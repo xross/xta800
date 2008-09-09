@@ -1,0 +1,16 @@
+- _start
+- _InitThread
+- _TouchRegisters
+- _GetRamEnd
+- _SetupTraps
+- _TrapHandler
+- _ExitWithError
+- a
+- main
+- b
+- c
+- _exception
+- _exit
+- memset
+- _DoSyscall
+- _done
