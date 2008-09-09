@@ -1,0 +1,36 @@
+To run:
+  xta [commands]: Starts xta tool in console mode.
+  xta -g:         Starts xta tool in gui mode.
+Avaliable console commands:
+  [-]load <xe file>: Loads the given xmos executable file
+  [-]path <from ref> <to ref>: Sets a path start and end points
+  [-]function <name>: Sets a path to trace a given function
+  [-]proc <node id> <core id>: All following analysis on given node and core (default: 0,0)
+  [-]freq <core frequency>: Sets the core freqency (default: 400)
+  [-]threads <num threads>: Sets number of threads currently executing (default: 8)
+  [-]list <type>: Lists all of the given <type> in the currently loaded executable
+      functions: Lists the functions
+      sources: Lists the files
+  [-]loop <loop id> <path id> <iterations>: Sets the number of iterations for the given loop path
+  [-]status: Display current status
+  [-]summary <path id | level>: Display timing summary for paths/functions
+      level SIMPLE: Show simple paths summary
+      level COMPLETE: Show complete path(s) timing
+      level COMPLETE_LOOPS: Show complete path(s) + loop timing
+      level COMPLETE_BLOCKS: Show complete path(s) + loop + basic block timing
+      level COMPLETE_INSTRUCTIONS: Show complete path(s) + loop + basic block + instruction timing
+      level UNRESOLVED: Show unresolved path(s) timing
+      level UNRESOLVED_LOOPS: Show unresolved path(s) + loop timing
+      level UNRESOLVED_BLOCKS: Show unresolved path(s) + loop + basic block timing
+      level UNRESOLVED_INSTRUCTIONS: Show unresolved path(s) + loop + basic block + instruction timing
+      level FUNCTIONS: Show path(s) + functions summary
+      level SOURCES: Show path(s) + sources summary
+  [-]src <path id> <source file>: Display annotated source file for given path id
+  [-]asm <path id>: Display annotated assembly for given path id
+  [-]trace: Display instruction trace for previous path/function
+  [-]graph: Dump graphviz dot file for previous path/function
+  [-]source <file name>: Sources the given command file
+  [-]history: Displays the command history
+  [-]pwd: Displays the current working directory
+  [-]help: Displays this help message
+  [-]exit: Quits the shell
