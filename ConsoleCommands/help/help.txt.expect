@@ -27,7 +27,10 @@ Avaliable console commands:
       level SOURCES: Show path(s) + sources summary
   [-]src <path id> <source file>: Display annotated source file for given path id
   [-]asm <path id>: Display annotated assembly for given path id
-  [-]trace: Display instruction trace for previous path/function
+  [-]trace <path id | level>: Display instruction trace for the given path id
+      level COMPLETE: Trace all complete paths
+      level UNRESOLVED: Trace all unresolves paths
+      level LOOP: Trace all looped paths
   [-]graph: Dump graphviz dot file for previous path/function
   [-]source <file name>: Sources the given command file
   [-]history: Displays the command history
