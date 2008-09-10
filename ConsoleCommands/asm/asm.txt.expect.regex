@@ -1,0 +1,35 @@
+Route: main
+Complete paths:   2
+Unresolved paths: 0
+Loops:            0
+Loop paths:       0
+<main>:
+\+         0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x0 
+\+         0x[0-9a-fA-F]{5} LDWDP_lru6 r1, dp\[i 0x8\] 
+\+         0x[0-9a-fA-F]{5} EQ_2rus r1, r1, i 0x2 
+\+         0x[0-9a-fA-F]{5} BRFT_ru6 r1, i 0x2 <.bt0>
+\+         0x[0-9a-fA-F]{5} BRFU_u6 i 0x2 <.bt1>
+  .bt0    0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x2 
+\+ .bt1    0x[0-9a-fA-F]{5} RETSP_u6 i 0x0 
+          0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x7 
+          0x[0-9a-fA-F]{5} BLRF_lu10 i 0xb0 <_DoSyscall>
+          0x[0-9a-fA-F]{5} CLRSR_u6 i 0x1 
+          0x[0-9a-fA-F]{5} WAITEU_0r  
+
+\.\.\.
+
+<main>:
+\+         0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x0 
+\+         0x[0-9a-fA-F]{5} LDWDP_lru6 r1, dp\[i 0x8\] 
+\+         0x[0-9a-fA-F]{5} EQ_2rus r1, r1, i 0x2 
+\+         0x[0-9a-fA-F]{5} BRFT_ru6 r1, i 0x2 <.bt0>
+          0x[0-9a-fA-F]{5} BRFU_u6 i 0x2 <.bt1>
+\+ .bt0    0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x2 
+\+ .bt1    0x[0-9a-fA-F]{5} RETSP_u6 i 0x0 
+          0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x7 
+          0x[0-9a-fA-F]{5} BLRF_lu10 i 0xb0 <_DoSyscall>
+          0x[0-9a-fA-F]{5} CLRSR_u6 i 0x1 
+          0x[0-9a-fA-F]{5} WAITEU_0r  
+
+\.\.\.
+
