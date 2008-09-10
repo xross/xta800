@@ -1,0 +1,30 @@
+Route: main
+Complete paths:   1
+Unresolved paths: 0
+Loops:            1
+Loop paths:       1
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions
+\+COMPLETE \[1 path\(s\)\]
+    path\(0\)  : \d+\.\d+/\d+/\d+/\d+/2/0/1
+        \+LOOP\(0\) \[1 path\(s\)\, 0 iteration\(s\)\]
+            path\(1\)  : \d+\.\d+/\d+/\d+/\d+/2/0/0
+  int main\(\)
+\+ {
+\+   int res = 2;
+\+   while \(res > 0\) 
+    {
+      --res;
+    }
+\+   return res;
+  }
+  
+  int main\(\)
+  {
+    int res = 2;
+\+   while \(res > 0\) 
+    {
+\+     --res;
+    }
+    return res;
+  }
+  
