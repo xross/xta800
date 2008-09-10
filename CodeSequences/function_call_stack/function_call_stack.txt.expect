@@ -1,0 +1,8 @@
+Route: main
+Complete paths:   2
+Unresolved paths: 0
+Loops:            1
+Loop paths:       1
+function: 0 1 
+main: 0 1 
+__crt_memcpy: 0 1 2 

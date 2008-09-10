@@ -1,14 +1,14 @@
 int function1()
 {
   int a = 22;
-  int b[12] = {0};
+  int b[12];
   return a;
 }
 
 int function2()
 {
   int a = 23;
-  int b[5] = {0};
+  int b[5];
   return a;
 }
 
