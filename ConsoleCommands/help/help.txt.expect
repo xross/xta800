@@ -25,8 +25,9 @@ Avaliable console commands:
       level UNRESOLVED_INSTRUCTIONS: Show unresolved path(s) + loop + basic block + instruction timing
       level FUNCTIONS: Show path(s) + functions summary
       level SOURCES: Show path(s) + sources summary
-  [-]src <path id> <source file>: Display annotated source file for given path id
   [-]asm <path id>: Display annotated assembly for given path id
+  [-]src <path id> <source file>: Display annotated source file for given path id
+  [-]mix <path id> <source file>: Display annotated source file + assembly instructions for the given path id
   [-]trace <path id | level>: Display instruction trace for the given path id
       level COMPLETE: Trace all complete paths
       level UNRESOLVED: Trace all unresolves paths

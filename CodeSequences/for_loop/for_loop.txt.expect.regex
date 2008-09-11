@@ -8,23 +8,23 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions
     path\(0\)  : \d+\.\d+/\d+/\d+/\d+/2/0/1
         \+LOOP\(0\) \[1 path\(s\)\, 0 iteration\(s\)\]
             path\(1\)  : \d+\.\d+/\d+/\d+/\d+/2/0/0
-  int main\(\)
-\+ {
-\+   int res = 0;
-\+   for \(int i = 0; i < 5; \+\+i\)
-    {
-      res \+= 1;
-    }
-\+   return res;
-  }
-  
-  int main\(\)
-  {
-    int res = 0;
-\+   for \(int i = 0; i < 5; \+\+i\)
-    {
-\+     res \+= 1;
-    }
-    return res;
-  }
-  
+  1: int main\(\)
+\+ 2: {
+\+ 3:   int res = 0;
+\+ 4:   for \(int i = 0; i < 5; \+\+i\)
+  5:   {
+  6:     res \+= 1;
+  7:   }
+\+ 8:   return res;
+  9: }
+  10: 
+  1: int main\(\)
+  2: {
+  3:   int res = 0;
+\+ 4:   for \(int i = 0; i < 5; \+\+i\)
+  5:   {
+\+ 6:     res \+= 1;
+  7:   }
+  8:   return res;
+  9: }
+  10: 
