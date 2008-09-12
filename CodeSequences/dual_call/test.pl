@@ -9,6 +9,5 @@ system("xcc -g test.xc -o $genDir/test.xe > $genDir/dual_call.log 2>&1");
 system("@ARGV load $genDir/test.xe " .
        "function main " .
        "summary SIMPLE " .
-       "summary COMPLETE_LOOPS " .
        "exit > $genDir/dual_call.txt 2>&1");
 
