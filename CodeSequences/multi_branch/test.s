@@ -2,6 +2,7 @@
 _start:
   bl main
 
+.type main, @function
 .globl main
 main:
   entsp 1
