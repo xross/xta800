@@ -11,10 +11,6 @@ Loop paths:       0
 \+         0x[0-9a-fA-F]{5} BRFU_u6 i 0x2 <.bt1>
   .bt0    0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x2 
 \+ .bt1    0x[0-9a-fA-F]{5} RETSP_u6 i 0x0 
-          0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x7 
-          0x[0-9a-fA-F]{5} BLRF_lu10 i 0xb0 <_DoSyscall>
-          0x[0-9a-fA-F]{5} CLRSR_u6 i 0x1 
-          0x[0-9a-fA-F]{5} WAITEU_0r  
 
 \.\.\.
 
@@ -26,10 +22,6 @@ Loop paths:       0
           0x[0-9a-fA-F]{5} BRFU_u6 i 0x2 <.bt1>
 \+ .bt0    0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x2 
 \+ .bt1    0x[0-9a-fA-F]{5} RETSP_u6 i 0x0 
-          0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x7 
-          0x[0-9a-fA-F]{5} BLRF_lu10 i 0xb0 <_DoSyscall>
-          0x[0-9a-fA-F]{5} CLRSR_u6 i 0x1 
-          0x[0-9a-fA-F]{5} WAITEU_0r  
 
 \.\.\.
 
