@@ -1,0 +1,48 @@
+Route: main
+Complete paths:   1
+Unresolved paths: 0
+Loops:            1
+Loop paths:       1
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions
+\+COMPLETE \[1 path\(s\)\]
+    path\(0\)  : \d+\.\d+/\d+/\d+/\d+/\d+/0/1
+        \+LOOP\(0\) \[1 path\(s\)\, 0 iteration\(s\)\]
+            path\(2\)  : \d+\.\d+/\d+/\d+/\d+/2/0/0
+        \+LOOP\(1\) \[1 path\(s\)\, 0 iteration\(s\)\]
+            path\(2\)  : \d+\.\d+/\d+/\d+/\d+/2/0/0
+  1: 
+  2: int delay\(int x\)
+\+ 3: {
+\+ 4:   int j = 0;
+  5:   
+\+ 6:   for \(int i = 0; i < x; i\+\+\)
+  7:     j \+= i;
+  8:     
+\+ 9:   return j;
+  10: }
+  11: 
+  12: int main\(\)
+\+ 13: {
+\+ 14:   delay\(10\);
+\+ 15:   delay\(20\);
+\+ 16:   return 0;
+  17: }
+  18: 
+  1: 
+  2: int delay\(int x\)
+  3: {
+  4:   int j = 0;
+  5:   
+\+ 6:   for \(int i = 0; i < x; i\+\+\)
+\+ 7:     j \+= i;
+  8:     
+  9:   return j;
+  10: }
+  11: 
+  12: int main\(\)
+  13: {
+  14:   delay\(10\);
+  15:   delay\(20\);
+  16:   return 0;
+  17: }
+  18: 
