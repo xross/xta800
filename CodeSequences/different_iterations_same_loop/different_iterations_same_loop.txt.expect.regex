@@ -1,0 +1,38 @@
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions
+\+COMPLETE \[4 path\(s\)\]
+    path\(9\)  : \d+\.\d+/\d+/\d+/\d+/\d+/0/1
+        \+LOOP\(12\) \[1 path\(s\)\, 12 iteration\(s\)\]
+            path\(7\)  : \d+\.\d+/\d+/\d+/\d+/2/0/12
+        \+LOOP\(13\) \[1 path\(s\)\, 13 iteration\(s\)\]
+            path\(7\)  : \d+\.\d+/\d+/\d+/\d+/2/0/13
+        \+LOOP\(14\) \[1 path\(s\)\, 14 iteration\(s\)\]
+            path\(7\)  : \d+\.\d+/\d+/\d+/\d+/2/0/14
+        \+LOOP\(15\) \[1 path\(s\)\, 15 iteration\(s\)\]
+            path\(7\)  : \d+\.\d+/\d+/\d+/\d+/2/0/15
+    path\(5\)  : \d+\.\d+/\d+/\d+/\d+/\d+/0/1
+        \+LOOP\(8\) \[1 path\(s\)\, 8 iteration\(s\)\]
+            path\(7\)  : \d+\.\d+/\d+/\d+/\d+/2/0/8
+        \+LOOP\(9\) \[1 path\(s\)\, 9 iteration\(s\)\]
+            path\(7\)  : \d+\.\d+/\d+/\d+/\d+/2/0/9
+        \+LOOP\(10\) \[1 path\(s\)\, 10 iteration\(s\)\]
+            path\(7\)  : \d+\.\d+/\d+/\d+/\d+/2/0/10
+        \+LOOP\(11\) \[1 path\(s\)\, 11 iteration\(s\)\]
+            path\(7\)  : \d+\.\d+/\d+/\d+/\d+/2/0/11
+    path\(3\)  : \d+\.\d+/\d+/\d+/\d+/\d+/0/1
+        \+LOOP\(4\) \[1 path\(s\)\, 4 iteration\(s\)\]
+            path\(7\)  : \d+\.\d+/\d+/\d+/\d+/2/0/4
+        \+LOOP\(5\) \[1 path\(s\)\, 5 iteration\(s\)\]
+            path\(7\)  : \d+\.\d+/\d+/\d+/\d+/2/0/5
+        \+LOOP\(6\) \[1 path\(s\)\, 6 iteration\(s\)\]
+            path\(7\)  : \d+\.\d+/\d+/\d+/\d+/2/0/6
+        \+LOOP\(7\) \[1 path\(s\)\, 7 iteration\(s\)\]
+            path\(7\)  : \d+\.\d+/\d+/\d+/\d+/2/0/7
+    path\(0\)  : \d+\.\d+/\d+/\d+/\d+/\d+/0/1
+        \+LOOP\(0\) \[1 path\(s\)\, 0 iteration\(s\)\]
+            path\(7\)  : \d+\.\d+/\d+/\d+/\d+/2/0/0
+        \+LOOP\(1\) \[1 path\(s\)\, 1 iteration\(s\)\]
+            path\(7\)  : \d+\.\d+/\d+/\d+/\d+/2/0/1
+        \+LOOP\(2\) \[1 path\(s\)\, 2 iteration\(s\)\]
+            path\(7\)  : \d+\.\d+/\d+/\d+/\d+/2/0/2
+        \+LOOP\(3\) \[1 path\(s\)\, 3 iteration\(s\)\]
+            path\(7\)  : \d+\.\d+/\d+/\d+/\d+/2/0/3
