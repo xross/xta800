@@ -1,12 +1,11 @@
 Route: main
 Complete paths:   1
 Unresolved paths: 0
-Loops:            2
+Loops:            1
 Loop paths:       2
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions
 \+COMPLETE \[1 path\(s\)\]
-    path\(0\)  : 9360.0/\d+/\d+/\d+/2/0/1
-        \+LOOP\(0\) \[1 path\(s\)\, 10 iteration\(s\)\]
-            path\(1\)  : 200.0/\d+/\d+/\d+/2/0/10
-               \+LOOP\(1\) \[1 path\(s\)\, 55 iteration\(s\)\]
-                   path\(2\)  : 120.0/\d+/\d+/\d+/2/0/55
+    path\(0\)  : \d+\.0/\d+/\d+/\d+/2/0/1
+        \+LOOP\(0\) \[2 path\(s\)\, 0 iteration\(s\)\]
+            path\(1\)  : \d+\.0/\d+/\d+/\d+/\d+/0/0
+            path\(2\)  : \d+\.0/\d+/\d+/\d+/\d+/0/0

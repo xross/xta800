@@ -9,8 +9,6 @@ system("xcc -std=c99 -g test.c -o $genDir/test.xe > $genDir/conditional_expressi
 system("@ARGV load $genDir/test.xe " .
        "function main " .
        "summary SIMPLE " .
-       "loop 0 1 10 " .
-       "loop 1 2 55 " .
        "summary COMPLETE_LOOPS " .
        "exit > $genDir/conditional_expression.txt 2>&1");
 
