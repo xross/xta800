@@ -31,7 +31,6 @@ Avaliable console commands:
   [-]trace <path id | level>: Display instruction trace for the given path id
       level COMPLETE: Trace all complete paths
       level UNRESOLVED: Trace all unresolves paths
-      level LOOP: Trace all looped paths
   [-]graph: Dump graphviz dot file for previous path/function
   [-]source <file name>: Sources the given command file
   [-]history: Displays the command history

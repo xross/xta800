@@ -1,13 +1,9 @@
-#define G4 1
-#define core __core
-#define regular __regular
-#define network __network
-#define node __node
+#include <xs1.h>
 
 core xdk[8];
 
-node xdk_node0 = {G4, {xdk[0], xdk[1], xdk[2], xdk[3]}};
-node xdk_node1 = {G4, {xdk[4], xdk[5], xdk[6], xdk[7]}};
+node xdk_node0 = {XS1_G4000A_512, {xdk[0], xdk[1], xdk[2], xdk[3]}};
+node xdk_node1 = {XS1_G4000A_512, {xdk[4], xdk[5], xdk[6], xdk[7]}};
 
 regular network single_xdk[2] = {xdk_node0,xdk_node1};
 
