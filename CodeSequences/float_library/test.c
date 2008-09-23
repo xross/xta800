@@ -1,10 +1,13 @@
 #include <stdlib.h>
 
+double mul(double one, double two)
+{
+  double result = one * two;
+  return result;
+}
+
 int main()
 {
-  double one = 1.0;
-  double two = 3.5;
-  double result = one * two;
- 
+  double result = mul(1.0, 3.5);
   return floor(result); 
 }
