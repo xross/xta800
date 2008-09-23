@@ -5,7 +5,7 @@ use warnings;
 my $genDir = $ARGV[0];
 shift @ARGV;
 
-system("xcc -g test.s -o $genDir/test.xe > $genDir/asm.log 2>&1");
+system("xcc -march=xs1a -g test.s -o $genDir/test.xe > $genDir/asm.log 2>&1");
 system("@ARGV load $genDir/test.xe " .
        "function main " .
        "summary SIMPLE " .

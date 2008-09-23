@@ -11,7 +11,12 @@ Avaliable console commands:
   [-]list <type>: Lists all of the given <type> in the currently loaded executable
       functions: Lists the functions
       sources: Lists the files
-  [-]loop <loop id> <path id> <iterations>: Sets the number of iterations for the given loop path
+  [-]loop <loop id> <path id> <scope> <iterations>: Sets the number of iterations for the given loop path
+      scope: RELATIVE/r: Iteration number propagates to the enclosing path (Default)
+      scope: ABSOLUTE/a: Absolute number of iterations
+  [-]loopi <loop instance id> <path id> <scope> <iterations>: Sets the number of iterations for the given loop instance
+      scope: RELATIVE/r: Iteration number propagates to the enclosing path (Default)
+      scope: ABSOLUTE/a: Absolute number of iterations
   [-]status: Display current status
   [-]summary <path id | level>: Display timing summary for paths/functions
       level SIMPLE: Show simple paths summary

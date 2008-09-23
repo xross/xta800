@@ -6,16 +6,16 @@ Loop paths:       21
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions
 \+COMPLETE \[1 path\(s\)\]
     path\(0\)  : \d+\.\d+/\d+/\d+/\d+/\d+/0/1
-        \+LOOP\(0\) \[2 path\(s\), 0 iteration\(s\)\]
+        \+loopi\(0\) \[2 path\(s\), 0 iteration\(s\)\, loop\(2\)]
             path\(3\)  : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
-                \+LOOP\(4\) \[1 path\(s\), 0 iteration\(s\)\]
+                \+loopi\(4\) \[1 path\(s\), 0 iteration\(s\)\, loop\(5\)]
                     path\(2\)  : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
             path\(1\)  : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
-                \+LOOP\(9\) \[1 path\(s\), 0 iteration\(s\)\]
+                \+loopi\(9\) \[1 path\(s\), 0 iteration\(s\)\, loop\(5\)]
                     path\(2\)  : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
-        \+LOOP\(1\) \[2 path\(s\), 0 iteration\(s\)\]
+        \+loopi\(1\) \[2 path\(s\), 0 iteration\(s\)\, loop\(4\)]
             path\(5\)  : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
-                \+LOOP\(5\) \[12 path\(s\), 0 iteration\(s\)\]
+                \+loopi\(5\) \[12 path\(s\), 0 iteration\(s\)\, loop\(3\)]
                     path\(12\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
                     path\(17\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
                     path\(10\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
@@ -28,17 +28,17 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions
                     path\(14\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
                     path\(8\)  : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
                     path\(13\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
-                \+LOOP\(6\) \[2 path\(s\), 0 iteration\(s\)\]
+                \+loopi\(6\) \[2 path\(s\), 0 iteration\(s\)\, loop\(1\)]
                     path\(19\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
-                        \+LOOP\(2\) \[2 path\(s\), 0 iteration\(s\)\]
+                        \+loopi\(2\) \[2 path\(s\), 0 iteration\(s\)\, loop\(0\)]
                             path\(21\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
                             path\(20\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
                     path\(18\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
-                        \+LOOP\(3\) \[2 path\(s\), 0 iteration\(s\)\]
+                        \+loopi\(3\) \[2 path\(s\), 0 iteration\(s\)\, loop\(0\)]
                             path\(21\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
                             path\(20\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
             path\(4\)  : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
-                \+LOOP\(7\) \[12 path\(s\), 0 iteration\(s\)\]
+                \+loopi\(7\) \[12 path\(s\), 0 iteration\(s\)\, loop\(3\)]
                     path\(12\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
                     path\(17\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
                     path\(10\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
@@ -51,12 +51,12 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions
                     path\(14\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
                     path\(8\)  : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
                     path\(13\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
-                \+LOOP\(8\) \[2 path\(s\), 0 iteration\(s\)\]
+                \+loopi\(8\) \[2 path\(s\), 0 iteration\(s\)\, loop\(1\)]
                     path\(19\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
-                        \+LOOP\(2\) \[2 path\(s\), 0 iteration\(s\)\]
+                        \+loopi\(2\) \[2 path\(s\), 0 iteration\(s\)\, loop\(0\)]
                             path\(21\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
                             path\(20\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
                     path\(18\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
-                        \+LOOP\(3\) \[2 path\(s\), 0 iteration\(s\)\]
+                        \+loopi\(3\) \[2 path\(s\), 0 iteration\(s\)\, loop\(0\)]
                             path\(21\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0
                             path\(20\) : \d+\.\d+/\d+/\d+/\d+/\d+/0/0

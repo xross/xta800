@@ -1,15 +1,15 @@
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions
 \+COMPLETE \[1 path\(s\)\]
     path\(0\)  : \d+\.\d+/\d+/\d+/\d+/6/0/1
-        \+LOOP\(0\) \[1 path\(s\)\, 5 iteration\(s\)\]
+        \+loopi\(0\) \[1 path\(s\)\, 5 iteration\(s\)\, loop\(4\)]
             path\(1\)  : \d+\.\d+/\d+/\d+/\d+/2/0/5
-        \+LOOP\(1\) \[1 path\(s\)\, 4 iteration\(s\)\]
+        \+loopi\(1\) \[1 path\(s\)\, 4 iteration\(s\)\, loop\(3\)]
             path\(2\)  : \d+\.\d+/\d+/\d+/\d+/2/0/4
-        \+LOOP\(2\) \[1 path\(s\)\, 3 iteration\(s\)\]
+        \+loopi\(2\) \[1 path\(s\)\, 3 iteration\(s\)\, loop\(2\)]
             path\(3\)  : \d+\.\d+/\d+/\d+/\d+/2/0/3
-        \+LOOP\(3\) \[1 path\(s\)\, 2 iteration\(s\)\]
+        \+loopi\(3\) \[1 path\(s\)\, 2 iteration\(s\)\, loop\(1\)]
             path\(4\)  : \d+\.\d+/\d+/\d+/\d+/2/0/2
-        \+LOOP\(4\) \[1 path\(s\)\, 1 iteration\(s\)\]
+        \+loopi\(4\) \[1 path\(s\)\, 1 iteration\(s\)\, loop\(0\)]
             path\(5\)  : \d+\.\d+/\d+/\d+/\d+/2/0/1
   1: int main\(\)
 \+ 2: {

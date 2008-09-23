@@ -9,8 +9,10 @@
 - main
 - b
 - c
+- __libc_done
 - _done
 - _exception
 - _exit
+- exit
 - memset
 - _DoSyscall

@@ -6,7 +6,7 @@ Loop paths:       1
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions
 \+COMPLETE \[1 path\(s\)\]
     path\(0\)  : \d+\.\d+/\d+/\d+/\d+/2/0/1
-        \+LOOP\(0\) \[1 path\(s\)\, 0 iteration\(s\)\]
+        \+loopi\(0\) \[1 path\(s\)\, 0 iteration\(s\)\, loop\(0\)]
             path\(1\)  : \d+\.\d+/\d+/\d+/\d+/2/0/0
   1: int main\(\)
 \+ 2: {
