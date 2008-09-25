@@ -2,13 +2,13 @@ Current node: 0
 Current core: 0
 Frequency: 400
 NumThreads: 8
-Loaded executable: csim__xs1a/test1.xe
-Node: 0, Core: 0 (No debug information found)
+Loaded executable: csim__xs1[ab]/test1.xe
+Node: 0, Core: 0 \(No debug information found\)
 No Paths/Functions registered
 Current node: 0
 Current core: 0
 Frequency: 400
 NumThreads: 8
-Loaded executable: csim__xs1a/test2.xe
-Node: 0, Core: 0 (No debug information found)
+Loaded executable: csim__xs1[ab]/test2.xe
+Node: 0, Core: 0 \(No debug information found\)
 No Paths/Functions registered
