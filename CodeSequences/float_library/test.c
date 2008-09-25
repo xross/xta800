@@ -9,5 +9,5 @@ double mul(double one, double two)
 int main()
 {
   double result = mul(1.0, 3.5);
-  return floor(result); 
+  return 0; 
 }
