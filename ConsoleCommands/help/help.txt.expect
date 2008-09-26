@@ -2,41 +2,18 @@
   [-]path <from ref> <to ref>: Sets a path start and end points
   [-]function <name>: Sets a path to trace a given function
   [-]list <type>: Lists all of the given <type> in the currently loaded executable
-      functions: Lists the functions
-      sources: Lists the files
   [-]loop <loop id> <path id> <scope> <iterations>: Sets the number of iterations for the given loop path
-      scope: RELATIVE/r: Iteration number propagates to the enclosing path (Default)
-      scope: ABSOLUTE/a: Absolute number of iterations
   [-]loopi <loop instance id> <path id> <scope> <iterations>: Sets the number of iterations for the given loop instance
-      scope: RELATIVE/r: Iteration number propagates to the enclosing path (Default)
-      scope: ABSOLUTE/a: Absolute number of iterations
   [-]status: Display current status
   [-]summary <path id | level>: Display timing summary for paths/functions
-      level: SIMPLE: Show simple paths summary
-      level: COMPLETE: Show complete path(s) timing
-      level: COMPLETE_LOOPS: Show complete path(s) + loop timing
-      level: COMPLETE_BLOCKS: Show complete path(s) + loop + basic block timing
-      level: COMPLETE_INSTRUCTIONS: Show complete path(s) + loop + basic block + instruction timing
-      level: UNRESOLVED: Show unresolved path(s) timing
-      level: UNRESOLVED_LOOPS: Show unresolved path(s) + loop timing
-      level: UNRESOLVED_BLOCKS: Show unresolved path(s) + loop + basic block timing
-      level: UNRESOLVED_INSTRUCTIONS: Show unresolved path(s) + loop + basic block + instruction timing
-      level: FUNCTIONS: Show path(s) + functions summary
-      level: SOURCES: Show path(s) + sources summary
   [-]asm <path id>: Display annotated assembly for given path id
   [-]src <path id> <source file>: Display annotated source file for given path id
   [-]mix <path id> <source file>: Display annotated source file + assembly instructions for the given path id
   [-]trace <path id | level>: Display instruction trace for the given path id
-      level COMPLETE: Trace all complete paths
-      level UNRESOLVED: Trace all unresolves paths
   [-]graph: Dump graphviz dot file for previous path/function
   [-]source <file name>: Sources the given command file
   [-]history: Displays the command history
   [-]pwd: Displays the current working directory
   [-]config <option> <arg0> <arg1>...: Configures the given option
-      option: proc <node id> <core id>: All following analysis on given node and core (default: 0,0)
-      option: freq <core frequency>: Sets the core freqency (default: 400)
-      option: threads <num threads>: Sets number of threads currently executing (default: 8)
-      option: iterations <a|r> <num>: Sets the default number of loop iterations (a: absolute, r: relative)
-  [-]help: Displays this help message
+  [-]help [command]: Displays help message for the given command
   [-]exit: Quits the shell
