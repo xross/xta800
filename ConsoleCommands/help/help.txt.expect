@@ -37,5 +37,6 @@
       option: proc <node id> <core id>: All following analysis on given node and core (default: 0,0)
       option: freq <core frequency>: Sets the core freqency (default: 400)
       option: threads <num threads>: Sets number of threads currently executing (default: 8)
+      option: iterations <a|r> <num>: Sets the default number of loop iterations (a: absolute, r: relative)
   [-]help: Displays this help message
   [-]exit: Quits the shell
