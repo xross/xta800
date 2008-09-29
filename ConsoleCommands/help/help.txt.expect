@@ -2,8 +2,6 @@
   [-]path <from ref> <to ref>: Sets a path start and end points
   [-]function <name>: Sets a path to trace a given function
   [-]list <type>: Lists all of the given <type> in the currently loaded executable
-  [-]loop <loop id> <path id> <scope> <iterations>: Sets the number of iterations for the given loop path
-  [-]loopi <loop instance id> <path id> <scope> <iterations>: Sets the number of iterations for the given loop instance
   [-]status: Display current status
   [-]summary <path id | level>: Display timing summary for paths/functions
   [-]asm <path id>: Display annotated assembly for given path id
@@ -11,6 +9,9 @@
   [-]mix <path id> <source file>: Display annotated source file + assembly instructions for the given path id
   [-]trace <path id | level>: Display instruction trace for the given path id
   [-]graph: Dump graphviz dot file for previous path/function
+  [-]loop <loop id> <path id> <scope> <iterations>: Sets the number of iterations for the given loop path
+  [-]loopi <loop instance id> <path id> <scope> <iterations>: Sets the number of iterations for the given loop instance
+  [-]time <pc> <mode> <value>: Sets the time taken for the instruction at the given pc
   [-]source <file name>: Sources the given command file
   [-]history: Displays the command history
   [-]pwd: Displays the current working directory

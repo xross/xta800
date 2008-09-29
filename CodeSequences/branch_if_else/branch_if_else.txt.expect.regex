@@ -24,20 +24,20 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions
 \+COMPLETE \[2 path\(s\)\]
     path\(0\)  : \d+\.\d+/\d+/\d+/\d+/2/0/1
         block: \d+\.\d+/\d+/\d+/\d+/1/0/1
-            0x[0-9a-fA-F]{5} .*
+           \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
 [^^^]
         block: \d+\.\d+/\d+/\d+/\d+/1/0/1
-            0x[0-9a-fA-F]{5} .*
+           \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
 [^^^]
     path\(1\)  : \d+\.\d+/\d+/\d+/\d+/3/0/1
         block: \d+\.\d+/\d+/\d+/\d+/1/0/1
-            0x[0-9a-fA-F]{5} .*
+           \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
 [^^^]
         block: \d+\.\d+/\d+/\d+/\d+/1/0/1
-            0x[0-9a-fA-F]{5} .*
+           \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
 [^^^]
         block: \d+\.\d+/\d+/\d+/\d+/1/0/1
-            0x[0-9a-fA-F]{5} .*
+           \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
 [^^^]
   1: int a = 2;
   2: int main\(\)
