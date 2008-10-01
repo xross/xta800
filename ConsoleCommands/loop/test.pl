@@ -4,8 +4,10 @@ use warnings;
 
 my $genDir = $ARGV[0];
 shift @ARGV;
+my $arch = $ARGV[0];
+shift @ARGV;
 
-system("xcc -g test.xc -o $genDir/test.xe > $genDir/loop.log 2>&1");
+system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/loop.log 2>&1");
 system("@ARGV load $genDir/test.xe " .
        "function main " .
        "loopi 0 1 r 5 " .
