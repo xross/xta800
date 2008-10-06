@@ -13,6 +13,7 @@
   [-]loopi <path instance id> <scope> <iterations>: Sets the number of iterations for the path instance
   [-]time <pc> <mode> <value>: Sets the time taken for the instruction at the given pc
   [-]source <file name>: Sources the given command file
+  [-]exclude <ref>: Adds the given reference to the exclusion list
   [-]history: Displays the command history
   [-]pwd: Displays the current working directory
   [-]config <option> <arg0> <arg1>...: Configures the given option

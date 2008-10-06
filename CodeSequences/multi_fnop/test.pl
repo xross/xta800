@@ -4,7 +4,12 @@ use warnings;
 
 my $genDir = $ARGV[0];
 shift @ARGV;
+my $arch = $ARGV[0];
+shift @ARGV;
 
 system("xcc -nostartfiles test.s -o $genDir/test.xe > $genDir/multi_fnop.log 2>&1");
-system("@ARGV load $genDir/test.xe function main summary COMPLETE_INSTRUCTIONS exit > $genDir/multi_fnop.txt 2>&1");
+system("@ARGV load $genDir/test.xe " .
+       "function main " .
+       "summary COMPLETE_INSTRUCTIONS " .
+       "exit > $genDir/multi_fnop.txt 2>&1");
 
