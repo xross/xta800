@@ -1,8 +1,6 @@
 Route: main
 Complete paths:   2
 Unresolved paths: 0
-Loops:            0
-Loop paths:       0
   0x[0-9a-fA-F]{5} main \+ 0               --FNOP--                    
   0x[0-9a-fA-F]{5} main \+ 0               LDC_ru6      r0, i 0x0      
   0x[0-9a-fA-F]{5} main \+ 2               LDWDP_lru6   r1, dp\[i 0x8\]  

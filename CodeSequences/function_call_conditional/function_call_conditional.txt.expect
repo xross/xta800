@@ -1,8 +1,6 @@
 Route: main
 Complete paths:   2
 Unresolved paths: 0
-Loops:            0
-Loop paths:       0
 function1: 1 
 function2: 0 
 main: 0 1 

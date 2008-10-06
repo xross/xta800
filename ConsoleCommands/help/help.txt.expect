@@ -9,8 +9,8 @@
   [-]mix <path id> <source file>: Display annotated source file + assembly instructions for the given path id
   [-]trace <path id | level>: Display instruction trace for the given path id
   [-]graph: Dump graphviz dot file for previous path/function
-  [-]loop <loop id> <path id> <scope> <iterations>: Sets the number of iterations for the given loop path
-  [-]loopi <loop instance id> <path id> <scope> <iterations>: Sets the number of iterations for the given loop instance
+  [-]loop <path id> <scope> <iterations>: Sets the number of iterations for the given path
+  [-]loopi <path instance id> <scope> <iterations>: Sets the number of iterations for the path instance
   [-]time <pc> <mode> <value>: Sets the time taken for the instruction at the given pc
   [-]source <file name>: Sources the given command file
   [-]history: Displays the command history

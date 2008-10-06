@@ -1,13 +1,11 @@
 Route: main
 Complete paths:   1
 Unresolved paths: 0
-Loops:            1
-Loop paths:       1
-Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    path\(0\)  : \d+\.\d+/\d+/\d+/\d+/2/0/1
+    pathi\(\d+\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/1/0, path\(\d+\)
         \+loopi\(0\) \[1 path\(s\)\, 0 iteration\(s\)\, loop\(0\)]
-            path\(1\)  : \d+\.\d+/\d+/\d+/\d+/2/0/0
+            pathi\(\d+\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/0/0, path\(\d+\)
   1: int main\(\)
 \+ 2: {
 \+ 3:   int res = 2;

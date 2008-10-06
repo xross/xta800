@@ -1,13 +1,11 @@
 Route: sort
 Complete paths:   1
 Unresolved paths: 0
-Loops:            2
-Loop paths:       3
-Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    path\(1\)  : \d+\.0/\d+/\d+/\d+/2/0/1
-        \+loopi\(1\) \[1 path\(s\)\, 0 iteration\(s\)\, loop\(1\)]
-            path\(0\)  : \d+\.0/\d+/\d+/\d+/\d+/0/0
-                \+loopi\(0\) \[2 path\(s\)\, 0 iteration\(s\)\, loop\(0\)]
-                    path\(3\)  : \d+\.0/\d+/\d+/\d+/\d+/0/0
-                    path\(2\)  : \d+\.0/\d+/\d+/\d+/\d+/0/0
+    pathi\(\d+\)\s+: \d+\.0/\d+/\d+/\d+/2/0/1/0, path\(\d+\)
+        \+loopi\(\d+\) \[1 path\(s\)\, 0 iteration\(s\)\, loop\(\d+\)]
+            pathi\(\d+\)\s+: \d+\.0/\d+/\d+/\d+/\d+/0/0/0, path\(\d+\)
+                \+loopi\(\d+\) \[2 path\(s\)\, 0 iteration\(s\)\, loop\(\d+\)]
+                    pathi\(\d+\)\s+: \d+\.0/\d+/\d+/\d+/\d+/0/0/0, path\(\d+\)
+                    pathi\(\d+\)\s+: \d+\.0/\d+/\d+/\d+/\d+/0/0/0, path\(\d+\)
