@@ -11,8 +11,8 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/dependent_neste
 system("@ARGV load $genDir/test.xe " .
        "function main " .
        "summary SIMPLE " .
-       "loopi 4 r 10 " .
-       "loopi 5 a 55 " .
+       "loopi 3 r 10 " .
+       "loopi 2 a 55 " .
        "summary COMPLETE_LOOPS " .
        "exit > $genDir/dependent_nested_loop.txt 2>&1");
 

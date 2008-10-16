@@ -1,23 +1,11 @@
 Route: main
 Complete paths:   1
 Unresolved paths: 0
-Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions/Absolute
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    pathi\(\d+\)\s+: \d+\.\d+/\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
-        \+loopi\(0\) \[1 path\(s\)\, 0 iteration\(s\)\, loop\(0\)]
-            pathi\(\d+\)\s+: \d+\.\d+/\d+/\d+/\d+/\d+/0/0/0, path\(\d+\)
-  1: int main\(\)
-\+ 2: {
-\+ 3:   int res = 10;
-  4:   do
-  5:   {
-\+ 6:     --res;
-  7:   }
-\+ 8:   while \(res > 0\);
-  9:  
-\+ 10:   return res;
-  11: }
-  12: 
+    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
+            pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/0/0, path\(\d+\)
   1: int main\(\)
   2: {
   3:   int res = 10;
@@ -28,5 +16,17 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions/A
 \+ 8:   while \(res > 0\);
   9:  
   10:   return res;
+  11: }
+  12: 
+  1: int main\(\)
+\+ 2: {
+\+ 3:   int res = 10;
+  4:   do
+  5:   {
+\+ 6:     --res;
+  7:   }
+\+ 8:   while \(res > 0\);
+  9:  
+\+ 10:   return res;
   11: }
   12: 

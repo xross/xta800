@@ -1,38 +1,38 @@
-Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions/Absolute
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[4 path\(s\)\]
-    pathi\(\d+\)\s+: \d+\.\d+/\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
-        \+loopi\(12\) \[1 path\(s\)\, 12 iteration\(s\)\, loop\(0\)]
-            pathi\(24\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/12/0, path\(\d+\)
-        \+loopi\(13\) \[1 path\(s\)\, 13 iteration\(s\)\, loop\(0\)]
-            pathi\(25\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/13/0, path\(\d+\)
-        \+loopi\(14\) \[1 path\(s\)\, 14 iteration\(s\)\, loop\(0\)]
-            pathi\(26\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/14/0, path\(\d+\)
-        \+loopi\(15\) \[1 path\(s\)\, 15 iteration\(s\)\, loop\(0\)]
-            pathi\(27\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/15/0, path\(\d+\)
-    pathi\(\d+\)\s+: \d+\.\d+/\d+/\d+/\d+/\d+/0/1
-        \+loopi\(8\) \[1 path\(s\)\, 8 iteration\(s\)\, loop\(0\)]
-            pathi\(20\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/8/0, path\(\d+\)
-        \+loopi\(9\) \[1 path\(s\)\, 9 iteration\(s\)\, loop\(0\)]
-            pathi\(21\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/9/0, path\(\d+\)
-        \+loopi\(10\) \[1 path\(s\)\, 10 iteration\(s\)\, loop\(0\)]
-            pathi\(22\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/10/0, path\(\d+\)
-        \+loopi\(11\) \[1 path\(s\)\, 11 iteration\(s\)\, loop\(0\)]
-            pathi\(23\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/11/0, path\(\d+\)
-    pathi\(\d+\)\s+: \d+\.\d+/\d+/\d+/\d+/\d+/0/1
-        \+loopi\(4\) \[1 path\(s\)\, 4 iteration\(s\)\, loop\(0\)]
-            pathi\(16\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/4/0, path\(\d+\)
-        \+loopi\(5\) \[1 path\(s\)\, 5 iteration\(s\)\, loop\(0\)]
-            pathi\(17\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/5/0, path\(\d+\)
-        \+loopi\(6\) \[1 path\(s\)\, 6 iteration\(s\)\, loop\(0\)]
-            pathi\(18\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/6/0, path\(\d+\)
-        \+loopi\(7\) \[1 path\(s\)\, 7 iteration\(s\)\, loop\(0\)]
-            pathi\(19\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/7/0, path\(\d+\)
-    pathi\(\d+\)\s+: \d+\.\d+/\d+/\d+/\d+/\d+/0/1
-        \+loopi\(0\) \[1 path\(s\)\, 0 iteration\(s\)\, loop\(0\)]
-            pathi\(12\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/0/0, path\(\d+\)
-        \+loopi\(1\) \[1 path\(s\)\, 1 iteration\(s\)\, loop\(0\)]
-            pathi\(13\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/1/0, path\(\d+\)
-        \+loopi\(2\) \[1 path\(s\)\, 2 iteration\(s\)\, loop\(0\)]
-            pathi\(14\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/2/0, path\(\d+\)
-        \+loopi\(3\) \[1 path\(s\)\, 3 iteration\(s\)\, loop\(0\)]
-            pathi\(15\)\s+: \d+\.\d+/\d+/\d+/\d+/2/0/3/0, path\(\d+\)
+    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 10 iteration\(s\)\]
+            pathi\(1\) +: \d+\.\d+/\d+/\d+/\d+/0/10/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 20 iteration\(s\)\]
+            pathi\(3\) +: \d+\.\d+/\d+/\d+/\d+/0/20/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 10 iteration\(s\)\]
+            pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/10/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 20 iteration\(s\)\]
+            pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/20/0, path\(\d+\)
+    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 10 iteration\(s\)\]
+            pathi\(1\) +: \d+\.\d+/\d+/\d+/\d+/0/10/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 20 iteration\(s\)\]
+            pathi\(3\) +: \d+\.\d+/\d+/\d+/\d+/0/20/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 10 iteration\(s\)\]
+            pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/10/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 20 iteration\(s\)\]
+            pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/20/0, path\(\d+\)
+    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 10 iteration\(s\)\]
+            pathi\(1\) +: \d+\.\d+/\d+/\d+/\d+/0/10/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 20 iteration\(s\)\]
+            pathi\(3\) +: \d+\.\d+/\d+/\d+/\d+/0/20/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 10 iteration\(s\)\]
+            pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/10/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 20 iteration\(s\)\]
+            pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/20/0, path\(\d+\)
+    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 10 iteration\(s\)\]
+            pathi\(1\) +: \d+\.\d+/\d+/\d+/\d+/0/10/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 20 iteration\(s\)\]
+            pathi\(3\) +: \d+\.\d+/\d+/\d+/\d+/0/20/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 10 iteration\(s\)\]
+            pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/10/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 20 iteration\(s\)\]
+            pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/20/0, path\(\d+\)

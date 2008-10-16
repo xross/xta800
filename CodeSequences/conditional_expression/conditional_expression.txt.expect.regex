@@ -1,9 +1,9 @@
 Route: main
 Complete paths:   1
 Unresolved paths: 0
-Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions/Absolute
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    pathi\(\d+\)\s+: \d+\.0/\d+/\d+/\d+/2/0/1/0, path\(\d+\)
-        \+loopi\(0\) \[2 path\(s\)\, 0 iteration\(s\)\, loop\(0\)]
-            pathi\(\d+\)\s+: \d+\.0/\d+/\d+/\d+/\d+/0/0/0, path\(\d+\)
-            pathi\(\d+\)\s+: \d+\.0/\d+/\d+/\d+/\d+/0/0/0, path\(\d+\)
+    pathi\(\d+\) +: \d+\.0/\d+/\d+/\d+/0/1/0, path\(\d+\)
+        \+loop \[2 path\(s\)\, 0 iteration\(s\)\]
+            pathi\(\d+\) +: \d+\.0/\d+/\d+/\d+/\d+/0/0, path\(\d+\)
+            pathi\(\d+\) +: \d+\.0/\d+/\d+/\d+/\d+/0/0, path\(\d+\)

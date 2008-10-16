@@ -1,10 +1,5 @@
 Route: main
 Complete paths:   1
 Unresolved paths: 0
-Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Blocks/Pausable/Executions/Absolute
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    pathi\(\d+\)\s+: 9360.0/\d+/\d+/\d+/2/0/1/0, path\(\d+\)
-        \+LOOP\(0\) \[1 path\(s\)\, 10 iteration\(s\)\]
-            pathi\(\d+\)\s+: 200.0/\d+/\d+/\d+/2/0/10/0, path\(\d+\)
-               \+LOOP\(1\) \[1 path\(s\)\, 55 iteration\(s\)\]
-                   pathi\(\d+\)\s+: 120.0/\d+/\d+/\d+/2/0/55/0, path\(\d+\)
