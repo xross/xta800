@@ -10,7 +10,7 @@
   [-]trace <path id | level>: Display instruction trace for the given path id
   [-]graph: Dump graphviz dot file for previous path/function
   [-]loop <path id> <scope> <iterations>: Sets the number of iterations for the given path
-  [-]loopi <path instance id> <scope> <iterations>: Sets the number of iterations for the path instance
+  [-]loopi <path instance> <scope> <iterations>: Sets the number of iterations for a path instance
   [-]time <pc> <mode> <value>: Sets the time taken for the instruction at the given pc
   [-]source <file name>: Sources the given command file
   [-]exclude <ref>: Adds the given reference to the exclusion list

@@ -2,10 +2,10 @@
 
 core xdk[8];
 
-node xdk_node0 = {XS1_G4000A_512, {xdk[0], xdk[1], xdk[2], xdk[3]}};
-node xdk_node1 = {XS1_G4000A_512, {xdk[4], xdk[5], xdk[6], xdk[7]}};
+__node xdk_node0 = {XS1_G4000A, {xdk[0], xdk[1], xdk[2], xdk[3]}};
+__node xdk_node1 = {XS1_G4000A, {xdk[4], xdk[5], xdk[6], xdk[7]}};
 
-regular network single_xdk[2] = {xdk_node0,xdk_node1};
+__regular network single_xdk[2] = {xdk_node0, xdk_node1};
 
 extern void kickOff( int coreId, chanend c );
 extern void passOn( int coreId, chanend inC, chanend outC );

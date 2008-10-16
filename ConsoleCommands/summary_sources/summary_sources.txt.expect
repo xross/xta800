@@ -1,6 +1,6 @@
-main.xc: 0 1 
-test1.xc: 0 1 
-test2.xc: 0 1 
-test3.xc: 0 1 
-test4.xc: 0 1 
-test5.xc: 0 1 
+main.xc: 1 2 
+test1.xc: 1 2 
+test2.xc: 1 2 
+test3.xc: 1 2 
+test4.xc: 1 2 
+test5.xc: 1 2 

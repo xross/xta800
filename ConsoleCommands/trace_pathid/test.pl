@@ -11,7 +11,7 @@ system("xcc -march=xs1a -g test.s -o $genDir/test.xe > $genDir/trace_pathid.log 
 system("@ARGV load $genDir/test.xe " .
        "function main " .
        "summary SIMPLE " .
-       "trace 0 " .
        "trace 1 " .
+       "trace 2 " .
        "exit > $genDir/trace_pathid.txt 2>&1");
 
