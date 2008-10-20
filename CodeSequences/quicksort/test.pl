@@ -12,5 +12,6 @@ system("@ARGV load $genDir/test.xe " .
        "function sort " .
        "summary SIMPLE " .
        "summary COMPLETE_LOOPS " .
+       "summary UNRESOLVED " .
        "exit > $genDir/quicksort.txt 2>&1");
 
