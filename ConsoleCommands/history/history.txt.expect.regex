@@ -1,2 +1,2 @@
-0: load [jc]sim__xs1[ab]/test.xe
+0: load \w+/test.xe
 1: history

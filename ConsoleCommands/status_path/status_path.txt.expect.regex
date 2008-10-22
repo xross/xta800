@@ -2,6 +2,6 @@ Current node: 0
 Current core: 0
 Frequency: 400
 NumThreads: 8
-Loaded executable: [cj]sim__xs1[ab]/test.xe
+Loaded executable: \w+/test.xe
 Node: 0, Core: 0 \(Debug information avaliable\)
 Loaded path: test.xc:3 -> test.xc:4
