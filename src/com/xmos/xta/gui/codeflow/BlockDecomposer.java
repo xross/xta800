@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
+
+import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -23,7 +25,7 @@ public class BlockDecomposer implements PathUpdater {
     private ArrayList<BasicBlock>   m_basicBlocks;
     private ArrayList<ArrayList<BasicBlock>> m_basicBlockDepths;
 
-    private CodeFlowPanel       m_codeFlow;
+    private CodeFlowPanel           m_codeFlow;
     
     public BlockDecomposer(PathStatus pathStatus){
         m_pathStatus = pathStatus;
@@ -141,7 +143,7 @@ public class BlockDecomposer implements PathUpdater {
     private void printOutGraphvis(){
         System.out.println("digraph g {");
         for(BasicBlock bb : m_basicBlocks){
-            System.out.print("L" + bb.hashCode() + "  [label = \"" );
+            System.out.print("L" + bb.hashCode() + "  [shape = box, label = \"" );
             for(XtaInstruction inst : bb.getInstructions()){
                 System.out.printf("%x %s %s\\n", inst.getPc(), inst.getNmenonic(), inst.getOperandString());
             }
@@ -255,5 +257,9 @@ public class BlockDecomposer implements PathUpdater {
                 links.get(getIndex(loopBlock.getInstructions(false).get(0),links)).addPrevious(lastInst);
             }
         }
+    }
+
+    public JPanel getJPanel() {
+        return m_codeFlow;
     }
 }

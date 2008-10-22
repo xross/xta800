@@ -30,7 +30,7 @@ import javax.swing.UIManager;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
-import com.xmos.xeobject.displayer.SourceDisplayer;
+import com.xmos.xeobjectdisplayer.SourceDisplayer;
 import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Engine;
@@ -63,11 +63,13 @@ public class XtaGui extends Displayer {
     private JPanel                  v_splitPane;
     private JSplitPane              main_splitPane;
     private PathStatus              m_pathStatus;
-    private XeObjectDisplayer       m_displayers;
+    private XtaXeObjectDisplayer       m_displayers;
     private Color                   m_lookAndFeelBackgroundColour;
     private JFrame                  m_mainFrame;
     private Menu                    m_menu;
     private BlockDecomposer         m_blockDecomposer;
+    
+    
     public static void main(String[] args) {
         XtaGui xtaGui = new XtaGui();
         try {
@@ -162,7 +164,7 @@ public class XtaGui extends Displayer {
 
     public void buildGui(){
         m_mainFrame.getContentPane().setLayout(new BorderLayout());
-        m_displayers = new XeObjectDisplayer(m_engine.getXeLoader(), m_menu, m_menu, m_engine);
+        m_displayers = new XtaXeObjectDisplayer(m_engine.getXeLoader(), m_menu, m_menu, m_engine);
         m_globalConfig.setM_sourceFileNames(m_displayers.getSourceFiles());
         m_pathStatus.setXeObjectDisplayer(m_displayers);
         m_toolBar = new ToolBar(m_globalConfig, m_displayers, m_engine);
@@ -237,7 +239,12 @@ public class XtaGui extends Displayer {
             sourceTabs.add(d, d.getTitle());
         sourceTabs.add(m_displayers.getDisassemblyDisplayer(), m_displayers.getDisassemblyDisplayer().getTitle());
         final JPanel circleStructure = m_circleStructure.getJPanel();
+        final JPanel codeFlow= m_blockDecomposer.getJPanel();
+        
         sourceTabs.add(circleStructure, "Code Structure");
+        sourceTabs.add(codeFlow, "Code Flow");
+        
+        
         //v_splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, m_routeTree.getPanel(), m_loopTree.getPanel());
         
         v_splitPane= m_routeTree.getPanel();
@@ -272,7 +279,7 @@ public class XtaGui extends Displayer {
             MemoryImage memoryImage, SymbolTable table) {
     }
 
-    public void notifyAnalysePaths() {     	
+    public void notifyAnalysePaths() {      
     }
 
     public void notifyLoadExecutable() {
