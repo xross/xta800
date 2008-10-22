@@ -20,19 +20,19 @@ public class ConsoleThread extends Thread {
 	Shell m_shell;
 	Vector <String> m_commandHistory;
 	GlobalConfig m_globalConfig;
-	
-	
+	ConsoleTextArea m_consoleTextArea;
 	
 	ConsoleThread(Engine engine, GlobalConfig globalConfig, JFrame mainFrame) {
-    	JTextArea textArea = new JTextArea();    
+    	JTextArea textArea = new JTextArea(); 
+    	m_consoleTextArea = new ConsoleTextArea(textArea);
+    	
     	m_globalConfig = globalConfig;
     	m_consoleFrame = new JDialog(mainFrame, "Console");
     	
-    	m_consoleFrame.setDefaultCloseOperation(JDialog.EXIT_ON_CLOSE);
+    	m_consoleFrame.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
     	m_consoleFrame.addWindowListener(new WindowAdapter(){
             public void windowClosed(WindowEvent e) {
-                m_shell.exit();
-                
+                m_consoleTextArea.sendCommand("exit");
             }
         });
     	
@@ -50,7 +50,7 @@ public class ConsoleThread extends Thread {
     	m_consoleFrame.setLocation(m_globalConfig.getM_consoleLocationOnScreen());
     	m_consoleFrame.pack();
     	m_consoleFrame.setVisible(true);       
-        m_shell = new Shell(new ConsoleTextArea(textArea), engine);			
+        m_shell = new Shell(m_consoleTextArea, engine);			
 	}
 	
     public void run() {
