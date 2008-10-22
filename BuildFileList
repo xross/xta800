@@ -1,0 +1,12 @@
+
+prebuild:
+	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)Frontends$(SLASH)xta         $(THEN) $(MAKECOMMAND)
+
+preclean:
+	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)Frontends$(SLASH)xta         $(THEN) $(MAKECLEAN)
+
+predepend:
+	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)Frontends$(SLASH)xta         $(THEN) $(MAKEDEPEND)
+
+prelint:
+	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)Frontends$(SLASH)xta         $(THEN) $(MAKELINT)

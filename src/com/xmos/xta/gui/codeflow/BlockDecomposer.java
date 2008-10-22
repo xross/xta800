@@ -1,0 +1,259 @@
+package com.xmos.xta.gui.codeflow;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Vector;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+import com.xmos.xta.engine.Block;
+import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.gui.PathUpdater;
+import com.xmos.xta.gui.core.PathStatus;
+import com.xmos.xta.gui.core.RoutePath;
+
+public class BlockDecomposer implements PathUpdater {
+
+    private Route                   m_route;
+    private PathStatus              m_pathStatus; 
+    private TreeModel               m_treeModel;
+    private int                     m_analysedRoute;
+    private ArrayList<BasicBlock>   m_basicBlocks;
+    private ArrayList<ArrayList<BasicBlock>> m_basicBlockDepths;
+
+    private CodeFlowPanel       m_codeFlow;
+    
+    public BlockDecomposer(PathStatus pathStatus){
+        m_pathStatus = pathStatus;
+        m_basicBlocks = new ArrayList<BasicBlock>();
+        m_codeFlow = new CodeFlowPanel();
+        m_basicBlockDepths = new ArrayList<ArrayList<BasicBlock>>();
+    }
+
+    public void notifyUpdateState() {
+    }
+
+    public void pushSelectedNode(DefaultMutableTreeNode selectedNode) {
+    }
+
+
+    public void setSelectedPath(TreePath selectedPath, DefaultMutableTreeNode node) {
+        m_treeModel = m_pathStatus.getTreeModel();
+        if(m_treeModel!=null){
+            DefaultMutableTreeNode routeNode = (DefaultMutableTreeNode)m_treeModel.getRoot();
+            RoutePath rp  = (RoutePath) routeNode.getUserObject();
+            m_route = rp.getRoute();
+            analyseRoute();
+            m_codeFlow.update(m_basicBlockDepths);
+        } else {
+            m_codeFlow.clear();
+        }
+    }
+
+    private boolean analyseRoute(){
+        boolean success = true;
+
+        if(m_route.hashCode() == m_analysedRoute){
+            return true;
+        }
+        
+        m_basicBlocks.clear();
+        //reduce the tree into basic blocks with connections
+        Collections.sort(m_route.getBlocks());
+
+        ArrayList<InstructionLink> links = buildInstructionLinks(m_route.getBlocks());
+
+        parseBlocks(m_route.getBlocks(), links);
+        parseLinks(links);
+
+        HashMap<Integer, BasicBlock> basicBlockMap = new HashMap<Integer, BasicBlock>();
+        for(BasicBlock bb : m_basicBlocks){
+            for(XtaInstruction inst : bb.getInstructions()){
+                basicBlockMap.put(inst.getPc(), bb);
+            }
+        }
+
+        makeBasicBlockLinks(links, basicBlockMap);
+
+        basicBlockMap.clear();
+        
+        m_basicBlockDepths.clear();
+        findBasicBlockDepth(m_basicBlocks.get(0), 0, new ArrayList<BasicBlock>());
+        
+        //printOutGraphvis();
+        
+        if(success){
+            m_analysedRoute = m_route.hashCode();
+        } else {
+            m_analysedRoute = 0;
+        }
+        return success;
+    }
+    
+    
+    private void findBasicBlockDepth(BasicBlock bb, int depth, ArrayList<BasicBlock> alreadySeen) {
+        if(bb.getDepth()>-1 ){
+            if(!alreadySeen.contains(bb)) {
+                int oldDepth = bb.getDepth();
+                bb.setDepth(Math.max(bb.getDepth(), depth));
+                if(bb.getDepth()> oldDepth){
+                    m_basicBlockDepths.get(oldDepth).remove(bb);
+                    addNewBlock(bb, bb.getDepth());
+                }
+            }
+            return;
+        } 
+        
+        addNewBlock(bb, depth);
+        bb.setDepth(depth);
+        ArrayList<BasicBlock> nowSeen =new ArrayList<BasicBlock>();
+        nowSeen.addAll(alreadySeen);
+        nowSeen.add(bb);
+        for(BasicBlock nextBB : bb.getNextBasicBlocks()){
+            findBasicBlockDepth(nextBB, depth+1,nowSeen);
+        }
+        
+    }
+    
+    private void addNewBlock(BasicBlock bb, int depth){
+        if(depth<m_basicBlockDepths.size()){
+            m_basicBlockDepths.get(depth).add(bb);
+        } else {
+            ArrayList<BasicBlock> blockList = new ArrayList<BasicBlock>();
+            blockList.add(bb);
+            m_basicBlockDepths.add(blockList);
+        }
+    }
+    
+    
+
+    private void makeBasicBlockLinks(ArrayList<InstructionLink> links, HashMap<Integer, BasicBlock> basicBlockMap) {
+        for(BasicBlock bb : m_basicBlocks){
+            int index = getIndex(bb.getInstructions().get(bb.getInstructions().size()-1), links);
+            for(XtaInstruction nextInst :links.get(index).getNextInstructions()){
+                bb.addNextBlock(basicBlockMap.get(nextInst.getPc()));
+            }
+        }
+    }
+
+    private void printOutGraphvis(){
+        System.out.println("digraph g {");
+        for(BasicBlock bb : m_basicBlocks){
+            System.out.print("L" + bb.hashCode() + "  [label = \"" );
+            for(XtaInstruction inst : bb.getInstructions()){
+                System.out.printf("%x %s %s\\n", inst.getPc(), inst.getNmenonic(), inst.getOperandString());
+            }
+            System.out.print(bb.getDepth() +" " + m_basicBlockDepths.get(bb.getDepth()).size()+ "\\n");
+            System.out.println("\"];");
+        }
+        for(BasicBlock bb : m_basicBlocks){
+            for(BasicBlock nb : bb.getNextBasicBlocks()){
+                System.out.println("L"+bb.hashCode() + " -> L" + nb.hashCode() + ";");
+            }
+        }
+        System.out.println("}");
+    }
+    
+    private ArrayList<InstructionLink> buildInstructionLinks( Vector<Block> blocks) {
+        ArrayList<InstructionLink> links = new ArrayList<InstructionLink>();
+        for(Block block : blocks){
+            for(XtaInstruction inst : block.getInstructionsThis()){
+                if(!inst.isFnop()){
+                    boolean found = false;
+                    for(InstructionLink link : links){
+                        if (link.getInstruction().getPc() == inst.getPc()) found = true;
+                    }
+                    if(!found){
+                        InstructionLink il = new InstructionLink(inst);
+                        links.add(il);
+                    }
+                }
+            }
+        }
+        return links;
+    }
+
+    private void parseLinks(ArrayList<InstructionLink> links) {
+        BasicBlock currentBlock = new BasicBlock();
+        if(m_route.completePaths().size()>0){
+            XtaInstruction startInst = m_route.completePaths().firstElement().getInstructions(false).firstElement();
+            int start = getIndex (startInst, links);
+            nextLink(start,currentBlock, links );
+            assert(!insructionsRemaining(links));
+        }
+    }
+
+    private void nextLink(int index, BasicBlock currentBlock, ArrayList<InstructionLink> links){
+        int currentOut = links.get(index).getNextInstructions().size();
+        int nextIn = 1;
+        if (currentOut == 1){
+            nextIn = links.get(getIndex(links.get(index).getNextInstructions().get(0), links)).getPreviousInstructions().size();
+        }
+        currentBlock.addInstruction(links.get(index).getInstruction());
+        if( currentOut==1 ){
+            if(nextIn != 1){
+                m_basicBlocks.add(currentBlock);
+                currentBlock = new BasicBlock();
+            }
+        } else {
+            m_basicBlocks.add(currentBlock);
+            currentBlock = new BasicBlock();
+        }
+        links.get(index).setDone(true);
+        if(links.get(index).getNextInstructions().size()>1){
+            for(XtaInstruction nextInst :links.get(index).getNextInstructions()){
+                currentBlock = new BasicBlock();
+                index= getIndex(nextInst, links);
+                if(links.get(index).isDone() == false) nextLink(index, currentBlock, links);
+            }
+        } else {
+            for(XtaInstruction nextInst :links.get(index).getNextInstructions()){
+                index= getIndex(nextInst, links);
+                if(links.get(index).isDone() == false) nextLink(index, currentBlock, links);
+            }
+        }
+    }
+
+    private boolean insructionsRemaining(ArrayList<InstructionLink> links){
+        for(InstructionLink il : links){
+            if(!il.isDone()) return true;
+        }
+        return false;
+    }
+
+    private int getIndex(XtaInstruction inst, ArrayList<InstructionLink> links){
+        for(InstructionLink il : links){
+            if(il.getInstruction().getPc() == inst.getPc()){
+                return links.indexOf(il);
+            }
+        }
+        assert(false);
+        return -1;
+    }
+
+    private void parseBlocks(Vector<Block> blocks, ArrayList<InstructionLink> links) {
+        for(Block block : blocks){
+            for(int i=0;i<block.getInstructionsThis().size();i++){
+                XtaInstruction prevInst = null;
+                if(i-1>=0){
+                    prevInst = block.getInstructionsThis().get(i-1);
+                } else {
+                    if(block.getParentPath()!=null){
+                        prevInst = block.getParentPath().getInstructionsThis().lastElement();
+                    } 
+                }
+                if(prevInst!= null){
+                    links.get(getIndex(prevInst,links)).addNext(block.getInstructionsThis().get(i));
+                    links.get(getIndex(block.getInstructionsThis().get(i),links)).addPrevious(prevInst);
+                }
+            }
+            XtaInstruction lastInst = block.getInstructionsThis().lastElement();
+            for(Block loopBlock : block.getLoopPaths()){
+                links.get(getIndex(lastInst,links)).addNext(loopBlock.getInstructions(false).get(0));
+                links.get(getIndex(loopBlock.getInstructions(false).get(0),links)).addPrevious(lastInst);
+            }
+        }
+    }
+}

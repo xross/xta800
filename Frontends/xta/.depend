@@ -1,0 +1,11 @@
+$(OBJDIR)/xta$(OBJEXT): \
+ xta.cpp \
+ $(XMOS_ROOT)/infr_libs_java/Frontends/frontendlib/frontend.h \
+ $(XMOS_ROOT)/infr_libs_cpp/export/include/XmosTypes.h \
+ $(XMOS_ROOT)/infr_libs_cpp/export/include/StringLibrary.h \
+ $(XMOS_ROOT)/infr_libs_cpp/export/include/XmosSystemIncludeStart.h \
+ $(XMOS_ROOT)/infr_libs_cpp/export/include/XmosSystemIncludeEnd.h \
+ $(XMOS_ROOT)/infr_libs_cpp/export/include/ErrorHandler.h \
+ $(XMOS_ROOT)/infr_libs_cpp/export/include/TraceType.h \
+ $(XMOS_ROOT)/infr_libs_cpp/export/include/XmosDefines.h \
+ $(XMOS_ROOT)/infr_libs_cpp/export/include/XmosTypes.h

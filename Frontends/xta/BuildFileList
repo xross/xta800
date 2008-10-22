@@ -1,0 +1,26 @@
+
+prebuild:
+
+preclean:
+
+predepend:
+
+SOURCE  = \
+  xta.cpp
+
+OBJS    = \
+  $(OBJDIR)/xta$(OBJEXT)
+
+INCDIRS = \
+  -I./ \
+  -I$(XMOS_ROOT)/infr_libs_java/Frontends/frontendlib \
+  -I$(XMOS_ROOT)/infr_libs_cpp/export/include
+
+LIBS    = \
+  $(XMOS_ROOT)/infr_libs_java/$(BINEXP)/frontendlib$(LIBEXT) \
+  $(XMOS_ROOT)/infr_libs_cpp/$(BINEXP)/ErrorHandler$(LIBEXT) \
+  $(XMOS_ROOT)/infr_libs_cpp/$(BINEXP)/StringLibrary$(LIBEXT)
+
+TARGETNAME = xta
+
+TARGETS    = $(BINDIR)/$(TARGETNAME)$(EXEEXT)
