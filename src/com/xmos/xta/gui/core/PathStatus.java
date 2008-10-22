@@ -22,7 +22,7 @@ import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.gui.GlobalConfig;
 import com.xmos.xta.gui.PathUpdater;
-import com.xmos.xta.gui.XeObjectDisplayer;
+import com.xmos.xta.gui.XtaXeObjectDisplayer;
 
 public class PathStatus extends Displayer{
 
@@ -30,7 +30,7 @@ public class PathStatus extends Displayer{
     private TreeModel               m_treeModel;
     private TreePath                m_selectedPath;
     private SymbolTable             m_table;
-    private XeObjectDisplayer       m_displayers;
+    private XtaXeObjectDisplayer       m_displayers;
     private GlobalConfig            m_globalConfig;
     private DefaultMutableTreeNode  m_centerNode;
     private Engine                  m_engine;
@@ -102,7 +102,7 @@ public class PathStatus extends Displayer{
         return newPath;
     }    
 
-    public void setXeObjectDisplayer(XeObjectDisplayer displayers){
+    public void setXeObjectDisplayer(XtaXeObjectDisplayer displayers){
         m_displayers = displayers;
     }
 

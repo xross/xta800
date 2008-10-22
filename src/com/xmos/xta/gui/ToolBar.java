@@ -20,7 +20,7 @@ import com.xmos.xta.engine.Engine;
 public class ToolBar extends JPanel {
 
     private Engine m_engine;
-    private XeObjectDisplayer m_displayers;
+    private XtaXeObjectDisplayer m_displayers;
     private JToolBar toolBar;
     private Vector<String> m_functionNames;
     private boolean allFolded = false;
@@ -39,7 +39,7 @@ public class ToolBar extends JPanel {
     private int m_frequency = 400;
     private int m_threadCount = 8;
     
-    public ToolBar(GlobalConfig globalConfig, XeObjectDisplayer displayers, Engine engine) {
+    public ToolBar(GlobalConfig globalConfig, XtaXeObjectDisplayer displayers, Engine engine) {
         super();
         m_displayers = displayers;
         m_engine = engine;

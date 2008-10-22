@@ -11,10 +11,11 @@ import javax.swing.text.BadLocationException;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.FileFinder;
+import com.xmos.xeobject.Line;
+import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.XeObject;
-import com.xmos.xeobject.displayer.DisassemblyDisplayer;
-import com.xmos.xeobject.displayer.Line;
-import com.xmos.xeobject.displayer.SourceDisplayer;
+import com.xmos.xeobjectdisplayer.DisassemblyDisplayer;
+import com.xmos.xeobjectdisplayer.SourceDisplayer;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.XtaInstruction;
 
@@ -22,18 +23,33 @@ import com.xmos.xta.engine.XtaInstruction;
  * This class encapsulates a full set of displayers (source and disassembly)
  * and provides methods on them such as highlighting a specific pc.
  */
-public class XeObjectDisplayer  {
+public class XtaXeObjectDisplayer  {
     
-    private SourceDisplayer[]    m_sourceDisplayers;
-    private DisassemblyDisplayer m_disassemblyDisplayer;
-    private XeObject             m_xeObject;
-    private JTabbedPane          m_tabbedPane;
+    private ArrayList<SourceDisplayer>      m_sourceDisplayers;
+    private DisassemblyDisplayer            m_disassemblyDisplayer;
+    private XeObject                        m_xeObject;
+    private JTabbedPane                     m_tabbedPane;
     
-    public XeObjectDisplayer(XeLoader xeLoader, FileFinder fileFinder, JComponent caller, Engine engine) {
+    public XtaXeObjectDisplayer(XeLoader xeLoader, FileFinder fileFinder, JComponent caller, Engine engine) {
         m_xeObject = new XeObject(xeLoader, fileFinder, caller);
-//        m_sourceDisplayers = m_xeObject.createSourceDisplayers(engine);
-//        m_disassemblyDisplayer = m_xeObject.createDisassemblyDisplayer(engine);
+        makeSourceDisplayers(m_xeObject);
+        makeDisassemblyDisplayer(m_xeObject);
         engine.setXeObject(m_xeObject);
+    }
+    
+    private void makeSourceDisplayers(XeObject xeObject){
+        m_sourceDisplayers = new ArrayList<SourceDisplayer>();
+        for(SourceFile sourceFile : xeObject.getSourceFiles()){
+            SourceDisplayer sourceDisplayer = new SourceDisplayer(sourceFile);
+            m_sourceDisplayers.add(sourceDisplayer);
+        }
+        return;
+    }
+    
+    private void makeDisassemblyDisplayer(XeObject xeObject){
+        m_disassemblyDisplayer = new DisassemblyDisplayer(xeObject.getFunctions());
+        return;
+        
     }
     
     public void setTabbedPane(JTabbedPane tabbedPane){
@@ -44,7 +60,7 @@ public class XeObjectDisplayer  {
         m_xeObject.registerFileFinder(fileFinder, caller);
     }
     
-    public SourceDisplayer[] getSourceDisplayers(){
+    public ArrayList<SourceDisplayer> getSourceDisplayers(){
         return m_sourceDisplayers;
     }
 
@@ -110,13 +126,13 @@ public class XeObjectDisplayer  {
 
     public void setFoldAll(boolean fold) {
         for(SourceDisplayer sd : m_sourceDisplayers){
-            for(Line line : sd.getLines()){
-                sd.setLineFold(line, fold);
-            }
+            //for(Line line : sd.getLines()){
+            //    sd.setLineFold(line, fold);
+            //}
         }
-        for(Line line : m_disassemblyDisplayer.getLines()){
-            m_disassemblyDisplayer.setLineFold(line, fold);
-        }
+        //for(Line line : m_disassemblyDisplayer.getLines()){
+            //m_disassemblyDisplayer.setLineFold(line, fold);
+        //}
         redraw();
     }
 

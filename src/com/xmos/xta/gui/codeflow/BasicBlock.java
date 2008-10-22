@@ -1,5 +1,6 @@
 package com.xmos.xta.gui.codeflow;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -12,6 +13,9 @@ public class BasicBlock{
     private int m_endPc;
     private ArrayList<XtaInstruction> m_instructions;
     private int m_depth;
+    
+    private Point m_location;
+    
 
     public BasicBlock(){
         setDepth(-1);
@@ -74,6 +78,16 @@ public class BasicBlock{
     public int getDepth() {
         return m_depth;
     }
+
+    public void setM_location(Point m_location) {
+        this.m_location = m_location;
+    }
+
+    public Point getM_location() {
+        return m_location;
+    }
+    
+    
     
 }
 
