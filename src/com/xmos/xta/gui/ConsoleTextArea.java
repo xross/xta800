@@ -31,6 +31,10 @@ public class ConsoleTextArea implements Console {
         String command = m_textAreaReader.readLine(commandHistory);
         return command;
 	}	
+	
+	public void sendCommand(String command) {
+		m_textAreaReader.sendCommand(command);
+	}	
 }
 
 class TextAreaReader extends Reader implements KeyListener {	 
@@ -106,6 +110,13 @@ class TextAreaReader extends Reader implements KeyListener {
 	 
 	public void close() throws IOException {
 	}	
+	
+	public void sendCommand(String command) {
+		m_lastLine = command;
+		synchronized(m_lineLock) {
+			m_lineLock.notifyAll();
+		}
+	}
 	
 	private void handleEnter() {
 		m_textArea.setCaretPosition(m_textArea.getDocument().getLength());			
