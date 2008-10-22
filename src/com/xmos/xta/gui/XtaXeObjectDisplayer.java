@@ -2,14 +2,9 @@ package com.xmos.xta.gui;
 
 import java.awt.Color;
 import java.util.ArrayList;
-
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
-import javax.swing.text.BadLocationException;
-
 import com.xmos.xeloader.XeLoader;
-import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.XeObject;

@@ -48,29 +48,27 @@ public class CodeFlowPanel extends JPanel{
                 for(BasicBlock nextBB : bb.getNextBasicBlocks()){
                     g2.setColor(Color.black);
                     
-                    
-                    //if(getDepth()){
-                        
-                    //}
                     Point endPoint = new Point ((int)nextBB.getM_location().getX(),
                             (int)nextBB.getM_location().getY()-BoxHeight/2);
                     
                     Point startPoint = new Point ((int)bb.getM_location().getX(),
                             (int)bb.getM_location().getY()+BoxHeight/2);
                     
-                   // Point controlPoint = new Point((int)startPoint.getX(),(int) startPoint.getY()-10);
-
-                    
-                    
-                   
-                    //QuadCurve2D.Double curve = new QuadCurve2D.Double();
-                   // Point[] points = {endPoint, controlPoint, startPoint};
-                   // curve.setCurve(points, 0);
-                    //g2.setColor(Color.gray);
-                    g2.drawLine((int)startPoint.getX(), (int)startPoint.getY(),
+                    if(getDepth(nextBB) < m_basicBlockDepths.indexOf(depthList) ){
+                        Point controlPoint = new Point((int)startPoint.getX(),(int) startPoint.getY()-10);
+                        
+                        
+                        
+                        QuadCurve2D.Double curve = new QuadCurve2D.Double();
+                        Point[] points = {endPoint, controlPoint, startPoint};
+                        curve.setCurve(points, 0);
+                        g2.draw(curve);
+                    } else {
+                        g2.drawLine((int)startPoint.getX(), (int)startPoint.getY(),
                             (int)endPoint.getX(), (int)endPoint.getY());
+                    }
+                    
                     g2.setColor(Color.black);
-                   // g2.draw(curve);
                 }
             }
         }
