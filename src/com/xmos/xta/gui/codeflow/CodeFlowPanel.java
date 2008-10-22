@@ -40,22 +40,37 @@ public class CodeFlowPanel extends JPanel{
                 bb.setM_location(p);
             }
         }
+        
+        
+        
         for(ArrayList<BasicBlock> depthList : m_basicBlockDepths){
             for(BasicBlock bb : depthList){
                 for(BasicBlock nextBB : bb.getNextBasicBlocks()){
                     g2.setColor(Color.black);
+                    
+                    
+                    //if(getDepth()){
+                        
+                    //}
                     Point endPoint = new Point ((int)nextBB.getM_location().getX(),
-                            (int)nextBB.getM_location().getY()+BoxHeight/2);
-                    Point endPointDown = new Point((int)endPoint.getX(),(int) endPoint.getY()+10);
+                            (int)nextBB.getM_location().getY()-BoxHeight/2);
+                    
                     Point startPoint = new Point ((int)bb.getM_location().getX(),
-                            (int)bb.getM_location().getY()-BoxHeight/2);
-                    Point startPointUp = new Point((int)startPoint.getX(),(int) startPoint.getY()-10);
-                    QuadCurve2D.Double curve = new QuadCurve2D.Double();
-                    Point[] points = {endPoint, endPointDown, startPointUp, startPoint};
-                    curve.setCurve(points, 0);
-                    //g2.drawLine((int)startPoint.getX(), (int)startPoint.getY()+BoxHeight/2,
-                    //        (int)endPoint.getX(), (int)endPoint.getY()-BoxHeight/2);
-                    g2.draw(curve);
+                            (int)bb.getM_location().getY()+BoxHeight/2);
+                    
+                   // Point controlPoint = new Point((int)startPoint.getX(),(int) startPoint.getY()-10);
+
+                    
+                    
+                   
+                    //QuadCurve2D.Double curve = new QuadCurve2D.Double();
+                   // Point[] points = {endPoint, controlPoint, startPoint};
+                   // curve.setCurve(points, 0);
+                    //g2.setColor(Color.gray);
+                    g2.drawLine((int)startPoint.getX(), (int)startPoint.getY(),
+                            (int)endPoint.getX(), (int)endPoint.getY());
+                    g2.setColor(Color.black);
+                   // g2.draw(curve);
                 }
             }
         }
@@ -82,6 +97,18 @@ public class CodeFlowPanel extends JPanel{
         
         
         
+        
+        
+    }
+    
+    private int getDepth(BasicBlock bb){
+        for(ArrayList<BasicBlock> bbList : m_basicBlockDepths){
+            for(BasicBlock b : bbList){
+                if(b.equals(bb)) return m_basicBlockDepths.indexOf(bbList);
+            }
+        }
+        assert(false);
+        return 0;
         
     }
     

@@ -67,16 +67,16 @@ public class SrcDisplayer extends Displayer {
                     	m_console.display(String.format(" "));						
 					}
 					
-					m_console.display(String.format(" %d: %s\n", 
-							sourceLine.getLineNumber(), 
-							sourceLine.getLine()));
+					//m_console.display(String.format(" %d: %s\n", 
+					//		sourceLine.getLineNumber(), 
+							//sourceLine.getLine()));
 
 					if (m_displayAssembly) {
-					    for (AssemblyLine assemblyLine : sourceLine.getAssembly()) {					    	
-							m_console.display(String.format("       -- %s %s\n", 
-									assemblyLine.getNmenonic(), 
-									assemblyLine.getOperandString()));
-					    }
+					    //for (AssemblyLine assemblyLine : sourceLine.getAssembly()) {					    	
+						//	m_console.display(String.format("       -- %s %s\n", 
+						//			assemblyLine.getNmenonic(), 
+						//			assemblyLine.getOperandString()));
+					    //}
 					}
 				}				
 			}			

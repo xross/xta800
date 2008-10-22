@@ -11,7 +11,6 @@ import javax.swing.text.BadLocationException;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.FileFinder;
-import com.xmos.xeobject.Line;
 import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xeobjectdisplayer.DisassemblyDisplayer;
@@ -73,67 +72,27 @@ public class XtaXeObjectDisplayer  {
     }
     
     public void setFnops(ArrayList<XtaInstruction> fnops){
-        for(AssemblyLine as : m_xeObject.getInstructions()){
-            as.setFnopCount(0);
-        }
-        for(XtaInstruction fnop : fnops){
-            AssemblyLine line = m_xeObject.getAssemblyLine(fnop.getPc());
-            line.setFnopCount(line.getFnopCount() + 1);
-        }
-        return;
+
     }
  
     public void setPCColourNumber(ArrayList<Integer> pcs, double colourNumber, Color baseColour) {
-        for(int pc : pcs){
-            m_xeObject.getAssemblyLine(pc).getLineAttributes().setColourNumber(colourNumber);
-        } 
-        for(SourceDisplayer sd : m_sourceDisplayers){
-            sd.setBaseColour(baseColour);
-        }
-        m_disassemblyDisplayer.setBaseColour(baseColour);
 
     }
     
     public void redraw(){
-        for(SourceDisplayer sd : m_sourceDisplayers){
-            try {
-                sd.renderFileToDoc();
-            } catch (BadLocationException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            m_disassemblyDisplayer.renderFileToDoc();
-        } catch (BadLocationException e) {
-            e.printStackTrace();
-        }
+        
     }
     
     public void clearHighlights() {
-        m_xeObject.clearHighlights();
-        if(m_tabbedPane.getTabCount()>1){
-            for(int i=0;i<m_tabbedPane.getTabCount()-1;i++){
-                m_tabbedPane.setIconAt(i, new ImageIcon());
-            }
-        }
+
     } 
 
     public void clearFnops(){
-        for(AssemblyLine as : m_xeObject.getInstructions()){
-            as.setFnopCount(0);
-        }
+
     }
 
     public void setFoldAll(boolean fold) {
-        for(SourceDisplayer sd : m_sourceDisplayers){
-            //for(Line line : sd.getLines()){
-            //    sd.setLineFold(line, fold);
-            //}
-        }
-        //for(Line line : m_disassemblyDisplayer.getLines()){
-            //m_disassemblyDisplayer.setLineFold(line, fold);
-        //}
-        redraw();
+
     }
 
     public ArrayList<String> getSourceFiles() {
