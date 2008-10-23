@@ -27,20 +27,22 @@ import javax.swing.SpinnerNumberModel;
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.gui.XtaGui;
 
 public class RootPath implements RouteNode {
 
-    private Block m_rootPath;
-    private Block m_caller;
+    private Block  m_rootPath;
+    private Block  m_caller;
     private Engine m_engine;
-    private JFrame  m_mainFrame;
+    private JFrame m_mainFrame;
+    private XtaGui m_xtaGui;
 
-
-    public RootPath(Block rootPath, Block caller, int depth, Engine engine, JFrame mainFrame){
+    public RootPath(Block rootPath, Block caller, int depth, Engine engine, JFrame mainFrame, XtaGui xtaGui){
         m_rootPath = rootPath;
         m_caller = caller;
         m_engine = engine;
         m_mainFrame = mainFrame;
+        m_xtaGui = xtaGui;
     }
 
     public Block getRootPathPath() {
@@ -190,6 +192,15 @@ public class RootPath implements RouteNode {
             }
         });
         popup.add(analysePath);
+        
+        JMenuItem traceToConsole = new JMenuItem("Trace in console");
+        traceToConsole.addMouseListener(new MouseAdapter(){
+            public void mousePressed(MouseEvent e) {
+            	m_xtaGui.sendToConsole(String.format("trace %d", m_rootPath.getInstanceId()));
+            }
+        });
+        popup.add(traceToConsole);
+        
         return popup;
     }
 

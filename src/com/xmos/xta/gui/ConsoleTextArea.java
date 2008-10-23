@@ -14,8 +14,8 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.commands.Command;
 
 public class ConsoleTextArea implements Console {
-	JTextArea m_textArea;
-	TextAreaReader m_textAreaReader;
+	private JTextArea m_textArea;
+	private TextAreaReader m_textAreaReader;
 	
 	public ConsoleTextArea(JTextArea textArea) {
 		m_textArea = textArea;
@@ -32,19 +32,23 @@ public class ConsoleTextArea implements Console {
         return command;
 	}	
 	
+	public boolean wasInternal() {
+		return m_textAreaReader.wasInternal();
+	}
+	
 	public void sendCommand(String command) {
 		m_textAreaReader.sendCommand(command);
 	}	
 }
 
 class TextAreaReader extends Reader implements KeyListener {	 
-	JTextArea m_textArea;
-	Object m_keyLock = new Object();
-	Object m_lineLock = new Object();
-	String m_lastLine;
-	int m_lastKeyCode = 1;
-	Vector<Command> m_commandHistory;
-	int m_commandHistoryIndex;
+	private JTextArea m_textArea;
+	private Object m_keyLock = new Object();
+	private Object m_lineLock = new Object();
+	private String m_lastLine;
+	private Vector<Command> m_commandHistory;
+	private int m_commandHistoryIndex;
+	private boolean m_internal;
 	
 	public TextAreaReader(JTextArea area) {
 		super();
@@ -53,7 +57,6 @@ class TextAreaReader extends Reader implements KeyListener {
 	}
 		
 	public void keyPressed(KeyEvent keyEvent) {
-		m_lastKeyCode = keyEvent.getKeyCode();
 		synchronized(m_keyLock) {
 			m_keyLock.notifyAll();
 		}		
@@ -112,17 +115,24 @@ class TextAreaReader extends Reader implements KeyListener {
 	}	
 	
 	public void sendCommand(String command) {
+		m_textArea.append(String.format("%s\n", command));
+		m_internal = true;
 		m_lastLine = command;
 		synchronized(m_lineLock) {
 			m_lineLock.notifyAll();
 		}
 	}
 	
+	public boolean wasInternal() {
+		return m_internal;
+	}
+	
 	private void handleEnter() {
 		m_textArea.setCaretPosition(m_textArea.getDocument().getLength());			
 		String txt = m_textArea.getText();
 		int idx = txt.lastIndexOf('>', m_textArea.getCaretPosition() - 1);
-		m_lastLine = txt.substring(idx != -1 ? idx + 1 : 1, m_textArea.getCaretPosition());
+		m_internal = false;
+		m_lastLine = txt.substring(idx != -1 ? idx + 1 : 1, m_textArea.getCaretPosition());		
 		synchronized(m_lineLock) {
 			m_lineLock.notifyAll();
 		}		

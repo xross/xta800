@@ -22,6 +22,7 @@ import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.gui.GlobalConfig;
 import com.xmos.xta.gui.PathUpdater;
+import com.xmos.xta.gui.XtaGui;
 import com.xmos.xta.gui.XtaXeObjectDisplayer;
 
 public class PathStatus extends Displayer{
@@ -36,14 +37,15 @@ public class PathStatus extends Displayer{
     private Engine                  m_engine;
     private int                     m_treeSize;
     private JFrame                  m_mainFrame;
+    private XtaGui                  m_xtaGui;
 
-
-    public PathStatus(GlobalConfig config, Engine engine, JFrame mainFrame) {
+    public PathStatus(GlobalConfig config, Engine engine, JFrame mainFrame, XtaGui xtaGui) {
         m_pathUpdaters = new ArrayList<PathUpdater>();
         m_engine = engine;
         m_globalConfig = config;
         m_treeSize =0;
         m_mainFrame = mainFrame;
+        m_xtaGui = xtaGui;
     }
 
     public void setSelectedNodeAsCenterNode(){
@@ -83,7 +85,7 @@ public class PathStatus extends Displayer{
 
     private DefaultMutableTreeNode addPath(int depth, Block path, Block caller) {
         DefaultMutableTreeNode newPath;
-        newPath = new DefaultMutableTreeNode( new RootPath(path, caller, depth, m_engine, m_mainFrame));
+        newPath = new DefaultMutableTreeNode( new RootPath(path, caller, depth, m_engine, m_mainFrame, m_xtaGui));
         m_treeSize++;
         assert(newPath!=null);
         for(Block pathBlock : path.getPathBlocks()){

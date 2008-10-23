@@ -17,6 +17,7 @@ import com.xmos.xta.gui.core.PathStatus;
 import com.xmos.xta.gui.core.RoutePath;
 
 public class BlockDecomposer implements PathUpdater {
+	final static boolean DISPLAY_GRAPH_VIS = false;
 
     private Route                   m_route;
     private PathStatus              m_pathStatus; 
@@ -84,7 +85,8 @@ public class BlockDecomposer implements PathUpdater {
         m_basicBlockDepths.clear();
         findBasicBlockDepth(m_basicBlocks.get(0), 0, new ArrayList<BasicBlock>());
         
-        //printOutGraphvis();
+        if (DISPLAY_GRAPH_VIS) 
+            printOutGraphvis();
         
         if(success){
             m_analysedRoute = m_route.hashCode();

@@ -15,6 +15,7 @@ public class Shell {
 		EXIT,
 	}
 	
+	private boolean m_exitAllowed;
 	private State m_state;
 	private Console m_console;
     private Engine m_engine;
@@ -24,10 +25,12 @@ public class Shell {
 	public Shell(Console console, Engine engine, String[] args) {
 	    initialise(console, engine);
     	processCommandLine(args);	   
+	    m_exitAllowed = true;
 	}
 
-	public Shell(Console console, Engine engine) {
+	public Shell(Console console, Engine engine, boolean exitAllowed) {
 	    initialise(console, engine);
+	    m_exitAllowed = exitAllowed;
 	}
 	
     public void execute() {    	
@@ -37,8 +40,7 @@ public class Shell {
     	}
     }
     
-    public void exit() {
-        
+    public void exit() {        
     	m_state = State.EXIT;
     }
 
@@ -92,24 +94,7 @@ public class Shell {
     	return getCommandFromConsole();
     }
     boolean active = true;
-    
-    class ConsoleListener extends Thread{
-        public void run() {
-            while(active){
-                addCommand(getCommandFromConsole());
-            }
-        }
-    }
-    class ExternalCommandListener extends Thread{
-        public void run() {
-            while(active){
-                
-            }
-        }
         
-    }
-    
-    
     private Command getCommandFromConsole() {
     	Command command = null;
     	do {
@@ -124,6 +109,9 @@ public class Shell {
             		m_commandHistory.add(new Invalid(line));                	
                 	m_console.display("Invalid command (Try 'help'..)\n");
                 }
+                if (!exitAllowed(command)) {
+            		command = null;
+                }
             }            
     	} while (command == null);
     	
@@ -134,7 +122,16 @@ public class Shell {
     private boolean isComplete() {
     	return m_state == State.EXIT;
     }
-            
+           
+    private boolean exitAllowed(Command command) {
+        if (!m_exitAllowed &&
+        	!m_console.wasInternal() &&
+        	command.name().equals("exit")) {
+    		return false;
+        }
+    	return true;
+    }
+    
 	private void usage() {
 		m_console.display("Error in arguments:\n");
 		m_console.display("To run:\n");

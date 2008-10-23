@@ -2,6 +2,7 @@ package com.xmos.xta.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ComponentAdapter;
@@ -18,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -41,8 +43,6 @@ import com.xmos.xta.gui.core.PathStatus;
 import com.xmos.xta.gui.trees.TreeLoopDisplayer;
 import com.xmos.xta.gui.trees.TreeRouteDisplayer;
 
-
-
 public class XtaGui extends Displayer {
 
     public final static boolean    DEBUG = false;
@@ -50,7 +50,7 @@ public class XtaGui extends Displayer {
     private GlobalConfig            m_globalConfig;    
     private Config                  m_config;
     private Engine                  m_engine;
-    private JTabbedPane             sourceTabs;
+    private JTabbedPane             m_sourceTabs;
     private JPanel                  m_selectedPathSummary;
     private TreeRouteDisplayer      m_routeTree;
     private TreeLoopDisplayer       m_loopTree;
@@ -63,12 +63,13 @@ public class XtaGui extends Displayer {
     private JPanel                  v_splitPane;
     private JSplitPane              main_splitPane;
     private PathStatus              m_pathStatus;
-    private XtaXeObjectDisplayer       m_displayers;
+    private XtaXeObjectDisplayer    m_displayers;
     private Color                   m_lookAndFeelBackgroundColour;
     private JFrame                  m_mainFrame;
     private Menu                    m_menu;
     private BlockDecomposer         m_blockDecomposer;
-    
+    private Vector<ConsoleTextArea> m_consoles;
+    private ConsoleArea             m_consoleArea;
     
     public static void main(String[] args) {
         XtaGui xtaGui = new XtaGui();
@@ -91,6 +92,9 @@ public class XtaGui extends Displayer {
         m_mainFrame.addWindowListener(new WindowAdapter(){
             public void windowClosed(WindowEvent e) {
                 writeOutSettings(m_globalConfig);
+                for (ConsoleTextArea consoleTextArea : m_consoles) {
+                    consoleTextArea.sendCommand("exit");
+                }
             }
         });
 
@@ -103,7 +107,7 @@ public class XtaGui extends Displayer {
             }
         });
 
-        m_menu = new Menu(m_globalConfig, m_engine, m_mainFrame);
+        m_menu = new Menu(m_globalConfig, m_engine, m_mainFrame, this);
         m_mainFrame.setJMenuBar(m_menu);
 
         m_lookAndFeelBackgroundColour = m_mainFrame.getContentPane().getBackground();
@@ -112,7 +116,7 @@ public class XtaGui extends Displayer {
 
         //engine displayers
         m_statusBarDisplayer    = new StatusBarDisplayer(m_engine, m_mainFrame, m_globalConfig);
-        m_pathStatus            = new PathStatus(m_globalConfig, m_engine, m_mainFrame);
+        m_pathStatus            = new PathStatus(m_globalConfig, m_engine, m_mainFrame, this);
         
         
         
@@ -156,6 +160,8 @@ public class XtaGui extends Displayer {
         m_mainFrame.pack();
         m_engine.registerDisplayer(m_statusBarDisplayer);
         m_engine.registerDisplayer(m_pathStatus);
+        
+        m_consoles = new Vector<ConsoleTextArea>();
         
         if(DEBUG){
             m_menu.open(m_globalConfig.getLastOpenedFile());
@@ -233,17 +239,26 @@ public class XtaGui extends Displayer {
         codePanel.setLayout(new BorderLayout());
 
         //build the code area
-        sourceTabs = new JTabbedPane();
-        m_displayers.setTabbedPane(sourceTabs);
+        m_sourceTabs = new JTabbedPane();
+        m_displayers.setTabbedPane(m_sourceTabs);
         for(SourceDisplayer d : m_displayers.getSourceDisplayers())
-            sourceTabs.add(d, d.getTitle());
-        sourceTabs.add(m_displayers.getDisassemblyDisplayer(), m_displayers.getDisassemblyDisplayer().getTitle());
+            m_sourceTabs.add(d, d.getTitle());
+        m_sourceTabs.add(m_displayers.getDisassemblyDisplayer(), m_displayers.getDisassemblyDisplayer().getTitle());
         final JPanel circleStructure = m_circleStructure.getJPanel();
-        final JPanel codeFlow= m_blockDecomposer.getJPanel();
+        final JPanel codeFlow = m_blockDecomposer.getJPanel();
         
-        sourceTabs.add(circleStructure, "Code Structure");
-        sourceTabs.add(codeFlow, "Code Flow");
+        m_consoleArea = new ConsoleArea(m_engine, m_globalConfig, false);
         
+        m_sourceTabs.add(circleStructure, "Code Structure");
+        m_sourceTabs.add(codeFlow, "Code Flow");
+        m_sourceTabs.add(m_consoleArea.getScrollPane(), "Console");           
+
+        new Thread() {
+    	    public void run() {        
+    	        registerConsole(m_consoleArea.getConsoleTextArea());
+    	    	m_consoleArea.execute();        
+		    }
+    	}.start();    	    	
         
         //v_splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, m_routeTree.getPanel(), m_loopTree.getPanel());
         
@@ -260,7 +275,7 @@ public class XtaGui extends Displayer {
         });
         */
         v_splitPane.revalidate();
-        h_splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, v_splitPane, sourceTabs);
+        h_splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, v_splitPane, m_sourceTabs);
         h_splitPane.addPropertyChangeListener(new PropertyChangeListener(){
             public void propertyChange(PropertyChangeEvent p) {
                 if (p.getPropertyName().equals(JSplitPane.DIVIDER_LOCATION_PROPERTY))
@@ -288,9 +303,22 @@ public class XtaGui extends Displayer {
 
     public void notifyUpdateState() { 
         m_routeTree.getPanel().repaint();
-
     }    
 
+    public void registerConsole(ConsoleTextArea console) {
+    	m_consoles.add(console);
+    }
+
+    public void unregisterConsole(ConsoleTextArea console) {
+    	m_consoles.remove(console);
+    }
+
+    public void sendToConsole(String command) {
+    	assert(m_consoles.size() > 0);
+    	m_consoles.get(0).sendCommand(command);
+    	m_sourceTabs.setSelectedComponent(m_consoleArea.getScrollPane());
+    }        
+    
     private void writeOutSettings(GlobalConfig globalConfig){
         XMLEncoder xml = null;
         try {
@@ -304,6 +332,4 @@ public class XtaGui extends Displayer {
         xml.flush();
         xml.close();
     }
-
-
 }

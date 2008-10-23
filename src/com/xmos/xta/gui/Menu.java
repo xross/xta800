@@ -3,11 +3,14 @@ package com.xmos.xta.gui;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.util.Collections;
 import java.util.LinkedList;
 
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -33,13 +36,15 @@ public class Menu extends JMenuBar  implements FileFinder
     private GlobalConfig            m_globalConfig;
     private File                    m_currentDirectory;
     private JFrame                  m_mainFrame;
+    private XtaGui                  m_xtaGui;
     
     
-    public Menu(GlobalConfig globalConfig, Engine engine, JFrame mainFrame) {
+    public Menu(GlobalConfig globalConfig, Engine engine, JFrame mainFrame, XtaGui xtaGui) {
         super();
         m_engine = engine;
         m_mainFrame = mainFrame;
         m_globalConfig = globalConfig;
+        m_xtaGui = xtaGui;
         createMenuBar();
     }
     
@@ -169,8 +174,34 @@ public class Menu extends JMenuBar  implements FileFinder
     }
 
     private void console(){
-        Thread thread = new ConsoleThread(m_engine, m_globalConfig, m_mainFrame);
-        thread.start(); 
+        new Thread() {
+    	    public void run() {
+    		   	ConsoleArea consoleArea = new ConsoleArea(m_engine, m_globalConfig, true);
+    		   	
+    		    JDialog consoleFrame = new JDialog(m_mainFrame, "Console");    	
+    		  	consoleFrame.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);    		  	   		  	 
+    		  	consoleFrame.add(consoleArea.getScrollPane());
+    		  	consoleFrame.setPreferredSize(m_globalConfig.getM_consoleFrameDimensions());
+    		  	consoleFrame.setLocation(m_globalConfig.getM_consoleLocationOnScreen());
+    		  	consoleFrame.pack();
+    		  	consoleFrame.setVisible(true);
+    		  	
+    		  	consoleFrame.addComponentListener(new ComponentAdapter(){
+    		        public void componentMoved(ComponentEvent e) {
+    		            m_globalConfig.setM_consoleLocationOnScreen(e.getComponent().getLocationOnScreen());
+    		        }
+    		        public void componentResized(ComponentEvent e) {
+    		            m_globalConfig.setM_consoleFrameDimensions(e.getComponent().getSize());
+    		        }
+    		    });
+    		  	
+    	        m_xtaGui.registerConsole(consoleArea.getConsoleTextArea());
+    		  	consoleArea.execute();
+    	        m_xtaGui.unregisterConsole(consoleArea.getConsoleTextArea());
+
+    	        consoleFrame.dispose();    		  	
+    		    }
+    		}.start();    	    	
     }
     
     private void open(){

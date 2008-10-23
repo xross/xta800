@@ -14,4 +14,8 @@ public class ConsoleSystem implements Console {
     	Scanner in = new Scanner(System.in);
         return in.nextLine();		
 	}
+	
+	public boolean wasInternal() {
+		return false;
+	}	
 }
