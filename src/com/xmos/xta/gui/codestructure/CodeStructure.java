@@ -120,7 +120,6 @@ public class CodeStructure implements PathUpdater {
                     } else {
                         colorMode.setText("Colour nodes by type");
                     }
-                    
                     popup.addSeparator();
                     popup.add(selectLikeNodes);
                     popup.add(colorMode);

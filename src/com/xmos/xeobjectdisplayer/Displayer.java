@@ -3,22 +3,28 @@ package com.xmos.xeobjectdisplayer;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
 import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Document;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.Line;
+import com.xmos.xeobject.Line.DisplayType;
 
-@SuppressWarnings("serial")
 public abstract class Displayer extends JPanel {
 
-	protected XTextPane         m_textPane;
+    private static final long serialVersionUID = 1L;
+    protected XTextPane         m_textPane;
 	protected LineHeaders       m_lineHeaders;
     protected StyledDocument    m_document;
     protected Style             m_style;
@@ -31,7 +37,6 @@ public abstract class Displayer extends JPanel {
     protected SourceColourer    m_sourceColourer;
     protected AssemblyColourer  m_assemblyColourer;
     
-    
 	public Displayer() {
 		super(new BorderLayout());
 		init();
@@ -42,8 +47,17 @@ public abstract class Displayer extends JPanel {
         m_lines = new ArrayList<Line>();
 	    
 	    m_textPane = new XTextPane(this);
-	    
+	    m_textPane.addMouseListener(new MouseAdapter(){
+            public void mousePressed(MouseEvent e) {
+                JTextPane editor = (JTextPane) e.getSource();
+                Document doc = editor.getDocument();
+                DefaultStyledDocument hdoc = (DefaultStyledDocument) doc;
+                int pos = editor.viewToModel(e.getPoint());
+                System.out.println(hdoc.getParagraphElement(pos));
+            }
+	    });
         m_document = m_textPane.getStyledDocument();
+        
         m_style = m_document.addStyle("NewStyle", null);
         
         
@@ -67,6 +81,95 @@ public abstract class Displayer extends JPanel {
         m_sourceColourer = new SourceColourer(m_document, m_font);
         m_assemblyColourer = new AssemblyColourer(m_document, m_font);
 	}
+	
+	public void unfoldLine(Line line){
+        if(line.getShowChildern()){
+            // nothing to do
+            return;
+        }
+        int location = 0;
+        int headerLocation = 0;
+        int i=0;
+        for(;i<m_lines.indexOf(line)+1;i++ ){
+            Line l_line = m_lines.get(i);
+            location += l_line.getText().length() +1;
+            headerLocation+=9;
+        }
+        final Point startPosition = m_textPaneScrollPane.getViewport().getViewPosition();
+        for(Line childLine : line.getChildern()){
+            insertLine(childLine, location);
+            m_lineHeaders.insertLine(childLine, headerLocation);
+            location+=childLine.getText().length()+1;
+            headerLocation+=9;
+        }
+        m_lines.addAll(m_lines.indexOf(line)+1, line.getChildern());
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                m_textPaneScrollPane.getViewport().setViewPosition(startPosition);
+            }});
+        line.setShowChildern(true);
+    }
+    
+    
+    
+    public void foldLine(Line line){
+        if(line.getShowChildern() == false){
+            // nothing to do
+            return;
+        }
+        
+        int removeAmount =0;
+        
+        ArrayList<Line> linesToRemove = line.getChildern();
+        for(Line l_line : linesToRemove){
+            removeAmount+=l_line.getText().length() +1;
+        }
+        
+        int location = 0;
+        int headerLocation = 0;
+        int i=0;
+        for(;i<m_lines.indexOf(line)+1;i++ ){
+            Line l_line = m_lines.get(i);
+            location += l_line.getText().length() +1;
+            headerLocation+=9;
+        }
+        
+        for(Line l_line : linesToRemove){
+            m_lines.remove(l_line);
+        }
+
+        final Point startPosition = m_textPaneScrollPane.getViewport().getViewPosition();
+
+        m_lineHeaders.remove(headerLocation, linesToRemove.size()*9);
+        
+        try {
+            m_document.remove(location, removeAmount);
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                m_textPaneScrollPane.getViewport().setViewPosition(startPosition);
+            }});
+        line.setShowChildern(false);
+        
+    }
+
+    protected void insertLine(Line line, int index){
+        String s = line.getText() + "\n";
+        try {
+            m_document.insertString(index, s, m_style);
+            if(line.getLineNumberType() == DisplayType.decimal){
+                m_sourceColourer.colourLine(index, s.length());
+            } else if(line.getLineNumberType() == DisplayType.hex){
+                m_assemblyColourer.colourLine(index, s.length());
+            } 
+            m_textPane.getHighlighter().addHighlight(0, 0, line.getLineHighlighter(m_lines, m_textPane));
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+        m_lines.add(line);
+    }
 	
 	public void snapToLine(int lineNumber) {
 		double value = (double)m_textPane.getHeight() / (double)m_lines.size();
@@ -97,20 +200,10 @@ public abstract class Displayer extends JPanel {
 	public String getTitle() {
 		return m_title;
 	}
-	
-	public Font getFont() {
-		return m_font;
-	}
 
 	public JScrollPane getScrollPane() {
 		return m_textPaneScrollPane;
 	}
-	
-	public Style getStyle() {
-		return m_style;
-	}
 
-	protected abstract void renderFileToDoc() throws BadLocationException;
-	protected abstract List<AssemblyLine> getAssembly(Line line);
-	protected abstract void setLineFold(Line line, boolean fold);
+	protected abstract void renderFileToDoc();
 }
