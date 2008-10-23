@@ -59,8 +59,7 @@ public abstract class Displayer extends JPanel {
         m_document = m_textPane.getStyledDocument();
         
         m_style = m_document.addStyle("NewStyle", null);
-        
-        
+
         m_lineHeaders = new LineHeaders(m_textPane, m_font, m_lines, this, m_style);
         
         StyleConstants.setFontFamily(m_style, m_font.getFamily());
@@ -143,6 +142,7 @@ public abstract class Displayer extends JPanel {
         m_lineHeaders.remove(headerLocation, linesToRemove.size()*9);
         
         try {
+            
             m_document.remove(location, removeAmount);
         } catch (BadLocationException e) {
             e.printStackTrace();

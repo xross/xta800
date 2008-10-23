@@ -67,6 +67,16 @@ public class LineHeaders extends JTextPane implements MouseListener, MouseMotion
             } catch (BadLocationException e) {
                 e.printStackTrace();
             }
+            LineNumberImage lni = new LineNumberImage(line, m_lines, this);
+
+           
+            try {
+                this.getHighlighter().addHighlight(0, 0, lni);
+            } catch (BadLocationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
     }
     
     public void remove(int start, int ammount){
