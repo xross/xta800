@@ -1,7 +1,6 @@
 package com.xmos.xta.gui.codeflow;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -63,8 +62,6 @@ public class BlockDecomposer implements PathUpdater {
         }
         
         m_basicBlocks.clear();
-        //reduce the tree into basic blocks with connections
-        Collections.sort(m_route.getBlocks());
 
         ArrayList<InstructionLink> links = buildInstructionLinks(m_route.getBlocks());
 

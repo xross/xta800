@@ -2,7 +2,6 @@ package com.xmos.xta.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ComponentAdapter;
@@ -40,7 +39,6 @@ import com.xmos.xta.engine.Route;
 import com.xmos.xta.gui.codeflow.BlockDecomposer;
 import com.xmos.xta.gui.codestructure.CodeStructure;
 import com.xmos.xta.gui.core.PathStatus;
-import com.xmos.xta.gui.trees.TreeLoopDisplayer;
 import com.xmos.xta.gui.trees.TreeRouteDisplayer;
 
 public class XtaGui extends Displayer {
@@ -53,13 +51,11 @@ public class XtaGui extends Displayer {
     private JTabbedPane             m_sourceTabs;
     private JPanel                  m_selectedPathSummary;
     private TreeRouteDisplayer      m_routeTree;
-    private TreeLoopDisplayer       m_loopTree;
     private StatusBarDisplayer      m_statusBarDisplayer;
     private ToolBar                 m_toolBar;
     private CodeStructure           m_circleStructure;
     private OverallRouteDisplayer   m_overallRouteDisplayer;
     private JSplitPane              h_splitPane;
-    //private JSplitPane              v_splitPane;
     private JPanel                  v_splitPane;
     private JSplitPane              main_splitPane;
     private PathStatus              m_pathStatus;
@@ -121,7 +117,6 @@ public class XtaGui extends Displayer {
         
         
         //path Updaters
-        m_loopTree              = new TreeLoopDisplayer(m_pathStatus);
         m_routeTree             = new TreeRouteDisplayer(m_pathStatus);
         m_circleStructure       = new CodeStructure(m_pathStatus, m_globalConfig);
         m_overallRouteDisplayer = new OverallRouteDisplayer(m_pathStatus);
@@ -221,7 +216,6 @@ public class XtaGui extends Displayer {
 
     public void setupUserLookAndFeel(){
         main_splitPane.setDividerLocation(m_globalConfig.getMainSplitPaneDivision());
-        //v_splitPane.setDividerLocation(m_globalConfig.getVSplitPaneDivision());
         h_splitPane.setDividerLocation(m_globalConfig.getHSplitPaneDivision());
     }
 
@@ -240,7 +234,6 @@ public class XtaGui extends Displayer {
 
         //build the code area
         m_sourceTabs = new JTabbedPane();
-        m_displayers.setTabbedPane(m_sourceTabs);
         for(SourceDisplayer d : m_displayers.getSourceDisplayers())
             m_sourceTabs.add(d, d.getTitle());
         m_sourceTabs.add(m_displayers.getDisassemblyDisplayer(), m_displayers.getDisassemblyDisplayer().getTitle());
@@ -259,21 +252,7 @@ public class XtaGui extends Displayer {
     	    	m_consoleArea.execute();        
 		    }
     	}.start();    	    	
-        
-        //v_splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, m_routeTree.getPanel(), m_loopTree.getPanel());
-        
         v_splitPane= m_routeTree.getPanel();
-        
-        /*
-        v_splitPane.addPropertyChangeListener(new PropertyChangeListener(){
-            public void propertyChange(PropertyChangeEvent p) {
-                if (p.getPropertyName().equals(JSplitPane.DIVIDER_LOCATION_PROPERTY))
-                {
-                    m_globalConfig.setVSplitPaneDivision(v_splitPane.getDividerLocation());
-                }
-            }
-        });
-        */
         v_splitPane.revalidate();
         h_splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, v_splitPane, m_sourceTabs);
         h_splitPane.addPropertyChangeListener(new PropertyChangeListener(){

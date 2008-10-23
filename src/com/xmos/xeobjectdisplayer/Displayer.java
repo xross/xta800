@@ -20,6 +20,8 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.Line.DisplayType;
+import com.xmos.xta.engine.Engine;
+import com.xmos.xta.gui.XtaXeObjectDisplayer;
 
 public abstract class Displayer extends JPanel {
 
@@ -36,9 +38,13 @@ public abstract class Displayer extends JPanel {
     protected int               m_highlightId=0;
     protected SourceColourer    m_sourceColourer;
     protected AssemblyColourer  m_assemblyColourer;
+    protected Engine            m_engine;
+    protected XtaXeObjectDisplayer m_parent;
     
-	public Displayer() {
+	public Displayer(Engine engine, XtaXeObjectDisplayer parent) {
 		super(new BorderLayout());
+		m_engine = engine;
+		m_parent = parent;
 		init();
 	}
 	
@@ -60,7 +66,7 @@ public abstract class Displayer extends JPanel {
         
         m_style = m_document.addStyle("NewStyle", null);
 
-        m_lineHeaders = new LineHeaders(m_textPane, m_font, m_lines, this, m_style);
+        m_lineHeaders = new LineHeaders(m_textPane, m_font, m_lines, this, m_style, m_engine, m_parent);
         
         StyleConstants.setFontFamily(m_style, m_font.getFamily());
         StyleConstants.setFontSize(m_style, m_font.getSize());
