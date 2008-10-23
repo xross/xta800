@@ -6,7 +6,6 @@ import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -20,11 +19,12 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import com.xmos.xeobject.Line;
+import com.xmos.xeobject.Line.DisplayType;
 
-@SuppressWarnings("serial")
 public abstract class Displayer extends JPanel {
 
-	protected XTextPane         m_textPane;
+    private static final long serialVersionUID = 1L;
+    protected XTextPane         m_textPane;
 	protected LineHeaders       m_lineHeaders;
     protected StyledDocument    m_document;
     protected Style             m_style;
@@ -36,7 +36,6 @@ public abstract class Displayer extends JPanel {
     protected int               m_highlightId=0;
     protected SourceColourer    m_sourceColourer;
     protected AssemblyColourer  m_assemblyColourer;
-    
     
 	public Displayer() {
 		super(new BorderLayout());
@@ -79,8 +78,8 @@ public abstract class Displayer extends JPanel {
         this.add(m_textPaneScrollPane, BorderLayout.CENTER);
         this.add(m_sideHighlighter, BorderLayout.EAST);
         
-        //m_sourceColourer = new SourceColourer(m_document, m_font);
-        //m_assemblyColourer = new AssemblyColourer(m_document, m_font);
+        m_sourceColourer = new SourceColourer(m_document, m_font);
+        m_assemblyColourer = new AssemblyColourer(m_document, m_font);
 	}
 	
 	public void unfoldLine(Line line){
@@ -103,6 +102,7 @@ public abstract class Displayer extends JPanel {
             location+=childLine.getText().length()+1;
             headerLocation+=9;
         }
+        m_lines.addAll(m_lines.indexOf(line)+1, line.getChildern());
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 m_textPaneScrollPane.getViewport().setViewPosition(startPosition);
@@ -151,9 +151,6 @@ public abstract class Displayer extends JPanel {
             public void run() {
                 m_textPaneScrollPane.getViewport().setViewPosition(startPosition);
             }});
-
-        
-        
         line.setShowChildern(false);
         
     }
@@ -162,7 +159,12 @@ public abstract class Displayer extends JPanel {
         String s = line.getText() + "\n";
         try {
             m_document.insertString(index, s, m_style);
-            m_textPane.getHighlighter().addHighlight(0, 0, line.getLineHighlighter());
+            if(line.getLineNumberType() == DisplayType.decimal){
+                m_sourceColourer.colourLine(index, s.length());
+            } else if(line.getLineNumberType() == DisplayType.hex){
+                m_assemblyColourer.colourLine(index, s.length());
+            } 
+            m_textPane.getHighlighter().addHighlight(0, 0, line.getLineHighlighter(m_lines, m_textPane));
         } catch (BadLocationException e) {
             e.printStackTrace();
         }

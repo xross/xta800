@@ -34,6 +34,8 @@ public class LineHeaders extends JTextPane implements MouseListener, MouseMotion
 		m_style = style;
 		m_displayer = displayer;
 		m_this = this;
+		this.setEditable(false);
+		
 		m_document = this.getStyledDocument();
         renderFileToDoc();
     }
@@ -81,17 +83,14 @@ public class LineHeaders extends JTextPane implements MouseListener, MouseMotion
        DefaultStyledDocument hdoc = (DefaultStyledDocument) doc;
        int pos = m_this.viewToModel(e.getPoint());
        int line =hdoc.getParagraphElement(pos).getEndOffset()/(LINE_LENGTH+1);
-       
        foldChange(m_lines.get(line-1));
     }
     
     private void foldChange(Line line){
-        
+
         if(!line.getShowChildern()){
-            System.out.println("unfolding");
             m_displayer.unfoldLine(line);
         } else {
-            System.out.println("folding");
             m_displayer.foldLine(line);
         }
     }
