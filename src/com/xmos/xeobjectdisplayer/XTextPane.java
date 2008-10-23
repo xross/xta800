@@ -26,6 +26,7 @@ public class XTextPane extends JTextPane {
     		.getVisibleRect().getWidth();
 
     	viewWidth = Math.max(viewWidth, getLongestLine());
+    	viewWidth = 6000;
     	setPreferredSize(new Dimension(viewWidth, getHeight()));
     	
     	g.setColor(this.getBackground());

@@ -9,16 +9,23 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Document;
 import javax.swing.text.Style;
 import javax.swing.text.StyledDocument;
 import com.xmos.xeobject.Line;
+import com.xmos.xeobject.Line.DisplayType;
 
 public class LineHeaders extends JTextPane implements MouseListener, MouseMotionListener {
     
-    private static final long serialVersionUID = 1L;
-    private ArrayList<Line> m_lines;
-    private Style m_style;
-
+    private static final long   serialVersionUID = 1L;
+    private ArrayList<Line>     m_lines;
+    private Style               m_style;
+    private Displayer           m_displayer;
+    private static final int    LINE_LENGTH = 8;
+    private JTextPane           m_this;
+    private Document            m_document;
+    
     public LineHeaders(XTextPane textPane, Font font, ArrayList<Line> lines,  Displayer displayer, Style style) {
         super();
 		addMouseListener(this);
@@ -26,23 +33,69 @@ public class LineHeaders extends JTextPane implements MouseListener, MouseMotion
 		this.setPreferredSize(new Dimension(80, 10));
 		m_lines = lines;
 		m_style = style;
-		try {
-            renderFileToDoc();
-        } catch (BadLocationException e) {
-            System.err.println("BadLocationException");
+		m_displayer = displayer;
+		m_this = this;
+		m_document = this.getStyledDocument();
+        renderFileToDoc();
+    }
+    
+    public void renderFileToDoc(){
+        //also have to add the code folding buttons and mouse over highlighting
+        for(Line line : m_lines){
+            insertLine(line, m_document.getLength());
         }
     }
     
-    private void renderFileToDoc() throws BadLocationException{
-        int i=0;
-        StyledDocument document = this.getStyledDocument();
-        for(Line line : m_lines){
-            document.insertString(document.getLength(), i+"\n", m_style);
-            i++;
+    public void insertLine(Line line, int location){
+        String lineNumber ="";
+            if(line.getLineNumberType()==DisplayType.decimal){
+                lineNumber = Integer.toString(line.getLineNumber());
+            } else if(line.getLineNumberType()==DisplayType.hex){
+                lineNumber = "0x" + Integer.toHexString(line.getLineNumber());
+            } else if(line.getLineNumberType()==DisplayType.none){
+                lineNumber = "";
+            } else {
+                assert(false);
+            }
+            while(lineNumber.length()<LINE_LENGTH){
+                lineNumber+=" ";
+            } 
+            assert(lineNumber.length() == 8);
+            try {
+                m_document.insertString(location, lineNumber+"\n", m_style);
+            } catch (BadLocationException e) {
+                e.printStackTrace();
+            }
+    }
+    
+    
+    public void mousePressed(MouseEvent e) {
+       Document doc = m_this.getDocument();
+       DefaultStyledDocument hdoc = (DefaultStyledDocument) doc;
+       int pos = m_this.viewToModel(e.getPoint());
+       int line =hdoc.getParagraphElement(pos).getEndOffset()/(LINE_LENGTH+1);
+       foldChange(m_lines.get(line-1));
+    }
+    
+    private void foldChange(Line line){
+        
+        if(!line.getShowChildern()){
+            System.out.println("unfolding");
+            m_displayer.unfoldLine(line);
+        } else {
+            System.out.println("folding");
+            m_displayer.foldLine(line);
         }
+    }
+    
+    
+    
+    public void mouseMoved(MouseEvent e) {
+        //want to highlight the text that the mouse is over and
+        //highlight the code folding button
+        
         
     }
-    
     
    /*
     public void paint(Graphics g) {
@@ -137,9 +190,9 @@ public class LineHeaders extends JTextPane implements MouseListener, MouseMotion
         revalidate();
         
     }
-*/
+
 	public void mousePressed(MouseEvent e) {
-	    /*
+	   
 //	    m_engine = m_displayer.getEngine();
 	    boolean clickedButton = false;
 	    
@@ -265,11 +318,11 @@ public class LineHeaders extends JTextPane implements MouseListener, MouseMotion
 	        }
 
 	    }
-		*/
+	
 	}
 
 	public void mouseMoved(MouseEvent e) {
-	    /*
+	   
 	    for(Line line : m_lines){
 	        line.getLineAttributes().setHeaderBold(false);
 	    }
@@ -289,9 +342,9 @@ public class LineHeaders extends JTextPane implements MouseListener, MouseMotion
 			}
 		}
 		repaint();
-		*/
+		
 	}
-	
+	*/
 	public void mouseEntered(MouseEvent arg0) {}
 
 	public void mouseExited(MouseEvent arg0) {}
@@ -301,5 +354,9 @@ public class LineHeaders extends JTextPane implements MouseListener, MouseMotion
 	public void mouseReleased(MouseEvent arg0) {}
 
 	public void mouseDragged(MouseEvent arg0) {}
+
+
+
+    
 }
 

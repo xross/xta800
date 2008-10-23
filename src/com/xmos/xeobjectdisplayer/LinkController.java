@@ -62,15 +62,6 @@ implements MouseMotionListener, MouseListener {
       } */    
     }
 
-  /**
-   * Called for a mouse click event.
-   * If the component is read-only (ie a browser) then 
-   * the clicked event is used to drive an attempt to
-   * follow the reference specified by a link.
-   *
-   * @param e the mouse event
-   * @see MouseListener#mouseClicked
-   */
   public void mouseClicked(MouseEvent e) {
     JTextPane editor = (JTextPane) e.getSource();
     Document doc = editor.getDocument();
