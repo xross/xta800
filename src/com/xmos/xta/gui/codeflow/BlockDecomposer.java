@@ -95,6 +95,7 @@ public class BlockDecomposer implements PathUpdater {
     
     
     private void findBasicBlockDepth(BasicBlock bb, int depth, ArrayList<BasicBlock> alreadySeen) {
+        /*
         if(bb.getDepth()>-1 ){
             if(!alreadySeen.contains(bb)) {
                 int oldDepth = bb.getDepth();
@@ -115,7 +116,7 @@ public class BlockDecomposer implements PathUpdater {
         for(BasicBlock nextBB : bb.getNextBasicBlocks()){
             findBasicBlockDepth(nextBB, depth+1,nowSeen);
         }
-        
+        */
     }
     
     private void addNewBlock(BasicBlock bb, int depth){

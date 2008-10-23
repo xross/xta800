@@ -81,9 +81,7 @@ public class XtaXeObjectDisplayer  {
         return m_xeObject;
     }
 
-    public void setFnops(ArrayList<XtaInstruction> fnops){
-
-    }
+    
 
     public void setPCColourNumber(ArrayList<Integer> pcs, double colourNumber, Color baseColour) {
         for(SourceDisplayer sd : m_sourceDisplayers){
@@ -100,9 +98,19 @@ public class XtaXeObjectDisplayer  {
     } 
 
     public void clearFnops(){
-
+        for(SourceDisplayer sd : m_sourceDisplayers){
+            sd.clearFnops();
+        }
+        m_disassemblyDisplayer.clearFnops();
     }
-
+    
+    public void setFnops(ArrayList<XtaInstruction> fnops){
+        for(SourceDisplayer sd : m_sourceDisplayers){
+            sd.setFnops();
+        }
+        m_disassemblyDisplayer.setFnops();
+    }
+    
     public void setFoldAll(boolean fold) {
 
     }

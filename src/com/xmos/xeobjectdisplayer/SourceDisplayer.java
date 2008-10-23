@@ -39,6 +39,19 @@ public class SourceDisplayer extends Displayer {
                 }
             }
         }
+    }
+
+    public void clearFnops() {
+        for(SourceLine sourceLine : m_sourceFile.getSourceLines()){
+            for(Line line : sourceLine.getChildern()){
+                line.setFnopCount(0);
+            }
+        }
+    }
+
+    public void setFnops() {
+        
+        
     }   
     
 }

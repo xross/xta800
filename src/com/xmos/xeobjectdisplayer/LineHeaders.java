@@ -7,7 +7,6 @@ import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
@@ -19,10 +18,9 @@ import javax.swing.text.Document;
 import javax.swing.text.Style;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.Line.DisplayType;
-import com.xmos.xta.engine.Engine;
 import com.xmos.xta.gui.XtaXeObjectDisplayer;
 
-public class LineHeaders extends JTextPane implements MouseListener, MouseMotionListener {
+public class LineHeaders extends JTextPane implements MouseListener{
 
     private static final long   serialVersionUID = 1L;
     private ArrayList<Line>     m_lines;
@@ -37,7 +35,6 @@ public class LineHeaders extends JTextPane implements MouseListener, MouseMotion
             Displayer displayer, Style style, XtaXeObjectDisplayer parent) {
         super();
         addMouseListener(this);
-        addMouseMotionListener(this);
         this.setPreferredSize(new Dimension(80, 10));
         this.setEnabled(false);
         this.setDisabledTextColor(Color.black);
@@ -159,13 +156,7 @@ public class LineHeaders extends JTextPane implements MouseListener, MouseMotion
             popup.show( (JComponent)e.getSource(), e.getX(), e.getY() );
             
         }
-
     }
-
-    private void redraw(){
-        this.repaint();
-    }
-    
     
     private void foldChange(Line line){
 
@@ -176,26 +167,10 @@ public class LineHeaders extends JTextPane implements MouseListener, MouseMotion
         }
     }
 
-
-
-    public void mouseMoved(MouseEvent e) {
-        //want to highlight the text that the mouse is over and
-        //highlight the code folding button
-
-
-    }
-
     public void mouseEntered(MouseEvent arg0) {}
-
     public void mouseExited(MouseEvent arg0) {}
-
     public void mouseClicked(MouseEvent arg0) {	}
-
     public void mouseReleased(MouseEvent arg0) {}
-
-    public void mouseDragged(MouseEvent arg0) {}
-
-
 
 
 }

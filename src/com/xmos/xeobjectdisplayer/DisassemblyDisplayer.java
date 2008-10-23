@@ -37,4 +37,18 @@ public class DisassemblyDisplayer extends Displayer {
             }
         }
     }
+
+    public void clearFnops() {
+        for(Function function : m_functions){
+            for(Line line : function.getChildern()){
+                line.setFnopCount(0);
+            }
+        }
+        
+    }
+
+    public void setFnops() {
+        // TODO Auto-generated method stub
+        
+    }
 }

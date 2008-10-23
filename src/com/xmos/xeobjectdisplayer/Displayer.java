@@ -4,18 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Document;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -41,8 +36,6 @@ public abstract class Displayer extends JPanel {
     protected AssemblyColourer  m_assemblyColourer;
     protected Engine            m_engine;
     protected XtaXeObjectDisplayer m_parent;
-   
-    //protected HashMap<Integer, Line> m_linesToPcs;
     
 	public Displayer(Engine engine, XtaXeObjectDisplayer parent) {
 		super(new BorderLayout());
@@ -53,18 +46,8 @@ public abstract class Displayer extends JPanel {
 	}
 	
 	private void init(){
-	   // m_linesToPcs = new HashMap<Integer, Line>();
         m_lines = new ArrayList<Line>();
 	    m_textPane = new XTextPane(this);
-	    m_textPane.addMouseListener(new MouseAdapter(){
-            public void mousePressed(MouseEvent e) {
-                JTextPane editor = (JTextPane) e.getSource();
-                Document doc = editor.getDocument();
-                DefaultStyledDocument hdoc = (DefaultStyledDocument) doc;
-                int pos = editor.viewToModel(e.getPoint());
-                System.out.println(hdoc.getParagraphElement(pos));
-            }
-	    });
         m_document = m_textPane.getStyledDocument();
         
         m_style = m_document.addStyle("NewStyle", null);
@@ -125,14 +108,12 @@ public abstract class Displayer extends JPanel {
             // nothing to do
             return;
         }
-        
         int removeAmount =0;
         
         ArrayList<Line> linesToRemove = line.getChildern();
         for(Line l_line : linesToRemove){
             removeAmount+=l_line.getText().length() +1;
         }
-        
         int location = 0;
         int headerLocation = 0;
         int i=0;
@@ -144,7 +125,6 @@ public abstract class Displayer extends JPanel {
         
         for(Line l_line : linesToRemove){
             m_lines.remove(l_line);
-            //m_linesToPcs.remove(l_line);
         }
 
         final Point startPosition = m_textPaneScrollPane.getViewport().getViewPosition();
@@ -152,7 +132,6 @@ public abstract class Displayer extends JPanel {
         m_lineHeaders.remove(headerLocation, linesToRemove.size()*9);
         
         try {
-            
             m_document.remove(location, removeAmount);
         } catch (BadLocationException e) {
             e.printStackTrace();
@@ -162,24 +141,12 @@ public abstract class Displayer extends JPanel {
                 m_textPaneScrollPane.getViewport().setViewPosition(startPosition);
             }});
         line.setShowChildern(false);
-        
     }
 
     protected void insertLine(Line line, int index){
         String s = line.getText() + "\n";
         try {
             m_document.insertString(index, s, m_style);
-            /*
-            if(line.isFoldable()){
-                for(Line childLine : line.getChildern()){
-                    m_linesToPcs.put(childLine.getLineNumber(), line);
-                }
-            } else {
-                if(line.getLineNumberType()==DisplayType.hex)
-                    m_linesToPcs.put(line.getLineNumber(), line);
-            }
-            */
-            
             if(line.getLineNumberType() == DisplayType.decimal){
                 m_sourceColourer.colourLine(index, s.length());
             } else if(line.getLineNumberType() == DisplayType.hex){
@@ -196,22 +163,6 @@ public abstract class Displayer extends JPanel {
 		double value = (double)m_textPane.getHeight() / (double)m_lines.size();
 		m_textPaneScrollPane.getVerticalScrollBar().setValue((int)(value * lineNumber));
 	}
-	
-	/*
-	public void addHyperlink(URL url, String text) {
-	  try {
-	    SimpleAttributeSet attrs = new SimpleAttributeSet();
-	    StyleConstants.setUnderline(attrs, true);
-	    StyleConstants.setForeground(attrs, Color.blue);
-	    attrs.addAttribute(m_linkId, new Integer(++m_linkId));
-	    attrs.addAttribute(HTML.Attribute.HREF, url.toString());
-	    m_document.insertString(m_document.getLength(), text, attrs);
-	  }
-	  catch (BadLocationException e) {
-	    e.printStackTrace(System.err);
-	  }        
-	}
-*/
 
 	public void removeHighlights() {
 	    for(Line line : m_lines){
@@ -236,4 +187,22 @@ public abstract class Displayer extends JPanel {
 	}
 	protected abstract void highlightPC(int pc, Color colour);
 	protected abstract void renderFileToDoc();
+	protected abstract void clearFnops();
+	protected abstract void setFnops();
+	
+	   /*
+    public void addHyperlink(URL url, String text) {
+      try {
+        SimpleAttributeSet attrs = new SimpleAttributeSet();
+        StyleConstants.setUnderline(attrs, true);
+        StyleConstants.setForeground(attrs, Color.blue);
+        attrs.addAttribute(m_linkId, new Integer(++m_linkId));
+        attrs.addAttribute(HTML.Attribute.HREF, url.toString());
+        m_document.insertString(m_document.getLength(), text, attrs);
+      }
+      catch (BadLocationException e) {
+        e.printStackTrace(System.err);
+      }        
+    }
+*/
 }

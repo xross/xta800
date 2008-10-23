@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.JPanel;
@@ -25,8 +24,6 @@ import com.xmos.elfhandler.Symbol;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
-import com.xmos.xta.engine.Block;
-import com.xmos.xta.engine.PathAttributes;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.gui.core.BlockPath;
