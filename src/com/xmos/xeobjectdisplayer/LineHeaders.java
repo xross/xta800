@@ -9,7 +9,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
-
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -32,13 +31,10 @@ public class LineHeaders extends JTextPane implements MouseListener, MouseMotion
     private static final int    LINE_LENGTH = 8;
     private JTextPane           m_this;
     private Document            m_document;
-
-    private Engine              m_engine;
-
     private XtaXeObjectDisplayer m_parent;
     
     public LineHeaders(XTextPane textPane, Font font, ArrayList<Line> lines,  
-            Displayer displayer, Style style, Engine engine, XtaXeObjectDisplayer parent) {
+            Displayer displayer, Style style, XtaXeObjectDisplayer parent) {
         super();
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -51,7 +47,6 @@ public class LineHeaders extends JTextPane implements MouseListener, MouseMotion
         m_displayer = displayer;
         m_this = this;
         this.setEditable(false);
-        m_engine = engine;
         m_document = this.getStyledDocument();
         renderFileToDoc();
     }
@@ -151,12 +146,18 @@ public class LineHeaders extends JTextPane implements MouseListener, MouseMotion
             } 
             if(line.isPausable()){
                 JMenuItem setPausable = new JMenuItem("Set pause time");
+                setPausable.addMouseListener(new MouseAdapter(){
+                    public void mousePressed(MouseEvent e) {
+                        m_parent.setPausable(line);
+                        
+                    }
+                });
                 popup.add(setPausable);
             }
             popup.setOpaque(true);
             popup.setLightWeightPopupEnabled(true);
             popup.show( (JComponent)e.getSource(), e.getX(), e.getY() );
-
+            
         }
 
     }

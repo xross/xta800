@@ -164,7 +164,6 @@ public class PathStatus extends Displayer{
         makeHighlighting();
         if(foundCenterNode == false){
             //rewind back as little as is necessary
-            //TODO
             m_centerNode = (DefaultMutableTreeNode) m_selectedPath.getLastPathComponent();
         }
 
