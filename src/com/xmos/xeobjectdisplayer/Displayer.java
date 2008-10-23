@@ -3,6 +3,7 @@ package com.xmos.xeobjectdisplayer;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -11,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
@@ -94,12 +96,17 @@ public abstract class Displayer extends JPanel {
             location += l_line.getText().length() +1;
             headerLocation+=9;
         }
+        final Point startPosition = m_textPaneScrollPane.getViewport().getViewPosition();
         for(Line childLine : line.getChildern()){
             insertLine(childLine, location);
             m_lineHeaders.insertLine(childLine, headerLocation);
             location+=childLine.getText().length()+1;
             headerLocation+=9;
         }
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                m_textPaneScrollPane.getViewport().setViewPosition(startPosition);
+            }});
         line.setShowChildern(true);
     }
     
@@ -110,9 +117,43 @@ public abstract class Displayer extends JPanel {
             // nothing to do
             return;
         }
-        //TODO
+        
+        int removeAmount =0;
+        
         ArrayList<Line> linesToRemove = line.getChildern();
-        System.out.println("need to remove " + linesToRemove.size() + " lines");
+        for(Line l_line : linesToRemove){
+            removeAmount+=l_line.getText().length() +1;
+        }
+        
+        int location = 0;
+        int headerLocation = 0;
+        int i=0;
+        for(;i<m_lines.indexOf(line)+1;i++ ){
+            Line l_line = m_lines.get(i);
+            location += l_line.getText().length() +1;
+            headerLocation+=9;
+        }
+        
+        for(Line l_line : linesToRemove){
+            m_lines.remove(l_line);
+        }
+
+        final Point startPosition = m_textPaneScrollPane.getViewport().getViewPosition();
+
+        m_lineHeaders.remove(headerLocation, linesToRemove.size()*9);
+        
+        try {
+            m_document.remove(location, removeAmount);
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                m_textPaneScrollPane.getViewport().setViewPosition(startPosition);
+            }});
+
+        
+        
         line.setShowChildern(false);
         
     }

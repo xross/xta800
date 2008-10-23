@@ -12,7 +12,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 import javax.swing.text.Style;
-import javax.swing.text.StyledDocument;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.Line.DisplayType;
 
@@ -68,12 +67,21 @@ public class LineHeaders extends JTextPane implements MouseListener, MouseMotion
             }
     }
     
+    public void remove(int start, int ammount){
+        try {
+            m_document.remove(start, ammount);
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+    }
+    
     
     public void mousePressed(MouseEvent e) {
        Document doc = m_this.getDocument();
        DefaultStyledDocument hdoc = (DefaultStyledDocument) doc;
        int pos = m_this.viewToModel(e.getPoint());
        int line =hdoc.getParagraphElement(pos).getEndOffset()/(LINE_LENGTH+1);
+       
        foldChange(m_lines.get(line-1));
     }
     
