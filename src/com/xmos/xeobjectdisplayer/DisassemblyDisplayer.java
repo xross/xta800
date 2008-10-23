@@ -1,7 +1,9 @@
 package com.xmos.xeobjectdisplayer;
 
+import java.awt.Color;
 import java.util.List;
 import com.xmos.xeobject.Function;
+import com.xmos.xeobject.Line;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.gui.XtaXeObjectDisplayer;
 
@@ -21,6 +23,18 @@ public class DisassemblyDisplayer extends Displayer {
     public void renderFileToDoc() {
         for(Function function : m_functions){
             insertLine(function, m_document.getLength());
+        }
+    }
+
+    protected void highlightPC(int pc, Color colour) {
+        for(Function function : m_functions){
+            for(Line line : function.getChildern()){
+                if(line.getLineNumber() == pc){
+                    function.setColour(colour);
+                    line.setColour(colour);
+                    return;
+                }
+            }
         }
     }
 }

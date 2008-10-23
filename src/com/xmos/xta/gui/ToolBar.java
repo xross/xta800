@@ -102,7 +102,6 @@ public class ToolBar extends JPanel {
                 }
 
                 FNOPStatusButton.setText(text);
-                m_displayers.redraw();
             }});
 
         foldAll.addActionListener(new ActionListener() {

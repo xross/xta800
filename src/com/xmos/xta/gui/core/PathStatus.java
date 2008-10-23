@@ -190,7 +190,6 @@ public class PathStatus extends Displayer{
         pcs.clear();
         ArrayList<XtaInstruction> fnops = collectFnops();
         m_displayers.setFnops(fnops);
-        m_displayers.redraw();
 
     }
 

@@ -1,5 +1,8 @@
 package com.xmos.xeobjectdisplayer;
 
+import java.awt.Color;
+
+import com.xmos.xeobject.Line;
 import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.SourceLine;
 import com.xmos.xta.engine.Engine;
@@ -25,5 +28,17 @@ public class SourceDisplayer extends Displayer {
             insertLine(sl, m_document.getLength());
         }
     }
+    
+    public void highlightPC(int pc, Color colour){
+        for(SourceLine sourceLine : m_sourceFile.getSourceLines()){
+            for(Line line : sourceLine.getChildern()){
+                if(line.getLineNumber() == pc){
+                    sourceLine.setColour(colour);
+                    line.setColour(colour);
+                    return;
+                }
+            }
+        }
+    }   
     
 }

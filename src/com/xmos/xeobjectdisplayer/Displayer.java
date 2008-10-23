@@ -7,7 +7,6 @@ import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -43,7 +42,7 @@ public abstract class Displayer extends JPanel {
     protected Engine            m_engine;
     protected XtaXeObjectDisplayer m_parent;
    
-    protected HashMap<Integer, Line> m_linesToPcs;
+    //protected HashMap<Integer, Line> m_linesToPcs;
     
 	public Displayer(Engine engine, XtaXeObjectDisplayer parent) {
 		super(new BorderLayout());
@@ -54,7 +53,7 @@ public abstract class Displayer extends JPanel {
 	}
 	
 	private void init(){
-	    m_linesToPcs = new HashMap<Integer, Line>();
+	   // m_linesToPcs = new HashMap<Integer, Line>();
         m_lines = new ArrayList<Line>();
 	    m_textPane = new XTextPane(this);
 	    m_textPane.addMouseListener(new MouseAdapter(){
@@ -145,7 +144,7 @@ public abstract class Displayer extends JPanel {
         
         for(Line l_line : linesToRemove){
             m_lines.remove(l_line);
-            m_linesToPcs.remove(l_line);
+            //m_linesToPcs.remove(l_line);
         }
 
         final Point startPosition = m_textPaneScrollPane.getViewport().getViewPosition();
@@ -170,7 +169,17 @@ public abstract class Displayer extends JPanel {
         String s = line.getText() + "\n";
         try {
             m_document.insertString(index, s, m_style);
-            m_linesToPcs.put(line.getLineNumber(), line);
+            /*
+            if(line.isFoldable()){
+                for(Line childLine : line.getChildern()){
+                    m_linesToPcs.put(childLine.getLineNumber(), line);
+                }
+            } else {
+                if(line.getLineNumberType()==DisplayType.hex)
+                    m_linesToPcs.put(line.getLineNumber(), line);
+            }
+            */
+            
             if(line.getLineNumberType() == DisplayType.decimal){
                 m_sourceColourer.colourLine(index, s.length());
             } else if(line.getLineNumberType() == DisplayType.hex){
@@ -205,10 +214,10 @@ public abstract class Displayer extends JPanel {
 */
 
 	public void removeHighlights() {
-	    m_textPane.getHighlighter().removeAllHighlights();
 	    for(Line line : m_lines){
 	        line.setColour(Color.white);
 	    }
+	    this.repaint();
     }
 	
 	public void highlightPCs(ArrayList<Integer> pcs, Color colour){
@@ -217,11 +226,7 @@ public abstract class Displayer extends JPanel {
 	    }
 	    this.repaint();
 	}
-	
-	public void highlightPC(int pc, Color colour){
-	    m_linesToPcs.get(pc).setColour(colour);
-	}
-	
+
 	public String getTitle() {
 		return m_title;
 	}
@@ -229,6 +234,6 @@ public abstract class Displayer extends JPanel {
 	public JScrollPane getScrollPane() {
 		return m_textPaneScrollPane;
 	}
-
+	protected abstract void highlightPC(int pc, Color colour);
 	protected abstract void renderFileToDoc();
 }

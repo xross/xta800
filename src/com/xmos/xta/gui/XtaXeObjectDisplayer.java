@@ -1,22 +1,16 @@
 package com.xmos.xta.gui;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
-
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.Line;
@@ -92,17 +86,17 @@ public class XtaXeObjectDisplayer  {
     }
 
     public void setPCColourNumber(ArrayList<Integer> pcs, double colourNumber, Color baseColour) {
-
+        for(SourceDisplayer sd : m_sourceDisplayers){
+            sd.highlightPCs(pcs, baseColour);
+        }
+        m_disassemblyDisplayer.highlightPCs(pcs, baseColour);
     }
-
-    public void redraw(){
-
-    }
-
+    
     public void clearHighlights() {
         for(SourceDisplayer sd : m_sourceDisplayers){
-            
+            sd.removeHighlights();
         }
+        m_disassemblyDisplayer.removeHighlights();
     } 
 
     public void clearFnops(){

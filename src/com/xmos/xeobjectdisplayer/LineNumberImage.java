@@ -32,7 +32,6 @@ public class LineNumberImage implements Highlighter.HighlightPainter {
         m_parent = parent;
 	}
 	
-	
     public void paint(Graphics g, int p0, int p1, Shape bounds, JTextComponent c) {
         Graphics2D g2 = (Graphics2D)g;
         
