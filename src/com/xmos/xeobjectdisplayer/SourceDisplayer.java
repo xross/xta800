@@ -1,8 +1,11 @@
 package com.xmos.xeobjectdisplayer;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.SourceFile;
@@ -46,7 +49,10 @@ public class SourceDisplayer extends Displayer {
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
-
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                m_textPaneScrollPane.getViewport().setViewPosition(new Point(0,0));
+            }});
     }
 
     public void highlightPC(int pc, Color colour){

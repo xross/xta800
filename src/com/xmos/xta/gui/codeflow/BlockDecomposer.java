@@ -161,7 +161,7 @@ public class BlockDecomposer implements PathUpdater {
             for(XtaInstruction inst : bb.getInstructions()){
                 System.out.printf("%x %s %s\\n", inst.getPc(), inst.getNmenonic(), inst.getOperandString());
             }
-            System.out.print(bb.getDepth() +" " + m_basicBlockDepths.get(bb.getDepth()).size()+ "\\n");
+           // System.out.print(bb.getDepth() +" " + m_basicBlockDepths.get(bb.getDepth()).size()+ "\\n");
             System.out.println("\"];");
         }
         for(BasicBlock bb : m_basicBlocks){

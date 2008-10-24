@@ -243,7 +243,6 @@ public class XtaGui extends Displayer {
         // If this has already been called before, then ensure that the previous
         // console area is unregistered from the xtaGui.
         if (m_consoleArea != null) {
-        	System.out.printf("UNREGISTERED CONSOLE...\n");
         	unregisterConsole(m_consoleArea.getConsoleTextArea());
         }
         m_consoleArea = new ConsoleArea(m_engine, m_globalConfig, false);
