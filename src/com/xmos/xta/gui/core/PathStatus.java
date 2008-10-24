@@ -160,7 +160,7 @@ public class PathStatus extends Displayer{
 
         Collections.reverse(list);
         m_selectedPath = new TreePath(list.toArray());
-
+        
         makeHighlighting();
         if(foundCenterNode == false){
             //rewind back as little as is necessary
@@ -187,8 +187,10 @@ public class PathStatus extends Displayer{
             }
         }
         m_displayers.setPCColourNumber(pcs, 1.0, m_globalConfig.getM_highlightedRouteColour());
+        
         pcs.clear();
         ArrayList<XtaInstruction> fnops = collectFnops();
+        m_displayers.clearFnops();
         m_displayers.setFnops(fnops);
 
     }

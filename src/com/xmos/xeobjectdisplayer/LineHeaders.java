@@ -84,6 +84,28 @@ public class LineHeaders extends JTextPane implements MouseListener{
 
     }
 
+    public void insertLines(ArrayList<Line> lines, int location){
+        StringBuffer sb = new StringBuffer("");
+        
+        try {
+            for(Line line : lines){
+                String lineNumber = "0x" + Integer.toHexString(line.getLineNumber());
+                while(lineNumber.length()<LINE_LENGTH){
+                    lineNumber+=" ";
+                }
+                sb.append(lineNumber);
+                sb.append("\n");
+                LineNumberImage lni = new LineNumberImage(line, m_lines, this, m_parent);
+                this.getHighlighter().addHighlight(0, 0, lni);
+            }
+            m_document.insertString(location, sb.toString(), m_style);
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    
     public void remove(int start, int ammount){
         try {
             m_document.remove(start, ammount);
@@ -100,7 +122,7 @@ public class LineHeaders extends JTextPane implements MouseListener{
         int lineNo =hdoc.getParagraphElement(pos).getEndOffset()/(LINE_LENGTH+1);
         final Line line = m_lines.get(lineNo-1);
         if(e.getButton()==1){
-            if(e.getX()> this.getWidth() - LineNumberImage.circleWidth){
+            if(e.getX()> this.getWidth() - LineNumberImage.circleWidth-5){
                 if(line.isFoldable()){
                     foldChange(line); 
                 }
@@ -151,6 +173,28 @@ public class LineHeaders extends JTextPane implements MouseListener{
                 });
                 popup.add(setPausable);
             }
+            JMenuItem unfoldAll = new JMenuItem("Unfold all");
+            unfoldAll.addMouseListener(new MouseAdapter(){
+                public void mousePressed(MouseEvent e) {
+                    int i=0;
+                    while(i<m_lines.size()){
+                        m_displayer.unfoldLine(m_lines.get(i));
+                        i++;
+                    }
+                }
+            });
+            popup.add(unfoldAll);
+            JMenuItem foldAll = new JMenuItem("Fold all");
+            foldAll.addMouseListener(new MouseAdapter(){
+                public void mousePressed(MouseEvent e) {
+                    int i=0;
+                    while(i<m_lines.size()){
+                        m_displayer.foldLine(m_lines.get(i));
+                        i++;
+                    }
+                }
+            });
+            popup.add(foldAll);
             popup.setOpaque(true);
             popup.setLightWeightPopupEnabled(true);
             popup.show( (JComponent)e.getSource(), e.getX(), e.getY() );

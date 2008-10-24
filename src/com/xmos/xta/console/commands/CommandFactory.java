@@ -14,7 +14,6 @@ public class CommandFactory {
 		new Src(), 
 		new Mix(),
 		new Trace(), 
-		new Graph(),
 		new Loop(),
 		new Loopi(),
 		new Time(),

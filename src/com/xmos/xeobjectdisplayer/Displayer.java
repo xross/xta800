@@ -73,7 +73,38 @@ public abstract class Displayer extends JPanel {
         m_assemblyColourer = new AssemblyColourer(m_document, m_font);
 	}
 	
-	public void unfoldLine(Line line){
+    protected void insertLine(Line line, int index){
+        String s = line.getText() + "\n";
+        try {
+            m_document.insertString(index, s, m_style);
+            if(line.getLineNumberType() == DisplayType.decimal){
+                m_sourceColourer.colourLine(index, s.length());
+            } else if(line.getLineNumberType() == DisplayType.hex){
+                m_assemblyColourer.colourLine(index, s.length());
+            } 
+            m_textPane.getHighlighter().addHighlight(0, 0, line.getLineHighlighter(m_lines, m_textPane));
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void insertLines(ArrayList<Line> lines, int index){
+        StringBuffer sb = new StringBuffer("");
+        try {
+            for(Line line : lines){
+                sb.append(line.getText());
+                sb.append("\n");
+                m_textPane.getHighlighter().addHighlight(0, 0, line.getLineHighlighter(m_lines, m_textPane));
+            }
+            m_document.insertString(index, sb.toString(), m_style);
+            m_assemblyColourer.colourLine(index, sb.length());
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    
+    public void unfoldLine(Line line){
         if(line.getShowChildern()){
             // nothing to do
             return;
@@ -87,6 +118,8 @@ public abstract class Displayer extends JPanel {
             headerLocation+=9;
         }
         final Point startPosition = m_textPaneScrollPane.getViewport().getViewPosition();
+        
+        
         for(Line childLine : line.getChildern()){
             insertLine(childLine, location);
             m_lineHeaders.insertLine(childLine, headerLocation);
@@ -99,9 +132,40 @@ public abstract class Displayer extends JPanel {
                 m_textPaneScrollPane.getViewport().setViewPosition(startPosition);
             }});
         line.setShowChildern(true);
+        m_sideHighlighter.repaint();
     }
     
-    
+    public void fastUnfoldLine(Line line){
+        if(line.getShowChildern()){
+            // nothing to do
+            return;
+        }
+        int location = 0;
+        int headerLocation = 0;
+        int i=0;
+        for(;i<m_lines.indexOf(line)+1;i++ ){
+            Line l_line = m_lines.get(i);
+            location += l_line.getText().length() +1;
+            headerLocation+=9;
+        }
+        final Point startPosition = m_textPaneScrollPane.getViewport().getViewPosition();
+        
+        
+        for(Line childLine : line.getChildern()){
+            insertLine(childLine, location);
+            m_lineHeaders.insertLine(childLine, headerLocation);
+            location+=childLine.getText().length()+1;
+            headerLocation+=9;
+        }
+        m_lines.addAll(m_lines.indexOf(line)+1, line.getChildern());
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                m_textPaneScrollPane.getViewport().setViewPosition(startPosition);
+            }});
+        line.setShowChildern(true);
+        m_sideHighlighter.repaint();
+    }
+
     
     public void foldLine(Line line){
         if(line.getShowChildern() == false){
@@ -141,23 +205,10 @@ public abstract class Displayer extends JPanel {
                 m_textPaneScrollPane.getViewport().setViewPosition(startPosition);
             }});
         line.setShowChildern(false);
+        m_sideHighlighter.repaint();
     }
 
-    protected void insertLine(Line line, int index){
-        String s = line.getText() + "\n";
-        try {
-            m_document.insertString(index, s, m_style);
-            if(line.getLineNumberType() == DisplayType.decimal){
-                m_sourceColourer.colourLine(index, s.length());
-            } else if(line.getLineNumberType() == DisplayType.hex){
-                m_assemblyColourer.colourLine(index, s.length());
-            } 
-            m_textPane.getHighlighter().addHighlight(0, 0, line.getLineHighlighter(m_lines, m_textPane));
-        } catch (BadLocationException e) {
-            e.printStackTrace();
-        }
-        m_lines.add(line);
-    }
+
 	
 	public void snapToLine(int lineNumber) {
 		double value = (double)m_textPane.getHeight() / (double)m_lines.size();
@@ -188,7 +239,8 @@ public abstract class Displayer extends JPanel {
 	protected abstract void highlightPC(int pc, Color colour);
 	protected abstract void renderFileToDoc();
 	protected abstract void clearFnops();
-	protected abstract void setFnops();
+	public abstract void setFnops(ArrayList<Integer> fnopPcs);
+
 	
 	   /*
     public void addHyperlink(URL url, String text) {
@@ -205,4 +257,52 @@ public abstract class Displayer extends JPanel {
       }        
     }
 */
+	
+
+    /*
+    //this could do with being more efficient
+    public void unfoldLine(Line line){
+        if(line.getShowChildern()){
+            // nothing to do
+            return;
+        }
+        int startLocation = 0;
+        int headerLocation = 0;
+        int i=0;
+        for(;i<m_lines.indexOf(line)+1;i++ ){
+            Line l_line = m_lines.get(i);
+            startLocation += l_line.getText().length() +1;
+            headerLocation+=9;
+        }
+        final Point startPosition = m_textPaneScrollPane.getViewport().getViewPosition();
+        StringBuffer sb = new StringBuffer("");
+        try {
+            for(Line childLine : line.getChildern()){
+                sb.append(childLine.getText());
+                sb.append("\n");
+                m_textPane.getHighlighter().addHighlight(0, 0, childLine.getLineHighlighter(m_lines, m_textPane));
+            }
+            m_document.insertString(startLocation, sb.toString(), m_style);
+            m_assemblyColourer.colourLine(startLocation, sb.length());
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+        
+       // for(Line childLine : line.getChildern()){
+       //     insertLine(childLine, startLocation);
+         //   m_lineHeaders.insertLine(childLine, headerLocation);
+           // startLocation+=childLine.getText().length()+1;
+       //     headerLocation+=9;
+       // }
+        
+        headerLocation = line.getChildern().size()*9;
+        m_lines.addAll(m_lines.indexOf(line)+1, line.getChildern());
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                m_textPaneScrollPane.getViewport().setViewPosition(startPosition);
+            }});
+        line.setShowChildern(true);
+    }
+    */
+	
 }

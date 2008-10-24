@@ -200,7 +200,6 @@ public class RootPath implements RouteNode {
             }
         });
         popup.add(traceToConsole);
-        
         return popup;
     }
 

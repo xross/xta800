@@ -49,6 +49,7 @@ public class BasicBlock{
     }
     
     public void addNextBlock(BasicBlock bb){
+        assert(bb!=null);
         m_nextBlocks.add(bb);
     }
     public ArrayList<BasicBlock> getNextBasicBlocks(){
