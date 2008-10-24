@@ -363,16 +363,6 @@ public class Engine {
     }
 
     public Double getTimeTaken(int lineNumber) {
-        //find the time taken for this pc
-        if(m_route!= null && m_route.getBlocks().size()>0){
-            for(Block block :m_route.getBlocks()){
-                for(XtaInstruction inst : block.getInstructionsThis()){
-                    if(inst.getPc() == lineNumber){
-                        return new Double(inst.getTimeTaken());
-                    }
-                }
-            }
-        }
         return new Double (0.0);
     }
 

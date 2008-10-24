@@ -53,10 +53,10 @@ public class XMouseListener implements MouseListener {
             JMenuItem collapse = new JMenuItem("Collapse All");
             collapse.addMouseListener(new MouseAdapter(){
                 public void mousePressed(MouseEvent e) {
-                    m_tree.expandRow(0);
-                    for(int row = 1;row < m_tree.getRowCount();row++){
+                    for(int row = m_tree.getRowCount()-1;row>=0;row--){
                         m_tree.collapseRow(row);
                     }
+                    m_tree.expandRow(0);
                 }
             });
             if(popup.getComponentCount()>0) popup.addSeparator();
