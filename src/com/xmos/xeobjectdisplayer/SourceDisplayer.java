@@ -38,7 +38,7 @@ public class SourceDisplayer extends Displayer {
             for (SourceLine sl : m_sourceFile.getSourceLines()) {
                 st.append(sl.getText());
                 st.append("\n");
-                m_textPane.getHighlighter().addHighlight(0, 0, sl.getLineHighlighter(m_lines, m_textPane));
+                m_textPane.getHighlighter().addHighlight(0, 0, sl.getLineHighlighter(m_lines, m_textPane, 6.5));
             }
             m_lines.addAll(m_sourceFile.getSourceLines());
             m_document.insertString(0, st.toString(), m_style);
@@ -72,7 +72,8 @@ public class SourceDisplayer extends Displayer {
     public void setFnops(ArrayList<Integer> fnopPcs) {
         for(int pc : fnopPcs){
             Line line = m_pcsToLines.get(pc);
-            line.setFnopCount(line.getFnopCount()+1);
+            if(line!= null)
+                line.setFnopCount(line.getFnopCount()+1);
         }
 
     }   
