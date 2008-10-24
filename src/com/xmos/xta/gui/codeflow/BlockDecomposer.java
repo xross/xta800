@@ -148,7 +148,7 @@ public class BlockDecomposer implements PathUpdater {
                 if(toAdd!=null){
                     bb.addNextBlock(toAdd);
                 } else {
-                    System.err.println("known error occured in block decomposer");
+                    //System.err.println("known error occured in block decomposer");
                 }
             }
         }

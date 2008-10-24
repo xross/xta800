@@ -82,7 +82,8 @@ public abstract class Displayer extends JPanel {
             } else if(line.getLineNumberType() == DisplayType.hex){
                 m_assemblyColourer.colourLine(index, s.length());
             } 
-            m_textPane.getHighlighter().addHighlight(0, 0, line.getLineHighlighter(m_lines, m_textPane, 5.5));
+            Double timeTaken = m_engine.getTimeTaken(line.getLineNumber());
+            m_textPane.getHighlighter().addHighlight(0, 0, line.getLineHighlighter(m_lines, m_textPane, timeTaken));
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
@@ -94,7 +95,8 @@ public abstract class Displayer extends JPanel {
             for(Line line : lines){
                 sb.append(line.getText());
                 sb.append("\n");
-                m_textPane.getHighlighter().addHighlight(0, 0, line.getLineHighlighter(m_lines, m_textPane, 5.5));
+                Double timeTaken = m_engine.getTimeTaken(line.getLineNumber());
+                m_textPane.getHighlighter().addHighlight(0, 0, line.getLineHighlighter(m_lines, m_textPane, timeTaken));
             }
             m_document.insertString(index, sb.toString(), m_style);
             m_assemblyColourer.colourLine(index, sb.length());

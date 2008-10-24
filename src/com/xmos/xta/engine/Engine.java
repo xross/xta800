@@ -156,7 +156,7 @@ public class Engine {
         m_exclusions.add(ref);
         return true;
     }
-    
+
     public boolean removeExclusion(Reference ref) {
         for(Reference present : m_exclusions){
             if(present.getPc() == ref.getPc()){
@@ -166,7 +166,7 @@ public class Engine {
         }
         return false;
     }
-    
+
     public boolean removeExclusion(String refStr){
         for(Reference present : m_exclusions){
             if(present.getRef().equals(refStr)){
@@ -180,7 +180,7 @@ public class Engine {
         m_exclusions.clear();
         return true;
     }
-    
+
     public boolean analyseRoute(String from, String to) {
         Reference fromRef = new Reference(from);
         Reference toRef = new Reference(to);     
@@ -362,6 +362,20 @@ public class Engine {
         return 0;
     }
 
+    public Double getTimeTaken(int lineNumber) {
+        //find the time taken for this pc
+        if(m_route!= null && m_route.getBlocks().size()>0){
+            for(Block block :m_route.getBlocks()){
+                for(XtaInstruction inst : block.getInstructionsThis()){
+                    if(inst.getPc() == lineNumber){
+                        return new Double(inst.getTimeTaken());
+                    }
+                }
+            }
+        }
+        return new Double (0.0);
+    }
+
     void notifyUpdateState() {
         for (Displayer displayer : m_displayers)
             displayer.notifyUpdateState();
@@ -449,6 +463,8 @@ public class Engine {
     private boolean resolveRefernece(Reference ref) {
         DebugInfo debugInfo = m_xeLoader.getDebugInfo(m_nodeId, m_coreId);
         return ref.resolve(debugInfo);
-    }     
+    }
+
+
 }
 
