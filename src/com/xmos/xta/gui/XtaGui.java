@@ -240,6 +240,12 @@ public class XtaGui extends Displayer {
         final JPanel circleStructure = m_circleStructure.getJPanel();
         final JPanel codeFlow = m_blockDecomposer.getJPanel();
         
+        // If this has already been called before, then ensure that the previous
+        // console area is unregistered from the xtaGui.
+        if (m_consoleArea != null) {
+        	System.out.printf("UNREGISTERED CONSOLE...\n");
+        	unregisterConsole(m_consoleArea.getConsoleTextArea());
+        }
         m_consoleArea = new ConsoleArea(m_engine, m_globalConfig, false);
         
         m_sourceTabs.add(circleStructure, "Code Structure");
