@@ -41,11 +41,25 @@ public class LoopPath implements RouteNode {
     }
 
     private String getSummary() {
-        String description = "Loop with " + m_loopPath.getLoopPaths().size() + " path";
+        String description = "Loop: " + m_loopPath.getLoopPaths().size() + " path";
         if (m_loopPath.getLoopPaths().size() > 1) {
             description += "s";
         }
+        
+        int numIterations = getNumIterations();
+        description += ", " + numIterations + " iteration";
+        if (numIterations > 1) {
+            description += "s";
+        }
         return description;
+    }
+
+    public int getNumIterations() {
+        int numIterations = 0;
+        for (Block loopPath : m_loopPath.getLoopPaths()) {
+            numIterations += m_loopPath.getLoopPathAttributes(loopPath).getNumIterations();
+        }
+        return numIterations;
     }
 
     public ImageIcon getIcon() {
