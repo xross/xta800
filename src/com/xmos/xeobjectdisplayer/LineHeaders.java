@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
@@ -133,7 +135,7 @@ public class LineHeaders extends JTextPane implements MouseListener{
                 }
             } 
         } else if(e.getButton()==3){
-            JPopupMenu popup = new JPopupMenu();
+            final JPopupMenu popup = new JPopupMenu();
             if(line.getLineNumberType()==DisplayType.decimal){
                 JMenuItem startLine = new JMenuItem("Set as start line");
                 startLine.addMouseListener(new MouseAdapter(){
@@ -197,7 +199,7 @@ public class LineHeaders extends JTextPane implements MouseListener{
                     }
                 });
                 exclusionsMenu.add(setExclusion);
-                JMenuItem removeExclusion = new JMenuItem("Set exclusion");
+                JMenuItem removeExclusion = new JMenuItem("Remove exclusion");
                 removeExclusion.addMouseListener(new MouseAdapter(){
                     public void mousePressed(MouseEvent e) {
                         m_engine.removeExclusion(new Reference(line.getLineNumber()));
@@ -232,6 +234,11 @@ public class LineHeaders extends JTextPane implements MouseListener{
             popup.setOpaque(true);
             popup.setLightWeightPopupEnabled(true);
             popup.show( (JComponent)e.getSource(), e.getX(), e.getY() );
+            popup.addPropertyChangeListener(new PropertyChangeListener(){
+                public void propertyChange(PropertyChangeEvent evt) {
+                   if(!popup.isVisible()) m_this.repaint();
+                }
+            });
 
         }
     }

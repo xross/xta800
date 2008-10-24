@@ -168,16 +168,20 @@ public class SummaryDisplayer extends Displayer {
     
     private void summarizePath(Block path, String indent, int numExecutions, boolean absolute) {
    	    displayPathLevelInfo(path, indent, numExecutions, absolute);
-                
-        if ((m_level == Level.COMPLETE_LOOPS) || 
-        	(m_level == Level.COMPLETE_INSTRUCTIONS) ||
-        	(m_level == Level.UNRESOLVED_LOOPS) || 
-        	(m_level == Level.UNRESOLVED_INSTRUCTIONS)) {
-          	displayLoopLevelInfo(path, indent, numExecutions);          	
+   	    
+        for (Block block : path.getPathBlocks()) {
+
+            if ((m_level == Level.COMPLETE_INSTRUCTIONS) || 
+                    (m_level == Level.UNRESOLVED_INSTRUCTIONS))
+                displayInstructionLevelInfo(block, indent, numExecutions);                
+
+            if ((m_level == Level.COMPLETE_LOOPS) || 
+            	(m_level == Level.COMPLETE_INSTRUCTIONS) ||
+            	(m_level == Level.UNRESOLVED_LOOPS) || 
+            	(m_level == Level.UNRESOLVED_INSTRUCTIONS)) {
+              	displayLoopLevelInfo(block, indent, numExecutions);          	
+            }
         }
-        if ((m_level == Level.COMPLETE_INSTRUCTIONS) || 
-          	(m_level == Level.UNRESOLVED_INSTRUCTIONS))
-           	displayInstructionLevelInfo(path, indent, numExecutions);                
     }
         
     private void displayPathLevelInfo(Block path, String indent, int numExecutions, boolean absolute) {
@@ -209,19 +213,17 @@ public class SummaryDisplayer extends Displayer {
     }
     
     private void displayLoopLevelInfo(Block path, String indent, int numIterations) {
-        for (Block block : path.getPathBlocks()) {
-            Vector<Block> loopPaths = block.getLoopPaths();
-            if (loopPaths.size() > 0) {
-                int totalIterations = 0;
-                for (Block loopPath : loopPaths) {
-                    PathAttributes attributes = block.getLoopPathAttributes(loopPath);
-                    totalIterations += attributes.getNumIterations();
-                }
-            	m_console.display(String.format("%s    +loop [%d path(s), %d iteration(s)]\n", 
-            			indent, loopPaths.size(), totalIterations));    
-                	
-            	summarizePaths(loopPaths, indent + "        ", block);
+        Vector<Block> loopPaths = path.getLoopPaths();
+        if (loopPaths.size() > 0) {
+            int totalIterations = 0;
+            for (Block loopPath : loopPaths) {
+                PathAttributes attributes = path.getLoopPathAttributes(loopPath);
+                totalIterations += attributes.getNumIterations();
             }
+        	m_console.display(String.format("%s    +loop [%d path(s), %d iteration(s)]\n", 
+        			indent, loopPaths.size(), totalIterations));    
+            	
+        	summarizePaths(loopPaths, indent + "        ", path);
         }
     }
 
@@ -229,7 +231,7 @@ public class SummaryDisplayer extends Displayer {
         if ((m_level == Level.COMPLETE_INSTRUCTIONS) ||
             (m_level == Level.UNRESOLVED_INSTRUCTIONS)) {
         	
-            for (XtaInstruction xtaInstruction : path.getInstructions(false)) {
+            for (XtaInstruction xtaInstruction : path.getInstructionsThis()) {
                 m_console.display(String.format("%s    (%.1fns) 0x%05x %s %s %s",
                 	indent,
                 	xtaInstruction.getTimeTaken(),
@@ -238,10 +240,6 @@ public class SummaryDisplayer extends Displayer {
                 	xtaInstruction.getOperandString(),
                 	xtaInstruction.canPause() ? "(P)" : ""));
                                 
-                    for (Block loopPath : path.getLoopPaths()) {
-                	    m_console.display(String.format("LOOP(%d) ",  loopPath.getInstanceId()));
-                    }
-
                 m_console.display("\n");
             }
         }

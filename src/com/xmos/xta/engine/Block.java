@@ -176,8 +176,8 @@ public class Block implements  Comparable<Block> {
     }
 
 
-    public int compareTo(Block Block) throws ClassCastException {       	    
-        return Block.getNumCyclesThis() - getNumCyclesThis();
+    public int compareTo(Block block) throws ClassCastException {       	    
+        return (int)(block.getTimeTaken(true) - getTimeTaken(true));
     }
 
     public boolean equivalent(Block block) {

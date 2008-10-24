@@ -6,12 +6,9 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.util.ArrayList;
-import java.util.Vector;
-
 import javax.swing.JTextPane;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
-
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.Line.DisplayType;
 import com.xmos.xta.engine.Engine;
@@ -98,17 +95,10 @@ public class LineNumberImage implements Highlighter.HighlightPainter {
                 g2.setColor(Color.gray);
                 g2.fillOval(m_textPane.getWidth()-1 - circleWidth -1 , 
                         (int)(lineTop + fontHeight/2), circleWidth, circleWidth);
-                g2.setColor(Color.gray.darker());
+                g2.setColor(Color.black);
                 g2.drawOval(m_textPane.getWidth()-1 - circleWidth -1 , 
                         (int)(lineTop + fontHeight/2), circleWidth, circleWidth);
-            } else if(m_line.getLineNumberType() == DisplayType.decimal){
-                g2.setColor(Color.gray.brighter());
-                g2.fillOval(m_textPane.getWidth()-1 - circleWidth -1 , 
-                        (int)(lineTop + fontHeight/2), circleWidth, circleWidth);
-                g2.setColor(Color.gray);
-                g2.drawOval(m_textPane.getWidth()-1 - circleWidth -1 , 
-                        (int)(lineTop + fontHeight/2), circleWidth, circleWidth);
-            }
+            } 
             
         } else if(m_line.isPausable()){
             g2.setColor(Color.red);
