@@ -254,7 +254,7 @@ public class OverallRouteDisplayer implements PathUpdater {
             x += drawFunctionBlock(g2, block, x, y, blockHeight, totalHeight,
                     instWidth, true, drawLeft, drawRight);
         }
-        m_timeLine.repaint();
+        
     }
     
     private int drawFunctionBlock(Graphics2D g2, XtaCodeBlock block,
@@ -348,6 +348,7 @@ public class OverallRouteDisplayer implements PathUpdater {
         }
         m_functionPanel.repaint();
         m_depthPanel.repaint();
+        m_timeLine.repaint();
     }
 
     private void getDebugInfo(){
@@ -424,12 +425,14 @@ public class OverallRouteDisplayer implements PathUpdater {
             clearAll();
             m_functionPanel.repaint();
             m_depthPanel.repaint();
+            m_timeLine.repaint();
         } else {
             getDebugInfo();
             m_routeSelection = selectedPath;
             notifyUpdateState();
             m_functionPanel.repaint();
             m_depthPanel.repaint();
+            m_timeLine.repaint();
         }
     }
 
@@ -443,7 +446,6 @@ public class OverallRouteDisplayer implements PathUpdater {
         if(m_pathLength == 0) return;
 
         double totalUnits = m_pathLength;
-        
         g2.setColor(Color.black);
         g2.drawLine(0, m_timeLine.getHeight()/7, m_timeLine.getWidth(), m_timeLine.getHeight()/7);
         

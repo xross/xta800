@@ -16,13 +16,11 @@ import com.xmos.xta.gui.core.RouteNode;
 public class XMouseListener implements MouseListener {
     
     private JTree m_tree;
-    //private boolean m_showAllInstances;
     private PathStatus m_pathStatus;
     private PathUpdater m_routeDisplayer;
-    public XMouseListener(JTree m_tree, boolean showAllInstances, PathStatus pathStatus, PathUpdater routeDisplayer) {
+    public XMouseListener(JTree m_tree, PathStatus pathStatus, PathUpdater routeDisplayer) {
         super();
         m_pathStatus = pathStatus;
-        //m_showAllInstances = showAllInstances;
         this.m_tree = m_tree;
         m_routeDisplayer = routeDisplayer;
     }
@@ -61,7 +59,7 @@ public class XMouseListener implements MouseListener {
                     }
                 }
             });
-            popup.addSeparator();
+            if(popup.getComponentCount()>0) popup.addSeparator();
             popup.add(expand);
             popup.add(collapse);
             popup.setOpaque(true);

@@ -6,7 +6,6 @@ import java.util.TreeSet;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
-import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.SourceLine;
 import com.xmos.xeobject.XeObject;

@@ -66,8 +66,8 @@ public class BlockDecomposer implements PathUpdater {
         ArrayList<InstructionLink> links = buildInstructionLinks(m_route.getBlocks());
 
         parseBlocks(m_route.getBlocks(), links);
-        parseLinks(links);
-
+        int startBlock =parseLinks(links);
+        if(startBlock == -1 ) return false;
         HashMap<Integer, BasicBlock> basicBlockMap = new HashMap<Integer, BasicBlock>();
         for(BasicBlock bb : m_basicBlocks){
             for(XtaInstruction inst : bb.getInstructions()){
@@ -80,7 +80,8 @@ public class BlockDecomposer implements PathUpdater {
         basicBlockMap.clear();
         
         m_basicBlockDepths.clear();
-        findBasicBlockDepth(m_basicBlocks.get(0), 0, new ArrayList<BasicBlock>());
+        resetAllBasicBlockDepths();
+        findBasicBlockDepth(m_basicBlocks.get(startBlock), 0, new ArrayList<BasicBlock>());
         
         if (DISPLAY_GRAPH_VIS) 
             printOutGraphvis();
@@ -94,8 +95,15 @@ public class BlockDecomposer implements PathUpdater {
     }
     
     
+    private void resetAllBasicBlockDepths() {
+       for(BasicBlock bb : m_basicBlocks){
+           bb.setDepth(-1);
+       }
+        
+    }
+
     private void findBasicBlockDepth(BasicBlock bb, int depth, ArrayList<BasicBlock> alreadySeen) {
-        /*
+        
         if(bb.getDepth()>-1 ){
             if(!alreadySeen.contains(bb)) {
                 int oldDepth = bb.getDepth();
@@ -114,9 +122,10 @@ public class BlockDecomposer implements PathUpdater {
         nowSeen.addAll(alreadySeen);
         nowSeen.add(bb);
         for(BasicBlock nextBB : bb.getNextBasicBlocks()){
+            assert(nextBB!=null);
             findBasicBlockDepth(nextBB, depth+1,nowSeen);
         }
-        */
+        
     }
     
     private void addNewBlock(BasicBlock bb, int depth){
@@ -135,7 +144,12 @@ public class BlockDecomposer implements PathUpdater {
         for(BasicBlock bb : m_basicBlocks){
             int index = getIndex(bb.getInstructions().get(bb.getInstructions().size()-1), links);
             for(XtaInstruction nextInst :links.get(index).getNextInstructions()){
-                bb.addNextBlock(basicBlockMap.get(nextInst.getPc()));
+                BasicBlock toAdd = basicBlockMap.get(nextInst.getPc());
+                if(toAdd!=null){
+                    bb.addNextBlock(toAdd);
+                } else {
+                    System.err.println("known error occured in block decomposer");
+                }
             }
         }
     }
@@ -177,14 +191,16 @@ public class BlockDecomposer implements PathUpdater {
         return links;
     }
 
-    private void parseLinks(ArrayList<InstructionLink> links) {
-        BasicBlock currentBlock = new BasicBlock();
+    private int parseLinks(ArrayList<InstructionLink> links) {
         if(m_route.completePaths().size()>0){
+            BasicBlock currentBlock = new BasicBlock();
             XtaInstruction startInst = m_route.completePaths().firstElement().getInstructions(false).firstElement();
             int start = getIndex (startInst, links);
             nextLink(start,currentBlock, links );
             assert(!insructionsRemaining(links));
+            return start;
         }
+        return -1;
     }
 
     private void nextLink(int index, BasicBlock currentBlock, ArrayList<InstructionLink> links){

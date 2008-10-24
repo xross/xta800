@@ -23,11 +23,9 @@ public class ToolBar extends JPanel {
     private XtaXeObjectDisplayer m_displayers;
     private JToolBar toolBar;
     private Vector<String> m_functionNames;
-    private boolean allFolded = false;
     private JButton pathButton;
     private JComboBox functionComboBox;
     private GlobalConfig m_globalConfig;
-    private JButton foldAll;
 
     private JButton FNOPStatusButton;
 
@@ -52,10 +50,7 @@ public class ToolBar extends JPanel {
 
     private void init(){
         pathButton = new JButton("Analyse Path");
-        foldAll = new JButton("Unfold All");
-        foldAll.setToolTipText("<HTML>Folds/unfolds all the assembly<br> from the source code<HTML>");
         FNOPStatusButton = new JButton("Hide FNOPs");
-
 
         m_threadCountBox = new JFormattedTextField();
         m_threadCountBox.setColumns(3);
@@ -104,10 +99,6 @@ public class ToolBar extends JPanel {
                 FNOPStatusButton.setText(text);
             }});
 
-        foldAll.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                foldAllPressed();
-            }});
 
         pathButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -133,8 +124,6 @@ public class ToolBar extends JPanel {
         toolBar.add(functionComboBox);
         toolBar.addSeparator();
         toolBar.add(pathButton);
-        toolBar.addSeparator();
-        toolBar.add(foldAll);
 
         toolBar.add(FNOPStatusButton);
         toolBar.addSeparator();
@@ -147,16 +136,6 @@ public class ToolBar extends JPanel {
         this.setLayout(new BorderLayout());
         this.add(toolBar, BorderLayout.WEST);
 
-    }
-
-    private void foldAllPressed(){
-        if(allFolded){
-            foldAll.setText("Unfold All");
-        } else {
-            foldAll.setText("Fold All");
-        }
-        m_displayers.setFoldAll(allFolded);
-        allFolded = ! allFolded;
     }
 
     private void pathButtonPressed(){

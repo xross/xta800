@@ -61,8 +61,6 @@ public class XtaXeObjectDisplayer  {
 
     private void makeDisassemblyDisplayer(XeObject xeObject){
         m_disassemblyDisplayer = new DisassemblyDisplayer(xeObject.getFunctions(), m_engine, this);
-        return;
-
     }
 
     public void registerFileFinder(FileFinder fileFinder, JComponent caller){
@@ -80,8 +78,6 @@ public class XtaXeObjectDisplayer  {
     public XeObject getXeObject(){
         return m_xeObject;
     }
-
-    
 
     public void setPCColourNumber(ArrayList<Integer> pcs, double colourNumber, Color baseColour) {
         for(SourceDisplayer sd : m_sourceDisplayers){
@@ -105,16 +101,17 @@ public class XtaXeObjectDisplayer  {
     }
     
     public void setFnops(ArrayList<XtaInstruction> fnops){
-        for(SourceDisplayer sd : m_sourceDisplayers){
-            sd.setFnops();
+        ArrayList<Integer> fnopPcs = new ArrayList<Integer>();
+        for(XtaInstruction inst : fnops){
+            if(!fnopPcs.contains(inst.getPc()))fnopPcs.add(inst.getPc());
         }
-        m_disassemblyDisplayer.setFnops();
+        
+        for(SourceDisplayer sd : m_sourceDisplayers){
+            sd.setFnops(fnopPcs);
+        }
+        m_disassemblyDisplayer.setFnops(fnopPcs);
     }
     
-    public void setFoldAll(boolean fold) {
-
-    }
-
     public ArrayList<String> getSourceFiles() {
         return m_xeObject.getSourceFileNames();
     }
@@ -207,7 +204,8 @@ public class XtaXeObjectDisplayer  {
 
             public void mousePressed(MouseEvent e) {
                 int numCycles = (Integer)cyclesSpinner.getValue();
-                m_engine.setInstructionNumCycles(line.getLineNumber(), numCycles);
+                boolean done = m_engine.setInstructionNumCycles(line.getLineNumber(), numCycles);
+                System.out.println(done + " " + m_engine.getErrorString());
                 id.dispose();
             }
             
@@ -219,8 +217,6 @@ public class XtaXeObjectDisplayer  {
         id.add(button);
         
         id.pack();
-        
-        
     }
 
 }

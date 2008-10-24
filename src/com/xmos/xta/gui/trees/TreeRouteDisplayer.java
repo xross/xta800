@@ -41,7 +41,7 @@ public class TreeRouteDisplayer implements PathUpdater{
         m_routeTreePanel.add(new JScrollPane(m_tree), BorderLayout.CENTER);
         m_tree.setCellRenderer(new TreeBarRenderer());
         m_tree.setExpandsSelectedPaths(true);
-        m_tree.addMouseListener(new XMouseListener( m_tree, true, m_pathStatus, this));
+        m_tree.addMouseListener(new XMouseListener( m_tree, m_pathStatus, this));
     }     
 
     public void notifyUpdateState() { 
