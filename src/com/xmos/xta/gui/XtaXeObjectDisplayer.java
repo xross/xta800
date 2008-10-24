@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
@@ -160,15 +162,16 @@ public class XtaXeObjectDisplayer  {
         id.setTitle("Set Instruction Time");
         id.setVisible(true);
 
-        int initialCycles=0;
-        
+        int initialCycles=line.getCycles();
+        JLabel timeLbl = new JLabel("Time: ");
+        JLabel cyclesLbl = new JLabel("Cycles: ");
         final JSpinner cyclesSpinner = new JSpinner();
+        
         SpinnerModel cyclesModel = new SpinnerNumberModel(initialCycles,0,Integer.MAX_VALUE,1); 
         cyclesSpinner.setModel(cyclesModel);
         
-        int initialTime = 0;
+        int initialTime = (int)line.getTime();
         final JSpinner timeSpinner = new JSpinner();
-        
         SpinnerModel timeModel = new SpinnerNumberModel(initialTime,0,Integer.MAX_VALUE,1); 
         
         /*
@@ -190,33 +193,48 @@ public class XtaXeObjectDisplayer  {
                 }
             }
         });
+        */
         
         
-         */
         
         
         timeSpinner.setModel(timeModel);
         
         
-        JButton button = new JButton("Set");
+        JButton setButton = new JButton("Set");
         
-        button.addMouseListener(new MouseAdapter(){
-
+        setButton.addMouseListener(new MouseAdapter(){
             public void mousePressed(MouseEvent e) {
-                int numCycles = (Integer)cyclesSpinner.getValue();
-                boolean done = m_engine.setInstructionNumCycles(line.getLineNumber(), numCycles);
-                System.out.println(done + " " + m_engine.getErrorString());
-                id.dispose();
+                setTime(cyclesSpinner, id, line);
             }
-            
         });
 
-        id.setLayout(new GridLayout(4,1));
-        id.add(cyclesSpinner);
-        id.add(timeSpinner);
-        id.add(button);
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.addMouseListener(new MouseAdapter(){
+            public void mousePressed(MouseEvent e) {
+                id.dispose();
+            }
+        });
+        id.setLayout(new GridLayout(3,2));
+        id.add(cyclesLbl);
         
+        id.add(cyclesSpinner);
+        id.add(timeLbl);
+        id.add(timeSpinner);
+        id.add(setButton);
+        id.add(cancelButton);
         id.pack();
     }
 
+    private void setTime(JSpinner cyclesSpinner, JDialog id, Line line){
+        int numCycles = (Integer)cyclesSpinner.getValue();
+                boolean done = m_engine.setInstructionNumCycles(line.getLineNumber(), numCycles);
+                if(done == false){
+                    JOptionPane.showMessageDialog(m_caller,
+                            m_engine.getErrorString(),
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
+                }
+                id.dispose();
+    }
 }

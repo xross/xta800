@@ -52,7 +52,7 @@ public abstract class Displayer extends JPanel {
         
         m_style = m_document.addStyle("NewStyle", null);
 
-        m_lineHeaders = new LineHeaders(m_textPane, m_font, m_lines, this, m_style, m_parent);
+        m_lineHeaders = new LineHeaders(m_textPane, m_font, m_lines, this, m_style, m_parent, m_engine);
         
         StyleConstants.setFontFamily(m_style, m_font.getFamily());
         StyleConstants.setFontSize(m_style, m_font.getSize());

@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import javax.swing.JComponent;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextPane;
@@ -18,6 +19,8 @@ import javax.swing.text.Document;
 import javax.swing.text.Style;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.Line.DisplayType;
+import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Reference;
 import com.xmos.xta.gui.XtaXeObjectDisplayer;
 
 public class LineHeaders extends JTextPane implements MouseListener{
@@ -30,15 +33,17 @@ public class LineHeaders extends JTextPane implements MouseListener{
     private JTextPane           m_this;
     private Document            m_document;
     private XtaXeObjectDisplayer m_parent;
-    
+    private Engine              m_engine;
+
     public LineHeaders(XTextPane textPane, Font font, ArrayList<Line> lines,  
-            Displayer displayer, Style style, XtaXeObjectDisplayer parent) {
+            Displayer displayer, Style style, XtaXeObjectDisplayer parent, Engine engine) {
         super();
         addMouseListener(this);
         this.setPreferredSize(new Dimension(80, 10));
         this.setEnabled(false);
         this.setDisabledTextColor(Color.black);
         m_lines = lines;
+        m_engine = engine;
         m_parent = parent;
         m_style = style;
         m_displayer = displayer;
@@ -75,7 +80,7 @@ public class LineHeaders extends JTextPane implements MouseListener{
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
-        LineNumberImage lni = new LineNumberImage(line, m_lines, this, m_parent);
+        LineNumberImage lni = new LineNumberImage(line, m_lines, this, m_parent, m_engine);
         try {
             this.getHighlighter().addHighlight(0, 0, lni);
         } catch (BadLocationException e) {
@@ -86,7 +91,7 @@ public class LineHeaders extends JTextPane implements MouseListener{
 
     public void insertLines(ArrayList<Line> lines, int location){
         StringBuffer sb = new StringBuffer("");
-        
+
         try {
             for(Line line : lines){
                 String lineNumber = "0x" + Integer.toHexString(line.getLineNumber());
@@ -95,7 +100,7 @@ public class LineHeaders extends JTextPane implements MouseListener{
                 }
                 sb.append(lineNumber);
                 sb.append("\n");
-                LineNumberImage lni = new LineNumberImage(line, m_lines, this, m_parent);
+                LineNumberImage lni = new LineNumberImage(line, m_lines, this, m_parent, m_engine);
                 this.getHighlighter().addHighlight(0, 0, lni);
             }
             m_document.insertString(location, sb.toString(), m_style);
@@ -105,7 +110,7 @@ public class LineHeaders extends JTextPane implements MouseListener{
 
     }
 
-    
+
     public void remove(int start, int ammount){
         try {
             m_document.remove(start, ammount);
@@ -144,13 +149,13 @@ public class LineHeaders extends JTextPane implements MouseListener{
                     }
                 });
                 popup.add(endLine);
-                
+
             } else if(line.getLineNumberType()==DisplayType.hex){
                 JMenuItem startPc = new JMenuItem("Set as start PC");
                 startPc.addMouseListener(new MouseAdapter(){
                     public void mousePressed(MouseEvent e) {
                         m_parent.setM_startPc( Integer.toHexString(line.getLineNumber()));
-                        
+
                     }
                 });
                 popup.add(startPc);
@@ -158,7 +163,7 @@ public class LineHeaders extends JTextPane implements MouseListener{
                 endPc.addMouseListener(new MouseAdapter(){
                     public void mousePressed(MouseEvent e) {
                         m_parent.setM_endPc( Integer.toHexString(line.getLineNumber()));
-                        
+
                     }
                 });
                 popup.add(endPc);
@@ -168,11 +173,40 @@ public class LineHeaders extends JTextPane implements MouseListener{
                 setPausable.addMouseListener(new MouseAdapter(){
                     public void mousePressed(MouseEvent e) {
                         m_parent.setPausable(line);
-                        
+
                     }
                 });
                 popup.add(setPausable);
             }
+
+            //exclusions
+            JMenu exclusionsMenu = new JMenu("Exclusions");
+            JMenuItem removeAllExclusions = new JMenuItem("Remove all exclusions");
+            removeAllExclusions.addMouseListener(new MouseAdapter(){
+                public void mousePressed(MouseEvent e) {
+                    m_engine.removeAllExclusions();
+                }
+            });
+            exclusionsMenu.add(removeAllExclusions);
+            if(line.getLineNumberType() == DisplayType.hex){
+                JMenuItem setExclusion = new JMenuItem("Set exclusion");
+                setExclusion.addMouseListener(new MouseAdapter(){
+                    public void mousePressed(MouseEvent e) {
+                        m_engine.setExclusion(new Reference(line.getLineNumber()));
+
+                    }
+                });
+                exclusionsMenu.add(setExclusion);
+                JMenuItem removeExclusion = new JMenuItem("Set exclusion");
+                removeExclusion.addMouseListener(new MouseAdapter(){
+                    public void mousePressed(MouseEvent e) {
+                        m_engine.removeExclusion(new Reference(line.getLineNumber()));
+                    }
+                });
+                exclusionsMenu.add(removeExclusion);
+            }
+
+            popup.add(exclusionsMenu);
             JMenuItem unfoldAll = new JMenuItem("Unfold all");
             unfoldAll.addMouseListener(new MouseAdapter(){
                 public void mousePressed(MouseEvent e) {
@@ -198,10 +232,10 @@ public class LineHeaders extends JTextPane implements MouseListener{
             popup.setOpaque(true);
             popup.setLightWeightPopupEnabled(true);
             popup.show( (JComponent)e.getSource(), e.getX(), e.getY() );
-            
+
         }
     }
-    
+
     private void foldChange(Line line){
 
         if(!line.getShowChildern()){

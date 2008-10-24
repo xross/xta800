@@ -18,7 +18,7 @@ public class Reference {
         m_isResolved = false;
     }
 
-    Reference(int pc) {
+    public Reference(int pc) {
         m_ref = "";
         m_pc = pc;
         m_isResolved = true;

@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.JTextPane;
 import javax.swing.text.Highlighter;
@@ -13,23 +14,27 @@ import javax.swing.text.JTextComponent;
 
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.Line.DisplayType;
+import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Reference;
 import com.xmos.xta.gui.XtaXeObjectDisplayer;
 
 
 public class LineNumberImage implements Highlighter.HighlightPainter {
 
-	private Line               m_line;
-	private ArrayList<Line>    m_lines;
-	private JTextPane          m_textPane;
-	public static final int   circleWidth = 8;
-	private XtaXeObjectDisplayer m_parent;
+	private Line                   m_line;
+	private ArrayList<Line>        m_lines;
+	private JTextPane              m_textPane;
+	public static final int        circleWidth = 8;
+	private XtaXeObjectDisplayer   m_parent;
+	private  Engine                m_engine;
 	
 	public LineNumberImage(Line line, ArrayList<Line> lines, LineHeaders lineHeaders, 
-	        XtaXeObjectDisplayer parent ){
+	        XtaXeObjectDisplayer parent, Engine engine ){
 	    m_line = line;
 	    m_lines = lines;
         m_textPane = lineHeaders;
         m_parent = parent;
+        m_engine = engine;
 	}
 	
     public void paint(Graphics g, int p0, int p1, Shape bounds, JTextComponent c) {
@@ -78,14 +83,41 @@ public class LineNumberImage implements Highlighter.HighlightPainter {
             }
         }
         
-        if(m_line.isPausable()){
+        boolean excluded = false;
+        //this is horribly inefficient
+        for(Reference ref : m_engine.getExclusions()){
+            if(m_line.getLineNumberType() == DisplayType.hex ){
+                if(ref.getPc() == m_line.getLineNumber()){
+                    excluded = true;
+                }
+            }
+        }
+        
+        if(excluded){
+            if(m_line.getLineNumberType() == DisplayType.hex){
+                g2.setColor(Color.gray);
+                g2.fillOval(m_textPane.getWidth()-1 - circleWidth -1 , 
+                        (int)(lineTop + fontHeight/2), circleWidth, circleWidth);
+                g2.setColor(Color.gray.darker());
+                g2.drawOval(m_textPane.getWidth()-1 - circleWidth -1 , 
+                        (int)(lineTop + fontHeight/2), circleWidth, circleWidth);
+            } else if(m_line.getLineNumberType() == DisplayType.decimal){
+                g2.setColor(Color.gray.brighter());
+                g2.fillOval(m_textPane.getWidth()-1 - circleWidth -1 , 
+                        (int)(lineTop + fontHeight/2), circleWidth, circleWidth);
+                g2.setColor(Color.gray);
+                g2.drawOval(m_textPane.getWidth()-1 - circleWidth -1 , 
+                        (int)(lineTop + fontHeight/2), circleWidth, circleWidth);
+            }
+            
+        } else if(m_line.isPausable()){
             g2.setColor(Color.red);
             g2.fillOval(m_textPane.getWidth()-1 - circleWidth -1 , 
                     (int)(lineTop + fontHeight/2), circleWidth, circleWidth);
             g2.setColor(Color.red.darker());
             g2.drawOval(m_textPane.getWidth()-1 - circleWidth -1 , 
                     (int)(lineTop + fontHeight/2), circleWidth, circleWidth);
-        }
+        } 
         g2.setColor(new Color(230, 230, 230));
         g2.drawLine(m_textPane.getWidth()-1,lineTop, m_textPane.getWidth()-1,  lineTop + (int)fontHeight);
     }
