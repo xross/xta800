@@ -6,6 +6,7 @@ import java.util.TreeSet;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
+import com.xmos.xeobject.Line;
 import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.SourceLine;
 import com.xmos.xeobject.XeObject;
@@ -66,16 +67,17 @@ public class SrcDisplayer extends Displayer {
                     	m_console.display(String.format(" "));						
 					}
 					
-					//m_console.display(String.format(" %d: %s\n", 
-					//		sourceLine.getLineNumber(), 
-							//sourceLine.getLine()));
+					m_console.display(String.format(" %d: %s\n", 
+							sourceLine.getLineNumber(), 
+							sourceLine.getText()));
 
 					if (m_displayAssembly) {
-					    //for (AssemblyLine assemblyLine : sourceLine.getAssembly()) {					    	
-						//	m_console.display(String.format("       -- %s %s\n", 
-						//			assemblyLine.getNmenonic(), 
-						//			assemblyLine.getOperandString()));
-					    //}
+					    for (Line assemblyLine : sourceLine.getChildern()) {					    	
+							m_console.display(String.format("       -- %s\n", assemblyLine.getText())); 
+							//m_console.display(String.format("       -- %s %s\n", 
+							//		assemblyLine.getNmenonic(), 
+							//		assemblyLine.getOperandString()));
+					    }
 					}
 				}				
 			}			
