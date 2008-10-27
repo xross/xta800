@@ -31,7 +31,7 @@ import javax.swing.UIManager;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
-import com.xmos.xeobjectdisplayer.SourceDisplayer;
+import com.xmos.xta.codewindow.SourceDisplayer;
 import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Engine;

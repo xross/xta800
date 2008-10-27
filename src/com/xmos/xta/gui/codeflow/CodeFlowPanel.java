@@ -45,7 +45,24 @@ public class CodeFlowPanel extends JPanel{
             }
         }
 
-
+        for(ArrayList<BasicBlock> depthList : m_basicBlockDepths){
+            for(BasicBlock bb : depthList){
+                Color c;
+                if(bb.getNextBasicBlocks().size() == 0){
+                    c = Color.red;
+                } else if(bb.getDepth() == 0){
+                    c = Color.green;
+                } else {
+                    c = Color.orange;
+                }
+                g2.setColor(c);
+                g2.fillRect((int)bb.getM_location().getX()-BoxWidth/2, 
+                        (int)bb.getM_location().getY()-BoxHeight/2, BoxWidth, BoxHeight);
+                g2.setColor(c.darker());
+                g2.drawRect((int)bb.getM_location().getX()-BoxWidth/2, 
+                        (int)bb.getM_location().getY()-BoxHeight/2, BoxWidth, BoxHeight);
+            }
+        }
 
         for(ArrayList<BasicBlock> depthList : m_basicBlockDepths){
             for(BasicBlock bb : depthList){
@@ -88,8 +105,10 @@ public class CodeFlowPanel extends JPanel{
                     } else if(thisDepth>nextDepth){
                         g2.setColor(Color.pink);
                         g2.setStroke(new BasicStroke(3));
-                        double midX = startPoint.getX() + (endPoint.getX() - startPoint.getX())/2.0;
+                        
                         double midY = startPoint.getY() + (endPoint.getY() - startPoint.getY())/2.0;
+                        double midX = startPoint.getX() + (endPoint.getX() - startPoint.getX())/2.0 - (endPoint.getY() - startPoint.getY())/20;
+                        
                         Point midPoint = new Point((int) midX,(int) midY);
                         
                         //Point controlPoint = new Point((int)startPoint.getX(), (int)midPoint.getY());
@@ -106,9 +125,15 @@ public class CodeFlowPanel extends JPanel{
                         g2.draw(curve);
 
                     } else {
-                        g2.setColor(Color.pink);
-                        g2.setStroke(new BasicStroke(3));
-                        g2.drawOval((int)startPoint.getX(), (int)startPoint.getY()-w-w/2, 2*w, 2*w);
+                        if(startPoint.distance(endPoint) == 0.0){
+                            //self loop
+                            g2.setColor(Color.pink);
+                            g2.setStroke(new BasicStroke(3));
+                            g2.drawOval((int)startPoint.getX(), (int)startPoint.getY()-w-w/2, 2*w, 2*w);
+                        } else {
+                            System.out.println("eek");
+                        }
+                        
                     }
                     g2.setStroke(new BasicStroke(1));
 
@@ -118,24 +143,7 @@ public class CodeFlowPanel extends JPanel{
         }
 
 
-        for(ArrayList<BasicBlock> depthList : m_basicBlockDepths){
-            for(BasicBlock bb : depthList){
-                Color c;
-                if(bb.getNextBasicBlocks().size() == 0){
-                    c = Color.red;
-                } else if(bb.getDepth() == 0){
-                    c = Color.green;
-                } else {
-                    c = Color.orange;
-                }
-                g2.setColor(c);
-                g2.fillRect((int)bb.getM_location().getX()-BoxWidth/2, 
-                        (int)bb.getM_location().getY()-BoxHeight/2, BoxWidth, BoxHeight);
-                g2.setColor(c.darker());
-                g2.drawRect((int)bb.getM_location().getX()-BoxWidth/2, 
-                        (int)bb.getM_location().getY()-BoxHeight/2, BoxWidth, BoxHeight);
-            }
-        }
+   
 
 
 

@@ -112,21 +112,18 @@ public class Route {
         context.push(new TreeSet<Integer>());
         MachineState initialState = new MachineState(memoryImage.getMemoryBase(), memoryImage.getMemorySize());
         
-        HashMap<Integer, TreeSet<Integer>> functionContexts = new HashMap<Integer, TreeSet<Integer>>();
-        
         if (m_functionName != null) {
             assert(symbolTable.symbolExists(m_functionName));
             int fromPc = symbolTable.symbolAddress(m_functionName);                
 
             rootPath = new Block(Mode.FUNCTION, m_config, m_instructionDecodeCache,
                 instructionAttributes, memoryImage, symbolTable, m_engine.getExclusions(),
-                fromPc, 0, this, null, initialState, context, functionContexts);
+                fromPc, 0, this, null, initialState, context);
         }
         else {
             rootPath = new Block(Mode.ABSOLUTE, m_config, m_instructionDecodeCache,
                 instructionAttributes, memoryImage, symbolTable, m_engine.getExclusions(),
-                m_fromRef.getPc(), m_toRef.getPc(), this, null, initialState, context,
-                functionContexts);            
+                m_fromRef.getPc(), m_toRef.getPc(), this, null, initialState, context);            
         }
                          
         stepPath(rootPath);
@@ -134,10 +131,6 @@ public class Route {
         if (m_status == Status.COMPLETED) {
 	        
             sortPaths();
-	    
-	    	//m_progress.resetState(Progress.State.PROCESSING_LOOPS, 
-	       	//		(m_completePaths.size() * 2) + m_loopedPaths.size());    	
-
 	        if (!buildCoveredLinesHashes(debugInfo, symbolTable)) {	        	
         	    return m_status;
             }	        	        

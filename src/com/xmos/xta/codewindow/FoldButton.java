@@ -1,4 +1,4 @@
-package com.xmos.xeobjectdisplayer;
+package com.xmos.xta.codewindow;
 
 import java.awt.Rectangle;
 

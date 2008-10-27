@@ -65,10 +65,6 @@ public class Block implements  Comparable<Block> {
     private int                     m_functionDepth;
 
     private Stack<TreeSet<Integer>> m_contexts;
-
-    // Map of hit PCs per function
-    private HashMap<Integer, TreeSet<Integer>> m_functionContexts;
-    
     private Vector<Reference>       m_exclusions;
 
     private HashMap<String, TreeSet<Integer>>   m_sourceLinesCovered;    
@@ -100,11 +96,9 @@ public class Block implements  Comparable<Block> {
             InstructionAttributes instructionAttributes, MemoryImage memoryImage, 
             SymbolTable symbolTable, Vector<Reference> exclusions, 
             int fromPc, int toPc, Route route, Block parentBlock, 
-            MachineState machineState, Stack<TreeSet<Integer>> contexts,
-            HashMap<Integer, TreeSet<Integer>> functionContexts) {
+            MachineState machineState, Stack<TreeSet<Integer>> contexts) {
         m_machineState   = new MachineState(machineState);
         m_contexts       = new Stack<TreeSet<Integer>>();
-        m_functionContexts = functionContexts;
         m_contexts.addAll(contexts);
 
         m_config         = config;
@@ -494,14 +488,14 @@ public class Block implements  Comparable<Block> {
 
         Block nextPath = new Block(m_mode, m_config, m_instructionDecodeCache, m_instructionAttributes, 
                 m_memoryImage, m_symbolTable, m_exclusions, startPc, m_toPc, m_route,
-                this, m_machineState, m_contexts, m_functionContexts);
+                this, m_machineState, m_contexts);
         nextPath.build();
     }
 
     private void takeBranch(int branchTarget) {
         Block nextPath = new Block(m_mode, m_config, m_instructionDecodeCache, m_instructionAttributes, 
                 m_memoryImage, m_symbolTable, m_exclusions, branchTarget, m_toPc, m_route,
-                this, m_machineState, m_contexts, m_functionContexts);
+                this, m_machineState, m_contexts);
         nextPath.m_machineState.branchTo(branchTarget, m_instruction.isLoadStore());
         nextPath.build();
     }
@@ -1054,16 +1048,8 @@ public class Block implements  Comparable<Block> {
             System.out.printf("Block: %d: pushFunction: m_functionDepth: %d\n", m_id, m_functionDepth);
             dumpContexts();
         }
-        
-        TreeSet<Integer> context;
-        if (m_functionContexts.containsKey(startPc)) {
-            context = m_functionContexts.get(startPc);
-        } else {
-            context = new TreeSet<Integer>();
-            m_functionContexts.put(startPc, context);
-        }
-        
-        m_contexts.push(context);
+
+        m_contexts.push(new TreeSet<Integer>());
         ++m_functionDepth;        
     }
 

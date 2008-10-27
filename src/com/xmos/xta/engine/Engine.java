@@ -424,13 +424,13 @@ public class Engine {
                     m_route.getNodeId(), m_route.getCoreId(), m_executableFile));
             return false;
         }
-        /*
+
         if (m_route.unresolvedPaths().size() > 0) {
             setErrorString(String.format("Found %d unresolved paths", 
                     m_route.unresolvedPaths().size()));
                 return false;
         }
-         */
+
         return true;
     }
 

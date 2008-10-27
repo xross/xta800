@@ -1,4 +1,4 @@
-package com.xmos.xeobjectdisplayer;
+package com.xmos.xta.codewindow;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -44,7 +44,6 @@ public class DisassemblyDisplayer extends Displayer {
                 LineHighlighter lh = new LineHighlighter(func);
                 lh.setLines(m_lines, m_textPane, 0.0);
                 m_lineHighlighters.add(lh);
-                //System.out.println("adding a line highlighter for line " + func.getText());
                 m_textPane.getHighlighter().addHighlight(0, 0, lh);
             }
             m_lines.addAll(m_functions);

@@ -16,7 +16,7 @@ import com.xmos.xta.gui.core.PathStatus;
 import com.xmos.xta.gui.core.RoutePath;
 
 public class BlockDecomposer implements PathUpdater {
-	final static boolean DISPLAY_GRAPH_VIS = false;
+	final static boolean DISPLAY_GRAPH_VIS = true;
 
     private Route                   m_route;
     private PathStatus              m_pathStatus; 
