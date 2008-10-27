@@ -41,7 +41,11 @@ public class DisassemblyDisplayer extends Displayer {
             for (Function func : m_functions) {
                 st.append(func.getText());
                 st.append("\n");
-                m_textPane.getHighlighter().addHighlight(0, 0, func.getLineHighlighter(m_lines, m_textPane, 0.0));
+                LineHighlighter lh = new LineHighlighter(func);
+                lh.setLines(m_lines, m_textPane, 0.0);
+                m_lineHighlighters.add(lh);
+                //System.out.println("adding a line highlighter for line " + func.getText());
+                m_textPane.getHighlighter().addHighlight(0, 0, lh);
             }
             m_lines.addAll(m_functions);
             m_document.insertString(0, st.toString(), m_style);

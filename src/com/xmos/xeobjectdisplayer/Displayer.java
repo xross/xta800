@@ -27,7 +27,11 @@ public abstract class Displayer extends JPanel {
     protected StyledDocument    m_document;
     protected Style             m_style;
     protected String            m_title = "Displayer";
+    
+    
     protected ArrayList<Line>   m_lines;
+    protected ArrayList<LineHighlighter>   m_lineHighlighters;
+    
     protected SideHighlighter   m_sideHighlighter;
     protected Font              m_font = new Font("Courier", Font.PLAIN, 12);
     protected JScrollPane       m_textPaneScrollPane;
@@ -41,12 +45,12 @@ public abstract class Displayer extends JPanel {
 		super(new BorderLayout());
 		m_engine = engine;
 		m_parent = parent;
-		
 		init();
 	}
 	
 	private void init(){
         m_lines = new ArrayList<Line>();
+        m_lineHighlighters = new ArrayList<LineHighlighter>();
 	    m_textPane = new XTextPane(this);
         m_document = m_textPane.getStyledDocument();
         
@@ -83,12 +87,18 @@ public abstract class Displayer extends JPanel {
                 m_assemblyColourer.colourLine(index, s.length());
             } 
             Double timeTaken = m_engine.getTimeTaken(line.getLineNumber());
-            m_textPane.getHighlighter().addHighlight(0, 0, line.getLineHighlighter(m_lines, m_textPane, timeTaken));
+            
+            LineHighlighter lh = new LineHighlighter(line);
+            lh.setLines(m_lines, m_textPane, timeTaken);
+            m_lineHighlighters.add(lh);
+            m_textPane.getHighlighter().addHighlight(0, 0, lh);
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
     }
 
+    
+    /*
     protected void insertLines(ArrayList<Line> lines, int index){
         StringBuffer sb = new StringBuffer("");
         try {
@@ -104,7 +114,7 @@ public abstract class Displayer extends JPanel {
             e.printStackTrace();
         }
     }
-    
+    */
     
     public void unfoldLine(Line line){
         if(line.getShowChildern()){
@@ -136,7 +146,7 @@ public abstract class Displayer extends JPanel {
         line.setShowChildern(true);
         m_sideHighlighter.repaint();
     }
-    
+    /*
     public void fastUnfoldLine(Line line){
         if(line.getShowChildern()){
             // nothing to do
@@ -167,7 +177,7 @@ public abstract class Displayer extends JPanel {
         line.setShowChildern(true);
         m_sideHighlighter.repaint();
     }
-
+*/
     
     public void foldLine(Line line){
         if(line.getShowChildern() == false){
@@ -191,6 +201,7 @@ public abstract class Displayer extends JPanel {
         
         for(Line l_line : linesToRemove){
             m_lines.remove(l_line);
+            removeLineHighlighter(l_line);
         }
 
         final Point startPosition = m_textPaneScrollPane.getViewport().getViewPosition();
@@ -212,7 +223,17 @@ public abstract class Displayer extends JPanel {
 
 
 	
-	public void snapToLine(int lineNumber) {
+	private void removeLineHighlighter(Line l_line) {
+	    for(LineHighlighter lh : m_lineHighlighters){
+	        if(lh.isLine(l_line)) {
+	            m_lineHighlighters.remove(lh);
+	            return;
+	        }
+	    }
+        assert(false);
+    }
+
+    public void snapToLine(int lineNumber) {
 		double value = (double)m_textPane.getHeight() / (double)m_lines.size();
 		m_textPaneScrollPane.getVerticalScrollBar().setValue((int)(value * lineNumber));
 	}
@@ -307,4 +328,19 @@ public abstract class Displayer extends JPanel {
     }
     */
 	
+}
+class LineWithHighlighter{
+    private Line line;
+    private LineHighlighter lineHighlighter;
+    public LineWithHighlighter(Line line, LineHighlighter lineHighlighter) {
+        super();
+        this.line = line;
+        this.lineHighlighter = lineHighlighter;
+    }
+    public Line getLine(){
+        return line;
+    }
+    public LineHighlighter getHighlighter(){
+        return lineHighlighter;
+    }
 }

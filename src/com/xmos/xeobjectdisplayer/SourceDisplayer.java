@@ -41,7 +41,10 @@ public class SourceDisplayer extends Displayer {
             for (SourceLine sl : m_sourceFile.getSourceLines()) {
                 st.append(sl.getText());
                 st.append("\n");
-                m_textPane.getHighlighter().addHighlight(0, 0, sl.getLineHighlighter(m_lines, m_textPane, 0.0));
+                LineHighlighter lh = new LineHighlighter(sl);
+                lh.setLines(m_lines, m_textPane, 0.0);
+                m_lineHighlighters.add(lh);
+                m_textPane.getHighlighter().addHighlight(0, 0, lh);
             }
             m_lines.addAll(m_sourceFile.getSourceLines());
             m_document.insertString(0, st.toString(), m_style);
