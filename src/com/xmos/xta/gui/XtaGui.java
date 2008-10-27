@@ -115,7 +115,6 @@ public class XtaGui extends Displayer {
         m_pathStatus            = new PathStatus(m_globalConfig, m_engine, m_mainFrame, this);
         
         
-        
         //path Updaters
         m_routeTree             = new TreeRouteDisplayer(m_pathStatus);
         m_circleStructure       = new CodeStructure(m_pathStatus, m_globalConfig);
