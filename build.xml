@@ -62,12 +62,21 @@
          <zipfileset src="${src}/../../infr_libs_java/export/jars/xeloader.jar"/>
          <zipfileset src="${src}/../../infr_libs_java/export/jars/isa.jar"/>
          <zipfileset src="${src}/../../infr_libs_java/export/jars/util.jar"/>
-   </jar> 
+    </jar> 
 
     <jar jarfile="${dist}/../lib/xtagui.jar"
          basedir="${build}"
-         includes="com/xmos/xta/**"
-         manifest="${src}/manifests/xtagui"/>
+         includes="com/xmos/xta/**,
+                   com/xmos/xeobjectdisplayer/**"
+         manifest="${src}/manifests/xtagui">
+         <zipfileset src="${src}/../../infr_libs_java/export/jars/dwarfhandler.jar"/>
+         <zipfileset src="${src}/../../infr_libs_java/export/jars/elfhandler.jar"/>
+         <zipfileset src="${src}/../../infr_libs_java/export/jars/xeobject.jar"/>
+         <zipfileset src="${src}/../../infr_libs_java/export/jars/xehandler.jar"/>
+         <zipfileset src="${src}/../../infr_libs_java/export/jars/xeloader.jar"/>
+         <zipfileset src="${src}/../../infr_libs_java/export/jars/isa.jar"/>
+         <zipfileset src="${src}/../../infr_libs_java/export/jars/util.jar"/>
+    </jar> 
   </target>
 
   <!-- Delete the ${build} and ${dist} directory trees -->
