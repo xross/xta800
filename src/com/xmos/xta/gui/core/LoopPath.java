@@ -14,6 +14,7 @@ import javax.swing.JPopupMenu;
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.gui.XtaGui;
 
 public class LoopPath implements RouteNode {
     private Block m_loopPath;
@@ -64,8 +65,8 @@ public class LoopPath implements RouteNode {
 
     public ImageIcon getIcon() {
         try {
-            return new ImageIcon(BlockPath.class
-                    .getResource("../Loop.png"));
+            return new ImageIcon(XtaGui.class
+                    .getResource("Loop.png"));
         } catch (Exception e) {
             System.err.println("Warning: Could not find icon image");
         }

@@ -30,8 +30,8 @@ public class BlockPath implements RouteNode {
     public ImageIcon getIcon() {
 
         try {
-            return new ImageIcon(BlockPath.class
-                    .getResource("../BasicBlock.png"));
+            return new ImageIcon(XtaGui.class
+                    .getResource("BasicBlock.png"));
         } catch (Exception e) {
             System.err.println("Warning: Could not find icon image");
         }

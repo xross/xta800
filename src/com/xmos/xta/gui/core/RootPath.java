@@ -95,15 +95,15 @@ public class RootPath implements RouteNode {
         }
         if(absolute){
             try {
-                return new ImageIcon(RootPath.class
-                        .getResource("../AbsolutePath.png"));
+                return new ImageIcon(XtaGui.class
+                        .getResource("AbsolutePath.png"));
             } catch (Exception e) {
                 System.err.println("Warning: Could not find icon image");
             }
         } else {
             try {
-                return new ImageIcon(RootPath.class
-                        .getResource("../Path.png"));
+                return new ImageIcon(XtaGui.class
+                        .getResource("Path.png"));
             } catch (Exception e) {
                 System.err.println("Warning: Could not find icon image");
             }
