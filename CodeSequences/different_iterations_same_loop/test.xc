@@ -25,7 +25,7 @@ void either(int choice)
 
 int main()
 {
-//  both();
+  both();
   either(0);
   either(1);
   
