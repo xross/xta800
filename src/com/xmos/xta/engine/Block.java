@@ -17,11 +17,15 @@ import com.xmos.xeloader.SymbolTable;
 
 public class Block implements  Comparable<Block> { 
     private static final boolean DEBUG = false;
+    private static final boolean DEBUG_GRAPH = false;
     private static final boolean DEBUG_STATUS = false;
     private static int m_numCompletedPaths = 0;    
     private static int m_numUnresolvedPaths = 0;    
-    private static int m_numLoopPaths = 0;    
+    private static int m_numLoopPaths = 0;
 
+    private static boolean m_blockOpen = false;
+    private static int m_lineNum = 0;
+    
     enum Mode {
         FUNCTION,
         ABSOLUTE,
@@ -64,6 +68,7 @@ public class Block implements  Comparable<Block> {
     private boolean                 m_firstStep;
     private int                     m_functionDepth;
 
+    private boolean                 m_willFormLoop;
     private Stack<TreeSet<Integer>> m_contexts;
     private Vector<Reference>       m_exclusions;
 
@@ -78,7 +83,7 @@ public class Block implements  Comparable<Block> {
     private int                     m_numFNops;
     private int                     m_numInstructions;
     private int                     m_numPausables;
-
+    
     static int getNumPaths() {
         return m_numPaths;
     }
@@ -100,6 +105,7 @@ public class Block implements  Comparable<Block> {
         m_machineState   = new MachineState(machineState);
         m_contexts       = new Stack<TreeSet<Integer>>();
         m_contexts.addAll(contexts);
+        m_willFormLoop = false;
 
         m_config         = config;
         m_memoryImage    = memoryImage;
@@ -107,8 +113,11 @@ public class Block implements  Comparable<Block> {
         m_instructions   = new Vector<XtaInstruction>();
         m_instructionDecodeCache = instructionDecodeCache;
         m_instructionAttributes  = instructionAttributes;
-        m_id            = m_numPaths;
-        m_instanceId    = m_id;
+        m_id = m_numPaths;
+        m_instanceId = m_id;
+        ++m_numPathInstances;
+        ++m_numPaths;
+
         m_mode          = mode;
         m_fromPc        = fromPc;
         m_toPc          = toPc;
@@ -120,7 +129,7 @@ public class Block implements  Comparable<Block> {
         m_sourceLinesCovered = new HashMap<String, TreeSet<Integer>>();
         m_asmLinesCovered    = new HashMap<String, TreeSet<Integer>>();
 
-        m_topLevel      = true;
+        m_topLevel = true;
 
         m_machineState.setPc(m_fromPc);
 
@@ -128,15 +137,13 @@ public class Block implements  Comparable<Block> {
         m_numFNops = 0;
         m_numPausables = 0;
 
-        ++m_numPathInstances;
-        ++m_numPaths;
-
         m_route = route;
         m_parentBlock = parentBlock;
         m_loopPaths = new Vector<Block>();
         m_loopPathAttributes = new HashMap<Block, PathAttributes>();
 
         m_route.addBlock(this);
+        
         if (DEBUG) {
             if (m_parentBlock != null) {
                 System.out.printf("New block %d with parent %d\n",
@@ -145,9 +152,95 @@ public class Block implements  Comparable<Block> {
                 System.out.printf("New root block %d\n", m_instanceId);
             }
         }
+        if(DEBUG_GRAPH){
+            if (m_blockOpen) {
+                System.out.printf("\"];\n");
+            }
+            if(m_parentBlock!= null){
+                System.out.printf("%d -> %d [label = \"%d\"];\n",
+                        m_parentBlock.m_instanceId, m_instanceId, m_lineNum++);
+            }
+
+            System.out.printf("%d [label = \"", m_instanceId);
+            m_blockOpen = true;
+        }
     }
-    
-    
+
+    Block(Block block, Block parent, Block newParent) {
+        m_machineState = null;
+        m_contexts = null;
+        m_willFormLoop = false;
+
+        m_config = block.m_config;
+        m_memoryImage = block.m_memoryImage;
+        m_symbolTable  = block.m_symbolTable;
+        m_instructions = block.m_instructions;
+
+        m_instructionDecodeCache = block.m_instructionDecodeCache;
+        m_instructionAttributes  = block.m_instructionAttributes;
+        m_id = block.m_id;
+        m_instanceId = m_numPathInstances;
+        ++m_numPathInstances;
+        ++m_numPaths;
+
+        m_mode = block.m_mode;
+        m_fromPc = block.m_fromPc;
+        m_toPc = block.m_toPc;
+        m_status = block.m_status;
+        m_firstStep = false;
+        m_functionDepth = block.m_functionDepth;
+        m_exclusions = block.m_exclusions;
+
+        m_sourceLinesCovered = block.m_sourceLinesCovered;
+        m_asmLinesCovered = block.m_asmLinesCovered;
+
+        m_topLevel = block.m_topLevel;
+
+        m_numInstructions = block.m_numInstructions;
+        m_numFNops = block.m_numFNops;
+        m_numPausables = block.m_numPausables;
+
+        m_route = block.m_route;
+
+        if (block.m_parentBlock != parent) {
+            m_parentBlock = new Block(block.m_parentBlock, parent, newParent);
+        } else {
+            m_parentBlock = newParent;
+        }
+        m_loopPaths = new Vector<Block>();
+        m_loopPathAttributes = new HashMap<Block, PathAttributes>();
+        for (Block loopPath : block.m_loopPaths) {
+            addLoopPath(new Block(loopPath, block, this), false, false);
+        }
+
+        m_route.addBlock(this);
+
+        if (DEBUG) {
+            if (m_parentBlock != null) {
+                System.out.printf("New block %d with parent %d\n",
+                        m_instanceId, m_parentBlock.m_instanceId);
+            } else {
+                System.out.printf("New root block %d\n", m_instanceId);
+            }
+        }
+        if (DEBUG_GRAPH){
+            if (m_blockOpen) {
+
+                System.out.printf("\"];\n");
+            }
+            if(m_parentBlock!= null){
+                System.out.printf("%d -> %d [label = \"%d\"];\n",
+                        m_parentBlock.m_instanceId, m_instanceId, m_lineNum++);
+            }
+
+            System.out.printf("%d [label = \"", m_instanceId);
+            m_blockOpen = true;
+            for (XtaInstruction inst : m_instructions) {
+                System.out.print(Integer.toHexString(inst.getPc()) +" " +inst.getNmenonic() + " " + inst.getOperandString() + "\\n");
+            }
+        }
+    }
+
     public int getFirstInstructionPc(){
         return m_instructions.firstElement().getPc();
     }
@@ -357,10 +450,25 @@ public class Block implements  Comparable<Block> {
 
     }
 
-    public boolean addLoopPath(Block pathStartBlock) {
+    public boolean addLoopPath(Block pathStartBlock, boolean isLoop, boolean formLoop) {
         assert(pathStartBlock != null);
         assert(!m_loopPaths.contains(pathStartBlock));
         if (m_loopPaths.contains(pathStartBlock)) return false;
+
+        if (DEBUG_GRAPH){
+            System.out.print(isLoop + " " + formLoop + "\\n");
+            if (m_blockOpen) {
+                System.out.printf("\"];\n");
+                m_blockOpen = false;
+            }
+            System.out.printf("%d -> %d [label = \"%d\"];\n",
+                    pathStartBlock.m_instanceId, m_instanceId, m_lineNum++);
+        }
+        if (DEBUG) {
+            System.out.printf("Block %d adding %d as loop\n",
+                    m_instanceId, pathStartBlock.m_instanceId);
+        }
+
         m_loopPaths.add(pathStartBlock);
         m_loopPathAttributes.put(pathStartBlock, new PathAttributes());
         return true;
@@ -403,7 +511,13 @@ public class Block implements  Comparable<Block> {
         m_instruction.execute(m_machineState);
         addInstruction(m_instruction);
 
-        if (DEBUG) traceInstruction(this);
+        m_willFormLoop |= willFormLoop(m_machineState.getPc());
+        if (DEBUG) {
+            traceInstruction(this);
+        }
+        if(DEBUG_GRAPH){
+            System.out.print(Integer.toHexString(m_instruction.getPc()) +" " +m_instruction.getNmenonic() + " " + m_instruction.getOperandString() + "\\n");
+        }
         /*
          * after an instruction is added then one of options can occur:
          * 1. Block is completed - add to the routes paths and stop stepping
@@ -417,13 +531,14 @@ public class Block implements  Comparable<Block> {
             m_route.addCompletePath(this);
             return;
         } 
-        
+
         if (isExcluded(pc)) {
             setStatus(Status.EXCLUDED);
             return;
         }
-        
+
         if (m_machineState.wasJump()) {
+            
             int jumpTarget = m_machineState.getJumpTarget();
 
             if (m_machineState.wasJumpResolved()) {
@@ -442,7 +557,7 @@ public class Block implements  Comparable<Block> {
 
                     m_machineState.branchTo(jumpTarget, m_instruction.isLoadStore());
                 }
-                
+
             } else {
                 setStatus(Status.UNRESOLVED);
                 m_route.addUnresolvedPath(this);
@@ -450,22 +565,30 @@ public class Block implements  Comparable<Block> {
 
         } else if (m_machineState.wasBranch()) {
             if (m_machineState.wasBranchResolved()){
+
                 if (resolveLoop(m_machineState.getPc())){
+                    //have formed a loop
                     setStatus(Status.LOOPED);
                 } else {
                     m_contexts.peek().add(m_instruction.getPc());
-                    takeBranch(m_machineState.getBranchTarget());
+                    
                     takeDontBranch(m_instruction);
+                    takeBranch(m_machineState.getBranchTarget());
+
                     setStatus(Status.COMPLETE);
                 }
+                setStatus(Status.COMPLETE);
+                
+                
             } else {
                 setStatus(Status.UNRESOLVED);
                 m_route.addUnresolvedPath(this);
             }
             
+
         } else {
             m_contexts.peek().add(m_instruction.getPc());
-            
+
             if (!m_instruction.isLoadStore()) {
                 m_machineState.fetch();
             }
@@ -477,12 +600,20 @@ public class Block implements  Comparable<Block> {
         m_firstStep = false;
         m_instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes());
     }
+    
+    private boolean willFormLoop(int pc){
+        if (m_contexts.peek().contains(pc)) {
+            return true;
+        }
+        return false;
+    }
+
+
 
     private void takeDontBranch(XtaInstruction instruction) {
         if (m_instruction.isLoadStore() == false) {
             m_machineState.fetch();
         }
-
         int startPc = m_machineState.getPc() + instruction.getNumBytes(); 
         m_machineState.issue(instruction.getNumBytes());
 
@@ -499,22 +630,24 @@ public class Block implements  Comparable<Block> {
         nextPath.m_machineState.branchTo(branchTarget, m_instruction.isLoadStore());
         nextPath.build();
     }
-
+    
     private boolean resolveLoop(int pc) {
-        if (!isLoop(pc)) {
+        boolean isLoop = isLoop(pc);
+        if (!m_willFormLoop && !isLoop) {
             return false;
         }
-        
         Block parent = m_parentBlock;
         while (parent != null){
             if (parent.getBranchingPC() == pc){
-
-                if (DEBUG) {
-                    System.out.printf("Block %d adding %d as loop\n",
-                            parent.m_instanceId, m_instanceId);
+                if (m_willFormLoop) {
+                    for (Block block : parent.getLoopPaths()) {
+                        if (block.m_parentBlock == parent) {
+                            addLoopPath(new Block(block, parent, this), isLoop, m_willFormLoop);
+                        }
+                    }
                 }
 
-                parent.addLoopPath(this);
+                parent.addLoopPath(this, isLoop, m_willFormLoop);
                 m_route.addLoopPath(this);
                 return true;
             }
@@ -522,7 +655,7 @@ public class Block implements  Comparable<Block> {
         }
         return false;
     }
-    
+
     private void build() {
         while (getStatus() == Block.Status.SEARCHING) {
             if (m_route.checkAbort()) {
@@ -854,7 +987,7 @@ public class Block implements  Comparable<Block> {
         }
         return num;        
     }
-    
+
     public int getNumPausablesThis() {
         return m_numPausables;
     }

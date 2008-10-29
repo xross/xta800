@@ -25,9 +25,6 @@ public class ToolBar extends JPanel {
     private Vector<String> m_functionNames;
     private JButton pathButton;
     private JComboBox functionComboBox;
-    private GlobalConfig m_globalConfig;
-
-    private JButton FNOPStatusButton;
 
     private JFormattedTextField m_threadCountBox;
     private JFormattedTextField m_frequencyBox;
@@ -41,7 +38,6 @@ public class ToolBar extends JPanel {
         super();
         m_displayers = displayers;
         m_engine = engine;
-        m_globalConfig = globalConfig;
         int nodeId = engine.getNodeId();
         int coreId = engine.getCoreId();
         m_functionNames = engine.getXeLoader().getFunctionNames(nodeId, coreId);
@@ -50,7 +46,6 @@ public class ToolBar extends JPanel {
 
     private void init(){
         pathButton = new JButton("Analyse Path");
-        FNOPStatusButton = new JButton("Hide FNOPs");
 
         m_threadCountBox = new JFormattedTextField();
         m_threadCountBox.setColumns(3);
@@ -82,24 +77,6 @@ public class ToolBar extends JPanel {
             }
         });
 
-
-        FNOPStatusButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                m_globalConfig.setFNOPS(! m_globalConfig.getFNOPS());
-                String text = null;
-
-                if(m_globalConfig.getFNOPS() == false){
-                    text = "Hide FNOPs";
-                    GuiConfig.fnopsShown = true;
-                } else {
-                    text = "Show FNOPs";
-                    GuiConfig.fnopsShown = false;
-                }
-
-                FNOPStatusButton.setText(text);
-            }});
-
-
         pathButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 pathButtonPressed();
@@ -124,8 +101,6 @@ public class ToolBar extends JPanel {
         toolBar.add(functionComboBox);
         toolBar.addSeparator();
         toolBar.add(pathButton);
-
-        toolBar.add(FNOPStatusButton);
         toolBar.addSeparator();
         new JLabel(m_path);
         toolBar.add(new JLabel("Frequency: "));

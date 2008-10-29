@@ -98,7 +98,6 @@ public abstract class Displayer extends JPanel {
     }
 
     
-    /*
     protected void insertLines(ArrayList<Line> lines, int index){
         StringBuffer sb = new StringBuffer("");
         try {
@@ -106,7 +105,10 @@ public abstract class Displayer extends JPanel {
                 sb.append(line.getText());
                 sb.append("\n");
                 Double timeTaken = m_engine.getTimeTaken(line.getLineNumber());
-                m_textPane.getHighlighter().addHighlight(0, 0, line.getLineHighlighter(m_lines, m_textPane, timeTaken));
+                LineHighlighter lh = new LineHighlighter(line);
+                lh.setLines(m_lines, m_textPane, timeTaken);
+                m_lineHighlighters.add(lh);
+                m_textPane.getHighlighter().addHighlight(0, 0, lh);
             }
             m_document.insertString(index, sb.toString(), m_style);
             m_assemblyColourer.colourLine(index, sb.length());
@@ -114,7 +116,6 @@ public abstract class Displayer extends JPanel {
             e.printStackTrace();
         }
     }
-    */
     
     public void unfoldLine(Line line){
         if(line.getShowChildern()){
@@ -146,9 +147,9 @@ public abstract class Displayer extends JPanel {
         line.setShowChildern(true);
         m_sideHighlighter.repaint();
     }
-    /*
+
     public void fastUnfoldLine(Line line){
-        if(line.getShowChildern()){
+        if(!line.isFoldable() || line.getShowChildern()){
             // nothing to do
             return;
         }
@@ -158,17 +159,13 @@ public abstract class Displayer extends JPanel {
         for(;i<m_lines.indexOf(line)+1;i++ ){
             Line l_line = m_lines.get(i);
             location += l_line.getText().length() +1;
-            headerLocation+=9;
+            //headerLocation+=9;
         }
+        headerLocation = 9 * m_lines.indexOf(line);
         final Point startPosition = m_textPaneScrollPane.getViewport().getViewPosition();
+        insertLines(line.getChildern(), location);
+        m_lineHeaders.insertLines(line.getChildern(), headerLocation);
         
-        
-        for(Line childLine : line.getChildern()){
-            insertLine(childLine, location);
-            m_lineHeaders.insertLine(childLine, headerLocation);
-            location+=childLine.getText().length()+1;
-            headerLocation+=9;
-        }
         m_lines.addAll(m_lines.indexOf(line)+1, line.getChildern());
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -177,7 +174,8 @@ public abstract class Displayer extends JPanel {
         line.setShowChildern(true);
         m_sideHighlighter.repaint();
     }
-*/
+
+    
     
     public void foldLine(Line line){
         if(line.getShowChildern() == false){

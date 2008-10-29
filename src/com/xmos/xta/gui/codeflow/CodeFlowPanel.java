@@ -79,9 +79,6 @@ public class CodeFlowPanel extends JPanel{
                     Point startPoint = new Point (x, y+w/2);
                     Point endPoint = new Point (X, Y-w/2);
 
-
-
-
                     int nextDepth = getDepth(nextBB);
                     int thisDepth = m_basicBlockDepths.indexOf(depthList);
 

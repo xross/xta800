@@ -18,6 +18,9 @@ import com.xmos.xta.gui.core.RoutePath;
 public class BlockDecomposer implements PathUpdater {
 	final static boolean DISPLAY_GRAPH_VIS = true;
 
+	private JPanel m_graphVizViewer;
+	
+	
     private Route                   m_route;
     private PathStatus              m_pathStatus; 
     private TreeModel               m_treeModel;
@@ -115,7 +118,6 @@ public class BlockDecomposer implements PathUpdater {
             }
             return;
         } 
-        
         addNewBlock(bb, depth);
         bb.setDepth(depth);
         ArrayList<BasicBlock> nowSeen =new ArrayList<BasicBlock>();
@@ -155,21 +157,29 @@ public class BlockDecomposer implements PathUpdater {
     }
 
     private void printOutGraphvis(){
-        System.out.println("digraph g {");
+        
+        String dotFile = "";
+        
+       
+        dotFile +="digraph g {";
         for(BasicBlock bb : m_basicBlocks){
-            System.out.print("L" + bb.hashCode() + "  [shape = box, label = \"" );
+            dotFile +="L" + bb.hashCode() + "  [shape = box, label = \"";
             for(XtaInstruction inst : bb.getInstructions()){
-                System.out.printf("%x %s %s\\n", inst.getPc(), inst.getNmenonic(), inst.getOperandString());
+                dotFile += Integer.toHexString(inst.getPc()) +" " + inst.getNmenonic() + " "+ inst.getOperandString() +"\\n";
             }
-           // System.out.print(bb.getDepth() +" " + m_basicBlockDepths.get(bb.getDepth()).size()+ "\\n");
-            System.out.println("\"];");
+            dotFile +="\"];";
         }
         for(BasicBlock bb : m_basicBlocks){
             for(BasicBlock nb : bb.getNextBasicBlocks()){
                 System.out.println("L"+bb.hashCode() + " -> L" + nb.hashCode() + ";");
+                dotFile+="L"+bb.hashCode() + " -> L" + nb.hashCode() + ";\n";
             }
         }
         System.out.println("}");
+        
+        
+        
+        //Process p=Runtime.getRuntime().exec("dot ")
     }
     
     private ArrayList<InstructionLink> buildInstructionLinks( Vector<Block> blocks) {

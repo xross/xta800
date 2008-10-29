@@ -7,6 +7,7 @@ import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
@@ -15,7 +16,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -24,6 +28,7 @@ import com.xmos.elfhandler.Symbol;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.gui.core.BlockPath;
@@ -54,12 +59,15 @@ public class OverallRouteDisplayer implements PathUpdater {
     private int m_blockDepth;
     private int m_blockPausable;
     private int m_blockFNops;
-    
+    private boolean showTime = false;
     private ArrayList<Box> m_boxes;
+    private Engine m_engine;
     
-    public OverallRouteDisplayer(PathStatus pathStatus) {
+    public OverallRouteDisplayer(PathStatus pathStatus, Engine engine) {
         initaliseColors();
+        m_engine = engine;
         m_functionColors = new HashMap<String, Color>();
+        
         m_timeLine = new JPanel(){
             private static final long serialVersionUID = 1L;
             
@@ -68,6 +76,28 @@ public class OverallRouteDisplayer implements PathUpdater {
                 drawTimeLine(g2);
             }
         };
+        
+        m_timeLine.addMouseListener(new MouseAdapter(){
+            public void mousePressed(MouseEvent e) {
+                if(e.getButton() == 3){
+                    JPopupMenu popup = new JPopupMenu();
+                    JMenuItem scaleView = new JMenuItem();
+                    if(showTime)scaleView.setText("Set scale to thread cycles");
+                    else scaleView.setText("Set scale to time elapsed");
+                    scaleView.addMouseListener(new MouseAdapter(){
+                        public void mousePressed(MouseEvent e) {
+                            showTime=!showTime;
+                            m_timeLine.repaint();
+                        }
+                    });
+                    popup.add(scaleView);
+                    popup.setOpaque(true);
+                    popup.setLightWeightPopupEnabled(true);
+                    popup.show( (JComponent)e.getSource(), e.getX(), e.getY() );
+                }
+                
+            }
+        });
         m_timeLine.setPreferredSize(new Dimension(32, 32));
         m_boxes = new ArrayList<Box>();
         
@@ -440,12 +470,19 @@ public class OverallRouteDisplayer implements PathUpdater {
         
     }
     
+    
+    
     private void drawTimeLine(Graphics2D g2){
         g2.setColor(Color.white);
         g2.fillRect(0, 0, m_timeLine.getWidth(), m_timeLine.getHeight());
         if(m_pathLength == 0) return;
 
-        double totalUnits = m_pathLength;
+        double totalUnits;
+        if(showTime){
+            totalUnits = m_pathLength*m_engine.getFrequency();
+        } else {
+            totalUnits = m_pathLength;
+        }
         g2.setColor(Color.black);
         g2.drawLine(0, m_timeLine.getHeight()/7, m_timeLine.getWidth(), m_timeLine.getHeight()/7);
         
@@ -538,6 +575,5 @@ class MouseOver implements MouseMotionListener {
     }
     
     public void mouseDragged(MouseEvent arg0) {
-        // TODO Auto-generated method stub
     }
 }

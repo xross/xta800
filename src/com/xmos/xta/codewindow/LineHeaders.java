@@ -136,7 +136,8 @@ public class LineHeaders extends JTextPane implements MouseListener{
             } 
         } else if(e.getButton()==3){
             final JPopupMenu popup = new JPopupMenu();
-            if(line.getLineNumberType()==DisplayType.decimal){
+            if(line.getLineNumberType()==DisplayType.decimal && line.isFoldable()){
+                
                 JMenuItem startLine = new JMenuItem("Set as start line");
                 startLine.addMouseListener(new MouseAdapter(){
                     public void mousePressed(MouseEvent e) {
@@ -212,10 +213,10 @@ public class LineHeaders extends JTextPane implements MouseListener{
             JMenuItem unfoldAll = new JMenuItem("Unfold all");
             unfoldAll.addMouseListener(new MouseAdapter(){
                 public void mousePressed(MouseEvent e) {
-                    int i=0;
-                    while(i<m_lines.size()){
-                        m_displayer.unfoldLine(m_lines.get(i));
-                        i++;
+                    int i=m_lines.size()-1;
+                    while(i>=0){
+                        m_displayer.fastUnfoldLine(m_lines.get(i));
+                        i--;
                     }
                 }
             });
