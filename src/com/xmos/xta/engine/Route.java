@@ -131,9 +131,11 @@ public class Route {
         if (m_status == Status.COMPLETED) {
 	        
             sortPaths();
-	        if (!buildCoveredLinesHashes(debugInfo, symbolTable)) {	        	
+	        /*
+            if (!buildCoveredLinesHashes(debugInfo, symbolTable)) {	        	
         	    return m_status;
             }	        	        
+            */
 
         }
         else if (rootPath.getStatus() == Block.Status.ERROR) {
@@ -142,15 +144,6 @@ public class Route {
 
         m_progress.resetState(Progress.State.IDLE, 0);        
         return m_status;
-    }
-    
-
-    public int getDepth() {
-        int maxDepth = 0;
-        for(Block path: m_completePaths){
-            maxDepth = Math.max(maxDepth, path.getDepth()+1);
-        }
-        return maxDepth;
     }
 
     public int getId() {

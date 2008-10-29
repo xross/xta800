@@ -215,7 +215,7 @@ public class LineHeaders extends JTextPane implements MouseListener{
                 public void mousePressed(MouseEvent e) {
                     int i=m_lines.size()-1;
                     while(i>=0){
-                        m_displayer.fastUnfoldLine(m_lines.get(i));
+                        m_displayer.unfoldLine(m_lines.get(i));
                         i--;
                     }
                 }

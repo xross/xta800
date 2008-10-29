@@ -1,10 +1,16 @@
 package com.xmos.xta.gui.codeflow;
 
+import java.awt.BorderLayout;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
-
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -19,8 +25,8 @@ public class BlockDecomposer implements PathUpdater {
 	final static boolean DISPLAY_GRAPH_VIS = true;
 
 	private JPanel m_graphVizViewer;
-	
-	
+	private JScrollPane m_graphScroll;
+	private JLabel m_graphLabel;
     private Route                   m_route;
     private PathStatus              m_pathStatus; 
     private TreeModel               m_treeModel;
@@ -35,6 +41,13 @@ public class BlockDecomposer implements PathUpdater {
         m_basicBlocks = new ArrayList<BasicBlock>();
         m_codeFlow = new CodeFlowPanel();
         m_basicBlockDepths = new ArrayList<ArrayList<BasicBlock>>();
+        m_graphVizViewer = new JPanel();
+        m_graphScroll = new JScrollPane();
+        m_graphLabel = new JLabel();
+        m_graphScroll.setViewportView(m_graphLabel);
+        m_graphVizViewer.setLayout(new BorderLayout());
+        m_graphVizViewer.add(m_graphScroll);
+        
     }
 
     public void notifyUpdateState() {
@@ -62,8 +75,8 @@ public class BlockDecomposer implements PathUpdater {
 
         if(m_route.hashCode() == m_analysedRoute){
             return true;
-        }
-        
+        } 
+        /*
         m_basicBlocks.clear();
 
         ArrayList<InstructionLink> links = buildInstructionLinks(m_route.getBlocks());
@@ -88,7 +101,7 @@ public class BlockDecomposer implements PathUpdater {
         
         if (DISPLAY_GRAPH_VIS) 
             printOutGraphvis();
-        
+        */
         if(success){
             m_analysedRoute = m_route.hashCode();
         } else {
@@ -159,27 +172,48 @@ public class BlockDecomposer implements PathUpdater {
     private void printOutGraphvis(){
         
         String dotFile = "";
-        
-       
-        dotFile +="digraph g {";
+        dotFile +="digraph g {\n";
         for(BasicBlock bb : m_basicBlocks){
             dotFile +="L" + bb.hashCode() + "  [shape = box, label = \"";
             for(XtaInstruction inst : bb.getInstructions()){
                 dotFile += Integer.toHexString(inst.getPc()) +" " + inst.getNmenonic() + " "+ inst.getOperandString() +"\\n";
             }
-            dotFile +="\"];";
+            dotFile +="\"];\n";
         }
         for(BasicBlock bb : m_basicBlocks){
             for(BasicBlock nb : bb.getNextBasicBlocks()){
-                System.out.println("L"+bb.hashCode() + " -> L" + nb.hashCode() + ";");
                 dotFile+="L"+bb.hashCode() + " -> L" + nb.hashCode() + ";\n";
             }
         }
-        System.out.println("}");
-        
-        
-        
-        //Process p=Runtime.getRuntime().exec("dot ")
+        dotFile += "}\n";
+        FileWriter file_writer;
+        String graphNumber = "" + dotFile.hashCode() + ".dot";
+        //String pictureNumber = "" + dotFile.hashCode() + ".jpg";
+        try {
+            file_writer = new FileWriter (new File(graphNumber));
+            BufferedWriter buf_writer = new BufferedWriter (file_writer);
+            buf_writer.write(dotFile);
+            buf_writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        /*
+        try {
+            Process p=Runtime.getRuntime().exec("dot "+graphNumber+" -Tjpg -o "+pictureNumber);
+            p.waitFor();
+            //ImageIcon icon = new ImageIcon(pictureNumber);
+            //m_graphLabel.setIcon(icon);
+            //m_graphVizViewer.repaint();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        */
+    }
+    
+    public JPanel getGraphVizPanel(){
+        return m_graphVizViewer;
     }
     
     private ArrayList<InstructionLink> buildInstructionLinks( Vector<Block> blocks) {

@@ -58,7 +58,9 @@ public class LoopPath implements RouteNode {
     public int getNumIterations() {
         int numIterations = 0;
         for (Block loopPath : m_loopPath.getLoopPaths()) {
+            m_loopPath.incrementSeen();
             numIterations += m_loopPath.getLoopPathAttributes(loopPath).getNumIterations();
+            m_loopPath.decrementSeen();
         }
         return numIterations;
     }

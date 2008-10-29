@@ -19,13 +19,15 @@ public class Block implements  Comparable<Block> {
     private static final boolean DEBUG = false;
     private static final boolean DEBUG_GRAPH = false;
     private static final boolean DEBUG_STATUS = false;
+    private static final boolean DEBUG_SANITY = true;
+
     private static int m_numCompletedPaths = 0;    
     private static int m_numUnresolvedPaths = 0;    
     private static int m_numLoopPaths = 0;
 
     private static boolean m_blockOpen = false;
     private static int m_lineNum = 0;
-    
+
     enum Mode {
         FUNCTION,
         ABSOLUTE,
@@ -68,6 +70,7 @@ public class Block implements  Comparable<Block> {
     private boolean                 m_firstStep;
     private int                     m_functionDepth;
 
+    private int                     m_seen;
     private boolean                 m_willFormLoop;
     private Stack<TreeSet<Integer>> m_contexts;
     private Vector<Reference>       m_exclusions;
@@ -75,7 +78,6 @@ public class Block implements  Comparable<Block> {
     private HashMap<String, TreeSet<Integer>>   m_sourceLinesCovered;    
     private HashMap<String, TreeSet<Integer>>   m_asmLinesCovered;    
 
-    boolean                         m_topLevel;
 
     private static int              m_numPaths;
     private static int              m_numPathInstances;
@@ -83,7 +85,7 @@ public class Block implements  Comparable<Block> {
     private int                     m_numFNops;
     private int                     m_numInstructions;
     private int                     m_numPausables;
-    
+
     static int getNumPaths() {
         return m_numPaths;
     }
@@ -106,6 +108,7 @@ public class Block implements  Comparable<Block> {
         m_contexts       = new Stack<TreeSet<Integer>>();
         m_contexts.addAll(contexts);
         m_willFormLoop = false;
+        m_seen = 0;
 
         m_config         = config;
         m_memoryImage    = memoryImage;
@@ -129,8 +132,6 @@ public class Block implements  Comparable<Block> {
         m_sourceLinesCovered = new HashMap<String, TreeSet<Integer>>();
         m_asmLinesCovered    = new HashMap<String, TreeSet<Integer>>();
 
-        m_topLevel = true;
-
         m_machineState.setPc(m_fromPc);
 
         m_numInstructions =0;
@@ -143,7 +144,7 @@ public class Block implements  Comparable<Block> {
         m_loopPathAttributes = new HashMap<Block, PathAttributes>();
 
         m_route.addBlock(this);
-        
+
         if (DEBUG) {
             if (m_parentBlock != null) {
                 System.out.printf("New block %d with parent %d\n",
@@ -166,52 +167,69 @@ public class Block implements  Comparable<Block> {
         }
     }
 
-    Block(Block block, Block parent, Block newParent) {
+    Block(Block blockToSplit, int pcHit) {
         m_machineState = null;
         m_contexts = null;
         m_willFormLoop = false;
+        m_seen = 0;
 
-        m_config = block.m_config;
-        m_memoryImage = block.m_memoryImage;
-        m_symbolTable  = block.m_symbolTable;
-        m_instructions = block.m_instructions;
+        m_config = blockToSplit.m_config;
+        m_memoryImage = blockToSplit.m_memoryImage;
+        m_symbolTable  = blockToSplit.m_symbolTable;
 
-        m_instructionDecodeCache = block.m_instructionDecodeCache;
-        m_instructionAttributes  = block.m_instructionAttributes;
-        m_id = block.m_id;
-        m_instanceId = m_numPathInstances;
+        m_instructions = new Vector<XtaInstruction>();
+        int instructionCount;
+        if(DEBUG_SANITY) {
+            instructionCount = blockToSplit.m_instructions.size();
+        }
+        for(XtaInstruction inst : blockToSplit.m_instructions){
+            if(inst.getPc() == pcHit) break;
+            m_instructions.add(inst);
+        }
+        for(XtaInstruction inst : m_instructions){
+            blockToSplit.m_instructions.remove(inst);
+        }
+        if(DEBUG_SANITY) {
+            assert(m_instructions.size() + 
+                    blockToSplit.m_instructions.size() == instructionCount);
+            assert(m_instructions.size()>0);
+            assert(blockToSplit.m_instructions.size()>0);
+        }
+
+        updateInstructionInfo();
+        blockToSplit.updateInstructionInfo();
+        
+        m_instructionDecodeCache = blockToSplit.m_instructionDecodeCache;
+        m_instructionAttributes  = blockToSplit.m_instructionAttributes;
+        
+        m_id = blockToSplit.m_id;
+        m_instanceId = blockToSplit.m_instanceId;
+        blockToSplit.m_id = m_numPaths;
+        blockToSplit.m_instanceId = m_numPathInstances;
         ++m_numPathInstances;
         ++m_numPaths;
 
-        m_mode = block.m_mode;
-        m_fromPc = block.m_fromPc;
-        m_toPc = block.m_toPc;
-        m_status = block.m_status;
+        m_mode = blockToSplit.m_mode;
+        
+       
+        m_status = blockToSplit.m_status;
         m_firstStep = false;
-        m_functionDepth = block.m_functionDepth;
-        m_exclusions = block.m_exclusions;
+        m_functionDepth = blockToSplit.m_functionDepth;
+        m_exclusions = blockToSplit.m_exclusions;
 
-        m_sourceLinesCovered = block.m_sourceLinesCovered;
-        m_asmLinesCovered = block.m_asmLinesCovered;
+        m_sourceLinesCovered = new HashMap<String, TreeSet<Integer>>();
+        m_asmLinesCovered    = new HashMap<String, TreeSet<Integer>>();
 
-        m_topLevel = block.m_topLevel;
+        m_route = blockToSplit.m_route;
 
-        m_numInstructions = block.m_numInstructions;
-        m_numFNops = block.m_numFNops;
-        m_numPausables = block.m_numPausables;
+        m_loopPaths = blockToSplit.getLoopPaths();
+        m_loopPathAttributes = blockToSplit.m_loopPathAttributes;
+        m_parentBlock = blockToSplit.m_parentBlock;
 
-        m_route = block.m_route;
-
-        if (block.m_parentBlock != parent) {
-            m_parentBlock = new Block(block.m_parentBlock, parent, newParent);
-        } else {
-            m_parentBlock = newParent;
-        }
-        m_loopPaths = new Vector<Block>();
-        m_loopPathAttributes = new HashMap<Block, PathAttributes>();
-        for (Block loopPath : block.m_loopPaths) {
-            addLoopPath(new Block(loopPath, block, this), false, false);
-        }
+        blockToSplit.m_loopPaths = new Vector<Block>();
+        blockToSplit.m_loopPathAttributes = new HashMap<Block, PathAttributes>();
+        blockToSplit.m_parentBlock = this;
+       // blockToSplit.addLoopPath(this, false, false);
 
         m_route.addBlock(this);
 
@@ -222,6 +240,10 @@ public class Block implements  Comparable<Block> {
             } else {
                 System.out.printf("New root block %d\n", m_instanceId);
             }
+            System.out.println("block " + blockToSplit.m_id +" is now " + Integer.toHexString(blockToSplit.m_fromPc)
+                    +" "+ Integer.toHexString(blockToSplit.m_toPc));
+            System.out.println("block " + this.m_id +" is now " + Integer.toHexString(this.m_fromPc)
+                    +" "+ Integer.toHexString(this.m_toPc));
         }
         if (DEBUG_GRAPH){
             if (m_blockOpen) {
@@ -241,6 +263,19 @@ public class Block implements  Comparable<Block> {
         }
     }
 
+    private void updateInstructionInfo()
+    {
+        m_fromPc = m_instructions.firstElement().getPc();
+        m_toPc = m_instructions.lastElement().getPc();
+        m_numInstructions = m_instructions.size();
+        m_numFNops = 0;
+        m_numPausables = 0;
+        for (XtaInstruction inst : m_instructions){
+            if(inst.isFnop())m_numFNops++;
+            if(inst.canPause())m_numPausables++;
+        }
+    }
+    
     public int getFirstInstructionPc(){
         return m_instructions.firstElement().getPc();
     }
@@ -295,9 +330,14 @@ public class Block implements  Comparable<Block> {
     }
 
     public Vector<Block> getLoopPaths() {
-        return m_loopPaths;
+        if (m_seen == 0) {
+            return m_loopPaths;
+        } else {
+            return new Vector<Block>();
+        }
     }
-
+    
+    
     public PathAttributes getLoopPathAttributes(Block block) {
         PathAttributes attributes = m_loopPathAttributes.get(block);
         assert(attributes != null);
@@ -310,14 +350,17 @@ public class Block implements  Comparable<Block> {
 
     public Vector<XtaInstruction> getInstructions(boolean recurse) {
         Vector<XtaInstruction> insts = new Vector<XtaInstruction>();
-        for(Block block : getPathBlocks()) {
+
+        for (Block block : getPathBlocks()) {
             insts.addAll(block.getInstructionsThis());
             if (recurse) {
-                for(Block loopPath : block.getLoopPaths()){
+                for (Block loopPath : block.getLoopPaths()) {
+                    block.incrementSeen();
                     insts.addAll(loopPath.getInstructions(true));
+                    block.decrementSeen();
                 }
             }
-        }        
+        } 
         return insts;
     }
 
@@ -327,16 +370,16 @@ public class Block implements  Comparable<Block> {
     public ArrayList<Block> getPathBlocks() {
         ArrayList<Block> paths = new ArrayList<Block>();
 
-        Block parent = m_parentBlock;
-        paths.add(this);
-
-        while (parent != null) {
-            if (parent.getLoopPaths().contains(this))
+        Block block = this;
+        
+        do {
+            paths.add(0, block);
+            
+            if (block.m_loopPaths.contains(this))
                 break;
+            block = block.m_parentBlock;
+        } while (block != null);
 
-            paths.add(0, parent);
-            parent = parent.m_parentBlock;
-        } 
         return paths;
     }
 
@@ -344,7 +387,9 @@ public class Block implements  Comparable<Block> {
         for (Block block : getPathBlocks()) {
             allBlocks.add(block);
             for (Block loopPath : block.getLoopPaths()) {
+                incrementSeen();
                 loopPath.getAllBlocks(allBlocks);
+                decrementSeen();
             }
         }
     }
@@ -443,13 +488,6 @@ public class Block implements  Comparable<Block> {
         }
     }
 
-    public int getDepth() {
-        int maxDepth = 0;
-        //figure this out later
-        return maxDepth;
-
-    }
-
     public boolean addLoopPath(Block pathStartBlock, boolean isLoop, boolean formLoop) {
         assert(pathStartBlock != null);
         assert(!m_loopPaths.contains(pathStartBlock));
@@ -538,7 +576,7 @@ public class Block implements  Comparable<Block> {
         }
 
         if (m_machineState.wasJump()) {
-            
+
             int jumpTarget = m_machineState.getJumpTarget();
 
             if (m_machineState.wasJumpResolved()) {
@@ -565,27 +603,13 @@ public class Block implements  Comparable<Block> {
 
         } else if (m_machineState.wasBranch()) {
             if (m_machineState.wasBranchResolved()){
-
-                if (resolveLoop(m_machineState.getPc())){
-                    //have formed a loop
-                    setStatus(Status.LOOPED);
-                } else {
-                    m_contexts.peek().add(m_instruction.getPc());
-                    
-                    takeDontBranch(m_instruction);
-                    takeBranch(m_machineState.getBranchTarget());
-
-                    setStatus(Status.COMPLETE);
-                }
+                takeBranch(m_machineState.getBranchTarget());
+                takeDontBranch(m_instruction);
                 setStatus(Status.COMPLETE);
-                
-                
             } else {
                 setStatus(Status.UNRESOLVED);
                 m_route.addUnresolvedPath(this);
             }
-            
-
         } else {
             m_contexts.peek().add(m_instruction.getPc());
 
@@ -600,7 +624,7 @@ public class Block implements  Comparable<Block> {
         m_firstStep = false;
         m_instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes());
     }
-    
+
     private boolean willFormLoop(int pc){
         if (m_contexts.peek().contains(pc)) {
             return true;
@@ -608,13 +632,26 @@ public class Block implements  Comparable<Block> {
         return false;
     }
 
-
-
     private void takeDontBranch(XtaInstruction instruction) {
         if (m_instruction.isLoadStore() == false) {
             m_machineState.fetch();
         }
         int startPc = m_machineState.getPc() + instruction.getNumBytes(); 
+        
+        //check to see if the startPc forms loop with any of the parents instructions
+        Block loopBlock = formsLoop(startPc);
+        //if it does then split the parent
+        if(loopBlock!= null){
+            if(loopBlock.getInstructionsThis().firstElement().getPc() == startPc){
+                loopBlock.addLoopPath(this, false, false);
+            } else {
+                new Block(loopBlock, startPc);
+                loopBlock.addLoopPath(this, false, false);
+
+            }
+            return;
+        }
+        //else make a new block
         m_machineState.issue(instruction.getNumBytes());
 
         Block nextPath = new Block(m_mode, m_config, m_instructionDecodeCache, m_instructionAttributes, 
@@ -623,7 +660,22 @@ public class Block implements  Comparable<Block> {
         nextPath.build();
     }
 
+    
+    
     private void takeBranch(int branchTarget) {
+      //check to see if the startPc forms loop with any of the parents instructions
+        Block loopBlock = formsLoop(branchTarget);
+        //if it does then split the parent
+        if(loopBlock!= null){
+            if(loopBlock.getInstructionsThis().firstElement().getPc() == branchTarget){
+                loopBlock.addLoopPath(this, false, false);
+            } else {
+                new Block(loopBlock, branchTarget);
+                loopBlock.addLoopPath(this, false, false);
+            }
+            return;
+        }
+        //else make a new block
         Block nextPath = new Block(m_mode, m_config, m_instructionDecodeCache, m_instructionAttributes, 
                 m_memoryImage, m_symbolTable, m_exclusions, branchTarget, m_toPc, m_route,
                 this, m_machineState, m_contexts);
@@ -631,31 +683,24 @@ public class Block implements  Comparable<Block> {
         nextPath.build();
     }
     
-    private boolean resolveLoop(int pc) {
-        boolean isLoop = isLoop(pc);
-        if (!m_willFormLoop && !isLoop) {
-            return false;
-        }
-        Block parent = m_parentBlock;
+    private Block formsLoop(int pc) {
+        Block parent = this;
         while (parent != null){
-            if (parent.getBranchingPC() == pc){
-                if (m_willFormLoop) {
-                    for (Block block : parent.getLoopPaths()) {
-                        if (block.m_parentBlock == parent) {
-                            addLoopPath(new Block(block, parent, this), isLoop, m_willFormLoop);
-                        }
-                    }
-                }
-
-                parent.addLoopPath(this, isLoop, m_willFormLoop);
-                m_route.addLoopPath(this);
-                return true;
+            if (parent.containsPc(pc)){
+                return parent;
             }
             parent = parent.getParentPath();
         }
-        return false;
+        return null;
     }
 
+    public boolean containsPc(int pc){
+        for(XtaInstruction inst : m_instructions){
+            if(inst.getPc() == pc) return true;
+        }
+        return false;
+    }
+    
     private void build() {
         while (getStatus() == Block.Status.SEARCHING) {
             if (m_route.checkAbort()) {
@@ -761,6 +806,7 @@ public class Block implements  Comparable<Block> {
 
             if (recurse) {
                 for (Block loopPath : block.getLoopPaths()) {
+                    incrementSeen();
                     PathAttributes attributes = block.getLoopPathAttributes(loopPath);
                     if (!attributes.isAbsolute()) {
                         int numIterations = attributes.getNumIterations();
@@ -768,6 +814,7 @@ public class Block implements  Comparable<Block> {
                             time += loopPath.getTimeTakenRelative(true) * numIterations;
                         }
                     }
+                    decrementSeen();
                 }
             }
         }
@@ -776,12 +823,11 @@ public class Block implements  Comparable<Block> {
 
     double getTimeTakenAbsolute(boolean recurse) {
         double time = 0.0;
-
         for (Block block : getPathBlocks()) {
-            if (recurse) {
+            if (recurse) { 
                 for (Block loopPath : block.getLoopPaths()) {
+                    block.incrementSeen();
                     time += loopPath.getTimeTakenAbsolute(true);      
-
                     PathAttributes attributes = block.getLoopPathAttributes(loopPath);
                     if (attributes.isAbsolute()) {
                         int numIterations = attributes.getNumIterations();
@@ -789,9 +835,11 @@ public class Block implements  Comparable<Block> {
                             time += loopPath.getTimeTakenRelative(false) * numIterations;
                         }
                     }
+                    block.decrementSeen();
                 }
             }
         }
+        
         return time;
     }
 
@@ -811,6 +859,7 @@ public class Block implements  Comparable<Block> {
 
             if (recurse) {
                 for (Block loopPath : block.getLoopPaths()) {
+                    block.incrementSeen();
                     PathAttributes attributes = block.getLoopPathAttributes(loopPath);
                     if (!attributes.isAbsolute()) {
                         int numIterations = attributes.getNumIterations();
@@ -818,6 +867,7 @@ public class Block implements  Comparable<Block> {
                             num += loopPath.getNumInstructionsRelative(true) * numIterations;
                         }
                     }
+                    block.decrementSeen();
                 }
             }
         }
@@ -830,6 +880,7 @@ public class Block implements  Comparable<Block> {
         for (Block block : getPathBlocks()) {
             if (recurse) {
                 for (Block loopPath : block.getLoopPaths()) {
+                    block.incrementSeen();
                     num += loopPath.getNumInstructionsAbsolute(true);      
 
                     PathAttributes attributes = block.getLoopPathAttributes(loopPath);
@@ -839,6 +890,7 @@ public class Block implements  Comparable<Block> {
                             num += loopPath.getNumInstructionsRelative(false) * numIterations;
                         }
                     }
+                    block.decrementSeen();
                 }
             }
         }
@@ -858,6 +910,7 @@ public class Block implements  Comparable<Block> {
 
             if (recurse) {
                 for (Block loopPath : block.getLoopPaths()) {
+                    block.incrementSeen();
                     PathAttributes attributes = block.getLoopPathAttributes(loopPath);
                     if (!attributes.isAbsolute()) {
                         int numIterations = attributes.getNumIterations();
@@ -865,6 +918,7 @@ public class Block implements  Comparable<Block> {
                             num += loopPath.getNumFNopsRelative(true) * numIterations;
                         }
                     }
+                    block.decrementSeen();
                 }
             }
         }
@@ -877,6 +931,7 @@ public class Block implements  Comparable<Block> {
         for (Block block : getPathBlocks()) {
             if (recurse) {
                 for (Block loopPath : block.getLoopPaths()) {
+                    block.incrementSeen();
                     num += loopPath.getNumFNopsAbsolute(true);      
 
                     PathAttributes attributes = block.getLoopPathAttributes(loopPath);
@@ -886,6 +941,7 @@ public class Block implements  Comparable<Block> {
                             num += loopPath.getNumFNopsRelative(false) * numIterations;
                         }
                     }
+                    block.decrementSeen();
                 }
             }
         }
@@ -904,6 +960,7 @@ public class Block implements  Comparable<Block> {
 
             if (recurse) {
                 for (Block loopPath : block.getLoopPaths()) {
+                    block.incrementSeen();
                     PathAttributes attributes = block.getLoopPathAttributes(loopPath);
                     if (!attributes.isAbsolute()) {
                         int numIterations = attributes.getNumIterations();
@@ -911,6 +968,7 @@ public class Block implements  Comparable<Block> {
                             num += loopPath.getNumCyclesRelative(true) * numIterations;
                         }
                     }
+                    block.decrementSeen();
                 }
             }
         }
@@ -923,6 +981,7 @@ public class Block implements  Comparable<Block> {
         for (Block block : getPathBlocks()) {
             if (recurse) {
                 for (Block loopPath : block.getLoopPaths()) {
+                    block.incrementSeen();
                     num += loopPath.getNumCyclesAbsolute(true);      
 
                     PathAttributes attributes = block.getLoopPathAttributes(loopPath);
@@ -932,6 +991,7 @@ public class Block implements  Comparable<Block> {
                             num += loopPath.getNumCyclesRelative(false) * numIterations;
                         }
                     }
+                    block.decrementSeen();
                 }
             }
         }
@@ -954,6 +1014,7 @@ public class Block implements  Comparable<Block> {
 
             if (recurse) {
                 for (Block loopPath : block.getLoopPaths()) {
+                    block.incrementSeen();
                     PathAttributes attributes = block.getLoopPathAttributes(loopPath);
                     if (!attributes.isAbsolute()) {
                         int numIterations = attributes.getNumIterations();
@@ -961,6 +1022,7 @@ public class Block implements  Comparable<Block> {
                             num += loopPath.getNumPausablesRelative(true) * numIterations;
                         }
                     }
+                    block.decrementSeen();
                 }
             }
         }
@@ -973,6 +1035,7 @@ public class Block implements  Comparable<Block> {
         for (Block block : getPathBlocks()) {
             if (recurse) {
                 for (Block loopPath : block.getLoopPaths()) {
+                    block.incrementSeen();
                     num += loopPath.getNumPausablesAbsolute(true);      
 
                     PathAttributes attributes = block.getLoopPathAttributes(loopPath);
@@ -982,6 +1045,7 @@ public class Block implements  Comparable<Block> {
                             num += loopPath.getNumPausablesRelative(false) * numIterations;
                         }
                     }
+                    block.decrementSeen();
                 }
             }
         }
@@ -1026,13 +1090,6 @@ public class Block implements  Comparable<Block> {
                 return true;
             }
         }               
-        return false;
-    }
-
-    private boolean isLoop(int pc) {  
-        if (m_contexts.peek().contains(pc)) {
-            return true;
-        }
         return false;
     }
 
@@ -1205,13 +1262,17 @@ public class Block implements  Comparable<Block> {
             System.out.printf("\n");
         }
     }
-
-    private int getBranchingPC(){
-        return m_instructions.lastElement().getPc();
-    }
-
+    
     public int getPathNumCycles(Block caller) {
         // TODO Auto-generated method stub
         return 0;
+    }
+
+    public void incrementSeen() {
+        m_seen++;
+    }
+
+    public void decrementSeen() {
+        m_seen--;
     }
 }

@@ -28,10 +28,12 @@ public abstract class Displayer {
         }
         for (Block block : path.getPathBlocks()) {
             for (Block loopPath : block.getLoopPaths()) {
+                block.incrementSeen();
                 Block foundPath = getPath(loopPath, pathId);
                 if (foundPath != null) {
                     return foundPath;
                 }
+                block.decrementSeen();
             }
         }
         return null;
