@@ -31,7 +31,7 @@ public class Block implements  Comparable<Block> {
     enum Mode {
         FUNCTION,
         ABSOLUTE,
-    }    
+    }
     public enum Status {
         SEARCHING,
         COMPLETE,
@@ -71,7 +71,6 @@ public class Block implements  Comparable<Block> {
     private int                     m_functionDepth;
 
     private int                     m_seen;
-    private boolean                 m_willFormLoop;
     private Stack<TreeSet<Integer>> m_contexts;
     private Vector<Reference>       m_exclusions;
 
@@ -107,7 +106,6 @@ public class Block implements  Comparable<Block> {
         m_machineState   = new MachineState(machineState);
         m_contexts       = new Stack<TreeSet<Integer>>();
         m_contexts.addAll(contexts);
-        m_willFormLoop = false;
         m_seen = 0;
 
         m_config         = config;
@@ -168,9 +166,12 @@ public class Block implements  Comparable<Block> {
     }
 
     Block(Block blockToSplit, int pcHit) {
+        if (DEBUG) {
+            System.out.printf("Splitting block %d at 0x%x\n", blockToSplit.m_instanceId, pcHit);
+        }
+
         m_machineState = null;
         m_contexts = null;
-        m_willFormLoop = false;
         m_seen = 0;
 
         m_config = blockToSplit.m_config;
@@ -549,7 +550,6 @@ public class Block implements  Comparable<Block> {
         m_instruction.execute(m_machineState);
         addInstruction(m_instruction);
 
-        m_willFormLoop |= willFormLoop(m_machineState.getPc());
         if (DEBUG) {
             traceInstruction(this);
         }
@@ -576,7 +576,6 @@ public class Block implements  Comparable<Block> {
         }
 
         if (m_machineState.wasJump()) {
-
             int jumpTarget = m_machineState.getJumpTarget();
 
             if (m_machineState.wasJumpResolved()) {
@@ -605,14 +604,27 @@ public class Block implements  Comparable<Block> {
             if (m_machineState.wasBranchResolved()){
                 takeBranch(m_machineState.getBranchTarget());
                 takeDontBranch(m_instruction);
-                setStatus(Status.COMPLETE);
             } else {
                 setStatus(Status.UNRESOLVED);
                 m_route.addUnresolvedPath(this);
             }
         } else {
-            m_contexts.peek().add(m_instruction.getPc());
 
+            //check to see if the startPc forms loop with any of the parents instructions
+            int nextPc = m_machineState.getPc() + m_instruction.getNumBytes();
+            Block loopBlock = formsLoop(nextPc);
+            //if it does then split the parent
+            if (loopBlock != null){
+                if (loopBlock.getInstructionsThis().firstElement().getPc() == nextPc){
+                    loopBlock.addLoopPath(this, false, false);
+                } else {
+                    new Block(loopBlock, nextPc);
+                    loopBlock.addLoopPath(this, false, false);
+                }
+                setStatus(Status.LOOPED);
+            }
+
+            m_contexts.peek().add(m_instruction.getPc());
             if (!m_instruction.isLoadStore()) {
                 m_machineState.fetch();
             }
@@ -625,33 +637,11 @@ public class Block implements  Comparable<Block> {
         m_instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes());
     }
 
-    private boolean willFormLoop(int pc){
-        if (m_contexts.peek().contains(pc)) {
-            return true;
-        }
-        return false;
-    }
-
     private void takeDontBranch(XtaInstruction instruction) {
         if (m_instruction.isLoadStore() == false) {
             m_machineState.fetch();
         }
         int startPc = m_machineState.getPc() + instruction.getNumBytes(); 
-        
-        //check to see if the startPc forms loop with any of the parents instructions
-        Block loopBlock = formsLoop(startPc);
-        //if it does then split the parent
-        if(loopBlock!= null){
-            if(loopBlock.getInstructionsThis().firstElement().getPc() == startPc){
-                loopBlock.addLoopPath(this, false, false);
-            } else {
-                new Block(loopBlock, startPc);
-                loopBlock.addLoopPath(this, false, false);
-
-            }
-            return;
-        }
-        //else make a new block
         m_machineState.issue(instruction.getNumBytes());
 
         Block nextPath = new Block(m_mode, m_config, m_instructionDecodeCache, m_instructionAttributes, 
@@ -659,44 +649,57 @@ public class Block implements  Comparable<Block> {
                 this, m_machineState, m_contexts);
         nextPath.build();
     }
-
-    
     
     private void takeBranch(int branchTarget) {
       //check to see if the startPc forms loop with any of the parents instructions
         Block loopBlock = formsLoop(branchTarget);
         //if it does then split the parent
-        if(loopBlock!= null){
-            if(loopBlock.getInstructionsThis().firstElement().getPc() == branchTarget){
+        if (loopBlock != null){
+            if (loopBlock.getInstructionsThis().firstElement().getPc() == branchTarget){
                 loopBlock.addLoopPath(this, false, false);
             } else {
                 new Block(loopBlock, branchTarget);
                 loopBlock.addLoopPath(this, false, false);
             }
-            return;
+            setStatus(Status.LOOPED);
+        } else { 
+            //else make a new block
+
+            Block nextPath = new Block(m_mode, m_config, m_instructionDecodeCache, m_instructionAttributes, 
+                    m_memoryImage, m_symbolTable, m_exclusions, branchTarget, m_toPc, m_route,
+                    this, m_machineState, m_contexts);
+            nextPath.m_machineState.branchTo(branchTarget, m_instruction.isLoadStore());
+            nextPath.build();
+
+            setStatus(Status.COMPLETE);
         }
-        //else make a new block
-        Block nextPath = new Block(m_mode, m_config, m_instructionDecodeCache, m_instructionAttributes, 
-                m_memoryImage, m_symbolTable, m_exclusions, branchTarget, m_toPc, m_route,
-                this, m_machineState, m_contexts);
-        nextPath.m_machineState.branchTo(branchTarget, m_instruction.isLoadStore());
-        nextPath.build();
     }
     
     private Block formsLoop(int pc) {
-        Block parent = this;
-        while (parent != null){
-            if (parent.containsPc(pc)){
-                return parent;
+//        if (isLoop(pc)) {
+            Block parent = this;
+            while (parent != null){
+                if (parent.containsPc(pc)){
+                    return parent;
+                }
+                parent = parent.getParentPath();
             }
-            parent = parent.getParentPath();
-        }
+  //      }
         return null;
     }
 
+    private boolean isLoop(int pc) {  
+        if (m_contexts.peek().contains(pc)) {
+            return true;
+        }
+        return false;
+    }
+    
     public boolean containsPc(int pc){
-        for(XtaInstruction inst : m_instructions){
-            if(inst.getPc() == pc) return true;
+        for (XtaInstruction inst : m_instructions){
+            if (inst.getPc() == pc) {
+                return true;
+            }
         }
         return false;
     }
@@ -1210,9 +1213,6 @@ public class Block implements  Comparable<Block> {
         System.out.print(Block.hashCode() + " " );
         System.out.printf("%3d:[%8d] (%-20s) ", Block.getId(), 
                 instruction.hashCode(), functionOffsetString);
-
-        for (int i = 0; i < Block.getId(); ++i)
-            System.out.printf(".");             
 
         System.out.printf("  0x%05x %s %s", 
                 instruction.getPc(), 
