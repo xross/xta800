@@ -103,14 +103,14 @@ public class SummaryDisplayer extends Displayer {
     	case COMPLETE_INSTRUCTIONS:
     		m_console.display(String.format("Path(id): Timing(ns)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute\n"));     			
          	m_console.display(String.format("+COMPLETE [%d path(s)]\n", route.completePaths().size()));
-	        summarizePaths(route.completePaths(), "    ", null);	        	       
+	        summarisePaths(route.completePaths(), "    ", null);	        	       
 	        break;
     	
         case UNRESOLVED:
         case UNRESOLVED_LOOPS:
         case UNRESOLVED_INSTRUCTIONS:
          	m_console.display(String.format("+UNRESOLVED [%d path(s)]\n", route.unresolvedPaths().size()));
-	        summarizePaths(route.unresolvedPaths(), "    ", null);
+	        summarisePaths(route.unresolvedPaths(), "    ", null);
 	        break;
 	        
         case FUNCTIONS:
@@ -151,7 +151,7 @@ public class SummaryDisplayer extends Displayer {
         m_console.display(String.format("Unresolved paths: %d\n", route.unresolvedPaths().size()));
     }
     
-    private void summarizePaths(Vector<Block> paths, String indent, Block parent) {
+    private void summarisePaths(Vector<Block> paths, String indent, Block parent) {
         for (Block path : paths) {
             int iterations = 1;
             boolean isAbsolute = false;
@@ -162,11 +162,11 @@ public class SummaryDisplayer extends Displayer {
                 isAbsolute = attributes.isAbsolute();
             }
                 
-        	summarizePath(path, indent, iterations, isAbsolute);
+        	summarisePath(path, indent, iterations, isAbsolute);
         }
     }
     
-    private void summarizePath(Block path, String indent, int numExecutions, boolean absolute) {
+    private void summarisePath(Block path, String indent, int numExecutions, boolean absolute) {
    	    displayPathLevelInfo(path, indent, numExecutions, absolute);
    	    
         for (Block block : path.getPathBlocks()) {
@@ -223,7 +223,9 @@ public class SummaryDisplayer extends Displayer {
         	m_console.display(String.format("%s    +loop [%d path(s), %d iteration(s)]\n", 
         			indent, loopPaths.size(), totalIterations));    
             	
-        	summarizePaths(loopPaths, indent + "        ", path);
+            path.incrementSeen();
+        	summarisePaths(loopPaths, indent + "        ", path);
+            path.decrementSeen();
         }
     }
 
@@ -302,8 +304,10 @@ public class SummaryDisplayer extends Displayer {
                 }
             }
         
-            for (Block loopPath : block.getLoopPaths()) {    	    		
+            for (Block loopPath : block.getLoopPaths()) {
+                block.incrementSeen();
    		    	buildPathsWithinFunctionSet(loopPath, pathSet, functionAddress, functionSize);
+   		    	block.decrementSeen();
        		}
         }
     }
@@ -323,8 +327,10 @@ public class SummaryDisplayer extends Displayer {
         	pathSet.add(path.getId());
         }
 
-        for (Block loopPath : path.getLoopPaths()) {    	    		
+        for (Block loopPath : path.getLoopPaths()) {
+            path.incrementSeen();
 	    	buildPathsWithinSourcesSet(loopPath, pathSet, sourceFileName);
+	    	path.decrementSeen();
    		}
     }
     
