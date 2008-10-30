@@ -12,7 +12,7 @@ system("@ARGV load $genDir/test.xe " .
        "function main " .
        "summary SIMPLE " .
        "summary COMPLETE_LOOPS " .
-       "src 4 test.xc " .
+       "src 6 test.xc " .
        "src 1 test.xc " .
        "exit > $genDir/same_loop_twice.txt 2>&1");
 

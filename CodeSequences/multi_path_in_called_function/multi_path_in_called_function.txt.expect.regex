@@ -1,9 +1,9 @@
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
-        \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
-            pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/0/0, path\(\d+\)
-        \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
-            pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/0/0, path\(\d+\)
-                \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
-                        pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/0/0, path\(\d+\)
+    pathi\(\d+\)   : 420.0/21/21/2/0/1/0, path\(\d+\)
+        \+loop \[1 path\(s\), 0 iteration\(s\)\]
+            pathi\(\d+\)   : 240.0/12/12/0/0/0/0, path\(\d+\)
+                \+loop \[1 path\(s\), 0 iteration\(s\)\]
+                    pathi\(\d+\)   : 120.0/6/6/0/0/0/0, path\(\d+\)
+        \+loop \[1 path\(s\), 0 iteration\(s\)\]
+            pathi\(\d+\)   : 120.0/6/6/0/0/0/0, path\(\d+\)
