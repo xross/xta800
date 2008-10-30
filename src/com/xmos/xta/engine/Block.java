@@ -524,7 +524,7 @@ public class Block implements Comparable<Block> {
         addInstruction(m_instruction);
 
         if(m_instruction.canPause()){
-            m_unknowns.add(pc);
+            addUnknown(m_instruction);
         }
         
         
@@ -587,7 +587,7 @@ public class Block implements Comparable<Block> {
                         takeDontBranch(m_instruction);
                         setStatus(Status.COMPLETE);
                     } else if(m_machineState.getBranchTaken() == BranchState.UNKNOWN) {
-                        m_unknowns.add(pc);
+                        addUnknown(m_instruction);
                         takeBranch(m_machineState.getBranchTarget());
                         takeDontBranch(m_instruction);
                     }
@@ -620,6 +620,12 @@ public class Block implements Comparable<Block> {
         m_firstStep = false;
         m_instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes());
     }
+    
+    private void addUnknown(XtaInstruction inst){
+        m_unknowns.add(inst.getPc());
+        m_route.addUnknown(inst.getPc());
+    }
+    
 
     private void takeDontBranch(XtaInstruction instruction) {
         if (m_instruction.isLoadStore() == false) {

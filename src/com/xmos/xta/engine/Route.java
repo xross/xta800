@@ -1,5 +1,6 @@
 package com.xmos.xta.engine;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,8 +39,7 @@ public class Route {
     Status m_status;        
     private Progress m_progress;
     private InstructionDecodeCache m_instructionDecodeCache;
-    
-    //private ArrayList<Block>    m_blocks;
+    private ArrayList<Integer> m_unknowns;
     
     private static int m_numRoutes;  
     
@@ -56,6 +56,10 @@ public class Route {
     
     public void setCurrentValue(int numPaths){
         m_progress.setCurValue(numPaths);
+    }
+    
+    public ArrayList<Integer> getUnknowns(){
+        return m_unknowns;
     }
     
     public final String id() {
@@ -191,6 +195,7 @@ public class Route {
     }
     
     private void initialise(Config config, int nodeId, int coreId) {
+        m_unknowns = new ArrayList<Integer>();
         m_id = new String("route" + m_numRoutes);   
         m_config = config;
         m_nodeId = nodeId;
@@ -236,6 +241,10 @@ public class Route {
             m_progress.incr();
         }
         return true;
+    }
+    
+    public void addUnknown(int pc){
+        m_unknowns.add(pc);
     }
     
     public boolean checkAbort() {

@@ -66,6 +66,8 @@ public class XtaGui extends Displayer {
     private BlockDecomposer         m_blockDecomposer;
     private Vector<ConsoleTextArea> m_consoles;
     private ConsoleArea             m_consoleArea;
+    private UnknownDisplayer        m_unknownDisplayer;
+    
     
     public static void main(String[] args) {
         XtaGui xtaGui = new XtaGui();
@@ -113,7 +115,7 @@ public class XtaGui extends Displayer {
         //engine displayers
         m_statusBarDisplayer    = new StatusBarDisplayer(m_engine, m_mainFrame, m_globalConfig);
         m_pathStatus            = new PathStatus(m_globalConfig, m_engine, m_mainFrame, this);
-        
+        m_unknownDisplayer      = new UnknownDisplayer();
         
         //path Updaters
         m_routeTree             = new TreeRouteDisplayer(m_pathStatus);
@@ -154,6 +156,7 @@ public class XtaGui extends Displayer {
         m_mainFrame.pack();
         m_engine.registerDisplayer(m_statusBarDisplayer);
         m_engine.registerDisplayer(m_pathStatus);
+        m_engine.registerDisplayer(m_unknownDisplayer);
         
         m_consoles = new Vector<ConsoleTextArea>();
         
