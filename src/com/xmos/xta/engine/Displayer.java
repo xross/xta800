@@ -31,6 +31,7 @@ public abstract class Displayer {
                 block.incrementSeen();
                 Block foundPath = getPath(loopPath, pathId);
                 if (foundPath != null) {
+                    block.decrementSeen();
                     return foundPath;
                 }
                 block.decrementSeen();

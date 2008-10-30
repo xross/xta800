@@ -22,7 +22,7 @@ import com.xmos.xta.gui.core.PathStatus;
 import com.xmos.xta.gui.core.RoutePath;
 
 public class BlockDecomposer implements PathUpdater {
-	final static boolean DISPLAY_GRAPH_VIS = true;
+	final static boolean DISPLAY_GRAPH_VIS = false;
 
 	private JPanel m_graphVizViewer;
 	private JScrollPane m_graphScroll;

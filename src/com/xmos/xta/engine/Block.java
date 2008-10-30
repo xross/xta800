@@ -16,7 +16,7 @@ import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 
 public class Block implements  Comparable<Block> { 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final boolean DEBUG_GRAPH = false;
     private static final boolean DEBUG_STATUS = false;
     private static final boolean DEBUG_SANITY = true;
@@ -574,7 +574,7 @@ public class Block implements  Comparable<Block> {
             setStatus(Status.EXCLUDED);
             return;
         }
-
+        m_contexts.peek().add(m_instruction.getPc());
         if (m_machineState.wasJump()) {
             int jumpTarget = m_machineState.getJumpTarget();
 
@@ -609,8 +609,6 @@ public class Block implements  Comparable<Block> {
                 m_route.addUnresolvedPath(this);
             }
         } else {
-
-            //check to see if the startPc forms loop with any of the parents instructions
             int nextPc = m_machineState.getPc() + m_instruction.getNumBytes();
             Block loopBlock = formsLoop(nextPc);
             //if it does then split the parent
@@ -624,7 +622,7 @@ public class Block implements  Comparable<Block> {
                 setStatus(Status.LOOPED);
             }
 
-            m_contexts.peek().add(m_instruction.getPc());
+          //  m_contexts.peek().add(m_instruction.getPc());
             if (!m_instruction.isLoadStore()) {
                 m_machineState.fetch();
             }
@@ -678,21 +676,21 @@ public class Block implements  Comparable<Block> {
     private Block formsLoop(int pc) {
         Block parent = this;
         while (parent != null){
-            if (parent.containsPc(pc)){
+            if (parent.containsPc(pc)&& isLoop(pc)){
                 return parent;
             }
             parent = parent.getParentPath();
         }
         return null;
     }
-    /*
+    
     private boolean isLoop(int pc) {  
         if (m_contexts.peek().contains(pc)) {
             return true;
         }
         return false;
     }
-     */
+     
     public boolean containsPc(int pc){
         for (XtaInstruction inst : m_instructions){
             if (inst.getPc() == pc) {
@@ -1079,9 +1077,6 @@ public class Block implements  Comparable<Block> {
         return false;
     }
 
-    /*
-     * Check this and all higher contexts for recursion
-     */
     private boolean isRecursion(int pc) {
         int lastIndex = m_contexts.size() - 1;
         for (int index = lastIndex; index >= 0; --index) {
