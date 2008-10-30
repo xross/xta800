@@ -39,7 +39,7 @@ public class Route {
     Status m_status;        
     private Progress m_progress;
     private InstructionDecodeCache m_instructionDecodeCache;
-    private ArrayList<Integer> m_unknowns;
+    private ArrayList<Unknown> m_unknowns;
     
     private static int m_numRoutes;  
     
@@ -58,7 +58,7 @@ public class Route {
         m_progress.setCurValue(numPaths);
     }
     
-    public ArrayList<Integer> getUnknowns(){
+    public ArrayList<Unknown> getUnknowns(){
         return m_unknowns;
     }
     
@@ -195,7 +195,7 @@ public class Route {
     }
     
     private void initialise(Config config, int nodeId, int coreId) {
-        m_unknowns = new ArrayList<Integer>();
+        m_unknowns = new ArrayList<Unknown>();
         m_id = new String("route" + m_numRoutes);   
         m_config = config;
         m_nodeId = nodeId;
@@ -243,8 +243,8 @@ public class Route {
         return true;
     }
     
-    public void addUnknown(int pc){
-        m_unknowns.add(pc);
+    public void addUnknown(Unknown unknown){
+        m_unknowns.add(unknown);
     }
     
     public boolean checkAbort() {

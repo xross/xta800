@@ -242,6 +242,7 @@ public class XtaGui extends Displayer {
         m_sourceTabs.add(m_displayers.getDisassemblyDisplayer(), m_displayers.getDisassemblyDisplayer().getTitle());
         final JPanel circleStructure = m_circleStructure.getJPanel();
         final JPanel codeFlow = m_blockDecomposer.getJPanel();
+        final JPanel unknowns = m_unknownDisplayer.getUnknownPanel();
         final JPanel graphViz =m_blockDecomposer.getGraphVizPanel();
         // If this has already been called before, then ensure that the previous
         // console area is unregistered from the xtaGui.
@@ -252,7 +253,8 @@ public class XtaGui extends Displayer {
         
         m_sourceTabs.add(circleStructure, "Code Structure");
         m_sourceTabs.add(codeFlow, "Code Flow");
-        m_sourceTabs.add(graphViz, "GraphViz");
+        //m_sourceTabs.add(graphViz, "GraphViz");
+        m_sourceTabs.add(unknowns, "Unknowns");
         m_sourceTabs.add(m_consoleArea.getScrollPane(), "Console");           
 
         new Thread() {
