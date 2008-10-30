@@ -49,7 +49,6 @@ public class XtaGui extends Displayer {
     private Config                  m_config;
     private Engine                  m_engine;
     private JTabbedPane             m_sourceTabs;
-    private JPanel                  m_selectedPathSummary;
     private TreeRouteDisplayer      m_routeTree;
     private StatusBarDisplayer      m_statusBarDisplayer;
     private ToolBar                 m_toolBar;
@@ -180,8 +179,12 @@ public class XtaGui extends Displayer {
         }
 
         m_mainFrame.getContentPane().add(m_toolBar, BorderLayout.NORTH);
-        m_selectedPathSummary = m_overallRouteDisplayer.getPanel();
-        main_splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, makeCodeEnvironment(), m_selectedPathSummary);
+        JTabbedPane tp = new JTabbedPane();
+        tp.add(m_overallRouteDisplayer.getFunctionPanel(), "Function View");
+        tp.add(m_overallRouteDisplayer.getDepthPanel(), "Loop View");
+        tp.add(m_unknownDisplayer.getUnknownPanel(), "Unknowns and Errors");
+        
+        main_splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, makeCodeEnvironment(), tp);
         main_splitPane.addPropertyChangeListener(new PropertyChangeListener(){
             public void propertyChange(PropertyChangeEvent p) {
                 if (p.getPropertyName().equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
@@ -242,8 +245,8 @@ public class XtaGui extends Displayer {
         m_sourceTabs.add(m_displayers.getDisassemblyDisplayer(), m_displayers.getDisassemblyDisplayer().getTitle());
         final JPanel circleStructure = m_circleStructure.getJPanel();
         final JPanel codeFlow = m_blockDecomposer.getJPanel();
-        final JPanel unknowns = m_unknownDisplayer.getUnknownPanel();
-        final JPanel graphViz =m_blockDecomposer.getGraphVizPanel();
+        
+        //final JPanel graphViz =m_blockDecomposer.getGraphVizPanel();
         // If this has already been called before, then ensure that the previous
         // console area is unregistered from the xtaGui.
         if (m_consoleArea != null) {
@@ -254,7 +257,6 @@ public class XtaGui extends Displayer {
         m_sourceTabs.add(circleStructure, "Code Structure");
         m_sourceTabs.add(codeFlow, "Code Flow");
         //m_sourceTabs.add(graphViz, "GraphViz");
-        m_sourceTabs.add(unknowns, "Unknowns");
         m_sourceTabs.add(m_consoleArea.getScrollPane(), "Console");           
 
         new Thread() {

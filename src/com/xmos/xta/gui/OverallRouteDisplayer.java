@@ -40,7 +40,8 @@ public class OverallRouteDisplayer implements PathUpdater {
 
     private JPanel                  m_overallRouteDisplayerPanel;
     private JPanel                  m_functionPanel;
-    private JPanel                  m_timeLine;
+    private JPanel                  m_functionTimeLine;
+    private JPanel                  m_depthTimeLine;
     private JPanel                  m_depthPanel;
     private PathStatus              m_pathStatus;
     private TreePath                m_routeSelection;
@@ -68,7 +69,7 @@ public class OverallRouteDisplayer implements PathUpdater {
         m_engine = engine;
         m_functionColors = new HashMap<String, Color>();
         
-        m_timeLine = new JPanel(){
+        m_functionTimeLine = new JPanel(){
             private static final long serialVersionUID = 1L;
             
             public void paint(Graphics g){
@@ -77,7 +78,7 @@ public class OverallRouteDisplayer implements PathUpdater {
             }
         };
         
-        m_timeLine.addMouseListener(new MouseAdapter(){
+        m_functionTimeLine.addMouseListener(new MouseAdapter(){
             public void mousePressed(MouseEvent e) {
                 if(e.getButton() == 3){
                     JPopupMenu popup = new JPopupMenu();
@@ -87,7 +88,7 @@ public class OverallRouteDisplayer implements PathUpdater {
                     scaleView.addMouseListener(new MouseAdapter(){
                         public void mousePressed(MouseEvent e) {
                             showTime=!showTime;
-                            m_timeLine.repaint();
+                            m_functionTimeLine.repaint();
                         }
                     });
                     popup.add(scaleView);
@@ -98,15 +99,47 @@ public class OverallRouteDisplayer implements PathUpdater {
                 
             }
         });
-        m_timeLine.setPreferredSize(new Dimension(32, 32));
+        m_functionTimeLine.setPreferredSize(new Dimension(32, 32));
+        m_depthTimeLine = new JPanel(){
+            private static final long serialVersionUID = 1L;
+            
+            public void paint(Graphics g){
+                Graphics2D g2 = (Graphics2D)g;
+                drawTimeLine(g2);
+            }
+        };
+        
+        m_depthTimeLine.addMouseListener(new MouseAdapter(){
+            public void mousePressed(MouseEvent e) {
+                if(e.getButton() == 3){
+                    JPopupMenu popup = new JPopupMenu();
+                    JMenuItem scaleView = new JMenuItem();
+                    if(showTime)scaleView.setText("Set scale to thread cycles");
+                    else scaleView.setText("Set scale to time elapsed");
+                    scaleView.addMouseListener(new MouseAdapter(){
+                        public void mousePressed(MouseEvent e) {
+                            showTime=!showTime;
+                            m_depthTimeLine.repaint();
+                        }
+                    });
+                    popup.add(scaleView);
+                    popup.setOpaque(true);
+                    popup.setLightWeightPopupEnabled(true);
+                    popup.show( (JComponent)e.getSource(), e.getX(), e.getY() );
+                }
+                
+            }
+        });
+        m_depthTimeLine.setPreferredSize(new Dimension(32, 32));
+        
         m_boxes = new ArrayList<Box>();
         
         m_blockList = new Vector<XtaCodeBlock>();
 
         this.m_pathStatus = pathStatus;
-        m_overallRouteDisplayerPanel = new JPanel();
+
         JTabbedPane tabbedPane = new JTabbedPane();
-        m_overallRouteDisplayerPanel.setLayout(new BorderLayout());
+
         m_depthPanel = new JPanel(){
             private static final long serialVersionUID = 1L;
             public void paint(Graphics g){
@@ -126,8 +159,7 @@ public class OverallRouteDisplayer implements PathUpdater {
         
         tabbedPane.addTab("Function View", m_functionPanel);
         tabbedPane.addTab("Loop View", m_depthPanel);
-        m_overallRouteDisplayerPanel.add(tabbedPane, BorderLayout.CENTER);
-        m_overallRouteDisplayerPanel.add(m_timeLine, BorderLayout.SOUTH);
+
     }
     
     public void displayRoute(Route route) {
@@ -354,6 +386,21 @@ public class OverallRouteDisplayer implements PathUpdater {
     public JPanel getPanel(){
         return m_overallRouteDisplayerPanel;
     }
+    
+    public JPanel getFunctionPanel(){
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(m_functionPanel, BorderLayout.CENTER);
+        panel.add(m_functionTimeLine, BorderLayout.SOUTH);
+        return panel;
+    }
+    public JPanel getDepthPanel(){
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(m_depthPanel, BorderLayout.CENTER);
+        panel.add(m_depthTimeLine, BorderLayout.SOUTH);
+        return panel;
+    }
 
     public void notifyUpdateState() {
         
@@ -378,7 +425,8 @@ public class OverallRouteDisplayer implements PathUpdater {
         }
         m_functionPanel.repaint();
         m_depthPanel.repaint();
-        m_timeLine.repaint();
+        m_functionTimeLine.repaint();
+        m_depthTimeLine.repaint();
     }
 
     private void getDebugInfo(){
@@ -455,14 +503,16 @@ public class OverallRouteDisplayer implements PathUpdater {
             clearAll();
             m_functionPanel.repaint();
             m_depthPanel.repaint();
-            m_timeLine.repaint();
+            m_functionTimeLine.repaint();
+            m_depthTimeLine.repaint();
         } else {
             getDebugInfo();
             m_routeSelection = selectedPath;
             notifyUpdateState();
             m_functionPanel.repaint();
             m_depthPanel.repaint();
-            m_timeLine.repaint();
+            m_functionTimeLine.repaint();
+            m_depthTimeLine.repaint();
         }
     }
 
@@ -474,7 +524,7 @@ public class OverallRouteDisplayer implements PathUpdater {
     
     private void drawTimeLine(Graphics2D g2){
         g2.setColor(Color.white);
-        g2.fillRect(0, 0, m_timeLine.getWidth(), m_timeLine.getHeight());
+        g2.fillRect(0, 0, m_functionTimeLine.getWidth(), m_functionTimeLine.getHeight());
         if(m_pathLength == 0) return;
 
         double totalUnits;
@@ -484,7 +534,7 @@ public class OverallRouteDisplayer implements PathUpdater {
             totalUnits = m_pathLength;
         }
         g2.setColor(Color.black);
-        g2.drawLine(0, m_timeLine.getHeight()/7, m_timeLine.getWidth(), m_timeLine.getHeight()/7);
+        g2.drawLine(0, m_functionTimeLine.getHeight()/7, m_functionTimeLine.getWidth(), m_functionTimeLine.getHeight()/7);
         
         int stepSize = 0;
         
@@ -496,15 +546,15 @@ public class OverallRouteDisplayer implements PathUpdater {
         
         while(i<totalUnits){
             int fontHeight = (int) g2.getFontMetrics().getStringBounds("" + (int)i, g2).getHeight();
-            int along = (int)(m_timeLine.getWidth()*i/totalUnits);
-            g2.drawLine(along, 0, along, m_timeLine.getHeight()/3);
-            if(along + (int) g2.getFontMetrics().getStringBounds("" + (int)i, g2).getWidth() < m_timeLine.getWidth())
-            g2.drawString("" + (int)i, along , m_timeLine.getHeight()/3 +fontHeight);
+            int along = (int)(m_functionTimeLine.getWidth()*i/totalUnits);
+            g2.drawLine(along, 0, along, m_functionTimeLine.getHeight()/3);
+            if(along + (int) g2.getFontMetrics().getStringBounds("" + (int)i, g2).getWidth() < m_functionTimeLine.getWidth())
+            g2.drawString("" + (int)i, along , m_functionTimeLine.getHeight()/3 +fontHeight);
             
             i+=stepSize;
         }
         
-        g2.drawLine(m_timeLine.getWidth(), 0, m_timeLine.getWidth(), m_timeLine.getHeight()/3);
+        g2.drawLine(m_functionTimeLine.getWidth(), 0, m_functionTimeLine.getWidth(), m_functionTimeLine.getHeight()/3);
     }
     
 }
