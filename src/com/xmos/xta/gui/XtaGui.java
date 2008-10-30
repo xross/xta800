@@ -188,6 +188,7 @@ public class XtaGui extends Displayer {
         });
         m_mainFrame.getContentPane().add(main_splitPane, BorderLayout.CENTER);
         m_mainFrame.getContentPane().add(m_statusBarDisplayer.getPanel(), BorderLayout.SOUTH);
+        m_mainFrame.setTitle("XTA - " + m_engine.getExecutable());
         setupUserLookAndFeel();
         m_mainFrame.pack();
         

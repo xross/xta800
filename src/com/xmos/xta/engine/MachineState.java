@@ -2,6 +2,14 @@ package com.xmos.xta.engine;
 
 
 class MachineState {
+    
+    public static enum BranchState 
+    {
+        TAKEN,
+        NOTTAKEN,
+        UNKNOWN
+    } 
+    
     public final int CP_REG_NUM = 12;
     public final int DP_REG_NUM = 13;
     public final int SP_REG_NUM = 14;
@@ -26,10 +34,12 @@ class MachineState {
 	private boolean m_wasBranch;
 	private boolean m_wasBranchResolved;
 	private int m_branchTarget;
+	private BranchState m_branchTaken;
 
     private boolean m_wasJump;
     private boolean m_wasJumpResolved;
     private int m_jumpTarget;
+    private BranchState m_jumpTaken;
 	
 	private Registers m_registers;
 	private Memory m_memory;
@@ -114,21 +124,42 @@ class MachineState {
     int getJumpTarget() {
         return m_jumpTarget;
     }
+    
+    BranchState getJumpTaken(){
+        return m_jumpTaken;
+    }
+    
+    BranchState getBranchTaken(){
+        return m_branchTaken;
+    }
 	
 	void branch(Expression branchTarget) {
+	    
 	    branchTarget.resolve();
-        m_wasBranch = true;
+
+	    m_wasBranch = true;
         m_wasBranchResolved = branchTarget.isResolved();
-        if (m_wasBranchResolved)
+        if (m_wasBranchResolved){
             m_branchTarget = branchTarget.getValue();
+            //TODO find out if the branch should be taken or not
+            m_branchTaken = BranchState.UNKNOWN;
+        } else{
+            m_branchTaken = BranchState.UNKNOWN;
+        }
+            
 	}
 
     void jump(Expression jumpTarget) {
         jumpTarget.resolve();
         m_wasJump = true;
         m_wasJumpResolved = jumpTarget.isResolved();
-        if (m_wasJumpResolved)
+        if (m_wasJumpResolved){
             m_jumpTarget = jumpTarget.getValue();
+            m_jumpTaken = BranchState.TAKEN;
+        } else {
+            m_jumpTaken = BranchState.UNKNOWN;
+        } 
+  
     }
 	
     boolean canIssue(int numBytes) {

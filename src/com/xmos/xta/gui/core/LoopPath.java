@@ -67,8 +67,14 @@ public class LoopPath implements RouteNode {
 
     public ImageIcon getIcon() {
         try {
-            return new ImageIcon(XtaGui.class
+            if(m_loopPath.getNumUnknowns(true)==0){
+                return new ImageIcon(XtaGui.class
                     .getResource("Loop.png"));
+            } else {
+                return new ImageIcon(XtaGui.class
+                        .getResource("LoopUnknown.png"));
+            }
+            
         } catch (Exception e) {
             System.err.println("Warning: Could not find icon image");
         }

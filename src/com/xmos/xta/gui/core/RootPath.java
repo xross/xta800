@@ -65,6 +65,7 @@ public class RootPath implements RouteNode {
         toolTipText += "<HTML>Number of cycles: " + getNumCycles() + "<br>";
         toolTipText += "<HTML>Number of FNOPs: " + m_rootPath.getNumFNops(true) + "<br>";
         toolTipText += "<HTML>Number of pausable: " + m_rootPath.getNumPausables(true) + "<br>";
+        toolTipText += "<HTML>Number of unknowns: " + m_rootPath.getNumUnknowns(true) + "<br>";
         toolTipText +=" <HTML>";
         return toolTipText;
     }
@@ -93,21 +94,30 @@ public class RootPath implements RouteNode {
         if(m_caller != null){
             absolute = m_caller.getLoopPathAttributes(m_rootPath).isAbsolute();
         }
+        
+        try {
         if(absolute){
-            try {
+            if(m_rootPath.getNumUnknowns(true)==0){
+                return new ImageIcon(XtaGui.class
+                        .getResource("AbsolutePathUnknown.png"));
+            } else {
                 return new ImageIcon(XtaGui.class
                         .getResource("AbsolutePath.png"));
-            } catch (Exception e) {
-                System.err.println("Warning: Could not find icon image");
             }
+
         } else {
-            try {
+            if(m_rootPath.getNumUnknowns(true)==0){
                 return new ImageIcon(XtaGui.class
                         .getResource("Path.png"));
-            } catch (Exception e) {
+            } else {
+                return new ImageIcon(XtaGui.class
+                        .getResource("PathUnknown.png"));
+            }
+            
+        }
+        } catch (Exception e) {
                 System.err.println("Warning: Could not find icon image");
             }
-        }
         return new ImageIcon();
     }
 
