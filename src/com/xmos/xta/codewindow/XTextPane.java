@@ -59,8 +59,9 @@ public class XTextPane extends JTextPane {
 	    
 	    return longest;
 	}
-
+/*
 	public boolean getScrollableTracksViewportWidth() {
         return false;
     }    
+    */
 }

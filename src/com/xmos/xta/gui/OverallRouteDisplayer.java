@@ -520,8 +520,6 @@ public class OverallRouteDisplayer implements PathUpdater {
         
     }
     
-    
-    
     private void drawTimeLine(Graphics2D g2){
         g2.setColor(Color.white);
         g2.fillRect(0, 0, m_functionTimeLine.getWidth(), m_functionTimeLine.getHeight());

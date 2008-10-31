@@ -77,7 +77,9 @@ public class Block implements Comparable<Block> {
     private int m_numPausables;
 
     private ArrayList<Unknown> m_unknowns;
-
+    private ArrayList<Integer> m_pcs;
+    
+    
     static int getNumPaths() {
         return m_numPaths;
     }
@@ -115,6 +117,7 @@ public class Block implements Comparable<Block> {
         ++m_numPaths;
 
         m_mode = mode;
+        
         m_fromPc = fromPc;
         m_toPc = toPc;
         m_status = Status.SEARCHING;
@@ -139,7 +142,8 @@ public class Block implements Comparable<Block> {
         m_route.addBlock(this);
 
         m_unknowns = new ArrayList<Unknown>();
-
+        m_pcs = new ArrayList<Integer>();
+        
         if (DEBUG) {
             if (m_parentBlock != null) {
                 System.out.printf("New block %d with parent %d\n",
@@ -166,7 +170,8 @@ public class Block implements Comparable<Block> {
 
         m_instructions = new Vector<XtaInstruction>();
         m_unknowns = new ArrayList<Unknown>();
-
+        m_pcs = new ArrayList<Integer>();
+        
         int instructionCount;
         if (DEBUG_SANITY) {
             instructionCount = blockToSplit.m_instructions.size();
@@ -181,6 +186,7 @@ public class Block implements Comparable<Block> {
                     break;
                 }
             }
+            m_pcs.add(inst.getPc());
             m_instructions.add(inst);
         }
         
@@ -188,6 +194,7 @@ public class Block implements Comparable<Block> {
             blockToSplit.m_unknowns.remove(unknown);
         }
         for (XtaInstruction inst : m_instructions) {
+            blockToSplit.m_pcs.remove(new Integer(inst.getPc()));
             blockToSplit.m_instructions.remove(inst);
         }
         if (DEBUG_SANITY) {
@@ -686,6 +693,8 @@ public class Block implements Comparable<Block> {
         return false;
     }
 
+  /*  
+    //almost have the time is spent in this loop
     public boolean containsPc(int pc) {
         for (XtaInstruction inst : m_instructions) {
             if (inst.getPc() == pc) {
@@ -693,8 +702,13 @@ public class Block implements Comparable<Block> {
             }
         }
         return false;
+     }
+*/
+    public boolean containsPc(int pc) {
+        if(m_pcs.contains(pc)) return true;
+        return false;
     }
-
+   
     private void build() {
         while (getStatus() == Block.Status.SEARCHING) {
             if (m_route.checkAbort()) {
@@ -1136,6 +1150,7 @@ public class Block implements Comparable<Block> {
                 .getNmenonic()));
         inst.setConfig(m_config);
 
+        m_pcs.add(inst.getPc());
         m_instructions.add(inst);
         if (inst.canPause()) {
             m_numPausables++;

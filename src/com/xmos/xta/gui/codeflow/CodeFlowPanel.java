@@ -128,7 +128,7 @@ public class CodeFlowPanel extends JPanel{
                             g2.setStroke(new BasicStroke(3));
                             g2.drawOval((int)startPoint.getX(), (int)startPoint.getY()-w-w/2, 2*w, 2*w);
                         } else {
-                            System.out.println("eek");
+
                         }
                         
                     }
@@ -138,13 +138,6 @@ public class CodeFlowPanel extends JPanel{
                 }
             }
         }
-
-
-   
-
-
-
-
 
     }
 

@@ -76,13 +76,14 @@ public class BlockDecomposer implements PathUpdater {
         if(m_route.hashCode() == m_analysedRoute){
             return true;
         } 
-        /*
+
         m_basicBlocks.clear();
 
         ArrayList<InstructionLink> links = buildInstructionLinks(m_route.getBlocks());
 
         parseBlocks(m_route.getBlocks(), links);
         int startBlock =parseLinks(links);
+        startBlock=0;
         if(startBlock == -1 ) return false;
         HashMap<Integer, BasicBlock> basicBlockMap = new HashMap<Integer, BasicBlock>();
         for(BasicBlock bb : m_basicBlocks){
@@ -97,11 +98,11 @@ public class BlockDecomposer implements PathUpdater {
         
         m_basicBlockDepths.clear();
         resetAllBasicBlockDepths();
+        /*
         findBasicBlockDepth(m_basicBlocks.get(startBlock), 0, new ArrayList<BasicBlock>());
-        
+        */
         if (DISPLAY_GRAPH_VIS) 
             printOutGraphvis();
-        */
         if(success){
             m_analysedRoute = m_route.hashCode();
         } else {

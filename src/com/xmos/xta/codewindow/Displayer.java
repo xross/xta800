@@ -10,6 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -66,6 +68,14 @@ public abstract class Displayer extends JPanel {
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         m_textPaneScrollPane.setRowHeader(new JViewport());
         m_textPaneScrollPane.getRowHeader().setView(m_lineHeaders);
+        m_textPaneScrollPane.getRowHeader().addChangeListener(new ChangeListener(){
+
+            public void stateChanged(ChangeEvent e) {
+                //System.out.println(e.getSource());
+                //System.out.println("line headers have changed " +  m_textPaneScrollPane.getRowHeader().getViewPosition());
+            }
+            
+        });
         m_textPaneScrollPane.getViewport().setBackground(Color.white);    
 
         m_sideHighlighter = new SideHighlighter(this, m_lines);
@@ -327,6 +337,7 @@ public abstract class Displayer extends JPanel {
     */
 	
 }
+/*
 class LineWithHighlighter{
     private Line line;
     private LineHighlighter lineHighlighter;
@@ -342,3 +353,4 @@ class LineWithHighlighter{
         return lineHighlighter;
     }
 }
+*/

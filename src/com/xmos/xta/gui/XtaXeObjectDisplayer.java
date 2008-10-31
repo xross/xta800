@@ -114,6 +114,15 @@ public class XtaXeObjectDisplayer  {
         m_disassemblyDisplayer.setFnops(fnopPcs);
     }
     
+    public void snapToPc(int pc){
+        /*
+        for(SourceDisplayer sd : m_sourceDisplayers){
+            sd.setFnops(fnopPcs);
+        }
+        m_disassemblyDisplayer.setFnops(fnopPcs);
+        */
+    }
+    
     public ArrayList<String> getSourceFiles() {
         return m_xeObject.getSourceFileNames();
     }

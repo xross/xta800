@@ -43,7 +43,7 @@ import com.xmos.xta.gui.trees.TreeRouteDisplayer;
 
 public class XtaGui extends Displayer {
 
-    public final static boolean    DEBUG = false;
+    public final static boolean    DEBUG = true;
     
     private GlobalConfig            m_globalConfig;    
     private Config                  m_config;
