@@ -90,16 +90,11 @@ public class PathStatus extends Displayer {
         newPath = new DefaultMutableTreeNode( new RootPath(path, caller, depth, m_engine, m_mainFrame, m_xtaGui));
         m_treeSize++;
         assert(newPath!=null);
-        System.out.println("Path with blocks " + path.getPathBlocks().size());
         int i = 0;
         for (Block pathBlock : path.getPathBlocks()) {
-            System.out.println("Block" + i);
-            i++;
             DefaultMutableTreeNode block = new DefaultMutableTreeNode(new BlockPath(pathBlock));
             
             if (pathBlock.numLoopPaths() > 0) {
-                System.out.println("Loop with " + pathBlock.numLoopPaths());
-
                 DefaultMutableTreeNode loop = new DefaultMutableTreeNode(new LoopPath(pathBlock, path, m_engine));
                 m_treeSize++;
                 for (Block loopPath : pathBlock.getLoopPaths()) {
