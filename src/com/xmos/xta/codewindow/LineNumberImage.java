@@ -3,16 +3,9 @@ package com.xmos.xta.codewindow;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Shape;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
-
-import javax.imageio.ImageIO;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JTextPane;
 import javax.swing.text.Highlighter;
@@ -110,7 +103,13 @@ public class LineNumberImage implements Highlighter.HighlightPainter {
             } 
             
         } else if(m_line.isPausable()){
-            ImageIcon icon = new ImageIcon(XtaGui.class.getResource("warning.png"));
+            ImageIcon icon;
+            try {
+                icon = new ImageIcon(XtaGui.class.getResource("warning.png"));
+            } catch (Exception e) {
+                icon = new ImageIcon();
+                e.printStackTrace();
+            }
             icon.paintIcon(m_textPane, g2, m_textPane.getWidth()-icon.getIconWidth(), (int)(lineTop + fontHeight/2)-5);
 
         } 
