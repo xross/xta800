@@ -40,16 +40,21 @@
     <mkdir dir="${dist}/../lib"/>
 
     <!-- Copy xta images/icons -->
-  	<copy file="${src}/com/xmos/xta/gui/XmosTM.jpg"             todir="${build}/com/xmos/xta/gui"/>
-  	<copy file="${src}/com/xmos/xta/gui/yellowled.png"          todir="${build}/com/xmos/xta/gui"/>
-  	<copy file="${src}/com/xmos/xta/gui/AbsolutePath.png"       todir="${build}/com/xmos/xta/gui"/>
-  	<copy file="${src}/com/xmos/xta/gui/AbsolutePathFolded.png" todir="${build}/com/xmos/xta/gui"/>
-  	<copy file="${src}/com/xmos/xta/gui/BasicBlock.png"         todir="${build}/com/xmos/xta/gui"/>
-  	<copy file="${src}/com/xmos/xta/gui/folder.png"             todir="${build}/com/xmos/xta/gui"/>
-  	<copy file="${src}/com/xmos/xta/gui/Loop.png"               todir="${build}/com/xmos/xta/gui"/>
-  	<copy file="${src}/com/xmos/xta/gui/Path.png"               todir="${build}/com/xmos/xta/gui"/>
-  	<copy file="${src}/com/xmos/xta/gui/Routes.png"             todir="${build}/com/xmos/xta/gui"/>
-  	<copy file="${src}/com/xmos/xta/gui/xta.gif"                todir="${build}/com/xmos/xta/gui"/>
+  	<copy file="${src}/com/xmos/xta/gui/XmosTM.jpg"              todir="${build}/com/xmos/xta/gui"/>
+  	<copy file="${src}/com/xmos/xta/gui/yellowled.png"           todir="${build}/com/xmos/xta/gui"/>
+  	<copy file="${src}/com/xmos/xta/gui/AbsolutePath.png"        todir="${build}/com/xmos/xta/gui"/>
+  	<copy file="${src}/com/xmos/xta/gui/AbsolutePathFolded.png"  todir="${build}/com/xmos/xta/gui"/>
+  	<copy file="${src}/com/xmos/xta/gui/AbsolutePathUnknown.png" todir="${build}/com/xmos/xta/gui"/>
+  	<copy file="${src}/com/xmos/xta/gui/BasicBlock.png"          todir="${build}/com/xmos/xta/gui"/>
+  	<copy file="${src}/com/xmos/xta/gui/BasicBlockUnknown.png"   todir="${build}/com/xmos/xta/gui"/>
+  	<copy file="${src}/com/xmos/xta/gui/folder.png"              todir="${build}/com/xmos/xta/gui"/>
+  	<copy file="${src}/com/xmos/xta/gui/Loop.png"                todir="${build}/com/xmos/xta/gui"/>
+  	<copy file="${src}/com/xmos/xta/gui/LoopUnknown.png"         todir="${build}/com/xmos/xta/gui"/>
+  	<copy file="${src}/com/xmos/xta/gui/Path.png"                todir="${build}/com/xmos/xta/gui"/>
+  	<copy file="${src}/com/xmos/xta/gui/PathUnknown.png"         todir="${build}/com/xmos/xta/gui"/>
+  	<copy file="${src}/com/xmos/xta/gui/Routes.png"              todir="${build}/com/xmos/xta/gui"/>
+  	<copy file="${src}/com/xmos/xta/gui/warning.png"             todir="${build}/com/xmos/xta/gui"/>
+  	<copy file="${src}/com/xmos/xta/gui/xta.gif"                 todir="${build}/com/xmos/xta/gui"/>
 
     <jar jarfile="${dist}/../lib/xta.jar"
          basedir="${build}"
