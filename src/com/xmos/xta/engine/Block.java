@@ -350,6 +350,15 @@ public class Block implements Comparable<Block> {
         assert(m_seen >= 0);
     }
 
+    public void incrementSeen() {
+        m_seen++;
+    }
+
+    public void decrementSeen() {
+        m_seen--;
+        assert(m_seen >= 0);
+    }
+
     public PathAttributes getLoopPathAttributes(Block block) {
         PathAttributes attributes = m_loopPathAttributes.get(block);
         assert (attributes != null);
@@ -404,7 +413,7 @@ public class Block implements Comparable<Block> {
     }
 
     public int getNumIterations() {
-        Block parent = m_parentBlock;
+        Block parent = this;
         while (parent != null) {
             if (parent.m_loopPaths.contains(this)) {
                 PathAttributes attributes = parent.getLoopPathAttributes(this);

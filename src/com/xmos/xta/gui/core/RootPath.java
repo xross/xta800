@@ -63,9 +63,9 @@ public class RootPath implements RouteNode {
         toolTipText += "<HTML>Path Instance ID: " + m_rootPath.getInstanceId() + "<br>";
         toolTipText += "<HTML>Time taken: " + getTimeTaken() + " ns<br>";
         toolTipText += "<HTML>Number of cycles: " + getNumCycles() + "<br>";
-        toolTipText += "<HTML>Number of FNOPs: " + m_rootPath.getNumFNops(true) + "<br>";
-        toolTipText += "<HTML>Number of pausable: " + m_rootPath.getNumPausables(true) + "<br>";
-        toolTipText += "<HTML>Number of unknowns: " + m_rootPath.getNumUnknowns(true) + "<br>";
+        toolTipText += "<HTML>Number of FNOPs: " + getNumFNops() + "<br>";
+        toolTipText += "<HTML>Number of pausable: " + getNumPausables() + "<br>";
+        toolTipText += "<HTML>Number of unknowns: " + getNumUnknowns() + "<br>";
         toolTipText +=" <HTML>";
         return toolTipText;
     }
@@ -79,11 +79,38 @@ public class RootPath implements RouteNode {
     }
 
     public int getNumCycles() {
-        return m_rootPath.getNumCycles(true);
+        startTiming();
+        int num = m_rootPath.getNumCycles(true);
+        endTiming();
+        return num;
     }
 
     public double getTimeTaken() {
-        return m_rootPath.getTimeTaken(true);
+        startTiming();
+        double timeTaken = m_rootPath.getTimeTaken(true);
+        endTiming();
+        return timeTaken;
+    }
+
+    public int getNumFNops() {
+        startTiming();
+        int num = m_rootPath.getNumFNops(true);
+        endTiming();
+        return num;
+    }
+
+    public int getNumPausables() {
+        startTiming();
+        int num = m_rootPath.getNumPausables(true);
+        endTiming();
+        return num;
+    }
+
+    public int getNumUnknowns() {
+        startTiming();
+        int num = m_rootPath.getNumUnknowns(true);
+        endTiming();
+        return num;
     }
 
     public ImageIcon getIcon() {
@@ -218,10 +245,26 @@ public class RootPath implements RouteNode {
     }
 
     public Vector<XtaInstruction> getInstructions() {
-        return m_rootPath.getInstructions(true);
+        startTiming();
+        Vector<XtaInstruction> instructions = m_rootPath.getInstructions(true);
+        endTiming();
+        return instructions;
     }
 
     public String getTypeName() {
         return "path";
     }
+
+    private void startTiming() {
+        if (m_caller != null) {
+            m_caller.incrementSeen();
+        }
+    }
+
+    private void endTiming() {
+        if (m_caller != null) {
+            m_caller.decrementSeen();
+        }
+    }
+    
 }

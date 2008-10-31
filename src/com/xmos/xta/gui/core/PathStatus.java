@@ -90,7 +90,6 @@ public class PathStatus extends Displayer {
         newPath = new DefaultMutableTreeNode( new RootPath(path, caller, depth, m_engine, m_mainFrame, m_xtaGui));
         m_treeSize++;
         assert(newPath!=null);
-        int i = 0;
         for (Block pathBlock : path.getPathBlocks()) {
             DefaultMutableTreeNode block = new DefaultMutableTreeNode(new BlockPath(pathBlock));
             
