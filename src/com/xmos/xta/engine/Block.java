@@ -613,6 +613,7 @@ public class Block implements Comparable<Block> {
                 setStatus(Status.UNRESOLVED);
                 m_route.addUnresolvedPath(this);
                 releaseMemory();
+                return;
             }
 
         } else if (m_machineState.wasBranch()) {
@@ -641,6 +642,7 @@ public class Block implements Comparable<Block> {
                 setStatus(Status.UNRESOLVED);
                 m_route.addUnresolvedPath(this);
                 releaseMemory();
+                return;
             }
         } else {
             int nextPc = m_machineState.getPc() + m_instruction.getNumBytes();
