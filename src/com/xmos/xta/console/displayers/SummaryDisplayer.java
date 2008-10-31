@@ -223,10 +223,9 @@ public class SummaryDisplayer extends Displayer {
         	m_console.display(String.format("%s    +loop [%d path(s), %d iteration(s)]\n", 
         			indent, loopPaths.size(), totalIterations));    
             	
-            path.incrementSeen();
         	summarisePaths(loopPaths, indent + "        ", path);
-            path.decrementSeen();
         }
+        path.doneWithLoopPaths();
     }
 
     private void displayInstructionLevelInfo(Block path, String indent, int numExecutions) {
@@ -305,10 +304,9 @@ public class SummaryDisplayer extends Displayer {
             }
         
             for (Block loopPath : block.getLoopPaths()) {
-                block.incrementSeen();
    		    	buildPathsWithinFunctionSet(loopPath, pathSet, functionAddress, functionSize);
-   		    	block.decrementSeen();
        		}
+            block.doneWithLoopPaths();
         }
     }
     
@@ -328,10 +326,9 @@ public class SummaryDisplayer extends Displayer {
         }
 
         for (Block loopPath : path.getLoopPaths()) {
-            path.incrementSeen();
 	    	buildPathsWithinSourcesSet(loopPath, pathSet, sourceFileName);
-	    	path.decrementSeen();
    		}
+        path.doneWithLoopPaths();
     }
     
     private boolean pathWithinSourceFile(Block path, String sourceFileName) {
@@ -363,7 +360,7 @@ public class SummaryDisplayer extends Displayer {
         
         int numLoops = 0;
         for (Block block : path.getPathBlocks()) {
-            numLoops += block.getLoopPaths().size();
+            numLoops += block.numLoopPaths();
         }
         m_console.display(String.format("Num Loops:        %d\n", numLoops));
     }

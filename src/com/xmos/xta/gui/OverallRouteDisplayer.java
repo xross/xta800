@@ -34,6 +34,7 @@ import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.gui.core.BlockPath;
 import com.xmos.xta.gui.core.LoopPath;
 import com.xmos.xta.gui.core.PathStatus;
+import com.xmos.xta.gui.core.RootPath;
 import com.xmos.xta.gui.core.RouteNode;
 
 public class OverallRouteDisplayer implements PathUpdater {
@@ -224,7 +225,10 @@ public class OverallRouteDisplayer implements PathUpdater {
             DefaultMutableTreeNode subNode = (DefaultMutableTreeNode)node.getChildAt(child);
 
             RouteNode routeNode = (RouteNode)((DefaultMutableTreeNode)(subNode)).getUserObject();
-            numIterations = routeNode.getBlock().getNumIterations();
+            
+            if (routeNode instanceof RootPath) {
+                numIterations = routeNode.getBlock().getNumIterations();
+            }
 
             if (routeNode instanceof LoopPath) {
                 m_currentDepth++;

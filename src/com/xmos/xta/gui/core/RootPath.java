@@ -50,7 +50,7 @@ public class RootPath implements RouteNode {
     }
 
     public String getDescription() {
-        String description = m_rootPath.getTimeTaken(true) + " ns";
+        String description = getTimeTaken() + " ns";
         if (m_caller != null) {
             description += " - " + m_rootPath.getNumIterations() + " iterations";
         }
@@ -63,9 +63,9 @@ public class RootPath implements RouteNode {
         toolTipText += "<HTML>Path Instance ID: " + m_rootPath.getInstanceId() + "<br>";
         toolTipText += "<HTML>Time taken: " + getTimeTaken() + " ns<br>";
         toolTipText += "<HTML>Number of cycles: " + getNumCycles() + "<br>";
-        toolTipText += "<HTML>Number of FNOPs: " + m_rootPath.getNumFNops(true) + "<br>";
-        toolTipText += "<HTML>Number of pausable: " + m_rootPath.getNumPausables(true) + "<br>";
-        toolTipText += "<HTML>Number of unknowns: " + m_rootPath.getNumUnknowns(true) + "<br>";
+        toolTipText += "<HTML>Number of FNOPs: " + getNumFNops() + "<br>";
+        toolTipText += "<HTML>Number of pausable: " + getNumPausables() + "<br>";
+        toolTipText += "<HTML>Number of unknowns: " + getNumUnknowns() + "<br>";
         toolTipText +=" <HTML>";
         return toolTipText;
     }
@@ -79,25 +79,50 @@ public class RootPath implements RouteNode {
     }
 
     public int getNumCycles() {
-        return m_rootPath.getNumCycles(true);
+        startTiming();
+        int num = m_rootPath.getNumCycles(true);
+        endTiming();
+        return num;
     }
 
     public double getTimeTaken() {
-        return m_rootPath.getTimeTaken(true);
+        startTiming();
+        double timeTaken = m_rootPath.getTimeTaken(true);
+        endTiming();
+        return timeTaken;
+    }
+
+    public int getNumFNops() {
+        startTiming();
+        int num = m_rootPath.getNumFNops(true);
+        endTiming();
+        return num;
+    }
+
+    public int getNumPausables() {
+        startTiming();
+        int num = m_rootPath.getNumPausables(true);
+        endTiming();
+        return num;
+    }
+
+    public int getNumUnknowns() {
+        startTiming();
+        int num = m_rootPath.getNumUnknowns(true);
+        endTiming();
+        return num;
     }
 
     public ImageIcon getIcon() {
-
-        //using the caller, find out if this path is absolute or not
-        
+        // using the caller, find out if this path is absolute or not
         boolean absolute = false;
         if(m_caller != null){
             absolute = m_caller.getLoopPathAttributes(m_rootPath).isAbsolute();
         }
         
         try {
-        if(absolute){
-            if(m_rootPath.getNumUnknowns(true)==0){
+        if (absolute){
+            if (m_rootPath.getNumUnknowns(true)==0){
                 return new ImageIcon(XtaGui.class
                         .getResource("AbsolutePathUnknown.png"));
             } else {
@@ -106,7 +131,7 @@ public class RootPath implements RouteNode {
             }
 
         } else {
-            if(m_rootPath.getNumUnknowns(true)==0){
+            if (m_rootPath.getNumUnknowns(true)==0){
                 return new ImageIcon(XtaGui.class
                         .getResource("Path.png"));
             } else {
@@ -149,7 +174,6 @@ public class RootPath implements RouteNode {
         JMenuItem setIterations = new JMenuItem("Set iteration properties");
         setIterations.addMouseListener(new MouseAdapter(){
             
-            
             public void mousePressed(MouseEvent e) {
 
                 int count = m_caller.getLoopPathAttributes(m_rootPath).getNumIterations();
@@ -188,11 +212,10 @@ public class RootPath implements RouteNode {
                 id.add(button);
                 
                 id.pack();
-                
             }
         });
         
-        if(m_caller != null) popup.add(setIterations);
+        if (m_caller != null) popup.add(setIterations);
         JMenuItem analysePath = new JMenuItem("Analyse just this");
         analysePath.addMouseListener(new MouseAdapter(){
             public void mousePressed(MouseEvent e) {
@@ -222,10 +245,26 @@ public class RootPath implements RouteNode {
     }
 
     public Vector<XtaInstruction> getInstructions() {
-        return m_rootPath.getInstructions(true);
+        startTiming();
+        Vector<XtaInstruction> instructions = m_rootPath.getInstructions(true);
+        endTiming();
+        return instructions;
     }
 
     public String getTypeName() {
         return "path";
     }
+
+    private void startTiming() {
+        if (m_caller != null) {
+            m_caller.incrementSeen();
+        }
+    }
+
+    private void endTiming() {
+        if (m_caller != null) {
+            m_caller.decrementSeen();
+        }
+    }
+    
 }

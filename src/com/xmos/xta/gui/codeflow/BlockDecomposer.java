@@ -303,8 +303,8 @@ public class BlockDecomposer implements PathUpdater {
                 if(i-1>=0){
                     prevInst = block.getInstructionsThis().get(i-1);
                 } else {
-                    if(block.getParentPath()!=null){
-                        prevInst = block.getParentPath().getInstructionsThis().lastElement();
+                    if(block.getParentBlock()!=null){
+                        prevInst = block.getParentBlock().getInstructionsThis().lastElement();
                     } 
                 }
                 if(prevInst!= null){
@@ -313,10 +313,11 @@ public class BlockDecomposer implements PathUpdater {
                 }
             }
             XtaInstruction lastInst = block.getInstructionsThis().lastElement();
-            for(Block loopBlock : block.getLoopPaths()){
+            for (Block loopBlock : block.getLoopPaths()){
                 links.get(getIndex(lastInst,links)).addNext(loopBlock.getInstructions(false).get(0));
                 links.get(getIndex(loopBlock.getInstructions(false).get(0),links)).addPrevious(lastInst);
             }
+            block.doneWithLoopPaths();
         }
     }
 

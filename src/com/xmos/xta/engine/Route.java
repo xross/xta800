@@ -269,7 +269,7 @@ public class Route {
          * straight line from beginning to end of the route
          */
         assert(m_completePaths != null);
-        if (m_completePaths.size() > 0) assert(endBlock.getParentPath() != null);
+        if (m_completePaths.size() > 0) assert(endBlock.getParentBlock() != null);
         assert(endBlock.getInstructionsThis()!= null);
         assert(endBlock.getInstructionsThis().size()>0);
         m_completePaths.add(endBlock);
@@ -307,7 +307,7 @@ public class Route {
          * straight line from beginning to end of the route
          */
         assert(m_unresolvedPaths != null);
-        if (m_unresolvedPaths.size() > 0) assert(path.getParentPath() != null);
+        if (m_unresolvedPaths.size() > 0) assert(path.getParentBlock() != null);
         assert(path.getInstructionsThis()!= null);
         assert(path.getInstructionsThis().size()>0);
         m_unresolvedPaths.add(path);
@@ -326,10 +326,12 @@ public class Route {
                     attributes.setNumIterations(iterations, absolute);
                     hit = true;
                     if (!allInstances) {
+                        block.doneWithLoopPaths();
                         return hit;
                     }
                 }
             }
+            block.doneWithLoopPaths();
         }
         
         return hit;
