@@ -230,7 +230,7 @@ public abstract class XtaInstruction extends Instruction {
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
         
-    	state.branch(branchTarget);
+    	state.branch(false, state.m_op1, branchTarget);
     }
 
     void BRBT(MachineState state) {
@@ -245,7 +245,7 @@ public abstract class XtaInstruction extends Instruction {
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
         
-    	state.branch(branchTarget);
+    	state.branch(true, state.m_op1, branchTarget);
     }
 
     void BRBU(MachineState state) {
@@ -275,7 +275,7 @@ public abstract class XtaInstruction extends Instruction {
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
         
-    	state.branch(branchTarget);
+    	state.branch(false, state.m_op1, branchTarget);
     }
 
     void BRFT(MachineState state) {
@@ -290,7 +290,7 @@ public abstract class XtaInstruction extends Instruction {
     	branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
     	
-        state.branch(branchTarget);
+        state.branch(true, state.m_op1, branchTarget);
     }
 
     void BRFU(MachineState state) {

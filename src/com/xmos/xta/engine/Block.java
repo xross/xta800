@@ -20,7 +20,7 @@ public class Block implements Comparable<Block> {
     private static final boolean DEBUG = false;
     private static final boolean DEBUG_STATUS = false;
     private static final boolean DEBUG_SANITY = true;
-    private static final boolean FollowResolutions = true;
+    private static final boolean FollowResolutions = false;
 
 
     private static int m_numCompletedPaths = 0;
@@ -78,8 +78,8 @@ public class Block implements Comparable<Block> {
 
     private ArrayList<Unknown> m_unknowns;
     private ArrayList<Integer> m_pcs;
-    
-    
+    private boolean m_speculative;
+
     static int getNumPaths() {
         return m_numPaths;
     }
@@ -99,7 +99,7 @@ public class Block implements Comparable<Block> {
             MemoryImage memoryImage, SymbolTable symbolTable,
             Vector<Reference> exclusions, int fromPc, int toPc, Route route,
             Block parentBlock, MachineState machineState,
-            Stack<TreeSet<Integer>> contexts) {
+            Stack<TreeSet<Integer>> contexts, boolean speculative) {
         m_machineState = new MachineState(machineState);
         m_contexts = new Stack<TreeSet<Integer>>();
         m_contexts.addAll(contexts);
@@ -117,7 +117,7 @@ public class Block implements Comparable<Block> {
         ++m_numPaths;
 
         m_mode = mode;
-        
+
         m_fromPc = fromPc;
         m_toPc = toPc;
         m_status = Status.SEARCHING;
@@ -143,6 +143,8 @@ public class Block implements Comparable<Block> {
 
         m_unknowns = new ArrayList<Unknown>();
         m_pcs = new ArrayList<Integer>();
+
+        m_speculative = speculative;
         
         if (DEBUG) {
             if (m_parentBlock != null) {
@@ -171,7 +173,7 @@ public class Block implements Comparable<Block> {
         m_instructions = new Vector<XtaInstruction>();
         m_unknowns = new ArrayList<Unknown>();
         m_pcs = new ArrayList<Integer>();
-        
+
         int instructionCount;
         if (DEBUG_SANITY) {
             instructionCount = blockToSplit.m_instructions.size();
@@ -189,7 +191,7 @@ public class Block implements Comparable<Block> {
             m_pcs.add(inst.getPc());
             m_instructions.add(inst);
         }
-        
+
         for(Unknown unknown : m_unknowns){
             blockToSplit.m_unknowns.remove(unknown);
         }
@@ -239,6 +241,8 @@ public class Block implements Comparable<Block> {
 
         m_route.addBlock(this);
 
+        m_speculative = blockToSplit.m_speculative;
+        
         if (DEBUG) {
             if (m_parentBlock != null) {
                 System.out.printf("New block %d with parent %d\n",
@@ -595,19 +599,19 @@ public class Block implements Comparable<Block> {
             if (m_machineState.wasBranchResolved()) {
                 if(FollowResolutions){
                     if(m_machineState.getBranchTaken() == BranchState.TAKEN){
-                        takeBranch(m_machineState.getBranchTarget());
+                        takeBranch(m_machineState.getBranchTarget(), false);
                         setStatus(Status.COMPLETE);
                     } else if(m_machineState.getBranchTaken() == BranchState.NOTTAKEN){
-                        takeDontBranch(m_instruction);
+                        takeDontBranch(m_instruction, false);
                         setStatus(Status.COMPLETE);
                     } else if(m_machineState.getBranchTaken() == BranchState.UNKNOWN) {
                         addUnknown(m_instruction);
-                        takeBranch(m_machineState.getBranchTarget());
-                        takeDontBranch(m_instruction);
+                        takeBranch(m_machineState.getBranchTarget(), true);
+                        takeDontBranch(m_instruction, true);
                     }
                 } else {
-                    takeBranch(m_machineState.getBranchTarget());
-                    takeDontBranch(m_instruction);
+                    takeBranch(m_machineState.getBranchTarget(), true);
+                    takeDontBranch(m_instruction, true);
                 }
             } else {
                 setStatus(Status.UNRESOLVED);
@@ -642,7 +646,7 @@ public class Block implements Comparable<Block> {
     }
 
 
-    private void takeDontBranch(XtaInstruction instruction) {
+    private void takeDontBranch(XtaInstruction instruction, boolean speculative) {
         if (m_instruction.isLoadStore() == false) {
             m_machineState.fetch();
         }
@@ -651,11 +655,11 @@ public class Block implements Comparable<Block> {
         Block nextPath = new Block(m_mode, m_config, m_instructionDecodeCache,
                 m_instructionAttributes, m_memoryImage, m_symbolTable,
                 m_exclusions, startPc, m_toPc, m_route, this, m_machineState,
-                m_contexts);
+                m_contexts, speculative);
         nextPath.build();
     }
 
-    private void takeBranch(int branchTarget) {
+    private void takeBranch(int branchTarget, boolean speculative) {
         Block loopBlock = formsLoop(branchTarget);
         if (loopBlock != null) {
             if (loopBlock.getInstructionsThis().firstElement().getPc() != branchTarget) {
@@ -667,7 +671,7 @@ public class Block implements Comparable<Block> {
             Block nextPath = new Block(m_mode, m_config,
                     m_instructionDecodeCache, m_instructionAttributes,
                     m_memoryImage, m_symbolTable, m_exclusions, branchTarget,
-                    m_toPc, m_route, this, m_machineState, m_contexts);
+                    m_toPc, m_route, this, m_machineState, m_contexts, speculative);
             nextPath.m_machineState.branchTo(branchTarget, m_instruction
                     .isLoadStore());
             nextPath.build();
@@ -676,14 +680,25 @@ public class Block implements Comparable<Block> {
     }
 
     private Block formsLoop(int pc) {
-        Block parent = this;
-        while (parent != null) {
-            if (parent.containsPc(pc) && isLoop(pc)) {
-                return parent;
+        if(FollowResolutions){
+            Block parent = this;
+            while (parent != null) {
+                if (parent.containsPc(pc) && isLoop(pc) && parent.m_speculative) {
+                    return parent;
+                }
+                parent = parent.getParentPath();
             }
-            parent = parent.getParentPath();
+            return null;
+        } else {
+            Block parent = this;
+            while (parent != null) {
+                if (parent.containsPc(pc) && isLoop(pc)) {
+                    return parent;
+                }
+                parent = parent.getParentPath();
+            }
+            return null;
         }
-        return null;
     }
 
     private boolean isLoop(int pc) {
@@ -693,22 +708,11 @@ public class Block implements Comparable<Block> {
         return false;
     }
 
-  /*  
-    //almost have the time is spent in this loop
-    public boolean containsPc(int pc) {
-        for (XtaInstruction inst : m_instructions) {
-            if (inst.getPc() == pc) {
-                return true;
-            }
-        }
-        return false;
-     }
-*/
     public boolean containsPc(int pc) {
         if(m_pcs.contains(pc)) return true;
         return false;
     }
-   
+
     private void build() {
         while (getStatus() == Block.Status.SEARCHING) {
             if (m_route.checkAbort()) {

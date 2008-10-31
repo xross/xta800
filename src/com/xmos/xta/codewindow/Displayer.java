@@ -273,7 +273,7 @@ public abstract class Displayer extends JPanel {
 	public abstract void setFnops(ArrayList<Integer> fnopPcs);
 
 	
-	   /*
+	/*  
     public void addHyperlink(URL url, String text) {
       try {
         SimpleAttributeSet attrs = new SimpleAttributeSet();

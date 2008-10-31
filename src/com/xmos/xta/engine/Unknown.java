@@ -50,13 +50,13 @@ public class Unknown {
     public ImageIcon getIcon(){
         if(m_reason == UnknownReason.Pausable){
             return new ImageIcon(XtaGui.class
-                    .getResource("yellowled.png"));
+                    .getResource("warning.png"));
         } else if(m_reason == UnknownReason.Branch){
             return new ImageIcon(XtaGui.class
-                    .getResource("yellowled.png"));
+                    .getResource("warning.png"));
         } else if(m_reason == UnknownReason.Jump){
             return new ImageIcon(XtaGui.class
-                    .getResource("yellowled.png"));
+                    .getResource("warning.png"));
         } else {
             assert(false);
         }
