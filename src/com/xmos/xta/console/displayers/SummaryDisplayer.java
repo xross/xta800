@@ -18,7 +18,7 @@ import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Block;
-import com.xmos.xta.engine.PathAttributes;
+import com.xmos.xta.engine.Attributes;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 
@@ -157,7 +157,7 @@ public class SummaryDisplayer extends Displayer {
             boolean isAbsolute = false;
 
             if (parent != null) {
-                PathAttributes attributes = parent.getLoopPathAttributes(path);
+                Attributes attributes = parent.getLoopPathAttributes(path);
                 iterations = attributes.getNumIterations();
                 isAbsolute = attributes.isAbsolute();
             }
@@ -217,7 +217,7 @@ public class SummaryDisplayer extends Displayer {
         if (loopPaths.size() > 0) {
             int totalIterations = 0;
             for (Block loopPath : loopPaths) {
-                PathAttributes attributes = path.getLoopPathAttributes(loopPath);
+                Attributes attributes = path.getLoopPathAttributes(loopPath);
                 totalIterations += attributes.getNumIterations();
             }
         	m_console.display(String.format("%s    +loop [%d path(s), %d iteration(s)]\n", 

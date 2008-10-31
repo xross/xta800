@@ -24,6 +24,7 @@ public class UnknownDisplayer extends Displayer {
     private JList m_unknownList;
     private JPanel m_panel;
     private DefaultListModel m_listModel;
+    private Route m_route;
     
     public UnknownDisplayer(){
         m_listModel = new DefaultListModel();
@@ -37,6 +38,7 @@ public class UnknownDisplayer extends Displayer {
     
     public void displayRoute(Route route, DebugInfo debugInfo,
             MemoryImage memoryImage, SymbolTable table) {
+        m_route = route;
         m_unknowns = route.getUnknowns();
         for(Unknown unknown : m_unknowns){
             m_listModel.addElement(unknown);
@@ -52,7 +54,15 @@ public class UnknownDisplayer extends Displayer {
     }
 
     public void notifyUpdateState() {
-       
+        if(m_route==null){
+            return;
+        }
+        m_unknowns = m_route.getUnknowns();
+        m_listModel.clear();
+        for(Unknown unknown : m_unknowns){
+            m_listModel.addElement(unknown);
+        }
+        m_unknownList.repaint();
     }
 
     public JPanel getUnknownPanel() {

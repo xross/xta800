@@ -47,7 +47,7 @@ public class Block implements Comparable<Block> {
     private Route m_route;
     private Vector<XtaInstruction> m_instructions;
 
-    private HashMap<Block, PathAttributes> m_loopPathAttributes;
+    private HashMap<Block, Attributes> m_loopPathAttributes;
     private Vector<Block> m_loopPaths;
 
     private InstructionDecodeCache m_instructionDecodeCache;
@@ -137,7 +137,7 @@ public class Block implements Comparable<Block> {
         m_route = route;
         m_parentBlock = parentBlock;
         m_loopPaths = new Vector<Block>();
-        m_loopPathAttributes = new HashMap<Block, PathAttributes>();
+        m_loopPathAttributes = new HashMap<Block, Attributes>();
 
         m_route.addBlock(this);
 
@@ -236,7 +236,7 @@ public class Block implements Comparable<Block> {
 
 
         blockToSplit.m_loopPaths = new Vector<Block>();
-        blockToSplit.m_loopPathAttributes = new HashMap<Block, PathAttributes>();
+        blockToSplit.m_loopPathAttributes = new HashMap<Block, Attributes>();
         blockToSplit.m_parentBlock = this;
 
         m_route.addBlock(this);
@@ -336,8 +336,8 @@ public class Block implements Comparable<Block> {
         }
     }
 
-    public PathAttributes getLoopPathAttributes(Block block) {
-        PathAttributes attributes = m_loopPathAttributes.get(block);
+    public Attributes getLoopPathAttributes(Block block) {
+        Attributes attributes = m_loopPathAttributes.get(block);
         assert (attributes != null);
         return attributes;
     }
@@ -396,7 +396,7 @@ public class Block implements Comparable<Block> {
         Block parent = m_parentBlock;
         while (parent != null) {
             if (parent.getLoopPaths().contains(this)) {
-                PathAttributes attributes = parent.getLoopPathAttributes(this);
+                Attributes attributes = parent.getLoopPathAttributes(this);
                 return attributes.getNumIterations();
             }
             parent = parent.m_parentBlock;
@@ -500,7 +500,7 @@ public class Block implements Comparable<Block> {
         }
 
         m_loopPaths.add(pathStartBlock);
-        m_loopPathAttributes.put(pathStartBlock, new PathAttributes());
+        m_loopPathAttributes.put(pathStartBlock, new Attributes());
         return true;
     }
 
@@ -820,7 +820,7 @@ public class Block implements Comparable<Block> {
             if (recurse) {
                 for (Block loopPath : block.getLoopPaths()) {
                     block.incrementSeen();
-                    PathAttributes attributes = block
+                    Attributes attributes = block
                     .getLoopPathAttributes(loopPath);
                     if (!attributes.isAbsolute()) {
                         int numIterations = attributes.getNumIterations();
@@ -843,7 +843,7 @@ public class Block implements Comparable<Block> {
                 for (Block loopPath : block.getLoopPaths()) {
                     block.incrementSeen();
                     time += loopPath.getTimeTakenAbsolute(true);
-                    PathAttributes attributes = block
+                    Attributes attributes = block
                     .getLoopPathAttributes(loopPath);
                     if (attributes.isAbsolute()) {
                         int numIterations = attributes.getNumIterations();
@@ -877,7 +877,7 @@ public class Block implements Comparable<Block> {
             if (recurse) {
                 for (Block loopPath : block.getLoopPaths()) {
                     block.incrementSeen();
-                    PathAttributes attributes = block
+                    Attributes attributes = block
                     .getLoopPathAttributes(loopPath);
                     if (!attributes.isAbsolute()) {
                         int numIterations = attributes.getNumIterations();
@@ -902,7 +902,7 @@ public class Block implements Comparable<Block> {
                     block.incrementSeen();
                     num += loopPath.getNumInstructionsAbsolute(true);
 
-                    PathAttributes attributes = block
+                    Attributes attributes = block
                     .getLoopPathAttributes(loopPath);
                     if (attributes.isAbsolute()) {
                         int numIterations = attributes.getNumIterations();
@@ -931,7 +931,7 @@ public class Block implements Comparable<Block> {
             if (recurse) {
                 for (Block loopPath : block.getLoopPaths()) {
                     block.incrementSeen();
-                    PathAttributes attributes = block
+                    Attributes attributes = block
                     .getLoopPathAttributes(loopPath);
                     if (!attributes.isAbsolute()) {
                         int numIterations = attributes.getNumIterations();
@@ -956,7 +956,7 @@ public class Block implements Comparable<Block> {
                     block.incrementSeen();
                     num += loopPath.getNumFNopsAbsolute(true);
 
-                    PathAttributes attributes = block
+                    Attributes attributes = block
                     .getLoopPathAttributes(loopPath);
                     if (attributes.isAbsolute()) {
                         int numIterations = attributes.getNumIterations();
@@ -985,7 +985,7 @@ public class Block implements Comparable<Block> {
             if (recurse) {
                 for (Block loopPath : block.getLoopPaths()) {
                     block.incrementSeen();
-                    PathAttributes attributes = block
+                    Attributes attributes = block
                     .getLoopPathAttributes(loopPath);
                     if (!attributes.isAbsolute()) {
                         int numIterations = attributes.getNumIterations();
@@ -1029,7 +1029,7 @@ public class Block implements Comparable<Block> {
                     block.incrementSeen();
                     num += loopPath.getNumCyclesAbsolute(true);
 
-                    PathAttributes attributes = block
+                    Attributes attributes = block
                     .getLoopPathAttributes(loopPath);
                     if (attributes.isAbsolute()) {
                         int numIterations = attributes.getNumIterations();
@@ -1062,7 +1062,7 @@ public class Block implements Comparable<Block> {
             if (recurse) {
                 for (Block loopPath : block.getLoopPaths()) {
                     block.incrementSeen();
-                    PathAttributes attributes = block
+                    Attributes attributes = block
                     .getLoopPathAttributes(loopPath);
                     if (!attributes.isAbsolute()) {
                         int numIterations = attributes.getNumIterations();
@@ -1087,7 +1087,7 @@ public class Block implements Comparable<Block> {
                     block.incrementSeen();
                     num += loopPath.getNumPausablesAbsolute(true);
 
-                    PathAttributes attributes = block
+                    Attributes attributes = block
                     .getLoopPathAttributes(loopPath);
                     if (attributes.isAbsolute()) {
                         int numIterations = attributes.getNumIterations();

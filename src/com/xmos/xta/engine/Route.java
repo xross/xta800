@@ -187,6 +187,13 @@ public class Route {
     }
     
     boolean setInstructionNumCycles(int pc, int numCycles) {
+        for(Unknown unknown : m_unknowns){
+            if(unknown.getPc() == pc){
+                m_unknowns.remove(unknown);
+                m_engine.notifyUpdateState();
+                break;
+            }
+        }
     	return m_instructionDecodeCache.setInstructionNumCycles(m_engine, pc, numCycles);
     }
 
@@ -315,7 +322,7 @@ public class Route {
             for (Block loopPath : block.getLoopPaths()) {
                 int blockId = allInstances ? loopPath.getId() : loopPath.getInstanceId();              
                 if (blockId == pathId) {
-                    PathAttributes attributes = block.getLoopPathAttributes(loopPath);
+                    Attributes attributes = block.getLoopPathAttributes(loopPath);
                     attributes.setNumIterations(iterations, absolute);
                     hit = true;
                     if (!allInstances) {
