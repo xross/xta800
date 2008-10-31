@@ -121,12 +121,12 @@ public class Route {
 
             rootPath = new Block(Mode.FUNCTION, m_config, m_instructionDecodeCache,
                 instructionAttributes, memoryImage, symbolTable, m_engine.getExclusions(),
-                fromPc, 0, this, null, initialState, context);
+                fromPc, 0, this, null, initialState, context, false);
         }
         else {
             rootPath = new Block(Mode.ABSOLUTE, m_config, m_instructionDecodeCache,
                 instructionAttributes, memoryImage, symbolTable, m_engine.getExclusions(),
-                m_fromRef.getPc(), m_toRef.getPc(), this, null, initialState, context);            
+                m_fromRef.getPc(), m_toRef.getPc(), this, null, initialState, context, false);            
         }
                          
         stepPath(rootPath);
