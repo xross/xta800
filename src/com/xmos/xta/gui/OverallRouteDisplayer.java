@@ -531,7 +531,7 @@ public class OverallRouteDisplayer implements PathUpdater {
 
         double totalUnits;
         if(showTime){
-            totalUnits = m_pathLength*m_engine.getFrequency();
+            totalUnits = ((m_engine.getConfig().m_numThreads * 1000) / m_engine.getConfig().m_frequency) * m_pathLength;
         } else {
             totalUnits = m_pathLength;
         }

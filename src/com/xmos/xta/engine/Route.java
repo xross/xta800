@@ -322,7 +322,7 @@ public class Route {
             for (Block loopPath : block.getLoopPaths()) {
                 int blockId = allInstances ? loopPath.getId() : loopPath.getInstanceId();              
                 if (blockId == pathId) {
-                    Attributes attributes = block.getLoopPathAttributes(loopPath);
+                    PathAttributes attributes = block.getLoopPathAttributes(loopPath);
                     attributes.setNumIterations(iterations, absolute);
                     hit = true;
                     if (!allInstances) {

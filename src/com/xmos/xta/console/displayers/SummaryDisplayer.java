@@ -19,6 +19,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Attributes;
+import com.xmos.xta.engine.PathAttributes;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 
@@ -157,7 +158,7 @@ public class SummaryDisplayer extends Displayer {
             boolean isAbsolute = false;
 
             if (parent != null) {
-                Attributes attributes = parent.getLoopPathAttributes(path);
+                PathAttributes attributes = parent.getLoopPathAttributes(path);
                 iterations = attributes.getNumIterations();
                 isAbsolute = attributes.isAbsolute();
             }

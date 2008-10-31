@@ -7,7 +7,7 @@ public abstract class XtaInstruction extends Instruction {
   
 	String m_functionName;
     int m_functionOffset;	
-    int m_numCycles;
+    Attributes m_numCycles;
     int m_basicNumCycles;
     Config m_config;
 	
@@ -16,7 +16,7 @@ public abstract class XtaInstruction extends Instruction {
 		super(nmenonic, opcode, pc, numBytes, isLoadStore, canPause);
 		m_functionName = null;
 		m_functionOffset = 0;
-		m_numCycles = 0;
+		m_numCycles = new Attributes();
 		m_basicNumCycles = 0;
 		m_config = null;
 	}
@@ -47,15 +47,15 @@ public abstract class XtaInstruction extends Instruction {
 		// Makes sure the user cannot configure the instruction to take
 		// less time than is physically possible.
 		if (numCycles > m_basicNumCycles) {
-		    m_numCycles = numCycles;
+		    m_numCycles.setNumIterations(numCycles);
 		}
 		else {
-			m_numCycles = m_basicNumCycles;
+		    m_numCycles.setNumIterations(m_basicNumCycles);
 		}
 	}
 
 	public int getNumCycles() {
-		return m_numCycles;
+		return m_numCycles.getNumIterations();
 	}
 	
 	public void setTimeTaken(double timeTaken) {
@@ -72,10 +72,10 @@ public abstract class XtaInstruction extends Instruction {
 		assert(m_config != null);
     	double timeTaken = 0.0;    	
         if (m_config.m_numThreads > 4) {
-        	timeTaken = ((m_config.m_numThreads * 1000) / m_config.m_frequency) * m_numCycles;
+        	timeTaken = ((m_config.m_numThreads * 1000) / m_config.m_frequency) * m_numCycles.getNumIterations();
         }
         else {
-        	timeTaken = ((4.0 * 1000) / m_config.m_frequency) * m_numCycles;
+        	timeTaken = ((4.0 * 1000) / m_config.m_frequency) * m_numCycles.getNumIterations();
         }
         return timeTaken;
 	}
@@ -86,7 +86,7 @@ public abstract class XtaInstruction extends Instruction {
 	
 	void setBasicNumCycles(int basicNumCycles) {
 		m_basicNumCycles = basicNumCycles;
-		m_numCycles = basicNumCycles;
+		m_numCycles.setNumIterations(basicNumCycles);
 	}
 	
 	static Expression reverseMap(Expression value, int numRanges, int ranges[][], int mapsTo[][]) {
