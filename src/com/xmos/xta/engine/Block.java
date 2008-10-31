@@ -415,7 +415,7 @@ public class Block implements Comparable<Block> {
     public int getNumIterations() {
         Block parent = this;
         while (parent != null) {
-            if (parent.getLoopPaths().contains(this)) {
+            if (parent.m_loopPaths.contains(this)) {
                 Attributes attributes = parent.getLoopPathAttributes(this);
                 return attributes.getNumIterations();
             }
