@@ -50,7 +50,7 @@ public class RootPath implements RouteNode {
     }
 
     public String getDescription() {
-        String description = m_rootPath.getTimeTaken(true) + " ns";
+        String description = getTimeTaken() + " ns";
         if (m_caller != null) {
             description += " - " + m_rootPath.getNumIterations() + " iterations";
         }
@@ -87,17 +87,15 @@ public class RootPath implements RouteNode {
     }
 
     public ImageIcon getIcon() {
-
-        //using the caller, find out if this path is absolute or not
-        
+        // using the caller, find out if this path is absolute or not
         boolean absolute = false;
         if(m_caller != null){
             absolute = m_caller.getLoopPathAttributes(m_rootPath).isAbsolute();
         }
         
         try {
-        if(absolute){
-            if(m_rootPath.getNumUnknowns(true)==0){
+        if (absolute){
+            if (m_rootPath.getNumUnknowns(true)==0){
                 return new ImageIcon(XtaGui.class
                         .getResource("AbsolutePathUnknown.png"));
             } else {
@@ -106,7 +104,7 @@ public class RootPath implements RouteNode {
             }
 
         } else {
-            if(m_rootPath.getNumUnknowns(true)==0){
+            if (m_rootPath.getNumUnknowns(true)==0){
                 return new ImageIcon(XtaGui.class
                         .getResource("Path.png"));
             } else {
@@ -149,7 +147,6 @@ public class RootPath implements RouteNode {
         JMenuItem setIterations = new JMenuItem("Set iteration properties");
         setIterations.addMouseListener(new MouseAdapter(){
             
-            
             public void mousePressed(MouseEvent e) {
 
                 int count = m_caller.getLoopPathAttributes(m_rootPath).getNumIterations();
@@ -188,11 +185,10 @@ public class RootPath implements RouteNode {
                 id.add(button);
                 
                 id.pack();
-                
             }
         });
         
-        if(m_caller != null) popup.add(setIterations);
+        if (m_caller != null) popup.add(setIterations);
         JMenuItem analysePath = new JMenuItem("Analyse just this");
         analysePath.addMouseListener(new MouseAdapter(){
             public void mousePressed(MouseEvent e) {

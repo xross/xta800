@@ -59,7 +59,7 @@ public class PathStatus extends Displayer {
         m_treeSize = 0;
         DefaultMutableTreeNode m_rootNode = new DefaultMutableTreeNode(new RoutePath(route, m_engine));
         m_treeModel = new DefaultTreeModel(m_rootNode);
-        for(Block path : route.completePaths()){
+        for (Block path : route.completePaths()){
             ((DefaultTreeModel)m_treeModel).insertNodeInto(
                     addPath(0, path, null),
                     m_rootNode,
@@ -67,12 +67,14 @@ public class PathStatus extends Displayer {
         }
         m_selectedPath = new TreePath(m_rootNode);
         m_centerNode = m_rootNode;
-        for(PathUpdater pathUpdater : m_pathUpdaters){
+        for (PathUpdater pathUpdater : m_pathUpdaters){
             pathUpdater.setSelectedPath(m_selectedPath, m_centerNode);
         }
-        if(route.unresolvedPaths().size()>0){
+        if (route.unresolvedPaths().size()>0){
             String error = String.format("Found %d unresolved path", route.unresolvedPaths().size());
-            if(route.unresolvedPaths().size()>1) error+="s";
+            if (route.unresolvedPaths().size() > 1) {
+                error += "s";
+            }
             JOptionPane.showMessageDialog(m_mainFrame,
                     error,
                     "Warning",
@@ -88,17 +90,22 @@ public class PathStatus extends Displayer {
         newPath = new DefaultMutableTreeNode( new RootPath(path, caller, depth, m_engine, m_mainFrame, m_xtaGui));
         m_treeSize++;
         assert(newPath!=null);
-        for(Block pathBlock : path.getPathBlocks()){
+        System.out.println("Path with blocks " + path.getPathBlocks().size());
+        int i = 0;
+        for (Block pathBlock : path.getPathBlocks()) {
+            System.out.println("Block" + i);
+            i++;
             DefaultMutableTreeNode block = new DefaultMutableTreeNode(new BlockPath(pathBlock));
             
-            if (pathBlock.getLoopPaths().size() > 0) {
+            if (pathBlock.numLoopPaths() > 0) {
+                System.out.println("Loop with " + pathBlock.numLoopPaths());
+
                 DefaultMutableTreeNode loop = new DefaultMutableTreeNode(new LoopPath(pathBlock, path, m_engine));
                 m_treeSize++;
                 for (Block loopPath : pathBlock.getLoopPaths()) {
-                    pathBlock.incrementSeen();
                     loop.add(addPath(depth + 1, loopPath, pathBlock));
-                    pathBlock.decrementSeen();
                 }
+                pathBlock.doneWithLoopPaths();
                 newPath.add(loop);
             }
 
