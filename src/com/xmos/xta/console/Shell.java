@@ -124,7 +124,9 @@ public class Shell {
     }
            
     private boolean exitAllowed(Command command) {
-        //TODO got a null pointer exception here
+        if (command == null)
+            return false;
+        
         if (!m_exitAllowed &&
         	!m_console.wasInternal() &&
         	command.name().equals("exit")) {

@@ -409,7 +409,7 @@ public class Block implements Comparable<Block> {
     public int getNumIterations() {
         Block parent = this;
         while (parent != null) {
-            if (parent.getLoopPaths().contains(this)) {
+            if (parent.m_loopPaths.contains(this)) {
                 Attributes attributes = parent.getLoopPathAttributes(this);
                 return attributes.getNumIterations();
             }
@@ -609,6 +609,7 @@ public class Block implements Comparable<Block> {
                 setStatus(Status.UNRESOLVED);
                 m_route.addUnresolvedPath(this);
                 releaseMemory();
+                return;
             }
 
         } else if (m_machineState.wasBranch()) {
@@ -639,6 +640,7 @@ public class Block implements Comparable<Block> {
                 setStatus(Status.UNRESOLVED);
                 m_route.addUnresolvedPath(this);
                 releaseMemory();
+                return;
             }
         } else {
             int nextPc = m_machineState.getPc() + m_instruction.getNumBytes();
