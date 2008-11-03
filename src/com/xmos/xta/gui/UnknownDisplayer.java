@@ -2,6 +2,9 @@ package com.xmos.xta.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
@@ -29,11 +32,21 @@ public class UnknownDisplayer extends Displayer {
     public UnknownDisplayer(){
         m_listModel = new DefaultListModel();
         m_unknownList = new JList(m_listModel);
+        m_unknownList.addMouseListener(new MouseAdapter(){
+            public void mousePressed(MouseEvent e) {
+                mousePress(e); 
+            }
+        });
         m_unknownList.setCellRenderer(new UnknownCellRenderer());
         m_panel = new JPanel();
         JScrollPane scrollPane = new JScrollPane(m_unknownList);
         m_panel.setLayout(new BorderLayout());
         m_panel.add(scrollPane, BorderLayout.CENTER);
+    }
+    
+    private void mousePress(MouseEvent e) {
+        Unknown selectedUnknown = (Unknown) m_unknownList.getSelectedValue();
+        System.out.println(selectedUnknown.getPc());
     }
     
     public void displayRoute(Route route, DebugInfo debugInfo,

@@ -255,6 +255,126 @@ class Expression {
 		}		
 	}
 	
+	
+	public int resolveMax(Expression expression) {
+	    
+	    if(expression.canResolve()){
+	        return expression.resolve(expression);
+	    }
+	        
+        if (expression.m_type != null) {
+            assert (expression.m_type == Type.IMMEDIATE);
+            return expression.m_value;
+        }
+        else {
+            long result = 0;
+            
+            switch (expression.m_operator) {
+            case ADD:
+                assert (expression.m_numOperands == 2);
+                return resolveMax(expression.m_operands[0]) + resolveMax(expression.m_operands[1]);
+
+            case SUB:               
+                assert (expression.m_numOperands == 2);
+                return resolveMax(expression.m_operands[0]) - resolveMax(expression.m_operands[1]);
+
+            case AND: 
+                assert (expression.m_numOperands == 2);
+                return resolveMax(expression.m_operands[0]) & resolveMax(expression.m_operands[1]);
+
+            case ANDNOT:
+                assert (expression.m_numOperands == 2);
+                return resolveMax(expression.m_operands[0]) & ~resolveMax(expression.m_operands[1]);
+
+            case ASHR:  
+                assert (expression.m_numOperands == 2);
+                return resolveMax(expression.m_operands[0]) >> resolveMax(expression.m_operands[1]);
+
+            case ASHL:              
+                assert (expression.m_numOperands == 2);
+                return resolveMax(expression.m_operands[0]) << resolveMax(expression.m_operands[1]);
+
+            case BITREV: 
+                assert (expression.m_numOperands == 1);
+                return XtaInstruction.bitReverse(resolveMax(expression.m_operands[0]));
+
+            case BYTEREV:
+                assert (expression.m_numOperands == 1);
+                return XtaInstruction.byteReverse(resolveMax(expression.m_operands[0]));
+
+            case CLZ:    
+                assert (expression.m_numOperands == 1);
+                return XtaInstruction.countLeadingZeros(resolveMax(expression.m_operands[0]));
+
+            case CRC32:  
+                assert (expression.m_numOperands == 3);
+                return XtaInstruction.crc32(resolveMax(expression.m_operands[0]), 
+                        resolveMax(expression.m_operands[1]),
+                        resolveMax(expression.m_operands[2]));
+
+            case CRC8:               
+                assert (expression.m_numOperands == 3);
+                return XtaInstruction.crc8(
+                        resolveMax(expression.m_operands[0]), 
+                        resolveMax(expression.m_operands[1]),
+                        resolveMax(expression.m_operands[2]));
+
+            case DIVS:               
+                assert (expression.m_numOperands == 2);
+                return XtaInstruction.divs(
+                        resolveMax(expression.m_operands[0]), 
+                        resolveMax(expression.m_operands[1]));
+
+            case DIVU:               
+                assert (expression.m_numOperands == 2);
+                return XtaInstruction.divu(
+                        resolveMax(expression.m_operands[0]), 
+                        resolveMax(expression.m_operands[1]));
+
+            case LT:                 
+                assert (expression.m_numOperands == 2);
+                return ((resolveMax(expression.m_operands[0]) < 
+                        resolveMax(expression.m_operands[1])) == true) ? 1 : 0;
+                                    
+            case GT:                 
+                assert (expression.m_numOperands == 2);
+                return ((resolveMax(expression.m_operands[0]) > 
+                resolveMax(expression.m_operands[1])) == true) ? 1 : 0;
+
+            case NEG:                
+                assert (expression.m_numOperands == 1);
+                return -resolveMax(expression.m_operands[0]);
+
+            case NOT:                
+                assert (expression.m_numOperands == 1);
+                return ~resolveMax(expression.m_operands[0]);
+
+            case OR:                 
+                assert (expression.m_numOperands == 2);
+                return resolveMax(expression.m_operands[0]) | resolveMax(expression.m_operands[1]);
+
+            case EQ:                 
+                assert (expression.m_numOperands == 2);
+                return (resolveMax(expression.m_operands[0]) == resolveMax(expression.m_operands[1])) ? 1 : 0;
+                
+            case MACC_LOW:
+                assert (expression.m_numOperands == 4);
+                result = macc();
+                return (int)result;
+
+            case MACC_HIGH:
+                assert (expression.m_numOperands == 4);
+                result = macc();
+                return (int)(result >> 32);
+
+            default:
+                assert false;
+                return 0;
+            }               
+        }       
+    }
+    
+	
 	private String createExpressionString(Expression expression, String exprStr) {
 		String retStr = exprStr;
 		
@@ -262,7 +382,7 @@ class Expression {
 		 	// Terminal:
 			switch (expression.m_type) {
 			case IMMEDIATE:
-				retStr += "[i " + expression.m_value + "]";
+				retStr += "[i 0x" + Integer.toHexString(expression.m_value)  + "("+expression.m_value + ")]";
 				break;
 				
 			case REGISTER:

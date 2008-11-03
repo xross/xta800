@@ -33,9 +33,12 @@ public class SourceColourer {
 
         // Add expressions to match with a style
         m_expressions = new ArrayList<Expression>();
-        m_expressions.add(
-                new Expression("(/\\*(?:[^*]|\\*[^/])*\\*/)",
-                createStyle(Color.red)));
+        
+        
+        
+        //m_expressions.add(
+        //        new Expression("(/\\*(?:[^*]|\\*[^/])*\\*/)",
+        //        createStyle(Color.red)));
         m_expressions.add(
                 new Expression("(//[^\n]*)",
                 createStyle(Color.red)));
@@ -48,10 +51,10 @@ public class SourceColourer {
         m_expressions.add(
                 new Expression("\\b(continue|break|for|return|while|if|else|switch|par)\\b",
                 createStyle(Color.green.darker())));
-        
         // Create a regex string
         String regex = "";
         int i=1;
+        
         for(Expression e : m_expressions) {
             regex += e.getRegex();
             if (i < m_expressions.size())

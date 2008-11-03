@@ -1,18 +1,11 @@
 package com.xmos.xta.engine;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.Vector;
-
-import com.xmos.dwarfhandler.DebugEngine;
-import com.xmos.dwarfhandler.StatementInfo;
-import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.MachineState.BranchState;
@@ -66,8 +59,10 @@ public class Block implements Comparable<Block> {
     private Stack<TreeSet<Integer>> m_contexts;
     private Vector<Reference> m_exclusions;
 
+    /*
     private HashMap<String, TreeSet<Integer>> m_sourceLinesCovered;
     private HashMap<String, TreeSet<Integer>> m_asmLinesCovered;
+    */
 
     private static int m_numPaths;
     private static int m_numPathInstances;
@@ -124,10 +119,10 @@ public class Block implements Comparable<Block> {
         m_firstStep = true;
         m_functionDepth = m_contexts.size() - 1;
         m_exclusions = exclusions;
-
+        /*
         m_sourceLinesCovered = new HashMap<String, TreeSet<Integer>>();
         m_asmLinesCovered = new HashMap<String, TreeSet<Integer>>();
-
+*/
         m_machineState.setPc(m_fromPc);
 
         m_numInstructions = 0;
@@ -224,10 +219,10 @@ public class Block implements Comparable<Block> {
         m_firstStep = false;
         m_functionDepth = blockToSplit.m_functionDepth;
         m_exclusions = blockToSplit.m_exclusions;
-
+/*
         m_sourceLinesCovered = new HashMap<String, TreeSet<Integer>>();
         m_asmLinesCovered = new HashMap<String, TreeSet<Integer>>();
-
+*/
         m_route = blockToSplit.m_route;
 
         m_loopPaths = blockToSplit.m_loopPaths;
@@ -461,6 +456,7 @@ public class Block implements Comparable<Block> {
         return m_toPc;
     }
 
+    /*
     public HashMap<String, TreeSet<Integer>> getSourceLinesCovered() {
         HashMap<String, TreeSet<Integer>> sourceLinesCovered = new HashMap<String, TreeSet<Integer>>();
 
@@ -506,7 +502,7 @@ public class Block implements Comparable<Block> {
             }
         }
     }
-
+*/
     public boolean addLoopPath(Block pathStartBlock) {
         assert (pathStartBlock != null);
         assert (!m_loopPaths.contains(pathStartBlock));
@@ -626,11 +622,13 @@ public class Block implements Comparable<Block> {
                         takeDontBranch(m_instruction, false);
                         setStatus(Status.COMPLETE);
                     } else if (m_machineState.getBranchTaken() == BranchState.UNKNOWN) {
+                        
                         addUnknown(m_instruction);
                         takeBranch(m_machineState.getBranchTarget(), true);
                         takeDontBranch(m_instruction, true);
                     }
                 } else {
+                    addUnknown(m_instruction);
                     takeBranch(m_machineState.getBranchTarget(), true);
                     takeDontBranch(m_instruction, true);
                     releaseMemory();
@@ -669,7 +667,14 @@ public class Block implements Comparable<Block> {
     }
 
     private void addUnknown(XtaInstruction inst) {
-        Unknown unknown = new Unknown(inst);
+        Unknown unknown;
+        if(inst.canPause() ){
+            unknown = new Unknown(inst);
+        } else {
+            unknown = new Unknown(inst, 
+                m_machineState.getGuardExpression(),
+                m_machineState.getBranchTargetExpression());
+        }
         m_unknowns.add(unknown);
         m_route.addUnknown(unknown);
     }
@@ -1185,7 +1190,7 @@ public class Block implements Comparable<Block> {
             m_numInstructions++;
         }
     }
-
+/*
     void buildCoveredLinesHashes(DebugInfo debugInfo, SymbolTable symbolTable) {
 
         DebugEngine debugEngine = debugInfo.getDebugEngine();
@@ -1272,7 +1277,7 @@ public class Block implements Comparable<Block> {
         }
 
     }
-
+*/
     private void traceInstruction(Block Block) {
         XtaInstruction instruction = Block.getCurrentInstruction();
 

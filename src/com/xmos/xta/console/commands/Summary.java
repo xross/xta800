@@ -73,6 +73,6 @@ class Summary extends Command {
 		if (!isRouteAnalysed(engine, console))
 			return;
 		
-        engine.displayRoute(new SummaryDisplayer(console, m_level, m_pathId));	
+        engine.displayRoute(new SummaryDisplayer(console, m_level, m_pathId, engine.getXeObject()));	
     }
 }

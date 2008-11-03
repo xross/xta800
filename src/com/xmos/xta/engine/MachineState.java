@@ -26,7 +26,10 @@ class MachineState {
     Expression m_op4;
     Expression m_op5;
     Expression m_op6;
-
+    
+    private Expression m_branchTargetExpression;
+    private Expression m_guardExpression;
+    
     private boolean m_wasBranch;
     private boolean m_wasBranchResolved;
     private int m_branchTarget;
@@ -130,14 +133,14 @@ class MachineState {
     }
 
     void branch(boolean b, Expression guard, Expression branchTarget) {
-
+        m_branchTargetExpression = branchTarget;
         branchTarget.resolve();
 
         m_wasBranch = true;
         m_wasBranchResolved = branchTarget.isResolved();
         if (m_wasBranchResolved) {
             guard.resolve();
-
+            m_guardExpression = guard;
             m_branchTarget = branchTarget.getValue();
             if (guard.isResolved()) {
                 if (guard.getValue() == 0) {
@@ -258,5 +261,13 @@ class MachineState {
 
             System.out.printf("\n");
         }
+    }
+
+    public Expression getBranchTargetExpression() {
+        return m_branchTargetExpression;
+    }
+    
+    public Expression getGuardExpression() {
+        return m_guardExpression;
     }
 }

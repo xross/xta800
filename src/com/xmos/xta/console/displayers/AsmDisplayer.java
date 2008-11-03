@@ -11,20 +11,25 @@ import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xeobject.Function;
+import com.xmos.xeobject.XeObject;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.Disassembler;
 import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.XtaInstruction;
 
 public class AsmDisplayer extends Displayer {
 	Console m_console;
 	int m_pathId;
 	XeLoader.Architecture m_architecture;
+	private XeObject m_xeObject;
 	
-	public AsmDisplayer(Console console, int pathId, XeLoader.Architecture architecture) {
+	public AsmDisplayer(Console console, int pathId, XeLoader.Architecture architecture,  XeObject xeObject) {
 		m_console = console;
 		m_pathId = pathId;
+		m_xeObject = xeObject;
 		m_architecture = architecture;
 	}
 	
@@ -37,8 +42,24 @@ public class AsmDisplayer extends Displayer {
 			return;
     	}
     	
-        if (path.getInstructions(false).size() > 0) {    	
-	    	HashMap<String, TreeSet<Integer>> asmLinesCovered = path.getAsmLinesCovered();    	
+        if (path.getInstructions(false).size() > 0) { 
+            HashMap<String, TreeSet<Integer>> asmLinesCovered = new HashMap<String, TreeSet<Integer>>();
+            
+            for(XtaInstruction inst : path.getInstructions(false)){
+                int pc = inst.getPc();
+                HashMap<Integer, Function> functionMap = m_xeObject.getPcToFunctionMap();
+                String instString = functionMap.get(pc).getText();
+                if(asmLinesCovered.containsKey(instString)){
+                    asmLinesCovered.get(instString).add(inst.getPc());
+                } else {
+                    TreeSet<Integer> treeList = new TreeSet<Integer>();
+                    treeList.add(inst.getPc());
+                    asmLinesCovered.put(instString, treeList);
+                }
+            }
+            
+            
+	    	//HashMap<String, TreeSet<Integer>> asmLinesCovered = path.getAsmLinesCovered();    	
 	        for (Iterator<Map.Entry<String, TreeSet<Integer>>> iter = 
 	        	asmLinesCovered.entrySet().iterator(); iter.hasNext();) {
 	        	
@@ -82,7 +103,9 @@ public class AsmDisplayer extends Displayer {
 	            m_console.display("\n");
 	            m_console.display("...\n");
 	            m_console.display("\n");
+	            
 	        }
+        
         }
     }
 

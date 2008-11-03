@@ -133,9 +133,11 @@ public class Route {
     
         if (m_status == Status.COMPLETED) {
             sortPaths();
+            /*
             if (!buildCoveredLinesHashes(debugInfo, symbolTable)) {	        	
         	    return m_status;
             }	
+            */
         }
         else if (rootPath.getStatus() == Block.Status.ERROR) {
             m_status = Status.ERROR;
@@ -238,7 +240,7 @@ public class Route {
         Collections.sort(m_completePaths);
         Collections.sort(m_unresolvedPaths);
     }
-
+/*
     private boolean buildCoveredLinesHashes(DebugInfo debugInfo, SymbolTable symbolTable) {    
         for (Block path : m_completePaths) {
             if (checkAbort()) 
@@ -249,7 +251,7 @@ public class Route {
         }
         return true;
     }
-    
+*/    
     public void addUnknown(Unknown unknown){
         m_unknowns.add(unknown);
     }

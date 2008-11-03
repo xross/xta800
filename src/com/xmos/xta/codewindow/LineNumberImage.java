@@ -108,7 +108,6 @@ public class LineNumberImage implements Highlighter.HighlightPainter {
                 icon = new ImageIcon(XtaGui.class.getResource("warning.png"));
             } catch (Exception e) {
                 icon = new ImageIcon();
-                e.printStackTrace();
             }
             icon.paintIcon(m_textPane, g2, m_textPane.getWidth()-icon.getIconWidth(), (int)(lineTop + fontHeight/2)-5);
 

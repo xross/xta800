@@ -22,10 +22,6 @@ public abstract class XtaInstruction extends Instruction {
 	}
 
 	public abstract void execute(MachineState machineState);
-	
-	//public Vector<LoopRoute> getMarkedLoopRoutes() { 
-	//	return m_markedLoopRoutes; 
-	//}
     		   
 	public void setFunctionName(String functionName) {
 		m_functionName = functionName;
