@@ -1,10 +1,16 @@
 package com.xmos.xta.gui.codeflow;
 
+import java.awt.BorderLayout;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
-
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -18,6 +24,9 @@ import com.xmos.xta.gui.core.RoutePath;
 public class BlockDecomposer implements PathUpdater {
 	final static boolean DISPLAY_GRAPH_VIS = false;
 
+	private JPanel m_graphVizViewer;
+	private JScrollPane m_graphScroll;
+	private JLabel m_graphLabel;
     private Route                   m_route;
     private PathStatus              m_pathStatus; 
     private TreeModel               m_treeModel;
@@ -32,6 +41,13 @@ public class BlockDecomposer implements PathUpdater {
         m_basicBlocks = new ArrayList<BasicBlock>();
         m_codeFlow = new CodeFlowPanel();
         m_basicBlockDepths = new ArrayList<ArrayList<BasicBlock>>();
+        m_graphVizViewer = new JPanel();
+        m_graphScroll = new JScrollPane();
+        m_graphLabel = new JLabel();
+        m_graphScroll.setViewportView(m_graphLabel);
+        m_graphVizViewer.setLayout(new BorderLayout());
+        m_graphVizViewer.add(m_graphScroll);
+        
     }
 
     public void notifyUpdateState() {
@@ -59,14 +75,15 @@ public class BlockDecomposer implements PathUpdater {
 
         if(m_route.hashCode() == m_analysedRoute){
             return true;
-        }
-        
+        } 
+
         m_basicBlocks.clear();
 
         ArrayList<InstructionLink> links = buildInstructionLinks(m_route.getBlocks());
 
         parseBlocks(m_route.getBlocks(), links);
         int startBlock =parseLinks(links);
+        startBlock=0;
         if(startBlock == -1 ) return false;
         HashMap<Integer, BasicBlock> basicBlockMap = new HashMap<Integer, BasicBlock>();
         for(BasicBlock bb : m_basicBlocks){
@@ -81,11 +98,11 @@ public class BlockDecomposer implements PathUpdater {
         
         m_basicBlockDepths.clear();
         resetAllBasicBlockDepths();
+        /*
         findBasicBlockDepth(m_basicBlocks.get(startBlock), 0, new ArrayList<BasicBlock>());
-        
+        */
         if (DISPLAY_GRAPH_VIS) 
             printOutGraphvis();
-        
         if(success){
             m_analysedRoute = m_route.hashCode();
         } else {
@@ -115,7 +132,6 @@ public class BlockDecomposer implements PathUpdater {
             }
             return;
         } 
-        
         addNewBlock(bb, depth);
         bb.setDepth(depth);
         ArrayList<BasicBlock> nowSeen =new ArrayList<BasicBlock>();
@@ -155,21 +171,50 @@ public class BlockDecomposer implements PathUpdater {
     }
 
     private void printOutGraphvis(){
-        System.out.println("digraph g {");
+        
+        String dotFile = "";
+        dotFile +="digraph g {\n";
         for(BasicBlock bb : m_basicBlocks){
-            System.out.print("L" + bb.hashCode() + "  [shape = box, label = \"" );
+            dotFile +="L" + bb.hashCode() + "  [shape = box, label = \"";
             for(XtaInstruction inst : bb.getInstructions()){
-                System.out.printf("%x %s %s\\n", inst.getPc(), inst.getNmenonic(), inst.getOperandString());
+                dotFile += Integer.toHexString(inst.getPc()) +" " + inst.getNmenonic() + " "+ inst.getOperandString() +"\\n";
             }
-            System.out.print(bb.getDepth() +" " + m_basicBlockDepths.get(bb.getDepth()).size()+ "\\n");
-            System.out.println("\"];");
+            dotFile +="\"];\n";
         }
         for(BasicBlock bb : m_basicBlocks){
             for(BasicBlock nb : bb.getNextBasicBlocks()){
-                System.out.println("L"+bb.hashCode() + " -> L" + nb.hashCode() + ";");
+                dotFile+="L"+bb.hashCode() + " -> L" + nb.hashCode() + ";\n";
             }
         }
-        System.out.println("}");
+        dotFile += "}\n";
+        FileWriter file_writer;
+        String graphNumber = "" + dotFile.hashCode() + ".dot";
+        //String pictureNumber = "" + dotFile.hashCode() + ".jpg";
+        try {
+            file_writer = new FileWriter (new File(graphNumber));
+            BufferedWriter buf_writer = new BufferedWriter (file_writer);
+            buf_writer.write(dotFile);
+            buf_writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        /*
+        try {
+            Process p=Runtime.getRuntime().exec("dot "+graphNumber+" -Tjpg -o "+pictureNumber);
+            p.waitFor();
+            //ImageIcon icon = new ImageIcon(pictureNumber);
+            //m_graphLabel.setIcon(icon);
+            //m_graphVizViewer.repaint();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        */
+    }
+    
+    public JPanel getGraphVizPanel(){
+        return m_graphVizViewer;
     }
     
     private ArrayList<InstructionLink> buildInstructionLinks( Vector<Block> blocks) {
@@ -258,8 +303,8 @@ public class BlockDecomposer implements PathUpdater {
                 if(i-1>=0){
                     prevInst = block.getInstructionsThis().get(i-1);
                 } else {
-                    if(block.getParentPath()!=null){
-                        prevInst = block.getParentPath().getInstructionsThis().lastElement();
+                    if(block.getParentBlock()!=null){
+                        prevInst = block.getParentBlock().getInstructionsThis().lastElement();
                     } 
                 }
                 if(prevInst!= null){
@@ -268,10 +313,11 @@ public class BlockDecomposer implements PathUpdater {
                 }
             }
             XtaInstruction lastInst = block.getInstructionsThis().lastElement();
-            for(Block loopBlock : block.getLoopPaths()){
+            for (Block loopBlock : block.getLoopPaths()){
                 links.get(getIndex(lastInst,links)).addNext(loopBlock.getInstructions(false).get(0));
                 links.get(getIndex(loopBlock.getInstructions(false).get(0),links)).addPrevious(lastInst);
             }
+            block.doneWithLoopPaths();
         }
     }
 

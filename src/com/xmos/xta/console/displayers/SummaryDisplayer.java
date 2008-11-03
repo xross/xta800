@@ -18,6 +18,7 @@ import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Block;
+import com.xmos.xta.engine.Attributes;
 import com.xmos.xta.engine.PathAttributes;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
@@ -103,14 +104,14 @@ public class SummaryDisplayer extends Displayer {
     	case COMPLETE_INSTRUCTIONS:
     		m_console.display(String.format("Path(id): Timing(ns)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute\n"));     			
          	m_console.display(String.format("+COMPLETE [%d path(s)]\n", route.completePaths().size()));
-	        summarizePaths(route.completePaths(), "    ", null);	        	       
+	        summarisePaths(route.completePaths(), "    ", null);	        	       
 	        break;
     	
         case UNRESOLVED:
         case UNRESOLVED_LOOPS:
         case UNRESOLVED_INSTRUCTIONS:
          	m_console.display(String.format("+UNRESOLVED [%d path(s)]\n", route.unresolvedPaths().size()));
-	        summarizePaths(route.unresolvedPaths(), "    ", null);
+	        summarisePaths(route.unresolvedPaths(), "    ", null);
 	        break;
 	        
         case FUNCTIONS:
@@ -151,7 +152,7 @@ public class SummaryDisplayer extends Displayer {
         m_console.display(String.format("Unresolved paths: %d\n", route.unresolvedPaths().size()));
     }
     
-    private void summarizePaths(Vector<Block> paths, String indent, Block parent) {
+    private void summarisePaths(Vector<Block> paths, String indent, Block parent) {
         for (Block path : paths) {
             int iterations = 1;
             boolean isAbsolute = false;
@@ -162,11 +163,11 @@ public class SummaryDisplayer extends Displayer {
                 isAbsolute = attributes.isAbsolute();
             }
                 
-        	summarizePath(path, indent, iterations, isAbsolute);
+        	summarisePath(path, indent, iterations, isAbsolute);
         }
     }
     
-    private void summarizePath(Block path, String indent, int numExecutions, boolean absolute) {
+    private void summarisePath(Block path, String indent, int numExecutions, boolean absolute) {
    	    displayPathLevelInfo(path, indent, numExecutions, absolute);
    	    
         for (Block block : path.getPathBlocks()) {
@@ -217,14 +218,15 @@ public class SummaryDisplayer extends Displayer {
         if (loopPaths.size() > 0) {
             int totalIterations = 0;
             for (Block loopPath : loopPaths) {
-                PathAttributes attributes = path.getLoopPathAttributes(loopPath);
+                Attributes attributes = path.getLoopPathAttributes(loopPath);
                 totalIterations += attributes.getNumIterations();
             }
         	m_console.display(String.format("%s    +loop [%d path(s), %d iteration(s)]\n", 
         			indent, loopPaths.size(), totalIterations));    
             	
-        	summarizePaths(loopPaths, indent + "        ", path);
+        	summarisePaths(loopPaths, indent + "        ", path);
         }
+        path.doneWithLoopPaths();
     }
 
     private void displayInstructionLevelInfo(Block path, String indent, int numExecutions) {
@@ -302,9 +304,10 @@ public class SummaryDisplayer extends Displayer {
                 }
             }
         
-            for (Block loopPath : block.getLoopPaths()) {    	    		
+            for (Block loopPath : block.getLoopPaths()) {
    		    	buildPathsWithinFunctionSet(loopPath, pathSet, functionAddress, functionSize);
        		}
+            block.doneWithLoopPaths();
         }
     }
     
@@ -323,9 +326,10 @@ public class SummaryDisplayer extends Displayer {
         	pathSet.add(path.getId());
         }
 
-        for (Block loopPath : path.getLoopPaths()) {    	    		
+        for (Block loopPath : path.getLoopPaths()) {
 	    	buildPathsWithinSourcesSet(loopPath, pathSet, sourceFileName);
    		}
+        path.doneWithLoopPaths();
     }
     
     private boolean pathWithinSourceFile(Block path, String sourceFileName) {
@@ -357,7 +361,7 @@ public class SummaryDisplayer extends Displayer {
         
         int numLoops = 0;
         for (Block block : path.getPathBlocks()) {
-            numLoops += block.getLoopPaths().size();
+            numLoops += block.numLoopPaths();
         }
         m_console.display(String.format("Num Loops:        %d\n", numLoops));
     }

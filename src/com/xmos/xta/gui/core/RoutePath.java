@@ -12,6 +12,7 @@ import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.gui.XtaGui;
 
 public class RoutePath implements RouteNode{
     private Route m_route;
@@ -36,8 +37,8 @@ public class RoutePath implements RouteNode{
 
     public ImageIcon getIcon() {
         try {
-            return new ImageIcon(BlockPath.class
-                    .getResource("../Routes.png"));
+            return new ImageIcon(XtaGui.class
+                    .getResource("Routes.png"));
         } catch (Exception e) {
             System.err.println("Warning: Could not find icon image");
         }

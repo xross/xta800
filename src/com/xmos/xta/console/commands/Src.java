@@ -53,11 +53,11 @@ class Src extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
+       
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
-
-		XeObject xeObject = engine.getXeObject();		
-        Displayer displayer = new SrcDisplayer(console, xeObject, m_pathId, m_fileName, false);
+		XeObject xeObject = engine.getXeObject();	
+		Displayer displayer = new SrcDisplayer(console, xeObject, m_pathId, m_fileName, false);
         engine.displayRoute(displayer);	
    }    
 }

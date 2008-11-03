@@ -1,60 +1,66 @@
 package com.xmos.xta.engine;
 
-
 class MachineState {
+
+    public static enum BranchState {
+        TAKEN, NOTTAKEN, UNKNOWN
+    }
+
     public final int CP_REG_NUM = 12;
     public final int DP_REG_NUM = 13;
     public final int SP_REG_NUM = 14;
     public final int LR_REG_NUM = 15;
-	
-	int m_opcode;
-	
-	int m_op1Fld;
-	int m_op2Fld;
-	int m_op3Fld;
-	int m_op4Fld;
-	int m_op5Fld;
-	int m_op6Fld;
 
-	Expression m_op1;
-	Expression m_op2;
-	Expression m_op3;
-	Expression m_op4;
-	Expression m_op5;
-	Expression m_op6;
+    int m_opcode;
 
-	private boolean m_wasBranch;
-	private boolean m_wasBranchResolved;
-	private int m_branchTarget;
+    int m_op1Fld;
+    int m_op2Fld;
+    int m_op3Fld;
+    int m_op4Fld;
+    int m_op5Fld;
+    int m_op6Fld;
+
+    Expression m_op1;
+    Expression m_op2;
+    Expression m_op3;
+    Expression m_op4;
+    Expression m_op5;
+    Expression m_op6;
+
+    private boolean m_wasBranch;
+    private boolean m_wasBranchResolved;
+    private int m_branchTarget;
+    private BranchState m_branchTaken;
 
     private boolean m_wasJump;
     private boolean m_wasJumpResolved;
     private int m_jumpTarget;
-	
-	private Registers m_registers;
-	private Memory m_memory;
+    private BranchState m_jumpTaken;
 
-	private InstructionBuffer m_iBuffer;
+    private Registers m_registers;
+    private Memory m_memory;
 
-	MachineState(int memoryBase, int memorySize) {
-	    m_registers = new Registers();
-	    m_memory = new Memory();
+    private InstructionBuffer m_iBuffer;
+
+    MachineState(int memoryBase, int memorySize) {
+        m_registers = new Registers();
+        m_memory = new Memory();
         m_iBuffer = new InstructionBuffer();
-        
-        // Initialises the stack pointer to a reasonable 
+
+        // Initialises the stack pointer to a reasonable
         // default location (i.e. the top of memory..)
         setStackPointerRegister(new Expression(memoryBase + memorySize));
-	}
+    }
 
     MachineState(MachineState machineState) {
-        m_opcode = machineState.m_opcode;        
+        m_opcode = machineState.m_opcode;
         m_op1Fld = machineState.m_op1Fld;
         m_op2Fld = machineState.m_op2Fld;
         m_op3Fld = machineState.m_op3Fld;
         m_op4Fld = machineState.m_op4Fld;
         m_op5Fld = machineState.m_op5Fld;
         m_op6Fld = machineState.m_op6Fld;
-        
+
         m_op1 = machineState.m_op1;
         m_op2 = machineState.m_op2;
         m_op3 = machineState.m_op3;
@@ -62,46 +68,46 @@ class MachineState {
         m_op5 = machineState.m_op5;
         m_op6 = machineState.m_op6;
 
-        m_wasBranch         = machineState.m_wasBranch;
+        m_wasBranch = machineState.m_wasBranch;
         m_wasBranchResolved = machineState.m_wasBranchResolved;
-        m_branchTarget      = machineState.m_branchTarget;        
+        m_branchTarget = machineState.m_branchTarget;
 
-        m_wasJump         = machineState.m_wasJump;
+        m_wasJump = machineState.m_wasJump;
         m_wasJumpResolved = machineState.m_wasJumpResolved;
-        m_jumpTarget      = machineState.m_jumpTarget;        
-        
+        m_jumpTarget = machineState.m_jumpTarget;
+
         m_registers = new Registers(machineState.m_registers);
         m_memory = new Memory(machineState.m_memory);
         m_iBuffer = new InstructionBuffer(machineState.m_iBuffer);
     }
-    
-    void setPc(int pc) { 
-        m_iBuffer.setPc(pc); 
+
+    void setPc(int pc) {
+        m_iBuffer.setPc(pc);
     }
-    
-    int getPc() { 
+
+    int getPc() {
         return m_iBuffer.getPc();
     }
-	
-	void setOpcode(int opcode) { 
-		m_opcode = opcode; 
-	}
-	
-	int getOpcode() { 
-		return m_opcode; 
-	}
 
-	boolean wasBranch() {
-		return m_wasBranch;
-	}
+    void setOpcode(int opcode) {
+        m_opcode = opcode;
+    }
 
-	boolean wasBranchResolved() {
-		return m_wasBranchResolved;
-	}
-	
-	int getBranchTarget() {
-		return m_branchTarget;
-	}
+    int getOpcode() {
+        return m_opcode;
+    }
+
+    boolean wasBranch() {
+        return m_wasBranch;
+    }
+
+    boolean wasBranchResolved() {
+        return m_wasBranchResolved;
+    }
+
+    int getBranchTarget() {
+        return m_branchTarget;
+    }
 
     boolean wasJump() {
         return m_wasJump;
@@ -110,27 +116,57 @@ class MachineState {
     boolean wasJumpResolved() {
         return m_wasJumpResolved;
     }
-    
+
     int getJumpTarget() {
         return m_jumpTarget;
     }
-	
-	void branch(Expression branchTarget) {
-	    branchTarget.resolve();
+
+    BranchState getJumpTaken() {
+        return m_jumpTaken;
+    }
+
+    BranchState getBranchTaken() {
+        return m_branchTaken;
+    }
+
+    void branch(boolean b, Expression guard, Expression branchTarget) {
+
+        branchTarget.resolve();
+
         m_wasBranch = true;
         m_wasBranchResolved = branchTarget.isResolved();
-        if (m_wasBranchResolved)
+        if (m_wasBranchResolved) {
+            guard.resolve();
+
             m_branchTarget = branchTarget.getValue();
-	}
+            if (guard.isResolved()) {
+                if (guard.getValue() == 0) {
+                    m_branchTaken = b ? BranchState.NOTTAKEN : BranchState.TAKEN;
+                } else {
+                    m_branchTaken = b ? BranchState.TAKEN : BranchState.NOTTAKEN;
+                }
+            } else {
+                m_branchTaken = BranchState.UNKNOWN;
+            }
+        } else {
+            m_branchTaken = BranchState.UNKNOWN;
+        }
+
+    }
 
     void jump(Expression jumpTarget) {
         jumpTarget.resolve();
         m_wasJump = true;
         m_wasJumpResolved = jumpTarget.isResolved();
-        if (m_wasJumpResolved)
+        if (m_wasJumpResolved) {
             m_jumpTarget = jumpTarget.getValue();
+            m_jumpTaken = BranchState.TAKEN;
+        } else {
+            m_jumpTaken = BranchState.UNKNOWN;
+        }
+
     }
-	
+
     boolean canIssue(int numBytes) {
         return m_iBuffer.canIssue(numBytes);
     }
@@ -146,79 +182,81 @@ class MachineState {
     void branchTo(int branchTarget, boolean isLoadStore) {
         m_iBuffer.branchTo(branchTarget, isLoadStore);
     }
-    
+
     int getNumIBufferBytes() {
         return m_iBuffer.getNumBytes();
     }
 
     Expression getConstPoolRegister() {
-		return m_registers.readRegister(CP_REG_NUM);
-	}
-	
-	void setConstPoolRegister(Expression value) {
-		writeRegister(CP_REG_NUM, value);
-	}
-
-	Expression getDataPoolRegister() {
-		return m_registers.readRegister(DP_REG_NUM);
-	}
-	
-	void setDataPoolRegister(Expression value) {
-		writeRegister(DP_REG_NUM, value);
-	}
-
-	Expression getStackPointerRegister() {
-		return m_registers.readRegister(SP_REG_NUM);
-	}
-
-	void setStackPointerRegister(Expression value) {
-		writeRegister(SP_REG_NUM, value);
-	}
-	
-	Expression getLinkRegister() {
-		return m_registers.readRegister(LR_REG_NUM);
-	}
-
-	void setLinkRegister(Expression value) {
-		writeRegister(LR_REG_NUM, value);
-	}
-	
-	Expression readRegister(int regNum) { 
-		return m_registers.readRegister(regNum); 
-	}
-	
-	void writeRegister(int regNum, Expression regValue) {
-		m_registers.writeRegister(regNum, regValue); 		
-	}
-
-    Expression readMemory(int address) { 
-        return m_memory.read(address); 
+        return m_registers.readRegister(CP_REG_NUM);
     }
-    
+
+    void setConstPoolRegister(Expression value) {
+        writeRegister(CP_REG_NUM, value);
+    }
+
+    Expression getDataPoolRegister() {
+        return m_registers.readRegister(DP_REG_NUM);
+    }
+
+    void setDataPoolRegister(Expression value) {
+        writeRegister(DP_REG_NUM, value);
+    }
+
+    Expression getStackPointerRegister() {
+        return m_registers.readRegister(SP_REG_NUM);
+    }
+
+    void setStackPointerRegister(Expression value) {
+        writeRegister(SP_REG_NUM, value);
+    }
+
+    Expression getLinkRegister() {
+        return m_registers.readRegister(LR_REG_NUM);
+    }
+
+    void setLinkRegister(Expression value) {
+        writeRegister(LR_REG_NUM, value);
+    }
+
+    Expression readRegister(int regNum) {
+        return m_registers.readRegister(regNum);
+    }
+
+    void writeRegister(int regNum, Expression regValue) {
+        m_registers.writeRegister(regNum, regValue);
+    }
+
+    Expression readMemory(int address) {
+        return m_memory.read(address);
+    }
+
     void writeMemory(int address, Expression value) {
-        m_memory.write(address, value);        
+        m_memory.write(address, value);
     }
-	
-	void resetInstructionState() {
+
+    void resetInstructionState() {
         m_wasBranch = false;
         m_wasBranchResolved = false;
-        m_branchTarget = 0;        
+        m_branchTarget = 0;
         m_wasJump = false;
         m_wasJumpResolved = false;
-        m_jumpTarget = 0;                
-	}
-	
-	void dumpState() {
-		for (int regIndex = 0; regIndex < Registers.NUM_REGISTERS; regIndex += 2) {
-			String exprString;
-			
-			exprString = m_registers.readRegister(regIndex + 0).expressionString();
-			System.out.printf("R[%-2d] = %-40s", regIndex + 0, exprString);			
+        m_jumpTarget = 0;
+    }
 
-			exprString = m_registers.readRegister(regIndex + 1).expressionString();
-			System.out.printf("R[%-2d] = %-40s", regIndex + 1, exprString);
-			
-			System.out.printf("\n");
-		}
-	}
+    void dumpState() {
+        for (int regIndex = 0; regIndex < Registers.NUM_REGISTERS; regIndex += 2) {
+            String exprString;
+
+            exprString = m_registers.readRegister(regIndex + 0)
+                    .expressionString();
+            System.out.printf("R[%-2d] = %-40s", regIndex + 0, exprString);
+
+            exprString = m_registers.readRegister(regIndex + 1)
+                    .expressionString();
+            System.out.printf("R[%-2d] = %-40s", regIndex + 1, exprString);
+
+            System.out.printf("\n");
+        }
+    }
 }

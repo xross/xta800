@@ -30,9 +30,11 @@ public abstract class Displayer {
             for (Block loopPath : block.getLoopPaths()) {
                 Block foundPath = getPath(loopPath, pathId);
                 if (foundPath != null) {
+                    block.doneWithLoopPaths();
                     return foundPath;
                 }
             }
+            block.doneWithLoopPaths();
         }
         return null;
     }

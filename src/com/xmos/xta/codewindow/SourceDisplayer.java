@@ -1,8 +1,11 @@
-package com.xmos.xeobjectdisplayer;
+package com.xmos.xta.codewindow;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.SourceFile;
@@ -38,7 +41,10 @@ public class SourceDisplayer extends Displayer {
             for (SourceLine sl : m_sourceFile.getSourceLines()) {
                 st.append(sl.getText());
                 st.append("\n");
-                m_textPane.getHighlighter().addHighlight(0, 0, sl.getLineHighlighter(m_lines, m_textPane, 0.0));
+                LineHighlighter lh = new LineHighlighter(sl);
+                lh.setLines(m_lines, m_textPane, 0.0);
+                m_lineHighlighters.add(lh);
+                m_textPane.getHighlighter().addHighlight(0, 0, lh);
             }
             m_lines.addAll(m_sourceFile.getSourceLines());
             m_document.insertString(0, st.toString(), m_style);
@@ -46,7 +52,10 @@ public class SourceDisplayer extends Displayer {
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
-
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                m_textPaneScrollPane.getViewport().setViewPosition(new Point(0,0));
+            }});
     }
 
     public void highlightPC(int pc, Color colour){

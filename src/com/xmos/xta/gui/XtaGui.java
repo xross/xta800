@@ -31,7 +31,7 @@ import javax.swing.UIManager;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
-import com.xmos.xeobjectdisplayer.SourceDisplayer;
+import com.xmos.xta.codewindow.SourceDisplayer;
 import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Engine;
@@ -49,7 +49,6 @@ public class XtaGui extends Displayer {
     private Config                  m_config;
     private Engine                  m_engine;
     private JTabbedPane             m_sourceTabs;
-    private JPanel                  m_selectedPathSummary;
     private TreeRouteDisplayer      m_routeTree;
     private StatusBarDisplayer      m_statusBarDisplayer;
     private ToolBar                 m_toolBar;
@@ -66,6 +65,8 @@ public class XtaGui extends Displayer {
     private BlockDecomposer         m_blockDecomposer;
     private Vector<ConsoleTextArea> m_consoles;
     private ConsoleArea             m_consoleArea;
+    private UnknownDisplayer        m_unknownDisplayer;
+    
     
     public static void main(String[] args) {
         XtaGui xtaGui = new XtaGui();
@@ -113,13 +114,12 @@ public class XtaGui extends Displayer {
         //engine displayers
         m_statusBarDisplayer    = new StatusBarDisplayer(m_engine, m_mainFrame, m_globalConfig);
         m_pathStatus            = new PathStatus(m_globalConfig, m_engine, m_mainFrame, this);
-        
-        
+        m_unknownDisplayer      = new UnknownDisplayer();
         
         //path Updaters
         m_routeTree             = new TreeRouteDisplayer(m_pathStatus);
         m_circleStructure       = new CodeStructure(m_pathStatus, m_globalConfig);
-        m_overallRouteDisplayer = new OverallRouteDisplayer(m_pathStatus);
+        m_overallRouteDisplayer = new OverallRouteDisplayer(m_pathStatus, m_engine);
         m_blockDecomposer       = new BlockDecomposer(m_pathStatus);
 
         m_pathStatus.registerPathUpdater(m_routeTree);
@@ -155,6 +155,7 @@ public class XtaGui extends Displayer {
         m_mainFrame.pack();
         m_engine.registerDisplayer(m_statusBarDisplayer);
         m_engine.registerDisplayer(m_pathStatus);
+        m_engine.registerDisplayer(m_unknownDisplayer);
         
         m_consoles = new Vector<ConsoleTextArea>();
         
@@ -178,8 +179,12 @@ public class XtaGui extends Displayer {
         }
 
         m_mainFrame.getContentPane().add(m_toolBar, BorderLayout.NORTH);
-        m_selectedPathSummary = m_overallRouteDisplayer.getPanel();
-        main_splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, makeCodeEnvironment(), m_selectedPathSummary);
+        JTabbedPane tp = new JTabbedPane();
+        tp.add(m_overallRouteDisplayer.getFunctionPanel(), "Function View");
+        tp.add(m_overallRouteDisplayer.getDepthPanel(), "Loop View");
+        tp.add(m_unknownDisplayer.getUnknownPanel(), "Unknowns and Errors");
+        
+        main_splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, makeCodeEnvironment(), tp);
         main_splitPane.addPropertyChangeListener(new PropertyChangeListener(){
             public void propertyChange(PropertyChangeEvent p) {
                 if (p.getPropertyName().equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
@@ -189,6 +194,7 @@ public class XtaGui extends Displayer {
         });
         m_mainFrame.getContentPane().add(main_splitPane, BorderLayout.CENTER);
         m_mainFrame.getContentPane().add(m_statusBarDisplayer.getPanel(), BorderLayout.SOUTH);
+        m_mainFrame.setTitle("XTA - " + m_engine.getExecutable());
         setupUserLookAndFeel();
         m_mainFrame.pack();
         
@@ -240,16 +246,17 @@ public class XtaGui extends Displayer {
         final JPanel circleStructure = m_circleStructure.getJPanel();
         final JPanel codeFlow = m_blockDecomposer.getJPanel();
         
+        //final JPanel graphViz =m_blockDecomposer.getGraphVizPanel();
         // If this has already been called before, then ensure that the previous
         // console area is unregistered from the xtaGui.
         if (m_consoleArea != null) {
-        	System.out.printf("UNREGISTERED CONSOLE...\n");
         	unregisterConsole(m_consoleArea.getConsoleTextArea());
         }
         m_consoleArea = new ConsoleArea(m_engine, m_globalConfig, false);
         
         m_sourceTabs.add(circleStructure, "Code Structure");
         m_sourceTabs.add(codeFlow, "Code Flow");
+        //m_sourceTabs.add(graphViz, "GraphViz");
         m_sourceTabs.add(m_consoleArea.getScrollPane(), "Console");           
 
         new Thread() {

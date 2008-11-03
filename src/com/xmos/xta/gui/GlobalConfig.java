@@ -9,7 +9,6 @@ import java.util.Vector;
 
 public class GlobalConfig {
 
-    private Boolean m_fnops;
     private Boolean m_antiAlising;
     private LinkedList<String> m_fileHistory;
     private Point m_locationOnScreen;
@@ -30,14 +29,6 @@ public class GlobalConfig {
     
     public GlobalConfig() {
         m_fileHistory = new LinkedList<String>();
-    }
-
-    public Boolean getFNOPS() {
-        return m_fnops;
-    }
-
-    public void setFNOPS(Boolean fnops) {
-        m_fnops = fnops;
     }
 
     public Boolean getAntiAlising() {
@@ -109,9 +100,6 @@ public class GlobalConfig {
     }
 
     public void setDefaultSettings() {
-        if (m_fnops == null) {
-            m_fnops = new Boolean(true);
-        }
         if (m_antiAlising == null) {
             m_antiAlising = new Boolean(true);
         }

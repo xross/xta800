@@ -18,8 +18,8 @@ import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.XeObject;
-import com.xmos.xeobjectdisplayer.DisassemblyDisplayer;
-import com.xmos.xeobjectdisplayer.SourceDisplayer;
+import com.xmos.xta.codewindow.DisassemblyDisplayer;
+import com.xmos.xta.codewindow.SourceDisplayer;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.XtaInstruction;
 
@@ -112,6 +112,15 @@ public class XtaXeObjectDisplayer  {
             sd.setFnops(fnopPcs);
         }
         m_disassemblyDisplayer.setFnops(fnopPcs);
+    }
+    
+    public void snapToPc(int pc){
+        /*
+        for(SourceDisplayer sd : m_sourceDisplayers){
+            sd.setFnops(fnopPcs);
+        }
+        m_disassemblyDisplayer.setFnops(fnopPcs);
+        */
     }
     
     public ArrayList<String> getSourceFiles() {

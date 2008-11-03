@@ -214,6 +214,8 @@ public class Menu extends JMenuBar  implements FileFinder
         String lastOpenedFile = m_globalConfig.getLastOpenedFile();
         if(lastOpenedFile!= null){
            fc.setSelectedFile(new File(lastOpenedFile)); 
+        } else {
+            fc.setSelectedFile(new File(System.getProperty("user.dir"))); 
         }
         int returnVal = fc.showOpenDialog(Menu.this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {

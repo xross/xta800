@@ -1,10 +1,12 @@
-package com.xmos.xeobjectdisplayer;
+package com.xmos.xta.codewindow;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 
 import com.xmos.xeobject.Function;
@@ -39,13 +41,20 @@ public class DisassemblyDisplayer extends Displayer {
             for (Function func : m_functions) {
                 st.append(func.getText());
                 st.append("\n");
-                m_textPane.getHighlighter().addHighlight(0, 0, func.getLineHighlighter(m_lines, m_textPane, 0.0));
+                LineHighlighter lh = new LineHighlighter(func);
+                lh.setLines(m_lines, m_textPane, 0.0);
+                m_lineHighlighters.add(lh);
+                m_textPane.getHighlighter().addHighlight(0, 0, lh);
             }
             m_lines.addAll(m_functions);
             m_document.insertString(0, st.toString(), m_style);
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                m_textPaneScrollPane.getViewport().setViewPosition(new Point(0,0));
+            }});
     }
 
     protected void highlightPC(int pc, Color colour) {

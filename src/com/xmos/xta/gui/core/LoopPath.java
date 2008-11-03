@@ -14,6 +14,7 @@ import javax.swing.JPopupMenu;
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.gui.XtaGui;
 
 public class LoopPath implements RouteNode {
     private Block m_loopPath;
@@ -41,8 +42,8 @@ public class LoopPath implements RouteNode {
     }
 
     private String getSummary() {
-        String description = "Loop: " + m_loopPath.getLoopPaths().size() + " path";
-        if (m_loopPath.getLoopPaths().size() > 1) {
+        String description = "Loop: " + m_loopPath.numLoopPaths() + " path";
+        if (m_loopPath.numLoopPaths() > 1) {
             description += "s";
         }
         
@@ -59,13 +60,20 @@ public class LoopPath implements RouteNode {
         for (Block loopPath : m_loopPath.getLoopPaths()) {
             numIterations += m_loopPath.getLoopPathAttributes(loopPath).getNumIterations();
         }
+        m_loopPath.doneWithLoopPaths();
         return numIterations;
     }
 
     public ImageIcon getIcon() {
         try {
-            return new ImageIcon(BlockPath.class
-                    .getResource("../Loop.png"));
+            if(m_loopPath.getNumUnknowns(true)==0){
+                return new ImageIcon(XtaGui.class
+                    .getResource("Loop.png"));
+            } else {
+                return new ImageIcon(XtaGui.class
+                        .getResource("LoopUnknown.png"));
+            }
+            
         } catch (Exception e) {
             System.err.println("Warning: Could not find icon image");
         }
@@ -86,6 +94,7 @@ public class LoopPath implements RouteNode {
             int numIterations = m_loopPath.getLoopPathAttributes(loopPath).getNumIterations();
             numCycles += loopPath.getNumCycles(true) * numIterations;
         }
+        m_loopPath.doneWithLoopPaths();
         return numCycles;
     }
     
@@ -95,6 +104,7 @@ public class LoopPath implements RouteNode {
             int numIterations = m_loopPath.getLoopPathAttributes(loopPath).getNumIterations();
             numFNops += loopPath.getNumFNops(true) * numIterations;
         }
+        m_loopPath.doneWithLoopPaths();
         return numFNops;
     }
 
@@ -104,6 +114,7 @@ public class LoopPath implements RouteNode {
             int numIterations = m_loopPath.getLoopPathAttributes(loopPath).getNumIterations();
             numPausable += loopPath.getNumPausables(true) * numIterations;
         }
+        m_loopPath.doneWithLoopPaths();
         return numPausable;
     }
 
@@ -113,13 +124,14 @@ public class LoopPath implements RouteNode {
             int numIterations = m_loopPath.getLoopPathAttributes(loopPath).getNumIterations();
             timeTaken += loopPath.getTimeTaken(true) * numIterations;
         }
+        m_loopPath.doneWithLoopPaths();
         return timeTaken;
     }
 
     public int getBranchCount() {
         int count = 0;
-        for(Block block : m_loopPath.getPathBlocks()){
-            count += block.getLoopPaths().size();
+        for (Block block : m_loopPath.getPathBlocks()){
+            count += block.numLoopPaths();
         }
         return count;
     }
@@ -149,6 +161,7 @@ public class LoopPath implements RouteNode {
         for (Block loopPath : m_loopPath.getLoopPaths()) {
             loopPath.getAllBlocks(blocks);
         }
+        m_loopPath.doneWithLoopPaths();
     }
 
     public Block getBlock() {
@@ -160,6 +173,7 @@ public class LoopPath implements RouteNode {
         for (Block loopPath : m_loopPath.getLoopPaths()) {
             insts.addAll(loopPath.getInstructions(true));
         }
+        m_loopPath.doneWithLoopPaths();
         return insts;
     }
 

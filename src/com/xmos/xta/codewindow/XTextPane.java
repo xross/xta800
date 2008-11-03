@@ -1,4 +1,4 @@
-package com.xmos.xeobjectdisplayer;
+package com.xmos.xta.codewindow;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -59,8 +59,9 @@ public class XTextPane extends JTextPane {
 	    
 	    return longest;
 	}
-
+/*
 	public boolean getScrollableTracksViewportWidth() {
         return false;
     }    
+    */
 }

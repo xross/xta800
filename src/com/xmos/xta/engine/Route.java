@@ -1,5 +1,6 @@
 package com.xmos.xta.engine;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,8 +39,7 @@ public class Route {
     Status m_status;        
     private Progress m_progress;
     private InstructionDecodeCache m_instructionDecodeCache;
-    
-    //private ArrayList<Block>    m_blocks;
+    private ArrayList<Unknown> m_unknowns;
     
     private static int m_numRoutes;  
     
@@ -56,6 +56,10 @@ public class Route {
     
     public void setCurrentValue(int numPaths){
         m_progress.setCurValue(numPaths);
+    }
+    
+    public ArrayList<Unknown> getUnknowns(){
+        return m_unknowns;
     }
     
     public final String id() {
@@ -104,7 +108,6 @@ public class Route {
         InstructionAttributes instructionAttributes = new InstructionAttributes();
         
         Block.resetNumPaths();
-        //LoopRoute.resetNumLoopRoutes();
         m_engine.setAbort(false);
 
         Block rootPath;
@@ -112,52 +115,34 @@ public class Route {
         context.push(new TreeSet<Integer>());
         MachineState initialState = new MachineState(memoryImage.getMemoryBase(), memoryImage.getMemorySize());
         
-        HashMap<Integer, TreeSet<Integer>> functionContexts = new HashMap<Integer, TreeSet<Integer>>();
-        
         if (m_functionName != null) {
             assert(symbolTable.symbolExists(m_functionName));
             int fromPc = symbolTable.symbolAddress(m_functionName);                
 
             rootPath = new Block(Mode.FUNCTION, m_config, m_instructionDecodeCache,
                 instructionAttributes, memoryImage, symbolTable, m_engine.getExclusions(),
-                fromPc, 0, this, null, initialState, context, functionContexts);
+                fromPc, 0, this, null, initialState, context, false);
         }
         else {
             rootPath = new Block(Mode.ABSOLUTE, m_config, m_instructionDecodeCache,
                 instructionAttributes, memoryImage, symbolTable, m_engine.getExclusions(),
-                m_fromRef.getPc(), m_toRef.getPc(), this, null, initialState, context,
-                functionContexts);            
+                m_fromRef.getPc(), m_toRef.getPc(), this, null, initialState, context, false);            
         }
                          
         stepPath(rootPath);
-                
+    
         if (m_status == Status.COMPLETED) {
-	        
             sortPaths();
-	    
-	    	//m_progress.resetState(Progress.State.PROCESSING_LOOPS, 
-	       	//		(m_completePaths.size() * 2) + m_loopedPaths.size());    	
-
-	        if (!buildCoveredLinesHashes(debugInfo, symbolTable)) {	        	
+            if (!buildCoveredLinesHashes(debugInfo, symbolTable)) {	        	
         	    return m_status;
-            }	        	        
-
+            }	
         }
         else if (rootPath.getStatus() == Block.Status.ERROR) {
             m_status = Status.ERROR;
         }
 
-        m_progress.resetState(Progress.State.IDLE, 0);        
+        m_progress.resetState(Progress.State.IDLE, 0);   
         return m_status;
-    }
-    
-
-    public int getDepth() {
-        int maxDepth = 0;
-        for(Block path: m_completePaths){
-            maxDepth = Math.max(maxDepth, path.getDepth()+1);
-        }
-        return maxDepth;
     }
 
     public int getId() {
@@ -202,6 +187,13 @@ public class Route {
     }
     
     boolean setInstructionNumCycles(int pc, int numCycles) {
+        for(Unknown unknown : m_unknowns){
+            if(unknown.getPc() == pc){
+                m_unknowns.remove(unknown);
+                m_engine.notifyUpdateState();
+                break;
+            }
+        }
     	return m_instructionDecodeCache.setInstructionNumCycles(m_engine, pc, numCycles);
     }
 
@@ -210,6 +202,7 @@ public class Route {
     }
     
     private void initialise(Config config, int nodeId, int coreId) {
+        m_unknowns = new ArrayList<Unknown>();
         m_id = new String("route" + m_numRoutes);   
         m_config = config;
         m_nodeId = nodeId;
@@ -241,13 +234,7 @@ public class Route {
         }
     }    
   
-    private void sortPaths() {        
-        /*
-        for(Block path : m_completePaths){
-            if (checkAbort()) 
-                break;
-        }
-        */
+    private void sortPaths() { 
         Collections.sort(m_completePaths);
         Collections.sort(m_unresolvedPaths);
     }
@@ -256,10 +243,15 @@ public class Route {
         for (Block path : m_completePaths) {
             if (checkAbort()) 
             	return false;
+
             path.buildCoveredLinesHashes(debugInfo, symbolTable);
             m_progress.incr();
         }
         return true;
+    }
+    
+    public void addUnknown(Unknown unknown){
+        m_unknowns.add(unknown);
     }
     
     public boolean checkAbort() {
@@ -277,7 +269,7 @@ public class Route {
          * straight line from beginning to end of the route
          */
         assert(m_completePaths != null);
-        if (m_completePaths.size() > 0) assert(endBlock.getParentPath() != null);
+        if (m_completePaths.size() > 0) assert(endBlock.getParentBlock() != null);
         assert(endBlock.getInstructionsThis()!= null);
         assert(endBlock.getInstructionsThis().size()>0);
         m_completePaths.add(endBlock);
@@ -315,7 +307,7 @@ public class Route {
          * straight line from beginning to end of the route
          */
         assert(m_unresolvedPaths != null);
-        if (m_unresolvedPaths.size() > 0) assert(path.getParentPath() != null);
+        if (m_unresolvedPaths.size() > 0) assert(path.getParentBlock() != null);
         assert(path.getInstructionsThis()!= null);
         assert(path.getInstructionsThis().size()>0);
         m_unresolvedPaths.add(path);
@@ -334,10 +326,12 @@ public class Route {
                     attributes.setNumIterations(iterations, absolute);
                     hit = true;
                     if (!allInstances) {
+                        block.doneWithLoopPaths();
                         return hit;
                     }
                 }
             }
+            block.doneWithLoopPaths();
         }
         
         return hit;

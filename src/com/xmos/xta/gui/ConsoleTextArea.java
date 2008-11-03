@@ -7,7 +7,10 @@ import java.io.Reader;
 import java.util.Vector;
 
 import javax.swing.JTextArea;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 import javax.swing.text.Utilities;
 
 import com.xmos.xta.console.Console;
@@ -19,6 +22,32 @@ public class ConsoleTextArea implements Console {
 	
 	public ConsoleTextArea(JTextArea textArea) {
 		m_textArea = textArea;
+		m_textArea.addCaretListener(new CaretListener(){
+
+            public void caretUpdate(CaretEvent e) {
+                PlainDocument pd = (PlainDocument) m_textArea.getDocument();
+                int lineStart = pd.getParagraphElement(pd.getLength()).getStartOffset();
+                int lineEnd = pd.getParagraphElement(pd.getLength()).getEndOffset();
+                
+                if(e.getDot() > lineStart && e.getDot() < lineEnd){
+                    //just to be safe
+                    m_textArea.setEditable(true);
+                    if(m_textArea.getSelectionStart() < lineStart+1){
+                        m_textArea.setEditable(false);
+                    }
+                } else {
+                    if(m_textArea.getSelectedText()== null){
+                        m_textArea.getCaret().setDot(lineEnd - 1);
+                        m_textArea.setEditable(true);
+                    } else {
+                        m_textArea.setEditable(false);   
+                    }
+                    
+                }
+            }
+		    
+		    
+		});
 		m_textAreaReader = new TextAreaReader(textArea);
 	}
 	

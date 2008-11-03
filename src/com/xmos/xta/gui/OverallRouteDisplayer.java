@@ -7,6 +7,7 @@ import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
@@ -15,7 +16,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -24,18 +28,21 @@ import com.xmos.elfhandler.Symbol;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.gui.core.BlockPath;
 import com.xmos.xta.gui.core.LoopPath;
 import com.xmos.xta.gui.core.PathStatus;
+import com.xmos.xta.gui.core.RootPath;
 import com.xmos.xta.gui.core.RouteNode;
 
 public class OverallRouteDisplayer implements PathUpdater {
 
     private JPanel                  m_overallRouteDisplayerPanel;
     private JPanel                  m_functionPanel;
-    private JPanel                  m_timeLine;
+    private JPanel                  m_functionTimeLine;
+    private JPanel                  m_depthTimeLine;
     private JPanel                  m_depthPanel;
     private PathStatus              m_pathStatus;
     private TreePath                m_routeSelection;
@@ -54,13 +61,16 @@ public class OverallRouteDisplayer implements PathUpdater {
     private int m_blockDepth;
     private int m_blockPausable;
     private int m_blockFNops;
-    
+    private boolean showTime = false;
     private ArrayList<Box> m_boxes;
+    private Engine m_engine;
     
-    public OverallRouteDisplayer(PathStatus pathStatus) {
+    public OverallRouteDisplayer(PathStatus pathStatus, Engine engine) {
         initaliseColors();
+        m_engine = engine;
         m_functionColors = new HashMap<String, Color>();
-        m_timeLine = new JPanel(){
+        
+        m_functionTimeLine = new JPanel(){
             private static final long serialVersionUID = 1L;
             
             public void paint(Graphics g){
@@ -68,15 +78,69 @@ public class OverallRouteDisplayer implements PathUpdater {
                 drawTimeLine(g2);
             }
         };
-        m_timeLine.setPreferredSize(new Dimension(32, 32));
+        
+        m_functionTimeLine.addMouseListener(new MouseAdapter(){
+            public void mousePressed(MouseEvent e) {
+                if(e.getButton() == 3){
+                    JPopupMenu popup = new JPopupMenu();
+                    JMenuItem scaleView = new JMenuItem();
+                    if(showTime)scaleView.setText("Set scale to thread cycles");
+                    else scaleView.setText("Set scale to time elapsed");
+                    scaleView.addMouseListener(new MouseAdapter(){
+                        public void mousePressed(MouseEvent e) {
+                            showTime=!showTime;
+                            m_functionTimeLine.repaint();
+                        }
+                    });
+                    popup.add(scaleView);
+                    popup.setOpaque(true);
+                    popup.setLightWeightPopupEnabled(true);
+                    popup.show( (JComponent)e.getSource(), e.getX(), e.getY() );
+                }
+                
+            }
+        });
+        m_functionTimeLine.setPreferredSize(new Dimension(32, 32));
+        m_depthTimeLine = new JPanel(){
+            private static final long serialVersionUID = 1L;
+            
+            public void paint(Graphics g){
+                Graphics2D g2 = (Graphics2D)g;
+                drawTimeLine(g2);
+            }
+        };
+        
+        m_depthTimeLine.addMouseListener(new MouseAdapter(){
+            public void mousePressed(MouseEvent e) {
+                if(e.getButton() == 3){
+                    JPopupMenu popup = new JPopupMenu();
+                    JMenuItem scaleView = new JMenuItem();
+                    if(showTime)scaleView.setText("Set scale to thread cycles");
+                    else scaleView.setText("Set scale to time elapsed");
+                    scaleView.addMouseListener(new MouseAdapter(){
+                        public void mousePressed(MouseEvent e) {
+                            showTime=!showTime;
+                            m_depthTimeLine.repaint();
+                        }
+                    });
+                    popup.add(scaleView);
+                    popup.setOpaque(true);
+                    popup.setLightWeightPopupEnabled(true);
+                    popup.show( (JComponent)e.getSource(), e.getX(), e.getY() );
+                }
+                
+            }
+        });
+        m_depthTimeLine.setPreferredSize(new Dimension(32, 32));
+        
         m_boxes = new ArrayList<Box>();
         
         m_blockList = new Vector<XtaCodeBlock>();
 
         this.m_pathStatus = pathStatus;
-        m_overallRouteDisplayerPanel = new JPanel();
+
         JTabbedPane tabbedPane = new JTabbedPane();
-        m_overallRouteDisplayerPanel.setLayout(new BorderLayout());
+
         m_depthPanel = new JPanel(){
             private static final long serialVersionUID = 1L;
             public void paint(Graphics g){
@@ -96,8 +160,7 @@ public class OverallRouteDisplayer implements PathUpdater {
         
         tabbedPane.addTab("Function View", m_functionPanel);
         tabbedPane.addTab("Loop View", m_depthPanel);
-        m_overallRouteDisplayerPanel.add(tabbedPane, BorderLayout.CENTER);
-        m_overallRouteDisplayerPanel.add(m_timeLine, BorderLayout.SOUTH);
+
     }
     
     public void displayRoute(Route route) {
@@ -162,7 +225,10 @@ public class OverallRouteDisplayer implements PathUpdater {
             DefaultMutableTreeNode subNode = (DefaultMutableTreeNode)node.getChildAt(child);
 
             RouteNode routeNode = (RouteNode)((DefaultMutableTreeNode)(subNode)).getUserObject();
-            numIterations = routeNode.getBlock().getNumIterations();
+            
+            if (routeNode instanceof RootPath) {
+                numIterations = routeNode.getBlock().getNumIterations();
+            }
 
             if (routeNode instanceof LoopPath) {
                 m_currentDepth++;
@@ -324,6 +390,21 @@ public class OverallRouteDisplayer implements PathUpdater {
     public JPanel getPanel(){
         return m_overallRouteDisplayerPanel;
     }
+    
+    public JPanel getFunctionPanel(){
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(m_functionPanel, BorderLayout.CENTER);
+        panel.add(m_functionTimeLine, BorderLayout.SOUTH);
+        return panel;
+    }
+    public JPanel getDepthPanel(){
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(m_depthPanel, BorderLayout.CENTER);
+        panel.add(m_depthTimeLine, BorderLayout.SOUTH);
+        return panel;
+    }
 
     public void notifyUpdateState() {
         
@@ -348,7 +429,8 @@ public class OverallRouteDisplayer implements PathUpdater {
         }
         m_functionPanel.repaint();
         m_depthPanel.repaint();
-        m_timeLine.repaint();
+        m_functionTimeLine.repaint();
+        m_depthTimeLine.repaint();
     }
 
     private void getDebugInfo(){
@@ -425,14 +507,16 @@ public class OverallRouteDisplayer implements PathUpdater {
             clearAll();
             m_functionPanel.repaint();
             m_depthPanel.repaint();
-            m_timeLine.repaint();
+            m_functionTimeLine.repaint();
+            m_depthTimeLine.repaint();
         } else {
             getDebugInfo();
             m_routeSelection = selectedPath;
             notifyUpdateState();
             m_functionPanel.repaint();
             m_depthPanel.repaint();
-            m_timeLine.repaint();
+            m_functionTimeLine.repaint();
+            m_depthTimeLine.repaint();
         }
     }
 
@@ -442,12 +526,17 @@ public class OverallRouteDisplayer implements PathUpdater {
     
     private void drawTimeLine(Graphics2D g2){
         g2.setColor(Color.white);
-        g2.fillRect(0, 0, m_timeLine.getWidth(), m_timeLine.getHeight());
+        g2.fillRect(0, 0, m_functionTimeLine.getWidth(), m_functionTimeLine.getHeight());
         if(m_pathLength == 0) return;
 
-        double totalUnits = m_pathLength;
+        double totalUnits;
+        if(showTime){
+            totalUnits = ((m_engine.getConfig().m_numThreads * 1000) / m_engine.getConfig().m_frequency) * m_pathLength;
+        } else {
+            totalUnits = m_pathLength;
+        }
         g2.setColor(Color.black);
-        g2.drawLine(0, m_timeLine.getHeight()/7, m_timeLine.getWidth(), m_timeLine.getHeight()/7);
+        g2.drawLine(0, m_functionTimeLine.getHeight()/7, m_functionTimeLine.getWidth(), m_functionTimeLine.getHeight()/7);
         
         int stepSize = 0;
         
@@ -459,15 +548,15 @@ public class OverallRouteDisplayer implements PathUpdater {
         
         while(i<totalUnits){
             int fontHeight = (int) g2.getFontMetrics().getStringBounds("" + (int)i, g2).getHeight();
-            int along = (int)(m_timeLine.getWidth()*i/totalUnits);
-            g2.drawLine(along, 0, along, m_timeLine.getHeight()/3);
-            if(along + (int) g2.getFontMetrics().getStringBounds("" + (int)i, g2).getWidth() < m_timeLine.getWidth())
-            g2.drawString("" + (int)i, along , m_timeLine.getHeight()/3 +fontHeight);
+            int along = (int)(m_functionTimeLine.getWidth()*i/totalUnits);
+            g2.drawLine(along, 0, along, m_functionTimeLine.getHeight()/3);
+            if(along + (int) g2.getFontMetrics().getStringBounds("" + (int)i, g2).getWidth() < m_functionTimeLine.getWidth())
+            g2.drawString("" + (int)i, along , m_functionTimeLine.getHeight()/3 +fontHeight);
             
             i+=stepSize;
         }
         
-        g2.drawLine(m_timeLine.getWidth(), 0, m_timeLine.getWidth(), m_timeLine.getHeight()/3);
+        g2.drawLine(m_functionTimeLine.getWidth(), 0, m_functionTimeLine.getWidth(), m_functionTimeLine.getHeight()/3);
     }
     
 }
@@ -538,6 +627,5 @@ class MouseOver implements MouseMotionListener {
     }
     
     public void mouseDragged(MouseEvent arg0) {
-        // TODO Auto-generated method stub
     }
 }

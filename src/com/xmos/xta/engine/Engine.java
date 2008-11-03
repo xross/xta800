@@ -363,16 +363,6 @@ public class Engine {
     }
 
     public Double getTimeTaken(int lineNumber) {
-        //find the time taken for this pc
-        if(m_route!= null && m_route.getBlocks().size()>0){
-            for(Block block :m_route.getBlocks()){
-                for(XtaInstruction inst : block.getInstructionsThis()){
-                    if(inst.getPc() == lineNumber){
-                        return new Double(inst.getTimeTaken());
-                    }
-                }
-            }
-        }
         return new Double (0.0);
     }
 
@@ -434,13 +424,13 @@ public class Engine {
                     m_route.getNodeId(), m_route.getCoreId(), m_executableFile));
             return false;
         }
-        /*
+
         if (m_route.unresolvedPaths().size() > 0) {
             setErrorString(String.format("Found %d unresolved paths", 
                     m_route.unresolvedPaths().size()));
                 return false;
         }
-         */
+
         return true;
     }
 
