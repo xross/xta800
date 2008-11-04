@@ -32,7 +32,6 @@ public class Route {
     
     private HashMap<Integer, Vector<Block>> m_loopPaths;  // Hash of start PC to block at that PC
     private Vector<Block>           m_blocks;  // Hash of start PC to block at that PC
-
     private Vector<Block> m_completePaths;     // Contains all the complete paths
     private Vector<Block> m_unresolvedPaths;   // Contains all the unresolved paths
     private Engine m_engine;
@@ -43,14 +42,19 @@ public class Route {
     
     private static int m_numRoutes;  
     
-    Route(Config config, Reference fromRef, Reference toRef, int nodeId, int coreId) {
+    Route(Config config, Reference fromRef, Reference toRef, int nodeId, int coreId, 
+            InstructionDecodeCache instructionDecodeCache) {
         m_fromRef = fromRef;
         m_toRef = toRef;
-        initialise(config, nodeId, coreId);        
+        m_instructionDecodeCache = instructionDecodeCache;
+        initialise(config, nodeId, coreId);
+        
     }
 
-    Route(Config config, String functionName, int nodeId, int coreId) {
+    Route(Config config, String functionName, int nodeId, int coreId,
+            InstructionDecodeCache instructionDecodeCache) {
         m_functionName = functionName;
+        m_instructionDecodeCache = instructionDecodeCache;
         initialise(config, nodeId, coreId);        
     }
     
@@ -102,9 +106,7 @@ public class Route {
         assert (debugInfo != null);
         m_engine = engine;
         m_status = Status.COMPLETED;
-        
-        m_instructionDecodeCache = new InstructionDecodeCache(
-        		symbolTable, engine.getXeLoader().getArchitecture());        
+            
         InstructionAttributes instructionAttributes = new InstructionAttributes();
         
         Block.resetNumPaths();

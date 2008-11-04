@@ -1,5 +1,7 @@
 package com.xmos.xta.engine;
 
+import java.util.ArrayList;
+
 import com.xmos.isa.Instruction;
 
 public abstract class XtaInstruction extends Instruction {
@@ -10,6 +12,7 @@ public abstract class XtaInstruction extends Instruction {
     Attributes m_numCycles;
     int m_basicNumCycles;
     Config m_config;
+    ArrayList<Integer> m_returnLocations; 
 	
 	XtaInstruction(String nmenonic, int opcode, int pc, int numBytes, 
 			boolean isLoadStore, boolean canPause) {
@@ -19,10 +22,19 @@ public abstract class XtaInstruction extends Instruction {
 		m_numCycles = new Attributes();
 		m_basicNumCycles = 0;
 		m_config = null;
+		m_returnLocations = new ArrayList<Integer>();
 	}
 
+	public void addReturnLocation(int pc){
+	    m_returnLocations.add(pc);
+	}
+	
 	public abstract void execute(MachineState machineState);
     		   
+	public ArrayList<Integer> getReturnLocations(){
+	    return m_returnLocations;
+	}
+	
 	public void setFunctionName(String functionName) {
 		m_functionName = functionName;
 	}

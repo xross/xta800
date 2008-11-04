@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
@@ -46,7 +45,6 @@ public class UnknownDisplayer extends Displayer {
     
     private void mousePress(MouseEvent e) {
         Unknown selectedUnknown = (Unknown) m_unknownList.getSelectedValue();
-        System.out.println(selectedUnknown.getPc());
     }
     
     public void displayRoute(Route route, DebugInfo debugInfo,

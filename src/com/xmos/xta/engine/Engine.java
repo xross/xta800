@@ -28,7 +28,8 @@ public class Engine {
     private Vector<Displayer> m_displayers;
     private Vector<Reference> m_exclusions;
     private boolean m_abort;
-
+    private InstructionDecodeCache m_instructionDecodeCache;
+    
     public Engine(Config config) {
         m_xeLoader = new XeLoader();
         m_xeObject = null;
@@ -43,6 +44,7 @@ public class Engine {
         m_displayers = new Vector<Displayer>();
         m_exclusions = new Vector<Reference>();
         m_abort = false;
+        
     }
 
     public Config getConfig() {
@@ -98,6 +100,7 @@ public class Engine {
         } else {
             setErrorString("The file '" + executableFile + "'could not be found.");	        
         }
+        decodeInstructions();
         return success;
     }	
 
@@ -128,7 +131,7 @@ public class Engine {
         }
         else {     
             m_previousRoute = m_route;
-            m_route = new Route(m_config, functionName, m_nodeId, m_coreId);
+            m_route = new Route(m_config, functionName, m_nodeId, m_coreId, m_instructionDecodeCache);
             return analyseRoute();
         }
     }
@@ -200,7 +203,7 @@ public class Engine {
         }
         else {    
             m_previousRoute = m_route;                   
-            m_route = new Route(m_config, fromRef, toRef, m_nodeId, m_coreId);
+            m_route = new Route(m_config, fromRef, toRef, m_nodeId, m_coreId, m_instructionDecodeCache);
             return analyseRoute();
         }
     }
@@ -364,6 +367,12 @@ public class Engine {
 
     public Double getTimeTaken(int lineNumber) {
         return new Double (0.0);
+    }
+    
+    private void decodeInstructions(){
+        m_instructionDecodeCache = new InstructionDecodeCache(
+                m_xeLoader.getSymbolTable(0, 0), getXeLoader().getArchitecture());
+        
     }
 
     void notifyUpdateState() {
