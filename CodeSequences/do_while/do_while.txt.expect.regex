@@ -20,7 +20,7 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
   12: 
   1: int main\(\)
 \+ 2: {
-\+ 3:   int res = 10;
+  3:   int res = 10;
   4:   do
   5:   {
 \+ 6:     --res;

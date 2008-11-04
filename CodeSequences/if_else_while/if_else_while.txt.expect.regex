@@ -9,7 +9,7 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
     pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
   1: int main\(\)
 \+ 2: {
-\+ 3:   int a = 0;
+  3:   int a = 0;
 \+ 4:   int res = 2;
 \+ 5:   if \(a == 0\)
   6:   {
@@ -27,13 +27,13 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
   18: 
   1: int main()
 \+ 2: {
-\+ 3:   int a = 0;
+  3:   int a = 0;
 \+ 4:   int res = 2;
 \+ 5:   if \(a == 0\)
   6:   {
 \+ 7:     while \(res > 0\) 
   8:     {
-  9:       --res;
+\+ 9:       --res;
   10:     }
   11:   }
   12:   else
