@@ -1,5 +1,7 @@
 package com.xmos.xta.engine;
 
+import com.xmos.xta.engine.resources.Resources;
+
 class MachineState {
 
     public static enum BranchState {
@@ -56,7 +58,7 @@ class MachineState {
         // default location (i.e. the top of memory..)
         setStackPointerRegister(new Expression(memoryBase + memorySize));
     }
-
+    
     MachineState(MachineState machineState) {
         m_opcode = machineState.m_opcode;
         m_op1Fld = machineState.m_op1Fld;
@@ -87,6 +89,10 @@ class MachineState {
         m_iBuffer = new InstructionBuffer(machineState.m_iBuffer);
     }
 
+    Resources getResources(){
+        return m_resources;
+    }
+    
     void setPc(int pc) {
         m_iBuffer.setPc(pc);
     }

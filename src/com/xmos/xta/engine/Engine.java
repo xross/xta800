@@ -101,12 +101,14 @@ public class Engine {
             if (m_xeObject == null) {
                 m_xeObject = new XeObject(m_xeLoader);
             }
+            decodeInstructions();
             for (Displayer displayer : m_displayers)
                 displayer.notifyLoadExecutable();
+            
         } else {
             setErrorString("The file '" + executableFile + "'could not be found.");	        
         }
-        decodeInstructions();
+        
         return success;
     }	
 

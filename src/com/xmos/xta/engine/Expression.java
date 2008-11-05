@@ -1,6 +1,6 @@
 package com.xmos.xta.engine;
 
-class Expression {
+public class Expression {
 	enum Type{
 		IMMEDIATE,
 		REGISTER,
