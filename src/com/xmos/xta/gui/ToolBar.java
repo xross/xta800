@@ -8,6 +8,7 @@ import java.beans.PropertyChangeListener;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -25,6 +26,8 @@ public class ToolBar extends JPanel {
     private Vector<String> m_functionNames;
     private JButton pathButton;
     private JComboBox functionComboBox;
+    private boolean m_fullAnalysis = false;
+    private JCheckBox m_checkBox;
 
     private JFormattedTextField m_threadCountBox;
     private JFormattedTextField m_frequencyBox;
@@ -93,12 +96,15 @@ public class ToolBar extends JPanel {
         functionComboBox.addActionListener(new ActionListener(){
 
             public void actionPerformed(ActionEvent e) {
-                RunEngineMethodFunc m = new RunEngineMethodFunc(functionComboBox.getSelectedItem().toString());
+                RunEngineMethodFunc m = new RunEngineMethodFunc(functionComboBox.getSelectedItem().toString(), m_checkBox.isSelected());
                 m.start();
             }            
         });
 
+        m_checkBox = new JCheckBox("Full Analysis");
+        
         toolBar.add(functionComboBox);
+        toolBar.add(m_checkBox);
         toolBar.addSeparator();
         toolBar.add(pathButton);
         toolBar.addSeparator();
@@ -130,21 +136,25 @@ public class ToolBar extends JPanel {
         } else 
             System.err.println("no end point");
 
-        RunEngineMethodRef m = new RunEngineMethodRef(start, end);
+        RunEngineMethodRef m = new RunEngineMethodRef(start, end, m_checkBox.isSelected());
         m.start();
 
     }
 
+    
+    
     class RunEngineMethodFunc extends Thread
     {
         String m_functionName;
+        private boolean m_full;
 
-        RunEngineMethodFunc(String functionName) {
+        RunEngineMethodFunc(String functionName, boolean full) {
             m_functionName = functionName;
+            m_full = full;
         }
 
         public void run() {
-            if (!m_engine.analyseRoute(m_functionName))
+            if (!m_engine.analyseRoute(m_functionName, m_full))
                 System.err.println(m_engine.getErrorString());
         }
     }
@@ -153,14 +163,16 @@ public class ToolBar extends JPanel {
     {
         String m_startRef;
         String m_endRef;
+        private boolean m_full;
 
-        RunEngineMethodRef(String startRef, String endRef) {
+        RunEngineMethodRef(String startRef, String endRef, boolean full) {
             m_startRef = startRef;
             m_endRef = endRef;
+            m_full = full;
         }
 
         public void run() {        	
-            if (!m_engine.analyseRoute(m_startRef, m_endRef))
+            if (!m_engine.analyseRoute(m_startRef, m_endRef, m_full))
                 System.err.println(m_engine.getErrorString());
         }
     }    

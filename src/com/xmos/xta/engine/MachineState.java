@@ -40,6 +40,7 @@ class MachineState {
     private int m_jumpTarget;
     private BranchState m_jumpTaken;
 
+    private Resources m_resources;
     private Registers m_registers;
     private Memory m_memory;
 
@@ -49,7 +50,8 @@ class MachineState {
         m_registers = new Registers();
         m_memory = new Memory();
         m_iBuffer = new InstructionBuffer();
-
+        m_resources = new Resources();
+        
         // Initialises the stack pointer to a reasonable
         // default location (i.e. the top of memory..)
         setStackPointerRegister(new Expression(memoryBase + memorySize));
@@ -79,6 +81,7 @@ class MachineState {
         m_wasJumpResolved = machineState.m_wasJumpResolved;
         m_jumpTarget = machineState.m_jumpTarget;
 
+        //m_resources = new Resources(machineState.m_resources);
         m_registers = new Registers(machineState.m_registers);
         m_memory = new Memory(machineState.m_memory);
         m_iBuffer = new InstructionBuffer(machineState.m_iBuffer);

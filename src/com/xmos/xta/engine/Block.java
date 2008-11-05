@@ -14,7 +14,7 @@ public class Block implements Comparable<Block> {
     private static final boolean DEBUG = false;
     private static final boolean DEBUG_STATUS = false;
     private static final boolean DEBUG_SANITY = false;
-    private static final boolean FollowResolutions = false;
+    private boolean m_resolveExpressions;
 
     private static int m_numCompletedPaths = 0;
     private static int m_numUnresolvedPaths = 0;
@@ -94,7 +94,7 @@ public class Block implements Comparable<Block> {
             MemoryImage memoryImage, SymbolTable symbolTable,
             Vector<Reference> exclusions, int fromPc, int toPc, Route route,
             Block parentBlock, MachineState machineState,
-            Stack<TreeSet<Integer>> contexts, boolean speculative) {
+            Stack<TreeSet<Integer>> contexts, boolean speculative, boolean resolveExpressions) {
         m_machineState = new MachineState(machineState);
         m_contexts = new Stack<TreeSet<Integer>>();
         m_contexts.addAll(contexts);
@@ -119,10 +119,7 @@ public class Block implements Comparable<Block> {
         m_firstStep = true;
         m_functionDepth = m_contexts.size() - 1;
         m_exclusions = exclusions;
-        /*
-        m_sourceLinesCovered = new HashMap<String, TreeSet<Integer>>();
-        m_asmLinesCovered = new HashMap<String, TreeSet<Integer>>();
-*/
+        m_resolveExpressions = resolveExpressions;
         m_machineState.setPc(m_fromPc);
 
         m_numInstructions = 0;
@@ -206,6 +203,8 @@ public class Block implements Comparable<Block> {
         m_instructionDecodeCache = blockToSplit.m_instructionDecodeCache;
         m_instructionAttributes = blockToSplit.m_instructionAttributes;
 
+        m_resolveExpressions = blockToSplit.m_resolveExpressions;
+        
         m_id = blockToSplit.m_id;
         m_instanceId = blockToSplit.m_instanceId;
         blockToSplit.m_id = m_numPaths;
@@ -219,10 +218,7 @@ public class Block implements Comparable<Block> {
         m_firstStep = false;
         m_functionDepth = blockToSplit.m_functionDepth;
         m_exclusions = blockToSplit.m_exclusions;
-/*
-        m_sourceLinesCovered = new HashMap<String, TreeSet<Integer>>();
-        m_asmLinesCovered = new HashMap<String, TreeSet<Integer>>();
-*/
+
         m_route = blockToSplit.m_route;
 
         m_loopPaths = blockToSplit.m_loopPaths;
@@ -533,7 +529,9 @@ public class Block implements Comparable<Block> {
             releaseMemory();
             return;
         }
+        
         m_contexts.peek().add(m_instruction.getPc());
+        
         if (m_machineState.wasJump()) {
             int jumpTarget = m_machineState.getJumpTarget();
 
@@ -556,16 +554,33 @@ public class Block implements Comparable<Block> {
                 }
 
             } else {
-                setStatus(Status.UNRESOLVED);
-                m_route.addUnresolvedPath(this);
-                releaseMemory();
-                return;
+                if(m_instruction.getNmenonic().startsWith("RETSP")){
+                    for(int callingpc : m_instruction.getReturnLocations()){
+                        boolean singleCallingTarget  = m_instruction.getReturnLocations().size() == 1;
+                        int op=0;
+                        try {
+                             op = m_memoryImage.readInstructionWord(callingpc);
+                        } catch (Exception e) {
+                            assert(false);
+                        }
+                        int callingPcBytes = m_instructionDecodeCache.decode(op, callingpc).getNumBytes();
+                        takeBranch(callingpc+callingPcBytes, !singleCallingTarget);
+                    }
+                    setStatus(Status.COMPLETE);
+                    releaseMemory();
+                    return;
+                } else {
+                    setStatus(Status.UNRESOLVED);
+                    m_route.addUnresolvedPath(this);
+                    releaseMemory();
+                    return;
+                }
             }
 
         } else if (m_machineState.wasBranch()) {
 
             if (m_machineState.wasBranchResolved()) {
-                if (FollowResolutions) {
+                if (m_resolveExpressions) {
                     if (m_machineState.getBranchTaken() == BranchState.TAKEN) {
                         takeBranch(m_machineState.getBranchTarget(), false);
                         setStatus(Status.COMPLETE);
@@ -578,6 +593,8 @@ public class Block implements Comparable<Block> {
                         takeBranch(m_machineState.getBranchTarget(), true);
                         takeDontBranch(m_instruction, true);
                     }
+                    releaseMemory();
+                    return;
                 } else {
                     addUnknown(m_instruction);
                     takeBranch(m_machineState.getBranchTarget(), true);
@@ -602,6 +619,8 @@ public class Block implements Comparable<Block> {
                 }
                 loopBlock.addLoopPath(this);
                 setStatus(Status.LOOPED);
+                releaseMemory();
+                return;
             }
             if (!m_instruction.isLoadStore()) {
                 m_machineState.fetch();
@@ -662,7 +681,7 @@ public class Block implements Comparable<Block> {
         Block nextPath = new Block(m_mode, m_config, m_instructionDecodeCache,
                 m_instructionAttributes, m_memoryImage, m_symbolTable,
                 m_exclusions, startPc, m_toPc, m_route, this, m_machineState,
-                m_contexts, speculative);
+                m_contexts, speculative,m_resolveExpressions);
         nextPath.build();
     }
 
@@ -679,7 +698,7 @@ public class Block implements Comparable<Block> {
                     m_instructionDecodeCache, m_instructionAttributes,
                     m_memoryImage, m_symbolTable, m_exclusions, branchTarget,
                     m_toPc, m_route, this, m_machineState, m_contexts,
-                    speculative);
+                    speculative, m_resolveExpressions);
             nextPath.m_machineState.branchTo(branchTarget, m_instruction
                     .isLoadStore());
             nextPath.build();
@@ -688,7 +707,7 @@ public class Block implements Comparable<Block> {
     }
 
     private Block formsLoop(int pc) {
-        if (FollowResolutions) {
+        if (m_resolveExpressions) {
             Block parent = this;
             while (parent != null) {
                 if (parent.containsPc(pc) && isLoop(pc) && parent.m_speculative) {

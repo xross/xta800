@@ -42,19 +42,23 @@ public class Route {
     
     private static int m_numRoutes;  
     
+    private boolean m_resolveExpressions;
+    
     Route(Config config, Reference fromRef, Reference toRef, int nodeId, int coreId, 
-            InstructionDecodeCache instructionDecodeCache) {
+            InstructionDecodeCache instructionDecodeCache, boolean resolveExpressions) {
         m_fromRef = fromRef;
         m_toRef = toRef;
+        m_resolveExpressions = resolveExpressions;
         m_instructionDecodeCache = instructionDecodeCache;
         initialise(config, nodeId, coreId);
         
     }
 
     Route(Config config, String functionName, int nodeId, int coreId,
-            InstructionDecodeCache instructionDecodeCache) {
+            InstructionDecodeCache instructionDecodeCache, boolean resolveExpressions) {
         m_functionName = functionName;
         m_instructionDecodeCache = instructionDecodeCache;
+        m_resolveExpressions = resolveExpressions;
         initialise(config, nodeId, coreId);        
     }
     
@@ -123,23 +127,18 @@ public class Route {
 
             rootPath = new Block(Mode.FUNCTION, m_config, m_instructionDecodeCache,
                 instructionAttributes, memoryImage, symbolTable, m_engine.getExclusions(),
-                fromPc, 0, this, null, initialState, context, false);
+                fromPc, 0, this, null, initialState, context, false, m_resolveExpressions);
         }
         else {
             rootPath = new Block(Mode.ABSOLUTE, m_config, m_instructionDecodeCache,
                 instructionAttributes, memoryImage, symbolTable, m_engine.getExclusions(),
-                m_fromRef.getPc(), m_toRef.getPc(), this, null, initialState, context, false);            
+                m_fromRef.getPc(), m_toRef.getPc(), this, null, initialState, context, false, m_resolveExpressions);            
         }
                          
         stepPath(rootPath);
     
         if (m_status == Status.COMPLETED) {
             sortPaths();
-            /*
-            if (!buildCoveredLinesHashes(debugInfo, symbolTable)) {	        	
-        	    return m_status;
-            }	
-            */
         }
         else if (rootPath.getStatus() == Block.Status.ERROR) {
             m_status = Status.ERROR;

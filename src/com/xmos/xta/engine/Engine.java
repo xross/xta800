@@ -33,7 +33,7 @@ public class Engine {
     private Vector<Reference> m_exclusions;
     private boolean m_abort;
     private InstructionDecodeCache m_instructionDecodeCache;
-
+    
     public Engine(Config config) {
         m_xeLoader = new XeLoader();
         m_xeObject = null;
@@ -124,7 +124,7 @@ public class Engine {
         return m_route.getProgress();   
     }
 
-    public boolean analyseRoute(String functionName) {
+    public boolean analyseRoute(String functionName, boolean resolveExpression) {
         if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
             setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
                     m_nodeId, m_coreId, m_executableFile));        	
@@ -137,7 +137,7 @@ public class Engine {
         }
         else {     
             m_previousRoute = m_route;
-            m_route = new Route(m_config, functionName, m_nodeId, m_coreId, m_instructionDecodeCache);
+            m_route = new Route(m_config, functionName, m_nodeId, m_coreId, m_instructionDecodeCache, resolveExpression);
             return analyseRoute();
         }
     }
@@ -190,7 +190,7 @@ public class Engine {
         return true;
     }
 
-    public boolean analyseRoute(String from, String to) {
+    public boolean analyseRoute(String from, String to, boolean resolveExpression) {
         Reference fromRef = new Reference(from);
         Reference toRef = new Reference(to);     
 
@@ -209,7 +209,7 @@ public class Engine {
         }
         else {    
             m_previousRoute = m_route;                   
-            m_route = new Route(m_config, fromRef, toRef, m_nodeId, m_coreId, m_instructionDecodeCache);
+            m_route = new Route(m_config, fromRef, toRef, m_nodeId, m_coreId, m_instructionDecodeCache, resolveExpression);
             return analyseRoute();
         }
     }
