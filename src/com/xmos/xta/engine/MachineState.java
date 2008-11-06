@@ -1,5 +1,7 @@
 package com.xmos.xta.engine;
 
+import com.xmos.xta.engine.resources.Resources;
+
 class MachineState {
 
     public static enum BranchState {
@@ -26,7 +28,10 @@ class MachineState {
     Expression m_op4;
     Expression m_op5;
     Expression m_op6;
-
+    
+    private Expression m_branchTargetExpression;
+    private Expression m_guardExpression;
+    
     private boolean m_wasBranch;
     private boolean m_wasBranchResolved;
     private int m_branchTarget;
@@ -37,6 +42,7 @@ class MachineState {
     private int m_jumpTarget;
     private BranchState m_jumpTaken;
 
+    private Resources m_resources;
     private Registers m_registers;
     private Memory m_memory;
 
@@ -46,12 +52,13 @@ class MachineState {
         m_registers = new Registers();
         m_memory = new Memory();
         m_iBuffer = new InstructionBuffer();
-
+        m_resources = new Resources();
+        
         // Initialises the stack pointer to a reasonable
         // default location (i.e. the top of memory..)
         setStackPointerRegister(new Expression(memoryBase + memorySize));
     }
-
+    
     MachineState(MachineState machineState) {
         m_opcode = machineState.m_opcode;
         m_op1Fld = machineState.m_op1Fld;
@@ -76,11 +83,16 @@ class MachineState {
         m_wasJumpResolved = machineState.m_wasJumpResolved;
         m_jumpTarget = machineState.m_jumpTarget;
 
+        //m_resources = new Resources(machineState.m_resources);
         m_registers = new Registers(machineState.m_registers);
         m_memory = new Memory(machineState.m_memory);
         m_iBuffer = new InstructionBuffer(machineState.m_iBuffer);
     }
 
+    Resources getResources(){
+        return m_resources;
+    }
+    
     void setPc(int pc) {
         m_iBuffer.setPc(pc);
     }
@@ -130,14 +142,14 @@ class MachineState {
     }
 
     void branch(boolean b, Expression guard, Expression branchTarget) {
-
+        m_branchTargetExpression = branchTarget;
         branchTarget.resolve();
 
         m_wasBranch = true;
         m_wasBranchResolved = branchTarget.isResolved();
         if (m_wasBranchResolved) {
             guard.resolve();
-
+            m_guardExpression = guard;
             m_branchTarget = branchTarget.getValue();
             if (guard.isResolved()) {
                 if (guard.getValue() == 0) {
@@ -258,5 +270,13 @@ class MachineState {
 
             System.out.printf("\n");
         }
+    }
+
+    public Expression getBranchTargetExpression() {
+        return m_branchTargetExpression;
+    }
+    
+    public Expression getGuardExpression() {
+        return m_guardExpression;
     }
 }

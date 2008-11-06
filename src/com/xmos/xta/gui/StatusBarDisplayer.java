@@ -71,7 +71,7 @@ public class StatusBarDisplayer implements Displayer {
         public void run() { 
 
             Progress p = m_engine.getProgress();  
-
+            int maxValue =p.getMaxValue();
             if(p.getCurValue() < p.getMaxValue() || m_engine.getErrorString()!=null){
                 m_progressMonitor = new ProgressMonitor(m_parent.getContentPane(),
                         "Analysing",
@@ -81,13 +81,14 @@ public class StatusBarDisplayer implements Displayer {
                 m_progressMonitor.setProgress(1);
                 
                 boolean abort = false;
+                m_progressMonitor.setMaximum(maxValue);
                 while(!abort){
                     try {
                         Thread.sleep(20);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    m_progressMonitor.setMaximum(p.getMaxValue());
+                    
                     m_progressMonitor.setProgress(p.getCurValue());
 
                     if(p.getState() == Progress.State.IDLE){
@@ -100,7 +101,7 @@ public class StatusBarDisplayer implements Displayer {
                         break;
                     }
 
-                    if(p.getMaxValue() == p.getCurValue()){
+                    if( maxValue== p.getCurValue()){
                         break;
                     }
                     p = m_engine.getProgress();

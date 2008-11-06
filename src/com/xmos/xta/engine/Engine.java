@@ -1,6 +1,8 @@
 package com.xmos.xta.engine;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Vector;
 
 import com.xmos.dwarfhandler.DebugEngine;
@@ -11,6 +13,8 @@ import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xeobject.Function;
+import com.xmos.xeobject.Line;
 import com.xmos.xeobject.XeObject;
 
 public class Engine { 
@@ -28,7 +32,8 @@ public class Engine {
     private Vector<Displayer> m_displayers;
     private Vector<Reference> m_exclusions;
     private boolean m_abort;
-
+    private InstructionDecodeCache m_instructionDecodeCache;
+    
     public Engine(Config config) {
         m_xeLoader = new XeLoader();
         m_xeObject = null;
@@ -43,6 +48,7 @@ public class Engine {
         m_displayers = new Vector<Displayer>();
         m_exclusions = new Vector<Reference>();
         m_abort = false;
+
     }
 
     public Config getConfig() {
@@ -92,12 +98,17 @@ public class Engine {
         boolean success = m_xeLoader.loadExecutable(executableFile);
         if (success) {
             m_exclusions.clear();
-            m_xeObject = null;
+            if (m_xeObject == null) {
+                m_xeObject = new XeObject(m_xeLoader);
+            }
+            decodeInstructions();
             for (Displayer displayer : m_displayers)
                 displayer.notifyLoadExecutable();
+            
         } else {
             setErrorString("The file '" + executableFile + "'could not be found.");	        
         }
+        
         return success;
     }	
 
@@ -115,7 +126,7 @@ public class Engine {
         return m_route.getProgress();   
     }
 
-    public boolean analyseRoute(String functionName) {
+    public boolean analyseRoute(String functionName, boolean resolveExpression) {
         if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
             setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
                     m_nodeId, m_coreId, m_executableFile));        	
@@ -128,7 +139,7 @@ public class Engine {
         }
         else {     
             m_previousRoute = m_route;
-            m_route = new Route(m_config, functionName, m_nodeId, m_coreId);
+            m_route = new Route(m_config, functionName, m_nodeId, m_coreId, m_instructionDecodeCache, resolveExpression);
             return analyseRoute();
         }
     }
@@ -181,7 +192,7 @@ public class Engine {
         return true;
     }
 
-    public boolean analyseRoute(String from, String to) {
+    public boolean analyseRoute(String from, String to, boolean resolveExpression) {
         Reference fromRef = new Reference(from);
         Reference toRef = new Reference(to);     
 
@@ -200,7 +211,7 @@ public class Engine {
         }
         else {    
             m_previousRoute = m_route;                   
-            m_route = new Route(m_config, fromRef, toRef, m_nodeId, m_coreId);
+            m_route = new Route(m_config, fromRef, toRef, m_nodeId, m_coreId, m_instructionDecodeCache, resolveExpression);
             return analyseRoute();
         }
     }
@@ -366,6 +377,59 @@ public class Engine {
         return new Double (0.0);
     }
 
+    private void decodeInstructions(){
+        int nodeId = 0;
+        int coreId = 0;
+        m_instructionDecodeCache = new InstructionDecodeCache(
+                m_xeLoader.getSymbolTable(nodeId, coreId), getXeLoader().getArchitecture());
+       
+        int lastPc = 0;
+        HashMap <Integer, ArrayList<Integer>> instructionEntryPc = new HashMap<Integer, ArrayList<Integer>>();
+        for(Function function : m_xeObject.getFunctions()){
+            int functionEntry = function.getChildern().get(0).getLineNumber();
+            for(Line assembly : function.getChildern()){
+                int pc = assembly.getLineNumber();
+                int opcode = getOpcode(pc, nodeId,coreId);
+                if(m_instructionDecodeCache.decode(opcode, pc).getNmenonic().startsWith("RETSP")){
+                    ArrayList<Integer> retsps = instructionEntryPc.get(functionEntry);
+                    if(retsps==null){
+                        retsps = new ArrayList<Integer>();
+                    } 
+                    retsps.add(pc);
+                    instructionEntryPc.put(functionEntry, retsps);  
+                }
+            }
+            lastPc = function.getChildern().get(function.getChildern().size()-1).getLineNumber();
+        }
+        int pc =m_xeLoader.getMemoryImage(nodeId, coreId).getMemoryBase();
+        while(pc <= lastPc){
+            int opcode = getOpcode(pc, nodeId,coreId);
+            int currentTarget = m_instructionDecodeCache.decode(opcode, pc).getBranchPcRelativeTargetPc();
+            if(currentTarget>0 && m_instructionDecodeCache.decode(opcode, pc).getNmenonic().startsWith("BL")){
+                if(instructionEntryPc.get(currentTarget)!=null){
+                    for(int targetPc : instructionEntryPc.get(currentTarget)){
+                        int opcodeRetsp = getOpcode(targetPc, nodeId,coreId);
+                        m_instructionDecodeCache.decode(opcodeRetsp, targetPc).addReturnLocation(pc);
+                    }
+                } else {
+                    //this is the case where dosyscall has been hit
+                }
+            }
+            pc += m_instructionDecodeCache.decode(opcode, pc).getNumBytes();
+        }
+    }
+
+    private int getOpcode(int pc, int nodeId, int coreId){
+        int opcode=0;
+        try {
+            opcode = m_xeLoader.getMemoryImage(nodeId, coreId).readInstructionWord(pc);
+        } catch (Exception e) {
+            System.err.println("Problem with XeLoader in engine");
+        }
+        return opcode;
+    }
+
+
     void notifyUpdateState() {
         for (Displayer displayer : m_displayers)
             displayer.notifyUpdateState();
@@ -428,7 +492,7 @@ public class Engine {
         if (m_route.unresolvedPaths().size() > 0) {
             setErrorString(String.format("Found %d unresolved paths", 
                     m_route.unresolvedPaths().size()));
-                return false;
+            return false;
         }
 
         return true;

@@ -1,18 +1,11 @@
 package com.xmos.xta.engine;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.Vector;
-
-import com.xmos.dwarfhandler.DebugEngine;
-import com.xmos.dwarfhandler.StatementInfo;
-import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.MachineState.BranchState;
@@ -21,7 +14,10 @@ public class Block implements Comparable<Block> {
     private static final boolean DEBUG = false;
     private static final boolean DEBUG_STATUS = false;
     private static final boolean DEBUG_SANITY = false;
-    private static final boolean FollowResolutions = false;
+    
+    
+    
+    private boolean m_resolveExpressions;
 
     private static int m_numCompletedPaths = 0;
     private static int m_numUnresolvedPaths = 0;
@@ -66,8 +62,10 @@ public class Block implements Comparable<Block> {
     private Stack<TreeSet<Integer>> m_contexts;
     private Vector<Reference> m_exclusions;
 
+    /*
     private HashMap<String, TreeSet<Integer>> m_sourceLinesCovered;
     private HashMap<String, TreeSet<Integer>> m_asmLinesCovered;
+    */
 
     private static int m_numPaths;
     private static int m_numPathInstances;
@@ -99,7 +97,7 @@ public class Block implements Comparable<Block> {
             MemoryImage memoryImage, SymbolTable symbolTable,
             Vector<Reference> exclusions, int fromPc, int toPc, Route route,
             Block parentBlock, MachineState machineState,
-            Stack<TreeSet<Integer>> contexts, boolean speculative) {
+            Stack<TreeSet<Integer>> contexts, boolean speculative, boolean resolveExpressions) {
         m_machineState = new MachineState(machineState);
         m_contexts = new Stack<TreeSet<Integer>>();
         m_contexts.addAll(contexts);
@@ -124,10 +122,7 @@ public class Block implements Comparable<Block> {
         m_firstStep = true;
         m_functionDepth = m_contexts.size() - 1;
         m_exclusions = exclusions;
-
-        m_sourceLinesCovered = new HashMap<String, TreeSet<Integer>>();
-        m_asmLinesCovered = new HashMap<String, TreeSet<Integer>>();
-
+        m_resolveExpressions = resolveExpressions;
         m_machineState.setPc(m_fromPc);
 
         m_numInstructions = 0;
@@ -211,6 +206,8 @@ public class Block implements Comparable<Block> {
         m_instructionDecodeCache = blockToSplit.m_instructionDecodeCache;
         m_instructionAttributes = blockToSplit.m_instructionAttributes;
 
+        m_resolveExpressions = blockToSplit.m_resolveExpressions;
+        
         m_id = blockToSplit.m_id;
         m_instanceId = blockToSplit.m_instanceId;
         blockToSplit.m_id = m_numPaths;
@@ -224,9 +221,6 @@ public class Block implements Comparable<Block> {
         m_firstStep = false;
         m_functionDepth = blockToSplit.m_functionDepth;
         m_exclusions = blockToSplit.m_exclusions;
-
-        m_sourceLinesCovered = new HashMap<String, TreeSet<Integer>>();
-        m_asmLinesCovered = new HashMap<String, TreeSet<Integer>>();
 
         m_route = blockToSplit.m_route;
 
@@ -461,52 +455,6 @@ public class Block implements Comparable<Block> {
         return m_toPc;
     }
 
-    public HashMap<String, TreeSet<Integer>> getSourceLinesCovered() {
-        HashMap<String, TreeSet<Integer>> sourceLinesCovered = new HashMap<String, TreeSet<Integer>>();
-
-        for (Block block : getPathBlocks()) {
-            addCoveredLineToHash(block.m_sourceLinesCovered, sourceLinesCovered);
-        }
-        return sourceLinesCovered;
-    }
-
-    public HashMap<String, TreeSet<Integer>> getAsmLinesCovered() {
-        HashMap<String, TreeSet<Integer>> asmLinesCovered = new HashMap<String, TreeSet<Integer>>();
-
-        for (Block block : getPathBlocks()) {
-            addCoveredLineToHash(block.m_asmLinesCovered, asmLinesCovered);
-        }
-        return asmLinesCovered;
-    }
-
-    private void addCoveredLineToHash(
-            HashMap<String, TreeSet<Integer>> blockLines,
-            HashMap<String, TreeSet<Integer>> allLines) {
-
-        Iterator<Map.Entry<String, TreeSet<Integer>>> iter = blockLines
-                .entrySet().iterator();
-
-        while (iter.hasNext()) {
-            Map.Entry<String, TreeSet<Integer>> pair = iter.next();
-            String fileName = pair.getKey();
-
-            TreeSet<Integer> lineNumbers;
-
-            if (!allLines.containsKey(fileName)) {
-                lineNumbers = new TreeSet<Integer>();
-                allLines.put(fileName, lineNumbers);
-            } else {
-                lineNumbers = allLines.get(fileName);
-            }
-
-            for (Integer lineNumber : pair.getValue()) {
-                if (!lineNumbers.contains(lineNumber)) {
-                    lineNumbers.add(lineNumber);
-                }
-            }
-        }
-    }
-
     public boolean addLoopPath(Block pathStartBlock) {
         assert (pathStartBlock != null);
         assert (!m_loopPaths.contains(pathStartBlock));
@@ -523,7 +471,11 @@ public class Block implements Comparable<Block> {
         return true;
     }
 
-    // Returns true if recursion is detected
+    
+    
+    
+    
+    
     void step() {
         int pc = m_machineState.getPc();
 
@@ -564,16 +516,7 @@ public class Block implements Comparable<Block> {
             addUnknown(m_instruction);
         }
 
-        if (DEBUG) {
-            traceInstruction(this);
-        }
-        /*
-         * after an instruction is added then one of options can occur: 1. Block
-         * is completed - add to the routes paths and stop stepping 2. the PC is
-         * unknown - stop stepping and add unresolved path 3. recursion is
-         * detected - stop stepping and add unresolved path 4. a branch has been
-         * hit - follow the branch then don't
-         */
+        if (DEBUG) traceInstruction(this);
 
         if (isComplete(m_instruction, pc)) {
             setStatus(Status.COMPLETE);
@@ -587,7 +530,9 @@ public class Block implements Comparable<Block> {
             releaseMemory();
             return;
         }
+        
         m_contexts.peek().add(m_instruction.getPc());
+        
         if (m_machineState.wasJump()) {
             int jumpTarget = m_machineState.getJumpTarget();
 
@@ -610,34 +555,45 @@ public class Block implements Comparable<Block> {
                 }
 
             } else {
-                setStatus(Status.UNRESOLVED);
-                m_route.addUnresolvedPath(this);
-                releaseMemory();
-                return;
+                if(m_instruction.getNmenonic().startsWith("RETSP")){
+                    for(int callingpc : m_instruction.getReturnLocations()){
+                        boolean singleCallingTarget  = m_instruction.getReturnLocations().size() == 1;
+                        int op=0;
+                        try {
+                             op = m_memoryImage.readInstructionWord(callingpc);
+                        } catch (Exception e) {
+                            assert(false);
+                        }
+                        int callingPcBytes = m_instructionDecodeCache.decode(op, callingpc).getNumBytes();
+                        backTrackRetsp(callingpc+callingPcBytes, !singleCallingTarget);
+                    }
+                    setStatus(Status.COMPLETE);
+                    releaseMemory();
+                    return;
+                } else {
+                    setStatus(Status.UNRESOLVED);
+                    m_route.addUnresolvedPath(this);
+                    releaseMemory();
+                    return;
+                }
             }
 
         } else if (m_machineState.wasBranch()) {
 
             if (m_machineState.wasBranchResolved()) {
-                if (FollowResolutions) {
+                if (m_resolveExpressions) {
                     if (m_machineState.getBranchTaken() == BranchState.TAKEN) {
-                        takeBranch(m_machineState.getBranchTarget(), false);
-                        setStatus(Status.COMPLETE);
+                        follow(m_instruction, true, false);
                     } else if (m_machineState.getBranchTaken() == BranchState.NOTTAKEN) {
-                        takeDontBranch(m_instruction, false);
-                        setStatus(Status.COMPLETE);
+                        follow(m_instruction, false, false);
                     } else if (m_machineState.getBranchTaken() == BranchState.UNKNOWN) {
-                        addUnknown(m_instruction);
-                        takeBranch(m_machineState.getBranchTarget(), true);
-                        takeDontBranch(m_instruction, true);
+                        followSpeculativeBranch();
+                        return;
                     }
                 } else {
-                    takeBranch(m_machineState.getBranchTarget(), true);
-                    takeDontBranch(m_instruction, true);
-                    releaseMemory();
+                    followSpeculativeBranch();
                     return;
                 }
-
             } else {
                 setStatus(Status.UNRESOLVED);
                 m_route.addUnresolvedPath(this);
@@ -645,6 +601,9 @@ public class Block implements Comparable<Block> {
                 return;
             }
         } else {
+            /*
+             * this is the case where the instruction was not a jump or a branch
+             */
             int nextPc = m_machineState.getPc() + m_instruction.getNumBytes();
             Block loopBlock = formsLoop(nextPc);
             // if it does then split the parent
@@ -654,6 +613,8 @@ public class Block implements Comparable<Block> {
                 }
                 loopBlock.addLoopPath(this);
                 setStatus(Status.LOOPED);
+                releaseMemory();
+                return;
             }
             if (!m_instruction.isLoadStore()) {
                 m_machineState.fetch();
@@ -666,30 +627,64 @@ public class Block implements Comparable<Block> {
         m_instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes());
     }
 
+    private void followSpeculativeBranch(){
+        addUnknown(m_instruction);
+        if(m_machineState.getPc() + m_instruction.getNumBytes()==
+            m_machineState.getBranchTarget()){
+            //add a warning to a list of warnings
+            System.out.println("Warning: both branches on instruction " 
+                    + Integer.toHexString(m_instruction.getPc()) +" are the same");
+            follow(m_instruction, true, true);
+        }
+        else {
+            follow(m_instruction, true, true);
+            follow(m_instruction, false, true);
+        }
+        releaseMemory();
+    }
+    
+    
     private void releaseMemory() {
         m_machineState = null;
     }
 
+    private void pushFunction(int startPc) {
+        if (DEBUG) {
+            System.out.printf("Block: %d: pushFunction: m_functionDepth: %d\n",
+                    m_id, m_functionDepth);
+            dumpContexts();
+        }
+
+        m_contexts.push(new TreeSet<Integer>());
+        ++m_functionDepth;
+    }
+
+    private void popFunction() {
+        if (DEBUG) {
+            System.out.printf("Block: %d: popFunction: m_functionDepth: %d\n",
+                    m_id, m_functionDepth);
+            dumpContexts();
+        }
+
+        m_contexts.pop();
+        --m_functionDepth;
+    }
+    
     private void addUnknown(XtaInstruction inst) {
-        Unknown unknown = new Unknown(inst);
+        Unknown unknown;
+        if(inst.canPause() ){
+            unknown = new Unknown(inst);
+        } else {
+            unknown = new Unknown(inst, 
+                m_machineState.getGuardExpression(),
+                m_machineState.getBranchTargetExpression());
+        }
         m_unknowns.add(unknown);
         m_route.addUnknown(unknown);
     }
 
-    private void takeDontBranch(XtaInstruction instruction, boolean speculative) {
-        if (m_instruction.isLoadStore() == false) {
-            m_machineState.fetch();
-        }
-        int startPc = m_machineState.getPc() + instruction.getNumBytes();
-        m_machineState.issue(instruction.getNumBytes());
-        Block nextPath = new Block(m_mode, m_config, m_instructionDecodeCache,
-                m_instructionAttributes, m_memoryImage, m_symbolTable,
-                m_exclusions, startPc, m_toPc, m_route, this, m_machineState,
-                m_contexts, speculative);
-        nextPath.build();
-    }
 
-    private void takeBranch(int branchTarget, boolean speculative) {
+    private void backTrackRetsp(int branchTarget, boolean speculative) {
         Block loopBlock = formsLoop(branchTarget);
         if (loopBlock != null) {
             if (loopBlock.getInstructionsThis().firstElement().getPc() != branchTarget) {
@@ -698,20 +693,63 @@ public class Block implements Comparable<Block> {
             loopBlock.addLoopPath(this);
             setStatus(Status.LOOPED);
         } else {
-            Block nextPath = new Block(m_mode, m_config,
-                    m_instructionDecodeCache, m_instructionAttributes,
-                    m_memoryImage, m_symbolTable, m_exclusions, branchTarget,
-                    m_toPc, m_route, this, m_machineState, m_contexts,
-                    speculative);
-            nextPath.m_machineState.branchTo(branchTarget, m_instruction
-                    .isLoadStore());
-            nextPath.build();
-            setStatus(Status.COMPLETE);
+            if(speculative){
+                Block nextPath = new Block(m_mode, m_config,
+                        m_instructionDecodeCache, m_instructionAttributes,
+                        m_memoryImage, m_symbolTable, m_exclusions, branchTarget,
+                        m_toPc, m_route, this, m_machineState, m_contexts,
+                        speculative, m_resolveExpressions);
+                nextPath.m_machineState.branchTo(branchTarget, m_instruction
+                        .isLoadStore());
+                nextPath.build();
+                setStatus(Status.COMPLETE);
+            } else {
+                m_machineState.branchTo(branchTarget, m_instruction
+                        .isLoadStore());
+            }
         }
+    }
+    
+    private void follow(XtaInstruction inst, boolean branch, boolean speculative){
+        
+        int dontBranchPc = m_machineState.getPc() + inst.getNumBytes();
+        int doBranchPc = m_machineState.getBranchTarget();
+        
+        if (inst.isLoadStore() == false) {
+            m_machineState.fetch();
+        }
+        int targetPc = branch ? doBranchPc : dontBranchPc;
+        
+        m_machineState.issue(inst.getNumBytes());
+        
+        Block loopBlock = formsLoop(targetPc);
+        
+        if (loopBlock != null) {
+            if (loopBlock.getInstructionsThis().firstElement().getPc() != targetPc) {
+                new Block(loopBlock, targetPc);
+            }
+            loopBlock.addLoopPath(this);
+            setStatus(Status.LOOPED);
+        } else {
+            if(speculative){
+                Block nextPath = new Block(m_mode, m_config,
+                        m_instructionDecodeCache, m_instructionAttributes,
+                        m_memoryImage, m_symbolTable, m_exclusions, targetPc,
+                        m_toPc, m_route, this, m_machineState, m_contexts,
+                        speculative, m_resolveExpressions);
+                nextPath.m_machineState.branchTo(targetPc, inst.isLoadStore());
+                nextPath.build();
+                setStatus(Status.COMPLETE);
+            } else {
+                m_machineState.branchTo(targetPc, inst.isLoadStore());
+            }
+            
+        }
+        
     }
 
     private Block formsLoop(int pc) {
-        if (FollowResolutions) {
+        if (m_resolveExpressions) {
             Block parent = this;
             while (parent != null) {
                 if (parent.containsPc(pc) && isLoop(pc) && parent.m_speculative) {
@@ -722,10 +760,10 @@ public class Block implements Comparable<Block> {
             return null;
         } else {
             Block parent = this;
+            boolean isLoop = isLoop(pc);
+            if(!isLoop) return null;
             while (parent != null) {
-                if (parent.containsPc(pc) && isLoop(pc)) {
-                    return parent;
-                }
+                if (parent.containsPc(pc)) return parent;
                 parent = parent.getParentBlock();
             }
             return null;
@@ -770,8 +808,6 @@ public class Block implements Comparable<Block> {
                 nextPc = m_machineState.getJumpTarget();
             } else {
                 setStatus(Status.UNRESOLVED);
-                if (DEBUG)
-                    System.out.println("found an unresolved Block");
                 m_route.addUnresolvedPath(this);
                 return;
             }
@@ -843,230 +879,8 @@ public class Block implements Comparable<Block> {
         return m_machineState.getJumpTarget();
     }
 
-    double getTimeTakenRelative(boolean recurse) {
-        double time = 0.0;
-
-        for (Block block : getPathBlocks()) {
-            time += block.getTimeTakenThis();
-
-            if (recurse) {
-                for (Block loopPath : block.getLoopPaths()) {
-
-                    PathAttributes attributes = block
-                            .getLoopPathAttributes(loopPath);
-                    if (!attributes.isAbsolute()) {
-                        int numIterations = attributes.getNumIterations();
-                        if (numIterations > 0) {
-                            time += loopPath.getTimeTakenRelative(true)
-                                    * numIterations;
-                        }
-                    }
-                }
-                block.doneWithLoopPaths();
-            }
-        }
-        return time;
-    }
-
-    double getTimeTakenAbsolute(boolean recurse) {
-        double time = 0.0;
-        for (Block block : getPathBlocks()) {
-            if (recurse) {
-                for (Block loopPath : block.getLoopPaths()) {
-                    time += loopPath.getTimeTakenAbsolute(true);
-                    PathAttributes attributes = block
-                            .getLoopPathAttributes(loopPath);
-                    if (attributes.isAbsolute()) {
-                        int numIterations = attributes.getNumIterations();
-                        if (numIterations > 0) {
-                            time += loopPath.getTimeTakenRelative(false)
-                                    * numIterations;
-                        }
-                    }
-                }
-                block.doneWithLoopPaths();
-            }
-        }
-
-        return time;
-    }
-
-    public double getTimeTakenThis() {
-        double time = 0.0;
-        for (XtaInstruction instruction : m_instructions) {
-            time += instruction.getTimeTaken();
-        }
-        return time;
-    }
-
-    int getNumInstructionsRelative(boolean recurse) {
-        int num = 0;
-
-        for (Block block : getPathBlocks()) {
-            num += block.getNumInstructionsThis();
-
-            if (recurse) {
-                for (Block loopPath : block.getLoopPaths()) {
-                    PathAttributes attributes = block
-                            .getLoopPathAttributes(loopPath);
-                    if (!attributes.isAbsolute()) {
-                        int numIterations = attributes.getNumIterations();
-                        if (numIterations > 0) {
-                            num += loopPath.getNumInstructionsRelative(true)
-                                    * numIterations;
-                        }
-                    }
-                }
-                block.doneWithLoopPaths();
-            }
-        }
-        return num;
-    }
-
-    int getNumInstructionsAbsolute(boolean recurse) {
-        int num = 0;
-
-        for (Block block : getPathBlocks()) {
-            if (recurse) {
-                for (Block loopPath : block.getLoopPaths()) {
-                    num += loopPath.getNumInstructionsAbsolute(true);
-
-                    PathAttributes attributes = block
-                            .getLoopPathAttributes(loopPath);
-                    if (attributes.isAbsolute()) {
-                        int numIterations = attributes.getNumIterations();
-                        if (numIterations > 0) {
-                            num += loopPath.getNumInstructionsRelative(false)
-                                    * numIterations;
-                        }
-                    }
-                }
-                block.doneWithLoopPaths();
-            }
-        }
-        return num;
-    }
-
-    int getNumInstructionsThis() {
-        return m_numInstructions;
-    }
-
-    int getNumFNopsRelative(boolean recurse) {
-        int num = 0;
-
-        for (Block block : getPathBlocks()) {
-            num += block.getNumFNopsThis();
-
-            if (recurse) {
-                for (Block loopPath : block.getLoopPaths()) {
-                    PathAttributes attributes = block
-                            .getLoopPathAttributes(loopPath);
-                    if (!attributes.isAbsolute()) {
-                        int numIterations = attributes.getNumIterations();
-                        if (numIterations > 0) {
-                            num += loopPath.getNumFNopsRelative(true)
-                                    * numIterations;
-                        }
-                    }
-                }
-                block.doneWithLoopPaths();
-            }
-        }
-        return num;
-    }
-
-    int getNumFNopsAbsolute(boolean recurse) {
-        int num = 0;
-
-        for (Block block : getPathBlocks()) {
-            if (recurse) {
-                for (Block loopPath : block.getLoopPaths()) {
-                    num += loopPath.getNumFNopsAbsolute(true);
-
-                    PathAttributes attributes = block
-                            .getLoopPathAttributes(loopPath);
-                    if (attributes.isAbsolute()) {
-                        int numIterations = attributes.getNumIterations();
-                        if (numIterations > 0) {
-                            num += loopPath.getNumFNopsRelative(false)
-                                    * numIterations;
-                        }
-                    }
-                }
-                block.doneWithLoopPaths();
-            }
-        }
-        return num;
-    }
-
-    public int getNumFNopsThis() {
-        return m_numFNops;
-    }
-
-    int getNumCyclesRelative(boolean recurse) {
-        int num = 0;
-
-        for (Block block : getPathBlocks()) {
-            num += block.getNumCyclesThis();
-
-            if (recurse) {
-                for (Block loopPath : block.getLoopPaths()) {
-                    PathAttributes attributes = block
-                            .getLoopPathAttributes(loopPath);
-                    if (!attributes.isAbsolute()) {
-                        int numIterations = attributes.getNumIterations();
-                        if (numIterations > 0) {
-                            num += loopPath.getNumCyclesRelative(true)
-                                    * numIterations;
-                        }
-                    }
-                }
-                block.doneWithLoopPaths();
-            }
-        }
-        return num;
-    }
-
     public int getUnknowns() {
         return m_unknowns.size();
-    }
-
-    public int getNumUnknowns(boolean recurse) {
-        int num = 0;
-        for (Block block : getPathBlocks()) {
-            num += block.getUnknowns();
-            if (recurse) {
-                for (Block loopPath : block.getLoopPaths()) {
-                    num += loopPath.getNumUnknowns(true);
-                }
-                block.doneWithLoopPaths();
-            }
-        }
-        return num;
-    }
-
-    int getNumCyclesAbsolute(boolean recurse) {
-        int num = 0;
-
-        for (Block block : getPathBlocks()) {
-            if (recurse) {
-                for (Block loopPath : block.getLoopPaths()) {
-                    num += loopPath.getNumCyclesAbsolute(true);
-
-                    PathAttributes attributes = block
-                            .getLoopPathAttributes(loopPath);
-                    if (attributes.isAbsolute()) {
-                        int numIterations = attributes.getNumIterations();
-                        if (numIterations > 0) {
-                            num += loopPath.getNumCyclesRelative(false)
-                                    * numIterations;
-                        }
-                    }
-                }
-                block.doneWithLoopPaths();
-            }
-        }
-        return num;
     }
 
     public int getNumCyclesThis() {
@@ -1075,54 +889,6 @@ public class Block implements Comparable<Block> {
             numCycles += instruction.getNumCycles();
         }
         return numCycles;
-    }
-
-    int getNumPausablesRelative(boolean recurse) {
-        int num = 0;
-
-        for (Block block : getPathBlocks()) {
-            num += block.getNumPausablesThis();
-
-            if (recurse) {
-                for (Block loopPath : block.getLoopPaths()) {
-                    PathAttributes attributes = block
-                            .getLoopPathAttributes(loopPath);
-                    if (!attributes.isAbsolute()) {
-                        int numIterations = attributes.getNumIterations();
-                        if (numIterations > 0) {
-                            num += loopPath.getNumPausablesRelative(true)
-                                    * numIterations;
-                        }
-                    }
-                }
-                block.doneWithLoopPaths();
-            }
-        }
-        return num;
-    }
-
-    int getNumPausablesAbsolute(boolean recurse) {
-        int num = 0;
-
-        for (Block block : getPathBlocks()) {
-            if (recurse) {
-                for (Block loopPath : block.getLoopPaths()) {
-                    num += loopPath.getNumPausablesAbsolute(true);
-
-                    PathAttributes attributes = block
-                            .getLoopPathAttributes(loopPath);
-                    if (attributes.isAbsolute()) {
-                        int numIterations = attributes.getNumIterations();
-                        if (numIterations > 0) {
-                            num += loopPath.getNumPausablesRelative(false)
-                                    * numIterations;
-                        }
-                    }
-                }
-                block.doneWithLoopPaths();
-            }
-        }
-        return num;
     }
 
     public int getNumPausablesThis() {
@@ -1177,6 +943,8 @@ public class Block implements Comparable<Block> {
         inst.setConfig(m_config);
 
         m_pcs.add(inst.getPc());
+        //TODO
+        //if(!m_instructions.contains(inst))
         m_instructions.add(inst);
         if (inst.canPause()) {
             m_numPausables++;
@@ -1187,94 +955,283 @@ public class Block implements Comparable<Block> {
             m_numInstructions++;
         }
     }
+    
+    public int getNumFNopsThis() {
+        return m_numFNops;
+    }
+    
 
-    void buildCoveredLinesHashes(DebugInfo debugInfo, SymbolTable symbolTable) {
+    public double getTimeTakenThis() {
+        double time = 0.0;
+        for (XtaInstruction instruction : m_instructions) {
+            time += instruction.getTimeTaken();
+        }
+        return time;
+    }
+    
 
-        DebugEngine debugEngine = debugInfo.getDebugEngine();
+    int getNumInstructionsThis() {
+        return m_numInstructions;
+    }
+
+    
+    /*
+     *  recursive information gathering below here
+     */
+    
+    double getTimeTakenRelative(boolean recurse) {
+        double time = 0.0;
 
         for (Block block : getPathBlocks()) {
-            block.buildSourceLinesFileHash(debugEngine, m_sourceLinesCovered);
-            block.buildAsmLinesFunctionHash(symbolTable, m_asmLinesCovered);
+            time += block.getTimeTakenThis();
 
-            if (DEBUG) {
-                System.out.printf("---------- Block: %d ----------\n", m_id);
-                System.out.printf("File -> Source Line Map:\n");
-                dumpHash(m_sourceLinesCovered, false);
-                System.out.printf("Function -> Asm Line Map:\n");
-                dumpHash(m_asmLinesCovered, true);
-            }
+            if (recurse) {
+                for (Block loopPath : block.getLoopPaths()) {
 
-            for (Block loopPath : block.getLoopPaths()) {
-                loopPath.buildCoveredLinesHashes(debugInfo, symbolTable);
-            }
-            block.doneWithLoopPaths();
-        }
-    }
-
-    private void buildSourceLinesFileHash(DebugEngine debugEngine,
-            HashMap<String, TreeSet<Integer>> sourceLinesCovered) {
-
-        for (XtaInstruction inst : m_instructions) {
-            Collection<StatementInfo> statements = debugEngine
-                    .getStatement(inst.getPc());
-            for (StatementInfo statementInfo : statements) {
-                String fileName = statementInfo.getFile().getFileName();
-                Long ln = statementInfo.getLine();
-                int lineNumber = ln.intValue();
-
-                addCoveredLineToHash(m_sourceLinesCovered, fileName, lineNumber);
-                addCoveredLineToHash(sourceLinesCovered, fileName, lineNumber);
+                    PathAttributes attributes = block
+                            .getLoopPathAttributes(loopPath);
+                    if (!attributes.isAbsolute()) {
+                        int numIterations = attributes.getNumIterations();
+                        if (numIterations > 0) {
+                            time += loopPath.getTimeTakenRelative(true)
+                                    * numIterations;
+                        }
+                    }
+                }
+                block.doneWithLoopPaths();
             }
         }
+        return time;
     }
 
-    private void addCoveredLineToHash(
-            HashMap<String, TreeSet<Integer>> linesCovered, String fileName,
-            int lineNumber) {
-
-        if (linesCovered.containsKey(fileName)) {
-            linesCovered.get(fileName).add(lineNumber);
-        } else {
-            TreeSet<Integer> lineNumbers = new TreeSet<Integer>();
-            lineNumbers.add(lineNumber);
-            linesCovered.put(fileName, lineNumbers);
-        }
-    }
-
-    private void buildAsmLinesFunctionHash(SymbolTable symbolTable,
-            HashMap<String, TreeSet<Integer>> asmLinesCovered) {
-
-        for (XtaInstruction instruction : m_instructions) {
-            String functionName = symbolTable.functionName(instruction.getPc());
-            int pc = instruction.getPc();
-
-            addCoveredLineToHash(m_asmLinesCovered, functionName, pc);
-            addCoveredLineToHash(asmLinesCovered, functionName, pc);
-        }
-    }
-
-    private void dumpHash(HashMap<String, TreeSet<Integer>> linesHash,
-            boolean hex) {
-        for (Iterator<Map.Entry<String, TreeSet<Integer>>> iter = linesHash
-                .entrySet().iterator(); iter.hasNext();) {
-            Map.Entry<String, TreeSet<Integer>> entry = (Map.Entry<String, TreeSet<Integer>>) iter
-                    .next();
-
-            String fileName = (String) entry.getKey();
-            TreeSet<Integer> fileLines = (TreeSet<Integer>) entry.getValue();
-
-            System.out.printf("%s: ", fileName);
-            for (long line : fileLines) {
-                if (hex)
-                    System.out.printf(" 0x%05x", line);
-                else
-                    System.out.printf(" %d", line);
+    double getTimeTakenAbsolute(boolean recurse) {
+        double time = 0.0;
+        for (Block block : getPathBlocks()) {
+            if (recurse) {
+                for (Block loopPath : block.getLoopPaths()) {
+                    time += loopPath.getTimeTakenAbsolute(true);
+                    PathAttributes attributes = block
+                            .getLoopPathAttributes(loopPath);
+                    if (attributes.isAbsolute()) {
+                        int numIterations = attributes.getNumIterations();
+                        if (numIterations > 0) {
+                            time += loopPath.getTimeTakenRelative(false)
+                                    * numIterations;
+                        }
+                    }
+                }
+                block.doneWithLoopPaths();
             }
-            System.out.printf("\n");
         }
 
+        return time;
     }
 
+
+    int getNumInstructionsRelative(boolean recurse) {
+        int num = 0;
+
+        for (Block block : getPathBlocks()) {
+            num += block.getNumInstructionsThis();
+
+            if (recurse) {
+                for (Block loopPath : block.getLoopPaths()) {
+                    PathAttributes attributes = block
+                            .getLoopPathAttributes(loopPath);
+                    if (!attributes.isAbsolute()) {
+                        int numIterations = attributes.getNumIterations();
+                        if (numIterations > 0) {
+                            num += loopPath.getNumInstructionsRelative(true)
+                                    * numIterations;
+                        }
+                    }
+                }
+                block.doneWithLoopPaths();
+            }
+        }
+        return num;
+    }
+
+    int getNumInstructionsAbsolute(boolean recurse) {
+        int num = 0;
+
+        for (Block block : getPathBlocks()) {
+            if (recurse) {
+                for (Block loopPath : block.getLoopPaths()) {
+                    num += loopPath.getNumInstructionsAbsolute(true);
+
+                    PathAttributes attributes = block
+                            .getLoopPathAttributes(loopPath);
+                    if (attributes.isAbsolute()) {
+                        int numIterations = attributes.getNumIterations();
+                        if (numIterations > 0) {
+                            num += loopPath.getNumInstructionsRelative(false)
+                                    * numIterations;
+                        }
+                    }
+                }
+                block.doneWithLoopPaths();
+            }
+        }
+        return num;
+    }
+
+    int getNumFNopsRelative(boolean recurse) {
+        int num = 0;
+
+        for (Block block : getPathBlocks()) {
+            num += block.getNumFNopsThis();
+
+            if (recurse) {
+                for (Block loopPath : block.getLoopPaths()) {
+                    PathAttributes attributes = block
+                            .getLoopPathAttributes(loopPath);
+                    if (!attributes.isAbsolute()) {
+                        int numIterations = attributes.getNumIterations();
+                        if (numIterations > 0) {
+                            num += loopPath.getNumFNopsRelative(true)
+                                    * numIterations;
+                        }
+                    }
+                }
+                block.doneWithLoopPaths();
+            }
+        }
+        return num;
+    }
+
+    int getNumFNopsAbsolute(boolean recurse) {
+        int num = 0;
+
+        for (Block block : getPathBlocks()) {
+            if (recurse) {
+                for (Block loopPath : block.getLoopPaths()) {
+                    num += loopPath.getNumFNopsAbsolute(true);
+
+                    PathAttributes attributes = block
+                            .getLoopPathAttributes(loopPath);
+                    if (attributes.isAbsolute()) {
+                        int numIterations = attributes.getNumIterations();
+                        if (numIterations > 0) {
+                            num += loopPath.getNumFNopsRelative(false)
+                                    * numIterations;
+                        }
+                    }
+                }
+                block.doneWithLoopPaths();
+            }
+        }
+        return num;
+    }
+
+    int getNumCyclesRelative(boolean recurse) {
+        int num = 0;
+
+        for (Block block : getPathBlocks()) {
+            num += block.getNumCyclesThis();
+
+            if (recurse) {
+                for (Block loopPath : block.getLoopPaths()) {
+                    PathAttributes attributes = block
+                            .getLoopPathAttributes(loopPath);
+                    if (!attributes.isAbsolute()) {
+                        int numIterations = attributes.getNumIterations();
+                        if (numIterations > 0) {
+                            num += loopPath.getNumCyclesRelative(true)
+                                    * numIterations;
+                        }
+                    }
+                }
+                block.doneWithLoopPaths();
+            }
+        }
+        return num;
+    }
+    int getNumPausablesRelative(boolean recurse) {
+        int num = 0;
+
+        for (Block block : getPathBlocks()) {
+            num += block.getNumPausablesThis();
+
+            if (recurse) {
+                for (Block loopPath : block.getLoopPaths()) {
+                    PathAttributes attributes = block
+                            .getLoopPathAttributes(loopPath);
+                    if (!attributes.isAbsolute()) {
+                        int numIterations = attributes.getNumIterations();
+                        if (numIterations > 0) {
+                            num += loopPath.getNumPausablesRelative(true)
+                                    * numIterations;
+                        }
+                    }
+                }
+                block.doneWithLoopPaths();
+            }
+        }
+        return num;
+    }
+
+    int getNumPausablesAbsolute(boolean recurse) {
+        int num = 0;
+
+        for (Block block : getPathBlocks()) {
+            if (recurse) {
+                for (Block loopPath : block.getLoopPaths()) {
+                    num += loopPath.getNumPausablesAbsolute(true);
+
+                    PathAttributes attributes = block
+                            .getLoopPathAttributes(loopPath);
+                    if (attributes.isAbsolute()) {
+                        int numIterations = attributes.getNumIterations();
+                        if (numIterations > 0) {
+                            num += loopPath.getNumPausablesRelative(false)
+                                    * numIterations;
+                        }
+                    }
+                }
+                block.doneWithLoopPaths();
+            }
+        }
+        return num;
+    }   
+    public int getNumUnknowns(boolean recurse) {
+        int num = 0;
+        for (Block block : getPathBlocks()) {
+            num += block.getUnknowns();
+            if (recurse) {
+                for (Block loopPath : block.getLoopPaths()) {
+                    num += loopPath.getNumUnknowns(true);
+                }
+                block.doneWithLoopPaths();
+            }
+        }
+        return num;
+    }
+
+    int getNumCyclesAbsolute(boolean recurse) {
+        int num = 0;
+
+        for (Block block : getPathBlocks()) {
+            if (recurse) {
+                for (Block loopPath : block.getLoopPaths()) {
+                    num += loopPath.getNumCyclesAbsolute(true);
+
+                    PathAttributes attributes = block
+                            .getLoopPathAttributes(loopPath);
+                    if (attributes.isAbsolute()) {
+                        int numIterations = attributes.getNumIterations();
+                        if (numIterations > 0) {
+                            num += loopPath.getNumCyclesRelative(false)
+                                    * numIterations;
+                        }
+                    }
+                }
+                block.doneWithLoopPaths();
+            }
+        }
+        return num;
+    }
+    
     private void traceInstruction(Block Block) {
         XtaInstruction instruction = Block.getCurrentInstruction();
 
@@ -1298,27 +1255,7 @@ public class Block implements Comparable<Block> {
         }
     }
 
-    private void pushFunction(int startPc) {
-        if (DEBUG) {
-            System.out.printf("Block: %d: pushFunction: m_functionDepth: %d\n",
-                    m_id, m_functionDepth);
-            dumpContexts();
-        }
-
-        m_contexts.push(new TreeSet<Integer>());
-        ++m_functionDepth;
-    }
-
-    private void popFunction() {
-        if (DEBUG) {
-            System.out.printf("Block: %d: popFunction: m_functionDepth: %d\n",
-                    m_id, m_functionDepth);
-            dumpContexts();
-        }
-
-        m_contexts.pop();
-        --m_functionDepth;
-    }
+    
 
     private void dumpContexts() {
         for (TreeSet<Integer> context : m_contexts) {
@@ -1329,4 +1266,173 @@ public class Block implements Comparable<Block> {
             System.out.printf("\n");
         }
     }
+    
+    /*
+    
+     void step() {
+        int pc = m_machineState.getPc();
+
+        int opcode = 0;
+        try {
+            opcode = m_memoryImage.readInstructionWord(pc);
+        } catch (Exception e) {
+            setStatus(Status.ERROR);
+            return;
+        }
+
+        m_machineState.setOpcode(opcode);
+        m_machineState.resetInstructionState();
+
+        m_instruction = m_instructionDecodeCache.decode(opcode, pc);
+        int instNumBytes = m_instruction.getNumBytes();
+
+        // Add an FNOP if required
+        if (m_machineState.canIssue(instNumBytes) == false) {
+            XtaInstruction fNop = m_instructionDecodeCache.getFNop(pc, 0);
+            addInstruction(fNop);
+            m_machineState.fetch();
+            fNop.setNumIBufferBytes(m_machineState.getNumIBufferBytes());
+
+            // May require two FNOPs if fetching a mis-aligned long
+            if (m_machineState.canIssue(instNumBytes) == false) {
+                fNop = m_instructionDecodeCache.getFNop(pc, 1);
+                addInstruction(fNop);
+                m_machineState.fetch();
+                fNop.setNumIBufferBytes(m_machineState.getNumIBufferBytes());
+            }
+        }
+
+        m_instruction.execute(m_machineState);
+        addInstruction(m_instruction);
+
+        if (m_instruction.canPause()) {
+            addUnknown(m_instruction);
+        }
+
+        if (DEBUG) traceInstruction(this);
+        //
+         // after an instruction is added then one of options can occur: 1. Block
+         // is completed - add to the routes paths and stop stepping 2. the PC is
+         // unknown - stop stepping and add unresolved path 3. recursion is
+         // detected - stop stepping and add unresolved path 4. a branch has been
+         // hit - follow the branch then don't
+         //
+
+        if (isComplete(m_instruction, pc)) {
+            setStatus(Status.COMPLETE);
+            m_route.addCompletePath(this);
+            releaseMemory();
+            return;
+        }
+
+        if (isExcluded(pc)) {
+            setStatus(Status.EXCLUDED);
+            releaseMemory();
+            return;
+        }
+        
+        m_contexts.peek().add(m_instruction.getPc());
+        
+        if (m_machineState.wasJump()) {
+            int jumpTarget = m_machineState.getJumpTarget();
+
+            if (m_machineState.wasJumpResolved()) {
+                if (m_instruction.getBranchLink() && isRecursion(jumpTarget)) {
+                    setStatus(Status.RECURSION);
+                    m_route.addUnresolvedPath(this);
+
+                } else {
+                    m_contexts.peek().add(m_instruction.getPc());
+
+                    if (m_instruction.getBranchLink()) {
+                        pushFunction(m_instruction.getPc());
+                    } else if (m_instruction.getReturn()) {
+                        popFunction();
+                    }
+
+                    m_machineState.branchTo(jumpTarget, m_instruction
+                            .isLoadStore());
+                }
+
+            } else {
+                if(m_instruction.getNmenonic().startsWith("RETSP")){
+                    for(int callingpc : m_instruction.getReturnLocations()){
+                        boolean singleCallingTarget  = m_instruction.getReturnLocations().size() == 1;
+                        int op=0;
+                        try {
+                             op = m_memoryImage.readInstructionWord(callingpc);
+                        } catch (Exception e) {
+                            assert(false);
+                        }
+                        int callingPcBytes = m_instructionDecodeCache.decode(op, callingpc).getNumBytes();
+                        takeBranch(callingpc+callingPcBytes, !singleCallingTarget);
+                    }
+                    setStatus(Status.COMPLETE);
+                    releaseMemory();
+                    return;
+                } else {
+                    setStatus(Status.UNRESOLVED);
+                    m_route.addUnresolvedPath(this);
+                    releaseMemory();
+                    return;
+                }
+            }
+
+        } else if (m_machineState.wasBranch()) {
+
+            if (m_machineState.wasBranchResolved()) {
+                if (m_resolveExpressions) {
+                    if (m_machineState.getBranchTaken() == BranchState.TAKEN) {
+                        takeBranch(m_machineState.getBranchTarget(), false);
+                        //setStatus(Status.COMPLETE);
+                    } else if (m_machineState.getBranchTaken() == BranchState.NOTTAKEN) {
+                        takeDontBranch(m_instruction, false);
+                        //setStatus(Status.COMPLETE);
+                    } else if (m_machineState.getBranchTaken() == BranchState.UNKNOWN) {
+                        
+                        addUnknown(m_instruction);
+                        takeBranch(m_machineState.getBranchTarget(), true);
+                        takeDontBranch(m_instruction, true);
+                        releaseMemory();
+                        return;
+                    }
+                    
+                } else {
+                    addUnknown(m_instruction);
+                    takeBranch(m_machineState.getBranchTarget(), true);
+                    takeDontBranch(m_instruction, true);
+                    releaseMemory();
+                    return;
+                }
+
+            } else {
+                setStatus(Status.UNRESOLVED);
+                m_route.addUnresolvedPath(this);
+                releaseMemory();
+                return;
+            }
+        } else {
+            int nextPc = m_machineState.getPc() + m_instruction.getNumBytes();
+            Block loopBlock = formsLoop(nextPc);
+            // if it does then split the parent
+            if (loopBlock != null) {
+                if (loopBlock.getInstructionsThis().firstElement().getPc() != nextPc) {
+                    new Block(loopBlock, nextPc);
+                }
+                loopBlock.addLoopPath(this);
+                setStatus(Status.LOOPED);
+                releaseMemory();
+                return;
+            }
+            if (!m_instruction.isLoadStore()) {
+                m_machineState.fetch();
+            }
+            updatePc(m_instruction);
+            m_machineState.issue(instNumBytes);
+        }
+
+        m_firstStep = false;
+        m_instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes());
+    }
+    */
 }

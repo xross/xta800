@@ -98,9 +98,9 @@ public class BlockDecomposer implements PathUpdater {
         
         m_basicBlockDepths.clear();
         resetAllBasicBlockDepths();
-        /*
-        findBasicBlockDepth(m_basicBlocks.get(startBlock), 0, new ArrayList<BasicBlock>());
-        */
+
+        //findBasicBlockDepth(m_basicBlocks.get(startBlock), 0, new ArrayList<BasicBlock>());
+
         if (DISPLAY_GRAPH_VIS) 
             printOutGraphvis();
         if(success){
@@ -187,17 +187,21 @@ public class BlockDecomposer implements PathUpdater {
             }
         }
         dotFile += "}\n";
-        FileWriter file_writer;
-        String graphNumber = "" + dotFile.hashCode() + ".dot";
+        //FileWriter file_writer;
+        //String graphNumber = "" + dotFile.hashCode() + ".dot";
+        System.out.println(dotFile);
+        
+        
+        
         //String pictureNumber = "" + dotFile.hashCode() + ".jpg";
-        try {
-            file_writer = new FileWriter (new File(graphNumber));
-            BufferedWriter buf_writer = new BufferedWriter (file_writer);
-            buf_writer.write(dotFile);
-            buf_writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //try {
+        //    file_writer = new FileWriter (new File(graphNumber));
+        //    BufferedWriter buf_writer = new BufferedWriter (file_writer);
+        //    buf_writer.write(dotFile);
+        //    buf_writer.close();
+        //} catch (IOException e) {
+        //    e.printStackTrace();
+        //}
         /*
         try {
             Process p=Runtime.getRuntime().exec("dot "+graphNumber+" -Tjpg -o "+pictureNumber);

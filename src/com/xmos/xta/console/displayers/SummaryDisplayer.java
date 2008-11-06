@@ -15,6 +15,10 @@ import com.xmos.isa.Instruction;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
+import com.xmos.xeobject.Line;
+import com.xmos.xeobject.SourceFile;
+import com.xmos.xeobject.SourceLine;
+import com.xmos.xeobject.XeObject;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Block;
@@ -41,7 +45,8 @@ public class SummaryDisplayer implements Displayer {
 	Console m_console;
 	Level m_level;
 	int m_pathId;
- 
+	XeObject m_xeObject;
+	
 	public static Level checkLevel(String level) {
 		if (level.equals(Level.SIMPLE.toString()))			
 		    return Level.SIMPLE;
@@ -86,10 +91,11 @@ public class SummaryDisplayer implements Displayer {
 	        		   SummaryDisplayer.Level.SOURCES.toString());      			
 	}
 	
-	public SummaryDisplayer(Console console, Level level, int pathId) {
+	public SummaryDisplayer(Console console, Level level, int pathId, XeObject xeObject) {
 		m_console = console;
 		m_level = level;
 		m_pathId = pathId;
+		m_xeObject=xeObject;
 	}
 	
     public void displayRoute(Route route, DebugInfo debugInfo, 
@@ -333,11 +339,29 @@ public class SummaryDisplayer implements Displayer {
     }
     
     private boolean pathWithinSourceFile(Block path, String sourceFileName) {
-        HashMap<String, TreeSet<Integer>> linesCovered = path.getSourceLinesCovered();
+        //TODO make this faster
+        HashMap<String, TreeSet<Integer>> linesCovered = new HashMap<String, TreeSet<Integer>>();
+        TreeSet<Integer> bob = new TreeSet<Integer>();
+        for(XtaInstruction inst : path.getInstructions(false)){
+            for(SourceFile sourceFile: m_xeObject.getSourceFiles()){
+                if(sourceFile.getFile().getName().equals(sourceFileName)){
+                    for(SourceLine sourceLine : sourceFile.getSourceLines()){
+                        for(Line assembly :sourceLine.getChildern()){
+                            if(assembly.getLineNumber() == inst.getPc()){
+                                bob.add(sourceLine.getLineNumber());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        linesCovered.put(sourceFileName, bob);
+        
         if (linesCovered.containsKey(sourceFileName) && 
     		(linesCovered.get(sourceFileName).size() > 0)) {
         	return true;
         }
+        
         return false;
     }   
     

@@ -14,6 +14,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.XtaInstruction;
 
 public class SrcDisplayer implements Displayer {    
 	Console m_console;
@@ -39,8 +40,25 @@ public class SrcDisplayer implements Displayer {
 			m_console.display(String.format("Error: invalid path id: %d\n", m_pathId));
 			return;
     	}
-    	          	        	        	                
-        HashMap<String, TreeSet<Integer>> linesCovered = path.getSourceLinesCovered();            
+    	//TODO make this faster
+    	HashMap<String, TreeSet<Integer>> linesCovered = new HashMap<String, TreeSet<Integer>>();
+    	TreeSet<Integer> treeLines = new TreeSet<Integer>();
+    	for(XtaInstruction inst : path.getInstructions(false)){
+    	    for(SourceFile sourceFile: m_xeObject.getSourceFiles()){
+    	        if(sourceFile.getFile().getName().equals(m_fileName)){
+    	            for(SourceLine sourceLine : sourceFile.getSourceLines()){
+    	                for(Line assembly :sourceLine.getChildern()){
+    	                    if(assembly.getLineNumber() == inst.getPc()){
+    	                        treeLines.add(sourceLine.getLineNumber());
+    	                    }
+    	                }
+    	            }
+    	        }
+    	    }
+    	}
+    	linesCovered.put(m_fileName, treeLines);
+    	
+        //HashMap<String, TreeSet<Integer>> linesCovered = path.getSourceLinesCovered();            
         if (!linesCovered.containsKey(m_fileName)) {
             // Print the most useful error message
             for (SourceFile sourceFile : m_xeObject.getSourceFiles()) {         
