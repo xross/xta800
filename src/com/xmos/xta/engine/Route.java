@@ -42,7 +42,7 @@ public class Route {
     private ArrayList<Unknown> m_unknowns;
     
     private static int m_numRoutes;  
-    
+        
     Route(Config config, Reference fromRef, Reference toRef, int nodeId, int coreId) {
         m_fromRef = fromRef;
         m_toRef = toRef;

@@ -17,7 +17,7 @@ import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Route;
 
-public class AsmDisplayer extends Displayer {
+public class AsmDisplayer implements Displayer {
 	Console m_console;
 	int m_pathId;
 	XeLoader.Architecture m_architecture;
@@ -31,7 +31,7 @@ public class AsmDisplayer extends Displayer {
     public void displayRoute(Route route, DebugInfo debugInfo, 
     		MemoryImage memoryImage, SymbolTable symbolTable) {
 
-    	Block path = getPath(route, m_pathId);
+    	Block path = DisplayerHelper.getPath(route, m_pathId);
     	if (path == null) {
 			m_console.display(String.format("Error: invalid path id: %d\n", m_pathId));        		
 			return;

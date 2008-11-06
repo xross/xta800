@@ -12,7 +12,7 @@ import com.xmos.xta.engine.Reference;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 
-public class TraceDisplayer extends Displayer {
+public class TraceDisplayer implements Displayer {
 	
 	public enum Level {
 	    COMPLETE, 
@@ -146,7 +146,7 @@ public class TraceDisplayer extends Displayer {
     }
     
     private void traceSinglePath(Route route, SymbolTable symbolTable) {
-        Block path = getPath(route, m_pathId);
+        Block path = DisplayerHelper.getPath(route, m_pathId);
     	if (path == null) {
 		    m_console.display(String.format("Error: invalid path id: %d\n", m_pathId));        		
 		    return;

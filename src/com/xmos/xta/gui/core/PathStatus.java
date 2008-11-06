@@ -25,7 +25,7 @@ import com.xmos.xta.gui.PathUpdater;
 import com.xmos.xta.gui.XtaGui;
 import com.xmos.xta.gui.XtaXeObjectDisplayer;
 
-public class PathStatus extends Displayer {
+public class PathStatus implements Displayer {
 
     private ArrayList<PathUpdater>  m_pathUpdaters;
     private TreeModel               m_treeModel;

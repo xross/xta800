@@ -18,7 +18,7 @@ import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.Unknown;
 
-public class UnknownDisplayer extends Displayer {
+public class UnknownDisplayer implements Displayer {
 
     private ArrayList<Unknown> m_unknowns;
     private JList m_unknownList;
