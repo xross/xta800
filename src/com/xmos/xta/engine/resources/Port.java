@@ -3,106 +3,105 @@ package com.xmos.xta.engine.resources;
 import com.xmos.xta.engine.Expression;
 
 public class Port implements Resource {
-    
-    public Port(){
-        
-    }
-    
-    public void SETV(int resId, int value) {
+
+    public Port() {
 
     }
 
-    public void SETEV(int resId, int value) {
+    public void SETV(Expression readRegister) {
 
     }
 
-    public void SETD(int dataPointer) {
+    public void SETEV(Expression readRegister) {
 
     }
 
-    public void GETD(int dest, int scr) {
+    public void GETD(Expression expression) {
 
     }
 
-    public void SETC(int resId, int controlBits) {
+    public void SETC(Expression expression) {
 
     }
 
-    public void SETCLK(int scr, int dest) {
+    public void SETD(Expression expression) {
 
     }
 
-    public void SETRDY(int scr, int dest) {
+    public void SETCLK(Expression expression) {
 
     }
 
-    public void SETPT(int scr, int scr1) {
+    public void SETRDY(Expression expression) {
 
     }
 
-    public void GETTS(int dest, int scr) {
+    public void SETPT(Expression expression) {
 
     }
 
-    public void INSHR(int dest, int scr) {
+    public void GETTS(Expression expression) {
 
     }
 
-    public void OUTSHR(int dest, int scr) {
+    public void INSHR(Expression expression) {
 
     }
 
-    public void PEEK(int dest, int scr) {
+    public void OUTSHR(Expression expression) {
 
     }
 
-    public void SETPSC(int scr, int scr1) {
+    public void PEEK(Expression expression) {
 
     }
 
-    public void SETTW(int resId, int dest) {
+    public void SETTW(Expression expression) {
 
     }
 
-    public void ENDIN(int dest, int scr) {
+    public void SETPSC(Expression expression) {
 
     }
 
-    public void CLRPT(int resId) {
+    public void ENDIN(Expression expression) {
 
     }
 
-    public void CHKCT(int scr, int scr1) {
+    public void CLRPT(Expression expression) {
 
     }
 
-    public void EDU(int resId) {
+    public void EDU() {
 
     }
 
-    public void EEF(int dest, int scr) {
+    public void EEF(Expression expression) {
 
     }
 
-    public void EET(int dest, int scr) {
+    public void EET(Expression expression) {
 
     }
 
-    public void EEU(int resId) {
+    public void EEU() {
 
     }
 
-    public void OUT(int scr, int scr1) {
-        
+    public void IN(Expression destRegister) {
 
     }
 
-    public void IN(int dest, int scr) {
-        
+    public void OUT(Expression scr1) {
 
     }
 
-    public void FREER(int resId) {
+    public void CHKCT(Expression expression) {
+        System.err.println("ILLEGAL_RESOURCE exception");
+
+    }
+
+    public void FREER() {
         System.err.println("ILLEGAL_RESOURCE exception");
 
     }
@@ -112,229 +111,89 @@ public class Port implements Resource {
 
     }
 
-    public void GETST(int dest, int scr) {
+    public void GETST(Expression dest) {
         System.err.println("ILLEGAL_RESOURCE exception");
 
     }
 
-    public void INCT(int dest, int scr) {
+    public void INCT(Expression expression) {
         System.err.println("ILLEGAL_RESOURCE exception");
 
     }
 
-    public void INT(int dest, int scr) {
+    public void INT(Expression expression) {
         System.err.println("ILLEGAL_RESOURCE exception");
 
-    }
-
-    public void MJOIN(int resId) {
-        System.err.println("ILLEGAL_RESOURCE exception");
-
-    }
-
-    public void MSYNC(int resId) {
-        System.err.println("ILLEGAL_RESOURCE exception");
-
-    }
-
-    public void OUTCT(int resId, int dest) {
-        System.err.println("ILLEGAL_RESOURCE exception");
-
-    }
-
-    public void OUTT(int resId, int dest) {
-        System.err.println("ILLEGAL_RESOURCE exception");
-
-    }
-
-    public void TESTCT(int dest, int scr) {
-        System.err.println("ILLEGAL_RESOURCE exception");
-
-    }
-
-    public void TESTLCL(int dest, int scr) {
-        System.err.println("ILLEGAL_RESOURCE exception");
-
-    }
-
-    public void TESTWCT(int dest, int scr) {
-        System.err.println("ILLEGAL_RESOURCE exception");
-
-    }
-
-    public void TINITCP(int dest, int scr) {
-        System.err.println("ILLEGAL_RESOURCE exception");
-
-    }
-
-    public void TINITDP(int dest, int scr) {
-        System.err.println("ILLEGAL_RESOURCE exception");
-
-    }
-
-    public void TINITLR(int dest, int scr) {
-        System.err.println("ILLEGAL_RESOURCE exception");
-
-    }
-
-    public void TINITPC(int dest, int scr) {
-        System.err.println("ILLEGAL_RESOURCE exception");
-
-    }
-
-    public void TINITSP(int dest, int scr) {
-        System.err.println("ILLEGAL_RESOURCE exception");
-
-    }
-
-    public void TSETR(int dest, int scr1, int scr2) {
-        System.err.println("ILLEGAL_RESOURCE exception");
-
-    }
-
-    public void TSTART(int threadId) {
-        System.err.println("ILLEGAL_RESOURCE exception");
-
-    }
-
-    public void CLRPT(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void EDU(int resId, int resType) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void EEF(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void EET(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void EEU(int resId, int resType) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void ENDIN(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void FREER(int resId, int resType) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void GETD(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void GETST(int resId, int resType, Expression dest) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void GETTS(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void IN(int dest, int scr, Expression expression) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void INCT(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void INSHR(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void INT(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
     }
 
     public void MJOIN(int resId, int resType) {
-        // TODO Auto-generated method stub
-        
+        System.err.println("ILLEGAL_RESOURCE exception");
+
     }
 
     public void MSYNC(int resId, int resType) {
-        // TODO Auto-generated method stub
-        
+        System.err.println("ILLEGAL_RESOURCE exception");
+
     }
 
-    public void OUT(int scr, int scr1, Expression expression) {
-        // TODO Auto-generated method stub
-        
+    public void OUTCT(Expression expression) {
+        System.err.println("ILLEGAL_RESOURCE exception");
+
     }
 
-    public void OUTCT(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
+    public void OUTT(Expression expression) {
+        System.err.println("ILLEGAL_RESOURCE exception");
+
     }
 
-    public void OUTSHR(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
+    public void TESTCT(Expression expression) {
+        System.err.println("ILLEGAL_RESOURCE exception");
+
     }
 
-    public void OUTT(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
+    public void TESTLCL(Expression expression) {
+        System.err.println("ILLEGAL_RESOURCE exception");
+
     }
 
-    public void PEEK(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
+    public void TESTWCT(Expression expression) {
+        System.err.println("ILLEGAL_RESOURCE exception");
+
     }
 
-    public void SETC(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
+    public void TINITCP(Expression expression) {
+        System.err.println("ILLEGAL_RESOURCE exception");
+
     }
 
-    public void SETCLK(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
+    public void TINITDP(Expression expression) {
+        System.err.println("ILLEGAL_RESOURCE exception");
+
     }
 
-    public void SETD(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
+    public void TINITLR(Expression expression) {
+        System.err.println("ILLEGAL_RESOURCE exception");
+
     }
 
-    public void SETPSC(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
+    public void TINITPC(Expression expression) {
+        System.err.println("ILLEGAL_RESOURCE exception");
+
     }
 
-    public void SETPT(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
+    public void TINITSP(Expression expression) {
+        System.err.println("ILLEGAL_RESOURCE exception");
+
     }
 
-    public void SETRDY(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
+    public void TSETR(Expression m_op2, Expression m_op3) {
+        System.err.println("ILLEGAL_RESOURCE exception");
+
     }
 
-    public void SETTW(int resId, int resType, Expression expression) {
-        // TODO Auto-generated method stub
-        
+    public void TSTART() {
+        System.err.println("ILLEGAL_RESOURCE exception");
+
     }
 
 }

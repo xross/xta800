@@ -5,56 +5,60 @@ import com.xmos.xta.engine.Expression;
 public interface Resource {
     public void GETR(int dest, int scr);
     
-    public void FREER(int resId, int resType);
-    public void GETST(int resId, int resType, Expression dest);
+    public void FREER();
+    public void GETST(Expression dest);
     
     public void MSYNC(int resId, int resType);
     public void MJOIN(int resId, int resType);
     
-    public void TINITCP(int dest, int scr);
-    public void TINITDP(int dest, int scr);
-    public void TINITSP(int dest, int scr);
-    public void TINITPC(int dest, int scr);
-    public void TINITLR(int dest, int scr);
-    public void TSTART(int threadId);
-    public void TSETR(int dest, int scr1, int scr2);
+    public void TINITCP(Expression expression);
+    public void TINITDP(Expression expression);
+    public void TINITSP(Expression expression);
+    public void TINITPC(Expression expression);
+    public void TINITLR(Expression expression);
+    public void TSTART();
     
-    public void SETV(int resId, int resType);
-    public void SETEV(int resId, int resType);
+
+    public void SETV(Expression readRegister);
+    public void SETEV(Expression readRegister);
     
-    public void SETD(int resId, int resType, Expression expression);
-    public void GETD(int resId, int resType, Expression expression);
-    public void SETC(int resId, int resType, Expression expression);
+    public void SETD(Expression expression);
+    public void GETD(Expression expression);
+    public void SETC(Expression expression);
     
-    public void SETCLK(int resId, int resType, Expression expression);
-    public void SETRDY(int resId, int resType, Expression expression);
+    public void SETCLK(Expression expression);
+    public void SETRDY(Expression expression);
     
-    public void SETPT(int resId, int resType, Expression expression);
-    public void GETTS(int resId, int resType, Expression expression);
-    public void INSHR(int resId, int resType, Expression expression);
-    public void OUTSHR(int resId, int resType, Expression expression);
-    public void PEEK(int resId, int resType, Expression expression);
-    public void SETTW(int resId, int resType, Expression expression);
-    public void SETPSC(int resId, int resType, Expression expression);
-    public void ENDIN(int resId, int resType, Expression expression);
-    public void CLRPT(int resId, int resType, Expression expression);
+    public void SETPT(Expression expression);
+    public void GETTS(Expression expression);
+    public void INSHR(Expression expression);
+    public void OUTSHR(Expression expression);
+    public void PEEK(Expression expression);
+    public void SETTW(Expression expression);
+    public void SETPSC(Expression expression);
+    public void ENDIN(Expression expression);
+    public void CLRPT(Expression expression);
     
-    public void EEU(int resId, int resType);
-    public void EDU(int resId, int resType);
-    public void EET(int resId, int resType, Expression expression);
-    public void EEF(int resId, int resType, Expression expression);
+    public void EEU();
+    public void EDU();
+    public void EET(Expression expression);
+    public void EEF(Expression expression);
     
-    public void IN(int dest, int scr, Expression expression);
+    public void IN(Expression destRegister);
     
-    public void OUT(int scr, int scr1, Expression expression);
+    public void OUT(Expression scr1);
     
-    public void INT(int resId, int resType, Expression expression);
-    public void INCT(int resId, int resType, Expression expression);
-    public void OUTT(int resId, int resType, Expression expression);
-    public void OUTCT(int resId, int resType, Expression expression);
-    public void TESTCT(int dest, int scr);
-    public void TESTWCT(int dest, int scr);
-    public void CHKCT(int scr, int scr1);
-    public void TESTLCL(int dest, int scr);
+    public void INT(Expression expression);
+    public void INCT(Expression expression);
+    public void OUTT(Expression expression);
+    public void OUTCT(Expression expression);
+    public void TESTCT(Expression expression);
+    public void TESTWCT(Expression expression);
+    public void CHKCT(Expression expression);
+    public void TESTLCL(Expression expression);
+
+    public void TSETR(Expression m_op2, Expression m_op3);
+
+    
     
 }

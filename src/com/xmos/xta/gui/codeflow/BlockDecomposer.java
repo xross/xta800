@@ -99,7 +99,7 @@ public class BlockDecomposer implements PathUpdater {
         m_basicBlockDepths.clear();
         resetAllBasicBlockDepths();
 
-        findBasicBlockDepth(m_basicBlocks.get(startBlock), 0, new ArrayList<BasicBlock>());
+        //findBasicBlockDepth(m_basicBlocks.get(startBlock), 0, new ArrayList<BasicBlock>());
 
         if (DISPLAY_GRAPH_VIS) 
             printOutGraphvis();

@@ -114,7 +114,7 @@ public class Expression {
 		return m_type == Type.IMMEDIATE;
 	}
 
-	int getValue() {
+	public int getValue() {
 		assert (m_type == Type.IMMEDIATE);
 		return m_value;
 	}
@@ -125,11 +125,11 @@ public class Expression {
         return expr;
 	}
 	
-	boolean canResolve() {
+	public boolean canResolve() {
 	    return canResolve(this);
 	}
 	
-	private boolean canResolve(Expression expression) {
+	boolean canResolve(Expression expression) {
 		if (expression.m_type != null) {
 			return expression.m_type == Type.IMMEDIATE;
 		}
@@ -142,7 +142,7 @@ public class Expression {
 		}
 	}
 	
-	private int resolve(Expression expression) {
+	public int resolve(Expression expression) {
 		if (expression.m_type != null) {
 			assert (expression.m_type == Type.IMMEDIATE);
 			return expression.m_value;
@@ -256,7 +256,7 @@ public class Expression {
 	}
 	
 	
-	public int resolveMax(Expression expression) {
+	 int resolveMax(Expression expression) {
 	    
 	    if(expression.canResolve()){
 	        return expression.resolve(expression);

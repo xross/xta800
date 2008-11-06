@@ -1,7 +1,5 @@
 package com.xmos.xta.engine.resources;
 
-import com.xmos.xta.engine.XtaInstruction;
-
 public class Resources {
 
     private static final int RES_TYPE_PORT = 0;
@@ -97,6 +95,14 @@ public class Resources {
             return m_coprocs[resNum];
         }
         return null;
+    }
+    public Resource getThread(int resType, int resNum) {
+        
+        if(resType != RES_TYPE_THREAD){
+            System.err.println("looking up a thread and have wrong resource type");
+            return null;
+        }
+        return getResource(resType, resNum);
     }
 
 

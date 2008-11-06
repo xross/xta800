@@ -14,6 +14,9 @@ public class Block implements Comparable<Block> {
     private static final boolean DEBUG = false;
     private static final boolean DEBUG_STATUS = false;
     private static final boolean DEBUG_SANITY = false;
+    
+    
+    
     private boolean m_resolveExpressions;
 
     private static int m_numCompletedPaths = 0;
@@ -468,6 +471,11 @@ public class Block implements Comparable<Block> {
         return true;
     }
 
+    
+    
+    
+    
+    
     void step() {
         int pc = m_machineState.getPc();
 
@@ -509,13 +517,6 @@ public class Block implements Comparable<Block> {
         }
 
         if (DEBUG) traceInstruction(this);
-        /*
-         * after an instruction is added then one of options can occur: 1. Block
-         * is completed - add to the routes paths and stop stepping 2. the PC is
-         * unknown - stop stepping and add unresolved path 3. recursion is
-         * detected - stop stepping and add unresolved path 4. a branch has been
-         * hit - follow the branch then don't
-         */
 
         if (isComplete(m_instruction, pc)) {
             setStatus(Status.COMPLETE);
@@ -564,7 +565,7 @@ public class Block implements Comparable<Block> {
                             assert(false);
                         }
                         int callingPcBytes = m_instructionDecodeCache.decode(op, callingpc).getNumBytes();
-                        takeBranch(callingpc+callingPcBytes, !singleCallingTarget);
+                        backTrackRetsp(callingpc+callingPcBytes, !singleCallingTarget);
                     }
                     setStatus(Status.COMPLETE);
                     releaseMemory();
@@ -582,27 +583,17 @@ public class Block implements Comparable<Block> {
             if (m_machineState.wasBranchResolved()) {
                 if (m_resolveExpressions) {
                     if (m_machineState.getBranchTaken() == BranchState.TAKEN) {
-                        takeBranch(m_machineState.getBranchTarget(), false);
-                        setStatus(Status.COMPLETE);
+                        follow(m_instruction, true, false);
                     } else if (m_machineState.getBranchTaken() == BranchState.NOTTAKEN) {
-                        takeDontBranch(m_instruction, false);
-                        setStatus(Status.COMPLETE);
+                        follow(m_instruction, false, false);
                     } else if (m_machineState.getBranchTaken() == BranchState.UNKNOWN) {
-                        
-                        addUnknown(m_instruction);
-                        takeBranch(m_machineState.getBranchTarget(), true);
-                        takeDontBranch(m_instruction, true);
+                        followSpeculativeBranch();
+                        return;
                     }
-                    releaseMemory();
-                    return;
                 } else {
-                    addUnknown(m_instruction);
-                    takeBranch(m_machineState.getBranchTarget(), true);
-                    takeDontBranch(m_instruction, true);
-                    releaseMemory();
+                    followSpeculativeBranch();
                     return;
                 }
-
             } else {
                 setStatus(Status.UNRESOLVED);
                 m_route.addUnresolvedPath(this);
@@ -610,6 +601,9 @@ public class Block implements Comparable<Block> {
                 return;
             }
         } else {
+            /*
+             * this is the case where the instruction was not a jump or a branch
+             */
             int nextPc = m_machineState.getPc() + m_instruction.getNumBytes();
             Block loopBlock = formsLoop(nextPc);
             // if it does then split the parent
@@ -633,6 +627,23 @@ public class Block implements Comparable<Block> {
         m_instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes());
     }
 
+    private void followSpeculativeBranch(){
+        addUnknown(m_instruction);
+        if(m_machineState.getPc() + m_instruction.getNumBytes()==
+            m_machineState.getBranchTarget()){
+            //add a warning to a list of warnings
+            System.out.println("Warning: both branches on instruction " 
+                    + Integer.toHexString(m_instruction.getPc()) +" are the same");
+            follow(m_instruction, true, true);
+        }
+        else {
+            follow(m_instruction, true, true);
+            follow(m_instruction, false, true);
+        }
+        releaseMemory();
+    }
+    
+    
     private void releaseMemory() {
         m_machineState = null;
     }
@@ -672,20 +683,8 @@ public class Block implements Comparable<Block> {
         m_route.addUnknown(unknown);
     }
 
-    private void takeDontBranch(XtaInstruction instruction, boolean speculative) {
-        if (m_instruction.isLoadStore() == false) {
-            m_machineState.fetch();
-        }
-        int startPc = m_machineState.getPc() + instruction.getNumBytes();
-        m_machineState.issue(instruction.getNumBytes());
-        Block nextPath = new Block(m_mode, m_config, m_instructionDecodeCache,
-                m_instructionAttributes, m_memoryImage, m_symbolTable,
-                m_exclusions, startPc, m_toPc, m_route, this, m_machineState,
-                m_contexts, speculative,m_resolveExpressions);
-        nextPath.build();
-    }
 
-    private void takeBranch(int branchTarget, boolean speculative) {
+    private void backTrackRetsp(int branchTarget, boolean speculative) {
         Block loopBlock = formsLoop(branchTarget);
         if (loopBlock != null) {
             if (loopBlock.getInstructionsThis().firstElement().getPc() != branchTarget) {
@@ -694,16 +693,59 @@ public class Block implements Comparable<Block> {
             loopBlock.addLoopPath(this);
             setStatus(Status.LOOPED);
         } else {
-            Block nextPath = new Block(m_mode, m_config,
-                    m_instructionDecodeCache, m_instructionAttributes,
-                    m_memoryImage, m_symbolTable, m_exclusions, branchTarget,
-                    m_toPc, m_route, this, m_machineState, m_contexts,
-                    speculative, m_resolveExpressions);
-            nextPath.m_machineState.branchTo(branchTarget, m_instruction
-                    .isLoadStore());
-            nextPath.build();
-            setStatus(Status.COMPLETE);
+            if(speculative){
+                Block nextPath = new Block(m_mode, m_config,
+                        m_instructionDecodeCache, m_instructionAttributes,
+                        m_memoryImage, m_symbolTable, m_exclusions, branchTarget,
+                        m_toPc, m_route, this, m_machineState, m_contexts,
+                        speculative, m_resolveExpressions);
+                nextPath.m_machineState.branchTo(branchTarget, m_instruction
+                        .isLoadStore());
+                nextPath.build();
+                setStatus(Status.COMPLETE);
+            } else {
+                m_machineState.branchTo(branchTarget, m_instruction
+                        .isLoadStore());
+            }
         }
+    }
+    
+    private void follow(XtaInstruction inst, boolean branch, boolean speculative){
+        
+        int dontBranchPc = m_machineState.getPc() + inst.getNumBytes();
+        int doBranchPc = m_machineState.getBranchTarget();
+        
+        if (inst.isLoadStore() == false) {
+            m_machineState.fetch();
+        }
+        int targetPc = branch ? doBranchPc : dontBranchPc;
+        
+        m_machineState.issue(inst.getNumBytes());
+        
+        Block loopBlock = formsLoop(targetPc);
+        
+        if (loopBlock != null) {
+            if (loopBlock.getInstructionsThis().firstElement().getPc() != targetPc) {
+                new Block(loopBlock, targetPc);
+            }
+            loopBlock.addLoopPath(this);
+            setStatus(Status.LOOPED);
+        } else {
+            if(speculative){
+                Block nextPath = new Block(m_mode, m_config,
+                        m_instructionDecodeCache, m_instructionAttributes,
+                        m_memoryImage, m_symbolTable, m_exclusions, targetPc,
+                        m_toPc, m_route, this, m_machineState, m_contexts,
+                        speculative, m_resolveExpressions);
+                nextPath.m_machineState.branchTo(targetPc, inst.isLoadStore());
+                nextPath.build();
+                setStatus(Status.COMPLETE);
+            } else {
+                m_machineState.branchTo(targetPc, inst.isLoadStore());
+            }
+            
+        }
+        
     }
 
     private Block formsLoop(int pc) {
@@ -901,6 +943,8 @@ public class Block implements Comparable<Block> {
         inst.setConfig(m_config);
 
         m_pcs.add(inst.getPc());
+        //TODO
+        //if(!m_instructions.contains(inst))
         m_instructions.add(inst);
         if (inst.canPause()) {
             m_numPausables++;
@@ -1222,4 +1266,173 @@ public class Block implements Comparable<Block> {
             System.out.printf("\n");
         }
     }
+    
+    /*
+    
+     void step() {
+        int pc = m_machineState.getPc();
+
+        int opcode = 0;
+        try {
+            opcode = m_memoryImage.readInstructionWord(pc);
+        } catch (Exception e) {
+            setStatus(Status.ERROR);
+            return;
+        }
+
+        m_machineState.setOpcode(opcode);
+        m_machineState.resetInstructionState();
+
+        m_instruction = m_instructionDecodeCache.decode(opcode, pc);
+        int instNumBytes = m_instruction.getNumBytes();
+
+        // Add an FNOP if required
+        if (m_machineState.canIssue(instNumBytes) == false) {
+            XtaInstruction fNop = m_instructionDecodeCache.getFNop(pc, 0);
+            addInstruction(fNop);
+            m_machineState.fetch();
+            fNop.setNumIBufferBytes(m_machineState.getNumIBufferBytes());
+
+            // May require two FNOPs if fetching a mis-aligned long
+            if (m_machineState.canIssue(instNumBytes) == false) {
+                fNop = m_instructionDecodeCache.getFNop(pc, 1);
+                addInstruction(fNop);
+                m_machineState.fetch();
+                fNop.setNumIBufferBytes(m_machineState.getNumIBufferBytes());
+            }
+        }
+
+        m_instruction.execute(m_machineState);
+        addInstruction(m_instruction);
+
+        if (m_instruction.canPause()) {
+            addUnknown(m_instruction);
+        }
+
+        if (DEBUG) traceInstruction(this);
+        //
+         // after an instruction is added then one of options can occur: 1. Block
+         // is completed - add to the routes paths and stop stepping 2. the PC is
+         // unknown - stop stepping and add unresolved path 3. recursion is
+         // detected - stop stepping and add unresolved path 4. a branch has been
+         // hit - follow the branch then don't
+         //
+
+        if (isComplete(m_instruction, pc)) {
+            setStatus(Status.COMPLETE);
+            m_route.addCompletePath(this);
+            releaseMemory();
+            return;
+        }
+
+        if (isExcluded(pc)) {
+            setStatus(Status.EXCLUDED);
+            releaseMemory();
+            return;
+        }
+        
+        m_contexts.peek().add(m_instruction.getPc());
+        
+        if (m_machineState.wasJump()) {
+            int jumpTarget = m_machineState.getJumpTarget();
+
+            if (m_machineState.wasJumpResolved()) {
+                if (m_instruction.getBranchLink() && isRecursion(jumpTarget)) {
+                    setStatus(Status.RECURSION);
+                    m_route.addUnresolvedPath(this);
+
+                } else {
+                    m_contexts.peek().add(m_instruction.getPc());
+
+                    if (m_instruction.getBranchLink()) {
+                        pushFunction(m_instruction.getPc());
+                    } else if (m_instruction.getReturn()) {
+                        popFunction();
+                    }
+
+                    m_machineState.branchTo(jumpTarget, m_instruction
+                            .isLoadStore());
+                }
+
+            } else {
+                if(m_instruction.getNmenonic().startsWith("RETSP")){
+                    for(int callingpc : m_instruction.getReturnLocations()){
+                        boolean singleCallingTarget  = m_instruction.getReturnLocations().size() == 1;
+                        int op=0;
+                        try {
+                             op = m_memoryImage.readInstructionWord(callingpc);
+                        } catch (Exception e) {
+                            assert(false);
+                        }
+                        int callingPcBytes = m_instructionDecodeCache.decode(op, callingpc).getNumBytes();
+                        takeBranch(callingpc+callingPcBytes, !singleCallingTarget);
+                    }
+                    setStatus(Status.COMPLETE);
+                    releaseMemory();
+                    return;
+                } else {
+                    setStatus(Status.UNRESOLVED);
+                    m_route.addUnresolvedPath(this);
+                    releaseMemory();
+                    return;
+                }
+            }
+
+        } else if (m_machineState.wasBranch()) {
+
+            if (m_machineState.wasBranchResolved()) {
+                if (m_resolveExpressions) {
+                    if (m_machineState.getBranchTaken() == BranchState.TAKEN) {
+                        takeBranch(m_machineState.getBranchTarget(), false);
+                        //setStatus(Status.COMPLETE);
+                    } else if (m_machineState.getBranchTaken() == BranchState.NOTTAKEN) {
+                        takeDontBranch(m_instruction, false);
+                        //setStatus(Status.COMPLETE);
+                    } else if (m_machineState.getBranchTaken() == BranchState.UNKNOWN) {
+                        
+                        addUnknown(m_instruction);
+                        takeBranch(m_machineState.getBranchTarget(), true);
+                        takeDontBranch(m_instruction, true);
+                        releaseMemory();
+                        return;
+                    }
+                    
+                } else {
+                    addUnknown(m_instruction);
+                    takeBranch(m_machineState.getBranchTarget(), true);
+                    takeDontBranch(m_instruction, true);
+                    releaseMemory();
+                    return;
+                }
+
+            } else {
+                setStatus(Status.UNRESOLVED);
+                m_route.addUnresolvedPath(this);
+                releaseMemory();
+                return;
+            }
+        } else {
+            int nextPc = m_machineState.getPc() + m_instruction.getNumBytes();
+            Block loopBlock = formsLoop(nextPc);
+            // if it does then split the parent
+            if (loopBlock != null) {
+                if (loopBlock.getInstructionsThis().firstElement().getPc() != nextPc) {
+                    new Block(loopBlock, nextPc);
+                }
+                loopBlock.addLoopPath(this);
+                setStatus(Status.LOOPED);
+                releaseMemory();
+                return;
+            }
+            if (!m_instruction.isLoadStore()) {
+                m_machineState.fetch();
+            }
+            updatePc(m_instruction);
+            m_machineState.issue(instNumBytes);
+        }
+
+        m_firstStep = false;
+        m_instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes());
+    }
+    */
 }
