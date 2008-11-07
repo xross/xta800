@@ -4,12 +4,11 @@ import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.Engine;
 
 public class XtaEngine {
-	private static Config m_config;
 	private static Engine m_engine;
-	
+		
 	public static void initialise() {
-        m_config = new Config();
-        m_engine = new Engine(m_config);		
+        m_engine = new Engine(new Config());
+        m_engine.registerDisplayer(XtaDisplayer.getInstance());
 	}
 	
 	public static Engine getEngine() {

@@ -6,10 +6,16 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-public class ExitHandler extends AbstractHandler implements IHandler {
+import com.xmos.xtagui.views.Control;
+
+public class LoadHandler extends AbstractHandler implements IHandler {
+    public static final boolean DEBUG = true;
+	
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		HandlerUtil.getActiveWorkbenchWindow(event).close();
+		if (DEBUG) System.out.printf("OpenHandler: execute\n");			
+
+		Control control = (Control)HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().findView(Control.ID);
+		control.executeLoad();				
 		return null;
 	}
-
 }
