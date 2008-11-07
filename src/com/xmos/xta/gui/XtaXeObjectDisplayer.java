@@ -40,7 +40,7 @@ public class XtaXeObjectDisplayer  {
     private JComponent                      m_caller;
 
     public XtaXeObjectDisplayer(XeLoader xeLoader, FileFinder fileFinder, JComponent caller, Engine engine) {
-        m_xeObject = new XeObject(xeLoader, fileFinder, caller);
+        m_xeObject = new XeObject(xeLoader, fileFinder);
         m_engine = engine;
         makeSourceDisplayers(m_xeObject);
         makeDisassemblyDisplayer(m_xeObject);
@@ -65,8 +65,8 @@ public class XtaXeObjectDisplayer  {
         m_disassemblyDisplayer = new DisassemblyDisplayer(xeObject.getFunctions(), m_engine, this);
     }
 
-    public void registerFileFinder(FileFinder fileFinder, JComponent caller){
-        m_xeObject.registerFileFinder(fileFinder, caller);
+    public void registerFileFinder(FileFinder fileFinder){
+        m_xeObject.registerFileFinder(fileFinder);
     }
 
     public ArrayList<SourceDisplayer> getSourceDisplayers(){

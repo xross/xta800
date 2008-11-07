@@ -27,7 +27,7 @@ import com.xmos.xta.engine.PathAttributes;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 
-public class SummaryDisplayer extends Displayer {
+public class SummaryDisplayer implements Displayer {
 	public enum Level {
 	    SIMPLE, 
 	    COMPLETE, 

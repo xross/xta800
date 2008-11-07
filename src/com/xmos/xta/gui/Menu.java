@@ -48,7 +48,7 @@ public class Menu extends JMenuBar  implements FileFinder
         createMenuBar();
     }
     
-    public File openFileFinder(JComponent caller, String fileToFind) {
+    public File openFileFinder(String fileToFind) {
         
         if(XtaGui.DEBUG){
             //first check all the last saved source files
@@ -78,7 +78,7 @@ public class Menu extends JMenuBar  implements FileFinder
         fileFilter.registerAcceptableFileTypes("c");
         fc.addChoosableFileFilter(fileFilter);
         fc.setFileFilter(fileFilter);
-        int returnVal = fc.showOpenDialog(caller);
+        int returnVal = fc.showOpenDialog(m_mainFrame);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             m_currentDirectory = fc.getSelectedFile();
             return fc.getSelectedFile();

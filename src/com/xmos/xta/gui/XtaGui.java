@@ -41,7 +41,7 @@ import com.xmos.xta.gui.codestructure.CodeStructure;
 import com.xmos.xta.gui.core.PathStatus;
 import com.xmos.xta.gui.trees.TreeRouteDisplayer;
 
-public class XtaGui extends Displayer {
+public class XtaGui implements Displayer {
 
     public final static boolean    DEBUG = false;
     

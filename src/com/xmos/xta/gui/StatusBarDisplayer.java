@@ -15,7 +15,7 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Progress;
 import com.xmos.xta.engine.Route;
 
-public class StatusBarDisplayer extends Displayer {
+public class StatusBarDisplayer implements Displayer {
 
     @SuppressWarnings("unused")
     private GlobalConfig            m_globalConfig;
