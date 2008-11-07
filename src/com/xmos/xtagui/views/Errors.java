@@ -2,6 +2,8 @@ package com.xmos.xtagui.views;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
@@ -11,6 +13,8 @@ public class Errors extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = true;
     public static final String ID = "com.xmos.xtagui.views.Errors";
 
+	private StyledText m_text;
+    
 	public Errors() {
 		if (DEBUG) System.out.printf("Errors()\n");			
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
@@ -18,6 +22,8 @@ public class Errors extends ViewPart implements IPropertyChangeListener {
 
 	public void createPartControl(Composite parent) {
 		if (DEBUG) System.out.printf("Errors: createPartControl\n");	
+		 
+		m_text = new StyledText(parent, SWT.NONE);		 
 	}
 
 	public void setFocus() {
@@ -25,6 +31,10 @@ public class Errors extends ViewPart implements IPropertyChangeListener {
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG) System.out.printf("Errors: propertyChange: %s\n", event.getProperty());			
+		if (DEBUG) System.out.printf("Errors: propertyChange: %s\n", event.getProperty());
+		
+		if (event.getProperty().equals("Error")) {
+			m_text.append("Error: " + (String)event.getNewValue() + "\n");
+		}
 	}	
 }

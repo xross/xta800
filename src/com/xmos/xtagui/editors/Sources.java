@@ -101,7 +101,8 @@ public class Sources extends MultiPageEditorPart implements IPropertyChangeListe
 	}
 	
 	private	int CreatePage(String pageName) {
-	    int index = addPage(new StyledText(getContainer(), SWT.BORDER));
+		StyledText text = new StyledText(getContainer(), SWT.NONE);
+	    int index = addPage(text);
 	    setPageText(index, pageName);
 	    return index;
 	}	

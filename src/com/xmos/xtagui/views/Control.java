@@ -89,7 +89,7 @@ public class Control extends ViewPart implements IPropertyChangeListener {
         	if (DEBUG) {
         		System.out.printf("OpenHandler: File open: null\n");
         	}
-        }		
+        }	                
 	}
 
 	public void executeRun() {
@@ -98,7 +98,10 @@ public class Control extends ViewPart implements IPropertyChangeListener {
 		if (!functionName.equals("")) {
 			RunEngineMethodFunc run = new RunEngineMethodFunc(functionName, fullExecution);
 			run.start();
-		} 				
+		} else {
+			XtaDisplayer.getInstance().broadcastPropertyChange(
+				new PropertyChangeEvent(this, "Error", null, "No function/path specified"));
+		}
 	}
 	
 	public String getCurrentFunctionSelection() {

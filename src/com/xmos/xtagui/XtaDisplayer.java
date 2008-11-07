@@ -10,6 +10,7 @@ import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Route;
+import com.xmos.xtagui.properties.DisplayRouteProperty;
 
 public class XtaDisplayer implements Displayer {
     public static final boolean DEBUG = true;	
