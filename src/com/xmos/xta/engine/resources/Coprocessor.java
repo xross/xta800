@@ -4,12 +4,20 @@ import com.xmos.xta.engine.Expression;
 
 public class Coprocessor implements Resource{
 
+    public Coprocessor() {
+        
+    }
+    
+    public Coprocessor(Coprocessor coprocessor) {
+        
+    }
+    
     public void CHKCT(Expression expression) {
          System.err.println("ILLEGAL_RESOURCE exception");
         
     }
 
-    public void CLRPT(Expression expression) {
+    public void CLRPT() {
          System.err.println("ILLEGAL_RESOURCE exception");
         
     }

@@ -3,7 +3,6 @@ package com.xmos.xta.engine;
 import java.util.ArrayList;
 
 import com.xmos.isa.Instruction;
-import com.xmos.xta.engine.resources.Resource;
 import com.xmos.xta.engine.resources.Resources;
 
 public abstract class XtaInstruction extends Instruction {
@@ -368,13 +367,13 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: CLRPT\n", getPc());	
     	Resources resources = state.getResources();
-        Expression resourceId = state.m_op2;
+        Expression resourceId = state.m_op1;
         
         if(resourceId.canResolve()){
             int resId = resourceId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            resources.getResource(resType, resNum).CLRPT( state.m_op1);
+            resources.getResource(resType, resNum).CLRPT();
         } else {
             System.err.println("could not resolve which resource of CLRPT");
         } 
@@ -1166,13 +1165,13 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: OUT\n", getPc());	
     	Resources resources = state.getResources();
-        Expression synchroniserId = state.m_op1;
+        Expression synchroniserId = state.m_op2;
         
         if(synchroniserId.canResolve()){
             int resId = synchroniserId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            resources.getResource(resType, resNum).OUT(state.m_op2);
+            resources.getResource(resType, resNum).OUT(state.m_op1);
         } else {
             System.err.println("could not resolve OUT");
         } 
@@ -1205,13 +1204,13 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: OUTSHR\n", getPc());	
     	Resources resources = state.getResources();
-        Expression synchroniserId = state.m_op1;
+        Expression synchroniserId = state.m_op2;
         
         if(synchroniserId.canResolve()){
             int resId = synchroniserId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            resources.getResource(resType, resNum).OUTSHR(state.m_op2);
+            resources.getResource(resType, resNum).OUTSHR(state.m_op1);
         } else {
             System.err.println("could not resolve OUTSHR");
         } 
@@ -1318,13 +1317,13 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETCLK\n", getPc());	
     	Resources resources = state.getResources();
-        Expression resourceId = state.m_op1;
+        Expression resourceId = state.m_op2;
         
         if(resourceId.canResolve()){
             int resId = resourceId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            resources.getResource(resType, resNum).SETCLK(state.m_op2);
+            resources.getResource(resType, resNum).SETCLK(state.m_op1);
         } else {
             System.err.println("could not resolve which resource in SETCLK");
         } 
@@ -1341,13 +1340,13 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETD\n", getPc());	
     	Resources resources = state.getResources();
-        Expression resourceId = state.m_op1;
+        Expression resourceId = state.m_op2;
         
         if(resourceId.canResolve()){
             int resId = resourceId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            resources.getResource(resType, resNum).SETD(state.m_op2);
+            resources.getResource(resType, resNum).SETD(state.m_op1);
         } else {
             System.err.println("could not resolve which resource of SETD");
         } 
@@ -1370,7 +1369,7 @@ public abstract class XtaInstruction extends Instruction {
             int resId = resourceId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            resources.getResource(resType, resNum).SETEV(state.m_op2);
+            resources.getResource(resType, resNum).SETEV(state.readRegister(11));
         } else {
             System.err.println("could not resolve which resource of SETEV");
         }     
@@ -1394,13 +1393,13 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETPSC\n", getPc());	
     	Resources resources = state.getResources();
-        Expression resourceId = state.m_op1;
+        Expression resourceId = state.m_op2;
         
         if(resourceId.canResolve()){
             int resId = resourceId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            resources.getResource(resType, resNum).SETPSC(state.m_op2);
+            resources.getResource(resType, resNum).SETPSC(state.m_op1);
         } else {
             System.err.println("could not resolve which resource of SETPSC");
         } 
@@ -1410,13 +1409,13 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETPT\n", getPc());	
     	Resources resources = state.getResources();
-        Expression resourceId = state.m_op1;
+        Expression resourceId = state.m_op2;
         
         if(resourceId.canResolve()){
             int resId = resourceId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            resources.getResource(resType, resNum).SETPT(state.m_op2);
+            resources.getResource(resType, resNum).SETPT(state.m_op1);
         } else {
             System.err.println("could not resolve which resource in SETPT");
         } 
@@ -1426,13 +1425,13 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETRDY\n", getPc());	
     	Resources resources = state.getResources();
-        Expression resourceId = state.m_op1;
+        Expression resourceId = state.m_op2;
         
         if(resourceId.canResolve()){
             int resId = resourceId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            resources.getResource(resType, resNum).SETRDY(state.m_op2);
+            resources.getResource(resType, resNum).SETRDY(state.m_op1);
         } else {
             System.err.println("could not resolve which resource in SETRDY");
         } 
@@ -1456,13 +1455,15 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETTW\n", getPc());	
     	Resources resources = state.getResources();
-        Expression resourceId = state.m_op1;
+        assert(resources!=null);
+    	
+    	Expression resourceId = state.m_op2;
         
         if(resourceId.canResolve()){
             int resId = resourceId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            resources.getResource(resType, resNum).SETTW(state.m_op2);
+            resources.getResource(resType, resNum).SETTW(state.m_op1);
         } else {
             System.err.println("could not resolve which resource of SETTW");
         } 
@@ -1658,13 +1659,13 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: TINITCP\n", getPc());	
     	Resources resources = state.getResources();
-        Expression resourceId = state.m_op1;
+        Expression resourceId = state.m_op2;
         
         if(resourceId.canResolve()){
             int resId = resourceId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            resources.getThread(resType, resNum).TINITCP(state.m_op2);
+            resources.getThread(resType, resNum).TINITCP(state.m_op1);
         } else {
             System.err.println("could not resolve which resource of TINITCP");
         } 
@@ -1674,13 +1675,13 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: TINITDP\n", getPc());	
     	Resources resources = state.getResources();
-        Expression resourceId = state.m_op1;
+        Expression resourceId = state.m_op2;
         
         if(resourceId.canResolve()){
             int resId = resourceId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            resources.getThread(resType, resNum).TINITDP(state.m_op2);
+            resources.getThread(resType, resNum).TINITDP(state.m_op1);
         } else {
             System.err.println("could not resolve which resource of TINITDP");
         } 
@@ -1690,13 +1691,13 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: TINITLR\n", getPc());	
     	Resources resources = state.getResources();
-        Expression resourceId = state.m_op1;
+        Expression resourceId = state.m_op2;
         
         if(resourceId.canResolve()){
             int resId = resourceId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            resources.getThread(resType, resNum).TINITLR(state.m_op2);
+            resources.getThread(resType, resNum).TINITLR(state.m_op1);
         } else {
             System.err.println("could not resolve which resource of TINITLR");
         } 
@@ -1706,13 +1707,14 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: TINITPC\n", getPc());	
     	Resources resources = state.getResources();
-        Expression resourceId = state.m_op1;
+        Expression resourceId = state.m_op2;
         
         if(resourceId.canResolve()){
             int resId = resourceId.getValue();
+            System.out.println(Integer.toHexString(resId));
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            resources.getThread(resType, resNum).TINITPC(state.m_op2);
+            resources.getThread(resType, resNum).TINITPC(state.m_op1);
         } else {
             System.err.println("could not resolve which resource of TINITPC");
         } 
@@ -1722,13 +1724,16 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: TINITSP\n", getPc());	
     	Resources resources = state.getResources();
-        Expression resourceId = state.m_op1;
+    	
+    	
+        Expression resourceId = state.m_op2;
         
         if(resourceId.canResolve()){
             int resId = resourceId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            resources.getThread(resType, resNum).TINITSP(state.m_op2);
+            
+            resources.getThread(resType, resNum).TINITSP(state.m_op1);
         } else {
             System.err.println("could not resolve which resource of TINITSP");
         } 
@@ -1737,7 +1742,7 @@ public abstract class XtaInstruction extends Instruction {
     void TSETMR(MachineState state) {
     	if (m_debug)     	
             System.out.printf("0x%08x: TSETMR\n", getPc());	
-
+    	
     	//TODO
     }
 
@@ -1745,13 +1750,13 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: TSETR\n", getPc());	
     	Resources resources = state.getResources();
-        Expression resourceId = state.m_op1;
+        Expression resourceId = state.m_op3;
         
         if(resourceId.canResolve()){
             int resId = resourceId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            resources.getThread(resType, resNum).TSETR(state.m_op2, state.m_op3);
+            resources.getThread(resType, resNum).TSETR(state.m_op1, state.m_op2);
         } else {
             System.err.println("could not resolve which resource of TSETR");
         } 

@@ -43,17 +43,21 @@ class MachineState {
     private BranchState m_jumpTaken;
 
     private Resources m_resources;
-    private Registers m_registers;
+    
     private Memory m_memory;
 
     private InstructionBuffer m_iBuffer;
-
+    
+    private Registers m_registers;
+    private int m_currentTread;
+    
     MachineState(int memoryBase, int memorySize) {
-        m_registers = new Registers();
         m_memory = new Memory();
         m_iBuffer = new InstructionBuffer();
         m_resources = new Resources();
-        
+        m_currentTread = 0;
+        m_registers = m_resources.getCurrentThreadsRegisters(m_currentTread);
+        getResources().addThread();
         // Initialises the stack pointer to a reasonable
         // default location (i.e. the top of memory..)
         setStackPointerRegister(new Expression(memoryBase + memorySize));
@@ -83,14 +87,22 @@ class MachineState {
         m_wasJumpResolved = machineState.m_wasJumpResolved;
         m_jumpTarget = machineState.m_jumpTarget;
 
-        //m_resources = new Resources(machineState.m_resources);
-        m_registers = new Registers(machineState.m_registers);
+        m_resources = new Resources(machineState.getResources());
+        
         m_memory = new Memory(machineState.m_memory);
         m_iBuffer = new InstructionBuffer(machineState.m_iBuffer);
+        m_registers = new Registers(machineState.m_registers);
     }
 
+    
+    
     Resources getResources(){
         return m_resources;
+    }
+    
+    void setCurrentThread(int thread){
+        m_currentTread = thread;
+        m_registers = m_resources.getCurrentThreadsRegisters(thread);
     }
     
     void setPc(int pc) {
@@ -169,8 +181,10 @@ class MachineState {
     void jump(Expression jumpTarget) {
         jumpTarget.resolve();
         m_wasJump = true;
+        m_branchTargetExpression = jumpTarget;
         m_wasJumpResolved = jumpTarget.isResolved();
         if (m_wasJumpResolved) {
+            
             m_jumpTarget = jumpTarget.getValue();
             m_jumpTaken = BranchState.TAKEN;
         } else {
@@ -216,6 +230,7 @@ class MachineState {
     }
 
     Expression getStackPointerRegister() {
+        assert(m_registers != null);
         return m_registers.readRegister(SP_REG_NUM);
     }
 
@@ -238,6 +253,23 @@ class MachineState {
     void writeRegister(int regNum, Expression regValue) {
         m_registers.writeRegister(regNum, regValue);
     }
+    
+    void dumpState() {
+        for (int regIndex = 0; regIndex < Registers.NUM_REGISTERS; regIndex += 2) {
+            String exprString;
+
+            exprString = m_registers.readRegister(regIndex + 0)
+                    .expressionString();
+            System.out.printf("R[%-2d] = %-40s", regIndex + 0, exprString);
+
+            exprString = m_registers.readRegister(regIndex + 1)
+                    .expressionString();
+            System.out.printf("R[%-2d] = %-40s", regIndex + 1, exprString);
+
+            System.out.printf("\n");
+        }
+    }
+    
 
     Expression readMemory(int address) {
         return m_memory.read(address);
@@ -256,21 +288,7 @@ class MachineState {
         m_jumpTarget = 0;
     }
 
-    void dumpState() {
-        for (int regIndex = 0; regIndex < Registers.NUM_REGISTERS; regIndex += 2) {
-            String exprString;
-
-            exprString = m_registers.readRegister(regIndex + 0)
-                    .expressionString();
-            System.out.printf("R[%-2d] = %-40s", regIndex + 0, exprString);
-
-            exprString = m_registers.readRegister(regIndex + 1)
-                    .expressionString();
-            System.out.printf("R[%-2d] = %-40s", regIndex + 1, exprString);
-
-            System.out.printf("\n");
-        }
-    }
+    
 
     public Expression getBranchTargetExpression() {
         return m_branchTargetExpression;

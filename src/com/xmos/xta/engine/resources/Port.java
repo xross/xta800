@@ -7,7 +7,9 @@ public class Port implements Resource {
     public Port() {
 
     }
+    public Port(Port port) {
 
+    }
     public void SETV(Expression readRegister) {
 
     }
@@ -68,7 +70,7 @@ public class Port implements Resource {
 
     }
 
-    public void CLRPT(Expression expression) {
+    public void CLRPT() {
 
     }
 

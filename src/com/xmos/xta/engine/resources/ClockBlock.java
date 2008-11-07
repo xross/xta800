@@ -3,12 +3,18 @@ package com.xmos.xta.engine.resources;
 import com.xmos.xta.engine.Expression;
 
 public class ClockBlock implements Resource {
+    
+    private boolean m_inUse;
     private Expression m_eventData;
     private Expression m_controlBits;
     public ClockBlock() {
-
+        m_inUse = false;
     }
-
+    public ClockBlock(ClockBlock clockBlock) {
+        m_inUse = clockBlock.m_inUse;
+        m_controlBits = clockBlock.m_controlBits;
+        m_eventData = clockBlock.m_eventData; 
+    }
     public void SETRDY(Expression expression) {
         //TODO
     }
@@ -33,7 +39,7 @@ public class ClockBlock implements Resource {
         System.err.println("ILLEGAL_RESOURCE exception");
     }
 
-    public void CLRPT(Expression expression) {
+    public void CLRPT() {
         System.err.println("ILLEGAL_RESOURCE exception");
     }
 

@@ -14,10 +14,20 @@ public class Channel implements Resource {
     private Expression m_controlBits;
     private Expression m_eventData;
     
-    private Channel() {
+    public Channel() {
         m_inUse = false;
     }
-
+    
+    public Channel(Channel channel) {
+        m_inUse = channel.m_inUse;
+        m_eventEnabledKnown = channel.m_inUse;
+        m_eventEnabled = channel.m_inUse;
+        m_vector = channel.m_vector;
+        m_environmentVector = channel.m_environmentVector;
+        m_controlBits = channel.m_controlBits;
+        m_eventData = channel.m_eventData; 
+    }
+    
     public void FREER() {
         m_inUse = false;
     }
@@ -127,7 +137,7 @@ public class Channel implements Resource {
     }
     
 
-    public void CLRPT(Expression expression) {
+    public void CLRPT() {
         System.err.println("ILLEGAL_RESOURCE exception");
     }
     

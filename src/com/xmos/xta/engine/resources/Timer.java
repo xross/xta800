@@ -17,6 +17,16 @@ public class Timer implements Resource {
         m_inUse = false;
     }
 
+    public Timer(Timer timer) {
+        m_inUse = timer.m_inUse;
+        m_eventEnabledKnown = timer.m_eventEnabledKnown;
+        m_vector= timer.m_vector;
+        m_eventEnabled= timer.m_eventEnabled;
+        m_environmentVector= timer.m_environmentVector;
+        m_controlBits= timer.m_controlBits;
+        m_eventData = timer.m_eventData;
+    }
+    
     public void FREER() {
         m_inUse = false;
     }
@@ -86,7 +96,7 @@ public class Timer implements Resource {
 
     }
 
-    public void CLRPT(Expression expression) {
+    public void CLRPT() {
         System.err.println("ILLEGAL_RESOURCE exception");
 
     }

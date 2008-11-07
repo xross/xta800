@@ -28,7 +28,7 @@ public class Block implements Comparable<Block> {
     }
 
     public enum Status {
-        SEARCHING, COMPLETE, UNRESOLVED, LOOPED, RECURSION, ERROR, EXCLUDED, MAX_NUM_PATHS
+        SEARCHING, COMPLETE, UNRESOLVED, LOOPED, RECURSION, ERROR, EXCLUDED, MAX_NUM_PATHS, PAUSED
     }
 
     private Config m_config;
@@ -61,11 +61,6 @@ public class Block implements Comparable<Block> {
     private int m_seen;
     private Stack<TreeSet<Integer>> m_contexts;
     private Vector<Reference> m_exclusions;
-
-    /*
-    private HashMap<String, TreeSet<Integer>> m_sourceLinesCovered;
-    private HashMap<String, TreeSet<Integer>> m_asmLinesCovered;
-    */
 
     private static int m_numPaths;
     private static int m_numPathInstances;
@@ -251,230 +246,6 @@ public class Block implements Comparable<Block> {
                     + Integer.toHexString(this.m_toPc));
         }
     }
-
-    private void updateInstructionInfo() {
-        m_fromPc = m_instructions.firstElement().getPc();
-        m_toPc = m_instructions.lastElement().getPc();
-        m_numInstructions = m_instructions.size();
-        m_numFNops = 0;
-        m_numPausables = 0;
-        for (XtaInstruction inst : m_instructions) {
-            if (inst.isFnop())
-                m_numFNops++;
-            if (inst.canPause())
-                m_numPausables++;
-        }
-    }
-
-    public int getFirstInstructionPc() {
-        return m_instructions.firstElement().getPc();
-    }
-
-    public int getLastInstructionPc() {
-        return m_instructions.lastElement().getPc();
-    }
-
-    public Block getParentBlock() {
-        return m_parentBlock;
-    }
-
-    public String getDescription() {
-        String desc = "Block (" + this.getId() + "): "
-                + this.getTimeTakenThis() + "ns";
-        return desc;
-    }
-
-    public String getPathDescription(Block caller) {
-        String desc = "Block (" + this.getId() + "): "
-                + this.getTimeTakenThis() + "ns";
-        return desc;
-    }
-
-    public int compareTo(Block block) throws ClassCastException {
-        return (int) (block.getTimeTaken(true) - getTimeTaken(true));
-    }
-
-    public boolean equivalent(Block block) {
-        Vector<XtaInstruction> thisI = getInstructions(false);
-        Vector<XtaInstruction> thatI = block.getInstructions(false);
-
-        if (thisI.size() != thatI.size())
-            return false;
-
-        for (int i = 0; i < thisI.size(); i++) {
-            if (thisI.get(i) != thatI.get(i))
-                return false;
-        }
-
-        return true;
-    }
-
-    public int getId() {
-        return m_id;
-    }
-
-    public void setId(int id) {
-        m_id = id;
-    }
-
-    public int getInstanceId() {
-        return m_instanceId;
-    }
-
-    public int numLoopPaths() {
-        if (m_seen == 0) {
-            return m_loopPaths.size();
-        } else {
-            return 0;
-        }
-    }
-
-    public Vector<Block> getLoopPaths() {
-        m_seen++;
-        if (m_seen == 1) {
-            return m_loopPaths;
-        } else {
-            return new Vector<Block>();
-        }
-    }
-
-    public void doneWithLoopPaths() {
-        m_seen--;
-        assert (m_seen >= 0);
-    }
-
-    public void incrementSeen() {
-        m_seen++;
-    }
-
-    public void decrementSeen() {
-        m_seen--;
-        assert (m_seen >= 0);
-    }
-
-    public PathAttributes getLoopPathAttributes(Block block) {
-        PathAttributes attributes = m_loopPathAttributes.get(block);
-        assert (attributes != null);
-        return attributes;
-    }
-
-    public Vector<XtaInstruction> getInstructionsThis() {
-        return m_instructions;
-    }
-
-    public Vector<XtaInstruction> getInstructions(boolean recurse) {
-        Vector<XtaInstruction> insts = new Vector<XtaInstruction>();
-
-        for (Block block : getPathBlocks()) {
-            insts.addAll(block.getInstructionsThis());
-            if (recurse) {
-                for (Block loopPath : block.getLoopPaths()) {
-                    insts.addAll(loopPath.getInstructions(true));
-                }
-                block.doneWithLoopPaths();
-            }
-        }
-        return insts;
-    }
-
-    /*
-     * Trace back from a starting block to the point the path ends.
-     */
-    public ArrayList<Block> getPathBlocks() {
-        ArrayList<Block> paths = new ArrayList<Block>();
-        Block block = this;
-
-        do {
-            paths.add(0, block);
-            if (block.m_loopPaths.contains(this)) {
-                break;
-            }
-            block = block.m_parentBlock;
-        } while (block != null);
-
-        return paths;
-    }
-
-    public void getAllBlocks(TreeSet<Block> allBlocks) {
-        for (Block block : getPathBlocks()) {
-            allBlocks.add(block);
-            for (Block loopPath : block.getLoopPaths()) {
-                loopPath.getAllBlocks(allBlocks);
-            }
-            block.doneWithLoopPaths();
-        }
-    }
-
-    public int getNumIterations() {
-        Block parent = this;
-        while (parent != null) {
-            if (parent.m_loopPaths.contains(this)) {
-                Attributes attributes = parent.getLoopPathAttributes(this);
-                return attributes.getNumIterations();
-            }
-            parent = parent.m_parentBlock;
-        }
-        return 1;
-    }
-
-    public double getTimeTaken(boolean recurse) {
-        return getTimeTakenRelative(recurse) + getTimeTakenAbsolute(recurse);
-    }
-
-    public int getNumInstructions(boolean recurse) {
-        return getNumInstructionsRelative(recurse)
-                + getNumInstructionsAbsolute(recurse);
-    }
-
-    public int getNumFNops(boolean recurse) {
-        return getNumFNopsRelative(recurse) + getNumFNopsAbsolute(recurse);
-    }
-
-    public int getNumCycles(boolean recurse) {
-        return getNumCyclesRelative(recurse) + getNumCyclesAbsolute(recurse);
-    }
-
-    public int getNumPausables(boolean recurse) {
-        return getNumPausablesRelative(recurse)
-                + getNumPausablesAbsolute(recurse);
-    }
-
-    public int getLength() {
-        int pathLength = 0;
-        for (Block block : getPathBlocks()) {
-            pathLength += block.m_instructions.size();
-        }
-        return pathLength;
-    }
-
-    public int fromPc() {
-        return m_fromPc;
-    }
-
-    public int toPc() {
-        return m_toPc;
-    }
-
-    public boolean addLoopPath(Block pathStartBlock) {
-        assert (pathStartBlock != null);
-        assert (!m_loopPaths.contains(pathStartBlock));
-        if (m_loopPaths.contains(pathStartBlock))
-            return false;
-
-        if (DEBUG) {
-            System.out.printf("Block %d adding %d as loop\n", m_instanceId,
-                    pathStartBlock.m_instanceId);
-        }
-
-        m_loopPaths.add(pathStartBlock);
-        m_loopPathAttributes.put(pathStartBlock, new PathAttributes());
-        return true;
-    }
-
-    
-    
-    
-    
     
     void step() {
         int pc = m_machineState.getPc();
@@ -508,7 +279,7 @@ public class Block implements Comparable<Block> {
                 fNop.setNumIBufferBytes(m_machineState.getNumIBufferBytes());
             }
         }
-
+        if (DEBUG) traceInstruction(this);
         m_instruction.execute(m_machineState);
         addInstruction(m_instruction);
 
@@ -516,7 +287,7 @@ public class Block implements Comparable<Block> {
             addUnknown(m_instruction);
         }
 
-        if (DEBUG) traceInstruction(this);
+        
 
         if (isComplete(m_instruction, pc)) {
             setStatus(Status.COMPLETE);
@@ -535,7 +306,7 @@ public class Block implements Comparable<Block> {
         
         if (m_machineState.wasJump()) {
             int jumpTarget = m_machineState.getJumpTarget();
-
+            
             if (m_machineState.wasJumpResolved()) {
                 if (m_instruction.getBranchLink() && isRecursion(jumpTarget)) {
                     setStatus(Status.RECURSION);
@@ -817,6 +588,224 @@ public class Block implements Comparable<Block> {
         }
         assert (nextPc != 0);
         m_machineState.setPc(nextPc);
+    }
+    private void updateInstructionInfo() {
+        m_fromPc = m_instructions.firstElement().getPc();
+        m_toPc = m_instructions.lastElement().getPc();
+        m_numInstructions = m_instructions.size();
+        m_numFNops = 0;
+        m_numPausables = 0;
+        for (XtaInstruction inst : m_instructions) {
+            if (inst.isFnop())
+                m_numFNops++;
+            if (inst.canPause())
+                m_numPausables++;
+        }
+    }
+
+    public int getFirstInstructionPc() {
+        return m_instructions.firstElement().getPc();
+    }
+
+    public int getLastInstructionPc() {
+        return m_instructions.lastElement().getPc();
+    }
+
+    public Block getParentBlock() {
+        return m_parentBlock;
+    }
+
+    public String getDescription() {
+        String desc = "Block (" + this.getId() + "): "
+                + this.getTimeTakenThis() + "ns";
+        return desc;
+    }
+
+    public String getPathDescription(Block caller) {
+        String desc = "Block (" + this.getId() + "): "
+                + this.getTimeTakenThis() + "ns";
+        return desc;
+    }
+
+    public int compareTo(Block block) throws ClassCastException {
+        return (int) (block.getTimeTaken(true) - getTimeTaken(true));
+    }
+
+    public boolean equivalent(Block block) {
+        Vector<XtaInstruction> thisI = getInstructions(false);
+        Vector<XtaInstruction> thatI = block.getInstructions(false);
+
+        if (thisI.size() != thatI.size())
+            return false;
+
+        for (int i = 0; i < thisI.size(); i++) {
+            if (thisI.get(i) != thatI.get(i))
+                return false;
+        }
+
+        return true;
+    }
+
+    public int getId() {
+        return m_id;
+    }
+
+    public void setId(int id) {
+        m_id = id;
+    }
+
+    public int getInstanceId() {
+        return m_instanceId;
+    }
+
+    public int numLoopPaths() {
+        if (m_seen == 0) {
+            return m_loopPaths.size();
+        } else {
+            return 0;
+        }
+    }
+
+    public Vector<Block> getLoopPaths() {
+        m_seen++;
+        if (m_seen == 1) {
+            return m_loopPaths;
+        } else {
+            return new Vector<Block>();
+        }
+    }
+
+    public void doneWithLoopPaths() {
+        m_seen--;
+        assert (m_seen >= 0);
+    }
+
+    public void incrementSeen() {
+        m_seen++;
+    }
+
+    public void decrementSeen() {
+        m_seen--;
+        assert (m_seen >= 0);
+    }
+
+    public PathAttributes getLoopPathAttributes(Block block) {
+        PathAttributes attributes = m_loopPathAttributes.get(block);
+        assert (attributes != null);
+        return attributes;
+    }
+
+    public Vector<XtaInstruction> getInstructionsThis() {
+        return m_instructions;
+    }
+
+    public Vector<XtaInstruction> getInstructions(boolean recurse) {
+        Vector<XtaInstruction> insts = new Vector<XtaInstruction>();
+
+        for (Block block : getPathBlocks()) {
+            insts.addAll(block.getInstructionsThis());
+            if (recurse) {
+                for (Block loopPath : block.getLoopPaths()) {
+                    insts.addAll(loopPath.getInstructions(true));
+                }
+                block.doneWithLoopPaths();
+            }
+        }
+        return insts;
+    }
+
+    /*
+     * Trace back from a starting block to the point the path ends.
+     */
+    public ArrayList<Block> getPathBlocks() {
+        ArrayList<Block> paths = new ArrayList<Block>();
+        Block block = this;
+
+        do {
+            paths.add(0, block);
+            if (block.m_loopPaths.contains(this)) {
+                break;
+            }
+            block = block.m_parentBlock;
+        } while (block != null);
+
+        return paths;
+    }
+
+    public void getAllBlocks(TreeSet<Block> allBlocks) {
+        for (Block block : getPathBlocks()) {
+            allBlocks.add(block);
+            for (Block loopPath : block.getLoopPaths()) {
+                loopPath.getAllBlocks(allBlocks);
+            }
+            block.doneWithLoopPaths();
+        }
+    }
+
+    public int getNumIterations() {
+        Block parent = this;
+        while (parent != null) {
+            if (parent.m_loopPaths.contains(this)) {
+                Attributes attributes = parent.getLoopPathAttributes(this);
+                return attributes.getNumIterations();
+            }
+            parent = parent.m_parentBlock;
+        }
+        return 1;
+    }
+
+    public double getTimeTaken(boolean recurse) {
+        return getTimeTakenRelative(recurse) + getTimeTakenAbsolute(recurse);
+    }
+
+    public int getNumInstructions(boolean recurse) {
+        return getNumInstructionsRelative(recurse)
+                + getNumInstructionsAbsolute(recurse);
+    }
+
+    public int getNumFNops(boolean recurse) {
+        return getNumFNopsRelative(recurse) + getNumFNopsAbsolute(recurse);
+    }
+
+    public int getNumCycles(boolean recurse) {
+        return getNumCyclesRelative(recurse) + getNumCyclesAbsolute(recurse);
+    }
+
+    public int getNumPausables(boolean recurse) {
+        return getNumPausablesRelative(recurse)
+                + getNumPausablesAbsolute(recurse);
+    }
+
+    public int getLength() {
+        int pathLength = 0;
+        for (Block block : getPathBlocks()) {
+            pathLength += block.m_instructions.size();
+        }
+        return pathLength;
+    }
+
+    public int fromPc() {
+        return m_fromPc;
+    }
+
+    public int toPc() {
+        return m_toPc;
+    }
+
+    public boolean addLoopPath(Block pathStartBlock) {
+        assert (pathStartBlock != null);
+        assert (!m_loopPaths.contains(pathStartBlock));
+        if (m_loopPaths.contains(pathStartBlock))
+            return false;
+
+        if (DEBUG) {
+            System.out.printf("Block %d adding %d as loop\n", m_instanceId,
+                    pathStartBlock.m_instanceId);
+        }
+
+        m_loopPaths.add(pathStartBlock);
+        m_loopPathAttributes.put(pathStartBlock, new PathAttributes());
+        return true;
     }
 
     int getPc() {

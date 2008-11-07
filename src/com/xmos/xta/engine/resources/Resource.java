@@ -37,7 +37,7 @@ public interface Resource {
     public void SETTW(Expression expression);
     public void SETPSC(Expression expression);
     public void ENDIN(Expression expression);
-    public void CLRPT(Expression expression);
+    public void CLRPT();
     
     public void EEU();
     public void EDU();

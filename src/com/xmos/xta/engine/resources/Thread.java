@@ -1,13 +1,39 @@
 package com.xmos.xta.engine.resources;
 
 import com.xmos.xta.engine.Expression;
+import com.xmos.xta.engine.Registers;
 
 public class Thread implements Resource{
+    
+    private int m_pc;
+    
+    private Registers m_registers;
+    
     private boolean m_inUse; 
+    
     public Thread(){
         m_inUse = false;
+        m_registers = new Registers();
     }
-
+    
+    public Thread(Thread thread){
+        m_inUse = thread.m_inUse;
+        m_registers = new Registers(thread.m_registers);
+        m_pc = thread.m_pc;
+    }
+    
+    public Registers getRegisters(){
+        return m_registers;
+    }
+    
+    public boolean isInUse(){
+        return m_inUse;
+    }
+    
+    public void setInUse(boolean b) {
+        m_inUse = b;
+    }
+    
     public void FREER() {
         m_inUse = false;
     }
@@ -52,7 +78,7 @@ public class Thread implements Resource{
         
     }
 
-    public void CLRPT(Expression expression) {
+    public void CLRPT() {
         System.err.println("ILLEGAL_RESOURCE exception");
         
     }
@@ -218,5 +244,8 @@ public class Thread implements Resource{
         System.err.println("ILLEGAL_RESOURCE exception");
         
     }
+
+
+    
    
 }

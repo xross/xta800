@@ -16,7 +16,9 @@ public class Synchroniser implements Resource {
     public Synchroniser() {
         m_inUse = false;
     }
-
+    public Synchroniser(Synchroniser sync) {
+        m_inUse = false;
+    }
     public void FREER() {
         m_inUse = false;
     }
@@ -38,7 +40,7 @@ public class Synchroniser implements Resource {
 
     }
 
-    public void CLRPT(Expression expression) {
+    public void CLRPT() {
         System.err.println("ILLEGAL_RESOURCE exception");
 
     }

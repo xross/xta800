@@ -12,6 +12,13 @@ public class Lock implements Resource {
         m_inUse = false;
     }
 
+    public Lock(Lock lock) {
+        m_inUse = lock.m_inUse;
+        m_vector = lock.m_vector;
+        m_environmentVector = lock.m_environmentVector;
+
+    }
+    
     public void FREER() {
         m_inUse = false;
     }
@@ -29,7 +36,7 @@ public class Lock implements Resource {
 
     }
 
-    public void CLRPT(Expression expression) {
+    public void CLRPT() {
         System.err.println("ILLEGAL_RESOURCE exception");
 
     }
