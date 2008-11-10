@@ -9,13 +9,13 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xtagui.XtaDisplayer;
 
-public class Errors extends ViewPart implements IPropertyChangeListener {
+public class ErrorsView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = true;
     public static final String ID = "com.xmos.xtagui.views.Errors";
 
 	private StyledText m_text;
     
-	public Errors() {
+	public ErrorsView() {
 		if (DEBUG) System.out.printf("Errors()\n");			
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 	}

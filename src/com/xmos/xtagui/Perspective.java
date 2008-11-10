@@ -4,14 +4,14 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.IFolderLayout;
 
-import com.xmos.xtagui.views.Console;
-import com.xmos.xtagui.views.Control;
-import com.xmos.xtagui.views.Errors;
-import com.xmos.xtagui.views.Flow;
-import com.xmos.xtagui.views.Function;
-import com.xmos.xtagui.views.Loop;
-import com.xmos.xtagui.views.Structure;
-import com.xmos.xtagui.views.Tree;
+import com.xmos.xtagui.views.ConsoleView;
+import com.xmos.xtagui.views.ControlView;
+import com.xmos.xtagui.views.ErrorsView;
+import com.xmos.xtagui.views.FlowView;
+import com.xmos.xtagui.views.FunctionView;
+import com.xmos.xtagui.views.LoopView;
+import com.xmos.xtagui.views.StructureView;
+import com.xmos.xtagui.views.TreeView;
 
 public class Perspective implements IPerspectiveFactory {
     public static final boolean DEBUG = true;
@@ -21,17 +21,17 @@ public class Perspective implements IPerspectiveFactory {
 				
         IFolderLayout viewsFolder = layout.createFolder(
         		"views.folder", IPageLayout.BOTTOM, 0.5f, layout.getEditorArea());        
-        viewsFolder.addView(Console.ID);	
-        viewsFolder.addView(Errors.ID);	
-        viewsFolder.addView(Loop.ID);	
-        viewsFolder.addView(Function.ID);	
-        viewsFolder.addView(Structure.ID);	
-        viewsFolder.addView(Flow.ID);	
+        viewsFolder.addView(ConsoleView.ID);	
+        viewsFolder.addView(ErrorsView.ID);	
+        viewsFolder.addView(LoopView.ID);	
+        viewsFolder.addView(FunctionView.ID);	
+        viewsFolder.addView(StructureView.ID);	
+        viewsFolder.addView(FlowView.ID);	
 		
         IFolderLayout treeFolder = layout.createFolder(
         		"tree.folder", IPageLayout.LEFT, 0.5f, layout.getEditorArea());        
-        treeFolder.addView(Control.ID);
-        treeFolder.addView(Tree.ID);
+        treeFolder.addView(ControlView.ID);
+        treeFolder.addView(TreeView.ID);
 
         layout.setEditorAreaVisible(true);
 	}

@@ -7,24 +7,24 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xtagui.XtaDisplayer;
 
-public class Console extends ViewPart implements IPropertyChangeListener {
+public class StructureView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = true;
-    public static final String ID = "com.xmos.xtagui.views.Console";
+    public static final String ID = "com.xmos.xtagui.views.Structure";
 
-	public Console() {
-		if (DEBUG) System.out.printf("Console()\n");			
+	public StructureView() {
+		if (DEBUG) System.out.printf("Structure()\n");			
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 	}
 
 	public void createPartControl(Composite parent) {
-		if (DEBUG) System.out.printf("Console: createPartControl\n");			
+		if (DEBUG) System.out.printf("Structure: createPartControl\n");			
 	}
 
 	public void setFocus() {
-		if (DEBUG) System.out.printf("Console: setFocus\n");			
+		if (DEBUG) System.out.printf("Structure: setFocus\n");			
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG) System.out.printf("Console: propertyChange: %s\n", event.getProperty());			
-	}
+		if (DEBUG) System.out.printf("Structure: propertyChange: %s\n", event.getProperty());			
+	}	
 }

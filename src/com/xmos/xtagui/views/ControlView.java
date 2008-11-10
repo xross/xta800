@@ -4,10 +4,12 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -21,13 +23,17 @@ import com.xmos.xtagui.XtaEngine;
 import com.xmos.xtagui.editors.Sources;
 import com.xmos.xtagui.editors.SourcesInput;
 
-public class Control extends ViewPart implements IPropertyChangeListener {
+public class ControlView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = true;
     public static final String ID = "com.xmos.xtagui.views.Control";
 
     private Combo m_combo;
+    private Button m_exhustive;
+    private Button m_fnops;
+    private Spinner m_frequency;
+    private Spinner m_numThreads;
     
-	public Control() {
+	public ControlView() {
 		if (DEBUG) System.out.printf("Control()\n");			
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 	}
@@ -37,9 +43,14 @@ public class Control extends ViewPart implements IPropertyChangeListener {
 
 		Composite composite = new Composite(parent, SWT.NONE);
 	    GridLayout gridLayout = new GridLayout();
+	    gridLayout.numColumns = 2;
 	    composite.setLayout(gridLayout);
 	    
-		createFunctionComposite(composite);
+		createFunctionControl(composite);
+		createExhustiveControl(composite);
+		createFNopsControl(composite);
+		createFrequencyControl(composite);
+		createNumThreadsControl(composite);
 	}
 
 	public void setFocus() {
@@ -104,21 +115,66 @@ public class Control extends ViewPart implements IPropertyChangeListener {
 		}
 	}
 	
-	public String getCurrentFunctionSelection() {
+	public String getFunctionSelection() {
 		return m_combo.getText();
 	}
-		
-	private void createFunctionComposite(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NONE);
-	    GridLayout gridLayout = new GridLayout();
-	    gridLayout.numColumns = 2;
-	    composite.setLayout(gridLayout);
 
-		Label label = new Label(composite, SWT.NONE);
-        label.setText("Functions:");
-		m_combo = new Combo(composite, SWT.DROP_DOWN);
+	public boolean getExhustiveSelection() {
+		return m_exhustive.getSelection();
 	}
 
+	public boolean getFnopsSelection() {
+		return m_fnops.getSelection();
+	}
+
+	public int getFrequencySelection() {
+		return m_frequency.getSelection();
+	}
+
+	public int getNumThreadsSelection() {
+		return m_numThreads.getSelection();
+	}
+	
+	private void createControlLabel(Composite parent, String str) {
+		Label label = new Label(parent, SWT.NONE);		        
+        label.setText(str);
+	}
+	
+	private void createFunctionControl(Composite parent) {
+		createControlLabel(parent, "Functions:");
+		m_combo = new Combo(parent, SWT.DROP_DOWN);
+	}
+
+	private void createExhustiveControl(Composite parent) {
+		createControlLabel(parent, "Exhustive:");
+        m_exhustive = new Button(parent, SWT.CHECK);
+	}	    
+		
+    private void createFNopsControl(Composite parent) {
+		createControlLabel(parent, "Show Fnops:");
+        m_fnops = new Button(parent, SWT.CHECK);
+    }
+
+    private void createFrequencyControl(Composite parent) {
+		createControlLabel(parent, "Frequency:");
+        m_frequency = new Spinner(parent, SWT.BORDER);
+        m_frequency.setMinimum(0);
+        m_frequency.setMaximum(1000);
+        m_frequency.setSelection(400);
+        m_frequency.setIncrement(1);
+        m_frequency.setPageIncrement(10);
+    }
+
+    private void createNumThreadsControl(Composite parent) {
+		createControlLabel(parent, "Num Threads:");
+        m_numThreads = new Spinner(parent, SWT.BORDER);
+        m_numThreads.setMinimum(0);
+        m_numThreads.setMaximum(8);
+        m_numThreads.setSelection(8);
+        m_numThreads.setIncrement(1);
+        m_numThreads.setPageIncrement(8);
+    }
+        
     class RunEngineMethodFunc extends Thread {
         private String m_functionName;
         private boolean m_full;

@@ -31,49 +31,49 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            class="com.xmos.xtagui.views.Control"
+            class="com.xmos.xtagui.views.ControlView"
             id="com.xmos.xtagui.views.Control"
             name="Control"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.Tree"
+            class="com.xmos.xtagui.views.TreeView"
             id="com.xmos.xtagui.views.Tree"
             name="Tree"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.Loop"
+            class="com.xmos.xtagui.views.LoopView"
             id="com.xmos.xtagui.views.Loop"
             name="Loop"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.Console"
+            class="com.xmos.xtagui.views.ConsoleView"
             id="com.xmos.xtagui.views.Console"
             name="Console"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.Errors"
+            class="com.xmos.xtagui.views.ErrorsView"
             id="com.xmos.xtagui.views.Errors"
             name="Errors"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.Function"
+            class="com.xmos.xtagui.views.FunctionView"
             id="com.xmos.xtagui.views.Function"
             name="Function"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.Flow"
+            class="com.xmos.xtagui.views.FlowView"
             id="com.xmos.xtagui.views.Flow"
             name="Flow"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.Structure"
+            class="com.xmos.xtagui.views.StructureView"
             id="com.xmos.xtagui.views.Structure"
             name="Structure"
             restorable="true">
@@ -98,13 +98,13 @@
             locationURI="toolbar:com.xmos.xtagui.views.Control">
          <command
                commandId="com.xmos.xtagui.load.command"
-               icon="icons/YellowDot.png"
+               icon="src/com/xmos/xtagui/icons/YellowDot.png"
                label="Load"
                style="push">
          </command>
          <command
                commandId="com.xmos.xtagui.run.command"
-               icon="icons/YellowDot.png"
+               icon="src/com/xmos/xtagui/icons/GreenDot.png"
                id="com.xmos.xtagui.run.command"
                label="Run"
                style="push">

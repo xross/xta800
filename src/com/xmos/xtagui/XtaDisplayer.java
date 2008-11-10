@@ -23,7 +23,6 @@ public class XtaDisplayer implements Displayer {
 	}
 	
 	public static XtaDisplayer getInstance() {
-		assert(m_displayer != null);
 		if (m_displayer == null) {
 			m_displayer = new XtaDisplayer();					
 		}

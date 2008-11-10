@@ -7,24 +7,24 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xtagui.XtaDisplayer;
 
-public class Function extends ViewPart implements IPropertyChangeListener {
+public class LoopView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = true;
-    public static final String ID = "com.xmos.xtagui.views.Function";
+    public static final String ID = "com.xmos.xtagui.views.Loop";
 
-	public Function() {
-		if (DEBUG) System.out.printf("Function()\n");			
+	public LoopView() {
+		if (DEBUG) System.out.printf("Loop()\n");			
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 	}
 
 	public void createPartControl(Composite parent) {
-		if (DEBUG) System.out.printf("Function: createPartControl\n");			
+		if (DEBUG) System.out.printf("Loop: createPartControl\n");			
 	}
 
 	public void setFocus() {
-		if (DEBUG) System.out.printf("Function: setFocus\n");			
+		if (DEBUG) System.out.printf("Loop: setFocus\n");			
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG) System.out.printf("Function: propertyChange: %s\n", event.getProperty());			
+		if (DEBUG) System.out.printf("Loop: propertyChange: %s\n", event.getProperty());			
 	}	
 }
