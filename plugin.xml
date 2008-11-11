@@ -98,13 +98,13 @@
             locationURI="toolbar:com.xmos.xtagui.views.Control">
          <command
                commandId="com.xmos.xtagui.load.command"
-               icon="src/com/xmos/xtagui/icons/YellowDot.png"
+               icon="src/com/xmos/xtagui/icons/yellowdot.png"
                label="Load"
                style="push">
          </command>
          <command
                commandId="com.xmos.xtagui.run.command"
-               icon="src/com/xmos/xtagui/icons/GreenDot.png"
+               icon="src/com/xmos/xtagui/icons/greendot.png"
                id="com.xmos.xtagui.run.command"
                label="Run"
                style="push">

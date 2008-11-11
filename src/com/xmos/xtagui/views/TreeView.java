@@ -2,7 +2,9 @@ package com.xmos.xtagui.views;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
@@ -47,10 +49,11 @@ public class TreeView extends ViewPart implements IPropertyChangeListener {
 			m_routeProperty = (DisplayRouteProperty)event.getNewValue();										
 			m_display.asyncExec(new Runnable() {
 				public void run() {
-					m_treeViewer.setContentProvider(new TreeViewContentProvider());
+					m_treeViewer.setContentProvider(new TreeViewContentProvider());				
 					m_treeViewer.setLabelProvider(new TreeViewLabelProvider(m_display));
 					m_treeViewer.setInput(createHierarchy());
 					m_treeViewer.expandAll();
+					ColumnViewerToolTipSupport.enableFor(m_treeViewer, ToolTip.NO_RECREATE);
 				}});					    
 		}
 	}
@@ -79,6 +82,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener {
                 for (Block loopPath : pathBlock.getLoopPaths()) {
                 	loopNode.addNode(createPath(loopPath, loopNode));                    
                 }
+                pathBlock.doneWithLoopPaths();
             }
         	pathNode.addNode(new BlockNode(pathBlock, pathNode));            
         }        

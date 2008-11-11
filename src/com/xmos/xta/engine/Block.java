@@ -755,25 +755,28 @@ public class Block implements Comparable<Block> {
     }
 
     public double getTimeTaken(boolean recurse) {
-        return getTimeTakenRelative(recurse) + getTimeTakenAbsolute(recurse);
+        return getTimeTakenRelative(recurse) + 
+            getTimeTakenAbsolute(recurse);
     }
 
     public int getNumInstructions(boolean recurse) {
-        return getNumInstructionsRelative(recurse)
-                + getNumInstructionsAbsolute(recurse);
+        return getNumInstructionsRelative(recurse) + 
+            getNumInstructionsAbsolute(recurse);
     }
 
     public int getNumFNops(boolean recurse) {
-        return getNumFNopsRelative(recurse) + getNumFNopsAbsolute(recurse);
+        return getNumFNopsRelative(recurse) + 
+            getNumFNopsAbsolute(recurse);
     }
 
     public int getNumCycles(boolean recurse) {
-        return getNumCyclesRelative(recurse) + getNumCyclesAbsolute(recurse);
+        return getNumCyclesRelative(recurse) + 
+            getNumCyclesAbsolute(recurse);
     }
 
     public int getNumPausables(boolean recurse) {
-        return getNumPausablesRelative(recurse)
-                + getNumPausablesAbsolute(recurse);
+        return getNumPausablesRelative(recurse) + 
+            getNumPausablesAbsolute(recurse);
     }
 
     public int getLength() {

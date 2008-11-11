@@ -1,20 +1,13 @@
 package com.xmos.xtagui.nodes;
 
-import java.util.TreeSet;
-import java.util.Vector;
-
 import com.xmos.xta.engine.Block;
-import com.xmos.xta.engine.XtaInstruction;
 
-public class PathNode implements Node {
+public class PathNode extends Node {
     private Block m_block;
-    private Node m_parent;
-    private Vector<Node> m_nodes;
     
     public PathNode(Block block, Node parent) {
+    	super(parent);
     	m_block = block;
-    	m_parent = parent;
-        m_nodes = new Vector<Node>();
     }
 
     public String getDescription() {
@@ -30,51 +23,18 @@ public class PathNode implements Node {
     }
 
     public int getNumCycles() {
-//        return m_block.getNumCycles();
-    	return 0;
+        return m_block.getNumCycles(true);
     }
 
     public double getTimeTaken() {
-//        return m_block.getTimeTaken();
-    	return 0;
+        return m_block.getTimeTaken(true);
     }
 
     public String getToolTipText() {
-        String toolTipText = "";
-        toolTipText += "<HTML>" + getDescription() +  "<br>";
-        toolTipText +=" <HTML>";
-        return toolTipText;
-    }
-
-    public int getBranchCount() {
-//        return m_block.completePaths().size();
-    	return 0;
-    }
-
-    public void getAllBlocks(TreeSet<Block> blocks) {
-    }  
-    
-    public Block getBlock() {
-        return null;
-    }
-    
-    public Vector<XtaInstruction> getInstructions() {
-        return new Vector<XtaInstruction>();
+        return getDescription();
     }
 
     public String getTypeName() {
         return "path";
-    }
-    
-    public void addNode(Node node) {
-    	m_nodes.add(node);
-    }
-
-    public Vector<Node> getNodes() {
-    	return m_nodes;
-    }
-    
-    public Node getParentNode() {
-    	return m_parent;
     }    
 }
