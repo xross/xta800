@@ -50,7 +50,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener {
 			m_display.asyncExec(new Runnable() {
 				public void run() {
 					m_treeViewer.setContentProvider(new TreeViewContentProvider());				
-					m_treeViewer.setLabelProvider(new TreeViewLabelProvider(m_display));
+					m_treeViewer.setLabelProvider(new TreeViewLabelProvider());
 					m_treeViewer.setInput(createHierarchy());
 					m_treeViewer.expandAll();
 					ColumnViewerToolTipSupport.enableFor(m_treeViewer, ToolTip.NO_RECREATE);

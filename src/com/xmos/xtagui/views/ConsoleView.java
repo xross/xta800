@@ -11,13 +11,20 @@ public class ConsoleView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = true;
     public static final String ID = "com.xmos.xtagui.views.Console";
 
+    private ConsoleViewControl m_consoleViewControl;
+    
 	public ConsoleView() {
 		if (DEBUG) System.out.printf("Console()\n");			
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 	}
 
 	public void createPartControl(Composite parent) {
-		if (DEBUG) System.out.printf("Console: createPartControl\n");			
+		if (DEBUG) System.out.printf("Console: createPartControl\n");
+		m_consoleViewControl = new ConsoleViewControl(parent);
+		new Thread() {
+	    	public void run() {
+	    		m_consoleViewControl.execute();
+    		}}.start();    	    	
 	}
 
 	public void setFocus() {

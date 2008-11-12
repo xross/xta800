@@ -33,6 +33,6 @@ public class Perspective implements IPerspectiveFactory {
         treeFolder.addView(ControlView.ID);
         treeFolder.addView(TreeView.ID);
 
-        layout.setEditorAreaVisible(true);
+        layout.setEditorAreaVisible(true);        
 	}
 }

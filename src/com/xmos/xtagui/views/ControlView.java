@@ -104,6 +104,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener {
 	}
 
 	public void executeRun() {
+		Views.showView(TreeView.ID);
+		Views.showView(FlowView.ID);
+		Views.showView(LoopView.ID);
+		Views.showView(StructureView.ID);
+		
 		boolean fullExecution = false;		
 		String functionName = m_combo.getText();
 		if (!functionName.equals("")) {
