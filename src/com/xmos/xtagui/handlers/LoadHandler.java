@@ -9,10 +9,10 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import com.xmos.xtagui.views.ControlView;
 
 public class LoadHandler extends AbstractHandler implements IHandler {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 	
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		if (DEBUG) System.out.printf("OpenHandler: execute\n");			
+		if (DEBUG) System.out.printf("LoadHandler: execute\n");			
 
 		ControlView control = (ControlView)HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().findView(ControlView.ID);
 		control.executeLoad();				

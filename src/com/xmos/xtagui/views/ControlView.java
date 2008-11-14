@@ -20,6 +20,7 @@ import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xtagui.XtaDisplayer;
 import com.xmos.xtagui.XtaEngine;
+import com.xmos.xtagui.XtaFileFinder;
 import com.xmos.xtagui.editors.Sources;
 import com.xmos.xtagui.editors.SourcesInput;
 
@@ -61,22 +62,13 @@ public class ControlView extends ViewPart implements IPropertyChangeListener {
 		if (DEBUG) System.out.printf("Control: propertyChange: %s\n", event.getProperty());			
 		
 		if (event.getProperty().equals("LoadExecutable")) {
-			XeObject xeObject = XtaEngine.getEngine().getXeObject();                    
-	        for (Function function : xeObject.getFunctions()) {
-	        	m_combo.add(function.getText());
-	        }			
+			createXeObject();
+            populateFunctionList();			
+	        openEditors();
 		}		
 	}    		
 		
-	public void executeLoad() {		
-		IWorkbenchPage page = getSite().getWorkbenchWindow().getActivePage();
-		try {
-			IEditorInput sourcesInput = new SourcesInput();
-			page.openEditor(sourcesInput, Sources.ID);
-		} catch (PartInitException e) {
-			e.printStackTrace();
-		}
-		
+	public void executeLoad() {				
         FileDialog fileDialog = new FileDialog(getSite().getWorkbenchWindow().getShell(), SWT.OPEN);
         fileDialog.setText("Open Xe File");
         String[] filterExt = { "*.xe" };
@@ -85,29 +77,26 @@ public class ControlView extends ViewPart implements IPropertyChangeListener {
         
         if (xeFileName != null) {
         	if (DEBUG) {
-        		System.out.printf("OpenHandler: File open: %s\n", xeFileName);
+        		System.out.printf("Control: File open: %s\n", xeFileName);
         	}
         	Engine engine = XtaEngine.getEngine();
         	boolean success = engine.loadExecutable(xeFileName);
         	if (DEBUG) {
         		if (success) {
-                    System.out.printf("OpenHandler: Successfully loaded executable: %s\n", xeFileName);
+                    System.out.printf("Control: Successfully loaded executable: %s\n", xeFileName);
         		} else {
-                    System.out.printf("OpenHandler: Failed to open file: %s\n", xeFileName);
+                    System.out.printf("Control: Failed to open file: %s\n", xeFileName);
         		}
         	}
         } else {
         	if (DEBUG) {
-        		System.out.printf("OpenHandler: File open: null\n");
+        		System.out.printf("Control: File open: null\n");
         	}
         }	                
 	}
 
 	public void executeRun() {
 		Views.showView(TreeView.ID);
-		Views.showView(FlowView.ID);
-		Views.showView(LoopView.ID);
-		Views.showView(StructureView.ID);
 		
 		boolean fullExecution = false;		
 		String functionName = m_combo.getText();
@@ -179,7 +168,30 @@ public class ControlView extends ViewPart implements IPropertyChangeListener {
         m_numThreads.setIncrement(1);
         m_numThreads.setPageIncrement(8);
     }
-        
+    
+    private void createXeObject() {
+		Engine engine = XtaEngine.getEngine();
+		XeObject xeObject = new XeObject(engine.getXeLoader(), new XtaFileFinder());
+		XtaEngine.getEngine().setXeObject(xeObject);                    
+    }
+    
+    private void populateFunctionList() {
+    	XeObject xeObject = XtaEngine.getEngine().getXeObject();                    
+        for (Function function : xeObject.getFunctions()) {
+        	m_combo.add(function.getText());
+        }
+    }
+    
+    private void openEditors() {
+		IWorkbenchPage page = getSite().getWorkbenchWindow().getActivePage();
+		try {
+			IEditorInput sourcesInput = new SourcesInput();
+			page.openEditor(sourcesInput, Sources.ID);
+		} catch (PartInitException e) {
+			e.printStackTrace();
+		}    	
+    }
+            
     class RunEngineMethodFunc extends Thread {
         private String m_functionName;
         private boolean m_full;

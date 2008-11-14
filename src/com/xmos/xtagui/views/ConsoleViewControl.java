@@ -12,6 +12,7 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
@@ -22,7 +23,7 @@ import com.xmos.xta.console.commands.Command;
 import com.xmos.xtagui.XtaEngine;
 
 public class ConsoleViewControl implements Console {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private Shell m_shell;
 	private TextReader m_textReader;
@@ -62,7 +63,7 @@ public class ConsoleViewControl implements Console {
 }
 
 class TextReader extends Reader {	 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
 	private StyledText m_text;
 	private Object m_keyLock = new Object();
@@ -78,7 +79,10 @@ class TextReader extends Reader {
 		if (DEBUG) System.out.printf("TextReader()\n");		
 		
 		m_display = PlatformUI.getWorkbench().getDisplay();						
-        m_text = new StyledText(parent, SWT.NONE);
+        m_text = new StyledText(parent, SWT.V_SCROLL);
+             
+        Font font = new Font(PlatformUI.getWorkbench().getDisplay(), "Courier New", 10, SWT.NONE);
+        m_text.setFont(font);
         
         m_text.addKeyListener(new KeyListener() {
         	public void keyPressed(KeyEvent event) {
@@ -107,7 +111,7 @@ class TextReader extends Reader {
         
         m_text.addVerifyKeyListener(new VerifyKeyListener() {
 			public void verifyKey(VerifyEvent event) {
-				System.out.printf("TextReader: verifyKey: %d\n", event.keyCode);
+				if (DEBUG) System.out.printf("TextReader: verifyKey: %d\n", event.keyCode);
 
 			    if (event.keyCode == SWT.ARROW_UP) {
 			    	event.doit = false;				
@@ -137,7 +141,6 @@ class TextReader extends Reader {
 				int lastIndex = m_text.getCharCount();
 		        int lastRowIndex = m_text.getLineAtOffset(lastIndex);
 		        
-		        System.out.printf("%d - %d\n", caretRowIndex, lastRowIndex);
 		        if (caretRowIndex != lastRowIndex) {
 		        	setCaretToEnd();
 		        }

@@ -10,13 +10,13 @@ import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Route;
-import com.xmos.xtagui.properties.DisplayRouteProperty;
 
 public class XtaDisplayer implements Displayer {
-    public static final boolean DEBUG = true;	
+    public static final boolean DEBUG = false;	
 	
 	private static XtaDisplayer m_displayer;
 	private ArrayList<IPropertyChangeListener> m_listeners;
+	private DisplayRouteInfo m_displayRouteInfo;
 	
 	private XtaDisplayer() {
 		m_listeners = new ArrayList<IPropertyChangeListener>();
@@ -47,9 +47,8 @@ public class XtaDisplayer implements Displayer {
 	public void displayRoute(Route route, DebugInfo debugInfo,
 			MemoryImage memoryImage, SymbolTable table) {		
 		if (DEBUG) System.out.printf("XtaDisplayer: displayRoute\n");		
-		DisplayRouteProperty property = new DisplayRouteProperty(
-			route, debugInfo, memoryImage, table);
-		broadcastPropertyChange(new PropertyChangeEvent(this, "DisplayRoute", null, property));
+		m_displayRouteInfo = new DisplayRouteInfo(route, debugInfo, memoryImage, table);
+		broadcastPropertyChange(new PropertyChangeEvent(this, "DisplayRoute", null, null));
 	}
 
 	public void notifyAnalysePaths() {
@@ -65,5 +64,9 @@ public class XtaDisplayer implements Displayer {
 	public void notifyUpdateState() {
 		if (DEBUG) System.out.printf("XtaDisplayer: notifyUpdateState\n");
 		broadcastPropertyChange(new PropertyChangeEvent(this, "UpdateState", null, null));
+	}
+	
+	public DisplayRouteInfo getDisplayRouteInfo() {
+		return m_displayRouteInfo;
 	}
 }

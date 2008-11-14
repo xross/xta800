@@ -8,7 +8,7 @@ import org.eclipse.ui.part.ViewPart;
 import com.xmos.xtagui.XtaDisplayer;
 
 public class FlowView extends ViewPart implements IPropertyChangeListener {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xtagui.views.Flow";
 
 	public FlowView() {

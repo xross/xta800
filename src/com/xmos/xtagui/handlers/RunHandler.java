@@ -9,7 +9,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import com.xmos.xtagui.views.ControlView;
 
 public class RunHandler extends AbstractHandler implements IHandler {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		if (DEBUG) System.out.printf("RunHandler: execute\n");	

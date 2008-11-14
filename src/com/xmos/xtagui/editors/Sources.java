@@ -1,35 +1,21 @@
 package com.xmos.xtagui.editors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.MultiPageEditorPart;
 
-import com.xmos.xeobject.Function;
-import com.xmos.xeobject.Line;
 import com.xmos.xeobject.SourceFile;
-import com.xmos.xeobject.SourceLine;
 import com.xmos.xeobject.XeObject;
-import com.xmos.xta.engine.Engine;
-import com.xmos.xtagui.XtaDisplayer;
 import com.xmos.xtagui.XtaEngine;
-import com.xmos.xtagui.XtaFileFinder;
 
-public class Sources extends MultiPageEditorPart implements IPropertyChangeListener {
-    public static final boolean DEBUG = true;
+public class Sources extends MultiPageEditorPart {
+    public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xtagui.editors.Sources";
-
-    private int m_disassemblyIndex;
     
 	public Sources() {
 		if (DEBUG) System.out.printf("Sources()\n");			
-		XtaDisplayer.getInstance().addPropertyChangeListener(this);
-		m_disassemblyIndex = 0;
 	}
 
 	public void doSave(IProgressMonitor monitor) {
@@ -45,7 +31,7 @@ public class Sources extends MultiPageEditorPart implements IPropertyChangeListe
 		if (DEBUG) System.out.printf("Sources: init\n");
 		
 		setSite(site);
-		setInput(input); 
+		setInput(input);		
 	}
 
 	public boolean isDirty() {
@@ -64,46 +50,21 @@ public class Sources extends MultiPageEditorPart implements IPropertyChangeListe
 
 	protected void createPages() {		
 		if (DEBUG) System.out.printf("Sources: createPages\n");	
-		
-		m_disassemblyIndex = CreatePage("Disassembly");
+        try {
+        	XtaEditor disassemblyEditor = new XtaEditor();
+        	IEditorInput disassemblyEditorInput = new InputDisassembly();
+			int index = addPage(disassemblyEditor, disassemblyEditorInput);
+			setPageText(index, "Disassembly");
+        	
+			XeObject xeObject = XtaEngine.getEngine().getXeObject();
+	        for (SourceFile sourceFile : xeObject.getSourceFiles()) {       	        	
+	        	XtaEditor sourceEditor = new XtaEditor();
+	        	IEditorInput sourceEditorInput = new InputSource(sourceFile);
+	    		index = addPage(sourceEditor, sourceEditorInput);
+		    	setPageText(index, sourceFile.getFile().getName());
+	        }					
+		} catch (PartInitException e) {
+			e.printStackTrace();
+		}       
 	}
-		
-	public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG) System.out.printf("Sources: propertyChange: %s\n", event.getProperty());			
-		
-		if (event.getProperty().equals("LoadExecutable")) {
-			Engine engine = XtaEngine.getEngine();
-			XeObject xeObject = new XeObject(engine.getXeLoader(), new XtaFileFinder());
-			XtaEngine.getEngine().setXeObject(xeObject);                    
-			
-			StyledText text = (StyledText)getControl(m_disassemblyIndex);		
-	        for (Function function : xeObject.getFunctions()) {
-	        	text.append(function.getText() + ":\n");
-	        	for (Line line : function.getChildern()) {
-	        		text.append(String.format("  0x%05x %s\n", 
-	            		line.getLineNumber(), line.getText()));        		
-	        	}
-	        	text.append("\n");
-	        }		
-			
-	        for (SourceFile sourceFile : xeObject.getSourceFiles()) {
-	        	int pageIndex = CreatePage(sourceFile.getFile().getName());
-	        	text = (StyledText)getControl(pageIndex);		
-	        	
-	            for (SourceLine sourceLine : sourceFile.getSourceLines()){
-	            	text.append(sourceLine.getText() + "\n");
-	                for (Line line : sourceLine.getChildern()) {
-	                	text.append("  - " + line.getText() + "\n");                	
-	                }
-	            }
-	        }	               		
-		}
-	}
-	
-	private	int CreatePage(String pageName) {
-		StyledText text = new StyledText(getContainer(), SWT.NONE);
-	    int index = addPage(text);
-	    setPageText(index, pageName);
-	    return index;
-	}	
 }

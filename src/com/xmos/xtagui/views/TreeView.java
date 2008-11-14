@@ -11,21 +11,21 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Route;
+import com.xmos.xtagui.DisplayRouteInfo;
 import com.xmos.xtagui.XtaDisplayer;
 import com.xmos.xtagui.nodes.BlockNode;
 import com.xmos.xtagui.nodes.LoopNode;
 import com.xmos.xtagui.nodes.Node;
 import com.xmos.xtagui.nodes.PathNode;
 import com.xmos.xtagui.nodes.RouteNode;
-import com.xmos.xtagui.properties.DisplayRouteProperty;
 
 public class TreeView extends ViewPart implements IPropertyChangeListener {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xtagui.views.Tree";
 
     private TreeViewer m_treeViewer;
     private Display m_display;
-    private DisplayRouteProperty m_routeProperty;
+    private DisplayRouteInfo m_routeInfo;
 
 	public TreeView() {
 		if (DEBUG) System.out.printf("Tree()\n");			
@@ -46,7 +46,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener {
 		if (DEBUG) System.out.printf("Tree: propertyChange: %s\n", event.getProperty());	
 		
 		if (event.getProperty().equals("DisplayRoute")) {
-			m_routeProperty = (DisplayRouteProperty)event.getNewValue();										
+			m_routeInfo = XtaDisplayer.getInstance().getDisplayRouteInfo();										
 			m_display.asyncExec(new Runnable() {
 				public void run() {
 					m_treeViewer.setContentProvider(new TreeViewContentProvider());				
@@ -59,7 +59,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener {
 	}
 	
 	private Node createHierarchy() {
-		Route route = m_routeProperty.getRoute();
+		Route route = m_routeInfo.getRoute();
         RouteNode routeNode = new RouteNode(route);
         for (Block block : route.completePaths()) {
         	routeNode.addNode(createPath(block, routeNode));

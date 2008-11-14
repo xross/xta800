@@ -27,6 +27,12 @@
             id="com.xmos.xtagui.editors.Sources"
             name="Sources">
       </editor>
+      <editor
+            class="com.xmos.xtagui.editors.XtaEditor"
+            default="false"
+            id="com.xmos.xtagui.editors.Test"
+            name="Test">
+      </editor>
    </extension>
    <extension
          point="org.eclipse.ui.views">

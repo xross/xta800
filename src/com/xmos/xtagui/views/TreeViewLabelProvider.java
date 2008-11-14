@@ -7,7 +7,7 @@ import com.xmos.xtagui.icons.Icons;
 import com.xmos.xtagui.nodes.Node;
 
 class TreeViewLabelProvider extends CellLabelProvider {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 	
 	TreeViewLabelProvider() {
 		if (DEBUG) System.out.printf("TreeViewLabelProvider()\n");	
