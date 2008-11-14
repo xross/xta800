@@ -16,7 +16,7 @@ public class XtaDisplayer implements Displayer {
 	
 	private static XtaDisplayer m_displayer;
 	private ArrayList<IPropertyChangeListener> m_listeners;
-	private DisplayRouteInfo m_displayRouteInfo;
+	private XtaRouteInfo m_displayRouteInfo;
 	
 	private XtaDisplayer() {
 		m_listeners = new ArrayList<IPropertyChangeListener>();
@@ -47,7 +47,7 @@ public class XtaDisplayer implements Displayer {
 	public void displayRoute(Route route, DebugInfo debugInfo,
 			MemoryImage memoryImage, SymbolTable table) {		
 		if (DEBUG) System.out.printf("XtaDisplayer: displayRoute\n");		
-		m_displayRouteInfo = new DisplayRouteInfo(route, debugInfo, memoryImage, table);
+		m_displayRouteInfo = new XtaRouteInfo(route, debugInfo, memoryImage, table);
 		broadcastPropertyChange(new PropertyChangeEvent(this, "DisplayRoute", null, null));
 	}
 
@@ -66,7 +66,7 @@ public class XtaDisplayer implements Displayer {
 		broadcastPropertyChange(new PropertyChangeEvent(this, "UpdateState", null, null));
 	}
 	
-	public DisplayRouteInfo getDisplayRouteInfo() {
+	public XtaRouteInfo getDisplayRouteInfo() {
 		return m_displayRouteInfo;
 	}
 }

@@ -45,7 +45,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener {
 		Composite composite = new Composite(parent, SWT.NONE);
 	    GridLayout gridLayout = new GridLayout();
 	    gridLayout.numColumns = 2;
-	    composite.setLayout(gridLayout);
+	    composite.setLayout(gridLayout);	            
+	    composite.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
 	    
 		createFunctionControl(composite);
 		createExhustiveControl(composite);
@@ -132,6 +133,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener {
 	private void createControlLabel(Composite parent, String str) {
 		Label label = new Label(parent, SWT.NONE);		        
         label.setText(str);
+        label.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
 	}
 	
 	private void createFunctionControl(Composite parent) {

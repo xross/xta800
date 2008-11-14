@@ -15,7 +15,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             name="Xta Perspective"
-            class="com.xmos.xtagui.Perspective"
+            class="com.xmos.xtagui.XtaPerspective"
             id="com.xmos.xtagui.Perspective">
       </perspective>
    </extension>

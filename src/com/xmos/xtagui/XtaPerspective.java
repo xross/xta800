@@ -13,7 +13,7 @@ import com.xmos.xtagui.views.LoopView;
 import com.xmos.xtagui.views.StructureView;
 import com.xmos.xtagui.views.TreeView;
 
-public class Perspective implements IPerspectiveFactory {
+public class XtaPerspective implements IPerspectiveFactory {
     public static final boolean DEBUG = true;
 
 	public void createInitialLayout(IPageLayout layout) {

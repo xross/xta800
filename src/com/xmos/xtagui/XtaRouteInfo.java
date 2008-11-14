@@ -5,13 +5,13 @@ import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.Route;
 
-public class DisplayRouteInfo {
+public class XtaRouteInfo {
 	private Route m_route; 
 	private DebugInfo m_debugInfo;
 	private MemoryImage m_memoryImage; 
 	private SymbolTable m_symbolTable;
 	
-	public DisplayRouteInfo(Route route, DebugInfo debugInfo,
+	public XtaRouteInfo(Route route, DebugInfo debugInfo,
 			MemoryImage memoryImage, SymbolTable symbolTable) {
 		m_route = route;
 		m_debugInfo = debugInfo;

@@ -3,6 +3,7 @@ package com.xmos.xtagui.editors;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -40,7 +41,7 @@ public class XtaEditor extends TextEditor {
         m_annotationModel = viewer.getProjectionAnnotationModel();
     }   
         
-    public void updateFoldingStructure(ArrayList<Position> positions) {
+    public void updateFoldingStructure(ArrayList<Position> positions, IDocument document) {
        Annotation[] annotations = new Annotation[positions.size()];
 
        // This will hold the new annotations along with their corresponding positions
@@ -52,7 +53,7 @@ public class XtaEditor extends TextEditor {
           annotations[i] = annotation;
        }
        m_annotationModel.modifyAnnotations(m_oldAnnotations, newAnnotations, null);
-
+       m_annotationModel.collapseAll(0, document.getLength());
        m_oldAnnotations = annotations;
     }    
 

@@ -19,12 +19,10 @@ public class XtaReconcilingStrategy implements IReconcilingStrategy, IReconcilin
 	
 	public void reconcile(IRegion partition) {
 		if (DEBUG) System.out.printf("XtaReconcilingStrategy: reconcile\n");
-		initialReconcile();
 	}
 
 	public void reconcile(DirtyRegion dirtyRegion, IRegion subRegion) {
 		if (DEBUG) System.out.printf("XtaReconcilingStrategy: reconcile\n");
-		initialReconcile();
 	}
 
 	public void setDocument(IDocument document) {
@@ -43,7 +41,7 @@ public class XtaReconcilingStrategy implements IReconcilingStrategy, IReconcilin
 		} catch (BadPositionCategoryException e) {
 			e.printStackTrace();
 		}		
-		m_editor.updateFoldingStructure(positions);
+		m_editor.updateFoldingStructure(positions, m_document);
 	}
 
 	public void setProgressMonitor(IProgressMonitor monitor) {

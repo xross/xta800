@@ -11,7 +11,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Route;
-import com.xmos.xtagui.DisplayRouteInfo;
+import com.xmos.xtagui.XtaRouteInfo;
 import com.xmos.xtagui.XtaDisplayer;
 import com.xmos.xtagui.nodes.BlockNode;
 import com.xmos.xtagui.nodes.LoopNode;
@@ -25,7 +25,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener {
 
     private TreeViewer m_treeViewer;
     private Display m_display;
-    private DisplayRouteInfo m_routeInfo;
+    private XtaRouteInfo m_routeInfo;
 
 	public TreeView() {
 		if (DEBUG) System.out.printf("Tree()\n");			
