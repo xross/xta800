@@ -5,7 +5,6 @@ import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.IFolderLayout;
 
 import com.xmos.xtagui.views.ConsoleView;
-import com.xmos.xtagui.views.ControlView;
 import com.xmos.xtagui.views.ErrorsView;
 import com.xmos.xtagui.views.FlowView;
 import com.xmos.xtagui.views.FunctionView;
@@ -14,10 +13,10 @@ import com.xmos.xtagui.views.StructureView;
 import com.xmos.xtagui.views.TreeView;
 
 public class XtaPerspective implements IPerspectiveFactory {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
 	public void createInitialLayout(IPageLayout layout) {
-        if (DEBUG) System.out.printf("Perspective: createInitialLayout\n");        
+        if (DEBUG) System.out.printf("XtaPerspective: createInitialLayout\n");        
 				
         IFolderLayout viewsFolder = layout.createFolder(
         		"views.folder", IPageLayout.BOTTOM, 0.5f, layout.getEditorArea());        
@@ -30,7 +29,6 @@ public class XtaPerspective implements IPerspectiveFactory {
 		
         IFolderLayout treeFolder = layout.createFolder(
         		"tree.folder", IPageLayout.LEFT, 0.5f, layout.getEditorArea());        
-        treeFolder.addView(ControlView.ID);
         treeFolder.addView(TreeView.ID);
 
         layout.setEditorAreaVisible(true);        

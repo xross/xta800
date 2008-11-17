@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xtagui.XtaDisplayer;
+import com.xmos.xtagui.XtaErrorLog;
 
 public class ErrorsView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
@@ -23,18 +24,28 @@ public class ErrorsView extends ViewPart implements IPropertyChangeListener {
 	public void createPartControl(Composite parent) {
 		if (DEBUG) System.out.printf("Errors: createPartControl\n");	
 		 
-		m_text = new StyledText(parent, SWT.NONE);		 
+		m_text = new StyledText(parent, SWT.V_SCROLL);	
+		m_text.setEditable(false); 
 	}
 
 	public void setFocus() {
-		if (DEBUG) System.out.printf("Errors: setFocus\n");			
+		if (DEBUG) System.out.printf("Errors: setFocus\n");
+		updateDisplay();
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("Errors: propertyChange: %s\n", event.getProperty());
 		
 		if (event.getProperty().equals("Error")) {
-			m_text.append("Error: " + (String)event.getNewValue() + "\n");
+			updateDisplay();
 		}
-	}	
+	}
+	
+	private void updateDisplay() {
+		m_text.setText("");
+		for (String errorString : XtaErrorLog.getInstance().getErrorStrings()) {
+			m_text.append("Error: " + errorString + "\n");
+		}
+		m_text.setSelection(m_text.getCharCount());
+	}
 }

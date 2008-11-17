@@ -12,7 +12,7 @@ import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategyExtension;
 
 public class XtaReconcilingStrategy implements IReconcilingStrategy, IReconcilingStrategyExtension {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 	
 	private XtaEditor m_editor;
 	private IDocument m_document;

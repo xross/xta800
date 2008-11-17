@@ -9,7 +9,7 @@ import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.SourceLine;
 
 public class InputSource implements IEditorInput {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private Input m_input;
     

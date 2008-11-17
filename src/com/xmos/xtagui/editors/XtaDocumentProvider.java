@@ -12,7 +12,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.AbstractDocumentProvider;
 
 public class XtaDocumentProvider extends AbstractDocumentProvider {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     
     XtaDocumentProvider() {
 		if (DEBUG) System.out.printf("XtaDocumentProvider()\n");			                    

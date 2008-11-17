@@ -9,7 +9,7 @@ import com.xmos.xeobject.Line;
 import com.xmos.xtagui.XtaEngine;
 
 public class InputDisassembly implements IEditorInput {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private Input m_input;
     

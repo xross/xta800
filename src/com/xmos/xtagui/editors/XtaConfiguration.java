@@ -6,7 +6,7 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 
 public class XtaConfiguration extends SourceViewerConfiguration {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
 	private XtaEditor m_editor;    
     

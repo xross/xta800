@@ -37,12 +37,6 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            class="com.xmos.xtagui.views.ControlView"
-            id="com.xmos.xtagui.views.Control"
-            name="Control"
-            restorable="true">
-      </view>
-      <view
             class="com.xmos.xtagui.views.TreeView"
             id="com.xmos.xtagui.views.Tree"
             name="Tree"
@@ -97,11 +91,23 @@
             id="com.xmos.xtagui.run.command"
             name="com.xmos.xtagui.run.command">
       </command>
+      <command
+            defaultHandler="com.xmos.xtagui.handlers.ConfigureHandler"
+            id="com.xmos.xtagui.configure.command"
+            name="com.xmos.xtagui.configure.command">
+      </command>
    </extension>
   <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="toolbar:com.xmos.xtagui.views.Control">
+            locationURI="toolbar:com.xmos.xtagui.views.Tree">
+         <command
+               commandId="com.xmos.xtagui.configure.command"
+               icon="src/com/xmos/xtagui/icons/greendot.png"
+               id="com.xmos.xtagui.configure.command"
+               label="Configure"
+               style="push">
+         </command>
          <command
                commandId="com.xmos.xtagui.load.command"
                icon="src/com/xmos/xtagui/icons/yellowdot.png"
