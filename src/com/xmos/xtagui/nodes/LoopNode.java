@@ -1,5 +1,10 @@
 package com.xmos.xtagui.nodes;
 
+import java.util.HashSet;
+
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+
 import com.xmos.xta.engine.Block;
 
 public class LoopNode extends Node {
@@ -19,23 +24,11 @@ public class LoopNode extends Node {
     }
     
     public double getTimeTaken() {
-        double timeTaken = 0.0;
-        for (Block loopPath : m_block.getLoopPaths()) {
-            int numIterations = m_block.getLoopPathAttributes(loopPath).getNumIterations();
-            timeTaken += loopPath.getTimeTaken(true) * numIterations;
-        }
-        m_block.doneWithLoopPaths();
-        return timeTaken;
+        return m_block.getTimeTaken(true);
     }
     
     public int getNumCycles() {
-        int numCycles = 0;
-        for (Block loopPath : m_block.getLoopPaths()) {
-            int numIterations = m_block.getLoopPathAttributes(loopPath).getNumIterations();
-            numCycles += loopPath.getNumCycles(true) * numIterations;
-        }
-        m_block.doneWithLoopPaths();
-        return numCycles;
+        return m_block.getNumCycles(true);
     }
     
     public String getDescription() {
@@ -55,6 +48,23 @@ public class LoopNode extends Node {
         return "loop";
     }
         
+    public HashSet<Integer> getPcsCovered() {
+        return m_block.getPcsCovered(true);
+    }
+
+    public void createContextMenu(IMenuManager manager) {    	
+		manager.add(new Action("loop 1") {
+			public void run() {
+				System.out.printf("loop 1 running\n");						
+			}
+		});
+		manager.add(new Action("loop 2") {
+			public void run() {
+				System.out.printf("loop 2 running\n");						
+			}
+		});
+    }
+    
     private int getNumIterations() {
         int numIterations = 0;
         for (Block loopPath : m_block.getLoopPaths()) {

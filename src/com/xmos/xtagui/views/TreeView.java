@@ -1,14 +1,20 @@
 package com.xmos.xtagui.views;
 
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -64,6 +70,8 @@ public class TreeView extends ViewPart implements IPropertyChangeListener {
 
 	    m_functions = new TreeViewFunctionCombo("com.xmos.xtagui.functions.combo");
 	    getViewSite().getActionBars().getToolBarManager().add(m_functions);
+
+	    createContextMenus();
 	}
 
 	public void setFocus() {
@@ -232,6 +240,25 @@ public class TreeView extends ViewPart implements IPropertyChangeListener {
 		for (int i = 0; i < indent; ++i) {
 			System.out.printf(" ");
 		}
+	}
+	
+	private void createContextMenus() {
+	    Menu m_contextMenu;
+		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		menuMgr.setRemoveAllWhenShown(true);
+		menuMgr.addMenuListener(new IMenuListener() {
+			public void menuAboutToShow(IMenuManager manager) {				
+				ISelection selection = m_treeViewer.getSelection();
+	            if (selection instanceof IStructuredSelection) {	            
+	                Object object = ((IStructuredSelection)selection).getFirstElement();
+	                if (object instanceof Node) {
+	    				((Node)object).createContextMenu(manager);
+	                }
+	            }				
+			}
+		});
+		m_contextMenu = menuMgr.createContextMenu(m_treeViewer.getTree());
+		m_treeViewer.getTree().setMenu(m_contextMenu);		
 	}
 	
     class RunEngineMethodFunc extends Thread {

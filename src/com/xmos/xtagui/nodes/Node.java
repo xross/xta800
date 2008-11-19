@@ -1,6 +1,9 @@
 package com.xmos.xtagui.nodes;
 
+import java.util.HashSet;
 import java.util.Vector;
+
+import org.eclipse.jface.action.IMenuManager;
 
 public abstract class Node {
     private Node m_parent;
@@ -20,6 +23,9 @@ public abstract class Node {
     public abstract String getDescription();
     public abstract String getToolTipText();
     public abstract String getTypeName();    
+    
+    public abstract HashSet<Integer> getPcsCovered();    
+    public abstract void createContextMenu(IMenuManager manager);
     
     public void addNode(Node node) {
     	m_nodes.add(node);

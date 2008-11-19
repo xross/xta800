@@ -92,9 +92,9 @@
             name="com.xmos.xtagui.run.command">
       </command>
       <command
-            defaultHandler="com.xmos.xtagui.handlers.ConfigureHandler"
-            id="com.xmos.xtagui.configure.command"
-            name="com.xmos.xtagui.configure.command">
+            defaultHandler="com.xmos.xtagui.handlers.SettingsHandler"
+            id="com.xmos.xtagui.settings.command"
+            name="com.xmos.xtagui.settings.command">
       </command>
    </extension>
   <extension
@@ -102,21 +102,22 @@
       <menuContribution
             locationURI="toolbar:com.xmos.xtagui.views.Tree">
          <command
-               commandId="com.xmos.xtagui.configure.command"
-               icon="src/com/xmos/xtagui/icons/greendot.png"
-               id="com.xmos.xtagui.configure.command"
-               label="Configure"
+               commandId="com.xmos.xtagui.settings.command"
+               icon="icons/settings.png"
+               id="com.xmos.xtagui.settings.command"
+               label="Settings"
                style="push">
          </command>
          <command
                commandId="com.xmos.xtagui.load.command"
-               icon="src/com/xmos/xtagui/icons/yellowdot.png"
+               icon="icons/load.png"
+               id="com.xmos.xtagui.load.command"
                label="Load"
                style="push">
          </command>
          <command
                commandId="com.xmos.xtagui.run.command"
-               icon="src/com/xmos/xtagui/icons/greendot.png"
+               icon="icons/run.png"
                id="com.xmos.xtagui.run.command"
                label="Run"
                style="push">
@@ -124,4 +125,44 @@
       </menuContribution>
    </extension>
  
+   <extension
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+      <specification
+            annotationType="com.xmos.xtagui.path"
+            textPreferenceKey="errorIndication"
+            textPreferenceValue="true"
+            presentationLayer="6"
+            showInNextPrevDropdownToolbarAction="true"
+            label="%errors.label"
+            colorPreferenceKey="errorIndicationColor"
+            showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
+            symbolicIcon="error"
+            quickFixIcon=""
+            isGoToNextNavigationTargetKey="isErrorGoToNextNavigationTarget"
+            isGoToNextNavigationTarget="true"
+            isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
+            isGoToPreviousNavigationTarget="true"
+            highlightPreferenceKey="errorIndicationHighlighting"
+            highlightPreferenceValue="true"
+            textStylePreferenceKey="errorTextStyle"
+			textStylePreferenceValue="PROBLEM_UNDERLINE"             
+            verticalRulerPreferenceKey="errorIndicationInVerticalRuler"
+            verticalRulerPreferenceValue="false"
+            overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="true"
+            contributesToHeader="true"
+            colorPreferenceValue="255,255,0">
+      </specification>
+   </extension>
+ 
+   <extension
+         point="org.eclipse.ui.editors.annotationTypes">
+      <type
+         name="com.xmos.xtagui.path"
+         super="org.eclipse.ui.workbench.texteditor.error"
+         markerType=""
+         markerSeverity="2">
+      </type>
+   </extension>
+  
 </plugin>

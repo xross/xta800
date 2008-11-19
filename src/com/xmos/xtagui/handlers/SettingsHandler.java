@@ -17,18 +17,18 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.xmos.xtagui.views.TreeView;
 
-public class ConfigureHandler extends AbstractHandler implements IHandler {
+public class SettingsHandler extends AbstractHandler implements IHandler {
     public static final boolean DEBUG = false;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		if (DEBUG) System.out.printf("ConfigureHandler: execute\n");		
+		if (DEBUG) System.out.printf("SettingsHandler: execute\n");		
 		
 		final TreeView treeView = (TreeView)HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().findView(TreeView.ID);
 		
 		final Shell shell = HandlerUtil.getActiveWorkbenchWindow(event).getShell();			
 	    final Shell dialog = new Shell(shell, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
 	    
-	    dialog.setText("Configuration");
+	    dialog.setText("Settings");
 	    dialog.setSize(200, 200);
 	    GridLayout gridLayout = new GridLayout();
 	    gridLayout.numColumns = 2;

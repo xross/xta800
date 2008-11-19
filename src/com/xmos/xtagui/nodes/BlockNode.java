@@ -1,5 +1,10 @@
 package com.xmos.xtagui.nodes;
 
+import java.util.HashSet;
+
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+
 import com.xmos.xta.engine.Block;
 
 public class BlockNode extends Node {
@@ -42,5 +47,22 @@ public class BlockNode extends Node {
 
     public String getTypeName() {
         return "block";
+    }
+    
+    public HashSet<Integer> getPcsCovered() {
+    	return m_block.getPcsCoveredThis();
+    }
+    
+    public void createContextMenu(IMenuManager manager) {    	
+		manager.add(new Action("block 1") {
+			public void run() {
+				System.out.printf("block 1 running\n");						
+			}
+		});
+		manager.add(new Action("block 2") {
+			public void run() {
+				System.out.printf("block 2 running\n");						
+			}
+		});
     }
 }

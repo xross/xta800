@@ -16,12 +16,16 @@ public class InputDisassembly implements IEditorInput {
     public InputDisassembly() {	
 		if (DEBUG) System.out.printf("InputDisassembly()\n");	
 		
+		int lineIndex = 0;
 		m_input = new Input();
-        for (Function function : XtaEngine.getEngine().getXeObject().getFunctions()) {
-        	m_input.addHeader(function.getText() + ":");	        	        	
+        for (Function function : XtaEngine.getEngine().getXeObject().getFunctions()) {        	
+        	m_input.addHeader(function.getText() + ":", lineIndex);	        	        	
+        	++lineIndex;
 
         	for (Line line : function.getChildern()) {
-        		m_input.addLine(String.format("    0x%05x %s", line.getLineNumber(), line.getText()));
+        		String str = String.format("    0x%05x %s", line.getLineNumber(), line.getText());
+        		m_input.addLine(str, line.getLineNumber(), lineIndex);
+        		++lineIndex;        		
         	}
         }				
 	}

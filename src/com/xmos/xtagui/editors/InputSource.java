@@ -16,11 +16,15 @@ public class InputSource implements IEditorInput {
     public InputSource(SourceFile sourceFile) {	
 		if (DEBUG) System.out.printf("InputSource()\n");
 		
+		int lineIndex = 0;
 		m_input = new Input();
-        for (SourceLine sourceLine : sourceFile.getSourceLines()){
-        	m_input.addHeader(sourceLine.getText());
+        for (SourceLine sourceLine : sourceFile.getSourceLines()){        	
+        	m_input.addHeader(sourceLine.getText(), lineIndex);
+        	++lineIndex;
+        	
             for (Line line : sourceLine.getChildern()) {
-            	m_input.addLine(line.getText());                	
+            	m_input.addLine(line.getText(), line.getLineNumber(), lineIndex);                	
+        		++lineIndex;        		
             }
         }
 	}

@@ -37,9 +37,9 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner {
 				String header = inputSection.getHeader() + "\n";
 				document.replace(sectionOffset, 0, header);
 				
-				for (String line : inputSection.getLines()) {
-					line += "\n";
-					document.replace(document.getLength(), 0, line);
+				for (InputLine line : inputSection.getLines()) {
+					String str = line.getLine() + "\n";
+					document.replace(document.getLength(), 0, str);
 				} 
 
 				int numLines = inputSection.getLines().size();
@@ -82,4 +82,7 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner {
 		return null;
 	}
 
+	public Input getInput() {
+		return m_input;
+	}
 }

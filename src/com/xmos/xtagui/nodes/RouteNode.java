@@ -1,5 +1,9 @@
 package com.xmos.xtagui.nodes;
 
+import java.util.HashSet;
+
+import org.eclipse.jface.action.IMenuManager;
+
 import com.xmos.xta.engine.Route;
 
 public class RouteNode extends Node {
@@ -11,19 +15,23 @@ public class RouteNode extends Node {
     }
 
     public int getId() {
-        return m_route.getId();
+    	assert(false);
+        return 0;
     }
 
     public int getInstanceId() {
-        return m_route.getInstanceId();
+    	assert(false);
+        return 0;
     }
 
     public double getTimeTaken() {
-        return m_route.getTimeTaken();
+    	assert(false);
+        return 0;
     }
 
     public int getNumCycles() {
-        return m_route.getNumCycles();
+    	assert(false);
+        return 0;
     }
     
     public String getDescription() {
@@ -42,4 +50,13 @@ public class RouteNode extends Node {
     public String getTypeName() {
         return "route";
     }
+    
+    public HashSet<Integer> getPcsCovered() {
+    	assert(false);
+        return null;	
+    }    
+    
+    public void createContextMenu(IMenuManager manager) {    	
+    	assert(false);
+    }    
 }

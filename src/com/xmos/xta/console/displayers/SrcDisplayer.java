@@ -40,27 +40,9 @@ public class SrcDisplayer implements Displayer {
 			m_console.display(String.format("Error: invalid path id: %d\n", m_pathId));
 			return;
     	}
-    	//TODO make this faster
-    	HashMap<String, TreeSet<Integer>> linesCovered = new HashMap<String, TreeSet<Integer>>();
-    	TreeSet<Integer> treeLines = new TreeSet<Integer>();
-    	for(XtaInstruction inst : path.getInstructions(false)){
-    	    for(SourceFile sourceFile: m_xeObject.getSourceFiles()){
-    	        if(sourceFile.getFile().getName().equals(m_fileName)){
-    	            for(SourceLine sourceLine : sourceFile.getSourceLines()){
-    	                for(Line assembly :sourceLine.getChildern()){
-    	                    if(assembly.getLineNumber() == inst.getPc()){
-    	                        treeLines.add(sourceLine.getLineNumber());
-    	                    }
-    	                }
-    	            }
-    	        }
-    	    }
-    	}
-    	linesCovered.put(m_fileName, treeLines);
     	
-        //HashMap<String, TreeSet<Integer>> linesCovered = path.getSourceLinesCovered();            
+        HashMap<String, TreeSet<Integer>> linesCovered = createSrcLinesCovered(path, m_xeObject, false);       
         if (!linesCovered.containsKey(m_fileName)) {
-            // Print the most useful error message
             for (SourceFile sourceFile : m_xeObject.getSourceFiles()) {         
                 String currentSourceFileName = sourceFile.getFile().getName();
                 if (m_fileName.equals(currentSourceFileName)) {
@@ -110,4 +92,32 @@ public class SrcDisplayer implements Displayer {
 
     public void notifyUpdateState() {    	
     }
+    
+	private HashMap<String, TreeSet<Integer>> createSrcLinesCovered(
+			Block block, XeObject xeObject, boolean recurse) {
+		
+    	HashMap<String, TreeSet<Integer>> linesCovered = new HashMap<String, TreeSet<Integer>>();
+    	for (XtaInstruction inst : block.getInstructions(recurse)) {
+    	    for (SourceFile sourceFile: xeObject.getSourceFiles()) {
+    	        String fileName = sourceFile.getFile().getName();
+    	    	TreeSet<Integer> sourceLines;
+
+    	    	if (linesCovered.containsKey(fileName)) {
+    	    		sourceLines = linesCovered.get(fileName);
+    	    	} else {    	    		
+    	    		sourceLines = new TreeSet<Integer>();
+    	    	    linesCovered.put(fileName, sourceLines);
+    	        }    	    	
+    	    	
+    	        for (SourceLine sourceLine : sourceFile.getSourceLines()) {
+    	            for (Line assembly : sourceLine.getChildern()) {
+    	                if (assembly.getLineNumber() == inst.getPc()) {
+    	                	sourceLines.add(sourceLine.getLineNumber());
+    	                }
+    	            }
+    	        }
+    	    }
+    	}
+		return linesCovered;
+	}    
 }
