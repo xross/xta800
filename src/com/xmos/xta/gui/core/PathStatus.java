@@ -70,19 +70,7 @@ public class PathStatus implements Displayer {
         for (PathUpdater pathUpdater : m_pathUpdaters){
             pathUpdater.setSelectedPath(m_selectedPath, m_centerNode);
         }
-        if (route.unresolvedPaths().size()>0){
-            String error = String.format("Found %d unresolved path", route.unresolvedPaths().size());
-            if (route.unresolvedPaths().size() > 1) {
-                error += "s";
-            }
-            JOptionPane.showMessageDialog(m_mainFrame,
-                    error,
-                    "Warning",
-                    JOptionPane.WARNING_MESSAGE);
 
-        }
-        
-        
     }
 
     private DefaultMutableTreeNode addPath(int depth, Block path, Block caller) {

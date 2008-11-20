@@ -61,7 +61,7 @@ public class Expression {
 	}
 	
 	// Immediate Constructor
-	Expression(int value) {
+	public Expression(int value) {
 		m_address     = 0;
 		m_value       = value;
 		m_type        = Type.IMMEDIATE;

@@ -46,6 +46,7 @@ public class Unknown {
 
     public String getUnknownString() {
         String str = "";
+        /*
         if (m_reason == UnknownReason.GUARD) {
             str = "Return value from input on instruction ";
             str += m_inst.getNmenonic() + " " + m_inst.getOperandString() + " ";
@@ -64,6 +65,7 @@ public class Unknown {
         } else {
             assert (false);
         }
+        */
         return str;
     }
 

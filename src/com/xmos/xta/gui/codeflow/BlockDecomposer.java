@@ -72,7 +72,7 @@ public class BlockDecomposer implements PathUpdater {
 
     private boolean analyseRoute(){
         boolean success = true;
-
+        /*
         if(m_route.hashCode() == m_analysedRoute){
             return true;
         } 
@@ -108,6 +108,7 @@ public class BlockDecomposer implements PathUpdater {
         } else {
             m_analysedRoute = 0;
         }
+        */
         return success;
     }
     
@@ -243,7 +244,7 @@ public class BlockDecomposer implements PathUpdater {
     private int parseLinks(ArrayList<InstructionLink> links) {
         if(m_route.completePaths().size()>0){
             BasicBlock currentBlock = new BasicBlock();
-            XtaInstruction startInst = m_route.completePaths().firstElement().getInstructions(false).firstElement();
+            XtaInstruction startInst = m_route.completePaths().get(0).getInstructions(false).firstElement();
             int start = getIndex (startInst, links);
             nextLink(start,currentBlock, links );
             assert(!insructionsRemaining(links));

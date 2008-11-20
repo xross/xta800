@@ -1,6 +1,6 @@
 package com.xmos.xta.engine;
 
-class InstructionBuffer {
+public class InstructionBuffer {
 	private final boolean DEBUG = false;
 	
     static final int IBUFFER_NUM_BYTES = 8;
@@ -9,19 +9,20 @@ class InstructionBuffer {
     int m_pc;
     int m_numBytes;
 
-    InstructionBuffer() {
+    public InstructionBuffer() {
         m_numBytes = 0;
 	}
 
-    InstructionBuffer(InstructionBuffer instructionBuffer) {
+    public InstructionBuffer(InstructionBuffer instructionBuffer) {
         m_numBytes = instructionBuffer.m_numBytes;
+        m_pc = instructionBuffer.m_pc;
     }
 	
-    void setPc(int pc) {
+    public void setPc(int pc) {
         m_pc = pc;
     }
     
-    int getPc() {
+    public int getPc() {
         return m_pc;
     }
     

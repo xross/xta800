@@ -1,10 +1,12 @@
 package com.xmos.xta.engine.resources;
 
 import com.xmos.xta.engine.Expression;
+import com.xmos.xta.engine.MachineState;
 
 public class Channel implements Resource {
 
     private boolean m_inUse; 
+    private int m_channelNumber;
     
     private boolean m_eventEnabledKnown;
     private boolean m_eventEnabled;
@@ -14,8 +16,9 @@ public class Channel implements Resource {
     private Expression m_controlBits;
     private Expression m_eventData;
     
-    public Channel() {
+    public Channel(int channelNumber) {
         m_inUse = false;
+        m_channelNumber = channelNumber;
     }
     
     public Channel(Channel channel) {
@@ -26,7 +29,14 @@ public class Channel implements Resource {
         m_environmentVector = channel.m_environmentVector;
         m_controlBits = channel.m_controlBits;
         m_eventData = channel.m_eventData; 
+        m_channelNumber = channel.m_channelNumber;
     }
+    
+    
+    public void GETR(int dest, int scr) {
+    	m_inUse = true;
+    }
+    
     
     public void FREER() {
         m_inUse = false;
@@ -41,7 +51,7 @@ public class Channel implements Resource {
     }
     
     public void SETD(Expression expression) {
-        m_eventData = expression;
+    	m_eventData = expression;
     }
 
     public void SETC(Expression expression) {
@@ -138,91 +148,134 @@ public class Channel implements Resource {
     
 
     public void CLRPT() {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
     
     public void ENDIN(Expression expression) {
-        System.err.println("ILLEGAL_RESOURCE exception"); 
+        System.out.println("---------ILLEGAL_RESOURCE exception-------"); 
     }
 
-    public void GETR(int dest, int scr) {
-        System.err.println("ILLEGAL_RESOURCE exception");
-    }
+    
 
     public void GETST(Expression dest) {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
 
     public void GETTS(Expression expression) {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
 
     public void INSHR(Expression expression) {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
     
     public void MJOIN(int resId, int resType) {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
 
     public void MSYNC(int resId, int resType) {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
 
     public void OUTSHR(Expression expression) {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
 
     public void PEEK(Expression expression) {
-        System.err.println("ILLEGAL_RESOURCE exception");  
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");  
     }
 
     public void SETCLK(Expression expression) {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
 
     public void SETPSC(Expression expression) {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
 
     public void SETPT(Expression expression) {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
 
     public void SETRDY(Expression expression) {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
 
     public void SETTW(Expression expression) {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
     
     public void TINITCP(Expression expression) {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
 
     public void TINITDP(Expression expression) {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
 
     public void TINITLR(Expression expression) {
-        System.err.println("ILLEGAL_RESOURCE exception");   
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");   
     }
 
     public void TINITPC(Expression expression) {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
 
     public void TINITSP(Expression expression) {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
 
     public void TSETR(Expression m_op2, Expression m_op3) {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
 
     public void TSTART() {
-        System.err.println("ILLEGAL_RESOURCE exception");
+        System.out.println("---------ILLEGAL_RESOURCE exception-------");
     }
+
+	public boolean isInUse() {
+		return m_inUse;
+	}
+
+	public void setInUse(boolean inUse) {
+		m_inUse = inUse;
+	}
+
+	public int getProcessor() {
+		return 0;
+	}
+
+	public int getNode() {
+		return 0;
+	}
+
+	public int getNumber() {
+		return m_channelNumber;
+	}
+
+	public int getPortWidth() {
+		return 0;
+	}
+
+	public int getRegId() {
+		return 0;
+	}
+
+	public void GETST(MachineState state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void MJOIN(MachineState state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void MSYNC(MachineState state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 
 }

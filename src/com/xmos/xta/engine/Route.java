@@ -4,355 +4,330 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.Vector;
-
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
-import com.xmos.xta.engine.Block.Mode;
+import com.xmos.xta.engine.Status.ExecutionStatus;
 
 public class Route {
 
-    enum Status {
-        COMPLETED, ABORTED, ERROR, MAX_NUM_PATHS,
-    }
+	enum RouteStatus {
+		COMPLETED, ABORTED, ERROR, MAX_NUM_PATHS, ANALYSING
+	}
 
-    private String m_id;
-    private Config m_config;
-    private int m_nodeId;
-    private int m_coreId;
-    private Reference m_fromRef;
-    private Reference m_toRef;
-    private String m_functionName;
+	private String m_id;
+	private Config m_config;
+	private int m_nodeId;
+	private int m_coreId;
+	private Reference m_fromRef;
+	private Reference m_toRef;
+	private String m_functionName;
+	private HashMap<Integer, Vector<Block>> m_loopPaths;
 
-    private HashMap<Integer, Vector<Block>> m_loopPaths; // Hash of start PC to
-                                                         // block at that PC
-    private Vector<Block> m_blocks; // Hash of start PC to block at that PC
-    private Vector<Block> m_completePaths; // Contains all the complete paths
-    private Vector<Block> m_unresolvedPaths; // Contains all the unresolved paths
-    private Engine m_engine;
-    Status m_status;
-    private Progress m_progress;
-    private InstructionDecodeCache m_instructionDecodeCache;
-    private ArrayList<Unknown> m_unknowns;
+	private ArrayList<ExecutionState> m_executionStates;
+	private LinkedList<ExecutionState> m_schedule;
 
-    private static int m_numRoutes;
+	private ArrayList<Block> m_unresolvedPaths;
+	private ArrayList<Block> m_completePaths;
 
-    private boolean m_resolveExpressions;
+	private Engine m_engine;
+	private RouteStatus m_status;
+	private Progress m_progress;
+	private InstructionDecodeCache m_instructionDecodeCache;
+	private ArrayList<Unknown> m_unknowns;
+	private ArrayList<String> m_warnings;
+	private static int m_numRoutes;
+	private InstructionAttributes m_instructionAttributes;
+	private boolean m_resolveExpressions;
 
-    Route(Config config, Reference fromRef, Reference toRef, int nodeId,
-            int coreId, InstructionDecodeCache instructionDecodeCache,
-            boolean resolveExpressions) {
-        m_fromRef = fromRef;
-        m_toRef = toRef;
-        m_resolveExpressions = resolveExpressions;
-        m_instructionDecodeCache = instructionDecodeCache;
-        initialise(config, nodeId, coreId);
+	Route(Config config, Reference fromRef, Reference toRef, int nodeId, int coreId, InstructionDecodeCache instructionDecodeCache, boolean resolveExpressions) {
+		m_fromRef = fromRef;
+		m_toRef = toRef;
+		m_resolveExpressions = resolveExpressions;
+		m_instructionDecodeCache = instructionDecodeCache;
+		initialise(config, nodeId, coreId);
 
-    }
+	}
 
-    Route(Config config, String functionName, int nodeId, int coreId,
-            InstructionDecodeCache instructionDecodeCache,
-            boolean resolveExpressions) {
-        m_functionName = functionName;
-        m_instructionDecodeCache = instructionDecodeCache;
-        m_resolveExpressions = resolveExpressions;
-        initialise(config, nodeId, coreId);
-    }
+	Route(Config config, String functionName, int nodeId, int coreId, InstructionDecodeCache instructionDecodeCache, boolean resolveExpressions) {
+		m_functionName = functionName;
+		m_instructionDecodeCache = instructionDecodeCache;
+		m_resolveExpressions = resolveExpressions;
+		initialise(config, nodeId, coreId);
+	}
 
-    public void setCurrentValue(int numPaths) {
-        m_progress.setCurValue(numPaths);
-    }
+	public void setCurrentValue(int numPaths) {
+		m_progress.setCurValue(numPaths);
+	}
 
-    public ArrayList<Unknown> getUnknowns() {
-        return m_unknowns;
-    }
+	public ArrayList<Unknown> getUnknowns() {
+		return m_unknowns;
+	}
 
-    public final String id() {
-        return m_id;
-    }
+	public final String id() {
+		return m_id;
+	}
 
-    public final String functionName() {
-        return m_functionName;
-    }
+	public final String functionName() {
+		return m_functionName;
+	}
 
-    public final int getNodeId() {
-        return m_nodeId;
-    }
+	public final int getNodeId() {
+		return m_nodeId;
+	}
 
-    public final int getCoreId() {
-        return m_coreId;
-    }
+	public final int getCoreId() {
+		return m_coreId;
+	}
 
-    public final Reference fromRef() {
-        return m_fromRef;
-    }
+	public final Reference fromRef() {
+		return m_fromRef;
+	}
 
-    public final Reference toRef() {
-        return m_toRef;
-    }
+	public final Reference toRef() {
+		return m_toRef;
+	}
 
-    public final Vector<Block> completePaths() {
-        return m_completePaths;
-    }
+	public final ArrayList<Block> completePaths() {
+		return m_completePaths;
+	}
 
-    public final Vector<Block> unresolvedPaths() {
-        return m_unresolvedPaths;
-    }
+	public final ArrayList<Block> unresolvedPaths() {
+		return m_unresolvedPaths;
+	}
 
-    Status analyse(MemoryImage memoryImage, SymbolTable symbolTable,
-            DebugInfo debugInfo, Engine engine) {
-        m_progress.resetState(Progress.State.PROCESSING_PATHS,
-                m_config.m_maxNumPaths);
+	RouteStatus analyse(MemoryImage memoryImage, SymbolTable symbolTable, DebugInfo debugInfo, Engine engine) {
+		m_progress.resetState(Progress.State.PROCESSING_PATHS, m_config.m_maxNumPaths);
 
-        assert (memoryImage != null);
-        assert (symbolTable != null);
-        assert (debugInfo != null);
-        m_engine = engine;
-        m_status = Status.COMPLETED;
+		assert (memoryImage != null);
+		assert (symbolTable != null);
+		assert (debugInfo != null);
+		m_engine = engine;
+		m_status = RouteStatus.ANALYSING;
 
-        InstructionAttributes instructionAttributes = new InstructionAttributes();
+		m_instructionAttributes = new InstructionAttributes();
 
-        Block.resetNumPaths();
-        m_engine.setAbort(false);
+		Block.resetNumPaths();
+		m_engine.setAbort(false);
 
-        Block rootPath;
-        Stack<TreeSet<Integer>> context = new Stack<TreeSet<Integer>>();
-        context.push(new TreeSet<Integer>());
-        
-        
-        MachineState initialState = new MachineState(memoryImage
-                .getMemoryBase(), memoryImage.getMemorySize());
-        
-        if (m_functionName != null) {
-            assert (symbolTable.symbolExists(m_functionName));
-            int fromPc = symbolTable.symbolAddress(m_functionName);
+		Stack<TreeSet<Integer>> context = new Stack<TreeSet<Integer>>();
+		context.push(new TreeSet<Integer>());
 
-            rootPath = new Block(Mode.FUNCTION, m_config,
-                    m_instructionDecodeCache, instructionAttributes,
-                    memoryImage, symbolTable, m_engine.getExclusions(), fromPc,
-                    0, this, null, initialState, context, false,
-                    m_resolveExpressions);
-        } else {
-            rootPath = new Block(Mode.ABSOLUTE, m_config,
-                    m_instructionDecodeCache, instructionAttributes,
-                    memoryImage, symbolTable, m_engine.getExclusions(),
-                    m_fromRef.getPc(), m_toRef.getPc(), this, null,
-                    initialState, context, false, m_resolveExpressions);
-        }
+		MachineState initialState = new MachineState(memoryImage.getMemoryBase(), memoryImage.getMemorySize());
+		BlockCommonComponents bc = null;
 
-        stepPath(rootPath);
+		if (m_functionName != null) {
+			bc = new BlockCommonComponents(m_config, m_instructionDecodeCache, m_instructionAttributes, memoryImage, symbolTable, m_engine.getExclusions(),
+					this, m_resolveExpressions, Block.Mode.FUNCTION);
+			assert (symbolTable.symbolExists(m_functionName));
+			int fromPc = symbolTable.symbolAddress(m_functionName);
+			new ExecutionState(this, initialState, bc, fromPc);
+		} else {
+			bc = new BlockCommonComponents(m_config, m_instructionDecodeCache, m_instructionAttributes, memoryImage, symbolTable, m_engine.getExclusions(),
+					this, m_resolveExpressions, Block.Mode.ABSOLUTE);
+			new ExecutionState(this, initialState, bc, m_fromRef.getPc(), m_toRef.getPc());
+		}
+		stepPath();
+		sortPaths();
+		m_progress.resetState(Progress.State.IDLE, 0);
+		return m_status;
+	}
 
-        if (m_status == Status.COMPLETED) {
-            sortPaths();
-        } else if (rootPath.getStatus() == Block.Status.ERROR) {
-            m_status = Status.ERROR;
-        }
+	public int getId() {
+		return 0;
+	}
 
-        m_progress.resetState(Progress.State.IDLE, 0);
-        return m_status;
-    }
+	public int getInstanceId() {
+		return 0;
+	}
 
-    public int getId() {
-        return 0;
-    }
+	public int getNumCycles() {
+		int maxCycles = 0;
+		for (Block path : m_completePaths) {
+			maxCycles = Math.max(path.getNumCycles(true), maxCycles);
+		}
+		return maxCycles;
+	}
 
-    public int getInstanceId() {
-        return 0;
-    }
+	public double getTimeTaken() {
+		return 0;
+	}
 
-    public int getNumCycles() {
-        int maxCycles = 0;
-        for (Block path : m_completePaths) {
-            maxCycles = Math.max(path.getNumCycles(true), maxCycles);
-        }
-        return maxCycles;
-    }
+	void notifyUpdate() {
+		Collections.sort(m_completePaths);
+		m_engine.notifyUpdateState();
+	}
 
-    public double getTimeTaken() {
-        return 0;
-    }
+	Progress getProgress() {
+		return m_progress;
+	}
 
-    void notifyUpdate() {
-        Collections.sort(m_completePaths);
-        m_engine.notifyUpdateState();
-    }
+	Config getConfig() {
+		return m_config;
+	}
 
-    Progress getProgress() {
-        return m_progress;
-    }
+	boolean setInstructionTimeTaken(int pc, double timeTaken) {
+		return m_instructionDecodeCache.setInstructionTimeTaken(m_engine, pc, timeTaken);
+	}
 
-    Config getConfig() {
-        return m_config;
-    }
+	double getInstructionTimeTaken(int pc) {
+		return m_instructionDecodeCache.getInstructionTimeTaken(pc);
+	}
 
-    boolean setInstructionTimeTaken(int pc, double timeTaken) {
-        return m_instructionDecodeCache.setInstructionTimeTaken(m_engine, pc,
-                timeTaken);
-    }
+	boolean setInstructionNumCycles(int pc, int numCycles) {
+		for (Unknown unknown : m_unknowns) {
+			if (unknown.getPc() == pc) {
+				m_unknowns.remove(unknown);
+				m_engine.notifyUpdateState();
+				break;
+			}
+		}
+		return m_instructionDecodeCache.setInstructionNumCycles(m_engine, pc, numCycles);
+	}
 
-    double getInstructionTimeTaken(int pc) {
-        return m_instructionDecodeCache.getInstructionTimeTaken(pc);
-    }
+	int getInstructionNumCycles(int pc) {
+		return m_instructionDecodeCache.getInstructionNumCycles(pc);
+	}
 
-    boolean setInstructionNumCycles(int pc, int numCycles) {
-        for (Unknown unknown : m_unknowns) {
-            if (unknown.getPc() == pc) {
-                m_unknowns.remove(unknown);
-                m_engine.notifyUpdateState();
-                break;
-            }
-        }
-        return m_instructionDecodeCache.setInstructionNumCycles(m_engine, pc,
-                numCycles);
-    }
+	private void initialise(Config config, int nodeId, int coreId) {
+		m_unknowns = new ArrayList<Unknown>();
+		m_warnings = new ArrayList<String>();
+		m_id = new String("route" + m_numRoutes);
+		m_config = config;
+		m_nodeId = nodeId;
+		m_coreId = coreId;
+		m_completePaths = new ArrayList<Block>();
+		m_unresolvedPaths = new ArrayList<Block>();
+		m_loopPaths = new HashMap<Integer, Vector<Block>>();
+		m_executionStates = new ArrayList<ExecutionState>();
+		m_schedule = new LinkedList<ExecutionState>();
+		m_status = RouteStatus.COMPLETED;
+		m_progress = new Progress(Progress.State.IDLE, 0, 0);
+		++m_numRoutes;
+	}
 
-    int getInstructionNumCycles(int pc) {
-        return m_instructionDecodeCache.getInstructionNumCycles(pc);
-    }
+	public void addUnresolvedPath(Block unresolved) {
+		m_unresolvedPaths.add(unresolved);
+	}
 
-    private void initialise(Config config, int nodeId, int coreId) {
-        m_unknowns = new ArrayList<Unknown>();
-        m_id = new String("route" + m_numRoutes);
-        m_config = config;
-        m_nodeId = nodeId;
-        m_coreId = coreId;
-        m_completePaths = new Vector<Block>();
-        m_unresolvedPaths = new Vector<Block>();
-        m_loopPaths = new HashMap<Integer, Vector<Block>>();
-        m_blocks = new Vector<Block>();
-        m_status = Status.COMPLETED;
-        m_progress = new Progress(Progress.State.IDLE, 0, 0);
-        ++m_numRoutes;
-    }
+	private void stepPath() {
+		ExecutionState searching = nextBlock();
+		while (searching != null) {
+			searching.build();
+			searching = nextBlock();
+			cleanSchedule();
+		}
+	}
 
-    private void stepPath(Block path) {
-        while (path.getStatus() == Block.Status.SEARCHING) {
-            if (checkAbort()) {
-                break;
-            }
-            path.step();
-            if (Block.getNumPaths() >= m_config.m_maxNumPaths) {
-                m_status = Status.MAX_NUM_PATHS;
-                break;
-            }
-            if (path.getStatus() == Block.Status.ERROR) {
-                m_status = Status.ERROR;
-                break;
-            }
-            m_progress.setCurValue(Block.getNumPaths());
-        }
-    }
+	private void cleanSchedule() {
+		ArrayList<ExecutionState> toRemove = new ArrayList<ExecutionState>();
+		for (ExecutionState executionState : m_schedule) {
+			if (executionState.getStatus() == ExecutionStatus.UNRESOLVED || executionState.getStatus() == ExecutionStatus.COMPLETE) {
+				toRemove.add(executionState);
+			}
+		}
+		m_schedule.removeAll(toRemove);
+	}
 
-    private void sortPaths() {
-        Collections.sort(m_completePaths);
-        Collections.sort(m_unresolvedPaths);
-    }
+	private ExecutionState nextBlock() {
+		for (ExecutionState executionState : m_schedule) {
+			if (executionState.getStatus() == ExecutionStatus.SEARCHING) {
+				return executionState;
+			}
+		}
+		return null;
+	}
 
-    /*
-     * private boolean buildCoveredLinesHashes(DebugInfo debugInfo, SymbolTable
-     * symbolTable) { for (Block path : m_completePaths) { if (checkAbort())
-     * return false;
-     * 
-     * path.buildCoveredLinesHashes(debugInfo, symbolTable); m_progress.incr();
-     * } return true; }
-     */
-    public void addUnknown(Unknown unknown) {
-        m_unknowns.add(unknown);
-    }
+	private void sortPaths() {
+		Collections.sort(m_completePaths);
+	}
 
-    public boolean checkAbort() {
-        if (m_engine.getAbort()) {
-            m_status = Status.ABORTED;
-            return true;
-        }
-        return false;
-    }
+	public void addUnknown(Unknown unknown) {
+		m_unknowns.add(unknown);
+	}
 
-    public void addCompletePath(Block endBlock) {
-        assert (endBlock != null);
-        /*
-         * can only add the null parent in the case when there is only one
-         * straight line from beginning to end of the route
-         */
-        assert (m_completePaths != null);
-        if (m_completePaths.size() > 0)
-            assert (endBlock.getParentBlock() != null);
-        assert (endBlock.getInstructionsThis() != null);
-        assert (endBlock.getInstructionsThis().size() > 0);
-        m_completePaths.add(endBlock);
-    }
+	public void addWarning(String warning) {
+		m_warnings.add(warning);
+	}
 
-    public void addLoopPath(Block startBlock) {
-        assert (startBlock != null);
-        int fromPc = startBlock.getInstructions(false).firstElement().getPc();
+	public boolean checkAbort() {
+		if (m_engine.getAbort()) {
+			m_status = RouteStatus.ABORTED;
+			return true;
+		}
+		return false;
+	}
 
-        Vector<Block> paths = m_loopPaths.get(fromPc);
-        if (paths == null) {
-            paths = new Vector<Block>();
-            m_loopPaths.put(fromPc, paths);
-        } else {
-            Iterator<Block> iter = paths.iterator();
-            while (iter.hasNext()) {
-                Block block = iter.next();
-                if (block.equivalent(startBlock)) {
-                    startBlock.setId(block.getId());
-                    break;
-                }
-            }
-        }
-        paths.add(startBlock);
-    }
+	public void addCompletePath(Block endBlock) {
+		m_completePaths.add(endBlock);
+	}
 
-    public void addBlock(Block block) {
-        m_blocks.add(block);
-    }
+	public void addLoopPath(Block startBlock) {
+		assert (startBlock != null);
+		int fromPc = startBlock.getInstructions(false).firstElement().getPc();
 
-    public void addUnresolvedPath(Block path) {
-        assert (path != null);
-        /*
-         * can only add the null parent in the case when there is only one
-         * straight line from beginning to end of the route
-         */
-        assert (m_unresolvedPaths != null);
-        if (m_unresolvedPaths.size() > 0)
-            assert (path.getParentBlock() != null);
-        assert (path.getInstructionsThis() != null);
-        assert (path.getInstructionsThis().size() > 0);
-        m_unresolvedPaths.add(path);
-    }
+		Vector<Block> paths = m_loopPaths.get(fromPc);
+		if (paths == null) {
+			paths = new Vector<Block>();
+			m_loopPaths.put(fromPc, paths);
+		} else {
+			Iterator<Block> iter = paths.iterator();
+			while (iter.hasNext()) {
+				Block block = iter.next();
+				if (block.equivalent(startBlock)) {
+					startBlock.setId(block.getId());
+					break;
+				}
+			}
+		}
+		paths.add(startBlock);
+	}
 
-    public boolean setLoopIterations(int pathId, boolean allInstances,
-            boolean absolute, int iterations) {
-        boolean hit = false;
+	public void addExecutionState(ExecutionState ex) {
+		m_executionStates.add(ex);
+		m_schedule.addFirst(ex);
+	}
 
-        Iterator<Block> iter = m_blocks.iterator();
-        while (iter.hasNext()) {
-            Block block = iter.next();
-            for (Block loopPath : block.getLoopPaths()) {
-                int blockId = allInstances ? loopPath.getId() : loopPath
-                        .getInstanceId();
-                if (blockId == pathId) {
-                    PathAttributes attributes = block
-                            .getLoopPathAttributes(loopPath);
-                    attributes.setNumIterations(iterations, absolute);
-                    hit = true;
-                    if (!allInstances) {
-                        block.doneWithLoopPaths();
-                        return hit;
-                    }
-                }
-            }
-            block.doneWithLoopPaths();
-        }
+	public void removeExecutionState(ExecutionState ex) {
+		assert (m_schedule.contains(ex));
+		m_schedule.remove(ex);
+	}
 
-        return hit;
-    }
+	public boolean setLoopIterations(int pathId, boolean allInstances, boolean absolute, int iterations) {
+		boolean hit = false;
 
-    public Vector<Block> getBlocks() {
-        return m_blocks;
-    }
+		Iterator<ExecutionState> iter = m_executionStates.iterator();
+		while (iter.hasNext()) {
+			ExecutionState executionState = iter.next();
+			for (Block block : executionState.getThreadBlocks()) {
+				if (block != null) {
+					for (Block loopPath : block.getLoopPaths()) {
+						int blockId = allInstances ? loopPath.getId() : loopPath.getInstanceId();
+						if (blockId == pathId) {
+							PathAttributes attributes = block.getLoopPathAttributes(loopPath);
+							attributes.setNumIterations(iterations, absolute);
+							hit = true;
+							if (!allInstances) {
+								block.doneWithLoopPaths();
+								return hit;
+							}
+						}
+					}
+					block.doneWithLoopPaths();
+				}
+			}
+			
+		}
+
+		return hit;
+	}
+
+	public ArrayList<ExecutionState> getExecutionStates() {
+		return m_executionStates;
+	}
 
 }

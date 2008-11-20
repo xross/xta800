@@ -1,15 +1,18 @@
 package com.xmos.xta.engine.resources;
 
 import com.xmos.xta.engine.Expression;
+import com.xmos.xta.engine.MachineState;
 
 public interface Resource {
+	
+	public boolean isInUse();
+	public void setInUse(boolean inUse);
+	
     public void GETR(int dest, int scr);
     
-    public void FREER();
-    public void GETST(Expression dest);
     
-    public void MSYNC(int resId, int resType);
-    public void MJOIN(int resId, int resType);
+    
+    
     
     public void TINITCP(Expression expression);
     public void TINITDP(Expression expression);
@@ -58,7 +61,13 @@ public interface Resource {
     public void TESTLCL(Expression expression);
 
     public void TSETR(Expression m_op2, Expression m_op3);
-
-    
+	public int getRegId();
+	public int getNumber();
+	public int getPortWidth();
+	
+	public void MJOIN(MachineState state);
+	public void MSYNC(MachineState state);
+	public void FREER();
+    public void GETST(MachineState state);
     
 }

@@ -409,7 +409,9 @@ public class Engine {
                 if(instructionEntryPc.get(currentTarget)!=null){
                     for(int targetPc : instructionEntryPc.get(currentTarget)){
                         int opcodeRetsp = getOpcode(targetPc, nodeId,coreId);
-                        m_instructionDecodeCache.decode(opcodeRetsp, targetPc).addReturnLocation(pc);
+                        int pcOpcode = getOpcode(pc, nodeId,coreId);
+                        XtaInstruction inst = m_instructionDecodeCache.decode(pcOpcode, pc);
+                        m_instructionDecodeCache.decode(opcodeRetsp, targetPc).addReturnLocation(inst);
                     }
                 } else {
                     //this is the case where dosyscall has been hit
@@ -458,7 +460,7 @@ public class Engine {
             assert(symbolTable != null);
             assert(debugInfo != null);
 
-            Route.Status status = m_route.analyse(memoryImage, symbolTable, debugInfo, this);                 
+            Route.RouteStatus status = m_route.analyse(memoryImage, symbolTable, debugInfo, this);                 
             switch (status) {
             case ABORTED:
                 setErrorString("Abort detected");
@@ -486,12 +488,6 @@ public class Engine {
         else {
             setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
                     m_route.getNodeId(), m_route.getCoreId(), m_executableFile));
-            return false;
-        }
-
-        if (m_route.unresolvedPaths().size() > 0) {
-            setErrorString(String.format("Found %d unresolved paths", 
-                    m_route.unresolvedPaths().size()));
             return false;
         }
 

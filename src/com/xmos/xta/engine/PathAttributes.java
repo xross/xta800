@@ -16,4 +16,5 @@ public class PathAttributes extends Attributes {
     public boolean isAbsolute() {
         return m_isAbsolute;
     }
+    
 }

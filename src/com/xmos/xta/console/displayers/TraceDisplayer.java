@@ -1,5 +1,6 @@
 package com.xmos.xta.console.displayers;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import com.xmos.xeloader.DebugInfo;
@@ -57,8 +58,8 @@ public class TraceDisplayer implements Displayer {
     		break;
     		
     	case UNRESOLVED:
-            tracePaths(route.unresolvedPaths(), symbolTable, "Unresolved paths", 
-            		route.fromRef(), route.toRef());
+            //tracePaths(route.unresolvedPaths(), symbolTable, "Unresolved paths", 
+            //		route.fromRef(), route.toRef());
 		    break;
 		    		    
     	case PATHID:
@@ -80,17 +81,17 @@ public class TraceDisplayer implements Displayer {
     public void notifyUpdateState() {    	
     }
 	
-    private void tracePaths(Vector<Block> paths, SymbolTable symbolTable, 
+    private void tracePaths(ArrayList<Block> arrayList, SymbolTable symbolTable, 
     		String title, Reference fromRef, Reference toRef) {
     	
-        if (paths.size() > 0) {
+        if (arrayList.size() > 0) {
             displayTitle(title);
         	
             int instrIndex = 0;
-            int maxInstructions = getMaxPathLength(paths);
+            int maxInstructions = getMaxPathLength(arrayList);
             
             while (instrIndex < maxInstructions) {            
-                for (Block path : paths) { 
+                for (Block path : arrayList) { 
                     if (instrIndex < path.getLength()) {
                     	displayInstruction(path, symbolTable, instrIndex);
                     }
@@ -134,9 +135,9 @@ public class TraceDisplayer implements Displayer {
         return null;    	
     }
 
-    private int getMaxPathLength(Vector<Block> paths) {
+    private int getMaxPathLength(ArrayList<Block> arrayList) {
         int maxPathLength = 0;
-        for (Block path : paths) {
+        for (Block path : arrayList) {
         	int pathLength = path.getLength();
         	if (pathLength > maxPathLength) {
         		maxPathLength = pathLength;
@@ -146,7 +147,7 @@ public class TraceDisplayer implements Displayer {
     }
     
     private void traceSinglePath(Route route, SymbolTable symbolTable) {
-        Block path = DisplayerHelper.getPath(route, m_pathId);
+    	Block path = DisplayerHelper.getPath(route, m_pathId);
     	if (path == null) {
 		    m_console.display(String.format("Error: invalid path id: %d\n", m_pathId));        		
 		    return;

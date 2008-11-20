@@ -3,6 +3,7 @@
 	<name>tools_xta</name>
 	<comment></comment>
 	<projects>
+		<project>infr_libs_java</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

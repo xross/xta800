@@ -1,6 +1,7 @@
 package com.xmos.xta.console.displayers;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,6 +26,7 @@ import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Attributes;
 import com.xmos.xta.engine.PathAttributes;
 import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.Status;
 import com.xmos.xta.engine.XtaInstruction;
 
 public class SummaryDisplayer implements Displayer {
@@ -158,8 +160,8 @@ public class SummaryDisplayer implements Displayer {
         m_console.display(String.format("Unresolved paths: %d\n", route.unresolvedPaths().size()));
     }
     
-    private void summarisePaths(Vector<Block> paths, String indent, Block parent) {
-        for (Block path : paths) {
+    private void summarisePaths(ArrayList<Block> loopPaths, String indent, Block parent) {
+        for (Block path : loopPaths) {
             int iterations = 1;
             boolean isAbsolute = false;
 
@@ -194,7 +196,7 @@ public class SummaryDisplayer implements Displayer {
     private void displayPathLevelInfo(Block path, String indent, int numExecutions, boolean absolute) {
         String pathInstanceId = String.format("pathi(%d)", path.getInstanceId());
 
-        if ((path.getStatus() != Block.Status.COMPLETE) && (path.getStatus() != Block.Status.LOOPED)) {
+        if ((path.getStatus() != Status.BlockStatus.COMPLETE) ) {
             String comment = "";
             switch (path.getStatus()) {
             case RECURSION:
@@ -220,7 +222,7 @@ public class SummaryDisplayer implements Displayer {
     }
     
     private void displayLoopLevelInfo(Block path, String indent, int numIterations) {
-        Vector<Block> loopPaths = path.getLoopPaths();
+        ArrayList<Block> loopPaths = path.getLoopPaths();
         if (loopPaths.size() > 0) {
             int totalIterations = 0;
             for (Block loopPath : loopPaths) {
