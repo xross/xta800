@@ -12,7 +12,8 @@ import org.eclipse.ui.part.ViewPart;
 import com.xmos.xtagui.XtaDisplayer;
 import com.xmos.xtagui.nodes.Node;
 
-public class LoopView extends ViewPart implements IPropertyChangeListener {
+public class LoopView extends ViewPart implements IPropertyChangeListener,
+                                                  ISelectionListener {
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xtagui.views.Loop";
 
@@ -50,4 +51,13 @@ public class LoopView extends ViewPart implements IPropertyChangeListener {
 		if (DEBUG) System.out.printf("Loop: dispose\n");			
 		getSite().getPage().removeSelectionListener(m_selectionListener);
 	}
+	
+    public void selectionChanged(IWorkbenchPart part, ISelection sel) {
+        if (sel instanceof IStructuredSelection) {	            
+            Object object = ((IStructuredSelection)sel).getFirstElement();
+            if (object instanceof Node) {
+                // Do selection updates here..
+            }
+        }
+     }	            		         	        	
 }

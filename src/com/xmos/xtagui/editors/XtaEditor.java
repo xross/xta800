@@ -26,7 +26,7 @@ import org.eclipse.ui.editors.text.TextEditor;
 
 import com.xmos.xtagui.nodes.Node;
 
-public class XtaEditor extends TextEditor {
+public class XtaEditor extends TextEditor implements ISelectionListener {
     public static final boolean DEBUG = true;
     public static final String ID = "com.xmos.xtagui.editors.Test";
     
@@ -34,22 +34,11 @@ public class XtaEditor extends TextEditor {
     private ProjectionAnnotationModel m_annotationModel;
     private IAnnotationModel m_highlightAnnotationModel;
     private Annotation[] m_oldAnnotations;
-    private ISelectionListener m_selectionListener;
     private AnnotationPainter m_painter;
     
     public XtaEditor() {
     	setSourceViewerConfiguration(new XtaConfiguration(this));
     	setDocumentProvider(new XtaDocumentProvider());        	
-    	
-		m_selectionListener = new ISelectionListener() {
-	         public void selectionChanged(IWorkbenchPart part, ISelection sel) {
-	            if (sel instanceof IStructuredSelection) {	            
-	                Object object = ((IStructuredSelection)sel).getFirstElement();
-	                if (object instanceof Node) {
-	            	    updateHighlighting((Node)object);
-	                }
-	            }
-	         }};	            		         	        
     }
 
     public void createPartControl(Composite parent) {
@@ -66,7 +55,7 @@ public class XtaEditor extends TextEditor {
         viewer.showAnnotations(true);
         viewer.showAnnotationsOverview(true);
         
-        getSite().getPage().addSelectionListener(m_selectionListener);
+        getSite().getPage().addSelectionListener(this);
         
         m_painter = new AnnotationPainter(viewer, getAnnotationAccess());        
         m_painter.addAnnotationType("com.xmos.xtagui.path");            
@@ -88,6 +77,15 @@ public class XtaEditor extends TextEditor {
        m_oldAnnotations = annotations;       
     }    
 
+    public void selectionChanged(IWorkbenchPart part, ISelection sel) {
+        if (sel instanceof IStructuredSelection) {	            
+            Object object = ((IStructuredSelection)sel).getFirstElement();
+            if (object instanceof Node) {
+        	    updateHighlighting((Node)object);
+            }
+        }
+     }	            		         	        
+    
     protected ISourceViewer createSourceViewer(Composite parent,
             IVerticalRuler ruler, int styles) {
         ISourceViewer viewer = new ProjectionViewer(parent, ruler,

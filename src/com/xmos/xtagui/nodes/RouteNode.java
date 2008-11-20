@@ -5,6 +5,7 @@ import java.util.HashSet;
 import org.eclipse.jface.action.IMenuManager;
 
 import com.xmos.xta.engine.Route;
+import com.xmos.xtagui.views.TreeView;
 
 public class RouteNode extends Node {
     private Route m_route;
@@ -56,7 +57,7 @@ public class RouteNode extends Node {
         return null;	
     }    
     
-    public void createContextMenu(IMenuManager manager) {    	
+    public void createContextMenu(IMenuManager manager, final TreeView treeView) {    	
     	assert(false);
     }    
 }

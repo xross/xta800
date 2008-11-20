@@ -5,6 +5,8 @@ import java.util.Vector;
 
 import org.eclipse.jface.action.IMenuManager;
 
+import com.xmos.xtagui.views.TreeView;
+
 public abstract class Node {
     private Node m_parent;
     private Vector<Node> m_nodes;	
@@ -25,7 +27,7 @@ public abstract class Node {
     public abstract String getTypeName();    
     
     public abstract HashSet<Integer> getPcsCovered();    
-    public abstract void createContextMenu(IMenuManager manager);
+    public abstract void createContextMenu(IMenuManager manager, final TreeView treeView);
     
     public void addNode(Node node) {
     	m_nodes.add(node);

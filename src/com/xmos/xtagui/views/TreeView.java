@@ -16,7 +16,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
@@ -38,7 +40,9 @@ import com.xmos.xtagui.nodes.Node;
 import com.xmos.xtagui.nodes.PathNode;
 import com.xmos.xtagui.nodes.RouteNode;
 
-public class TreeView extends ViewPart implements IPropertyChangeListener {
+public class TreeView extends ViewPart implements IPropertyChangeListener,
+                                                  ISelectionListener,
+                                                  IMenuListener {
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xtagui.views.Tree";
 
@@ -97,8 +101,27 @@ public class TreeView extends ViewPart implements IPropertyChangeListener {
 	        openEditors();
 		}				
 	}
+	
+    public void selectionChanged(IWorkbenchPart part, ISelection sel) {
+        if (sel instanceof IStructuredSelection) {	            
+            Object object = ((IStructuredSelection)sel).getFirstElement();
+            if (object instanceof Node) {
+                // Do selection updates here..
+            }
+        }
+     }	            		         	        
+	
+	public void menuAboutToShow(IMenuManager manager) {				
+		ISelection selection = m_treeViewer.getSelection();
+        if (selection instanceof IStructuredSelection) {	            
+            Object object = ((IStructuredSelection)selection).getFirstElement();
+            if (object instanceof Node) {
+				((Node)object).createContextMenu(manager, this);
+            }
+        }				
+	}
 
-	public void executeLoad() {				
+    public void executeLoad() {				
 		if (DEBUG) System.out.printf("Tree: executeLoad\n");	
 
 		FileDialog fileDialog = new FileDialog(getSite().getWorkbenchWindow().getShell(), SWT.OPEN);
@@ -174,6 +197,10 @@ public class TreeView extends ViewPart implements IPropertyChangeListener {
 		m_numThreads = numThreads;
 	}
 	
+	public TreeViewer getViewer() {
+		return m_treeViewer;
+	}
+		
     private void createXeObject() {
 		Engine engine = XtaEngine.getEngine();
 		XeObject xeObject = new XeObject(engine.getXeLoader(), new XtaFileFinder());
@@ -246,17 +273,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener {
 	    Menu m_contextMenu;
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(new IMenuListener() {
-			public void menuAboutToShow(IMenuManager manager) {				
-				ISelection selection = m_treeViewer.getSelection();
-	            if (selection instanceof IStructuredSelection) {	            
-	                Object object = ((IStructuredSelection)selection).getFirstElement();
-	                if (object instanceof Node) {
-	    				((Node)object).createContextMenu(manager);
-	                }
-	            }				
-			}
-		});
+		menuMgr.addMenuListener(this);
 		m_contextMenu = menuMgr.createContextMenu(m_treeViewer.getTree());
 		m_treeViewer.getTree().setMenu(m_contextMenu);		
 	}

@@ -4,8 +4,10 @@ import java.util.HashSet;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 
 import com.xmos.xta.engine.Block;
+import com.xmos.xtagui.views.TreeView;
 
 public class PathNode extends Node {
     private Block m_block;
@@ -47,15 +49,22 @@ public class PathNode extends Node {
     	return m_block.getPcsCovered(false);
     }
     
-    public void createContextMenu(IMenuManager manager) {    	
-		manager.add(new Action("path 1") {
+    public void createContextMenu(IMenuManager manager, final TreeView treeView) {    	
+		manager.add(new Action("expand all") {
 			public void run() {
-				System.out.printf("path 1 running\n");						
+				System.out.printf("path expand all\n");
+				treeView.getViewer().expandAll();
 			}
 		});
-		manager.add(new Action("path 2") {
+		manager.add(new Action("collapse all") {
 			public void run() {
-				System.out.printf("path 2 running\n");						
+				System.out.printf("path collapse\n");	
+				treeView.getViewer().collapseAll();
+			}
+		});
+		manager.add(new Separator());
+    	manager.add(new Action("trace to console") {
+			public void run() {
 			}
 		});
     }    

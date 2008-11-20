@@ -6,6 +6,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 
 import com.xmos.xta.engine.Block;
+import com.xmos.xtagui.views.TreeView;
 
 public class BlockNode extends Node {
 	Block m_block;
@@ -53,15 +54,15 @@ public class BlockNode extends Node {
     	return m_block.getPcsCoveredThis();
     }
     
-    public void createContextMenu(IMenuManager manager) {    	
-		manager.add(new Action("block 1") {
+    public void createContextMenu(IMenuManager manager, final TreeView treeView) {    	
+		manager.add(new Action("expand all") {
 			public void run() {
-				System.out.printf("block 1 running\n");						
+				treeView.getViewer().expandAll();
 			}
 		});
-		manager.add(new Action("block 2") {
+		manager.add(new Action("collapse all") {
 			public void run() {
-				System.out.printf("block 2 running\n");						
+				treeView.getViewer().collapseAll();
 			}
 		});
     }
