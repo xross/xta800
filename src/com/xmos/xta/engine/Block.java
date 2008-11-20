@@ -890,5 +890,24 @@ public class Block implements Comparable<Block> {
 	public Block getParentBlock() {
 		return m_parentBlock;
 	}
+	
+	public HashSet<Integer> getPcsCovered(boolean recurse) {
+    	HashSet<Integer> pcsCovered = new HashSet<Integer>();
+
+        for (Block block : getPathBlocks()) {
+        	pcsCovered.addAll(block.getPcsCoveredThis());
+            if (recurse) {
+                for (Block loopPath : block.getLoopPaths()) {
+                	pcsCovered.addAll(loopPath.getPcsCovered(true));
+                }
+                block.doneWithLoopPaths();
+            }
+        }
+        return pcsCovered;    	
+    }
+	
+	public HashSet<Integer> getPcsCoveredThis() {
+    	return m_pcs;
+    }
 
 }

@@ -15,7 +15,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             name="Xta Perspective"
-            class="com.xmos.xtagui.Perspective"
+            class="com.xmos.xtagui.XtaPerspective"
             id="com.xmos.xtagui.Perspective">
       </perspective>
    </extension>
@@ -27,53 +27,53 @@
             id="com.xmos.xtagui.editors.Sources"
             name="Sources">
       </editor>
+      <editor
+            class="com.xmos.xtagui.editors.XtaEditor"
+            default="false"
+            id="com.xmos.xtagui.editors.Test"
+            name="Test">
+      </editor>
    </extension>
    <extension
          point="org.eclipse.ui.views">
       <view
-            class="com.xmos.xtagui.views.Tree"
+            class="com.xmos.xtagui.views.TreeView"
             id="com.xmos.xtagui.views.Tree"
             name="Tree"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.Loop"
+            class="com.xmos.xtagui.views.LoopView"
             id="com.xmos.xtagui.views.Loop"
             name="Loop"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.Disassembly"
-            id="com.xmos.xtagui.views.Disassembly"
-            name="Disassembly"
-            restorable="true">
-      </view>
-      <view
-            class="com.xmos.xtagui.views.Console"
+            class="com.xmos.xtagui.views.ConsoleView"
             id="com.xmos.xtagui.views.Console"
             name="Console"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.Errors"
+            class="com.xmos.xtagui.views.ErrorsView"
             id="com.xmos.xtagui.views.Errors"
             name="Errors"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.Function"
+            class="com.xmos.xtagui.views.FunctionView"
             id="com.xmos.xtagui.views.Function"
             name="Function"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.Flow"
+            class="com.xmos.xtagui.views.FlowView"
             id="com.xmos.xtagui.views.Flow"
             name="Flow"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.Structure"
+            class="com.xmos.xtagui.views.StructureView"
             id="com.xmos.xtagui.views.Structure"
             name="Structure"
             restorable="true">
@@ -82,34 +82,87 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
-            defaultHandler="com.xmos.xtagui.handlers.ExitHandler"
-            id="com.xmos.xtagui.exit.command"
-            name="com.xmos.xtagui.exit.command">
+            defaultHandler="com.xmos.xtagui.handlers.LoadHandler"
+            id="com.xmos.xtagui.load.command"
+            name="com.xmos.xtagui.load.command">
       </command>
       <command
-            defaultHandler="com.xmos.xtagui.handlers.OpenHandler"
-            id="com.xmos.xtagui.open.command"
-            name="com.xmos.xtagui.open.command">
+            defaultHandler="com.xmos.xtagui.handlers.RunHandler"
+            id="com.xmos.xtagui.run.command"
+            name="com.xmos.xtagui.run.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xtagui.handlers.SettingsHandler"
+            id="com.xmos.xtagui.settings.command"
+            name="com.xmos.xtagui.settings.command">
       </command>
    </extension>
-   <extension
+  <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="menu:org.eclipse.ui.main.menu">
-         <menu
-               label="File">
-            <command
-                  commandId="com.xmos.xtagui.open.command"
-                  label="Open"
-                  style="push">
-            </command>
-            <command
-                  commandId="com.xmos.xtagui.exit.command"
-                  label="Exit"
-                  style="push">
-            </command>
-         </menu>
+            locationURI="toolbar:com.xmos.xtagui.views.Tree">
+         <command
+               commandId="com.xmos.xtagui.settings.command"
+               icon="icons/settings.png"
+               id="com.xmos.xtagui.settings.command"
+               label="Settings"
+               style="push">
+         </command>
+         <command
+               commandId="com.xmos.xtagui.load.command"
+               icon="icons/load.png"
+               id="com.xmos.xtagui.load.command"
+               label="Load"
+               style="push">
+         </command>
+         <command
+               commandId="com.xmos.xtagui.run.command"
+               icon="icons/run.png"
+               id="com.xmos.xtagui.run.command"
+               label="Run"
+               style="push">
+         </command>
       </menuContribution>
    </extension>
-
+ 
+   <extension
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+      <specification
+            annotationType="com.xmos.xtagui.path"
+            textPreferenceKey="errorIndication"
+            textPreferenceValue="true"
+            presentationLayer="6"
+            showInNextPrevDropdownToolbarAction="true"
+            label="%errors.label"
+            colorPreferenceKey="errorIndicationColor"
+            showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
+            symbolicIcon="error"
+            quickFixIcon=""
+            isGoToNextNavigationTargetKey="isErrorGoToNextNavigationTarget"
+            isGoToNextNavigationTarget="true"
+            isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
+            isGoToPreviousNavigationTarget="true"
+            highlightPreferenceKey="errorIndicationHighlighting"
+            highlightPreferenceValue="true"
+            textStylePreferenceKey="errorTextStyle"
+			textStylePreferenceValue="PROBLEM_UNDERLINE"             
+            verticalRulerPreferenceKey="errorIndicationInVerticalRuler"
+            verticalRulerPreferenceValue="false"
+            overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="true"
+            contributesToHeader="true"
+            colorPreferenceValue="255,255,50">
+      </specification>
+   </extension>
+ 
+   <extension
+         point="org.eclipse.ui.editors.annotationTypes">
+      <type
+         name="com.xmos.xtagui.path"
+         super="org.eclipse.ui.workbench.texteditor.error"
+         markerType=""
+         markerSeverity="2">
+      </type>
+   </extension>
+  
 </plugin>

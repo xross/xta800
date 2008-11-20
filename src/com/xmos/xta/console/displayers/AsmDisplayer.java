@@ -43,23 +43,8 @@ public class AsmDisplayer implements Displayer {
     	}
     	
         if (path.getInstructions(false).size() > 0) { 
-            HashMap<String, TreeSet<Integer>> asmLinesCovered = new HashMap<String, TreeSet<Integer>>();
-            
-            for(XtaInstruction inst : path.getInstructions(false)){
-                int pc = inst.getPc();
-                HashMap<Integer, Function> functionMap = m_xeObject.getPcToFunctionMap();
-                String instString = functionMap.get(pc).getText();
-                if(asmLinesCovered.containsKey(instString)){
-                    asmLinesCovered.get(instString).add(inst.getPc());
-                } else {
-                    TreeSet<Integer> treeList = new TreeSet<Integer>();
-                    treeList.add(inst.getPc());
-                    asmLinesCovered.put(instString, treeList);
-                }
-            }
-            
-            
-	    	//HashMap<String, TreeSet<Integer>> asmLinesCovered = path.getAsmLinesCovered();    	
+	    	HashMap<String, TreeSet<Integer>> asmLinesCovered = createAsmPcsCovered(path, m_xeObject, false);
+	    	
 	        for (Iterator<Map.Entry<String, TreeSet<Integer>>> iter = 
 	        	asmLinesCovered.entrySet().iterator(); iter.hasNext();) {
 	        	
@@ -117,6 +102,25 @@ public class AsmDisplayer implements Displayer {
 	
     public void notifyUpdateState() { 
     }
+    
+    private HashMap<String, TreeSet<Integer>> createAsmPcsCovered(
+			Block block, XeObject xeObject, boolean recurse) {
+			
+        HashMap<String, TreeSet<Integer>> asmLinesCovered = new HashMap<String, TreeSet<Integer>>();
+        for(XtaInstruction inst : block.getInstructions(recurse)){
+            int pc = inst.getPc();
+            HashMap<Integer, Function> functionMap = xeObject.getPcToFunctionMap();
+            String instString = functionMap.get(pc).getText();
+            if(asmLinesCovered.containsKey(instString)){
+                asmLinesCovered.get(instString).add(inst.getPc());
+            } else {
+                TreeSet<Integer> treeList = new TreeSet<Integer>();
+                treeList.add(inst.getPc());
+                asmLinesCovered.put(instString, treeList);
+            }
+        }
+        return asmLinesCovered;
+	}
     
     private String getBranchDest(HashMap<Integer, String> branchTargetMap, 
     		Instruction instruction) {
