@@ -43,7 +43,7 @@ public class Iterations {
 		exhustive.setSelection(treeView.getExhustive());		
 		exhustive.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				treeView.setExhustive(exhustive.getSelection());
+				treeView.setAllInstances(exhustive.getSelection());
 			}			
 		});
 	}	    
@@ -54,13 +54,13 @@ public class Iterations {
 		fnops.setSelection(treeView.getFnops());		
 		fnops.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				treeView.setFnops(fnops.getSelection());
+				treeView.setAbsoluteCount(fnops.getSelection());
 			}			
 		});
     }
 
     private void createNumIterationsControl(Composite parent, final TreeView treeView) {
-		createControlLabel(parent, "Frequency:");
+		createControlLabel(parent, "Num Iterations:");
 		final Spinner frequency = new Spinner(parent, SWT.BORDER);
 		frequency.setMinimum(0);
 		frequency.setMaximum(1000);
@@ -69,7 +69,7 @@ public class Iterations {
 	    frequency.setPageIncrement(10);
 	    frequency.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				treeView.setFrequency(frequency.getSelection());
+				treeView.setNumIterations(frequency.getSelection());
 			}			
 		});
     }

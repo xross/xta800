@@ -465,26 +465,11 @@ public class Block implements Comparable<Block> {
 	}
 
 	public ArrayList<Block> getLoopPaths() {
-		m_seen++;
-		if (m_seen == 1) {
+		if (m_seen == 0) {
 			return m_loopPaths;
 		} else {
 			return new ArrayList<Block>();
 		}
-	}
-
-	public void doneWithLoopPaths() {
-		m_seen--;
-		assert (m_seen >= 0);
-	}
-
-	public void incrementSeen() {
-		m_seen++;
-	}
-
-	public void decrementSeen() {
-		m_seen--;
-		assert (m_seen >= 0);
 	}
 
 	public int getId() {
@@ -494,8 +479,6 @@ public class Block implements Comparable<Block> {
 	public int getInstanceId() {
 		return m_instanceId;
 	}
-
-	// eek
 
 	public void setId(int id) {
 		m_id = id;
@@ -529,9 +512,9 @@ public class Block implements Comparable<Block> {
 				for (Block loopPath : block.getLoopPaths()) {
 					insts.addAll(loopPath.getInstructions(true));
 				}
-				block.doneWithLoopPaths();
 			}
 		}
+		doneWithPathBlocks();
 		return insts;
 	}
 
@@ -557,7 +540,7 @@ public class Block implements Comparable<Block> {
 		return attributes;
 	}
 
-	public ArrayList<Block> getPathPaths() {
+	public ArrayList<Block> getPathBlocks() {
 		ArrayList<Block> paths = new ArrayList<Block>();
 		Block block = this;
 
@@ -568,10 +551,44 @@ public class Block implements Comparable<Block> {
 			}
 			block = block.m_parentBlock;
 		} while (block != null);
+		
+		if (block != null)
+			block.m_seen++;
 
 		return paths;
 	}
 
+	public void doneWithPathBlocks() {
+		Block block = this;
+
+		do {
+			if (block.m_loopPaths.contains(this)) {
+				break;
+			}
+			block = block.m_parentBlock;
+		} while (block != null);
+		
+		if (block != null) {
+			assert(block.m_seen > 0);
+			block.m_seen--;
+		}
+	}
+
+	public int getNumPathBlocks() {
+		int numPathBlocks = 0;
+		Block block = this;
+
+		do {
+			++numPathBlocks;			
+			if (block.m_loopPaths.contains(this)) {
+				break;
+			}
+			block = block.m_parentBlock;
+		} while (block != null);
+		
+		return numPathBlocks;
+	}
+	
 	public int getNumFNopsThis() {
 		return m_numFNops;
 	}
@@ -586,21 +603,6 @@ public class Block implements Comparable<Block> {
 
 	int getNumInstructionsThis() {
 		return m_numInstructions;
-	}
-
-	public ArrayList<Block> getPathBlocks() {
-		ArrayList<Block> paths = new ArrayList<Block>();
-		Block block = this;
-
-		do {
-			paths.add(0, block);
-			if (block.m_loopPaths.contains(this)) {
-				break;
-			}
-			block = block.m_parentBlock;
-		} while (block != null);
-
-		return paths;
 	}
 
 	public int getNumIterations() {
@@ -652,15 +654,15 @@ public class Block implements Comparable<Block> {
 						}
 					}
 				}
-				block.doneWithLoopPaths();
 			}
 		}
+		doneWithPathBlocks();
 		return time;
 	}
 
 	double getTimeTakenAbsolute(boolean recurse) {
 		double time = 0.0;
-		for (Block block : getPathPaths()) {
+		for (Block block : getPathBlocks()) {
 			if (recurse) {
 				for (Block loopPath : block.getLoopPaths()) {
 					time += loopPath.getTimeTakenAbsolute(true);
@@ -672,17 +674,16 @@ public class Block implements Comparable<Block> {
 						}
 					}
 				}
-				block.doneWithLoopPaths();
 			}
 		}
-
+		doneWithPathBlocks();
 		return time;
 	}
 
 	int getNumInstructionsRelative(boolean recurse) {
 		int num = 0;
 
-		for (Block block : getPathPaths()) {
+		for (Block block : getPathBlocks()) {
 			num += block.getNumInstructionsThis();
 
 			if (recurse) {
@@ -695,16 +696,16 @@ public class Block implements Comparable<Block> {
 						}
 					}
 				}
-				block.doneWithLoopPaths();
 			}
 		}
+		doneWithPathBlocks();
 		return num;
 	}
 
 	int getNumInstructionsAbsolute(boolean recurse) {
 		int num = 0;
 
-		for (Block block : getPathPaths()) {
+		for (Block block : getPathBlocks()) {
 			if (recurse) {
 				for (Block loopPath : block.getLoopPaths()) {
 					num += loopPath.getNumInstructionsAbsolute(true);
@@ -717,16 +718,16 @@ public class Block implements Comparable<Block> {
 						}
 					}
 				}
-				block.doneWithLoopPaths();
 			}
 		}
+		doneWithPathBlocks();
 		return num;
 	}
 
 	int getNumFNopsRelative(boolean recurse) {
 		int num = 0;
 
-		for (Block block : getPathPaths()) {
+		for (Block block : getPathBlocks()) {
 			num += block.getNumFNopsThis();
 
 			if (recurse) {
@@ -739,16 +740,16 @@ public class Block implements Comparable<Block> {
 						}
 					}
 				}
-				block.doneWithLoopPaths();
 			}
 		}
+		doneWithPathBlocks();
 		return num;
 	}
 
 	int getNumFNopsAbsolute(boolean recurse) {
 		int num = 0;
 
-		for (Block block : getPathPaths()) {
+		for (Block block : getPathBlocks()) {
 			if (recurse) {
 				for (Block loopPath : block.getLoopPaths()) {
 					num += loopPath.getNumFNopsAbsolute(true);
@@ -761,16 +762,16 @@ public class Block implements Comparable<Block> {
 						}
 					}
 				}
-				block.doneWithLoopPaths();
 			}
 		}
+		doneWithPathBlocks();
 		return num;
 	}
 
 	int getNumCyclesRelative(boolean recurse) {
 		int num = 0;
 
-		for (Block block : getPathPaths()) {
+		for (Block block : getPathBlocks()) {
 			num += block.getNumCyclesThis();
 
 			if (recurse) {
@@ -783,16 +784,16 @@ public class Block implements Comparable<Block> {
 						}
 					}
 				}
-				block.doneWithLoopPaths();
 			}
 		}
+		doneWithPathBlocks();
 		return num;
 	}
 
 	int getNumPausablesRelative(boolean recurse) {
 		int num = 0;
 
-		for (Block block : getPathPaths()) {
+		for (Block block : getPathBlocks()) {
 			num += block.getNumPausablesThis();
 
 			if (recurse) {
@@ -805,16 +806,16 @@ public class Block implements Comparable<Block> {
 						}
 					}
 				}
-				block.doneWithLoopPaths();
 			}
 		}
+		doneWithPathBlocks();
 		return num;
 	}
 
 	int getNumPausablesAbsolute(boolean recurse) {
 		int num = 0;
 
-		for (Block block : getPathPaths()) {
+		for (Block block : getPathBlocks()) {
 			if (recurse) {
 				for (Block loopPath : block.getLoopPaths()) {
 					num += loopPath.getNumPausablesAbsolute(true);
@@ -827,30 +828,30 @@ public class Block implements Comparable<Block> {
 						}
 					}
 				}
-				block.doneWithLoopPaths();
 			}
 		}
+		doneWithPathBlocks();
 		return num;
 	}
 
 	public int getNumUnknowns(boolean recurse) {
 		int num = 0;
-		for (Block block : getPathPaths()) {
+		for (Block block : getPathBlocks()) {
 			num += block.getUnknowns();
 			if (recurse) {
 				for (Block loopPath : block.getLoopPaths()) {
 					num += loopPath.getNumUnknowns(true);
 				}
-				block.doneWithLoopPaths();
 			}
 		}
+		doneWithPathBlocks();
 		return num;
 	}
 
 	int getNumCyclesAbsolute(boolean recurse) {
 		int num = 0;
 
-		for (Block block : getPathPaths()) {
+		for (Block block : getPathBlocks()) {
 			if (recurse) {
 				for (Block loopPath : block.getLoopPaths()) {
 					num += loopPath.getNumCyclesAbsolute(true);
@@ -863,9 +864,9 @@ public class Block implements Comparable<Block> {
 						}
 					}
 				}
-				block.doneWithLoopPaths();
 			}
 		}
+		doneWithPathBlocks();
 		return num;
 	}
 
@@ -883,8 +884,8 @@ public class Block implements Comparable<Block> {
 			for (Block loopPath : block.getLoopPaths()) {
 				loopPath.getAllBlocks(allBlocks);
 			}
-			block.doneWithLoopPaths();
 		}
+		doneWithPathBlocks();
 	}
 
 	public Block getParentBlock() {
@@ -900,9 +901,9 @@ public class Block implements Comparable<Block> {
                 for (Block loopPath : block.getLoopPaths()) {
                 	pcsCovered.addAll(loopPath.getPcsCovered(true));
                 }
-                block.doneWithLoopPaths();
             }
         }
+        doneWithPathBlocks();
         return pcsCovered;    	
     }
 	
