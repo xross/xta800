@@ -24,9 +24,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xeobject.Function;
 import com.xmos.xeobject.XeObject;
-import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Route;
 import com.xmos.xtagui.XtaEngine;
 import com.xmos.xtagui.XtaErrorLog;
 import com.xmos.xtagui.XtaFileFinder;
@@ -34,11 +32,7 @@ import com.xmos.xtagui.XtaRouteInfo;
 import com.xmos.xtagui.XtaDisplayer;
 import com.xmos.xtagui.editors.Sources;
 import com.xmos.xtagui.editors.SourcesInput;
-import com.xmos.xtagui.nodes.BlockNode;
-import com.xmos.xtagui.nodes.LoopNode;
 import com.xmos.xtagui.nodes.Node;
-import com.xmos.xtagui.nodes.PathNode;
-import com.xmos.xtagui.nodes.RouteNode;
 
 public class TreeView extends ViewPart implements IPropertyChangeListener,
                                                   ISelectionListener,
@@ -223,52 +217,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 			e.printStackTrace();
 		}    	
     }
-	
-	private Node createHierarchy() {
-		Route route = m_routeInfo.getRoute();
-        RouteNode routeNode = new RouteNode(route);
-        for (Block block : route.completePaths()) {
-        	routeNode.addNode(createPath(block, routeNode, true));
-        }		
-        
-        if (DEBUG) {
-        	displayHierarchy(routeNode, 0);
-        }                
-		return routeNode;
-	}
-	
-	private PathNode createPath(Block block, Node parent, boolean complete) {
-        PathNode pathNode = new PathNode(block, parent, complete);
-                
-        for (Block pathBlock : block.getPathBlocks()) {            
-            if (pathBlock.numLoopPaths() > 0) {
-                LoopNode loopNode = new LoopNode(pathBlock, pathNode);
-                pathNode.addNode(loopNode);
-                
-                for (Block loopPath : pathBlock.getLoopPaths()) {
-                	loopNode.addNode(createPath(loopPath, loopNode, false));                    
-                }
-            }
-        	pathNode.addNode(new BlockNode(pathBlock, pathNode));            
-        }
-        block.doneWithPathBlocks();
-        return pathNode;
-	}
-	
-	private void displayHierarchy(Node node, int indent) {
-		printIndent(indent);
-		System.out.printf("%s\n", node.getTypeName());
-		for (Node subNode : node.getNodes()) {
-			displayHierarchy(subNode, indent + 4);
-		}
-	}
-	
-	private void printIndent(int indent) {
-		for (int i = 0; i < indent; ++i) {
-			System.out.printf(" ");
-		}
-	}
-	
+			
 	private void createContextMenus() {
 	    Menu m_contextMenu;
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
@@ -279,12 +228,12 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	private void initialiseTree() {
-		m_routeInfo = XtaDisplayer.getInstance().getDisplayRouteInfo();										
+		m_routeInfo = XtaDisplayer.getInstance().getRouteInfo();										
 		m_display.asyncExec(new Runnable() {
 			public void run() {
 				m_treeViewer.setContentProvider(new TreeViewContentProvider());				
 				m_treeViewer.setLabelProvider(new TreeViewLabelProvider());
-				m_treeViewer.setInput(createHierarchy());
+				m_treeViewer.setInput(m_routeInfo.getRouteNode());
 				m_treeViewer.expandAll();
 				ColumnViewerToolTipSupport.enableFor(m_treeViewer, ToolTip.NO_RECREATE);
 			}});					    		
