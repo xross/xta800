@@ -76,6 +76,8 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("Function: createPartControl\n");
 	    m_display = parent.getDisplay();
 
+	    getSite().getPage().addSelectionListener(this);
+	    
         initaliseColors();
         m_functionColors = new HashMap<String, Color>();
 
