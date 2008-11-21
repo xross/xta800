@@ -1,12 +1,14 @@
 package com.xmos.xtagui.nodes;
 
 import java.util.HashSet;
+import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 
 import com.xmos.xta.engine.Block;
+import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xtagui.dialogs.Iterations;
 import com.xmos.xtagui.views.TreeView;
 
@@ -100,5 +102,9 @@ public class PathNode extends Node {
 			    }
 		    });
     	}
-    }    
+    }
+
+    public Vector<XtaInstruction> getInstructions() {
+		return new Vector<XtaInstruction>();
+	}
 }

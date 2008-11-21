@@ -1,10 +1,12 @@
 package com.xmos.xtagui.nodes;
 
 import java.util.HashSet;
+import java.util.Vector;
 
 import org.eclipse.jface.action.IMenuManager;
 
 import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xtagui.views.TreeView;
 
 public class RouteNode extends Node {
@@ -21,5 +23,7 @@ public class RouteNode extends Node {
     public String getTypeName()    { assert(false); return ""; }
     
     public HashSet<Integer> getPcsCovered() { assert(false); return null; }       
-    public void createContextMenu(IMenuManager manager, final TreeView treeView) { assert(false); }    
+    public void createContextMenu(IMenuManager manager, final TreeView treeView) { assert(false); }
+    
+    public Vector<XtaInstruction> getInstructions() { assert(false); return null; };
 }

@@ -1,11 +1,13 @@
 package com.xmos.xtagui.nodes;
 
 import java.util.HashSet;
+import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 
 import com.xmos.xta.engine.Block;
+import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xtagui.views.TreeView;
 
 public class LoopNode extends Node {
@@ -87,4 +89,8 @@ public class LoopNode extends Node {
         }
         return numIterations;
     }
+
+    public Vector<XtaInstruction> getInstructions() {
+		return new Vector<XtaInstruction>();
+	}
 }
