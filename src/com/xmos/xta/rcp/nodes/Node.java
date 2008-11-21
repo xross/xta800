@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.eclipse.jface.action.IMenuManager;
 
+import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.views.TreeView;
 
 public abstract class Node {
@@ -24,9 +25,13 @@ public abstract class Node {
         
     public abstract String getDescription();
     public abstract String getToolTipText();
-    public abstract String getTypeName();    
+    public abstract String getTypeName();
     
-    public abstract HashSet<Integer> getPcsCovered();    
+    public abstract boolean isLoopNode();
+    public abstract boolean isPathNode();
+    public abstract int getNumIterations();
+    public abstract Vector<XtaInstruction> getInstructions();
+    public abstract HashSet<Integer> getPcsCovered();
     public abstract void createContextMenu(IMenuManager manager, final TreeView treeView);
     
     public void addNode(Node node) {

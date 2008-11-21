@@ -1,12 +1,14 @@
 package com.xmos.xta.rcp.nodes;
 
 import java.util.HashSet;
+import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 
 import com.xmos.xta.engine.Block;
+import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.dialogs.Iterations;
 import com.xmos.xta.rcp.views.TreeView;
 
@@ -100,5 +102,21 @@ public class PathNode extends Node {
 			    }
 		    });
     	}
-    }    
+    }
+
+	public int getNumIterations() {
+		return m_block.getNumIterations();
+	}
+
+	public boolean isLoopNode() {
+		return false;
+	}
+
+	public boolean isPathNode() {
+		return true;
+	}
+
+    public Vector<XtaInstruction> getInstructions() {
+		return new Vector<XtaInstruction>();
+	}
 }

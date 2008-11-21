@@ -1,11 +1,13 @@
 package com.xmos.xta.rcp.nodes;
 
 import java.util.HashSet;
+import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 
 import com.xmos.xta.engine.Block;
+import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.views.TreeView;
 
 public class LoopNode extends Node {
@@ -80,11 +82,23 @@ public class LoopNode extends Node {
         return description;
     }        
 
-    private int getNumIterations() {
+    public int getNumIterations() {
         int numIterations = 0;
         for (Block loopPath : m_block.getLoopPaths()) {
             numIterations += m_block.getLoopPathAttributes(loopPath).getNumIterations();
         }
         return numIterations;
     }
+
+	public boolean isLoopNode() {
+		return true;
+	}
+
+	public boolean isPathNode() {
+		return false;
+	}
+
+	public Vector<XtaInstruction> getInstructions() {
+		return new Vector<XtaInstruction>();
+	}
 }
