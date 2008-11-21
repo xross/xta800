@@ -5,9 +5,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
-
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
@@ -19,31 +16,22 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.elfhandler.Symbol;
-import com.xmos.xeloader.DebugInfo;
-import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
-import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
-import com.xmos.xta.swing.core.BlockPath;
-import com.xmos.xta.swing.core.LoopPath;
-import com.xmos.xta.swing.core.RootPath;
-import com.xmos.xta.swing.core.RouteNode;
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.nodes.Node;
 
 public class FunctionView extends ViewPart implements IPropertyChangeListener, 
                                                       ISelectionListener {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.rcp.views.Function";
 
     private Display m_display;
@@ -70,6 +58,9 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
 	public FunctionView() {
 		if (DEBUG) System.out.printf("Function()\n");			
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
+		
+		m_blockList = new Vector<XtaCodeBlock>();
+        m_functionColors = new HashMap<String, Color>();
 	}
 
 	public void createPartControl(Composite parent) {
@@ -77,12 +68,9 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
 	    m_display = parent.getDisplay();
 
 	    getSite().getPage().addSelectionListener(this);
-	    
-        initaliseColors();
-        m_functionColors = new HashMap<String, Color>();
+        initaliseColors(m_display);
 
 	    m_canvas = new Canvas(parent, SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND);
-
 	    m_canvas.addPaintListener(new PaintListener() {
 	        public void paintControl(PaintEvent e) {
 	        	drawFunctionPanel(e.gc);
@@ -107,15 +95,27 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
                 getDebugInfo();
                 m_selectedNode = (Node)object;
                 clearAll();
-                addPath(XtaDisplayer.getInstance().getRouteInfo().getRouteNode(), 1, false, false);
+                Node pathRoot = getPathRoot(XtaDisplayer.getInstance().getRouteInfo().getRouteNode(), m_selectedNode);
+                if (pathRoot != null)
+                	addPath(pathRoot, 1, false, false);
                 m_canvas.redraw();
             }
         }
     }
 
-    private boolean addPath(Node node, int numIterations,
-            boolean previousBlockSelected, boolean currentBlockSelected) {
+    private Node getPathRoot(Node root, Node start) {
+    	if (start == root) 
+    		return null;
+    	
+    	Node node = start;
+    	while (node.getParentNode() != root) {
+    		node = node.getParentNode();
+    	}
+		return node;
+	}
 
+	private boolean addPath(Node node, int numIterations,
+            boolean previousBlockSelected, boolean currentBlockSelected) {
         if (numIterations == 0)
             return previousBlockSelected;
         
@@ -160,15 +160,12 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
 
         boolean subBlockSelected = currentBlockSelected;
         for (Node subNode : node.getNodes()) {
-        	
         	if (node.isPathNode())
         		numIterations = node.getNumIterations();
         	
-        	boolean isLoop = node.isLoopNode();
-
-            if (isLoop) m_currentDepth++;
+            if (node.isLoopNode()) m_currentDepth++;
             subBlockSelected = addPath(subNode, numIterations, subBlockSelected, currentBlockSelected);
-            if (isLoop) m_currentDepth--;
+            if (node.isLoopNode()) m_currentDepth--;
         }
         
         if (m_blockLength > 0) {
@@ -229,33 +226,40 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
             boolean drawLeft, boolean drawRight) {
         
         Color color = m_functionColors.get(block.getFunction());
-
-        gc.setForeground(color);
+        gc.setBackground(color);
+        
+        Color pausableColor = lighter(color);
+        Color fnopColor = lighter(pausableColor);
+        Color borderColor = darker(color);
 
         int width = (int)(Math.ceil(instWidth * block.getLength()));
         gc.fillRectangle(x, y, width, height);
-        gc.setForeground(color);
+        gc.setForeground(borderColor);
+        gc.setBackground(borderColor);
         gc.drawRectangle(x, y, width, height);
         
         if (drawDetails && (block.getPausable() > 0)) {
             // Show the pausable
-            int fnopWidth = (int)Math.ceil(instWidth * block.getPausable()) - 1;
-            gc.setForeground(color);
-            gc.fillRectangle(x, y + (height / 3), fnopWidth, (height / 3) - 1);
+            int pausableWidth = (int)Math.ceil(instWidth * block.getPausable()) - 1;
+            gc.setBackground(pausableColor);
+            gc.fillRectangle(x, y + (height / 3), pausableWidth, (height / 3) - 1);
+            gc.setBackground(m_display.getSystemColor(SWT.COLOR_BLACK));
             gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
-            gc.drawRectangle(x, y + (height / 3), fnopWidth, (height / 3) - 1);
+            gc.drawRectangle(x, y + (height / 3), pausableWidth, (height / 3) - 1);
         }
 
         if (drawDetails && (block.getFNops() > 0)) {
             // Show the FNops
-            int pausableWidth = (int)Math.ceil(instWidth * block.getFNops()) - 1;
-            gc.setForeground(color);
-            gc.fillRectangle(x, y + ((2 * height) / 3), pausableWidth, (height / 3) - 1);
+            int fnopWidth = (int)Math.ceil(instWidth * block.getFNops()) - 1;
+            gc.setBackground(fnopColor);
+            gc.fillRectangle(x, y + ((2 * height) / 3), fnopWidth, (height / 3) - 1);
+            gc.setBackground(m_display.getSystemColor(SWT.COLOR_BLACK));
             gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
-            gc.drawRectangle(x, y + ((2 * height) / 3), pausableWidth, (height / 3) - 1);
+            gc.drawRectangle(x, y + ((2 * height) / 3), fnopWidth, (height / 3) - 1);
         }
         
         gc.setForeground(m_display.getSystemColor(SWT.COLOR_WHITE));
+        gc.setBackground(color);
         String functionName = block.getFunction();
         double functionNameWidth = gc.getFontMetrics().getAverageCharWidth() * functionName.length();
         double functionNameHeight = gc.getFontMetrics().getHeight();
@@ -282,10 +286,30 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
             gc.setColor(Color.black);
             gc.drawLine(x + width, 0, x + width, totalHeight);
         }*/
+
+        pausableColor.dispose();
+        fnopColor.dispose();
+        borderColor.dispose();
         return width;
     }
 
-    private void getDebugInfo(){
+    private Color darker(Color color) {
+    	RGB rgb = color.getRGB();
+    	float[] hsb = rgb.getHSB();
+    	hsb[2] = (float) (hsb[2] / 1.5); // Drop brightness
+    	RGB newRgb = new RGB(hsb[0], hsb[1], hsb[2]);
+    	return new Color(color.getDevice(), newRgb);
+	}
+
+	private Color lighter(Color color) {
+    	RGB rgb = color.getRGB();
+    	float[] hsb = rgb.getHSB();
+    	hsb[2] = (float) (1.0 - ((1.0 - hsb[2]) / 2.0)); // Increase brightness
+    	RGB newRgb = new RGB(hsb[0], hsb[1], hsb[2]);
+    	return new Color(color.getDevice(), newRgb);
+	}
+
+	private void getDebugInfo(){
     	m_table = XtaDisplayer.getInstance().getRouteInfo().getSymbolTable();
         Iterator<Map.Entry<Integer, Symbol>> iter =
             m_table.getElfHandler().getFunctionsPcKeyed().entrySet().iterator();
@@ -323,7 +347,7 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
         return new Color(m_display, rgb);
     }
 
-    private void initaliseColors() {
+    private void initaliseColors(Display display) {
         m_colorIndex = 0;
         m_colors = new Vector<Color>();
 
@@ -332,7 +356,7 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
             for (int g = increment * 2; g < 255; g += increment) {
                 for (int b = increment * 2; b < 255; b += increment) {
                 	RGB rgb = new RGB(r, g, b);
-                    m_colors.add(new Color(m_display, rgb));
+                    m_colors.add(new Color(display, rgb));
                 }
             }
         }
