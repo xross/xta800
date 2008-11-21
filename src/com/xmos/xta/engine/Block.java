@@ -74,10 +74,10 @@ public class Block implements Comparable<Block> {
 		m_toPc = toPc;
 		m_route = bc.getRoute();
 		m_executionState = executionState;
-		m_functionDepth =0;
-		m_numFNops =0;
-		m_numInstructions=0;
-		m_numPausables=0;
+		m_functionDepth = 0;
+		m_numFNops = 0;
+		m_numInstructions = 0;
+		m_numPausables = 0;
 		m_parentBlock = null;
 	}
 
@@ -156,7 +156,7 @@ public class Block implements Comparable<Block> {
 			copy.addAll(pcs);
 			m_contexts.add(copy);
 		}
-		m_startTime = block.m_endTime;  //plus a bit maybe
+		m_startTime = block.m_endTime; // plus a bit maybe
 		m_currentThread = block.m_currentThread;
 		m_firstStep = false;
 		m_seen = block.m_seen;
@@ -164,9 +164,9 @@ public class Block implements Comparable<Block> {
 		m_route = block.m_route;
 		m_executionState = executionState;
 		m_functionDepth = block.m_functionDepth;
-		m_numFNops =0;
-		m_numInstructions=0;
-		m_numPausables=0;	
+		m_numFNops = 0;
+		m_numInstructions = 0;
+		m_numPausables = 0;
 	}
 
 	public boolean canUnpause() {
@@ -210,6 +210,7 @@ public class Block implements Comparable<Block> {
 	}
 
 	public void addLoopPath(Block pathStartBlock) {
+		if(DEBUG) System.out.println("found loopPath: " + pathStartBlock.m_id + " forms a loop with block " + m_id);
 		assert (pathStartBlock != null);
 		assert (!m_loopPaths.contains(pathStartBlock));
 		if (m_loopPaths.contains(pathStartBlock))
@@ -220,6 +221,9 @@ public class Block implements Comparable<Block> {
 	}
 
 	public void build() {
+		
+		
+		
 		int pc = m_machineState.getPc(m_currentThread);
 		if (isExcluded(pc)) {
 			setStatus(BlockStatus.EXCLUDED);
@@ -240,11 +244,20 @@ public class Block implements Comparable<Block> {
 		XtaInstruction instruction = m_bc.getInstructionDecodeCache().decode(opcode, pc);
 		int instNumBytes = instruction.getNumBytes();
 
+		
 		handleIBuffer(instNumBytes, pc);
 
 		instruction.execute(m_machineState, m_currentThread);
 		addInstruction(instruction);
 
+		if(isInfiniteLoop(instruction, m_machineState, m_currentThread)){
+			setStatus(BlockStatus.ERROR);
+			return;
+		}
+		
+		
+		
+		
 		if (isComplete(instruction, pc)) {
 			setStatus(BlockStatus.COMPLETE);
 			m_route.addCompletePath(this);
@@ -254,7 +267,7 @@ public class Block implements Comparable<Block> {
 		m_contexts.peek().add(pc);
 
 		int nextPc = pc + instNumBytes;
-		
+
 		if (m_machineState.wasJump()) {
 			if (m_machineState.wasJumpResolved()) {
 				int jumpTarget = m_machineState.getJumpTarget();
@@ -285,7 +298,6 @@ public class Block implements Comparable<Block> {
 					return;
 				}
 			}
-
 		} else if (m_machineState.wasBranch()) {
 			if (m_machineState.wasBranchResolved()) {
 				if (m_bc.isResolveExpressions()) {
@@ -296,12 +308,13 @@ public class Block implements Comparable<Block> {
 					} else if (m_machineState.getBranchTaken() == BranchState.UNKNOWN) {
 						checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
 						checkForLoopFormation(nextPc, true, instruction, false, true);
+						setStatus(BlockStatus.COMPLETE);
 					}
 				} else {
 					checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
 					checkForLoopFormation(nextPc, true, instruction, false, true);
+					setStatus(BlockStatus.COMPLETE);
 				}
-				setStatus(BlockStatus.COMPLETE);
 				return;
 			} else {
 				setStatus(BlockStatus.UNRESOLVED);
@@ -316,11 +329,31 @@ public class Block implements Comparable<Block> {
 		instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
 	}
 
+	private Expression previousGuard;
+	private int previousPc;
+	
+	private boolean isInfiniteLoop(XtaInstruction instruction, MachineState state, int thread) {
+		if(state.wasBranch() || state.wasJump()){
+			if(previousGuard != null && state.getGuardExpression()!= null){
+				if(previousGuard.equals(state.getGuardExpression()) && previousPc == instruction.getPc()){
+					System.out.println("eekkkkkk");
+				}
+			}
+			
+			
+			previousGuard = state.getGuardExpression();
+			previousPc = instruction.getPc();
+			
+			
+		}
+		return false;
+	}
+
 	private void checkForLoopFormation(int nextPc, boolean speculative, XtaInstruction inst, boolean isJump, boolean isBranch) {
 		Block loopBlock = null;
-
 		m_speculative = m_speculative | speculative;
 		if (m_speculative) {
+
 			loopBlock = formsLoop(nextPc);
 		}
 		if (loopBlock != null) {
@@ -345,10 +378,6 @@ public class Block implements Comparable<Block> {
 			}
 		}
 	}
-
-	/*
-	 * all functions below here should be reasonably safe
-	 */
 
 	private boolean isComplete(XtaInstruction instruction, int pc) {
 		switch (m_bc.getMode()) {
@@ -409,9 +438,7 @@ public class Block implements Comparable<Block> {
 
 	private Block formsLoop(int pc) {
 		boolean contextsContainPc = m_contexts.peek().contains(pc);
-
 		Block parent = this;
-
 		while (parent != null) {
 			if (parent.m_pcs.contains(pc) && contextsContainPc) {
 				return parent;
@@ -448,12 +475,20 @@ public class Block implements Comparable<Block> {
 		}
 	}
 
-	public Status.BlockStatus getStatus() {
+	public BlockStatus getStatus() {
 		return m_status;
 	}
 
 	public void setStatus(BlockStatus blockStatus) {
 		m_status = blockStatus;
+		if(blockStatus == BlockStatus.COMPLETE){
+			//free everything that is no longer needed
+		}
+		
+		if(DEBUG){
+			System.out.println("block " + m_id + " status is " + blockStatus);
+		}
+		
 	}
 
 	public int numLoopPaths() {
@@ -494,8 +529,6 @@ public class Block implements Comparable<Block> {
 	public int getInstanceId() {
 		return m_instanceId;
 	}
-
-	// eek
 
 	public void setId(int id) {
 		m_id = id;
@@ -890,24 +923,24 @@ public class Block implements Comparable<Block> {
 	public Block getParentBlock() {
 		return m_parentBlock;
 	}
-	
-	public HashSet<Integer> getPcsCovered(boolean recurse) {
-    	HashSet<Integer> pcsCovered = new HashSet<Integer>();
 
-        for (Block block : getPathBlocks()) {
-        	pcsCovered.addAll(block.getPcsCoveredThis());
-            if (recurse) {
-                for (Block loopPath : block.getLoopPaths()) {
-                	pcsCovered.addAll(loopPath.getPcsCovered(true));
-                }
-                block.doneWithLoopPaths();
-            }
-        }
-        return pcsCovered;    	
-    }
-	
+	public HashSet<Integer> getPcsCovered(boolean recurse) {
+		HashSet<Integer> pcsCovered = new HashSet<Integer>();
+
+		for (Block block : getPathBlocks()) {
+			pcsCovered.addAll(block.getPcsCoveredThis());
+			if (recurse) {
+				for (Block loopPath : block.getLoopPaths()) {
+					pcsCovered.addAll(loopPath.getPcsCovered(true));
+				}
+				block.doneWithLoopPaths();
+			}
+		}
+		return pcsCovered;
+	}
+
 	public HashSet<Integer> getPcsCoveredThis() {
-    	return m_pcs;
-    }
+		return m_pcs;
+	}
 
 }
