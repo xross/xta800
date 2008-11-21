@@ -1,0 +1,25 @@
+package com.xmos.xta.rcp.nodes;
+
+import java.util.HashSet;
+
+import org.eclipse.jface.action.IMenuManager;
+
+import com.xmos.xta.engine.Route;
+import com.xmos.xta.rcp.views.TreeView;
+
+public class RouteNode extends Node {
+    public RouteNode(Route route) { super(null); }
+
+    public int getId()         { assert(false); return 0; }
+    public int getInstanceId() { assert(false); return 0; }
+
+    public double getTimeTaken() { assert(false); return 0; }
+    public int getNumCycles()    { assert(false); return 0; }
+    
+    public String getDescription() { assert(false); return ""; }
+    public String getToolTipText() { assert(false); return ""; }
+    public String getTypeName()    { assert(false); return ""; }
+    
+    public HashSet<Integer> getPcsCovered() { assert(false); return null; }       
+    public void createContextMenu(IMenuManager manager, final TreeView treeView) { assert(false); }    
+}
