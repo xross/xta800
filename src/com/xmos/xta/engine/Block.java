@@ -645,11 +645,7 @@ public class Block implements Comparable<Block> {
 		while (parent != null) {
 			if (parent.m_loopPaths.contains(this)) {
 				PathAttributes attributes = parent.getLoopPathAttributes(this);
-				if (!attributes.isAbsolute()) {
-					return parent.getNumIterations() * attributes.getNumIterations();
-				} else {
-					return attributes.getNumIterations();
-				}
+				return attributes.getNumIterations();
 			}
 			parent = parent.m_parentBlock;
 		}

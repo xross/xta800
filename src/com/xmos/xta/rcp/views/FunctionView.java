@@ -84,7 +84,7 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG) System.out.printf("Function: propertyChange: %s\n", event.getProperty());			
+		if (DEBUG) System.out.printf("Function: propertyChange: %s\n", event.getProperty());
 	}	
 	
     public void selectionChanged(IWorkbenchPart part, ISelection sel) {

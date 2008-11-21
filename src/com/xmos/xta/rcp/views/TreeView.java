@@ -234,7 +234,6 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 				m_treeViewer.setContentProvider(new TreeViewContentProvider());				
 				m_treeViewer.setLabelProvider(new TreeViewLabelProvider());
 				m_treeViewer.setInput(m_routeInfo.getRouteNode());
-				m_treeViewer.expandAll();
 				ColumnViewerToolTipSupport.enableFor(m_treeViewer, ToolTip.NO_RECREATE);
 			}});					    		
 	}
