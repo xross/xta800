@@ -76,7 +76,7 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("Function: createPartControl\n");
 	    m_display = parent.getDisplay();
 
-/*        initaliseColors();
+        initaliseColors();
         m_functionColors = new HashMap<String, Color>();
 
 	    m_canvas = new Canvas(parent, SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND);
@@ -85,7 +85,7 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
 	        public void paintControl(PaintEvent e) {
 	        	drawFunctionPanel(e.gc);
 	        }
-	    });*/
+	    });
 	}
 
 	public void setFocus() {
