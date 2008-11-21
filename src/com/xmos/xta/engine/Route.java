@@ -314,12 +314,10 @@ public class Route {
 							attributes.setNumIterations(iterations, absolute);
 							hit = true;
 							if (!allInstances) {
-								block.doneWithLoopPaths();
 								return hit;
 							}
 						}
 					}
-					block.doneWithLoopPaths();
 				}
 			}
 			

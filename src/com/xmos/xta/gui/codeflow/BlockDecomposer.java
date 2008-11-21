@@ -322,7 +322,6 @@ public class BlockDecomposer implements PathUpdater {
                 links.get(getIndex(lastInst,links)).addNext(loopBlock.getInstructions(false).get(0));
                 links.get(getIndex(loopBlock.getInstructions(false).get(0),links)).addPrevious(lastInst);
             }
-            block.doneWithLoopPaths();
         }
     }
 

@@ -60,7 +60,6 @@ public class LoopPath implements RouteNode {
         for (Block loopPath : m_loopPath.getLoopPaths()) {
             numIterations += m_loopPath.getLoopPathAttributes(loopPath).getNumIterations();
         }
-        m_loopPath.doneWithLoopPaths();
         return numIterations;
     }
 
@@ -94,7 +93,6 @@ public class LoopPath implements RouteNode {
             int numIterations = m_loopPath.getLoopPathAttributes(loopPath).getNumIterations();
             numCycles += loopPath.getNumCycles(true) * numIterations;
         }
-        m_loopPath.doneWithLoopPaths();
         return numCycles;
     }
     
@@ -104,7 +102,6 @@ public class LoopPath implements RouteNode {
             int numIterations = m_loopPath.getLoopPathAttributes(loopPath).getNumIterations();
             numFNops += loopPath.getNumFNops(true) * numIterations;
         }
-        m_loopPath.doneWithLoopPaths();
         return numFNops;
     }
 
@@ -114,7 +111,6 @@ public class LoopPath implements RouteNode {
             int numIterations = m_loopPath.getLoopPathAttributes(loopPath).getNumIterations();
             numPausable += loopPath.getNumPausables(true) * numIterations;
         }
-        m_loopPath.doneWithLoopPaths();
         return numPausable;
     }
 
@@ -124,7 +120,6 @@ public class LoopPath implements RouteNode {
             int numIterations = m_loopPath.getLoopPathAttributes(loopPath).getNumIterations();
             timeTaken += loopPath.getTimeTaken(true) * numIterations;
         }
-        m_loopPath.doneWithLoopPaths();
         return timeTaken;
     }
 
@@ -133,6 +128,7 @@ public class LoopPath implements RouteNode {
         for (Block block : m_loopPath.getPathBlocks()){
             count += block.numLoopPaths();
         }
+        m_loopPath.doneWithPathBlocks();
         return count;
     }
 
@@ -161,7 +157,6 @@ public class LoopPath implements RouteNode {
         for (Block loopPath : m_loopPath.getLoopPaths()) {
             loopPath.getAllBlocks(blocks);
         }
-        m_loopPath.doneWithLoopPaths();
     }
 
     public Block getBlock() {
@@ -173,7 +168,6 @@ public class LoopPath implements RouteNode {
         for (Block loopPath : m_loopPath.getLoopPaths()) {
             insts.addAll(loopPath.getInstructions(true));
         }
-        m_loopPath.doneWithLoopPaths();
         return insts;
     }
 

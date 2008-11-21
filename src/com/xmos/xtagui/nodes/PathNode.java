@@ -7,18 +7,25 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 
 import com.xmos.xta.engine.Block;
+import com.xmos.xtagui.dialogs.Iterations;
 import com.xmos.xtagui.views.TreeView;
 
 public class PathNode extends Node {
     private Block m_block;
+    private boolean m_complete;
     
-    public PathNode(Block block, Node parent) {
+    public PathNode(Block block, Node parent, boolean complete) {
     	super(parent);
     	m_block = block;
+    	m_complete = complete;
     }
 
     public String getDescription() {
-    	return getTimeTaken() + " ns (path " + getId() + ")";
+    	String str = getTimeTaken() + " ns (path " + getId() + ")";
+    	if (!m_complete) {
+    		str += " (iterations: " + m_block.getNumIterations() + ")";
+    	}
+    	return str;
     }
 
     public int getId() {
@@ -30,15 +37,32 @@ public class PathNode extends Node {
     }
 
     public int getNumCycles() {
-        return m_block.getNumCycles(false);
+        return m_block.getNumCycles(true);
     }
 
     public double getTimeTaken() {
-        return m_block.getTimeTaken(false);
+        return m_block.getTimeTaken(true);
     }
 
     public String getToolTipText() {
-        return getDescription();
+        String toolTipText = "";
+        toolTipText += "Path ID: "          + m_block.getId() + "\n";
+        toolTipText += "Path Instance ID: " + m_block.getInstanceId() + "\n";
+        toolTipText += "----------------------------------\n";
+        toolTipText += "Time taken: "          + m_block.getTimeTaken(true) + " ns\n";
+        toolTipText += "Number of cycles: "    + m_block.getNumCycles(true) + "\n";
+        toolTipText += "Number of FNOPs: "     + m_block.getNumFNops(true) + "\n";
+        toolTipText += "Number of pausables: " + m_block.getNumPausables(true) + "\n";
+        toolTipText += "----------------------------------\n";
+        toolTipText += "Time taken (this): "          + m_block.getTimeTaken(false) + " ns\n";
+        toolTipText += "Number of cycles (this): "    + m_block.getNumCycles(false) + "\n";
+        toolTipText += "Number of FNOPs (this): "     + m_block.getNumFNops(false) + "\n";
+        toolTipText += "Number of pausables (this): " + m_block.getNumPausables(false);        
+        if (!m_complete) {
+            toolTipText += "\n----------------------------------\n";
+            toolTipText += "Number of iterations: " + m_block.getNumIterations();
+        }
+        return toolTipText;
     }
 
     public String getTypeName() {
@@ -66,6 +90,15 @@ public class PathNode extends Node {
     	manager.add(new Action("trace to console") {
 			public void run() {
 			}
-		});
+		});    	
+    	
+    	if (!m_complete) {
+		    manager.add(new Separator());
+    	    manager.add(new Action("Set iterations") {
+			    public void run() {
+				    new Iterations(treeView);
+			    }
+		    });
+    	}
     }    
 }

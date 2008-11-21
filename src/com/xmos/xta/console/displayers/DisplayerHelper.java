@@ -22,12 +22,11 @@ public class DisplayerHelper {
             for (Block loopPath : block.getLoopPaths()) {
             	Block foundPath = getPath(loopPath, pathId);
                 if (foundPath != null) {
-                    block.doneWithLoopPaths();
                     return foundPath;
                 }
             }
-            block.doneWithLoopPaths();
         }
+        path.doneWithPathBlocks();
         return null;
     }
 }

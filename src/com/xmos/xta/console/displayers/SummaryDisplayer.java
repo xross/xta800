@@ -191,6 +191,7 @@ public class SummaryDisplayer implements Displayer {
               	displayLoopLevelInfo(block, indent, numExecutions);          	
             }
         }
+        path.doneWithPathBlocks();
     }
         
     private void displayPathLevelInfo(Block path, String indent, int numExecutions, boolean absolute) {
@@ -234,7 +235,6 @@ public class SummaryDisplayer implements Displayer {
             	
         	summarisePaths(loopPaths, indent + "        ", path);
         }
-        path.doneWithLoopPaths();
     }
 
     private void displayInstructionLevelInfo(Block path, String indent, int numExecutions) {
@@ -315,8 +315,8 @@ public class SummaryDisplayer implements Displayer {
             for (Block loopPath : block.getLoopPaths()) {
    		    	buildPathsWithinFunctionSet(loopPath, pathSet, functionAddress, functionSize);
        		}
-            block.doneWithLoopPaths();
         }
+        path.doneWithPathBlocks();        
     }
     
     private boolean pathWithinFunction(Block path, int functionAddress, int functionSize) {
@@ -337,7 +337,6 @@ public class SummaryDisplayer implements Displayer {
         for (Block loopPath : path.getLoopPaths()) {
 	    	buildPathsWithinSourcesSet(loopPath, pathSet, sourceFileName);
    		}
-        path.doneWithLoopPaths();
     }
     
     private boolean pathWithinSourceFile(Block path, String sourceFileName) {
@@ -382,13 +381,14 @@ public class SummaryDisplayer implements Displayer {
         m_console.display(String.format("Thread cycles:    %d\n", path.getNumCycles(true)));
         m_console.display(String.format("Num Instructions: %d\n", path.getNumInstructions(true)));
         m_console.display(String.format("Num FNops:        %d\n", path.getNumFNops(true)));
-        m_console.display(String.format("Num Blocks:       %d\n", path.getPathBlocks().size()));
+        m_console.display(String.format("Num Blocks:       %d\n", path.getNumPathBlocks()));
         m_console.display(String.format("Num Pauseables:   %d\n", path.getNumPausables(true)));
         
         int numLoops = 0;
         for (Block block : path.getPathBlocks()) {
             numLoops += block.numLoopPaths();
         }
+        path.doneWithPathBlocks();
         m_console.display(String.format("Num Loops:        %d\n", numLoops));
     }
 }

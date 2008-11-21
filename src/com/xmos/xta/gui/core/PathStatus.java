@@ -87,13 +87,13 @@ public class PathStatus implements Displayer {
                 for (Block loopPath : pathBlock.getLoopPaths()) {
                     loop.add(addPath(depth + 1, loopPath, pathBlock));
                 }
-                pathBlock.doneWithLoopPaths();
                 newPath.add(loop);
             }
 
             m_treeSize++;
             newPath.add(block);
         }
+        path.doneWithPathBlocks();        
         return newPath;
     }    
 

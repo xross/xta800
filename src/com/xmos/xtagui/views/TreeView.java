@@ -24,9 +24,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xeobject.Function;
 import com.xmos.xeobject.XeObject;
-import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Route;
 import com.xmos.xtagui.XtaEngine;
 import com.xmos.xtagui.XtaErrorLog;
 import com.xmos.xtagui.XtaFileFinder;
@@ -34,11 +32,7 @@ import com.xmos.xtagui.XtaRouteInfo;
 import com.xmos.xtagui.XtaDisplayer;
 import com.xmos.xtagui.editors.Sources;
 import com.xmos.xtagui.editors.SourcesInput;
-import com.xmos.xtagui.nodes.BlockNode;
-import com.xmos.xtagui.nodes.LoopNode;
 import com.xmos.xtagui.nodes.Node;
-import com.xmos.xtagui.nodes.PathNode;
-import com.xmos.xtagui.nodes.RouteNode;
 
 public class TreeView extends ViewPart implements IPropertyChangeListener,
                                                   ISelectionListener,
@@ -50,19 +44,16 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     private Display m_display;
     private XtaRouteInfo m_routeInfo;
     private TreeViewFunctionCombo m_functions;
+
     private boolean m_exhustive;
     private boolean m_fnops;
-    private int m_frequency;
-    private int m_numThreads;
-
+    
 	public TreeView() {
 		if (DEBUG) System.out.printf("Tree()\n");			
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 		
 		m_exhustive = false;
 		m_fnops = true;
-		m_frequency = 400;
-		m_numThreads = 8;
 	}
 
 	public void createPartControl(Composite parent) {
@@ -86,20 +77,14 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("Tree: propertyChange: %s\n", event.getProperty());	
 		
 		if (event.getProperty().equals("DisplayRoute")) {
-			m_routeInfo = XtaDisplayer.getInstance().getDisplayRouteInfo();										
-			m_display.asyncExec(new Runnable() {
-				public void run() {
-					m_treeViewer.setContentProvider(new TreeViewContentProvider());				
-					m_treeViewer.setLabelProvider(new TreeViewLabelProvider());
-					m_treeViewer.setInput(createHierarchy());
-					m_treeViewer.expandAll();
-					ColumnViewerToolTipSupport.enableFor(m_treeViewer, ToolTip.NO_RECREATE);
-				}});					    
+			initialiseTree();
 		} else if (event.getProperty().equals("LoadExecutable")) {
 			createXeObject();
             populateFunctionList();			
 	        openEditors();
-		}				
+		} else if (event.getProperty().equals("UpdateState")) {
+			refreshTree();
+		}
 	}
 	
     public void selectionChanged(IWorkbenchPart part, ISelection sel) {
@@ -155,10 +140,9 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 
 		Views.showView(TreeView.ID);
 		
-		boolean fullExecution = false;		
 		String functionName = m_functions.getCurrentEntry();
 		if (!functionName.equals("")) {
-			RunEngineMethodFunc run = new RunEngineMethodFunc(functionName, fullExecution);
+			RunEngineMethodFunc run = new RunEngineMethodFunc(functionName, m_exhustive);
 			run.start();
 		} else {
 			XtaErrorLog.getInstance().addError("No function/path specified");
@@ -182,25 +166,35 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	public int getFrequency() {
-		return m_frequency;
+		return XtaEngine.getEngine().getFrequency();
 	}
 
 	public void setFrequency(int frequency) {
-		m_frequency = frequency;
+		XtaEngine.getEngine().setFrequency(frequency);
 	}
 
 	public int getNumThreads() {
-		return m_numThreads;
+		return XtaEngine.getEngine().getNumThreads();
 	}
 
 	public void setNumThreads(int numThreads) {
-		m_numThreads = numThreads;
+		XtaEngine.getEngine().setNumThreads(numThreads);
+	}
+	
+	public void setAllInstances(boolean allInstances) {		
+	}
+
+	public void setAbsoluteCount(boolean allInstances) {		
+	}
+	
+	public int setNumIterations(int numIterations) {
+		return 0;
 	}
 	
 	public TreeViewer getViewer() {
 		return m_treeViewer;
 	}
-		
+			
     private void createXeObject() {
 		Engine engine = XtaEngine.getEngine();
 		XeObject xeObject = new XeObject(engine.getXeLoader(), new XtaFileFinder());
@@ -223,52 +217,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 			e.printStackTrace();
 		}    	
     }
-	
-	private Node createHierarchy() {
-		Route route = m_routeInfo.getRoute();
-        RouteNode routeNode = new RouteNode(route);
-        for (Block block : route.completePaths()) {
-        	routeNode.addNode(createPath(block, routeNode));
-        }		
-        
-        if (DEBUG) {
-        	displayHierarchy(routeNode, 0);
-        }                
-		return routeNode;
-	}
-	
-	private PathNode createPath(Block block, Node parent) {
-        PathNode pathNode = new PathNode(block, parent);
-                
-        for (Block pathBlock : block.getPathBlocks()) {            
-            if (pathBlock.numLoopPaths() > 0) {
-                LoopNode loopNode = new LoopNode(pathBlock, pathNode);
-                pathNode.addNode(loopNode);
-                
-                for (Block loopPath : pathBlock.getLoopPaths()) {
-                	loopNode.addNode(createPath(loopPath, loopNode));                    
-                }
-                pathBlock.doneWithLoopPaths();
-            }
-        	pathNode.addNode(new BlockNode(pathBlock, pathNode));            
-        }        
-        return pathNode;
-	}
-	
-	private void displayHierarchy(Node node, int indent) {
-		printIndent(indent);
-		System.out.printf("%s\n", node.getTypeName());
-		for (Node subNode : node.getNodes()) {
-			displayHierarchy(subNode, indent + 4);
-		}
-	}
-	
-	private void printIndent(int indent) {
-		for (int i = 0; i < indent; ++i) {
-			System.out.printf(" ");
-		}
-	}
-	
+			
 	private void createContextMenus() {
 	    Menu m_contextMenu;
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
@@ -276,6 +225,25 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		menuMgr.addMenuListener(this);
 		m_contextMenu = menuMgr.createContextMenu(m_treeViewer.getTree());
 		m_treeViewer.getTree().setMenu(m_contextMenu);		
+	}
+	
+	private void initialiseTree() {
+		m_routeInfo = XtaDisplayer.getInstance().getRouteInfo();										
+		m_display.asyncExec(new Runnable() {
+			public void run() {
+				m_treeViewer.setContentProvider(new TreeViewContentProvider());				
+				m_treeViewer.setLabelProvider(new TreeViewLabelProvider());
+				m_treeViewer.setInput(m_routeInfo.getRouteNode());
+				m_treeViewer.expandAll();
+				ColumnViewerToolTipSupport.enableFor(m_treeViewer, ToolTip.NO_RECREATE);
+			}});					    		
+	}
+	
+	private void refreshTree() {
+		m_display.asyncExec(new Runnable() {
+			public void run() {
+    			m_treeViewer.refresh();
+			}});					            	   		
 	}
 	
     class RunEngineMethodFunc extends Thread {

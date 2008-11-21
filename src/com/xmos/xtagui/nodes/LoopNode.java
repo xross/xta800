@@ -4,10 +4,8 @@ import java.util.HashSet;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.Separator;
 
 import com.xmos.xta.engine.Block;
-import com.xmos.xtagui.dialogs.Iterations;
 import com.xmos.xtagui.views.TreeView;
 
 public class LoopNode extends Node {
@@ -40,10 +38,14 @@ public class LoopNode extends Node {
 
     public String getToolTipText(){
         String toolTipText = getSummary() + "\n";
+        toolTipText += "----------------------------------\n";
+        toolTipText += "Loop ID: " + m_block.getId() + "\n";
+        toolTipText += "Loop Instance ID: " + m_block.getInstanceId() + "\n";
+        toolTipText += "----------------------------------\n";
         toolTipText += "Total time taken: " + getTimeTaken() + " ns\n";
         toolTipText += "Total number of cycles: " + getNumCycles() + "\n";
-        toolTipText += "Total number of FNOPs: " + getNumFNops() + "\n";
-        toolTipText += "Total number of pausable: " + getNumPausable();
+        toolTipText += "Total number of FNOPs: " + m_block.getNumFNops(true) + "\n";
+        toolTipText += "Total number of pausable: " + m_block.getNumPausables(true);
         return toolTipText;
     }
     
@@ -66,44 +68,8 @@ public class LoopNode extends Node {
 				treeView.getViewer().collapseAll();
 			}
 		});
-		manager.add(new Separator());
-
-    	manager.add(new Action("Set iterations") {
-			public void run() {
-				new Iterations(treeView);
-			}
-		});
     }
-    
-    private int getNumIterations() {
-        int numIterations = 0;
-        for (Block loopPath : m_block.getLoopPaths()) {
-            numIterations += m_block.getLoopPathAttributes(loopPath).getNumIterations();
-        }
-        m_block.doneWithLoopPaths();
-        return numIterations;
-    }
-    
-    private int getNumFNops() {
-        int numFNops = 0;
-        for (Block loopPath : m_block.getLoopPaths()) {
-            int numIterations = m_block.getLoopPathAttributes(loopPath).getNumIterations();
-            numFNops += loopPath.getNumFNops(true) * numIterations;
-        }
-        m_block.doneWithLoopPaths();
-        return numFNops;
-    }
-
-    private int getNumPausable() {
-        int numPausable = 0;
-        for (Block loopPath : m_block.getLoopPaths()) {
-            int numIterations = m_block.getLoopPathAttributes(loopPath).getNumIterations();
-            numPausable += loopPath.getNumPausables(true) * numIterations;
-        }
-        m_block.doneWithLoopPaths();
-        return numPausable;
-    }
-    
+            
     private String getSummary() {
         String description = "Loop: " + m_block.numLoopPaths() + " path";
         if (m_block.numLoopPaths() > 1) {
@@ -113,4 +79,12 @@ public class LoopNode extends Node {
         description += ", " + getNumIterations() + " iterations";
         return description;
     }        
+
+    private int getNumIterations() {
+        int numIterations = 0;
+        for (Block loopPath : m_block.getLoopPaths()) {
+            numIterations += m_block.getLoopPathAttributes(loopPath).getNumIterations();
+        }
+        return numIterations;
+    }
 }

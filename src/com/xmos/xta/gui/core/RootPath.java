@@ -79,37 +79,27 @@ public class RootPath implements RouteNode {
     }
 
     public int getNumCycles() {
-        startTiming();
         int num = m_rootPath.getNumCycles(true);
-        endTiming();
         return num;
     }
 
     public double getTimeTaken() {
-        startTiming();
         double timeTaken = m_rootPath.getTimeTaken(true);
-        endTiming();
         return timeTaken;
     }
 
     public int getNumFNops() {
-        startTiming();
         int num = m_rootPath.getNumFNops(true);
-        endTiming();
         return num;
     }
 
     public int getNumPausables() {
-        startTiming();
         int num = m_rootPath.getNumPausables(true);
-        endTiming();
         return num;
     }
 
     public int getNumUnknowns() {
-        startTiming();
         int num = m_rootPath.getNumUnknowns(true);
-        endTiming();
         return num;
     }
 
@@ -245,26 +235,11 @@ public class RootPath implements RouteNode {
     }
 
     public Vector<XtaInstruction> getInstructions() {
-        startTiming();
         Vector<XtaInstruction> instructions = m_rootPath.getInstructions(true);
-        endTiming();
         return instructions;
     }
 
     public String getTypeName() {
         return "path";
-    }
-
-    private void startTiming() {
-        if (m_caller != null) {
-            m_caller.incrementSeen();
-        }
-    }
-
-    private void endTiming() {
-        if (m_caller != null) {
-            m_caller.decrementSeen();
-        }
-    }
-    
+    }    
 }

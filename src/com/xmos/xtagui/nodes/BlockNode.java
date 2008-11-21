@@ -38,7 +38,9 @@ public class BlockNode extends Node {
     
     public String getToolTipText() {
         String toolTipText = "";
+        toolTipText += "Block ID: " + m_block.getId() + "\n";
         toolTipText += "Block Instance ID: " + m_block.getInstanceId() + "\n";
+        toolTipText += "----------------------------------\n";
         toolTipText += "Time taken: " + getTimeTaken() + " ns\n";
         toolTipText += "Number of cycles: " + getNumCycles() + "\n";
         toolTipText += "Number of FNOPs: " + m_block.getNumFNopsThis() + "\n";
