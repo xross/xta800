@@ -14,7 +14,7 @@ import com.xmos.xta.rcp.nodes.Node;
 
 public class FunctionView extends ViewPart implements IPropertyChangeListener, 
                                                       ISelectionListener {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public static final String ID = "com.xmos.xta.rcp.views.Function";
 
 	public FunctionView() {

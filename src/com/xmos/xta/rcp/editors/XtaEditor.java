@@ -27,7 +27,7 @@ import org.eclipse.ui.editors.text.TextEditor;
 import com.xmos.xta.rcp.nodes.Node;
 
 public class XtaEditor extends TextEditor implements ISelectionListener {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xtagui.editors.Test";
     public static final String AnnotationID = "com.xmos.xta.rcp.path";
     
