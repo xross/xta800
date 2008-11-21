@@ -1038,11 +1038,8 @@ public abstract class XtaInstruction extends Instruction {
 
     void LDWDP(MachineState state, int thread) {
     	if (m_debug)     	
-            System.out.printf("0x%08x: LDWDP\n", getPc());	
-
-    	//TODO (Just assign an undefined value to the destination register for now...)    	
-    	state.m_op1 = new Expression(state.m_op1Fld, 0, 
-			    Expression.Type.REGISTER, Expression.Status.UNDEFINED);    	
+            System.out.printf("0x%08x: LDWDP\n", getPc());		
+    	state.m_op1 = new Expression(state.getDataPoolRegister(thread));    	
     }
 
     void LDWSP(MachineState state, int thread) {

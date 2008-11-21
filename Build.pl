@@ -172,8 +172,11 @@ sub DoInstall
   XmosBuildLib::InstallFile("$DOMAIN", "lib", "xta.jar");
   #XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xta.jar", "bin");
 
-  XmosBuildLib::InstallFile("$DOMAIN", "lib", "xtagui.jar");
-  #XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xtagui.jar", "bin");
+  XmosBuildLib::InstallFile("$DOMAIN", "lib", "xtaswing.jar");
+  #XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xtaswing.jar", "bin");
+
+  XmosBuildLib::InstallFile("$DOMAIN", "lib", "xtarcp.jar");
+  #XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xtarcp.jar", "bin");
 
   chdir("$BUILDPATH") or die("oops");
 }

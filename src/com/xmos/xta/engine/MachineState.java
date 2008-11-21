@@ -1,5 +1,7 @@
 package com.xmos.xta.engine;
 
+import com.xmos.xeloader.MemoryImage;
+import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.resources.Resources;
 
 public class MachineState {
@@ -48,11 +50,11 @@ public class MachineState {
     
     
     
-    MachineState(int memoryBase, int memorySize) {
+    MachineState(SymbolTable symbolTable, MemoryImage memoryImage) {
         m_memory = new Memory();
         m_resources = new Resources();
         m_resources.addThread();
-        setStackPointerRegister(new Expression(memoryBase + memorySize), 0);
+        setStackPointerRegister(new Expression(memoryImage.getMemoryBase() + memoryImage.getMemorySize()), 0);
         
     }
 

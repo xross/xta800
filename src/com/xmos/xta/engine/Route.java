@@ -117,7 +117,8 @@ public class Route {
 		Stack<TreeSet<Integer>> context = new Stack<TreeSet<Integer>>();
 		context.push(new TreeSet<Integer>());
 
-		MachineState initialState = new MachineState(memoryImage.getMemoryBase(), memoryImage.getMemorySize());
+		
+		MachineState initialState = new MachineState(symbolTable, memoryImage);
 		BlockCommonComponents bc = null;
 
 		if (m_functionName != null) {
@@ -216,7 +217,7 @@ public class Route {
 
 	private void stepPath() {
 		ExecutionState searching = nextBlock();
-		while (searching != null) {
+		while (searching != null && m_status != RouteStatus.ABORTED) {
 			searching.build();
 			searching = nextBlock();
 			cleanSchedule();
@@ -263,6 +264,7 @@ public class Route {
 	}
 
 	public void addCompletePath(Block endBlock) {
+		//System.out.println("adding a complete path: block " + endBlock);
 		m_completePaths.add(endBlock);
 	}
 
