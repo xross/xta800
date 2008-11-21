@@ -270,22 +270,23 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
                     (int)(y + height/2.0 + functionNameHeight/2.0));
         }
 
-/*        if (!block.getSelected()) {
-            Composite c = gc.getComposite();
-            float alpha = .5f;
-            gc.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-            gc.setColor(Color.gray.brighter());
-            gc.fillRect(x, 0, width, totalHeight);
-            gc.setComposite(c);
+        if (!block.getSelected()) {
+            gc.setAlpha(100);
+            gc.setForeground(m_display.getSystemColor(SWT.COLOR_GRAY));
+            gc.setBackground(m_display.getSystemColor(SWT.COLOR_GRAY));
+            gc.fillRectangle(x, 0, width, totalHeight);
+            gc.setAlpha(255);
         }
         if (drawLeft) {
-            gc.setColor(Color.black);
+            gc.setBackground(m_display.getSystemColor(SWT.COLOR_BLACK));
+            gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
             gc.drawLine(x, 0, x, totalHeight);
         }
         if (drawRight) {
-            gc.setColor(Color.black);
+            gc.setBackground(m_display.getSystemColor(SWT.COLOR_BLACK));
+            gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
             gc.drawLine(x + width, 0, x + width, totalHeight);
-        }*/
+        }
 
         pausableColor.dispose();
         fnopColor.dispose();
