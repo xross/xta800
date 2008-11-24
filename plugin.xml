@@ -43,12 +43,6 @@
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.LoopView"
-            id="com.xmos.xta.rcp.views.Loop"
-            name="Loop"
-            restorable="true">
-      </view>
-      <view
             class="com.xmos.xta.rcp.views.ConsoleView"
             id="com.xmos.xta.rcp.views.Console"
             name="Console"
@@ -79,52 +73,66 @@
             restorable="true">
       </view>
    </extension>
+  
    <extension
-         point="org.eclipse.ui.commands">
-      <command
-            defaultHandler="com.xmos.xta.rcp.handlers.LoadHandler"
-            id="com.xmos.xta.rcp.load.command"
-            name="com.xmos.xta.rcp.load.command">
-      </command>
-      <command
-            defaultHandler="com.xmos.xta.rcp.handlers.RunHandler"
-            id="com.xmos.xta.rcp.run.command"
-            name="com.xmos.xta.rcp.run.command">
-      </command>
-      <command
-            defaultHandler="com.xmos.xta.rcp.handlers.SettingsHandler"
-            id="com.xmos.xta.rcp.settings.command"
-            name="com.xmos.xta.rcp.settings.command">
-      </command>
-   </extension>
-  <extension
          point="org.eclipse.ui.menus">
       <menuContribution
             locationURI="toolbar:com.xmos.xta.rcp.views.Tree">
          <command
-               commandId="com.xmos.xta.rcp.settings.command"
+               commandId="com.xmos.xta.rcp.tree.settings.command"
                icon="icons/settings.png"
-               id="com.xmos.xta.rcp.settings.command"
+               id="com.xmos.xta.rcp.tree.settings.command"
                label="Settings"
                style="push">
          </command>
          <command
-               commandId="com.xmos.xta.rcp.load.command"
+               commandId="com.xmos.xta.rcp.tree.load.command"
                icon="icons/load.png"
-               id="com.xmos.xta.rcp.load.command"
+               id="com.xmos.xta.rcp.tree.load.command"
                label="Load"
                style="push">
          </command>
          <command
-               commandId="com.xmos.xta.rcp.run.command"
+               commandId="com.xmos.xta.rcp.tree.run.command"
                icon="icons/run.png"
-               id="com.xmos.xta.rcp.run.command"
+               id="com.xmos.xta.rcp.tree.run.command"
                label="Run"
                style="push">
          </command>
       </menuContribution>
+      <menuContribution
+            locationURI="toolbar:com.xmos.xta.rcp.views.Function">
+         <command
+               commandId="com.xmos.xta.rcp.function.loops.command"
+               icon="icons/loop.png"
+               id="com.xmos.xta.rcp.function.loops.command"
+               label="Show loops"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension> <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.TreeLoadHandler"
+            id="com.xmos.xta.rcp.tree.load.command"
+            name="com.xmos.xta.rcp.tree.load.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.TreeRunHandler"
+            id="com.xmos.xta.rcp.tree.run.command"
+            name="com.xmos.xta.rcp.tree.run.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.TreeSettingsHandler"
+            id="com.xmos.xta.rcp.tree.settings.command"
+            name="com.xmos.xta.rcp.tree.settings.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.FunctionLoopsHandler"
+            id="com.xmos.xta.rcp.function.loops.command"
+            name="com.xmos.xta.rcp.function.loops.command">
+      </command>command>
    </extension>
- 
    <extension
          point="org.eclipse.ui.editors.markerAnnotationSpecification">
       <specification

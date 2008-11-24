@@ -8,11 +8,11 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.xmos.xta.rcp.views.TreeView;
 
-public class RunHandler extends AbstractHandler implements IHandler {
+public class TreeRunHandler extends AbstractHandler implements IHandler {
     public static final boolean DEBUG = false;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		if (DEBUG) System.out.printf("RunHandler: execute\n");	
+		if (DEBUG) System.out.printf("TreeRunHandler: execute\n");	
 
 		TreeView control = (TreeView)HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().findView(TreeView.ID);
 		control.executeRun();
