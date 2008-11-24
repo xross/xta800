@@ -166,7 +166,7 @@ sub DoBuild
   if ($HOST eq "PC") {
     system("buildrcp_win32.bat");
   } elsif ($HOST eq "Cygwin") {
-    system("buildrcp_win32.bat");
+    system("sh buildrcp_cygwin.sh");
   } elsif ($HOST eq "Mac") {
     system("sh buildrcp_mac.sh");
   } else {
