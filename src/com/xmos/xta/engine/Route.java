@@ -221,6 +221,10 @@ public class Route {
 			searching.build();
 			searching = nextBlock();
 			cleanSchedule();
+			if(this.m_executionStates.size() > m_config.m_maxNumPaths){
+				m_status = RouteStatus.MAX_NUM_PATHS;
+				break;
+			}
 		}
 	}
 

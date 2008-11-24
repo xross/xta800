@@ -23,7 +23,8 @@ public class CommandFactory {
 		new Pwd(),
 		new Config(),
 		new Help(), 
-		new Exit()
+		new Exit(),
+		new Mode()
 	};
 	
 	public static Command[] getCommands() {
