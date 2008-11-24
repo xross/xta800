@@ -1,7 +1,7 @@
 ROOT=`pwd`
-BUILD_DIR=/tmp/xta/macosx
-BUILD_OUTPUT=build.output.macosx
-TARGET=xta.macosx.zip
+BUILD_DIR=/tmp/xta/mac
+BUILD_OUTPUT=build.output.mac
+TARGET=xta.mac.zip
 ECLIPSE_DIR=/tools/eclipse/eclipse-SDK-3.4.1-linux-gtk-x86_64/
 LIB_DOMAIN=infr_libs_java
 XTA_DOMAIN=tools_xta
