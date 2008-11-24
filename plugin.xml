@@ -110,6 +110,16 @@
                style="push">
          </command>
       </menuContribution>
+      <menuContribution
+            locationURI="toolbar:com.xmos.xta.rcp.views.Structure">
+         <command
+               commandId="com.xmos.xta.rcp.structure.circle.command"
+               icon="icons/loop.png"
+               id="com.xmos.xta.rcp.structure.circle.command"
+               label="Draw circle"
+               style="push">
+         </command>
+      </menuContribution>
    </extension> <extension
          point="org.eclipse.ui.commands">
       <command
@@ -131,6 +141,11 @@
             defaultHandler="com.xmos.xta.rcp.handlers.FunctionLoopsHandler"
             id="com.xmos.xta.rcp.function.loops.command"
             name="com.xmos.xta.rcp.function.loops.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.StructureCircleHandler"
+            id="com.xmos.xta.rcp.structure.circle.command"
+            name="com.xmos.xta.rcp.structure.circle.command">
       </command>command>
    </extension>
    <extension

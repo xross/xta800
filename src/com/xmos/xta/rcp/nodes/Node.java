@@ -21,14 +21,17 @@ public abstract class Node {
     public abstract int getInstanceId();
 
 	public abstract double getTimeTaken();
+	public abstract double getTimeTakenThis();
     public abstract int getNumCycles();
         
     public abstract String getDescription();
     public abstract String getToolTipText();
     public abstract String getTypeName();
     
+    public abstract boolean isBlockNode();
     public abstract boolean isLoopNode();
     public abstract boolean isPathNode();
+    public abstract boolean isRouteNode();
     public abstract int getNumIterations();
     public abstract Vector<XtaInstruction> getInstructions();
     public abstract HashSet<Integer> getPcsCovered();
