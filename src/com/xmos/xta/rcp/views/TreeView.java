@@ -47,6 +47,9 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 
     private boolean m_exhustive;
     private boolean m_fnops;
+    private boolean m_allInstances;
+    private boolean m_absoluteCount;
+    private int m_numIterations;
     
 	public TreeView() {
 		if (DEBUG) System.out.printf("Tree()\n");			
@@ -54,6 +57,9 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		
 		m_exhustive = false;
 		m_fnops = true;
+		m_allInstances = false;
+		m_absoluteCount = false;
+		m_numIterations = 0;
 	}
 
 	public void createPartControl(Composite parent) {
@@ -181,13 +187,33 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		XtaEngine.getEngine().setNumThreads(numThreads);
 	}
 	
-	public void setAllInstances(boolean allInstances) {		
-	}
-
-	public void setAbsoluteCount(boolean allInstances) {		
+	public boolean getAllInstances() {
+		return m_allInstances;
 	}
 	
-	public int setNumIterations(int numIterations) {
+	public void setAllInstances(boolean allInstances) {	
+		m_allInstances = allInstances;
+	}
+
+	public boolean getAbsoluteCount() {
+		return m_absoluteCount;
+	}
+	
+	public void setAbsoluteCount(boolean allInstances) {
+		m_absoluteCount = allInstances;
+	}
+
+	public int getNumIterations() {
+		return m_numIterations;
+	}
+	
+	public int setNumIterations(int numIterations, int id, int instanceId) {
+		if (m_allInstances) {
+			XtaEngine.getEngine().setLoopIterations(id, true, m_absoluteCount, numIterations);
+		} else {
+			XtaEngine.getEngine().setLoopIterations(instanceId, false, m_absoluteCount, numIterations);		
+		}
+		m_numIterations = numIterations;
 		return 0;
 	}
 	

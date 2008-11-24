@@ -14,7 +14,13 @@ import org.eclipse.ui.PlatformUI;
 import com.xmos.xta.rcp.views.TreeView;
 
 public class Iterations {
-    public Iterations(final TreeView treeView) {    	
+	int m_id;
+	int m_instanceId;
+	
+    public Iterations(final TreeView treeView, int id, int instanceId) {
+    	m_id = id;
+    	m_instanceId = instanceId;
+    	
     	Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 	    Shell dialog = new Shell(shell, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
 	    
@@ -27,7 +33,7 @@ public class Iterations {
 	    	    
 	    createAllInstancesControl(dialog, treeView);
 		createAbsoluteCountControl(dialog, treeView);
-		createNumIterationsControl(dialog, treeView);
+		createNumIterationsControl(dialog, treeView, id, instanceId);
 		dialog.open();    	
     }
 
@@ -39,37 +45,37 @@ public class Iterations {
 	
 	private void createAllInstancesControl(Composite parent, final TreeView treeView) {
 		createControlLabel(parent, "Apply to all instances:");
-		final Button exhustive = new Button(parent, SWT.CHECK);
-		exhustive.setSelection(treeView.getExhustive());		
-		exhustive.addSelectionListener(new SelectionAdapter() {
+		final Button button = new Button(parent, SWT.CHECK);
+		button.setSelection(treeView.getAllInstances());		
+		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				treeView.setAllInstances(exhustive.getSelection());
+				treeView.setAllInstances(button.getSelection());
 			}			
 		});
 	}	    
 		
     private void createAbsoluteCountControl(Composite parent, final TreeView treeView) {
 		createControlLabel(parent, "Make count absolute:");
-		final Button fnops = new Button(parent, SWT.CHECK);
-		fnops.setSelection(treeView.getFnops());		
-		fnops.addSelectionListener(new SelectionAdapter() {
+		final Button button = new Button(parent, SWT.CHECK);
+		button.setSelection(treeView.getAbsoluteCount());		
+		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				treeView.setAbsoluteCount(fnops.getSelection());
+				treeView.setAbsoluteCount(button.getSelection());
 			}			
 		});
     }
 
-    private void createNumIterationsControl(Composite parent, final TreeView treeView) {
+    private void createNumIterationsControl(Composite parent, final TreeView treeView, int id, int instanceId) {
 		createControlLabel(parent, "Num Iterations:");
-		final Spinner frequency = new Spinner(parent, SWT.BORDER);
-		frequency.setMinimum(0);
-		frequency.setMaximum(1000);
-		frequency.setSelection(treeView.getFrequency());
-		frequency.setIncrement(1);
-	    frequency.setPageIncrement(10);
-	    frequency.addSelectionListener(new SelectionAdapter() {
+		final Spinner spinner = new Spinner(parent, SWT.BORDER);
+		spinner.setMinimum(0);
+		spinner.setMaximum(1000);
+		spinner.setSelection(treeView.getNumIterations());
+		spinner.setIncrement(1);
+		spinner.setPageIncrement(10);
+		spinner.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				treeView.setNumIterations(frequency.getSelection());
+				treeView.setNumIterations(spinner.getSelection(), m_id, m_instanceId);
 			}			
 		});
     }
