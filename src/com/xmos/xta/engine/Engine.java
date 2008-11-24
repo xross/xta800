@@ -33,6 +33,7 @@ public class Engine {
     private Vector<Reference> m_exclusions;
     private boolean m_abort;
     private InstructionDecodeCache m_instructionDecodeCache;
+    private boolean m_resolveExpression;
     
     public Engine(Config config) {
         m_xeLoader = new XeLoader();
@@ -48,7 +49,7 @@ public class Engine {
         m_displayers = new Vector<Displayer>();
         m_exclusions = new Vector<Reference>();
         m_abort = false;
-
+        m_resolveExpression = false;
     }
 
     public Config getConfig() {
@@ -127,6 +128,7 @@ public class Engine {
     }
 
     public boolean analyseRoute(String functionName, boolean resolveExpression) {
+    	resolveExpression = resolveExpression| m_resolveExpression;
         if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
             setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
                     m_nodeId, m_coreId, m_executableFile));        	
@@ -195,7 +197,7 @@ public class Engine {
     public boolean analyseRoute(String from, String to, boolean resolveExpression) {
         Reference fromRef = new Reference(from);
         Reference toRef = new Reference(to);     
-
+        resolveExpression = resolveExpression| m_resolveExpression;
         if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
             setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
                     m_nodeId, m_coreId, m_executableFile));        	
@@ -514,6 +516,10 @@ public class Engine {
         DebugInfo debugInfo = m_xeLoader.getDebugInfo(m_nodeId, m_coreId);
         return ref.resolve(debugInfo);
     }
+
+	public void setDynamicMode(boolean b) {
+		m_resolveExpression = b;
+	}
 
 
 }

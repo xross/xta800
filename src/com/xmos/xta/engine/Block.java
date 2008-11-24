@@ -250,13 +250,10 @@ public class Block implements Comparable<Block> {
 		instruction.execute(m_machineState, m_currentThread);
 		addInstruction(instruction);
 
-		if(isInfiniteLoop(instruction, m_machineState, m_currentThread)){
-			setStatus(BlockStatus.ERROR);
-			return;
-		}
-		
-		
-		
+		//if(isInfiniteLoop(instruction, m_machineState, m_currentThread)){
+		//	setStatus(BlockStatus.ERROR);
+		//	return;
+		//}
 		
 		if (isComplete(instruction, pc)) {
 			setStatus(BlockStatus.COMPLETE);
@@ -277,10 +274,12 @@ public class Block implements Comparable<Block> {
 					return;
 				} else {
 					if (instruction.getReturn()) {
+					 if(DEBUG) System.out.println("pop");
 						popFunction();
 					}
 					checkForLoopFormation(jumpTarget, false, instruction, true, false);
 					if (instruction.getBranchLink()) {
+						if(DEBUG) System.out.println("push");
 						pushFunction(pc);
 					}
 					return;

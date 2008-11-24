@@ -159,8 +159,21 @@ sub DoBuild
 {
   chdir("$TOOLS_XTA") or die("Build failed to find $TOOLS_XTA\n");
   system("$MAKE $MAKE_FLAGS");
+
   system("ant");
   die() if ($? != 0);
+
+  if ($HOST eq "PC") {
+    system("buildrcp_win32.bat");
+  } elsif ($HOST eq "Cygwin") {
+    system("sh buildrcp_cygwin.sh");
+  } elsif ($HOST eq "Mac") {
+    system("sh buildrcp_mac.sh");
+  } else {
+    system("sh buildrcp_linux.sh");
+  }
+  die() if ($? != 0);
+
   chdir("$BUILDPATH") or die("oops");
 }
 

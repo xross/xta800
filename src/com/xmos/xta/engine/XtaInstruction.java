@@ -963,7 +963,7 @@ public abstract class XtaInstruction extends Instruction {
             
         state.m_op1 = new Expression(Expression.OperatorType.ADD);
         state.m_op1.addOperand(stackPointer);
-        state.m_op1.addOperand(wordOffset);        	
+        state.m_op1.addOperand(wordOffset);   
     }
 
     void LDC(MachineState state, int thread) {
@@ -1007,9 +1007,10 @@ public abstract class XtaInstruction extends Instruction {
 
     	if (state.m_op2.canResolve() && state.m_op3.canResolve()) {
     	    // The address is resolvable so we can read the expression from 'memory'
+    		
     	    state.m_op2.resolve();
             state.m_op3.resolve();
-            state.m_op1 = state.readMemory(state.m_op2.getValue() + state.m_op3.getValue());    	    
+            state.m_op1 = state.readMemory(state.m_op2.getValue() + state.m_op3.getValue());  
     	}
     	else
     	{
@@ -1024,22 +1025,45 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDWCP\n", getPc());	
 
-    	//TODO (Just assign an undefined value to the destination register for now...)    	
-    	state.m_op1 = new Expression(state.m_op1Fld, 0, 
-			    Expression.Type.REGISTER, Expression.Status.UNDEFINED);    	
+    	Expression dp = state.getConstPoolRegister(thread);
+    	Expression offset = state.m_op2;
+    	if(offset.canResolve() && dp.canResolve()){
+    		int address = dp.getValue() + ((offset.getValue())<<2);
+    		Expression ex = state.readMemory(address);
+    		state.m_op1 = ex; 
+    	} else {
+    		state.m_op1 = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.DEFINED);
+    	}	
     }
 
     void LDWCPL(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDWCPL\n", getPc());	
-
-    	//TODO
+    	Expression dp = state.getConstPoolRegister(thread);
+    	Expression offset = state.m_op2;
+    	if(offset.canResolve() && dp.canResolve()){
+    		int address = dp.getValue() + ((offset.getValue())<<2);
+    		Expression ex = state.readMemory(address);
+    		state.m_op1 = ex; 
+    	} else {
+    		Expression ex = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.DEFINED);
+    		state.getResources().getThread(thread).getRegisters().writeRegister(11, ex); 
+    	}	
     }
 
     void LDWDP(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDWDP\n", getPc());		
-    	state.m_op1 = new Expression(state.getDataPoolRegister(thread));    	
+    	
+    	Expression dp = state.getDataPoolRegister(thread);
+    	Expression offset = state.m_op2;
+    	if(offset.canResolve() && dp.canResolve()){
+    		int address = dp.getValue() + ((offset.getValue())<<2);
+    		Expression ex = state.readMemory(address);
+    		state.m_op1 = ex; 
+    	} else {
+    		state.m_op1 = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.DEFINED);
+    	}	
     }
 
     void LDWSP(MachineState state, int thread) {
@@ -1320,6 +1344,7 @@ public abstract class XtaInstruction extends Instruction {
     	    setIsLoadStore(false);
     	}
     	
+    	
         state.jump(jumpTarget);
         setReturn(true);
     }
@@ -1591,7 +1616,9 @@ public abstract class XtaInstruction extends Instruction {
             // The address is resolvable so we can write the expression from 'memory'
             state.m_op2.resolve();
             state.m_op3.resolve();
-            state.writeMemory(state.m_op2.getValue() + state.m_op3.getValue(), state.m_op1);            
+            int valueToStore = state.m_op2.getValue() + state.m_op3.getValue();
+            
+            state.writeMemory(valueToStore, state.m_op1);            
         }
     }
 

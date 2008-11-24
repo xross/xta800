@@ -117,8 +117,8 @@ public class Route {
 		Stack<TreeSet<Integer>> context = new Stack<TreeSet<Integer>>();
 		context.push(new TreeSet<Integer>());
 
-		
 		MachineState initialState = new MachineState(symbolTable, memoryImage);
+
 		BlockCommonComponents bc = null;
 
 		if (m_functionName != null) {
@@ -221,6 +221,10 @@ public class Route {
 			searching.build();
 			searching = nextBlock();
 			cleanSchedule();
+			if(this.m_executionStates.size() > m_config.m_maxNumPaths){
+				m_status = RouteStatus.MAX_NUM_PATHS;
+				break;
+			}
 		}
 	}
 

@@ -9,7 +9,7 @@ import org.eclipse.ui.PlatformUI;
 import com.xmos.xeobject.FileFinder;
 
 public class XtaFileFinder implements FileFinder {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     
 	public File openFileFinder(String fileToFind) {
 		if (DEBUG) System.out.printf("XtaFileFinder: openFileFinder: %s\n", fileToFind);					
@@ -17,7 +17,10 @@ public class XtaFileFinder implements FileFinder {
         fileDialog.setText("Open Source File: " + fileToFind);
         String[] filterExt = { fileToFind };
         fileDialog.setFilterExtensions(filterExt);
-        String xeFileName = fileDialog.open();
- 		return new File(xeFileName);
+        String xeFileName = fileDialog.open();        
+        if (xeFileName != null) {
+ 		    return new File(xeFileName);
+        }
+        return null;
 	}
 }
