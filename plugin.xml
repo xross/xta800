@@ -7,128 +7,136 @@
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
-               class="com.xmos.xtagui.Application">
+               class="com.xmos.xta.rcp.Application">
          </run>
       </application>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            name="Xta Perspective"
-            class="com.xmos.xtagui.XtaPerspective"
-            id="com.xmos.xtagui.Perspective">
+            name="com.xmos.xta.rcp.XtaPerspective"
+            class="com.xmos.xta.rcp.XtaPerspective"
+            id="com.xmos.xta.rcp.XtaPerspective">
       </perspective>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="com.xmos.xtagui.editors.Sources"
+            class="com.xmos.xta.rcp.editors.Sources"
             default="false"
-            id="com.xmos.xtagui.editors.Sources"
+            id="com.xmos.xta.rcp.editors.Sources"
             name="Sources">
       </editor>
       <editor
-            class="com.xmos.xtagui.editors.XtaEditor"
+            class="com.xmos.xta.rcp.editors.XtaEditor"
             default="false"
-            id="com.xmos.xtagui.editors.Test"
-            name="Test">
+            id="com.xmos.xta.rcp.editors.XtaEditor"
+            name="XtaEditor">
       </editor>
    </extension>
    <extension
          point="org.eclipse.ui.views">
       <view
-            class="com.xmos.xtagui.views.TreeView"
-            id="com.xmos.xtagui.views.Tree"
+            class="com.xmos.xta.rcp.views.TreeView"
+            id="com.xmos.xta.rcp.views.Tree"
             name="Tree"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.LoopView"
-            id="com.xmos.xtagui.views.Loop"
-            name="Loop"
-            restorable="true">
-      </view>
-      <view
-            class="com.xmos.xtagui.views.ConsoleView"
-            id="com.xmos.xtagui.views.Console"
+            class="com.xmos.xta.rcp.views.ConsoleView"
+            id="com.xmos.xta.rcp.views.Console"
             name="Console"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.ErrorsView"
-            id="com.xmos.xtagui.views.Errors"
+            class="com.xmos.xta.rcp.views.ErrorsView"
+            id="com.xmos.xta.rcp.views.Errors"
             name="Errors"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.FunctionView"
-            id="com.xmos.xtagui.views.Function"
+            class="com.xmos.xta.rcp.views.FunctionView"
+            id="com.xmos.xta.rcp.views.Function"
             name="Function"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.FlowView"
-            id="com.xmos.xtagui.views.Flow"
+            class="com.xmos.xta.rcp.views.FlowView"
+            id="com.xmos.xta.rcp.views.Flow"
             name="Flow"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xtagui.views.StructureView"
-            id="com.xmos.xtagui.views.Structure"
+            class="com.xmos.xta.rcp.views.StructureView"
+            id="com.xmos.xta.rcp.views.Structure"
             name="Structure"
             restorable="true">
       </view>
    </extension>
+  
    <extension
-         point="org.eclipse.ui.commands">
-      <command
-            defaultHandler="com.xmos.xtagui.handlers.LoadHandler"
-            id="com.xmos.xtagui.load.command"
-            name="com.xmos.xtagui.load.command">
-      </command>
-      <command
-            defaultHandler="com.xmos.xtagui.handlers.RunHandler"
-            id="com.xmos.xtagui.run.command"
-            name="com.xmos.xtagui.run.command">
-      </command>
-      <command
-            defaultHandler="com.xmos.xtagui.handlers.SettingsHandler"
-            id="com.xmos.xtagui.settings.command"
-            name="com.xmos.xtagui.settings.command">
-      </command>
-   </extension>
-  <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="toolbar:com.xmos.xtagui.views.Tree">
+            locationURI="toolbar:com.xmos.xta.rcp.views.Tree">
          <command
-               commandId="com.xmos.xtagui.settings.command"
+               commandId="com.xmos.xta.rcp.tree.settings.command"
                icon="icons/settings.png"
-               id="com.xmos.xtagui.settings.command"
+               id="com.xmos.xta.rcp.tree.settings.command"
                label="Settings"
                style="push">
          </command>
          <command
-               commandId="com.xmos.xtagui.load.command"
+               commandId="com.xmos.xta.rcp.tree.load.command"
                icon="icons/load.png"
-               id="com.xmos.xtagui.load.command"
+               id="com.xmos.xta.rcp.tree.load.command"
                label="Load"
                style="push">
          </command>
          <command
-               commandId="com.xmos.xtagui.run.command"
+               commandId="com.xmos.xta.rcp.tree.run.command"
                icon="icons/run.png"
-               id="com.xmos.xtagui.run.command"
+               id="com.xmos.xta.rcp.tree.run.command"
                label="Run"
                style="push">
          </command>
       </menuContribution>
+      <menuContribution
+            locationURI="toolbar:com.xmos.xta.rcp.views.Function">
+         <command
+               commandId="com.xmos.xta.rcp.function.loops.command"
+               icon="icons/loop.png"
+               id="com.xmos.xta.rcp.function.loops.command"
+               label="Show loops"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension> <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.TreeLoadHandler"
+            id="com.xmos.xta.rcp.tree.load.command"
+            name="com.xmos.xta.rcp.tree.load.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.TreeRunHandler"
+            id="com.xmos.xta.rcp.tree.run.command"
+            name="com.xmos.xta.rcp.tree.run.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.TreeSettingsHandler"
+            id="com.xmos.xta.rcp.tree.settings.command"
+            name="com.xmos.xta.rcp.tree.settings.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.FunctionLoopsHandler"
+            id="com.xmos.xta.rcp.function.loops.command"
+            name="com.xmos.xta.rcp.function.loops.command">
+      </command>command>
    </extension>
- 
    <extension
          point="org.eclipse.ui.editors.markerAnnotationSpecification">
       <specification
-            annotationType="com.xmos.xtagui.path"
+            annotationType="com.xmos.xta.rcp.path"
             textPreferenceKey="errorIndication"
             textPreferenceValue="true"
             presentationLayer="6"
@@ -158,11 +166,35 @@
    <extension
          point="org.eclipse.ui.editors.annotationTypes">
       <type
-         name="com.xmos.xtagui.path"
+         name="com.xmos.xta.rcp.path"
          super="org.eclipse.ui.workbench.texteditor.error"
          markerType=""
          markerSeverity="2">
       </type>
+   </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="tools_xta.application"
+            name="tools_xta">
+         <property
+               name="appName"
+               value="tools_xta">
+         </property>
+      </product>
+   </extension>
+   <extension
+         id="product1"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="tools_xta.application"
+            name="Xmos Timing Anaylsis">
+         <property
+               name="appName"
+               value="Xmos Timing Anaylsis">
+         </property>
+      </product>
    </extension>
   
 </plugin>

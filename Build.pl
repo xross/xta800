@@ -159,8 +159,17 @@ sub DoBuild
 {
   chdir("$TOOLS_XTA") or die("Build failed to find $TOOLS_XTA\n");
   system("$MAKE $MAKE_FLAGS");
+
   system("ant");
   die() if ($? != 0);
+
+  if ($HOST eq "PC"){
+    system("buildrcp.bat");
+  }else{
+    system("sh buildrcp.sh");
+  }
+  die() if ($? != 0);
+
   chdir("$BUILDPATH") or die("oops");
 }
 
@@ -172,8 +181,8 @@ sub DoInstall
   XmosBuildLib::InstallFile("$DOMAIN", "lib", "xta.jar");
   #XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xta.jar", "bin");
 
-  XmosBuildLib::InstallFile("$DOMAIN", "lib", "xtagui.jar");
-  #XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xtagui.jar", "bin");
+  XmosBuildLib::InstallFile("$DOMAIN", "lib", "xtaswing.jar");
+  #XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xtaswing.jar", "bin");
 
   chdir("$BUILDPATH") or die("oops");
 }

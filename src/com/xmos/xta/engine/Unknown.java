@@ -2,7 +2,7 @@ package com.xmos.xta.engine;
 
 import javax.swing.ImageIcon;
 
-import com.xmos.xta.gui.XtaGui;
+import com.xmos.xta.swing.XtaGui;
 
 public class Unknown {
     /*

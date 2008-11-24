@@ -1,7 +1,6 @@
 package com.xmos.xta.console.displayers;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
