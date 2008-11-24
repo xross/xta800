@@ -1,5 +1,5 @@
 ROOT=`pwd`
-BUILD_DIR=/tmp/xta
+BUILD_DIR=/tmp/xta/linux_x86-64
 BUILD_OUTPUT=build.output.linux_x86-64
 TARGET=xta.linux_x86-64.zip
 ECLIPSE_DIR=/tools/eclipse/eclipse-SDK-3.4.1-linux-gtk-x86_64/
@@ -13,7 +13,7 @@ mkdir -p $BUILD_DIR/build_config
 
 cp -r $ROOT/../$LIB_DOMAIN/* $BUILD_DIR/build/plugins/$LIB_DOMAIN
 cp -r $ROOT/../$XTA_DOMAIN/* $BUILD_DIR/build/plugins/$XTA_DOMAIN
-cp $ROOT/build.properties.linux_x86-64 $BUILD_DIR/build_config/build.properties
+cp $ROOT/build.properties.linux $BUILD_DIR/build_config/build.properties
 
 export CLASSPATH=
 

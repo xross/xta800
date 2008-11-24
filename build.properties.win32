@@ -105,7 +105,7 @@ tarargs=
 ############## BUILD NAMING CONTROL ################
 # The directory into which the build elements are fetched and where
 # the build takes place.
-buildDirectory=C:\\tmp\\xta\\build
+buildDirectory=C:\\tmp\\xta\\win32\\build
 
 
 # Type of build.  Used in naming the build output.  Typically this value is

@@ -163,10 +163,14 @@ sub DoBuild
   system("ant");
   die() if ($? != 0);
 
-  if ($HOST eq "PC"){
-    system("buildrcp.bat");
-  }else{
-    system("sh buildrcp.sh");
+  if ($HOST eq "PC") {
+    system("buildrcp_win32.bat");
+  } elsif ($HOST eq "Cygwin") {
+    system("buildrcp_win32.bat");
+  } elsif ($HOST eq "Mac") {
+    system("sh buildrcp_mac.sh");
+  } else {
+    system("sh buildrcp_linux.sh");
   }
   die() if ($? != 0);
 

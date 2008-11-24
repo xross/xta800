@@ -4,9 +4,9 @@ echo %CD%>tmpFile
 set /p ROOT=<tmpFile
 del /Q tmpFile
 
-set BUILD_DIR=C:\tmp\xta
-set BUILD_OUTPUT=build.output.win32
-set TARGET=xta.win32.zip
+set BUILD_DIR=C:\tmp\xta\cygwin
+set BUILD_OUTPUT=build.output.cygwin
+set TARGET=xta.cygwin.zip
 set ECLIPSE_DIR=C:\eclipse\eclipse-SDK-3.4.1-win32
 set LIB_DOMAIN=infr_libs_java
 set XTA_DOMAIN=tools_xta
@@ -28,5 +28,6 @@ tail -2 %BUILD_OUTPUT%
 
 mkdir %ROOT%\bin
 del /Q %ROOT%\bin\%TARGET%
-copy /Y %BUILD_DIR%\build\I.TestBuild\*.zip %ROOT%\bin\%TARGET%
+xcopy /i /Y %BUILD_DIR%\build\I.TestBuild\*.zip %ROOT%\bin\
+move %ROOT%\bin\TestBuild*.zip %ROOT%\bin\%TARGET%
 
