@@ -2,12 +2,12 @@
 use strict;
 use warnings;
 
-my $genDir = $ARGV[0];
-shift @ARGV;
-my $arch = $ARGV[0];
-shift @ARGV;
-
+my $genDir  = shift(@ARGV);
+my $arch    = shift(@ARGV);
+my $noBuild = shift(@ARGV);
+if (!$noBuild) {
 system("xcc -march=$arch -std=c99 -g test.c -o $genDir/test.xe > $genDir/float_library.log 2>&1");
+}
 system("@ARGV load $genDir/test.xe " .
        "function main " .
        "status " .

@@ -3,43 +3,51 @@ Complete paths:   2
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
-    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
+    pathi\(2\)   : 140.0/7/6/1/0/1/0, path\(2\)
+    pathi\(1\)   : 140.0/7/6/1/0/1/0, path\(1\)
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
-    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
+    pathi\(2\)   : 140.0/7/6/1/0/1/0, path\(2\)
+    pathi\(1\)   : 140.0/7/6/1/0/1/0, path\(1\)
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
-        \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .* 
-[^^^]
-        \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .* 
-[^^^]
-    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
-        \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .* 
-[^^^]
-        \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .* 
-[^^^]
-  1: int a = 2;
+    pathi\(2\)   : 140.0/7/6/1/0/1/0, path\(2\)
+        \(20.0ns\) 0x10190 --FNOP--  
+        \(20.0ns\) 0x10190 LDC_ru6 r0, i 0x0 
+        \(20.0ns\) 0x10192 LDC_ru6 r1, i 0x2 
+        \(20.0ns\) 0x10194 EQ_2rus r1, r1, i 0x2 
+        \(20.0ns\) 0x10196 BRFT_ru6 r1, i 0x2 
+        \(20.0ns\) 0x10198 BRFU_u6 i 0x2 
+        \(20.0ns\) 0x1019c RETSP_u6 i 0x0 
+    pathi\(1\)   : 140.0/7/6/1/0/1/0, path\(1\)
+        \(20.0ns\) 0x10190 --FNOP--  
+        \(20.0ns\) 0x10190 LDC_ru6 r0, i 0x0 
+        \(20.0ns\) 0x10192 LDC_ru6 r1, i 0x2 
+        \(20.0ns\) 0x10194 EQ_2rus r1, r1, i 0x2 
+        \(20.0ns\) 0x10196 BRFT_ru6 r1, i 0x2 
+        \(20.0ns\) 0x1019a LDC_ru6 r0, i 0x2 
+        \(20.0ns\) 0x1019c RETSP_u6 i 0x0 
+  1: 
   2: int main\(\)
 \+ 3: {
   4:   int b = 0;
-\+ 5:   if \(a == 2\)
-  6:   {
-\+ 7:     b = 2;
-  8:   }
-\+ 9:   return b;
-  10: }
-  11: 
-  1: int a = 2;
+\+ 5:   int a = 2;
+\+ 6:   if \(a == 2\)
+  7:   {
+\+ 8:     b = 2;
+  9:   }
+\+ 10:   return b;
+  11: }
+  12: 
+  1: 
   2: int main\(\)
 \+ 3: {
   4:   int b = 0;
-\+ 5:   if \(a == 2\)
-  6:   {
-  7:     b = 2;
-  8:   }
-\+ 9:   return b;
-  10: }
-  11: 
+\+ 5:   int a = 2;
+\+ 6:   if \(a == 2\)
+  7:   {
+  8:     b = 2;
+  9:   }
+\+ 10:   return b;
+  11: }
+  12: 

@@ -2,13 +2,13 @@
 use strict;
 use warnings;
 
-my $genDir = $ARGV[0];
-shift @ARGV;
-my $arch = $ARGV[0];
-shift @ARGV;
+my $genDir  = shift(@ARGV);
+my $arch    = shift(@ARGV);
+my $noBuild = shift(@ARGV);
 
+if (!$noBuild) {
 system("xcc -march=$arch test1.xc -o $genDir/test1.xe > $genDir/load_twice.log 2>&1");
 system("xcc -march=$arch test2.xc -o $genDir/test2.xe > $genDir/load_twice.log 2>&1");
-
+}
 system("@ARGV load $genDir/test1.xe status load $genDir/test2.xe status exit > $genDir/load_twice.txt 2>&1");
 
