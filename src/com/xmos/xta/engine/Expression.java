@@ -41,7 +41,7 @@ public class Expression {
 	private Status m_status;
 	private OperatorType m_operator;
 	private Expression[] m_operands;	
-	private int m_numOperands;	
+	private int m_numOperands;
 
 	// Terminal Constructor
 	Expression(int address, int value, Type type, Status status) {
@@ -71,7 +71,7 @@ public class Expression {
 	}
 	
 	// Copy Constructor
-	Expression(Expression expression) {		
+	Expression(Expression expression) {	
 		m_address     = expression.m_address;
 		m_value       = expression.m_value;
 		m_type        = expression.m_type;

@@ -3,9 +3,10 @@ package com.xmos.xta.engine;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.resources.Resources;
+import com.xmos.xta.engine.resources.Thread;
 
 public class MachineState {
-	
+	public static final boolean DEBUG = false;
     public static enum BranchState {
         TAKEN, NOTTAKEN, UNKNOWN
     }
@@ -55,10 +56,26 @@ public class MachineState {
         m_resources = new Resources();
         m_resources.addThread();
         setStackPointerRegister(new Expression(memoryImage.getMemoryBase() + memoryImage.getMemorySize()), 0);
-        
+        initialiseRegisters(symbolTable);
+        initialiseMemory(memoryImage);
     }
 
-    MachineState(MachineState machineState) {
+    private void initialiseMemory(MemoryImage memoryImage) {
+    	m_memory.blockWrite(memoryImage.getCpStart(), memoryImage.getCpEnd()-memoryImage.getCpStart(), memoryImage);
+    	m_memory.blockWrite(memoryImage.getDpStart(), memoryImage.getDpEnd() - memoryImage.getDpStart(), memoryImage);
+		
+	}
+
+	private void initialiseRegisters(SymbolTable symbolTable) {
+		int cpStart = symbolTable.symbolAddress("_cp");
+		int dpStart = symbolTable.symbolAddress("_dp");
+		for(Thread thread : m_resources.getThreads()){
+			thread.getRegisters().writeRegister(DP_REG_NUM, new Expression(dpStart));
+			thread.getRegisters().writeRegister(CP_REG_NUM, new Expression(cpStart));
+		}
+	}
+
+	MachineState(MachineState machineState) {
         m_opcode = machineState.m_opcode;
         m_op1Fld = machineState.m_op1Fld;
         m_op2Fld = machineState.m_op2Fld;
@@ -245,11 +262,25 @@ public class MachineState {
     }
 
     Expression readMemory(int address) {
-        return m_memory.read(address);
+    	
+    	Expression read = m_memory.wordRead(address);
+    	if(read.canResolve()){
+    		if(DEBUG) System.out.println("read 0x" + Integer.toHexString(read.getValue())  + " from 0x" + 
+    				Integer.toHexString(address));
+    	} else {
+    		if(DEBUG) System.out.println("read unknown from 0x" + Integer.toHexString(address));
+    	}
+        return read;
     }
 
     void writeMemory(int address, Expression value) {
-        m_memory.write(address, value);
+    	if(value.canResolve()){
+    		if(DEBUG) System.out.println("\twrite to memory: 0x" + Integer.toHexString(value.getValue()) + " at 0x" 
+        			+Integer.toHexString(address));
+        } else {
+        	if(DEBUG) System.out.println("\twrite to memory:  unknown to 0x" + Integer.toHexString(address));
+        }
+        m_memory.wordWrite(address, value);
     }
 
     void resetInstructionState() {

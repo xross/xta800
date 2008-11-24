@@ -117,8 +117,8 @@ public class Route {
 		Stack<TreeSet<Integer>> context = new Stack<TreeSet<Integer>>();
 		context.push(new TreeSet<Integer>());
 
-		
 		MachineState initialState = new MachineState(symbolTable, memoryImage);
+
 		BlockCommonComponents bc = null;
 
 		if (m_functionName != null) {
