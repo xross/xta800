@@ -9,11 +9,11 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import com.xmos.xta.rcp.dialogs.Settings;
 import com.xmos.xta.rcp.views.TreeView;
 
-public class SettingsHandler extends AbstractHandler implements IHandler {
+public class TreeSettingsHandler extends AbstractHandler implements IHandler {
     public static final boolean DEBUG = false;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		if (DEBUG) System.out.printf("SettingsHandler: execute\n");		
+		if (DEBUG) System.out.printf("TreeSettingsHandler: execute\n");		
 		
 		final TreeView treeView = (TreeView)HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().findView(TreeView.ID);
 		

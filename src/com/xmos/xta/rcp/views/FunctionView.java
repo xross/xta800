@@ -31,11 +31,11 @@ import com.xmos.xta.rcp.nodes.Node;
 
 public class FunctionView extends ViewPart implements IPropertyChangeListener, 
                                                       ISelectionListener {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public static final String ID = "com.xmos.xta.rcp.views.Function";
 
     private Display m_display;
-    private Canvas m_canvas;
+    private Canvas m_canvas = null;
 
     private SymbolTable m_table;
     private Node m_selectedNode;
@@ -55,12 +55,15 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
     private Vector<Color> m_colors;
     private HashMap<String, Color> m_functionColors;
 
+    private boolean m_showLoops;
+    
 	public FunctionView() {
 		if (DEBUG) System.out.printf("Function()\n");			
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 		
 		m_blockList = new Vector<XtaCodeBlock>();
         m_functionColors = new HashMap<String, Color>();
+        m_showLoops = false;
 	}
 
 	public void createPartControl(Composite parent) {
@@ -70,17 +73,22 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
 	    getSite().getPage().addSelectionListener(this);
         initaliseColors(m_display);
 
-	    m_canvas = new Canvas(parent, SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND);
+//	    m_canvas = new Canvas(parent, SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND);
+	    m_canvas = new Canvas(parent, SWT.NO_BACKGROUND);
 	    m_canvas.addPaintListener(new PaintListener() {
 	        public void paintControl(PaintEvent e) {
-	        	drawFunctionPanel(e.gc);
+	        	if (m_showLoops) {
+	        		drawLoops(e.gc);
+	        	} else {
+	        		drawFunctions(e.gc);
+	        	}
 	        }
 	    });
 	}
 
 	public void setFocus() {
 		if (DEBUG) System.out.printf("Function: setFocus\n");			
-	    m_canvas.redraw();
+		m_canvas.redraw();
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
@@ -103,6 +111,11 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
         }
     }
 
+    public void setShowLoops(boolean showLoops) {
+		m_showLoops = showLoops;
+        m_canvas.redraw();
+    }
+    
     private Node getPathRoot(Node root, Node start) {
     	if (start == root) 
     		return null;
@@ -187,8 +200,10 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
         m_previousFunction = m_currentFunction;
     }
 
-    private void drawFunctionPanel(GC gc){
-        Rectangle clientArea = m_canvas.getClientArea();
+    private void drawFunctions(GC gc){
+		if (DEBUG) System.out.printf("Function: drawFunctions\n");			
+
+		Rectangle clientArea = m_canvas.getClientArea();
         int totalWidth = clientArea.width;
         int totalHeight = clientArea.height;
 
@@ -217,9 +232,42 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
             x += drawFunctionBlock(gc, block, x, y, blockHeight, totalHeight,
                     instWidth, true, drawLeft, drawRight);
         }
-        
     }
     
+    private void drawLoops(GC gc){
+		if (DEBUG) System.out.printf("Function: drawLoops\n");			
+
+		Rectangle clientArea = m_canvas.getClientArea();
+        int totalWidth = clientArea.width;
+        int totalHeight = clientArea.height;
+
+        gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
+        gc.fillRectangle(0, 0, totalWidth, totalHeight);
+        
+        if (m_blockList.isEmpty())
+            return;
+
+        int borderY = 10;
+        double blockHeight = (((double)totalHeight - (2.0 * (double)borderY)) / ((double)m_pathDepth/2.0 + 1));
+        double instWidth = (double)(totalWidth - 2) / (double)m_pathLength;
+
+        int x = 0;
+        boolean wasSelected = true;
+        for (int i = 0; i < m_blockList.size(); i++) {
+            XtaCodeBlock block = m_blockList.get(i);
+            boolean selected = block.getSelected();
+            
+            boolean drawLeft = (!selected && wasSelected);
+            boolean drawRight = (!selected &&
+                    ((i == (m_blockList.size() - 1)) || m_blockList.get(i+1).getSelected()));
+            wasSelected = selected;
+            
+            int y = borderY + (int)((m_pathDepth - block.getDepth()) * (blockHeight / 2.0));
+            x += drawFunctionBlock(gc, block, x, y, (int)blockHeight, totalHeight,
+                    instWidth, false, drawLeft, drawRight);
+        }
+    }
+
     private int drawFunctionBlock(GC gc, XtaCodeBlock block,
             int x, int y, int height, int totalHeight,
             double instWidth, boolean drawDetails,
