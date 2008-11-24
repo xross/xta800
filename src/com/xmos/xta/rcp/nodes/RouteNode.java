@@ -20,7 +20,7 @@ public class RouteNode extends Node {
     
     public String getDescription() { assert(false); return ""; }
     public String getToolTipText() { assert(false); return ""; }
-    public String getTypeName()    { assert(false); return ""; }
+    public String getTypeName()    { return "route"; }
     
     public HashSet<Integer> getPcsCovered() { assert(false); return null; }       
     public void createContextMenu(IMenuManager manager, final TreeView treeView) { assert(false); }
