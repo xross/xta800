@@ -25,5 +25,5 @@ mkdir -p $ROOT/bin
 rm -rf $ROOT/bin/$TARGET
 cp -f $BUILD_DIR/build/I.TestBuild/*.zip $ROOT/bin/$TARGET
 cd $ROOT/bin
-unzip -o $TARGET >>> $BUILD_OUTPUT
+unzip -o $TARGET >> $BUILD_OUTPUT
 
