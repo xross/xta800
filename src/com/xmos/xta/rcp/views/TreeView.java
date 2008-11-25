@@ -33,6 +33,7 @@ import com.xmos.xta.rcp.XtaRouteInfo;
 import com.xmos.xta.rcp.editors.Sources;
 import com.xmos.xta.rcp.editors.SourcesInput;
 import com.xmos.xta.rcp.nodes.Node;
+import com.xmos.xta.rcp.nodes.RouteNode;
 
 public class TreeView extends ViewPart implements IPropertyChangeListener,
                                                   ISelectionListener,
@@ -69,6 +70,9 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	    m_treeViewer = new TreeViewer(parent);		
 	    getSite().setSelectionProvider(m_treeViewer);
 
+		m_treeViewer.setContentProvider(new TreeViewContentProvider());				
+		m_treeViewer.setLabelProvider(new TreeViewLabelProvider());
+	    
 	    m_functions = new TreeViewFunctionCombo("com.xmos.xta.rcp.functions.combo");
 	    getViewSite().getActionBars().getToolBarManager().add(m_functions);
 
@@ -236,12 +240,14 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     
     private void openEditors() {
 		IWorkbenchPage page = getSite().getWorkbenchWindow().getActivePage();
+		page.closeAllEditors(false);
 		try {
 			IEditorInput sourcesInput = new SourcesInput();
 			page.openEditor(sourcesInput, Sources.ID);
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}    	
+		clearTree();
     }
 			
 	private void createContextMenus() {
@@ -257,8 +263,6 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		m_routeInfo = XtaDisplayer.getInstance().getRouteInfo();										
 		m_display.asyncExec(new Runnable() {
 			public void run() {
-				m_treeViewer.setContentProvider(new TreeViewContentProvider());				
-				m_treeViewer.setLabelProvider(new TreeViewLabelProvider());
 				m_treeViewer.setInput(m_routeInfo.getRouteNode());
 				ColumnViewerToolTipSupport.enableFor(m_treeViewer, ToolTip.NO_RECREATE);
 			}});					    		
@@ -269,6 +273,14 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 			public void run() {
     			m_treeViewer.refresh();
 			}});					            	   		
+	}
+	
+	private void clearTree() {
+		m_display.syncExec(new Runnable() {
+			public void run() {
+    			m_treeViewer.setInput(new RouteNode());
+    			m_treeViewer.refresh();
+			}});					            	   				
 	}
 	
     class RunEngineMethodFunc extends Thread {
