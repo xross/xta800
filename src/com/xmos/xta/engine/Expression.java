@@ -71,7 +71,7 @@ public class Expression {
 	}
 	
 	// Copy Constructor
-	Expression(Expression expression) {	
+	public Expression(Expression expression) {	
 		m_address     = expression.m_address;
 		m_value       = expression.m_value;
 		m_type        = expression.m_type;

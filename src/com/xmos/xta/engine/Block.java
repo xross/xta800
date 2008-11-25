@@ -264,8 +264,14 @@ public class Block implements Comparable<Block> {
 		m_contexts.peek().add(pc);
 
 		int nextPc = pc + instNumBytes;
-
-		if (m_machineState.wasJump()) {
+		if (m_machineState.wasEventWait()) {
+			if(m_machineState.wasEventResolved()){
+				for(int targetVector: m_machineState.getEventTarget()){
+	    			checkForLoopFormation(targetVector, false, instruction, true, true);
+				}
+				setStatus(BlockStatus.COMPLETE);
+			}
+		} else if (m_machineState.wasJump()) {
 			if (m_machineState.wasJumpResolved()) {
 				int jumpTarget = m_machineState.getJumpTarget();
 				if (instruction.getBranchLink() && isRecursion(jumpTarget)) {

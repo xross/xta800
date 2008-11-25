@@ -155,12 +155,7 @@ public class Resources {
     }
     
     public void addThread(){
-        for(int i=0;i<NUM_THREADS;i++){
-            if(m_threads[i].isInUse()==false){
-                m_threads[i].setInUse(true);
-                return;
-            }
-        }
+
     }
     
     public int getResID(int resType, int regId, int resNumber, int portWidth){
@@ -249,8 +244,9 @@ public class Resources {
 	}
 	
 	Resource getNewResource(Resource [] resources){
+
 		for(Resource res : resources){
-			if(res.isInUse()==false){
+			if(!res.isInUse()){
 				res.setInUse(true);
 				return res;
 			}
