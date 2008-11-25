@@ -23,7 +23,8 @@ public class InputSource implements IEditorInput {
         	++lineIndex;
         	
             for (Line line : sourceLine.getChildern()) {
-            	m_input.addLine(line.getText(), line.getLineNumber(), lineIndex);                	
+        		String str = String.format("    0x%05x %s", line.getLineNumber(), line.getText());
+            	m_input.addLine(str, line.getLineNumber(), lineIndex);                	
         		++lineIndex;        		
             }
         }

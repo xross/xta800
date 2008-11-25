@@ -66,6 +66,7 @@
       </view>
       <view
             class="com.xmos.xta.rcp.views.FlowView"
+            icon="icons/flow.png"
             id="com.xmos.xta.rcp.views.Flow"
             name="Flow"
             restorable="true">

@@ -6,229 +6,125 @@ import com.xmos.xta.engine.MachineState;
 public class Port implements Resource {
 	private boolean m_inUse;
 	private int m_portNo;
+	private int m_currentTime;
+	private int m_ioTime;
+	private boolean m_waitForTime; 
+	
+	enum Ready {
+		NOREADY, STROBED, HANDSHAKEN
+	};
+	enum Buffers {
+		BUFFERS , NOBUFFERS 
+	};
+	enum Mode {
+		EVENT, INTERUPT
+	};
+	
+	enum Status {
+		MASTER, SLAVE
+	};
+	
+	enum SampleDelay{
+		NOSDELAY, SDELAY 
+	};
+	
+	enum PortMode {
+		DATAPORT, CLOCKPORT, READYPORT
+	};
+	
+	enum DriveMode {
+		INPUT, NOINVERT
+	};
+	
+	enum Direction {
+		INPUT, OUTPUT
+	}
+	
+	private Direction m_direction;
+	private DriveMode m_driveMode;
+	private SampleDelay m_sampleDelay;
+	private PortMode m_portMode;
+	private Mode m_mode;
+	private Buffers m_buffers;
+	private Status m_status;
+	private Ready m_ready;
 	private Expression m_eventData;
 	private Expression m_controlBits;
-    public Port(int portNo) {
-    	m_portNo = portNo;
+	private boolean m_eventEnabled;
+    
+    private Expression m_vector;
+	
+	public Port(int portNo) {
+		m_buffers = Buffers.NOBUFFERS;
+		m_status = Status.MASTER;
+		m_sampleDelay = SampleDelay.NOSDELAY;
+		m_ready = Ready.NOREADY;
+		m_portMode = PortMode.DATAPORT;
+		m_mode = Mode.EVENT;
+		m_driveMode = DriveMode.NOINVERT;
+		m_direction = Direction.INPUT;
+		m_portNo = portNo;
     }
+	
     public Port(Port port) {
     	m_portNo = port.m_portNo;
     }
-    public boolean isInUse() {
+    
+    public int getCurrentTime(){
+    	return m_currentTime;
+    }
+    
+    public void setCurrentTime(int ct){
+    	m_currentTime = ct;
+    }
+    
+    public int getIOTime(){
+    	return m_ioTime;
+    }
+    
+    public void setIOTime(int io){
+    	m_ioTime = io;
+    }
+    
+    public void setWaitForTime(boolean wait){
+    	m_waitForTime = wait;
+    }
+    public boolean getWaitForTime(){
+    	return m_waitForTime;
+    }
+    
+	public void setEventEnabeled(boolean b) {
+		// TODO Auto-generated method stub
+		
+	}
+	public boolean isEventEnabeled() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	public Expression getEventVector() {
+		return m_vector;
+	}
+	
+	public void setEventVector(Expression vector) {
+		m_vector = vector;
+	}
+	public int getResourceID() {
+		int id=0;
+		id = Resources.RES_TYPE_SYNC;
+		int regId = 0;
+		id = id | (regId << 4);
+		id = id | (m_portNo << 8);
+		return id;
+	}
+	public void setInUse(boolean b) {
+		m_inUse = b;
+	}
+
+	public boolean isInUse() {
 		return m_inUse;
 	}
-
-	public void setInUse(boolean inUse) {
-		m_inUse = inUse;
+	private int m_masterThreadId;
+	public void setMaster(int thread) {
+		m_masterThreadId = thread;
 	}
-    
-    public void SETV(Expression readRegister) {
-
-    }
-
-    public void SETEV(Expression readRegister) {
-
-    }
-
-    public void GETD(Expression expression) {
-
-    }
-
-    public void SETC(Expression expression) {
-    	m_controlBits = expression;
-    }
-
-    public void SETD(Expression expression) {
-    	m_eventData = expression;
-    }
-
-    public void SETCLK(Expression expression) {
-
-    }
-
-    public void SETRDY(Expression expression) {
-
-    }
-
-    public void SETPT(Expression expression) {
-
-    }
-
-    public void GETTS(Expression expression) {
-
-    }
-
-    public void INSHR(Expression expression) {
-
-    }
-
-    public void OUTSHR(Expression expression) {
-
-    }
-
-    public void PEEK(Expression expression) {
-
-    }
-
-    public void SETTW(Expression expression) {
-
-    }
-
-    public void SETPSC(Expression expression) {
-
-    }
-
-    public void ENDIN(Expression expression) {
-
-    }
-
-    public void CLRPT() {
-
-    }
-
-    public void EDU() {
-
-    }
-
-    public void EEF(Expression expression) {
-
-    }
-
-    public void EET(Expression expression) {
-
-    }
-
-    public void EEU() {
-
-    }
-
-    public void IN(Expression destRegister) {
-
-    }
-
-    public void OUT(Expression scr1) {
-
-    }
-
-    public void CHKCT(Expression expression) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void FREER() {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void GETR(int dest, int scr) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void GETST(Expression dest) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void INCT(Expression expression) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void INT(Expression expression) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void MJOIN(int resId, int resType) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void MSYNC(int resId, int resType) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void OUTCT(Expression expression) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void OUTT(Expression expression) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void TESTCT(Expression expression) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void TESTLCL(Expression expression) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void TESTWCT(Expression expression) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void TINITCP(Expression expression) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void TINITDP(Expression expression) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void TINITLR(Expression expression) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void TINITPC(Expression expression) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void TINITSP(Expression expression) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void TSETR(Expression m_op2, Expression m_op3) {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-
-    public void TSTART() {
-        System.out.println("---------ILLEGAL_RESOURCE exception-------");
-
-    }
-	public int getNumber() {
-		return m_portNo;
-	}
-	public int getPortWidth() {
-		return 0;
-	}
-	public int getRegId() {
-		return 0;
-	}
-	public void GETST(MachineState state) {
-		// TODO Auto-generated method stub
-		
-	}
-	public void MJOIN(MachineState state) {
-		// TODO Auto-generated method stub
-		
-	}
-	public void MSYNC(MachineState state) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
