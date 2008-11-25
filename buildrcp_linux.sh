@@ -1,6 +1,6 @@
 ROOT=`pwd`
 BUILD_DIR=/tmp/xta/linux_x86-64
-BUILD_OUTPUT=build.output.linux_x86-64
+BUILD_OUTPUT=$ROOT/build.output.linux_x86-64
 TARGET=xta.linux_x86-64.zip
 ECLIPSE_DIR=/tools/eclipse/eclipse-SDK-3.4.1-linux-gtk-x86_64/
 LIB_DOMAIN=infr_libs_java
@@ -24,4 +24,6 @@ tail -n2 $BUILD_OUTPUT
 mkdir -p $ROOT/bin
 rm -rf $ROOT/bin/$TARGET
 cp -f $BUILD_DIR/build/I.TestBuild/*.zip $ROOT/bin/$TARGET
+cd $ROOT/bin
+unzip -o $TARGET >> $BUILD_OUTPUT
 

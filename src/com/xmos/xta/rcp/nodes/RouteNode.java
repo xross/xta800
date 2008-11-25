@@ -5,12 +5,11 @@ import java.util.Vector;
 
 import org.eclipse.jface.action.IMenuManager;
 
-import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.views.TreeView;
 
 public class RouteNode extends Node {
-    public RouteNode(Route route) { super(null); }
+    public RouteNode() { super(null); }
 
     public int getId()         { assert(false); return 0; }
     public int getInstanceId() { assert(false); return 0; }

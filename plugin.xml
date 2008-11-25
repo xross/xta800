@@ -38,36 +38,42 @@
          point="org.eclipse.ui.views">
       <view
             class="com.xmos.xta.rcp.views.TreeView"
+            icon="icons/tree.png"
             id="com.xmos.xta.rcp.views.Tree"
             name="Tree"
             restorable="true">
       </view>
       <view
             class="com.xmos.xta.rcp.views.ConsoleView"
+            icon="icons/console.png"
             id="com.xmos.xta.rcp.views.Console"
             name="Console"
             restorable="true">
       </view>
       <view
             class="com.xmos.xta.rcp.views.ErrorsView"
+            icon="icons/errors.png"
             id="com.xmos.xta.rcp.views.Errors"
             name="Errors"
             restorable="true">
       </view>
       <view
             class="com.xmos.xta.rcp.views.FunctionView"
+            icon="icons/function.png"
             id="com.xmos.xta.rcp.views.Function"
             name="Function"
             restorable="true">
       </view>
       <view
             class="com.xmos.xta.rcp.views.FlowView"
+            icon="icons/flow.png"
             id="com.xmos.xta.rcp.views.Flow"
             name="Flow"
             restorable="true">
       </view>
       <view
             class="com.xmos.xta.rcp.views.StructureView"
+            icon="icons/structure.png"
             id="com.xmos.xta.rcp.views.Structure"
             name="Structure"
             restorable="true">

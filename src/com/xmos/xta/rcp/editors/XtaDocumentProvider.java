@@ -12,7 +12,9 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.AbstractDocumentProvider;
 
 public class XtaDocumentProvider extends AbstractDocumentProvider {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
+    
+    private Document m_document;
     
     XtaDocumentProvider() {
 		if (DEBUG) System.out.printf("XtaDocumentProvider()\n");			                    
@@ -27,12 +29,12 @@ public class XtaDocumentProvider extends AbstractDocumentProvider {
 	protected IDocument createDocument(Object element) throws CoreException {
 		if (DEBUG) System.out.printf("XtaDocumentProvider: createDocument\n");			                    
 		if (element instanceof IEditorInput) {			
-			Document document = new Document();
+			m_document = new Document();
             Input contents = (Input)((IEditorInput)element).getAdapter(Input.class);						
 			IDocumentPartitioner partitioner = new XtaDocumentPartitioner(contents);
-			partitioner.connect(document);
-			document.setDocumentPartitioner(partitioner);									                        	
-			return document;
+			partitioner.connect(m_document);
+			m_document.setDocumentPartitioner(partitioner);									                        	
+			return m_document;
 		}
 		return null;
 	}

@@ -78,7 +78,7 @@ public class XtaDisplayer implements Displayer {
 	
 	private void createHierarchy(Route route, DebugInfo debugInfo,
 			MemoryImage memoryImage, SymbolTable table) {		
-        RouteNode routeNode = new RouteNode(route);
+        RouteNode routeNode = new RouteNode();
         for (Block block : route.completePaths()) {
         	routeNode.addNode(createPath(block, routeNode, true));
         }		

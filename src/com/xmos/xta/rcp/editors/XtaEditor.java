@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -23,13 +26,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
 import com.xmos.xta.rcp.nodes.Node;
 
 public class XtaEditor extends TextEditor implements ISelectionListener {
-    public static final boolean DEBUG = false;
-    public static final String ID = "com.xmos.xtagui.editors.Test";
-    public static final String AnnotationID = "com.xmos.xta.rcp.path";
+    public static final boolean DEBUG = true;
+    public static final String ID            = "com.xmos.xtagui.editors.Test";
+    public static final String AnnotationID  = "com.xmos.xta.rcp.path";
+    public static final String ExpandAllID   = "com.xmos.xtagui.action.ExpandAll";
+    public static final String CollapseAllID = "com.xmos.xtagui.action.CollapseAll";
     
     private ProjectionSupport m_projectionSupport;
     private ProjectionAnnotationModel m_annotationModel;
@@ -38,13 +44,17 @@ public class XtaEditor extends TextEditor implements ISelectionListener {
     private AnnotationPainter m_painter;
     
     public XtaEditor() {
-    	setSourceViewerConfiguration(new XtaConfiguration(this));
+		if (DEBUG) System.out.printf("XtaEditor()\n"); 
+
+    	setSourceViewerConfiguration(new XtaConfiguration(this));    	
     	setDocumentProvider(new XtaDocumentProvider());        	
     }
 
     public void createPartControl(Composite parent) {
-        super.createPartControl(parent);
-        ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
+		if (DEBUG) System.out.printf("XtaEditor: createPartControl\n"); 
+    	super.createPartControl(parent);
+
+    	ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
         
         m_projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
         m_projectionSupport.install();
@@ -59,11 +69,42 @@ public class XtaEditor extends TextEditor implements ISelectionListener {
         getSite().getPage().addSelectionListener(this);
         
         m_painter = new AnnotationPainter(viewer, getAnnotationAccess());        
-        m_painter.addAnnotationType(AnnotationID);            
+        m_painter.addAnnotationType(AnnotationID);                         
     }   
-        
+
+    protected void createActions() {
+		if (DEBUG) System.out.printf("XtaEditor: createActions\n"); 
+     	super.createActions();
+     	
+     	setAction(ExpandAllID, new Action("Expand All") {
+     		public void run() {
+     			System.out.printf("Expand All\n");     	
+     			IDocument document = getSourceViewer().getDocument();
+     			m_annotationModel.expandAll(0, document.getLength());
+     		}
+     	});
+     	setAction(CollapseAllID, new Action("Collapse All") {
+     		public void run() {
+     			System.out.printf("Collapse All\n");
+     			IDocument document = getSourceViewer().getDocument();
+     			m_annotationModel.collapseAll(0, document.getLength());
+     		}
+     	});
+    }
+    
+    protected void editorContextMenuAboutToShow(IMenuManager menu) {    
+		if (DEBUG) System.out.printf("XtaEditor: editorContextMenuAboutToShow\n"); 
+     	super.editorContextMenuAboutToShow(menu);
+
+     	menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));     	
+    	addAction(menu, ExpandAllID); 
+    	addAction(menu, CollapseAllID);      	
+    }
+    
     public void updateFoldingStructure(ArrayList<Position> positions, IDocument document) {
-       Annotation[] annotations = new Annotation[positions.size()];
+		if (DEBUG) System.out.printf("XtaEditor: updateFoldingStructure\n"); 
+
+		Annotation[] annotations = new Annotation[positions.size()];
 
        HashMap<ProjectionAnnotation, Position> newAnnotations = 
     	   new HashMap<ProjectionAnnotation, Position>();
@@ -79,7 +120,9 @@ public class XtaEditor extends TextEditor implements ISelectionListener {
     }    
 
     public void selectionChanged(IWorkbenchPart part, ISelection sel) {
-        if (sel instanceof IStructuredSelection) {	            
+		if (DEBUG) System.out.printf("XtaEditor: selectionChanged\n"); 
+
+		if (sel instanceof IStructuredSelection) {	            
             Object object = ((IStructuredSelection)sel).getFirstElement();
             if (object instanceof Node) {
         	    updateHighlighting((Node)object);
@@ -88,7 +131,10 @@ public class XtaEditor extends TextEditor implements ISelectionListener {
      }	            		         	        
     
     protected ISourceViewer createSourceViewer(Composite parent,
-            IVerticalRuler ruler, int styles) {
+    		IVerticalRuler ruler, int styles) {
+
+    	if (DEBUG) System.out.printf("XtaEditor: createSourceViewer\n"); 
+
         ISourceViewer viewer = new ProjectionViewer(parent, ruler,
 		    getOverviewRuler(), isOverviewRulerVisible(), styles);
 

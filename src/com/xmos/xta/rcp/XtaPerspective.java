@@ -19,16 +19,22 @@ public class XtaPerspective implements IPerspectiveFactory {
 				
         IFolderLayout viewsFolder = layout.createFolder(
         		"views.folder", IPageLayout.BOTTOM, 0.5f, layout.getEditorArea());        
-        viewsFolder.addView(ConsoleView.ID);
-        viewsFolder.addView(ErrorsView.ID);
-        viewsFolder.addView(FunctionView.ID);
-        viewsFolder.addView(StructureView.ID);
-        viewsFolder.addView(FlowView.ID);
-		
+        
+        addView(layout, viewsFolder, ConsoleView.ID);
+        addView(layout, viewsFolder, ErrorsView.ID);
+        addView(layout, viewsFolder, FunctionView.ID);
+        addView(layout, viewsFolder, StructureView.ID);
+        addView(layout, viewsFolder, FlowView.ID);
+               
         IFolderLayout treeFolder = layout.createFolder(
         		"tree.folder", IPageLayout.LEFT, 0.5f, layout.getEditorArea());        
-        treeFolder.addView(TreeView.ID);
+        addView(layout, treeFolder, TreeView.ID);
 
         layout.setEditorAreaVisible(true);
+	}
+	
+	private void addView(IPageLayout pageLayout, IFolderLayout folderLayout, String viewId) {
+		folderLayout.addView(viewId); 
+		pageLayout.addShowViewShortcut(viewId);
 	}
 }

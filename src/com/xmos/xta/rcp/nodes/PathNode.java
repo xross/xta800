@@ -78,13 +78,11 @@ public class PathNode extends Node {
     public void createContextMenu(IMenuManager manager, final TreeView treeView) {    	
 		manager.add(new Action("expand all") {
 			public void run() {
-				System.out.printf("path expand all\n");
 				treeView.getViewer().expandAll();
 			}
 		});
 		manager.add(new Action("collapse all") {
 			public void run() {
-				System.out.printf("path collapse\n");	
 				treeView.getViewer().collapseAll();
 			}
 		});
@@ -98,7 +96,7 @@ public class PathNode extends Node {
 		    manager.add(new Separator());
     	    manager.add(new Action("Set iterations") {
 			    public void run() {
-				    new Iterations(treeView);
+				    new Iterations(treeView, m_block.getId(), m_block.getInstanceId());
 			    }
 		    });
     	}
