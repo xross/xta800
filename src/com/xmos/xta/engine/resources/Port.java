@@ -112,8 +112,8 @@ public class Port implements Resource {
 		int id=0;
 		id = Resources.RES_TYPE_SYNC;
 		int regId = 0;
-		id = id | (regId << 3);
-		id = id | (m_portNo << 7);
+		id = id | (regId << 4);
+		id = id | (m_portNo << 8);
 		return id;
 	}
 	public void setInUse(boolean b) {
@@ -123,5 +123,8 @@ public class Port implements Resource {
 	public boolean isInUse() {
 		return m_inUse;
 	}
-
+	private int m_masterThreadId;
+	public void setMaster(int thread) {
+		m_masterThreadId = thread;
+	}
 }

@@ -11,6 +11,8 @@ public class Timer implements Resource {
     private Expression m_vector;
     private Expression m_environmentVector;
     
+    
+    
     private int m_timerNo;
     
     public Timer(int timerNo) {
@@ -51,12 +53,15 @@ public class Timer implements Resource {
 	}
 	
 	public int getResourceID() {
-		int id=0;
-		id = Resources.RES_TYPE_TIMER;
+		int id = (Resources.RES_TYPE_TIMER&0xf);
 		int regId = 0;
-		id = id | (regId << 3);
-		id = id | (m_timerNo << 7);
+		id = id | (regId << 4);
+		id = id | (m_timerNo << 8);
 		return id;
+	}
+	private int m_masterThreadId;
+	public void setMaster(int thread) {
+		m_masterThreadId = thread;
 	}
     
 

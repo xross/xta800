@@ -354,6 +354,7 @@ public abstract class XtaInstruction extends Instruction {
     void CHKCT(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: CHKCT\n", getPc());	
+    	/*
     	Resources resources = state.getResources();
         Expression resourceId = state.m_op1;
         Expression controlToken = state.m_op2;
@@ -363,11 +364,12 @@ public abstract class XtaInstruction extends Instruction {
             int resId = resourceId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            Port port = state.getResources().getPorts()[resNum];
+            Channel chan = state.getResources().getChannels()[resNum];
             
         } else {
             System.err.println("could not resolve which resource of CHKCT");
         } 
+        */
     }
 
     void CLRE(MachineState state, int thread) {
@@ -654,6 +656,7 @@ public abstract class XtaInstruction extends Instruction {
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
             //TODO
+            state.m_op2 = new Expression(1);
         } else {
             System.err.println("could not resolve which resource of ENDIN");
         } 
@@ -695,8 +698,14 @@ public abstract class XtaInstruction extends Instruction {
     void EXTDP(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: EXTDP\n", getPc());	
-
-    	//TODO
+    	assert(state.m_op2.canResolve());
+    	int imm = state.m_op2.getValue();
+    	if(state.m_op1.canResolve()){
+    		int value = state.m_op1.getValue() + (imm << Instruction.BITS_PER_WORD*2);
+    		state.setDataPoolRegister(new Expression(value), thread);
+    	} else {
+    		System.err.println("could not resolve EXTDP");
+    	}
     }
 
     void EXTSP(MachineState state, int thread) {
@@ -762,13 +771,17 @@ public abstract class XtaInstruction extends Instruction {
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
             if(resType == Resources.RES_TYPE_TIMER){
-    	    	//TODO
+    	    	//return the clock value
+            	state.m_op1 = new Expression(0);
     	    } else if(resType == Resources.RES_TYPE_CHANEND){
-    	    	
+    	    	//return the destionation
+    	    	state.m_op1 = new Expression(0);
     	    } else if(resType == Resources.RES_TYPE_PORT){
-    	    	
+    	    	//return the data to be matched
+    	    	state.m_op1 = new Expression(0);
     	    } else if(resType == Resources.RES_TYPE_CLKBLK){
-    	    	
+    	    	//return the divider
+    	    	state.m_op1 = new Expression(0);
     	    } else {
     	    	System.err.println("could not perform GETD on resource " + resType);
     	    }
@@ -780,36 +793,31 @@ public abstract class XtaInstruction extends Instruction {
     void GETED(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: GETED\n", getPc());	
-
-    	//TODO
+    	state.writeRegister(11, state.getResources().getThread(thread).getED(), thread);
     }
 
     void GETET(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: GETET\n", getPc());	
-
-    	//TODO
+    	state.writeRegister(11, state.getResources().getThread(thread).getET(), thread);
     }
 
     void GETID(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: GETID\n", getPc());	
-
-    	//TODO
+    	state.writeRegister(11, new Expression(state.getResources().getThread(thread).getID()), thread);
     }
 
     void GETKEP(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: GETKEP\n", getPc());	
-
-    	//TODO
+    	state.writeRegister(11, state.getResources().getThread(thread).getKEP(), thread);
     }
 
     void GETKSP(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: GETKSP\n", getPc());	
-
-    	//TODO
+    	state.writeRegister(11, state.getResources().getThread(thread).getKSP(), thread);
     }
 
     void GETPS(MachineState state, int thread) {
@@ -830,7 +838,8 @@ public abstract class XtaInstruction extends Instruction {
         
         int resType = resourceId.getValue();
         Resource res  = resources.getNewResource(resType);
-        
+        res.setInUse(true);
+        res.setMaster(thread);
         int resourceValue = res.getResourceID();
         state.m_op1 = new Expression(resourceValue);
     }
@@ -851,8 +860,20 @@ public abstract class XtaInstruction extends Instruction {
         	Resources resources = state.getResources();
         	int syncType = resources.decodeResType(synchroniserId.getValue());
         	int syncNumber = resources.decodeResNum(synchroniserId.getValue());
-        	resources.getSynchroniser(syncType, syncNumber).setInUse(true);
-        	//TODO
+        	Synchroniser sync = resources.getSynchroniser(syncType, syncNumber);
+        	sync.setInUse(true);
+        	
+        	//get a new thread
+        	Resource res  = resources.getNewResource(Resources.RES_TYPE_THREAD);
+        	assert(res!=null);
+        	//attach it to the sync
+        	sync.attachThread((Thread)res);
+        	
+        	
+        	//return the res id new thread
+        	state.m_op1 = new Expression(res.getResourceID());
+        	
+        	
         } else {
             System.err.println("could not resolve GETST");
         }       
@@ -1275,6 +1296,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
             Synchroniser sync = resources.getSynchroniser(resType, resNum);
             
+            
         } else {
             System.err.println("could not resolve MSYNC");
         } 
@@ -1634,11 +1656,11 @@ public abstract class XtaInstruction extends Instruction {
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
             Expression reg11 = state.readRegister(11, thread);
-          if(resType == resources.RES_TYPE_CHANEND){
+          if(resType == Resources.RES_TYPE_CHANEND){
         	  state.getResources().getChannels()[resNum].setEventVector(reg11);
-          } else if(resType == resources.RES_TYPE_PORT){
+          } else if(resType == Resources.RES_TYPE_PORT){
         	  state.getResources().getPorts()[resNum].setEventVector(reg11);
-          } else if(resType == resources.RES_TYPE_TIMER){
+          } else if(resType == Resources.RES_TYPE_TIMER){
         	  state.getResources().getTimers()[resNum].setEventVector(reg11);
           } else {
         	  System.out.println("cannot SETV on a resoutce type: " + resType);
@@ -1904,6 +1926,7 @@ public abstract class XtaInstruction extends Instruction {
         
         if(resourceId.canResolve()){
             int resId = resourceId.getValue();
+            printResId(resId);
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
             Thread child = resources.getThread(resType, resNum);
@@ -1913,7 +1936,12 @@ public abstract class XtaInstruction extends Instruction {
         } 
     }
 
-    void TSETMR(MachineState state, int thread) {
+    private void printResId(int resId) {
+		System.out.println("Type: " + (resId &0xf) + " Number: " + ((resId>>8)&0xf));
+		
+	}
+
+	void TSETMR(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: TSETMR\n", getPc());	
     	

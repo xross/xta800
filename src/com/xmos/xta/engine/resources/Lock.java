@@ -35,10 +35,13 @@ public class Lock implements Resource {
 		int id=0;
 		id = Resources.RES_TYPE_SYNC;
 		int regId = 0;
-		id = id | (regId << 3);
-		id = id | (m_lockNo << 7);
+		id = id | (regId << 4);
+		id = id | (m_lockNo << 8);
 		return id;
 	}
-
+	private int m_masterThreadId;
+	public void setMaster(int thread) {
+		m_masterThreadId = thread;
+	}
 
 }

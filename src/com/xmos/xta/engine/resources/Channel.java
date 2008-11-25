@@ -63,12 +63,15 @@ public class Channel implements Resource {
 		int id=0;
 		id = Resources.RES_TYPE_CHANEND;
 		int regId = 0;
-		id = id | (regId << 3);
-		id = id | (m_channelNumber << 7);
-		id = id | (m_processor<<15);
-		id = id | (m_node<<23);
+		id = id | (regId << 4);
+		id = id | (m_channelNumber << 8);
+		id = id | (m_processor<<16);
+		id = id | (m_node<<24);
 		return id;
 	}
 
-
+	private int m_masterThreadId;
+	public void setMaster(int thread) {
+		m_masterThreadId = thread;
+	}
 }

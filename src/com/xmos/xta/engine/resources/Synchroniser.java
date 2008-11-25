@@ -8,24 +8,21 @@ public class Synchroniser implements Resource {
     
 	private boolean m_inUse; 
 	private int m_syncId;
-	
-    private int m_ownT;
+	private int m_masterThreadId;
     private ArrayList<Thread> m_slaveList;
     private boolean m_mJoin;
     private boolean m_mSynced;
     
     
-    private ArrayList<Thread> m_threads;
-    
     public Synchroniser(int syncId) {
     	m_syncId = syncId;
         m_inUse = false;
-        m_threads = new ArrayList<Thread>();
+        m_slaveList = new ArrayList<Thread>();
     }
     public Synchroniser(Synchroniser sync) {
         m_inUse = sync.m_inUse;
         m_syncId = sync.m_syncId;
-        m_threads = new ArrayList<Thread>(sync.m_threads);
+        m_slaveList = new ArrayList<Thread>(sync.m_slaveList);
     }
     
 	public void setInUse(boolean b) {
@@ -40,8 +37,15 @@ public class Synchroniser implements Resource {
 		int id=0;
 		id = Resources.RES_TYPE_SYNC;
 		int regId = 0;
-		id = id | (regId << 3);
-		id = id | (m_syncId << 7);
+		id = id | (regId << 4);
+		id = id | (m_syncId << 8);
 		return id;
+	}
+
+	public void setMaster(int thread) {
+		m_masterThreadId = thread;
+	}
+	public void attachThread(Thread res) {
+		m_slaveList.add(res);
 	}
 }

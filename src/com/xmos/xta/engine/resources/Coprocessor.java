@@ -24,4 +24,9 @@ public class Coprocessor implements Resource{
 	public int getResourceID() {
 		return 0;
 	}
+
+	public void setMaster(int thread) {
+		// TODO Auto-generated method stub
+		
+	}
 }
