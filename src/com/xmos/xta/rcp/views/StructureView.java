@@ -1,17 +1,14 @@
 package com.xmos.xta.rcp.views;
 
-import java.util.Vector;
-
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
@@ -21,7 +18,12 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.rcp.XtaDisplayer;
+import com.xmos.xta.rcp.XtaRouteInfo;
 import com.xmos.xta.rcp.nodes.Node;
+import com.xmos.xta.rcp.views.Structure.StructureLoopNode;
+import com.xmos.xta.rcp.views.Structure.StructureNode;
+import com.xmos.xta.rcp.views.Structure.StructurePathNode;
+import com.xmos.xta.rcp.views.Structure.StructureRouteNode;
 
 public class StructureView extends ViewPart implements IPropertyChangeListener,
                                                        ISelectionListener {
@@ -31,12 +33,20 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 
     private boolean m_modeCircle;
 
-    private TreeStructureNode m_stuctureTree;
     private Node m_selectedNode;
-    private int m_treeDepth;
-    private int m_totalSize;
+    private StructureNode m_stuctureTree;
+    private double m_scale;
+    private int m_pixelsX;
+	private int m_pixelsY;
+    private int m_borderX;
+    private int m_borderY;
+    private int m_fontX;
+    private int m_fontY;
+    private int m_numTreeNodes;
     
     private Display m_display;
+    private Composite m_parent;
+    private ScrolledComposite m_scrollArea;
     private Canvas m_canvas;
     
 	public StructureView() {
@@ -44,24 +54,45 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 		
 		m_modeCircle = false;
+		m_scale = 1.0;
+		m_borderX = 10;
+		m_borderY = 10;
 	}
 
 	public void createPartControl(Composite parent) {
 		if (DEBUG) System.out.printf("Structure: createPartControl\n");			
-	    m_display = parent.getDisplay();
+	    m_parent = parent;
+	    m_display = m_parent.getDisplay();
+	    GC gc = new GC(m_display);
+	    m_fontX = gc.getFontMetrics().getAverageCharWidth();
+	    m_fontY = gc.getFontMetrics().getHeight();
+	    gc.dispose();
 
 	    getSite().getPage().addSelectionListener(this);
 
-	    m_canvas = new Canvas(parent, SWT.NO_BACKGROUND);
+	    m_scrollArea = new ScrolledComposite(m_parent,
+	    		SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL); 
+	    m_canvas = new Canvas(m_scrollArea, SWT.NO_BACKGROUND); 
+
+	    m_scrollArea.setAlwaysShowScrollBars(true); 
+	    m_scrollArea.setContent(m_canvas); 
+	    
+	    m_scrollArea.addPaintListener(new PaintListener() {
+	        public void paintControl(PaintEvent e) {
+	        	prepareCanvas();
+	        }
+	    });
+
 	    m_canvas.addPaintListener(new PaintListener() {
 	        public void paintControl(PaintEvent e) {
-	        	draw(e.gc);
+	        	drawCanvas(e.gc);
 	        }
 	    });
 	}
 
 	public void setFocus() {
-		if (DEBUG) System.out.printf("Structure: setFocus\n");			
+		if (DEBUG) System.out.printf("Structure: setFocus\n");
+		m_scrollArea.redraw();
 		m_canvas.redraw();
 	}
 
@@ -70,48 +101,73 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 
 		if (event.getProperty().equals("DisplayRoute")) {
 			m_selectedNode = null;
+			refreshTree();
 		} else if (event.getProperty().equals("LoadExecutable")) {
 			m_selectedNode = null;
 		} else if (event.getProperty().equals("UpdateState")) {
+			m_selectedNode = null;
+			refreshTree();
 		}
-
+		refreshView();
+	}
+	
+	private void refreshView() {
 		m_display.asyncExec(new Runnable() {
 			public void run() {
+				prepareCanvas();
 				m_canvas.redraw();
 			}});
 	}
-	
-    public void selectionChanged(IWorkbenchPart part, ISelection sel) {
+
+	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
         if (sel instanceof IStructuredSelection) {	            
             Object object = ((IStructuredSelection)sel).getFirstElement();
             if (object instanceof Node) {
                 m_selectedNode = (Node)object;
-                m_canvas.redraw();
+                analyseTree(m_selectedNode);
+        		m_scrollArea.redraw();
+        		m_canvas.redraw();
             }
         }
-     }	            		         	        	
+    }	            		         	        	
 
 	public void setCircleMode(boolean modeCircle) {
 		m_modeCircle = modeCircle;
+		m_scrollArea.redraw();
 		m_canvas.redraw();
 	}
 
-    private void draw(GC gc) {
+    private void refreshTree() {
     	if (m_selectedNode == null) {
-    		m_selectedNode = XtaDisplayer.getInstance().getRouteInfo().getRouteNode();
+    		XtaRouteInfo info = XtaDisplayer.getInstance().getRouteInfo();
+    		if (info != null)
+    			m_selectedNode = info.getRouteNode();
     	} else if (m_selectedNode.isBlockNode()) {
     		m_selectedNode = m_selectedNode.getParentNode();
     	}
-
-		Rectangle clientArea = m_canvas.getClientArea();
-        int totalWidth = clientArea.width;
-        int totalHeight = clientArea.height;
-    	gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
-        gc.fillRectangle(0, 0, totalWidth, totalHeight);
-
         analyseTree(m_selectedNode);
+    }
+    
+    private void prepareCanvas() {
+		Rectangle clientArea = m_scrollArea.getBounds();
+		int renderX = (int)((double)m_pixelsX * m_scale);
+		int renderY = (int)((double)m_pixelsY * m_scale);
+		
+		int x = (clientArea.width > renderX) ? clientArea.width : renderX;
+		int y = (clientArea.height > renderY) ? clientArea.height : renderY;
+		m_canvas.setSize(x, y);
+    }
+    
+    private void drawCanvas(GC gc) {
+    	gc.setAntialias(SWT.ON);
+    	gc.setTextAntialias(SWT.ON);
+    	
+		Rectangle clientArea = m_canvas.getClientArea();
+		m_canvas.setSize(clientArea.width, clientArea.height);
+    	gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
+        gc.fillRectangle(0, 0, clientArea.width, clientArea.height);
 
-		if (m_totalSize > MAX_NUM_RENDER_NODES){
+        if (m_numTreeNodes > MAX_NUM_RENDER_NODES){
 	        gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
 	        gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
 	        String error = "Code structure too Complicated: select a smaller region";
@@ -119,52 +175,28 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	        double functionNameWidth = gc.getFontMetrics().getAverageCharWidth() * error.length();
 	        double functionNameHeight = gc.getFontMetrics().getHeight();
 	        
-	        gc.drawString(error, (int)((totalWidth - functionNameWidth)/2),
-	        		(int)((totalHeight - functionNameHeight)/2));
-	        return;
+	        gc.drawString(error, (int)((m_borderY - functionNameWidth)/2),
+	        		(int)((m_borderY - functionNameHeight)/2));
+	    } else {
+	        if (m_stuctureTree == null)
+	        	return;
+	        
+			if (m_modeCircle) {
+				drawCircle(gc, m_scale);
+			} else {
+				m_stuctureTree.draw(m_display, gc, m_borderX, m_borderY, m_scale);
+			}
 	    }
-	
-		if (m_modeCircle) {
-			drawCircle(gc, totalWidth, totalHeight);
-		} else {
-			drawTree(gc, totalWidth, totalHeight);
-		}
     }
     
-    private void drawTree(GC gc, int totalWidth, int totalHeight) {
+    private void drawCircle(GC gc, double scale) {
+		System.out.printf("Draw Circle %d x %d\n", m_pixelsX, m_pixelsY);
         gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
-        gc.fillRectangle(0, 0, totalWidth, totalHeight);
-
-        double borderY = 10.0;
-        double yFactor = (((double)totalHeight - (2.0 * borderY)) / (double)m_treeDepth);
-
-        double borderX = 10.0;
-        drawTree(gc, m_stuctureTree, borderX, (double)totalWidth - (2.0 * borderX),
-        		borderY, yFactor);
-    }
-
-    private void drawTree(GC gc, TreeStructureNode node, double xOffset, double xWidth,
-    		double yOffset, double yFactor) {
-    	node.draw(gc, xOffset, xWidth, yOffset, yFactor);
-    	yOffset += node.getHeight() * yFactor;
-        
-        int numNodes = node.numChildren();
-        int subNodeNum = 0;
-        for (TreeStructureNode subNode : node.getChildren()) {
-        	double subWidth = xWidth / numNodes;
-        	drawTree(gc, subNode, xOffset + (subWidth * subNodeNum), subWidth, 
-        			yOffset, yFactor);
-        	subNodeNum++;
-        }
-    }
-    
-    private void drawCircle(GC gc, int totalWidth, int totalHeight) {
-        gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
-        gc.fillRectangle(0, 0, totalWidth, totalHeight);
+        gc.fillRectangle(0, 0, m_pixelsX, m_pixelsY);
 
         gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
         gc.setBackground(m_display.getSystemColor(SWT.COLOR_BLACK));
-        gc.fillOval(0, 0, totalWidth, totalHeight);
+        gc.fillOval(0, 0, m_pixelsX, m_pixelsY);
     }
 
     private Node getPathRoot(Node start) {
@@ -179,26 +211,35 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	private void analyseTree(Node node) {
-		m_treeDepth = 0;
-		m_totalSize = 0;
-
 		double totalTime = 0;
 		if (!node.isRouteNode()) {
 			totalTime = getPathRoot(node).getTimeTaken();
 		}
- 
+
+		m_numTreeNodes = 0;
 		// FIXME - ensure correct start iterations
-		m_stuctureTree = analyseTree(node, 0, node.getNumIterations(), totalTime);
+		m_stuctureTree = analyseTree(node, node.getNumIterations(), totalTime);
+
+		m_pixelsX = (m_borderX  * 2) + m_stuctureTree.getPixelsX();
+		m_pixelsY = (m_borderY * 2) + m_stuctureTree.getPixelsY();
 	}
 
-	private TreeStructureNode analyseTree(Node node, int depth, int numIterations, double totalTime) {
-		TreeStructureNode treeNode = new TreeStructureNode(node, numIterations, totalTime);
-		m_totalSize++;
+	private StructureNode analyseTree(Node node, int numIterations, double totalTime) {
+		if (node == null)
+			return null;
 		
-		depth += treeNode.getHeight();
-		if (depth > m_treeDepth) {
-        	m_treeDepth = depth;
-		}
+    	StructureNode treeNode = null;
+		m_numTreeNodes++;
+    	double weight = (numIterations * node.getTimeTakenThis()) / totalTime;
+
+    	if (node.isRouteNode())
+    		treeNode = new StructureRouteNode(m_fontX, m_fontY, node, weight);
+    	else if (node.isPathNode())
+    		treeNode = new StructurePathNode(node, weight);
+    	else if (node.isLoopNode())
+    		treeNode = new StructureLoopNode(node, weight);
+    	else
+    		assert(false);
 		
         for (Node subNode : node.getNodes()) {
         	if (node.isRouteNode())
@@ -208,83 +249,25 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
         		numIterations = node.getNumIterations() * numIterations;
 
     		if (subNode.isPathNode() || subNode.isLoopNode()) {
-    			TreeStructureNode newNode = analyseTree(subNode, depth, numIterations, totalTime);
+    			StructureNode newNode = analyseTree(subNode, numIterations, totalTime);
     			treeNode.addChild(newNode);
     		}
         }
         return treeNode;
 	}
-	
-    class TreeStructureNode {
-        private Node m_treeNode;
-        private Vector<TreeStructureNode> m_children;
-        private double m_weight;
-    	
-        public TreeStructureNode(Node treeNode, int numIterations, double totalTime) {
-        	m_treeNode = treeNode;
-        	m_children = new Vector<TreeStructureNode>();
-        	m_weight = (numIterations * treeNode.getTimeTakenThis()) / totalTime;
-        }    
-        
-        public int numChildren() {
-        	return m_children.size();
-		}
 
-		public void addChild(TreeStructureNode node) {
-        	m_children.add(node);
-        }
+	public void zoomOut() {
+		m_scale = m_scale / 1.2;
+		refreshView();
+	}
 
-        public Vector<TreeStructureNode> getChildren() {
-        	return m_children;
-        }    
-        
-        public Node getTreeNode() {
-        	return m_treeNode;
-        }
-        
-        public int getHeight() {
-        	if (m_treeNode.isRouteNode()) {
-        		return 10;
-        	} else if (m_treeNode.isPathNode()) {
-        		return 20;
-        	} else if (m_treeNode.isLoopNode()) {
-        		return 20;
-        	} else {
-        		assert(false);
-        		return 0;
-        	}
-        }
+	public void zoomIn() {
+		m_scale = m_scale * 1.2;
+		refreshView();
+	}
 
-        public void draw(GC gc, double xOffset, double xWidth, double yOffset, double yFactor) {
-            double yHeight = (double)getHeight() * yFactor;
-    	    if (m_treeNode.isRouteNode()) {
-    	        int height = getHeight();
-    	    	gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLUE));
-    	        gc.setBackground(m_display.getSystemColor(SWT.COLOR_BLUE));
-    	    	gc.fillOval((int)(xOffset + ((xWidth - 10) / 2.0)),
-    	    			(int)(yOffset + ((yHeight - height) / 2.0)), height, height);
-    	        gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
-    	        gc.setBackground(m_display.getSystemColor(SWT.COLOR_BLACK));
-    	    	gc.drawOval((int)(xOffset + ((xWidth - 10) / 2.0)),
-    	    			(int)(yOffset + ((yHeight - height) / 2.0)), height, height);
-    	    } else if (m_treeNode.isLoopNode()) {
-                gc.setForeground(m_display.getSystemColor(SWT.COLOR_YELLOW));
-                gc.setBackground(m_display.getSystemColor(SWT.COLOR_YELLOW));
-    	    	gc.fillOval((int)xOffset + 1, (int)yOffset + 1, (int)xWidth - 1, (int)yHeight - 1);
-                gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
-                gc.setBackground(m_display.getSystemColor(SWT.COLOR_BLACK));
-    	    	gc.drawOval((int)xOffset + 1, (int)yOffset + 1, (int)xWidth - 1, (int)yHeight - 1);
-    	    } else {
-    	    	gc.setAlpha((int)(255.0 * m_weight));
-                gc.setForeground(m_display.getSystemColor(SWT.COLOR_RED));
-                gc.setBackground(m_display.getSystemColor(SWT.COLOR_RED));
-    	    	gc.fillRectangle((int)xOffset + 1, (int)yOffset + 1, (int)xWidth - 1, (int)yHeight - 1);
-
-    	    	gc.setAlpha(255);
-    	    	gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
-                gc.setBackground(m_display.getSystemColor(SWT.COLOR_BLACK));
-    	    	gc.drawRectangle((int)xOffset + 1, (int)yOffset + 1, (int)xWidth - 1, (int)yHeight - 1);
-    	    }
-        }
-    }
+	public void zoomReset() {
+		m_scale = 1.0;
+		refreshView();
+	}
 }
