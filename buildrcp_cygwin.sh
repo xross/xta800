@@ -1,6 +1,6 @@
 ROOT=`pwd`
 BUILD_DIR=C:/tmp/xta/cygwin
-BUILD_OUTPUT=build.output.cygwin
+BUILD_OUTPUT=$ROOT/build.output.cygwin
 TARGET=xta.cygwin.zip
 ECLIPSE_DIR=C:/eclipse/eclipse-SDK-3.4.1-win32
 LIB_DOMAIN=infr_libs_java
@@ -24,4 +24,6 @@ tail -n2 $BUILD_OUTPUT
 mkdir -p $ROOT/bin
 rm -rf $ROOT/bin/$TARGET
 cp -f $BUILD_DIR/build/I.TestBuild/*.zip $ROOT/bin/$TARGET
+cd $ROOT/bin
+unzip -o $TARGET >>> $BUILD_OUTPUT
 

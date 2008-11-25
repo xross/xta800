@@ -5,7 +5,7 @@ set /p ROOT=<tmpFile
 del /Q tmpFile
 
 set BUILD_DIR=C:\tmp\xta\win32
-set BUILD_OUTPUT=build.output.win32
+set BUILD_OUTPUT=%ROOT%\build.output.win32
 set TARGET=xta.win32.zip
 set ECLIPSE_DIR=C:\eclipse\eclipse-SDK-3.4.1-win32
 set LIB_DOMAIN=infr_libs_java
@@ -30,4 +30,6 @@ mkdir %ROOT%\bin
 del /Q %ROOT%\bin\%TARGET%
 xcopy /i /Y %BUILD_DIR%\build\I.TestBuild\*.zip %ROOT%\bin\
 move %ROOT%\bin\TestBuild*.zip %ROOT%\bin\%TARGET%
+cd %ROOT%/bin
+unzip -o %TARGET% >> %BUILD_OUTPUT%
 
