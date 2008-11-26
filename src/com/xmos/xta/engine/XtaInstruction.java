@@ -869,9 +869,6 @@ public abstract class XtaInstruction extends Instruction {
         	//attach it to the sync
         	sync.attachThread((Thread)res);
         	
-        	System.out.println("current thread: " + thread);
-        	System.out.print ("got thread ");
-        	this.printResId(res.getResourceID());
         	//return the res id new thread
         	state.m_op1 = new Expression(res.getResourceID());
         	
@@ -1959,14 +1956,8 @@ public abstract class XtaInstruction extends Instruction {
             int resId = resourceId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            
             Thread child = resources.getThread(resType, resNum);
-            
-            System.out.println("currentThread: " + thread);
-            System.out.println("thread reg: (" + state.m_op3Fld  + ") " + state.m_op3.getValue() + "--> thread " + resNum);
-            System.out.println("input reg: (" + state.m_op2Fld  + ") " + state.m_op2.getValue());
-            System.out.println("output reg: " + state.m_op1Fld  );
-
+            assert(child!= null);
             child.getRegisters().writeRegister(state.m_op1Fld, state.m_op2);
         } else {
             System.err.println("could not resolve which resource of TSETR");

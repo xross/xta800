@@ -60,6 +60,8 @@ public class Block implements Comparable<Block> {
 	 * route analysis
 	 */
 	public Block(BlockCommonComponents bc, int fromPc, int toPc, MachineState machineState, ExecutionState executionState) {
+		if(DEBUG) System.out.println("\tstarting original block 0");
+		
 		m_numBlocks = 0;
 		initialise(machineState);
 
@@ -82,10 +84,6 @@ public class Block implements Comparable<Block> {
 	}
 
 	Block(Block blockToSplit, int pcHit) {
-		if (DEBUG) {
-			System.out.printf("Splitting block %d at 0x%x\n", blockToSplit.m_instanceId, pcHit);
-		}
-
 		m_machineState = null;
 		m_contexts = null;
 		m_seen = 0;
@@ -139,6 +137,7 @@ public class Block implements Comparable<Block> {
 		blockToSplit.m_parentBlock = this;
 
 		m_speculative = blockToSplit.m_speculative;
+		if(DEBUG) System.out.println("\tsplit block " +Integer.toHexString(pcHit)+ " at to make block " + m_id + " and block " + blockToSplit.m_id );
 	}
 
 	public Block(Block block, MachineState machineState, ExecutionState executionState) {
@@ -166,6 +165,8 @@ public class Block implements Comparable<Block> {
 		m_functionDepth = block.m_functionDepth;
 		m_numFNops = 0;
 		m_numInstructions = 0;
+		
+		if(DEBUG)System.out.println("\tstarted new block " + m_id);
 		m_numPausables = 0;
 	}
 
@@ -242,12 +243,14 @@ public class Block implements Comparable<Block> {
 		m_machineState.resetInstructionState();
 
 		XtaInstruction instruction = m_bc.getInstructionDecodeCache().decode(opcode, pc);
-		if(DEBUG) System.out.println("\ntrying: " + instruction);
+		//if(DEBUG) System.out.println("\ntrying: " + instruction);
 		int instNumBytes = instruction.getNumBytes();
 
 		
 		handleIBuffer(instNumBytes, pc);
-
+		if (instruction.canPause()) {
+            addUnknown(instruction);
+        }
 		instruction.execute(m_machineState, m_currentThread);
 		addInstruction(instruction);
 
@@ -312,6 +315,7 @@ public class Block implements Comparable<Block> {
 					} else if (m_machineState.getBranchTaken() == BranchState.NOTTAKEN) {
 						checkForLoopFormation(nextPc, false, instruction, false, false);
 					} else if (m_machineState.getBranchTaken() == BranchState.UNKNOWN) {
+						addUnknown(instruction);
 						checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
 						checkForLoopFormation(nextPc, true, instruction, false, true);
 						setStatus(BlockStatus.COMPLETE);
@@ -335,6 +339,20 @@ public class Block implements Comparable<Block> {
 		instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
 	}
 
+	private void addUnknown(XtaInstruction inst) {
+        Unknown unknown;
+        if(inst.canPause() ){
+            unknown = new Unknown(inst);
+        } else {
+            unknown = new Unknown(inst, 
+                m_machineState.getGuardExpression(),
+                m_machineState.getBranchTargetExpression());
+        }
+        m_unknowns.add(unknown);
+        m_route.addUnknown(unknown);
+    }
+	
+	
 	private Expression previousGuard;
 	private int previousPc;
 	
