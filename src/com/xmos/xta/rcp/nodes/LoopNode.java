@@ -55,7 +55,8 @@ public class LoopNode extends Node {
         toolTipText += "Total time taken: " + getTimeTaken() + " ns\n";
         toolTipText += "Total number of cycles: " + getNumCycles() + "\n";
         toolTipText += "Total number of FNOPs: " + m_block.getNumFNops(true) + "\n";
-        toolTipText += "Total number of pausable: " + m_block.getNumPausables(true);
+        toolTipText += "Total number of pausable: " + m_block.getNumPausables(true) + "\n";
+        toolTipText += "Total number of unknowns: " + m_block.getNumUnknowns(true);
         return toolTipText;
     }
     

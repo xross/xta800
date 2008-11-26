@@ -63,11 +63,13 @@ public class PathNode extends Node {
         toolTipText += "Number of cycles: "    + m_block.getNumCycles(true) + "\n";
         toolTipText += "Number of FNOPs: "     + m_block.getNumFNops(true) + "\n";
         toolTipText += "Number of pausables: " + m_block.getNumPausables(true) + "\n";
+        toolTipText += "Number of unknowns: "  + m_block.getNumUnknowns(true) + "\n";
         toolTipText += "----------------------------------\n";
         toolTipText += "Time taken (this): "          + m_block.getTimeTaken(false) + " ns\n";
         toolTipText += "Number of cycles (this): "    + m_block.getNumCycles(false) + "\n";
         toolTipText += "Number of FNOPs (this): "     + m_block.getNumFNops(false) + "\n";
-        toolTipText += "Number of pausables (this): " + m_block.getNumPausables(false);        
+        toolTipText += "Number of pausables (this): " + m_block.getNumPausables(false) + "\n";        
+        toolTipText += "Number of unknowns (this): "  + m_block.getNumUnknowns(false);        
         if (!m_isRoot) {
             toolTipText += "\n----------------------------------\n";
             toolTipText += "Number of iterations: " + m_block.getNumIterations();

@@ -9,7 +9,7 @@ import org.eclipse.ui.PlatformUI;
 import com.xmos.xeobject.FileFinder;
 
 public class XtaFileFinder implements FileFinder {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     
 	public File openFileFinder(String fileToFind) {
 		if (DEBUG) System.out.printf("XtaFileFinder: openFileFinder: %s\n", fileToFind);					
