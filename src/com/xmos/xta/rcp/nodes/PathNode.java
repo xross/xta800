@@ -50,6 +50,10 @@ public class PathNode extends Node {
         return m_block.getNumCycles(true);
     }
 
+    public int getNumUnknowns() {
+        return m_block.getNumUnknowns(true);
+    }    
+    
     public double getTimeTaken() {
         return m_block.getTimeTaken(true);
     }
