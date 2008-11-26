@@ -193,40 +193,66 @@
    <extension
          point="org.eclipse.ui.editors.markerAnnotationSpecification">
       <specification
-            annotationType="com.xmos.xta.rcp.path"
-            textPreferenceKey="errorIndication"
-            textPreferenceValue="true"
-            presentationLayer="6"
-            showInNextPrevDropdownToolbarAction="true"
-            label="%errors.label"
+            annotationType="com.xmos.xta.rcp.highlight"
             colorPreferenceKey="errorIndicationColor"
-            showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
-            symbolicIcon="error"
-            quickFixIcon=""
-            isGoToNextNavigationTargetKey="isErrorGoToNextNavigationTarget"
-            isGoToNextNavigationTarget="true"
-            isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
-            isGoToPreviousNavigationTarget="true"
+            colorPreferenceValue="255,255,75"
+            contributesToHeader="true"
             highlightPreferenceKey="errorIndicationHighlighting"
             highlightPreferenceValue="true"
-            textStylePreferenceKey="errorTextStyle"
-			textStylePreferenceValue="PROBLEM_UNDERLINE"             
-            verticalRulerPreferenceKey="errorIndicationInVerticalRuler"
-            verticalRulerPreferenceValue="false"
+            isGoToNextNavigationTarget="true"
+            isGoToNextNavigationTargetKey="isErrorGoToNextNavigationTarget"
+            isGoToPreviousNavigationTarget="true"
+            isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
+            label="Highlight"
             overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
             overviewRulerPreferenceValue="true"
-            contributesToHeader="true"
-            colorPreferenceValue="255,255,75">
+            presentationLayer="6"
+            showInNextPrevDropdownToolbarAction="true"
+            showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
+            symbolicIcon="error"
+            textPreferenceKey="errorIndication"
+            textPreferenceValue="true"
+            textStylePreferenceKey="errorTextStyle"
+            textStylePreferenceValue="PROBLEM_UNDERLINE"
+            verticalRulerPreferenceKey="errorIndicationInVerticalRuler"
+            verticalRulerPreferenceValue="false">
+      </specification>
+      <specification
+            annotationType="com.xmos.xta.rcp.unknown"
+            colorPreferenceKey="errorIndicationColor"
+            contributesToHeader="false"
+            highlightPreferenceValue="false"
+            includeOnPreferencePage="false"
+            isGoToNextNavigationTarget="false"
+            isGoToNextNavigationTargetKey="isErrorGoToNextNavigationTarget"
+            isGoToPreviousNavigationTarget="false"
+            isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
+            label="Unknown"
+            overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="false"
+            presentationLayer="6"
+            showInNextPrevDropdownToolbarAction="false"
+            showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
+            symbolicIcon="warning"
+            textPreferenceKey="errorIndication"
+            textPreferenceValue="false"
+            textStylePreferenceValue="NONE"
+            verticalRulerPreferenceKey="errorIndicationInVerticalRuler"
+            verticalRulerPreferenceValue="true">
       </specification>
    </extension>
  
    <extension
          point="org.eclipse.ui.editors.annotationTypes">
       <type
-         name="com.xmos.xta.rcp.path"
+         name="com.xmos.xta.rcp.highlight"
          super="org.eclipse.ui.workbench.texteditor.error"
          markerType=""
          markerSeverity="2">
+      </type>
+      <type
+            name="com.xmos.xta.rcp.unknown"
+            super="org.eclipse.ui.workbench.texteditor.info">
       </type>
    </extension>
    <extension

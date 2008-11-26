@@ -39,7 +39,7 @@ public class BlockNode extends Node {
     }
 
     public int getNumUnknowns() {
-        return m_block.getUnknowns();
+        return m_block.getNumUnknownsThis();
     }
     
     public String getDescription() {
@@ -54,7 +54,8 @@ public class BlockNode extends Node {
         toolTipText += "Time taken: " + getTimeTaken() + " ns\n";
         toolTipText += "Number of cycles: " + getNumCycles() + "\n";
         toolTipText += "Number of FNOPs: " + m_block.getNumFNopsThis() + "\n";
-        toolTipText += "Number of pausable: " + m_block.getNumPausablesThis();
+        toolTipText += "Number of pausables: " + m_block.getNumPausablesThis() + "\n";
+        toolTipText += "Number of unknowns: " + m_block.getNumUnknownsThis();
         return toolTipText;
     }
 

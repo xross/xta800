@@ -11,7 +11,6 @@ import com.xmos.xta.engine.MachineState.BranchState;
 import com.xmos.xta.engine.Status.BlockStatus;
 
 public class Block implements Comparable<Block> {
-
 	private static final boolean DEBUG = false;
 
 	static enum Mode {
@@ -577,7 +576,7 @@ public class Block implements Comparable<Block> {
 		return insts;
 	}
 
-	public int getUnknowns() {
+	public int getNumUnknownsThis() {
 		return m_unknowns.size();
 	}
 
@@ -896,7 +895,7 @@ public class Block implements Comparable<Block> {
 	public int getNumUnknowns(boolean recurse) {
 		int num = 0;
 		for (Block block : getPathBlocks()) {
-			num += block.getUnknowns();
+			num += block.getNumUnknownsThis();
 			if (recurse) {
 				for (Block loopPath : block.getLoopPaths()) {
 					num += loopPath.getNumUnknowns(true);

@@ -7,7 +7,7 @@ import com.xmos.xta.rcp.icons.Icons;
 import com.xmos.xta.rcp.nodes.Node;
 
 class TreeViewLabelProvider extends CellLabelProvider {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 	
 	TreeViewLabelProvider() {
 		if (DEBUG) System.out.printf("TreeViewLabelProvider()\n");	
@@ -23,7 +23,7 @@ class TreeViewLabelProvider extends CellLabelProvider {
 		if (node.getNumUnknowns() > 0) {
 			iconName += ".unknown";
 		}
-		cell.setImage(Icons.getIcon(node.getTypeName()));
+		cell.setImage(Icons.getIcon(iconName));
 	}
 
 	public String getToolTipText(Object element) {
