@@ -17,7 +17,7 @@ public class FunctionLoopsHandler extends AbstractHandler implements IHandler {
 		FunctionView control = (FunctionView)HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().findView(FunctionView.ID);
 		control.setShowLoops(m_isActive);
 		
-		if (DEBUG) System.out.printf("FunctionLoopsHandler: execute - enabled(%d)\n", m_isActive ? 1 : 0);			
+		if (DEBUG) System.out.printf("FunctionLoopsHandler: execute - enabled (%d)\n", m_isActive ? 1 : 0);			
 		return null;
 	}
 }

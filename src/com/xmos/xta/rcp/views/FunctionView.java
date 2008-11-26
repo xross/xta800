@@ -35,7 +35,7 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
     public static final String ID = "com.xmos.xta.rcp.views.Function";
 
     private Display m_display;
-    private Canvas m_canvas = null;
+    private Canvas m_canvas;
 
     private SymbolTable m_table;
     private Node m_selectedNode;
@@ -64,6 +64,7 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
 		m_blockList = new Vector<XtaCodeBlock>();
         m_functionColors = new HashMap<String, Color>();
         m_showLoops = false;
+        m_canvas = null;
 	}
 
 	public void createPartControl(Composite parent) {
@@ -73,7 +74,6 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
 	    getSite().getPage().addSelectionListener(this);
         initaliseColors(m_display);
 
-//	    m_canvas = new Canvas(parent, SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND);
 	    m_canvas = new Canvas(parent, SWT.NO_BACKGROUND);
 	    m_canvas.addPaintListener(new PaintListener() {
 	        public void paintControl(PaintEvent e) {
@@ -103,7 +103,7 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
                 getDebugInfo();
                 m_selectedNode = (Node)object;
                 clearAll();
-                Node pathRoot = getPathRoot(XtaDisplayer.getInstance().getRouteInfo().getRouteNode(), m_selectedNode);
+                Node pathRoot = getPathRoot(m_selectedNode);
                 if (pathRoot != null)
                 	addPath(pathRoot, 1, false, false);
                 m_canvas.redraw();
@@ -116,12 +116,12 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
         m_canvas.redraw();
     }
     
-    private Node getPathRoot(Node root, Node start) {
-    	if (start == root) 
+    private Node getPathRoot(Node start) {
+    	if (start.isRouteNode()) 
     		return null;
     	
     	Node node = start;
-    	while (node.getParentNode() != root) {
+    	while (!node.getParentNode().isRouteNode()) {
     		node = node.getParentNode();
     	}
 		return node;
@@ -173,8 +173,8 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
 
         boolean subBlockSelected = currentBlockSelected;
         for (Node subNode : node.getNodes()) {
-        	if (node.isPathNode())
-        		numIterations = node.getNumIterations();
+        	if (subNode.isPathNode())
+        		numIterations = node.getNumIterations() * numIterations;
         	
             if (node.isLoopNode()) m_currentDepth++;
             subBlockSelected = addPath(subNode, numIterations, subBlockSelected, currentBlockSelected);

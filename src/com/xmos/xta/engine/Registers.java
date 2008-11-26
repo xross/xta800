@@ -3,7 +3,7 @@ package com.xmos.xta.engine;
 public class Registers {
 	final static int NUM_REGISTERS = 16;	
 	private Expression[] m_registers;
-	
+    
 	public Registers() { 
 	    m_registers = new Expression[NUM_REGISTERS];	
 		for (int regIndex = 0; regIndex < NUM_REGISTERS; ++regIndex) {

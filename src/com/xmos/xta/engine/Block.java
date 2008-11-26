@@ -12,7 +12,7 @@ import com.xmos.xta.engine.Status.BlockStatus;
 
 public class Block implements Comparable<Block> {
 
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
 	static enum Mode {
 		FUNCTION, ABSOLUTE
@@ -242,6 +242,7 @@ public class Block implements Comparable<Block> {
 		m_machineState.resetInstructionState();
 
 		XtaInstruction instruction = m_bc.getInstructionDecodeCache().decode(opcode, pc);
+		if(DEBUG) System.out.println("\ntrying: " + instruction);
 		int instNumBytes = instruction.getNumBytes();
 
 		
@@ -264,8 +265,14 @@ public class Block implements Comparable<Block> {
 		m_contexts.peek().add(pc);
 
 		int nextPc = pc + instNumBytes;
-
-		if (m_machineState.wasJump()) {
+		if (m_machineState.wasEventWait()) {
+			if(m_machineState.wasEventResolved()){
+				for(int targetVector: m_machineState.getEventTarget()){
+	    			checkForLoopFormation(targetVector, false, instruction, true, true);
+				}
+				setStatus(BlockStatus.COMPLETE);
+			}
+		} else if (m_machineState.wasJump()) {
 			if (m_machineState.wasJumpResolved()) {
 				int jumpTarget = m_machineState.getJumpTarget();
 				if (instruction.getBranchLink() && isRecursion(jumpTarget)) {

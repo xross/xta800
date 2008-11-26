@@ -1,5 +1,7 @@
 package com.xmos.xta.engine;
 
+import java.util.ArrayList;
+
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.resources.Resources;
@@ -7,6 +9,7 @@ import com.xmos.xta.engine.resources.Thread;
 
 public class MachineState {
 	public static final boolean DEBUG = false;
+	
     public static enum BranchState {
         TAKEN, NOTTAKEN, UNKNOWN
     }
@@ -37,6 +40,7 @@ public class MachineState {
     
     private boolean m_wasBranch;
     private boolean m_wasBranchResolved;
+    
     private int m_branchTarget;
     private BranchState m_branchTaken;
 
@@ -45,11 +49,12 @@ public class MachineState {
     private int m_jumpTarget;
     private BranchState m_jumpTaken;
 
+    private boolean m_wasEventWait;
+    private boolean m_wasEventResolved;
+    private ArrayList<Integer> m_eventTargets;
+    
     private Resources m_resources;
-    
     private Memory m_memory;
-    
-    
     
     MachineState(SymbolTable symbolTable, MemoryImage memoryImage) {
         m_memory = new Memory();
@@ -58,6 +63,7 @@ public class MachineState {
         setStackPointerRegister(new Expression(memoryImage.getMemoryBase() + memoryImage.getMemorySize()), 0);
         initialiseRegisters(symbolTable);
         initialiseMemory(memoryImage);
+        m_eventTargets = new ArrayList<Integer>(); 
     }
 
     private void initialiseMemory(MemoryImage memoryImage) {
@@ -93,6 +99,7 @@ public class MachineState {
 
         m_wasBranch = machineState.m_wasBranch;
         m_wasBranchResolved = machineState.m_wasBranchResolved;
+        m_wasEventWait = machineState.m_wasEventWait;
         m_branchTarget = machineState.m_branchTarget;
         m_wasJump = machineState.m_wasJump;
         m_wasJumpResolved = machineState.m_wasJumpResolved;
@@ -101,11 +108,10 @@ public class MachineState {
         m_resources = new Resources(machineState.getResources());
        
         m_memory = new Memory(machineState.m_memory);
-        
+        m_eventTargets = new ArrayList<Integer>(); 
+        m_eventTargets.addAll(machineState.m_eventTargets);
     }
-    
 
-    
     public Resources getResources(){
         return m_resources;
     }
@@ -199,6 +205,16 @@ public class MachineState {
 
     }
 
+    void eventWait(Expression expression){
+    	m_wasEventWait = true;
+    	if(expression.canResolve()){
+    		m_wasEventResolved = true;
+    		m_eventTargets.add(expression.getValue());
+    	} else {
+    		m_wasEventResolved =false;
+    	}
+    }
+    
     boolean canIssue(int numBytes, int thread) {
         return m_resources.getCurrentIBuffer(thread).canIssue(numBytes);
     }
@@ -290,6 +306,7 @@ public class MachineState {
         m_wasJump = false;
         m_wasJumpResolved = false;
         m_jumpTarget = 0;
+        m_wasEventWait = false;
     }
 
     public Expression getBranchTargetExpression() {
@@ -299,6 +316,23 @@ public class MachineState {
     public Expression getGuardExpression() {
         return m_guardExpression;
     }
+
+	public boolean wasEventWait() {
+		return m_wasEventWait;
+	}
+
+	public ArrayList<Integer> getEventTarget() {
+		return m_eventTargets;
+	}
+
+	public boolean wasEventResolved() {
+		return m_wasEventResolved;
+	}
+
+	public void clearEventVectors() {
+		m_eventTargets.clear();
+		
+	}
 
 	
 

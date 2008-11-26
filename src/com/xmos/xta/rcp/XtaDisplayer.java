@@ -89,8 +89,8 @@ public class XtaDisplayer implements Displayer {
         m_routeInfo = new XtaRouteInfo(route, debugInfo, memoryImage, table, routeNode);
 	}
 
-	private PathNode createPath(Block block, Node parent, boolean complete) {
-        PathNode pathNode = new PathNode(block, parent, complete);
+	private PathNode createPath(Block block, Node parent, boolean isRoot) {
+        PathNode pathNode = new PathNode(block, parent, isRoot);
                 
         for (Block pathBlock : block.getPathBlocks()) {            
             if (pathBlock.numLoopPaths() > 0) {

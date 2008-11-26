@@ -3,6 +3,7 @@ package com.xmos.xta.engine;
 import com.xmos.xta.engine.Status.BlockStatus;
 import com.xmos.xta.engine.Status.ExecutionStatus;
 import com.xmos.xta.engine.resources.Resources;
+import com.xmos.xta.engine.resources.Synchroniser;
 
 public class ExecutionState {
 	private MachineState m_machineState;
@@ -84,20 +85,19 @@ public class ExecutionState {
 				}
 
 			} else if (currentStatus == BlockStatus.SYNCHRONISING) {
-				/*
-				 * if (allThreadsSyncing()) {
-				 * setAllThreadsStatus(BlockStatus.SEARCHING); } else {
-				 * currentThread = getNextThread(); }
-				 */
+				//check the synchronisers to see if this thread is a master
+				if(isMaster(currentThread)){
+					//if all its slaves are syncing
+					//then set the master and all its slaves to searching again
+					
+				}
 			} else if (currentStatus == BlockStatus.JOINING) {
-				/*
-				 * if (allOtherThreadsSyncing(currentThread)) {
-				 * 
-				 * //set all threads but the joining one to complete
-				 * 
-				 * //setAllThreadsStatus(Status.BlockStatus.COMPLETE); } else {
-				 * currentThread = getNextThread(); }
-				 */
+				//this thread must be a master
+				//get its synchroniser
+				
+				//free all its slave threads
+				
+				
 			} else if (currentStatus == BlockStatus.EXCLUDED
 					|| currentStatus == BlockStatus.ERROR
 					|| currentStatus == BlockStatus.RECURSION
@@ -113,10 +113,16 @@ public class ExecutionState {
 					currentThread = getNextThread();
 				}
 			} else {
-				System.out.println(currentStatus);
 				assert (false);
 			}
 		}
+	}
+
+	private boolean isMaster(Block currentThread) {
+		for(Synchroniser sync : m_machineState.getResources().getSynchronisers()){
+			
+		}
+		return false;
 	}
 
 	private void makeUnpauseSlection() {

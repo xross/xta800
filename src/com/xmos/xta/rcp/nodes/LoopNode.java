@@ -30,6 +30,10 @@ public class LoopNode extends Node {
         return m_block.getTimeTaken(true);
     }
     
+    public double getTimeTakenThis() {
+        return 0;
+    }
+    
     public int getNumCycles() {
         return m_block.getNumCycles(true);
     }
@@ -94,11 +98,19 @@ public class LoopNode extends Node {
         return numIterations;
     }
 
+	public boolean isBlockNode() {
+		return false;
+	}
+
 	public boolean isLoopNode() {
 		return true;
 	}
 
 	public boolean isPathNode() {
+		return false;
+	}
+
+	public boolean isRouteNode() {
 		return false;
 	}
 
