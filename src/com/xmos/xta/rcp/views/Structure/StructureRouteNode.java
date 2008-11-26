@@ -1,5 +1,7 @@
 package com.xmos.xta.rcp.views.Structure;
 
+import java.util.ArrayList;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
@@ -12,19 +14,12 @@ public class StructureRouteNode extends StructureNode {
     private int m_pathDividerLineWidth = 1;
     private int m_topBorder = 10;
     private int m_bottomBorder = 10;
-    private int m_fontPadding = 5;
-
-    private String m_header = "Route";
-    private int m_headerY;
     
-	public StructureRouteNode(int fontX, int fontY, Node treeNode, double weight) {
+	public StructureRouteNode(Node treeNode, double weight) {
 		super(treeNode, weight);
 		
-		// Enough room for borders
-		m_pixelsX = m_header.length() * fontX;
-		
-		m_headerY = fontY + m_fontPadding;
-		m_pixelsY = m_topBorder + m_bottomBorder + m_headerY;
+		m_pixelsX = 0;
+		m_pixelsY = m_topBorder + m_bottomBorder;
 	}
 
 	public int getPixelsX() {
@@ -61,20 +56,10 @@ public class StructureRouteNode extends StructureNode {
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc, int xOffset, int yOffset, double scale) {
+	public void draw(Display display, GC gc, ArrayList<StructureNode> clickAreas,
+			int xOffset, int yOffset, double scale) {
         if (DEBUG) System.out.printf("Draw Route %d,%d,%f\n", xOffset, yOffset, scale);
 
-        int x = (int)((double)xOffset + ((double)(getPixelsX() - m_pixelsX) / 2.0) * scale);
-        int y = (int)((double)yOffset * scale);
-        int width = (int)((double)m_pixelsX * scale);
-        int height = (int)((double)m_pixelsY * scale);
-
-        if (DEBUG) System.out.printf("Route %d,%d - %d,%d\n", x, y, width, height);
-
-        gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-        gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-    	gc.drawText(m_header, x, y);
-    	
     	int childOffsetX = 0;
     	int childNum = 0;
     	for (StructureNode child : m_children) {
@@ -82,15 +67,18 @@ public class StructureRouteNode extends StructureNode {
     		if (childNum > 0) {
         		drawDivider(display, gc, xOffset + childOffsetX + 
         				(m_pathDividerGap - m_pathDividerLineWidth) / 2,
-        				yOffset + m_headerY, scale);
+        				yOffset, scale);
     			childOffsetX += m_pathDividerGap;
     		}
 
-    		child.draw(display, gc, xOffset + childOffsetX, yOffset + m_headerY + m_topBorder, scale);
+    		child.draw(display, gc, clickAreas,
+    				xOffset + childOffsetX, yOffset + m_topBorder, scale);
     		childOffsetX += child.getPixelsX();
     		
     		childNum++;
     	}
+
+    	clickAreas.add(this);
     }
 
 	private void drawDivider(Display display, GC gc, int xOffset, int yOffset, double scale) {
@@ -98,7 +86,7 @@ public class StructureRouteNode extends StructureNode {
 
         int x = (int)((double)xOffset * scale);
         int top = (int)(double)(yOffset * scale);
-        int bottom = (int)((double)(yOffset + getPixelsY() - m_headerY) * scale);
+        int bottom = (int)((double)(yOffset + getPixelsY()) * scale);
 
         gc.setAlpha(100);
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
@@ -106,4 +94,8 @@ public class StructureRouteNode extends StructureNode {
     	gc.drawLine(x, top, x, bottom);
         gc.setAlpha(255);
     }
+
+	public boolean contains(int x, int y) {
+		return false;
+	}
 }

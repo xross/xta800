@@ -23,7 +23,7 @@ public class RouteNode extends Node {
     public String getTypeName()    { return "route"; }
     
     public HashSet<Integer> getPcsCovered() { assert(false); return null; }       
-    public void createContextMenu(IMenuManager manager, final TreeView treeView) { assert(false); }
+    public void createContextMenu(IMenuManager manager) { }
     
 	public int getNumIterations() { return 1; }
 	public boolean isBlockNode() { return false; }

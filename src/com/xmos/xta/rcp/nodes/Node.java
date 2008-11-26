@@ -35,7 +35,7 @@ public abstract class Node {
     public abstract int getNumIterations();
     public abstract Vector<XtaInstruction> getInstructions();
     public abstract HashSet<Integer> getPcsCovered();
-    public abstract void createContextMenu(IMenuManager manager, final TreeView treeView);
+    public abstract void createContextMenu(IMenuManager manager);
     
     public void addNode(Node node) {
     	m_nodes.add(node);

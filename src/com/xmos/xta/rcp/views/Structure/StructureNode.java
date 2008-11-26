@@ -1,5 +1,6 @@
 package com.xmos.xta.rcp.views.Structure;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import org.eclipse.swt.graphics.GC;
@@ -54,5 +55,7 @@ public abstract class StructureNode {
     public abstract int getPixelsY();
     public abstract int getChildrenX();
     public abstract int getChildrenY();
-    public abstract void draw(Display display, GC gc, int xOffset, int yOffset, double scale);
+    public abstract void draw(Display display, GC gc, ArrayList<StructureNode> clickAreas,
+    		int xOffset, int yOffset, double scale);
+    public abstract boolean contains(int x, int y);
 }

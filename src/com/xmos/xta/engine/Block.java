@@ -12,7 +12,7 @@ import com.xmos.xta.engine.Status.BlockStatus;
 
 public class Block implements Comparable<Block> {
 
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
 	static enum Mode {
 		FUNCTION, ABSOLUTE

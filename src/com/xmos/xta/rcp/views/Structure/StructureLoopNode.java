@@ -1,5 +1,7 @@
 package com.xmos.xta.rcp.views.Structure;
 
+import java.util.ArrayList;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
@@ -11,11 +13,16 @@ public class StructureLoopNode extends StructureNode {
     private int m_borderX = 3;
     private int m_bottomBorder = 3;
     private int m_connectionY = 10;
-
+    private int m_cornerRounding = 7;
+    
+    private int m_x;
+    private int m_y;
+    private int m_width;
+    private int m_height;
+    
 	public StructureLoopNode(Node treeNode, double weight) {
 		super(treeNode, weight);
 		
-		// Enough room for borders
 		m_pixelsX = 2 * m_borderX;
 		m_pixelsY = m_connectionY + m_bottomBorder;
 	}
@@ -50,36 +57,44 @@ public class StructureLoopNode extends StructureNode {
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc, int xOffset, int yOffset, double scale) {
+	public void draw(Display display, GC gc, ArrayList<StructureNode> clickAreas,
+			int xOffset, int yOffset, double scale) {
         if (DEBUG) System.out.printf("Draw Loop %d,%d,%f\n", xOffset, yOffset, scale);
 
-        int left = (int)((double)(xOffset + m_borderX) * scale);
-        int right = (int)((double)(xOffset + getPixelsX() - m_borderX) * scale);
-        int top = (int)((double)yOffset * scale);
-        int bottom = (int)((double)(yOffset + getPixelsY() - m_bottomBorder) * scale);
+        m_x = (int)((double)(xOffset + m_borderX) * scale);
+        m_y = (int)((double)yOffset * scale);
+        m_width = (int)((double)(getPixelsX() - (2 * m_borderX)) * scale);
+        m_height = (int)((double)(getPixelsY() - m_bottomBorder) * scale);
         
-        if (DEBUG) System.out.printf("Loop %d,%d - %d,%d\n", left, right, top, bottom);
-
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
         gc.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
-    	gc.drawLine(left, top, left, bottom);
-    	gc.drawLine(left, top, right, top);
-    	gc.drawLine(right, top, right, bottom);
-    	gc.drawLine(left, bottom, right, bottom);
+    	gc.drawRoundRectangle(m_x, m_y, m_width, m_height, m_cornerRounding, m_cornerRounding);
 
         int mid = (int)(((double)xOffset + ((double)getPixelsX() / 2)) * scale);
     	int childOffsetX = m_pixelsX / 2;
     	int childTop = (int)((double)(yOffset + m_connectionY) * scale);
     	for (StructureNode child : m_children) {
-    		child.draw(display, gc, xOffset + childOffsetX, yOffset + m_connectionY, scale);
+    		child.draw(display, gc, clickAreas,
+    				xOffset + childOffsetX, yOffset + m_connectionY, scale);
     		int childX = child.getPixelsX();
 
     		int childMid = (int)((double)(xOffset + childOffsetX + (childX / 2)) * scale);
         	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
             gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
-            gc.drawLine(mid, top, childMid, childTop);
+            gc.drawLine(mid, m_y, childMid, childTop);
 
     		childOffsetX += childX;
     	}
+
+    	clickAreas.add(this);
+	}
+
+	public boolean contains(int x, int y) {
+		if ((x >= m_x) && (x <= (m_x + m_width))) {
+			if ((y >= m_y) && (y <= (m_y + m_height))) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

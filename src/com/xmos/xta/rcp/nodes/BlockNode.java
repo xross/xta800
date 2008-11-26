@@ -62,17 +62,7 @@ public class BlockNode extends Node {
     	return m_block.getPcsCoveredThis();
     }
     
-    public void createContextMenu(IMenuManager manager, final TreeView treeView) {    	
-		manager.add(new Action("expand all") {
-			public void run() {
-				treeView.getViewer().expandAll();
-			}
-		});
-		manager.add(new Action("collapse all") {
-			public void run() {
-				treeView.getViewer().collapseAll();
-			}
-		});
+    public void createContextMenu(IMenuManager manager) {    	
     }
 
 	public int getNumIterations() {
