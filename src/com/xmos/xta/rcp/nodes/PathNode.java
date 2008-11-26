@@ -8,11 +8,9 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 
 import com.xmos.xta.engine.Block;
-import com.xmos.xta.engine.PathAttributes;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.dialogs.Iterations;
-import com.xmos.xta.rcp.views.TreeView;
 
 public class PathNode extends Node {
     private Block m_block;
