@@ -30,9 +30,7 @@ public class Timer implements Resource {
     public Timer(Timer timer) {
         m_inUse = timer.m_inUse;
         m_eventEnabledKnown = timer.m_eventEnabledKnown;
-        
         m_eventEnabled= timer.m_eventEnabled;
-        
         if(timer.m_vector!= null) m_vector= new Expression(timer.m_vector);
         if(timer.m_environmentVector!= null)  m_environmentVector= new Expression(timer.m_environmentVector);
     }

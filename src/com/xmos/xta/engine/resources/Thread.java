@@ -30,6 +30,13 @@ public class Thread implements Resource{
     }
     
     public Thread(int threadNo){
+    	m_SPC = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+        m_SSR= new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+        m_ET= new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+        m_ED= new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+        m_SED= new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+        m_KEP= new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+        m_KSP= new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
     	m_cbInUse = false;
     	m_ID = threadNo;
         m_registers = new Registers();
@@ -40,6 +47,15 @@ public class Thread implements Resource{
         m_registers = new Registers(thread.m_registers);
         m_ID = thread.m_ID;
         m_iBuffer = new InstructionBuffer(thread.m_iBuffer);
+        m_SPC = new Expression(thread.m_SPC);
+        m_SSR = new Expression(thread.m_SSR);
+        m_ET= new Expression(thread.m_ET);
+        m_ED= new Expression(thread.m_ED);
+        m_SED= new Expression(thread.m_SED);
+        m_KEP= new Expression(thread.m_KEP);
+        m_KSP= new Expression(thread.m_KSP);
+    	m_cbInUse = thread.m_cbInUse;
+
     }
 
     public void setControlBits(int controlBits){

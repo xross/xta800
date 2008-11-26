@@ -12,7 +12,7 @@ import com.xmos.xta.engine.Status.BlockStatus;
 
 public class Block implements Comparable<Block> {
 
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
 	static enum Mode {
 		FUNCTION, ABSOLUTE
@@ -242,6 +242,7 @@ public class Block implements Comparable<Block> {
 		m_machineState.resetInstructionState();
 
 		XtaInstruction instruction = m_bc.getInstructionDecodeCache().decode(opcode, pc);
+		if(DEBUG) System.out.println("\ntrying: " + instruction);
 		int instNumBytes = instruction.getNumBytes();
 
 		

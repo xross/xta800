@@ -108,6 +108,8 @@ public class MachineState {
         m_resources = new Resources(machineState.getResources());
        
         m_memory = new Memory(machineState.m_memory);
+        m_eventTargets = new ArrayList<Integer>(); 
+        m_eventTargets.addAll(machineState.m_eventTargets);
     }
 
     public Resources getResources(){

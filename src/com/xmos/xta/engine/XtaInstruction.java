@@ -869,7 +869,9 @@ public abstract class XtaInstruction extends Instruction {
         	//attach it to the sync
         	sync.attachThread((Thread)res);
         	
-        	
+        	System.out.println("current thread: " + thread);
+        	System.out.print ("got thread ");
+        	this.printResId(res.getResourceID());
         	//return the res id new thread
         	state.m_op1 = new Expression(res.getResourceID());
         	
@@ -1025,10 +1027,10 @@ public abstract class XtaInstruction extends Instruction {
     void LDAPB(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDAPB\n", getPc());	
-    	assert(state.m_op2.canResolve());
-    	int forward = state.m_op2.getValue();
+    	assert(state.m_op1.canResolve());
+    	int forward = state.m_op1.getValue();
     	int nextPc = state.getPc(thread) + getNumBytes();
-    	state.m_op1 = new Expression(nextPc - (forward<<(Instruction.BYTES_PER_WORD_LOG2/2)));
+    	state.m_op2 = new Expression(nextPc - (forward<<(Instruction.BYTES_PER_WORD_LOG2/2)));
     }
 
     void LDAPF(MachineState state, int thread) {
@@ -1926,7 +1928,6 @@ public abstract class XtaInstruction extends Instruction {
         
         if(resourceId.canResolve()){
             int resId = resourceId.getValue();
-            printResId(resId);
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
             Thread child = resources.getThread(resType, resNum);
@@ -1960,6 +1961,12 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
             
             Thread child = resources.getThread(resType, resNum);
+            
+            System.out.println("currentThread: " + thread);
+            System.out.println("thread reg: (" + state.m_op3Fld  + ") " + state.m_op3.getValue() + "--> thread " + resNum);
+            System.out.println("input reg: (" + state.m_op2Fld  + ") " + state.m_op2.getValue());
+            System.out.println("output reg: " + state.m_op1Fld  );
+
             child.getRegisters().writeRegister(state.m_op1Fld, state.m_op2);
         } else {
             System.err.println("could not resolve which resource of TSETR");

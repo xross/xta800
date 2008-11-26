@@ -1,16 +1,16 @@
 package com.xmos.xta.engine;
 
 public class Expression {
-	enum Type{
+	public enum Type{
 		IMMEDIATE,
 		REGISTER,
 		MEMORY,
 	}
-	enum Status {
+	public enum Status {
 		UNDEFINED,
 		DEFINED,
 	}
-	enum OperatorType{
+	public enum OperatorType{
 		ADD,
 		SUB,
 		AND,
@@ -44,7 +44,7 @@ public class Expression {
 	private int m_numOperands;
 
 	// Terminal Constructor
-	Expression(int address, int value, Type type, Status status) {
+	public Expression(int address, int value, Type type, Status status) {
 		m_address     = address;
 		m_value       = value;
 		m_type        = type;
