@@ -33,7 +33,11 @@ public class BlockNode extends Node {
     public int getNumCycles() {
         return m_block.getNumCyclesThis();
     }
-        
+
+    public int getNumUnknowns() {
+        return m_block.getUnknowns();
+    }
+    
     public String getDescription() {
         return getTimeTaken() + " ns";
     }

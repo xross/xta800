@@ -34,6 +34,10 @@ public class LoopNode extends Node {
         return m_block.getNumCycles(true);
     }
     
+    public int getNumUnknowns() {
+        return m_block.getNumUnknowns(true);
+    }    
+    
     public String getDescription() {
         return getTimeTaken() + " ns - " + getSummary(); 
     }

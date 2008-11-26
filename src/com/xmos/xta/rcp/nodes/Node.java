@@ -22,6 +22,7 @@ public abstract class Node {
 
 	public abstract double getTimeTaken();
     public abstract int getNumCycles();
+    public abstract int getNumUnknowns();
         
     public abstract String getDescription();
     public abstract String getToolTipText();
