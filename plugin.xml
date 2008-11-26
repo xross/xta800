@@ -116,6 +116,37 @@
                style="push">
          </command>
       </menuContribution>
+      <menuContribution
+            locationURI="toolbar:com.xmos.xta.rcp.views.Structure">
+         <command
+               commandId="com.xmos.xta.rcp.structure.circle.command"
+               icon="icons/loop.png"
+               id="com.xmos.xta.rcp.structure.circle.command"
+               label="Draw circle"
+               style="push">
+         </command>
+         <command
+               commandId="com.xmos.xta.rcp.structure.zoomin.command"
+               icon="icons/zoomin.png"
+               id="com.xmos.xta.rcp.structure.zoomin.command"
+               label="Zoom In"
+               style="push">
+         </command>
+         <command
+               commandId="com.xmos.xta.rcp.structure.zoomout.command"
+               icon="icons/zoomout.png"
+               id="com.xmos.xta.rcp.structure.zoomout.command"
+               label="Zoom Out"
+               style="push">
+         </command>
+         <command
+               commandId="com.xmos.xta.rcp.structure.zoomreset.command"
+               icon="icons/zoomreset.png"
+               id="com.xmos.xta.rcp.structure.zoomreset.command"
+               label="Reset Zoom"
+               style="push">
+         </command>
+      </menuContribution>
    </extension> <extension
          point="org.eclipse.ui.commands">
       <command
@@ -137,6 +168,26 @@
             defaultHandler="com.xmos.xta.rcp.handlers.FunctionLoopsHandler"
             id="com.xmos.xta.rcp.function.loops.command"
             name="com.xmos.xta.rcp.function.loops.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.StructureCircleHandler"
+            id="com.xmos.xta.rcp.structure.circle.command"
+            name="com.xmos.xta.rcp.structure.circle.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.StructureZoomInHandler"
+            id="com.xmos.xta.rcp.structure.zoomin.command"
+            name="com.xmos.xta.rcp.structure.zoomin.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.StructureZoomOutHandler"
+            id="com.xmos.xta.rcp.structure.zoomout.command"
+            name="com.xmos.xta.rcp.structure.zoomout.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.StructureZoomResetHandler"
+            id="com.xmos.xta.rcp.structure.zoomreset.command"
+            name="com.xmos.xta.rcp.structure.zoomreset.command">
       </command>command>
    </extension>
    <extension

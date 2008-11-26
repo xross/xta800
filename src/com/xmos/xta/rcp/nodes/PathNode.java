@@ -14,17 +14,17 @@ import com.xmos.xta.rcp.views.TreeView;
 
 public class PathNode extends Node {
     private Block m_block;
-    private boolean m_complete;
+    private boolean m_isRoot;
     
-    public PathNode(Block block, Node parent, boolean complete) {
+    public PathNode(Block block, Node parent, boolean isRoot) {
     	super(parent);
     	m_block = block;
-    	m_complete = complete;
+    	m_isRoot = isRoot;
     }
 
     public String getDescription() {
     	String str = getTimeTaken() + " ns (path " + getId() + ")";
-    	if (!m_complete) {
+    	if (!m_isRoot) {
     		str += " (iterations: " + m_block.getNumIterations() + ")";
     	}
     	return str;
@@ -46,6 +46,10 @@ public class PathNode extends Node {
         return m_block.getTimeTaken(true);
     }
 
+    public double getTimeTakenThis() {
+        return m_block.getTimeTaken(false);
+    }
+
     public String getToolTipText() {
         String toolTipText = "";
         toolTipText += "Path ID: "          + m_block.getId() + "\n";
@@ -60,7 +64,7 @@ public class PathNode extends Node {
         toolTipText += "Number of cycles (this): "    + m_block.getNumCycles(false) + "\n";
         toolTipText += "Number of FNOPs (this): "     + m_block.getNumFNops(false) + "\n";
         toolTipText += "Number of pausables (this): " + m_block.getNumPausables(false);        
-        if (!m_complete) {
+        if (!m_isRoot) {
             toolTipText += "\n----------------------------------\n";
             toolTipText += "Number of iterations: " + m_block.getNumIterations();
         }
@@ -92,7 +96,7 @@ public class PathNode extends Node {
 			}
 		});    	
     	
-    	if (!m_complete) {
+    	if (!m_isRoot) {
 		    manager.add(new Separator());
     	    manager.add(new Action("Set iterations") {
 			    public void run() {
@@ -106,12 +110,20 @@ public class PathNode extends Node {
 		return m_block.getNumIterations();
 	}
 
+	public boolean isBlockNode() {
+		return false;
+	}
+
 	public boolean isLoopNode() {
 		return false;
 	}
 
 	public boolean isPathNode() {
 		return true;
+	}
+
+	public boolean isRouteNode() {
+		return false;
 	}
 
     public Vector<XtaInstruction> getInstructions() {
