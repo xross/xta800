@@ -17,7 +17,8 @@ public class RouteNode extends Node {
     public double getTimeTaken() { assert(false); return 0; }
     public double getTimeTakenThis() { return 0; }
     public int getNumCycles()    { assert(false); return 0; }
-    
+    public int getNumUnknowns()  { assert(false); return 0; }    
+   
     public String getDescription() { assert(false); return ""; }
     public String getToolTipText() { assert(false); return ""; }
     public String getTypeName()    { return "route"; }

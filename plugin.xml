@@ -216,7 +216,7 @@
             overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
             overviewRulerPreferenceValue="true"
             contributesToHeader="true"
-            colorPreferenceValue="255,255,50">
+            colorPreferenceValue="255,255,75">
       </specification>
    </extension>
  

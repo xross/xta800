@@ -31,7 +31,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import com.xmos.xta.rcp.nodes.Node;
 
 public class XtaEditor extends TextEditor implements ISelectionListener {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static final String ID            = "com.xmos.xtagui.editors.Test";
     public static final String AnnotationID  = "com.xmos.xta.rcp.path";
     public static final String ExpandAllID   = "com.xmos.xtagui.action.ExpandAll";
