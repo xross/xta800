@@ -43,6 +43,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     public static final String ID = "com.xmos.xta.rcp.views.Tree";
 
     private TreeViewer m_treeViewer;
+    private Composite m_parent;
     private Display m_display;
     private XtaRouteInfo m_routeInfo;
     private TreeViewFunctionCombo m_functions;
@@ -60,9 +61,10 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 
 	public void createPartControl(Composite parent) {
 	    if (DEBUG) System.out.printf("Tree: createPartControl\n");
-	    m_display = parent.getDisplay();	    
+	    m_parent = parent;
+	    m_display = m_parent.getDisplay();	    
 		
-	    m_treeViewer = new TreeViewer(parent);		
+	    m_treeViewer = new TreeViewer(m_parent);		
 	    getSite().setSelectionProvider(m_treeViewer);
 
 		m_treeViewer.setContentProvider(new TreeViewContentProvider());				
@@ -117,7 +119,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
         if (selection instanceof IStructuredSelection) {	            
             Object object = ((IStructuredSelection)selection).getFirstElement();
             if (object instanceof Node) {
-				((Node)object).createContextMenu(manager);
+				((Node)object).createContextMenu(m_parent.getShell(), manager);
             }
         }				
 	}

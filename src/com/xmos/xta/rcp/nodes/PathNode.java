@@ -6,6 +6,7 @@ import java.util.Vector;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.swt.widgets.Shell;
 
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.XtaInstruction;
@@ -92,7 +93,7 @@ public class PathNode extends Node {
     }
     
     PathNode m_this = this;
-    public void createContextMenu(IMenuManager manager) {    	
+    public void createContextMenu(final Shell parent, IMenuManager manager) {    	
 		manager.add(new Separator());
     	manager.add(new Action("trace to console") {
 			public void run() {
@@ -103,7 +104,7 @@ public class PathNode extends Node {
 		    manager.add(new Separator());
     	    manager.add(new Action("Set iterations") {
 			    public void run() {
-				    new Iterations(m_this);
+				    new Iterations(parent, m_this);
 			    }
 		    });
     	}

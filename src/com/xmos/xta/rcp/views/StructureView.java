@@ -61,8 +61,8 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 
     private ArrayList<StructureNode> m_clickAreas;
     
-    private Display m_display;
     private Composite m_parent;
+    private Display m_display;
     private ScrolledComposite m_scrollArea;
     private Canvas m_canvas;
     
@@ -231,14 +231,8 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
     }	            		         	        	
 
 	public void menuAboutToShow(IMenuManager manager) {
-		manager.add(new Action("expand all") {
-			public void run() {
-				
-			}
-		});
-
 		if (m_selectedNode != null) {
-			m_selectedNode.createContextMenu(manager);
+			m_selectedNode.createContextMenu(m_parent.getShell(), manager);
 		}
 	}
 

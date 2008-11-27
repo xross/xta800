@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Vector;
 
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.swt.widgets.Shell;
 
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.views.TreeView;
@@ -24,7 +25,7 @@ public class RouteNode extends Node {
     public String getTypeName()    { return "route"; }
     
     public HashSet<Integer> getPcsCovered() { assert(false); return null; }       
-    public void createContextMenu(IMenuManager manager) { }
+    public void createContextMenu(final Shell parent, IMenuManager manager) { }
     
 	public int getNumIterations() { return 1; }
 	public boolean isBlockNode() { return false; }

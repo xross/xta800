@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Vector;
 
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.swt.widgets.Shell;
 
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.views.TreeView;
@@ -36,7 +37,7 @@ public abstract class Node {
     public abstract int getNumIterations();
     public abstract Vector<XtaInstruction> getInstructions();
     public abstract HashSet<Integer> getPcsCovered();
-    public abstract void createContextMenu(IMenuManager manager);
+    public abstract void createContextMenu(final Shell parent, IMenuManager manager);
     
     public void addNode(Node node) {
     	m_nodes.add(node);
