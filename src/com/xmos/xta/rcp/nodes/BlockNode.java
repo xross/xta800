@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.swt.widgets.Shell;
 
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.XtaInstruction;
@@ -67,17 +68,7 @@ public class BlockNode extends Node {
     	return m_block.getPcsCoveredThis();
     }
     
-    public void createContextMenu(IMenuManager manager, final TreeView treeView) {    	
-		manager.add(new Action("expand all") {
-			public void run() {
-				treeView.getViewer().expandAll();
-			}
-		});
-		manager.add(new Action("collapse all") {
-			public void run() {
-				treeView.getViewer().collapseAll();
-			}
-		});
+    public void createContextMenu(final Shell parent, IMenuManager manager) {    	
     }
 
 	public int getNumIterations() {

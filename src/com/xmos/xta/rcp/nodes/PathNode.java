@@ -6,20 +6,27 @@ import java.util.Vector;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.swt.widgets.Shell;
 
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.dialogs.Iterations;
-import com.xmos.xta.rcp.views.TreeView;
 
 public class PathNode extends Node {
     private Block m_block;
     private boolean m_isRoot;
     
+    private boolean m_allInstances;
+    private boolean m_absoluteCount;
+    
     public PathNode(Block block, Node parent, boolean isRoot) {
     	super(parent);
     	m_block = block;
     	m_isRoot = isRoot;
+    
+    	m_allInstances = false;
+    	m_absoluteCount = false;
     }
 
     public String getDescription() {
@@ -85,17 +92,8 @@ public class PathNode extends Node {
     	return m_block.getPcsCovered(false);
     }
     
-    public void createContextMenu(IMenuManager manager, final TreeView treeView) {    	
-		manager.add(new Action("expand all") {
-			public void run() {
-				treeView.getViewer().expandAll();
-			}
-		});
-		manager.add(new Action("collapse all") {
-			public void run() {
-				treeView.getViewer().collapseAll();
-			}
-		});
+    PathNode m_this = this;
+    public void createContextMenu(final Shell parent, IMenuManager manager) {    	
 		manager.add(new Separator());
     	manager.add(new Action("trace to console") {
 			public void run() {
@@ -106,7 +104,7 @@ public class PathNode extends Node {
 		    manager.add(new Separator());
     	    manager.add(new Action("Set iterations") {
 			    public void run() {
-				    new Iterations(treeView, m_block.getId(), m_block.getInstanceId());
+				    new Iterations(parent, m_this);
 			    }
 		    });
     	}
@@ -134,5 +132,31 @@ public class PathNode extends Node {
 
     public Vector<XtaInstruction> getInstructions() {
 		return new Vector<XtaInstruction>();
+	}
+
+	public void setIterations(int numIterations) {
+		if (m_allInstances) {
+			XtaEngine.getEngine().setLoopIterations(m_block.getId(), true,
+					m_absoluteCount, numIterations);
+		} else {
+			XtaEngine.getEngine().setLoopIterations(m_block.getInstanceId(), false,
+					m_absoluteCount, numIterations);		
+		}
+	}
+
+	public void setAllInstances(boolean allInstances) {
+		m_allInstances = allInstances;
+	}
+
+	public boolean getAllInstances() {
+		return m_allInstances;
+	}
+
+	public boolean getAbsoluteCount() {
+		return m_absoluteCount;
+	}
+
+	public void setAbsoluteCount(boolean absoluteCount) {
+		m_absoluteCount = absoluteCount;
 	}
 }

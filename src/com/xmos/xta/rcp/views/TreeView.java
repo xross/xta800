@@ -1,5 +1,6 @@
 package com.xmos.xta.rcp.views;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -42,15 +43,13 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     public static final String ID = "com.xmos.xta.rcp.views.Tree";
 
     private TreeViewer m_treeViewer;
+    private Composite m_parent;
     private Display m_display;
     private XtaRouteInfo m_routeInfo;
     private TreeViewFunctionCombo m_functions;
 
     private boolean m_exhustive;
     private boolean m_fnops;
-    private boolean m_allInstances;
-    private boolean m_absoluteCount;
-    private int m_numIterations;
     
 	public TreeView() {
 		if (DEBUG) System.out.printf("Tree()\n");			
@@ -58,16 +57,14 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		
 		m_exhustive = false;
 		m_fnops = true;
-		m_allInstances = false;
-		m_absoluteCount = false;
-		m_numIterations = 0;
 	}
 
 	public void createPartControl(Composite parent) {
 	    if (DEBUG) System.out.printf("Tree: createPartControl\n");
-	    m_display = parent.getDisplay();	    
+	    m_parent = parent;
+	    m_display = m_parent.getDisplay();	    
 		
-	    m_treeViewer = new TreeViewer(parent);		
+	    m_treeViewer = new TreeViewer(m_parent);		
 	    getSite().setSelectionProvider(m_treeViewer);
 
 		m_treeViewer.setContentProvider(new TreeViewContentProvider());				
@@ -107,11 +104,22 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
      }	            		         	        
 	
 	public void menuAboutToShow(IMenuManager manager) {				
+		manager.add(new Action("expand all") {
+			public void run() {
+				getViewer().expandAll();
+			}
+		});
+		manager.add(new Action("collapse all") {
+			public void run() {
+				getViewer().collapseAll();
+			}
+		});
+
 		ISelection selection = m_treeViewer.getSelection();
         if (selection instanceof IStructuredSelection) {	            
             Object object = ((IStructuredSelection)selection).getFirstElement();
             if (object instanceof Node) {
-				((Node)object).createContextMenu(manager, this);
+				((Node)object).createContextMenu(m_parent.getShell(), manager);
             }
         }				
 	}
@@ -191,36 +199,6 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		XtaEngine.getEngine().setNumThreads(numThreads);
 	}
 	
-	public boolean getAllInstances() {
-		return m_allInstances;
-	}
-	
-	public void setAllInstances(boolean allInstances) {	
-		m_allInstances = allInstances;
-	}
-
-	public boolean getAbsoluteCount() {
-		return m_absoluteCount;
-	}
-	
-	public void setAbsoluteCount(boolean allInstances) {
-		m_absoluteCount = allInstances;
-	}
-
-	public int getNumIterations() {
-		return m_numIterations;
-	}
-	
-	public int setNumIterations(int numIterations, int id, int instanceId) {
-		if (m_allInstances) {
-			XtaEngine.getEngine().setLoopIterations(id, true, m_absoluteCount, numIterations);
-		} else {
-			XtaEngine.getEngine().setLoopIterations(instanceId, false, m_absoluteCount, numIterations);		
-		}
-		m_numIterations = numIterations;
-		return 0;
-	}
-	
 	public TreeViewer getViewer() {
 		return m_treeViewer;
 	}
@@ -251,12 +229,12 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     }
 			
 	private void createContextMenus() {
-	    Menu m_contextMenu;
+	    Menu contextMenu;
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(this);
-		m_contextMenu = menuMgr.createContextMenu(m_treeViewer.getTree());
-		m_treeViewer.getTree().setMenu(m_contextMenu);		
+		contextMenu = menuMgr.createContextMenu(m_treeViewer.getTree());
+		m_treeViewer.getTree().setMenu(contextMenu);		
 	}
 	
 	private void initialiseTree() {
