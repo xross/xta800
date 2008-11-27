@@ -9,9 +9,7 @@ import org.eclipse.swt.widgets.Display;
 import com.xmos.xta.rcp.nodes.Node;
 
 public abstract class StructureNode {
-    private Node m_treeNode;
-    protected Vector<StructureNode> m_children;
-
+    protected Node m_treeNode;
     protected double m_weight;
     protected int m_lineWidth;
     protected int m_pixelsX;
@@ -25,23 +23,10 @@ public abstract class StructureNode {
     	m_weight = weight;
     	m_lineWidth = lineWidth;
 
-    	m_children = new Vector<StructureNode>();
 		m_childrenX = 0;
 		m_childrenY = 0;
 		
 		m_isSelected = false;
-    }    
-    
-    public int numChildren() {
-    	return m_children.size();
-	}
-
-	public void addChild(StructureNode node) {
-    	m_children.add(node);
-    }
-
-    public Vector<StructureNode> getChildren() {
-    	return m_children;
     }    
     
     public Node getTreeNode() {

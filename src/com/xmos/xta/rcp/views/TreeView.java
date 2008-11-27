@@ -66,6 +66,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		
 	    m_treeViewer = new TreeViewer(m_parent);		
 	    getSite().setSelectionProvider(m_treeViewer);
+	    getSite().getPage().addSelectionListener(this);
 
 		m_treeViewer.setContentProvider(new TreeViewContentProvider());				
 		m_treeViewer.setLabelProvider(new TreeViewLabelProvider());
@@ -98,7 +99,9 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
         if (sel instanceof IStructuredSelection) {	            
             Object object = ((IStructuredSelection)sel).getFirstElement();
             if (object instanceof Node) {
-                // Do selection updates here..
+            	if (part != this) {
+            		m_treeViewer.setSelection(sel, true);
+            	}
             }
         }
      }	            		         	        
