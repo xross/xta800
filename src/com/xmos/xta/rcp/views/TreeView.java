@@ -13,7 +13,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IEditorInput;
@@ -44,7 +43,6 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 
     private TreeViewer m_treeViewer;
     private Composite m_parent;
-    private Display m_display;
     private XtaRouteInfo m_routeInfo;
     private TreeViewFunctionCombo m_functions;
 
@@ -62,7 +60,6 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	public void createPartControl(Composite parent) {
 	    if (DEBUG) System.out.printf("Tree: createPartControl\n");
 	    m_parent = parent;
-	    m_display = m_parent.getDisplay();	    
 		
 	    m_treeViewer = new TreeViewer(m_parent);		
 	    getSite().setSelectionProvider(m_treeViewer);
@@ -211,17 +208,17 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     
     private void populateFunctionList() {
     	XeObject xeObject = XtaEngine.getEngine().getXeObject();                    
-        for (Function function : xeObject.getFunctions()) {
-        	m_functions.addEntry(function.getText());
+        for (final Function function : xeObject.getFunctions()) {
+           	m_functions.addEntry(function.getText());
         }
     }
     
     private void openEditors() {
-		IWorkbenchPage page = getSite().getWorkbenchWindow().getActivePage();
+		final IWorkbenchPage page = getSite().getWorkbenchWindow().getActivePage();
 		page.closeAllEditors(false);
+		IEditorInput sourcesInput = new SourcesInput();
 		try {
-			IEditorInput sourcesInput = new SourcesInput();
-			page.openEditor(sourcesInput, Sources.ID);
+		    page.openEditor(sourcesInput, Sources.ID);
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}    	
@@ -239,26 +236,17 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	
 	private void initialiseTree() {
 		m_routeInfo = XtaDisplayer.getInstance().getRouteInfo();										
-		m_display.asyncExec(new Runnable() {
-			public void run() {
-				m_treeViewer.setInput(m_routeInfo.getRouteNode());
-				ColumnViewerToolTipSupport.enableFor(m_treeViewer, ToolTip.NO_RECREATE);
-			}});					    		
+    	m_treeViewer.setInput(m_routeInfo.getRouteNode());
+		ColumnViewerToolTipSupport.enableFor(m_treeViewer, ToolTip.NO_RECREATE);
 	}
 	
 	private void refreshTree() {
-		m_display.asyncExec(new Runnable() {
-			public void run() {
-    			m_treeViewer.refresh();
-			}});					            	   		
+		m_treeViewer.refresh();
 	}
 	
 	private void clearTree() {
-		m_display.syncExec(new Runnable() {
-			public void run() {
-    			m_treeViewer.setInput(new RouteNode());
-    			m_treeViewer.refresh();
-			}});					            	   				
+		m_treeViewer.setInput(new RouteNode());
+		m_treeViewer.refresh();
 	}
 	
     class RunEngineMethodFunc extends Thread {
