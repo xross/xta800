@@ -12,17 +12,17 @@ public class StructurePathNode extends StructureNode {
 
     private int m_blockX = 10;
     private int m_blockY = 20;
-    private int m_connectorY = 5;
-    private int m_borderX = 3;
-    private int m_borderY = 3;
+    private int m_connectorY = 7;
+    private int m_borderX = 5;
+    private int m_borderY = 5;
 
     private int m_x;
     private int m_y;
     private int m_width;
     private int m_height;
 
-	public StructurePathNode(Node treeNode, double weight) {
-		super(treeNode, weight);
+	public StructurePathNode(Node treeNode, double weight, int lineWidth) {
+		super(treeNode, weight, lineWidth);
 		
 		m_pixelsX = m_blockX + (2 * m_borderX);
 		m_pixelsY = m_blockY + m_connectorY + m_borderY;
@@ -78,7 +78,10 @@ public class StructurePathNode extends StructureNode {
     	gc.setAlpha(255);
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
         gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+        
+        if (m_isSelected) gc.setLineWidth(m_lineWidth * 2);
     	gc.drawRectangle(m_x, m_y, m_width, m_height);
+        if (m_isSelected) gc.setLineWidth(m_lineWidth);
 
     	int childOffsetX = m_borderX;
     	int childTop = (int)((double)(yOffset + m_pixelsY) * scale);

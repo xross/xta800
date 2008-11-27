@@ -2,7 +2,6 @@ package com.xmos.xta.rcp.views;
 
 import java.util.ArrayList;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -50,9 +49,11 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 
     private boolean m_modeCircle;
 
+    private Node m_startNode;
     private Node m_selectedNode;
     private StructureNode m_stuctureTree;
     private double m_scale;
+    private int m_lineWidth;
     private int m_pixelsX;
 	private int m_pixelsY;
     private int m_borderX;
@@ -77,6 +78,7 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		m_scale = 1.0;
 		m_borderX = 10;
 		m_borderY = 10;
+		m_lineWidth = 1;
 	}
 
 	public void createPartControl(Composite parent) {
@@ -196,14 +198,17 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 
 		if (event.getProperty().equals("DisplayRoute")) {
 			m_selectedNode = null;
+			m_startNode = null;
 	    	if (m_toolTip != null  && !m_toolTip.isDisposed ())
 				m_toolTip.dispose ();
 			refreshTree();
 		} else if (event.getProperty().equals("LoadExecutable")) {
 	    	if (m_toolTip != null  && !m_toolTip.isDisposed ())
 				m_toolTip.dispose ();
+	    	m_startNode = null;
 			m_selectedNode = null;
 		} else if (event.getProperty().equals("UpdateState")) {
+			m_startNode = null;
 			m_selectedNode = null;
 			refreshTree();
 		}
@@ -223,7 +228,7 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
             Object object = ((IStructuredSelection)sel).getFirstElement();
             if (object instanceof Node) {
                 m_selectedNode = (Node)object;
-                analyseTree(m_selectedNode);
+                analyseTree(m_startNode, m_selectedNode);
         		m_scrollArea.redraw();
         		m_canvas.redraw();
             }
@@ -243,14 +248,21 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	}
 
     private void refreshTree() {
-    	if (m_selectedNode == null) {
-    		XtaRouteInfo info = XtaDisplayer.getInstance().getRouteInfo();
+		XtaRouteInfo info = XtaDisplayer.getInstance().getRouteInfo();
+
+		if (m_startNode == null) {
+    		if (info != null)
+    			m_startNode = info.getRouteNode();
+    	} 
+
+		if (m_selectedNode == null) {
     		if (info != null)
     			m_selectedNode = info.getRouteNode();
     	} else if (m_selectedNode.isBlockNode()) {
     		m_selectedNode = m_selectedNode.getParentNode();
     	}
-        analyseTree(m_selectedNode);
+		
+        analyseTree(m_startNode, m_selectedNode);
     }
     
     private void prepareCanvas() {
@@ -296,6 +308,7 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 			if (m_modeCircle) {
 				drawCircle(gc, m_scale);
 			} else {
+				gc.setLineWidth(m_lineWidth);
 				m_stuctureTree.draw(m_display, gc, m_clickAreas, m_borderX, m_borderY, m_scale);
 			}
 	    }
@@ -322,15 +335,15 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		return node;
 	}
 
-	private void analyseTree(Node node) {
+	private void analyseTree(Node startNode, Node selectedNode) {
 		double totalTime = 0;
-		if (!node.isRouteNode()) {
-			totalTime = getPathRoot(node).getTimeTaken();
+		if (!startNode.isRouteNode()) {
+			totalTime = getPathRoot(startNode).getTimeTaken();
 		}
 
 		m_numTreeNodes = 0;
 		// FIXME - ensure correct start iterations
-		m_stuctureTree = analyseTree(node, node.getNumIterations(), totalTime);
+		m_stuctureTree = analyseTree(startNode, startNode.getNumIterations(), totalTime);
 
 		m_pixelsX = (m_borderX  * 2) + m_stuctureTree.getPixelsX();
 		m_pixelsY = (m_borderY * 2) + m_stuctureTree.getPixelsY();
@@ -345,14 +358,17 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
     	double weight = (numIterations * node.getTimeTakenThis()) / totalTime;
 
     	if (node.isRouteNode())
-    		treeNode = new StructureRouteNode(node, weight);
+    		treeNode = new StructureRouteNode(node, weight, m_lineWidth);
     	else if (node.isPathNode())
-    		treeNode = new StructurePathNode(node, weight);
+    		treeNode = new StructurePathNode(node, weight, m_lineWidth);
     	else if (node.isLoopNode())
-    		treeNode = new StructureLoopNode(node, weight);
+    		treeNode = new StructureLoopNode(node, weight, m_lineWidth);
     	else
     		assert(false);
 		
+    	if (node == m_selectedNode)
+    		treeNode.setIsSelected(true);
+    	
         for (Node subNode : node.getNodes()) {
         	if (node.isRouteNode())
         		totalTime = subNode.getTimeTaken(); // Re-compute total time for sub tree
@@ -363,6 +379,9 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
     		if (subNode.isPathNode() || subNode.isLoopNode()) {
     			StructureNode newNode = analyseTree(subNode, numIterations, totalTime);
     			treeNode.addChild(newNode);
+    			
+    			if (newNode.isSelected())
+    				treeNode.setIsSelected(true);
     		}
         }
         return treeNode;
