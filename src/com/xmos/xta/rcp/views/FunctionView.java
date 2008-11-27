@@ -93,7 +93,25 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
 
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("Function: propertyChange: %s\n", event.getProperty());
+		if (event.getProperty().equals("DisplayRoute")) {
+			m_selectedNode = null;
+            clearAll();
+		} else if (event.getProperty().equals("LoadExecutable")) {
+			m_selectedNode = null;
+            clearAll();
+		} else if (event.getProperty().equals("UpdateState")) {
+			m_selectedNode = null;
+		}
+
+		refreshView();
 	}	
+	
+	private void refreshView() {
+		m_display.asyncExec(new Runnable() {
+			public void run() {
+				m_canvas.redraw();
+			}});
+	}
 	
     public void selectionChanged(IWorkbenchPart part, ISelection sel) {
 		if (DEBUG) System.out.printf("Function: selectionChanged\n");			

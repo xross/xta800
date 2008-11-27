@@ -1,46 +1,62 @@
 package com.xmos.xta.rcp.dialogs;
 
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
-import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xta.rcp.views.TreeView;
 
-public class Settings {
-    public Settings(final TreeView treeView) {
-    	Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-	    Shell dialog = new Shell(shell, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
-	    
-	    dialog.setText("Settings");
-	    dialog.setSize(200, 200);
-	    GridLayout gridLayout = new GridLayout();
+public class Settings extends Dialog {
+	
+	private TreeView m_treeView;
+	
+    public Settings(Shell parent, final TreeView treeView) {
+    	super(parent);
+    	m_treeView = treeView;
+		open();    	
+    }
+
+    protected void configureShell(Shell newShell) {
+    	super.configureShell(newShell);
+    	newShell.setText("Settings");
+    }
+
+    protected Control createDialogArea(Composite parent) {
+    	Composite container = (Composite) super.createDialogArea(parent);
+
+	    final GridLayout gridLayout = new GridLayout();
 	    gridLayout.numColumns = 2;
-	    dialog.setLayout(gridLayout);
-	    dialog.setBackground(dialog.getDisplay().getSystemColor(SWT.COLOR_WHITE));
-	    	    
-		createExhustiveControl(dialog, treeView);
-		createFNopsControl(dialog, treeView);
-		createFrequencyControl(dialog, treeView);
-		createNumThreadsControl(dialog, treeView);
-		dialog.open();    	
+	    container.setLayout(gridLayout);
+
+		createExhustiveControl(container, m_treeView);
+		createFNopsControl(container, m_treeView);
+		createFrequencyControl(container, m_treeView);
+		createNumThreadsControl(container, m_treeView);
+
+    	return container;
     }
 
 	private void createControlLabel(Composite parent, String str) {
 		Label label = new Label(parent, SWT.NONE);		        
+	    label.setLayoutData(new GridData(GridData.END, GridData.CENTER,
+	    		false, false));
         label.setText(str);
-        label.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
 	}
 	
 	private void createExhustiveControl(Composite parent, final TreeView treeView) {
 		createControlLabel(parent, "Exhustive:");
 		final Button button = new Button(parent, SWT.CHECK);
+		button.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
+				true, false));
 		button.setSelection(treeView.getExhustive());		
 		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -52,6 +68,8 @@ public class Settings {
     private void createFNopsControl(Composite parent, final TreeView treeView) {
 		createControlLabel(parent, "Show Fnops:");
 		final Button button = new Button(parent, SWT.CHECK);
+		button.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
+				true, false));
 		button.setSelection(treeView.getFnops());		
 		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -63,8 +81,10 @@ public class Settings {
     private void createFrequencyControl(Composite parent, final TreeView treeView) {
 		createControlLabel(parent, "Frequency:");
 		final Spinner spinner = new Spinner(parent, SWT.BORDER);
-		spinner.setMinimum(0);
-		spinner.setMaximum(1000);
+		spinner.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
+				true, false));
+		spinner.setMinimum(1);
+		spinner.setMaximum(10000);
 		spinner.setSelection(treeView.getFrequency());
 		spinner.setIncrement(1);
 		spinner.setPageIncrement(10);
@@ -78,11 +98,13 @@ public class Settings {
     private void createNumThreadsControl(Composite parent, final TreeView treeView) {
 		createControlLabel(parent, "Num Threads:");
 		final Spinner spinner = new Spinner(parent, SWT.BORDER);
-		spinner.setMinimum(0);
+		spinner.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
+				true, false));
+		spinner.setMinimum(1);
 		spinner.setMaximum(8);
 		spinner.setSelection(treeView.getNumThreads());
 		spinner.setIncrement(1);
-		spinner.setPageIncrement(8);
+		spinner.setPageIncrement(4);
 		spinner.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				treeView.setNumThreads(spinner.getSelection());

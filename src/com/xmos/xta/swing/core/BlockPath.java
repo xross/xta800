@@ -30,7 +30,7 @@ public class BlockPath implements RouteNode {
     public ImageIcon getIcon() {
 
         try {
-            if(m_path.getUnknowns() == 0){
+            if(m_path.getNumUnknownsThis() == 0){
                 return new ImageIcon(XtaGui.class
                     .getResource("BasicBlock.png"));
             } else {

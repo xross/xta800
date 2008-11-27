@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.swt.widgets.Shell;
 
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.XtaInstruction;
@@ -55,7 +56,8 @@ public class LoopNode extends Node {
         toolTipText += "Total time taken: " + getTimeTaken() + " ns\n";
         toolTipText += "Total number of cycles: " + getNumCycles() + "\n";
         toolTipText += "Total number of FNOPs: " + m_block.getNumFNops(true) + "\n";
-        toolTipText += "Total number of pausable: " + m_block.getNumPausables(true);
+        toolTipText += "Total number of pausable: " + m_block.getNumPausables(true) + "\n";
+        toolTipText += "Total number of unknowns: " + m_block.getNumUnknowns(true);
         return toolTipText;
     }
     
@@ -67,17 +69,7 @@ public class LoopNode extends Node {
         return m_block.getPcsCovered(true);
     }
 
-    public void createContextMenu(IMenuManager manager, final TreeView treeView) {    	
-		manager.add(new Action("expand all") {
-			public void run() {
-				treeView.getViewer().expandAll();
-			}
-		});
-		manager.add(new Action("collapse all") {
-			public void run() {
-				treeView.getViewer().collapseAll();
-			}
-		});
+    public void createContextMenu(final Shell parent, IMenuManager manager) {    	
     }
             
     private String getSummary() {
