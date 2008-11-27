@@ -2,7 +2,8 @@ package com.xmos.xta.rcp.editors;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -13,7 +14,7 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.AnnotationPainter;
-import org.eclipse.jface.text.source.IAnnotationModel;
+import org.eclipse.jface.text.source.IAnnotationModelExtension;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
@@ -36,18 +37,21 @@ import com.xmos.xta.rcp.nodes.Node;
 
 public class XtaEditor extends TextEditor implements IPropertyChangeListener,
                                                      ISelectionListener {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public static final String ID                    = "com.xmos.xtagui.editors.Test";
     public static final String HighlightAnnotationID = "com.xmos.xta.rcp.highlight";
     public static final String UnknownAnnotationID   = "com.xmos.xta.rcp.unknown";
     public static final String ExpandAllID           = "com.xmos.xtagui.action.ExpandAll";
     public static final String CollapseAllID         = "com.xmos.xtagui.action.CollapseAll";
     
-    private ProjectionSupport m_projectionSupport;
+    private ProjectionSupport m_projectionSupport;    
     private ProjectionAnnotationModel m_projectionAnnotationModel;
-    private IAnnotationModel m_annotationModel;
-    private Annotation[] m_oldAnnotations;
+    private IAnnotationModelExtension m_annotationModel;
     private AnnotationPainter m_painter;
+
+    private Annotation[] m_previousProjectionAnnotations;
+    private Annotation[] m_previousHighlightAnnotations;
+    private Annotation[] m_previousUnknownAnnotations;
     
     public XtaEditor() {
 		if (DEBUG) System.out.printf("XtaEditor()\n"); 
@@ -62,14 +66,14 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	super.createPartControl(parent);
 
     	ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
-        
+            	
         m_projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
         m_projectionSupport.install();
 
         viewer.doOperation(ProjectionViewer.TOGGLE);
 
         m_projectionAnnotationModel = viewer.getProjectionAnnotationModel();
-        m_annotationModel = viewer.getAnnotationModel();
+        m_annotationModel = (IAnnotationModelExtension)viewer.getAnnotationModel();
         
         viewer.showAnnotations(true);
         viewer.showAnnotationsOverview(true);
@@ -126,26 +130,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         	    updateHighlighting((Node)object);
             }
         }
-     }	            		         	        
-    
-    public void updateFoldingStructure(ArrayList<Position> positions, IDocument document) {
-	    if (DEBUG) System.out.printf("XtaEditor: updateFoldingStructure\n"); 
-
-	    Annotation[] annotations = new Annotation[positions.size()];
-
-        HashMap<ProjectionAnnotation, Position> newAnnotations = 
-    	    new HashMap<ProjectionAnnotation, Position>();
-
-        for(int i = 0; i < positions.size();i++) {
-            ProjectionAnnotation annotation = new ProjectionAnnotation();
-            newAnnotations.put(annotation, positions.get(i));
-            annotations[i] = annotation;
-        }
-       
-        m_projectionAnnotationModel.modifyAnnotations(m_oldAnnotations, newAnnotations, null);
-        m_projectionAnnotationModel.collapseAll(0, document.getLength());
-        m_oldAnnotations = annotations;       
-    }
+    }	            		         	        
     
     protected ISourceViewer createSourceViewer(Composite parent,
     		IVerticalRuler ruler, int styles) {
@@ -158,25 +143,60 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         return viewer;
     }
     
+    public void updateFoldingStructure(ArrayList<Position> positions, IDocument document) {
+	    if (DEBUG) System.out.printf("XtaEditor: updateFoldingStructure\n"); 
+
+	    Annotation[] annotations = new Annotation[positions.size()];
+        HashMap<ProjectionAnnotation, Position> annotationPositions = 
+    	    new HashMap<ProjectionAnnotation, Position>();
+
+        for(int i = 0; i < positions.size();i++) {
+            ProjectionAnnotation annotation = new ProjectionAnnotation();
+            annotationPositions.put(annotation, positions.get(i));
+            annotations[i] = annotation;
+        }
+       
+        m_projectionAnnotationModel.modifyAnnotations(
+        		m_previousProjectionAnnotations, annotationPositions, null);
+        
+        m_projectionAnnotationModel.collapseAll(0, document.getLength());
+        m_previousProjectionAnnotations = annotations;       
+    }
+        
     private void updateHighlighting(Node node) {
 		if (DEBUG) System.out.printf("XtaEditor: updateHighlighting\n"); 
-
-		clearAnnotations(HighlightAnnotationID);				
+		
+	    ArrayList<Annotation> annotations = new ArrayList<Annotation>();
+        HashMap<Annotation, Position> annotationPositions = 
+    	    new HashMap<Annotation, Position>();		
+		
 		for (Integer pc : node.getPcsCovered()) {
-			updateAnnotations(pc, HighlightAnnotationID);
-		}				
+			updateAnnotations(pc, HighlightAnnotationID, annotations, annotationPositions);
+		}
+				
+		m_annotationModel.replaceAnnotations(m_previousHighlightAnnotations, annotationPositions);        
+		m_previousHighlightAnnotations = createArray(annotations);    		
     }
                 
     private void upadteUnknowns() {
 		if (DEBUG) System.out.printf("XtaEditor: upadteUnknowns\n"); 
-  
-		clearAnnotations(UnknownAnnotationID);				
+
+	    ArrayList<Annotation> annotations = new ArrayList<Annotation>();
+        HashMap<Annotation, Position> annotationPositions = 
+    	    new HashMap<Annotation, Position>();		
+		
 		for (Unknown unknown : XtaDisplayer.getInstance().getRouteInfo().getRoute().getUnknowns()) {
-			updateAnnotations(unknown.getPc(), UnknownAnnotationID);
-		}						
+			updateAnnotations(unknown.getPc(), UnknownAnnotationID, annotations, annotationPositions);
+		}						    
+
+		m_annotationModel.replaceAnnotations(m_previousUnknownAnnotations, annotationPositions);        
+		m_previousUnknownAnnotations = createArray(annotations);    		    
     }
 
-    private void updateAnnotations(int pc, String type) {
+    private void updateAnnotations(int pc, String type, List<Annotation> annotations, 
+    		Map<Annotation, Position> annotationPositions) {
+		if (DEBUG) System.out.printf("XtaEditor: updateAnnotations\n"); 
+
 		XtaDocumentPartitioner xtaDocumentPartitioner = 
 			(XtaDocumentPartitioner)getSourceViewer().getDocument().getDocumentPartitioner();
 
@@ -184,39 +204,35 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			boolean hitSection = false;
 			for (InputLine line : inputSection.getLines()) {
 				if (line.getPc() == pc) {	
-					addAnnotation(line.getIndex(), type);
+					addAnnotation(line.getIndex(), type, annotations, annotationPositions);
 					hitSection = true;
 				}
 			}
 			if (hitSection) {
-				addAnnotation(inputSection.getIndex(), type);
+				addAnnotation(inputSection.getIndex(), type, annotations, annotationPositions);
 			}
-		}			    	
+		}
     }
     
-    private void addAnnotation(int index, String type) {
-		if (DEBUG) System.out.printf("XtaEditor: addAnnotation, line %d\n", index); 
+    private void addAnnotation(int index, String type, List<Annotation> annotations,
+    		Map<Annotation, Position> annotationPositions) {
+		if (DEBUG) System.out.printf("XtaEditor: addAnnotation, index %d\n", index); 
 
     	IDocument document = getSourceViewer().getDocument();
         try {
-			IRegion lineInfo = document.getLineInformation(index);
-	        Position position = new Position(lineInfo.getOffset(), lineInfo.getLength());
-	        Annotation annotation = new Annotation(type, true, "");
-	        m_annotationModel.addAnnotation(annotation, position);									
+    		IRegion lineInfo = document.getLineInformation(index);
+            Position position = new Position(lineInfo.getOffset(), lineInfo.getLength());
+            Annotation annotation = new Annotation(type, true, "");
+            annotationPositions.put(annotation, position);
+            annotations.add(annotation);
+            
 		} catch (BadLocationException e) {
 			e.printStackTrace();
-		}				        
+		}						
     }
-    
-    @SuppressWarnings("unchecked")
-	private void clearAnnotations(String type) {
-		if (DEBUG) System.out.printf("XtaEditor: clearAnnotations\n"); 
-    	
-		Iterator<Annotation> iter = m_annotationModel.getAnnotationIterator();
-		while (iter.hasNext()) {
-			Annotation annotation = iter.next();
-			if (annotation.getType() == type)
-			    m_annotationModel.removeAnnotation(annotation);
-		}
-    }    
+        
+    private Annotation[] createArray(List<Annotation> annotationList) {
+    	Annotation[] annotationArray = new Annotation[annotationList.size()];
+    	return annotationList.toArray(annotationArray);    	
+    }
 }
