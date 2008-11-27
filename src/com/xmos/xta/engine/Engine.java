@@ -388,20 +388,22 @@ public class Engine {
         int lastPc = 0;
         HashMap <Integer, ArrayList<Integer>> instructionEntryPc = new HashMap<Integer, ArrayList<Integer>>();
         for(Function function : m_xeObject.getFunctions()){
-            int functionEntry = function.getChildern().get(0).getLineNumber();
-            for(Line assembly : function.getChildern()){
-                int pc = assembly.getLineNumber();
-                int opcode = getOpcode(pc, nodeId,coreId);
-                if(m_instructionDecodeCache.decode(opcode, pc).getNmenonic().startsWith("RETSP")){
-                    ArrayList<Integer> retsps = instructionEntryPc.get(functionEntry);
-                    if(retsps==null){
-                        retsps = new ArrayList<Integer>();
-                    } 
-                    retsps.add(pc);
-                    instructionEntryPc.put(functionEntry, retsps);  
-                }
-            }
-            lastPc = function.getChildern().get(function.getChildern().size()-1).getLineNumber();
+        	if(function.getChildern() != null && function.getChildern().size()>0){
+	            int functionEntry = function.getChildern().get(0).getLineNumber();
+	            for(Line assembly : function.getChildern()){
+	                int pc = assembly.getLineNumber();
+	                int opcode = getOpcode(pc, nodeId,coreId);
+	                if(m_instructionDecodeCache.decode(opcode, pc).getNmenonic().startsWith("RETSP")){
+	                    ArrayList<Integer> retsps = instructionEntryPc.get(functionEntry);
+	                    if(retsps==null){
+	                        retsps = new ArrayList<Integer>();
+	                    } 
+	                    retsps.add(pc);
+	                    instructionEntryPc.put(functionEntry, retsps);  
+	                }
+	            }
+	            lastPc = function.getChildern().get(function.getChildern().size()-1).getLineNumber();
+        	}
         }
         int pc =m_xeLoader.getMemoryImage(nodeId, coreId).getMemoryBase();
         while(pc <= lastPc){

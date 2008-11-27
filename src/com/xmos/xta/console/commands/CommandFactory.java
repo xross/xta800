@@ -24,7 +24,9 @@ public class CommandFactory {
 		new Config(),
 		new Help(), 
 		new Exit(),
-		new Mode()
+		new Mode(),
+		new TimeBound(),
+		new CycleBound()
 	};
 	
 	public static Command[] getCommands() {

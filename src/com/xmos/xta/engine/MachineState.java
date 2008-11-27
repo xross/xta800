@@ -108,8 +108,7 @@ public class MachineState {
         m_resources = new Resources(machineState.getResources());
        
         m_memory = new Memory(machineState.m_memory);
-        m_eventTargets = new ArrayList<Integer>(); 
-        m_eventTargets.addAll(machineState.m_eventTargets);
+        m_eventTargets = new ArrayList<Integer>(machineState.m_eventTargets); 
     }
 
     public Resources getResources(){
@@ -331,6 +330,21 @@ public class MachineState {
 
 	public void clearEventVectors() {
 		m_eventTargets.clear();
+		
+	}
+
+	public void releaseMemory() {
+		m_op1 = null;
+		m_op2 = null;
+		m_op3 = null;
+		m_op4 = null;
+		m_op5 = null;
+		m_op6 = null;
+	    m_branchTargetExpression = null;
+	    m_guardExpression = null;
+	    m_eventTargets = null;
+	    m_resources = null;
+	    m_memory = null;
 		
 	}
 

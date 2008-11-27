@@ -72,6 +72,7 @@ public class ExecutionState {
 			if (currentStatus == BlockStatus.SEARCHING) {
 				currentThread.build();
 				currentStatus = currentThread.getStatus();
+				return;
 			} else if (currentStatus == BlockStatus.PAUSED) {
 
 				if (currentThread.canUnpause()) {
@@ -189,5 +190,9 @@ public class ExecutionState {
 			return true;
 		else
 			return false;
+	}
+
+	public MachineState getMachineState() {
+		return this.m_machineState;
 	}
 }

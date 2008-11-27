@@ -267,9 +267,13 @@ public class Route {
 		return false;
 	}
 
+	int maxCycles = 0;
+	
 	public void addCompletePath(Block endBlock) {
-		//System.out.println("adding a complete path: block " + endBlock);
+		
 		m_completePaths.add(endBlock);
+		maxCycles = Math.max(endBlock.getNumCycles(true), maxCycles);
+		System.out.println(m_completePaths.size() + "\tcycles: " + endBlock.getNumCycles(true) + " " + maxCycles);
 	}
 
 	public void addLoopPath(Block startBlock) {

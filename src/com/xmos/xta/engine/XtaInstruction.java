@@ -367,7 +367,7 @@ public abstract class XtaInstruction extends Instruction {
             Channel chan = state.getResources().getChannels()[resNum];
             
         } else {
-            System.err.println("could not resolve which resource of CHKCT");
+            ////System.err.println("could not resolve which resource of CHKCT");
         } 
         */
     }
@@ -391,12 +391,12 @@ public abstract class XtaInstruction extends Instruction {
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
             if(resType != Resources.RES_TYPE_PORT){
-            	System.err.println("CLRPT should be performed on a port resource");
+            	////System.err.println("CLRPT should be performed on a port resource");
             } else {
             	state.getResources().getPorts()[resNum].setWaitForTime(false);
             }
         } else {
-            System.err.println("could not resolve which resource of CLRPT");
+            ////System.err.println("could not resolve which resource of CLRPT");
         } 
     }
 
@@ -549,10 +549,10 @@ public abstract class XtaInstruction extends Instruction {
             	Timer timer = resources.getTimers()[resNum];
             	timer.setEventEnabeled(false);
             } else {
-            	System.err.println("Trying to perform EDU on an illegal resource");
+            	////System.err.println("Trying to perform EDU on an illegal resource");
             }
         } else {
-            System.err.println("could not resolve which resource of EDU");
+            ////System.err.println("could not resolve which resource of EDU");
         } 
     }
 
@@ -580,10 +580,10 @@ public abstract class XtaInstruction extends Instruction {
             	Timer timer = resources.getTimers()[resNum];
             	timer.setEventEnabeled(set);
             } else {
-            	System.err.println("Trying to perform EEF on an illegal resource");
+            	//System.err.println("Trying to perform EEF on an illegal resource");
             }
         } else {
-            System.err.println("could not resolve which resource of EEF");
+            //System.err.println("could not resolve which resource of EEF");
         } 
     }
 
@@ -611,10 +611,10 @@ public abstract class XtaInstruction extends Instruction {
             	Timer timer = resources.getTimers()[resNum];
             	timer.setEventEnabeled(set);
             } else {
-            	System.err.println("Trying to perform EET on an illegal resource");
+            	//System.err.println("Trying to perform EET on an illegal resource");
             }
         } else {
-            System.err.println("could not resolve which resource of EET");
+            //System.err.println("could not resolve which resource of EET");
         }  
     }
 
@@ -638,10 +638,10 @@ public abstract class XtaInstruction extends Instruction {
             	Timer timer = resources.getTimers()[resNum];
             	timer.setEventEnabeled(true);
             } else {
-            	System.err.printf("%s 0x%8x\n" , "Trying to perform EEU on an illegal resource " , resId);
+            	//System.err.printf("%s 0x%8x\n" , "Trying to perform EEU on an illegal resource " , resId);
             }
         } else {
-            System.err.println("could not resolve which resource of EEU");
+            //System.err.println("could not resolve which resource of EEU");
         } 
     }
 
@@ -658,7 +658,7 @@ public abstract class XtaInstruction extends Instruction {
             //TODO
             state.m_op2 = new Expression(1);
         } else {
-            System.err.println("could not resolve which resource of ENDIN");
+            //System.err.println("could not resolve which resource of ENDIN");
         } 
     }
 
@@ -704,7 +704,7 @@ public abstract class XtaInstruction extends Instruction {
     		int value = state.m_op1.getValue() + (imm << Instruction.BITS_PER_WORD*2);
     		state.setDataPoolRegister(new Expression(value), thread);
     	} else {
-    		System.err.println("could not resolve EXTDP");
+    		//System.err.println("could not resolve EXTDP");
     	}
     }
 
@@ -746,10 +746,10 @@ public abstract class XtaInstruction extends Instruction {
     	    } else if(resType == Resources.RES_TYPE_LOCK){
     	    	resources.getLocks()[resNum].setInUse(false);
     	    } else {
-    	    	System.err.println("could not perform FREER on resource " + resType);
+    	    	//System.err.println("could not perform FREER on resource " + resType);
     	    }
     	} else {
-    	    System.err.println("could not resolve FREER");
+    	    //System.err.println("could not resolve FREER");
     	}
     }
 
@@ -783,10 +783,10 @@ public abstract class XtaInstruction extends Instruction {
     	    	//return the divider
     	    	state.m_op1 = new Expression(0);
     	    } else {
-    	    	System.err.println("could not perform GETD on resource " + resType);
+    	    	//System.err.println("could not perform GETD on resource " + resType);
     	    }
         } else {
-            System.err.println("could not resolve which resource in GETD");
+            //System.err.println("could not resolve which resource in GETD");
         } 
     }
 
@@ -874,7 +874,7 @@ public abstract class XtaInstruction extends Instruction {
         	
         	
         } else {
-            System.err.println("could not resolve GETST");
+            //System.err.println("could not resolve GETST");
         }       
     }
 
@@ -889,7 +889,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve GETTS");
+            //System.err.println("could not resolve GETTS");
         } 
     }
 
@@ -905,7 +905,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve which resource of IN");
+            //System.err.println("could not resolve which resource of IN");
         } 
     }
 
@@ -921,7 +921,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve which resource of INCT");
+            //System.err.println("could not resolve which resource of INCT");
         } 
     }
 
@@ -945,7 +945,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve INSHR");
+            //System.err.println("could not resolve INSHR");
         } 
     }
 
@@ -961,7 +961,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve which resource of INT");
+            //System.err.println("could not resolve which resource of INT");
         } 
     }
 
@@ -1270,7 +1270,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve MJOIN");
+            //System.err.println("could not resolve MJOIN");
         } 
     }
 
@@ -1297,7 +1297,7 @@ public abstract class XtaInstruction extends Instruction {
             
             
         } else {
-            System.err.println("could not resolve MSYNC");
+            //System.err.println("could not resolve MSYNC");
         } 
     }
 
@@ -1347,7 +1347,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve OUT");
+            //System.err.println("could not resolve OUT");
         } 
     }
 
@@ -1363,7 +1363,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve OUTCT");
+            //System.err.println("could not resolve OUTCT");
         } 
     }
 
@@ -1386,7 +1386,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve OUTSHR");
+            //System.err.println("could not resolve OUTSHR");
         } 
     }
 
@@ -1402,7 +1402,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve OUTT");
+            //System.err.println("could not resolve OUTT");
         } 
     }
 
@@ -1418,7 +1418,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve PEEK");
+            //System.err.println("could not resolve PEEK");
         } 
     }
 
@@ -1484,7 +1484,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve which resource in SETC");
+            //System.err.println("could not resolve which resource in SETC");
         } 
     }
 
@@ -1500,7 +1500,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve which resource in SETCLK");
+            //System.err.println("could not resolve which resource in SETCLK");
         } 
     }
 
@@ -1523,7 +1523,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve which resource of SETD");
+            //System.err.println("could not resolve which resource of SETD");
         } 
     }
 
@@ -1546,7 +1546,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve which resource of SETEV");
+            //System.err.println("could not resolve which resource of SETEV");
         }     
     }
 
@@ -1576,7 +1576,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve which resource of SETPSC");
+            //System.err.println("could not resolve which resource of SETPSC");
         } 
     }
 
@@ -1592,7 +1592,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve which resource in SETPT");
+            //System.err.println("could not resolve which resource in SETPT");
         } 
     }
 
@@ -1608,7 +1608,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve which resource in SETRDY");
+            //System.err.println("could not resolve which resource in SETRDY");
         } 
     }
 
@@ -1640,7 +1640,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve which resource of SETTW");
+            //System.err.println("could not resolve which resource of SETTW");
         } 
     }
 
@@ -1665,7 +1665,7 @@ public abstract class XtaInstruction extends Instruction {
         	  System.out.println("cannot SETV on a resoutce type: " + resType);
           }
         } else {
-            System.err.println("could not resolve which resource of SETV");
+            //System.err.println("could not resolve which resource of SETV");
         }     
     	
     }
@@ -1805,7 +1805,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve which resource of TESTLCL");
+            //System.err.println("could not resolve which resource of TESTLCL");
         } 
     }
 
@@ -1821,7 +1821,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve which resource of TESTCT");
+            //System.err.println("could not resolve which resource of TESTCT");
         } 
     }
 
@@ -1837,7 +1837,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
           //TODO
         } else {
-            System.err.println("could not resolve which resource of TESTWCT");
+            //System.err.println("could not resolve which resource of TESTWCT");
         } 
     }
 
@@ -1855,7 +1855,7 @@ public abstract class XtaInstruction extends Instruction {
            
             child.getRegisters().writeRegister(MachineState.CP_REG_NUM, state.m_op1);
         } else {
-            System.err.println("could not resolve which resource of TINITLR");
+            //System.err.println("could not resolve which resource of TINITLR");
         } 
     }
 
@@ -1873,7 +1873,7 @@ public abstract class XtaInstruction extends Instruction {
             
             child.getRegisters().writeRegister(MachineState.DP_REG_NUM, state.m_op1);
         } else {
-            System.err.println("could not resolve which resource of TINITLR");
+            //System.err.println("could not resolve which resource of TINITLR");
         } 
     }
 
@@ -1890,7 +1890,7 @@ public abstract class XtaInstruction extends Instruction {
             Thread child = resources.getThread(resType, resNum);
             child.getRegisters().writeRegister(MachineState.LR_REG_NUM, state.m_op1);
         } else {
-            System.err.println("could not resolve which resource of TINITLR");
+            //System.err.println("could not resolve which resource of TINITLR");
         } 
     }
 
@@ -1908,12 +1908,12 @@ public abstract class XtaInstruction extends Instruction {
             if(state.m_op1.canResolve()){
             	child.setPc(state.m_op1.getValue());
             } else {
-            	System.err.println("could not resolve pc to set thread pc to");
+            	//System.err.println("could not resolve pc to set thread pc to");
             }
           //TODO
            // resources.getThread(resType, resNum).TINITPC(state.m_op1);
         } else {
-            System.err.println("could not resolve which resource of TINITPC");
+            //System.err.println("could not resolve which resource of TINITPC");
         } 
     }
 
@@ -1930,7 +1930,7 @@ public abstract class XtaInstruction extends Instruction {
             Thread child = resources.getThread(resType, resNum);
             child.getRegisters().writeRegister(MachineState.SP_REG_NUM, state.m_op1);
         } else {
-            System.err.println("could not resolve which resource of TINITLR");
+            //System.err.println("could not resolve which resource of TINITLR");
         } 
     }
 
@@ -1960,7 +1960,7 @@ public abstract class XtaInstruction extends Instruction {
             assert(child!= null);
             child.getRegisters().writeRegister(state.m_op1Fld, state.m_op2);
         } else {
-            System.err.println("could not resolve which resource of TSETR");
+            //System.err.println("could not resolve which resource of TSETR");
         } 
     }
 
@@ -1976,7 +1976,7 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
             //resources.getThread(resType, resNum).TSTART();
         } else {
-            System.err.println("could not resolve which resource of TSTART");
+            //System.err.println("could not resolve which resource of TSTART");
         } 
     }
 

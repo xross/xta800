@@ -15,7 +15,8 @@ class Memory {
 	}
 
 	Memory(Memory memory) {	
-	    m_memoryMap = new HashMap<Integer, Byte>(memory.m_memoryMap);
+	    m_memoryMap = new HashMap<Integer, Byte>();
+	    m_memoryMap.putAll(memory.m_memoryMap);
 	}
 
 	void byteWrite(int address, Expression exp){
