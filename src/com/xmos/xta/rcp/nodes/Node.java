@@ -7,7 +7,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Shell;
 
 import com.xmos.xta.engine.XtaInstruction;
-import com.xmos.xta.rcp.views.TreeView;
 
 public abstract class Node {
     private Node m_parent;

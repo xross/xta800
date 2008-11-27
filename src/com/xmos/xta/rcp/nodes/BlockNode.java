@@ -3,13 +3,11 @@ package com.xmos.xta.rcp.nodes;
 import java.util.HashSet;
 import java.util.Vector;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Shell;
 
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.XtaInstruction;
-import com.xmos.xta.rcp.views.TreeView;
 
 public class BlockNode extends Node {
 	Block m_block;
