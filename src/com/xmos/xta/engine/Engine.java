@@ -388,6 +388,7 @@ public class Engine {
         int lastPc = 0;
         HashMap <Integer, ArrayList<Integer>> instructionEntryPc = new HashMap<Integer, ArrayList<Integer>>();
         for(Function function : m_xeObject.getFunctions()){
+        	
         	if(function.getChildern() != null && function.getChildern().size()>0){
 	            int functionEntry = function.getChildern().get(0).getLineNumber();
 	            for(Line assembly : function.getChildern()){
