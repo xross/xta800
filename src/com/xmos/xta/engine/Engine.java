@@ -19,6 +19,8 @@ import com.xmos.xeobject.XeObject;
 
 public class Engine { 
 
+	private static final boolean DEBUG = true;
+	
     private XeLoader m_xeLoader;
     private XeObject m_xeObject;
     private Vector<File> m_sourceFiles;
@@ -34,6 +36,7 @@ public class Engine {
     private boolean m_abort;
     private InstructionDecodeCache m_instructionDecodeCache;
     private boolean m_resolveExpression;
+    private HashMap<Integer, String> m_labels;
     
     public Engine(Config config) {
         m_xeLoader = new XeLoader();
@@ -50,6 +53,7 @@ public class Engine {
         m_exclusions = new Vector<Reference>();
         m_abort = false;
         m_resolveExpression = false;
+        m_labels = new HashMap<Integer, String>();
     }
 
     public Config getConfig() {
@@ -522,6 +526,17 @@ public class Engine {
 
 	public void setDynamicMode(boolean b) {
 		m_resolveExpression = b;
+	}
+
+	public void addLabel(int parseInt, String string) {
+		this.m_labels.put(parseInt, string);
+	}
+
+	public String getLabel(int pc) {
+		if(this.m_labels.containsKey(pc)){
+			return m_labels.get(pc);
+		}
+		return null;
 	}
 
 

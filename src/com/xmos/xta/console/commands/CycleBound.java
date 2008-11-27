@@ -30,7 +30,7 @@ public class CycleBound extends Command  {
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "cyclebound <int (ns)> : returns PASS of FAIL if the worst case is less than the cycle bound";      	
+        return "cyclebound <int (cycles)> : returns PASS of FAIL if the worst case is less than the cycle bound";      	
     }
 
     public Command clone(String[] args, int index, boolean commandLineMode) {

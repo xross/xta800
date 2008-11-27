@@ -2,10 +2,8 @@ package com.xmos.xta.rcp.nodes;
 
 import java.util.HashSet;
 import java.util.Vector;
-
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Shell;
-
 import com.xmos.xta.engine.XtaInstruction;
 
 public class RouteNode extends Node {
