@@ -13,18 +13,23 @@ public abstract class StructureNode {
     protected Vector<StructureNode> m_children;
 
     protected double m_weight;
+    protected int m_lineWidth;
     protected int m_pixelsX;
     protected int m_pixelsY;
     protected int m_childrenX;
     protected int m_childrenY;
+    protected boolean m_isSelected;
 	
-    public StructureNode(Node treeNode, double weight) {
+    public StructureNode(Node treeNode, double weight, int lineWidth) {
     	m_treeNode = treeNode;
     	m_weight = weight;
+    	m_lineWidth = lineWidth;
 
     	m_children = new Vector<StructureNode>();
 		m_childrenX = 0;
 		m_childrenY = 0;
+		
+		m_isSelected = false;
     }    
     
     public int numChildren() {
@@ -50,6 +55,14 @@ public abstract class StructureNode {
     public double getHeight(double scale) {
     	return m_pixelsY * scale;
     }
+
+	public boolean isSelected() {
+		return m_isSelected;
+	}
+
+	public void setIsSelected(boolean isSelected) {
+		m_isSelected = isSelected;
+	}
 
     public abstract int getPixelsX();
     public abstract int getPixelsY();

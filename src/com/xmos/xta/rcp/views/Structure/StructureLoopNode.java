@@ -10,8 +10,8 @@ import com.xmos.xta.rcp.nodes.Node;
 public class StructureLoopNode extends StructureNode {
     public static final boolean DEBUG = false;
 
-    private int m_borderX = 3;
-    private int m_bottomBorder = 3;
+    private int m_borderX = 4;
+    private int m_bottomBorder = 4;
     private int m_connectionY = 10;
     private int m_cornerRounding = 7;
     
@@ -20,8 +20,8 @@ public class StructureLoopNode extends StructureNode {
     private int m_width;
     private int m_height;
     
-	public StructureLoopNode(Node treeNode, double weight) {
-		super(treeNode, weight);
+	public StructureLoopNode(Node treeNode, double weight, int lineWidth) {
+		super(treeNode, weight, lineWidth);
 		
 		m_pixelsX = 2 * m_borderX;
 		m_pixelsY = m_connectionY + m_bottomBorder;
@@ -68,7 +68,10 @@ public class StructureLoopNode extends StructureNode {
         
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
         gc.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
+
+        if (m_isSelected) gc.setLineWidth(m_lineWidth * 2);
     	gc.drawRoundRectangle(m_x, m_y, m_width, m_height, m_cornerRounding, m_cornerRounding);
+        if (m_isSelected) gc.setLineWidth(m_lineWidth);
 
         int mid = (int)(((double)xOffset + ((double)getPixelsX() / 2)) * scale);
     	int childOffsetX = m_pixelsX / 2;

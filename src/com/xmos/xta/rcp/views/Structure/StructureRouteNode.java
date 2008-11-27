@@ -15,8 +15,8 @@ public class StructureRouteNode extends StructureNode {
     private int m_topBorder = 10;
     private int m_bottomBorder = 10;
     
-	public StructureRouteNode(Node treeNode, double weight) {
-		super(treeNode, weight);
+	public StructureRouteNode(Node treeNode, double weight, int lineWidth) {
+		super(treeNode, weight, lineWidth);
 		
 		m_pixelsX = 0;
 		m_pixelsY = m_topBorder + m_bottomBorder;
