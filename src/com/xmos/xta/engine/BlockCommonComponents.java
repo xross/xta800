@@ -15,12 +15,14 @@ public class BlockCommonComponents {
     private Route m_route;
     private boolean m_resolveExpressions;
     private Block.Mode m_mode;
-
+    private Engine m_engine;
+    
+    
 	public BlockCommonComponents(Config m_config,
 			InstructionDecodeCache decodeCache,
 			InstructionAttributes attributes, MemoryImage image,
 			SymbolTable table, Vector<Reference> m_exclusions, Route m_route,
-			boolean expressions, Block.Mode m_mode) {
+			boolean expressions, Block.Mode m_mode, Engine engine) {
 		super();
 		this.m_config = m_config;
 		m_instructionDecodeCache = decodeCache;
@@ -31,6 +33,7 @@ public class BlockCommonComponents {
 		this.m_route = m_route;
 		setResolveExpressions(expressions);
 		this.setMode(m_mode);
+		this.setEngine(engine);
 	}
 	
 	public Config getConfig() {
@@ -86,6 +89,14 @@ public class BlockCommonComponents {
 	}
 	public Block.Mode getMode() {
 		return m_mode;
+	}
+
+	public void setEngine(Engine m_engine) {
+		this.m_engine = m_engine;
+	}
+
+	public Engine getEngine() {
+		return m_engine;
 	}
     
     

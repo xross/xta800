@@ -1,6 +1,7 @@
 package com.xmos.xta.engine;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,6 +17,8 @@ public class Block implements Comparable<Block> {
 	static enum Mode {
 		FUNCTION, ABSOLUTE
 	}
+	
+	private ArrayList<String> m_labels;
 
 	private BlockCommonComponents m_bc;
 
@@ -64,7 +67,7 @@ public class Block implements Comparable<Block> {
 
 		m_numBlocks = 0;
 		initialise(machineState);
-
+		m_labels= new ArrayList<String>(); 
 		m_bc = bc;
 		m_status = BlockStatus.SEARCHING;
 		m_contexts.add(new TreeSet<Integer>());
@@ -84,6 +87,7 @@ public class Block implements Comparable<Block> {
 	}
 
 	Block(Block blockToSplit, int pcHit) {
+		m_bc = blockToSplit.m_bc;
 		m_machineState = null;
 		m_contexts = null;
 		m_seen = 0;
@@ -111,6 +115,21 @@ public class Block implements Comparable<Block> {
 		for (XtaInstruction inst : m_instructions) {
 			blockToSplit.m_pcs.remove(new Integer(inst.getPc()));
 			blockToSplit.m_instructions.remove(inst);
+		}
+		blockToSplit.m_labels.clear();
+		m_labels = new ArrayList<String>();
+		
+		for(XtaInstruction inst : blockToSplit.m_instructions){
+			String label = m_bc.getEngine().getLabel(inst.getPc());
+			if(label != null){
+				blockToSplit.m_labels.add(label);
+			}
+		}
+		for(XtaInstruction inst : m_instructions){
+			String label = m_bc.getEngine().getLabel(inst.getPc());
+			if(label != null){
+				m_labels.add(label);
+			}
 		}
 
 		updateInstructionInfo();
@@ -143,6 +162,7 @@ public class Block implements Comparable<Block> {
 
 	public Block(Block block, MachineState machineState, ExecutionState executionState) {
 		initialise(machineState);
+		m_labels= new ArrayList<String>(); 
 		m_status = block.m_status;
 		m_speculative = block.m_speculative;
 		m_parentBlock = block;
@@ -173,7 +193,6 @@ public class Block implements Comparable<Block> {
 	}
 
 	public boolean canUnpause() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -444,7 +463,12 @@ public class Block implements Comparable<Block> {
 
 		if (DEBUG)
 			System.out.println("adding: " + inst + " to Block " + m_instanceId);
-
+		String label = m_bc.getEngine().getLabel(inst.getPc());
+		if(label!= null){
+			this.m_labels.add(label);
+			System.out.println("assigning the label: " + "unknown_label" + m_id +" to block " + m_id);
+		}
+		
 		inst.setBasicNumCycles(m_bc.getM_instructionAttributes().getTiming(inst.getNmenonic()));
 		inst.setConfig(m_bc.getConfig());
 
@@ -506,10 +530,6 @@ public class Block implements Comparable<Block> {
 
 	public void setStatus(BlockStatus blockStatus) {
 		m_status = blockStatus;
-		if (blockStatus == BlockStatus.COMPLETE) {
-			// free everything that is no longer needed
-		}
-
 		if (DEBUG) {
 			System.out.println("block " + m_id + " status is " + blockStatus);
 		}
@@ -718,6 +738,23 @@ public class Block implements Comparable<Block> {
 		}
 		doneWithPathBlocks();
 		return time;
+	}
+
+	public void getPathLabels(boolean recurse, ArrayList<String> labels) {
+		for (Block block : getPathBlocks()) {
+			labels.addAll(block.getLabels());
+			if (recurse) {
+				for (Block loopPath : block.getLoopPaths()) {
+					loopPath.getPathLabels(true, labels);
+				}
+			}
+		}
+		doneWithPathBlocks();
+		return;
+	}
+	
+	public ArrayList<String> getLabels() {
+		return m_labels;
 	}
 
 	double getTimeTakenAbsolute(boolean recurse) {
