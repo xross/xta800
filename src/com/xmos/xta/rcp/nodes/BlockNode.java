@@ -1,15 +1,12 @@
 package com.xmos.xta.rcp.nodes;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Vector;
-
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Shell;
-
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.XtaInstruction;
-import com.xmos.xta.rcp.views.TreeView;
 
 public class BlockNode extends Node {
 	Block m_block;
@@ -56,6 +53,15 @@ public class BlockNode extends Node {
         toolTipText += "Number of cycles: " + getNumCycles() + "\n";
         toolTipText += "Number of FNOPs: " + m_block.getNumFNopsThis() + "\n";
         toolTipText += "Number of pausables: " + m_block.getNumPausablesThis() + "\n";
+        ArrayList<String> labels  = m_block.getLabels();
+        boolean first= true;
+        for(String label : labels){
+        	if(first) {
+        		toolTipText += "Labels (this): " + label + "\n"; 	
+        		first = false;
+        	}
+        	else toolTipText += "                   : " + label + "\n"; 
+        }
         toolTipText += "Number of unknowns: " + m_block.getNumUnknownsThis();
         return toolTipText;
     }

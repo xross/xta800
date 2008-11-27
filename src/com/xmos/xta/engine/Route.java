@@ -123,19 +123,33 @@ public class Route {
 
 		if (m_functionName != null) {
 			bc = new BlockCommonComponents(m_config, m_instructionDecodeCache, m_instructionAttributes, memoryImage, symbolTable, m_engine.getExclusions(),
-					this, m_resolveExpressions, Block.Mode.FUNCTION);
+					this, m_resolveExpressions, Block.Mode.FUNCTION, m_engine);
 			assert (symbolTable.symbolExists(m_functionName));
 			int fromPc = symbolTable.symbolAddress(m_functionName);
 			new ExecutionState(this, initialState, bc, fromPc);
 		} else {
 			bc = new BlockCommonComponents(m_config, m_instructionDecodeCache, m_instructionAttributes, memoryImage, symbolTable, m_engine.getExclusions(),
-					this, m_resolveExpressions, Block.Mode.ABSOLUTE);
+					this, m_resolveExpressions, Block.Mode.ABSOLUTE, m_engine);
 			new ExecutionState(this, initialState, bc, m_fromRef.getPc(), m_toRef.getPc());
 		}
 		stepPath();
 		sortPaths();
+		labelPaths();
+		
 		m_progress.resetState(Progress.State.IDLE, 0);
 		return m_status;
+	}
+
+	private void labelPaths() {
+		for(Block block : this.m_completePaths){
+			TreeSet<Block> allBlocks = new TreeSet<Block>();
+			block.getAllBlocks(allBlocks);
+			for(Block b : allBlocks){
+				if(b.getLabels().size() == 0){
+					b.getLabels().add("unnamed_label_" + b.getId());
+				}
+			}
+		}
 	}
 
 	public int getId() {
@@ -267,15 +281,10 @@ public class Route {
 		return false;
 	}
 
-	int maxCycles = 0;
 	
 	public void addCompletePath(Block endBlock) {
-		
 		m_completePaths.add(endBlock);
-		maxCycles = Math.max(endBlock.getNumCycles(true), maxCycles);
-	//	System.out.println(m_completePaths.size() + "\tcycles: " + endBlock.getNumCycles(true) + " " + maxCycles);
 	}
-
 	public void addLoopPath(Block startBlock) {
 		assert (startBlock != null);
 		int fromPc = startBlock.getInstructions(false).firstElement().getPc();

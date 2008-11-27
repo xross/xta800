@@ -41,18 +41,24 @@ public class StructureLoopNode extends StructureNode {
 
 	public int getChildrenX() {
 		int pixels = 0;
-		for (StructureNode child : m_children) {
-			pixels += child.getPixelsX();
+		for (Node treeNode : m_treeNode.getNodes()) {
+			StructureNode child = treeNode.getStructureNode();
+			if (child != null) {
+				pixels += child.getPixelsX();
+			}
 		}
 		return pixels;
 	}
 
 	public int getChildrenY() {
 		int pixels = 0;
-		for (StructureNode child : m_children) {
-			int childPixels = child.getPixelsY();
-			if (childPixels > pixels)
-				pixels = childPixels;
+		for (Node treeNode : m_treeNode.getNodes()) {
+			StructureNode child = treeNode.getStructureNode();
+			if (child != null) {
+				int childPixels = child.getPixelsY();
+				if (childPixels > pixels)
+					pixels = childPixels;
+			}
 		}
 		return pixels;
 	}
@@ -76,17 +82,20 @@ public class StructureLoopNode extends StructureNode {
         int mid = (int)(((double)xOffset + ((double)getPixelsX() / 2)) * scale);
     	int childOffsetX = m_pixelsX / 2;
     	int childTop = (int)((double)(yOffset + m_connectionY) * scale);
-    	for (StructureNode child : m_children) {
-    		child.draw(display, gc, clickAreas,
-    				xOffset + childOffsetX, yOffset + m_connectionY, scale);
-    		int childX = child.getPixelsX();
-
-    		int childMid = (int)((double)(xOffset + childOffsetX + (childX / 2)) * scale);
-        	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-            gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
-            gc.drawLine(mid, m_y, childMid, childTop);
-
-    		childOffsetX += childX;
+		for (Node treeNode : m_treeNode.getNodes()) {
+			StructureNode child = treeNode.getStructureNode();
+			if (child != null) {
+	    		child.draw(display, gc, clickAreas,
+	    				xOffset + childOffsetX, yOffset + m_connectionY, scale);
+	    		int childX = child.getPixelsX();
+	
+	    		int childMid = (int)((double)(xOffset + childOffsetX + (childX / 2)) * scale);
+	        	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+	            gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+	            gc.drawLine(mid, m_y, childMid, childTop);
+	
+	    		childOffsetX += childX;
+			}
     	}
 
     	clickAreas.add(this);

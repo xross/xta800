@@ -1,5 +1,6 @@
 package com.xmos.xta.rcp.nodes;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Vector;
 
@@ -75,8 +76,20 @@ public class PathNode extends Node {
         toolTipText += "Time taken (this): "          + m_block.getTimeTaken(false) + " ns\n";
         toolTipText += "Number of cycles (this): "    + m_block.getNumCycles(false) + "\n";
         toolTipText += "Number of FNOPs (this): "     + m_block.getNumFNops(false) + "\n";
-        toolTipText += "Number of pausables (this): " + m_block.getNumPausables(false) + "\n";        
-        toolTipText += "Number of unknowns (this): "  + m_block.getNumUnknowns(false);        
+        
+        toolTipText += "Number of pausables (this): " + m_block.getNumPausables(false) + "\n";  
+        ArrayList<String> labels  = new ArrayList<String>();
+        m_block.getPathLabels(true,labels);
+        boolean first= true;
+        for(String label : labels){
+        	if(first) {
+        		toolTipText += "Labels (this): " + label + "\n"; 	
+        		first = false;
+        	}
+        	else toolTipText += "                   : " + label + "\n"; 
+        }
+        toolTipText += "Number of unknowns (this): "  + m_block.getNumUnknowns(false);     
+        
         if (!m_isRoot) {
             toolTipText += "\n----------------------------------\n";
             toolTipText += "Number of iterations: " + m_block.getNumIterations();
