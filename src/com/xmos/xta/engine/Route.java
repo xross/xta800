@@ -273,7 +273,7 @@ public class Route {
 		
 		m_completePaths.add(endBlock);
 		maxCycles = Math.max(endBlock.getNumCycles(true), maxCycles);
-		System.out.println(m_completePaths.size() + "\tcycles: " + endBlock.getNumCycles(true) + " " + maxCycles);
+	//	System.out.println(m_completePaths.size() + "\tcycles: " + endBlock.getNumCycles(true) + " " + maxCycles);
 	}
 
 	public void addLoopPath(Block startBlock) {
