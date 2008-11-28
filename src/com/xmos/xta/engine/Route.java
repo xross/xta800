@@ -134,7 +134,8 @@ public class Route {
 		}
 		stepPath();
 		sortPaths();
-		labelPaths();
+		//labelPaths();
+		filterPaths();
 		
 		m_progress.resetState(Progress.State.IDLE, 0);
 		return m_status;
@@ -283,8 +284,38 @@ public class Route {
 
 	
 	public void addCompletePath(Block endBlock) {
+		
+
+
+		
+
 		m_completePaths.add(endBlock);
 	}
+	
+	public void filterPaths(){
+		ArrayList<Block> toRemove = new ArrayList<Block>();
+		for(Block completePath : m_completePaths){
+			ArrayList<String> labels  = new ArrayList<String>();
+			completePath.getPathLabels(true, labels);
+			for(String label : m_engine.getRequiredLabels()){
+				if(!labels.contains(label)) {
+					toRemove.add(completePath);
+					continue;
+				}
+			}
+			for(String label : m_engine.getProhibitedLabels()){
+				if(labels.contains(label)) {
+					toRemove.add(completePath);
+					continue;
+				}
+			}
+			
+		}
+		m_completePaths.removeAll(toRemove);
+		
+	}
+	
+	
 	public void addLoopPath(Block startBlock) {
 		assert (startBlock != null);
 		int fromPc = startBlock.getInstructions(false).firstElement().getPc();

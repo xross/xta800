@@ -466,7 +466,6 @@ public class Block implements Comparable<Block> {
 		String label = m_bc.getEngine().getLabel(inst.getPc());
 		if(label!= null){
 			this.m_labels.add(label);
-			System.out.println("assigning the label: " + "unknown_label" + m_id +" to block " + m_id);
 		}
 		
 		inst.setBasicNumCycles(m_bc.getM_instructionAttributes().getTiming(inst.getNmenonic()));

@@ -38,7 +38,13 @@ public class Engine {
     private boolean m_resolveExpression;
     private HashMap<Integer, String> m_labels;
     
+    private ArrayList<String> m_requiredLables;
+    private ArrayList<String> m_prohibitedLables;
+    
+    
     public Engine(Config config) {
+    	m_requiredLables = new ArrayList<String>();
+    	m_prohibitedLables = new ArrayList<String>();
         m_xeLoader = new XeLoader();
         m_xeObject = null;
         m_route = null;
@@ -55,7 +61,31 @@ public class Engine {
         m_resolveExpression = false;
         m_labels = new HashMap<Integer, String>();
     }
-
+    
+    public void clearRequiredLabels(){
+    	m_requiredLables.clear();
+    }
+    
+    public void addRequiredLabel(String label){
+    	m_requiredLables.add(label);
+    }
+    
+    public void removeRequiredLabel(String label){
+    	m_requiredLables.remove(label);
+    }
+    
+    public void clearProhibitedLables(){
+    	m_prohibitedLables.clear();
+    }
+    
+    public void addProhibitedLable(String label){
+    	m_prohibitedLables.add(label);
+    }
+    
+    public void removeProhibitedLable(String label){
+    	m_prohibitedLables.remove(label);
+    }
+    
     public Config getConfig() {
         return m_config;
     }
@@ -539,6 +569,13 @@ public class Engine {
 		return null;
 	}
 
+	public ArrayList<String> getProhibitedLabels() {
+		return this.m_prohibitedLables;
+	}
+
+	public ArrayList<String> getRequiredLabels() {
+		return m_requiredLables;
+	}
 
 }
 
