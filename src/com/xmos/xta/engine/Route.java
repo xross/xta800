@@ -276,7 +276,7 @@ public class Route {
 		
 
 
-		
+		System.out.println(m_completePaths.size() + " completed blocks");
 
 		m_completePaths.add(endBlock);
 	}
