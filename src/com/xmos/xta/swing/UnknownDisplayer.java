@@ -93,7 +93,7 @@ class UnknownCellRenderer extends JLabel implements ListCellRenderer {
       boolean cellHasFocus)    // does the cell have focus
     {
         Unknown u = (Unknown)value;
-        setText(u.getUnknownString());
+        setText(u.getReason());
         setIcon(u.getIcon());
         if (isSelected) {
             setBackground(list.getSelectionBackground());
