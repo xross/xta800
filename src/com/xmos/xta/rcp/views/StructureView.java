@@ -8,16 +8,12 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TreeSelection;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseAdapter;
@@ -94,8 +90,14 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		m_lineWidth = 1;
 		
 		m_listeners = new Vector<ISelectionChangedListener>();
+		m_rootNode = null;
+	    m_startNode = null;
+	    m_selectedNode = null;
 	}
 
+	/*
+	 * ISelectionListener classes
+	 */
 	public void createPartControl(Composite parent) {
 		if (DEBUG) System.out.printf("Structure: createPartControl\n");			
 	    m_parent = parent;
@@ -127,83 +129,6 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	    setupMouseListeners();
 	    createContextMenus();
 	}
-	
-	private void createContextMenus() {
-	    Menu contextMenu;
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
-		menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(this);
-		contextMenu = menuMgr.createContextMenu(m_canvas);
-		m_canvas.setMenu(contextMenu);
-	}
-	
-	private void setupMouseListeners() {
-		m_toolTip = null;
-		m_tipLabel = null;
-
-		final Listener labelListener = new Listener() {
-			public void handleEvent (Event e) {
-				Label label = (Label)e.widget;
-				Shell shell = label.getShell();
-				switch (e.type) {
-					case SWT.MouseDown:
-						shell.dispose ();
-						break;
-					case SWT.MouseExit:
-						shell.dispose ();
-						break;
-				}
-			}
-		};
-
-		MouseAdapter mouseAdapter = new MouseAdapter() { 
-	    	public void mouseDown(MouseEvent e) {
-    			if ((e.button == 1) || (e.button == 3)) {
-		    		for (StructureNode node : m_clickAreas) {
-		    			if (node.contains(e.x, e.y)) {
-		    	    		m_selectedNode = node.getTreeNode();
-		    	    		setSelection(new StructuredSelection(m_selectedNode));
-		    				return;
-		    			}
-		    		}
-    			}
-	    	} 
-	    };  
-	    m_canvas.addMouseListener(mouseAdapter);
-	    
-	    MouseTrackListener mouseTrack = new MouseTrackListener() { 
-		     public void mouseEnter(MouseEvent e) { 
-		     }  
-		     public void mouseExit(MouseEvent e) { 
-		     }  
-		     public void mouseHover(MouseEvent e) { 
-		    		for (StructureNode node : m_clickAreas) {
-		    			if (node.contains(e.x, e.y)) {
-		    	    		if (m_toolTip != null  && !m_toolTip.isDisposed ())
-		    	    			m_toolTip.dispose ();
-
-		    	    		m_toolTip = new Shell(m_display, SWT.ON_TOP | SWT.NO_FOCUS | SWT.TOOL);
-		    	    		m_toolTip.setBackground (m_display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
-							FillLayout layout = new FillLayout ();
-							layout.marginWidth = 2;
-							m_toolTip.setLayout (layout);
-							m_tipLabel = new Label (m_toolTip, SWT.NONE);
-							m_tipLabel.setForeground (m_display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
-							m_tipLabel.setBackground (m_display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
-							m_tipLabel.setText(node.getTreeNode().getToolTipText());
-							m_tipLabel.addListener(SWT.MouseExit, labelListener);
-							m_tipLabel.addListener(SWT.MouseDown, labelListener);
-							Point size = m_toolTip.computeSize (SWT.DEFAULT, SWT.DEFAULT);
-							Point pt = Display.getCurrent().getCursorLocation();
-							m_toolTip.setBounds(pt.x, pt.y, size.x, size.y);
-							m_toolTip.setVisible(true);
-		    	    		return;
-		    			}
-		    		}
-		     } 
-	    }; 
-	    m_canvas.addMouseTrackListener(mouseTrack); 
-	}
 
 	public void setFocus() {
 		if (DEBUG) System.out.printf("Structure: setFocus\n");
@@ -219,6 +144,7 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 				m_toolTip.dispose ();
 
 	    	initialiseTree();
+//			annotateTree();
 		} else if (event.getProperty().equals("LoadExecutable")) {
 			clearTree();
 		} else if (event.getProperty().equals("UpdateState")) {
@@ -229,21 +155,16 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		refreshView();
 	}
 	
-	private void refreshView() {
-		m_display.asyncExec(new Runnable() {
-			public void run() {
-				prepareCanvas();
-				m_canvas.redraw();
-			}});
-	}
-
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
+		if (part == this)
+			return;
+		
         if (sel instanceof IStructuredSelection) {	            
             Object object = ((IStructuredSelection)sel).getFirstElement();
             if (object instanceof Node) {
                 m_selectedNode = (Node)object;
                 annotateTree();
-        		m_scrollArea.redraw();
+                m_scrollArea.redraw();
         		m_canvas.redraw();
             }
         }
@@ -253,6 +174,42 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		if (m_selectedNode != null) {
 			m_selectedNode.createContextMenu(m_parent.getShell(), manager);
 		}
+	}
+
+	/*
+	 * Methods for implementing the ISelectionProvider
+	 */
+	public void addSelectionChangedListener(ISelectionChangedListener listener) {
+		if (!m_listeners.contains(listener)) {
+			m_listeners.add(listener);
+		}
+	}
+
+	public ISelection getSelection() {
+		return new StructuredSelection(m_selectedNode);
+	}
+
+	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+		if (m_listeners.contains(listener)) {
+			m_listeners.remove(listener);
+		}
+	}
+
+	public void setSelection(ISelection selection) {
+		for (ISelectionChangedListener listener : m_listeners) {
+			listener.selectionChanged(new SelectionChangedEvent(this, selection));
+		}
+	}
+
+	/*
+	 * Structure view methods 
+	 */
+	private void refreshView() {
+		m_display.asyncExec(new Runnable() {
+			public void run() {
+				prepareCanvas();
+				m_canvas.redraw();
+			}});
 	}
 
 	public void setCircleMode(boolean modeCircle) {
@@ -276,8 +233,13 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 
 		m_numTreeNodes = 0;
 		analyseTree(m_rootNode, 1, 1);
-		m_pixelsX = (m_borderX  * 2) + m_rootNode.getStructureNode().getPixelsX();
-		m_pixelsY = (m_borderY * 2) + m_rootNode.getStructureNode().getPixelsY();
+		if (m_rootNode == null) {
+			m_pixelsX = 0;
+			m_pixelsY = 0;
+		} else {
+			m_pixelsX = (m_borderX  * 2) + m_rootNode.getStructureNode().getPixelsX();
+			m_pixelsY = (m_borderY * 2) + m_rootNode.getStructureNode().getPixelsY();
+		}
     }
     
     private void prepareCanvas() {
@@ -404,28 +366,85 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		m_startNode = null;
 		m_selectedNode = null;
 	}
+	
+	private void createContextMenus() {
+	    Menu contextMenu;
+		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		menuMgr.setRemoveAllWhenShown(true);
+		menuMgr.addMenuListener(this);
+		contextMenu = menuMgr.createContextMenu(m_canvas);
+		m_canvas.setMenu(contextMenu);
+	}
+	
+	private void setupMouseListeners() {
+		m_toolTip = null;
+		m_tipLabel = null;
 
-	public void addSelectionChangedListener(ISelectionChangedListener listener) {
-		if (!m_listeners.contains(listener)) {
-			m_listeners.add(listener);
-		}
+		final Listener labelListener = new Listener() {
+			public void handleEvent (Event e) {
+				Label label = (Label)e.widget;
+				Shell shell = label.getShell();
+				switch (e.type) {
+					case SWT.MouseDown:
+						shell.dispose ();
+						break;
+					case SWT.MouseExit:
+						shell.dispose ();
+						break;
+				}
+			}
+		};
+
+		MouseAdapter mouseAdapter = new MouseAdapter() { 
+	    	public void mouseDown(MouseEvent e) {
+    			if ((e.button == 1) || (e.button == 3)) {
+		    		for (StructureNode node : m_clickAreas) {
+		    			if (node.contains(e.x, e.y)) {
+		    	    		m_selectedNode = node.getTreeNode();
+		    	    		setSelection(new StructuredSelection(m_selectedNode));
+		    				return;
+		    			}
+		    		}
+    			}
+	    	} 
+	    };  
+	    m_canvas.addMouseListener(mouseAdapter);
+	    
+	    MouseTrackListener mouseTrack = new MouseTrackListener() { 
+		     public void mouseEnter(MouseEvent e) { 
+		     }  
+		     public void mouseExit(MouseEvent e) { 
+		     }  
+		     public void mouseHover(MouseEvent e) { 
+		    		for (StructureNode node : m_clickAreas) {
+		    			if (node.contains(e.x, e.y)) {
+		    	    		if (m_toolTip != null  && !m_toolTip.isDisposed ())
+		    	    			m_toolTip.dispose ();
+
+		    	    		createToolTip(node.getTreeNode(), labelListener);
+		    	    		return;
+		    			}
+		    		}
+		     } 
+	    }; 
+	    m_canvas.addMouseTrackListener(mouseTrack); 
 	}
 
-	public ISelection getSelection() {
-		return new StructuredSelection(m_selectedNode);
-	}
-
-	public void removeSelectionChangedListener(
-			ISelectionChangedListener listener) {
-
-		if (m_listeners.contains(listener)) {
-			m_listeners.remove(listener);
-		}
-	}
-
-	public void setSelection(ISelection selection) {
-		for (ISelectionChangedListener listener : m_listeners) {
-			listener.selectionChanged(new SelectionChangedEvent(this, selection));
-		}
+	private void createToolTip(Node node, Listener labelListener) {
+		m_toolTip = new Shell(m_display, SWT.ON_TOP | SWT.NO_FOCUS | SWT.TOOL);
+		m_toolTip.setBackground (m_display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
+		FillLayout layout = new FillLayout ();
+		layout.marginWidth = 2;
+		m_toolTip.setLayout (layout);
+		m_tipLabel = new Label (m_toolTip, SWT.NONE);
+		m_tipLabel.setForeground (m_display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
+		m_tipLabel.setBackground (m_display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
+		m_tipLabel.setText(node.getToolTipText());
+		m_tipLabel.addListener(SWT.MouseExit, labelListener);
+		m_tipLabel.addListener(SWT.MouseDown, labelListener);
+		Point size = m_toolTip.computeSize (SWT.DEFAULT, SWT.DEFAULT);
+		Point pt = Display.getCurrent().getCursorLocation();
+		m_toolTip.setBounds(pt.x, pt.y, size.x, size.y);
+		m_toolTip.setVisible(true);
 	}
 }
