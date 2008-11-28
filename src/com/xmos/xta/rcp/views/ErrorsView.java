@@ -2,9 +2,11 @@ package com.xmos.xta.rcp.views;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.rcp.XtaDisplayer;
@@ -14,7 +16,7 @@ public class ErrorsView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.rcp.views.Errors";
 
-	private StyledText m_text;
+    private TableViewer m_tableViewer;
     
 	public ErrorsView() {
 		if (DEBUG) System.out.printf("Errors()\n");			
@@ -24,8 +26,18 @@ public class ErrorsView extends ViewPart implements IPropertyChangeListener {
 	public void createPartControl(Composite parent) {
 		if (DEBUG) System.out.printf("Errors: createPartControl\n");	
 		 
-		m_text = new StyledText(parent, SWT.V_SCROLL);	
-		m_text.setEditable(false); 
+		m_tableViewer = new TableViewer(parent);		
+
+	    Table table = m_tableViewer.getTable();
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
+			    	    
+    	TableColumn tableColumn = new TableColumn(table, SWT.LEFT);
+    	tableColumn.setText("Description");
+    	tableColumn.setWidth(500);
+	    
+	    m_tableViewer.setContentProvider(new ErrorsViewContentProvider());				
+	    m_tableViewer.setLabelProvider(new ErrorsViewLabelProvider());	
 	}
 
 	public void setFocus() {
@@ -42,10 +54,7 @@ public class ErrorsView extends ViewPart implements IPropertyChangeListener {
 	}
 	
 	private void updateDisplay() {
-		m_text.setText("");
-		for (String errorString : XtaErrorLog.getInstance().getErrorStrings()) {
-			m_text.append("Error: " + errorString + "\n");
-		}
-		m_text.setSelection(m_text.getCharCount());
+		if (DEBUG) System.out.printf("Errors: updateDisplay\n"); 
+		m_tableViewer.setInput(XtaErrorLog.getInstance());
 	}
 }

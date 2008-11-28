@@ -8,7 +8,7 @@ import org.eclipse.swt.graphics.Image;
 import com.xmos.xta.engine.Unknown;
 
 public class UnknownsViewLabelProvider extends LabelProvider implements ITableLabelProvider {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private String[] m_columnNames;
     private int[] m_columnWidths;
