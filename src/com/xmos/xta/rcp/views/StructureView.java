@@ -144,7 +144,7 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 				m_toolTip.dispose ();
 
 	    	initialiseTree();
-//			annotateTree();
+			annotateTree();
 		} else if (event.getProperty().equals("LoadExecutable")) {
 			clearTree();
 		} else if (event.getProperty().equals("UpdateState")) {
@@ -156,9 +156,6 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
-		if (part == this)
-			return;
-		
         if (sel instanceof IStructuredSelection) {	            
             Object object = ((IStructuredSelection)sel).getFirstElement();
             if (object instanceof Node) {
@@ -186,7 +183,11 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	public ISelection getSelection() {
-		return new StructuredSelection(m_selectedNode);
+		if (m_selectedNode == null) {
+			return null;
+		} else {
+			return new StructuredSelection(m_selectedNode);
+		}
 	}
 
 	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
