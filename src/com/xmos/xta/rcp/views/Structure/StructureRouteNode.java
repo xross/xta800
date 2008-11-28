@@ -39,19 +39,29 @@ public class StructureRouteNode extends StructureNode {
 
 	public int getChildrenX() {
 		int pixels = 0;
-		for (StructureNode child : m_children) {
-			pixels += child.getPixelsX();
+		int numChildren = 0;
+		for (Node treeNode : m_treeNode.getNodes()) {
+			StructureNode child = treeNode.getStructureNode();
+			if (child != null) {
+				pixels += child.getPixelsX();
+				numChildren++;
+			}
 		}
-		pixels += (m_children.size() - 1) * m_pathDividerGap;
+		if (numChildren > 0) {
+			pixels += (numChildren - 1) * m_pathDividerGap;
+		}
 		return pixels;
 	}
 
 	public int getChildrenY() {
 		int pixels = 0;
-		for (StructureNode child : m_children) {
-			int childPixels = child.getPixelsY();
-			if (childPixels > pixels)
-				pixels = childPixels;
+		for (Node treeNode : m_treeNode.getNodes()) {
+			StructureNode child = treeNode.getStructureNode();
+			if (child != null) {
+				int childPixels = child.getPixelsY();
+				if (childPixels > pixels)
+					pixels = childPixels;
+			}
 		}
 		return pixels;
 	}
@@ -62,20 +72,22 @@ public class StructureRouteNode extends StructureNode {
 
     	int childOffsetX = 0;
     	int childNum = 0;
-    	for (StructureNode child : m_children) {
-
-    		if (childNum > 0) {
-        		drawDivider(display, gc, xOffset + childOffsetX + 
-        				(m_pathDividerGap - m_pathDividerLineWidth) / 2,
-        				yOffset, scale);
-    			childOffsetX += m_pathDividerGap;
-    		}
-
-    		child.draw(display, gc, clickAreas,
-    				xOffset + childOffsetX, yOffset + m_topBorder, scale);
-    		childOffsetX += child.getPixelsX();
-    		
-    		childNum++;
+		for (Node treeNode : m_treeNode.getNodes()) {
+			StructureNode child = treeNode.getStructureNode();
+			if (child != null) {
+	    		if (childNum > 0) {
+	        		drawDivider(display, gc, xOffset + childOffsetX + 
+	        				(m_pathDividerGap - m_pathDividerLineWidth) / 2,
+	        				yOffset, scale);
+	    			childOffsetX += m_pathDividerGap;
+	    		}
+	
+	    		child.draw(display, gc, clickAreas,
+	    				xOffset + childOffsetX, yOffset + m_topBorder, scale);
+	    		childOffsetX += child.getPixelsX();
+	    		
+	    		childNum++;
+			}
     	}
 
     	clickAreas.add(this);

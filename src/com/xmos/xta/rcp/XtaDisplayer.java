@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
@@ -66,11 +67,14 @@ public class XtaDisplayer implements Displayer {
 		broadcastPropertyChange(new PropertyChangeEvent(this, "UpdateState", null, null));
 	}
 		
-	public void broadcastPropertyChange(PropertyChangeEvent event) {
-		for (IPropertyChangeListener listener : m_listeners) {
-			listener.propertyChange(event);
-		}		
-	}	
+	public void broadcastPropertyChange(final PropertyChangeEvent event) {			
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+			public void run() {        	
+				for (IPropertyChangeListener listener : m_listeners) {
+					listener.propertyChange(event);
+				}		
+			}});					    				
+	}
 	
 	public XtaRouteInfo getRouteInfo() {
 		return m_routeInfo;

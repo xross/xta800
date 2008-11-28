@@ -13,7 +13,7 @@ public class TreeViewFunctionCombo extends ControlContribution {
 		super(str);
 	}
 
-	public void addEntry(String str) {
+	public void addEntry(String str) {		
 		m_combo.add(str);
 	}
 	

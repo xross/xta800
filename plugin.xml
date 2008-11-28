@@ -5,7 +5,8 @@
    <extension
          id="application"
          point="org.eclipse.core.runtime.applications">
-      <application>
+      <application
+            icon="icons/clock.png">
          <run
                class="com.xmos.xta.rcp.Application">
          </run>
@@ -76,6 +77,13 @@
             icon="icons/structure.png"
             id="com.xmos.xta.rcp.views.Structure"
             name="Structure"
+            restorable="true">
+      </view>
+      <view
+            class="com.xmos.xta.rcp.views.UnknownsView"
+            icon="icons/unknowns.png"
+            id="com.xmos.xta.rcp.views.Unknowns"
+            name="Unknowns"
             restorable="true">
       </view>
    </extension>

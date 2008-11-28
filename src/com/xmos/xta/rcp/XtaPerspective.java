@@ -6,6 +6,7 @@ import org.eclipse.ui.IFolderLayout;
 
 import com.xmos.xta.rcp.views.ConsoleView;
 import com.xmos.xta.rcp.views.ErrorsView;
+import com.xmos.xta.rcp.views.UnknownsView;
 import com.xmos.xta.rcp.views.FlowView;
 import com.xmos.xta.rcp.views.FunctionView;
 import com.xmos.xta.rcp.views.StructureView;
@@ -22,6 +23,7 @@ public class XtaPerspective implements IPerspectiveFactory {
         
         addView(layout, viewsFolder, ConsoleView.ID);
         addView(layout, viewsFolder, ErrorsView.ID);
+        addView(layout, viewsFolder, UnknownsView.ID);
         addView(layout, viewsFolder, FunctionView.ID);
         addView(layout, viewsFolder, StructureView.ID);
         addView(layout, viewsFolder, FlowView.ID);

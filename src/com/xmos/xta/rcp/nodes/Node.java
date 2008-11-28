@@ -5,15 +5,18 @@ import java.util.Vector;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Shell;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.rcp.views.Structure.StructureNode;
 
 public abstract class Node {
     private Node m_parent;
-    private Vector<Node> m_nodes;	
+    private Vector<Node> m_nodes;
+    private StructureNode m_structureNode;
 	
     public Node(Node parent) {
     	m_parent = parent;
     	m_nodes = new Vector<Node>();
-    }    
+    	m_structureNode = null;
+    }
     
     public abstract int getId();
     public abstract int getInstanceId();
@@ -46,5 +49,13 @@ public abstract class Node {
     
     public Node getParentNode() {
     	return m_parent;
+    }
+    
+    public void setStructureNode(StructureNode structureNode) {
+    	m_structureNode = structureNode;
+    }
+
+    public StructureNode getStructureNode() {
+    	return m_structureNode;
     }
 }

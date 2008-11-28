@@ -1,6 +1,7 @@
 package com.xmos.xta.rcp.views;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -8,7 +9,11 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseAdapter;
@@ -42,6 +47,7 @@ import com.xmos.xta.rcp.views.Structure.StructureRouteNode;
 
 public class StructureView extends ViewPart implements IPropertyChangeListener,
                                                        ISelectionListener,
+                                                       ISelectionProvider,
                                                        IMenuListener {
     public static final boolean DEBUG = false;
     public static final int MAX_NUM_RENDER_NODES = 2000;
@@ -49,9 +55,13 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 
     private boolean m_modeCircle;
 
+    private Node m_rootNode;
     private Node m_startNode;
     private Node m_selectedNode;
-    private StructureNode m_stuctureTree;
+    private XtaRouteInfo m_routeInfo;
+    
+    private Vector<ISelectionChangedListener> m_listeners;
+
     private double m_scale;
     private int m_lineWidth;
     private int m_pixelsX;
@@ -59,7 +69,6 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
     private int m_borderX;
     private int m_borderY;
     private int m_numTreeNodes;
-
     private ArrayList<StructureNode> m_clickAreas;
     
     private Composite m_parent;
@@ -79,12 +88,22 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		m_borderX = 10;
 		m_borderY = 10;
 		m_lineWidth = 1;
+		
+		m_listeners = new Vector<ISelectionChangedListener>();
+		m_rootNode = null;
+	    m_startNode = null;
+	    m_selectedNode = null;
 	}
 
+	/*
+	 * ISelectionListener classes
+	 */
 	public void createPartControl(Composite parent) {
 		if (DEBUG) System.out.printf("Structure: createPartControl\n");			
 	    m_parent = parent;
 	    m_display = m_parent.getDisplay();
+
+	    getSite().setSelectionProvider(this);
 	    getSite().getPage().addSelectionListener(this);
 
 	    m_scrollArea = new ScrolledComposite(m_parent,
@@ -110,82 +129,6 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	    setupMouseListeners();
 	    createContextMenus();
 	}
-	
-	private void createContextMenus() {
-	    Menu contextMenu;
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
-		menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(this);
-		contextMenu = menuMgr.createContextMenu(m_canvas);
-		m_canvas.setMenu(contextMenu);
-	}
-	
-	private void setupMouseListeners() {
-		m_toolTip = null;
-		m_tipLabel = null;
-
-		final Listener labelListener = new Listener() {
-			public void handleEvent (Event e) {
-				Label label = (Label)e.widget;
-				Shell shell = label.getShell();
-				switch (e.type) {
-					case SWT.MouseDown:
-						shell.dispose ();
-						break;
-					case SWT.MouseExit:
-						shell.dispose ();
-						break;
-				}
-			}
-		};
-
-		MouseAdapter mouseAdapter = new MouseAdapter() { 
-	    	public void mouseDown(MouseEvent e) {
-    			if ((e.button == 1) || (e.button == 3)) {
-		    		for (StructureNode node : m_clickAreas) {
-		    			if (node.contains(e.x, e.y)) {
-		    	    		m_selectedNode = node.getTreeNode(); 
-		    				return;
-		    			}
-		    		}
-    			}
-	    	} 
-	    };  
-	    m_canvas.addMouseListener(mouseAdapter);
-	    
-	    MouseTrackListener mouseTrack = new MouseTrackListener() { 
-		     public void mouseEnter(MouseEvent e) { 
-		     }  
-		     public void mouseExit(MouseEvent e) { 
-		     }  
-		     public void mouseHover(MouseEvent e) { 
-		    		for (StructureNode node : m_clickAreas) {
-		    			if (node.contains(e.x, e.y)) {
-		    	    		if (m_toolTip != null  && !m_toolTip.isDisposed ())
-		    	    			m_toolTip.dispose ();
-
-		    	    		m_toolTip = new Shell(m_display, SWT.ON_TOP | SWT.NO_FOCUS | SWT.TOOL);
-		    	    		m_toolTip.setBackground (m_display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
-							FillLayout layout = new FillLayout ();
-							layout.marginWidth = 2;
-							m_toolTip.setLayout (layout);
-							m_tipLabel = new Label (m_toolTip, SWT.NONE);
-							m_tipLabel.setForeground (m_display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
-							m_tipLabel.setBackground (m_display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
-							m_tipLabel.setText(node.getTreeNode().getToolTipText());
-							m_tipLabel.addListener(SWT.MouseExit, labelListener);
-							m_tipLabel.addListener(SWT.MouseDown, labelListener);
-							Point size = m_toolTip.computeSize (SWT.DEFAULT, SWT.DEFAULT);
-							Point pt = Display.getCurrent().getCursorLocation();
-							m_toolTip.setBounds(pt.x, pt.y, size.x, size.y);
-							m_toolTip.setVisible(true);
-		    	    		return;
-		    			}
-		    		}
-		     } 
-	    }; 
-	    m_canvas.addMouseTrackListener(mouseTrack); 
-	}
 
 	public void setFocus() {
 		if (DEBUG) System.out.printf("Structure: setFocus\n");
@@ -197,39 +140,31 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("Structure: propertyChange: %s\n", event.getProperty());			
 
 		if (event.getProperty().equals("DisplayRoute")) {
-			m_selectedNode = null;
-			m_startNode = null;
 	    	if (m_toolTip != null  && !m_toolTip.isDisposed ())
 				m_toolTip.dispose ();
-			refreshTree();
+
+	    	initialiseTree();
+//			annotateTree();
 		} else if (event.getProperty().equals("LoadExecutable")) {
+			clearTree();
+		} else if (event.getProperty().equals("UpdateState")) {
 	    	if (m_toolTip != null  && !m_toolTip.isDisposed ())
 				m_toolTip.dispose ();
-	    	m_startNode = null;
-			m_selectedNode = null;
-		} else if (event.getProperty().equals("UpdateState")) {
-			m_startNode = null;
-			m_selectedNode = null;
-			refreshTree();
+			annotateTree();
 		}
 		refreshView();
 	}
 	
-	private void refreshView() {
-		m_display.asyncExec(new Runnable() {
-			public void run() {
-				prepareCanvas();
-				m_canvas.redraw();
-			}});
-	}
-
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
+		if (part == this)
+			return;
+		
         if (sel instanceof IStructuredSelection) {	            
             Object object = ((IStructuredSelection)sel).getFirstElement();
             if (object instanceof Node) {
                 m_selectedNode = (Node)object;
-                analyseTree(m_startNode, m_selectedNode);
-        		m_scrollArea.redraw();
+                annotateTree();
+                m_scrollArea.redraw();
         		m_canvas.redraw();
             }
         }
@@ -241,28 +176,70 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		}
 	}
 
+	/*
+	 * Methods for implementing the ISelectionProvider
+	 */
+	public void addSelectionChangedListener(ISelectionChangedListener listener) {
+		if (!m_listeners.contains(listener)) {
+			m_listeners.add(listener);
+		}
+	}
+
+	public ISelection getSelection() {
+		return new StructuredSelection(m_selectedNode);
+	}
+
+	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+		if (m_listeners.contains(listener)) {
+			m_listeners.remove(listener);
+		}
+	}
+
+	public void setSelection(ISelection selection) {
+		for (ISelectionChangedListener listener : m_listeners) {
+			listener.selectionChanged(new SelectionChangedEvent(this, selection));
+		}
+	}
+
+	/*
+	 * Structure view methods 
+	 */
+	private void refreshView() {
+		m_display.asyncExec(new Runnable() {
+			public void run() {
+				prepareCanvas();
+				m_canvas.redraw();
+			}});
+	}
+
 	public void setCircleMode(boolean modeCircle) {
 		m_modeCircle = modeCircle;
 		m_scrollArea.redraw();
 		m_canvas.redraw();
 	}
 
-    private void refreshTree() {
-		XtaRouteInfo info = XtaDisplayer.getInstance().getRouteInfo();
-
-		if (m_startNode == null) {
-    		if (info != null)
-    			m_startNode = info.getRouteNode();
-    	} 
-
-		if (m_selectedNode == null) {
-    		if (info != null)
-    			m_selectedNode = info.getRouteNode();
-    	} else if (m_selectedNode.isBlockNode()) {
-    		m_selectedNode = m_selectedNode.getParentNode();
+    private void annotateTree() {
+		if (m_startNode != null) {
+    		if (m_startNode.isBlockNode()) {
+    			m_startNode = m_startNode.getParentNode();
+    		}
     	}
-		
-        analyseTree(m_startNode, m_selectedNode);
+
+		if (m_selectedNode != null) {
+    		if (m_selectedNode.isBlockNode()) {
+    			m_selectedNode = m_selectedNode.getParentNode();
+    		}
+    	}
+
+		m_numTreeNodes = 0;
+		analyseTree(m_rootNode, 1, 1);
+		if (m_rootNode == null) {
+			m_pixelsX = 0;
+			m_pixelsY = 0;
+		} else {
+			m_pixelsX = (m_borderX  * 2) + m_rootNode.getStructureNode().getPixelsX();
+			m_pixelsY = (m_borderY * 2) + m_rootNode.getStructureNode().getPixelsY();
+		}
     }
     
     private void prepareCanvas() {
@@ -302,14 +279,14 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	        gc.drawString(error, (int)((clientArea.width - functionNameWidth)/2),
 	        		(int)((clientArea.height - functionNameHeight)/2));
 	    } else {
-	        if (m_stuctureTree == null)
+	        if (m_startNode == null)
 	        	return;
 	        
 			if (m_modeCircle) {
 				drawCircle(gc, m_scale);
 			} else {
 				gc.setLineWidth(m_lineWidth);
-				m_stuctureTree.draw(m_display, gc, m_clickAreas, m_borderX, m_borderY, m_scale);
+				m_startNode.getStructureNode().draw(m_display, gc, m_clickAreas, m_borderX, m_borderY, m_scale);
 			}
 	    }
     }
@@ -324,50 +301,24 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
         gc.fillOval(0, 0, m_pixelsX, m_pixelsY);
     }
 
-    private Node getPathRoot(Node start) {
-    	if (start.isRouteNode()) 
-    		return null;
-    	
-    	Node node = start;
-    	while (!node.getParentNode().isRouteNode()) {
-    		node = node.getParentNode();
-    	}
-		return node;
-	}
-
-	private void analyseTree(Node startNode, Node selectedNode) {
-		double totalTime = 0;
-		if (!startNode.isRouteNode()) {
-			totalTime = getPathRoot(startNode).getTimeTaken();
-		}
-
-		m_numTreeNodes = 0;
-		// FIXME - ensure correct start iterations
-		m_stuctureTree = analyseTree(startNode, startNode.getNumIterations(), totalTime);
-
-		m_pixelsX = (m_borderX  * 2) + m_stuctureTree.getPixelsX();
-		m_pixelsY = (m_borderY * 2) + m_stuctureTree.getPixelsY();
-	}
-
-	private StructureNode analyseTree(Node node, int numIterations, double totalTime) {
+	private boolean analyseTree(Node node, int numIterations, double totalTime) {
 		if (node == null)
-			return null;
+			return false;
 		
-    	StructureNode treeNode = null;
-		m_numTreeNodes++;
     	double weight = (numIterations * node.getTimeTakenThis()) / totalTime;
+    	boolean selected = (node == m_selectedNode);
 
+    	StructureNode structureNode = null;
     	if (node.isRouteNode())
-    		treeNode = new StructureRouteNode(node, weight, m_lineWidth);
+    		structureNode = new StructureRouteNode(node, weight, m_lineWidth);
     	else if (node.isPathNode())
-    		treeNode = new StructurePathNode(node, weight, m_lineWidth);
+    		structureNode = new StructurePathNode(node, weight, m_lineWidth);
     	else if (node.isLoopNode())
-    		treeNode = new StructureLoopNode(node, weight, m_lineWidth);
+    		structureNode = new StructureLoopNode(node, weight, m_lineWidth);
     	else
     		assert(false);
-		
-    	if (node == m_selectedNode)
-    		treeNode.setIsSelected(true);
+    	node.setStructureNode(structureNode);
+    	m_numTreeNodes++;
     	
         for (Node subNode : node.getNodes()) {
         	if (node.isRouteNode())
@@ -377,14 +328,12 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
         		numIterations = node.getNumIterations() * numIterations;
 
     		if (subNode.isPathNode() || subNode.isLoopNode()) {
-    			StructureNode newNode = analyseTree(subNode, numIterations, totalTime);
-    			treeNode.addChild(newNode);
-    			
-    			if (newNode.isSelected())
-    				treeNode.setIsSelected(true);
+    			selected |= analyseTree(subNode, numIterations, totalTime);
     		}
         }
-        return treeNode;
+
+        structureNode.setIsSelected(selected);
+   		return selected;
 	}
 
 	public void zoomOut() {
@@ -400,5 +349,102 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	public void zoomReset() {
 		m_scale = 1.0;
 		refreshView();
+	}
+
+	private void initialiseTree() {
+		m_routeInfo = XtaDisplayer.getInstance().getRouteInfo();										
+		m_rootNode = m_routeInfo.getRouteNode();
+		m_startNode = m_rootNode;
+		m_selectedNode = null;
+	}
+
+	private void clearTree() {
+		if (m_toolTip != null  && !m_toolTip.isDisposed ())
+			m_toolTip.dispose ();
+		
+		m_rootNode = null;
+		m_startNode = null;
+		m_selectedNode = null;
+	}
+	
+	private void createContextMenus() {
+	    Menu contextMenu;
+		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		menuMgr.setRemoveAllWhenShown(true);
+		menuMgr.addMenuListener(this);
+		contextMenu = menuMgr.createContextMenu(m_canvas);
+		m_canvas.setMenu(contextMenu);
+	}
+	
+	private void setupMouseListeners() {
+		m_toolTip = null;
+		m_tipLabel = null;
+
+		final Listener labelListener = new Listener() {
+			public void handleEvent (Event e) {
+				Label label = (Label)e.widget;
+				Shell shell = label.getShell();
+				switch (e.type) {
+					case SWT.MouseDown:
+						shell.dispose ();
+						break;
+					case SWT.MouseExit:
+						shell.dispose ();
+						break;
+				}
+			}
+		};
+
+		MouseAdapter mouseAdapter = new MouseAdapter() { 
+	    	public void mouseDown(MouseEvent e) {
+    			if ((e.button == 1) || (e.button == 3)) {
+		    		for (StructureNode node : m_clickAreas) {
+		    			if (node.contains(e.x, e.y)) {
+		    	    		m_selectedNode = node.getTreeNode();
+		    	    		setSelection(new StructuredSelection(m_selectedNode));
+		    				return;
+		    			}
+		    		}
+    			}
+	    	} 
+	    };  
+	    m_canvas.addMouseListener(mouseAdapter);
+	    
+	    MouseTrackListener mouseTrack = new MouseTrackListener() { 
+		     public void mouseEnter(MouseEvent e) { 
+		     }  
+		     public void mouseExit(MouseEvent e) { 
+		     }  
+		     public void mouseHover(MouseEvent e) { 
+		    		for (StructureNode node : m_clickAreas) {
+		    			if (node.contains(e.x, e.y)) {
+		    	    		if (m_toolTip != null  && !m_toolTip.isDisposed ())
+		    	    			m_toolTip.dispose ();
+
+		    	    		createToolTip(node.getTreeNode(), labelListener);
+		    	    		return;
+		    			}
+		    		}
+		     } 
+	    }; 
+	    m_canvas.addMouseTrackListener(mouseTrack); 
+	}
+
+	private void createToolTip(Node node, Listener labelListener) {
+		m_toolTip = new Shell(m_display, SWT.ON_TOP | SWT.NO_FOCUS | SWT.TOOL);
+		m_toolTip.setBackground (m_display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
+		FillLayout layout = new FillLayout ();
+		layout.marginWidth = 2;
+		m_toolTip.setLayout (layout);
+		m_tipLabel = new Label (m_toolTip, SWT.NONE);
+		m_tipLabel.setForeground (m_display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
+		m_tipLabel.setBackground (m_display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
+		m_tipLabel.setText(node.getToolTipText());
+		m_tipLabel.addListener(SWT.MouseExit, labelListener);
+		m_tipLabel.addListener(SWT.MouseDown, labelListener);
+		Point size = m_toolTip.computeSize (SWT.DEFAULT, SWT.DEFAULT);
+		Point pt = Display.getCurrent().getCursorLocation();
+		m_toolTip.setBounds(pt.x, pt.y, size.x, size.y);
+		m_toolTip.setVisible(true);
 	}
 }
