@@ -26,7 +26,7 @@ public class LoopNode extends Node {
     }
     
     public double getTimeTaken() {
-        return m_block.getTimeTaken(true);
+        return m_block.getTimeTakenLoopsOnly();
     }
     
     public double getTimeTakenThis() {
@@ -34,11 +34,11 @@ public class LoopNode extends Node {
     }
     
     public int getNumCycles() {
-        return m_block.getNumCycles(true);
+        return m_block.getNumCyclesLoopsOnly();
     }
     
     public int getNumUnknowns() {
-        return m_block.getNumUnknowns(true);
+        return m_block.getNumUnknownsLoopsOnly();
     }    
     
     public String getDescription() {
@@ -53,9 +53,9 @@ public class LoopNode extends Node {
         toolTipText += "----------------------------------\n";
         toolTipText += "Total time taken: " + getTimeTaken() + " ns\n";
         toolTipText += "Total number of cycles: " + getNumCycles() + "\n";
-        toolTipText += "Total number of FNOPs: " + m_block.getNumFNops(true) + "\n";
-        toolTipText += "Total number of pausable: " + m_block.getNumPausables(true) + "\n";
-        toolTipText += "Total number of unknowns: " + m_block.getNumUnknowns(true);
+        toolTipText += "Total number of FNOPs: " + m_block.getNumFNopsLoopsOnly() + "\n";
+        toolTipText += "Total number of pausable: " + m_block.getNumPausablesLoopsOnly() + "\n";
+        toolTipText += "Total number of unknowns: " + m_block.getNumUnknownsLoopsOnly();
         return toolTipText;
     }
     
@@ -64,7 +64,7 @@ public class LoopNode extends Node {
     }
         
     public HashSet<Integer> getPcsCovered() {
-        return m_block.getPcsCovered(true);
+        return m_block.getPcsCoveredLoopsOnly();
     }
 
     public void createContextMenu(final Shell parent, IMenuManager manager) {    	
