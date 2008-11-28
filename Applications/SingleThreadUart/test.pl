@@ -11,7 +11,10 @@ system("xcc -march=$arch -g swc_uart_client.xc swc_uart_server.xc uart_example.x
 }
 
 system("@ARGV load $genDir/test.xe " .
-        "path 0x106da 0x10792 " .
-        "cyclebound 325 " .
+        "mode DYNAMIC" .
+        "exclude 0x107a8" .
+        "exclude 0x106d8" .
+        "exclude 0x10482" .
+        "path 0x106da 0x10792" .
         "exit > $genDir/SingleThreadUart.txt 2>&1");
 
