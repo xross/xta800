@@ -187,7 +187,7 @@ public class LineHeaders extends JTextPane implements MouseListener{
             JMenuItem removeAllExclusions = new JMenuItem("Remove all exclusions");
             removeAllExclusions.addMouseListener(new MouseAdapter(){
                 public void mousePressed(MouseEvent e) {
-                    m_engine.removeAllExclusions();
+                    //m_engine.removeAllExclusions();
                 }
             });
             exclusionsMenu.add(removeAllExclusions);
@@ -195,7 +195,7 @@ public class LineHeaders extends JTextPane implements MouseListener{
                 JMenuItem setExclusion = new JMenuItem("Set exclusion");
                 setExclusion.addMouseListener(new MouseAdapter(){
                     public void mousePressed(MouseEvent e) {
-                        m_engine.setExclusion(new Reference(line.getLineNumber()));
+                        //m_engine.setExclusion(new Reference(line.getLineNumber()));
 
                     }
                 });
@@ -203,7 +203,7 @@ public class LineHeaders extends JTextPane implements MouseListener{
                 JMenuItem removeExclusion = new JMenuItem("Remove exclusion");
                 removeExclusion.addMouseListener(new MouseAdapter(){
                     public void mousePressed(MouseEvent e) {
-                        m_engine.removeExclusion(new Reference(line.getLineNumber()));
+                        //m_engine.removeExclusion(new Reference(line.getLineNumber()));
                     }
                 });
                 exclusionsMenu.add(removeExclusion);

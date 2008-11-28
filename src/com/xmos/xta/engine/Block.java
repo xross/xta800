@@ -1,13 +1,14 @@
 package com.xmos.xta.engine;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.Vector;
+
+import com.xmos.xta.engine.Engine.ReferenceMode;
 import com.xmos.xta.engine.MachineState.BranchState;
 import com.xmos.xta.engine.Status.BlockStatus;
 
@@ -437,7 +438,7 @@ public class Block implements Comparable<Block> {
 	}
 
 	private boolean isExcluded(int pc) {
-		for (Reference reference : m_bc.getExclusions()) {
+		for (Reference reference : m_bc.getEngine().getReference(ReferenceMode.PROHIBITED)) {
 			assert (reference.isResolved());
 			if (reference.getPc() == pc) {
 				return true;
@@ -1005,6 +1006,16 @@ public class Block implements Comparable<Block> {
 
 	public HashSet<Integer> getPcsCoveredThis() {
 		return m_pcs;
+	}
+
+	public ArrayList<Integer> getAllReferencePcs() {
+		ArrayList<Integer> references = new ArrayList<Integer>();
+		for(String label : m_labels){
+			Reference ref  = new Reference(label);
+			ref.resolve(m_bc.getEngine());
+			references.add(ref.getPc());
+		}
+		return references;
 	}
 
 }

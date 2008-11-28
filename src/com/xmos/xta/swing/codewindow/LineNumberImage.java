@@ -84,6 +84,7 @@ public class LineNumberImage implements Highlighter.HighlightPainter {
         
         boolean excluded = false;
         //this is horribly inefficient
+        /*
         for(Reference ref : m_engine.getExclusions()){
             if(m_line.getLineNumberType() == DisplayType.hex ){
                 if(ref.getPc() == m_line.getLineNumber()){
@@ -91,7 +92,7 @@ public class LineNumberImage implements Highlighter.HighlightPainter {
                 }
             }
         }
-        
+        */
         if(excluded){
             if(m_line.getLineNumberType() == DisplayType.hex){
                 g2.setColor(Color.gray);

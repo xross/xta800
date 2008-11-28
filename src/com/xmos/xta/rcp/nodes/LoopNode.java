@@ -1,5 +1,6 @@
 package com.xmos.xta.rcp.nodes;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Vector;
 
@@ -55,7 +56,14 @@ public class LoopNode extends Node {
         toolTipText += "Total number of cycles: " + getNumCycles() + "\n";
         toolTipText += "Total number of FNOPs: " + m_block.getNumFNops(true) + "\n";
         toolTipText += "Total number of pausable: " + m_block.getNumPausables(true) + "\n";
-        toolTipText += "Total number of unknowns: " + m_block.getNumUnknowns(true);
+        toolTipText += "Total number of unknowns: " + m_block.getNumUnknowns(true) + "\n";
+        String loopName="";
+        ArrayList<String> labels = new ArrayList<String>();
+         m_block.getPathLabels(false, labels);
+        for(String label :labels){
+        	loopName+=label;
+        }
+        toolTipText += "Loop name: " + loopName;
         return toolTipText;
     }
     
