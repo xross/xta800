@@ -12,7 +12,7 @@ import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.XtaRouteInfo;
 
 public class UnknownsView extends ViewPart implements IPropertyChangeListener {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.rcp.views.Unknowns";
 
     private TableViewer m_tableViewer;
@@ -26,7 +26,6 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener {
 		if (DEBUG) System.out.printf("Unknowns: createPartControl\n");	
 		
 		m_tableViewer = new TableViewer(parent);		
-	    getSite().setSelectionProvider(m_tableViewer);
 
 	    Table table = m_tableViewer.getTable();
 		table.setHeaderVisible(true);

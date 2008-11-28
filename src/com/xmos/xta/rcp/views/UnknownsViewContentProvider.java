@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.Viewer;
 import com.xmos.xta.engine.Route;
 
 public class UnknownsViewContentProvider implements IStructuredContentProvider {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
 	public Object[] getElements(Object inputElement) {
 		if (DEBUG) System.out.printf("UnknownsViewContentProvider: getElements\n");	
