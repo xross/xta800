@@ -101,7 +101,6 @@ public class FunctionPathNode extends ViewNode {
         m_height = getBlockY() + m_pixelsY;
 
         gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-        gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
     	gc.drawLine(m_x, m_y, m_x, m_y);
 
         int childOffsetX = 0;

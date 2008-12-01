@@ -82,12 +82,15 @@ public class FunctionBlockNode extends ViewNode {
         m_width = scale(m_pixelsX, scale);
         m_height = m_pixelsY;
 
-        gc.setForeground(display.getSystemColor(SWT.COLOR_YELLOW));
-        gc.setBackground(display.getSystemColor(SWT.COLOR_YELLOW));
+        if (m_isSelected) {
+        	gc.setBackground(display.getSystemColor(SWT.COLOR_YELLOW));
+        } else { 
+        	gc.setBackground(display.getSystemColor(SWT.COLOR_DARK_YELLOW));
+        }
     	gc.fillRectangle(m_x, m_y, m_width, m_height);
 
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-        gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+        if (m_isSelected) gc.setLineWidth(m_lineWidth + 1);
     	gc.drawRectangle(m_x, m_y, m_width, m_height);
 	}
 

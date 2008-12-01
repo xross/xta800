@@ -74,9 +74,8 @@ public class StructureLoopNode extends StructureNode {
         m_height = scale(getPixelsY() - m_bottomBorder, scale);
         
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
-        gc.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
 
-        if (m_isSelected) gc.setLineWidth(m_lineWidth * 2);
+        if (m_isSelected) gc.setLineWidth(m_lineWidth + 1);
     	gc.drawRoundRectangle(m_x, m_y, m_width, m_height, m_cornerRounding, m_cornerRounding);
         if (m_isSelected) gc.setLineWidth(m_lineWidth);
 
@@ -91,7 +90,6 @@ public class StructureLoopNode extends StructureNode {
 	
 	    		int childMid = scale(m_pixelOffsetX + childOffsetX + (childX / 2), scale);
 	        	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-	            gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
 	            gc.drawLine(mid, m_y, childMid, childTop);
 	
 	    		childOffsetX += childX;

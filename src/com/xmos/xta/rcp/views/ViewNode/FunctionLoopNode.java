@@ -89,7 +89,7 @@ public class FunctionLoopNode extends ViewNode {
         m_bottom = m_pixelOffsetY + getPixelsY();
         
         gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
-        gc.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
+        if (m_isSelected) gc.setLineWidth(m_lineWidth + 1);
         gc.drawLine(m_left, m_top, m_left, m_bottom);
         gc.drawLine(m_right, m_top, m_right, m_bottom);
         gc.drawLine(m_left, m_bottom, scale(m_pixelOffsetX + m_borderX, scale), m_bottom);

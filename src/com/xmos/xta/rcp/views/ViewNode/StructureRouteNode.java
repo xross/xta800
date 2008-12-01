@@ -100,7 +100,6 @@ public class StructureRouteNode extends StructureNode {
 
         gc.setAlpha(100);
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-        gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
     	gc.drawLine(x, top, x, bottom);
         gc.setAlpha(255);
     }
