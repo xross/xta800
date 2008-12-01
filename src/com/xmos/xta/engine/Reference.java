@@ -14,6 +14,9 @@ public class Reference {
     
     
     public Reference(String ref) {
+    	if(ref.startsWith("0x")){
+    		
+    	}
         m_ref = ref;
         m_pc = 0;
         m_isResolved = false;

@@ -8,6 +8,8 @@ import com.xmos.xeloader.DebugInfo;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Reference;
+import com.xmos.xta.engine.Engine.ReferenceMode;
 
 class List extends Command {
 	String m_type;
@@ -36,8 +38,12 @@ class List extends Command {
         String descString = "list <type>: Lists all of the given <type> in the currently loaded executable";        
         if (detailed) {
         	descString += "\n";
+        	descString += "      required: Lists the required references\n";
+        	descString += "      prohibited: Lists the prohibited references\n";
+        	descString += "      excluded: Lists the excluded references\n";
         	descString += "      functions: Lists the functions\n";
         	descString += "      sources: Lists the files";
+        	
         }
         return descString;
     }
@@ -53,16 +59,39 @@ class List extends Command {
     public void execute(Shell shell, Engine engine, Console console) {
     	if (m_type.equals("functions")) {
     		listFunctions(engine, console);
-        }
-    	else if (m_type.equals("sources")) {    	
+        } else if (m_type.equals("sources")) {    	
     		listFiles(engine, console);
+    	} else if (m_type.equals("required")) {    	
+    		listRequirements(engine, console);
+    	} else if (m_type.equals("prohibited")) {    	
+    		listProhibiteds(engine, console);
+    	} else if (m_type.equals("excluded")) {    	
+    		listExcludes(engine, console);
     	}
     	else {
     		console.display(String.format("Error: Invalid list command: %s (Try 'help'..)\n", m_type));
     	}
     }    
     
-    private void listFunctions(Engine engine, Console console) {    	    
+    private void listExcludes(Engine engine, Console console) {
+    	for(Reference ref : engine.getReference(ReferenceMode.EXCLUSION)){
+    		console.display(String.format("- %s 0x%x\n", ref.getRef(), ref.getPc()));
+    	}
+	}
+
+	private void listProhibiteds(Engine engine, Console console) {
+		for(Reference ref : engine.getReference(ReferenceMode.PROHIBITED)){
+    		console.display(String.format("- %s 0x%x\n", ref.getRef(), ref.getPc()));
+    	}
+	}
+
+	private void listRequirements(Engine engine, Console console) {
+    	for(Reference ref : engine.getReference(ReferenceMode.REQUIRED)){
+    		console.display(String.format("- %s 0x%x\n", ref.getRef(), ref.getPc()));
+    	}
+	}
+
+	private void listFunctions(Engine engine, Console console) {    	    
 		if (!isExecutableLoaded(engine, console))
 			return;			
         

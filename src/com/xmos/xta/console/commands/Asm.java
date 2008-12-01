@@ -52,5 +52,6 @@ class Asm extends Command {
     	
         engine.displayRoute(new AsmDisplayer(console, m_pathId, 
         		engine.getXeLoader().getArchitecture(), engine.getXeObject()));	
-   }    
+   }
+    
 }

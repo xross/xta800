@@ -391,8 +391,6 @@ public class Block implements Comparable<Block> {
 		m_route.addUnknown(unknown);
 	}
 
-	private Expression previousGuard;
-	private int previousPc;
 
 	private void checkForLoopFormation(int nextPc, boolean speculative, XtaInstruction inst, boolean isJump, boolean isBranch) {
 		Block loopBlock = null;

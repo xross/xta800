@@ -273,11 +273,6 @@ public class Route {
 
 	
 	public void addCompletePath(Block endBlock) {
-		
-
-
-		System.out.println(m_completePaths.size() + " completed blocks");
-
 		m_completePaths.add(endBlock);
 	}
 	
@@ -285,9 +280,20 @@ public class Route {
 		
 		ArrayList<Block> toRemove = new ArrayList<Block>();
 		
+		ArrayList<Integer> exclusions = new ArrayList<Integer>();
+		for(Reference ref : m_engine.getReference(ReferenceMode.EXCLUSION)){
+			exclusions.add(ref.getPc());
+		}
+		ArrayList<Integer> required = new ArrayList<Integer>();
+		for(Reference ref : m_engine.getReference(ReferenceMode.REQUIRED)){
+			required.add(ref.getPc());
+		}
+		
+		
 		for(Block completePath : m_completePaths){
 			
 			ArrayList<Integer> allReferences = completePath.getAllReferencePcs();
+			System.out.println("all ref pcs : " + allReferences + "----exclusions:  " + exclusions + "---required: " + required);
 			for(Reference ref : m_engine.getReference(ReferenceMode.EXCLUSION)){
 
 				if(allReferences.contains(ref.getPc())) {

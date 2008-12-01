@@ -1,5 +1,6 @@
 package com.xmos.xta.console;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Vector;
@@ -37,6 +38,7 @@ public class Shell {
     	while (!isComplete()) {
     		Command command = getNextCommand();
     		command.execute(this, m_engine, m_console);
+    		m_commands.remove(command);
     	}
     }
     
@@ -50,6 +52,24 @@ public class Shell {
 
     public void addCommand(Command command) {
     	m_commands.add(command);
+    }
+    
+    public int getLocation(Command command){
+    	ArrayList<Command> com = new ArrayList<Command>();
+    	com.addAll(m_commands);
+    	return com.indexOf(command);
+    }
+    
+    public void addCommand(Command command, int position) {
+    	if(position == -1){
+    		addCommand(command);
+    	} else {
+			ArrayList<Command> com = new ArrayList<Command>();
+			com.addAll(m_commands);
+			com.add(position, command);
+			m_commands.clear();
+			m_commands.addAll(com);
+    	}
     }
     
     public Vector<String> getHistoryStrings() {
@@ -86,7 +106,7 @@ public class Shell {
     }
     
     private Command getNextCommand() {
-		Command command = m_commands.poll();
+		Command command = m_commands.peek();
 		if (command != null) {
     		m_commandHistory.add(command);			
 			return command;	
@@ -103,8 +123,7 @@ public class Shell {
             line = line.trim();
             if (line.length() > 0) {            
                 String[] tokens = line.trim().split("\\s+");
-                
-                command = CommandFactory.buildCommand(tokens, 0, m_commandHistory, false);                
+                command = CommandFactory.buildCommand(tokens, 0, m_commandHistory, false);         
                 if (command == null) {
             		m_commandHistory.add(new Invalid(line));                	
                 	m_console.display("Invalid command (Try 'help'..)\n");
@@ -147,5 +166,7 @@ public class Shell {
       		m_console.display(String.format("  %s\n", command.description(m_engine, false)));   		
       	}
         System.exit(1);
-	}	        
+	}
+
+		        
 }

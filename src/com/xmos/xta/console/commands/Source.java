@@ -49,7 +49,7 @@ class Source extends Command {
     public void execute(Shell shell, Engine engine, Console console) {    	
         try {
             BufferedReader fp = new BufferedReader(new FileReader(m_fileName));
-                        
+            int location = shell.getLocation(this);            
             try {
             	int lineNumber = 1;
                 String line;
@@ -62,11 +62,15 @@ class Source extends Command {
                         		tokens, 0, shell.getCommandHistory(), m_commandLineMode);
                         
                         if (command != null) {
-                        	shell.addCommand(command);
+                        	shell.addCommand(command, location+1);
+                        	location++;
                         }
                         else {
-                        	console.display(String.format("Invalid command in file: %s, line number: %d\n",
+                        	if(!tokens[0].startsWith("#")){
+                        		console.display(String.format("Invalid command in file: %s, line number: %d\n",
                         			m_fileName, lineNumber));
+                        	}
+                        	
                         }
                     }            
                     ++lineNumber;
