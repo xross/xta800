@@ -1,4 +1,4 @@
-package com.xmos.xta.rcp.views.Structure;
+package com.xmos.xta.rcp.views.ViewNode;
 
 import java.util.ArrayList;
 
@@ -29,13 +29,13 @@ public class StructureLoopNode extends StructureNode {
 	
 	public int getPixelsX() {
 		int pixels = getChildrenX() + m_pixelsX;
-		if (DEBUG) System.out.printf("Loop X %d\n", pixels);
+		if (DEBUG) System.out.printf("StructureLoop X %d\n", pixels);
 		return pixels;
 	}
 
 	public int getPixelsY() {
 		int pixels = getChildrenY() + m_pixelsY;
-		if (DEBUG) System.out.printf("Loop Y %d\n", pixels);
+		if (DEBUG) System.out.printf("StructureLoop Y %d\n", pixels);
 		return pixels;
 	}
 
@@ -63,14 +63,14 @@ public class StructureLoopNode extends StructureNode {
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc, ArrayList<StructureNode> clickAreas,
-			int xOffset, int yOffset, double scale) {
-        if (DEBUG) System.out.printf("Draw Loop %d,%d,%f\n", xOffset, yOffset, scale);
+	public void draw(Display display, GC gc, double scale) {
+        if (DEBUG) System.out.printf("Draw StructureLoop %d,%d,%f\n",
+        		m_pixelOffsetX, m_pixelOffsetY, scale);
 
-        m_x = (int)((double)(xOffset + m_borderX) * scale);
-        m_y = (int)((double)yOffset * scale);
-        m_width = (int)((double)(getPixelsX() - (2 * m_borderX)) * scale);
-        m_height = (int)((double)(getPixelsY() - m_bottomBorder) * scale);
+        m_x = scale(m_pixelOffsetX + m_borderX, scale);
+        m_y = scale(m_pixelOffsetY, scale);
+        m_width = scale(getPixelsX() - (2 * m_borderX), scale);
+        m_height = scale(getPixelsY() - m_bottomBorder, scale);
         
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
         gc.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
@@ -79,22 +79,35 @@ public class StructureLoopNode extends StructureNode {
     	gc.drawRoundRectangle(m_x, m_y, m_width, m_height, m_cornerRounding, m_cornerRounding);
         if (m_isSelected) gc.setLineWidth(m_lineWidth);
 
-        int mid = (int)(((double)xOffset + ((double)getPixelsX() / 2)) * scale);
+        int mid = scale(m_pixelOffsetX + (getPixelsX() / 2), scale);
     	int childOffsetX = m_pixelsX / 2;
-    	int childTop = (int)((double)(yOffset + m_connectionY) * scale);
+    	int childTop = scale(m_pixelOffsetY + m_connectionY, scale);
 		for (Node treeNode : m_treeNode.getNodes()) {
 			StructureNode child = treeNode.getStructureNode();
 			if (child != null) {
-	    		child.draw(display, gc, clickAreas,
-	    				xOffset + childOffsetX, yOffset + m_connectionY, scale);
+	    		child.draw(display, gc, scale);
 	    		int childX = child.getPixelsX();
 	
-	    		int childMid = (int)((double)(xOffset + childOffsetX + (childX / 2)) * scale);
+	    		int childMid = scale(m_pixelOffsetX + childOffsetX + (childX / 2), scale);
 	        	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 	            gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
 	            gc.drawLine(mid, m_y, childMid, childTop);
 	
 	    		childOffsetX += childX;
+			}
+    	}
+	}
+
+	public void annotateXy(int xOffset, int yOffset, ArrayList<ViewNode> clickAreas) {
+        m_pixelOffsetX = xOffset;
+		m_pixelOffsetY = yOffset;
+
+        int childOffsetX = m_borderX;
+		for (Node treeNode : m_treeNode.getNodes()) {
+			StructureNode child = treeNode.getStructureNode();
+			if (child != null) {
+	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_connectionY, clickAreas);
+	    		childOffsetX +=  child.getPixelsX();
 			}
     	}
 

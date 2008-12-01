@@ -90,6 +90,7 @@ public class Iterations extends Dialog {
 		spinner.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
 				true, false, 2, 1));
 		spinner.setMinimum(0);
+		spinner.setMaximum(Integer.MAX_VALUE);
 		spinner.setSelection(m_numIterations);
 		spinner.setIncrement(1);
 		spinner.setPageIncrement(10);
