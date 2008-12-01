@@ -212,6 +212,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     }
     
     private void populateFunctionList() {
+    	m_functions.clearEntries();
     	XeObject xeObject = XtaEngine.getEngine().getXeObject();                    
         for (final Function function : xeObject.getFunctions()) {
            	m_functions.addEntry(function.getText());

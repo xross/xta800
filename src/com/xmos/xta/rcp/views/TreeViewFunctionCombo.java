@@ -13,6 +13,10 @@ public class TreeViewFunctionCombo extends ControlContribution {
 		super(str);
 	}
 
+	public void clearEntries() {
+		m_combo.removeAll();
+	}
+	
 	public void addEntry(String str) {		
 		m_combo.add(str);
 	}
