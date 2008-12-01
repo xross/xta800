@@ -81,6 +81,7 @@ public class FunctionLoopNode extends ViewNode {
         if (DEBUG) System.out.printf("Draw FunctionLoop %d,%d,%f\n",
         		m_pixelOffsetX, m_pixelOffsetY, scale);
 
+        gc.setLineWidth(m_lineWidth);
         int childrenX = getChildrenX();
         m_left = scale(m_pixelOffsetX, scale);
         m_right = scale(m_pixelOffsetX + childrenX + (m_borderX * 2), scale);

@@ -71,6 +71,7 @@ public class StructurePathNode extends StructureNode {
         if (DEBUG) System.out.printf("Draw StructurePath %d,%d,%f\n",
         		m_pixelOffsetX, m_pixelOffsetY, scale);
 
+        gc.setLineWidth(m_lineWidth);
         m_x = scale(m_pixelOffsetX + m_borderX, scale);
         m_y = scale(m_pixelOffsetY, scale);
         m_width = scale(getPixelsX() - (2 * m_borderX), scale);
