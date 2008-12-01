@@ -370,7 +370,9 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		m_tipLabel.addListener(SWT.MouseDown, labelListener);
 		Point size = m_toolTip.computeSize (SWT.DEFAULT, SWT.DEFAULT);
 		Point pt = Display.getCurrent().getCursorLocation();
-		m_toolTip.setBounds(pt.x, pt.y, size.x, size.y);
+
+		// Display slightly to the right of the cursor in order to not have it behind cursor
+		m_toolTip.setBounds(pt.x + 10, pt.y, size.x, size.y);
 		m_toolTip.setVisible(true);
 	}
 
