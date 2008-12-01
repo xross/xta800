@@ -195,7 +195,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
     private void updateAnnotations(int pc, String type, List<Annotation> annotations, 
     		Map<Annotation, Position> annotationPositions) {
-		if (DEBUG) System.out.printf("XtaEditor: updateAnnotations\n"); 
+		if (DEBUG) System.out.printf("XtaEditor: updateAnnotations: pc: 0x%05x\n", pc); 
 
 		XtaDocumentPartitioner xtaDocumentPartitioner = 
 			(XtaDocumentPartitioner)getSourceViewer().getDocument().getDocumentPartitioner();

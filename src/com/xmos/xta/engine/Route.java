@@ -11,6 +11,7 @@ import java.util.Vector;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
+import com.xmos.xta.engine.Engine.ReferenceMode;
 import com.xmos.xta.engine.Status.ExecutionStatus;
 
 public class Route {
@@ -33,6 +34,7 @@ public class Route {
 
 	private ArrayList<Block> m_unresolvedPaths;
 	private ArrayList<Block> m_completePaths;
+	private ArrayList<Block> m_removedPaths;
 
 	private Engine m_engine;
 	private RouteStatus m_status;
@@ -122,35 +124,21 @@ public class Route {
 		BlockCommonComponents bc = null;
 
 		if (m_functionName != null) {
-			bc = new BlockCommonComponents(m_config, m_instructionDecodeCache, m_instructionAttributes, memoryImage, symbolTable, m_engine.getExclusions(),
-					this, m_resolveExpressions, Block.Mode.FUNCTION, m_engine);
+			bc = new BlockCommonComponents(m_config, m_instructionDecodeCache, m_instructionAttributes, memoryImage, symbolTable, 
+					m_engine.getReference(ReferenceMode.PROHIBITED), this, m_resolveExpressions, Block.Mode.FUNCTION, m_engine);
 			assert (symbolTable.symbolExists(m_functionName));
 			int fromPc = symbolTable.symbolAddress(m_functionName);
 			new ExecutionState(this, initialState, bc, fromPc);
 		} else {
-			bc = new BlockCommonComponents(m_config, m_instructionDecodeCache, m_instructionAttributes, memoryImage, symbolTable, m_engine.getExclusions(),
-					this, m_resolveExpressions, Block.Mode.ABSOLUTE, m_engine);
+			bc = new BlockCommonComponents(m_config, m_instructionDecodeCache, m_instructionAttributes, memoryImage, symbolTable, 
+					m_engine.getReference(ReferenceMode.PROHIBITED), this, m_resolveExpressions, Block.Mode.ABSOLUTE, m_engine);
 			new ExecutionState(this, initialState, bc, m_fromRef.getPc(), m_toRef.getPc());
 		}
 		stepPath();
-		sortPaths();
-		//labelPaths();
 		filterPaths();
-		
+		sortPaths();
 		m_progress.resetState(Progress.State.IDLE, 0);
 		return m_status;
-	}
-
-	private void labelPaths() {
-		for(Block block : this.m_completePaths){
-			TreeSet<Block> allBlocks = new TreeSet<Block>();
-			block.getAllBlocks(allBlocks);
-			for(Block b : allBlocks){
-				if(b.getLabels().size() == 0){
-					b.getLabels().add("unnamed_label_" + b.getId());
-				}
-			}
-		}
 	}
 
 	public int getId() {
@@ -218,6 +206,7 @@ public class Route {
 		m_coreId = coreId;
 		m_completePaths = new ArrayList<Block>();
 		m_unresolvedPaths = new ArrayList<Block>();
+		m_removedPaths = new ArrayList<Block>();
 		m_loopPaths = new HashMap<Integer, Vector<Block>>();
 		m_executionStates = new ArrayList<ExecutionState>();
 		m_schedule = new LinkedList<ExecutionState>();
@@ -287,31 +276,36 @@ public class Route {
 		
 
 
-		
+		System.out.println(m_completePaths.size() + " completed blocks");
 
 		m_completePaths.add(endBlock);
 	}
 	
 	public void filterPaths(){
+		
 		ArrayList<Block> toRemove = new ArrayList<Block>();
+		
 		for(Block completePath : m_completePaths){
-			ArrayList<String> labels  = new ArrayList<String>();
-			completePath.getPathLabels(true, labels);
-			for(String label : m_engine.getRequiredLabels()){
-				if(!labels.contains(label)) {
+			
+			ArrayList<Integer> allReferences = completePath.getAllReferencePcs();
+			for(Reference ref : m_engine.getReference(ReferenceMode.EXCLUSION)){
+
+				if(allReferences.contains(ref.getPc())) {
 					toRemove.add(completePath);
-					continue;
+					break;
 				}
 			}
-			for(String label : m_engine.getProhibitedLabels()){
-				if(labels.contains(label)) {
+			
+			for(Reference ref : m_engine.getReference(ReferenceMode.REQUIRED)){
+				if(!allReferences.contains(ref.getPc())) {
 					toRemove.add(completePath);
-					continue;
+					break;
 				}
 			}
 			
 		}
 		m_completePaths.removeAll(toRemove);
+		m_removedPaths.addAll(toRemove);
 		
 	}
 	

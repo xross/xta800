@@ -79,7 +79,7 @@ public class PathNode extends Node {
         
         toolTipText += "Number of pausables (this): " + m_block.getNumPausables(false) + "\n";  
         ArrayList<String> labels  = new ArrayList<String>();
-        m_block.getPathLabels(true,labels);
+        m_block.getPathLabels(false, labels);
         boolean first= true;
         for(String label : labels){
         	if(first) {

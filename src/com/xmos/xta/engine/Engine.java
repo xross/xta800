@@ -21,6 +21,11 @@ public class Engine {
 
 	private static final boolean DEBUG = true;
 	
+	public enum ReferenceMode {
+		EXCLUSION,
+		PROHIBITED,
+		REQUIRED
+	}
     private XeLoader m_xeLoader;
     private XeObject m_xeObject;
     private Vector<File> m_sourceFiles;
@@ -32,19 +37,23 @@ public class Engine {
     private int m_coreId;
     private String m_errorString;
     private Vector<Displayer> m_displayers;
+    
     private Vector<Reference> m_exclusions;
+    private Vector<Reference> m_prohibited;
+    private Vector<Reference> m_required;
+    private HashMap<Integer, String> m_labels;
+    
     private boolean m_abort;
     private InstructionDecodeCache m_instructionDecodeCache;
     private boolean m_resolveExpression;
-    private HashMap<Integer, String> m_labels;
-    
-    private ArrayList<String> m_requiredLables;
-    private ArrayList<String> m_prohibitedLables;
-    
     
     public Engine(Config config) {
-    	m_requiredLables = new ArrayList<String>();
-    	m_prohibitedLables = new ArrayList<String>();
+    	
+    	m_exclusions = new Vector<Reference>();
+    	m_prohibited = new Vector<Reference>();
+    	m_required = new Vector<Reference>();
+    	m_labels = new HashMap<Integer, String>();
+    	
         m_xeLoader = new XeLoader();
         m_xeObject = null;
         m_route = null;
@@ -56,34 +65,50 @@ public class Engine {
         m_coreId = 0;
         m_errorString = "";
         m_displayers = new Vector<Displayer>();
-        m_exclusions = new Vector<Reference>();
+        
         m_abort = false;
         m_resolveExpression = false;
-        m_labels = new HashMap<Integer, String>();
+        
     }
     
-    public void clearRequiredLabels(){
-    	m_requiredLables.clear();
+    public void addReference(ReferenceMode mode, Reference ref){
+    	//test for duplicates
+    	//test for conditions where the user want a reference and not a reference
+    	
+    	if(mode == ReferenceMode.EXCLUSION){
+    		m_exclusions.add(ref);
+    	} else if(mode == ReferenceMode.PROHIBITED){
+    		m_prohibited.add(ref);
+    	} else if(mode == ReferenceMode.REQUIRED){
+    		m_required.add(ref);
+    	} else{
+    		assert(false);
+    	}
     }
     
-    public void addRequiredLabel(String label){
-    	m_requiredLables.add(label);
+    public void removeReference(ReferenceMode mode, Reference ref){
+    	if(mode == ReferenceMode.EXCLUSION){
+    		m_exclusions.remove(ref);
+    	} else if(mode == ReferenceMode.PROHIBITED){
+    		m_prohibited.remove(ref);
+    	} else if(mode == ReferenceMode.REQUIRED){
+    		m_required.remove(ref);
+    	} else{
+    		assert(false);
+    	}
     }
     
-    public void removeRequiredLabel(String label){
-    	m_requiredLables.remove(label);
-    }
-    
-    public void clearProhibitedLables(){
-    	m_prohibitedLables.clear();
-    }
-    
-    public void addProhibitedLable(String label){
-    	m_prohibitedLables.add(label);
-    }
-    
-    public void removeProhibitedLable(String label){
-    	m_prohibitedLables.remove(label);
+    public Vector<Reference> getReference(ReferenceMode mode){
+    	if(mode == ReferenceMode.EXCLUSION){
+    		return m_exclusions;
+    	} else if(mode == ReferenceMode.PROHIBITED){
+    		return m_prohibited;
+    	} else if(mode == ReferenceMode.REQUIRED){
+    		return m_required;
+    	} else{
+    		assert(false);
+    		return null;
+    	}
     }
     
     public Config getConfig() {
@@ -179,54 +204,6 @@ public class Engine {
             return analyseRoute();
         }
     }
-    public Vector<Reference> getExclusions() {
-        return m_exclusions;
-    }
-
-    public boolean setExclusion(Reference ref) {
-        m_exclusions.add(ref);
-        return true;
-    }
-
-    public boolean setExclusion(String refStr) {
-        Reference ref = new Reference(refStr);
-
-        if (!m_xeLoader.isLoaded()) {
-            setErrorString("No executable file loaded");
-            return false;
-        }
-        else if (!resolveRefernece(ref)) {
-            setErrorString(String.format("Unresolved reference: %s", refStr));
-            return false;
-        }
-
-        m_exclusions.add(ref);
-        return true;
-    }
-
-    public boolean removeExclusion(Reference ref) {
-        for(Reference present : m_exclusions){
-            if(present.getPc() == ref.getPc()){
-                m_exclusions.remove(present);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean removeExclusion(String refStr){
-        for(Reference present : m_exclusions){
-            if(present.getRef().equals(refStr)){
-                m_exclusions.remove(present);
-                return true;
-            }
-        }
-        return false;
-    }
-    public boolean removeAllExclusions(){
-        m_exclusions.clear();
-        return true;
-    }
 
     public boolean analyseRoute(String from, String to, boolean resolveExpression) {
         Reference fromRef = new Reference(from);
@@ -286,7 +263,12 @@ public class Engine {
 
             displayer.displayRoute(m_route, debugInfo, memoryImage, symbolTable);    	
         }
-    }        
+    }    
+    
+    public void refineRoute(){
+    	//this applies all exclusions, requirements and prohibited properties to the route
+    	
+    }
 
     public void registerDisplayer(Displayer displayer) {    	
         m_displayers.add(displayer);
@@ -568,14 +550,19 @@ public class Engine {
 		}
 		return null;
 	}
-
-	public ArrayList<String> getProhibitedLabels() {
-		return this.m_prohibitedLables;
+	
+	public boolean isLabel(String lbl){
+		return m_labels.containsValue(lbl);
 	}
-
-	public ArrayList<String> getRequiredLabels() {
-		return m_requiredLables;
+	
+	public int getLabelPc(String label){
+		for(int pc : m_labels.keySet()){
+			if(label.equals(m_labels.get(pc))){
+				return pc;
+			}
+		}
+		assert(false);
+		return 0;
 	}
-
 }
 
