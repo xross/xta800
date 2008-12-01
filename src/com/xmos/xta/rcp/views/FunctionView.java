@@ -5,137 +5,62 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.elfhandler.Symbol;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.nodes.Node;
+import com.xmos.xta.rcp.views.ViewNode.FunctionBlockNode;
+import com.xmos.xta.rcp.views.ViewNode.FunctionLoopNode;
+import com.xmos.xta.rcp.views.ViewNode.ViewNode;
+import com.xmos.xta.rcp.views.ViewNode.FunctionPathNode;
 
-public class FunctionView extends ViewPart implements IPropertyChangeListener, 
-                                                      ISelectionListener {
+public class FunctionView extends ZoomedCanvasView {
+	
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.rcp.views.Function";
 
-    private Display m_display;
-    private Canvas m_canvas;
-
     private SymbolTable m_table;
-    private Node m_selectedNode;
-    
-    private Vector<XtaCodeBlock> m_blockList;
-    private int m_pathDepth;
-    private int m_pathLength;
+    private Vector<XtaFunctionBlock> m_functionList;
+    private int m_nodeOffset;
     private int m_blockLength;
-    private int m_blockDepth;
-    private int m_blockPausable;
-    private int m_blockFNops;
+    private Node m_currentNode;
     private String m_currentFunction;
     private String m_previousFunction;
-    private int m_currentDepth;
 
     private int m_colorIndex;
     private Vector<Color> m_colors;
     private HashMap<String, Color> m_functionColors;
 
-    private boolean m_showLoops;
+    private int m_functionNameY = 30;
     
 	public FunctionView() {
+		super();
 		if (DEBUG) System.out.printf("Function()\n");			
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 		
-		m_blockList = new Vector<XtaCodeBlock>();
+		m_functionList = new Vector<XtaFunctionBlock>();
         m_functionColors = new HashMap<String, Color>();
-        m_showLoops = false;
-        m_canvas = null;
-	}
-
-	public void createPartControl(Composite parent) {
-		if (DEBUG) System.out.printf("Function: createPartControl\n");
-	    m_display = parent.getDisplay();
-
-	    getSite().getPage().addSelectionListener(this);
         initaliseColors(m_display);
 
-	    m_canvas = new Canvas(parent, SWT.NO_BACKGROUND);
-	    m_canvas.addPaintListener(new PaintListener() {
-	        public void paintControl(PaintEvent e) {
-	        	if (m_showLoops) {
-	        		drawLoops(e.gc);
-	        	} else {
-	        		drawFunctions(e.gc);
-	        	}
-	        }
-	    });
+		m_scale = 1.0;
+		m_scaleY = false;
+		m_pixelsX = 0;
+		m_pixelsY = 0;
+		m_borderX = 0;
+		m_borderY = 10;
+		m_lineWidth = 1;
 	}
 
-	public void setFocus() {
-		if (DEBUG) System.out.printf("Function: setFocus\n");			
-		m_canvas.redraw();
-	}
-
-	public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG) System.out.printf("Function: propertyChange: %s\n", event.getProperty());
-		if (event.getProperty().equals("DisplayRoute")) {
-			m_selectedNode = null;
-            clearAll();
-		} else if (event.getProperty().equals("LoadExecutable")) {
-			m_selectedNode = null;
-            clearAll();
-		} else if (event.getProperty().equals("UpdateState")) {
-			m_selectedNode = null;
-		}
-
-		refreshView();
-	}	
-	
-	private void refreshView() {
-		m_display.asyncExec(new Runnable() {
-			public void run() {
-				m_canvas.redraw();
-			}});
-	}
-	
-    public void selectionChanged(IWorkbenchPart part, ISelection sel) {
-		if (DEBUG) System.out.printf("Function: selectionChanged\n");			
-	    if (sel instanceof IStructuredSelection) {	            
-            Object object = ((IStructuredSelection)sel).getFirstElement();
-            if (object instanceof Node) {
-                getDebugInfo();
-                m_selectedNode = (Node)object;
-                clearAll();
-                Node pathRoot = getPathRoot(m_selectedNode);
-                if (pathRoot != null)
-                	addPath(pathRoot, 1, false, false);
-                m_canvas.redraw();
-            }
-        }
-    }
-
-    public void setShowLoops(boolean showLoops) {
-		m_showLoops = showLoops;
-        m_canvas.redraw();
-    }
-    
     private Node getPathRoot(Node start) {
-    	if (start.isRouteNode()) 
+    	if ((start == null) || start.isRouteNode()) 
     		return null;
     	
     	Node node = start;
@@ -145,239 +70,131 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
 		return node;
 	}
 
-	private boolean addPath(Node node, int numIterations,
-            boolean previousBlockSelected, boolean currentBlockSelected) {
-        if (numIterations == 0)
-            return previousBlockSelected;
-        
-        // Set the current selected 
-        if (node == m_selectedNode) {
-            currentBlockSelected = true;
-        }
+    protected void initialiseTree() {
+    	clearAll();
+		m_routeInfo = XtaDisplayer.getInstance().getRouteInfo();
+		if (m_routeInfo != null) {
+			m_rootNode = m_routeInfo.getRouteNode();
+			m_selectedNode = m_routeInfo.getSelectedNode();
+			getDebugInfo();
+		} else {
+			m_rootNode = null;
+			m_selectedNode = null;
+		}
+	}
 
-        for (XtaInstruction inst : node.getInstructions()) {
-            String functionName = m_table.functionName(inst.getPc());
+    protected void annotateTree(boolean isSelctionChange) {
+    	clearAll();
+        Node pathRoot = getPathRoot(m_selectedNode);
+		if (pathRoot == null) {
+			m_pixelsX = 0;
+			m_pixelsY = 0;
+		} else {
+			annotateTree(pathRoot, 1);
 
-            if (m_blockLength == 0) {
-                previousBlockSelected = currentBlockSelected;
-            }
-                
-            if (m_currentFunction.length() == 0) {
-                m_currentFunction = functionName;
-                m_previousFunction = functionName;
-            }
-
-            if ((m_currentFunction.equals(functionName) == false) || 
-                (m_currentDepth != m_blockDepth) ||
-                (currentBlockSelected != previousBlockSelected)) {
-                
-                if (m_blockLength > 0) {
-                    addBlock(previousBlockSelected);
-                    m_currentFunction = functionName;
-                    previousBlockSelected = currentBlockSelected;
-                } else {
-                    m_currentFunction = m_previousFunction;
-                }
-            }
-            m_blockLength += numIterations;
-            m_blockDepth = m_currentDepth;
-            
-            if (inst.canPause())
-                m_blockPausable++;
-
-            if (inst.isFnop())
-                m_blockFNops++;
-        }
-
-        boolean subBlockSelected = currentBlockSelected;
-        for (Node subNode : node.getNodes()) {
-        	if (subNode.isPathNode())
-        		numIterations = node.getNumIterations() * numIterations;
-        	
-            if (node.isLoopNode()) m_currentDepth++;
-            subBlockSelected = addPath(subNode, numIterations, subBlockSelected, currentBlockSelected);
-            if (node.isLoopNode()) m_currentDepth--;
-        }
-        
-        if (m_blockLength > 0) {
-            addBlock(currentBlockSelected);
-        }
-        return currentBlockSelected;
+			m_clickAreas.clear();
+			pathRoot.getFunctionNode().annotateXy(m_borderX, m_borderY, m_clickAreas);
+			if (m_blockLength > 0)
+				addBlock();
+		}
+		updatePixelsXy();
+		if (!isSelctionChange)
+			zoomFit();
     }
 
-    private void addBlock(boolean blockSelected) {
-        m_blockList.add(new XtaCodeBlock(m_currentFunction, m_blockLength,
-                m_blockDepth, m_blockPausable,
-                m_blockFNops, blockSelected));
-        m_pathLength += m_blockLength;
+    protected void updatePixelsXy() {
+        Node pathRoot = getPathRoot(m_selectedNode);
+		if (pathRoot == null) {
+			m_pixelsX = 0;
+			m_pixelsY = 0;
+		} else {
+			m_pixelsX = (m_borderX  * 2) + pathRoot.getFunctionNode().getPixelsX();
+			m_pixelsY = (m_borderY * 2) + pathRoot.getFunctionNode().getPixelsY() + m_functionNameY;
+		}
+    }
+    
+    private void clearAll() {
+        m_functionList.clear();
+        m_nodeOffset = 0;
+        m_currentFunction = "";
+        m_previousFunction = "";
+    }
+
+    private void annotateTree(Node node, int numIterations) {
+		if ((node == null) || node.isRouteNode())
+			return;
+
+		m_currentNode = node;
+		
+		ViewNode functionNode = null;
+    	if (node.isBlockNode()) {
+            for (XtaInstruction inst : node.getInstructions()) {
+                String functionName = m_table.functionName(inst.getPc());
+
+                if (m_currentFunction.length() == 0) {
+                    m_currentFunction = functionName;
+                    m_previousFunction = functionName;
+                }
+
+                if (m_currentFunction.equals(functionName) == false) {
+                    if (m_nodeOffset > 0) {
+                        addBlock();
+                        m_currentFunction = functionName;
+                    } else {
+                        m_currentFunction = m_previousFunction;
+                    }
+                }
+            	m_nodeOffset += numIterations;
+            	m_blockLength += numIterations;
+            }
+    		functionNode = new FunctionBlockNode(node, numIterations, m_lineWidth);
+    	} else if (node.isPathNode()) {
+    		functionNode = new FunctionPathNode(node, numIterations, m_lineWidth);
+    	} else if (node.isLoopNode()) {
+    		functionNode = new FunctionLoopNode(node, numIterations, m_lineWidth);
+    	}
+
+    	node.setFunctionNode(functionNode);
+        for (Node subNode : node.getNodes()) {
+        	m_nodeOffset = 0;
+        	
+        	int subNumIterations = subNode.getNumIterations() * numIterations;
+			annotateTree(subNode, subNumIterations);
+        }
+	}
+
+    private void addBlock() {
+    	Color color = m_functionColors.get(m_currentFunction);
+    	XtaFunctionBlock block = new XtaFunctionBlock(m_currentFunction, color,
+    			m_currentNode, m_nodeOffset, m_blockLength);
+        m_functionList.add(block);
         m_blockLength = 0;
-        m_blockPausable = 0;
-        m_blockFNops = 0;
-        if (m_currentDepth > m_pathDepth)
-            m_pathDepth = m_currentDepth;
         m_previousFunction = m_currentFunction;
     }
 
-    private void drawFunctions(GC gc){
-		if (DEBUG) System.out.printf("Function: drawFunctions\n");			
-
+    protected void drawCanvas(GC gc) {
+    	gc.setAntialias(SWT.ON);
+    	gc.setTextAntialias(SWT.ON);
+    	
 		Rectangle clientArea = m_canvas.getClientArea();
-        int totalWidth = clientArea.width;
-        int totalHeight = clientArea.height;
+		m_canvas.setSize(clientArea.width, clientArea.height);
+    	gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
+        gc.fillRectangle(0, 0, clientArea.width, clientArea.height);
 
-        gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
-        gc.fillRectangle(0, 0, totalWidth, totalHeight);
+        Node pathRoot = getPathRoot(m_selectedNode);
+        if (pathRoot == null)
+        	return;
         
-        if (m_blockList.isEmpty())
-            return;
-
-        int borderY = totalHeight / 6;
-        int y = borderY;
-        int blockHeight = totalHeight - (2 * borderY);
-        double instWidth = (double)(totalWidth - 2) / (double)m_pathLength;
-
-        int x = 0;
-        boolean wasSelected = true;
-        for (int i = 0; i < m_blockList.size(); i++) {
-            XtaCodeBlock block = m_blockList.get(i);
-            boolean selected = block.getSelected();
-            
-            boolean drawLeft = (!selected && wasSelected);
-            boolean drawRight = (!selected &&
-                    ((i == (m_blockList.size() - 1)) || m_blockList.get(i+1).getSelected()));
-            wasSelected = selected;
-            
-            x += drawFunctionBlock(gc, block, x, y, blockHeight, totalHeight,
-                    instWidth, true, drawLeft, drawRight);
-        }
+		gc.setLineWidth(m_lineWidth);
+		int blockX = m_borderX;
+		for (XtaFunctionBlock block : m_functionList) {
+			blockX += block.draw(m_display, gc, blockX, m_borderY, m_pixelsY - m_functionNameY, m_pixelsY, m_scale);
+		}
+		pathRoot.getFunctionNode().draw(m_display, gc, m_scale);
     }
     
-    private void drawLoops(GC gc){
-		if (DEBUG) System.out.printf("Function: drawLoops\n");			
-
-		Rectangle clientArea = m_canvas.getClientArea();
-        int totalWidth = clientArea.width;
-        int totalHeight = clientArea.height;
-
-        gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
-        gc.fillRectangle(0, 0, totalWidth, totalHeight);
-        
-        if (m_blockList.isEmpty())
-            return;
-
-        int borderY = 10;
-        double blockHeight = (((double)totalHeight - (2.0 * (double)borderY)) / ((double)m_pathDepth/2.0 + 1));
-        double instWidth = (double)(totalWidth - 2) / (double)m_pathLength;
-
-        int x = 0;
-        boolean wasSelected = true;
-        for (int i = 0; i < m_blockList.size(); i++) {
-            XtaCodeBlock block = m_blockList.get(i);
-            boolean selected = block.getSelected();
-            
-            boolean drawLeft = (!selected && wasSelected);
-            boolean drawRight = (!selected &&
-                    ((i == (m_blockList.size() - 1)) || m_blockList.get(i+1).getSelected()));
-            wasSelected = selected;
-            
-            int y = borderY + (int)((m_pathDepth - block.getDepth()) * (blockHeight / 2.0));
-            x += drawFunctionBlock(gc, block, x, y, (int)blockHeight, totalHeight,
-                    instWidth, false, drawLeft, drawRight);
-        }
-    }
-
-    private int drawFunctionBlock(GC gc, XtaCodeBlock block,
-            int x, int y, int height, int totalHeight,
-            double instWidth, boolean drawDetails,
-            boolean drawLeft, boolean drawRight) {
-        
-        Color color = m_functionColors.get(block.getFunction());
-        gc.setBackground(color);
-        
-        Color pausableColor = lighter(color);
-        Color fnopColor = lighter(pausableColor);
-        Color borderColor = darker(color);
-
-        int width = (int)(Math.ceil(instWidth * block.getLength()));
-        gc.fillRectangle(x, y, width, height);
-        gc.setForeground(borderColor);
-        gc.setBackground(borderColor);
-        gc.drawRectangle(x, y, width, height);
-        
-        if (drawDetails && (block.getPausable() > 0)) {
-            // Show the pausable
-            int pausableWidth = (int)Math.ceil(instWidth * block.getPausable()) - 1;
-            gc.setBackground(pausableColor);
-            gc.fillRectangle(x, y + (height / 3), pausableWidth, (height / 3) - 1);
-            gc.setBackground(m_display.getSystemColor(SWT.COLOR_BLACK));
-            gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
-            gc.drawRectangle(x, y + (height / 3), pausableWidth, (height / 3) - 1);
-        }
-
-        if (drawDetails && (block.getFNops() > 0)) {
-            // Show the FNops
-            int fnopWidth = (int)Math.ceil(instWidth * block.getFNops()) - 1;
-            gc.setBackground(fnopColor);
-            gc.fillRectangle(x, y + ((2 * height) / 3), fnopWidth, (height / 3) - 1);
-            gc.setBackground(m_display.getSystemColor(SWT.COLOR_BLACK));
-            gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
-            gc.drawRectangle(x, y + ((2 * height) / 3), fnopWidth, (height / 3) - 1);
-        }
-        
-        gc.setForeground(m_display.getSystemColor(SWT.COLOR_WHITE));
-        gc.setBackground(color);
-        String functionName = block.getFunction();
-        double functionNameWidth = gc.getFontMetrics().getAverageCharWidth() * functionName.length();
-        double functionNameHeight = gc.getFontMetrics().getHeight();
-
-        if (width > (int)functionNameWidth){
-            gc.drawString(functionName,
-                    (int)(x + width/2.0 - functionNameWidth/2.0),
-                    (int)(y + height/2.0 + functionNameHeight/2.0));
-        }
-
-        if (!block.getSelected()) {
-            gc.setAlpha(100);
-            gc.setForeground(m_display.getSystemColor(SWT.COLOR_GRAY));
-            gc.setBackground(m_display.getSystemColor(SWT.COLOR_GRAY));
-            gc.fillRectangle(x, 0, width, totalHeight);
-            gc.setAlpha(255);
-        }
-        if (drawLeft) {
-            gc.setBackground(m_display.getSystemColor(SWT.COLOR_BLACK));
-            gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
-            gc.drawLine(x, 0, x, totalHeight);
-        }
-        if (drawRight) {
-            gc.setBackground(m_display.getSystemColor(SWT.COLOR_BLACK));
-            gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
-            gc.drawLine(x + width, 0, x + width, totalHeight);
-        }
-
-        pausableColor.dispose();
-        fnopColor.dispose();
-        borderColor.dispose();
-        return width;
-    }
-
-    private Color darker(Color color) {
-    	RGB rgb = color.getRGB();
-    	float[] hsb = rgb.getHSB();
-    	hsb[2] = (float) (hsb[2] / 1.5); // Drop brightness
-    	RGB newRgb = new RGB(hsb[0], hsb[1], hsb[2]);
-    	return new Color(color.getDevice(), newRgb);
-	}
-
-	private Color lighter(Color color) {
-    	RGB rgb = color.getRGB();
-    	float[] hsb = rgb.getHSB();
-    	hsb[2] = (float) (1.0 - ((1.0 - hsb[2]) / 2.0)); // Increase brightness
-    	RGB newRgb = new RGB(hsb[0], hsb[1], hsb[2]);
-    	return new Color(color.getDevice(), newRgb);
-	}
-
 	private void getDebugInfo(){
-    	m_table = XtaDisplayer.getInstance().getRouteInfo().getSymbolTable();
+    	m_table = m_routeInfo.getSymbolTable();
         Iterator<Map.Entry<Integer, Symbol>> iter =
             m_table.getElfHandler().getFunctionsPcKeyed().entrySet().iterator();
         
@@ -390,20 +207,6 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
         }
     }
     
-    private void clearAll() {
-        m_blockList.clear();
-        m_pathDepth = 0;
-        m_pathLength = 0;
-        m_blockLength = 0;
-        m_blockDepth = 0;
-        m_blockPausable = 0;
-        m_blockFNops = 0;
-        
-        m_currentFunction = "";
-        m_previousFunction = "";
-        m_currentDepth = 0;
-    }
-
     private Color getColor() {
         if (m_colorIndex < m_colors.size()) {
             Color color = m_colors.get(m_colorIndex);
@@ -428,40 +231,42 @@ public class FunctionView extends ViewPart implements IPropertyChangeListener,
             }
         }
     }
-
-    class XtaCodeBlock {
+    
+    class XtaFunctionBlock {
         private String m_function;
-        private int m_length;
-        private int m_pausable;
-        private int m_fNops;
-        private int m_depth;
-        private boolean m_selected;
-        public XtaCodeBlock(String function, int length,
-                int depth, int pausable, int fNops, boolean selected) {
+        private Color m_color;
+        private Node m_node;
+        private int m_offset;
+        public XtaFunctionBlock(String function, Color color, Node node, int offset, 
+        		int length) {
             m_function = function;
-            m_length = length;
-            m_depth = depth;
-            m_pausable = pausable;
-            m_fNops = fNops;
-            m_selected = selected;
+            m_color = color;
+            m_node = node;
+            m_offset = offset;
         }
         public String getFunction() {
             return m_function;
         }
-        public int getLength() {
-            return m_length;
-        }
-        public int getDepth() {
-            return m_depth;
-        }
-        public int getPausable() {
-            return m_pausable;
-        }
-        public int getFNops() {
-            return m_fNops;
-        }
-        public boolean getSelected() {
-            return m_selected;
+    	
+        public int draw(Display display, GC gc, int x, int y, int textBase, int height, double scale) {
+
+            int length = (m_node.getFunctionNode().getPixelOffsetX() + m_offset) - x;
+
+            gc.setForeground(m_color);
+            gc.setBackground(m_color);
+        	gc.fillRectangle((int)((double)x * scale), y, (int)((double)length * scale) + 1, height);
+
+            gc.setForeground(m_display.getSystemColor(SWT.COLOR_WHITE));
+            gc.setBackground(m_color);
+            double functionNameWidth = gc.getFontMetrics().getAverageCharWidth() * m_function.length();
+
+            if (((double)length * scale) > functionNameWidth){
+                gc.drawString(m_function,
+                        (int)(((((double)x + ((double)length / 2.0)) * scale) - (functionNameWidth)/2.0)),
+                        textBase);
+            }
+            
+            return length;
         }
     }
 }

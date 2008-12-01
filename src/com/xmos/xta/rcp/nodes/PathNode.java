@@ -108,8 +108,9 @@ public class PathNode extends Node {
     PathNode m_this = this;
     public void createContextMenu(final Shell parent, IMenuManager manager) {    	
 		manager.add(new Separator());
-    	manager.add(new Action("trace to console") {
+    	manager.add(new Action("Trace in console") {
 			public void run() {
+				// TODO - implement
 			}
 		});    	
     	

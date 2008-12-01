@@ -93,16 +93,17 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	}
 	
     public void selectionChanged(IWorkbenchPart part, ISelection sel) {
-		if (part == this)
-			return;
-
+    	if ((part == this) || sel.isEmpty())
+    		return;
+    	
 		if (sel instanceof IStructuredSelection) {	            
             Object object = ((IStructuredSelection)sel).getFirstElement();
             if (object instanceof Node) {
+            	m_routeInfo.setSelectedNode((Node)object);
         		m_treeViewer.setSelection(sel, true);
             }
         }
-     }	            		         	        
+     }
 	
 	public void menuAboutToShow(IMenuManager manager) {				
 		manager.add(new Action("expand all") {

@@ -2,15 +2,19 @@ package com.xmos.xta.rcp.nodes;
 
 import java.util.HashSet;
 import java.util.Vector;
+
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Shell;
+
 import com.xmos.xta.engine.XtaInstruction;
-import com.xmos.xta.rcp.views.Structure.StructureNode;
+import com.xmos.xta.rcp.views.ViewNode.StructureNode;
+import com.xmos.xta.rcp.views.ViewNode.ViewNode;
 
 public abstract class Node {
     private Node m_parent;
     private Vector<Node> m_nodes;
     private StructureNode m_structureNode;
+    private ViewNode m_functionNode;
 	
     public Node(Node parent) {
     	m_parent = parent;
@@ -57,5 +61,13 @@ public abstract class Node {
 
     public StructureNode getStructureNode() {
     	return m_structureNode;
+    }
+
+    public void setFunctionNode(ViewNode functionNode) {
+    	m_functionNode = functionNode;
+    }
+
+    public ViewNode getFunctionNode() {
+    	return m_functionNode;
     }
 }

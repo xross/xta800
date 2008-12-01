@@ -7,11 +7,12 @@ import com.xmos.xta.engine.Route;
 import com.xmos.xta.rcp.nodes.Node;
 
 public class XtaRouteInfo {
-	private Route m_route; 
+	private Route m_route;
 	private DebugInfo m_debugInfo;
 	private MemoryImage m_memoryImage; 
 	private SymbolTable m_symbolTable;
 	private Node m_routeNode;
+	private Node m_selectedNode;
 	
 	public XtaRouteInfo(Route route, DebugInfo debugInfo,
 			MemoryImage memoryImage, SymbolTable symbolTable, Node routeNode) {
@@ -20,6 +21,7 @@ public class XtaRouteInfo {
 		m_memoryImage = memoryImage;
 		m_symbolTable = symbolTable;
 		m_routeNode = routeNode;
+		m_selectedNode = routeNode;
 	}
 	
 	public Route getRoute() {
@@ -40,5 +42,13 @@ public class XtaRouteInfo {
 	
 	public Node getRouteNode() {
 		return m_routeNode;
+	}	
+
+	public Node getSelectedNode() {
+		return m_selectedNode;
+	}	
+
+	public void setSelectedNode(Node selectedNode) {
+		m_selectedNode = selectedNode;
 	}	
 }

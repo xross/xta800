@@ -117,22 +117,36 @@
       <menuContribution
             locationURI="toolbar:com.xmos.xta.rcp.views.Function">
          <command
-               commandId="com.xmos.xta.rcp.function.loops.command"
-               icon="icons/loop.png"
-               id="com.xmos.xta.rcp.function.loops.command"
-               label="Show loops"
+               commandId="com.xmos.xta.rcp.function.zoomin.command"
+               icon="icons/zoomin.png"
+               id="com.xmos.xta.rcp.function.zoomin.command"
+               label="Zoom In"
+               style="push">
+         </command>
+         <command
+               commandId="com.xmos.xta.rcp.function.zoomout.command"
+               icon="icons/zoomout.png"
+               id="com.xmos.xta.rcp.function.zoomout.command"
+               label="Zoom Out"
+               style="push">
+         </command>
+         <command
+               commandId="com.xmos.xta.rcp.function.zoomreset.command"
+               icon="icons/zoomreset.png"
+               id="com.xmos.xta.rcp.function.zoomreset.command"
+               label="Reset Zoom"
+               style="push">
+         </command>
+         <command
+               commandId="com.xmos.xta.rcp.function.zoomfit.command"
+               icon="icons/zoomfit.png"
+               id="com.xmos.xta.rcp.function.zoomfit.command"
+               label="Zoom to fit"
                style="push">
          </command>
       </menuContribution>
       <menuContribution
             locationURI="toolbar:com.xmos.xta.rcp.views.Structure">
-         <command
-               commandId="com.xmos.xta.rcp.structure.circle.command"
-               icon="icons/loop.png"
-               id="com.xmos.xta.rcp.structure.circle.command"
-               label="Draw circle"
-               style="push">
-         </command>
          <command
                commandId="com.xmos.xta.rcp.structure.zoomin.command"
                icon="icons/zoomin.png"
@@ -173,16 +187,6 @@
             name="com.xmos.xta.rcp.tree.settings.command">
       </command>
       <command
-            defaultHandler="com.xmos.xta.rcp.handlers.FunctionLoopsHandler"
-            id="com.xmos.xta.rcp.function.loops.command"
-            name="com.xmos.xta.rcp.function.loops.command">
-      </command>
-      <command
-            defaultHandler="com.xmos.xta.rcp.handlers.StructureCircleHandler"
-            id="com.xmos.xta.rcp.structure.circle.command"
-            name="com.xmos.xta.rcp.structure.circle.command">
-      </command>
-      <command
             defaultHandler="com.xmos.xta.rcp.handlers.StructureZoomInHandler"
             id="com.xmos.xta.rcp.structure.zoomin.command"
             name="com.xmos.xta.rcp.structure.zoomin.command">
@@ -196,6 +200,26 @@
             defaultHandler="com.xmos.xta.rcp.handlers.StructureZoomResetHandler"
             id="com.xmos.xta.rcp.structure.zoomreset.command"
             name="com.xmos.xta.rcp.structure.zoomreset.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.FunctionZoomInHandler"
+            id="com.xmos.xta.rcp.function.zoomin.command"
+            name="com.xmos.xta.rcp.function.zoomin.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.FunctionZoomOutHandler"
+            id="com.xmos.xta.rcp.function.zoomout.command"
+            name="com.xmos.xta.rcp.function.zoomout.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.FunctionZoomResetHandler"
+            id="com.xmos.xta.rcp.function.zoomreset.command"
+            name="com.xmos.xta.rcp.function.zoomreset.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.FunctionZoomFitHandler"
+            id="com.xmos.xta.rcp.function.zoomfit.command"
+            name="com.xmos.xta.rcp.function.zoomfit.command">
       </command>command>
    </extension>
    <extension
