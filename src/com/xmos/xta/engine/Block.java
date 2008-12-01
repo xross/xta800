@@ -228,8 +228,10 @@ public class Block implements Comparable<Block> {
 		return (int) (path.getTimeTaken(true) - getTimeTaken(true));
 	}
 
-	static void resetNumPaths() {
-		m_numBlocks = 0;
+	public ArrayList<String> getPathIdentifier(){
+		ArrayList<String> ident = new ArrayList<String>();
+		this.getPathLabels(false, ident);
+		return ident;
 	}
 
 	public void addLoopPath(Block pathStartBlock) {
@@ -436,7 +438,7 @@ public class Block implements Comparable<Block> {
 	}
 
 	private boolean isExcluded(int pc) {
-		for (Reference reference : m_bc.getEngine().getReference(ReferenceMode.PROHIBITED)) {
+		for (CodeReference reference : m_bc.getEngine().getReference(ReferenceMode.PROHIBITED)) {
 			assert (reference.isResolved());
 			if (reference.getPc() == pc) {
 				return true;
@@ -974,7 +976,7 @@ public class Block implements Comparable<Block> {
        getPathLabels(false, labels);
 		ArrayList<Integer> references = new ArrayList<Integer>();
 		for(String label : labels){
-			Reference ref  = new Reference(label);
+			CodeReference ref  = new CodeReference(label);
 			ref.resolve(m_bc.getEngine());
 			references.add(ref.getPc());
 		}

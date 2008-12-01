@@ -11,7 +11,7 @@ public class BlockCommonComponents {
     private InstructionAttributes m_instructionAttributes;
     private MemoryImage m_memoryImage;
     private SymbolTable m_symbolTable;
-    private Vector<Reference> m_exclusions;
+    private Vector<CodeReference> m_exclusions;
     private Route m_route;
     private boolean m_resolveExpressions;
     private Block.Mode m_mode;
@@ -21,7 +21,7 @@ public class BlockCommonComponents {
 	public BlockCommonComponents(Config m_config,
 			InstructionDecodeCache decodeCache,
 			InstructionAttributes attributes, MemoryImage image,
-			SymbolTable table, Vector<Reference> m_exclusions, Route m_route,
+			SymbolTable table, Vector<CodeReference> m_exclusions, Route m_route,
 			boolean expressions, Block.Mode m_mode, Engine engine) {
 		super();
 		this.m_config = m_config;
@@ -66,10 +66,10 @@ public class BlockCommonComponents {
 	public void setSymbolTable(SymbolTable table) {
 		m_symbolTable = table;
 	}
-	public Vector<Reference> getExclusions() {
+	public Vector<CodeReference> getExclusions() {
 		return m_exclusions;
 	}
-	public void setExclusions(Vector<Reference> m_exclusions) {
+	public void setExclusions(Vector<CodeReference> m_exclusions) {
 		this.m_exclusions = m_exclusions;
 	}
 	public void setRoute(Route m_route) {

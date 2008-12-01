@@ -24,8 +24,8 @@ public class Route {
 	private Config m_config;
 	private int m_nodeId;
 	private int m_coreId;
-	private Reference m_fromRef;
-	private Reference m_toRef;
+	private CodeReference m_fromRef;
+	private CodeReference m_toRef;
 	private String m_functionName;
 	private HashMap<Integer, Vector<Block>> m_loopPaths;
 
@@ -46,7 +46,7 @@ public class Route {
 	private InstructionAttributes m_instructionAttributes;
 	private boolean m_resolveExpressions;
 
-	Route(Config config, Reference fromRef, Reference toRef, int nodeId, int coreId, InstructionDecodeCache instructionDecodeCache, boolean resolveExpressions) {
+	Route(Config config, CodeReference fromRef, CodeReference toRef, int nodeId, int coreId, InstructionDecodeCache instructionDecodeCache, boolean resolveExpressions) {
 		m_fromRef = fromRef;
 		m_toRef = toRef;
 		m_resolveExpressions = resolveExpressions;
@@ -86,11 +86,11 @@ public class Route {
 		return m_coreId;
 	}
 
-	public final Reference fromRef() {
+	public final CodeReference fromRef() {
 		return m_fromRef;
 	}
 
-	public final Reference toRef() {
+	public final CodeReference toRef() {
 		return m_toRef;
 	}
 
@@ -113,7 +113,6 @@ public class Route {
 
 		m_instructionAttributes = new InstructionAttributes();
 
-		Block.resetNumPaths();
 		m_engine.setAbort(false);
 
 		Stack<TreeSet<Integer>> context = new Stack<TreeSet<Integer>>();
@@ -281,11 +280,11 @@ public class Route {
 		ArrayList<Block> toRemove = new ArrayList<Block>();
 		
 		ArrayList<Integer> exclusions = new ArrayList<Integer>();
-		for(Reference ref : m_engine.getReference(ReferenceMode.EXCLUSION)){
+		for(CodeReference ref : m_engine.getReference(ReferenceMode.EXCLUSION)){
 			exclusions.add(ref.getPc());
 		}
 		ArrayList<Integer> required = new ArrayList<Integer>();
-		for(Reference ref : m_engine.getReference(ReferenceMode.REQUIRED)){
+		for(CodeReference ref : m_engine.getReference(ReferenceMode.REQUIRED)){
 			required.add(ref.getPc());
 		}
 		
@@ -293,8 +292,7 @@ public class Route {
 		for(Block completePath : m_completePaths){
 			
 			ArrayList<Integer> allReferences = completePath.getAllReferencePcs();
-			System.out.println("all ref pcs : " + allReferences + "----exclusions:  " + exclusions + "---required: " + required);
-			for(Reference ref : m_engine.getReference(ReferenceMode.EXCLUSION)){
+			for(CodeReference ref : m_engine.getReference(ReferenceMode.EXCLUSION)){
 
 				if(allReferences.contains(ref.getPc())) {
 					toRemove.add(completePath);
@@ -302,7 +300,7 @@ public class Route {
 				}
 			}
 			
-			for(Reference ref : m_engine.getReference(ReferenceMode.REQUIRED)){
+			for(CodeReference ref : m_engine.getReference(ReferenceMode.REQUIRED)){
 				if(!allReferences.contains(ref.getPc())) {
 					toRemove.add(completePath);
 					break;

@@ -62,7 +62,10 @@ public class BlockNode extends Node {
         	}
         	else toolTipText += "                   : " + label + "\n"; 
         }
+        
         toolTipText += "Number of unknowns: " + m_block.getNumUnknownsThis();
+        
+        
         return toolTipText;
     }
 

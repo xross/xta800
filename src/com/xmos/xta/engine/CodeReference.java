@@ -7,28 +7,32 @@ import java.util.Iterator;
 import com.xmos.dwarfhandler.DebugEngine;
 import com.xmos.xeloader.DebugInfo;
 
-public class Reference {
+public class CodeReference {
+	
     String m_ref;
     int m_pc;
     boolean m_isResolved;
     
     
-    public Reference(String ref) {
-    	if(ref.startsWith("0x")){
-    		
-    	}
-        m_ref = ref;
-        m_pc = 0;
-        m_isResolved = false;
+    public CodeReference(String ref) {
+    	m_ref = ref; 
+    	m_pc =0;
+    	m_isResolved = false;
     }
 
-    public Reference(String label, int pc) {
+    public CodeReference(String label, int pc) {
+    	//first sanitise the label
+    	if(label.contains(":") || label.startsWith("0x") ){
+    		System.err.println("not a valid label");
+    		m_isResolved = false;
+    		return;
+    	}
         m_ref = label;
         m_pc = pc;
         m_isResolved = true;
     }
     
-    public Reference(int pc) {
+    public CodeReference(int pc) {
         m_ref = "";
         m_pc = pc;
         m_isResolved = true;
@@ -157,10 +161,21 @@ public class Reference {
         return (int)lowestPc;
     }
 
-	public void resolve(Engine engine) {
+	public boolean resolve(Engine engine) {
+		
 		if(engine.isLabel(m_ref)){
 			m_pc = engine.getLabelPc(m_ref);
 	        m_isResolved = true;
+	        return true;
+		}
+		return false;
+	}
+
+	public boolean resolve(DebugInfo debugInfo, Engine engine) {
+		if (this.resolve(engine)){
+			return true;
+		} else {
+			return this.resolve(debugInfo);
 		}
 	}
 }
