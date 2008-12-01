@@ -162,6 +162,7 @@ public class Engine {
                 m_xeObject = new XeObject(m_xeLoader);
             }
             decodeInstructions();
+            m_route = null;
             for (Displayer displayer : m_displayers)
                 displayer.notifyLoadExecutable();
             
