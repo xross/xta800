@@ -16,6 +16,8 @@ public abstract class ViewNode {
     protected int m_pixelsY;
     protected int m_childrenX;
     protected int m_childrenY;
+
+    protected boolean m_isSelected;
 	
     public ViewNode(Node treeNode, int lineWidth) {
     	m_treeNode = treeNode;
@@ -23,6 +25,14 @@ public abstract class ViewNode {
 
 		m_childrenX = 0;
 		m_childrenY = 0;
+
+	    m_pixelOffsetX = 0;
+	    m_pixelOffsetY = 0;
+
+	    m_pixelsX = 0;
+	    m_pixelsY = 0;
+
+		m_isSelected = false;
     }    
     
     public Node getTreeNode() {
@@ -48,6 +58,14 @@ public abstract class ViewNode {
     public int scale(int x, double scale) {
     	return (int)((double)x * scale);
     }
+
+    public boolean isSelected() {
+		return m_isSelected;
+	}
+
+	public void setIsSelected(boolean isSelected) {
+		m_isSelected = isSelected;
+	}
 
     public abstract int getPixelsX();
     public abstract int getPixelsY();

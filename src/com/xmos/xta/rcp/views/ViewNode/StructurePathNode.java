@@ -71,21 +71,20 @@ public class StructurePathNode extends StructureNode {
         if (DEBUG) System.out.printf("Draw StructurePath %d,%d,%f\n",
         		m_pixelOffsetX, m_pixelOffsetY, scale);
 
+        gc.setLineWidth(m_lineWidth);
         m_x = scale(m_pixelOffsetX + m_borderX, scale);
         m_y = scale(m_pixelOffsetY, scale);
         m_width = scale(getPixelsX() - (2 * m_borderX), scale);
         m_height = scale(m_pixelsY - m_borderY - m_connectorY, scale);
 
     	gc.setAlpha((int)(255.0 * m_weight));
-        gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
         gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
     	gc.fillRectangle(m_x, m_y, m_width, m_height);
 
     	gc.setAlpha(255);
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-        gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
         
-        if (m_isSelected) gc.setLineWidth(m_lineWidth * 2);
+        if (m_isSelected) gc.setLineWidth(m_lineWidth + 1);
     	gc.drawRectangle(m_x, m_y, m_width, m_height);
         if (m_isSelected) gc.setLineWidth(m_lineWidth);
 
@@ -100,7 +99,6 @@ public class StructurePathNode extends StructureNode {
 	    		
 	    		int lineX = scale(m_pixelOffsetX + childOffsetX + (childX / 2), scale);
 	        	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-	            gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
 	            gc.drawLine(lineX, lineTop, lineX, childTop);
 	
 	            childOffsetX += childX;

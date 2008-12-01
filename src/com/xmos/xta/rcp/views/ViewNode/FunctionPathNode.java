@@ -21,13 +21,13 @@ public class FunctionPathNode extends ViewNode {
     private int m_numIterations;
 
 	public FunctionPathNode(Node treeNode, int numIterations, int lineWidth) {
-		super(treeNode, lineWidth);
+		super(treeNode, lineWidth * 2);
 
 		m_pixelsX = 0;
 
 		m_numIterations = numIterations;
 		if (m_numIterations > 0) {
-			m_pixelsY = 2 * m_borderY;
+			m_pixelsY = 2 * m_borderY + m_lineWidth;
 		} else {
 			m_pixelsY = 0;
 		}
@@ -94,13 +94,13 @@ public class FunctionPathNode extends ViewNode {
         if (m_numIterations == 0)
         	return;
         
+        gc.setLineWidth(m_lineWidth);
         m_x = scale(m_pixelOffsetX, scale);
         m_y = m_pixelOffsetY;
         m_width = scale(getPixelsX(), scale);
         m_height = getBlockY() + m_pixelsY;
 
         gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-        gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
     	gc.drawLine(m_x, m_y, m_x, m_y);
 
         int childOffsetX = 0;
@@ -108,6 +108,7 @@ public class FunctionPathNode extends ViewNode {
 			ViewNode child = treeNode.getFunctionNode();
 			if (child != null) {
 	    		child.draw(display, gc, scale);
+	            gc.setLineWidth(m_lineWidth);
 	    		int childX = child.getPixelsX(); 
 
 	    		if (child instanceof FunctionLoopNode) gc.setLineStyle(SWT.LINE_DASH);
@@ -130,7 +131,8 @@ public class FunctionPathNode extends ViewNode {
 		for (Node treeNode : m_treeNode.getNodes()) {
 			ViewNode child = treeNode.getFunctionNode();
 			if (child != null) {
-	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_borderY, clickAreas);
+	    		child.annotateXy(xOffset + childOffsetX,
+	    				yOffset + m_borderY + m_lineWidth, clickAreas);
 	            childOffsetX += child.getPixelsX();
 			}
     	}

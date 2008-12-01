@@ -42,7 +42,7 @@ public class StructureView extends ZoomedCanvasView {
     	}
 
 		m_numTreeNodes = 0;
-		analyseTree(m_rootNode, 1, 1);
+		annotateTree(m_rootNode, 1, 1);
 		
 		m_clickAreas.clear();
 		if (m_rootNode != null) {
@@ -73,7 +73,7 @@ public class StructureView extends ZoomedCanvasView {
         if (m_numTreeNodes > MAX_NUM_RENDER_NODES) {
 	        gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
 	        gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
-	        String error = "Code structure too Complicated: select a smaller region";
+	        String error = "Code structure too complicated: select a smaller region";
 
 	        double functionNameWidth = gc.getFontMetrics().getAverageCharWidth() * error.length();
 	        double functionNameHeight = gc.getFontMetrics().getHeight();
@@ -89,7 +89,7 @@ public class StructureView extends ZoomedCanvasView {
 	    }
     }
     
-	private boolean analyseTree(Node node, int numIterations, double totalTime) {
+	private boolean annotateTree(Node node, int numIterations, double totalTime) {
 		if (node == null)
 			return false;
 		
@@ -109,14 +109,15 @@ public class StructureView extends ZoomedCanvasView {
     	m_numTreeNodes++;
     	
         for (Node subNode : node.getNodes()) {
-        	if (node.isRouteNode())
-        		totalTime = subNode.getTimeTaken(); // Re-compute total time for sub tree
-        	
-        	if (subNode.isPathNode())
-        		numIterations = node.getNumIterations() * numIterations;
-
     		if (subNode.isPathNode() || subNode.isLoopNode()) {
-    			selected |= analyseTree(subNode, numIterations, totalTime);
+            	if (node.isRouteNode())
+            		totalTime = subNode.getTimeTaken(); // Re-compute total time for sub tree
+
+    			int subNumIterations = numIterations;
+    			if (node.isLoopNode())
+    				subNumIterations = subNode.getNumIterations() * numIterations;
+    			
+    			selected |= annotateTree(subNode, subNumIterations, totalTime);
     		}
         }
 

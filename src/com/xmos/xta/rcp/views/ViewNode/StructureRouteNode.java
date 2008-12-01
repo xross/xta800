@@ -93,13 +93,13 @@ public class StructureRouteNode extends StructureNode {
 	private void drawDivider(Display display, GC gc, int xOffset, int yOffset, double scale) {
         if (DEBUG) System.out.printf("Draw Divider %d,%d,%f\n", xOffset, yOffset, scale);
 
+        gc.setLineWidth(m_lineWidth);
         int x = scale(xOffset, scale);
         int top = scale(yOffset, scale);
         int bottom = scale(yOffset + getPixelsY(), scale);
 
         gc.setAlpha(100);
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-        gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
     	gc.drawLine(x, top, x, bottom);
         gc.setAlpha(255);
     }
