@@ -1,7 +1,7 @@
 ROOT=`pwd`
-BUILD_DIR=/tmp/xta/linux_x86-64
-BUILD_OUTPUT=$ROOT/build.output.linux_x86-64
-TARGET=xta.linux_x86-64.zip
+BUILD_DIR=/tmp/xta/linux
+BUILD_OUTPUT=$ROOT/build.output.linux
+TARGET=xta.linux.zip
 ECLIPSE_DIR=/tools/eclipse/eclipse-SDK-3.4.1-linux-gtk-x86_64/
 LIB_DOMAIN=infr_libs_java
 XTA_DOMAIN=tools_xta
