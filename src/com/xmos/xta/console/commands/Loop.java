@@ -21,6 +21,8 @@ class Loop extends Command {
 		m_iterations = iterations;
 	}
 	
+	
+	
     public int numArgs() {
     	return 3;
     }        
@@ -38,7 +40,7 @@ class Loop extends Command {
     }
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = "loop <path id> <scope> <iterations>: Sets the number of iterations for the given path";
+    	String descString = "loop <path> <scope> <iterations>: Sets the number of iterations for the given path";
     	if (detailed) {
         	descString += "\n";
     		descString += "      scope: RELATIVE/r: Iteration number propagates to the enclosing path (Default)\n";                

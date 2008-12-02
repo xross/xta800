@@ -272,6 +272,7 @@ public class Route {
 
 	
 	public void addCompletePath(Block endBlock) {
+		System.out.println("complete block");
 		m_completePaths.add(endBlock);
 	}
 	
