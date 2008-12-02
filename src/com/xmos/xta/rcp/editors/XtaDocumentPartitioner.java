@@ -1,7 +1,6 @@
 package com.xmos.xta.rcp.editors;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jface.text.DocumentEvent;
@@ -153,7 +152,10 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner {
 	    	++index;
 	    }
 	    
-	    TypedRegion[] regions = Arrays.copyOfRange(m_regions, startRegion, startRegion + numRegions);	    
+	    TypedRegion[] regions = new TypedRegion[numRegions];
+	    for (index = 0; index < numRegions; ++index) {
+	    	regions[index] = m_regions[startRegion + index];
+	    }
 		return regions;
 	}	
 	
