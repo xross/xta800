@@ -15,19 +15,26 @@ public class RouteNode extends Node {
     	m_structureNode = new StructureRouteNode(this);
     }
 
-    public int getId()         { assert(false); return 0; }
-    public int getInstanceId() { assert(false); return 0; }
+    public int getId()         { return 0; }
+    public int getInstanceId() { return 0; }
 
-    public double getTimeTaken() { assert(false); return 0; }
+    public double getTimeTaken() { return 0; }
     public double getTimeTakenThis() { return 0; }
-    public int getNumCycles()    { assert(false); return 0; }
-    public int getNumUnknowns()  { assert(false); return 0; }    
+    public int getNumCycles()    { return 0; }
+    public int getNumUnknowns()  { return 0; }    
    
-    public String getDescription() { assert(false); return ""; }
-    public String getToolTipText() { assert(false); return ""; }
+    public String getDescription() {
+    	int numPaths = getNodes().size();
+    	String str = "Route found with " + numPaths + " path";
+    	if (numPaths > 1) {
+    		str += "s";
+    	}
+    	return str;
+    }
+    public String getToolTipText() { return ""; }
     public String getTypeName()    { return "route"; }
     
-    public HashSet<Integer> getPcsCovered() { assert(false); return null; }       
+    public HashSet<Integer> getPcsCovered() { return new HashSet<Integer>(); }       
     public void createContextMenu(final Shell parent, IMenuManager manager) { }
     
 	public int getNumIterations() { return 1; }
@@ -36,5 +43,5 @@ public class RouteNode extends Node {
 	public boolean isPathNode() { return false; }
 	public boolean isRouteNode() { return true; }
 
-    public Vector<XtaInstruction> getInstructions() { assert(false); return null; };
+    public Vector<XtaInstruction> getInstructions() { return new Vector<XtaInstruction>(); };
 }

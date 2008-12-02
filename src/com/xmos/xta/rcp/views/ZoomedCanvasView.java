@@ -116,6 +116,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    createContextMenus();
 	    
 	    initialiseTree();
+    	buildClickAreas();
 		annotateTree(false);
 		refreshView();
 
@@ -125,8 +126,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 
 	public void setFocus() {
 		if (DEBUG) System.out.printf("Structure: setFocus\n");
-		m_scrollArea.redraw();
-		m_canvas.redraw();
+		refreshView();
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
@@ -171,8 +171,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
             if (object instanceof Node) {
                 m_selectedNode = (Node)object;
                 annotateTree(false);
-                m_scrollArea.redraw();
-        		m_canvas.redraw();
+                refreshView();
             }
         }
     }	            		         	        	
@@ -218,8 +217,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
             if (object instanceof Node) {
 		        m_selectedNode = (Node)object;
 		        annotateTree(true);
-		        m_scrollArea.redraw();
-				m_canvas.redraw();
+		        refreshView();
             }
         }
         
@@ -235,6 +233,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		m_display.asyncExec(new Runnable() {
 			public void run() {
 				prepareCanvas();
+				m_scrollArea.redraw();
 				m_canvas.redraw();
 			}});
 	}

@@ -39,13 +39,19 @@ public class XtaDisplayer implements Displayer {
 		return m_displayer;		
 	}
 
-	public void addPropertyChangeListener(IPropertyChangeListener listener) {
-		if(!m_listeners.contains(listener))
-			m_listeners.add(listener);
+	public void addPropertyChangeListener(final IPropertyChangeListener listener) {
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+			public void run() {        	
+				if (!m_listeners.contains(listener))
+					m_listeners.add(listener);
+			}});
 	}
 
-	public void removePropertyChangeListener(IPropertyChangeListener listener) {
-		m_listeners.remove(listener);
+	public void removePropertyChangeListener(final IPropertyChangeListener listener) {
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+			public void run() {        	
+				m_listeners.remove(listener);
+			}});
 	}
 		
 	public void displayRoute(Route route, DebugInfo debugInfo,
@@ -81,8 +87,8 @@ public class XtaDisplayer implements Displayer {
 			public void run() {        	
 				for (IPropertyChangeListener listener : m_listeners) {
 					listener.propertyChange(event);
-				}		
-			}});					    				
+				}
+			}});
 	}
 	
 	public XtaRouteInfo getRouteInfo() {
