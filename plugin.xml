@@ -5,8 +5,7 @@
    <extension
          id="application"
          point="org.eclipse.core.runtime.applications">
-      <application
-            icon="icons/clock.png">
+      <application>
          <run
                class="com.xmos.xta.rcp.Application">
          </run>
@@ -248,6 +247,54 @@
             verticalRulerPreferenceKey="errorIndicationInVerticalRuler"
             verticalRulerPreferenceValue="true">
       </specification>
+      <specification
+            annotationType="com.xmos.xta.rcp.start"
+            colorPreferenceKey="errorIndicationColor"
+            contributesToHeader="false"
+            highlightPreferenceValue="false"
+            icon="icons/start.png"
+            includeOnPreferencePage="false"
+            isGoToNextNavigationTarget="false"
+            isGoToNextNavigationTargetKey="isErrorGoToNextNavigationTarget"
+            isGoToPreviousNavigationTarget="false"
+            isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
+            label="Start"
+            overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="false"
+            presentationLayer="6"
+            showInNextPrevDropdownToolbarAction="false"
+            showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
+            symbolicIcon="warning"
+            textPreferenceKey="errorIndication"
+            textPreferenceValue="false"
+            textStylePreferenceValue="NONE"
+            verticalRulerPreferenceKey="errorIndicationInVerticalRuler"
+            verticalRulerPreferenceValue="true">
+      </specification>
+      <specification
+            annotationType="com.xmos.xta.rcp.stop"
+            colorPreferenceKey="errorIndicationColor"
+            contributesToHeader="false"
+            highlightPreferenceValue="false"
+            icon="icons/stop.png"
+            includeOnPreferencePage="false"
+            isGoToNextNavigationTarget="false"
+            isGoToNextNavigationTargetKey="isErrorGoToNextNavigationTarget"
+            isGoToPreviousNavigationTarget="false"
+            isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
+            label="Stop"
+            overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="false"
+            presentationLayer="6"
+            showInNextPrevDropdownToolbarAction="false"
+            showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
+            symbolicIcon="warning"
+            textPreferenceKey="errorIndication"
+            textPreferenceValue="false"
+            textStylePreferenceValue="NONE"
+            verticalRulerPreferenceKey="errorIndicationInVerticalRuler"
+            verticalRulerPreferenceValue="true">
+      </specification>
    </extension>
  
    <extension
@@ -260,6 +307,14 @@
       </type>
       <type
             name="com.xmos.xta.rcp.unknown"
+            super="org.eclipse.ui.workbench.texteditor.info">
+      </type>
+      <type
+            name="com.xmos.xta.rcp.start"
+            super="org.eclipse.ui.workbench.texteditor.info">
+      </type>
+      <type
+            name="com.xmos.xta.rcp.stop"
             super="org.eclipse.ui.workbench.texteditor.info">
       </type>
    </extension>

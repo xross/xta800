@@ -41,6 +41,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     public static final String ID                    = "com.xmos.xtagui.editors.Test";
     public static final String HighlightAnnotationID = "com.xmos.xta.rcp.highlight";
     public static final String UnknownAnnotationID   = "com.xmos.xta.rcp.unknown";
+    public static final String StartAnnotationID     = "com.xmos.xta.rcp.start";
+    public static final String StopAnnotationID      = "com.xmos.xta.rcp.stop";
     public static final String ExpandAllID           = "com.xmos.xtagui.action.ExpandAll";
     public static final String CollapseAllID         = "com.xmos.xtagui.action.CollapseAll";
     
@@ -81,7 +83,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         getSite().getPage().addSelectionListener(this);
         
         m_painter = new AnnotationPainter(viewer, getAnnotationAccess());        
-        m_painter.addAnnotationType(HighlightAnnotationID);                      
+        m_painter.addAnnotationType(HighlightAnnotationID);     
     }   
     
     protected void createActions() {
@@ -102,7 +104,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      			m_projectionAnnotationModel.collapseAll(0, document.getLength());
      		}
      	});
-    }
+    }    
     
     protected void editorContextMenuAboutToShow(IMenuManager menu) {    
 		if (DEBUG) System.out.printf("XtaEditor: editorContextMenuAboutToShow\n"); 

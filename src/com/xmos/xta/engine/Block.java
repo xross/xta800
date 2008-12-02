@@ -1027,5 +1027,4 @@ public class Block implements Comparable<Block> {
         }
         return result;
     }
-    
 }
