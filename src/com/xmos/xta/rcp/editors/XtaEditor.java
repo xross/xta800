@@ -37,7 +37,7 @@ import com.xmos.xta.rcp.nodes.Node;
 
 public class XtaEditor extends TextEditor implements IPropertyChangeListener,
                                                      ISelectionListener {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     
     public static final String ID                    = "com.xmos.xtagui.editors.Test";
     public static final String HighlightAnnotationID = "com.xmos.xta.rcp.highlight";

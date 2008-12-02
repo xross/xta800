@@ -11,7 +11,7 @@ import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TypedRegion;
 
 public class XtaDocumentPartitioner implements IDocumentPartitioner {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     
     public static final String SECTION     = "PositionCategory.Section";
     public static final String SOURCE      = "SOURCE";
