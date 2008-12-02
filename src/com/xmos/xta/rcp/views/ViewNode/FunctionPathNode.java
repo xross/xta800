@@ -18,13 +18,17 @@ public class FunctionPathNode extends ViewNode {
     private int m_y;
     private int m_width;
     private int m_height;
-    private int m_numIterations;
 
-	public FunctionPathNode(Node treeNode, int numIterations, int lineWidth) {
-		super(treeNode, lineWidth * 2);
-
+	public FunctionPathNode(Node treeNode) {
+		super(treeNode);
 		m_pixelsX = 0;
+	}
 
+	public void setLineWidth(int lineWidth) {
+		m_lineWidth = lineWidth + 1;
+	}
+	
+	public void setNumIterations(int numIterations) {
 		m_numIterations = numIterations;
 		if (m_numIterations > 0) {
 			m_pixelsY = 2 * m_borderY + m_lineWidth;
@@ -32,7 +36,7 @@ public class FunctionPathNode extends ViewNode {
 			m_pixelsY = 0;
 		}
 	}
-
+	
 	public int getPixelsX() {
 		if (m_numIterations == 0)
 			return 0;
@@ -123,20 +127,23 @@ public class FunctionPathNode extends ViewNode {
     			m_x + scale(childOffsetX, scale), m_y);
 	}
 
-	public void annotateXy(int xOffset, int yOffset, ArrayList<ViewNode> clickAreas) {
+	public void annotateXy(int xOffset, int yOffset) {
         m_pixelOffsetX = xOffset;
         m_pixelOffsetY = yOffset;
 
         int childOffsetX = 0;
 		for (Node treeNode : m_treeNode.getNodes()) {
 			ViewNode child = treeNode.getFunctionNode();
-			if (child != null) {
-	    		child.annotateXy(xOffset + childOffsetX,
-	    				yOffset + m_borderY + m_lineWidth, clickAreas);
-	            childOffsetX += child.getPixelsX();
-			}
+    		child.annotateXy(xOffset + childOffsetX, yOffset + m_borderY + m_lineWidth);
+            childOffsetX += child.getPixelsX();
     	}
+	}
 
+	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
+		for (Node treeNode : m_treeNode.getNodes()) {
+			ViewNode child = treeNode.getFunctionNode();
+			child.buildClickAreas(clickAreas);
+    	}
 		clickAreas.add(this);
 	}
 

@@ -9,6 +9,8 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.rcp.views.ViewNode.FunctionLoopNode;
+import com.xmos.xta.rcp.views.ViewNode.StructureLoopNode;
 
 public class LoopNode extends Node {
     private Block m_block;
@@ -16,7 +18,10 @@ public class LoopNode extends Node {
     public LoopNode(Block block, Node parent){
     	super(parent);
     	m_block = block;
-    }
+
+    	m_functionNode = new FunctionLoopNode(this);
+    	m_structureNode = new StructureLoopNode(this);
+}
 
     public int getId() {
         return m_block.getId();

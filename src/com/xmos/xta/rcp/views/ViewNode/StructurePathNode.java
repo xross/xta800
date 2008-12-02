@@ -21,8 +21,8 @@ public class StructurePathNode extends StructureNode {
     private int m_width;
     private int m_height;
 
-	public StructurePathNode(Node treeNode, double weight, int lineWidth) {
-		super(treeNode, weight, lineWidth);
+	public StructurePathNode(Node treeNode) {
+		super(treeNode);
 		
 		m_pixelsX = m_blockX + (2 * m_borderX);
 		m_pixelsY = m_blockY + m_connectorY + m_borderY;
@@ -106,7 +106,7 @@ public class StructurePathNode extends StructureNode {
     	}
 	}
 
-	public void annotateXy(int xOffset, int yOffset, ArrayList<ViewNode> clickAreas) {
+	public void annotateXy(int xOffset, int yOffset) {
         m_pixelOffsetX = xOffset;
 		m_pixelOffsetY = yOffset;
 
@@ -114,11 +114,19 @@ public class StructurePathNode extends StructureNode {
 		for (Node treeNode : m_treeNode.getNodes()) {
 			StructureNode child = treeNode.getStructureNode();
 			if (child != null) {
-	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_pixelsY, clickAreas);
+	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_pixelsY);
 	            childOffsetX += child.getPixelsX();
 			}
     	}
+	}
 
+	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
+		for (Node treeNode : m_treeNode.getNodes()) {
+			StructureNode child = treeNode.getStructureNode();
+			if (child != null) {
+				child.buildClickAreas(clickAreas);
+			}
+    	}
     	clickAreas.add(this);
 	}
 

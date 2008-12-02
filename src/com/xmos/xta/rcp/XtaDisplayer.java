@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xeloader.DebugInfo;
@@ -24,6 +25,8 @@ public class XtaDisplayer implements Displayer {
 	private static XtaDisplayer m_displayer;
 	private ArrayList<IPropertyChangeListener> m_listeners;
 	private XtaRouteInfo m_routeInfo;
+
+	private ISelection m_doubleClickSelection;
 	
 	private XtaDisplayer() {
 		m_listeners = new ArrayList<IPropertyChangeListener>();
@@ -67,6 +70,12 @@ public class XtaDisplayer implements Displayer {
 		broadcastPropertyChange(new PropertyChangeEvent(this, "UpdateState", null, null));
 	}
 		
+	public void notifyDoubleClick(ISelection selection) {
+		if (DEBUG) System.out.println("XtaDisplayer: notifyDoubleState " + selection);
+		m_doubleClickSelection = selection;
+		broadcastPropertyChange(new PropertyChangeEvent(this, "DoubleClick", null, null));
+	}	
+
 	public void broadcastPropertyChange(final PropertyChangeEvent event) {			
 		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 			public void run() {        	
@@ -78,6 +87,10 @@ public class XtaDisplayer implements Displayer {
 	
 	public XtaRouteInfo getRouteInfo() {
 		return m_routeInfo;
+	}
+	
+	public ISelection getDoubleClickSelection() {
+		return m_doubleClickSelection;
 	}
 	
 	private void createHierarchy(Route route, DebugInfo debugInfo,
@@ -123,5 +136,5 @@ public class XtaDisplayer implements Displayer {
 		for (int i = 0; i < indent; ++i) {
 			System.out.printf(" ");
 		}
-	}	
+	}
 }

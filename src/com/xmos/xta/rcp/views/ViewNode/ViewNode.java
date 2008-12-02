@@ -17,11 +17,12 @@ public abstract class ViewNode {
     protected int m_childrenX;
     protected int m_childrenY;
 
+    protected int m_numIterations;
     protected boolean m_isSelected;
 	
-    public ViewNode(Node treeNode, int lineWidth) {
+    public ViewNode(Node treeNode) {
     	m_treeNode = treeNode;
-    	m_lineWidth = lineWidth;
+    	m_lineWidth = 0;
 
 		m_childrenX = 0;
 		m_childrenY = 0;
@@ -33,7 +34,15 @@ public abstract class ViewNode {
 	    m_pixelsY = 0;
 
 		m_isSelected = false;
-    }    
+    }
+    
+    public void setLineWidth(int lineWidth) {
+    	m_lineWidth = lineWidth;
+    }
+    
+    public void setNumIterations(int numIterations) {
+    	m_numIterations = numIterations;
+    }
     
     public Node getTreeNode() {
     	return m_treeNode;
@@ -72,6 +81,7 @@ public abstract class ViewNode {
     public abstract int getChildrenX();
     public abstract int getChildrenY();
     public abstract void draw(Display display, GC gc, double scale);
-    public abstract void annotateXy(int xOffset, int yOffset, ArrayList<ViewNode> clickAreas);
+    public abstract void annotateXy(int xOffset, int yOffset);
+    public abstract void buildClickAreas(ArrayList<ViewNode> clickAreas);
     public abstract boolean contains(int x, int y);
 }
