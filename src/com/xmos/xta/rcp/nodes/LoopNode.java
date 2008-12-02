@@ -1,5 +1,6 @@
 package com.xmos.xta.rcp.nodes;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Vector;
 
@@ -8,6 +9,8 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.rcp.views.ViewNode.FunctionLoopNode;
+import com.xmos.xta.rcp.views.ViewNode.StructureLoopNode;
 
 public class LoopNode extends Node {
     private Block m_block;
@@ -15,7 +18,10 @@ public class LoopNode extends Node {
     public LoopNode(Block block, Node parent){
     	super(parent);
     	m_block = block;
-    }
+
+    	m_functionNode = new FunctionLoopNode(this);
+    	m_structureNode = new StructureLoopNode(this);
+}
 
     public int getId() {
         return m_block.getId();
@@ -55,7 +61,15 @@ public class LoopNode extends Node {
         toolTipText += "Total number of cycles: " + getNumCycles() + "\n";
         toolTipText += "Total number of FNOPs: " + m_block.getNumFNopsLoopsOnly() + "\n";
         toolTipText += "Total number of pausable: " + m_block.getNumPausablesLoopsOnly() + "\n";
-        toolTipText += "Total number of unknowns: " + m_block.getNumUnknownsLoopsOnly();
+        toolTipText += "Total number of unknowns: " + m_block.getNumUnknownsLoopsOnly() + "\n";
+        String loopName="";
+        ArrayList<String> labels = new ArrayList<String>();
+         m_block.getPathLabels(false, labels);
+        for(String label :labels){
+        	loopName+=label;
+        }
+        toolTipText += "Loop name: " + loopName;
+        
         return toolTipText;
     }
     

@@ -5,6 +5,9 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 
 public abstract class Command {
+	public String toString(){
+		return commandLine();
+	}
     public abstract int numArgs();
     public abstract String name();
     public abstract String commandLine();

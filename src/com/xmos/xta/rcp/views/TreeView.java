@@ -7,6 +7,8 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -30,8 +32,8 @@ import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaErrorLog;
 import com.xmos.xta.rcp.XtaFileFinder;
 import com.xmos.xta.rcp.XtaRouteInfo;
-import com.xmos.xta.rcp.editors.Sources;
-import com.xmos.xta.rcp.editors.SourcesInput;
+import com.xmos.xta.rcp.editors.SourcesEditor;
+import com.xmos.xta.rcp.editors.SourcesEditorInput;
 import com.xmos.xta.rcp.nodes.Node;
 import com.xmos.xta.rcp.nodes.RouteNode;
 
@@ -67,6 +69,12 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 
 		m_treeViewer.setContentProvider(new TreeViewContentProvider());				
 		m_treeViewer.setLabelProvider(new TreeViewLabelProvider());
+		
+		m_treeViewer.addDoubleClickListener(new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent event) {
+				XtaDisplayer.getInstance().notifyDoubleClick(m_treeViewer.getSelection());
+			}
+		});
 	    
 	    m_functions = new TreeViewFunctionCombo("com.xmos.xta.rcp.functions.combo");
 	    getViewSite().getActionBars().getToolBarManager().add(m_functions);
@@ -93,16 +101,17 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	}
 	
     public void selectionChanged(IWorkbenchPart part, ISelection sel) {
-		if (part == this)
-			return;
-
+    	if ((part == this) || sel.isEmpty())
+    		return;
+    	
 		if (sel instanceof IStructuredSelection) {	            
             Object object = ((IStructuredSelection)sel).getFirstElement();
             if (object instanceof Node) {
+            	m_routeInfo.setSelectedNode((Node)object);
         		m_treeViewer.setSelection(sel, true);
             }
         }
-     }	            		         	        
+     }
 	
 	public void menuAboutToShow(IMenuManager manager) {				
 		manager.add(new Action("expand all") {
@@ -211,6 +220,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     }
     
     private void populateFunctionList() {
+    	m_functions.clearEntries();
     	XeObject xeObject = XtaEngine.getEngine().getXeObject();                    
         for (final Function function : xeObject.getFunctions()) {
            	m_functions.addEntry(function.getText());
@@ -220,9 +230,9 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     private void openEditors() {
 		final IWorkbenchPage page = getSite().getWorkbenchWindow().getActivePage();
 		page.closeAllEditors(false);
-		IEditorInput sourcesInput = new SourcesInput();
+		IEditorInput sourcesInput = new SourcesEditorInput();
 		try {
-		    page.openEditor(sourcesInput, Sources.ID);
+		    page.openEditor(sourcesInput, SourcesEditor.ID);
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}    	

@@ -10,14 +10,16 @@ import com.xmos.xta.rcp.XtaEngine;
 
 public class InputDisassembly implements IEditorInput {
     public static final boolean DEBUG = false;
+    public static final String s_headerType = XtaDocumentPartitioner.SOURCE;
+    public static final String s_lineType = XtaDocumentPartitioner.DISASSEMBLY;
 
-    private Input m_input;
+    private Input m_input;    
     
     public InputDisassembly() {	
 		if (DEBUG) System.out.printf("InputDisassembly()\n");	
 		
 		int lineIndex = 0;
-		m_input = new Input();
+		m_input = new Input(s_headerType, s_lineType);
         for (Function function : XtaEngine.getEngine().getXeObject().getFunctions()) {        	
         	m_input.addHeader(function.getText() + ":", lineIndex);	        	        	
         	++lineIndex;

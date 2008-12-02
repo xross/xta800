@@ -1,13 +1,14 @@
 package com.xmos.xta.engine;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.Vector;
+
+import com.xmos.xta.engine.Engine.ReferenceMode;
 import com.xmos.xta.engine.MachineState.BranchState;
 import com.xmos.xta.engine.Status.BlockStatus;
 
@@ -227,8 +228,10 @@ public class Block implements Comparable<Block> {
 		return (int) (path.getTimeTaken(true) - getTimeTaken(true));
 	}
 
-	static void resetNumPaths() {
-		m_numBlocks = 0;
+	public ArrayList<String> getPathIdentifier(){
+		ArrayList<String> ident = new ArrayList<String>();
+		this.getPathLabels(false, ident);
+		return ident;
 	}
 
 	public void addLoopPath(Block pathStartBlock) {
@@ -390,8 +393,6 @@ public class Block implements Comparable<Block> {
 		m_route.addUnknown(unknown);
 	}
 
-	private Expression previousGuard;
-	private int previousPc;
 
 	private void checkForLoopFormation(int nextPc, boolean speculative, XtaInstruction inst, boolean isJump, boolean isBranch) {
 		Block loopBlock = null;
@@ -437,7 +438,7 @@ public class Block implements Comparable<Block> {
 	}
 
 	private boolean isExcluded(int pc) {
-		for (Reference reference : m_bc.getExclusions()) {
+		for (CodeReference reference : m_bc.getEngine().getReference(ReferenceMode.PROHIBITED)) {
 			assert (reference.isResolved());
 			if (reference.getPc() == pc) {
 				return true;
@@ -969,6 +970,19 @@ public class Block implements Comparable<Block> {
 	public int getNumUnknownsThis() {
 		return m_unknowns.size();
 	}
+	
+	public ArrayList<Integer> getAllReferencePcs() {
+		ArrayList<String> labels  = new ArrayList<String>();
+       getPathLabels(false, labels);
+		ArrayList<Integer> references = new ArrayList<Integer>();
+		for(String label : labels){
+			CodeReference ref  = new CodeReference(label);
+			ref.resolve(m_bc.getEngine());
+			references.add(ref.getPc());
+		}
+		return references;
+	}
+
 	
 	// --------------------------------------------------------------------- //
 	// 'Loops only' statistics

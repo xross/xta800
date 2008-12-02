@@ -18,7 +18,6 @@ public class CommandFactory {
 		new Loopi(),
 		new Time(),
 		new Source(),
-        new Exclude(),
 		new History(),
 		new Pwd(),
 		new Config(),
@@ -27,8 +26,11 @@ public class CommandFactory {
 		new Mode(),
 		new TimeBound(),
 		new CycleBound(),
-		new SourceLabel(),
-		new Label()
+		new Label(),
+		new Exclude(),
+		new Prohibited(),
+		new Required(),
+		
 	};
 	
 	public static Command[] getCommands() {

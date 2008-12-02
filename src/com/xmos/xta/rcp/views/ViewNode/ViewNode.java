@@ -1,33 +1,48 @@
-package com.xmos.xta.rcp.views.Structure;
+package com.xmos.xta.rcp.views.ViewNode;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.rcp.nodes.Node;
 
-public abstract class StructureNode {
+public abstract class ViewNode {
     protected Node m_treeNode;
-    protected double m_weight;
     protected int m_lineWidth;
+    protected int m_pixelOffsetX;
+    protected int m_pixelOffsetY;
     protected int m_pixelsX;
     protected int m_pixelsY;
     protected int m_childrenX;
     protected int m_childrenY;
+
+    protected int m_numIterations;
     protected boolean m_isSelected;
 	
-    public StructureNode(Node treeNode, double weight, int lineWidth) {
+    public ViewNode(Node treeNode) {
     	m_treeNode = treeNode;
-    	m_weight = weight;
-    	m_lineWidth = lineWidth;
+    	m_lineWidth = 0;
 
 		m_childrenX = 0;
 		m_childrenY = 0;
-		
+
+	    m_pixelOffsetX = 0;
+	    m_pixelOffsetY = 0;
+
+	    m_pixelsX = 0;
+	    m_pixelsY = 0;
+
 		m_isSelected = false;
-    }    
+    }
+    
+    public void setLineWidth(int lineWidth) {
+    	m_lineWidth = lineWidth;
+    }
+    
+    public void setNumIterations(int numIterations) {
+    	m_numIterations = numIterations;
+    }
     
     public Node getTreeNode() {
     	return m_treeNode;
@@ -41,7 +56,19 @@ public abstract class StructureNode {
     	return m_pixelsY * scale;
     }
 
-	public boolean isSelected() {
+    public int getPixelOffsetX() {
+    	return m_pixelOffsetX;
+    }
+
+    public int getPixelOffsetY() {
+    	return m_pixelOffsetY;
+    }
+
+    public int scale(int x, double scale) {
+    	return (int)((double)x * scale);
+    }
+
+    public boolean isSelected() {
 		return m_isSelected;
 	}
 
@@ -53,7 +80,8 @@ public abstract class StructureNode {
     public abstract int getPixelsY();
     public abstract int getChildrenX();
     public abstract int getChildrenY();
-    public abstract void draw(Display display, GC gc, ArrayList<StructureNode> clickAreas,
-    		int xOffset, int yOffset, double scale);
+    public abstract void draw(Display display, GC gc, double scale);
+    public abstract void annotateXy(int xOffset, int yOffset);
+    public abstract void buildClickAreas(ArrayList<ViewNode> clickAreas);
     public abstract boolean contains(int x, int y);
 }

@@ -13,6 +13,8 @@ import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.dialogs.Iterations;
+import com.xmos.xta.rcp.views.ViewNode.FunctionPathNode;
+import com.xmos.xta.rcp.views.ViewNode.StructurePathNode;
 
 public class PathNode extends Node {
     private Block m_block;
@@ -28,6 +30,9 @@ public class PathNode extends Node {
     
     	m_allInstances = false;
     	m_absoluteCount = false;
+    	
+    	m_functionNode = new FunctionPathNode(this);
+    	m_structureNode = new StructurePathNode(this);
     }
 
     public String getDescription() {
@@ -79,7 +84,7 @@ public class PathNode extends Node {
         
         toolTipText += "Number of pausables (this): " + m_block.getNumPausables(false) + "\n";  
         ArrayList<String> labels  = new ArrayList<String>();
-        m_block.getPathLabels(true,labels);
+        m_block.getPathLabels(false, labels);
         boolean first= true;
         for(String label : labels){
         	if(first) {
@@ -108,8 +113,9 @@ public class PathNode extends Node {
     PathNode m_this = this;
     public void createContextMenu(final Shell parent, IMenuManager manager) {    	
 		manager.add(new Separator());
-    	manager.add(new Action("trace to console") {
+    	manager.add(new Action("Trace in console") {
 			public void run() {
+				// TODO - implement
 			}
 		});    	
     	

@@ -13,7 +13,7 @@ import javax.swing.text.JTextComponent;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.Line.DisplayType;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Reference;
+import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.swing.XtaGui;
 import com.xmos.xta.swing.XtaXeObjectDisplayer;
 
@@ -84,6 +84,7 @@ public class LineNumberImage implements Highlighter.HighlightPainter {
         
         boolean excluded = false;
         //this is horribly inefficient
+        /*
         for(Reference ref : m_engine.getExclusions()){
             if(m_line.getLineNumberType() == DisplayType.hex ){
                 if(ref.getPc() == m_line.getLineNumber()){
@@ -91,7 +92,7 @@ public class LineNumberImage implements Highlighter.HighlightPainter {
                 }
             }
         }
-        
+        */
         if(excluded){
             if(m_line.getLineNumberType() == DisplayType.hex){
                 g2.setColor(Color.gray);

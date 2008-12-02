@@ -10,6 +10,8 @@ import com.xmos.xeobject.SourceLine;
 
 public class InputSource implements IEditorInput {
     public static final boolean DEBUG = false;
+    public static final String s_headerType = XtaDocumentPartitioner.SOURCE;
+    public static final String s_lineType = XtaDocumentPartitioner.DISASSEMBLY;
 
     private Input m_input;
     
@@ -17,7 +19,7 @@ public class InputSource implements IEditorInput {
 		if (DEBUG) System.out.printf("InputSource()\n");
 		
 		int lineIndex = 0;
-		m_input = new Input();
+		m_input = new Input(s_headerType, s_lineType);
         for (SourceLine sourceLine : sourceFile.getSourceLines()){        	
         	m_input.addHeader(sourceLine.getText(), lineIndex);
         	++lineIndex;

@@ -1,4 +1,4 @@
-package com.xmos.xta.rcp.views.Structure;
+package com.xmos.xta.rcp.views.ViewNode;
 
 import java.util.ArrayList;
 
@@ -15,8 +15,8 @@ public class StructureRouteNode extends StructureNode {
     private int m_topBorder = 10;
     private int m_bottomBorder = 10;
     
-	public StructureRouteNode(Node treeNode, double weight, int lineWidth) {
-		super(treeNode, weight, lineWidth);
+	public StructureRouteNode(Node treeNode) {
+		super(treeNode);
 		
 		m_pixelsX = 0;
 		m_pixelsY = m_topBorder + m_bottomBorder;
@@ -27,13 +27,13 @@ public class StructureRouteNode extends StructureNode {
 		if (pixels < m_pixelsX)
 			pixels = m_pixelsX; 
 			
-		if (DEBUG) System.out.printf("Route X %d\n", m_pixelsX);
+		if (DEBUG) System.out.printf("StructureRoute X %d\n", m_pixelsX);
 		return pixels;
 	}
 
 	public int getPixelsY() {
 		int pixels = getChildrenY() + m_pixelsY;
-		if (DEBUG) System.out.printf("Route Y %d\n", pixels);
+		if (DEBUG) System.out.printf("StructureRoute Y %d\n", pixels);
 		return pixels;
 	}
 
@@ -66,9 +66,9 @@ public class StructureRouteNode extends StructureNode {
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc, ArrayList<StructureNode> clickAreas,
-			int xOffset, int yOffset, double scale) {
-        if (DEBUG) System.out.printf("Draw Route %d,%d,%f\n", xOffset, yOffset, scale);
+	public void draw(Display display, GC gc, double scale) {
+        if (DEBUG) System.out.printf("Draw StructureRoute %d,%d,%f\n",
+        		m_pixelOffsetX, m_pixelOffsetY, scale);
 
     	int childOffsetX = 0;
     	int childNum = 0;
@@ -76,35 +76,58 @@ public class StructureRouteNode extends StructureNode {
 			StructureNode child = treeNode.getStructureNode();
 			if (child != null) {
 	    		if (childNum > 0) {
-	        		drawDivider(display, gc, xOffset + childOffsetX + 
+	        		drawDivider(display, gc, m_pixelOffsetX + childOffsetX + 
 	        				(m_pathDividerGap - m_pathDividerLineWidth) / 2,
-	        				yOffset, scale);
+	        				m_pixelOffsetY, scale);
 	    			childOffsetX += m_pathDividerGap;
 	    		}
 	
-	    		child.draw(display, gc, clickAreas,
-	    				xOffset + childOffsetX, yOffset + m_topBorder, scale);
+	    		child.draw(display, gc, scale);
 	    		childOffsetX += child.getPixelsX();
 	    		
 	    		childNum++;
 			}
     	}
-
-    	clickAreas.add(this);
     }
 
 	private void drawDivider(Display display, GC gc, int xOffset, int yOffset, double scale) {
         if (DEBUG) System.out.printf("Draw Divider %d,%d,%f\n", xOffset, yOffset, scale);
 
-        int x = (int)((double)xOffset * scale);
-        int top = (int)(double)(yOffset * scale);
-        int bottom = (int)((double)(yOffset + getPixelsY()) * scale);
+        gc.setLineWidth(m_lineWidth);
+        int x = scale(xOffset, scale);
+        int top = scale(yOffset, scale);
+        int bottom = scale(yOffset + getPixelsY(), scale);
 
         gc.setAlpha(100);
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-        gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
     	gc.drawLine(x, top, x, bottom);
         gc.setAlpha(255);
+    }
+
+	public void annotateXy(int xOffset, int yOffset) {
+        m_pixelOffsetX = xOffset;
+		m_pixelOffsetY = yOffset;
+
+    	int childOffsetX = 0;
+    	int childNum = 0;
+		for (Node treeNode : m_treeNode.getNodes()) {
+			StructureNode child = treeNode.getStructureNode();
+			if (child != null) {
+	    		if (childNum > 0)
+	    			childOffsetX += m_pathDividerGap;
+	
+	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_topBorder);
+	    		childOffsetX += child.getPixelsX();
+	    		childNum++;
+			}
+    	}
+    }
+
+	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
+		for (Node treeNode : m_treeNode.getNodes()) {
+			StructureNode child = treeNode.getStructureNode();
+			child.buildClickAreas(clickAreas);
+    	}
     }
 
 	public boolean contains(int x, int y) {
