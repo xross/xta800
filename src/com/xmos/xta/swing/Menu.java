@@ -9,7 +9,6 @@ import java.io.File;
 import java.util.Collections;
 import java.util.LinkedList;
 
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;

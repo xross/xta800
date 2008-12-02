@@ -1,6 +1,5 @@
 package com.xmos.xta.swing.codewindow;
 
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -22,7 +21,6 @@ import javax.swing.text.Style;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.Line.DisplayType;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.swing.XtaXeObjectDisplayer;
 
 public class LineHeaders extends JTextPane implements MouseListener{

@@ -26,7 +26,6 @@ public class ToolBar extends JPanel {
     private Vector<String> m_functionNames;
     private JButton pathButton;
     private JComboBox functionComboBox;
-    private boolean m_fullAnalysis = false;
     private JCheckBox m_checkBox;
 
     private JFormattedTextField m_threadCountBox;
