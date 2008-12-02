@@ -1,16 +1,26 @@
 package com.xmos.xta.rcp.editors;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.TypedRegion;
 
 public class XtaDocumentPartitioner implements IDocumentPartitioner {
-    public static final boolean DEBUG = false;
-    public static final String SECTION = "PositionCategory.Section";
-
+    public static final boolean DEBUG = true;
+    
+    public static final String SECTION     = "PositionCategory.Section";
+    public static final String SOURCE      = "SOURCE";
+    public static final String DISASSEMBLY = "DISASSEMBLY";
+    
     private Input m_input;
+    private TypedRegion[] m_regions;
+    private String[] m_regionTypes;
 	
 	XtaDocumentPartitioner(Input input) {
 		if (DEBUG) System.out.printf("XtaDocumentPartitioner()\n");		
@@ -18,40 +28,43 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner {
 	}
 	
 	public ITypedRegion[] computePartitioning(int offset, int length) {
-		if (DEBUG) System.out.printf("XtaDocumentPartitioner: computePartitioning\n");		
-		return null;
+		if (DEBUG) System.out.printf("XtaDocumentPartitioner: computePartitioning: %d, %d\n", offset, length);					
+		return getRegions(offset, length);
 	}
 
 	public void connect(IDocument document) {
 		if (DEBUG) System.out.printf("XtaDocumentPartitioner: connect\n");		
 		
-		int sectionOffset = 0;
-		int sectionLength = 0;
-		
+		List<TypedRegion> regionList = new ArrayList<TypedRegion>();
+				
 		document.addPositionCategory(SECTION);
 		
 		for (InputSection inputSection : m_input.getSections()) {	
-			try {
-				sectionOffset = document.getLength();
+			int headerOffset = document.getLength();
 
-				String header = inputSection.getHeader() + "\n";
-				document.replace(sectionOffset, 0, header);
-				
-				for (InputLine line : inputSection.getLines()) {
-					String str = line.getLine() + "\n";
-					document.replace(document.getLength(), 0, str);
-				} 
+			String header = inputSection.getHeader() + "\n";
+			updateDocument(document, header);							
+			addTypedRegion(document, regionList, headerOffset, m_input.getHeaderType());
 
-				int numLines = inputSection.getLines().size();
-				if (numLines > 0) {
-				    sectionLength = document.getLength() - sectionOffset;
-				    Position position = new Position(sectionOffset, sectionLength);				
-				    document.addPosition(SECTION, position);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}				
-		}	
+			int linesOffset = document.getLength();
+			for (InputLine line : inputSection.getLines()) {
+				String str = line.getLine() + "\n";
+				updateDocument(document, str);
+			} 
+
+			int numLines = inputSection.getLines().size();
+			if (numLines > 0) {
+				addPositionMarker(document, headerOffset);
+				addTypedRegion(document, regionList, linesOffset, m_input.getLineType());
+			}
+		}
+					
+		m_regions = new TypedRegion[regionList.size()];
+		m_regions = regionList.toArray(m_regions);					
+		
+		m_regionTypes = new String[2];
+		m_regionTypes[0] = SOURCE;
+		m_regionTypes[1] = DISASSEMBLY;
 	}
 
 	public void disconnect() {
@@ -68,21 +81,102 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner {
 	}
 
 	public String getContentType(int offset) {
-		if (DEBUG) System.out.printf("XtaDocumentPartitioner: getContentType\n");		
-		return null;
+		if (DEBUG) System.out.printf("XtaDocumentPartitioner: getContentType: %d\n", offset);	
+		return getRegion(offset).getType();
 	}
 
 	public String[] getLegalContentTypes() {
 		if (DEBUG) System.out.printf("XtaDocumentPartitioner: getLegalContentTypes\n");		
-		return null;
+		return m_regionTypes;
 	}
 
 	public ITypedRegion getPartition(int offset) {
-		if (DEBUG) System.out.printf("XtaDocumentPartitioner: getPartition\n");		
-		return null;
+		if (DEBUG) System.out.printf("XtaDocumentPartitioner: getPartition: %d\n", offset);		
+		return getRegion(offset);
 	}
 
 	public Input getInput() {
 		return m_input;
+	}
+	
+	private void updateDocument(IDocument document, String str) {
+		try {
+		    document.replace(document.getLength(), 0, str);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}				
+	}
+	
+	private void addPositionMarker(IDocument document, int offset) {
+	    int sectionLength = document.getLength() - offset;
+	    Position position = new Position(offset, sectionLength);				
+		try {
+    	    document.addPosition(SECTION, position);		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}				
+	}
+	
+	private void addTypedRegion(IDocument document, 
+			List<TypedRegion> regionList, int offset, String type) {		
+		regionList.add(new TypedRegion(offset, document.getLength() - offset, type));
+	}	
+	
+	private TypedRegion getRegion(int offset) { 
+	    for (TypedRegion region : m_regions) {
+		    if (hitRegion(region, offset)) {
+			    return region;
+	        }
+	    }
+		assert(false);
+		return null;
+	}
+	
+	private TypedRegion[] getRegions(int offset, int length) {
+		int startRegion = 0;
+		int numRegions = 0;
+		int index = 0;
+				
+	    for (TypedRegion region : m_regions) {
+	    	if (numRegions > 0) {
+	    		if (overlapsRegion(region, offset, length)) {
+	    			++numRegions;
+	    		} else {
+	    			break;
+	    		}	    		
+	    	} else {	    	
+		        if (hitRegion(region, offset)) {
+		    	    startRegion = index;
+		    	    ++numRegions;
+    	        }
+	    	}
+	    	++index;
+	    }
+	    
+	    TypedRegion[] regions = Arrays.copyOfRange(m_regions, startRegion, startRegion + numRegions);	    
+		return regions;
+	}	
+	
+	private boolean hitRegion(TypedRegion region, int offset) {
+	    if ((offset >= region.getOffset()) &&
+		    (offset < (region.getOffset() + region.getLength()))) {
+		    return true;
+	    }
+	    return false;
+	}
+	
+	private boolean overlapsRegion(TypedRegion region, int offset, int length) {
+		int start = offset;
+		int end = offset + length;
+		
+		int regionStart = region.getOffset();
+		int regionEnd = region.getOffset() + region.getLength();
+		
+        if (((start >= regionStart) && (start < regionEnd)) ||
+            ((end >= regionStart) && (start < regionEnd)) || 
+            ((start < regionStart) && (end >= regionEnd))) {
+        	return true;
+        }
+		return false;
 	}
 }

@@ -23,7 +23,7 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="com.xmos.xta.rcp.editors.Sources"
+            class="com.xmos.xta.rcp.editors.SourcesEditor"
             default="false"
             id="com.xmos.xta.rcp.editors.Sources"
             name="Sources">
