@@ -269,7 +269,13 @@ public class MachineState {
     }
 
     Expression readRegister(int regNum, int thread) {
-        return m_resources.getThread(thread).getRegisters().readRegister(regNum);
+    	Expression e = m_resources.getThread(thread).getRegisters().readRegister(regNum);
+    	if(e == null){
+    		return new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+    	} else {
+    		return e;
+    	}
+        
     }
 
     void writeRegister(int regNum, Expression regValue, int thread) {

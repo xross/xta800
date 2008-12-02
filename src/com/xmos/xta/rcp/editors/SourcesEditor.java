@@ -10,11 +10,11 @@ import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.rcp.XtaEngine;
 
-public class Sources extends MultiPageEditorPart {
+public class SourcesEditor extends MultiPageEditorPart {
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.rcp.editors.Sources";
     
-	public Sources() {
+	public SourcesEditor() {
 		if (DEBUG) System.out.printf("Sources()\n");			
 	}
 

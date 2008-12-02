@@ -20,11 +20,21 @@ public class Registers {
     }
 	
 	Expression readRegister(int regNum) { 
-		return m_registers[regNum]; 
+		if(m_registers[regNum] == null){
+			return new Expression(regNum, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+		} else {
+			return m_registers[regNum]; 
+		}
 	}
 	
 	void writeRegister(int regNum, Expression regValue) {
-		m_registers[regNum] = regValue;		
-		m_registers[regNum].resolve();
+		if(regValue == null){
+			m_registers[regNum] = new Expression(regNum, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+		} else {
+			m_registers[regNum] = regValue;
+			if(regValue.canResolve()){
+				m_registers[regNum].resolve();
+			}
+		}	
 	}
 }

@@ -4,10 +4,10 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 
-public class SourcesInput implements IEditorInput {
+public class SourcesEditorInput implements IEditorInput {
     public static final boolean DEBUG = false;
 
-    public SourcesInput() {	
+    public SourcesEditorInput() {	
 		if (DEBUG) System.out.printf("SourcesInput()\n");			
 	}
 	

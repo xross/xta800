@@ -32,8 +32,8 @@ import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaErrorLog;
 import com.xmos.xta.rcp.XtaFileFinder;
 import com.xmos.xta.rcp.XtaRouteInfo;
-import com.xmos.xta.rcp.editors.Sources;
-import com.xmos.xta.rcp.editors.SourcesInput;
+import com.xmos.xta.rcp.editors.SourcesEditor;
+import com.xmos.xta.rcp.editors.SourcesEditorInput;
 import com.xmos.xta.rcp.nodes.Node;
 import com.xmos.xta.rcp.nodes.RouteNode;
 
@@ -232,9 +232,9 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     private void openEditors() {
 		final IWorkbenchPage page = getSite().getWorkbenchWindow().getActivePage();
 		page.closeAllEditors(false);
-		IEditorInput sourcesInput = new SourcesInput();
+		IEditorInput sourcesInput = new SourcesEditorInput();
 		try {
-		    page.openEditor(sourcesInput, Sources.ID);
+		    page.openEditor(sourcesInput, SourcesEditor.ID);
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}    	
