@@ -10,8 +10,6 @@ import com.xmos.xta.rcp.nodes.Node;
 public class FunctionLoopNode extends ViewNode {
     public static final boolean DEBUG = false;
 
-    private int m_numIterations;
-
     private int m_borderX = 3;
 
     private int m_left;
@@ -19,9 +17,11 @@ public class FunctionLoopNode extends ViewNode {
     private int m_bottom;
     private int m_top;
     
-	public FunctionLoopNode(Node treeNode, int numIterations, int lineWidth) {
-		super(treeNode, lineWidth);
-		
+	public FunctionLoopNode(Node treeNode) {
+		super(treeNode);
+	}
+	
+	public void setNumIterations(int numIterations) {
 		m_numIterations = numIterations;
 		if (m_numIterations > 0) {
 			m_pixelsX = m_borderX * 2;
@@ -89,7 +89,7 @@ public class FunctionLoopNode extends ViewNode {
         m_bottom = m_pixelOffsetY + getPixelsY();
         
         gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
-        gc.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
+        if (m_isSelected) gc.setLineWidth(m_lineWidth + 1);
         gc.drawLine(m_left, m_top, m_left, m_bottom);
         gc.drawLine(m_right, m_top, m_right, m_bottom);
         gc.drawLine(m_left, m_bottom, scale(m_pixelOffsetX + m_borderX, scale), m_bottom);
@@ -103,7 +103,7 @@ public class FunctionLoopNode extends ViewNode {
     	}
 	}
 
-	public void annotateXy(int xOffset, int yOffset, ArrayList<ViewNode> clickAreas) {
+	public void annotateXy(int xOffset, int yOffset) {
         m_pixelOffsetX = xOffset;
         m_pixelOffsetY = yOffset;
 
@@ -111,11 +111,17 @@ public class FunctionLoopNode extends ViewNode {
 		for (Node treeNode : m_treeNode.getNodes()) {
 			ViewNode child = treeNode.getFunctionNode();
 			if (child != null) {
-	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_pixelsY, clickAreas);
+	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_pixelsY);
 	    		childOffsetX += child.getPixelsX();
 			}
     	}
+	}
 
+	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
+		for (Node treeNode : m_treeNode.getNodes()) {
+			ViewNode child = treeNode.getFunctionNode();
+			child.buildClickAreas(clickAreas);
+    	}
     	clickAreas.add(this);
 	}
 

@@ -168,6 +168,13 @@
                label="Reset Zoom"
                style="push">
          </command>
+         <command
+               commandId="com.xmos.xta.rcp.structure.cumulative.command"
+               icon="icons/cumulative.png"
+               id="com.xmos.xta.rcp.structure.cumulative.command"
+               label="Cumulative weights"
+               style="push">
+         </command>
       </menuContribution>
    </extension> <extension
          point="org.eclipse.ui.commands">
@@ -220,6 +227,11 @@
             defaultHandler="com.xmos.xta.rcp.handlers.FunctionZoomFitHandler"
             id="com.xmos.xta.rcp.function.zoomfit.command"
             name="com.xmos.xta.rcp.function.zoomfit.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.rcp.handlers.StructureCumulativeHandler"
+            id="com.xmos.xta.rcp.structure.cumulative.command"
+            name="com.xmos.xta.rcp.structure.cumulative.command">
       </command>command>
    </extension>
    <extension

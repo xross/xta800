@@ -8,7 +8,8 @@ import com.xmos.xeloader.DebugInfo;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Reference;
+import com.xmos.xta.engine.CodeReference;
+import com.xmos.xta.engine.PathQuery;
 import com.xmos.xta.engine.Engine.ReferenceMode;
 
 class List extends Command {
@@ -42,6 +43,7 @@ class List extends Command {
         	descString += "      prohibited: Lists the prohibited references\n";
         	descString += "      excluded: Lists the excluded references\n";
         	descString += "      functions: Lists the functions\n";
+        	descString += "      queries: Lists the current queries\n";
         	descString += "      sources: Lists the files";
         	
         }
@@ -67,26 +69,36 @@ class List extends Command {
     		listProhibiteds(engine, console);
     	} else if (m_type.equals("excluded")) {    	
     		listExcludes(engine, console);
+    	} else if (m_type.equals("queries")) {    	
+    		listQueries(engine, console);
     	}
     	else {
     		console.display(String.format("Error: Invalid list command: %s (Try 'help'..)\n", m_type));
     	}
     }    
     
-    private void listExcludes(Engine engine, Console console) {
-    	for(Reference ref : engine.getReference(ReferenceMode.EXCLUSION)){
+    private void listQueries(Engine engine, Console console) {
+		for(PathQuery pq : engine.getPathQueries()){
+			console.display(String.format("- %s %s : %d paths\n", pq.getName(), 
+					pq.getExpression(), pq.getBlocks().size()));
+		}
+		
+	}
+
+	private void listExcludes(Engine engine, Console console) {
+    	for(CodeReference ref : engine.getReference(ReferenceMode.EXCLUSION)){
     		console.display(String.format("- %s 0x%x\n", ref.getRef(), ref.getPc()));
     	}
 	}
 
 	private void listProhibiteds(Engine engine, Console console) {
-		for(Reference ref : engine.getReference(ReferenceMode.PROHIBITED)){
+		for(CodeReference ref : engine.getReference(ReferenceMode.PROHIBITED)){
     		console.display(String.format("- %s 0x%x\n", ref.getRef(), ref.getPc()));
     	}
 	}
 
 	private void listRequirements(Engine engine, Console console) {
-    	for(Reference ref : engine.getReference(ReferenceMode.REQUIRED)){
+    	for(CodeReference ref : engine.getReference(ReferenceMode.REQUIRED)){
     		console.display(String.format("- %s 0x%x\n", ref.getRef(), ref.getPc()));
     	}
 	}

@@ -5,9 +5,15 @@ import java.util.Vector;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Shell;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.rcp.views.ViewNode.FunctionRouteNode;
+import com.xmos.xta.rcp.views.ViewNode.StructureRouteNode;
 
 public class RouteNode extends Node {
-    public RouteNode() { super(null); }
+    public RouteNode() {
+    	super(null);
+    	m_functionNode = new FunctionRouteNode(this);
+    	m_structureNode = new StructureRouteNode(this);
+    }
 
     public int getId()         { assert(false); return 0; }
     public int getInstanceId() { assert(false); return 0; }

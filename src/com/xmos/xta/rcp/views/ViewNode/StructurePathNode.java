@@ -21,8 +21,8 @@ public class StructurePathNode extends StructureNode {
     private int m_width;
     private int m_height;
 
-	public StructurePathNode(Node treeNode, double weight, int lineWidth) {
-		super(treeNode, weight, lineWidth);
+	public StructurePathNode(Node treeNode) {
+		super(treeNode);
 		
 		m_pixelsX = m_blockX + (2 * m_borderX);
 		m_pixelsY = m_blockY + m_connectorY + m_borderY;
@@ -78,15 +78,13 @@ public class StructurePathNode extends StructureNode {
         m_height = scale(m_pixelsY - m_borderY - m_connectorY, scale);
 
     	gc.setAlpha((int)(255.0 * m_weight));
-        gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
         gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
     	gc.fillRectangle(m_x, m_y, m_width, m_height);
 
     	gc.setAlpha(255);
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-        gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
         
-        if (m_isSelected) gc.setLineWidth(m_lineWidth * 2);
+        if (m_isSelected) gc.setLineWidth(m_lineWidth + 1);
     	gc.drawRectangle(m_x, m_y, m_width, m_height);
         if (m_isSelected) gc.setLineWidth(m_lineWidth);
 
@@ -101,7 +99,6 @@ public class StructurePathNode extends StructureNode {
 	    		
 	    		int lineX = scale(m_pixelOffsetX + childOffsetX + (childX / 2), scale);
 	        	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-	            gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
 	            gc.drawLine(lineX, lineTop, lineX, childTop);
 	
 	            childOffsetX += childX;
@@ -109,7 +106,7 @@ public class StructurePathNode extends StructureNode {
     	}
 	}
 
-	public void annotateXy(int xOffset, int yOffset, ArrayList<ViewNode> clickAreas) {
+	public void annotateXy(int xOffset, int yOffset) {
         m_pixelOffsetX = xOffset;
 		m_pixelOffsetY = yOffset;
 
@@ -117,11 +114,19 @@ public class StructurePathNode extends StructureNode {
 		for (Node treeNode : m_treeNode.getNodes()) {
 			StructureNode child = treeNode.getStructureNode();
 			if (child != null) {
-	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_pixelsY, clickAreas);
+	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_pixelsY);
 	            childOffsetX += child.getPixelsX();
 			}
     	}
+	}
 
+	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
+		for (Node treeNode : m_treeNode.getNodes()) {
+			StructureNode child = treeNode.getStructureNode();
+			if (child != null) {
+				child.buildClickAreas(clickAreas);
+			}
+    	}
     	clickAreas.add(this);
 	}
 

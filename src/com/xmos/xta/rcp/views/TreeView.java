@@ -7,6 +7,8 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -67,6 +69,12 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 
 		m_treeViewer.setContentProvider(new TreeViewContentProvider());				
 		m_treeViewer.setLabelProvider(new TreeViewLabelProvider());
+		
+		m_treeViewer.addDoubleClickListener(new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent event) {
+				XtaDisplayer.getInstance().notifyDoubleClick(m_treeViewer.getSelection());
+			}
+		});
 	    
 	    m_functions = new TreeViewFunctionCombo("com.xmos.xta.rcp.functions.combo");
 	    getViewSite().getActionBars().getToolBarManager().add(m_functions);

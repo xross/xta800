@@ -38,20 +38,22 @@ public class Engine {
     private String m_errorString;
     private Vector<Displayer> m_displayers;
     
-    private Vector<Reference> m_exclusions;
-    private Vector<Reference> m_prohibited;
-    private Vector<Reference> m_required;
+    private Vector<CodeReference> m_exclusions;
+    private Vector<CodeReference> m_prohibited;
+    private Vector<CodeReference> m_required;
     private HashMap<Integer, String> m_labels;
     
     private boolean m_abort;
     private InstructionDecodeCache m_instructionDecodeCache;
     private boolean m_resolveExpression;
     
+    private ArrayList<PathQuery> m_pathQueries;
+    
     public Engine(Config config) {
     	
-    	m_exclusions = new Vector<Reference>();
-    	m_prohibited = new Vector<Reference>();
-    	m_required = new Vector<Reference>();
+    	m_exclusions = new Vector<CodeReference>();
+    	m_prohibited = new Vector<CodeReference>();
+    	m_required = new Vector<CodeReference>();
     	m_labels = new HashMap<Integer, String>();
     	
         m_xeLoader = new XeLoader();
@@ -65,13 +67,13 @@ public class Engine {
         m_coreId = 0;
         m_errorString = "";
         m_displayers = new Vector<Displayer>();
-        
+        m_pathQueries = new ArrayList<PathQuery>();
         m_abort = false;
         m_resolveExpression = false;
         
     }
     
-    public void addReference(ReferenceMode mode, Reference ref){
+    public void addReference(ReferenceMode mode, CodeReference ref){
     	//test for duplicates
     	//test for conditions where the user want a reference and not a reference
     	
@@ -86,7 +88,7 @@ public class Engine {
     	}
     }
     
-    public void removeReference(ReferenceMode mode, Reference ref){
+    public void removeReference(ReferenceMode mode, CodeReference ref){
     	if(mode == ReferenceMode.EXCLUSION){
     		m_exclusions.remove(ref);
     	} else if(mode == ReferenceMode.PROHIBITED){
@@ -98,7 +100,7 @@ public class Engine {
     	}
     }
     
-    public Vector<Reference> getReference(ReferenceMode mode){
+    public Vector<CodeReference> getReference(ReferenceMode mode){
     	if(mode == ReferenceMode.EXCLUSION){
     		return m_exclusions;
     	} else if(mode == ReferenceMode.PROHIBITED){
@@ -155,6 +157,7 @@ public class Engine {
     }
 
     public boolean loadExecutable(String executableFile) {
+    	m_pathQueries.clear();
         boolean success = m_xeLoader.loadExecutable(executableFile);
         if (success) {
             m_exclusions.clear();
@@ -174,6 +177,7 @@ public class Engine {
     }	
 
     public boolean loadExecutable(XEHandler xeHandler) {
+    	m_pathQueries.clear();
         boolean success = m_xeLoader.loadExecutable(xeHandler);
         for (Displayer displayer : m_displayers)
             displayer.notifyLoadExecutable();
@@ -207,19 +211,19 @@ public class Engine {
     }
 
     public boolean analyseRoute(String from, String to, boolean resolveExpression) {
-        Reference fromRef = new Reference(from);
-        Reference toRef = new Reference(to);     
+        CodeReference fromRef = new CodeReference(from);
+        CodeReference toRef = new CodeReference(to);     
         resolveExpression = resolveExpression| m_resolveExpression;
         if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
             setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
                     m_nodeId, m_coreId, m_executableFile));        	
             return false;
         }
-        else if (!resolveRefernece(fromRef)) {
+        else if (!resolveRefernece(fromRef, this)) {
             setErrorString(String.format("Unresolved reference: %s", from));
             return false;
         }
-        else if (!resolveRefernece(toRef)) {
+        else if (!resolveRefernece(toRef, this)) {
             setErrorString(String.format("Unresolved reference: %s", from));
             return false;
         }
@@ -532,9 +536,9 @@ public class Engine {
         return false;	
     }    
 
-    private boolean resolveRefernece(Reference ref) {
+    private boolean resolveRefernece(CodeReference ref, Engine engine) {
         DebugInfo debugInfo = m_xeLoader.getDebugInfo(m_nodeId, m_coreId);
-        return ref.resolve(debugInfo);
+        return ref.resolve(debugInfo, engine);
     }
 
 	public void setDynamicMode(boolean b) {
@@ -564,6 +568,14 @@ public class Engine {
 		}
 		assert(false);
 		return 0;
+	}
+
+	public void addQuery(PathQuery pq) {
+		this.m_pathQueries.add(pq);
+	}
+
+	public ArrayList<PathQuery> getPathQueries() {
+		return m_pathQueries;
 	}
 }
 

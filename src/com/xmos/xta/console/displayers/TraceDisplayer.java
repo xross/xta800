@@ -8,7 +8,7 @@ import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Block;
-import com.xmos.xta.engine.Reference;
+import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 
@@ -81,7 +81,7 @@ public class TraceDisplayer implements Displayer {
     }
 	
     private void tracePaths(ArrayList<Block> arrayList, SymbolTable symbolTable, 
-    		String title, Reference fromRef, Reference toRef) {
+    		String title, CodeReference fromRef, CodeReference toRef) {
     	
         if (arrayList.size() > 0) {
             displayTitle(title);

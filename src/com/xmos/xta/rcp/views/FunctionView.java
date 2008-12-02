@@ -17,10 +17,7 @@ import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.nodes.Node;
-import com.xmos.xta.rcp.views.ViewNode.FunctionBlockNode;
-import com.xmos.xta.rcp.views.ViewNode.FunctionLoopNode;
 import com.xmos.xta.rcp.views.ViewNode.ViewNode;
-import com.xmos.xta.rcp.views.ViewNode.FunctionPathNode;
 
 public class FunctionView extends ZoomedCanvasView {
 	
@@ -83,6 +80,12 @@ public class FunctionView extends ZoomedCanvasView {
 		}
 	}
 
+    protected void buildClickAreas() {
+    	m_clickAreas.clear();
+    	if (m_rootNode != null)
+    		m_rootNode.getFunctionNode().buildClickAreas(m_clickAreas);
+    }
+
     protected void annotateTree(boolean isSelctionChange) {
     	clearAll();
         Node pathRoot = getPathRoot(m_selectedNode);
@@ -90,10 +93,9 @@ public class FunctionView extends ZoomedCanvasView {
 			m_pixelsX = 0;
 			m_pixelsY = 0;
 		} else {
-			annotateTree(pathRoot, 1);
+			annotateTree(pathRoot, 1, false);
 
-			m_clickAreas.clear();
-			pathRoot.getFunctionNode().annotateXy(m_borderX, m_borderY, m_clickAreas);
+			pathRoot.getFunctionNode().annotateXy(m_borderX, m_borderY);
 			if (m_blockLength > 0)
 				addBlock();
 		}
@@ -120,13 +122,14 @@ public class FunctionView extends ZoomedCanvasView {
         m_previousFunction = "";
     }
 
-    private void annotateTree(Node node, int numIterations) {
+    private void annotateTree(Node node, int numIterations, boolean selected) {
 		if ((node == null) || node.isRouteNode())
 			return;
 
 		m_currentNode = node;
-		
-		ViewNode functionNode = null;
+    	selected |= (node == m_selectedNode);
+
+		ViewNode functionNode = node.getFunctionNode();
     	if (node.isBlockNode()) {
             for (XtaInstruction inst : node.getInstructions()) {
                 String functionName = m_table.functionName(inst.getPc());
@@ -147,19 +150,19 @@ public class FunctionView extends ZoomedCanvasView {
             	m_nodeOffset += numIterations;
             	m_blockLength += numIterations;
             }
-    		functionNode = new FunctionBlockNode(node, numIterations, m_lineWidth);
-    	} else if (node.isPathNode()) {
-    		functionNode = new FunctionPathNode(node, numIterations, m_lineWidth);
-    	} else if (node.isLoopNode()) {
-    		functionNode = new FunctionLoopNode(node, numIterations, m_lineWidth);
     	}
-
-    	node.setFunctionNode(functionNode);
+    	
+    	functionNode.setNumIterations(numIterations);
+    	functionNode.setLineWidth(m_lineWidth);
+        functionNode.setIsSelected(selected);
         for (Node subNode : node.getNodes()) {
         	m_nodeOffset = 0;
         	
-        	int subNumIterations = subNode.getNumIterations() * numIterations;
-			annotateTree(subNode, subNumIterations);
+        	int subNumIterations = numIterations;
+			if (node.isLoopNode())
+				subNumIterations = subNode.getNumIterations() * numIterations;
+			
+        	annotateTree(subNode, subNumIterations, selected);
         }
 	}
 
@@ -252,7 +255,6 @@ public class FunctionView extends ZoomedCanvasView {
 
             int length = (m_node.getFunctionNode().getPixelOffsetX() + m_offset) - x;
 
-            gc.setForeground(m_color);
             gc.setBackground(m_color);
         	gc.fillRectangle((int)((double)x * scale), y, (int)((double)length * scale) + 1, height);
 

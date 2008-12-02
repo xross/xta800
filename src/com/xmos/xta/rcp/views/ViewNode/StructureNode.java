@@ -4,19 +4,17 @@ import com.xmos.xta.rcp.nodes.Node;
 
 public abstract class StructureNode extends ViewNode {
     protected double m_weight;
-    protected boolean m_isSelected;
 	
-    public StructureNode(Node treeNode, double weight, int lineWidth) {
-    	super(treeNode, lineWidth);
-    	m_weight = weight;
-		m_isSelected = false;
+    public StructureNode(Node treeNode) {
+    	super(treeNode);
+    	m_weight = 0;
     }    
-    
-	public boolean isSelected() {
-		return m_isSelected;
-	}
 
-	public void setIsSelected(boolean isSelected) {
-		m_isSelected = isSelected;
-	}
+    public double getWeight() {
+    	return m_weight;
+    }    
+
+    public void setWeight(double weight) {
+    	m_weight = weight;
+    }    
 }

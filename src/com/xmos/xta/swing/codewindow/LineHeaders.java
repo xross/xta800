@@ -22,7 +22,7 @@ import javax.swing.text.Style;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.Line.DisplayType;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Reference;
+import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.swing.XtaXeObjectDisplayer;
 
 public class LineHeaders extends JTextPane implements MouseListener{

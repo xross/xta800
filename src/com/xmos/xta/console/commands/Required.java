@@ -3,17 +3,17 @@ package com.xmos.xta.console.commands;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Reference;
+import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.engine.Engine.ReferenceMode;
 
 public class Required extends Command {
-    Reference m_ref;
+    CodeReference m_ref;
     
     Required() {
         m_ref = null;
     }
     
-    Required(Reference ref) {
+    Required(CodeReference ref) {
         m_ref = ref;        
     }
     
@@ -38,7 +38,7 @@ public class Required extends Command {
             return null;        
 
         String r = args[index + 1];
-        Reference ref = new Reference(r);
+        CodeReference ref = new CodeReference(r);
         return new Required(ref);
     }
     
