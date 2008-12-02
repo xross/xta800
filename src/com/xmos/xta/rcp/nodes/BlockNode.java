@@ -7,6 +7,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Shell;
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.rcp.views.ViewNode.FunctionBlockNode;
 
 public class BlockNode extends Node {
 	Block m_block;
@@ -14,6 +15,8 @@ public class BlockNode extends Node {
     public BlockNode(Block block, Node parent) {
     	super(parent);
     	m_block = block; 
+
+    	m_functionNode = new FunctionBlockNode(this);
     }
     
     public int getId() {

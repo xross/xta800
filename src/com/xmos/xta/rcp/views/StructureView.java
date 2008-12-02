@@ -6,10 +6,7 @@ import org.eclipse.swt.graphics.Rectangle;
 
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.nodes.Node;
-import com.xmos.xta.rcp.views.ViewNode.StructureLoopNode;
 import com.xmos.xta.rcp.views.ViewNode.StructureNode;
-import com.xmos.xta.rcp.views.ViewNode.StructurePathNode;
-import com.xmos.xta.rcp.views.ViewNode.StructureRouteNode;
 
 public class StructureView extends ZoomedCanvasView {
 
@@ -17,6 +14,7 @@ public class StructureView extends ZoomedCanvasView {
     public static final int MAX_NUM_RENDER_NODES = 2000;
     public static final String ID = "com.xmos.xta.rcp.views.Structure";
 
+    private boolean m_weightIsCumulative;
     private int m_numTreeNodes;
 
 	public StructureView() {
@@ -32,7 +30,12 @@ public class StructureView extends ZoomedCanvasView {
 		m_borderY = 10;
 		m_lineWidth = 1;
 		m_numTreeNodes = 0;
+		m_weightIsCumulative = false;
 	}
+
+    protected void buildClickAreas() {
+    	m_rootNode.getStructureNode().buildClickAreas(m_clickAreas);
+    }
 
     protected void annotateTree(boolean isSelctionChange) {
 		if (m_selectedNode != null) {
@@ -42,22 +45,30 @@ public class StructureView extends ZoomedCanvasView {
     	}
 
 		m_numTreeNodes = 0;
-		annotateTree(m_rootNode, 1, 1);
+		annotateTree(m_doubleClickNode, getNumIterations(m_doubleClickNode), 1);
 		
-		m_clickAreas.clear();
-		if (m_rootNode != null) {
-			m_rootNode.getStructureNode().annotateXy(m_borderX, m_borderY, m_clickAreas);
+		// Build up a new list of click areas and then swap to ensure the old ones are available
+		// for double clicks
+		if (m_doubleClickNode != null) {
+			m_doubleClickNode.getStructureNode().annotateXy(m_borderX, m_borderY);
 			updatePixelsXy();
 		}
     }
-    
+
+    private int getNumIterations(Node start) {
+    	if ((start == null) || start.isRouteNode()) 
+    		return 1;
+    	
+		return (start.getNumIterations() * getNumIterations(start.getParentNode()));
+	}
+
     protected void updatePixelsXy() {
-    	if ((m_rootNode == null) || (m_numTreeNodes > MAX_NUM_RENDER_NODES)) {
+    	if ((m_doubleClickNode == null) || (m_numTreeNodes > MAX_NUM_RENDER_NODES)) {
 			m_pixelsX = 0;
 			m_pixelsY = 0;
 		} else {
-			m_pixelsX = (m_borderX  * 2) + m_rootNode.getStructureNode().getPixelsX();
-			m_pixelsY = (m_borderY * 2) + m_rootNode.getStructureNode().getPixelsY();
+			m_pixelsX = (m_borderX  * 2) + m_doubleClickNode.getStructureNode().getPixelsX();
+			m_pixelsY = (m_borderY * 2) + m_doubleClickNode.getStructureNode().getPixelsY();
 		}
     }
     
@@ -81,33 +92,29 @@ public class StructureView extends ZoomedCanvasView {
 	        gc.drawString(error, (int)((clientArea.width - functionNameWidth)/2),
 	        		(int)((clientArea.height - functionNameHeight)/2));
 	    } else {
-	        if (m_rootNode == null)
+	        if (m_doubleClickNode == null)
 	        	return;
 	        
 			gc.setLineWidth(m_lineWidth);
-			m_rootNode.getStructureNode().draw(m_display, gc, m_scale);
+			m_doubleClickNode.getStructureNode().draw(m_display, gc, m_scale);
 	    }
     }
     
 	private boolean annotateTree(Node node, int numIterations, double totalTime) {
 		if (node == null)
 			return false;
+    	m_numTreeNodes++;
 		
-    	double weight = (numIterations * node.getTimeTakenThis()) / totalTime;
+    	double weight = 0;
+    	if (totalTime > 0) {
+    		weight = (numIterations * node.getTimeTakenThis()) / totalTime;
+    	}
+
     	boolean selected = (node == m_selectedNode);
 
-    	StructureNode structureNode = null;
-    	if (node.isRouteNode())
-    		structureNode = new StructureRouteNode(node, weight, m_lineWidth);
-    	else if (node.isPathNode())
-    		structureNode = new StructurePathNode(node, weight, m_lineWidth);
-    	else if (node.isLoopNode())
-    		structureNode = new StructureLoopNode(node, weight, m_lineWidth);
-    	else
-    		assert(false);
-    	node.setStructureNode(structureNode);
-    	m_numTreeNodes++;
-    	
+    	StructureNode structureNode = node.getStructureNode();
+
+    	double childrenWeight = 0;
         for (Node subNode : node.getNodes()) {
     		if (subNode.isPathNode() || subNode.isLoopNode()) {
             	if (node.isRouteNode())
@@ -118,9 +125,21 @@ public class StructureView extends ZoomedCanvasView {
     				subNumIterations = subNode.getNumIterations() * numIterations;
     			
     			selected |= annotateTree(subNode, subNumIterations, totalTime);
+    			
+    			StructureNode subStructureNode = subNode.getStructureNode();
+    			if (subStructureNode != null) {
+    				childrenWeight += subStructureNode.getWeight();
+    			}
     		}
         }
 
+        if (m_weightIsCumulative) {
+        	structureNode.setWeight(weight + childrenWeight);
+        } else {
+        	structureNode.setWeight(weight);
+        }
+        
+    	structureNode.setLineWidth(m_lineWidth);
         structureNode.setIsSelected(selected);
    		return selected;
 	}
@@ -129,10 +148,18 @@ public class StructureView extends ZoomedCanvasView {
 		m_routeInfo = XtaDisplayer.getInstance().getRouteInfo();
 		if (m_routeInfo != null) {
 			m_rootNode = m_routeInfo.getRouteNode();
+			m_doubleClickNode = m_rootNode;
 			m_selectedNode = m_routeInfo.getSelectedNode();
 		} else {
 			m_rootNode = null;
+			m_doubleClickNode = null;
 			m_selectedNode = null;
 		}
+	}
+
+	public void setWeightCumulative(boolean cumulative) {
+		m_weightIsCumulative = cumulative;
+		refreshView();
+		annotateTree(false);
 	}
 }

@@ -17,10 +17,7 @@ import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.nodes.Node;
-import com.xmos.xta.rcp.views.ViewNode.FunctionBlockNode;
-import com.xmos.xta.rcp.views.ViewNode.FunctionLoopNode;
 import com.xmos.xta.rcp.views.ViewNode.ViewNode;
-import com.xmos.xta.rcp.views.ViewNode.FunctionPathNode;
 
 public class FunctionView extends ZoomedCanvasView {
 	
@@ -83,6 +80,12 @@ public class FunctionView extends ZoomedCanvasView {
 		}
 	}
 
+    protected void buildClickAreas() {
+    	m_clickAreas.clear();
+    	if (m_rootNode != null)
+    		m_rootNode.getFunctionNode().buildClickAreas(m_clickAreas);
+    }
+
     protected void annotateTree(boolean isSelctionChange) {
     	clearAll();
         Node pathRoot = getPathRoot(m_selectedNode);
@@ -92,8 +95,7 @@ public class FunctionView extends ZoomedCanvasView {
 		} else {
 			annotateTree(pathRoot, 1, false);
 
-			m_clickAreas.clear();
-			pathRoot.getFunctionNode().annotateXy(m_borderX, m_borderY, m_clickAreas);
+			pathRoot.getFunctionNode().annotateXy(m_borderX, m_borderY);
 			if (m_blockLength > 0)
 				addBlock();
 		}
@@ -127,7 +129,7 @@ public class FunctionView extends ZoomedCanvasView {
 		m_currentNode = node;
     	selected |= (node == m_selectedNode);
 
-		ViewNode functionNode = null;
+		ViewNode functionNode = node.getFunctionNode();
     	if (node.isBlockNode()) {
             for (XtaInstruction inst : node.getInstructions()) {
                 String functionName = m_table.functionName(inst.getPc());
@@ -148,15 +150,11 @@ public class FunctionView extends ZoomedCanvasView {
             	m_nodeOffset += numIterations;
             	m_blockLength += numIterations;
             }
-    		functionNode = new FunctionBlockNode(node, numIterations, m_lineWidth);
-    	} else if (node.isPathNode()) {
-    		functionNode = new FunctionPathNode(node, numIterations, m_lineWidth);
-    	} else if (node.isLoopNode()) {
-    		functionNode = new FunctionLoopNode(node, numIterations, m_lineWidth);
     	}
-
+    	
+    	functionNode.setNumIterations(numIterations);
+    	functionNode.setLineWidth(m_lineWidth);
         functionNode.setIsSelected(selected);
-    	node.setFunctionNode(functionNode);
         for (Node subNode : node.getNodes()) {
         	m_nodeOffset = 0;
         	

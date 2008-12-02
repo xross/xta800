@@ -15,13 +15,14 @@ public class FunctionBlockNode extends ViewNode {
     private int m_x;
     private int m_y;
     private int m_width;
-    private int m_numIterations;
 
-	public FunctionBlockNode(Node treeNode, int numIterations, int lineWidth) {
-		super(treeNode, lineWidth);
-
+	public FunctionBlockNode(Node treeNode) {
+		super(treeNode);
+	}
+	
+	public void setNumIterations(int numIterations) {
 		m_numIterations = numIterations;
-		m_pixelsX = treeNode.getInstructions().size() * numIterations;
+		m_pixelsX = m_treeNode.getInstructions().size() * numIterations;
 		m_pixelsY = m_height;
 	}
 
@@ -94,10 +95,12 @@ public class FunctionBlockNode extends ViewNode {
     	gc.drawRectangle(m_x, m_y, m_width, m_height);
 	}
 
-	public void annotateXy(int xOffset, int yOffset, ArrayList<ViewNode> clickAreas) {
+	public void annotateXy(int xOffset, int yOffset) {
         m_pixelOffsetX = xOffset;
         m_pixelOffsetY = yOffset;
+	}
 
+	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
         clickAreas.add(this);
 	}
 

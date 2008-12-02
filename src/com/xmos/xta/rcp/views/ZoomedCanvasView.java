@@ -53,6 +53,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 
     protected Node m_rootNode;
     protected Node m_selectedNode;
+    protected Node m_doubleClickNode;
     protected XtaRouteInfo m_routeInfo;
     
     protected double m_scale;
@@ -79,6 +80,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    
 		m_listeners = new Vector<ISelectionChangedListener>();
 		m_rootNode = null;
+		m_doubleClickNode = null;
 	    m_selectedNode = null;
 	}
 
@@ -135,6 +137,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 				m_toolTip.dispose ();
 	    	}
 	    	initialiseTree();
+	    	buildClickAreas();
 			annotateTree(false);
 			refreshView();
 		} else if (event.getProperty().equals("LoadExecutable")) {
@@ -144,6 +147,16 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    	if (m_toolTip != null  && !m_toolTip.isDisposed ()) {
 				m_toolTip.dispose ();
 	    	}
+			annotateTree(false);
+			refreshView();
+		} else if (event.getProperty().equals("DoubleClick")) {
+			ISelection sel = XtaDisplayer.getInstance().getDoubleClickSelection();
+	        if (sel instanceof IStructuredSelection) {	            
+	            Object object = ((IStructuredSelection)sel).getFirstElement();
+	            if (object instanceof Node) {
+	                m_doubleClickNode = (Node)object;
+	            }
+	        }
 			annotateTree(false);
 			refreshView();
 		}
@@ -218,7 +231,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	/*
 	 * Structure view methods 
 	 */
-	private void refreshView() {
+	protected void refreshView() {
 		m_display.asyncExec(new Runnable() {
 			public void run() {
 				prepareCanvas();
@@ -285,6 +298,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			m_toolTip.dispose ();
 		}
 		m_rootNode = null;
+		m_doubleClickNode = null;
 		m_selectedNode = null;
 	}
 	
@@ -316,7 +330,18 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			}
 		};
 
-		m_canvas.addMouseListener(new MouseAdapter() { 
+		m_canvas.addMouseListener(new MouseAdapter() {
+			public void mouseDoubleClick(MouseEvent e) {
+	    		for (ViewNode node : m_clickAreas) {
+	    			if (node.contains(e.x, e.y)) {
+	    	    		m_selectedNode = node.getTreeNode();
+	    	    		ISelection selection = new StructuredSelection(m_selectedNode);
+	    	    		setSelection(selection);
+	    				XtaDisplayer.getInstance().notifyDoubleClick(selection);
+	    				return;
+	    			}
+	    		}
+			}
 	    	public void mouseDown(MouseEvent e) {
     			if ((e.button == 1) || (e.button == 3)) {
 		    		for (ViewNode node : m_clickAreas) {
@@ -378,6 +403,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 
 	protected abstract void initialiseTree();
     protected abstract void drawCanvas(GC gc);    
+    protected abstract void buildClickAreas();
     protected abstract void annotateTree(boolean isSelctionChange);
     protected abstract void updatePixelsXy();
 }

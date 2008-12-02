@@ -13,6 +13,8 @@ import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.dialogs.Iterations;
+import com.xmos.xta.rcp.views.ViewNode.FunctionPathNode;
+import com.xmos.xta.rcp.views.ViewNode.StructurePathNode;
 
 public class PathNode extends Node {
     private Block m_block;
@@ -28,6 +30,9 @@ public class PathNode extends Node {
     
     	m_allInstances = false;
     	m_absoluteCount = false;
+    	
+    	m_functionNode = new FunctionPathNode(this);
+    	m_structureNode = new StructurePathNode(this);
     }
 
     public String getDescription() {
