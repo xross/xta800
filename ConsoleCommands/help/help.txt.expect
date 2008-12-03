@@ -8,13 +8,18 @@
   [-]src <path id> <source file>: Display annotated source file for given path id
   [-]mix <path id> <source file>: Display annotated source file + assembly instructions for the given path id
   [-]trace <path id | level>: Display instruction trace for the given path id
-  [-]loop <path id> <scope> <iterations>: Sets the number of iterations for the given path
-  [-]loopi <path instance> <scope> <iterations>: Sets the number of iterations for a path instance
+  [-]loop <path> <scope> <iterations>: Sets the number of iterations for the given path
   [-]time <pc> <mode> <value>: Sets the time taken for the instruction at the given pc
   [-]source <file name>: Sources the given command file
-  [-]exclude <ref>: Adds the given reference to the exclusion list
   [-]history: Displays the command history
   [-]pwd: Displays the current working directory
   [-]config <option> <arg0> <arg1>...: Configures the given option
   [-]help [command]: Displays help message for the given command
   [-]exit: Quits the shell
+  [-]mode <mode type> : sets the engine into STATIC or DYNAMIC mode
+  [-]timebound <int (ns)> : returns PASS of FAIL if the worst case is less than the time bound
+  [-]cyclebound <int (cycles)> : returns PASS of FAIL if the worst case is less than the cycle bound
+  [-]label <CodeRef> <label>: adds a label to the given pc
+  [-]excluded <add/remove> <ref>: Adds or removes the given reference to the excluded list (post analysis action)
+  [-]prohibited <add/remove> <ref>: Adds or removes the given reference to the prohibited list (during analysis action)
+  [-]required <add/remove> <ref>: Adds or removes the given reference to the required list (post analysis action)
