@@ -242,17 +242,24 @@ sub BuildEclipse
     $platform   = "cygwin";
     $config     = "win32, win32, x86";
   } elsif ($HOST eq "Mac") {
-    $eclipseDir = "/tools/eclipse/eclipse-SDK-3.4.1-linux-gtk-x86_64";
+    $eclipseDir = "/tools/eclipse/eclipse-SDK-3.4.1-linux-gtk";
     $template   = "/tmp/xta_XXXXXXXX";
     $tailCmd    = "tail -n2";
     $platform   = "mac";
     $config     = "macosx, carbon, x86";
   } else {
-    $eclipseDir = "/tools/eclipse/eclipse-SDK-3.4.1-linux-gtk-x86_64";
+    my $version = `uname -i`;
+    chomp($version);
+    $eclipseDir = "/tools/eclipse/eclipse-SDK-3.4.1-linux-gtk-$version";
     $template   = "/tmp/xta_XXXXXXXX";
     $tailCmd    = "tail -n2";
     $platform   = "linux";
-    $config     = "linux, gtk, x86";
+
+    if ($version eq "x86_64") {
+      $config = "linux, gtk, x86_64";
+    } else {
+      $config = "linux, gtk, x86";
+    }
   }
 
   my $buildOutput = "$TOOLS_XTA/build.output.$platform";
@@ -275,7 +282,7 @@ sub BuildEclipse
                  "-application org.eclipse.ant.core.antRunner " .
                  "-buildfile $eclipseDir/plugins/org.eclipse.pde.build_3.4.1.R34x_v20080805/scripts/productBuild/productBuild.xml " .
                  "-Dbuilder=$buildDir/build_config -quiet";
- 
+
   system("$buildCmd >> $buildOutput");
   system($tailCmd . " $buildOutput");
 
@@ -306,8 +313,7 @@ sub CreateBuildPropertiesFile
   open(my $outfp, ">$buildPropertiesFile") 
     or die("Cannot open file: $buildPropertiesFile for writing");
 
-  while(my $line = <$infp>)
-  {
+  while(my $line = <$infp>) {
     $line =~ s/\[HOST\]/$platform/;
     $line =~ s/\[CONFIG\]/$config/;
     $line =~ s/\[BUILD_DIRECTORY\]/$buildDir\/build/;
