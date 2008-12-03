@@ -13,7 +13,7 @@ import com.xmos.xta.engine.MachineState.BranchState;
 import com.xmos.xta.engine.Status.BlockStatus;
 
 public class Block implements Comparable<Block> {
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
 	static enum Mode {
 		FUNCTION, ABSOLUTE
@@ -27,7 +27,6 @@ public class Block implements Comparable<Block> {
 	private Route m_route;
 
 	private int m_id;
-	private int m_instanceId;
 
 	private MachineState m_machineState;
 	private Vector<XtaInstruction> m_instructions;
@@ -63,6 +62,7 @@ public class Block implements Comparable<Block> {
 	 * route analysis
 	 */
 	public Block(BlockCommonComponents bc, int fromPc, int toPc, MachineState machineState, ExecutionState executionState) {
+		bc.getRoute().addNewBlock(this);
 		if (DEBUG)
 			System.out.println("\tstarting original block 0");
 
@@ -89,6 +89,7 @@ public class Block implements Comparable<Block> {
 
 	Block(Block blockToSplit, int pcHit) {
 		m_bc = blockToSplit.m_bc;
+		m_bc.getRoute().addNewBlock(this);
 		m_machineState = null;
 		m_contexts = null;
 		m_seen = 0;
@@ -137,9 +138,7 @@ public class Block implements Comparable<Block> {
 		blockToSplit.updateInstructionInfo();
 
 		m_id = blockToSplit.m_id;
-		m_instanceId = blockToSplit.m_instanceId;
 		blockToSplit.m_id = m_numBlocks;
-		blockToSplit.m_instanceId = blockToSplit.m_id;
 		++m_numBlocks;
 
 		m_status = blockToSplit.m_status;
@@ -168,6 +167,7 @@ public class Block implements Comparable<Block> {
 		m_speculative = block.m_speculative;
 		m_parentBlock = block;
 		m_bc = block.m_bc;
+		m_bc.getRoute().addNewBlock(this);
 		m_status = BlockStatus.SEARCHING;
 
 		Iterator<TreeSet<Integer>> iter = m_parentBlock.m_contexts.iterator();
@@ -199,7 +199,6 @@ public class Block implements Comparable<Block> {
 
 	private void initialise(MachineState machineState) {
 		m_id = m_numBlocks++;
-		m_instanceId = m_id;
 		m_contexts = new Stack<TreeSet<Integer>>();
 		m_pcs = new HashSet<Integer>();
 		m_instructions = new Vector<XtaInstruction>();
@@ -347,17 +346,10 @@ public class Block implements Comparable<Block> {
 						checkForLoopFormation(nextPc, false, instruction, false, false);
 					} else if (m_machineState.getBranchTaken() == BranchState.UNKNOWN) {
 						addUnknown(instruction);
-						checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
-						checkForLoopFormation(nextPc, true, instruction, false, true);
-						setStatus(BlockStatus.COMPLETE);
-						releaseMemory();
-
+						takeUnknownBranch(instruction, nextPc);
 					}
 				} else {
-					checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
-					checkForLoopFormation(nextPc, true, instruction, false, true);
-					setStatus(BlockStatus.COMPLETE);
-					releaseMemory();
+					takeUnknownBranch(instruction, nextPc);
 				}
 				return;
 			} else {
@@ -372,6 +364,39 @@ public class Block implements Comparable<Block> {
 
 		m_firstStep = false;
 		instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
+	}
+
+	private void takeUnknownBranch(XtaInstruction instruction, int nextPc) {
+		boolean resolve = false;
+		if(resolve){
+			 if(instruction.getNmenonic().equals("BRBF")){
+				
+				 //TODO
+				 
+				 
+			} else if(instruction.getNmenonic().equals("BRBT")){
+				
+			} else if(instruction.getNmenonic().equals("BRFF")){
+				
+			} else if(instruction.getNmenonic().equals("BRFT")){
+				
+			} else if(instruction.getNmenonic().equals("BAU")){
+				
+			} else if(instruction.getNmenonic().equals("BRU")){
+				
+			}
+
+			
+			checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
+			checkForLoopFormation(nextPc, true, instruction, false, true);
+			setStatus(BlockStatus.COMPLETE);
+			releaseMemory();
+		} else {
+			checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
+			checkForLoopFormation(nextPc, true, instruction, false, true);
+			setStatus(BlockStatus.COMPLETE);
+			releaseMemory();
+		}
 	}
 
 	private void releaseMemory(){
@@ -461,9 +486,6 @@ public class Block implements Comparable<Block> {
 	private void addInstruction(XtaInstruction inst) {
 		assert (m_instructions != null);
 		assert (inst != null);
-
-		if (DEBUG)
-			System.out.println("adding: " + inst + " to Block " + m_instanceId);
 		String label = m_bc.getEngine().getLabel(inst.getPc());
 		if(label!= null){
 			this.m_labels.add(label);
@@ -553,10 +575,6 @@ public class Block implements Comparable<Block> {
 
 	public int getId() {
 		return m_id;
-	}
-
-	public int getInstanceId() {
-		return m_instanceId;
 	}
 
 	public void setId(int id) {

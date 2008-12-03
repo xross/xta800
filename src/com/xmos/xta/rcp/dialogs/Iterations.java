@@ -18,7 +18,6 @@ import com.xmos.xta.rcp.nodes.PathNode;
 
 public class Iterations extends Dialog {
 	private int m_numIterations;
-    private boolean m_allInstances;
     private boolean m_absoluteCount;
     
     PathNode m_pathNode;
@@ -27,7 +26,6 @@ public class Iterations extends Dialog {
     	super(parent);
     	m_pathNode = pathNode;
     	m_numIterations = pathNode.getNumIterations();
-    	m_allInstances = pathNode.getAllInstances();
     	m_absoluteCount = pathNode.getAbsoluteCount();
     	open();
     }
@@ -63,12 +61,6 @@ public class Iterations extends Dialog {
 		final Button button = new Button(parent, SWT.CHECK);
 		button.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
 				true, false, 2, 1));
-		button.setSelection(pathNode.getAllInstances());
-		button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				m_allInstances = button.getSelection();
-			}			
-		});
 	}	    
 
     private void createAbsoluteCountControl(Composite parent, final PathNode pathNode) {
@@ -111,7 +103,6 @@ public class Iterations extends Dialog {
     	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {
 			m_pathNode.setIterations(m_numIterations);
 			m_pathNode.setAbsoluteCount(m_absoluteCount);
-			m_pathNode.setAllInstances(m_allInstances);
     	}
     	super.buttonPressed(id);
     }

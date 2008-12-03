@@ -26,10 +26,6 @@ public class LoopNode extends Node {
     public int getId() {
         return m_block.getId();
     }
-
-    public int getInstanceId() {
-        return m_block.getInstanceId();
-    }
     
     public double getTimeTaken() {
         return m_block.getTimeTakenLoopsOnly();
@@ -55,7 +51,6 @@ public class LoopNode extends Node {
         String toolTipText = getSummary() + "\n";
         toolTipText += "----------------------------------\n";
         toolTipText += "Loop ID: " + m_block.getId() + "\n";
-        toolTipText += "Loop Instance ID: " + m_block.getInstanceId() + "\n";
         toolTipText += "----------------------------------\n";
         toolTipText += "Total time taken: " + getTimeTaken() + " ns\n";
         toolTipText += "Total number of cycles: " + getNumCycles() + "\n";

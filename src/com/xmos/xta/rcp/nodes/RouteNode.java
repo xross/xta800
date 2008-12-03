@@ -16,7 +16,6 @@ public class RouteNode extends Node {
     }
 
     public int getId()         { assert(false); return 0; }
-    public int getInstanceId() { assert(false); return 0; }
 
     public double getTimeTaken() { assert(false); return 0; }
     public double getTimeTakenThis() { return 0; }

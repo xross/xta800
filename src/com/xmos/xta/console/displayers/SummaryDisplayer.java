@@ -194,7 +194,7 @@ public class SummaryDisplayer implements Displayer {
     }
         
     private void displayPathLevelInfo(Block path, String indent, int numExecutions, boolean absolute) {
-        String pathInstanceId = String.format("pathi(%d)", path.getInstanceId());
+        String pathInstanceId = String.format("pathi(%d)", path.getId());
 
         if ((path.getStatus() != Status.BlockStatus.COMPLETE) ) {
             String comment = "";

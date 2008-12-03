@@ -20,7 +20,6 @@ public class PathNode extends Node {
     private Block m_block;
     private boolean m_isRoot;
     
-    private boolean m_allInstances;
     private boolean m_absoluteCount;
     
     public PathNode(Block block, Node parent, boolean isRoot) {
@@ -28,7 +27,6 @@ public class PathNode extends Node {
     	m_block = block;
     	m_isRoot = isRoot;
     
-    	m_allInstances = false;
     	m_absoluteCount = false;
     	
     	m_functionNode = new FunctionPathNode(this);
@@ -45,10 +43,6 @@ public class PathNode extends Node {
 
     public int getId() {
         return m_block.getId();
-    }
-
-    public int getInstanceId() {
-        return m_block.getInstanceId();
     }
 
     public int getNumCycles() {
@@ -70,7 +64,6 @@ public class PathNode extends Node {
     public String getToolTipText() {
         String toolTipText = "";
         toolTipText += "Path ID: "          + m_block.getId() + "\n";
-        toolTipText += "Path Instance ID: " + m_block.getInstanceId() + "\n";
         toolTipText += "----------------------------------\n";
         toolTipText += "Time taken: "          + m_block.getTimeTaken(true) + " ns\n";
         toolTipText += "Number of cycles: "    + m_block.getNumCycles(true) + "\n";
@@ -154,21 +147,8 @@ public class PathNode extends Node {
 	}
 
 	public void setIterations(int numIterations) {
-		if (m_allInstances) {
-			XtaEngine.getEngine().setLoopIterations(m_block.getId(), true,
-					m_absoluteCount, numIterations);
-		} else {
-			XtaEngine.getEngine().setLoopIterations(m_block.getInstanceId(), false,
-					m_absoluteCount, numIterations);		
-		}
-	}
-
-	public void setAllInstances(boolean allInstances) {
-		m_allInstances = allInstances;
-	}
-
-	public boolean getAllInstances() {
-		return m_allInstances;
+		XtaEngine.getEngine().setLoopIterations(m_block.getId(),
+				m_absoluteCount, numIterations);
 	}
 
 	public boolean getAbsoluteCount() {
