@@ -6,6 +6,8 @@ use SetupEnv;
 use File::Copy;
 use XmosBuildLib;
 use XmosArg;
+use File::Temp qw/ :mktemp  /;
+use File::Path;
 
 my $MAKE_FLAGS;
 my $CONFIG;
@@ -163,16 +165,7 @@ sub DoBuild
   system("ant");
   die() if ($? != 0);
 
-  if ($HOST eq "PC") {
-    system("buildrcp_win32.bat");
-  } elsif ($HOST eq "Cygwin") {
-    system("sh buildrcp_cygwin.sh");
-  } elsif ($HOST eq "Mac") {
-    system("sh buildrcp_mac.sh");
-  } else {
-    system("sh buildrcp_linux.sh");
-  }
-  die() if ($? != 0);
+  BuildEclipse();
 
   chdir("$BUILDPATH") or die("oops");
 }
@@ -226,6 +219,112 @@ sub CreateXtaFiles
     or die("Failed to move XtaInstructionDecoder.java\n");
   rename("XtaInstructions.java", "$TOOLS_XTA${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta${SLASH}engine${SLASH}${version}XtaInstructions.java") 
     or die("Failed to move XtaInstructions.java\n");
+}
+
+sub BuildEclipse
+{
+  my $eclipseDir = "";
+  my $template   = "";
+  my $tailCmd    = "";
+  my $platform   = "";
+  my $config     = "";
+
+  if ($HOST eq "PC") {
+    $eclipseDir = "C:/eclipse/eclipse-SDK-3.4.1-win32";
+    $template   = "C:/tmp/xta_XXXXXXXX";
+    $tailCmd    = "tail -2";
+    $platform   = "win32";
+    $config     = "win32, win32, x86";
+  } elsif ($HOST eq "Cygwin") {
+    $eclipseDir = "C:/eclipse/eclipse-SDK-3.4.1-win32";
+    $template   = "C:/tmp/xta_XXXXXXXX";
+    $tailCmd    = "tail -n2";
+    $platform   = "cygwin";
+    $config     = "win32, win32, x86";
+  } elsif ($HOST eq "Mac") {
+    $eclipseDir = "/tools/eclipse/eclipse-SDK-3.4.1-linux-gtk-x86_64";
+    $template   = "/tmp/xta_XXXXXXXX";
+    $tailCmd    = "tail -n2";
+    $platform   = "mac";
+    $config     = "macosx, carbon, x86";
+  } else {
+    $eclipseDir = "/tools/eclipse/eclipse-SDK-3.4.1-linux-gtk-x86_64";
+    $template   = "/tmp/xta_XXXXXXXX";
+    $tailCmd    = "tail -n2";
+    $platform   = "linux";
+    $config     = "linux, gtk, x86";
+  }
+
+  my $buildOutput = "$TOOLS_XTA/build.output.$platform";
+  my $target      = "xta.$platform.zip";
+  my $buildDir    = mkdtemp($template);
+
+  MakeDirectory("$buildDir/build/plugins");
+  MakeDirectory("$buildDir/build_config");
+  
+  unlink($buildOutput);
+
+  system("cp -r $TOOLS_XTA/../infr_libs_java $buildDir/build/plugins/infr_libs_java >> $buildOutput");
+  system("cp -r $TOOLS_XTA/../tools_xta      $buildDir/build/plugins/tools_xta      >> $buildOutput");
+
+  # Creates the target specific build properties file..
+  my $buildPropertiesFile = CreateBuildPropertiesFile($platform, $config, $buildDir, $eclipseDir);
+  system("cp $buildPropertiesFile $buildDir/build_config/build.properties >> $buildOutput");
+ 
+  my $buildCmd = "java -jar $eclipseDir/plugins/org.eclipse.equinox.launcher_1.0.101.R34x_v20080819.jar " .
+                 "-application org.eclipse.ant.core.antRunner " .
+                 "-buildfile $eclipseDir/plugins/org.eclipse.pde.build_3.4.1.R34x_v20080805/scripts/productBuild/productBuild.xml " .
+                 "-Dbuilder=$buildDir/build_config -quiet";
+ 
+  system("$buildCmd >> $buildOutput");
+  system($tailCmd . " $buildOutput");
+
+  # Installs the zip file into the bin directory.
+  mkdir("$TOOLS_XTA/bin");
+  unlink("$TOOLS_XTA/bin/$target");
+  system("cp $buildDir/build/I.TestBuild/*.zip $TOOLS_XTA/bin/$target");
+ 
+  # Unzips the zip file..
+  chdir("$TOOLS_XTA/bin") 
+    or die("Unable to chdir to: $TOOLS_XTA/bin\n");
+  system("unzip -o $target >> $buildOutput");
+}
+
+sub CreateBuildPropertiesFile
+{
+  my $platform   = shift;
+  my $config     = shift;
+  my $buildDir   = shift;
+  my $eclipseDir = shift;
+
+  my $buildPropertiesTemplate = "$TOOLS_XTA/build.properties.template";
+  my $buildPropertiesFile     = "$TOOLS_XTA/build.properties.$platform";
+
+  open(my $infp, "<$buildPropertiesTemplate") 
+    or die("Cannot open file: $buildPropertiesTemplate for reading");
+
+  open(my $outfp, ">$buildPropertiesFile") 
+    or die("Cannot open file: $buildPropertiesFile for writing");
+
+  while(my $line = <$infp>)
+  {
+    $line =~ s/\[HOST\]/$platform/;
+    $line =~ s/\[CONFIG\]/$config/;
+    $line =~ s/\[BUILD_DIRECTORY\]/$buildDir\/build/;
+    $line =~ s/\[ECLIPSE_DIRECTORY\]/$eclipseDir/;
+    print $outfp "$line"; 
+  }
+  close($infp);
+  close($outfp);
+
+  return $buildPropertiesFile;
+}
+
+sub MakeDirectory
+{
+  my $dir = shift;
+  mkpath("$dir") 
+    or die("Unable to create directory: $dir\n");
 }
 
 main()
