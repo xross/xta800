@@ -9,38 +9,90 @@ import com.xmos.xeloader.DebugInfo;
 
 public class CodeReference {
 	
-    String m_ref;
-    int m_pc;
-    boolean m_isResolved;
-    
-    
-    public CodeReference(String ref) {
-    	m_ref = ref; 
-    	m_pc =0;
-    	m_isResolved = false;
-    }
+	public enum RefType{
+		PC,
+		LINE,
+		LABEL
+	}
+	
+	private RefType m_type;
+	private String m_ref;
+	private int m_pc;
+	private boolean m_isResolved;
 
-    public CodeReference(String label, int pc) {
-    	//first sanitise the label
-    	if(label.contains(":") || label.startsWith("0x") ){
-    		System.err.println("not a valid label");
-    		m_isResolved = false;
-    		return;
-    	}
-        m_ref = label;
-        m_pc = pc;
-        m_isResolved = true;
-    }
-    
-    public CodeReference(int pc) {
-        m_ref = "";
-        m_pc = pc;
-        m_isResolved = true;
-    }
-    
-    public String toString(){
-		return m_ref + " 0x" + Integer.toHexString(m_pc);
-    	
+	
+	public CodeReference(String ref){
+		m_ref = ref;
+		if(isPcString(ref)){
+			m_type = RefType.PC;
+			return;
+		} else if(isSourceReference(ref)) {
+			m_type = RefType.LINE;
+			return;
+		} else {
+			//must be a label
+			m_type = RefType.LABEL;
+			return;
+		}
+	}
+
+	private boolean isSourceReference(String ref) {
+		if(ref.contains(":")){
+			String [] parts = ref.split(":");
+			if(parts.length == 2 && 
+					parts[1].matches("[0-9]*") && 
+					parts[0].length()>0){
+				m_type = RefType.LINE;
+				m_isResolved = false;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isPcString(String ref) {
+		if(ref.matches("0x[0-9a-fA-F]*")){
+			m_pc = Integer.parseInt(ref.substring(2), 16);
+		} else if(ref.matches("[0-9]*")){
+			m_pc = Integer.parseInt(ref, 10);
+		} else {
+			m_isResolved = false;
+			return false;
+		}
+		//TODO make these bounds refer to the memory size
+		if(m_pc >= 0x10000 && m_pc < 0x20000){
+			m_isResolved = true;
+			return true;
+		} else {
+			m_isResolved = false;
+			return false;
+		}
+	}
+
+	public String toString(){
+		if(m_type == RefType.LABEL){
+			if(m_isResolved){
+				return "label " + m_ref + " : 0x" + Integer.toHexString(m_pc);
+			} else {
+				return "label " + m_ref + " : unresolved";
+			}
+			
+		} else if(m_type == RefType.LINE){
+			if(m_isResolved){
+				return "line " + m_ref + " -> 0x" + Integer.toHexString(m_pc);
+			} else {
+				return "line " + m_ref + " -> : unresolved";
+			}
+		} else if(m_type == RefType.PC){
+			if(m_isResolved){
+				return "PC : 0x" + Integer.toHexString(m_pc);
+			} else {
+				return "PC : unresolved";
+			}
+		} else {
+			assert(false);
+			return "";
+		}
     }
     
     public String getRef() {
@@ -53,7 +105,7 @@ public class CodeReference {
         return m_pc;
     }
     
-    boolean isResolved() {
+    public boolean isResolved() {
         return m_isResolved;
     }
     
@@ -162,7 +214,7 @@ public class CodeReference {
     }
 
 	public boolean resolve(Engine engine) {
-		
+		System.out.println("searching engine for " + m_ref);
 		if(engine.isLabel(m_ref)){
 			m_pc = engine.getLabelPc(m_ref);
 	        m_isResolved = true;
@@ -171,7 +223,8 @@ public class CodeReference {
 		return false;
 	}
 
-	public boolean resolve(DebugInfo debugInfo, Engine engine) {
+	public boolean resolve( Engine engine, int m_nodeId, int m_coreId) {
+		 DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(m_nodeId, m_coreId);
 		if (this.resolve(engine)){
 			return true;
 		} else {

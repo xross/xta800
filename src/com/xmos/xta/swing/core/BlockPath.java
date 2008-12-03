@@ -46,9 +46,9 @@ public class BlockPath implements RouteNode {
     public int getId() {
         return m_path.getId();
     }
-    public int getInstanceId() {
-        return m_path.getInstanceId();
-    }
+    //public int getInstanceId() {
+        //return m_path.getInstanceId();
+    //}
     public int getNumCycles() {
         return m_path.getNumCyclesThis();
     }
@@ -57,7 +57,7 @@ public class BlockPath implements RouteNode {
     }
     public String getToolTipText() {
         String toolTipText = "";
-        toolTipText += "<HTML>Block Instance ID: " + m_path.getInstanceId() + "<br>";
+       // toolTipText += "<HTML>Block Instance ID: " + m_path.getInstanceId() + "<br>";
         toolTipText += "<HTML>Time taken: " + getTimeTaken() + " ns<br>";
         toolTipText += "<HTML>Number of cycles: " + getNumCycles() + "<br>";
         toolTipText += "<HTML>Number of FNOPs: " + m_path.getNumFNopsThis() + "<br>";

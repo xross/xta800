@@ -21,6 +21,8 @@ public abstract class XtaInstruction extends Instruction {
     int m_basicNumCycles;
     Config m_config;
     ArrayList<XtaInstruction> m_returnLocations; 
+    private BranchTarget m_branchTarget;
+    
 	
 	XtaInstruction(String nmenonic, int opcode, int pc, int numBytes, 
 			boolean isLoadStore, boolean canPause) {
@@ -31,6 +33,8 @@ public abstract class XtaInstruction extends Instruction {
 		m_basicNumCycles = 0;
 		m_config = null;
 		m_returnLocations = new ArrayList<XtaInstruction>();
+		//try to replace the above with this
+		m_branchTarget = new BranchTarget();
 	}
 
 	public String toString(){

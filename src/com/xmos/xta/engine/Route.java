@@ -35,6 +35,8 @@ public class Route {
 	private ArrayList<Block> m_unresolvedPaths;
 	private ArrayList<Block> m_completePaths;
 	private ArrayList<Block> m_removedPaths;
+	private ArrayList<Block> m_allBlocks;
+	
 
 	private Engine m_engine;
 	private RouteStatus m_status;
@@ -206,6 +208,7 @@ public class Route {
 		m_completePaths = new ArrayList<Block>();
 		m_unresolvedPaths = new ArrayList<Block>();
 		m_removedPaths = new ArrayList<Block>();
+		m_allBlocks = new ArrayList<Block>();
 		m_loopPaths = new HashMap<Integer, Vector<Block>>();
 		m_executionStates = new ArrayList<ExecutionState>();
 		m_schedule = new LinkedList<ExecutionState>();
@@ -252,6 +255,9 @@ public class Route {
 
 	private void sortPaths() {
 		Collections.sort(m_completePaths);
+		for(Block block : m_allBlocks){
+			Collections.sort(block.getLoopPaths());
+		}
 	}
 
 	public void addUnknown(Unknown unknown) {
@@ -272,7 +278,6 @@ public class Route {
 
 	
 	public void addCompletePath(Block endBlock) {
-		System.out.println("complete block");
 		m_completePaths.add(endBlock);
 	}
 	
@@ -346,7 +351,7 @@ public class Route {
 		m_schedule.remove(ex);
 	}
 
-	public boolean setLoopIterations(int pathId, boolean allInstances, boolean absolute, int iterations) {
+	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
 		boolean hit = false;
 
 		Iterator<ExecutionState> iter = m_executionStates.iterator();
@@ -355,19 +360,16 @@ public class Route {
 			for (Block block : executionState.getThreadBlocks()) {
 				if (block != null) {
 					for (Block loopPath : block.getLoopPaths()) {
-						int blockId = allInstances ? loopPath.getId() : loopPath.getInstanceId();
+						int blockId =  loopPath.getId();
 						if (blockId == pathId) {
 							PathAttributes attributes = block.getLoopPathAttributes(loopPath);
 							attributes.setNumIterations(iterations, absolute);
 							hit = true;
-							if (!allInstances) {
-								return hit;
-							}
+							return hit;
 						}
 					}
 				}
 			}
-			
 		}
 
 		return hit;
@@ -375,6 +377,10 @@ public class Route {
 
 	public ArrayList<ExecutionState> getExecutionStates() {
 		return m_executionStates;
+	}
+	
+	public void addNewBlock(Block block){
+		m_allBlocks.add(block);
 	}
 
 }

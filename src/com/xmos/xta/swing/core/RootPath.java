@@ -54,13 +54,13 @@ public class RootPath implements RouteNode {
         if (m_caller != null) {
             description += " - " + m_rootPath.getNumIterations() + " iterations";
         }
-        description += " (path " + m_rootPath.getInstanceId() + ")";
+        //description += " (path " + m_rootPath.getInstanceId() + ")";
         return description;
     }
 
     public String getToolTipText() {
         String toolTipText = "";
-        toolTipText += "<HTML>Path Instance ID: " + m_rootPath.getInstanceId() + "<br>";
+       // toolTipText += "<HTML>Path Instance ID: " + m_rootPath.getInstanceId() + "<br>";
         toolTipText += "<HTML>Time taken: " + getTimeTaken() + " ns<br>";
         toolTipText += "<HTML>Number of cycles: " + getNumCycles() + "<br>";
         toolTipText += "<HTML>Number of FNOPs: " + getNumFNops() + "<br>";
@@ -74,9 +74,9 @@ public class RootPath implements RouteNode {
         return m_rootPath.getId();
     }
 
-    public int getInstanceId() {
-        return m_rootPath.getInstanceId();
-    }
+   // public int getInstanceId() {
+  //      return m_rootPath.getInstanceId();
+  //  }
 
     public int getNumCycles() {
         int num = m_rootPath.getNumCycles(true);
@@ -187,7 +187,6 @@ public class RootPath implements RouteNode {
 
                     public void mousePressed(MouseEvent e) {
                         m_engine.setLoopIterations(m_rootPath.getId(), 
-                                scopeButton.isSelected(), 
                                 absoluteButton.isSelected(), 
                                 (Integer)(spinner.getValue()));
                         id.dispose();
@@ -219,7 +218,7 @@ public class RootPath implements RouteNode {
         JMenuItem traceToConsole = new JMenuItem("Trace in console");
         traceToConsole.addMouseListener(new MouseAdapter(){
             public void mousePressed(MouseEvent e) {
-            	m_xtaGui.sendToConsole(String.format("trace %d", m_rootPath.getInstanceId()));
+            	//m_xtaGui.sendToConsole(String.format("trace %d", m_rootPath.getInstanceId()));
             }
         });
         popup.add(traceToConsole);

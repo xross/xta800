@@ -85,7 +85,7 @@ class Loop extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-		if (!engine.setLoopIterations(m_pathId, true, m_absolute, m_iterations)) {
+		if (!engine.setLoopIterations(m_pathId, m_absolute, m_iterations)) {
     		console.display(String.format("Error: Failed to set loop iterations: path id: %d\n", m_pathId));    		
     	}
     }    

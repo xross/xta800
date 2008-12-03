@@ -22,7 +22,6 @@ public abstract class Node {
     }
     
     public abstract int getId();
-    public abstract int getInstanceId();
 
 	public abstract double getTimeTaken();
 	public abstract double getTimeTakenThis();
