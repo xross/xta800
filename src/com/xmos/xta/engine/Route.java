@@ -11,6 +11,7 @@ import java.util.Vector;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
+import com.xmos.xta.engine.CodeReference.RefType;
 import com.xmos.xta.engine.Engine.ReferenceMode;
 import com.xmos.xta.engine.Status.ExecutionStatus;
 
@@ -105,7 +106,7 @@ public class Route {
 	}
 
 	RouteStatus analyse(MemoryImage memoryImage, SymbolTable symbolTable, DebugInfo debugInfo, Engine engine) {
-		m_progress.resetState(Progress.State.PROCESSING_PATHS, m_config.m_maxNumPaths);
+		m_progress.resetState(Progress.State.PROCESSING_PATHS, m_config.m_minimumRemainingMemory);
 
 		assert (memoryImage != null);
 		assert (symbolTable != null);
@@ -225,17 +226,16 @@ public class Route {
 		ExecutionState searching = nextBlock();
 		while (searching != null && m_status != RouteStatus.ABORTED) {
 			searching.build();
-			
-			
 			searching = nextBlock();
-			cleanSchedule();
-			if(this.m_executionStates.size() > m_config.m_maxNumPaths){
-				m_status = RouteStatus.MAX_NUM_PATHS;
-				break;
+			
+			if(Runtime.getRuntime().maxMemory() - Runtime.getRuntime().freeMemory() < m_config.m_minimumRemainingMemory 
+					&& m_status == RouteStatus.ANALYSING){
+				System.err.println("Warning: ran out of memory (" +Runtime.getRuntime().freeMemory()+" out of  )"+m_config.m_minimumRemainingMemory);
+				m_status = RouteStatus.ABORTED;
 			}
+			cleanSchedule();
 		}
 		System.gc();
-		System.out.println(Runtime.getRuntime().freeMemory());
 	}
 
 	private void cleanSchedule() {
@@ -301,22 +301,22 @@ public class Route {
 		
 		for(Block completePath : m_completePaths){
 			
-			ArrayList<Integer> allReferences = completePath.getAllReferencePcs();
-			for(CodeReference ref : m_engine.getReference(ReferenceMode.EXCLUSION)){
+			ArrayList<Integer> allPathPcs = completePath.getAllPcs();
 
-				if(allReferences.contains(ref.getPc())) {
+			for(int req : required){
+				if(!allPathPcs.contains(req)){
 					toRemove.add(completePath);
 					break;
 				}
 			}
-			
-			for(CodeReference ref : m_engine.getReference(ReferenceMode.REQUIRED)){
-				if(!allReferences.contains(ref.getPc())) {
+
+			for(int exc : exclusions){
+				if(allPathPcs.contains(exc)){
 					toRemove.add(completePath);
 					break;
 				}
 			}
-			
+
 		}
 		m_completePaths.removeAll(toRemove);
 		m_removedPaths.addAll(toRemove);
