@@ -1,5 +1,8 @@
 package com.xmos.xta.rcp.views;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
@@ -18,6 +21,8 @@ public class ConsoleView extends ViewPart implements IPropertyChangeListener,
     public static final String ID = "com.xmos.xta.rcp.views.Console";
 
     private ConsoleViewControl m_consoleViewControl;
+    private Boolean m_started = false;
+    private List<String> m_pendingCommands = new ArrayList<String>();
     
 	public ConsoleView() {
 		if (DEBUG) System.out.printf("Console()\n");			
@@ -26,12 +31,14 @@ public class ConsoleView extends ViewPart implements IPropertyChangeListener,
 
 	public void createPartControl(Composite parent) {
 		if (DEBUG) System.out.printf("Console: createPartControl\n");
-		m_consoleViewControl = new ConsoleViewControl(parent);
+
+		m_consoleViewControl = new ConsoleViewControl(this, parent);
+
 		new Thread() {
 	    	public void run() {
 	    		m_consoleViewControl.execute();
-    		}}.start();    	    	
-	}
+    		}}.start();
+    }
 
 	public void setFocus() {
 		if (DEBUG) System.out.printf("Console: setFocus\n");			
@@ -48,5 +55,33 @@ public class ConsoleView extends ViewPart implements IPropertyChangeListener,
                 // Do selection updates here..
             }
         }
-     }	            		         	        
+     }
+
+    public void runCommand(String command) {
+		if (DEBUG) System.out.printf("Console: runCommand: %s\n", command);
+		
+		synchronized(this) {
+			if (m_started) 
+				m_consoleViewControl.sendCommand(command);
+			else
+				m_pendingCommands.add(command);
+		}
+     }
+
+	public boolean hasPendingCommands() {
+		synchronized(this) {
+			m_started = true;
+			if (m_pendingCommands.size() > 0)
+				return true;
+			else
+				return false;
+		}
+	}
+
+   public String getCommand() {
+		synchronized(this) {
+			String command = m_pendingCommands.remove(0);
+			return command;
+		}
+     }
 }

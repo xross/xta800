@@ -21,6 +21,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         configurer.setInitialSize(new Point(400, 300));
         configurer.setShowCoolBar(false);
         configurer.setShowStatusLine(false);
-        configurer.setTitle("Xmos Timing Analysis");
+        configurer.setTitle("XMOS Timing Analysis");
     }    
 }

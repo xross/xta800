@@ -32,8 +32,8 @@ import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaErrorLog;
 import com.xmos.xta.rcp.XtaFileFinder;
 import com.xmos.xta.rcp.XtaRouteInfo;
-import com.xmos.xta.rcp.editors.Sources;
-import com.xmos.xta.rcp.editors.SourcesInput;
+import com.xmos.xta.rcp.editors.SourcesEditor;
+import com.xmos.xta.rcp.editors.SourcesEditorInput;
 import com.xmos.xta.rcp.nodes.Node;
 import com.xmos.xta.rcp.nodes.RouteNode;
 
@@ -101,14 +101,16 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	}
 	
     public void selectionChanged(IWorkbenchPart part, ISelection sel) {
-    	if ((part == this) || sel.isEmpty())
+    	if (sel.isEmpty())
     		return;
     	
 		if (sel instanceof IStructuredSelection) {	            
             Object object = ((IStructuredSelection)sel).getFirstElement();
             if (object instanceof Node) {
             	m_routeInfo.setSelectedNode((Node)object);
-        		m_treeViewer.setSelection(sel, true);
+            	if (part != this) {
+            		m_treeViewer.setSelection(sel, true);
+            	}
             }
         }
      }
@@ -230,9 +232,9 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     private void openEditors() {
 		final IWorkbenchPage page = getSite().getWorkbenchWindow().getActivePage();
 		page.closeAllEditors(false);
-		IEditorInput sourcesInput = new SourcesInput();
+		IEditorInput sourcesInput = new SourcesEditorInput();
 		try {
-		    page.openEditor(sourcesInput, Sources.ID);
+		    page.openEditor(sourcesInput, SourcesEditor.ID);
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}    	
@@ -249,8 +251,13 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	private void initialiseTree() {
-		m_routeInfo = XtaDisplayer.getInstance().getRouteInfo();										
-    	m_treeViewer.setInput(m_routeInfo.getRouteNode());
+		m_routeInfo = XtaDisplayer.getInstance().getRouteInfo();
+		
+		// Create the magic 'hidden' node to allow the actual node to be seen
+		// in the tree
+		RouteNode treeRoot = new RouteNode();
+		treeRoot.addNode(m_routeInfo.getRouteNode());
+    	m_treeViewer.setInput(treeRoot);
 		ColumnViewerToolTipSupport.enableFor(m_treeViewer, ToolTip.NO_RECREATE);
 	}
 	

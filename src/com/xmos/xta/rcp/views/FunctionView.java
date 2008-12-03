@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -68,12 +69,12 @@ public class FunctionView extends ZoomedCanvasView {
 	}
 
     protected void initialiseTree() {
-    	clearAll();
-		m_routeInfo = XtaDisplayer.getInstance().getRouteInfo();
+    	m_routeInfo = XtaDisplayer.getInstance().getRouteInfo();
 		if (m_routeInfo != null) {
+    		getDebugInfo();
 			m_rootNode = m_routeInfo.getRouteNode();
 			m_selectedNode = m_routeInfo.getSelectedNode();
-			getDebugInfo();
+    		setSelection(new StructuredSelection(m_selectedNode));
 		} else {
 			m_rootNode = null;
 			m_selectedNode = null;
@@ -110,7 +111,7 @@ public class FunctionView extends ZoomedCanvasView {
 			m_pixelsX = 0;
 			m_pixelsY = 0;
 		} else {
-			m_pixelsX = (m_borderX  * 2) + pathRoot.getFunctionNode().getPixelsX();
+			m_pixelsX = (m_borderX * 2) + pathRoot.getFunctionNode().getPixelsX();
 			m_pixelsY = (m_borderY * 2) + pathRoot.getFunctionNode().getPixelsY() + m_functionNameY;
 		}
     }

@@ -188,6 +188,16 @@ sub DoInstall
   XmosBuildLib::InstallFile("$DOMAIN", "lib", "xtaswing.jar");
   #XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xtaswing.jar", "bin");
 
+  if ($HOST eq "PC") {
+    XmosBuildLib::InstallFile("$DOMAIN", "bin", "xta.win32.zip");
+  } elsif ($HOST eq "Cygwin") {
+    XmosBuildLib::InstallFile("$DOMAIN", "bin", "xta.cygwin.zip");
+  } elsif ($HOST eq "Mac") {
+    XmosBuildLib::InstallFile("$DOMAIN", "bin", "xta.mac.zip");
+  } else {
+    XmosBuildLib::InstallFile("$DOMAIN", "bin", "xta.linux.zip");
+  }
+
   chdir("$BUILDPATH") or die("oops");
 }
 

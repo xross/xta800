@@ -8,11 +8,15 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.dialogs.Iterations;
+import com.xmos.xta.rcp.views.ConsoleView;
 import com.xmos.xta.rcp.views.ViewNode.FunctionPathNode;
 import com.xmos.xta.rcp.views.ViewNode.StructurePathNode;
 
@@ -108,7 +112,15 @@ public class PathNode extends Node {
 		manager.add(new Separator());
     	manager.add(new Action("Trace in console") {
 			public void run() {
-				// TODO - implement
+				ConsoleView console = (ConsoleView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+					getActivePage().findView(ConsoleView.ID);
+				
+				try {
+					PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+					getActivePage().showView(ConsoleView.ID);
+				} catch (PartInitException e) {}
+				
+				console.runCommand("trace " + m_this.getId());
 			}
 		});    	
     	

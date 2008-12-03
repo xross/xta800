@@ -4,9 +4,13 @@ import java.util.ArrayList;
 
 public class Input {	
 	private ArrayList<InputSection> m_sections;
+	private String m_headerType;
+	private String m_lineType;
 	
-    Input() {
+    Input(String headerType, String lineType) {
     	m_sections = new ArrayList<InputSection>();
+    	m_headerType = headerType;
+    	m_lineType = lineType;
     }
     
     void addHeader(String header, int index) {
@@ -20,6 +24,14 @@ public class Input {
     
     ArrayList<InputSection> getSections() {
     	return m_sections;
+    }
+    
+    String getHeaderType() {
+        return m_headerType; 	
+    }
+
+    String getLineType() {
+        return m_lineType; 	
     }
 }
 

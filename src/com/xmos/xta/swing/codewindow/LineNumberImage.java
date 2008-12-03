@@ -13,10 +13,8 @@ import javax.swing.text.JTextComponent;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.Line.DisplayType;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.swing.XtaGui;
 import com.xmos.xta.swing.XtaXeObjectDisplayer;
-
 
 public class LineNumberImage implements Highlighter.HighlightPainter {
 
@@ -25,7 +23,6 @@ public class LineNumberImage implements Highlighter.HighlightPainter {
 	private JTextPane              m_textPane;
 	public static final int        circleWidth = 8;
 	private XtaXeObjectDisplayer   m_parent;
-	private  Engine                m_engine;
 	
 	public LineNumberImage(Line line, ArrayList<Line> lines, LineHeaders lineHeaders, 
 	        XtaXeObjectDisplayer parent, Engine engine ){
@@ -33,7 +30,6 @@ public class LineNumberImage implements Highlighter.HighlightPainter {
 	    m_lines = lines;
         m_textPane = lineHeaders;
         m_parent = parent;
-        m_engine = engine;
 	}
 	
     public void paint(Graphics g, int p0, int p1, Shape bounds, JTextComponent c) {

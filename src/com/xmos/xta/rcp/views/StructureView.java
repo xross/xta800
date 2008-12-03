@@ -1,5 +1,6 @@
 package com.xmos.xta.rcp.views;
 
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -34,7 +35,10 @@ public class StructureView extends ZoomedCanvasView {
 	}
 
     protected void buildClickAreas() {
-    	m_rootNode.getStructureNode().buildClickAreas(m_clickAreas);
+    	m_clickAreas.clear();
+    	if (m_rootNode != null) {
+    		m_rootNode.getStructureNode().buildClickAreas(m_clickAreas);
+    	}
     }
 
     protected void annotateTree(boolean isSelctionChange) {
@@ -45,7 +49,9 @@ public class StructureView extends ZoomedCanvasView {
     	}
 
 		m_numTreeNodes = 0;
-		annotateTree(m_doubleClickNode, getNumIterations(m_doubleClickNode), 1);
+		annotateTree(m_doubleClickNode,
+				getNumIterations(m_doubleClickNode),
+				getTotalWeight(m_doubleClickNode));
 		
 		// Build up a new list of click areas and then swap to ensure the old ones are available
 		// for double clicks
@@ -60,6 +66,19 @@ public class StructureView extends ZoomedCanvasView {
     		return 1;
     	
 		return (start.getNumIterations() * getNumIterations(start.getParentNode()));
+	}
+
+    private double getTotalWeight(Node start) {
+    	if ((start == null) || start.isRouteNode()) { 
+    		return 1;
+    	} else {
+    		Node parent = start.getParentNode();
+    		if (parent.isRouteNode()) {
+    			return start.getTimeTaken();
+    		} else {
+    			return getTotalWeight(parent);
+    		}
+    	}
 	}
 
     protected void updatePixelsXy() {
@@ -150,6 +169,7 @@ public class StructureView extends ZoomedCanvasView {
 			m_rootNode = m_routeInfo.getRouteNode();
 			m_doubleClickNode = m_rootNode;
 			m_selectedNode = m_routeInfo.getSelectedNode();
+			setSelection(new StructuredSelection(m_selectedNode));
 		} else {
 			m_rootNode = null;
 			m_doubleClickNode = null;

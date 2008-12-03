@@ -44,7 +44,6 @@ public class UnknownDisplayer implements Displayer {
     }
     
     private void mousePress(MouseEvent e) {
-        Unknown selectedUnknown = (Unknown) m_unknownList.getSelectedValue();
     }
     
     public void displayRoute(Route route, DebugInfo debugInfo,
