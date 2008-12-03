@@ -17,7 +17,7 @@ import com.xmos.xta.rcp.nodes.Node;
 
 public class ConsoleView extends ViewPart implements IPropertyChangeListener,
                                                      ISelectionListener {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.rcp.views.Console";
 
     private ConsoleViewControl m_consoleViewControl;

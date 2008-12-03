@@ -23,16 +23,16 @@ import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.rcp.XtaEngine;
 
 public class ConsoleViewControl implements Console {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private Shell m_shell;
 	private TextReader m_textReader;
-	private ConsoleView m_console; 
+	private ConsoleView m_consoleView; 
 	
 	public ConsoleViewControl(ConsoleView console, Composite parent) {
 		if (DEBUG) System.out.printf("ConsoleViewControl()\n");			
 
-		m_console = console;
+		m_consoleView = console;
 		m_shell = new Shell(this, XtaEngine.getEngine(), false);		        
 		m_textReader = new TextReader(parent);
 	}
@@ -49,8 +49,8 @@ public class ConsoleViewControl implements Console {
 	
 	public String getNextLine(Vector<Command> commandHistory) {
 		if (DEBUG) System.out.printf("ConsoleViewControl: getNextLine\n");
-		if (m_console.hasPendingCommands()) {
-			String command = m_console.getCommand();
+		if (m_consoleView.hasPendingCommands()) {
+			String command = m_consoleView.getCommand();
 	        return command;
 		} else {
 			String command = m_textReader.readLine(commandHistory);
