@@ -16,7 +16,7 @@ public interface RouteNode {
     public double               getTimeTaken();
     public int                  getNumCycles();
     public int                  getId();
-    public int                  getInstanceId();
+   // public int                  getInstanceId();
     
     public Vector<XtaInstruction> getInstructions();
  

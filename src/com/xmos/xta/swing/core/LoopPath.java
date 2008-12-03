@@ -83,9 +83,9 @@ public class LoopPath implements RouteNode {
         return m_loopPath.getId();
     }
 
-    public int getInstanceId() {
-        return m_loopPath.getInstanceId();
-    }
+   // public int getInstanceId() {
+   //     return m_loopPath.getInstanceId();
+   // }
 
     public int getNumCycles() {
         int numCycles = 0;

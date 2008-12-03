@@ -18,8 +18,6 @@ import com.xmos.xeobject.Line;
 import com.xmos.xeobject.XeObject;
 
 public class Engine { 
-
-	private static final boolean DEBUG = true;
 	
 	public enum ReferenceMode {
 		EXCLUSION,
@@ -88,17 +86,37 @@ public class Engine {
     	}
     }
     
-    public void removeReference(ReferenceMode mode, CodeReference ref){
+    public boolean removeReference(ReferenceMode mode, CodeReference ref){
     	if(mode == ReferenceMode.EXCLUSION){
-    		m_exclusions.remove(ref);
+    		CodeReference cr = findReference(ref, m_exclusions);
+    		if(cr==null) return false;
+    		m_exclusions.remove(cr);
+    		return true;
     	} else if(mode == ReferenceMode.PROHIBITED){
-    		m_prohibited.remove(ref);
+    		CodeReference cr = findReference(ref, m_prohibited);
+    		if(cr==null) return false;
+    		m_prohibited.remove(cr);
+    		return true;
     	} else if(mode == ReferenceMode.REQUIRED){
-    		m_required.remove(ref);
+    		CodeReference cr = findReference(ref, m_required);
+    		if(cr==null) return false;
+    		m_required.remove(cr);
+    		return true;
     	} else{
     		assert(false);
+    		return false;
     	}
     }
+    
+    private CodeReference findReference(CodeReference ref, Vector<CodeReference> references){
+    	for(CodeReference present : references){
+    		if(ref.getPc() == present.getPc() && ref.getRef().equals(present.getRef())){
+    			return present;
+    		}
+    	}
+    	return null;
+    }
+    
     
     public Vector<CodeReference> getReference(ReferenceMode mode){
     	if(mode == ReferenceMode.EXCLUSION){
@@ -165,6 +183,7 @@ public class Engine {
                 m_xeObject = new XeObject(m_xeLoader);
             }
             decodeInstructions();
+            //addBranchTargets();
             m_route = null;
             for (Displayer displayer : m_displayers)
                 displayer.notifyLoadExecutable();
@@ -348,8 +367,8 @@ public class Engine {
         m_errorString = errorString;
     }
 
-    public boolean setLoopIterations(int pathId, boolean allInstances, boolean absolute, int iterations) {
-        boolean hit = m_route.setLoopIterations(pathId, allInstances, absolute, iterations);
+    public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
+        boolean hit = m_route.setLoopIterations(pathId, absolute, iterations);
 
         if (hit) {
             m_route.notifyUpdate();
@@ -537,8 +556,7 @@ public class Engine {
     }    
 
     private boolean resolveRefernece(CodeReference ref, Engine engine) {
-        DebugInfo debugInfo = m_xeLoader.getDebugInfo(m_nodeId, m_coreId);
-        return ref.resolve(debugInfo, engine);
+        return ref.resolve(engine, m_nodeId, m_coreId);
     }
 
 	public void setDynamicMode(boolean b) {

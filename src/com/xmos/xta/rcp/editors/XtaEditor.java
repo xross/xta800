@@ -93,14 +93,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      	
      	setAction(ExpandAllID, new Action("Expand All") {
      		public void run() {
-     			System.out.printf("Expand All\n");     	
      			IDocument document = getSourceViewer().getDocument();
      			m_projectionAnnotationModel.expandAll(0, document.getLength());
      		}
      	});
      	setAction(CollapseAllID, new Action("Collapse All") {
      		public void run() {
-     			System.out.printf("Collapse All\n");
      			IDocument document = getSourceViewer().getDocument();
      			m_projectionAnnotationModel.collapseAll(0, document.getLength());
      		}
