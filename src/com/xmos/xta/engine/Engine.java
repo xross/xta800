@@ -18,8 +18,6 @@ import com.xmos.xeobject.Line;
 import com.xmos.xeobject.XeObject;
 
 public class Engine { 
-
-	private static final boolean DEBUG = true;
 	
 	public enum ReferenceMode {
 		EXCLUSION,

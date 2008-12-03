@@ -156,6 +156,7 @@ public class ExecutionState {
 				continue;
 			if (thread.getStatus() != BlockStatus.COMPLETE) {
 				return false;
+				
 			}
 		}
 		return true;

@@ -225,6 +225,8 @@ public class Route {
 		ExecutionState searching = nextBlock();
 		while (searching != null && m_status != RouteStatus.ABORTED) {
 			searching.build();
+			
+			
 			searching = nextBlock();
 			cleanSchedule();
 			if(this.m_executionStates.size() > m_config.m_maxNumPaths){
@@ -232,6 +234,8 @@ public class Route {
 				break;
 			}
 		}
+		System.gc();
+		System.out.println(Runtime.getRuntime().freeMemory());
 	}
 
 	private void cleanSchedule() {
