@@ -662,6 +662,19 @@ public class Block implements Comparable<Block> {
 		}
 		return 1;
 	}
+
+	public ArrayList<Integer> getAllPcs() {
+		ArrayList<Integer> allPcs = new ArrayList<Integer>();
+		allPcs.addAll(m_pcs);
+		for (Block block : getPathBlocks()) {
+			allPcs.addAll(block.m_pcs);
+			for (Block loopPath : block.getLoopPaths()) {
+				allPcs.addAll(loopPath.getAllPcs());
+			}
+		}
+		doneWithPathBlocks();
+		return allPcs;
+	}
 	
 	public void getPathLabels(boolean recurse, ArrayList<String> labels) {
 		for (Block block : getPathBlocks()) {
@@ -989,16 +1002,10 @@ public class Block implements Comparable<Block> {
 		return m_unknowns.size();
 	}
 	
-	public ArrayList<Integer> getAllReferencePcs() {
+	public ArrayList<String> getAllLabelPcs() {
 		ArrayList<String> labels  = new ArrayList<String>();
-       getPathLabels(false, labels);
-		ArrayList<Integer> references = new ArrayList<Integer>();
-		for(String label : labels){
-			CodeReference ref  = new CodeReference(label);
-			ref.resolve(m_bc.getEngine());
-			references.add(ref.getPc());
-		}
-		return references;
+        getPathLabels(false, labels);
+		return labels;
 	}
 
 	
@@ -1059,4 +1066,5 @@ public class Block implements Comparable<Block> {
         }
         return result;
     }
+
 }
