@@ -23,7 +23,7 @@ import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.rcp.XtaEngine;
 
 public class ConsoleViewControl implements Console {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private Shell m_shell;
 	private TextReader m_textReader;
