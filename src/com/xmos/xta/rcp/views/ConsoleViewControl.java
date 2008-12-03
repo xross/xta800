@@ -23,22 +23,24 @@ import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.rcp.XtaEngine;
 
 public class ConsoleViewControl implements Console {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     private Shell m_shell;
 	private TextReader m_textReader;
+	private ConsoleView m_console; 
 	
-	public ConsoleViewControl(Composite parent) {
+	public ConsoleViewControl(ConsoleView console, Composite parent) {
 		if (DEBUG) System.out.printf("ConsoleViewControl()\n");			
 
+		m_console = console;
 		m_shell = new Shell(this, XtaEngine.getEngine(), false);		        
 		m_textReader = new TextReader(parent);
 	}
 	
     public void execute() {
-		if (DEBUG) System.out.printf("ConsoleViewControl: execute\n");			
+		if (DEBUG) System.out.printf("ConsoleViewControl: execute\n");
         m_shell.execute();
-    }	
+    }
 	
 	public void display(String str) {		
 		if (DEBUG) System.out.printf("ConsoleViewControl: display: %s\n", str);			
@@ -46,9 +48,14 @@ public class ConsoleViewControl implements Console {
 	}
 	
 	public String getNextLine(Vector<Command> commandHistory) {
-		if (DEBUG) System.out.printf("ConsoleViewControl: getNextLine\n");			
-		String command = m_textReader.readLine(commandHistory);
-        return command;
+		if (DEBUG) System.out.printf("ConsoleViewControl: getNextLine\n");
+		if (m_console.hasPendingCommands()) {
+			String command = m_console.getCommand();
+	        return command;
+		} else {
+			String command = m_textReader.readLine(commandHistory);
+	        return command;
+		}
 	}	
 	
 	public boolean wasInternal() {
@@ -57,7 +64,7 @@ public class ConsoleViewControl implements Console {
 	}
 	
 	public void sendCommand(String command) {
-		if (DEBUG) System.out.printf("ConsoleViewControl: sendCommand: %s\n", command);			
+		if (DEBUG) System.out.printf("ConsoleViewControl: sendCommand: %s\n", command);
 		m_textReader.sendCommand(command);
 	}	
 }
@@ -163,7 +170,7 @@ class TextReader extends Reader {
 	    		m_text.append(m_string);
 		    	m_text.setSelection(m_text.getCharCount());
 		    }
-    	});					    				
+    	});
 	}
 	
 	public String readLine(Vector<Command> commandHistory) {

@@ -33,7 +33,7 @@ public class Shell {
 	    initialise(console, engine);
 	    m_exitAllowed = exitAllowed;
 	}
-	
+
     public void execute() {    	
     	while (!isComplete()) {
     		Command command = getNextCommand();
