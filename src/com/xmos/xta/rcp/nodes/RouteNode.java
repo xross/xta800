@@ -50,6 +50,10 @@ public class RouteNode extends Node {
     	return new Vector<XtaInstruction>();
     }
 
+	public void getFnopPcs(Vector<XtaInstruction> fnops) {
+		// Do nothing
+	}
+
 	public void getBlockIds(Vector<Integer> ids) {
 		// Do nothing
 	}
