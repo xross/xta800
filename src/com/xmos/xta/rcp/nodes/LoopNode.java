@@ -56,15 +56,7 @@ public class LoopNode extends Node {
         toolTipText += "Total number of cycles: " + getNumCycles() + "\n";
         toolTipText += "Total number of FNOPs: " + m_block.getNumFNopsLoopsOnly() + "\n";
         toolTipText += "Total number of pausable: " + m_block.getNumPausablesLoopsOnly() + "\n";
-        toolTipText += "Total number of unknowns: " + m_block.getNumUnknownsLoopsOnly() + "\n";
-        String loopName="";
-        ArrayList<String> labels = new ArrayList<String>();
-         m_block.getPathLabels(false, labels);
-        for(String label :labels){
-        	loopName+=label;
-        }
-        toolTipText += "Loop name: " + loopName;
-        
+        toolTipText += "Total number of unknowns: " + m_block.getNumUnknownsLoopsOnly() ;
         return toolTipText;
     }
     
