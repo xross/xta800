@@ -4,7 +4,7 @@ Unresolved paths: 0
   1: int a = 2;
   2: int main()
 + 3: {
-  4:   int b = 0;
++ 4:   int b = 0;
 + 5:   if (a == 2)
   6:   {
   7:     b = 2;
@@ -22,7 +22,7 @@ Unresolved paths: 0
   1: int a = 2;
   2: int main()
 + 3: {
-  4:   int b = 0;
++ 4:   int b = 0;
 + 5:   if (a == 2)
   6:   {
 + 7:     b = 2;

@@ -67,7 +67,7 @@ Path(id): Timing(ns)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
   27: 
   1: int main()
 + 2: {
-  3:   int res = 0;
++ 3:   int res = 0;
 + 4:   int i = 0;
 + 5:   for (i = 0; i < 5; ++i)
   6:   {
