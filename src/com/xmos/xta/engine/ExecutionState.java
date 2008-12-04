@@ -69,6 +69,13 @@ public class ExecutionState {
 
 		BlockStatus currentStatus = currentThread.getStatus();
 		while (m_status == ExecutionStatus.SEARCHING) {
+			
+			if(currentStatus == BlockStatus.OUTOFMEMORY ){
+				currentThread.setStatus(BlockStatus.OUTOFMEMORY);
+				setStatus(ExecutionStatus.OUTOFMEMORY);
+				return;
+			}
+			
 			if (currentStatus == BlockStatus.SEARCHING) {
 				currentThread.build();
 				currentStatus = currentThread.getStatus();
@@ -103,7 +110,7 @@ public class ExecutionState {
 					|| currentStatus == BlockStatus.ERROR
 					|| currentStatus == BlockStatus.RECURSION
 					|| currentStatus == BlockStatus.UNRESOLVED
-					|| currentStatus == BlockStatus.MAX_NUM_PATHS) {
+					) {
 				this.setStatus(ExecutionStatus.UNRESOLVED);
 				return;
 			} else if (currentStatus == BlockStatus.COMPLETE) {
@@ -195,5 +202,12 @@ public class ExecutionState {
 
 	public MachineState getMachineState() {
 		return this.m_machineState;
+	}
+
+	public void releaseMemory() {
+		m_machineState = null;
+		m_route = null;
+		System.gc();
+		
 	}
 }

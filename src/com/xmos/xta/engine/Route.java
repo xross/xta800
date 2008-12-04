@@ -13,12 +13,13 @@ import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.CodeReference.RefType;
 import com.xmos.xta.engine.Engine.ReferenceMode;
+import com.xmos.xta.engine.Status.BlockStatus;
 import com.xmos.xta.engine.Status.ExecutionStatus;
 
 public class Route {
 
 	enum RouteStatus {
-		COMPLETED, ABORTED, ERROR, MAX_NUM_PATHS, ANALYSING
+		COMPLETED, ABORTED, ERROR, OUTOFMEMORY, ANALYSING
 	}
 
 	private String m_id;
@@ -137,8 +138,10 @@ public class Route {
 			new ExecutionState(this, initialState, bc, m_fromRef.getPc(), m_toRef.getPc());
 		}
 		stepPath();
-		filterPaths();
-		sortPaths();
+		if(m_status != RouteStatus.ABORTED && m_status != RouteStatus.OUTOFMEMORY && m_status != RouteStatus.ERROR){
+			filterPaths();
+			sortPaths();
+		}
 		m_progress.resetState(Progress.State.IDLE, 0);
 		return m_status;
 	}
@@ -224,19 +227,18 @@ public class Route {
 
 	private void stepPath() {
 		ExecutionState searching = nextBlock();
-		while (searching != null && m_status != RouteStatus.ABORTED) {
+		while (searching != null && (m_status != RouteStatus.ABORTED )) {
 			searching.build();
-			searching = nextBlock();
-			
-			if(Runtime.getRuntime().maxMemory() - Runtime.getRuntime().freeMemory() < m_config.m_minimumRemainingMemory 
-					&& m_status == RouteStatus.ANALYSING){
-				System.err.println("Warning: ran out of memory (" +Runtime.getRuntime().freeMemory()+" out of  )"+m_config.m_minimumRemainingMemory);
-				m_status = RouteStatus.ABORTED;
+			if(searching.getStatus() == ExecutionStatus.OUTOFMEMORY){
+				m_status = RouteStatus.OUTOFMEMORY;
+				return;
 			}
+			searching = nextBlock();
 			cleanSchedule();
 		}
 		System.gc();
 	}
+
 
 	private void cleanSchedule() {
 		ArrayList<ExecutionState> toRemove = new ArrayList<ExecutionState>();

@@ -51,16 +51,6 @@ public class BlockNode extends Node {
         toolTipText += "Number of cycles: " + getNumCycles() + "\n";
         toolTipText += "Number of FNOPs: " + m_block.getNumFNopsThis() + "\n";
         toolTipText += "Number of pausables: " + m_block.getNumPausablesThis() + "\n";
-        ArrayList<String> labels  = m_block.getLabels();
-        boolean first= true;
-        for(String label : labels){
-        	if(first) {
-        		toolTipText += "Labels (this): " + label + "\n"; 	
-        		first = false;
-        	}
-        	else toolTipText += "                   : " + label + "\n"; 
-        }
-        
         toolTipText += "Number of unknowns: " + m_block.getNumUnknownsThis();
         
         

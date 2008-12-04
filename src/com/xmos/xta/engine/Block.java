@@ -19,8 +19,6 @@ public class Block implements Comparable<Block> {
 		FUNCTION, ABSOLUTE
 	}
 	
-	private ArrayList<String> m_labels;
-
 	private BlockCommonComponents m_bc;
 
 	private Block m_parentBlock;
@@ -68,7 +66,6 @@ public class Block implements Comparable<Block> {
 
 		m_numBlocks = 0;
 		initialise(machineState);
-		m_labels= new ArrayList<String>(); 
 		m_bc = bc;
 		m_status = BlockStatus.SEARCHING;
 		m_contexts.add(new TreeSet<Integer>());
@@ -118,21 +115,6 @@ public class Block implements Comparable<Block> {
 			blockToSplit.m_pcs.remove(new Integer(inst.getPc()));
 			blockToSplit.m_instructions.remove(inst);
 		}
-		blockToSplit.m_labels.clear();
-		m_labels = new ArrayList<String>();
-		
-		for(XtaInstruction inst : blockToSplit.m_instructions){
-			String label = m_bc.getEngine().getLabel(inst.getPc());
-			if(label != null){
-				blockToSplit.m_labels.add(label);
-			}
-		}
-		for(XtaInstruction inst : m_instructions){
-			String label = m_bc.getEngine().getLabel(inst.getPc());
-			if(label != null){
-				m_labels.add(label);
-			}
-		}
 
 		updateInstructionInfo();
 		blockToSplit.updateInstructionInfo();
@@ -162,7 +144,6 @@ public class Block implements Comparable<Block> {
 
 	public Block(Block block, MachineState machineState, ExecutionState executionState) {
 		initialise(machineState);
-		m_labels= new ArrayList<String>(); 
 		m_status = block.m_status;
 		m_speculative = block.m_speculative;
 		m_parentBlock = block;
@@ -227,12 +208,6 @@ public class Block implements Comparable<Block> {
 		return (int) (path.getTimeTaken(true) - getTimeTaken(true));
 	}
 
-	public ArrayList<String> getPathIdentifier(){
-		ArrayList<String> ident = new ArrayList<String>();
-		this.getPathLabels(false, ident);
-		return ident;
-	}
-
 	public void addLoopPath(Block pathStartBlock) {
 		if (DEBUG)
 			System.out.println("found loopPath: " + pathStartBlock.m_id + " forms a loop with block " + m_id);
@@ -246,9 +221,19 @@ public class Block implements Comparable<Block> {
 	}
 
 	public void build() {
-
+		
+		if(Runtime.getRuntime().totalMemory() == Runtime.getRuntime().maxMemory() 
+				&& Runtime.getRuntime().freeMemory() < m_bc.getConfig().m_minimumRemainingMemory ){
+			System.gc();
+			if(Runtime.getRuntime().freeMemory() < m_bc.getConfig().m_minimumRemainingMemory){
+				setStatus(BlockStatus.OUTOFMEMORY);
+				releaseMemory();
+				return;
+			}
+		}
+		
 		int pc = m_machineState.getPc(m_currentThread);
-		if (isExcluded(pc)) {
+		if (isProhibited(pc)) {
 			setStatus(BlockStatus.EXCLUDED);
 			releaseMemory();
 			return;
@@ -310,14 +295,10 @@ public class Block implements Comparable<Block> {
 					return;
 				} else {
 					if (instruction.getReturn()) {
-						if (DEBUG)
-							System.out.println("pop");
 						popFunction();
 					}
 					checkForLoopFormation(jumpTarget, false, instruction, true, false);
 					if (instruction.getBranchLink()) {
-						if (DEBUG)
-							System.out.println("push");
 						pushFunction(pc);
 					}
 					return;
@@ -346,10 +327,16 @@ public class Block implements Comparable<Block> {
 						checkForLoopFormation(nextPc, false, instruction, false, false);
 					} else if (m_machineState.getBranchTaken() == BranchState.UNKNOWN) {
 						addUnknown(instruction);
-						takeUnknownBranch(instruction, nextPc);
+						checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
+						checkForLoopFormation(nextPc, true, instruction, false, true);
+						setStatus(BlockStatus.COMPLETE);
+						releaseMemory();
 					}
 				} else {
-					takeUnknownBranch(instruction, nextPc);
+					checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
+					checkForLoopFormation(nextPc, true, instruction, false, true);
+					setStatus(BlockStatus.COMPLETE);
+					releaseMemory();
 				}
 				return;
 			} else {
@@ -365,47 +352,6 @@ public class Block implements Comparable<Block> {
 		m_firstStep = false;
 		instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
 	}
-
-	private void takeUnknownBranch(XtaInstruction instruction, int nextPc) {
-		boolean resolve = false;
-		if(resolve){
-			 if(instruction.getNmenonic().equals("BRBF")){
-				
-				 //TODO
-				 
-				 
-			} else if(instruction.getNmenonic().equals("BRBT")){
-				
-			} else if(instruction.getNmenonic().equals("BRFF")){
-				
-			} else if(instruction.getNmenonic().equals("BRFT")){
-				
-			} else if(instruction.getNmenonic().equals("BAU")){
-				
-			} else if(instruction.getNmenonic().equals("BRU")){
-				
-			}
-
-			
-			checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
-			checkForLoopFormation(nextPc, true, instruction, false, true);
-			setStatus(BlockStatus.COMPLETE);
-			releaseMemory();
-		} else {
-			checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
-			checkForLoopFormation(nextPc, true, instruction, false, true);
-			setStatus(BlockStatus.COMPLETE);
-			releaseMemory();
-		}
-	}
-
-	private void releaseMemory(){
-		m_machineState.releaseMemory();
-		m_machineState = null;
-		m_contexts.clear();
-		this.m_contexts = null;
-	}
-	
 	
 	private void addUnknown(XtaInstruction inst) {
 		Unknown unknown;
@@ -418,7 +364,6 @@ public class Block implements Comparable<Block> {
 		m_unknowns.add(unknown);
 		m_route.addUnknown(unknown);
 	}
-
 
 	private void checkForLoopFormation(int nextPc, boolean speculative, XtaInstruction inst, boolean isJump, boolean isBranch) {
 		Block loopBlock = null;
@@ -449,7 +394,15 @@ public class Block implements Comparable<Block> {
 			}
 		}
 	}
-
+	
+	private void releaseMemory(){
+		m_machineState.releaseMemory();
+		m_machineState = null;
+		m_contexts.clear();
+		this.m_contexts = null;
+	}
+	
+	
 	private boolean isComplete(XtaInstruction instruction, int pc) {
 		switch (m_bc.getMode()) {
 		case FUNCTION:
@@ -463,7 +416,7 @@ public class Block implements Comparable<Block> {
 		}
 	}
 
-	private boolean isExcluded(int pc) {
+	private boolean isProhibited(int pc) {
 		for (CodeReference reference : m_bc.getEngine().getReference(ReferenceMode.PROHIBITED)) {
 			assert (reference.isResolved());
 			if (reference.getPc() == pc) {
@@ -487,11 +440,7 @@ public class Block implements Comparable<Block> {
 	private void addInstruction(XtaInstruction inst) {
 		assert (m_instructions != null);
 		assert (inst != null);
-		String label = m_bc.getEngine().getLabel(inst.getPc());
-		if(label!= null){
-			this.m_labels.add(label);
-		}
-		
+		if(DEBUG) System.out.println(inst);
 		inst.setBasicNumCycles(m_bc.getM_instructionAttributes().getTiming(inst.getNmenonic()));
 		inst.setConfig(m_bc.getConfig());
 
@@ -675,23 +624,6 @@ public class Block implements Comparable<Block> {
 		}
 		doneWithPathBlocks();
 		return allPcs;
-	}
-	
-	public void getPathLabels(boolean recurse, ArrayList<String> labels) {
-		for (Block block : getPathBlocks()) {
-			labels.addAll(block.getLabels());
-			if (recurse) {
-				for (Block loopPath : block.getLoopPaths()) {
-					loopPath.getPathLabels(true, labels);
-				}
-			}
-		}
-		doneWithPathBlocks();
-		return;
-	}
-	
-	public ArrayList<String> getLabels() {
-		return m_labels;
 	}
 	
 	public int getLength() {
@@ -1001,12 +933,6 @@ public class Block implements Comparable<Block> {
 	
 	public int getNumUnknownsThis() {
 		return m_unknowns.size();
-	}
-	
-	public ArrayList<String> getAllLabelPcs() {
-		ArrayList<String> labels  = new ArrayList<String>();
-        getPathLabels(false, labels);
-		return labels;
 	}
 
 	

@@ -80,16 +80,6 @@ public class PathNode extends Node {
         toolTipText += "Number of FNOPs (this): "     + m_block.getNumFNops(false) + "\n";
         
         toolTipText += "Number of pausables (this): " + m_block.getNumPausables(false) + "\n";  
-        ArrayList<String> labels  = new ArrayList<String>();
-        m_block.getPathLabels(false, labels);
-        boolean first= true;
-        for(String label : labels){
-        	if(first) {
-        		toolTipText += "Labels (this): " + label + "\n"; 	
-        		first = false;
-        	}
-        	else toolTipText += "                   : " + label + "\n"; 
-        }
         toolTipText += "Number of unknowns (this): "  + m_block.getNumUnknowns(false);     
         
         if (!m_isRoot) {
