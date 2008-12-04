@@ -12,27 +12,27 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
     pathi\(1\)   : 220.0/11/7/4/0/1/0, path\(1\)
-        \(20.0ns\) 0x10190 --FNOP--  
-        \(20.0ns\) 0x10190 LDWDP_lru6 r0, dp\[i 0xc\] 
-        \(20.0ns\) 0x10194 --FNOP--  
-        \(20.0ns\) 0x10194 EQ_2rus r0, r0, i 0x2 
-        \(20.0ns\) 0x10196 BRFT_ru6 r0, i 0x2 
-        \(20.0ns\) 0x1019a LDC_ru6 r0, i 0x3 
-        \(20.0ns\) 0x1019c STWDP_lru6 r0, dp\[i 0x8\] 
-        \(20.0ns\) 0x101a0 --FNOP--  
-        \(20.0ns\) 0x101a0 LDWDP_lru6 r0, dp\[i 0xc\] 
-        \(20.0ns\) 0x101a4 --FNOP--  
-        \(20.0ns\) 0x101a4 RETSP_u6 i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDWDP_lru6 r0, dp\[i 0xc\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EQ_2rus r0, r0, i 0x2 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} BRFT_ru6 r0, i 0x2 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x3 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} STWDP_lru6 r0, dp\[i 0x8\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDWDP_lru6 r0, dp\[i 0xc\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} RETSP_u6 i 0x0 
     pathi\(2\)   : 180.0/9/6/3/0/1/0, path\(2\)
-        \(20.0ns\) 0x10190 --FNOP--  
-        \(20.0ns\) 0x10190 LDWDP_lru6 r0, dp\[i 0xc\] 
-        \(20.0ns\) 0x10194 --FNOP--  
-        \(20.0ns\) 0x10194 EQ_2rus r0, r0, i 0x2 
-        \(20.0ns\) 0x10196 BRFT_ru6 r0, i 0x2 
-        \(20.0ns\) 0x10198 BRFU_u6 i 0x6 
-        \(20.0ns\) 0x101a0 LDWDP_lru6 r0, dp\[i 0xc\] 
-        \(20.0ns\) 0x101a4 --FNOP--  
-        \(20.0ns\) 0x101a4 RETSP_u6 i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDWDP_lru6 r0, dp\[i 0xc\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EQ_2rus r0, r0, i 0x2 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} BRFT_ru6 r0, i 0x2 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} BRFU_u6 i 0x6 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDWDP_lru6 r0, dp\[i 0xc\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} RETSP_u6 i 0x0 
   1: int a = 1;
   2: int b = 2;
   3: int c = 3;

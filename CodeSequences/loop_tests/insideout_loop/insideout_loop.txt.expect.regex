@@ -10,14 +10,14 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
     pathi\(2\)   : 220.0/11/10/1/0/1/0, path\(2\)
-        \(20.0ns\) 0x101a2 --FNOP--  
-        \(20.0ns\) 0x101a2 ADD_2rus r0, r0, i 0x5 
-        \(20.0ns\) 0x101a4 RETSP_u6 i 0x0 
-        \(20.0ns\) 0x101bc ADD_2rus r4, r4, i 0x1 
-        \(20.0ns\) 0x101be BRBU_u6 i 0xe 
-        \(20.0ns\) 0x101b2 LDC_ru6 r0, i 0xa 
-        \(20.0ns\) 0x101b4 LSS_3r r0, r4, r0 
-        \(20.0ns\) 0x101b6 BRFT_ru6 r0, i 0x2 
-        \(20.0ns\) 0x101ba BLRB_u10 i 0x2c 
-        \(20.0ns\) 0x10190 LDC_ru6 r1, i 0x0 
-        \(20.0ns\) 0x10192 ADD_2rus r0, r1, i 0x5 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r0, r0, i 0x5 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} RETSP_u6 i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r4, r4, i 0x1 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} BRBU_u6 i 0xe 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0xa 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LSS_3r r0, r4, r0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} BRFT_ru6 r0, i 0x2 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} BLRB_u10 i 0x2c 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_ru6 r1, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r0, r1, i 0x5 

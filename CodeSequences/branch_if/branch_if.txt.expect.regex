@@ -12,25 +12,25 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
     pathi\(2\)   : 140.0/7/6/1/0/1/0, path\(2\)
-        \(20.0ns\) 0x10190 --FNOP--  
-        \(20.0ns\) 0x10190 LDC_ru6 r0, i 0x0 
-        \(20.0ns\) 0x10192 LDC_ru6 r1, i 0x2 
-        \(20.0ns\) 0x10194 EQ_2rus r1, r1, i 0x2 
-        \(20.0ns\) 0x10196 BRFT_ru6 r1, i 0x2 
-        \(20.0ns\) 0x10198 BRFU_u6 i 0x2 
-        \(20.0ns\) 0x1019c RETSP_u6 i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_ru6 r1, i 0x2 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EQ_2rus r1, r1, i 0x2 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} BRFT_ru6 r1, i 0x2 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} BRFU_u6 i 0x2 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} RETSP_u6 i 0x0 
     pathi\(1\)   : 140.0/7/6/1/0/1/0, path\(1\)
-        \(20.0ns\) 0x10190 --FNOP--  
-        \(20.0ns\) 0x10190 LDC_ru6 r0, i 0x0 
-        \(20.0ns\) 0x10192 LDC_ru6 r1, i 0x2 
-        \(20.0ns\) 0x10194 EQ_2rus r1, r1, i 0x2 
-        \(20.0ns\) 0x10196 BRFT_ru6 r1, i 0x2 
-        \(20.0ns\) 0x1019a LDC_ru6 r0, i 0x2 
-        \(20.0ns\) 0x1019c RETSP_u6 i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_ru6 r1, i 0x2 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EQ_2rus r1, r1, i 0x2 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} BRFT_ru6 r1, i 0x2 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x2 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} RETSP_u6 i 0x0 
   1: 
   2: int main\(\)
 \+ 3: {
-  4:   int b = 0;
+\+ 4:   int b = 0;
 \+ 5:   int a = 2;
 \+ 6:   if \(a == 2\)
   7:   {
@@ -42,7 +42,7 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
   1: 
   2: int main\(\)
 \+ 3: {
-  4:   int b = 0;
+\+ 4:   int b = 0;
 \+ 5:   int a = 2;
 \+ 6:   if \(a == 2\)
   7:   {
