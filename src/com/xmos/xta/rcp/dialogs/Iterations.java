@@ -42,7 +42,6 @@ public class Iterations extends Dialog {
 	    gridLayout.numColumns = 3;
 	    container.setLayout(gridLayout);
 
-	    createAllInstancesControl(container, m_pathNode);
 		createAbsoluteCountControl(container, m_pathNode);
 		createNumIterationsControl(container, m_pathNode);
 
@@ -56,13 +55,6 @@ public class Iterations extends Dialog {
         label.setText(str);
 	}
 	
-	private void createAllInstancesControl(Composite parent, final PathNode pathNode) {
-		createControlLabel(parent, "Apply to all instances:");
-		final Button button = new Button(parent, SWT.CHECK);
-		button.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
-				true, false, 2, 1));
-	}	    
-
     private void createAbsoluteCountControl(Composite parent, final PathNode pathNode) {
 		createControlLabel(parent, "Make count absolute:");
 		final Button button = new Button(parent, SWT.CHECK);

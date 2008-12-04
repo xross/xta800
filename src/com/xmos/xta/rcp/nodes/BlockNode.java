@@ -91,4 +91,8 @@ public class BlockNode extends Node {
 	public Vector<XtaInstruction> getInstructions() {
 		return m_block.getInstructionsThis();
 	}
+
+	public void getBlockIds(Vector<Integer> ids) {
+		ids.add(m_block.getId());
+	}
 }

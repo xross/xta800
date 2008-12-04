@@ -19,13 +19,16 @@ public class Unknown {
     private UnknownType m_reason;
     private Expression m_guard;
     private Expression m_branchTarget;
+    private Block m_block;
     
-    public Unknown(XtaInstruction inst) {
+    public Unknown(Block block, XtaInstruction inst) {
+    	m_block = block;
         m_inst = inst;
         m_reason = UnknownType.PAUSABLETIME;
     }    
     
-    public Unknown(XtaInstruction inst, Expression guard, Expression branchTarget) {
+    public Unknown(Block block, XtaInstruction inst, Expression guard, Expression branchTarget) {
+    	m_block = block;
         m_guard = guard;
         m_branchTarget = branchTarget;
         m_inst = inst;
@@ -41,6 +44,10 @@ public class Unknown {
     
     public int getPc() {
         return m_inst.getPc();
+    }
+
+    public int getPathId() {
+        return m_block.getId();
     }
 
     public String getReason() {

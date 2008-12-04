@@ -33,8 +33,12 @@ public class RouteNode extends Node {
     public String getToolTipText() { return ""; }
     public String getTypeName()    { return "route"; }
     
-    public HashSet<Integer> getPcsCovered() { return new HashSet<Integer>(); }       
-    public void createContextMenu(final Shell parent, IMenuManager manager) { }
+    public HashSet<Integer> getPcsCovered() {
+    	return new HashSet<Integer>();
+    }
+    public void createContextMenu(final Shell parent, IMenuManager manager) {
+    	// Do nothing
+    }
     
 	public int getNumIterations() { return 1; }
 	public boolean isBlockNode() { return false; }
@@ -42,5 +46,11 @@ public class RouteNode extends Node {
 	public boolean isPathNode() { return false; }
 	public boolean isRouteNode() { return true; }
 
-    public Vector<XtaInstruction> getInstructions() { return new Vector<XtaInstruction>(); };
+    public Vector<XtaInstruction> getInstructions() {
+    	return new Vector<XtaInstruction>();
+    }
+
+	public void getBlockIds(Vector<Integer> ids) {
+		// Do nothing
+	}
 }

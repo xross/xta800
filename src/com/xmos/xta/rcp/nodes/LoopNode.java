@@ -108,4 +108,10 @@ public class LoopNode extends Node {
 	public Vector<XtaInstruction> getInstructions() {
 		return new Vector<XtaInstruction>();
 	}
+
+	public void getBlockIds(Vector<Integer> ids) {
+		for (Node node : getNodes()) {
+			node.getBlockIds(ids);
+		}
+	}
 }

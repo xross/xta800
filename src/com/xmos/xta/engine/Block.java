@@ -398,6 +398,19 @@ public class Block implements Comparable<Block> {
 			releaseMemory();
 		}
 	}
+	
+	
+	private void addUnknown(XtaInstruction inst) {
+		Unknown unknown;
+		if (inst.canPause()) {
+			unknown = new Unknown(this, inst);
+		} else {
+			unknown = new Unknown(this, inst, m_machineState.getGuardExpression(),
+					m_machineState.getBranchTargetExpression());
+		}
+		m_unknowns.add(unknown);
+		m_route.addUnknown(unknown);
+	}
 
 	private void checkForLoopFormation(int nextPc, boolean speculative, XtaInstruction inst, boolean isJump, boolean isBranch) {
 		Block loopBlock = null;
@@ -436,17 +449,6 @@ public class Block implements Comparable<Block> {
 		this.m_contexts = null;
 	}
 	
-	
-	private void addUnknown(XtaInstruction inst) {
-		Unknown unknown;
-		if (inst.canPause()) {
-			unknown = new Unknown(inst);
-		} else {
-			unknown = new Unknown(inst, m_machineState.getGuardExpression(), m_machineState.getBranchTargetExpression());
-		}
-		m_unknowns.add(unknown);
-		m_route.addUnknown(unknown);
-	}
 	
 	private boolean isComplete(XtaInstruction instruction, int pc) {
 		switch (m_bc.getMode()) {
