@@ -519,7 +519,7 @@ public class Engine {
 
             case MAX_NUM_PATHS:
                 setErrorString(String.format("Maximum number of paths reached (%d)", 
-                        m_config.m_maxNumPaths));
+                        m_config.m_minimumRemainingMemory));
                 m_route = m_previousRoute;
                 return false; 
             case COMPLETED:

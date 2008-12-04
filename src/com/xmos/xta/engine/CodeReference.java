@@ -214,7 +214,6 @@ public class CodeReference {
     }
 
 	public boolean resolve(Engine engine) {
-		System.out.println("searching engine for " + m_ref);
 		if(engine.isLabel(m_ref)){
 			m_pc = engine.getLabelPc(m_ref);
 	        m_isResolved = true;
@@ -230,5 +229,9 @@ public class CodeReference {
 		} else {
 			return this.resolve(debugInfo);
 		}
+	}
+
+	public RefType getType() {
+		return 	m_type;
 	}
 }
