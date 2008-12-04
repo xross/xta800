@@ -1,0 +1,23 @@
+load csim__xs1a\test.xe
+
+source client.sr
+source servicefifo.sr
+source x8TxdService.sr
+source x8RxdService.sr
+
+label 0x106d8 swc_uart_server_timer_in 
+label 0x107a8 uartTest
+label 0x106da start
+label 0x10792 end
+
+label 0x10700 swc_uart_server_serviceFifos
+label 0x1074e swc_uart_server_clientRequest
+label 0x1072c swc_usrt_server_time_to_service_client
+label 0x1076e swc_usrt_server_no_time_to_service_client
+
+prohibited swc_usrt_server_no_time_to_service_client
+prohibited uartTest
+prohibited swc_uart_server_timer_in
+
+
+path start end

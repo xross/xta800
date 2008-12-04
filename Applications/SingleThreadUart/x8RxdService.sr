@@ -1,0 +1,17 @@
+label 0x102d8 x8RxdService_exclude0
+label 0x102e8 x8RxdService_exclude1
+label 0x102ec x8RxdService_exclude2
+label 0x10310 x8RxdService_exclude3
+label 0x1035e x8RxdService_exclude4
+label 0x10358 x8RxdService_exclude5
+label 0x1037a x8RxdService_exclude6
+label 0x10398 x8RxdService_exclude7
+
+prohibited x8RxdService_exclude0
+prohibited x8RxdService_exclude1
+prohibited x8RxdService_exclude2
+prohibited x8RxdService_exclude3
+prohibited x8RxdService_exclude4
+prohibited x8RxdService_exclude5
+prohibited x8RxdService_exclude6
+prohibited x8RxdService_exclude7

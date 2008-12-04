@@ -1,0 +1,51 @@
+Route: main
+Complete paths:   2
+Unresolved paths: 0
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
+\+COMPLETE \[2 path\(s\)\]
+    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
+        \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
+            pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/0/0, path\(\d+\)
+    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
+  1: int main\(\)
+\+ 2: {
+\+ 3:   int a = 0;
+\+ 4:   int res = 2;
+\+ 5:   if \(a == 0\)
+  6:   {
+  7:     while \(res > 0\) 
+  8:     {
+  9:       --res;
+  10:     }
+  11:   }
+\+ 12:   return res;
+  13: }
+  14: 
+  1: int main\(\)
+\+ 2: {
+\+ 3:   int a = 0;
+\+ 4:   int res = 2;
+\+ 5:   if \(a == 0\)
+  6:   {
+\+ 7:     while \(res > 0\) 
+  8:     {
+  9:       --res;
+  10:     }
+  11:   }
+\+ 12:   return res;
+  13: }
+  14: 
+  1: int main\(\)
+  2: {
+  3:   int a = 0;
+  4:   int res = 2;
+  5:   if \(a == 0\)
+  6:   {
+\+ 7:     while \(res > 0\) 
+  8:     {
+\+ 9:       --res;
+  10:     }
+  11:   }
+  12:   return res;
+  13: }
+  14: 

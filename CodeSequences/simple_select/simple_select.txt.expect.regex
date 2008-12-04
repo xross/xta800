@@ -1,0 +1,265 @@
+Route: main
+Complete paths:   4
+Unresolved paths: 0
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
+\+COMPLETE \[4 path\(s\)\]
+    pathi\(4\)   : 1220.0/61/58/3/12/1/0, path\(4\)
+    pathi\(3\)   : 1220.0/61/58/3/12/1/0, path\(3\)
+    pathi\(2\)   : 1220.0/61/58/3/12/1/0, path\(2\)
+    pathi\(1\)   : 1220.0/61/58/3/12/1/0, path\(1\)
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
+\+COMPLETE \[4 path\(s\)\]
+    pathi\(4\)   : 1220.0/61/58/3/12/1/0, path\(4\)
+    pathi\(3\)   : 1220.0/61/58/3/12/1/0, path\(3\)
+    pathi\(2\)   : 1220.0/61/58/3/12/1/0, path\(2\)
+    pathi\(1\)   : 1220.0/61/58/3/12/1/0, path\(1\)
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
+\+COMPLETE \[4 path\(s\)\]
+    pathi\(4\)   : 1220.0/61/58/3/12/1/0, path\(4\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EXTSP_u6 i 0xc 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} STWSP_ru6 r4, sp\[i 0x0\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} STWSP_ru6 r5, sp\[i 0x4\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} STWSP_ru6 r6, sp\[i 0x8\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r2, r9, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r1, r10, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} GETR_rus r6, i 0x1 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} GETR_rus r5, i 0x1 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} GETR_rus r4, i 0x1 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} GETR_rus r3, i 0x1 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r6\], i 0x1 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} IN_2r r0, res\[r6\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} CLRE_0r  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r11, i 0x64 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r11, r0, r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETD_2r res\[r6\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r6\], i 0x9 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAPF_u10 r11, i 0x36 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETV_1r res\[r6\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EEU_1r res\[r6\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r11, i 0xc8 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r11, r0, r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETD_2r res\[r5\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r5\], i 0x9 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAPF_u10 r11, i 0x30 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETV_1r res\[r5\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EEU_1r res\[r5\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r11, i 0x12c 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r11, r0, r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETD_2r res\[r4\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r4\], i 0x9 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAPF_u10 r11, i 0x2a 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETV_1r res\[r4\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EEU_1r res\[r4\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r11, i 0x190 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r0, r0, r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETD_2r res\[r3\], r0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r3\], i 0x9 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAPF_u10 r11, i 0x24 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETV_1r res\[r3\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EEU_1r res\[r3\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} WAITEU_0r  \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} IN_2r r0, res\[r3\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r9, i 0x7d0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r0, r0, r9 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} BRFU_u6 i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} FREER_1r res\[r6\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} FREER_1r res\[r5\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} FREER_1r res\[r4\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} FREER_1r res\[r3\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDWSP_ru6 r4, sp\[i 0x0\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDWSP_ru6 r5, sp\[i 0x4\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDWSP_ru6 r6, sp\[i 0x8\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r9, r2, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r10, r1, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAWSP_ru6 r14, sp\[i 0xc\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} RETSP_u6 i 0x0 
+    pathi\(3\)   : 1220.0/61/58/3/12/1/0, path\(3\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EXTSP_u6 i 0xc 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} STWSP_ru6 r4, sp\[i 0x0\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} STWSP_ru6 r5, sp\[i 0x4\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} STWSP_ru6 r6, sp\[i 0x8\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r2, r9, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r1, r10, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} GETR_rus r6, i 0x1 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} GETR_rus r5, i 0x1 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} GETR_rus r4, i 0x1 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} GETR_rus r3, i 0x1 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r6\], i 0x1 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} IN_2r r0, res\[r6\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} CLRE_0r  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r11, i 0x64 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r11, r0, r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETD_2r res\[r6\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r6\], i 0x9 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAPF_u10 r11, i 0x36 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETV_1r res\[r6\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EEU_1r res\[r6\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r11, i 0xc8 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r11, r0, r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETD_2r res\[r5\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r5\], i 0x9 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAPF_u10 r11, i 0x30 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETV_1r res\[r5\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EEU_1r res\[r5\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r11, i 0x12c 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r11, r0, r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETD_2r res\[r4\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r4\], i 0x9 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAPF_u10 r11, i 0x2a 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETV_1r res\[r4\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EEU_1r res\[r4\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r11, i 0x190 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r0, r0, r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETD_2r res\[r3\], r0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r3\], i 0x9 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAPF_u10 r11, i 0x24 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETV_1r res\[r3\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EEU_1r res\[r3\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} WAITEU_0r  \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} IN_2r r0, res\[r4\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r9, i 0x7d0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r0, r0, r9 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} BRFU_u6 i 0xa 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} FREER_1r res\[r6\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} FREER_1r res\[r5\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} FREER_1r res\[r4\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} FREER_1r res\[r3\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDWSP_ru6 r4, sp\[i 0x0\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDWSP_ru6 r5, sp\[i 0x4\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDWSP_ru6 r6, sp\[i 0x8\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r9, r2, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r10, r1, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAWSP_ru6 r14, sp\[i 0xc\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} RETSP_u6 i 0x0 
+    pathi\(2\)   : 1220.0/61/58/3/12/1/0, path\(2\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EXTSP_u6 i 0xc 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} STWSP_ru6 r4, sp\[i 0x0\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} STWSP_ru6 r5, sp\[i 0x4\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} STWSP_ru6 r6, sp\[i 0x8\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r2, r9, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r1, r10, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} GETR_rus r6, i 0x1 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} GETR_rus r5, i 0x1 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} GETR_rus r4, i 0x1 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} GETR_rus r3, i 0x1 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r6\], i 0x1 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} IN_2r r0, res\[r6\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} CLRE_0r  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r11, i 0x64 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r11, r0, r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETD_2r res\[r6\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r6\], i 0x9 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAPF_u10 r11, i 0x36 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETV_1r res\[r6\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EEU_1r res\[r6\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r11, i 0xc8 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r11, r0, r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETD_2r res\[r5\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r5\], i 0x9 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAPF_u10 r11, i 0x30 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETV_1r res\[r5\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EEU_1r res\[r5\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r11, i 0x12c 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r11, r0, r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETD_2r res\[r4\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r4\], i 0x9 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAPF_u10 r11, i 0x2a 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETV_1r res\[r4\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EEU_1r res\[r4\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r11, i 0x190 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r0, r0, r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETD_2r res\[r3\], r0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r3\], i 0x9 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAPF_u10 r11, i 0x24 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETV_1r res\[r3\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EEU_1r res\[r3\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} WAITEU_0r  \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} IN_2r r0, res\[r5\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r9, i 0x7d0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r0, r0, r9 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} BRFU_u6 i 0x14 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} FREER_1r res\[r6\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} FREER_1r res\[r5\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} FREER_1r res\[r4\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} FREER_1r res\[r3\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDWSP_ru6 r4, sp\[i 0x0\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDWSP_ru6 r5, sp\[i 0x4\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDWSP_ru6 r6, sp\[i 0x8\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r9, r2, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r10, r1, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAWSP_ru6 r14, sp\[i 0xc\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} RETSP_u6 i 0x0 
+    pathi\(1\)   : 1220.0/61/58/3/12/1/0, path\(1\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EXTSP_u6 i 0xc 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} STWSP_ru6 r4, sp\[i 0x0\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} STWSP_ru6 r5, sp\[i 0x4\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} STWSP_ru6 r6, sp\[i 0x8\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r2, r9, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r1, r10, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} GETR_rus r6, i 0x1 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} GETR_rus r5, i 0x1 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} GETR_rus r4, i 0x1 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} GETR_rus r3, i 0x1 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r6\], i 0x1 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} IN_2r r0, res\[r6\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} CLRE_0r  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r11, i 0x64 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r11, r0, r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETD_2r res\[r6\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r6\], i 0x9 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAPF_u10 r11, i 0x36 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETV_1r res\[r6\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EEU_1r res\[r6\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r11, i 0xc8 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r11, r0, r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETD_2r res\[r5\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r5\], i 0x9 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAPF_u10 r11, i 0x30 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETV_1r res\[r5\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EEU_1r res\[r5\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r11, i 0x12c 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r11, r0, r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETD_2r res\[r4\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r4\], i 0x9 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAPF_u10 r11, i 0x2a 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETV_1r res\[r4\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EEU_1r res\[r4\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r11, i 0x190 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r0, r0, r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETD_2r res\[r3\], r0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETC_ru6 res\[r3\], i 0x9 \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAPF_u10 r11, i 0x24 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} SETV_1r res\[r3\], r11 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} EEU_1r res\[r3\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} WAITEU_0r  \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} IN_2r r0, res\[r6\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_lru6 r9, i 0x3e8 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_3r r0, r0, r9 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} BRFU_u6 i 0x1e 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} FREER_1r res\[r6\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} FREER_1r res\[r5\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} FREER_1r res\[r4\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} FREER_1r res\[r3\] \(P\)
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDWSP_ru6 r4, sp\[i 0x0\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDWSP_ru6 r5, sp\[i 0x4\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDWSP_ru6 r6, sp\[i 0x8\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r9, r2, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} ADD_2rus r10, r1, i 0x0 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} LDAWSP_ru6 r14, sp\[i 0xc\] 
+        \(20.0ns\) 0x[0-9a-fA-F]{5} RETSP_u6 i 0x0 
