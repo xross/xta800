@@ -170,4 +170,10 @@ public class PathNode extends Node {
 	public void setAbsoluteCount(boolean absoluteCount) {
 		m_absoluteCount = absoluteCount;
 	}
+
+	public void getBlockIds(Vector<Integer> ids) {
+		for (Node node : getNodes()) {
+			node.getBlockIds(ids);
+		}
+	}
 }

@@ -40,6 +40,7 @@ public abstract class Node {
     public abstract Vector<XtaInstruction> getInstructions();
     public abstract HashSet<Integer> getPcsCovered();
     public abstract void createContextMenu(final Shell parent, IMenuManager manager);
+	public abstract void getBlockIds(Vector<Integer> ids);
     
     public void addNode(Node node) {
     	m_nodes.add(node);

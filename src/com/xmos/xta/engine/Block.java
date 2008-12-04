@@ -410,9 +410,10 @@ public class Block implements Comparable<Block> {
 	private void addUnknown(XtaInstruction inst) {
 		Unknown unknown;
 		if (inst.canPause()) {
-			unknown = new Unknown(inst);
+			unknown = new Unknown(this, inst);
 		} else {
-			unknown = new Unknown(inst, m_machineState.getGuardExpression(), m_machineState.getBranchTargetExpression());
+			unknown = new Unknown(this, inst, m_machineState.getGuardExpression(),
+					m_machineState.getBranchTargetExpression());
 		}
 		m_unknowns.add(unknown);
 		m_route.addUnknown(unknown);
