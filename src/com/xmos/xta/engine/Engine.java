@@ -16,6 +16,8 @@ import com.xmos.xeloader.XeLoader;
 import com.xmos.xeobject.Function;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.XeObject;
+import com.xmos.xta.engine.Route.RouteStatus;
+import com.xmos.xta.engine.Status.ExecutionStatus;
 
 public class Engine { 
 	
@@ -504,8 +506,13 @@ public class Engine {
             assert(memoryImage != null);
             assert(symbolTable != null);
             assert(debugInfo != null);
-
-            Route.RouteStatus status = m_route.analyse(memoryImage, symbolTable, debugInfo, this);                 
+            RouteStatus status = RouteStatus.ABORTED;
+            try {
+            	status = m_route.analyse(memoryImage, symbolTable, debugInfo, this);                 
+        	} catch (final java.lang.OutOfMemoryError e) {
+        		System.gc();
+        	}
+            
             switch (status) {
             case ABORTED:
                 setErrorString("Abort detected");
@@ -517,10 +524,10 @@ public class Engine {
                 m_route = m_previousRoute;
                 return false;
 
-            case MAX_NUM_PATHS:
-                setErrorString(String.format("Maximum number of paths reached (%d)", 
-                        m_config.m_minimumRemainingMemory));
+            case OUTOFMEMORY:
+                setErrorString("Out of Memory");
                 m_route = m_previousRoute;
+                System.gc();
                 return false; 
             case COMPLETED:
                 setErrorString(null);

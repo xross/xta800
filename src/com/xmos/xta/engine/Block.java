@@ -13,7 +13,7 @@ import com.xmos.xta.engine.MachineState.BranchState;
 import com.xmos.xta.engine.Status.BlockStatus;
 
 public class Block implements Comparable<Block> {
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
 	static enum Mode {
 		FUNCTION, ABSOLUTE
@@ -221,7 +221,17 @@ public class Block implements Comparable<Block> {
 	}
 
 	public void build() {
-
+		
+		if(Runtime.getRuntime().totalMemory() == Runtime.getRuntime().maxMemory() 
+				&& Runtime.getRuntime().freeMemory() < m_bc.getConfig().m_minimumRemainingMemory ){
+			System.gc();
+			if(Runtime.getRuntime().freeMemory() < m_bc.getConfig().m_minimumRemainingMemory){
+				setStatus(BlockStatus.OUTOFMEMORY);
+				releaseMemory();
+				return;
+			}
+		}
+		
 		int pc = m_machineState.getPc(m_currentThread);
 		if (isProhibited(pc)) {
 			setStatus(BlockStatus.EXCLUDED);
@@ -342,63 +352,6 @@ public class Block implements Comparable<Block> {
 		m_firstStep = false;
 		instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
 	}
-
-	private void takeUnknownBranch(XtaInstruction instruction, int nextPc) {
-		boolean resolve = m_bc.isResolveExpressions();
-		if(resolve){
-			 if(instruction.getNmenonic().startsWith("BRBF")){
-				int reg = m_machineState.m_op1Fld;
-				m_machineState.writeRegister(reg, new Expression(0), m_currentThread);
-				//take the branch
-				checkForLoopFormation(m_machineState.getBranchTarget(), false, instruction, true, false);
-				//set the guard register to unknown
-				Expression unknownReg = new Expression(reg, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
-				m_machineState.writeRegister(reg, unknownReg, m_currentThread);
-				checkForLoopFormation(nextPc, false, instruction, false, false);
-			} else if(instruction.getNmenonic().startsWith("BRBT")){
-				int reg = m_machineState.m_op1Fld;
-				m_machineState.writeRegister(reg, new Expression(0), m_currentThread);
-				//take the branch
-				checkForLoopFormation(nextPc, false, instruction, false, false);
-				//set the guard register to unknown
-				Expression unknownReg = new Expression(reg, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
-				m_machineState.writeRegister(reg, unknownReg, m_currentThread);
-				checkForLoopFormation(m_machineState.getBranchTarget(), false, instruction, true, false);
-				
-			} else if(instruction.getNmenonic().startsWith("BRFF")){
-				int reg = m_machineState.m_op1Fld;
-				m_machineState.writeRegister(reg, new Expression(0), m_currentThread);
-				//take the branch
-				checkForLoopFormation(m_machineState.getBranchTarget(), false, instruction, true, false);
-				//set the guard register to unknown
-				Expression unknownReg = new Expression(reg, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
-				m_machineState.writeRegister(reg, unknownReg, m_currentThread);
-				checkForLoopFormation(nextPc, false, instruction, false, false);
-			
-			} else if(instruction.getNmenonic().startsWith("BRFT")){
-				int reg = m_machineState.m_op1Fld;
-				m_machineState.writeRegister(reg, new Expression(0), m_currentThread);
-				//take the branch
-				checkForLoopFormation(nextPc, false, instruction, false, false);
-				//set the guard register to unknown
-				Expression unknownReg = new Expression(reg, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
-				m_machineState.writeRegister(reg, unknownReg, m_currentThread);
-				checkForLoopFormation(m_machineState.getBranchTarget(), false, instruction, true, false);
-				
-			} else {
-				checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
-				checkForLoopFormation(nextPc, true, instruction, false, true);
-			}
-			setStatus(BlockStatus.COMPLETE);
-			releaseMemory();
-		} else {
-			checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
-			checkForLoopFormation(nextPc, true, instruction, false, true);
-			setStatus(BlockStatus.COMPLETE);
-			releaseMemory();
-		}
-	}
-	
 	
 	private void addUnknown(XtaInstruction inst) {
 		Unknown unknown;
