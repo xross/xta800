@@ -10,23 +10,23 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
-	private MenuManager showViewMenuMgr;
-	private IContributionItem showViewItem;
+	private MenuManager m_showViewMenuMgr;
+	private IContributionItem m_showViewItem;
 	
     public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
         super(configurer);
     }
 
     protected void makeActions(IWorkbenchWindow window) {
-    	showViewMenuMgr = new MenuManager("Show View", "showView");
-    	showViewItem = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
+    	m_showViewMenuMgr = new MenuManager("Show View", "showView");
+    	m_showViewItem = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
     }
 
     protected void fillMenuBar(IMenuManager menuBar) {
     	MenuManager windowMenu = new MenuManager("&Window",
     			IWorkbenchActionConstants.M_WINDOW);
-    	showViewMenuMgr.add(showViewItem);
-    	windowMenu.add(showViewMenuMgr);
+    	m_showViewMenuMgr.add(m_showViewItem);
+    	windowMenu.add(m_showViewMenuMgr);
     	menuBar.add(windowMenu);
     }
 }
