@@ -45,7 +45,7 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
   10: int j = 10;
   11: int main\(\)
 \+ 12: \{
-  13:   if \(b == 2\)
+\+ 13:   if \(b == 2\)
   14:   \{
 \+ 15:     a = 3;
   16:   \}
@@ -64,7 +64,7 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
   10: int j = 10;
   11: int main\(\)
 \+ 12: \{
-  13:   if \(b == 2\)
+\+ 13:   if \(b == 2\)
   14:   \{
   15:     a = 3;
   16:   \}

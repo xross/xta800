@@ -13,8 +13,8 @@ if (!$noBuild) {
 system("@ARGV load $genDir/test.xe " .
        "function main " .
        "summary SIMPLE " .
-       "loopi 4 r 10 " .
-       "loopi 3 a 55 " .
+       "loop 4 r 10 " .
+       "loop 3 a 55 " .
        "summary COMPLETE_LOOPS " .
        "exit > $genDir/dependent_nested_loop.txt 2>&1");
 
