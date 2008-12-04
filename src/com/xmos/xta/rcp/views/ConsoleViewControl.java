@@ -51,6 +51,7 @@ public class ConsoleViewControl implements Console {
 		if (DEBUG) System.out.printf("ConsoleViewControl: getNextLine\n");
 		if (m_consoleView.hasPendingCommands()) {
 			String command = m_consoleView.getCommand();
+			display(command);
 	        return command;
 		} else {
 			String command = m_textReader.readLine(commandHistory);
