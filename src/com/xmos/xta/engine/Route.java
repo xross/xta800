@@ -11,15 +11,13 @@ import java.util.Vector;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
-import com.xmos.xta.engine.CodeReference.RefType;
 import com.xmos.xta.engine.Engine.ReferenceMode;
-import com.xmos.xta.engine.Status.BlockStatus;
 import com.xmos.xta.engine.Status.ExecutionStatus;
 
 public class Route {
 
 	enum RouteStatus {
-		COMPLETED, ABORTED, ERROR, OUTOFMEMORY, ANALYSING
+		COMPLETED, ABORTED, ERROR, ANALYSING
 	}
 
 	private String m_id;
@@ -34,7 +32,7 @@ public class Route {
 	private ArrayList<ExecutionState> m_executionStates;
 	private LinkedList<ExecutionState> m_schedule;
 
-	private ArrayList<Block> m_unresolvedPaths;
+	private ArrayList<Unresolved> m_unresolvedPaths;
 	private ArrayList<Block> m_completePaths;
 	private ArrayList<Block> m_removedPaths;
 	private ArrayList<Block> m_allBlocks;
@@ -102,11 +100,12 @@ public class Route {
 		return m_completePaths;
 	}
 
-	public final ArrayList<Block> unresolvedPaths() {
+	public final ArrayList<Unresolved> unresolvedPaths() {
 		return m_unresolvedPaths;
 	}
 
-	RouteStatus analyse(MemoryImage memoryImage, SymbolTable symbolTable, DebugInfo debugInfo, Engine engine) {
+	RouteStatus analyse(MemoryImage memoryImage, SymbolTable symbolTable, 
+			DebugInfo debugInfo, Engine engine) throws Exception {
 		m_progress.resetState(Progress.State.PROCESSING_PATHS, m_config.m_minimumRemainingMemory);
 
 		assert (memoryImage != null);
@@ -138,10 +137,8 @@ public class Route {
 			new ExecutionState(this, initialState, bc, m_fromRef.getPc(), m_toRef.getPc());
 		}
 		stepPath();
-		if(m_status != RouteStatus.ABORTED && m_status != RouteStatus.OUTOFMEMORY && m_status != RouteStatus.ERROR){
-			filterPaths();
-			sortPaths();
-		}
+		filterPaths();
+		sortPaths();
 		m_progress.resetState(Progress.State.IDLE, 0);
 		return m_status;
 	}
@@ -210,7 +207,7 @@ public class Route {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_completePaths = new ArrayList<Block>();
-		m_unresolvedPaths = new ArrayList<Block>();
+		m_unresolvedPaths = new ArrayList<Unresolved>();
 		m_removedPaths = new ArrayList<Block>();
 		m_allBlocks = new ArrayList<Block>();
 		m_loopPaths = new HashMap<Integer, Vector<Block>>();
@@ -221,18 +218,14 @@ public class Route {
 		++m_numRoutes;
 	}
 
-	public void addUnresolvedPath(Block unresolved) {
+	public void addUnresolvedPath(Unresolved unresolved) {
 		m_unresolvedPaths.add(unresolved);
 	}
 
-	private void stepPath() {
+	private void stepPath() throws Exception {
 		ExecutionState searching = nextBlock();
 		while (searching != null && (m_status != RouteStatus.ABORTED )) {
 			searching.build();
-			if(searching.getStatus() == ExecutionStatus.OUTOFMEMORY){
-				m_status = RouteStatus.OUTOFMEMORY;
-				return;
-			}
 			searching = nextBlock();
 			cleanSchedule();
 		}

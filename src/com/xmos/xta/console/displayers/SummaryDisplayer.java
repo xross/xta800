@@ -26,6 +26,7 @@ import com.xmos.xta.engine.Attributes;
 import com.xmos.xta.engine.PathAttributes;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.Status;
+import com.xmos.xta.engine.Unresolved;
 import com.xmos.xta.engine.XtaInstruction;
 
 public class SummaryDisplayer implements Displayer {
@@ -118,7 +119,12 @@ public class SummaryDisplayer implements Displayer {
         case UNRESOLVED_LOOPS:
         case UNRESOLVED_INSTRUCTIONS:
          	m_console.display(String.format("+UNRESOLVED [%d path(s)]\n", route.unresolvedPaths().size()));
-	        summarisePaths(route.unresolvedPaths(), "    ", null);
+	        ArrayList<Block> unresolvedPaths = new ArrayList<Block>();
+	        for(Unresolved unknown : route.unresolvedPaths()){
+	        	unresolvedPaths.add(unknown.getBlock());
+	        }
+
+         	summarisePaths(unresolvedPaths, "    ", null);
 	        break;
 	        
         case FUNCTIONS:

@@ -62,20 +62,13 @@ public class ExecutionState {
 		m_route.addExecutionState(this);
 	}
 
-	public void build() {
+	public void build() throws Exception {
 
 		assert (m_threadBlocks != null);
 		Block currentThread = getNextThread();
 
 		BlockStatus currentStatus = currentThread.getStatus();
 		while (m_status == ExecutionStatus.SEARCHING) {
-			
-			if(currentStatus == BlockStatus.OUTOFMEMORY ){
-				currentThread.setStatus(BlockStatus.OUTOFMEMORY);
-				setStatus(ExecutionStatus.OUTOFMEMORY);
-				return;
-			}
-			
 			if (currentStatus == BlockStatus.SEARCHING) {
 				currentThread.build();
 				currentStatus = currentThread.getStatus();

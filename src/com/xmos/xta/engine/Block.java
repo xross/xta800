@@ -48,11 +48,11 @@ public class Block implements Comparable<Block> {
 	private boolean m_speculative;
 	private int m_currentThread;
 	private boolean m_firstStep;
-	private int m_startTime;
-	private int m_endTime;
 
 	private ExecutionState m_executionState;
 
+	private String m_errorString;
+	
 	private static int m_numBlocks;
 
 	/*
@@ -69,7 +69,6 @@ public class Block implements Comparable<Block> {
 		m_bc = bc;
 		m_status = BlockStatus.SEARCHING;
 		m_contexts.add(new TreeSet<Integer>());
-		m_startTime = 0;
 		m_currentThread = 0;
 		m_speculative = false;
 		m_firstStep = true;
@@ -158,7 +157,6 @@ public class Block implements Comparable<Block> {
 			copy.addAll(pcs);
 			m_contexts.add(copy);
 		}
-		m_startTime = block.m_endTime; // plus a bit maybe
 		m_currentThread = block.m_currentThread;
 		m_firstStep = false;
 		m_seen = block.m_seen;
@@ -188,7 +186,6 @@ public class Block implements Comparable<Block> {
 		m_unknowns = new ArrayList<Unknown>();
 		m_machineState = machineState;
 		m_unknowns = new ArrayList<Unknown>();
-		m_endTime = 0;
 	}
 
 	private void updateInstructionInfo() {
@@ -220,18 +217,11 @@ public class Block implements Comparable<Block> {
 		return;
 	}
 
-	public void build() {
-		
-		if(Runtime.getRuntime().totalMemory() == Runtime.getRuntime().maxMemory() 
-				&& Runtime.getRuntime().freeMemory() < m_bc.getConfig().m_minimumRemainingMemory ){
-			System.gc();
-			if(Runtime.getRuntime().freeMemory() < m_bc.getConfig().m_minimumRemainingMemory){
-				setStatus(BlockStatus.OUTOFMEMORY);
-				releaseMemory();
-				return;
-			}
-		}
-		
+	public String getErrorString(){
+		return m_errorString;
+	}
+	public void build() throws Exception {
+		m_errorString = "";
 		int pc = m_machineState.getPc(m_currentThread);
 		if (isProhibited(pc)) {
 			setStatus(BlockStatus.EXCLUDED);
@@ -244,6 +234,7 @@ public class Block implements Comparable<Block> {
 			opcode = m_bc.getMemoryImage().readInstructionWord(pc);
 		} catch (Exception e) {
 			setStatus(BlockStatus.ERROR);
+			m_errorString = "Tried to address invalid PC (0x"+Integer.toHexString(pc)+")";
 			releaseMemory();
 			return;
 		}
@@ -252,7 +243,6 @@ public class Block implements Comparable<Block> {
 		m_machineState.resetInstructionState();
 
 		XtaInstruction instruction = m_bc.getInstructionDecodeCache().decode(opcode, pc);
-		// if(DEBUG) System.out.println("\ntrying: " + instruction);
 		int instNumBytes = instruction.getNumBytes();
 
 		handleIBuffer(instNumBytes, pc);
@@ -282,16 +272,25 @@ public class Block implements Comparable<Block> {
 					checkForLoopFormation(targetVector, false, instruction, true, true);
 				}
 				setStatus(BlockStatus.COMPLETE);
+			} else {
+				setStatus(BlockStatus.UNRESOLVED);
+				String reason  = "Unable to resolve the event vectors (possibly event vector set up out of scope?)";
+				Unresolved unresolved = new Unresolved(this, instruction, reason);
+				m_route.addUnresolvedPath(unresolved);
 				releaseMemory();
 				return;
 			}
+			releaseMemory();
+			return;
 		} else if (m_machineState.wasJump()) {
 			if (m_machineState.wasJumpResolved()) {
 				int jumpTarget = m_machineState.getJumpTarget();
 				if (instruction.getBranchLink() && isRecursion(jumpTarget)) {
 					setStatus(BlockStatus.RECURSION);
+					String reason  = "Recursion with 0x" + Integer.toHexString(jumpTarget);
+					Unresolved unresolved = new Unresolved(this, instruction, reason);
+					m_route.addUnresolvedPath(unresolved);
 					releaseMemory();
-					m_route.addUnresolvedPath(this);
 					return;
 				} else {
 					if (instruction.getReturn()) {
@@ -313,7 +312,9 @@ public class Block implements Comparable<Block> {
 					return;
 				} else {
 					setStatus(BlockStatus.UNRESOLVED);
-					m_route.addUnresolvedPath(this);
+					String reason  = "Unknown jump target";
+					Unresolved unresolved = new Unresolved(this, instruction, reason);
+					m_route.addUnresolvedPath(unresolved);
 					releaseMemory();
 					return;
 				}
@@ -341,7 +342,9 @@ public class Block implements Comparable<Block> {
 				return;
 			} else {
 				setStatus(BlockStatus.UNRESOLVED);
-				m_route.addUnresolvedPath(this);
+				String reason  = "Unknown branch target";
+				Unresolved unresolved = new Unresolved(this, instruction, reason);
+				m_route.addUnresolvedPath(unresolved);
 				m_machineState = null;
 				return;
 			}

@@ -17,7 +17,6 @@ import com.xmos.xeobject.Function;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Route.RouteStatus;
-import com.xmos.xta.engine.Status.ExecutionStatus;
 
 public class Engine { 
 	
@@ -227,9 +226,36 @@ public class Engine {
         else {     
             m_previousRoute = m_route;
             m_route = new Route(m_config, functionName, m_nodeId, m_coreId, m_instructionDecodeCache, resolveExpression);
-            return analyseRoute();
+            boolean t = analyseRouteSafley();
+            
+            if(t == false){
+            	//restore the route
+            	m_route = new Route(m_config, functionName, m_nodeId, m_coreId, m_instructionDecodeCache, resolveExpression);
+            }
+            return t;
         }
     }
+    
+    
+    private boolean analyseRouteSafley(){
+    	//catch all errors here
+    	
+    	boolean t = false;
+    	try {
+			t = analyseRoute();
+		} catch (final java.lang.OutOfMemoryError e) {
+			m_route = null;
+            System.gc();
+            setErrorString("Out of Memory"); 
+            return false;
+		} catch (Exception e) {
+			//unknown Exception
+			setErrorString("Unknown error: contact Xmos with stack trace"); 
+			e.printStackTrace();
+		} 
+		return t;
+    }
+    
 
     public boolean analyseRoute(String from, String to, boolean resolveExpression) {
         CodeReference fromRef = new CodeReference(from);
@@ -251,10 +277,16 @@ public class Engine {
         else {    
             m_previousRoute = m_route;                   
             m_route = new Route(m_config, fromRef, toRef, m_nodeId, m_coreId, m_instructionDecodeCache, resolveExpression);
-            return analyseRoute();
+            boolean t = analyseRouteSafley();
+            if(t == false){
+            	//restore the route
+            	m_route = new Route(m_config, fromRef, toRef, m_nodeId, m_coreId, m_instructionDecodeCache, resolveExpression);
+            }
+            return t;
         }
     }
-
+    
+    
     public void displayRoute() {
         if (m_route != null) { 
             int nodeId = m_route.getNodeId();
@@ -484,7 +516,7 @@ public class Engine {
             displayer.notifyUpdateState();
     }
 
-    private boolean analyseRoute() {
+    private boolean analyseRoute() throws Exception {
         assert(m_route != null);
 
         if (m_route.getProgress().getState() != Progress.State.IDLE) {
@@ -507,12 +539,7 @@ public class Engine {
             assert(symbolTable != null);
             assert(debugInfo != null);
             RouteStatus status = RouteStatus.ABORTED;
-            try {
-            	status = m_route.analyse(memoryImage, symbolTable, debugInfo, this);                 
-        	} catch (final java.lang.OutOfMemoryError e) {
-        		System.gc();
-        	}
-            
+            status = m_route.analyse(memoryImage, symbolTable, debugInfo, this);                 
             switch (status) {
             case ABORTED:
                 setErrorString("Abort detected");
@@ -523,12 +550,6 @@ public class Engine {
                 setErrorString("Cannot analyse path");
                 m_route = m_previousRoute;
                 return false;
-
-            case OUTOFMEMORY:
-                setErrorString("Out of Memory");
-                m_route = m_previousRoute;
-                System.gc();
-                return false; 
             case COMPLETED:
                 setErrorString(null);
             }

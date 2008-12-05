@@ -22,6 +22,7 @@ public class PathQuery {
 			path.getAllBlocks(allBlocks);
 			for(Block block : allBlocks){
 				//do something with the expressions here
+				
 			}
 		}
 	}
