@@ -9,5 +9,5 @@ my $noBuild = shift(@ARGV);
 if (!$noBuild) {
 system("xcc -march=xs1b test.xc -o $genDir/test.xe > $genDir/multi_core.log 2>&1");
 }
-system("@ARGV load $genDir/test.xe config proc 128 3 status exit > $genDir/multi_core.txt 2>&1");
+system("@ARGV load $genDir/test.xe config proc 128 2 status exit > $genDir/multi_core.txt 2>&1");
 

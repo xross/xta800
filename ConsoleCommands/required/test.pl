@@ -10,12 +10,12 @@ if (!$noBuild) {
 system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/required.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "required add 0x1019c " .
+       "required add 0x100d0 " .
        "function main " .
        "summary SIMPLE " .
        "src 1 test.xc " .
-       "required remove 0x1019c " .
-       "required add 0x101a0 " .
+       "required remove 0x100d0 " .
+       "required add 0x100d4 " .
        "function main " .
        "summary SIMPLE " .
        "src 2 test.xc " .

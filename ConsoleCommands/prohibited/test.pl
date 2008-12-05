@@ -10,7 +10,7 @@ if (!$noBuild) {
 system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/prohibited.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "prohibited add 0x1019c " .
+       "prohibited add 0x100d0 " .
        "function main " .
        "summary SIMPLE " .
        "src 2 test.xc " .
