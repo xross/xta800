@@ -14,9 +14,10 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            name="com.xmos.xta.rcp.XtaPerspective"
             class="com.xmos.xta.rcp.XtaPerspective"
-            id="com.xmos.xta.rcp.XtaPerspective">
+            icon="icons/xta.png"
+            id="com.xmos.xta.rcp.XtaPerspective"
+            name="com.xmos.xta.rcp.XtaPerspective">
       </perspective>
    </extension>
    <extension
