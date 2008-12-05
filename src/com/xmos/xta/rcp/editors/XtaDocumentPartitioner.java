@@ -6,11 +6,14 @@ import java.util.List;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentPartitioner;
+import org.eclipse.jface.text.IDocumentPartitionerExtension;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TypedRegion;
 
-public class XtaDocumentPartitioner implements IDocumentPartitioner {
+public class XtaDocumentPartitioner implements IDocumentPartitioner,
+                                               IDocumentPartitionerExtension {
     public static final boolean DEBUG = false;
     
     public static final String SECTION     = "PositionCategory.Section";
@@ -77,6 +80,33 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner {
 	public boolean documentChanged(DocumentEvent event) {
 		if (DEBUG) System.out.printf("XtaDocumentPartitioner: documentChanged\n");		
 		return false;
+	}
+
+	public IRegion documentChanged2(DocumentEvent event) {
+		if (DEBUG) System.out.printf("XtaDocumentPartitioner: documentChanged2\n");
+
+		boolean hit = false;
+		int regionSizeChange = event.fText.length() - event.fLength;
+	    for (int index = 0; index < m_regions.length; ++index) {
+	    	TypedRegion region = m_regions[index];
+
+	    	if (hit) {
+	    		TypedRegion newRegion = new TypedRegion(region.getOffset() + regionSizeChange,
+	    				region.getLength(), region.getType());
+	    		m_regions[index] = newRegion;
+	    	} else {
+    		
+		    	if ((event.fOffset >= region.getOffset()) &&
+					(event.fOffset < (region.getOffset() + region.getLength()))) {
+		    		hit = true;
+		    		
+		    		TypedRegion newRegion = new TypedRegion(region.getOffset(),
+		    				region.getLength() + regionSizeChange, region.getType());
+		    		m_regions[index] = newRegion;
+				}
+	    	}
+	    }
+		return null;
 	}
 
 	public String getContentType(int offset) {

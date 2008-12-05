@@ -200,10 +200,16 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private void removeFnops() {
 		if (DEBUG) System.out.printf("XtaEditor: removeFnops\n");
 		
-		XtaDocumentPartitioner xtaDocumentPartitioner = 
-			(XtaDocumentPartitioner)getSourceViewer().getDocument().getDocumentPartitioner();
-
-    	IDocument document = getSourceViewer().getDocument();
+		ISourceViewer viewer = getSourceViewer();
+		if (viewer == null)
+			return;
+		
+		IDocument document = viewer.getDocument();
+		if (document == null)
+			return;
+		
+		XtaDocumentPartitioner xtaDocumentPartitioner =
+			(XtaDocumentPartitioner)document.getDocumentPartitioner();
 
     	int fnopsRemoved = 0;
     	for (InputSection inputSection : xtaDocumentPartitioner.getInput().getSections()) {
@@ -226,10 +232,16 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}
 
     private void addFnop(int pc) {
-		XtaDocumentPartitioner xtaDocumentPartitioner = 
-			(XtaDocumentPartitioner)getSourceViewer().getDocument().getDocumentPartitioner();
-
-		IDocument document = getSourceViewer().getDocument();
+		ISourceViewer viewer = getSourceViewer();
+		if (viewer == null)
+			return;
+		
+		IDocument document = viewer.getDocument();
+		if (document == null)
+			return;
+		
+		XtaDocumentPartitioner xtaDocumentPartitioner =
+			(XtaDocumentPartitioner)document.getDocumentPartitioner();
 
     	boolean fnopsAdded = false;
     	for (InputSection inputSection : xtaDocumentPartitioner.getInput().getSections()) {
@@ -293,8 +305,16 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     		Map<Annotation, Position> annotationPositions) {
 		if (DEBUG) System.out.printf("XtaEditor: updateAnnotations: pc: 0x%05x\n", pc); 
 
-		XtaDocumentPartitioner xtaDocumentPartitioner = 
-			(XtaDocumentPartitioner)getSourceViewer().getDocument().getDocumentPartitioner();
+		ISourceViewer viewer = getSourceViewer();
+		if (viewer == null)
+			return;
+		
+		IDocument document = viewer.getDocument();
+		if (document == null)
+			return;
+		
+		XtaDocumentPartitioner xtaDocumentPartitioner =
+			(XtaDocumentPartitioner)document.getDocumentPartitioner();
 
     	for (InputSection inputSection : xtaDocumentPartitioner.getInput().getSections()) {	
 			boolean hitSection = false;
