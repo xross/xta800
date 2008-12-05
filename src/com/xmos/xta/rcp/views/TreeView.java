@@ -49,14 +49,12 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     private TreeViewFunctionCombo m_functions;
 
     private boolean m_exhustive;
-    private boolean m_fnops;
     
 	public TreeView() {
 		if (DEBUG) System.out.printf("Tree()\n");			
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 		
 		m_exhustive = false;
-		m_fnops = true;
 	}
 
 	public void createPartControl(Composite parent) {
@@ -185,14 +183,6 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 
 	public void setExhustive(boolean exhustive) {
 		m_exhustive = exhustive;
-	}
-
-	public boolean getFnops() {
-		return m_fnops;
-	}
-
-	public void setFnops(boolean fnops) {
-		m_fnops = fnops;
 	}
 
 	public int getFrequency() {

@@ -40,6 +40,7 @@ public abstract class Node {
     public abstract Vector<XtaInstruction> getInstructions();
     public abstract HashSet<Integer> getPcsCovered();
     public abstract void createContextMenu(final Shell parent, IMenuManager manager);
+	public abstract void getFnopPcs(Vector<XtaInstruction> fnops);
 	public abstract void getBlockIds(Vector<Integer> ids);
     
     public void addNode(Node node) {
@@ -61,4 +62,15 @@ public abstract class Node {
     public ViewNode getFunctionNode() {
     	return m_functionNode;
     }
+
+    public Node getPathRoot() {
+    	if (isRouteNode()) 
+    		return null;
+    	
+    	Node node = this;
+    	while (!node.getParentNode().isRouteNode()) {
+    		node = node.getParentNode();
+    	}
+		return node;
+	}
 }

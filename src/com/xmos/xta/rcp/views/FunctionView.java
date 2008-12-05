@@ -57,17 +57,6 @@ public class FunctionView extends ZoomedCanvasView {
 		m_lineWidth = 1;
 	}
 
-    private Node getPathRoot(Node start) {
-    	if ((start == null) || start.isRouteNode()) 
-    		return null;
-    	
-    	Node node = start;
-    	while (!node.getParentNode().isRouteNode()) {
-    		node = node.getParentNode();
-    	}
-		return node;
-	}
-
     protected void initialiseTree() {
     	m_routeInfo = XtaDisplayer.getInstance().getRouteInfo();
 		if (m_routeInfo != null) {
@@ -89,7 +78,11 @@ public class FunctionView extends ZoomedCanvasView {
 
     protected void annotateTree(boolean isSelctionChange) {
     	clearAll();
-        Node pathRoot = getPathRoot(m_selectedNode);
+    	Node pathRoot = null;
+    	if (m_selectedNode != null) {
+    		pathRoot = m_selectedNode.getPathRoot();
+    	}
+    	
 		if (pathRoot == null) {
 			m_pixelsX = 0;
 			m_pixelsY = 0;
@@ -106,8 +99,12 @@ public class FunctionView extends ZoomedCanvasView {
     }
 
     protected void updatePixelsXy() {
-        Node pathRoot = getPathRoot(m_selectedNode);
-		if (pathRoot == null) {
+    	Node pathRoot = null;
+    	if (m_selectedNode != null) {
+    		pathRoot = m_selectedNode.getPathRoot();
+    	}
+
+    	if (pathRoot == null) {
 			m_pixelsX = 0;
 			m_pixelsY = 0;
 		} else {
@@ -185,7 +182,10 @@ public class FunctionView extends ZoomedCanvasView {
     	gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
         gc.fillRectangle(0, 0, clientArea.width, clientArea.height);
 
-        Node pathRoot = getPathRoot(m_selectedNode);
+    	Node pathRoot = null;
+    	if (m_selectedNode != null) {
+    		pathRoot = m_selectedNode.getPathRoot();
+    	}
         if (pathRoot == null)
         	return;
         

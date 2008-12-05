@@ -38,7 +38,6 @@ public class Settings extends Dialog {
 	    container.setLayout(gridLayout);
 
 		createExhustiveControl(container, m_treeView);
-		createFNopsControl(container, m_treeView);
 		createFrequencyControl(container, m_treeView);
 		createNumThreadsControl(container, m_treeView);
 
@@ -65,19 +64,6 @@ public class Settings extends Dialog {
 		});
 	}	    
 		
-    private void createFNopsControl(Composite parent, final TreeView treeView) {
-		createControlLabel(parent, "Show Fnops:");
-		final Button button = new Button(parent, SWT.CHECK);
-		button.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
-				true, false));
-		button.setSelection(treeView.getFnops());		
-		button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				treeView.setFnops(button.getSelection());
-			}			
-		});
-    }
-
     private void createFrequencyControl(Composite parent, final TreeView treeView) {
 		createControlLabel(parent, "Frequency:");
 		final Spinner spinner = new Spinner(parent, SWT.BORDER);

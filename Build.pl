@@ -242,7 +242,7 @@ sub BuildEclipse
     $platform   = "cygwin";
     $config     = "win32, win32, x86";
   } elsif ($HOST eq "Mac") {
-    $eclipseDir = "/tools/eclipse/eclipse-SDK-3.4.1-linux-gtk";
+    $eclipseDir = "/tools/eclipse/eclipse-SDK-3.4.1-linux-gtk-i386";
     $template   = "/tmp/xta_XXXXXXXX";
     $tailCmd    = "tail -n2";
     $platform   = "mac";
