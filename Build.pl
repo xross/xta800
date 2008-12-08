@@ -223,38 +223,28 @@ sub CreateXtaFiles
 
 sub BuildEclipse
 {
-  my $eclipseDir = "";
-  my $template   = "";
   my $tailCmd    = "";
   my $platform   = "";
   my $config     = "";
 
   if ($HOST eq "PC") {
-    $eclipseDir = "C:/eclipse/eclipse-SDK-3.4.1-win32";
-    $template   = "C:/tmp/xta_XXXXXXXX";
     $tailCmd    = "tail -2";
     $platform   = "win32";
     $config     = "win32, win32, x86";
   } elsif ($HOST eq "Cygwin") {
-    $eclipseDir = "C:/eclipse/eclipse-SDK-3.4.1-win32";
-    $template   = "C:/tmp/xta_XXXXXXXX";
     $tailCmd    = "tail -n2";
     $platform   = "cygwin";
     $config     = "win32, win32, x86";
   } elsif ($HOST eq "Mac") {
-    $eclipseDir = "/tools/eclipse/eclipse-SDK-3.4.1-linux-gtk-i386";
-    $template   = "/tmp/xta_XXXXXXXX";
     $tailCmd    = "tail -n2";
     $platform   = "mac";
     $config     = "macosx, carbon, x86";
   } else {
-    my $version = `uname -i`;
-    chomp($version);
-    $eclipseDir = "/tools/eclipse/eclipse-SDK-3.4.1-linux-gtk-$version";
-    $template   = "/tmp/xta_XXXXXXXX";
     $tailCmd    = "tail -n2";
     $platform   = "linux";
 
+    my $version = `uname -i`;
+    chomp($version);
     if ($version eq "x86_64") {
       $config = "linux, gtk, x86_64";
     } else {
@@ -262,17 +252,24 @@ sub BuildEclipse
     }
   }
 
+  my $eclipseDir  = "$ENV{'ECLIPSE_HOME'}";
   my $buildOutput = "$TOOLS_XTA/build.output.$platform";
   my $target      = "xta.$platform.zip";
-  my $buildDir    = mkdtemp($template);
+  my $buildDir    = "$TOOLS_XTA/tmp";
+  my $tmpBuildDir = "$TOOLS_XTA/../tmp";
 
-  MakeDirectory("$buildDir/build/plugins");
-  MakeDirectory("$buildDir/build_config");
+  rmtree($buildDir);
+  rmtree($tmpBuildDir);
+
+  MakeDirectory("$tmpBuildDir/build/plugins");
+  MakeDirectory("$tmpBuildDir/build_config");
   
   unlink($buildOutput);
 
-  system("cp -r $TOOLS_XTA/../infr_libs_java $buildDir/build/plugins/infr_libs_java >> $buildOutput");
-  system("cp -r $TOOLS_XTA/../tools_xta      $buildDir/build/plugins/tools_xta      >> $buildOutput");
+  system("cp -r $TOOLS_XTA/../infr_libs_java $tmpBuildDir/build/plugins/infr_libs_java >> $buildOutput");
+  system("cp -r $TOOLS_XTA/../tools_xta      $tmpBuildDir/build/plugins/tools_xta      >> $buildOutput");
+
+  rename($tmpBuildDir, $buildDir);
 
   # Creates the target specific build properties file..
   my $buildPropertiesFile = CreateBuildPropertiesFile($platform, $config, $buildDir, $eclipseDir);
