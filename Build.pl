@@ -301,6 +301,10 @@ sub CreateBuildPropertiesFile
   my $buildDir   = shift;
   my $eclipseDir = shift;
 
+  # Only use forward slahes in the properties file.
+  $buildDir =~ s/\\/\//g; 
+  $eclipseDir =~ s/\\/\//g; 
+
   my $buildPropertiesTemplate = "$TOOLS_XTA/build.properties.template";
   my $buildPropertiesFile     = "$TOOLS_XTA/build.properties.$platform";
 
