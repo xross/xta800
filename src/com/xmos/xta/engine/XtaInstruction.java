@@ -382,6 +382,19 @@ public abstract class XtaInstruction extends Instruction {
     	for(Thread t : state.getResources().getThreads()){
     		t.setStatusRegisterBit(StatusRegister.EEBLE, false);
     	}
+    	state.clearEventVectors();
+    	for(Timer t : state.getResources().getTimers()){
+    		t.setEventEnabeled(false);
+    	}
+    	
+    	for(Channel c : state.getResources().getChannels()){
+    		c.setEventEnabeled(false);
+    	}
+    	
+    	for(Port p : state.getResources().getPorts()){
+    		p.setEventEnabeled(false);
+    	}
+    	
     }
     
     void CLRPT(MachineState state, int thread) {

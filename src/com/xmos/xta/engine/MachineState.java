@@ -6,6 +6,7 @@ import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.resources.Resources;
 import com.xmos.xta.engine.resources.Thread;
+import com.xmos.xta.engine.resources.Timer;
 
 public class MachineState {
 	public static final boolean DEBUG = false;
@@ -208,7 +209,9 @@ public class MachineState {
     	m_wasEventWait = true;
     	if(expression.canResolve()){
     		m_wasEventResolved = true;
+    		
     		m_eventTargets.add(expression.getValue());
+    		assert(m_eventTargets.size()<3);
     	} else {
     		m_wasEventResolved =false;
     	}
@@ -336,8 +339,8 @@ public class MachineState {
 
 	public void clearEventVectors() {
 		m_eventTargets.clear();
-		
 	}
+	
 
 	public void releaseMemory() {
 		m_op1 = null;
@@ -348,7 +351,7 @@ public class MachineState {
 		m_op6 = null;
 	    m_branchTargetExpression = null;
 	    m_guardExpression = null;
-	    m_eventTargets = null;
+	    m_eventTargets.clear();
 	    m_resources = null;
 	    m_memory = null;
 		
