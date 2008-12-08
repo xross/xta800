@@ -268,7 +268,9 @@ public class Block implements Comparable<Block> {
 		int nextPc = pc + instNumBytes;
 		if (m_machineState.wasEventWait()) {
 			if (m_machineState.wasEventResolved()) {
-				for (int targetVector : m_machineState.getEventTarget()) {
+				ArrayList<Integer> targets = new ArrayList<Integer>(m_machineState.getEventTarget());
+				m_machineState.clearEventVectors();
+				for (int targetVector : targets) {
 					checkForLoopFormation(targetVector, false, instruction, true, true);
 				}
 				setStatus(BlockStatus.COMPLETE);

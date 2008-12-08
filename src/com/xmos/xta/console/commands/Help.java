@@ -63,7 +63,7 @@ class Help extends Command {
     
     public void execute(Shell shell, Engine engine, Console console) {    	
     	if (m_command == null) {
-            // Displays help for all commands.    		
+            // Displays help for all commands.    	
 	    	Command[] avaliableCommands = CommandFactory.getCommands();
 	    	for (Command command : avaliableCommands) {
 	    		console.display(String.format("  [-]%s\n", command.description(engine, false)));   		
