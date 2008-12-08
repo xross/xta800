@@ -227,21 +227,30 @@ sub BuildEclipse
   my $platform   = "";
   my $config     = "";
 
+  my $buildDir    = "$TOOLS_XTA/tmp";
+  my $tmpBuildDir = "$TOOLS_XTA/../tmp";
+  my $buildDirProperties = "";
+
   if ($HOST eq "PC") {
     $tailCmd    = "tail -2";
     $platform   = "win32";
     $config     = "win32, win32, x86";
+    $buildDirProperties = $buildDir;
   } elsif ($HOST eq "Cygwin") {
     $tailCmd    = "tail -n2";
     $platform   = "cygwin";
     $config     = "win32, win32, x86";
+    $buildDirProperties = `cygpath -m $buildDir`;
+    chomp($buildDirProperties);
   } elsif ($HOST eq "Mac") {
     $tailCmd    = "tail -n2";
     $platform   = "mac";
     $config     = "macosx, carbon, x86";
+    $buildDirProperties = $buildDir;
   } else {
     $tailCmd    = "tail -n2";
     $platform   = "linux";
+    $buildDirProperties = $buildDir;
 
     my $version = `uname -i`;
     chomp($version);
@@ -255,8 +264,6 @@ sub BuildEclipse
   my $eclipseDir  = "$ENV{'ECLIPSE_HOME'}";
   my $buildOutput = "$TOOLS_XTA/build.output.$platform";
   my $target      = "xta.$platform.zip";
-  my $buildDir    = "$TOOLS_XTA/tmp";
-  my $tmpBuildDir = "$TOOLS_XTA/../tmp";
 
   rmtree($buildDir);
   rmtree($tmpBuildDir);
@@ -272,13 +279,13 @@ sub BuildEclipse
   rename($tmpBuildDir, $buildDir);
 
   # Creates the target specific build properties file..
-  my $buildPropertiesFile = CreateBuildPropertiesFile($platform, $config, $buildDir, $eclipseDir);
+  my $buildPropertiesFile = CreateBuildPropertiesFile($platform, $config, $buildDirProperties, $eclipseDir);
   system("cp $buildPropertiesFile $buildDir/build_config/build.properties >> $buildOutput");
  
   my $buildCmd = "java -jar $eclipseDir/plugins/org.eclipse.equinox.launcher_1.0.101.R34x_v20080819.jar " .
                  "-application org.eclipse.ant.core.antRunner " .
                  "-buildfile $eclipseDir/plugins/org.eclipse.pde.build_3.4.1.R34x_v20080805/scripts/productBuild/productBuild.xml " .
-                 "-Dbuilder=$buildDir/build_config -quiet";
+                 "-Dbuilder=$buildDirProperties/build_config -quiet";
 
   system("$buildCmd >> $buildOutput");
   system($tailCmd . " $buildOutput");
