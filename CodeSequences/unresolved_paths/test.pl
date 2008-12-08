@@ -7,12 +7,7 @@ my $arch    = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-        system("xcc -march=$arch -std=c99 -g test.c -o $genDir/test.xe > $genDir/unresolved_paths.log 2>&1");
+system("xcc -march=$arch -nostartfiles test.s -o $genDir/test.xe > $genDir/unresolved_paths.log 2>&1");
 }
-
-system("@ARGV load $genDir/test.xe " .
-       "function main " .
-       "summary SIMPLE " .
-       "summary COMPLETE_LOOPS " .
-       "exit > $genDir/unresolved_paths.txt 2>&1");
+system("@ARGV load $genDir/test.xe function main summary SIMPLE summary COMPLETE_LOOPS exit > $genDir/unresolved_paths.txt 2>&1");
 

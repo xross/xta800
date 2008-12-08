@@ -30,6 +30,7 @@
 	
 		  .text
 .globl _Encrypt
+.type _Encrypt, @function
 .globl _Encrypt.nstackwords
 .linkset _Encrypt.nstackwords, 10 
 _Encrypt:
@@ -1169,6 +1170,7 @@ _Encrypt:
           
 .globl Encrypt
 .globl Encrypt.nstackwords
+.type Encrypt, @function
 .linkset Encrypt.nstackwords, 56 
 Encrypt:
           entsp     46

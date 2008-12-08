@@ -1,9 +1,69 @@
 Route: main
-Complete paths:   1
+Complete paths:   4
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-\+COMPLETE \[1 path\(s\)\]
-    pathi\(\d+\) +: \d+\.0/\d+/\d+/\d+/0/1/0, path\(\d+\)
-        \+loop \[2 path\(s\)\, 0 iteration\(s\)\]
-            pathi\(\d+\) +: \d+\.0/\d+/\d+/\d+/\d+/0/0, path\(\d+\)
-            pathi\(\d+\) +: \d+\.0/\d+/\d+/\d+/\d+/0/0, path\(\d+\)
+\+COMPLETE \[4 path\(s\)\]
+    pathi\(\d+\)  : 260.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+        \+loop \[4 path\(s\), 0 iteration\(s\)\]
+            pathi\(\d+\)   : 200.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+                \+loop \[1 path\(s\), 0 iteration\(s\)\]
+                    pathi\(\d+\)   : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+            pathi\(\d+\)  : 200.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+                \+loop \[1 path\(s\), 0 iteration\(s\)\]
+                    pathi\(\d+\)  : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+            pathi\(\d+\)  : 180.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+                \+loop \[1 path\(s\), 0 iteration\(s\)\]
+                    pathi\(\d+\)  : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+            pathi\(\d+\)  : 160.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+                \+loop \[1 path\(s\), 0 iteration\(s\)\]
+                    pathi\(\d+\)  : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+        \+loop \[1 path\(s\), 0 iteration\(s\)\]
+            pathi\(\d+\)   : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+    pathi\(\d+\)  : 260.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+        \+loop \[4 path\(s\), 0 iteration\(s\)\]
+            pathi\(\d+\)   : 200.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+                \+loop \[1 path\(s\), 0 iteration\(s\)\]
+                    pathi\(\d+\)   : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+            pathi\(\d+\)  : 200.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+                \+loop \[1 path\(s\), 0 iteration\(s\)\]
+                    pathi\(\d+\)  : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+            pathi\(\d+\)  : 180.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+                \+loop \[1 path\(s\), 0 iteration\(s\)\]
+                    pathi\(\d+\)  : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+            pathi\(\d+\)  : 160.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+                \+loop \[1 path\(s\), 0 iteration\(s\)\]
+                    pathi\(\d+\)  : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+        \+loop \[1 path\(s\), 0 iteration\(s\)\]
+            pathi\(\d+\)  : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+    pathi\(\d+\)  : 240.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+        \+loop \[4 path\(s\), 0 iteration\(s\)\]
+            pathi\(\d+\)   : 200.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+                \+loop \[1 path\(s\), 0 iteration\(s\)\]
+                    pathi\(\d+\)   : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+            pathi\(\d+\)  : 200.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+                \+loop \[1 path\(s\), 0 iteration\(s\)\]
+                    pathi\(\d+\)  : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+            pathi\(\d+\)  : 180.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+                \+loop \[1 path\(s\), 0 iteration\(s\)\]
+                    pathi\(\d+\)  : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+            pathi\(\d+\)  : 160.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+                \+loop \[1 path\(s\), 0 iteration\(s\)\]
+                    pathi\(\d+\)  : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+        \+loop \[1 path\(s\), 0 iteration\(s\)\]
+            pathi\(\d+\)  : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+    pathi\(\d+\)  : 220.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+        \+loop \[4 path\(s\), 0 iteration\(s\)\]
+            pathi\(\d+\)   : 200.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+                \+loop \[1 path\(s\), 0 iteration\(s\)\]
+                    pathi\(\d+\)   : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+            pathi\(\d+\)  : 200.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+                \+loop \[1 path\(s\), 0 iteration\(s\)\]
+                    pathi\(\d+\)  : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+            pathi\(\d+\)  : 180.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+                \+loop \[1 path\(s\), 0 iteration\(s\)\]
+                    pathi\(\d+\)  : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+            pathi\(\d+\)  : 160.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+                \+loop \[1 path\(s\), 0 iteration\(s\)\]
+                    pathi\(\d+\)  : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)
+        \+loop \[1 path\(s\), 0 iteration\(s\)\]
+            pathi\(\d+\)  : 40.0/\d+/\d+/\d+/\d+/\d+/\d+, path\(\d+\)

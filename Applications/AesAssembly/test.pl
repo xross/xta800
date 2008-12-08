@@ -12,6 +12,7 @@ system("mv  aes_test_assembly.xe $genDir/test.xe >  $genDir/AesAssembly.log>&1")
 }
 
 system("@ARGV load $genDir/test.xe " .
-        "function main " .
+        "function _Encrypt " .
+        "summary COMPLETE_INSTRUCTIONS " .
         "exit > $genDir/AesAssembly.txt 2>&1");
 

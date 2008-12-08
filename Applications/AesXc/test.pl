@@ -8,10 +8,11 @@ my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
 system("xmake>  $genDir/AesXc.log>&1");
-system("mv  aes_test_assembly.xe $genDir/test.xe >  $genDir/AesXc.log>&1");
+system("mv  aes_test_xc.xe $genDir/test.xe >  $genDir/AesXc.log>&1");
 }
 
 system("@ARGV load $genDir/test.xe " .
-        "function main " .
+        "function _Encrypt " .
+        "summary COMPLETE_INSTRUCTIONS " .
         "exit > $genDir/AesXc.txt 2>&1");
 
