@@ -1,14 +1,20 @@
-Current node: 128
-Current core: 3
+Current node: 0
+Current core: 2
 Frequency: 400
 NumThreads: 8
-Loaded executable: \w+/test.xe
+Loaded executable: csim__xs1a/test.xe
 Node: 0, Core: 0 \(No debug information found\)
 Node: 0, Core: 1 \(No debug information found\)
 Node: 0, Core: 2 \(No debug information found\)
 Node: 0, Core: 3 \(No debug information found\)
-Node: 128, Core: 0 \(No debug information found\)
-Node: 128, Core: 1 \(No debug information found\)
-Node: 128, Core: 2 \(No debug information found\)
-Node: 128, Core: 3 \(No debug information found\)
+No Paths/Functions registered
+Current node: 0
+Current core: 1
+Frequency: 400
+NumThreads: 8
+Loaded executable: csim__xs1a/test.xe
+Node: 0, Core: 0 \(No debug information found\)
+Node: 0, Core: 1 \(No debug information found\)
+Node: 0, Core: 2 \(No debug information found\)
+Node: 0, Core: 3 \(No debug information found\)
 No Paths/Functions registered

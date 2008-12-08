@@ -10,7 +10,7 @@ _start:
 .globl main
 main:
   entsp 1
-  
+  bau r1
 
 
   retsp 1
