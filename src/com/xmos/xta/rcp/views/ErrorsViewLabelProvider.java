@@ -15,7 +15,7 @@ public class ErrorsViewLabelProvider extends LabelProvider implements ITableLabe
 	public String getColumnText(Object element, int columnIndex) {
 		if (DEBUG) System.out.printf("UnknownsViewLabelProvider: getColumnText: index: %d\n", columnIndex);	
 		
-		assert(columnIndex == 1);		
+		assert(columnIndex == 0);
 		return (String)element;
 	}
 }

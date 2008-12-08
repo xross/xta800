@@ -82,13 +82,15 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		m_rootNode = null;
 		m_doubleClickNode = null;
 	    m_selectedNode = null;
+
+		m_scale = 1.0;
 	}
 
 	/*
 	 * ISelectionListener classes
 	 */
 	public void createPartControl(Composite parent) {
-		if (DEBUG) System.out.printf("Structure: createPartControl\n");
+		if (DEBUG) System.out.printf("ZoomedCanvasView: createPartControl\n");
 	    m_parent = parent;
 	    m_display = m_parent.getDisplay();
 
@@ -125,12 +127,12 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	}
 
 	public void setFocus() {
-		if (DEBUG) System.out.printf("Structure: setFocus\n");
+		if (DEBUG) System.out.printf("ZoomedCanvasView: setFocus\n");
 		refreshView();
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG) System.out.printf("Structure: propertyChange: %s\n", event.getProperty());			
+		if (DEBUG) System.out.printf("ZoomedCanvasView: propertyChange: %s\n", event.getProperty());			
 
 		if (event.getProperty().equals("DisplayRoute")) {
 	    	if (m_toolTip != null  && !m_toolTip.isDisposed ()) {
@@ -239,8 +241,11 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	}
 
     private void prepareCanvas() {
-		Rectangle clientArea = m_scrollArea.getBounds();
-		
+    	if (m_scale == 0) {
+    		zoomFit();
+    	}
+
+    	Rectangle clientArea = m_scrollArea.getClientArea();
 		int renderX = (int)((double)m_pixelsX * m_scale);
 		int renderY = m_pixelsY;
 		if (m_scaleY)
@@ -249,6 +254,11 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		int x = (clientArea.width > renderX) ? clientArea.width : renderX;
 		int y = (clientArea.height > renderY) ? clientArea.height : renderY;
 		m_canvas.setSize(x, y);
+
+		if (DEBUG) {
+			System.out.printf("ZoomedCanvasView: prepareCanvas %d,%d (%d, %d) %f\n",
+				x, y, clientArea.width, clientArea.height, m_scale);
+		}
     }
     
 	public void zoomOut() {
@@ -282,13 +292,20 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	}
 
 	public void zoomFit() {
-		double xScale = (double)m_scrollArea.getBounds().width / (double)m_pixelsX;
-		double yScale = (double)m_scrollArea.getBounds().height / (double)m_pixelsY;
+		double xScale = (double)m_scrollArea.getClientArea().width / (double)m_pixelsX;
+		double yScale = (double)m_scrollArea.getClientArea().height / (double)m_pixelsY;
+
 		if (m_scaleY) {
 			m_scale = (xScale < yScale) ? xScale : yScale;
 		} else {
 			m_scale = xScale;
 		}
+
+		if (DEBUG) {
+			System.out.printf("ZoomedCanvasView: zoomFit %f (%d, %d)\n",
+				m_scale, m_parent.getBounds().width, m_parent.getBounds().height);
+		}
+
 		refreshView();
 	}
 
