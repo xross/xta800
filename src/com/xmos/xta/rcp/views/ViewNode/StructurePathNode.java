@@ -46,8 +46,8 @@ public class StructurePathNode extends StructureNode {
 	public int getChildrenX() {
 		int pixels = 0;
 		for (Node treeNode : m_treeNode.getNodes()) {
-			StructureNode child = treeNode.getStructureNode();
-			if (child != null) {
+			if (!treeNode.isBlockNode()) {
+				StructureNode child = treeNode.getStructureNode();
 				pixels += child.getPixelsX();
 			}
 		}
@@ -57,8 +57,8 @@ public class StructurePathNode extends StructureNode {
 	public int getChildrenY() {
 		int pixels = 0;
 		for (Node treeNode : m_treeNode.getNodes()) {
-			StructureNode child = treeNode.getStructureNode();
-			if (child != null) {
+			if (!treeNode.isBlockNode()) {
+				StructureNode child = treeNode.getStructureNode();
 				int childPixels = child.getPixelsY();
 				if (childPixels > pixels)
 					pixels = childPixels;
@@ -92,8 +92,8 @@ public class StructurePathNode extends StructureNode {
     	int childTop = scale(m_pixelOffsetY + m_pixelsY, scale);
     	int lineTop = scale(m_pixelOffsetY + m_pixelsY - m_borderY - m_connectorY, scale);
 		for (Node treeNode : m_treeNode.getNodes()) {
-			StructureNode child = treeNode.getStructureNode();
-			if (child != null) {
+			if (!treeNode.isBlockNode()) {
+				StructureNode child = treeNode.getStructureNode();
 	    		child.draw(display, gc, scale);
 	    		int childX = child.getPixelsX();
 	    		
@@ -112,8 +112,8 @@ public class StructurePathNode extends StructureNode {
 
     	int childOffsetX = m_borderX;
 		for (Node treeNode : m_treeNode.getNodes()) {
-			StructureNode child = treeNode.getStructureNode();
-			if (child != null) {
+			if (!treeNode.isBlockNode()) {
+				StructureNode child = treeNode.getStructureNode();
 	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_pixelsY);
 	            childOffsetX += child.getPixelsX();
 			}
@@ -122,8 +122,8 @@ public class StructurePathNode extends StructureNode {
 
 	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
 		for (Node treeNode : m_treeNode.getNodes()) {
-			StructureNode child = treeNode.getStructureNode();
-			if (child != null) {
+			if (!treeNode.isBlockNode()) {
+				StructureNode child = treeNode.getStructureNode();
 				child.buildClickAreas(clickAreas);
 			}
     	}
