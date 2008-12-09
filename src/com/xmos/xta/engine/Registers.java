@@ -4,6 +4,8 @@ public class Registers {
 	final static int NUM_REGISTERS = 16;	
 	private Expression[] m_registers;
 
+	
+	
 	public Registers() { 
 	    m_registers = new Expression[NUM_REGISTERS];	
 		for (int regIndex = 0; regIndex < NUM_REGISTERS; ++regIndex) {
@@ -36,5 +38,20 @@ public class Registers {
 				m_registers[regNum].resolve();
 			}
 		}	
+	}
+	
+	public Expression[] getRegisters(){
+		return m_registers;
+	}
+	
+	public String toString(){
+		String out = "" ;
+		for(int i=0;i<NUM_REGISTERS;i++){
+			Expression reg = m_registers[i];
+			if(reg.canResolve()){
+				out +="r" + i + " " + Integer.toHexString(reg.getValue()) + "\t";
+			}
+		}
+		return out;
 	}
 }
