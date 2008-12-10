@@ -29,19 +29,10 @@ AESFILESASSEMBLY = $(AES_SOURCE_DIR)$(SLASH)Decrypt.S \
 				$(AES_SOURCE_DIR)$(SLASH)InvKeyExpansion.S \
 				$(AES_SOURCE_DIR)$(SLASH)KeyExpansion.S \
 
-AESFILESXC = $(AES_SOURCE_DIR)$(SLASH)Decrypt.xc \
-				$(AES_SOURCE_DIR)$(SLASH)Encrypt.xc \
-				$(AES_SOURCE_DIR)$(SLASH)InvKeyExpansion.xc \
-				$(AES_SOURCE_DIR)$(SLASH)KeyExpansion.xc \
-
-
 INCLUDES 	= -I $(AES_SOURCE_DIR) \
 
-all: assembly xc
+all: assembly
 
 assembly:
 	xcc $(AESFILESBASIC) $(AESFILESASSEMBLY) -o $(TARGETNAME)_assembly.xe \
-				
-xc:
-	xcc -O2 $(AESFILESBASIC) $(AESFILESXC) -o $(TARGETNAME)_xc.xe \
 				
