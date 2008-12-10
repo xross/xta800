@@ -33,7 +33,6 @@ public abstract class XtaInstruction extends Instruction {
 		m_basicNumCycles = 0;
 		m_config = null;
 		m_returnLocations = new ArrayList<XtaInstruction>();
-		//try to replace the above with this
 		m_branchTarget = new BranchTarget();
 	}
 
@@ -127,7 +126,6 @@ public abstract class XtaInstruction extends Instruction {
     void ADD(MachineState state, int thread) {
     	if (m_debug) 
     		System.out.printf("0x%08x: ADD\n", getPc());
-    	
     	state.m_op1 = new Expression(Expression.OperatorType.ADD);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
@@ -137,29 +135,22 @@ public abstract class XtaInstruction extends Instruction {
     void AND(MachineState state, int thread) {
     	if (m_debug) 
         	System.out.printf("0x%08x: AND\n", getPc());    
-    	
     	state.m_op1 = new Expression(Expression.OperatorType.AND);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
-    	
-    	
     }
     
     void ANDNOT(MachineState state, int thread) {
     	if (m_debug) 
         	System.out.printf("0x%08x: ANDNOT\n", getPc());  
-    	
     	state.m_op1 = new Expression(Expression.OperatorType.ANDNOT);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
-    	
-    	
     }
     
     void ASHR(MachineState state, int thread) {
     	if (m_debug)     	
     	    System.out.printf("0x%08x: ASHR\n", getPc());   
-    	
     	state.m_op1 = new Expression(Expression.OperatorType.ASHR);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
@@ -174,7 +165,6 @@ public abstract class XtaInstruction extends Instruction {
     void BITREV(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: BITREV\n", getPc());
-
     	state.m_op1 = new Expression(Expression.OperatorType.BITREV);
     	state.m_op1.addOperand(state.m_op2);
     }
@@ -182,7 +172,6 @@ public abstract class XtaInstruction extends Instruction {
     void BLA(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: BLA\n", getPc());
-
     	state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
     	state.jump(state.m_op1);
     	setBranchLink(true);
@@ -191,7 +180,6 @@ public abstract class XtaInstruction extends Instruction {
     void BLACP(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: BLACP\n", getPc());	
-    	
     	Expression branchTarget = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.DEFINED);
     	branchTarget.addOperand(state.getConstPoolRegister(thread));
     	branchTarget.addOperand(state.m_op1); 	
@@ -203,7 +191,6 @@ public abstract class XtaInstruction extends Instruction {
     void BLAT(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: BLAT\n", getPc());	
-
     	Expression branchTarget = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.DEFINED);
     	branchTarget.addOperand(state.readRegister(11, thread));
     	branchTarget.addOperand(state.m_op1); 	
@@ -354,7 +341,6 @@ public abstract class XtaInstruction extends Instruction {
     void BYTEREV(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: BYTEREV\n", getPc());
-	
     	state.m_op1 = new Expression(Expression.OperatorType.BYTEREV);
     	state.m_op1.addOperand(state.m_op2);
     }
@@ -362,22 +348,7 @@ public abstract class XtaInstruction extends Instruction {
     void CHKCT(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: CHKCT\n", getPc());	
-    	/*
-    	Resources resources = state.getResources();
-        Expression resourceId = state.m_op1;
-        Expression controlToken = state.m_op2;
-        
-        if(resourceId.canResolve() && controlToken.canResolve()){
-        	int ct = controlToken.getValue();
-            int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-            Channel chan = state.getResources().getChannels()[resNum];
-            
-        } else {
-            ////System.err.println("could not resolve which resource of CHKCT");
-        } 
-        */
+    	//TODO
     	if(m_uninplimented) System.err.println("CHKCT");
     }
 
@@ -489,6 +460,8 @@ public abstract class XtaInstruction extends Instruction {
     void DCALL(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: DCALL\n", getPc());	
+    	
+    	//flag as unimportant path
     	if(m_uninplimented) System.err.println("DCALL");
     	//TODO
     }
@@ -496,13 +469,15 @@ public abstract class XtaInstruction extends Instruction {
     void DENTSP(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: DENTSP\n", getPc());
+    	//flag as unimportant path
     	if(m_uninplimented) System.err.println("DENTSP");
     	//TODO
     }
 
     void DGETREG(MachineState state, int thread) {
     	if (m_debug)     	
-            System.out.printf("0x%08x: DGETREG\n", getPc());	
+            System.out.printf("0x%08x: DGETREG\n", getPc());
+    	//flag as unimportant path
     	if(m_uninplimented) System.err.println("DGETREG");
     	//TODO
     }
@@ -526,6 +501,7 @@ public abstract class XtaInstruction extends Instruction {
     void DRESTSP(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: DRESTSP\n", getPc());	
+    	//flag as unimportant path
     	if(m_uninplimented) System.err.println("DRESTSP");
     	//TODO
     }
@@ -533,6 +509,7 @@ public abstract class XtaInstruction extends Instruction {
     void DRET(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: DRET\n", getPc());	
+    	//flag as unimportant path
     	if(m_uninplimented) System.err.println("DRET");
     	//TODO
     }
@@ -540,6 +517,7 @@ public abstract class XtaInstruction extends Instruction {
     void ECALLF(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: ECALLF\n", getPc());	
+    	//flag as unimportant path
     	//if(m_uninplimented) System.err.println("ECALLF");
     	//TODO
     }
@@ -547,6 +525,7 @@ public abstract class XtaInstruction extends Instruction {
     void ECALLT(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: ECALLT\n", getPc());	
+    	//flag as unimportant path
     	if(m_uninplimented) System.err.println("ECALLT");
     	//TODO
     }
@@ -670,18 +649,8 @@ public abstract class XtaInstruction extends Instruction {
     void ENDIN(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: ENDIN\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression resourceId = state.m_op2;
-        
-        if(resourceId.canResolve()){
-            int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-            //TODO
-            state.m_op2 = new Expression(1);
-        } else {
-            //System.err.println("could not resolve which resource of ENDIN");
-        } 
+        if(m_uninplimented) System.err.println("ENDIN");
+    	//TODO
     }
 
     void ENTSP(MachineState state, int thread) {
@@ -790,7 +759,6 @@ public abstract class XtaInstruction extends Instruction {
         
         if(resourceId.canResolve()){
             int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
             if(resType == Resources.RES_TYPE_TIMER){
     	    	//return the clock value
@@ -844,7 +812,8 @@ public abstract class XtaInstruction extends Instruction {
 
     void GETPS(MachineState state, int thread) {
     	if (m_debug)     	
-            System.out.printf("0x%08x: GETPS\n", getPc());	
+            System.out.printf("0x%08x: GETPS\n", getPc());
+    	//set as important for now
     	if(m_uninplimented) System.err.println("GETPS");
     	//TODO
     }
@@ -903,88 +872,44 @@ public abstract class XtaInstruction extends Instruction {
     void GETTS(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: GETTS\n", getPc());	
-        Expression synchroniserId = state.m_op2;
-        if(synchroniserId.canResolve()){
-        	Resources resources = state.getResources();
-            int resId = synchroniserId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve GETTS");
-        } 
+    	if(m_uninplimented) System.err.println("GETTS");
+    	//TODO
     }
 
     void IN(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: IN\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression resourceId = state.m_op2;
-        
-        if(resourceId.canResolve()){
-            int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve which resource of IN");
-        } 
+    	if(m_uninplimented) System.err.println("IN");
+    	//TODO
     }
 
     void INCT(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: INCT\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression resourceId = state.m_op2;
-        
-        if(resourceId.canResolve()){
-            int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve which resource of INCT");
-        } 
+    	if(m_uninplimented) System.err.println("INCT");
+    	//TODO 
     }
 
     void INPW(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: INPW\n", getPc());	
-
+        state.m_op1 = new Expression(state.m_op1Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+        if(m_uninplimented) System.err.println("INPW");
     	//TODO
-        state.m_op1 = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
     }
 
     void INSHR(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: INSHR\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression synchroniserId = state.m_op2;
-        
-        if(synchroniserId.canResolve()){
-            int resId = synchroniserId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve INSHR");
-        } 
+    	if(m_uninplimented) System.err.println("INSHR");
+    	//TODO
     }
 
     void INT(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: INT\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression resourceId = state.m_op2;
-        
-        if(resourceId.canResolve()){
-            int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve which resource of INT");
-        } 
+    	if(m_uninplimented) System.err.println("INT");
+    	//TODO
     }
 
     void KCALL(MachineState state, int thread) {
@@ -1049,7 +974,7 @@ public abstract class XtaInstruction extends Instruction {
     		int base = state.m_op2.getValue();
     		int offset = state.m_op3.getValue();
     		int address = base - offset;
-    		state.m_op1 = state.readShort(address);
+    		state.m_op1 = new Expression(address);
     	} else {
     		state.m_op1 = new Expression(state.m_op1Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
     	}
@@ -1058,17 +983,24 @@ public abstract class XtaInstruction extends Instruction {
     void LDA16F(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDA16F\n", getPc());	
-    	if(m_uninplimented) System.err.println("LDA16F");
-    	//TODO
+    	if(state.m_op2.canResolve() && state.m_op3.canResolve()){
+    		int base = state.m_op2.getValue();
+    		int offset = state.m_op3.getValue() << (Instruction.BYTES_PER_WORD_LOG2/2);
+    		int address = base + offset;
+    		state.m_op1 = new Expression(address);
+    	} else {
+    		state.m_op1 = new Expression(state.m_op1Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+    	}
     }
 
     void LDAPB(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDAPB\n", getPc());	
     	assert(state.m_op1.canResolve());
-    	int forward = state.m_op1.getValue();
+    	int offset = state.m_op1.getValue();
     	int nextPc = state.getPc(thread) + getNumBytes();
-    	state.m_op2 = new Expression(nextPc - (forward<<(Instruction.BYTES_PER_WORD_LOG2/2)));
+    	int number = nextPc - (offset<<(Instruction.BYTES_PER_WORD_LOG2/2));
+    	state.writeRegister(11, new Expression(number), thread);
     }
 
     void LDAPF(MachineState state, int thread) {
@@ -1076,18 +1008,29 @@ public abstract class XtaInstruction extends Instruction {
             System.out.printf("0x%08x: LDAPF\n", getPc());	
     	
     	assert(state.m_op1.canResolve());
-    	int forward = state.m_op1.getValue();
+    	int offset = state.m_op1.getValue();
     	int nextPc = state.getPc(thread) + getNumBytes();
-    	
-    	int number = nextPc + (forward<<(Instruction.BYTES_PER_WORD_LOG2/2));
+    	int number = nextPc + (offset<<(Instruction.BYTES_PER_WORD_LOG2/2));
     	state.writeRegister(11, new Expression(number), thread);
     }
 
     void LDAWB(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDAWB\n", getPc());	
-    	if(m_uninplimented) System.err.println("LDAWB");
-    	//TODO
+    	if (state.m_op2.canResolve() && state.m_op3.canResolve()) {
+    	    // The address is resolvable so we can read the expression from 'memory'
+    		
+    	    state.m_op2.resolve();
+            state.m_op3.resolve();
+            int base = state.m_op2.getValue();
+            int offset = state.m_op3.getValue() << Instruction.BYTES_PER_WORD_LOG2;
+            int address  = base - offset;
+            state.m_op1 = new Expression(address) ;  
+    	}
+    	else
+    	{  	    
+    	    state.m_op1 = new Expression(state.m_op1Fld, 0, Expression.Type.MEMORY, Expression.Status.UNDEFINED);  	
+    	}
     }
 
     void LDAWDP(MachineState state, int thread) {
@@ -1096,7 +1039,7 @@ public abstract class XtaInstruction extends Instruction {
 
         Expression rhs = new Expression(Expression.OperatorType.ASHL);              
         rhs.addOperand(state.m_op2);
-        rhs.addOperand(new Expression(2));
+        rhs.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2));
         
         state.m_op1 = new Expression(Expression.OperatorType.ADD);
         state.m_op1.addOperand(state.getDataPoolRegister(thread));            
@@ -1109,7 +1052,7 @@ public abstract class XtaInstruction extends Instruction {
     	
     	Expression rhs = new Expression(Expression.OperatorType.ASHL);    	    	
     	rhs.addOperand(state.m_op3);
-    	rhs.addOperand(new Expression(2));
+    	rhs.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2));
     	
     	state.m_op1 = new Expression(Expression.OperatorType.ADD);
     	state.m_op1.addOperand(state.m_op2);	    	
@@ -1132,8 +1075,8 @@ public abstract class XtaInstruction extends Instruction {
     void LDC(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDC\n", getPc());
-	
-    	state.m_op1 = new Expression(state.m_op2);
+    	assert(state.m_op2.canResolve());
+    	state.m_op1 = new Expression(state.m_op2.getValue());
     }
 
     void LDET(MachineState state, int thread) {
@@ -1181,11 +1124,7 @@ public abstract class XtaInstruction extends Instruction {
     	}
     	else
     	{
-    		
-    	    // The address is not resolvable so use the memory reference as the expression.    	    
-    	    state.m_op1 = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.DEFINED);
-    	    state.m_op1.addOperand(state.m_op2);
-    	    state.m_op1.addOperand(state.m_op3);    	
+    		 state.m_op1 = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.UNDEFINED);  	   	
     	}
     }
 
@@ -1243,16 +1182,12 @@ public abstract class XtaInstruction extends Instruction {
         Expression wordOffset = new Expression(state.m_op2.getValue() << Instruction.BYTES_PER_WORD_LOG2);
 
         if (stackPointer.canResolve()) {
-            // The stack pointer address is resolvable so we can load the expression from 'memory'
-        	stackPointer.resolve();
+            stackPointer.resolve();
         	wordOffset.resolve();
             state.m_op1 = state.readMemory(stackPointer.getValue() + wordOffset.getValue());    	    
         }
         else {
-    	    // The stack pointer address is not resolvable so use the memory reference as the expression.    	    
-    	    state.m_op1 = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.DEFINED);
-    	    state.m_op1.addOperand(stackPointer);
-    	    state.m_op1.addOperand(wordOffset);    	        	
+        	 state.m_op1 = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.UNDEFINED);  	    	        	
         }
     }
 
@@ -1321,60 +1256,39 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: MJOIN\n", getPc());	
 
-    	Resources resources = state.getResources();
-        
-        Expression synchroniserId = state.m_op1;
-        
-        if(synchroniserId.canResolve()){
-            int resId = synchroniserId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve MJOIN");
-        } 
+    	if(m_uninplimented) System.err.println("MJOIN");
+    	//TODO
     }
 
     void MKMSK(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: MKMSK\n", getPc());
     	assert(state.m_op2.canResolve());
-    	
     	int shift = state.m_op2.getValue();
-    	
     	int mask = (1<<shift) - 1;
-    	
     	state.m_op1 = new Expression(mask);
-
     }
 
     void MSYNC(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: MSYNC\n", getPc());	
-
-    	Resources resources = state.getResources();
-    	
-        Expression synchroniserId = state.m_op1;
-        
-        if(synchroniserId.canResolve()){
-            int resId = synchroniserId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-            Synchroniser sync = resources.getSynchroniser(resType, resNum);
-            
-            
-        } else {
-            //System.err.println("could not resolve MSYNC");
-        } 
+    	if(m_uninplimented) System.err.println("MSYNC");
+    	//TODO
     }
 
     void MUL(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: MUL\n", getPc());	
-
-    	//TODO (Just assign an undefined value to the destination register for now...)    	
-    	state.m_op1 = new Expression(state.m_op1Fld, 0, 
-			    Expression.Type.REGISTER, Expression.Status.UNDEFINED);    	
+    	if(state.m_op2.canResolve() && state.m_op3.canResolve()){
+    		int scr1 = state.m_op2.getValue();
+    		int scr2 = state.m_op3.getValue();
+    		int dest = scr1 * scr2;
+    		state.m_op1 = new Expression(dest);
+    		//do properly with an expression later
+    	} else {	
+    		state.m_op1 = new Expression(state.m_op1Fld, 0, 
+			    Expression.Type.REGISTER, Expression.Status.UNDEFINED);    
+    	}
     }
 
     void NEG(MachineState state, int thread) {
@@ -1396,7 +1310,6 @@ public abstract class XtaInstruction extends Instruction {
     void OR(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: OR\n", getPc());
-	
     	state.m_op1 = new Expression(Expression.OperatorType.OR);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
@@ -1405,95 +1318,64 @@ public abstract class XtaInstruction extends Instruction {
     void OUT(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: OUT\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression synchroniserId = state.m_op2;
-        
-        if(synchroniserId.canResolve()){
-            int resId = synchroniserId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve OUT");
-        } 
+    	if(m_uninplimented) System.err.println("OUT");
+    	//TODO
     }
 
     void OUTCT(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: OUTCT\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression synchroniserId = state.m_op1;
-        
-        if(synchroniserId.canResolve()){
-            int resId = synchroniserId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve OUTCT");
-        } 
+    	if(m_uninplimented) System.err.println("OUTCT");
+    	//TODO
     }
 
     void OUTPW(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: OUTPW\n", getPc());	
-
+    	if(m_uninplimented) System.err.println("OUTPW");
     	//TODO
     }
 
     void OUTSHR(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: OUTSHR\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression synchroniserId = state.m_op2;
-        
-        if(synchroniserId.canResolve()){
-            int resId = synchroniserId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve OUTSHR");
-        } 
+    	if(m_uninplimented) System.err.println("OUTSHR");
+    	//TODO
     }
 
     void OUTT(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: OUTT\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression synchroniserId = state.m_op2;
-        
-        if(synchroniserId.canResolve()){
-            int resId = synchroniserId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve OUTT");
-        } 
+    	if(m_uninplimented) System.err.println("OUTT");
+    	//TODO
     }
 
     void PEEK(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: PEEK\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression synchroniserId = state.m_op2;
-        
-        if(synchroniserId.canResolve()){
-            int resId = synchroniserId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve PEEK");
-        } 
+    	if(m_uninplimented) System.err.println("PEEK");
+    	//TODO
     }
 
     void REMS(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: REMS\n", getPc());	
-    	if(m_uninplimented) System.err.println("REMS");
-    	//TODO
+    	if(state.m_op2.canResolve() && state.m_op3.canResolve()){
+      		int dividend = state.m_op2.getValue();
+      		int divisor = state.m_op3.getValue();
+      		if(divisor == 0 || (dividend == 0x80000000 && divisor == 0xffffffff)){
+      			//exception
+      			System.err.println("Exception in REMS");
+      		} else {
+      			double d1 = ((double)(((long)dividend)&0xffffffffl));
+                double d2 = ((double)(((long)divisor)&0xffffffffl));
+                int div = (int)(d1 / d2);
+                int dest = (int)(d1 - div * d2);
+      			state.m_op1 = new Expression(dest);
+      		}
+      	} else {
+      		state.m_op1 = new Expression(state.m_op1Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED); 
+      	}	
     }
 
     void REMU(MachineState state, int thread) {
@@ -1503,12 +1385,11 @@ public abstract class XtaInstruction extends Instruction {
     		int input = state.m_op2.getValue();
     		int mod = state.m_op3.getValue();
     		if(mod == 0){
-    			System.err.println("error: mod by 0");
+    			System.err.println("Exception in REMU");
     		} else {
     			int result = input % mod;
     			state.m_op1 = new Expression(result);
     		}
-    		
     	} else {
     		state.m_op1 = new Expression(state.m_op1Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED); 
     	}
@@ -1553,33 +1434,15 @@ public abstract class XtaInstruction extends Instruction {
     void SETC(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETC\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression resourceId = state.m_op1;
-        
-        if(resourceId.canResolve()){
-            int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve which resource in SETC");
-        } 
+    	if(m_uninplimented) System.err.println("SETC");
+    	//TODO
     }
 
     void SETCLK(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETCLK\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression resourceId = state.m_op2;
-        
-        if(resourceId.canResolve()){
-            int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve which resource in SETCLK");
-        } 
+    	if(m_uninplimented) System.err.println("SETCLK");
+    	//TODO
     }
 
     void SETCP(MachineState state, int thread) {
@@ -1592,17 +1455,8 @@ public abstract class XtaInstruction extends Instruction {
     void SETD(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETD\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression resourceId = state.m_op2;
-        
-        if(resourceId.canResolve()){
-            int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve which resource of SETD");
-        } 
+    	if(m_uninplimented) System.err.println("SETD");
+    	//TODO
     }
 
     void SETDP(MachineState state, int thread) {
@@ -1615,17 +1469,8 @@ public abstract class XtaInstruction extends Instruction {
     void SETEV(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETEV\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression resourceId = state.m_op1;
-        
-        if(resourceId.canResolve()){
-            int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve which resource of SETEV");
-        }     
+    	if(m_uninplimented) System.err.println("SETEV");
+    	//TODO  
     }
 
     void SETKEP(MachineState state, int thread) {
@@ -1645,49 +1490,22 @@ public abstract class XtaInstruction extends Instruction {
     void SETPSC(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETPSC\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression resourceId = state.m_op2;
-        
-        if(resourceId.canResolve()){
-            int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve which resource of SETPSC");
-        } 
+    	if(m_uninplimented) System.err.println("SETPSC");
+    	//TODO
     }
 
     void SETPT(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETPT\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression resourceId = state.m_op2;
-        
-        if(resourceId.canResolve()){
-            int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve which resource in SETPT");
-        } 
+    	if(m_uninplimented) System.err.println("SETPT");
+    	//TODO
     }
 
     void SETRDY(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETRDY\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression resourceId = state.m_op2;
-        
-        if(resourceId.canResolve()){
-            int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve which resource in SETRDY");
-        } 
+    	if(m_uninplimented) System.err.println("SETRDY");
+    	//TODO
     }
 
     void SETSP(MachineState state, int thread) {
@@ -1707,19 +1525,8 @@ public abstract class XtaInstruction extends Instruction {
     void SETTW(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETTW\n", getPc());	
-    	Resources resources = state.getResources();
-        assert(resources!=null);
-    	
-    	Expression resourceId = state.m_op2;
-        
-        if(resourceId.canResolve()){
-            int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve which resource of SETTW");
-        } 
+    	if(m_uninplimented) System.err.println("SETTW");
+    	//TODO
     }
 
     void SETV(MachineState state, int thread) {
@@ -1849,7 +1656,6 @@ public abstract class XtaInstruction extends Instruction {
             System.out.printf("0x%08x: STW\n", getPc());	
     	
         if (state.m_op2.canResolve() && state.m_op3.canResolve()) {
-            // The address is resolvable so we can write the expression from 'memory'
             state.m_op2.resolve();
             state.m_op3.resolve();
             int base = state.m_op2.getValue();
@@ -1908,7 +1714,6 @@ public abstract class XtaInstruction extends Instruction {
     void SYNCR(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: SYNCR\n", getPc());	
-
     	//TODO
     	if(m_uninplimented) System.err.println("SYNCR");
     }
@@ -1916,49 +1721,22 @@ public abstract class XtaInstruction extends Instruction {
     void TESTLCL(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: TESTLCL\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression resourceId = state.m_op2;
-        
-        if(resourceId.canResolve()){
-            int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve which resource of TESTLCL");
-        } 
+    	//TODO
+    	if(m_uninplimented) System.err.println("TESTLCL");
     }
 
     void TESTCT(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: TESTCT\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression resourceId = state.m_op2;
-        
-        if(resourceId.canResolve()){
-            int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve which resource of TESTCT");
-        } 
+    	//TODO
+    	if(m_uninplimented) System.err.println("TESTCT");
     }
 
     void TESTWCT(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: TESTWCT\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression resourceId = state.m_op2;
-        
-        if(resourceId.canResolve()){
-            int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-          //TODO
-        } else {
-            //System.err.println("could not resolve which resource of TESTWCT");
-        } 
+    	//TODO
+    	if(m_uninplimented) System.err.println("TESTWCT");
     }
 
     void TINITCP(MachineState state, int thread) {
@@ -2082,32 +1860,21 @@ public abstract class XtaInstruction extends Instruction {
     void TSTART(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: TSTART\n", getPc());	
-    	Resources resources = state.getResources();
-        Expression resourceId = state.m_op1;
-        
-        if(resourceId.canResolve()){
-            int resId = resourceId.getValue();
-            int resNum = resources.decodeResNum(resId);
-            int resType = resources.decodeResType(resId);
-            //resources.getThread(resType, resNum).TSTART();
-        } else {
-            //System.err.println("could not resolve which resource of TSTART");
-        } 
+    	if(m_uninplimented) System.err.println("TSTART");
+    	//TODO
     }
 
     void WAITEF(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: WAITEF\n", getPc());	
-    	
-    	
     	if(m_uninplimented) System.err.println("WAITEF");
-    	
+    	//TODO
     }
 
     void WAITET(MachineState state, int thread) {
     	if (m_debug)     	
             System.out.printf("0x%08x: WAITET\n", getPc());	
-
+    	//TODO
     	if(m_uninplimented) System.err.println("WAITET");
     }
 
@@ -2142,6 +1909,7 @@ public abstract class XtaInstruction extends Instruction {
     		int scr2 = state.m_op3.getValue();
     		int dest = scr1^scr2;
     		state.m_op1 = new Expression(dest);
+    		//do properly with expressions
     	}
     	
     }
@@ -2154,7 +1922,7 @@ public abstract class XtaInstruction extends Instruction {
     		int bits = state.m_op2.getValue();
     		int scrDest = state.m_op1.getValue();
     		if (bits > 0 && bits < 32){
-    			
+    			//do properly with expressions
     			int mask = 0xffffffff << bits;
     			scrDest = scrDest & ~mask;
     			state.m_op1 = new Expression(scrDest);
