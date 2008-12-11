@@ -1,6 +1,5 @@
 package com.xmos.xta.swing.codewindow;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -38,18 +37,18 @@ public class SideHighlighter extends JPanel {
     
     public void paint(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        double actualBarWidth = (double)this.getHeight() / m_lines.size();
-        double barWidth = actualBarWidth < 1 ? 1 : actualBarWidth;
+//        double actualBarWidth = (double)this.getHeight() / m_lines.size();
+//        double barWidth = actualBarWidth < 1 ? 1 : actualBarWidth;
         g2.setColor(this.getBackground());
         g2.fillRect(0, 0, this.getWidth(), this.getHeight());
-        for(Line line : m_lines){
-            if(!line.getColour().equals(Color.white)){
-                Color c = line.getColour();
-                g2.setColor(c);
-                g2.fillRect(2,(int)(actualBarWidth*m_lines.indexOf(line)), this.getWidth()-4, (int)barWidth);
-                g2.setColor(c.darker());
-                g2.drawRect(2,(int)(actualBarWidth*m_lines.indexOf(line)), this.getWidth()-4, (int)barWidth);
-            }
-        }
+//        for(Line line : m_lines){
+//            if(!line.getColour().equals(Color.white)){
+//                Color c = line.getColour();
+//                g2.setColor(c);
+//                g2.fillRect(2,(int)(actualBarWidth*m_lines.indexOf(line)), this.getWidth()-4, (int)barWidth);
+//                g2.setColor(c.darker());
+//                g2.drawRect(2,(int)(actualBarWidth*m_lines.indexOf(line)), this.getWidth()-4, (int)barWidth);
+//            }
+//        }
     }
 }

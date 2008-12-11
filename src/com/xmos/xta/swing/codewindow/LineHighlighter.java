@@ -25,7 +25,7 @@ public class LineHighlighter implements Highlighter.HighlightPainter {
 
 
     public void paint(Graphics g, int p0, int p1, Shape bounds, JTextComponent c) {
-        g.setColor(m_line.getColour());
+        //g.setColor(m_line.getColour());
         double fontHeight = g.getFontMetrics(m_textPane.getFont()).getHeight()+3;
         int lineNumber = m_lines.indexOf(m_line);
 

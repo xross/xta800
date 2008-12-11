@@ -7,55 +7,56 @@ public class Input {
 	private String m_headerType;
 	private String m_lineType;
 	
-    Input(String headerType, String lineType) {
+	public Input(String headerType, String lineType) {
     	m_sections = new ArrayList<InputSection>();
     	m_headerType = headerType;
     	m_lineType = lineType;
     }
     
-    void addHeader(String header, int index) {
-        m_sections.add(new InputSection(header, index));    	
+	public void addHeader(String header, String headerCodeReference, int index) {
+        m_sections.add(new InputSection(header, headerCodeReference, index));    	
     }
     
-    void addLine(String line, int pc, int index) {
+	public void addLine(String line, String codeReference, int pc, int index) {
     	assert(m_sections.size() > 0);
-    	m_sections.get(m_sections.size() - 1).addLine(line, pc, index);
+    	m_sections.get(m_sections.size() - 1).addLine(line, codeReference, pc, index);
     }
     
-    ArrayList<InputSection> getSections() {
+	public ArrayList<InputSection> getSections() {
     	return m_sections;
     }
     
-    String getHeaderType() {
+	public String getHeaderType() {
         return m_headerType; 	
     }
 
-    String getLineType() {
+	public String getLineType() {
         return m_lineType; 	
     }
 }
 
 class InputSection {
-	private String m_header;
+	private InputLine m_header;
 	private ArrayList<InputLine> m_lines;
 	private ArrayList<InputLine> m_fnops;
 	private int m_index;
 	
-	InputSection(String header, int index) {
-		m_header = header;
+	public InputSection(String header, String headerCodeReference, int index) {
+		// Header line must have -1 index to counteract +1 in index calculations
+		m_header = new InputLine(this, header, headerCodeReference, 0, -1);
 		m_lines = new ArrayList<InputLine>();
 		m_fnops = new ArrayList<InputLine>();
 		m_index = index;
 	}
 	
-	void addLine(String line, int pc, int index) {
-		m_lines.add(new InputLine(this, line, pc, index - m_index - 1));
+	public void addLine(String line, String codeReference, int pc, int index) {
+		m_lines.add(new InputLine(this, line, codeReference, pc, index - m_index - 1));
 	}
 
-	void addFnop(String line, int pc, int index) {
+	public void addFnop(String line, int pc, int index) {
 		int offset = index - m_index - 1;
 		
-		InputLine fnop = new InputLine(this, line, pc, offset);
+		InputLine fnop = new InputLine(this, line, "", pc, offset);
 		m_lines.add(offset, fnop);
 		m_fnops.add(fnop);
 
@@ -64,7 +65,7 @@ class InputSection {
 		}
 	}
 
-	InputLine removeFnop() {
+	public InputLine removeFnop() {
 		if (m_fnops.isEmpty())
 			return null;
 		
@@ -77,8 +78,16 @@ class InputSection {
 		}
 		return firstFnop;
 	}
+	
+	public boolean isFnop(int lineNum) {
+		assert(lineNum < m_lines.size());
+		if (m_fnops.contains(m_lines.get(lineNum))) {
+			return true;
+		}
+		return false;
+	}
 
-	String getHeader() {
+	public InputLine getHeader() {
 		return m_header;
 	}
 
@@ -90,20 +99,20 @@ class InputSection {
 		return m_fnops.size();
 	}
 
-	ArrayList<InputLine> getLines() {
+	public ArrayList<InputLine> getLines() {
 		return m_lines;
 	}
 
-	InputLine getLine(int lineNum) {
+	public InputLine getLine(int lineNum) {
 		assert(lineNum < m_lines.size());
 		return m_lines.get(lineNum);
 	}
 
-	int getIndex() {
+	public int getIndex() {
 		return m_index;
 	}
 
-	void setIndex(int index) {
+	public void setIndex(int index) {
 		m_index = index;
 	}
 
@@ -118,19 +127,25 @@ class InputSection {
 
 class InputLine {
 	private InputSection m_section;
+	private String m_codeReference;
 	private String m_line;
 	private int m_pc;
 	private int m_offset;
     
-	InputLine(InputSection section, String line, int pc, int offset) {
+	public InputLine(InputSection section, String line, String codeReference, int pc, int offset) {
 		m_section = section;
 		m_line = line;
+		m_codeReference = codeReference;
 		m_pc = pc;
 		m_offset = offset;
 	}
 	
 	public String getLine() {
 		return m_line;
+	}
+	
+	public String getCodeReference() {
+		return m_codeReference;
 	}
 	
 	public int getPc() {

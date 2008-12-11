@@ -1,6 +1,5 @@
 package com.xmos.xta.rcp.nodes;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Vector;
 
@@ -13,7 +12,6 @@ import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.XtaInstruction;
-import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.dialogs.Iterations;
 import com.xmos.xta.rcp.views.ConsoleView;
