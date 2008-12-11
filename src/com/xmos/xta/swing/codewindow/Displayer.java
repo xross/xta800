@@ -247,10 +247,10 @@ public abstract class Displayer extends JPanel {
 	}
 
 	public void removeHighlights() {
-	    for(Line line : m_lines){
-	        line.setColour(Color.white);
-	    }
-	    this.repaint();
+	    //for(Line line : m_lines){
+	        //line.setColour(Color.white);
+	    //}
+	    //this.repaint();
     }
 	
 	public void highlightPCs(ArrayList<Integer> pcs, Color colour){

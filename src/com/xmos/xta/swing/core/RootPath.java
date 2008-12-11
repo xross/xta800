@@ -35,14 +35,14 @@ public class RootPath implements RouteNode {
     private Block  m_caller;
     private Engine m_engine;
     private JFrame m_mainFrame;
-    private XtaGui m_xtaGui;
+//    private XtaGui m_xtaGui;
 
     public RootPath(Block rootPath, Block caller, int depth, Engine engine, JFrame mainFrame, XtaGui xtaGui){
         m_rootPath = rootPath;
         m_caller = caller;
         m_engine = engine;
         m_mainFrame = mainFrame;
-        m_xtaGui = xtaGui;
+//        m_xtaGui = xtaGui;
     }
 
     public Block getRootPathPath() {

@@ -62,7 +62,7 @@ public class SourceDisplayer extends Displayer {
         for(SourceLine sourceLine : m_sourceFile.getSourceLines()){
             for(Line line : sourceLine.getChildern()){
                 if(line.getLineNumber() == pc){
-                    sourceLine.setColour(colour);
+//                    sourceLine.setColour(colour);
                     return;
                 }
             }
