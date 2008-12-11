@@ -1296,16 +1296,11 @@ public abstract class XtaInstruction extends Instruction {
     void MUL(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: MUL\n", getPc());	
-    	if(state.m_op2.canResolve() && state.m_op3.canResolve()){
-    		int scr1 = state.m_op2.getValue();
-    		int scr2 = state.m_op3.getValue();
-    		int dest = scr1 * scr2;
-    		state.m_op1 = new Expression(dest);
-    		//do properly with an expression later
-    	} else {	
-    		state.m_op1 = new Expression(state.m_op1Fld, 0, 
-			    Expression.Type.REGISTER, Expression.Status.UNDEFINED);    
-    	}
+    	Expression result = new Expression(OperatorType.MUL);
+    	result.addOperand(state.m_op2);
+    	result.addOperand(state.m_op3);
+    	result.resolve();
+    	state.m_op1 = result;
     }
 
     void NEG(MachineState state, int thread) throws Exception {
@@ -1437,16 +1432,9 @@ public abstract class XtaInstruction extends Instruction {
     void SETC(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETC\n", getPc());	
-    	
-    	if(state.m_op1.canResolve()){
-    		
-    		//state.getResources().
-    	} else {
-    		//TODO
-    		throw new Exception("SETC");
+    	if(m_uninplimented) {
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
-    	
-    	
     }
 
     void SETCLK(MachineState state, int thread) throws Exception {
@@ -1910,31 +1898,25 @@ public abstract class XtaInstruction extends Instruction {
     void XOR(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: XOR\n", getPc());	
-
-    	if(state.m_op2.canResolve() && state.m_op3.canResolve()){
-    		int scr1 = state.m_op2.getValue();
-    		int scr2 = state.m_op3.getValue();
-    		int dest = scr1^scr2;
-    		state.m_op1 = new Expression(dest);
-    		//do properly with expressions
-    	}
-    	
+    	Expression result = new Expression(OperatorType.XOR);
+    	result.addOperand(state.m_op2);
+    	result.addOperand(state.m_op3);
+    	result.resolve();
+    	state.m_op1 = result;
     }
 
     void ZEXT(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: ZEXT\n", getPc());	
-    	
-    	if(state.m_op1.canResolve()){
-    		int bits = state.m_op2.getValue();
-    		int scrDest = state.m_op1.getValue();
-    		if (bits > 0 && bits < 32){
-    			//do properly with expressions
-    			int mask = 0xffffffff << bits;
-    			scrDest = scrDest & ~mask;
-    			state.m_op1 = new Expression(scrDest);
-    		}
+    	Expression result = new Expression(OperatorType.ZEXT);
+    	result.addOperand(state.m_op1);
+    	result.addOperand(state.m_op2);
+    	if(result.canResolve()){
+    		state.m_op1 = new Expression(result);
+    	} else {
+    		state.m_op1 = result;
     	}
+    	
     }
     
     void GETN(MachineState state, int thread) throws Exception {
@@ -1985,33 +1967,33 @@ public abstract class XtaInstruction extends Instruction {
     void MACCU(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: MACCU\n", getPc());	
-
-    	//TODO
-    	if(m_uninplimented) System.err.println("MACCU");
+    	if(m_uninplimented) {
+    		throw new InstructionExecption(Error.UNSUPPORTED);
+    	}
     }
     
     void MACCS(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: MACCS\n", getPc());	
-
-    	//TODO
-    	if(m_uninplimented) System.err.println("MACCS");
+    	if(m_uninplimented) {
+    		throw new InstructionExecption(Error.UNSUPPORTED);
+    	}
     }    
     
     void LDIVU(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDIVU\n", getPc());	
-
-    	//TODO
-    	if(m_uninplimented) System.err.println("LDIVU");
+    	if(m_uninplimented) {
+    		throw new InstructionExecption(Error.UNSUPPORTED);
+    	}
     }
     
     void LSUB(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: LSUB\n", getPc());	
-
-    	//TODO
-    	if(m_uninplimented) System.err.println("LSUB");
+    	if(m_uninplimented) {
+    		throw new InstructionExecption(Error.UNSUPPORTED);
+    	}
     }
      
 }
