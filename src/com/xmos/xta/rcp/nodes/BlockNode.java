@@ -1,6 +1,5 @@
 package com.xmos.xta.rcp.nodes;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Vector;
 import org.eclipse.jface.action.IMenuManager;
@@ -8,6 +7,7 @@ import org.eclipse.swt.widgets.Shell;
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.views.ViewNode.FunctionBlockNode;
+import com.xmos.xta.rcp.views.ViewNode.StructureBlockNode;
 
 public class BlockNode extends Node {
 	Block m_block;
@@ -17,6 +17,7 @@ public class BlockNode extends Node {
     	m_block = block; 
 
     	m_functionNode = new FunctionBlockNode(this);
+    	m_structureNode = new StructureBlockNode(this);
     }
     
     public int getId() {

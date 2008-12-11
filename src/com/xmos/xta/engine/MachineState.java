@@ -1,7 +1,6 @@
 package com.xmos.xta.engine;
 
 import java.util.ArrayList;
-
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.resources.Resources;
@@ -208,7 +207,9 @@ public class MachineState {
     	m_wasEventWait = true;
     	if(expression.canResolve()){
     		m_wasEventResolved = true;
+    		
     		m_eventTargets.add(expression.getValue());
+    		assert(m_eventTargets.size()<3);
     	} else {
     		m_wasEventResolved =false;
     	}
@@ -293,6 +294,27 @@ public class MachineState {
     	}
         return read;
     }
+    public Expression readShort(int address) {
+    	Expression read = m_memory.wordRead(address);
+    	if(read.canResolve()){
+    		if(DEBUG) System.out.println("read word 0x" + Integer.toHexString(read.getValue())  + " from 0x" + 
+    				Integer.toHexString(address));
+    	} else {
+    		if(DEBUG) System.out.println("read word unknown from 0x" + Integer.toHexString(address));
+    	}
+        return read;
+	}
+    Expression readByte(int address) {
+    	
+    	Expression read = m_memory.byteRead(address);
+    	if(read.canResolve()){
+    		if(DEBUG) System.out.println("read byte 0x" + Integer.toHexString(read.getValue())  + " from 0x" + 
+    				Integer.toHexString(address));
+    	} else {
+    		if(DEBUG) System.out.println("read byte unknown from 0x" + Integer.toHexString(address));
+    	}
+        return read;
+    }
 
     void writeMemory(int address, Expression value) {
     	if(value.canResolve()){
@@ -303,7 +325,28 @@ public class MachineState {
         }
         m_memory.wordWrite(address, value);
     }
-
+    
+    
+    public void writeByte(int address, Expression value) {
+    	if(value.canResolve()){
+    		if(DEBUG) System.out.println("\twrite to memory: 0x" + Integer.toHexString(value.getValue()) + " at 0x" 
+        			+Integer.toHexString(address));
+        } else {
+        	if(DEBUG) System.out.println("\twrite to memory:  unknown to 0x" + Integer.toHexString(address));
+        }
+        m_memory.byteWrite(address, value);
+	}
+    
+    public void writeShort(int address, Expression value) {
+    	if(value.canResolve()){
+    		if(DEBUG) System.out.println("\twrite to memory: 0x" + Integer.toHexString(value.getValue()) + " at 0x" 
+        			+Integer.toHexString(address));
+        } else {
+        	if(DEBUG) System.out.println("\twrite to memory:  unknown to 0x" + Integer.toHexString(address));
+        }
+        m_memory.shortWrite(address, value);
+	}
+    
     void resetInstructionState() {
         m_wasBranch = false;
         m_wasBranchResolved = false;
@@ -336,8 +379,8 @@ public class MachineState {
 
 	public void clearEventVectors() {
 		m_eventTargets.clear();
-		
 	}
+	
 
 	public void releaseMemory() {
 		m_op1 = null;
@@ -348,11 +391,15 @@ public class MachineState {
 		m_op6 = null;
 	    m_branchTargetExpression = null;
 	    m_guardExpression = null;
-	    m_eventTargets = null;
+	    m_eventTargets.clear();
 	    m_resources = null;
 	    m_memory = null;
 		
 	}
+
+	
+
+	
 
 	
 

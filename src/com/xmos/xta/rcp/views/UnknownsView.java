@@ -72,7 +72,9 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 		
 		if (event.getProperty().equals("DisplayRoute")) {
 			updateDisplay();
-		}
+		} else if (event.getProperty().equals("LoadExecutable")) {
+			m_tableViewer.setInput(null);
+		} 
 	}
 
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
@@ -96,6 +98,8 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
             m_tableViewer.setInput(routeInfo.getRoute());
             m_selectedNode = routeInfo.getSelectedNode();
             updateHighlighting();
+		} else {
+			m_tableViewer.setInput(null);
 		}
     }
 

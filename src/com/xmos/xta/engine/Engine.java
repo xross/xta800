@@ -248,10 +248,16 @@ public class Engine {
             System.gc();
             setErrorString("Out of Memory"); 
             return false;
+		} catch (final java.lang.StackOverflowError e) {
+			m_route = null;
+            System.gc();
+            setErrorString("Out of Memory"); 
+            return false;
 		} catch (Exception e) {
 			//unknown Exception
 			setErrorString("Unknown error: contact Xmos with stack trace"); 
 			e.printStackTrace();
+			return false;
 		} 
 		return t;
     }

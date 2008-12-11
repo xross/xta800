@@ -48,7 +48,6 @@ public class FunctionView extends ZoomedCanvasView {
         m_functionColors = new HashMap<String, Color>();
         initaliseColors(m_display);
 
-		m_scale = 1.0;
 		m_scaleY = false;
 		m_pixelsX = 0;
 		m_pixelsY = 0;
@@ -58,6 +57,7 @@ public class FunctionView extends ZoomedCanvasView {
 	}
 
     protected void initialiseTree() {
+		if (DEBUG) System.out.printf("Function: initialiseTree\n");			
     	m_routeInfo = XtaDisplayer.getInstance().getRouteInfo();
 		if (m_routeInfo != null) {
     		getDebugInfo();
@@ -71,12 +71,14 @@ public class FunctionView extends ZoomedCanvasView {
 	}
 
     protected void buildClickAreas() {
+		if (DEBUG) System.out.printf("Function: buildClickAreas\n");			
     	m_clickAreas.clear();
     	if (m_rootNode != null)
     		m_rootNode.getFunctionNode().buildClickAreas(m_clickAreas);
     }
 
     protected void annotateTree(boolean isSelctionChange) {
+		if (DEBUG) System.out.printf("Function: annotateTree\n");			
     	clearAll();
     	Node pathRoot = null;
     	if (m_selectedNode != null) {
@@ -92,13 +94,15 @@ public class FunctionView extends ZoomedCanvasView {
 			pathRoot.getFunctionNode().annotateXy(m_borderX, m_borderY);
 			if (m_blockLength > 0)
 				addBlock();
+
+			updatePixelsXy();
+			if (!isSelctionChange)
+				zoomFit();
 		}
-		updatePixelsXy();
-		if (!isSelctionChange)
-			zoomFit();
     }
 
     protected void updatePixelsXy() {
+		if (DEBUG) System.out.printf("Function: updatePixelsXy ");			
     	Node pathRoot = null;
     	if (m_selectedNode != null) {
     		pathRoot = m_selectedNode.getPathRoot();
@@ -111,6 +115,8 @@ public class FunctionView extends ZoomedCanvasView {
 			m_pixelsX = (m_borderX * 2) + pathRoot.getFunctionNode().getPixelsX();
 			m_pixelsY = (m_borderY * 2) + pathRoot.getFunctionNode().getPixelsY() + m_functionNameY;
 		}
+
+		if (DEBUG) System.out.printf("%d,%d\n", m_pixelsX, m_pixelsY);			
     }
     
     private void clearAll() {

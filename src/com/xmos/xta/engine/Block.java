@@ -221,7 +221,6 @@ public class Block implements Comparable<Block> {
 		return m_errorString;
 	}
 	public void build() throws Exception {
-		m_errorString = "";
 		int pc = m_machineState.getPc(m_currentThread);
 		if (isProhibited(pc)) {
 			setStatus(BlockStatus.EXCLUDED);
@@ -252,7 +251,8 @@ public class Block implements Comparable<Block> {
 
 		instruction.execute(m_machineState, m_currentThread);
 		addInstruction(instruction);
-
+		//dumpState(m_machineState);
+		
 		if (isComplete(instruction, pc)) {
 			setStatus(BlockStatus.COMPLETE);
 			m_route.addCompletePath(this);
@@ -268,7 +268,9 @@ public class Block implements Comparable<Block> {
 		int nextPc = pc + instNumBytes;
 		if (m_machineState.wasEventWait()) {
 			if (m_machineState.wasEventResolved()) {
-				for (int targetVector : m_machineState.getEventTarget()) {
+				ArrayList<Integer> targets = new ArrayList<Integer>(m_machineState.getEventTarget());
+				m_machineState.clearEventVectors();
+				for (int targetVector : targets) {
 					checkForLoopFormation(targetVector, false, instruction, true, true);
 				}
 				setStatus(BlockStatus.COMPLETE);
@@ -356,6 +358,29 @@ public class Block implements Comparable<Block> {
 		instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
 	}
 	
+	private void dumpState(MachineState state) {
+		Registers reg = state.getResources().getThread(m_currentThread).getRegisters();
+		
+		for(int i=0;i<4;i++){
+			String s = "";
+			for(int j=0;j<4;j++){
+				
+				s+= "reg " + (i*4 +j) + " ";
+				if(reg.getRegisters()[i*4 +j].canResolve()){
+					
+					s+= "0x" + String.format("%8x", reg.getRegisters()[i*4 +j].getValue()) +" ";
+				} else {
+					s+= "-----------";
+				}
+				s+="\t";
+				
+			}
+			System.out.println(s);
+		}
+		return;
+		
+	}
+
 	private void addUnknown(XtaInstruction inst) {
 		Unknown unknown;
 		if (inst.canPause()) {

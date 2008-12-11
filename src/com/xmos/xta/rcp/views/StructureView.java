@@ -23,7 +23,6 @@ public class StructureView extends ZoomedCanvasView {
 		if (DEBUG) System.out.printf("Structure()\n");			
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 	    
-		m_scale = 1.0;
 		m_scaleY = true;
 		m_pixelsX = 0;
 		m_pixelsY = 0;
