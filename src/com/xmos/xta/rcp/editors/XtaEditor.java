@@ -32,6 +32,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
+import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.engine.Unknown;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.XtaDisplayer;
@@ -48,8 +49,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     public static final String StopAnnotationID      = "com.xmos.xta.rcp.stop";
     public static final String ExpandAllID           = "com.xmos.xtagui.action.ExpandAll";
     public static final String CollapseAllID         = "com.xmos.xtagui.action.CollapseAll";
-    
+
+    public static final String SetStartPointID       = "com.xmos.xtagui.action.SetStartPoint";
+    public static final String SetEndPointID         = "com.xmos.xtagui.action.SetEndPoint";
+
     private static final String fnopString = "    ------- \tFNOP\n";
+    private static final String codeReferenceError = "-";
     
     private ProjectionSupport m_projectionSupport;    
     private ProjectionAnnotationModel m_projectionAnnotationModel;
@@ -61,15 +66,27 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private Annotation[] m_previousUnknownAnnotations;
     
     private Node m_currentPathRoot;
+    private Node m_selectedNode;
     
-    public XtaEditor() {
-		if (DEBUG) System.out.printf("XtaEditor()\n"); 
+    private final String m_type;
+    private final String m_fileName;
+    private int m_startPointLineNum;
+    private int m_endPointLineNum;
+    
+    public XtaEditor(final String type, String fileName) {
+		if (DEBUG) System.out.printf("XtaEditor()\n");
+		m_type = type;
+		m_fileName = fileName;
+
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 
     	setSourceViewerConfiguration(new XtaConfiguration(this));
     	setDocumentProvider(new XtaDocumentProvider());
     	
     	m_currentPathRoot = null;
+    	m_selectedNode = null;
+    	m_startPointLineNum = -1;
+        m_endPointLineNum = -1;
     }
 
     public void createPartControl(Composite parent) {
@@ -92,43 +109,25 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         getSite().getPage().addSelectionListener(this);
         
         m_painter = new AnnotationPainter(viewer, getAnnotationAccess());        
-        m_painter.addAnnotationType(HighlightAnnotationID);     
-    }   
-    
-    protected void createActions() {
-		if (DEBUG) System.out.printf("XtaEditor: createActions\n"); 
-     	super.createActions();
-     	
-     	setAction(ExpandAllID, new Action("Expand All") {
-     		public void run() {
-     			IDocument document = getSourceViewer().getDocument();
-     			m_projectionAnnotationModel.expandAll(0, document.getLength());
-     		}
-     	});
-     	setAction(CollapseAllID, new Action("Collapse All") {
-     		public void run() {
-     			IDocument document = getSourceViewer().getDocument();
-     			m_projectionAnnotationModel.collapseAll(0, document.getLength());
-     		}
-     	});
-    }    
-    
-    protected void editorContextMenuAboutToShow(IMenuManager menu) {    
-		if (DEBUG) System.out.printf("XtaEditor: editorContextMenuAboutToShow\n"); 
-     	super.editorContextMenuAboutToShow(menu);
-
-     	menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));     	
-    	addAction(menu, ExpandAllID); 
-    	addAction(menu, CollapseAllID);      	
+        m_painter.addAnnotationType(HighlightAnnotationID);
     }
-
+    
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("Tree: propertyChange: %s\n", event.getProperty());	
 		
 		if (event.getProperty().equals("DisplayRoute")) {
-			updateFnops(null);
-    	    updateHighlighting(null);
+			m_selectedNode = null;
+			updateFnops();
+    	    updateHighlighting();
 			updateUnknowns();
+		} else if (event.getProperty().equals("LoadExecutable")) {
+			m_selectedNode = null;
+			updateFnops();
+    	    updateHighlighting();
+		} else if (event.getProperty().equals("SetStartPoint")) {
+//			m_startPoint.setText(XtaDisplayer.getInstance().getStartPoint());
+		} else if (event.getProperty().equals("SetEndPoint")) {
+//			m_endPoint.setText(XtaDisplayer.getInstance().getEndPoint());
 		}
 	}
     
@@ -138,8 +137,9 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		if (sel instanceof IStructuredSelection) {	            
             Object object = ((IStructuredSelection)sel).getFirstElement();
             if (object instanceof Node) {
-            	updateFnops((Node)object);
-        	    updateHighlighting((Node)object);
+            	m_selectedNode = (Node)object;
+            	updateFnops();
+        	    updateHighlighting();
             }
         }
     }	            		         	        
@@ -175,12 +175,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         m_previousProjectionAnnotations = annotations;       
     }
         
-    private void updateFnops(Node node) {
+    private void updateFnops() {
 		if (DEBUG) System.out.printf("XtaEditor: updateFnops\n"); 
 
     	Node pathRoot = null;
-    	if (node != null) {
-    		pathRoot = node.getPathRoot();
+    	if (m_selectedNode != null) {
+    		pathRoot = m_selectedNode.getPathRoot();
     	}
     	
     	if (pathRoot == m_currentPathRoot)
@@ -269,17 +269,24 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		}
 	}
     
-    private void updateHighlighting(Node node) {
+    private void updateHighlighting() {
 		if (DEBUG) System.out.printf("XtaEditor: updateHighlighting\n"); 
 		
 	    ArrayList<Annotation> annotations = new ArrayList<Annotation>();
         HashMap<Annotation, Position> annotationPositions = 
     	    new HashMap<Annotation, Position>();		
 		
-        if (node != null) {
-			for (Integer pc : node.getPcsCovered()) {
+        if (m_selectedNode != null) {
+			for (Integer pc : m_selectedNode.getPcsCovered()) {
 				updateAnnotations(pc, HighlightAnnotationID, annotations, annotationPositions);
 			}
+        }
+        
+        if (m_startPointLineNum >= 0) {
+        	addAnnotation(m_startPointLineNum, StartAnnotationID, annotations, annotationPositions);
+        }
+        if (m_endPointLineNum >= 0) {
+        	addAnnotation(m_endPointLineNum, StopAnnotationID, annotations, annotationPositions);
         }
 				
 		m_annotationModel.replaceAnnotations(m_previousHighlightAnnotations, annotationPositions);        
@@ -351,4 +358,99 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	Annotation[] annotationArray = new Annotation[annotationList.size()];
     	return annotationList.toArray(annotationArray);    	
     }
+
+    protected void createActions() {
+		if (DEBUG) System.out.printf("XtaEditor: createActions\n"); 
+     	super.createActions();
+     	
+     	setAction(ExpandAllID, new Action("Expand All") {
+     		public void run() {
+     			IDocument document = getSourceViewer().getDocument();
+     			m_projectionAnnotationModel.expandAll(0, document.getLength());
+     		}
+     	});
+     	setAction(CollapseAllID, new Action("Collapse All") {
+     		public void run() {
+     			IDocument document = getSourceViewer().getDocument();
+     			m_projectionAnnotationModel.collapseAll(0, document.getLength());
+     		}
+     	});
+
+     	setAction(SetStartPointID, new Action("Set start point") {
+     		public void run() {
+     			m_startPointLineNum = getVerticalRuler().getLineOfLastMouseButtonActivity();
+     			String ref = getLineDescription(m_startPointLineNum);
+    			CodeReference startPoint = new CodeReference(ref);
+     			XtaDisplayer.getInstance().notifySetStartPoint(startPoint);
+     		}
+     	});
+     	setAction(SetEndPointID, new Action("Set end point") {
+     		public void run() {
+     			m_endPointLineNum = getVerticalRuler().getLineOfLastMouseButtonActivity();
+     			String ref = getLineDescription(m_endPointLineNum);
+     			CodeReference endPoint = new CodeReference(ref);
+     			XtaDisplayer.getInstance().notifySetEndPoint(endPoint);
+     		}
+     	});
+}    
+    
+    protected void editorContextMenuAboutToShow(IMenuManager menu) {
+		if (DEBUG) System.out.printf("XtaEditor: editorContextMenuAboutToShow\n"); 
+     	super.editorContextMenuAboutToShow(menu);
+
+     	menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));     	
+    	addAction(menu, ExpandAllID);
+    	addAction(menu, CollapseAllID);
+    }
+
+    protected void rulerContextMenuAboutToShow(IMenuManager menu) {
+		if (DEBUG) System.out.printf("XtaEditor: editorContextMenuAboutToShow\n");
+		
+		int clickLineNum = getVerticalRuler().getLineOfLastMouseButtonActivity();
+		if (getLineDescription(clickLineNum) != null) {
+			addAction(menu, SetStartPointID);
+			addAction(menu, SetEndPointID);
+			menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
+		}
+
+     	super.editorContextMenuAboutToShow(menu);
+    }
+
+	private String getLineDescription(int clickLineNum) {
+		ISourceViewer viewer = getSourceViewer();
+		if (viewer == null)
+			return null;
+		
+		IDocument document = viewer.getDocument();
+		if (document == null)
+			return null;
+		
+		XtaDocumentPartitioner xtaDocumentPartitioner =
+			(XtaDocumentPartitioner)document.getDocumentPartitioner();
+
+    	for (InputSection inputSection : xtaDocumentPartitioner.getInput().getSections()) {
+    		int startLine = inputSection.getIndex();
+    		int endLine = startLine + inputSection.getLines().size();
+    		int offset = clickLineNum - startLine;
+    		if (m_type.equals(XtaDocumentPartitioner.SOURCE)) {
+    			// Must be some associated assembly
+    			if (startLine != endLine) {
+    				if ((clickLineNum >= startLine) && (clickLineNum <= endLine)) {
+        				if (offset == 0) {
+        					return inputSection.getHeaderCodeReference();
+        				} else {
+        					return inputSection.getLine(offset - 1).getCodeReference();
+        				}
+        			}
+    			}
+    		} else {
+    			// Don't map to the header
+        		if ((clickLineNum > startLine) && (clickLineNum <= endLine)) {
+        			return inputSection.getLine(offset - 1).getCodeReference();
+    			}
+    		}
+    	}
+
+		return null;
+	}
 }

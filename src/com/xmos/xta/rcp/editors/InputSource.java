@@ -18,15 +18,18 @@ public class InputSource implements IEditorInput {
     public InputSource(SourceFile sourceFile) {	
 		if (DEBUG) System.out.printf("InputSource()\n");
 		
+		String fileName = sourceFile.getFile().getName();
 		int lineIndex = 0;
 		m_input = new Input(s_headerType, s_lineType);
         for (SourceLine sourceLine : sourceFile.getSourceLines()){        	
-        	m_input.addHeader(sourceLine.getText(), lineIndex);
+    		String headerRef = String.format("%s:%d", fileName, sourceLine.getLineNumber());
+        	m_input.addHeader(sourceLine.getText(), headerRef, lineIndex);
         	++lineIndex;
         	
             for (Line line : sourceLine.getChildern()) {
         		String str = String.format("    0x%05x %s", line.getLineNumber(), line.getText());
-            	m_input.addLine(str, line.getLineNumber(), lineIndex);                	
+        		String childRef = String.format("0x%05x", line.getLineNumber());
+            	m_input.addLine(str, childRef, line.getLineNumber(), lineIndex);                	
         		++lineIndex;        		
             }
         }

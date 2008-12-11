@@ -11,7 +11,9 @@ import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.Block;
+import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.engine.Displayer;
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.rcp.nodes.BlockNode;
 import com.xmos.xta.rcp.nodes.LoopNode;
@@ -27,9 +29,14 @@ public class XtaDisplayer implements Displayer {
 	private XtaRouteInfo m_routeInfo;
 
 	private ISelection m_doubleClickSelection;
-	
+	private CodeReference m_startPoint;
+	private CodeReference m_endPoint;
+
 	private XtaDisplayer() {
 		m_listeners = new ArrayList<IPropertyChangeListener>();
+		
+		m_startPoint = null;
+		m_endPoint = null;
 	}
 	
 	public static XtaDisplayer getInstance() {
@@ -82,6 +89,26 @@ public class XtaDisplayer implements Displayer {
 		broadcastPropertyChange(new PropertyChangeEvent(this, "DoubleClick", null, null));
 	}	
 
+	public void notifySetStartPoint(CodeReference startPoint) {
+		if (DEBUG) System.out.printf("XtaDisplayer: notifySetStartPoint\n");
+		Engine engine = XtaEngine.getEngine();
+		startPoint.resolve(engine, engine.getNodeId(), engine.getCoreId());
+		if (startPoint.isResolved()) {
+			m_startPoint = startPoint;
+			broadcastPropertyChange(new PropertyChangeEvent(this, "SetStartPoint", null, null));
+		}
+	}
+		
+	public void notifySetEndPoint(CodeReference endPoint) {
+		if (DEBUG) System.out.printf("XtaDisplayer: notifySetStartPoint\n");
+		Engine engine = XtaEngine.getEngine();
+		endPoint.resolve(engine, engine.getNodeId(), engine.getCoreId());
+		if (endPoint.isResolved()) {
+			m_endPoint = endPoint;
+			broadcastPropertyChange(new PropertyChangeEvent(this, "SetEndPoint", null, null));
+		}
+	}
+		
 	public void broadcastPropertyChange(final PropertyChangeEvent event) {			
 		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 			public void run() {        	
@@ -99,6 +126,14 @@ public class XtaDisplayer implements Displayer {
 		return m_doubleClickSelection;
 	}
 	
+	public CodeReference getStartPoint() {
+		return m_startPoint;
+	}
+	
+	public CodeReference getEndPoint() {
+		return m_endPoint;
+	}
+
 	private void createHierarchy(Route route, DebugInfo debugInfo,
 			MemoryImage memoryImage, SymbolTable table) {		
         RouteNode routeNode = new RouteNode();

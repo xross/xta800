@@ -122,7 +122,7 @@ public class CodeReference {
             }
             
             String fileName = m_ref.substring(0, colonIndex);
-            if (!fileExists(fileName)) {
+            if (!fileExists(debugInfo, fileName)) {
                 return false;            
             }
             
@@ -144,9 +144,8 @@ public class CodeReference {
         return true;
     }
 
-    private boolean fileExists(String fileName) {
-        File f = new File(fileName);
-        return f.exists();
+    private boolean fileExists(DebugInfo debugInfo, String fileName) {
+    	return debugInfo.getDebugEngine().containsFile(fileName);
     }    
     
     private boolean isInteger(String str) {
@@ -222,7 +221,7 @@ public class CodeReference {
 		return false;
 	}
 
-	public boolean resolve( Engine engine, int m_nodeId, int m_coreId) {
+	public boolean resolve(Engine engine, int m_nodeId, int m_coreId) {
 		 DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(m_nodeId, m_coreId);
 		if (this.resolve(engine)){
 			return true;
