@@ -3,6 +3,7 @@ package com.xmos.xta.engine;
 import java.util.ArrayList;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
+import com.xmos.xeloader.XeLoader.Architecture;
 import com.xmos.xta.engine.resources.Resources;
 import com.xmos.xta.engine.resources.Thread;
 
@@ -13,11 +14,17 @@ public class MachineState {
         TAKEN, NOTTAKEN, UNKNOWN
     }
 
+    public static enum InstructionSet {
+    	REVA, REVB
+    }
     public final static int CP_REG_NUM = 12;
     public final static int DP_REG_NUM = 13;
     public final static int SP_REG_NUM = 14;
     public final static int LR_REG_NUM = 15;
-
+    public final static int STACK_OFFSET_SPC = 1; 	  
+    public final static int STACK_OFFSET_SSR = 2; 	 
+    public final static int STACK_OFFSET_SED = 3; 	 
+    public final static int STACK_OFFSET_ET = 4; 
     int m_opcode;
 
     int m_op1Fld;
@@ -55,7 +62,10 @@ public class MachineState {
     private Resources m_resources;
     private Memory m_memory;
     
-    MachineState(SymbolTable symbolTable, MemoryImage memoryImage) {
+    private Architecture m_arch;
+    
+    MachineState(SymbolTable symbolTable, MemoryImage memoryImage, Architecture arch) {
+    	m_arch = arch;
         m_memory = new Memory();
         m_resources = new Resources();
         m_resources.addThread();
@@ -65,6 +75,10 @@ public class MachineState {
         m_eventTargets = new ArrayList<Integer>(); 
     }
 
+    public Architecture getArchitecture(){
+    	return m_arch;
+    }
+    
     private void initialiseMemory(MemoryImage memoryImage) {
     	m_memory.blockWrite(memoryImage.getCpStart(), memoryImage.getCpEnd()-memoryImage.getCpStart(), memoryImage);
     	m_memory.blockWrite(memoryImage.getDpStart(), memoryImage.getDpEnd() - memoryImage.getDpStart(), memoryImage);
@@ -165,12 +179,22 @@ public class MachineState {
 
     void branch(boolean b, Expression guard, Expression branchTarget) {
         m_branchTargetExpression = branchTarget;
-        branchTarget.resolve();
+        try {
+			branchTarget.resolve();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
         m_wasBranch = true;
         m_wasBranchResolved = branchTarget.isResolved();
         if (m_wasBranchResolved) {
-            guard.resolve();
+            try {
+				guard.resolve();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             m_guardExpression = guard;
             m_branchTarget = branchTarget.getValue();
             if (guard.isResolved()) {
@@ -189,7 +213,12 @@ public class MachineState {
     }
 
     void jump(Expression jumpTarget) {
-        jumpTarget.resolve();
+        try {
+			jumpTarget.resolve();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         m_wasJump = true;
         m_branchTargetExpression = jumpTarget;
         m_wasJumpResolved = jumpTarget.isResolved();

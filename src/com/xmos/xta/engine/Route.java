@@ -11,7 +11,9 @@ import java.util.Vector;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
+import com.xmos.xeloader.XeLoader.Architecture;
 import com.xmos.xta.engine.Engine.ReferenceMode;
+import com.xmos.xta.engine.MachineState.InstructionSet;
 import com.xmos.xta.engine.Status.ExecutionStatus;
 
 public class Route {
@@ -120,9 +122,11 @@ public class Route {
 
 		Stack<TreeSet<Integer>> context = new Stack<TreeSet<Integer>>();
 		context.push(new TreeSet<Integer>());
+		Architecture arch = m_engine.getXeLoader().getArchitecture() ;
+		MachineState initialState = new MachineState(symbolTable, memoryImage, arch);
 
-		MachineState initialState = new MachineState(symbolTable, memoryImage);
-
+		
+		
 		BlockCommonComponents bc = null;
 
 		if (m_functionName != null) {
