@@ -14,7 +14,7 @@ public class InstructionExecption extends Exception {
 		DEBUG_INSTRUCTION,
 		KERNEL_INSTRUCTION,
 		TRAP_INSTRUCTION,
-		ET_RESOURCE_DEP,
+		ET_RESOURCE_DEP, ET_ARITHMETIC,
 		
 	};
 	

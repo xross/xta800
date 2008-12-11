@@ -1,5 +1,7 @@
 package com.xmos.xta.engine;
 
+import com.xmos.xta.engine.InstructionExecption.Error;
+
 public class Expression {
 	public enum Type{
 		IMMEDIATE,
@@ -35,7 +37,11 @@ public class Expression {
         SHL,
         SHR, 
         REMS,
-        REMU, SEXT,
+        REMU, 
+        SEXT,
+        ZEXT, 
+        XOR,
+        MUL,
         
 	}	
     
@@ -282,7 +288,15 @@ public class Expression {
             case SEXT:
             	assert (expression.m_numOperands == 2);
             	return sext(resolve(expression.m_operands[0]),resolve(expression.m_operands[1]));
-            	
+            case ZEXT:
+            	assert (expression.m_numOperands == 2);
+            	return zext(resolve(expression.m_operands[0]),resolve(expression.m_operands[1]));
+            case XOR:
+            	assert (expression.m_numOperands == 2);
+            	return resolve(expression.m_operands[0]) ^ resolve(expression.m_operands[1]);
+            case MUL:
+            	assert (expression.m_numOperands == 2);
+            	return (int) (resolve(expression.m_operands[0]) * resolve(expression.m_operands[1]));
             default:
             	assert false;
                 return 0;
@@ -290,16 +304,34 @@ public class Expression {
 		}		
 	}
 	
-
+	private final int zext(int x, int n) {
+        if (n == 0) {
+            return x;   // FIXME - not in documentation
+        }
+        return x & ((1<<n) - 1);
+    }
 	
-	private int remu(int remsA, int remsB) {
-		// TODO Auto-generated method stub
-		return remsA%remsB;
+	private int remu(int remsA, int remsB) throws InstructionExecption {
+		double d1 = ((double)(((long)remsA)&0xffffffffl));
+		double d2 = ((double)(((long)remsB)&0xffffffffl));
+        if (d2 == 0) {
+            throw new InstructionExecption(Error.ET_ARITHMETIC);
+        } else {
+            int div = (int)(d1 / d2);
+            return (int)(d1 - div * d2);
+        }
 	}
 
-	private int rems(int remsA, int remsB) {
-		// TODO Auto-generated method stub
-		return remsA%remsB;
+	private int rems(int remsA, int remsB)throws InstructionExecption {
+		if (remsB == 0) {
+			throw new InstructionExecption(Error.ET_ARITHMETIC);
+        } else {
+            if (remsB < 0 && remsA < 0 && remsA/remsB < 0 ) { // overflow on /
+            	throw new InstructionExecption(Error.ET_ARITHMETIC);
+            } else {
+                return remsA%remsB;
+            }
+        }
 	}
 
 	private String createExpressionString(Expression expression, String exprStr) {
