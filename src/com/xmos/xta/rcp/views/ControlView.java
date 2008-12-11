@@ -1,5 +1,8 @@
 package com.xmos.xta.rcp.views;
 
+import javax.swing.JFrame;
+import javax.swing.ProgressMonitor;
+
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
@@ -12,11 +15,13 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
@@ -30,6 +35,7 @@ import com.xmos.xeobject.Function;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Progress;
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaErrorLog;
@@ -43,6 +49,12 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.rcp.views.Control";
 
+    public static final String STATUS_EMPTY  = "Empty";
+    public static final String STATUS_LOADED = "Loaded";
+    public static final String STATUS_BUSY   = "Busy";
+    public static final String STATUS_DONE   = "Done";
+    
+    private Display m_display;
     private Composite m_parent;
     private Combo m_functions;
 
@@ -51,17 +63,22 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     private Text m_startPoint;
     private Text m_endPoint;
     private Label m_engineStatus;
+    private Label m_progress;
+    
+    private volatile ProgressUpdater m_progressUpdater;
 
 	public ControlView() {
 		if (DEBUG) System.out.printf("Tree()\n");			
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 		
 		m_isExhaustive = false;
+		m_progressUpdater = null;
 	}
 
 	public void createPartControl(Composite parent) {
 	    if (DEBUG) System.out.printf("Control: createPartControl\n");
 	    m_parent = parent;
+	    m_display = m_parent.getDisplay();
 
 	    ExpandBar bar = new ExpandBar(m_parent, SWT.V_SCROLL | SWT.H_SCROLL);
 
@@ -79,15 +96,28 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("Control: propertyChange: %s\n", event.getProperty());	
 		
 		if (event.getProperty().equals("DisplayRoute")) {
+	        if (m_progressUpdater != null) {
+	        	m_progressUpdater.end();
+	        }
+        	m_progress.setText("" + XtaEngine.getEngine().getProgress().getCurValue());
+			m_engineStatus.setText(STATUS_DONE);
+
 		} else if (event.getProperty().equals("LoadExecutable")) {
 			createXeObject();
             populateFunctionList();			
 	        openEditors();
+	        if (m_progressUpdater != null) {
+	        	m_progressUpdater.end();
+	        }
+        	m_progress.setText("0");
+        	m_engineStatus.setText(STATUS_LOADED);
+
 		} else if (event.getProperty().equals("UpdateState")) {
 			
 		} else if (event.getProperty().equals("SetStartPoint")) {
 			CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();
 			m_startPoint.setText(startPoint.getRef());
+
 		} else if (event.getProperty().equals("SetEndPoint")) {
 			CodeReference endPoint = XtaDisplayer.getInstance().getEndPoint();
 			m_endPoint.setText(endPoint.getRef());
@@ -130,10 +160,16 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	public void executeRunFunction() {
 		if (DEBUG) System.out.printf("Control: executeRunFunction\n");	
 
+		if (m_progressUpdater != null) {
+			return;
+		}
+
 		String functionName = m_functions.getText();
 		if (!functionName.equals("")) {
 			RunEngineMethodFunc run = new RunEngineMethodFunc(functionName, m_isExhaustive);
 			run.start();
+			m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
+			m_progressUpdater.start();
 		} else {
 			XtaErrorLog.getInstance().addError("No function/path specified");
 		}
@@ -142,6 +178,10 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	public void executeRunPath() {
 		if (DEBUG) System.out.printf("Control: executeRunPath\n");	
 
+		if (m_progressUpdater != null) {
+			return;
+		}
+		
 		String startRef = m_startPoint.getText();
 		String endRef = m_endPoint.getText();
 		if (startRef.equals("")) {
@@ -149,8 +189,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		} else if (endRef.equals("")) {
 			XtaErrorLog.getInstance().addError("Please specify an end reference");
 		} else {
+			m_engineStatus.setText(STATUS_BUSY);
 			RunEngineMethodPath run = new RunEngineMethodPath(startRef, endRef, m_isExhaustive);
 			run.start();
+			m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
+			m_progressUpdater.start();
 		}
 	}
 	
@@ -252,6 +295,37 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         }
     }	
 
+    class ProgressUpdater extends Thread {
+        private Engine m_engine;
+        private Label m_progress;
+
+        public ProgressUpdater(Engine engine, final Label progress) {
+            m_engine = engine;
+            m_progress = progress;
+        }
+
+        public void end() {
+        	m_progressUpdater = null;
+        }
+
+        public void run() {
+        	Thread thisThread = Thread.currentThread();
+        	final Progress p = m_engine.getProgress();  
+            while (m_progressUpdater == thisThread) {
+            	m_display.asyncExec(new Runnable() {
+        			public void run() {
+        				m_progress.setText("" + p.getCurValue());
+        			}});            	
+
+            	try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
 	private void createControlBar(ExpandBar bar) {
 		Composite composite = getBarComposite(bar, 1);
 
@@ -357,7 +431,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	private void createStatusBar(ExpandBar bar) {
-		Composite composite = getBarComposite(bar, 2);
+		Composite composite = getBarComposite(bar, 1);
 
 	    Group group = new Group(composite, SWT.SHADOW_ETCHED_IN);
 	    GridLayout layout = new GridLayout();
@@ -365,19 +439,19 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    group.setText("Engine status");
 	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		m_engineStatus = new Label(group, SWT.CHECK);
+		m_engineStatus = new Label(group, SWT.SHADOW_NONE | SWT.CENTER);
 		m_engineStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		m_engineStatus.setText("Idle");
+		m_engineStatus.setText(STATUS_EMPTY);
 
 	    Group progressGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
 	    GridLayout progressLayout = new GridLayout();
-	    progressGroup.setLayout(layout);
-	    progressGroup.setText("Progress");
+	    progressGroup.setLayout(progressLayout);
+	    progressGroup.setText("Blocks analysed");
 	    progressGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		m_engineStatus = new Label(group, SWT.CHECK);
-		m_engineStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		m_engineStatus.setText("Idle");
+	    m_progress = new Label(progressGroup, SWT.SHADOW_NONE | SWT.CENTER);
+	    m_progress.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    m_progress.setText("" + 0);
 
 	    ExpandItem barItem = new ExpandItem(bar, SWT.NONE, 0);
 	    barItem.setText("Status");

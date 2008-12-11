@@ -66,10 +66,6 @@ public class Route {
 		initialise(config, nodeId, coreId);
 	}
 
-	public void setCurrentValue(int numPaths) {
-		m_progress.setCurValue(numPaths);
-	}
-
 	public ArrayList<Unknown> getUnknowns() {
 		return m_unknowns;
 	}
@@ -143,7 +139,6 @@ public class Route {
 		stepPath();
 		filterPaths();
 		sortPaths();
-		m_progress.resetState(Progress.State.IDLE, 0);
 		return m_status;
 	}
 
@@ -284,8 +279,7 @@ public class Route {
 		m_completePaths.add(endBlock);
 	}
 	
-	public void filterPaths(){
-		
+	public void filterPaths() {
 		ArrayList<Block> toRemove = new ArrayList<Block>();
 		
 		ArrayList<Integer> exclusions = new ArrayList<Integer>();
@@ -319,7 +313,6 @@ public class Route {
 		}
 		m_completePaths.removeAll(toRemove);
 		m_removedPaths.addAll(toRemove);
-		
 	}
 	
 	
@@ -384,6 +377,7 @@ public class Route {
 	
 	public void addNewBlock(Block block){
 		m_allBlocks.add(block);
+		m_progress.setCurValue(m_allBlocks.size());
 	}
 
 }
