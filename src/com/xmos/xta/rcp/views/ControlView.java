@@ -50,6 +50,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
     private Text m_startPoint;
     private Text m_endPoint;
+    private Label m_engineStatus;
 
 	public ControlView() {
 		if (DEBUG) System.out.printf("Tree()\n");			
@@ -65,6 +66,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    ExpandBar bar = new ExpandBar(m_parent, SWT.V_SCROLL | SWT.H_SCROLL);
 
 	    createSettingsBar(bar);
+	    createStatusBar(bar);
 	    createControlBar(bar);
 	    bar.setSpacing(8);
 	}
@@ -352,6 +354,36 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		Label label = new Label(parent, SWT.NONE);		        
 	    label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
         label.setText(str);
+	}
+
+	private void createStatusBar(ExpandBar bar) {
+		Composite composite = getBarComposite(bar, 2);
+
+	    Group group = new Group(composite, SWT.SHADOW_ETCHED_IN);
+	    GridLayout layout = new GridLayout();
+	    group.setLayout(layout);
+	    group.setText("Engine status");
+	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+		m_engineStatus = new Label(group, SWT.CHECK);
+		m_engineStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		m_engineStatus.setText("Idle");
+
+	    Group progressGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
+	    GridLayout progressLayout = new GridLayout();
+	    progressGroup.setLayout(layout);
+	    progressGroup.setText("Progress");
+	    progressGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+		m_engineStatus = new Label(group, SWT.CHECK);
+		m_engineStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		m_engineStatus.setText("Idle");
+
+	    ExpandItem barItem = new ExpandItem(bar, SWT.NONE, 0);
+	    barItem.setText("Status");
+	    barItem.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+	    barItem.setControl(composite);
+	    barItem.setExpanded(true);
 	}
 
 	private void createSettingsBar(ExpandBar bar) {
