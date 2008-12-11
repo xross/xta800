@@ -249,7 +249,17 @@ public class Block implements Comparable<Block> {
 			addUnknown(instruction);
 		}
 
-		instruction.execute(m_machineState, m_currentThread);
+		try {
+			instruction.execute(m_machineState, m_currentThread);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			setStatus(BlockStatus.UNRESOLVED);
+			String reason  = e.getMessage();
+			Unresolved unresolved = new Unresolved(this, instruction, reason);
+			m_route.addUnresolvedPath(unresolved);
+			releaseMemory();
+			return;
+		}
 		addInstruction(instruction);
 		//dumpState(m_machineState);
 		
