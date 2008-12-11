@@ -61,8 +61,8 @@ public class DisassemblyDisplayer extends Displayer {
         for(Function function : m_functions){
             for(Line line : function.getChildern()){
                 if(line.getLineNumber() == pc){
-                    function.setColour(colour);
-                    line.setColour(colour);
+                    //function.setColour(colour);
+                    //line.setColour(colour);
                     return;
                 }
             }
