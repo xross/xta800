@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.xmos.isa.Instruction;
 import com.xmos.xeloader.XeLoader.Architecture;
 import com.xmos.xta.engine.Expression.OperatorType;
+import com.xmos.xta.engine.InstructionExecption.Error;
 import com.xmos.xta.engine.resources.Channel;
 import com.xmos.xta.engine.resources.Port;
 import com.xmos.xta.engine.resources.Resource;
@@ -18,6 +19,9 @@ public abstract class XtaInstruction extends Instruction {
 	private static final boolean m_debug = false;
 	private static final boolean m_uninplimented = true;
   
+	
+	
+	
 	String m_functionName;
     int m_functionOffset;	
     Attributes m_numCycles;
@@ -348,7 +352,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: CHKCT\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -377,7 +381,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: CLRPT\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -446,7 +450,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: DCALL\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("DEBUG");
+    		throw new InstructionExecption(Error.DEBUG_INSTRUCTION);
     	}
     }
 
@@ -454,7 +458,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: DENTSP\n", getPc());
     	if(m_uninplimented) {
-    		throw new Exception("DEBUG");
+    		throw new InstructionExecption(Error.DEBUG_INSTRUCTION);
     	}
     }
 
@@ -462,7 +466,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: DGETREG\n", getPc());
     	if(m_uninplimented) {
-    		throw new Exception("DEBUG");
+    		throw new InstructionExecption(Error.DEBUG_INSTRUCTION);
     	}
     }
 
@@ -486,7 +490,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: DRESTSP\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("DEBUG");
+    		throw new InstructionExecption(Error.DEBUG_INSTRUCTION);
     	}
     }
 
@@ -494,7 +498,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: DRET\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("DEBUG");
+    		throw new InstructionExecption(Error.DEBUG_INSTRUCTION);
     	}
     }
 
@@ -502,7 +506,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: ECALLF\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("ERROR");
+    		throw new InstructionExecption(Error.TRAP_INSTRUCTION);
     	}
     }
 
@@ -510,7 +514,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: ECALLT\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("ERROR");
+    		throw new InstructionExecption(Error.TRAP_INSTRUCTION);
     	}
     }
 
@@ -534,7 +538,7 @@ public abstract class XtaInstruction extends Instruction {
             	Timer timer = resources.getTimers()[resNum];
             	timer.setEventEnabeled(false);
             } else {
-            	throw new Exception("ET_RESOURCE_DEP");
+            	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
             }
         } else {
         	throw new Exception("RESOURCE");
@@ -565,10 +569,10 @@ public abstract class XtaInstruction extends Instruction {
             	Timer timer = resources.getTimers()[resNum];
             	timer.setEventEnabeled(set);
             } else {
-            	throw new Exception("ET_RESOURCE_DEP");
+            	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
             }
         } else {
-        	throw new Exception("RESOURCE");
+        	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
         } 
     }
 
@@ -596,10 +600,10 @@ public abstract class XtaInstruction extends Instruction {
             	Timer timer = resources.getTimers()[resNum];
             	timer.setEventEnabeled(set);
             } else {
-            	throw new Exception("ET_RESOURCE_DEP");
+            	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
             }
         } else {
-        	throw new Exception("RESOURCE");
+        	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
         } 
     }
 
@@ -623,10 +627,10 @@ public abstract class XtaInstruction extends Instruction {
             	Timer timer = resources.getTimers()[resNum];
             	timer.setEventEnabeled(true);
             } else {
-            	throw new Exception("ET_RESOURCE_DEP");
+            	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
             }
         } else {
-        	throw new Exception("RESOURCE");
+        	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
         } 
     }
 
@@ -634,7 +638,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: ENDIN\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -730,10 +734,10 @@ public abstract class XtaInstruction extends Instruction {
     	    } else if(resType == Resources.RES_TYPE_LOCK){
     	    	resources.getLocks()[resNum].setInUse(false);
     	    } else {
-            	throw new Exception("ET_RESOURCE_DEP");
+            	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
             }
         } else {
-        	throw new Exception("RESOURCE");
+        	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
         } 
     }
 
@@ -741,7 +745,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: FREET\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -767,10 +771,10 @@ public abstract class XtaInstruction extends Instruction {
     	    	//return the divider
     	    	state.m_op1 = new Expression(0);
     	    } else {
-            	throw new Exception("ET_RESOURCE_DEP");
+            	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
             }
         } else {
-        	throw new Exception("RESOURCE");
+        	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
         } 
     }
 
@@ -808,7 +812,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: GETPS\n", getPc());
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -847,7 +851,7 @@ public abstract class XtaInstruction extends Instruction {
         	int syncNumber = resources.decodeResNum(synchroniserId.getValue());
         	Synchroniser sync = resources.getSynchroniser(syncType, syncNumber);
         	if(sync == null){
-        		throw new Exception("ET_RESOURCE_DEP");
+        		throw new InstructionExecption(Error.ET_RESOURCE_DEP);
         	}
         	sync.setInUse(true);
         	
@@ -860,7 +864,7 @@ public abstract class XtaInstruction extends Instruction {
         	//return the res id new thread
         	state.m_op1 = new Expression(res.getResourceID());
         } else {
-        	throw new Exception("RESOURCE");
+        	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
         }      
     }
 
@@ -868,7 +872,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: GETTS\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -876,7 +880,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: IN\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -884,7 +888,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: INCT\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -892,7 +896,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: INPW\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -900,7 +904,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: INSHR\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -908,7 +912,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: INT\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -916,7 +920,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: KCALL\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -924,7 +928,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: KENTSP\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -932,7 +936,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: KRESTSP\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -940,7 +944,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: KRET\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1089,7 +1093,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDET\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1097,7 +1101,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDSED\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1105,7 +1109,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDSPC\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1113,7 +1117,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDSSR\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1268,7 +1272,7 @@ public abstract class XtaInstruction extends Instruction {
             System.out.printf("0x%08x: MJOIN\n", getPc());	
 
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1285,7 +1289,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: MSYNC\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1332,7 +1336,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: OUT\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1340,7 +1344,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: OUTCT\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1348,7 +1352,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: OUTPW\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1356,7 +1360,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: OUTSHR\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1364,7 +1368,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: OUTT\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1372,7 +1376,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: PEEK\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1438,6 +1442,7 @@ public abstract class XtaInstruction extends Instruction {
     		
     		//state.getResources().
     	} else {
+    		//TODO
     		throw new Exception("SETC");
     	}
     	
@@ -1448,7 +1453,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETCLK\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1456,7 +1461,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETCP\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1464,7 +1469,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETD\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1472,7 +1477,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETDP\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1480,7 +1485,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETEV\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	} 
     }
 
@@ -1488,7 +1493,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETKEP\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("UNSUPPORTED");
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1496,8 +1501,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETPS\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Channel not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1505,8 +1509,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETPSC\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Channel not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1514,8 +1517,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETPT\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Channel not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1523,8 +1525,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETRDY\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Channel not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1544,8 +1545,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETTW\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Channel not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1570,7 +1570,7 @@ public abstract class XtaInstruction extends Instruction {
         	  System.out.println("cannot SETV on a resoutce type: " + resType);
           }
         } else {
-            throw new Exception("ET_RESOURCE_DEP");
+            throw new InstructionExecption(Error.ET_RESOURCE_DEP);
         }     
     	
     }
@@ -1587,50 +1587,39 @@ public abstract class XtaInstruction extends Instruction {
     void SHL(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: SHL\n", getPc());	
-    	
-    	if(state.m_op2.canResolve() && state.m_op3.canResolve()){
-    		int scr = state.m_op2.getValue();
-    		int shift = state.m_op3.getValue();
-    		int dest = scr << shift;
-    		state.m_op1 = new Expression(dest);
-    	} else {
-    		state.m_op1 =  new Expression(state.m_op1Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
-    	}
+    	Expression result = new Expression(OperatorType.SHL);
+    	result.addOperand(state.m_op2);
+    	result.addOperand(state.m_op3);
+    	state.m_op1 = result;
     }
 
     void SHR(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: SHR\n", getPc());	
-
-    	if(state.m_op2.canResolve() && state.m_op3.canResolve()){
-    		int scr = state.m_op2.getValue();
-    		int shift = state.m_op3.getValue();
-    		int dest = scr >> shift;
-    		state.m_op1 = new Expression(dest);
-    	} else {
-    		state.m_op1 =  new Expression(state.m_op1Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
-    	}
+    	Expression result = new Expression(OperatorType.SHR);
+    	result.addOperand(state.m_op2);
+    	result.addOperand(state.m_op3);
+    	state.m_op1 = result;
     }
 
     void SSYNC(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: SSYNC\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Channel not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
     void ST16(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
-            System.out.printf("0x%08x: ST16\n", getPc());	
+            System.out.printf("0x%08x: ST16\n", getPc());
     	if(state.m_op2.canResolve() && state.m_op3.canResolve()){
     		int base = state.m_op2.getValue();
     		int offset = state.m_op3.getValue() << (Instruction.BITS_PER_WORD/2) ;
     		int address = base + offset;
     		state.writeShort(address, state.m_op1);
     	} else {
-    		state.m_op1 = new Expression(state.m_op1Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+    		throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
     	}
     }
 
@@ -1660,7 +1649,7 @@ public abstract class XtaInstruction extends Instruction {
     		int address = sp.getValue() + (MachineState.STACK_OFFSET_SED << Instruction.BYTES_PER_WORD_LOG2);
     		state.writeMemory(address, sed);
     	} else {
-    		throw new Exception("written to unknown location");
+    		throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
     	}
     }
 
@@ -1675,7 +1664,7 @@ public abstract class XtaInstruction extends Instruction {
     		int address = sp.getValue() + (MachineState.STACK_OFFSET_ET << Instruction.BYTES_PER_WORD_LOG2);
     		state.writeMemory(address, et);
     	} else {
-    		throw new Exception("written to unknown location");
+    		throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
     	}
     }
 
@@ -1690,7 +1679,7 @@ public abstract class XtaInstruction extends Instruction {
     		int address = sp.getValue() + (MachineState.STACK_OFFSET_SPC << Instruction.BYTES_PER_WORD_LOG2);
     		state.writeMemory(address, spc);
     	} else {
-    		throw new Exception("written to unknown location");
+    		throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
     	}
     }
 
@@ -1705,7 +1694,7 @@ public abstract class XtaInstruction extends Instruction {
     		int address = sp.getValue() + (MachineState.STACK_OFFSET_SSR << Instruction.BYTES_PER_WORD_LOG2);
     		state.writeMemory(address, spc);
     	} else {
-    		throw new Exception("written to unknown location");
+    		throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
     	}
     }
 
@@ -1721,7 +1710,7 @@ public abstract class XtaInstruction extends Instruction {
             int address =  base + offset;
             state.writeMemory(address, state.m_op1);            
         } else {
-        	throw new Exception("written to unknown location");
+        	throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
         }
     }
 
@@ -1741,7 +1730,7 @@ public abstract class XtaInstruction extends Instruction {
         	int address =  base + offset;
         	state.writeMemory(address, state.m_op1);
         } else {
-        	throw new Exception("written to unknown location");
+        	throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
         }
     }
 
@@ -1762,7 +1751,7 @@ public abstract class XtaInstruction extends Instruction {
         	int address =  base + offset;
         	state.writeMemory(address, state.m_op1);
         } else {
-        	throw new Exception("written to unknown location");
+        	throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
         }
     }
 
@@ -1778,8 +1767,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SYNCR\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1787,8 +1775,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: TESTLCL\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1796,8 +1783,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: TESTCT\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1805,8 +1791,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: TESTWCT\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1814,8 +1799,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: TINITCP\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1823,8 +1807,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: TINITDP\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1832,8 +1815,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: TINITLR\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1841,8 +1823,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: TINITPC\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1850,8 +1831,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: TINITSP\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1859,8 +1839,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: TSETMR\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1878,7 +1857,7 @@ public abstract class XtaInstruction extends Instruction {
             assert(child!= null);
             child.getRegisters().writeRegister(state.m_op1Fld, state.m_op2);
         } else {
-            throw new Exception("ET_ILLEGAL_RESOURCE");
+            throw new InstructionExecption(Error.ET_ILLEGAL_RESOURCE);
         } 
     }
 
@@ -1886,8 +1865,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: TSTART\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1895,8 +1873,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: WAITEF\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1904,8 +1881,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: WAITET\n", getPc());	
     	if(m_uninplimented) {
-    		throw new Exception("Not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
 
@@ -1966,8 +1942,7 @@ public abstract class XtaInstruction extends Instruction {
             System.out.printf("0x%08x: GETN\n", getPc());	
 
     	if(m_uninplimented) {
-    		throw new Exception("Not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
     
@@ -1976,8 +1951,7 @@ public abstract class XtaInstruction extends Instruction {
             System.out.printf("0x%08x: SETN\n", getPc());	
 
     	if(m_uninplimented) {
-    		throw new Exception("Not yet supported");
-    		//TODO
+    		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
         
