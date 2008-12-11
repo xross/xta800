@@ -35,7 +35,12 @@ public class Registers {
 		} else {
 			m_registers[regNum] = regValue;
 			if(regValue.canResolve()){
-				m_registers[regNum].resolve();
+				try {
+					m_registers[regNum].resolve();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}	
 	}
