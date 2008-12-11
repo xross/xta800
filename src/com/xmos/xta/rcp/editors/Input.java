@@ -36,15 +36,14 @@ public class Input {
 }
 
 class InputSection {
-	private String m_header;
-	private String m_headerCodeReference;
+	private InputLine m_header;
 	private ArrayList<InputLine> m_lines;
 	private ArrayList<InputLine> m_fnops;
 	private int m_index;
 	
 	public InputSection(String header, String headerCodeReference, int index) {
-		m_header = header;
-		m_headerCodeReference = headerCodeReference;
+		// Header line must have -1 index to counteract +1 in index calculations
+		m_header = new InputLine(this, header, headerCodeReference, 0, -1);
 		m_lines = new ArrayList<InputLine>();
 		m_fnops = new ArrayList<InputLine>();
 		m_index = index;
@@ -88,12 +87,8 @@ class InputSection {
 		return false;
 	}
 
-	public String getHeader() {
+	public InputLine getHeader() {
 		return m_header;
-	}
-
-	public String getHeaderCodeReference() {
-		return m_headerCodeReference;
 	}
 
 	public int getNumLines() {

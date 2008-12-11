@@ -58,7 +58,7 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 	    
 	    m_tableViewer.setContentProvider(contentProvider);				
 	    m_tableViewer.setLabelProvider(labelProvider);
-	    
+	    updateDisplay();
 		getSite().getPage().addSelectionListener(this);
 	}
 

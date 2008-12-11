@@ -31,12 +31,14 @@ public class XtaDisplayer implements Displayer {
 	private ISelection m_doubleClickSelection;
 	private CodeReference m_startPoint;
 	private CodeReference m_endPoint;
+	private CodeReference m_codePoint;
 
 	private XtaDisplayer() {
 		m_listeners = new ArrayList<IPropertyChangeListener>();
 		
 		m_startPoint = null;
 		m_endPoint = null;
+		m_codePoint = null;
 	}
 	
 	public static XtaDisplayer getInstance() {
@@ -108,7 +110,12 @@ public class XtaDisplayer implements Displayer {
 			broadcastPropertyChange(new PropertyChangeEvent(this, "SetEndPoint", null, null));
 		}
 	}
-		
+
+	public void notifyShow(CodeReference codePoint) {
+		m_codePoint = codePoint;
+		broadcastPropertyChange(new PropertyChangeEvent(this, "ShowCodePoint", null, null));
+	}
+
 	public void broadcastPropertyChange(final PropertyChangeEvent event) {			
 		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 			public void run() {        	
@@ -132,6 +139,10 @@ public class XtaDisplayer implements Displayer {
 	
 	public CodeReference getEndPoint() {
 		return m_endPoint;
+	}
+
+	public CodeReference getCodePoint() {
+		return m_codePoint;
 	}
 
 	private void createHierarchy(Route route, DebugInfo debugInfo,

@@ -255,6 +255,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 	    Button loadButton = new Button(composite, SWT.PUSH);
 	    loadButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+	    loadButton.setToolTipText("Open file");
 	    loadButton.setImage(Icons.getIcon("load"));
 	    loadButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -284,6 +285,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 	    Button runButton = new Button(group, SWT.PUSH);
 	    runButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+	    runButton.setToolTipText("Time specified function");
 	    runButton.setImage(Icons.getIcon("run"));
 	    runButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -293,7 +295,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	private void createPathControl(Composite composite) {
-		int numColumns = 2;
+		int numColumns = 5;
 	    Group group = new Group(composite, SWT.SHADOW_ETCHED_IN);
 	    GridLayout layout = new GridLayout();
 	    layout.numColumns = numColumns;
@@ -304,23 +306,45 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    Group startGroup = new Group(group, SWT.SHADOW_ETCHED_IN);
 	    startGroup.setLayout(new FillLayout());
 	    startGroup.setText("From");
-	    startGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    startGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 	    m_startPoint = new Text(startGroup, SWT.SINGLE | SWT.CENTER);
 	
 	    Group endGroup = new Group(group, SWT.SHADOW_ETCHED_IN);
 	    endGroup.setLayout(new FillLayout());
 	    endGroup.setText("To");
-	    endGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    endGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 	    m_endPoint = new Text(endGroup, SWT.SINGLE | SWT.CENTER);
 	
+	    Button findStartButton = new Button(group, SWT.PUSH);
+	    findStartButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+	    findStartButton.setToolTipText("Show start point");
+	    findStartButton.setImage(Icons.getIcon("start16x16"));
+	    findStartButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();
+				XtaDisplayer.getInstance().notifyShow(startPoint);
+			}
+		});
+
+	    Button findStopButton = new Button(group, SWT.PUSH);
+	    findStopButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+	    findStopButton.setToolTipText("Show stop point");
+	    findStopButton.setImage(Icons.getIcon("stop16x16"));
+	    findStopButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				CodeReference startPoint = XtaDisplayer.getInstance().getEndPoint();
+				XtaDisplayer.getInstance().notifyShow(startPoint);
+			}
+		});
+
 	    Button timePathButton = new Button(group, SWT.PUSH);
-	    timePathButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false,
-	    		numColumns, 1));
+	    timePathButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+	    timePathButton.setToolTipText("Time specified path");
 	    timePathButton.setImage(Icons.getIcon("run"));
 	    timePathButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				executeRunPath();
-			}			
+			}
 		});
 	}
 

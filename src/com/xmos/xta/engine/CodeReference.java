@@ -37,9 +37,9 @@ public class CodeReference {
 	}
 
 	private boolean isSourceReference(String ref) {
-		if(ref.contains(":")){
+		if (ref.contains(":")){
 			String [] parts = ref.split(":");
-			if(parts.length == 2 && 
+			if (parts.length == 2 && 
 					parts[1].matches("[0-9]*") && 
 					parts[0].length()>0){
 				m_type = RefType.LINE;
@@ -51,16 +51,16 @@ public class CodeReference {
 	}
 
 	private boolean isPcString(String ref) {
-		if(ref.matches("0x[0-9a-fA-F]*")){
+		if (ref.matches("0x[0-9a-fA-F]*")){
 			m_pc = Integer.parseInt(ref.substring(2), 16);
-		} else if(ref.matches("[0-9]*")){
+		} else if (ref.matches("[0-9]*")){
 			m_pc = Integer.parseInt(ref, 10);
 		} else {
 			m_isResolved = false;
 			return false;
 		}
 		//TODO make these bounds refer to the memory size
-		if(m_pc >= 0x10000 && m_pc < 0x20000){
+		if (m_pc >= 0x10000 && m_pc < 0x20000){
 			m_isResolved = true;
 			return true;
 		} else {
@@ -70,14 +70,14 @@ public class CodeReference {
 	}
 
 	public String toString(){
-		if(m_type == RefType.LABEL){
-			if(m_isResolved){
+		if (m_type == RefType.LABEL){
+			if (m_isResolved){
 				return "label " + m_ref + " : 0x" + Integer.toHexString(m_pc);
 			} else {
 				return "label " + m_ref + " : unresolved";
 			}
 			
-		} else if(m_type == RefType.LINE){
+		} else if (m_type == RefType.LINE){
 			if(m_isResolved){
 				return "line " + m_ref + " -> 0x" + Integer.toHexString(m_pc);
 			} else {
@@ -96,15 +96,31 @@ public class CodeReference {
     }
     
     public String getRef() {
-        assert m_isResolved == true;
+        assert(m_isResolved == true);
         return m_ref;
     }
     
     public int getPc() {
-        assert m_isResolved == true;
+        assert(m_isResolved == true);
         return m_pc;
     }
-    
+
+    public String getFileName() {
+        assert(m_isResolved == true);
+		
+        if (m_ref.contains(":")){
+			String [] parts = m_ref.split(":");
+			if (parts.length == 2 && 
+					parts[1].matches("[0-9]*") && 
+					parts[0].length()>0){
+				m_type = RefType.LINE;
+				m_isResolved = false;
+				return parts[0];
+			}
+		}
+		return "";
+    }
+
     public boolean isResolved() {
         return m_isResolved;
     }

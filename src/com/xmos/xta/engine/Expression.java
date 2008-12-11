@@ -382,7 +382,7 @@ public class Expression {
 		 	// Terminal:
 			switch (expression.m_type) {
 			case IMMEDIATE:
-				retStr += "[i 0x" + Integer.toHexString(expression.m_value)  + "("+expression.m_value + ")]";
+				retStr += "[i 0x" + Integer.toHexString(expression.m_value)  + "(" + expression.m_value + ")]";
 				break;
 				
 			case REGISTER:
@@ -397,7 +397,7 @@ public class Expression {
 				break;
 				
 			case MEMORY:
-				assert (m_operands.length == 2);
+				assert (expression.m_numOperands == 2);
 				retStr += "m";
 				retStr = createExpressionString(expression.m_operands[0], retStr);
 				retStr = createExpressionString(expression.m_operands[1], retStr);

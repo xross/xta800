@@ -44,7 +44,7 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 		for (InputSection inputSection : m_input.getSections()) {	
 			int headerOffset = document.getLength();
 
-			String header = inputSection.getHeader() + "\n";
+			String header = inputSection.getHeader().getLine() + "\n";
 			updateDocument(document, header);							
 			addTypedRegion(document, regionList, headerOffset, m_input.getHeaderType());
 
