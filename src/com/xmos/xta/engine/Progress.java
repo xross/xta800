@@ -21,7 +21,11 @@ public class Progress {
     	m_curValue = curValue;
 	}	
 
-    public State getState() {
+	public void setState(State state) {
+		m_state = state;
+	}
+
+	public State getState() {
     	return m_state;
     }
     
@@ -69,5 +73,4 @@ public class Progress {
             return "";
     	}
     }
-
 }

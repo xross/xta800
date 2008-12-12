@@ -190,6 +190,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     		pathRoot = m_selectedNode.getPathRoot();
     	}
     	
+    	// Don't bother unless the selected path has changed
     	if (pathRoot == m_currentPathRoot)
     		return;
 
@@ -411,7 +412,11 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     		} else {
     			// Don't map to the header
         		if ((clickLineNum > startLine) && (clickLineNum <= endLine)) {
-        			return inputSection.getLine(offset - 1).getCodeReference();
+        			if (!inputSection.isFnop(offset - 1)) {
+        				return inputSection.getLine(offset - 1).getCodeReference();
+        			} else {
+        				return null;
+        			}
     			}
     		}
     	}

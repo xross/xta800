@@ -47,6 +47,7 @@ public class Engine {
     private boolean m_resolveExpression;
     
     private ArrayList<PathQuery> m_pathQueries;
+    private Progress m_progress;
     
     public Engine(Config config) {
     	
@@ -70,17 +71,18 @@ public class Engine {
         m_abort = false;
         m_resolveExpression = false;
         
+        m_progress = new Progress(Progress.State.IDLE, 0, 0);
     }
     
     public void addReference(ReferenceMode mode, CodeReference ref){
     	//test for duplicates
     	//test for conditions where the user want a reference and not a reference
     	
-    	if(mode == ReferenceMode.EXCLUSION){
+    	if (mode == ReferenceMode.EXCLUSION){
     		m_exclusions.add(ref);
-    	} else if(mode == ReferenceMode.PROHIBITED){
+    	} else if (mode == ReferenceMode.PROHIBITED){
     		m_prohibited.add(ref);
-    	} else if(mode == ReferenceMode.REQUIRED){
+    	} else if (mode == ReferenceMode.REQUIRED){
     		m_required.add(ref);
     	} else{
     		assert(false);
@@ -90,17 +92,17 @@ public class Engine {
     public boolean removeReference(ReferenceMode mode, CodeReference ref){
     	if(mode == ReferenceMode.EXCLUSION){
     		CodeReference cr = findReference(ref, m_exclusions);
-    		if(cr==null) return false;
+    		if (cr==null) return false;
     		m_exclusions.remove(cr);
     		return true;
     	} else if(mode == ReferenceMode.PROHIBITED){
     		CodeReference cr = findReference(ref, m_prohibited);
-    		if(cr==null) return false;
+    		if (cr==null) return false;
     		m_prohibited.remove(cr);
     		return true;
     	} else if(mode == ReferenceMode.REQUIRED){
     		CodeReference cr = findReference(ref, m_required);
-    		if(cr==null) return false;
+    		if (cr==null) return false;
     		m_required.remove(cr);
     		return true;
     	} else{
@@ -110,8 +112,8 @@ public class Engine {
     }
     
     private CodeReference findReference(CodeReference ref, Vector<CodeReference> references){
-    	for(CodeReference present : references){
-    		if(ref.getPc() == present.getPc() && ref.getRef().equals(present.getRef())){
+    	for (CodeReference present : references){
+    		if (ref.getPc() == present.getPc() && ref.getRef().equals(present.getRef())){
     			return present;
     		}
     	}
@@ -122,9 +124,9 @@ public class Engine {
     public Vector<CodeReference> getReference(ReferenceMode mode){
     	if(mode == ReferenceMode.EXCLUSION){
     		return m_exclusions;
-    	} else if(mode == ReferenceMode.PROHIBITED){
+    	} else if (mode == ReferenceMode.PROHIBITED){
     		return m_prohibited;
-    	} else if(mode == ReferenceMode.REQUIRED){
+    	} else if (mode == ReferenceMode.REQUIRED){
     		return m_required;
     	} else{
     		assert(false);
@@ -204,11 +206,8 @@ public class Engine {
         return success;
     }
 
-    public Progress getProgress() {    	
-        if (m_route == null) {
-            return new Progress(Progress.State.IDLE, 0, 0);
-        }    	
-        return m_route.getProgress();   
+    public Progress getProgress() {
+    	return m_progress;
     }
 
     public boolean analyseRoute(String functionName, boolean resolveExpression) {
@@ -225,19 +224,21 @@ public class Engine {
         }
         else {     
             m_previousRoute = m_route;
-            m_route = new Route(m_config, functionName, m_nodeId, m_coreId, m_instructionDecodeCache, resolveExpression);
+            m_route = new Route(m_config, m_progress, functionName,
+            		m_nodeId, m_coreId, m_instructionDecodeCache,
+            		resolveExpression);
+
             boolean t = analyseRouteSafley();
-            
-            if(t == false){
+            if (t == false){
             	//restore the route
-            	m_route = new Route(m_config, functionName, m_nodeId, m_coreId, m_instructionDecodeCache, resolveExpression);
+            	m_route = m_previousRoute;
             }
             return t;
         }
     }
     
     
-    private boolean analyseRouteSafley(){
+    private boolean analyseRouteSafley() {
     	//catch all errors here
     	
     	boolean t = false;
@@ -282,11 +283,13 @@ public class Engine {
         }
         else {    
             m_previousRoute = m_route;                   
-            m_route = new Route(m_config, fromRef, toRef, m_nodeId, m_coreId, m_instructionDecodeCache, resolveExpression);
+            m_route = new Route(m_config, m_progress, fromRef, toRef,
+            		m_nodeId, m_coreId, m_instructionDecodeCache,
+            		resolveExpression);
             boolean t = analyseRouteSafley();
-            if(t == false){
-            	//restore the route
-            	m_route = new Route(m_config, fromRef, toRef, m_nodeId, m_coreId, m_instructionDecodeCache, resolveExpression);
+            if (t == false) {
+            	// restore the route
+            	m_route = m_previousRoute;
             }
             return t;
         }
@@ -525,7 +528,7 @@ public class Engine {
     private boolean analyseRoute() throws Exception {
         assert(m_route != null);
 
-        if (m_route.getProgress().getState() != Progress.State.IDLE) {
+        if (m_progress.getState() != Progress.State.IDLE) {
             setErrorString("Engine busy");
             return false;
         }

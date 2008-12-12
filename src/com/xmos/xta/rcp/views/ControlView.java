@@ -1,8 +1,5 @@
 package com.xmos.xta.rcp.views;
 
-import javax.swing.JFrame;
-import javax.swing.ProgressMonitor;
-
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
@@ -21,7 +18,6 @@ import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
@@ -99,7 +95,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        if (m_progressUpdater != null) {
 	        	m_progressUpdater.end();
 	        }
-        	m_progress.setText("" + XtaEngine.getEngine().getProgress().getCurValue());
 			m_engineStatus.setText(STATUS_DONE);
 
 		} else if (event.getProperty().equals("LoadExecutable")) {
@@ -166,6 +161,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 		String functionName = m_functions.getText();
 		if (!functionName.equals("")) {
+			m_engineStatus.setText(STATUS_BUSY);
 			RunEngineMethodFunc run = new RunEngineMethodFunc(functionName, m_isExhaustive);
 			run.start();
 			m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
@@ -323,6 +319,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
                     e.printStackTrace();
                 }
             }
+
+        	m_display.asyncExec(new Runnable() {
+    			public void run() {
+    				m_progress.setText("" + p.getCurValue());
+    			}});            	
         }
     }
     
@@ -451,7 +452,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 	    m_progress = new Label(progressGroup, SWT.SHADOW_NONE | SWT.CENTER);
 	    m_progress.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    m_progress.setText("" + 0);
+	    m_progress.setText("0");
 
 	    ExpandItem barItem = new ExpandItem(bar, SWT.NONE, 0);
 	    barItem.setText("Status");
