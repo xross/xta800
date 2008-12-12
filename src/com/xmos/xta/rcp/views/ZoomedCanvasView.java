@@ -57,6 +57,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     protected Node m_doubleClickNode;
     protected XtaRouteInfo m_routeInfo;
     
+    private boolean m_refreshing;
     protected double m_scale;
     protected boolean m_scaleY;
     protected int m_lineWidth;
@@ -85,6 +86,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    m_selectedNode = null;
 
 		m_scale = 1.0;
+		m_refreshing = false;
 	}
 
 	/*
@@ -233,11 +235,16 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	 * Structure view methods 
 	 */
 	protected void refreshView() {
-		m_display.asyncExec(new Runnable() {
+		if (m_refreshing)
+			return;
+		
+		m_display.syncExec(new Runnable() {
 			public void run() {
+				m_refreshing = true;
 				prepareCanvas();
 				m_scrollArea.redraw();
 				m_canvas.redraw();
+				m_refreshing = false;
 			}});
 	}
 
