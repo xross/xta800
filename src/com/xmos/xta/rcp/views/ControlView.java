@@ -108,6 +108,10 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         	m_progress.setText("0");
         	m_engineStatus.setText(STATUS_LOADED);
 
+		} else if (event.getProperty().equals(Displayer.NOTIFY_ANALYSE_PATHS)) {
+			m_engineStatus.setText(STATUS_BUSY);
+			m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
+			m_progressUpdater.start();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_STATE)) {
 			
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_START_POINT)) {
@@ -165,11 +169,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 		String functionName = m_functions.getText();
 		if (!functionName.equals("")) {
-			m_engineStatus.setText(STATUS_BUSY);
 			RunEngineMethodFunc run = new RunEngineMethodFunc(functionName, m_isExhaustive);
 			run.start();
-			m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
-			m_progressUpdater.start();
 		} else {
 			XtaErrorLog.getInstance().addError("No function/path specified");
 		}
@@ -189,11 +190,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		} else if (endRef.equals("")) {
 			XtaErrorLog.getInstance().addError("Please specify an end reference");
 		} else {
-			m_engineStatus.setText(STATUS_BUSY);
 			RunEngineMethodPath run = new RunEngineMethodPath(startRef, endRef, m_isExhaustive);
 			run.start();
-			m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
-			m_progressUpdater.start();
 		}
 	}
 	
