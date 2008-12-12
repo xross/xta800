@@ -13,7 +13,6 @@ import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader.Architecture;
 import com.xmos.xta.engine.Engine.ReferenceMode;
-import com.xmos.xta.engine.MachineState.InstructionSet;
 import com.xmos.xta.engine.Status.ExecutionStatus;
 
 public class Route {
@@ -50,7 +49,10 @@ public class Route {
 	private InstructionAttributes m_instructionAttributes;
 	private boolean m_resolveExpressions;
 
-	Route(Config config, CodeReference fromRef, CodeReference toRef, int nodeId, int coreId, InstructionDecodeCache instructionDecodeCache, boolean resolveExpressions) {
+	Route(Config config, Progress progress, CodeReference fromRef, CodeReference toRef,
+			int nodeId, int coreId, InstructionDecodeCache instructionDecodeCache,
+			boolean resolveExpressions) {
+		m_progress = progress;
 		m_fromRef = fromRef;
 		m_toRef = toRef;
 		m_resolveExpressions = resolveExpressions;
@@ -59,7 +61,10 @@ public class Route {
 
 	}
 
-	Route(Config config, String functionName, int nodeId, int coreId, InstructionDecodeCache instructionDecodeCache, boolean resolveExpressions) {
+	Route(Config config, Progress progress, String functionName,
+			int nodeId, int coreId, InstructionDecodeCache instructionDecodeCache,
+			boolean resolveExpressions) {
+		m_progress = progress;
 		m_functionName = functionName;
 		m_instructionDecodeCache = instructionDecodeCache;
 		m_resolveExpressions = resolveExpressions;
@@ -139,7 +144,7 @@ public class Route {
 		stepPath();
 		filterPaths();
 		sortPaths();
-		
+		m_progress.setState(Progress.State.IDLE);
 		return m_status;
 	}
 
@@ -214,7 +219,6 @@ public class Route {
 		m_executionStates = new ArrayList<ExecutionState>();
 		m_schedule = new LinkedList<ExecutionState>();
 		m_status = RouteStatus.COMPLETED;
-		m_progress = new Progress(Progress.State.IDLE, 0, 0);
 		++m_numRoutes;
 	}
 
@@ -228,6 +232,7 @@ public class Route {
 			searching.build();
 			searching = nextBlock();
 			cleanSchedule();
+			checkAbort();
 		}
 		System.gc();
 	}
@@ -381,4 +386,11 @@ public class Route {
 		m_progress.setCurValue(m_allBlocks.size());
 	}
 
+	public String getStatusString() {
+	    if (functionName() != null) {
+	    	return String.format("function: %s\n", functionName());
+	    } else {
+	    	return String.format("path: %s -> %s\n",  fromRef().getRef(), toRef().getRef());
+	    }
+	}
 }

@@ -1,7 +1,6 @@
 package com.xmos.xta.rcp.views;
 
-import javax.swing.JFrame;
-import javax.swing.ProgressMonitor;
+import java.io.File;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -21,7 +20,6 @@ import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
@@ -34,12 +32,15 @@ import org.eclipse.ui.part.ViewPart;
 import com.xmos.xeobject.Function;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.CodeReference;
+import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Progress;
+import com.xmos.xta.engine.Route;
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaErrorLog;
 import com.xmos.xta.rcp.XtaFileFinder;
+import com.xmos.xta.rcp.XtaRouteInfo;
 import com.xmos.xta.rcp.editors.SourcesEditor;
 import com.xmos.xta.rcp.editors.SourcesEditorInput;
 import com.xmos.xta.rcp.icons.Icons;
@@ -58,12 +59,18 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     private Composite m_parent;
     private Combo m_functions;
 
-    private boolean m_isExhaustive;
-
+    private Text m_fileName;
     private Text m_startPoint;
     private Text m_endPoint;
+    private Text m_currentRoute;
     private Label m_engineStatus;
     private Label m_progress;
+    
+    private Button m_resolveExpressions;
+    private Spinner m_freqSpinner;
+    private Spinner m_threadSpinner;
+    private Spinner m_coreSpinner;
+    private Spinner m_nodeSpinner;
     
     private volatile ProgressUpdater m_progressUpdater;
 
@@ -71,7 +78,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("Tree()\n");			
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 		
-		m_isExhaustive = false;
 		m_progressUpdater = null;
 	}
 
@@ -95,36 +101,37 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("Control: propertyChange: %s\n", event.getProperty());	
 		
-		if (event.getProperty().equals("DisplayRoute")) {
-	        if (m_progressUpdater != null) {
-	        	m_progressUpdater.end();
-	        }
-        	m_progress.setText("" + XtaEngine.getEngine().getProgress().getCurValue());
-			m_engineStatus.setText(STATUS_DONE);
-
-		} else if (event.getProperty().equals("LoadExecutable")) {
+		if (event.getProperty().equals(Displayer.NOTIFY_DISPLAY_ROUTE)) {
+			setDone("Done");
+			updateCurrentRoute();
+		} else if (event.getProperty().equals(Displayer.NOTIFY_LOAD_EXECUTABLE)) {
 			createXeObject();
             populateFunctionList();			
 	        openEditors();
-	        if (m_progressUpdater != null) {
-	        	m_progressUpdater.end();
-	        }
-        	m_progress.setText("0");
-        	m_engineStatus.setText(STATUS_LOADED);
-
-		} else if (event.getProperty().equals("UpdateState")) {
-			
-		} else if (event.getProperty().equals("SetStartPoint")) {
+	        setDone(STATUS_LOADED);
+	        m_progress.setText("0");
+	        updateState();
+		} else if (event.getProperty().equals(Displayer.NOTIFY_ANALYSE_PATHS)) {
+			m_engineStatus.setText(STATUS_BUSY);
+			m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
+			m_progressUpdater.start();
+		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_STATE)) {
+	        updateState();
+		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_START_POINT)) {
 			CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();
 			m_startPoint.setText(startPoint.getRef());
-
-		} else if (event.getProperty().equals("SetEndPoint")) {
+		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_END_POINT)) {
 			CodeReference endPoint = XtaDisplayer.getInstance().getEndPoint();
 			m_endPoint.setText(endPoint.getRef());
+		} else if (event.getProperty().equals(Displayer.NOTIFY_SELECT_FUNCTION)) {
+			String functionName = XtaDisplayer.getInstance().getNotifyArgument();
+			setSelectedFunction(functionName);
+		} else if (event.getProperty().equals(Displayer.NOTIFY_ERROR)) {
+			setDone("Aborted");
 		}
 	}
 	
-    public void selectionChanged(IWorkbenchPart part, ISelection sel) {
+	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
 		if (DEBUG) System.out.printf("Control: selectionChanged\n");	
      }
 	
@@ -166,10 +173,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 		String functionName = m_functions.getText();
 		if (!functionName.equals("")) {
-			RunEngineMethodFunc run = new RunEngineMethodFunc(functionName, m_isExhaustive);
+			RunEngineMethodFunc run = new RunEngineMethodFunc(functionName);
 			run.start();
-			m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
-			m_progressUpdater.start();
 		} else {
 			XtaErrorLog.getInstance().addError("No function/path specified");
 		}
@@ -189,22 +194,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		} else if (endRef.equals("")) {
 			XtaErrorLog.getInstance().addError("Please specify an end reference");
 		} else {
-			m_engineStatus.setText(STATUS_BUSY);
-			RunEngineMethodPath run = new RunEngineMethodPath(startRef, endRef, m_isExhaustive);
+			RunEngineMethodPath run = new RunEngineMethodPath(startRef, endRef);
 			run.start();
-			m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
-			m_progressUpdater.start();
 		}
 	}
 	
-	public void setExhaustive(boolean isExhaustive) {
-		m_isExhaustive = isExhaustive;
-	}
-	
-	public boolean isExhaustive() {
-		return m_isExhaustive;
-	}
-
 	public int getFrequency() {
 		return XtaEngine.getEngine().getFrequency();
 	}
@@ -220,11 +214,42 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	public void setNumThreads(int numThreads) {
 		XtaEngine.getEngine().setNumThreads(numThreads);
 	}
+
+	public void setCoreId(int coreId) {
+		XtaEngine.getEngine().setCoreId(coreId);
+	}
+
+	public void setNodeId(int nodeId) {
+		XtaEngine.getEngine().setNodeId(nodeId);
+	}
+
+	public void setResolve(boolean resolve) {
+		XtaEngine.getEngine().setResolve(resolve);
+	}
 	
+	private void updateState() {
+		m_resolveExpressions.setSelection(XtaEngine.getEngine().getResolve());
+
+		m_freqSpinner.setSelection(XtaEngine.getEngine().getFrequency());
+
+		m_threadSpinner.setSelection(XtaEngine.getEngine().getNumThreads());
+
+		m_coreSpinner.setMaximum(XtaEngine.getEngine().getCoreId());
+		m_coreSpinner.setSelection(XtaEngine.getEngine().getCoreId());
+
+		m_nodeSpinner.setMaximum(XtaEngine.getEngine().getNodeId());
+		m_nodeSpinner.setSelection(XtaEngine.getEngine().getNodeId());
+	}
+
     private void createXeObject() {
 		Engine engine = XtaEngine.getEngine();
 		XeObject xeObject = new XeObject(engine.getXeLoader(), new XtaFileFinder());
-		XtaEngine.getEngine().setXeObject(xeObject);                    
+		XtaEngine.getEngine().setXeObject(xeObject);
+
+		File xe = new File(engine.getXeLoader().getExecutable());
+		if (xe.isFile()) {
+			m_fileName.setText(xe.getName());
+		}
     }
     
     private void populateFunctionList() {
@@ -234,7 +259,16 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
            	m_functions.add(function.getText());
         }
     }
-    
+
+    private void setSelectedFunction(String functionName) {
+    	for (int index = 0; index < m_functions.getItemCount(); index++) {
+    		if (m_functions.getItem(index).equals(functionName)) {
+    			m_functions.select(index);
+    			break;
+    		}
+    	}
+    }
+
     private void openEditors() {
 		final IWorkbenchPage page = getSite().getWorkbenchWindow().getActivePage();
 		page.closeAllEditors(false);
@@ -246,17 +280,34 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		}    	
     }
 			
-    class RunEngineMethodFunc extends Thread {
-        private String m_functionName;
-        private boolean m_full;
+	private void cancelRun() {
+		XtaEngine.getEngine().setAbort(true);
+	}
 
-        RunEngineMethodFunc(String functionName, boolean full) {
+	private void setDone(String status) {
+        if (m_progressUpdater != null) {
+        	m_progressUpdater.end();
+        }
+    	m_engineStatus.setText(status);
+	}
+
+	private void updateCurrentRoute() {
+		XtaRouteInfo routeInfo = XtaDisplayer.getInstance().getRouteInfo();
+		if (routeInfo != null) {
+			Route route = routeInfo.getRoute();
+			m_currentRoute.setText(route.getStatusString());
+		}
+	}
+
+	class RunEngineMethodFunc extends Thread {
+        private String m_functionName;
+
+        RunEngineMethodFunc(String functionName) {
             m_functionName = functionName;
-            m_full = full;
         }
 
         public void run() {
-            if (!XtaEngine.getEngine().analyseRoute(m_functionName, m_full))
+            if (!XtaEngine.getEngine().analyseRoute(m_functionName))
             	XtaErrorLog.getInstance().addError(XtaEngine.getEngine().getErrorString());
         }
     }
@@ -264,16 +315,14 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     class RunEngineMethodPath extends Thread {
         private String m_startRef;
         private String m_endRef;
-        private boolean m_full;
 
-        RunEngineMethodPath(String startRef, String endRef, boolean full) {
+        RunEngineMethodPath(String startRef, String endRef) {
         	m_startRef = startRef;
         	m_endRef = endRef;
-            m_full = full;
         }
 
         public void run() {
-            if (!XtaEngine.getEngine().analyseRoute(m_startRef, m_endRef, m_full))
+            if (!XtaEngine.getEngine().analyseRoute(m_startRef, m_endRef))
             	XtaErrorLog.getInstance().addError(XtaEngine.getEngine().getErrorString());
         }
     }
@@ -281,16 +330,14 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     class RunEngineMethodRef extends Thread {
         private String m_startRef;
         private String m_endRef;
-        private boolean m_full;
 
-        RunEngineMethodRef(String startRef, String endRef, boolean full) {
+        RunEngineMethodRef(String startRef, String endRef) {
             m_startRef = startRef;
             m_endRef = endRef;
-            m_full = full;
         }
 
         public void run() {        	
-            if (!XtaEngine.getEngine().analyseRoute(m_startRef, m_endRef, m_full))
+            if (!XtaEngine.getEngine().analyseRoute(m_startRef, m_endRef))
             	XtaErrorLog.getInstance().addError(XtaEngine.getEngine().getErrorString());
         }
     }	
@@ -323,11 +370,38 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
                     e.printStackTrace();
                 }
             }
+
+        	m_display.asyncExec(new Runnable() {
+    			public void run() {
+    				m_progress.setText("" + p.getCurValue());
+    			}});            	
         }
     }
     
 	private void createControlBar(ExpandBar bar) {
-		Composite composite = getBarComposite(bar, 1);
+		Composite composite = getBarComposite(bar, 3);
+
+	    createFileControl(composite);
+	    createFunctionControl(composite);
+	    createPathControl(composite);
+	    
+	    ExpandItem barItem = new ExpandItem(bar, SWT.NONE, 0);
+	    barItem.setText("Xta Control");
+	    barItem.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+	    barItem.setControl(composite);
+	    barItem.setExpanded(true);
+	}
+
+	private void createFileControl(Composite composite) {
+	    Group group = new Group(composite, SWT.SHADOW_ETCHED_IN);
+	    GridLayout layout = new GridLayout();
+	    group.setText("File");
+	    group.setLayout(layout);
+	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+
+	    m_fileName = new Text(group, SWT.SINGLE);
+	    m_fileName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    m_fileName.setText("");
 
 	    Button loadButton = new Button(composite, SWT.PUSH);
 	    loadButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
@@ -339,29 +413,21 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			}			
 		});
 
-	    createFunctionControl(composite);
-	    createPathControl(composite);
-	    
-	    ExpandItem barItem = new ExpandItem(bar, SWT.NONE, 0);
-	    barItem.setText("Xta Control");
-	    barItem.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
-	    barItem.setControl(composite);
-	    barItem.setExpanded(true);
 	}
-
+	
 	private void createFunctionControl(Composite composite) {
 	    Group group = new Group(composite, SWT.SHADOW_ETCHED_IN);
 	    GridLayout layout = new GridLayout();
-	    group.setText("Function timing");
+	    group.setText("Function");
 	    group.setLayout(layout);
-	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
 	    m_functions = new Combo(group, SWT.NONE | SWT.DROP_DOWN | SWT.READ_ONLY);
 	    m_functions.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-	    Button runButton = new Button(group, SWT.PUSH);
+	    Button runButton = new Button(composite, SWT.PUSH);
 	    runButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-	    runButton.setToolTipText("Time specified function");
+	    runButton.setToolTipText("Time selected function");
 	    runButton.setImage(Icons.getIcon("run"));
 	    runButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -371,28 +437,28 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	private void createPathControl(Composite composite) {
-		int numColumns = 5;
+		int numColumns = 2;
 	    Group group = new Group(composite, SWT.SHADOW_ETCHED_IN);
 	    GridLayout layout = new GridLayout();
 	    layout.numColumns = numColumns;
 	    group.setLayout(layout);
-	    group.setText("Path timing");
-	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    group.setText("Path");
+	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 	    
 	    Group startGroup = new Group(group, SWT.SHADOW_ETCHED_IN);
 	    startGroup.setLayout(new FillLayout());
 	    startGroup.setText("From");
-	    startGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+	    startGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	    m_startPoint = new Text(startGroup, SWT.SINGLE | SWT.CENTER);
 	
 	    Group endGroup = new Group(group, SWT.SHADOW_ETCHED_IN);
 	    endGroup.setLayout(new FillLayout());
 	    endGroup.setText("To");
-	    endGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+	    endGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	    m_endPoint = new Text(endGroup, SWT.SINGLE | SWT.CENTER);
 	
 	    Button findStartButton = new Button(group, SWT.PUSH);
-	    findStartButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+	    findStartButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 	    findStartButton.setToolTipText("Show start point");
 	    findStartButton.setImage(Icons.getIcon("start16x16"));
 	    findStartButton.addSelectionListener(new SelectionAdapter() {
@@ -403,7 +469,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		});
 
 	    Button findStopButton = new Button(group, SWT.PUSH);
-	    findStopButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+	    findStopButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 	    findStopButton.setToolTipText("Show stop point");
 	    findStopButton.setImage(Icons.getIcon("stop16x16"));
 	    findStopButton.addSelectionListener(new SelectionAdapter() {
@@ -413,7 +479,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			}
 		});
 
-	    Button timePathButton = new Button(group, SWT.PUSH);
+	    Button timePathButton = new Button(composite, SWT.PUSH);
 	    timePathButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 	    timePathButton.setToolTipText("Time specified path");
 	    timePathButton.setImage(Icons.getIcon("run"));
@@ -431,27 +497,47 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	private void createStatusBar(ExpandBar bar) {
-		Composite composite = getBarComposite(bar, 1);
+		Composite composite = getBarComposite(bar, 3);
 
 	    Group group = new Group(composite, SWT.SHADOW_ETCHED_IN);
 	    GridLayout layout = new GridLayout();
 	    group.setLayout(layout);
 	    group.setText("Engine status");
-	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
 		m_engineStatus = new Label(group, SWT.SHADOW_NONE | SWT.CENTER);
 		m_engineStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		m_engineStatus.setText(STATUS_EMPTY);
 
-	    Group progressGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
+	    Button cancelButton = new Button(composite, SWT.PUSH);
+	    cancelButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+	    cancelButton.setToolTipText("Cancel");
+	    cancelButton.setImage(Icons.getIcon("cancel"));
+	    cancelButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				cancelRun();
+			}
+		});
+
+		Group progressGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
 	    GridLayout progressLayout = new GridLayout();
 	    progressGroup.setLayout(progressLayout);
 	    progressGroup.setText("Blocks analysed");
-	    progressGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    progressGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 
 	    m_progress = new Label(progressGroup, SWT.SHADOW_NONE | SWT.CENTER);
 	    m_progress.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    m_progress.setText("" + 0);
+	    m_progress.setText("0");
+
+		Group currentGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
+	    GridLayout currentLayout = new GridLayout();
+	    currentGroup.setLayout(currentLayout);
+	    currentGroup.setText("Currently analysed");
+	    currentGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+
+	    m_currentRoute = new Text(currentGroup, SWT.SINGLE);
+	    m_currentRoute.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    m_currentRoute.setText("");
 
 	    ExpandItem barItem = new ExpandItem(bar, SWT.NONE, 0);
 	    barItem.setText("Status");
@@ -463,45 +549,75 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	private void createSettingsBar(ExpandBar bar) {
 		Composite composite = getBarComposite(bar, 2);
 
-		createControlLabel(composite, "Exhustive:");
-		final Button button = new Button(composite, SWT.CHECK);
-		button.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		button.setSelection(m_isExhaustive);		
-		button.addSelectionListener(new SelectionAdapter() {
+		createControlLabel(composite, "Resolve expressions:");
+		m_resolveExpressions = new Button(composite, SWT.CHECK);
+		m_resolveExpressions.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		m_resolveExpressions.setSelection(XtaEngine.getEngine().getResolve());		
+		m_resolveExpressions.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				m_isExhaustive = button.getSelection();
+				setResolve(m_resolveExpressions.getSelection());
 			}			
 		});
 	 	
 		createControlLabel(composite, "Frequency:");
-		final Spinner freqSpinner = new Spinner(composite, SWT.BORDER);
-		freqSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		freqSpinner.setMinimum(1);
-		freqSpinner.setMaximum(10000);
-		freqSpinner.setSelection(getFrequency());
-		freqSpinner.setIncrement(1);
-		freqSpinner.setPageIncrement(10);
-		freqSpinner.addSelectionListener(new SelectionAdapter() {
+		m_freqSpinner = new Spinner(composite, SWT.BORDER);
+		m_freqSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		m_freqSpinner.setMinimum(1);
+		m_freqSpinner.setMaximum(10000);
+		m_freqSpinner.setSelection(getFrequency());
+		m_freqSpinner.setIncrement(1);
+		m_freqSpinner.setPageIncrement(10);
+		m_freqSpinner.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				setFrequency(freqSpinner.getSelection());
+				setFrequency(m_freqSpinner.getSelection());
 			}			
 		});
 
 		createControlLabel(composite, "Num Threads:");
-		final Spinner threadSpinner = new Spinner(composite, SWT.BORDER);
-		threadSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		threadSpinner.setMinimum(1);
-		threadSpinner.setMaximum(8);
-		threadSpinner.setSelection(getNumThreads());
-		threadSpinner.setIncrement(1);
-		threadSpinner.setPageIncrement(4);
-		threadSpinner.addSelectionListener(new SelectionAdapter() {
+		m_threadSpinner = new Spinner(composite, SWT.BORDER);
+		m_threadSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		m_threadSpinner.setMinimum(1);
+		m_threadSpinner.setMaximum(8);
+		m_threadSpinner.setSelection(getNumThreads());
+		m_threadSpinner.setIncrement(1);
+		m_threadSpinner.setPageIncrement(4);
+		m_threadSpinner.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				setNumThreads(threadSpinner.getSelection());
+				setNumThreads(m_threadSpinner.getSelection());
 			}			
 		});
 		
-	    ExpandItem barItem = new ExpandItem(bar, SWT.NONE, 0);
+		createControlLabel(composite, "CoreId:");
+		m_coreSpinner = new Spinner(composite, SWT.BORDER);
+		m_coreSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		m_coreSpinner.setMinimum(0);
+		m_coreSpinner.setMaximum(0);
+		m_coreSpinner.setEnabled(false);
+		m_coreSpinner.setSelection(0);
+		m_coreSpinner.setIncrement(1);
+		m_coreSpinner.setPageIncrement(4);
+		m_coreSpinner.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				setCoreId(m_coreSpinner.getSelection());
+			}			
+		});
+
+		createControlLabel(composite, "NodeId:");
+		m_nodeSpinner = new Spinner(composite, SWT.BORDER);
+		m_nodeSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		m_nodeSpinner.setMinimum(0);
+		m_nodeSpinner.setMaximum(0);
+		m_nodeSpinner.setEnabled(false);
+		m_nodeSpinner.setSelection(0);
+		m_nodeSpinner.setIncrement(1);
+		m_nodeSpinner.setPageIncrement(4);
+		m_nodeSpinner.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				setNodeId(m_nodeSpinner.getSelection());
+			}			
+		});
+
+		ExpandItem barItem = new ExpandItem(bar, SWT.NONE, 0);
 	    barItem.setText("Settings");
 	    barItem.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
 	    barItem.setControl(composite);

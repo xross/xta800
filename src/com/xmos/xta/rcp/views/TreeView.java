@@ -19,6 +19,7 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
+import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.XtaRouteInfo;
 import com.xmos.xta.rcp.nodes.Node;
@@ -52,7 +53,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		
 		m_treeViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
-				XtaDisplayer.getInstance().notifyDoubleClick(m_treeViewer.getSelection());
+				XtaDisplayer.getInstance().notifySetFocus(m_treeViewer.getSelection());
 			}
 		});
 	 	
@@ -66,11 +67,11 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("Tree: propertyChange: %s\n", event.getProperty());	
 		
-		if (event.getProperty().equals("DisplayRoute")) {
+		if (event.getProperty().equals(Displayer.NOTIFY_DISPLAY_ROUTE)) {
 			initialiseTree();
-		} else if (event.getProperty().equals("LoadExecutable")) {
+		} else if (event.getProperty().equals(Displayer.NOTIFY_LOAD_EXECUTABLE)) {
 			clearTree();
-		} else if (event.getProperty().equals("UpdateState")) {
+		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_STATE)) {
 			refreshTree();
 		}
 	}
