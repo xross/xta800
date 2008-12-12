@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader.Architecture;
+import com.xmos.xta.engine.InstructionExecption.Error;
 import com.xmos.xta.engine.resources.Resources;
 import com.xmos.xta.engine.resources.Thread;
 
@@ -79,7 +80,12 @@ public class MachineState {
     	return m_arch;
     }
     
+    private int m_memoryBase;
+    private int m_memorySize;
+    
     private void initialiseMemory(MemoryImage memoryImage) {
+    	m_memoryBase = memoryImage.getMemoryBase();
+    	m_memorySize = memoryImage.getMemorySize();
     	m_memory.blockWrite(memoryImage.getCpStart(), memoryImage.getCpEnd()-memoryImage.getCpStart(), memoryImage);
     	m_memory.blockWrite(memoryImage.getDpStart(), memoryImage.getDpEnd() - memoryImage.getDpStart(), memoryImage);
 		
@@ -177,26 +183,18 @@ public class MachineState {
         return m_branchTaken;
     }
 
-    void branch(boolean b, Expression guard, Expression branchTarget) {
+    void branch(boolean b, Expression guard, Expression branchTarget) throws Exception {
         m_branchTargetExpression = branchTarget;
-        try {
-			branchTarget.resolve();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		branchTarget.resolve();
         m_wasBranch = true;
         m_wasBranchResolved = branchTarget.isResolved();
         if (m_wasBranchResolved) {
-            try {
-				guard.resolve();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			guard.resolve();
             m_guardExpression = guard;
             m_branchTarget = branchTarget.getValue();
+            if(!is16bitAligned(m_branchTarget) || !isWithinMemory(m_branchTarget)){
+            	throw new InstructionExecption(Error.ET_ILLEGAL_PC);
+            }
             if (guard.isResolved()) {
                 if (guard.getValue() == 0) {
                     m_branchTaken = b ? BranchState.NOTTAKEN : BranchState.TAKEN;
@@ -212,32 +210,47 @@ public class MachineState {
 
     }
 
-    void jump(Expression jumpTarget) {
-        try {
-			jumpTarget.resolve();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    void jump(Expression jumpTarget) throws Exception{
+		jumpTarget.resolve();
         m_wasJump = true;
         m_branchTargetExpression = jumpTarget;
         m_wasJumpResolved = jumpTarget.isResolved();
         if (m_wasJumpResolved) {
-            
             m_jumpTarget = jumpTarget.getValue();
+            if(!is16bitAligned(m_jumpTarget) || !isWithinMemory(m_jumpTarget)){
+            	throw new InstructionExecption(Error.ET_ILLEGAL_PC);
+            }
             m_jumpTaken = BranchState.TAKEN;
         } else {
             m_jumpTaken = BranchState.UNKNOWN;
         }
-
     }
 
-    void eventWait(Expression expression){
+    public boolean isWithinMemory(int target) {
+		if(target >= m_memoryBase && target < m_memoryBase + m_memorySize){
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean is16bitAligned(int target) {
+		if((target & 0x1) == 0){ //maybe it's a 3
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	void eventWait(Expression expression) throws InstructionExecption{
     	m_wasEventWait = true;
     	if(expression.canResolve()){
     		m_wasEventResolved = true;
-    		
-    		m_eventTargets.add(expression.getValue());
+    		int eventTarget = expression.getValue();
+    		if(!is16bitAligned(eventTarget) || !isWithinMemory(eventTarget)){
+            	throw new InstructionExecption(Error.ET_ILLEGAL_PC);
+            }
+    		m_eventTargets.add(eventTarget);
     		assert(m_eventTargets.size()<3);
     	} else {
     		m_wasEventResolved =false;
