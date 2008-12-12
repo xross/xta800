@@ -13,7 +13,6 @@ import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader.Architecture;
 import com.xmos.xta.engine.Engine.ReferenceMode;
-import com.xmos.xta.engine.MachineState.InstructionSet;
 import com.xmos.xta.engine.Status.ExecutionStatus;
 
 public class Route {
@@ -233,6 +232,7 @@ public class Route {
 			searching.build();
 			searching = nextBlock();
 			cleanSchedule();
+			checkAbort();
 		}
 		System.gc();
 	}
@@ -384,5 +384,13 @@ public class Route {
 	public void addNewBlock(Block block){
 		m_allBlocks.add(block);
 		m_progress.setCurValue(m_allBlocks.size());
+	}
+
+	public String getStatusString() {
+	    if (functionName() != null) {
+	    	return String.format("function: %s\n", functionName());
+	    } else {
+	    	return String.format("path: %s -> %s\n",  fromRef().getRef(), toRef().getRef());
+	    }
 	}
 }

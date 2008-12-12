@@ -43,7 +43,7 @@ class Function extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-        if (!engine.analyseRoute(m_functionName, false)) {  
+        if (!engine.analyseRoute(m_functionName)) {  
          	console.display(String.format("Error: %s\n", engine.getErrorString()));
         }            
     }

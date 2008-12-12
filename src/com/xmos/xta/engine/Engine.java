@@ -25,6 +25,12 @@ public class Engine {
 		PROHIBITED,
 		REQUIRED
 	}
+
+	public enum ExpressionMode {
+		NORESOLVE,
+		RESOLVE
+	}
+	
     private XeLoader m_xeLoader;
     private XeObject m_xeObject;
     private Vector<File> m_sourceFiles;
@@ -90,22 +96,22 @@ public class Engine {
     }
     
     public boolean removeReference(ReferenceMode mode, CodeReference ref){
-    	if(mode == ReferenceMode.EXCLUSION){
+    	if (mode == ReferenceMode.EXCLUSION){
     		CodeReference cr = findReference(ref, m_exclusions);
     		if (cr==null) return false;
     		m_exclusions.remove(cr);
     		return true;
-    	} else if(mode == ReferenceMode.PROHIBITED){
+    	} else if (mode == ReferenceMode.PROHIBITED){
     		CodeReference cr = findReference(ref, m_prohibited);
     		if (cr==null) return false;
     		m_prohibited.remove(cr);
     		return true;
-    	} else if(mode == ReferenceMode.REQUIRED){
+    	} else if (mode == ReferenceMode.REQUIRED){
     		CodeReference cr = findReference(ref, m_required);
     		if (cr==null) return false;
     		m_required.remove(cr);
     		return true;
-    	} else{
+    	} else {
     		assert(false);
     		return false;
     	}
@@ -128,7 +134,7 @@ public class Engine {
     		return m_prohibited;
     	} else if (mode == ReferenceMode.REQUIRED){
     		return m_required;
-    	} else{
+    	} else {
     		assert(false);
     		return null;
     	}
@@ -210,8 +216,7 @@ public class Engine {
     	return m_progress;
     }
 
-    public boolean analyseRoute(String functionName, boolean resolveExpression) {
-    	resolveExpression = resolveExpression| m_resolveExpression;
+    public boolean analyseRoute(String functionName) {
         if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
             setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
                     m_nodeId, m_coreId, m_executableFile));        	
@@ -226,7 +231,7 @@ public class Engine {
             m_previousRoute = m_route;
             m_route = new Route(m_config, m_progress, functionName,
             		m_nodeId, m_coreId, m_instructionDecodeCache,
-            		resolveExpression);
+            		m_resolveExpression);
 
             boolean t = analyseRouteSafley();
             if (t) {
@@ -236,6 +241,9 @@ public class Engine {
             } else {
             	//restore the route
             	m_route = m_previousRoute;
+                for (Displayer displayer : m_displayers) {
+                	displayer.notify(Displayer.NOTIFY_ERROR, "");
+                }
             }
             return t;
         }
@@ -268,10 +276,9 @@ public class Engine {
     }
     
 
-    public boolean analyseRoute(String from, String to, boolean resolveExpression) {
+    public boolean analyseRoute(String from, String to) {
         CodeReference fromRef = new CodeReference(from);
         CodeReference toRef = new CodeReference(to);     
-        resolveExpression = resolveExpression| m_resolveExpression;
         if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
             setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
                     m_nodeId, m_coreId, m_executableFile));        	
@@ -289,7 +296,7 @@ public class Engine {
             m_previousRoute = m_route;                   
             m_route = new Route(m_config, m_progress, fromRef, toRef,
             		m_nodeId, m_coreId, m_instructionDecodeCache,
-            		resolveExpression);
+            		m_resolveExpression);
             boolean t = analyseRouteSafley();
             if (t) {
                 for (Displayer displayer : m_displayers) {
@@ -299,6 +306,9 @@ public class Engine {
             } else {
             	// restore the route
             	m_route = m_previousRoute;
+                for (Displayer displayer : m_displayers) {
+                	displayer.notify(Displayer.NOTIFY_ERROR, "");
+                }
             }
             return t;
         }
@@ -350,24 +360,25 @@ public class Engine {
         m_displayers.add(displayer);
     }
 
-    public void clearDisplayer(Displayer displayer){
+    public void clearDisplayer(Displayer displayer) {
         m_displayers.remove(displayer);    			
     }
 
-    public void clearDisplayers(){
+    public void clearDisplayers() {
         m_displayers.clear();
     }
 
-    public void setAbort(boolean value){
+    public void setAbort(boolean value) {
         m_abort = value;
     }
 
-    public boolean getAbort(){
+    public boolean getAbort() {
         return m_abort;
     }
 
     public void setNodeId(int nodeId) {
         m_nodeId = nodeId;
+        notifyUpdateState();
     }
 
     public int getNodeId(){
@@ -376,9 +387,10 @@ public class Engine {
 
     public void setCoreId(int coreId) {
         m_coreId = coreId;
+        notifyUpdateState();
     }
 
-    public int getCoreId(){
+    public int getCoreId() {
         return m_coreId;
     }
 
@@ -387,7 +399,7 @@ public class Engine {
         notifyUpdateState();
     }
 
-    public int getFrequency(){
+    public int getFrequency() {
         return m_config.m_frequency;
     }
 
@@ -396,15 +408,24 @@ public class Engine {
         notifyUpdateState();
     }
 
-    public int getNumThreads(){
+    public int getNumThreads() {
         return m_config.m_numThreads;
     }
 
-    public Vector<File> getFileNames(){
+	public void setResolve(boolean resolve) {
+		m_resolveExpression = resolve;
+        notifyUpdateState();
+	}
+
+	public boolean getResolve() {
+		return m_resolveExpression;
+	}
+
+    public Vector<File> getFileNames() {
         for(DebugInfo bd : m_xeLoader.getDebugInfos()){
             DebugEngine de = bd.getDebugEngine();
             for (File  fileName : de.findFiles(m_executableFile)){
-                if(!m_sourceFiles.contains(fileName)) 
+                if (!m_sourceFiles.contains(fileName)) 
                     m_sourceFiles.add(fileName);
             }
         }
@@ -433,7 +454,7 @@ public class Engine {
         boolean hit = false;
         if (m_route != null) {
             hit = m_route.setInstructionTimeTaken(pc, timeTaken);
-            if(hit) notifyUpdateState(); 
+            if (hit) notifyUpdateState(); 
         }
         else {
             setErrorString("No route currently anaylsed");    		
@@ -452,7 +473,7 @@ public class Engine {
         boolean hit = false;
         if (m_route != null) {         		    		
             hit = m_route.setInstructionNumCycles(pc, numCycles);
-            if(hit) notifyUpdateState();    
+            if (hit) notifyUpdateState();    
         }
         else {
             setErrorString("No route currently anaylsed");    		
@@ -479,16 +500,16 @@ public class Engine {
        
         int lastPc = 0;
         HashMap <Integer, ArrayList<Integer>> instructionEntryPc = new HashMap<Integer, ArrayList<Integer>>();
-        for(Function function : m_xeObject.getFunctions()){
+        for (Function function : m_xeObject.getFunctions()){
         	
-        	if(function.getChildern() != null && function.getChildern().size()>0){
+        	if (function.getChildern() != null && function.getChildern().size()>0){
 	            int functionEntry = function.getChildern().get(0).getLineNumber();
-	            for(Line assembly : function.getChildern()){
+	            for (Line assembly : function.getChildern()){
 	                int pc = assembly.getLineNumber();
 	                int opcode = getOpcode(pc, nodeId,coreId);
-	                if(m_instructionDecodeCache.decode(opcode, pc).getNmenonic().startsWith("RETSP")){
+	                if (m_instructionDecodeCache.decode(opcode, pc).getNmenonic().startsWith("RETSP")){
 	                    ArrayList<Integer> retsps = instructionEntryPc.get(functionEntry);
-	                    if(retsps==null){
+	                    if (retsps==null){
 	                        retsps = new ArrayList<Integer>();
 	                    } 
 	                    retsps.add(pc);
@@ -499,12 +520,12 @@ public class Engine {
         	}
         }
         int pc =m_xeLoader.getMemoryImage(nodeId, coreId).getMemoryBase();
-        while(pc <= lastPc){
+        while (pc <= lastPc){
             int opcode = getOpcode(pc, nodeId,coreId);
             int currentTarget = m_instructionDecodeCache.decode(opcode, pc).getBranchPcRelativeTargetPc();
-            if(currentTarget>0 && m_instructionDecodeCache.decode(opcode, pc).getNmenonic().startsWith("BL")){
-                if(instructionEntryPc.get(currentTarget)!=null){
-                    for(int targetPc : instructionEntryPc.get(currentTarget)){
+            if (currentTarget>0 && m_instructionDecodeCache.decode(opcode, pc).getNmenonic().startsWith("BL")){
+                if (instructionEntryPc.get(currentTarget)!=null){
+                    for (int targetPc : instructionEntryPc.get(currentTarget)){
                         int opcodeRetsp = getOpcode(targetPc, nodeId,coreId);
                         int pcOpcode = getOpcode(pc, nodeId,coreId);
                         XtaInstruction inst = m_instructionDecodeCache.decode(pcOpcode, pc);
@@ -605,16 +626,12 @@ public class Engine {
         return ref.resolve(engine, m_nodeId, m_coreId);
     }
 
-	public void setDynamicMode(boolean b) {
-		m_resolveExpression = b;
-	}
-
 	public void addLabel(int parseInt, String string) {
 		this.m_labels.put(parseInt, string);
 	}
 
 	public String getLabel(int pc) {
-		if(this.m_labels.containsKey(pc)){
+		if (this.m_labels.containsKey(pc)){
 			return m_labels.get(pc);
 		}
 		return null;
@@ -625,7 +642,7 @@ public class Engine {
 	}
 	
 	public int getLabelPc(String label){
-		for(int pc : m_labels.keySet()){
+		for (int pc : m_labels.keySet()){
 			if(label.equals(m_labels.get(pc))){
 				return pc;
 			}

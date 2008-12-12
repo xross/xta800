@@ -71,14 +71,8 @@ class Status extends Command {
 	    	Route route = engine.getRoute();
 	    	if (route == null) {
 	    		console.display(String.format("No Paths/Functions registered\n"));    		
-	    	}
-	    	else {
-     	        if (route.functionName() != null)
-	   	        	console.display(String.format("Loaded function: %s\n", 
-	   	                route.functionName()));
-	   	        else
-	   	        	console.display(String.format("Loaded path: %s -> %s\n", 
-	   	                route.fromRef().getRef(), route.toRef().getRef()));
+	    	} else {
+	    		console.display("Loaded " + route.getStatusString());
 	    	}
     	}
     }    

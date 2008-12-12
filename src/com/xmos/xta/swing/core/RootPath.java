@@ -210,7 +210,7 @@ public class RootPath implements RouteNode {
             public void mousePressed(MouseEvent e) {
                 String startPc = Integer.toHexString(m_rootPath.getInstructions(false).get(0).getPc());
                 String endPc = Integer.toHexString(m_rootPath.getInstructions(false).lastElement().getPc());
-                m_engine.analyseRoute(startPc, endPc, false);
+                m_engine.analyseRoute(startPc, endPc);
             }
         });
         popup.add(analysePath);
