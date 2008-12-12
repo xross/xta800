@@ -30,6 +30,7 @@ import org.eclipse.ui.part.ViewPart;
 import com.xmos.xeobject.Function;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.CodeReference;
+import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Progress;
 import com.xmos.xta.rcp.XtaDisplayer;
@@ -91,13 +92,13 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("Control: propertyChange: %s\n", event.getProperty());	
 		
-		if (event.getProperty().equals("DisplayRoute")) {
+		if (event.getProperty().equals(Displayer.NOTIFY_DISPLAY_ROUTE)) {
 	        if (m_progressUpdater != null) {
 	        	m_progressUpdater.end();
 	        }
 			m_engineStatus.setText(STATUS_DONE);
 
-		} else if (event.getProperty().equals("LoadExecutable")) {
+		} else if (event.getProperty().equals(Displayer.NOTIFY_LOAD_EXECUTABLE)) {
 			createXeObject();
             populateFunctionList();			
 	        openEditors();
@@ -107,19 +108,22 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         	m_progress.setText("0");
         	m_engineStatus.setText(STATUS_LOADED);
 
-		} else if (event.getProperty().equals("UpdateState")) {
+		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_STATE)) {
 			
-		} else if (event.getProperty().equals("SetStartPoint")) {
+		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_START_POINT)) {
 			CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();
 			m_startPoint.setText(startPoint.getRef());
 
-		} else if (event.getProperty().equals("SetEndPoint")) {
+		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_END_POINT)) {
 			CodeReference endPoint = XtaDisplayer.getInstance().getEndPoint();
 			m_endPoint.setText(endPoint.getRef());
+		} else if (event.getProperty().equals(Displayer.NOTIFY_SELECT_FUNCTION)) {
+			String functionName = XtaDisplayer.getInstance().getNotifyArgument();
+			setSelectedFunction(functionName);
 		}
 	}
 	
-    public void selectionChanged(IWorkbenchPart part, ISelection sel) {
+	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
 		if (DEBUG) System.out.printf("Control: selectionChanged\n");	
      }
 	
@@ -230,7 +234,16 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
            	m_functions.add(function.getText());
         }
     }
-    
+
+    private void setSelectedFunction(String functionName) {
+    	for (int index = 0; index < m_functions.getItemCount(); index++) {
+    		if (m_functions.getItem(index).equals(functionName)) {
+    			m_functions.select(index);
+    			break;
+    		}
+    	}
+    }
+
     private void openEditors() {
 		final IWorkbenchPage page = getSite().getWorkbenchWindow().getActivePage();
 		page.closeAllEditors(false);

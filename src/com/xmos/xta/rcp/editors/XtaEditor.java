@@ -33,6 +33,7 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
 import com.xmos.xta.engine.CodeReference;
+import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Unknown;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.engine.CodeReference.RefType;
@@ -115,24 +116,24 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("Tree: propertyChange: %s\n", event.getProperty());	
 		
-		if (event.getProperty().equals("DisplayRoute")) {
+		if (event.getProperty().equals(Displayer.NOTIFY_DISPLAY_ROUTE)) {
 			m_selectedNode = null;
 			updateFnops();
     	    updateHighlighting();
 			updateUnknowns();
-		} else if (event.getProperty().equals("LoadExecutable")) {
+		} else if (event.getProperty().equals(Displayer.NOTIFY_LOAD_EXECUTABLE)) {
 			m_selectedNode = null;
 			updateFnops();
     	    updateHighlighting();
-		} else if (event.getProperty().equals("SetStartPoint")) {
+		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_START_POINT)) {
 			CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();
 			m_startPointLine = findCodeRefLineNum(startPoint);
     	    updateHighlighting();
-		} else if (event.getProperty().equals("SetEndPoint")) {
+		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_END_POINT)) {
 			CodeReference endPoint = XtaDisplayer.getInstance().getEndPoint();
 			m_endPointLine = findCodeRefLineNum(endPoint);
     	    updateHighlighting();
-		} else if (event.getProperty().equals("ShowCodePoint")) {
+		} else if (event.getProperty().equals(Displayer.NOTIFY_SHOW_CODE_POINT)) {
 			CodeReference codePoint = XtaDisplayer.getInstance().getCodePoint();
 			showCodePoint(codePoint);
 		}

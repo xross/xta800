@@ -84,14 +84,8 @@ public class SrcDisplayer implements Displayer {
 		}        
     }
 
-	public void notifyAnalysePaths() {
+	public void notify(String message, String argument) {
 	}
-
-	public void notifyLoadExecutable() {
-	}	       
-
-    public void notifyUpdateState() {    	
-    }
     
 	private HashMap<String, TreeSet<Integer>> createSrcLinesCovered(
 			Block block, XeObject xeObject, boolean recurse) {

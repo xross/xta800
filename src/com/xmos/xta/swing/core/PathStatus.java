@@ -108,22 +108,17 @@ public class PathStatus implements Displayer {
         m_pathUpdaters.add(pathUpdater);
     }
 
-    public void notifyAnalysePaths() {
-
-    }
-
-    public void notifyLoadExecutable() {
-        m_treeModel = null;
-        for(PathUpdater pathUpdater : m_pathUpdaters){
-            pathUpdater.setSelectedPath(null, null);
-        }
-    }
-
-    public void notifyUpdateState() {
-        for(PathUpdater pathUpdater : m_pathUpdaters){
-            pathUpdater.notifyUpdateState();
-        }
-
+    public void notify(String message, String argument) {
+		if (message.equals(NOTIFY_LOAD_EXECUTABLE)) {
+	        m_treeModel = null;
+	        for (PathUpdater pathUpdater : m_pathUpdaters){
+	            pathUpdater.setSelectedPath(null, null);
+	        }
+		} else if (message.equals(NOTIFY_UPDATE_STATE)) {
+	        for (PathUpdater pathUpdater : m_pathUpdaters){
+	            pathUpdater.notifyUpdateState();
+	        }
+		}
     }
 
     public SymbolTable getSymbolTable(){

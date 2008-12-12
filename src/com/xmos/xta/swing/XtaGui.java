@@ -286,16 +286,13 @@ public class XtaGui implements Displayer {
             MemoryImage memoryImage, SymbolTable table) {
     }
 
-    public void notifyAnalysePaths() {      
+    public void notify(String message, String argument) {
+    	if (message.equals(NOTIFY_LOAD_EXECUTABLE)) {
+            buildGui(); 
+    	} else if (message.equals(NOTIFY_UPDATE_STATE)) {
+            m_routeTree.getPanel().repaint();
+    	}
     }
-
-    public void notifyLoadExecutable() {
-        buildGui(); 
-    }
-
-    public void notifyUpdateState() { 
-        m_routeTree.getPanel().repaint();
-    }    
 
     public void registerConsole(ConsoleTextArea console) {
     	m_consoles.add(console);

@@ -55,26 +55,23 @@ public class UnknownDisplayer implements Displayer {
         }
     }
 
-    public void notifyAnalysePaths() {
-        m_listModel.clear();
-    }
-
-    public void notifyLoadExecutable() { 
-        m_listModel.clear();
-    }
-
-    public void notifyUpdateState() {
-        if(m_route==null){
-            return;
-        }
-        m_unknowns = m_route.getUnknowns();
-        m_listModel.clear();
-        for(Unknown unknown : m_unknowns){
-            m_listModel.addElement(unknown);
-        }
-        m_unknownList.repaint();
-    }
-
+	public void notify(String message, String argument) {
+		if (message.equals(NOTIFY_ANALYSE_PATHS) ||
+				message.equals(NOTIFY_LOAD_EXECUTABLE)) {
+			m_listModel.clear();
+		} else if (message.equals(NOTIFY_UPDATE_STATE)) {
+	        if (m_route==null){
+	            return;
+	        }
+	        m_unknowns = m_route.getUnknowns();
+	        m_listModel.clear();
+	        for (Unknown unknown : m_unknowns){
+	            m_listModel.addElement(unknown);
+	        }
+	        m_unknownList.repaint();
+		}
+	}
+	
     public JPanel getUnknownPanel() {
         return m_panel;
     }

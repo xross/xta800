@@ -189,7 +189,7 @@ public class Engine {
             //addBranchTargets();
             m_route = null;
             for (Displayer displayer : m_displayers)
-                displayer.notifyLoadExecutable();
+                displayer.notify(Displayer.NOTIFY_LOAD_EXECUTABLE, executableFile);
             
         } else {
             setErrorString("The file '" + executableFile + "'could not be found.");	        
@@ -202,7 +202,7 @@ public class Engine {
     	m_pathQueries.clear();
         boolean success = m_xeLoader.loadExecutable(xeHandler);
         for (Displayer displayer : m_displayers)
-            displayer.notifyLoadExecutable();
+            displayer.notify(Displayer.NOTIFY_LOAD_EXECUTABLE, "");
         return success;
     }
 
@@ -229,7 +229,11 @@ public class Engine {
             		resolveExpression);
 
             boolean t = analyseRouteSafley();
-            if (t == false){
+            if (t) {
+                for (Displayer displayer : m_displayers) {
+                	displayer.notify(Displayer.NOTIFY_SELECT_FUNCTION, functionName);
+                }
+            } else {
             	//restore the route
             	m_route = m_previousRoute;
             }
@@ -287,7 +291,12 @@ public class Engine {
             		m_nodeId, m_coreId, m_instructionDecodeCache,
             		resolveExpression);
             boolean t = analyseRouteSafley();
-            if (t == false) {
+            if (t) {
+                for (Displayer displayer : m_displayers) {
+                	displayer.notify(Displayer.NOTIFY_SET_START_POINT, from);
+                	displayer.notify(Displayer.NOTIFY_SET_END_POINT, to);
+                }
+            } else {
             	// restore the route
             	m_route = m_previousRoute;
             }
@@ -522,7 +531,7 @@ public class Engine {
 
     void notifyUpdateState() {
         for (Displayer displayer : m_displayers)
-            displayer.notifyUpdateState();
+            displayer.notify(Displayer.NOTIFY_UPDATE_STATE, "");
     }
 
     private boolean analyseRoute() throws Exception {
@@ -534,7 +543,7 @@ public class Engine {
         }
 
         for (Displayer displayer : m_displayers)
-            displayer.notifyAnalysePaths();    	
+            displayer.notify(Displayer.NOTIFY_ANALYSE_PATHS, "");    	
 
         int nodeId = m_route.getNodeId();
         int coreId = m_route.getCoreId();
