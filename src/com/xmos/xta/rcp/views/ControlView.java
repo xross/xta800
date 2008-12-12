@@ -8,7 +8,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -20,6 +19,7 @@ import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
@@ -66,11 +66,15 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     private Label m_engineStatus;
     private Label m_progress;
     
+    private MemoryUpdater m_memoryUpdater;
+    private Group m_memoryGroup;
+    private ProgressBar m_memoryUsage;
+    
     private Button m_resolveExpressions;
     private Spinner m_freqSpinner;
     private Spinner m_threadSpinner;
-    private Spinner m_coreSpinner;
-    private Spinner m_nodeSpinner;
+    private Combo m_nodeIds;
+    private Combo m_coreIds;
     
     private volatile ProgressUpdater m_progressUpdater;
 
@@ -92,6 +96,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    createStatusBar(bar);
 	    createControlBar(bar);
 	    bar.setSpacing(8);
+	    
+	    m_memoryUpdater = new MemoryUpdater(m_memoryGroup, m_memoryUsage);
+	    m_memoryUpdater.start();
 	}
 	
 	public void setFocus() {
@@ -134,6 +141,12 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
 		if (DEBUG) System.out.printf("Control: selectionChanged\n");	
      }
+	
+	public void dispose() {
+		if (m_memoryUpdater != null) {
+			m_memoryUpdater.end();
+		}
+	}
 	
     public void executeLoad() {				
 		if (DEBUG) System.out.printf("Control: executeLoad\n");	
@@ -215,12 +228,20 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		XtaEngine.getEngine().setNumThreads(numThreads);
 	}
 
-	public void setCoreId(int coreId) {
-		XtaEngine.getEngine().setCoreId(coreId);
+	public void setNodeId(String string) {
+        try {
+        	int nodeId = Integer.parseInt(string); 
+        	XtaEngine.getEngine().setNodeId(nodeId);
+        } catch (NumberFormatException e) {
+        }    	        
 	}
 
-	public void setNodeId(int nodeId) {
-		XtaEngine.getEngine().setNodeId(nodeId);
+	public void setCoreId(String string) {
+        try {
+        	int coreId = Integer.parseInt(string); 
+        	XtaEngine.getEngine().setCoreId(coreId);
+        } catch (NumberFormatException e) {
+        }    	        
 	}
 
 	public void setResolve(boolean resolve) {
@@ -234,11 +255,37 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 		m_threadSpinner.setSelection(XtaEngine.getEngine().getNumThreads());
 
-		m_coreSpinner.setMaximum(XtaEngine.getEngine().getCoreId());
-		m_coreSpinner.setSelection(XtaEngine.getEngine().getCoreId());
+		updateNodeIds();
+		updateCoreIds();
+	}
+	
+	private void updateNodeIds() {
+		m_nodeIds.removeAll();
 
-		m_nodeSpinner.setMaximum(XtaEngine.getEngine().getNodeId());
-		m_nodeSpinner.setSelection(XtaEngine.getEngine().getNodeId());
+		int selectedNodeId = XtaEngine.getEngine().getNodeId();
+		int index = 0;
+		for (Integer nodeId : XtaEngine.getEngine().getXeLoader().getNodeIds()) {
+			m_nodeIds.add(String.format("%d", nodeId));
+			
+			if (nodeId == selectedNodeId)
+				m_nodeIds.select(index);
+			index++;
+		}
+	}
+
+	private void updateCoreIds() {
+		m_coreIds.removeAll();
+
+		int selectedNodeId = XtaEngine.getEngine().getNodeId();
+		int selectedCoreId = XtaEngine.getEngine().getCoreId();
+		int index = 0;
+		for (Integer coreId : XtaEngine.getEngine().getXeLoader().getCoreIds(selectedNodeId)) {
+			m_coreIds.add(String.format("%d", coreId));
+			
+			if (coreId == selectedCoreId)
+				m_coreIds.select(index);
+			index++;
+		}
 	}
 
     private void createXeObject() {
@@ -378,6 +425,49 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         }
     }
     
+    class MemoryUpdater extends Thread {
+        private Group m_memoryGroup;
+        private ProgressBar m_memoryUsage;
+
+        public MemoryUpdater(final Group memoryGroup, final ProgressBar memoryUsage) {
+        	m_memoryGroup = memoryGroup;
+        	m_memoryUsage = memoryUsage;
+        }
+
+        public void end() {
+        	m_memoryUpdater = null;
+        }
+
+        public void run() {
+        	Thread thisThread = Thread.currentThread();
+
+        	int refreshRate = 50;
+        	int i = 0;
+            while (m_memoryUpdater == thisThread) {
+            	if (i == 0) {
+	            	m_display.asyncExec(new Runnable() {
+	        			public void run() {
+	        				System.gc();
+	        				double max = Runtime.getRuntime().maxMemory();
+	        				double total = Runtime.getRuntime().totalMemory();
+	        				double free = Runtime.getRuntime().freeMemory();
+	        				int usage = (int)(((total - free) / max) * 100);
+	                    	m_memoryGroup.setText(String.format("Memory used %d%%", usage));
+	        				m_memoryUsage.setSelection(usage);
+	        			}});
+            	}
+
+            	try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                i = (i + 1) % refreshRate;
+            }
+        }
+    }
+    
 	private void createControlBar(ExpandBar bar) {
 		Composite composite = getBarComposite(bar, 3);
 
@@ -393,12 +483,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	private void createFileControl(Composite composite) {
-	    Group group = new Group(composite, SWT.SHADOW_ETCHED_IN);
-	    GridLayout layout = new GridLayout();
-	    group.setText("File");
-	    group.setLayout(layout);
-	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-
+		Group group = createGroup(composite, "File", 1, 2);
 	    m_fileName = new Text(group, SWT.SINGLE);
 	    m_fileName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	    m_fileName.setText("");
@@ -412,16 +497,10 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 				executeLoad();
 			}			
 		});
-
 	}
 	
 	private void createFunctionControl(Composite composite) {
-	    Group group = new Group(composite, SWT.SHADOW_ETCHED_IN);
-	    GridLayout layout = new GridLayout();
-	    group.setText("Function");
-	    group.setLayout(layout);
-	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-
+		Group group = createGroup(composite, "Function", 1, 2);
 	    m_functions = new Combo(group, SWT.NONE | SWT.DROP_DOWN | SWT.READ_ONLY);
 	    m_functions.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
@@ -437,25 +516,15 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	private void createPathControl(Composite composite) {
-		int numColumns = 2;
-	    Group group = new Group(composite, SWT.SHADOW_ETCHED_IN);
-	    GridLayout layout = new GridLayout();
-	    layout.numColumns = numColumns;
-	    group.setLayout(layout);
-	    group.setText("Path");
-	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-	    
-	    Group startGroup = new Group(group, SWT.SHADOW_ETCHED_IN);
-	    startGroup.setLayout(new FillLayout());
-	    startGroup.setText("From");
-	    startGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		Group group = createGroup(composite, "Path", 2, 2);
+
+		Group startGroup = createGroup(group, "From", 1, 1);
 	    m_startPoint = new Text(startGroup, SWT.SINGLE | SWT.CENTER);
-	
-	    Group endGroup = new Group(group, SWT.SHADOW_ETCHED_IN);
-	    endGroup.setLayout(new FillLayout());
-	    endGroup.setText("To");
-	    endGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    m_startPoint.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		
+	    Group endGroup = createGroup(group, "To", 1, 1);
 	    m_endPoint = new Text(endGroup, SWT.SINGLE | SWT.CENTER);
+	    m_endPoint.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	
 	    Button findStartButton = new Button(group, SWT.PUSH);
 	    findStartButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
@@ -490,22 +559,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		});
 	}
 
-	private void createControlLabel(Composite parent, String str) {
-		Label label = new Label(parent, SWT.NONE);		        
-	    label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-        label.setText(str);
-	}
-
 	private void createStatusBar(ExpandBar bar) {
 		Composite composite = getBarComposite(bar, 3);
 
-	    Group group = new Group(composite, SWT.SHADOW_ETCHED_IN);
-	    GridLayout layout = new GridLayout();
-	    group.setLayout(layout);
-	    group.setText("Engine status");
-	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-
-		m_engineStatus = new Label(group, SWT.SHADOW_NONE | SWT.CENTER);
+		Group engineGroup = createGroup(composite, "Engine status", 1, 2);
+		m_engineStatus = new Label(engineGroup, SWT.SHADOW_NONE | SWT.CENTER);
 		m_engineStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		m_engineStatus.setText(STATUS_EMPTY);
 
@@ -519,25 +577,22 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			}
 		});
 
-		Group progressGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
-	    GridLayout progressLayout = new GridLayout();
-	    progressGroup.setLayout(progressLayout);
-	    progressGroup.setText("Blocks analysed");
-	    progressGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
-
+		Group progressGroup = createGroup(composite, "Blocks analysed", 1, 3);
 	    m_progress = new Label(progressGroup, SWT.SHADOW_NONE | SWT.CENTER);
 	    m_progress.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	    m_progress.setText("0");
 
-		Group currentGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
-	    GridLayout currentLayout = new GridLayout();
-	    currentGroup.setLayout(currentLayout);
-	    currentGroup.setText("Currently analysed");
-	    currentGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
-
+		Group currentGroup = createGroup(composite, "Currently analysed", 1, 3);
 	    m_currentRoute = new Text(currentGroup, SWT.SINGLE);
 	    m_currentRoute.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	    m_currentRoute.setText("");
+
+		m_memoryGroup = createGroup(composite, "Memory used", 1, 3);
+	    m_memoryUsage = new ProgressBar(m_memoryGroup, SWT.SMOOTH | SWT.HORIZONTAL);
+	    m_memoryUsage.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    m_memoryUsage.setMaximum(0);
+	    m_memoryUsage.setMaximum(100);
+	    m_memoryUsage.setSelection(0);
 
 	    ExpandItem barItem = new ExpandItem(bar, SWT.NONE, 0);
 	    barItem.setText("Status");
@@ -549,8 +604,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	private void createSettingsBar(ExpandBar bar) {
 		Composite composite = getBarComposite(bar, 2);
 
-		createControlLabel(composite, "Resolve expressions:");
-		m_resolveExpressions = new Button(composite, SWT.CHECK);
+		Group resolveGroup = createGroup(composite, "Resolve expressions", 1, 2);
+		m_resolveExpressions = new Button(resolveGroup, SWT.CHECK);
 		m_resolveExpressions.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		m_resolveExpressions.setSelection(XtaEngine.getEngine().getResolve());		
 		m_resolveExpressions.addSelectionListener(new SelectionAdapter() {
@@ -559,8 +614,26 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			}			
 		});
 	 	
-		createControlLabel(composite, "Frequency:");
-		m_freqSpinner = new Spinner(composite, SWT.BORDER);
+		Group nodeGroup = createGroup(composite, "Node", 1, 1);
+	    m_nodeIds = new Combo(nodeGroup, SWT.NONE | SWT.DROP_DOWN | SWT.READ_ONLY);
+	    m_nodeIds.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    m_nodeIds.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				setNodeId(m_nodeIds.getText());
+			}			
+		});
+
+		Group coreGroup = createGroup(composite, "Core", 1, 1);
+	    m_coreIds = new Combo(coreGroup, SWT.NONE | SWT.DROP_DOWN | SWT.READ_ONLY);
+	    m_coreIds.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    m_coreIds.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				setCoreId(m_coreIds.getText());
+			}			
+		});
+
+		Group freqGroup = createGroup(composite, "Frequency", 1, 1);
+	    m_freqSpinner = new Spinner(freqGroup, SWT.BORDER);
 		m_freqSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		m_freqSpinner.setMinimum(1);
 		m_freqSpinner.setMaximum(10000);
@@ -573,8 +646,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			}			
 		});
 
-		createControlLabel(composite, "Num Threads:");
-		m_threadSpinner = new Spinner(composite, SWT.BORDER);
+		Group threadsGroup = createGroup(composite, "Num threads", 1, 1);
+		m_threadSpinner = new Spinner(threadsGroup, SWT.BORDER);
 		m_threadSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		m_threadSpinner.setMinimum(1);
 		m_threadSpinner.setMaximum(8);
@@ -587,41 +660,21 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			}			
 		});
 		
-		createControlLabel(composite, "CoreId:");
-		m_coreSpinner = new Spinner(composite, SWT.BORDER);
-		m_coreSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		m_coreSpinner.setMinimum(0);
-		m_coreSpinner.setMaximum(0);
-		m_coreSpinner.setEnabled(false);
-		m_coreSpinner.setSelection(0);
-		m_coreSpinner.setIncrement(1);
-		m_coreSpinner.setPageIncrement(4);
-		m_coreSpinner.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				setCoreId(m_coreSpinner.getSelection());
-			}			
-		});
-
-		createControlLabel(composite, "NodeId:");
-		m_nodeSpinner = new Spinner(composite, SWT.BORDER);
-		m_nodeSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		m_nodeSpinner.setMinimum(0);
-		m_nodeSpinner.setMaximum(0);
-		m_nodeSpinner.setEnabled(false);
-		m_nodeSpinner.setSelection(0);
-		m_nodeSpinner.setIncrement(1);
-		m_nodeSpinner.setPageIncrement(4);
-		m_nodeSpinner.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				setNodeId(m_nodeSpinner.getSelection());
-			}			
-		});
-
 		ExpandItem barItem = new ExpandItem(bar, SWT.NONE, 0);
 	    barItem.setText("Settings");
 	    barItem.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
 	    barItem.setControl(composite);
 	    barItem.setExpanded(true);
+	}
+
+	private Group createGroup(Composite parent, String description, int numColumns, int span) {
+		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
+	    GridLayout layout = new GridLayout();
+	    layout.numColumns = numColumns;
+	    group.setLayout(layout);
+	    group.setText(description);
+	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, span, 1));
+	    return group;
 	}
 
 	private Composite getBarComposite(ExpandBar bar, int numColumns) { 
