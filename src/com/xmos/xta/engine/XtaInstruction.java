@@ -19,9 +19,7 @@ public abstract class XtaInstruction extends Instruction {
 	private static final boolean m_debug = false;
 	private static final boolean m_uninplimented = true;
   
-	
-	
-	
+
 	String m_functionName;
     int m_functionOffset;	
     Attributes m_numCycles;
@@ -184,7 +182,8 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: BLACP\n", getPc());	
     	Expression branchTarget = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.DEFINED);
-    	branchTarget.addOperand(state.getConstPoolRegister(thread));
+    	Expression cp = state.getConstPoolRegister(thread);
+    	branchTarget.addOperand(cp);
     	branchTarget.addOperand(state.m_op1); 	
     	state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
     	state.jump(branchTarget);
@@ -541,7 +540,7 @@ public abstract class XtaInstruction extends Instruction {
             	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
             }
         } else {
-        	throw new Exception("RESOURCE");
+        	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
         } 
     }
 
@@ -650,14 +649,17 @@ public abstract class XtaInstruction extends Instruction {
     	if (state.m_op1.getValue() != 0) {     		
             Expression stackPointer = state.getStackPointerRegister(thread);
             Expression wordOffset = new Expression(state.m_op1.getValue() << Instruction.BYTES_PER_WORD_LOG2);
-
 	        if (stackPointer.canResolve()) {
                 // The address is resolvable so we can go ahead and 
 	    	    // store the link register expression on the stack.    	        
 	            stackPointer.resolve();
-                state.writeMemory(stackPointer.getValue(), state.getLinkRegister(thread));   
+	            
+	            int address = stackPointer.getValue();
+	            if(!state.isWithinMemory(address) || !state.is16bitAligned(address) ){
+	            	throw new InstructionExecption(Error.ET_LOAD_STORE);
+	            }
+                state.writeMemory(address, state.getLinkRegister(thread));   
 	        }        
-        
             Expression newStackPointer = new Expression(Expression.OperatorType.SUB);
             newStackPointer.addOperand(stackPointer);
             newStackPointer.addOperand(wordOffset);        	
@@ -952,27 +954,42 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: LD16S\n", getPc());	
     	
+    	Expression address = new Expression(OperatorType.ADD);
     	
-    	if(state.m_op2.canResolve() && state.m_op3.canResolve()){
-    		int base = state.m_op2.getValue();
-    		int offset = state.m_op3.getValue();
-    		int address = base + offset;
-    		state.m_op1 = state.readShort(address);
+    	Expression offset = new Expression(OperatorType.SHL);
+    	offset.addOperand(state.m_op3);
+    	offset.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2/2));
+    	
+    	address.addOperand(state.m_op2);
+    	address.addOperand(offset);
+    	
+    	if(address.canResolve()){
+    		if(!state.isWithinMemory(address.getValue())){
+    			throw new InstructionExecption(Error.ET_LOAD_STORE);
+    		}
+    		state.m_op1 = state.readShort(address.getValue());
     	} else {
-    		state.m_op1 = new Expression(state.m_op1Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+    		state.m_op1 = new Expression(0,0,Expression.Type.MEMORY, Expression.Status.UNDEFINED);
     	}
+
     }
 
     void LD8U(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: LD8U\n", getPc());	
-    	if(state.m_op2.canResolve() && state.m_op3.canResolve()){
-    		int base = state.m_op2.getValue();
-    		int offset = state.m_op3.getValue();
-    		int address = base + offset;
-    		state.m_op1 = state.readByte(address);
+
+    	Expression address = new Expression(OperatorType.ADD);
+    	
+    	address.addOperand(state.m_op2);
+    	address.addOperand(state.m_op3);
+    	
+    	if(address.canResolve()){
+    		if(!state.isWithinMemory(address.getValue())){
+    			throw new InstructionExecption(Error.ET_LOAD_STORE);
+    		}
+    		state.m_op1 = state.readShort(address.getValue());
     	} else {
-    		state.m_op1 = new Expression(state.m_op1Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+    		state.m_op1 = new Expression(0,0,Expression.Type.MEMORY, Expression.Status.UNDEFINED);
     	}
 
     }
@@ -980,27 +997,31 @@ public abstract class XtaInstruction extends Instruction {
     void LDA16B(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDA16B\n", getPc());	
-    	if(state.m_op2.canResolve() && state.m_op3.canResolve()){
-    		int base = state.m_op2.getValue();
-    		int offset = state.m_op3.getValue();
-    		int address = base - offset;
-    		state.m_op1 = new Expression(address);
-    	} else {
-    		state.m_op1 = new Expression(state.m_op1Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
-    	}
+    	Expression result = new Expression(OperatorType.SUB);
+    	
+    	Expression offset = new Expression(OperatorType.SHL);
+    	offset.addOperand(state.m_op3);
+    	offset.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2/2));
+    	
+    	result.addOperand(state.m_op2);
+    	result.addOperand(offset);
+    	
+    	state.m_op1 = result;
     }
 
     void LDA16F(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDA16F\n", getPc());	
-    	if(state.m_op2.canResolve() && state.m_op3.canResolve()){
-    		int base = state.m_op2.getValue();
-    		int offset = state.m_op3.getValue() << (Instruction.BYTES_PER_WORD_LOG2/2);
-    		int address = base + offset;
-    		state.m_op1 = new Expression(address);
-    	} else {
-    		state.m_op1 = new Expression(state.m_op1Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
-    	}
+    	Expression result = new Expression(OperatorType.ADD);
+    	
+    	Expression offset = new Expression(OperatorType.SHL);
+    	offset.addOperand(state.m_op3);
+    	offset.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2/2));
+    	
+    	result.addOperand(state.m_op2);
+    	result.addOperand(offset);
+    	
+    	state.m_op1 = result;
     }
 
     void LDAPB(MachineState state, int thread) throws Exception {
@@ -1016,7 +1037,6 @@ public abstract class XtaInstruction extends Instruction {
     void LDAPF(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDAPF\n", getPc());	
-    	
     	assert(state.m_op1.canResolve());
     	int offset = state.m_op1.getValue();
     	int nextPc = state.getPc(thread) + getNumBytes();
@@ -1027,20 +1047,16 @@ public abstract class XtaInstruction extends Instruction {
     void LDAWB(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDAWB\n", getPc());	
-    	if (state.m_op2.canResolve() && state.m_op3.canResolve()) {
-    	    // The address is resolvable so we can read the expression from 'memory'
-    		
-    	    state.m_op2.resolve();
-            state.m_op3.resolve();
-            int base = state.m_op2.getValue();
-            int offset = state.m_op3.getValue() << Instruction.BYTES_PER_WORD_LOG2;
-            int address  = base - offset;
-            state.m_op1 = new Expression(address) ;  
-    	}
-    	else
-    	{  	    
-    	    state.m_op1 = new Expression(state.m_op1Fld, 0, Expression.Type.MEMORY, Expression.Status.UNDEFINED);  	
-    	}
+    	Expression result = new Expression(OperatorType.SUB);
+    	
+    	Expression offset = new Expression(OperatorType.SHL);
+    	offset.addOperand(state.m_op3);
+    	offset.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2));
+    	
+    	result.addOperand(state.m_op2);
+    	result.addOperand(offset);
+    	
+    	state.m_op1 = result;
     }
 
     void LDAWDP(MachineState state, int thread) throws Exception {

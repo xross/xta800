@@ -233,7 +233,6 @@ public class Block implements Comparable<Block> {
 			opcode = m_bc.getMemoryImage().readInstructionWord(pc);
 		} catch (Exception e) {
 			setStatus(BlockStatus.ERROR);
-			m_errorString = "Tried to address invalid PC (0x"+Integer.toHexString(pc)+")";
 			releaseMemory();
 			return;
 		}
@@ -245,9 +244,9 @@ public class Block implements Comparable<Block> {
 		int instNumBytes = instruction.getNumBytes();
 
 		handleIBuffer(instNumBytes, pc);
-		if (instruction.canPause()) {
-			addUnknown(instruction);
-		}
+		//if (instruction.canPause()) {
+		//	addUnknown(instruction);
+		//}
 
 		try {
 			instruction.execute(m_machineState, m_currentThread);

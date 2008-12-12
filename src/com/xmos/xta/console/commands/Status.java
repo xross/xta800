@@ -62,6 +62,7 @@ class Status extends Command {
     	    	
     	Progress progress = engine.getProgress();
     	if (progress.getState() != Progress.State.IDLE) {
+    		
     		console.display(String.format("Currently busy: %s (%d/%d)\n", 
     				progress.getDescription(), 
     				progress.getCurValue(), 

@@ -45,6 +45,7 @@ class Function extends Command {
 
         if (!engine.analyseRoute(m_functionName, false)) {  
          	console.display(String.format("Error: %s\n", engine.getErrorString()));
-        }            
+        }  
+        assert(true);
     }
 }

@@ -139,6 +139,7 @@ public class Route {
 		stepPath();
 		filterPaths();
 		sortPaths();
+		
 		return m_status;
 	}
 
