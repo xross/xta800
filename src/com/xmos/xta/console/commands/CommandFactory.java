@@ -22,7 +22,6 @@ public class CommandFactory {
 		new Config(),
 		new Help(), 
 		new Exit(),
-		new Mode(),
 		new TimeBound(),
 		new CycleBound(),
 		new Label(),

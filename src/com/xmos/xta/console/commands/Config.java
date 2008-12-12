@@ -10,6 +10,7 @@ class Config extends Command {
 		new Freq(), 
 		new Threads(), 
 		new Iterations(), 
+		new Mode(), 
 	};
 	
 	Command m_option;
