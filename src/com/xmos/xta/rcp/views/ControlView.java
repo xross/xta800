@@ -577,15 +577,15 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			}
 		});
 
-		Group progressGroup = createGroup(composite, "Blocks analysed", 1, 3);
-	    m_progress = new Label(progressGroup, SWT.SHADOW_NONE | SWT.CENTER);
-	    m_progress.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    m_progress.setText("0");
-
 		Group currentGroup = createGroup(composite, "Currently analysed", 1, 3);
 	    m_currentRoute = new Text(currentGroup, SWT.SINGLE);
 	    m_currentRoute.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	    m_currentRoute.setText("");
+
+		Group progressGroup = createGroup(composite, "Blocks analysed", 1, 3);
+	    m_progress = new Label(progressGroup, SWT.SHADOW_NONE | SWT.CENTER);
+	    m_progress.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    m_progress.setText("0");
 
 		m_memoryGroup = createGroup(composite, "Memory used", 1, 3);
 	    m_memoryUsage = new ProgressBar(m_memoryGroup, SWT.SMOOTH | SWT.HORIZONTAL);
