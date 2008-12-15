@@ -16,7 +16,6 @@
   [-]config <option> <arg0> <arg1>...: Configures the given option
   [-]help [command]: Displays help message for the given command
   [-]exit: Quits the shell
-  [-]mode <mode type> : sets the engine into STATIC or DYNAMIC mode
   [-]timebound <int (ns)> : returns PASS of FAIL if the worst case is less than the time bound
   [-]cyclebound <int (cycles)> : returns PASS of FAIL if the worst case is less than the cycle bound
   [-]label <CodeRef> <label>: adds a label to the given pc

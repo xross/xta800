@@ -24,11 +24,6 @@ AESFILESBASIC	=	$(AES_SOURCE_DIR)$(SLASH)AES.xc \
 				$(AES_SOURCE_DIR)$(SLASH)sBoxInv.xc \
 				$(AES_SOURCE_DIR)$(SLASH)sBox.xc \
 
-AESFILESASSEMBLY = $(AES_SOURCE_DIR)$(SLASH)Decrypt.S \
-				$(AES_SOURCE_DIR)$(SLASH)Encrypt.S \
-				$(AES_SOURCE_DIR)$(SLASH)InvKeyExpansion.S \
-				$(AES_SOURCE_DIR)$(SLASH)KeyExpansion.S \
-
 AESFILESXC = $(AES_SOURCE_DIR)$(SLASH)Decrypt.xc \
 				$(AES_SOURCE_DIR)$(SLASH)Encrypt.xc \
 				$(AES_SOURCE_DIR)$(SLASH)InvKeyExpansion.xc \
@@ -37,10 +32,7 @@ AESFILESXC = $(AES_SOURCE_DIR)$(SLASH)Decrypt.xc \
 
 INCLUDES 	= -I $(AES_SOURCE_DIR) \
 
-all: assembly xc
-
-assembly:
-	xcc $(AESFILESBASIC) $(AESFILESASSEMBLY) -o $(TARGETNAME)_assembly.xe \
+all: xc
 				
 xc:
 	xcc -O2 $(AESFILESBASIC) $(AESFILESXC) -o $(TARGETNAME)_xc.xe \

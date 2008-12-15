@@ -71,7 +71,6 @@ while (<INFILE>) {
                         $line =~ s/ (.)+//;
                         print OUTFILE "$line";
                 }
-                #print OUTFILE "$line";
         }       
 }
 close(INFILE);

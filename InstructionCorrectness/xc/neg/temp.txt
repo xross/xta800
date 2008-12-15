@@ -1,0 +1,10 @@
+  0x100c8 main + 0               --FNOP--                    
+  0x100c8 main + 0               ENTSP_u6     i 0x4          
+  0x100ca main + 2               LDC_ru6      r0, i 0x4      
+  0x100cc main + 4               LDWCP_lru6   r11, cp[i 0x0] 
+  0x100d0 main + 8               --FNOP--                    
+  0x100d0 main + 8               EQ_2rus      r0, r0, i 0x0  
+  0x100d2 main + 10              EQ_3r        r0, r0, r11    
+  0x100d4 main + 12              BRFT_ru6     r0, i 0x2      
+  0x100d6 main + 14              BRFU_u6      i 0x2          
+  0x100da main + 18              RETSP_u6     i 0x4          
