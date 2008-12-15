@@ -141,6 +141,10 @@ public class Expression {
 	}
 	
 	boolean canResolve(Expression expression) {
+		if(expression == null) {
+			assert(false);
+			return false;
+		}
 		if (expression.m_type != null) {
 			return expression.m_type == Type.IMMEDIATE;
 		}

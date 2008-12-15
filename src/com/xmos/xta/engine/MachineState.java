@@ -227,7 +227,7 @@ public class MachineState {
     }
 
     public boolean isWithinMemory(int target) {
-		if(target >= m_memoryBase && target < m_memoryBase + m_memorySize){
+		if(target >= m_memoryBase && target <= m_memoryBase + m_memorySize){
 			return true;
 		} else {
 			return false;
@@ -235,7 +235,7 @@ public class MachineState {
 	}
 
 	public boolean is16bitAligned(int target) {
-		if((target & 0x1) == 0){ //maybe it's a 3
+		if((target & 0x1) == 0){ 
 			return true;
 		} else {
 			return false;

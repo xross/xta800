@@ -3,7 +3,6 @@ package com.xmos.xta.console.commands;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Engine.ExpressionMode;
 
 class Mode extends Command {
 	boolean m_resolve;
