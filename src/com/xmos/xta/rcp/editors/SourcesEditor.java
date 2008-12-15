@@ -51,14 +51,16 @@ public class SourcesEditor extends MultiPageEditorPart {
 	protected void createPages() {		
 		if (DEBUG) System.out.printf("Sources: createPages\n");	
         try {
-        	XtaEditor disassemblyEditor = new XtaEditor();
+        	XtaEditor disassemblyEditor = new XtaEditor(XtaDocumentPartitioner.DISASSEMBLY,
+        			"Disassembly");
         	IEditorInput disassemblyEditorInput = new InputDisassembly();
 			int index = addPage(disassemblyEditor, disassemblyEditorInput);
 			setPageText(index, "Disassembly");
         	
 			XeObject xeObject = XtaEngine.getEngine().getXeObject();
 	        for (SourceFile sourceFile : xeObject.getSourceFiles()) {       	        	
-	        	XtaEditor sourceEditor = new XtaEditor();
+	        	XtaEditor sourceEditor = new XtaEditor(XtaDocumentPartitioner.SOURCE,
+	        			sourceFile.getFile().getName());
 	        	IEditorInput sourceEditorInput = new InputSource(sourceFile);
 	    		index = addPage(sourceEditor, sourceEditorInput);
 		    	setPageText(index, sourceFile.getFile().getName());

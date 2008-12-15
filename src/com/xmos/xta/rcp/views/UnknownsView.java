@@ -17,6 +17,7 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
+import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Unknown;
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.XtaRouteInfo;
@@ -58,7 +59,7 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 	    
 	    m_tableViewer.setContentProvider(contentProvider);				
 	    m_tableViewer.setLabelProvider(labelProvider);
-	    
+	    updateDisplay();
 		getSite().getPage().addSelectionListener(this);
 	}
 
@@ -70,9 +71,9 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("Unknowns: propertyChange: %s\n", event.getProperty());		
 		
-		if (event.getProperty().equals("DisplayRoute")) {
+		if (event.getProperty().equals(Displayer.NOTIFY_DISPLAY_ROUTE)) {
 			updateDisplay();
-		} else if (event.getProperty().equals("LoadExecutable")) {
+		} else if (event.getProperty().equals(Displayer.NOTIFY_LOAD_EXECUTABLE)) {
 			m_tableViewer.setInput(null);
 		} 
 	}

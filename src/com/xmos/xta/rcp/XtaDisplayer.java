@@ -11,7 +11,9 @@ import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.Block;
+import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.engine.Displayer;
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.rcp.nodes.BlockNode;
 import com.xmos.xta.rcp.nodes.LoopNode;
@@ -26,10 +28,19 @@ public class XtaDisplayer implements Displayer {
 	private ArrayList<IPropertyChangeListener> m_listeners;
 	private XtaRouteInfo m_routeInfo;
 
-	private ISelection m_doubleClickSelection;
-	
+	private ISelection m_focusSelection;
+	private CodeReference m_startPoint;
+	private CodeReference m_endPoint;
+	private CodeReference m_codePoint;
+	private String m_notifyArgument;
+
 	private XtaDisplayer() {
 		m_listeners = new ArrayList<IPropertyChangeListener>();
+		
+		m_startPoint = null;
+		m_endPoint = null;
+		m_codePoint = null;
+		m_notifyArgument = null;
 	}
 	
 	public static XtaDisplayer getInstance() {
@@ -58,29 +69,52 @@ public class XtaDisplayer implements Displayer {
 			MemoryImage memoryImage, SymbolTable table) {		
 		if (DEBUG) System.out.printf("XtaDisplayer: displayRoute\n");		
 		createHierarchy(route, debugInfo, memoryImage, table);
-		broadcastPropertyChange(new PropertyChangeEvent(this, "DisplayRoute", null, null));
+		broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_DISPLAY_ROUTE, null, null));
 	}
 
-	public void notifyAnalysePaths() {
-		if (DEBUG) System.out.printf("XtaDisplayer: notifyAnalysePaths\n");
-		broadcastPropertyChange(new PropertyChangeEvent(this, "AnalysePaths", null, null));
+	public void notify(String message, String argument) {
+		if (DEBUG) System.out.printf("XtaDisplayer: notify %s (%s)\n", message, argument);
+
+		if (message.equals(NOTIFY_SET_START_POINT)) {
+			notifySetStartPoint(new CodeReference(argument));
+		} else if (message.equals(NOTIFY_SET_END_POINT)) {
+			notifySetEndPoint(new CodeReference(argument));
+		} else {
+			m_notifyArgument = argument;
+			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
+		}
 	}
 
-	public void notifyLoadExecutable() {
-		if (DEBUG) System.out.printf("XtaDisplayer: notifyLoadExecutable\n");
-		broadcastPropertyChange(new PropertyChangeEvent(this, "LoadExecutable", null, null));
-	}
+	public void notifySetFocus(ISelection selection) {
+		if (DEBUG) System.out.println("XtaDisplayer: notifySetFocus " + selection);
+		m_focusSelection = selection;
+		broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_SET_FOCUS, null, null));
+	}	
 
-	public void notifyUpdateState() {
-		if (DEBUG) System.out.printf("XtaDisplayer: notifyUpdateState\n");
-		broadcastPropertyChange(new PropertyChangeEvent(this, "UpdateState", null, null));
+	public void notifySetStartPoint(CodeReference startPoint) {
+		if (DEBUG) System.out.printf("XtaDisplayer: notifySetStartPoint\n");
+		Engine engine = XtaEngine.getEngine();
+		startPoint.resolve(engine, engine.getNodeId(), engine.getCoreId());
+		if (startPoint.isResolved()) {
+			m_startPoint = startPoint;
+			broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_SET_START_POINT, null, null));
+		}
 	}
 		
-	public void notifyDoubleClick(ISelection selection) {
-		if (DEBUG) System.out.println("XtaDisplayer: notifyDoubleState " + selection);
-		m_doubleClickSelection = selection;
-		broadcastPropertyChange(new PropertyChangeEvent(this, "DoubleClick", null, null));
-	}	
+	public void notifySetEndPoint(CodeReference endPoint) {
+		if (DEBUG) System.out.printf("XtaDisplayer: notifySetStartPoint\n");
+		Engine engine = XtaEngine.getEngine();
+		endPoint.resolve(engine, engine.getNodeId(), engine.getCoreId());
+		if (endPoint.isResolved()) {
+			m_endPoint = endPoint;
+			broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_SET_END_POINT, null, null));
+		}
+	}
+
+	public void notifyShow(CodeReference codePoint) {
+		m_codePoint = codePoint;
+		broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_SHOW_CODE_POINT, null, null));
+	}
 
 	public void broadcastPropertyChange(final PropertyChangeEvent event) {			
 		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
@@ -95,10 +129,26 @@ public class XtaDisplayer implements Displayer {
 		return m_routeInfo;
 	}
 	
-	public ISelection getDoubleClickSelection() {
-		return m_doubleClickSelection;
+	public ISelection getFocusSelection() {
+		return m_focusSelection;
 	}
 	
+	public CodeReference getStartPoint() {
+		return m_startPoint;
+	}
+	
+	public CodeReference getEndPoint() {
+		return m_endPoint;
+	}
+
+	public CodeReference getCodePoint() {
+		return m_codePoint;
+	}
+	
+	public String getNotifyArgument() {
+		return m_notifyArgument;
+	}
+
 	private void createHierarchy(Route route, DebugInfo debugInfo,
 			MemoryImage memoryImage, SymbolTable table) {		
         RouteNode routeNode = new RouteNode();

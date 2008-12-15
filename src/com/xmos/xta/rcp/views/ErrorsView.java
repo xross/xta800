@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
 
+import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.XtaErrorLog;
 
@@ -48,7 +49,7 @@ public class ErrorsView extends ViewPart implements IPropertyChangeListener {
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("Errors: propertyChange: %s\n", event.getProperty());
 		
-		if (event.getProperty().equals("Error")) {
+		if (event.getProperty().equals(Displayer.NOTIFY_ERROR)) {
 			updateDisplay();
 		}
 	}

@@ -47,7 +47,7 @@ class Path extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-        if (!engine.analyseRoute(m_fromRef, m_toRef, false)) {
+        if (!engine.analyseRoute(m_fromRef, m_toRef)) {
         	console.display(String.format("Error: %s\n", engine.getErrorString()));
         }
     }   

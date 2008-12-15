@@ -2,7 +2,6 @@ package com.xmos.xta.rcp.views.ViewNode;
 
 import java.util.ArrayList;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 import com.xmos.xta.rcp.nodes.Node;

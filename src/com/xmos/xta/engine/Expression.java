@@ -1,5 +1,7 @@
 package com.xmos.xta.engine;
 
+import com.xmos.xta.engine.InstructionExecption.Error;
+
 public class Expression {
 	public enum Type{
 		IMMEDIATE,
@@ -31,7 +33,16 @@ public class Expression {
 		OR,
         EQ,
         MACC_LOW,
-        MACC_HIGH,
+        MACC_HIGH, 
+        SHL,
+        SHR, 
+        REMS,
+        REMU, 
+        SEXT,
+        ZEXT, 
+        XOR,
+        MUL,
+        
 	}	
     
 	final static int MAX_NUM_OPERANDS = 6;	
@@ -100,7 +111,7 @@ public class Expression {
 	    return m_numOperands;
 	}
 	
-	void resolve() {
+	void resolve() throws Exception{
 		if ((m_numOperands > 0) && canResolve()) {
 			m_address     = 0;
 			m_value       = resolve(this);
@@ -130,6 +141,10 @@ public class Expression {
 	}
 	
 	boolean canResolve(Expression expression) {
+		if(expression == null) {
+			assert(false);
+			return false;
+		}
 		if (expression.m_type != null) {
 			return expression.m_type == Type.IMMEDIATE;
 		}
@@ -142,7 +157,7 @@ public class Expression {
 		}
 	}
 	
-	public int resolve(Expression expression) {
+	public int resolve(Expression expression) throws Exception {
 		if (expression.m_type != null) {
 			assert (expression.m_type == Type.IMMEDIATE);
 			return expression.m_value;
@@ -242,12 +257,50 @@ public class Expression {
                 assert (expression.m_numOperands == 4);
                 result = macc();
                 return (int)result;
-
+                
             case MACC_HIGH:
                 assert (expression.m_numOperands == 4);
                 result = macc();
                 return (int)(result >> 32);
-
+                
+            case SHR:
+                assert (expression.m_numOperands == 2);
+                return resolve(expression.m_operands[0]) >> resolve(expression.m_operands[1]);
+		
+            case SHL:
+                assert (expression.m_numOperands == 2);
+                return resolve(expression.m_operands[0]) << resolve(expression.m_operands[1]);
+                
+            case REMS:
+            	assert (expression.m_numOperands == 2);
+            	int remsA = resolve(expression.m_operands[0]);
+            	int remsB = resolve(expression.m_operands[1]);
+            	if(remsB == 0){
+            		throw new Exception("ET_ARITHMETIC");
+            	}
+                return rems(remsA, remsB);
+                
+            case REMU:
+            	assert (expression.m_numOperands == 2);
+            	int remuA = resolve(expression.m_operands[0]);
+            	int remuB = resolve(expression.m_operands[1]);
+            	if(remuB == 0){
+            		throw new Exception("ET_ARITHMETIC");
+            	}
+                return remu(remuA, remuB);
+                
+            case SEXT:
+            	assert (expression.m_numOperands == 2);
+            	return sext(resolve(expression.m_operands[0]),resolve(expression.m_operands[1]));
+            case ZEXT:
+            	assert (expression.m_numOperands == 2);
+            	return zext(resolve(expression.m_operands[0]),resolve(expression.m_operands[1]));
+            case XOR:
+            	assert (expression.m_numOperands == 2);
+            	return resolve(expression.m_operands[0]) ^ resolve(expression.m_operands[1]);
+            case MUL:
+            	assert (expression.m_numOperands == 2);
+            	return (int) (resolve(expression.m_operands[0]) * resolve(expression.m_operands[1]));
             default:
             	assert false;
                 return 0;
@@ -255,126 +308,36 @@ public class Expression {
 		}		
 	}
 	
-	
-	 int resolveMax(Expression expression) {
-	    
-	    if(expression.canResolve()){
-	        return expression.resolve(expression);
-	    }
-	        
-        if (expression.m_type != null) {
-            assert (expression.m_type == Type.IMMEDIATE);
-            return expression.m_value;
+	private final int zext(int x, int n) {
+        if (n == 0) {
+            return x;   // FIXME - not in documentation
         }
-        else {
-            long result = 0;
-            
-            switch (expression.m_operator) {
-            case ADD:
-                assert (expression.m_numOperands == 2);
-                return resolveMax(expression.m_operands[0]) + resolveMax(expression.m_operands[1]);
-
-            case SUB:               
-                assert (expression.m_numOperands == 2);
-                return resolveMax(expression.m_operands[0]) - resolveMax(expression.m_operands[1]);
-
-            case AND: 
-                assert (expression.m_numOperands == 2);
-                return resolveMax(expression.m_operands[0]) & resolveMax(expression.m_operands[1]);
-
-            case ANDNOT:
-                assert (expression.m_numOperands == 2);
-                return resolveMax(expression.m_operands[0]) & ~resolveMax(expression.m_operands[1]);
-
-            case ASHR:  
-                assert (expression.m_numOperands == 2);
-                return resolveMax(expression.m_operands[0]) >> resolveMax(expression.m_operands[1]);
-
-            case ASHL:              
-                assert (expression.m_numOperands == 2);
-                return resolveMax(expression.m_operands[0]) << resolveMax(expression.m_operands[1]);
-
-            case BITREV: 
-                assert (expression.m_numOperands == 1);
-                return XtaInstruction.bitReverse(resolveMax(expression.m_operands[0]));
-
-            case BYTEREV:
-                assert (expression.m_numOperands == 1);
-                return XtaInstruction.byteReverse(resolveMax(expression.m_operands[0]));
-
-            case CLZ:    
-                assert (expression.m_numOperands == 1);
-                return XtaInstruction.countLeadingZeros(resolveMax(expression.m_operands[0]));
-
-            case CRC32:  
-                assert (expression.m_numOperands == 3);
-                return XtaInstruction.crc32(resolveMax(expression.m_operands[0]), 
-                        resolveMax(expression.m_operands[1]),
-                        resolveMax(expression.m_operands[2]));
-
-            case CRC8:               
-                assert (expression.m_numOperands == 3);
-                return XtaInstruction.crc8(
-                        resolveMax(expression.m_operands[0]), 
-                        resolveMax(expression.m_operands[1]),
-                        resolveMax(expression.m_operands[2]));
-
-            case DIVS:               
-                assert (expression.m_numOperands == 2);
-                return XtaInstruction.divs(
-                        resolveMax(expression.m_operands[0]), 
-                        resolveMax(expression.m_operands[1]));
-
-            case DIVU:               
-                assert (expression.m_numOperands == 2);
-                return XtaInstruction.divu(
-                        resolveMax(expression.m_operands[0]), 
-                        resolveMax(expression.m_operands[1]));
-
-            case LT:                 
-                assert (expression.m_numOperands == 2);
-                return ((resolveMax(expression.m_operands[0]) < 
-                        resolveMax(expression.m_operands[1])) == true) ? 1 : 0;
-                                    
-            case GT:                 
-                assert (expression.m_numOperands == 2);
-                return ((resolveMax(expression.m_operands[0]) > 
-                resolveMax(expression.m_operands[1])) == true) ? 1 : 0;
-
-            case NEG:                
-                assert (expression.m_numOperands == 1);
-                return -resolveMax(expression.m_operands[0]);
-
-            case NOT:                
-                assert (expression.m_numOperands == 1);
-                return ~resolveMax(expression.m_operands[0]);
-
-            case OR:                 
-                assert (expression.m_numOperands == 2);
-                return resolveMax(expression.m_operands[0]) | resolveMax(expression.m_operands[1]);
-
-            case EQ:                 
-                assert (expression.m_numOperands == 2);
-                return (resolveMax(expression.m_operands[0]) == resolveMax(expression.m_operands[1])) ? 1 : 0;
-                
-            case MACC_LOW:
-                assert (expression.m_numOperands == 4);
-                result = macc();
-                return (int)result;
-
-            case MACC_HIGH:
-                assert (expression.m_numOperands == 4);
-                result = macc();
-                return (int)(result >> 32);
-
-            default:
-                assert false;
-                return 0;
-            }               
-        }       
+        return x & ((1<<n) - 1);
     }
-    
 	
+	private int remu(int remsA, int remsB) throws InstructionExecption {
+		double d1 = ((double)(((long)remsA)&0xffffffffl));
+		double d2 = ((double)(((long)remsB)&0xffffffffl));
+        if (d2 == 0) {
+            throw new InstructionExecption(Error.ET_ARITHMETIC);
+        } else {
+            int div = (int)(d1 / d2);
+            return (int)(d1 - div * d2);
+        }
+	}
+
+	private int rems(int remsA, int remsB)throws InstructionExecption {
+		if (remsB == 0) {
+			throw new InstructionExecption(Error.ET_ARITHMETIC);
+        } else {
+            if (remsB < 0 && remsA < 0 && remsA/remsB < 0 ) { // overflow on /
+            	throw new InstructionExecption(Error.ET_ARITHMETIC);
+            } else {
+                return remsA%remsB;
+            }
+        }
+	}
+
 	private String createExpressionString(Expression expression, String exprStr) {
 		String retStr = exprStr;
 		
@@ -382,7 +345,7 @@ public class Expression {
 		 	// Terminal:
 			switch (expression.m_type) {
 			case IMMEDIATE:
-				retStr += "[i 0x" + Integer.toHexString(expression.m_value)  + "("+expression.m_value + ")]";
+				retStr += "[i 0x" + Integer.toHexString(expression.m_value)  + "(" + expression.m_value + ")]";
 				break;
 				
 			case REGISTER:
@@ -397,7 +360,7 @@ public class Expression {
 				break;
 				
 			case MEMORY:
-				assert (m_operands.length == 2);
+				assert (expression.m_numOperands == 2);
 				retStr += "m";
 				retStr = createExpressionString(expression.m_operands[0], retStr);
 				retStr = createExpressionString(expression.m_operands[1], retStr);
@@ -443,7 +406,20 @@ public class Expression {
 		return retStr;
 	}
 	
-	long macc()
+	final int sext(int x, int n) {
+        if (n > 0)
+        {
+            long signBit = (x >> (n - 1)) & 0x1;
+            long mask = 0xffffffff << n;
+            if (signBit == 1)
+              x = (int) (x | mask);
+            else
+              x = (int) (x & ~mask);
+        }
+        return x;
+    }
+	
+	long macc() throws Exception
 	{
 	    long  result = (long)resolve(m_operands[0]) * (long)resolve(m_operands[1]);
 	    result = result + (((long)resolve(m_operands[2]) << 32) | (long)resolve(m_operands[3]));

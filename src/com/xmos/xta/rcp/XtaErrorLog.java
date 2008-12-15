@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.eclipse.jface.util.PropertyChangeEvent;
 
+import com.xmos.xta.engine.Displayer;
+
 public class XtaErrorLog {
     public static final boolean DEBUG = false;	
 	
@@ -26,7 +28,7 @@ public class XtaErrorLog {
 	    if (DEBUG) System.out.printf("XtaErrorLog: addError: %s\n", errorString);    
 		m_errorStrings.add(errorString);
 		XtaDisplayer.getInstance().broadcastPropertyChange(
-				new PropertyChangeEvent(this, "Error", null, null));
+				new PropertyChangeEvent(this, Displayer.NOTIFY_ERROR, null, null));
 	}
 	
 	public List<String> getErrorStrings() {

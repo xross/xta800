@@ -86,34 +86,17 @@
             name="Unknowns"
             restorable="true">
       </view>
+      <view
+            class="com.xmos.xta.rcp.views.ControlView"
+            icon="icons/settings.png"
+            id="com.xmos.xta.rcp.views.Control"
+            name="Control"
+            restorable="true">
+      </view>
    </extension>
   
    <extension
          point="org.eclipse.ui.menus">
-      <menuContribution
-            locationURI="toolbar:com.xmos.xta.rcp.views.Tree">
-         <command
-               commandId="com.xmos.xta.rcp.tree.settings.command"
-               icon="icons/settings.png"
-               id="com.xmos.xta.rcp.tree.settings.command"
-               label="Settings"
-               style="push">
-         </command>
-         <command
-               commandId="com.xmos.xta.rcp.tree.load.command"
-               icon="icons/load.png"
-               id="com.xmos.xta.rcp.tree.load.command"
-               label="Load"
-               style="push">
-         </command>
-         <command
-               commandId="com.xmos.xta.rcp.tree.run.command"
-               icon="icons/run.png"
-               id="com.xmos.xta.rcp.tree.run.command"
-               label="Run"
-               style="push">
-         </command>
-      </menuContribution>
       <menuContribution
             locationURI="toolbar:com.xmos.xta.rcp.views.Function">
          <command
@@ -178,21 +161,6 @@
       </menuContribution>
    </extension> <extension
          point="org.eclipse.ui.commands">
-      <command
-            defaultHandler="com.xmos.xta.rcp.handlers.TreeLoadHandler"
-            id="com.xmos.xta.rcp.tree.load.command"
-            name="com.xmos.xta.rcp.tree.load.command">
-      </command>
-      <command
-            defaultHandler="com.xmos.xta.rcp.handlers.TreeRunHandler"
-            id="com.xmos.xta.rcp.tree.run.command"
-            name="com.xmos.xta.rcp.tree.run.command">
-      </command>
-      <command
-            defaultHandler="com.xmos.xta.rcp.handlers.TreeSettingsHandler"
-            id="com.xmos.xta.rcp.tree.settings.command"
-            name="com.xmos.xta.rcp.tree.settings.command">
-      </command>
       <command
             defaultHandler="com.xmos.xta.rcp.handlers.StructureZoomInHandler"
             id="com.xmos.xta.rcp.structure.zoomin.command"

@@ -233,7 +233,6 @@ public class Block implements Comparable<Block> {
 			opcode = m_bc.getMemoryImage().readInstructionWord(pc);
 		} catch (Exception e) {
 			setStatus(BlockStatus.ERROR);
-			m_errorString = "Tried to address invalid PC (0x"+Integer.toHexString(pc)+")";
 			releaseMemory();
 			return;
 		}
@@ -245,13 +244,37 @@ public class Block implements Comparable<Block> {
 		int instNumBytes = instruction.getNumBytes();
 
 		handleIBuffer(instNumBytes, pc);
-		if (instruction.canPause()) {
-			addUnknown(instruction);
-		}
+		//if (instruction.canPause()) {
+		//	addUnknown(instruction);
+		//}
 
-		instruction.execute(m_machineState, m_currentThread);
+		try {
+			instruction.execute(m_machineState, m_currentThread);
+		} catch (InstructionExecption e) {
+			if(m_bc.isResolveExpressions()){
+				//die when we wont be able to be sure of everything anymore
+				setStatus(BlockStatus.UNRESOLVED);
+				String reason  = e.getMessage();
+				Unresolved unresolved = new Unresolved(this, instruction, reason);
+				m_route.addUnresolvedPath(unresolved);
+				releaseMemory();
+			return;
+			} else {
+				//continue on if not fatal
+				if(e.isFatal()){
+					setStatus(BlockStatus.UNRESOLVED);
+					String reason  = e.getMessage();
+					Unresolved unresolved = new Unresolved(this, instruction, reason);
+					m_route.addUnresolvedPath(unresolved);
+					releaseMemory();
+				} else {
+					//addUnknown(instruction);
+				}
+			}
+			
+			
+		}
 		addInstruction(instruction);
-		//dumpState(m_machineState);
 		
 		if (isComplete(instruction, pc)) {
 			setStatus(BlockStatus.COMPLETE);
@@ -356,29 +379,6 @@ public class Block implements Comparable<Block> {
 
 		m_firstStep = false;
 		instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
-	}
-	
-	private void dumpState(MachineState state) {
-		Registers reg = state.getResources().getThread(m_currentThread).getRegisters();
-		
-		for(int i=0;i<4;i++){
-			String s = "";
-			for(int j=0;j<4;j++){
-				
-				s+= "reg " + (i*4 +j) + " ";
-				if(reg.getRegisters()[i*4 +j].canResolve()){
-					
-					s+= "0x" + String.format("%8x", reg.getRegisters()[i*4 +j].getValue()) +" ";
-				} else {
-					s+= "-----------";
-				}
-				s+="\t";
-				
-			}
-			System.out.println(s);
-		}
-		return;
-		
 	}
 
 	private void addUnknown(XtaInstruction inst) {

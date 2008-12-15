@@ -135,7 +135,7 @@ public class ToolBar extends JPanel {
         } else 
             System.err.println("no end point");
 
-        RunEngineMethodRef m = new RunEngineMethodRef(start, end, m_checkBox.isSelected());
+        RunEngineMethodRef m = new RunEngineMethodRef(start, end);
         m.start();
 
     }
@@ -145,15 +145,13 @@ public class ToolBar extends JPanel {
     class RunEngineMethodFunc extends Thread
     {
         String m_functionName;
-        private boolean m_full;
 
         RunEngineMethodFunc(String functionName, boolean full) {
             m_functionName = functionName;
-            m_full = full;
         }
 
         public void run() {
-            if (!m_engine.analyseRoute(m_functionName, m_full))
+            if (!m_engine.analyseRoute(m_functionName))
                 System.err.println(m_engine.getErrorString());
         }
     }
@@ -162,16 +160,14 @@ public class ToolBar extends JPanel {
     {
         String m_startRef;
         String m_endRef;
-        private boolean m_full;
 
-        RunEngineMethodRef(String startRef, String endRef, boolean full) {
+        RunEngineMethodRef(String startRef, String endRef) {
             m_startRef = startRef;
             m_endRef = endRef;
-            m_full = full;
         }
 
         public void run() {        	
-            if (!m_engine.analyseRoute(m_startRef, m_endRef, m_full))
+            if (!m_engine.analyseRoute(m_startRef, m_endRef))
                 System.err.println(m_engine.getErrorString());
         }
     }    

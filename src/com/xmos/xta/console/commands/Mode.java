@@ -5,15 +5,16 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 
 class Mode extends Command {
-	boolean dynamicMode;
+	boolean m_resolve;
 
 	Mode() {
-		dynamicMode = false;
+		m_resolve = false;
 	}
 	
 	Mode(boolean mode) {
-		dynamicMode = mode;
+		m_resolve = mode;
 	}
+	
     public int numArgs() {
     	return 1;
     }        
@@ -23,15 +24,15 @@ class Mode extends Command {
     }        
 
     public String commandLine() {
-    	if(dynamicMode){
-    		return "mode: dynamic";
+    	if (m_resolve){
+    		return "mode RESOLVE";
     	} else {
-    		return "mode: static";
+    		return "mode NORESOLVE";
     	}
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "mode <mode type> : sets the engine into STATIC or DYNAMIC mode";      	
+        return "mode <mode type> : sets the engine into RESOLVE or NORESOLVE mode";      	
     }
 
     public Command clone(String[] args, int index, boolean commandLineMode) {
@@ -39,17 +40,17 @@ class Mode extends Command {
     	
 		if ((index + numArgs()) >= args.length) 
 			return null;		
-		if(args[index +1].equals("DYNAMIC")){
+		if(args[index +1].equals("RESOLVE")){
 			return new Mode(true);
-		} else if(args[index +1].equals("STATIC")){
+		} else if(args[index +1].equals("NORESOLVE")){
 			return new Mode(false);
 		} 
-		return new Mode(dynamicMode);
+		return new Mode(m_resolve);
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
-        engine.setDynamicMode(dynamicMode);                
+        engine.setResolve(m_resolve);                
    }    
 }

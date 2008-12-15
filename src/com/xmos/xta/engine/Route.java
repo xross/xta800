@@ -11,6 +11,7 @@ import java.util.Vector;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
+import com.xmos.xeloader.XeLoader.Architecture;
 import com.xmos.xta.engine.Engine.ReferenceMode;
 import com.xmos.xta.engine.Status.ExecutionStatus;
 
@@ -48,7 +49,10 @@ public class Route {
 	private InstructionAttributes m_instructionAttributes;
 	private boolean m_resolveExpressions;
 
-	Route(Config config, CodeReference fromRef, CodeReference toRef, int nodeId, int coreId, InstructionDecodeCache instructionDecodeCache, boolean resolveExpressions) {
+	Route(Config config, Progress progress, CodeReference fromRef, CodeReference toRef,
+			int nodeId, int coreId, InstructionDecodeCache instructionDecodeCache,
+			boolean resolveExpressions) {
+		m_progress = progress;
 		m_fromRef = fromRef;
 		m_toRef = toRef;
 		m_resolveExpressions = resolveExpressions;
@@ -57,15 +61,14 @@ public class Route {
 
 	}
 
-	Route(Config config, String functionName, int nodeId, int coreId, InstructionDecodeCache instructionDecodeCache, boolean resolveExpressions) {
+	Route(Config config, Progress progress, String functionName,
+			int nodeId, int coreId, InstructionDecodeCache instructionDecodeCache,
+			boolean resolveExpressions) {
+		m_progress = progress;
 		m_functionName = functionName;
 		m_instructionDecodeCache = instructionDecodeCache;
 		m_resolveExpressions = resolveExpressions;
 		initialise(config, nodeId, coreId);
-	}
-
-	public void setCurrentValue(int numPaths) {
-		m_progress.setCurValue(numPaths);
 	}
 
 	public ArrayList<Unknown> getUnknowns() {
@@ -120,9 +123,11 @@ public class Route {
 
 		Stack<TreeSet<Integer>> context = new Stack<TreeSet<Integer>>();
 		context.push(new TreeSet<Integer>());
+		Architecture arch = m_engine.getXeLoader().getArchitecture() ;
+		MachineState initialState = new MachineState(symbolTable, memoryImage, arch);
 
-		MachineState initialState = new MachineState(symbolTable, memoryImage);
-
+		
+		
 		BlockCommonComponents bc = null;
 
 		if (m_functionName != null) {
@@ -139,7 +144,7 @@ public class Route {
 		stepPath();
 		filterPaths();
 		sortPaths();
-		m_progress.resetState(Progress.State.IDLE, 0);
+		m_progress.setState(Progress.State.IDLE);
 		return m_status;
 	}
 
@@ -214,7 +219,6 @@ public class Route {
 		m_executionStates = new ArrayList<ExecutionState>();
 		m_schedule = new LinkedList<ExecutionState>();
 		m_status = RouteStatus.COMPLETED;
-		m_progress = new Progress(Progress.State.IDLE, 0, 0);
 		++m_numRoutes;
 	}
 
@@ -228,6 +232,7 @@ public class Route {
 			searching.build();
 			searching = nextBlock();
 			cleanSchedule();
+			checkAbort();
 		}
 		System.gc();
 	}
@@ -280,8 +285,7 @@ public class Route {
 		m_completePaths.add(endBlock);
 	}
 	
-	public void filterPaths(){
-		
+	public void filterPaths() {
 		ArrayList<Block> toRemove = new ArrayList<Block>();
 		
 		ArrayList<Integer> exclusions = new ArrayList<Integer>();
@@ -315,7 +319,6 @@ public class Route {
 		}
 		m_completePaths.removeAll(toRemove);
 		m_removedPaths.addAll(toRemove);
-		
 	}
 	
 	
@@ -380,6 +383,14 @@ public class Route {
 	
 	public void addNewBlock(Block block){
 		m_allBlocks.add(block);
+		m_progress.setCurValue(m_allBlocks.size());
 	}
 
+	public String getStatusString() {
+	    if (functionName() != null) {
+	    	return String.format("function: %s\n", functionName());
+	    } else {
+	    	return String.format("path: %s -> %s\n",  fromRef().getRef(), toRef().getRef());
+	    }
+	}
 }

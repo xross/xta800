@@ -5,6 +5,7 @@ import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.IFolderLayout;
 
 import com.xmos.xta.rcp.views.ConsoleView;
+import com.xmos.xta.rcp.views.ControlView;
 import com.xmos.xta.rcp.views.ErrorsView;
 import com.xmos.xta.rcp.views.UnknownsView;
 import com.xmos.xta.rcp.views.FlowView;
@@ -17,7 +18,7 @@ public class XtaPerspective implements IPerspectiveFactory {
 
 	public void createInitialLayout(IPageLayout layout) {
         if (DEBUG) System.out.printf("XtaPerspective: createInitialLayout\n");
-				
+
         IFolderLayout viewsFolder = layout.createFolder(
         		"views.folder", IPageLayout.BOTTOM, 0.5f, layout.getEditorArea());        
         
@@ -27,7 +28,11 @@ public class XtaPerspective implements IPerspectiveFactory {
         addView(layout, viewsFolder, FunctionView.ID);
         addView(layout, viewsFolder, StructureView.ID);
         addView(layout, viewsFolder, FlowView.ID);
-               
+				
+        IFolderLayout controlFolder = layout.createFolder(
+        		"control.folder", IPageLayout.LEFT, 0.5f, layout.getEditorArea());        
+        addView(layout, controlFolder, ControlView.ID);
+
         IFolderLayout treeFolder = layout.createFolder(
         		"tree.folder", IPageLayout.LEFT, 0.5f, layout.getEditorArea());        
         addView(layout, treeFolder, TreeView.ID);

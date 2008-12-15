@@ -38,6 +38,7 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
+import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.XtaRouteInfo;
 import com.xmos.xta.rcp.nodes.Node;
@@ -56,6 +57,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     protected Node m_doubleClickNode;
     protected XtaRouteInfo m_routeInfo;
     
+    private boolean m_refreshing;
     protected double m_scale;
     protected boolean m_scaleY;
     protected int m_lineWidth;
@@ -84,6 +86,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    m_selectedNode = null;
 
 		m_scale = 1.0;
+		m_refreshing = false;
 	}
 
 	/*
@@ -134,7 +137,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("ZoomedCanvasView: propertyChange: %s\n", event.getProperty());			
 
-		if (event.getProperty().equals("DisplayRoute")) {
+		if (event.getProperty().equals(Displayer.NOTIFY_DISPLAY_ROUTE)) {
 	    	if (m_toolTip != null  && !m_toolTip.isDisposed ()) {
 				m_toolTip.dispose ();
 	    	}
@@ -142,17 +145,17 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    	buildClickAreas();
 			annotateTree(false);
 			refreshView();
-		} else if (event.getProperty().equals("LoadExecutable")) {
+		} else if (event.getProperty().equals(Displayer.NOTIFY_LOAD_EXECUTABLE)) {
 			clearTree();
 			refreshView();
-		} else if (event.getProperty().equals("UpdateState")) {
+		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_STATE)) {
 	    	if (m_toolTip != null  && !m_toolTip.isDisposed ()) {
 				m_toolTip.dispose ();
 	    	}
 			annotateTree(false);
 			refreshView();
-		} else if (event.getProperty().equals("DoubleClick")) {
-			ISelection sel = XtaDisplayer.getInstance().getDoubleClickSelection();
+		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_FOCUS)) {
+			ISelection sel = XtaDisplayer.getInstance().getFocusSelection();
 	        if (sel instanceof IStructuredSelection) {	            
 	            Object object = ((IStructuredSelection)sel).getFirstElement();
 	            if (object instanceof Node) {
@@ -232,11 +235,16 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	 * Structure view methods 
 	 */
 	protected void refreshView() {
-		m_display.asyncExec(new Runnable() {
+		if (m_refreshing)
+			return;
+		
+		m_display.syncExec(new Runnable() {
 			public void run() {
+				m_refreshing = true;
 				prepareCanvas();
 				m_scrollArea.redraw();
 				m_canvas.redraw();
+				m_refreshing = false;
 			}});
 	}
 
@@ -353,7 +361,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    	    		m_selectedNode = node.getTreeNode();
 	    	    		ISelection selection = new StructuredSelection(m_selectedNode);
 	    	    		setSelection(selection);
-	    				XtaDisplayer.getInstance().notifyDoubleClick(selection);
+	    				XtaDisplayer.getInstance().notifySetFocus(selection);
 	    				return;
 	    			}
 	    		}

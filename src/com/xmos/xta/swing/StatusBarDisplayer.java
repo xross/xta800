@@ -50,12 +50,14 @@ public class StatusBarDisplayer implements Displayer {
 
     }
 
-    public void notifyAnalysePaths() {
-        m_status = "Analysing Route"; 
-        m_textArea.setText(m_status);
-        ProgressPoller poller = new ProgressPoller(m_engine, m_parentFrame);
-        poller.start();
-    }
+	public void notify(String message, String argument) {
+		if (message.equals(NOTIFY_ANALYSE_PATHS)) {
+	        m_status = "Analysing Route"; 
+	        m_textArea.setText(m_status);
+	        ProgressPoller poller = new ProgressPoller(m_engine, m_parentFrame);
+	        poller.start();
+		}
+	}
 
     class ProgressPoller extends Thread {
         private Engine                 m_engine;
@@ -108,14 +110,6 @@ public class StatusBarDisplayer implements Displayer {
                 }
             }
         }
-    }
-
-
-
-    public void notifyLoadExecutable() {
-    }	       
-
-    public void notifyUpdateState() {    
     }
 
     public JPanel getPanel(){

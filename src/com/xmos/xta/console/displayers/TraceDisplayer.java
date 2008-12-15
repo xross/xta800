@@ -71,14 +71,8 @@ public class TraceDisplayer implements Displayer {
     	}
     }
 
-	public void notifyAnalysePaths() {
+	public void notify(String message, String argument) {
 	}
-
-	public void notifyLoadExecutable() {
-	}	       
-
-    public void notifyUpdateState() {    	
-    }
 	
     private void tracePaths(ArrayList<Block> arrayList, SymbolTable symbolTable, 
     		String title, CodeReference fromRef, CodeReference toRef) {
