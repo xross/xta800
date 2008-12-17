@@ -13,11 +13,12 @@ main:
   bu call
 
 .align 4
+aligned:
+.skip 2,0
 call:
-   bl test
+  bl test
   # A misaligned long instruction
   xor r0, r0, r0
-
   retsp 1
 
 .type test, @function

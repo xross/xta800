@@ -12,30 +12,82 @@ _start:
 .globl main
 main:
   entsp 0
+  # initialise data pointer
   ldap r11, data
-  bu empty0
-empty0:
-  ldw r0, r11[0]
-  ldw r0, r11[0]
-  
-  ldc r0, 0
-  ldw r0, r11[0]
-  .align 4
-align0:
+  bu test0
 
-.skip 2, 0
-  ldc r0, 0
-  
-  bu empty1
-empty1:
-  ldc r0, 0
-  ldc r0, 0
-  #ldw sould get blocked
+.align 4
+test0:
+  add r0, r0, r0
+  add r0, r0, r0
+  add r0, r0, r0
   ldw r0, r11[0]
-  .align 4
-align1:
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  bu test1
 
-.skip 2, 0
-  ldc r0,0
-  
+.align 4
+test1:
+  add r0, r0, r0
+  add r0, r0, r0
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  bu test2
+
+.align 4
+test2:
+  add r0, r0, r0
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  bu test3
+
+.align 4
+test3:
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  bu test4
+
+.align 4
+test4:
+  ldw r0, r11[0]
+  add r0, r0, r0
+  add r0, r0, r0
+  add r0, r0, r0
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  bu test5
+
+.align 4
+test5:
+  ldw r0, r11[0]
+  add r0, r0, r0
+  add r0, r0, r0
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  bu test6
+
+.align 4
+test6:
+  ldw r0, r11[0]
+  add r0, r0, r0
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+  ldw r0, r11[0]
+
   retsp 0

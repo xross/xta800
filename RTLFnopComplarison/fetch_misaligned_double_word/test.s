@@ -12,13 +12,11 @@ main:
   ldc r0, 1
   bu call
 
-.align 2
+.align 4
 call:
   bl test
-  
   # A misaligned long instruction
   xor r0, r0, r0
-
   retsp 1
 
 .type test, @function

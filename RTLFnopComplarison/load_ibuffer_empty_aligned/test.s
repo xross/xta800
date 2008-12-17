@@ -14,6 +14,8 @@ main:
   entsp 0
   ldap r11, data
   bu empty
+
+.align 4
 empty:
   ldw r0, r11[0]
   ldw r0, r11[0]

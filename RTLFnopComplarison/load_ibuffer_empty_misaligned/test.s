@@ -17,7 +17,6 @@ main:
 
 .align 4
 align:
-
 .skip 2, 0
 empty:
   ldw r0, r11[0]
