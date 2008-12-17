@@ -2,6 +2,9 @@ package com.xmos.xta.rcp.views;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
@@ -92,8 +95,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    m_display = m_parent.getDisplay();
 
 	    ExpandBar bar = new ExpandBar(m_parent, SWT.V_SCROLL);
-//	    FillLayout layout = new FillLayout();
-//	    bar.setLayout(layout);
 
 	    createControlBar(bar);
 	    createStatusBar(bar);
@@ -148,9 +149,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	public void dispose() {
 		if (m_memoryUpdater != null) {
 			m_memoryUpdater.end();
+			m_memoryUpdater = null;
 		}
 		if (m_progressUpdater != null) {
 			m_progressUpdater.end();
+			m_progressUpdater = null;
 		}
 	}
 	
@@ -340,6 +343,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	private void setDone(String status) {
         if (m_progressUpdater != null) {
         	m_progressUpdater.end();
+        	m_progressUpdater = null;
         }
     	m_engineStatus.setText(status);
 	}
