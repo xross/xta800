@@ -8,6 +8,8 @@ import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.IWhitespaceDetector;
 import org.eclipse.jface.text.rules.IWordDetector;
+import org.eclipse.jface.text.rules.NumberRule;
+import org.eclipse.jface.text.rules.PatternRule;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
@@ -29,6 +31,8 @@ public class ScannerSource extends RuleBasedScanner {
     	processStrings(display, rules);
     	processKeywords(display, rules);
     	processPragmas(display, rules);
+    	processNumbers(display, rules);
+    	processComments(display, rules);
     	
     	IRule[] rulesArray = new IRule[rules.size()];
     	rulesArray = rules.toArray(rulesArray);    	
@@ -79,6 +83,19 @@ public class ScannerSource extends RuleBasedScanner {
     private void processPragmas(Display display, List<IRule> rules) {
     	Color color = display.getSystemColor(SWT.COLOR_RED);
     	IToken token = new Token(new TextAttribute(color));
-    	rules.add(new SingleLineRule("#pragma", null, token));    	
+    	rules.add(new PatternRule("#", null, token, ' ', true));    	
+    }    
+
+    private void processNumbers(Display display, List<IRule> rules) {
+    	Color color = display.getSystemColor(SWT.COLOR_RED);
+    	IToken token = new Token(new TextAttribute(color));
+    	rules.add(new NumberRule(token));
+    }
+
+    private void processComments(Display display, List<IRule> rules) {
+    	Color color = display.getSystemColor(SWT.COLOR_DARK_GREEN);
+    	IToken token = new Token(new TextAttribute(color));
+    	rules.add(new PatternRule("/*", "*/", token, ' ', false));    	
+    	rules.add(new PatternRule("//", null, token, '\0', true));    	
     }    
 }
