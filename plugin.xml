@@ -17,7 +17,7 @@
             class="com.xmos.xta.rcp.XtaPerspective"
             icon="icons/xta.png"
             id="com.xmos.xta.rcp.XtaPerspective"
-            name="com.xmos.xta.rcp.XtaPerspective">
+            name="Xta">
       </perspective>
    </extension>
    <extension
