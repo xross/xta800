@@ -19,7 +19,7 @@ open(OUTFILE, ">$suite.log.expect") or die "Can't open file to write";
 close(OUTFILE);
 
 if (!$noBuild) {
-        system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/$suite.log 2>&1");
+        system("xcc -march=xs1b -g test.xc test.s -o $genDir/test.xe > $genDir/$suite.log 2>&1");
 }
 
 system("@ARGV load $genDir/test.xe " .

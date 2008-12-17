@@ -7,7 +7,7 @@ my $arch    = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -march=$arch test.xc -o $genDir/test.xe > $genDir/config_freq.log 2>&1");
+system("xcc -march=$arch test.xc -o $genDir/test.xe > $genDir/config_mode.log 2>&1");
 }
-system("@ARGV config mode RESOLVE status exit > $genDir/config_freq.txt 2>&1");
+system("@ARGV config mode RESOLVE status exit > $genDir/config_mode.txt 2>&1");
 
