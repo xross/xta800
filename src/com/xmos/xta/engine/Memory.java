@@ -19,17 +19,17 @@ class Memory {
 	    m_memoryMap.putAll(memory.m_memoryMap);
 	}
 
-	void byteWrite(int address, Expression exp){
+	void byteWrite(int address, Expression exp) throws Exception{
 		boolean removed = needsRemoving(address, exp);
 		if(!removed) byteWrite(address, (byte) exp.getValue());
 	}
 	
-	void shortWrite(int address, Expression exp){
+	void shortWrite(int address, Expression exp) throws Exception{
 		boolean removed = needsRemoving(address, exp);
 		if(!removed) shortWrite(address , (short) exp.getValue());
 	}
 	
-	void wordWrite(int address, Expression exp){
+	void wordWrite(int address, Expression exp) throws Exception{
 		boolean removed = needsRemoving(address, exp);
 		if(!removed) wordWrite(address, exp.getValue());
 	}

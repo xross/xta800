@@ -17,6 +17,7 @@ import com.xmos.xta.engine.resources.Thread.StatusRegister;
 
 public abstract class XtaInstruction extends Instruction {
 	private static final boolean m_debug = false;
+	private static final boolean m_verbose = false;
 	private static final boolean m_uninplimented = true;
   
 
@@ -114,7 +115,7 @@ public abstract class XtaInstruction extends Instruction {
 		m_numCycles.setNumIterations(basicNumCycles);
 	}
 	
-	static Expression reverseMap(Expression value, int numRanges, int ranges[][], int mapsTo[][]) {
+	static Expression reverseMap(Expression value, int numRanges, int ranges[][], int mapsTo[][]) throws Exception {
 	    assert(value.canResolve());
 		return new Expression(Instruction.reverseMap(value.getValue(), numRanges, ranges, mapsTo));
 	}
@@ -126,12 +127,18 @@ public abstract class XtaInstruction extends Instruction {
 	static long signedRemainder(MachineState state, long a, long b, Thread thread) { return 0; }	
 	
     void ADD(MachineState state, int thread) throws Exception {
-    	if (m_debug) 
-    		System.out.printf("0x%08x: ADD\n", getPc());
-    	state.m_op1 = new Expression(Expression.OperatorType.ADD);
+		if (m_debug)
+			System.out.printf("0x%08x: ADD\n", getPc());
+		state.m_op1 = new Expression(Expression.OperatorType.ADD);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
-    }
+		if (m_verbose) {
+			System.out.printf("add r%d[%s], r%d[%s], r%d[%s]\n",
+					state.m_op1Fld, state.m_op1.getStringValue(), 
+					state.m_op2Fld, state.m_op2.getStringValue(), 
+					state.m_op3Fld, state.m_op3.getStringValue());
+		}
+	}
     
     void AND(MachineState state, int thread) throws Exception {
     	if (m_debug) 
@@ -139,28 +146,53 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1 = new Expression(Expression.OperatorType.AND);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
+    	if (m_verbose) {
+			System.out.printf("and r%d[%s], r%d[%s], r%d[%s]\n",
+					state.m_op1Fld, state.m_op1.getStringValue(), 
+					state.m_op2Fld, state.m_op2.getStringValue(), 
+					state.m_op3Fld, state.m_op3.getStringValue());
+		}
     }
     
     void ANDNOT(MachineState state, int thread) throws Exception {
     	if (m_debug) 
         	System.out.printf("0x%08x: ANDNOT\n", getPc());  
-    	state.m_op1 = new Expression(Expression.OperatorType.ANDNOT);
-    	state.m_op1.addOperand(state.m_op2);
-    	state.m_op1.addOperand(state.m_op3);
+    	Expression result = new Expression(Expression.OperatorType.ANDNOT);
+    	result.addOperand(state.m_op1);
+    	result.addOperand(state.m_op2);
+    	state.m_op1 = result;
+    	if (m_verbose) {
+			System.out.printf("andnot r%d[%s], r%d[%s]\n",
+					state.m_op1Fld, state.m_op1.getStringValue(), 
+					state.m_op2Fld, state.m_op2.getStringValue());
+		}
+
     }
     
     void ASHR(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
     	    System.out.printf("0x%08x: ASHR\n", getPc());   
-    	state.m_op1 = new Expression(Expression.OperatorType.ASHR);
-    	state.m_op1.addOperand(state.m_op2);
-    	state.m_op1.addOperand(state.m_op3);
+    	Expression result = new Expression(Expression.OperatorType.ASHR);
+    	result.addOperand(state.m_op2);
+    	result.addOperand(state.m_op3);
+    	state.m_op1 = result;
+    	if (m_verbose) {
+			System.out.printf("ashr r%d[%s], r%d[%s], r%d[%s]\n",
+					state.m_op1Fld, state.m_op1.getStringValue(), 
+					state.m_op2Fld, state.m_op2.getStringValue(), 
+					state.m_op3Fld, state.m_op3.getStringValue());
+		}
+    	
     }
     
     void BAU(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
     	    System.out.printf("0x%08x: BAU\n", getPc());
     	state.jump(state.m_op1);
+    	if (m_verbose) {
+			System.out.printf("bau r%d[%s]\n",
+					state.m_op1Fld, state.m_op1.getStringValue());
+		}
     }
     
     void BITREV(MachineState state, int thread) throws Exception {
@@ -168,6 +200,11 @@ public abstract class XtaInstruction extends Instruction {
             System.out.printf("0x%08x: BITREV\n", getPc());
     	state.m_op1 = new Expression(Expression.OperatorType.BITREV);
     	state.m_op1.addOperand(state.m_op2);
+    	if (m_verbose) {
+			System.out.printf("bitrev r%d[%s], r%d[%s]\n",
+					state.m_op1Fld, state.m_op1.getStringValue(), 
+					state.m_op2Fld, state.m_op2.getStringValue());
+		}
     }
 
     void BLA(MachineState state, int thread) throws Exception {
@@ -176,29 +213,58 @@ public abstract class XtaInstruction extends Instruction {
     	state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
     	state.jump(state.m_op1);
     	setBranchLink(true);
+    	if (m_verbose) {
+			System.out.printf("bla r%d[%s]\n",
+					state.m_op1Fld, state.m_op1.getStringValue());
+		}
     }
 
     void BLACP(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: BLACP\n", getPc());	
-    	Expression branchTarget = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.DEFINED);
+    	Expression loadLocation = new Expression(OperatorType.ADD);
     	Expression cp = state.getConstPoolRegister(thread);
-    	branchTarget.addOperand(cp);
-    	branchTarget.addOperand(state.m_op1); 	
-    	state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
-    	state.jump(branchTarget);
-        setBranchLink(true);    	
+    	
+    	Expression offset = new Expression(OperatorType.SHL);
+    	offset.addOperand(state.m_op1);
+    	offset.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2));
+    	
+    	loadLocation.addOperand(cp);
+    	loadLocation.addOperand(offset);
+    	
+    	if(loadLocation.canResolve()){
+    		Expression branchTarget = state.readMemory(loadLocation.getValue());
+    		state.jump(branchTarget);
+    		state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
+    		setBranchLink(true);    
+    	} else {
+    		
+    	}
+    	
+    		
     }
 
     void BLAT(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: BLAT\n", getPc());	
-    	Expression branchTarget = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.DEFINED);
-    	branchTarget.addOperand(state.readRegister(11, thread));
-    	branchTarget.addOperand(state.m_op1); 	
-    	state.jump(branchTarget);
-    	state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
-        setBranchLink(true);
+    	Expression loadLocation = new Expression(OperatorType.ADD);
+    	Expression table = state.readRegister(11, thread);
+    	
+    	Expression offset = new Expression(OperatorType.SHL);
+    	offset.addOperand(state.m_op1);
+    	offset.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2));
+    	
+    	loadLocation.addOperand(table);
+    	loadLocation.addOperand(offset);
+    	
+    	if(loadLocation.canResolve()){
+    		Expression branchTarget = state.readMemory(loadLocation.getValue());
+    		state.jump(branchTarget);
+    		state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
+    		setBranchLink(true);    
+    	} else {
+    		
+    	}
     }
 
     void BLRB(MachineState state, int thread) throws Exception {
@@ -331,12 +397,12 @@ public abstract class XtaInstruction extends Instruction {
 	
         Expression offset = new Expression(Expression.OperatorType.ASHL);
         offset.addOperand(state.m_op1);
-        offset.addOperand(new Expression(1));
+        offset.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2/2));
         
         Expression branchTarget = new Expression(Expression.OperatorType.ADD);
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
-
+        System.out.println(Integer.toHexString(branchTarget.getValue()));
     	state.jump(branchTarget);
     }
 
@@ -439,10 +505,27 @@ public abstract class XtaInstruction extends Instruction {
     void CRC8(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: CRC8\n", getPc());	
-    	state.m_op1 = new Expression(Expression.OperatorType.CRC8);
-    	state.m_op1.addOperand(state.m_op2);
-    	state.m_op1.addOperand(state.m_op3);
-    	state.m_op1.addOperand(state.m_op4);
+    	Expression scrdest = new Expression(Expression.OperatorType.CRC8_SCRDEST);
+    	Expression dest = new Expression(Expression.OperatorType.CRC8_DEST);
+    	 
+    	scrdest.addOperand(state.m_op4);
+    	scrdest.addOperand(state.m_op2);
+    	scrdest.addOperand(state.m_op3);
+    	
+    	dest.addOperand(state.m_op4);
+    	dest.addOperand(state.m_op2);
+    	dest.addOperand(state.m_op3);
+    	
+    	if(scrdest.canResolve()){
+    		scrdest = new Expression(scrdest.getValue());
+    	}
+    	if(dest.canResolve()){
+    		dest = new Expression(dest.getValue());
+    	}
+    	
+    	state.m_op4 = scrdest;
+    	state.m_op1 = dest;
+    	
     }
 
     void DCALL(MachineState state, int thread) throws Exception {
@@ -505,7 +588,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: ECALLF\n", getPc());	
     	if(m_uninplimented) {
-    		throw new InstructionExecption(Error.TRAP_INSTRUCTION);
+    		//throw new InstructionExecption(Error.TRAP_INSTRUCTION);
     	}
     }
 
@@ -680,13 +763,13 @@ public abstract class XtaInstruction extends Instruction {
     void EXTDP(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: EXTDP\n", getPc());	
-    	assert(state.m_op2.canResolve());
-    	int imm = state.m_op2.getValue();
+    	assert(state.m_op1.canResolve());
+    	int imm = state.m_op1.getValue() << Instruction.BYTES_PER_WORD_LOG2;
     	
     	
     	Expression offset = new Expression(OperatorType.SUB);
     	offset.addOperand(state.getDataPoolRegister(thread) );
-    	offset.addOperand(new Expression(imm << Instruction.BITS_PER_WORD));
+    	offset.addOperand(new Expression(imm));
     	
     	offset.resolve();
     	if(offset.canResolve()){
@@ -701,16 +784,22 @@ public abstract class XtaInstruction extends Instruction {
     void EXTSP(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: EXTSP\n", getPc());	
-
-    	assert state.m_op1.canResolve();    		    		
-        Expression stackPointer = state.getStackPointerRegister(thread);
-        Expression wordOffset = new Expression(state.m_op1.getValue() << Instruction.BYTES_PER_WORD_LOG2);
-
-        Expression newStackPointer = new Expression(Expression.OperatorType.SUB);
-        newStackPointer.addOperand(stackPointer);
-        newStackPointer.addOperand(wordOffset);        	
-
-        state.setStackPointerRegister(newStackPointer, thread);
+    	assert(state.m_op1.canResolve());
+    	int imm = state.m_op1.getValue() << Instruction.BYTES_PER_WORD_LOG2;
+    	
+    	
+    	Expression offset = new Expression(OperatorType.SUB);
+    	offset.addOperand(state.getStackPointerRegister(thread));
+    	offset.addOperand(new Expression(imm));
+    	
+    	offset.resolve();
+    	if(offset.canResolve()){
+    		int value = offset.getValue();
+    		state.setStackPointerRegister(new Expression(value), thread);
+    	} else {
+    		//maybe dodgy as is circular
+    		state.setStackPointerRegister(offset, thread);
+    	}
     }
 
     void FREER(MachineState state, int thread) throws Exception {
@@ -987,7 +1076,7 @@ public abstract class XtaInstruction extends Instruction {
     		if(!state.isWithinMemory(address.getValue())){
     			throw new InstructionExecption(Error.ET_LOAD_STORE);
     		}
-    		state.m_op1 = state.readShort(address.getValue());
+    		state.m_op1 = state.readByte(address.getValue());
     	} else {
     		state.m_op1 = new Expression(0,0,Expression.Type.MEMORY, Expression.Status.UNDEFINED);
     	}
@@ -1138,8 +1227,11 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDW(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
-            System.out.printf("0x%08x: LDW\n", getPc());
+    	if (m_debug)   {
+    		
+    		System.out.printf("0x%08x: LDW\n", getPc());
+    	}
+            
 
     	if (state.m_op2.canResolve() && state.m_op3.canResolve()) {
     	    // The address is resolvable so we can read the expression from 'memory'
@@ -1252,7 +1344,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: LSS\n", getPc());	
 
-    	state.m_op1 = new Expression(Expression.OperatorType.LT);
+    	state.m_op1 = new Expression(Expression.OperatorType.LTS);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
     }
@@ -1261,7 +1353,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug) 
     		System.out.printf("0x%08x: LSU\n", getPc());
 
-    	state.m_op1 = new Expression(Expression.OperatorType.LT);
+    	state.m_op1 = new Expression(Expression.OperatorType.LTU);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
     }
@@ -1269,18 +1361,10 @@ public abstract class XtaInstruction extends Instruction {
     void MACC(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: MACC\n", getPc());	
-
-        state.m_op1 = new Expression(Expression.OperatorType.MACC_LOW);
-        state.m_op1.addOperand(state.m_op2);
-        state.m_op1.addOperand(state.m_op3);
-        state.m_op1.addOperand(state.m_op5);
-        state.m_op1.addOperand(state.m_op6);
-
-        state.m_op4 = new Expression(Expression.OperatorType.MACC_HIGH);
-        state.m_op4.addOperand(state.m_op2);
-        state.m_op4.addOperand(state.m_op3);
-        state.m_op4.addOperand(state.m_op5);
-        state.m_op4.addOperand(state.m_op6);
+    	if(m_uninplimented) {
+    		throw new InstructionExecption(Error.UNSUPPORTED);
+    	}
+        
     }
 
     void MJOIN(MachineState state, int thread) throws Exception {
@@ -1297,8 +1381,11 @@ public abstract class XtaInstruction extends Instruction {
             System.out.printf("0x%08x: MKMSK\n", getPc());
     	assert(state.m_op2.canResolve());
     	int shift = state.m_op2.getValue();
-    	int mask = (1<<shift) - 1;
-    	state.m_op1 = new Expression(mask);
+    	long mask = (1<<shift) - 1;
+    	if(shift == 32){
+    		mask = 0xFFFFFFFF;
+    	}
+    	state.m_op1 = new Expression((int)mask);
     }
 
     void MSYNC(MachineState state, int thread) throws Exception {
@@ -1464,9 +1551,7 @@ public abstract class XtaInstruction extends Instruction {
     void SETCP(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETCP\n", getPc());	
-    	if(m_uninplimented) {
-    		throw new InstructionExecption(Error.UNSUPPORTED);
-    	}
+    	state.setConstPoolRegister(state.m_op1, thread);
     }
 
     void SETD(MachineState state, int thread) throws Exception {
@@ -1480,9 +1565,7 @@ public abstract class XtaInstruction extends Instruction {
     void SETDP(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETDP\n", getPc());	
-    	if(m_uninplimented) {
-    		throw new InstructionExecption(Error.UNSUPPORTED);
-    	}
+    	state.setDataPoolRegister(state.m_op1, thread);
     }
 
     void SETEV(MachineState state, int thread) throws Exception {
@@ -1583,8 +1666,8 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: SEXT\n", getPc());	
     	Expression result = new Expression(OperatorType.SEXT);
+    	result.addOperand(state.m_op1);
     	result.addOperand(state.m_op2);
-    	result.addOperand(state.m_op3);
     	state.m_op1 = result;
     }
 
@@ -1956,16 +2039,23 @@ public abstract class XtaInstruction extends Instruction {
     void LADD(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: LADD\n", getPc());	
-    	if(state.m_op2.canResolve() && state.m_op3.canResolve() && state.m_op5.canResolve()){
-	    	long lacc = (0xffffffffL & (long) (state.m_op2.getValue())) +
-	        (0xffffffffL & (long) (state.m_op3.getValue())) +
-	        ((state.m_op5.getValue()) & 1);
-	        state.m_op4 = new Expression((int)(lacc >> 32) & 1);
-	        state.m_op1 = new Expression((int)(lacc & 0xffffffff));
+    	Expression result = new Expression(OperatorType.LADD_LOWER);
+    	result.addOperand(state.m_op2);
+    	result.addOperand(state.m_op3);
+    	result.addOperand(state.m_op5);
+
+    	Expression carry = new Expression(OperatorType.LADD_CARRY);
+    	result.addOperand(state.m_op2);
+    	result.addOperand(state.m_op3);
+    	result.addOperand(state.m_op5);
+    	if(carry.canResolve() && result.canResolve()){
+    		state.m_op4 = new Expression(carry.getValue());
+    		state.m_op1 = new Expression(result.getValue());
     	} else {
-    		state.m_op4 = new Expression(state.m_op4Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
-            state.m_op1 = new Expression(state.m_op1Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
-    	}	
+    		state.m_op4 = carry;
+    		state.m_op1 = result;
+    	}
+    	
     }
     
     void LDAWCP(MachineState state, int thread) throws Exception {
@@ -1983,33 +2073,96 @@ public abstract class XtaInstruction extends Instruction {
     void MACCU(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: MACCU\n", getPc());	
-    	if(m_uninplimented) {
-    		throw new InstructionExecption(Error.UNSUPPORTED);
+    	Expression high =new Expression(OperatorType.MACCU_HIGH);
+    	Expression low = new Expression(OperatorType.MACCU_LOW);
+
+    	high.addOperand(state.m_op1);
+    	high.addOperand(state.m_op4);
+    	high.addOperand(state.m_op2);
+    	high.addOperand(state.m_op3);
+
+    	low.addOperand(state.m_op1);
+    	low.addOperand(state.m_op4);
+    	low.addOperand(state.m_op2);
+    	low.addOperand(state.m_op3);
+        
+    	if(high.canResolve() && low.canResolve()){
+    		state.m_op4 = new Expression(low.getValue());
+    		state.m_op1 = new Expression(high.getValue());
+    	} else {
+    		state.m_op4 = low;
+    		state.m_op1 = high;
     	}
+    	
+        
     }
     
     void MACCS(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: MACCS\n", getPc());	
-    	if(m_uninplimented) {
-    		throw new InstructionExecption(Error.UNSUPPORTED);
+    	Expression high =  new Expression(OperatorType.MACCS_HIGH);
+    	high.addOperand(state.m_op1);
+    	high.addOperand(state.m_op4);
+    	high.addOperand(state.m_op2);
+    	high.addOperand(state.m_op3);
+    	Expression low = new Expression(OperatorType.MACCS_LOW);
+    	low.addOperand(state.m_op1);
+    	low.addOperand(state.m_op4);
+    	low.addOperand(state.m_op2);
+    	low.addOperand(state.m_op3);
+    	if(high.canResolve() && low.canResolve()){
+    		state.m_op4 = new Expression(low.getValue());
+    		state.m_op1 = new Expression(high.getValue());
+    	} else {
+    		state.m_op4 = low;
+    		state.m_op1 = high;
     	}
     }    
     
     void LDIVU(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: LDIVU\n", getPc());	
-    	if(m_uninplimented) {
-    		throw new InstructionExecption(Error.UNSUPPORTED);
+    	Expression high =  new Expression(OperatorType.LDIVU_HIGH);
+    	high.addOperand(state.m_op1);
+    	high.addOperand(state.m_op4);
+    	high.addOperand(state.m_op2);
+    	high.addOperand(state.m_op3);
+    	Expression low = new Expression(OperatorType.LDIVU_LOW);
+    	low.addOperand(state.m_op1);
+    	low.addOperand(state.m_op4);
+    	low.addOperand(state.m_op2);
+    	low.addOperand(state.m_op3);
+    	if(high.canResolve() && low.canResolve()){
+    		state.m_op4 = new Expression(low.getValue());
+    		state.m_op1 = new Expression(high.getValue());
+    	} else {
+    		state.m_op4 = low;
+    		state.m_op1 = high;
     	}
     }
     
     void LSUB(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: LSUB\n", getPc());	
-    	if(m_uninplimented) {
-    		throw new InstructionExecption(Error.UNSUPPORTED);
+    	
+    	Expression result = new Expression(OperatorType.LSUB_LOWER);
+    	result.addOperand(state.m_op2);
+    	result.addOperand(state.m_op3);
+    	result.addOperand(state.m_op5);
+
+    	Expression carry = new Expression(OperatorType.LSUB_CARRY);
+    	carry.addOperand(state.m_op2);
+    	carry.addOperand(state.m_op3);
+    	carry.addOperand(state.m_op5);
+    	
+    	if(carry.canResolve() && result.canResolve()){
+    		state.m_op4 = new Expression(carry.getValue());
+    		state.m_op1 = new Expression(result.getValue());
+    	} else {
+    		state.m_op4 = carry;
+    		state.m_op1 = result;
     	}
+    	
     }
      
 }

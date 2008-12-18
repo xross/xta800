@@ -54,7 +54,11 @@ public class Registers {
 		for(int i=0;i<NUM_REGISTERS;i++){
 			Expression reg = m_registers[i];
 			if(reg.canResolve()){
-				out +="r" + i + " " + Integer.toHexString(reg.getValue()) + "\t";
+				try {
+					out +="r" + i + " " + Integer.toHexString(reg.getValue()) + "\t";
+				} catch (Exception e) {
+					out +="r" + i + " unknown\t";
+				}
 			}
 		}
 		return out;

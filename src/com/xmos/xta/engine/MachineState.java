@@ -86,8 +86,10 @@ public class MachineState {
     private void initialiseMemory(MemoryImage memoryImage) {
     	m_memoryBase = memoryImage.getMemoryBase();
     	m_memorySize = memoryImage.getMemorySize();
-    	m_memory.blockWrite(memoryImage.getCpStart(), memoryImage.getCpEnd()-memoryImage.getCpStart(), memoryImage);
-    	m_memory.blockWrite(memoryImage.getDpStart(), memoryImage.getDpEnd() - memoryImage.getDpStart(), memoryImage);
+    	
+    	m_memory.blockWrite(0x10000, 0x10000, memoryImage);
+    	//m_memory.blockWrite(memoryImage.getCpStart(), memoryImage.getCpEnd()-memoryImage.getCpStart(), memoryImage);
+    	//m_memory.blockWrite(memoryImage.getDpStart(), memoryImage.getDpEnd() - memoryImage.getDpStart(), memoryImage);
 		
 	}
 
@@ -192,7 +194,8 @@ public class MachineState {
 			guard.resolve();
             m_guardExpression = guard;
             m_branchTarget = branchTarget.getValue();
-            if(!is16bitAligned(m_branchTarget) || !isWithinMemory(m_branchTarget)){
+            //if(!is16bitAligned(m_branchTarget) || !isWithinMemory(m_branchTarget)){
+            if(!is16bitAligned(m_branchTarget)){
             	throw new InstructionExecption(Error.ET_ILLEGAL_PC);
             }
             if (guard.isResolved()) {
@@ -217,7 +220,8 @@ public class MachineState {
         m_wasJumpResolved = jumpTarget.isResolved();
         if (m_wasJumpResolved) {
             m_jumpTarget = jumpTarget.getValue();
-            if(!is16bitAligned(m_jumpTarget) || !isWithinMemory(m_jumpTarget)){
+            //if(!is16bitAligned(m_jumpTarget) || !isWithinMemory(m_jumpTarget)){
+            if(!is16bitAligned(m_jumpTarget)){
             	throw new InstructionExecption(Error.ET_ILLEGAL_PC);
             }
             m_jumpTaken = BranchState.TAKEN;
@@ -242,12 +246,13 @@ public class MachineState {
 		}
 	}
 
-	void eventWait(Expression expression) throws InstructionExecption{
+	void eventWait(Expression expression) throws Exception{
     	m_wasEventWait = true;
     	if(expression.canResolve()){
     		m_wasEventResolved = true;
     		int eventTarget = expression.getValue();
-    		if(!is16bitAligned(eventTarget) || !isWithinMemory(eventTarget)){
+    		//if(!is16bitAligned(eventTarget) || !isWithinMemory(eventTarget)){
+    		if(!is16bitAligned(eventTarget)){
             	throw new InstructionExecption(Error.ET_ILLEGAL_PC);
             }
     		m_eventTargets.add(eventTarget);
@@ -325,7 +330,7 @@ public class MachineState {
     	m_resources.getThread(thread).getRegisters().writeRegister(regNum, regValue);
     }
 
-    Expression readMemory(int address) {
+    Expression readMemory(int address) throws Exception {
     	
     	Expression read = m_memory.wordRead(address);
     	if(read.canResolve()){
@@ -336,8 +341,8 @@ public class MachineState {
     	}
         return read;
     }
-    public Expression readShort(int address) {
-    	Expression read = m_memory.wordRead(address);
+    public Expression readShort(int address) throws Exception {
+    	Expression read = m_memory.halfRead(address);
     	if(read.canResolve()){
     		if(DEBUG) System.out.println("read word 0x" + Integer.toHexString(read.getValue())  + " from 0x" + 
     				Integer.toHexString(address));
@@ -346,7 +351,7 @@ public class MachineState {
     	}
         return read;
 	}
-    Expression readByte(int address) {
+    Expression readByte(int address) throws Exception {
     	
     	Expression read = m_memory.byteRead(address);
     	if(read.canResolve()){
@@ -358,7 +363,7 @@ public class MachineState {
         return read;
     }
 
-    void writeMemory(int address, Expression value) {
+    void writeMemory(int address, Expression value) throws Exception {
     	if(value.canResolve()){
     		if(DEBUG) System.out.println("\twrite to memory: 0x" + Integer.toHexString(value.getValue()) + " at 0x" 
         			+Integer.toHexString(address));
@@ -369,7 +374,7 @@ public class MachineState {
     }
     
     
-    public void writeByte(int address, Expression value) {
+    public void writeByte(int address, Expression value) throws Exception {
     	if(value.canResolve()){
     		if(DEBUG) System.out.println("\twrite to memory: 0x" + Integer.toHexString(value.getValue()) + " at 0x" 
         			+Integer.toHexString(address));
@@ -379,7 +384,7 @@ public class MachineState {
         m_memory.byteWrite(address, value);
 	}
     
-    public void writeShort(int address, Expression value) {
+    public void writeShort(int address, Expression value) throws Exception {
     	if(value.canResolve()){
     		if(DEBUG) System.out.println("\twrite to memory: 0x" + Integer.toHexString(value.getValue()) + " at 0x" 
         			+Integer.toHexString(address));

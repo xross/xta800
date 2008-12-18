@@ -14,6 +14,7 @@ import com.xmos.xta.engine.Status.BlockStatus;
 
 public class Block implements Comparable<Block> {
 	private static final boolean DEBUG = false;
+	private static final boolean DUMPSTATE = false;
 
 	static enum Mode {
 		FUNCTION, ABSOLUTE
@@ -50,8 +51,6 @@ public class Block implements Comparable<Block> {
 	private boolean m_firstStep;
 
 	private ExecutionState m_executionState;
-
-	private String m_errorString;
 	
 	private static int m_numBlocks;
 
@@ -217,9 +216,6 @@ public class Block implements Comparable<Block> {
 		return;
 	}
 
-	public String getErrorString(){
-		return m_errorString;
-	}
 	public void build() throws Exception {
 		int pc = m_machineState.getPc(m_currentThread);
 		if (isProhibited(pc)) {
@@ -244,37 +240,12 @@ public class Block implements Comparable<Block> {
 		int instNumBytes = instruction.getNumBytes();
 
 		handleIBuffer(instNumBytes, pc);
-		//if (instruction.canPause()) {
-		//	addUnknown(instruction);
-		//}
 
-		try {
-			instruction.execute(m_machineState, m_currentThread);
-		} catch (InstructionExecption e) {
-			if(m_bc.isResolveExpressions()){
-				//die when we wont be able to be sure of everything anymore
-				setStatus(BlockStatus.UNRESOLVED);
-				String reason  = e.getMessage();
-				Unresolved unresolved = new Unresolved(this, instruction, reason);
-				m_route.addUnresolvedPath(unresolved);
-				releaseMemory();
-			return;
-			} else {
-				//continue on if not fatal
-				if(e.isFatal()){
-					setStatus(BlockStatus.UNRESOLVED);
-					String reason  = e.getMessage();
-					Unresolved unresolved = new Unresolved(this, instruction, reason);
-					m_route.addUnresolvedPath(unresolved);
-					releaseMemory();
-				} else {
-					//addUnknown(instruction);
-				}
-			}
-			
-			
-		}
+		executeInstruction(instruction);
+		
 		addInstruction(instruction);
+		
+		if (DUMPSTATE) dumpState(m_machineState);
 		
 		if (isComplete(instruction, pc)) {
 			setStatus(BlockStatus.COMPLETE);
@@ -289,6 +260,7 @@ public class Block implements Comparable<Block> {
 		m_contexts.peek().add(pc);
 
 		int nextPc = pc + instNumBytes;
+		
 		if (m_machineState.wasEventWait()) {
 			if (m_machineState.wasEventResolved()) {
 				ArrayList<Integer> targets = new ArrayList<Integer>(m_machineState.getEventTarget());
@@ -302,8 +274,6 @@ public class Block implements Comparable<Block> {
 				String reason  = "Unable to resolve the event vectors (possibly event vector set up out of scope?)";
 				Unresolved unresolved = new Unresolved(this, instruction, reason);
 				m_route.addUnresolvedPath(unresolved);
-				releaseMemory();
-				return;
 			}
 			releaseMemory();
 			return;
@@ -319,10 +289,12 @@ public class Block implements Comparable<Block> {
 					return;
 				} else {
 					if (instruction.getReturn()) {
+						if(DEBUG) System.out.println("pop");
 						popFunction();
 					}
 					checkForLoopFormation(jumpTarget, false, instruction, true, false);
 					if (instruction.getBranchLink()) {
+						if(DEBUG) System.out.println("push");
 						pushFunction(pc);
 					}
 					return;
@@ -375,10 +347,41 @@ public class Block implements Comparable<Block> {
 			}
 		} else {
 			checkForLoopFormation(nextPc, false, instruction, false, false);
+			m_firstStep = false;
+			instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
+			
 		}
 
-		m_firstStep = false;
-		instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
+		//m_firstStep = false;
+		//instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
+	}
+
+	private void executeInstruction(XtaInstruction instruction)
+			throws Exception {
+		try {
+			instruction.execute(m_machineState, m_currentThread);
+		} catch (InstructionExecption e) {
+			if(m_bc.isResolveExpressions()){
+				//die when we wont be able to be sure of everything anymore
+				setStatus(BlockStatus.UNRESOLVED);
+				String reason  = e.getMessage();
+				Unresolved unresolved = new Unresolved(this, instruction, reason);
+				m_route.addUnresolvedPath(unresolved);
+				releaseMemory();
+			return;
+			} else {
+				//continue on if not fatal
+				if(e.isFatal()){
+					setStatus(BlockStatus.UNRESOLVED);
+					String reason  = e.getMessage();
+					Unresolved unresolved = new Unresolved(this, instruction, reason);
+					m_route.addUnresolvedPath(unresolved);
+					releaseMemory();
+				} else {
+					//addUnknown(instruction);
+				}
+			}	
+		}
 	}
 
 	private void addUnknown(XtaInstruction inst) {
@@ -468,18 +471,34 @@ public class Block implements Comparable<Block> {
 	private void addInstruction(XtaInstruction inst) {
 		assert (m_instructions != null);
 		assert (inst != null);
-		if(DEBUG) System.out.println(inst);
+		if(DEBUG) {
+			System.out.print(this.m_contexts.size() + " " );
+			System.out.println(inst);
+		}
 		inst.setBasicNumCycles(m_bc.getM_instructionAttributes().getTiming(inst.getNmenonic()));
 		inst.setConfig(m_bc.getConfig());
 
-		m_pcs.add(inst.getPc());
-		m_instructions.add(inst);
-		if (inst.canPause()) {
-			m_numPausables++;
+		boolean keepInstructionTrace =true;
+		/*
+		if(m_instructions.size() > 1000){
+			keepInstructionTrace = false;
 		}
+		*/
+		if (m_instructions != null && keepInstructionTrace){
+			m_instructions.add(inst);
+		} else {
+			if(m_instructions.size()>0){
+				m_instructions = null;
+				System.gc();
+			}
+		}
+		m_pcs.add(inst.getPc());
 		if (inst.isFnop()) {
 			m_numFNops++;
 		} else {
+			if (inst.canPause()) {
+				m_numPausables++;
+			}
 			m_numInstructions++;
 		}
 
@@ -1021,5 +1040,28 @@ public class Block implements Comparable<Block> {
         }
         return result;
     }
+    
+    private void dumpState(MachineState state) throws Exception {
+		Registers reg = state.getResources().getThread(m_currentThread).getRegisters();
+		
+		for(int i=0;i<4;i++){
+			String s = "";
+			for(int j=0;j<4;j++){
+				
+				s+= "reg " + (i*4 +j) + " ";
+				if(reg.getRegisters()[i*4 +j].canResolve()){
+					
+					s+= "0x" + String.format("%8x", reg.getRegisters()[i*4 +j].getValue()) +" ";
+				} else {
+					s+= "-----------";
+				}
+				s+="\t";
+				
+			}
+			System.out.println(s);
+		}
+		return;
+		
+	}
 
 }
