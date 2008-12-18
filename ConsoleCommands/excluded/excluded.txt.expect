@@ -1,3 +1,4 @@
+- ref: 0x100d0, pc: 0x100d0
 Route: main
 Complete paths:   1
 Unresolved paths: 0
@@ -16,6 +17,7 @@ Unresolved paths: 0
 + 13:   return b;
   14: }
   15: 
+- ref: 0x100d4, pc: 0x100d4
 Route: main
 Complete paths:   1
 Unresolved paths: 0

@@ -10,7 +10,7 @@ if (!$noBuild) {
 system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/summary_functions.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "function main " .
-       "summary FUNCTIONS " .
+       "analyse function main " .
+       "summary functions " .
        "exit > $genDir/summary_functions.txt 2>&1");
 

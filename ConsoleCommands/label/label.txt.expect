@@ -1,3 +1,5 @@
-Route: main
-Complete paths:   2
-Unresolved paths: 0
+- ref: bob, pc: 0x1019a
+- ref: bill, pc: 0x1019a
+- ref: bob, pc: 0x1019a
+- ref: bill, pc: 0x1019a
+- ref: bill, pc: 0x1019a
