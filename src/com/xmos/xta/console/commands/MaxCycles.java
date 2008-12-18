@@ -6,15 +6,15 @@ import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Route;
 
-public class TimeBound extends Command  {
-	int m_timeBound;
+public class MaxCycles extends Command  {
+	private int m_maxCycles;
 
-	TimeBound() {
-		m_timeBound = 0;
+	MaxCycles() {
+		m_maxCycles = 0;
 	}
 	
-	TimeBound(int timeBound) {
-		m_timeBound = timeBound;
+	MaxCycles(int maxCycles) {
+		m_maxCycles = maxCycles;
 	}
 	
     public int numArgs() {
@@ -22,26 +22,27 @@ public class TimeBound extends Command  {
     }        
 
     public String name() {
-    	return "timebound";
+    	return "maxcycles";
     }        
 
     public String commandLine() {
-    	return "timebound " + m_timeBound;
+    	return "maxcycles " + m_maxCycles;
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "timebound <int (ns)> : returns PASS of FAIL if the worst case is less than the time bound";      	
+        return "maxcycles <num cycles> : Analysis fails at the given cycle limt";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
-    	
-    	
+    public Command clone(String[] args, int index, boolean commandLineMode) {    	    	
 		if ((index + numArgs()) >= args.length) 
 			return null;
 		
-		int time = Integer.parseInt(args[index +1]);
-		
-		return new TimeBound(time);
+    	int cycles;
+    	try { cycles = Integer.parseInt(args[index + 1]); }
+	    catch (NumberFormatException e) {
+	        return null;
+	    }		
+		return new MaxCycles(cycles);
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
@@ -50,8 +51,8 @@ public class TimeBound extends Command  {
 		
 		Route route = engine.getRoute();
         for(Block path : route.completePaths()){
-        	double time = path.getTimeTaken(true);
-        	if(time > m_timeBound){
+        	int cycles = path.getNumCycles(true);
+        	if (cycles > m_maxCycles){
         		console.display("FAIL\n");
         		return;
         	}

@@ -6,27 +6,35 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.engine.Engine.ReferenceMode;
 
-public class Required extends Command {
-	
-	enum AddRemove {
-		ADD, REMOVE
+public class Required extends Command {	
+	enum Operation {
+		ADD, REMOVE, LIST
 	};
 	
-	CodeReference m_ref;
+	private CodeReference m_ref;	
+	private Operation m_operation;
 	
-	AddRemove m_addRemove;
-	
-	Required() {
+	Required(Operation operation) {
+        m_operation = operation;
         m_ref = null;
     }
     
-	Required(CodeReference ref, AddRemove addRemove) {
+	Required(CodeReference ref, Operation operation) {
+        m_operation = operation;
         m_ref = ref;        
-        m_addRemove = addRemove;
     }
     
     public int numArgs() {
-        return 2;
+    	switch (m_operation) {
+    	case ADD:
+    	case REMOVE:
+            return 1;
+    	case LIST:
+            return 0;
+        default:
+        	assert(false);
+            return 0;
+    	}    	        
     }        
 
     public String name() {
@@ -34,46 +42,78 @@ public class Required extends Command {
     }        
 
     public String commandLine() {
-        return "required " + m_addRemove + " " + m_ref.getRef();
+    	switch (m_operation) {
+    	case ADD:
+    	case REMOVE:
+    		return "required " + m_ref.getRef();
+    	case LIST:
+    		return "required";
+        default:
+        	assert(false);
+            return "";
+    	}    	        
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "required <add/remove> <ref>: Adds or removes the given reference to the required list (post analysis action)";         
+    	switch (m_operation) {
+    	case ADD:
+            return "required <ref>: Adds the given reference to the required list (post analysis action)";         
+    	case REMOVE:
+            return "required <ref>: Removes the given reference from the required list (post analysis action)";
+    	case LIST:
+            return "required: Lists the reference in the excluded list";
+        default:
+        	assert(false);
+            return "";
+    	}    	    
     }
 
     public Command clone(String[] args, int index, boolean commandLineMode) {
         if ((index + numArgs()) >= args.length) 
             return null;        
-        AddRemove addRemove; 
-        String arg = args[index + 1];
-        if(arg.toUpperCase().equals("ADD") ) {
-        	addRemove = AddRemove.ADD;
-        } else if(arg.toUpperCase().equals("REMOVE") ) {
-        	addRemove = AddRemove.REMOVE;
-        } else {
-        	return null;
-        }
-       
-        CodeReference codeRef = new CodeReference(args[index + 2]);
-        return new Required(codeRef, addRemove);
+        
+    	switch (m_operation) {
+    	case ADD:
+    	case REMOVE:
+            CodeReference codeRef = new CodeReference(args[index + 1]);
+            return new Required(codeRef, m_operation);
+    	case LIST:
+            return new Required(m_operation);
+        default:
+        	assert(false);
+            return null;
+    	}    	        
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
         if (!isExecutableLoaded(engine, console))
             return;    
-        m_ref.resolve(engine);
-        if(m_ref.isResolved()){
-	        if(m_addRemove == AddRemove.ADD){
-	        	engine.addReference(ReferenceMode.REQUIRED, m_ref);
-	        } else if(m_addRemove == AddRemove.REMOVE){
-	        	engine.removeReference(ReferenceMode.REQUIRED, m_ref);
-	        } else {
-	        	assert(false);
-	    	}
+
+        if (m_operation == Operation.LIST) {
+        	listRequirements(engine, console);        	
         } else {
-        	console.display("Error: trying to add an unresolved reference: " + m_ref + "\n");
-        }
-       
+            m_ref.resolve(engine);
+            if (m_ref.isResolved()){
+            	switch (m_operation) {
+            	case ADD:
+            		engine.addReference(ReferenceMode.REQUIRED, m_ref);
+            		break;
+            	case REMOVE:
+            		engine.removeReference(ReferenceMode.REQUIRED, m_ref);
+            		break;
+                default:
+                	assert(false);
+            		break;
+            	}    	
+            } else {
+            	console.display("Error: Unresolved reference: " + m_ref + "\n");
+            }               	
+        }                     
     }  
 
+	private void listRequirements(Engine engine, Console console) {
+    	for(CodeReference ref : engine.getReference(ReferenceMode.REQUIRED)){
+    		console.display(String.format("- ref: %s, pc: 0x%x\n", ref.getRef(), ref.getPc()));
+    	}
+	}    
 }

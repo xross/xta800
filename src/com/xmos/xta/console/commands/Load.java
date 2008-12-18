@@ -5,7 +5,7 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 
 class Load extends Command {
-	String m_executableName;
+	private String m_executableName;
 	
 	Load() {
 		m_executableName = "";

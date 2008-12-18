@@ -5,8 +5,8 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 
 class Iterations extends Command {
-	int m_iterations;
-	boolean m_absolute;
+	private int m_iterations;
+	private boolean m_absolute;
 	
 	Iterations() {
 		m_iterations = 0;

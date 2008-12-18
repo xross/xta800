@@ -5,7 +5,7 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 
 class Threads extends Command {
-	int m_numThreads;
+	private int m_numThreads;
 	
 	Threads() {
 		m_numThreads = 0;

@@ -31,17 +31,17 @@ import com.xmos.xta.engine.XtaInstruction;
 
 public class SummaryDisplayer implements Displayer {
 	public enum Level {
-	    SIMPLE, 
-	    COMPLETE, 
-	    COMPLETE_LOOPS, 
-	    COMPLETE_INSTRUCTIONS, 
-	    UNRESOLVED,
-	    UNRESOLVED_LOOPS, 
-	    UNRESOLVED_INSTRUCTIONS, 
-	    FUNCTIONS,
-	    SOURCES,           
-	    PATHID,   
-        ERROR,     
+	    simple, 
+	    complete, 
+	    complete_loops, 
+	    complete_instructions, 
+	    unresolved,
+	    unresolved_loops, 
+	    unresolved_instructions, 
+	    functions,
+	    sources,           
+	    pathid,   
+        error,     
 	}
 
 	Console m_console;
@@ -50,47 +50,47 @@ public class SummaryDisplayer implements Displayer {
 	XeObject m_xeObject;
 	
 	public static Level checkLevel(String level) {
-		if (level.equals(Level.SIMPLE.toString()))			
-		    return Level.SIMPLE;
-		else if (level.equals(Level.COMPLETE.toString()))
-		    return Level.COMPLETE;
-		else if (level.equals(Level.COMPLETE_LOOPS.toString()))
-		    return Level.COMPLETE_LOOPS;
-		else if (level.equals(Level.COMPLETE_INSTRUCTIONS.toString()))
-		    return Level.COMPLETE_INSTRUCTIONS;
-		else if (level.equals(Level.UNRESOLVED.toString()))
-		    return Level.UNRESOLVED;
-		else if (level.equals(Level.UNRESOLVED_LOOPS.toString()))
-		    return Level.UNRESOLVED_LOOPS;
-		else if (level.equals(Level.UNRESOLVED_INSTRUCTIONS.toString()))
-		    return Level.UNRESOLVED_INSTRUCTIONS;
-		else if (level.equals(Level.FUNCTIONS.toString()))
-		    return Level.FUNCTIONS;
-		else if (level.equals(Level.SOURCES.toString()))
-		    return Level.SOURCES;
+		if (level.equals(Level.simple.toString()))			
+		    return Level.simple;
+		else if (level.equals(Level.complete.toString()))
+		    return Level.complete;
+		else if (level.equals(Level.complete_loops.toString()))
+		    return Level.complete_loops;
+		else if (level.equals(Level.complete_instructions.toString()))
+		    return Level.complete_instructions;
+		else if (level.equals(Level.unresolved.toString()))
+		    return Level.unresolved;
+		else if (level.equals(Level.unresolved_loops.toString()))
+		    return Level.unresolved_loops;
+		else if (level.equals(Level.unresolved_instructions.toString()))
+		    return Level.unresolved_instructions;
+		else if (level.equals(Level.functions.toString()))
+		    return Level.functions;
+		else if (level.equals(Level.sources.toString()))
+		    return Level.sources;
 					
-		return Level.ERROR;
+		return Level.error;
 	}
 	
 	public static String getLevelOptionString() {
         return String.format("      level: %s: Show simple paths summary\n", 
-        		SummaryDisplayer.Level.SIMPLE.toString()) +
+        		SummaryDisplayer.Level.simple.toString()) +
 	           String.format("      level: %s: Show complete path(s) timing\n", 
-	        		   SummaryDisplayer.Level.COMPLETE.toString()) +
+	        		   SummaryDisplayer.Level.complete.toString()) +
 	           String.format("      level: %s: Show complete path(s) + loop timing\n", 
-	        		   SummaryDisplayer.Level.COMPLETE_LOOPS.toString()) +   	
+	        		   SummaryDisplayer.Level.complete_loops.toString()) +   	
                String.format("      level: %s: Show complete path(s) + loop + basic block + instruction timing\n", 
-            		   SummaryDisplayer.Level.COMPLETE_INSTRUCTIONS.toString()) +      	
+            		   SummaryDisplayer.Level.complete_instructions.toString()) +      	
 	           String.format("      level: %s: Show unresolved path(s) timing\n", 
-	        		   SummaryDisplayer.Level.UNRESOLVED.toString()) +
+	        		   SummaryDisplayer.Level.unresolved.toString()) +
 	           String.format("      level: %s: Show unresolved path(s) + loop timing\n", 
-	        		   SummaryDisplayer.Level.UNRESOLVED_LOOPS.toString()) +   	 	
+	        		   SummaryDisplayer.Level.unresolved_loops.toString()) +   	 	
 	           String.format("      level: %s: Show unresolved path(s) + loop + basic block + instruction timing\n", 
-	        		   SummaryDisplayer.Level.UNRESOLVED_INSTRUCTIONS.toString()) +   	
+	        		   SummaryDisplayer.Level.unresolved_instructions.toString()) +   	
 	           String.format("      level: %s: Show path(s) + functions summary\n", 
-	        		   SummaryDisplayer.Level.FUNCTIONS.toString()) +   	            		   
+	        		   SummaryDisplayer.Level.functions.toString()) +   	            		   
 	           String.format("      level: %s: Show path(s) + sources summary", 
-	        		   SummaryDisplayer.Level.SOURCES.toString());      			
+	        		   SummaryDisplayer.Level.sources.toString());      			
 	}
 	
 	public SummaryDisplayer(Console console, Level level, int pathId, XeObject xeObject) {
@@ -103,21 +103,21 @@ public class SummaryDisplayer implements Displayer {
     public void displayRoute(Route route, DebugInfo debugInfo, 
     		MemoryImage memoryImage, SymbolTable symbolTable) {         	
     	switch (m_level) {
-    	case SIMPLE:
+    	case simple:
     	    displaySimple(route);
     	    break;
     	        
-    	case COMPLETE:
-    	case COMPLETE_LOOPS:
-    	case COMPLETE_INSTRUCTIONS:
+    	case complete:
+    	case complete_loops:
+    	case complete_instructions:
     		m_console.display(String.format("Path(id): Timing(ns)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute\n"));     			
          	m_console.display(String.format("+COMPLETE [%d path(s)]\n", route.completePaths().size()));
 	        summarisePaths(route.completePaths(), "    ", null);	        	       
 	        break;
     	
-        case UNRESOLVED:
-        case UNRESOLVED_LOOPS:
-        case UNRESOLVED_INSTRUCTIONS:
+        case unresolved:
+        case unresolved_loops:
+        case unresolved_instructions:
          	m_console.display(String.format("+UNRESOLVED [%d path(s)]\n", route.unresolvedPaths().size()));
 	        ArrayList<Block> unresolvedPaths = new ArrayList<Block>();
 	        for(Unresolved unknown : route.unresolvedPaths()){
@@ -127,15 +127,15 @@ public class SummaryDisplayer implements Displayer {
          	summarisePaths(unresolvedPaths, "    ", null);
 	        break;
 	        
-        case FUNCTIONS:
+        case functions:
         	displayFunctions(route, symbolTable);
         	break;
 
-        case SOURCES:
+        case sources:
         	displaySources(route, debugInfo);
         	break;
         	
-        case PATHID:
+        case pathid:
         	displayPathSummary(route);
         	break;
         	
@@ -179,14 +179,14 @@ public class SummaryDisplayer implements Displayer {
    	    
         for (Block block : path.getPathBlocks()) {
 
-            if ((m_level == Level.COMPLETE_INSTRUCTIONS) || 
-                    (m_level == Level.UNRESOLVED_INSTRUCTIONS))
+            if ((m_level == Level.complete_instructions) || 
+                    (m_level == Level.unresolved_instructions))
                 displayInstructionLevelInfo(block, indent, numExecutions);                
 
-            if ((m_level == Level.COMPLETE_LOOPS) || 
-            	(m_level == Level.COMPLETE_INSTRUCTIONS) ||
-            	(m_level == Level.UNRESOLVED_LOOPS) || 
-            	(m_level == Level.UNRESOLVED_INSTRUCTIONS)) {
+            if ((m_level == Level.complete_loops) || 
+            	(m_level == Level.complete_instructions) ||
+            	(m_level == Level.unresolved_loops) || 
+            	(m_level == Level.unresolved_instructions)) {
               	displayLoopLevelInfo(block, indent, numExecutions);          	
             }
         }
@@ -237,8 +237,8 @@ public class SummaryDisplayer implements Displayer {
     }
 
     private void displayInstructionLevelInfo(Block path, String indent, int numExecutions) {
-        if ((m_level == Level.COMPLETE_INSTRUCTIONS) ||
-            (m_level == Level.UNRESOLVED_INSTRUCTIONS)) {
+        if ((m_level == Level.complete_instructions) ||
+            (m_level == Level.unresolved_instructions)) {
         	
             for (XtaInstruction xtaInstruction : path.getInstructionsThis()) {
                 m_console.display(String.format("%s    (%.1fns) 0x%05x %s %s %s",

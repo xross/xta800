@@ -10,10 +10,10 @@ class Time extends Command {
 		CYCLES,
 	}
 	
-	int m_pc;
-	Mode m_mode;
-	int m_numCycles;
-	float m_timeTaken;
+	private int m_pc;
+	private Mode m_mode;
+	private int m_numCycles;
+	private float m_timeTaken;
 	
 	Time() {
 		m_pc = 0;
@@ -59,8 +59,8 @@ class Time extends Command {
         String descString = "time <pc> <mode> <value>: Sets the time taken for the instruction at the given pc";         
     	if (detailed) {    	    	
         	descString += "\n";
-    		descString += "      mode: ns:     Sets the time this instruction takes in ns\n";
-    		descString += "      mode: cycles: Sets the time this instruction takes in thread cycles";
+    		descString += "          mode: ns:     Sets the time this instruction takes in ns\n";
+    		descString += "          mode: cycles: Sets the time this instruction takes in thread cycles";
     	}
     	return descString;
     }

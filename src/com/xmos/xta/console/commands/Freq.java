@@ -5,7 +5,7 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 
 class Freq extends Command {
-	int m_frequency;
+	private int m_frequency;
 	
 	Freq() {
 		m_frequency = 0;

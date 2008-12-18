@@ -6,21 +6,13 @@ import com.xmos.xta.console.displayers.TraceDisplayer;
 import com.xmos.xta.engine.Engine;
 
 class Trace extends Command {
-	TraceDisplayer.Level m_level;
-	int m_pathId;
+	private int m_pathId;
 
 	Trace() {
-		m_level = TraceDisplayer.Level.ERROR;
 		m_pathId = 0;
 	}
 	
-	Trace(TraceDisplayer.Level level) {
-		m_level = level;
-		m_pathId = 0;
-	}	
-
 	Trace(int pathId) {
-		m_level = TraceDisplayer.Level.PATHID;
 		m_pathId = pathId;
 	}
 	
@@ -37,11 +29,7 @@ class Trace extends Command {
     }        
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = String.format("trace <path id | level>: Display instruction trace for the given path id");
-    	if (detailed) {    	    	
-        	descString += "\n";
-    		descString += TraceDisplayer.getLevelOptionString();
-    	}
+    	String descString = String.format("trace <path id>: Display instruction trace for the given path id");
     	return descString;    	                
     }
 
@@ -55,11 +43,7 @@ class Trace extends Command {
     	    return new Trace(pathId);
 	    }
 	    catch (NumberFormatException e) {
-	    	TraceDisplayer.Level level = TraceDisplayer.checkLevel(args[index + 1]);	        	
-        	if (level == TraceDisplayer.Level.ERROR)
-    	    	return null;
-        	
-        	return new Trace(level);        	
+   	    	return null;
 	    }    	
     }
     
@@ -67,6 +51,6 @@ class Trace extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-        engine.displayRoute(new TraceDisplayer(console, m_level, m_pathId));	
+        engine.displayRoute(new TraceDisplayer(console, m_pathId));	
     }    
 }

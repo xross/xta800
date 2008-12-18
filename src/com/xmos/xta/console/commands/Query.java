@@ -6,7 +6,6 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.PathQuery;
 
 public class Query  extends Command {
-
 	private String m_pathQuery;
 	private String m_expression;
 	
@@ -18,10 +17,11 @@ public class Query  extends Command {
 	public Command clone(String[] args, int index, boolean commandLineMode) {
 		if ((index + numArgs()) >= args.length)
 			return null;
+		
 		String pathQuery = args[index + 1];
 		
-		//sanitise query name
-		if(pathQuery.contains(":") || pathQuery.startsWith("0x")){
+		// Sanitise query name
+		if (pathQuery.contains(":") || pathQuery.startsWith("0x")){
 			return null;
 		} else {
 			m_pathQuery = pathQuery;
@@ -51,5 +51,4 @@ public class Query  extends Command {
 	public int numArgs() {
 		return 2;
 	}
-
 }

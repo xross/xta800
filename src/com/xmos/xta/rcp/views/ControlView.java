@@ -353,6 +353,15 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		if (routeInfo != null) {
 			Route route = routeInfo.getRoute();
 			m_currentRoute.setText(route.getStatusString());
+
+/*			int numUnresolvedPaths = route.unresolvedPaths().size();
+//			if (numUnresolvedPaths > 0) {
+				Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0,
+			            "Status Error Message", null);
+
+		        ErrorDialog.openError(Display.getCurrent().getActiveShell(),
+		            "JFace Error", "Found " + numUnresolvedPaths + " unresolved paths", status);
+//			}*/
 		}
 	}
 
@@ -419,7 +428,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
             while (m_active) {
             	m_display.asyncExec(new Runnable() {
         			public void run() {
-        				m_progress.setText("" + p.getCurValue());
+        				if (m_active) {
+        					m_progress.setText("" + p.getCurValue());
+        				}
         			}});            	
 
             	try {
@@ -503,6 +514,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    m_fileName = new Text(group, SWT.SINGLE);
 	    m_fileName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	    m_fileName.setText("");
+	    m_fileName.setEditable(false);
 
 	    Button loadButton = new Button(composite, SWT.PUSH);
 	    loadButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
@@ -597,6 +609,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    m_currentRoute = new Text(currentGroup, SWT.SINGLE);
 	    m_currentRoute.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	    m_currentRoute.setText("");
+	    m_currentRoute.setEditable(false);
 
 		Group progressGroup = createGroup(composite, "Blocks analysed", 1, 3);
 	    m_progress = new Label(progressGroup, SWT.SHADOW_NONE | SWT.CENTER);

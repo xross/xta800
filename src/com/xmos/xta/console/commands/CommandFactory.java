@@ -5,30 +5,21 @@ import java.util.Vector;
 public class CommandFactory {
 	static private Command[] m_commands = { 
 		new Load(), 
-		new Path(), 
-		new Function(), 
+		new Analyse(), 
 		new List(),
 		new Status(),
 		new Summary(), 
-		new Asm(), 
-		new Src(), 
-		new Mix(),
-		new Trace(), 
-		new Loop(),
-		new Time(),
+		new Print(), 
+		new Set(),
+		new Assert(),
+		new Add(),
+		new Remove(),
 		new Source(),
 		new History(),
 		new Pwd(),
 		new Config(),
 		new Help(), 
-		new Exit(),
-		new TimeBound(),
-		new CycleBound(),
-		new Label(),
-		new Exclude(),
-		new Prohibited(),
-		new Required(),
-		
+		new Exit(),		
 	};
 	
 	public static Command[] getCommands() {

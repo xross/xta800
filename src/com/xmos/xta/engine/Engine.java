@@ -3,6 +3,7 @@ package com.xmos.xta.engine;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import com.xmos.dwarfhandler.DebugEngine;
@@ -25,11 +26,6 @@ public class Engine {
 		PROHIBITED,
 		REQUIRED
 	}
-
-	public enum ExpressionMode {
-		NORESOLVE,
-		RESOLVE
-	}
 	
     private XeLoader m_xeLoader;
     private XeObject m_xeObject;
@@ -46,7 +42,7 @@ public class Engine {
     private Vector<CodeReference> m_exclusions;
     private Vector<CodeReference> m_prohibited;
     private Vector<CodeReference> m_required;
-    private HashMap<Integer, String> m_labels;
+    private HashMap<String, Integer> m_labels;
     
     private boolean m_abort;
     private InstructionDecodeCache m_instructionDecodeCache;
@@ -60,7 +56,7 @@ public class Engine {
     	m_exclusions = new Vector<CodeReference>();
     	m_prohibited = new Vector<CodeReference>();
     	m_required = new Vector<CodeReference>();
-    	m_labels = new HashMap<Integer, String>();
+    	m_labels = new HashMap<String, Integer>();
     	
         m_xeLoader = new XeLoader();
         m_xeObject = null;
@@ -312,8 +308,7 @@ public class Engine {
             return t;
         }
     }
-    
-    
+        
     public void displayRoute() {
         if (m_route != null) { 
             int nodeId = m_route.getNodeId();
@@ -625,26 +620,25 @@ public class Engine {
         return ref.resolve(engine, m_nodeId, m_coreId);
     }
 
-	public void addLabel(int parseInt, String string) {
-		this.m_labels.put(parseInt, string);
+	public void addLabel(String label , int pc) {
+		m_labels.put(label, pc);
 	}
 
-	public String getLabel(int pc) {
-		if (this.m_labels.containsKey(pc)){
-			return m_labels.get(pc);
-		}
-		return null;
+	public void removeLabel(String label) {
+		m_labels.remove(label);
 	}
 	
-	public boolean isLabel(String lbl){
-		return m_labels.containsValue(lbl);
+	public Map<String, Integer> getLabels() {
+		return m_labels;
+	}
+	
+	public boolean isLabel(String label){
+		return m_labels.containsKey(label);
 	}
 	
 	public int getLabelPc(String label){
-		for (int pc : m_labels.keySet()){
-			if(label.equals(m_labels.get(pc))){
-				return pc;
-			}
+		if (m_labels.containsKey(label)) {
+			return m_labels.get(label);
 		}
 		assert(false);
 		return 0;
