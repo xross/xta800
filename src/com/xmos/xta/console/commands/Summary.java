@@ -20,7 +20,7 @@ class Summary extends Command {
 	}
 
 	Summary(int pathId) {
-		m_level = SummaryDisplayer.Level.error;
+		m_level = SummaryDisplayer.Level.pathid;
 		m_pathId = pathId;
 	}
 	
