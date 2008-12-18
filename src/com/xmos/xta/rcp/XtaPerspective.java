@@ -27,7 +27,7 @@ public class XtaPerspective implements IPerspectiveFactory {
         addView(layout, viewsFolder, UnknownsView.ID);
         addView(layout, viewsFolder, FunctionView.ID);
         addView(layout, viewsFolder, StructureView.ID);
-        addView(layout, viewsFolder, FlowView.ID);
+//        addView(layout, viewsFolder, FlowView.ID);
 				
         IFolderLayout controlFolder = layout.createFolder(
         		"control.folder", IPageLayout.LEFT, 0.5f, layout.getEditorArea());        
