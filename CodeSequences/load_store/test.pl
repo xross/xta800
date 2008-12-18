@@ -11,10 +11,10 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/load_store.log 
 }
 
 system("@ARGV load $genDir/test.xe " .
-       "function main " .
-       "src 4 test.xc " .
-       "src 3 test.xc " .
-       "src 6 test.xc " .
-       "src 5 test.xc " .
+       "analyse function main " .
+       "print src 4 test.xc " .
+       "print src 3 test.xc " .
+       "print src 6 test.xc " .
+       "print src 5 test.xc " .
        "exit > $genDir/load_store.txt 2>&1");
 

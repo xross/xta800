@@ -10,9 +10,9 @@ if (!$noBuild) {
 system("xcc -march=$arch -std=c99 -g test.c -o $genDir/test.xe > $genDir/quicksort.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "function sort " .
-       "summary SIMPLE " .
-       "summary COMPLETE_LOOPS " .
-       "summary UNRESOLVED " .
+       "analyse function sort " .
+       "summary simple " .
+       "summary complete_loops " .
+       "summary unresolved " .
        "exit > $genDir/quicksort.txt 2>&1");
 

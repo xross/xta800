@@ -11,12 +11,12 @@ if (!$noBuild) {
 }
 
 system("@ARGV load $genDir/test.xe " .
-        "function main " .
-        "summary SIMPLE " .
-        "summary COMPLETE " .
-        "summary COMPLETE_LOOPS " .
-        "summary COMPLETE_INSTRUCTIONS " .
-        "src 1 test.xc " .
-        "src 2 test.xc " .
+        "analyse function main " .
+        "summary simple " .
+        "summary complete " .
+        "summary complete_loops " .
+        "summary complete_instructions " .
+        "print src 1 test.xc " .
+        "print src 2 test.xc " .
         "exit > $genDir/branch_if_else.txt 2>&1");
 

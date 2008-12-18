@@ -10,8 +10,8 @@ if (!$noBuild) {
 system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/pausable.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "function main " .
-       "summary SIMPLE " .
-       "summary COMPLETE_LOOPS " .
+       "analyse function main " .
+       "summary simple " .
+       "summary complete_loops " .
        "exit > $genDir/pausable.txt 2>&1");
 
