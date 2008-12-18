@@ -370,7 +370,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      			XtaDisplayer.getInstance().notifySetEndPoint(endPoint);
      		}
      	});
-}    
+    }    
     
     protected void editorContextMenuAboutToShow(IMenuManager menu) {
 		if (DEBUG) System.out.printf("XtaEditor: editorContextMenuAboutToShow\n"); 

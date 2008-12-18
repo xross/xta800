@@ -107,22 +107,16 @@ public class Label extends Command {
 		
     	switch (m_operation) {
     	case ADD:
-    		m_ref.resolve(engine);
-    		if (m_ref.isResolved()){    	    		
-   				engine.addLabel(m_label, m_ref.getPc());
-    		} else {
+			if (!engine.addLabel(m_label, m_ref)) {
     			console.display("Error: could not resolve reference: " + m_ref);
     		}		        	        				
-			break;
-			
+			break;			
     	case REMOVE:
 			engine.removeLabel(m_label);
-			break;
-			
+			break;			
     	case LIST:
         	listLabels(engine, console);        	
-    		break;
-    		
+    		break;    		
         default:
            	assert(false);
        		break;
