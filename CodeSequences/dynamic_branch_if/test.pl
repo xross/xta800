@@ -11,11 +11,11 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/dynamic_branch_
 }
 
 system("@ARGV load $genDir/test.xe " .
-        "mode DYNAMIC " .
-       "function main " .
-       "summary SIMPLE " .
-       "summary COMPLETE " .
-       "summary COMPLETE_LOOPS " .
-       "src 0 test.xc " .
+       "config mode resolve " .
+       "analyse function main " .
+       "summary simple " .
+       "summary complete " .
+       "summary complete_loops " .
+       "print src 0 test.xc " .
        "exit > $genDir/dynamic_branch_if.txt 2>&1");
 

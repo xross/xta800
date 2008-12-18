@@ -9,8 +9,8 @@ if (!$noBuild) {
         system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/dynamic_dual_call.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-        "mode DYNAMIC " .
-       "function main " .
-       "summary SIMPLE " .
+       "config mode resolve " .
+       "analyse function main " .
+       "summary simple " .
        "exit > $genDir/dynamic_dual_call.txt 2>&1");
 

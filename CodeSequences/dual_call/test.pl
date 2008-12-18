@@ -9,7 +9,7 @@ if (!$noBuild) {
         system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/dual_call.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "function main " .
-       "summary SIMPLE " .
+       "analyse function main " .
+       "summary simple " .
        "exit > $genDir/dual_call.txt 2>&1");
 

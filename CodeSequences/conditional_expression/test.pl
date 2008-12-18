@@ -11,8 +11,8 @@ if (!$noBuild) {
 }
 
 system("@ARGV load $genDir/test.xe " .
-       "function main " .
-       "summary SIMPLE " .
-       "summary COMPLETE_LOOPS " .
+       "analyse function main " .
+       "summary simple " .
+       "summary complete_loops " .
        "exit > $genDir/conditional_expression.txt 2>&1");
 

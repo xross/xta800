@@ -9,10 +9,10 @@ if (!$noBuild) {
         system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/do_while.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "function main " .
-       "summary SIMPLE " .
-       "summary COMPLETE_LOOPS " .
-       "src 1 test.xc " .
-       "src 2 test.xc " .
+       "analyse function main " .
+       "summary simple " .
+       "summary complete_loops " .
+       "print src 1 test.xc " .
+       "print src 2 test.xc " .
        "exit > $genDir/do_while.txt 2>&1");
 

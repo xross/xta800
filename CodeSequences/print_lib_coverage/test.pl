@@ -11,16 +11,16 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/print_lib_cover
 }
 
 system("@ARGV load $genDir/test.xe " .
-       "function printchar_test " .
-       "function printcharln_test " .
-       "function printint_test " .
-       "function printintln_test " .
-       "function printuint_test " .
-       "function printuintln_test " .
-       "function printhex_test " .
-       "function printhexln_test " .
-       "function printstr_test " .
-       "function printstrln_test " .
-       "summary SIMPLE " .
+       "analyse function printchar_test " .
+       "analyse function printcharln_test " .
+       "analyse function printint_test " .
+       "analyse function printintln_test " .
+       "analyse function printuint_test " .
+       "analyse function printuintln_test " .
+       "analyse function printhex_test " .
+       "analyse function printhexln_test " .
+       "analyse function printstr_test " .
+       "analyse function printstrln_test " .
+       "summary simple " .
        "exit > $genDir/print_lib_coverage.txt 2>&1");
 

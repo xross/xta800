@@ -10,7 +10,7 @@ if (!$noBuild) {
 system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/printint.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "function printint " .
-       "summary SIMPLE " .
+       "analyse function printint " .
+       "summary simple " .
        "exit > $genDir/printint.txt 2>&1");
 
