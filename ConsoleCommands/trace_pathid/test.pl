@@ -10,9 +10,9 @@ if (!$noBuild) {
 system("xcc -march=xs1a -g test.s -o $genDir/test.xe > $genDir/trace_pathid.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "function main " .
-       "summary SIMPLE " .
-       "trace 1 " .
-       "trace 2 " .
+       "analyse function main " .
+       "summary simple " .
+       "print trace 1 " .
+       "print trace 2 " .
        "exit > $genDir/trace_pathid.txt 2>&1");
 

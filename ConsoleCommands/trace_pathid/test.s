@@ -71,7 +71,6 @@ a:
 .linkset main.locnoside, 1
 .linkset main.locnochandec, 1
 .linkset main.nstackwords, 0
-.cc_top main.function,main
 .LDBG14:
           .align    4
 main:
@@ -119,7 +118,6 @@ main:
           .byte     0x0b
           .align    4, 0
 .LDBG25:
-.cc_bottom main.function
 .linkset main.maxchanends, 0
 .linkset main.maxtimers, 0
 .linkset main.maxthreads, 1
