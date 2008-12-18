@@ -32,3 +32,5 @@ test:
 data:
 .word 0
 .word 0
+
+#include "common.s"

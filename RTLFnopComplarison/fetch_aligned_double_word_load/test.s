@@ -5,21 +5,23 @@ _start:
   ldap r11, data
   set sp, r11
   bl main
+  bl _exit
 
 .type main, @function
 .globl main
 main:
   entsp 1
+  ldaw r1, sp[0]
+  set cp, r1
   ldc r0, 1
   bu call
-
+ 
 .align 4
 aligned:
 .skip 2,0
 call:
   bl test
-  # A misaligned long instruction
-  ldw r1, r11[0]
+  ldw r1, cp[64]
   retsp 1
 
 .type test, @function
@@ -32,5 +34,5 @@ test:
 data:
 .word 0
 .word 0
-.word 0
-.word 0
+
+#include "common.s"

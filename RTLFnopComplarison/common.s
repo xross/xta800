@@ -1,13 +1,6 @@
 .text
-.align 2
-.globl _start
-_start:
-  ldap r11, data
-  set sp, r11
-  bl main
 
 _exit:
-_done:
   ldc r0, 7
   ldc r1, 0
   ldc r2, 0
