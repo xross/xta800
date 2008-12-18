@@ -13,3 +13,7 @@ cat vsim.log | grep 0@0 > rtl.log
 ~/scripts/addFnops.pl rtl.log
 cp rtl.log ../
 cp rtl.log.out ../fnop.log
+
+cd ..
+fnoplog=`ls *.txt.expect`
+mv fnop.log $fnoplog
