@@ -13,7 +13,7 @@ import com.xmos.xta.engine.MachineState.BranchState;
 import com.xmos.xta.engine.Status.BlockStatus;
 
 public class Block implements Comparable<Block> {
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	private static final boolean DUMPSTATE = false;
 
 	static enum Mode {
@@ -238,6 +238,7 @@ public class Block implements Comparable<Block> {
 
 		XtaInstruction instruction = m_bc.getInstructionDecodeCache().decode(opcode, pc);
 		int instNumBytes = instruction.getNumBytes();
+
 
 		handleIBuffer(instNumBytes, pc);
 
@@ -529,14 +530,19 @@ public class Block implements Comparable<Block> {
 	private void handleIBuffer(int instNumBytes, int pc) {
 		if (m_machineState.canIssue(instNumBytes, m_currentThread) == false) {
 			XtaInstruction fNop = m_bc.getInstructionDecodeCache().getFNop(pc, 0);
-			addInstruction(fNop);
+			
+			if(!(m_bc.getMode() == Mode.FUNCTION && m_firstStep)){
+				addInstruction(fNop);
+			}
 			m_machineState.fetch(m_currentThread);
 			fNop.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
 
 			// May require two FNOPs if fetching a mis-aligned long
 			if (m_machineState.canIssue(instNumBytes, m_currentThread) == false) {
 				fNop = m_bc.getInstructionDecodeCache().getFNop(pc, 1);
-				addInstruction(fNop);
+				if(!(m_bc.getMode() == Mode.FUNCTION && m_firstStep)){
+					addInstruction(fNop);
+				}
 				m_machineState.fetch(m_currentThread);
 				fNop.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
 			}
