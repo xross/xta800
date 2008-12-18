@@ -11,7 +11,7 @@ my $noBuild = shift(@ARGV);
 my $cwd = getcwd();
 my $suite = basename($cwd);
 
-my $maxdepth = 6;
+my $maxdepth = 5;
 
 my $count =0;
 
@@ -87,7 +87,7 @@ my $depth =0;
 my $string = "";
 
 
-open(OUTFILE, ">test.s") or die "Can't open file to write";
+open(OUTFILE, ">test.S") or die "Can't open file to write";
 print OUTFILE   ".text \n" .
                 "data:\n" .
                 ".word 0\n" .
@@ -98,7 +98,7 @@ print OUTFILE   ".text \n" .
                 ".type main, \@function\n" .
                 ".globl main\n" .
                 "main:\n" .
-                "  entsp 0\n" .
+                #"  entsp 0\n" .
                 "  # initialise data pointer\n" .
                 "  ldap r11, data\n" . 
                 "  set cp, r11\n"; 
@@ -110,7 +110,7 @@ print OUTFILE "  retsp 0\n";
                 
                 
 if (!$noBuild) {
-        system("xcc -march=$arch -nostartfiles test.s -o $genDir/test.xe > $genDir/$suite.log 2>&1");
+        system("xcc -march=$arch -nostartfiles test.S -I ../ -o $genDir/test.xe > $genDir/$suite.log 2>&1");
 }
 
 
