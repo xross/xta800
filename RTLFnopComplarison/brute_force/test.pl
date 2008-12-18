@@ -89,23 +89,28 @@ my $string = "";
 
 open(OUTFILE, ">test.S") or die "Can't open file to write";
 print OUTFILE   ".text \n" .
-                "data:\n" .
-                ".word 0\n" .
                 ".align 2\n" .
                 ".globl _start\n" .
                 "_start:\n" .
+                "  ldap r11, data\n" .
+                "  set sp, r11\n" .
                 "  bl main\n" .
+                "  bl _exit\n" .
                 ".type main, \@function\n" .
                 ".globl main\n" .
+                
                 "main:\n" .
                 #"  entsp 0\n" .
-                "  # initialise data pointer\n" .
                 "  ldap r11, data\n" . 
                 "  set cp, r11\n"; 
                 output_seq($string);
 seq_inst($string, $depth);
 
-print OUTFILE "  retsp 0\n";          
+print OUTFILE "  retsp 0\n" . 
+                ".align 4\n" .
+                "data:\n" .
+                ".word 0\n" . 
+                "#include \"common.s\"\n";
                 
                 
                 
