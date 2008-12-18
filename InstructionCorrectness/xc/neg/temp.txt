@@ -1,10 +1,21 @@
-  0x100c8 main + 0               --FNOP--                    
-  0x100c8 main + 0               ENTSP_u6     i 0x4          
-  0x100ca main + 2               LDC_ru6      r0, i 0x4      
-  0x100cc main + 4               LDWCP_lru6   r11, cp[i 0x0] 
-  0x100d0 main + 8               --FNOP--                    
-  0x100d0 main + 8               EQ_2rus      r0, r0, i 0x0  
-  0x100d2 main + 10              EQ_3r        r0, r0, r11    
-  0x100d4 main + 12              BRFT_ru6     r0, i 0x2      
-  0x100d6 main + 14              BRFU_u6      i 0x2          
-  0x100da main + 18              RETSP_u6     i 0x4          
+Error in arguments:
+To run:
+  xta [commands]: Starts xta tool in console mode.
+  xta -g:         Starts xta tool in gui mode.
+Avaliable console commands:
+  load <xe file>: Loads the given xmos executable file
+  analyse <option> <arg0> <arg1>...: Perform timing analysis
+  list <option> <arg0> <arg1>...: Lists the given set of items
+  status: Display current status
+  summary <path id | level>: Display timing summary for paths/functions
+  print <option> <arg0> <arg1>...: Display path information
+  set <option> <arg0> <arg1>...: Set path information
+  assert <option> <arg0> <arg1>...: Set limts on the analysis phase
+  add <option> <arg0> <arg1>...: Add item to given list
+  remove <option> <arg0> <arg1>...: Remove item from given list
+  source <file name>: Sources the given command file
+  history: Displays the command history
+  pwd: Displays the current working directory
+  config <option> <arg0> <arg1>...: Configures the given option
+  help [command]: Displays help message for the given command
+  exit: Quits the shell
