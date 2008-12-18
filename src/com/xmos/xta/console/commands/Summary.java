@@ -6,11 +6,11 @@ import com.xmos.xta.console.displayers.SummaryDisplayer;
 import com.xmos.xta.engine.Engine;
 
 class Summary extends Command {
-	SummaryDisplayer.Level m_level;
-	int m_pathId;
+	private SummaryDisplayer.Level m_level;
+	private int m_pathId;
 	
 	Summary() {
-		m_level = SummaryDisplayer.Level.ERROR;
+		m_level = SummaryDisplayer.Level.error;
 		m_pathId = 0;
 	}
 	
@@ -20,7 +20,7 @@ class Summary extends Command {
 	}
 
 	Summary(int pathId) {
-		m_level = SummaryDisplayer.Level.PATHID;
+		m_level = SummaryDisplayer.Level.error;
 		m_pathId = pathId;
 	}
 	
@@ -33,7 +33,7 @@ class Summary extends Command {
     }        
 
     public String commandLine() {
-    	if (m_level == SummaryDisplayer.Level.PATHID)
+    	if (m_level == SummaryDisplayer.Level.pathid)
     	    return "summary " + m_pathId;
     	else
     	    return "summary " + m_level;    	
@@ -59,7 +59,7 @@ class Summary extends Command {
         }
         catch (NumberFormatException e) {        	
         	SummaryDisplayer.Level level = SummaryDisplayer.checkLevel(args[index + 1]);	        	
-        	if (level == SummaryDisplayer.Level.ERROR)
+        	if (level == SummaryDisplayer.Level.error)
     	    	return null;
         	
         	return new Summary(level);        	

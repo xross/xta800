@@ -5,7 +5,7 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 
 class Help extends Command {
-	Command m_command;
+	private Command m_command;
 	
 	Help() {
 		m_command = null;

@@ -1,0 +1,49 @@
+package com.xmos.xta.console.commands;
+
+import java.io.File;
+import java.util.Collection;
+
+import com.xmos.xeloader.DebugInfo;
+import com.xmos.xta.console.Console;
+import com.xmos.xta.console.Shell;
+import com.xmos.xta.engine.Engine;
+
+class Sources extends Command {
+	Sources() {
+	}
+
+    public int numArgs() {
+    	return 0;
+    }        
+	
+    public String name() {
+    	return "sources";
+    }        
+
+    public String commandLine() {
+    	return "sources";
+    }
+    
+    public String description(Engine engine, boolean detailed) {
+        return "sources: Lists the source files";      	
+    }
+
+    public Command clone(String[] args, int index, boolean commandLineMode) {
+        return new Sources();
+    }
+    
+    public void execute(Shell shell, Engine engine, Console console) {
+		if (!isExecutableLoaded(engine, console))
+			return;		
+		
+        int nodeId = engine.getNodeId();
+	    int coreId = engine.getCoreId();
+	    DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(nodeId, coreId);
+	    assert(debugInfo != null);        
+		
+    	Collection<File> sourceFiles = debugInfo.getDebugEngine().findFiles("");        
+  	    for (File sourceFile : sourceFiles) {
+  	    	console.display(String.format("- %s\n", sourceFile.getName()));
+    	}    			
+    }
+}

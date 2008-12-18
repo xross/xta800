@@ -5,7 +5,7 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 
 class Mode extends Command {
-	boolean m_resolve;
+	private boolean m_resolve;
 
 	Mode() {
 		m_resolve = false;
@@ -25,32 +25,29 @@ class Mode extends Command {
 
     public String commandLine() {
     	if (m_resolve){
-    		return "mode RESOLVE";
+    		return "mode resolve";
     	} else {
-    		return "mode NORESOLVE";
+    		return "mode noresolve";
     	}
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "mode <mode type> : sets the engine into RESOLVE or NORESOLVE mode";      	
+        return "mode <resolve|noresolve>: Sets the engine the given mode";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
-    	
-    	
+    public Command clone(String[] args, int index, boolean commandLineMode) {    	    	
 		if ((index + numArgs()) >= args.length) 
-			return null;		
-		if(args[index +1].equals("RESOLVE")){
+			return null;
+		
+		if (args[index +1].equals("resolve")){
 			return new Mode(true);
-		} else if(args[index +1].equals("NORESOLVE")){
+		} else if(args[index +1].equals("noresolve")){
 			return new Mode(false);
 		} 
-		return new Mode(m_resolve);
+		return null;
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console))
-			return;			    	
         engine.setResolve(m_resolve);                
    }    
 }

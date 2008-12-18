@@ -1,133 +1,20 @@
 package com.xmos.xta.console.commands;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Vector;
-
-import com.xmos.xeloader.DebugInfo;
-import com.xmos.xta.console.Console;
-import com.xmos.xta.console.Shell;
-import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.CodeReference;
-import com.xmos.xta.engine.PathQuery;
-import com.xmos.xta.engine.Engine.ReferenceMode;
-
-class List extends Command {
-	String m_type;
+class List extends CommandContainer {
+	static private Command[] m_options = { 
+		new Label(Label.Operation.LIST), 
+		new Excluded(Excluded.Operation.LIST), 
+		new Prohibited(Prohibited.Operation.LIST), 
+		new Required(Required.Operation.LIST), 
+		new Functions(),
+		new Sources(),
+		new Queries(),
+	};
 	
-	List() {
-		m_type = "";
-	}
-
-	List(String type) {
-		m_type = type;
-	}
+	List() { super("list"); }
+	List(Command command) { super("list", command); }
 	
-    public int numArgs() {
-    	return 1;
-    }        
-	
-    public String name() {
-    	return "list";
-    }        
-	
-    public String commandLine() {
-    	return "list " + m_type;
-    }
-    
-    public String description(Engine engine, boolean detailed) {    	
-        String descString = "list <type>: Lists all of the given <type> in the currently loaded executable";        
-        if (detailed) {
-        	descString += "\n";
-        	descString += "      required: Lists the required references\n";
-        	descString += "      prohibited: Lists the prohibited references\n";
-        	descString += "      excluded: Lists the excluded references\n";
-        	descString += "      functions: Lists the functions\n";
-        	descString += "      queries: Lists the current queries\n";
-        	descString += "      sources: Lists the files";
-        	
-        }
-        return descString;
-    }
-
-    public Command clone(String[] args, int index, boolean commandLineMode) {
-		if ((index + numArgs()) >= args.length) 
-			return null;		
-
-		String type = args[index + 1];
-        return new List(type);
-    }
-    
-    public void execute(Shell shell, Engine engine, Console console) {
-    	if (m_type.equals("functions")) {
-    		listFunctions(engine, console);
-        } else if (m_type.equals("sources")) {    	
-    		listFiles(engine, console);
-    	} else if (m_type.equals("required")) {    	
-    		listRequirements(engine, console);
-    	} else if (m_type.equals("prohibited")) {    	
-    		listProhibiteds(engine, console);
-    	} else if (m_type.equals("excluded")) {    	
-    		listExcludes(engine, console);
-    	} else if (m_type.equals("queries")) {    	
-    		listQueries(engine, console);
-    	}
-    	else {
-    		console.display(String.format("Error: Invalid list command: %s (Try 'help'..)\n", m_type));
-    	}
-    }    
-    
-    private void listQueries(Engine engine, Console console) {
-		for(PathQuery pq : engine.getPathQueries()){
-			console.display(String.format("- %s %s : %d paths\n", pq.getName(), 
-					pq.getExpression(), pq.getBlocks().size()));
-		}
-		
-	}
-
-	private void listExcludes(Engine engine, Console console) {
-    	for(CodeReference ref : engine.getReference(ReferenceMode.EXCLUSION)){
-    		console.display(String.format("- %s 0x%x\n", ref.getRef(), ref.getPc()));
-    	}
-	}
-
-	private void listProhibiteds(Engine engine, Console console) {
-		for(CodeReference ref : engine.getReference(ReferenceMode.PROHIBITED)){
-    		console.display(String.format("- %s 0x%x\n", ref.getRef(), ref.getPc()));
-    	}
-	}
-
-	private void listRequirements(Engine engine, Console console) {
-    	for(CodeReference ref : engine.getReference(ReferenceMode.REQUIRED)){
-    		console.display(String.format("- %s 0x%x\n", ref.getRef(), ref.getPc()));
-    	}
-	}
-
-	private void listFunctions(Engine engine, Console console) {    	    
-		if (!isExecutableLoaded(engine, console))
-			return;			
-        
-	    int nodeId = engine.getNodeId();
-	    int coreId = engine.getCoreId();
-        Vector<String> functionNames = engine.getXeLoader().getFunctionNames(nodeId, coreId);
-
-        for (String functionName : functionNames) {
-            console.display(String.format("- %s\n", functionName));
-        }
-    }
-
-    private void listFiles(Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console))
-			return;		
-		
-        int nodeId = engine.getNodeId();
-	    int coreId = engine.getCoreId();
-	    DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(nodeId, coreId);
-	    assert(debugInfo != null);        
-		
-    	Collection<File> sourceFiles = debugInfo.getDebugEngine().findFiles("");        
-  	    for (File sourceFile : sourceFiles) {
-  	    	console.display(String.format("- %s\n", sourceFile.getName()));
-    	}    			
-    }
+	protected String getDescription() { return "Lists the given set of items"; }
+	protected Command[] getSubCommands() { return m_options; }
+	protected Command clone(Command command) { return new Add(command); }		
 }

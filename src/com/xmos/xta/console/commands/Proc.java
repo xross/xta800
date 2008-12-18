@@ -5,8 +5,8 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 
 class Proc extends Command {
-	int m_nodeId;
-	int m_coreId;
+	private int m_nodeId;
+	private int m_coreId;
 	
 	Proc() {
 		m_nodeId = 0;

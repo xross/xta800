@@ -5,9 +5,9 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 
 class Loop extends Command {	
-	int m_pathId;
-	boolean m_absolute;
-	int m_iterations;
+	private int m_pathId;
+	private boolean m_absolute;
+	private int m_iterations;
 	
 	Loop() {
 		m_pathId = 0;
@@ -20,9 +20,7 @@ class Loop extends Command {
 		m_absolute = absolute;
 		m_iterations = iterations;
 	}
-	
-	
-	
+			
     public int numArgs() {
     	return 3;
     }        
@@ -43,8 +41,8 @@ class Loop extends Command {
     	String descString = "loop <path> <scope> <iterations>: Sets the number of iterations for the given path";
     	if (detailed) {
         	descString += "\n";
-    		descString += "      scope: RELATIVE/r: Iteration number propagates to the enclosing path (Default)\n";                
-    		descString += "      scope: ABSOLUTE/a: Absolute number of iterations";
+    		descString += "          scope: RELATIVE/r: Iteration number propagates to the enclosing path (Default)\n";                
+    		descString += "          scope: ABSOLUTE/a: Absolute number of iterations";
     	}
     	return descString;
     }

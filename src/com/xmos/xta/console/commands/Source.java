@@ -9,8 +9,8 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 
 class Source extends Command {
-	String m_fileName;
-	boolean m_commandLineMode;
+	private String m_fileName;
+	private boolean m_commandLineMode;
 	
 	Source() {
 		m_fileName = "";

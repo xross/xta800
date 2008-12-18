@@ -5,7 +5,7 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 
 public class Invalid extends Command {
-	String m_invalidCommand;
+	private String m_invalidCommand;
 		
 	public Invalid(String invalidCommand) {
 		m_invalidCommand = invalidCommand;

@@ -8,8 +8,8 @@ import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Engine;
 
 class Mix extends Command {
-	int m_pathId;
-	String m_fileName;
+	private int m_pathId;
+	private String m_fileName;
 
 	Mix() {
 		m_pathId = 0;

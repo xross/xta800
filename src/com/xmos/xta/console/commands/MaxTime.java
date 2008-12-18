@@ -6,15 +6,15 @@ import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Route;
 
-public class CycleBound extends Command  {
-	int m_cycleBound;
+public class MaxTime extends Command  {
+	private int m_maxTime;
 
-	CycleBound() {
-		m_cycleBound = 0;
+	MaxTime() {
+		m_maxTime = 0;
 	}
 	
-	CycleBound(int timeBound) {
-		m_cycleBound = timeBound;
+	MaxTime(int maxTime) {
+		m_maxTime = maxTime;
 	}
 	
     public int numArgs() {
@@ -22,26 +22,27 @@ public class CycleBound extends Command  {
     }        
 
     public String name() {
-    	return "cyclebound";
+    	return "maxtime";
     }        
 
     public String commandLine() {
-    	return "cyclebound " + m_cycleBound;
+    	return "maxtime " + m_maxTime;
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "cyclebound <int (cycles)> : returns PASS of FAIL if the worst case is less than the cycle bound";      	
+        return "maxtime <ns> : Analysis fails at the given time limt";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
-    	
-    	
+    public Command clone(String[] args, int index, boolean commandLineMode) {    	    	
 		if ((index + numArgs()) >= args.length) 
 			return null;
-		
-		int cycles = Integer.parseInt(args[index +1]);
-		
-		return new CycleBound(cycles);
+
+    	int time;
+    	try { time = Integer.parseInt(args[index + 1]); }
+	    catch (NumberFormatException e) {
+	        return null;
+	    }		
+		return new MaxTime(time);
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
@@ -50,8 +51,8 @@ public class CycleBound extends Command  {
 		
 		Route route = engine.getRoute();
         for(Block path : route.completePaths()){
-        	int cycles = path.getNumCycles(true);
-        	if(cycles > m_cycleBound){
+        	double time = path.getTimeTaken(true);
+        	if (time > m_maxTime){
         		console.display("FAIL\n");
         		return;
         	}

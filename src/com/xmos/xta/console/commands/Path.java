@@ -5,8 +5,8 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 
 class Path extends Command {
-	String m_fromRef;
-	String m_toRef;
+	private String m_fromRef;
+	private String m_toRef;
 	
 	Path() {
 		m_fromRef = "";

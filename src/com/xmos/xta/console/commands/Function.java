@@ -5,7 +5,7 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 
 class Function extends Command {
-	String m_functionName;
+	private String m_functionName;
 	
 	Function() {
 		m_functionName = "";

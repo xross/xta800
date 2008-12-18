@@ -8,8 +8,8 @@ import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Engine;
 
 class Src extends Command {
-	int m_pathId;
-	String m_fileName;
+	private int m_pathId;
+	private String m_fileName;
 
 	Src() {
 		m_pathId = 0;

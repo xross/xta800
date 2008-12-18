@@ -229,7 +229,7 @@ public class CodeReference {
     }
 
 	public boolean resolve(Engine engine) {
-		if(engine.isLabel(m_ref)){
+		if (engine.isLabel(m_ref)){
 			m_pc = engine.getLabelPc(m_ref);
 	        m_isResolved = true;
 	        return true;
@@ -239,7 +239,7 @@ public class CodeReference {
 
 	public boolean resolve(Engine engine, int m_nodeId, int m_coreId) {
 		 DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(m_nodeId, m_coreId);
-		if (this.resolve(engine)){
+		if (resolve(engine)){
 			return true;
 		} else {
 			return this.resolve(debugInfo);
