@@ -361,8 +361,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 		        ErrorDialog.openError(Display.getCurrent().getActiveShell(),
 		            "JFace Error", "Found " + numUnresolvedPaths + " unresolved paths", status);
-//			}
-		}*/
+//			}*/
+		}
 	}
 
 	class RunEngineMethodFunc extends Thread {
