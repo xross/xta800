@@ -1,24 +1,16 @@
   [-]load <xe file>: Loads the given xmos executable file
-  [-]path <from ref> <to ref>: Sets a path start and end points
-  [-]function <name>: Sets a path to trace a given function
-  [-]list <type>: Lists all of the given <type> in the currently loaded executable
+  [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
+  [-]list <option> <arg0> <arg1>...: Lists the given set of items
   [-]status: Display current status
   [-]summary <path id | level>: Display timing summary for paths/functions
-  [-]asm <path id>: Display annotated assembly for given path id
-  [-]src <path id> <source file>: Display annotated source file for given path id
-  [-]mix <path id> <source file>: Display annotated source file + assembly instructions for the given path id
-  [-]trace <path id | level>: Display instruction trace for the given path id
-  [-]loop <path> <scope> <iterations>: Sets the number of iterations for the given path
-  [-]time <pc> <mode> <value>: Sets the time taken for the instruction at the given pc
+  [-]print <option> <arg0> <arg1>...: Display path information
+  [-]set <option> <arg0> <arg1>...: Set path information
+  [-]assert <option> <arg0> <arg1>...: Set limts on the analysis phase
+  [-]add <option> <arg0> <arg1>...: Add item to given list
+  [-]remove <option> <arg0> <arg1>...: Remove item from given list
   [-]source <file name>: Sources the given command file
   [-]history: Displays the command history
   [-]pwd: Displays the current working directory
   [-]config <option> <arg0> <arg1>...: Configures the given option
   [-]help [command]: Displays help message for the given command
   [-]exit: Quits the shell
-  [-]timebound <int (ns)> : returns PASS of FAIL if the worst case is less than the time bound
-  [-]cyclebound <int (cycles)> : returns PASS of FAIL if the worst case is less than the cycle bound
-  [-]label <CodeRef> <label>: adds a label to the given pc
-  [-]excluded <add/remove> <ref>: Adds or removes the given reference to the excluded list (post analysis action)
-  [-]prohibited <add/remove> <ref>: Adds or removes the given reference to the prohibited list (during analysis action)
-  [-]required <add/remove> <ref>: Adds or removes the given reference to the required list (post analysis action)
