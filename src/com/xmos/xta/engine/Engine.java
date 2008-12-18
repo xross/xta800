@@ -76,9 +76,10 @@ public class Engine {
         m_progress = new Progress(Progress.State.IDLE, 0, 0);
     }
     
-    public void addReference(ReferenceMode mode, CodeReference ref){
-    	//test for duplicates
-    	//test for conditions where the user want a reference and not a reference
+    public boolean addReference(ReferenceMode mode, CodeReference ref) {    	    	
+        if (!resolveRefernece(ref, this)) {
+        	return false;
+        }    	
     	
     	if (mode == ReferenceMode.EXCLUSION){
     		m_exclusions.add(ref);
@@ -88,23 +89,29 @@ public class Engine {
     		m_required.add(ref);
     	} else{
     		assert(false);
+    		return false;
     	}
+    	return true;
     }
     
     public boolean removeReference(ReferenceMode mode, CodeReference ref){
+        if (!resolveRefernece(ref, this)) {
+        	return false;
+        }    	
+
     	if (mode == ReferenceMode.EXCLUSION){
     		CodeReference cr = findReference(ref, m_exclusions);
-    		if (cr==null) return false;
+    		if (cr == null) return false;
     		m_exclusions.remove(cr);
     		return true;
     	} else if (mode == ReferenceMode.PROHIBITED){
     		CodeReference cr = findReference(ref, m_prohibited);
-    		if (cr==null) return false;
+    		if (cr == null) return false;
     		m_prohibited.remove(cr);
     		return true;
     	} else if (mode == ReferenceMode.REQUIRED){
     		CodeReference cr = findReference(ref, m_required);
-    		if (cr==null) return false;
+    		if (cr == null) return false;
     		m_required.remove(cr);
     		return true;
     	} else {
@@ -243,37 +250,12 @@ public class Engine {
             }
             return t;
         }
-    }
-    
-    
-    private boolean analyseRouteSafley() {
-    	//catch all errors here
-    	boolean t = false;
-    	try {
-			t = analyseRoute();
-		} catch (final java.lang.OutOfMemoryError e) {
-			m_route = null;
-            System.gc();
-            setErrorString("Out of Memory"); 
-            return false;
-		} catch (final java.lang.StackOverflowError e) {
-			m_route = null;
-            System.gc();
-            setErrorString("Out of Memory"); 
-            return false;
-		} catch (Exception e) {
-			//unknown Exception
-			setErrorString("Unknown error: contact Xmos with stack trace"); 
-			e.printStackTrace();
-			return false;
-		} 
-		return t;
-    }
-    
+    }    
 
     public boolean analyseRoute(String from, String to) {
         CodeReference fromRef = new CodeReference(from);
         CodeReference toRef = new CodeReference(to);     
+        
         if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
             setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
                     m_nodeId, m_coreId, m_executableFile));        	
@@ -486,6 +468,30 @@ public class Engine {
         return new Double (0.0);
     }
 
+    private boolean analyseRouteSafley() {
+    	//catch all errors here
+    	boolean t = false;
+    	try {
+			t = analyseRoute();
+		} catch (final java.lang.OutOfMemoryError e) {
+			m_route = null;
+            System.gc();
+            setErrorString("Out of Memory"); 
+            return false;
+		} catch (final java.lang.StackOverflowError e) {
+			m_route = null;
+            System.gc();
+            setErrorString("Out of Memory"); 
+            return false;
+		} catch (Exception e) {
+			//unknown Exception
+			setErrorString("Unknown error: contact Xmos with stack trace"); 
+			e.printStackTrace();
+			return false;
+		} 
+		return t;
+    }
+    
     private void decodeInstructions(){
         int nodeId = 0;
         int coreId = 0;
@@ -620,8 +626,12 @@ public class Engine {
         return ref.resolve(engine, m_nodeId, m_coreId);
     }
 
-	public void addLabel(String label , int pc) {
-		m_labels.put(label, pc);
+	public boolean addLabel(String label , CodeReference ref) {
+        if (resolveRefernece(ref, this)) {
+    		m_labels.put(label, ref.getPc()); 
+    		return true;
+        }    			
+        return false;
 	}
 
 	public void removeLabel(String label) {
