@@ -2,12 +2,16 @@ package com.xmos.xta.rcp.views;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -65,7 +69,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     private Text m_currentRoute;
     private Label m_engineStatus;
     private Label m_progress;
-    
+
     private MemoryUpdater m_memoryUpdater;
     private Group m_memoryGroup;
     private ProgressBar m_memoryUsage;
@@ -90,11 +94,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    m_parent = parent;
 	    m_display = m_parent.getDisplay();
 
-	    ExpandBar bar = new ExpandBar(m_parent, SWT.V_SCROLL | SWT.H_SCROLL);
+	    ExpandBar bar = new ExpandBar(m_parent, SWT.V_SCROLL);
 
-	    createSettingsBar(bar);
-	    createStatusBar(bar);
 	    createControlBar(bar);
+	    createStatusBar(bar);
+	    createSettingsBar(bar);
 	    bar.setSpacing(8);
 	    
 	    m_memoryUpdater = new MemoryUpdater(m_memoryGroup, m_memoryUsage);
@@ -145,6 +149,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	public void dispose() {
 		if (m_memoryUpdater != null) {
 			m_memoryUpdater.end();
+			m_memoryUpdater = null;
+		}
+		if (m_progressUpdater != null) {
+			m_progressUpdater.end();
+			m_progressUpdater = null;
 		}
 	}
 	
@@ -334,6 +343,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	private void setDone(String status) {
         if (m_progressUpdater != null) {
         	m_progressUpdater.end();
+        	m_progressUpdater = null;
         }
     	m_engineStatus.setText(status);
 	}
@@ -392,6 +402,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     class ProgressUpdater extends Thread {
         private Engine m_engine;
         private Label m_progress;
+        private boolean m_active;
 
         public ProgressUpdater(Engine engine, final Label progress) {
             m_engine = engine;
@@ -399,13 +410,13 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         }
 
         public void end() {
-        	m_progressUpdater = null;
+        	m_active = false;
         }
 
         public void run() {
-        	Thread thisThread = Thread.currentThread();
+            m_active = true;
         	final Progress p = m_engine.getProgress();  
-            while (m_progressUpdater == thisThread) {
+            while (m_active) {
             	m_display.asyncExec(new Runnable() {
         			public void run() {
         				m_progress.setText("" + p.getCurValue());
@@ -420,7 +431,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
         	m_display.asyncExec(new Runnable() {
     			public void run() {
-    				m_progress.setText("" + p.getCurValue());
+    				if (m_active) {
+    					m_progress.setText("" + p.getCurValue());
+    				}
     			}});            	
         }
     }
@@ -428,6 +441,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     class MemoryUpdater extends Thread {
         private Group m_memoryGroup;
         private ProgressBar m_memoryUsage;
+        private boolean m_active;
 
         public MemoryUpdater(final Group memoryGroup, final ProgressBar memoryUsage) {
         	m_memoryGroup = memoryGroup;
@@ -435,15 +449,14 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         }
 
         public void end() {
-        	m_memoryUpdater = null;
+        	m_active = false;
         }
 
         public void run() {
-        	Thread thisThread = Thread.currentThread();
-
+            m_active = true;
         	int refreshRate = 50;
         	int i = 0;
-            while (m_memoryUpdater == thisThread) {
+            while (m_active) {
             	if (i == 0) {
 	            	m_display.asyncExec(new Runnable() {
 	        			public void run() {
@@ -452,8 +465,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        				double total = Runtime.getRuntime().totalMemory();
 	        				double free = Runtime.getRuntime().freeMemory();
 	        				int usage = (int)(((total - free) / max) * 100);
-	                    	m_memoryGroup.setText(String.format("Memory used %d%%", usage));
-	        				m_memoryUsage.setSelection(usage);
+	        				
+	        				if (m_active) {
+	        					m_memoryGroup.setText(String.format("Memory used %d%%", usage));
+	        					m_memoryUsage.setSelection(usage);
+	        				}
 	        			}});
             	}
 
