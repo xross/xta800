@@ -12,7 +12,7 @@ my $cwd = getcwd();
 my $suite = basename($cwd);
 
 if (!$noBuild) {
-        system("xcc -march=$arch -nostartfiles test.s -o $genDir/test.xe > $genDir/$suite.log 2>&1");
+        system("xcc -march=$arch -nostartfiles test.S -I ../ -o $genDir/test.xe > $genDir/$suite.log 2>&1");
 }
 
 
