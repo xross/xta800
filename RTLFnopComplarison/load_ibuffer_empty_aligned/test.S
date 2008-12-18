@@ -23,5 +23,7 @@ empty:
   
   
 #include "common.s"
+
+.align 4
 data:
 .word 0

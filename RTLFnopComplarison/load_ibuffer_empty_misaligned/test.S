@@ -23,5 +23,7 @@ empty:
   ldw r0, r11[0]
   retsp 0
 #include "common.s"
+
+.align 4
 data:
 .word 0
