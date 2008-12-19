@@ -475,16 +475,19 @@ public class Engine {
 			t = analyseRoute();
 		} catch (final java.lang.OutOfMemoryError e) {
 			m_route = null;
+			m_progress.setState(Progress.State.IDLE);
             System.gc();
             setErrorString("Out of Memory"); 
             return false;
 		} catch (final java.lang.StackOverflowError e) {
 			m_route = null;
+			m_progress.setState(Progress.State.IDLE);
             System.gc();
             setErrorString("Out of Memory"); 
             return false;
 		} catch (Exception e) {
 			//unknown Exception
+			m_progress.setState(Progress.State.IDLE);
 			setErrorString("Unknown error: contact Xmos with stack trace"); 
 			e.printStackTrace();
 			return false;
