@@ -1,5 +1,5 @@
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[3 path\(s\)\]
-    pathi\(4\)   : 1140.0/57/56/1/14/1/0, path\(4\)
-    pathi\(3\)   : 1140.0/57/56/1/14/1/0, path\(3\)
-    pathi\(1\)   : 740.0/37/36/1/10/1/0, path\(1\)
+    pathi\(4\)   : 1120.0/56/56/0/14/1/0, path\(4\)
+    pathi\(3\)   : 1120.0/56/56/0/14/1/0, path\(3\)
+    pathi\(1\)   : 720.0/36/36/0/10/1/0, path\(1\)
