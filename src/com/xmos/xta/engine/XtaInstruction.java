@@ -402,7 +402,6 @@ public abstract class XtaInstruction extends Instruction {
         Expression branchTarget = new Expression(Expression.OperatorType.ADD);
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
-        System.out.println(Integer.toHexString(branchTarget.getValue()));
     	state.jump(branchTarget);
     }
 
