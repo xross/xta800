@@ -36,7 +36,6 @@ import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Unknown;
 import com.xmos.xta.engine.XtaInstruction;
-import com.xmos.xta.engine.CodeReference.RefType;
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.nodes.Node;
 
@@ -70,14 +69,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private Node m_selectedNode;
     
     private final String m_type;
-    private final String m_fileName;
     private InputLine m_startPointLine;
     private InputLine m_endPointLine;
     
     public XtaEditor(final String type, String fileName) {
 		if (DEBUG) System.out.printf("XtaEditor()\n");
 		m_type = type;
-		m_fileName = fileName;
 
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 
