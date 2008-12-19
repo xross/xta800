@@ -37,18 +37,20 @@ public class InstructionBuffer {
             return true;
     }
     
-    void fetch() {
+    int fetch() {
         // Need room for a word before fetching
         if (m_numBytes <= (IBUFFER_NUM_BYTES - BYTES_PER_WORD))
         {
             // Aligned fetches can get an entire word
             if (isWordAligned(m_pc + m_numBytes)) {
                 m_numBytes += BYTES_PER_WORD;
+                return BYTES_PER_WORD;
             } else {
                 m_numBytes += BYTES_PER_WORD / 2;
+                return BYTES_PER_WORD / 2;
             }
         }
-//        printState();
+        return 0;
     }
 
     void issue(int numBytes) {
@@ -56,7 +58,7 @@ public class InstructionBuffer {
         m_numBytes -= numBytes;
     }
 
-    void branchTo(int targetAddress, boolean isLoadStore) {
+    int branchTo(int targetAddress, boolean isLoadStore) {
         m_pc = targetAddress;
         
         if (isLoadStore) {
@@ -64,13 +66,13 @@ public class InstructionBuffer {
         } else {
             // Word-aligned branches will fetch 2 halves
             if (isWordAligned(targetAddress)) {
-                m_numBytes = 4;
+                m_numBytes = BYTES_PER_WORD;
+                
             } else {
-                m_numBytes = 2;
+                m_numBytes = BYTES_PER_WORD / 2;
             }
         }
-        if (DEBUG)
-            printState();
+        return m_numBytes;
 	}
 
     private boolean isWordAligned(int address) {

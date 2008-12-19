@@ -748,6 +748,9 @@ public abstract class XtaInstruction extends Instruction {
             newStackPointer.addOperand(wordOffset);        	
 
             state.setStackPointerRegister(newStackPointer, thread);
+    	} else {
+    	    // Not actually do a load
+    	    //setIsLoadStore(false);
     	}
     }
 
@@ -1524,7 +1527,7 @@ public abstract class XtaInstruction extends Instruction {
     	    }    	        	    
     	} else {
     	    // Not actually do a load
-    	    setIsLoadStore(false);
+    	    //setIsLoadStore(false);
     	}
     	
     	

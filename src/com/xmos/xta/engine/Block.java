@@ -13,12 +13,19 @@ import com.xmos.xta.engine.MachineState.BranchState;
 import com.xmos.xta.engine.Status.BlockStatus;
 
 public class Block implements Comparable<Block> {
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	private static final boolean DUMPSTATE = false;
+	private static final boolean IBUFFERSTATE = false;
 
 	static enum Mode {
 		FUNCTION, ABSOLUTE
 	}
+	
+	private int m_ibufferBefore;
+	private int m_ibufferAfter;
+	private int m_ibufferFnops;
+	private int m_ibufferFetches;
+	private int m_ibufferIssue;
 	
 	private BlockCommonComponents m_bc;
 
@@ -217,6 +224,15 @@ public class Block implements Comparable<Block> {
 	}
 
 	public void build() throws Exception {
+		
+		if(IBUFFERSTATE) {
+			m_ibufferBefore=0;
+			m_ibufferAfter=0;
+			m_ibufferFnops=0;
+			m_ibufferFetches=0;
+			m_ibufferIssue=0;
+			m_ibufferBefore = m_machineState.getResources().getCurrentIBuffer(m_currentThread).getNumBytes();
+		}
 		int pc = m_machineState.getPc(m_currentThread);
 		if (isProhibited(pc)) {
 			setStatus(BlockStatus.EXCLUDED);
@@ -243,7 +259,6 @@ public class Block implements Comparable<Block> {
 		handleIBuffer(instNumBytes, pc);
 
 		executeInstruction(instruction);
-		
 		addInstruction(instruction);
 		
 		if (DUMPSTATE) dumpState(m_machineState);
@@ -277,7 +292,6 @@ public class Block implements Comparable<Block> {
 				m_route.addUnresolvedPath(unresolved);
 			}
 			releaseMemory();
-			return;
 		} else if (m_machineState.wasJump()) {
 			if (m_machineState.wasJumpResolved()) {
 				int jumpTarget = m_machineState.getJumpTarget();
@@ -287,18 +301,14 @@ public class Block implements Comparable<Block> {
 					Unresolved unresolved = new Unresolved(this, instruction, reason);
 					m_route.addUnresolvedPath(unresolved);
 					releaseMemory();
-					return;
 				} else {
 					if (instruction.getReturn()) {
-						if(DEBUG) System.out.println("pop");
 						popFunction();
 					}
 					checkForLoopFormation(jumpTarget, false, instruction, true, false);
 					if (instruction.getBranchLink()) {
-						if(DEBUG) System.out.println("push");
 						pushFunction(pc);
 					}
-					return;
 				}
 			} else {
 				if (instruction.getReturnLocations().size() > 0) {
@@ -307,14 +317,12 @@ public class Block implements Comparable<Block> {
 					}
 					setStatus(BlockStatus.COMPLETE);
 					releaseMemory();
-					return;
 				} else {
 					setStatus(BlockStatus.UNRESOLVED);
 					String reason  = "Unknown jump target";
 					Unresolved unresolved = new Unresolved(this, instruction, reason);
 					m_route.addUnresolvedPath(unresolved);
 					releaseMemory();
-					return;
 				}
 			}
 		} else if (m_machineState.wasBranch()) {
@@ -337,24 +345,39 @@ public class Block implements Comparable<Block> {
 					setStatus(BlockStatus.COMPLETE);
 					releaseMemory();
 				}
-				return;
 			} else {
 				setStatus(BlockStatus.UNRESOLVED);
 				String reason  = "Unknown branch target";
 				Unresolved unresolved = new Unresolved(this, instruction, reason);
 				m_route.addUnresolvedPath(unresolved);
 				m_machineState = null;
-				return;
 			}
 		} else {
 			checkForLoopFormation(nextPc, false, instruction, false, false);
 			m_firstStep = false;
 			instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
-			
 		}
-
-		//m_firstStep = false;
-		//instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
+		
+		if(IBUFFERSTATE) {
+			m_ibufferAfter = m_machineState.getResources().getCurrentIBuffer(m_currentThread).getNumBytes();
+		}
+		
+		if(IBUFFERSTATE) {
+			System.out.print("start: " + m_ibufferBefore + 
+					" fnop fetches: " + m_ibufferFnops + 
+					" fetches: " + m_ibufferFetches+ 
+					" issues:" + m_ibufferIssue + 
+					" After: " + m_ibufferAfter);
+			int properState = m_ibufferBefore + m_ibufferFnops + m_ibufferFetches - m_ibufferIssue ;
+			
+			if(properState != m_ibufferAfter){
+				System.out.print("  eek");
+				// m_machineState.getResources().getCurrentIBuffer(m_currentThread).m_numBytes = properState;
+			
+				
+			}
+			System.out.println("\n");
+		}
 	}
 
 	private void executeInstruction(XtaInstruction instruction)
@@ -413,16 +436,25 @@ public class Block implements Comparable<Block> {
 		} else {
 			if (isBranch) {
 				MachineState machineState = new MachineState(m_machineState);
-				machineState.branchTo(nextPc, inst.isLoadStore(), m_currentThread);
+				
+
+				m_ibufferBefore = machineState.branchTo(nextPc, inst.isLoadStore(), m_currentThread);
 				new ExecutionState(m_executionState, machineState);
 			} else if (isJump) {
-				m_machineState.branchTo(nextPc, inst.isLoadStore(), m_currentThread);
+				m_ibufferBefore = m_machineState.branchTo(nextPc, inst.isLoadStore(), m_currentThread);
 			} else {
-				m_machineState.setPc(nextPc, m_currentThread);
-				m_machineState.issue(inst.getNumBytes(), m_currentThread);
 				if (!inst.isLoadStore()) {
-					m_machineState.fetch(m_currentThread);
+					
+					int fetched =m_machineState.fetch(m_currentThread);
+					if(IBUFFERSTATE){
+						m_ibufferFetches+=fetched;
+					} 
 				}
+				m_machineState.setPc(nextPc, m_currentThread);
+				if(IBUFFERSTATE){
+					m_ibufferIssue+=inst.getNumBytes();
+				}
+				m_machineState.issue(inst.getNumBytes(), m_currentThread);
 			}
 		}
 	}
@@ -473,7 +505,6 @@ public class Block implements Comparable<Block> {
 		assert (m_instructions != null);
 		assert (inst != null);
 		if(DEBUG) {
-			System.out.print(this.m_contexts.size() + " " );
 			System.out.println(inst);
 		}
 		inst.setBasicNumCycles(m_bc.getM_instructionAttributes().getTiming(inst.getNmenonic()));
@@ -528,13 +559,18 @@ public class Block implements Comparable<Block> {
 	}
 
 	private void handleIBuffer(int instNumBytes, int pc) {
+		
 		if (m_machineState.canIssue(instNumBytes, m_currentThread) == false) {
 			XtaInstruction fNop = m_bc.getInstructionDecodeCache().getFNop(pc, 0);
 			
 			if(!(m_bc.getMode() == Mode.FUNCTION && m_firstStep)){
 				addInstruction(fNop);
 			}
-			m_machineState.fetch(m_currentThread);
+			
+			int fetched1 = m_machineState.fetch(m_currentThread);
+			if(IBUFFERSTATE){
+				m_ibufferFnops+=fetched1;
+			}
 			fNop.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
 
 			// May require two FNOPs if fetching a mis-aligned long
@@ -543,7 +579,10 @@ public class Block implements Comparable<Block> {
 				if(!(m_bc.getMode() == Mode.FUNCTION && m_firstStep)){
 					addInstruction(fNop);
 				}
-				m_machineState.fetch(m_currentThread);
+				int fetched2 = m_machineState.fetch(m_currentThread);
+				if(IBUFFERSTATE){
+					m_ibufferFnops+=fetched2;
+				}
 				fNop.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
 			}
 		}

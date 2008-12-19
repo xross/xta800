@@ -266,16 +266,20 @@ public class MachineState {
         return m_resources.getCurrentIBuffer(thread).canIssue(numBytes);
     }
 
-    void fetch(int thread) {
-    	m_resources.getCurrentIBuffer(thread).fetch();
+    int fetch(int thread) {
+    	
+    	if(m_resources.getCurrentIBuffer(thread).getNumBytes()<6){
+    		 return m_resources.getCurrentIBuffer(thread).fetch();
+    	}
+    	return 0;
     }
 
     void issue(int numBytes, int thread) {
     	m_resources.getCurrentIBuffer(thread).issue(numBytes);
     }
 
-    void branchTo(int branchTarget, boolean isLoadStore, int thread) {
-    	m_resources.getCurrentIBuffer(thread).branchTo(branchTarget, isLoadStore);
+    int branchTo(int branchTarget, boolean isLoadStore, int thread) {
+    	return m_resources.getCurrentIBuffer(thread).branchTo(branchTarget, isLoadStore);
     }
 
     int getNumIBufferBytes(int thread) {
@@ -402,6 +406,7 @@ public class MachineState {
         m_wasJumpResolved = false;
         m_jumpTarget = 0;
         m_wasEventWait = false;
+        
     }
 
     public Expression getBranchTargetExpression() {
