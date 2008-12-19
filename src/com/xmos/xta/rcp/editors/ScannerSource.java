@@ -58,10 +58,20 @@ public class ScannerSource extends RuleBasedScanner {
     	Color color = display.getSystemColor(SWT.COLOR_BLUE);
     	
         String[] keywords = {
-        	"int", "unsigned", "signed", "while", 
-        	"for", "do", "if", "else", "return",
-        	"float", "double", "extern", "static",
-        	"port", "clock"
+            "auto", "else", "return", "union",
+            "break", "enum", "short", "unsigned",
+            "case", "extern", "signed", "void",
+            "char", "for", "sizeof", "volatile",
+            "const", "if", "static", "while",        		
+            "continue", "int", "struct", "default", 
+            "long", "switch", "do", "register", 
+            "typedef", "buffered", "in", "par", 
+            "timer", "chan", "inline", "port", 
+            "transaction", "chanend", "master", "select", 
+            "when", "clock", "out", "slave",        
+            "accept", "claim", "goto", "proc",
+            "asm", "double", "module", "restrict",
+            "assert", "float", "on",        
         };
         
         WordRule rule = new WordRule(new IWordDetector() {
