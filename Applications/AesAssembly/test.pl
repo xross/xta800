@@ -9,8 +9,8 @@ my $noBuild = shift(@ARGV);
 my $directory = "AesAssembly";
 
 if (!$noBuild) {
-        system("xmake>  $genDir/$directory.log>&1");
-        system("mv  aes_test_assembly.xe $genDir/test.xe >  $genDir/$directory.log>&1");
+        system("xmake>  $genDir/$directory.log 2>&1");
+        system("mv  aes_test_assembly.xe $genDir/test.xe >  $genDir/$directory.log 2>&1");
 }
 
 
