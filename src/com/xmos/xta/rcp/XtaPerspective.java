@@ -20,7 +20,7 @@ public class XtaPerspective implements IPerspectiveFactory {
         if (DEBUG) System.out.printf("XtaPerspective: createInitialLayout\n");
 
         IFolderLayout viewsFolder = layout.createFolder(
-        		"views.folder", IPageLayout.BOTTOM, 0.5f, layout.getEditorArea());        
+        		"views.folder", IPageLayout.BOTTOM, 0.8f, layout.getEditorArea());
         
         addView(layout, viewsFolder, ConsoleView.ID);
         addView(layout, viewsFolder, ErrorsView.ID);
@@ -30,11 +30,11 @@ public class XtaPerspective implements IPerspectiveFactory {
 //        addView(layout, viewsFolder, FlowView.ID);
 				
         IFolderLayout controlFolder = layout.createFolder(
-        		"control.folder", IPageLayout.LEFT, 0.5f, layout.getEditorArea());        
+        		"control.folder", IPageLayout.LEFT, 0.3f, layout.getEditorArea());        
         addView(layout, controlFolder, ControlView.ID);
 
         IFolderLayout treeFolder = layout.createFolder(
-        		"tree.folder", IPageLayout.LEFT, 0.5f, layout.getEditorArea());        
+        		"tree.folder", IPageLayout.LEFT, 0.3f, layout.getEditorArea());        
         addView(layout, treeFolder, TreeView.ID);
 
         layout.setEditorAreaVisible(true);
