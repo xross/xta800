@@ -24,8 +24,8 @@ public class RouteNode extends Node {
    
     public String getDescription() {
     	int numPaths = getNodes().size();
-    	String str = "Route found with " + numPaths + " path";
-    	if (numPaths > 1) {
+    	String str = "Found with " + numPaths + " path";
+    	if (numPaths != 1) {
     		str += "s";
     	}
     	return str;
