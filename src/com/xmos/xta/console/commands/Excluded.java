@@ -89,26 +89,24 @@ public class Excluded extends Command {
         if (!isExecutableLoaded(engine, console))
             return;    
 
-        if (m_operation == Operation.LIST) {
-    		listExcludes(engine, console);        	
-        } else {
-            m_ref.resolve(engine);
-            if (m_ref.isResolved()){
-            	switch (m_operation) {
-            	case ADD:
-            		engine.addReference(ReferenceMode.EXCLUSION, m_ref);
-            		break;
-            	case REMOVE:
-            		engine.removeReference(ReferenceMode.EXCLUSION, m_ref);
-            		break;
-                default:
-                	assert(false);
-            		break;
-            	}    	
-            } else {
-            	console.display("Error: Unresolved reference: " + m_ref + "\n");
-            }               	
-        }      
+       	switch (m_operation) {
+       	case ADD:
+       		if (!engine.addReference(ReferenceMode.EXCLUSION, m_ref)) {
+               	console.display("Error: Unable to add reference: " + m_ref + "\n");            			
+       		}
+       		break;
+       	case REMOVE:
+       		if (!engine.removeReference(ReferenceMode.EXCLUSION, m_ref)) {        			
+             	console.display("Error: Unable to remove reference: " + m_ref + "\n");            			
+      		}
+       		break;           		
+       	case LIST:
+       		listExcludes(engine, console);
+       		break;
+        default:
+           	assert(false);
+       		break;
+        }                     
     }  
     
     private void listExcludes(Engine engine, Console console) {    	

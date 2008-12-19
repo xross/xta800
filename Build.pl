@@ -15,6 +15,18 @@ my $HOST;
 my $DOMAIN;
 my $BIN;
 
+my $buildDir = "";
+my $tmpBuildDir = "";
+
+my $tailCmd = "";
+my $platform = "";
+my $config = "";
+my $buildDirProperties = "";
+
+my $eclipseDir = "";
+my $buildOutput = "";
+my $target = "";
+
 my %ALIASES =
   (
     'all' => ['realclean', 'prebuild', 'build', 'install'],
@@ -172,6 +184,8 @@ sub DoBuild
 
 sub DoInstall
 {
+  SetupVars();
+
   XmosBuildLib::InstallFile("$DOMAIN", "${BIN}", "xta.exe");
   #XmosBuildLib::InstallReleaseFile("$DOMAIN", "${BIN}", "xta.exe", "bin");
 
@@ -181,15 +195,12 @@ sub DoInstall
   XmosBuildLib::InstallFile("$DOMAIN", "lib", "xtaswing.jar");
   #XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xtaswing.jar", "bin");
 
-  if ($HOST eq "PC") {
-    XmosBuildLib::InstallFile("$DOMAIN", "bin", "xta.win32.zip");
-  } elsif ($HOST eq "Cygwin") {
-    XmosBuildLib::InstallFile("$DOMAIN", "bin", "xta.cygwin.zip");
-  } elsif ($HOST eq "Mac") {
-    XmosBuildLib::InstallFile("$DOMAIN", "bin", "xta.mac.zip");
-  } else {
-    XmosBuildLib::InstallFile("$DOMAIN", "bin", "xta.linux.zip");
-  }
+  XmosBuildLib::InstallFile("$DOMAIN", "bin", "$target");
+
+  # Unzips the zip file..
+  chdir("$INSTALLPATH") 
+    or die("Unable to chdir to: $INSTALLPATH\n");
+  system("unzip -o $target");
 
   chdir("$BUILDPATH") or die("oops");
 }
@@ -221,15 +232,10 @@ sub CreateXtaFiles
     or die("Failed to move XtaInstructions.java\n");
 }
 
-sub BuildEclipse
+sub SetupVars
 {
-  my $tailCmd    = "";
-  my $platform   = "";
-  my $config     = "";
-
-  my $buildDir    = "$TOOLS_XTA/tmp";
-  my $tmpBuildDir = "$TOOLS_XTA/../tmp";
-  my $buildDirProperties = "";
+  $buildDir    = "$TOOLS_XTA/tmp";
+  $tmpBuildDir = "$TOOLS_XTA/../tmp";
 
   if ($HOST eq "PC") {
     $tailCmd    = "tail -2";
@@ -261,9 +267,14 @@ sub BuildEclipse
     }
   }
 
-  my $eclipseDir  = "$ENV{'ECLIPSE_HOME'}";
-  my $buildOutput = "$TOOLS_XTA/build.output.$platform";
-  my $target      = "xta.$platform.zip";
+  $eclipseDir  = "$ENV{'ECLIPSE_HOME'}";
+  $buildOutput = "$TOOLS_XTA/build.output.$platform";
+  $target      = "xta.$platform.zip";
+}
+
+sub BuildEclipse
+{
+  SetupVars();
 
   rmtree($buildDir);
   rmtree($tmpBuildDir);

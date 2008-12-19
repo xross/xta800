@@ -17,12 +17,18 @@ int main(int argc, char **argv)
   if (findArg("-g", argc, argv))
     jarName = "xtaswing.jar";
 
+  
   if (findJarInPath(jar, jarName))
   {
+    string jvmArgString = "";
+    const char *jvmArgs = getenv("JVM_ARGS");
+    if (jvmArgs != NULL) 
+        jvmArgString = jvmArgs;
+    
     string args;
     getArgString(args, argc, argv);
 
-    string command = "java -jar " + jar + args;
+    string command = "java " + jvmArgString + " -jar " + jar + args;
     int returnCode = run(command.c_str());
     return returnCode;
   }
