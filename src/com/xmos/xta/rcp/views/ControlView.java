@@ -689,7 +689,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    barItem.setText("Settings");
 	    barItem.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
 	    barItem.setControl(composite);
-	    barItem.setExpanded(true);
+	    barItem.setExpanded(false);
 	}
 
 	private Group createGroup(Composite parent, String description, int numColumns, int span) {
