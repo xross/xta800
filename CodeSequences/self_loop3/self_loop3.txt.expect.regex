@@ -3,18 +3,18 @@ Complete paths:   1
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    pathi\(\d+\)   : 240.0/12/12/1/0/1/0, path\(\d+\)
+    path\(\d+\)\s+: 240.0/12/12/1/0/1/0
         \+loop \[1 path\(s\), 0 iteration\(s\)\]
-            pathi\(\d+\)   : 160.0/8/8/0/0/0/0, path\(\d+\)
+            path\(\d+\)\s+: 160.0/8/8/0/0/0/0
                 \+loop \[1 path\(s\), 0 iteration\(s\)\]
-                    pathi\(\d+\)   : 100.0/5/5/0/0/0/0, path\(\d+\)
+                    path\(\d+\)\s+: 100.0/5/5/0/0/0/0
                         \+loop \[1 path\(s\), 0 iteration\(s\)\]
-                            pathi\(\d+\)   : 40.0/2/2/0/0/0/0, path\(\d+\)
+                            path\(\d+\)\s+: 40.0/2/2/0/0/0/0
                 \+loop \[1 path\(s\), 0 iteration\(s\)\]
-                    pathi\(\d+\)   : 40.0/2/2/0/0/0/0, path\(1\)
+                    path\(\d+\)\s+: 40.0/2/2/0/0/0/0
         \+loop \[1 path\(s\), 0 iteration\(s\)\]
-            pathi\(\d+\)   : 100.0/5/5/0/0/0/0, path\(\d+\)
+            path\(\d+\)\s+: 100.0/5/5/0/0/0/0
                 \+loop \[1 path\(s\), 0 iteration\(s\)\]
-                    pathi\(\d+\)   : 40.0/2/2/0/0/0/0, path\(\d+\)
+                    path\(\d+\)\s+: 40.0/2/2/0/0/0/0
         \+loop \[1 path\(s\), 0 iteration\(s\)\]
-            pathi\(\d+\)   : 40.0/2/2/0/0/0/0, path\(\d+\)
+            path\(\d+\)\s+: 40.0/2/2/0/0/0/0
