@@ -15,7 +15,7 @@ if (!$noBuild) {
         system("xcc -march=$arch -nostartfiles test.S -I ../ -o $genDir/test.xe > $genDir/$suite.log 2>&1");
 }
 
-system("@ARGV load $genDir/test.xe function main trace 0 exit > $suite.tmp 2>&1");
+system("@ARGV load $genDir/test.xe analyse function main print trace 0 exit > $suite.tmp 2>&1");
 
 open(INFILE, "$suite.tmp") or die "Can't open input file";
 open(OUTFILE, ">$genDir/$suite.txt") or die "Can't open file to write";

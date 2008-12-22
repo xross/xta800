@@ -12,14 +12,23 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/print_lib_cover
 
 system("@ARGV load $genDir/test.xe " .
        "analyse function printchar_test " .
+       "summary simple " .
        "analyse function printcharln_test " .
+       "summary simple " .
        "analyse function printint_test " .
+       "summary simple " .
        "analyse function printintln_test " .
+       "summary simple " .
        "analyse function printuint_test " .
+       "summary simple " .
        "analyse function printuintln_test " .
+       "summary simple " .
        "analyse function printhex_test " .
+       "summary simple " .
        "analyse function printhexln_test " .
+       "summary simple " .
        "analyse function printstr_test " .
+       "summary simple " .
        "analyse function printstrln_test " .
        "summary simple " .
        "exit > $genDir/print_lib_coverage.txt 2>&1");

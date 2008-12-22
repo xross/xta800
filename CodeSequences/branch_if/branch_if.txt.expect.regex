@@ -3,30 +3,20 @@ Complete paths:   2
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    pathi\(2\)   : 140.0/7/6/1/0/1/0, path\(2\)
-    pathi\(1\)   : 140.0/7/6/1/0/1/0, path\(1\)
+    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
+    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    pathi\(2\)   : 140.0/7/6/1/0/1/0, path\(2\)
-    pathi\(1\)   : 140.0/7/6/1/0/1/0, path\(1\)
+    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
+    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    pathi\(2\)   : 140.0/7/6/1/0/1/0, path\(2\)
-        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
-        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x0 
-        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_ru6 r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F]{5} EQ_2rus r1, r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F]{5} BRFT_ru6 r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F]{5} BRFU_u6 i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F]{5} RETSP_u6 i 0x0 
-    pathi\(1\)   : 140.0/7/6/1/0/1/0, path\(1\)
-        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
-        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x0 
-        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_ru6 r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F]{5} EQ_2rus r1, r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F]{5} BRFT_ru6 r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F]{5} LDC_ru6 r0, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F]{5} RETSP_u6 i 0x0 
+    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
+       \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
+[^^^]
+    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
+       \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
+[^^^]
   1: 
   2: int main\(\)
 \+ 3: {

@@ -9,8 +9,8 @@ my $noBuild = shift(@ARGV);
 my $directory = "AesAssembly";
 
 if (!$noBuild) {
-        system("xmake>  $genDir/$directory.log>&1");
-        system("mv  aes_test_assembly.xe $genDir/test.xe >  $genDir/$directory.log>&1");
+        system("xmake>  $genDir/$directory.log 2>&1");
+        system("mv  aes_test_assembly.xe $genDir/test.xe >  $genDir/$directory.log 2>&1");
 }
 
 
@@ -18,8 +18,8 @@ my $filename = "trace";
 my $compareFnnops = 0;
 
 system("@ARGV load $genDir/test.xe " .
-        "function _Encrypt " .
-        "summary COMPLETE_INSTRUCTIONS " .
+        "analyse function _Encrypt " .
+        "summary complete_instructions " .
         "exit > $genDir/$directory.txt 2>&1");
 
 system("Simulator -c config.txt -t $genDir/test.xe > trace.out");

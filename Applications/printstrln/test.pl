@@ -7,19 +7,18 @@ my $genDir  = shift(@ARGV);
 my $arch    = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 my $directory = "printstrln";
-my $function = "main";
 
 if (!$noBuild) {
-       system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/$directory.log 2>&1");
+        system("xcc -march=$arch -g test.xc -o $genDir/test.xe >  $genDir/$directory.log 2>&1");
 }
+
 
 my $filename = "trace";
 my $compareFnnops = 0;
 
 system("@ARGV load $genDir/test.xe " .
-        "mode DYNAMIC " .
-        "function $function " .
-        "summary COMPLETE_INSTRUCTIONS " .
+        "analyse function _Encrypt " .
+        "summary complete_instructions " .
         "exit > $genDir/$directory.txt 2>&1");
 
 system("Simulator -c config.txt -t $genDir/test.xe > trace.out");
@@ -31,35 +30,25 @@ my $foundFunction = $_;
 $foundFunction = 0;
 while (<INFILE>) {
         my $line = $_;
-        $line =~ s/hello//;
-        if($line =~ m/$function/){
-                if($line =~ m/$function/ && $line =~ m/retsp/){
-                        $foundFunction = 2;
-                } else {
+        if($line =~ m/_Encrypt/ and $foundFunction <2){
+                if($foundFunction == 0) {
                         $foundFunction = 1;
-                }   
-        }     
-        $line =~ s/(.)+-000/0x/;
-        $line =~ s/ (.)+//;
-        if($line !~ m/0x[0-9a-fA-F]{5}/ and $line =~ /0\@0\@0/){
-                if($compareFnnops == 1){
-                        $line = "FNOP\n";
-                } else {
-                        $line = "";
                 }
-        } 
-        if($line eq "\n"){
-                next;
-        }
-        
-        if($foundFunction==1){
-        
+                $line =~ s/(.)+-000/0x/;
+                $line =~ s/ (.)+//;
                 print OUTFILE "$line";
-        }
-        if($foundFunction==2){
-                print OUTFILE "$line";
-                $foundFunction = 0;
-        }
+        } else  {
+
+                if($foundFunction == 1 and $line =~ m/FNOP/ and $compareFnnops == 1){
+                        $line =~ s/0(.)+F/F/;
+                        $line =~ s/ \@(.)+//;
+                        print OUTFILE "$line";
+                } else {
+                        if($line !~ m/FNOP/ and $foundFunction == 1){
+                                $foundFunction = 2;
+                        }
+                }
+        }        
 }
 close(INFILE);
 close(OUTFILE);

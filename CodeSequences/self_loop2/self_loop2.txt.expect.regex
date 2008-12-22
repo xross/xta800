@@ -3,9 +3,9 @@ Complete paths:   1
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    pathi\(\d+\)   : 280.0/14/14/1/0/1/0, path\(\d+\)
+    pathi\(\d+\)   : 280.0/14/13/1/0/1/0, path\(\d+\)
         \+loop \[1 path\(s\), 0 iteration\(s\)\]
-            pathi\(\d+\)   : 200.0/10/10/0/0/0/0, path\(\d+\)
+            pathi\(\d+\)   : 220.0/11/10/1/0/0/0, path\(\d+\)
                 \+loop \[1 path\(s\), 0 iteration\(s\)\]
                     pathi\(\d+\)   : 100.0/5/5/0/0/0/0, path\(\d+\)
                         \+loop \[1 path\(s\), 0 iteration\(s\)\]
