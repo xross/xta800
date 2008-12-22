@@ -3,27 +3,27 @@ Complete paths:   1
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    pathi\(\d+\) +: 300.0/\d+/\d+/\d+/0/1/0, path\(\d+\)
+    path\(\d+\) +: 300.0/\d+/\d+/\d+/0/1/0
         \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
-            pathi\(\d+\) +: 540.0/\d+/\d+/\d+/0/0/0, path\(\d+\)
+            path\(\d+\) +: 540.0/\d+/\d+/\d+/0/0/0
                \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
-                   pathi\(\d+\) +: 240.0/\d+/\d+/\d+/0/0/0, path\(\d+\)
+                   path\(\d+\) +: 240.0/\d+/\d+/\d+/0/0/0
                        \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
-                           pathi\(\d+\) +: 140.0/\d+/\d+/\d+/0/0/0, path\(\d+\)
+                           path\(\d+\) +: 140.0/\d+/\d+/\d+/0/0/0
                \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
-                   pathi\(\d+\) +: 240.0/\d+/\d+/\d+/0/0/0, path\(\d+\)
+                   path\(\d+\) +: 240.0/\d+/\d+/\d+/0/0/0
                        \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
-                           pathi\(\d+\) +: 140.0/\d+/\d+/\d+/0/0/0, path\(\d+\)
+                           path\(\d+\) +: 140.0/\d+/\d+/\d+/0/0/0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    pathi\(\d+\) +: 203300.0/\d+/\d+/\d+/0/1/0, path\(\d+\)
+    path\(\d+\) +: 203300.0/\d+/\d+/\d+/0/1/0
         \+loop \[1 path\(s\)\, 10 iteration\(s\)\]
-            pathi\(\d+\) +: 170780.0/\d+/\d+/\d+/0/10/0, path\(\d+\)
+            path\(\d+\) +: 170780.0/\d+/\d+/\d+/0/10/0
                \+loop \[1 path\(s\)\, 55 iteration\(s\)\]
-                   pathi\(\d+\) +: 154240.0/\d+/\d+/\d+/0/55/1, path\(\d+\)
+                   path\(\d+\) +: 154240.0/\d+/\d+/\d+/0/55/1
                        \+loop \[1 path\(s\)\, 1100 iteration\(s\)\]
-                           pathi\(\d+\) +: 140.0/\d+/\d+/\d+/0/1100/1, path\(\d+\)
+                           path\(\d+\) +: 140.0/\d+/\d+/\d+/0/1100/1
                \+loop \[1 path\(s\)\, 1 iteration\(s\)\]
-                   pathi\(\d+\) +: 3040.0/\d+/\d+/\d+/0/1/0, path\(\d+\)
+                   path\(\d+\) +: 3040.0/\d+/\d+/\d+/0/1/0
                        \+loop \[1 path\(s\)\, 20 iteration\(s\)\]
-                           pathi\(\d+\) +: 140.0/\d+/\d+/\d+/0/20/0, path\(\d+\)
+                           path\(\d+\) +: 140.0/\d+/\d+/\d+/0/20/0

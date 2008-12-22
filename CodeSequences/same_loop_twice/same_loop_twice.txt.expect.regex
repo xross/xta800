@@ -3,11 +3,11 @@ Complete paths:   1
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0, path\(\d+\)
+    path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0
         \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
-            pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/0/0, path\(\d+\)
+            path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/0/0
         \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
-            pathi\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/0/0, path\(\d+\)
+            path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/0/0
   1: 
   2: int delay\(int x\)
 \+ 3: {

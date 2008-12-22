@@ -3,10 +3,10 @@ Complete paths:   1
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    pathi\(0\)   : 120.0/6/6/0/0/1/0, path\(0\)
+    path\(0\)\s+: 120.0/6/6/0/0/1/0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    pathi\(0\)   : 120.0/6/6/0/0/1/0, path\(0\)
+    path\(0\)\s+: 120.0/6/6/0/0/1/0
   1: 
   2: int main\(\)
 \+ 3: \{
