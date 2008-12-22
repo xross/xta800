@@ -194,7 +194,7 @@ public class SummaryDisplayer implements Displayer {
     }
         
     private void displayPathLevelInfo(Block path, String indent, int numExecutions, boolean absolute) {
-        String pathInstanceId = String.format("pathi(%d)", path.getId());
+        String pathId = String.format("path(%d)", path.getId());
 
         if ((path.getStatus() != Status.BlockStatus.COMPLETE) ) {
             String comment = "";
@@ -206,19 +206,18 @@ public class SummaryDisplayer implements Displayer {
                 comment = "found unresolved PC";
                 break;
             }
-            m_console.display(String.format("%s%-11s: %s\n", indent, pathInstanceId, comment));
+            m_console.display(String.format("%s%-11s: %s\n", indent, pathId, comment));
         }
         
-        m_console.display(String.format("%s%-11s: %.1f/%d/%d/%d/%d/%d/%d, path(%d)\n", 
-        		indent, pathInstanceId, 
+        m_console.display(String.format("%s%-11s: %.1f/%d/%d/%d/%d/%d/%d\n", 
+        		indent, pathId, 
         		path.getTimeTaken(true),
         		path.getNumCycles(true),
         		path.getNumInstructions(true), 
         		path.getNumFNops(true),
         		path.getNumPausables(true),
         		numExecutions, 
-        		absolute == true ? 1 : 0,
-        		path.getId()));
+        		absolute == true ? 1 : 0));
     }
     
     private void displayLoopLevelInfo(Block path, String indent, int numIterations) {

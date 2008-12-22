@@ -20,10 +20,9 @@ public class PathQuery {
 		for(Block path : route.completePaths()){
 			TreeSet<Block> allBlocks = new TreeSet<Block>();
 			path.getAllBlocks(allBlocks);
-			for(Block block : allBlocks){
-				//do something with the expressions here
-				
-			}
+			//for(Block block : allBlocks){
+				//do something with the expressions here				
+			//}
 		}
 	}
 	
