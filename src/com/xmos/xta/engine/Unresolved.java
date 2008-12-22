@@ -1,10 +1,10 @@
 package com.xmos.xta.engine;
 
-public class Unresolved {
-	
+public class Unresolved {	
 	private Block m_block;
 	private XtaInstruction m_instruction;
 	private String m_reason;
+	
 	public Unresolved(Block block, XtaInstruction instruction, String reason) {
 		super();
 		m_block = block;

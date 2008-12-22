@@ -2,6 +2,7 @@ package com.xmos.xta.console.displayers;
 
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.Unresolved;
 
 public class DisplayerHelper {
     public static Block getPath(Route route, int pathId) {
@@ -11,6 +12,12 @@ public class DisplayerHelper {
                 return foundPath;
             }
         }
+        for (Unresolved path : route.unresolvedPaths()) {
+        	Block foundPath = getPath(path.getBlock(), pathId);
+            if (foundPath != null) {
+                return foundPath;
+            }
+        }                
         return null;        
     }
     
