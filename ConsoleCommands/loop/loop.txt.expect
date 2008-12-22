@@ -1,16 +1,16 @@
 Path(id): Timing(ns)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 +COMPLETE [1 path(s)]
-    pathi(10)  : 1520.0/76/76/0/0/1/0, path(10)
+    path(10)   : 1520.0/76/76/0/0/1/0
         +loop [1 path(s), 5 iteration(s)]
-            pathi(1)   : 120.0/6/6/0/0/5/0, path(1)
+            path(1)    : 120.0/6/6/0/0/5/0
         +loop [1 path(s), 0 iteration(s)]
-            pathi(3)   : 120.0/6/6/0/0/0/0, path(3)
+            path(3)    : 120.0/6/6/0/0/0/0
         +loop [1 path(s), 0 iteration(s)]
-            pathi(5)   : 120.0/6/6/0/0/0/0, path(5)
+            path(5)    : 120.0/6/6/0/0/0/0
         +loop [1 path(s), 3 iteration(s)]
-            pathi(7)   : 120.0/6/6/0/0/3/0, path(7)
+            path(7)    : 120.0/6/6/0/0/3/0
         +loop [1 path(s), 0 iteration(s)]
-            pathi(9)   : 120.0/6/6/0/0/0/0, path(9)
+            path(9)    : 120.0/6/6/0/0/0/0
   1: int main()
   2: {
   3:   int res = 0;

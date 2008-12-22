@@ -3,13 +3,13 @@ Complete paths:   4
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[4 path\(s\)\]
-    pathi\(4\)   : 1000.0/50/50/0/12/1/0, path\(4\)
-    pathi\(3\)   : 1000.0/50/50/0/12/1/0, path\(3\)
-    pathi\(2\)   : 1000.0/50/50/0/12/1/0, path\(2\)
-    pathi\(1\)   : 1000.0/50/50/0/12/1/0, path\(1\)
+    path\(4\)\s+: 1000.0/50/50/0/12/1/0
+    path\(3\)\s+: 1000.0/50/50/0/12/1/0
+    path\(2\)\s+: 1000.0/50/50/0/12/1/0
+    path\(1\)\s+: 1000.0/50/50/0/12/1/0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[4 path\(s\)\]
-    pathi\(4\)   : 1000.0/50/50/0/12/1/0, path\(4\)
-    pathi\(3\)   : 1000.0/50/50/0/12/1/0, path\(3\)
-    pathi\(2\)   : 1000.0/50/50/0/12/1/0, path\(2\)
-    pathi\(1\)   : 1000.0/50/50/0/12/1/0, path\(1\)
+    path\(4\)\s+: 1000.0/50/50/0/12/1/0
+    path\(3\)\s+: 1000.0/50/50/0/12/1/0
+    path\(2\)\s+: 1000.0/50/50/0/12/1/0
+    path\(1\)\s+: 1000.0/50/50/0/12/1/0

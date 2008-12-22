@@ -1,0 +1,11 @@
+Route: main
+Complete paths:   0
+Unresolved paths: 1
+  0x[0-9a-fA-F]{5} main \+ 0               ENTSP_u6     i 0x4      
+  0x[0-9a-fA-F]{5} main \+ 2               --FNOP--  
+  0x[0-9a-fA-F]{5} main \+ 2               LDC_ru6      r0, i 0x0  
+  0x[0-9a-fA-F]{5} main \+ 4               LDC_ru6      r0, i 0x0  
+  0x[0-9a-fA-F]{5} main \+ 6               LDC_ru6      r0, i 0x0  
+  0x[0-9a-fA-F]{5} main \+ 8               LDC_ru6      r0, i 0x0  
+  0x[0-9a-fA-F]{5} main \+ 10              LDC_ru6      r0, i 0x0  
+  0x[0-9a-fA-F]{5} main \+ 12              BAU_1r       r1  
