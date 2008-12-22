@@ -1,3 +1,31 @@
+Route: printchar_test
+Complete paths:   1
+Unresolved paths: 0
+Route: printcharln_test
+Complete paths:   1
+Unresolved paths: 0
+Route: printint_test
+Complete paths:   9
+Unresolved paths: 0
+Error: Out of Memory
+Route: printint_test
+Complete paths:   9
+Unresolved paths: 0
+Route: printuint_test
+Complete paths:   2
+Unresolved paths: 0
+Route: printuintln_test
+Complete paths:   6
+Unresolved paths: 0
+Route: printhex_test
+Complete paths:   2
+Unresolved paths: 0
+Route: printhexln_test
+Complete paths:   6
+Unresolved paths: 0
+Route: printstr_test
+Complete paths:   2
+Unresolved paths: 0
 Route: printstrln_test
 Complete paths:   6
 Unresolved paths: 0

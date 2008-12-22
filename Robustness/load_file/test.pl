@@ -15,5 +15,5 @@ system("@ARGV load sponge.xe analyse function main exit > $genDir/load_file.txt 
 #exists but isn't an xe
 system("@ARGV load $genDir/john.xe " .
        "analyse function main " .
-       "exit >> $genDir/load_file.txt");
+       "exit >> $genDir/load_file.txt 2>&1");
 
