@@ -66,10 +66,8 @@ public class Block implements Comparable<Block> {
 	 * route analysis
 	 */
 	public Block(BlockCommonComponents bc, int fromPc, int toPc, MachineState machineState, ExecutionState executionState) {
+		if(DEBUG)System.out.println("block 0 started at 0x" + Integer.toHexString(fromPc));
 		bc.getRoute().addNewBlock(this);
-		if (DEBUG)
-			System.out.println("\tstarting original block 0");
-
 		m_numBlocks = 0;
 		initialise(machineState);
 		m_bc = bc;
@@ -148,6 +146,7 @@ public class Block implements Comparable<Block> {
 	}
 
 	public Block(Block block, MachineState machineState, ExecutionState executionState) {
+
 		initialise(machineState);
 		m_status = block.m_status;
 		m_speculative = block.m_speculative;
@@ -172,10 +171,8 @@ public class Block implements Comparable<Block> {
 		m_functionDepth = block.m_functionDepth;
 		m_numFNops = 0;
 		m_numInstructions = 0;
-
-		if (DEBUG)
-			System.out.println("\tstarted new block " + m_id);
 		m_numPausables = 0;
+		if(DEBUG)System.out.println("block " + this.m_id +  " started at 0x" + Integer.toHexString(this.m_machineState.getPc(this.m_currentThread)));
 	}
 
 	public boolean canUnpause() {
@@ -505,7 +502,7 @@ public class Block implements Comparable<Block> {
 		assert (m_instructions != null);
 		assert (inst != null);
 		if(DEBUG) {
-			System.out.println(inst);
+			System.out.println(this.m_id + " " +m_functionDepth + " "+inst);
 		}
 		inst.setBasicNumCycles(m_bc.getM_instructionAttributes().getTiming(inst.getNmenonic()));
 		inst.setConfig(m_bc.getConfig());
