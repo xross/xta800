@@ -142,8 +142,6 @@ public class Expression {
 			assert (expression.m_type == Type.IMMEDIATE);
 			return expression.m_value;
 		} else {
-			long result = 0;
-
 			switch (expression.m_operator) {
 			case ADD:
 				assert (expression.m_numOperands == 2);
