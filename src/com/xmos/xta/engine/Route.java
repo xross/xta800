@@ -388,9 +388,9 @@ public class Route {
 
 	public String getStatusString() {
 	    if (functionName() != null) {
-	    	return String.format("function: %s\n", functionName());
+	    	return String.format("function: %s", functionName());
 	    } else {
-	    	return String.format("path: %s -> %s\n",  fromRef().getRef(), toRef().getRef());
+	    	return String.format("path: %s -> %s",  fromRef().getRef(), toRef().getRef());
 	    }
 	}
 }

@@ -75,7 +75,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     private Spinner m_threadSpinner;
     private Combo m_nodeIds;
     private Combo m_coreIds;
-    
+        
     private volatile ProgressUpdater m_progressUpdater;
 
 	public ControlView() {
@@ -122,6 +122,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			m_engineStatus.setText(STATUS_BUSY);
 			m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
 			m_progressUpdater.start();
+	        m_currentRoute.setText("");
 		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_STATE)) {
 	        updateState();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_START_POINT)) {
@@ -135,6 +136,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			setSelectedFunction(functionName);
 		} else if (event.getProperty().equals(Displayer.NOTIFY_ERROR)) {
 			setDone("Aborted");
+			updateCurrentRoute();
 		}
 	}
 	
