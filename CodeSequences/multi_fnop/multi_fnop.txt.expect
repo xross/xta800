@@ -1,6 +1,6 @@
 Path(id): Timing(ns)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 +COMPLETE [1 path(s)]
-    pathi(0)   : 260.0/13/9/4/0/1/0, path(0)
+    path(0)   : 260.0/13/9/4/0/1/0
         (20.0ns) 0x10002 --FNOP--  
         (20.0ns) 0x10002 ENTSP_u6 i 0x4 
         (20.0ns) 0x10004 --FNOP--  

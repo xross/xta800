@@ -3,10 +3,10 @@ Complete paths:   1
 Unresolved paths: 0
 Path(id): Timing(ns)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 +COMPLETE [1 path(s)]
-    pathi(6)   : 200.0/10/8/2/0/1/0, path(6)
+    path(6)   : 200.0/10/8/2/0/1/0
         +loop [1 path(s), 0 iteration(s)]
-            pathi(1)   : 40.0/2/2/0/0/0/0, path(1)
+            path(1)   : 40.0/2/2/0/0/0/0
         +loop [1 path(s), 0 iteration(s)]
-            pathi(5)   : 120.0/6/6/0/0/0/0, path(5)
+            path(5)   : 120.0/6/6/0/0/0/0
                 +loop [1 path(s), 0 iteration(s)]
-                    pathi(4)   : 40.0/2/2/0/0/0/0, path(1)
+                    path(4)   : 40.0/2/2/0/0/0/0
