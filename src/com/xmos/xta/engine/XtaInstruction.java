@@ -737,7 +737,8 @@ public abstract class XtaInstruction extends Instruction {
 	            stackPointer.resolve();
 	            
 	            int address = stackPointer.getValue();
-	            if(!state.isWithinMemory(address) || !state.is16bitAligned(address) ){
+	            //if(!state.isWithinMemory(address) || !state.is16bitAligned(address) ){
+	            if(!state.is16bitAligned(address) ){
 	            	throw new InstructionExecption(Error.ET_LOAD_STORE);
 	            }
                 state.writeMemory(address, state.getLinkRegister(thread));   
