@@ -35,6 +35,11 @@ public class XtaErrorLog {
 	    if (DEBUG) System.out.printf("XtaErrorLog: getErrorStrings\n");    
 		return m_errorStrings;
 	}
+	
+	public void clearErrorStrings() {
+	    if (DEBUG) System.out.printf("XtaErrorLog: clearErrorStrings\n");    
+	    m_errorStrings.clear();
+	}
 }
 
 

@@ -51,11 +51,19 @@ public class ErrorsView extends ViewPart implements IPropertyChangeListener {
 		
 		if (event.getProperty().equals(Displayer.NOTIFY_ERROR)) {
 			updateDisplay();
+    	} else if (event.getProperty().equals(Displayer.NOTIFY_ANALYSE_PATHS)) {
+    		clearDisplay();
 		}
 	}
 	
 	private void updateDisplay() {
 		if (DEBUG) System.out.printf("Errors: updateDisplay\n"); 
 		m_tableViewer.setInput(XtaErrorLog.getInstance());
+	}
+
+	private void clearDisplay() {
+		if (DEBUG) System.out.printf("Errors: clearDisplay\n"); 
+		XtaErrorLog.getInstance().clearErrorStrings();
+		m_tableViewer.refresh();
 	}
 }
