@@ -1,5 +1,4 @@
 Error: Found 10 unresolved paths
-Route: 0x101a2 -\> 0x10192
 Complete paths:   1
 Unresolved paths: 10
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute

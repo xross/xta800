@@ -1,5 +1,4 @@
 - ref: 0x100d0, pc: 0x100d0
-Route: main
 Complete paths:   1
 Unresolved paths: 0
   1: int a = 2;
@@ -18,7 +17,6 @@ Unresolved paths: 0
   14: }
   15: 
 - ref: 0x100d4, pc: 0x100d4
-Route: main
 Complete paths:   1
 Unresolved paths: 0
   1: int a = 2;
