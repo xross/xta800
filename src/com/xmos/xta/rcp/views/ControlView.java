@@ -2,6 +2,9 @@ package com.xmos.xta.rcp.views;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
@@ -352,14 +355,14 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			Route route = routeInfo.getRoute();
 			m_currentRoute.setText(route.getStatusString());
 
-/*			int numUnresolvedPaths = route.unresolvedPaths().size();
-//			if (numUnresolvedPaths > 0) {
+			int numUnresolvedPaths = route.unresolvedPaths().size();
+			if (numUnresolvedPaths > 0) {
 				Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0,
-			            "Status Error Message", null);
+						"Found " + numUnresolvedPaths + " unresolved path(s)", null);
 
 		        ErrorDialog.openError(Display.getCurrent().getActiveShell(),
-		            "JFace Error", "Found " + numUnresolvedPaths + " unresolved paths", status);
-//			}*/
+		            "Warning", null, status);
+			}
 		}
 	}
 
