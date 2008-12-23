@@ -3,4 +3,4 @@ Complete paths:   1
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    path\(0\)   : 3900.0/195/152/43/0/1/0
+    path\(0\)\s+: 3900.0/195/152/43/0/1/0
