@@ -26,12 +26,13 @@ $foundFunction = 0;
 while (<INFILE>) {
         my $line = $_;
         if($line =~ m/FNOP/){
-                $line = "FNOP\n";
+            $line = "FNOP";
+        } else {
+            $line =~ s/^\s+//;
+            my @fields = split /\s+/, $line;
+            $line = $fields[1];
         }
-        $line =~ s/(.)+-000/0x/;
-        $line =~ s/  //;
-        $line =~ s/ (.)+//;
-        print OUTFILE "$line";
+        print OUTFILE "$line\n";
 }
 close(INFILE);
 close(OUTFILE);
