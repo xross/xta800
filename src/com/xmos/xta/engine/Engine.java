@@ -223,6 +223,7 @@ public class Engine {
     }
 
     public boolean analyseRoute(String functionName) {
+    	System.gc();
         if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
             setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
                     m_nodeId, m_coreId, m_executableFile));        	
@@ -256,6 +257,7 @@ public class Engine {
     }    
 
     public boolean analyseRoute(String from, String to) {
+    	System.gc();
         CodeReference fromRef = new CodeReference(from);
         CodeReference toRef = new CodeReference(to);     
         
