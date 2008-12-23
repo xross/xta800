@@ -149,12 +149,6 @@ public class SummaryDisplayer implements Displayer {
 	}
 	
     private void displaySimple(Route route) {
-        if (route.functionName() != null)
-            m_console.display(String.format("Route: %s\n", route.functionName()));
-        else
-            m_console.display(String.format("Route: %s -> %s\n", 
-                route.fromRef().getRef(), route.toRef().getRef()));
-        
         m_console.display(String.format("Complete paths:   %d\n", route.completePaths().size()));
         m_console.display(String.format("Unresolved paths: %d\n", route.unresolvedPaths().size()));
     }

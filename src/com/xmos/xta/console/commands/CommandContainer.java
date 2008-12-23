@@ -31,7 +31,7 @@ abstract class CommandContainer extends Command {
     }        
 
     public String commandLine() {
-    	return String.format("%s %s", m_option.commandLine(), m_commandName);
+    	return String.format("%s %s", m_commandName, m_option.commandLine());
     }
     
     public String description(Engine engine, boolean detailed) {

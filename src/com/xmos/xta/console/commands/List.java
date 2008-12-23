@@ -16,5 +16,5 @@ class List extends CommandContainer {
 	
 	protected String getDescription() { return "Lists the given set of items"; }
 	protected Command[] getSubCommands() { return m_options; }
-	protected Command clone(Command command) { return new Add(command); }		
+	protected Command clone(Command command) { return new List(command); }		
 }
