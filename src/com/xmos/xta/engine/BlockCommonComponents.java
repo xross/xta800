@@ -7,7 +7,7 @@ import com.xmos.xeloader.SymbolTable;
 
 public class BlockCommonComponents {
 	private Config m_config;
-    private InstructionDecodeCache m_instructionDecodeCache;
+    private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
     private InstructionAttributes m_instructionAttributes;
     private MemoryImage m_memoryImage;
     private SymbolTable m_symbolTable;
@@ -19,13 +19,13 @@ public class BlockCommonComponents {
     
     
 	public BlockCommonComponents(Config m_config,
-			InstructionDecodeCache decodeCache,
+			NodeCoreInstructionCaches nodeCoreInstructionCache,
 			InstructionAttributes attributes, MemoryImage image,
 			SymbolTable table, Vector<CodeReference> m_exclusions, Route m_route,
 			boolean expressions, Block.Mode m_mode, Engine engine) {
 		super();
 		this.m_config = m_config;
-		m_instructionDecodeCache = decodeCache;
+		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
 		m_instructionAttributes = attributes;
 		m_memoryImage = image;
 		m_symbolTable = table;
@@ -42,12 +42,13 @@ public class BlockCommonComponents {
 	public void setConfig(Config m_config) {
 		this.m_config = m_config;
 	}
-	public InstructionDecodeCache getInstructionDecodeCache() {
-		return m_instructionDecodeCache;
+	public NodeCoreInstructionCaches getNodeCoreInstructionCaches() {
+		return m_nodeCoreInstructionCache;
 	}
-	public void setInstructionDecodeCache(InstructionDecodeCache decodeCache) {
-		m_instructionDecodeCache = decodeCache;
+	public void setNodeCoreInstructionCaches(NodeCoreInstructionCaches nodeCoreInstructionCache) {
+		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
 	}
+	
 	public InstructionAttributes getM_instructionAttributes() {
 		return m_instructionAttributes;
 	}

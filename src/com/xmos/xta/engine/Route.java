@@ -42,7 +42,7 @@ public class Route {
 	private Engine m_engine;
 	private RouteStatus m_status;
 	private Progress m_progress;
-	private InstructionDecodeCache m_instructionDecodeCache;
+	private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
 	private ArrayList<Unknown> m_unknowns;
 	private ArrayList<String> m_warnings;
 	private static int m_numRoutes;
@@ -50,23 +50,23 @@ public class Route {
 	private boolean m_resolveExpressions;
 
 	Route(Config config, Progress progress, CodeReference fromRef, CodeReference toRef,
-			int nodeId, int coreId, InstructionDecodeCache instructionDecodeCache,
+			int nodeId, int coreId, NodeCoreInstructionCaches nodeCoreInstructionCache,
 			boolean resolveExpressions) {
 		m_progress = progress;
 		m_fromRef = fromRef;
 		m_toRef = toRef;
 		m_resolveExpressions = resolveExpressions;
-		m_instructionDecodeCache = instructionDecodeCache;
+		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
 		initialise(config, nodeId, coreId);
 
 	}
 
 	Route(Config config, Progress progress, String functionName,
-			int nodeId, int coreId, InstructionDecodeCache instructionDecodeCache,
+			int nodeId, int coreId, NodeCoreInstructionCaches nodeCoreInstructionCache,
 			boolean resolveExpressions) {
 		m_progress = progress;
 		m_functionName = functionName;
-		m_instructionDecodeCache = instructionDecodeCache;
+		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
 		m_resolveExpressions = resolveExpressions;
 		initialise(config, nodeId, coreId);
 	}
@@ -131,13 +131,13 @@ public class Route {
 		BlockCommonComponents bc = null;
 
 		if (m_functionName != null) {
-			bc = new BlockCommonComponents(m_config, m_instructionDecodeCache, m_instructionAttributes, memoryImage, symbolTable, 
+			bc = new BlockCommonComponents(m_config, m_nodeCoreInstructionCache, m_instructionAttributes, memoryImage, symbolTable, 
 					m_engine.getReference(ReferenceMode.PROHIBITED), this, m_resolveExpressions, Block.Mode.FUNCTION, m_engine);
 			assert (symbolTable.symbolExists(m_functionName));
 			int fromPc = symbolTable.symbolAddress(m_functionName);
 			new ExecutionState(this, initialState, bc, fromPc);
 		} else {
-			bc = new BlockCommonComponents(m_config, m_instructionDecodeCache, m_instructionAttributes, memoryImage, symbolTable, 
+			bc = new BlockCommonComponents(m_config, m_nodeCoreInstructionCache, m_instructionAttributes, memoryImage, symbolTable, 
 					m_engine.getReference(ReferenceMode.PROHIBITED), this, m_resolveExpressions, Block.Mode.ABSOLUTE, m_engine);
 			new ExecutionState(this, initialState, bc, m_fromRef.getPc(), m_toRef.getPc());
 		}
@@ -182,11 +182,11 @@ public class Route {
 	}
 
 	boolean setInstructionTimeTaken(int pc, double timeTaken) {
-		return m_instructionDecodeCache.setInstructionTimeTaken(m_engine, pc, timeTaken);
+		return m_nodeCoreInstructionCache.setInstructionTimeTaken(m_engine, pc, timeTaken, m_nodeId, m_coreId);
 	}
 
 	double getInstructionTimeTaken(int pc) {
-		return m_instructionDecodeCache.getInstructionTimeTaken(pc);
+		return m_nodeCoreInstructionCache.getInstructionTimeTaken(pc, m_nodeId, m_coreId);
 	}
 
 	boolean setInstructionNumCycles(int pc, int numCycles) {
@@ -197,11 +197,11 @@ public class Route {
 				break;
 			}
 		}
-		return m_instructionDecodeCache.setInstructionNumCycles(m_engine, pc, numCycles);
+		return m_nodeCoreInstructionCache.setInstructionNumCycles(m_engine, pc, numCycles, m_nodeId, m_coreId);
 	}
 
 	int getInstructionNumCycles(int pc) {
-		return m_instructionDecodeCache.getInstructionNumCycles(pc);
+		return m_nodeCoreInstructionCache.getInstructionNumCycles(pc, m_nodeId, m_coreId);
 	}
 
 	private void initialise(Config config, int nodeId, int coreId) {
