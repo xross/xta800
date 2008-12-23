@@ -45,7 +45,6 @@ public class Engine {
     private HashMap<String, Integer> m_labels;
     
     private boolean m_abort;
-    //private InstructionDecodeCache m_instructionDecodeCache;
     private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
     private boolean m_resolveExpression;
     

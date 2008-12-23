@@ -240,14 +240,14 @@ public class Route {
 
 	private void cleanSchedule() {
 		
-		//needs speeding up
-		ArrayList<ExecutionState> toRemove = new ArrayList<ExecutionState>();
-		for (ExecutionState executionState : m_schedule) {
-			if (executionState.getStatus() == ExecutionStatus.UNRESOLVED || executionState.getStatus() == ExecutionStatus.COMPLETE) {
-				toRemove.add(executionState);
+		Iterator<ExecutionState> shedIter = m_schedule.iterator();
+	    while ( shedIter.hasNext() ){
+	    	ExecutionState e = shedIter.next();
+	    	if (e.getStatus() == ExecutionStatus.UNRESOLVED 
+	    			|| e.getStatus() == ExecutionStatus.COMPLETE) {
+	    		shedIter.remove();
 			}
-		}
-		m_schedule.removeAll(toRemove);
+	    }
 	}
 
 	private ExecutionState nextBlock() {
