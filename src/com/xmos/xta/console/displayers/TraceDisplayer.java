@@ -32,8 +32,9 @@ public class TraceDisplayer implements Displayer {
          	String functionOffsetString = 
          		instruction.getFunctionName() + " + " + instruction.getFunctionOffset();
          	
-         	m_console.display(String.format("%s 0x%05x %-22s %-12s %-15s",
+         	m_console.display(String.format("%s (%.1fns) 0x%05x %-22s %-12s %-15s",
              		canPause,
+             		instruction.getTimeTaken(),
                		instruction.getPc(), 
                		functionOffsetString, 
                		instruction.getNmenonic(), 
