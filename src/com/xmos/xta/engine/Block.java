@@ -230,7 +230,9 @@ public class Block implements Comparable<Block> {
 			m_ibufferIssue=0;
 			m_ibufferBefore = m_machineState.getResources().getCurrentIBuffer(m_currentThread).getNumBytes();
 		}
+		
 		int pc = m_machineState.getPc(m_currentThread);
+		
 		if (isProhibited(pc)) {
 			setStatus(BlockStatus.EXCLUDED);
 			releaseMemory();
@@ -248,14 +250,21 @@ public class Block implements Comparable<Block> {
 
 		m_machineState.setOpcode(opcode);
 		m_machineState.resetInstructionState();
-
-		XtaInstruction instruction = m_bc.getInstructionDecodeCache().decode(opcode, pc);
+		XtaInstruction instruction = m_bc.getNodeCoreInstructionCaches()
+		 .decode(opcode, pc, m_bc.getEngine().getNodeId(), m_bc.getEngine().getCoreId());
+		//XtaInstruction instruction = m_bc.getInstructionDecodeCache().decode(opcode, pc);
 		int instNumBytes = instruction.getNumBytes();
 
 
 		handleIBuffer(instNumBytes, pc);
 
-		executeInstruction(instruction);
+		boolean success = executeInstruction(instruction);
+		
+		if(!success) {
+			
+			return;
+		}
+		
 		addInstruction(instruction);
 		
 		if (DUMPSTATE) dumpState(m_machineState);
@@ -270,8 +279,11 @@ public class Block implements Comparable<Block> {
 			addUnknown(instruction);
 		}
 		
-		m_contexts.peek().add(pc);
-
+		if(m_contexts != null){
+			m_contexts.peek().add(pc);
+		} else {
+			System.err.println("contexts disappered!");
+		}
 		int nextPc = pc + instNumBytes;
 		
 		if (m_machineState.wasEventWait()) {
@@ -377,19 +389,19 @@ public class Block implements Comparable<Block> {
 		}
 	}
 
-	private void executeInstruction(XtaInstruction instruction)
+	private boolean executeInstruction(XtaInstruction instruction) 
 			throws Exception {
 		try {
 			instruction.execute(m_machineState, m_currentThread);
+			return true;
 		} catch (InstructionExecption e) {
+			
 			if(m_bc.isResolveExpressions()){
 				//die when we wont be able to be sure of everything anymore
 				setStatus(BlockStatus.UNRESOLVED);
 				String reason  = e.getMessage();
 				Unresolved unresolved = new Unresolved(this, instruction, reason);
 				m_route.addUnresolvedPath(unresolved);
-				releaseMemory();
-			return;
 			} else {
 				//continue on if not fatal
 				if(e.isFatal()){
@@ -397,12 +409,14 @@ public class Block implements Comparable<Block> {
 					String reason  = e.getMessage();
 					Unresolved unresolved = new Unresolved(this, instruction, reason);
 					m_route.addUnresolvedPath(unresolved);
-					releaseMemory();
 				} else {
+					return true;
 					//addUnknown(instruction);
 				}
 			}	
 		}
+		releaseMemory();
+		return false;
 	}
 
 	private void addUnknown(XtaInstruction inst) {
@@ -558,8 +572,7 @@ public class Block implements Comparable<Block> {
 	private void handleIBuffer(int instNumBytes, int pc) {
 		
 		if (m_machineState.canIssue(instNumBytes, m_currentThread) == false) {
-			XtaInstruction fNop = m_bc.getInstructionDecodeCache().getFNop(pc, 0);
-			
+			XtaInstruction fNop = m_bc.getNodeCoreInstructionCaches().getFNop(pc, 0, m_bc.getEngine().getNodeId(), m_bc.getEngine().getCoreId());
 			if(!(m_bc.getMode() == Mode.FUNCTION && m_firstStep)){
 				addInstruction(fNop);
 			}
@@ -572,7 +585,7 @@ public class Block implements Comparable<Block> {
 
 			// May require two FNOPs if fetching a mis-aligned long
 			if (m_machineState.canIssue(instNumBytes, m_currentThread) == false) {
-				fNop = m_bc.getInstructionDecodeCache().getFNop(pc, 1);
+				fNop = m_bc.getNodeCoreInstructionCaches().getFNop(pc, 1, m_bc.getEngine().getNodeId(), m_bc.getEngine().getCoreId());
 				if(!(m_bc.getMode() == Mode.FUNCTION && m_firstStep)){
 					addInstruction(fNop);
 				}

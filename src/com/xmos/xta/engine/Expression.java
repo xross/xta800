@@ -4,6 +4,9 @@ import com.xmos.isa.Instruction;
 import com.xmos.xta.engine.InstructionExecption.Error;
 
 public class Expression {
+	
+	public final static boolean m_keepExpressions = false;
+	
 	public enum Type {
 		IMMEDIATE, REGISTER, MEMORY,
 	}
@@ -83,13 +86,28 @@ public class Expression {
 	}
 
 	void resolve() throws Exception {
-		if ((m_numOperands > 0) && canResolve()) {
-			m_address = 0;
-			m_value = resolve(this);
-			m_type = Type.IMMEDIATE;
-			m_status = Status.DEFINED;
-			m_numOperands = 0;
+		if ((m_numOperands > 0) ){
+			if(canResolve()) {
+				m_address = 0;
+				m_value = resolve(this);
+				m_type = Type.IMMEDIATE;
+				m_status = Status.DEFINED;
+				m_numOperands = 0;
+				if(!m_keepExpressions){
+					m_operands = null;
+				}
+			} else {
+				if (!m_keepExpressions){
+					m_address = 0;
+					m_value = 0;
+					m_type = Type.IMMEDIATE;
+					m_status = Status.UNDEFINED;
+					m_numOperands = 0;
+					m_operands = null;
+				}
+			}
 		}
+		
 	}
 
 	boolean isResolved() {

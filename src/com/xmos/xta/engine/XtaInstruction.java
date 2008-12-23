@@ -17,7 +17,6 @@ import com.xmos.xta.engine.resources.Thread.StatusRegister;
 
 public abstract class XtaInstruction extends Instruction {
 	private static final boolean m_debug = false;
-	private static final boolean m_verbose = false;
 	private static final boolean m_uninplimented = true;
   
 
@@ -132,12 +131,7 @@ public abstract class XtaInstruction extends Instruction {
 		state.m_op1 = new Expression(Expression.OperatorType.ADD);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
-		if (m_verbose) {
-			System.out.printf("add r%d[%s], r%d[%s], r%d[%s]\n",
-					state.m_op1Fld, state.m_op1.getStringValue(), 
-					state.m_op2Fld, state.m_op2.getStringValue(), 
-					state.m_op3Fld, state.m_op3.getStringValue());
-		}
+    	state.m_op1.resolve();
 	}
     
     void AND(MachineState state, int thread) throws Exception {
@@ -146,12 +140,7 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1 = new Expression(Expression.OperatorType.AND);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
-    	if (m_verbose) {
-			System.out.printf("and r%d[%s], r%d[%s], r%d[%s]\n",
-					state.m_op1Fld, state.m_op1.getStringValue(), 
-					state.m_op2Fld, state.m_op2.getStringValue(), 
-					state.m_op3Fld, state.m_op3.getStringValue());
-		}
+    	state.m_op1.resolve();
     }
     
     void ANDNOT(MachineState state, int thread) throws Exception {
@@ -161,12 +150,7 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op1);
     	result.addOperand(state.m_op2);
     	state.m_op1 = result;
-    	if (m_verbose) {
-			System.out.printf("andnot r%d[%s], r%d[%s]\n",
-					state.m_op1Fld, state.m_op1.getStringValue(), 
-					state.m_op2Fld, state.m_op2.getStringValue());
-		}
-
+    	state.m_op1.resolve();
     }
     
     void ASHR(MachineState state, int thread) throws Exception {
@@ -176,23 +160,14 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op2);
     	result.addOperand(state.m_op3);
     	state.m_op1 = result;
-    	if (m_verbose) {
-			System.out.printf("ashr r%d[%s], r%d[%s], r%d[%s]\n",
-					state.m_op1Fld, state.m_op1.getStringValue(), 
-					state.m_op2Fld, state.m_op2.getStringValue(), 
-					state.m_op3Fld, state.m_op3.getStringValue());
-		}
-    	
+    	state.m_op1.resolve();
     }
     
     void BAU(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
     	    System.out.printf("0x%08x: BAU\n", getPc());
+    	state.m_op1.resolve();
     	state.jump(state.m_op1);
-    	if (m_verbose) {
-			System.out.printf("bau r%d[%s]\n",
-					state.m_op1Fld, state.m_op1.getStringValue());
-		}
     }
     
     void BITREV(MachineState state, int thread) throws Exception {
@@ -200,23 +175,18 @@ public abstract class XtaInstruction extends Instruction {
             System.out.printf("0x%08x: BITREV\n", getPc());
     	state.m_op1 = new Expression(Expression.OperatorType.BITREV);
     	state.m_op1.addOperand(state.m_op2);
-    	if (m_verbose) {
-			System.out.printf("bitrev r%d[%s], r%d[%s]\n",
-					state.m_op1Fld, state.m_op1.getStringValue(), 
-					state.m_op2Fld, state.m_op2.getStringValue());
-		}
+    	state.m_op1.resolve();
     }
 
     void BLA(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: BLA\n", getPc());
     	state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
+    	
+    	state.getLinkRegister(thread).resolve();
     	state.jump(state.m_op1);
     	setBranchLink(true);
-    	if (m_verbose) {
-			System.out.printf("bla r%d[%s]\n",
-					state.m_op1Fld, state.m_op1.getStringValue());
-		}
+
     }
 
     void BLACP(MachineState state, int thread) throws Exception {
@@ -234,8 +204,10 @@ public abstract class XtaInstruction extends Instruction {
     	
     	if(loadLocation.canResolve()){
     		Expression branchTarget = state.readMemory(loadLocation.getValue());
+    		branchTarget.resolve();
     		state.jump(branchTarget);
     		state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
+    		state.getLinkRegister(thread).resolve();
     		setBranchLink(true);    
     	} else {
     		
@@ -259,8 +231,10 @@ public abstract class XtaInstruction extends Instruction {
     	
     	if(loadLocation.canResolve()){
     		Expression branchTarget = state.readMemory(loadLocation.getValue());
+    		branchTarget.resolve();
     		state.jump(branchTarget);
     		state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
+    		state.getLinkRegister(thread).resolve();
     		setBranchLink(true);    
     	} else {
     		
@@ -278,12 +252,14 @@ public abstract class XtaInstruction extends Instruction {
         Expression branchTarget = new Expression(Expression.OperatorType.SUB);
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
-        
+        branchTarget.resolve();
     	state.jump(branchTarget);
     	state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
+    	state.getLinkRegister(thread).resolve();
         setBranchLink(true);
     }
 
+    
     void BLRF(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: BLRF\n", getPc());
@@ -295,9 +271,10 @@ public abstract class XtaInstruction extends Instruction {
         Expression branchTarget = new Expression(Expression.OperatorType.ADD);
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
-        
+        branchTarget.resolve();
     	state.jump(branchTarget);
     	state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
+    	state.getLinkRegister(thread).resolve();
         setBranchLink(true);
     }
 
@@ -312,7 +289,7 @@ public abstract class XtaInstruction extends Instruction {
         Expression branchTarget = new Expression(Expression.OperatorType.SUB);
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
-        
+         branchTarget.resolve();
     	state.branch(false, state.m_op1, branchTarget);
     }
 
@@ -327,7 +304,7 @@ public abstract class XtaInstruction extends Instruction {
         Expression branchTarget = new Expression(Expression.OperatorType.SUB);
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
-        
+        branchTarget.resolve();
     	state.branch(true, state.m_op1, branchTarget);
     }
 
@@ -342,7 +319,7 @@ public abstract class XtaInstruction extends Instruction {
         Expression branchTarget = new Expression(Expression.OperatorType.SUB);
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
-        
+        branchTarget.resolve();
     	state.jump(branchTarget);
     }
 
@@ -357,7 +334,7 @@ public abstract class XtaInstruction extends Instruction {
         Expression branchTarget = new Expression(Expression.OperatorType.ADD);
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
-        
+        branchTarget.resolve();
     	state.branch(false, state.m_op1, branchTarget);
     }
 
@@ -372,7 +349,7 @@ public abstract class XtaInstruction extends Instruction {
     	Expression branchTarget = new Expression(Expression.OperatorType.ADD);
     	branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
-    	
+    	branchTarget.resolve();
         state.branch(true, state.m_op1, branchTarget);
     }
 
@@ -387,7 +364,7 @@ public abstract class XtaInstruction extends Instruction {
         Expression branchTarget = new Expression(Expression.OperatorType.ADD);
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
-
+        branchTarget.resolve();
         state.jump(branchTarget);
     }
 
@@ -402,6 +379,7 @@ public abstract class XtaInstruction extends Instruction {
         Expression branchTarget = new Expression(Expression.OperatorType.ADD);
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
+        branchTarget.resolve();
     	state.jump(branchTarget);
     }
 
@@ -410,6 +388,7 @@ public abstract class XtaInstruction extends Instruction {
             System.out.printf("0x%08x: BYTEREV\n", getPc());
     	state.m_op1 = new Expression(Expression.OperatorType.BYTEREV);
     	state.m_op1.addOperand(state.m_op2);
+    	state.m_op1.resolve();
     }
 
     void CHKCT(MachineState state, int thread) throws Exception {
@@ -420,6 +399,8 @@ public abstract class XtaInstruction extends Instruction {
     	}
     }
 
+    
+    //TODO
     void CLRE(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: CLRE\n", getPc());	

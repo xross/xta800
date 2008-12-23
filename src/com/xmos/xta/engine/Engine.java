@@ -45,7 +45,7 @@ public class Engine {
     private HashMap<String, Integer> m_labels;
     
     private boolean m_abort;
-    private InstructionDecodeCache m_instructionDecodeCache;
+    private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
     private boolean m_resolveExpression;
     
     private ArrayList<PathQuery> m_pathQueries;
@@ -59,6 +59,7 @@ public class Engine {
     	m_labels = new HashMap<String, Integer>();
     	
         m_xeLoader = new XeLoader();
+        
         m_xeObject = null;
         m_route = null;
         m_previousRoute = null;
@@ -194,6 +195,7 @@ public class Engine {
             if (m_xeObject == null) {
                 m_xeObject = new XeObject(m_xeLoader);
             }
+            m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);
             decodeInstructions();
             //addBranchTargets();
             m_route = null;
@@ -220,6 +222,7 @@ public class Engine {
     }
 
     public boolean analyseRoute(String functionName) {
+    	System.gc();
         if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
             setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
                     m_nodeId, m_coreId, m_executableFile));        	
@@ -233,7 +236,7 @@ public class Engine {
         else {     
             m_previousRoute = m_route;
             m_route = new Route(m_config, m_progress, functionName,
-            		m_nodeId, m_coreId, m_instructionDecodeCache,
+            		m_nodeId, m_coreId, m_nodeCoreInstructionCache,
             		m_resolveExpression);
 
             boolean t = analyseRouteSafley();
@@ -253,6 +256,7 @@ public class Engine {
     }    
 
     public boolean analyseRoute(String from, String to) {
+    	System.gc();
         CodeReference fromRef = new CodeReference(from);
         CodeReference toRef = new CodeReference(to);     
         
@@ -272,7 +276,7 @@ public class Engine {
         else {    
             m_previousRoute = m_route;                   
             m_route = new Route(m_config, m_progress, fromRef, toRef,
-            		m_nodeId, m_coreId, m_instructionDecodeCache,
+            		m_nodeId, m_coreId, m_nodeCoreInstructionCache,
             		m_resolveExpression);
             boolean t = analyseRouteSafley();
             if (t) {
@@ -496,11 +500,10 @@ public class Engine {
     }
     
     private void decodeInstructions(){
-        int nodeId = 0;
-        int coreId = 0;
-        m_instructionDecodeCache = new InstructionDecodeCache(
-                m_xeLoader.getSymbolTable(nodeId, coreId), getXeLoader().getArchitecture());
-       
+        int nodeId = m_nodeId;
+        int coreId = m_coreId;
+
+        
         int lastPc = 0;
         HashMap <Integer, ArrayList<Integer>> instructionEntryPc = new HashMap<Integer, ArrayList<Integer>>();
         for (Function function : m_xeObject.getFunctions()){
@@ -510,7 +513,9 @@ public class Engine {
 	            for (Line assembly : function.getChildern()){
 	                int pc = assembly.getLineNumber();
 	                int opcode = getOpcode(pc, nodeId,coreId);
-	                if (m_instructionDecodeCache.decode(opcode, pc).getNmenonic().startsWith("RETSP")){
+	                
+	                
+	                if (m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().startsWith("RETSP")){
 	                    ArrayList<Integer> retsps = instructionEntryPc.get(functionEntry);
 	                    if (retsps==null){
 	                        retsps = new ArrayList<Integer>();
@@ -525,20 +530,20 @@ public class Engine {
         int pc =m_xeLoader.getMemoryImage(nodeId, coreId).getMemoryBase();
         while (pc <= lastPc){
             int opcode = getOpcode(pc, nodeId,coreId);
-            int currentTarget = m_instructionDecodeCache.decode(opcode, pc).getBranchPcRelativeTargetPc();
-            if (currentTarget>0 && m_instructionDecodeCache.decode(opcode, pc).getNmenonic().startsWith("BL")){
+            int currentTarget = m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getBranchPcRelativeTargetPc();
+            if (currentTarget>0 && m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().startsWith("BL")){
                 if (instructionEntryPc.get(currentTarget)!=null){
                     for (int targetPc : instructionEntryPc.get(currentTarget)){
                         int opcodeRetsp = getOpcode(targetPc, nodeId,coreId);
                         int pcOpcode = getOpcode(pc, nodeId,coreId);
-                        XtaInstruction inst = m_instructionDecodeCache.decode(pcOpcode, pc);
-                        m_instructionDecodeCache.decode(opcodeRetsp, targetPc).addReturnLocation(inst);
+                        XtaInstruction inst = m_nodeCoreInstructionCache.decode(pcOpcode, pc, nodeId, coreId);
+                        m_nodeCoreInstructionCache.decode(opcodeRetsp, targetPc, nodeId, coreId).addReturnLocation(inst);
                     }
                 } else {
                     //this is the case where dosyscall has been hit
                 }
             }
-            pc += m_instructionDecodeCache.decode(opcode, pc).getNumBytes();
+            pc += m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNumBytes();
         }
     }
 
