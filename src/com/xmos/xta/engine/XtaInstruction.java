@@ -400,7 +400,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     
-    //TODO
+    
     void CLRE(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: CLRE\n", getPc());	
@@ -470,6 +470,7 @@ public abstract class XtaInstruction extends Instruction {
             System.out.printf("0x%08x: CLZ\n", getPc());	
     	state.m_op1 = new Expression(Expression.OperatorType.CLZ);
     	state.m_op1.addOperand(state.m_op2);
+    	state.m_op1.resolve();
     }
 
     void CRC32(MachineState state, int thread) throws Exception {
@@ -480,6 +481,7 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op2);
     	result.addOperand(state.m_op3);    	
     	state.m_op1 = result;
+    	state.m_op1.resolve();
     }
 
     void CRC8(MachineState state, int thread) throws Exception {
@@ -505,6 +507,8 @@ public abstract class XtaInstruction extends Instruction {
     	
     	state.m_op4 = scrdest;
     	state.m_op1 = dest;
+    	state.m_op1.resolve();
+    	state.m_op4.resolve();
     	
     }
 
@@ -538,6 +542,7 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1 = new Expression(Expression.OperatorType.DIVS);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
+    	state.m_op1.resolve();
     }
 
     void DIVU(MachineState state, int thread) throws Exception {
@@ -546,6 +551,7 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1 = new Expression(Expression.OperatorType.DIVU);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
+    	state.m_op1.resolve();
     }
 
     void DRESTSP(MachineState state, int thread) throws Exception {
@@ -729,6 +735,7 @@ public abstract class XtaInstruction extends Instruction {
             newStackPointer.addOperand(wordOffset);        	
 
             state.setStackPointerRegister(newStackPointer, thread);
+            state.getStackPointerRegister(thread).resolve();
     	} else {
     	    // Not actually do a load
     	    //setIsLoadStore(false);
@@ -742,6 +749,8 @@ public abstract class XtaInstruction extends Instruction {
         state.m_op1 = new Expression(Expression.OperatorType.EQ);
         state.m_op1.addOperand(state.m_op2);
         state.m_op1.addOperand(state.m_op3);
+        state.m_op1.resolve();
+        
     }
 
     void EXTDP(MachineState state, int thread) throws Exception {
@@ -763,6 +772,7 @@ public abstract class XtaInstruction extends Instruction {
     		//maybe dodgy as is circular
     		state.setDataPoolRegister(offset, thread);
     	}
+    	state.getDataPoolRegister(thread).resolve();
     }
 
     void EXTSP(MachineState state, int thread) throws Exception {
@@ -784,6 +794,7 @@ public abstract class XtaInstruction extends Instruction {
     		//maybe dodgy as is circular
     		state.setStackPointerRegister(offset, thread);
     	}
+    	state.getStackPointerRegister(thread).resolve();
     }
 
     void FREER(MachineState state, int thread) throws Exception {
@@ -906,6 +917,7 @@ public abstract class XtaInstruction extends Instruction {
         res.setMaster(thread);
         int resourceValue = res.getResourceID();
         state.m_op1 = new Expression(resourceValue);
+        state.m_op1.resolve();
     }
 
     void GETSR(MachineState state, int thread) throws Exception {
@@ -914,6 +926,7 @@ public abstract class XtaInstruction extends Instruction {
     	assert(state.m_op1.canResolve());
     	int status = state.getResources().getThread(thread).getStatusRegister() & state.m_op1.getValue();
     	state.writeRegister(11, new Expression(status), thread);
+    	
     }
 
     void GETST(MachineState state, int thread) throws Exception {
@@ -1022,7 +1035,6 @@ public abstract class XtaInstruction extends Instruction {
     		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
-
     void LD16S(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: LD16S\n", getPc());	
@@ -1044,7 +1056,7 @@ public abstract class XtaInstruction extends Instruction {
     	} else {
     		state.m_op1 = new Expression(0,0,Expression.Type.MEMORY, Expression.Status.UNDEFINED);
     	}
-
+    	state.m_op1.resolve();
     }
 
     void LD8U(MachineState state, int thread) throws Exception {
@@ -1064,7 +1076,7 @@ public abstract class XtaInstruction extends Instruction {
     	} else {
     		state.m_op1 = new Expression(0,0,Expression.Type.MEMORY, Expression.Status.UNDEFINED);
     	}
-
+    	state.m_op1.resolve();
     }
 
     void LDA16B(MachineState state, int thread) throws Exception {
@@ -1080,6 +1092,7 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(offset);
     	
     	state.m_op1 = result;
+    	state.m_op1.resolve();
     }
 
     void LDA16F(MachineState state, int thread) throws Exception {
@@ -1095,6 +1108,7 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(offset);
     	
     	state.m_op1 = result;
+    	state.m_op1.resolve();
     }
 
     void LDAPB(MachineState state, int thread) throws Exception {
@@ -1130,6 +1144,7 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(offset);
     	
     	state.m_op1 = result;
+    	state.m_op1.resolve();
     }
 
     void LDAWDP(MachineState state, int thread) throws Exception {
@@ -1142,7 +1157,8 @@ public abstract class XtaInstruction extends Instruction {
         
         state.m_op1 = new Expression(Expression.OperatorType.ADD);
         state.m_op1.addOperand(state.getDataPoolRegister(thread));            
-        state.m_op1.addOperand(rhs);            
+        state.m_op1.addOperand(rhs);  
+        state.m_op1.resolve();
     }
 
     void LDAWF(MachineState state, int thread) throws Exception {
@@ -1155,7 +1171,8 @@ public abstract class XtaInstruction extends Instruction {
     	
     	state.m_op1 = new Expression(Expression.OperatorType.ADD);
     	state.m_op1.addOperand(state.m_op2);	    	
-    	state.m_op1.addOperand(rhs);	    	
+    	state.m_op1.addOperand(rhs);	
+    	state.m_op1.resolve();
     }
 
     void LDAWSP(MachineState state, int thread) throws Exception {
@@ -1168,7 +1185,8 @@ public abstract class XtaInstruction extends Instruction {
             
         state.m_op1 = new Expression(Expression.OperatorType.ADD);
         state.m_op1.addOperand(stackPointer);
-        state.m_op1.addOperand(wordOffset);   
+        state.m_op1.addOperand(wordOffset);  
+        state.m_op1.resolve();
     }
 
     void LDC(MachineState state, int thread) throws Exception {
@@ -1176,6 +1194,7 @@ public abstract class XtaInstruction extends Instruction {
             System.out.printf("0x%08x: LDC\n", getPc());
     	assert(state.m_op2.canResolve());
     	state.m_op1 = new Expression(state.m_op2.getValue());
+    	state.m_op1.resolve();
     }
 
     void LDET(MachineState state, int thread) throws Exception {
@@ -1209,7 +1228,7 @@ public abstract class XtaInstruction extends Instruction {
     		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
-
+    
     void LDW(MachineState state, int thread) throws Exception {
     	if (m_debug)   {
     		
@@ -1232,6 +1251,7 @@ public abstract class XtaInstruction extends Instruction {
     	{
     		 state.m_op1 = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.UNDEFINED);  	   	
     	}
+    	state.m_op1.resolve();
     }
 
     void LDWCP(MachineState state, int thread) throws Exception {
@@ -1247,6 +1267,7 @@ public abstract class XtaInstruction extends Instruction {
     	} else {
     		state.m_op1 = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.DEFINED);
     	}	
+    	state.m_op1.resolve();
     }
 
     void LDWCPL(MachineState state, int thread) throws Exception {
@@ -1262,6 +1283,7 @@ public abstract class XtaInstruction extends Instruction {
     		Expression ex = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.DEFINED);
     		state.getResources().getThread(thread).getRegisters().writeRegister(11, ex); 
     	}	
+    	state.m_op1.resolve();
     }
 
     void LDWDP(MachineState state, int thread) throws Exception {
@@ -1277,6 +1299,7 @@ public abstract class XtaInstruction extends Instruction {
     	} else {
     		state.m_op1 = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.DEFINED);
     	}	
+    	state.m_op1.resolve();
     }
 
     void LDWSP(MachineState state, int thread) throws Exception {
@@ -1295,6 +1318,7 @@ public abstract class XtaInstruction extends Instruction {
         else {
         	 state.m_op1 = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.UNDEFINED);  	    	        	
         }
+        state.m_op1.resolve();
     }
 
     void LMUL(MachineState state, int thread) throws Exception {
@@ -1322,6 +1346,8 @@ public abstract class XtaInstruction extends Instruction {
     		state.m_op1 = new Expression(state.m_op1Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
     		state.m_op4 = new Expression(state.m_op4Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
     	}
+    	state.m_op1.resolve();
+    	state.m_op4.resolve();
     }
 
     void LSS(MachineState state, int thread) throws Exception {
@@ -1340,6 +1366,7 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1 = new Expression(Expression.OperatorType.LTU);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
+    	state.m_op1.resolve();
     }
 
     void MACC(MachineState state, int thread) throws Exception {
@@ -1370,6 +1397,7 @@ public abstract class XtaInstruction extends Instruction {
     		mask = 0xFFFFFFFF;
     	}
     	state.m_op1 = new Expression((int)mask);
+    	state.m_op1.resolve();
     }
 
     void MSYNC(MachineState state, int thread) throws Exception {
@@ -1388,6 +1416,7 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op3);
     	result.resolve();
     	state.m_op1 = result;
+    	state.m_op1.resolve();
     }
 
     void NEG(MachineState state, int thread) throws Exception {
@@ -1396,6 +1425,7 @@ public abstract class XtaInstruction extends Instruction {
 	
     	state.m_op1 = new Expression(Expression.OperatorType.NEG);
     	state.m_op1.addOperand(state.m_op2);
+    	state.m_op1.resolve();
     }
 
     void NOT(MachineState state, int thread) throws Exception {
@@ -1404,6 +1434,7 @@ public abstract class XtaInstruction extends Instruction {
 	
     	state.m_op1 = new Expression(Expression.OperatorType.NOT);
     	state.m_op1.addOperand(state.m_op2);
+    	state.m_op1.resolve();
     }
 
     void OR(MachineState state, int thread) throws Exception {
@@ -1412,6 +1443,7 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1 = new Expression(Expression.OperatorType.OR);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
+    	state.m_op1.resolve();
     }
 
     void OUT(MachineState state, int thread) throws Exception {
@@ -1469,6 +1501,7 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op2);
     	result.addOperand(state.m_op3);
     	state.m_op1 = result;
+    	state.m_op1.resolve();
     }
 
     void REMU(MachineState state, int thread) throws Exception {
@@ -1478,6 +1511,7 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op2);
     	result.addOperand(state.m_op3);
     	state.m_op1 = result;
+    	state.m_op1.resolve();
     }
 
     void RETSP(MachineState state, int thread) throws Exception {
@@ -1504,14 +1538,15 @@ public abstract class XtaInstruction extends Instruction {
                 // The address is not resolvable so this path has hit a dead end..         
     	        jumpTarget = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.DEFINED);
     	        jumpTarget.addOperand(stackPointer);
-    	        jumpTarget.addOperand(state.m_op1);            	    
+    	        jumpTarget.addOperand(state.m_op1);      
+    	        
     	    }    	        	    
     	} else {
     	    // Not actually do a load
     	    //setIsLoadStore(false);
     	}
     	
-    	
+    	jumpTarget.resolve();
         state.jump(jumpTarget);
         setReturn(true);
     }
@@ -1619,7 +1654,7 @@ public abstract class XtaInstruction extends Instruction {
     		throw new InstructionExecption(Error.UNSUPPORTED);
     	}
     }
-
+  
     void SETV(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: SETV\n", getPc());	
@@ -1638,14 +1673,14 @@ public abstract class XtaInstruction extends Instruction {
           } else if(resType == Resources.RES_TYPE_TIMER){
         	  state.getResources().getTimers()[resNum].setEventVector(reg11);
           } else {
-        	  System.out.println("cannot SETV on a resoutce type: " + resType);
+        	  //System.out.println("cannot SETV on a resoutce type: " + resType);
           }
         } else {
             throw new InstructionExecption(Error.ET_RESOURCE_DEP);
         }     
     	
     }
-    
+
     void SEXT(MachineState state, int thread) throws Exception {
     	if (m_debug)     	
             System.out.printf("0x%08x: SEXT\n", getPc());	
@@ -1653,6 +1688,7 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op1);
     	result.addOperand(state.m_op2);
     	state.m_op1 = result;
+    	state.m_op1.resolve();
     }
 
     void SHL(MachineState state, int thread) throws Exception {
@@ -1662,6 +1698,7 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op2);
     	result.addOperand(state.m_op3);
     	state.m_op1 = result;
+    	state.m_op1.resolve();
     }
 
     void SHR(MachineState state, int thread) throws Exception {
@@ -1671,6 +1708,7 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op2);
     	result.addOperand(state.m_op3);
     	state.m_op1 = result;
+    	state.m_op1.resolve();
     }
 
     void SSYNC(MachineState state, int thread) throws Exception {
@@ -1832,6 +1870,7 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1 = new Expression(Expression.OperatorType.SUB);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
+    	state.m_op1.resolve();
     }
 
     void SYNCR(MachineState state, int thread) throws Exception {
@@ -1986,6 +2025,7 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op3);
     	result.resolve();
     	state.m_op1 = result;
+    	state.m_op1.resolve();
     }
 
     void ZEXT(MachineState state, int thread) throws Exception {
@@ -1999,7 +2039,7 @@ public abstract class XtaInstruction extends Instruction {
     	} else {
     		state.m_op1 = result;
     	}
-    	
+    	state.m_op1.resolve();
     }
     
     void GETN(MachineState state, int thread) throws Exception {
@@ -2039,7 +2079,8 @@ public abstract class XtaInstruction extends Instruction {
     		state.m_op4 = carry;
     		state.m_op1 = result;
     	}
-    	
+    	state.m_op1.resolve();
+    	state.m_op4.resolve();
     }
     
     void LDAWCP(MachineState state, int thread) throws Exception {
@@ -2051,6 +2092,7 @@ public abstract class XtaInstruction extends Instruction {
 		Expression regValue = new Expression(Expression.OperatorType.ADD);
 		regValue.addOperand(state.getConstPoolRegister(thread));
 		regValue.addOperand(offset);
+		regValue.resolve();
     	state.writeRegister(11, regValue, thread);
     }
     
@@ -2077,8 +2119,8 @@ public abstract class XtaInstruction extends Instruction {
     		state.m_op4 = low;
     		state.m_op1 = high;
     	}
-    	
-        
+    	state.m_op1.resolve();
+    	state.m_op4.resolve();
     }
     
     void MACCS(MachineState state, int thread) throws Exception {
@@ -2101,6 +2143,8 @@ public abstract class XtaInstruction extends Instruction {
     		state.m_op4 = low;
     		state.m_op1 = high;
     	}
+    	state.m_op1.resolve();
+    	state.m_op4.resolve();
     }    
     
     void LDIVU(MachineState state, int thread) throws Exception {
@@ -2123,6 +2167,8 @@ public abstract class XtaInstruction extends Instruction {
     		state.m_op4 = low;
     		state.m_op1 = high;
     	}
+    	state.m_op1.resolve();
+    	state.m_op4.resolve();
     }
     
     void LSUB(MachineState state, int thread) throws Exception {
@@ -2146,7 +2192,8 @@ public abstract class XtaInstruction extends Instruction {
     		state.m_op4 = carry;
     		state.m_op1 = result;
     	}
-    	
+    	state.m_op1.resolve();
+    	state.m_op4.resolve();
     }
      
 }
