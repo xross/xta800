@@ -8,7 +8,7 @@ import com.xmos.xta.rcp.views.ConsoleView;
 import com.xmos.xta.rcp.views.ControlView;
 import com.xmos.xta.rcp.views.ErrorsView;
 import com.xmos.xta.rcp.views.UnknownsView;
-import com.xmos.xta.rcp.views.FlowView;
+//import com.xmos.xta.rcp.views.FlowView;
 import com.xmos.xta.rcp.views.FunctionView;
 import com.xmos.xta.rcp.views.StructureView;
 import com.xmos.xta.rcp.views.TreeView;
