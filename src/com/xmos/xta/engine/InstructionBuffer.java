@@ -10,6 +10,7 @@ public class InstructionBuffer {
     int m_numBytes;
 
     public InstructionBuffer() {
+    	m_pc = 0;
         m_numBytes = 0;
 	}
 

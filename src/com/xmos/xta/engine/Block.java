@@ -222,12 +222,12 @@ public class Block implements Comparable<Block> {
 
 	public void build() throws Exception {
 		
-		if(IBUFFERSTATE) {
-			m_ibufferBefore=0;
-			m_ibufferAfter=0;
-			m_ibufferFnops=0;
-			m_ibufferFetches=0;
-			m_ibufferIssue=0;
+		if (IBUFFERSTATE) {
+			m_ibufferBefore = 0;
+			m_ibufferAfter = 0;
+			m_ibufferFnops = 0;
+			m_ibufferFetches = 0;
+			m_ibufferIssue = 0;
 			m_ibufferBefore = m_machineState.getResources().getCurrentIBuffer(m_currentThread).getNumBytes();
 		}
 		

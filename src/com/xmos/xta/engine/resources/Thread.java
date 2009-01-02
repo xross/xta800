@@ -31,12 +31,12 @@ public class Thread implements Resource{
     
     public Thread(int threadNo){
     	m_SPC = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
-        m_SSR= new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
-        m_ET= new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
-        m_ED= new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
-        m_SED= new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
-        m_KEP= new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
-        m_KSP= new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+        m_SSR = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+        m_ET = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+        m_ED = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+        m_SED = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+        m_KEP = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+        m_KSP = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
     	m_cbInUse = false;
     	m_ID = threadNo;
         m_registers = new Registers();
@@ -49,27 +49,27 @@ public class Thread implements Resource{
         m_iBuffer = new InstructionBuffer(thread.m_iBuffer);
         m_SPC = new Expression(thread.m_SPC);
         m_SSR = new Expression(thread.m_SSR);
-        m_ET= new Expression(thread.m_ET);
-        m_ED= new Expression(thread.m_ED);
-        m_SED= new Expression(thread.m_SED);
-        m_KEP= new Expression(thread.m_KEP);
-        m_KSP= new Expression(thread.m_KSP);
+        m_ET = new Expression(thread.m_ET);
+        m_ED = new Expression(thread.m_ED);
+        m_SED = new Expression(thread.m_SED);
+        m_KEP = new Expression(thread.m_KEP);
+        m_KSP = new Expression(thread.m_KSP);
     	m_cbInUse = thread.m_cbInUse;
 
     }
 
     public void setControlBits(int controlBits){
-    	if((controlBits&1) == 1){
+    	if ((controlBits&1) == 1){
     		m_cbInUse = true;
     	} else {
     		m_cbInUse = false;
     	}
-    	if((controlBits&2) == 2){
+    	if ((controlBits&2) == 2){
     		m_cbMSync = true;
     	} else {
     		m_cbMSync = false;
     	}
-    	if((controlBits&3) == 3){
+    	if ((controlBits&3) == 3){
     		m_cbSSync = true;
     	} else {
     		m_cbSSync = false;
@@ -79,13 +79,13 @@ public class Thread implements Resource{
     
     public int getControlBits(){
     	int cb = 0;
-    	if(m_cbInUse){
+    	if (m_cbInUse){
     		cb |=1;
     	}
-		if(m_cbMSync){
+		if (m_cbMSync){
 			cb |=2;		
     	}
-		if(m_cbSSync){
+		if (m_cbSSync){
 			cb |=4;
 		}
 		cb |= (m_cbMasterBits<<8);
@@ -138,36 +138,34 @@ public class Thread implements Resource{
     }
     
     public void setStatusRegisterBit(StatusRegister bit, boolean b){
-    	if(bit == StatusRegister.EEBLE){
-    		if(b) m_SR |= 1;
+    	if (bit == StatusRegister.EEBLE){
+    		if (b) m_SR |= 1;
     		else m_SR &= ~1;
-    	} else if(bit == StatusRegister.IEBLE){
-    		if(b) m_SR |= 2;
+    	} else if (bit == StatusRegister.IEBLE){
+    		if (b) m_SR |= 2;
     		else m_SR &= ~2;
-    	} else if(bit == StatusRegister.INENB){
-    		if(b) m_SR |= 4;
+    	} else if (bit == StatusRegister.INENB){
+    		if (b) m_SR |= 4;
     		else m_SR &= ~4;
-    	} else if(bit == StatusRegister.ININT){
-    		if(b) m_SR |= 8;
+    	} else if (bit == StatusRegister.ININT){
+    		if (b) m_SR |= 8;
     		else m_SR &= ~8;
-    	} else if(bit == StatusRegister.INK){
-    		if(b) m_SR |= 16;
+    	} else if (bit == StatusRegister.INK){
+    		if (b) m_SR |= 16;
     		else m_SR &= ~16;
-    	} else if(bit == StatusRegister.SINK){
-    		if(b) m_SR |= 32;
+    	} else if (bit == StatusRegister.SINK){
+    		if (b) m_SR |= 32;
     		else m_SR &= ~32;
-    	} else if(bit == StatusRegister.WAITING){
-    		if(b) m_SR |= 64;
+    	} else if (bit == StatusRegister.WAITING){
+    		if (b) m_SR |= 64;
     		else m_SR &= ~64;
-    	} else if(bit == StatusRegister.FAST){
-    		if(b) m_SR |= 128;
+    	} else if (bit == StatusRegister.FAST){
+    		if (b) m_SR |= 128;
     		else m_SR &= ~128;
     	} else {
     		assert(false);
     	}
     }
-
-    
     
 	public Expression getSPC() {
 		return m_SPC;

@@ -125,8 +125,6 @@ public class Route {
 		context.push(new TreeSet<Integer>());
 		Architecture arch = m_engine.getXeLoader().getArchitecture() ;
 		MachineState initialState = new MachineState(symbolTable, memoryImage, arch);
-
-		
 		
 		BlockCommonComponents bc = null;
 

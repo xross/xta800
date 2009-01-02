@@ -2,6 +2,8 @@ package com.xmos.xta.console.commands;
 
 import java.util.Vector;
 
+import com.xmos.xeloader.SymbolTable;
+import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
@@ -38,8 +40,12 @@ class Functions extends Command {
 	    int coreId = engine.getCoreId();
         Vector<String> functionNames = engine.getXeLoader().getFunctionNames(nodeId, coreId);
 
+        XeLoader xeLoader = engine.getXeLoader();
+        SymbolTable symbolTable = xeLoader.getSymbolTable(nodeId, coreId);
+        
         for (String functionName : functionNames) {
-            console.display(String.format("- %s\n", functionName));
+        	int functionAddress = symbolTable.symbolAddress(functionName);
+            console.display(String.format("- %s (0x%x)\n", functionName, functionAddress));
         }
     }
 }

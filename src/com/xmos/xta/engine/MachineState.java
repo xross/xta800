@@ -88,7 +88,7 @@ public class MachineState {
     	m_memorySize = memoryImage.getMemorySize();
     	
     	m_memory.blockWrite(0x10000, 0x10000, memoryImage);
-    	//m_memory.blockWrite(memoryImage.getCpStart(), memoryImage.getCpEnd()-memoryImage.getCpStart(), memoryImage);
+    	//m_memory.blockWrite(memoryImage.getCpStart(), memoryImage.getCpEnd() - memoryImage.getCpStart(), memoryImage);
     	//m_memory.blockWrite(memoryImage.getDpStart(), memoryImage.getDpEnd() - memoryImage.getDpStart(), memoryImage);
 		
 	}
@@ -140,7 +140,6 @@ public class MachineState {
     	m_resources.getCurrentIBuffer(threadNo).setPc(pc);
     }
 
-    
     int getPc(int thread) {
         return m_resources.getCurrentIBuffer(thread).getPc();
     }
@@ -210,7 +209,6 @@ public class MachineState {
         } else {
             m_branchTaken = BranchState.UNKNOWN;
         }
-
     }
 
     void jump(Expression jumpTarget) throws Exception{
@@ -267,8 +265,7 @@ public class MachineState {
     }
 
     int fetch(int thread) {
-    	
-    	if(m_resources.getCurrentIBuffer(thread).getNumBytes()<6){
+    	if (m_resources.getCurrentIBuffer(thread).getNumBytes()<6){
     		 return m_resources.getCurrentIBuffer(thread).fetch();
     	}
     	return 0;
@@ -287,7 +284,6 @@ public class MachineState {
     }
 
     Expression getConstPoolRegister(int thread) {
-    	
         return m_resources.getThread(thread).getRegisters().readRegister(CP_REG_NUM);
     }
 
@@ -322,7 +318,7 @@ public class MachineState {
 
     Expression readRegister(int regNum, int thread) {
     	Expression e = m_resources.getThread(thread).getRegisters().readRegister(regNum);
-    	if(e == null){
+    	if (e == null){
     		return new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
     	} else {
     		return e;
@@ -337,63 +333,63 @@ public class MachineState {
     Expression readMemory(int address) throws Exception {
     	
     	Expression read = m_memory.wordRead(address);
-    	if(read.canResolve()){
-    		if(DEBUG) System.out.println("read 0x" + Integer.toHexString(read.getValue())  + " from 0x" + 
+    	if (read.canResolve()){
+    		if (DEBUG) System.out.println("read 0x" + Integer.toHexString(read.getValue())  + " from 0x" + 
     				Integer.toHexString(address));
     	} else {
-    		if(DEBUG) System.out.println("read unknown from 0x" + Integer.toHexString(address));
+    		if (DEBUG) System.out.println("read unknown from 0x" + Integer.toHexString(address));
     	}
         return read;
     }
     public Expression readShort(int address) throws Exception {
     	Expression read = m_memory.halfRead(address);
-    	if(read.canResolve()){
-    		if(DEBUG) System.out.println("read word 0x" + Integer.toHexString(read.getValue())  + " from 0x" + 
+    	if (read.canResolve()){
+    		if (DEBUG) System.out.println("read word 0x" + Integer.toHexString(read.getValue())  + " from 0x" + 
     				Integer.toHexString(address));
     	} else {
-    		if(DEBUG) System.out.println("read word unknown from 0x" + Integer.toHexString(address));
+    		if (DEBUG) System.out.println("read word unknown from 0x" + Integer.toHexString(address));
     	}
         return read;
 	}
     Expression readByte(int address) throws Exception {
     	
     	Expression read = m_memory.byteRead(address);
-    	if(read.canResolve()){
-    		if(DEBUG) System.out.println("read byte 0x" + Integer.toHexString(read.getValue())  + " from 0x" + 
+    	if (read.canResolve()){
+    		if (DEBUG) System.out.println("read byte 0x" + Integer.toHexString(read.getValue())  + " from 0x" + 
     				Integer.toHexString(address));
     	} else {
-    		if(DEBUG) System.out.println("read byte unknown from 0x" + Integer.toHexString(address));
+    		if (DEBUG) System.out.println("read byte unknown from 0x" + Integer.toHexString(address));
     	}
         return read;
     }
 
     void writeMemory(int address, Expression value) throws Exception {
-    	if(value.canResolve()){
-    		if(DEBUG) System.out.println("\twrite to memory: 0x" + Integer.toHexString(value.getValue()) + " at 0x" 
+    	if (value.canResolve()){
+    		if (DEBUG) System.out.println("\twrite to memory: 0x" + Integer.toHexString(value.getValue()) + " at 0x" 
         			+Integer.toHexString(address));
         } else {
-        	if(DEBUG) System.out.println("\twrite to memory:  unknown to 0x" + Integer.toHexString(address));
+        	if (DEBUG) System.out.println("\twrite to memory:  unknown to 0x" + Integer.toHexString(address));
         }
         m_memory.wordWrite(address, value);
     }
     
     
     public void writeByte(int address, Expression value) throws Exception {
-    	if(value.canResolve()){
-    		if(DEBUG) System.out.println("\twrite to memory: 0x" + Integer.toHexString(value.getValue()) + " at 0x" 
+    	if (value.canResolve()){
+    		if (DEBUG) System.out.println("\twrite to memory: 0x" + Integer.toHexString(value.getValue()) + " at 0x" 
         			+Integer.toHexString(address));
         } else {
-        	if(DEBUG) System.out.println("\twrite to memory:  unknown to 0x" + Integer.toHexString(address));
+        	if (DEBUG) System.out.println("\twrite to memory:  unknown to 0x" + Integer.toHexString(address));
         }
         m_memory.byteWrite(address, value);
 	}
     
     public void writeShort(int address, Expression value) throws Exception {
-    	if(value.canResolve()){
-    		if(DEBUG) System.out.println("\twrite to memory: 0x" + Integer.toHexString(value.getValue()) + " at 0x" 
+    	if (value.canResolve()){
+    		if (DEBUG) System.out.println("\twrite to memory: 0x" + Integer.toHexString(value.getValue()) + " at 0x" 
         			+Integer.toHexString(address));
         } else {
-        	if(DEBUG) System.out.println("\twrite to memory:  unknown to 0x" + Integer.toHexString(address));
+        	if (DEBUG) System.out.println("\twrite to memory:  unknown to 0x" + Integer.toHexString(address));
         }
         m_memory.shortWrite(address, value);
 	}
@@ -406,7 +402,6 @@ public class MachineState {
         m_wasJumpResolved = false;
         m_jumpTarget = 0;
         m_wasEventWait = false;
-        
     }
 
     public Expression getBranchTargetExpression() {
@@ -432,7 +427,6 @@ public class MachineState {
 	public void clearEventVectors() {
 		m_eventTargets.clear();
 	}
-	
 
 	public void releaseMemory() {
 		m_op1 = null;
@@ -446,7 +440,6 @@ public class MachineState {
 	    m_eventTargets.clear();
 	    m_resources = null;
 	    m_memory = null;
-		
 	}
 
 	
