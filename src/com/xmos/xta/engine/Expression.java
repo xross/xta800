@@ -100,7 +100,7 @@ public class Expression {
 				if (!m_keepExpressions){
 					m_address = 0;
 					m_value = 0;
-					m_type = Type.IMMEDIATE;
+					m_type = Type.MEMORY;
 					m_status = Status.UNDEFINED;
 					m_numOperands = 0;
 					m_operands = null;

@@ -33,15 +33,11 @@ public class Registers {
 		if(regValue == null){
 			m_registers[regNum] = new Expression(regNum, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
 		} else {
-			m_registers[regNum] = regValue;
-			if(regValue.canResolve()){
-				try {
-					m_registers[regNum].resolve();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+			
+			//if(!regValue.canResolve())
+			//	m_registers[regNum] = null;
+			//else 
+				m_registers[regNum] = regValue;
 		}	
 	}
 	
