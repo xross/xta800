@@ -209,14 +209,6 @@ public class Engine {
         return success;
     }	
 
-    public boolean loadExecutable(XEHandler xeHandler) {
-    	m_pathQueries.clear();
-        boolean success = m_xeLoader.loadExecutable(xeHandler);
-        for (Displayer displayer : m_displayers)
-            displayer.notify(Displayer.NOTIFY_LOAD_EXECUTABLE, "");
-        return success;
-    }
-
     public Progress getProgress() {
     	return m_progress;
     }
@@ -247,9 +239,6 @@ public class Engine {
             } else {
             	//restore the route
             	m_route = m_previousRoute;
-                for (Displayer displayer : m_displayers) {
-                	displayer.notify(Displayer.NOTIFY_ERROR, "");
-                }
             }
             return t;
         }
@@ -287,9 +276,6 @@ public class Engine {
             } else {
             	// restore the route
             	m_route = m_previousRoute;
-                for (Displayer displayer : m_displayers) {
-                	displayer.notify(Displayer.NOTIFY_ERROR, "");
-                }
             }
             return t;
         }
