@@ -141,7 +141,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Displayer.NOTIFY_ERROR)) {
 			setDone("Aborted");
 			updateCurrentRoute();
-			displayErrorBox();
+			displayMessageBox("Error", "Analysis Unsuccessful\n(See error log for details)");
 		}
 	}
 	
@@ -163,30 +163,34 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     public void executeLoad() {				
 		if (DEBUG) System.out.printf("Control: executeLoad\n");	
 
-		FileDialog fileDialog = new FileDialog(getSite().getWorkbenchWindow().getShell(), SWT.OPEN);
-        fileDialog.setText("Open Xe File");
-        String[] filterExt = { "*.xe" };
-        fileDialog.setFilterExtensions(filterExt);
-        String xeFileName = fileDialog.open();
-        
-        if (xeFileName != null) {
-        	if (DEBUG) {
-        		System.out.printf("Control: File open: %s\n", xeFileName);
-        	}
-        	Engine engine = XtaEngine.getEngine();
-        	boolean success = engine.loadExecutable(xeFileName);
-        	if (DEBUG) {
-        		if (success) {
-                    System.out.printf("Control: Successfully loaded executable: %s\n", xeFileName);
-        		} else {
-                    System.out.printf("Control: Failed to open file: %s\n", xeFileName);
-        		}
-        	}
-        } else {
-        	if (DEBUG) {
-        		System.out.printf("Control: File open: null\n");
-        	}
-        }	                
+		if (!m_engineStatus.getText().equals(STATUS_BUSY)) {
+			FileDialog fileDialog = new FileDialog(getSite().getWorkbenchWindow().getShell(), SWT.OPEN);
+	        fileDialog.setText("Open Xe File");
+	        String[] filterExt = { "*.xe" };
+	        fileDialog.setFilterExtensions(filterExt);
+	        String xeFileName = fileDialog.open();
+	        
+	        if (xeFileName != null) {
+	        	if (DEBUG) {
+	        		System.out.printf("Control: File open: %s\n", xeFileName);
+	        	}
+	        	Engine engine = XtaEngine.getEngine();
+	        	boolean success = engine.loadExecutable(xeFileName);
+	        	if (DEBUG) {
+	        		if (success) {
+	                    System.out.printf("Control: Successfully loaded executable: %s\n", xeFileName);
+	        		} else {
+	                    System.out.printf("Control: Failed to open file: %s\n", xeFileName);
+	        		}
+	        	}
+	        } else {
+	        	if (DEBUG) {
+	        		System.out.printf("Control: File open: null\n");
+	        	}
+	        }	                			
+		} else {
+			displayMessageBox("Error", "Cannot open file, engine currently busy");
+		}
 	}
 
 	public void executeRunFunction() {
@@ -373,13 +377,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		}		
 	}
 	
-	private void displayErrorBox() {
-		Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0,
-				"Analysis Unsuccessful\n(See error log for details)", null);
-        ErrorDialog.openError(Display.getCurrent().getActiveShell(),
-            "Error", null, status);	      				
-	}
-
+	private void displayMessageBox(String title, String message) {
+		Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0, message, null);
+        ErrorDialog.openError(Display.getCurrent().getActiveShell(), title, null, status);	      				
+	}		
+	
 	class RunEngineMethodFunc extends Thread {
         private String m_functionName;
 
