@@ -114,6 +114,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		if (event.getProperty().equals(Displayer.NOTIFY_DISPLAY_ROUTE)) {
 			setDone("Done");
 			updateCurrentRoute();
+			checkUnresolvedPaths();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_LOAD_EXECUTABLE)) {
 			createXeObject();
             populateFunctionList();			
@@ -140,6 +141,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Displayer.NOTIFY_ERROR)) {
 			setDone("Aborted");
 			updateCurrentRoute();
+			displayErrorBox();
 		}
 	}
 	
@@ -354,16 +356,28 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		if (routeInfo != null) {
 			Route route = routeInfo.getRoute();
 			m_currentRoute.setText(route.getStatusString());
-
+		}
+	}
+	
+	private void checkUnresolvedPaths() {
+		XtaRouteInfo routeInfo = XtaDisplayer.getInstance().getRouteInfo();
+		if (routeInfo != null) {
+			Route route = routeInfo.getRoute();
 			int numUnresolvedPaths = route.unresolvedPaths().size();
 			if (numUnresolvedPaths > 0) {
 				Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0,
 						"Found " + numUnresolvedPaths + " unresolved path(s)", null);
-
 		        ErrorDialog.openError(Display.getCurrent().getActiveShell(),
 		            "Warning", null, status);
 			}
-		}
+		}		
+	}
+	
+	private void displayErrorBox() {
+		Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0,
+				"Analysis Unsuccessful\n(See error log for details)", null);
+        ErrorDialog.openError(Display.getCurrent().getActiveShell(),
+            "Error", null, status);	      				
 	}
 
 	class RunEngineMethodFunc extends Thread {
