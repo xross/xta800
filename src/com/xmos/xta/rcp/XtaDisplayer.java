@@ -79,6 +79,15 @@ public class XtaDisplayer implements Displayer {
 			notifySetStartPoint(new CodeReference(argument));
 		} else if (message.equals(NOTIFY_SET_END_POINT)) {
 			notifySetEndPoint(new CodeReference(argument));
+		} else if (message.equals(NOTIFY_LOAD_EXECUTABLE)) {
+			//set the displayer state to the uninitialised state
+			m_startPoint = null;
+			m_endPoint = null;
+			m_codePoint = null;
+			m_notifyArgument = null;
+			m_routeInfo = null;
+			m_notifyArgument = argument;
+			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
 		} else {
 			m_notifyArgument = argument;
 			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));

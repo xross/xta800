@@ -257,17 +257,20 @@ public class Block implements Comparable<Block> {
 
 
 		handleIBuffer(instNumBytes, pc);
-
+		if (DUMPSTATE) dumpState(m_machineState);
 		boolean success = executeInstruction(instruction);
 		
 		if(!success) {
-			
 			return;
 		}
 		
 		addInstruction(instruction);
 		
-		if (DUMPSTATE) dumpState(m_machineState);
+		if (DUMPSTATE) {
+			dumpState(m_machineState);
+			System.out.println();
+			System.out.println();
+		}
 		
 		if (isComplete(instruction, pc)) {
 			setStatus(BlockStatus.COMPLETE);
@@ -382,8 +385,6 @@ public class Block implements Comparable<Block> {
 			if(properState != m_ibufferAfter){
 				System.out.print("  eek");
 				// m_machineState.getResources().getCurrentIBuffer(m_currentThread).m_numBytes = properState;
-			
-				
 			}
 			System.out.println("\n");
 		}
@@ -522,11 +523,7 @@ public class Block implements Comparable<Block> {
 		inst.setConfig(m_bc.getConfig());
 
 		boolean keepInstructionTrace =true;
-		/*
-		if(m_instructions.size() > 1000){
-			keepInstructionTrace = false;
-		}
-		*/
+		
 		if (m_instructions != null && keepInstructionTrace){
 			m_instructions.add(inst);
 		} else {
