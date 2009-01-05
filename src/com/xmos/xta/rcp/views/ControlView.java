@@ -116,12 +116,14 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			updateCurrentRoute();
 			checkUnresolvedPaths();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_LOAD_EXECUTABLE)) {
+			
 			createXeObject();
             populateFunctionList();			
 	        openEditors();
 	        setDone(STATUS_LOADED);
 	        m_progress.setText("0");
 	        updateState();
+	        updateCurrentRoute();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_ANALYSE_PATHS)) {
 			m_engineStatus.setText(STATUS_BUSY);
 			m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
@@ -360,7 +362,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		if (routeInfo != null) {
 			Route route = routeInfo.getRoute();
 			m_currentRoute.setText(route.getStatusString());
-		}
+		} else {
+		m_currentRoute.setText("No routes analysed.");
+	}
 	}
 	
 	private void checkUnresolvedPaths() {

@@ -50,5 +50,13 @@ public class XtaRouteInfo {
 
 	public void setSelectedNode(Node selectedNode) {
 		m_selectedNode = selectedNode;
+	}
+
+	public void setRoute(Route route) {
+		m_route = route;
 	}	
+	
+	public void resetRouteInfo(){
+		
+	}
 }
