@@ -14,9 +14,6 @@ int main(int argc, char **argv)
   string jar;
 
   const char *jarName = "xta.jar";
-  if (findArg("-g", argc, argv))
-    jarName = "xtaswing.jar";
-
   
   if (findJarInPath(jar, jarName))
   {

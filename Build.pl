@@ -192,9 +192,6 @@ sub DoInstall
   XmosBuildLib::InstallFile("$DOMAIN", "lib", "xta.jar");
   #XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xta.jar", "bin");
 
-  XmosBuildLib::InstallFile("$DOMAIN", "lib", "xtaswing.jar");
-  #XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xtaswing.jar", "bin");
-
   XmosBuildLib::InstallFile("$DOMAIN", "bin", "$target");
 
   # Unzips the zip file..

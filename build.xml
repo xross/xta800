@@ -40,41 +40,10 @@
   <target name="dist" depends="compile" description="generate the distribution" >
     <mkdir dir="${dist}/../lib"/>
 
-    <!-- Copy xta images/icons -->
-  	<copy file="${src}/com/xmos/xta/swing/XmosTM.jpg"              todir="${build}/com/xmos/xta/swing"/>
-  	<copy file="${src}/com/xmos/xta/swing/yellowled.png"           todir="${build}/com/xmos/xta/swing"/>
-  	<copy file="${src}/com/xmos/xta/swing/AbsolutePath.png"        todir="${build}/com/xmos/xta/swing"/>
-  	<copy file="${src}/com/xmos/xta/swing/AbsolutePathFolded.png"  todir="${build}/com/xmos/xta/swing"/>
-  	<copy file="${src}/com/xmos/xta/swing/AbsolutePathUnknown.png" todir="${build}/com/xmos/xta/swing"/>
-  	<copy file="${src}/com/xmos/xta/swing/BasicBlock.png"          todir="${build}/com/xmos/xta/swing"/>
-  	<copy file="${src}/com/xmos/xta/swing/BasicBlockUnknown.png"   todir="${build}/com/xmos/xta/swing"/>
-  	<copy file="${src}/com/xmos/xta/swing/folder.png"              todir="${build}/com/xmos/xta/swing"/>
-  	<copy file="${src}/com/xmos/xta/swing/Loop.png"                todir="${build}/com/xmos/xta/swing"/>
-  	<copy file="${src}/com/xmos/xta/swing/LoopUnknown.png"         todir="${build}/com/xmos/xta/swing"/>
-  	<copy file="${src}/com/xmos/xta/swing/Path.png"                todir="${build}/com/xmos/xta/swing"/>
-  	<copy file="${src}/com/xmos/xta/swing/PathUnknown.png"         todir="${build}/com/xmos/xta/swing"/>
-  	<copy file="${src}/com/xmos/xta/swing/Routes.png"              todir="${build}/com/xmos/xta/swing"/>
-  	<copy file="${src}/com/xmos/xta/swing/warning.png"             todir="${build}/com/xmos/xta/swing"/>
-  	<copy file="${src}/com/xmos/xta/swing/xta.gif"                 todir="${build}/com/xmos/xta/swing"/>
-
     <jar jarfile="${dist}/../lib/xta.jar"
          basedir="${build}"
          includes="com/xmos/xta/**"
          manifest="${src}/manifests/xta">
-         <zipfileset src="${src}/../../infr_libs_java/export/jars/dwarfhandler.jar"/>
-         <zipfileset src="${src}/../../infr_libs_java/export/jars/elfhandler.jar"/>
-         <zipfileset src="${src}/../../infr_libs_java/export/jars/xeobject.jar"/>
-         <zipfileset src="${src}/../../infr_libs_java/export/jars/xehandler.jar"/>
-         <zipfileset src="${src}/../../infr_libs_java/export/jars/xeloader.jar"/>
-         <zipfileset src="${src}/../../infr_libs_java/export/jars/isa.jar"/>
-         <zipfileset src="${src}/../../infr_libs_java/export/jars/util.jar"/>
-    </jar>
-    
-    <jar jarfile="${dist}/../lib/xtaswing.jar"
-         basedir="${build}"
-         includes="com/xmos/xta/**,
-                   com/xmos/xeobjectdisplayer/**"
-         manifest="${src}/manifests/xtaswing">
          <zipfileset src="${src}/../../infr_libs_java/export/jars/dwarfhandler.jar"/>
          <zipfileset src="${src}/../../infr_libs_java/export/jars/elfhandler.jar"/>
          <zipfileset src="${src}/../../infr_libs_java/export/jars/xeobject.jar"/>

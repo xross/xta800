@@ -2,8 +2,6 @@ package com.xmos.xta.engine;
 
 import javax.swing.ImageIcon;
 
-import com.xmos.xta.swing.XtaGui;
-
 public class Unknown {
     /*
      * ReturnValue - engine could not determine the return value of the
@@ -88,15 +86,5 @@ public class Unknown {
         }
         assert(false);
         return "";
-    }
-    
-    public ImageIcon getIcon() {
-        ImageIcon icon;
-        try {
-            icon = new ImageIcon(XtaGui.class.getResource("warning.png"));
-        } catch (Exception e) {
-            return new ImageIcon();
-        }
-        return icon;
-    }
+    }    
 }
