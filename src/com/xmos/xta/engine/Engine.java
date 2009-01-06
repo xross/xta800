@@ -9,7 +9,6 @@ import java.util.Vector;
 import com.xmos.dwarfhandler.DebugEngine;
 import com.xmos.elfhandler.ElfHandler;
 import com.xmos.elfhandler.Symbol;
-import com.xmos.xehandler.XEHandler;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
@@ -197,7 +196,6 @@ public class Engine {
             }
             m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);
             decodeInstructions();
-            //addBranchTargets();
             m_route = null;
             for (Displayer displayer : m_displayers)
                 displayer.notify(Displayer.NOTIFY_LOAD_EXECUTABLE, executableFile);
