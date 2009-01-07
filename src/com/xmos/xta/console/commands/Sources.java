@@ -41,7 +41,7 @@ class Sources extends Command {
 	    DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(nodeId, coreId);
 	    assert(debugInfo != null);        
 		
-    	Collection<File> sourceFiles = debugInfo.getDebugEngine().findFiles("");        
+    	Collection<File> sourceFiles = debugInfo.getDebugEngine().getFileNames();        
   	    for (File sourceFile : sourceFiles) {
   	    	console.display(String.format("- %s\n", sourceFile.getName()));
     	}    			

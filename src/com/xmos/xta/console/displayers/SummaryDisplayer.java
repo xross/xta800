@@ -274,7 +274,7 @@ public class SummaryDisplayer implements Displayer {
     }
 
     private void displaySources(Route route, DebugInfo debugInfo) {
-    	Collection<File> sourceFiles = debugInfo.getDebugEngine().findFiles("");
+    	Collection<File> sourceFiles = debugInfo.getDebugEngine().getFileNames();
         
     	for (File sourceFile : sourceFiles) {
             String sourceFileName = sourceFile.getName();

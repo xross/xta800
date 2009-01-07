@@ -388,7 +388,7 @@ public class Engine {
     public Vector<File> getFileNames() {
         for(DebugInfo bd : m_xeLoader.getDebugInfos()){
             DebugEngine de = bd.getDebugEngine();
-            for (File  fileName : de.findFiles(m_executableFile)){
+            for (File  fileName : de.getFileNames()){
                 if (!m_sourceFiles.contains(fileName)) 
                     m_sourceFiles.add(fileName);
             }
