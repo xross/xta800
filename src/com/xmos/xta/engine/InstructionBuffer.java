@@ -1,7 +1,6 @@
 package com.xmos.xta.engine;
 
 public class InstructionBuffer {
-	private final boolean DEBUG = false;
 	
     static final int IBUFFER_NUM_BYTES = 8;
     static final int BYTES_PER_WORD = 4;
@@ -82,9 +81,5 @@ public class InstructionBuffer {
         else
             return false;
     }
-    
-    private void printState() {
-        System.out.printf("ibuffer %d bytes from 0x%08x to 0x%08x\n",
-                m_numBytes, m_pc, m_pc + m_numBytes);
-    }
+
 }

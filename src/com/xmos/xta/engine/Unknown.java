@@ -1,7 +1,5 @@
 package com.xmos.xta.engine;
 
-import javax.swing.ImageIcon;
-
 public class Unknown {
     /*
      * ReturnValue - engine could not determine the return value of the
