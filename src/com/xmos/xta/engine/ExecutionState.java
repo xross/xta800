@@ -3,7 +3,6 @@ package com.xmos.xta.engine;
 import com.xmos.xta.engine.Status.BlockStatus;
 import com.xmos.xta.engine.Status.ExecutionStatus;
 import com.xmos.xta.engine.resources.Resources;
-import com.xmos.xta.engine.resources.Synchroniser;
 
 public class ExecutionState {
 	private MachineState m_machineState;
@@ -120,9 +119,7 @@ public class ExecutionState {
 	}
 
 	private boolean isMaster(Block currentThread) {
-		for(Synchroniser sync : m_machineState.getResources().getSynchronisers()){
-			
-		}
+
 		return false;
 	}
 
