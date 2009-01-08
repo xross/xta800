@@ -50,15 +50,12 @@ public class Engine {
     private ArrayList<PathQuery> m_pathQueries;
     private Progress m_progress;
     
-    public Engine(Config config) {
-    	
+    public Engine(Config config) {    	
     	m_exclusions = new Vector<CodeReference>();
     	m_prohibited = new Vector<CodeReference>();
     	m_required = new Vector<CodeReference>();
-    	m_labels = new HashMap<String, Integer>();
-    	
-        m_xeLoader = new XeLoader();
-        
+    	m_labels = new HashMap<String, Integer>();    	
+        m_xeLoader = new XeLoader();        
         m_xeObject = null;
         m_route = null;
         m_previousRoute = null;
@@ -71,8 +68,7 @@ public class Engine {
         m_displayers = new Vector<Displayer>();
         m_pathQueries = new ArrayList<PathQuery>();
         m_abort = false;
-        m_resolveExpression = false;
-        
+        m_resolveExpression = false;        
         m_progress = new Progress(Progress.State.IDLE, 0, 0);
     }
     
@@ -196,7 +192,8 @@ public class Engine {
             }
             m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);
             decodeInstructions();
-            m_route = null;
+            m_route = null;            
+            
             for (Displayer displayer : m_displayers)
                 displayer.notify(Displayer.NOTIFY_LOAD_EXECUTABLE, executableFile);
             
@@ -456,6 +453,42 @@ public class Engine {
         return new Double (0.0);
     }
 
+	public boolean addLabel(String label , CodeReference ref) {
+        if (resolveRefernece(ref, this)) {
+    		m_labels.put(label, ref.getPc()); 
+    		return true;
+        }    			
+        return false;
+	}
+
+	public void removeLabel(String label) {
+		m_labels.remove(label);
+	}
+	
+	public Map<String, Integer> getLabels() {
+		return m_labels;
+	}
+	
+	public boolean isLabel(String label){
+		return m_labels.containsKey(label);
+	}
+	
+	public int getLabelPc(String label){
+		if (m_labels.containsKey(label)) {
+			return m_labels.get(label);
+		}
+		assert(false);
+		return 0;
+	}
+
+	public void addQuery(PathQuery pq) {
+		this.m_pathQueries.add(pq);
+	}
+
+	public ArrayList<PathQuery> getPathQueries() {
+		return m_pathQueries;
+	}
+	
     private boolean analyseRouteSafley() {
     	//catch all errors here
     	boolean t = false;
@@ -486,7 +519,6 @@ public class Engine {
     private void decodeInstructions(){
         int nodeId = m_nodeId;
         int coreId = m_coreId;
-
         
         int lastPc = 0;
         HashMap <Integer, ArrayList<Integer>> instructionEntryPc = new HashMap<Integer, ArrayList<Integer>>();
@@ -496,12 +528,12 @@ public class Engine {
 	            int functionEntry = function.getChildern().get(0).getLineNumber();
 	            for (Line assembly : function.getChildern()){
 	                int pc = assembly.getLineNumber();
-	                int opcode = getOpcode(pc, nodeId,coreId);
+	                int opcode = getOpcode(pc, nodeId, coreId);
 	                
 	                
 	                if (m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().startsWith("RETSP")){
 	                    ArrayList<Integer> retsps = instructionEntryPc.get(functionEntry);
-	                    if (retsps==null){
+	                    if (retsps == null){
 	                        retsps = new ArrayList<Integer>();
 	                    } 
 	                    retsps.add(pc);
@@ -511,15 +543,15 @@ public class Engine {
 	            lastPc = function.getChildern().get(function.getChildern().size()-1).getLineNumber();
         	}
         }
-        int pc =m_xeLoader.getMemoryImage(nodeId, coreId).getMemoryBase();
+        int pc = m_xeLoader.getMemoryImage(nodeId, coreId).getMemoryBase();
         while (pc <= lastPc){
-            int opcode = getOpcode(pc, nodeId,coreId);
+            int opcode = getOpcode(pc, nodeId, coreId);
             int currentTarget = m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getBranchPcRelativeTargetPc();
             if (currentTarget>0 && m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().startsWith("BL")){
                 if (instructionEntryPc.get(currentTarget)!=null){
                     for (int targetPc : instructionEntryPc.get(currentTarget)){
-                        int opcodeRetsp = getOpcode(targetPc, nodeId,coreId);
-                        int pcOpcode = getOpcode(pc, nodeId,coreId);
+                        int opcodeRetsp = getOpcode(targetPc, nodeId, coreId);
+                        int pcOpcode = getOpcode(pc, nodeId, coreId);
                         XtaInstruction inst = m_nodeCoreInstructionCache.decode(pcOpcode, pc, nodeId, coreId);
                         m_nodeCoreInstructionCache.decode(opcodeRetsp, targetPc, nodeId, coreId).addReturnLocation(inst);
                     }
@@ -540,7 +572,6 @@ public class Engine {
         }
         return opcode;
     }
-
 
     void notifyUpdateState() {
         for (Displayer displayer : m_displayers)
@@ -617,41 +648,5 @@ public class Engine {
     private boolean resolveRefernece(CodeReference ref, Engine engine) {
         return ref.resolve(engine, m_nodeId, m_coreId);
     }
-
-	public boolean addLabel(String label , CodeReference ref) {
-        if (resolveRefernece(ref, this)) {
-    		m_labels.put(label, ref.getPc()); 
-    		return true;
-        }    			
-        return false;
-	}
-
-	public void removeLabel(String label) {
-		m_labels.remove(label);
-	}
-	
-	public Map<String, Integer> getLabels() {
-		return m_labels;
-	}
-	
-	public boolean isLabel(String label){
-		return m_labels.containsKey(label);
-	}
-	
-	public int getLabelPc(String label){
-		if (m_labels.containsKey(label)) {
-			return m_labels.get(label);
-		}
-		assert(false);
-		return 0;
-	}
-
-	public void addQuery(PathQuery pq) {
-		this.m_pathQueries.add(pq);
-	}
-
-	public ArrayList<PathQuery> getPathQueries() {
-		return m_pathQueries;
-	}
 }
 
