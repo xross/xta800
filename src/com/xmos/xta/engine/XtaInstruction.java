@@ -8,12 +8,9 @@ import com.xmos.xta.engine.Expression.OperatorType;
 import com.xmos.xta.engine.InstructionExecption.Error;
 import com.xmos.xta.engine.resources.Channel;
 import com.xmos.xta.engine.resources.Port;
-import com.xmos.xta.engine.resources.Resource;
 import com.xmos.xta.engine.resources.Resources;
-import com.xmos.xta.engine.resources.Synchroniser;
 import com.xmos.xta.engine.resources.Thread;
 import com.xmos.xta.engine.resources.Timer;
-import com.xmos.xta.engine.resources.Thread.StatusRegister;
 
 public abstract class XtaInstruction extends Instruction {
 	private static final boolean m_debug = false;

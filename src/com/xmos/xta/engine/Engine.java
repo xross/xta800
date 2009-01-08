@@ -3,6 +3,7 @@ package com.xmos.xta.engine;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -37,35 +38,33 @@ public class Engine {
     private int m_coreId;
     private String m_errorString;
     private Vector<Displayer> m_displayers;
-    
-    private Vector<CodeReference> m_exclusions;
-    private Vector<CodeReference> m_prohibited;
-    private Vector<CodeReference> m_required;
-    private HashMap<String, Integer> m_labels;
-    
-    private boolean m_abort;
     private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
-    private boolean m_resolveExpression;
-    
-    private ArrayList<PathQuery> m_pathQueries;
+    private boolean m_abort;
+    private boolean m_resolveExpression;    
     private Progress m_progress;
     
+    private ArrayList<CodeReferenceList> m_exclusions;
+    private ArrayList<CodeReferenceList> m_prohibited;
+    private ArrayList<CodeReferenceList> m_required;
+    private ArrayList<LabelMap> m_labels;
+    private ArrayList<PathQuery> m_pathQueries;    
+    
     public Engine(Config config) {    	
-    	m_exclusions = new Vector<CodeReference>();
-    	m_prohibited = new Vector<CodeReference>();
-    	m_required = new Vector<CodeReference>();
-    	m_labels = new HashMap<String, Integer>();    	
-        m_xeLoader = new XeLoader();        
-        m_xeObject = null;
-        m_route = null;
-        m_previousRoute = null;
+    	m_exclusions  = new ArrayList<CodeReferenceList>();
+    	m_prohibited  = new ArrayList<CodeReferenceList>();
+    	m_required    = new ArrayList<CodeReferenceList>();
+    	m_labels      = new ArrayList<LabelMap>();    	
+        m_xeLoader    = new XeLoader();        
         m_sourceFiles = new Vector<File>();
+        m_xeObject = null;
+        m_route    = null;
+        m_previousRoute = null;
         m_config = config;
         m_executableFile = "";
         m_nodeId = 0;
         m_coreId = 0;
         m_errorString = "";
-        m_displayers = new Vector<Displayer>();
+        m_displayers  = new Vector<Displayer>();
         m_pathQueries = new ArrayList<PathQuery>();
         m_abort = false;
         m_resolveExpression = false;        
@@ -75,14 +74,14 @@ public class Engine {
     public boolean addReference(ReferenceMode mode, CodeReference ref) {    	    	
         if (!resolveRefernece(ref, this)) {
         	return false;
-        }    	
-    	
+        }   
+            	
     	if (mode == ReferenceMode.EXCLUSION){
-    		m_exclusions.add(ref);
+            getReferenceList(m_exclusions, m_nodeId, m_coreId).add(ref);
     	} else if (mode == ReferenceMode.PROHIBITED){
-    		m_prohibited.add(ref);
+            getReferenceList(m_prohibited, m_nodeId, m_coreId).add(ref);
     	} else if (mode == ReferenceMode.REQUIRED){
-    		m_required.add(ref);
+            getReferenceList(m_required, m_nodeId, m_coreId).add(ref);
     	} else{
     		assert(false);
     		return false;
@@ -96,43 +95,36 @@ public class Engine {
         }    	
 
     	if (mode == ReferenceMode.EXCLUSION){
-    		CodeReference cr = findReference(ref, m_exclusions);
+    		List<CodeReference> references = getReferenceList(m_exclusions, m_nodeId, m_coreId);	
+    		CodeReference cr = findReference(ref, references);
     		if (cr == null) return false;
-    		m_exclusions.remove(cr);
+    		references.remove(cr);
     		return true;
     	} else if (mode == ReferenceMode.PROHIBITED){
-    		CodeReference cr = findReference(ref, m_prohibited);
+    		List<CodeReference> references = getReferenceList(m_prohibited, m_nodeId, m_coreId);
+    		CodeReference cr = findReference(ref, references);
     		if (cr == null) return false;
-    		m_prohibited.remove(cr);
+    		references.remove(cr);
     		return true;
     	} else if (mode == ReferenceMode.REQUIRED){
-    		CodeReference cr = findReference(ref, m_required);
+    		List<CodeReference> references = getReferenceList(m_required, m_nodeId, m_coreId);
+    		CodeReference cr = findReference(ref, references);
     		if (cr == null) return false;
-    		m_required.remove(cr);
+    		references.remove(cr);
     		return true;
     	} else {
     		assert(false);
     		return false;
     	}
     }
-    
-    private CodeReference findReference(CodeReference ref, Vector<CodeReference> references){
-    	for (CodeReference present : references){
-    		if (ref.getPc() == present.getPc() && ref.getRef().equals(present.getRef())){
-    			return present;
-    		}
-    	}
-    	return null;
-    }
-    
-    
-    public Vector<CodeReference> getReference(ReferenceMode mode){
+        
+    public List<CodeReference> getReference(ReferenceMode mode){
     	if(mode == ReferenceMode.EXCLUSION){
-    		return m_exclusions;
+    		return getReferenceList(m_exclusions, m_nodeId, m_coreId);
     	} else if (mode == ReferenceMode.PROHIBITED){
-    		return m_prohibited;
+    		return getReferenceList(m_prohibited, m_nodeId, m_coreId);
     	} else if (mode == ReferenceMode.REQUIRED){
-    		return m_required;
+    		return getReferenceList(m_required, m_nodeId, m_coreId);
     	} else {
     		assert(false);
     		return null;
@@ -186,21 +178,20 @@ public class Engine {
     	m_pathQueries.clear();
         boolean success = m_xeLoader.loadExecutable(executableFile);
         if (success) {
-            m_exclusions.clear();
             if (m_xeObject == null) {
                 m_xeObject = new XeObject(m_xeLoader);
             }
             m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);
             decodeInstructions();
-            m_route = null;            
+            initialiseReferenceLists();
             
-            for (Displayer displayer : m_displayers)
+            m_route = null;                                    
+            for (Displayer displayer : m_displayers) {
                 displayer.notify(Displayer.NOTIFY_LOAD_EXECUTABLE, executableFile);
-            
+            }
         } else {
             setErrorString("The file '" + executableFile + "'could not be found.");	        
-        }
-        
+        }        
         return success;
     }	
 
@@ -407,7 +398,6 @@ public class Engine {
         if (hit) {
             m_route.notifyUpdate();
         }
-
         return hit;
     }    
 
@@ -455,27 +445,28 @@ public class Engine {
 
 	public boolean addLabel(String label , CodeReference ref) {
         if (resolveRefernece(ref, this)) {
-    		m_labels.put(label, ref.getPc()); 
+        	getLabelsMap(m_labels, m_nodeId, m_coreId).put(label, ref.getPc()); 
     		return true;
         }    			
         return false;
 	}
 
 	public void removeLabel(String label) {
-		m_labels.remove(label);
+		getLabelsMap(m_labels, m_nodeId, m_coreId).remove(label);
 	}
 	
 	public Map<String, Integer> getLabels() {
-		return m_labels;
+		return getLabelsMap(m_labels, m_nodeId, m_coreId);
 	}
 	
 	public boolean isLabel(String label){
-		return m_labels.containsKey(label);
+		return getLabelsMap(m_labels, m_nodeId, m_coreId).containsKey(label);
 	}
 	
 	public int getLabelPc(String label){
-		if (m_labels.containsKey(label)) {
-			return m_labels.get(label);
+		Map<String, Integer> labels = getLabelsMap(m_labels, m_nodeId, m_coreId);		
+		if (labels.containsKey(label)) {
+			return labels.get(label);
 		}
 		assert(false);
 		return 0;
@@ -488,6 +479,11 @@ public class Engine {
 	public ArrayList<PathQuery> getPathQueries() {
 		return m_pathQueries;
 	}
+	
+    void notifyUpdateState() {
+        for (Displayer displayer : m_displayers)
+            displayer.notify(Displayer.NOTIFY_UPDATE_STATE, "");
+    }
 	
     private boolean analyseRouteSafley() {
     	//catch all errors here
@@ -573,11 +569,6 @@ public class Engine {
         return opcode;
     }
 
-    void notifyUpdateState() {
-        for (Displayer displayer : m_displayers)
-            displayer.notify(Displayer.NOTIFY_UPDATE_STATE, "");
-    }
-
     private boolean analyseRoute() throws Exception {
         assert(m_route != null);
 
@@ -647,6 +638,55 @@ public class Engine {
 
     private boolean resolveRefernece(CodeReference ref, Engine engine) {
         return ref.resolve(engine, m_nodeId, m_coreId);
+    }
+    
+    private List<CodeReference> getReferenceList(List<CodeReferenceList> referenceList, 
+    		int nodeId, int coreId) {
+    	for (CodeReferenceList references : referenceList) {
+    		if ((references.getNodeId() == nodeId) &&
+    			(references.getCoreId() == coreId)) {
+    			return references.getReferences();
+    		}
+    	}
+    	assert(false);
+    	return null;
+    }
+    
+    private CodeReference findReference(CodeReference ref, List<CodeReference> references){
+    	for (CodeReference present : references){
+    		if (ref.getPc() == present.getPc() && ref.getRef().equals(present.getRef())){
+    			return present;
+    		}
+    	}
+    	return null;
+    }        
+
+    private Map<String, Integer> getLabelsMap(List<LabelMap> labelsMap, 
+    		int nodeId, int coreId) {
+    	for (LabelMap labels : labelsMap) {
+    		if ((labels.getNodeId() == nodeId) &&
+    			(labels.getCoreId() == coreId)) {
+    			return labels.getLabels();
+    		}
+    	}
+    	assert(false);
+    	return null;
+    }
+
+    private void initialiseReferenceLists() {
+    	m_exclusions.clear();
+    	m_prohibited.clear();
+    	m_required.clear();
+    	m_labels.clear();
+    	
+		for(int node : m_xeLoader.getNodeIds()){
+			for(int core : m_xeLoader.getCoreIds(node)){							
+			    m_exclusions.add(new CodeReferenceList(node, core));
+			    m_prohibited.add(new CodeReferenceList(node, core));
+			    m_required.add(new CodeReferenceList(node, core));
+			    m_labels.add(new LabelMap(node, core));
+			}
+		}    	
     }
 }
 

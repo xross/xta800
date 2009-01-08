@@ -1,5 +1,6 @@
 package com.xmos.xta.engine;
 
+import java.util.List;
 import java.util.Vector;
 
 import com.xmos.xeloader.MemoryImage;
@@ -11,17 +12,16 @@ public class BlockCommonComponents {
     private InstructionAttributes m_instructionAttributes;
     private MemoryImage m_memoryImage;
     private SymbolTable m_symbolTable;
-    private Vector<CodeReference> m_exclusions;
+    private List<CodeReference> m_exclusions;
     private Route m_route;
     private boolean m_resolveExpressions;
     private Block.Mode m_mode;
-    private Engine m_engine;
-    
+    private Engine m_engine;    
     
 	public BlockCommonComponents(Config m_config,
 			NodeCoreInstructionCaches nodeCoreInstructionCache,
 			InstructionAttributes attributes, MemoryImage image,
-			SymbolTable table, Vector<CodeReference> m_exclusions, Route m_route,
+			SymbolTable table, List<CodeReference> m_exclusions, Route m_route,
 			boolean expressions, Block.Mode m_mode, Engine engine) {
 		super();
 		this.m_config = m_config;
@@ -67,7 +67,7 @@ public class BlockCommonComponents {
 	public void setSymbolTable(SymbolTable table) {
 		m_symbolTable = table;
 	}
-	public Vector<CodeReference> getExclusions() {
+	public List<CodeReference> getExclusions() {
 		return m_exclusions;
 	}
 	public void setExclusions(Vector<CodeReference> m_exclusions) {
