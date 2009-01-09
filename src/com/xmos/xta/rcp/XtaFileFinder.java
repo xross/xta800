@@ -5,13 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xeobject.FileFinder;
 
 public class XtaFileFinder implements FileFinder {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     
     private List<File> m_fileCache;
     
@@ -27,11 +29,16 @@ public class XtaFileFinder implements FileFinder {
 			return cachedFile;
 		}
 		
-        FileDialog fileDialog = new FileDialog(PlatformUI.getWorkbench().getDisplay().getActiveShell(), SWT.OPEN);
+		Display display = PlatformUI.getWorkbench().getDisplay();
+		Shell parent = new Shell(display);
+        FileDialog fileDialog = new FileDialog(parent, SWT.OPEN);
         fileDialog.setText("Open Source File: " + fileToFind);
         String[] filterExt = { fileToFind };
+        
         fileDialog.setFilterExtensions(filterExt);
-        String xeFileName = fileDialog.open();        
+        if (DEBUG) System.out.println("about to open");
+        String xeFileName = fileDialog.open();      
+        if (DEBUG) System.out.println("got file " + xeFileName);
         if (xeFileName != null) {
         	File file = new File(xeFileName);
         	m_fileCache.add(file);
