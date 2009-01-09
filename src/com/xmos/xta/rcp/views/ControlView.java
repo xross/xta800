@@ -308,12 +308,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
     private void createXeObject() {
 		Engine engine = XtaEngine.getEngine();
-		XeObject xeObject = new XeObject(engine.getXeLoader(), new XtaFileFinder());
-		XtaEngine.getEngine().setXeObject(xeObject);
-
 		File xe = new File(engine.getXeLoader().getExecutable());
 		if (xe.isFile()) {
 			m_fileName.setText(xe.getName());
+		} else {
+			//TODO - catch this - shouldn't fail
 		}
     }
     
