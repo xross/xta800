@@ -31,6 +31,12 @@ public class CodeReference {
 			return;
 		}
 	}
+	
+	public CodeReference(String fileName, int lineNumber) {
+		m_ref = String.format("%s:%d", fileName, lineNumber);
+		m_type = RefType.LINE;
+		m_isResolved = false;
+	}
 
 	public RefType getType() {
 		return 	m_type;
@@ -141,7 +147,6 @@ public class CodeReference {
 			if (parts.length == 2 && 
 					parts[1].matches("[0-9]*") && 
 					parts[0].length()>0){
-				m_type = RefType.LINE;
 				m_isResolved = false;
 				return true;
 			}
