@@ -14,6 +14,7 @@ import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.Function;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.XeObject;
@@ -28,7 +29,7 @@ public class Engine {
 	}
 	
     private XeLoader m_xeLoader;
-    private XeObject m_xeObject;
+    private ArrayList<XeObject> m_xeObjects;
     private Vector<File> m_sourceFiles;
     private Route m_route;
     private Route m_previousRoute;
@@ -56,8 +57,8 @@ public class Engine {
     	m_labels      = new ArrayList<LabelMap>();    	
         m_xeLoader    = new XeLoader();        
         m_sourceFiles = new Vector<File>();
-        m_xeObject = null;
-        m_route    = null;
+        m_xeObjects   = new ArrayList<XeObject>();
+        m_route       = null;
         m_previousRoute = null;
         m_config = config;
         m_executableFile = "";
@@ -159,31 +160,21 @@ public class Engine {
         return m_xeLoader;
     }	
 
-    public void setXeLoader(XeLoader xeLoader){
-        m_xeLoader = xeLoader;
-    }
-
-    public void setXeObject(XeObject xeObject){
-        m_xeObject = xeObject;
-    }
-
     public XeObject getXeObject(){
-        if (m_xeObject == null) {
-            m_xeObject = new XeObject(m_xeLoader);
-        }
-        return m_xeObject;
+        return getXeObject(m_nodeId, m_coreId);
     }
 
     public boolean loadExecutable(String executableFile) {
+    	return loadExecutable(executableFile, null);
+    }
+
+    public boolean loadExecutable(String executableFile, FileFinder fileFinder) {
     	m_pathQueries.clear();
         boolean success = m_xeLoader.loadExecutable(executableFile);
         if (success) {
-            if (m_xeObject == null) {
-                m_xeObject = new XeObject(m_xeLoader);
-            }
+        	initialiseLists(fileFinder);
             m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);
-            decodeInstructions();
-            initialiseReferenceLists();
+            decodeInstructions();            
             
             m_route = null;                                    
             for (Displayer displayer : m_displayers) {
@@ -513,21 +504,18 @@ public class Engine {
     }
     
     private void decodeInstructions(){
-        int nodeId = m_nodeId;
-        int coreId = m_coreId;
-        
         int lastPc = 0;
         HashMap <Integer, ArrayList<Integer>> instructionEntryPc = new HashMap<Integer, ArrayList<Integer>>();
-        for (Function function : m_xeObject.getFunctions()){
+        for (Function function : getXeObject(m_nodeId, m_coreId).getFunctions()){
         	
         	if (function.getChildern() != null && function.getChildern().size()>0){
 	            int functionEntry = function.getChildern().get(0).getLineNumber();
 	            for (Line assembly : function.getChildern()){
 	                int pc = assembly.getLineNumber();
-	                int opcode = getOpcode(pc, nodeId, coreId);
+	                int opcode = getOpcode(pc, m_nodeId, m_coreId);
 	                
 	                
-	                if (m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().startsWith("RETSP")){
+	                if (m_nodeCoreInstructionCache.decode(opcode, pc, m_nodeId, m_coreId).getNmenonic().startsWith("RETSP")){
 	                    ArrayList<Integer> retsps = instructionEntryPc.get(functionEntry);
 	                    if (retsps == null){
 	                        retsps = new ArrayList<Integer>();
@@ -539,23 +527,23 @@ public class Engine {
 	            lastPc = function.getChildern().get(function.getChildern().size()-1).getLineNumber();
         	}
         }
-        int pc = m_xeLoader.getMemoryImage(nodeId, coreId).getMemoryBase();
+        int pc = m_xeLoader.getMemoryImage(m_nodeId, m_coreId).getMemoryBase();
         while (pc <= lastPc){
-            int opcode = getOpcode(pc, nodeId, coreId);
-            int currentTarget = m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getBranchPcRelativeTargetPc();
-            if (currentTarget>0 && m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().startsWith("BL")){
+            int opcode = getOpcode(pc, m_nodeId, m_coreId);
+            int currentTarget = m_nodeCoreInstructionCache.decode(opcode, pc, m_nodeId, m_coreId).getBranchPcRelativeTargetPc();
+            if (currentTarget>0 && m_nodeCoreInstructionCache.decode(opcode, pc, m_nodeId, m_coreId).getNmenonic().startsWith("BL")){
                 if (instructionEntryPc.get(currentTarget)!=null){
                     for (int targetPc : instructionEntryPc.get(currentTarget)){
-                        int opcodeRetsp = getOpcode(targetPc, nodeId, coreId);
-                        int pcOpcode = getOpcode(pc, nodeId, coreId);
-                        XtaInstruction inst = m_nodeCoreInstructionCache.decode(pcOpcode, pc, nodeId, coreId);
-                        m_nodeCoreInstructionCache.decode(opcodeRetsp, targetPc, nodeId, coreId).addReturnLocation(inst);
+                        int opcodeRetsp = getOpcode(targetPc, m_nodeId, m_coreId);
+                        int pcOpcode = getOpcode(pc, m_nodeId, m_coreId);
+                        XtaInstruction inst = m_nodeCoreInstructionCache.decode(pcOpcode, pc, m_nodeId, m_coreId);
+                        m_nodeCoreInstructionCache.decode(opcodeRetsp, targetPc, m_nodeId, m_coreId).addReturnLocation(inst);
                     }
                 } else {
                     //this is the case where dosyscall has been hit
                 }
             }
-            pc += m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNumBytes();
+            pc += m_nodeCoreInstructionCache.decode(opcode, pc, m_nodeId, m_coreId).getNumBytes();
         }
     }
 
@@ -673,20 +661,33 @@ public class Engine {
     	return null;
     }
 
-    private void initialiseReferenceLists() {
+    private XeObject getXeObject(int nodeId, int coreId) {
+    	for (XeObject xeObject : m_xeObjects) {
+    		if ((xeObject.getNodeId() == nodeId) &&
+        		(xeObject.getCoreId() == coreId)) {
+    			return xeObject;
+    		}    		
+    	}
+    	assert(false);
+    	return null;
+    }
+    
+    private void initialiseLists(FileFinder fileFinder) {
     	m_exclusions.clear();
     	m_prohibited.clear();
     	m_required.clear();
     	m_labels.clear();
+    	m_xeObjects.clear();
     	
-		for(int node : m_xeLoader.getNodeIds()){
-			for(int core : m_xeLoader.getCoreIds(node)){							
+		for (int node : m_xeLoader.getNodeIds()){
+			for (int core : m_xeLoader.getCoreIds(node)){							
 			    m_exclusions.add(new CodeReferenceList(node, core));
 			    m_prohibited.add(new CodeReferenceList(node, core));
 			    m_required.add(new CodeReferenceList(node, core));
 			    m_labels.add(new LabelMap(node, core));
+				m_xeObjects.add(new XeObject(m_xeLoader, node, core, fileFinder));
 			}
 		}    	
-    }
+    }    
 }
 

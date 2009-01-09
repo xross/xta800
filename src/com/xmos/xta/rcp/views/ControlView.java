@@ -1,7 +1,5 @@
 package com.xmos.xta.rcp.views;
 
-import java.io.File;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -115,10 +113,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			setDone("Done");
 			updateCurrentRoute();
 			checkUnresolvedPaths();
-		} else if (event.getProperty().equals(Displayer.NOTIFY_LOAD_EXECUTABLE)) {
-			
-			createXeObject();
-            populateFunctionList();			
+		} else if (event.getProperty().equals(Displayer.NOTIFY_LOAD_EXECUTABLE)) {			
 	        openEditors();
 	        setDone(STATUS_LOADED);
 	        m_progress.setText("0");
@@ -171,25 +166,19 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        String[] filterExt = { "*.xe" };
 	        fileDialog.setFilterExtensions(filterExt);
 	        String xeFileName = fileDialog.open();
+
+        	if (DEBUG)
+        		System.out.printf("Control: File open: %s\n", xeFileName);
 	        
 	        if (xeFileName != null) {
-	        	if (DEBUG) {
-	        		System.out.printf("Control: File open: %s\n", xeFileName);
-	        	}
 	        	Engine engine = XtaEngine.getEngine();
-	        	boolean success = engine.loadExecutable(xeFileName);
-	        	if (DEBUG) {
-	        		if (success) {
-	                    System.out.printf("Control: Successfully loaded executable: %s\n", xeFileName);
-	        		} else {
-	                    System.out.printf("Control: Failed to open file: %s\n", xeFileName);
-	        		}
-	        	}
-	        } else {
-	        	if (DEBUG) {
-	        		System.out.printf("Control: File open: null\n");
-	        	}
-	        }	                			
+	        	boolean success = engine.loadExecutable(xeFileName, new XtaFileFinder());
+	        	if (success) {
+	    			m_fileName.setText(xeFileName);
+	    		}	        		        	
+	        	if (DEBUG)
+                    System.out.printf("Control: executeLoad, success: %d\n", success);
+	        }
 		} else {
 			displayMessageBox("Error", "Cannot open file, engine currently busy");
 		}
@@ -267,10 +256,10 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	private void updateState() {
+        populateFunctionList();			
+		
 		m_resolveExpressions.setSelection(XtaEngine.getEngine().getResolve());
-
 		m_freqSpinner.setSelection(XtaEngine.getEngine().getFrequency());
-
 		m_threadSpinner.setSelection(XtaEngine.getEngine().getNumThreads());
 
 		updateNodeIds();
@@ -305,17 +294,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			index++;
 		}
 	}
-
-    private void createXeObject() {
-		Engine engine = XtaEngine.getEngine();
-		XeObject xeObject = new XeObject(engine.getXeLoader(), new XtaFileFinder());
-		XtaEngine.getEngine().setXeObject(xeObject);
-
-		File xe = new File(engine.getXeLoader().getExecutable());
-		if (xe.isFile()) {
-			m_fileName.setText(xe.getName());
-		}
-    }
     
     private void populateFunctionList() {
     	m_functions.removeAll();
