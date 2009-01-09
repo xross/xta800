@@ -484,51 +484,53 @@ public class Engine {
     }
     
     private void decodeInstructions(){
-        int nodeId = m_nodeId;
-        int coreId = m_coreId;
-
-        
-        int lastPc = 0;
-        HashMap <Integer, ArrayList<Integer>> instructionEntryPc = new HashMap<Integer, ArrayList<Integer>>();
-        for (Function function : m_xeObject.getFunctions()){
-        	
-        	if (function.getChildern() != null && function.getChildern().size()>0){
-	            int functionEntry = function.getChildern().get(0).getLineNumber();
-	            for (Line assembly : function.getChildern()){
-	                int pc = assembly.getLineNumber();
-	                int opcode = getOpcode(pc, nodeId,coreId);
-	                
-	                
-	                if (m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().startsWith("RETSP")){
-	                    ArrayList<Integer> retsps = instructionEntryPc.get(functionEntry);
-	                    if (retsps==null){
-	                        retsps = new ArrayList<Integer>();
-	                    } 
-	                    retsps.add(pc);
-	                    instructionEntryPc.put(functionEntry, retsps);  
-	                }
-	            }
-	            lastPc = function.getChildern().get(function.getChildern().size()-1).getLineNumber();
+        for(int nodeId : m_xeLoader.getNodeIds()){
+        	for(int coreId : m_xeLoader.getCoreIds(nodeId)){
+		        int lastPc = 0;
+		        HashMap <Integer, ArrayList<Integer>> instructionEntryPc = new HashMap<Integer, ArrayList<Integer>>();
+		        for (Function function : m_xeObject.getFunctions()){
+		        	
+		        	if (function.getChildern() != null && function.getChildern().size()>0){
+			            int functionEntry = function.getChildern().get(0).getLineNumber();
+			            for (Line assembly : function.getChildern()){
+			                int pc = assembly.getLineNumber();
+			                int opcode = getOpcode(pc, nodeId,coreId);
+			                
+			                
+			                if (m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().startsWith("RETSP")){
+			                    ArrayList<Integer> retsps = instructionEntryPc.get(functionEntry);
+			                    if (retsps==null){
+			                        retsps = new ArrayList<Integer>();
+			                    } 
+			                    retsps.add(pc);
+			                    instructionEntryPc.put(functionEntry, retsps);  
+			                }
+			            }
+			            lastPc = function.getChildern().get(function.getChildern().size()-1).getLineNumber();
+		        	}
+		        }
+		        int pc =m_xeLoader.getMemoryImage(nodeId, coreId).getMemoryBase();
+		        while (pc <= lastPc){
+		            int opcode = getOpcode(pc, nodeId,coreId);
+		            int currentTarget = m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getBranchPcRelativeTargetPc();
+		            if (currentTarget>0 && m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().startsWith("BL")){
+		                if (instructionEntryPc.get(currentTarget)!=null){
+		                    for (int targetPc : instructionEntryPc.get(currentTarget)){
+		                        int opcodeRetsp = getOpcode(targetPc, nodeId,coreId);
+		                        int pcOpcode = getOpcode(pc, nodeId,coreId);
+		                        XtaInstruction inst = m_nodeCoreInstructionCache.decode(pcOpcode, pc, nodeId, coreId);
+		                        m_nodeCoreInstructionCache.decode(opcodeRetsp, targetPc, nodeId, coreId).addReturnLocation(inst);
+		                    }
+		                } else {
+		                    //this is the case where dosyscall has been hit
+		                }
+		            }
+		            pc += m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNumBytes();
+		        }
+  		
         	}
         }
-        int pc =m_xeLoader.getMemoryImage(nodeId, coreId).getMemoryBase();
-        while (pc <= lastPc){
-            int opcode = getOpcode(pc, nodeId,coreId);
-            int currentTarget = m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getBranchPcRelativeTargetPc();
-            if (currentTarget>0 && m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().startsWith("BL")){
-                if (instructionEntryPc.get(currentTarget)!=null){
-                    for (int targetPc : instructionEntryPc.get(currentTarget)){
-                        int opcodeRetsp = getOpcode(targetPc, nodeId,coreId);
-                        int pcOpcode = getOpcode(pc, nodeId,coreId);
-                        XtaInstruction inst = m_nodeCoreInstructionCache.decode(pcOpcode, pc, nodeId, coreId);
-                        m_nodeCoreInstructionCache.decode(opcodeRetsp, targetPc, nodeId, coreId).addReturnLocation(inst);
-                    }
-                } else {
-                    //this is the case where dosyscall has been hit
-                }
-            }
-            pc += m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNumBytes();
-        }
+        
     }
 
     private int getOpcode(int pc, int nodeId, int coreId){
