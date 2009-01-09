@@ -29,8 +29,8 @@ class Memory {
 		
 		if(exp.canResolve()){
 			//remove this byte from the unknowns if it is in there
-			if(m_unknownMemoryMap.contains(address))
-				m_unknownMemoryMap.remove(address);
+			//if(m_unknownMemoryMap.contains(address))
+			//	m_unknownMemoryMap.remove(address);
 			//add this byte to the memoryMap
 			byteWrite(address, (byte) exp.getValue());
 		} else {
