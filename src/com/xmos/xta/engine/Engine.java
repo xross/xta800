@@ -170,6 +170,7 @@ public class Engine {
 
     public boolean loadExecutable(String executableFile, FileFinder fileFinder) {
     	m_pathQueries.clear();
+    	
         boolean success = m_xeLoader.loadExecutable(executableFile);
         if (success) {
         	initialiseLists(fileFinder);
