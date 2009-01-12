@@ -18,7 +18,7 @@ public class InputSource implements IEditorInput {
     public InputSource(SourceFile sourceFile) {	
 		if (DEBUG) System.out.printf("InputSource()\n");
 		
-		String fileName = sourceFile.getFile().getName();
+		String fileName = sourceFile.getFile().getAbsolutePath();
 		int lineIndex = 0;
 		m_input = new Input(s_headerType, s_lineType);
         for (SourceLine sourceLine : sourceFile.getSourceLines()){        	
