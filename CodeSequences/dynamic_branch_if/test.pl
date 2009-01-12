@@ -16,6 +16,6 @@ system("@ARGV load $genDir/test.xe " .
        "summary simple " .
        "summary complete " .
        "summary complete_loops " .
-       "print src 0 test.xc " .
+       "print src 0 ../test.xc " .
        "exit > $genDir/dynamic_branch_if.txt 2>&1");
 

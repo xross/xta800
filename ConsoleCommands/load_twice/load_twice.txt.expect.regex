@@ -3,7 +3,7 @@ Current core: 0
 Frequency: 400
 NumThreads: 8
 Mode: No Resolve
-Loaded executable: \w+/test1.xe
+Loaded executable: test1.xe
 Node: 0, Core: 0 \(No debug information found\)
 No Paths/Functions registered
 Current node: 0
@@ -11,6 +11,6 @@ Current core: 0
 Frequency: 400
 NumThreads: 8
 Mode: No Resolve
-Loaded executable: \w+/test2.xe
+Loaded executable: test2.xe
 Node: 0, Core: 0 \(No debug information found\)
 No Paths/Functions registered
