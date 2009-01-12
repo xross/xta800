@@ -53,7 +53,7 @@ class Status extends Command {
     	if (executable==null)
     		console.display(String.format("No executable loaded\n"));
     	else
-    		console.display(String.format("Loaded executable: %s\n", executable.getAbsolutePath()));
+    		console.display(String.format("Loaded executable: %s\n", executable.getName()));
     	
     	for (MemoryImage memoryImage : engine.getMemoryImages()) {
     		int node = memoryImage.getNodeId();

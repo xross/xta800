@@ -169,6 +169,7 @@ public class Engine {
     	
         boolean success = m_xeLoader.loadExecutable(executableFile);
         if (success) {
+        	m_executableFile = executableFile;
         	initialiseLists(fileFinder);
             m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);
             decodeInstructions(); 
