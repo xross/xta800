@@ -1,5 +1,8 @@
 package com.xmos.xta.console.commands;
 
+import java.io.File;
+import java.io.IOException;
+
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
@@ -40,7 +43,14 @@ class Load extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-        if (engine.loadExecutable(m_executableName) == false) {
+    	
+    	File file = new File(new File(m_executableName).getAbsolutePath());
+    	try {
+			file = file.getCanonicalFile();
+		} catch (IOException e) {
+			console.display(String.format("Error: Failed to resolve executable path: %s\n", m_executableName));
+		}
+        if (engine.loadExecutable(file) == false) {
         	console.display(String.format("Error: Failed to load executable: %s\n", m_executableName));
         }
     }

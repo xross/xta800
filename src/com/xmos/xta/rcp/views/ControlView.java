@@ -1,5 +1,8 @@
 package com.xmos.xta.rcp.views;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -170,9 +173,19 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         	if (DEBUG)
         		System.out.printf("Control: File open: %s\n", xeFileName);
 	        
+        	File xeFile = new File(xeFileName);
+        	
+        	try {
+				xeFile = xeFile.getCanonicalFile();
+			} catch (IOException e) {
+				//FIXME -popup a box as a warning
+				System.err.println("cannot resolve file: " + xeFileName);
+				return;
+			}
+        	
 	        if (xeFileName != null) {
 	        	Engine engine = XtaEngine.getEngine();
-	        	boolean success = engine.loadExecutable(xeFileName, new XtaFileFinder());
+	        	boolean success = engine.loadExecutable(xeFile, new XtaFileFinder());
 	        	if (success) {
 	    			m_fileName.setText(xeFileName);
 	    		}	        		        	

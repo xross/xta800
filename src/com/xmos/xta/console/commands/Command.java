@@ -1,5 +1,7 @@
 package com.xmos.xta.console.commands;
 
+import java.io.File;
+
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
@@ -16,8 +18,8 @@ public abstract class Command {
     public abstract void execute(Shell shell, Engine engine, Console console);
     
     static boolean isExecutableLoaded(Engine engine, Console console) {    
-	    String executable = engine.getExecutable();
-    	if (executable.equals("")) {
+	    File executable = engine.getExecutable();
+    	if (executable==null) {
     		console.display("Error: No executable loaded\n");
 	        return false;
     	}

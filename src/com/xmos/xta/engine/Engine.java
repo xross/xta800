@@ -33,7 +33,7 @@ public class Engine {
     private Route m_route;
     private Route m_previousRoute;
     private Config m_config;
-    private String m_executableFile;
+    private File m_executableFile;
     private int m_nodeId;
     private int m_coreId;
     private String m_errorString;
@@ -61,7 +61,7 @@ public class Engine {
         m_route       = null;
         m_previousRoute = null;
         m_config = config;
-        m_executableFile = "";
+        m_executableFile = null;
         m_nodeId = 0;
         m_coreId = 0;
         m_errorString = "";
@@ -134,10 +134,6 @@ public class Engine {
     
     public Config getConfig() {
         return m_config;
-    }
-
-    public String getExecutable() {
-        return m_xeLoader.getExecutable();
     }	
 
     public Vector<MemoryImage> getMemoryImages() {
@@ -164,11 +160,11 @@ public class Engine {
         return getXeObject(m_nodeId, m_coreId);
     }
 
-    public boolean loadExecutable(String executableFile) {
+    public boolean loadExecutable(File executableFile) {
     	return loadExecutable(executableFile, null);
     }
 
-    public boolean loadExecutable(String executableFile, FileFinder fileFinder) {
+    public boolean loadExecutable(File executableFile, FileFinder fileFinder) {
     	m_pathQueries.clear();
     	
         boolean success = m_xeLoader.loadExecutable(executableFile);
@@ -180,7 +176,7 @@ public class Engine {
             
             m_route = null;                                    
             for (Displayer displayer : m_displayers) {
-                displayer.notify(Displayer.NOTIFY_LOAD_EXECUTABLE, executableFile);
+                displayer.notify(Displayer.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
             }
         } else {
             setErrorString("The file '" + executableFile + "'could not be found.");	        
@@ -700,5 +696,9 @@ public class Engine {
     		labelMap.loadLabels(this, m_xeLoader);
 		}    	
     }
+
+	public File getExecutable() {
+		return m_executableFile;
+	}
 }
 
