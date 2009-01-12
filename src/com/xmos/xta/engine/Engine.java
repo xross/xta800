@@ -29,7 +29,6 @@ public class Engine {
 	}
 	
     private XeLoader m_xeLoader;
-    private ArrayList<XeObject> m_xeObjects;
     private Vector<File> m_sourceFiles;
     private Route m_route;
     private Route m_previousRoute;
@@ -44,6 +43,7 @@ public class Engine {
     private boolean m_resolveExpression;    
     private Progress m_progress;
     
+    private ArrayList<XeObject> m_xeObjects;
     private ArrayList<CodeReferenceList> m_exclusions;
     private ArrayList<CodeReferenceList> m_prohibited;
     private ArrayList<CodeReferenceList> m_required;
@@ -51,13 +51,13 @@ public class Engine {
     private ArrayList<PathQuery> m_pathQueries;    
     
     public Engine(Config config) {    	
+        m_xeObjects   = new ArrayList<XeObject>();
     	m_exclusions  = new ArrayList<CodeReferenceList>();
     	m_prohibited  = new ArrayList<CodeReferenceList>();
     	m_required    = new ArrayList<CodeReferenceList>();
     	m_labels      = new ArrayList<LabelMap>();    	
         m_xeLoader    = new XeLoader();        
         m_sourceFiles = new Vector<File>();
-        m_xeObjects   = new ArrayList<XeObject>();
         m_route       = null;
         m_previousRoute = null;
         m_config = config;
@@ -175,7 +175,8 @@ public class Engine {
         if (success) {
         	initialiseLists(fileFinder);
             m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);
-            decodeInstructions();            
+            decodeInstructions(); 
+            loadLabels();
             
             m_route = null;                                    
             for (Displayer displayer : m_displayers) {
@@ -437,26 +438,26 @@ public class Engine {
 
 	public boolean addLabel(String label , CodeReference ref) {
         if (resolveRefernece(ref, this)) {
-        	getLabelsMap(m_labels, m_nodeId, m_coreId).put(label, ref.getPc()); 
+        	getLabelsMap(m_nodeId, m_coreId).put(label, ref.getPc()); 
     		return true;
         }    			
         return false;
 	}
 
 	public void removeLabel(String label) {
-		getLabelsMap(m_labels, m_nodeId, m_coreId).remove(label);
+		getLabelsMap(m_nodeId, m_coreId).remove(label);
 	}
 	
 	public Map<String, Integer> getLabels() {
-		return getLabelsMap(m_labels, m_nodeId, m_coreId);
+		return getLabelsMap(m_nodeId, m_coreId);
 	}
 	
 	public boolean isLabel(String label){
-		return getLabelsMap(m_labels, m_nodeId, m_coreId).containsKey(label);
+		return getLabelsMap(m_nodeId, m_coreId).containsKey(label);
 	}
 	
 	public int getLabelPc(String label){
-		Map<String, Integer> labels = getLabelsMap(m_labels, m_nodeId, m_coreId);		
+		Map<String, Integer> labels = getLabelsMap(m_nodeId, m_coreId);		
 		if (labels.containsKey(label)) {
 			return labels.get(label);
 		}
@@ -515,8 +516,7 @@ public class Engine {
 			            int functionEntry = function.getChildern().get(0).getLineNumber();
 			            for (Line assembly : function.getChildern()){
 			                int pc = assembly.getLineNumber();
-			                int opcode = getOpcode(pc, nodeId,coreId);
-			                
+			                int opcode = getOpcode(pc, nodeId,coreId);			                
 			                
 			                if (m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().startsWith("RETSP")){
 			                    ArrayList<Integer> retsps = instructionEntryPc.get(functionEntry);
@@ -655,9 +655,8 @@ public class Engine {
     	return null;
     }        
 
-    private Map<String, Integer> getLabelsMap(List<LabelMap> labelsMap, 
-    		int nodeId, int coreId) {
-    	for (LabelMap labels : labelsMap) {
+    private Map<String, Integer> getLabelsMap(int nodeId, int coreId) {
+    	for (LabelMap labels : m_labels) {
     		if ((labels.getNodeId() == nodeId) &&
     			(labels.getCoreId() == coreId)) {
     			return labels.getLabels();
@@ -694,6 +693,12 @@ public class Engine {
 				m_xeObjects.add(new XeObject(m_xeLoader, node, core, fileFinder));
 			}
 		}    	
-    }    
+    }
+    
+    private void loadLabels() {
+    	for (LabelMap labelMap : m_labels) {
+    		labelMap.loadLabels(this, m_xeLoader);
+		}    	
+    }
 }
 
