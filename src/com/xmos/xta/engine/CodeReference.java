@@ -82,7 +82,6 @@ public class CodeReference {
 
             try {
             	file = file.getCanonicalFile();
-				System.out.println(file);
 			} catch (IOException e) {
 				return false;
 			}

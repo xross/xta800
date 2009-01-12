@@ -92,12 +92,12 @@ public class Excluded extends Command {
        	switch (m_operation) {
        	case ADD:
        		if (!engine.addReference(ReferenceMode.EXCLUSION, m_ref)) {
-               	console.display("Error: Unable to add reference: " + m_ref + "\n");            			
+               	console.display("Error: Unable to add reference: " + m_ref.getRef() + "\n");            			
        		}
        		break;
        	case REMOVE:
        		if (!engine.removeReference(ReferenceMode.EXCLUSION, m_ref)) {        			
-             	console.display("Error: Unable to remove reference: " + m_ref + "\n");            			
+             	console.display("Error: Unable to remove reference: " + m_ref.getRef() + "\n");            			
       		}
        		break;           		
        	case LIST:
