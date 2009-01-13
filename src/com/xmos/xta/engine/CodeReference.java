@@ -74,11 +74,11 @@ public class CodeReference {
     		DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(m_nodeId, m_coreId);		
             
     		String fileName = m_ref.substring(0, colonIndex);
-    		
-    		if( fileName.charAt(0) != File.separatorChar){
-    			fileName = engine.getXeLoader().getFile().getParent() + File.separatorChar +  fileName;
+
+    		File file = new File(fileName);
+    		if (!file.isAbsolute()) {
+    			fileName = engine.getXeLoader().getFile().getParent() + File.separatorChar + fileName;
             }
-            File file = new File(fileName);
 
             try {
             	file = file.getCanonicalFile();
@@ -118,7 +118,7 @@ public class CodeReference {
     	return false;
 	}
   
-    private boolean fileExists(DebugInfo debugInfo, File fileName) {
+	private boolean fileExists(DebugInfo debugInfo, File fileName) {
     	return debugInfo.getDebugEngine().containsXtaFile(fileName);
     }    
     
