@@ -41,19 +41,22 @@ public class LabelMap {
         	int index = 8;
         	while (index < size) {
         		String labelName = readString(data, byteIndex + index);
-        		index += labelName.length() + 1;        		
+        		index += labelName.length() + 1;
         		
         		int lineNumber = readInt(data, byteIndex + index);
         		index += 4;
         		
         		String fileName = readString(data, byteIndex + index);
-        		index += fileName.length() + 1;     
+        		index += fileName.length() + 1;
         		
         		CodeReference ref = new CodeReference(fileName, lineNumber);
         		if (ref.resolve(engine, m_nodeId, m_coreId)) {
-        			m_labels.put(labelName, ref.getPc()); 
+        			m_labels.put(labelName, ref.getPc());
+        	    } else {
+        	    	System.out.println("WARNING: unable to resolve label " +
+        	    			fileName + ":" + lineNumber);
         	    }
-        	}        	
+        	}
         	byteIndex += size;
         }
 	}

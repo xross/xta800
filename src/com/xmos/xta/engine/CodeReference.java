@@ -78,6 +78,7 @@ public class CodeReference {
     		File file = new File(fileName);
     		if (!file.isAbsolute()) {
     			fileName = engine.getXeLoader().getFile().getParent() + File.separatorChar + fileName;
+        		file = new File(fileName);
             }
 
             try {
