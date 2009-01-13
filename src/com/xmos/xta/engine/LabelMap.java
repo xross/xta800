@@ -1,5 +1,6 @@
 package com.xmos.xta.engine;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,8 +38,11 @@ public class LabelMap {
         	// Skip version
         	readInt(data, byteIndex);
         	int size = readInt(data, byteIndex + 4);
-        	 
+
         	int index = 8;
+        	String basePath = readString(data, byteIndex + index);
+    		index += basePath.length() + 1;
+
         	while (index < size) {
         		String labelName = readString(data, byteIndex + index);
         		index += labelName.length() + 1;
@@ -48,6 +52,7 @@ public class LabelMap {
         		
         		String fileName = readString(data, byteIndex + index);
         		index += fileName.length() + 1;
+        		fileName = basePath + File.separator + fileName;
         		
         		CodeReference ref = new CodeReference(fileName, lineNumber);
         		if (ref.resolve(engine, m_nodeId, m_coreId)) {

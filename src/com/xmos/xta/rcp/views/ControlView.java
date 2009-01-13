@@ -171,20 +171,20 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        fileDialog.setFilterExtensions(filterExt);
 	        String xeFileName = fileDialog.open();
 
-        	if (DEBUG)
-        		System.out.printf("Control: File open: %s\n", xeFileName);
-	        
-        	File xeFile = new File(xeFileName);
-        	
-        	try {
-				xeFile = xeFile.getCanonicalFile();
-			} catch (IOException e) {
-				//FIXME -popup a box as a warning
-				System.err.println("cannot resolve file: " + xeFileName);
-				return;
-			}
-        	
 	        if (xeFileName != null) {
+	        	if (DEBUG)
+	        		System.out.printf("Control: File open: %s\n", xeFileName);
+	        
+	        	File xeFile = new File(xeFileName);
+	        	
+	        	try {
+					xeFile = xeFile.getCanonicalFile();
+				} catch (IOException e) {
+					//FIXME -popup a box as a warning
+					System.err.println("cannot resolve file: " + xeFileName);
+					return;
+				}
+        	
 	        	Engine engine = XtaEngine.getEngine();
 	        	boolean success = engine.loadExecutable(xeFile, new XtaFileFinder());
 	        	if (success) {
