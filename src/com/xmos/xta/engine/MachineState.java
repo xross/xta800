@@ -101,6 +101,7 @@ public class MachineState {
 	}
 
 	MachineState(MachineState machineState) {
+		m_arch = machineState.m_arch;
         m_opcode = machineState.m_opcode;
         m_op1Fld = machineState.m_op1Fld;
         m_op2Fld = machineState.m_op2Fld;
