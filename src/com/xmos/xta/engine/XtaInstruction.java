@@ -1325,10 +1325,10 @@ public abstract class XtaInstruction extends Instruction {
     	if (m_debug)     	
             System.out.printf("0x%08x: LMUL\n", getPc());	
 
-    	if(state.m_op2.canResolve() &&
+    	if (state.m_op2.canResolve() &&
     			state.m_op3.canResolve() &&
     			state.m_op5.canResolve() &&
-    			state.m_op6.canResolve()){
+    			state.m_op6.canResolve()) {
 	    	long lprod = (((long)(state.m_op2.getValue()))&0xffffffffL) *
 	        (((long)(state.m_op3.getValue()))&0xffffffffL);
 			long lacc = lprod + (((long)(state.m_op5.getValue()))&0xffffffffL) +
@@ -1338,9 +1338,12 @@ public abstract class XtaInstruction extends Instruction {
 				state.m_op4 = new Expression((int)(lacc >> 32));
 	    		state.m_op1 = new Expression(((int)(lacc & 0xffffffff)));
 			}
-			else if (state.getArchitecture() == Architecture.REVB) {
+			else if ((state.getArchitecture() == Architecture.REVB) ||
+					 (state.getArchitecture() == Architecture.REVC)) {
 				state.m_op1 = new Expression((int)(lacc >> 32));
 	    		state.m_op4 = new Expression(((int)(lacc & 0xffffffff)));
+			} else {
+				assert(false);
 			}
     	} else {
     		state.m_op1 = new Expression(state.m_op1Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
