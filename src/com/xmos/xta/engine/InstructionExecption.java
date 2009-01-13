@@ -22,6 +22,7 @@ public class InstructionExecption extends Exception {
 		ET_ARITHMETIC,
 		ET_ILLEGAL_PC,
 		ET_LOAD_STORE,
+		UNIDENTIFIEDVECTOR,
 		
 	};
 	

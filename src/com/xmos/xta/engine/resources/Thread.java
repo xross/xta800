@@ -4,7 +4,7 @@ import com.xmos.xta.engine.Expression;
 import com.xmos.xta.engine.InstructionBuffer;
 import com.xmos.xta.engine.Registers;
 
-public class Thread implements Resource{
+public class Thread extends Resource {
     
     private Registers m_registers;
     private InstructionBuffer m_iBuffer;
@@ -29,7 +29,8 @@ public class Thread implements Resource{
         INK, SINK, WAITING, FAST
     }
     
-    public Thread(int threadNo){
+    public Thread(int threadNum){
+    	super(Resources.RES_TYPE_THREAD, threadNum);
     	m_SPC = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
         m_SSR = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
         m_ET = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
@@ -38,12 +39,12 @@ public class Thread implements Resource{
         m_KEP = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
         m_KSP = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
     	m_cbInUse = false;
-    	m_ID = threadNo;
         m_registers = new Registers();
         m_iBuffer = new InstructionBuffer();
     }
     
     public Thread(Thread thread){
+    	super(thread);
         m_registers = new Registers(thread.m_registers);
         m_ID = thread.m_ID;
         m_iBuffer = new InstructionBuffer(thread.m_iBuffer);

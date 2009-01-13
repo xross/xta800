@@ -1,32 +1,12 @@
 package com.xmos.xta.engine.resources;
 
-public class Coprocessor implements Resource{
-	private int m_procId;
-	private boolean m_inUse;
+public class Coprocessor extends Resource {
 	
-    public Coprocessor(int procNo) {
-        m_procId=procNo;
+    public Coprocessor() {
+        super(Resources.RES_TYPE_COPROC, 0);
     }
     
     public Coprocessor(Coprocessor coprocessor) {
-    	m_inUse = coprocessor.m_inUse;
-    	m_procId = coprocessor.m_procId;
+    	super(coprocessor);
     }
-    
-    public boolean isInUse() {
-		return m_inUse;
-	}
-
-	public void setInUse(boolean inUse) {
-		m_inUse = inUse;
-	}
-    
-	public int getResourceID() {
-		return 0;
-	}
-
-	public void setMaster(int thread) {
-		// TODO Auto-generated method stub
-		
-	}
 }

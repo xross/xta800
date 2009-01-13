@@ -13,7 +13,7 @@ import com.xmos.xta.engine.MachineState.BranchState;
 import com.xmos.xta.engine.Status.BlockStatus;
 
 public class Block implements Comparable<Block> {
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	private static final boolean DUMPSTATE = false;
 	private static final boolean IBUFFERSTATE = false;
 
@@ -252,12 +252,13 @@ public class Block implements Comparable<Block> {
 		m_machineState.resetInstructionState();
 		XtaInstruction instruction = m_bc.getNodeCoreInstructionCaches()
 		 .decode(opcode, pc, m_bc.getEngine().getNodeId(), m_bc.getEngine().getCoreId());
-		//XtaInstruction instruction = m_bc.getInstructionDecodeCache().decode(opcode, pc);
 		int instNumBytes = instruction.getNumBytes();
 
 
 		handleIBuffer(instNumBytes, pc);
 		if (DUMPSTATE) dumpState(m_machineState);
+		
+		if(DEBUG) System.out.println("about to execute " + instruction);
 		boolean success = executeInstruction(instruction);
 		
 		if(!success) {
@@ -292,7 +293,7 @@ public class Block implements Comparable<Block> {
 		if (m_machineState.wasEventWait()) {
 			if (m_machineState.wasEventResolved()) {
 				ArrayList<Integer> targets = new ArrayList<Integer>(m_machineState.getEventTarget());
-				m_machineState.clearEventVectors();
+				m_machineState.clearVectors();
 				for (int targetVector : targets) {
 					checkForLoopFormation(targetVector, false, instruction, true, true);
 				}

@@ -1,11 +1,8 @@
 package com.xmos.xta.engine.resources;
 
 import com.xmos.xta.engine.Expression;
-import com.xmos.xta.engine.MachineState;
 
-public class Port implements Resource {
-	private boolean m_inUse;
-	private int m_portNo;
+public class Port extends EventableResource {
 	private int m_currentTime;
 	private int m_ioTime;
 	private boolean m_waitForTime; 
@@ -50,11 +47,9 @@ public class Port implements Resource {
 	private Ready m_ready;
 	private Expression m_eventData;
 	private Expression m_controlBits;
-	private boolean m_eventEnabled;
-    
-    private Expression m_vector;
 	
-	public Port(int portNo) {
+	public Port(int portNum) {
+		super(Resources.RES_TYPE_PORT, portNum);
 		m_buffers = Buffers.NOBUFFERS;
 		m_status = Status.MASTER;
 		m_sampleDelay = SampleDelay.NOSDELAY;
@@ -63,11 +58,10 @@ public class Port implements Resource {
 		m_mode = Mode.EVENT;
 		m_driveMode = DriveMode.NOINVERT;
 		m_direction = Direction.INPUT;
-		m_portNo = portNo;
     }
 	
     public Port(Port port) {
-    	m_portNo = port.m_portNo;
+    	super(port);
     }
     
     public int getCurrentTime(){
@@ -92,39 +86,4 @@ public class Port implements Resource {
     public boolean getWaitForTime(){
     	return m_waitForTime;
     }
-    
-	public void setEventEnabeled(boolean b) {
-		// TODO Auto-generated method stub
-		
-	}
-	public boolean isEventEnabeled() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	public Expression getEventVector() {
-		return m_vector;
-	}
-	
-	public void setEventVector(Expression vector) {
-		m_vector = vector;
-	}
-	public int getResourceID() {
-		int id=0;
-		id = Resources.RES_TYPE_SYNC;
-		int regId = 0;
-		id = id | (regId << 4);
-		id = id | (m_portNo << 8);
-		return id;
-	}
-	public void setInUse(boolean b) {
-		m_inUse = b;
-	}
-
-	public boolean isInUse() {
-		return m_inUse;
-	}
-	private int m_masterThreadId;
-	public void setMaster(int thread) {
-		m_masterThreadId = thread;
-	}
 }
