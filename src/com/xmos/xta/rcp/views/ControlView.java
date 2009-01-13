@@ -120,6 +120,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        openEditors();
 	        setDone(STATUS_LOADED);
 	        m_progress.setText("0");
+	        setSelectedFunction("");
 	        updateState();
 	        updateCurrentRoute();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_ANALYSE_PATHS)) {
@@ -269,7 +270,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	private void updateState() {
-        populateFunctionList();			
+        populateFunctionList();
 		
 		m_resolveExpressions.setSelection(XtaEngine.getEngine().getResolve());
 		m_freqSpinner.setSelection(XtaEngine.getEngine().getFrequency());
@@ -309,11 +310,15 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
     
     private void populateFunctionList() {
+    	// Remember current function name to select it again if it exists
+    	String currentFunction = m_functions.getText();
+    	
     	m_functions.removeAll();
     	XeObject xeObject = XtaEngine.getEngine().getXeObject();                    
         for (final Function function : xeObject.getFunctions()) {
            	m_functions.add(function.getText());
         }
+        setSelectedFunction(currentFunction);
     }
 
     private void setSelectedFunction(String functionName) {
