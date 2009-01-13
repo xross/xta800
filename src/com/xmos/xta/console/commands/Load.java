@@ -52,6 +52,7 @@ class Load extends Command {
 		}
         if (engine.loadExecutable(file) == false) {
         	console.display(String.format("Error: Failed to load executable: %s\n", m_executableName));
+        	console.display(engine.getErrorString());
         }
     }
 

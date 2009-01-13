@@ -142,7 +142,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Displayer.NOTIFY_ERROR)) {
 			setDone("Aborted");
 			updateCurrentRoute();
-			displayMessageBox("Error", "Analysis Unsuccessful\n(See error log for details)");
+			displayMessageBox("Error", "Error detected\n(See error tab for details)");
 		}
 	}
 	
@@ -189,9 +189,12 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        	boolean success = engine.loadExecutable(xeFile, new XtaFileFinder());
 	        	if (success) {
 	    			m_fileName.setText(xeFileName);
-	    		}	        		        	
-	        	if (DEBUG)
-                    System.out.printf("Control: executeLoad, success: %d\n", success);
+
+	    			if (DEBUG)
+	                    System.out.printf("Control: executeLoad, success: %d\n", success);
+	    		} else {
+	                XtaErrorLog.getInstance().addError(XtaEngine.getEngine().getErrorString());
+	    		}
 	        }
 		} else {
 			displayMessageBox("Error", "Cannot open file, engine currently busy");
