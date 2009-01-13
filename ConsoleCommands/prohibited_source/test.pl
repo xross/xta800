@@ -10,14 +10,14 @@ if (!$noBuild) {
 system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/prohibited_source.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "add prohibited test.xc:7 " .
+       "add prohibited ../test.xc:7 " .
        "list prohibited " .
        "analyse function main " .
        "summary simple " .
        "print src 2 ../test.xc " .
-       "remove prohibited test.xc:7 " .
+       "remove prohibited ../test.xc:7 " .
        "list prohibited " .
-       "add prohibited test.xc:11 " .
+       "add prohibited ../test.xc:11 " .
        "list prohibited " .
        "analyse function main " .
        "summary simple " .
