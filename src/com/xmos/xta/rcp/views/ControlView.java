@@ -120,7 +120,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        openEditors();
 	        setDone(STATUS_LOADED);
 	        m_progress.setText("0");
-	        setSelectedFunction("");
+	        m_functions.removeAll();
 	        updateState();
 	        updateCurrentRoute();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_ANALYSE_PATHS)) {
