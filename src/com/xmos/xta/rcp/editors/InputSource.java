@@ -1,5 +1,8 @@
 package com.xmos.xta.rcp.editors;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
@@ -18,7 +21,16 @@ public class InputSource implements IEditorInput {
     public InputSource(SourceFile sourceFile) {	
 		if (DEBUG) System.out.printf("InputSource()\n");
 		
-		String fileName = sourceFile.getFile().getName();
+		File file = sourceFile.getFile();
+		
+		try {
+			file = file.getCanonicalFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		String fileName = file.getAbsolutePath();
+		
 		int lineIndex = 0;
 		m_input = new Input(s_headerType, s_lineType);
         for (SourceLine sourceLine : sourceFile.getSourceLines()){        	

@@ -207,7 +207,7 @@
       <specification
             annotationType="com.xmos.xta.rcp.highlight"
             colorPreferenceKey="errorIndicationColor"
-            colorPreferenceValue="255,255,75"
+            colorPreferenceValue="255,125,75"
             contributesToHeader="true"
             highlightPreferenceKey="errorIndicationHighlighting"
             highlightPreferenceValue="true"

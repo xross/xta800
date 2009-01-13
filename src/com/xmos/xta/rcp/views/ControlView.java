@@ -1,5 +1,8 @@
 package com.xmos.xta.rcp.views;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -117,6 +120,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        openEditors();
 	        setDone(STATUS_LOADED);
 	        m_progress.setText("0");
+	        m_functions.removeAll();
 	        updateState();
 	        updateCurrentRoute();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_ANALYSE_PATHS)) {
@@ -167,12 +171,22 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        fileDialog.setFilterExtensions(filterExt);
 	        String xeFileName = fileDialog.open();
 
-        	if (DEBUG)
-        		System.out.printf("Control: File open: %s\n", xeFileName);
-	        
 	        if (xeFileName != null) {
+	        	if (DEBUG)
+	        		System.out.printf("Control: File open: %s\n", xeFileName);
+	        
+	        	File xeFile = new File(xeFileName);
+	        	
+	        	try {
+					xeFile = xeFile.getCanonicalFile();
+				} catch (IOException e) {
+					//FIXME -popup a box as a warning
+					System.err.println("cannot resolve file: " + xeFileName);
+					return;
+				}
+        	
 	        	Engine engine = XtaEngine.getEngine();
-	        	boolean success = engine.loadExecutable(xeFileName, new XtaFileFinder());
+	        	boolean success = engine.loadExecutable(xeFile, new XtaFileFinder());
 	        	if (success) {
 	    			m_fileName.setText(xeFileName);
 	    		}	        		        	
@@ -256,7 +270,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	private void updateState() {
-        populateFunctionList();			
+        populateFunctionList();
 		
 		m_resolveExpressions.setSelection(XtaEngine.getEngine().getResolve());
 		m_freqSpinner.setSelection(XtaEngine.getEngine().getFrequency());
@@ -296,11 +310,15 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
     
     private void populateFunctionList() {
+    	// Remember current function name to select it again if it exists
+    	String currentFunction = m_functions.getText();
+    	
     	m_functions.removeAll();
     	XeObject xeObject = XtaEngine.getEngine().getXeObject();                    
         for (final Function function : xeObject.getFunctions()) {
            	m_functions.add(function.getText());
         }
+        setSelectedFunction(currentFunction);
     }
 
     private void setSelectedFunction(String functionName) {

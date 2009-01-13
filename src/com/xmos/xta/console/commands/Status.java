@@ -1,5 +1,7 @@
 package com.xmos.xta.console.commands;
 
+import java.io.File;
+
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xta.console.Console;
@@ -35,7 +37,7 @@ class Status extends Command {
     public void execute(Shell shell, Engine engine, Console console) {
     	int nodeId = engine.getNodeId();
     	int coreId = engine.getCoreId();
-    	String executable = engine.getExecutable();
+    	File executable = engine.getExecutable();
     	    	
     	console.display(String.format("Current node: %d\n", nodeId));    	
     	console.display(String.format("Current core: %d\n", coreId));
@@ -48,10 +50,10 @@ class Status extends Command {
     	else
     		console.display(String.format("Mode: No Resolve\n"));    		
     	
-    	if (executable.equals(""))
+    	if (executable==null)
     		console.display(String.format("No executable loaded\n"));
     	else
-    		console.display(String.format("Loaded executable: %s\n", executable));
+    		console.display(String.format("Loaded executable: %s\n", executable.getName()));
     	
     	for (MemoryImage memoryImage : engine.getMemoryImages()) {
     		int node = memoryImage.getNodeId();

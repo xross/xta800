@@ -10,7 +10,7 @@ public class InstructionExecption extends Exception {
 		UNKNOWN_MEMORY_WRITE,
 		
 		UNKNOWN_RESOURCE,
-		UNSUPPORTED,
+		UNIMPLIMENTED,
 		
 		DEBUG_INSTRUCTION,
 		KERNEL_INSTRUCTION,

@@ -1,5 +1,7 @@
 package com.xmos.xta.engine;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -71,8 +73,21 @@ public class CodeReference {
 
     		DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(m_nodeId, m_coreId);		
             
-            String fileName = m_ref.substring(0, colonIndex);
-            if (!fileExists(debugInfo, fileName)) {
+    		String fileName = m_ref.substring(0, colonIndex);
+
+    		File file = new File(fileName);
+    		if (!file.isAbsolute()) {
+    			fileName = engine.getXeLoader().getFile().getParent() + File.separatorChar + fileName;
+        		file = new File(fileName);
+            }
+
+            try {
+            	file = file.getCanonicalFile();
+			} catch (IOException e) {
+				return false;
+			}
+            
+            if (!fileExists(debugInfo, file)) {
                 return false;            
             }
             
@@ -82,7 +97,7 @@ public class CodeReference {
             }
                         
             DebugEngine debugEngine = debugInfo.getDebugEngine();            
-            Collection<Long> pcs = debugEngine.getAddresses(fileName, intStringToInt(lineNumber));
+            Collection<Long> pcs = debugEngine.getXtaAddresses(file, intStringToInt(lineNumber));
             if (pcs.size() > 0) {
                 m_pc = findLowestPc(pcs);
             }
@@ -104,8 +119,8 @@ public class CodeReference {
     	return false;
 	}
   
-    private boolean fileExists(DebugInfo debugInfo, String fileName) {
-    	return debugInfo.getDebugEngine().containsFile(fileName);
+	private boolean fileExists(DebugInfo debugInfo, File fileName) {
+    	return debugInfo.getDebugEngine().containsXtaFile(fileName);
     }    
     
     private boolean isInteger(String str) {
