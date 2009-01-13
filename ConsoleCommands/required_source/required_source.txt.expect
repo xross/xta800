@@ -1,4 +1,4 @@
-- ref: test.xc:7, pc: 0x100d0
+- ref: ../test.xc:7, pc: 0x100d0
 Complete paths:   1
 Unresolved paths: 0
   1: int a = 2;
@@ -16,7 +16,7 @@ Unresolved paths: 0
 + 13:   return b;
   14: }
   15: 
-- ref: test.xc:11, pc: 0x100d4
+- ref: ../test.xc:11, pc: 0x100d4
 Complete paths:   1
 Unresolved paths: 0
   1: int a = 2;
