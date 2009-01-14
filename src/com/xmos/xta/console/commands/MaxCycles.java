@@ -30,7 +30,7 @@ public class MaxCycles extends Command  {
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "maxcycles <num cycles> : Analysis fails at the given cycle limt";      	
+        return "maxcycles <num cycles> : Analysis fails at the given cycle limit";      	
     }
 
     public Command clone(String[] args, int index, boolean commandLineMode) {    	    	

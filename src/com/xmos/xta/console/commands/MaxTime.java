@@ -30,7 +30,7 @@ public class MaxTime extends Command  {
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "maxtime <ns> : Analysis fails at the given time limt";      	
+        return "maxtime <ns> : Analysis fails at the given time limit";      	
     }
 
     public Command clone(String[] args, int index, boolean commandLineMode) {    	    	

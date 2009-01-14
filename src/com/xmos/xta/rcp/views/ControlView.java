@@ -677,9 +677,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	private void createSettingsBar(ExpandBar bar) {
 		Composite composite = getBarComposite(bar, 2);
 
-		Group resolveGroup = createGroup(composite, "Resolve expressions", 1, 2);
+		Group resolveGroup = createGroup(composite, "Resolve", 1, 2);
 		m_resolveExpressions = new Button(resolveGroup, SWT.CHECK);
-		m_resolveExpressions.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		m_resolveExpressions.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
 		m_resolveExpressions.setSelection(XtaEngine.getEngine().getResolve());		
 		m_resolveExpressions.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
