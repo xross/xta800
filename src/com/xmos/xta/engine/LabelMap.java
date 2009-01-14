@@ -32,7 +32,7 @@ public class LabelMap {
 		return m_labels;
 	}
 	
-	void loadLabels(Engine engine, XeLoader xeLoader) {		
+	boolean loadLabels(Engine engine, XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(
 				".xtainfo", m_nodeId, m_coreId);
 				
@@ -63,14 +63,23 @@ public class LabelMap {
         		if (DEBUG) System.out.println(fileName + " " + lineNumber);
         		
         		if (ref.resolve(engine, m_nodeId, m_coreId)) {
-        			m_labels.put(labelName, ref.getPc());
+        			if (!m_labels.containsKey(labelName)) {
+        				m_labels.put(labelName, ref.getPc());
+        			} else {
+            	    	engine.setErrorString("ERROR: duplicate label '" +
+            	    			labelName + "' found.\n");
+            	    	return false;
+        			}
         	    } else {
-        	    	System.out.println("WARNING: unable to resolve label " +
+        	    	engine.setErrorString("ERROR: unable to resolve label " +
         	    			fileName + ":" + lineNumber);
+        	    	return false;
         	    }
         	}
         	byteIndex += size;
         }
+        
+        return true;
 	}
 	
     final int readInt(byte[] data, int offset) {

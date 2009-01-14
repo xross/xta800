@@ -173,11 +173,13 @@ public class Engine {
         	initialiseLists(fileFinder);
             m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);
             decodeInstructions(); 
-            loadLabels();
+            success &= loadLabels();
             
-            m_route = null;                                    
-            for (Displayer displayer : m_displayers) {
-                displayer.notify(Displayer.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
+            if (success) {
+            	m_route = null;
+            	for (Displayer displayer : m_displayers) {
+            		displayer.notify(Displayer.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
+            	}
             }
         } else {
             setErrorString("The file '" + executableFile + "'could not be found.");	        
@@ -235,7 +237,7 @@ public class Engine {
             return false;
         }
         else if (!resolveRefernece(toRef, this)) {
-            setErrorString(String.format("Unresolved reference: %s", from));
+            setErrorString(String.format("Unresolved reference: %s", to));
             return false;
         }
         else {    
@@ -682,20 +684,22 @@ public class Engine {
     	m_xeObjects.clear();
     	
 		for (int node : m_xeLoader.getNodeIds()){
-			for (int core : m_xeLoader.getCoreIds(node)){							
+			for (int core : m_xeLoader.getCoreIds(node)) {
 			    m_exclusions.add(new CodeReferenceList(node, core));
 			    m_prohibited.add(new CodeReferenceList(node, core));
 			    m_required.add(new CodeReferenceList(node, core));
 			    m_labels.add(new LabelMap(node, core));
 				m_xeObjects.add(new XeObject(m_xeLoader, node, core, fileFinder));
 			}
-		}    	
+		}
     }
     
-    private void loadLabels() {
+    private boolean loadLabels() {
     	for (LabelMap labelMap : m_labels) {
-    		labelMap.loadLabels(this, m_xeLoader);
-		}    	
+    		if (!labelMap.loadLabels(this, m_xeLoader))
+    			return false;
+		}
+    	return true;
     }
 
 	public File getExecutable() {

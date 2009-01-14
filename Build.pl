@@ -197,7 +197,7 @@ sub DoInstall
   # Unzips the zip file..
   chdir("$INSTALLPATH") 
     or die("Unable to chdir to: $INSTALLPATH\n");
-  system("unzip -o $target");
+  system("unzip -q -o $target");
 
   chdir("$BUILDPATH") or die("oops");
 }
@@ -306,7 +306,7 @@ sub BuildEclipse
   # Unzips the zip file..
   chdir("$TOOLS_XTA/bin") 
     or die("Unable to chdir to: $TOOLS_XTA/bin\n");
-  system("unzip -o $target >> $buildOutput");
+  system("unzip -q -o $target >> $buildOutput");
 }
 
 sub CreateBuildPropertiesFile
