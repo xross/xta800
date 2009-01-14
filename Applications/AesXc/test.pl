@@ -22,7 +22,8 @@ system("@ARGV load $genDir/test.xe " .
         "summary complete_instructions " .
         "exit > $genDir/$directory.txt 2>&1");
 
-system("xsim -c config.txt -t $genDir/test.xe > trace.out");
+system("xobjdump -r config.xml $genDir/test.xe > trace.out");
+system("xsim -t $genDir/test.xe > trace.out");
 
 open(INFILE, "$filename.out") or die "Can't open input file";
 open(OUTFILE, ">$filename.parsed") or die "Can't open file to write";
