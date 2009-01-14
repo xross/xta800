@@ -157,14 +157,16 @@ public class CodeReference {
     }
 	
 	private boolean isSourceReference(String ref) {
-		if (ref.contains(":")) {
-			String [] parts = ref.split(":");
-			if (parts.length == 2 && 
-					parts[1].matches("[0-9]*") && 
-					parts[0].length()>0){
-				m_isResolved = false;
-				return true;
-			}
+        int colonIndex = m_ref.lastIndexOf(':');
+        if (colonIndex == -1) {
+        	return false;
+        }
+
+		String fileName = ref.substring(0, colonIndex);
+		String lineNum = ref.substring(colonIndex + 1);
+		if (lineNum.matches("[0-9]*") && (fileName.length() > 0)) {
+			m_isResolved = false;
+			return true;
 		}
 		return false;
 	}

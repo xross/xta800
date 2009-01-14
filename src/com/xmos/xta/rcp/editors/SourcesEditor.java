@@ -1,6 +1,8 @@
 package com.xmos.xta.rcp.editors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -8,16 +10,31 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 
 import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.XeObject;
+import com.xmos.xta.engine.CodeReference;
+import com.xmos.xta.engine.Displayer;
+import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.XtaEngine;
 
-public class SourcesEditor extends MultiPageEditorPart {
+public class SourcesEditor extends MultiPageEditorPart implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.rcp.editors.Sources";
     
+    private int m_disassemblyIndex;
+    
 	public SourcesEditor() {
 		if (DEBUG) System.out.printf("Sources()\n");			
+
+		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 	}
 
+	public void propertyChange(PropertyChangeEvent event) {
+		if (DEBUG) System.out.printf("SourcesEditor: propertyChange: %s\n", event.getProperty());	
+		
+		if (event.getProperty().equals(Displayer.NOTIFY_SHOW_CODE_POINT)) {
+			setActivePage(m_disassemblyIndex);
+		}
+	}
+	
 	public void doSave(IProgressMonitor monitor) {
 		if (DEBUG) System.out.printf("Sources: doSave\n");			
 	}
@@ -31,7 +48,7 @@ public class SourcesEditor extends MultiPageEditorPart {
 		if (DEBUG) System.out.printf("Sources: init\n");
 		
 		setSite(site);
-		setInput(input);		
+		setInput(input);
 	}
 
 	public boolean isDirty() {
@@ -56,6 +73,7 @@ public class SourcesEditor extends MultiPageEditorPart {
         	IEditorInput disassemblyEditorInput = new InputDisassembly();
 			int index = addPage(disassemblyEditor, disassemblyEditorInput);
 			setPageText(index, "Disassembly");
+			m_disassemblyIndex = index;
         	
 			XeObject xeObject = XtaEngine.getEngine().getXeObject();
 	        for (SourceFile sourceFile : xeObject.getSourceFiles()) {       	        	

@@ -237,7 +237,7 @@ public class Engine {
             return false;
         }
         else if (!resolveRefernece(toRef, this)) {
-            setErrorString(String.format("Unresolved reference: %s", from));
+            setErrorString(String.format("Unresolved reference: %s", to));
             return false;
         }
         else {    

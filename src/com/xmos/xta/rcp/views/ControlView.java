@@ -10,6 +10,8 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -66,6 +68,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     private Text m_fileName;
     private Text m_startPoint;
     private Text m_endPoint;
+    private ModifyListener m_startPointListener;
+    private ModifyListener m_endPointListener;
+    
     private Text m_currentRoute;
     private Label m_engineStatus;
     private Label m_progress;
@@ -87,6 +92,19 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 		
 		m_progressUpdater = null;
+		
+		m_startPointListener = new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				CodeReference startPoint = new CodeReference(m_startPoint.getText());
+				XtaDisplayer.getInstance().notifySetStartPoint(startPoint);
+			}			
+		};
+		m_endPointListener = new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				CodeReference endPoint = new CodeReference(m_endPoint.getText());
+				XtaDisplayer.getInstance().notifySetEndPoint(endPoint);
+			}			
+		};
 	}
 
 	public void createPartControl(Composite parent) {
@@ -132,10 +150,14 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        updateState();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_START_POINT)) {
 			CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();
+		    m_startPoint.removeModifyListener(m_startPointListener);
 			m_startPoint.setText(startPoint.getRef());
+		    m_startPoint.addModifyListener(m_startPointListener);
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_END_POINT)) {
 			CodeReference endPoint = XtaDisplayer.getInstance().getEndPoint();
+		    m_endPoint.removeModifyListener(m_endPointListener);
 			m_endPoint.setText(endPoint.getRef());
+			m_endPoint.addModifyListener(m_endPointListener);
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SELECT_FUNCTION)) {
 			String functionName = XtaDisplayer.getInstance().getNotifyArgument();
 			setSelectedFunction(functionName);
@@ -569,14 +591,16 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		Group startGroup = createGroup(group, "From", 1, 1);
 	    m_startPoint = new Text(startGroup, SWT.SINGLE | SWT.CENTER);
 	    m_startPoint.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    m_startPoint.addModifyListener(m_startPointListener);
 		
 	    Group endGroup = createGroup(group, "To", 1, 1);
 	    m_endPoint = new Text(endGroup, SWT.SINGLE | SWT.CENTER);
 	    m_endPoint.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    m_endPoint.addModifyListener(m_endPointListener);
 	
 	    Button findStartButton = new Button(group, SWT.PUSH);
 	    findStartButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-	    findStartButton.setToolTipText("Show start point");
+	    findStartButton.setToolTipText("Show start point in disassembly");
 	    findStartButton.setImage(Icons.getIcon("start16x16"));
 	    findStartButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -587,7 +611,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 	    Button findStopButton = new Button(group, SWT.PUSH);
 	    findStopButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-	    findStopButton.setToolTipText("Show stop point");
+	    findStopButton.setToolTipText("Show stop point in disassembly");
 	    findStopButton.setImage(Icons.getIcon("stop16x16"));
 	    findStopButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
