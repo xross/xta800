@@ -7,6 +7,9 @@ import java.util.Map;
 import com.xmos.xeloader.XeLoader;
 
 public class LabelMap {
+	
+	private static final boolean DEBUG = false;
+	
 	private int m_nodeId;
 	private int m_coreId;
 	private HashMap<String, Integer> m_labels;
@@ -33,6 +36,7 @@ public class LabelMap {
 		byte[] data = xeLoader.getSectionData(
 				".xtainfo", m_nodeId, m_coreId);
 				
+		if (DEBUG) System.out.println(".xtainfo is of size " + data.length + " bytes");
 		int byteIndex = 0;
         while (byteIndex < data.length) {
         	// Skip version
@@ -55,6 +59,9 @@ public class LabelMap {
         		fileName = basePath + File.separator + fileName;
         		
         		CodeReference ref = new CodeReference(fileName, lineNumber);
+        		
+        		if (DEBUG) System.out.println(fileName + " " + lineNumber);
+        		
         		if (ref.resolve(engine, m_nodeId, m_coreId)) {
         			m_labels.put(labelName, ref.getPc());
         	    } else {

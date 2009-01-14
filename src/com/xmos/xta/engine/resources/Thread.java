@@ -1,5 +1,7 @@
 package com.xmos.xta.engine.resources;
 
+import java.util.ArrayList;
+
 import com.xmos.xta.engine.Expression;
 import com.xmos.xta.engine.InstructionBuffer;
 import com.xmos.xta.engine.Registers;
@@ -24,6 +26,8 @@ public class Thread extends Resource {
     private Expression m_KEP;
     private Expression m_KSP;
     
+    private ArrayList<Expression> m_unknownResourceEventVectors;
+    
     public enum StatusRegister {
     	EEBLE, IEBLE, INENB,ININT,
         INK, SINK, WAITING, FAST
@@ -31,6 +35,7 @@ public class Thread extends Resource {
     
     public Thread(int threadNum){
     	super(Resources.RES_TYPE_THREAD, threadNum);
+    	m_unknownResourceEventVectors = new ArrayList<Expression>();
     	m_SPC = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
         m_SSR = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
         m_ET = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
@@ -45,6 +50,7 @@ public class Thread extends Resource {
     
     public Thread(Thread thread){
     	super(thread);
+    	m_unknownResourceEventVectors = new ArrayList<Expression>(thread.m_unknownResourceEventVectors);
         m_registers = new Registers(thread.m_registers);
         m_ID = thread.m_ID;
         m_iBuffer = new InstructionBuffer(thread.m_iBuffer);
@@ -59,6 +65,8 @@ public class Thread extends Resource {
 
     }
 
+    
+    
     public void setControlBits(int controlBits){
     	if ((controlBits&1) == 1){
     		m_cbInUse = true;
@@ -237,6 +245,34 @@ public class Thread extends Resource {
 	private int m_masterThreadId;
 	public void setMaster(int thread) {
 		m_masterThreadId = thread;
+	}
+
+	public void addUnknownEventVector(Expression destination) {
+		boolean pair = false;
+		if(destination.canResolve()){
+			for(Expression e :m_unknownResourceEventVectors){
+				if(e.canResolve()){
+					try {
+						if(e.getValue() == destination.getValue()){
+							pair = true;
+						}
+					} catch (Exception e1) {
+						//will never happen
+					}
+				}
+			}
+		}
+		if(!pair){
+			m_unknownResourceEventVectors.add(destination);
+		}
+	}
+    
+	
+	public ArrayList<Expression> getUnknownResourceEventVectors(){
+		return m_unknownResourceEventVectors;
+	}
+	public void clearUnknownResourceEventVectors(){
+		m_unknownResourceEventVectors.clear();
 	}
     
 }

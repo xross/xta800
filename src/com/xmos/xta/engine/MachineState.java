@@ -423,7 +423,9 @@ public class MachineState {
 		return m_wasEventResolved;
 	}
 
-	public void clearVectors() {
+	public void clearEventTargets() {
+		//FIXME i dont know what this does!
+		//or why i put it here
 		m_eventTargets.clear();
 	}
 

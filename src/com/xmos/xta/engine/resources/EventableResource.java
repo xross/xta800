@@ -34,7 +34,6 @@ public class EventableResource extends Resource {
 	
 	public Expression getEnvironmentVector() {
 		if(m_environmentVector == null){
-			//this only should occur if the code is very badly written
 			return new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
 		} else {
 			return m_environmentVector;
@@ -47,7 +46,6 @@ public class EventableResource extends Resource {
 
 	public Expression getVector() {
 			if(m_vector == null){
-				//this only should occur if the code is very badly written
 				return new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
 			} else {
 				return m_vector;

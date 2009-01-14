@@ -18,7 +18,7 @@ import com.xmos.xta.engine.resources.Thread.StatusRegister;
 
 public abstract class XtaInstruction extends Instruction {
 	private static final boolean INSTRUCTIONDEBUG = false;
-	private static final boolean RESOURCEDEBUG  = true;
+	private static final boolean RESOURCEDEBUG  = false;
 	private static final boolean m_uninplimented = true;
   
 
@@ -409,7 +409,7 @@ public abstract class XtaInstruction extends Instruction {
     	for(Thread t : state.getResources().getThreads()){
     		t.setStatusRegisterBit(StatusRegister.EEBLE, false);
     	}
-    	state.clearVectors();
+    	state.clearEventTargets();
     	for(Timer t : state.getResources().getTimers()){
     		t.setEventEnabeled(false);
     	}
@@ -902,17 +902,21 @@ public abstract class XtaInstruction extends Instruction {
             System.out.printf("0x%08x: GETR\n", getPc());	
     	
     	Resources resources = state.getResources();
-        Expression resourceId = state.m_op2;
-        
-        assert(resourceId.canResolve());
-        
-        int resType = resourceId.getValue();
+    	Expression resourceId = state.m_op2;
+    	assert(resourceId.canResolve());
+    	int resType = resourceId.getValue();
+    	
         Resource res  = resources.getNewResource(resType);
         res.setInUse(true);
         res.setMaster(thread);
+        
         int resourceValue = res.getResourceID();
         state.m_op1 = new Expression(resourceValue);
         state.m_op1.resolve();
+    	
+        if(RESOURCEDEBUG){
+        	System.out.println("got resource for thread " + thread);
+        }
     }
 
     void GETSR(MachineState state, int thread) throws Exception {
@@ -927,6 +931,25 @@ public abstract class XtaInstruction extends Instruction {
     void GETST(MachineState state, int thread) throws Exception {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETST\n", getPc());	
+    	/*
+    	
+    	Expression synchroniserId = state.m_op2;
+    	if(synchroniserId.canResolve()){
+    		Resources resources = state.getResources();
+    		int resNo = synchroniserId.getValue();
+    		int resType = resources.decodeResType(resNo);
+    		int resNum = resources.decodeResType(resNo);
+    		if(resType == Resources.RES_TYPE_SYNC){
+    			
+    		} else {
+    			
+    		}
+    		
+    	} else {
+    		//TODO 
+    	}
+    	
+    	*/
     	
     	Expression synchroniserId = state.m_op2;
     	if(synchroniserId.canResolve()){
@@ -942,7 +965,6 @@ public abstract class XtaInstruction extends Instruction {
     			Resource newRes = resources.getNewResource(Resources.RES_TYPE_THREAD);
     			
     			if(newRes == null){
-    				//FIXME - check that this is correct
     				throw new InstructionExecption(Error.ET_RESOURCE_DEP);
     			} else {
     				Synchroniser sync = (Synchroniser)res;
@@ -950,10 +972,10 @@ public abstract class XtaInstruction extends Instruction {
     				state.m_op1 = new Expression(res.getResourceID());
     			}
     		} else {
-    			//FIXME - check that this is correct
-    			throw new InstructionExecption(Error.ET_RESOURCE_DEP);
+    			throw new InstructionExecption(Error.ET_ILLEGAL_RESOURCE);
     		}
     	} 
+    	
     }
 
     void GETTS(MachineState state, int thread) throws Exception {
@@ -1687,19 +1709,18 @@ public abstract class XtaInstruction extends Instruction {
     	
     	Resources resources = state.getResources();
     	Expression resourceId = state.m_op1;
+    	Expression reg_11 = state.readRegister(11, thread);
     	
-    	if(resourceId.canResolve()){
+    	if (resourceId.canResolve()){
     		int resId = resourceId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            
-            Expression reg_11 = state.readRegister(11, thread);
-            
-            if(resType == Resources.RES_TYPE_CHANEND || resType == Resources.RES_TYPE_PORT
-            		|| resType == Resources.RES_TYPE_TIMER){
+
+            if (resType == Resources.RES_TYPE_CHANEND || resType == Resources.RES_TYPE_PORT
+            		|| resType == Resources.RES_TYPE_TIMER) {
             	EventableResource er = (EventableResource) state.getResources().getResource(resType, resNum);
             	er.setVector(reg_11);
-            	if(RESOURCEDEBUG){
+            	if (RESOURCEDEBUG){
             		System.out.println("resource (resNum: " + resNum + " resType: " + resType + 
             				") set vector to " + reg_11.getStringValue());
             	}
@@ -1708,7 +1729,11 @@ public abstract class XtaInstruction extends Instruction {
             	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
             }
     	} else {
-    		throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
+    		Thread t = resources.getThread(thread);
+    		t.addUnknownEventVector(reg_11);
+    		if (RESOURCEDEBUG){
+        		System.out.println("resource (resNum: ? resType: ?) set vector to " + reg_11.getStringValue());
+        	}
     	}
     }
 
@@ -2032,40 +2057,67 @@ public abstract class XtaInstruction extends Instruction {
     	if(RESOURCEDEBUG){
     		System.out.println("waiting on events:");
     	}
-    	state.clearVectors();
-    	for(Timer timer : state.getResources().getTimers()){
-    		if(timer.isEventEnabeled()){
+    	ArrayList<Integer> takenVectors = new ArrayList<Integer>();
+    	
+    	state.clearEventTargets();
+    	for (Timer timer : state.getResources().getTimers()){
+    		if (timer.isEventEnabeled()){
     			
 				state.eventWait(timer.getVector());
-    			
-    			if(RESOURCEDEBUG){
+    			if(timer.getVector().canResolve()){
+    				takenVectors.add(timer.getVector().getValue());
+    			}
+    			if (RESOURCEDEBUG) {
 					System.out.println("    timer:" + timer.getVector().expressionString());
     	    	}
     		}
     	}
 		for (Port port : state.getResources().getPorts()) {
-			if(port.isEventEnabeled()){
-    			try {
-					state.eventWait(port.getEnvironmentVector());
-				} catch (Exception e) {
-				}
-    			if(RESOURCEDEBUG){
-    	    		System.out.println("    port:" + port.getEnvironmentVector().expressionString());
+			if (port.isEventEnabeled()){
+    			
+				state.eventWait(port.getVector());
+				if(port.getVector().canResolve()){
+    				takenVectors.add(port.getVector().getValue());
+    			}
+    			if (RESOURCEDEBUG) {
+					System.out.println("    port:" + port.getVector().expressionString());
     	    	}
     		}
 		}
 		for (Channel channel : state.getResources().getChannels()) {
-			if(channel.isEventEnabeled()){
-    			try {
-					state.eventWait(channel.getEnvironmentVector());
-				} catch (Exception e) {
-				}
-    			if(RESOURCEDEBUG){
-    	    		System.out.println("    channel:" + channel.getEnvironmentVector().expressionString());
+			if (channel.isEventEnabeled()){
+    			
+				state.eventWait(channel.getVector());
+				if(channel.getVector().canResolve()){
+    				takenVectors.add(channel.getVector().getValue());
+    			}
+    			if (RESOURCEDEBUG) {
+					System.out.println("    channel:" + channel.getVector().expressionString());
     	    	}
     		}
 		}
-		if(RESOURCEDEBUG){
+		//TODO
+		for(Expression vector : state.getResources().getThread(thread).getUnknownResourceEventVectors()){
+			if(vector.canResolve()){
+				int destination = vector.getValue();
+				if(!takenVectors.contains(destination))
+					state.eventWait(vector);
+				if (RESOURCEDEBUG) {
+					System.out.println("    unknown resource:" + vector.expressionString());
+		    	}
+			} else {
+				state.eventWait(vector);
+				if (RESOURCEDEBUG) {
+					System.out.println("    unknown resource:" + vector.expressionString());
+		    	}
+			}
+			
+			
+		}
+		
+		 state.getResources().getThread(thread).clearUnknownResourceEventVectors();
+		
+		 if(RESOURCEDEBUG){
     		System.out.println("----");
     	}
     }
