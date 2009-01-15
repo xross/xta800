@@ -345,7 +345,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		}
 	}
     
-    @SuppressWarnings("unchecked")
 	private void populateFunctionList() {
     	// Remember current function name to select it again if it exists
     	String currentFunction = m_functions.getText();
