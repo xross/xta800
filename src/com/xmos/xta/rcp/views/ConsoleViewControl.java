@@ -101,15 +101,26 @@ class TextReader extends Reader {
         		}		
         				
         		if (event.keyCode == SWT.CR) {
+        			
         			handleEnter();
         		}
         		else if (event.keyCode == SWT.ARROW_UP) {
         			decrementCommandIndex();
         			displayCommand();
         		}
+        		else if (event.keyCode == SWT.ARROW_LEFT) {
+
+        		}
+        		else if (event.keyCode == SWT.ARROW_RIGHT) {
+
+        		}
         		else if (event.keyCode == SWT.ARROW_DOWN) {
         			incrementCommandIndex();
         			displayCommand();
+        		}
+        		else {
+        			//if the carat is not on the last line then don't draw it
+        			//i'm not sure if it is too late by now
         		}
         	}
         	
@@ -136,10 +147,16 @@ class TextReader extends Reader {
 					if (checkCursor()) {
     					event.doit = false;				
 	    			}
+				} else if (event.keyCode == SWT.CR) {
+					if (DEBUG) System.out.printf("Set Caret to end\n");
+					setCaretToEnd();
+					m_text.append("\n");
+					event.doit = false;	
 				}
+				
 			}			
 		});
-        
+        /*
         m_text.addMouseListener(new MouseListener() {
 			public void mouseDown(MouseEvent e) {
 				if (DEBUG) System.out.printf("TextReader: mouseDown\n");
@@ -149,9 +166,9 @@ class TextReader extends Reader {
 				int lastIndex = m_text.getCharCount();
 		        int lastRowIndex = m_text.getLineAtOffset(lastIndex);
 		        
-		        if (caretRowIndex != lastRowIndex) {
-		        	setCaretToEnd();
-		        }
+		        //if (caretRowIndex != lastRowIndex) {
+		        	//setCaretToEnd();
+		        //}
 			}
 
 			public void mouseUp(MouseEvent e) {				
@@ -159,7 +176,8 @@ class TextReader extends Reader {
 			
 			public void mouseDoubleClick(MouseEvent e) {				
 			}
-        });        
+        }); 
+        */       
 	}
 	
 	public void display(String str) {
@@ -219,7 +237,8 @@ class TextReader extends Reader {
 		String txt = m_text.getText();
 		int idx = txt.lastIndexOf('>', m_text.getCharCount() - 1);
 		m_internal = false;
-		m_lastLine = txt.substring(idx != -1 ? idx + 1 : 1, m_text.getCharCount());		
+		m_lastLine = txt.substring(idx != -1 ? idx + 1 : 1, m_text.getCharCount());	
+		//m_lastLine = m_lastLine.replaceAll("\n", "");
 		synchronized(m_lineLock) {
 			m_lineLock.notifyAll();
 		}		
