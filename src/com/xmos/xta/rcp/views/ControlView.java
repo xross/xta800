@@ -2,6 +2,8 @@ package com.xmos.xta.rcp.views;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -334,13 +336,16 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		}
 	}
     
-    private void populateFunctionList() {
+    @SuppressWarnings("unchecked")
+	private void populateFunctionList() {
     	// Remember current function name to select it again if it exists
     	String currentFunction = m_functions.getText();
     	
     	m_functions.removeAll();
-    	XeObject xeObject = XtaEngine.getEngine().getXeObject();                    
-        for (final Function function : xeObject.getFunctions()) {
+    	XeObject xeObject = XtaEngine.getEngine().getXeObject();
+    	List<Function> functions = xeObject.getFunctions();
+    	Collections.sort(functions);
+        for (final Function function : functions) {
            	m_functions.add(function.getText());
         }
         setSelectedFunction(currentFunction);
