@@ -134,6 +134,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		treeRoot.addNode(m_routeInfo.getRouteNode());
     	m_treeViewer.setInput(treeRoot);
 		ColumnViewerToolTipSupport.enableFor(m_treeViewer, ToolTip.NO_RECREATE);
+		m_treeViewer.expandToLevel(2);		
 	}
 	
 	private void refreshTree() {

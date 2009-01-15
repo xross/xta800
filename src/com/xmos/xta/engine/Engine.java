@@ -437,28 +437,40 @@ public class Engine {
 
 	public boolean addLabel(String label , CodeReference ref) {
         if (resolveRefernece(ref, this)) {
-        	getLabelsMap(m_nodeId, m_coreId).put(label, ref.getPc()); 
-    		return true;
+    		Map<String, Integer> labels = getLabelsMap(m_nodeId, m_coreId);
+    		if (labels != null) {
+    			labels.put(label, ref.getPc()); 
+    		    return true;
+    		}
         }    			
         return false;
 	}
 
 	public void removeLabel(String label) {
-		getLabelsMap(m_nodeId, m_coreId).remove(label);
+		Map<String, Integer> labels = getLabelsMap(m_nodeId, m_coreId);
+		if (labels != null) {
+			labels.remove(label);
+		}
 	}
 	
 	public Map<String, Integer> getLabels() {
 		return getLabelsMap(m_nodeId, m_coreId);
 	}
 	
-	public boolean isLabel(String label){
-		return getLabelsMap(m_nodeId, m_coreId).containsKey(label);
+	public boolean isLabel(String label) {
+		Map<String, Integer> labels = getLabelsMap(m_nodeId, m_coreId);
+		if (labels != null) {
+			return labels.containsKey(label);
+		}
+		return false;
 	}
 	
 	public int getLabelPc(String label){
 		Map<String, Integer> labels = getLabelsMap(m_nodeId, m_coreId);		
-		if (labels.containsKey(label)) {
-			return labels.get(label);
+		if (labels != null) {
+    		if (labels.containsKey(label)) {
+	    		return labels.get(label);
+		    }
 		}
 		assert(false);
 		return 0;
@@ -661,7 +673,6 @@ public class Engine {
     			return labels.getLabels();
     		}
     	}
-    	assert(false);
     	return null;
     }
 

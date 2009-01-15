@@ -98,14 +98,14 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		
 		m_startPointListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				CodeReference startPoint = new CodeReference(m_startPoint.getText());
-				XtaDisplayer.getInstance().notifySetStartPoint(startPoint);
+    		    CodeReference startPoint = new CodeReference(m_startPoint.getText());
+			    XtaDisplayer.getInstance().notifySetStartPoint(startPoint);
 			}			
 		};
 		m_endPointListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				CodeReference endPoint = new CodeReference(m_endPoint.getText());
-				XtaDisplayer.getInstance().notifySetEndPoint(endPoint);
+			    CodeReference endPoint = new CodeReference(m_endPoint.getText());
+			    XtaDisplayer.getInstance().notifySetEndPoint(endPoint);
 			}			
 		};
 	}
@@ -141,7 +141,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        openEditors();
 	        setDone(STATUS_LOADED);
 	        m_progress.setText("0");
-	        m_functions.removeAll();
+	        m_functions.removeAll();	       	       
+	        setText(m_startPoint, m_startPointListener, "");
+	        setText(m_endPoint, m_endPointListener, "");
 	        updateState();
 	        updateCurrentRoute();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_ANALYSE_PATHS)) {
@@ -152,15 +154,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_STATE)) {
 	        updateState();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_START_POINT)) {
-			CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();
-		    m_startPoint.removeModifyListener(m_startPointListener);
-			m_startPoint.setText(startPoint.getRef());
-		    m_startPoint.addModifyListener(m_startPointListener);
+			CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();			
+	        setText(m_startPoint, m_startPointListener, startPoint.getRef());			
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_END_POINT)) {
 			CodeReference endPoint = XtaDisplayer.getInstance().getEndPoint();
-		    m_endPoint.removeModifyListener(m_endPointListener);
-			m_endPoint.setText(endPoint.getRef());
-			m_endPoint.addModifyListener(m_endPointListener);
+	        setText(m_endPoint, m_endPointListener, endPoint.getRef());
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SELECT_FUNCTION)) {
 			String functionName = XtaDisplayer.getInstance().getNotifyArgument();
 			setSelectedFunction(functionName);
@@ -347,7 +345,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		}
 	}
     
-    @SuppressWarnings("unchecked")
 	private void populateFunctionList() {
     	// Remember current function name to select it again if it exists
     	String currentFunction = m_functions.getText();
@@ -775,5 +772,12 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    composite.setLayout(layout);
 	    composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	    return composite;
+	}
+	
+	private void setText(Text text, ModifyListener listener, String str) {
+		text.removeModifyListener(listener);
+		text.setText(str);
+		text.addModifyListener(listener);	
+		text.setSelection(str.length());
 	}
 }
