@@ -18,6 +18,7 @@ import org.eclipse.jface.text.source.AnnotationPainter;
 import org.eclipse.jface.text.source.IAnnotationModelExtension;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
+import org.eclipse.jface.text.source.IVerticalRulerColumn;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
@@ -148,18 +149,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
             }
         }
     }	            		         	        
-    
-	protected ISourceViewer createSourceViewer(Composite parent,
-    		IVerticalRuler ruler, int styles) {
-    	if (DEBUG) System.out.printf("XtaEditor: createSourceViewer\n"); 
-
-        ISourceViewer viewer = new ProjectionViewer(parent, ruler,
-		    getOverviewRuler(), isOverviewRulerVisible(), styles);
-
-        getSourceViewerDecorationSupport(viewer);
-        return viewer;
-    }
-    
+    	
     public void updateFoldingStructure(ArrayList<Position> positions, IDocument document) {
 	    if (DEBUG) System.out.printf("XtaEditor: updateFoldingStructure\n"); 
 
@@ -179,7 +169,24 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         m_projectionAnnotationModel.collapseAll(0, document.getLength());
         m_previousProjectionAnnotations = annotations;       
     }
-        
+
+	protected ISourceViewer createSourceViewer(Composite parent,
+    		IVerticalRuler ruler, int styles) {
+    	if (DEBUG) System.out.printf("XtaEditor: createSourceViewer\n"); 
+
+        ISourceViewer viewer = new ProjectionViewer(parent, ruler,
+		    getOverviewRuler(), isOverviewRulerVisible(), styles);
+
+        getSourceViewerDecorationSupport(viewer);
+        return viewer;
+    }
+    
+	protected IVerticalRulerColumn createLineNumberRulerColumn() {
+		fLineNumberRulerColumn= new XtaLineNumberRulerColumn(getInput());
+		initializeLineNumberRulerColumn(fLineNumberRulerColumn);
+		return fLineNumberRulerColumn;
+	}
+    
     private void updateFnops() {
 		if (DEBUG) System.out.printf("XtaEditor: updateFnops\n"); 
 
@@ -491,6 +498,13 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		return viewer.getDocument();
 	}
 
+	private Input getInput() {
+		XtaDocumentPartitioner xtaDocumentPartitioner =
+			(XtaDocumentPartitioner)getDocument().getDocumentPartitioner();
+
+		return xtaDocumentPartitioner.getInput();		
+	}
+	
 	private ArrayList<InputSection> getSections() {
 		IDocument document = getDocument();
 		if (document == null)
@@ -501,5 +515,4 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
 		return xtaDocumentPartitioner.getInput().getSections();
 	}
-
 }
