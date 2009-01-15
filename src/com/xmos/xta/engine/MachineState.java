@@ -424,8 +424,6 @@ public class MachineState {
 	}
 
 	public void clearEventTargets() {
-		//FIXME i dont know what this does!
-		//or why i put it here
 		m_eventTargets.clear();
 	}
 

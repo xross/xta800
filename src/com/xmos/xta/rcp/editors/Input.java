@@ -1,16 +1,20 @@
 package com.xmos.xta.rcp.editors;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Input {	
 	private ArrayList<InputSection> m_sections;
 	private String m_headerType;
 	private String m_lineType;
+	private Map<Integer, Integer> m_lineNumberMapping;
 	
 	public Input(String headerType, String lineType) {
     	m_sections = new ArrayList<InputSection>();
     	m_headerType = headerType;
     	m_lineType = lineType;
+    	m_lineNumberMapping = new HashMap<Integer, Integer>();
     }
     
 	public void addHeader(String header, String headerCodeReference, int index) {
@@ -33,6 +37,14 @@ public class Input {
 	public String getLineType() {
         return m_lineType; 	
     }
+	
+	public void addLineNumberMapping(int from, int to) {
+		m_lineNumberMapping.put(from, to);
+	}
+	
+	public Map<Integer, Integer> getLineNumberMapping() {
+		return m_lineNumberMapping;
+	}
 }
 
 class InputSection {
