@@ -12,7 +12,8 @@ public class CodeReference {
 	public enum RefType{
 		PC,
 		LINE,
-		LABEL
+		LABEL,
+		INVALID
 	}
 	
 	private RefType m_type;
@@ -21,16 +22,16 @@ public class CodeReference {
 	private boolean m_isResolved;
 	
 	public CodeReference(String ref) {
-		m_ref = ref;
-		if (isPcString(ref)) {
+		m_ref = ref.replaceAll("[ \t\n]", "");
+
+		if (m_ref.length() == 0) {
+			m_type = RefType.INVALID;
+		} else if (isPcString(ref)) {
 			m_type = RefType.PC;
-			return;
 		} else if (isSourceReference(ref)) {
 			m_type = RefType.LINE;
-			return;
 		} else {
 			m_type = RefType.LABEL;
-			return;
 		}
 	}
 	
@@ -114,6 +115,8 @@ public class CodeReference {
                 return true;
     	    }
     	    return false;
+    	case INVALID:
+    		return false;
     	}
     	assert(false);
     	return false;

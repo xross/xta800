@@ -153,29 +153,7 @@ class TextReader extends Reader {
 				}
 				
 			}			
-		});
-        /*
-        m_text.addMouseListener(new MouseListener() {
-			public void mouseDown(MouseEvent e) {
-				if (DEBUG) System.out.printf("TextReader: mouseDown\n");
-				int caretIndex = m_text.getCaretOffset();
-		        int caretRowIndex = m_text.getLineAtOffset(caretIndex);
-
-				int lastIndex = m_text.getCharCount();
-		        int lastRowIndex = m_text.getLineAtOffset(lastIndex);
-		        
-		        //if (caretRowIndex != lastRowIndex) {
-		        	//setCaretToEnd();
-		        //}
-			}
-
-			public void mouseUp(MouseEvent e) {				
-			}        	
-			
-			public void mouseDoubleClick(MouseEvent e) {				
-			}
-        }); 
-        */       
+		});       
 	}
 	
 	public void display(String str) {

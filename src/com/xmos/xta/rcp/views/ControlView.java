@@ -2,6 +2,8 @@ package com.xmos.xta.rcp.views;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -42,6 +44,7 @@ import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Progress;
 import com.xmos.xta.engine.Route;
+import com.xmos.xta.rcp.XtaCorePlugin;
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaErrorLog;
@@ -189,7 +192,17 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        fileDialog.setText("Open Xe File");
 	        String[] filterExt = { "*.xe" };
 	        fileDialog.setFilterExtensions(filterExt);
+	        
+	        //this sets the initial path
+	        XtaCorePlugin plugin = XtaCorePlugin.getDefault();
+	        
+	        String lastDir = plugin.getPreferenceStore().getString("LastDir");
+	        fileDialog.setFilterPath(lastDir);
+	        
 	        String xeFileName = fileDialog.open();
+	        
+	        String path = new File(xeFileName).getParent();
+	        XtaCorePlugin.getDefault().getPreferenceStore().setValue("LastDir", path);
 
 	        if (xeFileName != null) {
 	        	if (DEBUG)
@@ -332,13 +345,16 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		}
 	}
     
-    private void populateFunctionList() {
+    @SuppressWarnings("unchecked")
+	private void populateFunctionList() {
     	// Remember current function name to select it again if it exists
     	String currentFunction = m_functions.getText();
     	
     	m_functions.removeAll();
-    	XeObject xeObject = XtaEngine.getEngine().getXeObject();                    
-        for (final Function function : xeObject.getFunctions()) {
+    	XeObject xeObject = XtaEngine.getEngine().getXeObject();
+    	List<Function> functions = xeObject.getFunctions();
+    	Collections.sort(functions);
+        for (final Function function : functions) {
            	m_functions.add(function.getText());
         }
         setSelectedFunction(currentFunction);
@@ -609,7 +625,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 	    Button findStopButton = new Button(group, SWT.PUSH);
 	    findStopButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-	    findStopButton.setToolTipText("Show stop point in disassembly");
+	    findStopButton.setToolTipText("Show end point in disassembly");
 	    findStopButton.setImage(Icons.getIcon("stop16x16"));
 	    findStopButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -675,9 +691,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	private void createSettingsBar(ExpandBar bar) {
 		Composite composite = getBarComposite(bar, 2);
 
-		Group resolveGroup = createGroup(composite, "Resolve expressions", 1, 2);
+		Group resolveGroup = createGroup(composite, "Resolve", 1, 2);
 		m_resolveExpressions = new Button(resolveGroup, SWT.CHECK);
-		m_resolveExpressions.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		m_resolveExpressions.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
 		m_resolveExpressions.setSelection(XtaEngine.getEngine().getResolve());		
 		m_resolveExpressions.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {

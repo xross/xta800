@@ -9,7 +9,7 @@ class Assert extends CommandContainer {
 	Assert() { super("assert"); }
 	Assert(Command command) { super("assert", command); }
 	
-	protected String getDescription() { return "Set limts on the analysis phase"; }
+	protected String getDescription() { return "Set limits on the analysis phase"; }
 	protected Command[] getSubCommands() { return m_options; }
 	protected Command clone(Command command) { return new Analyse(command); }	
 }
