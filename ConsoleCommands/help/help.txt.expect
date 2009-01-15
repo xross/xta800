@@ -5,7 +5,7 @@
   [-]summary <path id | level>: Display timing summary for paths/functions
   [-]print <option> <arg0> <arg1>...: Display path information
   [-]set <option> <arg0> <arg1>...: Set path information
-  [-]assert <option> <arg0> <arg1>...: Set limts on the analysis phase
+  [-]assert <option> <arg0> <arg1>...: Set limits on the analysis phase
   [-]add <option> <arg0> <arg1>...: Add item to given list
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
   [-]source <file name>: Sources the given command file
