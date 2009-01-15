@@ -121,6 +121,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			updateUnknowns();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_LOAD_EXECUTABLE)) {
 			m_selectedNode = null;
+	    	m_startPointLine = null;
+	        m_endPointLine = null;			
 			updateFnops();
     	    updateHighlighting();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_START_POINT)) {
@@ -460,12 +462,15 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}
 
 	private InputLine findCodeRefLineNum(CodeReference codeRef) {
-		int pc = codeRef.getPc();
-    	if (m_type == XtaDocumentPartitioner.DISASSEMBLY) {
-    		return findPcLine(pc);
-    	} else {
-    		return findCodeLine(pc);
-    	}
+		if (codeRef.isResolved()) {
+		    int pc = codeRef.getPc();
+    	    if (m_type == XtaDocumentPartitioner.DISASSEMBLY) {
+    		    return findPcLine(pc);
+    	    } else {
+    		    return findCodeLine(pc);
+    	    }
+		}
+		return null;
 	}
 
 	private InputLine findPcLine(int pc) {

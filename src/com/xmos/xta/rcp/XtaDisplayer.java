@@ -104,20 +104,16 @@ public class XtaDisplayer implements Displayer {
 		if (DEBUG) System.out.printf("XtaDisplayer: notifySetStartPoint\n");
 		Engine engine = XtaEngine.getEngine();
 		startPoint.resolve(engine, engine.getNodeId(), engine.getCoreId());
-		if (startPoint.isResolved()) {
-			m_startPoint = startPoint;
-			broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_SET_START_POINT, null, null));
-		}
+    	m_startPoint = startPoint;
+		broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_SET_START_POINT, null, null));
 	}
 		
 	public void notifySetEndPoint(CodeReference endPoint) {
 		if (DEBUG) System.out.printf("XtaDisplayer: notifySetStartPoint\n");
 		Engine engine = XtaEngine.getEngine();
 		endPoint.resolve(engine, engine.getNodeId(), engine.getCoreId());
-		if (endPoint.isResolved()) {
-			m_endPoint = endPoint;
-			broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_SET_END_POINT, null, null));
-		}
+		m_endPoint = endPoint;
+		broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_SET_END_POINT, null, null));
 	}
 
 	public void notifyShow(CodeReference codePoint) {

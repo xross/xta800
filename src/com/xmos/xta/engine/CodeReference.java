@@ -172,9 +172,9 @@ public class CodeReference {
 	}
 
 	private boolean isPcString(String ref) {
-		if (ref.matches("0x[0-9a-fA-F]*")){
+		if (ref.matches("0x[0-9a-fA-F]+")){
 			m_pc = Integer.parseInt(ref.substring(2), 16);
-		} else if (ref.matches("[0-9]*")){
+		} else if (ref.matches("[0-9]+")){
 			m_pc = Integer.parseInt(ref, 10);
 		} else {
 			m_isResolved = false;
