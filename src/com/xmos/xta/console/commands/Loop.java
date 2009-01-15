@@ -30,7 +30,7 @@ class Loop extends Command {
     }        
 
     public String commandLine() {
-    	String absStr = m_absolute ? "ABSOLUTE" : "RELATIVE";
+    	String absStr = m_absolute ? "absolute" : "relative";
     	return "loop " + 
     	    m_pathId + " " + 
     	    absStr + " " + 
@@ -41,8 +41,8 @@ class Loop extends Command {
     	String descString = "loop <path> <scope> <iterations>: Sets the number of iterations for the given path";
     	if (detailed) {
         	descString += "\n";
-    		descString += "          scope: RELATIVE/r: Iteration number propagates to the enclosing path (Default)\n";                
-    		descString += "          scope: ABSOLUTE/a: Absolute number of iterations";
+    		descString += "          scope: relative/r: Iteration number propagates to the enclosing path (Default)\n";                
+    		descString += "          scope: absolute/a: Absolute number of iterations";
     	}
     	return descString;
     }
@@ -58,11 +58,11 @@ class Loop extends Command {
 	    }
 
 	    boolean absolute;
-	    if ((args[index + 2].compareTo("RELATIVE") == 0) ||  
+	    if ((args[index + 2].compareTo("relative") == 0) ||  
 	    	(args[index + 2].compareTo("r") == 0)){
 	    	absolute = false;
 	    }
-	    else if ((args[index + 2].compareTo("ABSOLUTE") == 0) ||  
+	    else if ((args[index + 2].compareTo("absolute") == 0) ||  
 		         (args[index + 2].compareTo("a") == 0)){
 	    	absolute = true;
 	    }
