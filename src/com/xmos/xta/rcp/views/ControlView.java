@@ -616,7 +616,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 	    Button findStopButton = new Button(group, SWT.PUSH);
 	    findStopButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-	    findStopButton.setToolTipText("Show stop point in disassembly");
+	    findStopButton.setToolTipText("Show end point in disassembly");
 	    findStopButton.setImage(Icons.getIcon("stop16x16"));
 	    findStopButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
