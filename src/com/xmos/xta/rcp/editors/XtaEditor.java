@@ -54,6 +54,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
     public static final String SetStartPointID       = "com.xmos.xtagui.action.SetStartPoint";
     public static final String SetEndPointID         = "com.xmos.xtagui.action.SetEndPoint";
+    public static final String RemoveStartPointID    = "com.xmos.xtagui.action.RemoveStartPoint";
+    public static final String RemoveEndPointID      = "com.xmos.xtagui.action.RemoveEndPoint";
 
     private static final String fnopString = "    ------- \tFNOP\n";
     
@@ -376,6 +378,18 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      			XtaDisplayer.getInstance().notifySetEndPoint(endPoint);
      		}
      	});
+     	setAction(RemoveStartPointID, new Action("Remove start point") {
+     		public void run() {
+     			CodeReference startPoint = new CodeReference("");
+     			XtaDisplayer.getInstance().notifySetStartPoint(startPoint);     			
+     		}
+     	});
+     	setAction(RemoveEndPointID, new Action("Remove end point") {
+     		public void run() {
+     			CodeReference endPoint = new CodeReference("");
+     			XtaDisplayer.getInstance().notifySetEndPoint(endPoint);     			
+     		}
+     	});
     }    
     
     protected void editorContextMenuAboutToShow(IMenuManager menu) {
@@ -391,9 +405,19 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("XtaEditor: editorContextMenuAboutToShow\n");
 		
 		int clickLineNum = getVerticalRuler().getLineOfLastMouseButtonActivity();
-		if (getLineDescription(clickLineNum) != null) {
-			addAction(menu, SetStartPointID);
-			addAction(menu, SetEndPointID);
+		
+		String codeReference = getLineDescription(clickLineNum);				
+		if (codeReference != null) {
+			if (isStartPointSet(codeReference)) {
+			    addAction(menu, RemoveStartPointID);
+			} else {
+			    addAction(menu, SetStartPointID);				
+			}
+			if (isEndPointSet(codeReference)) {						
+			    addAction(menu, RemoveEndPointID);
+			} else {
+			    addAction(menu, SetEndPointID);				
+			}
 			menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
 		}
 
@@ -519,5 +543,23 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			(XtaDocumentPartitioner)document.getDocumentPartitioner();
 
 		return xtaDocumentPartitioner.getInput().getSections();
+	}
+	
+	private boolean isStartPointSet(String codeReference) {
+		if (m_startPointLine != null) {
+			if (m_startPointLine.getCodeReference().equals(codeReference)) {
+				return true;
+			}
+		}
+	    return false;	
+	}
+
+	private boolean isEndPointSet(String codeReference) {
+		if (m_endPointLine != null) {
+			if (m_endPointLine.getCodeReference().equals(codeReference)) {
+				return true;
+			}
+		}
+	    return false;	
 	}
 }
