@@ -2058,7 +2058,6 @@ public abstract class XtaInstruction extends Instruction {
     		System.out.println("waiting on events:");
     	}
     	ArrayList<Integer> takenVectors = new ArrayList<Integer>();
-    	
     	state.clearEventTargets();
     	for (Timer timer : state.getResources().getTimers()){
     		if (timer.isEventEnabeled()){
