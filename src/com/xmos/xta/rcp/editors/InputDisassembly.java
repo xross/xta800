@@ -22,13 +22,17 @@ public class InputDisassembly implements IEditorInput {
 		m_input = new Input(s_headerType, s_lineType);
         for (Function function : XtaEngine.getEngine().getXeObject().getFunctions()) {        	
     		String headerRef = String.format("-");
-        	m_input.addHeader(function.getText() + ":", headerRef, lineIndex);	        	        	
+        	m_input.addHeader(function.getText() + ":", headerRef, lineIndex);
+        	
+        	m_input.addLineNumberMapping(lineIndex, lineIndex + 1);
         	++lineIndex;
 
         	for (Line line : function.getChildern()) {
         		String str = String.format("    0x%05x %s", line.getLineNumber(), line.getText());
         		String childRef = String.format("0x%05x", line.getLineNumber());
         		m_input.addLine(str, childRef, line.getLineNumber(), lineIndex);
+
+            	m_input.addLineNumberMapping(lineIndex, lineIndex + 1);
         		++lineIndex;        		
         	}
         }				
