@@ -41,25 +41,43 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 				
 		document.addPositionCategory(SECTION);
 		
+		int headerOffset = 0;
 		for (InputSection inputSection : m_input.getSections()) {	
-			int headerOffset = document.getLength();
+			int numLines = inputSection.getLines().size();
+			
+			// Adds the SOURCE region for the previous lines.
+			if (numLines > 0) {
+				addTypedRegion(document, regionList, headerOffset, m_input.getHeaderType());
+			}
 
+			int offset = document.getLength();
 			String header = inputSection.getHeader().getLine() + "\n";
-			updateDocument(document, header);							
-			addTypedRegion(document, regionList, headerOffset, m_input.getHeaderType());
-
+			updateDocument(document, header);
+			
+			// Adds the SOURCE region for this line.
+			if (numLines > 0) {
+				addTypedRegion(document, regionList, offset, m_input.getHeaderType());
+			}			
+			
 			int linesOffset = document.getLength();
 			for (InputLine line : inputSection.getLines()) {
 				String str = line.getLine() + "\n";
 				updateDocument(document, str);
 			} 
 
-			int numLines = inputSection.getLines().size();
+			// Adds the DISASSEMBLY region
 			if (numLines > 0) {
-				addPositionMarker(document, headerOffset);
+				addPositionMarker(document, offset);
 				addTypedRegion(document, regionList, linesOffset, m_input.getLineType());
 			}
+
+			if (numLines > 0) {
+				headerOffset = document.getLength();
+			}
 		}
+		
+		// Adds the final SOURCE region if required.
+		addTypedRegion(document, regionList, headerOffset, m_input.getHeaderType());
 					
 		m_regions = new TypedRegion[regionList.size()];
 		m_regions = regionList.toArray(m_regions);					
@@ -147,8 +165,12 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 	}
 	
 	private void addTypedRegion(IDocument document, 
-			List<TypedRegion> regionList, int offset, String type) {		
-		regionList.add(new TypedRegion(offset, document.getLength() - offset, type));
+			List<TypedRegion> regionList, int offset, String type) {
+		
+		int length = document.getLength() - offset;
+		if (length > 0) {		
+		    regionList.add(new TypedRegion(offset, document.getLength() - offset, type));
+		}
 	}	
 	
 	private TypedRegion getRegion(int offset) { 

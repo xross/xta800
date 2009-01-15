@@ -10,7 +10,6 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 
 import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.XeObject;
-import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.XtaEngine;

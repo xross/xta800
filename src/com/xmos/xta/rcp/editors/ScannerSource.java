@@ -8,6 +8,7 @@ import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.IWhitespaceDetector;
 import org.eclipse.jface.text.rules.IWordDetector;
+import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.NumberRule;
 import org.eclipse.jface.text.rules.PatternRule;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
@@ -105,7 +106,7 @@ public class ScannerSource extends RuleBasedScanner {
     private void processComments(Display display, List<IRule> rules) {
     	Color color = display.getSystemColor(SWT.COLOR_DARK_GREEN);
     	IToken token = new Token(new TextAttribute(color));
-    	rules.add(new PatternRule("/*", "*/", token, ' ', false));    	
+    	rules.add(new MultiLineRule("/*", "*/", token));    	
     	rules.add(new PatternRule("//", null, token, '\0', true));    	
     }    
 }

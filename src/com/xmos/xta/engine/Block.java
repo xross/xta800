@@ -172,6 +172,8 @@ public class Block implements Comparable<Block> {
 		m_numFNops = 0;
 		m_numInstructions = 0;
 		m_numPausables = 0;
+		
+		assert(m_contexts.size()>0);
 		if(DEBUG)System.out.println("block " + this.m_id +  " started at 0x" + Integer.toHexString(this.m_machineState.getPc(this.m_currentThread)));
 	}
 
@@ -252,12 +254,12 @@ public class Block implements Comparable<Block> {
 		m_machineState.resetInstructionState();
 		XtaInstruction instruction = m_bc.getNodeCoreInstructionCaches()
 		 .decode(opcode, pc, m_bc.getEngine().getNodeId(), m_bc.getEngine().getCoreId());
-		//XtaInstruction instruction = m_bc.getInstructionDecodeCache().decode(opcode, pc);
 		int instNumBytes = instruction.getNumBytes();
 
 
 		handleIBuffer(instNumBytes, pc);
 		if (DUMPSTATE) dumpState(m_machineState);
+		
 		boolean success = executeInstruction(instruction);
 		
 		if(!success) {
@@ -292,7 +294,7 @@ public class Block implements Comparable<Block> {
 		if (m_machineState.wasEventWait()) {
 			if (m_machineState.wasEventResolved()) {
 				ArrayList<Integer> targets = new ArrayList<Integer>(m_machineState.getEventTarget());
-				m_machineState.clearEventVectors();
+				m_machineState.clearEventTargets();
 				for (int targetVector : targets) {
 					checkForLoopFormation(targetVector, false, instruction, true, true);
 				}
@@ -316,6 +318,9 @@ public class Block implements Comparable<Block> {
 				} else {
 					if (instruction.getReturn()) {
 						popFunction();
+						if(m_contexts.size() == 0){
+							m_contexts.add(new TreeSet<Integer>());
+						}
 					}
 					checkForLoopFormation(jumpTarget, false, instruction, true, false);
 					if (instruction.getBranchLink()) {
@@ -340,6 +345,8 @@ public class Block implements Comparable<Block> {
 		} else if (m_machineState.wasBranch()) {
 			if (m_machineState.wasBranchResolved()) {
 				if (m_bc.isResolveExpressions()) {
+					//TODO catch the case where the jump completes the path - as below
+					
 					if (m_machineState.getBranchTaken() == BranchState.TAKEN) {
 						checkForLoopFormation(m_machineState.getBranchTarget(), false, instruction, true, false);
 					} else if (m_machineState.getBranchTaken() == BranchState.NOTTAKEN) {
@@ -352,8 +359,15 @@ public class Block implements Comparable<Block> {
 						releaseMemory();
 					}
 				} else {
-					checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
-					checkForLoopFormation(nextPc, true, instruction, false, true);
+					//first check that the branch target isn't the  
+					if (isComplete(instruction, m_machineState.getBranchTarget()) || 
+							isComplete(instruction, nextPc)) {
+						m_route.addCompletePath(this);
+						return;
+					} else {
+						checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
+						checkForLoopFormation(nextPc, true, instruction, false, true);
+					}
 					setStatus(BlockStatus.COMPLETE);
 					releaseMemory();
 				}
@@ -543,7 +557,7 @@ public class Block implements Comparable<Block> {
 		}
 
 	}
-
+	
 	private Block formsLoop(int pc) {
 		boolean contextsContainPc = m_contexts.peek().contains(pc);
 		Block parent = this;

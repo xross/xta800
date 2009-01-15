@@ -7,6 +7,7 @@ import com.xmos.xeloader.XeLoader.Architecture;
 import com.xmos.xta.engine.Expression.OperatorType;
 import com.xmos.xta.engine.InstructionExecption.Error;
 import com.xmos.xta.engine.resources.Channel;
+import com.xmos.xta.engine.resources.EventableResource;
 import com.xmos.xta.engine.resources.Port;
 import com.xmos.xta.engine.resources.Resource;
 import com.xmos.xta.engine.resources.Resources;
@@ -16,7 +17,8 @@ import com.xmos.xta.engine.resources.Timer;
 import com.xmos.xta.engine.resources.Thread.StatusRegister;
 
 public abstract class XtaInstruction extends Instruction {
-	private static final boolean m_debug = false;
+	private static final boolean INSTRUCTIONDEBUG = false;
+	private static final boolean RESOURCEDEBUG  = false;
 	private static final boolean m_uninplimented = true;
   
 
@@ -126,7 +128,7 @@ public abstract class XtaInstruction extends Instruction {
 	static long signedRemainder(MachineState state, long a, long b, Thread thread) { return 0; }	
 	
     void ADD(MachineState state, int thread) throws Exception {
-		if (m_debug)
+		if (INSTRUCTIONDEBUG)
 			System.out.printf("0x%08x: ADD\n", getPc());
 		state.m_op1 = new Expression(Expression.OperatorType.ADD);
     	state.m_op1.addOperand(state.m_op2);
@@ -135,7 +137,7 @@ public abstract class XtaInstruction extends Instruction {
 	}
     
     void AND(MachineState state, int thread) throws Exception {
-    	if (m_debug) 
+    	if (INSTRUCTIONDEBUG) 
         	System.out.printf("0x%08x: AND\n", getPc());    
     	state.m_op1 = new Expression(Expression.OperatorType.AND);
     	state.m_op1.addOperand(state.m_op2);
@@ -144,7 +146,7 @@ public abstract class XtaInstruction extends Instruction {
     }
     
     void ANDNOT(MachineState state, int thread) throws Exception {
-    	if (m_debug) 
+    	if (INSTRUCTIONDEBUG) 
         	System.out.printf("0x%08x: ANDNOT\n", getPc());  
     	Expression result = new Expression(Expression.OperatorType.ANDNOT);
     	result.addOperand(state.m_op1);
@@ -154,7 +156,7 @@ public abstract class XtaInstruction extends Instruction {
     }
     
     void ASHR(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
     	    System.out.printf("0x%08x: ASHR\n", getPc());   
     	Expression result = new Expression(Expression.OperatorType.ASHR);
     	result.addOperand(state.m_op2);
@@ -164,14 +166,14 @@ public abstract class XtaInstruction extends Instruction {
     }
     
     void BAU(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
     	    System.out.printf("0x%08x: BAU\n", getPc());
     	state.m_op1.resolve();
     	state.jump(state.m_op1);
     }
     
     void BITREV(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: BITREV\n", getPc());
     	state.m_op1 = new Expression(Expression.OperatorType.BITREV);
     	state.m_op1.addOperand(state.m_op2);
@@ -179,7 +181,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void BLA(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: BLA\n", getPc());
     	state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
     	
@@ -190,7 +192,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void BLACP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: BLACP\n", getPc());	
     	Expression loadLocation = new Expression(OperatorType.ADD);
     	Expression cp = state.getConstPoolRegister(thread);
@@ -217,7 +219,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void BLAT(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: BLAT\n", getPc());	
     	Expression loadLocation = new Expression(OperatorType.ADD);
     	Expression table = state.readRegister(11, thread);
@@ -242,7 +244,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void BLRB(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: BLRB\n", getPc());
     	
         Expression offset = new Expression(Expression.OperatorType.ASHL);
@@ -261,7 +263,7 @@ public abstract class XtaInstruction extends Instruction {
 
     
     void BLRF(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: BLRF\n", getPc());
 	
         Expression offset = new Expression(Expression.OperatorType.ASHL);
@@ -279,7 +281,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void BRBF(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: BRBF\n", getPc());
 	
         Expression offset = new Expression(Expression.OperatorType.ASHL);
@@ -289,12 +291,12 @@ public abstract class XtaInstruction extends Instruction {
         Expression branchTarget = new Expression(Expression.OperatorType.SUB);
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
-         branchTarget.resolve();
+        branchTarget.resolve();
     	state.branch(false, state.m_op1, branchTarget);
     }
 
     void BRBT(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: BRBT\n", getPc());
 	
         Expression offset = new Expression(Expression.OperatorType.ASHL);
@@ -309,7 +311,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void BRBU(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: BRBU\n", getPc());
 	
         Expression offset = new Expression(Expression.OperatorType.ASHL);
@@ -324,7 +326,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void BRFF(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: BRFF\n", getPc());
 	
         Expression offset = new Expression(Expression.OperatorType.ASHL);
@@ -339,7 +341,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void BRFT(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: BRFT\n", getPc());
 
         Expression offset = new Expression(Expression.OperatorType.ASHL);
@@ -354,7 +356,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void BRFU(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: BRFU\n", getPc());
 	
         Expression offset = new Expression(Expression.OperatorType.ASHL);
@@ -369,7 +371,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void BRU(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: BRU\n", getPc());
 	
         Expression offset = new Expression(Expression.OperatorType.ASHL);
@@ -384,7 +386,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void BYTEREV(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: BYTEREV\n", getPc());
     	state.m_op1 = new Expression(Expression.OperatorType.BYTEREV);
     	state.m_op1.addOperand(state.m_op2);
@@ -392,7 +394,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void CHKCT(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: CHKCT\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -402,12 +404,12 @@ public abstract class XtaInstruction extends Instruction {
     
     
     void CLRE(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: CLRE\n", getPc());	
     	for(Thread t : state.getResources().getThreads()){
     		t.setStatusRegisterBit(StatusRegister.EEBLE, false);
     	}
-    	state.clearEventVectors();
+    	state.clearEventTargets();
     	for(Timer t : state.getResources().getTimers()){
     		t.setEventEnabeled(false);
     	}
@@ -423,7 +425,7 @@ public abstract class XtaInstruction extends Instruction {
     }
     
     void CLRPT(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: CLRPT\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -431,7 +433,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void CLRSR(MachineState state, int thread) throws Exception {
-    	if (m_debug)     
+    	if (INSTRUCTIONDEBUG)     
             System.out.printf("0x%08x: CLRSR\n", getPc());	
     	
     	Thread currentThread = state.getResources().getThread(thread);
@@ -466,7 +468,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void CLZ(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: CLZ\n", getPc());	
     	state.m_op1 = new Expression(Expression.OperatorType.CLZ);
     	state.m_op1.addOperand(state.m_op2);
@@ -474,7 +476,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void CRC32(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: CRC32\n", getPc());	
     	Expression result = new Expression(Expression.OperatorType.CRC32);
     	result.addOperand(state.m_op1);
@@ -485,7 +487,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void CRC8(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: CRC8\n", getPc());	
     	Expression scrdest = new Expression(Expression.OperatorType.CRC8_SCRDEST);
     	Expression dest = new Expression(Expression.OperatorType.CRC8_DEST);
@@ -513,7 +515,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void DCALL(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: DCALL\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.DEBUG_INSTRUCTION);
@@ -521,7 +523,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void DENTSP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: DENTSP\n", getPc());
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.DEBUG_INSTRUCTION);
@@ -529,7 +531,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void DGETREG(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: DGETREG\n", getPc());
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.DEBUG_INSTRUCTION);
@@ -537,7 +539,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void DIVS(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: DIVS\n", getPc());	
     	state.m_op1 = new Expression(Expression.OperatorType.DIVS);
     	state.m_op1.addOperand(state.m_op2);
@@ -546,7 +548,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void DIVU(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: DIVU\n", getPc());	
     	state.m_op1 = new Expression(Expression.OperatorType.DIVU);
     	state.m_op1.addOperand(state.m_op2);
@@ -555,7 +557,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void DRESTSP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: DRESTSP\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.DEBUG_INSTRUCTION);
@@ -563,7 +565,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void DRET(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: DRET\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.DEBUG_INSTRUCTION);
@@ -571,7 +573,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void ECALLF(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: ECALLF\n", getPc());	
     	if(m_uninplimented) {
     		//throw new InstructionExecption(Error.TRAP_INSTRUCTION);
@@ -579,7 +581,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void ECALLT(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: ECALLT\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.TRAP_INSTRUCTION);
@@ -587,7 +589,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void EDU(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: EDU\n", getPc());	
     	Resources resources = state.getResources();
         Expression resourceId = state.m_op1;
@@ -614,7 +616,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void EEF(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: EEF\n", getPc());	
     	Resources resources = state.getResources();
         Expression resourceId = state.m_op2;
@@ -645,7 +647,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void EET(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: EET\n", getPc());	
     	Resources resources = state.getResources();
         Expression resourceId = state.m_op2;
@@ -676,7 +678,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void EEU(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: EEU\n", getPc());	
     	Resources resources = state.getResources();
         Expression resourceId = state.m_op1;
@@ -703,7 +705,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void ENDIN(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: ENDIN\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -711,7 +713,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void ENTSP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: ENTSP\n", getPc());	
     	        	
     	assert state.m_op1.canResolve();    		    		
@@ -743,7 +745,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void EQ(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: EQ\n", getPc());	
 
         state.m_op1 = new Expression(Expression.OperatorType.EQ);
@@ -754,7 +756,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void EXTDP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: EXTDP\n", getPc());	
     	assert(state.m_op1.canResolve());
     	int imm = state.m_op1.getValue() << Instruction.BYTES_PER_WORD_LOG2;
@@ -776,7 +778,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void EXTSP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: EXTSP\n", getPc());	
     	assert(state.m_op1.canResolve());
     	int imm = state.m_op1.getValue() << Instruction.BYTES_PER_WORD_LOG2;
@@ -798,37 +800,30 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void FREER(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: FREER\n", getPc());	
 
-    	Resources resources = state.getResources();
-    	
     	Expression resourceId = state.m_op1;
 
     	if(resourceId.canResolve()){
+    		Resources resources = state.getResources();
     	    int resId = resourceId.getValue();
     	    int resNum = resources.decodeResNum(resId);
     	    int resType = resources.decodeResType(resId);
-    	    if(resType == Resources.RES_TYPE_TIMER){
-    	    	resources.getTimers()[resNum].setInUse(false);
-    	    } else if(resType == Resources.RES_TYPE_CHANEND){
-    	    	resources.getChannels()[resNum].setInUse(false);
-    	    } else if(resType == Resources.RES_TYPE_SYNC){
-    	    	resources.getSynchronisers()[resNum].setInUse(false);
-    	    } else if(resType == Resources.RES_TYPE_THREAD){
-    	    	resources.getThreads()[resNum].setInUse(false);
-    	    } else if(resType == Resources.RES_TYPE_LOCK){
-    	    	resources.getLocks()[resNum].setInUse(false);
+    	    if(resType == Resources.RES_TYPE_TIMER || resType == Resources.RES_TYPE_CHANEND ||
+    	    		resType == Resources.RES_TYPE_SYNC ||  resType == Resources.RES_TYPE_THREAD ||
+    	    		resType == Resources.RES_TYPE_LOCK){
+    	    resources.getResource(resType, resNum).setInUse(true);
     	    } else {
-            	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
-            }
+    	    	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
+    	    }
         } else {
         	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
         } 
     }
 
     void FREET(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: FREET\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -836,7 +831,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void GETD(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETD\n", getPc());	
     	Resources resources = state.getResources();
         Expression resourceId = state.m_op2;
@@ -865,37 +860,37 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void GETED(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETED\n", getPc());	
     	state.writeRegister(11, state.getResources().getThread(thread).getED(), thread);
     }
 
     void GETET(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETET\n", getPc());	
     	state.writeRegister(11, state.getResources().getThread(thread).getET(), thread);
     }
 
     void GETID(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETID\n", getPc());	
     	state.writeRegister(11, new Expression(state.getResources().getThread(thread).getID()), thread);
     }
 
     void GETKEP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETKEP\n", getPc());	
     	state.writeRegister(11, state.getResources().getThread(thread).getKEP(), thread);
     }
 
     void GETKSP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETKSP\n", getPc());	
     	state.writeRegister(11, state.getResources().getThread(thread).getKSP(), thread);
     }
 
     void GETPS(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETPS\n", getPc());
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -903,25 +898,29 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void GETR(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETR\n", getPc());	
     	
     	Resources resources = state.getResources();
-        Expression resourceId = state.m_op2;
-        
-        assert(resourceId.canResolve());
-        
-        int resType = resourceId.getValue();
+    	Expression resourceId = state.m_op2;
+    	assert(resourceId.canResolve());
+    	int resType = resourceId.getValue();
+    	
         Resource res  = resources.getNewResource(resType);
         res.setInUse(true);
         res.setMaster(thread);
+        
         int resourceValue = res.getResourceID();
         state.m_op1 = new Expression(resourceValue);
         state.m_op1.resolve();
+    	
+        if(RESOURCEDEBUG){
+        	System.out.println("got resource for thread " + thread);
+        }
     }
 
     void GETSR(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETSR\n", getPc());	
     	assert(state.m_op1.canResolve());
     	int status = state.getResources().getThread(thread).getStatusRegister() & state.m_op1.getValue();
@@ -930,34 +929,57 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void GETST(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETST\n", getPc());	
-        Expression synchroniserId = state.m_op2;
-        if(synchroniserId.canResolve()){
-        	Resources resources = state.getResources();
-        	int syncType = resources.decodeResType(synchroniserId.getValue());
-        	int syncNumber = resources.decodeResNum(synchroniserId.getValue());
-        	Synchroniser sync = resources.getSynchroniser(syncType, syncNumber);
-        	if(sync == null){
-        		throw new InstructionExecption(Error.ET_RESOURCE_DEP);
-        	}
-        	sync.setInUse(true);
-        	
-        	//get a new thread
-        	Resource res  = resources.getNewResource(Resources.RES_TYPE_THREAD);
-        	assert(res!=null);
-        	//attach it to the sync
-        	sync.attachThread((Thread)res);
-        	
-        	//return the res id new thread
-        	state.m_op1 = new Expression(res.getResourceID());
-        } else {
-        	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
-        }      
+    	/*
+    	
+    	Expression synchroniserId = state.m_op2;
+    	if(synchroniserId.canResolve()){
+    		Resources resources = state.getResources();
+    		int resNo = synchroniserId.getValue();
+    		int resType = resources.decodeResType(resNo);
+    		int resNum = resources.decodeResType(resNo);
+    		if(resType == Resources.RES_TYPE_SYNC){
+    			
+    		} else {
+    			
+    		}
+    		
+    	} else {
+    		//TODO 
+    	}
+    	
+    	*/
+    	
+    	Expression synchroniserId = state.m_op2;
+    	if(synchroniserId.canResolve()){
+    		Resources resources = state.getResources();
+    		int resNo = synchroniserId.getValue();
+    		int resType = resources.decodeResType(resNo);
+    		int resNum = resources.decodeResType(resNo);
+    		
+    		if(resType == Resources.RES_TYPE_SYNC){
+    			
+    			Resource res = resources.getResource(resType, resNum);
+    			res.setInUse(true);
+    			Resource newRes = resources.getNewResource(Resources.RES_TYPE_THREAD);
+    			
+    			if(newRes == null){
+    				throw new InstructionExecption(Error.ET_RESOURCE_DEP);
+    			} else {
+    				Synchroniser sync = (Synchroniser)res;
+    				sync.attachResource(res);
+    				state.m_op1 = new Expression(res.getResourceID());
+    			}
+    		} else {
+    			throw new InstructionExecption(Error.ET_ILLEGAL_RESOURCE);
+    		}
+    	} 
+    	
     }
 
     void GETTS(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETTS\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -965,7 +987,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void IN(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: IN\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -973,7 +995,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void INCT(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: INCT\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -981,7 +1003,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void INPW(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: INPW\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -989,7 +1011,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void INSHR(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: INSHR\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -997,7 +1019,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void INT(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: INT\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1005,7 +1027,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void KCALL(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: KCALL\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1013,7 +1035,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void KENTSP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: KENTSP\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1021,7 +1043,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void KRESTSP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: KRESTSP\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1029,14 +1051,14 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void KRET(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: KRET\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
     	}
     }
     void LD16S(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LD16S\n", getPc());	
     	
     	Expression address = new Expression(OperatorType.ADD);
@@ -1060,7 +1082,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LD8U(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LD8U\n", getPc());	
 
     	Expression address = new Expression(OperatorType.ADD);
@@ -1080,7 +1102,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDA16B(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDA16B\n", getPc());	
     	Expression result = new Expression(OperatorType.SUB);
     	
@@ -1096,7 +1118,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDA16F(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDA16F\n", getPc());	
     	Expression result = new Expression(OperatorType.ADD);
     	
@@ -1112,7 +1134,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDAPB(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDAPB\n", getPc());	
     	assert(state.m_op1.canResolve());
     	int offset = state.m_op1.getValue();
@@ -1122,7 +1144,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDAPF(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDAPF\n", getPc());	
     	assert(state.m_op1.canResolve());
     	int offset = state.m_op1.getValue();
@@ -1132,7 +1154,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDAWB(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDAWB\n", getPc());	
     	Expression result = new Expression(OperatorType.SUB);
     	
@@ -1148,7 +1170,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDAWDP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDAWDP\n", getPc());	
 
         Expression rhs = new Expression(Expression.OperatorType.ASHL);              
@@ -1162,7 +1184,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDAWF(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDAWF\n", getPc());	
     	
     	Expression rhs = new Expression(Expression.OperatorType.ASHL);    	    	
@@ -1176,7 +1198,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDAWSP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDAWSP\n", getPc());	
     	
     	assert state.m_op2.canResolve();    		    		
@@ -1190,7 +1212,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDC(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDC\n", getPc());
     	assert(state.m_op2.canResolve());
     	state.m_op1 = new Expression(state.m_op2.getValue());
@@ -1198,7 +1220,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDET(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDET\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1206,7 +1228,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDSED(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDSED\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1214,7 +1236,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDSPC(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDSPC\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1222,7 +1244,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDSSR(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDSSR\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1230,7 +1252,7 @@ public abstract class XtaInstruction extends Instruction {
     }
     
     void LDW(MachineState state, int thread) throws Exception {
-    	if (m_debug)   {
+    	if (INSTRUCTIONDEBUG)   {
     		
     		System.out.printf("0x%08x: LDW\n", getPc());
     	}
@@ -1255,7 +1277,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDWCP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDWCP\n", getPc());	
 
     	Expression dp = state.getConstPoolRegister(thread);
@@ -1271,7 +1293,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDWCPL(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDWCPL\n", getPc());	
     	Expression dp = state.getConstPoolRegister(thread);
     	Expression offset = state.m_op2;
@@ -1287,7 +1309,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDWDP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDWDP\n", getPc());		
     	
     	Expression dp = state.getDataPoolRegister(thread);
@@ -1303,7 +1325,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LDWSP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDWSP\n", getPc());	
     	
     	assert state.m_op2.canResolve();
@@ -1322,7 +1344,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LMUL(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LMUL\n", getPc());	
 
     	if (state.m_op2.canResolve() &&
@@ -1354,7 +1376,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LSS(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LSS\n", getPc());	
 
     	state.m_op1 = new Expression(Expression.OperatorType.LTS);
@@ -1363,7 +1385,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void LSU(MachineState state, int thread) throws Exception {
-    	if (m_debug) 
+    	if (INSTRUCTIONDEBUG) 
     		System.out.printf("0x%08x: LSU\n", getPc());
 
     	state.m_op1 = new Expression(Expression.OperatorType.LTU);
@@ -1373,7 +1395,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void MACC(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: MACC\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1382,7 +1404,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void MJOIN(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: MJOIN\n", getPc());	
 
     	if(m_uninplimented) {
@@ -1391,7 +1413,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void MKMSK(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: MKMSK\n", getPc());
     	assert(state.m_op2.canResolve());
     	int shift = state.m_op2.getValue();
@@ -1404,7 +1426,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void MSYNC(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: MSYNC\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1412,7 +1434,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void MUL(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: MUL\n", getPc());	
     	Expression result = new Expression(OperatorType.MUL);
     	result.addOperand(state.m_op2);
@@ -1423,7 +1445,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void NEG(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: NEG\n", getPc());
 	
     	state.m_op1 = new Expression(Expression.OperatorType.NEG);
@@ -1432,7 +1454,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void NOT(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: NOT\n", getPc());
 	
     	state.m_op1 = new Expression(Expression.OperatorType.NOT);
@@ -1441,7 +1463,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void OR(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: OR\n", getPc());
     	state.m_op1 = new Expression(Expression.OperatorType.OR);
     	state.m_op1.addOperand(state.m_op2);
@@ -1450,7 +1472,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void OUT(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: OUT\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1458,7 +1480,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void OUTCT(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: OUTCT\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1466,7 +1488,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void OUTPW(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: OUTPW\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1474,7 +1496,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void OUTSHR(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: OUTSHR\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1482,7 +1504,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void OUTT(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: OUTT\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1490,7 +1512,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void PEEK(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: PEEK\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1498,7 +1520,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void REMS(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: REMS\n", getPc());	
     	Expression result = new Expression(OperatorType.REMS);
     	result.addOperand(state.m_op2);
@@ -1508,7 +1530,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void REMU(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: REMU\n", getPc());	
     	Expression result = new Expression(OperatorType.REMU);
     	result.addOperand(state.m_op2);
@@ -1518,7 +1540,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void RETSP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: RETSP\n", getPc());	
 
         Expression jumpTarget = state.getLinkRegister(thread);                
@@ -1555,7 +1577,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void SETC(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETC\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1563,7 +1585,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void SETCLK(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETCLK\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1571,13 +1593,13 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void SETCP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETCP\n", getPc());	
     	state.setConstPoolRegister(state.m_op1, thread);
     }
 
     void SETD(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETD\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1585,21 +1607,44 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void SETDP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETDP\n", getPc());	
     	state.setDataPoolRegister(state.m_op1, thread);
     }
 
     void SETEV(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETEV\n", getPc());	
-    	if(m_uninplimented) {
-    		throw new InstructionExecption(Error.UNIMPLIMENTED);
+    	
+    	Resources resources = state.getResources();
+    	Expression resourceId = state.m_op1;
+    	
+    	if(resourceId.canResolve()){
+    		int resId = resourceId.getValue();
+            int resNum = resources.decodeResNum(resId);
+            int resType = resources.decodeResType(resId);
+            
+            Expression reg_11 = state.readRegister(11, thread);
+            
+            if(resType == Resources.RES_TYPE_CHANEND || resType == Resources.RES_TYPE_PORT
+            		|| resType == Resources.RES_TYPE_TIMER){
+            	EventableResource er = (EventableResource) state.getResources().getResource(resType, resNum);
+            	er.setEnvironmentVector(reg_11);
+            	if(RESOURCEDEBUG){
+            		System.out.println("resource (resNum: " + resNum + " resType: " + resType + 
+            				") set environment vector to " + reg_11.getStringValue());
+            	}
+            } else {
+            	//FIXME - check that this is correct
+            	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
+            }
+    	} else {
+    		throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
     	} 
     }
 
     void SETKEP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETKEP\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1607,7 +1652,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void SETPS(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETPS\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1615,7 +1660,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void SETPSC(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETPSC\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1623,7 +1668,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void SETPT(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETPT\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1631,7 +1676,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void SETRDY(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETRDY\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1639,19 +1684,19 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void SETSP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETSP\n", getPc());	
     	state.setStackPointerRegister(state.m_op1, thread);
     }
 
     void SETSR(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETSR\n", getPc());	
     	state.getResources().getThread(thread).setSSR(state.m_op1);
     }
 
     void SETTW(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETTW\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1659,33 +1704,41 @@ public abstract class XtaInstruction extends Instruction {
     }
   
     void SETV(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETV\n", getPc());	
+    	
     	Resources resources = state.getResources();
-        Expression resourceId = state.m_op1;
-        
-        if(resourceId.canResolve()){
-            int resId = resourceId.getValue();
+    	Expression resourceId = state.m_op1;
+    	Expression reg_11 = state.readRegister(11, thread);
+    	
+    	if (resourceId.canResolve()){
+    		int resId = resourceId.getValue();
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
-            Expression reg11 = state.readRegister(11, thread);
-          if(resType == Resources.RES_TYPE_CHANEND){
-        	  state.getResources().getChannels()[resNum].setEventVector(reg11);
-          } else if(resType == Resources.RES_TYPE_PORT){
-        	  state.getResources().getPorts()[resNum].setEventVector(reg11);
-          } else if(resType == Resources.RES_TYPE_TIMER){
-        	  state.getResources().getTimers()[resNum].setEventVector(reg11);
-          } else {
-        	  //System.out.println("cannot SETV on a resoutce type: " + resType);
-          }
-        } else {
-            throw new InstructionExecption(Error.ET_RESOURCE_DEP);
-        }     
-    	
+
+            if (resType == Resources.RES_TYPE_CHANEND || resType == Resources.RES_TYPE_PORT
+            		|| resType == Resources.RES_TYPE_TIMER) {
+            	EventableResource er = (EventableResource) state.getResources().getResource(resType, resNum);
+            	er.setVector(reg_11);
+            	if (RESOURCEDEBUG){
+            		System.out.println("resource (resNum: " + resNum + " resType: " + resType + 
+            				") set vector to " + reg_11.getStringValue());
+            	}
+            } else {
+            	//FIXME - check that this is correct
+            	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
+            }
+    	} else {
+    		Thread t = resources.getThread(thread);
+    		t.addUnknownEventVector(reg_11);
+    		if (RESOURCEDEBUG){
+        		System.out.println("resource (resNum: ? resType: ?) set vector to " + reg_11.getStringValue());
+        	}
+    	}
     }
 
     void SEXT(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SEXT\n", getPc());	
     	Expression result = new Expression(OperatorType.SEXT);
     	result.addOperand(state.m_op1);
@@ -1695,7 +1748,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void SHL(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SHL\n", getPc());	
     	Expression result = new Expression(OperatorType.SHL);
     	result.addOperand(state.m_op2);
@@ -1705,7 +1758,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void SHR(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SHR\n", getPc());	
     	Expression result = new Expression(OperatorType.SHR);
     	result.addOperand(state.m_op2);
@@ -1715,7 +1768,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void SSYNC(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SSYNC\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1723,7 +1776,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void ST16(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: ST16\n", getPc());
     	if(state.m_op2.canResolve() && state.m_op3.canResolve()){
     		int base = state.m_op2.getValue();
@@ -1736,7 +1789,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void ST8(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: ST8\n", getPc());	
     	if(state.m_op2.canResolve() && state.m_op3.canResolve()){
     		int base = state.m_op2.getValue();
@@ -1749,7 +1802,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void STSED(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: STSED\n", getPc());	
     	if(m_uninplimented) System.err.println("STSED");
     	
@@ -1766,7 +1819,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void STET(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: STET\n", getPc());	
     	Expression et = state.getResources().getThread(thread).getET();
     	
@@ -1781,7 +1834,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void STSPC(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: STSPC\n", getPc());	
     	Expression spc = state.getResources().getThread(thread).getSPC();
     	
@@ -1796,7 +1849,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void STSSR(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: STSSR\n", getPc());	
     	Expression spc = state.getResources().getThread(thread).getSSR();
     	
@@ -1811,7 +1864,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void STW(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: STW\n", getPc());	
     	
         if (state.m_op2.canResolve() && state.m_op3.canResolve()) {
@@ -1827,7 +1880,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void STWDP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: STWDP\n", getPc());	
     	
     	assert state.m_op2.canResolve();
@@ -1847,7 +1900,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void STWSP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: STWSP\n", getPc());	
 
     	assert state.m_op2.canResolve();
@@ -1868,7 +1921,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void SUB(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SUB\n", getPc());
     	state.m_op1 = new Expression(Expression.OperatorType.SUB);
     	state.m_op1.addOperand(state.m_op2);
@@ -1877,7 +1930,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void SYNCR(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SYNCR\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1885,7 +1938,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void TESTLCL(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: TESTLCL\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1893,7 +1946,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void TESTCT(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: TESTCT\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1901,7 +1954,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void TESTWCT(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: TESTWCT\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1909,7 +1962,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void TINITCP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: TINITCP\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1917,7 +1970,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void TINITDP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: TINITDP\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1925,7 +1978,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void TINITLR(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: TINITLR\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1933,7 +1986,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void TINITPC(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: TINITPC\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1941,7 +1994,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void TINITSP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: TINITSP\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1949,7 +2002,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
 	void TSETMR(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: TSETMR\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1957,7 +2010,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void TSETR(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: TSETR\n", getPc());	
     	Resources resources = state.getResources();
         Expression resourceId = state.m_op3;
@@ -1975,7 +2028,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void TSTART(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: TSTART\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1983,7 +2036,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void WAITEF(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: WAITEF\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1991,7 +2044,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void WAITET(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: WAITET\n", getPc());	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED);
@@ -1999,29 +2052,78 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void WAITEU(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: WAITEU\n", getPc());	
+    	if(RESOURCEDEBUG){
+    		System.out.println("waiting on events:");
+    	}
+    	ArrayList<Integer> takenVectors = new ArrayList<Integer>();
     	
-    	state.clearEventVectors();
-    	for(Timer timer : state.getResources().getTimers()){
-    		if(timer.isEventEnabeled()){
-    			state.eventWait(timer.getEventVector());
+    	state.clearEventTargets();
+    	for (Timer timer : state.getResources().getTimers()){
+    		if (timer.isEventEnabeled()){
+    			
+				state.eventWait(timer.getVector());
+    			if(timer.getVector().canResolve()){
+    				takenVectors.add(timer.getVector().getValue());
+    			}
+    			if (RESOURCEDEBUG) {
+					System.out.println("    timer:" + timer.getVector().expressionString());
+    	    	}
     		}
     	}
 		for (Port port : state.getResources().getPorts()) {
-			if(port.isEventEnabeled()){
-    			state.eventWait(port.getEventVector());
+			if (port.isEventEnabeled()){
+    			
+				state.eventWait(port.getVector());
+				if(port.getVector().canResolve()){
+    				takenVectors.add(port.getVector().getValue());
+    			}
+    			if (RESOURCEDEBUG) {
+					System.out.println("    port:" + port.getVector().expressionString());
+    	    	}
     		}
 		}
 		for (Channel channel : state.getResources().getChannels()) {
-			if(channel.isEventEnabeled()){
-    			state.eventWait(channel.getEventVector());
+			if (channel.isEventEnabeled()){
+    			
+				state.eventWait(channel.getVector());
+				if(channel.getVector().canResolve()){
+    				takenVectors.add(channel.getVector().getValue());
+    			}
+    			if (RESOURCEDEBUG) {
+					System.out.println("    channel:" + channel.getVector().expressionString());
+    	    	}
     		}
 		}
+		//TODO
+		for(Expression vector : state.getResources().getThread(thread).getUnknownResourceEventVectors()){
+			if(vector.canResolve()){
+				int destination = vector.getValue();
+				if(!takenVectors.contains(destination))
+					state.eventWait(vector);
+				if (RESOURCEDEBUG) {
+					System.out.println("    unknown resource:" + vector.expressionString());
+		    	}
+			} else {
+				state.eventWait(vector);
+				if (RESOURCEDEBUG) {
+					System.out.println("    unknown resource:" + vector.expressionString());
+		    	}
+			}
+			
+			
+		}
+		
+		 state.getResources().getThread(thread).clearUnknownResourceEventVectors();
+		
+		 if(RESOURCEDEBUG){
+    		System.out.println("----");
+    	}
     }
 
     void XOR(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: XOR\n", getPc());	
     	Expression result = new Expression(OperatorType.XOR);
     	result.addOperand(state.m_op2);
@@ -2032,7 +2134,7 @@ public abstract class XtaInstruction extends Instruction {
     }
 
     void ZEXT(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: ZEXT\n", getPc());	
     	Expression result = new Expression(OperatorType.ZEXT);
     	result.addOperand(state.m_op1);
@@ -2046,7 +2148,7 @@ public abstract class XtaInstruction extends Instruction {
     }
     
     void GETN(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETN\n", getPc());	
 
     	if(m_uninplimented) {
@@ -2055,7 +2157,7 @@ public abstract class XtaInstruction extends Instruction {
     }
     
     void SETN(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETN\n", getPc());	
 
     	if(m_uninplimented) {
@@ -2064,7 +2166,7 @@ public abstract class XtaInstruction extends Instruction {
     }
         
     void LADD(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LADD\n", getPc());	
     	Expression result = new Expression(OperatorType.LADD_LOWER);
     	result.addOperand(state.m_op2);
@@ -2087,7 +2189,7 @@ public abstract class XtaInstruction extends Instruction {
     }
     
     void LDAWCP(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDAWCP\n", getPc());	
 		Expression offset = new Expression(Expression.OperatorType.SHL);
 		offset.addOperand(state.m_op1);
@@ -2100,7 +2202,7 @@ public abstract class XtaInstruction extends Instruction {
     }
     
     void MACCU(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: MACCU\n", getPc());	
     	Expression high =new Expression(OperatorType.MACCU_HIGH);
     	Expression low = new Expression(OperatorType.MACCU_LOW);
@@ -2127,7 +2229,7 @@ public abstract class XtaInstruction extends Instruction {
     }
     
     void MACCS(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: MACCS\n", getPc());	
     	Expression high =  new Expression(OperatorType.MACCS_HIGH);
     	high.addOperand(state.m_op1);
@@ -2151,7 +2253,7 @@ public abstract class XtaInstruction extends Instruction {
     }    
     
     void LDIVU(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LDIVU\n", getPc());	
     	Expression high =  new Expression(OperatorType.LDIVU_HIGH);
     	high.addOperand(state.m_op1);
@@ -2175,7 +2277,7 @@ public abstract class XtaInstruction extends Instruction {
     }
     
     void LSUB(MachineState state, int thread) throws Exception {
-    	if (m_debug)     	
+    	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: LSUB\n", getPc());	
     	
     	Expression result = new Expression(OperatorType.LSUB_LOWER);

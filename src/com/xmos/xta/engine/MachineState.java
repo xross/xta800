@@ -68,7 +68,7 @@ public class MachineState {
     MachineState(SymbolTable symbolTable, MemoryImage memoryImage, Architecture arch) {
     	m_arch = arch;
         m_memory = new Memory();
-        m_resources = new Resources();
+        m_resources = new Resources(memoryImage.getNodeId(), memoryImage.getCoreId());
         m_resources.addThread();
         setStackPointerRegister(new Expression(memoryImage.getMemoryBase() + memoryImage.getMemorySize()), 0);
         initialiseRegisters(symbolTable);
@@ -87,10 +87,8 @@ public class MachineState {
     	m_memoryBase = memoryImage.getMemoryBase();
     	m_memorySize = memoryImage.getMemorySize();
     	
+    	//FIXME -this doesn't look right!
     	m_memory.blockWrite(0x10000, 0x10000, memoryImage);
-    	//m_memory.blockWrite(memoryImage.getCpStart(), memoryImage.getCpEnd() - memoryImage.getCpStart(), memoryImage);
-    	//m_memory.blockWrite(memoryImage.getDpStart(), memoryImage.getDpEnd() - memoryImage.getDpStart(), memoryImage);
-		
 	}
 
 	private void initialiseRegisters(SymbolTable symbolTable) {
@@ -425,7 +423,9 @@ public class MachineState {
 		return m_wasEventResolved;
 	}
 
-	public void clearEventVectors() {
+	public void clearEventTargets() {
+		//FIXME i dont know what this does!
+		//or why i put it here
 		m_eventTargets.clear();
 	}
 

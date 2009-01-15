@@ -1,45 +1,12 @@
 package com.xmos.xta.engine.resources;
 
-import com.xmos.xta.engine.Expression;
-import com.xmos.xta.engine.MachineState;
+public class ClockBlock extends Resource {
 
-public class ClockBlock implements Resource {
-	
-	
-    private int m_clockNumber;
-    private boolean m_inUse;
-    private Expression m_eventData;
-    private Expression m_controlBits;
-    
-    public ClockBlock(int clockNumber) {
-        m_inUse = false;
-        m_clockNumber = clockNumber;
+	public ClockBlock(int clockNum) {
+    	super(Resources.RES_TYPE_CLKBLK, clockNum);
     }
+
     public ClockBlock(ClockBlock clockBlock) {
-        m_inUse = clockBlock.m_inUse;
-        m_controlBits = clockBlock.m_controlBits;
-        m_eventData = clockBlock.m_eventData; 
-        m_clockNumber = clockBlock.m_clockNumber;
+        super(clockBlock);
     }
-
-    public boolean isInUse() {
-		return m_inUse;
-	}
-
-	public void setInUse(boolean inUse) {
-		m_inUse = inUse;
-	}
-
-	public int getResourceID() {
-		int id=0;
-		id = Resources.RES_TYPE_SYNC;
-		int regId = 0;
-		id = id | (regId << 4);
-		id = id | (m_clockNumber << 8);
-		return id;
-	}
-	private int m_masterThreadId;
-	public void setMaster(int thread) {
-		m_masterThreadId = thread;
-	}
 }

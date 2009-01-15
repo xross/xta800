@@ -33,7 +33,7 @@ public class Resources {
     private ClockBlock[] m_clockBlocks;
 
     
-    public Resources(){
+    public Resources(int node, int core ){
         //set up all the resources
         m_timers = new Timer[NUM_TIMERS];
         m_channels = new Channel[NUM_CHANNELS];
@@ -49,7 +49,7 @@ public class Resources {
         }
         
         for(int i=0;i<NUM_CHANNELS;i++){
-            m_channels[i] = new Channel(i);
+            m_channels[i] = new Channel(i, node, core);
         }
         for(int i=0;i<NUM_LOCKS;i++){
             m_locks[i] = new Lock(i);
@@ -68,7 +68,7 @@ public class Resources {
             m_threads[i] = new Thread(i);
         }
         for(int i=0;i<NUM_COPROC;i++){
-            m_coprocs[i] = new Coprocessor(i);
+            m_coprocs[i] = new Coprocessor();
         }
         
     }
