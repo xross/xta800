@@ -42,6 +42,7 @@ import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Progress;
 import com.xmos.xta.engine.Route;
+import com.xmos.xta.rcp.XtaCorePlugin;
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaErrorLog;
@@ -191,7 +192,17 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        fileDialog.setText("Open Xe File");
 	        String[] filterExt = { "*.xe" };
 	        fileDialog.setFilterExtensions(filterExt);
+	        
+	        //this sets the initial path
+	        XtaCorePlugin plugin = XtaCorePlugin.getDefault();
+	        
+	        String lastDir = plugin.getPreferenceStore().getString("LastDir");
+	        fileDialog.setFilterPath(lastDir);
+	        
 	        String xeFileName = fileDialog.open();
+	        
+	        String path = new File(xeFileName).getParent();
+	        XtaCorePlugin.getDefault().getPreferenceStore().setValue("LastDir", path);
 
 	        if (xeFileName != null) {
 	        	if (DEBUG)
