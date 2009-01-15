@@ -13,8 +13,8 @@ import org.eclipse.ui.PlatformUI;
 import com.xmos.xeobject.FileFinder;
 
 public class XtaFileFinder implements FileFinder {
-    public static final boolean DEBUG = true;
-    
+    public static final boolean DEBUG = false;
+      
     private List<File> m_fileCache;
     
     public XtaFileFinder() {
