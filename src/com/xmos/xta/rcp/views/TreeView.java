@@ -73,7 +73,9 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 			clearTree();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_STATE)) {
 			refreshTree();
-		}
+		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_EXCLUDES)) {
+			initialiseTree();
+		} 
 	}
 	
     public void selectionChanged(IWorkbenchPart part, ISelection sel) {
@@ -139,6 +141,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	
 	private void refreshTree() {
 		m_treeViewer.refresh();
+		
 	}
 	
 	private void clearTree() {

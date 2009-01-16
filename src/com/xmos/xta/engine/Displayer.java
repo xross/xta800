@@ -16,6 +16,7 @@ public interface Displayer {
 	public static final String NOTIFY_SET_START_POINT = "SetStartPoint";
 	public static final String NOTIFY_SHOW_CODE_POINT = "ShowCodePoint";
 	public static final String NOTIFY_UPDATE_STATE    = "UpdateState";
+	public static final String NOTIFY_UPDATE_EXCLUDES = "UpdateExcludes";
 	
     void displayRoute(Route route, 
             DebugInfo debugInfo, MemoryImage memoryImage, SymbolTable m_symbolTable);

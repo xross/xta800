@@ -2021,7 +2021,11 @@ public abstract class XtaInstruction extends Instruction {
             int resType = resources.decodeResType(resId);
             Thread child = resources.getThread(resType, resNum);
             assert(child!= null);
-            child.getRegisters().writeRegister(state.m_op1Fld, state.m_op2);
+            if(child == null){
+            	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
+            } else {
+            	child.getRegisters().writeRegister(state.m_op1Fld, state.m_op2);
+            }
         } else {
             throw new InstructionExecption(Error.ET_ILLEGAL_RESOURCE);
         } 
