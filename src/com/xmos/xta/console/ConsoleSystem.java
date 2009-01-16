@@ -18,4 +18,7 @@ public class ConsoleSystem implements Console {
 	public boolean wasInternal() {
 		return false;
 	}	
+	
+	public void clearScreen() {		
+	}
 }

@@ -8,4 +8,5 @@ public interface Console {
 	void display(String str);
 	String getNextLine(Vector<Command> commandHistory);
 	boolean wasInternal();
+	void clearScreen();
 }
