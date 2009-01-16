@@ -10,16 +10,13 @@ import com.xmos.xta.engine.Engine;
 
 class Source extends Command {
 	private String m_fileName;
-	private boolean m_commandLineMode;
 	
 	Source() {
 		m_fileName = "";
-		m_commandLineMode = false;
 	}
 	
-	Source(String fileName, boolean commandLineMode) {
+	Source(String fileName) {
 		m_fileName = fileName;
-		m_commandLineMode = commandLineMode;
 	}
 	
     public int numArgs() {
@@ -43,7 +40,7 @@ class Source extends Command {
 			return null;		
 
     	String fileName = args[index + 1];
-        return new Source(fileName, commandLineMode);        
+        return new Source(fileName);        
     }
     
     public void execute(Shell shell, Engine engine, Console console) {    	
@@ -59,7 +56,7 @@ class Source extends Command {
                         String[] tokens = line.trim().split("\\s+");
                         
                         Command command = CommandFactory.buildCommand(
-                        		tokens, 0, shell.getCommandHistory(), m_commandLineMode);
+                        		tokens, 0, shell.getCommandHistory(), false);
                         
                         if (command != null) {
                         	shell.addCommand(command, location+1);
