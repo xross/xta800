@@ -168,6 +168,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SELECT_FUNCTION)) {
 			String functionName = XtaDisplayer.getInstance().getNotifyArgument();
 			setSelectedFunction(functionName);
+		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_EXCLUDES)) {
+			updateState();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_ERROR)) {
 	        m_memoryUpdater.setFastRefresh(false);
 			setDone("Aborted");

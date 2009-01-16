@@ -13,7 +13,7 @@ public class XtaCorePlugin extends AbstractUIPlugin {
 	
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		getPreferenceStore().setDefault("LastDir", "/home/");
+		getPreferenceStore().setDefault("LastDir", "");
 	}
 
 	public static XtaCorePlugin getDefault(){

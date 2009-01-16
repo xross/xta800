@@ -296,7 +296,8 @@ public class Route {
 		for(CodeReference ref : m_engine.getReference(ReferenceMode.REQUIRED)){
 			required.add(ref.getPc());
 		}
-		
+		m_completePaths.addAll(m_removedPaths);
+		m_removedPaths.clear();
 		
 		for(Block completePath : m_completePaths){
 			

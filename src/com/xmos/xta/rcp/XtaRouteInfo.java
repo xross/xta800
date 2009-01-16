@@ -3,8 +3,13 @@ package com.xmos.xta.rcp;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
+import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Route;
+import com.xmos.xta.rcp.nodes.BlockNode;
+import com.xmos.xta.rcp.nodes.LoopNode;
 import com.xmos.xta.rcp.nodes.Node;
+import com.xmos.xta.rcp.nodes.PathNode;
+import com.xmos.xta.rcp.nodes.RouteNode;
 
 public class XtaRouteInfo {
 	private Route m_route;
@@ -22,6 +27,34 @@ public class XtaRouteInfo {
 		m_symbolTable = symbolTable;
 		m_routeNode = routeNode;
 		m_selectedNode = routeNode;
+		buildRouteNode();
+	}
+	
+	public void buildRouteNode(){
+		RouteNode routeNode = new RouteNode();
+		
+        for (Block block : m_route.completePaths()) {
+        	routeNode.addNode(createPath(block, routeNode, true));
+        }		
+        m_routeNode = routeNode;
+	}
+	
+	private PathNode createPath(Block block, Node parent, boolean isRoot) {
+        PathNode pathNode = new PathNode(block, parent, isRoot);
+                
+        for (Block pathBlock : block.getPathBlocks()) {            
+            if (pathBlock.numLoopPaths() > 0) {
+                LoopNode loopNode = new LoopNode(pathBlock, pathNode);
+                pathNode.addNode(loopNode);
+                
+                for (Block loopPath : pathBlock.getLoopPaths()) {
+                	loopNode.addNode(createPath(loopPath, loopNode, false));                    
+                }
+            }
+        	pathNode.addNode(new BlockNode(pathBlock, pathNode));            
+        }
+        block.doneWithPathBlocks();
+        return pathNode;
 	}
 	
 	public Route getRoute() {

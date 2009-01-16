@@ -75,6 +75,10 @@ public class XtaDisplayer implements Displayer {
 			notifySetStartPoint(new CodeReference(argument));
 		} else if (message.equals(NOTIFY_SET_END_POINT)) {
 			notifySetEndPoint(new CodeReference(argument));
+		} else if (message.equals(NOTIFY_UPDATE_EXCLUDES)) {
+			m_notifyArgument = argument;
+			m_routeInfo.buildRouteNode();
+			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
 		} else if (message.equals(NOTIFY_LOAD_EXECUTABLE)) {
 			resetState();
 			m_notifyArgument = argument;
@@ -155,14 +159,18 @@ public class XtaDisplayer implements Displayer {
 
 	private void createHierarchy(Route route, DebugInfo debugInfo,
 			MemoryImage memoryImage, SymbolTable table) {		
-        RouteNode routeNode = new RouteNode();
+        /*
+		RouteNode routeNode = new RouteNode();
+		
         for (Block block : route.completePaths()) {
         	routeNode.addNode(createPath(block, routeNode, true));
         }		
         
         if (DEBUG) {
         	displayHierarchy(routeNode, 0);
-        }                
+        }   
+        */     
+		RouteNode routeNode = null;
         m_routeInfo = new XtaRouteInfo(route, debugInfo, memoryImage, table, routeNode);
 	}
 

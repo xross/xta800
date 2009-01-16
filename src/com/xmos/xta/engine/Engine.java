@@ -72,13 +72,28 @@ public class Engine {
         m_progress = new Progress(Progress.State.IDLE, 0, 0);
     }
     
+    private boolean referenceListContainsReference(CodeReference ref, List<CodeReference> list){
+    	for(CodeReference cr : list){
+    		if(cr.getRef().equals(ref.getRef())){
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    
     public boolean addReference(ReferenceMode mode, CodeReference ref) {    	    	
         if (!resolveRefernece(ref, this)) {
         	return false;
-        }   
-            	
+        }    	
     	if (mode == ReferenceMode.EXCLUSION){
-            getReferenceList(m_exclusions, m_nodeId, m_coreId).add(ref);
+    		if(referenceListContainsReference(ref, getReferenceList(m_exclusions, m_nodeId, m_coreId))){
+    			//give reason to the user
+    			return false;
+    		} else {
+    			getReferenceList(m_exclusions, m_nodeId, m_coreId).add(ref);
+    		}
+            
     	} else if (mode == ReferenceMode.PROHIBITED){
             getReferenceList(m_prohibited, m_nodeId, m_coreId).add(ref);
     	} else if (mode == ReferenceMode.REQUIRED){
@@ -87,6 +102,9 @@ public class Engine {
     		assert(false);
     		return false;
     	}
+    	if(m_route != null) m_route.filterPaths();
+    	for (Displayer displayer : m_displayers)
+            displayer.notify(Displayer.NOTIFY_UPDATE_EXCLUDES, ""); 
     	return true;
     }
     
@@ -100,23 +118,24 @@ public class Engine {
     		CodeReference cr = findReference(ref, references);
     		if (cr == null) return false;
     		references.remove(cr);
-    		return true;
     	} else if (mode == ReferenceMode.PROHIBITED){
     		List<CodeReference> references = getReferenceList(m_prohibited, m_nodeId, m_coreId);
     		CodeReference cr = findReference(ref, references);
     		if (cr == null) return false;
     		references.remove(cr);
-    		return true;
     	} else if (mode == ReferenceMode.REQUIRED){
     		List<CodeReference> references = getReferenceList(m_required, m_nodeId, m_coreId);
     		CodeReference cr = findReference(ref, references);
     		if (cr == null) return false;
     		references.remove(cr);
-    		return true;
     	} else {
     		assert(false);
     		return false;
     	}
+    	m_route.filterPaths();
+    	for (Displayer displayer : m_displayers)
+            displayer.notify(Displayer.NOTIFY_UPDATE_EXCLUDES, ""); 
+    	return true;
     }
         
     public List<CodeReference> getReference(ReferenceMode mode){
