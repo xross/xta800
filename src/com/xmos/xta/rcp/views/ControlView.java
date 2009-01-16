@@ -154,11 +154,15 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_STATE)) {
 	        updateState();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_START_POINT)) {
-			CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();			
-	        setText(m_startPoint, m_startPointListener, startPoint.getRef());			
+			CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();
+			if (startPoint.isResolved()) {
+				setText(m_startPoint, m_startPointListener, startPoint.getRef());
+			}
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_END_POINT)) {
 			CodeReference endPoint = XtaDisplayer.getInstance().getEndPoint();
-	        setText(m_endPoint, m_endPointListener, endPoint.getRef());
+			if (endPoint.isResolved()) {
+				setText(m_endPoint, m_endPointListener, endPoint.getRef());
+			}
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SELECT_FUNCTION)) {
 			String functionName = XtaDisplayer.getInstance().getNotifyArgument();
 			setSelectedFunction(functionName);
@@ -200,6 +204,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        fileDialog.setFilterPath(lastDir);
 	        
 	        String xeFileName = fileDialog.open();
+	        
+	        if (xeFileName == null)
+	        	return;
 	        
 	        String path = new File(xeFileName).getParent();
 	        XtaCorePlugin.getDefault().getPreferenceStore().setValue("LastDir", path);

@@ -29,8 +29,10 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("SourcesEditor: propertyChange: %s\n", event.getProperty());	
 		
-		if (event.getProperty().equals(Displayer.NOTIFY_SHOW_CODE_POINT)) {
-			setActivePage(m_disassemblyIndex);
+		if (getPageCount() > 0) {
+			if (event.getProperty().equals(Displayer.NOTIFY_SHOW_CODE_POINT)) {
+				setActivePage(m_disassemblyIndex);
+			}
 		}
 	}
 	
