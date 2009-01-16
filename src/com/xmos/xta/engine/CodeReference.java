@@ -42,11 +42,10 @@ public class CodeReference {
 	}
 
 	public RefType getType() {
-		return 	m_type;
+		return m_type;
 	}
     
     public String getRef() {
-        assert(m_isResolved == true);
         return m_ref;
     }
     
