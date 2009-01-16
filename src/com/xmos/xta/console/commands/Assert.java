@@ -11,5 +11,5 @@ class Assert extends CommandContainer {
 	
 	protected String getDescription() { return "Set limits on the analysis phase"; }
 	protected Command[] getSubCommands() { return m_options; }
-	protected Command clone(Command command) { return new Analyse(command); }	
+	protected Command clone(Command command) { return new Assert(command); }	
 }
