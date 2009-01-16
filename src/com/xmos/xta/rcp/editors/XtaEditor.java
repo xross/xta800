@@ -212,6 +212,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 				addFnop(inst.getPc());
 			}
     	}
+    	
+	    if (m_type.equals(XtaDocumentPartitioner.DISASSEMBLY)) {
+		    ((InputDisassembly)getEditorInput()).updateLineNumberMapping();
+	    } else {
+		    ((InputSource)getEditorInput()).updateLineNumberMapping();	    	
+	    }
 	}
 
     private void removeFnops() {
@@ -455,7 +461,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}
 
     private void showCodePoint(CodeReference codePoint) {
-    	if ((codePoint == null) || (m_type == XtaDocumentPartitioner.SOURCE)) {
+    	if ((codePoint == null) || (m_type.equals(XtaDocumentPartitioner.SOURCE))) {
     		return;
     	}
     	
@@ -488,7 +494,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	private InputLine findCodeRefLineNum(CodeReference codeRef) {
 		if (codeRef.isResolved()) {
 		    int pc = codeRef.getPc();
-    	    if (m_type == XtaDocumentPartitioner.DISASSEMBLY) {
+    	    if (m_type.equals(XtaDocumentPartitioner.DISASSEMBLY)) {
     		    return findPcLine(pc);
     	    } else {
     		    return findCodeLine(pc);

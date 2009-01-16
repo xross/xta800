@@ -41,7 +41,7 @@ public class Input {
 	public void addLineNumberMapping(int from, int to) {
 		m_lineNumberMapping.put(from, to);
 	}
-	
+		
 	public Map<Integer, Integer> getLineNumberMapping() {
 		return m_lineNumberMapping;
 	}

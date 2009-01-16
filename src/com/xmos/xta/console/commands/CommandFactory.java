@@ -18,6 +18,7 @@ public class CommandFactory {
 		new History(),
 		new Pwd(),
 		new Config(),
+		new Clear(),
 		new Help(), 
 		new Exit(),		
 	};

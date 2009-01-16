@@ -32,15 +32,11 @@ public class InputSource implements IEditorInput {
 		String fileName = file.getAbsolutePath();
 		
 		int lineIndex = 0;
-		int sourceLineIndex = 1;
 		m_input = new Input(s_headerType, s_lineType);
         for (SourceLine sourceLine : sourceFile.getSourceLines()){        	
     		String headerRef = String.format("%s:%d", fileName, sourceLine.getLineNumber());
-        	m_input.addHeader(sourceLine.getText(), headerRef, lineIndex);
-        	
-        	m_input.addLineNumberMapping(lineIndex, sourceLineIndex);
+        	m_input.addHeader(sourceLine.getText(), headerRef, lineIndex);        	
         	++lineIndex;
-        	++sourceLineIndex;
         	
             for (Line line : sourceLine.getChildern()) {
         		String str = String.format("    0x%05x %s", line.getLineNumber(), line.getText());
@@ -49,7 +45,18 @@ public class InputSource implements IEditorInput {
         		++lineIndex;        		
             }
         }
+        updateLineNumberMapping();
 	}
+    
+    public void updateLineNumberMapping() {
+		int lineIndex = 0;
+		int sourceLineIndex = 1;
+    	for (InputSection inputSection : m_input.getSections()) {
+        	m_input.addLineNumberMapping(lineIndex, sourceLineIndex);
+        	lineIndex += inputSection.getLines().size() + 1;
+        	++sourceLineIndex;
+    	}
+    }    
 	
 	public boolean exists() {
 		if (DEBUG) System.out.printf("InputSource: exists\n");			

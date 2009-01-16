@@ -134,6 +134,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("Control: propertyChange: %s\n", event.getProperty());	
 		
 		if (event.getProperty().equals(Displayer.NOTIFY_DISPLAY_ROUTE)) {
+	        m_memoryUpdater.setFastRefresh(false);
 			setDone("Done");
 			updateCurrentRoute();
 			checkUnresolvedPaths();
@@ -147,6 +148,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        updateState();
 	        updateCurrentRoute();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_ANALYSE_PATHS)) {
+	        m_memoryUpdater.setFastRefresh(true);
 			m_engineStatus.setText(STATUS_BUSY);
 			m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
 			m_progressUpdater.start();
@@ -154,17 +156,22 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_STATE)) {
 	        updateState();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_START_POINT)) {
-			CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();			
-	        setText(m_startPoint, m_startPointListener, startPoint.getRef());			
+			CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();
+			if (startPoint.isResolved()) {
+				setText(m_startPoint, m_startPointListener, startPoint.getRef());
+			}
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_END_POINT)) {
 			CodeReference endPoint = XtaDisplayer.getInstance().getEndPoint();
-	        setText(m_endPoint, m_endPointListener, endPoint.getRef());
+			if (endPoint.isResolved()) {
+				setText(m_endPoint, m_endPointListener, endPoint.getRef());
+			}
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SELECT_FUNCTION)) {
 			String functionName = XtaDisplayer.getInstance().getNotifyArgument();
 			setSelectedFunction(functionName);
 		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_EXCLUDES)) {
 			updateState();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_ERROR)) {
+	        m_memoryUpdater.setFastRefresh(false);
 			setDone("Aborted");
 			updateCurrentRoute();
 			displayMessageBox("Error", "Error detected\n(See error tab for details)");
@@ -202,6 +209,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        fileDialog.setFilterPath(lastDir);
 	        
 	        String xeFileName = fileDialog.open();
+	        
+	        if (xeFileName == null)
+	        	return;
 	        
 	        String path = new File(xeFileName).getParent();
 	        XtaCorePlugin.getDefault().getPreferenceStore().setValue("LastDir", path);
@@ -507,13 +517,18 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     }
     
     class MemoryUpdater extends Thread {
-        private Group m_memoryGroup;
+    	private static final int SLOW_REFRESH_RATE = 1000;	
+    	private static final int FAST_REFRESH_RATE = 50;
+
+    	private Group m_memoryGroup;
         private ProgressBar m_memoryUsage;
         private boolean m_active;
+        private int m_refreshRate;
 
         public MemoryUpdater(final Group memoryGroup, final ProgressBar memoryUsage) {
         	m_memoryGroup = memoryGroup;
         	m_memoryUsage = memoryUsage;
+        	m_refreshRate = SLOW_REFRESH_RATE;
         }
 
         public void end() {
@@ -522,7 +537,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
         public void run() {
             m_active = true;
-        	int refreshRate = 50;
         	int i = 0;
             while (m_active) {
             	if (i == 0) {
@@ -547,9 +561,13 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
                     e.printStackTrace();
                 }
 
-                i = (i + 1) % refreshRate;
+                i = (i + 1) % m_refreshRate;
             }
         }
+        
+        public void setFastRefresh(boolean fast) {
+        	m_refreshRate = (fast) ? FAST_REFRESH_RATE : SLOW_REFRESH_RATE;
+        }        
     }
     
 	private void createControlBar(ExpandBar bar) {

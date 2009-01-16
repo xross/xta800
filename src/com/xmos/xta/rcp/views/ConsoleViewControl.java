@@ -62,6 +62,11 @@ public class ConsoleViewControl implements Console {
 		return m_textReader.wasInternal();
 	}
 	
+	public void clearScreen() {
+		if (DEBUG) System.out.printf("ConsoleViewControl: clearScreen\n");			
+		m_textReader.clearScreen();		
+	}
+	
 	public void sendCommand(String command) {
 		if (DEBUG) System.out.printf("ConsoleViewControl: sendCommand: %s\n", command);
 		m_textReader.sendCommand(command);
@@ -197,6 +202,15 @@ class TextReader extends Reader {
 	public boolean wasInternal() {
 		if (DEBUG) System.out.printf("TextReader: wasInternal\n");			
 		return m_internal;
+	}
+	
+	public void clearScreen() {
+		if (DEBUG) System.out.printf("TextReader: clearScreen\n");			
+        m_display.syncExec(new Runnable() {
+    		public void run() {
+        		m_text.setText("");
+    		}
+        });    		
 	}
 	
 	public void close() throws IOException {
