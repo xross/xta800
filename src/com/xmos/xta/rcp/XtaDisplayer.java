@@ -36,11 +36,7 @@ public class XtaDisplayer implements Displayer {
 
 	private XtaDisplayer() {
 		m_listeners = new ArrayList<IPropertyChangeListener>();
-		
-		m_startPoint = null;
-		m_endPoint = null;
-		m_codePoint = null;
-		m_notifyArgument = null;
+		resetState();
 	}
 	
 	public static XtaDisplayer getInstance() {
@@ -80,12 +76,7 @@ public class XtaDisplayer implements Displayer {
 		} else if (message.equals(NOTIFY_SET_END_POINT)) {
 			notifySetEndPoint(new CodeReference(argument));
 		} else if (message.equals(NOTIFY_LOAD_EXECUTABLE)) {
-			//set the displayer state to the uninitialised state
-			m_startPoint = null;
-			m_endPoint = null;
-			m_codePoint = null;
-			m_notifyArgument = null;
-			m_routeInfo = null;
+			resetState();
 			m_notifyArgument = argument;
 			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
 		} else {
@@ -152,6 +143,14 @@ public class XtaDisplayer implements Displayer {
 	
 	public String getNotifyArgument() {
 		return m_notifyArgument;
+	}
+	
+	private void resetState() {
+		m_routeInfo = null;
+		m_startPoint = null;
+		m_endPoint = null;
+		m_codePoint = null;
+		m_notifyArgument = null;		
 	}
 
 	private void createHierarchy(Route route, DebugInfo debugInfo,
