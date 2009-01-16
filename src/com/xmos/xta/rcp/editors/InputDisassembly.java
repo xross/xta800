@@ -22,21 +22,33 @@ public class InputDisassembly implements IEditorInput {
 		m_input = new Input(s_headerType, s_lineType);
         for (Function function : XtaEngine.getEngine().getXeObject().getFunctions()) {        	
     		String headerRef = String.format("-");
-        	m_input.addHeader(function.getText() + ":", headerRef, lineIndex);
-        	
-        	m_input.addLineNumberMapping(lineIndex, lineIndex + 1);
+        	m_input.addHeader(function.getText() + ":", headerRef, lineIndex);        	
         	++lineIndex;
 
         	for (Line line : function.getChildern()) {
         		String str = String.format("    0x%05x %s", line.getLineNumber(), line.getText());
         		String childRef = String.format("0x%05x", line.getLineNumber());
         		m_input.addLine(str, childRef, line.getLineNumber(), lineIndex);
-
-            	m_input.addLineNumberMapping(lineIndex, lineIndex + 1);
         		++lineIndex;        		
         	}
-        }				
+        }		
+        updateLineNumberMapping();
 	}
+    
+    public void updateLineNumberMapping() {
+		int lineIndex = 0;
+    	for (InputSection inputSection : m_input.getSections()) {
+        	m_input.addLineNumberMapping(lineIndex, lineIndex + 1);
+        	++lineIndex;
+
+        	int numInputLines = inputSection.getLines().size();
+        	while (numInputLines > 0) {
+            	m_input.addLineNumberMapping(lineIndex, lineIndex + 1);
+        		++lineIndex;  
+        		--numInputLines;
+        	}
+    	}
+    }
 	
 	public boolean exists() {
 		if (DEBUG) System.out.printf("InputDisassembly: exists\n");			
