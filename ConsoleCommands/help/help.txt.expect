@@ -5,12 +5,73 @@
   [-]summary <path id | level>: Display timing summary for paths/functions
   [-]print <option> <arg0> <arg1>...: Display path information
   [-]set <option> <arg0> <arg1>...: Set path information
-  [-]assert <option> <arg0> <arg1>...: Set limts on the analysis phase
+  [-]assert <option> <arg0> <arg1>...: Set limits on the analysis phase
   [-]add <option> <arg0> <arg1>...: Add item to given list
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
   [-]source <file name>: Sources the given command file
   [-]history: Displays the command history
   [-]pwd: Displays the current working directory
   [-]config <option> <arg0> <arg1>...: Configures the given option
+  [-]clear: Clears the screen (Gui mode only)
   [-]help [command]: Displays help message for the given command
-  [-]exit: Quits the shell
+  [-]exit: Quits the shell (Standalone mode only)
+  [-]load <xe file>: Loads the given xmos executable file
+  [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
+      option: path <from ref> <to ref>: Sets a path start and end points
+      option: function <name>: Sets a path to trace a given function
+  [-]list <option> <arg0> <arg1>...: Lists the given set of items
+      option: label: Lists the labels
+      option: excluded: Lists the reference in the excluded list
+      option: prohibited: Lists the reference in the excluded list
+      option: required: Lists the reference in the excluded list
+      option: functions: Lists the functions in the loaded application
+      option: sources: Lists the source files
+      option: queries: Lists the current queries
+  [-]status: Display current status
+  [-]summary <path id | level>: Display timing summary for paths/functions
+      level: simple: Show simple paths summary
+      level: complete: Show complete path(s) timing
+      level: complete_loops: Show complete path(s) + loop timing
+      level: complete_instructions: Show complete path(s) + loop + basic block + instruction timing
+      level: unresolved: Show unresolved path(s) timing
+      level: unresolved_loops: Show unresolved path(s) + loop timing
+      level: unresolved_instructions: Show unresolved path(s) + loop + basic block + instruction timing
+      level: functions: Show path(s) + functions summary
+      level: sources: Show path(s) + sources summary
+  [-]print <option> <arg0> <arg1>...: Display path information
+      option: asm <path id>: Display annotated assembly for given path id
+      option: src <path id> <source file>: Display annotated source file for given path id
+      option: mix <path id> <source file>: Display annotated source file + assembly instructions for the given path id
+      option: trace <path id>: Display instruction trace for the given path id
+  [-]set <option> <arg0> <arg1>...: Set path information
+      option: loop <path> <scope> <iterations>: Sets the number of iterations for the given path
+          scope: relative/r: Iteration number propagates to the enclosing path (Default)
+          scope: absolute/a: Absolute number of iterations
+      option: time <pc> <mode> <value>: Sets the time taken for the instruction at the given pc
+          mode: ns:     Sets the time this instruction takes in ns
+          mode: cycles: Sets the time this instruction takes in thread cycles
+  [-]assert <option> <arg0> <arg1>...: Set limits on the analysis phase
+      option: maxtime <ns> : Analysis fails at the given time limit
+      option: maxcycles <num cycles> : Analysis fails at the given cycle limit
+  [-]add <option> <arg0> <arg1>...: Add item to given list
+      option: label <ref> <label>: Adds the given label/reference to the labels list
+      option: excluded <ref>: Adds the given reference to the excluded list (post analysis action)
+      option: prohibited <ref>: Adds the given reference to the prohibited list (pre analysis action)
+      option: required <ref>: Adds the given reference to the required list (post analysis action)
+  [-]remove <option> <arg0> <arg1>...: Remove item from given list
+      option: label <label>: Removes the given label from the labels list
+      option: excluded <ref>: Removes the given reference from the excluded list (post analysis action)
+      option: prohibited <ref>: Removes the given reference from the prohibited list (pre analysis action)
+      option: required <ref>: Removes the given reference from the required list (post analysis action)
+  [-]source <file name>: Sources the given command file
+  [-]history: Displays the command history
+  [-]pwd: Displays the current working directory
+  [-]config <option> <arg0> <arg1>...: Configures the given option
+      option: proc <node id> <core id>: All following analysis on given node and core (default: 0,0)
+      option: freq <core frequency>: Sets the core freqency (default: 400)
+      option: threads <num threads>: Sets number of threads currently executing (default: 8)
+      option: iterations <a|r> <num>: Sets the default number of loop iterations (a: absolute, r: relative)
+      option: mode <resolve|noresolve>: Sets the engine the given mode
+  [-]clear: Clears the screen (Gui mode only)
+  [-]help [command]: Displays help message for the given command
+  [-]exit: Quits the shell (Standalone mode only)

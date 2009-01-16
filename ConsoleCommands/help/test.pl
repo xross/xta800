@@ -9,5 +9,5 @@ my $noBuild = shift(@ARGV);
 if (!$noBuild) {
 system("xcc -march=$arch test.xc -o $genDir/test.xe > $genDir/help.log 2>&1");
 }
-system("@ARGV help exit > $genDir/help.txt 2>&1");
+system("@ARGV source cmds.txt > $genDir/help.txt 2>&1");
 

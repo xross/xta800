@@ -1,0 +1,19 @@
+help
+help load
+help analyse
+help list
+help status
+help summary
+help print
+help set
+help assert
+help add
+help remove
+help source
+help history
+help pwd
+help config
+help clear
+help help
+help exit
+exit
