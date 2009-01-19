@@ -168,7 +168,9 @@ public class StructureView extends ZoomedCanvasView {
 			m_rootNode = m_routeInfo.getRouteNode();
 			m_doubleClickNode = m_rootNode;
 			m_selectedNode = m_routeInfo.getSelectedNode();
-			setSelection(new StructuredSelection(m_selectedNode));
+			if (m_selectedNode != null) {
+				setSelection(new StructuredSelection(m_selectedNode));
+			}
 		} else {
 			m_rootNode = null;
 			m_doubleClickNode = null;

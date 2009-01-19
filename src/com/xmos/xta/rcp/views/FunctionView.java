@@ -63,7 +63,9 @@ public class FunctionView extends ZoomedCanvasView {
     		getDebugInfo();
 			m_rootNode = m_routeInfo.getRouteNode();
 			m_selectedNode = m_routeInfo.getSelectedNode();
-    		setSelection(new StructuredSelection(m_selectedNode));
+			if (m_selectedNode != null) {
+				setSelection(new StructuredSelection(m_selectedNode));
+			}
 		} else {
 			m_rootNode = null;
 			m_selectedNode = null;
