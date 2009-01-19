@@ -100,7 +100,6 @@ public class ExecutionState {
 				
 			} else if (currentStatus == BlockStatus.EXCLUDED
 					|| currentStatus == BlockStatus.ERROR
-					|| currentStatus == BlockStatus.RECURSION
 					|| currentStatus == BlockStatus.UNRESOLVED
 					) {
 				this.setStatus(ExecutionStatus.UNRESOLVED);

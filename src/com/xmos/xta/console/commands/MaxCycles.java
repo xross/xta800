@@ -50,6 +50,10 @@ public class MaxCycles extends Command  {
 			return;		
 		
 		Route route = engine.getRoute();
+		if(route.completePaths().size() == 0){
+			console.display("FAIL\n");
+    		return;
+		}
         for(Block path : route.completePaths()){
         	int cycles = path.getNumCycles(true);
         	if (cycles > m_maxCycles){
