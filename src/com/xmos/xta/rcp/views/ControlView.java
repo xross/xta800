@@ -138,6 +138,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			setDone("Done");
 			updateCurrentRoute();
 			checkUnresolvedPaths();
+			checkTotalPaths();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_LOAD_EXECUTABLE)) {			
 	        openEditors();
 	        setDone(STATUS_LOADED);
@@ -426,7 +427,19 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			}
 		}		
 	}
-	
+	private void checkTotalPaths() {
+		XtaRouteInfo routeInfo = XtaDisplayer.getInstance().getRouteInfo();
+		if (routeInfo != null) {
+			Route route = routeInfo.getRoute();
+			int numUnresolvedPaths = route.unresolvedPaths().size();
+			if (numUnresolvedPaths == 0 && route.completePaths().size() == 0) {
+				Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0,
+						"No complete paths found, may have found an infinite loop", null);
+		        ErrorDialog.openError(Display.getCurrent().getActiveShell(),
+		            "Warning", null, status);
+			}
+		}		
+	}
 	private void displayMessageBox(String title, String message) {
 		Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0, message, null);
         ErrorDialog.openError(Display.getCurrent().getActiveShell(), title, null, status);	      				

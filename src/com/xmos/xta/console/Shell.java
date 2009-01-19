@@ -155,10 +155,6 @@ public class Shell {
     }
     
 	private void usage() {
-		m_console.display("Error in arguments:\n");
-		m_console.display("To run:\n");
-		m_console.display("  xta [commands]: Starts xta tool in console mode.\n");
-		m_console.display("  xta -g:         Starts xta tool in gui mode.\n");
 		m_console.display("Avaliable console commands:\n");	        	
         
       	Command[] avaliableCommands = CommandFactory.getCommands();

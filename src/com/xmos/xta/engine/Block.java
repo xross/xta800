@@ -7,14 +7,12 @@ import java.util.Iterator;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.Vector;
-
 import com.xmos.xta.engine.Engine.ReferenceMode;
 import com.xmos.xta.engine.MachineState.BranchState;
 import com.xmos.xta.engine.Status.BlockStatus;
-import com.xmos.xta.engine.Status.UnresolvedReason;
 
 public class Block implements Comparable<Block> {
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	private static final boolean DUMPSTATE = false;
 	private static final boolean IBUFFERSTATE = false;
 
@@ -125,8 +123,8 @@ public class Block implements Comparable<Block> {
 		updateInstructionInfo();
 		blockToSplit.updateInstructionInfo();
 		
-		m_toPc =blockToSplit.m_instructions.lastElement().getPc();
-		
+		m_toPc = m_instructions.lastElement().getPc();
+		blockToSplit.m_toPc = blockToSplit.m_instructions.lastElement().getPc();
 		m_id = blockToSplit.m_id;
 		blockToSplit.m_id = m_numBlocks;
 		++m_numBlocks;
@@ -233,6 +231,7 @@ public class Block implements Comparable<Block> {
 	}
 
 	public void build() throws Exception {
+		
 		
 		if (IBUFFERSTATE) {
 			m_ibufferBefore = 0;

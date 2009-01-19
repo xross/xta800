@@ -37,6 +37,8 @@ public class XtaRouteInfo {
         	routeNode.addNode(createPath(block, routeNode, true));
         }		
         m_routeNode = routeNode;
+        m_routeNode = routeNode;
+		m_selectedNode = routeNode;
 	}
 	
 	private PathNode createPath(Block block, Node parent, boolean isRoot) {

@@ -255,7 +255,7 @@ sub SetupVars
     $platform   = "linux";
     $buildDirProperties = $buildDir;
 
-    my $version = `uname -i`;
+    my $version = `uname -m`;
     chomp($version);
     if ($version eq "x86_64") {
       $config = "linux, gtk, x86_64";
