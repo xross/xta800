@@ -14,7 +14,7 @@ import com.xmos.xta.engine.Status.BlockStatus;
 import com.xmos.xta.engine.Status.UnresolvedReason;
 
 public class Block implements Comparable<Block> {
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	private static final boolean DUMPSTATE = false;
 	private static final boolean IBUFFERSTATE = false;
 
@@ -124,7 +124,9 @@ public class Block implements Comparable<Block> {
 
 		updateInstructionInfo();
 		blockToSplit.updateInstructionInfo();
-
+		
+		m_toPc =blockToSplit.m_instructions.lastElement().getPc();
+		
 		m_id = blockToSplit.m_id;
 		blockToSplit.m_id = m_numBlocks;
 		++m_numBlocks;
@@ -202,7 +204,7 @@ public class Block implements Comparable<Block> {
 	}
 
 	private void updateInstructionInfo() {
-		m_toPc = m_instructions.lastElement().getPc();
+		
 		m_numInstructions = m_instructions.size();
 		m_numFNops = 0;
 		m_numPausables = 0;

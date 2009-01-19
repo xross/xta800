@@ -110,6 +110,10 @@ public class Required extends Command {
     }  
 
 	private void listRequirements(Engine engine, Console console) {
+		if(engine.getReference(ReferenceMode.REQUIRED).size() == 0){
+			console.display("no code references are required\n");
+			return;
+		}
     	for(CodeReference ref : engine.getReference(ReferenceMode.REQUIRED)){
     		console.display(String.format("- ref: %s, pc: 0x%x\n", ref.getRef(), ref.getPc()));
     	}

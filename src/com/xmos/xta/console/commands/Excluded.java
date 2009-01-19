@@ -109,7 +109,11 @@ public class Excluded extends Command {
         }                     
     }  
     
-    private void listExcludes(Engine engine, Console console) {    	
+    private void listExcludes(Engine engine, Console console) {    
+    	if(engine.getReference(ReferenceMode.EXCLUSION).size() == 0){
+			console.display("no code references are excluded\n");
+			return;
+		}
     	for (CodeReference ref : engine.getReference(ReferenceMode.EXCLUSION)){
     		console.display(String.format("- ref: %s, pc: 0x%x\n", ref.getRef(), ref.getPc()));
     	}
