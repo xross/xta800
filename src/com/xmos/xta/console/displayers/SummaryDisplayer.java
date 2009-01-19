@@ -28,6 +28,7 @@ import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.Status;
 import com.xmos.xta.engine.Unresolved;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.engine.Status.UnresolvedReason;
 
 public class SummaryDisplayer implements Displayer {
 	public enum Level {
@@ -192,14 +193,7 @@ public class SummaryDisplayer implements Displayer {
 
         if ((path.getStatus() != Status.BlockStatus.COMPLETE) ) {
             String comment = "";
-            switch (path.getStatus()) {
-            case RECURSION:
-                comment = "found recursion";
-                break;
-            case UNRESOLVED:
-                comment = "found unresolved PC";
-                break;
-            }
+            comment = path.getUnresolved().getReason();
             m_console.display(String.format("%s%-11s: %s\n", indent, pathId, comment));
         }
         

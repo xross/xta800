@@ -50,6 +50,10 @@ public class MaxTime extends Command  {
 			return;		
 		
 		Route route = engine.getRoute();
+		if(route.completePaths().size() == 0){
+			console.display("FAIL\n");
+    		return;
+		}
         for(Block path : route.completePaths()){
         	double time = path.getTimeTaken(true);
         	if (time > m_maxTime){

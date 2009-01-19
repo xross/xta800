@@ -11,6 +11,7 @@ import java.util.Vector;
 import com.xmos.xta.engine.Engine.ReferenceMode;
 import com.xmos.xta.engine.MachineState.BranchState;
 import com.xmos.xta.engine.Status.BlockStatus;
+import com.xmos.xta.engine.Status.UnresolvedReason;
 
 public class Block implements Comparable<Block> {
 	private static final boolean DEBUG = false;
@@ -42,6 +43,7 @@ public class Block implements Comparable<Block> {
 
 	private int m_toPc;
 	private BlockStatus m_status;
+	private Unresolved m_unresolved;
 	private int m_functionDepth;
 
 	private int m_seen;
@@ -85,6 +87,7 @@ public class Block implements Comparable<Block> {
 		m_numInstructions = 0;
 		m_numPausables = 0;
 		m_parentBlock = null;
+		m_unresolved = null;
 	}
 
 	Block(Block blockToSplit, int pcHit) {
@@ -127,6 +130,7 @@ public class Block implements Comparable<Block> {
 		++m_numBlocks;
 
 		m_status = blockToSplit.m_status;
+		m_unresolved = blockToSplit.m_unresolved;
 		m_firstStep = false;
 		m_functionDepth = blockToSplit.m_functionDepth;
 
@@ -172,9 +176,13 @@ public class Block implements Comparable<Block> {
 		m_numFNops = 0;
 		m_numInstructions = 0;
 		m_numPausables = 0;
-		
+		m_unresolved = block.m_unresolved;
 		assert(m_contexts.size()>0);
 		if(DEBUG)System.out.println("block " + this.m_id +  " started at 0x" + Integer.toHexString(this.m_machineState.getPc(this.m_currentThread)));
+	}
+
+	public Unresolved getUnresolved(){
+		return m_unresolved;
 	}
 
 	public boolean canUnpause() {
@@ -305,6 +313,7 @@ public class Block implements Comparable<Block> {
 				setStatus(BlockStatus.UNRESOLVED);
 				String reason  = "Unable to resolve the event vectors (possibly event vector set up out of scope?)";
 				Unresolved unresolved = new Unresolved(this, instruction, reason);
+				m_unresolved = unresolved;
 				m_route.addUnresolvedPath(unresolved);
 			}
 			releaseMemory();
@@ -312,9 +321,10 @@ public class Block implements Comparable<Block> {
 			if (m_machineState.wasJumpResolved()) {
 				int jumpTarget = m_machineState.getJumpTarget();
 				if (instruction.getBranchLink() && isRecursion(jumpTarget)) {
-					setStatus(BlockStatus.RECURSION);
+					setStatus(BlockStatus.UNRESOLVED);
 					String reason  = "Recursion with 0x" + Integer.toHexString(jumpTarget);
 					Unresolved unresolved = new Unresolved(this, instruction, reason);
+					m_unresolved = unresolved;
 					m_route.addUnresolvedPath(unresolved);
 					releaseMemory();
 				} else {
@@ -340,6 +350,7 @@ public class Block implements Comparable<Block> {
 					setStatus(BlockStatus.UNRESOLVED);
 					String reason  = "Unknown jump target";
 					Unresolved unresolved = new Unresolved(this, instruction, reason);
+					m_unresolved = unresolved;
 					m_route.addUnresolvedPath(unresolved);
 					releaseMemory();
 				}
@@ -368,6 +379,7 @@ public class Block implements Comparable<Block> {
 				setStatus(BlockStatus.UNRESOLVED);
 				String reason  = "Unknown branch target";
 				Unresolved unresolved = new Unresolved(this, instruction, reason);
+				m_unresolved = unresolved;
 				m_route.addUnresolvedPath(unresolved);
 				m_machineState = null;
 			}
@@ -413,7 +425,9 @@ public class Block implements Comparable<Block> {
 				//die when we wont be able to be sure of everything anymore
 				setStatus(BlockStatus.UNRESOLVED);
 				String reason  = e.getMessage();
+				
 				Unresolved unresolved = new Unresolved(this, instruction, reason);
+				m_unresolved = unresolved;
 				m_route.addUnresolvedPath(unresolved);
 			} else {
 				//continue on if not fatal
@@ -421,6 +435,7 @@ public class Block implements Comparable<Block> {
 					setStatus(BlockStatus.UNRESOLVED);
 					String reason  = e.getMessage();
 					Unresolved unresolved = new Unresolved(this, instruction, reason);
+					m_unresolved = unresolved;
 					m_route.addUnresolvedPath(unresolved);
 				} else {
 					return true;

@@ -95,9 +95,19 @@ public class Engine {
     		}
             
     	} else if (mode == ReferenceMode.PROHIBITED){
-            getReferenceList(m_prohibited, m_nodeId, m_coreId).add(ref);
+    		if(referenceListContainsReference(ref, getReferenceList(m_prohibited, m_nodeId, m_coreId))){
+    			//give reason to the user
+    			return false;
+    		} else {
+    			getReferenceList(m_prohibited, m_nodeId, m_coreId).add(ref);
+    		}
     	} else if (mode == ReferenceMode.REQUIRED){
-            getReferenceList(m_required, m_nodeId, m_coreId).add(ref);
+    		if(referenceListContainsReference(ref, getReferenceList(m_required, m_nodeId, m_coreId))){
+    			//give reason to the user
+    			return false;
+    		} else {
+    			getReferenceList(m_required, m_nodeId, m_coreId).add(ref);
+    		}
     	} else{
     		assert(false);
     		return false;
