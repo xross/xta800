@@ -19,9 +19,8 @@ system("@ARGV load $genDir/test.xe " .
        "print src 2 ../test.xc " .
        "remove excluded L1 " .
        "list excluded " .
-       "add excluded L2 " .
-       "list excluded " .
        "analyse function main " .
        "summary simple " .
+       "print src 2 ../test.xc " .
        "print src 1 ../test.xc " .
        "exit > $genDir/excluded_labels.txt 2>&1");

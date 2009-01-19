@@ -16,5 +16,7 @@ system("@ARGV load $genDir/test.xe " .
        "assert maxtime 10 " .
        "assert maxcycles 10 " .
        "assert maxtime 200 " .
+       "analyse function _done " .
+       "assert maxtime 200 " .
        "exit > $genDir/assert.txt 2>&1");
 

@@ -7,7 +7,7 @@ my $arch    = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/print_lib_coverage.log 2>&1");
+system("xcc -march=$arch -g -Xmapper --retain test.xc -o $genDir/test.xe > $genDir/print_lib_coverage.log 2>&1");
 }
 
 system("@ARGV load $genDir/test.xe " .
