@@ -2020,7 +2020,6 @@ public abstract class XtaInstruction extends Instruction {
             int resNum = resources.decodeResNum(resId);
             int resType = resources.decodeResType(resId);
             Thread child = resources.getThread(resType, resNum);
-            assert(child!= null);
             if(child == null){
             	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
             } else {

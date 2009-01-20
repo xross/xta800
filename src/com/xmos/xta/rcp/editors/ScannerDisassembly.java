@@ -41,9 +41,14 @@ public class ScannerDisassembly extends RuleBasedScanner {
         
         String[] specialKeywords = {
         	"sp", "dp", "ps", "pc", 
-        	"cp", "et", "ed"
+        	"cp", "et", "ed", "sed",
+        	"spc", "ssr", "kep", "et", 
         };
             
+        String[] others = {
+            	"res", 
+            };
+        
         WordRule rule = new WordRule(new IWordDetector() {
             public boolean isWordStart(char c) { 
          	    return Character.isJavaIdentifierStart(c); 
@@ -62,30 +67,11 @@ public class ScannerDisassembly extends RuleBasedScanner {
         for (String keyword : specialKeywords) {
            rule.addWord(keyword, keywordToken);
         }
-        rules.add(rule);
-    }
-    
-    private void processSpecialRegisters(Display display, List<IRule> rules) {
-    	Color color = display.getSystemColor(SWT.COLOR_DARK_RED);
-    	
-        String[] keywords = {
-        	"sp", "dp", "ps", "pc", 
-        	"cp", "et", "ed"
-        };
-        
-        WordRule rule = new WordRule(new IWordDetector() {
-            public boolean isWordStart(char c) { 
-         	    return Character.isJavaIdentifierStart(c); 
-            }
-            public boolean isWordPart(char c) {   
-            	return Character.isJavaIdentifierPart(c); 
-            }
-        }, Token.WHITESPACE);
-        
-        IToken keywordToken = new Token(new TextAttribute(color, null, SWT.BOLD));        
-        for (String keyword : keywords) {
+        color = display.getSystemColor(SWT.COLOR_RED);
+        keywordToken = new Token(new TextAttribute(color, null, SWT.BOLD));        
+        for (String keyword : others) {
            rule.addWord(keyword, keywordToken);
-        }        
+        }
         rules.add(rule);
     }
 }
