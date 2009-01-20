@@ -198,6 +198,9 @@ sub DoInstall
   chdir("$INSTALLPATH") 
     or die("Unable to chdir to: $INSTALLPATH\n");
   system("unzip -q -o $target");
+  rmtree("xta_bin");
+  rename("xta_$platform", "xta_bin")
+    or die("Unable to rename xta_$platform to: xta_bin\n");
 
   chdir("$BUILDPATH") or die("oops");
 }
