@@ -38,7 +38,7 @@ class Time extends Command {
 	
     public int numArgs() {
     	return 3;
-    }        
+    }
 
     public String name() {
     	return "time";
@@ -47,9 +47,9 @@ class Time extends Command {
     public String commandLine() {
     	switch (m_mode) {
     	case NS:
-        	return String.format("time ns 0x%05x %.1f", m_pc, m_timeTaken);
+        	return String.format("time 0x%05x ns %.1f", m_pc, m_timeTaken);
     	case CYCLES:
-        	return String.format("time cycles 0x%05x %d", m_pc, m_numCycles);    		
+        	return String.format("time 0x%05x cycles %d", m_pc, m_numCycles);    		
     	}
     	assert(false);
     	return "";

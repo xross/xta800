@@ -22,7 +22,7 @@ public class CodeReference {
 	private boolean m_isResolved;
 	
 	public CodeReference(String ref) {
-		m_ref = ref.replaceAll("[ \t\n]", "");
+		m_ref = ref.trim();
 
 		if (m_ref.length() == 0) {
 			m_type = RefType.INVALID;
