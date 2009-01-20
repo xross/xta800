@@ -23,7 +23,7 @@ public class ScannerDisassembly extends RuleBasedScanner {
     	List<IRule> rules = new ArrayList<IRule>();
 
     	processRegisters(display, rules);
-    	
+    	//processSpecialRegisters(display, rules);
     	IRule[] rulesArray = new IRule[rules.size()];
     	rulesArray = rules.toArray(rulesArray);    	
         setRules(rulesArray);
@@ -37,6 +37,40 @@ public class ScannerDisassembly extends RuleBasedScanner {
         	"r4", "r5", "r6", "r7",
         	"r8", "r9", "r10", "r11",
         	"r12", "r13", "r14", "r15", "FNOP"
+        };
+        
+        String[] specialKeywords = {
+        	"sp", "dp", "ps", "pc", 
+        	"cp", "et", "ed"
+        };
+            
+        WordRule rule = new WordRule(new IWordDetector() {
+            public boolean isWordStart(char c) { 
+         	    return Character.isJavaIdentifierStart(c); 
+            }
+            public boolean isWordPart(char c) {   
+            	return Character.isJavaIdentifierPart(c); 
+            }
+        }, Token.WHITESPACE);
+        
+        IToken keywordToken = new Token(new TextAttribute(color, null, SWT.BOLD));        
+        for (String keyword : keywords) {
+           rule.addWord(keyword, keywordToken);
+        }
+        color = display.getSystemColor(SWT.COLOR_DARK_RED);
+        keywordToken = new Token(new TextAttribute(color, null, SWT.BOLD));        
+        for (String keyword : specialKeywords) {
+           rule.addWord(keyword, keywordToken);
+        }
+        rules.add(rule);
+    }
+    
+    private void processSpecialRegisters(Display display, List<IRule> rules) {
+    	Color color = display.getSystemColor(SWT.COLOR_DARK_RED);
+    	
+        String[] keywords = {
+        	"sp", "dp", "ps", "pc", 
+        	"cp", "et", "ed"
         };
         
         WordRule rule = new WordRule(new IWordDetector() {
