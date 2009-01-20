@@ -15,6 +15,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 
+import com.xmos.xeobject.AssemblyLine;
+
 public class ScannerDisassembly extends RuleBasedScanner {
     public static final boolean DEBUG = false;
     
@@ -45,9 +47,11 @@ public class ScannerDisassembly extends RuleBasedScanner {
         	"spc", "ssr", "kep", "et", 
         };
             
-        String[] others = {
-            	"res", 
-            };
+        ArrayList<String> resource = new ArrayList<String>();
+        for(String s : AssemblyLine.resourceName){
+        	resource.add(s);
+        }
+        resource.add("res");
         
         WordRule rule = new WordRule(new IWordDetector() {
             public boolean isWordStart(char c) { 
@@ -69,7 +73,7 @@ public class ScannerDisassembly extends RuleBasedScanner {
         }
         color = display.getSystemColor(SWT.COLOR_RED);
         keywordToken = new Token(new TextAttribute(color, null, SWT.BOLD));        
-        for (String keyword : others) {
+        for (String keyword : resource) {
            rule.addWord(keyword, keywordToken);
         }
         rules.add(rule);

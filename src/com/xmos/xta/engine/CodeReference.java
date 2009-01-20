@@ -62,7 +62,8 @@ public class CodeReference {
     	switch (m_type) {
     	case PC:
     		m_isResolved = true;
-            return true;
+    		//also need to check for existence within the executable
+    		return engine.getXeObject().getPcToFunctionMap().containsKey(m_pc);
             
     	case LINE:
             // Input: 'source file:line number'
