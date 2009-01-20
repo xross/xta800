@@ -11,5 +11,5 @@ class Set extends CommandContainer {
 	
 	protected String getDescription() { return "Set path information"; }
 	protected Command[] getSubCommands() { return m_options; }
-	protected Command clone(Command command) { return new Analyse(command); }	
+	protected Command clone(Command command) { return new Set(command); }	
 }

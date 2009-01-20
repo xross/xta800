@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     string args;
     getArgString(args, argc, argv);
 
-    string command = "java " + jvmArgString + " -jar " + jar + args;
+    string command = "java " + jvmArgString + " -jar \"" + jar + "\"" + args;
     int returnCode = run(command.c_str());
     return returnCode;
   }
