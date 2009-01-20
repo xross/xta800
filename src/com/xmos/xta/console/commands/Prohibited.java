@@ -111,7 +111,7 @@ public class Prohibited extends Command {
 
 	private void listProhibiteds(Engine engine, Console console) {
 		if(engine.getReference(ReferenceMode.PROHIBITED).size() == 0){
-			console.display("no code references are prohibited\n");
+			console.display("none\n");
 			return;
 		}
 		for(CodeReference ref : engine.getReference(ReferenceMode.PROHIBITED)){

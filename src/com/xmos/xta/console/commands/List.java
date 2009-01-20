@@ -3,7 +3,7 @@ package com.xmos.xta.console.commands;
 class List extends CommandContainer {
 	static private Command[] m_options = { 
 		new Label(Label.Operation.LIST), 
-		new Excluded(Excluded.Operation.LIST), 
+		new Filter(Filter.Operation.LIST), 
 		new Prohibited(Prohibited.Operation.LIST), 
 		new Required(Required.Operation.LIST), 
 		new Unknowns(),

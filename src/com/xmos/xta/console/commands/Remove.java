@@ -3,7 +3,7 @@ package com.xmos.xta.console.commands;
 class Remove extends CommandContainer {
 	static private Command[] m_options = { 
 		new Label(Label.Operation.REMOVE), 
-		new Excluded(Excluded.Operation.REMOVE), 
+		new Filter(Filter.Operation.REMOVE), 
 		new Prohibited(Prohibited.Operation.REMOVE), 
 		new Required(Required.Operation.REMOVE), 
 	};

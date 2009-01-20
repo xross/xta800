@@ -111,7 +111,7 @@ public class Required extends Command {
 
 	private void listRequirements(Engine engine, Console console) {
 		if(engine.getReference(ReferenceMode.REQUIRED).size() == 0){
-			console.display("no code references are required\n");
+			console.display("none\n");
 			return;
 		}
     	for(CodeReference ref : engine.getReference(ReferenceMode.REQUIRED)){

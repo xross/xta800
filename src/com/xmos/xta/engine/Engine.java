@@ -23,7 +23,7 @@ import com.xmos.xta.engine.Route.RouteStatus;
 public class Engine { 
 	
 	public enum ReferenceMode {
-		EXCLUSION,
+		FILTERED,
 		PROHIBITED,
 		REQUIRED
 	}
@@ -86,7 +86,7 @@ public class Engine {
         if (!resolveRefernece(ref, this)) {
         	return false;
         }    	
-    	if (mode == ReferenceMode.EXCLUSION){
+    	if (mode == ReferenceMode.FILTERED){
     		if(referenceListContainsReference(ref, getReferenceList(m_exclusions, m_nodeId, m_coreId))){
     			//give reason to the user
     			return false;
@@ -123,7 +123,7 @@ public class Engine {
         	return false;
         }    	
 
-    	if (mode == ReferenceMode.EXCLUSION){
+    	if (mode == ReferenceMode.FILTERED){
     		List<CodeReference> references = getReferenceList(m_exclusions, m_nodeId, m_coreId);	
     		CodeReference cr = findReference(ref, references);
     		if (cr == null) return false;
@@ -149,7 +149,7 @@ public class Engine {
     }
         
     public List<CodeReference> getReference(ReferenceMode mode){
-    	if(mode == ReferenceMode.EXCLUSION){
+    	if(mode == ReferenceMode.FILTERED){
     		return getReferenceList(m_exclusions, m_nodeId, m_coreId);
     	} else if (mode == ReferenceMode.PROHIBITED){
     		return getReferenceList(m_prohibited, m_nodeId, m_coreId);

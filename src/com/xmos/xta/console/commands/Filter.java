@@ -6,7 +6,7 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.engine.Engine.ReferenceMode;
 
-public class Excluded extends Command {	
+public class Filter extends Command {	
 	enum Operation {
 		ADD, REMOVE, LIST
 	};
@@ -14,12 +14,12 @@ public class Excluded extends Command {
 	private CodeReference m_ref;	
 	private Operation m_operation;
 	
-	Excluded(Operation operation) {
+	Filter(Operation operation) {
 		m_operation = operation;
         m_ref = null;
     }
     
-	Excluded(CodeReference ref, Operation operation) {
+	Filter(CodeReference ref, Operation operation) {
 		m_operation = operation;
         m_ref = ref;        
     }
@@ -38,16 +38,16 @@ public class Excluded extends Command {
     }        
 
     public String name() {
-        return "excluded";
+        return "filter";
     }        
 
     public String commandLine() {    	        
     	switch (m_operation) {
     	case ADD:
     	case REMOVE:
-    		return "excluded " + m_ref.getRef();
+    		return "filter " + m_ref.getRef();
     	case LIST:
-    		return "excluded";
+    		return "filter";
         default:
         	assert(false);
             return "";
@@ -57,11 +57,11 @@ public class Excluded extends Command {
     public String description(Engine engine, boolean detailed) {
     	switch (m_operation) {
     	case ADD:
-            return "excluded <ref>: Adds the given reference to the excluded list (post analysis action)";         
+            return "filter <ref>: Adds the given reference to the filter list (post analysis action)";         
     	case REMOVE:
-            return "excluded <ref>: Removes the given reference from the excluded list (post analysis action)";
+            return "filter <ref>: Removes the given reference from the filter list (post analysis action)";
     	case LIST:
-            return "excluded: Lists the reference in the excluded list";
+            return "filter: Lists the reference in the filter list";
         default:
         	assert(false);
             return "";
@@ -76,9 +76,9 @@ public class Excluded extends Command {
     	case ADD:
     	case REMOVE:
             CodeReference codeRef = new CodeReference(args[index + 1]);
-            return new Excluded(codeRef, m_operation);
+            return new Filter(codeRef, m_operation);
     	case LIST:
-            return new Excluded(m_operation);
+            return new Filter(m_operation);
         default:
         	assert(false);
             return null;
@@ -91,12 +91,12 @@ public class Excluded extends Command {
 
        	switch (m_operation) {
        	case ADD:
-       		if (!engine.addReference(ReferenceMode.EXCLUSION, m_ref)) {
+       		if (!engine.addReference(ReferenceMode.FILTERED, m_ref)) {
                	console.display("Error: Unable to add reference: " + m_ref.getRef() + "\n");            			
        		}
        		break;
        	case REMOVE:
-       		if (!engine.removeReference(ReferenceMode.EXCLUSION, m_ref)) {        			
+       		if (!engine.removeReference(ReferenceMode.FILTERED, m_ref)) {        			
              	console.display("Error: Unable to remove reference: " + m_ref.getRef() + "\n");            			
       		}
        		break;           		
@@ -110,11 +110,11 @@ public class Excluded extends Command {
     }  
     
     private void listExcludes(Engine engine, Console console) {    
-    	if(engine.getReference(ReferenceMode.EXCLUSION).size() == 0){
-			console.display("no code references are excluded\n");
+    	if(engine.getReference(ReferenceMode.FILTERED).size() == 0){
+			console.display("none\n");
 			return;
 		}
-    	for (CodeReference ref : engine.getReference(ReferenceMode.EXCLUSION)){
+    	for (CodeReference ref : engine.getReference(ReferenceMode.FILTERED)){
     		console.display(String.format("- ref: %s, pc: 0x%x\n", ref.getRef(), ref.getPc()));
     	}
     }

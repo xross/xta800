@@ -289,7 +289,7 @@ public class Route {
 		ArrayList<Block> toRemove = new ArrayList<Block>();
 		
 		ArrayList<Integer> exclusions = new ArrayList<Integer>();
-		for(CodeReference ref : m_engine.getReference(ReferenceMode.EXCLUSION)){
+		for(CodeReference ref : m_engine.getReference(ReferenceMode.FILTERED)){
 			exclusions.add(ref.getPc());
 		}
 		ArrayList<Integer> required = new ArrayList<Integer>();
