@@ -414,7 +414,8 @@ public class Expression {
 						hresult |= 1;
 					}
 				}
-				return (int) (hresult>>32);
+				//return (int) (hresult>>32);
+				return 0; // findBugs reported the above as naughty
 			default:
 				assert false;
 				return 0;

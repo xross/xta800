@@ -17,7 +17,6 @@ public class Thread extends Resource {
     private boolean m_cbMSync;
     private boolean m_cbSSync;
     private int m_cbMasterBits;
-	private int m_masterThreadId;
 
     private Expression m_SPC;
     private Expression m_SSR;
