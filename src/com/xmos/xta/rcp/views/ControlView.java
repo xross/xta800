@@ -158,12 +158,12 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        updateState();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_START_POINT)) {
 			CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();
-			if (startPoint.isResolved()) {
+			if (startPoint.isResolved() || startPoint.getRef().equals("")) {
 				setText(m_startPoint, m_startPointListener, startPoint.getRef());
 			}
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_END_POINT)) {
 			CodeReference endPoint = XtaDisplayer.getInstance().getEndPoint();
-			if (endPoint.isResolved()) {
+			if (endPoint.isResolved() || endPoint.getRef().equals("")) {
 				setText(m_endPoint, m_endPointListener, endPoint.getRef());
 			}
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SELECT_FUNCTION)) {

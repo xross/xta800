@@ -472,7 +472,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		IDocument document = getDocument();
 		for (InputSection inputSection : getSections()) {
 			for (InputLine line : inputSection.getLines()) {
-				if (line.getPc() == codePoint.getPc()) {
+				if ((line.getPc() == codePoint.getPc()) && !inputSection.isFnop(line.getOffset())) {
 					try {
 						int charOffset = document.getLineOffset(line.getIndex());
 						m_projectionAnnotationModel.expandAll(charOffset, 1);
