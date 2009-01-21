@@ -123,6 +123,31 @@ public class Shell {
             line = line.trim();
             if (line.length() > 0) {            
                 String[] tokens = line.trim().split("\\s+");
+                
+                ArrayList<String> s = new ArrayList<String>();
+                
+                boolean multiword = false;
+                String m = "";
+                for(String word : tokens){
+                	if(word.startsWith("\"")){
+                		multiword = true;
+                		word = word.substring(1);
+                	} 
+                	if(word.endsWith("\"")){
+                		multiword = false;
+                		word = word.substring(0, word.length()-1);
+                		word = m+ " " + word ;
+                		word = word.trim();
+                		m = "";
+                	} 
+                	if(multiword){
+                		m = m + " " + word;
+                	} else {
+                		s.add(word);
+                	}
+                	
+                }
+                tokens = s.toArray(tokens);
                 command = CommandFactory.buildCommand(tokens, 0, m_commandHistory, false);         
                 if (command == null) {
             		m_commandHistory.add(new Invalid(line));                	

@@ -328,10 +328,14 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="tools_xta.application"
-            name="tools_xta">
+            name="xta">
          <property
                name="appName"
-               value="tools_xta">
+               value="xta">
+         </property>
+         <property
+               name="aboutText"
+               value="This is an unreleased/unsupported version. (build XMOS_BUILD_NUMBER)">
          </property>
       </product>
    </extension>

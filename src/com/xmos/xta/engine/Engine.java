@@ -112,7 +112,9 @@ public class Engine {
     		assert(false);
     		return false;
     	}
-    	if(m_route != null) m_route.filterPaths();
+    	if (m_route != null) 
+    		m_route.filterPaths();
+    	
     	for (Displayer displayer : m_displayers)
             displayer.notify(Displayer.NOTIFY_UPDATE_EXCLUDES, ""); 
     	return true;
@@ -142,7 +144,9 @@ public class Engine {
     		assert(false);
     		return false;
     	}
-    	m_route.filterPaths();
+    	if (m_route != null) 
+    		m_route.filterPaths();
+    	
     	for (Displayer displayer : m_displayers)
             displayer.notify(Displayer.NOTIFY_UPDATE_EXCLUDES, ""); 
     	return true;
