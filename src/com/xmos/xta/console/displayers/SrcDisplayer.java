@@ -38,6 +38,7 @@ public class SrcDisplayer implements Displayer {
     		MemoryImage memoryImage, SymbolTable symbolTable) {
     	
     	Block path = DisplayerHelper.getPath(route, m_pathId);
+    	
     	if (path == null) {
 			m_console.display(String.format("Error: invalid path id: %d\n", m_pathId));
 			return;

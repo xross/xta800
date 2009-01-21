@@ -20,7 +20,8 @@ public class CommandFactory {
 		new Config(),
 		new Clear(),
 		new Help(), 
-		new Exit(),		
+		new Exit(),	
+	    new Echo(),
 	};
 	
 	public static Command[] getCommands() {
