@@ -19,9 +19,10 @@ public class CommandFactory {
 		new Pwd(),
 		new Config(),
 		new Clear(),
+	    new Echo(),
+	    new Version(),
 		new Help(), 
 		new Exit(),	
-	    new Echo(),
 	};
 	
 	public static Command[] getCommands() {

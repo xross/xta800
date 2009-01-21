@@ -40,9 +40,12 @@
   <target name="dist" depends="compile" description="generate the distribution" >
     <mkdir dir="${dist}/../lib"/>
 
+    <copy file="${build}/../plugin.xml" todir="${build}"/>
+    
     <jar jarfile="${dist}/../lib/xta.jar"
          basedir="${build}"
-         includes="com/xmos/xta/**"
+         includes="com/xmos/xta/**,
+                   plugin.xml"
          manifest="${src}/manifests/xta">
          <zipfileset src="${src}/../../infr_libs_java/export/jars/dwarfhandler.jar"/>
          <zipfileset src="${src}/../../infr_libs_java/export/jars/elfhandler.jar"/>
