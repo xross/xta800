@@ -187,9 +187,11 @@ sub DoInstall
   SetupVars();
 
   XmosBuildLib::InstallFile("$DOMAIN", "${BIN}", "xta.exe");
+  XmosBuildLib::InstallPatchFile("$DOMAIN", "${BIN}", "xta.exe", "bin");
   #XmosBuildLib::InstallReleaseFile("$DOMAIN", "${BIN}", "xta.exe", "bin");
 
   XmosBuildLib::InstallFile("$DOMAIN", "lib", "xta.jar");
+  XmosBuildLib::InstallPatchFile("$DOMAIN", "lib", "xta.jar", "bin");
   #XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xta.jar", "bin");
 
   XmosBuildLib::InstallFile("$DOMAIN", "bin", "$target");
@@ -201,6 +203,17 @@ sub DoInstall
   rmtree("xta_bin");
   rename("xta_$platform", "xta_bin")
     or die("Unable to rename xta_$platform to: xta_bin\n");
+
+  XmosBuildLib::InstallPatchFile("$DOMAIN", "bin", "$target", ".");
+
+  # Unzips the zip file..
+  chdir("$INSTALLPATH/External/Patch") 
+    or die("Unable to chdir to: $INSTALLPATH/External/Patch\n");
+  system("unzip -q -o $target");
+  rmtree("xta_bin");
+  rename("xta_$platform", "xta_bin")
+    or die("Unable to rename xta_$platform to: xta_bin\n");
+  unlink("$target");
 
   chdir("$BUILDPATH") or die("oops");
 }
