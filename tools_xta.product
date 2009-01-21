@@ -3,6 +3,11 @@
 
 <product name="tools_xta" id="tools_xta.product" application="tools_xta.application" version="1.0.0" useFeatures="false">
 
+   <aboutInfo>
+      <text>
+         This is an unreleased/unsupported version. (build XMOS_BUILD_NUMBER)
+      </text>
+   </aboutInfo>
 
    <configIni use="default">
    </configIni>
@@ -12,7 +17,6 @@
    </launcherArgs>
 
    <windowImages/>
-
 
    <launcher name="xta">
       <solaris/>
