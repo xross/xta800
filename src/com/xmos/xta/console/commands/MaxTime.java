@@ -50,18 +50,28 @@ public class MaxTime extends Command  {
 			return;		
 		
 		Route route = engine.getRoute();
-		if(route.completePaths().size() == 0){
+		
+		
+		if(route == null || route.completePaths().size() == 0){
 			console.display("FAIL\n");
+			console.display("no paths found\n");
     		return;
 		}
+		double worstPathTime = 0;
         for(Block path : route.completePaths()){
         	double time = path.getTimeTaken(true);
-        	if (time > m_maxTime){
-        		console.display("FAIL\n");
-        		return;
-        	}
+        	worstPathTime = Math.max(worstPathTime, time);
         }
-        console.display("PASS\n");
+        if(worstPathTime > m_maxTime){
+        	console.display("FAIL\n");
+        	console.display("" + (worstPathTime - m_maxTime) + "ns violation\n");
+        } else {
+        	console.display("PASS\n");
+        	console.display("" + (m_maxTime - worstPathTime) + "ns slack\n");
+        }
+        
+        
+        
         return;
    }    
 }

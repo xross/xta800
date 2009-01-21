@@ -50,18 +50,22 @@ public class MaxCycles extends Command  {
 			return;		
 		
 		Route route = engine.getRoute();
-		if(route.completePaths().size() == 0){
+		if(route == null || route.completePaths().size() == 0){
 			console.display("FAIL\n");
+			console.display("no paths found\n");
     		return;
 		}
+		double worstPathCycles = 0;
         for(Block path : route.completePaths()){
-        	int cycles = path.getNumCycles(true);
-        	if (cycles > m_maxCycles){
-        		console.display("FAIL\n");
-        		return;
-        	}
+        	double cycles = path.getNumCycles(true);
+        	worstPathCycles = Math.max(worstPathCycles, cycles);
         }
-        console.display("PASS\n");
-        return;
+        if(worstPathCycles > m_maxCycles){
+        	console.display("FAIL\n");
+        	console.display("" + (worstPathCycles - m_maxCycles) + " cycles violation\n");
+        } else {
+        	console.display("PASS\n");
+        	console.display("" + (m_maxCycles - worstPathCycles) + " cycles slack\n");
+        }
    }    
 }
