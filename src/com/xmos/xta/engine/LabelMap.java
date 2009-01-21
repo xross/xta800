@@ -66,12 +66,12 @@ public class LabelMap {
         			if (!m_labels.containsKey(labelName)) {
         				m_labels.put(labelName, ref.getPc());
         			} else {
-            	    	engine.setErrorString("ERROR: duplicate label '" +
-            	    			labelName + "' found.\n");
+            	    	engine.setErrorString("Duplicate label '" +
+            	    			labelName + "' found.");
             	    	return false;
         			}
         	    } else {
-        	    	engine.setErrorString("ERROR: unable to resolve label " +
+        	    	engine.setErrorString("Unable to resolve label " +
         	    			fileName + ":" + lineNumber);
         	    	return false;
         	    }
