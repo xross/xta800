@@ -63,15 +63,9 @@ public class MaxTime extends Command  {
         	worstPathTime = Math.max(worstPathTime, time);
         }
         if(worstPathTime > m_maxTime){
-        	console.display("FAIL\n");
-        	console.display("" + (worstPathTime - m_maxTime) + "ns violation\n");
+        	console.display("FAIL (" + (worstPathTime - m_maxTime) + "ns violation)\n");
         } else {
-        	console.display("PASS\n");
-        	console.display("" + (m_maxTime - worstPathTime) + "ns slack\n");
-        }
-        
-        
-        
-        return;
-   }    
+        	console.display("PASS (" + (m_maxTime - worstPathTime) + "ns slack)\n");
+        }                       
+   }
 }
