@@ -28,7 +28,6 @@ import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.Status;
 import com.xmos.xta.engine.Unresolved;
 import com.xmos.xta.engine.XtaInstruction;
-import com.xmos.xta.engine.Status.UnresolvedReason;
 
 public class SummaryDisplayer implements Displayer {
 	public enum Level {

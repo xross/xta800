@@ -1,6 +1,5 @@
 package com.xmos.xta.engine.resources;
 
-import com.xmos.xta.engine.Expression;
 
 public class Port extends EventableResource {
 	private int m_currentTime;
@@ -36,7 +35,7 @@ public class Port extends EventableResource {
 	enum Direction {
 		INPUT, OUTPUT
 	}
-	
+	/*
 	private Direction m_direction;
 	private DriveMode m_driveMode;
 	private SampleDelay m_sampleDelay;
@@ -47,9 +46,10 @@ public class Port extends EventableResource {
 	private Ready m_ready;
 	private Expression m_eventData;
 	private Expression m_controlBits;
-	
+	*/
 	public Port(int portNum) {
 		super(Resources.RES_TYPE_PORT, portNum);
+		/*
 		m_buffers = Buffers.NOBUFFERS;
 		m_status = Status.MASTER;
 		m_sampleDelay = SampleDelay.NOSDELAY;
@@ -58,6 +58,7 @@ public class Port extends EventableResource {
 		m_mode = Mode.EVENT;
 		m_driveMode = DriveMode.NOINVERT;
 		m_direction = Direction.INPUT;
+		*/
     }
 	
     public Port(Port port) {

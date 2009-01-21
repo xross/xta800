@@ -2,7 +2,6 @@ package com.xmos.xta.console.commands;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
-import com.xmos.xta.console.displayers.SummaryDisplayer;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Unknown;
 

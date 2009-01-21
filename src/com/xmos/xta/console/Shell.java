@@ -113,7 +113,6 @@ public class Shell {
 		}
     	return getCommandFromConsole();
     }
-    boolean active = true;
         
     private Command getCommandFromConsole() {
     	Command command = null;
