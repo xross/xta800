@@ -13,6 +13,7 @@ my $MAKE_FLAGS;
 my $CONFIG;
 my $HOST;
 my $DOMAIN;
+my $BUILD_NUM;
 my $BIN;
 
 my $buildDir = "";
@@ -58,6 +59,7 @@ sub main
   $MAKE_FLAGS = $xmosArg->GetMakeFlags();
   $CONFIG = $xmosArg->GetOption("CONFIG");
   $DOMAIN = $xmosArg->GetOption("DOMAIN");
+  $BUILD_NUM = $xmosArg->GetOption("BUILD_NUM");
   $HOST = $xmosArg->GetOption("HOST");
   $BIN = $xmosArg->GetBinDir();
 
@@ -174,6 +176,8 @@ sub DoBuild
   chdir("$TOOLS_XTA") or die("Build failed to find $TOOLS_XTA\n");
   system("$MAKE $MAKE_FLAGS");
 
+  UpdateBuildNumber();
+
   system("ant");
   die() if ($? != 0);
 
@@ -283,6 +287,25 @@ sub SetupVars
   $eclipseDir  = "$ENV{'ECLIPSE_HOME'}";
   $buildOutput = "$TOOLS_XTA/build.output.$platform";
   $target      = "xta.$platform.zip";
+}
+
+sub UpdateBuildNumber
+{
+  if (defined($BUILD_NUM)) 
+  {
+    # Reads in the plugin.xml and patches the build number..
+    open(my $infp, "+<plugin.xml") 
+      or die("Cannot open file: plugin.xml for reading");
+    my @lines = <$infp>;
+
+    seek $infp,0,0;
+    foreach my $line (@lines)
+    {
+      $line =~ s/\(build ....\)/\(build $BUILD_NUM\)/g;
+      print $infp $line;
+    }
+    close $infp;
+  }
 }
 
 sub BuildEclipse

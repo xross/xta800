@@ -41,6 +41,7 @@ class Unknowns extends Command {
 
 		if (!isRouteAnalysed(engine, console))
 			return;
+		
 		for(Unknown unknown : engine.getRoute().getUnknowns()){
 			console.display(unknown.getReason() + "\n");
 		}	

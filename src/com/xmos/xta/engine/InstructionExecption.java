@@ -26,13 +26,11 @@ public class InstructionExecption extends Exception {
 		
 	};
 	
-	private static HashSet<Error> m_fatal;
+	private static HashSet<Error> m_fatal = new HashSet<Error>();
 	
 	private Error m_error;
 	public InstructionExecption(Error error){
 		super();
-		m_fatal = new HashSet<Error>();
-		//m_fatal.add();
 		m_error = error;
 	}
 	

@@ -37,10 +37,14 @@ abstract class CommandContainer extends Command {
     public String description(Engine engine, boolean detailed) {
     	String descString = String.format("%s <option> <arg0> <arg1>...: %s", m_commandName, getDescription());
     	if (detailed) {    	    	
-        	String optionsString = "\n";
+        	StringBuffer sb = new StringBuffer();
+        	sb.append("\n");
         	for (Command option : getSubCommands()) {
-        		optionsString += "      option: " + option.description(engine, true) + "\n";
+        		sb.append("      option: ");
+        		sb.append(option.description(engine, true));
+        		sb.append( "\n");
         	}  
+        	String optionsString= sb.toString();
     		descString += optionsString.substring(0, optionsString.length()-1);
     	}
     	return descString;

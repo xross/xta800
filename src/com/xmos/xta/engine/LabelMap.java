@@ -94,12 +94,12 @@ public class LabelMap {
     }
     
     final String readString(byte[] data, int offset) {
-        String s = "";
+        StringBuffer sb = new StringBuffer();
         int index = offset;
         while (data[index] != 0) {
-        	s += (char)data[index];
+        	sb.append((char)data[index]);
         	++index;
         }
-        return s;
+        return sb.toString();
     }
 }
