@@ -1,15 +1,15 @@
 Path(id): Timing(ns)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 +COMPLETE [1 path(s)]
     path(0)    : 240.0/12/9/3/0/1/0
-        (20.0ns) 0x10002 ENTSP_u6 i 0x4 
+        (20.0ns) 0x10002 entsp (u6) i 0x4 
         (20.0ns) 0x10004 --FNOP--  
-        (20.0ns) 0x10004 LDC_ru6 r0, i 0x1 
-        (20.0ns) 0x10006 BRFU_u6 i 0x0 
-        (20.0ns) 0x10008 BLRF_u10 i 0x6 
-        (20.0ns) 0x10010 ENTSP_u6 i 0x4 
-        (20.0ns) 0x10012 ADD_3r r0, r0, r0 
-        (20.0ns) 0x10014 RETSP_u6 i 0x4 
+        (20.0ns) 0x10004 ldc (ru6) r0, i 0x1 
+        (20.0ns) 0x10006 brfu (u6) i 0x0 
+        (20.0ns) 0x10008 blrf (u10) i 0x6 
+        (20.0ns) 0x10010 entsp (u6) i 0x4 
+        (20.0ns) 0x10012 add (3r) r0, r0, r0 
+        (20.0ns) 0x10014 retsp (u6) i 0x4 
         (20.0ns) 0x1000a --FNOP--  
         (20.0ns) 0x1000a --FNOP--  
-        (20.0ns) 0x1000a ASHR_l3r r0, r0, r0 
-        (20.0ns) 0x1000e RETSP_u6 i 0x4 
+        (20.0ns) 0x1000a ashr (l3r) r0, r0, r0 
+        (20.0ns) 0x1000e retsp (u6) i 0x4 

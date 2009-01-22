@@ -16,6 +16,7 @@ Unresolved paths: 0
 + 13:   return b;
   14: }
   15: 
+none
 - ref: 0x100d4, pc: 0x100d4
 Complete paths:   1
 Unresolved paths: 0

@@ -4,5 +4,5 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
     path\(\d+\) +: \d+\.0/\d+/\d+/\d+/0/1/0
 \+UNRESOLVED \[1 path\(s\)\]
-    path\(\d+\) +: found recursion
+    path\(\d+\) +: Recursion with 0x[0-9a-zA-Z]{5}
     path\(\d+\) +: \d+\.0/\d+/\d+/\d+/0/1/0
