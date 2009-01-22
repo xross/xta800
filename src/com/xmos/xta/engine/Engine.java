@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
 import com.xmos.dwarfhandler.DebugEngine;
 import com.xmos.elfhandler.ElfHandler;
 import com.xmos.elfhandler.Symbol;
@@ -114,9 +113,7 @@ public class Engine {
     	}
     	if (m_route != null) 
     		m_route.filterPaths();
-    	
-    	for (Displayer displayer : m_displayers)
-            displayer.notify(Displayer.NOTIFY_UPDATE_EXCLUDES, ""); 
+    	callDisplayers(Displayer.NOTIFY_UPDATE_EXCLUDES, ""); 
     	return true;
     }
     
@@ -146,12 +143,15 @@ public class Engine {
     	}
     	if (m_route != null) 
     		m_route.filterPaths();
-    	
-    	for (Displayer displayer : m_displayers)
-            displayer.notify(Displayer.NOTIFY_UPDATE_EXCLUDES, ""); 
+    	callDisplayers(Displayer.NOTIFY_UPDATE_EXCLUDES, ""); 
     	return true;
     }
         
+    public void callDisplayers(String message, String argument){
+    	for (Displayer displayer : m_displayers)
+            displayer.notify(message, argument); 
+    }
+    
     public List<CodeReference> getReference(ReferenceMode mode){
     	if(mode == ReferenceMode.FILTERED){
     		return getReferenceList(m_exclusions, m_nodeId, m_coreId);
@@ -206,13 +206,13 @@ public class Engine {
         	initialiseLists(fileFinder);
             m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);
             decodeInstructions(); 
-            success &= loadLabels();
+            
+            //TODO
+            loadLabels();
             
             if (success) {
             	m_route = null;
-            	for (Displayer displayer : m_displayers) {
-            		displayer.notify(Displayer.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
-            	}
+            	callDisplayers(Displayer.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath()); 
             }
         } else {
             setErrorString("The file '" + executableFile + "'could not be found.");	        
@@ -225,7 +225,6 @@ public class Engine {
     }
 
     public boolean analyseRoute(String functionName) {
-    	System.gc();
         if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
             setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
                     m_nodeId, m_coreId, m_executableFile));        	
@@ -244,9 +243,7 @@ public class Engine {
 
             boolean t = analyseRouteSafley();
             if (t) {
-                for (Displayer displayer : m_displayers) {
-                	displayer.notify(Displayer.NOTIFY_SELECT_FUNCTION, functionName);
-                }
+            	callDisplayers(Displayer.NOTIFY_SELECT_FUNCTION, functionName); 
             } else {
             	//restore the route
             	m_route = m_previousRoute;
@@ -256,7 +253,6 @@ public class Engine {
     }    
 
     public boolean analyseRoute(String from, String to) {
-    	System.gc();
         CodeReference fromRef = new CodeReference(from);
         CodeReference toRef = new CodeReference(to);     
         
@@ -280,10 +276,12 @@ public class Engine {
             		m_resolveExpression);
             boolean t = analyseRouteSafley();
             if (t) {
-                for (Displayer displayer : m_displayers) {
-                	displayer.notify(Displayer.NOTIFY_SET_START_POINT, from);
-                	displayer.notify(Displayer.NOTIFY_SET_END_POINT, to);
-                }
+            	callDisplayers(Displayer.NOTIFY_SET_START_POINT, from); 
+            	callDisplayers(Displayer.NOTIFY_SET_END_POINT, to); 
+                //for (Displayer displayer : m_displayers) {
+                //	displayer.notify(Displayer.NOTIFY_SET_START_POINT, from);
+                //	displayer.notify(Displayer.NOTIFY_SET_END_POINT, to);
+                //}
             } else {
             	// restore the route
             	m_route = m_previousRoute;
@@ -355,7 +353,8 @@ public class Engine {
 
     public void setNodeId(int nodeId) {
         m_nodeId = nodeId;
-        notifyUpdateState();
+        switchNodeCode();
+        callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
     }
 
     public int getNodeId(){
@@ -364,7 +363,8 @@ public class Engine {
 
     public void setCoreId(int coreId) {
         m_coreId = coreId;
-        notifyUpdateState();
+        switchNodeCode();
+        callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
     }
 
     public int getCoreId() {
@@ -373,7 +373,7 @@ public class Engine {
 
     public void setFrequency(int frequency) {
         m_config.m_frequency = frequency;
-        notifyUpdateState();
+        callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
     }
 
     public int getFrequency() {
@@ -382,7 +382,7 @@ public class Engine {
 
     public void setNumThreads(int numThreads) {
         m_config.m_numThreads = numThreads;
-        notifyUpdateState();
+        callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
     }
 
     public int getNumThreads() {
@@ -391,7 +391,7 @@ public class Engine {
 
 	public void setResolve(boolean resolve) {
 		m_resolveExpression = resolve;
-        notifyUpdateState();
+		callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
 	}
 
 	public boolean getResolve() {
@@ -430,7 +430,7 @@ public class Engine {
         boolean hit = false;
         if (m_route != null) {
             hit = m_route.setInstructionTimeTaken(pc, timeTaken);
-            if (hit) notifyUpdateState(); 
+            if (hit) callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
         }
         else {
             setErrorString("No route currently anaylsed");    		
@@ -449,7 +449,7 @@ public class Engine {
         boolean hit = false;
         if (m_route != null) {         		    		
             hit = m_route.setInstructionNumCycles(pc, numCycles);
-            if (hit) notifyUpdateState();    
+            if (hit) callDisplayers(Displayer.NOTIFY_UPDATE_STATE, ""); 
         }
         else {
             setErrorString("No route currently anaylsed");    		
@@ -517,11 +517,6 @@ public class Engine {
 		return m_pathQueries;
 	}
 	
-    void notifyUpdateState() {
-        for (Displayer displayer : m_displayers)
-            displayer.notify(Displayer.NOTIFY_UPDATE_STATE, "");
-    }
-	
     private boolean analyseRouteSafley() {
     	//catch all errors here
     	boolean t = false;
@@ -547,6 +542,15 @@ public class Engine {
 			return false;
 		} 
 		return t;
+    }
+    
+    private void switchNodeCode(){
+    	/*
+    	m_exclusions.clear();
+    	m_prohibited.clear();
+    	m_required.clear();
+    	getLabelsMap(m_nodeId, m_coreId);
+    	*/
     }
     
     private void decodeInstructions(){
@@ -614,9 +618,7 @@ public class Engine {
             setErrorString("Engine busy");
             return false;
         }
-
-        for (Displayer displayer : m_displayers)
-            displayer.notify(Displayer.NOTIFY_ANALYSE_PATHS, "");    	
+        callDisplayers(Displayer.NOTIFY_ANALYSE_PATHS, "");
 
         int nodeId = m_route.getNodeId();
         int coreId = m_route.getCoreId();
@@ -729,6 +731,7 @@ public class Engine {
     	
 		for (int node : m_xeLoader.getNodeIds()){
 			for (int core : m_xeLoader.getCoreIds(node)) {
+				
 			    m_exclusions.add(new CodeReferenceList(node, core));
 			    m_prohibited.add(new CodeReferenceList(node, core));
 			    m_required.add(new CodeReferenceList(node, core));
@@ -738,12 +741,11 @@ public class Engine {
 		}
     }
     
-    private boolean loadLabels() {
+    private void loadLabels() {
     	for (LabelMap labelMap : m_labels) {
-    		if (!labelMap.loadLabels(this, m_xeLoader))
-    			return false;
+    		labelMap.loadLabels(this, m_xeLoader);
 		}
-    	return true;
+    	return;
     }
 
 	public File getExecutable() {

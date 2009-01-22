@@ -196,7 +196,5 @@ public class ExecutionState {
 	public void releaseMemory() {
 		m_machineState = null;
 		m_route = null;
-		System.gc();
-		
 	}
 }

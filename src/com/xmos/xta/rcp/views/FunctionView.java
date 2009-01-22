@@ -3,6 +3,7 @@ package com.xmos.xta.rcp.views;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Random;
 import java.util.Vector;
 
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -225,7 +226,8 @@ public class FunctionView extends ZoomedCanvasView {
             m_colorIndex++;
             return color;
         }
-        RGB rgb = new RGB((int)(Math.random()*255), (int)(Math.random()*255), (int)(Math.random()*255));
+        Random r = new Random(); 
+        RGB rgb = new RGB(r.nextInt(256), r.nextInt(256), r.nextInt(256));
         return new Color(m_display, rgb);
     }
 

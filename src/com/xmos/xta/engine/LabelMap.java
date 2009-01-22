@@ -3,7 +3,6 @@ package com.xmos.xta.engine;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
 import com.xmos.xeloader.XeLoader;
 
 public class LabelMap {
@@ -36,7 +35,7 @@ public class LabelMap {
 		byte[] data = xeLoader.getSectionData(
 				".xtainfo", m_nodeId, m_coreId);
 				
-		if (DEBUG) System.out.println(".xtainfo is of size " + data.length + " bytes");
+		if (DEBUG) System.out.println("\n\n.xtainfo is of size " + data.length + " bytes for node " + m_nodeId + " core: " + m_coreId);
 		int byteIndex = 0;
         while (byteIndex < data.length) {
         	// Skip version
@@ -60,20 +59,27 @@ public class LabelMap {
         		
         		CodeReference ref = new CodeReference(fileName, lineNumber);
         		
-        		if (DEBUG) System.out.println(fileName + " " + lineNumber);
+        		if (DEBUG) System.out.println(labelName + " "+ fileName + " " + lineNumber);
         		
         		if (ref.resolve(engine, m_nodeId, m_coreId)) {
         			if (!m_labels.containsKey(labelName)) {
+        				if (DEBUG)  System.out.println("found");
         				m_labels.put(labelName, ref.getPc());
         			} else {
-            	    	engine.setErrorString("Duplicate label '" +
-            	    			labelName + "' found.");
-            	    	return false;
+        				String error = "Duplicate label '" +labelName + "' found.";
+        				if (DEBUG)  System.out.println(error);
+        				//engine.callDisplayers(Displayer.NOTIFY_ERROR, error);
+            	    	//plough on regardless
+        				//FIXME
+        				//return false;
         			}
         	    } else {
-        	    	engine.setErrorString("Unable to resolve label " +
-        	    			fileName + ":" + lineNumber);
-        	    	return false;
+        	    	String error = "Unable to resolve label " + labelName;
+        	    	if (DEBUG)  System.out.println(error);
+        	    	//engine.callDisplayers(Displayer.NOTIFY_ERROR, error);
+        	    	//plough on regardless
+        	    	//FIXME
+        	    	//return false;
         	    }
         	}
         	byteIndex += size;

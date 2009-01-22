@@ -1,7 +1,5 @@
 package com.xmos.xta.engine;
 
-import java.util.HashSet;
-
 public class InstructionExecption extends Exception {
 
 	private static final long serialVersionUID = 1L;
@@ -26,8 +24,6 @@ public class InstructionExecption extends Exception {
 		
 	};
 	
-	private static HashSet<Error> m_fatal = new HashSet<Error>();
-	
 	private Error m_error;
 	public InstructionExecption(Error error){
 		super();
@@ -39,7 +35,7 @@ public class InstructionExecption extends Exception {
 	}
 	
 	public boolean isFatal(){
-		return m_fatal.contains(this);
+		return false;
 	}
 	
 	public String getMessage(){

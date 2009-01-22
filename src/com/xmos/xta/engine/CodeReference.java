@@ -97,7 +97,8 @@ public class CodeReference {
                 return false;            
             }
                         
-            DebugEngine debugEngine = debugInfo.getDebugEngine();            
+            DebugEngine debugEngine = debugInfo.getDebugEngine();     
+            
             Collection<Long> pcs = debugEngine.getXtaAddresses(file, intStringToInt(lineNumber));
             if (pcs.size() > 0) {
                 m_pc = findLowestPc(pcs);

@@ -1,5 +1,6 @@
 package com.xmos.xta.engine;
 
+import java.awt.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -537,7 +538,9 @@ public class Block implements Comparable<Block> {
 	}
 
 	private boolean isProhibited(int pc) {
-		for (CodeReference reference : m_bc.getEngine().getReference(ReferenceMode.PROHIBITED)) {
+		Engine engine = m_bc.getEngine();
+		if(engine == null) return false;
+		for (CodeReference reference : engine.getReference(ReferenceMode.PROHIBITED)) {
 			assert (reference.isResolved());
 			if (reference.getPc() == pc) {
 				return true;
@@ -573,7 +576,6 @@ public class Block implements Comparable<Block> {
 		} else {
 			if(m_instructions.size()>0){
 				m_instructions = null;
-				System.gc();
 			}
 		}
 		m_pcs.add(inst.getPc());

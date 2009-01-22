@@ -555,7 +555,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
             	if (i == 0) {
 	            	m_display.asyncExec(new Runnable() {
 	        			public void run() {
-	        				System.gc();
+	        				//System.gc();
 	        				double max = Runtime.getRuntime().maxMemory();
 	        				double total = Runtime.getRuntime().totalMemory();
 	        				double free = Runtime.getRuntime().freeMemory();

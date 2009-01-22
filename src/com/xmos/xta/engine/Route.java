@@ -21,7 +21,6 @@ public class Route {
 		COMPLETED, ABORTED, ERROR, ANALYSING
 	}
 
-	private String m_id;
 	private Config m_config;
 	private int m_nodeId;
 	private int m_coreId;
@@ -29,16 +28,12 @@ public class Route {
 	private CodeReference m_toRef;
 	private String m_functionName;
 	private HashMap<Integer, Vector<Block>> m_loopPaths;
-
 	private ArrayList<ExecutionState> m_executionStates;
 	private LinkedList<ExecutionState> m_schedule;
-
 	private ArrayList<Unresolved> m_unresolvedPaths;
 	private ArrayList<Block> m_completePaths;
 	private ArrayList<Block> m_removedPaths;
 	private ArrayList<Block> m_allBlocks;
-	
-
 	private Engine m_engine;
 	private RouteStatus m_status;
 	private Progress m_progress;
@@ -73,10 +68,6 @@ public class Route {
 
 	public ArrayList<Unknown> getUnknowns() {
 		return m_unknowns;
-	}
-
-	public final String id() {
-		return m_id;
 	}
 
 	public final String functionName() {
@@ -168,7 +159,7 @@ public class Route {
 
 	void notifyUpdate() {
 		Collections.sort(m_completePaths);
-		m_engine.notifyUpdateState();
+		m_engine.callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
 	}
 
 	Progress getProgress() {
@@ -191,7 +182,7 @@ public class Route {
 		for (Unknown unknown : m_unknowns) {
 			if (unknown.getPc() == pc) {
 				m_unknowns.remove(unknown);
-				m_engine.notifyUpdateState();
+				m_engine.callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
 				break;
 			}
 		}
@@ -205,7 +196,6 @@ public class Route {
 	private void initialise(Config config, int nodeId, int coreId) {
 		m_unknowns = new ArrayList<Unknown>();
 		m_warnings = new ArrayList<String>();
-		m_id = new String("route" + m_numRoutes);
 		m_config = config;
 		m_nodeId = nodeId;
 		m_coreId = coreId;
@@ -232,7 +222,6 @@ public class Route {
 			cleanSchedule();
 			checkAbort();
 		}
-		System.gc();
 	}
 
 
