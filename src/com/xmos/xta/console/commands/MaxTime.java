@@ -7,65 +7,63 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Route;
 
 public class MaxTime extends Command  {
-	private int m_maxTime;
+    private int m_maxTime;
 
-	MaxTime() {
-		m_maxTime = 0;
-	}
-	
-	MaxTime(int maxTime) {
-		m_maxTime = maxTime;
-	}
-	
+    MaxTime() {
+        m_maxTime = 0;
+    }
+    
+    MaxTime(int maxTime) {
+        m_maxTime = maxTime;
+    }
+    
     public int numArgs() {
-    	return 1;
+        return 1;
     }        
 
     public String name() {
-    	return "maxtime";
+        return "maxtime";
     }        
 
     public String commandLine() {
-    	return "maxtime " + m_maxTime;
+        return "maxtime " + m_maxTime;
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "maxtime <ns> : Analysis fails at the given time limit";      	
+        return "maxtime <ns> : Analysis fails at the given time limit";          
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {    	    	
-		if ((index + numArgs()) >= args.length) 
-			return null;
+    public Command clone(String[] args, int index, boolean commandLineMode) {                
+        if ((index + numArgs()) >= args.length) 
+            return null;
 
-    	int time;
-    	try { time = Integer.parseInt(args[index + 1]); }
-	    catch (NumberFormatException e) {
-	        return null;
-	    }		
-		return new MaxTime(time);
+        int time;
+        try { time = Integer.parseInt(args[index + 1]); }
+        catch (NumberFormatException e) {
+            return null;
+        }        
+        return new MaxTime(time);
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console))
-			return;		
-		
-		Route route = engine.getRoute();
-		
-		
-		if(route == null || route.completePaths().size() == 0){
-			console.display("FAIL\n");
-			console.display("no paths found\n");
-    		return;
-		}
-		double worstPathTime = 0;
+        if (!isExecutableLoaded(engine, console))
+            return;        
+        
+        Route route = engine.getRoute();
+        
+        if(route == null || route.completePaths().size() == 0){
+            console.display("FAIL (no paths found)\n");
+            return;
+        }
+        double worstPathTime = 0;
         for(Block path : route.completePaths()){
-        	double time = path.getTimeTaken(true);
-        	worstPathTime = Math.max(worstPathTime, time);
+            double time = path.getTimeTaken(true);
+            worstPathTime = Math.max(worstPathTime, time);
         }
         if(worstPathTime > m_maxTime){
-        	console.display("FAIL (" + (worstPathTime - m_maxTime) + "ns violation)\n");
+            console.display("FAIL (" + (worstPathTime - m_maxTime) + "ns violation)\n");
         } else {
-        	console.display("PASS (" + (m_maxTime - worstPathTime) + "ns slack)\n");
+            console.display("PASS (" + (m_maxTime - worstPathTime) + "ns slack)\n");
         }                       
    }
 }

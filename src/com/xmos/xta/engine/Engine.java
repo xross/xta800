@@ -557,7 +557,7 @@ public class Engine {
 			                int pc = assembly.getLineNumber();
 			                int opcode = getOpcode(pc, nodeId,coreId);			                
 			                
-			                if (m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().startsWith("RETSP")){
+			                if (m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().toLowerCase().startsWith("retsp")){
 			                    ArrayList<Integer> retsps = instructionEntryPc.get(functionEntry);
 			                    if (retsps==null){
 			                        retsps = new ArrayList<Integer>();
@@ -573,7 +573,7 @@ public class Engine {
 		        while (pc <= lastPc){
 		            int opcode = getOpcode(pc, nodeId,coreId);
 		            int currentTarget = m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getBranchPcRelativeTargetPc();
-		            if (currentTarget>0 && m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().startsWith("BL")){
+		            if (currentTarget>0 && m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().toLowerCase().startsWith("bl")){
 		                if (instructionEntryPc.get(currentTarget)!=null){
 		                    for (int targetPc : instructionEntryPc.get(currentTarget)){
 		                        int opcodeRetsp = getOpcode(targetPc, nodeId,coreId);
