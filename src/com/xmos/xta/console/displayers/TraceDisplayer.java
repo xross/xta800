@@ -27,19 +27,22 @@ public class TraceDisplayer implements Displayer {
 		    return;
 		}
     	
+    	double currentTime = 0.0;
 		for (XtaInstruction instruction : path.getInstructions(false)) {
          	String canPause = instruction.canPause() ? "P" : " ";
          	String functionOffsetString = 
          		instruction.getFunctionName() + " + " + instruction.getFunctionOffset();
          	
-         	m_console.display(String.format("%s (%.1fns) 0x%05x %-22s %-12s %-15s",
+         	m_console.display(String.format("%s %.1f: (%.1fns) 0x%05x %-22s %-12s %s",
              		canPause,
+             		currentTime,
              		instruction.getTimeTaken(),
                		instruction.getPc(), 
                		functionOffsetString, 
                		instruction.getNmenonic(), 
                		instruction.getOperandString()));
          	
+         	currentTime += instruction.getTimeTaken();
           	m_console.display("\n");
 		}  		
     }
