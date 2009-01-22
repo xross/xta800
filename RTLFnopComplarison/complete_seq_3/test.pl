@@ -134,7 +134,7 @@ while (<INFILE>) {
         } else {
             $line =~ s/^\s+//;
             my @fields = split /\s+/, $line;
-            $line = $fields[1];
+            $line = $fields[2];
         }
         print OUTFILE "$line\n";
 }
