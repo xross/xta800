@@ -1,10 +1,10 @@
 Complete paths:   0
 Unresolved paths: 1
-  \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 0               entsp \(u6\)   i 0x4      
-  \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 2               --FNOP--  
-  \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 2               ldc \(ru6\)    r0, i 0x0  
-  \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 4               ldc \(ru6\)    r0, i 0x0  
-  \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 6               ldc \(ru6\)    r0, i 0x0  
-  \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 8               ldc \(ru6\)    r0, i 0x0  
-  \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 10              ldc \(ru6\)    r0, i 0x0  
-  \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 12              bau \(1r\)     r1  
+  0\.0: \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 0 +entsp \(u6\)   i 0x4
+  20\.0: \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 2 +--FNOP--
+  40\.0: \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 2 +ldc \(ru6\)    r0, i 0x0
+  60\.0: \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 4 +ldc \(ru6\)    r0, i 0x0
+  80\.0: \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 6 +ldc \(ru6\)    r0, i 0x0
+  100\.0: \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 8 +ldc \(ru6\)    r0, i 0x0
+  120\.0: \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 10 +ldc \(ru6\)    r0, i 0x0
+  140\.0: \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 12 +bau \(1r\)     r1
