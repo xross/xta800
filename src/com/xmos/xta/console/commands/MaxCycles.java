@@ -60,9 +60,27 @@ public class MaxCycles extends Command  {
             worstPathCycles = Math.max(worstPathCycles, cycles);
         }
         if (worstPathCycles > m_maxCycles){
-            console.display("FAIL (" + (worstPathCycles - m_maxCycles) + " cycles violation)\n");
+            console.display("FAIL (required ");
+            displayCycles(console, m_maxCycles);
+            console.display(", worst-case ");
+            displayCycles(console, (int)worstPathCycles);
+            console.display(", violation ");
+            displayCycles(console, (int)(worstPathCycles - m_maxCycles));
+            console.display(")\n");
         } else {
-            console.display("PASS (" + (m_maxCycles - worstPathCycles) + " cycles slack)\n");
+            console.display("PASS (required ");
+            displayCycles(console, m_maxCycles);
+            console.display(", worst-case ");
+            displayCycles(console, (int)worstPathCycles);
+            console.display(", slack ");
+            displayCycles(console, (int)(m_maxCycles - worstPathCycles));
+            console.display(")\n");
         }
-    }    
+    }
+
+	private void displayCycles(Console console, int numCycles) {
+		console.display(numCycles + " cycle");
+		if (numCycles != 1)
+			console.display("s");
+	}    
 }
