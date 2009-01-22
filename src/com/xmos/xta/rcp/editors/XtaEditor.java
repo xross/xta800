@@ -461,7 +461,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}
 
     private void showCodePoint(CodeReference codePoint) {
-    	if ((codePoint == null) || (m_type.equals(XtaDocumentPartitioner.SOURCE))) {
+    	if ((codePoint == null) || !codePoint.isResolved() || m_type.equals(XtaDocumentPartitioner.SOURCE)) {
     		return;
     	}
     	
