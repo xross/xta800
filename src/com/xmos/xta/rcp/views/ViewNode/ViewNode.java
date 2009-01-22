@@ -84,4 +84,8 @@ public abstract class ViewNode {
     public abstract void annotateXy(int xOffset, int yOffset);
     public abstract void buildClickAreas(ArrayList<ViewNode> clickAreas);
     public abstract boolean contains(int x, int y);
+
+	public String getToolTipText() {
+		return m_treeNode.getToolTipText();
+	}
 }
