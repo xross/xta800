@@ -121,29 +121,24 @@ public class Engine {
     }
     
     public boolean removeReference(ReferenceMode mode, CodeReference ref){
-        if (!resolveRefernece(ref, this)) {
-        	return false;
-        }    	
-
+    	boolean found = true;
+    	
     	if (mode == ReferenceMode.FILTERED){
-    		List<CodeReference> references = getReferenceList(m_exclusions, m_nodeId, m_coreId);	
-    		CodeReference cr = findReference(ref, references);
-    		if (cr == null) return false;
-    		references.remove(cr);
+    		List<CodeReference> references = getReferenceList(m_exclusions, m_nodeId, m_coreId);
+    		found = removeReferences(ref, references);
     	} else if (mode == ReferenceMode.PROHIBITED){
     		List<CodeReference> references = getReferenceList(m_prohibited, m_nodeId, m_coreId);
-    		CodeReference cr = findReference(ref, references);
-    		if (cr == null) return false;
-    		references.remove(cr);
+    		found = removeReferences(ref, references);
     	} else if (mode == ReferenceMode.REQUIRED){
     		List<CodeReference> references = getReferenceList(m_required, m_nodeId, m_coreId);
-    		CodeReference cr = findReference(ref, references);
-    		if (cr == null) return false;
-    		references.remove(cr);
+    		found = removeReferences(ref, references);
     	} else {
     		assert(false);
     		return false;
     	}
+    	if (!found)
+    		return false;
+
     	if (m_route != null) 
     		m_route.filterPaths();
     	
@@ -152,7 +147,7 @@ public class Engine {
     	return true;
     }
         
-    public List<CodeReference> getReference(ReferenceMode mode){
+	public List<CodeReference> getReference(ReferenceMode mode){
     	if(mode == ReferenceMode.FILTERED){
     		return getReferenceList(m_exclusions, m_nodeId, m_coreId);
     	} else if (mode == ReferenceMode.PROHIBITED){
@@ -690,14 +685,21 @@ public class Engine {
     	return null;
     }
     
-    private CodeReference findReference(CodeReference ref, List<CodeReference> references){
+    private boolean removeReferences(CodeReference ref, List<CodeReference> references) {
+    	List<CodeReference> matches = new ArrayList<CodeReference>();
+    	
     	for (CodeReference present : references){
-    		if (ref.getPc() == present.getPc() && ref.getRef().equals(present.getRef())){
-    			return present;
+    		if (present.getRef().matches(ref.getRef())){
+    			matches.add(present);
     		}
     	}
-    	return null;
-    }        
+
+    	if (matches.size() > 0) {
+    		references.removeAll(matches);
+    		return true;
+    	}
+    	return false;
+	}
 
     private Map<String, Integer> getLabelsMap(int nodeId, int coreId) {
     	for (LabelMap labels : m_labels) {
