@@ -16,11 +16,13 @@ public class Unknown {
     private Expression m_guard;
     private Expression m_branchTarget;
     private Block m_block;
+    private boolean m_show;
     
     public Unknown(Block block, XtaInstruction inst) {
     	m_block = block;
         m_inst = inst;
         m_reason = UnknownType.PAUSABLETIME;
+        m_show = true;
     }    
     
     public Unknown(Block block, XtaInstruction inst, Expression guard, Expression branchTarget) {
@@ -85,4 +87,11 @@ public class Unknown {
         assert(false);
         return "";
     }    
+    
+    public boolean getShow(){
+    	return m_show;
+    }
+    public void setShow(boolean show){
+    	m_show= show;
+    }
 }
