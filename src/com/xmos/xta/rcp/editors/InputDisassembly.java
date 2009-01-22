@@ -29,7 +29,7 @@ public class InputDisassembly implements IEditorInput {
         		String str = String.format("    0x%05x %s", line.getLineNumber(), line.getText());
         		String childRef = String.format("0x%05x", line.getLineNumber());
         		m_input.addLine(str, childRef, line.getLineNumber(), lineIndex);
-        		++lineIndex;        		
+        		++lineIndex;
         	}
         }		
         updateLineNumberMapping();

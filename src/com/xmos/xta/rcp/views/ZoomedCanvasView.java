@@ -397,7 +397,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		    	    		if (m_toolTip != null  && !m_toolTip.isDisposed ())
 		    	    			m_toolTip.dispose ();
 
-		    	    		createToolTip(node.getTreeNode(), labelListener);
+		    	    		createToolTip(node.getToolTipText(), labelListener);
 		    	    		return;
 		    			}
 		    		}
@@ -405,7 +405,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    });
 	}
 
-	private void createToolTip(Node node, Listener labelListener) {
+	private void createToolTip(String toolTip, Listener labelListener) {
 		m_toolTip = new Shell(m_display, SWT.ON_TOP | SWT.NO_FOCUS | SWT.TOOL);
 		m_toolTip.setBackground (m_display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
 		FillLayout layout = new FillLayout ();
@@ -414,7 +414,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		m_tipLabel = new Label (m_toolTip, SWT.NONE);
 		m_tipLabel.setForeground (m_display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
 		m_tipLabel.setBackground (m_display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
-		m_tipLabel.setText(node.getToolTipText());
+		m_tipLabel.setText(toolTip);
 		m_tipLabel.addListener(SWT.MouseExit, labelListener);
 		m_tipLabel.addListener(SWT.MouseDown, labelListener);
 		Point size = m_toolTip.computeSize (SWT.DEFAULT, SWT.DEFAULT);
