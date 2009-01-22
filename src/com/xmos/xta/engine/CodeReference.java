@@ -18,6 +18,7 @@ public class CodeReference {
 	
 	private RefType m_type;
 	private String m_ref;
+	private String m_shortRef;
 	private int m_pc;
 	private boolean m_isResolved;
 	
@@ -33,12 +34,25 @@ public class CodeReference {
 		} else {
 			m_type = RefType.LABEL;
 		}
+		setShortRef();
 	}
 	
 	public CodeReference(String fileName, int lineNumber) {
 		m_ref = String.format("%s:%d", fileName, lineNumber);
 		m_type = RefType.LINE;
 		m_isResolved = false;
+		setShortRef();
+	}
+
+	private void setShortRef() {
+		if (m_type == RefType.LINE) {
+			int index = m_ref.lastIndexOf(File.separatorChar);
+			if (index == -1) {
+				m_shortRef = m_ref;
+			} else {
+				m_shortRef = m_ref.substring(index + 1);
+			}
+		}
 	}
 
 	public RefType getType() {
@@ -47,6 +61,13 @@ public class CodeReference {
     
     public String getRef() {
         return m_ref;
+    }
+    
+    public String getShortRef() {
+		if (m_type == RefType.LINE)
+			return m_shortRef;
+		else
+			return m_ref;
     }
     
     public int getPc() {

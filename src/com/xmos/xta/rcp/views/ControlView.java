@@ -68,7 +68,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     private Composite m_parent;
     private Combo m_functions;
 
-    private Text m_fileName;
+    private Text m_fileNameTextBox;
     private Text m_startPoint;
     private Text m_endPoint;
     private ModifyListener m_startPointListener;
@@ -87,6 +87,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     private Spinner m_threadSpinner;
     private Combo m_nodeIds;
     private Combo m_coreIds;
+    
+    private Button m_cancelButton;
         
     private volatile ProgressUpdater m_progressUpdater;
 
@@ -144,8 +146,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        setDone(STATUS_LOADED);
 	        m_progress.setText("0");
 	        m_functions.removeAll();	       	       
-	        setText(m_startPoint, m_startPointListener, "");
-	        setText(m_endPoint, m_endPointListener, "");
+	        setText(m_startPoint, m_startPointListener, "", "");
+	        setText(m_endPoint, m_endPointListener, "", "");
 	        updateState();
 	        updateCurrentRoute();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_ANALYSE_PATHS)) {
@@ -154,17 +156,18 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
 			m_progressUpdater.start();
 	        m_currentRoute.setText("");
+	        m_currentRoute.setToolTipText("");
 		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_STATE)) {
 	        updateState();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_START_POINT)) {
 			CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();
 			if (startPoint.isResolved() || startPoint.getRef().equals("")) {
-				setText(m_startPoint, m_startPointListener, startPoint.getRef());
+				setText(m_startPoint, m_startPointListener, startPoint.getRef(), startPoint.getRef());
 			}
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_END_POINT)) {
 			CodeReference endPoint = XtaDisplayer.getInstance().getEndPoint();
 			if (endPoint.isResolved() || endPoint.getRef().equals("")) {
-				setText(m_endPoint, m_endPointListener, endPoint.getRef());
+				setText(m_endPoint, m_endPointListener, endPoint.getRef(), endPoint.getRef());
 			}
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SELECT_FUNCTION)) {
 			String functionName = XtaDisplayer.getInstance().getNotifyArgument();
@@ -234,7 +237,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        	Engine engine = XtaEngine.getEngine();
 	        	boolean success = engine.loadExecutable(xeFile, new XtaFileFinder());
 	        	if (success) {
-	    			m_fileName.setText(xeFileName);
+	    			m_fileNameTextBox.setText(xeFile.getName());
+	    			m_fileNameTextBox.setToolTipText(xeFileName);
 
 	    			if (DEBUG)
 	                    System.out.printf("Control: executeLoad, success: %d\n", success);
@@ -257,6 +261,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		String functionName = m_functions.getText();
 		if (!functionName.equals("")) {
 			RunEngineMethodFunc run = new RunEngineMethodFunc(functionName);
+        	m_cancelButton.setEnabled(true);
 			run.start();
 		} else {
 			XtaErrorLog.getInstance().addError("No function/path specified");
@@ -278,6 +283,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			XtaErrorLog.getInstance().addError("Please specify an end reference");
 		} else {
 			RunEngineMethodPath run = new RunEngineMethodPath(startRef, endRef);
+        	m_cancelButton.setEnabled(true);
 			run.start();
 		}
 	}
@@ -402,16 +408,20 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         	m_progressUpdater = null;
         }
     	m_engineStatus.setText(status);
+    	m_cancelButton.setEnabled(false);
 	}
 
 	private void updateCurrentRoute() {
 		XtaRouteInfo routeInfo = XtaDisplayer.getInstance().getRouteInfo();
 		if (routeInfo != null) {
 			Route route = routeInfo.getRoute();
-			m_currentRoute.setText(route.getStatusString());
+			String routeStatus = route.getStatusString();
+			m_currentRoute.setText(routeStatus);
+			m_currentRoute.setToolTipText(routeStatus);
 		} else {
-		m_currentRoute.setText("No routes analysed.");
-	}
+			m_currentRoute.setText("No routes analysed.");
+			m_currentRoute.setToolTipText("");
+		}
 	}
 	
 	private void checkUnresolvedPaths() {
@@ -468,7 +478,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         }
 
         public void run() {
-            if (!XtaEngine.getEngine().analyseRoute(m_startRef, m_endRef))
+        	if (!XtaEngine.getEngine().analyseRoute(m_startRef, m_endRef))
             	XtaErrorLog.getInstance().addError(XtaEngine.getEngine().getErrorString());
         }
     }
@@ -599,10 +609,10 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 	private void createFileControl(Composite composite) {
 		Group group = createGroup(composite, "File", 1, 2);
-	    m_fileName = new Text(group, SWT.SINGLE);
-	    m_fileName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    m_fileName.setText("");
-	    m_fileName.setEditable(false);
+	    m_fileNameTextBox = new Text(group, SWT.SINGLE);
+	    m_fileNameTextBox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    m_fileNameTextBox.setText("");
+	    m_fileNameTextBox.setEditable(false);
 
 	    Button loadButton = new Button(composite, SWT.PUSH);
 	    loadButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
@@ -685,15 +695,16 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		m_engineStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		m_engineStatus.setText(STATUS_EMPTY);
 
-	    Button cancelButton = new Button(composite, SWT.PUSH);
-	    cancelButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-	    cancelButton.setToolTipText("Cancel");
-	    cancelButton.setImage(Icons.getIcon("cancel"));
-	    cancelButton.addSelectionListener(new SelectionAdapter() {
+		m_cancelButton = new Button(composite, SWT.PUSH);
+		m_cancelButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		m_cancelButton.setToolTipText("Cancel");
+		m_cancelButton.setImage(Icons.getIcon("cancel"));
+		m_cancelButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				cancelRun();
 			}
 		});
+		m_cancelButton.setEnabled(false);
 
 		Group currentGroup = createGroup(composite, "Currently analysed", 1, 3);
 	    m_currentRoute = new Text(currentGroup, SWT.SINGLE);
@@ -807,10 +818,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    return composite;
 	}
 	
-	private void setText(Text text, ModifyListener listener, String str) {
+	private void setText(Text text, ModifyListener listener, String str, String toolTip) {
 		text.removeModifyListener(listener);
 		text.setText(str);
 		text.addModifyListener(listener);	
 		text.setSelection(str.length());
+		text.setToolTipText(toolTip);
 	}
 }

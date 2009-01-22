@@ -18,6 +18,7 @@ import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.nodes.Node;
+import com.xmos.xta.rcp.views.ViewNode.TextBlockNode;
 import com.xmos.xta.rcp.views.ViewNode.ViewNode;
 
 public class FunctionView extends ZoomedCanvasView {
@@ -27,6 +28,7 @@ public class FunctionView extends ZoomedCanvasView {
 
     private SymbolTable m_table;
     private Vector<XtaFunctionBlock> m_functionList;
+    private boolean m_addedFunctionsToClickAreas;
     private int m_nodeOffset;
     private int m_blockLength;
     private Node m_currentNode;
@@ -45,6 +47,7 @@ public class FunctionView extends ZoomedCanvasView {
 		XtaDisplayer.getInstance().addPropertyChangeListener(this);
 		
 		m_functionList = new Vector<XtaFunctionBlock>();
+		m_addedFunctionsToClickAreas = false;
         m_functionColors = new HashMap<String, Color>();
         initaliseColors(m_display);
 
@@ -77,6 +80,8 @@ public class FunctionView extends ZoomedCanvasView {
     	m_clickAreas.clear();
     	if (m_rootNode != null)
     		m_rootNode.getFunctionNode().buildClickAreas(m_clickAreas);
+
+    	m_addedFunctionsToClickAreas = false;
     }
 
     protected void annotateTree(boolean isSelctionChange) {
@@ -100,6 +105,13 @@ public class FunctionView extends ZoomedCanvasView {
 			updatePixelsXy();
 			if (!isSelctionChange)
 				zoomFit();
+
+			if (!m_addedFunctionsToClickAreas) {
+				for (XtaFunctionBlock block : m_functionList) {
+					m_clickAreas.add(block.getTextBlockNode());
+				}
+				m_addedFunctionsToClickAreas = true;
+			}
 		}
     }
 
@@ -126,6 +138,7 @@ public class FunctionView extends ZoomedCanvasView {
         m_nodeOffset = 0;
         m_currentFunction = "";
         m_previousFunction = "";
+        m_addedFunctionsToClickAreas = false;
     }
 
     private void annotateTree(Node node, int numIterations, boolean selected) {
@@ -175,7 +188,7 @@ public class FunctionView extends ZoomedCanvasView {
     private void addBlock() {
     	Color color = m_functionColors.get(m_currentFunction);
     	XtaFunctionBlock block = new XtaFunctionBlock(m_currentFunction, color,
-    			m_currentNode, m_nodeOffset, m_blockLength);
+    			m_currentNode, m_nodeOffset);
         m_functionList.add(block);
         m_blockLength = 0;
         m_previousFunction = m_currentFunction;
@@ -200,7 +213,7 @@ public class FunctionView extends ZoomedCanvasView {
 		gc.setLineWidth(m_lineWidth);
 		int blockX = m_borderX;
 		for (XtaFunctionBlock block : m_functionList) {
-			blockX += block.draw(m_display, gc, blockX, m_borderY, m_pixelsY - m_functionNameY, m_pixelsY, m_scale);
+			blockX += block.draw(m_display, gc, blockX, m_borderY, m_pixelsY, m_scale);
 		}
 		pathRoot.getFunctionNode().draw(m_display, gc, m_scale);
     }
@@ -245,38 +258,28 @@ public class FunctionView extends ZoomedCanvasView {
     }
     
     class XtaFunctionBlock {
-        private String m_function;
-        private Color m_color;
         private Node m_node;
         private int m_offset;
-        public XtaFunctionBlock(String function, Color color, Node node, int offset, 
-        		int length) {
-            m_function = function;
-            m_color = color;
+        private TextBlockNode m_textBlockNode;
+        
+        public XtaFunctionBlock(String function, Color color, Node node, int offset) {
             m_node = node;
             m_offset = offset;
+            
+            m_textBlockNode = new TextBlockNode(function, color);
         }
-        public String getFunction() {
-            return m_function;
+        
+        TextBlockNode getTextBlockNode() {
+        	return m_textBlockNode;
         }
-    	
-        public int draw(Display display, GC gc, int x, int y, int textBase, int height, double scale) {
+
+        public int draw(Display display, GC gc, int x, int y, int height, double scale) {
 
             int length = (m_node.getFunctionNode().getPixelOffsetX() + m_offset) - x;
-
-            gc.setBackground(m_color);
-        	gc.fillRectangle((int)((double)x * scale), y, (int)((double)length * scale) + 1, height);
-
-            gc.setForeground(m_display.getSystemColor(SWT.COLOR_WHITE));
-            gc.setBackground(m_color);
-            double functionNameWidth = gc.getFontMetrics().getAverageCharWidth() * m_function.length();
-
-            if (((double)length * scale) > functionNameWidth){
-                gc.drawString(m_function,
-                        (int)(((((double)x + ((double)length / 2.0)) * scale) - (functionNameWidth)/2.0)),
-                        textBase);
-            }
             
+            m_textBlockNode.setBounds((int)((double)x * scale), y, (int)((double)length * scale) + 1, height, m_pixelsY - m_functionNameY);
+            m_textBlockNode.draw(display, gc, scale);
+
             return length;
         }
     }

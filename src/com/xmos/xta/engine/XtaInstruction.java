@@ -41,7 +41,7 @@ public abstract class XtaInstruction extends Instruction {
 	}
 
 	public String toString(){
-		return "0x" +Integer.toHexString(getPc()) + " " + getNmenonic() + " " + getOperandString();
+		return "0x" + Integer.toHexString(getPc()) + " " + getNmenonic() + " " + getOperandString();
 	}
 	
 	public void addReturnLocation(XtaInstruction pc){
