@@ -48,7 +48,7 @@ public class ScannerDisassembly extends RuleBasedScanner {
         };
             
         ArrayList<String> resource = new ArrayList<String>();
-        for(String s : AssemblyLine.resourceName){
+        for(String s : AssemblyLine.getResourceNames()){
         	resource.add(s);
         }
         resource.add("res");
