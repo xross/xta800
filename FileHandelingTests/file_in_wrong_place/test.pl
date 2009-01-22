@@ -7,7 +7,8 @@ my $arch    = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("@ARGV load $genDir/test.xe analyse function main exit > $genDir/file_in_wrong_place.log 2>&1");
+system("cp a.xc test.xc");
+system("xcc -march=xs1b -g test.xc -o $genDir/test.xe > $genDir/file_in_wrong_place.log 2>&1");
+system("mv test.xc ./up/test.xc");
 }
-
-system("touch file_in_wrong_place.txt");
+system("@ARGV load $genDir/test.xe analyse function main summary complete print src 44 ../up/test.xc exit > $genDir/file_in_wrong_place.txt 2>&1");
