@@ -12,13 +12,13 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/excluded_labels
 system("@ARGV load $genDir/test.xe " .
        "add label L1 0x100d0 " .
        "add label L2 0x100d4 " .
-       "add excluded L1 " .
-       "list excluded " .
+       "add filter L1 " .
+       "list filter " .
        "analyse function main " .
        "summary simple " .
        "print src 2 ../test.xc " .
-       "remove excluded L1 " .
-       "list excluded " .
+       "remove filter L1 " .
+       "list filter " .
        "analyse function main " .
        "summary simple " .
        "print src 2 ../test.xc " .

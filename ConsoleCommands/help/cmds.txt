@@ -1,19 +1,20 @@
 help
-help load
+help add
 help analyse
+help assert
+help clear
+help config
+help echo
+help help
+help history
 help list
+help load
+help print
+help pwd
+help remove
+help set
+help source
 help status
 help summary
-help print
-help set
-help assert
-help add
-help remove
-help source
-help history
-help pwd
-help config
-help clear
-help help
 help exit
 exit
