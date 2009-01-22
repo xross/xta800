@@ -11,16 +11,16 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
     path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0
-       \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
+        \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
 [^^^]
-       \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
+        \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
 [^^^]
     path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0
-       \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
+        \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
 [^^^]
-       \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
+        \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
 [^^^]
-       \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
+        \(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
 [^^^]
   1: int a = 2;
   2: int main\(\)
