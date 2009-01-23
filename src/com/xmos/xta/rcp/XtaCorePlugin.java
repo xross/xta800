@@ -14,6 +14,7 @@ public class XtaCorePlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		getPreferenceStore().setDefault("LastDir", "");
+		getPreferenceStore().setDefault("History", "");
 	}
 
 	public static XtaCorePlugin getDefault(){

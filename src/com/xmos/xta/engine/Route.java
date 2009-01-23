@@ -214,6 +214,10 @@ public class Route {
 		m_unresolvedPaths.add(unresolved);
 	}
 
+	public RouteStatus getStatus(){
+		return m_status;
+	}
+	
 	private void stepPath() throws Exception {
 		ExecutionState searching = nextBlock();
 		while (searching != null && (m_status != RouteStatus.ABORTED )) {

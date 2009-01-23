@@ -18,6 +18,7 @@ import com.xmos.xeobject.Function;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Route.RouteStatus;
+import com.xmos.xta.engine.Unknown.UnknownType;
 
 public class Engine { 
 	
@@ -202,7 +203,6 @@ public class Engine {
             m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);
             decodeInstructions(); 
             
-            //TODO
             loadLabels();
             
             if (success) {
@@ -409,6 +409,7 @@ public class Engine {
     }
 
     public void setErrorString(String errorString) {
+    	
         m_errorString = errorString;
     }
 
@@ -422,10 +423,22 @@ public class Engine {
     }    
 
     public boolean setInstructionTimeTaken(int pc, double timeTaken) {
+    	
+    	//TODO
         boolean hit = false;
         if (m_route != null) {
             hit = m_route.setInstructionTimeTaken(pc, timeTaken);
-            if (hit) callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
+            ArrayList<Unknown> toRemove = new ArrayList<Unknown>();
+            for(Unknown unknown : m_route.getUnknowns()){
+            	if(unknown.getPc() == pc && unknown.getUnknownType() == UnknownType.PAUSABLETIME){
+            		toRemove.add(unknown);
+            	}
+            }
+            m_route.getUnknowns().removeAll(toRemove);
+            if (hit) {
+            	callDisplayers(Displayer.NOTIFY_UPDATE_EXCLUDES, ""); 
+            	callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
+            }
         }
         else {
             setErrorString("No route currently anaylsed");    		

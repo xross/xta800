@@ -4,8 +4,9 @@ import java.util.ArrayList;
 
 import com.xmos.isa.Instruction;
 import com.xmos.xeloader.XeLoader.Architecture;
-import com.xmos.xta.engine.Expression.OperatorType;
 import com.xmos.xta.engine.InstructionExecption.Error;
+import com.xmos.xta.engine.expression.Expression;
+import com.xmos.xta.engine.expression.Expression.OperatorType;
 import com.xmos.xta.engine.resources.Channel;
 import com.xmos.xta.engine.resources.EventableResource;
 import com.xmos.xta.engine.resources.Port;
@@ -907,13 +908,17 @@ public abstract class XtaInstruction extends Instruction {
     	int resType = resourceId.getValue();
     	
         Resource res  = resources.getNewResource(resType);
-        res.setInUse(true);
-        res.setMaster(thread);
         
-        int resourceValue = res.getResourceID();
-        state.m_op1 = new Expression(resourceValue);
-        state.m_op1.resolve();
-    	
+        if(res == null){
+			throw new InstructionExecption(Error.ET_RESOURCE_DEP);
+		} else {
+	        res.setInUse(true);
+	        res.setMaster(thread);
+	        
+	        int resourceValue = res.getResourceID();
+	        state.m_op1 = new Expression(resourceValue);
+	        state.m_op1.resolve();
+		}
         if(RESOURCEDEBUG){
         	System.out.println("got resource for thread " + thread);
         }

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import com.xmos.xeloader.MemoryImage;
+import com.xmos.xta.engine.expression.Expression;
 
 class Memory {	
 

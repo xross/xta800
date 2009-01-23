@@ -1,6 +1,6 @@
 package com.xmos.xta.engine.resources;
 
-import com.xmos.xta.engine.Expression;
+import com.xmos.xta.engine.expression.Expression;
 
 public class EventableResource extends Resource {
     private boolean m_eventEnabledKnown;

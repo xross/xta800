@@ -18,6 +18,7 @@ import org.eclipse.ui.PlatformUI;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
+import com.xmos.xta.rcp.XtaCorePlugin;
 import com.xmos.xta.rcp.XtaEngine;
 
 public class ConsoleViewControl implements Console {
@@ -94,7 +95,6 @@ class TextReader extends Reader {
              
         Font font = new Font(PlatformUI.getWorkbench().getDisplay(), "Courier New", 10, SWT.NONE);
         m_text.setFont(font);
-        
         m_text.addKeyListener(new KeyListener() {
         	public void keyPressed(KeyEvent event) {
         		if (DEBUG) System.out.printf("TextReader: keyPressed: %d\n", event.keyCode);			
@@ -214,6 +214,12 @@ class TextReader extends Reader {
 	}
 	
 	public void close() throws IOException {
+		XtaCorePlugin plugin = XtaCorePlugin.getDefault();
+		StringBuffer sb = new StringBuffer();
+		for(Command c : m_commandHistory){
+			sb.append(c.name() + " || ");
+		}
+		plugin.getPreferenceStore().setValue("History", sb.toString());
 		if (DEBUG) System.out.printf("TextReader: close\n");			
 	}
 

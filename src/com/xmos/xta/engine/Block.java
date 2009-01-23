@@ -50,7 +50,7 @@ public class Block implements Comparable<Block> {
 	private int m_numFNops;
 	private int m_numInstructions;
 	private int m_numPausables;
-
+	
 	private ArrayList<Unknown> m_unknowns;
 	private HashSet<Integer> m_pcs;
 	private boolean m_speculative;
