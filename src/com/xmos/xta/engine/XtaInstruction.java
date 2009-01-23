@@ -4,9 +4,8 @@ import java.util.ArrayList;
 
 import com.xmos.isa.Instruction;
 import com.xmos.xeloader.XeLoader.Architecture;
+import com.xmos.xta.engine.Expression.OperatorType;
 import com.xmos.xta.engine.InstructionExecption.Error;
-import com.xmos.xta.engine.expression.Expression;
-import com.xmos.xta.engine.expression.Expression.OperatorType;
 import com.xmos.xta.engine.resources.Channel;
 import com.xmos.xta.engine.resources.EventableResource;
 import com.xmos.xta.engine.resources.Port;

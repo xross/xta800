@@ -1,6 +1,6 @@
 package com.xmos.xta.engine.expression.operations;
 
-import com.xmos.xta.engine.expression.Expression;
+import com.xmos.xta.engine.Expression;
 
 public class Add {
 

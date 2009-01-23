@@ -1,6 +1,5 @@
 package com.xmos.xta.engine;
 
-import com.xmos.xta.engine.expression.Expression;
 
 public class Registers {
 	final static int NUM_REGISTERS = 16;	

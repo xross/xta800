@@ -1,6 +1,6 @@
 package com.xmos.xta.engine.resources;
 
-import com.xmos.xta.engine.expression.Expression;
+import com.xmos.xta.engine.Expression;
 
 public class Channel extends EventableResource {
 

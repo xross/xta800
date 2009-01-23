@@ -1,5 +1,7 @@
 package com.xmos.xta.engine.expression;
 
+import com.xmos.xta.engine.Expression;
+
 public class ExpressionImm extends Expression implements ExpressionInterface{
 	
 	private int m_value;

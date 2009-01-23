@@ -5,7 +5,6 @@ import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader.Architecture;
 import com.xmos.xta.engine.InstructionExecption.Error;
-import com.xmos.xta.engine.expression.Expression;
 import com.xmos.xta.engine.resources.Resources;
 import com.xmos.xta.engine.resources.Thread;
 

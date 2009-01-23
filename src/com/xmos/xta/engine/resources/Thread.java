@@ -2,9 +2,9 @@ package com.xmos.xta.engine.resources;
 
 import java.util.ArrayList;
 
+import com.xmos.xta.engine.Expression;
 import com.xmos.xta.engine.InstructionBuffer;
 import com.xmos.xta.engine.Registers;
-import com.xmos.xta.engine.expression.Expression;
 
 public class Thread extends Resource {
     
