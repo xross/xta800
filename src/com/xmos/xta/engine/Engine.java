@@ -201,7 +201,12 @@ public class Engine {
         	m_executableFile = executableFile;
         	initialiseLists(fileFinder);
             m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);
-            decodeInstructions(); 
+            try {
+				decodeInstructions();
+			} catch (Exception e) {
+				setErrorString("Some of the pc's refered to in the executable could not be found");
+				success = false;
+			} 
             
             loadLabels();
             
@@ -561,7 +566,7 @@ public class Engine {
     	*/
     }
     
-    private void decodeInstructions(){
+    private void decodeInstructions() throws Exception{
         for(int nodeId : m_xeLoader.getNodeIds()){
         	for(int coreId : m_xeLoader.getCoreIds(nodeId)){
 		        int lastPc = 0;
@@ -609,12 +614,12 @@ public class Engine {
         }
     }
 
-    private int getOpcode(int pc, int nodeId, int coreId){
+    private int getOpcode(int pc, int nodeId, int coreId) throws Exception{
         int opcode=0;
         try {
             opcode = m_xeLoader.getMemoryImage(nodeId, coreId).readInstructionWord(pc);
         } catch (Exception e) {
-            System.err.println("Problem with XeLoader in engine");
+        	throw new Exception("Problem with XeLoader in engine");
         }
         return opcode;
     }

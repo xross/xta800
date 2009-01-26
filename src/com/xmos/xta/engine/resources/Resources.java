@@ -4,6 +4,8 @@ import com.xmos.xta.engine.InstructionBuffer;
 import com.xmos.xta.engine.Registers;
 
 public class Resources {
+	
+	private static final boolean VERBOSE_WARNINGS = false;
 
     public static final int RES_TYPE_PORT = 0;
     public static final int RES_TYPE_TIMER  = 1;
@@ -213,12 +215,12 @@ public class Resources {
         return null;
     }
     public Thread getThread(int resType, int resNum) {
-        
         if(resType != RES_TYPE_THREAD){
-            System.err.println("looking up a thread and have wrong resource type");
+        	if(VERBOSE_WARNINGS) System.err.println("Trying to get a new thread but failing");
             return null;
+        } else {
+        	return (Thread)getResource(resType, resNum);
         }
-        return (Thread)getResource(resType, resNum);
     }
 
 	public Resource getNewResource(int resType) {
@@ -251,18 +253,19 @@ public class Resources {
 				return res;
 			}
 		}
-		assert(false);	
-		System.err.println("Ran out of resources");
+		if(VERBOSE_WARNINGS) System.err.println("Trying to get a new resource but failing");
 		return null;
 		
 	}
 
 	public Synchroniser getSynchroniser(int resType, int resNum) {
 		if(resType != RES_TYPE_SYNC){
-            System.err.println("looking up a sync and have wrong resource type");
+			if(VERBOSE_WARNINGS) System.err.println("Trying to get a new synchroniser but failing");
             return null;
+        } else {
+        	return (Synchroniser)getResource(resType, resNum);
         }
-        return (Synchroniser)getResource(resType, resNum);
+        
 	}
 
 	public Thread getThread(int thread) {
