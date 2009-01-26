@@ -1,16 +1,5 @@
-#include <print.h>
-
-void led2_thread(out port p_led, chanend prev, chanend next, int start)
+int add(int a, int b)
 {
-   int token = 1;
-   if (start) next <: 1;
-   while (token) {
-      prev :> token;
-      next <: token;
-  }
-  return;
-}
-
-void printout(){
-	printintln(4);
+  int res = a + b;
+  return res;
 }
