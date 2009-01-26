@@ -493,13 +493,15 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}
 
 	private InputLine findCodeRefLineNum(CodeReference codeRef) {
-		if (codeRef.getResolved()) {
-		    int pc = codeRef.getPc();
-    	    if (m_type.equals(XtaDocumentPartitioner.DISASSEMBLY)) {
-    		    return findPcLine(pc);
-    	    } else {
-    		    return findCodeLine(pc);
-    	    }
+		if (codeRef != null) {
+			if (codeRef.getResolved()) {
+			    int pc = codeRef.getPc();
+	    	    if (m_type.equals(XtaDocumentPartitioner.DISASSEMBLY)) {
+	    		    return findPcLine(pc);
+	    	    } else {
+	    		    return findCodeLine(pc);
+	    	    }
+			}			
 		}
 		return null;
 	}
