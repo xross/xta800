@@ -68,7 +68,7 @@ public class LabelMap {
         				if (DEBUG)  System.out.println(error);
         				//engine.callDisplayers(Displayer.NOTIFY_ERROR, error);
             	    	//plough on regardless
-        				//FIXME
+        				//FIXME (BUG: 4437)
         				//return false;
         			}
         	    } else {
@@ -76,7 +76,7 @@ public class LabelMap {
         	    	if (DEBUG)  System.out.println(error);
         	    	//engine.callDisplayers(Displayer.NOTIFY_ERROR, error);
         	    	//plough on regardless
-        	    	//FIXME
+        	    	//FIXME (BUG: 4437)
         	    	//return false;
         	    }
         	}
