@@ -1,7 +1,5 @@
 package com.xmos.xta.console.displayers;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.TreeSet;
 
@@ -44,23 +42,10 @@ public class SrcDisplayer implements Displayer {
 			return;
     	}
     	
-        HashMap<File, TreeSet<Integer>> linesCovered = createSrcLinesCovered(path, m_xeObject, false);  
-
-        if( m_fileName.charAt(0) != File.separatorChar){
-        	m_fileName =m_xeObject.getExectuableFile().getParent() + File.separatorChar +  m_fileName;
-        }
-        File traceFile = new File(m_fileName);
-        try {
-			traceFile = traceFile.getCanonicalFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-        if (!linesCovered.containsKey(traceFile)) {
+        HashMap<String, TreeSet<Integer>> linesCovered = createSrcLinesCovered(path, m_xeObject, false);  		
+        if (!linesCovered.containsKey(m_fileName)) {
             for (SourceFile sourceFile : m_xeObject.getSourceFiles()) {         
-                File currentSourceFile = sourceFile.getFile();
-               
-                if (traceFile.getAbsolutePath().equals(currentSourceFile.getAbsolutePath())) {
+                if (sourceFile.getFileName().equals(m_fileName)) {
                     m_console.display(String.format("Error: The requested path does not touch the file: %s\n",
                             m_fileName));
                     return;
@@ -70,16 +55,9 @@ public class SrcDisplayer implements Displayer {
            	return;
         }
                                                     
-        TreeSet<Integer> fileLines = linesCovered.get(traceFile);                                                                                
+        TreeSet<Integer> fileLines = linesCovered.get(m_fileName);                                                                                
 		for (SourceFile sourceFile : m_xeObject.getSourceFiles()) {		
-			File source=null;
-			try {
-				source = sourceFile.getFile().getCanonicalFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			assert(source!=null);
-			if (traceFile.equals(source)) {
+			if (sourceFile.getFileName().equals(m_fileName)) {
 				for (SourceLine sourceLine : sourceFile.getSourceLines()) {						
 					if (fileLines.contains(sourceLine.getLineNumber())) {
 						m_console.display(String.format("+"));
@@ -104,24 +82,21 @@ public class SrcDisplayer implements Displayer {
 	public void notify(String message, String argument) {
 	}
 
-	private HashMap<File, TreeSet<Integer>> createSrcLinesCovered(Block block,
+	private HashMap<String, TreeSet<Integer>> createSrcLinesCovered(Block block,
 			XeObject xeObject, boolean recurse) {
 
-		HashMap<File, TreeSet<Integer>> linesCovered = new HashMap<File, TreeSet<Integer>>();
+		HashMap<String, TreeSet<Integer>> linesCovered = new HashMap<String, TreeSet<Integer>>();
 		for (XtaInstruction inst : block.getInstructions(recurse)) {
 			for (SourceFile sourceFile : xeObject.getSourceFiles()) {
-				File file = sourceFile.getFile();
-				try {
-					file = file.getCanonicalFile();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				
+				String fileName = sourceFile.getFileName();
+
 				TreeSet<Integer> sourceLines;
-				if (linesCovered.containsKey(file)) {
-					sourceLines = linesCovered.get(file);
+				if (linesCovered.containsKey(fileName)) {
+					sourceLines = linesCovered.get(fileName);
 				} else {
 					sourceLines = new TreeSet<Integer>();
-					linesCovered.put(file, sourceLines);
+					linesCovered.put(fileName, sourceLines);
 				}
 
 				for (SourceLine sourceLine : sourceFile.getSourceLines()) {

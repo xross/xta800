@@ -296,7 +296,7 @@ public class Block implements Comparable<Block> {
 		if(m_contexts != null){
 			m_contexts.peek().add(pc);
 		} else {
-			System.err.println("contexts disappered!");
+			throw new Exception("During analysis function contextx have become null");
 		}
 		int nextPc = pc + instNumBytes;
 		
