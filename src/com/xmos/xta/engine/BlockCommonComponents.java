@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
+import com.xmos.xta.engine.references.CodeReference;
 
 public class BlockCommonComponents {
 	private Config m_config;

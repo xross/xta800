@@ -1,8 +1,6 @@
 package com.xmos.xta.rcp;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
@@ -12,47 +10,47 @@ import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xeobject.FileFinder;
 
-public class XtaFileFinder implements FileFinder {
-    public static final boolean DEBUG = false;
-      
-    private List<File> m_fileCache;
-    
-    public XtaFileFinder() {
-    	m_fileCache = new ArrayList<File>();
-    }
-    
-	public File openFileFinder(String fileToFind) {
-		if (DEBUG) System.out.printf("XtaFileFinder: openFileFinder: %s\n", fileToFind);
+public class XtaFileFinder extends FileFinder {    
+	public File openFileFinder(String compilationDir, String fileName) {
 		
-		File cachedFile = findFileInCache(fileToFind);
+		if (findFileInCancelCache(compilationDir, fileName)) {
+			return null;
+		}
+		
+		File cachedFile = findFileInCache(compilationDir, fileName);
 		if (cachedFile != null) {
 			return cachedFile;
 		}
 		
-		Display display = PlatformUI.getWorkbench().getDisplay();
-		Shell parent = new Shell(display);
+		File srcPathFile = findFileInSrcPaths(XtaEngine.getEngine().getSrcPaths(), fileName);
+		if (srcPathFile != null) {
+			return srcPathFile;
+		}
+		
+		File userSpecifiedFile = askUserForFile(compilationDir, fileName);
+		if (userSpecifiedFile != null) {
+			return userSpecifiedFile;
+		}
+		return null;			
+	}
+		
+	private File askUserForFile(String compilationDir, String fileName) {
+    	File sourceFile = new File(compilationDir + File.separator + fileName);		
+	    Display display = PlatformUI.getWorkbench().getDisplay();
+	    Shell parent = new Shell(display);
         FileDialog fileDialog = new FileDialog(parent, SWT.OPEN);
-        fileDialog.setText("Open Source File: " + fileToFind);
-        String[] filterExt = { fileToFind };
-        
+        fileDialog.setText("Open Source File: " + sourceFile.getName());
+        String[] filterExt = {sourceFile.getName()};
+    
         fileDialog.setFilterExtensions(filterExt);
-        if (DEBUG) System.out.println("about to open");
         String xeFileName = fileDialog.open();      
-        if (DEBUG) System.out.println("got file " + xeFileName);
         if (xeFileName != null) {
         	File file = new File(xeFileName);
-        	m_fileCache.add(file);
- 		    return file;
+        	addToFileCache(compilationDir, fileName, file);
+		    return file;
+        } else {
+        	addToCancelCache(compilationDir, fileName);
+        	return null;
         }
-        return null;
-	}
-
-    private File findFileInCache(String fileToFind) {    	
-	    for (File file : m_fileCache) {
-	    	if (file.getName().equals(fileToFind)) {
-	    		return file;
-	    	}		
-	    }
-	    return null;
-    }
+	}		
 }

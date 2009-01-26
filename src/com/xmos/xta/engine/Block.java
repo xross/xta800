@@ -10,6 +10,7 @@ import java.util.Vector;
 import com.xmos.xta.engine.Engine.ReferenceMode;
 import com.xmos.xta.engine.MachineState.BranchState;
 import com.xmos.xta.engine.Status.BlockStatus;
+import com.xmos.xta.engine.references.CodeReference;
 
 public class Block implements Comparable<Block> {
 	private static final boolean DEBUG = false;
@@ -230,9 +231,7 @@ public class Block implements Comparable<Block> {
 		return;
 	}
 
-	public void build() throws Exception {
-		
-		
+	public void build() throws Exception {				
 		if (IBUFFERSTATE) {
 			m_ibufferBefore = 0;
 			m_ibufferAfter = 0;
@@ -297,7 +296,7 @@ public class Block implements Comparable<Block> {
 		if(m_contexts != null){
 			m_contexts.peek().add(pc);
 		} else {
-			System.err.println("contexts disappered!");
+			throw new Exception("During analysis function contextx have become null");
 		}
 		int nextPc = pc + instNumBytes;
 		
@@ -540,7 +539,7 @@ public class Block implements Comparable<Block> {
 		Engine engine = m_bc.getEngine();
 		if(engine == null) return false;
 		for (CodeReference reference : engine.getReference(ReferenceMode.PROHIBITED)) {
-			assert (reference.isResolved());
+			assert (reference.getResolved());
 			if (reference.getPc() == pc) {
 				return true;
 			}

@@ -3,8 +3,9 @@ package com.xmos.xta.console.commands;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.engine.Engine.ReferenceMode;
+import com.xmos.xta.engine.references.CodeReference;
+import com.xmos.xta.engine.references.CodeReferenceFactory;
 
 public class Filter extends Command {	
 	enum Operation {
@@ -75,7 +76,7 @@ public class Filter extends Command {
     	switch (m_operation) {
     	case ADD:
     	case REMOVE:
-            CodeReference codeRef = new CodeReference(args[index + 1]);
+            CodeReference codeRef = CodeReferenceFactory.createCodeReference(args[index + 1]);
             return new Filter(codeRef, m_operation);
     	case LIST:
             return new Filter(m_operation);

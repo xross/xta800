@@ -3,6 +3,8 @@ package com.xmos.xta.engine;
 import java.util.List;
 import java.util.Vector;
 
+import com.xmos.xta.engine.references.CodeReference;
+
 public class CodeReferenceList {
     private int m_nodeId;
 	private int m_coreId;

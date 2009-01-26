@@ -1808,7 +1808,6 @@ public abstract class XtaInstruction extends Instruction {
     void STSED(MachineState state, int thread) throws Exception {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: STSED\n", getPc());	
-    	if(m_uninplimented) System.err.println("STSED");
     	
     	Expression sed = state.getResources().getThread(thread).getSED();
     	

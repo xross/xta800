@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import com.xmos.dwarfhandler.DebugEngine;
+
 import com.xmos.elfhandler.ElfHandler;
 import com.xmos.elfhandler.Symbol;
 import com.xmos.xeloader.DebugInfo;
@@ -18,6 +18,8 @@ import com.xmos.xeobject.Function;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Route.RouteStatus;
+import com.xmos.xta.engine.references.CodeReference;
+import com.xmos.xta.engine.references.CodeReferenceFactory;
 import com.xmos.xta.engine.Unknown.UnknownType;
 
 public class Engine { 
@@ -29,7 +31,6 @@ public class Engine {
 	}
 	
     private XeLoader m_xeLoader;
-    private Vector<File> m_sourceFiles;
     private Route m_route;
     private Route m_previousRoute;
     private Config m_config;
@@ -42,13 +43,14 @@ public class Engine {
     private boolean m_abort;
     private boolean m_resolveExpression;    
     private Progress m_progress;
+    private String m_srcPaths;
     
     private ArrayList<XeObject> m_xeObjects;
     private ArrayList<CodeReferenceList> m_exclusions;
     private ArrayList<CodeReferenceList> m_prohibited;
     private ArrayList<CodeReferenceList> m_required;
     private ArrayList<LabelMap> m_labels;
-    private ArrayList<PathQuery> m_pathQueries;    
+    private ArrayList<PathQuery> m_pathQueries;
     
     public Engine(Config config) {    	
         m_xeObjects   = new ArrayList<XeObject>();
@@ -57,7 +59,6 @@ public class Engine {
     	m_required    = new ArrayList<CodeReferenceList>();
     	m_labels      = new ArrayList<LabelMap>();    	
         m_xeLoader    = new XeLoader();        
-        m_sourceFiles = new Vector<File>();
         m_route       = null;
         m_previousRoute = null;
         m_config = config;
@@ -65,23 +66,14 @@ public class Engine {
         m_nodeId = 0;
         m_coreId = 0;
         m_errorString = "";
+        m_srcPaths = ".";
         m_displayers  = new Vector<Displayer>();
         m_pathQueries = new ArrayList<PathQuery>();
         m_abort = false;
         m_resolveExpression = false;        
         m_progress = new Progress(Progress.State.IDLE, 0, 0);
     }
-    
-    private boolean referenceListContainsReference(CodeReference ref, List<CodeReference> list){
-    	for(CodeReference cr : list){
-    		if(cr.getRef().equals(ref.getRef())){
-    			return true;
-    		}
-    	}
-    	return false;
-    }
-    
-    
+            
     public boolean addReference(ReferenceMode mode, CodeReference ref) {    	    	
         if (!resolveRefernece(ref, this)) {
         	return false;
@@ -114,6 +106,7 @@ public class Engine {
     	}
     	if (m_route != null) 
     		m_route.filterPaths();
+    	
     	callDisplayers(Displayer.NOTIFY_UPDATE_EXCLUDES, ""); 
     	return true;
     }
@@ -139,6 +132,7 @@ public class Engine {
 
     	if (m_route != null) 
     		m_route.filterPaths();
+    	
     	callDisplayers(Displayer.NOTIFY_UPDATE_EXCLUDES, ""); 
     	return true;
     }
@@ -189,10 +183,15 @@ public class Engine {
         return getXeObject(m_nodeId, m_coreId);
     }
 
-    public boolean loadExecutable(File executableFile) {
-    	return loadExecutable(executableFile, null);
+    public String getSrcPaths() {
+    	return m_srcPaths;
     }
 
+    public void setSrcPaths(String srcPaths) {
+    	m_srcPaths = srcPaths;
+    	m_srcPaths += ";.";
+    }
+    
     public boolean loadExecutable(File executableFile, FileFinder fileFinder) {
     	m_pathQueries.clear();
     	
@@ -201,14 +200,16 @@ public class Engine {
         	m_executableFile = executableFile;
         	initialiseLists(fileFinder);
             m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);
-            decodeInstructions(); 
+            try {
+				decodeInstructions();
+			} catch (Exception e) {
+				setErrorString("Some of the pc's refered to in the executable could not be found");
+				success = false;
+			} 
             
             loadLabels();
-            
-            if (success) {
-            	m_route = null;
-            	callDisplayers(Displayer.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath()); 
-            }
+           	m_route = null;
+           	callDisplayers(Displayer.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath()); 
         } else {
             setErrorString("The file '" + executableFile + "'could not be found.");	        
         }        
@@ -248,8 +249,8 @@ public class Engine {
     }    
 
     public boolean analyseRoute(String from, String to) {
-        CodeReference fromRef = new CodeReference(from);
-        CodeReference toRef = new CodeReference(to);     
+        CodeReference fromRef = CodeReferenceFactory.createCodeReference(from);
+        CodeReference toRef = CodeReferenceFactory.createCodeReference(to); 
         
         if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
             setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
@@ -393,17 +394,6 @@ public class Engine {
 		return m_resolveExpression;
 	}
 
-    public Vector<File> getFileNames() {
-        for(DebugInfo bd : m_xeLoader.getDebugInfos()){
-            DebugEngine de = bd.getDebugEngine();
-            for (File  fileName : de.getFileNames()){
-                if (!m_sourceFiles.contains(fileName)) 
-                    m_sourceFiles.add(fileName);
-            }
-        }
-        return m_sourceFiles;
-    }
-
     public String getErrorString() {
         return m_errorString;
     }
@@ -525,6 +515,15 @@ public class Engine {
 		return m_pathQueries;
 	}
 	
+    private boolean referenceListContainsReference(CodeReference ref, List<CodeReference> list){
+    	for(CodeReference cr : list){
+    		if(cr.getRef().equals(ref.getRef())){
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+	
     private boolean analyseRouteSafley() {
     	//catch all errors here
     	boolean t = false;
@@ -561,7 +560,7 @@ public class Engine {
     	*/
     }
     
-    private void decodeInstructions(){
+    private void decodeInstructions() throws Exception{
         for(int nodeId : m_xeLoader.getNodeIds()){
         	for(int coreId : m_xeLoader.getCoreIds(nodeId)){
 		        int lastPc = 0;
@@ -609,12 +608,12 @@ public class Engine {
         }
     }
 
-    private int getOpcode(int pc, int nodeId, int coreId){
+    private int getOpcode(int pc, int nodeId, int coreId) throws Exception{
         int opcode=0;
         try {
             opcode = m_xeLoader.getMemoryImage(nodeId, coreId).readInstructionWord(pc);
         } catch (Exception e) {
-            System.err.println("Problem with XeLoader in engine");
+        	throw new Exception("Problem with XeLoader in engine");
         }
         return opcode;
     }
@@ -745,8 +744,7 @@ public class Engine {
     	m_xeObjects.clear();
     	
 		for (int node : m_xeLoader.getNodeIds()){
-			for (int core : m_xeLoader.getCoreIds(node)) {
-				
+			for (int core : m_xeLoader.getCoreIds(node)) {				
 			    m_exclusions.add(new CodeReferenceList(node, core));
 			    m_prohibited.add(new CodeReferenceList(node, core));
 			    m_required.add(new CodeReferenceList(node, core));
