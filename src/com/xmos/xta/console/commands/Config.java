@@ -7,6 +7,7 @@ class Config extends CommandContainer {
 		new Threads(), 
 		new Iterations(), 
 		new Mode(), 
+		new SrcPaths(), 
 	};
 	
 	Config() { super("config"); }

@@ -39,11 +39,12 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xeobject.Function;
 import com.xmos.xeobject.XeObject;
-import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Progress;
 import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.references.CodeReference;
+import com.xmos.xta.engine.references.CodeReferenceFactory;
 import com.xmos.xta.rcp.XtaCorePlugin;
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.XtaEngine;
@@ -100,13 +101,13 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		
 		m_startPointListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-    		    CodeReference startPoint = new CodeReference(m_startPoint.getText());
+    		    CodeReference startPoint = CodeReferenceFactory.createCodeReference(m_startPoint.getText());
 			    XtaDisplayer.getInstance().notifySetStartPoint(startPoint);
 			}			
 		};
 		m_endPointListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-			    CodeReference endPoint = new CodeReference(m_endPoint.getText());
+			    CodeReference endPoint = CodeReferenceFactory.createCodeReference(m_endPoint.getText());
 			    XtaDisplayer.getInstance().notifySetEndPoint(endPoint);
 			}			
 		};
@@ -161,12 +162,12 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        updateState();
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_START_POINT)) {
 			CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();
-			if (startPoint.isResolved() || startPoint.getRef().equals("")) {
+			if (startPoint.getResolved() || startPoint.getRef().equals("")) {
 				setText(m_startPoint, m_startPointListener, startPoint.getRef(), startPoint.getRef());
 			}
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_END_POINT)) {
 			CodeReference endPoint = XtaDisplayer.getInstance().getEndPoint();
-			if (endPoint.isResolved() || endPoint.getRef().equals("")) {
+			if (endPoint.getResolved() || endPoint.getRef().equals("")) {
 				setText(m_endPoint, m_endPointListener, endPoint.getRef(), endPoint.getRef());
 			}
 		} else if (event.getProperty().equals(Displayer.NOTIFY_SELECT_FUNCTION)) {
