@@ -7,10 +7,10 @@ class InstructionAttributes {
     
     InstructionAttributes() {
         m_timing = new HashMap<String, Integer>();
-        m_timing.put("DIVS_l3r", 8);
-        m_timing.put("DIVU_l3r", 8);
-        m_timing.put("REMS_l3r", 8);
-        m_timing.put("REMU_l3r", 8);
+        m_timing.put("divs (l3r)", 8);
+        m_timing.put("divu (l3r)", 8);
+        m_timing.put("rems (l3r)", 8);
+        m_timing.put("remu (l3r)", 8);
     }
     
     int getTiming(String nmenonic) {
