@@ -812,11 +812,10 @@ public abstract class XtaInstruction extends Instruction {
     	    int resType = resources.decodeResType(resId);
     	    if(resType == Resources.RES_TYPE_TIMER || resType == Resources.RES_TYPE_CHANEND ||
     	    		resType == Resources.RES_TYPE_SYNC ||  resType == Resources.RES_TYPE_THREAD ||
-    	    		resType == Resources.RES_TYPE_LOCK){
-    	    Resource res = resources.getResource(resType, resNum);
-    	    if(res!= null) res.setInUse(true);
-    	    } else {
-    	    	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
+    	    		resType == Resources.RES_TYPE_LOCK) {
+    	        Resource res = resources.getResource(resType, resNum);
+    	        if(res!= null)
+    	    	    res.setInUse(true);
     	    }
         } else {
         	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
@@ -936,25 +935,6 @@ public abstract class XtaInstruction extends Instruction {
     void GETST(MachineState state, int thread) throws Exception {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETST\n", getPc());	
-    	/*
-    	
-    	Expression synchroniserId = state.m_op2;
-    	if(synchroniserId.canResolve()){
-    		Resources resources = state.getResources();
-    		int resNo = synchroniserId.getValue();
-    		int resType = resources.decodeResType(resNo);
-    		int resNum = resources.decodeResType(resNo);
-    		if(resType == Resources.RES_TYPE_SYNC){
-    			
-    		} else {
-    			
-    		}
-    		
-    	} else {
-    		//TODO 
-    	}
-    	
-    	*/
     	
     	Expression synchroniserId = state.m_op2;
     	if(synchroniserId.canResolve()){
@@ -966,8 +946,8 @@ public abstract class XtaInstruction extends Instruction {
     		if(resType == Resources.RES_TYPE_SYNC){
     			
     			Resource res = resources.getResource(resType, resNum);
-    			if(res==null){
-    				throw new InstructionExecption(Error.ET_ILLEGAL_RESOURCE);
+    			if (res==null) {
+    				return;
     			}
     			res.setInUse(true);
     			Resource newRes = resources.getNewResource(Resources.RES_TYPE_THREAD);
@@ -1638,7 +1618,7 @@ public abstract class XtaInstruction extends Instruction {
             		|| resType == Resources.RES_TYPE_TIMER){
             	EventableResource er = (EventableResource) state.getResources().getResource(resType, resNum);
             	if(er==null){
-            		throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
+            		return;
             	}
             	er.setEnvironmentVector(reg_11);
             	if(RESOURCEDEBUG){
@@ -1731,7 +1711,7 @@ public abstract class XtaInstruction extends Instruction {
             		|| resType == Resources.RES_TYPE_TIMER) {
             	EventableResource er = (EventableResource) state.getResources().getResource(resType, resNum);
             	if(er==null){
-            		throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
+            		return;
             	}
             	er.setVector(reg_11);
             	if (RESOURCEDEBUG){
