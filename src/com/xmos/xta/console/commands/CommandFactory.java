@@ -2,6 +2,8 @@ package com.xmos.xta.console.commands;
 
 import java.util.Vector;
 
+import com.xmos.xta.console.Console;
+
 public class CommandFactory {
 	static private Command[] m_commands = { 
 		new Load(), 
@@ -30,7 +32,7 @@ public class CommandFactory {
 	}
 	
     public static Command buildCommand(String[] args, int index, 
-    		Vector<Command> commandHistory, boolean commandLineMode) {
+    		Vector<Command> commandHistory, Console console, boolean commandLineMode) {
     	String arg = args[index];    	
         
         if (isPingCommand(arg)) {
@@ -40,9 +42,16 @@ public class CommandFactory {
     	arg = stripLeadingDash(arg);
     	for (Command command : m_commands) {
     		if (arg.equals(command.name())) {
-    			return command.clone(args, index, commandLineMode);
+    			Command cloned = command.clone(args, index, commandLineMode);    			
+    			if (cloned == null) {
+    		    	console.display(
+    		    			"Invalid argument(s) to '" + command.name() + 
+    		    			"' command (Try 'help " + command.name() + "'..)\n");    	    				
+    			}
+    			return cloned;
     		}    			
-    	}
+    	}    	
+    	console.display("Invalid command (Try 'help'..)\n");    	
     	return null;
     }
     

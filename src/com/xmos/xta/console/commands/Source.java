@@ -56,7 +56,7 @@ class Source extends Command {
                         String[] tokens = line.trim().split("\\s+");
                         
                         Command command = CommandFactory.buildCommand(
-                        		tokens, 0, shell.getCommandHistory(), false);
+                        		tokens, 0, shell.getCommandHistory(), console, false);
                         
                         if (command != null) {
                         	shell.addCommand(command, location+1);
