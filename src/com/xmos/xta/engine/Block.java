@@ -145,8 +145,7 @@ public class Block implements Comparable<Block> {
 		blockToSplit.m_parentBlock = this;
 
 		m_speculative = blockToSplit.m_speculative;
-		if (DEBUG)
-			System.out.println("\tsplit block " + Integer.toHexString(pcHit) + " at to make block " + m_id + " and block " + blockToSplit.m_id);
+		if (DEBUG) System.out.println("\tsplit block " + Integer.toHexString(pcHit) + " at to make block " + m_id + " and block " + blockToSplit.m_id);
 	}
 
 	public Block(Block block, MachineState machineState, ExecutionState executionState) {
@@ -219,8 +218,7 @@ public class Block implements Comparable<Block> {
 	}
 
 	public void addLoopPath(Block pathStartBlock) {
-		if (DEBUG)
-			System.out.println("found loopPath: " + pathStartBlock.m_id + " forms a loop with block " + m_id);
+		if (DEBUG) System.out.println("found loopPath: " + pathStartBlock.m_id + " forms a loop with block " + m_id);
 		assert (pathStartBlock != null);
 		assert (!m_loopPaths.contains(pathStartBlock));
 		if (m_loopPaths.contains(pathStartBlock))
@@ -279,8 +277,6 @@ public class Block implements Comparable<Block> {
 		
 		if (DUMPSTATE) {
 			dumpState(m_machineState);
-			System.out.println();
-			System.out.println();
 		}
 		
 		if (isComplete(instruction, pc)) {
@@ -393,25 +389,6 @@ public class Block implements Comparable<Block> {
 				m_firstStep = false;
 				instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
 			}
-		}
-		
-		if(IBUFFERSTATE) {
-			m_ibufferAfter = m_machineState.getResources().getCurrentIBuffer(m_currentThread).getNumBytes();
-		}
-		
-		if(IBUFFERSTATE) {
-			System.out.print("start: " + m_ibufferBefore + 
-					" fnop fetches: " + m_ibufferFnops + 
-					" fetches: " + m_ibufferFetches+ 
-					" issues:" + m_ibufferIssue + 
-					" After: " + m_ibufferAfter);
-			int properState = m_ibufferBefore + m_ibufferFnops + m_ibufferFetches - m_ibufferIssue ;
-			
-			if(properState != m_ibufferAfter){
-				System.out.print("  eek");
-				// m_machineState.getResources().getCurrentIBuffer(m_currentThread).m_numBytes = properState;
-			}
-			System.out.println("\n");
 		}
 	}
 
@@ -757,8 +734,8 @@ public class Block implements Comparable<Block> {
 		return 1;
 	}
 
-	public ArrayList<Integer> getAllPcs() {
-		ArrayList<Integer> allPcs = new ArrayList<Integer>();
+	public HashSet<Integer> getAllPcs() {
+		HashSet<Integer> allPcs = new HashSet<Integer>();
 		allPcs.addAll(m_pcs);
 		for (Block block : getPathBlocks()) {
 			allPcs.addAll(block.m_pcs);

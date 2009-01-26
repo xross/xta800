@@ -3,6 +3,7 @@ package com.xmos.xta.engine;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
@@ -235,7 +236,7 @@ public class Route {
 	    while ( shedIter.hasNext() ){
 	    	ExecutionState e = shedIter.next();
 	    	if (e.getStatus() == ExecutionStatus.UNRESOLVED 
-	    			|| e.getStatus() == ExecutionStatus.COMPLETE) {
+	    			|| e.getStatus() == ExecutionStatus.COMPLETE ) {
 	    		shedIter.remove();
 			}
 	    }
@@ -253,6 +254,10 @@ public class Route {
 	private void sortPaths() {
 		Collections.sort(m_completePaths);
 		for(Block block : m_allBlocks){
+			if(m_status == RouteStatus.ABORTED ){
+				//return the paths unsorted
+				return;
+			}
 			Collections.sort(block.getLoopPaths());
 		}
 	}
@@ -280,7 +285,6 @@ public class Route {
 	
 	public void filterPaths() {
 		
-		//TODO
 		ArrayList<Block> toRemove = new ArrayList<Block>();
 		
 		ArrayList<Integer> exclusions = new ArrayList<Integer>();
@@ -294,10 +298,16 @@ public class Route {
 		m_completePaths.addAll(m_removedPaths);
 		m_removedPaths.clear();
 		
+		if(required.size() == 0 && exclusions.size() == 0){
+			return;
+		}
+		
 		for(Block completePath : m_completePaths){
-			
-			ArrayList<Integer> allPathPcs = completePath.getAllPcs();
-
+			HashSet<Integer> allPathPcs = completePath.getAllPcs();
+			if(m_status == RouteStatus.ABORTED ){
+				//return the paths unfiltered
+				return;
+			}
 			for(int req : required){
 				if(!allPathPcs.contains(req)){
 					toRemove.add(completePath);

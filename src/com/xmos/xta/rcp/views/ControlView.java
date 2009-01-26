@@ -230,8 +230,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        	try {
 					xeFile = xeFile.getCanonicalFile();
 				} catch (IOException e) {
-					//FIXME -popup a box as a warning
-					System.err.println("cannot resolve file: " + xeFileName);
+					displayMessageBox("Error", "Cannot resolve file: " + xeFileName);
 					return;
 				}
         	
