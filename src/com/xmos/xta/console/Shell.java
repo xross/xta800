@@ -96,7 +96,7 @@ public class Shell {
     
     private void processCommandLine(String[] args) {     		    
 	    for (int i = 0; i < args.length; ++i) {
-	    	Command command = CommandFactory.buildCommand(args, i, m_commandHistory, true);
+	    	Command command = CommandFactory.buildCommand(args, i, m_commandHistory, m_console, true);
 	    	if (command == null)
 	    		usage();
 	    	
@@ -147,11 +147,10 @@ public class Shell {
                 	
                 }
                 tokens = s.toArray(tokens);
-                command = CommandFactory.buildCommand(tokens, 0, m_commandHistory, false);         
+                command = CommandFactory.buildCommand(tokens, 0, m_commandHistory, m_console, false);
                 if (command == null) {
-            		m_commandHistory.add(new Invalid(line));                	
-                	m_console.display("Invalid command (Try 'help'..)\n");
-                }
+                	m_commandHistory.add(new Invalid(line));
+                }                	
                 if (!exitAllowed(command)) {
             		command = null;
                 }
