@@ -33,9 +33,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     }
 
     protected void fillMenuBar(IMenuManager menuBar) {
-   	    MenuManager fileMenu = new MenuManager("&File", IWorkbenchActionConstants.M_FILE);
-    	MenuManager windowMenu = new MenuManager("&Window", IWorkbenchActionConstants.M_WINDOW);
-   	    MenuManager helpMenu = new MenuManager("&Help", IWorkbenchActionConstants.M_HELP);
+   	    MenuManager fileMenu = new MenuManager("File", null);
+    	MenuManager windowMenu = new MenuManager("Window", null);
+   	    MenuManager helpMenu = new MenuManager("Help", null);
     	
    	    menuBar.add(fileMenu);
     	menuBar.add(windowMenu);
