@@ -188,28 +188,28 @@ public class Resources {
     public Resource getResource(int resType, int resNum) {
         switch(resType){
         case RES_TYPE_PORT:
-        	if(resNum<NUM_PORTS) return null;
+            assert(resNum<NUM_PORTS);
             return m_ports[resNum];
         case RES_TYPE_TIMER:
-        	if(resNum<NUM_TIMERS) return null;
+            assert(resNum<NUM_TIMERS);
             return m_timers[resNum];
         case RES_TYPE_CHANEND:
-        	if(resNum<NUM_CHANNELS) return null;
+            assert(resNum<NUM_CHANNELS);
             return m_channels[resNum];
         case RES_TYPE_SYNC:
-        	if(resNum<NUM_SYNCHRONISERS) return null;
+            assert(resNum<NUM_SYNCHRONISERS);
             return m_synchronisers[resNum];
         case RES_TYPE_THREAD:
-        	if(resNum<NUM_THREADS) return null;
+            assert(resNum<NUM_THREADS);
             return m_threads[resNum];
         case RES_TYPE_LOCK:
-        	if(resNum<NUM_LOCKS) return null;
+            assert(resNum<NUM_LOCKS);
             return m_locks[resNum];
         case RES_TYPE_CLKBLK:
-        	if(resNum<NUM_CLOCKBLOCKS) return null;
+            assert(resNum<NUM_CLOCKBLOCKS);
             return m_clockBlocks[resNum];
         case RES_TYPE_COPROC:
-        	if(resNum<NUM_COPROC) return null;
+            assert(resNum<NUM_COPROC);
             return m_coprocs[resNum];
         }
         return null;
