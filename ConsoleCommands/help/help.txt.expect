@@ -35,6 +35,7 @@
       option: threads <num threads>: Sets number of threads currently executing (default: 8)
       option: iterations <a|r> <num>: Sets the default number of loop iterations (a: absolute, r: relative)
       option: mode <resolve|noresolve>: Sets the engine the given mode
+      option: srcpaths <paths>: Sets the (semicolon separated) source search path
   [-]echo "text": prints the text to the console
   [-]help [command]: Displays help message for the given command
   [-]history: Displays the command history

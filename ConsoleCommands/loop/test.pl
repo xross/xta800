@@ -14,8 +14,8 @@ system("@ARGV load $genDir/test.xe " .
        "set loop 1 r 5 " .
        "set loop 7 r 3 " .
        "summary complete_loops " .
-       "print src 1 ../test.xc " .
-       "print src 7 ../test.xc " .
-       "print src 10 ../test.xc " .
+       "print src 1 test.xc " .
+       "print src 7 test.xc " .
+       "print src 10 test.xc " .
        "exit > $genDir/loop.txt 2>&1");
 

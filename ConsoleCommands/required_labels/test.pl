@@ -16,12 +16,12 @@ system("@ARGV load $genDir/test.xe " .
        "list required " .
        "analyse function main " .
        "summary simple " .
-       "print src 1 ../test.xc " .
+       "print src 1 test.xc " .
        "remove required L1 " .
        "list required " .
        "add required L2 " .
        "list required " .
        "analyse function main " .
        "summary simple " .
-       "print src 2 ../test.xc " .
+       "print src 2 test.xc " .
        "exit > $genDir/required_labels.txt 2>&1");

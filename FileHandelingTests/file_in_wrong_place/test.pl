@@ -11,4 +11,7 @@ system("cp a.xc test.xc");
 system("xcc -march=xs1b -g test.xc -o $genDir/test.xe > $genDir/file_in_wrong_place.log 2>&1");
 system("mv test.xc ./up/test.xc");
 }
-system("@ARGV load $genDir/test.xe analyse function main summary complete print src 44 ../up/test.xc exit > $genDir/file_in_wrong_place.txt 2>&1");
+system("@ARGV load $genDir/test.xe " .
+       "analyse function main " .
+       "summary simple " .
+       "exit > $genDir/file_in_wrong_place.txt 2>&1");

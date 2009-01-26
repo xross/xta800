@@ -39,14 +39,12 @@ int main() {
   
   timer t;
   chan c;
+  int result = 0;
   
   #pragma xta label "pointA"
   t :> before;
   for (i = 0; i < 1000; i++) {
-    par {
-      send(c);
-      receive(c);
-    }
+    result += i;
   }
   #pragma xta label "pointB"
   t :> after;
