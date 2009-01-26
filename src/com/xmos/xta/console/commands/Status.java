@@ -50,6 +50,8 @@ class Status extends Command {
     	else
     		console.display(String.format("Mode: No Resolve\n"));    		
     	
+    	console.display("SrcPaths: " + engine.getSrcPaths() + "\n");
+    	
     	if (executable==null)
     		console.display(String.format("No executable loaded\n"));
     	else

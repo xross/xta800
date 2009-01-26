@@ -14,6 +14,7 @@ import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader.Architecture;
 import com.xmos.xta.engine.Engine.ReferenceMode;
 import com.xmos.xta.engine.Status.ExecutionStatus;
+import com.xmos.xta.engine.references.CodeReference;
 
 public class Route {
 

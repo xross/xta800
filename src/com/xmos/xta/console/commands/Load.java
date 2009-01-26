@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.xmos.xta.console.Console;
+import com.xmos.xta.console.ConsoleFileFinder;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 
@@ -50,7 +51,8 @@ class Load extends Command {
 		} catch (IOException e) {
 			console.display(String.format("Error: Failed to resolve executable path: %s\n", m_executableName));
 		}
-        if (engine.loadExecutable(file) == false) {
+		ConsoleFileFinder fileFinder = new ConsoleFileFinder(engine, console);	
+        if (engine.loadExecutable(file, fileFinder) == false) {
         	console.display(String.format("Error: Failed to load executable: %s\n", m_executableName));
         	console.display(String.format("Error: %s\n", engine.getErrorString()));
         }

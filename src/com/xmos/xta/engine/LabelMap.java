@@ -1,12 +1,12 @@
 package com.xmos.xta.engine;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xta.engine.references.CodeReference;
+import com.xmos.xta.engine.references.CodeReferenceFactory;
 
-public class LabelMap {
-	
+public class LabelMap {	
 	private static final boolean DEBUG = false;
 	
 	private int m_nodeId;
@@ -43,8 +43,8 @@ public class LabelMap {
         	int size = readInt(data, byteIndex + 4);
 
         	int index = 8;
-        	String basePath = readString(data, byteIndex + index);
-    		index += basePath.length() + 1;
+        	String compilationDir = readString(data, byteIndex + index);
+    		index += compilationDir.length() + 1;
 
         	while (index < size) {
         		String labelName = readString(data, byteIndex + index);
@@ -55,11 +55,9 @@ public class LabelMap {
         		
         		String fileName = readString(data, byteIndex + index);
         		index += fileName.length() + 1;
-        		fileName = basePath + File.separator + fileName;
         		
-        		CodeReference ref = new CodeReference(fileName, lineNumber);
-        		
-        		if (DEBUG) System.out.println(labelName + " "+ fileName + " " + lineNumber);
+        		CodeReference ref = CodeReferenceFactory.createCodeReference(
+        				String.format("%s:%d", fileName, lineNumber));
         		
         		if (ref.resolve(engine, m_nodeId, m_coreId)) {
         			if (!m_labels.containsKey(labelName)) {
@@ -83,8 +81,7 @@ public class LabelMap {
         	    }
         	}
         	byteIndex += size;
-        }
-        
+        }        
         return true;
 	}
 	

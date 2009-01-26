@@ -5,8 +5,9 @@ import java.util.Map;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
-import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.references.CodeReference;
+import com.xmos.xta.engine.references.CodeReferenceFactory;
 
 public class Label extends Command {
 	enum Operation {
@@ -89,7 +90,7 @@ public class Label extends Command {
 				
     	switch (m_operation) {
     	case ADD:
-    		CodeReference ref = new CodeReference(args[index + 2]);
+    		CodeReference ref = CodeReferenceFactory.createCodeReference(args[index + 2]);
     		return new Label(args[index + 1], ref, m_operation);            
     	case REMOVE:
     		return new Label(args[index + 1], m_operation);            

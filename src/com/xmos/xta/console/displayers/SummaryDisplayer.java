@@ -1,14 +1,13 @@
 package com.xmos.xta.console.displayers;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.xmos.dwarfhandler.DebugFile;
 import com.xmos.elfhandler.ElfHandler;
 import com.xmos.elfhandler.Symbol;
 import com.xmos.isa.Instruction;
@@ -267,18 +266,14 @@ public class SummaryDisplayer implements Displayer {
     }
 
     private void displaySources(Route route, DebugInfo debugInfo) {
-    	Collection<File> sourceFiles = debugInfo.getDebugEngine().getFileNames();
-        
-    	for (File sourceFile : sourceFiles) {
-            String sourceFileName = sourceFile.getName();
-
+  	    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {
         	TreeSet<Integer> pathIds = new TreeSet<Integer>();
             for (Block path : route.completePaths()) {
-            	buildPathsWithinSourcesSet(path, pathIds, sourceFileName);
+            	buildPathsWithinSourcesSet(path, pathIds, debugFile.getFileName());
             }    	
             
             if (pathIds.size() > 0) {
-            	m_console.display(String.format("%s: ", sourceFileName)); 
+            	m_console.display(String.format("%s: ", debugFile.getFileName())); 
             	for (Integer pathId : pathIds) {
             		m_console.display(String.format("%d ", pathId));
             	}

@@ -8,10 +8,11 @@ import org.eclipse.ui.PlatformUI;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
-import com.xmos.xta.engine.CodeReference;
 import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.references.CodeReference;
+import com.xmos.xta.engine.references.CodeReferenceFactory;
 import com.xmos.xta.rcp.nodes.RouteNode;
 
 public class XtaDisplayer implements Displayer {
@@ -65,9 +66,9 @@ public class XtaDisplayer implements Displayer {
 		if (DEBUG) System.out.printf("XtaDisplayer: notify %s (%s)\n", message, argument);
 
 		if (message.equals(NOTIFY_SET_START_POINT)) {
-			notifySetStartPoint(new CodeReference(argument));
+			notifySetStartPoint(CodeReferenceFactory.createCodeReference(argument));
 		} else if (message.equals(NOTIFY_SET_END_POINT)) {
-			notifySetEndPoint(new CodeReference(argument));
+			notifySetEndPoint(CodeReferenceFactory.createCodeReference(argument));
 		} else if (message.equals(NOTIFY_UPDATE_EXCLUDES)) {
 			m_notifyArgument = argument;
 			if (m_routeInfo != null) {
