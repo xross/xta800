@@ -9,5 +9,10 @@ my $noBuild = shift(@ARGV);
 if (!$noBuild) {
 system("xcc -march=xs1b -g test.xc up/test.xc -o $genDir/test.xe > $genDir/multi_directory_same_file_names_with_labels.log 2>&1");
 }
-system("@ARGV load $genDir/test.xe list label analyse function flashled print src 0 ../test.xc config proc 0 1 list label analyse function led2_thread print src 7 ../up/test.xc print src 4 ../up/test.xc config proc 0 2 list label config proc 0 3 list label exit  > $genDir/multi_directory_same_file_names_with_labels.txt 2>&1");
+system("@ARGV load $genDir/test.xe " .
+       "list label " .
+       "analyse function main " .
+       "print src 0 test.xc " .
+       "print src 0 up/test.xc " .
+       "exit  > $genDir/multi_directory_same_file_names_with_labels.txt 2>&1");
 

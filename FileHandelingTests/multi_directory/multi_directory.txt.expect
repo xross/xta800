@@ -1,122 +1,15 @@
-  1: /**
-  2:  * @ModuleName XDK Multicore Tutorial
-  3:  * @Date 06/10/2008
-  4:  * @Version 2.1
-  5:  *
-  6:  * The copyrights, all other intellectual and industrial 
-  7:  * property rights are retained by XMOS and/or its licensors. 
-  8:  * Terms and conditions covering the use of this code can
-  9:  * be found in the Xmos End User License Agreement.
-  10:  *
-  11:  * Copyright XMOS Ltd 2008
-  12: **/ 
-  13: 
-  14: #include <xs1.h>
-  15: #include <platform.h>
-  16: 
-  17: on stdcore[0] : out port p_led0 = XS1_PORT_1F;
-  18: on stdcore[1] : out port p_led1 = XS1_PORT_1F;
-  19: on stdcore[2] : out port p_led2 = XS1_PORT_1F;
-  20: on stdcore[3] : out port p_led3 = XS1_PORT_1F;
-  21: on stdcore[0] : in port p_button = XS1_PORT_4F;
-  22: 
-  23: void led1_thread(out port p_led, chanend prev, chanend next, int start);
-  24: void led2_thread(out port p_led, chanend prev, chanend next, int start);
-  25: void button_listener(in port p_button, chanend prev, chanend next);
-  26: void printout();
-  27: 
-  28: int main()
-  29: {
-  30:   chan c_0to1;
-  31:   chan c_1to2;
-  32:   chan c_2to3;
-  33:   chan c_3to0;
-  34:   chan button_chan;
-  35: 
-  36:   par
-  37:   {
-  38:     on stdcore[0] : led1_thread(p_led0, c_0to1, c_1to2, 1);
-  39:     on stdcore[1] : led2_thread(p_led1, c_1to2, c_2to3, 0);
-  40:     on stdcore[2] : led1_thread(p_led2, c_2to3, c_3to0, 0);
-  41:     on stdcore[3] : led2_thread(p_led3, c_3to0, button_chan, 0);
-  42:     on stdcore[0] : button_listener(p_button, button_chan, c_0to1);
-  43:   }
-  44: 
-  45:   return 0;
-  46: }
-  47: 
-  48: #define PERIOD 10000000
-  49: 
-  50: void flashled(out port p_led)
-+ 51: {
-  52:    unsigned s;
-  53:    timer tmr;
-+ 54:    p_led <: 0;
-+ 55:    tmr :> s;
-+ 56:    tmr when timerafter(s + PERIOD) :> s ;
-+ 57:    p_led <: 1;
-+ 58:    return;
-  59: }
-  60: 
-  61: void button_listener(in port p_button, chanend prev, chanend next)
-  62: {
-  63:    int button_press;
-  64:    int token = 1;
-  65:    printout();
-  66:    while (token) {
-  67:       prev:> token;
-  68:       p_button :> button_press;
-  69:       if (token){
-  70:          if( ((~button_press)&0xf) == 0x4 ){
-  71:            next <: 0;
-  72:          } else {
-  73:            next <: 1;
-  74:          }
-  75:       }
-  76:   }
-  77:   return;
-  78: }
-  79: 
-  80: void led1_thread(out port p_led, chanend prev, chanend next, int start)
-  81: {
-  82:    int token = 1;
-  83:    if (start) next <: 1;
-  84:    while (token) {
-  85:       prev :> token;
-  86:       flashled(p_led);
-  87:       next <: token;
-  88:   }
-  89:   return;
-  90: }
-  1: #include <print.h>
+- test.xc
+- up/up.xc
+  1: int add(int a, int b);
   2: 
-  3: void led2_thread(out port p_led, chanend prev, chanend next, int start)
+  3: int main()
 + 4: {
-+ 5:    int token = 1;
-+ 6:    if (start) next <: 1;
-+ 7:    while (token) {
-  8:       prev :> token;
-  9:       next <: token;
-  10:   }
-+ 11:   return;
-  12: }
-  13: 
-  14: void printout(){
-  15:     printintln(4);
-  16: }
-  1: #include <print.h>
-  2: 
-  3: void led2_thread(out port p_led, chanend prev, chanend next, int start)
-+ 4: {
-+ 5:    int token = 1;
-+ 6:    if (start) next <: 1;
-+ 7:    while (token) {
-  8:       prev :> token;
-  9:       next <: token;
-  10:   }
-+ 11:   return;
-  12: }
-  13: 
-  14: void printout(){
-  15:     printintln(4);
-  16: }
++ 5:   int a = add(2, 4);
++ 6:   return a;
+  7: }
+  8: 
+  1: int add(int a, int b)
++ 2: {
++ 3:   int res = a + b;
++ 4:   return res;
+  5: }
