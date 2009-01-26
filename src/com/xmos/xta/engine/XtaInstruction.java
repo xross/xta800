@@ -813,7 +813,8 @@ public abstract class XtaInstruction extends Instruction {
     	    if(resType == Resources.RES_TYPE_TIMER || resType == Resources.RES_TYPE_CHANEND ||
     	    		resType == Resources.RES_TYPE_SYNC ||  resType == Resources.RES_TYPE_THREAD ||
     	    		resType == Resources.RES_TYPE_LOCK){
-    	    resources.getResource(resType, resNum).setInUse(true);
+    	    Resource res = resources.getResource(resType, resNum);
+    	    if(res!= null) res.setInUse(true);
     	    } else {
     	    	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
     	    }
@@ -965,6 +966,9 @@ public abstract class XtaInstruction extends Instruction {
     		if(resType == Resources.RES_TYPE_SYNC){
     			
     			Resource res = resources.getResource(resType, resNum);
+    			if(res==null){
+    				throw new InstructionExecption(Error.ET_ILLEGAL_RESOURCE);
+    			}
     			res.setInUse(true);
     			Resource newRes = resources.getNewResource(Resources.RES_TYPE_THREAD);
     			
@@ -1633,6 +1637,9 @@ public abstract class XtaInstruction extends Instruction {
             if(resType == Resources.RES_TYPE_CHANEND || resType == Resources.RES_TYPE_PORT
             		|| resType == Resources.RES_TYPE_TIMER){
             	EventableResource er = (EventableResource) state.getResources().getResource(resType, resNum);
+            	if(er==null){
+            		throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
+            	}
             	er.setEnvironmentVector(reg_11);
             	if(RESOURCEDEBUG){
             		System.out.println("resource (resNum: " + resNum + " resType: " + resType + 
@@ -1723,6 +1730,9 @@ public abstract class XtaInstruction extends Instruction {
             if (resType == Resources.RES_TYPE_CHANEND || resType == Resources.RES_TYPE_PORT
             		|| resType == Resources.RES_TYPE_TIMER) {
             	EventableResource er = (EventableResource) state.getResources().getResource(resType, resNum);
+            	if(er==null){
+            		throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
+            	}
             	er.setVector(reg_11);
             	if (RESOURCEDEBUG){
             		System.out.println("resource (resNum: " + resNum + " resType: " + resType + 

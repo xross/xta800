@@ -818,6 +818,7 @@ public class Block implements Comparable<Block> {
 	// --------------------------------------------------------------------- //
 	// Statistics
 	// --------------------------------------------------------------------- //	
+	
 	public double getTimeTaken(boolean recurse) {
 		return getTimeTakenRelative(recurse) + getTimeTakenAbsolute(recurse);
 	}
