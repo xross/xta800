@@ -211,6 +211,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        XtaCorePlugin plugin = XtaCorePlugin.getDefault();
 	        
 	        String lastDir = plugin.getPreferenceStore().getString("LastDir");
+	        
 	        fileDialog.setFilterPath(lastDir);
 	        
 	        String xeFileName = fileDialog.open();
@@ -219,7 +220,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        	return;
 	        
 	        String path = new File(xeFileName).getParent();
-	        XtaCorePlugin.getDefault().getPreferenceStore().setValue("LastDir", path);
+	        plugin.getPreferenceStore().setValue("LastDir", path);
 
 	        if (xeFileName != null) {
 	        	if (DEBUG)

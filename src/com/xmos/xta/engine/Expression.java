@@ -1,7 +1,6 @@
 package com.xmos.xta.engine;
 
 import com.xmos.isa.Instruction;
-import com.xmos.xta.engine.InstructionExecption.Error;
 
 public class Expression {
 	
@@ -28,6 +27,12 @@ public class Expression {
 	private Expression[] m_operands;
 	private int m_numOperands;
 
+	
+	public Expression(){
+		
+	}
+
+	
 	// Terminal Constructor
 	public Expression(int address, int value, Type type, Status status) {
 		m_address = address;
@@ -36,13 +41,15 @@ public class Expression {
 		m_status = status;
 		m_numOperands = 0;
 		m_operands = new Expression[MAX_NUM_OPERANDS];
+		//initialise();
 	}
 
 	// Node Constructor
-	Expression(OperatorType operator) {
+	public Expression(OperatorType operator) {
 		m_operator = operator;
 		m_numOperands = 0;
 		m_operands = new Expression[MAX_NUM_OPERANDS];
+		//initialise();
 	}
 
 	// Immediate Constructor
@@ -53,6 +60,7 @@ public class Expression {
 		m_status = Status.DEFINED;
 		m_numOperands = 0;
 		m_operands = new Expression[MAX_NUM_OPERANDS];
+		//initialise();
 	}
 
 	// Copy Constructor
@@ -64,28 +72,28 @@ public class Expression {
 		m_operator = expression.m_operator;
 		m_numOperands = 0;
 		m_operands = new Expression[MAX_NUM_OPERANDS];
-
+		
 		for (int operIndex = 0; operIndex < expression.m_numOperands; ++operIndex) {
 			addOperand(expression.m_operands[operIndex]);
 		}
 	}
-
-	void addOperand(Expression operand) {
+	
+	public void addOperand(Expression operand) {
 		assert (m_numOperands < MAX_NUM_OPERANDS);
 		m_operands[m_numOperands] = operand;
 		++m_numOperands;
 	}
 
-	Expression getOperand(int operandNum) {
+	public Expression getOperand(int operandNum) {
 		assert (operandNum < m_numOperands);
 		return m_operands[operandNum];
 	}
 
-	int numOperands() {
+	public int numOperands() {
 		return m_numOperands;
 	}
 
-	void resolve() throws Exception {
+	public void resolve() throws Exception {
 		if ((m_numOperands > 0) ){
 			if(canResolve()) {
 				m_address = 0;
@@ -110,7 +118,7 @@ public class Expression {
 		
 	}
 
-	boolean isResolved() {
+	public boolean isResolved() {
 		return m_type == Type.IMMEDIATE;
 	}
 
@@ -129,7 +137,7 @@ public class Expression {
 		}
 	}
 	
-	String expressionString() {
+	public String expressionString() {
 		// Builds up a string describing the expression state.
 		String expr = createExpressionString(this, "");
 		return expr;
@@ -139,7 +147,7 @@ public class Expression {
 		return canResolve(this);
 	}
 
-	boolean canResolve(Expression expression) {
+	public boolean canResolve(Expression expression) {
 		if (expression == null) {
 			// assert(false);
 			return false;
@@ -434,7 +442,7 @@ public class Expression {
 		double d1 = ((double) (((long) remsA) & 0xffffffffl));
 		double d2 = ((double) (((long) remsB) & 0xffffffffl));
 		if (d2 == 0) {
-			throw new InstructionExecption(Error.ET_ARITHMETIC);
+			throw new InstructionExecption(InstructionExecption.Error.ET_ARITHMETIC);
 		} else {
 			int div = (int) (d1 / d2);
 			return (int) (d1 - div * d2);
@@ -443,10 +451,10 @@ public class Expression {
 
 	private int rems(int remsA, int remsB) throws InstructionExecption {
 		if (remsB == 0) {
-			throw new InstructionExecption(Error.ET_ARITHMETIC);
+			throw new InstructionExecption(InstructionExecption.Error.ET_ARITHMETIC);
 		} else {
 			if (remsB < 0 && remsA < 0 && remsA / remsB < 0) { // overflow on /
-				throw new InstructionExecption(Error.ET_ARITHMETIC);
+				throw new InstructionExecption(InstructionExecption.Error.ET_ARITHMETIC);
 			} else {
 				return remsA % remsB;
 			}

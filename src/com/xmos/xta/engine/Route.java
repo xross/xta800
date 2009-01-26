@@ -215,6 +215,10 @@ public class Route {
 		m_unresolvedPaths.add(unresolved);
 	}
 
+	public RouteStatus getStatus(){
+		return m_status;
+	}
+	
 	private void stepPath() throws Exception {
 		ExecutionState searching = nextBlock();
 		while (searching != null && (m_status != RouteStatus.ABORTED )) {
@@ -276,6 +280,8 @@ public class Route {
 	}
 	
 	public void filterPaths() {
+		
+		//TODO
 		ArrayList<Block> toRemove = new ArrayList<Block>();
 		
 		ArrayList<Integer> exclusions = new ArrayList<Integer>();
@@ -308,6 +314,15 @@ public class Route {
 			}
 
 		}
+		
+		for(Unknown unknown : m_unknowns){
+			if(exclusions.contains(unknown.getPc())){
+				unknown.setShow(false);
+			} else {
+				unknown.setShow(true);
+			}
+		}
+		
 		m_completePaths.removeAll(toRemove);
 		m_removedPaths.addAll(toRemove);
 	}

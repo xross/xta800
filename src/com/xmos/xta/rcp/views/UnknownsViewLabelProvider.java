@@ -14,10 +14,10 @@ public class UnknownsViewLabelProvider extends LabelProvider implements ITableLa
     private int[] m_columnWidths;
     private int[] m_columnAligmnments;
     
-    private static final String BLOCKID = "Block Id";
-    private static final String TYPE   = "Type";
-    private static final String PC     = "Pc";
-    private static final String REASON = "Reason";
+    static final String BLOCKID = "Block Id";
+    static final String TYPE   = "Type";
+    static final String PC     = "Pc";
+    static final String REASON = "Reason";
     
     public UnknownsViewLabelProvider() {
     	m_columnNames = new String[] { BLOCKID, TYPE, PC, REASON };
@@ -60,4 +60,7 @@ public class UnknownsViewLabelProvider extends LabelProvider implements ITableLa
 	public int[] getColumnAligmnments() {
 		return m_columnAligmnments;
 	}
+	
+	
+	
 }

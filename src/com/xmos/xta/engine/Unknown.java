@@ -1,5 +1,6 @@
 package com.xmos.xta.engine;
 
+
 public class Unknown {
     /*
      * ReturnValue - engine could not determine the return value of the
@@ -8,7 +9,7 @@ public class Unknown {
      * could not decide where to jump to
      */
     public static enum UnknownType {
-        GUARD, PAUSABLETIME, BRANCHTARGET, JUMP, FALSEUNKNOWN
+        GUARD, PAUSABLETIME, BRANCHTARGET, JUMP, FALSEUNKNOWN, UNKNOWN
     }
 
     private XtaInstruction m_inst;
@@ -16,34 +17,46 @@ public class Unknown {
     private Expression m_guard;
     private Expression m_branchTarget;
     private Block m_block;
+    private boolean m_show;
     
     public Unknown(Block block, XtaInstruction inst) {
-    	m_block = block;
-        m_inst = inst;
-        m_reason = UnknownType.PAUSABLETIME;
+    	initialise(block, inst);
+    	m_reason = UnknownType.PAUSABLETIME;
+        m_show = true;
+        
     }    
     
     public Unknown(Block block, XtaInstruction inst, Expression guard, Expression branchTarget) {
-    	m_block = block;
-        m_guard = guard;
+    	initialise(block, inst);
+    	m_guard = guard;
         m_branchTarget = branchTarget;
-        m_inst = inst;
         if(!branchTarget.canResolve()){
             m_reason = UnknownType.BRANCHTARGET;
         } else if(!guard.canResolve()){
             m_reason = UnknownType.GUARD;
         } else {
-            m_reason = UnknownType.FALSEUNKNOWN;
-            
+            m_reason = UnknownType.FALSEUNKNOWN;    
         }
     }
     
+    private void initialise(Block block, XtaInstruction inst){
+    	m_inst = inst;
+    	m_block = block;
+    	m_guard = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+        m_reason = UnknownType.UNKNOWN;
+        m_branchTarget = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
+        m_show = true;
+    }
+    
+    
     public int getPc() {
-        return m_inst.getPc();
+    	if(m_inst == null) return 0;
+    	else return m_inst.getPc();
     }
 
     public int getPathId() {
-        return m_block.getId();
+    	if(m_block == null) return 0;
+    	else return m_block.getId();
     }
 
     public String getReason() {
@@ -68,6 +81,9 @@ public class Unknown {
         }
         return str;
     }
+    public UnknownType getUnknownType(){
+    	return m_reason;
+    }
 
     public String getTypeString() {
         switch (m_reason) {
@@ -85,4 +101,11 @@ public class Unknown {
         assert(false);
         return "";
     }    
+    
+    public boolean getShow(){
+    	return m_show;
+    }
+    public void setShow(boolean show){
+    	m_show= show;
+    }
 }
