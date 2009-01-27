@@ -403,17 +403,19 @@ public class Engine {
         m_errorString = errorString;
     }
 
+    
     public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
         boolean hit = m_route.setLoopIterations(pathId, absolute, iterations);
-
+        m_route.invalidateAllBlocks();
         if (hit) {
             m_route.notifyUpdate();
+            
         }
         return hit;
     }    
 
     public boolean setInstructionTimeTaken(int pc, double timeTaken) {
-    	
+    	 m_route.invalidateAllBlocks();
     	//TODO
         boolean hit = false;
         if (m_route != null) {
@@ -445,6 +447,7 @@ public class Engine {
 
     public boolean setInstructionNumCycles(int pc, int numCycles) {
         boolean hit = false;
+        m_route.invalidateAllBlocks();
         if (m_route != null) {         		    		
             hit = m_route.setInstructionNumCycles(pc, numCycles);
             if (hit) callDisplayers(Displayer.NOTIFY_UPDATE_STATE, ""); 
@@ -533,13 +536,13 @@ public class Engine {
 			m_route = null;
 			m_progress.setState(Progress.State.IDLE);
             System.gc();
-            setErrorString("Out of Memory"); 
+            setErrorString("Out of Memory(OutOfMemoryError)"); 
             return false;
 		} catch (final java.lang.StackOverflowError e) {
 			m_route = null;
 			m_progress.setState(Progress.State.IDLE);
             System.gc();
-            setErrorString("Out of Memory"); 
+            setErrorString("Out of Memory (StackOverflowError)"); 
             return false;
 		} catch (Exception e) {
 			//unknown Exception

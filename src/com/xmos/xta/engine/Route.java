@@ -158,7 +158,13 @@ public class Route {
 	public double getTimeTaken() {
 		return 0;
 	}
-
+	
+	public void invalidateAllBlocks(){
+		for(Block block : m_allBlocks){
+			block.getBlockStats().invalidateAll();
+		}
+	}
+	
 	void notifyUpdate() {
 		Collections.sort(m_completePaths);
 		m_engine.callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
@@ -304,7 +310,7 @@ public class Route {
 		}
 		
 		for(Block completePath : m_completePaths){
-			HashSet<Integer> allPathPcs = completePath.getAllPcs();
+			HashSet<Integer> allPathPcs = completePath.getPcsCovered(true);
 			if(m_status == RouteStatus.ABORTED ){
 				//return the paths unfiltered
 				return;
