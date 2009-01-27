@@ -18,7 +18,7 @@ public class FileLineReference extends CodeReference {
 		}	
 	}	
 		
-    public boolean resolve(Engine engine, int m_nodeId, int m_coreId) {
+    public boolean resolve(Engine engine, int nodeId, int coreId) {
         // Input: 'source file:line number'
     	String ref = getRef();
     	
@@ -28,7 +28,7 @@ public class FileLineReference extends CodeReference {
         }
                 
 		String fileName = ref.substring(0, colonIndex);
-		DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(m_nodeId, m_coreId);		
+		DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(nodeId, coreId);		
 		if (!fileExistsInDebugInfo(debugInfo, fileName)) {        	
             return false;            
         }
