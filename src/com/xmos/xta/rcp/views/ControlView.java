@@ -136,7 +136,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("Control: propertyChange: %s\n", event.getProperty());	
 		
-		if (event.getProperty().equals(Displayer.NOTIFY_DISPLAY_ROUTE)) {
+		if (event.getProperty().equals(Displayer.NOTIFY_ANALYSIS_COMPLETE)) {
 	        m_memoryUpdater.setFastRefresh(false);
 			setDone("Done");
 			updateCurrentRoute();
@@ -151,7 +151,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        setText(m_endPoint, m_endPointListener, "", "");
 	        updateState();
 	        updateCurrentRoute();
-		} else if (event.getProperty().equals(Displayer.NOTIFY_ANALYSE_PATHS)) {
+		} else if (event.getProperty().equals(Displayer.NOTIFY_ANALYSIS_BEGIN)) {
 	        m_memoryUpdater.setFastRefresh(true);
 			m_engineStatus.setText(STATUS_BUSY);
 			m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);

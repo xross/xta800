@@ -51,7 +51,7 @@ public class ErrorsView extends ViewPart implements IPropertyChangeListener {
 		
 		if (event.getProperty().equals(Displayer.NOTIFY_ERROR)) {
 			updateDisplay();
-    	} else if (event.getProperty().equals(Displayer.NOTIFY_ANALYSE_PATHS)) {
+    	} else if (event.getProperty().equals(Displayer.NOTIFY_ANALYSIS_BEGIN)) {
     		clearDisplay();
 		}
 	}

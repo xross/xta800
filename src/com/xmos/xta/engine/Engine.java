@@ -169,6 +169,27 @@ public class Engine {
         return m_xeLoader.getDebugInfos();
     }
 
+    public MemoryImage getMemoryImage() {
+    	if (m_route != null) {
+            return m_xeLoader.getMemoryImage(m_route.getNodeId(), m_route.getCoreId());    		
+    	}
+    	return null;
+    }
+
+    public SymbolTable getSymbolTable() {
+    	if (m_route != null) {
+            return m_xeLoader.getSymbolTable(m_route.getNodeId(), m_route.getCoreId());    		
+    	}
+    	return null;
+    }
+
+    public DebugInfo getDebugInfo() {
+    	if (m_route != null) {
+            return m_xeLoader.getDebugInfo(m_route.getNodeId(), m_route.getCoreId());    		
+    	}
+    	return null;
+    }
+    
     public Route getRoute(){
         return m_route;
     }
@@ -285,43 +306,7 @@ public class Engine {
             return success;
         }
     }
-        
-    public void displayRoute() {
-        if (m_route != null) { 
-            int nodeId = m_route.getNodeId();
-            int coreId = m_route.getCoreId();
-
-            MemoryImage memoryImage = m_xeLoader.getMemoryImage(nodeId, coreId);
-            SymbolTable symbolTable = m_xeLoader.getSymbolTable(nodeId, coreId);
-            DebugInfo debugInfo = m_xeLoader.getDebugInfo(nodeId, coreId);                               
-
-            assert(memoryImage != null);
-            assert(symbolTable != null);
-            assert(debugInfo != null);
-
-            for (Displayer displayer : m_displayers) {
-                displayer.displayRoute(m_route, debugInfo, memoryImage, symbolTable);    	
-            }
-        }
-    }    
-
-    public void displayRoute(Displayer displayer) {
-        if (m_route != null) { 
-            int nodeId = m_route.getNodeId();
-            int coreId = m_route.getCoreId();
-
-            MemoryImage memoryImage = m_xeLoader.getMemoryImage(nodeId, coreId);
-            SymbolTable symbolTable = m_xeLoader.getSymbolTable(nodeId, coreId);
-            DebugInfo debugInfo = m_xeLoader.getDebugInfo(nodeId, coreId);                               
-
-            assert(memoryImage != null);
-            assert(symbolTable != null);
-            assert(debugInfo != null);
-
-            displayer.displayRoute(m_route, debugInfo, memoryImage, symbolTable);    	
-        }
-    }    
-    
+            
     public void registerDisplayer(Displayer displayer) {    	
         m_displayers.add(displayer);
     }
@@ -617,7 +602,7 @@ public class Engine {
         	callDisplayers(Displayer.NOTIFY_ERROR, "Engine busy");        	
             return false;
         }
-        callDisplayers(Displayer.NOTIFY_ANALYSE_PATHS, "");
+        callDisplayers(Displayer.NOTIFY_ANALYSIS_BEGIN, "");
 
         int nodeId = m_route.getNodeId();
         int coreId = m_route.getCoreId();
@@ -643,10 +628,7 @@ public class Engine {
                 m_route = m_previousRoute;
                 return false;
             }
-
-            for (Displayer displayer : m_displayers) {
-                displayer.displayRoute(m_route, debugInfo, memoryImage, symbolTable); 
-            }                
+            callDisplayers(Displayer.NOTIFY_ANALYSIS_COMPLETE, "");
         }
         else {
         	callDisplayers(Displayer.NOTIFY_ERROR,         	

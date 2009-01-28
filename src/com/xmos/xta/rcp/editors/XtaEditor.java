@@ -117,7 +117,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("Tree: propertyChange: %s\n", event.getProperty());	
 		
-		if (event.getProperty().equals(Displayer.NOTIFY_DISPLAY_ROUTE)) {
+		if (event.getProperty().equals(Displayer.NOTIFY_ANALYSIS_COMPLETE)) {
 			m_selectedNode = null;
 			updateFnops();
     	    updateHighlighting();

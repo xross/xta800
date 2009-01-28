@@ -137,7 +137,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("ZoomedCanvasView: propertyChange: %s\n", event.getProperty());			
 
-		if (event.getProperty().equals(Displayer.NOTIFY_DISPLAY_ROUTE)) {
+		if (event.getProperty().equals(Displayer.NOTIFY_ANALYSIS_COMPLETE)) {
 	    	if (m_toolTip != null  && !m_toolTip.isDisposed ()) {
 				m_toolTip.dispose ();
 	    	}

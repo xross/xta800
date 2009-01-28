@@ -1,10 +1,8 @@
 package com.xmos.xta.console.commands;
 
-import com.xmos.xeobject.XeObject;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.displayers.SrcDisplayer;
-import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Engine;
 
 class Src extends Command {
@@ -53,11 +51,16 @@ class Src extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-       
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
-		XeObject xeObject = engine.getXeObject();	
-		Displayer displayer = new SrcDisplayer(console, xeObject, m_pathId, m_fileName, false);
-        engine.displayRoute(displayer);	
+
+		if (!isRouteAnalysed(engine, console))
+			return;
+
+		if (!isPathValid(engine, console, m_pathId))
+			return;
+				
+		SrcDisplayer displayer = new SrcDisplayer(engine, console, m_pathId, m_fileName, false);
+		displayer.display();	
    }    
 }
