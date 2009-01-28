@@ -273,7 +273,6 @@ public class SummaryDisplayer implements Displayer {
             for (Block path : route.completePaths()) {
             	buildPathsWithinSourcesSet(path, pathIds, debugFile.getFileName());
             }    	
-            
             if (pathIds.size() > 0) {
             	String file = String.format("%s: ", debugFile.getFileName()); 
             	for (Integer pathId : pathIds) {
