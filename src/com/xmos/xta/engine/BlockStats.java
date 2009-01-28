@@ -16,6 +16,7 @@ public class BlockStats {
 		m_numCyclesValid = false;
 		m_numPausablesValid = false;
 		m_numUnknownsValid = false;
+		m_absoluteDoubleTrueKnown = false;
 	}
 	
 	private double m_timeTaken;
@@ -37,36 +38,49 @@ public class BlockStats {
 	
 	public double getTimeTaken(boolean recurse) {
 		double timeTaken;
-		if(m_timeTakenValid){
-			timeTaken = m_timeTaken; 
+		if(recurse){
+			if(m_timeTakenValid){
+				timeTaken = m_timeTaken; 
+			} else {
+				timeTaken = getTimeTakenRelative(recurse) + getTimeTakenAbsolute(recurse);
+				m_timeTaken = timeTaken;
+				m_timeTakenValid = true;
+			}
 		} else {
-			timeTaken = getTimeTakenRelative(recurse) + getTimeTakenAbsolute(recurse);
-			m_timeTaken = timeTaken;
-			m_timeTakenValid = true;
+			timeTaken = getTimeTakenRelative(false) + getTimeTakenAbsolute(false);
 		}
+		
 		return timeTaken;
 	}
 
 	public int getNumInstructions(boolean recurse) {
 		int numInstructions;
-		if(m_numInstructionsValid){
-			numInstructions = m_numInstructions; 
+		if(recurse){
+			if(m_numInstructionsValid){
+				numInstructions = m_numInstructions; 
+			} else {
+				numInstructions = getNumInstructionsRelative(recurse) + getNumInstructionsAbsolute(recurse);
+				m_numInstructions = numInstructions;
+				m_numInstructionsValid = true;
+			}
 		} else {
-			numInstructions = getNumInstructionsRelative(recurse) + getNumInstructionsAbsolute(recurse);
-			m_numInstructions = numInstructions;
-			m_numInstructionsValid = true;
+			numInstructions = getNumInstructionsRelative(false) + getNumInstructionsAbsolute(false);
 		}
 		return numInstructions;
 	}
 
 	public int getNumFNops(boolean recurse) {
 		int numFnops;
-		if(m_numFNopsValid){
-			numFnops = m_numFNops; 
+		if(recurse){
+			if(m_numFNopsValid){
+				numFnops = m_numFNops; 
+			} else {
+				numFnops = getNumFNopsRelative(recurse) + getNumFNopsAbsolute(recurse);
+				m_numFNops = numFnops;
+				m_numFNopsValid = true;
+			}
 		} else {
-			numFnops = getNumFNopsRelative(recurse) + getNumFNopsAbsolute(recurse);
-			m_numFNops = numFnops;
-			m_numFNopsValid = true;
+			numFnops = getNumFNopsRelative(false) + getNumFNopsAbsolute(false);
 		}
 		return numFnops;
 
@@ -74,36 +88,49 @@ public class BlockStats {
 
 	public int getNumCycles(boolean recurse) {
 		int numCycles;
-		if(m_numCyclesValid){
-			numCycles = m_numCycles; 
+		if(recurse){
+			if(m_numCyclesValid){
+				numCycles = m_numCycles; 
+			} else {
+				numCycles = getNumCyclesRelative(recurse) + getNumCyclesAbsolute(recurse);
+				m_numCycles = numCycles;
+				m_numCyclesValid = true;
+			}
 		} else {
-			numCycles = getNumCyclesRelative(recurse) + getNumCyclesAbsolute(recurse);
-			m_numCycles = numCycles;
-			m_numCyclesValid = true;
+			numCycles = getNumCyclesRelative(false) + getNumCyclesAbsolute(false);
 		}
 		return numCycles;
 	}
 
 	public int getNumPausables(boolean recurse) {
 		int numPausables;
-		if(m_numPausablesValid){
-			numPausables = m_numPausables; 
+		if(recurse){
+			if(m_numPausablesValid){
+				numPausables = m_numPausables; 
+			} else {
+				numPausables = getNumPausablesRelative(recurse) + getNumPausablesAbsolute(recurse);
+				m_numPausables = numPausables;
+				m_numPausablesValid = true;
+			}
 		} else {
-			numPausables = getNumPausablesRelative(recurse) + getNumPausablesAbsolute(recurse);
-			m_numPausables = numPausables;
-			m_numPausablesValid = true;
+			numPausables = getNumPausablesRelative(false) + getNumPausablesAbsolute(false);
 		}
+		
 		return numPausables;
 	}
 
 	public int getNumUnknowns(boolean recurse) {
 		int numUnknowns;
-		if(m_numUnknownsValid){
-			numUnknowns = m_numUnknowns; 
+		if(recurse){
+			if(m_numUnknownsValid){
+				numUnknowns = m_numUnknowns; 
+			} else {
+				numUnknowns = getNumUnknownsRelative(recurse) + getNumUnknownsAbsolute(recurse);
+				m_numUnknowns = numUnknowns;
+				m_numUnknownsValid = true;
+			}
 		} else {
-			numUnknowns = getNumUnknownsRelative(recurse) + getNumUnknownsAbsolute(recurse);
-			m_numUnknowns = numUnknowns;
-			m_numUnknownsValid = true;
+			numUnknowns = getNumUnknownsRelative(false) + getNumUnknownsAbsolute(false);
 		}
 		return numUnknowns;
 	}
@@ -292,30 +319,44 @@ public class BlockStats {
 			public int getValueRelative(Block block) { return block.getBlockStats().getNumUnknownsRelative(false); }});
 	}
 	
+	
+	boolean m_absoluteDoubleTrueKnown = false;
+	double m_absoluteDoubleTrue;
+	
 	private double getAbsoluteDouble(boolean recurse, DoubleAbsolute val) {
 		double result = 0.0;
-		for (Block block : m_block.getPathBlocks()) {
-			if (recurse) {
-				for (Block loopPath : block.getLoopPaths()) {
-					result += val.getValueAbsolute(loopPath);
-					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
-					if (attributes.isAbsolute()) {
-						int numIterations = attributes.getNumIterations();
-						if (numIterations > 0) {
-							result += val.getValueRelative(loopPath) * numIterations;
+		if (recurse) {
+			if(m_absoluteDoubleTrueKnown){
+				result =  m_absoluteDoubleTrue;
+			} else {
+				for (Block block : m_block.getPathBlocks()) {
+					for (Block loopPath : block.getLoopPaths()) {
+						result += val.getValueAbsolute(loopPath);
+						PathAttributes attributes = block.getLoopPathAttributes(loopPath);
+						if (attributes.isAbsolute()) {
+							int numIterations = attributes.getNumIterations();
+							if (numIterations > 0) {
+								result += val.getValueRelative(loopPath) * numIterations;
+							}
 						}
 					}
 				}
+				m_absoluteDoubleTrue = result;
+				m_absoluteDoubleTrueKnown = true;
+				m_block.doneWithPathBlocks();
 			}
+			
 		}
-		m_block.doneWithPathBlocks();
+		
 		return result;
 	}
 
+	
 	private int getAbsoluteInteger(boolean recurse, IntegerAbsolute val) {
 		int result = 0;
-		for (Block block : m_block.getPathBlocks()) {
-			if (recurse) {
+		if (recurse) {
+			
+			for (Block block : m_block.getPathBlocks()) {
 				for (Block loopPath : block.getLoopPaths()) {
 					result += val.getValueAbsolute(loopPath);
 					PathAttributes attributes = block.getLoopPathAttributes(loopPath);

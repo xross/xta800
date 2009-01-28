@@ -63,7 +63,7 @@ public class Block implements Comparable<Block> {
 	 */
 	public Block(BlockCommonComponents bc, int fromPc, int toPc, MachineState machineState, ExecutionState executionState) {
 		if(DEBUG)System.out.println("block 0 started at 0x" + Integer.toHexString(fromPc));
-		bc.getRoute().addNewBlock(this);
+		
 		m_numBlocks = 0;
 		initialise(machineState);
 		m_bc = bc;
@@ -83,6 +83,7 @@ public class Block implements Comparable<Block> {
 		m_parentBlock = null;
 		m_unresolved = null;
 		m_blockStats = new BlockStats(this);
+		bc.getRoute().addNewBlock(this);
 	}
 
 	Block(Block blockToSplit, int pcHit) {
@@ -244,25 +245,6 @@ public class Block implements Comparable<Block> {
 		}
 	}
 
-	private boolean checkComplete(XtaInstruction instruction) {
-		if (isComplete(instruction, instruction.getPc())) {
-			setStatus(BlockStatus.COMPLETE);
-			if(m_route.completePaths().contains(this)) {
-				if(LOG_PROBLEMS){
-					System.out.println("Block " + m_id  +" completed and was "
-							+" already added to m_completePaths");
-				}
-			} else {
-				m_route.addCompletePath(this);
-			}
-			return true;
-		}
-		return false;
-	}
-	
-
-	
-
 	private void handleNormalInstruction(XtaInstruction instruction, int nextPc) {
 		checkForLoopFormation(nextPc, false, instruction, false, false);
 		if(m_route.completePaths().contains(this)){
@@ -395,7 +377,6 @@ public class Block implements Comparable<Block> {
 		}
 	}
 
-	
 	public int compareTo(Block path) {
 		return (int) (path.getTimeTaken(true) - getTimeTaken(true));
 	}
@@ -511,6 +492,22 @@ public class Block implements Comparable<Block> {
 		this.m_contexts = null;
 	}
 	
+	private boolean checkComplete(XtaInstruction instruction) {
+		if (isComplete(instruction, instruction.getPc())) {
+			setStatus(BlockStatus.COMPLETE);
+			if(m_route.completePaths().contains(this)) {
+				if(LOG_PROBLEMS){
+					System.out.println("Block " + m_id  +" completed and was "
+							+" already added to m_completePaths");
+				}
+			} else {
+				m_route.addCompletePath(this);
+			}
+			return true;
+		}
+		return false;
+	}
+	
 	private boolean isComplete(XtaInstruction instruction, int pc) {
 		switch (m_bc.getMode()) {
 		case FUNCTION:
@@ -551,7 +548,7 @@ public class Block implements Comparable<Block> {
 		assert (m_instructions != null);
 		assert (inst != null);
 		if(DEBUG) {
-			System.out.println(this.m_id + " " +m_functionDepth + " "+inst);
+			System.out.println(this.m_id + " "+inst);
 		}
 		inst.setBasicNumCycles(m_bc.getM_instructionAttributes().getTiming(inst.getNmenonic()));
 		inst.setConfig(m_bc.getConfig());
@@ -739,8 +736,6 @@ public class Block implements Comparable<Block> {
 		return 1;
 	}
 
-
-	
 	public int getLength() {
 		int pathLength = 0;
 		for (Block block : getPathBlocks()) {
@@ -758,7 +753,6 @@ public class Block implements Comparable<Block> {
 		}
 		doneWithPathBlocks();
 	}
-
 
 	public Vector<XtaInstruction> getInstructions(boolean recurse) {
 		Vector<XtaInstruction> insts = new Vector<XtaInstruction>();

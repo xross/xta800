@@ -1,5 +1,6 @@
 package com.xmos.xta.rcp;
 
+import java.util.HashMap;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
@@ -12,12 +13,17 @@ import com.xmos.xta.rcp.nodes.PathNode;
 import com.xmos.xta.rcp.nodes.RouteNode;
 
 public class XtaRouteInfo {
+	
+	private static final int MAXPATHS = 2;
 	private Route m_route;
 	private DebugInfo m_debugInfo;
 	private MemoryImage m_memoryImage; 
 	private SymbolTable m_symbolTable;
 	private Node m_routeNode;
 	private Node m_selectedNode;
+//	private static HashMap <Block, PathNode> m_pathLookUp;
+	private static HashMap <Block, BlockNode> m_blockLookUp;
+//	private static HashMap <Block, LoopNode> m_loopLookUp;
 	
 	public XtaRouteInfo(Route route, DebugInfo debugInfo,
 			MemoryImage memoryImage, SymbolTable symbolTable, Node routeNode) {
@@ -31,12 +37,19 @@ public class XtaRouteInfo {
 	}
 	
 	public void buildRouteNode(){
+//		m_pathLookUp = new HashMap<Block, PathNode>();
+		m_blockLookUp = new HashMap<Block, BlockNode>();
+//		m_loopLookUp = new HashMap<Block, LoopNode>();
 		RouteNode routeNode = new RouteNode();
-		
+		int i=0;
         for (Block block : m_route.completePaths()) {
+        	if(i==MAXPATHS) break;
+        	i++;
         	routeNode.addNode(createPath(block, routeNode, true));
         }		
-        m_routeNode = routeNode;
+//        m_pathLookUp = null;
+        m_blockLookUp = null;
+//        m_loopLookUp = null;
         m_routeNode = routeNode;
 		m_selectedNode = routeNode;
 	}
@@ -46,6 +59,7 @@ public class XtaRouteInfo {
                 
         for (Block pathBlock : block.getPathBlocks()) {            
             if (pathBlock.numLoopPaths() > 0) {
+            	
                 LoopNode loopNode = new LoopNode(pathBlock, pathNode);
                 pathNode.addNode(loopNode);
                 
@@ -53,12 +67,16 @@ public class XtaRouteInfo {
                 	loopNode.addNode(createPath(loopPath, loopNode, false));                    
                 }
             }
-        	pathNode.addNode(new BlockNode(pathBlock, pathNode));            
+            if(!m_blockLookUp.containsKey(pathBlock)){
+            	BlockNode blockNode = new BlockNode(pathBlock, pathNode);
+            	m_blockLookUp.put(pathBlock, blockNode);
+            } 
+        	pathNode.addNode(m_blockLookUp.get(pathBlock));          
         }
         block.doneWithPathBlocks();
         return pathNode;
 	}
-	
+
 	public Route getRoute() {
 		return m_route;
 	}
