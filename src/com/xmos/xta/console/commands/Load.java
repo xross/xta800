@@ -52,10 +52,7 @@ class Load extends Command {
 			console.display(String.format("Error: Failed to resolve executable path: %s\n", m_executableName));
 		}
 		ConsoleFileFinder fileFinder = new ConsoleFileFinder(engine, console);	
-        if (engine.loadExecutable(file, fileFinder) == false) {
-        	console.display(String.format("Error: Failed to load executable: %s\n", m_executableName));
-        	console.display(String.format("Error: %s\n", engine.getErrorString()));
-        }
+		engine.loadExecutable(file, fileFinder);
     }
 
 	public String toString() {

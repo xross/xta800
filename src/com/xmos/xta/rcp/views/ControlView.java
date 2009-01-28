@@ -48,7 +48,7 @@ import com.xmos.xta.engine.references.CodeReferenceFactory;
 import com.xmos.xta.rcp.XtaCorePlugin;
 import com.xmos.xta.rcp.XtaDisplayer;
 import com.xmos.xta.rcp.XtaEngine;
-import com.xmos.xta.rcp.XtaErrorLog;
+import com.xmos.xta.rcp.XtaLog;
 import com.xmos.xta.rcp.XtaFileFinder;
 import com.xmos.xta.rcp.XtaRouteInfo;
 import com.xmos.xta.rcp.editors.SourcesEditor;
@@ -239,8 +239,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 	    			if (DEBUG)
 	                    System.out.printf("Control: executeLoad, success: %d\n", success);
-	    		} else {
-	                XtaErrorLog.getInstance().addError(XtaEngine.getEngine().getErrorString());
 	    		}
 	        }
 		} else {
@@ -261,7 +259,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         	m_cancelButton.setEnabled(true);
 			run.start();
 		} else {
-			XtaErrorLog.getInstance().addError("No function/path specified");
+			XtaLog.getInstance().add(XtaLog.Level.ERROR, "No function/path specified");
 		}
 	}
 	
@@ -275,9 +273,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		String startRef = m_startPoint.getText();
 		String endRef = m_endPoint.getText();
 		if (startRef.equals("")) {
-			XtaErrorLog.getInstance().addError("Please specify a start reference");
+			XtaLog.getInstance().add(XtaLog.Level.ERROR, "Please specify a start reference");
 		} else if (endRef.equals("")) {
-			XtaErrorLog.getInstance().addError("Please specify an end reference");
+			XtaLog.getInstance().add(XtaLog.Level.ERROR, "Please specify an end reference");
 		} else {
 			RunEngineMethodPath run = new RunEngineMethodPath(startRef, endRef);
         	m_cancelButton.setEnabled(true);
@@ -460,8 +458,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         }
 
         public void run() {
-            if (!XtaEngine.getEngine().analyseRoute(m_functionName))
-            	XtaErrorLog.getInstance().addError(XtaEngine.getEngine().getErrorString());
+            XtaEngine.getEngine().analyseRoute(m_functionName);
         }
     }
 
@@ -475,8 +472,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         }
 
         public void run() {
-        	if (!XtaEngine.getEngine().analyseRoute(m_startRef, m_endRef))
-            	XtaErrorLog.getInstance().addError(XtaEngine.getEngine().getErrorString());
+        	XtaEngine.getEngine().analyseRoute(m_startRef, m_endRef);
         }
     }
 
@@ -490,8 +486,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         }
 
         public void run() {        	
-            if (!XtaEngine.getEngine().analyseRoute(m_startRef, m_endRef))
-            	XtaErrorLog.getInstance().addError(XtaEngine.getEngine().getErrorString());
+            XtaEngine.getEngine().analyseRoute(m_startRef, m_endRef);
         }
     }	
 

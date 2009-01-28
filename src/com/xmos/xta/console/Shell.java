@@ -92,6 +92,7 @@ public class Shell {
 		m_state = State.RUNNING;
 	    m_commands = new LinkedList<Command>();
 	    m_commandHistory = new Vector<Command>();
+	    m_engine.registerDisplayer(new ConsoleDisplayer(console));
     }
     
     private void processCommandLine(String[] args) {     		    

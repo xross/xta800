@@ -65,23 +65,40 @@ public class XtaDisplayer implements Displayer {
 	public void notify(String message, String argument) {
 		if (DEBUG) System.out.printf("XtaDisplayer: notify %s (%s)\n", message, argument);
 
-		if (message.equals(NOTIFY_SET_START_POINT)) {
+		if (message.equals(NOTIFY_ERROR)) {
+			XtaLog.getInstance().add(XtaLog.Level.ERROR, argument);
+			broadcastPropertyChange(new PropertyChangeEvent(this, Displayer.NOTIFY_ERROR, null, null));								
+			
+		} else if (message.equals(NOTIFY_WARNING)) {
+			XtaLog.getInstance().add(XtaLog.Level.WARNING, argument);
+			broadcastPropertyChange(new PropertyChangeEvent(this, Displayer.NOTIFY_WARNING, null, null));								
+			
+		} else if (message.equals(NOTIFY_INFO)) {
+			XtaLog.getInstance().add(XtaLog.Level.INFO, argument);
+			broadcastPropertyChange(new PropertyChangeEvent(this, Displayer.NOTIFY_INFO, null, null));								
+			
+		} else if (message.equals(NOTIFY_SET_START_POINT)) {
 			notifySetStartPoint(CodeReferenceFactory.createCodeReference(argument));
+			
 		} else if (message.equals(NOTIFY_SET_END_POINT)) {
 			notifySetEndPoint(CodeReferenceFactory.createCodeReference(argument));
+			
 		} else if (message.equals(NOTIFY_UPDATE_EXCLUDES)) {
 			m_notifyArgument = argument;
 			if (m_routeInfo != null) {
 				m_routeInfo.buildRouteNode();
 				broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
 			}
+			
 		} else if (message.equals(NOTIFY_LOAD_EXECUTABLE)) {
 			resetState();
 			m_notifyArgument = argument;
 			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
+			
 		} else {
 			m_notifyArgument = argument;
 			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
+			
 		}
 	}
 

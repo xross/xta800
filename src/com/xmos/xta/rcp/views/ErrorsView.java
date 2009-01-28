@@ -11,7 +11,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.rcp.XtaDisplayer;
-import com.xmos.xta.rcp.XtaErrorLog;
+import com.xmos.xta.rcp.XtaLog;
 
 public class ErrorsView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
@@ -58,12 +58,12 @@ public class ErrorsView extends ViewPart implements IPropertyChangeListener {
 	
 	private void updateDisplay() {
 		if (DEBUG) System.out.printf("Errors: updateDisplay\n"); 
-		m_tableViewer.setInput(XtaErrorLog.getInstance());
+		m_tableViewer.setInput(XtaLog.getInstance());
 	}
 
 	private void clearDisplay() {
 		if (DEBUG) System.out.printf("Errors: clearDisplay\n"); 
-		XtaErrorLog.getInstance().clearErrorStrings();
+		XtaLog.getInstance().clearStrings(XtaLog.Level.ERROR);
 		m_tableViewer.refresh();
 	}
 }

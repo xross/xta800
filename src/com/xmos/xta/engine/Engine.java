@@ -37,7 +37,6 @@ public class Engine {
     private File m_executableFile;
     private int m_nodeId;
     private int m_coreId;
-    private String m_errorString;
     private Vector<Displayer> m_displayers;
     private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
     private boolean m_abort;
@@ -65,7 +64,6 @@ public class Engine {
         m_executableFile = null;
         m_nodeId = 0;
         m_coreId = 0;
-        m_errorString = "";
         m_srcPaths = ".";
         m_displayers  = new Vector<Displayer>();
         m_pathQueries = new ArrayList<PathQuery>();
@@ -203,7 +201,8 @@ public class Engine {
             try {
 				decodeInstructions();
 			} catch (Exception e) {
-				setErrorString("Some of the pc's refered to in the executable could not be found");
+				callDisplayers(Displayer.NOTIFY_ERROR, 
+						"Some of the pc's refered to in the executable could not be found");
 				success = false;
 			} 
             
@@ -211,7 +210,8 @@ public class Engine {
            	m_route = null;
            	callDisplayers(Displayer.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath()); 
         } else {
-            setErrorString("The file '" + executableFile + "'could not be found.");	        
+			callDisplayers(Displayer.NOTIFY_ERROR, 
+					"The file '" + executableFile + "'could not be found.");
         }        
         return success;
     }	
@@ -222,13 +222,15 @@ public class Engine {
 
     public boolean analyseRoute(String functionName) {
         if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
-            setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
-                    m_nodeId, m_coreId, m_executableFile));        	
+			callDisplayers(Displayer.NOTIFY_ERROR, 
+		            String.format("Node: %d, Core: %d image not found in file: %s",
+		                    m_nodeId, m_coreId, m_executableFile));        	
             return false;
         }
         else if (!functionExists(functionName)) {
-            setErrorString(String.format("Cannot find function: %s in file: %s, node: %d, core: %d",
-                    functionName, m_executableFile, m_nodeId, m_coreId));        	
+			callDisplayers(Displayer.NOTIFY_ERROR, 
+                    String.format("Cannot find function: %s in file: %s, node: %d, core: %d",
+                            functionName, m_executableFile, m_nodeId, m_coreId));        	
             return false;
         }
         else {     
@@ -237,14 +239,13 @@ public class Engine {
             		m_nodeId, m_coreId, m_nodeCoreInstructionCache,
             		m_resolveExpression);
 
-            boolean t = analyseRouteSafley();
-            if (t) {
+            boolean success = analyseRouteSafley();
+            if (success) {
             	callDisplayers(Displayer.NOTIFY_SELECT_FUNCTION, functionName); 
             } else {
-            	//restore the route
             	m_route = m_previousRoute;
             }
-            return t;
+            return success;
         }
     }    
 
@@ -252,17 +253,20 @@ public class Engine {
         CodeReference fromRef = CodeReferenceFactory.createCodeReference(from);
         CodeReference toRef = CodeReferenceFactory.createCodeReference(to); 
         
-        if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
-            setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
-                    m_nodeId, m_coreId, m_executableFile));        	
+        if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {        	
+			callDisplayers(Displayer.NOTIFY_ERROR, 
+		            String.format("Node: %d, Core: %d image not found in file: %s",
+		                    m_nodeId, m_coreId, m_executableFile));        	
             return false;
         }
         else if (!resolveRefernece(fromRef, this)) {
-            setErrorString(String.format("Unresolved reference: %s", from));
+			callDisplayers(Displayer.NOTIFY_ERROR, 
+					String.format("Unresolved reference: %s", from));
             return false;
         }
         else if (!resolveRefernece(toRef, this)) {
-            setErrorString(String.format("Unresolved reference: %s", to));
+			callDisplayers(Displayer.NOTIFY_ERROR, 
+					String.format("Unresolved reference: %s", to));
             return false;
         }
         else {    
@@ -270,19 +274,15 @@ public class Engine {
             m_route = new Route(m_config, m_progress, fromRef, toRef,
             		m_nodeId, m_coreId, m_nodeCoreInstructionCache,
             		m_resolveExpression);
-            boolean t = analyseRouteSafley();
-            if (t) {
+            
+            boolean success = analyseRouteSafley();
+            if (success) {
             	callDisplayers(Displayer.NOTIFY_SET_START_POINT, from); 
             	callDisplayers(Displayer.NOTIFY_SET_END_POINT, to); 
-                //for (Displayer displayer : m_displayers) {
-                //	displayer.notify(Displayer.NOTIFY_SET_START_POINT, from);
-                //	displayer.notify(Displayer.NOTIFY_SET_END_POINT, to);
-                //}
             } else {
-            	// restore the route
             	m_route = m_previousRoute;
             }
-            return t;
+            return success;
         }
     }
         
@@ -322,11 +322,6 @@ public class Engine {
         }
     }    
     
-    public void refineRoute(){
-    	//this applies all exclusions, requirements and prohibited properties to the route
-    	
-    }
-
     public void registerDisplayer(Displayer displayer) {    	
         m_displayers.add(displayer);
     }
@@ -393,16 +388,6 @@ public class Engine {
 	public boolean getResolve() {
 		return m_resolveExpression;
 	}
-
-    public String getErrorString() {
-        return m_errorString;
-    }
-
-    public void setErrorString(String errorString) {
-    	
-        m_errorString = errorString;
-    }
-
     
     public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
         boolean hit = m_route.setLoopIterations(pathId, absolute, iterations);
@@ -433,7 +418,7 @@ public class Engine {
             }
         }
         else {
-            setErrorString("No route currently anaylsed");    		
+			callDisplayers(Displayer.NOTIFY_ERROR, "No route currently anaylsed");
         }
         return hit;
     }
@@ -453,7 +438,7 @@ public class Engine {
             if (hit) callDisplayers(Displayer.NOTIFY_UPDATE_STATE, ""); 
         }
         else {
-            setErrorString("No route currently anaylsed");    		
+			callDisplayers(Displayer.NOTIFY_ERROR, "No route currently anaylsed");
         }
         return hit;
     }
@@ -528,30 +513,28 @@ public class Engine {
     }
 	
     private boolean analyseRouteSafley() {
-    	//catch all errors here
-    	boolean t = false;
+    	boolean success = false;
     	try {
-			t = analyseRoute();
+    		success = analyseRoute();
 		} catch (final java.lang.OutOfMemoryError e) {
 			m_route = null;
 			m_progress.setState(Progress.State.IDLE);
             System.gc();
-            setErrorString("Out of Memory(OutOfMemoryError)"); 
+			callDisplayers(Displayer.NOTIFY_ERROR, "Out of Memory (OutOfMemoryError)");
             return false;
 		} catch (final java.lang.StackOverflowError e) {
 			m_route = null;
 			m_progress.setState(Progress.State.IDLE);
             System.gc();
-            setErrorString("Out of Memory (StackOverflowError)"); 
+			callDisplayers(Displayer.NOTIFY_ERROR, "Out of Memory (StackOverflowError)");
             return false;
 		} catch (Exception e) {
-			//unknown Exception
 			m_progress.setState(Progress.State.IDLE);
-			setErrorString("Unknown error: contact Xmos with stack trace"); 
+			callDisplayers(Displayer.NOTIFY_ERROR, "Unknown error detected");
 			e.printStackTrace();
 			return false;
 		} 
-		return t;
+		return success;
     }
     
     private void switchNodeCode(){
@@ -625,7 +608,7 @@ public class Engine {
         assert(m_route != null);
 
         if (m_progress.getState() != Progress.State.IDLE) {
-            setErrorString("Engine busy");
+        	callDisplayers(Displayer.NOTIFY_ERROR, "Engine busy");        	
             return false;
         }
         callDisplayers(Displayer.NOTIFY_ANALYSE_PATHS, "");
@@ -644,17 +627,15 @@ public class Engine {
             RouteStatus status = RouteStatus.ABORTED;
             status = m_route.analyse(memoryImage, symbolTable, debugInfo, this);                 
             switch (status) {
-            case ABORTED:
-                setErrorString("Abort detected");
+            case ABORTED:            	
+            	callDisplayers(Displayer.NOTIFY_ERROR, "Abort detected");        	
                 m_route = m_previousRoute;
                 return false;
 
             case ERROR:
-                setErrorString("Cannot analyse path");
+            	callDisplayers(Displayer.NOTIFY_ERROR, "Cannot analyse path");        	
                 m_route = m_previousRoute;
                 return false;
-            case COMPLETED:
-                setErrorString(null);
             }
 
             for (Displayer displayer : m_displayers) {
@@ -662,8 +643,9 @@ public class Engine {
             }                
         }
         else {
-            setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
-                    m_route.getNodeId(), m_route.getCoreId(), m_executableFile));
+        	callDisplayers(Displayer.NOTIFY_ERROR,         	
+                    String.format("Node: %d, Core: %d image not found in file: %s",
+                            m_route.getNodeId(), m_route.getCoreId(), m_executableFile));
             return false;
         }
 
