@@ -54,11 +54,11 @@ public class InstructionDecodeCache {
 			    return true;
 			}
 			
-			engine.callDisplayers(Displayer.NOTIFY_ERROR, 
+			engine.notify(Notifier.NOTIFY_ERROR, 
 					String.format("Instruction at pc: 0x%08x cannot pause", pc));			
             return false;
 		}
-		engine.callDisplayers(Displayer.NOTIFY_ERROR, 
+		engine.notify(Notifier.NOTIFY_ERROR, 
 				String.format("Pc: 0x%08x not found", pc));			
 		return false;
     }
@@ -82,11 +82,11 @@ public class InstructionDecodeCache {
 				return true;
 			}
 			
-			engine.callDisplayers(Displayer.NOTIFY_ERROR, 
+			engine.notify(Notifier.NOTIFY_ERROR, 
 					String.format("Instruction at pc: 0x%05x cannot pause", pc));						
             return true;
 		}
-		engine.callDisplayers(Displayer.NOTIFY_ERROR, 
+		engine.notify(Notifier.NOTIFY_ERROR, 
 				String.format("Pc: 0x%05x not found", pc));			
 		return false;
     }    

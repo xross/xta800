@@ -9,8 +9,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
 
-import com.xmos.xta.engine.Displayer;
-import com.xmos.xta.rcp.XtaDisplayer;
+import com.xmos.xta.engine.Notifier;
+import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaLog;
 
 public class ErrorsView extends ViewPart implements IPropertyChangeListener {
@@ -21,7 +21,7 @@ public class ErrorsView extends ViewPart implements IPropertyChangeListener {
     
 	public ErrorsView() {
 		if (DEBUG) System.out.printf("Errors()\n");			
-		XtaDisplayer.getInstance().addPropertyChangeListener(this);
+		XtaNotifier.getInstance().addPropertyChangeListener(this);
 	}
 
 	public void createPartControl(Composite parent) {
@@ -49,9 +49,10 @@ public class ErrorsView extends ViewPart implements IPropertyChangeListener {
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("Errors: propertyChange: %s\n", event.getProperty());
 		
-		if (event.getProperty().equals(Displayer.NOTIFY_ERROR)) {
+		if (event.getProperty().equals(Notifier.NOTIFY_ERROR)) {
 			updateDisplay();
-    	} else if (event.getProperty().equals(Displayer.NOTIFY_ANALYSIS_BEGIN)) {
+			
+    	} else if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_BEGIN)) {
     		clearDisplay();
 		}
 	}

@@ -33,12 +33,12 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
-import com.xmos.xta.engine.Displayer;
+import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Unknown;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
-import com.xmos.xta.rcp.XtaDisplayer;
+import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.nodes.Node;
 
 public class XtaEditor extends TextEditor implements IPropertyChangeListener,
@@ -80,7 +80,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("XtaEditor()\n");
 		m_type = type;
 
-		XtaDisplayer.getInstance().addPropertyChangeListener(this);
+		XtaNotifier.getInstance().addPropertyChangeListener(this);
 
     	setSourceViewerConfiguration(new XtaConfiguration(this));
     	setDocumentProvider(new XtaDocumentProvider());
@@ -117,27 +117,31 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("Tree: propertyChange: %s\n", event.getProperty());	
 		
-		if (event.getProperty().equals(Displayer.NOTIFY_ANALYSIS_COMPLETE)) {
+		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
 			m_selectedNode = null;
 			updateFnops();
     	    updateHighlighting();
 			updateUnknowns();
-		} else if (event.getProperty().equals(Displayer.NOTIFY_LOAD_EXECUTABLE)) {
+			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			m_selectedNode = null;
 	    	m_startPointLine = null;
 	        m_endPointLine = null;			
 			updateFnops();
     	    updateHighlighting();
-		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_START_POINT)) {
-			CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();
+    	    
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT)) {
+			CodeReference startPoint = XtaNotifier.getInstance().getStartPoint();
 			m_startPointLine = findCodeRefLineNum(startPoint);
     	    updateHighlighting();
-		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_END_POINT)) {
-			CodeReference endPoint = XtaDisplayer.getInstance().getEndPoint();
+    	    
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT)) {
+			CodeReference endPoint = XtaNotifier.getInstance().getEndPoint();
 			m_endPointLine = findCodeRefLineNum(endPoint);
     	    updateHighlighting();
-		} else if (event.getProperty().equals(Displayer.NOTIFY_SHOW_CODE_POINT)) {
-			CodeReference codePoint = XtaDisplayer.getInstance().getCodePoint();
+    	    
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SHOW_CODE_POINT)) {
+			CodeReference codePoint = XtaNotifier.getInstance().getCodePoint();
 			showCodePoint(codePoint);
 		}
 	}
@@ -304,7 +308,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         HashMap<Annotation, Position> annotationPositions = 
     	    new HashMap<Annotation, Position>();		
 		
-		for (Unknown unknown : XtaDisplayer.getInstance().getRouteInfo().getRoute().getUnknowns()) {
+		for (Unknown unknown : XtaNotifier.getInstance().getRouteInfo().getRoute().getUnknowns()) {
 			updateAnnotations(unknown.getPc(), UnknownAnnotationID, annotations, annotationPositions);
 		}						    
 
@@ -374,7 +378,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      			int clickLineNum = getVerticalRuler().getLineOfLastMouseButtonActivity();
      			String ref = getLineDescription(clickLineNum);
     			CodeReference startPoint = CodeReferenceFactory.createCodeReference(ref);
-     			XtaDisplayer.getInstance().notifySetStartPoint(startPoint);
+     			XtaNotifier.getInstance().notifySetStartPoint(startPoint);
      		}
      	});
      	setAction(SetEndPointID, new Action("Set end point") {
@@ -382,19 +386,19 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      			int clickLineNum = getVerticalRuler().getLineOfLastMouseButtonActivity();
      			String ref = getLineDescription(clickLineNum);
      			CodeReference endPoint = CodeReferenceFactory.createCodeReference(ref);
-     			XtaDisplayer.getInstance().notifySetEndPoint(endPoint);
+     			XtaNotifier.getInstance().notifySetEndPoint(endPoint);
      		}
      	});
      	setAction(RemoveStartPointID, new Action("Remove start point") {
      		public void run() {
      			CodeReference startPoint = CodeReferenceFactory.createCodeReference("");
-     			XtaDisplayer.getInstance().notifySetStartPoint(startPoint);     			
+     			XtaNotifier.getInstance().notifySetStartPoint(startPoint);     			
      		}
      	});
      	setAction(RemoveEndPointID, new Action("Remove end point") {
      		public void run() {
      			CodeReference endPoint = CodeReferenceFactory.createCodeReference("");
-     			XtaDisplayer.getInstance().notifySetEndPoint(endPoint);     			
+     			XtaNotifier.getInstance().notifySetEndPoint(endPoint);     			
      		}
      	});
     }    

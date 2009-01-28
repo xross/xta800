@@ -21,14 +21,14 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
-import com.xmos.xta.engine.Displayer;
+import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Unknown;
-import com.xmos.xta.rcp.XtaDisplayer;
+import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaRouteInfo;
 import com.xmos.xta.rcp.nodes.Node;
 
 public class UnknownsView extends ViewPart implements IPropertyChangeListener,
-		ISelectionListener {
+		                                              ISelectionListener {
 	public static final boolean DEBUG = false;
 	public static final String ID = "com.xmos.xta.rcp.views.Unknowns";
 
@@ -39,7 +39,7 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 	public UnknownsView() {
 		if (DEBUG)
 			System.out.printf("Unknowns()\n");
-		XtaDisplayer.getInstance().addPropertyChangeListener(this);
+		XtaNotifier.getInstance().addPropertyChangeListener(this);
 	}
 
 	public void createPartControl(Composite parent) {
@@ -98,16 +98,17 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG)
-			System.out.printf("Unknowns: propertyChange: %s\n", event
-					.getProperty());
+		if (DEBUG) 
+			System.out.printf("Unknowns: propertyChange: %s\n", event.getProperty());
 
-		if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_EXCLUDES)) {
+		if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUDES)) {
 			m_tableViewer.setInput(null);
 			updateDisplay();
-		} else if (event.getProperty().equals(Displayer.NOTIFY_ANALYSIS_COMPLETE)) {
+			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
 			updateDisplay();
-		} else if (event.getProperty().equals(Displayer.NOTIFY_LOAD_EXECUTABLE)) {
+			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			m_tableViewer.setInput(null);
 		}
 	}
@@ -129,7 +130,7 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 		if (DEBUG)
 			System.out.printf("Unknowns: updateDisplay\n");
 
-		final XtaRouteInfo routeInfo = XtaDisplayer.getInstance()
+		final XtaRouteInfo routeInfo = XtaNotifier.getInstance()
 				.getRouteInfo();
 		if (routeInfo != null) {
 			m_tableViewer.setInput(routeInfo.getRoute());
@@ -157,7 +158,6 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	class UnknownSorter extends ViewerSorter {
-
 		int field=0;
 		int direction =1;
 		
