@@ -1,6 +1,7 @@
 package com.xmos.xta.console.displayers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -266,20 +267,25 @@ public class SummaryDisplayer implements Displayer {
     }
 
     private void displaySources(Route route, DebugInfo debugInfo) {
+    	ArrayList<String> files = new ArrayList<String>();
   	    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {
         	TreeSet<Integer> pathIds = new TreeSet<Integer>();
             for (Block path : route.completePaths()) {
             	buildPathsWithinSourcesSet(path, pathIds, debugFile.getFileName());
             }    	
-            
             if (pathIds.size() > 0) {
-            	m_console.display(String.format("%s: ", debugFile.getFileName())); 
+            	String file = String.format("%s: ", debugFile.getFileName()); 
             	for (Integer pathId : pathIds) {
-            		m_console.display(String.format("%d ", pathId));
+            		file += String.format("%d ", pathId);
             	}
-            	m_console.display("\n");
+            	files.add(file);
             }            
     	}
+  	    
+  	  Collections.sort(files);
+	    for(String file : files){
+	    	m_console.display(file + "\n"); 
+	    }
     }   
 
     private void buildPathsWithinFunctionSet(Block path, Set<Integer> pathSet, 
