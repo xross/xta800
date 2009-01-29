@@ -16,14 +16,12 @@ public class SrcDisplayer {
 	private Engine m_engine;
 	private Console m_console;
 	private int m_pathId;
-	private String m_fileName;
 	private boolean m_displayAssembly;
 
-	public SrcDisplayer(Engine engine, Console console, int pathId, String fileName, boolean displayAssembly) {
+	public SrcDisplayer(Engine engine, Console console, int pathId, boolean displayAssembly) {
 		m_engine = engine;
 		m_console = console;
 		m_pathId = pathId;
-		m_fileName = fileName;
 		m_displayAssembly = displayAssembly;
 	}
 
@@ -31,28 +29,21 @@ public class SrcDisplayer {
 		XeObject xeObject = m_engine.getXeObject();
 
     	Block path = Block.getPath(m_engine.getRoute(), m_pathId);
-        HashMap<String, TreeSet<Integer>> linesCovered = createSrcLinesCovered(path, xeObject, false);  		
-        if (!linesCovered.containsKey(m_fileName)) {
-            for (SourceFile sourceFile : xeObject.getSourceFiles()) {         
-                if (sourceFile.getFileName().equals(m_fileName)) {
-                    m_console.display(String.format("Error: The requested path does not touch the file: %s\n",
-                            m_fileName));
-                    return;
-                }           
-            }
-        	m_console.display(String.format("Error: The source file has not been loaded: %s\n", m_fileName));
-           	return;
-        }
-                                                    
-        TreeSet<Integer> fileLines = linesCovered.get(m_fileName);                                                                                
-		for (SourceFile sourceFile : xeObject.getSourceFiles()) {		
-			if (sourceFile.getFileName().equals(m_fileName)) {
+        HashMap<String, TreeSet<Integer>> linesCovered = createSrcLinesCovered(path, xeObject, false);                                                                   
+        
+		for (SourceFile sourceFile : xeObject.getSourceFiles()) {									
+	        TreeSet<Integer> fileLines = linesCovered.get(sourceFile.getCompilationName());    
+	        if (fileLines.size() > 0) {
+				m_console.display("----------------------------------\n");
+				m_console.display(sourceFile.getFileName() + " (" + sourceFile.getCompilationDir() + ")\n");
+				m_console.display("----------------------------------\n");	        	
+	        	
 				for (SourceLine sourceLine : sourceFile.getSourceLines()) {						
 					if (fileLines.contains(sourceLine.getLineNumber())) {
 						m_console.display(String.format("+"));
 					}
 					else {
-                    	m_console.display(String.format(" "));						
+	                   	m_console.display(String.format(" "));						
 					}
 					m_console.display(String.format(" %d: %s\n", 
 							sourceLine.getLineNumber(), 
@@ -62,9 +53,9 @@ public class SrcDisplayer {
 					    for (Line assemblyLine : sourceLine.getChildern()) {					    	
 							m_console.display(String.format("       -- %s\n", assemblyLine.getText())); 
 					    }
-					}
-				}				
-			}			
+					}				
+				}				        	
+	        }	        
 		}        
     }
 
@@ -75,14 +66,13 @@ public class SrcDisplayer {
 		for (XtaInstruction inst : block.getInstructions(recurse)) {
 			for (SourceFile sourceFile : xeObject.getSourceFiles()) {
 				
-				String fileName = sourceFile.getFileName();
-
+				String compilationName = sourceFile.getCompilationName();
 				TreeSet<Integer> sourceLines;
-				if (linesCovered.containsKey(fileName)) {
-					sourceLines = linesCovered.get(fileName);
+				if (linesCovered.containsKey(compilationName)) {
+					sourceLines = linesCovered.get(compilationName);
 				} else {
 					sourceLines = new TreeSet<Integer>();
-					linesCovered.put(fileName, sourceLines);
+					linesCovered.put(compilationName, sourceLines);
 				}
 
 				for (SourceLine sourceLine : sourceFile.getSourceLines()) {
@@ -95,5 +85,5 @@ public class SrcDisplayer {
 			}
 		}
 		return linesCovered;
-	}
+	}	
 }

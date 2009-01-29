@@ -7,20 +7,17 @@ import com.xmos.xta.engine.Engine;
 
 class Mix extends Command {
 	private int m_pathId;
-	private String m_fileName;
 
 	Mix() {
 		m_pathId = 0;
-		m_fileName = "";
 	}
 
-	Mix(int pathId, String fileName) {
+	Mix(int pathId) {
 		m_pathId = pathId;
-		m_fileName = fileName;
 	}
 	
     public int numArgs() {
-    	return 2;
+    	return 1;
     }        
 
     public String name() {
@@ -28,11 +25,11 @@ class Mix extends Command {
     }        
 
     public String commandLine() {
-    	return "mix " + m_pathId + " " + m_fileName;
+    	return "mix " + m_pathId;
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "mix <path id> <source file>: Display annotated source file + assembly instructions for the given path id";      	
+        return "mix <path id>: Display annotated source file(s) + assembly instructions for the given path id";      	
     }
 
     public Command clone(String[] args, int index, boolean commandLineMode) {
@@ -46,8 +43,7 @@ class Mix extends Command {
     	catch (NumberFormatException e) {
     	    return null;
     	}
-        String fileName = args[index + 2];    	
-    	return new Mix(pathId, fileName);
+    	return new Mix(pathId);
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
@@ -60,7 +56,7 @@ class Mix extends Command {
 		if (!isPathValid(engine, console, m_pathId))
 			return;
 		
-		SrcDisplayer displayer = new SrcDisplayer(engine, console, m_pathId, m_fileName, true);
+		SrcDisplayer displayer = new SrcDisplayer(engine, console, m_pathId, true);
 		displayer.display();
    }    
 }
