@@ -231,7 +231,7 @@ public class Engine {
            	m_route = null;
            	notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath()); 
         } else {
-        	notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile + "'could not be found.");
+        	notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile + "' could not be loaded.");
         }        
         return success;
     }	
