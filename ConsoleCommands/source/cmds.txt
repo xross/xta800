@@ -1,2 +1,7 @@
+# This is a comment.
 status
+
+# Test that invalid commands are reported.
+clobber
+
 exit
