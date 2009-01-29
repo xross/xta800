@@ -30,6 +30,9 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
         \(20.0ns\) 0x[0-9a-fA-F]{5} ldwdp \(lru6\) r0, dp\[i 0x10\] 
         \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
         \(20.0ns\) 0x[0-9a-fA-F]{5} retsp \(u6\) i 0x0 
+----------------------------------
+test.xc \(.*\)
+----------------------------------
   1: int a = 1;
   2: int b = 2;
   3: int c = 3;
@@ -49,6 +52,9 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+ 17:   return b;
   18: \}
   19: 
+----------------------------------
+test.xc \(.*\)
+----------------------------------
   1: int a = 1;
   2: int b = 2;
   3: int c = 3;

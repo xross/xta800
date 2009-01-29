@@ -12,7 +12,6 @@ system("xcc -march=xs1b -g test.xc up/up.xc -o $genDir/test.xe > $genDir/multi_d
 system("@ARGV load $genDir/test.xe " . 
        "list label " .
        "analyse function main " .
-       "print src 0 test.xc " .
-       "print src 0 up/up.xc " .
+       "print src 0 " .
        "exit  > $genDir/multi_directory_with_labels.txt 2>&1");
 

@@ -6,6 +6,9 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
         \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
             path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/0/0
     path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0
+----------------------------------
+test.xc \(.*\)
+----------------------------------
   1: int main\(\)
 \+ 2: {
 \+ 3:   int a = 0;
@@ -24,6 +27,9 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+ 16:   return res;
   17: }
   18: 
+----------------------------------
+test.xc \(.*\)
+----------------------------------
   1: int main\(\)
 \+ 2: {
 \+ 3:   int a = 0;
@@ -42,6 +48,9 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+ 16:   return res;
   17: }
   18: 
+----------------------------------
+test.xc \(.*\)
+----------------------------------
   1: int main\(\)
   2: {
   3:   int a = 0;

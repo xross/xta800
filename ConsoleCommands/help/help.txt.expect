@@ -51,8 +51,8 @@
   [-]load <xe file>: Loads the given xmos executable file
   [-]print <option> <arg0> <arg1>...: Display path information
       option: asm <path id>: Display annotated assembly for given path id
-      option: src <path id> <source file>: Display annotated source file for given path id
-      option: mix <path id> <source file>: Display annotated source file + assembly instructions for the given path id
+      option: src <path id>: Display annotated source file(s) for given path id
+      option: mix <path id>: Display annotated source file(s) + assembly instructions for the given path id
       option: trace <path id>: Display instruction trace for the given path id
   [-]pwd: Displays the current working directory
   [-]remove <option> <arg0> <arg1>...: Remove item from given list

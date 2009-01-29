@@ -22,6 +22,9 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 [^^^]
  +\(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
 [^^^]
+----------------------------------
+test.xc \(.*\)
+----------------------------------
   1: int a = 2;
   2: int main\(\)
 \+ 3: {
@@ -36,7 +39,10 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
   12:   } 
 \+ 13:   return b;
   14: }
-  15: 
+  15:
+----------------------------------
+test.xc \(.*\)
+----------------------------------
   1: int a = 2;
   2: int main\(\)
 \+ 3: {

@@ -7,12 +7,12 @@ my $arch    = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -march=xs1b -g test.xc up/up.xc -o $genDir/test.xe > $genDir/multi_directory.log 2>&1");
+system("xcc -march=xs1b -g test.xc add/add.xc sub/sub.xc -o $genDir/test.xe > $genDir/multi_directory.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "list sources " .
        "analyse function main " .
-       "print src 0 test.xc " .
-       "print src 0 up/up.xc " .
+       "print src 1 " .
+       "print src 2 " .
        "exit  > $genDir/multi_directory.txt 2>&1");
 

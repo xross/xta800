@@ -16,12 +16,12 @@ system("@ARGV load $genDir/test.xe " .
        "list prohibited " .
        "analyse function main " .
        "summary simple " .
-       "print src 2 test.xc " .
+       "print src 2 " .
        "remove prohibited L1 " .
        "list prohibited " .
        "add prohibited L2 " .
        "list prohibited " .
        "analyse function main " .
        "summary simple " .
-       "print src 1 test.xc " .
+       "print src 1 " .
        "exit > $genDir/prohibited_labels.txt 2>&1");
