@@ -1,6 +1,4 @@
-Error: Failed to load executable: sponge.xe
-Error: The file '.*sponge.xe'could not be found.
+Error: The file '.*sponge.xe' could not be found.
 Error: No executable loaded
-Error: Failed to load executable: .*/john.xe
-Error: The file '.*john.xe'could not be found.
+Error: The file '.*john.xe' could not be found.
 Error: No executable loaded
