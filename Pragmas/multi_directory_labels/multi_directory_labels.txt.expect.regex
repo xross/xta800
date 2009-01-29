@@ -1,9 +1,9 @@
 - ref: mainB, pc: 0x[0-9a-fA-F]{5}
-- ref: mainA, pc: 0x[0-9a-fA-F]{5}
-- ref: src1, pc: 0x[0-9a-fA-F]{5}
-- ref: src1Term, pc: 0x[0-9a-fA-F]{5}
-- ref: src2, pc: 0x[0-9a-fA-F]{5}
 - ref: src2Term, pc: 0x[0-9a-fA-F]{5}
+- ref: src2, pc: 0x[0-9a-fA-F]{5}
+- ref: mainA, pc: 0x[0-9a-fA-F]{5}
+- ref: src1Term, pc: 0x[0-9a-fA-F]{5}
+- ref: src1, pc: 0x[0-9a-fA-F]{5}
 Complete paths:   1
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
