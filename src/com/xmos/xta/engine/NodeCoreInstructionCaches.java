@@ -30,6 +30,10 @@ public class NodeCoreInstructionCaches {
 		return idc.decode(opcode, pc);
 	}
 	
+	public InstructionDecodeCache getInstructionDecodeCache(int node, int core){
+		return m_nodeCore.get(nodeCoreString(node, core));
+	}
+	
 	public XtaInstruction getFNop(int pc, int fnopNum, int node, int core){
 		InstructionDecodeCache idc = m_nodeCore.get(nodeCoreString(node, core));
 		return idc.getFNop(pc, fnopNum);

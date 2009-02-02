@@ -464,7 +464,11 @@ public class Expression {
 	private String createExpressionString(Expression expression, String exprStr) {
 		String retStr = exprStr;
 
-		if (expression.m_type != null) {
+		if(expression== null){
+			return "null";
+		}
+		
+		if ( expression.m_type != null) {
 			// Terminal:
 			switch (expression.m_type) {
 			case IMMEDIATE:
@@ -484,11 +488,13 @@ public class Expression {
 
 			case MEMORY:
 				assert (expression.m_numOperands == 2);
-				retStr += "m";
-				retStr = createExpressionString(expression.m_operands[0],
-						retStr);
-				retStr = createExpressionString(expression.m_operands[1],
-						retStr);
+				if(expression.m_status != Status.UNDEFINED){
+					retStr += "m";
+					retStr = createExpressionString(expression.m_operands[0], retStr);
+					retStr = createExpressionString(expression.m_operands[1], retStr);
+				} else {
+					retStr += "m unknown";
+				}
 				break;
 
 			default:

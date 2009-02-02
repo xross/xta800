@@ -2,6 +2,7 @@ package com.xmos.xta.engine;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.Function;
 import com.xmos.xeobject.Line;
@@ -44,7 +46,6 @@ public class Engine {
     private boolean m_resolveExpression;    
     private Progress m_progress;
     private String m_srcPaths;
-    
     private ArrayList<XeObject> m_xeObjects;
     private ArrayList<CodeReferenceList> m_exclusions;
     private ArrayList<CodeReferenceList> m_prohibited;
@@ -200,13 +201,18 @@ public class Engine {
         	m_executableFile = executableFile;
         	initialiseLists(fileFinder);
             m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);
+            
+            			
+            
             try {
 				decodeInstructions();
 			} catch (Exception e) {
 				setErrorString("Some of the pc's refered to in the executable could not be found");
 				success = false;
 			} 
-            
+			parseResources();
+
+			
             loadLabels();
            	m_route = null;
            	callDisplayers(Displayer.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath()); 
@@ -216,7 +222,113 @@ public class Engine {
         return success;
     }	
 
-    public Progress getProgress() {
+    private void parseResources() {
+    	for(int nodeId : m_xeLoader.getNodeIds()){
+    		for(int coreId : m_xeLoader.getCoreIds(nodeId)){
+    			XeObject xeObject = getXeObject(nodeId, coreId);
+    			for(Function function: xeObject.getFunctions()){
+    				resourceAnalysis(function, m_nodeCoreInstructionCache.getInstructionDecodeCache(nodeId, coreId));
+    			}
+    		}
+    	}
+	}
+    
+    
+    private void resourceAnalysis(Function function, InstructionDecodeCache instructionDecodeCache) {
+    	if (function.getChildern() != null && function.getChildern().size()>0){
+    		
+    		ArrayList<Line> m_lines  = function.getChildern();
+    		Collections.reverse(m_lines);
+    		for(Line line : m_lines){
+    			AssemblyLine  al = (AssemblyLine)line;
+    			int pc = al.getPc();
+    			//this assumes that this pc has already been decoded
+    			XtaInstruction inst = instructionDecodeCache.getInstruction(pc);
+    			if(inst == null){
+    				//TODO
+    			} else {
+    				inst.applyInstructionToResources();
+    			}
+    			
+    		}
+    	}
+	}
+
+	private void decodeInstructions() throws Exception{
+    	
+    	ArrayList<String> maps = new ArrayList<String>();
+    	
+    	ArrayList<String> functions = new ArrayList<String>();
+        for(int nodeId : m_xeLoader.getNodeIds()){
+        	for(int coreId : m_xeLoader.getCoreIds(nodeId)){
+		        int lastPc = 0;
+		        HashMap <Integer, ArrayList<Integer>> instructionEntryPc = new HashMap<Integer, ArrayList<Integer>>();
+		        for (Function function : getXeObject(nodeId, coreId).getFunctions()){
+		        	
+		        	if (function.getChildern() != null && function.getChildern().size()>0){
+			            int functionEntry = function.getChildern().get(0).getLineNumber();
+			            for (Line assembly : function.getChildern()){
+			                int pc = assembly.getLineNumber();
+			                int opcode = getOpcode(pc, nodeId,coreId);			                
+			                String retsp_lu6 = new RevbXtaInstruction_retsp_lu6(0, 0).getNmenonic();
+			                String retsp_u6 = new RevbXtaInstruction_retsp_u6(0, 0).getNmenonic();
+			                String nemonic = m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic();
+			                if (nemonic.equals(retsp_lu6) || nemonic.equals(retsp_u6)){
+			                    ArrayList<Integer> retsps = instructionEntryPc.get(functionEntry);
+			                    if (retsps==null){
+			                        retsps = new ArrayList<Integer>();
+			                    } 
+			                    retsps.add(pc);
+			                    instructionEntryPc.put(functionEntry, retsps);  
+			                }
+			            }
+			            lastPc = function.getChildern().get(function.getChildern().size()-1).getLineNumber();
+		        	}
+		        }
+		        int pc =m_xeLoader.getMemoryImage(nodeId, coreId).getMemoryBase();
+		        while (pc <= lastPc){
+		            int opcode = getOpcode(pc, nodeId,coreId);
+		            int currentTarget = m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getBranchPcRelativeTargetPc();
+		            if (currentTarget>0 && m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().toLowerCase().startsWith("bl")){
+		                if (instructionEntryPc.get(currentTarget)!=null){
+		                    for (int targetPc : instructionEntryPc.get(currentTarget)){
+		                        int opcodeRetsp = getOpcode(targetPc, nodeId,coreId);
+		                        int pcOpcode = getOpcode(pc, nodeId,coreId);
+		                        XtaInstruction inst = m_nodeCoreInstructionCache.decode(pcOpcode, pc, nodeId, coreId);
+		                        m_nodeCoreInstructionCache.decode(opcodeRetsp, targetPc, nodeId, coreId).addReturnLocation(inst);
+		                        
+		                        String to = m_xeLoader.getSymbolTable(nodeId, coreId).getElfHandler().getFunctionOffset(targetPc).getName();
+		                        String from = m_xeLoader.getSymbolTable(nodeId, coreId).getElfHandler().getFunctionOffset(inst.getPc()).getName();
+		                        
+		                        if(!functions.contains(to))functions.add(to);
+		                        if(!functions.contains(from))functions.add(from);
+		                        
+		                        String map = "fn"+functions.indexOf(from)  +" -> " + "fn" +functions.indexOf(to);
+		                        
+		                        if(!maps.contains(map)) maps.add(map);
+		                        
+		                    }
+		                } else {
+		                    //this is the case where dosyscall has been hit
+		                }
+		            }
+		            pc += m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNumBytes();
+		        }
+  		
+        	}
+        }
+        /*
+        System.out.println("digraph g {");
+        for(String function : functions){
+        	System.out.println("fn" +functions.indexOf(function) +" [label = \"" + function + "\"];");
+        }
+        for(String map : maps){
+        	System.out.println(map +";");
+        }
+        System.out.println("}");
+        */
+    }
+	public Progress getProgress() {
     	return m_progress;
     }
 
@@ -274,10 +386,6 @@ public class Engine {
             if (t) {
             	callDisplayers(Displayer.NOTIFY_SET_START_POINT, from); 
             	callDisplayers(Displayer.NOTIFY_SET_END_POINT, to); 
-                //for (Displayer displayer : m_displayers) {
-                //	displayer.notify(Displayer.NOTIFY_SET_START_POINT, from);
-                //	displayer.notify(Displayer.NOTIFY_SET_END_POINT, to);
-                //}
             } else {
             	// restore the route
             	m_route = m_previousRoute;
@@ -349,7 +457,6 @@ public class Engine {
 
     public void setNodeId(int nodeId) {
         m_nodeId = nodeId;
-        switchNodeCode();
         callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
     }
 
@@ -359,7 +466,6 @@ public class Engine {
 
     public void setCoreId(int coreId) {
         m_coreId = coreId;
-        switchNodeCode();
         callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
     }
 
@@ -559,62 +665,8 @@ public class Engine {
 		return t;
     }
     
-    private void switchNodeCode(){
-    	/*
-    	m_exclusions.clear();
-    	m_prohibited.clear();
-    	m_required.clear();
-    	getLabelsMap(m_nodeId, m_coreId);
-    	*/
-    }
     
-    private void decodeInstructions() throws Exception{
-        for(int nodeId : m_xeLoader.getNodeIds()){
-        	for(int coreId : m_xeLoader.getCoreIds(nodeId)){
-		        int lastPc = 0;
-		        HashMap <Integer, ArrayList<Integer>> instructionEntryPc = new HashMap<Integer, ArrayList<Integer>>();
-		        for (Function function : getXeObject(nodeId, coreId).getFunctions()){
-		        	
-		        	if (function.getChildern() != null && function.getChildern().size()>0){
-			            int functionEntry = function.getChildern().get(0).getLineNumber();
-			            for (Line assembly : function.getChildern()){
-			                int pc = assembly.getLineNumber();
-			                int opcode = getOpcode(pc, nodeId,coreId);			                
-			                
-			                if (m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().toLowerCase().startsWith("retsp")){
-			                    ArrayList<Integer> retsps = instructionEntryPc.get(functionEntry);
-			                    if (retsps==null){
-			                        retsps = new ArrayList<Integer>();
-			                    } 
-			                    retsps.add(pc);
-			                    instructionEntryPc.put(functionEntry, retsps);  
-			                }
-			            }
-			            lastPc = function.getChildern().get(function.getChildern().size()-1).getLineNumber();
-		        	}
-		        }
-		        int pc =m_xeLoader.getMemoryImage(nodeId, coreId).getMemoryBase();
-		        while (pc <= lastPc){
-		            int opcode = getOpcode(pc, nodeId,coreId);
-		            int currentTarget = m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getBranchPcRelativeTargetPc();
-		            if (currentTarget>0 && m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().toLowerCase().startsWith("bl")){
-		                if (instructionEntryPc.get(currentTarget)!=null){
-		                    for (int targetPc : instructionEntryPc.get(currentTarget)){
-		                        int opcodeRetsp = getOpcode(targetPc, nodeId,coreId);
-		                        int pcOpcode = getOpcode(pc, nodeId,coreId);
-		                        XtaInstruction inst = m_nodeCoreInstructionCache.decode(pcOpcode, pc, nodeId, coreId);
-		                        m_nodeCoreInstructionCache.decode(opcodeRetsp, targetPc, nodeId, coreId).addReturnLocation(inst);
-		                    }
-		                } else {
-		                    //this is the case where dosyscall has been hit
-		                }
-		            }
-		            pc += m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNumBytes();
-		        }
-  		
-        	}
-        }
-    }
+   
 
     private int getOpcode(int pc, int nodeId, int coreId) throws Exception{
         int opcode=0;
@@ -772,5 +824,6 @@ public class Engine {
 	public File getExecutable() {
 		return m_executableFile;
 	}
+
 }
 

@@ -257,6 +257,14 @@ public class Resources {
 		return null;
 		
 	}
+	
+	boolean allInUse(Resource [] resources){
+		boolean allInUse = true;
+		for(Resource res : resources){
+			allInUse &= res.m_isInUse;
+		}
+		return allInUse;
+	}
 
 	public Synchroniser getSynchroniser(int resType, int resNum) {
 		if(resType != RES_TYPE_SYNC){
@@ -271,6 +279,29 @@ public class Resources {
 	public Thread getThread(int thread) {
 		assert(thread<NUM_THREADS);
 		return m_threads[thread];
+	}
+
+	public boolean freeResourceAvaliable(int resType) {
+		switch(resType){
+        case RES_TYPE_PORT:
+            return !allInUse(m_ports);
+        case RES_TYPE_TIMER:
+            return !allInUse(m_timers);
+        case RES_TYPE_CHANEND:
+            return !allInUse(m_channels);
+        case RES_TYPE_SYNC:
+            return !allInUse(m_synchronisers);
+        case RES_TYPE_THREAD:
+            return !allInUse(m_threads);
+        case RES_TYPE_LOCK:
+            return !allInUse(m_locks);
+        case RES_TYPE_CLKBLK:
+            return !allInUse(m_clockBlocks);
+        case RES_TYPE_COPROC:
+            return !allInUse(m_coprocs);
+        }
+		assert(false);
+		return false;
 	}
 
 }

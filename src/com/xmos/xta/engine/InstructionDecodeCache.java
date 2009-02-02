@@ -23,6 +23,13 @@ public class InstructionDecodeCache {
         m_symbolTable = symbolTable;
 	}
 	
+	XtaInstruction getInstruction(int pc){
+		if (m_instructionCache.containsKey(pc))
+            return m_instructionCache.get(pc);
+		 assert(false);
+		 return null;
+	}
+	
 	XtaInstruction decode(int opcode, int pc) {
 		if (m_instructionCache.containsKey(pc))
             return m_instructionCache.get(pc);

@@ -734,7 +734,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		Group resolveGroup = createGroup(composite, "Resolve", 1, 2);
 		m_resolveExpressions = new Button(resolveGroup, SWT.CHECK);
 		m_resolveExpressions.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
-		m_resolveExpressions.setSelection(XtaEngine.getEngine().getResolve());		
+		m_resolveExpressions.setSelection(XtaEngine.getEngine().getResolve());
 		m_resolveExpressions.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				setResolve(m_resolveExpressions.getSelection());

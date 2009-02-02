@@ -217,7 +217,6 @@ public class Block implements Comparable<Block> {
 		addInstruction(instruction);
 		
 		if(checkComplete(instruction)) return;
-		
 
 		if(instruction.canPause()){
 			addUnknown(instruction);
@@ -550,7 +549,7 @@ public class Block implements Comparable<Block> {
 		if(DEBUG) {
 			System.out.println(this.m_id + " "+inst);
 		}
-		inst.setBasicNumCycles(m_bc.getM_instructionAttributes().getTiming(inst.getNmenonic()));
+		//inst.setBasicNumCycles(m_bc.getM_instructionAttributes().getTiming(inst.getNmenonic()));
 		inst.setConfig(m_bc.getConfig());
 
 		boolean keepInstructionTrace =true;
