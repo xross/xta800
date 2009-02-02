@@ -3,67 +3,47 @@ package com.xmos.xta.console.displayers;
 import java.util.HashMap;
 import java.util.TreeSet;
 
-import com.xmos.xeloader.DebugInfo;
-import com.xmos.xeloader.MemoryImage;
-import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.SourceLine;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.console.Console;
-import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Block;
-import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.XtaInstruction;
 
-public class SrcDisplayer implements Displayer {
-	Console m_console;
-	XeObject m_xeObject;
-	int m_pathId;
-	String m_fileName;
-	boolean m_displayAssembly;
+public class SrcDisplayer {
+	private Engine m_engine;
+	private Console m_console;
+	private int m_pathId;
+	private boolean m_displayAssembly;
 
-	public SrcDisplayer(Console console, XeObject xeObject, int pathId,
-			String fileName, boolean displayAssembly) {
+	public SrcDisplayer(Engine engine, Console console, int pathId, boolean displayAssembly) {
+		m_engine = engine;
 		m_console = console;
-		m_xeObject = xeObject;
 		m_pathId = pathId;
-		m_fileName = fileName;
 		m_displayAssembly = displayAssembly;
 	}
 
-	public void displayRoute(Route route, DebugInfo debugInfo, 
-    		MemoryImage memoryImage, SymbolTable symbolTable) {
-    	
-    	Block path = DisplayerHelper.getPath(route, m_pathId);
-    	
-    	if (path == null) {
-			m_console.display(String.format("Error: invalid path id: %d\n", m_pathId));
-			return;
-    	}
-    	
-        HashMap<String, TreeSet<Integer>> linesCovered = createSrcLinesCovered(path, m_xeObject, false);  		
-        if (!linesCovered.containsKey(m_fileName)) {
-            for (SourceFile sourceFile : m_xeObject.getSourceFiles()) {         
-                if (sourceFile.getFileName().equals(m_fileName)) {
-                    m_console.display(String.format("Error: The requested path does not touch the file: %s\n",
-                            m_fileName));
-                    return;
-                }           
-            }
-        	m_console.display(String.format("Error: The source file has not been loaded: %s\n", m_fileName));
-           	return;
-        }
-                                                    
-        TreeSet<Integer> fileLines = linesCovered.get(m_fileName);                                                                                
-		for (SourceFile sourceFile : m_xeObject.getSourceFiles()) {		
-			if (sourceFile.getFileName().equals(m_fileName)) {
+	public void display() {    	
+		XeObject xeObject = m_engine.getXeObject();
+
+    	Block path = Block.getPath(m_engine.getRoute(), m_pathId);
+        HashMap<String, TreeSet<Integer>> linesCovered = createSrcLinesCovered(path, xeObject, false);                                                                   
+        
+		for (SourceFile sourceFile : xeObject.getSourceFiles()) {									
+	        TreeSet<Integer> fileLines = linesCovered.get(sourceFile.getCompilationName());    
+	        if (fileLines.size() > 0) {
+				m_console.display("----------------------------------\n");
+				m_console.display(sourceFile.getFileName() + " (" + sourceFile.getCompilationDir() + ")\n");
+				m_console.display("----------------------------------\n");	        	
+	        	
 				for (SourceLine sourceLine : sourceFile.getSourceLines()) {						
 					if (fileLines.contains(sourceLine.getLineNumber())) {
 						m_console.display(String.format("+"));
 					}
 					else {
-                    	m_console.display(String.format(" "));						
+	                   	m_console.display(String.format(" "));						
 					}
 					m_console.display(String.format(" %d: %s\n", 
 							sourceLine.getLineNumber(), 
@@ -73,14 +53,11 @@ public class SrcDisplayer implements Displayer {
 					    for (Line assemblyLine : sourceLine.getChildern()) {					    	
 							m_console.display(String.format("       -- %s\n", assemblyLine.getText())); 
 					    }
-					}
-				}				
-			}			
+					}				
+				}				        	
+	        }	        
 		}        
     }
-
-	public void notify(String message, String argument) {
-	}
 
 	private HashMap<String, TreeSet<Integer>> createSrcLinesCovered(Block block,
 			XeObject xeObject, boolean recurse) {
@@ -89,14 +66,13 @@ public class SrcDisplayer implements Displayer {
 		for (XtaInstruction inst : block.getInstructions(recurse)) {
 			for (SourceFile sourceFile : xeObject.getSourceFiles()) {
 				
-				String fileName = sourceFile.getFileName();
-
+				String compilationName = sourceFile.getCompilationName();
 				TreeSet<Integer> sourceLines;
-				if (linesCovered.containsKey(fileName)) {
-					sourceLines = linesCovered.get(fileName);
+				if (linesCovered.containsKey(compilationName)) {
+					sourceLines = linesCovered.get(compilationName);
 				} else {
 					sourceLines = new TreeSet<Integer>();
-					linesCovered.put(fileName, sourceLines);
+					linesCovered.put(compilationName, sourceLines);
 				}
 
 				for (SourceLine sourceLine : sourceFile.getSourceLines()) {
@@ -109,5 +85,5 @@ public class SrcDisplayer implements Displayer {
 			}
 		}
 		return linesCovered;
-	}
+	}	
 }

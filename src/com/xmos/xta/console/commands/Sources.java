@@ -1,5 +1,8 @@
 package com.xmos.xta.console.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import com.xmos.dwarfhandler.DebugFile;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xta.console.Console;
@@ -38,13 +41,19 @@ class Sources extends Command {
 	    int coreId = engine.getCoreId();
 	    DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(nodeId, coreId);
 	    assert(debugInfo != null);        
-		
+		ArrayList<String> files = new ArrayList<String>();
   	    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {
-  	    	console.display(String.format("- %s", debugFile.getFileName()));
+  	    	String file = String.format("- %s (%s)", 
+  	    			debugFile.getFileName(), debugFile.getCompilationDir());
+  	    	  	    	
   	    	if (debugFile.getFile() == null) {
-  	  	    	console.display(" (File not found)");  	    		
-  	    	}
-  	    	console.display("\n");  	    	
-    	}    			
+  	    		file += " (File not found)"; 	    		
+  	    	} 
+  	    	files.add(file); 	    	
+    	}   
+  	    Collections.sort(files);
+  	    for (String file : files){
+  	    	console.display(file + "\n"); 
+  	    }
     }
 }

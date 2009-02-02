@@ -1,31 +1,23 @@
 package com.xmos.xta.console.displayers;
 
-import com.xmos.xeloader.DebugInfo;
-import com.xmos.xeloader.MemoryImage;
-import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.console.Console;
-import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Block;
-import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.XtaInstruction;
 
-public class TraceDisplayer implements Displayer {
+public class TraceDisplayer {
+	private Engine m_engine;
 	private Console m_console;
 	private int m_pathId;
 		
-	public TraceDisplayer(Console console, int pathId) {		
+	public TraceDisplayer(Engine engine, Console console, int pathId) {
+		m_engine = engine;
 		m_console = console;
 		m_pathId = pathId;
 	}
 	
-    public void displayRoute(Route route, DebugInfo debugInfo, 
-    		MemoryImage memoryImage, SymbolTable symbolTable) {     	
-  		
-    	Block path = DisplayerHelper.getPath(route, m_pathId);
-    	if (path == null) {
-		    m_console.display(String.format("Error: invalid path id: %d\n", m_pathId));        		
-		    return;
-		}
+    public void display() {     	  		
+    	Block path = Block.getPath(m_engine.getRoute(), m_pathId);
     	
     	double currentTime = 0.0;
 		for (XtaInstruction instruction : path.getInstructions(false)) {
@@ -46,7 +38,4 @@ public class TraceDisplayer implements Displayer {
           	m_console.display("\n");
 		}  		
     }
-
-	public void notify(String message, String argument) {
-	}	        
 }

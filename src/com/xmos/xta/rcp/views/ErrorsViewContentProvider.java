@@ -3,7 +3,7 @@ package com.xmos.xta.rcp.views;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import com.xmos.xta.rcp.XtaErrorLog;
+import com.xmos.xta.rcp.XtaLog;
 
 public class ErrorsViewContentProvider implements IStructuredContentProvider {
     public static final boolean DEBUG = false;
@@ -11,7 +11,7 @@ public class ErrorsViewContentProvider implements IStructuredContentProvider {
 	public Object[] getElements(Object inputElement) {
 		if (DEBUG) System.out.printf("ErrorsViewContentProvider: getElements\n");	
 		
-		return ((XtaErrorLog)inputElement).getErrorStrings().toArray();
+		return ((XtaLog)inputElement).getStrings(XtaLog.Level.ERROR).toArray();
 	}
 
 	public void dispose() {

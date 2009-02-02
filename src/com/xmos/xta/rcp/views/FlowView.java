@@ -9,7 +9,7 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
-import com.xmos.xta.rcp.XtaDisplayer;
+import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.nodes.Node;
 
 public class FlowView extends ViewPart implements IPropertyChangeListener,
@@ -19,7 +19,7 @@ public class FlowView extends ViewPart implements IPropertyChangeListener,
 
 	public FlowView() {
 		if (DEBUG) System.out.printf("Flow()\n");			
-		XtaDisplayer.getInstance().addPropertyChangeListener(this);
+		XtaNotifier.getInstance().addPropertyChangeListener(this);
 	}
 
 	public void createPartControl(Composite parent) {

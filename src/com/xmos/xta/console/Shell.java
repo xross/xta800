@@ -92,13 +92,16 @@ public class Shell {
 		m_state = State.RUNNING;
 	    m_commands = new LinkedList<Command>();
 	    m_commandHistory = new Vector<Command>();
+	    m_engine.registerNotifier(new ConsoleDisplayer(console));
     }
     
     private void processCommandLine(String[] args) {     		    
 	    for (int i = 0; i < args.length; ++i) {
 	    	Command command = CommandFactory.buildCommand(args, i, m_commandHistory, m_console, true);
-	    	if (command == null)
+	    	if (command == null) {
+	        	m_console.display("Invalid command (Try 'help'..)\n");    	
 	    		usage();
+	    	}
 	    	
 	    	m_commands.offer(command);
 	    	i += command.numArgs();
@@ -149,6 +152,7 @@ public class Shell {
                 tokens = s.toArray(tokens);
                 command = CommandFactory.buildCommand(tokens, 0, m_commandHistory, m_console, false);
                 if (command == null) {
+    	        	m_console.display("Invalid command (Try 'help'..)\n");                	
                 	m_commandHistory.add(new Invalid(line));
                 }                	
                 if (!exitAllowed(command)) {

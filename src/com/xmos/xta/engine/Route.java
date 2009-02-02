@@ -158,10 +158,15 @@ public class Route {
 	public double getTimeTaken() {
 		return 0;
 	}
-
+	
+	public void invalidateAllBlocks(){
+		for(Block block : m_allBlocks){
+			block.getBlockStats().invalidateAll();
+		}
+	}
+	
 	void notifyUpdate() {
 		Collections.sort(m_completePaths);
-		m_engine.callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
 	}
 
 	Progress getProgress() {
@@ -184,7 +189,7 @@ public class Route {
 		for (Unknown unknown : m_unknowns) {
 			if (unknown.getPc() == pc) {
 				m_unknowns.remove(unknown);
-				m_engine.callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
+				m_engine.notify(Notifier.NOTIFY_UPDATE_STATE, "");
 				break;
 			}
 		}
@@ -304,7 +309,7 @@ public class Route {
 		}
 		
 		for(Block completePath : m_completePaths){
-			HashSet<Integer> allPathPcs = completePath.getAllPcs();
+			HashSet<Integer> allPathPcs = completePath.getPcsCovered(true);
 			if(m_status == RouteStatus.ABORTED ){
 				//return the paths unfiltered
 				return;
@@ -370,8 +375,8 @@ public class Route {
 	}
 
 	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
+/*
 		boolean hit = false;
-
 		Iterator<ExecutionState> iter = m_executionStates.iterator();
 		while (iter.hasNext()) {
 			ExecutionState executionState = iter.next();
@@ -389,8 +394,20 @@ public class Route {
 				}
 			}
 		}
-
 		return hit;
+*/
+		//this scales much better
+		for (Block block : m_allBlocks) {
+			for (Block loopPath : block.getLoopPaths()) {
+				if (loopPath.getId() == pathId) {
+					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
+					attributes.setNumIterations(iterations, absolute);
+					return true;
+				}
+			}
+		}	
+		return false;
+		
 	}
 
 	public ArrayList<ExecutionState> getExecutionStates() {
@@ -398,8 +415,10 @@ public class Route {
 	}
 	
 	public void addNewBlock(Block block){
-		m_allBlocks.add(block);
-		m_progress.setCurValue(m_allBlocks.size());
+		if(block!=null){
+			m_allBlocks.add(block);
+			m_progress.setCurValue(m_allBlocks.size());
+		}
 	}
 
 	public String getStatusString() {

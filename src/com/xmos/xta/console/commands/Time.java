@@ -107,14 +107,10 @@ class Time extends Command {
     public void execute(Shell shell, Engine engine, Console console) {
     	switch (m_mode) {
     	case NS:
-            if (!engine.setInstructionTimeTaken(m_pc, m_timeTaken)) {  
-             	console.display(String.format("Error: %s\n", engine.getErrorString()));
-            }            
+            engine.setInstructionTimeTaken(m_pc, m_timeTaken);  
     		break;
     	case CYCLES:
-            if (!engine.setInstructionNumCycles(m_pc, m_numCycles)) {  
-             	console.display(String.format("Error: %s\n", engine.getErrorString()));
-            }            
+            engine.setInstructionNumCycles(m_pc, m_numCycles);  
     		break;
         default:
         	assert(false);

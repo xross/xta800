@@ -14,18 +14,11 @@ import com.xmos.xta.engine.references.CodeReference;
 
 public class Block implements Comparable<Block> {
 	private static final boolean DEBUG = false;
-	private static final boolean DUMPSTATE = false;
-	private static final boolean IBUFFERSTATE = false;
+	private static final boolean LOG_PROBLEMS = true;
 
 	static enum Mode {
 		FUNCTION, ABSOLUTE
 	}
-	
-	private int m_ibufferBefore;
-	private int m_ibufferAfter;
-	private int m_ibufferFnops;
-	private int m_ibufferFetches;
-	private int m_ibufferIssue;
 	
 	private BlockCommonComponents m_bc;
 
@@ -57,18 +50,52 @@ public class Block implements Comparable<Block> {
 	private boolean m_speculative;
 	private int m_currentThread;
 	private boolean m_firstStep;
-
-	private ExecutionState m_executionState;
+	private ExecutionState m_executionState;	
+	private BlockStats m_blockStats;
 	
 	private static int m_numBlocks;
 
+    public static Block getPath(Route route, int pathId) {
+    	assert(route != null);
+    	
+        for (Block path : route.completePaths()) {
+        	Block foundPath = getPath(path, pathId);
+            if (foundPath != null) {
+                return foundPath;
+            }
+        }
+        for (Unresolved path : route.unresolvedPaths()) {
+        	Block foundPath = getPath(path.getBlock(), pathId);
+            if (foundPath != null) {
+                return foundPath;
+            }
+        }                
+        return null;        
+    }
+    
+    private static Block getPath(Block path, int pathId) {
+        if (pathId == path.getId()) {
+            return path;
+        }
+        for (Block block : path.getPathBlocks()) {
+            for (Block loopPath : block.getLoopPaths()) {
+            	Block foundPath = getPath(loopPath, pathId);
+                if (foundPath != null) {
+                    return foundPath;
+                }
+            }
+        }
+        path.doneWithPathBlocks();
+        return null;
+    }    
+		
 	/*
 	 * this is the initial constructor for a path - it only gets called once per
 	 * route analysis
 	 */
 	public Block(BlockCommonComponents bc, int fromPc, int toPc, MachineState machineState, ExecutionState executionState) {
 		if(DEBUG)System.out.println("block 0 started at 0x" + Integer.toHexString(fromPc));
-		bc.getRoute().addNewBlock(this);
+		
 		m_numBlocks = 0;
 		initialise(machineState);
 		m_bc = bc;
@@ -87,6 +114,8 @@ public class Block implements Comparable<Block> {
 		m_numPausables = 0;
 		m_parentBlock = null;
 		m_unresolved = null;
+		m_blockStats = new BlockStats(this);
+		bc.getRoute().addNewBlock(this);
 	}
 
 	Block(Block blockToSplit, int pcHit) {
@@ -147,6 +176,11 @@ public class Block implements Comparable<Block> {
 
 		m_speculative = blockToSplit.m_speculative;
 		if (DEBUG) System.out.println("\tsplit block " + Integer.toHexString(pcHit) + " at to make block " + m_id + " and block " + blockToSplit.m_id);
+		m_blockStats = new BlockStats(this);
+	}
+
+	public BlockStats getBlockStats(){
+		return m_blockStats;
 	}
 
 	public Block(Block block, MachineState machineState, ExecutionState executionState) {
@@ -177,8 +211,169 @@ public class Block implements Comparable<Block> {
 		m_numInstructions = 0;
 		m_numPausables = 0;
 		m_unresolved = block.m_unresolved;
+		m_blockStats = new BlockStats(this);
 		assert(m_contexts.size()>0);
 		if(DEBUG)System.out.println("block " + this.m_id +  " started at 0x" + Integer.toHexString(this.m_machineState.getPc(this.m_currentThread)));
+	}
+
+	public void build() throws Exception {				
+		
+		int pc = m_machineState.getPc(m_currentThread);
+		
+		if (isProhibited(pc)) {
+			setStatus(BlockStatus.EXCLUDED);
+			releaseMemory();
+			return;
+		}
+
+		int opcode = 0;
+		try {
+			opcode = m_bc.getMemoryImage().readInstructionWord(pc);
+		} catch (Exception e) {
+			setStatus(BlockStatus.ERROR);
+			releaseMemory();
+			return;
+		}
+
+		m_machineState.setOpcode(opcode);
+		m_machineState.resetInstructionState();
+		XtaInstruction instruction = m_bc.getNodeCoreInstructionCaches()
+		 .decode(opcode, pc, m_bc.getEngine().getNodeId(), m_bc.getEngine().getCoreId());
+		
+		handleIBuffer(instruction.getNumBytes(), pc);
+		
+		boolean success = executeInstruction(instruction);
+		
+		if(!success) return;
+		
+		addInstruction(instruction);
+		
+		if(checkComplete(instruction)) return;
+		
+
+		if(instruction.canPause()){
+			addUnknown(instruction);
+		}
+		
+		if(m_contexts != null){
+			m_contexts.peek().add(pc);
+		} else {
+			if(LOG_PROBLEMS){
+				System.out.println("Block " + m_id  +" had lost is contexts");
+			}
+			throw new Exception("During analysis function contexts have become null");
+		}
+		int nextPc = pc + instruction.getNumBytes();
+		
+		//the machine can only be in one of the following states
+		if (m_machineState.wasEventWait()) {
+			handleEvent(instruction);
+		} else if (m_machineState.wasJump()) {
+			handleJump(pc, instruction);
+		} else if (m_machineState.wasBranch()) {
+			handleBranch(instruction, nextPc);
+		} else {
+			handleNormalInstruction(instruction, nextPc);
+		}
+	}
+
+	private void handleNormalInstruction(XtaInstruction instruction, int nextPc) {
+		checkForLoopFormation(nextPc, false, instruction, false, false);
+		if(m_route.completePaths().contains(this)){
+			setStatus(BlockStatus.COMPLETE);
+			releaseMemory();
+		} else{
+			m_firstStep = false;
+			instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
+		}
+	}
+
+	private void handleBranch(XtaInstruction instruction, int nextPc) {
+		if (m_machineState.wasBranchResolved()) {
+			if (m_bc.isResolveExpressions()) {
+				if (m_machineState.getBranchTaken() == BranchState.TAKEN) {
+					checkForLoopFormation(m_machineState.getBranchTarget(), false, instruction, true, false);
+				} else if (m_machineState.getBranchTaken() == BranchState.NOTTAKEN) {
+					checkForLoopFormation(nextPc, false, instruction, false, false);
+				} else if (m_machineState.getBranchTaken() == BranchState.UNKNOWN) {
+					addUnknown(instruction);
+					checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
+					checkForLoopFormation(nextPc, true, instruction, false, true);
+					setStatus(BlockStatus.COMPLETE);
+					releaseMemory();
+				}
+			} else {
+				checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
+				checkForLoopFormation(nextPc, true, instruction, false, true);
+				setStatus(BlockStatus.COMPLETE);
+				releaseMemory();
+			}
+		} else {
+			setStatus(BlockStatus.UNRESOLVED);
+			String reason  = "Unknown branch target";
+			Unresolved unresolved = new Unresolved(this, instruction, reason);
+			m_unresolved = unresolved;
+			m_route.addUnresolvedPath(unresolved);
+			m_machineState = null;
+		}
+	}
+
+	private void handleJump(int pc, XtaInstruction instruction) {
+		if (m_machineState.wasJumpResolved()) {
+			int jumpTarget = m_machineState.getJumpTarget();
+			if (instruction.getBranchLink() && isRecursion(jumpTarget)) {
+				setStatus(BlockStatus.UNRESOLVED);
+				String reason  = "Recursion with 0x" + Integer.toHexString(jumpTarget);
+				Unresolved unresolved = new Unresolved(this, instruction, reason);
+				m_unresolved = unresolved;
+				m_route.addUnresolvedPath(unresolved);
+				releaseMemory();
+			} else {
+				if (instruction.getReturn()) {
+					popFunction();
+					if(m_contexts.size() == 0){
+						m_contexts.add(new TreeSet<Integer>());
+					}
+				}
+				checkForLoopFormation(jumpTarget, false, instruction, true, false);
+				if (instruction.getBranchLink()) {
+					pushFunction(pc);
+				}
+			}
+		} else {
+			if (instruction.getReturnLocations().size() > 0) {
+				for (XtaInstruction callingInst : instruction.getReturnLocations()) {
+					checkForLoopFormation(callingInst.getPc() + callingInst.getNumBytes(), false, callingInst, true, true);
+				}
+				setStatus(BlockStatus.COMPLETE);
+				releaseMemory();
+			} else {
+				setStatus(BlockStatus.UNRESOLVED);
+				String reason  = "Unknown jump target";
+				Unresolved unresolved = new Unresolved(this, instruction, reason);
+				m_unresolved = unresolved;
+				m_route.addUnresolvedPath(unresolved);
+				releaseMemory();
+			}
+		}
+	}
+
+	private void handleEvent(XtaInstruction instruction) {
+		if (m_machineState.wasEventResolved()) {
+			ArrayList<Integer> targets = new ArrayList<Integer>(m_machineState.getEventTarget());
+			m_machineState.clearEventTargets();
+			for (int targetVector : targets) {
+				checkForLoopFormation(targetVector, false, instruction, true, true);
+			}
+			setStatus(BlockStatus.COMPLETE);
+		} else {
+			setStatus(BlockStatus.UNRESOLVED);
+			String reason  = "Unable to resolve the event vectors (possibly event vector set up out of scope?)";
+			Unresolved unresolved = new Unresolved(this, instruction, reason);
+			m_unresolved = unresolved;
+			m_route.addUnresolvedPath(unresolved);
+		}
+		releaseMemory();
 	}
 
 	public Unresolved getUnresolved(){
@@ -228,169 +423,7 @@ public class Block implements Comparable<Block> {
 		m_loopPathAttributes.put(pathStartBlock, new PathAttributes());
 		return;
 	}
-
-	public void build() throws Exception {				
-		if (IBUFFERSTATE) {
-			m_ibufferBefore = 0;
-			m_ibufferAfter = 0;
-			m_ibufferFnops = 0;
-			m_ibufferFetches = 0;
-			m_ibufferIssue = 0;
-			m_ibufferBefore = m_machineState.getResources().getCurrentIBuffer(m_currentThread).getNumBytes();
-		}
-		
-		int pc = m_machineState.getPc(m_currentThread);
-		
-		if (isProhibited(pc)) {
-			setStatus(BlockStatus.EXCLUDED);
-			releaseMemory();
-			return;
-		}
-
-		int opcode = 0;
-		try {
-			opcode = m_bc.getMemoryImage().readInstructionWord(pc);
-		} catch (Exception e) {
-			setStatus(BlockStatus.ERROR);
-			releaseMemory();
-			return;
-		}
-
-		m_machineState.setOpcode(opcode);
-		m_machineState.resetInstructionState();
-		XtaInstruction instruction = m_bc.getNodeCoreInstructionCaches()
-		 .decode(opcode, pc, m_bc.getEngine().getNodeId(), m_bc.getEngine().getCoreId());
-		int instNumBytes = instruction.getNumBytes();
-
-
-		handleIBuffer(instNumBytes, pc);
-		if (DUMPSTATE) dumpState(m_machineState);
-		
-		boolean success = executeInstruction(instruction);
-		
-		if(!success) {
-			return;
-		}
-		
-		addInstruction(instruction);
-		
-		if (DUMPSTATE) {
-			dumpState(m_machineState);
-		}
-		
-		if (isComplete(instruction, pc)) {
-			setStatus(BlockStatus.COMPLETE);
-			if(!m_route.completePaths().contains(this)) 
-				m_route.addCompletePath(this);
-			return;
-		}
-
-		if(instruction.canPause()){
-			addUnknown(instruction);
-		}
-		
-		if(m_contexts != null){
-			m_contexts.peek().add(pc);
-		} else {
-			throw new Exception("During analysis function contextx have become null");
-		}
-		int nextPc = pc + instNumBytes;
-		
-		if (m_machineState.wasEventWait()) {
-			if (m_machineState.wasEventResolved()) {
-				ArrayList<Integer> targets = new ArrayList<Integer>(m_machineState.getEventTarget());
-				m_machineState.clearEventTargets();
-				for (int targetVector : targets) {
-					checkForLoopFormation(targetVector, false, instruction, true, true);
-				}
-				
-				setStatus(BlockStatus.COMPLETE);
-			} else {
-				setStatus(BlockStatus.UNRESOLVED);
-				String reason  = "Unable to resolve the event vectors (possibly event vector set up out of scope?)";
-				Unresolved unresolved = new Unresolved(this, instruction, reason);
-				m_unresolved = unresolved;
-				m_route.addUnresolvedPath(unresolved);
-			}
-			releaseMemory();
-		} else if (m_machineState.wasJump()) {
-			if (m_machineState.wasJumpResolved()) {
-				int jumpTarget = m_machineState.getJumpTarget();
-				if (instruction.getBranchLink() && isRecursion(jumpTarget)) {
-					setStatus(BlockStatus.UNRESOLVED);
-					String reason  = "Recursion with 0x" + Integer.toHexString(jumpTarget);
-					Unresolved unresolved = new Unresolved(this, instruction, reason);
-					m_unresolved = unresolved;
-					m_route.addUnresolvedPath(unresolved);
-					releaseMemory();
-				} else {
-					if (instruction.getReturn()) {
-						popFunction();
-						if(m_contexts.size() == 0){
-							m_contexts.add(new TreeSet<Integer>());
-						}
-					}
-					checkForLoopFormation(jumpTarget, false, instruction, true, false);
-					if (instruction.getBranchLink()) {
-						pushFunction(pc);
-					}
-				}
-			} else {
-				if (instruction.getReturnLocations().size() > 0) {
-					for (XtaInstruction callingInst : instruction.getReturnLocations()) {
-						checkForLoopFormation(callingInst.getPc() + callingInst.getNumBytes(), false, callingInst, true, true);
-					}
-					setStatus(BlockStatus.COMPLETE);
-					releaseMemory();
-				} else {
-					setStatus(BlockStatus.UNRESOLVED);
-					String reason  = "Unknown jump target";
-					Unresolved unresolved = new Unresolved(this, instruction, reason);
-					m_unresolved = unresolved;
-					m_route.addUnresolvedPath(unresolved);
-					releaseMemory();
-				}
-			}
-		} else if (m_machineState.wasBranch()) {
-			if (m_machineState.wasBranchResolved()) {
-				if (m_bc.isResolveExpressions()) {
-					if (m_machineState.getBranchTaken() == BranchState.TAKEN) {
-						checkForLoopFormation(m_machineState.getBranchTarget(), false, instruction, true, false);
-					} else if (m_machineState.getBranchTaken() == BranchState.NOTTAKEN) {
-						checkForLoopFormation(nextPc, false, instruction, false, false);
-					} else if (m_machineState.getBranchTaken() == BranchState.UNKNOWN) {
-						addUnknown(instruction);
-						checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
-						checkForLoopFormation(nextPc, true, instruction, false, true);
-						setStatus(BlockStatus.COMPLETE);
-						releaseMemory();
-					}
-				} else {
-					checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
-					checkForLoopFormation(nextPc, true, instruction, false, true);
-					setStatus(BlockStatus.COMPLETE);
-					releaseMemory();
-				}
-			} else {
-				setStatus(BlockStatus.UNRESOLVED);
-				String reason  = "Unknown branch target";
-				Unresolved unresolved = new Unresolved(this, instruction, reason);
-				m_unresolved = unresolved;
-				m_route.addUnresolvedPath(unresolved);
-				m_machineState = null;
-			}
-		} else {
-			checkForLoopFormation(nextPc, false, instruction, false, false);
-			if(m_route.completePaths().contains(this)){
-				setStatus(BlockStatus.COMPLETE);
-				releaseMemory();
-			} else{
-				m_firstStep = false;
-				instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
-			}
-		}
-	}
-
+	
 	private boolean executeInstruction(XtaInstruction instruction) 
 			throws Exception {
 		try {
@@ -435,30 +468,32 @@ public class Block implements Comparable<Block> {
 		m_unknowns.add(unknown);
 		m_route.addUnknown(unknown);
 	}
-
+	
 	private void checkForLoopFormation(int nextPc, boolean speculative, 
 			XtaInstruction inst, boolean isJump, boolean isBranch) {	
-		Block loopBlock = null;
+		
 		m_speculative = m_speculative | speculative;
-		if (m_speculative) {
-			loopBlock = formsLoop(nextPc);
-		}
-		if (loopBlock != null) {
-			XtaInstruction instruction = null;
+		Block loopBlock = formsLoop(nextPc);
+		/*
+		 * this instruction forms a loop if
+		 * 	- the next instruction is already in the blocks path
+		 * 	- the current instruction is speculative
+		 */
+		if (m_speculative && loopBlock != null) {
+			
+			//this is the case when a loop should be formed
+			XtaInstruction nextInstruction = null;
+			
 			try {
-				instruction = m_bc.getNodeCoreInstructionCaches()
+				nextInstruction = m_bc.getNodeCoreInstructionCaches()
 				 .decode(m_bc.getMemoryImage().readInstructionWord(nextPc), 
 						 nextPc, m_bc.getEngine().getNodeId(), m_bc.getEngine().getCoreId());
 			} catch (Exception e) {
 				assert(false);
 			}
 			
-			if(isComplete(instruction, nextPc)){
-				//addInstruction(instruction);
-				if(!m_route.completePaths().contains(this)) 
-					m_route.addCompletePath(this);
-				return;
-			}
+			//if the path completes on the next instruction then 
+			if(checkComplete(nextInstruction)) return;
 			
 			if (loopBlock.getInstructionsThis().get(0).getPc() != nextPc) {
 				new Block(loopBlock, nextPc);
@@ -467,25 +502,16 @@ public class Block implements Comparable<Block> {
 			this.setStatus(BlockStatus.COMPLETE);
 		} else {
 			if (isBranch) {
-				MachineState machineState = new MachineState(m_machineState);
-				
-
-				m_ibufferBefore = machineState.branchTo(nextPc, inst.isLoadStore(), m_currentThread);
+				MachineState machineState = new MachineState(m_machineState); 
+				machineState.branchTo(nextPc, inst.isLoadStore(), m_currentThread);
 				new ExecutionState(m_executionState, machineState);
 			} else if (isJump) {
-				m_ibufferBefore = m_machineState.branchTo(nextPc, inst.isLoadStore(), m_currentThread);
+				m_machineState.branchTo(nextPc, inst.isLoadStore(), m_currentThread);
 			} else {
 				if (!inst.isLoadStore()) {
-					
-					int fetched =m_machineState.fetch(m_currentThread);
-					if(IBUFFERSTATE){
-						m_ibufferFetches+=fetched;
-					} 
+					m_machineState.fetch(m_currentThread);
 				}
 				m_machineState.setPc(nextPc, m_currentThread);
-				if(IBUFFERSTATE){
-					m_ibufferIssue+=inst.getNumBytes();
-				}
 				m_machineState.issue(inst.getNumBytes(), m_currentThread);
 			}
 		}
@@ -498,6 +524,21 @@ public class Block implements Comparable<Block> {
 		this.m_contexts = null;
 	}
 	
+	private boolean checkComplete(XtaInstruction instruction) {
+		if (isComplete(instruction, instruction.getPc())) {
+			setStatus(BlockStatus.COMPLETE);
+			if(m_route.completePaths().contains(this)) {
+				if(LOG_PROBLEMS){
+					System.out.println("Block " + m_id  +" completed and was "
+							+" already added to m_completePaths");
+				}
+			} else {
+				m_route.addCompletePath(this);
+			}
+			return true;
+		}
+		return false;
+	}
 	
 	private boolean isComplete(XtaInstruction instruction, int pc) {
 		switch (m_bc.getMode()) {
@@ -539,7 +580,7 @@ public class Block implements Comparable<Block> {
 		assert (m_instructions != null);
 		assert (inst != null);
 		if(DEBUG) {
-			System.out.println(this.m_id + " " +m_functionDepth + " "+inst);
+			System.out.println(this.m_id + " "+inst);
 		}
 		inst.setBasicNumCycles(m_bc.getM_instructionAttributes().getTiming(inst.getNmenonic()));
 		inst.setConfig(m_bc.getConfig());
@@ -595,10 +636,7 @@ public class Block implements Comparable<Block> {
 				addInstruction(fNop);
 			}
 			
-			int fetched1 = m_machineState.fetch(m_currentThread);
-			if(IBUFFERSTATE){
-				m_ibufferFnops+=fetched1;
-			}
+			m_machineState.fetch(m_currentThread);
 			fNop.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
 
 			// May require two FNOPs if fetching a mis-aligned long
@@ -607,10 +645,7 @@ public class Block implements Comparable<Block> {
 				if(!(m_bc.getMode() == Mode.FUNCTION && m_firstStep)){
 					addInstruction(fNop);
 				}
-				int fetched2 = m_machineState.fetch(m_currentThread);
-				if(IBUFFERSTATE){
-					m_ibufferFnops+=fetched2;
-				}
+				m_machineState.fetch(m_currentThread);
 				fNop.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
 			}
 		}
@@ -733,19 +768,6 @@ public class Block implements Comparable<Block> {
 		return 1;
 	}
 
-	public HashSet<Integer> getAllPcs() {
-		HashSet<Integer> allPcs = new HashSet<Integer>();
-		allPcs.addAll(m_pcs);
-		for (Block block : getPathBlocks()) {
-			allPcs.addAll(block.m_pcs);
-			for (Block loopPath : block.getLoopPaths()) {
-				allPcs.addAll(loopPath.getAllPcs());
-			}
-		}
-		doneWithPathBlocks();
-		return allPcs;
-	}
-	
 	public int getLength() {
 		int pathLength = 0;
 		for (Block block : getPathBlocks()) {
@@ -762,10 +784,6 @@ public class Block implements Comparable<Block> {
 			}
 		}
 		doneWithPathBlocks();
-	}
-
-	public Block getParentBlock() {
-		return m_parentBlock;
 	}
 
 	public Vector<XtaInstruction> getInstructions(boolean recurse) {
@@ -786,10 +804,9 @@ public class Block implements Comparable<Block> {
 	public Vector<XtaInstruction> getInstructionsThis() {
 		return m_instructions;
 	}
-
+	
 	public HashSet<Integer> getPcsCovered(boolean recurse) {
 		HashSet<Integer> pcsCovered = new HashSet<Integer>();
-
 		for (Block block : getPathBlocks()) {
 			pcsCovered.addAll(block.getPcsCoveredThis());		
 			if (recurse) {
@@ -801,11 +818,11 @@ public class Block implements Comparable<Block> {
 		doneWithPathBlocks();		
 		return pcsCovered;
 	}
-
+	
 	public HashSet<Integer> getPcsCoveredThis() {
 		return m_pcs;
 	}
-
+	
 	public HashSet<Integer> getPcsCoveredLoopsOnly() {
 		HashSet<Integer> pcsCovered = new HashSet<Integer>();
 
@@ -819,208 +836,14 @@ public class Block implements Comparable<Block> {
 	// Statistics
 	// --------------------------------------------------------------------- //	
 	
-	public double getTimeTaken(boolean recurse) {
-		return getTimeTakenRelative(recurse) + getTimeTakenAbsolute(recurse);
-	}
-
-	public int getNumInstructions(boolean recurse) {
-		return getNumInstructionsRelative(recurse) + getNumInstructionsAbsolute(recurse);
-	}
-
-	public int getNumFNops(boolean recurse) {
-		return getNumFNopsRelative(recurse) + getNumFNopsAbsolute(recurse);
-	}
-
-	public int getNumCycles(boolean recurse) {
-		return getNumCyclesRelative(recurse) + getNumCyclesAbsolute(recurse);
-	}
-
-	public int getNumPausables(boolean recurse) {
-		return getNumPausablesRelative(recurse) + getNumPausablesAbsolute(recurse);
-	}
-
-	public int getNumUnknowns(boolean recurse) {
-		return getNumUnknownsRelative(recurse) + getNumUnknownsAbsolute(recurse);
-	}
+	public double getTimeTaken(boolean recurse) { return m_blockStats.getTimeTaken(recurse);}
+	public int getNumInstructions(boolean recurse) { return m_blockStats.getNumInstructions(recurse);}
+	public int getNumFNops(boolean recurse) { return m_blockStats.getNumFNops(recurse);}
+	public int getNumCycles(boolean recurse) { return m_blockStats.getNumCycles(recurse);}
+	public int getNumPausables(boolean recurse) { return m_blockStats.getNumPausables(recurse);}
+	public int getNumUnknowns(boolean recurse) { return m_blockStats.getNumUnknowns(recurse);}
 	
-	// --------------------------------------------------------------------- //
-	// Relative statistics
-	// --------------------------------------------------------------------- //	
-	interface IntegerRelative { 
-		int getValueThis(Block block); 
-		int getValueRelative(Block block); 
-	}
-	interface DoubleRelative { 
-		double getValueThis(Block block); 
-		double getValueRelative(Block block); 
-	}
-	
-	private double getTimeTakenRelative(boolean recurse) {
-		return getRelativeDouble(recurse, new DoubleRelative() {
-			public double getValueThis(Block block)     { return block.getTimeTakenThis(); }			
-			public double getValueRelative(Block block) { return block.getTimeTakenRelative(true); }});
-	}
 
-	private int getNumCyclesRelative(boolean recurse) {
-		return getRelativeInteger(recurse, new IntegerRelative() {
-			public int getValueThis(Block block)     { return block.getNumCyclesThis(); }			
-			public int getValueRelative(Block block) { return block.getNumCyclesRelative(true); }});
-	}	
-	
-	private int getNumInstructionsRelative(boolean recurse) {
-		return getRelativeInteger(recurse, new IntegerRelative() {
-			public int getValueThis(Block block)     { return block.getNumInstructionsThis(); }			
-			public int getValueRelative(Block block) { return block.getNumInstructionsRelative(true); }});
-	}	
-
-	private int getNumFNopsRelative(boolean recurse) {
-		return getRelativeInteger(recurse, new IntegerRelative() {
-			public int getValueThis(Block block)     { return block.getNumFNopsThis(); }			
-			public int getValueRelative(Block block) { return block.getNumFNopsRelative(true); }});
-	}	
-	
-	private int getNumPausablesRelative(boolean recurse) {
-		return getRelativeInteger(recurse, new IntegerRelative() {
-			public int getValueThis(Block block)     { return block.getNumPausablesThis(); }			
-			public int getValueRelative(Block block) { return block.getNumPausablesRelative(true); }});
-	}	
-
-	private int getNumUnknownsRelative(boolean recurse) {
-		return getRelativeInteger(recurse, new IntegerRelative() {
-			public int getValueThis(Block block)     { return block.getNumUnknownsThis(); }			
-			public int getValueRelative(Block block) { return block.getNumUnknownsRelative(true); }});
-	}				
-	
-	private double getRelativeDouble(boolean recurse, DoubleRelative val) {
-		double result = 0.0;
-		for (Block block : getPathBlocks()) {
-			result += val.getValueThis(block);
-			if (recurse) {
-				for (Block loopPath : block.getLoopPaths()) {
-
-					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
-					if (!attributes.isAbsolute()) {
-						int numIterations = attributes.getNumIterations();
-						if (numIterations > 0) {
-							result += val.getValueRelative(loopPath) * numIterations;
-						}
-					}
-				}
-			}
-		}
-		doneWithPathBlocks();
-		return result;
-	}
-
-	private int getRelativeInteger(boolean recurse, IntegerRelative val) {
-		int result = 0;
-		for (Block block : getPathBlocks()) {
-			result += val.getValueThis(block);
-			if (recurse) {
-				for (Block loopPath : block.getLoopPaths()) {
-
-					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
-					if (!attributes.isAbsolute()) {
-						int numIterations = attributes.getNumIterations();
-						if (numIterations > 0) {
-							result += val.getValueRelative(loopPath) * numIterations;
-						}
-					}
-				}
-			}
-		}
-		doneWithPathBlocks();
-		return result;
-	}
-	
-	// --------------------------------------------------------------------- //
-	// Absolute statistics
-	// --------------------------------------------------------------------- //	
-	interface IntegerAbsolute { 
-		int getValueAbsolute(Block block); 
-		int getValueRelative(Block block); 
-	}
-	interface DoubleAbsolute { 
-		double getValueAbsolute(Block block); 
-		double getValueRelative(Block block); 
-	}
-
-	private double getTimeTakenAbsolute(boolean recurse) {
-		return getAbsoluteDouble(recurse, new DoubleAbsolute() {
-			public double getValueAbsolute(Block block) { return block.getTimeTakenAbsolute(true); }
-			public double getValueRelative(Block block) { return block.getTimeTakenRelative(false); }});
-	}
-
-	private int getNumCyclesAbsolute(boolean recurse) {
-		return getAbsoluteInteger(recurse, new IntegerAbsolute() {
-			public int getValueAbsolute(Block block) { return block.getNumCyclesAbsolute(true); }
-			public int getValueRelative(Block block) { return block.getNumCyclesRelative(false); }});
-	}
-	
-	private int getNumInstructionsAbsolute(boolean recurse) {
-		return getAbsoluteInteger(recurse, new IntegerAbsolute() {
-			public int getValueAbsolute(Block block) { return block.getNumInstructionsAbsolute(true); }
-			public int getValueRelative(Block block) { return block.getNumInstructionsRelative(false); }});
-	}
-
-	private int getNumFNopsAbsolute(boolean recurse) {
-		return getAbsoluteInteger(recurse, new IntegerAbsolute() {
-			public int getValueAbsolute(Block block) { return block.getNumFNopsAbsolute(true); }
-			public int getValueRelative(Block block) { return block.getNumFNopsRelative(false); }});
-	}
-
-	private int getNumPausablesAbsolute(boolean recurse) {
-		return getAbsoluteInteger(recurse, new IntegerAbsolute() {
-			public int getValueAbsolute(Block block) { return block.getNumPausablesAbsolute(true); }
-			public int getValueRelative(Block block) { return block.getNumPausablesRelative(false); }});
-	}
-
-	private int getNumUnknownsAbsolute(boolean recurse) {
-		return getAbsoluteInteger(recurse, new IntegerAbsolute() {
-			public int getValueAbsolute(Block block) { return block.getNumUnknownsAbsolute(true); }
-			public int getValueRelative(Block block) { return block.getNumUnknownsRelative(false); }});
-	}
-	
-	private double getAbsoluteDouble(boolean recurse, DoubleAbsolute val) {
-		double result = 0.0;
-		for (Block block : getPathBlocks()) {
-			if (recurse) {
-				for (Block loopPath : block.getLoopPaths()) {
-					result += val.getValueAbsolute(loopPath);
-					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
-					if (attributes.isAbsolute()) {
-						int numIterations = attributes.getNumIterations();
-						if (numIterations > 0) {
-							result += val.getValueRelative(loopPath) * numIterations;
-						}
-					}
-				}
-			}
-		}
-		doneWithPathBlocks();
-		return result;
-	}
-
-	private int getAbsoluteInteger(boolean recurse, IntegerAbsolute val) {
-		int result = 0;
-		for (Block block : getPathBlocks()) {
-			if (recurse) {
-				for (Block loopPath : block.getLoopPaths()) {
-					result += val.getValueAbsolute(loopPath);
-					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
-					if (attributes.isAbsolute()) {
-						int numIterations = attributes.getNumIterations();
-						if (numIterations > 0) {
-							result += val.getValueRelative(loopPath) * numIterations;
-						}
-					}
-				}
-			}
-		}
-		doneWithPathBlocks();
-		return result;
-	}
-	
 	// --------------------------------------------------------------------- //
 	// 'This' statistics
 	// --------------------------------------------------------------------- //		
@@ -1060,82 +883,12 @@ public class Block implements Comparable<Block> {
 	// --------------------------------------------------------------------- //
 	// 'Loops only' statistics
 	// --------------------------------------------------------------------- //		
-	interface IntegerLoops { 
-		int getValue(Block block); 
-	}
-	interface DoubleLoops { 
-		double getValue(Block block); 
-	}
 	
-	public double getTimeTakenLoopsOnly() {	
-		return getLoopsOnlyDouble(new DoubleLoops() {
-			public double getValue(Block block) { return block.getTimeTaken(true); }});
-	}
+	public double getTimeTakenLoopsOnly() {	return m_blockStats.getTimeTakenLoopsOnly();}
+	public int getNumCyclesLoopsOnly() { return m_blockStats.getNumCyclesLoopsOnly();}
+	public int getNumInstructionsLoopsOnly() { return m_blockStats.getNumInstructionsLoopsOnly();}
+	public int getNumFNopsLoopsOnly() {	return m_blockStats.getNumFNopsLoopsOnly();}
+	public int getNumPausablesLoopsOnly() {	return m_blockStats.getNumPausablesLoopsOnly();}
+	public int getNumUnknownsLoopsOnly() { return m_blockStats.getNumUnknownsLoopsOnly();}
 	
-	public int getNumCyclesLoopsOnly() {	
-		return getLoopsOnlyInteger(new IntegerLoops() {
-			public int getValue(Block block) { return block.getNumCycles(true); }});
-	}
-
-	public int getNumInstructionsLoopsOnly() {	
-		return getLoopsOnlyInteger(new IntegerLoops() {
-			public int getValue(Block block) { return block.getNumInstructions(true); }});
-	}
-
-	public int getNumFNopsLoopsOnly() {	
-		return getLoopsOnlyInteger(new IntegerLoops() {
-			public int getValue(Block block) { return block.getNumFNops(true); }});
-	}
-
-	public int getNumPausablesLoopsOnly() {	
-		return getLoopsOnlyInteger(new IntegerLoops() {
-			public int getValue(Block block) { return block.getNumPausables(true); }});
-	}
-	
-	public int getNumUnknownsLoopsOnly() {	
-		return getLoopsOnlyInteger(new IntegerLoops() {
-			public int getValue(Block block) { return block.getNumUnknowns(true); }});
-	}
-	    
-	private double getLoopsOnlyDouble(DoubleLoops val) {	
-        double result = 0.0;
-        for (Block loopPath : getLoopPaths()) {
-            int numIterations = getLoopPathAttributes(loopPath).getNumIterations();
-            result += val.getValue(loopPath) * numIterations;
-        }
-        return result;
-	}
-
-    private int getLoopsOnlyInteger(IntegerLoops val) {
-        int result = 0;
-        for (Block loopPath : getLoopPaths()) {
-            int numIterations = getLoopPathAttributes(loopPath).getNumIterations();
-            result += val.getValue(loopPath) * numIterations;
-        }
-        return result;
-    }
-    
-    private void dumpState(MachineState state) throws Exception {
-		Registers reg = state.getResources().getThread(m_currentThread).getRegisters();
-		
-		for(int i=0;i<4;i++){
-			String s = "";
-			for(int j=0;j<4;j++){
-				
-				s+= "reg " + (i*4 +j) + " ";
-				if(reg.getRegisters()[i*4 +j].canResolve()){
-					
-					s+= "0x" + String.format("%8x", reg.getRegisters()[i*4 +j].getValue()) +" ";
-				} else {
-					s+= "-----------";
-				}
-				s+="\t";
-				
-			}
-			System.out.println(s);
-		}
-		return;
-		
-	}
-
 }

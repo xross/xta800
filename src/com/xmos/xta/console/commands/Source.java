@@ -55,20 +55,18 @@ class Source extends Command {
                     if (line.length() > 0) {            
                         String[] tokens = line.trim().split("\\s+");
                         
-                        Command command = CommandFactory.buildCommand(
-                        		tokens, 0, shell.getCommandHistory(), console, false);
-                        
-                        if (command != null) {
-                        	shell.addCommand(command, location+1);
-                        	location++;
-                        }
-                        else {
-                        	if(!tokens[0].startsWith("#")){
-                        		console.display(String.format("Invalid command in file: %s, line number: %d\n",
-                        			m_fileName, lineNumber));
-                        	}
-                        	
-                        }
+                    	if (!tokens[0].startsWith("#")) {
+                            Command command = CommandFactory.buildCommand(
+                            		tokens, 0, shell.getCommandHistory(), console, false);
+                            
+                            if (command != null) {
+                            	shell.addCommand(command, location+1);
+                            	location++;
+                            } else {
+                            	console.display(String.format("Invalid command in file: %s, line number: %d\n",
+                            		    m_fileName, lineNumber));                            	
+                            }                    		
+                    	}                        
                     }            
                     ++lineNumber;
                 }

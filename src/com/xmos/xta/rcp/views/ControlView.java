@@ -52,16 +52,16 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xeobject.Function;
 import com.xmos.xeobject.XeObject;
-import com.xmos.xta.engine.Displayer;
+import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Progress;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
 import com.xmos.xta.rcp.XtaCorePlugin;
-import com.xmos.xta.rcp.XtaDisplayer;
+import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaEngine;
-import com.xmos.xta.rcp.XtaErrorLog;
+import com.xmos.xta.rcp.XtaLog;
 import com.xmos.xta.rcp.XtaFileFinder;
 import com.xmos.xta.rcp.XtaRouteInfo;
 import com.xmos.xta.rcp.editors.SourcesEditor;
@@ -108,20 +108,20 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 	public ControlView() {
 		if (DEBUG) System.out.printf("Tree()\n");			
-		XtaDisplayer.getInstance().addPropertyChangeListener(this);
+		XtaNotifier.getInstance().addPropertyChangeListener(this);
 		
 		m_progressUpdater = null;
 		
 		m_startPointListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
     		    CodeReference startPoint = CodeReferenceFactory.createCodeReference(m_startPoint.getText());
-			    XtaDisplayer.getInstance().notifySetStartPoint(startPoint);
+			    XtaNotifier.getInstance().notifySetStartPoint(startPoint);
 			}			
 		};
 		m_endPointListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 			    CodeReference endPoint = CodeReferenceFactory.createCodeReference(m_endPoint.getText());
-			    XtaDisplayer.getInstance().notifySetEndPoint(endPoint);
+			    XtaNotifier.getInstance().notifySetEndPoint(endPoint);
 			}			
 		};
 	}
@@ -149,13 +149,14 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("Control: propertyChange: %s\n", event.getProperty());	
 		
-		if (event.getProperty().equals(Displayer.NOTIFY_DISPLAY_ROUTE)) {
+		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
 	        m_memoryUpdater.setFastRefresh(false);
 			setDone("Done");
 			updateCurrentRoute();
 			checkUnresolvedPaths();
 			checkTotalPaths();
-		} else if (event.getProperty().equals(Displayer.NOTIFY_LOAD_EXECUTABLE)) {			
+			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {			
 	        openEditors();
 	        setDone(STATUS_LOADED);
 	        m_progress.setText("0");
@@ -164,27 +165,34 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        setText(m_endPoint, m_endPointListener, "", "");
 	        updateState();
 	        updateCurrentRoute();
-		} else if (event.getProperty().equals(Displayer.NOTIFY_ANALYSE_PATHS)) {
+	        
+		} else if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_BEGIN)) {
 	        m_memoryUpdater.setFastRefresh(true);
 			m_engineStatus.setText(STATUS_BUSY);
 			m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
 			m_progressUpdater.start();
 	        m_currentRoute.setText("");
 	        m_currentRoute.setToolTipText("");
-		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_STATE)) {
+	        
+		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
 	        updateState();
-		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_START_POINT)) {
-			CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();			
+	        
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT)) {
+			CodeReference startPoint = XtaNotifier.getInstance().getStartPoint();					
 			updateText(startPoint, m_startPoint, m_startPointListener);
-		} else if (event.getProperty().equals(Displayer.NOTIFY_SET_END_POINT)) {
-			CodeReference endPoint = XtaDisplayer.getInstance().getEndPoint();
+			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT)) {
+			CodeReference endPoint = XtaNotifier.getInstance().getEndPoint();
 			updateText(endPoint, m_endPoint, m_endPointListener);
-		} else if (event.getProperty().equals(Displayer.NOTIFY_SELECT_FUNCTION)) {
-			String functionName = XtaDisplayer.getInstance().getNotifyArgument();
+			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_FUNCTION)) {
+			String functionName = XtaNotifier.getInstance().getNotifyArgument();
 			setSelectedFunction(functionName);
-		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_EXCLUDES)) {
+			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUDES)) {
 			updateState();
-		} else if (event.getProperty().equals(Displayer.NOTIFY_ERROR)) {
+			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_ERROR)) {
 	        m_memoryUpdater.setFastRefresh(false);
 			setDone("Aborted");
 			updateCurrentRoute();
@@ -252,8 +260,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 	    			if (DEBUG)
 	                    System.out.printf("Control: executeLoad, success: %d\n", success);
-	    		} else {
-	                XtaErrorLog.getInstance().addError(XtaEngine.getEngine().getErrorString());
 	    		}
 	        }
 		} else {
@@ -274,7 +280,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         	m_cancelButton.setEnabled(true);
 			run.start();
 		} else {
-			XtaErrorLog.getInstance().addError("No function/path specified");
+			XtaLog.getInstance().add(XtaLog.Level.ERROR, "No function/path specified");
 		}
 	}
 	
@@ -288,9 +294,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		String startRef = m_startPoint.getText();
 		String endRef = m_endPoint.getText();
 		if (startRef.equals("")) {
-			XtaErrorLog.getInstance().addError("Please specify a start reference");
+			XtaLog.getInstance().add(XtaLog.Level.ERROR, "Please specify a start reference");
 		} else if (endRef.equals("")) {
-			XtaErrorLog.getInstance().addError("Please specify an end reference");
+			XtaLog.getInstance().add(XtaLog.Level.ERROR, "Please specify an end reference");
 		} else {
 			RunEngineMethodPath run = new RunEngineMethodPath(startRef, endRef);
         	m_cancelButton.setEnabled(true);
@@ -422,7 +428,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	private void updateCurrentRoute() {
-		XtaRouteInfo routeInfo = XtaDisplayer.getInstance().getRouteInfo();
+		XtaRouteInfo routeInfo = XtaNotifier.getInstance().getRouteInfo();
 		if (routeInfo != null) {
 			Route route = routeInfo.getRoute();
 			String routeStatus = route.getStatusString();
@@ -435,7 +441,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	private void checkUnresolvedPaths() {
-		XtaRouteInfo routeInfo = XtaDisplayer.getInstance().getRouteInfo();
+		XtaRouteInfo routeInfo = XtaNotifier.getInstance().getRouteInfo();
 		if (routeInfo != null) {
 			Route route = routeInfo.getRoute();
 			int numUnresolvedPaths = route.unresolvedPaths().size();
@@ -448,7 +454,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		}		
 	}
 	private void checkTotalPaths() {
-		XtaRouteInfo routeInfo = XtaDisplayer.getInstance().getRouteInfo();
+		XtaRouteInfo routeInfo = XtaNotifier.getInstance().getRouteInfo();
 		if (routeInfo != null) {
 			Route route = routeInfo.getRoute();
 			int numUnresolvedPaths = route.unresolvedPaths().size();
@@ -473,8 +479,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         }
 
         public void run() {
-            if (!XtaEngine.getEngine().analyseRoute(m_functionName))
-            	XtaErrorLog.getInstance().addError(XtaEngine.getEngine().getErrorString());
+            XtaEngine.getEngine().analyseRoute(m_functionName);
         }
     }
 
@@ -488,8 +493,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         }
 
         public void run() {
-        	if (!XtaEngine.getEngine().analyseRoute(m_startRef, m_endRef))
-            	XtaErrorLog.getInstance().addError(XtaEngine.getEngine().getErrorString());
+        	XtaEngine.getEngine().analyseRoute(m_startRef, m_endRef);
         }
     }
 
@@ -503,8 +507,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         }
 
         public void run() {        	
-            if (!XtaEngine.getEngine().analyseRoute(m_startRef, m_endRef))
-            	XtaErrorLog.getInstance().addError(XtaEngine.getEngine().getErrorString());
+            XtaEngine.getEngine().analyseRoute(m_startRef, m_endRef);
         }
     }	
 
@@ -669,7 +672,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    m_endPoint = new Text(endGroup, SWT.SINGLE | SWT.CENTER);
 	    m_endPoint.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	    m_endPoint.addModifyListener(m_endPointListener);
-	    
+
 	    Button timePathButton = new Button(composite, SWT.PUSH);
 	    timePathButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 	    timePathButton.setToolTipText("Time specified path");

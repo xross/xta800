@@ -19,8 +19,8 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
-import com.xmos.xta.engine.Displayer;
-import com.xmos.xta.rcp.XtaDisplayer;
+import com.xmos.xta.engine.Notifier;
+import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaRouteInfo;
 import com.xmos.xta.rcp.nodes.Node;
 import com.xmos.xta.rcp.nodes.RouteNode;
@@ -37,7 +37,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 
 	public TreeView() {
 		if (DEBUG) System.out.printf("Tree()\n");			
-		XtaDisplayer.getInstance().addPropertyChangeListener(this);
+		XtaNotifier.getInstance().addPropertyChangeListener(this);
 	}
 
 	public void createPartControl(Composite parent) {
@@ -53,7 +53,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		
 		m_treeViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
-				XtaDisplayer.getInstance().notifySetFocus(m_treeViewer.getSelection());
+				XtaNotifier.getInstance().notifySetFocus(m_treeViewer.getSelection());
 			}
 		});
 	 	
@@ -67,13 +67,16 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("Tree: propertyChange: %s\n", event.getProperty());	
 		
-		if (event.getProperty().equals(Displayer.NOTIFY_DISPLAY_ROUTE)) {
+		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
 			initialiseTree();
-		} else if (event.getProperty().equals(Displayer.NOTIFY_LOAD_EXECUTABLE)) {
+			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			clearTree();
-		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_STATE)) {
+			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
 			refreshTree();
-		} else if (event.getProperty().equals(Displayer.NOTIFY_UPDATE_EXCLUDES)) {
+			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUDES)) {
 			initialiseTree();
 		} 
 	}
@@ -128,7 +131,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	private void initialiseTree() {
-		m_routeInfo = XtaDisplayer.getInstance().getRouteInfo();
+		m_routeInfo = XtaNotifier.getInstance().getRouteInfo();
 		
 		// Create the magic 'hidden' node to allow the actual node to be seen
 		// in the tree

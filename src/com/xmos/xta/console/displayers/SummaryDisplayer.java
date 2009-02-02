@@ -1,6 +1,7 @@
 package com.xmos.xta.console.displayers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -12,23 +13,21 @@ import com.xmos.elfhandler.ElfHandler;
 import com.xmos.elfhandler.Symbol;
 import com.xmos.isa.Instruction;
 import com.xmos.xeloader.DebugInfo;
-import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.SourceLine;
-import com.xmos.xeobject.XeObject;
 import com.xmos.xta.console.Console;
-import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Attributes;
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.PathAttributes;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.Status;
 import com.xmos.xta.engine.Unresolved;
 import com.xmos.xta.engine.XtaInstruction;
 
-public class SummaryDisplayer implements Displayer {
+public class SummaryDisplayer {
 	public enum Level {
 	    simple, 
 	    complete, 
@@ -43,10 +42,10 @@ public class SummaryDisplayer implements Displayer {
         error,     
 	}
 
-	Console m_console;
-	Level m_level;
-	int m_pathId;
-	XeObject m_xeObject;
+	private Engine m_engine;
+	private Console m_console;
+	private Level m_level;
+	private int m_pathId;
 	
 	public static Level checkLevel(String level) {
 		if (level.equals(Level.simple.toString()))			
@@ -92,15 +91,19 @@ public class SummaryDisplayer implements Displayer {
 	        		   SummaryDisplayer.Level.sources.toString());      			
 	}
 	
-	public SummaryDisplayer(Console console, Level level, int pathId, XeObject xeObject) {
+	public SummaryDisplayer(Engine engine, Console console, Level level, int pathId) {
+		m_engine = engine;
 		m_console = console;
 		m_level = level;
 		m_pathId = pathId;
-		m_xeObject=xeObject;
 	}
 	
-    public void displayRoute(Route route, DebugInfo debugInfo, 
-    		MemoryImage memoryImage, SymbolTable symbolTable) {         	
+    public void display() {      
+    	Route route = m_engine.getRoute();
+
+    	SymbolTable symbolTable = m_engine.getSymbolTable();
+    	DebugInfo debugInfo     = m_engine.getDebugInfo();
+    	
     	switch (m_level) {
     	case simple:
     	    displaySimple(route);
@@ -143,9 +146,6 @@ public class SummaryDisplayer implements Displayer {
             break;
     	}    	
     }
-
-	public void notify(String message, String argument) {
-	}
 	
     private void displaySimple(Route route) {
         m_console.display(String.format("Complete paths:   %d\n", route.completePaths().size()));
@@ -266,20 +266,25 @@ public class SummaryDisplayer implements Displayer {
     }
 
     private void displaySources(Route route, DebugInfo debugInfo) {
+    	ArrayList<String> files = new ArrayList<String>();
   	    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {
         	TreeSet<Integer> pathIds = new TreeSet<Integer>();
             for (Block path : route.completePaths()) {
             	buildPathsWithinSourcesSet(path, pathIds, debugFile.getFileName());
             }    	
-            
             if (pathIds.size() > 0) {
-            	m_console.display(String.format("%s: ", debugFile.getFileName())); 
+            	String file = String.format("%s: ", debugFile.getFileName()); 
             	for (Integer pathId : pathIds) {
-            		m_console.display(String.format("%d ", pathId));
+            		file += String.format("%d ", pathId);
             	}
-            	m_console.display("\n");
+            	files.add(file);
             }            
     	}
+  	    
+  	  Collections.sort(files);
+	    for(String file : files){
+	    	m_console.display(file + "\n"); 
+	    }
     }   
 
     private void buildPathsWithinFunctionSet(Block path, Set<Integer> pathSet, 
@@ -324,7 +329,7 @@ public class SummaryDisplayer implements Displayer {
         HashMap<String, TreeSet<Integer>> linesCovered = new HashMap<String, TreeSet<Integer>>();
         TreeSet<Integer> bob = new TreeSet<Integer>();
         for(XtaInstruction inst : path.getInstructions(false)){
-            for(SourceFile sourceFile: m_xeObject.getSourceFiles()){
+            for(SourceFile sourceFile: m_engine.getXeObject().getSourceFiles()){
                 if(sourceFile.getFile().getName().equals(sourceFileName)){
                     for(SourceLine sourceLine : sourceFile.getSourceLines()){
                         for(Line assembly :sourceLine.getChildern()){
