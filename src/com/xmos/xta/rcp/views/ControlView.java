@@ -2,18 +2,28 @@ package com.xmos.xta.rcp.views;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.GroupMarker;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -21,17 +31,20 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
@@ -637,9 +650,15 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			}			
 		});
 	}
+
+	public static class DummyAction extends Action {
+		public DummyAction (String text) {
+			super(text);
+		}
+	}
 	
 	private void createPathControl(Composite composite) {
-		Group group = createGroup(composite, "Path", 2, 2);
+		Group group = createGroup(composite, "Path", 1, 2);
 
 		Group startGroup = createGroup(group, "From", 1, 1);
 	    m_startPoint = new Text(startGroup, SWT.SINGLE | SWT.CENTER);
@@ -650,29 +669,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    m_endPoint = new Text(endGroup, SWT.SINGLE | SWT.CENTER);
 	    m_endPoint.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	    m_endPoint.addModifyListener(m_endPointListener);
-	
-	    Button findStartButton = new Button(group, SWT.PUSH);
-	    findStartButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-	    findStartButton.setToolTipText("Show start point in disassembly");
-	    findStartButton.setImage(Icons.getIcon("start16x16"));
-	    findStartButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();
-				XtaDisplayer.getInstance().notifyShow(startPoint);
-			}
-		});
-
-	    Button findStopButton = new Button(group, SWT.PUSH);
-	    findStopButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-	    findStopButton.setToolTipText("Show end point in disassembly");
-	    findStopButton.setImage(Icons.getIcon("stop16x16"));
-	    findStopButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				CodeReference startPoint = XtaDisplayer.getInstance().getEndPoint();
-				XtaDisplayer.getInstance().notifyShow(startPoint);
-			}
-		});
-
+	    
 	    Button timePathButton = new Button(composite, SWT.PUSH);
 	    timePathButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 	    timePathButton.setToolTipText("Time specified path");

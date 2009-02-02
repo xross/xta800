@@ -27,6 +27,11 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -39,6 +44,7 @@ import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
 import com.xmos.xta.rcp.XtaDisplayer;
+import com.xmos.xta.rcp.icons.Icons;
 import com.xmos.xta.rcp.nodes.Node;
 
 public class XtaEditor extends TextEditor implements IPropertyChangeListener,
@@ -53,10 +59,14 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     public static final String ExpandAllID           = "com.xmos.xtagui.action.ExpandAll";
     public static final String CollapseAllID         = "com.xmos.xtagui.action.CollapseAll";
 
+    public static final String ShowStartPointID      = "com.xmos.xtagui.action.ShowStartPoint";
+    public static final String ShowEndPointID        = "com.xmos.xtagui.action.ShowEndPoint";
     public static final String SetStartPointID       = "com.xmos.xtagui.action.SetStartPoint";
     public static final String SetEndPointID         = "com.xmos.xtagui.action.SetEndPoint";
     public static final String RemoveStartPointID    = "com.xmos.xtagui.action.RemoveStartPoint";
     public static final String RemoveEndPointID      = "com.xmos.xtagui.action.RemoveEndPoint";
+    Action m_showStartPointAction;
+    Action m_showEndPointAction;
 
     private static final String fnopString = "    ------- \tFNOP\n";
     
@@ -369,6 +379,22 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      		}
      	});
 
+     	m_showStartPointAction = new Action("Show start point") {
+     		public void run() {
+				CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();
+				XtaDisplayer.getInstance().notifyShow(startPoint);
+     		}
+     	};
+     	setAction(ShowStartPointID, m_showStartPointAction);
+     	
+     	m_showEndPointAction = new Action("Show end point") {
+     		public void run() {
+				CodeReference endPoint = XtaDisplayer.getInstance().getEndPoint();
+				XtaDisplayer.getInstance().notifyShow(endPoint);
+     		}
+     	} ;
+     	setAction(ShowEndPointID, m_showEndPointAction);
+
      	setAction(SetStartPointID, new Action("Set start point") {
      		public void run() {
      			int clickLineNum = getVerticalRuler().getLineOfLastMouseButtonActivity();
@@ -406,6 +432,16 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      	menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));     	
     	addAction(menu, ExpandAllID);
     	addAction(menu, CollapseAllID);
+    	
+		menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
+
+		CodeReference startPoint = XtaDisplayer.getInstance().getStartPoint();
+		addAction(menu, ShowStartPointID);
+		m_showStartPointAction.setEnabled((startPoint != null));
+
+		CodeReference endPoint = XtaDisplayer.getInstance().getEndPoint();
+		addAction(menu, ShowEndPointID);
+		m_showEndPointAction.setEnabled((endPoint != null));
     }
 
     protected void rulerContextMenuAboutToShow(IMenuManager menu) {
