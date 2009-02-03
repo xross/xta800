@@ -7,11 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.swt.widgets.Display;
-
 import com.xmos.elfhandler.ElfHandler;
 import com.xmos.elfhandler.Symbol;
 import com.xmos.xeloader.DebugInfo;
@@ -26,8 +21,6 @@ import com.xmos.xta.engine.Route.RouteStatus;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
 import com.xmos.xta.engine.Unknown.UnknownType;
-import com.xmos.xta.rcp.XtaNotifier;
-import com.xmos.xta.rcp.XtaRouteInfo;
 
 public class Engine { 
 	
@@ -511,13 +504,13 @@ public class Engine {
 			m_route = null;
 			m_progress.setState(Progress.State.IDLE);
             System.gc();
-            notify(Notifier.NOTIFY_ERROR, "Out of Memory (OutOfMemoryError)");
+            notify(Notifier.NOTIFY_ERROR, "Out of Memory (Heap)");
             return false;
 		} catch (final java.lang.StackOverflowError e) {
 			m_route = null;
 			m_progress.setState(Progress.State.IDLE);
             System.gc();
-            notify(Notifier.NOTIFY_ERROR, "Out of Memory (StackOverflowError)");
+            notify(Notifier.NOTIFY_ERROR, "Out of Memory (Stack)");
             return false;
 		} catch (Exception e) {
 			m_progress.setState(Progress.State.IDLE);

@@ -72,6 +72,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private Annotation[] m_previousProjectionAnnotations;
     private Annotation[] m_previousHighlightAnnotations;
     private Annotation[] m_previousUnknownAnnotations;
+    private boolean m_hasHighlightedLines;
     
     private Node m_currentPathRoot;
     private Node m_selectedNode;
@@ -93,6 +94,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	m_selectedNode = null;
     	m_startPointLine = null;
         m_endPointLine = null;
+        m_hasHighlightedLines = false;
     }
 
     public void createPartControl(Composite parent) {
@@ -293,6 +295,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 				updateAnnotations(pc, HighlightAnnotationID, annotations, annotationPositions);
 			}
         }
+        
+        m_hasHighlightedLines = (annotations.size() > 0);
         
         if (m_startPointLine != null) {
         	addAnnotation(m_startPointLine.getIndex(), StartAnnotationID, annotations, annotationPositions);
@@ -608,10 +612,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	    return false;	
 	}
 
-	public int numHighlights() {
-		if (m_previousHighlightAnnotations != null)
-			return m_previousHighlightAnnotations.length;
-		else
-			return 0;
+	public boolean hasHighlightedLines() {
+		return m_hasHighlightedLines;
 	}
 }

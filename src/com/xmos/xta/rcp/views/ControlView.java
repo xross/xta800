@@ -187,7 +187,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			updateCurrentRoute();
 			
 			if (m_isGuiCommand) {
-				displayMessageBox("Error", "Error detected\n(See error tab for details)");
+				displayMessageBox("Error", "Error detected\n(See log for details)");
 			}
 			setDone("Aborted");
 		}

@@ -37,7 +37,7 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 				for (int i = 0; i < getPageCount(); i++) {
 					XtaEditor editor = (XtaEditor)this.getEditor(i);
 					
-					if (editor.numHighlights() > 0) {
+					if (editor.hasHighlightedLines()) {
 						setPageImage(i, Icons.getIcon("selected"));
 					} else {
 						setPageImage(i, null);
