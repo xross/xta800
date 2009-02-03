@@ -27,11 +27,6 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -307,7 +302,9 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         }
 				
 		m_annotationModel.replaceAnnotations(m_previousHighlightAnnotations, annotationPositions);        
-		m_previousHighlightAnnotations = createArray(annotations);    		
+		m_previousHighlightAnnotations = createArray(annotations);
+		
+		XtaNotifier.getInstance().notify(Notifier.NOTIFY_UPDATE_HIGHLIGHTS, "");
     }
                 
     private void updateUnknowns() {
@@ -609,5 +606,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			}
 		}
 	    return false;	
+	}
+
+	public int numHighlights() {
+		if (m_previousHighlightAnnotations != null)
+			return m_previousHighlightAnnotations.length;
+		else
+			return 0;
 	}
 }

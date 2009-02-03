@@ -19,6 +19,7 @@ public class Shell {
 	private boolean m_exitAllowed;
 	private State m_state;
 	private Console m_console;
+    private ConsoleNotifier m_consoleNotifier;
     private Engine m_engine;
     private Queue<Command> m_commands;
     private Vector<Command> m_commandHistory;
@@ -37,7 +38,9 @@ public class Shell {
     public void execute() {    	
     	while (!isComplete()) {
     		Command command = getNextCommand();
+    	    m_engine.registerNotifier(m_consoleNotifier);
     		command.execute(this, m_engine, m_console);
+    	    m_engine.removeNotifier(m_consoleNotifier);
     		m_commands.remove(command);
     	}
     }
@@ -92,10 +95,10 @@ public class Shell {
 		m_state = State.RUNNING;
 	    m_commands = new LinkedList<Command>();
 	    m_commandHistory = new Vector<Command>();
-	    m_engine.registerNotifier(new ConsoleDisplayer(console));
+	    m_consoleNotifier = new ConsoleNotifier(console);
     }
     
-    private void processCommandLine(String[] args) {     		    
+    private void processCommandLine(String[] args) {
 	    for (int i = 0; i < args.length; ++i) {
 	    	Command command = CommandFactory.buildCommand(args, i, m_commandHistory, m_console, true);
 	    	if (command == null) {
@@ -190,6 +193,4 @@ public class Shell {
       	}
         System.exit(1);
 	}
-
-		        
 }

@@ -14,6 +14,7 @@ public interface Notifier {
 	public static final String NOTIFY_SHOW_CODE_POINT   = "ShowCodePoint";
 	public static final String NOTIFY_UPDATE_STATE      = "UpdateState";
 	public static final String NOTIFY_UPDATE_EXCLUDES   = "UpdateExcludes";
+	public static final String NOTIFY_UPDATE_HIGHLIGHTS = "UpdateHighlights";
 	    
     void notify(String message, String argument);
 }

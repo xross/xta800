@@ -13,6 +13,7 @@ import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaEngine;
+import com.xmos.xta.rcp.icons.Icons;
 
 public class SourcesEditor extends MultiPageEditorPart implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
@@ -32,6 +33,16 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 		if (getPageCount() > 0) {
 			if (event.getProperty().equals(Notifier.NOTIFY_SHOW_CODE_POINT)) {
 				setActivePage(m_disassemblyIndex);
+			} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_HIGHLIGHTS)) {
+				for (int i = 0; i < getPageCount(); i++) {
+					XtaEditor editor = (XtaEditor)this.getEditor(i);
+					
+					if (editor.numHighlights() > 0) {
+						setPageImage(i, Icons.getIcon("selected"));
+					} else {
+						setPageImage(i, null);
+					}
+				}
 			}
 		}
 	}
