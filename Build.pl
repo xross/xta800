@@ -219,6 +219,8 @@ sub DoInstall
     or die("Unable to rename xta_$platform to: xta_bin\n");
   unlink("$target");
 
+  XmosBuildLib::InstallPatchFile("$DOMAIN", ".", "xtagui.ini", "xta_bin");
+
   chdir("$BUILDPATH") or die("oops");
 }
 
