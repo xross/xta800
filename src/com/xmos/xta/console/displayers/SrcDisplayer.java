@@ -1,6 +1,8 @@
 package com.xmos.xta.console.displayers;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.TreeSet;
 
 import com.xmos.xeobject.Line;
@@ -13,12 +15,14 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.XtaInstruction;
 
 public class SrcDisplayer {
+	private static final boolean DEBUG = false;
+
 	private Engine m_engine;
 	private Console m_console;
 	private int m_pathId;
 	private boolean m_displayAssembly;
 
-	public SrcDisplayer(Engine engine, Console console, int pathId, boolean displayAssembly) {
+	public SrcDisplayer(Engine engine, Console console, int pathId, boolean displayAssembly) {		
 		m_engine = engine;
 		m_console = console;
 		m_pathId = pathId;
@@ -30,6 +34,9 @@ public class SrcDisplayer {
 
     	Block path = Block.getPath(m_engine.getRoute(), m_pathId);
         HashMap<String, TreeSet<Integer>> linesCovered = createSrcLinesCovered(path, xeObject, false);                                                                   
+        
+        if (DEBUG) 
+        	displaySrcLinesCovered(linesCovered);
         
 		for (SourceFile sourceFile : xeObject.getSourceFiles()) {									
 	        TreeSet<Integer> fileLines = linesCovered.get(sourceFile.getCompilationName());    
@@ -77,7 +84,7 @@ public class SrcDisplayer {
 
 				for (SourceLine sourceLine : sourceFile.getSourceLines()) {
 					for (Line assembly : sourceLine.getChildern()) {
-						if (assembly.getLineNumber() == inst.getPc()) {
+						if (assembly.getLineNumber() == inst.getPc()) {							
 							sourceLines.add(sourceLine.getLineNumber());
 						}
 					}
@@ -85,5 +92,22 @@ public class SrcDisplayer {
 			}
 		}
 		return linesCovered;
-	}	
+	}
+	
+	private void displaySrcLinesCovered(Map<String, TreeSet<Integer>> linesCovered) {
+        Iterator<Map.Entry<String, TreeSet<Integer>>> iter =
+        	linesCovered.entrySet().iterator();
+
+        while (iter.hasNext()) {
+        	Map.Entry<String, TreeSet<Integer>> pair = iter.next();
+            String fileName = pair.getKey();
+            TreeSet<Integer> lineNumbers = pair.getValue();
+		
+            System.out.printf("SrcLinesCovered: %s: ", fileName);
+            for (Integer lineNumber : lineNumbers) {
+                System.out.print(lineNumber + " ");            	
+            }
+            System.out.print("\n");
+        }
+	}
 }

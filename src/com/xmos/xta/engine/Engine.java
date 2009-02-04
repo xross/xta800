@@ -210,8 +210,11 @@ public class Engine {
     public boolean loadExecutable(File executableFile, FileFinder fileFinder) {
     	m_pathQueries.clear();
     	
-        boolean success = m_xeLoader.loadExecutable(executableFile);
+    	XeLoader newLoader = new XeLoader();
+    	
+        boolean success = newLoader.loadExecutable(executableFile);
         if (success) {
+        	m_xeLoader = newLoader;
         	m_executableFile = executableFile;
         	initialiseLists(fileFinder);
             m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);
@@ -316,9 +319,15 @@ public class Engine {
         }
     }
             
-    public void registerNotifier(Notifier notifier) {    	
+    public void registerNotifier(Notifier notifier) {
+    	assert(m_notifiers.contains(notifier) == false);
         m_notifiers.add(notifier);
     }
+
+    public void removeNotifier(Notifier notifier) {
+    	assert(m_notifiers.contains(notifier));
+        m_notifiers.remove(notifier);
+	}
 
     public void setAbort(boolean value) {
         m_abort = value;
@@ -330,7 +339,7 @@ public class Engine {
 
     public void setNodeId(int nodeId) {
         m_nodeId = nodeId;
-        notify(Notifier.NOTIFY_UPDATE_STATE, "");
+        notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_NODE_ID);
 
     }
 
@@ -340,7 +349,7 @@ public class Engine {
 
     public void setCoreId(int coreId) {
         m_coreId = coreId;
-        notify(Notifier.NOTIFY_UPDATE_STATE, "");
+        notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_CORE_ID);
 
     }
 
@@ -353,7 +362,7 @@ public class Engine {
         if(m_route!=null){
         	m_route.invalidateAllBlocks();
         }
-        notify(Notifier.NOTIFY_UPDATE_STATE, "");
+        notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_FREQUENCY);
     }
 
     public int getFrequency() {
@@ -365,7 +374,7 @@ public class Engine {
         if(m_route!= null){
         	m_route.invalidateAllBlocks();
         }
-        notify(Notifier.NOTIFY_UPDATE_STATE, "");
+        notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_NUM_THREADS);
     }
 
     public int getNumThreads() {
@@ -374,7 +383,7 @@ public class Engine {
 
 	public void setResolve(boolean resolve) {
 		m_resolveExpression = resolve;
-		notify(Notifier.NOTIFY_UPDATE_STATE, "");
+		notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_RESOLVE);
 	}
 
 	public boolean getResolve() {
@@ -513,13 +522,13 @@ public class Engine {
 			m_route = null;
 			m_progress.setState(Progress.State.IDLE);
             System.gc();
-            notify(Notifier.NOTIFY_ERROR, "Out of Memory (OutOfMemoryError)");
+            notify(Notifier.NOTIFY_ERROR, "Out of Memory (Heap)");
             return false;
 		} catch (final java.lang.StackOverflowError e) {
 			m_route = null;
 			m_progress.setState(Progress.State.IDLE);
             System.gc();
-            notify(Notifier.NOTIFY_ERROR, "Out of Memory (StackOverflowError)");
+            notify(Notifier.NOTIFY_ERROR, "Out of Memory (Stack)");
             return false;
 		} catch (Exception e) {
 			m_progress.setState(Progress.State.IDLE);
@@ -568,6 +577,12 @@ public class Engine {
                 m_route = m_previousRoute;
                 return false;
             }
+
+            int numUnresolvedPaths = m_route.unresolvedPaths().size();
+			if (numUnresolvedPaths > 0) {
+	        	notify(Notifier.NOTIFY_ERROR, String.format("Found " + numUnresolvedPaths + " unresolved path(s)"));
+			}
+            
             notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, "");
         }
         else {

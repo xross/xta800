@@ -6,10 +6,10 @@ import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Route;
 
-public class ConsoleDisplayer implements Notifier {
+public class ConsoleNotifier implements Notifier {
 	private Console m_console;
 	
-	ConsoleDisplayer(Console console) {
+	ConsoleNotifier(Console console) {
 		m_console = console;
 	}
 	

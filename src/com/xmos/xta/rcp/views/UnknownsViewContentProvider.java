@@ -16,8 +16,8 @@ public class UnknownsViewContentProvider implements IStructuredContentProvider {
 		
 		ArrayList<Unknown> show = new ArrayList<Unknown>();
 		
-		for(Unknown unknown : ((Route)inputElement).getUnknowns()){
-			if(unknown.getShow()){
+		for (Unknown unknown : ((Route)inputElement).getUnknowns()){
+			if (unknown.getShow()){
 				show.add(unknown);
 			}
 		}

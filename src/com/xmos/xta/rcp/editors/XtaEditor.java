@@ -53,10 +53,14 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     public static final String ExpandAllID           = "com.xmos.xtagui.action.ExpandAll";
     public static final String CollapseAllID         = "com.xmos.xtagui.action.CollapseAll";
 
+    public static final String ShowStartPointID      = "com.xmos.xtagui.action.ShowStartPoint";
+    public static final String ShowEndPointID        = "com.xmos.xtagui.action.ShowEndPoint";
     public static final String SetStartPointID       = "com.xmos.xtagui.action.SetStartPoint";
     public static final String SetEndPointID         = "com.xmos.xtagui.action.SetEndPoint";
     public static final String RemoveStartPointID    = "com.xmos.xtagui.action.RemoveStartPoint";
     public static final String RemoveEndPointID      = "com.xmos.xtagui.action.RemoveEndPoint";
+    Action m_showStartPointAction;
+    Action m_showEndPointAction;
 
     private static final String fnopString = "    ------- \tFNOP\n";
     
@@ -68,6 +72,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private Annotation[] m_previousProjectionAnnotations;
     private Annotation[] m_previousHighlightAnnotations;
     private Annotation[] m_previousUnknownAnnotations;
+    private boolean m_hasHighlightedLines;
     
     private Node m_currentPathRoot;
     private Node m_selectedNode;
@@ -89,6 +94,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	m_selectedNode = null;
     	m_startPointLine = null;
         m_endPointLine = null;
+        m_hasHighlightedLines = false;
     }
 
     public void createPartControl(Composite parent) {
@@ -290,6 +296,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			}
         }
         
+        m_hasHighlightedLines = (annotations.size() > 0);
+        
         if (m_startPointLine != null) {
         	addAnnotation(m_startPointLine.getIndex(), StartAnnotationID, annotations, annotationPositions);
         }
@@ -298,7 +306,9 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         }
 				
 		m_annotationModel.replaceAnnotations(m_previousHighlightAnnotations, annotationPositions);        
-		m_previousHighlightAnnotations = createArray(annotations);    		
+		m_previousHighlightAnnotations = createArray(annotations);
+		
+		XtaNotifier.getInstance().notify(Notifier.NOTIFY_UPDATE_HIGHLIGHTS, "");
     }
                 
     private void updateUnknowns() {
@@ -373,6 +383,22 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      		}
      	});
 
+     	m_showStartPointAction = new Action("Show start point") {
+     		public void run() {
+				CodeReference startPoint = XtaNotifier.getInstance().getStartPoint();
+				XtaNotifier.getInstance().notifyShow(startPoint);
+     		}
+     	};
+     	setAction(ShowStartPointID, m_showStartPointAction);
+     	
+     	m_showEndPointAction = new Action("Show end point") {
+     		public void run() {
+				CodeReference endPoint = XtaNotifier.getInstance().getEndPoint();
+				XtaNotifier.getInstance().notifyShow(endPoint);
+     		}
+     	} ;
+     	setAction(ShowEndPointID, m_showEndPointAction);
+
      	setAction(SetStartPointID, new Action("Set start point") {
      		public void run() {
      			int clickLineNum = getVerticalRuler().getLineOfLastMouseButtonActivity();
@@ -410,6 +436,16 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      	menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));     	
     	addAction(menu, ExpandAllID);
     	addAction(menu, CollapseAllID);
+    	
+		menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
+
+		CodeReference startPoint = XtaNotifier.getInstance().getStartPoint();
+		addAction(menu, ShowStartPointID);
+		m_showStartPointAction.setEnabled((startPoint != null));
+
+		CodeReference endPoint = XtaNotifier.getInstance().getEndPoint();
+		addAction(menu, ShowEndPointID);
+		m_showEndPointAction.setEnabled((endPoint != null));
     }
 
     protected void rulerContextMenuAboutToShow(IMenuManager menu) {
@@ -574,5 +610,9 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			}
 		}
 	    return false;	
+	}
+
+	public boolean hasHighlightedLines() {
+		return m_hasHighlightedLines;
 	}
 }

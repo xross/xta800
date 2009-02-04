@@ -14,7 +14,8 @@ import com.xmos.xta.rcp.nodes.RouteNode;
 
 public class XtaRouteInfo {
 	
-	private static final int MAXPATHS = -1;
+
+	private static final int MAXPATHS = 100;
 	private Route m_route;
 	private DebugInfo m_debugInfo;
 	private MemoryImage m_memoryImage; 

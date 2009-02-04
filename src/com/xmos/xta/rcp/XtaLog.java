@@ -1,7 +1,9 @@
 package com.xmos.xta.rcp;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -12,14 +14,14 @@ public class XtaLog {
 		ERROR,
 		WARNING,
 		INFO
-	}	
-	private Map<Level, ArrayList<String>> m_strings;
+	}
+	private Map<Level, ArrayList<XtaLogEntry>> m_entries;
 	
 	private XtaLog() {
-		m_strings = new HashMap<Level, ArrayList<String>>();
-		m_strings.put(Level.ERROR,   new ArrayList<String>());
-		m_strings.put(Level.WARNING, new ArrayList<String>());
-		m_strings.put(Level.INFO,    new ArrayList<String>());
+		m_entries = new HashMap<Level, ArrayList<XtaLogEntry>>();
+		m_entries.put(Level.ERROR,   new ArrayList<XtaLogEntry>());
+		m_entries.put(Level.WARNING, new ArrayList<XtaLogEntry>());
+		m_entries.put(Level.INFO,    new ArrayList<XtaLogEntry>());
 	}
 	
 	public static XtaLog getInstance() {
@@ -30,18 +32,40 @@ public class XtaLog {
 	}
 	
 	public void add(Level level, String message) {
-		assert(m_strings.get(level) != null);
-		m_strings.get(level).add(message);
+		assert(m_entries.get(level) != null);
+		m_entries.get(level).add(new XtaLogEntry(message, level, new Date()));
 	}
 	
-	public List<String> getStrings(Level level) {
-		assert(m_strings.get(level) != null);
-		return m_strings.get(level);
+	public List<XtaLogEntry> getAll() {
+		List<XtaLogEntry> allEntries = new ArrayList<XtaLogEntry>();
+
+		Iterator<Map.Entry<Level, ArrayList<XtaLogEntry>>> iter = m_entries.entrySet().iterator();
+		while (iter.hasNext()) {
+			ArrayList<XtaLogEntry> entries = iter.next().getValue(); 
+			allEntries.addAll(entries);
+		}
+		return allEntries;
+	}
+
+	public void clearAll() {
+		Iterator<Map.Entry<Level, ArrayList<XtaLogEntry>>> iter = m_entries.entrySet().iterator();
+		while (iter.hasNext()) {
+			ArrayList<XtaLogEntry> entries = iter.next().getValue();
+			entries.clear();
+		}
 	}
 	
-	public void clearStrings(Level level) {
-		assert(m_strings.get(level) != null);
-		m_strings.get(level).clear();
+	public String getLevelString(Level level) {
+		switch (level) {
+		case ERROR:
+			return "ERROR";
+		case WARNING:
+			return "WARNING";
+		case INFO:
+			return "INFO";
+		default:
+			return "Unknown";
+		}
 	}
 }
 

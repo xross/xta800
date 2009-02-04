@@ -13,32 +13,38 @@ import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaLog;
 
-public class ErrorsView extends ViewPart implements IPropertyChangeListener {
+public class LogView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
-    public static final String ID = "com.xmos.xta.rcp.views.Errors";
+    public static final String ID = "com.xmos.xta.rcp.views.Log";
 
     private TableViewer m_tableViewer;
     
-	public ErrorsView() {
+	public LogView() {
 		if (DEBUG) System.out.printf("Errors()\n");			
 		XtaNotifier.getInstance().addPropertyChangeListener(this);
 	}
 
 	public void createPartControl(Composite parent) {
 		if (DEBUG) System.out.printf("Errors: createPartControl\n");	
-		 
+
 		m_tableViewer = new TableViewer(parent);		
 
 	    Table table = m_tableViewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-			    	    
-    	TableColumn tableColumn = new TableColumn(table, SWT.LEFT);
-    	tableColumn.setText("Description");
-    	tableColumn.setWidth(500);
-	    
-	    m_tableViewer.setContentProvider(new ErrorsViewContentProvider());				
-	    m_tableViewer.setLabelProvider(new ErrorsViewLabelProvider());	
+
+		LogViewContentProvider contentProvider = new LogViewContentProvider();
+		LogViewLabelProvider labelProvider = new LogViewLabelProvider();
+
+		for (int i = 0; i < labelProvider.getColumnNames().length; ++i) {
+			TableColumn tableColumn = new TableColumn(table, labelProvider
+					.getColumnAligmnments()[i]);
+			tableColumn.setText(labelProvider.getColumnNames()[i]);
+			tableColumn.setWidth(labelProvider.getColumnWidths()[i]);
+		}
+
+	    m_tableViewer.setContentProvider(contentProvider);				
+	    m_tableViewer.setLabelProvider(labelProvider);	
 	}
 
 	public void setFocus() {
@@ -52,7 +58,7 @@ public class ErrorsView extends ViewPart implements IPropertyChangeListener {
 		if (event.getProperty().equals(Notifier.NOTIFY_ERROR)) {
 			updateDisplay();
 			
-    	} else if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_BEGIN)) {
+    	} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
     		clearDisplay();
 		}
 	}
@@ -64,7 +70,7 @@ public class ErrorsView extends ViewPart implements IPropertyChangeListener {
 
 	private void clearDisplay() {
 		if (DEBUG) System.out.printf("Errors: clearDisplay\n"); 
-		XtaLog.getInstance().clearStrings(XtaLog.Level.ERROR);
+		XtaLog.getInstance().clearAll();
 		m_tableViewer.refresh();
 	}
 }

@@ -52,10 +52,10 @@
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.ErrorsView"
-            icon="icons/errors.png"
-            id="com.xmos.xta.rcp.views.Errors"
-            name="Errors"
+            class="com.xmos.xta.rcp.views.LogView"
+            icon="icons/log.png"
+            id="com.xmos.xta.rcp.views.Log"
+            name="Log"
             restorable="true">
       </view>
       <view

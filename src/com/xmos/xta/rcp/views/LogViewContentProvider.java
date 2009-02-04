@@ -5,13 +5,13 @@ import org.eclipse.jface.viewers.Viewer;
 
 import com.xmos.xta.rcp.XtaLog;
 
-public class ErrorsViewContentProvider implements IStructuredContentProvider {
+public class LogViewContentProvider implements IStructuredContentProvider {
     public static final boolean DEBUG = false;
 
 	public Object[] getElements(Object inputElement) {
 		if (DEBUG) System.out.printf("ErrorsViewContentProvider: getElements\n");	
 		
-		return ((XtaLog)inputElement).getStrings(XtaLog.Level.ERROR).toArray();
+		return ((XtaLog)inputElement).getAll().toArray();
 	}
 
 	public void dispose() {
