@@ -81,6 +81,7 @@ public class Block implements Comparable<Block> {
             for (Block loopPath : block.getLoopPaths()) {
             	Block foundPath = getPath(loopPath, pathId);
                 if (foundPath != null) {
+                    path.doneWithPathBlocks();
                     return foundPath;
                 }
             }
