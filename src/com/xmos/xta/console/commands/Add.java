@@ -6,6 +6,7 @@ class Add extends CommandContainer {
 		new Filter(Filter.Operation.ADD), 
 		new Prohibited(Prohibited.Operation.ADD), 
 		new Required(Required.Operation.ADD), 
+		new Branch(Branch.Operation.ADD),
 	};
 	
 	Add() { super("add"); }

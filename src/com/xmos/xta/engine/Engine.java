@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.Vector;
 import com.xmos.elfhandler.ElfHandler;
 import com.xmos.elfhandler.Symbol;
@@ -45,6 +46,7 @@ public class Engine {
     private ArrayList<CodeReferenceList> m_prohibited;
     private ArrayList<CodeReferenceList> m_required;
     private ArrayList<LabelMap> m_labels;
+    private ArrayList<BranchMap> m_branches;
     private ArrayList<PathQuery> m_pathQueries;
     
     public Engine(Config config) {    	
@@ -53,6 +55,7 @@ public class Engine {
     	m_prohibited  = new ArrayList<CodeReferenceList>();
     	m_required    = new ArrayList<CodeReferenceList>();
     	m_labels      = new ArrayList<LabelMap>();    	
+    	m_branches    = new ArrayList<BranchMap>();
         m_xeLoader    = new XeLoader();        
         m_route       = null;
         m_previousRoute = null;
@@ -69,32 +72,33 @@ public class Engine {
     }
             
     public boolean addReference(ReferenceMode mode, CodeReference ref) {    	    	
-        if (!resolveRefernece(ref, this)) {
+        if (!resolveRefernece(ref, this)) {        	
+           	notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
         	return false;
         }    	
     	if (mode == ReferenceMode.FILTERED){
-    		if(referenceListContainsReference(ref, getReferenceList(m_exclusions, m_nodeId, m_coreId))){
-    			//give reason to the user
+    		if (referenceListContainsReference(ref, getReferenceList(m_exclusions, m_nodeId, m_coreId))){
+               	notify(Notifier.NOTIFY_ERROR, String.format("Reference already filtered: %s", ref.getRef()));
     			return false;
     		} else {
     			getReferenceList(m_exclusions, m_nodeId, m_coreId).add(ref);
     		}
             
     	} else if (mode == ReferenceMode.PROHIBITED){
-    		if(referenceListContainsReference(ref, getReferenceList(m_prohibited, m_nodeId, m_coreId))){
-    			//give reason to the user
+    		if (referenceListContainsReference(ref, getReferenceList(m_prohibited, m_nodeId, m_coreId))){
+               	notify(Notifier.NOTIFY_ERROR, String.format("Reference already prohibited: %s", ref.getRef()));
     			return false;
     		} else {
     			getReferenceList(m_prohibited, m_nodeId, m_coreId).add(ref);
     		}
     	} else if (mode == ReferenceMode.REQUIRED){
-    		if(referenceListContainsReference(ref, getReferenceList(m_required, m_nodeId, m_coreId))){
-    			//give reason to the user
+    		if (referenceListContainsReference(ref, getReferenceList(m_required, m_nodeId, m_coreId))){
+               	notify(Notifier.NOTIFY_ERROR, String.format("Reference already required: %s", ref.getRef()));
     			return false;
     		} else {
     			getReferenceList(m_required, m_nodeId, m_coreId).add(ref);
     		}
-    	} else{
+    	} else {
     		assert(false);
     		return false;
     	}
@@ -121,8 +125,10 @@ public class Engine {
     		assert(false);
     		return false;
     	}
-    	if (!found)
+    	if (!found) {
+           	notify(Notifier.NOTIFY_ERROR, String.format("Unable to remove reference: %s", ref.getRef()));    		
     		return false;
+    	}
 
     	if (m_route != null) 
     		m_route.filterPaths();
@@ -229,6 +235,8 @@ public class Engine {
 			runAnalysisEngine();
 			
             loadLabels();
+            loadBranches();
+            
            	m_route = null;
            	notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath()); 
         } else {
@@ -238,8 +246,8 @@ public class Engine {
     }	
 
     private void runAnalysisEngine(){
-    	AnalysisEngine ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache, m_xeObjects);
-    	ae.run();
+//    	AnalysisEngine ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache, m_xeObjects);
+//    	ae.run();
     }
     
 	private void decodeInstructions() throws Exception {
@@ -457,45 +465,90 @@ public class Engine {
     }
 
 	public boolean addLabel(String label , CodeReference ref) {
-        if (resolveRefernece(ref, this)) {
-    		Map<String, Integer> labels = getLabelsMap(m_nodeId, m_coreId);
-    		if (labels != null) {
-    			labels.put(label, ref.getPc()); 
-    		    return true;
-    		}
-        }    			
+        if (!resolveRefernece(ref, this)) {
+        	notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
+            return false;
+        }		
+		
+   		LabelMap labelMap = getLabelsMap(m_nodeId, m_coreId);
+   		if (labelMap != null) {
+   			labelMap.getLabels().put(label, ref.getPc()); 
+   		    return true;
+   		}
         return false;
 	}
 
 	public void removeLabel(String label) {
-		Map<String, Integer> labels = getLabelsMap(m_nodeId, m_coreId);
-		if (labels != null) {
-			labels.remove(label);
+		LabelMap labelMap = getLabelsMap(m_nodeId, m_coreId);
+		if (labelMap != null) {
+			labelMap.getLabels().remove(label);
 		}
 	}
 	
 	public Map<String, Integer> getLabels() {
-		return getLabelsMap(m_nodeId, m_coreId);
+		LabelMap labelMap = getLabelsMap(m_nodeId, m_coreId);
+		if (labelMap != null) {
+			return labelMap.getLabels();
+		}
+        return null;
 	}
-	
+
 	public boolean isLabel(String label) {
-		Map<String, Integer> labels = getLabelsMap(m_nodeId, m_coreId);
-		if (labels != null) {
-			return labels.containsKey(label);
+		LabelMap labelMap = getLabelsMap(m_nodeId, m_coreId);
+		if (labelMap != null) {
+			return labelMap.getLabels().containsKey(label);
 		}
 		return false;
 	}
 	
 	public int getLabelPc(String label){
-		Map<String, Integer> labels = getLabelsMap(m_nodeId, m_coreId);		
-		if (labels != null) {
-    		if (labels.containsKey(label)) {
-	    		return labels.get(label);
+		LabelMap labelMap = getLabelsMap(m_nodeId, m_coreId);
+		if (labelMap != null) {
+    		if (labelMap.getLabels().containsKey(label)) {
+	    		return labelMap.getLabels().get(label);
 		    }
 		}
 		assert(false);
 		return 0;
 	}
+	
+	public boolean addBranch(CodeReference fromRef, CodeReference toRef) {
+        if (!resolveRefernece(fromRef, this)) {
+        	notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", fromRef.getRef()));
+            return false;
+        }
+        else if (!resolveRefernece(toRef, this)) {
+        	notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", toRef.getRef()));
+            return false;
+        }
+		
+        BranchMap branchMap = getBranchesMap(m_nodeId, m_coreId);
+   		if (branchMap != null) {
+   			branchMap.add(fromRef.getPc(), toRef.getPc());
+   		    return true;
+   		}
+        return false;
+	}
+
+	public void removeBranch(CodeReference fromRef) {
+        if (!resolveRefernece(fromRef, this)) {
+        	notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", fromRef.getRef()));
+            return;
+        }
+
+		BranchMap branchMap = getBranchesMap(m_nodeId, m_coreId);
+		if (branchMap != null) {
+			branchMap.remove(fromRef.getPc());
+		}
+	}
+	
+	public Map<Integer, TreeSet<Integer>> getBranches() {
+		BranchMap branchMap = getBranchesMap(m_nodeId, m_coreId);
+		if (branchMap != null) {
+			return branchMap.getBranches();
+		}
+        return null;
+	}	
 
 	public void addQuery(PathQuery pq) {
 		this.m_pathQueries.add(pq);
@@ -642,16 +695,26 @@ public class Engine {
     	return false;
 	}
 
-    private Map<String, Integer> getLabelsMap(int nodeId, int coreId) {
+    private LabelMap getLabelsMap(int nodeId, int coreId) {
     	for (LabelMap labels : m_labels) {
     		if ((labels.getNodeId() == nodeId) &&
     			(labels.getCoreId() == coreId)) {
-    			return labels.getLabels();
+    			return labels;
     		}
     	}
     	return null;
     }
 
+    private BranchMap getBranchesMap(int nodeId, int coreId) {
+    	for (BranchMap branches : m_branches) {
+    		if ((branches.getNodeId() == nodeId) &&
+    			(branches.getCoreId() == coreId)) {
+    			return branches;
+    		}
+    	}
+    	return null;
+    }    
+    
     private XeObject getXeObject(int nodeId, int coreId) {
     	for (XeObject xeObject : m_xeObjects) {
     		if ((xeObject.getNodeId() == nodeId) &&
@@ -668,6 +731,7 @@ public class Engine {
     	m_prohibited.clear();
     	m_required.clear();
     	m_labels.clear();
+    	m_branches.clear();
     	m_xeObjects.clear();
     	
 		for (int node : m_xeLoader.getNodeIds()){
@@ -676,6 +740,7 @@ public class Engine {
 			    m_prohibited.add(new CodeReferenceList(node, core));
 			    m_required.add(new CodeReferenceList(node, core));
 			    m_labels.add(new LabelMap(node, core));
+			    m_branches.add(new BranchMap(node, core));
 				m_xeObjects.add(new XeObject(m_xeLoader, node, core, fileFinder));
 			}
 		}
@@ -688,6 +753,13 @@ public class Engine {
     	return;
     }
 
+    private void loadBranches() {
+    	for (BranchMap branchMap : m_branches) {
+    		branchMap.loadBranches(this, m_xeLoader);
+		}
+    	return;
+    }
+    
 	public File getExecutable() {
 		return m_executableFile;
 	}

@@ -92,14 +92,10 @@ public class Filter extends Command {
 
        	switch (m_operation) {
        	case ADD:
-       		if (!engine.addReference(ReferenceMode.FILTERED, m_ref)) {
-               	console.display("Error: Unable to add reference: " + m_ref.getRef() + "\n");            			
-       		}
+       		engine.addReference(ReferenceMode.FILTERED, m_ref);
        		break;
        	case REMOVE:
-       		if (!engine.removeReference(ReferenceMode.FILTERED, m_ref)) {        			
-             	console.display("Error: Unable to remove reference: " + m_ref.getRef() + "\n");            			
-      		}
+       		engine.removeReference(ReferenceMode.FILTERED, m_ref);        			
        		break;           		
        	case LIST:
        		listExcludes(engine, console);

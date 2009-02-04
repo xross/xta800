@@ -92,14 +92,10 @@ public class Required extends Command {
 
        	switch (m_operation) {
        	case ADD:
-       		if (!engine.addReference(ReferenceMode.REQUIRED, m_ref)) {
-               	console.display("Error: Unable to add reference: " + m_ref + "\n");            			
-       		}
+       		engine.addReference(ReferenceMode.REQUIRED, m_ref);
        		break;
        	case REMOVE:
-       		if (!engine.removeReference(ReferenceMode.REQUIRED, m_ref)) {        			
-             	console.display("Error: Unable to remove reference: " + m_ref + "\n");            			
-      		}
+       		engine.removeReference(ReferenceMode.REQUIRED, m_ref);        			
        		break;           		
        	case LIST:
        		listRequirements(engine, console);
