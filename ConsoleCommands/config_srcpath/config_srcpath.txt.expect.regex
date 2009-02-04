@@ -9,4 +9,4 @@ SrcPaths: .*/up;.
 Loaded executable: test.xe
 Node: 0, Core: 0 \(Debug information avaliable\)
 No Paths/Functions registered
-- test.xc
+- test.xc \(.*\)

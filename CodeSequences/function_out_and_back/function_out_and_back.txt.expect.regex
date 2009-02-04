@@ -1,3 +1,4 @@
+Error: Found 2 unresolved path\(s\)
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[4 path\(s\)\]
     path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0
