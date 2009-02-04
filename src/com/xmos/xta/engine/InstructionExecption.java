@@ -30,6 +30,13 @@ public class InstructionExecption extends Exception {
 		m_error = error;
 	}
 	
+	private int m_pc;
+	public InstructionExecption(Error error, int pc){
+		super();
+		m_pc = pc;
+		m_error = error;
+	}
+	
 	public Error getError(){
 		return m_error;
 	}
@@ -44,7 +51,7 @@ public class InstructionExecption extends Exception {
 		} else if(m_error == Error.UNKNOWN_RESOURCE){
 			return "cannot identify the recource";
 		} else if(m_error == Error.UNIMPLIMENTED){
-			return "instruction currently unimplimented, results may be incorrect";
+			return "instruction at 0x" + Integer.toHexString(m_pc) + " currently unimplimented, results may be incorrect";
 		} else if(m_error == Error.DEBUG_INSTRUCTION){
 			return "executed dubug instruction";
 		} else if(m_error == Error.KERNEL_INSTRUCTION){

@@ -249,7 +249,6 @@ public class Block implements Comparable<Block> {
 		addInstruction(instruction);
 		
 		if(checkComplete(instruction)) return;
-		
 
 		if(instruction.canPause()){
 			addUnknown(instruction);
@@ -341,9 +340,12 @@ public class Block implements Comparable<Block> {
 				}
 			}
 		} else {
-			if (instruction.getReturnLocations().size() > 0) {
-				for (XtaInstruction callingInst : instruction.getReturnLocations()) {
-					checkForLoopFormation(callingInst.getPc() + callingInst.getNumBytes(), false, callingInst, true, true);
+			if (instruction.getReturn() ) {
+
+				for(int returnLocation : instruction.getSuccessors()){
+					XtaInstruction callingInst = m_bc.getNodeCoreInstructionCaches().
+					getInstructionDecodeCache(m_bc.getEngine().getNodeId(), m_bc.getEngine().getCoreId()).getInstruction(returnLocation);
+					checkForLoopFormation(returnLocation, false, callingInst, true, true);
 				}
 				setStatus(BlockStatus.COMPLETE);
 				releaseMemory();
@@ -582,7 +584,7 @@ public class Block implements Comparable<Block> {
 		if(DEBUG) {
 			System.out.println(this.m_id + " "+inst);
 		}
-		inst.setBasicNumCycles(m_bc.getM_instructionAttributes().getTiming(inst.getNmenonic()));
+		//inst.setBasicNumCycles(m_bc.getM_instructionAttributes().getTiming(inst.getNmenonic()));
 		inst.setConfig(m_bc.getConfig());
 
 		boolean keepInstructionTrace =true;
