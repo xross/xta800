@@ -60,10 +60,13 @@ public class InstructionDecodeCache {
 			    instruction.setTimeTaken(timeTaken);
 			    return true;
 			}
-			engine.setErrorString(String.format("Warning: Instruction at pc: 0x%08x cannot pause", pc));			
+			
+			engine.notify(Notifier.NOTIFY_ERROR, 
+					String.format("Instruction at pc: 0x%08x cannot pause", pc));			
             return false;
 		}
-		engine.setErrorString(String.format("Warning: Pc: 0x%08x not found", pc));
+		engine.notify(Notifier.NOTIFY_ERROR, 
+				String.format("Pc: 0x%08x not found", pc));			
 		return false;
     }
     
@@ -85,10 +88,13 @@ public class InstructionDecodeCache {
 				instruction.setNumCycles(numCycles);
 				return true;
 			}
-			engine.setErrorString(String.format("Warning: Instruction at pc: 0x%05x cannot pause", pc));			
+			
+			engine.notify(Notifier.NOTIFY_ERROR, 
+					String.format("Instruction at pc: 0x%05x cannot pause", pc));						
             return true;
 		}
-		engine.setErrorString(String.format("Warning: Pc: 0x%05x not found", pc));
+		engine.notify(Notifier.NOTIFY_ERROR, 
+				String.format("Pc: 0x%05x not found", pc));			
 		return false;
     }    
     

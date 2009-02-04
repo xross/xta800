@@ -2,12 +2,9 @@ package com.xmos.xta.engine;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
 import com.xmos.elfhandler.ElfHandler;
 import com.xmos.elfhandler.Symbol;
 import com.xmos.xeloader.DebugInfo;
@@ -16,8 +13,6 @@ import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.FileFinder;
-import com.xmos.xeobject.Function;
-import com.xmos.xeobject.Line;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Route.RouteStatus;
 import com.xmos.xta.engine.references.CodeReference;
@@ -39,8 +34,7 @@ public class Engine {
     private File m_executableFile;
     private int m_nodeId;
     private int m_coreId;
-    private String m_errorString;
-    private Vector<Displayer> m_displayers;
+    private Vector<Notifier> m_notifiers;
     private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
     private boolean m_abort;
     private boolean m_resolveExpression;    
@@ -66,9 +60,8 @@ public class Engine {
         m_executableFile = null;
         m_nodeId = 0;
         m_coreId = 0;
-        m_errorString = "";
         m_srcPaths = ".";
-        m_displayers  = new Vector<Displayer>();
+        m_notifiers  = new Vector<Notifier>();
         m_pathQueries = new ArrayList<PathQuery>();
         m_abort = false;
         m_resolveExpression = false;        
@@ -108,7 +101,7 @@ public class Engine {
     	if (m_route != null) 
     		m_route.filterPaths();
     	
-    	callDisplayers(Displayer.NOTIFY_UPDATE_EXCLUDES, ""); 
+    	notify(Notifier.NOTIFY_UPDATE_EXCLUDES, ""); 
     	return true;
     }
     
@@ -134,13 +127,13 @@ public class Engine {
     	if (m_route != null) 
     		m_route.filterPaths();
     	
-    	callDisplayers(Displayer.NOTIFY_UPDATE_EXCLUDES, ""); 
+    	notify(Notifier.NOTIFY_UPDATE_EXCLUDES, ""); 
     	return true;
     }
         
-    public void callDisplayers(String message, String argument){
-    	for (Displayer displayer : m_displayers)
-            displayer.notify(message, argument); 
+    public void notify(String message, String argument){
+    	for (Notifier notifier : m_notifiers)
+    		notifier.notify(message, argument); 
     }
     
     public List<CodeReference> getReference(ReferenceMode mode){
@@ -172,6 +165,27 @@ public class Engine {
         return m_xeLoader.getDebugInfos();
     }
 
+    public MemoryImage getMemoryImage() {
+    	if (m_route != null) {
+            return m_xeLoader.getMemoryImage(m_route.getNodeId(), m_route.getCoreId());    		
+    	}
+    	return null;
+    }
+
+    public SymbolTable getSymbolTable() {
+    	if (m_route != null) {
+            return m_xeLoader.getSymbolTable(m_route.getNodeId(), m_route.getCoreId());    		
+    	}
+    	return null;
+    }
+
+    public DebugInfo getDebugInfo() {
+    	if (m_route != null) {
+            return m_xeLoader.getDebugInfo(m_route.getNodeId(), m_route.getCoreId());    		
+    	}
+    	return null;
+    }
+    
     public Route getRoute(){
         return m_route;
     }
@@ -201,146 +215,55 @@ public class Engine {
         	m_executableFile = executableFile;
         	initialiseLists(fileFinder);
             m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);
-            
-            			
-            
+
             try {
 				decodeInstructions();
 			} catch (Exception e) {
-				setErrorString("Some of the pc's refered to in the executable could not be found");
+				notify(Notifier.NOTIFY_ERROR, "Some of the pc's refered to in the executable could not be found");
 				success = false;
 			} 
-			parseResources();
-
+			
+			runAnalysisEngine();
 			
             loadLabels();
            	m_route = null;
-           	callDisplayers(Displayer.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath()); 
+           	notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath()); 
         } else {
-            setErrorString("The file '" + executableFile + "'could not be found.");	        
+        	notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile + "' could not be loaded.");
         }        
         return success;
     }	
 
-    private void parseResources() {
+    private void runAnalysisEngine(){
+    	AnalysisEngine ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache, m_xeObjects);
+    	ae.run();
+    }
+    
+	private void decodeInstructions() throws Exception {
     	for(int nodeId : m_xeLoader.getNodeIds()){
-    		for(int coreId : m_xeLoader.getCoreIds(nodeId)){
-    			XeObject xeObject = getXeObject(nodeId, coreId);
-    			for(Function function: xeObject.getFunctions()){
-    				resourceAnalysis(function, m_nodeCoreInstructionCache.getInstructionDecodeCache(nodeId, coreId));
-    			}
-    		}
-    	}
-	}
-    
-    
-    private void resourceAnalysis(Function function, InstructionDecodeCache instructionDecodeCache) {
-    	if (function.getChildern() != null && function.getChildern().size()>0){
-    		
-    		ArrayList<Line> m_lines  = function.getChildern();
-    		Collections.reverse(m_lines);
-    		for(Line line : m_lines){
-    			AssemblyLine  al = (AssemblyLine)line;
-    			int pc = al.getPc();
-    			//this assumes that this pc has already been decoded
-    			XtaInstruction inst = instructionDecodeCache.getInstruction(pc);
-    			if(inst == null){
-    				//TODO
-    			} else {
-    				inst.applyInstructionToResources();
-    			}
-    			
-    		}
-    	}
-	}
-
-	private void decodeInstructions() throws Exception{
-    	
-    	ArrayList<String> maps = new ArrayList<String>();
-    	
-    	ArrayList<String> functions = new ArrayList<String>();
-        for(int nodeId : m_xeLoader.getNodeIds()){
         	for(int coreId : m_xeLoader.getCoreIds(nodeId)){
-		        int lastPc = 0;
-		        HashMap <Integer, ArrayList<Integer>> instructionEntryPc = new HashMap<Integer, ArrayList<Integer>>();
-		        for (Function function : getXeObject(nodeId, coreId).getFunctions()){
-		        	
-		        	if (function.getChildern() != null && function.getChildern().size()>0){
-			            int functionEntry = function.getChildern().get(0).getLineNumber();
-			            for (Line assembly : function.getChildern()){
-			                int pc = assembly.getLineNumber();
-			                int opcode = getOpcode(pc, nodeId,coreId);			                
-			                String retsp_lu6 = new RevbXtaInstruction_retsp_lu6(0, 0).getNmenonic();
-			                String retsp_u6 = new RevbXtaInstruction_retsp_u6(0, 0).getNmenonic();
-			                String nemonic = m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic();
-			                if (nemonic.equals(retsp_lu6) || nemonic.equals(retsp_u6)){
-			                    ArrayList<Integer> retsps = instructionEntryPc.get(functionEntry);
-			                    if (retsps==null){
-			                        retsps = new ArrayList<Integer>();
-			                    } 
-			                    retsps.add(pc);
-			                    instructionEntryPc.put(functionEntry, retsps);  
-			                }
-			            }
-			            lastPc = function.getChildern().get(function.getChildern().size()-1).getLineNumber();
-		        	}
-		        }
-		        int pc =m_xeLoader.getMemoryImage(nodeId, coreId).getMemoryBase();
-		        while (pc <= lastPc){
-		            int opcode = getOpcode(pc, nodeId,coreId);
-		            int currentTarget = m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getBranchPcRelativeTargetPc();
-		            if (currentTarget>0 && m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNmenonic().toLowerCase().startsWith("bl")){
-		                if (instructionEntryPc.get(currentTarget)!=null){
-		                    for (int targetPc : instructionEntryPc.get(currentTarget)){
-		                        int opcodeRetsp = getOpcode(targetPc, nodeId,coreId);
-		                        int pcOpcode = getOpcode(pc, nodeId,coreId);
-		                        XtaInstruction inst = m_nodeCoreInstructionCache.decode(pcOpcode, pc, nodeId, coreId);
-		                        m_nodeCoreInstructionCache.decode(opcodeRetsp, targetPc, nodeId, coreId).addReturnLocation(inst);
-		                        
-		                        String to = m_xeLoader.getSymbolTable(nodeId, coreId).getElfHandler().getFunctionOffset(targetPc).getName();
-		                        String from = m_xeLoader.getSymbolTable(nodeId, coreId).getElfHandler().getFunctionOffset(inst.getPc()).getName();
-		                        
-		                        if(!functions.contains(to))functions.add(to);
-		                        if(!functions.contains(from))functions.add(from);
-		                        
-		                        String map = "fn"+functions.indexOf(from)  +" -> " + "fn" +functions.indexOf(to);
-		                        
-		                        if(!maps.contains(map)) maps.add(map);
-		                        
-		                    }
-		                } else {
-		                    //this is the case where dosyscall has been hit
-		                }
-		            }
-		            pc += m_nodeCoreInstructionCache.decode(opcode, pc, nodeId, coreId).getNumBytes();
-		        }
-  		
+        		XeObject xeObject = getXeObject(nodeId, coreId);
+        		for(AssemblyLine al : xeObject.getInstructions()){
+        			int pc = al.getPc();
+        		    m_nodeCoreInstructionCache.decode(getOpcode(pc, nodeId,coreId), pc, nodeId, coreId);
+        		}
         	}
         }
-        /*
-        System.out.println("digraph g {");
-        for(String function : functions){
-        	System.out.println("fn" +functions.indexOf(function) +" [label = \"" + function + "\"];");
-        }
-        for(String map : maps){
-        	System.out.println(map +";");
-        }
-        System.out.println("}");
-        */
     }
+	
 	public Progress getProgress() {
     	return m_progress;
     }
 
     public boolean analyseRoute(String functionName) {
         if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
-            setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
-                    m_nodeId, m_coreId, m_executableFile));        	
+        	notify(Notifier.NOTIFY_ERROR, String.format("Node: %d, Core: %d image not found in file: %s",
+		                    m_nodeId, m_coreId, m_executableFile));        	
             return false;
         }
         else if (!functionExists(functionName)) {
-            setErrorString(String.format("Cannot find function: %s in file: %s, node: %d, core: %d",
-                    functionName, m_executableFile, m_nodeId, m_coreId));        	
+        	notify(Notifier.NOTIFY_ERROR, String.format("Cannot find function: %s in file: %s, node: %d, core: %d",
+                            functionName, m_executableFile, m_nodeId, m_coreId));        	
             return false;
         }
         else {     
@@ -349,14 +272,13 @@ public class Engine {
             		m_nodeId, m_coreId, m_nodeCoreInstructionCache,
             		m_resolveExpression);
 
-            boolean t = analyseRouteSafley();
-            if (t) {
-            	callDisplayers(Displayer.NOTIFY_SELECT_FUNCTION, functionName); 
+            boolean success = analyseRouteSafley();
+            if (success) {
+            	notify(Notifier.NOTIFY_SELECT_FUNCTION, functionName); 
             } else {
-            	//restore the route
             	m_route = m_previousRoute;
             }
-            return t;
+            return success;
         }
     }    
 
@@ -364,17 +286,17 @@ public class Engine {
         CodeReference fromRef = CodeReferenceFactory.createCodeReference(from);
         CodeReference toRef = CodeReferenceFactory.createCodeReference(to); 
         
-        if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
-            setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
-                    m_nodeId, m_coreId, m_executableFile));        	
+        if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {        	
+        	notify(Notifier.NOTIFY_ERROR, String.format("Node: %d, Core: %d image not found in file: %s",
+		                    m_nodeId, m_coreId, m_executableFile));        	
             return false;
         }
         else if (!resolveRefernece(fromRef, this)) {
-            setErrorString(String.format("Unresolved reference: %s", from));
+        	notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", from));
             return false;
         }
         else if (!resolveRefernece(toRef, this)) {
-            setErrorString(String.format("Unresolved reference: %s", to));
+        	notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", to));
             return false;
         }
         else {    
@@ -382,69 +304,20 @@ public class Engine {
             m_route = new Route(m_config, m_progress, fromRef, toRef,
             		m_nodeId, m_coreId, m_nodeCoreInstructionCache,
             		m_resolveExpression);
-            boolean t = analyseRouteSafley();
-            if (t) {
-            	callDisplayers(Displayer.NOTIFY_SET_START_POINT, from); 
-            	callDisplayers(Displayer.NOTIFY_SET_END_POINT, to); 
+            
+            boolean success = analyseRouteSafley();
+            if (success) {
+            	notify(Notifier.NOTIFY_SET_START_POINT, from); 
+            	notify(Notifier.NOTIFY_SET_END_POINT, to); 
             } else {
-            	// restore the route
             	m_route = m_previousRoute;
             }
-            return t;
+            return success;
         }
     }
-        
-    public void displayRoute() {
-        if (m_route != null) { 
-            int nodeId = m_route.getNodeId();
-            int coreId = m_route.getCoreId();
-
-            MemoryImage memoryImage = m_xeLoader.getMemoryImage(nodeId, coreId);
-            SymbolTable symbolTable = m_xeLoader.getSymbolTable(nodeId, coreId);
-            DebugInfo debugInfo = m_xeLoader.getDebugInfo(nodeId, coreId);                               
-
-            assert(memoryImage != null);
-            assert(symbolTable != null);
-            assert(debugInfo != null);
-
-            for (Displayer displayer : m_displayers) {
-                displayer.displayRoute(m_route, debugInfo, memoryImage, symbolTable);    	
-            }
-        }
-    }    
-
-    public void displayRoute(Displayer displayer) {
-        if (m_route != null) { 
-            int nodeId = m_route.getNodeId();
-            int coreId = m_route.getCoreId();
-
-            MemoryImage memoryImage = m_xeLoader.getMemoryImage(nodeId, coreId);
-            SymbolTable symbolTable = m_xeLoader.getSymbolTable(nodeId, coreId);
-            DebugInfo debugInfo = m_xeLoader.getDebugInfo(nodeId, coreId);                               
-
-            assert(memoryImage != null);
-            assert(symbolTable != null);
-            assert(debugInfo != null);
-
-            displayer.displayRoute(m_route, debugInfo, memoryImage, symbolTable);    	
-        }
-    }    
-    
-    public void refineRoute(){
-    	//this applies all exclusions, requirements and prohibited properties to the route
-    	
-    }
-
-    public void registerDisplayer(Displayer displayer) {    	
-        m_displayers.add(displayer);
-    }
-
-    public void clearDisplayer(Displayer displayer) {
-        m_displayers.remove(displayer);    			
-    }
-
-    public void clearDisplayers() {
-        m_displayers.clear();
+            
+    public void registerNotifier(Notifier notifier) {    	
+        m_notifiers.add(notifier);
     }
 
     public void setAbort(boolean value) {
@@ -457,7 +330,8 @@ public class Engine {
 
     public void setNodeId(int nodeId) {
         m_nodeId = nodeId;
-        callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
+        notify(Notifier.NOTIFY_UPDATE_STATE, "");
+
     }
 
     public int getNodeId(){
@@ -466,7 +340,8 @@ public class Engine {
 
     public void setCoreId(int coreId) {
         m_coreId = coreId;
-        callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
+        notify(Notifier.NOTIFY_UPDATE_STATE, "");
+
     }
 
     public int getCoreId() {
@@ -478,7 +353,7 @@ public class Engine {
         if(m_route!=null){
         	m_route.invalidateAllBlocks();
         }
-        callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
+        notify(Notifier.NOTIFY_UPDATE_STATE, "");
     }
 
     public int getFrequency() {
@@ -490,7 +365,7 @@ public class Engine {
         if(m_route!= null){
         	m_route.invalidateAllBlocks();
         }
-        callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
+        notify(Notifier.NOTIFY_UPDATE_STATE, "");
     }
 
     public int getNumThreads() {
@@ -499,30 +374,22 @@ public class Engine {
 
 	public void setResolve(boolean resolve) {
 		m_resolveExpression = resolve;
-		callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
+		notify(Notifier.NOTIFY_UPDATE_STATE, "");
 	}
 
 	public boolean getResolve() {
 		return m_resolveExpression;
 	}
-
-    public String getErrorString() {
-        return m_errorString;
-    }
-
-    public void setErrorString(String errorString) {
-        m_errorString = errorString;
-    }
-
     
     public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
         boolean hit = m_route.setLoopIterations(pathId, absolute, iterations);
         if (hit) {
         	m_route.invalidateAllBlocks();
             m_route.notifyUpdate();
+    		notify(Notifier.NOTIFY_UPDATE_STATE, "");
         }
         return hit;
-    }    
+    }
 
     public boolean setInstructionTimeTaken(int pc, double timeTaken) {
         boolean hit = false;
@@ -537,12 +404,12 @@ public class Engine {
             m_route.getUnknowns().removeAll(toRemove);
             if (hit) {
             	m_route.invalidateAllBlocks();
-            	callDisplayers(Displayer.NOTIFY_UPDATE_EXCLUDES, ""); 
-            	callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
+            	notify(Notifier.NOTIFY_UPDATE_EXCLUDES, ""); 
+            	notify(Notifier.NOTIFY_UPDATE_STATE, "");
             }
         }
         else {
-            setErrorString("No route currently anaylsed");    		
+        	notify(Notifier.NOTIFY_ERROR, "No route currently anaylsed");
         }
         return hit;
     }
@@ -560,11 +427,11 @@ public class Engine {
             hit = m_route.setInstructionNumCycles(pc, numCycles);
             if (hit){
             	m_route.invalidateAllBlocks();
-            	callDisplayers(Displayer.NOTIFY_UPDATE_STATE, ""); 
+            	notify(Notifier.NOTIFY_UPDATE_STATE, ""); 
             }
         }
         else {
-            setErrorString("No route currently anaylsed");    		
+        	notify(Notifier.NOTIFY_ERROR, "No route currently anaylsed");
         }
         return hit;
     }
@@ -639,53 +506,43 @@ public class Engine {
     }
 	
     private boolean analyseRouteSafley() {
-    	//catch all errors here
-    	boolean t = false;
+    	boolean success = false;
     	try {
-			t = analyseRoute();
+    		success = analyseRoute();
 		} catch (final java.lang.OutOfMemoryError e) {
 			m_route = null;
 			m_progress.setState(Progress.State.IDLE);
             System.gc();
-            setErrorString("Out of Memory(OutOfMemoryError)"); 
+            notify(Notifier.NOTIFY_ERROR, "Out of Memory (OutOfMemoryError)");
             return false;
 		} catch (final java.lang.StackOverflowError e) {
 			m_route = null;
 			m_progress.setState(Progress.State.IDLE);
             System.gc();
-            setErrorString("Out of Memory (StackOverflowError)"); 
+            notify(Notifier.NOTIFY_ERROR, "Out of Memory (StackOverflowError)");
             return false;
 		} catch (Exception e) {
-			//unknown Exception
 			m_progress.setState(Progress.State.IDLE);
-			setErrorString("Unknown error: contact Xmos with stack trace"); 
+			notify(Notifier.NOTIFY_ERROR, "Unknown error detected");
 			e.printStackTrace();
 			return false;
 		} 
-		return t;
+		return success;
     }
     
-    
-   
-
     private int getOpcode(int pc, int nodeId, int coreId) throws Exception{
-        int opcode=0;
-        try {
-            opcode = m_xeLoader.getMemoryImage(nodeId, coreId).readInstructionWord(pc);
-        } catch (Exception e) {
-        	throw new Exception("Problem with XeLoader in engine");
-        }
-        return opcode;
+        return m_xeLoader.getMemoryImage(nodeId, coreId).readInstructionWord(pc);
     }
+    
 
     private boolean analyseRoute() throws Exception {
         assert(m_route != null);
 
         if (m_progress.getState() != Progress.State.IDLE) {
-            setErrorString("Engine busy");
+        	notify(Notifier.NOTIFY_ERROR, "Engine busy");        	
             return false;
         }
-        callDisplayers(Displayer.NOTIFY_ANALYSE_PATHS, "");
+        notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 
         int nodeId = m_route.getNodeId();
         int coreId = m_route.getCoreId();
@@ -701,26 +558,21 @@ public class Engine {
             RouteStatus status = RouteStatus.ABORTED;
             status = m_route.analyse(memoryImage, symbolTable, debugInfo, this);                 
             switch (status) {
-            case ABORTED:
-                setErrorString("Abort detected");
+            case ABORTED:            	
+            	notify(Notifier.NOTIFY_ERROR, "Abort detected");        	
                 m_route = m_previousRoute;
                 return false;
 
             case ERROR:
-                setErrorString("Cannot analyse path");
+            	notify(Notifier.NOTIFY_ERROR, "Cannot analyse path");        	
                 m_route = m_previousRoute;
                 return false;
-            case COMPLETED:
-                setErrorString(null);
             }
-
-            for (Displayer displayer : m_displayers) {
-                displayer.displayRoute(m_route, debugInfo, memoryImage, symbolTable); 
-            }                
+            notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, "");
         }
         else {
-            setErrorString(String.format("Node: %d, Core: %d image not found in file: %s",
-                    m_route.getNodeId(), m_route.getCoreId(), m_executableFile));
+        	notify(Notifier.NOTIFY_ERROR, String.format("Node: %d, Core: %d image not found in file: %s",
+                            m_route.getNodeId(), m_route.getCoreId(), m_executableFile));
             return false;
         }
 

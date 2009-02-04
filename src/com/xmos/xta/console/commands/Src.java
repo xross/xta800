@@ -1,28 +1,23 @@
 package com.xmos.xta.console.commands;
 
-import com.xmos.xeobject.XeObject;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.displayers.SrcDisplayer;
-import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Engine;
 
 class Src extends Command {
 	private int m_pathId;
-	private String m_fileName;
 
 	Src() {
 		m_pathId = 0;
-		m_fileName = "";
 	}
 
-	Src(int pathId, String fileName) {
+	Src(int pathId) {
 		m_pathId = pathId;
-		m_fileName = fileName;
 	}
 	
     public int numArgs() {
-    	return 2;
+    	return 1;
     }        
 
     public String name() {
@@ -30,11 +25,11 @@ class Src extends Command {
     }        
 
     public String commandLine() {
-    	return "src " + m_pathId + " " + m_fileName;
+    	return "src " + m_pathId;
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "src <path id> <source file>: Display annotated source file for given path id";      	
+        return "src <path id>: Display annotated source file(s) for given path id";      	
     }
 
     public Command clone(String[] args, int index, boolean commandLineMode) {
@@ -48,16 +43,20 @@ class Src extends Command {
     	catch (NumberFormatException e) {
     	    return null;
     	}
-        String fileName = args[index + 2];    	
-    	return new Src(pathId, fileName);
+    	return new Src(pathId);
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-       
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
-		XeObject xeObject = engine.getXeObject();	
-		Displayer displayer = new SrcDisplayer(console, xeObject, m_pathId, m_fileName, false);
-        engine.displayRoute(displayer);	
+
+		if (!isRouteAnalysed(engine, console))
+			return;
+
+		if (!isPathValid(engine, console, m_pathId))
+			return;
+				
+		SrcDisplayer displayer = new SrcDisplayer(engine, console, m_pathId, false);
+		displayer.display();	
    }    
 }

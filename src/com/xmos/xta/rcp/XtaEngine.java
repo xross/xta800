@@ -8,7 +8,7 @@ public class XtaEngine {
 		
 	public static void initialise() {
         m_engine = new Engine(new Config());
-        m_engine.registerDisplayer(XtaDisplayer.getInstance());
+        m_engine.registerNotifier(XtaNotifier.getInstance());
 	}
 	
 	public static Engine getEngine() {

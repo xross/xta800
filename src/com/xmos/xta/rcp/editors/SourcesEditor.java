@@ -10,8 +10,8 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 
 import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.XeObject;
-import com.xmos.xta.engine.Displayer;
-import com.xmos.xta.rcp.XtaDisplayer;
+import com.xmos.xta.engine.Notifier;
+import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaEngine;
 
 public class SourcesEditor extends MultiPageEditorPart implements IPropertyChangeListener {
@@ -23,14 +23,14 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 	public SourcesEditor() {
 		if (DEBUG) System.out.printf("Sources()\n");			
 
-		XtaDisplayer.getInstance().addPropertyChangeListener(this);
+		XtaNotifier.getInstance().addPropertyChangeListener(this);
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("SourcesEditor: propertyChange: %s\n", event.getProperty());	
 		
 		if (getPageCount() > 0) {
-			if (event.getProperty().equals(Displayer.NOTIFY_SHOW_CODE_POINT)) {
+			if (event.getProperty().equals(Notifier.NOTIFY_SHOW_CODE_POINT)) {
 				setActivePage(m_disassemblyIndex);
 			}
 		}

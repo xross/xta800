@@ -49,9 +49,14 @@ class Asm extends Command {
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
-    	
-        engine.displayRoute(new AsmDisplayer(console, m_pathId, 
-        		engine.getXeLoader().getArchitecture(), engine.getXeObject()));	
-   }
-    
+
+		if (!isRouteAnalysed(engine, console))
+			return;
+
+		if (!isPathValid(engine, console, m_pathId))
+			return;
+		
+		AsmDisplayer displayer = new AsmDisplayer(engine, console, m_pathId); 
+        displayer.display();
+   } 
 }

@@ -22,8 +22,10 @@ public abstract class XtaInstruction extends Instruction {
 	private static final boolean RESOURCEDEBUG  = false;
 	private static final boolean m_uninplimented = true;
   
-	private HashSet<LivenessResource> m_ins;
-	private HashSet<LivenessResource> m_outs;
+	private ArrayList<Integer> m_successors;
+	
+	private HashSet<LivenessResource> m_liveIn;
+	private HashSet<LivenessResource> m_liveOut;
 	private LivenessResource m_use;
 	private LivenessResource m_def;
 	
@@ -36,7 +38,6 @@ public abstract class XtaInstruction extends Instruction {
     private ArrayList<XtaInstruction> m_returnLocations; 
     private boolean m_definesResource;
 	private boolean m_usesResource;
-	private int m_usesResourceOper;
     
 	XtaInstruction(String nmenonic, int opcode, int pc, int numBytes, 
 			boolean isLoadStore, boolean canPause, boolean usesResource, 
@@ -51,18 +52,53 @@ public abstract class XtaInstruction extends Instruction {
 		m_numCycles.setNumIterations(numCycles);
 		m_config = null;
 		m_returnLocations = new ArrayList<XtaInstruction>();
-		m_ins = new HashSet<LivenessResource>();
-		m_outs = new HashSet<LivenessResource>();
+		m_liveIn = new HashSet<LivenessResource>();
+		m_liveOut = new HashSet<LivenessResource>();
+		m_successors = new ArrayList<Integer>();
+		if(this.getBranchPcRelative()) addSuccessor(this.getBranchPcRelativeTargetPc());
 	}
 
-	public void applyInstructionToResources(){
-		if(m_usesResource){
-			
-			System.out.println(this.toString() + " uses "  + "" );
-		}
-		
+	public void setUse(LivenessResource use){
+		m_use = use;
 	}
 	
+	public void setDef(LivenessResource def){
+		m_def = def;
+	}
+	
+	public LivenessResource getUse(){
+		if(m_use == null && this.getUsesResource()){
+			m_use = new LivenessResource(this.getUseResource());
+		}
+		return m_use;
+	}
+	
+	public LivenessResource getDef(){
+		if(m_def == null && this.getDefinesResource()){
+			m_def = new LivenessResource(this.getDefResource());
+		}
+		return m_def;
+	}
+	public void setLiveOut(HashSet<LivenessResource> liveOut) {
+		m_liveOut = liveOut;
+	}
+	
+	public void setLiveIn(HashSet<LivenessResource> liveIn) {
+		m_liveIn = liveIn;
+	}
+	public HashSet<LivenessResource> getLiveIn(){
+		return m_liveIn;
+	}
+	public HashSet<LivenessResource> getLiveOut(){
+		return m_liveOut;
+	}
+	public ArrayList<Integer> getSuccessors(){
+		return m_successors;
+	}
+	public void addSuccessor(int successorPc){
+		if(!m_successors.contains(successorPc))m_successors.add(successorPc);
+		return;
+	}
 	
 	public boolean getDefinesResource(){
 		return m_definesResource;
@@ -77,6 +113,7 @@ public abstract class XtaInstruction extends Instruction {
 	}
 	
 	public void addReturnLocation(XtaInstruction pc){
+		addSuccessor(pc.getPc());
 	    m_returnLocations.add(pc);
 	}
 	
@@ -2346,6 +2383,8 @@ public abstract class XtaInstruction extends Instruction {
         	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
         }
     }
+
+
 }
 
 class NullInstruction extends XtaInstruction {    
@@ -2360,6 +2399,14 @@ class NullInstruction extends XtaInstruction {
     public String getOperandString() {
     	return "";
     }
+
+	public int getDefResource() {
+		return 0;
+	}
+
+	public int getUseResource() {
+		return 0;
+	}
 }
 
 

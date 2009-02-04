@@ -51,6 +51,13 @@ class Trace extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-        engine.displayRoute(new TraceDisplayer(console, m_pathId));	
+		if (!isRouteAnalysed(engine, console))
+			return;
+
+		if (!isPathValid(engine, console, m_pathId))
+			return;
+		
+		TraceDisplayer displayer = new TraceDisplayer(engine, console, m_pathId);	
+		displayer.display();
     }    
 }

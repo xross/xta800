@@ -50,13 +50,45 @@ public class Block implements Comparable<Block> {
 	private boolean m_speculative;
 	private int m_currentThread;
 	private boolean m_firstStep;
-
-	private ExecutionState m_executionState;
-	
+	private ExecutionState m_executionState;	
 	private BlockStats m_blockStats;
 	
 	private static int m_numBlocks;
 
+    public static Block getPath(Route route, int pathId) {
+    	assert(route != null);
+    	
+        for (Block path : route.completePaths()) {
+        	Block foundPath = getPath(path, pathId);
+            if (foundPath != null) {
+                return foundPath;
+            }
+        }
+        for (Unresolved path : route.unresolvedPaths()) {
+        	Block foundPath = getPath(path.getBlock(), pathId);
+            if (foundPath != null) {
+                return foundPath;
+            }
+        }                
+        return null;        
+    }
+    
+    private static Block getPath(Block path, int pathId) {
+        if (pathId == path.getId()) {
+            return path;
+        }
+        for (Block block : path.getPathBlocks()) {
+            for (Block loopPath : block.getLoopPaths()) {
+            	Block foundPath = getPath(loopPath, pathId);
+                if (foundPath != null) {
+                    return foundPath;
+                }
+            }
+        }
+        path.doneWithPathBlocks();
+        return null;
+    }    
+		
 	/*
 	 * this is the initial constructor for a path - it only gets called once per
 	 * route analysis

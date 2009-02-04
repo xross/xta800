@@ -167,7 +167,6 @@ public class Route {
 	
 	void notifyUpdate() {
 		Collections.sort(m_completePaths);
-		m_engine.callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
 	}
 
 	Progress getProgress() {
@@ -190,7 +189,7 @@ public class Route {
 		for (Unknown unknown : m_unknowns) {
 			if (unknown.getPc() == pc) {
 				m_unknowns.remove(unknown);
-				m_engine.callDisplayers(Displayer.NOTIFY_UPDATE_STATE, "");
+				m_engine.notify(Notifier.NOTIFY_UPDATE_STATE, "");
 				break;
 			}
 		}

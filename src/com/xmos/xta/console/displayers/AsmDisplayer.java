@@ -7,43 +7,34 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import com.xmos.isa.Instruction;
-import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
-import com.xmos.xeloader.XeLoader;
 import com.xmos.xeobject.Function;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.Disassembler;
-import com.xmos.xta.engine.Displayer;
 import com.xmos.xta.engine.Block;
-import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.XtaInstruction;
 
-public class AsmDisplayer implements Displayer {
-	Console m_console;
-	int m_pathId;
-	XeLoader.Architecture m_architecture;
-	private XeObject m_xeObject;
+public class AsmDisplayer {
+	private Engine m_engine;
+	private Console m_console;
+	private int m_pathId;
 	
-	public AsmDisplayer(Console console, int pathId, XeLoader.Architecture architecture,  XeObject xeObject) {
+	public AsmDisplayer(Engine engine, Console console, int pathId) {
+		m_engine = engine;
 		m_console = console;
 		m_pathId = pathId;
-		m_xeObject = xeObject;
-		m_architecture = architecture;
 	}
 	
-    public void displayRoute(Route route, DebugInfo debugInfo, 
-    		MemoryImage memoryImage, SymbolTable symbolTable) {
-
-    	Block path = DisplayerHelper.getPath(route, m_pathId);
-    	if (path == null) {
-			m_console.display(String.format("Error: invalid path id: %d\n", m_pathId));        		
-			return;
-    	}
+    public void display() {     	
+    	MemoryImage memoryImage = m_engine.getMemoryImage();
+    	SymbolTable symbolTable = m_engine.getSymbolTable();
     	
+    	Block path = Block.getPath(m_engine.getRoute(), m_pathId);
         if (path.getInstructions(false).size() > 0) { 
-	    	HashMap<String, TreeSet<Integer>> asmLinesCovered = createAsmPcsCovered(path, m_xeObject, false);
+	    	HashMap<String, TreeSet<Integer>> asmLinesCovered = createAsmPcsCovered(path, m_engine.getXeObject(), false);
 	    	
 	        for (Iterator<Map.Entry<String, TreeSet<Integer>>> iter = 
 	        	asmLinesCovered.entrySet().iterator(); iter.hasNext();) {
@@ -67,7 +58,7 @@ public class AsmDisplayer implements Displayer {
 	            
 	            m_console.display(String.format("<%s>:\n", functionName));	            
 	            Vector<Instruction> disassemblyVector = Disassembler.disassemble(
-	            		memoryImage, functionAddress, functionSize, m_architecture);
+	            		memoryImage, functionAddress, functionSize, m_engine.getXeLoader().getArchitecture());
 	            
 	            HashMap<Integer, String> branchTargetMap = Disassembler.createBranchTargetMap(
 	            		symbolTable, disassemblyVector);	            
@@ -93,9 +84,6 @@ public class AsmDisplayer implements Displayer {
         
         }
     }
-
-	public void notify(String message, String argument) {
-	}
 
     private HashMap<String, TreeSet<Integer>> createAsmPcsCovered(
 			Block block, XeObject xeObject, boolean recurse) {

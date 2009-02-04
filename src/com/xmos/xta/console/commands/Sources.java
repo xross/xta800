@@ -43,19 +43,17 @@ class Sources extends Command {
 	    assert(debugInfo != null);        
 		ArrayList<String> files = new ArrayList<String>();
   	    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {
-  	    	String file = String.format("- %s", debugFile.getFileName());
-  	    	
-  	    	
+  	    	String file = String.format("- %s (%s)", 
+  	    			debugFile.getFileName(), debugFile.getCompilationDir());
+  	    	  	    	
   	    	if (debugFile.getFile() == null) {
   	    		file += " (File not found)"; 	    		
   	    	} 
   	    	files.add(file); 	    	
     	}   
   	    Collections.sort(files);
-  	    for(String file : files){
+  	    for (String file : files){
   	    	console.display(file + "\n"); 
   	    }
-  	    
-  	    
     }
 }
