@@ -52,8 +52,8 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 					while (getPageCount() > 0) {
 						removePage(0);
 					}
-					createPages();					
-				}				
+					createPages();
+				}
 			}
 		}
 	}
@@ -104,11 +104,11 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 	        			sourceFile.getFile().getName());
 	        	IEditorInput sourceEditorInput = new InputSource(sourceFile);
 	    		index = addPage(sourceEditor, sourceEditorInput);
-		    	setPageText(index, sourceFile.getFile().getName());
-	        }					
+		    	setPageText(index, sourceFile.getFileName());
+	        }
 		} catch (PartInitException e) {
 			e.printStackTrace();
-		}    
+		}
 		setActivePage(0);
 	}
 }
