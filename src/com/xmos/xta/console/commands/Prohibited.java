@@ -92,14 +92,10 @@ public class Prohibited extends Command {
         
        	switch (m_operation) {
        	case ADD:
-       		if (!engine.addReference(ReferenceMode.PROHIBITED, m_ref)) {
-               	console.display("Error: Unable to add reference: " + m_ref.getRef() + "\n");            			
-       		}
+       		engine.addReference(ReferenceMode.PROHIBITED, m_ref);
        		break;
        	case REMOVE:
-       		if (!engine.removeReference(ReferenceMode.PROHIBITED, m_ref)) {        			
-             	console.display("Error: Unable to remove reference: " + m_ref.getRef() + "\n");            			
-      		}
+       		engine.removeReference(ReferenceMode.PROHIBITED, m_ref);        			
        		break;           		
        	case LIST:
        		listProhibiteds(engine, console);

@@ -6,6 +6,7 @@ class Remove extends CommandContainer {
 		new Filter(Filter.Operation.REMOVE), 
 		new Prohibited(Prohibited.Operation.REMOVE), 
 		new Required(Required.Operation.REMOVE), 
+		new Branch(Branch.Operation.REMOVE),		
 	};
 	
 	Remove() { super("remove"); }

@@ -6,6 +6,7 @@ class List extends CommandContainer {
 		new Filter(Filter.Operation.LIST), 
 		new Prohibited(Prohibited.Operation.LIST), 
 		new Required(Required.Operation.LIST), 
+		new Branch(Branch.Operation.LIST),		
 		new Unknowns(),
 		new Functions(),
 		new Sources(),
