@@ -214,8 +214,11 @@ public class Engine {
     public boolean loadExecutable(File executableFile, FileFinder fileFinder) {
     	m_pathQueries.clear();
     	
-        boolean success = m_xeLoader.loadExecutable(executableFile);
+    	XeLoader newLoader = new XeLoader();
+    	
+        boolean success = newLoader.loadExecutable(executableFile);
         if (success) {
+        	m_xeLoader = newLoader;
         	m_executableFile = executableFile;
         	initialiseLists(fileFinder);
             m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);

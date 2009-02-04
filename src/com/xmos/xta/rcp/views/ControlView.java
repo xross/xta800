@@ -141,7 +141,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		
 		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
 	        m_memoryUpdater.setFastRefresh(false);
-			setDone("Done");
+			setDone(STATUS_DONE);
 			updateCurrentRoute();
 			checkTotalPaths();
 			
@@ -189,7 +189,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			if (m_isGuiCommand) {
 				displayMessageBox("Error", "Error detected\n(See log for details)");
 			}
-			setDone("Aborted");
+			setDone(STATUS_DONE);
 		}
 	}
 	
