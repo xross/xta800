@@ -325,7 +325,7 @@ public class Engine {
     public void setNodeId(int nodeId) {
         m_nodeId = nodeId;
         switchNodeCode();
-        notify(Notifier.NOTIFY_UPDATE_STATE, "");
+        notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_NODE_ID);
     }
 
     public int getNodeId(){
@@ -335,7 +335,7 @@ public class Engine {
     public void setCoreId(int coreId) {
         m_coreId = coreId;
         switchNodeCode();
-        notify(Notifier.NOTIFY_UPDATE_STATE, "");
+        notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_CORE_ID);
     }
 
     public int getCoreId() {
@@ -347,7 +347,7 @@ public class Engine {
         if(m_route!=null){
         	m_route.invalidateAllBlocks();
         }
-        notify(Notifier.NOTIFY_UPDATE_STATE, "");
+        notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_FREQUENCY);
     }
 
     public int getFrequency() {
@@ -359,7 +359,7 @@ public class Engine {
         if(m_route!= null){
         	m_route.invalidateAllBlocks();
         }
-        notify(Notifier.NOTIFY_UPDATE_STATE, "");
+        notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_NUM_THREADS);
     }
 
     public int getNumThreads() {
@@ -368,7 +368,7 @@ public class Engine {
 
 	public void setResolve(boolean resolve) {
 		m_resolveExpression = resolve;
-		notify(Notifier.NOTIFY_UPDATE_STATE, "");
+		notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_RESOLVE);
 	}
 
 	public boolean getResolve() {
