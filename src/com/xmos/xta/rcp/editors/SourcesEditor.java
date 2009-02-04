@@ -33,6 +33,7 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 		if (getPageCount() > 0) {
 			if (event.getProperty().equals(Notifier.NOTIFY_SHOW_CODE_POINT)) {
 				setActivePage(m_disassemblyIndex);
+				
 			} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_HIGHLIGHTS)) {
 				for (int i = 0; i < getPageCount(); i++) {
 					XtaEditor editor = (XtaEditor)this.getEditor(i);
@@ -43,6 +44,16 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 						setPageImage(i, null);
 					}
 				}
+				
+			} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
+				String argument = XtaNotifier.getInstance().getNotifyArgument();								
+				if (argument.equals(Notifier.STATE_CORE_ID) || 
+					argument.equals(Notifier.STATE_NODE_ID)) {
+					while (getPageCount() > 0) {
+						removePage(0);
+					}
+					createPages();					
+				}				
 			}
 		}
 	}
@@ -97,6 +108,7 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 	        }					
 		} catch (PartInitException e) {
 			e.printStackTrace();
-		}       
+		}    
+		setActivePage(0);
 	}
 }
