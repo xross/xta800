@@ -132,9 +132,9 @@ public class Branch extends Command {
     	    Integer fromPc = pair.getKey();
     	    TreeSet<Integer> toPcs = pair.getValue();
     	    
-    	    console.display(String.format("- 0x%08x =>", fromPc));
+    	    console.display(String.format("- 0x%x =>", fromPc));
     	    for (Integer toPc : toPcs) {
-        	    console.display(String.format(" 0x%08x", toPc));    	    	
+        	    console.display(String.format(" 0x%x", toPc));    	    	
     	    }
     	    console.display("\n");
     	}		

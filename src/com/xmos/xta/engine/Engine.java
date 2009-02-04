@@ -77,28 +77,28 @@ public class Engine {
         	return false;
         }    	
     	if (mode == ReferenceMode.FILTERED){
-    		if(referenceListContainsReference(ref, getReferenceList(m_exclusions, m_nodeId, m_coreId))){
-    			//give reason to the user
+    		if (referenceListContainsReference(ref, getReferenceList(m_exclusions, m_nodeId, m_coreId))){
+               	notify(Notifier.NOTIFY_ERROR, String.format("Reference already filtered: %s", ref.getRef()));
     			return false;
     		} else {
     			getReferenceList(m_exclusions, m_nodeId, m_coreId).add(ref);
     		}
             
     	} else if (mode == ReferenceMode.PROHIBITED){
-    		if(referenceListContainsReference(ref, getReferenceList(m_prohibited, m_nodeId, m_coreId))){
-    			//give reason to the user
+    		if (referenceListContainsReference(ref, getReferenceList(m_prohibited, m_nodeId, m_coreId))){
+               	notify(Notifier.NOTIFY_ERROR, String.format("Reference already prohibited: %s", ref.getRef()));
     			return false;
     		} else {
     			getReferenceList(m_prohibited, m_nodeId, m_coreId).add(ref);
     		}
     	} else if (mode == ReferenceMode.REQUIRED){
-    		if(referenceListContainsReference(ref, getReferenceList(m_required, m_nodeId, m_coreId))){
-    			//give reason to the user
+    		if (referenceListContainsReference(ref, getReferenceList(m_required, m_nodeId, m_coreId))){
+               	notify(Notifier.NOTIFY_ERROR, String.format("Reference already required: %s", ref.getRef()));
     			return false;
     		} else {
     			getReferenceList(m_required, m_nodeId, m_coreId).add(ref);
     		}
-    	} else{
+    	} else {
     		assert(false);
     		return false;
     	}
@@ -246,8 +246,8 @@ public class Engine {
     }	
 
     private void runAnalysisEngine(){
-    	AnalysisEngine ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache, m_xeObjects);
-    	ae.run();
+//    	AnalysisEngine ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache, m_xeObjects);
+//    	ae.run();
     }
     
 	private void decodeInstructions() throws Exception {

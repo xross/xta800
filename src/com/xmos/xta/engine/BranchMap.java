@@ -8,7 +8,7 @@ import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
 
 public class BranchMap {	
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	
 	private int m_nodeId;
 	private int m_coreId;
