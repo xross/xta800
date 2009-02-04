@@ -90,6 +90,9 @@ public class AnalysisEngine {
 				for(AssemblyLine al : xeObject.getInstructions()){
 					XtaInstruction inst = decodeCache.getInstruction(al.getPc());
 					
+					
+					
+					
 				}
 			}
 		}
@@ -171,7 +174,7 @@ public class AnalysisEngine {
 	private void addNextInstruction(XeObject xeObject, InstructionDecodeCache decodeCache) {
 		for(AssemblyLine al : xeObject.getInstructions()){
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
-			if(m_noNextPc.contains(inst.getNmenonic())){
+			if(!m_noNextPc.contains(inst.getNmenonic())){
 				inst.addSuccessor(inst.getPc() + inst.getNumBytes());
 			}
 		}
@@ -181,6 +184,7 @@ public class AnalysisEngine {
 	 * this adds to the list of successors and retsp's the possible next pc of a retsp
 	 */
 	public void traceRetsps(XeObject xeObject, InstructionDecodeCache decodeCache){
+
 		for(Function function: xeObject.getFunctions()){
 			if(function.getChildern().size()<1) continue;
 			int functionEntry = ((AssemblyLine)function.getChildern().get(0)).getPc();
@@ -188,6 +192,7 @@ public class AnalysisEngine {
 			ArrayList<Integer> branchLinkPcs = new ArrayList<Integer>();
 			
 			for(AssemblyLine al : xeObject.getInstructions()){
+				
 				XtaInstruction inst = decodeCache.getInstruction(al.getPc());
 				if(inst.getBranchLink()){
 					int targetPc = inst.getBranchPcRelativeTargetPc();
@@ -196,10 +201,9 @@ public class AnalysisEngine {
 					}
 				}
 			}
-			
 			for(Line line : function.getChildern()){
 				XtaInstruction inst = decodeCache.getInstruction(((AssemblyLine)line).getPc());
-				if(inst.getReturn()){
+				if(isReturn(inst.getNmenonic())){
 					for(int blPc : branchLinkPcs){
 						inst.addSuccessor(blPc);
 						inst.addReturnLocation(decodeCache.getInstruction(blPc));
@@ -207,6 +211,15 @@ public class AnalysisEngine {
 				}
 			}
 		}
+	}
+	
+	private boolean isReturn(String nmenonic){
+		String retsp_u6 = new RevbXtaInstruction_retsp_u6(0, 0).getNmenonic();
+		String retsp_lu6 = new RevbXtaInstruction_retsp_lu6(0, 0).getNmenonic();
+		if(retsp_u6.equals(nmenonic)|| retsp_lu6.equals(nmenonic)){
+			return true;
+		}
+		return false;
 	}
 	
 	/*
