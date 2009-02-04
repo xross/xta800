@@ -348,7 +348,6 @@ public class Engine {
     public void setNodeId(int nodeId) {
         m_nodeId = nodeId;
         notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_NODE_ID);
-
     }
 
     public int getNodeId(){
@@ -358,7 +357,6 @@ public class Engine {
     public void setCoreId(int coreId) {
         m_coreId = coreId;
         notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_CORE_ID);
-
     }
 
     public int getCoreId() {
@@ -472,7 +470,11 @@ public class Engine {
 		
    		LabelMap labelMap = getLabelsMap(m_nodeId, m_coreId);
    		if (labelMap != null) {
-   			labelMap.getLabels().put(label, ref.getPc()); 
+			if (!labelMap.getLabels().containsKey(label)) {
+   			    labelMap.getLabels().put(label, ref.getPc());				
+			} else {
+	           	notify(Notifier.NOTIFY_ERROR, String.format("Label already exists: %s", label));    		
+			}
    		    return true;
    		}
         return false;
@@ -480,8 +482,12 @@ public class Engine {
 
 	public void removeLabel(String label) {
 		LabelMap labelMap = getLabelsMap(m_nodeId, m_coreId);
-		if (labelMap != null) {
-			labelMap.getLabels().remove(label);
+		if (labelMap != null) {			
+			if (labelMap.getLabels().containsKey(label)) {
+				labelMap.getLabels().remove(label);				
+			} else {
+	           	notify(Notifier.NOTIFY_ERROR, String.format("Unable to remove label: %s", label));    		
+	    	}			
 		}
 	}
 	
@@ -537,8 +543,12 @@ public class Engine {
         }
 
 		BranchMap branchMap = getBranchesMap(m_nodeId, m_coreId);
-		if (branchMap != null) {
-			branchMap.remove(fromRef.getPc());
+		if (branchMap != null) {			
+			if (branchMap.getBranches().containsKey(fromRef.getPc())) {
+				branchMap.remove(fromRef.getPc());
+			} else {
+	           	notify(Notifier.NOTIFY_ERROR, String.format("Unable to remove branch: 0x%x", fromRef.getPc()));    		
+	    	}			
 		}
 	}
 	
