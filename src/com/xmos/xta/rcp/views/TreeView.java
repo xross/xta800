@@ -135,8 +135,12 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		
 		// Create the magic 'hidden' node to allow the actual node to be seen
 		// in the tree
-		RouteNode treeRoot = new RouteNode();
+		RouteNode treeRoot = new RouteNode("");
 		treeRoot.addNode(m_routeInfo.getRouteNode());
+
+		if (m_routeInfo.getUnresolvedNode().getNodes().size() > 0) {
+			treeRoot.addNode(m_routeInfo.getUnresolvedNode());
+		}
     	m_treeViewer.setInput(treeRoot);
 		ColumnViewerToolTipSupport.enableFor(m_treeViewer, ToolTip.NO_RECREATE);
 		m_treeViewer.expandToLevel(2);		
@@ -148,7 +152,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	private void clearTree() {
-		m_treeViewer.setInput(new RouteNode());
+		m_treeViewer.setInput(new RouteNode(""));
 		m_treeViewer.refresh();
 	}
 }
