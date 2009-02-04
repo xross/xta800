@@ -341,7 +341,6 @@ public class Block implements Comparable<Block> {
 			}
 		} else {
 			if (instruction.getReturn() ) {
-
 				for(int returnLocation : instruction.getSuccessors()){
 					XtaInstruction callingInst = m_bc.getNodeCoreInstructionCaches().
 					getInstructionDecodeCache(m_bc.getEngine().getNodeId(), m_bc.getEngine().getCoreId()).getInstruction(returnLocation);
