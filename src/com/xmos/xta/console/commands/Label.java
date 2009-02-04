@@ -108,9 +108,7 @@ public class Label extends Command {
 		
     	switch (m_operation) {
     	case ADD:
-			if (!engine.addLabel(m_label, m_ref)) {
-    			console.display("Error: could not resolve reference: " + m_ref);
-    		}		        	        				
+			engine.addLabel(m_label, m_ref);
 			break;			
     	case REMOVE:
 			engine.removeLabel(m_label);

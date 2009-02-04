@@ -42,7 +42,6 @@ public abstract class CodeReference {
     }
     
 	public int getPc() {
-		assert(m_resolved == true);
 		return m_pc;
 	}	
 
