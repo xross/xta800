@@ -68,18 +68,14 @@ public class LabelMap {
         			} else {
         				String error = "Duplicate label '" +labelName + "' found.";
         				if (DEBUG)  System.out.println(error);
-        				//engine.callDisplayers(Displayer.NOTIFY_ERROR, error);
-            	    	//plough on regardless
-        				//FIXME (BUG: 4437)
-        				//return false;
+        				engine.notify(Notifier.NOTIFY_ERROR, error);
+        				return false;
         			}
         	    } else {
         	    	String error = "Unable to resolve label " + labelName;
         	    	if (DEBUG)  System.out.println(error);
-        	    	//engine.callDisplayers(Displayer.NOTIFY_ERROR, error);
-        	    	//plough on regardless
-        	    	//FIXME (BUG: 4437)
-        	    	//return false;
+    				engine.notify(Notifier.NOTIFY_ERROR, error);
+        	    	return false;
         	    }
         	}
         	byteIndex += size;
