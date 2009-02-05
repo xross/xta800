@@ -65,7 +65,7 @@ public class PathNode extends Node {
 
     public String getToolTipText() {
         String toolTipText = "";
-        toolTipText += "Path ID: "          + m_block.getId() + "\n";
+        toolTipText += "Path ID: "          + m_block.getPathId() + "\n";
         toolTipText += "----------------------------------\n";
         toolTipText += "Time taken: "          + m_block.getTimeTaken(true) + " ns\n";
         toolTipText += "Number of cycles: "    + m_block.getNumCycles(true) + "\n";

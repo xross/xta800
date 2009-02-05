@@ -33,7 +33,7 @@ public class ConsoleViewControl implements Console {
 
 		m_consoleView = console;
 		m_shell = new Shell(this, XtaEngine.getEngine(), false);		        
-		m_textReader = new TextReader(parent);
+		m_textReader = new TextReader(parent, m_shell);
 	}
 	
     public void execute() {
@@ -86,12 +86,14 @@ class TextReader extends Reader {
 	private boolean m_internal;
 	private Display m_display;
 	private String m_string;
+	private Shell m_shell;
 	
-	public TextReader(Composite parent) {
+	public TextReader(Composite parent, Shell shell) {
 		if (DEBUG) System.out.printf("TextReader()\n");		
 		
 		m_display = PlatformUI.getWorkbench().getDisplay();						
         m_text = new StyledText(parent, SWT.V_SCROLL);
+        m_shell = shell;
              
         Font font = new Font(PlatformUI.getWorkbench().getDisplay(), "Courier New", 10, SWT.NONE);
         m_text.setFont(font);
@@ -103,8 +105,7 @@ class TextReader extends Reader {
         			m_keyLock.notifyAll();
         		}		
         				
-        		if (event.keyCode == SWT.CR) {
-        			
+        		if ((event.keyCode == SWT.CR) || (event.keyCode == SWT.KEYPAD_CR)) {
         			handleEnter();
         		}
         		else if (event.keyCode == SWT.ARROW_UP) {
@@ -150,7 +151,7 @@ class TextReader extends Reader {
 					if (checkCursor()) {
     					event.doit = false;				
 	    			}
-				} else if (event.keyCode == SWT.CR) {
+				} else if ((event.keyCode == SWT.CR) || (event.keyCode == SWT.KEYPAD_CR)) {
 					if (DEBUG) System.out.printf("Set Caret to end\n");
 					setCaretToEnd();
 					m_text.append("\n");
@@ -280,7 +281,7 @@ class TextReader extends Reader {
         int currentRowIndex = m_text.getLineAtOffset(currentIndex);
 		int rowStartIndex = m_text.getOffsetAtLine(currentRowIndex);
 		
-		if (currentIndex < (rowStartIndex + 2)) {
+		if (currentIndex <= (rowStartIndex + m_shell.getPrompt().length())) {
 			return true;
 		} 
 		return false;

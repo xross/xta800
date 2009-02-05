@@ -43,7 +43,6 @@ public class Route {
 	private ArrayList<Unknown> m_unknowns;
 	private ArrayList<String> m_warnings;
 	private static int m_numRoutes;
-	private InstructionAttributes m_instructionAttributes;
 	private boolean m_resolveExpressions;
 
 	Route(Config config, Progress progress, CodeReference fromRef, CodeReference toRef,
@@ -110,7 +109,7 @@ public class Route {
 		m_engine = engine;
 		m_status = RouteStatus.ANALYSING;
 
-		m_instructionAttributes = new InstructionAttributes();
+		//m_instructionAttributes = new InstructionAttributes();
 
 		m_engine.setAbort(false);
 
@@ -122,13 +121,13 @@ public class Route {
 		BlockCommonComponents bc = null;
 
 		if (m_functionName != null) {
-			bc = new BlockCommonComponents(m_config, m_nodeCoreInstructionCache, m_instructionAttributes, memoryImage, symbolTable, 
+			bc = new BlockCommonComponents(m_config, m_nodeCoreInstructionCache, memoryImage, symbolTable, 
 					m_engine.getReference(ReferenceMode.PROHIBITED), this, m_resolveExpressions, Block.Mode.FUNCTION, m_engine);
 			assert (symbolTable.symbolExists(m_functionName));
 			int fromPc = symbolTable.symbolAddress(m_functionName);
 			new ExecutionState(this, initialState, bc, fromPc);
 		} else {
-			bc = new BlockCommonComponents(m_config, m_nodeCoreInstructionCache, m_instructionAttributes, memoryImage, symbolTable, 
+			bc = new BlockCommonComponents(m_config, m_nodeCoreInstructionCache, memoryImage, symbolTable, 
 					m_engine.getReference(ReferenceMode.PROHIBITED), this, m_resolveExpressions, Block.Mode.ABSOLUTE, m_engine);
 			new ExecutionState(this, initialState, bc, m_fromRef.getPc(), m_toRef.getPc());
 		}
@@ -287,6 +286,7 @@ public class Route {
 	
 	public void addCompletePath(Block endBlock) {
 		m_completePaths.add(endBlock);
+		endBlock.addPathId();
 	}
 	
 	public void filterPaths() {

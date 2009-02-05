@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.regex.PatternSyntaxException;
+
 import com.xmos.elfhandler.ElfHandler;
 import com.xmos.elfhandler.Symbol;
 import com.xmos.xeloader.DebugInfo;
@@ -48,6 +50,8 @@ public class Engine {
     private ArrayList<LabelMap> m_labels;
     private ArrayList<BranchMap> m_branches;
     private ArrayList<PathQuery> m_pathQueries;
+    
+    private AnalysisEngine m_ae;
     
     public Engine(Config config) {    	
         m_xeObjects   = new ArrayList<XeObject>();
@@ -220,6 +224,7 @@ public class Engine {
     	
         boolean success = newLoader.loadExecutable(executableFile);
         if (success) {
+        	
         	m_xeLoader = newLoader;
         	m_executableFile = executableFile;
         	initialiseLists(fileFinder);
@@ -232,10 +237,13 @@ public class Engine {
 				success = false;
 			} 
 			
+			loadLabels();
+            loadBranches();
+			
+			m_ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache, m_xeObjects, m_branches);
 			runAnalysisEngine();
 			
-            loadLabels();
-            loadBranches();
+            
             
            	m_route = null;
            	notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath()); 
@@ -245,9 +253,8 @@ public class Engine {
         return success;
     }	
 
-    private void runAnalysisEngine(){
-//    	AnalysisEngine ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache, m_xeObjects);
-//    	ae.run();
+    public void runAnalysisEngine(){
+    	m_ae.run();
     }
     
 	private void decodeInstructions() throws Exception {
@@ -482,11 +489,24 @@ public class Engine {
 
 	public void removeLabel(String label) {
 		LabelMap labelMap = getLabelsMap(m_nodeId, m_coreId);
-		if (labelMap != null) {			
-			if (labelMap.getLabels().containsKey(label)) {
-				labelMap.getLabels().remove(label);				
-			} else {
-	           	notify(Notifier.NOTIFY_ERROR, String.format("Unable to remove label: %s", label));    		
+		if (labelMap != null) {
+	    	List<String> matches = new ArrayList<String>();
+	    	
+	    	for (String mapEntry : labelMap.getLabels().keySet()){
+	    		try {
+	    			if (mapEntry.matches(label)){
+	    				matches.add(mapEntry);
+	    			}
+	    		} catch ( PatternSyntaxException e ) {
+	    			// Ignore
+	    		}
+	    	}
+
+	    	if (matches.size() > 0) {
+	    		for (String toRemove : matches)
+	    			labelMap.getLabels().remove(toRemove);
+	    	} else {
+	    		notify(Notifier.NOTIFY_ERROR, String.format("Unable to remove label: %s", label));    		
 	    	}			
 		}
 	}
@@ -693,8 +713,12 @@ public class Engine {
     	List<CodeReference> matches = new ArrayList<CodeReference>();
     	
     	for (CodeReference present : references){
-    		if (present.getRef().matches(ref.getRef())){
-    			matches.add(present);
+    		try {
+    			if (present.getRef().matches(ref.getRef())){
+    				matches.add(present);
+    			}
+    		} catch ( PatternSyntaxException e ) {
+    			// Ignore
     		}
     	}
 
