@@ -123,7 +123,7 @@ public class Shell {
     private Command getCommandFromConsole() {
     	Command command = null;
     	do {
-    		m_console.display(">");    		    		
+    		m_console.display("xta " + (m_commandHistory.size() + 1) + ">");    		    		
             String line = m_console.getNextLine(m_commandHistory);
             line = line.trim();
             if (line.length() > 0) {            
@@ -133,19 +133,19 @@ public class Shell {
                 
                 boolean multiword = false;
                 String m = "";
-                for(String word : tokens){
-                	if(word.startsWith("\"")){
+                for (String word : tokens){
+                	if (word.startsWith("\"")){
                 		multiword = true;
                 		word = word.substring(1);
                 	} 
-                	if(word.endsWith("\"")){
+                	if (word.endsWith("\"")){
                 		multiword = false;
                 		word = word.substring(0, word.length()-1);
                 		word = m+ " " + word ;
                 		word = word.trim();
                 		m = "";
                 	} 
-                	if(multiword){
+                	if (multiword){
                 		m = m + " " + word;
                 	} else {
                 		s.add(word);
