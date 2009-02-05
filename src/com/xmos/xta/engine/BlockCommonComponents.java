@@ -14,7 +14,6 @@ public class BlockCommonComponents {
     private SymbolTable m_symbolTable;
     private List<CodeReference> m_exclusions;
     private Route m_route;
-    private boolean m_resolveExpressions;
     private Block.Mode m_mode;
     private Engine m_engine;    
     
@@ -22,7 +21,7 @@ public class BlockCommonComponents {
 			NodeCoreInstructionCaches nodeCoreInstructionCache,
 			MemoryImage image,
 			SymbolTable table, List<CodeReference> m_exclusions, Route m_route,
-			boolean expressions, Block.Mode m_mode, Engine engine) {
+			Block.Mode m_mode, Engine engine) {
 		super();
 		this.m_config = m_config;
 		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
@@ -30,7 +29,6 @@ public class BlockCommonComponents {
 		m_symbolTable = table;
 		this.m_exclusions = m_exclusions;
 		this.m_route = m_route;
-		setResolveExpressions(expressions);
 		this.setMode(m_mode);
 		this.setEngine(engine);
 	}
@@ -71,12 +69,6 @@ public class BlockCommonComponents {
 	}
 	public Route getRoute() {
 		return m_route;
-	}
-	public void setResolveExpressions(boolean m_resolveExpressions) {
-		this.m_resolveExpressions = m_resolveExpressions;
-	}
-	public boolean isResolveExpressions() {
-		return m_resolveExpressions;
 	}
 	public void setMode(Block.Mode m_mode) {
 		this.m_mode = m_mode;

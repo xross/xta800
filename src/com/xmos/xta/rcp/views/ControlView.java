@@ -335,14 +335,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         }    	        
 	}
 
-	public void setResolve(boolean resolve) {
-		XtaEngine.getEngine().setResolve(resolve);
-	}
-	
 	private void updateState() {
         populateFunctionList();
 		
-		m_resolveExpressions.setSelection(XtaEngine.getEngine().getResolve());
 		m_freqSpinner.setSelection(XtaEngine.getEngine().getFrequency());
 		m_threadSpinner.setSelection(XtaEngine.getEngine().getNumThreads());
 
@@ -704,16 +699,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	private void createSettingsBar(ExpandBar bar) {
 		Composite composite = getBarComposite(bar, 2);
 
-		Group resolveGroup = createGroup(composite, "Resolve", 1, 2);
-		m_resolveExpressions = new Button(resolveGroup, SWT.CHECK);
-		m_resolveExpressions.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
-		m_resolveExpressions.setSelection(XtaEngine.getEngine().getResolve());
-		m_resolveExpressions.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				setResolve(m_resolveExpressions.getSelection());
-			}			
-		});
-	 	
 		Group nodeGroup = createGroup(composite, "Node", 1, 1);
 	    m_nodeIds = new Combo(nodeGroup, SWT.NONE | SWT.DROP_DOWN | SWT.READ_ONLY);
 	    m_nodeIds.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));

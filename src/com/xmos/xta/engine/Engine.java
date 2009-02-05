@@ -38,7 +38,6 @@ public class Engine {
 	private Vector<Notifier> m_notifiers;
 	private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
 	private boolean m_abort;
-	private boolean m_resolveExpression;
 	private Progress m_progress;
 	private String m_srcPaths;
 	private ArrayList<XeObject> m_xeObjects;
@@ -69,7 +68,6 @@ public class Engine {
 		m_notifiers = new Vector<Notifier>();
 		m_pathQueries = new ArrayList<PathQuery>();
 		m_abort = false;
-		m_resolveExpression = false;
 		m_progress = new Progress(Progress.State.IDLE, 0, 0);
 	}
 
@@ -280,8 +278,7 @@ public class Engine {
 			return false;
 		} else {
 			m_previousRoute = m_route;
-			m_route = new Route(m_config, m_progress, functionName, m_nodeId, m_coreId, m_nodeCoreInstructionCache,
-					m_resolveExpression);
+			m_route = new Route(m_config, m_progress, functionName, m_nodeId, m_coreId, m_nodeCoreInstructionCache);
 
 			boolean success = analyseRouteSafley();
 			if (success) {
@@ -309,8 +306,7 @@ public class Engine {
 			return false;
 		} else {
 			m_previousRoute = m_route;
-			m_route = new Route(m_config, m_progress, fromRef, toRef, m_nodeId, m_coreId, m_nodeCoreInstructionCache,
-					m_resolveExpression);
+			m_route = new Route(m_config, m_progress, fromRef, toRef, m_nodeId, m_coreId, m_nodeCoreInstructionCache);
 
 			boolean success = analyseRouteSafley();
 			if (success) {
@@ -382,15 +378,6 @@ public class Engine {
 
 	public int getNumThreads() {
 		return m_config.m_numThreads;
-	}
-
-	public void setResolve(boolean resolve) {
-		m_resolveExpression = resolve;
-		notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_RESOLVE);
-	}
-
-	public boolean getResolve() {
-		return m_resolveExpression;
 	}
 
 	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {

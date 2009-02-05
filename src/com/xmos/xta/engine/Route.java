@@ -43,27 +43,22 @@ public class Route {
 	private ArrayList<Unknown> m_unknowns;
 	private ArrayList<String> m_warnings;
 	private static int m_numRoutes;
-	private boolean m_resolveExpressions;
 
 	Route(Config config, Progress progress, CodeReference fromRef, CodeReference toRef,
-			int nodeId, int coreId, NodeCoreInstructionCaches nodeCoreInstructionCache,
-			boolean resolveExpressions) {
+			int nodeId, int coreId, NodeCoreInstructionCaches nodeCoreInstructionCache) {
 		m_progress = progress;
 		m_fromRef = fromRef;
 		m_toRef = toRef;
-		m_resolveExpressions = resolveExpressions;
 		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
 		initialise(config, nodeId, coreId);
 
 	}
 
 	Route(Config config, Progress progress, String functionName,
-			int nodeId, int coreId, NodeCoreInstructionCaches nodeCoreInstructionCache,
-			boolean resolveExpressions) {
+			int nodeId, int coreId, NodeCoreInstructionCaches nodeCoreInstructionCache) {
 		m_progress = progress;
 		m_functionName = functionName;
 		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
-		m_resolveExpressions = resolveExpressions;
 		initialise(config, nodeId, coreId);
 	}
 
@@ -122,13 +117,13 @@ public class Route {
 
 		if (m_functionName != null) {
 			bc = new BlockCommonComponents(m_config, m_nodeCoreInstructionCache, memoryImage, symbolTable, 
-					m_engine.getReference(ReferenceMode.PROHIBITED), this, m_resolveExpressions, Block.Mode.FUNCTION, m_engine);
+					m_engine.getReference(ReferenceMode.PROHIBITED), this, Block.Mode.FUNCTION, m_engine);
 			assert (symbolTable.symbolExists(m_functionName));
 			int fromPc = symbolTable.symbolAddress(m_functionName);
 			new ExecutionState(this, initialState, bc, fromPc);
 		} else {
 			bc = new BlockCommonComponents(m_config, m_nodeCoreInstructionCache, memoryImage, symbolTable, 
-					m_engine.getReference(ReferenceMode.PROHIBITED), this, m_resolveExpressions, Block.Mode.ABSOLUTE, m_engine);
+					m_engine.getReference(ReferenceMode.PROHIBITED), this, Block.Mode.ABSOLUTE, m_engine);
 			new ExecutionState(this, initialState, bc, m_fromRef.getPc(), m_toRef.getPc());
 		}
 		stepPath();
