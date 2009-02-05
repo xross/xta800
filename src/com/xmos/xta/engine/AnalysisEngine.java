@@ -21,8 +21,9 @@ public class AnalysisEngine {
 	private ArrayList<UserSuccessor> m_userSuccessors;
 	private HashMap<NodeCore, Integer> m_constantPoolPointers;
 	private HashMap<NodeCore, Integer> m_dataPoolPointers;
+	private ArrayList<BranchMap> m_branches;
 	
-	public AnalysisEngine(XeLoader loader, NodeCoreInstructionCaches coreInstructionCache, ArrayList<XeObject> objects){
+	public AnalysisEngine(XeLoader loader, NodeCoreInstructionCaches coreInstructionCache, ArrayList<XeObject> objects, ArrayList<BranchMap> branches){
 		m_constantPoolPointers = new HashMap<NodeCore, Integer>();
 		m_dataPoolPointers = new HashMap<NodeCore, Integer>();
 		m_mcInstructionCache = coreInstructionCache;
@@ -30,6 +31,7 @@ public class AnalysisEngine {
 		m_xeObjects = objects;
 		m_unsafeAssumptions = true;
 		m_userSuccessors = new ArrayList<UserSuccessor>();
+		m_branches = branches;
 	}
 	
 	public void run(){
@@ -82,6 +84,7 @@ public class AnalysisEngine {
 	 * this tries its best to tag all the resources with their type
 	 * and like ones as the same
 	 */
+	/*
 	private void resourceAnalysis(){
 		for(int nodeId : m_xeLoader.getNodeIds()){
 			for(int coreId: m_xeLoader.getCoreIds(nodeId)){
@@ -97,6 +100,7 @@ public class AnalysisEngine {
 			}
 		}
 	}
+	*/
 	
 	private void locatePoolPointers(){
 		for(int nodeId : m_xeLoader.getNodeIds()){
@@ -109,10 +113,11 @@ public class AnalysisEngine {
 		}
 
 	}
-	
+	/*
 	private void allocatePortsTransferWidth(){
 		//TODO
 	}
+	*/
 	
 	private void findAllSuccessors(){
 	
@@ -124,6 +129,8 @@ public class AnalysisEngine {
 					traceRetsps(xeObject, decodeCache);
 					addNextInstruction(xeObject, decodeCache);
 				}
+				addBranchMaps(xeObject, decodeCache, nodeId, coreId);
+				
 				addBranches(xeObject, decodeCache, nodeId, coreId);
 				
 				addUserSuccessors(xeObject, decodeCache);
@@ -131,6 +138,19 @@ public class AnalysisEngine {
 		}
 	}
 	
+	private void addBranchMaps(XeObject xeObject, InstructionDecodeCache decodeCache, int nodeId, int coreId) {
+		for(AssemblyLine al : xeObject.getInstructions()){
+			for(BranchMap bm : m_branches){
+				if(bm.getBranches().containsKey(al.getPc())){
+					XtaInstruction inst = decodeCache.getInstruction(al.getPc());
+					for(int target : bm.getBranches().get(al.getPc())){
+						inst.addSuccessor(target);
+					}
+				}
+			}
+		}
+	}
+
 	private void addUserSuccessors(XeObject xeObject, InstructionDecodeCache decodeCache) {
 		for(AssemblyLine al : xeObject.getInstructions()){
 			for(UserSuccessor us : m_userSuccessors){

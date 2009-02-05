@@ -286,6 +286,7 @@ public class Route {
 	
 	public void addCompletePath(Block endBlock) {
 		m_completePaths.add(endBlock);
+		endBlock.addPathId();
 	}
 	
 	public void filterPaths() {

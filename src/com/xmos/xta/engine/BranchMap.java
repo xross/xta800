@@ -28,7 +28,7 @@ public class BranchMap {
 		return m_coreId;
 	}
 	
-	Map<Integer, TreeSet<Integer>> getBranches() {
+	public Map<Integer, TreeSet<Integer>> getBranches() {
 		return m_branches;
 	}
 	

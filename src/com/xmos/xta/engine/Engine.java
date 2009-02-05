@@ -49,6 +49,8 @@ public class Engine {
     private ArrayList<BranchMap> m_branches;
     private ArrayList<PathQuery> m_pathQueries;
     
+    private AnalysisEngine m_ae;
+    
     public Engine(Config config) {    	
         m_xeObjects   = new ArrayList<XeObject>();
     	m_exclusions  = new ArrayList<CodeReferenceList>();
@@ -220,6 +222,7 @@ public class Engine {
     	
         boolean success = newLoader.loadExecutable(executableFile);
         if (success) {
+        	
         	m_xeLoader = newLoader;
         	m_executableFile = executableFile;
         	initialiseLists(fileFinder);
@@ -232,10 +235,13 @@ public class Engine {
 				success = false;
 			} 
 			
+			loadLabels();
+            loadBranches();
+			
+			m_ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache, m_xeObjects, m_branches);
 			runAnalysisEngine();
 			
-            loadLabels();
-            loadBranches();
+            
             
            	m_route = null;
            	notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath()); 
@@ -245,9 +251,8 @@ public class Engine {
         return success;
     }	
 
-    private void runAnalysisEngine(){
-//    	AnalysisEngine ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache, m_xeObjects);
-//    	ae.run();
+    public void runAnalysisEngine(){
+    	m_ae.run();
     }
     
 	private void decodeInstructions() throws Exception {
