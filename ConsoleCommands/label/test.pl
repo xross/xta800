@@ -14,10 +14,10 @@ system("@ARGV load $genDir/test.xe " .
        "add label bill bob " .
        "list label ". 
        "remove label fred " .
-       "list label ". 
+       "-list label ". 
        "remove label bob " .
-       "list label ". 
+       "-list label ". 
        "remove label bill " .
-       "list label ". 
+       "-list label ". 
        "exit > $genDir/label.txt 2>&1");
 

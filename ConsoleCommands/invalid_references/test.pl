@@ -17,7 +17,7 @@ system("@ARGV load $genDir/test.xe " .
        "add filter 96 " .
        "remove branch 100 " .
        "remove label silly " .
-       "remove prohibited 98 " .
+       "-remove prohibited 98 " .
        "remove required 97 " .
        "remove filter 96 " .
        "add label silly 0x100c4 " .

@@ -34,7 +34,6 @@
       option: proc <node id> <core id>: All following analysis on given node and core (default: 0,0)
       option: freq <core frequency>: Sets the core frequency (default: 400)
       option: threads <num threads>: Sets number of threads currently executing (default: 8)
-      option: iterations <a|r> <num>: Sets the default number of loop iterations (a: absolute, r: relative)
       option: mode <resolve|noresolve>: Sets the engine the given mode
       option: srcpaths <paths>: Sets the (semicolon separated) source search path
   [-]echo "text": prints the text to the console
@@ -58,7 +57,7 @@
       option: trace <path id>: Display instruction trace for the given path id
   [-]pwd: Displays the current working directory
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
-      option: label <label>: Removes the given label from the labels list
+      option: label [label]+: Removes the given labels from the labels list
       option: filter <ref>: Removes the given reference from the filter list (post analysis action)
       option: prohibited <ref>: Removes the given reference from the prohibited list (pre analysis action)
       option: required <ref>: Removes the given reference from the required list (post analysis action)
