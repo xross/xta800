@@ -368,8 +368,9 @@ public class BlockStats {
 					}
 				}
 			}
+			m_block.doneWithPathBlocks();
 		}
-		m_block.doneWithPathBlocks();
+		
 		return result;
 	}
 	
