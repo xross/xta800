@@ -22,6 +22,7 @@
       option: filter <ref>: Adds the given reference to the filter list (post analysis action)
       option: prohibited <ref>: Adds the given reference to the prohibited list (pre analysis action)
       option: required <ref>: Adds the given reference to the required list (post analysis action)
+      option: branch <from ref> <to ref>: Adds the given from/to reference to the branches list
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
       option: path <from ref> <to ref>: Sets a path start and end points
       option: function <name>: Sets a path to trace a given function
@@ -44,6 +45,7 @@
       option: filter: Lists the reference in the filter list
       option: prohibited: Lists the reference in the excluded list
       option: required: Lists the reference in the excluded list
+      option: branch: Lists the branches
       option: unknowns : Displays a list of the unknowns within the current analysis
       option: functions: Lists the functions in the loaded application
       option: sources: Lists the source files
@@ -60,6 +62,7 @@
       option: filter <ref>: Removes the given reference from the filter list (post analysis action)
       option: prohibited <ref>: Removes the given reference from the prohibited list (pre analysis action)
       option: required <ref>: Removes the given reference from the required list (post analysis action)
+      option: branch <from ref>: Removes the given from reference from the branches list
   [-]set <option> <arg0> <arg1>...: Set path information
       option: loop <path> <scope> <iterations>: Sets the number of iterations for the given path
           scope: relative/r: Iteration number propagates to the enclosing path (Default)

@@ -1,5 +1,6 @@
 - ref: bob, pc: 0x1019a
 - ref: bill, pc: 0x1019a
+Error: Unable to remove label: fred
 - ref: bob, pc: 0x1019a
 - ref: bill, pc: 0x1019a
 - ref: bill, pc: 0x1019a
