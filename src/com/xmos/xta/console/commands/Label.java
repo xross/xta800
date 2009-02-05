@@ -137,6 +137,11 @@ public class Label extends Command {
 	}
 	
 	private void listLabels(Engine engine, Console console) {
+		if (engine.getLabels().entrySet().size() == 0){
+			console.display("none\n");
+			return;
+		}
+
     	Iterator<Map.Entry<String, Integer>> iter = engine.getLabels().entrySet().iterator();        
     	while (iter.hasNext()) {
     	    Map.Entry<String, Integer> pair = iter.next();

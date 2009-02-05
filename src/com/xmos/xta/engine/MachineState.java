@@ -1,6 +1,5 @@
 package com.xmos.xta.engine;
 
-import java.util.ArrayList;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader.Architecture;

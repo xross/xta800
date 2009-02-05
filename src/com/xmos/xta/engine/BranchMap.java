@@ -62,8 +62,9 @@ public class BranchMap {
 		int byteIndex = 0;
         while (byteIndex < data.length) {        	
         	int fromPc = ByteArrayManipulation.readInt(data, byteIndex);
-        	int toPc = ByteArrayManipulation.readInt(data, byteIndex + 4);
-        	byteIndex += 8;
+        	byteIndex += 4;        	
+        	int toPc = ByteArrayManipulation.readInt(data, byteIndex);
+        	byteIndex += 4;
 
     		if (DEBUG) System.out.printf("- fromPc: 0x%08x, toPc: 0x%08xz\n", fromPc, toPc);        	
     		add(fromPc, toPc);
