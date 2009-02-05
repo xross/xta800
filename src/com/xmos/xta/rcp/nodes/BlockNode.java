@@ -2,10 +2,17 @@ package com.xmos.xta.rcp.nodes;
 
 import java.util.HashSet;
 import java.util.Vector;
+
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.rcp.views.ConsoleView;
 import com.xmos.xta.rcp.views.ViewNode.FunctionBlockNode;
 import com.xmos.xta.rcp.views.ViewNode.StructureBlockNode;
 
@@ -66,7 +73,22 @@ public class BlockNode extends Node {
     	return m_block.getPcsCoveredThis();
     }
     
+    BlockNode m_this = this;
     public void createContextMenu(final Shell parent, IMenuManager manager) {    	
+		manager.add(new Separator());
+    	manager.add(new Action("Trace in console") {
+			public void run() {
+				ConsoleView console = (ConsoleView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+					getActivePage().findView(ConsoleView.ID);
+				
+				try {
+					PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+					getActivePage().showView(ConsoleView.ID);
+				} catch (PartInitException e) {}
+				
+				console.runCommand("print trace b" + m_this.getId());
+			}
+		});    	
     }
 
 	public int getNumIterations() {

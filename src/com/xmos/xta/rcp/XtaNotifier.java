@@ -161,6 +161,6 @@ public class XtaNotifier implements Notifier {
 	private void createHierarchy() {
 		Engine engine = XtaEngine.getEngine();		
         m_routeInfo = new XtaRouteInfo(engine.getRoute(), engine.getDebugInfo(), 
-        		engine.getMemoryImage(), engine.getSymbolTable(), null);
+        		engine.getMemoryImage(), engine.getSymbolTable());
 	}
 }

@@ -1,5 +1,6 @@
 package com.xmos.xta.console.commands;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -14,36 +15,31 @@ public class Label extends Command {
 		ADD, REMOVE, LIST
 	};
 
-	private String m_label;
+	private ArrayList<String> m_labels;
 	private CodeReference m_ref;
 	private Operation m_operation;
 
 	Label(Operation operation) {
 		m_operation = operation;
-		m_label = null;
+		m_labels = new ArrayList<String>();;
 		m_ref = null;
 	}
 
 	Label(String label, CodeReference ref, Operation operation) {
 		assert(operation == Operation.ADD);
 		m_operation = operation;
-		m_label = label;
+		m_labels = new ArrayList<String>();;
+		m_labels.add(label);
 		m_ref = ref;
+		
 	}
 
-	Label(String label, Operation operation) {
-		assert(operation == Operation.REMOVE);
-		m_operation = operation;
-		m_label = label;
-		m_ref = null;
-	}
-	
 	public int numArgs() {
     	switch (m_operation) {
     	case ADD:
             return 2;         
     	case REMOVE:
-            return 1;
+            return m_labels.size();
     	case LIST:
             return 0;
         default:
@@ -59,9 +55,14 @@ public class Label extends Command {
 	public String commandLine() {
     	switch (m_operation) {
     	case ADD:
-    		return "label " + m_ref.getRef() + " " + m_label; 
+    		assert(m_labels.size() == 1);
+    		return "label " + m_ref.getRef() + " " + m_labels.get(0); 
     	case REMOVE:
-    		return "label " + m_label;
+    		String commandLine = "label";
+    		for (String label : m_labels) {
+    			commandLine += " " + label;
+    		}
+    		return commandLine;
     	case LIST:
     		return "label";
         default:
@@ -75,7 +76,7 @@ public class Label extends Command {
     	case ADD:
             return "label <ref> <label>: Adds the given label/reference to the labels list";         
     	case REMOVE:
-            return "label <label>: Removes the given label from the labels list";
+            return "label [label]+: Removes the given labels from the labels list";
     	case LIST:
             return "label: Lists the labels";
         default:
@@ -93,7 +94,17 @@ public class Label extends Command {
     		CodeReference ref = CodeReferenceFactory.createCodeReference(args[index + 2]);
     		return new Label(args[index + 1], ref, m_operation);            
     	case REMOVE:
-    		return new Label(args[index + 1], m_operation);            
+    		Label label = new Label(m_operation);
+    		int i = 1;
+    		while (!areArgsDone(args, index + i)) {
+    			label.m_labels.add(args[index + i]);
+    			i++;
+    		}
+
+    		if (label.m_labels.size() < 1)
+    			return null;
+
+    		return label;
     	case LIST:
     		return new Label(m_operation);            
         default:
@@ -108,10 +119,13 @@ public class Label extends Command {
 		
     	switch (m_operation) {
     	case ADD:
-			engine.addLabel(m_label, m_ref);
+    		assert(m_labels.size() == 1);
+			engine.addLabel(m_labels.get(0), m_ref);
 			break;			
     	case REMOVE:
-			engine.removeLabel(m_label);
+    		for (String label : m_labels) {
+    			engine.removeLabel(label);
+    		}
 			break;			
     	case LIST:
         	listLabels(engine, console);        	

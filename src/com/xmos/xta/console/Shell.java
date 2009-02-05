@@ -154,10 +154,13 @@ public class Shell {
                 }
                 tokens = s.toArray(tokens);
                 command = CommandFactory.buildCommand(tokens, 0, m_commandHistory, m_console, false);
-                if (command == null) {
+
+                // Check command is valid and has consumed entire line
+                if ((command == null) || (command.numArgs() != (tokens.length - 1))) {
     	        	m_console.display("Invalid command (Try 'help'..)\n");                	
                 	m_commandHistory.add(new Invalid(line));
-                }                	
+                	command = null;
+                }
                 if (!exitAllowed(command)) {
             		command = null;
                 }

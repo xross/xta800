@@ -9,8 +9,11 @@ import com.xmos.xta.rcp.views.ViewNode.FunctionRouteNode;
 import com.xmos.xta.rcp.views.ViewNode.StructureRouteNode;
 
 public class RouteNode extends Node {
-    public RouteNode() {
+	private String m_type;
+	
+    public RouteNode(String type) {
     	super(null);
+    	m_type = type;
     	m_functionNode = new FunctionRouteNode(this);
     	m_structureNode = new StructureRouteNode(this);
     }
@@ -24,7 +27,7 @@ public class RouteNode extends Node {
    
     public String getDescription() {
     	int numPaths = getNodes().size();
-    	String str = "Found " + numPaths + " path";
+    	String str = "Found " + numPaths + " " + m_type + " path";
     	if (numPaths != 1) {
     		str += "s";
     	}

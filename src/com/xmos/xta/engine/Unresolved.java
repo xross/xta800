@@ -12,15 +12,15 @@ public class Unresolved {
 		m_reason = reason;
 	}
 	
-	public Block getBlock(){
+	public Block getBlock() {
 		return m_block;
 	}
 	
-	public String getReason(){
+	public String getReason() {
 		return m_reason;
 	}
 	
-	public XtaInstruction getInstruction(){
+	public XtaInstruction getInstruction() {
 		return m_instruction;
 	}
 

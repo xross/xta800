@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.regex.PatternSyntaxException;
+
 import com.xmos.elfhandler.ElfHandler;
 import com.xmos.elfhandler.Symbol;
 import com.xmos.xeloader.DebugInfo;
@@ -353,7 +355,6 @@ public class Engine {
     public void setNodeId(int nodeId) {
         m_nodeId = nodeId;
         notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_NODE_ID);
-
     }
 
     public int getNodeId(){
@@ -363,7 +364,6 @@ public class Engine {
     public void setCoreId(int coreId) {
         m_coreId = coreId;
         notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_CORE_ID);
-
     }
 
     public int getCoreId() {
@@ -477,7 +477,11 @@ public class Engine {
 		
    		LabelMap labelMap = getLabelsMap(m_nodeId, m_coreId);
    		if (labelMap != null) {
-   			labelMap.getLabels().put(label, ref.getPc()); 
+			if (!labelMap.getLabels().containsKey(label)) {
+   			    labelMap.getLabels().put(label, ref.getPc());				
+			} else {
+	           	notify(Notifier.NOTIFY_ERROR, String.format("Label already exists: %s", label));    		
+			}
    		    return true;
    		}
         return false;
@@ -486,7 +490,24 @@ public class Engine {
 	public void removeLabel(String label) {
 		LabelMap labelMap = getLabelsMap(m_nodeId, m_coreId);
 		if (labelMap != null) {
-			labelMap.getLabels().remove(label);
+	    	List<String> matches = new ArrayList<String>();
+	    	
+	    	for (String mapEntry : labelMap.getLabels().keySet()){
+	    		try {
+	    			if (mapEntry.matches(label)){
+	    				matches.add(mapEntry);
+	    			}
+	    		} catch ( PatternSyntaxException e ) {
+	    			// Ignore
+	    		}
+	    	}
+
+	    	if (matches.size() > 0) {
+	    		for (String toRemove : matches)
+	    			labelMap.getLabels().remove(toRemove);
+	    	} else {
+	    		notify(Notifier.NOTIFY_ERROR, String.format("Unable to remove label: %s", label));    		
+	    	}			
 		}
 	}
 	
@@ -542,8 +563,12 @@ public class Engine {
         }
 
 		BranchMap branchMap = getBranchesMap(m_nodeId, m_coreId);
-		if (branchMap != null) {
-			branchMap.remove(fromRef.getPc());
+		if (branchMap != null) {			
+			if (branchMap.getBranches().containsKey(fromRef.getPc())) {
+				branchMap.remove(fromRef.getPc());
+			} else {
+	           	notify(Notifier.NOTIFY_ERROR, String.format("Unable to remove branch: 0x%x", fromRef.getPc()));    		
+	    	}			
 		}
 	}
 	
@@ -688,8 +713,12 @@ public class Engine {
     	List<CodeReference> matches = new ArrayList<CodeReference>();
     	
     	for (CodeReference present : references){
-    		if (present.getRef().matches(ref.getRef())){
-    			matches.add(present);
+    		try {
+    			if (present.getRef().matches(ref.getRef())){
+    				matches.add(present);
+    			}
+    		} catch ( PatternSyntaxException e ) {
+    			// Ignore
     		}
     	}
 

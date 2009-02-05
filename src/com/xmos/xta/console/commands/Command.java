@@ -50,5 +50,11 @@ public abstract class Command {
     		return false;
     	}    	
     	return true;
-    }    
+    }
+
+    protected boolean areArgsDone(String[] args, int i) {
+		if ((i >= args.length) || args[i].startsWith("-") || args[i].startsWith("\n"))
+			return true;
+		return false;
+	}
 }
