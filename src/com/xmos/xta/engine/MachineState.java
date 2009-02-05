@@ -50,14 +50,10 @@ public class MachineState {
     private int m_branchTarget;
     private boolean hasBranched;
     private boolean hasJumped;
-    
-    
-    private BranchState m_branchTaken;
 
     private boolean m_wasJump;
     private boolean m_wasJumpResolved;
     private int m_jumpTarget;
-    private BranchState m_jumpTaken;
 
     private boolean m_wasEventWait;
     private boolean m_wasEventResolved;
@@ -221,14 +217,12 @@ public class MachineState {
         m_wasJumpResolved = jumpTarget.isResolved();
         if (m_wasJumpResolved) {
             m_jumpTarget = jumpTarget.getValue();
+          //FIXME move this into the Block
             //if(!is16bitAligned(m_jumpTarget) || !isWithinMemory(m_jumpTarget)){
             if(!is16bitAligned(m_jumpTarget)){
             	throw new InstructionExecption(Error.ET_ILLEGAL_PC);
             }
-            m_jumpTaken = BranchState.TAKEN;
-        } else {
-            m_jumpTaken = BranchState.UNKNOWN;
-        }
+        } 
     }
 
     public boolean isWithinMemory(int target) {
