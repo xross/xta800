@@ -103,8 +103,7 @@ class TextReader extends Reader {
         			m_keyLock.notifyAll();
         		}		
         				
-        		if (event.keyCode == SWT.CR) {
-        			
+        		if ((event.keyCode == SWT.CR) || (event.keyCode == SWT.KEYPAD_CR)) {
         			handleEnter();
         		}
         		else if (event.keyCode == SWT.ARROW_UP) {
