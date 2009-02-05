@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.regex.PatternSyntaxException;
+
 import com.xmos.elfhandler.ElfHandler;
 import com.xmos.elfhandler.Symbol;
 import com.xmos.xeloader.DebugInfo;
@@ -482,11 +484,24 @@ public class Engine {
 
 	public void removeLabel(String label) {
 		LabelMap labelMap = getLabelsMap(m_nodeId, m_coreId);
-		if (labelMap != null) {			
-			if (labelMap.getLabels().containsKey(label)) {
-				labelMap.getLabels().remove(label);				
-			} else {
-	           	notify(Notifier.NOTIFY_ERROR, String.format("Unable to remove label: %s", label));    		
+		if (labelMap != null) {
+	    	List<String> matches = new ArrayList<String>();
+	    	
+	    	for (String mapEntry : labelMap.getLabels().keySet()){
+	    		try {
+	    			if (mapEntry.matches(label)){
+	    				matches.add(mapEntry);
+	    			}
+	    		} catch ( PatternSyntaxException e ) {
+	    			// Ignore
+	    		}
+	    	}
+
+	    	if (matches.size() > 0) {
+	    		for (String toRemove : matches)
+	    			labelMap.getLabels().remove(toRemove);
+	    	} else {
+	    		notify(Notifier.NOTIFY_ERROR, String.format("Unable to remove label: %s", label));    		
 	    	}			
 		}
 	}
@@ -693,8 +708,12 @@ public class Engine {
     	List<CodeReference> matches = new ArrayList<CodeReference>();
     	
     	for (CodeReference present : references){
-    		if (present.getRef().matches(ref.getRef())){
-    			matches.add(present);
+    		try {
+    			if (present.getRef().matches(ref.getRef())){
+    				matches.add(present);
+    			}
+    		} catch ( PatternSyntaxException e ) {
+    			// Ignore
     		}
     	}
 

@@ -558,7 +558,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        				int usage = (int)(((total - free) / max) * 100);
 	        				
 	        				if (m_active) {
-	        					m_memoryGroup.setText(String.format("Memory used %d%%", usage));
+	        					m_memoryGroup.setText(String.format("Host memory used %d%%", usage));
 	        					m_memoryUsage.setSelection(usage);
 	        				}
 	        			}});

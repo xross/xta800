@@ -149,7 +149,7 @@ class TextReader extends Reader {
 					if (checkCursor()) {
     					event.doit = false;				
 	    			}
-				} else if (event.keyCode == SWT.CR) {
+				} else if ((event.keyCode == SWT.CR) || (event.keyCode == SWT.KEYPAD_CR)) {
 					if (DEBUG) System.out.printf("Set Caret to end\n");
 					setCaretToEnd();
 					m_text.append("\n");
