@@ -8,7 +8,6 @@ import java.util.Stack;
 import java.util.TreeSet;
 import java.util.Vector;
 import com.xmos.xta.engine.Engine.ReferenceMode;
-import com.xmos.xta.engine.MachineState.BranchState;
 import com.xmos.xta.engine.Status.BlockStatus;
 import com.xmos.xta.engine.references.CodeReference;
 
@@ -25,7 +24,8 @@ public class Block implements Comparable<Block> {
 	private Block m_parentBlock;
 	private Route m_route;
 
-	private int m_id;
+	private int m_blockId;
+	private int m_pathId;
 
 	private MachineState m_machineState;
 	private Vector<XtaInstruction> m_instructions;
@@ -53,7 +53,9 @@ public class Block implements Comparable<Block> {
 	private ExecutionState m_executionState;	
 	private BlockStats m_blockStats;
 	
-	private static int m_numBlocks;
+	private static int m_numBlocks=0;
+	private static int m_numPaths=0;
+	
 
     public static Block getPath(Route route, int pathId) {
     	assert(route != null);
@@ -156,8 +158,8 @@ public class Block implements Comparable<Block> {
 		
 		m_toPc = m_instructions.lastElement().getPc();
 		blockToSplit.m_toPc = blockToSplit.m_instructions.lastElement().getPc();
-		m_id = blockToSplit.m_id;
-		blockToSplit.m_id = m_numBlocks;
+		m_blockId = blockToSplit.m_blockId;
+		blockToSplit.m_blockId = m_numBlocks;
 		++m_numBlocks;
 
 		m_status = blockToSplit.m_status;
@@ -176,7 +178,7 @@ public class Block implements Comparable<Block> {
 		blockToSplit.m_parentBlock = this;
 
 		m_speculative = blockToSplit.m_speculative;
-		if (DEBUG) System.out.println("\tsplit block " + Integer.toHexString(pcHit) + " at to make block " + m_id + " and block " + blockToSplit.m_id);
+		if (DEBUG) System.out.println("\tsplit block " + Integer.toHexString(pcHit) + " at to make block " + m_blockId + " and block " + blockToSplit.m_blockId);
 		m_blockStats = new BlockStats(this);
 	}
 
@@ -214,7 +216,7 @@ public class Block implements Comparable<Block> {
 		m_unresolved = block.m_unresolved;
 		m_blockStats = new BlockStats(this);
 		assert(m_contexts.size()>0);
-		if(DEBUG)System.out.println("block " + this.m_id +  " started at 0x" + Integer.toHexString(this.m_machineState.getPc(this.m_currentThread)));
+		if(DEBUG)System.out.println("block " + this.m_blockId +  " started at 0x" + Integer.toHexString(this.m_machineState.getPc(this.m_currentThread)));
 	}
 
 	public void build() throws Exception {				
@@ -259,7 +261,7 @@ public class Block implements Comparable<Block> {
 			m_contexts.peek().add(pc);
 		} else {
 			if(LOG_PROBLEMS){
-				System.out.println("Block " + m_id  +" had lost is contexts");
+				System.out.println("Block " + m_blockId  +" had lost is contexts");
 			}
 			throw new Exception("During analysis function contexts have become null");
 		}
@@ -289,37 +291,51 @@ public class Block implements Comparable<Block> {
 	}
 
 	private void handleBranch(XtaInstruction instruction, int nextPc) {
-		if (m_machineState.wasBranchResolved()) {
-			if (m_bc.isResolveExpressions()) {
-				if (m_machineState.getBranchTaken() == BranchState.TAKEN) {
-					checkForLoopFormation(m_machineState.getBranchTarget(), false, instruction, true, false);
-				} else if (m_machineState.getBranchTaken() == BranchState.NOTTAKEN) {
-					checkForLoopFormation(nextPc, false, instruction, false, false);
-				} else if (m_machineState.getBranchTaken() == BranchState.UNKNOWN) {
-					addUnknown(instruction);
-					checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
-					checkForLoopFormation(nextPc, true, instruction, false, true);
+		if (m_machineState.wasBranchTargetResolved() && m_machineState.wasGuardResolved()) {
+			checkForLoopFormation(
+					m_machineState.getBranchTarget(), 
+					false, 
+					instruction, 
+					false, 
+					false);
+			
+			
+		} else {
+			//add the branch target to the sucessors if need be
+			if (m_machineState.wasBranchTargetResolved()){
+				//System.out.println("adding 0x" + m_machineState.getBranchTarget());
+				//instruction.addSuccessor(m_machineState.getBranchTarget());
+			}
+			
+			
+			//take all the successors
+			if(instruction.getSuccessors().size()>0){
+				
+				for(int target : instruction.getSuccessors()){
+					checkForLoopFormation(target, true, instruction, false, true);
+				}
+				if(instruction.getSuccessors().size()!=1){
 					setStatus(BlockStatus.COMPLETE);
 					releaseMemory();
 				}
 			} else {
-				checkForLoopFormation(m_machineState.getBranchTarget(), true, instruction, false, true);
-				checkForLoopFormation(nextPc, true, instruction, false, true);
-				setStatus(BlockStatus.COMPLETE);
+				setStatus(BlockStatus.UNRESOLVED);
+				String reason  = "Unknown branch target";
+				Unresolved unresolved = new Unresolved(this, instruction, reason);
+				m_unresolved = unresolved;
+				m_route.addUnresolvedPath(unresolved);
 				releaseMemory();
 			}
-		} else {
-			setStatus(BlockStatus.UNRESOLVED);
-			String reason  = "Unknown branch target";
-			Unresolved unresolved = new Unresolved(this, instruction, reason);
-			m_unresolved = unresolved;
-			m_route.addUnresolvedPath(unresolved);
-			m_machineState = null;
 		}
+		//setStatus(BlockStatus.COMPLETE);
+		//releaseMemory();
 	}
 
 	private void handleJump(int pc, XtaInstruction instruction) {
+		
 		if (m_machineState.wasJumpResolved()) {
+			//take the jump
+			
 			int jumpTarget = m_machineState.getJumpTarget();
 			if (instruction.getBranchLink() && isRecursion(jumpTarget)) {
 				setStatus(BlockStatus.UNRESOLVED);
@@ -332,9 +348,12 @@ public class Block implements Comparable<Block> {
 				if (instruction.getReturn()) {
 					popFunction();
 					if(m_contexts.size() == 0){
+						if(LOG_PROBLEMS){
+							System.out.println("Block " + m_blockId  +" had lost is contexts");
+						}
 						m_contexts.add(new TreeSet<Integer>());
 					}
-				}
+				} 
 				checkForLoopFormation(jumpTarget, false, instruction, true, false);
 				if (instruction.getBranchLink()) {
 					pushFunction(pc);
@@ -342,11 +361,19 @@ public class Block implements Comparable<Block> {
 			}
 		} else {
 			if (instruction.getReturn() ) {
-
+				popFunction();
+				if(m_contexts.size() == 0){
+					if(LOG_PROBLEMS){
+						System.out.println("Block " + m_blockId  +" had lost is contexts");
+					}
+					m_contexts.add(new TreeSet<Integer>());
+				}
+			}
+			if(instruction.getSuccessors().size()>0){
 				for(int returnLocation : instruction.getSuccessors()){
 					XtaInstruction callingInst = m_bc.getNodeCoreInstructionCaches().
 					getInstructionDecodeCache(m_bc.getEngine().getNodeId(), m_bc.getEngine().getCoreId()).getInstruction(returnLocation);
-					checkForLoopFormation(returnLocation, false, callingInst, true, true);
+					checkForLoopFormation(returnLocation, true, callingInst, false, true);
 				}
 				setStatus(BlockStatus.COMPLETE);
 				releaseMemory();
@@ -362,21 +389,31 @@ public class Block implements Comparable<Block> {
 	}
 
 	private void handleEvent(XtaInstruction instruction) {
-		if (m_machineState.wasEventResolved()) {
-			ArrayList<Integer> targets = new ArrayList<Integer>(m_machineState.getEventTarget());
-			m_machineState.clearEventTargets();
-			for (int targetVector : targets) {
-				checkForLoopFormation(targetVector, false, instruction, true, true);
-			}
+		if (m_machineState.wasEventResolved()) { //ie we know where we are going
+			//follow the event vector
+			int eventTarget = m_machineState.getEventTarget();
+			
+			//FIXME - probably tell the user that this has happened
+			instruction.addSuccessor(eventTarget);
+			checkForLoopFormation(eventTarget, false, instruction, true, true);
 			setStatus(BlockStatus.COMPLETE);
+			releaseMemory();
 		} else {
-			setStatus(BlockStatus.UNRESOLVED);
-			String reason  = "Unable to resolve the event vectors (possibly event vector set up out of scope?)";
-			Unresolved unresolved = new Unresolved(this, instruction, reason);
-			m_unresolved = unresolved;
-			m_route.addUnresolvedPath(unresolved);
+			//follow the successors
+			if(instruction.getSuccessors().size()>0){
+				for(int eventTarget : instruction.getSuccessors()){
+					checkForLoopFormation(eventTarget, true, instruction, true, true);
+				}
+				setStatus(BlockStatus.COMPLETE);
+				releaseMemory();
+			} else {
+				setStatus(BlockStatus.UNRESOLVED);
+				String reason  = "Unable to resolve the event vectors (possibly event vector set up out of scope?)";
+				Unresolved unresolved = new Unresolved(this, instruction, reason);
+				m_unresolved = unresolved;
+				m_route.addUnresolvedPath(unresolved);
+			}
 		}
-		releaseMemory();
 	}
 
 	public Unresolved getUnresolved(){
@@ -388,7 +425,7 @@ public class Block implements Comparable<Block> {
 	}
 
 	private void initialise(MachineState machineState) {
-		m_id = m_numBlocks++;
+		m_blockId = m_numBlocks++;
 		m_contexts = new Stack<TreeSet<Integer>>();
 		m_pcs = new HashSet<Integer>();
 		m_instructions = new Vector<XtaInstruction>();
@@ -417,7 +454,8 @@ public class Block implements Comparable<Block> {
 	}
 
 	public void addLoopPath(Block pathStartBlock) {
-		if (DEBUG) System.out.println("found loopPath: " + pathStartBlock.m_id + " forms a loop with block " + m_id);
+		if (DEBUG) System.out.println("found loopPath: " + pathStartBlock.m_blockId + " forms a loop with block " + m_blockId);
+		pathStartBlock.addPathId();
 		assert (pathStartBlock != null);
 		assert (!m_loopPaths.contains(pathStartBlock));
 		if (m_loopPaths.contains(pathStartBlock))
@@ -425,6 +463,11 @@ public class Block implements Comparable<Block> {
 		m_loopPaths.add(pathStartBlock);
 		m_loopPathAttributes.put(pathStartBlock, new PathAttributes());
 		return;
+	}
+	
+	void addPathId(){
+		m_pathId = m_numPaths;
+		m_numPaths++;
 	}
 	
 	private boolean executeInstruction(XtaInstruction instruction) 
@@ -472,11 +515,11 @@ public class Block implements Comparable<Block> {
 		m_route.addUnknown(unknown);
 	}
 	
-	private void checkForLoopFormation(int nextPc, boolean speculative, 
-			XtaInstruction inst, boolean isJump, boolean isBranch) {	
+	private void checkForLoopFormation(int targetPc, boolean speculative, 
+			XtaInstruction currentInst, boolean hasJumped, boolean hasBranched) {	
 		
 		m_speculative = m_speculative | speculative;
-		Block loopBlock = formsLoop(nextPc);
+		Block loopBlock = formsLoop(targetPc);
 		/*
 		 * this instruction forms a loop if
 		 * 	- the next instruction is already in the blocks path
@@ -489,8 +532,8 @@ public class Block implements Comparable<Block> {
 			
 			try {
 				nextInstruction = m_bc.getNodeCoreInstructionCaches()
-				 .decode(m_bc.getMemoryImage().readInstructionWord(nextPc), 
-						 nextPc, m_bc.getEngine().getNodeId(), m_bc.getEngine().getCoreId());
+				 .decode(m_bc.getMemoryImage().readInstructionWord(targetPc), 
+						 targetPc, m_bc.getEngine().getNodeId(), m_bc.getEngine().getCoreId());
 			} catch (Exception e) {
 				assert(false);
 			}
@@ -498,24 +541,24 @@ public class Block implements Comparable<Block> {
 			//if the path completes on the next instruction then 
 			if(checkComplete(nextInstruction)) return;
 			
-			if (loopBlock.getInstructionsThis().get(0).getPc() != nextPc) {
-				new Block(loopBlock, nextPc);
+			if (loopBlock.getInstructionsThis().get(0).getPc() != targetPc) {
+				new Block(loopBlock, targetPc);
 			}
 			loopBlock.addLoopPath(this);
 			this.setStatus(BlockStatus.COMPLETE);
 		} else {
-			if (isBranch) {
+			if (hasBranched && speculative) {
 				MachineState machineState = new MachineState(m_machineState); 
-				machineState.branchTo(nextPc, inst.isLoadStore(), m_currentThread);
+				machineState.branchTo(targetPc, currentInst.isLoadStore(), m_currentThread);
 				new ExecutionState(m_executionState, machineState);
-			} else if (isJump) {
-				m_machineState.branchTo(nextPc, inst.isLoadStore(), m_currentThread);
+			} else if (hasJumped || (hasBranched && !speculative)) {
+				m_machineState.branchTo(targetPc, currentInst.isLoadStore(), m_currentThread);
 			} else {
-				if (!inst.isLoadStore()) {
+				if (!currentInst.isLoadStore()) {
 					m_machineState.fetch(m_currentThread);
 				}
-				m_machineState.setPc(nextPc, m_currentThread);
-				m_machineState.issue(inst.getNumBytes(), m_currentThread);
+				m_machineState.setPc(targetPc, m_currentThread);
+				m_machineState.issue(currentInst.getNumBytes(), m_currentThread);
 			}
 		}
 	}
@@ -532,7 +575,7 @@ public class Block implements Comparable<Block> {
 			setStatus(BlockStatus.COMPLETE);
 			if(m_route.completePaths().contains(this)) {
 				if(LOG_PROBLEMS){
-					System.out.println("Block " + m_id  +" completed and was "
+					System.out.println("Block " + m_blockId  +" completed and was "
 							+" already added to m_completePaths");
 				}
 			} else {
@@ -583,7 +626,7 @@ public class Block implements Comparable<Block> {
 		assert (m_instructions != null);
 		assert (inst != null);
 		if(DEBUG) {
-			System.out.println(this.m_id + " "+inst);
+			System.out.println(this.m_blockId + " "+inst);
 		}
 		//inst.setBasicNumCycles(m_bc.getM_instructionAttributes().getTiming(inst.getNmenonic()));
 		inst.setConfig(m_bc.getConfig());
@@ -661,7 +704,7 @@ public class Block implements Comparable<Block> {
 	public void setStatus(BlockStatus blockStatus) {
 		m_status = blockStatus;
 		if (DEBUG) {
-			System.out.println("block " + m_id + " status is " + blockStatus);
+			System.out.println("block " + m_blockId + " status is " + blockStatus);
 		}
 	}
 
@@ -680,13 +723,18 @@ public class Block implements Comparable<Block> {
 			return new ArrayList<Block>();
 		}
 	}
+	
+	public int getPathId(){
+		return m_pathId;
+	}
+	
 
 	public int getId() {
-		return m_id;
+		return m_blockId;
 	}
 
 	public void setId(int id) {
-		m_id = id;
+		m_blockId = id;
 	}
 
 	public boolean equivalent(Block block) {

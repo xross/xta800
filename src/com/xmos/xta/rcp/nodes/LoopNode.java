@@ -49,7 +49,7 @@ public class LoopNode extends Node {
     public String getToolTipText(){
         String toolTipText = getSummary() + "\n";
         toolTipText += "----------------------------------\n";
-        toolTipText += "Loop ID: " + m_block.getId() + "\n";
+        toolTipText += "Loop ID: " + m_block.getPathId() + "\n";
         toolTipText += "----------------------------------\n";
         toolTipText += "Total time taken: " + getTimeTaken() + " ns\n";
         toolTipText += "Total number of cycles: " + getNumCycles() + "\n";

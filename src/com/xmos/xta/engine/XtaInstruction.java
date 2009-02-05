@@ -356,7 +356,7 @@ public abstract class XtaInstruction extends Instruction {
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
         branchTarget.resolve();
-    	state.branch(false, state.m_op1, branchTarget);
+    	state.branch(false, state.m_op1, branchTarget, this);
     }
 
     void BRBT(MachineState state, int thread) throws Exception {
@@ -371,7 +371,7 @@ public abstract class XtaInstruction extends Instruction {
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
         branchTarget.resolve();
-    	state.branch(true, state.m_op1, branchTarget);
+    	state.branch(true, state.m_op1, branchTarget, this);
     }
 
     void BRBU(MachineState state, int thread) throws Exception {
@@ -401,7 +401,7 @@ public abstract class XtaInstruction extends Instruction {
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
         branchTarget.resolve();
-    	state.branch(false, state.m_op1, branchTarget);
+    	state.branch(false, state.m_op1, branchTarget, this);
     }
 
     void BRFT(MachineState state, int thread) throws Exception {
@@ -416,7 +416,7 @@ public abstract class XtaInstruction extends Instruction {
     	branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
     	branchTarget.resolve();
-        state.branch(true, state.m_op1, branchTarget);
+        state.branch(true, state.m_op1, branchTarget, this);
     }
 
     void BRFU(MachineState state, int thread) throws Exception {
@@ -473,7 +473,6 @@ public abstract class XtaInstruction extends Instruction {
     	for(Thread t : state.getResources().getThreads()){
     		t.setStatusRegisterBit(StatusRegister.EEBLE, false);
     	}
-    	state.clearEventTargets();
     	for(Timer t : state.getResources().getTimers()){
     		t.setEventEnabeled(false);
     	}
@@ -1818,25 +1817,21 @@ public abstract class XtaInstruction extends Instruction {
     void WAITEF(MachineState state, int thread) throws Exception {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: WAITEF\n", getPc());	
-    	if(m_uninplimented) {
-    		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
-    	}
+    	state.eventWait(false, false, state.m_op1);
     }
 
     void WAITET(MachineState state, int thread) throws Exception {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: WAITET\n", getPc());	
-    	if(m_uninplimented) {
-    		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
-    	}
+    	state.eventWait(false, true, state.m_op1);
     }
 
     void WAITEU(MachineState state, int thread) throws Exception {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: WAITEU\n", getPc());	
-    	if(RESOURCEDEBUG){
-    		System.out.println("waiting on events:");
-    	}
+    	state.eventWait(true, false,  null);
+    	
+    	/*
     	ArrayList<Integer> takenVectors = new ArrayList<Integer>();
     	state.clearEventTargets();
     	for (Timer timer : state.getResources().getTimers()){
@@ -1895,10 +1890,7 @@ public abstract class XtaInstruction extends Instruction {
 		}
 		
 		 state.getResources().getThread(thread).clearUnknownResourceEventVectors();
-		
-		 if(RESOURCEDEBUG){
-    		System.out.println("----");
-    	}
+		*/
     }
 
     void XOR(MachineState state, int thread) throws Exception {

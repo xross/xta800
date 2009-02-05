@@ -10,7 +10,6 @@ import com.xmos.xta.engine.references.CodeReference;
 public class BlockCommonComponents {
 	private Config m_config;
     private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
-    private InstructionAttributes m_instructionAttributes;
     private MemoryImage m_memoryImage;
     private SymbolTable m_symbolTable;
     private List<CodeReference> m_exclusions;
@@ -21,13 +20,12 @@ public class BlockCommonComponents {
     
 	public BlockCommonComponents(Config m_config,
 			NodeCoreInstructionCaches nodeCoreInstructionCache,
-			InstructionAttributes attributes, MemoryImage image,
+			MemoryImage image,
 			SymbolTable table, List<CodeReference> m_exclusions, Route m_route,
 			boolean expressions, Block.Mode m_mode, Engine engine) {
 		super();
 		this.m_config = m_config;
 		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
-		m_instructionAttributes = attributes;
 		m_memoryImage = image;
 		m_symbolTable = table;
 		this.m_exclusions = m_exclusions;
@@ -50,12 +48,6 @@ public class BlockCommonComponents {
 		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
 	}
 	
-	public InstructionAttributes getM_instructionAttributes() {
-		return m_instructionAttributes;
-	}
-	public void setM_instructionAttributes(InstructionAttributes attributes) {
-		m_instructionAttributes = attributes;
-	}
 	public MemoryImage getMemoryImage() {
 		return m_memoryImage;
 	}
