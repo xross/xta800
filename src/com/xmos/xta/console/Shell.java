@@ -23,6 +23,7 @@ public class Shell {
     private Engine m_engine;
     private Queue<Command> m_commands;
     private Vector<Command> m_commandHistory;
+    private String m_prompt;
 		
 	public Shell(Console console, Engine engine, String[] args) {
 	    initialise(console, engine);
@@ -123,7 +124,8 @@ public class Shell {
     private Command getCommandFromConsole() {
     	Command command = null;
     	do {
-    		m_console.display("xta " + (m_commandHistory.size() + 1) + ">");    		    		
+    		m_prompt = "xta " + (m_commandHistory.size() + 1) + ">";
+    		m_console.display(m_prompt);    		    		
             String line = m_console.getNextLine(m_commandHistory);
             line = line.trim();
             if (line.length() > 0) {            
@@ -195,5 +197,9 @@ public class Shell {
       		m_console.display(String.format("  %s\n", command.description(m_engine, false)));   		
       	}
         System.exit(1);
+	}
+	
+	public String getPrompt() {
+		return m_prompt;
 	}
 }
