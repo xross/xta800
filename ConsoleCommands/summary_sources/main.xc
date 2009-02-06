@@ -4,9 +4,8 @@ int function3();
 int function4();
 int function5();
 
-int main()
+int test(int a)
 {
-  int a = 0;
   int b = 0;
   if (a == 0)
     b = 1;
@@ -19,3 +18,7 @@ int main()
   return 0;
 }
 
+int main()
+{
+  test(0);
+}

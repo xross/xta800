@@ -1,5 +1,4 @@
-int a = 2;
-int main()
+int test(int a)
 {
   int b = 0;
   if (a == 2)
@@ -13,3 +12,7 @@ int main()
   return b;
 }
 
+int main()
+{
+  return test(2);
+}

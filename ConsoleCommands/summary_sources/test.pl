@@ -10,7 +10,7 @@ if (!$noBuild) {
 system("xcc -march=$arch -g main.xc test1.xc test2.xc test3.xc test4.xc test5.xc -o $genDir/test.xe > $genDir/summary_sources.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse function main " .
+       "analyse function test " .
        "summary sources " .
        "exit > $genDir/summary_sources.txt 2>&1");
 

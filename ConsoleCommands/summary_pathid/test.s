@@ -1,66 +1,164 @@
-          .file     "test.xc"
-          .text
-          .align    2
-
-.LDBG0:
-# Thread names for recovering thread graph in linker
-.globl a, "si"
-.type  a, @object
-          .section .dp.data,       "adw", @progbits
+.globl function1, "f{si}(0)"
+.globl function1.nstackwords
+.globl function1.maxthreads
+.globl function1.maxtimers
+.globl function1.maxchanends
+.globl function1.maxsync
+.type  function1, @function
+.linkset function1.locnoside, 1
+.linkset function1.locnochandec, 1
+.linkset function1.nstackwords, 0
+.cc_top function1.function,function1
           .align    4
-a:
-          .int      0x00000002
-          .section  .debug_frame, "",     @progbits
+function1:
+          ldc       r0, 0x0
+          retsp     0x0 
+.cc_bottom function1.function
+.linkset function1.maxchanends, 0
+.linkset function1.maxtimers, 0
+.linkset function1.maxthreads, 1
+.globl function2, "f{si}(0)"
+.globl function2.nstackwords
+.globl function2.maxthreads
+.globl function2.maxtimers
+.globl function2.maxchanends
+.globl function2.maxsync
+.type  function2, @function
+.linkset function2.locnoside, 1
+.linkset function2.locnochandec, 1
+.linkset function2.nstackwords, 0
+.cc_top function2.function,function2
           .align    4
-.LDBG1:
-          .int      .LDBG3-.LDBG2
-.LDBG2:
-          .int      0xffffffff
-          .byte     0x03
-          .byte     0x00
-          .uleb128  0x2
-          .sleb128  0xfffffffc
-          .uleb128  0xf
-          .byte     0x0c
-          .uleb128  0xe
-          .uleb128  0x0
-          .byte     0x07
-          .uleb128  0x0
-          .byte     0x07
-          .uleb128  0x1
-          .byte     0x07
-          .uleb128  0x2
-          .byte     0x07
-          .uleb128  0x3
-          .byte     0x08
-          .uleb128  0x4
-          .byte     0x08
-          .uleb128  0x5
-          .byte     0x08
-          .uleb128  0x6
-          .byte     0x08
-          .uleb128  0x7
-          .byte     0x08
-          .uleb128  0x8
-          .byte     0x08
-          .uleb128  0x9
-          .byte     0x08
-          .uleb128  0xa
-          .byte     0x07
-          .uleb128  0xb
-          .byte     0x08
-          .uleb128  0xc
-          .byte     0x08
-          .uleb128  0xd
-          .byte     0x08
-          .uleb128  0xe
-          .byte     0x08
-          .uleb128  0xf
-          .align    4, 0
-.LDBG3:
-          .text
-.LDBG4:
-.globread main, a, "test.xc:5: error: previously used here"
+function2:
+          ldc       r0, 0x0
+          retsp     0x0 
+.cc_bottom function2.function
+.linkset function2.maxchanends, 0
+.linkset function2.maxtimers, 0
+.linkset function2.maxthreads, 1
+.globl function3, "f{si}(0)"
+.globl function3.nstackwords
+.globl function3.maxthreads
+.globl function3.maxtimers
+.globl function3.maxchanends
+.globl function3.maxsync
+.type  function3, @function
+.linkset function3.locnoside, 1
+.linkset function3.locnochandec, 1
+.linkset function3.nstackwords, 0
+.cc_top function3.function,function3
+          .align    4
+function3:
+          ldc       r0, 0x0
+          retsp     0x0 
+.cc_bottom function3.function
+.linkset function3.maxchanends, 0
+.linkset function3.maxtimers, 0
+.linkset function3.maxthreads, 1
+.globl function4, "f{si}(0)"
+.globl function4.nstackwords
+.globl function4.maxthreads
+.globl function4.maxtimers
+.globl function4.maxchanends
+.globl function4.maxsync
+.type  function4, @function
+.linkset function4.locnoside, 1
+.linkset function4.locnochandec, 1
+.linkset function4.nstackwords, 0
+.cc_top function4.function,function4
+          .align    4
+function4:
+          ldc       r0, 0x0
+          retsp     0x0 
+.cc_bottom function4.function
+.linkset function4.maxchanends, 0
+.linkset function4.maxtimers, 0
+.linkset function4.maxthreads, 1
+.globl function5, "f{si}(0)"
+.globl function5.nstackwords
+.globl function5.maxthreads
+.globl function5.maxtimers
+.globl function5.maxchanends
+.globl function5.maxsync
+.type  function5, @function
+.linkset function5.locnoside, 1
+.linkset function5.locnochandec, 1
+.linkset function5.nstackwords, 0
+.cc_top function5.function,function5
+          .align    4
+function5:
+          ldc       r0, 0x0
+          retsp     0x0 
+.cc_bottom function5.function
+.linkset function5.maxchanends, 0
+.linkset function5.maxtimers, 0
+.linkset function5.maxthreads, 1
+.call test, function1
+.call test, function2
+.call test, function3
+.call test, function4
+.call test, function5
+.globl test, "f{si}(si)"
+.globl test.nstackwords
+.globl test.maxthreads
+.globl test.maxtimers
+.globl test.maxchanends
+.globl test.maxsync
+.type  test, @function
+.linkset test.locnoside, 1
+.linkset test.locnochandec, 1
+.linkset .LLNK5, function1.nstackwords $M function2.nstackwords
+.linkset .LLNK4, .LLNK5 $M function3.nstackwords
+.linkset .LLNK3, .LLNK4 $M function4.nstackwords
+.linkset .LLNK2, .LLNK3 $M function5.nstackwords
+.linkset .LLNK1, .LLNK2 $M .LLNK2
+.linkset .LLNK0, .LLNK1 + 1
+.linkset test.nstackwords, .LLNK0
+.cc_top test.function,test
+          .align    4
+test:
+          entsp     0x1 
+          ldc       r1, 0x0
+          bf        r0, .L1 
+          bu        .L0 
+.L1:
+          ldc       r1, 0x1
+.L0:
+          bl        function1 
+          bl        function2 
+          bl        function3 
+          bl        function4 
+          bl        function5 
+          ldc       r0, 0x0
+          retsp     0x1 
+.cc_bottom test.function
+.linkset .LLNK9, function1.maxchanends $M function2.maxchanends
+.linkset .LLNK8, .LLNK9 $M function3.maxchanends
+.linkset .LLNK7, .LLNK8 $M function4.maxchanends
+.linkset .LLNK6, .LLNK7 $M function5.maxchanends
+.linkset test.maxchanends, .LLNK6
+.linkset .LLNK13, function1.maxtimers $M function2.maxtimers
+.linkset .LLNK12, .LLNK13 $M function3.maxtimers
+.linkset .LLNK11, .LLNK12 $M function4.maxtimers
+.linkset .LLNK10, .LLNK11 $M function5.maxtimers
+.linkset test.maxtimers, .LLNK10
+.linkset .LLNK20, function1.maxthreads - 1
+.linkset .LLNK19, 1 + .LLNK20
+.linkset .LLNK18, 1 $M .LLNK19
+.linkset .LLNK22, function2.maxthreads - 1
+.linkset .LLNK21, 1 + .LLNK22
+.linkset .LLNK17, .LLNK18 $M .LLNK21
+.linkset .LLNK24, function3.maxthreads - 1
+.linkset .LLNK23, 1 + .LLNK24
+.linkset .LLNK16, .LLNK17 $M .LLNK23
+.linkset .LLNK26, function4.maxthreads - 1
+.linkset .LLNK25, 1 + .LLNK26
+.linkset .LLNK15, .LLNK16 $M .LLNK25
+.linkset .LLNK28, function5.maxthreads - 1
+.linkset .LLNK27, 1 + .LLNK28
+.linkset .LLNK14, .LLNK15 $M .LLNK27
+.linkset test.maxthreads, .LLNK14
+.call main, test
 .globl main, "f{si}(0)"
 .globl main.nstackwords
 .globl main.maxthreads
@@ -70,336 +168,27 @@ a:
 .type  main, @function
 .linkset main.locnoside, 1
 .linkset main.locnochandec, 1
-.linkset main.nstackwords, 0
-.LDBG14:
+.linkset .LLNK30, test.nstackwords $M test.nstackwords
+.linkset .LLNK29, .LLNK30 + 1
+.linkset main.nstackwords, .LLNK29
+.cc_top main.function,main
           .align    4
 main:
-.LDBG15:
-.LDBG16:                             # line (3)
-.LDBG5:
-.LDBG17:                             # line (4)
+          entsp     0x1 
           ldc       r0, 0x0
-.LDBG7:
-.LDBG18:                             # line (5)
-          ldw       r1, dp[a] 
-          eq        r1, r1, 0x2
-          bt        r1, .L1 
-.LDBG8:
-.LDBG9:
-          bu        .L0 
-.LDBG10:
-.L1:
-.LDBG19:                             # line (7)
-          ldc       r0, 0x2
-.LDBG11:
-.LDBG12:
-.L0:
-.LDBG20:                             # line (9)
-.LDBG21:
-          retsp     0x0 
-.LDBG6:
-.LDBG13:
-.LDBG22:
-.LDBG23:
-          .section  .debug_frame, "",     @progbits
-          .align    4
-          .int      .LDBG25-.LDBG24
-.LDBG24:
-          .long     .LDBG1           # offset in .debug_frame
-          .int      .LDBG14
-          .int      .LDBG23-.LDBG14
-          .byte     0x01
-          .int      .LDBG15
-          .byte     0x01
-          .int      .LDBG21
-          .byte     0x0a
-          .byte     0x01
-          .int      .LDBG22
-          .byte     0x0b
-          .align    4, 0
-.LDBG25:
-.linkset main.maxchanends, 0
-.linkset main.maxtimers, 0
-.linkset main.maxthreads, 1
-          .text
-.LDBG26:
-.LDBG27:
-          .section  .debug_info,   "",    @progbits
-.LDBG30:
-          .int      .LDBG32-.LDBG31
-.LDBG31:
-          .short    0x0003
-          .long     .LDBG28          # offset in .debug_abbrev
-          .byte     0x04
-          .uleb128  0x1
-          .long     .LDBG0           # low address
-          .long     .LDBG27          # high address
-          .asciiz   "test.xc"
-          .asciiz   "ace.xmos.local:/home/kris/Views/Tools/verif_tests_sw/Tools/xta/ConsoleCommands/asm"
-          .short    0xc000
-          .asciiz   "XMOS Dwarf Symbolic Debug Generator"
-          .long     .LDBG29          # offset in .debug_lineprog
-.LDBG33:
-          .uleb128  0x2
-          .asciiz   "long"
-          .byte     0x05
-          .byte     0x04
-.LDBG34:
-          .uleb128  0x2
-          .asciiz   "unsigned long"
-          .byte     0x07
-          .byte     0x04
-.LDBG35:
-          .uleb128  0x2
-          .asciiz   "int"
-          .byte     0x05
-          .byte     0x04
-.LDBG36:
-          .uleb128  0x2
-          .asciiz   "unsigned int"
-          .byte     0x07
-          .byte     0x04
-.LDBG37:
-          .uleb128  0x2
-          .asciiz   "short"
-          .byte     0x05
-          .byte     0x02
-.LDBG38:
-          .uleb128  0x2
-          .asciiz   "unsigned short"
-          .byte     0x07
-          .byte     0x02
-.LDBG39:
-          .uleb128  0x2
-          .asciiz   "char"
-          .byte     0x05
-          .byte     0x01
-.LDBG40:
-          .uleb128  0x2
-          .asciiz   "unsigned char"
-          .byte     0x07
-          .byte     0x01
-          .uleb128  0x3
-          .asciiz   "a"
-          .byte     0x01
-          .short    0x0001
-          .int      .LDBG35-.LDBG30
-          .short    .LDBG42-.LDBG41
-.LDBG41:
-          .byte     0x03
-          .int      a
-.LDBG42:
-.LDBG43:
-          .uleb128  0x4
-          .asciiz   "main"
-          .byte     0x01
-          .byte     0x03
-          .byte     0x01
-          .int      .LDBG35-.LDBG30
-          .byte     0x01
-          .long     .LDBG4           # low address
-          .long     .LDBG26          # high address
-          .uleb128  0x5
-          .asciiz   "b"
-          .byte     0x01
-          .short    0x0004
-          .short    0x0000
-          .int      .LDBG35-.LDBG30
-          .int      .LDBG44
-          .section  .debug_loc,    "",    @progbits
-.LDBG44:
-          .int      .LDBG11-.LDBG0
-          .int      .LDBG11-.LDBG0
-          .short    .LDBG46-.LDBG45
-.LDBG45:
-          .byte     0x50
-.LDBG46:
-          .int      .LDBG12-.LDBG0
-          .int      .LDBG13-.LDBG0
-          .short    .LDBG48-.LDBG47
-.LDBG47:
-          .byte     0x50
-.LDBG48:
-          .int      .LDBG9-.LDBG0
-          .int      .LDBG10-.LDBG0
-          .short    .LDBG50-.LDBG49
-.LDBG49:
-          .byte     0x50
-.LDBG50:
-          .int      .LDBG7-.LDBG0
-          .int      .LDBG8-.LDBG0
-          .short    .LDBG52-.LDBG51
-.LDBG51:
-          .byte     0x50
-.LDBG52:
-          .int      0x00000000
-          .int      0x00000000
-          .section  .debug_info,   "",    @progbits
-          .byte     0x00
-          .byte     0x00
-.LDBG32:
-          .section  .debug_pubnames, "",  @progbits
-          .int      .LDBG54-.LDBG53
-.LDBG53:
-          .short    0x0002
-          .long     .LDBG30          # offset in .debug_info
-          .int      .LDBG32-.LDBG30
-          .int      .LDBG43-.LDBG30
-          .asciiz   "main"
-          .int      0x00000000
-.LDBG54:
-          .section  .debug_line,   "",    @progbits
-.LDBG29:
-          .int      .LDBG56-.LDBG55
-.LDBG55:
-          .short    0x0003
-          .int      .LDBG58-.LDBG57
-.LDBG57:
-          .byte     0x01
-          .byte     0x01
-          .byte     0xff
-          .byte     0x04
-          .byte     0x10
-          .byte     0x00
-          .byte     0x01
-          .byte     0x01
-          .byte     0x01
-          .byte     0x01
-          .byte     0x00
-          .byte     0x00
-          .byte     0x00
-          .byte     0x01
-          .byte     0x00
-          .byte     0x00
-          .byte     0x01
-          .byte     0x00
-          .byte     0x00
-          .byte     0x00
-          .byte     0x00
-          .asciiz   "test.xc"
-          .uleb128  0x0
-          .uleb128  0x48c78ed9
-          .uleb128  0x55
-          .byte     0x00
-.LDBG58:
-          .byte     0x00
-          .sleb128  0x5
-          .byte     0x02
-          .int      .LDBG16
-          .byte     0x13             # special opcode (line + 2)
-          .byte     0x00
-          .sleb128  0x5
-          .byte     0x02
-          .int      .LDBG17
-          .byte     0x12             # special opcode (line + 1)
-          .byte     0x00
-          .sleb128  0x5
-          .byte     0x02
-          .int      .LDBG18
-          .byte     0x12             # special opcode (line + 1)
-          .byte     0x00
-          .sleb128  0x5
-          .byte     0x02
-          .int      .LDBG19
-          .byte     0x13             # special opcode (line + 2)
-          .byte     0x00
-          .sleb128  0x5
-          .byte     0x02
-          .int      .LDBG20
-          .byte     0x13             # special opcode (line + 2)
-          .byte     0x00
-          .uleb128  0x1
-          .byte     0x01
-.LDBG56:
-          .section  .debug_abbrev, "",    @progbits
-.LDBG28:
-          .uleb128  0x1
-          .byte     0x11
-          .byte     0x01
-          .byte     0x11
-          .byte     0x01
-          .byte     0x12
-          .byte     0x01
-          .byte     0x03
-          .byte     0x08
-          .byte     0x1b
-          .byte     0x08
-          .byte     0x13
-          .byte     0x05
-          .byte     0x25
-          .byte     0x08
-          .byte     0x10
-          .byte     0x06
-          .byte     0x00
-          .byte     0x00
-          .uleb128  0x2
-          .byte     0x24
-          .byte     0x00
-          .byte     0x03
-          .byte     0x08
-          .byte     0x3e
-          .byte     0x0b
-          .byte     0x0b
-          .byte     0x0b
-          .byte     0x00
-          .byte     0x00
-          .uleb128  0x4
-          .byte     0x2e
-          .byte     0x01
-          .byte     0x03
-          .byte     0x08
-          .byte     0x3a
-          .byte     0x0b
-          .byte     0x3b
-          .byte     0x0b
-          .byte     0x3f
-          .byte     0x0c
-          .byte     0x49
-          .byte     0x13
-          .byte     0x27
-          .byte     0x0c
-          .byte     0x11
-          .byte     0x01
-          .byte     0x12
-          .byte     0x01
-          .byte     0x00
-          .byte     0x00
-          .uleb128  0x3
-          .byte     0x34
-          .byte     0x00
-          .byte     0x03
-          .byte     0x08
-          .byte     0x3a
-          .byte     0x0b
-          .byte     0x3b
-          .byte     0x05
-          .byte     0x49
-          .byte     0x13
-          .byte     0x02
-          .byte     0x03
-          .byte     0x00
-          .byte     0x00
-          .uleb128  0x5
-          .byte     0x34
-          .byte     0x00
-          .byte     0x03
-          .byte     0x08
-          .byte     0x3a
-          .byte     0x0b
-          .byte     0x3b
-          .byte     0x05
-          .byte     0x2c
-          .byte     0x05
-          .byte     0x49
-          .byte     0x13
-          .byte     0x02
-          .byte     0x06
-          .byte     0x00
-          .byte     0x00
-
-          .byte     0x00
+          bl        test 
+          retsp     0x1 
+.cc_bottom main.function
+.linkset main.maxchanends, test.maxchanends
+.linkset main.maxtimers, test.maxtimers
+.linkset .LLNK33, test.maxthreads - 1
+.linkset .LLNK32, 1 + .LLNK33
+.linkset .LLNK31, 1 $M .LLNK32
+.linkset main.maxthreads, .LLNK31
+# Thread names for recovering thread graph in linker
           .section .dp.data,       "adw", @progbits
 .align 4
+          .align    4
           .section .dp.bss,        "adw", @nobits
 .align 4
           .ident    "XMOS 32-bit XC Compiler This is an unreleased/unsupported version. (build xxxx)"

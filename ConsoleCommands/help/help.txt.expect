@@ -34,7 +34,6 @@
       option: proc <node id> <core id>: All following analysis on given node and core (default: 0,0)
       option: freq <core frequency>: Sets the core frequency (default: 400)
       option: threads <num threads>: Sets number of threads currently executing (default: 8)
-      option: mode <resolve|noresolve>: Sets the engine the given mode
       option: srcpaths <paths>: Sets the (semicolon separated) source search path
   [-]echo "text": prints the text to the console
   [-]help [command]: Displays help message for the given command
