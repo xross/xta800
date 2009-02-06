@@ -180,13 +180,6 @@ public class Route {
 	}
 
 	boolean setInstructionNumCycles(int pc, int numCycles) {
-		for (Unknown unknown : m_unknowns) {
-			if (unknown.getPc() == pc) {
-				m_unknowns.remove(unknown);
-				m_engine.notify(Notifier.NOTIFY_UPDATE_STATE, "");
-				break;
-			}
-		}
 		return m_nodeCoreInstructionCache.setInstructionNumCycles(m_engine, pc, numCycles, m_nodeId, m_coreId);
 	}
 
@@ -289,35 +282,35 @@ public class Route {
 		ArrayList<Block> toRemove = new ArrayList<Block>();
 		
 		ArrayList<Integer> exclusions = new ArrayList<Integer>();
-		for(CodeReference ref : m_engine.getReference(ReferenceMode.FILTERED)){
+		for (CodeReference ref : m_engine.getReference(ReferenceMode.FILTERED)){
 			exclusions.add(ref.getPc());
 		}
 		ArrayList<Integer> required = new ArrayList<Integer>();
-		for(CodeReference ref : m_engine.getReference(ReferenceMode.REQUIRED)){
+		for (CodeReference ref : m_engine.getReference(ReferenceMode.REQUIRED)){
 			required.add(ref.getPc());
 		}
 		m_completePaths.addAll(m_removedPaths);
 		m_removedPaths.clear();
 		
-		if(required.size() == 0 && exclusions.size() == 0){
+		if (required.size() == 0 && exclusions.size() == 0){
 			return;
 		}
 		
-		for(Block completePath : m_completePaths){
+		for (Block completePath : m_completePaths){
 			HashSet<Integer> allPathPcs = completePath.getPcsCovered(true);
-			if(m_status == RouteStatus.ABORTED ){
+			if (m_status == RouteStatus.ABORTED ){
 				//return the paths unfiltered
 				return;
 			}
-			for(int req : required){
-				if(!allPathPcs.contains(req)){
+			for (int req : required){
+				if (!allPathPcs.contains(req)){
 					toRemove.add(completePath);
 					break;
 				}
 			}
 
-			for(int exc : exclusions){
-				if(allPathPcs.contains(exc)){
+			for (int exc : exclusions){
+				if (allPathPcs.contains(exc)){
 					toRemove.add(completePath);
 					break;
 				}
@@ -325,11 +318,11 @@ public class Route {
 
 		}
 		
-		for(Unknown unknown : m_unknowns){
-			if(exclusions.contains(unknown.getPc())){
-				unknown.setShow(false);
+		for (Unknown unknown : m_unknowns){
+			if (exclusions.contains(unknown.getPc())){
+				unknown.setIsShown(false);
 			} else {
-				unknown.setShow(true);
+				unknown.setIsShown(true);
 			}
 		}
 		

@@ -38,9 +38,9 @@ import com.xmos.xta.engine.Unknown;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
+import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.dialogs.InstructionTime;
-import com.xmos.xta.rcp.dialogs.Iterations;
 import com.xmos.xta.rcp.nodes.Node;
 
 public class XtaEditor extends TextEditor implements IPropertyChangeListener,
@@ -68,6 +68,9 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     
     Action m_showStartPointAction;
     Action m_showEndPointAction;
+    Action m_setInstructionTimeAction;
+    String m_clickCodeRefString;
+    CodeReference m_clickCodeRef;
 
     private static final String fnopString = "    ------- \tFNOP\n";
     
@@ -157,9 +160,13 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SHOW_CODE_POINT)) {
 			CodeReference codePoint = XtaNotifier.getInstance().getCodePoint();
 			showCodePoint(codePoint);
+			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
+			updateUnknowns();
+
 		}
 	}
-    
+
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
 		if (DEBUG) System.out.printf("XtaEditor: selectionChanged\n"); 
 
@@ -300,7 +307,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		
         if (m_selectedNode != null) {
 			for (Integer pc : m_selectedNode.getPcsCovered()) {
-				updateAnnotations(pc, HighlightAnnotationID, annotations, annotationPositions);
+				updateAnnotations(pc, HighlightAnnotationID, annotations, annotationPositions, false);
 			}
         }
         
@@ -327,7 +334,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	    new HashMap<Annotation, Position>();		
 		
 		for (Unknown unknown : XtaNotifier.getInstance().getRouteInfo().getRoute().getUnknowns()) {
-			updateAnnotations(unknown.getPc(), UnknownAnnotationID, annotations, annotationPositions);
+			if (unknown.isShown() && !unknown.isSet())
+				updateAnnotations(unknown.getPc(), UnknownAnnotationID, annotations, annotationPositions, true);
 		}						    
 
 		m_annotationModel.replaceAnnotations(m_previousUnknownAnnotations, annotationPositions);        
@@ -335,13 +343,13 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     }
 
     private void updateAnnotations(int pc, String type, List<Annotation> annotations, 
-    		Map<Annotation, Position> annotationPositions) {
+    		Map<Annotation, Position> annotationPositions, boolean excludeFnops) {
 		if (DEBUG) System.out.printf("XtaEditor: updateAnnotations: pc: 0x%05x\n", pc); 
 
     	for (InputSection inputSection : getSections()) {
 			boolean hitSection = false;
 			for (InputLine line : inputSection.getLines()) {
-				if (line.getPc() == pc) {	
+				if ((line.getPc() == pc) && (!excludeFnops || !inputSection.isFnop(line.getOffset()))) {	
 					addAnnotation(line.getIndex(), type, annotations, annotationPositions);
 					hitSection = true;
 				}
@@ -409,18 +417,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
      	setAction(SetStartPointID, new Action("Set start point") {
      		public void run() {
-     			int clickLineNum = getVerticalRuler().getLineOfLastMouseButtonActivity();
-     			String ref = getLineDescription(clickLineNum);
-    			CodeReference startPoint = CodeReferenceFactory.createCodeReference(ref);
-     			XtaNotifier.getInstance().notifySetStartPoint(startPoint);
+     			XtaNotifier.getInstance().notifySetStartPoint(m_clickCodeRef);
      		}
      	});
      	setAction(SetEndPointID, new Action("Set end point") {
      		public void run() {
-     			int clickLineNum = getVerticalRuler().getLineOfLastMouseButtonActivity();
-     			String ref = getLineDescription(clickLineNum);
-     			CodeReference endPoint = CodeReferenceFactory.createCodeReference(ref);
-     			XtaNotifier.getInstance().notifySetEndPoint(endPoint);
+     			XtaNotifier.getInstance().notifySetEndPoint(m_clickCodeRef);
      		}
      	});
      	setAction(RemoveStartPointID, new Action("Remove start point") {
@@ -436,11 +438,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      		}
      	});
 
-     	setAction(SetInstructionTimeID, new Action("Set instruction time") {
+     	m_setInstructionTimeAction = new Action("Set instruction time") {
      		public void run() {
-//     			new InstructionTime(m_parent.getShell(), m_this);
+     			new InstructionTime(m_parent.getShell(), XtaEngine.getEngine(), m_clickCodeRef);
      		}
-     	});
+     	};
+     	setAction(SetInstructionTimeID, m_setInstructionTimeAction);
     }    
     
     protected void editorContextMenuAboutToShow(IMenuManager menu) {
@@ -467,22 +470,33 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		
 		int clickLineNum = getVerticalRuler().getLineOfLastMouseButtonActivity();
 		
-		String codeReference = getLineDescription(clickLineNum);				
-		if (codeReference != null) {
-			if (isStartPointSet(codeReference)) {
+		m_clickCodeRefString = getLineDescription(clickLineNum);				
+		if (m_clickCodeRefString != null) {
+			
+			m_clickCodeRef = CodeReferenceFactory.createCodeReference(m_clickCodeRefString); 
+			
+			if (isStartPointSet(m_clickCodeRefString)) {
 			    addAction(menu, RemoveStartPointID);
 			} else {
 			    addAction(menu, SetStartPointID);				
 			}
-			if (isEndPointSet(codeReference)) {						
+			if (isEndPointSet(m_clickCodeRefString)) {						
 			    addAction(menu, RemoveEndPointID);
 			} else {
 			    addAction(menu, SetEndPointID);				
 			}
 			menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
+			addAction(menu, SetInstructionTimeID);
+			
+			if ((XtaNotifier.getInstance().getRouteInfo() != null) && 
+			    (XtaNotifier.getInstance().getRouteInfo().getRoute() != null) &&
+			     XtaEngine.getEngine().canInstructionPause(m_clickCodeRef.getPc())) {
+				
+				m_setInstructionTimeAction.setEnabled(true);
+			} else {
+				m_setInstructionTimeAction.setEnabled(false);
+			}
 		}
-
-	    addAction(menu, SetInstructionTimeID);
 
      	super.editorContextMenuAboutToShow(menu);
     }

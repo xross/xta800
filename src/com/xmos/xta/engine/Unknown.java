@@ -17,46 +17,50 @@ public class Unknown {
     private Expression m_guard;
     private Expression m_branchTarget;
     private Block m_block;
-    private boolean m_show;
+    private boolean m_isShown;
+    private boolean m_isSet;
     
     public Unknown(Block block, XtaInstruction inst) {
     	initialise(block, inst);
     	m_reason = UnknownType.PAUSABLETIME;
-        m_show = true;
-        
     }    
     
     public Unknown(Block block, XtaInstruction inst, Expression guard, Expression branchTarget) {
     	initialise(block, inst);
     	m_guard = guard;
         m_branchTarget = branchTarget;
-        if(!branchTarget.canResolve()){
+        if (!branchTarget.canResolve()){
             m_reason = UnknownType.BRANCHTARGET;
-        } else if(!guard.canResolve()){
+        } else if (!guard.canResolve()){
             m_reason = UnknownType.GUARD;
         } else {
             m_reason = UnknownType.FALSEUNKNOWN;    
         }
     }
     
-    private void initialise(Block block, XtaInstruction inst){
+    private void initialise(Block block, XtaInstruction inst) {
     	m_inst = inst;
     	m_block = block;
     	m_guard = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
         m_reason = UnknownType.UNKNOWN;
         m_branchTarget = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
-        m_show = true;
+        m_isShown = true;
+        m_isSet = false;
     }
     
     
     public int getPc() {
-    	if(m_inst == null) return 0;
-    	else return m_inst.getPc();
+    	if (m_inst == null)
+    		return 0;
+    	else
+    		return m_inst.getPc();
     }
 
     public int getPathId() {
-    	if(m_block == null) return 0;
-    	else return m_block.getId();
+    	if (m_block == null)
+    		return 0;
+    	else
+    		return m_block.getId();
     }
 
     public String getReason() {
@@ -81,7 +85,7 @@ public class Unknown {
         }
         return str;
     }
-    public UnknownType getUnknownType(){
+    public UnknownType getUnknownType() {
     	return m_reason;
     }
 
@@ -102,10 +106,19 @@ public class Unknown {
         return "";
     }    
     
-    public boolean getShow(){
-    	return m_show;
+    public boolean isShown() {
+    	return m_isShown;
     }
-    public void setShow(boolean show){
-    	m_show= show;
+    
+    public void setIsShown(boolean isShown) {
+    	m_isShown = isShown;
+    }
+
+    public boolean isSet() {
+    	return m_isSet;
+    }
+    
+    public void setIsSet(boolean isSet) {
+    	m_isSet = isSet;
     }
 }

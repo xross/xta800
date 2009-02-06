@@ -73,7 +73,8 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			clearTree();
 			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
+		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE) ||
+				   event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
 			refreshTree();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUDES)) {

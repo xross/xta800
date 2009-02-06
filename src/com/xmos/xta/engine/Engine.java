@@ -400,16 +400,11 @@ public class Engine {
 		if (m_route != null) {
 			m_route.invalidateAllBlocks();
 			hit = m_route.setInstructionTimeTaken(pc, timeTaken);
-			ArrayList<Unknown> toRemove = new ArrayList<Unknown>();
-			for (Unknown unknown : m_route.getUnknowns()) {
-				if (unknown.getPc() == pc && unknown.getUnknownType() == UnknownType.PAUSABLETIME) {
-					toRemove.add(unknown);
-				}
-			}
-			m_route.getUnknowns().removeAll(toRemove);
 			if (hit) {
-
-				notify(Notifier.NOTIFY_UPDATE_EXCLUDES, "");
+				boolean removed = updateUnknowns(pc);
+				if (removed)
+					notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+				
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			}
 		} else {
@@ -431,6 +426,9 @@ public class Engine {
 			m_route.invalidateAllBlocks();
 			hit = m_route.setInstructionNumCycles(pc, numCycles);
 			if (hit) {
+				boolean removed = updateUnknowns(pc);
+				if (removed)
+					notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			}
@@ -440,11 +438,27 @@ public class Engine {
 		return hit;
 	}
 
+	private boolean updateUnknowns(int pc) {
+		boolean found = false;
+		for (Unknown unknown : m_route.getUnknowns()) {
+			if ((unknown.getPc() == pc) && (unknown.getUnknownType() == UnknownType.PAUSABLETIME)) {
+				unknown.setIsSet(true);
+
+				found = true;
+			}
+		}
+		return found;
+	}
+
 	public int getInstructionNumCycles(int pc) {
 		if (m_route != null) {
 			return m_route.getInstructionNumCycles(pc);
 		}
 		return 0;
+	}
+	
+	public boolean canInstructionPause(int pc) {
+		return m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId).getInstruction(pc).canPause();
 	}
 
 	public Double getTimeTaken(int lineNumber) {

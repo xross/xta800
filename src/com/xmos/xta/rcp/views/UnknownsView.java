@@ -101,7 +101,9 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 		if (DEBUG) 
 			System.out.printf("Unknowns: propertyChange: %s\n", event.getProperty());
 
-		if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUDES)) {
+		if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS) ||
+			event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUDES)) {
+			
 			m_tableViewer.setInput(null);
 			updateDisplay();
 			

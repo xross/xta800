@@ -916,7 +916,12 @@ public class Block implements Comparable<Block> {
 	}	
 	
 	public int getNumUnknownsThis() {
-		return m_unknowns.size();
+		int num = 0;
+		for (Unknown unknown : m_unknowns) {
+			if (unknown.isShown() && !unknown.isSet())
+				num++;
+		}
+		return num;
 	}
 
 	
