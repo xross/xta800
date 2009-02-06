@@ -11,7 +11,7 @@ public class ConsoleSystem implements Console {
 	}
 	
 	public String getNextLine(Vector<Command> commandHistory) {
-    	Scanner in = new Scanner(System.in);
+		Scanner in = new Scanner(System.in);
         return in.nextLine();		
 	}
 	

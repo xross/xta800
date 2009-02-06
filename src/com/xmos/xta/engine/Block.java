@@ -97,7 +97,7 @@ public class Block implements Comparable<Block> {
 	 * route analysis
 	 */
 	public Block(BlockCommonComponents bc, int fromPc, int toPc, MachineState machineState, ExecutionState executionState) {
-		if(DEBUG)System.out.println("block 0 started at 0x" + Integer.toHexString(fromPc));
+		if(DEBUG) System.out.println("block 0 started at 0x" + Integer.toHexString(fromPc));
 		
 		m_numBlocks = 0;
 		initialise(machineState);
@@ -476,28 +476,17 @@ public class Block implements Comparable<Block> {
 			instruction.execute(m_machineState, m_currentThread);
 			return true;
 		} catch (InstructionExecption e) {
-			
-			if(m_bc.isResolveExpressions()){
-				//die when we wont be able to be sure of everything anymore
+			//continue on if not fatal
+			if(e.isFatal()){
 				setStatus(BlockStatus.UNRESOLVED);
 				String reason  = e.getMessage();
-				
 				Unresolved unresolved = new Unresolved(this, instruction, reason);
 				m_unresolved = unresolved;
 				m_route.addUnresolvedPath(unresolved);
 			} else {
-				//continue on if not fatal
-				if(e.isFatal()){
-					setStatus(BlockStatus.UNRESOLVED);
-					String reason  = e.getMessage();
-					Unresolved unresolved = new Unresolved(this, instruction, reason);
-					m_unresolved = unresolved;
-					m_route.addUnresolvedPath(unresolved);
-				} else {
-					return true;
-					//addUnknown(instruction);
-				}
-			}	
+				return true;
+				//addUnknown(instruction);
+			}
 		}
 		releaseMemory();
 		return false;

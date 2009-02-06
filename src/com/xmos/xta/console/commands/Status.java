@@ -45,11 +45,6 @@ class Status extends Command {
     	console.display(String.format("Frequency: %d\n", engine.getConfig().m_frequency));    	
     	console.display(String.format("NumThreads: %d\n", engine.getConfig().m_numThreads));
     	
-    	if (engine.getResolve())
-    		console.display(String.format("Mode: Resolve\n"));
-    	else
-    		console.display(String.format("Mode: No Resolve\n"));    		
-    	
     	console.display("SrcPaths: " + engine.getSrcPaths() + "\n");
     	
     	if (executable==null)
