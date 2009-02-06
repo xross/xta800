@@ -579,7 +579,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	private InputLine findPcLine(int pc) {
 		for (InputSection inputSection : getSections()) {
 			for (InputLine line : inputSection.getLines()) {
-				if (line.getPc() == pc) {	
+				if ((line.getPc() == pc) && !inputSection.isFnop(line.getOffset())) {	
 					return line;
 				}
 			}
@@ -590,7 +590,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	private InputLine findCodeLine(int pc) {
 		for (InputSection inputSection : getSections()) {
 			for (InputLine line : inputSection.getLines()) {
-				if (line.getPc() == pc) {	
+				if ((line.getPc() == pc) && !inputSection.isFnop(line.getOffset())) {	
 					return inputSection.getHeader();
 				}
 			}
