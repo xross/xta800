@@ -4,6 +4,8 @@ import java.util.Vector;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -21,8 +23,12 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Unknown;
+import com.xmos.xta.engine.references.CodeReference;
+import com.xmos.xta.engine.references.CodeReferenceFactory;
+import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaRouteInfo;
 import com.xmos.xta.rcp.nodes.Node;
@@ -89,6 +95,8 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 		}
 		updateDisplay();
 		getSite().getPage().addSelectionListener(this);
+		
+	    setupMouseListeners();
 	}
 
 	public void setFocus() {
@@ -194,4 +202,17 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 		}
 	}
 
+	private void setupMouseListeners() {
+		m_tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent event) {
+				ISelection selection = event.getSelection();
+				Unknown unknown = (Unknown)((IStructuredSelection) selection).getFirstElement();
+				
+				CodeReference startPoint = CodeReferenceFactory.createCodeReference("0x" + Integer.toHexString(unknown.getPc()));
+				Engine engine = XtaEngine.getEngine();
+				startPoint.resolve(engine, engine.getNodeId(), engine.getCoreId());
+				XtaNotifier.getInstance().notifyShow(startPoint);
+			}
+		});
+	}
 }

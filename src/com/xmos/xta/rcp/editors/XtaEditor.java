@@ -33,6 +33,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Unknown;
 import com.xmos.xta.engine.XtaInstruction;
@@ -488,7 +489,10 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
 			addAction(menu, SetInstructionTimeID);
 			
-			if ((XtaNotifier.getInstance().getRouteInfo() != null) && 
+			Engine engine = XtaEngine.getEngine();
+			boolean resolved = m_clickCodeRef.resolve(engine, engine.getNodeId(), engine.getCoreId());
+			if (resolved &&
+				(XtaNotifier.getInstance().getRouteInfo() != null) && 
 			    (XtaNotifier.getInstance().getRouteInfo().getRoute() != null) &&
 			     XtaEngine.getEngine().canInstructionPause(m_clickCodeRef.getPc())) {
 				
