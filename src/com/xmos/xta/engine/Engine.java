@@ -401,10 +401,6 @@ public class Engine {
 			m_route.invalidateAllBlocks();
 			hit = m_route.setInstructionTimeTaken(pc, timeTaken);
 			if (hit) {
-				boolean removed = updateUnknowns(pc);
-				if (removed)
-					notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-				
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			}
 		} else {
@@ -426,10 +422,6 @@ public class Engine {
 			m_route.invalidateAllBlocks();
 			hit = m_route.setInstructionNumCycles(pc, numCycles);
 			if (hit) {
-				boolean removed = updateUnknowns(pc);
-				if (removed)
-					notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			}
 		} else {
@@ -438,7 +430,7 @@ public class Engine {
 		return hit;
 	}
 
-	private boolean updateUnknowns(int pc) {
+	public void clearUnknown(int pc) {
 		boolean found = false;
 		for (Unknown unknown : m_route.getUnknowns()) {
 			if ((unknown.getPc() == pc) && (unknown.getUnknownType() == UnknownType.PAUSABLETIME)) {
@@ -447,7 +439,8 @@ public class Engine {
 				found = true;
 			}
 		}
-		return found;
+		if (found)
+			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 
 	public int getInstructionNumCycles(int pc) {

@@ -20,6 +20,8 @@ import com.xmos.xta.engine.references.CodeReference;
 public class InstructionTime extends Dialog {
     Engine m_engine;
     int m_pc;
+    
+    boolean m_valueChanged;
     int m_originalCycles;
 	
     Text m_ns;
@@ -32,6 +34,8 @@ public class InstructionTime extends Dialog {
     	super(parent);
     	m_engine = engine;
     	m_pc = codeReference.getPc();
+
+    	m_valueChanged = false;
     	m_originalCycles = m_engine.getInstructionNumCycles(m_pc);
     	open();
     }
@@ -61,6 +65,7 @@ public class InstructionTime extends Dialog {
 			public void modifyText(ModifyEvent e) {
 				try {
 					m_engine.setInstructionTimeTaken(m_pc, Double.parseDouble(m_ns.getText()));
+					m_valueChanged = true;
 					updateCyclesValue();
 				} catch (NumberFormatException exception) {
 					// Do nothing
@@ -76,6 +81,7 @@ public class InstructionTime extends Dialog {
 			public void modifyText(ModifyEvent e) {
 				try {
 					m_engine.setInstructionNumCycles(m_pc, Integer.parseInt(m_cycles.getText()));
+					m_valueChanged = true;
 					updateNsValue();
 				} catch (NumberFormatException exception) {
 					// Do nothing
@@ -113,7 +119,10 @@ public class InstructionTime extends Dialog {
 
     protected void buttonPressed(int id) {
     	if (id == IDialogConstants.CANCEL_ID) {
-    		m_engine.setInstructionNumCycles(m_pc, m_originalCycles);
+    		if (m_valueChanged)
+    			m_engine.setInstructionNumCycles(m_pc, m_originalCycles);
+    	} else {
+    		m_engine.clearUnknown(m_pc);
     	}
     	super.buttonPressed(id);
     }
