@@ -224,7 +224,7 @@ public class Engine {
 			m_xeLoader = newLoader;
 			m_executableFile = executableFile;
 			initialiseLists(fileFinder);
-			m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);
+			m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader, m_config);
 
 			try {
 				decodeInstructions();

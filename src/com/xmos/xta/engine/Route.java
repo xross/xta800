@@ -116,13 +116,13 @@ public class Route {
 		BlockCommonComponents bc = null;
 
 		if (m_functionName != null) {
-			bc = new BlockCommonComponents(m_config, m_nodeCoreInstructionCache, memoryImage, symbolTable, 
+			bc = new BlockCommonComponents(m_nodeCoreInstructionCache, memoryImage, symbolTable, 
 					m_engine.getReference(ReferenceMode.PROHIBITED), this, Block.Mode.FUNCTION, m_engine);
 			assert (symbolTable.symbolExists(m_functionName));
 			int fromPc = symbolTable.symbolAddress(m_functionName);
 			new ExecutionState(this, initialState, bc, fromPc);
 		} else {
-			bc = new BlockCommonComponents(m_config, m_nodeCoreInstructionCache, memoryImage, symbolTable, 
+			bc = new BlockCommonComponents(m_nodeCoreInstructionCache, memoryImage, symbolTable, 
 					m_engine.getReference(ReferenceMode.PROHIBITED), this, Block.Mode.ABSOLUTE, m_engine);
 			new ExecutionState(this, initialState, bc, m_fromRef.getPc(), m_toRef.getPc());
 		}

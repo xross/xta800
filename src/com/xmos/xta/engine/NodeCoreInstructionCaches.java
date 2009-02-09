@@ -8,20 +8,20 @@ public class NodeCoreInstructionCaches {
 	private HashMap<String, InstructionDecodeCache> m_nodeCore;
 	private XeLoader m_xeLoader;
 	
-	public NodeCoreInstructionCaches(XeLoader xeLoader){
+	public NodeCoreInstructionCaches(XeLoader xeLoader, Config config){
 		m_xeLoader = xeLoader;
 		m_nodeCore = new HashMap<String, InstructionDecodeCache>();
 		for(int node : m_xeLoader.getNodeIds()){
 			for(int core : m_xeLoader.getCoreIds(node)){
-				addNodeCore(node, core);
+				addNodeCore(node, core, config);
 			}
 		}
 	}
 	
-	public void addNodeCore(int node, int core){
+	public void addNodeCore(int node, int core, Config config){
 		String newNodeCore = nodeCoreString(node, core);
 		InstructionDecodeCache idc = new InstructionDecodeCache(
-                m_xeLoader.getSymbolTable(node, core), m_xeLoader.getArchitecture());
+                m_xeLoader.getSymbolTable(node, core), m_xeLoader.getArchitecture(), config);
 		m_nodeCore.put(newNodeCore, idc);
 	}
 	

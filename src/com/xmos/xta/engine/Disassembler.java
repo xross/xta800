@@ -10,7 +10,7 @@ import com.xmos.xeloader.XeLoader;
 
 public class Disassembler {      
 	public static Vector<Instruction> disassemble(
-			MemoryImage memoryImage, int address, int size, XeLoader.Architecture architecture) {	
+			MemoryImage memoryImage, int address, int size, XeLoader.Architecture architecture, Config config) {	
 
 		XtaInstructionDecoder instructionDecoder = 
 			XtaInstructionDecoder.createInstrcutionDecoder(architecture);
@@ -38,7 +38,7 @@ public class Disassembler {
         	} catch (Exception e) {
         	    // Do nothing
         	}
-        	XtaInstruction instruction = instructionDecoder.decode(opcode, pc);    
+        	XtaInstruction instruction = instructionDecoder.decode(opcode, pc, config);    
             disassemblyVector.add(instruction);            
         	int instNumBytes = instruction.getNumBytes();        	        	
         	numBytesRead += instNumBytes;

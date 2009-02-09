@@ -58,7 +58,8 @@ public class AsmDisplayer {
 	            
 	            m_console.display(String.format("<%s>:\n", functionName));	            
 	            Vector<Instruction> disassemblyVector = Disassembler.disassemble(
-	            		memoryImage, functionAddress, functionSize, m_engine.getXeLoader().getArchitecture());
+	            		memoryImage, functionAddress, functionSize, m_engine.getXeLoader().getArchitecture(),
+	            		m_engine.getConfig());
 	            
 	            HashMap<Integer, String> branchTargetMap = Disassembler.createBranchTargetMap(
 	            		symbolTable, disassemblyVector);	            

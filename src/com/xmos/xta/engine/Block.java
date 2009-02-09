@@ -617,10 +617,8 @@ public class Block implements Comparable<Block> {
 		if(DEBUG) {
 			System.out.println(this.m_blockId + " "+inst);
 		}
-		//inst.setBasicNumCycles(m_bc.getM_instructionAttributes().getTiming(inst.getNmenonic()));
-		inst.setConfig(m_bc.getConfig());
 
-		boolean keepInstructionTrace =true;
+		boolean keepInstructionTrace = true;
 		
 		if (m_instructions != null && keepInstructionTrace){
 			m_instructions.add(inst);

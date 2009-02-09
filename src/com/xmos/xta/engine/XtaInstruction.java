@@ -29,17 +29,17 @@ public abstract class XtaInstruction extends Instruction {
 	private LivenessResource m_use;
 	private LivenessResource m_def;
 	
-	String m_functionName;
-    int m_functionOffset;	
-    Attributes m_numCycles;
-    int m_basicNumCycles;
-    Config m_config;
+	private String m_functionName;
+    private int m_functionOffset;	
+    private Attributes m_numCycles;
+    private int m_basicNumCycles;
+    private Config m_config;
   
     private ArrayList<XtaInstruction> m_returnLocations; 
     private boolean m_definesResource;
 	private boolean m_usesResource;
     
-	XtaInstruction(String nmenonic, int opcode, int pc, int numBytes, 
+	XtaInstruction(String nmenonic, Config config, int opcode, int pc, int numBytes, 
 			boolean isLoadStore, boolean canPause, boolean usesResource, 
 		    boolean definesResource, int numCycles) {
 		super(nmenonic, opcode, pc, numBytes, isLoadStore, canPause);
@@ -50,7 +50,7 @@ public abstract class XtaInstruction extends Instruction {
 		m_numCycles = new Attributes();
 		m_basicNumCycles = numCycles;
 		m_numCycles.setNumIterations(numCycles);
-		m_config = null;
+		m_config = config;
 		m_returnLocations = new ArrayList<XtaInstruction>();
 		m_liveIn = new HashSet<LivenessResource>();
 		m_liveOut = new HashSet<LivenessResource>();
@@ -2380,8 +2380,8 @@ public abstract class XtaInstruction extends Instruction {
 }
 
 class NullInstruction extends XtaInstruction {    
-    NullInstruction(String nmenonic, int opcode, int pc, int numBytes) {
-        super(nmenonic, opcode, pc, numBytes, false, false, false, false, 1);
+    NullInstruction(String nmenonic, Config config, int opcode, int pc, int numBytes) {
+        super(nmenonic, config, opcode, pc, numBytes, false, false, false, false, 1);
         setIsFnop(true);
     }
     
