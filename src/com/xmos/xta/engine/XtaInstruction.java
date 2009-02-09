@@ -22,7 +22,7 @@ public abstract class XtaInstruction extends Instruction {
 	private static final boolean RESOURCEDEBUG  = false;
 	private static final boolean m_uninplimented = true;
   
-	private ArrayList<Integer> m_successors;
+	private ArrayList<NextPcType> m_successors;
 	
 	private HashSet<LivenessResource> m_liveIn;
 	private HashSet<LivenessResource> m_liveOut;
@@ -38,6 +38,9 @@ public abstract class XtaInstruction extends Instruction {
     private ArrayList<XtaInstruction> m_returnLocations; 
     private boolean m_definesResource;
 	private boolean m_usesResource;
+	
+	private boolean m_nextInstructionPcKnown;
+	private int m_nextInstructionPc;
     
 	XtaInstruction(String nmenonic, int opcode, int pc, int numBytes, 
 			boolean isLoadStore, boolean canPause, boolean usesResource, 
@@ -54,10 +57,18 @@ public abstract class XtaInstruction extends Instruction {
 		m_returnLocations = new ArrayList<XtaInstruction>();
 		m_liveIn = new HashSet<LivenessResource>();
 		m_liveOut = new HashSet<LivenessResource>();
-		m_successors = new ArrayList<Integer>();
-		if(this.getBranchPcRelative()) addSuccessor(this.getBranchPcRelativeTargetPc());
+		m_successors = new ArrayList<NextPcType>();
+		if(this.getBranchPcRelative()) addSuccessor(this.getBranchPcRelativeTargetPc(), true);
 	}
 
+	public boolean isNextInstructionPcKnown(){
+		return m_nextInstructionPcKnown;
+	}
+	
+	public int getNextInstructionPc(){
+		return m_nextInstructionPc;
+	}
+	
 	public void setUse(LivenessResource use){
 		m_use = use;
 	}
@@ -92,11 +103,11 @@ public abstract class XtaInstruction extends Instruction {
 	public HashSet<LivenessResource> getLiveOut(){
 		return m_liveOut;
 	}
-	public ArrayList<Integer> getSuccessors(){
+	public ArrayList<NextPcType> getSuccessors(){
 		return m_successors;
 	}
-	public void addSuccessor(int successorPc){
-		if(!m_successors.contains(successorPc))m_successors.add(successorPc);
+	public void addSuccessor(int successorPc, boolean isBranch){
+		if(!m_successors.contains(successorPc))m_successors.add(new NextPcType(successorPc, isBranch));
 		return;
 	}
 	
@@ -113,7 +124,7 @@ public abstract class XtaInstruction extends Instruction {
 	}
 	
 	public void addReturnLocation(XtaInstruction pc){
-		addSuccessor(pc.getPc());
+		addSuccessor(pc.getPc(), true);
 	    m_returnLocations.add(pc);
 	}
 	
@@ -198,6 +209,8 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
 	}
     
     void AND(MachineState state, int thread) throws Exception {
@@ -207,6 +220,8 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void ANDNOT(MachineState state, int thread) throws Exception {
@@ -217,6 +232,8 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op2);
     	state.m_op1 = result;
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void ASHR(MachineState state, int thread) throws Exception {
@@ -227,13 +244,22 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op3);
     	state.m_op1 = result;
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void BAU(MachineState state, int thread) throws Exception {
     	if (INSTRUCTIONDEBUG)     	
     	    System.out.printf("0x%08x: BAU\n", getPc());
     	state.m_op1.resolve();
-    	state.jump(state.m_op1);
+    	
+    	if(state.m_op1.canResolve()){
+    		m_nextInstructionPc = state.m_op1.getValue();
+    		m_nextInstructionPcKnown = true;
+    	} else {
+    		m_nextInstructionPcKnown = false;
+    	}
+    	//state.jump(state.m_op1);
     }
     
     void BITREV(MachineState state, int thread) throws Exception {
@@ -242,6 +268,8 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1 = new Expression(Expression.OperatorType.BITREV);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void BLA(MachineState state, int thread) throws Exception {
@@ -250,9 +278,14 @@ public abstract class XtaInstruction extends Instruction {
     	state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
     	
     	state.getLinkRegister(thread).resolve();
-    	state.jump(state.m_op1);
+    	//state.jump(state.m_op1);
+    	if(state.m_op1.canResolve()){
+    		m_nextInstructionPc = state.m_op1.getValue();
+    		m_nextInstructionPcKnown = true;
+    	} else {
+    		m_nextInstructionPcKnown = false;
+    	}
     	setBranchLink(true);
-
     }
 
     void BLACP(MachineState state, int thread) throws Exception {
@@ -271,15 +304,21 @@ public abstract class XtaInstruction extends Instruction {
     	if(loadLocation.canResolve()){
     		Expression branchTarget = state.readMemory(loadLocation.getValue());
     		branchTarget.resolve();
-    		state.jump(branchTarget);
+    		
+    		if(branchTarget.canResolve()){
+    			m_nextInstructionPc = branchTarget.getValue();
+        		m_nextInstructionPcKnown = true;
+    		} else {
+    			m_nextInstructionPcKnown = false;
+    		}
+    		
+    		//state.jump(branchTarget);
     		state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
     		state.getLinkRegister(thread).resolve();
     		setBranchLink(true);    
     	} else {
-    		
-    	}
-    	
-    		
+    		m_nextInstructionPcKnown = false;
+    	}	
     }
 
     void BLAT(MachineState state, int thread) throws Exception {
@@ -298,12 +337,20 @@ public abstract class XtaInstruction extends Instruction {
     	if(loadLocation.canResolve()){
     		Expression branchTarget = state.readMemory(loadLocation.getValue());
     		branchTarget.resolve();
-    		state.jump(branchTarget);
+    		
+    		if(branchTarget.canResolve()){
+    			m_nextInstructionPc = branchTarget.getValue();
+    			m_nextInstructionPcKnown = true;
+    		} else {
+    			m_nextInstructionPcKnown = false;
+    		}
+    		
+    		//state.jump(branchTarget);
     		state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
     		state.getLinkRegister(thread).resolve();
     		setBranchLink(true);    
     	} else {
-    		
+    		m_nextInstructionPcKnown = false;
     	}
     }
 
@@ -319,7 +366,15 @@ public abstract class XtaInstruction extends Instruction {
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
         branchTarget.resolve();
-    	state.jump(branchTarget);
+        
+        if(branchTarget.canResolve()){
+			m_nextInstructionPc = branchTarget.getValue();
+			m_nextInstructionPcKnown = true;
+		} else {
+			m_nextInstructionPcKnown = false;
+		}
+        
+    	//state.jump(branchTarget);
     	state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
     	state.getLinkRegister(thread).resolve();
         setBranchLink(true);
@@ -338,7 +393,15 @@ public abstract class XtaInstruction extends Instruction {
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
         branchTarget.resolve();
-    	state.jump(branchTarget);
+        
+        if(branchTarget.canResolve()){
+			m_nextInstructionPc = branchTarget.getValue();
+			m_nextInstructionPcKnown = true;
+		} else {
+			m_nextInstructionPcKnown = false;
+		}
+        
+    	//state.jump(branchTarget);
     	state.setLinkRegister(new Expression(getPc() + getNumBytes()), thread);
     	state.getLinkRegister(thread).resolve();
         setBranchLink(true);
@@ -356,7 +419,18 @@ public abstract class XtaInstruction extends Instruction {
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
         branchTarget.resolve();
-    	state.branch(false, state.m_op1, branchTarget, this);
+        
+        if(state.m_op1.canResolve() && branchTarget.canResolve()){
+        	if(state.m_op1.getValue() == 0 ){
+        		m_nextInstructionPc = branchTarget.getValue();
+        	} else {
+        		m_nextInstructionPc = getPc() + getNumBytes();
+        	}
+        	m_nextInstructionPcKnown = true;
+        } else {
+        	m_nextInstructionPcKnown = false;
+        }
+    	//state.branch(false, state.m_op1, branchTarget, this);
     }
 
     void BRBT(MachineState state, int thread) throws Exception {
@@ -371,7 +445,18 @@ public abstract class XtaInstruction extends Instruction {
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
         branchTarget.resolve();
-    	state.branch(true, state.m_op1, branchTarget, this);
+        if(state.m_op1.canResolve() && branchTarget.canResolve()){
+        	if(state.m_op1.getValue() != 0 ){
+        		m_nextInstructionPc = branchTarget.getValue();
+        	} else {
+        		m_nextInstructionPc = getPc() + getNumBytes();
+        	}
+        	m_nextInstructionPcKnown = true;
+        } else {
+        	m_nextInstructionPcKnown = false;
+        }
+        
+    	//state.branch(true, state.m_op1, branchTarget, this);
     }
 
     void BRBU(MachineState state, int thread) throws Exception {
@@ -386,7 +471,13 @@ public abstract class XtaInstruction extends Instruction {
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
         branchTarget.resolve();
-    	state.jump(branchTarget);
+        if( branchTarget.canResolve()){
+        	m_nextInstructionPc = branchTarget.getValue();
+        	m_nextInstructionPcKnown = true;
+        } else {
+        	m_nextInstructionPcKnown = false;
+        }
+    	//state.jump(branchTarget);
     }
 
     void BRFF(MachineState state, int thread) throws Exception {
@@ -401,7 +492,17 @@ public abstract class XtaInstruction extends Instruction {
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
         branchTarget.resolve();
-    	state.branch(false, state.m_op1, branchTarget, this);
+        if(state.m_op1.canResolve() && branchTarget.canResolve()){
+        	if(state.m_op1.getValue() == 0 ){
+        		m_nextInstructionPc = branchTarget.getValue();
+        	} else {
+        		m_nextInstructionPc = getPc() + getNumBytes();
+        	}
+        	m_nextInstructionPcKnown = true;
+        } else {
+        	m_nextInstructionPcKnown = false;
+        }
+        //state.branch(false, state.m_op1, branchTarget, this);
     }
 
     void BRFT(MachineState state, int thread) throws Exception {
@@ -416,7 +517,17 @@ public abstract class XtaInstruction extends Instruction {
     	branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
     	branchTarget.resolve();
-        state.branch(true, state.m_op1, branchTarget, this);
+    	if(state.m_op1.canResolve() && branchTarget.canResolve()){
+        	if(state.m_op1.getValue() != 0 ){
+        		m_nextInstructionPc = branchTarget.getValue();
+        	} else {
+        		m_nextInstructionPc = getPc() + getNumBytes();
+        	}
+        	m_nextInstructionPcKnown = true;
+        } else {
+        	m_nextInstructionPcKnown = false;
+        }
+    	//state.branch(true, state.m_op1, branchTarget, this);
     }
 
     void BRFU(MachineState state, int thread) throws Exception {
@@ -431,7 +542,13 @@ public abstract class XtaInstruction extends Instruction {
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
         branchTarget.resolve();
-        state.jump(branchTarget);
+        if(branchTarget.canResolve()){
+            m_nextInstructionPc = branchTarget.getValue();
+        	m_nextInstructionPcKnown = true;
+        } else {
+        	m_nextInstructionPcKnown = false;
+        }
+        //state.jump(branchTarget);
     }
 
     void BRU(MachineState state, int thread) throws Exception {
@@ -446,7 +563,13 @@ public abstract class XtaInstruction extends Instruction {
         branchTarget.addOperand(new Expression(getPc() + getNumBytes()));
         branchTarget.addOperand(offset);
         branchTarget.resolve();
-    	state.jump(branchTarget);
+        if(branchTarget.canResolve()){
+            m_nextInstructionPc = branchTarget.getValue();
+        	m_nextInstructionPcKnown = true;
+        } else {
+        	m_nextInstructionPcKnown = false;
+        }
+    	//state.jump(branchTarget);
     }
 
     void BYTEREV(MachineState state, int thread) throws Exception {
@@ -455,6 +578,8 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1 = new Expression(Expression.OperatorType.BYTEREV);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void CHKCT(MachineState state, int thread) throws Exception {
@@ -463,6 +588,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     
@@ -484,6 +611,8 @@ public abstract class XtaInstruction extends Instruction {
     	for(Port p : state.getResources().getPorts()){
     		p.setEventEnabeled(false);
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     	
     }
     
@@ -493,6 +622,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void CLRSR(MachineState state, int thread) throws Exception {
@@ -528,6 +659,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(((imm>>7)&1) == 1){
     		currentThread.setStatusRegisterBit(StatusRegister.FAST, false);
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void CLZ(MachineState state, int thread) throws Exception {
@@ -536,6 +669,8 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1 = new Expression(Expression.OperatorType.CLZ);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void CRC32(MachineState state, int thread) throws Exception {
@@ -547,6 +682,8 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op3);    	
     	state.m_op1 = result;
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void CRC8(MachineState state, int thread) throws Exception {
@@ -574,6 +711,8 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1 = dest;
     	state.m_op1.resolve();
     	state.m_op4.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     	
     }
 
@@ -583,6 +722,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.DEBUG_INSTRUCTION);
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void DENTSP(MachineState state, int thread) throws Exception {
@@ -591,6 +732,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.DEBUG_INSTRUCTION);
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void DGETREG(MachineState state, int thread) throws Exception {
@@ -599,6 +742,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.DEBUG_INSTRUCTION);
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void DIVS(MachineState state, int thread) throws Exception {
@@ -608,6 +753,8 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void DIVU(MachineState state, int thread) throws Exception {
@@ -617,6 +764,8 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void DRESTSP(MachineState state, int thread) throws Exception {
@@ -625,6 +774,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.DEBUG_INSTRUCTION);
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void DRET(MachineState state, int thread) throws Exception {
@@ -633,6 +784,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.DEBUG_INSTRUCTION);
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void ECALLF(MachineState state, int thread) throws Exception {
@@ -641,6 +794,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		//throw new InstructionExecption(Error.TRAP_INSTRUCTION);
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void ECALLT(MachineState state, int thread) throws Exception {
@@ -649,6 +804,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.TRAP_INSTRUCTION);
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void EDU(MachineState state, int thread) throws Exception {
@@ -676,6 +833,8 @@ public abstract class XtaInstruction extends Instruction {
         } else {
         	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
         } 
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void EEF(MachineState state, int thread) throws Exception {
@@ -707,6 +866,8 @@ public abstract class XtaInstruction extends Instruction {
         } else {
         	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
         } 
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void EET(MachineState state, int thread) throws Exception {
@@ -738,6 +899,8 @@ public abstract class XtaInstruction extends Instruction {
         } else {
         	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
         } 
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void EEU(MachineState state, int thread) throws Exception {
@@ -765,6 +928,8 @@ public abstract class XtaInstruction extends Instruction {
         } else {
         	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
         } 
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void ENDIN(MachineState state, int thread) throws Exception {
@@ -773,6 +938,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void ENTSP(MachineState state, int thread) throws Exception {
@@ -805,6 +972,8 @@ public abstract class XtaInstruction extends Instruction {
     	    // Not actually do a load
     	    //setIsLoadStore(false);
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void EQ(MachineState state, int thread) throws Exception {
@@ -815,6 +984,8 @@ public abstract class XtaInstruction extends Instruction {
         state.m_op1.addOperand(state.m_op2);
         state.m_op1.addOperand(state.m_op3);
         state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
         
     }
 
@@ -838,6 +1009,8 @@ public abstract class XtaInstruction extends Instruction {
     		state.setDataPoolRegister(offset, thread);
     	}
     	state.getDataPoolRegister(thread).resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void EXTSP(MachineState state, int thread) throws Exception {
@@ -860,6 +1033,8 @@ public abstract class XtaInstruction extends Instruction {
     		state.setStackPointerRegister(offset, thread);
     	}
     	state.getStackPointerRegister(thread).resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
    
@@ -870,6 +1045,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
    
@@ -878,30 +1055,40 @@ public abstract class XtaInstruction extends Instruction {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETED\n", getPc());	
     	state.writeRegister(11, state.getResources().getThread(thread).getED(), thread);
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void GETET(MachineState state, int thread) throws Exception {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETET\n", getPc());	
     	state.writeRegister(11, state.getResources().getThread(thread).getET(), thread);
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void GETID(MachineState state, int thread) throws Exception {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETID\n", getPc());	
     	state.writeRegister(11, new Expression(state.getResources().getThread(thread).getID()), thread);
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void GETKEP(MachineState state, int thread) throws Exception {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETKEP\n", getPc());	
     	state.writeRegister(11, state.getResources().getThread(thread).getKEP(), thread);
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void GETKSP(MachineState state, int thread) throws Exception {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: GETKSP\n", getPc());	
     	state.writeRegister(11, state.getResources().getThread(thread).getKSP(), thread);
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void GETPS(MachineState state, int thread) throws Exception {
@@ -919,6 +1106,8 @@ public abstract class XtaInstruction extends Instruction {
     	assert(state.m_op1.canResolve());
     	int status = state.getResources().getThread(thread).getStatusRegister() & state.m_op1.getValue();
     	state.writeRegister(11, new Expression(status), thread);
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     	
     }
 
@@ -929,6 +1118,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void IN(MachineState state, int thread) throws Exception {
@@ -937,6 +1128,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void INCT(MachineState state, int thread) throws Exception {
@@ -945,6 +1138,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void INPW(MachineState state, int thread) throws Exception {
@@ -953,6 +1148,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void INSHR(MachineState state, int thread) throws Exception {
@@ -961,6 +1158,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void INT(MachineState state, int thread) throws Exception {
@@ -969,6 +1168,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void KCALL(MachineState state, int thread) throws Exception {
@@ -977,6 +1178,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void KENTSP(MachineState state, int thread) throws Exception {
@@ -985,6 +1188,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void KRESTSP(MachineState state, int thread) throws Exception {
@@ -993,6 +1198,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void KRET(MachineState state, int thread) throws Exception {
@@ -1001,6 +1208,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     void LD16S(MachineState state, int thread) throws Exception {
     	if (INSTRUCTIONDEBUG)     	
@@ -1024,6 +1233,8 @@ public abstract class XtaInstruction extends Instruction {
     		state.m_op1 = new Expression(0,0,Expression.Type.MEMORY, Expression.Status.UNDEFINED);
     	}
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LD8U(MachineState state, int thread) throws Exception {
@@ -1044,6 +1255,8 @@ public abstract class XtaInstruction extends Instruction {
     		state.m_op1 = new Expression(0,0,Expression.Type.MEMORY, Expression.Status.UNDEFINED);
     	}
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LDA16B(MachineState state, int thread) throws Exception {
@@ -1060,6 +1273,8 @@ public abstract class XtaInstruction extends Instruction {
     	
     	state.m_op1 = result;
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LDA16F(MachineState state, int thread) throws Exception {
@@ -1076,6 +1291,8 @@ public abstract class XtaInstruction extends Instruction {
     	
     	state.m_op1 = result;
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LDAPB(MachineState state, int thread) throws Exception {
@@ -1086,6 +1303,8 @@ public abstract class XtaInstruction extends Instruction {
     	int nextPc = state.getPc(thread) + getNumBytes();
     	int number = nextPc - (offset<<(Instruction.BYTES_PER_WORD_LOG2/2));
     	state.writeRegister(11, new Expression(number), thread);
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LDAPF(MachineState state, int thread) throws Exception {
@@ -1096,6 +1315,8 @@ public abstract class XtaInstruction extends Instruction {
     	int nextPc = state.getPc(thread) + getNumBytes();
     	int number = nextPc + (offset<<(Instruction.BYTES_PER_WORD_LOG2/2));
     	state.writeRegister(11, new Expression(number), thread);
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LDAWB(MachineState state, int thread) throws Exception {
@@ -1112,6 +1333,8 @@ public abstract class XtaInstruction extends Instruction {
     	
     	state.m_op1 = result;
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LDAWDP(MachineState state, int thread) throws Exception {
@@ -1126,6 +1349,8 @@ public abstract class XtaInstruction extends Instruction {
         state.m_op1.addOperand(state.getDataPoolRegister(thread));            
         state.m_op1.addOperand(rhs);  
         state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LDAWF(MachineState state, int thread) throws Exception {
@@ -1140,6 +1365,8 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1.addOperand(state.m_op2);	    	
     	state.m_op1.addOperand(rhs);	
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LDAWSP(MachineState state, int thread) throws Exception {
@@ -1154,6 +1381,8 @@ public abstract class XtaInstruction extends Instruction {
         state.m_op1.addOperand(stackPointer);
         state.m_op1.addOperand(wordOffset);  
         state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LDC(MachineState state, int thread) throws Exception {
@@ -1162,6 +1391,8 @@ public abstract class XtaInstruction extends Instruction {
     	assert(state.m_op2.canResolve());
     	state.m_op1 = new Expression(state.m_op2.getValue());
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LDET(MachineState state, int thread) throws Exception {
@@ -1170,6 +1401,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LDSED(MachineState state, int thread) throws Exception {
@@ -1178,6 +1411,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LDSPC(MachineState state, int thread) throws Exception {
@@ -1186,6 +1421,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LDSSR(MachineState state, int thread) throws Exception {
@@ -1194,6 +1431,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void LDW(MachineState state, int thread) throws Exception {
@@ -1219,6 +1458,8 @@ public abstract class XtaInstruction extends Instruction {
     		 state.m_op1 = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.UNDEFINED);  	   	
     	}
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LDWCP(MachineState state, int thread) throws Exception {
@@ -1235,6 +1476,8 @@ public abstract class XtaInstruction extends Instruction {
     		state.m_op1 = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.DEFINED);
     	}	
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LDWCPL(MachineState state, int thread) throws Exception {
@@ -1251,6 +1494,8 @@ public abstract class XtaInstruction extends Instruction {
     		state.getResources().getThread(thread).getRegisters().writeRegister(11, ex); 
     	}	
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LDWDP(MachineState state, int thread) throws Exception {
@@ -1267,6 +1512,8 @@ public abstract class XtaInstruction extends Instruction {
     		state.m_op1 = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.DEFINED);
     	}	
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LDWSP(MachineState state, int thread) throws Exception {
@@ -1286,6 +1533,8 @@ public abstract class XtaInstruction extends Instruction {
         	 state.m_op1 = new Expression(0, 0, Expression.Type.MEMORY, Expression.Status.UNDEFINED);  	    	        	
         }
         state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LMUL(MachineState state, int thread) throws Exception {
@@ -1318,6 +1567,8 @@ public abstract class XtaInstruction extends Instruction {
     	}
     	state.m_op1.resolve();
     	state.m_op4.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LSS(MachineState state, int thread) throws Exception {
@@ -1327,6 +1578,8 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1 = new Expression(Expression.OperatorType.LTS);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void LSU(MachineState state, int thread) throws Exception {
@@ -1337,6 +1590,8 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void MACC(MachineState state, int thread) throws Exception {
@@ -1345,7 +1600,9 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
-        
+
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
 
@@ -1360,6 +1617,8 @@ public abstract class XtaInstruction extends Instruction {
     	}
     	state.m_op1 = new Expression((int)mask);
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     
@@ -1373,6 +1632,8 @@ public abstract class XtaInstruction extends Instruction {
     	result.resolve();
     	state.m_op1 = result;
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void NEG(MachineState state, int thread) throws Exception {
@@ -1382,6 +1643,8 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1 = new Expression(Expression.OperatorType.NEG);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void NOT(MachineState state, int thread) throws Exception {
@@ -1391,6 +1654,8 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1 = new Expression(Expression.OperatorType.NOT);
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void OR(MachineState state, int thread) throws Exception {
@@ -1400,6 +1665,8 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void OUT(MachineState state, int thread) throws Exception {
@@ -1408,6 +1675,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void OUTCT(MachineState state, int thread) throws Exception {
@@ -1416,6 +1685,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void OUTPW(MachineState state, int thread) throws Exception {
@@ -1424,6 +1695,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void OUTSHR(MachineState state, int thread) throws Exception {
@@ -1432,6 +1705,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void OUTT(MachineState state, int thread) throws Exception {
@@ -1440,6 +1715,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void PEEK(MachineState state, int thread) throws Exception {
@@ -1448,6 +1725,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void REMS(MachineState state, int thread) throws Exception {
@@ -1458,6 +1737,8 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op3);
     	state.m_op1 = result;
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void REMU(MachineState state, int thread) throws Exception {
@@ -1468,6 +1749,8 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op3);
     	state.m_op1 = result;
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void RETSP(MachineState state, int thread) throws Exception {
@@ -1503,7 +1786,15 @@ public abstract class XtaInstruction extends Instruction {
     	}
     	
     	jumpTarget.resolve();
-        state.jump(jumpTarget);
+    	
+    	if(jumpTarget.canResolve()){
+    		m_nextInstructionPcKnown = true;
+        	m_nextInstructionPc = jumpTarget.getValue();
+    	} else {
+    		m_nextInstructionPcKnown = false;
+    	}
+    	
+        //state.jump(jumpTarget);
         setReturn(true);
     }
 
@@ -1513,6 +1804,8 @@ public abstract class XtaInstruction extends Instruction {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETCP\n", getPc());	
     	state.setConstPoolRegister(state.m_op1, thread);
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
 
@@ -1520,6 +1813,8 @@ public abstract class XtaInstruction extends Instruction {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETDP\n", getPc());	
     	state.setDataPoolRegister(state.m_op1, thread);
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     
@@ -1530,6 +1825,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void SETPS(MachineState state, int thread) throws Exception {
@@ -1538,6 +1835,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void SETPSC(MachineState state, int thread) throws Exception {
@@ -1554,6 +1853,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     
@@ -1562,12 +1863,16 @@ public abstract class XtaInstruction extends Instruction {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETSP\n", getPc());	
     	state.setStackPointerRegister(state.m_op1, thread);
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void SETSR(MachineState state, int thread) throws Exception {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: SETSR\n", getPc());	
     	state.getResources().getThread(thread).setSSR(state.m_op1);
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void SETTW(MachineState state, int thread) throws Exception {
@@ -1576,6 +1881,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
   
    
@@ -1588,6 +1895,8 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op2);
     	state.m_op1 = result;
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void SHL(MachineState state, int thread) throws Exception {
@@ -1598,6 +1907,8 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op3);
     	state.m_op1 = result;
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void SHR(MachineState state, int thread) throws Exception {
@@ -1608,6 +1919,8 @@ public abstract class XtaInstruction extends Instruction {
     	result.addOperand(state.m_op3);
     	state.m_op1 = result;
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void SSYNC(MachineState state, int thread) throws Exception {
@@ -1616,6 +1929,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void ST16(MachineState state, int thread) throws Exception {
@@ -1629,6 +1944,8 @@ public abstract class XtaInstruction extends Instruction {
     	} else {
     		throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void ST8(MachineState state, int thread) throws Exception {
@@ -1642,6 +1959,8 @@ public abstract class XtaInstruction extends Instruction {
     	} else {
     		state.m_op1 = new Expression(state.m_op1Fld, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void STSED(MachineState state, int thread) throws Exception {
@@ -1658,6 +1977,8 @@ public abstract class XtaInstruction extends Instruction {
     	} else {
     		throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void STET(MachineState state, int thread) throws Exception {
@@ -1673,6 +1994,8 @@ public abstract class XtaInstruction extends Instruction {
     	} else {
     		throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void STSPC(MachineState state, int thread) throws Exception {
@@ -1688,6 +2011,8 @@ public abstract class XtaInstruction extends Instruction {
     	} else {
     		throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void STSSR(MachineState state, int thread) throws Exception {
@@ -1703,6 +2028,8 @@ public abstract class XtaInstruction extends Instruction {
     	} else {
     		throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void STW(MachineState state, int thread) throws Exception {
@@ -1719,6 +2046,8 @@ public abstract class XtaInstruction extends Instruction {
         } else {
         	throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
         }
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void STWDP(MachineState state, int thread) throws Exception {
@@ -1739,6 +2068,8 @@ public abstract class XtaInstruction extends Instruction {
         } else {
         	throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
         }
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void STWSP(MachineState state, int thread) throws Exception {
@@ -1760,6 +2091,8 @@ public abstract class XtaInstruction extends Instruction {
         } else {
         	throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
         }
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void SUB(MachineState state, int thread) throws Exception {
@@ -1769,6 +2102,8 @@ public abstract class XtaInstruction extends Instruction {
     	state.m_op1.addOperand(state.m_op2);
     	state.m_op1.addOperand(state.m_op3);
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void SYNCR(MachineState state, int thread) throws Exception {
@@ -1777,6 +2112,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void TESTLCL(MachineState state, int thread) throws Exception {
@@ -1785,6 +2122,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void TESTCT(MachineState state, int thread) throws Exception {
@@ -1793,6 +2132,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void TESTWCT(MachineState state, int thread) throws Exception {
@@ -1801,6 +2142,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
    
@@ -1811,26 +2154,34 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
 
     void WAITEF(MachineState state, int thread) throws Exception {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: WAITEF\n", getPc());	
-    	state.eventWait(false, false, state.m_op1);
+    	//state.eventWait(false, false, state.m_op1);
+
+    	m_nextInstructionPcKnown = false;
+
+
+ 
     }
 
     void WAITET(MachineState state, int thread) throws Exception {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: WAITET\n", getPc());	
-    	state.eventWait(false, true, state.m_op1);
+    	//state.eventWait(false, true, state.m_op1);
+    	m_nextInstructionPcKnown = false;
     }
 
     void WAITEU(MachineState state, int thread) throws Exception {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: WAITEU\n", getPc());	
-    	state.eventWait(true, false,  null);
-    	
+    	//state.eventWait(true, false,  null);
+    	m_nextInstructionPcKnown = false;
     	/*
     	ArrayList<Integer> takenVectors = new ArrayList<Integer>();
     	state.clearEventTargets();
@@ -1902,6 +2253,8 @@ public abstract class XtaInstruction extends Instruction {
     	result.resolve();
     	state.m_op1 = result;
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void ZEXT(MachineState state, int thread) throws Exception {
@@ -1916,6 +2269,8 @@ public abstract class XtaInstruction extends Instruction {
     		state.m_op1 = result;
     	}
     	state.m_op1.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void GETN(MachineState state, int thread) throws Exception {
@@ -1925,6 +2280,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void SETN(MachineState state, int thread) throws Exception {
@@ -1934,6 +2291,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
         
     void LADD(MachineState state, int thread) throws Exception {
@@ -1957,6 +2316,8 @@ public abstract class XtaInstruction extends Instruction {
     	}
     	state.m_op1.resolve();
     	state.m_op4.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void LDAWCP(MachineState state, int thread) throws Exception {
@@ -1970,6 +2331,8 @@ public abstract class XtaInstruction extends Instruction {
 		regValue.addOperand(offset);
 		regValue.resolve();
     	state.writeRegister(11, regValue, thread);
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void MACCU(MachineState state, int thread) throws Exception {
@@ -1997,6 +2360,8 @@ public abstract class XtaInstruction extends Instruction {
     	}
     	state.m_op1.resolve();
     	state.m_op4.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void MACCS(MachineState state, int thread) throws Exception {
@@ -2021,6 +2386,8 @@ public abstract class XtaInstruction extends Instruction {
     	}
     	state.m_op1.resolve();
     	state.m_op4.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }    
     
     void LDIVU(MachineState state, int thread) throws Exception {
@@ -2045,6 +2412,8 @@ public abstract class XtaInstruction extends Instruction {
     	}
     	state.m_op1.resolve();
     	state.m_op4.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void LSUB(MachineState state, int thread) throws Exception {
@@ -2070,6 +2439,8 @@ public abstract class XtaInstruction extends Instruction {
     	}
     	state.m_op1.resolve();
     	state.m_op4.resolve();
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     
@@ -2102,6 +2473,8 @@ public abstract class XtaInstruction extends Instruction {
         	
         	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
         } 
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void GETST(MachineState state, int thread) throws Exception {
@@ -2132,6 +2505,8 @@ public abstract class XtaInstruction extends Instruction {
     			throw new InstructionExecption(Error.ET_ILLEGAL_RESOURCE);
     		}
     	} 
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     	
     }
 
@@ -2141,6 +2516,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void MJOIN(MachineState state, int thread) throws Exception {
@@ -2150,6 +2527,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void TINITCP(MachineState state, int thread) throws Exception {
@@ -2158,6 +2537,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void TINITDP(MachineState state, int thread) throws Exception {
@@ -2166,6 +2547,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void TINITLR(MachineState state, int thread) throws Exception {
@@ -2174,6 +2557,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void TINITPC(MachineState state, int thread) throws Exception {
@@ -2190,6 +2575,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void TSTART(MachineState state, int thread) throws Exception {
@@ -2198,6 +2585,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void TSETR(MachineState state, int thread) throws Exception {
@@ -2219,6 +2608,8 @@ public abstract class XtaInstruction extends Instruction {
         } else {
             throw new InstructionExecption(Error.ET_ILLEGAL_RESOURCE);
         } 
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
     void SETV(MachineState state, int thread) throws Exception {
@@ -2253,6 +2644,8 @@ public abstract class XtaInstruction extends Instruction {
         		System.out.println("resource (resNum: ? resType: ?) set vector to " + reg_11.getStringValue());
         	}
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void SETEV(MachineState state, int thread) throws Exception {
@@ -2284,6 +2677,8 @@ public abstract class XtaInstruction extends Instruction {
     	} else {
     		throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
     	} 
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void SETC(MachineState state, int thread) throws Exception {
@@ -2292,7 +2687,9 @@ public abstract class XtaInstruction extends Instruction {
     	
     	//ensure that the resource is valid
     	
-    	
+
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     	
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
@@ -2305,6 +2702,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void GETD(MachineState state, int thread) throws Exception {
@@ -2334,6 +2733,8 @@ public abstract class XtaInstruction extends Instruction {
         } else {
         	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
         } 
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void SETCLK(MachineState state, int thread) throws Exception {
@@ -2342,6 +2743,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void SETRDY(MachineState state, int thread) throws Exception {
@@ -2350,6 +2753,8 @@ public abstract class XtaInstruction extends Instruction {
     	if(m_uninplimented) {
     		throw new InstructionExecption(Error.UNIMPLIMENTED, getPc());
     	}
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
     
     void GETR(MachineState state, int thread) throws Exception {
@@ -2374,6 +2779,8 @@ public abstract class XtaInstruction extends Instruction {
         	//this is a genuine exception
         	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
         }
+    	m_nextInstructionPcKnown = true;
+    	m_nextInstructionPc = getPc() + getNumBytes();
     }
 
 

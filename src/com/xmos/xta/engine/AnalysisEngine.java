@@ -144,7 +144,7 @@ public class AnalysisEngine {
 				if(bm.getBranches().containsKey(al.getPc())){
 					XtaInstruction inst = decodeCache.getInstruction(al.getPc());
 					for(int target : bm.getBranches().get(al.getPc())){
-						inst.addSuccessor(target);
+						inst.addSuccessor(target, true);
 					}
 				}
 			}
@@ -156,7 +156,7 @@ public class AnalysisEngine {
 			for(UserSuccessor us : m_userSuccessors){
 				if(us.m_fromPc == al.getPc()){
 					XtaInstruction inst = decodeCache.getInstruction(al.getPc());
-					inst.addSuccessor(us.m_toPc);
+					inst.addSuccessor(us.m_toPc, true);
 				}
 			}
 		}
@@ -195,7 +195,7 @@ public class AnalysisEngine {
 		for(AssemblyLine al : xeObject.getInstructions()){
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
 			if(!m_noNextPc.contains(inst.getNmenonic())){
-				inst.addSuccessor(inst.getPc() + inst.getNumBytes());
+				inst.addSuccessor(inst.getPc() + inst.getNumBytes(), false);
 			}
 		}
 	}
@@ -225,7 +225,7 @@ public class AnalysisEngine {
 				XtaInstruction inst = decodeCache.getInstruction(((AssemblyLine)line).getPc());
 				if(isReturn(inst.getNmenonic())){
 					for(int blPc : branchLinkPcs){
-						inst.addSuccessor(blPc);
+						inst.addSuccessor(blPc, true);
 						inst.addReturnLocation(decodeCache.getInstruction(blPc));
 					}
 				}
@@ -249,7 +249,7 @@ public class AnalysisEngine {
 		for(AssemblyLine al : xeObject.getInstructions()){
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
 			if(inst.getBranchPcRelative()){
-				inst.addSuccessor(inst.getBranchPcRelativeTargetPc());
+				inst.addSuccessor(inst.getBranchPcRelativeTargetPc(), true);
 			}
 			
 			if(inst.getNmenonic().equals(new RevbXtaInstruction_blacp_u10(0, 0).getNmenonic())) {
@@ -260,7 +260,7 @@ public class AnalysisEngine {
 					byte b = m_xeLoader.getMemoryImage(nodeId, coreId).readByte(address+i);
 					word = word | (b<<(8 * i));
 				}
-				inst.addSuccessor(word);
+				inst.addSuccessor(word, true);
 				
 			}
 			if(inst.getNmenonic().equals(new RevbXtaInstruction_blacp_lu10(0, 0).getNmenonic())){
@@ -271,7 +271,7 @@ public class AnalysisEngine {
 					byte b = m_xeLoader.getMemoryImage(nodeId, coreId).readByte(address+i);
 					word = word | (b<<(8 * i));
 				}
-				inst.addSuccessor(word);
+				inst.addSuccessor(word, true);
 			}
 			
 		}

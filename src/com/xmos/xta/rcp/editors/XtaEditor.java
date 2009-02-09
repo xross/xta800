@@ -39,15 +39,13 @@ import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
 import com.xmos.xta.rcp.XtaNotifier;
-import com.xmos.xta.rcp.dialogs.InstructionTime;
-import com.xmos.xta.rcp.dialogs.Iterations;
 import com.xmos.xta.rcp.nodes.Node;
 
 public class XtaEditor extends TextEditor implements IPropertyChangeListener,
                                                      ISelectionListener {
     public static final boolean DEBUG = false;
     
-    private Composite m_parent;
+    //private Composite m_parent;
 
     public static final String ID                    = "com.xmos.xtagui.editors.Test";
     public static final String HighlightAnnotationID = "com.xmos.xta.rcp.highlight";
@@ -107,7 +105,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     public void createPartControl(Composite parent) {
 		if (DEBUG) System.out.printf("XtaEditor: createPartControl\n"); 
     	super.createPartControl(parent);
-    	m_parent = parent;
+    	//m_parent = parent;
 
     	ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
             	

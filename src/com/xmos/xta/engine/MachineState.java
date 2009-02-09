@@ -184,11 +184,12 @@ public class MachineState {
     boolean hasJumped(){
     	return hasJumped;
     }
-
+/*
     void branch(boolean branchIfTrue, Expression guard, Expression branchTarget, XtaInstruction xtaInstruction) throws Exception {
     	m_wasBranchingInstruction = true;
     	hasJumped = false;
-    	
+    	branchTarget.resolve();
+    	guard.resolve();
     	m_wasBranchTargetResolved = branchTarget.isResolved();
     	m_wasGuardResolved = guard.isResolved();
     	 if (branchTarget.isResolved() && guard.isResolved()) {
@@ -224,7 +225,7 @@ public class MachineState {
             }
         } 
     }
-
+*/
     public boolean isWithinMemory(int target) {
 		if(target >= m_memoryBase && target <= m_memoryBase + m_memorySize){
 			return true;
@@ -240,7 +241,7 @@ public class MachineState {
 			return false;
 		}
 	}
-
+/*
 	void eventWait(boolean unconditional, boolean waitIfTrue, Expression expression) throws Exception{
 		boolean waitOnEvent = unconditional;
 		if(!unconditional){
@@ -260,7 +261,7 @@ public class MachineState {
 		}
 		
     }
-    
+    */
     boolean canIssue(int numBytes, int thread) {
         return m_resources.getCurrentIBuffer(thread).canIssue(numBytes);
     }
