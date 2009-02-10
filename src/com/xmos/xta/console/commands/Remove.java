@@ -12,7 +12,7 @@ class Remove extends CommandContainer {
 	Remove() { super("remove"); }
 	Remove(Command command) { super("remove", command); }
 	
+	public Command[] getSubCommands() { return m_options; }
 	protected String getDescription() { return "Remove item from given list"; }
-	protected Command[] getSubCommands() { return m_options; }
 	protected Command clone(Command command) { return new Remove(command); }	
 }

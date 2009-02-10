@@ -18,6 +18,14 @@ public abstract class Command {
     public abstract Command clone(String[] args, int index, boolean commandLineMode);
     public abstract void execute(Shell shell, Engine engine, Console console);
     
+	public Command[] getSubCommands() {
+		return null;
+	}
+    
+	public boolean usesFileSystem() {
+		return false;
+	}
+	
     public static boolean isExecutableLoaded(Engine engine, Console console) {    
 	    File executable = engine.getExecutable();
     	if (executable==null) {

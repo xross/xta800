@@ -18,7 +18,6 @@ abstract class CommandContainer extends Command {
 		m_option = option;
 	}
 	
-	abstract protected Command[] getSubCommands();
 	abstract protected String getDescription();
 	abstract protected Command clone(Command opt);
 	
