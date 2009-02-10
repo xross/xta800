@@ -493,8 +493,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			Engine engine = XtaEngine.getEngine();
 			boolean resolved = m_clickCodeRef.resolve(engine, engine.getNodeId(), engine.getCoreId());
 			if (resolved &&
-				(XtaNotifier.getInstance().getRouteInfo() != null) && 
-			    (XtaNotifier.getInstance().getRouteInfo().getRoute() != null) &&
+				(XtaNotifier.getInstance().getRouteInfo() != null) &&
 			     XtaEngine.getEngine().canInstructionPause(m_clickCodeRef.getPc())) {
 				
 				m_setInstructionTimeAction.setEnabled(true);

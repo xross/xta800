@@ -1,6 +1,11 @@
 package com.xmos.xta.engine.references;
 
+import com.xmos.xta.engine.Engine;
+
 public class CodeReferenceFactory {
+	
+	private static Engine m_engine;
+	
     public static CodeReference createCodeReference(String reference) {
     	String ref = reference.trim();
 
@@ -10,12 +15,19 @@ public class CodeReferenceFactory {
 			return new PcReference(ref, getPcString(ref));
 		} else if (isSourceReference(ref)) {
 			return new FileLineReference(ref);
-		} else {
+		} else if (m_engine.isLabel(reference)) {
 			return new LabelReference(ref);
+		} else {
+			return new StringReference(ref);
 		}
     }
-        
-	private static boolean isSourceReference(String ref) {
+    
+    public static void setEngine(Engine engine) {
+    	assert(engine != null);
+    	m_engine = engine;
+    }
+
+	public static boolean isSourceReference(String ref) {
         int colonIndex = ref.lastIndexOf(':');
         if (colonIndex == -1) {
         	return false;
@@ -29,7 +41,7 @@ public class CodeReferenceFactory {
 		return false;
 	}
 
-	private static boolean isPcString(String ref) {
+	public static boolean isPcString(String ref) {
 		if (ref.matches("0x[0-9a-fA-F]+")){
 			return true;
 		} else if (ref.matches("[0-9]+")){
@@ -39,7 +51,7 @@ public class CodeReferenceFactory {
 		}
 	}
 	
-	private static int getPcString(String ref) {
+	public static int getPcString(String ref) {
 		if (ref.matches("0x[0-9a-fA-F]+")){
 			return Integer.parseInt(ref.substring(2), 16);
 		} else if (ref.matches("[0-9]+")){
@@ -47,6 +59,6 @@ public class CodeReferenceFactory {
 		} else {
 			assert(false);
 			return 0;
-		}		
-	}		
+		}
+	}
 }

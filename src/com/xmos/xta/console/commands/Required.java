@@ -12,17 +12,17 @@ public class Required extends Command {
 		ADD, REMOVE, LIST
 	};
 	
-	private CodeReference m_ref;	
+	private String m_refString;	
 	private Operation m_operation;
 	
 	Required(Operation operation) {
         m_operation = operation;
-        m_ref = null;
+        m_refString = "";
     }
     
-	Required(CodeReference ref, Operation operation) {
+	Required(String refString, Operation operation) {
         m_operation = operation;
-        m_ref = ref;        
+        m_refString = refString;
     }
     
     public int numArgs() {
@@ -46,7 +46,7 @@ public class Required extends Command {
     	switch (m_operation) {
     	case ADD:
     	case REMOVE:
-    		return "required " + m_ref.getRef();
+    		return "required " + m_refString;
     	case LIST:
     		return "required";
         default:
@@ -76,8 +76,7 @@ public class Required extends Command {
     	switch (m_operation) {
     	case ADD:
     	case REMOVE:
-            CodeReference codeRef = CodeReferenceFactory.createCodeReference(args[index + 1]);
-            return new Required(codeRef, m_operation);
+            return new Required(args[index + 1], m_operation);
     	case LIST:
             return new Required(m_operation);
         default:
@@ -90,12 +89,14 @@ public class Required extends Command {
         if (!isExecutableLoaded(engine, console))
             return;    
 
-       	switch (m_operation) {
+        CodeReference ref = CodeReferenceFactory.createCodeReference(m_refString);
+
+        switch (m_operation) {
        	case ADD:
-       		engine.addReference(ReferenceMode.REQUIRED, m_ref);
+       		engine.addReference(ReferenceMode.REQUIRED, ref);
        		break;
        	case REMOVE:
-       		engine.removeReference(ReferenceMode.REQUIRED, m_ref);        			
+       		engine.removeReference(ReferenceMode.REQUIRED, ref);        			
        		break;           		
        	case LIST:
        		listRequirements(engine, console);
