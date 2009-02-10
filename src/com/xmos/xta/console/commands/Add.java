@@ -12,7 +12,7 @@ class Add extends CommandContainer {
 	Add() { super("add"); }
 	Add(Command command) { super("add", command); }
 	
+	public Command[] getSubCommands() { return m_options; }
 	protected String getDescription() { return "Add item to given list"; }
-	protected Command[] getSubCommands() { return m_options; }
 	protected Command clone(Command command) { return new Add(command); }	
 }

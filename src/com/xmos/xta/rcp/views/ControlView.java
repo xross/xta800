@@ -82,7 +82,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     private MemoryUpdater m_memoryUpdater;
     private Group m_memoryGroup;
     private ProgressBar m_memoryUsage;
-    
     private Spinner m_freqSpinner;
     private Spinner m_threadSpinner;
     private Combo m_nodeIds;

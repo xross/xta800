@@ -11,7 +11,7 @@ class Config extends CommandContainer {
 	Config() { super("config"); }
 	Config(Command command) { super("config", command); }
 	
+	public Command[] getSubCommands() { return m_options; }
 	protected String getDescription() { return "Configures the given option"; }
-	protected Command[] getSubCommands() { return m_options; }
 	protected Command clone(Command command) { return new Config(command); }
 }

@@ -42,6 +42,7 @@ import com.xmos.xta.engine.references.CodeReferenceFactory;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.dialogs.InstructionTime;
+
 import com.xmos.xta.rcp.nodes.Node;
 
 public class XtaEditor extends TextEditor implements IPropertyChangeListener,

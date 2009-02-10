@@ -82,4 +82,8 @@ class Source extends Command {
         	console.display(String.format("Error: Unable to open file for reading: %s\n", m_fileName)); 
         }    	
     }    
+    
+	public boolean usesFileSystem() {
+		return true;
+	}	    
 }

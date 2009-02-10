@@ -11,7 +11,7 @@ class Print extends CommandContainer {
 	Print() { super("print"); }
 	Print(Command command) { super("print", command); }
 	
+	public Command[] getSubCommands() { return m_options; }
 	protected String getDescription() { return "Display path information"; }
-	protected Command[] getSubCommands() { return m_options; }
 	protected Command clone(Command command) { return new Print(command); }	
 }

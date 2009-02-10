@@ -32,6 +32,9 @@
              <fileset dir="${src}/../../infr_libs_java/export/jars/">
                  <include name="**/*.jar"/>
              </fileset>
+             <fileset dir="${src}/../../infr_libs_java/jars/">
+                 <include name="**/*.jar"/>
+             </fileset>
            </classpath>
     </javac>
   </target>
@@ -47,6 +50,7 @@
          includes="com/xmos/xta/**,
                    plugin.xml"
          manifest="${src}/manifests/xta">
+         <zipfileset src="${src}/../../infr_libs_java/jars/jline-0.9.94.jar"/>
          <zipfileset src="${src}/../../infr_libs_java/export/jars/dwarfhandler.jar"/>
          <zipfileset src="${src}/../../infr_libs_java/export/jars/elfhandler.jar"/>
          <zipfileset src="${src}/../../infr_libs_java/export/jars/xeobject.jar"/>

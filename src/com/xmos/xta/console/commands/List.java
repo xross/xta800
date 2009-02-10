@@ -17,7 +17,7 @@ class List extends CommandContainer {
 	List() { super("list"); }
 	List(Command command) { super("list", command); }
 	
+	public Command[] getSubCommands() { return m_options; }
 	protected String getDescription() { return "Lists the given set of items"; }
-	protected Command[] getSubCommands() { return m_options; }
 	protected Command clone(Command command) { return new List(command); }		
 }

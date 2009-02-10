@@ -3,7 +3,6 @@ package com.xmos.xta.engine;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader.Architecture;
-import com.xmos.xta.engine.InstructionExecption.Error;
 import com.xmos.xta.engine.resources.Resources;
 import com.xmos.xta.engine.resources.Thread;
 
@@ -17,6 +16,7 @@ public class MachineState {
     public static enum InstructionSet {
     	REVA, REVB
     }
+    
     public final static int CP_REG_NUM = 12;
     public final static int DP_REG_NUM = 13;
     public final static int SP_REG_NUM = 14;
@@ -41,40 +41,17 @@ public class MachineState {
     Expression m_op5;
     Expression m_op6;
     
-    private Expression m_branchTargetExpression;
-    private Expression m_guardExpression;
-    
-    private boolean m_wasBranchingInstruction;
-    private boolean m_wasBranchTargetResolved;
-    private boolean m_wasGuardResolved;
-    private int m_branchTarget;
-    private boolean hasBranched;
-    private boolean hasJumped;
-    
-    
-    private BranchState m_branchTaken;
-
-    private boolean m_wasJump;
-    private boolean m_wasJumpResolved;
-    private int m_jumpTarget;
-    private BranchState m_jumpTaken;
-
-    private boolean m_wasEventWait;
-    private boolean m_wasEventResolved;
-    private int m_eventTarget;
-    
     private Resources m_resources;
     private Memory m_memory;
-    
+	public boolean m_branched;    
     private Architecture m_arch;
     
     MachineState(SymbolTable symbolTable, MemoryImage memoryImage, Architecture arch) {
-    	hasBranched = false;
-    	hasJumped = false;
     	m_arch = arch;
         m_memory = new Memory();
         m_resources = new Resources(memoryImage.getNodeId(), memoryImage.getCoreId());
         m_resources.addThread();
+        m_branched = false;
         setStackPointerRegister(new Expression(memoryImage.getMemoryBase() + memoryImage.getMemorySize()), 0);
         initialiseRegisters(symbolTable);
         initialiseMemory(memoryImage); 
@@ -120,19 +97,9 @@ public class MachineState {
         m_op4 = machineState.m_op4;
         m_op5 = machineState.m_op5;
         m_op6 = machineState.m_op6;
-
-        m_wasBranchingInstruction = machineState.m_wasBranchingInstruction;
-        m_wasBranchTargetResolved = machineState.m_wasBranchTargetResolved;
-        m_wasEventWait = machineState.m_wasEventWait;
-        m_branchTarget = machineState.m_branchTarget;
-        m_wasJump = machineState.m_wasJump;
-        m_wasJumpResolved = machineState.m_wasJumpResolved;
-        m_jumpTarget = machineState.m_jumpTarget;
-
         m_resources = new Resources(machineState.getResources());
-       
         m_memory = new Memory(machineState.m_memory);
-        m_eventTarget = machineState.m_eventTarget;
+        m_branched = machineState.m_branched;
     }
 
     public Resources getResources(){
@@ -155,82 +122,6 @@ public class MachineState {
         return m_opcode;
     }
 
-    boolean wasBranch() {
-        return m_wasBranchingInstruction;
-    }
-
-    boolean wasBranchTargetResolved() {
-        return m_wasBranchTargetResolved;
-    }
-    boolean wasGuardResolved() {
-        return m_wasGuardResolved;
-    }
-    
-    int getBranchTarget() {
-        return m_branchTarget;
-    }
-
-    boolean wasJump() {
-        return m_wasJump;
-    }
-
-    boolean wasJumpResolved() {
-        return m_wasJumpResolved;
-    }
-
-    int getJumpTarget() {
-        return m_jumpTarget;
-    }
-    
-    boolean hasBranched(){
-    	return hasBranched;
-    }
-    boolean hasJumped(){
-    	return hasJumped;
-    }
-
-    void branch(boolean branchIfTrue, Expression guard, Expression branchTarget, XtaInstruction xtaInstruction) throws Exception {
-    	m_wasBranchingInstruction = true;
-    	hasJumped = false;
-    	
-    	m_wasBranchTargetResolved = branchTarget.isResolved();
-    	m_wasGuardResolved = guard.isResolved();
-    	 if (branchTarget.isResolved() && guard.isResolved()) {
-             m_guardExpression = guard;
-             
-             //FIXME move this into the Block
-             //if(!is16bitAligned(m_branchTarget) || !isWithinMemory(m_branchTarget)){
-             if(!is16bitAligned(m_branchTarget)){
-             	throw new InstructionExecption(Error.ET_ILLEGAL_PC);
-             }
-             
-             if ((guard.getValue() != 0 ) == branchIfTrue) {
-            	 m_branchTarget = branchTarget.getValue();
-            	 hasBranched = true;
-             } else {
-            	 m_branchTarget = xtaInstruction.getPc() + xtaInstruction.getNumBytes();
-                 hasBranched = false;
-             }
-    	 }
-    }
-
-    void jump(Expression jumpTarget) throws Exception{
-		jumpTarget.resolve();
-        m_wasJump = true;
-        m_branchTargetExpression = jumpTarget;
-        m_wasJumpResolved = jumpTarget.isResolved();
-        if (m_wasJumpResolved) {
-            m_jumpTarget = jumpTarget.getValue();
-            //if(!is16bitAligned(m_jumpTarget) || !isWithinMemory(m_jumpTarget)){
-            if(!is16bitAligned(m_jumpTarget)){
-            	throw new InstructionExecption(Error.ET_ILLEGAL_PC);
-            }
-            m_jumpTaken = BranchState.TAKEN;
-        } else {
-            m_jumpTaken = BranchState.UNKNOWN;
-        }
-    }
-
     public boolean isWithinMemory(int target) {
 		if(target >= m_memoryBase && target <= m_memoryBase + m_memorySize){
 			return true;
@@ -247,26 +138,6 @@ public class MachineState {
 		}
 	}
 
-	void eventWait(boolean unconditional, boolean waitIfTrue, Expression expression) throws Exception{
-		boolean waitOnEvent = unconditional;
-		if(!unconditional){
-			if(expression.canResolve()){
-				waitOnEvent = (waitIfTrue == (expression.getValue() == 0));
-			} else {
-				//wait anyway as pessimistic
-				waitOnEvent = true;
-			}
-		}
-		
-		if(waitOnEvent){
-			
-		} else {
-			m_wasEventResolved = true;
-			
-		}
-		
-    }
-    
     boolean canIssue(int numBytes, int thread) {
         return m_resources.getCurrentIBuffer(thread).canIssue(numBytes);
     }
@@ -400,38 +271,6 @@ public class MachineState {
         }
         m_memory.shortWrite(address, value);
 	}
-    
-    void resetInstructionState() {
-        m_wasBranchingInstruction = false;
-        m_wasBranchTargetResolved = false;
-        m_branchTarget = 0;
-        m_wasJump = false;
-        m_wasJumpResolved = false;
-        m_jumpTarget = 0;
-        m_wasEventWait = false;
-    }
-
-    public Expression getBranchTargetExpression() {
-        return m_branchTargetExpression;
-    }
-    
-    public Expression getGuardExpression() {
-        return m_guardExpression;
-    }
-
-	public boolean wasEventWait() {
-		return m_wasEventWait;
-	}
-
-	public int getEventTarget() {
-		return m_eventTarget;
-	}
-
-	public boolean wasEventResolved() {
-		return m_wasEventResolved;
-	}
-
-
 
 	public void releaseMemory() {
 		m_op1 = null;
@@ -440,10 +279,16 @@ public class MachineState {
 		m_op4 = null;
 		m_op5 = null;
 		m_op6 = null;
-	    m_branchTargetExpression = null;
-	    m_guardExpression = null;
 	    m_resources = null;
 	    m_memory = null;
+	}
+
+	public void setBranched(boolean branched){
+		m_branched = branched;
+	}
+
+	public boolean branched() {
+		return m_branched;
 	}
 
 	

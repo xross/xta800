@@ -128,7 +128,7 @@ public class Shell {
     	Command command = null;
     	do {
     		m_prompt = "xta " + (m_commandHistory.size() + 1) + ">";
-    		m_console.display(m_prompt);    		    		
+    		m_console.displayPrompt(m_prompt);    		    		
             String line = m_console.getNextLine(m_commandHistory);
             line = line.trim();
             if (line.length() > 0) {            

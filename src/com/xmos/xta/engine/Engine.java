@@ -383,9 +383,10 @@ public class Engine {
 
 	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
 		if (m_route != null) {
-			m_route.invalidateAllBlocks();
+			
 			boolean hit = m_route.setLoopIterations(pathId, absolute, iterations);
 			if (hit) {
+				m_route.invalidateAllBlocks();
 				m_route.notifyUpdate();
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			}

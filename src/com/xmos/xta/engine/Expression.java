@@ -93,11 +93,15 @@ public class Expression {
 		return m_numOperands;
 	}
 
-	public void resolve() throws Exception {
+	public void resolve()  {
 		if ((m_numOperands > 0) ){
 			if(canResolve()) {
 				m_address = 0;
-				m_value = resolve(this);
+				try {
+					m_value = resolve(this);
+				} catch (Exception e) {
+					m_value = 0;
+				}
 				m_type = Type.IMMEDIATE;
 				m_status = Status.DEFINED;
 				m_numOperands = 0;
@@ -489,11 +493,12 @@ public class Expression {
 			case MEMORY:
 				assert (expression.m_numOperands == 2);
 				if(expression.m_status != Status.UNDEFINED){
-					retStr += "m";
+					retStr += "[m";
 					retStr = createExpressionString(expression.m_operands[0], retStr);
 					retStr = createExpressionString(expression.m_operands[1], retStr);
+					retStr += "]";
 				} else {
-					retStr += "m unknown";
+					retStr += "[m UNDEF]";
 				}
 				break;
 
