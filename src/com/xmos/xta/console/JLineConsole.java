@@ -14,7 +14,6 @@ public class JLineConsole implements Console {
 	JLineConsole() throws IOException {
 		m_reader = new ConsoleReader();
 		m_reader.setBellEnabled(false);
-		configureCommandCompletion();
 	  	m_reader.addCompletor(new JLineCompletor());
 	}
 	
@@ -30,14 +29,13 @@ public class JLineConsole implements Console {
 		try {
 			String line = m_reader.readLine(m_prompt);			
 			if (line == null) {
-			    System.out.printf("Internal Error: Problem reading console input (aborting)..\n");
-			    System.out.printf("Try using -DConsole=Basic\n");			
-				System.exit(1);
+				reportError();
 			    return null;
 			}
 			return line;
 		} catch (IOException e) {
 			System.out.printf("Internal Error: Problem reading console input (aborting)..\n");
+		    System.out.printf("Try using -DConsole=Basic\n");			
 			System.exit(1);
 			return null;
 		}
@@ -50,6 +48,9 @@ public class JLineConsole implements Console {
 	public void clearScreen() {		
 	}
 	
-	private void configureCommandCompletion() {
+	private void reportError() {
+		System.out.printf("Internal Error: Problem reading console input (aborting)..\n");
+	    System.out.printf("Try using -DConsole=Basic\n");			
+		System.exit(1);		
 	}
 }
