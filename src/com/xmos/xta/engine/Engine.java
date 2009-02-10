@@ -69,6 +69,8 @@ public class Engine {
 		m_pathQueries = new ArrayList<PathQuery>();
 		m_abort = false;
 		m_progress = new Progress(Progress.State.IDLE, 0, 0);
+
+		CodeReferenceFactory.setEngine(this);
 	}
 
 	public boolean addReference(ReferenceMode mode, CodeReference ref) {
@@ -224,7 +226,7 @@ public class Engine {
 			m_xeLoader = newLoader;
 			m_executableFile = executableFile;
 			initialiseLists(fileFinder);
-			m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader, m_config);
+			m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(this, m_xeLoader, m_config);
 
 			try {
 				decodeInstructions();
@@ -368,7 +370,6 @@ public class Engine {
 	}
 
 	public void setNumThreads(int numThreads) {
-
 		m_config.m_numThreads = numThreads;
 		if (m_route != null) {
 			m_route.invalidateAllBlocks();
@@ -394,63 +395,120 @@ public class Engine {
 		return false;
 	}
 
-	public boolean setInstructionTimeTaken(int pc, double timeTaken) {
-
-		boolean hit = false;
-		if (m_route != null) {
-			m_route.invalidateAllBlocks();
-			hit = m_route.setInstructionTimeTaken(pc, timeTaken);
-			if (hit) {
-				notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			}
-		} else {
-			notify(Notifier.NOTIFY_ERROR, "No route currently anaylsed");
+	public boolean setInstructionTimeTaken(CodeReference ref, double timeTaken) {
+		if (m_nodeCoreInstructionCache == null) {
+			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
+			return false;
 		}
+
+		if (!resolveRefernece(ref, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
+			return false;
+		}
+
+		if (m_route != null)
+			m_route.invalidateAllBlocks();
+		
+		boolean hit = m_nodeCoreInstructionCache.setInstructionTimeTaken(this, ref.getPc(), timeTaken, m_nodeId, m_coreId);
+		if (hit) {
+			boolean unknownsChanged = updateUnknown(ref.getPc(), true);
+			if (unknownsChanged)
+				notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+		}
+
 		return hit;
 	}
 
 	public double getInstructionTimeTaken(int pc) {
-		if (m_route != null) {
-			return m_route.getInstructionTimeTaken(pc);
+		if (m_nodeCoreInstructionCache == null) {
+			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
+			return 0;
 		}
-		return 0;
+		return m_nodeCoreInstructionCache.getInstructionTimeTaken(pc, m_nodeId, m_coreId);
 	}
 
-	public boolean setInstructionNumCycles(int pc, int numCycles) {
-		boolean hit = false;
-		if (m_route != null) {
-			m_route.invalidateAllBlocks();
-			hit = m_route.setInstructionNumCycles(pc, numCycles);
-			if (hit) {
-				notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			}
-		} else {
-			notify(Notifier.NOTIFY_ERROR, "No route currently anaylsed");
+	public boolean setInstructionNumCycles(CodeReference ref, int numCycles) {
+		if (m_nodeCoreInstructionCache == null) {
+			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
+			return false;
 		}
+
+		if (!resolveRefernece(ref, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
+			return false;
+		}
+
+		if (m_route != null)
+			m_route.invalidateAllBlocks();
+			
+		boolean hit = m_nodeCoreInstructionCache.setInstructionNumCycles(this, ref.getPc(), numCycles, m_nodeId, m_coreId);
+		if (hit) {
+			boolean unknownsChanged = updateUnknown(ref.getPc(), true);
+			if (unknownsChanged)
+				notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+		}
+
 		return hit;
 	}
 
-	public void clearUnknown(int pc) {
+	public ArrayList<Integer> getPcsWithTimeSet() {
+		if (m_nodeCoreInstructionCache == null) {
+			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
+			return null;
+		}
+		return m_nodeCoreInstructionCache.getPcsWithTimeSet(m_nodeId, m_coreId);
+	}
+
+	public boolean updateUnknown(int pc, boolean clear) {
+		if (m_route == null)
+			return false;
+
 		boolean found = false;
 		for (Unknown unknown : m_route.getUnknowns()) {
 			if ((unknown.getPc() == pc) && (unknown.getUnknownType() == UnknownType.PAUSABLETIME)) {
-				unknown.setIsSet(true);
-
+				unknown.setIsSet(clear);
 				found = true;
 			}
 		}
-		if (found)
-			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+		return found;
 	}
 
 	public int getInstructionNumCycles(int pc) {
-		if (m_route != null) {
-			return m_route.getInstructionNumCycles(pc);
+		if (m_nodeCoreInstructionCache == null) {
+			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
+			return 0;
 		}
-		return 0;
+		return m_nodeCoreInstructionCache.getInstructionNumCycles(pc, m_nodeId, m_coreId);
 	}
 	
+	public void unsetInstructionTime(int pc) {
+		if (m_nodeCoreInstructionCache == null) {
+			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
+			return;
+		}
+		m_nodeCoreInstructionCache.unsetInstructionTime(pc, m_nodeId, m_coreId);
+	}
+
+	public void unsetInstructionTime(CodeReference ref) {
+		if (m_nodeCoreInstructionCache == null) {
+			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
+			return;
+		}
+
+		if (!m_nodeCoreInstructionCache.unsetInstructionTime(ref, m_nodeId, m_coreId)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Unable to unset time for: %s", ref.getRef()));
+		}
+	}
+
 	public boolean canInstructionPause(int pc) {
+		if (m_nodeCoreInstructionCache == null) {
+			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
+			return false;
+		}
 		return m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId).getInstruction(pc).canPause();
 	}
 
@@ -461,6 +519,12 @@ public class Engine {
 	public boolean addLabel(String label, CodeReference ref) {
 		if (!resolveRefernece(ref, this)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
+			return false;
+		}
+
+		// Test whether the label happens to be a PC string
+		if (CodeReferenceFactory.isPcString(label)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a label: %s", label));
 			return false;
 		}
 
@@ -523,7 +587,7 @@ public class Engine {
 				return labelMap.getLabels().get(label);
 			}
 		}
-		assert (false);
+		assert(false);
 		return 0;
 	}
 

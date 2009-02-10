@@ -63,14 +63,16 @@ class Source extends Command {
                             	shell.addCommand(command, location+1);
                             	location++;
                             } else {
+                            	shell.addCommand(new Invalid(line), location+1);
+                            	location++;
                             	console.display(String.format("Invalid command in file: %s, line number: %d\n",
                             		    m_fileName, lineNumber));                            	
-                            }                    		
-                    	}                        
-                    }            
+                            }
+                    	}
+                    }
                     ++lineNumber;
                 }
-                fp.close();            
+                fp.close();
             }
             catch (IOException e) {
             	console.display(String.format("Error: Problem reading the file: %s\n", m_fileName)); 

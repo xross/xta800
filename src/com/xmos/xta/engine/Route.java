@@ -171,22 +171,6 @@ public class Route {
 		return m_config;
 	}
 
-	boolean setInstructionTimeTaken(int pc, double timeTaken) {
-		return m_nodeCoreInstructionCache.setInstructionTimeTaken(m_engine, pc, timeTaken, m_nodeId, m_coreId);
-	}
-
-	double getInstructionTimeTaken(int pc) {
-		return m_nodeCoreInstructionCache.getInstructionTimeTaken(pc, m_nodeId, m_coreId);
-	}
-
-	boolean setInstructionNumCycles(int pc, int numCycles) {
-		return m_nodeCoreInstructionCache.setInstructionNumCycles(m_engine, pc, numCycles, m_nodeId, m_coreId);
-	}
-
-	int getInstructionNumCycles(int pc) {
-		return m_nodeCoreInstructionCache.getInstructionNumCycles(pc, m_nodeId, m_coreId);
-	}
-
 	private void initialise(Config config, int nodeId, int coreId) {
 		m_unknowns = new ArrayList<Unknown>();
 		m_warnings = new ArrayList<String>();
@@ -416,4 +400,5 @@ public class Route {
 	    	return String.format("path: %s -> %s",  fromRef().getRef(), toRef().getRef());
 	    }
 	}
+
 }

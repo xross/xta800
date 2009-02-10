@@ -12,16 +12,16 @@ public class Prohibited extends Command {
 		ADD, REMOVE, LIST
 	};
 	
-	private CodeReference m_ref;	
+	private String m_refString;	
 	private Operation m_operation;
 	
 	Prohibited(Operation operation) {
 		m_operation = operation;
-        m_ref = null;
+		m_refString = "";
     }
     
-	Prohibited(CodeReference ref, Operation operation) {
-        m_ref = ref;        
+	Prohibited(String refString, Operation operation) {
+		m_refString = refString;        
         m_operation = operation;
     }
     
@@ -46,7 +46,7 @@ public class Prohibited extends Command {
     	switch (m_operation) {
     	case ADD:
     	case REMOVE:
-    		return "prohibited " + m_ref.getRef();
+    		return "prohibited " + m_refString;
     	case LIST:
     		return "prohibited";
         default:
@@ -60,7 +60,7 @@ public class Prohibited extends Command {
     	case ADD:
             return "prohibited <ref>: Adds the given reference to the prohibited list (pre analysis action)";         
     	case REMOVE:
-            return "prohibited <ref>: Removes the given reference from the prohibited list (pre analysis action)";
+            return "prohibited <ref>: Removes the given reference from the prohibited list (supports regular expressions)";
     	case LIST:
             return "prohibited: Lists the reference in the excluded list";
         default:
@@ -76,8 +76,7 @@ public class Prohibited extends Command {
     	switch (m_operation) {
     	case ADD:
     	case REMOVE:
-            CodeReference codeRef = CodeReferenceFactory.createCodeReference(args[index + 1]);
-            return new Prohibited(codeRef, m_operation);
+            return new Prohibited(args[index + 1], m_operation);
     	case LIST:
             return new Prohibited(m_operation);
         default:
@@ -89,13 +88,15 @@ public class Prohibited extends Command {
     public void execute(Shell shell, Engine engine, Console console) {
         if (!isExecutableLoaded(engine, console))
             return;    
-        
-       	switch (m_operation) {
+
+        CodeReference ref = CodeReferenceFactory.createCodeReference(m_refString);
+
+        switch (m_operation) {
        	case ADD:
-       		engine.addReference(ReferenceMode.PROHIBITED, m_ref);
+       		engine.addReference(ReferenceMode.PROHIBITED, ref);
        		break;
        	case REMOVE:
-       		engine.removeReference(ReferenceMode.PROHIBITED, m_ref);        			
+       		engine.removeReference(ReferenceMode.PROHIBITED, ref);        			
        		break;           		
        	case LIST:
        		listProhibiteds(engine, console);

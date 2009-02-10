@@ -10,6 +10,7 @@ class List extends CommandContainer {
 		new Unknowns(),
 		new Functions(),
 		new Sources(),
+		new Times(),
 		new Queries(),
 	};
 	

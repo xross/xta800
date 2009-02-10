@@ -6,25 +6,26 @@ import com.xmos.xta.console.Console;
 
 public class CommandFactory {
 	static private Command[] m_commands = { 
-		new Load(), 
-		new Analyse(), 
-		new List(),
-		new Status(),
-		new Summary(), 
-		new Print(), 
-		new Set(),
-		new Assert(),
 		new Add(),
-		new Remove(),
-		new Source(),
-		new History(),
-		new Pwd(),
+		new Analyse(), 
+		new Assert(),
 		new Config(),
 		new Clear(),
 	    new Echo(),
-	    new Version(),
-		new Help(), 
 		new Exit(),	
+		new Help(), 
+		new History(),
+		new Load(), 
+		new List(),
+		new Print(), 
+		new Pwd(),
+		new Remove(),
+		new Set(),
+		new Source(),
+		new Status(),
+		new Summary(), 
+		new Unset(),
+	    new Version(),
 	};
 	
 	public static Command[] getCommands() {
@@ -37,7 +38,7 @@ public class CommandFactory {
         
         if (isPingCommand(arg)) {
         	return getPingCommand(arg, commandHistory);
-        }    	
+        }
     	
     	arg = stripLeadingDash(arg);
     	for (Command command : m_commands) {
@@ -49,8 +50,8 @@ public class CommandFactory {
     		    			"' command (Try 'help " + command.name() + "'..)\n");    	    				
     			}
     			return cloned;
-    		}    			
-    	}    	
+    		}
+    	}
     	return null;
     }
     
@@ -62,7 +63,7 @@ public class CommandFactory {
     	return newArg;
     }
     
-    private static boolean isPingCommand(String arg) {
+    public static boolean isPingCommand(String arg) {
         if ((arg.charAt(0) == '!'))
         	return true;
         
@@ -74,11 +75,12 @@ public class CommandFactory {
     	
         int commandIndex;
         try {
-        	commandIndex = Integer.parseInt(arg);
+        	// Need to subtract 1 since command 1 is in array position 0
+        	commandIndex = Integer.parseInt(arg) - 1;
         }
         catch (NumberFormatException e) {
             return null;
-        }    	        
+        }
     	
         if ((commandIndex < 0) || (commandIndex >= commandHistory.size()))            	
   		    return null;

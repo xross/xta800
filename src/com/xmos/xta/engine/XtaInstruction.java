@@ -150,6 +150,10 @@ public abstract class XtaInstruction extends Instruction {
 		}
 	}
 
+	public void resetNumCycles() {
+	    m_numCycles.setNumIterations(m_basicNumCycles);
+	}
+	
 	public int getNumCycles() {
 		return m_numCycles.getNumIterations();
 	}

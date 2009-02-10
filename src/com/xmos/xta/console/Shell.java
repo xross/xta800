@@ -39,10 +39,13 @@ public class Shell {
     public void execute() {    	
     	while (!isComplete()) {
     		Command command = getNextCommand();
-    	    m_engine.registerNotifier(m_consoleNotifier);
-    		command.execute(this, m_engine, m_console);
-    	    m_engine.removeNotifier(m_consoleNotifier);
-    		m_commands.remove(command);
+    		
+            if (exitAllowed(command)) {
+            	m_engine.registerNotifier(m_consoleNotifier);
+            	command.execute(this, m_engine, m_console);
+            	m_engine.removeNotifier(m_consoleNotifier);
+            }
+        	m_commands.remove(command);
     	}
     }
     
@@ -152,19 +155,28 @@ public class Shell {
                 	} else {
                 		s.add(word);
                 	}
-                	
                 }
+
                 tokens = s.toArray(tokens);
+                boolean isPingCommand = CommandFactory.isPingCommand(tokens[0]);
                 command = CommandFactory.buildCommand(tokens, 0, m_commandHistory, m_console, false);
 
                 // Check command is valid and has consumed entire line
-                if ((command == null) || (command.numArgs() != (tokens.length - 1))) {
+                boolean invalidCommand = false;
+                if (command != null) {
+                	if (isPingCommand) {
+                		invalidCommand = (tokens.length != 1);
+                	} else {
+                		invalidCommand = (command.numArgs() != (tokens.length - 1));
+                	}
+                } else {
+                	invalidCommand = true;
+                }
+                
+                if (invalidCommand) {
     	        	m_console.display("Invalid command (Try 'help'..)\n");                	
                 	m_commandHistory.add(new Invalid(line));
                 	command = null;
-                }
-                if (!exitAllowed(command)) {
-            		command = null;
                 }
             }            
     	} while (command == null);
@@ -178,9 +190,7 @@ public class Shell {
     }
            
     private boolean exitAllowed(Command command) {
-        if (command == null)
-            return false;
-        
+        assert(command != null);
         if (!m_exitAllowed &&
         	!m_console.wasInternal() &&
         	command.name().equals("exit")) {

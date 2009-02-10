@@ -16,21 +16,21 @@ public class Label extends Command {
 	};
 
 	private ArrayList<String> m_labels;
-	private CodeReference m_ref;
+	private String m_refString;
 	private Operation m_operation;
 
 	Label(Operation operation) {
 		m_operation = operation;
-		m_labels = new ArrayList<String>();;
-		m_ref = null;
+		m_labels = new ArrayList<String>();
+		m_refString = "";
 	}
 
-	Label(String label, CodeReference ref, Operation operation) {
+	Label(String label, String refString, Operation operation) {
 		assert(operation == Operation.ADD);
 		m_operation = operation;
-		m_labels = new ArrayList<String>();;
+		m_labels = new ArrayList<String>();
 		m_labels.add(label);
-		m_ref = ref;
+		m_refString = refString;
 		
 	}
 
@@ -42,21 +42,28 @@ public class Label extends Command {
             return m_labels.size();
     	case LIST:
             return 0;
-        default:
-        	assert(false);
-            return 0;
     	}    		
+    	assert(false);
+        return 0;
 	}
 
 	public String name() {
-		return "label";
+    	switch (m_operation) {
+    	case ADD:
+    	case REMOVE:
+    		return "label"; 
+    	case LIST:
+    		return "labels";
+    	}    			
+    	assert(false);
+        return "";
 	}
 
 	public String commandLine() {
     	switch (m_operation) {
     	case ADD:
     		assert(m_labels.size() == 1);
-    		return "label " + m_ref.getRef() + " " + m_labels.get(0); 
+    		return "label " + m_refString + " " + m_labels.get(0); 
     	case REMOVE:
     		String commandLine = "label";
     		for (String label : m_labels) {
@@ -64,35 +71,34 @@ public class Label extends Command {
     		}
     		return commandLine;
     	case LIST:
-    		return "label";
-        default:
-        	assert(false);
-            return "";
+    		return "labels";
     	}    			
+    	assert(false);
+        return "";
 	}
 
 	public String description(Engine engine, boolean detailed) {
     	switch (m_operation) {
     	case ADD:
-            return "label <ref> <label>: Adds the given label/reference to the labels list";         
+            return "label <ref> <label>: Adds the given label to the labels list";         
     	case REMOVE:
-            return "label [label]+: Removes the given labels from the labels list";
+            return "label [label]+: Removes the given labels from the labels list (supports regular expressions)";
     	case LIST:
-            return "label: Lists the labels";
-        default:
-        	assert(false);
-            return "";
+            return "labels: Lists the labels";
     	}    		
+    	assert(false);
+        return "";
 	}
 
+	CodeReference ref;
+	CodeReference labelRef;
 	public Command clone(String[] args, int index, boolean commandLineMode) {
 		if ((index + numArgs()) >= args.length)
 			return null;
 				
     	switch (m_operation) {
     	case ADD:
-    		CodeReference ref = CodeReferenceFactory.createCodeReference(args[index + 2]);
-    		return new Label(args[index + 1], ref, m_operation);            
+    		return new Label(args[index + 2], args[index + 1], m_operation);            
     	case REMOVE:
     		Label label = new Label(m_operation);
     		int i = 1;
@@ -107,20 +113,20 @@ public class Label extends Command {
     		return label;
     	case LIST:
     		return new Label(m_operation);            
-        default:
-        	assert(false);
-            return null;
     	}    						
+    	assert(false);
+        return null;
 	}
 
 	public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;
-		
+
     	switch (m_operation) {
     	case ADD:
     		assert(m_labels.size() == 1);
-			engine.addLabel(m_labels.get(0), m_ref);
+    		CodeReference ref = CodeReferenceFactory.createCodeReference(m_refString);
+			engine.addLabel(m_labels.get(0), ref);
 			break;			
     	case REMOVE:
     		for (String label : m_labels) {

@@ -3,7 +3,7 @@ package com.xmos.xta.console.commands;
 class Set extends CommandContainer {
 	static private Command[] m_options = { 
 		new Loop(), 
-		new Time(), 
+		new Time(Time.Operation.SET), 
 	};
 	
 	Set() { super("set"); }
