@@ -8,7 +8,7 @@ class Unset extends CommandContainer {
 	Unset() { super("unset"); }
 	Unset(Command command) { super("unset", command); }
 	
+	public Command[] getSubCommands() { return m_options; }
 	protected String getDescription() { return "Unset item from given list"; }
-	protected Command[] getSubCommands() { return m_options; }
 	protected Command clone(Command command) { return new Unset(command); }	
 }
