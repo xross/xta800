@@ -13,7 +13,7 @@ import com.xmos.xta.engine.references.CodeReference;
 
 public class Block implements Comparable<Block> {
 	private static final boolean DEBUG = false;
-	private static final boolean LOG_PROBLEMS = true;
+	private static final boolean LOG_PROBLEMS = false;
 
 	static enum Mode {
 		FUNCTION, ABSOLUTE
@@ -53,8 +53,8 @@ public class Block implements Comparable<Block> {
 	private ExecutionState m_executionState;	
 	private BlockStats m_blockStats;
 	
-	private static int m_numBlocks=0;
-	private static int m_numPaths=0;
+	private static int m_numBlocks;
+	private static int m_numPaths;
 	
 
     public static Block getPath(Route route, int pathId) {
@@ -97,7 +97,7 @@ public class Block implements Comparable<Block> {
 	 * route analysis
 	 */
 	public Block(BlockCommonComponents bc, int fromPc, int toPc, MachineState machineState, ExecutionState executionState) {
-		if(DEBUG)System.out.println("block 0 started at 0x" + Integer.toHexString(fromPc));
+		if(DEBUG) System.out.println("block 0 started at 0x" + Integer.toHexString(fromPc));
 		
 		m_numBlocks = 0;
 		initialise(machineState);
@@ -476,28 +476,17 @@ public class Block implements Comparable<Block> {
 			instruction.execute(m_machineState, m_currentThread);
 			return true;
 		} catch (InstructionExecption e) {
-			
-			if(m_bc.isResolveExpressions()){
-				//die when we wont be able to be sure of everything anymore
+			//continue on if not fatal
+			if(e.isFatal()){
 				setStatus(BlockStatus.UNRESOLVED);
 				String reason  = e.getMessage();
-				
 				Unresolved unresolved = new Unresolved(this, instruction, reason);
 				m_unresolved = unresolved;
 				m_route.addUnresolvedPath(unresolved);
 			} else {
-				//continue on if not fatal
-				if(e.isFatal()){
-					setStatus(BlockStatus.UNRESOLVED);
-					String reason  = e.getMessage();
-					Unresolved unresolved = new Unresolved(this, instruction, reason);
-					m_unresolved = unresolved;
-					m_route.addUnresolvedPath(unresolved);
-				} else {
-					return true;
-					//addUnknown(instruction);
-				}
-			}	
+				return true;
+				//addUnknown(instruction);
+			}
 		}
 		releaseMemory();
 		return false;
@@ -628,10 +617,8 @@ public class Block implements Comparable<Block> {
 		if(DEBUG) {
 			System.out.println(this.m_blockId + " "+inst);
 		}
-		//inst.setBasicNumCycles(m_bc.getM_instructionAttributes().getTiming(inst.getNmenonic()));
-		inst.setConfig(m_bc.getConfig());
 
-		boolean keepInstructionTrace =true;
+		boolean keepInstructionTrace = true;
 		
 		if (m_instructions != null && keepInstructionTrace){
 			m_instructions.add(inst);
@@ -927,7 +914,12 @@ public class Block implements Comparable<Block> {
 	}	
 	
 	public int getNumUnknownsThis() {
-		return m_unknowns.size();
+		int num = 0;
+		for (Unknown unknown : m_unknowns) {
+			if (unknown.isShown() && !unknown.isSet())
+				num++;
+		}
+		return num;
 	}
 
 	

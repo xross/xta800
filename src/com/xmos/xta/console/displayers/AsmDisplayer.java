@@ -58,7 +58,8 @@ public class AsmDisplayer {
 	            
 	            m_console.display(String.format("<%s>:\n", functionName));	            
 	            Vector<Instruction> disassemblyVector = Disassembler.disassemble(
-	            		memoryImage, functionAddress, functionSize, m_engine.getXeLoader().getArchitecture());
+	            		memoryImage, functionAddress, functionSize, m_engine.getXeLoader().getArchitecture(),
+	            		m_engine.getConfig());
 	            
 	            HashMap<Integer, String> branchTargetMap = Disassembler.createBranchTargetMap(
 	            		symbolTable, disassemblyVector);	            
@@ -92,13 +93,16 @@ public class AsmDisplayer {
         for(XtaInstruction inst : block.getInstructions(recurse)){
             int pc = inst.getPc();
             HashMap<Integer, Function> functionMap = xeObject.getPcToFunctionMap();
-            String instString = functionMap.get(pc).getText();
-            if(asmLinesCovered.containsKey(instString)){
-                asmLinesCovered.get(instString).add(inst.getPc());
-            } else {
-                TreeSet<Integer> treeList = new TreeSet<Integer>();
-                treeList.add(inst.getPc());
-                asmLinesCovered.put(instString, treeList);
+            Function function = functionMap.get(pc);
+            if (function != null) {
+	            String instString = function.getText();
+	            if (asmLinesCovered.containsKey(instString)){
+	                asmLinesCovered.get(instString).add(inst.getPc());
+	            } else {
+	                TreeSet<Integer> treeList = new TreeSet<Integer>();
+	                treeList.add(inst.getPc());
+	                asmLinesCovered.put(instString, treeList);
+	            }
             }
         }
         return asmLinesCovered;

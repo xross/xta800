@@ -118,7 +118,7 @@ public class Shell {
     		m_commandHistory.add(command);			
 			return command;	
 		}
-    	return getCommandFromConsole();
+		return getCommandFromConsole();
     }
         
     private Command getCommandFromConsole() {

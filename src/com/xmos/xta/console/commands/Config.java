@@ -5,7 +5,6 @@ class Config extends CommandContainer {
 		new Proc(), 
 		new Freq(), 
 		new Threads(), 
-		new Mode(), 
 		new SrcPaths(), 
 	};
 	

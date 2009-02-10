@@ -6,21 +6,23 @@ import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
 
 public class InstructionDecodeCache {
-	XtaInstructionDecoder m_instructionDecoder;
-	HashMap<Integer, XtaInstruction> m_instructionCache;
-	SymbolTable m_symbolTable;
+	private XtaInstructionDecoder m_instructionDecoder;
+	private HashMap<Integer, XtaInstruction> m_instructionCache;
+	private SymbolTable m_symbolTable;
+	private Config m_config;
 
 	// There can be two FNOPs at one PC
-	HashMap<Integer, XtaInstruction> m_fnopCache[];
+	private HashMap<Integer, XtaInstruction> m_fnopCache[];
     
 	@SuppressWarnings("unchecked")
-	InstructionDecodeCache(SymbolTable symbolTable, XeLoader.Architecture architecture) {		
+	InstructionDecodeCache(SymbolTable symbolTable, XeLoader.Architecture architecture, Config config) {
     	m_instructionDecoder = XtaInstructionDecoder.createInstrcutionDecoder(architecture);
 		m_instructionCache = new HashMap<Integer, XtaInstruction>();
         m_fnopCache = new HashMap[2];
         m_fnopCache[0] = new HashMap<Integer, XtaInstruction>();
         m_fnopCache[1] = new HashMap<Integer, XtaInstruction>();
         m_symbolTable = symbolTable;
+        m_config = config;
 	}
 	
 	XtaInstruction getInstruction(int pc){
@@ -34,7 +36,7 @@ public class InstructionDecodeCache {
 		if (m_instructionCache.containsKey(pc))
             return m_instructionCache.get(pc);
 		        
-        XtaInstruction instruction = m_instructionDecoder.decode(opcode, pc);
+        XtaInstruction instruction = m_instructionDecoder.decode(opcode, pc, m_config);
         instruction.setFunctionName(m_symbolTable.functionName(pc));
         instruction.setFunctionOffset(m_symbolTable.functionOffset(pc));
         m_instructionCache.put(pc, instruction);
@@ -46,7 +48,7 @@ public class InstructionDecodeCache {
         if (m_fnopCache[fnopNum].containsKey(pc))
             return m_fnopCache[fnopNum].get(pc);
                 
-        XtaInstruction fnop = new NullInstruction("--FNOP--", 0, pc, 0);
+        XtaInstruction fnop = new NullInstruction("--FNOP--", m_config, 0, pc, 0);
         fnop.setFunctionName(m_symbolTable.functionName(pc));
         fnop.setFunctionOffset(m_symbolTable.functionOffset(pc));
         m_fnopCache[fnopNum].put(pc, fnop);

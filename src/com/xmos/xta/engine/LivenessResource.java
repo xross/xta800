@@ -19,90 +19,90 @@ public class LivenessResource {
 	
 	
 	private static final HashSet<String> m_names0 = new HashSet<String>(
-			Arrays.asList(new RevbXtaInstruction_freer_1r(0, 0).getNmenonic())); 
+			Arrays.asList(new RevbXtaInstruction_freer_1r(0, 0, null).getNmenonic())); 
 	
 	private static final HashSet<ResourceNames> m_resources0 = new HashSet<ResourceNames>(
 			Arrays.asList(ResourceNames.RES_names_TIMER, ResourceNames.RES_names_CHANEND, ResourceNames.RES_names_SYNC,
 					ResourceNames.RES_names_THREAD, ResourceNames.RES_names_LOCK)); 
 	
 	private static final HashSet<String> m_names1 = new HashSet<String>(
-			Arrays.asList(new RevbXtaInstruction_getst_2r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_msync_1r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_mjoin_1r(0, 0).getNmenonic()));
+			Arrays.asList(new RevbXtaInstruction_getst_2r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_msync_1r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_mjoin_1r(0, 0, null).getNmenonic()));
 	private static final HashSet<ResourceNames> m_resources1 = new HashSet<ResourceNames>(
 			Arrays.asList( ResourceNames.RES_names_SYNC)); 
 	
 	private static final HashSet<String> m_names2 = new HashSet<String>(
-			Arrays.asList(new RevbXtaInstruction_tinitcp_2r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_tinitdp_2r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_tinitsp_2r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_tinitpc_2r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_tstart_1r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_tsetr_3r(0, 0).getNmenonic()));
+			Arrays.asList(new RevbXtaInstruction_tinitcp_2r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_tinitdp_2r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_tinitsp_2r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_tinitpc_2r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_tstart_1r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_tsetr_3r(0, 0, null).getNmenonic()));
 	private static final HashSet<ResourceNames> m_resources2 = new HashSet<ResourceNames>(
 			Arrays.asList(ResourceNames.RES_names_THREAD)); 
 	
 	private static final HashSet<String> m_names3 = new HashSet<String>(
-			Arrays.asList(new RevbXtaInstruction_setv_1r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_setev_1r(0, 0).getNmenonic()));
+			Arrays.asList(new RevbXtaInstruction_setv_1r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_setev_1r(0, 0, null).getNmenonic()));
 	private static final HashSet<ResourceNames> m_resources3 = new HashSet<ResourceNames>(
 			Arrays.asList(ResourceNames.RES_names_PORT, ResourceNames.RES_names_TIMER, ResourceNames.RES_names_CHANEND)); 
 	
 	private static final HashSet<String> m_names4 = new HashSet<String>(
-			Arrays.asList(new RevbXtaInstruction_setd_2r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_getd_l2r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_setc_ru6(0, 0).getNmenonic()));
+			Arrays.asList(new RevbXtaInstruction_setd_2r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_getd_l2r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_setc_ru6(0, 0, null).getNmenonic()));
 	private static final HashSet<ResourceNames> m_resources4 = new HashSet<ResourceNames>(
 			Arrays.asList(ResourceNames.RES_names_PORT, ResourceNames.RES_names_TIMER, ResourceNames.RES_names_CHANEND,
 					ResourceNames.RES_names_CLKBLK)); 
 	
 	private static final HashSet<String> m_names5 = new HashSet<String>(
-			Arrays.asList(new RevbXtaInstruction_setclk_l2r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_setrdy_l2r(0, 0).getNmenonic()));
+			Arrays.asList(new RevbXtaInstruction_setclk_l2r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_setrdy_l2r(0, 0, null).getNmenonic()));
 	private static final HashSet<ResourceNames> m_resources5 = new HashSet<ResourceNames>(
 			Arrays.asList(ResourceNames.RES_names_PORT, ResourceNames.RES_names_CLKBLK));
 	
 	private static final HashSet<String> m_names6 = new HashSet<String>(
-			Arrays.asList(new RevbXtaInstruction_setpt_2r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_getts_2r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_inshr_2r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_outshr_2r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_peek_2r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_settw_l2r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_endin_2r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_setpsc_2r(0, 0).getNmenonic(),
-				new RevbXtaInstruction_clrpt_1r(0, 0).getNmenonic()));
+			Arrays.asList(new RevbXtaInstruction_setpt_2r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_getts_2r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_inshr_2r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_outshr_2r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_peek_2r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_settw_l2r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_endin_2r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_setpsc_2r(0, 0, null).getNmenonic(),
+				new RevbXtaInstruction_clrpt_1r(0, 0, null).getNmenonic()));
 	private static final HashSet<ResourceNames> m_resources6 = new HashSet<ResourceNames>(
 			Arrays.asList(ResourceNames.RES_names_PORT));
 	
 	private static final HashSet<String> m_names7 = new HashSet<String>(
-			Arrays.asList(new RevbXtaInstruction_eeu_1r(0, 0).getNmenonic(),
-					new RevbXtaInstruction_edu_1r(0, 0).getNmenonic(),
-					new RevbXtaInstruction_eet_2r(0, 0).getNmenonic(),
-					new RevbXtaInstruction_eef_2r(0, 0).getNmenonic()));
+			Arrays.asList(new RevbXtaInstruction_eeu_1r(0, 0, null).getNmenonic(),
+					new RevbXtaInstruction_edu_1r(0, 0, null).getNmenonic(),
+					new RevbXtaInstruction_eet_2r(0, 0, null).getNmenonic(),
+					new RevbXtaInstruction_eef_2r(0, 0, null).getNmenonic()));
 	private static final HashSet<ResourceNames> m_resources7 = new HashSet<ResourceNames>(
 			Arrays.asList(ResourceNames.RES_names_PORT, ResourceNames.RES_names_TIMER, ResourceNames.RES_names_CHANEND));
 	
 	private static final HashSet<String> m_names8 = new HashSet<String>(
-			Arrays.asList(new RevbXtaInstruction_in_2r(0, 0).getNmenonic()));
+			Arrays.asList(new RevbXtaInstruction_in_2r(0, 0, null).getNmenonic()));
 	private static final HashSet<ResourceNames> m_resources8 = new HashSet<ResourceNames>(
 			Arrays.asList(ResourceNames.RES_names_PORT, ResourceNames.RES_names_TIMER, ResourceNames.RES_names_CHANEND,
 					ResourceNames.RES_names_LOCK));
 	
 	private static final HashSet<String> m_names9 = new HashSet<String>(
-			Arrays.asList(new RevbXtaInstruction_out_2r(0, 0).getNmenonic()));
+			Arrays.asList(new RevbXtaInstruction_out_2r(0, 0, null).getNmenonic()));
 	private static final HashSet<ResourceNames> m_resources9 = new HashSet<ResourceNames>(
 			Arrays.asList(ResourceNames.RES_names_PORT, ResourceNames.RES_names_CHANEND, ResourceNames.RES_names_LOCK));
 	
 	private static final HashSet<String> m_names10 = new HashSet<String>(
-			Arrays.asList(new RevbXtaInstruction_int_2r(0, 0).getNmenonic(),
-					new RevbXtaInstruction_inct_2r(0, 0).getNmenonic(),
-					new RevbXtaInstruction_outt_2r(0, 0).getNmenonic(),
-					new RevbXtaInstruction_outct_2r(0, 0).getNmenonic(),
-					new RevbXtaInstruction_testct_2r(0, 0).getNmenonic(),
-					new RevbXtaInstruction_testwct_2r(0, 0).getNmenonic(),
-					new RevbXtaInstruction_chkct_2r(0, 0).getNmenonic(),
-					new RevbXtaInstruction_testlcl_l2r(0, 0).getNmenonic()));
+			Arrays.asList(new RevbXtaInstruction_int_2r(0, 0, null).getNmenonic(),
+					new RevbXtaInstruction_inct_2r(0, 0, null).getNmenonic(),
+					new RevbXtaInstruction_outt_2r(0, 0, null).getNmenonic(),
+					new RevbXtaInstruction_outct_2r(0, 0, null).getNmenonic(),
+					new RevbXtaInstruction_testct_2r(0, 0, null).getNmenonic(),
+					new RevbXtaInstruction_testwct_2r(0, 0, null).getNmenonic(),
+					new RevbXtaInstruction_chkct_2r(0, 0, null).getNmenonic(),
+					new RevbXtaInstruction_testlcl_l2r(0, 0, null).getNmenonic()));
 	private static final HashSet<ResourceNames> m_resources10 = new HashSet<ResourceNames>(
 			Arrays.asList(ResourceNames.RES_names_CHANEND));
 	

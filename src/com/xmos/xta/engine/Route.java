@@ -43,27 +43,22 @@ public class Route {
 	private ArrayList<Unknown> m_unknowns;
 	private ArrayList<String> m_warnings;
 	private static int m_numRoutes;
-	private boolean m_resolveExpressions;
 
 	Route(Config config, Progress progress, CodeReference fromRef, CodeReference toRef,
-			int nodeId, int coreId, NodeCoreInstructionCaches nodeCoreInstructionCache,
-			boolean resolveExpressions) {
+			int nodeId, int coreId, NodeCoreInstructionCaches nodeCoreInstructionCache) {
 		m_progress = progress;
 		m_fromRef = fromRef;
 		m_toRef = toRef;
-		m_resolveExpressions = resolveExpressions;
 		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
 		initialise(config, nodeId, coreId);
 
 	}
 
 	Route(Config config, Progress progress, String functionName,
-			int nodeId, int coreId, NodeCoreInstructionCaches nodeCoreInstructionCache,
-			boolean resolveExpressions) {
+			int nodeId, int coreId, NodeCoreInstructionCaches nodeCoreInstructionCache) {
 		m_progress = progress;
 		m_functionName = functionName;
 		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
-		m_resolveExpressions = resolveExpressions;
 		initialise(config, nodeId, coreId);
 	}
 
@@ -121,14 +116,14 @@ public class Route {
 		BlockCommonComponents bc = null;
 
 		if (m_functionName != null) {
-			bc = new BlockCommonComponents(m_config, m_nodeCoreInstructionCache, memoryImage, symbolTable, 
-					m_engine.getReference(ReferenceMode.PROHIBITED), this, m_resolveExpressions, Block.Mode.FUNCTION, m_engine);
+			bc = new BlockCommonComponents(m_nodeCoreInstructionCache, memoryImage, symbolTable, 
+					m_engine.getReference(ReferenceMode.PROHIBITED), this, Block.Mode.FUNCTION, m_engine);
 			assert (symbolTable.symbolExists(m_functionName));
 			int fromPc = symbolTable.symbolAddress(m_functionName);
 			new ExecutionState(this, initialState, bc, fromPc);
 		} else {
-			bc = new BlockCommonComponents(m_config, m_nodeCoreInstructionCache, memoryImage, symbolTable, 
-					m_engine.getReference(ReferenceMode.PROHIBITED), this, m_resolveExpressions, Block.Mode.ABSOLUTE, m_engine);
+			bc = new BlockCommonComponents(m_nodeCoreInstructionCache, memoryImage, symbolTable, 
+					m_engine.getReference(ReferenceMode.PROHIBITED), this, Block.Mode.ABSOLUTE, m_engine);
 			new ExecutionState(this, initialState, bc, m_fromRef.getPc(), m_toRef.getPc());
 		}
 		stepPath();
@@ -185,13 +180,6 @@ public class Route {
 	}
 
 	boolean setInstructionNumCycles(int pc, int numCycles) {
-		for (Unknown unknown : m_unknowns) {
-			if (unknown.getPc() == pc) {
-				m_unknowns.remove(unknown);
-				m_engine.notify(Notifier.NOTIFY_UPDATE_STATE, "");
-				break;
-			}
-		}
 		return m_nodeCoreInstructionCache.setInstructionNumCycles(m_engine, pc, numCycles, m_nodeId, m_coreId);
 	}
 
@@ -294,35 +282,35 @@ public class Route {
 		ArrayList<Block> toRemove = new ArrayList<Block>();
 		
 		ArrayList<Integer> exclusions = new ArrayList<Integer>();
-		for(CodeReference ref : m_engine.getReference(ReferenceMode.FILTERED)){
+		for (CodeReference ref : m_engine.getReference(ReferenceMode.FILTERED)){
 			exclusions.add(ref.getPc());
 		}
 		ArrayList<Integer> required = new ArrayList<Integer>();
-		for(CodeReference ref : m_engine.getReference(ReferenceMode.REQUIRED)){
+		for (CodeReference ref : m_engine.getReference(ReferenceMode.REQUIRED)){
 			required.add(ref.getPc());
 		}
 		m_completePaths.addAll(m_removedPaths);
 		m_removedPaths.clear();
 		
-		if(required.size() == 0 && exclusions.size() == 0){
+		if (required.size() == 0 && exclusions.size() == 0){
 			return;
 		}
 		
-		for(Block completePath : m_completePaths){
+		for (Block completePath : m_completePaths){
 			HashSet<Integer> allPathPcs = completePath.getPcsCovered(true);
-			if(m_status == RouteStatus.ABORTED ){
+			if (m_status == RouteStatus.ABORTED ){
 				//return the paths unfiltered
 				return;
 			}
-			for(int req : required){
-				if(!allPathPcs.contains(req)){
+			for (int req : required){
+				if (!allPathPcs.contains(req)){
 					toRemove.add(completePath);
 					break;
 				}
 			}
 
-			for(int exc : exclusions){
-				if(allPathPcs.contains(exc)){
+			for (int exc : exclusions){
+				if (allPathPcs.contains(exc)){
 					toRemove.add(completePath);
 					break;
 				}
@@ -330,11 +318,11 @@ public class Route {
 
 		}
 		
-		for(Unknown unknown : m_unknowns){
-			if(exclusions.contains(unknown.getPc())){
-				unknown.setShow(false);
+		for (Unknown unknown : m_unknowns){
+			if (exclusions.contains(unknown.getPc())){
+				unknown.setIsShown(false);
 			} else {
-				unknown.setShow(true);
+				unknown.setIsShown(true);
 			}
 		}
 		
