@@ -3,98 +3,126 @@ package com.xmos.xta.rcp.dialogs;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Text;
 
-import com.xmos.xta.rcp.nodes.PathNode;
+import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.references.CodeReference;
 
 public class InstructionTime extends Dialog {
-	private int m_numIterations;
-    private boolean m_absoluteCount;
+    Engine m_engine;
+    int m_pc;
     
-    PathNode m_pathNode;
+    boolean m_valueChanged;
+    int m_originalCycles;
 	
-    public InstructionTime(Shell parent, final PathNode pathNode) {
+    Text m_ns;
+    Text m_cycles;
+    
+    ModifyListener m_nsListener;
+    ModifyListener m_cyclesListener;
+    
+    public InstructionTime(Shell parent, final Engine engine, CodeReference codeReference) {
     	super(parent);
-    	m_pathNode = pathNode;
-    	m_numIterations = pathNode.getNumIterations();
-    	m_absoluteCount = pathNode.getAbsoluteCount();
+    	m_engine = engine;
+    	m_pc = codeReference.getPc();
+
+    	m_valueChanged = false;
+    	m_originalCycles = m_engine.getInstructionNumCycles(m_pc);
     	open();
     }
 
     protected void configureShell(Shell newShell) {
     	super.configureShell(newShell);
-    	newShell.setText("Iterations");
+    	newShell.setText("Set Instruction Time");
     }
 
     protected Control createDialogArea(Composite parent) {
     	Composite container = (Composite) super.createDialogArea(parent);
 
 	    final GridLayout gridLayout = new GridLayout();
-	    gridLayout.numColumns = 3;
+	    gridLayout.numColumns = 2;
 	    container.setLayout(gridLayout);
 
-		createAbsoluteCountControl(container, m_pathNode);
-		createNumIterationsControl(container, m_pathNode);
+		Group engineGroup = createGroup(container, "PC", 1, 2);
+		Label ref = new Label(engineGroup, SWT.SHADOW_NONE | SWT.CENTER);
+		ref.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		ref.setText("0x" + Integer.toHexString(m_pc));
+
+		Group nsGroup = createGroup(container, "ns", 1, 1);
+		m_ns = new Text(nsGroup, SWT.SINGLE | SWT.CENTER);
+		m_ns.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    
+	    m_nsListener = new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				try {
+					m_engine.setInstructionTimeTaken(m_pc, Double.parseDouble(m_ns.getText()));
+					m_valueChanged = true;
+					updateCyclesValue();
+				} catch (NumberFormatException exception) {
+					// Do nothing
+				}
+			}
+		};
+
+		Group cyclesGroup = createGroup(container, "cycles", 1, 1);
+	    m_cycles = new Text(cyclesGroup, SWT.SINGLE | SWT.CENTER);
+	    m_cycles.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    
+	    m_cyclesListener = new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				try {
+					m_engine.setInstructionNumCycles(m_pc, Integer.parseInt(m_cycles.getText()));
+					m_valueChanged = true;
+					updateNsValue();
+				} catch (NumberFormatException exception) {
+					// Do nothing
+				}
+			}
+		};
+
+		updateNsValue();
+		updateCyclesValue();
 
     	return container;
     }
 
-	private void createControlLabel(Composite parent, String str) {
-		Label label = new Label(parent, SWT.NONE);		        
-	    label.setLayoutData(new GridData(GridData.END, GridData.CENTER,
-	    		false, false));
-        label.setText(str);
+	private Group createGroup(Composite parent, String description, int numColumns, int span) {
+		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
+	    GridLayout layout = new GridLayout();
+	    layout.numColumns = numColumns;
+	    group.setLayout(layout);
+	    group.setText(description);
+	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, span, 1));
+	    return group;
 	}
-	
-    private void createAbsoluteCountControl(Composite parent, final PathNode pathNode) {
-		createControlLabel(parent, "Make count absolute:");
-		final Button button = new Button(parent, SWT.CHECK);
-		button.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
-				true, false, 2, 1));
-		button.setSelection(pathNode.getAbsoluteCount());		
-		button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				m_absoluteCount = button.getSelection();
-			}			
-		});
-    }
 
-    private void createNumIterationsControl(Composite parent, final PathNode pathNode) {
-		createControlLabel(parent, "Num Iterations:");
-		final Spinner spinner = new Spinner(parent, SWT.BORDER);
-		spinner.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
-				true, false, 2, 1));
-		spinner.setMinimum(0);
-		spinner.setMaximum(Integer.MAX_VALUE);
-		spinner.setSelection(m_numIterations);
-		spinner.setIncrement(1);
-		spinner.setPageIncrement(10);
-		spinner.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				m_numIterations = spinner.getSelection();
-			}			
-		});
-    }
-    
-    protected void createButtonsForButtonBar(Composite parent) {
-    	createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
-    	createButton(parent, IDialogConstants.PROCEED_ID, "Apply", false);
-    	createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-    }
-    
+	private void updateNsValue() {
+		m_ns.removeModifyListener(m_nsListener);
+		m_ns.setText(Double.toString(m_engine.getInstructionTimeTaken(m_pc)));
+		m_ns.addModifyListener(m_nsListener);
+	}			
+
+	private void updateCyclesValue() {
+		m_cycles.removeModifyListener(m_cyclesListener);
+		m_cycles.setText(Integer.toString(m_engine.getInstructionNumCycles(m_pc)));
+		m_cycles.addModifyListener(m_cyclesListener);
+	}			
+
     protected void buttonPressed(int id) {
-    	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {
-			m_pathNode.setIterations(m_numIterations);
-			m_pathNode.setAbsoluteCount(m_absoluteCount);
+    	if (id == IDialogConstants.CANCEL_ID) {
+    		if (m_valueChanged)
+    			m_engine.setInstructionNumCycles(m_pc, m_originalCycles);
+    	} else {
+    		m_engine.clearUnknown(m_pc);
     	}
     	super.buttonPressed(id);
     }

@@ -2,10 +2,17 @@ package com.xmos.xta.rcp.views;
 
 import java.util.Vector;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
@@ -14,17 +21,24 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Unknown;
+import com.xmos.xta.engine.references.CodeReference;
+import com.xmos.xta.engine.references.CodeReferenceFactory;
+import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaRouteInfo;
+import com.xmos.xta.rcp.dialogs.InstructionTime;
 import com.xmos.xta.rcp.nodes.Node;
 
 public class UnknownsView extends ViewPart implements IPropertyChangeListener,
@@ -33,8 +47,12 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 	public static final String ID = "com.xmos.xta.rcp.views.Unknowns";
 
 	protected Display m_display;
+	Composite m_parent;
 	private TableViewer m_tableViewer;
 	private Node m_selectedNode;
+	
+	CodeReference m_selectedCodeRef;
+	Action m_setInstructionTimeAction;
 
 	public UnknownsView() {
 		if (DEBUG)
@@ -46,6 +64,7 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 		if (DEBUG)
 			System.out.printf("Unknowns: createPartControl\n");
 
+		m_parent = parent;
 		m_display = parent.getDisplay();
 		m_tableViewer = new TableViewer(parent);
 		final UnknownSorter us = new UnknownSorter();
@@ -89,6 +108,8 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 		}
 		updateDisplay();
 		getSite().getPage().addSelectionListener(this);
+		
+	    setupMouseListeners();
 	}
 
 	public void setFocus() {
@@ -101,7 +122,9 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 		if (DEBUG) 
 			System.out.printf("Unknowns: propertyChange: %s\n", event.getProperty());
 
-		if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUDES)) {
+		if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS) ||
+			event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUDES)) {
+			
 			m_tableViewer.setInput(null);
 			updateDisplay();
 			
@@ -192,4 +215,50 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 		}
 	}
 
+	private void setupMouseListeners() {
+		m_tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent event) {
+				XtaNotifier.getInstance().notifyShow(m_selectedCodeRef);
+			}
+		});
+		
+		m_tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+			public void selectionChanged(SelectionChangedEvent event) {
+				ISelection selection = event.getSelection();
+				Unknown unknown = (Unknown)((IStructuredSelection) selection).getFirstElement();
+				
+				if (unknown != null) {
+					m_selectedCodeRef = CodeReferenceFactory.createCodeReference("0x" + Integer.toHexString(unknown.getPc()));
+					Engine engine = XtaEngine.getEngine();
+					m_selectedCodeRef.resolve(engine, engine.getNodeId(), engine.getCoreId());
+					m_setInstructionTimeAction.setEnabled(true);
+				} else {
+					m_setInstructionTimeAction.setEnabled(false);
+				}
+			}
+			
+		});
+		
+
+		// Create the context menu
+		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		menuMgr.setRemoveAllWhenShown(false);
+		Menu menu = menuMgr.createContextMenu(m_tableViewer.getControl());
+		m_tableViewer.getControl().setMenu(menu);
+		getSite().registerContextMenu(menuMgr, m_tableViewer);
+		
+		// Create the action
+		m_setInstructionTimeAction = new Action() { 
+			public void run() {
+     			new InstructionTime(m_parent.getShell(), XtaEngine.getEngine(), m_selectedCodeRef);
+			}
+		}; 
+		m_setInstructionTimeAction.setText("Set instruction time");
+		menuMgr.add(m_setInstructionTimeAction);
+		m_setInstructionTimeAction.setEnabled(false);
+		
+		// required, for extensions
+		menuMgr.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+	}
 }

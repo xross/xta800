@@ -165,28 +165,28 @@ public class AnalysisEngine {
 	//TODO
 	//get rid of this and do it automatically from arch dbs
 	private static final HashSet<String> m_noNextPc = new HashSet<String>(
-    		Arrays.asList(new RevbXtaInstruction_bau_1r(0, 0).getNmenonic(),
-			new RevbXtaInstruction_bla_1r(0, 0).getNmenonic(),
-			new RevbXtaInstruction_blacp_u10(0, 0).getNmenonic(),
-			new RevbXtaInstruction_blacp_lu10(0, 0).getNmenonic(),
-			new RevbXtaInstruction_blat_u6(0, 0).getNmenonic(),
-			new RevbXtaInstruction_blat_lu6(0, 0).getNmenonic(),
-			new RevbXtaInstruction_blrb_u10(0, 0).getNmenonic(),
-			new RevbXtaInstruction_blrb_lu10(0, 0).getNmenonic(),
-			new RevbXtaInstruction_blrf_u10(0, 0).getNmenonic(),
-			new RevbXtaInstruction_blrf_lu10(0, 0).getNmenonic(),
-			new RevbXtaInstruction_brbu_u6(0, 0).getNmenonic(),
-			new RevbXtaInstruction_brbu_lu6(0, 0).getNmenonic(),
-			new RevbXtaInstruction_brfu_u6(0, 0).getNmenonic(),
-			new RevbXtaInstruction_brfu_lu6(0, 0).getNmenonic(),
-			new RevbXtaInstruction_bru_1r(0, 0).getNmenonic(),
-			new RevbXtaInstruction_dret_0r(0, 0).getNmenonic(),
-			new RevbXtaInstruction_kret_0r(0, 0).getNmenonic(),
-			new RevbXtaInstruction_retsp_u6(0, 0).getNmenonic(),
-			new RevbXtaInstruction_retsp_lu6(0, 0).getNmenonic(),
-			new RevbXtaInstruction_waitef_1r(0, 0).getNmenonic(),
-			new RevbXtaInstruction_waitet_1r(0, 0).getNmenonic(),
-			new RevbXtaInstruction_waiteu_0r(0, 0).getNmenonic()));
+    		Arrays.asList(new RevbXtaInstruction_bau_1r(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_bla_1r(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_blacp_u10(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_blacp_lu10(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_blat_u6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_blat_lu6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_blrb_u10(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_blrb_lu10(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_blrf_u10(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_blrf_lu10(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_brbu_u6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_brbu_lu6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_brfu_u6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_brfu_lu6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_bru_1r(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_dret_0r(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_kret_0r(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_retsp_u6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_retsp_lu6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_waitef_1r(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_waitet_1r(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_waiteu_0r(0, 0, null).getNmenonic()));
 	
 	/*
 	 * if the instruction doesn't unconditionally branch then add the next pc to the successor list
@@ -226,7 +226,6 @@ public class AnalysisEngine {
 				if(isReturn(inst.getNmenonic())){
 					for(int blPc : branchLinkPcs){
 						inst.addSuccessor(blPc, true);
-						inst.addReturnLocation(decodeCache.getInstruction(blPc));
 					}
 				}
 			}
@@ -234,8 +233,8 @@ public class AnalysisEngine {
 	}
 	
 	private boolean isReturn(String nmenonic){
-		String retsp_u6 = new RevbXtaInstruction_retsp_u6(0, 0).getNmenonic();
-		String retsp_lu6 = new RevbXtaInstruction_retsp_lu6(0, 0).getNmenonic();
+		String retsp_u6 = new RevbXtaInstruction_retsp_u6(0, 0, null).getNmenonic();
+		String retsp_lu6 = new RevbXtaInstruction_retsp_lu6(0, 0, null).getNmenonic();
 		if(retsp_u6.equals(nmenonic)|| retsp_lu6.equals(nmenonic)){
 			return true;
 		}
@@ -252,7 +251,7 @@ public class AnalysisEngine {
 				inst.addSuccessor(inst.getBranchPcRelativeTargetPc(), true);
 			}
 			
-			if(inst.getNmenonic().equals(new RevbXtaInstruction_blacp_u10(0, 0).getNmenonic())) {
+			if(inst.getNmenonic().equals(new RevbXtaInstruction_blacp_u10(0, 0, null).getNmenonic())) {
 				int imm = XtaInstruction.getBits(16, 10, inst.getOpcode()) << Instruction.BYTES_PER_WORD_LOG2;
 				int address = getConstantPoolPointer(nodeId, coreId) + imm;
 				int word=0;
@@ -263,7 +262,7 @@ public class AnalysisEngine {
 				inst.addSuccessor(word, true);
 				
 			}
-			if(inst.getNmenonic().equals(new RevbXtaInstruction_blacp_lu10(0, 0).getNmenonic())){
+			if(inst.getNmenonic().equals(new RevbXtaInstruction_blacp_lu10(0, 0, null).getNmenonic())){
 				int imm = XtaInstruction.getBitsHL(16, 10, 0, 10, inst.getOpcode()) << Instruction.BYTES_PER_WORD_LOG2;
 				int address = getConstantPoolPointer(nodeId, coreId) + imm;
 				int word=0;

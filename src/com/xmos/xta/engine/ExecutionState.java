@@ -47,6 +47,29 @@ public class ExecutionState {
 		m_route.addExecutionState(this);
 	}
 
+	public ExecutionState(ExecutionState executionState,
+			MachineState machineState, Block block) {
+		m_route = executionState.m_route;
+		m_machineState = machineState;
+		m_threadBlocks = new Block[Resources.NUM_THREADS];
+		for (int i = 0; i < Resources.NUM_THREADS; i++) {
+			if (executionState.m_threadBlocks[i] == null) {
+				m_threadBlocks[i] = null;
+			} else {
+				
+				m_threadBlocks[i] = new Block(executionState.m_threadBlocks[i],
+						m_machineState, this);
+				if(block == executionState.m_threadBlocks[i]){
+					m_threadBlocks[i].m_speculative = true;
+				}
+
+			}
+		}
+		m_status = Status.ExecutionStatus.SEARCHING;
+		m_currentThread = 0;
+		m_route.addExecutionState(this);
+	}
+
 	public Block[] getThreadBlocks(){
 		return m_threadBlocks;
 	}

@@ -8,7 +8,6 @@ import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.references.CodeReference;
 
 public class BlockCommonComponents {
-	private Config m_config;
     private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
     private MemoryImage m_memoryImage;
     private SymbolTable m_symbolTable;
@@ -17,13 +16,11 @@ public class BlockCommonComponents {
     private Block.Mode m_mode;
     private Engine m_engine;    
     
-	public BlockCommonComponents(Config m_config,
-			NodeCoreInstructionCaches nodeCoreInstructionCache,
+	public BlockCommonComponents(NodeCoreInstructionCaches nodeCoreInstructionCache,
 			MemoryImage image,
 			SymbolTable table, List<CodeReference> m_exclusions, Route m_route,
 			Block.Mode m_mode, Engine engine) {
 		super();
-		this.m_config = m_config;
 		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
 		m_memoryImage = image;
 		m_symbolTable = table;
@@ -33,12 +30,6 @@ public class BlockCommonComponents {
 		this.setEngine(engine);
 	}
 	
-	public Config getConfig() {
-		return m_config;
-	}
-	public void setConfig(Config m_config) {
-		this.m_config = m_config;
-	}
 	public NodeCoreInstructionCaches getNodeCoreInstructionCaches() {
 		return m_nodeCoreInstructionCache;
 	}

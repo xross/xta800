@@ -224,7 +224,7 @@ public class Engine {
 			m_xeLoader = newLoader;
 			m_executableFile = executableFile;
 			initialiseLists(fileFinder);
-			m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader);
+			m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(m_xeLoader, m_config);
 
 			try {
 				decodeInstructions();
@@ -401,16 +401,8 @@ public class Engine {
 		if (m_route != null) {
 			
 			hit = m_route.setInstructionTimeTaken(pc, timeTaken);
-			ArrayList<Unknown> toRemove = new ArrayList<Unknown>();
-			for (Unknown unknown : m_route.getUnknowns()) {
-				if (unknown.getPc() == pc && unknown.getUnknownType() == UnknownType.PAUSABLETIME) {
-					toRemove.add(unknown);
-				}
-			}
-			m_route.getUnknowns().removeAll(toRemove);
 			if (hit) {
 				m_route.invalidateAllBlocks();
-				notify(Notifier.NOTIFY_UPDATE_EXCLUDES, "");
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			}
 		} else {
@@ -441,11 +433,28 @@ public class Engine {
 		return hit;
 	}
 
+	public void clearUnknown(int pc) {
+		boolean found = false;
+		for (Unknown unknown : m_route.getUnknowns()) {
+			if ((unknown.getPc() == pc) && (unknown.getUnknownType() == UnknownType.PAUSABLETIME)) {
+				unknown.setIsSet(true);
+
+				found = true;
+			}
+		}
+		if (found)
+			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+	}
+
 	public int getInstructionNumCycles(int pc) {
 		if (m_route != null) {
 			return m_route.getInstructionNumCycles(pc);
 		}
 		return 0;
+	}
+	
+	public boolean canInstructionPause(int pc) {
+		return m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId).getInstruction(pc).canPause();
 	}
 
 	public Double getTimeTaken(int lineNumber) {
