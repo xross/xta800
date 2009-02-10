@@ -57,5 +57,9 @@ class Load extends Command {
 
 	public String toString() {
 		return commandLine();
-	}    
+	}
+	
+	public boolean usesFileSystem() {
+		return true;
+	}	
 }

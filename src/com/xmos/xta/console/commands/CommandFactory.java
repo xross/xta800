@@ -74,7 +74,7 @@ public class CommandFactory {
     	
         int commandIndex;
         try {
-        	commandIndex = Integer.parseInt(arg);
+        	commandIndex = Integer.parseInt(arg) - 1;
         }
         catch (NumberFormatException e) {
             return null;

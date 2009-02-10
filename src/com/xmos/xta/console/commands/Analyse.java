@@ -9,7 +9,7 @@ class Analyse extends CommandContainer {
 	Analyse() { super("analyse"); }
 	Analyse(Command command) { super("analyse", command); }
 	
+	public Command[] getSubCommands() { return m_options; }
 	protected String getDescription() { return "Perform timing analysis"; }
-	protected Command[] getSubCommands() { return m_options; }
 	protected Command clone(Command command) { return new Analyse(command); }	
 }

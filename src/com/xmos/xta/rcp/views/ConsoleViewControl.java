@@ -46,6 +46,11 @@ public class ConsoleViewControl implements Console {
 		m_textReader.display(str);
 	}
 	
+	public void displayPrompt(String str) {
+		if (DEBUG) System.out.printf("ConsoleViewControl: displayPrompt: %s\n", str);			
+		m_textReader.display(str);
+	}
+	
 	public String getNextLine(Vector<Command> commandHistory) {
 		if (DEBUG) System.out.printf("ConsoleViewControl: getNextLine\n");
 		if (m_consoleView.hasPendingCommands()) {
@@ -173,7 +178,7 @@ class TextReader extends Reader {
 		    }
     	});
 	}
-	
+		
 	public String readLine(Vector<Command> commandHistory) {
 		if (DEBUG) System.out.printf("TextReader: readLine\n");			
 

@@ -9,7 +9,7 @@ class Set extends CommandContainer {
 	Set() { super("set"); }
 	Set(Command command) { super("set", command); }
 	
+	public Command[] getSubCommands() { return m_options; }
 	protected String getDescription() { return "Set path information"; }
-	protected Command[] getSubCommands() { return m_options; }
 	protected Command clone(Command command) { return new Set(command); }	
 }
