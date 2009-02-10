@@ -11,7 +11,7 @@ if (!$noBuild) {
         system("xcc -march=$arch -g main.xc $genDir/src1.o $genDir/src2.o -o $genDir/test.xe >> $genDir/multi_directory_labels.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "list label " .
+       "list labels " .
        "analyse path mainA src1 " .
        "summary simple " .
        "summary complete_instructions " .

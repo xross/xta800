@@ -10,18 +10,18 @@ if (!$noBuild) {
 system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/required_labels.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "add label L1 0x100d0 " .
-       "add label L2 0x100d4 " .
+       "add label 0x100cc L1 " .
+       "add label 0x100d0 L2 " .
        "add required L1 " .
        "list required " .
-       "analyse function main " .
+       "analyse function test " .
        "summary simple " .
-       "print src 1 " .
+       "print src 2 " .
        "remove required L1 " .
        "list required " .
        "add required L2 " .
        "list required " .
-       "analyse function main " .
+       "analyse function test " .
        "summary simple " .
-       "print src 2 " .
+       "print src 1 " .
        "exit > $genDir/required_labels.txt 2>&1");

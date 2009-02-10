@@ -2,15 +2,23 @@ Current node: 0
 Current core: 0
 Frequency: 400
 NumThreads: 8
-Mode: No Resolve
 SrcPaths: .
 No executable loaded
 No Paths/Functions registered
-Current node: 0
-Current core: 0
-Frequency: 400
-NumThreads: 8
-Mode: No Resolve
-SrcPaths: .
-No executable loaded
-No Paths/Functions registered
+Invalid command in file: cmds.txt, line number: 1
+Invalid command in file: cmds.txt, line number: 4
+Invalid command (Try 'help'..)
+Error: No executable loaded
+1: status
+2: source cmds.txt
+3: !0
+4: list functions
+5: history
+Invalid command (Try 'help'..)
+1: status
+2: source cmds.txt
+3: !0
+4: list functions
+5: history
+6: !3
+7: history

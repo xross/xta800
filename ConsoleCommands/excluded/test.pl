@@ -10,16 +10,15 @@ if (!$noBuild) {
 system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/excluded.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "add filter 0x100d0 " .
-       "list filter " .
-       "analyse function main " .
-       "summary simple " .
-       "print src 2 " .
-       "remove filter 0x100d0 " .
-       "list filter " .
-       "add filter 0x100d4 " .
-       "list filter " .
-       "analyse function main " .
+       "add filter 0x100cc " .
+       "list filters " .
+       "analyse function test " .
        "summary simple " .
        "print src 1 " .
+       "remove filter 0x100cc " .
+       "list filters " .
+       "add filter 0x100d0 " .
+       "list filters " .
+       "summary simple " .
+       "print src 2 " .
        "exit > $genDir/excluded.txt 2>&1");

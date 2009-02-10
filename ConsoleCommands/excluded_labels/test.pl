@@ -10,17 +10,17 @@ if (!$noBuild) {
 system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/excluded_labels.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "add label L1 0x100d0 " .
-       "add label L2 0x100d4 " .
+       "add label 0x100cc L1 " .
+       "add label 0x100d0 L2 " .
        "add filter L1 " .
-       "list filter " .
-       "analyse function main " .
+       "list filters " .
+       "analyse function test " .
        "summary simple " .
-       "print src 2 " .
-       "remove filter L1 " .
-       "list filter " .
-       "analyse function main " .
-       "summary simple " .
-       "print src 2 " .
        "print src 1 " .
+       "remove filter L1 " .
+       "list filters " .
+       "add filter L2 " .
+       "list filters " .
+       "summary simple " .
+       "print src 2 " .
        "exit > $genDir/excluded_labels.txt 2>&1");

@@ -11,7 +11,7 @@ system("xcc -march=$arch test.xc -o $genDir/test.xe > $genDir/invalid_references
 }
 system("@ARGV load $genDir/test.xe " .
        "add branch 100 100 " .
-       "add label silly 99 " .
+       "add label 99 silly " .
        "add prohibited 98 " .
        "add required 97 " .
        "add filter 96 " .
@@ -20,8 +20,8 @@ system("@ARGV load $genDir/test.xe " .
        "-remove prohibited 98 " .
        "remove required 97 " .
        "remove filter 96 " .
-       "add label silly 0x100c4 " .
-       "add label silly 0x100c6 " .
+       "add label 0x100c4 silly " .
+       "add label 0x100c6 silly " .
        "add prohibited 0x100c4 " .
        "add prohibited 0x100c4 " .
        "add required 0x100c4 " .
