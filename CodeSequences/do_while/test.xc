@@ -1,11 +1,12 @@
 int main()
 {
   int res = 10;
+  int i;
   do
   {
     --res;
   }
-  while (res > 0);
+  while (i > 0);
  
   return res;
 }

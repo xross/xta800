@@ -1,28 +1,36 @@
-Complete paths:   1
+Complete paths:   3
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-\+COMPLETE \[1 path\(s\)\]
-    path\(\d+\) +: 300.0/\d+/\d+/\d+/0/1/0
-        \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
-            path\(\d+\) +: 540.0/\d+/\d+/\d+/0/0/0
-                \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
-                    path\(\d+\) +: 240.0/\d+/\d+/\d+/0/0/0
-                        \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
-                            path\(\d+\) +: 140.0/\d+/\d+/\d+/0/0/0
-                \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
-                    path\(\d+\) +: 240.0/\d+/\d+/\d+/0/0/0
-                        \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
-                            path\(\d+\) +: 140.0/\d+/\d+/\d+/0/0/0
+\+COMPLETE \[3 path\(s\)\]
+    path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/1/0
+        \+loop \[2 path\(s\)\, \d+ iteration\(s\)\]
+            path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/0/0
+                \+loop \[1 path\(s\)\, \d+ iteration\(s\)\]
+                    path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/0/0
+            path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/0/0
+        \+loop \[1 path\(s\)\, \d+ iteration\(s\)\]
+            path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/0/0
+    path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/1/0
+        \+loop \[2 path\(s\)\, \d+ iteration\(s\)\]
+            path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/0/0
+                \+loop \[1 path\(s\)\, \d+ iteration\(s\)\]
+                    path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/0/0
+            path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/0/0
+    path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/1/0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-\+COMPLETE \[1 path\(s\)\]
-    path\(\d+\) +: 203300.0/\d+/\d+/\d+/0/1/0
-        \+loop \[1 path\(s\)\, 10 iteration\(s\)\]
-            path\(\d+\) +: 170780.0/\d+/\d+/\d+/0/10/0
-                \+loop \[1 path\(s\)\, 55 iteration\(s\)\]
-                    path\(\d+\) +: 154240.0/\d+/\d+/\d+/0/55/1
-                        \+loop \[1 path\(s\)\, 1100 iteration\(s\)\]
-                            path\(\d+\) +: 140.0/\d+/\d+/\d+/0/1100/1
-                \+loop \[1 path\(s\)\, 1 iteration\(s\)\]
-                    path\(\d+\) +: 3040.0/\d+/\d+/\d+/0/1/0
-                        \+loop \[1 path\(s\)\, 20 iteration\(s\)\]
-                            path\(\d+\) +: 140.0/\d+/\d+/\d+/0/20/0
+\+COMPLETE \[3 path\(s\)\]
+    path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/1/0
+       \+loop \[2 path\(s\)\, \d+ iteration\(s\)\]
+            path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/98/0
+                \+loop \[1 path\(s\)\, \d+ iteration\(s\)\]
+                    path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/65/0
+            path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/55/0
+       \+loop \[1 path\(s\)\, \d+ iteration\(s\)\]
+            path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/65/0
+    path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/1/0
+        \+loop \[2 path\(s\)\, \d+ iteration\(s\)\]
+            path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/98/0
+                \+loop \[1 path\(s\)\, \d+ iteration\(s\)\]
+                    path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/65/0
+            path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/55/0
+    path\(\d+\) +: \d+.0/\d+/\d+/\d+/0/1/0

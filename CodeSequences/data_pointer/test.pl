@@ -16,7 +16,6 @@ system("@ARGV load $genDir/test.xe " .
        "summary complete " .
        "summary complete_loops " .
        "summary complete_instructions " .
-       "print src 1 " .
-       "print src 2 " .
+       "print src 0 " .
        "exit > $genDir/data_pointer.txt 2>&1");
 

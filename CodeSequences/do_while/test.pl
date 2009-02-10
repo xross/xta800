@@ -12,7 +12,7 @@ system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "summary simple " .
        "summary complete_loops " .
-       "print src 1 " .
        "print src 2 " .
+       "print src 1 " .
        "exit > $genDir/do_while.txt 2>&1");
 

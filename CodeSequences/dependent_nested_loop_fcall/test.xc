@@ -4,7 +4,7 @@ int loop(int i)
   int res = 0;
   for (int j = 0; j < i; j++)
   {
-    for (int k = 0; k < 20; k++)
+    for (int k = 0; k < 3; k++)
     {
       res += k * i;
     }
@@ -17,10 +17,11 @@ int loop(int i)
 int main()
 {
   int res = 0;
-  for (int i = 0; i < 10; i++)
+int j;
+  for (int i = 0; i < 3; i++)
   {
-    res += loop(i);
-    res += loop(1);
+    res += loop(j);
+    res += loop(j);
   }
   return res;
 }

@@ -9,7 +9,6 @@ if (!$noBuild) {
 system("xcc -march=$arch -std=c99 -g test.c -o $genDir/test.xe > $genDir/float_library.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "config mode resolve " .
        "analyse function main " .
        "status " .
        "exit > $genDir/float_library.txt 2>&1");

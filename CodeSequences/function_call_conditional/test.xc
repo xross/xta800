@@ -12,14 +12,18 @@ int function2()
   return a;
 }
 
-int main()
+int test()
 {
-  int a = 22;
+  int a;
   if (a < 21) 
     function1();
   else
     function2();
+}
 
+int main()
+{
+  test();
   return 0;
 }
 

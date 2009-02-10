@@ -38,7 +38,6 @@ if ($found == 1) {
   }
 
   system("@ARGV load $genDir/test.xe " .
-         "config mode resolve " .
          "analyse function main " .
          "print trace 0 " .
          "exit > temp.txt 2>&1");
@@ -56,7 +55,7 @@ if ($found == 1) {
   print OUTFILE "$success";
   close(INFILE);
   close(OUTFILE);
-  system("rm temp.txt");
+  #system("rm temp.txt");
 }
 
 

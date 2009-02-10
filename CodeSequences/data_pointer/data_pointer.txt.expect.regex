@@ -1,16 +1,14 @@
-Complete paths:   2
+Complete paths:   1
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-\+COMPLETE \[2 path\(s\)\]
-    path\(1\)\s+: 200.0/10/7/3/0/1/0
-    path\(2\)\s+: 160.0/8/6/2/0/1/0
+\+COMPLETE \[1 path\(s\)\]
+    path\(0\)\s+: 200.0/10/7/3/0/1/0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-\+COMPLETE \[2 path\(s\)\]
-    path\(1\)\s+: 200.0/10/7/3/0/1/0
-    path\(2\)\s+: 160.0/8/6/2/0/1/0
+\+COMPLETE \[1 path\(s\)\]
+    path\(0\)\s+: 200.0/10/7/3/0/1/0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-\+COMPLETE \[2 path\(s\)\]
-    path\(1\)\s+: 200.0/10/7/3/0/1/0
+\+COMPLETE \[1 path\(s\)\]
+    path\(0\)\s+: 200.0/10/7/3/0/1/0
         \(20.0ns\) 0x[0-9a-fA-F]{5} ldwdp \(lru6\) r0, dp\[i 0x10\] 
         \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
         \(20.0ns\) 0x[0-9a-fA-F]{5} eq \(2rus\) r0, r0, i 0x2 
@@ -18,15 +16,6 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
         \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r0, i 0x3 
         \(20.0ns\) 0x[0-9a-fA-F]{5} stwdp \(lru6\) r0, dp\[i 0xc\] 
         \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
-        \(20.0ns\) 0x[0-9a-fA-F]{5} ldwdp \(lru6\) r0, dp\[i 0x10\] 
-        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
-        \(20.0ns\) 0x[0-9a-fA-F]{5} retsp \(u6\) i 0x0 
-    path\(2\)\s+: 160.0/8/6/2/0/1/0
-        \(20.0ns\) 0x[0-9a-fA-F]{5} ldwdp \(lru6\) r0, dp\[i 0x10\] 
-        \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
-        \(20.0ns\) 0x[0-9a-fA-F]{5} eq \(2rus\) r0, r0, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F]{5} brft \(ru6\) r0, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F]{5} brfu \(u6\) i 0x6 
         \(20.0ns\) 0x[0-9a-fA-F]{5} ldwdp \(lru6\) r0, dp\[i 0x10\] 
         \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
         \(20.0ns\) 0x[0-9a-fA-F]{5} retsp \(u6\) i 0x0 
@@ -48,28 +37,6 @@ test.xc \(.*\)
 \+ 13:   if \(b == 2\)
   14:   \{
 \+ 15:     a = 3;
-  16:   \}
-\+ 17:   return b;
-  18: \}
-  19: 
-----------------------------------
-test.xc \(.*\)
-----------------------------------
-  1: int a = 1;
-  2: int b = 2;
-  3: int c = 3;
-  4: int d = 4;
-  5: int e = 5;
-  6: int f = 6;
-  7: int g = 7;
-  8: int h = 8;
-  9: int i = 9;
-  10: int j = 10;
-  11: int main\(\)
-\+ 12: \{
-\+ 13:   if \(b == 2\)
-  14:   \{
-  15:     a = 3;
   16:   \}
 \+ 17:   return b;
   18: \}
