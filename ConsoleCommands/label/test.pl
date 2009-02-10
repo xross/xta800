@@ -10,14 +10,14 @@ if (!$noBuild) {
 system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/label.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "add label bob 0x1019a " .
-       "add label bill bob " .
-       "list label ". 
+       "add label 0x1019a bob " .
+       "add label bob bill " .
+       "list labels ". 
        "remove label fred " .
-       "-list label ". 
+       "-list labels ". 
        "remove label bob " .
-       "-list label ". 
+       "-list labels ". 
        "remove label bill " .
-       "-list label ". 
+       "-list labels ". 
        "exit > $genDir/label.txt 2>&1");
 

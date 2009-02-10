@@ -11,14 +11,14 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/excluded_source
 }
 system("@ARGV load $genDir/test.xe " .
        "add filter test.xc:6 " .
-       "list filter " .
+       "list filters " .
        "analyse function test " .
        "summary simple " .
        "print src 1 " .
        "remove filter test.xc:6 " .
-       "list filter " .
+       "list filters " .
        "add filter test.xc:10 " .
-       "list filter " .
+       "list filters " .
        "analyse function test " .
        "summary simple " .
        "print src 2 " .

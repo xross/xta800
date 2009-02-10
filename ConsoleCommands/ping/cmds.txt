@@ -1,2 +1,6 @@
 !0
+list functions
+history
+!3
+history
 exit

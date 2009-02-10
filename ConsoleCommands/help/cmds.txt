@@ -5,6 +5,7 @@ help assert
 help clear
 help config
 help echo
+help exit
 help help
 help history
 help list
@@ -16,5 +17,5 @@ help set
 help source
 help status
 help summary
-help exit
+help unset
 exit

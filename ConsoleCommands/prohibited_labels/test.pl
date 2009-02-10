@@ -10,8 +10,8 @@ if (!$noBuild) {
 system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/prohibited_labels.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "add label L1 0x100cc " .
-       "add label L2 0x100d0 " .
+       "add label 0x100cc L1 " .
+       "add label 0x100d0 L2 " .
        "add prohibited L1 " .
        "list prohibited " .
        "analyse function test " .

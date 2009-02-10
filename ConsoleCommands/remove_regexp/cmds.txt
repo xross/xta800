@@ -33,14 +33,14 @@ add filter done
 add filter case_1
 add filter case_2
 add filter case_3
-list filter
+list filters
 remove filter case.*
-list filter
+list filters
 add filter case_1
 add filter case_2
 add filter case_3
-list filter
+list filters
 remove filter .*
-list filter
+list filters
 
 
