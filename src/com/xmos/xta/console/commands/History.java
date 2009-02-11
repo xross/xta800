@@ -31,8 +31,8 @@ class History extends Command {
     public void execute(Shell shell, Engine engine, Console console) {
     	int index = 1;
     	for (Command command : shell.getCommandHistory()) {
-    		++index;    		
     		console.display(String.format("%d: %s\n", index, command.commandLine()));
+    		++index;
     	}
     }    
 }
