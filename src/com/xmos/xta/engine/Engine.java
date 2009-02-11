@@ -296,6 +296,8 @@ public class Engine {
 		CodeReference fromRef = CodeReferenceFactory.createCodeReference(from);
 		CodeReference toRef = CodeReferenceFactory.createCodeReference(to);
 
+		int dist = m_ae.determineReachability(fromRef.getPc(), toRef.getPc(), m_nodeId, m_coreId);
+		if(dist == Integer.MAX_VALUE) return false;
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Node: %d, Core: %d image not found in file: %s", m_nodeId,
 					m_coreId, m_executableFile));
