@@ -12,7 +12,6 @@ import com.xmos.xta.rcp.views.ViewNode.StructureNode;
 public class StructureView extends ZoomedCanvasView {
 
 	public static final boolean DEBUG = false;
-    public static final int MAX_NUM_RENDER_NODES = 2000;
     public static final String ID = "com.xmos.xta.rcp.views.Structure";
 
     private boolean m_weightIsCumulative;
@@ -81,7 +80,7 @@ public class StructureView extends ZoomedCanvasView {
 	}
 
     protected void updatePixelsXy() {
-    	if ((m_doubleClickNode == null) || (m_numTreeNodes > MAX_NUM_RENDER_NODES)) {
+    	if (m_doubleClickNode == null) {
 			m_pixelsX = 0;
 			m_pixelsY = 0;
 		} else {
@@ -99,23 +98,11 @@ public class StructureView extends ZoomedCanvasView {
     	gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
         gc.fillRectangle(0, 0, clientArea.width, clientArea.height);
 
-        if (m_numTreeNodes > MAX_NUM_RENDER_NODES) {
-	        gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
-	        gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
-	        String error = "Code structure too complicated: select a smaller region";
-
-	        double functionNameWidth = gc.getFontMetrics().getAverageCharWidth() * error.length();
-	        double functionNameHeight = gc.getFontMetrics().getHeight();
-	        
-	        gc.drawString(error, (int)((clientArea.width - functionNameWidth)/2),
-	        		(int)((clientArea.height - functionNameHeight)/2));
-	    } else {
-	        if (m_doubleClickNode == null)
-	        	return;
-	        
-			gc.setLineWidth(m_lineWidth);
-			m_doubleClickNode.getStructureNode().draw(m_display, gc, m_scale);
-	    }
+        if (m_doubleClickNode == null)
+        	return;
+        
+		gc.setLineWidth(m_lineWidth);
+		m_doubleClickNode.getStructureNode().draw(m_display, gc, m_scale);
     }
     
 	private boolean annotateTree(Node node, int numIterations, double totalTime) {
