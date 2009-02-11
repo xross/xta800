@@ -241,8 +241,14 @@ public class Block implements Comparable<Block> {
 			}
 			throw new Exception("During analysis function contexts have become null");
 		}
+		boolean takeKnown;
+		if(STATIC){
+			takeKnown = (!m_speculative ||  instruction.getSuccessors().size() == 1);
+		} else {
+			takeKnown = true;
+		}
 		
-		if(instruction.isNextInstructionPcKnown() && (!m_speculative ||  instruction.getSuccessors().size() == 1)){
+		if(instruction.isNextInstructionPcKnown() && takeKnown){
 			handleKnownNextPc(pc, instruction);
 		} else {
 			handleUnknownNextPc(instruction);
@@ -270,57 +276,74 @@ public class Block implements Comparable<Block> {
 			pushFunction(pc);
 			m_machineState.branchTo(targetPc, instruction.isLoadStore(), m_currentThread);
 		} else {
-			
-			if (!instruction.isLoadStore()) {
-				m_machineState.fetch(m_currentThread);
-			}
-			
-			if(m_machineState.m_branched){
-				m_machineState.branchTo(targetPc, instruction.isLoadStore(), m_currentThread);
+			Block loopBlock = formsLoop(targetPc);
+			if(loopBlock!= null && !m_conditionalBranchTaken){
+				formLoopIfNotComplete(targetPc, loopBlock);
+				setStatus(BlockStatus.COMPLETE);
 			} else {
-			
-				m_machineState.setPc(targetPc, m_currentThread);
-				m_machineState.issue(instruction.getNumBytes(), m_currentThread);
-				if(m_route.completePaths().contains(this)){
-					setStatus(BlockStatus.COMPLETE);
-					releaseMemory();
-				} else{
-					instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
-				} 
+				if (!instruction.isLoadStore()) {
+					m_machineState.fetch(m_currentThread);
+				}
+				
+				if(m_machineState.m_branched){
+					m_machineState.branchTo(targetPc, instruction.isLoadStore(), m_currentThread);
+				} else {
+				
+					m_machineState.setPc(targetPc, m_currentThread);
+					m_machineState.issue(instruction.getNumBytes(), m_currentThread);
+					if(m_route.completePaths().contains(this)){
+						setStatus(BlockStatus.COMPLETE);
+						releaseMemory();
+					} else{
+						instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
+					} 
+				}
+				m_firstStep = false;
 			}
-			m_firstStep = false;
 		}
 	}
-	
+
 	private void handleUnknownNextPc(XtaInstruction instruction) {
 		if(instruction.getSuccessors().size() == 0) {
 			setStatus(BlockStatus.ERROR);
 			releaseMemory();
-		} else if(instruction.getSuccessors().size() == 1) {
-			NextPcType targetPc = instruction.getSuccessors().get(0);
-			Block loopBlock = formsLoop(targetPc.getPc());
-			if(loopBlock!= null && !m_conditionalBranchTaken){
-				formLoopIfNotComplete(targetPc, loopBlock);
-			} else {
-				takeNextInstruction(instruction, targetPc, m_machineState);
-			}
 		} else {
+			boolean nonDeterministicBranch = instruction.getSuccessors().size() > 1;
 			for(NextPcType targetPc : instruction.getSuccessors()){
 				Block loopBlock = formsLoop(targetPc.getPc());
 				if(loopBlock!= null && !m_conditionalBranchTaken){
 					formLoopIfNotComplete(targetPc, loopBlock);
 				} else {
-					MachineState machineState = new MachineState(m_machineState);
-					takeNextInstruction(instruction, targetPc, machineState);
-					new ExecutionState(m_executionState, machineState, this);
+					if(nonDeterministicBranch) {
+						MachineState machineState = new MachineState(m_machineState);
+						boolean maintainedMS = takeNextInstruction(instruction, targetPc, machineState);
+						new ExecutionState(m_executionState, machineState, this, maintainedMS);
+					} else {
+						takeNextInstruction(instruction, targetPc, m_machineState);
+					}
 				}
 			}
-			this.setStatus(BlockStatus.COMPLETE);
+			if(nonDeterministicBranch) this.setStatus(BlockStatus.COMPLETE);
 		}
 	}
 
-	private void takeNextInstruction(XtaInstruction instruction, NextPcType targetPc, MachineState machineState) {
+	private boolean takeNextInstruction(XtaInstruction instruction, NextPcType targetPc, MachineState machineState) {
+		boolean maintainedMS = false;
 		if(targetPc.isBranch()){
+
+			if(!STATIC){
+				if(machineState.branchTargetKnown()){
+					//then the unknown register much be the guard
+					Expression register = machineState.getGuardRegister();
+					
+					maintainedMS = register.resolveEqualTo(0, machineState);
+				} else {
+					//it was the target that was unknown
+					Expression register = machineState.getBranchTargetRegister();
+					maintainedMS = register.resolveEqualTo(targetPc.getPc(), machineState);
+				}
+			}
+			
 			machineState.branchTo(targetPc.getPc(), instruction.isLoadStore(), m_currentThread);
 		} else {
 			if (!instruction.isLoadStore()) {
@@ -329,17 +352,20 @@ public class Block implements Comparable<Block> {
 			machineState.setPc(targetPc.getPc(), m_currentThread);
 			machineState.issue(instruction.getNumBytes(), m_currentThread);
 		}
+		return maintainedMS;
 	}
 
-	private void formLoopIfNotComplete(NextPcType targetPc, Block loopBlock) {
-		if(!willComplete(targetPc.getPc())){
-			if (loopBlock.getInstructionsThis().get(0).getPc() != targetPc.getPc()) {
-				new Block(loopBlock, targetPc.getPc());
+	private void formLoopIfNotComplete(int targetPc, Block loopBlock) {
+		if(!willComplete(targetPc)){
+			if (loopBlock.getInstructionsThis().get(0).getPc() != targetPc) {
+				new Block(loopBlock, targetPc);
 			}
 			loopBlock.addLoopPath(this);
 		}
 	}
-
+	private void formLoopIfNotComplete(NextPcType targetPc, Block loopBlock) {
+		formLoopIfNotComplete(targetPc.getPc(),loopBlock);
+	}
 	
 
 	private boolean willComplete(int targetPc) {

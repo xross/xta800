@@ -291,7 +291,43 @@ public class MachineState {
 		return m_branched;
 	}
 
+	public void resetState(){
+		m_branched = false;
+		m_branchTargetKnown = false;
+		m_guardRegister = null;
+		m_branchTargetRegister = null;
+		m_branchedOnTrue = false;
+	}
 	
+	private boolean m_branchTargetKnown;
+	private Expression m_guardRegister;
+	private Expression m_branchTargetRegister;
+	private boolean m_branchedOnTrue;
+	
+	public void setBranchProperties(boolean branched, boolean branchTargetKnown,
+			Expression guardRegister, Expression branchTargetRegister, boolean branchedOnTrue){
+		m_branched = branched;
+		m_branchTargetKnown = branchTargetKnown;
+		m_guardRegister = guardRegister;
+		m_branchTargetRegister = branchTargetRegister;
+		m_branchedOnTrue = branchedOnTrue;
+	}
+	
+	public boolean branchTargetKnown() {
+		return m_branchTargetKnown;
+	}
+
+	public Expression getGuardRegister() {
+		return m_guardRegister;
+	}
+
+	public Expression getBranchTargetRegister() {
+		return m_branchTargetRegister;
+	}
+
+	public boolean branchedOnTrue(){
+		return m_branchedOnTrue;
+	}
 
 	
 

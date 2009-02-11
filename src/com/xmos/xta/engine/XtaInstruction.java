@@ -257,8 +257,8 @@ public abstract class XtaInstruction extends Instruction {
     	} else {
     		m_nextInstructionPcKnown = false;
     	}
-    	state.setBranched(true);
-    	//state.jump(state.m_op1);
+    	//state.setBranched(true);
+    	state.setBranchProperties(true, false, null, state.m_op1, false);
     }
     
     void BITREV(MachineState state, int thread) throws Exception {
