@@ -26,7 +26,7 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 
 		XtaNotifier.getInstance().addPropertyChangeListener(this);
 	}
-
+	
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("SourcesEditor: propertyChange: %s\n", event.getProperty());	
 		

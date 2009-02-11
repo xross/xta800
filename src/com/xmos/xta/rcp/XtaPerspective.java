@@ -43,5 +43,6 @@ public class XtaPerspective implements IPerspectiveFactory {
 	private void addView(IPageLayout pageLayout, IFolderLayout folderLayout, String viewId) {
 		folderLayout.addView(viewId); 
 		pageLayout.addShowViewShortcut(viewId);
+		pageLayout.getViewLayout(viewId).setCloseable(false);
 	}
 }
