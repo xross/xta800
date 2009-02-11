@@ -14,7 +14,7 @@ system("@ARGV load $genDir/test.xe " .
        "summary simple " .
        "summary complete_loops " .
        "print src 2 " .
-       "print src 4 " .
+       "print src 1 " .
        "print src 3 " .
        "exit > $genDir/if_while.txt 2>&1");
 

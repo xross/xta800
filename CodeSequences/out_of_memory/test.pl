@@ -16,7 +16,5 @@ system("@ARGV load $genDir/test.xe " .
         "summary complete " .
         "summary complete_loops " .
         "summary complete_instructions " .
-        "print src 1 " .
-        "print src 2 " .
         "exit > $genDir/out_of_memory.txt 2>&1");
 

@@ -1,6 +1,6 @@
 int main()
 {
-  int res = 2;
+  int res;
   while (res > 0) 
   {
     --res;

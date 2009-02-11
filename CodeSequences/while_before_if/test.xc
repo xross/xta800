@@ -1,7 +1,7 @@
 int main()
 {
-  int a = 0;
-  int res = 2;
+  int a;
+  int res;
 
   while (res > 0) 
   {

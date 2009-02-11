@@ -1,71 +1,26 @@
-Complete paths:   2
+Complete paths:   1
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-\+COMPLETE \[2 path\(s\)\]
-    path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0
-        \+loop \[1 path\(s\)\, 0 iteration\(s\)\]
-            path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/0/0
-    path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0
+\+COMPLETE \[1 path\(s\)\]
+    path\(0\)    : 380.0/19/19/0/0/1/0
 ----------------------------------
 test.xc \(.*\)
 ----------------------------------
   1: int main\(\)
-\+ 2: {
+\+ 2: \{
 \+ 3:   int a = 0;
 \+ 4:   int res = 2;
 \+ 5:   if \(a == 0\)
-  6:   {
-  7:     while \(res > 0\) 
-  8:     {
-  9:       --res;
-  10:     }
-  11:   }
-  12:   else
-  13:   {
-\+ 14:     res = 3;
-  15:   }
-\+ 16:   return res;
-  17: }
-  18: 
-----------------------------------
-test.xc \(.*\)
-----------------------------------
-  1: int main\(\)
-\+ 2: {
-\+ 3:   int a = 0;
-\+ 4:   int res = 2;
-\+ 5:   if \(a == 0\)
-  6:   {
+  6:   \{
 \+ 7:     while \(res > 0\) 
-  8:     {
-  9:       --res;
-  10:     }
-  11:   }
-  12:   else
-  13:   {
-  14:     res = 3;
-  15:   }
-\+ 16:   return res;
-  17: }
-  18: 
-----------------------------------
-test.xc \(.*\)
-----------------------------------
-  1: int main\(\)
-  2: {
-  3:   int a = 0;
-  4:   int res = 2;
-  5:   if \(a == 0\)
-  6:   {
-\+ 7:     while \(res > 0\) 
-  8:     {
+  8:     \{
 \+ 9:       --res;
-  10:     }
-  11:   }
+  10:     \}
+  11:   \}
   12:   else
-  13:   {
+  13:   \{
   14:     res = 3;
-  15:   }
-  16:   return res;
-  17: }
+  15:   \}
+\+ 16:   return res;
+  17: \}
   18: 
