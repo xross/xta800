@@ -48,7 +48,7 @@ public class ExecutionState {
 	}
 
 	public ExecutionState(ExecutionState executionState,
-			MachineState machineState, Block block) {
+			MachineState machineState, Block block, boolean maintainMS) {
 		m_route = executionState.m_route;
 		m_machineState = machineState;
 		m_threadBlocks = new Block[Resources.NUM_THREADS];
@@ -59,7 +59,7 @@ public class ExecutionState {
 				
 				m_threadBlocks[i] = new Block(executionState.m_threadBlocks[i],
 						m_machineState, this);
-				if(block == executionState.m_threadBlocks[i]){
+				if(block == executionState.m_threadBlocks[i] && !maintainMS){
 					m_threadBlocks[i].m_speculative = true;
 				}
 

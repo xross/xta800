@@ -5,6 +5,10 @@ public class NextPcType {
 	private boolean m_isBranch; 
 	private int m_nextPc;
 	
+	//private int branchRegister;
+	//private boolean branchIfTrue;
+	//private boolean branchIfFalse;
+	
 	public NextPcType(int pc, boolean isBranch) {
 		super();
 		m_nextPc = pc;

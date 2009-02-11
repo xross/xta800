@@ -78,6 +78,17 @@ public class Expression {
 		}
 	}
 	
+	/*
+	 * this function takes an integer and back tracks to fill in the undefined value 
+	 * if possible. returns true if possible else false if not.
+	 */
+	public boolean resolveEqualTo(int registerValue, MachineState machineState){
+		
+		
+		
+		return false;
+	}
+	
 	public void addOperand(Expression operand) {
 		assert (m_numOperands < MAX_NUM_OPERANDS);
 		m_operands[m_numOperands] = operand;
