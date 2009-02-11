@@ -10,7 +10,7 @@ import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.views.ViewNode.StructureNode;
 import com.xmos.xta.rcp.views.ViewNode.ViewNode;
 
-public abstract class Node {
+public abstract class Node implements Comparable<Node> {
     private Node m_parent;
     private Vector<Node> m_nodes;
     protected StructureNode m_structureNode;
@@ -21,6 +21,10 @@ public abstract class Node {
     	m_nodes = new Vector<Node>();
     }
     
+    public final int compareTo(Node node) {
+        return node.getNumCycles() - getNumCycles();
+    }
+
     public abstract int getId();
 
 	public abstract double getTimeTaken();
