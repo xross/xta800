@@ -243,11 +243,13 @@ public class Block implements Comparable<Block> {
 			throw new Exception("During analysis function contexts have become null");
 		}
 		
-		if(instruction.isNextInstructionPcKnown() && (instruction.getSuccessors().size() == 1 && STATIC)){
+		if(instruction.isNextInstructionPcKnown() && ((instruction.getSuccessors().size() == 1 && STATIC) || instruction.getReturn())){
 			handleKnownNextPc(instruction.getNextInstructionPc(), instruction, m_machineState);
 		} else {
 			handleUnknownNextPc(instruction);
 		}
+		
+		
 	}
 	
 	private void handleKnownNextPc(int targetPc, XtaInstruction instruction, MachineState machineState) {
