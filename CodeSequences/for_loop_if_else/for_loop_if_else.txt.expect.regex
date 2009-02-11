@@ -1,36 +1,16 @@
-Complete paths:   2
+Complete paths:   1
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-\+COMPLETE \[2 path\(s\)\]
-    path\(3\)    : 280.0/14/14/0/0/1/0
+\+COMPLETE \[1 path\(s\)\]
+    path\(1\)    : 120.0/6/6/0/0/1/0
         \+loop \[2 path\(s\), 0 iteration\(s\)\]
-            path\(2\)    : 160.0/8/8/0/0/0/0
-            path\(1\)    : 160.0/8/8/0/0/0/0
-    path\(5\)    : 280.0/14/14/0/0/1/0
-        \+loop \[2 path\(s\), 0 iteration\(s\)\]
-            path\(2\)    : 160.0/8/8/0/0/0/0
-            path\(1\)    : 160.0/8/8/0/0/0/0
+            path\(4\)    : 160.0/8/8/0/0/0/0
+            path\(3\)    : 160.0/8/8/0/0/0/0
 ----------------------------------
-test.xc \(.*\)
+test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSequences/for_loop_if_else\)
 ----------------------------------
   1: int main\(\)
-\+ 2: \{
-  3:   int res;
-\+ 4:   for \(int i = 0; i < 5; \+\+i\)
-  5:   \{
-\+ 6:     if \(res == 0\)
-\+ 7:       res \+= 1;
-  8:     else
-  9:       res \+= 2;
-  10:   \}
-\+ 11:   return res;
-  12: \}
-  13: 
-----------------------------------
-test.xc \(.*\)
-----------------------------------
-  1: int main\(\)
-\+ 2: {
+  2: \{
   3:   int res;
 \+ 4:   for \(int i = 0; i < 5; \+\+i\)
   5:   \{
@@ -39,6 +19,22 @@ test.xc \(.*\)
   8:     else
 \+ 9:       res \+= 2;
   10:   \}
-\+ 11:   return res;
+  11:   return res;
+  12: \}
+  13: 
+----------------------------------
+test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSequences/for_loop_if_else\)
+----------------------------------
+  1: int main\(\)
+  2: \{
+  3:   int res;
+\+ 4:   for \(int i = 0; i < 5; \+\+i\)
+  5:   \{
+\+ 6:     if \(res == 0\)
+\+ 7:       res \+= 1;
+  8:     else
+  9:       res \+= 2;
+  10:   \}
+  11:   return res;
   12: \}
   13: 

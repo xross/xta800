@@ -14,7 +14,6 @@ system("@ARGV load $genDir/test.xe " .
        "summary complete_loops " .
        "set loop 4 r 65 " .
        "set loop 3 r 55 " .
-       "set loop 5 r 98 " .
        "summary complete_loops " .
        "exit > $genDir/dependent_nested_loop_fcall.txt 2>&1");
 

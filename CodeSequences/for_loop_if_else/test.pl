@@ -13,6 +13,6 @@ system("@ARGV load $genDir/test.xe " .
        "summary simple " .
        "summary complete_loops " .
        "print src 3 " .
-       "print src 5 " .
+       "print src 4 " .
        "exit > $genDir/for_loop_if_else.txt 2>&1");
 

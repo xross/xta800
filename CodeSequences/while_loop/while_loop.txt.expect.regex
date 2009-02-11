@@ -1,13 +1,12 @@
-Complete paths:   2
+Complete paths:   1
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-\+COMPLETE \[2 path\(s\)\]
-    path\(3\)    : 200.0/10/10/0/0/1/0
+\+COMPLETE \[1 path\(s\)\]
+    path\(1\)    : 100.0/5/5/0/0/1/0
         \+loop \[1 path\(s\), 0 iteration\(s\)\]
             path\(2\)    : 100.0/5/5/0/0/0/0
-    path\(1\)    : 100.0/5/5/0/0/1/0
 ----------------------------------
-test.xc \(.*\)
+test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSequences/while_loop\)
 ----------------------------------
   1: int main\(\)
 \+ 2: \{
@@ -20,7 +19,7 @@ test.xc \(.*\)
   9: \}
   10: 
 ----------------------------------
-test.xc \(.*\)
+test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSequences/while_loop\)
 ----------------------------------
   1: int main\(\)
 \+ 2: \{
