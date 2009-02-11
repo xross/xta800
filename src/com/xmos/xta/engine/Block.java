@@ -285,10 +285,10 @@ public class Block implements Comparable<Block> {
 					setStatus(BlockStatus.COMPLETE);
 					releaseMemory();
 				} else{
-					m_firstStep = false;
 					instruction.setNumIBufferBytes(m_machineState.getNumIBufferBytes(m_currentThread));
 				} 
 			}
+			m_firstStep = false;
 		}
 	}
 	
