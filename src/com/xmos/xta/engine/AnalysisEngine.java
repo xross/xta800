@@ -23,6 +23,9 @@ public class AnalysisEngine {
 	private HashMap<NodeCore, Integer> m_dataPoolPointers;
 	private ArrayList<BranchMap> m_branches;
 	
+	private HashMap<NodeCore, Node[]> m_nodes;
+	private HashMap<NodeCore, Edge[]> m_edges;
+	
 	public AnalysisEngine(XeLoader loader, NodeCoreInstructionCaches coreInstructionCache, ArrayList<XeObject> objects, ArrayList<BranchMap> branches){
 		m_constantPoolPointers = new HashMap<NodeCore, Integer>();
 		m_dataPoolPointers = new HashMap<NodeCore, Integer>();
@@ -32,11 +35,15 @@ public class AnalysisEngine {
 		m_unsafeAssumptions = true;
 		m_userSuccessors = new ArrayList<UserSuccessor>();
 		m_branches = branches;
+		m_edges = new HashMap<NodeCore, Edge[]>();
+		m_nodes= new HashMap<NodeCore, Node[]>();
 	}
 	
 	public void run(){
+		//the order of analysis is important
 		locatePoolPointers();
 		findAllSuccessors();
+		makeAllNodeMaps();
 		return;
 	}
 	
@@ -78,6 +85,85 @@ public class AnalysisEngine {
 			}
 		}
 		return 0;
+	}
+	
+	private void makeAllNodeMaps(){
+		for(int nodeId : m_xeLoader.getNodeIds()){
+			for(int coreId: m_xeLoader.getCoreIds(nodeId)){
+				XeObject xeObject = getXeObject(nodeId, coreId);
+				InstructionDecodeCache decodeCache = m_mcInstructionCache.getInstructionDecodeCache(nodeId, coreId);
+				makeNodeMap(xeObject, decodeCache, nodeId, coreId);
+			}
+		}
+	}
+
+	private HashMap<Integer, Node> m_pcToNode = new HashMap<Integer, Node>();
+	
+	private void makeNodeMap(XeObject xeObject, InstructionDecodeCache decodeCache, int nodeId, int coreId){
+		ArrayList<Edge> edges = new ArrayList<Edge>();
+		HashMap<Integer, Node> nodes = new HashMap<Integer, Node>();
+		//put all the nodes in the node set
+		for(AssemblyLine al : xeObject.getInstructions()){
+			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
+			
+			Node node = new Node(nodes.size());
+			m_pcToNode.put(inst.getPc(), node);
+			nodes.put(inst.getPc(), node);
+		}
+		for(AssemblyLine al : xeObject.getInstructions()){
+			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
+			Node from = nodes.get(inst.getPc());
+			for(NextPcType target : inst.getSuccessors()){
+				Node to = nodes.get(target.getPc());
+				
+				if(from != null && to != null){
+					edges.add(new Edge(from, to, 1));
+				}
+			}
+		}
+		Edge[] edgeArray = edges.toArray(new Edge[] {} );
+		m_edges.put(new NodeCore(nodeId, coreId), edgeArray);
+		Node[] nodeArray = nodes.values().toArray(new Node[] {});
+		m_nodes.put(new NodeCore(nodeId, coreId), nodeArray);
+	}
+	
+	
+	public int determineReachability(int startPc, int endPc, int nodeId, int coreId){
+		Node to = getNode(startPc, nodeId, coreId);
+		Node from = getNode(endPc, nodeId, coreId);
+		if(from!= null && to!= null){
+			FloydWarshall fw = new FloydWarshall();
+			fw.calcShortestPaths(getNodes(nodeId, coreId), getEdges(nodeId, coreId));
+			return fw.getShortestDistance(from, to);
+		} else {
+			return Integer.MAX_VALUE;
+		}
+	}
+	public Node getNode(int pc,int node, int core){
+		for(NodeCore nc : m_nodes.keySet()){
+			if(nc.m_nodeId == node && nc.m_coreId == core){
+				for(Node n : m_nodes.get(nc)){
+					if(n == m_pcToNode.get(pc)) return n;
+				}
+			}
+		}
+		return null;
+	}
+	public Edge[] getEdges(int node, int core){
+		for(NodeCore nc : m_edges.keySet()){
+			if(nc.m_nodeId == node && nc.m_coreId == core){
+				return m_edges.get(nc);
+			}
+		}
+		return null;
+	}
+	public Node[] getNodes(int node, int core){
+		for(NodeCore nc : m_nodes.keySet()){
+			if(nc.m_nodeId == node && nc.m_coreId == core){
+				return m_nodes.get(nc);
+			}
+		}
+		return null;
 	}
 	
 	/*
