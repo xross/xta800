@@ -56,7 +56,7 @@ public abstract class XtaInstruction extends Instruction {
 		m_liveIn = new HashSet<LivenessResource>();
 		m_liveOut = new HashSet<LivenessResource>();
 		m_successors = new ArrayList<NextPcType>();
-		if(this.getBranchPcRelative()) addSuccessor(this.getBranchPcRelativeTargetPc(), true);
+		if(this.getBranchPcRelative()) addSuccessor(this.getBranchPcRelativeTargetPc(), true, this.getBranchLink());
 	}
 
 	public boolean isNextInstructionPcKnown(){
@@ -104,8 +104,8 @@ public abstract class XtaInstruction extends Instruction {
 	public ArrayList<NextPcType> getSuccessors(){
 		return m_successors;
 	}
-	public void addSuccessor(int successorPc, boolean isBranch){
-		if(!m_successors.contains(successorPc))m_successors.add(new NextPcType(successorPc, isBranch));
+	public void addSuccessor(int successorPc, boolean isBranch, boolean isBranchLink){
+		if(!m_successors.contains(successorPc))m_successors.add(new NextPcType(successorPc, isBranch, isBranchLink));
 		return;
 	}
 	

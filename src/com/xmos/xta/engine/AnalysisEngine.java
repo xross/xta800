@@ -144,7 +144,7 @@ public class AnalysisEngine {
 				if(bm.getBranches().containsKey(al.getPc())){
 					XtaInstruction inst = decodeCache.getInstruction(al.getPc());
 					for(int target : bm.getBranches().get(al.getPc())){
-						inst.addSuccessor(target, true);
+						inst.addSuccessor(target, true, decodeCache.getInstruction(target).getBranchLink());
 					}
 				}
 			}
@@ -156,7 +156,8 @@ public class AnalysisEngine {
 			for(UserSuccessor us : m_userSuccessors){
 				if(us.m_fromPc == al.getPc()){
 					XtaInstruction inst = decodeCache.getInstruction(al.getPc());
-					inst.addSuccessor(us.m_toPc, true);
+					//inst.addSuccessor(us.m_toPc, true, decodeCache.getInstruction(us.m_toPc).getBranchLink());
+					inst.addSuccessor(us.m_toPc, true, false);
 				}
 			}
 		}
@@ -195,7 +196,7 @@ public class AnalysisEngine {
 		for(AssemblyLine al : xeObject.getInstructions()){
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
 			if(!m_noNextPc.contains(inst.getNmenonic())){
-				inst.addSuccessor(inst.getPc() + inst.getNumBytes(), false);
+				inst.addSuccessor(inst.getPc() + inst.getNumBytes(), false, false);
 			}
 		}
 	}
@@ -225,7 +226,7 @@ public class AnalysisEngine {
 				XtaInstruction inst = decodeCache.getInstruction(((AssemblyLine)line).getPc());
 				if(isReturn(inst.getNmenonic())){
 					for(int blPc : branchLinkPcs){
-						inst.addSuccessor(blPc, true);
+						inst.addSuccessor(blPc, true, false);
 					}
 				}
 			}
@@ -247,10 +248,11 @@ public class AnalysisEngine {
 	public void addBranches(XeObject xeObject, InstructionDecodeCache decodeCache, int nodeId, int coreId){
 		for(AssemblyLine al : xeObject.getInstructions()){
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
+			boolean isBranchLink = inst.getNmenonic().startsWith("bl");
 			if(inst.getBranchPcRelative()){
-				inst.addSuccessor(inst.getBranchPcRelativeTargetPc(), true);
+				int pc = inst.getBranchPcRelativeTargetPc();
+				inst.addSuccessor(pc , true, isBranchLink);
 			}
-			
 			if(inst.getNmenonic().equals(new RevbXtaInstruction_blacp_u10(0, 0, null).getNmenonic())) {
 				int imm = XtaInstruction.getBits(16, 10, inst.getOpcode()) << Instruction.BYTES_PER_WORD_LOG2;
 				int address = getConstantPoolPointer(nodeId, coreId) + imm;
@@ -259,7 +261,7 @@ public class AnalysisEngine {
 					byte b = m_xeLoader.getMemoryImage(nodeId, coreId).readByte(address+i);
 					word = word | (b<<(8 * i));
 				}
-				inst.addSuccessor(word, true);
+				inst.addSuccessor(word, true,isBranchLink );
 				
 			}
 			if(inst.getNmenonic().equals(new RevbXtaInstruction_blacp_lu10(0, 0, null).getNmenonic())){
@@ -270,11 +272,9 @@ public class AnalysisEngine {
 					byte b = m_xeLoader.getMemoryImage(nodeId, coreId).readByte(address+i);
 					word = word | (b<<(8 * i));
 				}
-				inst.addSuccessor(word, true);
+				inst.addSuccessor(word, true, isBranchLink);
 			}
-			
 		}
-		
 	}
 	
 	
