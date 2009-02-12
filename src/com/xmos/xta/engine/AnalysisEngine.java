@@ -23,6 +23,9 @@ public class AnalysisEngine {
 	private HashMap<NodeCore, Integer> m_dataPoolPointers;
 	private ArrayList<BranchMap> m_branches;
 	
+	private HashMap<NodeCore, Node[]> m_nodes;
+	private HashMap<NodeCore, Edge[]> m_edges;
+	
 	public AnalysisEngine(XeLoader loader, NodeCoreInstructionCaches coreInstructionCache, ArrayList<XeObject> objects, ArrayList<BranchMap> branches){
 		m_constantPoolPointers = new HashMap<NodeCore, Integer>();
 		m_dataPoolPointers = new HashMap<NodeCore, Integer>();
@@ -32,11 +35,15 @@ public class AnalysisEngine {
 		m_unsafeAssumptions = true;
 		m_userSuccessors = new ArrayList<UserSuccessor>();
 		m_branches = branches;
+		m_edges = new HashMap<NodeCore, Edge[]>();
+		m_nodes= new HashMap<NodeCore, Node[]>();
 	}
 	
 	public void run(){
+		//the order of analysis is important
 		locatePoolPointers();
 		findAllSuccessors();
+		makeAllNodeMaps();
 		return;
 	}
 	
@@ -78,6 +85,85 @@ public class AnalysisEngine {
 			}
 		}
 		return 0;
+	}
+	
+	private void makeAllNodeMaps(){
+		for(int nodeId : m_xeLoader.getNodeIds()){
+			for(int coreId: m_xeLoader.getCoreIds(nodeId)){
+				XeObject xeObject = getXeObject(nodeId, coreId);
+				InstructionDecodeCache decodeCache = m_mcInstructionCache.getInstructionDecodeCache(nodeId, coreId);
+				makeNodeMap(xeObject, decodeCache, nodeId, coreId);
+			}
+		}
+	}
+
+	private HashMap<Integer, Node> m_pcToNode = new HashMap<Integer, Node>();
+	
+	private void makeNodeMap(XeObject xeObject, InstructionDecodeCache decodeCache, int nodeId, int coreId){
+		ArrayList<Edge> edges = new ArrayList<Edge>();
+		HashMap<Integer, Node> nodes = new HashMap<Integer, Node>();
+		//put all the nodes in the node set
+		for(AssemblyLine al : xeObject.getInstructions()){
+			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
+			
+			Node node = new Node(nodes.size());
+			m_pcToNode.put(inst.getPc(), node);
+			nodes.put(inst.getPc(), node);
+		}
+		for(AssemblyLine al : xeObject.getInstructions()){
+			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
+			Node from = nodes.get(inst.getPc());
+			for(NextPcType target : inst.getSuccessors()){
+				Node to = nodes.get(target.getPc());
+				
+				if(from != null && to != null){
+					edges.add(new Edge(from, to, 1));
+				}
+			}
+		}
+		Edge[] edgeArray = edges.toArray(new Edge[] {} );
+		m_edges.put(new NodeCore(nodeId, coreId), edgeArray);
+		Node[] nodeArray = nodes.values().toArray(new Node[] {});
+		m_nodes.put(new NodeCore(nodeId, coreId), nodeArray);
+	}
+	
+	
+	public int determineReachability(int startPc, int endPc, int nodeId, int coreId){
+		Node to = getNode(startPc, nodeId, coreId);
+		Node from = getNode(endPc, nodeId, coreId);
+		if(from!= null && to!= null){
+			FloydWarshall fw = new FloydWarshall();
+			fw.calcShortestPaths(getNodes(nodeId, coreId), getEdges(nodeId, coreId));
+			return fw.getShortestDistance(from, to);
+		} else {
+			return Integer.MAX_VALUE;
+		}
+	}
+	public Node getNode(int pc,int node, int core){
+		for(NodeCore nc : m_nodes.keySet()){
+			if(nc.m_nodeId == node && nc.m_coreId == core){
+				for(Node n : m_nodes.get(nc)){
+					if(n == m_pcToNode.get(pc)) return n;
+				}
+			}
+		}
+		return null;
+	}
+	public Edge[] getEdges(int node, int core){
+		for(NodeCore nc : m_edges.keySet()){
+			if(nc.m_nodeId == node && nc.m_coreId == core){
+				return m_edges.get(nc);
+			}
+		}
+		return null;
+	}
+	public Node[] getNodes(int node, int core){
+		for(NodeCore nc : m_nodes.keySet()){
+			if(nc.m_nodeId == node && nc.m_coreId == core){
+				return m_nodes.get(nc);
+			}
+		}
+		return null;
 	}
 	
 	/*
@@ -144,7 +230,7 @@ public class AnalysisEngine {
 				if(bm.getBranches().containsKey(al.getPc())){
 					XtaInstruction inst = decodeCache.getInstruction(al.getPc());
 					for(int target : bm.getBranches().get(al.getPc())){
-						inst.addSuccessor(target);
+						inst.addSuccessor(target, true, decodeCache.getInstruction(target).getBranchLink());
 					}
 				}
 			}
@@ -156,7 +242,8 @@ public class AnalysisEngine {
 			for(UserSuccessor us : m_userSuccessors){
 				if(us.m_fromPc == al.getPc()){
 					XtaInstruction inst = decodeCache.getInstruction(al.getPc());
-					inst.addSuccessor(us.m_toPc);
+					//inst.addSuccessor(us.m_toPc, true, decodeCache.getInstruction(us.m_toPc).getBranchLink());
+					inst.addSuccessor(us.m_toPc, true, false);
 				}
 			}
 		}
@@ -195,7 +282,7 @@ public class AnalysisEngine {
 		for(AssemblyLine al : xeObject.getInstructions()){
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
 			if(!m_noNextPc.contains(inst.getNmenonic())){
-				inst.addSuccessor(inst.getPc() + inst.getNumBytes());
+				inst.addSuccessor(inst.getPc() + inst.getNumBytes(), false, false);
 			}
 		}
 	}
@@ -225,8 +312,7 @@ public class AnalysisEngine {
 				XtaInstruction inst = decodeCache.getInstruction(((AssemblyLine)line).getPc());
 				if(isReturn(inst.getNmenonic())){
 					for(int blPc : branchLinkPcs){
-						inst.addSuccessor(blPc);
-						inst.addReturnLocation(decodeCache.getInstruction(blPc));
+						inst.addSuccessor(blPc, true, false);
 					}
 				}
 			}
@@ -248,10 +334,11 @@ public class AnalysisEngine {
 	public void addBranches(XeObject xeObject, InstructionDecodeCache decodeCache, int nodeId, int coreId){
 		for(AssemblyLine al : xeObject.getInstructions()){
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
+			boolean isBranchLink = inst.getNmenonic().startsWith("bl");
 			if(inst.getBranchPcRelative()){
-				inst.addSuccessor(inst.getBranchPcRelativeTargetPc());
+				int pc = inst.getBranchPcRelativeTargetPc();
+				inst.addSuccessor(pc , true, isBranchLink);
 			}
-			
 			if(inst.getNmenonic().equals(new RevbXtaInstruction_blacp_u10(0, 0, null).getNmenonic())) {
 				int imm = XtaInstruction.getBits(16, 10, inst.getOpcode()) << Instruction.BYTES_PER_WORD_LOG2;
 				int address = getConstantPoolPointer(nodeId, coreId) + imm;
@@ -260,7 +347,7 @@ public class AnalysisEngine {
 					byte b = m_xeLoader.getMemoryImage(nodeId, coreId).readByte(address+i);
 					word = word | (b<<(8 * i));
 				}
-				inst.addSuccessor(word);
+				inst.addSuccessor(word, true,isBranchLink );
 				
 			}
 			if(inst.getNmenonic().equals(new RevbXtaInstruction_blacp_lu10(0, 0, null).getNmenonic())){
@@ -271,11 +358,9 @@ public class AnalysisEngine {
 					byte b = m_xeLoader.getMemoryImage(nodeId, coreId).readByte(address+i);
 					word = word | (b<<(8 * i));
 				}
-				inst.addSuccessor(word);
+				inst.addSuccessor(word, true, isBranchLink);
 			}
-			
 		}
-		
 	}
 	
 	

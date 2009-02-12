@@ -82,7 +82,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     private MemoryUpdater m_memoryUpdater;
     private Group m_memoryGroup;
     private ProgressBar m_memoryUsage;
-    
     private Spinner m_freqSpinner;
     private Spinner m_threadSpinner;
     private Combo m_nodeIds;
@@ -94,7 +93,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     private volatile ProgressUpdater m_progressUpdater;
 
 	public ControlView() {
-		if (DEBUG) System.out.printf("Tree()\n");			
+		if (DEBUG) System.out.println("Control(" + this.hashCode() + "): new");			
 		XtaNotifier.getInstance().addPropertyChangeListener(this);
 		
 		m_progressUpdater = null;
@@ -116,7 +115,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	public void createPartControl(Composite parent) {
-	    if (DEBUG) System.out.printf("Control: createPartControl\n");
+	    if (DEBUG) System.out.println("Control (" + this.hashCode() + "): createPartControl");
 	    m_parent = parent;
 	    m_display = m_parent.getDisplay();
 
@@ -132,11 +131,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	public void setFocus() {
-		if (DEBUG) System.out.printf("Control: setFocus\n");			
+		if (DEBUG) System.out.println("Control(" + this.hashCode() + "): setFocus");			
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG) System.out.printf("Control: propertyChange: %s\n", event.getProperty());	
+		if (DEBUG) System.out.println("Control(" + this.hashCode() + ") propertyChange: " + event.getProperty());	
 		
 		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
 	        m_memoryUpdater.setFastRefresh(false);
@@ -193,7 +192,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
-		if (DEBUG) System.out.printf("Control: selectionChanged\n");	
+		if (DEBUG) System.out.println("Control(" + this.hashCode() + "): selectionChanged");	
      }
 	
 	public void dispose() {
@@ -208,7 +207,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 	
     public void executeLoad() {				
-		if (DEBUG) System.out.printf("Control: executeLoad\n");	
+		if (DEBUG) System.out.println("Control(" + this.hashCode() + "): executeLoad");	
 
 		if (!m_engineStatus.getText().equals(STATUS_BUSY)) {
 			FileDialog fileDialog = new FileDialog(getSite().getWorkbenchWindow().getShell(), SWT.OPEN);
@@ -233,7 +232,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 	        if (xeFileName != null) {
 	        	if (DEBUG)
-	        		System.out.printf("Control: File open: %s\n", xeFileName);
+	        		System.out.println("Control(" + this.hashCode() + "): File open: " + xeFileName);
 	        
 	        	File xeFile = new File(xeFileName);
 	        	
@@ -252,7 +251,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    			m_fileNameTextBox.setToolTipText(xeFileName);
 
 	    			if (DEBUG)
-	                    System.out.printf("Control: executeLoad, success: %d\n", success);
+	                    System.out.println("Control(" + this.hashCode() + "): executeLoad, success: " + success);
 	    		}
 	        }
 		} else {
@@ -261,7 +260,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	public void executeRunFunction() {
-		if (DEBUG) System.out.printf("Control: executeRunFunction\n");	
+		if (DEBUG) System.out.println("Control(" + this.hashCode() + "): executeRunFunction");	
 
 		if (m_progressUpdater != null) {
 			return;
@@ -279,7 +278,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	public void executeRunPath() {
-		if (DEBUG) System.out.printf("Control: executeRunPath\n");	
+		if (DEBUG) System.out.println("Control(" + this.hashCode() + "): executeRunPath");	
 
 		if (m_progressUpdater != null) {
 			return;

@@ -12,17 +12,17 @@ public class Filter extends Command {
 		ADD, REMOVE, LIST
 	};
 	
-	private CodeReference m_ref;	
+	private String m_refString;	
 	private Operation m_operation;
 	
 	Filter(Operation operation) {
 		m_operation = operation;
-        m_ref = null;
+		m_refString = "";
     }
     
-	Filter(CodeReference ref, Operation operation) {
+	Filter(String refString, Operation operation) {
 		m_operation = operation;
-        m_ref = ref;        
+        m_refString = refString;
     }
     
     public int numArgs() {
@@ -39,16 +39,25 @@ public class Filter extends Command {
     }        
 
     public String name() {
-        return "filter";
+    	switch (m_operation) {
+    	case ADD:
+    	case REMOVE:
+            return "filter";
+    	case LIST:
+            return "filters";
+        default:
+        	assert(false);
+            return "";
+    	}    	        
     }        
 
     public String commandLine() {    	        
     	switch (m_operation) {
     	case ADD:
     	case REMOVE:
-    		return "filter " + m_ref.getRef();
+    		return "filter " + m_refString;
     	case LIST:
-    		return "filter";
+    		return "filters";
         default:
         	assert(false);
             return "";
@@ -60,9 +69,9 @@ public class Filter extends Command {
     	case ADD:
             return "filter <ref>: Adds the given reference to the filter list (post analysis action)";         
     	case REMOVE:
-            return "filter <ref>: Removes the given reference from the filter list (post analysis action)";
+            return "filter <ref>: Removes the given reference from the filter list (supports regular expressions)";
     	case LIST:
-            return "filter: Lists the reference in the filter list";
+            return "filters: Lists the reference in the filter list";
         default:
         	assert(false);
             return "";
@@ -76,8 +85,7 @@ public class Filter extends Command {
     	switch (m_operation) {
     	case ADD:
     	case REMOVE:
-            CodeReference codeRef = CodeReferenceFactory.createCodeReference(args[index + 1]);
-            return new Filter(codeRef, m_operation);
+            return new Filter(args[index + 1], m_operation);
     	case LIST:
             return new Filter(m_operation);
         default:
@@ -90,12 +98,14 @@ public class Filter extends Command {
         if (!isExecutableLoaded(engine, console))
             return;    
 
+        CodeReference ref = CodeReferenceFactory.createCodeReference(m_refString);
+
        	switch (m_operation) {
        	case ADD:
-       		engine.addReference(ReferenceMode.FILTERED, m_ref);
+       		engine.addReference(ReferenceMode.FILTERED, ref);
        		break;
        	case REMOVE:
-       		engine.removeReference(ReferenceMode.FILTERED, m_ref);        			
+       		engine.removeReference(ReferenceMode.FILTERED, ref);        			
        		break;           		
        	case LIST:
        		listExcludes(engine, console);
@@ -107,7 +117,7 @@ public class Filter extends Command {
     }  
     
     private void listExcludes(Engine engine, Console console) {    
-    	if(engine.getReference(ReferenceMode.FILTERED).size() == 0){
+    	if (engine.getReference(ReferenceMode.FILTERED).size() == 0){
 			console.display("none\n");
 			return;
 		}

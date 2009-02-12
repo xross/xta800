@@ -32,7 +32,7 @@ class History extends Command {
     	int index = 1;
     	for (Command command : shell.getCommandHistory()) {
     		console.display(String.format("%d: %s\n", index, command.commandLine()));
-    		++index;    		
+    		++index;
     	}
     }    
 }

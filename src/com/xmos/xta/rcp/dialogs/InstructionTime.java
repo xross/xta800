@@ -19,7 +19,7 @@ import com.xmos.xta.engine.references.CodeReference;
 
 public class InstructionTime extends Dialog {
     Engine m_engine;
-    int m_pc;
+    CodeReference m_ref;
     
     boolean m_valueChanged;
     int m_originalCycles;
@@ -33,10 +33,10 @@ public class InstructionTime extends Dialog {
     public InstructionTime(Shell parent, final Engine engine, CodeReference codeReference) {
     	super(parent);
     	m_engine = engine;
-    	m_pc = codeReference.getPc();
+    	m_ref = codeReference;
 
     	m_valueChanged = false;
-    	m_originalCycles = m_engine.getInstructionNumCycles(m_pc);
+    	m_originalCycles = m_engine.getInstructionNumCycles(m_ref.getPc());
     	open();
     }
 
@@ -55,7 +55,7 @@ public class InstructionTime extends Dialog {
 		Group engineGroup = createGroup(container, "PC", 1, 2);
 		Label ref = new Label(engineGroup, SWT.SHADOW_NONE | SWT.CENTER);
 		ref.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		ref.setText("0x" + Integer.toHexString(m_pc));
+		ref.setText(m_ref.getRef());
 
 		Group nsGroup = createGroup(container, "ns", 1, 1);
 		m_ns = new Text(nsGroup, SWT.SINGLE | SWT.CENTER);
@@ -64,7 +64,7 @@ public class InstructionTime extends Dialog {
 	    m_nsListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				try {
-					m_engine.setInstructionTimeTaken(m_pc, Double.parseDouble(m_ns.getText()));
+					m_engine.setInstructionTimeTaken(m_ref, Double.parseDouble(m_ns.getText()));
 					m_valueChanged = true;
 					updateCyclesValue();
 				} catch (NumberFormatException exception) {
@@ -80,7 +80,7 @@ public class InstructionTime extends Dialog {
 	    m_cyclesListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				try {
-					m_engine.setInstructionNumCycles(m_pc, Integer.parseInt(m_cycles.getText()));
+					m_engine.setInstructionNumCycles(m_ref, Integer.parseInt(m_cycles.getText()));
 					m_valueChanged = true;
 					updateNsValue();
 				} catch (NumberFormatException exception) {
@@ -107,22 +107,23 @@ public class InstructionTime extends Dialog {
 
 	private void updateNsValue() {
 		m_ns.removeModifyListener(m_nsListener);
-		m_ns.setText(Double.toString(m_engine.getInstructionTimeTaken(m_pc)));
+		m_ns.setText(Double.toString(m_engine.getInstructionTimeTaken(m_ref.getPc())));
 		m_ns.addModifyListener(m_nsListener);
 	}			
 
 	private void updateCyclesValue() {
 		m_cycles.removeModifyListener(m_cyclesListener);
-		m_cycles.setText(Integer.toString(m_engine.getInstructionNumCycles(m_pc)));
+		m_cycles.setText(Integer.toString(m_engine.getInstructionNumCycles(m_ref.getPc())));
 		m_cycles.addModifyListener(m_cyclesListener);
 	}			
 
     protected void buttonPressed(int id) {
     	if (id == IDialogConstants.CANCEL_ID) {
     		if (m_valueChanged)
-    			m_engine.setInstructionNumCycles(m_pc, m_originalCycles);
+    			m_engine.unsetInstructionTime(m_ref.getPc());
     	} else {
-    		m_engine.clearUnknown(m_pc);
+    		// Ensure that the value is 
+    		m_engine.setInstructionNumCycles(m_ref, m_originalCycles);
     	}
     	super.buttonPressed(id);
     }

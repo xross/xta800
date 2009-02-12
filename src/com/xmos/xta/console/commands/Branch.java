@@ -15,28 +15,28 @@ public class Branch extends Command {
 		ADD, REMOVE, LIST
 	};
 
-	private CodeReference m_fromRef;
-	private CodeReference m_toRef;
+	private String m_fromRefString;
+	private String m_toRefString;
 	private Operation m_operation;
 
 	Branch(Operation operation) {
 		m_operation = operation;
-		m_fromRef = null;
-		m_toRef = null;
+		m_fromRefString = "";
+		m_toRefString = "";
 	}
 
-	Branch(CodeReference fromRef, CodeReference toRef, Operation operation) {
+	Branch(String fromRefString, String toRefString, Operation operation) {
 		assert(operation == Operation.ADD);
 		m_operation = operation;
-		m_fromRef = fromRef;
-		m_toRef = toRef;
+		m_fromRefString = fromRefString;
+		m_toRefString = toRefString;
 	}
 
-	Branch(CodeReference fromRef, Operation operation) {
+	Branch(String fromRefString, Operation operation) {
 		assert(operation == Operation.REMOVE);
 		m_operation = operation;
-		m_fromRef = fromRef;
-		m_toRef = null;
+		m_fromRefString = fromRefString;
+		m_toRefString = "";
 	}
 	
 	public int numArgs() {
@@ -60,9 +60,9 @@ public class Branch extends Command {
 	public String commandLine() {
     	switch (m_operation) {
     	case ADD:
-    		return "branch " + m_fromRef.getRef() + " " + m_toRef.getRef(); 
+    		return "branch " + m_fromRefString + " " + m_toRefString; 
     	case REMOVE:
-    		return "branch " + m_fromRef.getRef();
+    		return "branch " + m_fromRefString;
     	case LIST:
     		return "branch";
         default:
@@ -91,12 +91,9 @@ public class Branch extends Command {
 				
     	switch (m_operation) {
     	case ADD:
-    		CodeReference fromRef = CodeReferenceFactory.createCodeReference(args[index + 1]);
-    		CodeReference toRef   = CodeReferenceFactory.createCodeReference(args[index + 2]);
-    		return new Branch(fromRef, toRef, m_operation);            
+    		return new Branch(args[index + 1], args[index + 2], m_operation);            
     	case REMOVE:
-    		CodeReference ref = CodeReferenceFactory.createCodeReference(args[index + 1]);
-    		return new Branch(ref, m_operation);            
+    		return new Branch(args[index + 1], m_operation);            
     	case LIST:
     		return new Branch(m_operation);            
         default:
@@ -108,13 +105,16 @@ public class Branch extends Command {
 	public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;
-		
+
+		CodeReference fromRef = CodeReferenceFactory.createCodeReference(m_fromRefString);
+		CodeReference toRef = CodeReferenceFactory.createCodeReference(m_toRefString);
+
     	switch (m_operation) {
     	case ADD:
-			engine.addBranch(m_fromRef, m_toRef);
+			engine.addBranch(fromRef, toRef);
 			break;			
     	case REMOVE:
-			engine.removeBranch(m_fromRef);
+			engine.removeBranch(fromRef);
 			break;			
     	case LIST:
     		listBranches(engine, console);        	

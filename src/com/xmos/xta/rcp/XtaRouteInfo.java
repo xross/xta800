@@ -1,6 +1,5 @@
 package com.xmos.xta.rcp;
 
-import java.util.HashMap;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
@@ -15,18 +14,14 @@ import com.xmos.xta.rcp.nodes.RouteNode;
 
 public class XtaRouteInfo {
 	
-
 	private static final int MAXPATHS = 100;
 	private Route m_route;
 	private DebugInfo m_debugInfo;
 	private MemoryImage m_memoryImage; 
 	private SymbolTable m_symbolTable;
 	private Node m_routeNode;
-	private Node m_selectedNode;
 	private Node m_unresolvedNode;
-
-	private static HashMap <Block, BlockNode> m_blockLookUp;
-	private static HashMap <Block, LoopNode> m_loopLookUp;
+	private Node m_selectedNode;
 	
 	public XtaRouteInfo(Route route, DebugInfo debugInfo,
 			MemoryImage memoryImage, SymbolTable symbolTable) {
@@ -36,17 +31,15 @@ public class XtaRouteInfo {
 		m_symbolTable = symbolTable;
 		m_routeNode = null;
 		m_selectedNode = null;
-		m_unresolvedNode = null;
+		m_selectedNode = null;
 		buildRouteNode();
 	}
 	
 	public void buildRouteNode(){
-		m_blockLookUp = new HashMap<Block, BlockNode>();
-		m_loopLookUp = new HashMap<Block, LoopNode>();
 		RouteNode routeNode = new RouteNode("complete");
 		int i = 0;
         for (Block block : m_route.completePaths()) {
-        	if (i==MAXPATHS) break;
+        	if (i >= MAXPATHS) break;
         	i++;
         	routeNode.addNode(createPath(block, routeNode, true));
         }		
@@ -55,41 +48,30 @@ public class XtaRouteInfo {
 		
 		m_unresolvedNode = new RouteNode("unresolved");
 		for (Unresolved unresolved : m_route.unresolvedPaths()) {
-        	if (i==MAXPATHS) break;
+        	if (i >= MAXPATHS) break;
         	i++;
 			m_unresolvedNode.addNode(createPath(unresolved.getBlock(), m_unresolvedNode, true));
 		}
-        m_blockLookUp = null;
-        m_loopLookUp = null;
 	}
 	
 	private PathNode createPath(Block block, Node parent, boolean isRoot) {
-
-        PathNode pathNode = new PathNode(block, parent, isRoot);      
+        PathNode pathNode = new PathNode(block, parent, isRoot);
+                
         for (Block pathBlock : block.getPathBlocks()) {            
             if (pathBlock.numLoopPaths() > 0) {
-            	LoopNode loopNode;
-            	if (!m_loopLookUp.containsKey(pathBlock)){
-            		loopNode = new LoopNode(pathBlock, pathNode);
-            		m_loopLookUp.put(pathBlock, loopNode);
-            		for (Block loopPath : pathBlock.getLoopPaths()) {
-	                	loopNode.addNode(createPath(loopPath, loopNode, false));                    
-	                }
-            	} else {
-            		loopNode = m_loopLookUp.get(pathBlock);
-            	}
+                LoopNode loopNode = new LoopNode(pathBlock, pathNode);
                 pathNode.addNode(loopNode);
+                
+                for (Block loopPath : pathBlock.getLoopPaths()) {
+                	loopNode.addNode(createPath(loopPath, loopNode, false));                    
+                }
             }
-            if (!m_blockLookUp.containsKey(pathBlock)){
-            	BlockNode blockNode = new BlockNode(pathBlock, pathNode);
-            	m_blockLookUp.put(pathBlock, blockNode);
-            } 
-        	pathNode.addNode(m_blockLookUp.get(pathBlock));    
+        	pathNode.addNode(new BlockNode(pathBlock, pathNode));            
         }
         block.doneWithPathBlocks();
         return pathNode;
 	}
-
+	
 	public Route getRoute() {
 		return m_route;
 	}
@@ -116,7 +98,7 @@ public class XtaRouteInfo {
 
 	public Node getUnresolvedNode() {
 		return m_unresolvedNode;
-	}	
+	}
 
 	public void setSelectedNode(Node selectedNode) {
 		m_selectedNode = selectedNode;

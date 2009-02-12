@@ -1,5 +1,7 @@
 package com.xmos.xta.rcp.views.TreeView;
 
+import java.util.Arrays;
+
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
@@ -12,7 +14,11 @@ class TreeViewContentProvider implements ITreeContentProvider {
 		if (DEBUG) System.out.printf("TreeViewContentProvider: getChildren: %s\n",
 				parentElement.toString());
 
-		return ((Node)parentElement).getNodes().toArray();
+		Object[] res = ((Node)parentElement).getNodes().toArray();
+		if (((Node)parentElement).isRouteNode()) {
+			Arrays.sort(res);
+		}
+		return res;
 	}
 
 	public Object getParent(Object element) {

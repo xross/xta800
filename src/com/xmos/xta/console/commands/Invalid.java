@@ -33,6 +33,6 @@ public class Invalid extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-    	assert false;
+    	console.display("Invalid command (Try 'help'..)\n");
     }    
 }
