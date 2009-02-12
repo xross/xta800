@@ -29,7 +29,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
                                                   ISelectionListener,
                                                   IMenuListener {
     public static final boolean DEBUG = false;
-    public static final String ID = "com.xmos.xta.rcp.views.Tree";
+    public static final String ID = "com.xmos.xta.rcp.views.TreeView.Tree";
 
     private TreeViewer m_treeViewer;
     private Composite m_parent;

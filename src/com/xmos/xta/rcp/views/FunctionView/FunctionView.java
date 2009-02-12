@@ -26,7 +26,7 @@ import com.xmos.xta.rcp.views.ViewNode.ViewNode;
 public class FunctionView extends ZoomedCanvasView {
 	
     public static final boolean DEBUG = false;
-    public static final String ID = "com.xmos.xta.rcp.views.Function";
+    public static final String ID = "com.xmos.xta.rcp.views.FunctionView.Function";
 
     private SymbolTable m_table;
     private Vector<XtaFunctionBlock> m_functionList;

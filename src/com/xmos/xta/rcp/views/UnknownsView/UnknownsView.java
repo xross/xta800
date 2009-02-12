@@ -44,7 +44,7 @@ import com.xmos.xta.rcp.nodes.Node;
 public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 		                                              ISelectionListener {
 	public static final boolean DEBUG = false;
-	public static final String ID = "com.xmos.xta.rcp.views.Unknowns";
+	public static final String ID = "com.xmos.xta.rcp.views.UnknownsView.Unknowns";
 
 	protected Display m_display;
 	Composite m_parent;

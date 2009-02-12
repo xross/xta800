@@ -15,7 +15,7 @@ import com.xmos.xta.rcp.nodes.Node;
 public class FlowView extends ViewPart implements IPropertyChangeListener,
                                                   ISelectionListener {
     public static final boolean DEBUG = false;
-    public static final String ID = "com.xmos.xta.rcp.views.Flow";
+    public static final String ID = "com.xmos.xta.rcp.views.FlowView.Flow";
 
 	public FlowView() {
 		if (DEBUG) System.out.printf("Flow()\n");			
