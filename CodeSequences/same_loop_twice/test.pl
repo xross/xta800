@@ -14,6 +14,7 @@ system("@ARGV load $genDir/test.xe " .
        "summary simple " .
        "summary complete_loops " .
        "print src 4 " .
-       "print src 3 " .
+       "print src 5 " .
+       "print src 2 " .
        "exit > $genDir/same_loop_twice.txt 2>&1");
 
