@@ -1,9 +1,15 @@
-package com.xmos.xta.rcp.views;
+package com.xmos.xta.rcp.views.ConsoleView;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Vector;
 
+import jline.Completor;
+
+import org.eclipse.jface.text.JFaceTextUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.VerifyKeyListener;
@@ -15,84 +21,30 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 
-import com.xmos.xta.console.Console;
+import com.xmos.xta.console.JLineCompletor;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.rcp.XtaCorePlugin;
-import com.xmos.xta.rcp.XtaEngine;
 
-public class ConsoleViewControl implements Console {
-    public static final boolean DEBUG = false;
-
-    private Shell m_shell;
-	private TextReader m_textReader;
-	private ConsoleView m_consoleView; 
-	
-	public ConsoleViewControl(ConsoleView console, Composite parent) {
-		if (DEBUG) System.out.printf("ConsoleViewControl()\n");			
-
-		m_consoleView = console;
-		m_shell = new Shell(this, XtaEngine.getEngine(), false);		        
-		m_textReader = new TextReader(parent, m_shell);
-	}
-	
-    public void execute() {
-		if (DEBUG) System.out.printf("ConsoleViewControl: execute\n");
-        m_shell.execute();
-    }
-	
-	public void display(String str) {		
-		if (DEBUG) System.out.printf("ConsoleViewControl: display: %s\n", str);			
-		m_textReader.display(str);
-	}
-	
-	public void displayPrompt(String str) {
-		if (DEBUG) System.out.printf("ConsoleViewControl: displayPrompt: %s\n", str);			
-		m_textReader.display(str);
-	}
-	
-	public String getNextLine(Vector<Command> commandHistory) {
-		if (DEBUG) System.out.printf("ConsoleViewControl: getNextLine\n");
-		if (m_consoleView.hasPendingCommands()) {
-			String command = m_consoleView.getCommand();
-			display(command);
-	        return command;
-		} else {
-			String command = m_textReader.readLine(commandHistory);
-	        return command;
-		}
-	}	
-	
-	public boolean wasInternal() {
-		if (DEBUG) System.out.printf("ConsoleViewControl: wasInternal\n");			
-		return m_textReader.wasInternal();
-	}
-	
-	public void clearScreen() {
-		if (DEBUG) System.out.printf("ConsoleViewControl: clearScreen\n");			
-		m_textReader.clearScreen();		
-	}
-	
-	public void sendCommand(String command) {
-		if (DEBUG) System.out.printf("ConsoleViewControl: sendCommand: %s\n", command);
-		m_textReader.sendCommand(command);
-	}	
-}
-
-class TextReader extends Reader {	 
+public class TextReader extends Reader {	 
     public static final boolean DEBUG = false;
 
 	private StyledText m_text;
 	private Object m_keyLock = new Object();
 	private Object m_lineLock = new Object();
+	private Object m_charLock = new Object();
 	private String m_lastLine;
+	private int m_lastChar;
 	private Vector<Command> m_commandHistory;
 	private int m_commandHistoryIndex;
 	private boolean m_internal;
 	private Display m_display;
 	private String m_string;
+	private String m_prompt;
 	private Shell m_shell;
-	
+	private Completor m_completor;
+    private TabCompletionHandler m_completionHandler;
+
 	public TextReader(Composite parent, Shell shell) {
 		if (DEBUG) System.out.printf("TextReader()\n");		
 		
@@ -117,19 +69,14 @@ class TextReader extends Reader {
         			decrementCommandIndex();
         			displayCommand();
         		}
-        		else if (event.keyCode == SWT.ARROW_LEFT) {
-
-        		}
-        		else if (event.keyCode == SWT.ARROW_RIGHT) {
-
-        		}
         		else if (event.keyCode == SWT.ARROW_DOWN) {
         			incrementCommandIndex();
         			displayCommand();
         		}
-        		else {
-        			//if the carat is not on the last line then don't draw it
-        			//i'm not sure if it is too late by now
+        		else if (event.keyCode == SWT.TAB) {
+                    complete();
+        		} else {
+        			handleCharacter(event.character);
         		}
         	}
         	
@@ -147,6 +94,9 @@ class TextReader extends Reader {
 				else if (event.keyCode == SWT.ARROW_DOWN) {
 					event.doit = false;				
 				}
+        		else if (event.keyCode == SWT.TAB) {
+        			event.doit = false;
+        		}							    
 				else if (event.keyCode == SWT.BS) {
 					if (checkCursor()) {
     					event.doit = false;				
@@ -162,9 +112,11 @@ class TextReader extends Reader {
 					m_text.append("\n");
 					event.doit = false;	
 				}
-				
 			}			
-		});       
+		});    
+                
+        m_completor = new JLineCompletor();
+        m_completionHandler = new TabCompletionHandler();
 	}
 	
 	public void display(String str) {
@@ -178,7 +130,19 @@ class TextReader extends Reader {
 		    }
     	});
 	}
+
+	public void displayPrompt(String str) {
+		if (DEBUG) System.out.printf("TextReader: displayPrompt: %s\n", str);			
 		
+		m_prompt = str;
+        m_display.syncExec(new Runnable() {
+    		public void run() {
+	    		m_text.append(m_prompt);
+		    	m_text.setSelection(m_text.getCharCount());
+		    }
+    	});
+	}
+	
 	public String readLine(Vector<Command> commandHistory) {
 		if (DEBUG) System.out.printf("TextReader: readLine\n");			
 
@@ -194,7 +158,20 @@ class TextReader extends Reader {
 		}	
 		return m_lastLine;
 	}
-	 	
+	
+	public int readCharacter() {
+		if (DEBUG) System.out.printf("TextReader: readCharacter\n");			
+		
+		synchronized(m_charLock) {
+			try {
+				m_charLock.wait();
+			}
+			catch (InterruptedException ex) {
+			}
+		}	
+		return m_lastChar;
+	}	
+	
 	public void sendCommand(String command) {
 		if (DEBUG) System.out.printf("TextReader: sendCommand\n");			
 		m_text.append(String.format("%s\n", command));
@@ -234,15 +211,92 @@ class TextReader extends Reader {
 		return 0;
 	}
 	
+	String getCurrentBuffer() {				
+		int currentIndex = m_text.getCaretOffset();
+        int currentRowIndex = m_text.getLineAtOffset(currentIndex);
+		int rowStartIndex = m_text.getOffsetAtLine(currentRowIndex);
+		int startIndex = rowStartIndex + m_shell.getPrompt().length();
+		
+		int numCharsInBuffer = currentIndex - startIndex;		
+		if (numCharsInBuffer > 0) {
+			if (currentIndex == m_text.getCharCount()) {
+				--currentIndex;
+			}
+	        return m_text.getText(startIndex, currentIndex);				
+		}
+		return "";
+	}
+
+	int getCurrentCursorIndex() {
+		int currentIndex = m_text.getCaretOffset();
+        int currentRowIndex = m_text.getLineAtOffset(currentIndex);
+		int rowStartIndex = m_text.getOffsetAtLine(currentRowIndex);		
+        return currentIndex - (rowStartIndex + m_shell.getPrompt().length());	
+	}
+	
+	void insertText(String text, int cursorIndex) {
+		int currentIndex = m_text.getCaretOffset();
+        int currentRowIndex = m_text.getLineAtOffset(currentIndex);
+		int rowStartIndex = m_text.getOffsetAtLine(currentRowIndex);
+		int startIndex = rowStartIndex + m_shell.getPrompt().length() + cursorIndex;		
+		int numCharsTotal = m_text.getCharCount();
+		int numCharsToEnd = numCharsTotal - startIndex;
+		m_text.replaceTextRange(startIndex, numCharsToEnd, text);		
+	}
+
+	void insertCompletions(Collection<String> completions, String buffer) {
+		m_text.append("\n");
+		
+	    int numPixels = m_text.getSize().x;
+	    int averageCharPixelWidth = JFaceTextUtil.getAverageCharWidth(m_text);
+	    int averageNumChars = numPixels / averageCharPixelWidth;
+		
+	    // Finds the longest candidate..
+	    int longestCompletionLength = 0;
+        for (String completion : completions) {
+        	if (completion.length() > longestCompletionLength) 
+        		longestCompletionLength = completion.length();
+        }
+
+        int fieldWidth = longestCompletionLength + 5;
+	    int numFields = averageNumChars / fieldWidth;
+        	
+	    int fieldIndex = 0;
+        for (String completion : completions) {
+        	
+        	// Builds a string with the correct amount of space inserted at the end...
+        	String completionField = completion;
+        	for (int i = completion.length(); i < fieldWidth; ++i)
+        		completionField += " ";
+        	        	
+        	m_text.append(completionField);   
+        	++fieldIndex;
+        	if (fieldIndex == numFields) {
+            	m_text.append("\n");        	
+            	fieldIndex = 0;        		
+        	}
+        }
+    	m_text.append("\n");        	
+        displayPrompt(m_prompt);
+        display(buffer);
+        setCaretToEnd();
+	}
+	
 	private void handleEnter() {
 		setCaretToEnd();
 		String txt = m_text.getText();
 		int idx = txt.lastIndexOf('>', m_text.getCharCount() - 1);
 		m_internal = false;
 		m_lastLine = txt.substring(idx != -1 ? idx + 1 : 1, m_text.getCharCount());	
-		//m_lastLine = m_lastLine.replaceAll("\n", "");
 		synchronized(m_lineLock) {
 			m_lineLock.notifyAll();
+		}		
+	}
+
+	private void handleCharacter(int character) {
+		m_lastChar = character;
+		synchronized(m_charLock) {
+			m_charLock.notifyAll();
 		}		
 	}
 	
@@ -291,4 +345,15 @@ class TextReader extends Reader {
 		} 
 		return false;
 	}	
+		
+	private void complete() {
+        List<String> candidates = new ArrayList<String>();
+        String buffer = getCurrentBuffer();
+        int cursor = getCurrentCursorIndex();
+
+        int position = m_completor.complete(buffer, cursor, candidates);
+        if (candidates.size() != 0) {
+            m_completionHandler.complete(this, candidates, position);		
+        }
+	}
 }

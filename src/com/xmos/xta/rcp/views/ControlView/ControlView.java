@@ -1,4 +1,4 @@
-package com.xmos.xta.rcp.views;
+package com.xmos.xta.rcp.views.ControlView;
 
 import java.io.File;
 import java.io.IOException;

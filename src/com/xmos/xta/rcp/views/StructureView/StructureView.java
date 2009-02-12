@@ -1,4 +1,4 @@
-package com.xmos.xta.rcp.views;
+package com.xmos.xta.rcp.views.StructureView;
 
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
@@ -7,6 +7,7 @@ import org.eclipse.swt.graphics.Rectangle;
 
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.nodes.Node;
+import com.xmos.xta.rcp.views.ZoomedCanvasView;
 import com.xmos.xta.rcp.views.ViewNode.StructureNode;
 
 public class StructureView extends ZoomedCanvasView {

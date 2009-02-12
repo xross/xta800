@@ -1,4 +1,4 @@
-package com.xmos.xta.rcp.views;
+package com.xmos.xta.rcp.views.FunctionView;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,6 +19,7 @@ import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.nodes.Node;
+import com.xmos.xta.rcp.views.ZoomedCanvasView;
 import com.xmos.xta.rcp.views.ViewNode.TextBlockNode;
 import com.xmos.xta.rcp.views.ViewNode.ViewNode;
 

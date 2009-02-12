@@ -1,4 +1,4 @@
-package com.xmos.xta.rcp.views;
+package com.xmos.xta.rcp.views.UnknownsView;
 
 import java.util.ArrayList;
 
