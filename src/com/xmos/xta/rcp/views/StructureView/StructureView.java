@@ -1,4 +1,4 @@
-package com.xmos.xta.rcp.views;
+package com.xmos.xta.rcp.views.StructureView;
 
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
@@ -7,12 +7,13 @@ import org.eclipse.swt.graphics.Rectangle;
 
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.nodes.Node;
+import com.xmos.xta.rcp.views.ZoomedCanvasView;
 import com.xmos.xta.rcp.views.ViewNode.StructureNode;
 
 public class StructureView extends ZoomedCanvasView {
 
 	public static final boolean DEBUG = false;
-    public static final String ID = "com.xmos.xta.rcp.views.Structure";
+    public static final String ID = "com.xmos.xta.rcp.views.StructureView.Structure";
 
     private boolean m_weightIsCumulative;
     private int m_numTreeNodes;

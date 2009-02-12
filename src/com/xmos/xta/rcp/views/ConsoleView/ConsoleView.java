@@ -1,4 +1,4 @@
-package com.xmos.xta.rcp.views;
+package com.xmos.xta.rcp.views.ConsoleView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,22 +17,18 @@ import com.xmos.xta.rcp.nodes.Node;
 
 public class ConsoleView extends ViewPart implements IPropertyChangeListener,
                                                      ISelectionListener {
-    public static final boolean DEBUG = false;
-    public static final String ID = "com.xmos.xta.rcp.views.Console";
+    public static final String ID = "com.xmos.xta.rcp.views.ConsoleView.Console";
 
-    private ConsoleViewControl m_consoleViewControl;
+    private GuiConsole m_consoleViewControl;
     private Boolean m_started = false;
     private List<String> m_pendingCommands = new ArrayList<String>();
     
 	public ConsoleView() {
-		if (DEBUG) System.out.printf("Console()\n");			
 		XtaNotifier.getInstance().addPropertyChangeListener(this);
 	}
 
 	public void createPartControl(Composite parent) {
-		if (DEBUG) System.out.printf("Console: createPartControl\n");
-
-		m_consoleViewControl = new ConsoleViewControl(this, parent);
+		m_consoleViewControl = new GuiConsole(this, parent);
 
 		new Thread() {
 	    	public void run() {
@@ -41,11 +37,9 @@ public class ConsoleView extends ViewPart implements IPropertyChangeListener,
     }
 
 	public void setFocus() {
-		if (DEBUG) System.out.printf("Console: setFocus\n");			
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG) System.out.printf("Console: propertyChange: %s\n", event.getProperty());			
 	}
 	
     public void selectionChanged(IWorkbenchPart part, ISelection sel) {
@@ -58,8 +52,6 @@ public class ConsoleView extends ViewPart implements IPropertyChangeListener,
      }
 
     public void runCommand(String command) {
-		if (DEBUG) System.out.printf("Console: runCommand: %s\n", command);
-		
 		synchronized(this) {
 			if (m_started) 
 				m_consoleViewControl.sendCommand(command);

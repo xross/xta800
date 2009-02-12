@@ -1,4 +1,4 @@
-package com.xmos.xta.rcp.views;
+package com.xmos.xta.rcp.views.FunctionView;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,13 +19,14 @@ import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.nodes.Node;
+import com.xmos.xta.rcp.views.ZoomedCanvasView;
 import com.xmos.xta.rcp.views.ViewNode.TextBlockNode;
 import com.xmos.xta.rcp.views.ViewNode.ViewNode;
 
 public class FunctionView extends ZoomedCanvasView {
 	
     public static final boolean DEBUG = false;
-    public static final String ID = "com.xmos.xta.rcp.views.Function";
+    public static final String ID = "com.xmos.xta.rcp.views.FunctionView.Function";
 
     private SymbolTable m_table;
     private Vector<XtaFunctionBlock> m_functionList;

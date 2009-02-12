@@ -1,4 +1,4 @@
-package com.xmos.xta.rcp.views;
+package com.xmos.xta.rcp.views.TreeView;
 
 import java.util.Arrays;
 

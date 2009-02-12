@@ -1,4 +1,4 @@
-package com.xmos.xta.rcp.views;
+package com.xmos.xta.rcp.views.ControlView;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,7 +58,7 @@ import com.xmos.xta.rcp.icons.Icons;
 public class ControlView extends ViewPart implements IPropertyChangeListener,
                                                      ISelectionListener {
     public static final boolean DEBUG = false;
-    public static final String ID = "com.xmos.xta.rcp.views.Control";
+    public static final String ID = "com.xmos.xta.rcp.views.ControlView.Control";
 
     public static final String STATUS_EMPTY  = "Empty";
     public static final String STATUS_LOADED = "Loaded";

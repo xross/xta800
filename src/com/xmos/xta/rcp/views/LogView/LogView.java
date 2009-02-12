@@ -1,4 +1,4 @@
-package com.xmos.xta.rcp.views;
+package com.xmos.xta.rcp.views.LogView;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -14,7 +14,7 @@ import com.xmos.xta.rcp.XtaLog;
 
 public class LogView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
-    public static final String ID = "com.xmos.xta.rcp.views.Log";
+    public static final String ID = "com.xmos.xta.rcp.views.LogView.Log";
 
     private TableViewer m_tableViewer;
     

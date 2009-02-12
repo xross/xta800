@@ -19,7 +19,7 @@ public class JLineCompletor implements Completor {
     private ArgumentCompletor m_baseCompletor;
     private Map<String, Completor> m_subCompletors;
     
-	JLineCompletor() {			
+	public JLineCompletor() {			
 		m_subCompletors = new HashMap<String, Completor>();
 		createCommandCompletors();
 	}

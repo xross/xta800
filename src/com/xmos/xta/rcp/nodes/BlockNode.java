@@ -12,7 +12,7 @@ import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.XtaInstruction;
-import com.xmos.xta.rcp.views.ConsoleView;
+import com.xmos.xta.rcp.views.ConsoleView.ConsoleView;
 import com.xmos.xta.rcp.views.ViewNode.FunctionBlockNode;
 import com.xmos.xta.rcp.views.ViewNode.StructureBlockNode;
 

@@ -38,58 +38,58 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            class="com.xmos.xta.rcp.views.TreeView"
+            class="com.xmos.xta.rcp.views.TreeView.TreeView"
             icon="icons/tree.png"
-            id="com.xmos.xta.rcp.views.Tree"
+            id="com.xmos.xta.rcp.views.TreeView.Tree"
             name="Tree"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.ConsoleView"
+            class="com.xmos.xta.rcp.views.ConsoleView.ConsoleView"
             icon="icons/console.png"
-            id="com.xmos.xta.rcp.views.Console"
+            id="com.xmos.xta.rcp.views.ConsoleView.Console"
             name="Console"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.LogView"
+            class="com.xmos.xta.rcp.views.LogView.LogView"
             icon="icons/log.png"
-            id="com.xmos.xta.rcp.views.Log"
+            id="com.xmos.xta.rcp.views.LogView.Log"
             name="Log"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.FunctionView"
+            class="com.xmos.xta.rcp.views.FunctionView.FunctionView"
             icon="icons/function.png"
-            id="com.xmos.xta.rcp.views.Function"
+            id="com.xmos.xta.rcp.views.FunctionView.Function"
             name="Function"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.FlowView"
+            class="com.xmos.xta.rcp.views.FlowView.FlowView"
             icon="icons/flow.png"
-            id="com.xmos.xta.rcp.views.Flow"
+            id="com.xmos.xta.rcp.views.FlowView.Flow"
             name="Flow"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.StructureView"
+            class="com.xmos.xta.rcp.views.StructureView.StructureView"
             icon="icons/structure.png"
-            id="com.xmos.xta.rcp.views.Structure"
+            id="com.xmos.xta.rcp.views.StructureView.Structure"
             name="Structure"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.UnknownsView"
+            class="com.xmos.xta.rcp.views.UnknownsView.UnknownsView"
             icon="icons/unknowns.png"
-            id="com.xmos.xta.rcp.views.Unknowns"
+            id="com.xmos.xta.rcp.views.UnknownsView.Unknowns"
             name="Unknowns"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.ControlView"
+            class="com.xmos.xta.rcp.views.ControlView.ControlView"
             icon="icons/settings.png"
-            id="com.xmos.xta.rcp.views.Control"
+            id="com.xmos.xta.rcp.views.ControlView.Control"
             name="Control"
             restorable="true">
       </view>
@@ -98,7 +98,7 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="toolbar:com.xmos.xta.rcp.views.Function">
+            locationURI="toolbar:com.xmos.xta.rcp.views.FunctionView.Function">
          <command
                commandId="com.xmos.xta.rcp.function.zoomin.command"
                icon="icons/zoomin.png"
@@ -129,7 +129,7 @@
          </command>
       </menuContribution>
       <menuContribution
-            locationURI="toolbar:com.xmos.xta.rcp.views.Structure">
+            locationURI="toolbar:com.xmos.xta.rcp.views.StructureView.Structure">
          <command
                commandId="com.xmos.xta.rcp.structure.zoomin.command"
                icon="icons/zoomin.png"
@@ -336,18 +336,6 @@
          <property
                name="aboutText"
                value="This is an unreleased/unsupported version. (build xxxx)">
-         </property>
-      </product>
-   </extension>
-   <extension
-         id="product1"
-         point="org.eclipse.core.runtime.products">
-      <product
-            application="tools_xta.application"
-            name="Xmos Timing Anaylsis">
-         <property
-               name="appName"
-               value="Xmos Timing Anaylsis">
          </property>
       </product>
    </extension>

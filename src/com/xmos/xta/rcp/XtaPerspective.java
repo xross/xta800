@@ -4,14 +4,14 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.IFolderLayout;
 
-import com.xmos.xta.rcp.views.ConsoleView;
-import com.xmos.xta.rcp.views.ControlView;
-import com.xmos.xta.rcp.views.LogView;
-import com.xmos.xta.rcp.views.UnknownsView;
 //import com.xmos.xta.rcp.views.FlowView;
-import com.xmos.xta.rcp.views.FunctionView;
-import com.xmos.xta.rcp.views.StructureView;
-import com.xmos.xta.rcp.views.TreeView;
+import com.xmos.xta.rcp.views.ConsoleView.ConsoleView;
+import com.xmos.xta.rcp.views.ControlView.ControlView;
+import com.xmos.xta.rcp.views.FunctionView.FunctionView;
+import com.xmos.xta.rcp.views.LogView.LogView;
+import com.xmos.xta.rcp.views.StructureView.StructureView;
+import com.xmos.xta.rcp.views.TreeView.TreeView;
+import com.xmos.xta.rcp.views.UnknownsView.UnknownsView;
 
 public class XtaPerspective implements IPerspectiveFactory {
     public static final boolean DEBUG = false;
@@ -37,7 +37,7 @@ public class XtaPerspective implements IPerspectiveFactory {
         		"tree.folder", IPageLayout.LEFT, 0.3f, layout.getEditorArea());        
         addView(layout, treeFolder, TreeView.ID);
 
-        layout.setEditorAreaVisible(true);
+        layout.setEditorAreaVisible(true);        
 	}
 	
 	private void addView(IPageLayout pageLayout, IFolderLayout folderLayout, String viewId) {

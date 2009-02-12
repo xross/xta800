@@ -1,4 +1,4 @@
-package com.xmos.xta.rcp.views;
+package com.xmos.xta.rcp.views.LogView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
