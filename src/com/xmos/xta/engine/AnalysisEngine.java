@@ -22,9 +22,14 @@ public class AnalysisEngine {
 	private HashMap<NodeCore, Integer> m_constantPoolPointers;
 	private HashMap<NodeCore, Integer> m_dataPoolPointers;
 	private ArrayList<BranchMap> m_branches;
-	
 	private HashMap<NodeCore, Node[]> m_nodes;
 	private HashMap<NodeCore, Edge[]> m_edges;
+	private ArrayList<FunctionReturns> m_functionReturns;
+	
+	
+	private static final boolean MAKEDOT = false;
+	private static final boolean DEBUG = false;
+	
 	
 	public AnalysisEngine(XeLoader loader, NodeCoreInstructionCaches coreInstructionCache, ArrayList<XeObject> objects, ArrayList<BranchMap> branches){
 		m_constantPoolPointers = new HashMap<NodeCore, Integer>();
@@ -37,6 +42,7 @@ public class AnalysisEngine {
 		m_branches = branches;
 		m_edges = new HashMap<NodeCore, Edge[]>();
 		m_nodes= new HashMap<NodeCore, Node[]>();
+		m_functionReturns = new ArrayList<FunctionReturns>();
 	}
 	
 	public void run(){
@@ -44,6 +50,7 @@ public class AnalysisEngine {
 		locatePoolPointers();
 		findAllSuccessors();
 		makeAllNodeMaps();
+
 		return;
 	}
 	
@@ -86,6 +93,24 @@ public class AnalysisEngine {
 		}
 		return 0;
 	}
+
+
+	
+	public HashSet<Integer> getFunctionRetuns(String functionName, int nodeId, int coreId){
+		for(FunctionReturns f : m_functionReturns){
+			if(f.getNode() == nodeId && f.getCore() == coreId){
+				return f.getFunctionReturns(functionName);
+			}
+		}
+		return new HashSet<Integer>();
+	}
+	
+	
+	public int getFunctionStartPc(String functionName, int nodeId, int coreId) {
+		return getXeObject(nodeId, coreId).getFunctionStartPc().get(functionName);
+	}
+	
+	
 	
 	private void makeAllNodeMaps(){
 		for(int nodeId : m_xeLoader.getNodeIds()){
@@ -100,30 +125,46 @@ public class AnalysisEngine {
 	private HashMap<Integer, Node> m_pcToNode = new HashMap<Integer, Node>();
 	
 	private void makeNodeMap(XeObject xeObject, InstructionDecodeCache decodeCache, int nodeId, int coreId){
+		
 		ArrayList<Edge> edges = new ArrayList<Edge>();
-		HashMap<Integer, Node> nodes = new HashMap<Integer, Node>();
-		//put all the nodes in the node set
-		for(AssemblyLine al : xeObject.getInstructions()){
-			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
-			
-			Node node = new Node(nodes.size());
-			m_pcToNode.put(inst.getPc(), node);
-			nodes.put(inst.getPc(), node);
+		ArrayList<Node> nodes = new ArrayList<Node>();
+		if(MAKEDOT){
+			System.out.println("digraph g {");
 		}
 		for(AssemblyLine al : xeObject.getInstructions()){
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
-			Node from = nodes.get(inst.getPc());
+			Node from = m_pcToNode.get(inst.getPc());
+			if(from == null){
+				from = new Node(nodes.size());
+				nodes.add(from);
+				m_pcToNode.put(inst.getPc(), from);
+				if(MAKEDOT){
+					System.out.println("node" + from.name+ " [label = \"0x" + Integer.toHexString(inst.getPc())+ "\"];");
+				}
+			}
 			for(NextPcType target : inst.getSuccessors()){
-				Node to = nodes.get(target.getPc());
-				
-				if(from != null && to != null){
-					edges.add(new Edge(from, to, 1));
+				Node to = m_pcToNode.get(target.getPc());
+				if(to == null){
+					to = new Node(nodes.size());
+					nodes.add(to);
+					m_pcToNode.put(target.getPc(), to);
+					if(MAKEDOT){
+						System.out.println("node" + to.name + " [label = \"0x" + Integer.toHexString(target.getPc())+ "\"];");
+					}
+				}
+				Edge edge = new Edge( to,from ,1);
+				edges.add(edge);
+				if(MAKEDOT){
+					System.out.println("node" + from.name + " -> node" + to.name + ";");
 				}
 			}
 		}
+		if(MAKEDOT){
+			System.out.println("}");
+		}
 		Edge[] edgeArray = edges.toArray(new Edge[] {} );
 		m_edges.put(new NodeCore(nodeId, coreId), edgeArray);
-		Node[] nodeArray = nodes.values().toArray(new Node[] {});
+		Node[] nodeArray = nodes.toArray(new Node[] {});
 		m_nodes.put(new NodeCore(nodeId, coreId), nodeArray);
 	}
 	
@@ -134,12 +175,28 @@ public class AnalysisEngine {
 		if(from!= null && to!= null){
 			FloydWarshall fw = new FloydWarshall();
 			fw.calcShortestPaths(getNodes(nodeId, coreId), getEdges(nodeId, coreId));
+			if(DEBUG){
+				for(Node node : fw.getShortestPath(from, to)){
+					System.out.println("node: 0x" + Integer.toHexString(getPc(node, nodeId, coreId)));
+				}
+			}
 			return fw.getShortestDistance(from, to);
 		} else {
 			return Integer.MAX_VALUE;
 		}
 	}
-	public Node getNode(int pc,int node, int core){
+	
+	private int getPc(Node node, int nodeId, int coreId){
+		for(int pc : m_pcToNode.keySet()){
+			if(m_pcToNode.get(pc).name == node.name){
+				return pc;
+			}
+		}
+		return 0;
+	}
+	
+	//warning this may/will break for multicore
+	private Node getNode(int pc,int node, int core){
 		for(NodeCore nc : m_nodes.keySet()){
 			if(nc.m_nodeId == node && nc.m_coreId == core){
 				for(Node n : m_nodes.get(nc)){
@@ -179,9 +236,6 @@ public class AnalysisEngine {
 				for(AssemblyLine al : xeObject.getInstructions()){
 					XtaInstruction inst = decodeCache.getInstruction(al.getPc());
 					
-					
-					
-					
 				}
 			}
 		}
@@ -199,12 +253,7 @@ public class AnalysisEngine {
 		}
 
 	}
-	/*
-	private void allocatePortsTransferWidth(){
-		//TODO
-	}
-	*/
-	
+
 	private void findAllSuccessors(){
 	
 		for(int nodeId : m_xeLoader.getNodeIds()){
@@ -212,7 +261,7 @@ public class AnalysisEngine {
 				XeObject xeObject = getXeObject(nodeId, coreId);
 				InstructionDecodeCache decodeCache = m_mcInstructionCache.getInstructionDecodeCache(nodeId, coreId);
 				if(m_unsafeAssumptions){
-					traceRetsps(xeObject, decodeCache);
+					traceFunctionsRetsps(xeObject, decodeCache, nodeId, coreId);
 					addNextInstruction(xeObject, decodeCache);
 				}
 				addBranchMaps(xeObject, decodeCache, nodeId, coreId);
@@ -220,6 +269,8 @@ public class AnalysisEngine {
 				addBranches(xeObject, decodeCache, nodeId, coreId);
 				
 				addUserSuccessors(xeObject, decodeCache);
+				
+				findFunctionRetsps(xeObject, decodeCache, nodeId, coreId);
 			}
 		}
 	}
@@ -287,15 +338,36 @@ public class AnalysisEngine {
 		}
 	}
 	
-	/*
-	 * this adds to the list of successors and retsp's the possible next pc of a retsp
-	 */
-	public void traceRetsps(XeObject xeObject, InstructionDecodeCache decodeCache){
-
+	private void findFunctionRetsps(XeObject xeObject, 
+			InstructionDecodeCache decodeCache, int nodeId, int coreId){
+		HashMap<String, HashSet<Integer>> m_nodeCoreMap = new HashMap<String, HashSet<Integer>>();
+		for(Function function: xeObject.getFunctions()){
+			HashSet<Integer> functionReturns = new HashSet<Integer>();
+			for(Line line : function.getChildern()){
+				XtaInstruction inst = decodeCache.getInstruction(((AssemblyLine)line).getPc());
+				if(isReturn(inst.getNmenonic()))
+					functionReturns.add(inst.getPc());
+			}
+			m_nodeCoreMap.put( function.getText(), functionReturns);
+		}
+		
+		boolean added = false;
+		for(FunctionReturns f : m_functionReturns){
+			if(f.getNode() == nodeId && f.getCore() == coreId){
+				added = true;
+				m_functionReturns.set(m_functionReturns.indexOf(f), new FunctionReturns(nodeId, coreId, m_nodeCoreMap));
+			}
+		}
+		if(!added)m_functionReturns.add(new FunctionReturns(nodeId, coreId, m_nodeCoreMap));
+	}
+	
+	
+	
+	private void traceFunctionsRetsps(XeObject xeObject,
+			InstructionDecodeCache decodeCache, int nodeId, int coreId) {
 		for(Function function: xeObject.getFunctions()){
 			if(function.getChildern().size()<1) continue;
 			int functionEntry = ((AssemblyLine)function.getChildern().get(0)).getPc();
-			
 			ArrayList<Integer> branchLinkPcs = new ArrayList<Integer>();
 			
 			for(AssemblyLine al : xeObject.getInstructions()){
@@ -316,7 +388,9 @@ public class AnalysisEngine {
 					}
 				}
 			}
+			
 		}
+		
 	}
 	
 	private boolean isReturn(String nmenonic){

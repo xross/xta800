@@ -29,6 +29,9 @@ public class Route {
 	private CodeReference m_fromRef;
 	private CodeReference m_toRef;
 	private String m_functionName;
+	
+	private String m_endString;
+	
 	private HashMap<Integer, Vector<Block>> m_loopPaths;
 	private ArrayList<ExecutionState> m_executionStates;
 	private LinkedList<ExecutionState> m_schedule;
@@ -43,21 +46,16 @@ public class Route {
 	private ArrayList<Unknown> m_unknowns;
 	private ArrayList<String> m_warnings;
 	private static int m_numRoutes;
-
-	Route(Config config, Progress progress, CodeReference fromRef, CodeReference toRef,
-			int nodeId, int coreId, NodeCoreInstructionCaches nodeCoreInstructionCache) {
+	private int m_startPc;
+	private HashSet<Integer> m_endPcs;
+	
+	public Route(Config config, Progress progress, int startPc, HashSet<Integer> endPcs, int nodeId, int coreId,
+			NodeCoreInstructionCaches nodeCoreInstructionCache) {
+		
+		m_startPc = startPc;
+		m_endPcs = endPcs;
+		
 		m_progress = progress;
-		m_fromRef = fromRef;
-		m_toRef = toRef;
-		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
-		initialise(config, nodeId, coreId);
-
-	}
-
-	Route(Config config, Progress progress, String functionName,
-			int nodeId, int coreId, NodeCoreInstructionCaches nodeCoreInstructionCache) {
-		m_progress = progress;
-		m_functionName = functionName;
 		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
 		initialise(config, nodeId, coreId);
 	}
@@ -104,8 +102,6 @@ public class Route {
 		m_engine = engine;
 		m_status = RouteStatus.ANALYSING;
 
-		//m_instructionAttributes = new InstructionAttributes();
-
 		m_engine.setAbort(false);
 
 		Stack<TreeSet<Integer>> context = new Stack<TreeSet<Integer>>();
@@ -115,17 +111,10 @@ public class Route {
 		
 		BlockCommonComponents bc = null;
 
-		if (m_functionName != null) {
-			bc = new BlockCommonComponents(m_nodeCoreInstructionCache, memoryImage, symbolTable, 
-					m_engine.getReference(ReferenceMode.PROHIBITED), this, Block.Mode.FUNCTION, m_engine);
-			assert (symbolTable.symbolExists(m_functionName));
-			int fromPc = symbolTable.symbolAddress(m_functionName);
-			new ExecutionState(this, initialState, bc, fromPc);
-		} else {
-			bc = new BlockCommonComponents(m_nodeCoreInstructionCache, memoryImage, symbolTable, 
-					m_engine.getReference(ReferenceMode.PROHIBITED), this, Block.Mode.ABSOLUTE, m_engine);
-			new ExecutionState(this, initialState, bc, m_fromRef.getPc(), m_toRef.getPc());
-		}
+		bc = new BlockCommonComponents(m_nodeCoreInstructionCache, memoryImage, symbolTable, 
+					m_engine.getReference(ReferenceMode.PROHIBITED), this, m_engine, m_endPcs);
+		new ExecutionState(this, initialState, bc, m_startPc);
+		
 		stepPath();
 		filterPaths();
 		sortPaths();
@@ -257,6 +246,7 @@ public class Route {
 
 	
 	public void addCompletePath(Block endBlock) {
+	
 		m_completePaths.add(endBlock);
 		endBlock.addPathId();
 	}
@@ -347,28 +337,6 @@ public class Route {
 	}
 
 	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
-/*
-		boolean hit = false;
-		Iterator<ExecutionState> iter = m_executionStates.iterator();
-		while (iter.hasNext()) {
-			ExecutionState executionState = iter.next();
-			for (Block block : executionState.getThreadBlocks()) {
-				if (block != null) {
-					for (Block loopPath : block.getLoopPaths()) {
-						int blockId =  loopPath.getId();
-						if (blockId == pathId) {
-							PathAttributes attributes = block.getLoopPathAttributes(loopPath);
-							attributes.setNumIterations(iterations, absolute);
-							hit = true;
-							return hit;
-						}
-					}
-				}
-			}
-		}
-		return hit;
-*/
-		//this scales much better
 		for (Block block : m_allBlocks) {
 			for (Block loopPath : block.getLoopPaths()) {
 				if (loopPath.getId() == pathId) {
@@ -379,7 +347,6 @@ public class Route {
 			}
 		}	
 		return false;
-		
 	}
 
 	public ArrayList<ExecutionState> getExecutionStates() {

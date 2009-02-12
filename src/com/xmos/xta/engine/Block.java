@@ -14,7 +14,7 @@ import com.xmos.xta.engine.references.CodeReference;
 public class Block implements Comparable<Block> {
 	
 	private static final boolean STATIC = true; 
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	private static final boolean LOG_PROBLEMS = true;
 
 	static enum Mode {
@@ -60,12 +60,8 @@ public class Block implements Comparable<Block> {
 	public boolean m_speculative;	
 	
 	private static int m_numBlocks;
-	private static int m_numPaths;
-		
-	/*
-	 * this is the initial constructor for a path - it only gets called once per
-	 * route analysis
-	 */
+	private static int m_numPaths;	
+
 	public Block(BlockCommonComponents bc, int fromPc, int toPc, MachineState machineState, ExecutionState executionState) {
 		if(DEBUG) {
 			System.out.println("block 0 started at 0x" + Integer.toHexString(fromPc));
@@ -247,15 +243,13 @@ public class Block implements Comparable<Block> {
 			handleKnownNextPc(instruction.getNextInstructionPc(), instruction, m_machineState);
 		} else {
 			handleUnknownNextPc(instruction);
-		}
-		
-		
+		}		
 	}
 	
 	private void handleKnownNextPc(int targetPc, XtaInstruction instruction, MachineState machineState) {
 
-		if(instruction.getSuccessors().size() > 1){
-			//m_conditionalBranchTaken = true;
+		if(instruction.getSuccessors().size() > 1 && !STATIC){
+			m_conditionalBranchTaken = true;
 		}
 		if (instruction.getBranchLink() && isRecursion(targetPc)) {
 			setStatus(BlockStatus.UNRESOLVED);
@@ -490,6 +484,7 @@ public class Block implements Comparable<Block> {
 							+" already added to m_completePaths");
 				}
 			} else {
+				if(DEBUG)System.out.println("adding complete path");
 				m_route.addCompletePath(this);
 			}
 			return true;
@@ -498,15 +493,9 @@ public class Block implements Comparable<Block> {
 	}
 	
 	private boolean isComplete(XtaInstruction instruction, int pc) {
-		switch (m_bc.getMode()) {
-		case FUNCTION:
-			//System.out.println(m_functionDepth + " " + (m_contexts.size()-1) + " " + (m_functionDepth == (m_contexts.size()-1)));
-			return ((m_functionDepth == 0) && instruction.getReturn());
-		case ABSOLUTE:
-			boolean foundEnd = ((pc == m_toPc) && !m_firstStep);
-			return foundEnd;
-		default:
-			assert false;
+		if(!m_firstStep && m_bc.getEndPcs().contains(pc)){
+			return true;
+		} else {
 			return false;
 		}
 	}

@@ -2,6 +2,7 @@ package com.xmos.xta.engine;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -268,7 +269,7 @@ public class Engine {
 	public Progress getProgress() {
 		return m_progress;
 	}
-
+/*
 	public boolean analyseRoute(String functionName) {
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Node: %d, Core: %d image not found in file: %s", m_nodeId,
@@ -291,13 +292,30 @@ public class Engine {
 			return success;
 		}
 	}
-
+*/
+	public boolean analyseRoute(String functionName) {
+		
+		
+		
+		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Node: %d, Core: %d image not found in file: %s", m_nodeId,
+					m_coreId, m_executableFile));
+			return false;
+		} else if (!functionExists(functionName)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Cannot find function: %s in file: %s, node: %d, core: %d",
+					functionName, m_executableFile, m_nodeId, m_coreId));
+			return false;
+		} else {
+			
+			HashSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
+			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
+			return analyseRoute(startPc, endPcs);
+			
+		}
+	}
 	public boolean analyseRoute(String from, String to) {
 		CodeReference fromRef = CodeReferenceFactory.createCodeReference(from);
 		CodeReference toRef = CodeReferenceFactory.createCodeReference(to);
-
-		int dist = m_ae.determineReachability(fromRef.getPc(), toRef.getPc(), m_nodeId, m_coreId);
-		if(dist == Integer.MAX_VALUE) return false;
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Node: %d, Core: %d image not found in file: %s", m_nodeId,
 					m_coreId, m_executableFile));
@@ -309,19 +327,55 @@ public class Engine {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", to));
 			return false;
 		} else {
-			m_previousRoute = m_route;
-			m_route = new Route(m_config, m_progress, fromRef, toRef, m_nodeId, m_coreId, m_nodeCoreInstructionCache);
-
-			boolean success = analyseRouteSafley();
-			if (success) {
-				notify(Notifier.NOTIFY_SET_START_POINT, from);
-				notify(Notifier.NOTIFY_SET_END_POINT, to);
-			} else {
-				m_route = m_previousRoute;
-			}
-			return success;
+			HashSet<Integer> endPc = new HashSet<Integer>();
+			endPc.add(toRef.getPc());
+			return analyseRoute(fromRef.getPc(), endPc );
 		}
 	}
+	
+	public boolean analyseRoute(int startPc, HashSet<Integer> endPcs) {
+		
+		boolean reachable = false;
+		for(int end : endPcs){
+			int dist = m_ae.determineReachability(startPc, end, m_nodeId, m_coreId);
+			if(dist != Integer.MAX_VALUE){
+				reachable = true;
+				break;
+			}
+		}
+		String endString = "";
+		if(!reachable){
+			for(int end : endPcs){
+				endString += "0x" +Integer.toHexString(end) + ", "; 
+			}
+			endString = endString.substring(0, endString.length()-2);
+			notify(Notifier.NOTIFY_ERROR, "No valid of execution from 0x" + Integer.toHexString(startPc) + " to " + endString);
+			
+			return false;
+		} 
+		
+		m_previousRoute = m_route;
+		
+		m_route = new Route(m_config, m_progress, startPc, endPcs, m_nodeId, m_coreId, m_nodeCoreInstructionCache);
+/*
+		System.out.println("analysing from 0x" + Integer.toHexString(startPc));
+		for(int t : endPcs.toArray(new Integer [] {})){
+			System.out.println("analysing to 0x" + Integer.toHexString(t));
+		}
+*/		
+		
+		boolean success = analyseRouteSafley();
+		if (success) {
+			notify(Notifier.NOTIFY_SET_START_POINT, "0x" + Integer.toHexString(startPc));
+			notify(Notifier.NOTIFY_SET_END_POINT, endString);
+			//may be able to scrap the m_previousRoute here. free a lot of memory
+		} else {
+			m_route = m_previousRoute;
+		}
+		return success;
+
+	}
+	
 
 	public void registerNotifier(Notifier notifier) {
 		assert (m_notifiers.contains(notifier) == false);

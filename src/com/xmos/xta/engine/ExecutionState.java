@@ -20,33 +20,6 @@ public class ExecutionState {
 		m_machineState.setPc(fromPc, 0);
 	}
 
-	public ExecutionState(Route route, MachineState machineState,
-			BlockCommonComponents bc, int fromPc, int toPc) {
-		m_route = route;
-		m_machineState = machineState;
-		initialise();
-		m_threadBlocks[0] = new Block(bc, fromPc, toPc, m_machineState, this);
-		m_machineState.setPc(fromPc, 0);
-	}
-
-	public ExecutionState(ExecutionState executionState,
-			MachineState machineState) {
-		m_route = executionState.m_route;
-		m_machineState = machineState;
-		m_threadBlocks = new Block[Resources.NUM_THREADS];
-		for (int i = 0; i < Resources.NUM_THREADS; i++) {
-			if (executionState.m_threadBlocks[i] == null) {
-				m_threadBlocks[i] = null;
-			} else {
-				m_threadBlocks[i] = new Block(executionState.m_threadBlocks[i],
-						m_machineState, this);
-			}
-		}
-		m_status = Status.ExecutionStatus.SEARCHING;
-		m_currentThread = 0;
-		m_route.addExecutionState(this);
-	}
-
 	public ExecutionState(ExecutionState executionState,
 			MachineState machineState, Block block, boolean maintainMS) {
 		m_route = executionState.m_route;
