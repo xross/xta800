@@ -3,7 +3,6 @@ package com.xmos.xta.console;
 import java.io.IOException;
 import java.util.Vector;
 
-import com.xmos.xta.console.commands.Command;
 
 import jline.ConsoleReader;
 

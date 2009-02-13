@@ -5,8 +5,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Vector;
 
-import com.xmos.xta.console.commands.Command;
-import com.xmos.xta.console.commands.CommandFactory;
 import com.xmos.xta.console.commands.Invalid;
 import com.xmos.xta.engine.Engine;
 

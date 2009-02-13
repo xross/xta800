@@ -21,9 +21,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 
+import com.xmos.xta.console.Command;
 import com.xmos.xta.console.JLineCompletor;
 import com.xmos.xta.console.Shell;
-import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.rcp.XtaCorePlugin;
 
 public class TextReader extends Reader {	 

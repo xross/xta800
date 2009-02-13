@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import com.xmos.xta.console.commands.Command;
-import com.xmos.xta.console.commands.CommandFactory;
 
 import jline.ArgumentCompletor;
 import jline.Completor;
