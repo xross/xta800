@@ -13,9 +13,9 @@ system("@ARGV load $genDir/test.xe " .
   "status " .
   "analyse function main " .
   "summary complete " .
-  "load not_found.xe " .
+  "-load not_found.xe " .
   "status " .
   "analyse function main " .
   "summary complete " .
-  "exit > $genDir/load_with_error.txt 2>&1");
+  "-exit > $genDir/load_with_error.txt 2>&1");
 

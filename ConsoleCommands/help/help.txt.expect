@@ -15,7 +15,7 @@
   [-]set <option> <arg0> <arg1>...: Set path information
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
-  [-]summary <path id | level>: Display timing summary for paths/functions
+  [-]summary <level> [path/block id]: Display timing summary for paths/functions
   [-]unset <option> <arg0> <arg1>...: Unset item from given list
   [-]version: Displays the version information
   [-]add <option> <arg0> <arg1>...: Add item to given list
@@ -53,10 +53,10 @@
       option: queries: Lists the current queries
   [-]load <xe file>: Loads the given xmos executable file
   [-]print <option> <arg0> <arg1>...: Display path information
-      option: asm <path id>: Display annotated assembly for given path id
-      option: src <path id>: Display annotated source file(s) for given path id
-      option: mix <path id>: Display annotated source file(s) + assembly instructions for the given path id
-      option: trace <path id>: Display instruction trace for the given path id
+      option: asm <path/block id>: Display annotated assembly for given path id
+      option: src <path/block id>: Display annotated source file(s) for given path id
+      option: mix <path/block id>: Display annotated source file(s) + assembly instructions for the given path id
+      option: trace <path/block id>: Display instruction trace for the given path/block
   [-]pwd: Displays the current working directory
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
       option: label [label]+: Removes the given labels from the labels list (supports regular expressions)
@@ -73,15 +73,18 @@
           mode: cycles: Sets the time this instruction takes in thread cycles
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
-  [-]summary <path id | level>: Display timing summary for paths/functions
+  [-]summary <level> [path/block id]: Display timing summary for paths/functions
       level: simple: Show simple paths summary
-      level: complete: Show complete path(s) timing
-      level: complete_loops: Show complete path(s) + loop timing
-      level: complete_instructions: Show complete path(s) + loop + basic block + instruction timing
-      level: unresolved: Show unresolved path(s) timing
-      level: unresolved_loops: Show unresolved path(s) + loop timing
-      level: unresolved_instructions: Show unresolved path(s) + loop + basic block + instruction timing
+      level: complete: Show complete path timing
+      level: complete_loops: Show complete path + loop timing
+      level: complete_blocks: Show complete path + loop + block timing
+      level: complete_instructions: Show complete path + loop + block + instruction timing
+      level: unresolved: Show unresolved path timing
+      level: unresolved_loops: Show unresolved path + loop timing
+      level: unresolved_blocks: Show unresolved path + loop + block timing
+      level: unresolved_instructions: Show unresolved path + loop + block + instruction timing
       level: functions: Show path(s) + functions summary
       level: sources: Show path(s) + sources summary
+      level: info <path/block id>: Show information for given path/block
   [-]unset <option> <arg0> <arg1>...: Unset item from given list
       option: time <pc>: Clears the time set for the given instructions (supports regular expressions)

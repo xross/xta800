@@ -16,11 +16,11 @@ system("@ARGV load $genDir/test.xe " .
        "list filters " .
        "analyse function test " .
        "summary simple " .
-       "print src 1 " .
+       "-print src 1 " .
        "remove filter L1 " .
        "list filters " .
        "add filter L2 " .
        "list filters " .
        "summary simple " .
-       "print src 2 " .
+       "-print src 0 " .
        "exit > $genDir/excluded_labels.txt 2>&1");

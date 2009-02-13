@@ -2,28 +2,28 @@ Complete paths:   2
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    path\(2\)    : 120.0/6/6/0/0/1/0
-    path\(1\)    : 120.0/6/6/0/0/1/0
+    path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0
+    path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    path\(2\)    : 120.0/6/6/0/0/1/0
-    path\(1\)    : 120.0/6/6/0/0/1/0
+    path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0
+    path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    path\(2\)    : 120.0/6/6/0/0/1/0
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r0, i 0x0 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] eq \(2rus\) r1, r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] brft \(ru6\) r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r0, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] retsp \(u6\) i 0x0 
-    path\(1\)    : 120.0/6/6/0/0/1/0
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r0, i 0x0 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] eq \(2rus\) r1, r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] brft \(ru6\) r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] brfu \(u6\) i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] retsp \(u6\) i 0x0 
+    path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0
+        block\(b\d+\)  : \d+\.\d+/\d+/\d+/\d+/\d+
+ +\(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
+[^^^]
+        block\(b\d+\)  : \d+\.\d+/\d+/\d+/\d+/\d+
+ +\(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
+[^^^]
+    path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/0/1/0
+        block\(b\d+\)  : \d+\.\d+/\d+/\d+/\d+/\d+
+ +\(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
+[^^^]
+        block\(b\d+\)  : \d+\.\d+/\d+/\d+/\d+/\d+
+ +\(\d+\.\d+ns\) 0x[0-9a-fA-F]{5} .*
+[^^^]
 ----------------------------------
 test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/branch_if\)
 ----------------------------------

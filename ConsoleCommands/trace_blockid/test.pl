@@ -10,9 +10,9 @@ if (!$noBuild) {
 system("xcc -march=xs1b -g test.s -o $genDir/test.xe > $genDir/trace_blockid.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse function memset " .
+       "analyse function main " .
        "summary simple " .
-       "print trace b0 " .
-       "print trace b16 " .
+       "-print trace b0 " .
+       "-print trace b1 " .
        "exit > $genDir/trace_blockid.txt 2>&1");
 

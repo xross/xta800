@@ -12,6 +12,6 @@ system("xcc -march=xs1a -nostartfiles -g test.s -o $genDir/test.xe > $genDir/tra
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "summary simple " .
-       "print trace 0 " .
+       "-print trace 0 " .
        "exit > $genDir/trace_pathid_unresolved.txt 2>&1");
 

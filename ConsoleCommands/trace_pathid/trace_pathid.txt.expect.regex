@@ -1,16 +1,18 @@
 Complete paths:   2
 Unresolved paths: 0
-  0.0: \(20.0ns\) 0x100c4 test \+ 0 +ldc \(ru6\)    r1, i 0x0
-  20.0: \(20.0ns\) 0x100c6 test \+ 2 +eq \(2rus\)    r0, r0, i 0x2
-  40.0: \(20.0ns\) 0x100c8 test \+ 4 +brft \(ru6\)   r0, i 0x2
-  60.0: \(20.0ns\) 0x100ca test \+ 6 +brfu \(u6\)    i 0x4
-  80.0: \(20.0ns\) 0x100d0 test \+ 12 +ldc \(ru6\)    r1, i 0x3
-  100.0: \(20.0ns\) 0x100d2 test \+ 14 +add \(2rus\)   r0, r1, i 0x0
-  120.0: \(20.0ns\) 0x100d4 test \+ 16 +retsp \(u6\)   i 0x0
-  0.0: \(20.0ns\) 0x100c4 test \+ 0 +ldc \(ru6\)    r1, i 0x0
-  20.0: \(20.0ns\) 0x100c6 test \+ 2 +eq \(2rus\)    r0, r0, i 0x2
-  40.0: \(20.0ns\) 0x100c8 test \+ 4 +brft \(ru6\)   r0, i 0x2
-  60.0: \(20.0ns\) 0x100cc test \+ 8 +ldc \(ru6\)    r1, i 0x2
-  80.0: \(20.0ns\) 0x100ce test \+ 10 +brfu \(u6\)    i 0x2
-  100.0: \(20.0ns\) 0x100d2 test \+ 14 +add \(2rus\)   r0, r1, i 0x0
-  120.0: \(20.0ns\) 0x100d4 test \+ 16 +retsp \(u6\)   i 0x0
+  0.0: \(20.0ns\) 0x100c4 test \+ 0 +--FNOP--     
+  20.0: \(20.0ns\) 0x100c4 test \+ 0 +ldc \(ru6\)    r1, i 0x0
+  40.0: \(20.0ns\) 0x100c6 test \+ 2 +eq \(2rus\)    r0, r0, i 0x2
+  60.0: \(20.0ns\) 0x100c8 test \+ 4 +brft \(ru6\)   r0, i 0x2
+  80.0: \(20.0ns\) 0x100cc test \+ 8 +ldc \(ru6\)    r1, i 0x2
+  100.0: \(20.0ns\) 0x100ce test \+ 10 +brfu \(u6\)    i 0x2
+  120.0: \(20.0ns\) 0x100d2 test \+ 14 +add \(2rus\)   r0, r1, i 0x0
+  140.0: \(20.0ns\) 0x100d4 test \+ 16 +retsp \(u6\)   i 0x0
+  0.0: \(20.0ns\) 0x100c4 test \+ 0 +--FNOP--     
+  20.0: \(20.0ns\) 0x100c4 test \+ 0 +ldc \(ru6\)    r1, i 0x0
+  40.0: \(20.0ns\) 0x100c6 test \+ 2 +eq \(2rus\)    r0, r0, i 0x2
+  60.0: \(20.0ns\) 0x100c8 test \+ 4 +brft \(ru6\)   r0, i 0x2
+  80.0: \(20.0ns\) 0x100ca test \+ 6 +brfu \(u6\)    i 0x4
+  100.0: \(20.0ns\) 0x100d0 test \+ 12 +ldc \(ru6\)    r1, i 0x3
+  120.0: \(20.0ns\) 0x100d2 test \+ 14 +add \(2rus\)   r0, r1, i 0x0
+  140.0: \(20.0ns\) 0x100d4 test \+ 16 +retsp \(u6\)   i 0x0

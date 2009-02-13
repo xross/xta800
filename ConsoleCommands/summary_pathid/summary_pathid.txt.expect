@@ -1,14 +1,14 @@
-Timing(ns):       520.0
-Thread cycles:    26
+Timing(ns):       540.0
+Thread cycles:    27
 Num Instructions: 21
-Num FNops:        5
+Num FNops:        6
 Num Blocks:       2
 Num Pauseables:   0
 Num Loops:        0
-Timing(ns):       520.0
-Thread cycles:    26
+Timing(ns):       540.0
+Thread cycles:    27
 Num Instructions: 21
-Num FNops:        5
+Num FNops:        6
 Num Blocks:       2
 Num Pauseables:   0
 Num Loops:        0

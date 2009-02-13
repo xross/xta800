@@ -14,12 +14,12 @@ system("@ARGV load $genDir/test.xe " .
        "list prohibited " .
        "analyse function test " .
        "summary simple " .
-       "print src 1 " .
+       "-print src 0 " .
        "remove prohibited 0x100cc " .
        "list prohibited " .
        "add prohibited 0x100d0 " .
        "list prohibited " .
        "analyse function test " .
        "summary simple " .
-       "print src 2 " .
+       "-print src 0 " .
        "exit > $genDir/prohibited.txt 2>&1");
