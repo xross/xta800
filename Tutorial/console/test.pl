@@ -13,9 +13,9 @@ system("@ARGV load $genDir/test.xe " .
        "add prohibited packet_start " .
        "analyse path receive_loop receive_loop " .
        "summary complete " .
-       "assert maxtime 320 " .
+       "-assert maxtime 320 " .
        "remove prohibited packet_start " .
        "analyse path eop_detected packet_start " .
        "summary complete " .
-       "assert maxtime 1240 " .
+       "-assert maxtime 1240 " .
        "exit > $genDir/console.txt 2>&1");
