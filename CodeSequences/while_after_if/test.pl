@@ -12,5 +12,5 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/while_after_if.
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "summary complete_loops " .
-       "exit > $genDir/while_after_if.txt 2>&1");
+       "-exit > $genDir/while_after_if.txt 2>&1");
 

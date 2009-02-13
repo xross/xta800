@@ -11,9 +11,9 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/while_loop.log 
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "summary simple " .
-       "summary complete_loops " .
-       "print src 2 " .
-       "print src 1 " . 
-       "exit > $genDir/while_loop.txt 2>&1");
+       "-summary simple " .
+       "-summary complete_loops " .
+       "-print src 1 " .
+       "-print src 0 " . 
+       "-exit > $genDir/while_loop.txt 2>&1");
 

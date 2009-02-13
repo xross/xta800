@@ -12,5 +12,5 @@ system("xcc -nostartfiles test.s -o $genDir/test.xe > $genDir/multi_fnop.log 2>&
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "summary complete_instructions " .
-       "exit > $genDir/multi_fnop.txt 2>&1");
+       "-exit > $genDir/multi_fnop.txt 2>&1");
 

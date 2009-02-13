@@ -12,11 +12,11 @@ system("xcc -march=$arch -g -gsource test.xc -o $genDir/test.xe > $genDir/source
 
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "summary simple " .
-       "summary complete " .
-       "summary complete_loops " .
-       "summary complete_instructions " .
-       "print src 1 " .
-       "print src 2 " .
-       "exit > $genDir/source_test.txt 2>&1");
+       "-summary simple " .
+       "-summary complete " .
+       "-summary complete_loops " .
+       "-summary complete_instructions " .
+       "-print src 1 " .
+       "-print src 0 " .
+       "-exit > $genDir/source_test.txt 2>&1");
 

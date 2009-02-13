@@ -11,7 +11,7 @@ system("xcc -march=$arch -nostartfiles test.s -o $genDir/test.xe > $genDir/unres
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "summary simple " .
-       "summary complete " . 
-       "exit > $genDir/unresolved_paths.txt 2>&1");
+       "-summary simple " .
+       "-summary complete " . 
+       "-exit > $genDir/unresolved_paths.txt 2>&1");
 

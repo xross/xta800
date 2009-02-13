@@ -11,7 +11,7 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/par_straight_li
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "summary simple " .
-       "summary complete_loops " .
-       "exit > $genDir/par_straight_line_code.txt 2>&1");
+       "-summary simple " .
+       "-summary complete_loops " .
+       "-exit > $genDir/par_straight_line_code.txt 2>&1");
 

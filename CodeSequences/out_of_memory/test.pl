@@ -12,9 +12,9 @@ if (!$noBuild) {
 
 system("@ARGV load $genDir/test.xe " .
         "analyse function main " .
-        "summary simple " .
-        "summary complete " .
-        "summary complete_loops " .
-        "summary complete_instructions " .
-        "exit > $genDir/out_of_memory.txt 2>&1");
+        "-summary simple " .
+        "-summary complete " .
+        "-summary complete_loops " .
+        "-summary complete_instructions " .
+        "-exit > $genDir/out_of_memory.txt 2>&1");
 

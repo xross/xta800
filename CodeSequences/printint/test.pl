@@ -12,5 +12,5 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/printint.log 2>
 system("@ARGV load $genDir/test.xe " .
        "analyse function printint " .
        "summary simple " .
-       "exit > $genDir/printint.txt 2>&1");
+       "-exit > $genDir/printint.txt 2>&1");
 

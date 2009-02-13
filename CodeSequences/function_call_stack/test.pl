@@ -11,7 +11,7 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/function_call_s
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "summary simple " .
-       "summary functions " .
-       "exit > $genDir/function_call_stack.txt 2>&1");
+       "-summary simple " .
+       "-summary functions " .
+       "-exit > $genDir/function_call_stack.txt 2>&1");
 
