@@ -13,9 +13,9 @@ import com.xmos.xta.engine.references.CodeReference;
 
 public class Block implements Comparable<Block> {
 	
-	private static final boolean STATIC = true; 
-	private static final boolean DEBUG = true;
-	private static final boolean LOG_PROBLEMS = true;
+	private static final boolean STATIC = false; 
+	private static final boolean DEBUG = false;
+	private static final boolean LOG_PROBLEMS = false;
 
 	static enum Mode {
 		FUNCTION, ABSOLUTE
