@@ -7,25 +7,32 @@ import com.xmos.xta.engine.Engine;
 
 class Summary extends Command {
 	private SummaryDisplayer.Level m_level;
-	private int m_pathId;
+	private int m_id;
+	private Command.IdType m_idType;
 	
 	Summary() {
 		m_level = SummaryDisplayer.Level.error;
-		m_pathId = 0;
+		m_id = 0;
+		m_idType = null;
 	}
 	
 	Summary(SummaryDisplayer.Level level) {
 		m_level = level;
-		m_pathId = 0;
+		m_id = 0;
+		m_idType = null;
 	}
 
-	Summary(int pathId) {
-		m_level = SummaryDisplayer.Level.pathid;
-		m_pathId = pathId;
+	Summary(SummaryDisplayer.Level level, int id, IdType idType) {
+		m_level = level;
+		m_id = id;
+		m_idType = idType;
 	}
 	
     public int numArgs() {
-    	return 1;
+    	if (m_level == SummaryDisplayer.Level.info)
+        	return 2;
+    	else 
+    		return 1;
     }        
 
     public String name() {
@@ -33,14 +40,14 @@ class Summary extends Command {
     }        
 
     public String commandLine() {
-    	if (m_level == SummaryDisplayer.Level.pathid)
-    	    return "summary " + m_pathId;
+    	if (m_level == SummaryDisplayer.Level.info)
+    	    return "summary " + m_level + m_id;
     	else
     	    return "summary " + m_level;    	
     }        
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = String.format("summary <path id | level>: Display timing summary for paths/functions");
+    	String descString = String.format("summary <level> [path/block id]: Display timing summary for paths/functions");
     	if (detailed) {    	    	
         	descString += "\n";
     		descString += SummaryDisplayer.getLevelOptionString();
@@ -52,18 +59,18 @@ class Summary extends Command {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 
-    	int pathId = 0;
+    	SummaryDisplayer.Level level = SummaryDisplayer.checkLevel(args[index + 1]);	        	
+    	if (level == SummaryDisplayer.Level.error)
+	    	return null;
+		
+    	if (areArgsDone(args, index + 2)) 
+    		return new Summary(level);
+    		
         try { 
-        	pathId = Integer.parseInt(args[index + 1]);         
-        	return new Summary(pathId);
-        }
-        catch (NumberFormatException e) {        	
-        	SummaryDisplayer.Level level = SummaryDisplayer.checkLevel(args[index + 1]);	        	
-        	if (level == SummaryDisplayer.Level.error)
-    	    	return null;
-        	
-        	return new Summary(level);        	
-        }    		    
+            return new Summary(level, getId(args[index + 2]), getIdType(args[index + 2]));
+        } catch (NumberFormatException e) {        	
+          	return null;
+        }    		            		
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
@@ -73,7 +80,7 @@ class Summary extends Command {
 		if (!isRouteAnalysed(engine, console))
 			return;
 		
-		SummaryDisplayer displayer = new SummaryDisplayer(engine, console, m_level, m_pathId);
+		SummaryDisplayer displayer = new SummaryDisplayer(engine, console, m_level, m_id, m_idType);
 		displayer.display();
     }
 }

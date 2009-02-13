@@ -106,7 +106,6 @@ public class Shell {
 	    for (int i = 0; i < args.length; ++i) {
 	    	Command command = CommandFactory.buildCommand(args, i, m_commandHistory, m_console, true);
 	    	if (command == null) {
-	        	m_console.display("Invalid command (Try 'help'..)\n");    	
 	    		usage();
 	    	}
 	    	
@@ -173,8 +172,7 @@ public class Shell {
                 	invalidCommand = true;
                 }
                 
-                if (invalidCommand) {
-    	        	m_console.display("Invalid command (Try 'help'..)\n");                	
+                if (invalidCommand) {    	        	              	
                 	m_commandHistory.add(new Invalid(line));
                 	command = null;
                 }

@@ -6,14 +6,17 @@ import com.xmos.xta.console.displayers.AsmDisplayer;
 import com.xmos.xta.engine.Engine;
 
 class Asm extends Command {
-	private int m_pathId;
+	private int m_id;
+	private Command.IdType m_idType;
 
 	Asm() {
-		m_pathId = 0;
+		m_id = 0;
+		m_idType = null;
 	}
 
-	Asm(int pathId) {
-		m_pathId = pathId;
+	Asm(int id, IdType idType) {
+		m_id = id;
+		m_idType = idType;
 	}
 	
     public int numArgs() {
@@ -25,25 +28,23 @@ class Asm extends Command {
     }        
 
     public String commandLine() {
-    	return "asm " + m_pathId;
+    	return "asm " + m_id;
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "asm <path id>: Display annotated assembly for given path id";      	
+        return "asm <path/block id>: Display annotated assembly for given path id";      	
     }
 
     public Command clone(String[] args, int index, boolean commandLineMode) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
     	
-    	int pathId;
     	try {
-    	    pathId = Integer.parseInt(args[index + 1]);
+    	    return new Asm(getId(args[index + 1]), getIdType(args[index + 1]));
 	    }
 	    catch (NumberFormatException e) {
 	        return null;
 	    }    	
-    	return new Asm(pathId);
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
@@ -53,10 +54,10 @@ class Asm extends Command {
 		if (!isRouteAnalysed(engine, console))
 			return;
 
-		if (!isPathValid(engine, console, m_pathId))
-			return;
+	    if (!isIdValid(engine, console, m_id, m_idType))
+		    return;
 		
-		AsmDisplayer displayer = new AsmDisplayer(engine, console, m_pathId); 
+		AsmDisplayer displayer = new AsmDisplayer(engine, console, m_id, m_idType); 
         displayer.display();
    } 
 }

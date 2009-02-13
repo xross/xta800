@@ -12,6 +12,7 @@ import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeobject.Function;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.console.Console;
+import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Disassembler;
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Engine;
@@ -20,21 +21,36 @@ import com.xmos.xta.engine.XtaInstruction;
 public class AsmDisplayer {
 	private Engine m_engine;
 	private Console m_console;
-	private int m_pathId;
+	private int m_id;
+	private Command.IdType m_idType;
 	
-	public AsmDisplayer(Engine engine, Console console, int pathId) {
+	public AsmDisplayer(Engine engine, Console console, int id, Command.IdType idType) {
 		m_engine = engine;
 		m_console = console;
-		m_pathId = pathId;
+		m_id = id;
+		m_idType = idType;
 	}
 	
     public void display() {     	
+        Vector<XtaInstruction> instructions = null;    		
+        switch (m_idType) {
+        case BLOCK:
+        	Block block = m_engine.getRoute().getBlock(m_id);			
+        	instructions = block.getInstructionsThis();
+        	break;
+        case PATH:
+        	Block path = m_engine.getRoute().getPath(m_id);			
+        	instructions = path.getInstructions(false);
+        	break;
+        default:
+        	assert(false);
+        }
+
     	MemoryImage memoryImage = m_engine.getMemoryImage();
     	SymbolTable symbolTable = m_engine.getSymbolTable();
-    	
-    	Block path = Block.getPath(m_engine.getRoute(), m_pathId);
-        if (path.getInstructions(false).size() > 0) { 
-	    	HashMap<String, TreeSet<Integer>> asmLinesCovered = createAsmPcsCovered(path, m_engine.getXeObject(), false);
+    	    	
+        if (instructions.size() > 0) { 
+	    	HashMap<String, TreeSet<Integer>> asmLinesCovered = createAsmPcsCovered(instructions, m_engine.getXeObject());
 	    	
 	        for (Iterator<Map.Entry<String, TreeSet<Integer>>> iter = 
 	        	asmLinesCovered.entrySet().iterator(); iter.hasNext();) {
@@ -52,8 +68,8 @@ public class AsmDisplayer {
 	            	// We can't seem to find the actual address + size (maybe the information
 	            	// is missing from the symbol table, so just use the highest and lowest 
 	            	// address from the path to be displayed.
-	            	functionAddress = getLowestAddress(path);
-	            	functionSize = getHighestAddress(path) - functionAddress;
+	            	functionAddress = getLowestAddress(instructions);
+	            	functionSize = getHighestAddress(instructions) - functionAddress;
 	            }
 	            
 	            m_console.display(String.format("<%s>:\n", functionName));	            
@@ -87,10 +103,10 @@ public class AsmDisplayer {
     }
 
     private HashMap<String, TreeSet<Integer>> createAsmPcsCovered(
-			Block block, XeObject xeObject, boolean recurse) {
+    		Vector<XtaInstruction> instructions, XeObject xeObject) {
 			
         HashMap<String, TreeSet<Integer>> asmLinesCovered = new HashMap<String, TreeSet<Integer>>();
-        for(XtaInstruction inst : block.getInstructions(recurse)){
+        for(XtaInstruction inst : instructions){
             int pc = inst.getPc();
             HashMap<Integer, Function> functionMap = xeObject.getPcToFunctionMap();
             Function function = functionMap.get(pc);
@@ -137,9 +153,9 @@ public class AsmDisplayer {
 	    return branchTarget;
     }
     
-    private int getLowestAddress(Block path) {
+    private int getLowestAddress(Vector<XtaInstruction> instructions) {
     	int address = Integer.MAX_VALUE;    	
-		for (Instruction instruction : path.getInstructions(false)) {
+		for (Instruction instruction : instructions) {
 			if (instruction.getPc() < address) {
 				address = instruction.getPc();
 			}
@@ -147,9 +163,9 @@ public class AsmDisplayer {
         return address;	
     }
     
-    private int getHighestAddress(Block path) {
+    private int getHighestAddress(Vector<XtaInstruction> instructions) {
     	int address = Integer.MIN_VALUE;    	
-		for (Instruction instruction : path.getInstructions(false)) {
+		for (Instruction instruction : instructions) {
 			if (instruction.getPc() > address) {
 				address = instruction.getPc();
 			}

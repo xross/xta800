@@ -51,7 +51,6 @@ public class Route {
 		m_toRef = toRef;
 		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
 		initialise(config, nodeId, coreId);
-
 	}
 
 	Route(Config config, Progress progress, String functionName,
@@ -94,6 +93,58 @@ public class Route {
 		return m_unresolvedPaths;
 	}
 
+	public int getId() {
+		return 0;
+	}
+
+	public int getInstanceId() {
+		return 0;
+	}
+
+	public int getNumCycles() {
+		int maxCycles = 0;
+		for (Block path : m_completePaths) {
+			maxCycles = Math.max(path.getNumCycles(true), maxCycles);
+		}
+		return maxCycles;
+	}
+
+	public Block getBlock(int blockId) {
+		for (Block block : m_allBlocks) {
+			if (block.getId() == blockId) {
+				return block;
+			}
+		}
+		return null;
+	}
+
+	public Block getPath(int pathId) {
+		for (Block block : m_allBlocks) {
+			if (block.getPathId() == pathId) {
+				return block;
+			}
+		}
+		return null;		
+	}
+	
+	public double getTimeTaken() {
+		return 0;
+	}
+	
+	public void invalidateAllBlocks(){
+		for(Block block : m_allBlocks){
+			block.getBlockStats().invalidateAll();
+		}
+	}
+	
+	public void addUnresolvedPath(Unresolved unresolved) {
+		m_unresolvedPaths.add(unresolved);
+	}
+
+	public RouteStatus getStatus(){
+		return m_status;
+	}
+
 	RouteStatus analyse(MemoryImage memoryImage, SymbolTable symbolTable, 
 			DebugInfo debugInfo, Engine engine) throws Exception {
 		m_progress.resetState(Progress.State.PROCESSING_PATHS, m_config.m_minimumRemainingMemory);
@@ -103,8 +154,6 @@ public class Route {
 		assert (debugInfo != null);
 		m_engine = engine;
 		m_status = RouteStatus.ANALYSING;
-
-		//m_instructionAttributes = new InstructionAttributes();
 
 		m_engine.setAbort(false);
 
@@ -132,32 +181,6 @@ public class Route {
 		m_progress.setState(Progress.State.IDLE);
 		return m_status;
 	}
-
-	public int getId() {
-		return 0;
-	}
-
-	public int getInstanceId() {
-		return 0;
-	}
-
-	public int getNumCycles() {
-		int maxCycles = 0;
-		for (Block path : m_completePaths) {
-			maxCycles = Math.max(path.getNumCycles(true), maxCycles);
-		}
-		return maxCycles;
-	}
-
-	public double getTimeTaken() {
-		return 0;
-	}
-	
-	public void invalidateAllBlocks(){
-		for(Block block : m_allBlocks){
-			block.getBlockStats().invalidateAll();
-		}
-	}
 	
 	void notifyUpdate() {
 		Collections.sort(m_completePaths);
@@ -170,7 +193,7 @@ public class Route {
 	Config getConfig() {
 		return m_config;
 	}
-
+	
 	private void initialise(Config config, int nodeId, int coreId) {
 		m_unknowns = new ArrayList<Unknown>();
 		m_warnings = new ArrayList<String>();
@@ -187,14 +210,6 @@ public class Route {
 		m_status = RouteStatus.COMPLETED;
 		++m_numRoutes;
 	}
-
-	public void addUnresolvedPath(Unresolved unresolved) {
-		m_unresolvedPaths.add(unresolved);
-	}
-
-	public RouteStatus getStatus(){
-		return m_status;
-	}
 	
 	private void stepPath() throws Exception {
 		ExecutionState searching = nextBlock();
@@ -206,9 +221,7 @@ public class Route {
 		}
 	}
 
-
-	private void cleanSchedule() {
-		
+	private void cleanSchedule() {		
 		Iterator<ExecutionState> shedIter = m_schedule.iterator();
 	    while ( shedIter.hasNext() ){
 	    	ExecutionState e = shedIter.next();
@@ -254,7 +267,6 @@ public class Route {
 		}
 		return false;
 	}
-
 	
 	public void addCompletePath(Block endBlock) {
 		m_completePaths.add(endBlock);
@@ -262,7 +274,6 @@ public class Route {
 	}
 	
 	public void filterPaths() {
-		
 		ArrayList<Block> toRemove = new ArrayList<Block>();
 		
 		ArrayList<Integer> exclusions = new ArrayList<Integer>();
@@ -347,39 +358,16 @@ public class Route {
 	}
 
 	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
-/*
-		boolean hit = false;
-		Iterator<ExecutionState> iter = m_executionStates.iterator();
-		while (iter.hasNext()) {
-			ExecutionState executionState = iter.next();
-			for (Block block : executionState.getThreadBlocks()) {
-				if (block != null) {
-					for (Block loopPath : block.getLoopPaths()) {
-						int blockId =  loopPath.getId();
-						if (blockId == pathId) {
-							PathAttributes attributes = block.getLoopPathAttributes(loopPath);
-							attributes.setNumIterations(iterations, absolute);
-							hit = true;
-							return hit;
-						}
-					}
-				}
-			}
-		}
-		return hit;
-*/
-		//this scales much better
 		for (Block block : m_allBlocks) {
 			for (Block loopPath : block.getLoopPaths()) {
-				if (loopPath.getId() == pathId) {
+				if (loopPath.getPathId() == pathId) {
 					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
 					attributes.setNumIterations(iterations, absolute);
 					return true;
 				}
 			}
 		}	
-		return false;
-		
+		return false;		
 	}
 
 	public ArrayList<ExecutionState> getExecutionStates() {
@@ -400,5 +388,4 @@ public class Route {
 	    	return String.format("path: %s -> %s",  fromRef().getRef(), toRef().getRef());
 	    }
 	}
-
 }

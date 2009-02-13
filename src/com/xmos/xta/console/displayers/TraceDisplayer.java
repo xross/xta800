@@ -1,6 +1,9 @@
 package com.xmos.xta.console.displayers;
 
+import java.util.Vector;
+
 import com.xmos.xta.console.Console;
+import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.XtaInstruction;
@@ -8,19 +11,33 @@ import com.xmos.xta.engine.XtaInstruction;
 public class TraceDisplayer {
 	private Engine m_engine;
 	private Console m_console;
-	private int m_pathId;
+	private int m_id;
+	private Command.IdType m_idType;
 		
-	public TraceDisplayer(Engine engine, Console console, int pathId) {
+	public TraceDisplayer(Engine engine, Console console, int id, Command.IdType idType) {
 		m_engine = engine;
 		m_console = console;
-		m_pathId = pathId;
+		m_id = id;
+		m_idType = idType;
 	}
 	
-    public void display() {     	  		
-    	Block path = Block.getPath(m_engine.getRoute(), m_pathId);
-    	
+    public void display() {  
+        Vector<XtaInstruction> instructions = null;    		
+        switch (m_idType) {
+        case BLOCK:
+        	Block block = m_engine.getRoute().getBlock(m_id);			
+        	instructions = block.getInstructionsThis();
+        	break;
+        case PATH:
+        	Block path = m_engine.getRoute().getPath(m_id);			
+        	instructions = path.getInstructions(false);
+        	break;
+        default:
+        	assert(false);
+        }
+        	
     	double currentTime = 0.0;
-		for (XtaInstruction instruction : path.getInstructions(false)) {
+		for (XtaInstruction instruction : instructions) {
          	String canPause = instruction.canPause() ? "P" : " ";
          	String functionOffsetString = 
          		instruction.getFunctionName() + " + " + instruction.getFunctionOffset();

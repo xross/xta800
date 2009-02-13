@@ -4,19 +4,24 @@ import java.io.File;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
-import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Engine;
 
 public abstract class Command {
-	public String toString(){
-		return commandLine();
-	}
+    public enum IdType {
+    	PATH,
+    	BLOCK,
+    }
+	
     public abstract int numArgs();
     public abstract String name();
     public abstract String commandLine();
     public abstract String description(Engine engine, boolean detailed);
     public abstract Command clone(String[] args, int index, boolean commandLineMode);
     public abstract void execute(Shell shell, Engine engine, Console console);
+
+	public String toString(){
+		return commandLine();
+	}
     
 	public Command[] getSubCommands() {
 		return null;
@@ -51,15 +56,40 @@ public abstract class Command {
     	return true;    	
     }
 
-    public static boolean isPathValid(Engine engine, Console console, int pathId) {
-    	Block path = Block.getPath(engine.getRoute(), pathId);
-    	if (path == null) {
-    		console.display(String.format("Error: invalid path id: %d\n", pathId));        		
-    		return false;
+    public static boolean isIdValid(Engine engine, Console console, int id, IdType idType) {
+        switch (idType) {
+        case BLOCK:
+        	if (engine.getRoute().getBlock(id) == null) {
+        		console.display(String.format("Error: invalid block id: %d\n", id));        		
+        		return false;
+        	}
+        	return true;
+        case PATH:
+        	if (engine.getRoute().getPath(id) == null) {
+        		console.display(String.format("Error: invalid path id: %d\n", id));        		
+        		return false;
+        	}    	
+        	return true;        	
+        default:
+        	assert(false);
+            return false;
+        }    	
+    }
+            
+    public static int getId(String idString) {    	
+    	if (getIdType(idString) == IdType.BLOCK) {
+    		idString = idString.substring(1);
     	}    	
-    	return true;
+   		return Integer.parseInt(idString);
     }
 
+    public static IdType getIdType(String idString) {
+		if (idString.charAt(0) == 'b') {
+			return IdType.BLOCK;
+		}
+		return IdType.PATH;
+    }
+    
     protected boolean areArgsDone(String[] args, int i) {
 		if ((i >= args.length) || args[i].startsWith("-") || args[i].startsWith("\n"))
 			return true;

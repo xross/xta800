@@ -52,6 +52,7 @@ public class CommandFactory {
     			return cloned;
     		}
     	}
+    	console.display("Invalid command (Try 'help'..)\n");    	
     	return null;
     }
     

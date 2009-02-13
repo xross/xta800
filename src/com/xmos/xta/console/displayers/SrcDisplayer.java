@@ -4,12 +4,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.SourceLine;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.console.Console;
+import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.XtaInstruction;
@@ -19,21 +21,35 @@ public class SrcDisplayer {
 
 	private Engine m_engine;
 	private Console m_console;
-	private int m_pathId;
+	private int m_id;
+	private Command.IdType m_idType;
 	private boolean m_displayAssembly;
 
-	public SrcDisplayer(Engine engine, Console console, int pathId, boolean displayAssembly) {		
+	public SrcDisplayer(Engine engine, Console console, int pathId, Command.IdType idType, boolean displayAssembly) {		
 		m_engine = engine;
 		m_console = console;
-		m_pathId = pathId;
+		m_id = pathId;
+		m_idType = idType;
 		m_displayAssembly = displayAssembly;
 	}
 
 	public void display() {    	
-		XeObject xeObject = m_engine.getXeObject();
+        Vector<XtaInstruction> instructions = null;    		
+        switch (m_idType) {
+        case BLOCK:
+        	Block block = m_engine.getRoute().getBlock(m_id);			
+        	instructions = block.getInstructionsThis();
+        	break;
+        case PATH:
+        	Block path = m_engine.getRoute().getPath(m_id);			
+        	instructions = path.getInstructions(false);
+        	break;
+        default:
+        	assert(false);
+        }
 
-    	Block path = Block.getPath(m_engine.getRoute(), m_pathId);
-        HashMap<String, TreeSet<Integer>> linesCovered = createSrcLinesCovered(path, xeObject, false);                                                                   
+		XeObject xeObject = m_engine.getXeObject();
+        HashMap<String, TreeSet<Integer>> linesCovered = createSrcLinesCovered(instructions, xeObject);                                                                   
         
         if (DEBUG) 
         	displaySrcLinesCovered(linesCovered);
@@ -66,11 +82,11 @@ public class SrcDisplayer {
 		}        
     }
 
-	private HashMap<String, TreeSet<Integer>> createSrcLinesCovered(Block block,
-			XeObject xeObject, boolean recurse) {
+	private HashMap<String, TreeSet<Integer>> createSrcLinesCovered(Vector<XtaInstruction> instructions,
+			XeObject xeObject) {
 
 		HashMap<String, TreeSet<Integer>> linesCovered = new HashMap<String, TreeSet<Integer>>();
-		for (XtaInstruction inst : block.getInstructions(recurse)) {
+		for (XtaInstruction inst : instructions) {
 			for (SourceFile sourceFile : xeObject.getSourceFiles()) {
 				
 				String compilationName = sourceFile.getCompilationName();

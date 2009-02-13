@@ -6,14 +6,17 @@ import com.xmos.xta.console.displayers.TraceDisplayer;
 import com.xmos.xta.engine.Engine;
 
 class Trace extends Command {
-	private int m_pathId;
+	private int m_id;
+	private Command.IdType m_idType;
 
 	Trace() {
-		m_pathId = 0;
+		m_id = 0;
+		m_idType = null;
 	}
 	
-	Trace(int pathId) {
-		m_pathId = pathId;
+	Trace(int id, Command.IdType idType) {
+		m_id = id;		
+		m_idType = idType;
 	}
 	
     public int numArgs() {
@@ -25,11 +28,11 @@ class Trace extends Command {
     }        
 
     public String commandLine() {
-    	return "trace " + m_pathId;
-    }        
+    	return "trace " + m_id;
+    }
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = String.format("trace <path id>: Display instruction trace for the given path id");
+    	String descString = String.format("trace <path/block id>: Display instruction trace for the given path/block");
     	return descString;    	                
     }
 
@@ -37,16 +40,14 @@ class Trace extends Command {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 
-    	int pathId;
     	try {
-    	    pathId = Integer.parseInt(args[index + 1]);
-    	    return new Trace(pathId);
+    	    return new Trace(getId(args[index + 1]), getIdType(args[index + 1]));
 	    }
 	    catch (NumberFormatException e) {
    	    	return null;
-	    }    	
+	    } 	
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
@@ -54,10 +55,10 @@ class Trace extends Command {
 		if (!isRouteAnalysed(engine, console))
 			return;
 
-		if (!isPathValid(engine, console, m_pathId))
-			return;
+	    if (!isIdValid(engine, console, m_id, m_idType))
+		    return;
 		
-		TraceDisplayer displayer = new TraceDisplayer(engine, console, m_pathId);	
+		TraceDisplayer displayer = new TraceDisplayer(engine, console, m_id, m_idType);	
 		displayer.display();
     }    
 }

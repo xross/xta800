@@ -38,7 +38,7 @@ public class Block implements Comparable<Block> {
 	private int m_toPc;
 	private BlockStatus m_status;
 	
-	//this is only set if the path doesnt resolve for some reason
+	//this is only set if the path doesn't resolve for some reason
 	private Unresolved m_unresolved;
 	private int m_functionDepth;
 
@@ -71,6 +71,7 @@ public class Block implements Comparable<Block> {
 			System.out.println("block 0 started at 0x" + Integer.toHexString(fromPc));
 		}
 		m_numBlocks = 0;
+		m_numPaths = 0;
 		initialise(machineState);
 		m_bc = bc;
 		m_status = BlockStatus.SEARCHING;
@@ -346,42 +347,7 @@ public class Block implements Comparable<Block> {
 		}
 		return checkComplete(nextInstruction);
 	}
-	
-	public static Block getPath(Route route, int pathId) {
-    	assert(route != null);
-    	
-        for (Block path : route.completePaths()) {
-        	Block foundPath = getPath(path, pathId);
-            if (foundPath != null) {
-                return foundPath;
-            }
-        }
-        for (Unresolved path : route.unresolvedPaths()) {
-        	Block foundPath = getPath(path.getBlock(), pathId);
-            if (foundPath != null) {
-                return foundPath;
-            }
-        }                
-        return null;        
-    }
-    
-    private static Block getPath(Block path, int pathId) {
-        if (pathId == path.getId()) {
-            return path;
-        }
-        for (Block block : path.getPathBlocks()) {
-            for (Block loopPath : block.getLoopPaths()) {
-            	Block foundPath = getPath(loopPath, pathId);
-                if (foundPath != null) {
-                    path.doneWithPathBlocks();
-                    return foundPath;
-                }
-            }
-        }
-        path.doneWithPathBlocks();
-        return null;
-    }    
-    
+	    
 	public Unresolved getUnresolved(){
 		return m_unresolved;
 	}
@@ -392,6 +358,7 @@ public class Block implements Comparable<Block> {
 
 	private void initialise(MachineState machineState) {
 		m_blockId = m_numBlocks++;
+		m_pathId = -1;
 		m_contexts = new Stack<TreeSet<Integer>>();
 		m_pcs = new HashSet<Integer>();
 		m_instructions = new Vector<XtaInstruction>();
@@ -639,8 +606,7 @@ public class Block implements Comparable<Block> {
 	
 	public int getPathId(){
 		return m_pathId;
-	}
-	
+	}	
 
 	public int getId() {
 		return m_blockId;
@@ -827,7 +793,7 @@ public class Block implements Comparable<Block> {
 		return numCycles;
 	}
 	
-	int getNumInstructionsThis() {
+	public int getNumInstructionsThis() {
 		return m_numInstructions;
 	}
 
@@ -847,7 +813,6 @@ public class Block implements Comparable<Block> {
 		}
 		return num;
 	}
-
 	
 	// --------------------------------------------------------------------- //
 	// 'Loops only' statistics
