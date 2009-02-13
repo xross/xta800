@@ -29,6 +29,13 @@ public class AsmDisplayer {
 	}
 	
     public void display() {     	
+    	
+    	//this should check to see that there is a route to display first
+    	if(m_engine.anythingToDisplay() == false){
+    		//error and dont print
+    		System.err.println("asm displayer shouldnt be displaying anything");
+    	}
+    	
     	MemoryImage memoryImage = m_engine.getMemoryImage();
     	SymbolTable symbolTable = m_engine.getSymbolTable();
     	
