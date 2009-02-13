@@ -2,6 +2,8 @@ package com.xmos.xta.engine;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -75,27 +77,34 @@ public class Engine {
 
 	public boolean addReference(ReferenceMode mode, CodeReference ref) {
 		if (!resolveRefernece(ref, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Unresolved reference: %s", ref.getRef()));
 			return false;
 		}
 		if (mode == ReferenceMode.FILTERED) {
-			if (referenceListContainsReference(ref, getReferenceList(m_exclusions, m_nodeId, m_coreId))) {
-				notify(Notifier.NOTIFY_ERROR, String.format("Reference already filtered: %s", ref.getRef()));
+			if (referenceListContainsReference(ref, getReferenceList(
+					m_exclusions, m_nodeId, m_coreId))) {
+				notify(Notifier.NOTIFY_ERROR, String.format(
+						"Reference already filtered: %s", ref.getRef()));
 				return false;
 			} else {
 				getReferenceList(m_exclusions, m_nodeId, m_coreId).add(ref);
 			}
 
 		} else if (mode == ReferenceMode.PROHIBITED) {
-			if (referenceListContainsReference(ref, getReferenceList(m_prohibited, m_nodeId, m_coreId))) {
-				notify(Notifier.NOTIFY_ERROR, String.format("Reference already prohibited: %s", ref.getRef()));
+			if (referenceListContainsReference(ref, getReferenceList(
+					m_prohibited, m_nodeId, m_coreId))) {
+				notify(Notifier.NOTIFY_ERROR, String.format(
+						"Reference already prohibited: %s", ref.getRef()));
 				return false;
 			} else {
 				getReferenceList(m_prohibited, m_nodeId, m_coreId).add(ref);
 			}
 		} else if (mode == ReferenceMode.REQUIRED) {
-			if (referenceListContainsReference(ref, getReferenceList(m_required, m_nodeId, m_coreId))) {
-				notify(Notifier.NOTIFY_ERROR, String.format("Reference already required: %s", ref.getRef()));
+			if (referenceListContainsReference(ref, getReferenceList(
+					m_required, m_nodeId, m_coreId))) {
+				notify(Notifier.NOTIFY_ERROR, String.format(
+						"Reference already required: %s", ref.getRef()));
 				return false;
 			} else {
 				getReferenceList(m_required, m_nodeId, m_coreId).add(ref);
@@ -115,20 +124,24 @@ public class Engine {
 		boolean found = true;
 
 		if (mode == ReferenceMode.FILTERED) {
-			List<CodeReference> references = getReferenceList(m_exclusions, m_nodeId, m_coreId);
+			List<CodeReference> references = getReferenceList(m_exclusions,
+					m_nodeId, m_coreId);
 			found = removeReferences(ref, references);
 		} else if (mode == ReferenceMode.PROHIBITED) {
-			List<CodeReference> references = getReferenceList(m_prohibited, m_nodeId, m_coreId);
+			List<CodeReference> references = getReferenceList(m_prohibited,
+					m_nodeId, m_coreId);
 			found = removeReferences(ref, references);
 		} else if (mode == ReferenceMode.REQUIRED) {
-			List<CodeReference> references = getReferenceList(m_required, m_nodeId, m_coreId);
+			List<CodeReference> references = getReferenceList(m_required,
+					m_nodeId, m_coreId);
 			found = removeReferences(ref, references);
 		} else {
 			assert (false);
 			return false;
 		}
 		if (!found) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unable to remove reference: %s", ref.getRef()));
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Unable to remove reference: %s", ref.getRef()));
 			return false;
 		}
 
@@ -158,56 +171,92 @@ public class Engine {
 	}
 
 	public Config getConfig() {
+		// cant be constructed without a config
 		return m_config;
 	}
 
 	public Vector<MemoryImage> getMemoryImages() {
-		return m_xeLoader.getMemoryImages();
+		if (m_xeLoader != null)
+			return m_xeLoader.getMemoryImages();
+		else {
+			System.err.println("xeLoader is missing: cannot getMemoryImages()");
+			return new Vector<MemoryImage>();
+		}
 	}
 
 	public Vector<SymbolTable> getSymbolTables() {
-		return m_xeLoader.getSymbolTables();
+		if (m_xeLoader != null)
+			return m_xeLoader.getSymbolTables();
+		else {
+			System.err.println("xeLoader is missing: cannot getSymbolTables()");
+			return new Vector<SymbolTable>();
+		}
 	}
 
 	public Vector<DebugInfo> getDebugInfos() {
-		return m_xeLoader.getDebugInfos();
+		if (m_xeLoader != null)
+			return m_xeLoader.getDebugInfos();
+		else {
+			System.err.println("xeLoader is missing: cannot getDebugInfos()");
+			return new Vector<DebugInfo>();
+		}
+	}
+
+	public boolean anythingToDisplay() {
+		if (m_route != null) {
+			if (m_route.completePaths().size()
+					+ m_route.unresolvedPaths().size() > 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public MemoryImage getMemoryImage() {
 		if (m_route != null) {
-			return m_xeLoader.getMemoryImage(m_route.getNodeId(), m_route.getCoreId());
+			return m_xeLoader.getMemoryImage(m_route.getNodeId(), m_route
+					.getCoreId());
 		}
 		return null;
 	}
 
 	public SymbolTable getSymbolTable() {
 		if (m_route != null) {
-			return m_xeLoader.getSymbolTable(m_route.getNodeId(), m_route.getCoreId());
+			return m_xeLoader.getSymbolTable(m_route.getNodeId(), m_route
+					.getCoreId());
 		}
 		return null;
 	}
 
 	public DebugInfo getDebugInfo() {
 		if (m_route != null) {
-			return m_xeLoader.getDebugInfo(m_route.getNodeId(), m_route.getCoreId());
+			return m_xeLoader.getDebugInfo(m_route.getNodeId(), m_route
+					.getCoreId());
 		}
 		return null;
 	}
 
 	public Route getRoute() {
+		// FIXME what happens if this is null
 		return m_route;
 	}
 
 	public XeLoader getXeLoader() {
+		// FIXME what happens if this is null
 		return m_xeLoader;
 	}
 
 	public XeObject getXeObject() {
+		// FIXME what happens if this is null
 		return getXeObject(m_nodeId, m_coreId);
 	}
 
 	public String getSrcPaths() {
-		return m_srcPaths;
+		if (m_srcPaths != null) {
+			return m_srcPaths;
+		} else {
+			return ".";
+		}
 	}
 
 	public void setSrcPaths(String srcPaths) {
@@ -226,25 +275,32 @@ public class Engine {
 			m_xeLoader = newLoader;
 			m_executableFile = executableFile;
 			initialiseLists(fileFinder);
-			m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(this, m_xeLoader, m_config);
+			m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(this,
+					m_xeLoader, m_config);
 
 			try {
 				decodeInstructions();
 			} catch (Exception e) {
-				notify(Notifier.NOTIFY_ERROR, "Some of the pc's refered to in the executable could not be found");
+				notify(Notifier.NOTIFY_ERROR,
+						"Some of the pc's refered to in the executable could not be found");
 				success = false;
 			}
 
 			loadLabels();
 			loadBranches();
 
-			m_ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache, m_xeObjects, m_branches);
+			m_ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache,
+					m_xeObjects, m_branches);
+
 			runAnalysisEngine();
 
 			m_route = null;
-			notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
+
+			notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile
+					.getAbsolutePath());
 		} else {
-			notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile + "' could not be loaded.");
+			notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile
+					+ "' could not be loaded.");
 		}
 		return success;
 	}
@@ -259,68 +315,104 @@ public class Engine {
 				XeObject xeObject = getXeObject(nodeId, coreId);
 				for (AssemblyLine al : xeObject.getInstructions()) {
 					int pc = al.getPc();
-					m_nodeCoreInstructionCache.decode(getOpcode(pc, nodeId, coreId), pc, nodeId, coreId);
+					m_nodeCoreInstructionCache.decode(getOpcode(pc, nodeId,
+							coreId), pc, nodeId, coreId);
 				}
 			}
 		}
 	}
 
 	public Progress getProgress() {
-		return m_progress;
+		if (m_progress != null) {
+			return m_progress;
+		} else {
+			return new Progress(Progress.State.IDLE, 0, 0);
+		}
 	}
 
 	public boolean analyseRoute(String functionName) {
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Node: %d, Core: %d image not found in file: %s", m_nodeId,
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Node: %d, Core: %d image not found in file: %s", m_nodeId,
 					m_coreId, m_executableFile));
 			return false;
 		} else if (!functionExists(functionName)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Cannot find function: %s in file: %s, node: %d, core: %d",
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Cannot find function: %s in file: %s, node: %d, core: %d",
 					functionName, m_executableFile, m_nodeId, m_coreId));
 			return false;
 		} else {
-			m_previousRoute = m_route;
-			m_route = new Route(m_config, m_progress, functionName, m_nodeId, m_coreId, m_nodeCoreInstructionCache);
-
-			boolean success = analyseRouteSafley();
-			if (success) {
-				notify(Notifier.NOTIFY_SELECT_FUNCTION, functionName);
-			} else {
-				m_route = m_previousRoute;
-			}
-			return success;
+			HashSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName,
+					m_nodeId, m_coreId);
+			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId,
+					m_coreId);
+			return analyseRoute(startPc, endPcs);
 		}
 	}
 
 	public boolean analyseRoute(String from, String to) {
 		CodeReference fromRef = CodeReferenceFactory.createCodeReference(from);
 		CodeReference toRef = CodeReferenceFactory.createCodeReference(to);
-
-		int dist = m_ae.determineReachability(fromRef.getPc(), toRef.getPc(), m_nodeId, m_coreId);
-		if(dist == Integer.MAX_VALUE) return false;
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Node: %d, Core: %d image not found in file: %s", m_nodeId,
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Node: %d, Core: %d image not found in file: %s", m_nodeId,
 					m_coreId, m_executableFile));
 			return false;
 		} else if (!resolveRefernece(fromRef, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", from));
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Unresolved reference: %s", from));
 			return false;
 		} else if (!resolveRefernece(toRef, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", to));
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Unresolved reference: %s", to));
 			return false;
 		} else {
-			m_previousRoute = m_route;
-			m_route = new Route(m_config, m_progress, fromRef, toRef, m_nodeId, m_coreId, m_nodeCoreInstructionCache);
-
-			boolean success = analyseRouteSafley();
-			if (success) {
-				notify(Notifier.NOTIFY_SET_START_POINT, from);
-				notify(Notifier.NOTIFY_SET_END_POINT, to);
-			} else {
-				m_route = m_previousRoute;
-			}
-			return success;
+			HashSet<Integer> endPc = new HashSet<Integer>();
+			endPc.add(toRef.getPc());
+			return analyseRoute(fromRef.getPc(), endPc);
 		}
+	}
+
+	public boolean analyseRoute(int startPc, HashSet<Integer> endPcs) {
+
+		boolean reachable = false;
+		for (int end : endPcs) {
+			int dist = m_ae.determineReachability(startPc, end, m_nodeId,
+					m_coreId);
+			if (dist != Integer.MAX_VALUE) {
+				reachable = true;
+				break;
+			}
+		}
+		String endString = "";
+		if (!reachable) {
+			for (int end : endPcs) {
+				endString += "0x" + Integer.toHexString(end) + ", ";
+			}
+			endString = endString.substring(0, endString.length() - 2);
+			notify(Notifier.NOTIFY_ERROR, "No valid of execution from 0x"
+					+ Integer.toHexString(startPc) + " to " + endString);
+
+			return false;
+		}
+
+		m_previousRoute = m_route;
+
+		m_route = new Route(m_config, m_progress, startPc, endPcs, m_nodeId,
+				m_coreId, m_nodeCoreInstructionCache);
+
+		boolean success = analyseRouteSafley();
+		if (success) {
+			notify(Notifier.NOTIFY_SET_START_POINT, "0x"
+					+ Integer.toHexString(startPc));
+			notify(Notifier.NOTIFY_SET_END_POINT, endString);
+			// may be able to scrap the m_previousRoute here. free a lot of
+			// memory
+		} else {
+			m_route = m_previousRoute;
+		}
+		return success;
+
 	}
 
 	public void registerNotifier(Notifier notifier) {
@@ -383,36 +475,39 @@ public class Engine {
 		return m_config.m_numThreads;
 	}
 
-	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
-		if (m_route != null) {
-			
-			boolean hit = m_route.setLoopIterations(pathId, absolute, iterations);
+	public boolean setLoopIterations(int pathId, boolean absolute,
+			int iterations) {
+		if (this.anythingToDisplay()) {
+			boolean hit = m_route.setLoopIterations(pathId, absolute,
+					iterations);
 			if (hit) {
 				m_route.invalidateAllBlocks();
 				m_route.notifyUpdate();
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			}
-
 			return hit;
 		}
 		return false;
 	}
 
 	public boolean setInstructionTimeTaken(CodeReference ref, double timeTaken) {
+
 		if (m_nodeCoreInstructionCache == null) {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
 			return false;
 		}
 
 		if (!resolveRefernece(ref, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Unresolved reference: %s", ref.getRef()));
 			return false;
 		}
 
 		if (m_route != null)
 			m_route.invalidateAllBlocks();
-		
-		boolean hit = m_nodeCoreInstructionCache.setInstructionTimeTaken(this, ref.getPc(), timeTaken, m_nodeId, m_coreId);
+
+		boolean hit = m_nodeCoreInstructionCache.setInstructionTimeTaken(this,
+				ref.getPc(), timeTaken, m_nodeId, m_coreId);
 		if (hit) {
 			boolean unknownsChanged = updateUnknown(ref.getPc(), true);
 			if (unknownsChanged)
@@ -429,7 +524,8 @@ public class Engine {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
 			return 0;
 		}
-		return m_nodeCoreInstructionCache.getInstructionTimeTaken(pc, m_nodeId, m_coreId);
+		return m_nodeCoreInstructionCache.getInstructionTimeTaken(pc, m_nodeId,
+				m_coreId);
 	}
 
 	public boolean setInstructionNumCycles(CodeReference ref, int numCycles) {
@@ -439,14 +535,16 @@ public class Engine {
 		}
 
 		if (!resolveRefernece(ref, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Unresolved reference: %s", ref.getRef()));
 			return false;
 		}
 
-		if (m_route != null)
+		if (this.anythingToDisplay())
 			m_route.invalidateAllBlocks();
-			
-		boolean hit = m_nodeCoreInstructionCache.setInstructionNumCycles(this, ref.getPc(), numCycles, m_nodeId, m_coreId);
+
+		boolean hit = m_nodeCoreInstructionCache.setInstructionNumCycles(this,
+				ref.getPc(), numCycles, m_nodeId, m_coreId);
 		if (hit) {
 			boolean unknownsChanged = updateUnknown(ref.getPc(), true);
 			if (unknownsChanged)
@@ -461,18 +559,19 @@ public class Engine {
 	public ArrayList<Integer> getPcsWithTimeSet() {
 		if (m_nodeCoreInstructionCache == null) {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
-			return null;
+			return new ArrayList<Integer>();
 		}
 		return m_nodeCoreInstructionCache.getPcsWithTimeSet(m_nodeId, m_coreId);
 	}
 
 	public boolean updateUnknown(int pc, boolean clear) {
-		if (m_route == null)
+		if (!this.anythingToDisplay())
 			return false;
 
 		boolean found = false;
 		for (Unknown unknown : m_route.getUnknowns()) {
-			if ((unknown.getPc() == pc) && (unknown.getUnknownType() == UnknownType.PAUSABLETIME)) {
+			if ((unknown.getPc() == pc)
+					&& (unknown.getUnknownType() == UnknownType.PAUSABLETIME)) {
 				unknown.setIsSet(clear);
 				found = true;
 			}
@@ -485,9 +584,10 @@ public class Engine {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
 			return 0;
 		}
-		return m_nodeCoreInstructionCache.getInstructionNumCycles(pc, m_nodeId, m_coreId);
+		return m_nodeCoreInstructionCache.getInstructionNumCycles(pc, m_nodeId,
+				m_coreId);
 	}
-	
+
 	public void unsetInstructionTime(int pc) {
 		if (m_nodeCoreInstructionCache == null) {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
@@ -502,8 +602,10 @@ public class Engine {
 			return;
 		}
 
-		if (!m_nodeCoreInstructionCache.unsetInstructionTime(ref, m_nodeId, m_coreId)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unable to unset time for: %s", ref.getRef()));
+		if (!m_nodeCoreInstructionCache.unsetInstructionTime(ref, m_nodeId,
+				m_coreId)) {
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Unable to unset time for: %s", ref.getRef()));
 		}
 	}
 
@@ -512,22 +614,21 @@ public class Engine {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
 			return false;
 		}
-		return m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId).getInstruction(pc).canPause();
-	}
-
-	public Double getTimeTaken(int lineNumber) {
-		return new Double(0.0);
+		return m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId,
+				m_coreId).getInstruction(pc).canPause();
 	}
 
 	public boolean addLabel(String label, CodeReference ref) {
 		if (!resolveRefernece(ref, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Unresolved reference: %s", ref.getRef()));
 			return false;
 		}
 
 		// Test whether the label happens to be a PC string
 		if (CodeReferenceFactory.isPcString(label)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a label: %s", label));
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Cannot use PC as a label: %s", label));
 			return false;
 		}
 
@@ -536,7 +637,8 @@ public class Engine {
 			if (!labelMap.getLabels().containsKey(label)) {
 				labelMap.getLabels().put(label, ref.getPc());
 			} else {
-				notify(Notifier.NOTIFY_ERROR, String.format("Label already exists: %s", label));
+				notify(Notifier.NOTIFY_ERROR, String.format(
+						"Label already exists: %s", label));
 			}
 			return true;
 		}
@@ -562,7 +664,8 @@ public class Engine {
 				for (String toRemove : matches)
 					labelMap.getLabels().remove(toRemove);
 			} else {
-				notify(Notifier.NOTIFY_ERROR, String.format("Unable to remove label: %s", label));
+				notify(Notifier.NOTIFY_ERROR, String.format(
+						"Unable to remove label: %s", label));
 			}
 		}
 	}
@@ -572,7 +675,7 @@ public class Engine {
 		if (labelMap != null) {
 			return labelMap.getLabels();
 		}
-		return null;
+		return new HashMap<String, Integer>();
 	}
 
 	public boolean isLabel(String label) {
@@ -590,16 +693,18 @@ public class Engine {
 				return labelMap.getLabels().get(label);
 			}
 		}
-		assert(false);
+		assert (false);
 		return 0;
 	}
 
 	public boolean addBranch(CodeReference fromRef, CodeReference toRef) {
 		if (!resolveRefernece(fromRef, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", fromRef.getRef()));
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Unresolved reference: %s", fromRef.getRef()));
 			return false;
 		} else if (!resolveRefernece(toRef, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", toRef.getRef()));
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Unresolved reference: %s", toRef.getRef()));
 			return false;
 		}
 
@@ -613,7 +718,8 @@ public class Engine {
 
 	public void removeBranch(CodeReference fromRef) {
 		if (!resolveRefernece(fromRef, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", fromRef.getRef()));
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Unresolved reference: %s", fromRef.getRef()));
 			return;
 		}
 
@@ -622,7 +728,8 @@ public class Engine {
 			if (branchMap.getBranches().containsKey(fromRef.getPc())) {
 				branchMap.remove(fromRef.getPc());
 			} else {
-				notify(Notifier.NOTIFY_ERROR, String.format("Unable to remove branch: 0x%x", fromRef.getPc()));
+				notify(Notifier.NOTIFY_ERROR, String.format(
+						"Unable to remove branch: 0x%x", fromRef.getPc()));
 			}
 		}
 	}
@@ -632,7 +739,7 @@ public class Engine {
 		if (branchMap != null) {
 			return branchMap.getBranches();
 		}
-		return null;
+		return new HashMap<Integer, TreeSet<Integer>>();
 	}
 
 	public void addQuery(PathQuery pq) {
@@ -643,7 +750,8 @@ public class Engine {
 		return m_pathQueries;
 	}
 
-	private boolean referenceListContainsReference(CodeReference ref, List<CodeReference> list) {
+	private boolean referenceListContainsReference(CodeReference ref,
+			List<CodeReference> list) {
 		for (CodeReference cr : list) {
 			if (cr.getRef().equals(ref.getRef())) {
 				return true;
@@ -678,7 +786,8 @@ public class Engine {
 	}
 
 	private int getOpcode(int pc, int nodeId, int coreId) throws Exception {
-		return m_xeLoader.getMemoryImage(nodeId, coreId).readInstructionWord(pc);
+		return m_xeLoader.getMemoryImage(nodeId, coreId)
+				.readInstructionWord(pc);
 	}
 
 	private boolean analyseRoute() throws Exception {
@@ -698,11 +807,10 @@ public class Engine {
 			SymbolTable symbolTable = m_xeLoader.getSymbolTable(nodeId, coreId);
 			DebugInfo debugInfo = m_xeLoader.getDebugInfo(nodeId, coreId);
 
-			assert (memoryImage != null);
-			assert (symbolTable != null);
-			assert (debugInfo != null);
 			RouteStatus status = RouteStatus.ABORTED;
+
 			status = m_route.analyse(memoryImage, symbolTable, debugInfo, this);
+
 			switch (status) {
 			case ABORTED:
 				notify(Notifier.NOTIFY_ERROR, "Abort detected");
@@ -717,13 +825,16 @@ public class Engine {
 
 			int numUnresolvedPaths = m_route.unresolvedPaths().size();
 			if (numUnresolvedPaths > 0) {
-				notify(Notifier.NOTIFY_ERROR, String.format("Found " + numUnresolvedPaths + " unresolved path(s)"));
+				notify(Notifier.NOTIFY_ERROR, String.format("Found "
+						+ numUnresolvedPaths + " unresolved path(s)"));
 			}
 
 			notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, "");
 		} else {
-			notify(Notifier.NOTIFY_ERROR, String.format("Node: %d, Core: %d image not found in file: %s", m_route
-					.getNodeId(), m_route.getCoreId(), m_executableFile));
+			notify(Notifier.NOTIFY_ERROR, String
+					.format("Node: %d, Core: %d image not found in file: %s",
+							m_route.getNodeId(), m_route.getCoreId(),
+							m_executableFile));
 			return false;
 		}
 
@@ -750,17 +861,20 @@ public class Engine {
 		return ref.resolve(engine, m_nodeId, m_coreId);
 	}
 
-	private List<CodeReference> getReferenceList(List<CodeReferenceList> referenceList, int nodeId, int coreId) {
+	private List<CodeReference> getReferenceList(
+			List<CodeReferenceList> referenceList, int nodeId, int coreId) {
 		for (CodeReferenceList references : referenceList) {
-			if ((references.getNodeId() == nodeId) && (references.getCoreId() == coreId)) {
+			if ((references.getNodeId() == nodeId)
+					&& (references.getCoreId() == coreId)) {
 				return references.getReferences();
 			}
 		}
 		assert (false);
-		return null;
+		return new ArrayList<CodeReference>();
 	}
 
-	private boolean removeReferences(CodeReference ref, List<CodeReference> references) {
+	private boolean removeReferences(CodeReference ref,
+			List<CodeReference> references) {
 		List<CodeReference> matches = new ArrayList<CodeReference>();
 
 		for (CodeReference present : references) {
@@ -782,7 +896,8 @@ public class Engine {
 
 	private LabelMap getLabelsMap(int nodeId, int coreId) {
 		for (LabelMap labels : m_labels) {
-			if ((labels.getNodeId() == nodeId) && (labels.getCoreId() == coreId)) {
+			if ((labels.getNodeId() == nodeId)
+					&& (labels.getCoreId() == coreId)) {
 				return labels;
 			}
 		}
@@ -791,7 +906,8 @@ public class Engine {
 
 	private BranchMap getBranchesMap(int nodeId, int coreId) {
 		for (BranchMap branches : m_branches) {
-			if ((branches.getNodeId() == nodeId) && (branches.getCoreId() == coreId)) {
+			if ((branches.getNodeId() == nodeId)
+					&& (branches.getCoreId() == coreId)) {
 				return branches;
 			}
 		}
@@ -800,7 +916,8 @@ public class Engine {
 
 	private XeObject getXeObject(int nodeId, int coreId) {
 		for (XeObject xeObject : m_xeObjects) {
-			if ((xeObject.getNodeId() == nodeId) && (xeObject.getCoreId() == coreId)) {
+			if ((xeObject.getNodeId() == nodeId)
+					&& (xeObject.getCoreId() == coreId)) {
 				return xeObject;
 			}
 		}
@@ -823,7 +940,8 @@ public class Engine {
 				m_required.add(new CodeReferenceList(node, core));
 				m_labels.add(new LabelMap(node, core));
 				m_branches.add(new BranchMap(node, core));
-				m_xeObjects.add(new XeObject(m_xeLoader, node, core, fileFinder));
+				m_xeObjects
+						.add(new XeObject(m_xeLoader, node, core, fileFinder));
 			}
 		}
 	}

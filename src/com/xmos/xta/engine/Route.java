@@ -26,9 +26,7 @@ public class Route {
 	private Config m_config;
 	private int m_nodeId;
 	private int m_coreId;
-	private CodeReference m_fromRef;
-	private CodeReference m_toRef;
-	private String m_functionName;
+	private String m_analysisString;
 	private HashMap<Integer, Vector<Block>> m_loopPaths;
 	private ArrayList<ExecutionState> m_executionStates;
 	private LinkedList<ExecutionState> m_schedule;
@@ -42,21 +40,16 @@ public class Route {
 	private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
 	private ArrayList<Unknown> m_unknowns;
 	private ArrayList<String> m_warnings;
-	private static int m_numRoutes;
-
-	Route(Config config, Progress progress, CodeReference fromRef, CodeReference toRef,
-			int nodeId, int coreId, NodeCoreInstructionCaches nodeCoreInstructionCache) {
+	private static int m_numRoutes;	
+	private int m_startPc;
+	private HashSet<Integer> m_endPcs;
+	
+	public Route(Config config, Progress progress, int startPc, HashSet<Integer> endPcs, int nodeId, int coreId,
+			NodeCoreInstructionCaches nodeCoreInstructionCache) {
+		m_startPc = startPc;
+		m_endPcs = endPcs;
+		m_analysisString = "";
 		m_progress = progress;
-		m_fromRef = fromRef;
-		m_toRef = toRef;
-		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
-		initialise(config, nodeId, coreId);
-	}
-
-	Route(Config config, Progress progress, String functionName,
-			int nodeId, int coreId, NodeCoreInstructionCaches nodeCoreInstructionCache) {
-		m_progress = progress;
-		m_functionName = functionName;
 		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
 		initialise(config, nodeId, coreId);
 	}
@@ -65,24 +58,12 @@ public class Route {
 		return m_unknowns;
 	}
 
-	public final String functionName() {
-		return m_functionName;
-	}
-
 	public final int getNodeId() {
 		return m_nodeId;
 	}
 
 	public final int getCoreId() {
 		return m_coreId;
-	}
-
-	public final CodeReference fromRef() {
-		return m_fromRef;
-	}
-
-	public final CodeReference toRef() {
-		return m_toRef;
 	}
 
 	public final ArrayList<Block> completePaths() {
@@ -94,10 +75,6 @@ public class Route {
 	}
 
 	public int getId() {
-		return 0;
-	}
-
-	public int getInstanceId() {
 		return 0;
 	}
 
@@ -147,11 +124,9 @@ public class Route {
 
 	RouteStatus analyse(MemoryImage memoryImage, SymbolTable symbolTable, 
 			DebugInfo debugInfo, Engine engine) throws Exception {
+
 		m_progress.resetState(Progress.State.PROCESSING_PATHS, m_config.m_minimumRemainingMemory);
 
-		assert (memoryImage != null);
-		assert (symbolTable != null);
-		assert (debugInfo != null);
 		m_engine = engine;
 		m_status = RouteStatus.ANALYSING;
 
@@ -159,29 +134,36 @@ public class Route {
 
 		Stack<TreeSet<Integer>> context = new Stack<TreeSet<Integer>>();
 		context.push(new TreeSet<Integer>());
+		
 		Architecture arch = m_engine.getXeLoader().getArchitecture() ;
+		
 		MachineState initialState = new MachineState(symbolTable, memoryImage, arch);
 		
-		BlockCommonComponents bc = null;
+		BlockCommonComponents bc = new BlockCommonComponents(m_nodeCoreInstructionCache, 
+				memoryImage, symbolTable, m_engine.getReference(ReferenceMode.PROHIBITED), 
+				this, m_engine, m_endPcs);
 
-		if (m_functionName != null) {
-			bc = new BlockCommonComponents(m_nodeCoreInstructionCache, memoryImage, symbolTable, 
-					m_engine.getReference(ReferenceMode.PROHIBITED), this, Block.Mode.FUNCTION, m_engine);
-			assert (symbolTable.symbolExists(m_functionName));
-			int fromPc = symbolTable.symbolAddress(m_functionName);
-			new ExecutionState(this, initialState, bc, fromPc);
-		} else {
-			bc = new BlockCommonComponents(m_nodeCoreInstructionCache, memoryImage, symbolTable, 
-					m_engine.getReference(ReferenceMode.PROHIBITED), this, Block.Mode.ABSOLUTE, m_engine);
-			new ExecutionState(this, initialState, bc, m_fromRef.getPc(), m_toRef.getPc());
-		}
+		new ExecutionState(this, initialState, bc, m_startPc);
+		
 		stepPath();
 		filterPaths();
 		sortPaths();
+		if(m_status  == RouteStatus.COMPLETED){
+			makeCompleteStatus();
+		}
 		m_progress.setState(Progress.State.IDLE);
 		return m_status;
 	}
-	
+
+	private void makeCompleteStatus(){
+		m_analysisString = "from: 0x" + Integer.toHexString(m_startPc) + " to: ";
+		for(int end : m_endPcs){
+			m_analysisString += "0x" + Integer.toHexString(end) + ", ";
+		}
+		m_analysisString = m_analysisString.substring(0,m_analysisString.length()-2);
+		return;
+	}
+			
 	void notifyUpdate() {
 		Collections.sort(m_completePaths);
 	}
@@ -269,6 +251,7 @@ public class Route {
 	}
 	
 	public void addCompletePath(Block endBlock) {
+	
 		m_completePaths.add(endBlock);
 		endBlock.addPathId();
 	}
@@ -382,10 +365,6 @@ public class Route {
 	}
 
 	public String getStatusString() {
-	    if (functionName() != null) {
-	    	return String.format("function: %s", functionName());
-	    } else {
-	    	return String.format("path: %s -> %s",  fromRef().getRef(), toRef().getRef());
-	    }
+		return m_analysisString;
 	}
 }

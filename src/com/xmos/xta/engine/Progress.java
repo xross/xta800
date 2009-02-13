@@ -3,7 +3,6 @@ package com.xmos.xta.engine;
 public class Progress {
 	public static enum State {
 		PROCESSING_PATHS,
-		PROCESSING_LOOPS,
 		IDLE,
 	}
 	
@@ -61,9 +60,6 @@ public class Progress {
     	switch (state) {
         case PROCESSING_PATHS:
         	return "Processing paths";
-        	
-        case PROCESSING_LOOPS:
-        	return "Processing loops";
         	
         case IDLE:
         	return "Idle";
