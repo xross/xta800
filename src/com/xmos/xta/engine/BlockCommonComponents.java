@@ -1,10 +1,8 @@
 package com.xmos.xta.engine;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
-
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.references.CodeReference;

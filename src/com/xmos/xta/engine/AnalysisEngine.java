@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.TreeSet;
 
 import com.xmos.isa.Instruction;
 import com.xmos.xeloader.XeLoader;
@@ -25,11 +26,10 @@ public class AnalysisEngine {
 	private HashMap<NodeCore, Node[]> m_nodes;
 	private HashMap<NodeCore, Edge[]> m_edges;
 	private ArrayList<FunctionReturns> m_functionReturns;
-	
+	public HashMap<Integer, TreeSet<Integer>> m_functionCallLocations;
 	
 	private static final boolean MAKEDOT = false;
 	private static final boolean DEBUG = false;
-	
 	
 	public AnalysisEngine(XeLoader loader, NodeCoreInstructionCaches coreInstructionCache, ArrayList<XeObject> objects, ArrayList<BranchMap> branches){
 		m_constantPoolPointers = new HashMap<NodeCore, Integer>();
@@ -43,6 +43,7 @@ public class AnalysisEngine {
 		m_edges = new HashMap<NodeCore, Edge[]>();
 		m_nodes= new HashMap<NodeCore, Node[]>();
 		m_functionReturns = new ArrayList<FunctionReturns>();
+		m_functionCallLocations = new HashMap<Integer, TreeSet<Integer>>();
 	}
 	
 	public void run(){
@@ -94,8 +95,6 @@ public class AnalysisEngine {
 		return 0;
 	}
 
-
-	
 	public HashSet<Integer> getFunctionRetuns(String functionName, int nodeId, int coreId){
 		for(FunctionReturns f : m_functionReturns){
 			if(f.getNode() == nodeId && f.getCore() == coreId){
@@ -105,12 +104,9 @@ public class AnalysisEngine {
 		return new HashSet<Integer>();
 	}
 	
-	
 	public int getFunctionStartPc(String functionName, int nodeId, int coreId) {
 		return getXeObject(nodeId, coreId).getFunctionStartPc().get(functionName);
 	}
-	
-	
 	
 	private void makeAllNodeMaps(){
 		for(int nodeId : m_xeLoader.getNodeIds()){
@@ -168,7 +164,6 @@ public class AnalysisEngine {
 		m_nodes.put(new NodeCore(nodeId, coreId), nodeArray);
 	}
 	
-	
 	public int determineReachability(int startPc, int endPc, int nodeId, int coreId){
 		Node to = getNode(startPc, nodeId, coreId);
 		Node from = getNode(endPc, nodeId, coreId);
@@ -206,6 +201,7 @@ public class AnalysisEngine {
 		}
 		return null;
 	}
+	
 	public Edge[] getEdges(int node, int core){
 		for(NodeCore nc : m_edges.keySet()){
 			if(nc.m_nodeId == node && nc.m_coreId == core){
@@ -214,6 +210,8 @@ public class AnalysisEngine {
 		}
 		return null;
 	}
+	
+	
 	public Node[] getNodes(int node, int core){
 		for(NodeCore nc : m_nodes.keySet()){
 			if(nc.m_nodeId == node && nc.m_coreId == core){
@@ -261,7 +259,7 @@ public class AnalysisEngine {
 				XeObject xeObject = getXeObject(nodeId, coreId);
 				InstructionDecodeCache decodeCache = m_mcInstructionCache.getInstructionDecodeCache(nodeId, coreId);
 				if(m_unsafeAssumptions){
-					traceFunctionsRetsps(xeObject, decodeCache, nodeId, coreId);
+					
 					addNextInstruction(xeObject, decodeCache);
 				}
 				addBranchMaps(xeObject, decodeCache, nodeId, coreId);
@@ -269,7 +267,7 @@ public class AnalysisEngine {
 				addBranches(xeObject, decodeCache, nodeId, coreId);
 				
 				addUserSuccessors(xeObject, decodeCache);
-				
+				traceFunctionsRetsps(xeObject, decodeCache, nodeId, coreId);
 				findFunctionRetsps(xeObject, decodeCache, nodeId, coreId);
 			}
 		}
@@ -281,7 +279,7 @@ public class AnalysisEngine {
 				if(bm.getBranches().containsKey(al.getPc())){
 					XtaInstruction inst = decodeCache.getInstruction(al.getPc());
 					for(int target : bm.getBranches().get(al.getPc())){
-						inst.addSuccessor(target, true, decodeCache.getInstruction(target).getBranchLink());
+						inst.addSuccessor(target, true);
 					}
 				}
 			}
@@ -293,8 +291,7 @@ public class AnalysisEngine {
 			for(UserSuccessor us : m_userSuccessors){
 				if(us.m_fromPc == al.getPc()){
 					XtaInstruction inst = decodeCache.getInstruction(al.getPc());
-					//inst.addSuccessor(us.m_toPc, true, decodeCache.getInstruction(us.m_toPc).getBranchLink());
-					inst.addSuccessor(us.m_toPc, true, false);
+					inst.addSuccessor(us.m_toPc, true);
 				}
 			}
 		}
@@ -333,14 +330,16 @@ public class AnalysisEngine {
 		for(AssemblyLine al : xeObject.getInstructions()){
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
 			if(!m_noNextPc.contains(inst.getNmenonic())){
-				inst.addSuccessor(inst.getPc() + inst.getNumBytes(), false, false);
+				inst.addSuccessor(inst.getPc() + inst.getNumBytes(), false);
 			}
 		}
 	}
 	
 	private void findFunctionRetsps(XeObject xeObject, 
 			InstructionDecodeCache decodeCache, int nodeId, int coreId){
+		
 		HashMap<String, HashSet<Integer>> m_nodeCoreMap = new HashMap<String, HashSet<Integer>>();
+		
 		for(Function function: xeObject.getFunctions()){
 			HashSet<Integer> functionReturns = new HashSet<Integer>();
 			for(Line line : function.getChildern()){
@@ -361,38 +360,71 @@ public class AnalysisEngine {
 		if(!added)m_functionReturns.add(new FunctionReturns(nodeId, coreId, m_nodeCoreMap));
 	}
 	
-	
-	
 	private void traceFunctionsRetsps(XeObject xeObject,
 			InstructionDecodeCache decodeCache, int nodeId, int coreId) {
-		for(Function function: xeObject.getFunctions()){
-			if(function.getChildern().size()<1) continue;
-			int functionEntry = ((AssemblyLine)function.getChildern().get(0)).getPc();
-			ArrayList<Integer> branchLinkPcs = new ArrayList<Integer>();
-			
-			for(AssemblyLine al : xeObject.getInstructions()){
-				
-				XtaInstruction inst = decodeCache.getInstruction(al.getPc());
-				if(inst.getBranchLink()){
-					int targetPc = inst.getBranchPcRelativeTargetPc();
-					if(targetPc == functionEntry){	
-						branchLinkPcs.add(inst.getPc() + inst.getNumBytes());
-					}
-				}
-			}
-			for(Line line : function.getChildern()){
-				XtaInstruction inst = decodeCache.getInstruction(((AssemblyLine)line).getPc());
-				if(isReturn(inst.getNmenonic())){
-					for(int blPc : branchLinkPcs){
-						inst.addSuccessor(blPc, true, false);
-					}
-				}
-			}
-			
+		for(int branchLinkTarget : m_functionCallLocations.keySet()){
+			followBranchTarget(decodeCache, branchLinkTarget, branchLinkTarget, new HashSet<Integer>());
 		}
 		
 	}
 	
+	private void followBranchTarget(InstructionDecodeCache decodeCache, int branchLinkTarget, int currentPc, HashSet<Integer> alreadySeen) {
+		boolean keepGoing = true;
+		HashSet<Integer> nowSeen = new HashSet<Integer>(alreadySeen);
+		XtaInstruction previousInstruction = null;
+		while(keepGoing){
+			XtaInstruction inst = decodeCache.getInstruction(currentPc);
+			if(inst == null) return;
+			
+			if(endOfProgram(inst, previousInstruction)){
+				keepGoing = false;
+			} else {
+			
+				if(inst.getBranchLink()){
+					currentPc  = inst.getNumBytes() + inst.getPc();
+				} else if(isReturn(inst.getNmenonic())){
+					keepGoing = false;
+					for(int returnLocation : m_functionCallLocations.get(branchLinkTarget)){
+						inst.addSuccessor(returnLocation, true);
+					}
+				} else {
+					if(inst.getSuccessors().size() > 1){
+						keepGoing = false;
+						for(NextPcType nextPc : inst.getSuccessors()){
+							if(!nowSeen.contains(nextPc.getPc())){
+								nowSeen.add(nextPc.getPc());
+								followBranchTarget(decodeCache, branchLinkTarget, nextPc.getPc(), nowSeen);
+							}
+						}
+					} else {
+						if(inst.getSuccessors().size() == 1){
+							if(!nowSeen.contains(inst.getSuccessors().get(0).getPc())){
+								nowSeen.add(inst.getSuccessors().get(0).getPc());
+								currentPc = inst.getSuccessors().get(0).getPc();
+							} else {
+								keepGoing = false;
+							}
+							currentPc = inst.getSuccessors().get(0).getPc();
+						} else {
+							keepGoing = false;
+						}
+					}
+					
+				}
+			}
+			previousInstruction = inst;
+		}
+	}
+	
+	private boolean endOfProgram(XtaInstruction inst, XtaInstruction previousInstruction) {
+		if(inst!= null && previousInstruction!= null){
+			if(previousInstruction.getNmenonic().equals(new RevbXtaInstruction_clre_0r(0, 0, null).getNmenonic()) && 
+					inst.getNmenonic().equals(new RevbXtaInstruction_waiteu_0r(0,0,null).getNmenonic()))
+				return true;
+		}
+		return false;
+	}
+
 	private boolean isReturn(String nmenonic){
 		String retsp_u6 = new RevbXtaInstruction_retsp_u6(0, 0, null).getNmenonic();
 		String retsp_lu6 = new RevbXtaInstruction_retsp_lu6(0, 0, null).getNmenonic();
@@ -411,8 +443,10 @@ public class AnalysisEngine {
 			boolean isBranchLink = inst.getNmenonic().startsWith("bl");
 			if(inst.getBranchPcRelative()){
 				int pc = inst.getBranchPcRelativeTargetPc();
-				inst.addSuccessor(pc , true, isBranchLink);
-			}
+				inst.addSuccessor(pc , true);
+				addToBranchTable(inst, isBranchLink, pc);
+			} 
+			
 			if(inst.getNmenonic().equals(new RevbXtaInstruction_blacp_u10(0, 0, null).getNmenonic())) {
 				int imm = XtaInstruction.getBits(16, 10, inst.getOpcode()) << Instruction.BYTES_PER_WORD_LOG2;
 				int address = getConstantPoolPointer(nodeId, coreId) + imm;
@@ -421,7 +455,8 @@ public class AnalysisEngine {
 					byte b = m_xeLoader.getMemoryImage(nodeId, coreId).readByte(address+i);
 					word = word | (b<<(8 * i));
 				}
-				inst.addSuccessor(word, true,isBranchLink );
+				inst.addSuccessor(word, true);
+				addToBranchTable(inst, isBranchLink, word);
 				
 			}
 			if(inst.getNmenonic().equals(new RevbXtaInstruction_blacp_lu10(0, 0, null).getNmenonic())){
@@ -432,12 +467,27 @@ public class AnalysisEngine {
 					byte b = m_xeLoader.getMemoryImage(nodeId, coreId).readByte(address+i);
 					word = word | (b<<(8 * i));
 				}
-				inst.addSuccessor(word, true, isBranchLink);
+				inst.addSuccessor(word, true);
+				addToBranchTable(inst, isBranchLink, word);
 			}
 		}
 	}
-	
-	
+
+	private void addToBranchTable(XtaInstruction inst, boolean isBranchLink,
+			int pc) {
+		if(isBranchLink){
+			inst.setBranchLink(true);
+			if(m_functionCallLocations.containsKey(pc)){
+				TreeSet<Integer> returnLocations = m_functionCallLocations.get(pc);
+				returnLocations.add(inst.getPc() + inst.getNumBytes());
+			} else {
+				TreeSet<Integer> returnLocations = new TreeSet<Integer>();
+				returnLocations.add(inst.getPc() + inst.getNumBytes());
+				m_functionCallLocations.put(pc, returnLocations);
+			}
+		}
+	}
+		
 	private XeObject getXeObject(int nodeId, int coreId) {
     	for (XeObject xeObject : m_xeObjects) {
     		if ((xeObject.getNodeId() == nodeId) &&

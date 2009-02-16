@@ -1,19 +1,13 @@
 package com.xmos.xta.engine;
 
 public class NextPcType {
-	private boolean m_isBranchLink; 
 	private boolean m_isBranch; 
 	private int m_nextPc;
 	
-	//private int branchRegister;
-	//private boolean branchIfTrue;
-	//private boolean branchIfFalse;
-	
-	public NextPcType(int pc, boolean isBranch, boolean isBranchLink) {
+	public NextPcType(int pc, boolean isBranch) {
 		super();
 		m_nextPc = pc;
 		m_isBranch = isBranch;
-		m_isBranchLink = isBranchLink;
 	}
 	
 	public int getPc() {
@@ -22,8 +16,5 @@ public class NextPcType {
 	public boolean isBranch() {
 		return m_isBranch;
 	}
-	
-	public boolean isBranchLink(){
-		return m_isBranchLink;
-	}
+
 }
