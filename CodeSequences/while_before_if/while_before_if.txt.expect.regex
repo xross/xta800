@@ -1,8 +1,8 @@
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    path\(4\)    : 140.0/7/7/0/0/1/0
+    path\(4\)    : 160.0/8/7/1/0/1/0
         \+loop \[1 path\(s\), 0 iteration\(s\)\]
-            path\(2\)    : 100.0/5/5/0/0/0/0
-    path\(3\)    : 140.0/7/7/0/0/1/0
+            path\(2\)    : 120.0/6/5/1/0/0/0
+    path\(3\)    : 160.0/8/7/1/0/1/0
         \+loop \[1 path\(s\), 0 iteration\(s\)\]
-            path\(2\)    : 100.0/5/5/0/0/0/0
+            path\(2\)    : 120.0/6/5/1/0/0/0

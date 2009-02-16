@@ -1,5 +1,3 @@
-Error: Found 1 unresolved path\(s\)
-Complete paths:   0
-Unresolved paths: 1
-Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-\+COMPLETE \[0 path\(s\)\]
+Error: No valid of execution from 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] to 0x10006
+Error: No function/path analysed
+Error: No function/path analysed

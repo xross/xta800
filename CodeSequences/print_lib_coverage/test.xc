@@ -51,6 +51,15 @@ printstrln(s);
 
 
 int main(){
-	
+	printchar_test();
+    printcharln_test();
+    printint_test();
+    printintln_test();
+    printuint_test();
+    printuintln_test();
+    printhex_test();
+    printhexln_test();
+    printstr_test();
+    printstrln_test();
 }
 

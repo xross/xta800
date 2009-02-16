@@ -2,7 +2,7 @@ Complete paths:   1
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    path\(4\)    : 460.0/23/22/2/0/1/0
+    path\(4\)    : 480.0/24/23/3/0/1/0
         \+loop \[1 path\(s\), 0 iteration\(s\)\]
             path\(2\)    : 100.0/5/5/0/0/0/0
         \+loop \[1 path\(s\), 0 iteration\(s\)\]
