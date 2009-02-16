@@ -1,34 +1,46 @@
 package com.xmos.xta.engine;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.TreeSet;
 
 public class FunctionReturns {
 
 	private int m_node;
 	private int m_core;
-	private HashMap<String, HashSet<Integer>> m_functionReturns;
+	private HashMap<Integer, TreeSet<Integer>> m_functionReturns;
 	
-	public FunctionReturns(int m_node, int m_core,
-			HashMap<String, HashSet<Integer>> returns) {
+	public FunctionReturns(int m_node, int m_core) {
 		super();
 		this.m_node = m_node;
 		this.m_core = m_core;
-		m_functionReturns = returns;
+		m_functionReturns = new HashMap<Integer, TreeSet<Integer>>();
 	}
 
-	public int getNode(){
+	public int getNodeId(){
 		return m_node;
 	}
 	
-	public int getCore(){
+	public int getCoreId(){
 		return m_core;
 	}
 	
-	public HashSet<Integer> getFunctionReturns(String functionName){
-		HashSet<Integer> set = m_functionReturns.get(functionName);
+	
+	public void addFunction(int from, int to){
+		if(m_functionReturns.containsKey(from)){
+			TreeSet<Integer> function = m_functionReturns.get(from);
+			function.add(to);
+		} else {
+			TreeSet<Integer> function = new TreeSet<Integer>();
+			
+			function.add(to);
+			m_functionReturns.put(from, function);
+		}
+	}
+	
+	public TreeSet<Integer> getFunctionReturns(int startPc){
+		TreeSet<Integer> set = m_functionReturns.get(startPc);
 		if(set == null){
-			return new HashSet<Integer>();
+			return new TreeSet<Integer>();
 		} else {
 			return set;
 		}

@@ -3,7 +3,6 @@ package com.xmos.xta.engine;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -342,10 +341,16 @@ public class Engine {
 					functionName, m_executableFile, m_nodeId, m_coreId));
 			return false;
 		} else {
-			HashSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName,
+			TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName,
 					m_nodeId, m_coreId);
 			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId,
 					m_coreId);
+			/*
+			System.out.println("from 0x" + Integer.toHexString(startPc));
+			for(int end : endPcs){
+				System.out.println("to 0x" + Integer.toHexString(end));
+			}
+			*/
 			return analyseRoute(startPc, endPcs);
 		}
 	}
@@ -367,13 +372,13 @@ public class Engine {
 					"Unresolved reference: %s", to));
 			return false;
 		} else {
-			HashSet<Integer> endPc = new HashSet<Integer>();
+			TreeSet<Integer> endPc = new TreeSet<Integer>();
 			endPc.add(toRef.getPc());
 			return analyseRoute(fromRef.getPc(), endPc);
 		}
 	}
 
-	public boolean analyseRoute(int startPc, HashSet<Integer> endPcs) {
+	public boolean analyseRoute(int startPc, TreeSet<Integer> endPcs) {
 
 		boolean reachable = false;
 		for (int end : endPcs) {
@@ -389,10 +394,15 @@ public class Engine {
 			for (int end : endPcs) {
 				endString += "0x" + Integer.toHexString(end) + ", ";
 			}
-			endString = endString.substring(0, endString.length() - 2);
-			notify(Notifier.NOTIFY_ERROR, "No valid of execution from 0x"
-					+ Integer.toHexString(startPc) + " to " + endString);
-
+			if(endString.length() > 2){
+				endString = endString.substring(0, endString.length() - 2);
+				notify(Notifier.NOTIFY_ERROR, "No valid of execution from 0x"
+						+ Integer.toHexString(startPc) + " to " + endString);
+			} else {
+				notify(Notifier.NOTIFY_ERROR, "No valid of execution from 0x"
+						+ Integer.toHexString(startPc) );
+			}
+			
 			return false;
 		}
 

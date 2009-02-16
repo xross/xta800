@@ -105,15 +105,27 @@ public abstract class XtaInstruction extends Instruction {
 		return m_successors;
 	}
 	public void addSuccessor(int successorPc, boolean isBranch){
-		boolean found = false;
+		int foundBranch = 0;
+		int foundNoBranch = 0;
 		for(NextPcType pc : m_successors){
-			if(pc.getPc() == successorPc){
-				found = true;
-				break;
+			if(pc.getPc() == successorPc ){
+				if(pc.isBranch()){
+					foundBranch++;
+				} else {
+					foundNoBranch++;
+				}
 			}
 		}
-		if(!found || isBranch) {
+		if(foundBranch + foundNoBranch == 0) {
 			m_successors.add(new NextPcType(successorPc, isBranch));
+		} else if(isBranch ){
+			if(foundBranch == 0){
+				m_successors.add(new NextPcType(successorPc, isBranch));
+			}
+		} else if(!isBranch){
+			if(foundNoBranch == 0){
+				m_successors.add(new NextPcType(successorPc, isBranch));
+			}
 		}
 		return;
 	}

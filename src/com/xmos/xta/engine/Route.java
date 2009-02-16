@@ -42,9 +42,9 @@ public class Route {
 	private ArrayList<String> m_warnings;
 	private static int m_numRoutes;	
 	private int m_startPc;
-	private HashSet<Integer> m_endPcs;
+	private TreeSet<Integer> m_endPcs;
 	
-	public Route(Config config, Progress progress, int startPc, HashSet<Integer> endPcs, int nodeId, int coreId,
+	public Route(Config config, Progress progress, int startPc, TreeSet<Integer> endPcs, int nodeId, int coreId,
 			NodeCoreInstructionCaches nodeCoreInstructionCache) {
 		m_startPc = startPc;
 		m_endPcs = endPcs;

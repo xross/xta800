@@ -1,7 +1,7 @@
 package com.xmos.xta.engine;
 
-import java.util.HashSet;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.Vector;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
@@ -15,12 +15,12 @@ public class BlockCommonComponents {
     private Route m_route;
     private Block.Mode m_mode;
     private Engine m_engine;    
-    private HashSet<Integer> m_endPcs;
+    private TreeSet<Integer> m_endPcs;
     
     
 	public BlockCommonComponents(NodeCoreInstructionCaches nodeCoreInstructionCache,
 			MemoryImage image, SymbolTable table, List<CodeReference> m_exclusions, Route m_route,
-			Engine engine, HashSet<Integer> pcs) {
+			Engine engine, TreeSet<Integer> pcs) {
 		super();
 		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
 		m_memoryImage = image;
@@ -78,7 +78,7 @@ public class BlockCommonComponents {
 		return m_engine;
 	}
     
-    public HashSet<Integer> getEndPcs(){
+    public TreeSet<Integer> getEndPcs(){
     	return m_endPcs;
     }
     
