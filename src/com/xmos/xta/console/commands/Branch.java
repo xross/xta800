@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
 
+import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
@@ -11,7 +12,7 @@ import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
 
 public class Branch extends Command {
-	enum Operation {
+	public enum Operation {
 		ADD, REMOVE, LIST
 	};
 
@@ -19,13 +20,13 @@ public class Branch extends Command {
 	private String m_toRefString;
 	private Operation m_operation;
 
-	Branch(Operation operation) {
+	public Branch(Operation operation) {
 		m_operation = operation;
 		m_fromRefString = "";
 		m_toRefString = "";
 	}
 
-	Branch(String fromRefString, String toRefString, Operation operation) {
+	public Branch(String fromRefString, String toRefString, Operation operation) {
 		assert(operation == Operation.ADD);
 		m_operation = operation;
 		m_fromRefString = fromRefString;

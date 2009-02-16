@@ -40,8 +40,7 @@ public class Route {
 	private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
 	private ArrayList<Unknown> m_unknowns;
 	private ArrayList<String> m_warnings;
-	private static int m_numRoutes;
-	
+	private static int m_numRoutes;	
 	private int m_startPc;
 	private HashSet<Integer> m_endPcs;
 	
@@ -73,6 +72,54 @@ public class Route {
 
 	public final ArrayList<Unresolved> unresolvedPaths() {
 		return m_unresolvedPaths;
+	}
+
+	public int getId() {
+		return 0;
+	}
+
+	public int getNumCycles() {
+		int maxCycles = 0;
+		for (Block path : m_completePaths) {
+			maxCycles = Math.max(path.getNumCycles(true), maxCycles);
+		}
+		return maxCycles;
+	}
+
+	public Block getBlock(int blockId) {
+		for (Block block : m_allBlocks) {
+			if (block.getId() == blockId) {
+				return block;
+			}
+		}
+		return null;
+	}
+
+	public Block getPath(int pathId) {
+		for (Block block : m_allBlocks) {
+			if (block.getPathId() == pathId) {
+				return block;
+			}
+		}
+		return null;		
+	}
+	
+	public double getTimeTaken() {
+		return 0;
+	}
+	
+	public void invalidateAllBlocks(){
+		for(Block block : m_allBlocks){
+			block.getBlockStats().invalidateAll();
+		}
+	}
+	
+	public void addUnresolvedPath(Unresolved unresolved) {
+		m_unresolvedPaths.add(unresolved);
+	}
+
+	public RouteStatus getStatus(){
+		return m_status;
 	}
 
 	RouteStatus analyse(MemoryImage memoryImage, SymbolTable symbolTable, 
@@ -108,11 +155,6 @@ public class Route {
 		return m_status;
 	}
 
-	//FIXME this is unnecessary and should go away
-	public int getId() {
-		return 0;
-	}
-
 	private void makeCompleteStatus(){
 		m_analysisString = "from: 0x" + Integer.toHexString(m_startPc) + " to: ";
 		for(int end : m_endPcs){
@@ -121,21 +163,7 @@ public class Route {
 		m_analysisString = m_analysisString.substring(0,m_analysisString.length()-2);
 		return;
 	}
-	
-	public int getNumCycles() {
-		int maxCycles = 0;
-		for (Block path : m_completePaths) {
-			maxCycles = Math.max(path.getNumCycles(true), maxCycles);
-		}
-		return maxCycles;
-	}
-	
-	public void invalidateAllBlocks(){
-		for(Block block : m_allBlocks){
-			block.getBlockStats().invalidateAll();
-		}
-	}
-	
+			
 	void notifyUpdate() {
 		Collections.sort(m_completePaths);
 	}
@@ -147,7 +175,7 @@ public class Route {
 	Config getConfig() {
 		return m_config;
 	}
-
+	
 	private void initialise(Config config, int nodeId, int coreId) {
 		m_unknowns = new ArrayList<Unknown>();
 		m_warnings = new ArrayList<String>();
@@ -164,14 +192,6 @@ public class Route {
 		m_status = RouteStatus.COMPLETED;
 		++m_numRoutes;
 	}
-
-	public void addUnresolvedPath(Unresolved unresolved) {
-		m_unresolvedPaths.add(unresolved);
-	}
-
-	public RouteStatus getStatus(){
-		return m_status;
-	}
 	
 	private void stepPath() throws Exception {
 		ExecutionState searching = nextBlock();
@@ -183,7 +203,7 @@ public class Route {
 		}
 	}
 
-	private void cleanSchedule() {
+	private void cleanSchedule() {		
 		Iterator<ExecutionState> shedIter = m_schedule.iterator();
 	    while ( shedIter.hasNext() ){
 	    	ExecutionState e = shedIter.next();
@@ -229,7 +249,6 @@ public class Route {
 		}
 		return false;
 	}
-
 	
 	public void addCompletePath(Block endBlock) {
 	
@@ -238,7 +257,6 @@ public class Route {
 	}
 	
 	public void filterPaths() {
-		
 		ArrayList<Block> toRemove = new ArrayList<Block>();
 		
 		ArrayList<Integer> exclusions = new ArrayList<Integer>();
@@ -325,14 +343,14 @@ public class Route {
 	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
 		for (Block block : m_allBlocks) {
 			for (Block loopPath : block.getLoopPaths()) {
-				if (loopPath.getId() == pathId) {
+				if (loopPath.getPathId() == pathId) {
 					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
 					attributes.setNumIterations(iterations, absolute);
 					return true;
 				}
 			}
 		}	
-		return false;
+		return false;		
 	}
 
 	public ArrayList<ExecutionState> getExecutionStates() {
@@ -349,5 +367,4 @@ public class Route {
 	public String getStatusString() {
 		return m_analysisString;
 	}
-
 }

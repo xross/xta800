@@ -4,9 +4,9 @@ import java.util.Vector;
 
 import org.eclipse.swt.widgets.Composite;
 
+import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
-import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.rcp.XtaEngine;
 
 public class GuiConsole implements Console {

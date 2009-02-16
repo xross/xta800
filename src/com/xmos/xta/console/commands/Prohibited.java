@@ -1,5 +1,6 @@
 package com.xmos.xta.console.commands;
 
+import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
@@ -8,19 +9,19 @@ import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
 
 public class Prohibited extends Command {	
-	enum Operation {
+	public enum Operation {
 		ADD, REMOVE, LIST
 	};
 	
 	private String m_refString;	
 	private Operation m_operation;
 	
-	Prohibited(Operation operation) {
+	public Prohibited(Operation operation) {
 		m_operation = operation;
 		m_refString = "";
     }
     
-	Prohibited(String refString, Operation operation) {
+	public Prohibited(String refString, Operation operation) {
 		m_refString = refString;        
         m_operation = operation;
     }

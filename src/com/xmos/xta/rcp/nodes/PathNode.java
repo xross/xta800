@@ -44,7 +44,7 @@ public class PathNode extends Node {
     }
 
     public int getId() {
-        return m_block.getId();
+        return m_block.getPathId();
     }
 
     public int getNumCycles() {

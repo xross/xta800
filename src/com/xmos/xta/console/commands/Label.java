@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
@@ -11,7 +12,7 @@ import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
 
 public class Label extends Command {
-	enum Operation {
+	public enum Operation {
 		ADD, REMOVE, LIST
 	};
 
@@ -19,13 +20,13 @@ public class Label extends Command {
 	private String m_refString;
 	private Operation m_operation;
 
-	Label(Operation operation) {
+	public Label(Operation operation) {
 		m_operation = operation;
 		m_labels = new ArrayList<String>();
 		m_refString = "";
 	}
 
-	Label(String label, String refString, Operation operation) {
+	public Label(String label, String refString, Operation operation) {
 		assert(operation == Operation.ADD);
 		m_operation = operation;
 		m_labels = new ArrayList<String>();

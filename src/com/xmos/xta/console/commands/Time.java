@@ -1,12 +1,13 @@
 package com.xmos.xta.console.commands;
 
+import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
 
-class Time extends Command {
+public class Time extends Command {
 	public enum Operation {
 		SET,
 		UNSET,
@@ -23,14 +24,14 @@ class Time extends Command {
 	private int m_numCycles;
 	private float m_timeTaken;
 	
-	Time(Operation operation) {
+	public Time(Operation operation) {
 		m_operation = operation;
 		m_mode = Mode.NS;
 		m_numCycles = 0;
 		m_timeTaken = 0;
 	}
 	
-	Time(String refString, int cycles) {
+	public Time(String refString, int cycles) {
 		m_operation = Operation.SET;
 		m_mode = Mode.CYCLES;
 		m_refString = refString;
@@ -38,7 +39,7 @@ class Time extends Command {
 		m_timeTaken = 0;
 	}
 
-	Time(String refString, float time) {
+	public Time(String refString, float time) {
 		m_operation = Operation.SET;
 		m_mode = Mode.NS;
 		m_refString = refString;
@@ -46,7 +47,7 @@ class Time extends Command {
 		m_numCycles = 0;
 	}
 
-	Time(String refString) {
+	public Time(String refString) {
 		m_operation = Operation.UNSET;
 		m_mode = Mode.NS;
 		m_refString = refString;
