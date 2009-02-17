@@ -28,7 +28,7 @@ public class AnalysisEngine {
 	
 	
 	
-	private static final boolean MAKEDOT = true;
+	private static final boolean MAKEDOT = false;
 	private static final boolean DEBUG = false;
 	
 	public AnalysisEngine(XeLoader loader, NodeCoreInstructionCaches coreInstructionCache, ArrayList<XeObject> objects, ArrayList<BranchMap> branches){
@@ -139,75 +139,84 @@ public class AnalysisEngine {
 
 	private HashMap<Integer, Node> m_pcToNode = new HashMap<Integer, Node>();
 	
-	private void makeNodeMap(XeObject xeObject, InstructionDecodeCache decodeCache, int nodeId, int coreId){
-		
+	private void makeNodeMap(XeObject xeObject,
+			InstructionDecodeCache decodeCache, int nodeId, int coreId) {
+
+		HashMap<Integer, Node> pcToTempNode = new HashMap<Integer, Node>();
+
 		ArrayList<Edge> edges = new ArrayList<Edge>();
 		ArrayList<Node> nodes = new ArrayList<Node>();
-		if(MAKEDOT){
-			System.out.println("digraph g {");
-		}
-		for(AssemblyLine al : xeObject.getInstructions()){
+		for (AssemblyLine al : xeObject.getInstructions()) {
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
-			Node from = m_pcToNode.get(inst.getPc());
-			
-			
-			if(from == null){
+			Node from = pcToTempNode.get(inst.getPc());
+			if (from == null) {
 				from = new Node(nodes.size());
 				nodes.add(from);
-				m_pcToNode.put(inst.getPc(), from);
-				if(MAKEDOT){
-					boolean singleSuc = this.singleSuccessor(inst);
-					boolean singlePre = this.singlePredessor(inst.getPc(), xeObject, decodeCache);
-					boolean onlySuc = onlySucFromPredessors(inst.getPc(), xeObject, decodeCache);
-					System.out.print("node" + from.name+ " [label = \"0x" + Integer.toHexString(inst.getPc())+"\"");
-					if(singleSuc && singlePre && ! onlySuc) {
-						System.out.print(", style=filled, fillcolor=red");
-					} else {
-						System.out.print(", style=filled, fillcolor=green");
-					}
-					System.out.println("];");
+				pcToTempNode.put(inst.getPc(), from);
+				boolean singleSuc = this.singleSuccessor(inst);
+				boolean singlePre = this.singlePredessor(inst.getPc(),
+						xeObject, decodeCache);
+				boolean onlySuc = onlySucFromPredessors(inst.getPc(), xeObject,
+						decodeCache);
+				if (!(singleSuc && singlePre && !onlySuc)) {
+					m_pcToNode.put(inst.getPc(), new Node(m_pcToNode.size()));
 				}
 			}
-			
-			
-			
-			
-			
-			for(NextPcType target : inst.getSuccessors()){
-				Node to = m_pcToNode.get(target.getPc());
-				if(to == null){
+
+			for (NextPcType target : inst.getSuccessors()) {
+				Node to = pcToTempNode.get(target.getPc());
+				if (to == null) {
 					to = new Node(nodes.size());
 					nodes.add(to);
-					m_pcToNode.put(target.getPc(), to);
-					if(MAKEDOT){
-						System.out.print("node" + to.name + " [label = \"0x" + Integer.toHexString(target.getPc()) + "\"");
-						if(		   this.singlePredessor(target.getPc(), xeObject, decodeCache) 
-								&& this.singleSuccessor(inst)
-								){
-							System.out.print(", style=filled, fillcolor=red");
-						} else {
-							System.out.print(", style=filled, fillcolor=green");
-						}
-						System.out.println("];");
+					pcToTempNode.put(target.getPc(), to);
+					if (!(this.singlePredessor(target.getPc(), xeObject,
+							decodeCache) && this.singleSuccessor(inst))) {
+						m_pcToNode.put(target.getPc(), new Node(m_pcToNode
+								.size()));
 					}
-				}
-				Edge edge = new Edge( to,from ,1);
-				edges.add(edge);
-				if(MAKEDOT){
-					System.out.println("node" + from.name + " -> node" + to.name + ";");
 				}
 			}
 		}
-		if(MAKEDOT){
-			System.out.println("}");
+		if(MAKEDOT) System.out.println("digraph g {" );
+		for (int basicBlockStart : m_pcToNode.keySet()) {
+			XtaInstruction inst = decodeCache.getInstruction(basicBlockStart);
+			Node node = m_pcToNode.get(basicBlockStart);
+			if(MAKEDOT) System.out.print("node" + node.name + " [label = \"" + inst + "\\n");
+			node.m_pcs.add(basicBlockStart);
+			while (inst != null && inst.getSuccessors().size() == 1) {
+				int next = inst.getSuccessors().get(0).getPc();
+				inst = decodeCache.getInstruction(next);
+				if (inst != null && !m_pcToNode.containsKey(next)) {
+					if(MAKEDOT) System.out.print(inst + "\\n");
+					node.m_pcs.add(inst.getPc());
+				} else {
+					break;
+				}
+			}
+			if(MAKEDOT) System.out.println("\", style=filled, shape=box, fillcolor=azure];");
 		}
-		for(int pc : m_pcToNode.keySet()){
-		//	System.out.println("0x" + Integer.toHexString(pc) + " to node " + m_pcToNode.get(pc).name);
+
+		for (int basicBlockStart : m_pcToNode.keySet()) {
+
+			Node node = m_pcToNode.get(basicBlockStart);
+			int lastPc = node.m_pcs.get(node.m_pcs.size()-1); 
+			XtaInstruction inst = decodeCache.getInstruction(lastPc);
+			for(NextPcType nextPc : inst.getSuccessors()){
+				Node next = m_pcToNode.get(nextPc.getPc());
+				if(next!= null){
+					edges.add(new Edge(node, next, 1));
+					if(MAKEDOT) System.out.println("node" + node.name  +" -> node" +next.name +";");
+				}
+				
+			}
+
 		}
-		
-		Edge[] edgeArray = edges.toArray(new Edge[] {} );
+		if(MAKEDOT) System.out.println("}" );
+		//System.out.println("edges:" + edges.size() + " nodes:" + m_pcToNode.size());
+		Edge[] edgeArray = edges.toArray(new Edge[] {});
 		m_edges.put(new NodeCore(nodeId, coreId), edgeArray);
-		Node[] nodeArray = nodes.toArray(new Node[] {});
+		Node[] nodeArray = m_pcToNode.values().toArray(new Node[] {});
+		//Node[] nodeArray = nodes.toArray(new Node[] {});
 		m_nodes.put(new NodeCore(nodeId, coreId), nodeArray);
 	}
 	
@@ -249,6 +258,9 @@ public class AnalysisEngine {
 		Node to = getNode(startPc, nodeId, coreId);
 		Node from = getNode(endPc, nodeId, coreId);
 		if(from!= null && to!= null){
+			if(from == to ){
+				return 0;
+			}
 			FloydWarshall fw = new FloydWarshall();
 			fw.calcShortestPaths(getNodes(nodeId, coreId), getEdges(nodeId, coreId));
 			if(DEBUG){
@@ -273,6 +285,10 @@ public class AnalysisEngine {
 	
 	//warning this may/will break for multicore
 	private Node getNode(int pc,int node, int core){
+		for(Node n : m_pcToNode.values()){
+			if(n.m_pcs.contains(pc)) return n;
+		}
+		/*
 		for(NodeCore nc : m_nodes.keySet()){
 			if(nc.m_nodeId == node && nc.m_coreId == core){
 				for(Node n : m_nodes.get(nc)){
@@ -280,7 +296,9 @@ public class AnalysisEngine {
 				}
 			}
 		}
+		*/
 		return null;
+		
 	}
 	
 	public Edge[] getEdges(int node, int core){
