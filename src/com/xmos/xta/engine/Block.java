@@ -252,7 +252,7 @@ public class Block implements Comparable<Block> {
 		if(instruction.getSuccessors().size() > 1 && !STATIC){
 			m_conditionalBranchTaken = true;
 		}
-		if (instruction.getBranchLink() && isRecursion(targetPc)) {
+		if ( isRecursion(targetPc)) {
 			setStatus(BlockStatus.UNRESOLVED);
 			String reason  = "Recursion with 0x" + Integer.toHexString(targetPc);
 			Unresolved unresolved = new Unresolved(this, instruction, reason);
@@ -294,7 +294,10 @@ public class Block implements Comparable<Block> {
 
 	private void handleUnknownNextPc(XtaInstruction instruction) {
 		if(instruction.getSuccessors().size() == 0) {
-			setStatus(BlockStatus.ERROR);
+			setStatus(BlockStatus.UNRESOLVED);
+			Unresolved unresolved = new Unresolved(this, instruction, "Unknown next instruction at 0x" + Integer.toHexString(instruction.getPc()));
+			m_unresolved = unresolved;
+			m_route.addUnresolvedPath(unresolved);
 			releaseMemory();
 		} else {
 			boolean nonDeterministicBranch = instruction.getSuccessors().size() > 1;

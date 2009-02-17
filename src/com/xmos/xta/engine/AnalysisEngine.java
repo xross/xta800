@@ -28,7 +28,7 @@ public class AnalysisEngine {
 	
 	
 	
-	private static final boolean MAKEDOT = false;
+	private static final boolean MAKEDOT = true;
 	private static final boolean DEBUG = false;
 	
 	public AnalysisEngine(XeLoader loader, NodeCoreInstructionCaches coreInstructionCache, ArrayList<XeObject> objects, ArrayList<BranchMap> branches){
@@ -149,14 +149,30 @@ public class AnalysisEngine {
 		for(AssemblyLine al : xeObject.getInstructions()){
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
 			Node from = m_pcToNode.get(inst.getPc());
+			
+			
 			if(from == null){
 				from = new Node(nodes.size());
 				nodes.add(from);
 				m_pcToNode.put(inst.getPc(), from);
 				if(MAKEDOT){
-					System.out.println("node" + from.name+ " [label = \"0x" + Integer.toHexString(inst.getPc())+ "\"];");
+					boolean singleSuc = this.singleSuccessor(inst);
+					boolean singlePre = this.singlePredessor(inst.getPc(), xeObject, decodeCache);
+					boolean onlySuc = onlySucFromPredessors(inst.getPc(), xeObject, decodeCache);
+					System.out.print("node" + from.name+ " [label = \"0x" + Integer.toHexString(inst.getPc())+"\"");
+					if(singleSuc && singlePre && ! onlySuc) {
+						System.out.print(", style=filled, fillcolor=red");
+					} else {
+						System.out.print(", style=filled, fillcolor=green");
+					}
+					System.out.println("];");
 				}
 			}
+			
+			
+			
+			
+			
 			for(NextPcType target : inst.getSuccessors()){
 				Node to = m_pcToNode.get(target.getPc());
 				if(to == null){
@@ -164,7 +180,15 @@ public class AnalysisEngine {
 					nodes.add(to);
 					m_pcToNode.put(target.getPc(), to);
 					if(MAKEDOT){
-						System.out.println("node" + to.name + " [label = \"0x" + Integer.toHexString(target.getPc())+ "\"];");
+						System.out.print("node" + to.name + " [label = \"0x" + Integer.toHexString(target.getPc()) + "\"");
+						if(		   this.singlePredessor(target.getPc(), xeObject, decodeCache) 
+								&& this.singleSuccessor(inst)
+								){
+							System.out.print(", style=filled, fillcolor=red");
+						} else {
+							System.out.print(", style=filled, fillcolor=green");
+						}
+						System.out.println("];");
 					}
 				}
 				Edge edge = new Edge( to,from ,1);
@@ -177,19 +201,49 @@ public class AnalysisEngine {
 		if(MAKEDOT){
 			System.out.println("}");
 		}
+		for(int pc : m_pcToNode.keySet()){
+		//	System.out.println("0x" + Integer.toHexString(pc) + " to node " + m_pcToNode.get(pc).name);
+		}
+		
 		Edge[] edgeArray = edges.toArray(new Edge[] {} );
 		m_edges.put(new NodeCore(nodeId, coreId), edgeArray);
 		Node[] nodeArray = nodes.toArray(new Node[] {});
 		m_nodes.put(new NodeCore(nodeId, coreId), nodeArray);
 	}
-	/*
-	private boolean singlePredessor(int pc){
+	
+	private int countPredessors(int pc, XeObject xeObject, InstructionDecodeCache decodeCache){
+		int predessors = 0;
+		for(AssemblyLine al : xeObject.getInstructions()){
+			XtaInstruction preInst = decodeCache.getInstruction(al.getPc());
+			predessors += preInst.successorPcCount(pc);
+		}
+		return predessors;
+	}
+	private boolean onlySucFromPredessors(int pc, XeObject xeObject, InstructionDecodeCache decodeCache){
+		int successors = 0;
+		for(AssemblyLine al : xeObject.getInstructions()){
+			XtaInstruction preInst = decodeCache.getInstruction(al.getPc());
+			if(preInst.successorPcCount(pc) > 0){
+				successors += preInst.getSuccessors().size();
+			}
+			
+		}
+		if(successors==1) return false;
+		return true;
+	}
+	
+	private boolean singlePredessor(int pc, XeObject xeObject, InstructionDecodeCache decodeCache){
+		if(countPredessors(pc, xeObject, decodeCache)==1){
+			return true;
+		} return false;
+	}
+
+	private boolean singleSuccessor(XtaInstruction inst){
+		if(inst.getSuccessors().size() == 1){
+			return true;
+		}
 		return false;
 	}
-	private boolean singleSuccessor(int pc){
-		return false;
-	}
-	*/
 	
 	public int determineReachability(int startPc, int endPc, int nodeId, int coreId){
 		Node to = getNode(startPc, nodeId, coreId);

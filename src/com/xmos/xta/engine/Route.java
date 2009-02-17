@@ -148,9 +148,7 @@ public class Route {
 		stepPath();
 		filterPaths();
 		sortPaths();
-		if(m_status  == RouteStatus.COMPLETED){
-			makeCompleteStatus();
-		}
+		makeCompleteStatus();
 		m_progress.setState(Progress.State.IDLE);
 		return m_status;
 	}

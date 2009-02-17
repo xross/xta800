@@ -104,6 +104,14 @@ public abstract class XtaInstruction extends Instruction {
 	public ArrayList<NextPcType> getSuccessors(){
 		return m_successors;
 	}
+	public int successorPcCount(int pc){
+		int count =0;
+		for(NextPcType suc : m_successors){
+			if(suc.getPc() == pc) count++;
+		}
+		return count;
+	}
+	
 	public void addSuccessor(int successorPc, boolean isBranch){
 		int foundBranch = 0;
 		int foundNoBranch = 0;
