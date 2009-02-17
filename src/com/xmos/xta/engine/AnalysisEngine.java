@@ -204,7 +204,7 @@ public class AnalysisEngine {
 			for(NextPcType nextPc : inst.getSuccessors()){
 				Node next = m_pcToNode.get(nextPc.getPc());
 				if(next!= null){
-					edges.add(new Edge(node, next, 1));
+					edges.add(new Edge( next, node,1));
 					if(MAKEDOT) System.out.println("node" + node.name  +" -> node" +next.name +";");
 				}
 				
@@ -260,6 +260,8 @@ public class AnalysisEngine {
 		if(from!= null && to!= null){
 			if(from == to ){
 				return 0;
+			} else {
+				//System.out.println("from node"+ from.name + " to node"+to.name);
 			}
 			FloydWarshall fw = new FloydWarshall();
 			fw.calcShortestPaths(getNodes(nodeId, coreId), getEdges(nodeId, coreId));
