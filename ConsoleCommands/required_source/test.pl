@@ -14,12 +14,12 @@ system("@ARGV load $genDir/test.xe " .
        "list required " .
        "analyse function test " .
        "summary simple " .
-       "print src 2 " .
+       "-print src 0 " .
        "remove required test.xc:6 " .
        "list required " .
        "add required test.xc:10 " .
        "list required " .
        "analyse function test " .
        "summary simple " .
-       "print src 1 " .
+       "-print src 1 " .
        "exit > $genDir/required_source.txt 2>&1");

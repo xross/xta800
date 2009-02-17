@@ -10,7 +10,7 @@ if (!$noBuild) {
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function fix_fft_64 " .
-       "summary simple " .
-       "summary complete_loops " .
-       "exit > $genDir/fft.txt 2>&1");
+       "-summary simple " .
+       "-summary complete_loops " .
+       "-exit > $genDir/fft.txt 2>&1");
 

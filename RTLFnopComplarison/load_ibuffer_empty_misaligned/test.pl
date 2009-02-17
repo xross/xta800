@@ -23,6 +23,9 @@ open(OUTFILE, ">$genDir/$suite.txt") or die "Can't open file to write";
 my $foundFunction = $_;
 my $function = "main";
 $foundFunction = 0;
+my $linecount = $_;
+$linecount =0;
+
 while (<INFILE>) {
         my $line = $_;
         if($line =~ m/FNOP/){
@@ -32,7 +35,13 @@ while (<INFILE>) {
             my @fields = split /\s+/, $line;
             $line = $fields[2];
         }
-        print OUTFILE "$line\n";
+        $linecount++;
+        if($linecount==1 && $line =~ m/FNOP/){
+            
+        } else {
+            print OUTFILE "$line\n";
+        }
+        
 }
 close(INFILE);
 close(OUTFILE);

@@ -10,5 +10,5 @@ system("xcc -march=$arch -g fft.xc -o $genDir/test.xe > $genDir/fft_inverse.log 
 system("@ARGV load $genDir/test.xe " .
        "analyse function fix_fft_64_inverse " .
        "summary simple " .
-       "exit > $genDir/fft_inverse.txt 2>&1");
+       "-exit > $genDir/fft_inverse.txt 2>&1");
 

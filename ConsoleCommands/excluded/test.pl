@@ -14,11 +14,11 @@ system("@ARGV load $genDir/test.xe " .
        "list filters " .
        "analyse function test " .
        "summary simple " .
-       "print src 1 " .
+       "-print src 1 " .
        "remove filter 0x100cc " .
        "list filters " .
        "add filter 0x100d0 " .
        "list filters " .
        "summary simple " .
-       "print src 2 " .
+       "-print src 0 " .
        "exit > $genDir/excluded.txt 2>&1");

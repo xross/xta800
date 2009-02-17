@@ -14,4 +14,4 @@ system("mv test.xc ./up/test.xc");
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "summary simple " .
-       "exit > $genDir/file_in_wrong_place.txt 2>&1");
+       "-exit > $genDir/file_in_wrong_place.txt 2>&1");

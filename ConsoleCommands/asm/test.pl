@@ -12,6 +12,6 @@ system("xcc -march=xs1a -g test.s -o $genDir/test.xe > $genDir/asm.log 2>&1");
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "summary simple " .
-       "print asm 0 " .
+       "-print asm 0 " .
        "exit > $genDir/asm.txt 2>&1");
 

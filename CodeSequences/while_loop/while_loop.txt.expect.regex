@@ -2,24 +2,11 @@ Complete paths:   1
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    path\(1\)    : 120.0/6/5/1/0/1/0
+    path\(\d+\)    : 120.0/6/5/1/0/1/0
         \+loop \[1 path\(s\), 0 iteration\(s\)\]
-            path\(2\)    : 120.0/6/5/1/0/0/0
+            path\(\d+\)    : 120.0/6/5/1/0/0/0
 ----------------------------------
-test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSequences/while_loop\)
-----------------------------------
-  1: int main\(\)
-\+ 2: \{
-  3:   int res;
-\+ 4:   while \(res > 0\) 
-  5:   \{
-\+ 6:     --res;
-  7:   \}
-  8:   return res;
-  9: \}
-  10: 
-----------------------------------
-test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSequences/while_loop\)
+test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/while_loop\)
 ----------------------------------
   1: int main\(\)
 \+ 2: \{
@@ -29,5 +16,18 @@ test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSeque
   6:     --res;
   7:   \}
 \+ 8:   return res;
+  9: \}
+  10: 
+----------------------------------
+test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/while_loop\)
+----------------------------------
+  1: int main\(\)
+\+ 2: \{
+  3:   int res;
+\+ 4:   while \(res > 0\) 
+  5:   \{
+\+ 6:     --res;
+  7:   \}
+  8:   return res;
   9: \}
   10: 

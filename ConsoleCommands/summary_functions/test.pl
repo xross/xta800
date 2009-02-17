@@ -12,7 +12,7 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/summary_functio
 system("@ARGV load $genDir/test.xe " .
        "analyse function test " .
        "summary functions " .
-       "analyse function main " .
+       "-analyse function main " .
        "summary functions " .
-       "exit > $genDir/summary_functions.txt 2>&1");
+       "-exit > $genDir/summary_functions.txt 2>&1");
 

@@ -1,20 +1,7 @@
 Complete paths:   2
 Unresolved paths: 0
 ----------------------------------
-test.xc \(.*\)
-----------------------------------
-  1: int main\(\)
-\+ 2: \{
-  3:   int a\[1\];
-\+ 4:   a\[0\] = 0x12345678;
-\+ 5:   if\(a\[0\] == 0x12345678\)
-  6:     return 0;
-  7:   else 
-\+ 8:     return 1;
-  9: \}
-  10: 
-----------------------------------
-test.xc \(.*\)
+test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/array\)
 ----------------------------------
   1: int main\(\)
 \+ 2: \{
@@ -24,5 +11,18 @@ test.xc \(.*\)
 \+ 6:     return 0;
   7:   else 
   8:     return 1;
+  9: \}
+  10: 
+----------------------------------
+test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/array\)
+----------------------------------
+  1: int main\(\)
+\+ 2: \{
+  3:   int a\[1\];
+\+ 4:   a\[0\] = 0x12345678;
+\+ 5:   if\(a\[0\] == 0x12345678\)
+  6:     return 0;
+  7:   else 
+\+ 8:     return 1;
   9: \}
   10: 

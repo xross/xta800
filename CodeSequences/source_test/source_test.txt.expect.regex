@@ -2,32 +2,36 @@ Complete paths:   2
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    path\(2\)    : 140.0/7/6/1/0/1/0
-    path\(1\)    : 140.0/7/6/1/0/1/0
+    path\(\d+\)    : 140.0/7/6/1/0/1/0
+    path\(\d+\)    : 140.0/7/6/1/0/1/0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    path\(2\)    : 140.0/7/6/1/0/1/0
-    path\(1\)    : 140.0/7/6/1/0/1/0
+    path\(\d+\)    : 140.0/7/6/1/0/1/0
+    path\(\d+\)    : 140.0/7/6/1/0/1/0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    path\(2\)    : 140.0/7/6/1/0/1/0
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] --FNOP--  
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r0, i 0x0 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] eq \(2rus\) r1, r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] brft \(ru6\) r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r0, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] retsp \(u6\) i 0x0 
-    path\(1\)    : 140.0/7/6/1/0/1/0
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] --FNOP--  
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r0, i 0x0 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] eq \(2rus\) r1, r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] brft \(ru6\) r1, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] brfu \(u6\) i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] retsp \(u6\) i 0x0 
+    path\(\d+\)    : 140.0/7/6/1/0/1/0
+        block\(b\d+\)  : 100.0/5/4/1/0
+            \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r0, i 0x0 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r1, i 0x2 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} eq \(2rus\) r1, r1, i 0x2 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} brft \(ru6\) r1, i 0x2 
+        block\(b\d+\)  : 40.0/2/2/0/0
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r0, i 0x2 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} retsp \(u6\) i 0x0 
+    path\(\d+\)    : 140.0/7/6/1/0/1/0
+        block\(b\d+\)  : 100.0/5/4/1/0
+            \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r0, i 0x0 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r1, i 0x2 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} eq \(2rus\) r1, r1, i 0x2 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} brft \(ru6\) r1, i 0x2 
+        block\(b\d+\)  : 40.0/2/2/0/0
+            \(20.0ns\) 0x[0-9a-fA-F]{5} brfu \(u6\) i 0x2 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} retsp \(u6\) i 0x0 
 ----------------------------------
-test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSequences/source_test\)
+test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/source_test\)
 ----------------------------------
   1: 
   2: int main\(\)
@@ -42,7 +46,7 @@ test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSeque
   11: \}
   12: 
 ----------------------------------
-test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSequences/source_test\)
+test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/source_test\)
 ----------------------------------
   1: 
   2: int main\(\)

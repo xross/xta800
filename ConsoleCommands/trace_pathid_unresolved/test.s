@@ -15,6 +15,7 @@ main:
   ldc r0, 0x0
   ldc r0, 0x0
   ldc r0, 0x0
+  bf r0, end
   bau r1
-
+end:
   retsp 1

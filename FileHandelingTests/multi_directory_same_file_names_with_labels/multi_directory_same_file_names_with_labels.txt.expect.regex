@@ -1,6 +1,15 @@
 - ref: label2, pc: 0x100d0
 - ref: label1, pc: 0x100c6
 ----------------------------------
+up/test.xc \(.*\)
+----------------------------------
+  1: int add\(int a, int b\)
+\+ 2: {
+  3:   #pragma xta label "label2"
+\+ 4:   int res = a \+ b;
+\+ 5:   return res;
+  6: }
+----------------------------------
 test.xc \(.*\)
 ----------------------------------
   1: int add\(int a, int b\);
@@ -12,12 +21,3 @@ test.xc \(.*\)
 \+ 7:   return a;
   8: }
   9: 
-----------------------------------
-up/test.xc \(.*\)
-----------------------------------
-  1: int add\(int a, int b\)
-\+ 2: {
-  3:   #pragma xta label "label2"
-\+ 4:   int res = a \+ b;
-\+ 5:   return res;
-  6: }

@@ -5,4 +5,4 @@ NumThreads: 8
 SrcPaths: .
 Loaded executable: test.xe
 Node: 0, Core: 0 \(Debug information avaliable\)
-Loaded path: test.xc:3 -> test.xc:4
+Loaded from: 0x[0-9a-f]{5} to: 0x[0-9a-f]{5}

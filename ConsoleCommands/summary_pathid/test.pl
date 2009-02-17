@@ -11,7 +11,7 @@ system("xcc -march=xs1a -g test.s -o $genDir/test.xe > $genDir/summary_pathid.lo
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function test " .
-       "summary 1 " .
-       "summary 2 " .
+       "summary info 0 " .
+       "summary info 1 " .
        "exit > $genDir/summary_pathid.txt 2>&1");
 

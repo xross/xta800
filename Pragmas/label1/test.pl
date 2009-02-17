@@ -10,7 +10,7 @@ if (!$noBuild) {
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse path pointA pointB " .
-       "summary simple " .
-       "summary complete_loops " .
-       "exit > $genDir/label1.txt 2>&1");
+       "-summary simple " .
+       "-summary complete_loops " .
+       "-exit > $genDir/label1.txt 2>&1");
 

@@ -2,32 +2,33 @@ Complete paths:   1
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    path\(0\)    : 1120.0/56/22/6/0/1/0
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] --FNOP--  
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] entsp \(u6\) i 0x4 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] --FNOP--  
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] blrb \(u10\) i 0x2c 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r1, i 0x4 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r0, i 0x11 
-        \(160.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] rems \(l3r\) r0, r0, r1 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] retsp \(u6\) i 0x0 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] --FNOP--  
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] blrb \(u10\) i 0x24 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r1, i 0x4 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r0, i 0x11 
-        \(160.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] remu \(l3r\) r0, r0, r1 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] retsp \(u6\) i 0x0 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] --FNOP--  
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] blrb \(u10\) i 0x1c 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r1, i 0x4 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r0, i 0x11 
-        \(160.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] divs \(l3r\) r0, r0, r1 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] retsp \(u6\) i 0x0 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] --FNOP--  
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] blrb \(u10\) i 0x14 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r1, i 0x4 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r0, i 0x11 
-        \(160.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] divu \(l3r\) r0, r0, r1 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] retsp \(u6\) i 0x0 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] --FNOP--  
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] retsp \(u6\) i 0x4 
+    path\(\d+\)    : 1120.0/56/22/6/0/1/0
+        block\(b\d+\)  : 1120.0/56/22/6/0
+            \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+            \(20.0ns\) 0x[0-9a-fA-F]{5} entsp \(u6\) i 0x4 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+            \(20.0ns\) 0x[0-9a-fA-F]{5} blrb \(u10\) i 0x2c 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r1, i 0x4 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r0, i 0x11 
+            \(160.0ns\) 0x[0-9a-fA-F]{5} rems \(l3r\) r0, r0, r1 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} retsp \(u6\) i 0x0 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+            \(20.0ns\) 0x[0-9a-fA-F]{5} blrb \(u10\) i 0x24 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r1, i 0x4 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r0, i 0x11 
+            \(160.0ns\) 0x[0-9a-fA-F]{5} remu \(l3r\) r0, r0, r1 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} retsp \(u6\) i 0x0 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+            \(20.0ns\) 0x[0-9a-fA-F]{5} blrb \(u10\) i 0x1c 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r1, i 0x4 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r0, i 0x11 
+            \(160.0ns\) 0x[0-9a-fA-F]{5} divs \(l3r\) r0, r0, r1 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} retsp \(u6\) i 0x0 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+            \(20.0ns\) 0x[0-9a-fA-F]{5} blrb \(u10\) i 0x14 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r1, i 0x4 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r0, i 0x11 
+            \(160.0ns\) 0x[0-9a-fA-F]{5} divu \(l3r\) r0, r0, r1 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} retsp \(u6\) i 0x0 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+            \(20.0ns\) 0x[0-9a-fA-F]{5} retsp \(u6\) i 0x4 

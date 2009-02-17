@@ -12,5 +12,5 @@ system("xcc -march=$arch -g main.xc test1.xc test2.xc test3.xc test4.xc test5.xc
 system("@ARGV load $genDir/test.xe " .
        "analyse function test " .
        "summary sources " .
-       "exit > $genDir/summary_sources.txt 2>&1");
+       "-exit > $genDir/summary_sources.txt 2>&1");
 

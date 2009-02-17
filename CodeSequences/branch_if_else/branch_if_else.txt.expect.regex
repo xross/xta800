@@ -2,34 +2,38 @@ Complete paths:   2
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    path\(2\)    : 160.0/8/7/1/0/1/0
-    path\(1\)    : 160.0/8/7/1/0/1/0
+    path\(\d+\)    : 160.0/8/7/1/0/1/0
+    path\(\d+\)    : 160.0/8/7/1/0/1/0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    path\(2\)    : 160.0/8/7/1/0/1/0
-    path\(1\)    : 160.0/8/7/1/0/1/0
+    path\(\d+\)    : 160.0/8/7/1/0/1/0
+    path\(\d+\)    : 160.0/8/7/1/0/1/0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    path\(2\)    : 160.0/8/7/1/0/1/0
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] --FNOP--  
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r0, i 0x0 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldwdp \(lru6\) r0, dp\[i 0xc\] 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] eq \(2rus\) r0, r0, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] brft \(ru6\) r0, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r0, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] brfu \(u6\) i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] retsp \(u6\) i 0x0 
-    path\(1\)    : 160.0/8/7/1/0/1/0
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] --FNOP--  
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r0, i 0x0 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldwdp \(lru6\) r0, dp\[i 0xc\] 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] eq \(2rus\) r0, r0, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] brft \(ru6\) r0, i 0x2 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] brfu \(u6\) i 0x4 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] ldc \(ru6\) r0, i 0x3 
-        \(20.0ns\) 0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] retsp \(u6\) i 0x0 
+    path\(\d+\)    : 160.0/8/7/1/0/1/0
+        block\(b\d+\)  : 100.0/5/4/1/0
+            \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r0, i 0x0 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldwdp \(lru6\) r0, dp\[i 0xc\] 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} eq \(2rus\) r0, r0, i 0x2 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} brft \(ru6\) r0, i 0x2 
+        block\(b\d+\)  : 60.0/3/3/0/0
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r0, i 0x2 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} brfu \(u6\) i 0x2 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} retsp \(u6\) i 0x0 
+    path\(\d+\)    : 160.0/8/7/1/0/1/0
+        block\(b\d+\)  : 100.0/5/4/1/0
+            \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r0, i 0x0 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldwdp \(lru6\) r0, dp\[i 0xc\] 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} eq \(2rus\) r0, r0, i 0x2 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} brft \(ru6\) r0, i 0x2 
+        block\(b\d+\)  : 60.0/3/3/0/0
+            \(20.0ns\) 0x[0-9a-fA-F]{5} brfu \(u6\) i 0x4 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r0, i 0x3 
+            \(20.0ns\) 0x[0-9a-fA-F]{5} retsp \(u6\) i 0x0 
 ----------------------------------
-test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSequences/branch_if_else\)
+test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/branch_if_else\)
 ----------------------------------
   1: int a = 2;
   2: int main\(\)
@@ -47,7 +51,7 @@ test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSeque
   14: \}
   15: 
 ----------------------------------
-test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSequences/branch_if_else\)
+test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/branch_if_else\)
 ----------------------------------
   1: int a = 2;
   2: int main\(\)

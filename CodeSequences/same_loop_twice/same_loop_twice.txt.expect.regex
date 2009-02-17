@@ -2,13 +2,13 @@ Complete paths:   1
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    path\(4\)    : 480.0/24/23/3/0/1/0
+    path\(\d+\)    : 480.0/24/23/3/0/1/0
         \+loop \[1 path\(s\), 0 iteration\(s\)\]
-            path\(2\)    : 100.0/5/5/0/0/0/0
+            path\(\d+\)    : 100.0/5/5/0/0/0/0
         \+loop \[1 path\(s\), 0 iteration\(s\)\]
-            path\(5\)    : 100.0/5/5/0/0/0/0
+            path\(\d+\)    : 100.0/5/5/0/0/0/0
 ----------------------------------
-test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSequences/same_loop_twice\)
+test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/same_loop_twice\)
 ----------------------------------
   1: 
   2: int delay\(int x\)
@@ -29,7 +29,7 @@ test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSeque
   17: \}
   18: 
 ----------------------------------
-test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSequences/same_loop_twice\)
+test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/same_loop_twice\)
 ----------------------------------
   1: 
   2: int delay\(int x\)
@@ -50,7 +50,7 @@ test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSeque
   17: \}
   18: 
 ----------------------------------
-test.xc \(/home/andrew-local/software/sandbox/verif_tests_sw/Tools/xta/CodeSequences/same_loop_twice\)
+test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/same_loop_twice\)
 ----------------------------------
   1: 
   2: int delay\(int x\)
