@@ -1,0 +1,10 @@
+load tutorial_console.xe
+add prohibited packet_start
+analyse path receive_loop receive_loop
+summary complete
+assert maxtime 320
+remove prohibited packet_start
+analyse path eop_detected packet_start
+summary complete
+assert maxtime 1240
+exit
