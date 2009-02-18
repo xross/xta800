@@ -28,7 +28,7 @@ public class AnalysisEngine {
 	private ArrayList<BasicBlockStartPcs> m_basicBlockStartPcs;
 	
 	
-	private static final boolean MAKEDOT = false;
+	private static final boolean MAKEDOT = true;
 	private static final boolean DEBUG = false;
 	
 	public AnalysisEngine(XeLoader loader, NodeCoreInstructionCaches coreInstructionCache, ArrayList<XeObject> objects, ArrayList<BranchMap> branches){
@@ -138,16 +138,16 @@ public class AnalysisEngine {
 		}
 	}
 
-	//private HashMap<Integer, Node> m_pcToNode = new HashMap<Integer, Node>();
-	
-	
 	private void makeNodeMap(XeObject xeObject,
 			InstructionDecodeCache decodeCache, int nodeId, int coreId) {
 		
 		HashMap<Integer, Node> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
 		ArrayList<Edge> edges = new ArrayList<Edge>();
-		//TODO
-		//should to remove all the predecessors first 
+
+		for (AssemblyLine al : xeObject.getInstructions()) {
+			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
+			inst.getPredessors().clear();
+		}
 		
 		for (AssemblyLine al : xeObject.getInstructions()) {
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
@@ -191,7 +191,6 @@ public class AnalysisEngine {
 			}
 			if(MAKEDOT) System.out.println("\", style=filled, shape=box, fillcolor=azure];");
 		}
-		//System.out.println(3);
 		for (int basicBlockStart : pcToNode.keySet()) {
 
 			Node node = pcToNode.get(basicBlockStart);
@@ -203,9 +202,7 @@ public class AnalysisEngine {
 					edges.add(new Edge( next, node,1));
 					if(MAKEDOT) System.out.println("node" + node.name  +" -> node" +next.name +";");
 				}
-				
 			}
-
 		}
 		if(MAKEDOT) System.out.println("}" );
 		Edge[] edgeArray = edges.toArray(new Edge[] {});
