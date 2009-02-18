@@ -147,7 +147,7 @@ public class PathNode extends Node {
 	}
 
 	public void setIterations(int numIterations) {
-		XtaEngine.getEngine().setLoopIterations(m_block.getId(),
+		XtaEngine.getEngine().setLoopIterations(m_block.getPathId(),
 				m_absoluteCount, numIterations);
 	}
 
