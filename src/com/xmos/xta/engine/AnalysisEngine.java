@@ -25,7 +25,7 @@ public class AnalysisEngine {
 	private HashMap<NodeCore, Edge[]> m_edges;
 	private ArrayList<FunctionCallLocations> m_functionCallLocations;
 	private ArrayList<FunctionReturns> m_functionReturns;
-	
+	private ArrayList<BasicBlockStartPcs> m_basicBlockStartPcs;
 	
 	
 	private static final boolean MAKEDOT = false;
@@ -44,6 +44,7 @@ public class AnalysisEngine {
 		m_nodes= new HashMap<NodeCore, Node[]>();
 		m_functionCallLocations = new ArrayList<FunctionCallLocations>();
 		m_functionReturns = new ArrayList<FunctionReturns>();
+		m_basicBlockStartPcs = new ArrayList<BasicBlockStartPcs>();
 	}
 	
 	public void run(){
@@ -137,15 +138,19 @@ public class AnalysisEngine {
 		}
 	}
 
-	private HashMap<Integer, Node> m_pcToNode = new HashMap<Integer, Node>();
+	//private HashMap<Integer, Node> m_pcToNode = new HashMap<Integer, Node>();
+	
 	
 	private void makeNodeMap(XeObject xeObject,
 			InstructionDecodeCache decodeCache, int nodeId, int coreId) {
-
+		
+		HashMap<Integer, Node> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
+		
 		HashMap<Integer, Node> pcToTempNode = new HashMap<Integer, Node>();
 
 		ArrayList<Edge> edges = new ArrayList<Edge>();
 		ArrayList<Node> nodes = new ArrayList<Node>();
+
 		for (AssemblyLine al : xeObject.getInstructions()) {
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
 			Node from = pcToTempNode.get(inst.getPc());
@@ -159,7 +164,7 @@ public class AnalysisEngine {
 				boolean onlySuc = onlySucFromPredessors(inst.getPc(), xeObject,
 						decodeCache);
 				if (!(singleSuc && singlePre && !onlySuc)) {
-					m_pcToNode.put(inst.getPc(), new Node(m_pcToNode.size()));
+					pcToNode.put(inst.getPc(), new Node(pcToNode.size()));
 				}
 			}
 
@@ -171,22 +176,24 @@ public class AnalysisEngine {
 					pcToTempNode.put(target.getPc(), to);
 					if (!(this.singlePredessor(target.getPc(), xeObject,
 							decodeCache) && this.singleSuccessor(inst))) {
-						m_pcToNode.put(target.getPc(), new Node(m_pcToNode
+						pcToNode.put(target.getPc(), new Node(pcToNode
 								.size()));
 					}
 				}
 			}
 		}
+
 		if(MAKEDOT) System.out.println("digraph g {" );
-		for (int basicBlockStart : m_pcToNode.keySet()) {
+		
+		for (int basicBlockStart : pcToNode.keySet()) {
 			XtaInstruction inst = decodeCache.getInstruction(basicBlockStart);
-			Node node = m_pcToNode.get(basicBlockStart);
+			Node node = pcToNode.get(basicBlockStart);
 			if(MAKEDOT) System.out.print("node" + node.name + " [label = \"" + inst + "\\n");
 			node.m_pcs.add(basicBlockStart);
 			while (inst != null && inst.getSuccessors().size() == 1) {
 				int next = inst.getSuccessors().get(0).getPc();
 				inst = decodeCache.getInstruction(next);
-				if (inst != null && !m_pcToNode.containsKey(next)) {
+				if (inst != null && !pcToNode.containsKey(next)) {
 					if(MAKEDOT) System.out.print(inst + "\\n");
 					node.m_pcs.add(inst.getPc());
 				} else {
@@ -195,14 +202,14 @@ public class AnalysisEngine {
 			}
 			if(MAKEDOT) System.out.println("\", style=filled, shape=box, fillcolor=azure];");
 		}
+		//System.out.println(3);
+		for (int basicBlockStart : pcToNode.keySet()) {
 
-		for (int basicBlockStart : m_pcToNode.keySet()) {
-
-			Node node = m_pcToNode.get(basicBlockStart);
+			Node node = pcToNode.get(basicBlockStart);
 			int lastPc = node.m_pcs.get(node.m_pcs.size()-1); 
 			XtaInstruction inst = decodeCache.getInstruction(lastPc);
 			for(NextPcType nextPc : inst.getSuccessors()){
-				Node next = m_pcToNode.get(nextPc.getPc());
+				Node next = pcToNode.get(nextPc.getPc());
 				if(next!= null){
 					edges.add(new Edge( next, node,1));
 					if(MAKEDOT) System.out.println("node" + node.name  +" -> node" +next.name +";");
@@ -212,19 +219,29 @@ public class AnalysisEngine {
 
 		}
 		if(MAKEDOT) System.out.println("}" );
-		//System.out.println("edges:" + edges.size() + " nodes:" + m_pcToNode.size());
 		Edge[] edgeArray = edges.toArray(new Edge[] {});
 		m_edges.put(new NodeCore(nodeId, coreId), edgeArray);
-		Node[] nodeArray = m_pcToNode.values().toArray(new Node[] {});
-		//Node[] nodeArray = nodes.toArray(new Node[] {});
+		Node[] nodeArray = pcToNode.values().toArray(new Node[] {});
 		m_nodes.put(new NodeCore(nodeId, coreId), nodeArray);
 	}
 	
+	private HashMap<Integer, Node> getBasicBlockStartPcs(int nodeId, int coreId) {
+		for(BasicBlockStartPcs bbsp : m_basicBlockStartPcs){
+			if(bbsp.getCoreId() == coreId && bbsp.getNodeId()==nodeId){
+				return bbsp.getBasicBlockMap();
+			}
+		}
+		BasicBlockStartPcs bb = new BasicBlockStartPcs(nodeId, coreId);
+		m_basicBlockStartPcs.add(bb);
+		return bb.getBasicBlockMap();
+	}
+
 	private int countPredessors(int pc, XeObject xeObject, InstructionDecodeCache decodeCache){
 		int predessors = 0;
 		for(AssemblyLine al : xeObject.getInstructions()){
 			XtaInstruction preInst = decodeCache.getInstruction(al.getPc());
 			predessors += preInst.successorPcCount(pc);
+			if(predessors>1) return 2;
 		}
 		return predessors;
 	}
@@ -260,9 +277,7 @@ public class AnalysisEngine {
 		if(from!= null && to!= null){
 			if(from == to ){
 				return 0;
-			} else {
-				//System.out.println("from node"+ from.name + " to node"+to.name);
-			}
+			} 
 			FloydWarshall fw = new FloydWarshall();
 			fw.calcShortestPaths(getNodes(nodeId, coreId), getEdges(nodeId, coreId));
 			if(DEBUG){
@@ -277,28 +292,18 @@ public class AnalysisEngine {
 	}
 	
 	private int getPc(Node node, int nodeId, int coreId){
-		for(int pc : m_pcToNode.keySet()){
-			if(m_pcToNode.get(pc).name == node.name){
+		for(int pc : getBasicBlockStartPcs(nodeId, coreId).keySet()){
+			if(getBasicBlockStartPcs(nodeId, coreId).get(pc).name == node.name){
 				return pc;
 			}
 		}
 		return 0;
 	}
 	
-	//warning this may/will break for multicore
-	private Node getNode(int pc,int node, int core){
-		for(Node n : m_pcToNode.values()){
+	private Node getNode(int pc,int nodeId, int coreId){
+		for(Node n : getBasicBlockStartPcs(nodeId, coreId).values()){
 			if(n.m_pcs.contains(pc)) return n;
 		}
-		/*
-		for(NodeCore nc : m_nodes.keySet()){
-			if(nc.m_nodeId == node && nc.m_coreId == core){
-				for(Node n : m_nodes.get(nc)){
-					if(n == m_pcToNode.get(pc)) return n;
-				}
-			}
-		}
-		*/
 		return null;
 		
 	}
