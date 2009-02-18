@@ -23,6 +23,7 @@ public abstract class XtaInstruction extends Instruction {
 	private static final boolean m_uninplimented = false;
   
 	private ArrayList<NextPcType> m_successors;
+	private ArrayList<XtaInstruction> m_predessors;
 	
 	private HashSet<LivenessResource> m_liveIn;
 	private HashSet<LivenessResource> m_liveOut;
@@ -56,9 +57,18 @@ public abstract class XtaInstruction extends Instruction {
 		m_liveIn = new HashSet<LivenessResource>();
 		m_liveOut = new HashSet<LivenessResource>();
 		m_successors = new ArrayList<NextPcType>();
+		m_predessors =  new ArrayList<XtaInstruction>();
 		if(this.getBranchPcRelative()) addSuccessor(this.getBranchPcRelativeTargetPc(), true);
 	}
 
+	public ArrayList<XtaInstruction> getPredessors(){
+		return m_predessors;
+	}
+	
+	public void addPredessor(XtaInstruction inst){
+		m_predessors.add(inst);
+	}
+	
 	public boolean isNextInstructionPcKnown(){
 		return m_nextInstructionPcKnown;
 	}

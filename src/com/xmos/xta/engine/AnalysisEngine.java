@@ -145,41 +145,30 @@ public class AnalysisEngine {
 			InstructionDecodeCache decodeCache, int nodeId, int coreId) {
 		
 		HashMap<Integer, Node> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
-		
-		HashMap<Integer, Node> pcToTempNode = new HashMap<Integer, Node>();
-
 		ArrayList<Edge> edges = new ArrayList<Edge>();
-		ArrayList<Node> nodes = new ArrayList<Node>();
-
+		//TODO
+		//should to remove all the predecessors first 
+		
 		for (AssemblyLine al : xeObject.getInstructions()) {
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
-			Node from = pcToTempNode.get(inst.getPc());
-			if (from == null) {
-				from = new Node(nodes.size());
-				nodes.add(from);
-				pcToTempNode.put(inst.getPc(), from);
-				boolean singleSuc = this.singleSuccessor(inst);
-				boolean singlePre = this.singlePredessor(inst.getPc(),
-						xeObject, decodeCache);
-				boolean onlySuc = onlySucFromPredessors(inst.getPc(), xeObject,
-						decodeCache);
-				if (!(singleSuc && singlePre && !onlySuc)) {
+			for(NextPcType successor : inst.getSuccessors()){
+				XtaInstruction succ = decodeCache.getInstruction(successor.getPc());
+				if(succ!= null){
+					succ.addPredessor(inst);
+				}
+				
+			}
+		}
+		
+		for (AssemblyLine al : xeObject.getInstructions()) {
+			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
+			
+			if(inst.getPredessors().size()==1){
+				if (inst.getPredessors().get(0).getSuccessors().size() != 1){
 					pcToNode.put(inst.getPc(), new Node(pcToNode.size()));
 				}
-			}
-
-			for (NextPcType target : inst.getSuccessors()) {
-				Node to = pcToTempNode.get(target.getPc());
-				if (to == null) {
-					to = new Node(nodes.size());
-					nodes.add(to);
-					pcToTempNode.put(target.getPc(), to);
-					if (!(this.singlePredessor(target.getPc(), xeObject,
-							decodeCache) && this.singleSuccessor(inst))) {
-						pcToNode.put(target.getPc(), new Node(pcToNode
-								.size()));
-					}
-				}
+			} else {
+				pcToNode.put(inst.getPc(), new Node(pcToNode.size()));
 			}
 		}
 
@@ -236,40 +225,6 @@ public class AnalysisEngine {
 		return bb.getBasicBlockMap();
 	}
 
-	private int countPredessors(int pc, XeObject xeObject, InstructionDecodeCache decodeCache){
-		int predessors = 0;
-		for(AssemblyLine al : xeObject.getInstructions()){
-			XtaInstruction preInst = decodeCache.getInstruction(al.getPc());
-			predessors += preInst.successorPcCount(pc);
-			if(predessors>1) return 2;
-		}
-		return predessors;
-	}
-	private boolean onlySucFromPredessors(int pc, XeObject xeObject, InstructionDecodeCache decodeCache){
-		int successors = 0;
-		for(AssemblyLine al : xeObject.getInstructions()){
-			XtaInstruction preInst = decodeCache.getInstruction(al.getPc());
-			if(preInst.successorPcCount(pc) > 0){
-				successors += preInst.getSuccessors().size();
-			}
-			
-		}
-		if(successors==1) return false;
-		return true;
-	}
-	
-	private boolean singlePredessor(int pc, XeObject xeObject, InstructionDecodeCache decodeCache){
-		if(countPredessors(pc, xeObject, decodeCache)==1){
-			return true;
-		} return false;
-	}
-
-	private boolean singleSuccessor(XtaInstruction inst){
-		if(inst.getSuccessors().size() == 1){
-			return true;
-		}
-		return false;
-	}
 	
 	public int determineReachability(int startPc, int endPc, int nodeId, int coreId){
 		Node to = getNode(startPc, nodeId, coreId);
