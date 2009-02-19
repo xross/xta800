@@ -464,7 +464,7 @@ public class AnalysisEngine {
 			} 
 			
 			if(inst.getNmenonic().equals(new RevbXtaInstruction_blacp_u10(0, 0, null).getNmenonic())) {
-				int imm = XtaInstruction.getBits(16, 10, inst.getOpcode()) << Instruction.BYTES_PER_WORD_LOG2;
+				int imm = XtaInstruction.getBits(16, 10, inst.getOpcode()) << Instruction.NUM_BYTES_PER_WORD_LOG2;
 				int address = getConstantPoolPointer(nodeId, coreId) + imm;
 				int word=0;
 				for(int i=0;i<4;i++){
@@ -476,7 +476,7 @@ public class AnalysisEngine {
 				
 			}
 			if(inst.getNmenonic().equals(new RevbXtaInstruction_blacp_lu10(0, 0, null).getNmenonic())){
-				int imm = XtaInstruction.getBitsHL(16, 10, 0, 10, inst.getOpcode()) << Instruction.BYTES_PER_WORD_LOG2;
+				int imm = XtaInstruction.getBitsHL(16, 10, 0, 10, inst.getOpcode()) << Instruction.NUM_BYTES_PER_WORD_LOG2;
 				int address = getConstantPoolPointer(nodeId, coreId) + imm;
 				int word=0;
 				for(int i=0;i<4;i++){

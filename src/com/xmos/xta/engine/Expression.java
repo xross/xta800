@@ -209,7 +209,7 @@ public class Expression {
 
 				int shiftVal = resolve(expression.m_operands[1]);
 				if (shiftVal < 0
-						|| shiftVal >= (8 << Instruction.BITS_PER_WORD)) {
+						|| shiftVal >= (8 << Instruction.NUM_BITS_PER_WORD)) {
 					if (resolve(expression.m_operands[1]) < 0) {
 						return ~0;
 					} else {
