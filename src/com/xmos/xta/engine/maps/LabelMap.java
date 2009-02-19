@@ -1,10 +1,12 @@
-package com.xmos.xta.engine;
+package com.xmos.xta.engine.maps;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
 
@@ -15,25 +17,25 @@ public class LabelMap {
 	private int m_coreId;
 	private HashMap<String, Integer> m_labels;
 	
-	LabelMap(int nodeId, int coreId) {
+	public LabelMap(int nodeId, int coreId) {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_labels = new HashMap<String, Integer>(); 
 	}
 	
-	int getNodeId() {
+	public int getNodeId() {
 		return m_nodeId;
 	}
 
-	int getCoreId() {
+	public int getCoreId() {
 		return m_coreId;
 	}
 	
-	Map<String, Integer> getLabels() {
+	public Map<String, Integer> getLabels() {
 		return m_labels;
 	}
 	
-	boolean loadLabels(Engine engine, XeLoader xeLoader) {
+	public boolean load(Engine engine, XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(
 				".xtainfo", m_nodeId, m_coreId);
 				

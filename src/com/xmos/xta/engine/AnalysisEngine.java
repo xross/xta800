@@ -12,6 +12,7 @@ import com.xmos.isa.Instruction;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.XeObject;
+import com.xmos.xta.engine.maps.BranchMap;
 
 public class AnalysisEngine {
 	private XeLoader m_xeLoader;

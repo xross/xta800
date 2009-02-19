@@ -1,4 +1,4 @@
-package com.xmos.xta.engine;
+package com.xmos.xta.engine.maps;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,6 +6,8 @@ import java.util.TreeSet;
 
 import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Notifier;
 
 public class BranchMap {	
 	private static final boolean DEBUG = false;
@@ -14,17 +16,17 @@ public class BranchMap {
 	private int m_coreId;
 	private HashMap<Integer, TreeSet<Integer>> m_branches;
 	
-	BranchMap(int nodeId, int coreId) {
+	public BranchMap(int nodeId, int coreId) {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_branches = new HashMap<Integer, TreeSet<Integer>>(); 
 	}
 	
-	int getNodeId() {
+	public int getNodeId() {
 		return m_nodeId;
 	}
 
-	int getCoreId() {
+	public int getCoreId() {
 		return m_coreId;
 	}
 	
@@ -32,7 +34,7 @@ public class BranchMap {
 		return m_branches;
 	}
 	
-	void add(int fromPc, int toPc) {
+	public void add(int fromPc, int toPc) {
 		if (!m_branches.containsKey(fromPc)) {
 			TreeSet<Integer> toPcs = new TreeSet<Integer>();
 			toPcs.add(toPc);
@@ -42,13 +44,13 @@ public class BranchMap {
 		}		
 	}
 	
-	void remove(int fromPc) {
+	public void remove(int fromPc) {
 		if (m_branches.containsKey(fromPc)) {
 			m_branches.remove(fromPc);
 		}		
 	}
 	
-	boolean loadBranches(Engine engine, XeLoader xeLoader) {
+	public boolean load(Engine engine, XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(
 				".xtabranch", m_nodeId, m_coreId);
 				
