@@ -62,26 +62,30 @@ public class Node implements Comparable<Node> {
 	}
 
 	public boolean setIBuferStart(int initialFullness) {
-		boolean  alreadyDone = false;
+		boolean  update = true;
 		for(IBufferState ib : m_iBufferStates){
 			if(ib.initialIBuffer == initialFullness){
-				alreadyDone = true;
+				update = false;
 			}
 		}
-		if(!alreadyDone){
+		if(update){
 			//parseBlock and 
 			IBufferState ib = new IBufferState();
 			ib.initialIBuffer = initialFullness;
-			ib.finalIBuffer = initialFullness;
+			
+			InstructionBuffer instBuff = new InstructionBuffer();
+			instBuff.setPc(m_instructions.getFirst().getPc());
 			for(XtaInstruction inst :  m_instructions){
-				//simulate ibuffer
-				if(inst.isLoadStore()){
-					
+				if(!instBuff.canIssue(inst.getNumBytes())){
+					instBuff.fetch();
 				}
 				
+				
 			}
+			ib.finalIBufferKnown = true;
+			ib.finalIBuffer = instBuff.m_numBytes;
 		}
-		return !alreadyDone;
+		return update;
 	}
 
 }

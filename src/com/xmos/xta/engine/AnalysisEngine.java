@@ -23,8 +23,6 @@ public class AnalysisEngine {
 	private HashMap<NodeCore, Integer> m_constantPoolPointers;
 	private HashMap<NodeCore, Integer> m_dataPoolPointers;
 	private ArrayList<BranchMap> m_branches;
-	//private HashMap<NodeCore, Node[]> m_nodes;
-	//private HashMap<NodeCore, Edge[]> m_edges;
 	private ArrayList<FunctionCallLocations> m_functionCallLocations;
 	private ArrayList<FunctionReturns> m_functionReturns;
 	private ArrayList<BasicBlockStartPcs> m_basicBlockStartPcs;
@@ -133,7 +131,7 @@ public class AnalysisEngine {
 				InstructionDecodeCache decodeCache = m_mcInstructionCache.getInstructionDecodeCache(nodeId, coreId);
 				makeNodeMap(xeObject, decodeCache, nodeId, coreId);
 				
-				//fillGraphFnops(nodeId, coreId);
+				fillGraphFnops(nodeId, coreId);
 				
 				//printDot(nodeId, coreId);
 			}
@@ -162,7 +160,7 @@ public class AnalysisEngine {
 			} else {
 				for(Node previouseNode : node.getPrevoiusNodes()){
 					for(IBufferState ibuffer : previouseNode.getIBufferStates()){
-						if(ibuffer.finalIBufferKnown){
+						if(!ibuffer.finalIBufferKnown){
 							modified = node.setIBuferStart(ibuffer.finalIBuffer);
 						}
 					}
@@ -236,6 +234,7 @@ public class AnalysisEngine {
 		System.out.println("digraph g {");
 		for (Node node : pcToNode.values()) {
 			System.out.print("node" + node.m_nodeId + " [label = \"" );
+			/*
 			System.out.print("ib start: ");
 			for(IBufferState ib : node.getIBufferStates()){
 				System.out.print(ib.initialIBuffer + ", ");
@@ -245,6 +244,7 @@ public class AnalysisEngine {
 				System.out.print(ib.finalIBuffer + " ");
 			}
 			System.out.print("\\n");
+			*/
 			for(XtaInstruction inst : node.getInstructions()){
 				System.out.print(inst + "\\n");
 			}
