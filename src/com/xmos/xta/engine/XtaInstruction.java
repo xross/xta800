@@ -58,7 +58,6 @@ public abstract class XtaInstruction extends Instruction {
 		m_liveOut = new HashSet<LivenessResource>();
 		m_successors = new ArrayList<NextPcType>();
 		m_predessors =  new ArrayList<XtaInstruction>();
-		if(this.getBranchPcRelative()) addSuccessor(this.getBranchPcRelativeTargetPc(), true);
 	}
 
 	public ArrayList<XtaInstruction> getPredessors(){
@@ -122,11 +121,12 @@ public abstract class XtaInstruction extends Instruction {
 		return count;
 	}
 	
-	public void addSuccessor(int successorPc, boolean isBranch){
+	public void addSuccessor(XtaInstruction successor, boolean isBranch){
+		if(successor == null) return; 
 		int foundBranch = 0;
 		int foundNoBranch = 0;
 		for(NextPcType pc : m_successors){
-			if(pc.getPc() == successorPc ){
+			if(pc.getInstruction().getPc() == successor.getPc() ){
 				if(pc.isBranch()){
 					foundBranch++;
 				} else {
@@ -135,14 +135,14 @@ public abstract class XtaInstruction extends Instruction {
 			}
 		}
 		if(foundBranch + foundNoBranch == 0) {
-			m_successors.add(new NextPcType(successorPc, isBranch));
+			m_successors.add(new NextPcType(successor, isBranch));
 		} else if(isBranch ){
 			if(foundBranch == 0){
-				m_successors.add(new NextPcType(successorPc, isBranch));
+				m_successors.add(new NextPcType(successor, isBranch));
 			}
 		} else if(!isBranch){
 			if(foundNoBranch == 0){
-				m_successors.add(new NextPcType(successorPc, isBranch));
+				m_successors.add(new NextPcType(successor, isBranch));
 			}
 		}
 		return;

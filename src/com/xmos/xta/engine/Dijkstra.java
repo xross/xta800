@@ -29,7 +29,7 @@ public class Dijkstra {
 			int l = Integer.MAX_VALUE;
 			Node n = nodes[0];
 			for (Node j : C) {
-				if (D[j.name] < l) {
+				if (D[j.m_nodeId] < l) {
 					n = j;
 				}
 			}
@@ -38,18 +38,18 @@ public class Dijkstra {
 			// see if any Edges from this Node yield a shorter path than from
 			// source->that Node
 			for (int j = 0; j < nodes.length - 1; j++) {
-				if (D[n.name] != Integer.MAX_VALUE
-						&& Weight[n.name][j] != Integer.MAX_VALUE
-						&& D[n.name] + Weight[n.name][j] < D[j]) {
+				if (D[n.m_nodeId] != Integer.MAX_VALUE
+						&& Weight[n.m_nodeId][j] != Integer.MAX_VALUE
+						&& D[n.m_nodeId] + Weight[n.m_nodeId][j] < D[j]) {
 					// found one, update the path
-					D[j] = D[n.name] + Weight[n.name][j];
+					D[j] = D[n.m_nodeId] + Weight[n.m_nodeId][j];
 					P[j] = n;
 				}
 			}
 		}
 		// we have our path. reuse C as the result list
 		C.clear();
-		int loc = target.name;
+		int loc = target.m_nodeId;
 		C.add(target);
 		// backtrack from the target by P(revious), adding to the result list
 		while (P[loc] != nodes[0]) {
@@ -58,7 +58,7 @@ public class Dijkstra {
 				return null;
 			}
 			C.add(0, P[loc]);
-			loc = P[loc].name;
+			loc = P[loc].m_nodeId;
 		}
 		C.add(0, nodes[0]);
 		return C;
@@ -70,7 +70,7 @@ public class Dijkstra {
 			Arrays.fill(Weight[i], Integer.MAX_VALUE);
 		}
 		for (Edge e : edges) {
-			Weight[e.from.name][e.to.name] = e.weight;
+			Weight[e.from.m_nodeId][e.to.m_nodeId] = e.weight;
 		}
 		return Weight;
 	}

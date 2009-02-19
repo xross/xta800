@@ -2,17 +2,22 @@ package com.xmos.xta.engine;
 
 public class NextPcType {
 	private boolean m_isBranch; 
-	private int m_nextPc;
+	private XtaInstruction m_nextInstruction;
 	
-	public NextPcType(int pc, boolean isBranch) {
+	public NextPcType(XtaInstruction inst, boolean isBranch) {
 		super();
-		m_nextPc = pc;
+		m_nextInstruction = inst;
 		m_isBranch = isBranch;
 	}
 	
 	public int getPc() {
-		return m_nextPc;
+		return m_nextInstruction.getPc();
 	}
+	
+	public XtaInstruction getInstruction() {
+		return m_nextInstruction;
+	}
+	
 	public boolean isBranch() {
 		return m_isBranch;
 	}

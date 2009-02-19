@@ -25,11 +25,11 @@ public class FloydWarshall {
 	   }
 
 	   public int getShortestDistance(Node source, Node target){
-	       return D[source.name][target.name];
+	       return D[source.m_nodeId][target.m_nodeId];
 	   }
 
 	   public ArrayList<Node> getShortestPath(Node source, Node target){
-	       if(D[source.name][target.name] == Integer.MAX_VALUE){
+	       if(D[source.m_nodeId][target.m_nodeId] == Integer.MAX_VALUE){
 	           return new ArrayList<Node>();
 	       }
 	       ArrayList<Node> path = getIntermediatePath(source, target);
@@ -42,13 +42,13 @@ public class FloydWarshall {
 	       if(D == null){
 	           throw new IllegalArgumentException("Must call calcShortestPaths(...) before attempting to obtain a path.");
 	       }
-	       if(P[source.name][target.name] == null){
+	       if(P[source.m_nodeId][target.m_nodeId] == null){
 	           return new ArrayList<Node>();
 	       }
 	       ArrayList<Node> path = new ArrayList<Node>();
-	       path.addAll(getIntermediatePath(source, P[source.name][target.name]));
-	       path.add(P[source.name][target.name]);
-	       path.addAll(getIntermediatePath(P[source.name][target.name], target));
+	       path.addAll(getIntermediatePath(source, P[source.m_nodeId][target.m_nodeId]));
+	       path.add(P[source.m_nodeId][target.m_nodeId]);
+	       path.addAll(getIntermediatePath(P[source.m_nodeId][target.m_nodeId], target));
 	       return path;
 	   }
 	   
@@ -58,7 +58,7 @@ public class FloydWarshall {
 	           Arrays.fill(Weight[i], Integer.MAX_VALUE);
 	       }
 	       for(Edge e : edges){
-	           Weight[e.from.name][e.to.name] = e.weight;
+	           Weight[e.from.m_nodeId][e.to.m_nodeId] = e.weight;
 	       }
 	       return Weight;
 	   }

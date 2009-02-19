@@ -3,7 +3,7 @@ package com.xmos.xta.engine;
 import java.util.HashMap;
 
 public class BasicBlockStartPcs {
-	private HashMap<Integer, Node> m_pcToNode ;
+	private HashMap<XtaInstruction, Node> m_pcToNode ;
 	private int m_node;
 	private int m_core;
 	
@@ -11,10 +11,10 @@ public class BasicBlockStartPcs {
 	public BasicBlockStartPcs(int node, int core){
 		m_node = node;
 		m_core = core;
-		m_pcToNode = new HashMap<Integer, Node>();
+		m_pcToNode = new HashMap<XtaInstruction, Node>();
 	}
 	
-	public HashMap<Integer, Node> getBasicBlockMap(){
+	public HashMap<XtaInstruction, Node> getBasicBlockMap(){
 		return m_pcToNode;
 	}
 	
