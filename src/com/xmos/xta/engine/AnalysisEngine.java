@@ -206,9 +206,8 @@ public class AnalysisEngine {
 			Node node = pcToNode.get(basicBlockStart);
 			node.getInstructions().add(basicBlockStart);
 			while (inst != null && inst.getSuccessors().size() == 1) {
-				int next = inst.getSuccessors().get(0).getPc();
-				inst = decodeCache.getInstruction(next);
-				if (inst != null && !pcToNode.containsKey(next)) {
+				inst = inst.getSuccessors().get(0).getInstruction();
+				if (inst != null && !pcToNode.containsKey(inst)) {
 					node.getInstructions().add(inst);
 				} else {
 					break;
