@@ -336,7 +336,7 @@ public abstract class XtaInstruction extends Instruction {
     	
     	Expression offset = new Expression(OperatorType.SHL);
     	offset.addOperand(state.m_op1);
-    	offset.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2));
+    	offset.addOperand(new Expression(Instruction.NUM_BYTES_PER_WORD_LOG2));
     	
     	loadLocation.addOperand(cp);
     	loadLocation.addOperand(offset);
@@ -370,7 +370,7 @@ public abstract class XtaInstruction extends Instruction {
     	
     	Expression offset = new Expression(OperatorType.SHL);
     	offset.addOperand(state.m_op1);
-    	offset.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2));
+    	offset.addOperand(new Expression(Instruction.NUM_BYTES_PER_WORD_LOG2));
     	
     	loadLocation.addOperand(table);
     	loadLocation.addOperand(offset);
@@ -606,7 +606,7 @@ public abstract class XtaInstruction extends Instruction {
 	
         Expression offset = new Expression(Expression.OperatorType.ASHL);
         offset.addOperand(state.m_op1);
-        offset.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2/2));
+        offset.addOperand(new Expression(Instruction.NUM_BYTES_PER_WORD_LOG2/2));
     	state.setBranched(true);
         
         Expression branchTarget = new Expression(Expression.OperatorType.ADD);
@@ -1030,7 +1030,7 @@ public abstract class XtaInstruction extends Instruction {
     	assert state.m_op1.canResolve();    		    		
     	if (state.m_op1.getValue() != 0) {     		
             Expression stackPointer = state.getStackPointerRegister(thread);
-            Expression wordOffset = new Expression(state.m_op1.getValue() << Instruction.BYTES_PER_WORD_LOG2);
+            Expression wordOffset = new Expression(state.m_op1.getValue() << Instruction.NUM_BYTES_PER_WORD_LOG2);
 	        if (stackPointer.canResolve()) {
                 // The address is resolvable so we can go ahead and 
 	    	    // store the link register expression on the stack.    	        
@@ -1074,7 +1074,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: EXTDP\n", getPc());	
     	assert(state.m_op1.canResolve());
-    	int imm = state.m_op1.getValue() << Instruction.BYTES_PER_WORD_LOG2;
+    	int imm = state.m_op1.getValue() << Instruction.NUM_BYTES_PER_WORD_LOG2;
     	
 
     	
@@ -1099,7 +1099,7 @@ public abstract class XtaInstruction extends Instruction {
     	if (INSTRUCTIONDEBUG)     	
             System.out.printf("0x%08x: EXTSP\n", getPc());	
     	assert(state.m_op1.canResolve());
-    	int imm = state.m_op1.getValue() << Instruction.BYTES_PER_WORD_LOG2;
+    	int imm = state.m_op1.getValue() << Instruction.NUM_BYTES_PER_WORD_LOG2;
     	
 
     	
@@ -1319,7 +1319,7 @@ public abstract class XtaInstruction extends Instruction {
     	
     	Expression offset = new Expression(OperatorType.SHL);
     	offset.addOperand(state.m_op3);
-    	offset.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2/2));
+    	offset.addOperand(new Expression(Instruction.NUM_BYTES_PER_WORD_LOG2/2));
     	
     	address.addOperand(state.m_op2);
     	address.addOperand(offset);
@@ -1372,7 +1372,7 @@ public abstract class XtaInstruction extends Instruction {
     	
     	Expression offset = new Expression(OperatorType.SHL);
     	offset.addOperand(state.m_op3);
-    	offset.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2/2));
+    	offset.addOperand(new Expression(Instruction.NUM_BYTES_PER_WORD_LOG2/2));
     	
     	result.addOperand(state.m_op2);
     	result.addOperand(offset);
@@ -1391,7 +1391,7 @@ public abstract class XtaInstruction extends Instruction {
     	
     	Expression offset = new Expression(OperatorType.SHL);
     	offset.addOperand(state.m_op3);
-    	offset.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2/2));
+    	offset.addOperand(new Expression(Instruction.NUM_BYTES_PER_WORD_LOG2/2));
     	
     	result.addOperand(state.m_op2);
     	result.addOperand(offset);
@@ -1409,7 +1409,7 @@ public abstract class XtaInstruction extends Instruction {
     	assert(state.m_op1.canResolve());
     	int offset = state.m_op1.getValue();
     	int nextPc = state.getPc(thread) + getNumBytes();
-    	int number = nextPc - (offset<<(Instruction.BYTES_PER_WORD_LOG2/2));
+    	int number = nextPc - (offset<<(Instruction.NUM_BYTES_PER_WORD_LOG2/2));
     	state.writeRegister(11, new Expression(number), thread);
     	m_nextInstructionPcKnown = true;
     	m_nextInstructionPc = getPc() + getNumBytes();
@@ -1422,7 +1422,7 @@ public abstract class XtaInstruction extends Instruction {
     	assert(state.m_op1.canResolve());
     	int offset = state.m_op1.getValue();
     	int nextPc = state.getPc(thread) + getNumBytes();
-    	int number = nextPc + (offset<<(Instruction.BYTES_PER_WORD_LOG2/2));
+    	int number = nextPc + (offset<<(Instruction.NUM_BYTES_PER_WORD_LOG2/2));
     	state.writeRegister(11, new Expression(number), thread);
     	m_nextInstructionPcKnown = true;
     	m_nextInstructionPc = getPc() + getNumBytes();
@@ -1436,7 +1436,7 @@ public abstract class XtaInstruction extends Instruction {
     	
     	Expression offset = new Expression(OperatorType.SHL);
     	offset.addOperand(state.m_op3);
-    	offset.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2));
+    	offset.addOperand(new Expression(Instruction.NUM_BYTES_PER_WORD_LOG2));
     	
     	result.addOperand(state.m_op2);
     	result.addOperand(offset);
@@ -1454,7 +1454,7 @@ public abstract class XtaInstruction extends Instruction {
 
         Expression rhs = new Expression(Expression.OperatorType.ASHL);              
         rhs.addOperand(state.m_op2);
-        rhs.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2));
+        rhs.addOperand(new Expression(Instruction.NUM_BYTES_PER_WORD_LOG2));
         
         state.m_op1 = new Expression(Expression.OperatorType.ADD);
         state.m_op1.addOperand(state.getDataPoolRegister(thread));            
@@ -1471,7 +1471,7 @@ public abstract class XtaInstruction extends Instruction {
     	
     	Expression rhs = new Expression(Expression.OperatorType.ASHL);    	    	
     	rhs.addOperand(state.m_op3);
-    	rhs.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2));
+    	rhs.addOperand(new Expression(Instruction.NUM_BYTES_PER_WORD_LOG2));
     	
     	state.m_op1 = new Expression(Expression.OperatorType.ADD);
     	state.m_op1.addOperand(state.m_op2);	    	
@@ -1488,7 +1488,7 @@ public abstract class XtaInstruction extends Instruction {
     	
     	assert state.m_op2.canResolve();    		    		
         Expression stackPointer = state.getStackPointerRegister(thread);
-        Expression wordOffset = new Expression(state.m_op2.getValue() << Instruction.BYTES_PER_WORD_LOG2);
+        Expression wordOffset = new Expression(state.m_op2.getValue() << Instruction.NUM_BYTES_PER_WORD_LOG2);
             
         state.m_op1 = new Expression(Expression.OperatorType.ADD);
         state.m_op1.addOperand(stackPointer);
@@ -1568,7 +1568,7 @@ public abstract class XtaInstruction extends Instruction {
     	    state.m_op2.resolve();
             state.m_op3.resolve();
             int base = state.m_op2.getValue();
-            int offset = state.m_op3.getValue() << Instruction.BYTES_PER_WORD_LOG2;
+            int offset = state.m_op3.getValue() << Instruction.NUM_BYTES_PER_WORD_LOG2;
             int address  = base + offset;
             
             state.m_op1 = state.readMemory( address) ;  
@@ -1591,7 +1591,7 @@ public abstract class XtaInstruction extends Instruction {
     	m_nextInstructionPcKnown = true;
     	m_nextInstructionPc = getPc() + getNumBytes();
     	if(offset.canResolve() && dp.canResolve()){
-    		int address = dp.getValue() + ((offset.getValue()) << Instruction.BYTES_PER_WORD_LOG2);
+    		int address = dp.getValue() + ((offset.getValue()) << Instruction.NUM_BYTES_PER_WORD_LOG2);
     		Expression ex = state.readMemory(address);
     		state.m_op1 = ex; 
     	} else {
@@ -1610,7 +1610,7 @@ public abstract class XtaInstruction extends Instruction {
     	m_nextInstructionPc = getPc() + getNumBytes();
     	
     	if(offset.canResolve() && dp.canResolve()){
-    		int address = dp.getValue() + ((offset.getValue()) << Instruction.BYTES_PER_WORD_LOG2);
+    		int address = dp.getValue() + ((offset.getValue()) << Instruction.NUM_BYTES_PER_WORD_LOG2);
     		Expression ex = state.readMemory(address);
     		state.m_op1 = ex; 
     	} else {
@@ -1632,7 +1632,7 @@ public abstract class XtaInstruction extends Instruction {
     	m_nextInstructionPc = getPc() + getNumBytes();
     	
     	if(offset.canResolve() && dp.canResolve()){
-    		int address = dp.getValue() + ((offset.getValue()) << Instruction.BYTES_PER_WORD_LOG2);
+    		int address = dp.getValue() + ((offset.getValue()) << Instruction.NUM_BYTES_PER_WORD_LOG2);
     		Expression ex = state.readMemory(address);
     		state.m_op1 = ex; 
     	} else {
@@ -1648,7 +1648,7 @@ public abstract class XtaInstruction extends Instruction {
     	
     	assert state.m_op2.canResolve();
         Expression stackPointer = state.getStackPointerRegister(thread);                
-        Expression wordOffset = new Expression(state.m_op2.getValue() << Instruction.BYTES_PER_WORD_LOG2);
+        Expression wordOffset = new Expression(state.m_op2.getValue() << Instruction.NUM_BYTES_PER_WORD_LOG2);
 
         m_nextInstructionPcKnown = true;
     	m_nextInstructionPc = getPc() + getNumBytes();
@@ -1895,7 +1895,7 @@ public abstract class XtaInstruction extends Instruction {
                 // The address is resolvable so we can read the expression from 'memory'
     	        stackPointer.resolve();
                 int newStackPointerValue = stackPointer.getValue() + 
-                    (state.m_op1.getValue() << Instruction.BYTES_PER_WORD_LOG2);
+                    (state.m_op1.getValue() << Instruction.NUM_BYTES_PER_WORD_LOG2);
             
                 state.setStackPointerRegister(new Expression(newStackPointerValue), thread);                
     	        
@@ -2071,7 +2071,7 @@ public abstract class XtaInstruction extends Instruction {
     	
     	if(state.m_op2.canResolve() && state.m_op3.canResolve()){
     		int base = state.m_op2.getValue();
-    		int offset = state.m_op3.getValue() << (Instruction.BITS_PER_WORD/2) ;
+    		int offset = state.m_op3.getValue() << (Instruction.NUM_BITS_PER_WORD/2) ;
     		int address = base + offset;
     		state.writeShort(address, state.m_op1);
     	} else {
@@ -2104,7 +2104,7 @@ public abstract class XtaInstruction extends Instruction {
     	Expression sp = state.getStackPointerRegister(thread);
     	
     	if(sed.canResolve() && sp.canResolve()){
-    		int address = sp.getValue() + (MachineState.STACK_OFFSET_SED << Instruction.BYTES_PER_WORD_LOG2);
+    		int address = sp.getValue() + (MachineState.STACK_OFFSET_SED << Instruction.NUM_BYTES_PER_WORD_LOG2);
     		state.writeMemory(address, sed);
     	} else {
     		throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
@@ -2124,7 +2124,7 @@ public abstract class XtaInstruction extends Instruction {
     	m_nextInstructionPc = getPc() + getNumBytes();
     	
     	if(et.canResolve() && sp.canResolve()){
-    		int address = sp.getValue() + (MachineState.STACK_OFFSET_ET << Instruction.BYTES_PER_WORD_LOG2);
+    		int address = sp.getValue() + (MachineState.STACK_OFFSET_ET << Instruction.NUM_BYTES_PER_WORD_LOG2);
     		state.writeMemory(address, et);
     	} else {
     		throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
@@ -2143,7 +2143,7 @@ public abstract class XtaInstruction extends Instruction {
     	m_nextInstructionPc = getPc() + getNumBytes();
     	
     	if(spc.canResolve() && sp.canResolve()){
-    		int address = sp.getValue() + (MachineState.STACK_OFFSET_SPC << Instruction.BYTES_PER_WORD_LOG2);
+    		int address = sp.getValue() + (MachineState.STACK_OFFSET_SPC << Instruction.NUM_BYTES_PER_WORD_LOG2);
     		state.writeMemory(address, spc);
     	} else {
     		throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
@@ -2162,7 +2162,7 @@ public abstract class XtaInstruction extends Instruction {
     	m_nextInstructionPc = getPc() + getNumBytes();
     	
     	if(spc.canResolve() && sp.canResolve()){
-    		int address = sp.getValue() + (MachineState.STACK_OFFSET_SSR << Instruction.BYTES_PER_WORD_LOG2);
+    		int address = sp.getValue() + (MachineState.STACK_OFFSET_SSR << Instruction.NUM_BYTES_PER_WORD_LOG2);
     		state.writeMemory(address, spc);
     	} else {
     		throw new InstructionExecption(Error.UNKNOWN_MEMORY_WRITE);
@@ -2181,7 +2181,7 @@ public abstract class XtaInstruction extends Instruction {
             state.m_op2.resolve();
             state.m_op3.resolve();
             int base = state.m_op2.getValue();
-            int offset = state.m_op3.getValue() << Instruction.BYTES_PER_WORD_LOG2;
+            int offset = state.m_op3.getValue() << Instruction.NUM_BYTES_PER_WORD_LOG2;
             int address =  base + offset;
             state.writeMemory(address, state.m_op1);  
         } else {
@@ -2196,7 +2196,7 @@ public abstract class XtaInstruction extends Instruction {
     	
     	assert state.m_op2.canResolve();
         Expression dataPointer = state.getDataPoolRegister(thread);                
-        Expression wordOffset = new Expression(state.m_op2.getValue() << Instruction.BYTES_PER_WORD_LOG2);
+        Expression wordOffset = new Expression(state.m_op2.getValue() << Instruction.NUM_BYTES_PER_WORD_LOG2);
 
         if (dataPointer.canResolve()) {
             dataPointer.resolve();
@@ -2221,7 +2221,7 @@ public abstract class XtaInstruction extends Instruction {
 
     	assert state.m_op2.canResolve();
         Expression stackPointer = state.getStackPointerRegister(thread);                
-        Expression wordOffset = new Expression(state.m_op2.getValue() << Instruction.BYTES_PER_WORD_LOG2);
+        Expression wordOffset = new Expression(state.m_op2.getValue() << Instruction.NUM_BYTES_PER_WORD_LOG2);
 
         m_nextInstructionPcKnown = true;
         	m_nextInstructionPc = getPc() + getNumBytes();
@@ -2470,7 +2470,7 @@ public abstract class XtaInstruction extends Instruction {
             System.out.printf("0x%08x: LDAWCP\n", getPc());	
 		Expression offset = new Expression(Expression.OperatorType.SHL);
 		offset.addOperand(state.m_op1);
-		offset.addOperand(new Expression(Instruction.BYTES_PER_WORD_LOG2));
+		offset.addOperand(new Expression(Instruction.NUM_BYTES_PER_WORD_LOG2));
 		Expression regValue = new Expression(Expression.OperatorType.ADD);
 		regValue.addOperand(state.getConstPoolRegister(thread));
 		regValue.addOperand(offset);
