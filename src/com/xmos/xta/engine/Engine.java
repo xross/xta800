@@ -19,6 +19,9 @@ import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Route.RouteStatus;
+import com.xmos.xta.engine.maps.BranchMap;
+import com.xmos.xta.engine.maps.EndpointMap;
+import com.xmos.xta.engine.maps.LabelMap;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
 import com.xmos.xta.engine.Unknown.UnknownType;
@@ -47,6 +50,7 @@ public class Engine {
 	private ArrayList<CodeReferenceList> m_required;
 	private ArrayList<LabelMap> m_labels;
 	private ArrayList<BranchMap> m_branches;
+	private ArrayList<EndpointMap> m_endpoints;
 	private ArrayList<PathQuery> m_pathQueries;
 
 	private AnalysisEngine m_ae;
@@ -58,6 +62,7 @@ public class Engine {
 		m_required = new ArrayList<CodeReferenceList>();
 		m_labels = new ArrayList<LabelMap>();
 		m_branches = new ArrayList<BranchMap>();
+		m_endpoints = new ArrayList<EndpointMap>();
 		m_xeLoader = new XeLoader();
 		m_route = null;
 		m_previousRoute = null;
@@ -287,6 +292,7 @@ public class Engine {
 
 			loadLabels();
 			loadBranches();
+			loadEndpoints();
 
 			m_ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache,
 					m_xeObjects, m_branches);
@@ -752,6 +758,14 @@ public class Engine {
 		return new HashMap<Integer, TreeSet<Integer>>();
 	}
 
+	public Map<String, Integer> getEndpoints() {
+		EndpointMap endpointMap = getEndpointsMap(m_nodeId, m_coreId);
+		if (endpointMap != null) {
+			return endpointMap.getEndpoints();
+		}
+		return new HashMap<String, Integer>();
+	}
+	
 	public void addQuery(PathQuery pq) {
 		this.m_pathQueries.add(pq);
 	}
@@ -906,8 +920,8 @@ public class Engine {
 
 	private LabelMap getLabelsMap(int nodeId, int coreId) {
 		for (LabelMap labels : m_labels) {
-			if ((labels.getNodeId() == nodeId)
-					&& (labels.getCoreId() == coreId)) {
+			if ((labels.getNodeId() == nodeId) &&
+				(labels.getCoreId() == coreId)) {
 				return labels;
 			}
 		}
@@ -916,14 +930,24 @@ public class Engine {
 
 	private BranchMap getBranchesMap(int nodeId, int coreId) {
 		for (BranchMap branches : m_branches) {
-			if ((branches.getNodeId() == nodeId)
-					&& (branches.getCoreId() == coreId)) {
+			if ((branches.getNodeId() == nodeId) &&
+				(branches.getCoreId() == coreId)) {
 				return branches;
 			}
 		}
 		return null;
 	}
 
+	private EndpointMap getEndpointsMap(int nodeId, int coreId) {
+		for (EndpointMap endpoints : m_endpoints) {
+			if ((endpoints.getNodeId() == nodeId) &&
+			    (endpoints.getCoreId() == coreId)) {
+				return endpoints;
+			}
+		}
+		return null;
+	}
+	
 	private XeObject getXeObject(int nodeId, int coreId) {
 		for (XeObject xeObject : m_xeObjects) {
 			if ((xeObject.getNodeId() == nodeId)
@@ -941,6 +965,7 @@ public class Engine {
 		m_required.clear();
 		m_labels.clear();
 		m_branches.clear();
+		m_endpoints.clear();
 		m_xeObjects.clear();
 
 		for (int node : m_xeLoader.getNodeIds()) {
@@ -950,6 +975,7 @@ public class Engine {
 				m_required.add(new CodeReferenceList(node, core));
 				m_labels.add(new LabelMap(node, core));
 				m_branches.add(new BranchMap(node, core));
+				m_endpoints.add(new EndpointMap(node, core));
 				m_xeObjects
 						.add(new XeObject(m_xeLoader, node, core, fileFinder));
 			}
@@ -958,18 +984,22 @@ public class Engine {
 
 	private void loadLabels() {
 		for (LabelMap labelMap : m_labels) {
-			labelMap.loadLabels(this, m_xeLoader);
+			labelMap.load(this, m_xeLoader);
 		}
-		return;
 	}
 
 	private void loadBranches() {
 		for (BranchMap branchMap : m_branches) {
-			branchMap.loadBranches(this, m_xeLoader);
+			branchMap.load(this, m_xeLoader);
 		}
-		return;
 	}
 
+	private void loadEndpoints() {
+		for (EndpointMap endpointMap : m_endpoints) {
+			endpointMap.load(this, m_xeLoader);
+		}
+	}
+	
 	public File getExecutable() {
 		return m_executableFile;
 	}
