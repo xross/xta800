@@ -28,26 +28,6 @@ public class Node implements Comparable<Node> {
 	public ArrayList<IBufferState> getIBufferStates(){
 		return m_iBufferStates;
 	}
-	
-	public int getWorstFinalIBuffer() {
-		int worst = 0;
-		for (IBufferState ibuff : m_iBufferStates) {
-			worst = Math.max(worst, ibuff.finalIBuffer);
-		}
-		return worst;
-	}
-
-	public boolean getFinalIBufferKnown(){
-		return false;
-	}
-	
-	public int getWorstStartIBuffer() {
-		int worst = 0;
-		for (IBufferState ibuff : m_iBufferStates) {
-			worst = Math.max(worst, ibuff.finalIBuffer);
-		}
-		return worst;
-	}
 
 	public LinkedList<XtaInstruction> getInstructions() {
 		return m_instructions;
@@ -62,42 +42,78 @@ public class Node implements Comparable<Node> {
 	}
 
 	public boolean setIBuferStart(int initialFullness) {
-		boolean  update = true;
-		for(IBufferState ib : m_iBufferStates){
-			if(ib.initialIBuffer == initialFullness){
-				update = false;
+		IBufferState ib = new IBufferState();
+		ib.initialIBuffer = initialFullness;
+		
+		for(IBufferState old : m_iBufferStates){
+			if(old.initialIBuffer == initialFullness){
+				return false;
 			}
 		}
-		if(update){
-			//parseBlock and 
-			IBufferState ib = new IBufferState();
-			ib.initialIBuffer = initialFullness;
-			
-			InstructionBuffer instBuff = new InstructionBuffer();
-			instBuff.setPc(m_instructions.getFirst().getPc());
-			for(XtaInstruction inst :  m_instructions){
-				if(!instBuff.canIssue(inst.getNumBytes())){
-					instBuff.fetch();
+		
+		InstructionBuffer instBuff = new InstructionBuffer();
+		instBuff.setPc(m_instructions.getFirst().getPc());
+		instBuff.m_numBytes = initialFullness;
+		for(XtaInstruction inst :  m_instructions){
+			while(!instBuff.canIssue(inst.getNumBytes())){
+				
+				instBuff.fetch();
+				ib.m_fnops.add(inst.getPc());
+			}
+			if (!inst.isLoadStore()) {
+				instBuff.fetch();
+			}
+			instBuff.issue(inst.getNumBytes());
+			if(inst.getSuccessors().size() > 0){
+				for(NextPcType succ : inst.getSuccessors()){
+					if(succ.isBranch()){
+						instBuff.branchTo(succ.getPc(), inst.isLoadStore());
+					} else {
+						instBuff.setPc(inst.getPc() + inst.getNumBytes());
+					}
+					if(m_instructions.getLast() == inst){
+						ib.finalIBuffer = instBuff.m_numBytes;
+						ib.finalIBufferKnown = true;
+						addIbuffState(ib);
+					}
 				}
-				
-				
+			} else {
+				instBuff.setPc(inst.getPc() + inst.getNumBytes());
+				if(m_instructions.getLast() == inst){
+					ib.finalIBuffer = instBuff.m_numBytes;
+					ib.finalIBufferKnown = true;
+					addIbuffState(ib);
+				}
 			}
-			ib.finalIBufferKnown = true;
-			ib.finalIBuffer = instBuff.m_numBytes;
+			
 		}
-		return update;
+		
+		
+		return true;
 	}
 
+	private boolean addIbuffState(IBufferState ib){
+		for(IBufferState old : m_iBufferStates){
+			if(old.finalIBuffer == ib.finalIBuffer){
+				return false;
+			}
+		}
+		m_iBufferStates.add(ib);
+		return true;
+	}
+	
+	
 }
 
 class IBufferState {
-	boolean finalIBufferKnown = false;
+	boolean finalIBufferKnown;
 	int initialIBuffer;
 	int finalIBuffer;
 
 	ArrayList<Integer> m_fnops;
 
 	public IBufferState() {
+		finalIBufferKnown = false;
 		initialIBuffer = 0;
 		finalIBuffer = 0;
 		m_fnops = new ArrayList<Integer>();

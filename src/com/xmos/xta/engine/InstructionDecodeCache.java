@@ -36,7 +36,6 @@ public class InstructionDecodeCache {
 	XtaInstruction getInstruction(int pc){
 		if (m_instructionCache.containsKey(pc))
             return m_instructionCache.get(pc);
-		 assert(false);
 		 return null;
 	}
 	
