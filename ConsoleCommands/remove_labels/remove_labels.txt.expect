@@ -1,7 +1,7 @@
-- ref: bob, pc: 0x100c6
-- ref: bill, pc: 0x100d6
+Label: bill, pc: 0x100d6
+Label: bob, pc: 0x100c6
 none
-- ref: bob, pc: 0x100d4
-- ref: bill, pc: 0x100d0
+Label: bill, pc: 0x100d0
+Label: bob, pc: 0x100d4
 Error: Unable to remove label: bill
 none
