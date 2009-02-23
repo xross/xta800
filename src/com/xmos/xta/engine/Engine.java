@@ -20,8 +20,10 @@ import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Route.RouteStatus;
 import com.xmos.xta.engine.maps.BranchMap;
-import com.xmos.xta.engine.maps.EndpointMap;
 import com.xmos.xta.engine.maps.LabelMap;
+import com.xmos.xta.engine.maps.LabelInfo;
+import com.xmos.xta.engine.maps.TableInfo;
+import com.xmos.xta.engine.maps.TableMap;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
 import com.xmos.xta.engine.Unknown.UnknownType;
@@ -48,9 +50,11 @@ public class Engine {
 	private ArrayList<CodeReferenceList> m_exclusions;
 	private ArrayList<CodeReferenceList> m_prohibited;
 	private ArrayList<CodeReferenceList> m_required;
-	private ArrayList<LabelMap> m_labels;
 	private ArrayList<BranchMap> m_branches;
-	private ArrayList<EndpointMap> m_endpoints;
+	private ArrayList<LabelMap> m_labels;
+	private ArrayList<TableMap> m_labelTable;
+	private ArrayList<LabelMap> m_endpoints;
+	private ArrayList<TableMap> m_endpointTable;
 	private ArrayList<PathQuery> m_pathQueries;
 
 	private AnalysisEngine m_ae;
@@ -60,9 +64,11 @@ public class Engine {
 		m_exclusions = new ArrayList<CodeReferenceList>();
 		m_prohibited = new ArrayList<CodeReferenceList>();
 		m_required = new ArrayList<CodeReferenceList>();
-		m_labels = new ArrayList<LabelMap>();
 		m_branches = new ArrayList<BranchMap>();
-		m_endpoints = new ArrayList<EndpointMap>();
+		m_labels = new ArrayList<LabelMap>();
+		m_labelTable = new ArrayList<TableMap>();
+		m_endpoints = new ArrayList<LabelMap>();
+		m_endpointTable = new ArrayList<TableMap>();
 		m_xeLoader = new XeLoader();
 		m_route = null;
 		m_previousRoute = null;
@@ -290,8 +296,8 @@ public class Engine {
 				success = false;
 			}
 
-			loadLabels();
 			loadBranches();
+			loadLabels();
 			loadEndpoints();
 
 			m_ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache,
@@ -634,85 +640,6 @@ public class Engine {
 				m_coreId).getInstruction(pc).canPause();
 	}
 
-	public boolean addLabel(String label, CodeReference ref) {
-		if (!resolveRefernece(ref, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format(
-					"Unresolved reference: %s", ref.getRef()));
-			return false;
-		}
-
-		// Test whether the label happens to be a PC string
-		if (CodeReferenceFactory.isPcString(label)) {
-			notify(Notifier.NOTIFY_ERROR, String.format(
-					"Cannot use PC as a label: %s", label));
-			return false;
-		}
-
-		LabelMap labelMap = getLabelsMap(m_nodeId, m_coreId);
-		if (labelMap != null) {
-			if (!labelMap.getLabels().containsKey(label)) {
-				labelMap.getLabels().put(label, ref.getPc());
-			} else {
-				notify(Notifier.NOTIFY_ERROR, String.format(
-						"Label already exists: %s", label));
-			}
-			return true;
-		}
-		return false;
-	}
-
-	public void removeLabel(String label) {
-		LabelMap labelMap = getLabelsMap(m_nodeId, m_coreId);
-		if (labelMap != null) {
-			List<String> matches = new ArrayList<String>();
-
-			for (String mapEntry : labelMap.getLabels().keySet()) {
-				try {
-					if (mapEntry.matches(label)) {
-						matches.add(mapEntry);
-					}
-				} catch (PatternSyntaxException e) {
-					// Ignore
-				}
-			}
-
-			if (matches.size() > 0) {
-				for (String toRemove : matches)
-					labelMap.getLabels().remove(toRemove);
-			} else {
-				notify(Notifier.NOTIFY_ERROR, String.format(
-						"Unable to remove label: %s", label));
-			}
-		}
-	}
-
-	public Map<String, Integer> getLabels() {
-		LabelMap labelMap = getLabelsMap(m_nodeId, m_coreId);
-		if (labelMap != null) {
-			return labelMap.getLabels();
-		}
-		return new HashMap<String, Integer>();
-	}
-
-	public boolean isLabel(String label) {
-		LabelMap labelMap = getLabelsMap(m_nodeId, m_coreId);
-		if (labelMap != null) {
-			return labelMap.getLabels().containsKey(label);
-		}
-		return false;
-	}
-
-	public int getLabelPc(String label) {
-		LabelMap labelMap = getLabelsMap(m_nodeId, m_coreId);
-		if (labelMap != null) {
-			if (labelMap.getLabels().containsKey(label)) {
-				return labelMap.getLabels().get(label);
-			}
-		}
-		assert (false);
-		return 0;
-	}
-
 	public boolean addBranch(CodeReference fromRef, CodeReference toRef) {
 		if (!resolveRefernece(fromRef, this)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
@@ -757,13 +684,159 @@ public class Engine {
 		}
 		return new HashMap<Integer, TreeSet<Integer>>();
 	}
-
-	public Map<String, Integer> getEndpoints() {
-		EndpointMap endpointMap = getEndpointsMap(m_nodeId, m_coreId);
-		if (endpointMap != null) {
-			return endpointMap.getEndpoints();
+	
+	public boolean addLabel(String label, CodeReference ref) {
+		if (!resolveRefernece(ref, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Unresolved reference: %s", ref.getRef()));
+			return false;
 		}
-		return new HashMap<String, Integer>();
+
+		// Test whether the label happens to be a PC string
+		if (CodeReferenceFactory.isPcString(label)) {
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Cannot use PC as a label: %s", label));
+			return false;
+		}
+
+		LabelMap labelMap = getLabelsMap(m_labels, m_nodeId, m_coreId);
+		if (labelMap != null) {
+			if (!labelMap.getMap().containsKey(label)) {										
+				labelMap.getMap().put(label, new LabelInfo(ref.getPc(), label, "", "", 0));
+			} else {
+				notify(Notifier.NOTIFY_ERROR, String.format(
+						"Label already exists: %s", label));
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public void removeLabel(String label) {
+		LabelMap labelMap = getLabelsMap(m_labels, m_nodeId, m_coreId);
+		if (labelMap != null) {
+			List<String> matches = new ArrayList<String>();
+
+			for (String mapEntry : labelMap.getMap().keySet()) {
+				try {
+					if (mapEntry.matches(label)) {
+						matches.add(mapEntry);
+					}
+				} catch (PatternSyntaxException e) {
+					// Ignore
+				}
+			}
+
+			if (matches.size() > 0) {
+				for (String toRemove : matches)
+					labelMap.getMap().remove(toRemove);
+			} else {
+				notify(Notifier.NOTIFY_ERROR, String.format(
+						"Unable to remove label: %s", label));
+			}
+		}
+	}
+
+	public Map<String, LabelInfo> getLabels() {
+		LabelMap labelMap = getLabelsMap(m_labels, m_nodeId, m_coreId);
+		if (labelMap != null) {
+			return labelMap.getMap();
+		}
+		return new HashMap<String, LabelInfo>();
+	}
+
+	public boolean isLabel(String label) {
+		LabelMap labelMap = getLabelsMap(m_labels, m_nodeId, m_coreId);
+		if (labelMap != null) {
+			return labelMap.getMap().containsKey(label);
+		}
+		return false;
+	}
+
+	public int getLabelPc(String label) {
+		LabelMap labelMap = getLabelsMap(m_labels, m_nodeId, m_coreId);
+		if (labelMap != null) {
+			if (labelMap.getMap().containsKey(label)) {
+				return labelMap.getMap().get(label).getPc();
+			}
+		}
+		assert (false);
+		return 0;
+	}
+
+	public Map<Integer, TableInfo> getLabelTable() {
+		TableMap tableMap = getTableMap(m_labelTable, m_nodeId, m_coreId);
+		if (tableMap != null) {
+			return tableMap.getMap();
+		}
+		return new HashMap<Integer, TableInfo>();
+	}
+	
+	public boolean addEndpoint(String endpoint, CodeReference ref) {
+		if (!resolveRefernece(ref, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Unresolved reference: %s", ref.getRef()));
+			return false;
+		}
+
+		// Test whether the endpoint happens to be a PC string
+		if (CodeReferenceFactory.isPcString(endpoint)) {
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Cannot use PC as a endpoint: %s", endpoint));
+			return false;
+		}
+
+		LabelMap endpointMap = getLabelsMap(m_endpoints, m_nodeId, m_coreId);
+		if (endpointMap != null) {
+			if (!endpointMap.getMap().containsKey(endpoint)) {
+				endpointMap.getMap().put(endpoint, new LabelInfo(ref.getPc(), endpoint, "", "", 0));
+			} else {
+				notify(Notifier.NOTIFY_ERROR, String.format(
+						"Endpoint already exists: %s", endpoint));
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public void removeEndpoint(String endpoint) {
+		LabelMap endpointMap = getLabelsMap(m_endpoints, m_nodeId, m_coreId);
+		if (endpointMap != null) {
+			List<String> matches = new ArrayList<String>();
+
+			for (String mapEntry : endpointMap.getMap().keySet()) {
+				try {
+					if (mapEntry.matches(endpoint)) {
+						matches.add(mapEntry);
+					}
+				} catch (PatternSyntaxException e) {
+				}
+			}
+
+			if (matches.size() > 0) {
+				for (String toRemove : matches)
+					endpointMap.getMap().remove(toRemove);
+			} else {
+				notify(Notifier.NOTIFY_ERROR, String.format(
+						"Unable to remove endpoint: %s", endpoint));
+			}
+		}
+	}
+	
+	public Map<String, LabelInfo> getEndpoints() {
+		LabelMap endpointMap = getLabelsMap(m_endpoints, m_nodeId, m_coreId);
+		if (endpointMap != null) {
+			return endpointMap.getMap();
+		}
+		return new HashMap<String, LabelInfo>();
+	}
+	
+	public Map<Integer, TableInfo> getEndpointTable() {
+		TableMap tableMap = getTableMap(m_endpointTable, m_nodeId, m_coreId);
+		if (tableMap != null) {
+			return tableMap.getMap();
+		}
+		return new HashMap<Integer, TableInfo>();
 	}
 	
 	public void addQuery(PathQuery pq) {
@@ -918,16 +991,6 @@ public class Engine {
 		return false;
 	}
 
-	private LabelMap getLabelsMap(int nodeId, int coreId) {
-		for (LabelMap labels : m_labels) {
-			if ((labels.getNodeId() == nodeId) &&
-				(labels.getCoreId() == coreId)) {
-				return labels;
-			}
-		}
-		return null;
-	}
-
 	private BranchMap getBranchesMap(int nodeId, int coreId) {
 		for (BranchMap branches : m_branches) {
 			if ((branches.getNodeId() == nodeId) &&
@@ -938,16 +1001,26 @@ public class Engine {
 		return null;
 	}
 
-	private EndpointMap getEndpointsMap(int nodeId, int coreId) {
-		for (EndpointMap endpoints : m_endpoints) {
-			if ((endpoints.getNodeId() == nodeId) &&
-			    (endpoints.getCoreId() == coreId)) {
-				return endpoints;
+	private LabelMap getLabelsMap(List<LabelMap> labels, int nodeId, int coreId) {
+		for (LabelMap labelMap : labels) {
+			if ((labelMap.getNodeId() == nodeId) &&
+				(labelMap.getCoreId() == coreId)) {
+				return labelMap;
 			}
 		}
 		return null;
 	}
-	
+
+	private TableMap getTableMap(List<TableMap> tables, int nodeId, int coreId) {
+		for (TableMap tableMap : tables) {
+			if ((tableMap.getNodeId() == nodeId) &&
+				(tableMap.getCoreId() == coreId)) {
+				return tableMap;
+			}
+		}
+		return null;
+	}
+		
 	private XeObject getXeObject(int nodeId, int coreId) {
 		for (XeObject xeObject : m_xeObjects) {
 			if ((xeObject.getNodeId() == nodeId)
@@ -963,9 +1036,11 @@ public class Engine {
 		m_exclusions.clear();
 		m_prohibited.clear();
 		m_required.clear();
-		m_labels.clear();
 		m_branches.clear();
+		m_labels.clear();
+		m_labelTable.clear();
 		m_endpoints.clear();
+		m_endpointTable.clear();
 		m_xeObjects.clear();
 
 		for (int node : m_xeLoader.getNodeIds()) {
@@ -973,18 +1048,13 @@ public class Engine {
 				m_exclusions.add(new CodeReferenceList(node, core));
 				m_prohibited.add(new CodeReferenceList(node, core));
 				m_required.add(new CodeReferenceList(node, core));
-				m_labels.add(new LabelMap(node, core));
 				m_branches.add(new BranchMap(node, core));
-				m_endpoints.add(new EndpointMap(node, core));
-				m_xeObjects
-						.add(new XeObject(m_xeLoader, node, core, fileFinder));
+				m_labels.add(new LabelMap(node, core, ".xtalabel"));
+				m_labelTable.add(new TableMap(node, core, ".xtalabeltable"));
+				m_endpoints.add(new LabelMap(node, core, ".xtaendpoint"));
+				m_endpointTable.add(new TableMap(node, core, ".xtaendpointtable"));
+				m_xeObjects.add(new XeObject(m_xeLoader, node, core, fileFinder));
 			}
-		}
-	}
-
-	private void loadLabels() {
-		for (LabelMap labelMap : m_labels) {
-			labelMap.load(this, m_xeLoader);
 		}
 	}
 
@@ -994,9 +1064,21 @@ public class Engine {
 		}
 	}
 
+	private void loadLabels() {
+		for (LabelMap labelMap : m_labels) {
+			labelMap.load(this, m_xeLoader);
+		}
+		for (TableMap tableMap : m_labelTable) {
+			tableMap.load(this, m_xeLoader);
+		}
+	}
+	
 	private void loadEndpoints() {
-		for (EndpointMap endpointMap : m_endpoints) {
+		for (LabelMap endpointMap : m_endpoints) {
 			endpointMap.load(this, m_xeLoader);
+		}
+		for (TableMap tableMap : m_endpointTable) {
+			tableMap.load(this, m_xeLoader);
 		}
 	}
 	

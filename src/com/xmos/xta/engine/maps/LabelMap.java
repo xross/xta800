@@ -1,26 +1,25 @@
 package com.xmos.xta.engine.maps;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.references.CodeReference;
-import com.xmos.xta.engine.references.CodeReferenceFactory;
 
-public class LabelMap {	
+public class LabelMap {
 	private static final boolean DEBUG = false;
 	
 	private int m_nodeId;
 	private int m_coreId;
-	private HashMap<String, Integer> m_labels;
+	private String m_sectionName;
+	private TreeMap<String, LabelInfo> m_labels;
 	
-	public LabelMap(int nodeId, int coreId) {
+	public LabelMap(int nodeId, int coreId, String sectionName) {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
-		m_labels = new HashMap<String, Integer>(); 
+		m_sectionName = sectionName;
+		m_labels = new TreeMap<String, LabelInfo>(); 
 	}
 	
 	public int getNodeId() {
@@ -31,57 +30,52 @@ public class LabelMap {
 		return m_coreId;
 	}
 	
-	public Map<String, Integer> getLabels() {
+	public Map<String, LabelInfo> getMap() {
 		return m_labels;
 	}
 	
 	public boolean load(Engine engine, XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(
-				".xtainfo", m_nodeId, m_coreId);
+				m_sectionName, m_nodeId, m_coreId);
 				
-		if (DEBUG) System.out.println("\n\n.xtainfo is of size " + data.length + " bytes for node " + m_nodeId + " core: " + m_coreId);
+		if (DEBUG) System.out.printf("%s: section size: %d, node: %d, core: %d\n",
+				m_sectionName, data.length, m_nodeId, m_coreId);
+
 		int byteIndex = 0;
         while (byteIndex < data.length) {
-        	// Skip version
-        	ByteArrayManipulation.readInt(data, byteIndex);
-        	int size = ByteArrayManipulation.readInt(data, byteIndex + 4);
+        	int base = byteIndex;
+        	
+        	int size = ByteArrayManipulation.readInt(data, byteIndex);
+        	byteIndex += 4;
 
-        	int index = 8;
-        	String compilationDir = ByteArrayManipulation.readString(data, byteIndex + index);
-    		index += compilationDir.length() + 1;
+       		int version = ByteArrayManipulation.readInt(data, byteIndex);
+       		byteIndex += 4;
+        		        		
+       		String compilationDir = ByteArrayManipulation.readString(data, byteIndex);
+       		byteIndex += compilationDir.length() + 1;
 
-        	while (index < size) {
-        		String labelName = ByteArrayManipulation.readString(data, byteIndex + index);
-        		index += labelName.length() + 1;
+    		if (DEBUG) System.out.printf("size: %d, version: %s, compilationDir: %s\n",
+    				size, version, compilationDir);
+       		
+           	while (byteIndex < (base + size)) {        		
+        		int location = ByteArrayManipulation.readInt(data, byteIndex);
+        		byteIndex += 4;
         		
-        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex + index);
-        		index += 4;
+        		String label = ByteArrayManipulation.readString(data, byteIndex);
+        		byteIndex += label.length() + 1;
+
+        		String fileName = ByteArrayManipulation.readString(data, byteIndex);
+        		byteIndex += fileName.length() + 1;
         		
-        		String fileName = ByteArrayManipulation.readString(data, byteIndex + index);
-        		index += fileName.length() + 1;
+        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
+        		byteIndex += 4;
+        		        		
+        		if (DEBUG) System.out.printf("- label: %s, pc: 0x%08x, fileName: %s, lineNumber: %d\n", 
+        				label, location, fileName, lineNumber);
         		
-        		CodeReference ref = CodeReferenceFactory.createCodeReference(
-        				String.format("%s:%d", fileName, lineNumber));
-        		
-        		if (ref.resolve(engine, m_nodeId, m_coreId)) {
-        			if (!m_labels.containsKey(labelName)) {
-        				if (DEBUG)  System.out.println("found");
-        				m_labels.put(labelName, ref.getPc());
-        			} else {
-        				String error = "Duplicate label '" +labelName + "' found.";
-        				if (DEBUG)  System.out.println(error);
-        				engine.notify(Notifier.NOTIFY_ERROR, error);
-        				return false;
-        			}
-        	    } else {
-        	    	String error = "Unable to resolve label " + labelName;
-        	    	if (DEBUG)  System.out.println(error);
-    				engine.notify(Notifier.NOTIFY_ERROR, error);
-        	    	return false;
-        	    }
+        		m_labels.put(label, new LabelInfo(location, label, compilationDir, fileName, lineNumber));        	        		
         	}
-        	byteIndex += size;
-        }        
+        }
         return true;
 	}
 }

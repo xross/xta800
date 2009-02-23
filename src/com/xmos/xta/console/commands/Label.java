@@ -1,13 +1,12 @@
 package com.xmos.xta.console.commands;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
 
 import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.maps.LabelInfo;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
 
@@ -31,8 +30,7 @@ public class Label extends Command {
 		m_operation = operation;
 		m_labels = new ArrayList<String>();
 		m_labels.add(label);
-		m_refString = refString;
-		
+		m_refString = refString;		
 	}
 
 	public int numArgs() {
@@ -91,8 +89,6 @@ public class Label extends Command {
         return "";
 	}
 
-	CodeReference ref;
-	CodeReference labelRef;
 	public Command clone(String[] args, int index, boolean commandLineMode) {
 		if ((index + numArgs()) >= args.length)
 			return null;
@@ -149,10 +145,10 @@ public class Label extends Command {
 			return;
 		}
 
-    	Iterator<Map.Entry<String, Integer>> iter = engine.getLabels().entrySet().iterator();        
-    	while (iter.hasNext()) {
-    	    Map.Entry<String, Integer> pair = iter.next();
-    	    console.display(String.format("- ref: %s, pc: 0x%x\n", pair.getKey(), pair.getValue()));
+		for (LabelInfo info : engine.getLabels().values()) {
+    	    console.display(String.format("Label: %s, pc: 0x%x, compilation dir: %s, filename: %s, line number: %d\n", 
+    	    		info.getLabel(), info.getPc(), info.getCompilationDir(), 
+    	    		info.getFileName(), info.getLineNumber()));
     	}		
 	}
 }
