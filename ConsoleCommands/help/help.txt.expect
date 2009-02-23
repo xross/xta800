@@ -19,11 +19,12 @@
   [-]unset <option> <arg0> <arg1>...: Unset item from given list
   [-]version: Displays the version information
   [-]add <option> <arg0> <arg1>...: Add item to given list
-      option: label <ref> <label>: Adds the given label to the labels list
       option: filter <ref>: Adds the given reference to the filter list (post analysis action)
       option: prohibited <ref>: Adds the given reference to the prohibited list (pre analysis action)
       option: required <ref>: Adds the given reference to the required list (post analysis action)
       option: branch <from ref> <to ref>: Adds the given from/to reference to the branches list
+      option: endpoint <ref> <label>: Adds the given endpoint to the endpoints list
+      option: label <ref> <label>: Adds the given label to the labels list
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
       option: path <from ref> <to ref>: Sets a path start and end points
       option: function <name>: Sets a path to trace a given function
@@ -41,11 +42,14 @@
   [-]help [command]: Displays help message for the given command
   [-]history: Displays the command history
   [-]list <option> <arg0> <arg1>...: Lists the given set of items
-      option: labels: Lists the labels
       option: filters: Lists the reference in the filter list
       option: prohibited: Lists the reference in the excluded list
       option: required: Lists the reference in the excluded list
-      option: branch: Lists the branches
+      option: branches: Lists the branches
+      option: labels: Lists the labels
+      option: endpoints: Lists the endpoints
+      option: alllabels: Lists all the possible locations for labels
+      option: allendpoints: Lists all the possible locations for endpoints
       option: unknowns : Displays a list of the unknowns within the current analysis
       option: functions: Lists the functions in the loaded application
       option: sources: Lists the source files
@@ -59,11 +63,12 @@
       option: trace <path/block id>: Display instruction trace for the given path/block
   [-]pwd: Displays the current working directory
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
-      option: label [label]+: Removes the given labels from the labels list (supports regular expressions)
       option: filter <ref>: Removes the given reference from the filter list (supports regular expressions)
       option: prohibited <ref>: Removes the given reference from the prohibited list (supports regular expressions)
       option: required <ref>: Removes the given reference from the required list (post analysis action)
       option: branch <from ref>: Removes the given from reference from the branches list
+      option: endpoint [label]+: Removes the given endpoints from the endpoints list (supports regular expressions)
+      option: label [label]+: Removes the given labels from the labels list (supports regular expressions)
   [-]set <option> <arg0> <arg1>...: Set path information
       option: loop <path> <scope> <iterations>: Sets the number of iterations for the given path
           scope: relative/r: Iteration number propagates to the enclosing path (Default)
