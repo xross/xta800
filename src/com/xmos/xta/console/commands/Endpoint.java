@@ -146,9 +146,18 @@ public class Endpoint extends Command {
 		}
 
 		for (LabelInfo info : engine.getEndpoints().values()) {
-    	    console.display(String.format("Label: %s, pc: 0x%x, compilation dir: %s, filename: %s, line number: %d\n", 
-    	    		info.getLabel(), info.getPc(), info.getCompilationDir(), 
-    	    		info.getFileName(), info.getLineNumber()));
-    	}		
+    	    console.display(String.format("Label: %s, pc: 0x%x", info.getLabel(), info.getPc())); 
+    	    
+    	    if (!info.getCompilationDir().equals("")) {
+    	    	console.display(", compilation dir: " + info.getCompilationDir());
+    	    }
+    	    if (!info.getCompilationDir().equals("")) {
+    	    	console.display(", filename: " + info.getFileName());
+    	    }
+    	    if (!info.getCompilationDir().equals("")) {
+    	    	console.display(", line number: " + info.getLineNumber());
+    	    }
+    	    console.display("\n");    	    
+    	}				
 	}
 }
