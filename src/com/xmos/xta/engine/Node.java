@@ -10,6 +10,8 @@ public class Node implements Comparable<Node> {
 	private ArrayList<IBufferState> m_iBufferStates;
 	private ArrayList<Node> m_nextNode;
 	private ArrayList<Node> m_previousNode;
+	private ArrayList<LinkedList<Node>> m_loops;
+	
 
 	Node(int n) {
 		m_nodeId = n;
@@ -17,6 +19,11 @@ public class Node implements Comparable<Node> {
 		m_instructions = new LinkedList<XtaInstruction>();
 		m_nextNode = new ArrayList<Node>();
 		m_previousNode = new ArrayList<Node>();
+		m_loops = new ArrayList<LinkedList<Node>>();
+	}
+	
+	public String toString(){
+		return "node: " + this.m_nodeId + " " + m_instructions.getFirst();
 	}
 
 	public int compareTo(Node n) {
@@ -25,6 +32,10 @@ public class Node implements Comparable<Node> {
 		return -1;
 	}
 
+	public ArrayList<LinkedList<Node>> getLoops(){
+		return m_loops;
+	}
+	
 	public ArrayList<IBufferState> getIBufferStates(){
 		return m_iBufferStates;
 	}
@@ -100,6 +111,11 @@ public class Node implements Comparable<Node> {
 		}
 		m_iBufferStates.add(ib);
 		return true;
+	}
+
+	public void addLoop(LinkedList<Node> trimedLoop) {
+		m_loops.add(trimedLoop);
+		
 	}
 	
 	
