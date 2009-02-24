@@ -1,0 +1,2 @@
+add label one 0x10000
+add label 0x10000 one

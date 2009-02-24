@@ -1,3 +1,4 @@
+remove label .*
 add label 0x10000 bob
 add label 0x10002 bill
 list labels

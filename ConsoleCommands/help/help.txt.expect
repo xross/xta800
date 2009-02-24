@@ -56,7 +56,6 @@
       option: functions: Lists the functions in the loaded application
       option: sources: Lists the source files
       option: times: Lists the instructions which have had their times set
-      option: queries: Lists the current queries
   [-]load <xe file>: Loads the given xmos executable file
   [-]print <option> <arg0> <arg1>...: Display path information
       option: asm <path/block id>: Display annotated assembly for given path id
