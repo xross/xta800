@@ -137,7 +137,7 @@ public class Time extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-		CodeReference ref = CodeReferenceFactory.createCodeReference(m_refString);
+		CodeReference ref = CodeReferenceFactory.createEndpointReference(m_refString);
 
 		switch (m_operation) {
     	case SET:

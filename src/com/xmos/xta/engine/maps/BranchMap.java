@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.maps;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.xmos.util.ByteArrayManipulation;
@@ -14,12 +14,12 @@ public class BranchMap {
 	
 	private int m_nodeId;
 	private int m_coreId;
-	private HashMap<Integer, TreeSet<Integer>> m_branches;
+	private TreeMap<Integer, TreeSet<Integer>> m_branches;
 	
 	public BranchMap(int nodeId, int coreId) {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
-		m_branches = new HashMap<Integer, TreeSet<Integer>>(); 
+		m_branches = new TreeMap<Integer, TreeSet<Integer>>(); 
 	}
 	
 	public int getNodeId() {
@@ -30,7 +30,7 @@ public class BranchMap {
 		return m_coreId;
 	}
 	
-	public Map<Integer, TreeSet<Integer>> getBranches() {
+	public Map<Integer, TreeSet<Integer>> getMap() {
 		return m_branches;
 	}
 	

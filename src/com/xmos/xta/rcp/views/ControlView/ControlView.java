@@ -100,13 +100,13 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		
 		m_startPointListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-    		    CodeReference startPoint = CodeReferenceFactory.createCodeReference(m_startPoint.getText());
+    		    CodeReference startPoint = CodeReferenceFactory.createEndpointReference(m_startPoint.getText());
 			    XtaNotifier.getInstance().notifySetStartPoint(startPoint);
 			}			
 		};
 		m_endPointListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-			    CodeReference endPoint = CodeReferenceFactory.createCodeReference(m_endPoint.getText());
+			    CodeReference endPoint = CodeReferenceFactory.createEndpointReference(m_endPoint.getText());
 			    XtaNotifier.getInstance().notifySetEndPoint(endPoint);
 			}			
 		};

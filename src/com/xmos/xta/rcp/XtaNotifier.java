@@ -51,10 +51,10 @@ public class XtaNotifier implements Notifier {
 			broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_ANALYSIS_COMPLETE, null, null));
 			
 		} else if (message.equals(NOTIFY_SET_START_POINT)) {
-			notifySetStartPoint(CodeReferenceFactory.createCodeReference(argument));
+			notifySetStartPoint(CodeReferenceFactory.createEndpointReference(argument));
 			
 		} else if (message.equals(NOTIFY_SET_END_POINT)) {
-			notifySetEndPoint(CodeReferenceFactory.createCodeReference(argument));
+			notifySetEndPoint(CodeReferenceFactory.createEndpointReference(argument));
 			
 		} else if (message.equals(NOTIFY_LOAD_EXECUTABLE)) {
 			resetState();

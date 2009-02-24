@@ -7,19 +7,19 @@ import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.Engine;
 
-public class TableMap {
+public class SrcTableMap {
 	private static final boolean DEBUG = false;
 	
 	private int m_nodeId;
 	private int m_coreId;
 	private String m_sectionName;
-	private TreeMap<Integer, TableInfo> m_locations;
+	private TreeMap<Integer, SrcTableInfo> m_locations;
 	
-	public TableMap(int nodeId, int coreId, String sectionName) {
+	public SrcTableMap(int nodeId, int coreId, String sectionName) {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_sectionName = sectionName;
-		m_locations = new TreeMap<Integer, TableInfo>(); 
+		m_locations = new TreeMap<Integer, SrcTableInfo>(); 
 	}
 	
 	public int getNodeId() {
@@ -30,7 +30,7 @@ public class TableMap {
 		return m_coreId;
 	}
 	
-	public Map<Integer, TableInfo> getMap() {
+	public Map<Integer, SrcTableInfo> getMap() {
 		return m_locations;
 	}
 	
@@ -70,7 +70,7 @@ public class TableMap {
         		if (DEBUG) System.out.printf("- pc: 0x%08x, fileName: %s, lineNumber: %d\n", 
         				location, fileName, lineNumber);
         		
-        		m_locations.put(location, new TableInfo(location, compilationDir, fileName, lineNumber));        	        		
+        		m_locations.put(location, new SrcTableInfo(location, compilationDir, fileName, lineNumber));        	        		
         	}
         }
         return true;

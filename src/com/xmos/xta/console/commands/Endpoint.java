@@ -6,7 +6,7 @@ import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.maps.LabelInfo;
+import com.xmos.xta.engine.maps.SrcLabelInfo;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
 
@@ -122,9 +122,9 @@ public class Endpoint extends Command {
     	switch (m_operation) {
     	case ADD:
     		assert(m_endpoints.size() == 1);
-    		CodeReference ref = CodeReferenceFactory.createCodeReference(m_refString);
+    		CodeReference ref = CodeReferenceFactory.createEndpointReference(m_refString);
 			engine.addEndpoint(m_endpoints.get(0), ref);
-			break;			
+			break;
     	case REMOVE:
     		for (String endpoint : m_endpoints) {
     			engine.removeEndpoint(endpoint);
@@ -145,16 +145,12 @@ public class Endpoint extends Command {
 			return;
 		}
 
-		for (LabelInfo info : engine.getEndpoints().values()) {
+		for (SrcLabelInfo info : engine.getEndpoints().values()) {
     	    console.display(String.format("Label: %s, pc: 0x%x", info.getLabel(), info.getPc())); 
     	    
     	    if (!info.getCompilationDir().equals("")) {
     	    	console.display(", compilation dir: " + info.getCompilationDir());
-    	    }
-    	    if (!info.getCompilationDir().equals("")) {
     	    	console.display(", filename: " + info.getFileName());
-    	    }
-    	    if (!info.getCompilationDir().equals("")) {
     	    	console.display(", line number: " + info.getLineNumber());
     	    }
     	    console.display("\n");    	    

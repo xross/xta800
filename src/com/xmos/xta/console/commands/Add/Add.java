@@ -8,6 +8,7 @@ import com.xmos.xta.console.commands.Filter;
 import com.xmos.xta.console.commands.Label;
 import com.xmos.xta.console.commands.Prohibited;
 import com.xmos.xta.console.commands.Required;
+import com.xmos.xta.console.commands.SrcLabel;
 
 public class Add extends CommandContainer {
 	static private Command[] m_options = { 
@@ -15,8 +16,9 @@ public class Add extends CommandContainer {
 		new Prohibited(Prohibited.Operation.ADD), 
 		new Required(Required.Operation.ADD), 
 		new Branch(Branch.Operation.ADD),
+		new Label(Label.Operation.ADD),
+		new SrcLabel(SrcLabel.Operation.ADD),
 		new Endpoint(Endpoint.Operation.ADD),
-		new Label(Label.Operation.ADD), 
 	};
 	
 	public Add() { super("add"); }

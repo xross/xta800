@@ -195,7 +195,9 @@ public class AnalysisEngine {
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
 
 			if (inst.getPredessors().size() == 1) {
-				if (inst.getPredessors().get(0).getSuccessors().size() != 1) {
+				if(inst.getPredessors().get(0).getReturn() || inst.getPredessors().get(0).getBranchLink()){
+					pcToNode.put(inst, new Node(pcToNode.size()));
+				} else if (inst.getPredessors().get(0).getSuccessors().size() != 1) {
 					pcToNode.put(inst, new Node(pcToNode.size()));
 				}
 			} else {
@@ -380,9 +382,9 @@ public class AnalysisEngine {
 	private void addBranchMaps(XeObject xeObject, InstructionDecodeCache decodeCache, int nodeId, int coreId) {
 		for (AssemblyLine al : xeObject.getInstructions()) {
 			for (BranchMap bm : m_branches) {
-				if (bm.getBranches().containsKey(al.getPc())) {
+				if (bm.getMap().containsKey(al.getPc())) {
 					XtaInstruction inst = decodeCache.getInstruction(al.getPc());
-					for (int target : bm.getBranches().get(al.getPc())) {
+					for (int target : bm.getMap().get(al.getPc())) {
 						inst.addSuccessor(decodeCache.getInstruction(target), true);
 					}
 				}
