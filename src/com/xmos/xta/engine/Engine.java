@@ -360,16 +360,8 @@ public class Engine {
 					functionName, m_executableFile, m_nodeId, m_coreId));
 			return false;
 		} else {
-			TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName,
-					m_nodeId, m_coreId);
-			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId,
-					m_coreId);
-			/*
-			System.out.println("from 0x" + Integer.toHexString(startPc));
-			for(int end : endPcs){
-				System.out.println("to 0x" + Integer.toHexString(end));
-			}
-			*/
+			TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
+			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
 			return analyseRoute(startPc, endPcs);
 		}
 	}
@@ -419,8 +411,7 @@ public class Engine {
 			} else {
 				notify(Notifier.NOTIFY_ERROR, "No valid of execution from 0x"
 						+ Integer.toHexString(startPc) );
-			}
-			
+			}			
 			return false;
 		}
 
@@ -680,7 +671,7 @@ public class Engine {
 	}
 	
 	public boolean addSrcLabel(String label, CodeReference ref) {
-		return addToSrcLabelMap(m_srcLabels, label, ref);
+		return addToSrcLabelMap(m_srcLabels, m_srcLabelTables, label, ref);
 	}
 
 	public void removeSrcLabel(String label) {
@@ -696,7 +687,7 @@ public class Engine {
 	}
 	
 	public boolean addEndpoint(String endpoint, CodeReference ref) {
-		return addToSrcLabelMap(m_endpoints, endpoint, ref);
+		return addToSrcLabelMap(m_endpoints, m_endpointTables, endpoint, ref);
 	}
 
 	public void removeEndpoint(String endpoint) {
@@ -966,7 +957,7 @@ public class Engine {
 		}
 	}	
 	
-	public boolean addToLabelMap(String label, CodeReference ref) {
+	private boolean addToLabelMap(String label, CodeReference ref) {
 		if (!resolveRefernece(ref, this)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", ref.getRef()));
@@ -992,7 +983,7 @@ public class Engine {
 		return false;
 	}
 
-	public void removeFromLabelMap(String label) {
+	private void removeFromLabelMap(String label) {
 		LabelMap labelMap = getLabelMapNull(m_nodeId, m_coreId);
 		if (labelMap != null) {
 			List<String> matches = new ArrayList<String>();
@@ -1016,7 +1007,8 @@ public class Engine {
 		}
 	}
 	
-	private boolean addToSrcLabelMap(List<SrcLabelMap> labelMaps, String label, CodeReference ref) {
+	private boolean addToSrcLabelMap(List<SrcLabelMap> labelMaps, List<SrcTableMap> tableMaps,
+			String label, CodeReference ref) {
 		if (!resolveRefernece(ref, this)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", ref.getRef()));
@@ -1028,7 +1020,7 @@ public class Engine {
 					"Cannot use PC as a label: %s", label));
 			return false;
 		}
-
+		
 		SrcLabelMap labelMap = getSrcLabelMapNull(labelMaps, m_nodeId, m_coreId);
 		if (labelMap != null) {
 			if (!labelMap.getMap().containsKey(label)) {										
