@@ -372,8 +372,8 @@ public class Engine {
 	}
 
 	public boolean analyseRoute(String from, String to) {
-		CodeReference fromRef = CodeReferenceFactory.createCodeReference(from);
-		CodeReference toRef = CodeReferenceFactory.createCodeReference(to);
+		CodeReference fromRef = CodeReferenceFactory.createEndpointReference(from);
+		CodeReference toRef = CodeReferenceFactory.createEndpointReference(to);
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Node: %d, Core: %d image not found in file: %s", m_nodeId,
@@ -395,7 +395,6 @@ public class Engine {
 	}
 
 	public boolean analyseRoute(int startPc, TreeSet<Integer> endPcs) {
-
 		boolean reachable = false;
 		for (int end : endPcs) {
 			int dist = m_ae.determineReachability(startPc, end, m_nodeId,

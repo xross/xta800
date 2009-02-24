@@ -223,13 +223,12 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 		});
 		
 		m_tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection selection = event.getSelection();
 				Unknown unknown = (Unknown)((IStructuredSelection) selection).getFirstElement();
 				
 				if (unknown != null) {
-					m_selectedCodeRef = CodeReferenceFactory.createCodeReference("0x" + Integer.toHexString(unknown.getPc()));
+					m_selectedCodeRef = CodeReferenceFactory.createEndpointReference("0x" + Integer.toHexString(unknown.getPc()));
 					Engine engine = XtaEngine.getEngine();
 					m_selectedCodeRef.resolve(engine, engine.getNodeId(), engine.getCoreId());
 					m_setInstructionTimeAction.setEnabled(true);

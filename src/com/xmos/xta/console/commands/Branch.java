@@ -115,8 +115,8 @@ public class Branch extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-		CodeReference fromRef = CodeReferenceFactory.createCodeReference(m_fromRefString);
-		CodeReference toRef = CodeReferenceFactory.createCodeReference(m_toRefString);
+		CodeReference fromRef = CodeReferenceFactory.createReference(m_fromRefString);
+		CodeReference toRef = CodeReferenceFactory.createReference(m_toRefString);
 
     	switch (m_operation) {
     	case ADD:
