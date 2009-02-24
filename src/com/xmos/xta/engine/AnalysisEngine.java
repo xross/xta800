@@ -195,7 +195,9 @@ public class AnalysisEngine {
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
 
 			if (inst.getPredessors().size() == 1) {
-				if (inst.getPredessors().get(0).getSuccessors().size() != 1) {
+				if(inst.getPredessors().get(0).getReturn() || inst.getPredessors().get(0).getBranchLink()){
+					pcToNode.put(inst, new Node(pcToNode.size()));
+				} else if (inst.getPredessors().get(0).getSuccessors().size() != 1) {
 					pcToNode.put(inst, new Node(pcToNode.size()));
 				}
 			} else {
