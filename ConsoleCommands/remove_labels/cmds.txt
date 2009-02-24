@@ -1,10 +1,10 @@
-add label test.xc:5 bob
-add label test.xc:13 bill
+add label 0x10000 bob
+add label 0x10002 bill
 list labels
 remove label bob bill
 -list labels
-add label test.xc:11 bob
-add label test.xc:7 bill
+add label 0x10006 bob
+add label 0x1000a bill
 list labels
 remove label .* bill
 -list labels
