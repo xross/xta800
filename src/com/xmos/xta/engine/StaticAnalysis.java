@@ -8,18 +8,23 @@ import java.util.TreeSet;
 
 public class StaticAnalysis {
 	
-	private ArrayList<Node> m_nodes;
+	private ArrayList<BasicBlock> m_nodes;
 	private int m_startPc;
 	private TreeSet<Integer> m_endPcs; 
-	private ArrayList<LinkedList<Node>> m_pathList;
+	//private ArrayList<LinkedList<BasicBlock>> m_pathList;
+	
+	private ArrayList<PathBasicBlock> m_completedPaths;
+	
 	private boolean m_analysisReady;
 	
 	public StaticAnalysis(){
-		m_pathList = new ArrayList<LinkedList<Node>>();
+		
+
+		m_completedPaths = new ArrayList<PathBasicBlock>();
 		m_analysisReady = false;
 	}
 	
-	public void setNodes(ArrayList<Node> nodes){
+	public void setNodes(ArrayList<BasicBlock> nodes){
 		m_nodes = nodes;
 	}
 	
@@ -38,121 +43,137 @@ public class StaticAnalysis {
 			//error
 			return;
 		}
-		Node startNode = getNode(m_startPc);
+		BasicBlock startNode = getNode(m_startPc);
 		
 		if(startNode == null){
 			//error
 			return;
 		}
-		LinkedList<Node> emptyList = new LinkedList<Node>();
+		
+		PathBasicBlock startBasicBlock = new PathBasicBlock(startNode, null);
+		
 		Stack<Integer> stack = new Stack<Integer>();
-		Stack<LinkedList<Node>> nodeContext = new Stack<LinkedList<Node>>();
-		nodeContext.push(new LinkedList<Node>());
-		followNode(startNode, emptyList, stack, nodeContext);
+		
+		Stack<LinkedList<BasicBlock>> nodeContext = new Stack<LinkedList<BasicBlock>>();
+		nodeContext.push(new LinkedList<BasicBlock>());
+		
+		followNode(startBasicBlock, stack, nodeContext);
 		
 	}
 	
-	private void followNode(Node currentNode, LinkedList<Node> nodeList, 
-			Stack<Integer> stack, Stack<LinkedList<Node>> nodeContext) {
+	private void followNode(
+		PathBasicBlock currentBasicBlock, 
+		Stack<Integer> stack, 
+		Stack<LinkedList<BasicBlock>> nodeContext) {
 		
-		nodeList.add(currentNode);	
 		
-		boolean finalBlock = reachedEnd(currentNode.getInstructions(), m_endPcs);
+		
+		//nodeList.add(currentBasicBlock);	
+		
+		boolean finalBlock = reachedEnd(currentBasicBlock.getThisBasicBlock().getInstructions(), m_endPcs);
 		
 		if(finalBlock){
-			m_pathList.add(nodeList);
+			m_completedPaths.add(currentBasicBlock);
 			return;
 		} else {
 			
-			if(formsRecursion(currentNode, nodeContext)){
+			if(formsRecursion(currentBasicBlock, nodeContext)){
 				//error
-				System.err.println("error");
+				//System.err.println("error");
 				
 				return;
 			}
 			
-			int loopIndex = formsLoop(currentNode, nodeContext);
+			//int loopIndex = formsLoop(currentBasicBlock, nodeContext);
 			
-			if(loopIndex!=-1){
-				LinkedList<Node> currentContext = nodeContext.peek();
-				LinkedList<Node> trimedLoop = new LinkedList<Node>( currentContext.subList(loopIndex, currentContext.size()));
+			//PathBasicBlock loopBlock = formsLoop(currentBasicBlock, nodeContext);
+			
+			
+			//if(loopBlock!=null){
 				
-				Node formsLoopWith = currentContext.get(loopIndex -1);
-				formsLoopWith.addLoop(trimedLoop);
-				return;
-			}
+				//System.
+				
+				//LinkedList<BasicBlock> currentContext = nodeContext.peek();
+				
+				//BasicBlock formsLoopWith = currentContext.get(loopIndex -1);
+				
+				//PathBasicBlock nextPathBasicBlock = new PathBasicBlock(formsLoopWith, currentBasicBlock);
+				
+				//loopBlock.getLoopPaths().add(nextPathBasicBlock);
+			//	return;
+			//}
 			
-			XtaInstruction lastInstruction = currentNode.getInstructions().getLast();
+			XtaInstruction lastInstruction = currentBasicBlock.getThisBasicBlock().getInstructions().getLast();
 			
 			
 			if(lastInstruction.getReturn() && stack.size()>0){
 				//known returns
-				Node nextNode = getNode(stack.peek());
+				BasicBlock nextNode = getNode(stack.peek());
 				
-				
-				Stack<LinkedList<Node>> newContext = new Stack<LinkedList<Node>>();
+				Stack<LinkedList<BasicBlock>> newContext = new Stack<LinkedList<BasicBlock>>();
 				copyStack(nodeContext, newContext);
 				newContext.pop();
 
 				Stack<Integer> newStack = (Stack<Integer>) stack.clone();
 				newStack.pop();
 				
-				LinkedList<Node> currentList = new LinkedList<Node>(nodeList);
+				PathBasicBlock nextPathBasicBlock = new PathBasicBlock(nextNode, currentBasicBlock);
 				
-				followNode(nextNode, currentList, newStack, newContext);
+				followNode(nextPathBasicBlock, newStack, newContext);
 				
 			} else {
-				for(Node nextNode : currentNode.getNextNodes()){
+				for(BasicBlock nextNode : currentBasicBlock.getThisBasicBlock().getNextNodes()){
 					if(lastInstruction.getBranchLink()){
 						
 						Stack<Integer> newStack = (Stack<Integer>) stack.clone();
 						newStack.add(lastInstruction.getPc() + lastInstruction.getNumBytes());
 						
-						Stack<LinkedList<Node>> newContext = new Stack<LinkedList<Node>>();
+						Stack<LinkedList<BasicBlock>> newContext = new Stack<LinkedList<BasicBlock>>();
 						copyStack(nodeContext, newContext);
-						newContext.push(new LinkedList<Node>());
+						newContext.push(new LinkedList<BasicBlock>());
 						
-						LinkedList<Node> currentList = new LinkedList<Node>(nodeList);
+						PathBasicBlock nextPathBasicBlock = new PathBasicBlock(nextNode, currentBasicBlock);
 						
-						followNode(nextNode, currentList, newStack, newContext);
+						followNode(nextPathBasicBlock, newStack, newContext);
 					} else {
 						Stack<Integer> newStack = (Stack<Integer>) stack.clone();
 						
-						Stack<LinkedList<Node>> newContext = new Stack<LinkedList<Node>>();
+						Stack<LinkedList<BasicBlock>> newContext = new Stack<LinkedList<BasicBlock>>();
 						copyStack(nodeContext, newContext);
-						newContext.peek().add(currentNode);
 						
-						LinkedList<Node> currentList = new LinkedList<Node>(nodeList);
+						newContext.peek().add(currentBasicBlock.getThisBasicBlock());
 						
-						followNode(nextNode, currentList, newStack, newContext);
+						PathBasicBlock nextPathBasicBlock = new PathBasicBlock(nextNode, currentBasicBlock);
+						
+						followNode(nextPathBasicBlock, newStack, newContext);
 					}
 				}
 			}
 		}	
 	}
 
-	private void copyStack(Stack<LinkedList<Node>> nodeContext, Stack<LinkedList<Node>> temp) {
-		Iterator<LinkedList<Node>> iter = nodeContext.iterator();
+	private void copyStack(Stack<LinkedList<BasicBlock>> nodeContext, Stack<LinkedList<BasicBlock>> temp) {
+		Iterator<LinkedList<BasicBlock>> iter = nodeContext.iterator();
 		while (iter.hasNext()) {
-			LinkedList<Node> pcs = iter.next();
-			LinkedList<Node> copy = new LinkedList<Node>(pcs);
+			LinkedList<BasicBlock> pcs = iter.next();
+			LinkedList<BasicBlock> copy = new LinkedList<BasicBlock>(pcs);
 			temp.add(copy);
 		}
 	}
 
-	private boolean formsRecursion(Node currentNode, Stack<LinkedList<Node>> nodeContext) {
-		LinkedList<Node> notInContext = new LinkedList<Node>();
-		for(LinkedList<Node> list : nodeContext){
+	private boolean formsRecursion(PathBasicBlock currentNode, Stack<LinkedList<BasicBlock>> nodeContext) {
+		LinkedList<BasicBlock> notInContext = new LinkedList<BasicBlock>();
+		for(LinkedList<BasicBlock> list : nodeContext){
 			if(nodeContext.indexOf(list)< nodeContext.size()-1){
 				notInContext.addAll(list);
 			}
 		}
-		return notInContext.contains(currentNode);
+		return notInContext.contains(currentNode.getThisBasicBlock());
 	}
 	
-	private int formsLoop(Node currentNode, Stack<LinkedList<Node>> nodeContext) {
-		LinkedList<Node> currentContext = nodeContext.peek();
-		return currentContext.indexOf(currentNode);
+	private int formsLoop(PathBasicBlock currentNode, Stack<LinkedList<BasicBlock>> nodeContext) {
+		LinkedList<BasicBlock> currentContext = nodeContext.peek();
+		return currentContext.indexOf(currentNode.getThisBasicBlock());
 	}
 
 	private boolean reachedEnd(LinkedList<XtaInstruction> instructions, TreeSet<Integer> pcs) {
@@ -164,40 +185,38 @@ public class StaticAnalysis {
 		return false;
 	}
 
-	private Node getNode(int pc) {
-		for(Node node : m_nodes){
+	private BasicBlock getNode(int pc) {
+		for(BasicBlock node : m_nodes){
 			for(XtaInstruction inst : node.getInstructions()){
 				if(inst.getPc() == pc) return node;
 			}
-			
 		}
 		return null;
 	}
 	
 	public void dumpNodes(){
-		for(LinkedList<Node> nodeList : m_pathList){
-			System.out.println("path " + m_pathList.indexOf(nodeList) + ":");
-			dumpNode(nodeList, 0);
+		for(PathBasicBlock bb :m_completedPaths){
+			dumpNode(bb, 0);
+			System.out.println();
 		}
 	}
-	
-	private void dumpNode(LinkedList<Node> nodeList, int indent){
-		if(indent > 4) return;
+
+	private void dumpNode(PathBasicBlock bb, int indent){
 		String t = "";
-		for(int i=0;i<indent;i++){
-			t += "\t";
+		for(int i=0;i< indent;i++){
+			t+="\t";
 		}
-		int nodeIndex = 0;
-		for(Node node : nodeList){
-			System.out.println(t+"node " + nodeIndex++);
-			for(XtaInstruction inst : node.getInstructions()){
-				System.out.println(t + inst);
+		for(PathBasicBlock pbb : bb.getPathBlocks()){
+			for(XtaInstruction inst : pbb.getThisBasicBlock().getInstructions()){
+				for(int pc : pbb.getThisBasicBlock().getIBufferStates().get(0).m_fnops){
+					if(pc == inst.getPc()) System.out.println(t+"FNOP");
+				}
+				System.out.println(t+inst);
 			}
-			int loopIndex =0;
-			for(LinkedList<Node> loop : node.getLoops()){
-				System.out.println(t+"\tloop " + loopIndex++);
+			for(PathBasicBlock loop : pbb.getLoopPaths()){
 				dumpNode(loop, indent+1);
 			}
 		}
 	}
+
 }

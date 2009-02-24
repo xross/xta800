@@ -6,11 +6,11 @@ import java.util.Arrays;
 public class FloydWarshall {
 
 	   int[][] D;
-	   Node[][] P;
+	   BasicBlock[][] P;
 
-	   public void calcShortestPaths(Node[] nodes, Edge[] edges) {
+	   public void calcShortestPaths(BasicBlock[] nodes, Edge[] edges) {
 	       D = initializeWeight(nodes, edges);
-	       P = new Node[nodes.length][nodes.length];
+	       P = new BasicBlock[nodes.length][nodes.length];
 
 	       for(int k=0; k<nodes.length; k++){
 	           for(int i=0; i<nodes.length; i++){
@@ -24,35 +24,35 @@ public class FloydWarshall {
 	       }
 	   }
 
-	   public int getShortestDistance(Node source, Node target){
+	   public int getShortestDistance(BasicBlock source, BasicBlock target){
 	       return D[source.m_nodeId][target.m_nodeId];
 	   }
 
-	   public ArrayList<Node> getShortestPath(Node source, Node target){
+	   public ArrayList<BasicBlock> getShortestPath(BasicBlock source, BasicBlock target){
 	       if(D[source.m_nodeId][target.m_nodeId] == Integer.MAX_VALUE){
-	           return new ArrayList<Node>();
+	           return new ArrayList<BasicBlock>();
 	       }
-	       ArrayList<Node> path = getIntermediatePath(source, target);
+	       ArrayList<BasicBlock> path = getIntermediatePath(source, target);
 	       path.add(0, source);
 	       path.add(target);
 	       return path;
 	   }
 
-	   private ArrayList<Node> getIntermediatePath(Node source, Node target){
+	   private ArrayList<BasicBlock> getIntermediatePath(BasicBlock source, BasicBlock target){
 	       if(D == null){
 	           throw new IllegalArgumentException("Must call calcShortestPaths(...) before attempting to obtain a path.");
 	       }
 	       if(P[source.m_nodeId][target.m_nodeId] == null){
-	           return new ArrayList<Node>();
+	           return new ArrayList<BasicBlock>();
 	       }
-	       ArrayList<Node> path = new ArrayList<Node>();
+	       ArrayList<BasicBlock> path = new ArrayList<BasicBlock>();
 	       path.addAll(getIntermediatePath(source, P[source.m_nodeId][target.m_nodeId]));
 	       path.add(P[source.m_nodeId][target.m_nodeId]);
 	       path.addAll(getIntermediatePath(P[source.m_nodeId][target.m_nodeId], target));
 	       return path;
 	   }
 	   
-	   private int[][] initializeWeight(Node[] nodes, Edge[] edges){
+	   private int[][] initializeWeight(BasicBlock[] nodes, Edge[] edges){
 	       int[][] Weight = new int[nodes.length][nodes.length];
 	       for(int i=0; i<nodes.length; i++){
 	           Arrays.fill(Weight[i], Integer.MAX_VALUE);
