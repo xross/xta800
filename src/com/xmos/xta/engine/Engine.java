@@ -429,8 +429,8 @@ public class Engine {
 
 		//TODO
 		StaticAnalysis sa = new StaticAnalysis();
-		ArrayList<Node> nodes = new ArrayList<Node>();
-		for(Node node : m_ae.getNodes(m_nodeId, m_coreId)){
+		ArrayList<BasicBlock> nodes = new ArrayList<BasicBlock>();
+		for(BasicBlock node : m_ae.getNodes(m_nodeId, m_coreId)){
 			nodes.add(node);
 		}
 		sa.setNodes(nodes);

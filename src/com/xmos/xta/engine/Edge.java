@@ -2,10 +2,10 @@ package com.xmos.xta.engine;
 
 public class Edge implements Comparable<Edge> {
 
-	   Node from, to;
+	   BasicBlock from, to;
 	   int weight;
 
-	   Edge(Node f, Node t, int w){
+	   Edge(BasicBlock f, BasicBlock t, int w){
 	       from = f;
 	       to = t;
 	       weight = w;

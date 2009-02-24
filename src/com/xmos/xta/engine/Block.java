@@ -588,6 +588,7 @@ public class Block implements Comparable<Block> {
 		}
 	}
 
+	////
 	public ArrayList<Block> getLoopPaths() {
 		if (m_seen == 0) {
 			return m_loopPaths;
@@ -629,6 +630,7 @@ public class Block implements Comparable<Block> {
 		return attributes;
 	}
 
+	////
 	public ArrayList<Block> getPathBlocks() {
 		ArrayList<Block> paths = new ArrayList<Block>();
 		Block block = this;
@@ -647,6 +649,7 @@ public class Block implements Comparable<Block> {
 		return paths;
 	}
 
+	////
 	public void doneWithPathBlocks() {
 		Block block = this;
 
@@ -817,38 +820,4 @@ public class Block implements Comparable<Block> {
 	public int getNumPausablesLoopsOnly() {	return m_blockStats.getNumPausablesLoopsOnly();}
 	public int getNumUnknownsLoopsOnly() { return m_blockStats.getNumUnknownsLoopsOnly();}
 
-	/*
-	private boolean takeNextInstruction(XtaInstruction instruction, NextPcType targetPc, MachineState machineState) {
-		boolean maintainedMS = false;
-		if(targetPc.isBranch()){
-
-			if(!STATIC){
-				if(machineState.branchTargetKnown()){
-					//then the unknown register much be the guard
-					Expression register = machineState.getGuardRegister();
-					
-					maintainedMS = register.resolveEqualTo(0, machineState);
-				} else {
-					//it was the target that was unknown
-					Expression register = machineState.getBranchTargetRegister();
-					maintainedMS = register.resolveEqualTo(targetPc.getPc(), machineState);
-				}
-			}
-			
-			if(targetPc.isBranchLink()){
-				pushFunction(targetPc.getPc());
-			}
-			
-			
-			machineState.branchTo(targetPc.getPc(), instruction.isLoadStore(), m_currentThread);
-		} else {
-			if (!instruction.isLoadStore()) {
-				machineState.fetch(m_currentThread);
-			}
-			machineState.setPc(targetPc.getPc(), m_currentThread);
-			machineState.issue(instruction.getNumBytes(), m_currentThread);
-		}
-		return maintainedMS;
-	}
-	*/
 }

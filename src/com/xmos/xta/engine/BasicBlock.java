@@ -3,37 +3,38 @@ package com.xmos.xta.engine;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-public class Node implements Comparable<Node> {
+public class BasicBlock implements Comparable<BasicBlock> {
 
 	int m_nodeId;
 	private LinkedList<XtaInstruction> m_instructions;
 	private ArrayList<IBufferState> m_iBufferStates;
-	private ArrayList<Node> m_nextNode;
-	private ArrayList<Node> m_previousNode;
-	private ArrayList<LinkedList<Node>> m_loops;
-	
+	private ArrayList<BasicBlock> m_nextNode;
+	private ArrayList<BasicBlock> m_previousNode;
+	//private ArrayList<LinkedList<BasicBlock>> m_loops;
+	private ArrayList<PathBasicBlock> m_loopPaths;
 
-	Node(int n) {
+	BasicBlock(int n) {
 		m_nodeId = n;
 		m_iBufferStates = new ArrayList<IBufferState>();
 		m_instructions = new LinkedList<XtaInstruction>();
-		m_nextNode = new ArrayList<Node>();
-		m_previousNode = new ArrayList<Node>();
-		m_loops = new ArrayList<LinkedList<Node>>();
+		m_nextNode = new ArrayList<BasicBlock>();
+		m_previousNode = new ArrayList<BasicBlock>();
+		//m_loops = new ArrayList<LinkedList<BasicBlock>>();
+		m_loopPaths = new ArrayList<PathBasicBlock>();
 	}
 	
 	public String toString(){
 		return "node: " + this.m_nodeId + " " + m_instructions.getFirst();
 	}
 
-	public int compareTo(Node n) {
+	public int compareTo(BasicBlock n) {
 		if (n == this)
 			return 0;
 		return -1;
 	}
 
-	public ArrayList<LinkedList<Node>> getLoops(){
-		return m_loops;
+	public ArrayList<PathBasicBlock> getLoopPaths(){
+		return m_loopPaths;
 	}
 	
 	public ArrayList<IBufferState> getIBufferStates(){
@@ -44,11 +45,11 @@ public class Node implements Comparable<Node> {
 		return m_instructions;
 	}
 
-	public ArrayList<Node> getNextNodes() {
+	public ArrayList<BasicBlock> getNextNodes() {
 		return m_nextNode;
 	}
 
-	public ArrayList<Node> getPrevoiusNodes() {
+	public ArrayList<BasicBlock> getPrevoiusNodes() {
 		return m_previousNode;
 	}
 
@@ -96,10 +97,7 @@ public class Node implements Comparable<Node> {
 					addIbuffState(ib);
 				}
 			}
-			
 		}
-		
-		
 		return true;
 	}
 
@@ -112,11 +110,8 @@ public class Node implements Comparable<Node> {
 		m_iBufferStates.add(ib);
 		return true;
 	}
+	
 
-	public void addLoop(LinkedList<Node> trimedLoop) {
-		m_loops.add(trimedLoop);
-		
-	}
 	
 	
 }

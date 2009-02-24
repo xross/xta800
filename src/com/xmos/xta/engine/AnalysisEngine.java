@@ -139,12 +139,12 @@ public class AnalysisEngine {
 	}
 
 	private void fillGraphFnops(int nodeId, int coreId) {
-		HashMap<XtaInstruction, Node> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
-		for (Node node : pcToNode.values()) {
+		HashMap<XtaInstruction, BasicBlock> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
+		for (BasicBlock node : pcToNode.values()) {
 			node.getPrevoiusNodes().clear();
 		}
-		for (Node node : pcToNode.values()) {
-			for (Node nextNode : node.getNextNodes()) {
+		for (BasicBlock node : pcToNode.values()) {
+			for (BasicBlock nextNode : node.getNextNodes()) {
 
 				nextNode.getPrevoiusNodes().add(node);
 			}
@@ -152,14 +152,14 @@ public class AnalysisEngine {
 		itterateOverGraph(pcToNode);
 	}
 
-	private void itterateOverGraph(HashMap<XtaInstruction, Node> pcToNode) {
+	private void itterateOverGraph(HashMap<XtaInstruction, BasicBlock> pcToNode) {
 		
 		for(int i=0;i<pcToNode.values().size();i++){
-			for (Node node : pcToNode.values()) {
+			for (BasicBlock node : pcToNode.values()) {
 				if (node.getPrevoiusNodes().size() == 0 && node.getIBufferStates().size() == 0) {
 					 node.setIBuferStart(0);
 				} else {
-					for (Node previouseNode : node.getPrevoiusNodes()) {
+					for (BasicBlock previouseNode : node.getPrevoiusNodes()) {
 						ArrayList<IBufferState> bob = new  ArrayList<IBufferState>(previouseNode.getIBufferStates());
 						for (IBufferState ibuffer : bob) {
 							node.setIBuferStart(ibuffer.finalIBuffer);
@@ -173,7 +173,7 @@ public class AnalysisEngine {
 
 	private void makeNodeMap(XeObject xeObject, InstructionDecodeCache decodeCache, int nodeId, int coreId) {
 
-		HashMap<XtaInstruction, Node> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
+		HashMap<XtaInstruction, BasicBlock> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
 
 		for (AssemblyLine al : xeObject.getInstructions()) {
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
@@ -187,7 +187,6 @@ public class AnalysisEngine {
 				if (succ != null) {
 					succ.addPredessor(inst);
 				}
-
 			}
 		}
 
@@ -196,17 +195,17 @@ public class AnalysisEngine {
 
 			if (inst.getPredessors().size() == 1) {
 				if(inst.getPredessors().get(0).getReturn() || inst.getPredessors().get(0).getBranchLink()){
-					pcToNode.put(inst, new Node(pcToNode.size()));
+					pcToNode.put(inst, new BasicBlock(pcToNode.size()));
 				} else if (inst.getPredessors().get(0).getSuccessors().size() != 1) {
-					pcToNode.put(inst, new Node(pcToNode.size()));
+					pcToNode.put(inst, new BasicBlock(pcToNode.size()));
 				}
 			} else {
-				pcToNode.put(inst, new Node(pcToNode.size()));
+				pcToNode.put(inst, new BasicBlock(pcToNode.size()));
 			}
 		}
 		for (XtaInstruction basicBlockStart : pcToNode.keySet()) {
 			XtaInstruction inst = basicBlockStart;
-			Node node = pcToNode.get(basicBlockStart);
+			BasicBlock node = pcToNode.get(basicBlockStart);
 			node.getInstructions().add(basicBlockStart);
 			while (inst != null && inst.getSuccessors().size() == 1) {
 				inst = inst.getSuccessors().get(0).getInstruction();
@@ -218,10 +217,10 @@ public class AnalysisEngine {
 			}
 		}
 		for (XtaInstruction basicBlockStart : pcToNode.keySet()) {
-			Node node = pcToNode.get(basicBlockStart);
+			BasicBlock node = pcToNode.get(basicBlockStart);
 			XtaInstruction inst = node.getInstructions().getLast();
 			for (NextPcType nextPc : inst.getSuccessors()) {
-				Node next = pcToNode.get(decodeCache.getInstruction(nextPc.getPc()));
+				BasicBlock next = pcToNode.get(decodeCache.getInstruction(nextPc.getPc()));
 				if (next != null) {
 					node.getNextNodes().add(next);
 				}
@@ -230,10 +229,10 @@ public class AnalysisEngine {
 	}
 
 	private void printDot(int nodeId, int coreId) {
-		HashMap<XtaInstruction, Node> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
+		HashMap<XtaInstruction, BasicBlock> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
 
 		System.out.println("digraph g {");
-		for (Node node : pcToNode.values()) {
+		for (BasicBlock node : pcToNode.values()) {
 			int maxFnops =0 ;
 			int minFnops =0x10000 ;
 			boolean singular = false;
@@ -272,15 +271,15 @@ public class AnalysisEngine {
 				
 			}
 		}
-		for (Node node : pcToNode.values()) {
-			for (Node nextNode : node.getNextNodes()) {
+		for (BasicBlock node : pcToNode.values()) {
+			for (BasicBlock nextNode : node.getNextNodes()) {
 				System.out.println("node" + node.m_nodeId + " -> node" + nextNode.m_nodeId + ";");
 			}
 		}
 		System.out.println("}");
 	}
 
-	private HashMap<XtaInstruction, Node> getBasicBlockStartPcs(int nodeId, int coreId) {
+	private HashMap<XtaInstruction, BasicBlock> getBasicBlockStartPcs(int nodeId, int coreId) {
 		for (BasicBlockStartPcs bbsp : m_basicBlockStartPcs) {
 			if (bbsp.getCoreId() == coreId && bbsp.getNodeId() == nodeId) {
 				return bbsp.getBasicBlockMap();
@@ -292,8 +291,8 @@ public class AnalysisEngine {
 	}
 
 	public int determineReachability(int startPc, int endPc, int nodeId, int coreId) {
-		Node to = getNode(startPc, nodeId, coreId);
-		Node from = getNode(endPc, nodeId, coreId);
+		BasicBlock to = getNode(startPc, nodeId, coreId);
+		BasicBlock from = getNode(endPc, nodeId, coreId);
 		if (from != null && to != null) {
 			if (from == to) {
 				return 0;
@@ -301,7 +300,7 @@ public class AnalysisEngine {
 			FloydWarshall fw = new FloydWarshall();
 			fw.calcShortestPaths(getNodes(nodeId, coreId), getEdges(nodeId, coreId));
 			if (DEBUG) {
-				for (Node node : fw.getShortestPath(from, to)) {
+				for (BasicBlock node : fw.getShortestPath(from, to)) {
 					System.out.println("node: 0x" + Integer.toHexString(getPc(node, nodeId, coreId).getPc()));
 				}
 			}
@@ -311,7 +310,7 @@ public class AnalysisEngine {
 		}
 	}
 
-	private XtaInstruction getPc(Node node, int nodeId, int coreId) {
+	private XtaInstruction getPc(BasicBlock node, int nodeId, int coreId) {
 		for (XtaInstruction pc : getBasicBlockStartPcs(nodeId, coreId).keySet()) {
 			if (getBasicBlockStartPcs(nodeId, coreId).get(pc).m_nodeId == node.m_nodeId) {
 				return pc;
@@ -321,8 +320,8 @@ public class AnalysisEngine {
 		return null;
 	}
 
-	private Node getNode(int pc, int nodeId, int coreId) {
-		for (Node n : getBasicBlockStartPcs(nodeId, coreId).values()) {
+	private BasicBlock getNode(int pc, int nodeId, int coreId) {
+		for (BasicBlock n : getBasicBlockStartPcs(nodeId, coreId).values()) {
 			LinkedList<XtaInstruction> insts = n.getInstructions();
 			for (XtaInstruction inst : insts) {
 				if (inst.getPc() == pc) {
@@ -335,16 +334,16 @@ public class AnalysisEngine {
 
 	public Edge[] getEdges(int nodeId, int coreId) {
 		ArrayList<Edge> edges = new ArrayList<Edge>();
-		for (Node node : getBasicBlockStartPcs(nodeId, coreId).values()) {
-			for (Node nextNode : node.getNextNodes()) {
+		for (BasicBlock node : getBasicBlockStartPcs(nodeId, coreId).values()) {
+			for (BasicBlock nextNode : node.getNextNodes()) {
 				edges.add(new Edge(nextNode, node, 1));
 			}
 		}
 		return edges.toArray(new Edge[] {});
 	}
 
-	public Node[] getNodes(int nodeId, int coreId) {
-		return getBasicBlockStartPcs(nodeId, coreId).values().toArray(new Node[] {});
+	public BasicBlock[] getNodes(int nodeId, int coreId) {
+		return getBasicBlockStartPcs(nodeId, coreId).values().toArray(new BasicBlock[] {});
 	}
 
 	private void locatePoolPointers() {
