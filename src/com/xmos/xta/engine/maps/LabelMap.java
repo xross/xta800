@@ -3,6 +3,8 @@ package com.xmos.xta.engine.maps;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.xmos.elfhandler.Symbol;
+import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.Engine;
 
@@ -30,6 +32,10 @@ public class LabelMap {
 	}
 	
 	public boolean load(Engine engine, XeLoader xeLoader) {
+        SymbolTable symbolTable = xeLoader.getSymbolTable(m_nodeId, m_coreId);
+        for (Symbol symbol : symbolTable.getElfHandler().getSymbolsNameKeyed().values()) {
+        	m_labels.put(symbol.getName(), symbol.getValue());	
+        }
         return true;
 	}	
 }

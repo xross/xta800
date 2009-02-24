@@ -57,7 +57,6 @@ public class Engine {
 	private ArrayList<SrcTableMap> m_srcLabelTables;
 	private ArrayList<SrcLabelMap> m_endpoints;
 	private ArrayList<SrcTableMap> m_endpointTables;
-	private ArrayList<PathQuery> m_pathQueries;
 	private AnalysisEngine m_ae;
 
 	public Engine(Config config) {
@@ -80,7 +79,6 @@ public class Engine {
 		m_coreId = 0;
 		m_srcPaths = ".";
 		m_notifiers = new Vector<Notifier>();
-		m_pathQueries = new ArrayList<PathQuery>();
 		m_abort = false;
 		m_progress = new Progress(Progress.State.IDLE, 0, 0);
 
@@ -276,8 +274,6 @@ public class Engine {
 	}
 
 	public boolean loadExecutable(File executableFile, FileFinder fileFinder) {
-		m_pathQueries.clear();
-
 		XeLoader newLoader = new XeLoader();
 
 		boolean success = newLoader.loadExecutable(executableFile);
@@ -702,14 +698,6 @@ public class Engine {
 		return getSrcLabelTableMap(m_endpointTables);
 	}
 	
-	public void addQuery(PathQuery pq) {
-		this.m_pathQueries.add(pq);
-	}
-
-	public ArrayList<PathQuery> getPathQueries() {
-		return m_pathQueries;
-	}
-
 	public File getExecutable() {
 		return m_executableFile;
 	}
