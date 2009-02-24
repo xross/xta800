@@ -429,13 +429,13 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      	});
      	setAction(RemoveStartPointID, new Action("Remove start point") {
      		public void run() {
-     			CodeReference startPoint = CodeReferenceFactory.createCodeReference("");
+     			CodeReference startPoint = CodeReferenceFactory.createEndpointReference("");
      			XtaNotifier.getInstance().notifySetStartPoint(startPoint);     			
      		}
      	});
      	setAction(RemoveEndPointID, new Action("Remove end point") {
      		public void run() {
-     			CodeReference endPoint = CodeReferenceFactory.createCodeReference("");
+     			CodeReference endPoint = CodeReferenceFactory.createEndpointReference("");
      			XtaNotifier.getInstance().notifySetEndPoint(endPoint);     			
      		}
      	});
@@ -475,7 +475,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		m_clickCodeRefString = getLineDescription(clickLineNum);				
 		if (m_clickCodeRefString != null) {
 			
-			m_clickCodeRef = CodeReferenceFactory.createCodeReference(m_clickCodeRefString); 
+			m_clickCodeRef = CodeReferenceFactory.createEndpointReference(m_clickCodeRefString); 
 			
 			if (isStartPointSet(m_clickCodeRefString)) {
 			    addAction(menu, RemoveStartPointID);

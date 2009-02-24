@@ -2,9 +2,8 @@ package com.xmos.xta.engine.references;
 
 import com.xmos.xta.engine.Engine;
 
-public class StringReference extends CodeReference {
-
-	StringReference(String ref) {
+public class ErrorReference extends CodeReference {
+	ErrorReference(String ref) {
 		super(ref);
 	}
 		

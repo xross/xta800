@@ -123,7 +123,7 @@ public class Label extends Command {
     	switch (m_operation) {
     	case ADD:
     		assert(m_labels.size() == 1);
-    		CodeReference ref = CodeReferenceFactory.createCodeReference(m_refString);
+    		CodeReference ref = CodeReferenceFactory.createReference(m_refString);
 			engine.addLabel(m_labels.get(0), ref);
 			break;			
     	case REMOVE:

@@ -99,7 +99,7 @@ public class Filter extends Command {
         if (!isExecutableLoaded(engine, console))
             return;    
 
-        CodeReference ref = CodeReferenceFactory.createCodeReference(m_refString);
+        CodeReference ref = CodeReferenceFactory.createSrcLabelReference(m_refString);
 
        	switch (m_operation) {
        	case ADD:

@@ -3,7 +3,6 @@ package com.xmos.xta.engine.references;
 import com.xmos.xta.engine.Engine;
 
 public class LabelReference extends CodeReference {
-
 	LabelReference(String ref) {
 		super(ref);
 	}

@@ -2,8 +2,7 @@ package com.xmos.xta.engine.references;
 
 import com.xmos.xta.engine.Engine;
 
-public class PcReference extends CodeReference {
-	
+public class PcReference extends CodeReference {	
 	PcReference(String ref, int pc) {
 		super(ref);		
 		setPc(pc);

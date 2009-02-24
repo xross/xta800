@@ -122,7 +122,7 @@ public class SrcLabel extends Command {
     	switch (m_operation) {
     	case ADD:
     		assert(m_labels.size() == 1);
-    		CodeReference ref = CodeReferenceFactory.createCodeReference(m_refString);
+    		CodeReference ref = CodeReferenceFactory.createSrcLabelReference(m_refString);
 			engine.addSrcLabel(m_labels.get(0), ref);
 			break;			
     	case REMOVE:

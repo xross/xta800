@@ -122,9 +122,9 @@ public class Endpoint extends Command {
     	switch (m_operation) {
     	case ADD:
     		assert(m_endpoints.size() == 1);
-    		CodeReference ref = CodeReferenceFactory.createCodeReference(m_refString);
+    		CodeReference ref = CodeReferenceFactory.createEndpointReference(m_refString);
 			engine.addEndpoint(m_endpoints.get(0), ref);
-			break;			
+			break;
     	case REMOVE:
     		for (String endpoint : m_endpoints) {
     			engine.removeEndpoint(endpoint);

@@ -337,6 +337,10 @@
                name="aboutText"
                value="This is an unreleased/unsupported version. (build xxxx)">
          </property>
+         <property
+          	name="windowImages" 
+          	value="icons/xta16x16.png,icons/xta32x32.png">
+         </property>
       </product>
    </extension>
   
