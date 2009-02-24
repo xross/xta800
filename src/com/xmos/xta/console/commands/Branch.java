@@ -55,7 +55,15 @@ public class Branch extends Command {
 	}
 
 	public String name() {
-		return "branch";
+    	switch (m_operation) {
+    	case ADD:
+    	case REMOVE:
+    		return "branch"; 
+    	case LIST:
+    		return "branches";
+    	}    			
+    	assert(false);
+        return "";
 	}
 
 	public String commandLine() {
@@ -65,7 +73,7 @@ public class Branch extends Command {
     	case REMOVE:
     		return "branch " + m_fromRefString;
     	case LIST:
-    		return "branch";
+    		return "branches";
         default:
         	assert(false);
             return "";
@@ -79,7 +87,7 @@ public class Branch extends Command {
     	case REMOVE:
             return "branch <from ref>: Removes the given from reference from the branches list";
     	case LIST:
-            return "branch: Lists the branches";
+            return "branches: Lists the branches";
         default:
         	assert(false);
             return "";
@@ -127,6 +135,11 @@ public class Branch extends Command {
 	}
 	
 	private void listBranches(Engine engine, Console console) {
+		if (engine.getBranches().entrySet().size() == 0){
+			console.display("none\n");
+			return;
+		}
+		
     	Iterator<Map.Entry<Integer, TreeSet<Integer>>> iter = engine.getBranches().entrySet().iterator();        
     	while (iter.hasNext()) {
     	    Map.Entry<Integer, TreeSet<Integer>> pair = iter.next();

@@ -15,7 +15,7 @@ public class CodeReferenceFactory {
 			return new PcReference(ref, getPcString(ref));
 		} else if (isSourceReference(ref)) {
 			return new FileLineReference(ref);
-		} else if (m_engine.isLabel(reference)) {
+		} else if (m_engine.getLabels().containsKey(reference)) {
 			return new LabelReference(ref);
 		} else {
 			return new StringReference(ref);
@@ -60,5 +60,5 @@ public class CodeReferenceFactory {
 			assert(false);
 			return 0;
 		}
-	}
+	}	
 }

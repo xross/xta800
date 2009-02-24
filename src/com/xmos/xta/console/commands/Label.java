@@ -31,8 +31,7 @@ public class Label extends Command {
 		m_operation = operation;
 		m_labels = new ArrayList<String>();
 		m_labels.add(label);
-		m_refString = refString;
-		
+		m_refString = refString;		
 	}
 
 	public int numArgs() {
@@ -91,8 +90,6 @@ public class Label extends Command {
         return "";
 	}
 
-	CodeReference ref;
-	CodeReference labelRef;
 	public Command clone(String[] args, int index, boolean commandLineMode) {
 		if ((index + numArgs()) >= args.length)
 			return null;
@@ -148,11 +145,11 @@ public class Label extends Command {
 			console.display("none\n");
 			return;
 		}
-
+		
     	Iterator<Map.Entry<String, Integer>> iter = engine.getLabels().entrySet().iterator();        
     	while (iter.hasNext()) {
     	    Map.Entry<String, Integer> pair = iter.next();
-    	    console.display(String.format("- ref: %s, pc: 0x%x\n", pair.getKey(), pair.getValue()));
+    	    console.display(String.format("Label: %s, pc: 0x%x\n", pair.getKey(), pair.getValue()));
     	}		
 	}
 }
