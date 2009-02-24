@@ -11,8 +11,8 @@ public class LabelReference extends CodeReference {
 	public boolean resolve(Engine engine, int m_nodeId, int m_coreId) {
 		String ref = getRef();
 		
-	    if (engine.isLabel(ref)) {
-		    setPc(engine.getLabelPc(ref));
+	    if (engine.getLabels().containsKey(ref)) {
+		    setPc(engine.getLabels().get(ref));
 	        setResolved(true);
 	        return true;
 	    }

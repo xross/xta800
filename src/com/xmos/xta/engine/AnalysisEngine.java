@@ -380,9 +380,9 @@ public class AnalysisEngine {
 	private void addBranchMaps(XeObject xeObject, InstructionDecodeCache decodeCache, int nodeId, int coreId) {
 		for (AssemblyLine al : xeObject.getInstructions()) {
 			for (BranchMap bm : m_branches) {
-				if (bm.getBranches().containsKey(al.getPc())) {
+				if (bm.getMap().containsKey(al.getPc())) {
 					XtaInstruction inst = decodeCache.getInstruction(al.getPc());
-					for (int target : bm.getBranches().get(al.getPc())) {
+					for (int target : bm.getMap().get(al.getPc())) {
 						inst.addSuccessor(decodeCache.getInstruction(target), true);
 					}
 				}

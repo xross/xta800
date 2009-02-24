@@ -1,13 +1,15 @@
 package com.xmos.xta.engine.maps;
 
-public class TableInfo {
+public class SrcLabelInfo {
     private int m_pc;
+    private String m_label;
     private String m_compilationDir;
     private String m_fileName;
     private int m_lineNumber;
     
-    public TableInfo(int pc, String compilationDir, String fileName, int lineNumber) {
+    public SrcLabelInfo(int pc, String label, String compilationDir, String fileName, int lineNumber) {
     	m_pc = pc;
+    	m_label = label;
     	m_compilationDir = compilationDir;
     	m_fileName = fileName;
     	m_lineNumber = lineNumber;
@@ -16,7 +18,11 @@ public class TableInfo {
     public int getPc() {
     	return m_pc;
     }
-        
+    
+    public String getLabel() {
+    	return m_label;
+    }
+    
     public String getCompilationDir() {
     	return m_compilationDir;
     }

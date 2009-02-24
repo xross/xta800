@@ -8,6 +8,7 @@ import com.xmos.xta.console.commands.Filter;
 import com.xmos.xta.console.commands.Label;
 import com.xmos.xta.console.commands.Prohibited;
 import com.xmos.xta.console.commands.Required;
+import com.xmos.xta.console.commands.SrcLabel;
 
 public class Remove extends CommandContainer {
 	static private Command[] m_options = { 
@@ -15,8 +16,9 @@ public class Remove extends CommandContainer {
 		new Prohibited(Prohibited.Operation.REMOVE), 
 		new Required(Required.Operation.REMOVE), 
 		new Branch(Branch.Operation.REMOVE),		
-		new Endpoint(Endpoint.Operation.REMOVE),		
 		new Label(Label.Operation.REMOVE), 
+		new SrcLabel(SrcLabel.Operation.REMOVE),		
+		new Endpoint(Endpoint.Operation.REMOVE),		
 	};
 	
 	public Remove() { super("remove"); }

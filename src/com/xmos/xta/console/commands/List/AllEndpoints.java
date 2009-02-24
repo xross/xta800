@@ -4,7 +4,7 @@ import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.maps.TableInfo;
+import com.xmos.xta.engine.maps.SrcTableInfo;
 
 public class AllEndpoints extends Command {
 	public AllEndpoints() {
@@ -39,7 +39,7 @@ public class AllEndpoints extends Command {
 			return;
 		}
 
-		for (TableInfo info : engine.getEndpointTable().values()) {
+		for (SrcTableInfo info : engine.getEndpointTable().values()) {
     	    console.display(String.format("pc: 0x%x, compilation dir: %s, filename: %s, line number: %d\n", 
     	    		info.getPc(), info.getCompilationDir(), 
     	    		info.getFileName(), info.getLineNumber()));

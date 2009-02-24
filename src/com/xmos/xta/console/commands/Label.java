@@ -1,12 +1,13 @@
 package com.xmos.xta.console.commands;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.maps.LabelInfo;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
 
@@ -144,20 +145,11 @@ public class Label extends Command {
 			console.display("none\n");
 			return;
 		}
-
-		for (LabelInfo info : engine.getLabels().values()) {
-    	    console.display(String.format("Label: %s, pc: 0x%x", info.getLabel(), info.getPc())); 
-    	    
-    	    if (!info.getCompilationDir().equals("")) {
-    	    	console.display(", compilation dir: " + info.getCompilationDir());
-    	    }
-    	    if (!info.getCompilationDir().equals("")) {
-    	    	console.display(", filename: " + info.getFileName());
-    	    }
-    	    if (!info.getCompilationDir().equals("")) {
-    	    	console.display(", line number: " + info.getLineNumber());
-    	    }
-    	    console.display("\n");
+		
+    	Iterator<Map.Entry<String, Integer>> iter = engine.getLabels().entrySet().iterator();        
+    	while (iter.hasNext()) {
+    	    Map.Entry<String, Integer> pair = iter.next();
+    	    console.display(String.format("Label: %s, pc: 0x%x\n", pair.getKey(), pair.getValue()));
     	}		
 	}
 }
