@@ -417,7 +417,7 @@ public class Engine {
 
 		m_previousRoute = m_route;
 
-		//TODO
+/*		//TODO
 		StaticAnalysis sa = new StaticAnalysis();
 		ArrayList<BasicBlock> nodes = new ArrayList<BasicBlock>();
 		for(BasicBlock node : m_ae.getNodes(m_nodeId, m_coreId)){
@@ -426,7 +426,8 @@ public class Engine {
 		sa.setNodes(nodes);
 		sa.setEndPoints(startPc, endPcs);
 		sa.Analyse();
-		//sa.dumpNodes();
+		sa.dumpNodes();
+*/
 		m_route = new Route(m_config, m_progress, startPc, endPcs, m_nodeId,
 				m_coreId, m_nodeCoreInstructionCache);
 
