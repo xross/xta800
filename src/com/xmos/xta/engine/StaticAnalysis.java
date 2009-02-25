@@ -1,6 +1,7 @@
 package com.xmos.xta.engine;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
@@ -8,37 +9,52 @@ import java.util.TreeSet;
 
 public class StaticAnalysis {
 	
+	enum RouteStatus {
+		COMPLETED, ABORTED, ERROR, ANALYSING
+	}
+	
 	private ArrayList<BasicBlock> m_nodes;
 	private int m_startPc;
 	private TreeSet<Integer> m_endPcs; 
 	private ArrayList<PathBasicBlock> m_completedPaths;
+	private ArrayList<PathBasicBlock> m_allBasicBlocks;
+	private String m_analysisString = "";
+	private Engine m_engine;
+	private ArrayList<Unknown> m_unknowns;
 	
-	private boolean m_analysisReady;
 	
-	public StaticAnalysis(){
+	public StaticAnalysis(int startPc, TreeSet<Integer> endPcs, 
+			ArrayList<BasicBlock> nodes, Engine engine){
 		m_completedPaths = new ArrayList<PathBasicBlock>();
-		m_analysisReady = false;
-	}
-	
-	public void setNodes(ArrayList<BasicBlock> nodes){
-		m_nodes = nodes;
-	}
-	
-	public void setEndPoints(int startPc, TreeSet<Integer> endPcs){
-		m_endPcs = endPcs;
+		m_allBasicBlocks = new ArrayList<PathBasicBlock>();
 		m_startPc = startPc;
-		if(m_nodes!= null){
-			m_analysisReady = true;
-		} else {
-			m_analysisReady = false;
+		m_endPcs =endPcs;
+		m_analysisString = "";
+		m_nodes = nodes;
+		m_engine = engine;
+		m_unknowns = new ArrayList<Unknown>();
+	}
+	
+	public String getStatusString() {
+		return m_analysisString;
+	}
+	
+	public ArrayList<Unknown> getUnknowns() {
+		return m_unknowns;
+	}
+	
+	public ArrayList<PathBasicBlock> getAllBasicBlocks(){
+		return m_allBasicBlocks;
+	}
+	
+	public void invalidateAllBlocks(){
+		for(PathBasicBlock block : m_allBasicBlocks){
+			block.getBlockStats().invalidateAll();
 		}
 	}
 	
-	public void Analyse(){
-		if(!m_analysisReady) {
-			//error
-			return;
-		}
+	public void analyse(){
+		m_allBasicBlocks.clear();
 		BasicBlock startNode = getNode(m_startPc);
 		if(startNode == null){
 			//error
@@ -49,10 +65,24 @@ public class StaticAnalysis {
 		Stack<LinkedList<BasicBlock>> nodeContext = new Stack<LinkedList<BasicBlock>>();
 		nodeContext.push(new LinkedList<BasicBlock>());
 		followNode(startBasicBlock, stack, nodeContext);
+		
+		//filterPaths();
+		sortPaths();
+		makeCompleteStatus();
+		//return m_status;
+
+	}
+	
+	private void sortPaths() {
+		Collections.sort(m_completedPaths);
+		for(PathBasicBlock block : m_allBasicBlocks){
+			Collections.sort(block.getLoopPaths());
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
 	private void followNode(
+			
 		PathBasicBlock currentBasicBlock, 
 		Stack<Integer> stack, 
 		Stack<LinkedList<BasicBlock>> nodeContext) {
@@ -175,4 +205,26 @@ public class StaticAnalysis {
 		bb.doneWithPathBlocks();
 	}
 
+	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
+		for (PathBasicBlock block : m_allBasicBlocks) {
+			for (PathBasicBlock loopPath : block.getLoopPaths()) {
+				if (loopPath.getPathId() == pathId) {
+					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
+					attributes.setNumIterations(iterations, absolute);
+					return true;
+				}
+			}
+		}	
+		return false;		
+	}
+	
+	private void makeCompleteStatus(){
+		m_analysisString = "from: 0x" + Integer.toHexString(m_startPc) + " to: ";
+		for(int end : m_endPcs){
+			m_analysisString += "0x" + Integer.toHexString(end) + ", ";
+		}
+		m_analysisString = m_analysisString.substring(0,m_analysisString.length()-2);
+		return;
+	}
+	
 }
