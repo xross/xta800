@@ -56,6 +56,7 @@
       option: functions: Lists the functions in the loaded application
       option: sources: Lists the source files
       option: times: Lists the instructions which have had their times set
+      option: constraint <expression>: Defines the constraint expression
   [-]load <xe file>: Loads the given xmos executable file
   [-]print <option> <arg0> <arg1>...: Display path information
       option: asm <path/block id>: Display annotated assembly for given path id
@@ -78,6 +79,7 @@
       option: time <ref> <mode> <value>: Sets the time taken for the instruction at the given pc
           mode: ns:     Sets the time this instruction takes in ns
           mode: cycles: Sets the time this instruction takes in thread cycles
+      option: constraint <expression>: Defines the constraint expression
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
   [-]summary <option> <arg0> <arg1>...: Display timing summaries
