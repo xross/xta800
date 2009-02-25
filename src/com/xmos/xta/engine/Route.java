@@ -24,25 +24,30 @@ public class Route {
 	}
 
 	private Config m_config;
-	private int m_nodeId;
-	private int m_coreId;
-	private String m_analysisString;
-	private HashMap<Integer, Vector<Block>> m_loopPaths;
+	private Engine m_engine;
 	private ArrayList<ExecutionState> m_executionStates;
 	private LinkedList<ExecutionState> m_schedule;
-	private ArrayList<Unresolved> m_unresolvedPaths;
-	private ArrayList<Block> m_completePaths;
-	private ArrayList<Block> m_removedPaths;
-	private ArrayList<Block> m_allBlocks;
-	private Engine m_engine;
-	private RouteStatus m_status;
 	private Progress m_progress;
 	private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
-	private ArrayList<Unknown> m_unknowns;
-	private ArrayList<String> m_warnings;
 	private static int m_numRoutes;	
+	private HashMap<Integer, Vector<Block>> m_loopPaths;
+	private ArrayList<Unknown> m_unknowns;
+	
+	private String m_analysisString;
+	private ArrayList<Unresolved> m_unresolvedPaths;
+	private ArrayList<Block> m_completePaths;
 	private int m_startPc;
 	private TreeSet<Integer> m_endPcs;
+	private ArrayList<Block> m_allBlocks;
+	private ArrayList<String> m_warnings;
+	
+	
+	private RouteStatus m_status;
+	private ArrayList<Block> m_removedPaths;
+	
+	
+	
+	
 	
 	public Route(Config config, Progress progress, int startPc, TreeSet<Integer> endPcs, int nodeId, int coreId,
 			NodeCoreInstructionCaches nodeCoreInstructionCache) {
@@ -56,14 +61,6 @@ public class Route {
 
 	public ArrayList<Unknown> getUnknowns() {
 		return m_unknowns;
-	}
-
-	public final int getNodeId() {
-		return m_nodeId;
-	}
-
-	public final int getCoreId() {
-		return m_coreId;
 	}
 
 	public final ArrayList<Block> completePaths() {
@@ -102,10 +99,6 @@ public class Route {
 			}
 		}
 		return null;		
-	}
-	
-	public double getTimeTaken() {
-		return 0;
 	}
 	
 	public void invalidateAllBlocks(){
@@ -165,21 +158,11 @@ public class Route {
 	void notifyUpdate() {
 		Collections.sort(m_completePaths);
 	}
-
-	Progress getProgress() {
-		return m_progress;
-	}
-
-	Config getConfig() {
-		return m_config;
-	}
 	
 	private void initialise(Config config, int nodeId, int coreId) {
 		m_unknowns = new ArrayList<Unknown>();
 		m_warnings = new ArrayList<String>();
 		m_config = config;
-		m_nodeId = nodeId;
-		m_coreId = coreId;
 		m_completePaths = new ArrayList<Block>();
 		m_unresolvedPaths = new ArrayList<Unresolved>();
 		m_removedPaths = new ArrayList<Block>();
@@ -306,7 +289,7 @@ public class Route {
 		m_removedPaths.addAll(toRemove);
 	}
 	
-	
+	///
 	public void addLoopPath(Block startBlock) {
 		assert (startBlock != null);
 		int fromPc = startBlock.getInstructions(false).firstElement().getPc();
@@ -351,10 +334,6 @@ public class Route {
 		return false;		
 	}
 
-	public ArrayList<ExecutionState> getExecutionStates() {
-		return m_executionStates;
-	}
-	
 	public void addNewBlock(Block block){
 		if(block!=null){
 			m_allBlocks.add(block);

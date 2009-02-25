@@ -228,7 +228,7 @@ public class AnalysisEngine {
 		}
 	}
 
-	private void printDot(int nodeId, int coreId) {
+	public void printDot(int nodeId, int coreId) {
 		HashMap<XtaInstruction, BasicBlock> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
 
 		System.out.println("digraph g {");

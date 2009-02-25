@@ -26,7 +26,6 @@ public class List extends CommandContainer {
 		new Functions(),
 		new Sources(),
 		new Times(),
-		new Queries(),
 		new Constraint(Constraint.Operation.LIST),		
 	};
 	

@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.regex.PatternSyntaxException;
-
 import com.xmos.elfhandler.ElfHandler;
 import com.xmos.elfhandler.Symbol;
 import com.xmos.xeloader.DebugInfo;
@@ -58,7 +57,6 @@ public class Engine {
 	private ArrayList<SrcTableMap> m_srcLabelTables;
 	private ArrayList<SrcLabelMap> m_endpoints;
 	private ArrayList<SrcTableMap> m_endpointTables;
-	private ArrayList<PathQuery> m_pathQueries;
 	private AnalysisEngine m_ae;
 	private Constraint m_constraint;
 
@@ -82,7 +80,6 @@ public class Engine {
 		m_coreId = 0;
 		m_srcPaths = ".";
 		m_notifiers = new Vector<Notifier>();
-		m_pathQueries = new ArrayList<PathQuery>();
 		m_abort = false;
 		m_progress = new Progress(Progress.State.IDLE, 0, 0);
 		m_constraint = null;
@@ -228,24 +225,21 @@ public class Engine {
 
 	public MemoryImage getMemoryImage() {
 		if (m_route != null) {
-			return m_xeLoader.getMemoryImage(m_route.getNodeId(), m_route
-					.getCoreId());
+			return m_xeLoader.getMemoryImage(m_nodeId, m_coreId);
 		}
 		return null;
 	}
 
 	public SymbolTable getSymbolTable() {
 		if (m_route != null) {
-			return m_xeLoader.getSymbolTable(m_route.getNodeId(), m_route
-					.getCoreId());
+			return m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
 		}
 		return null;
 	}
 
 	public DebugInfo getDebugInfo() {
 		if (m_route != null) {
-			return m_xeLoader.getDebugInfo(m_route.getNodeId(), m_route
-					.getCoreId());
+			return m_xeLoader.getDebugInfo(m_nodeId, m_coreId);
 		}
 		return null;
 	}
@@ -279,8 +273,6 @@ public class Engine {
 	}
 
 	public boolean loadExecutable(File executableFile, FileFinder fileFinder) {
-		m_pathQueries.clear();
-
 		XeLoader newLoader = new XeLoader();
 
 		boolean success = newLoader.loadExecutable(executableFile);
@@ -420,17 +412,6 @@ public class Engine {
 
 		m_previousRoute = m_route;
 
-/*		//TODO
-		StaticAnalysis sa = new StaticAnalysis();
-		ArrayList<BasicBlock> nodes = new ArrayList<BasicBlock>();
-		for(BasicBlock node : m_ae.getNodes(m_nodeId, m_coreId)){
-			nodes.add(node);
-		}
-		sa.setNodes(nodes);
-		sa.setEndPoints(startPc, endPcs);
-		sa.Analyse();
-		sa.dumpNodes();
-*/
 		m_route = new Route(m_config, m_progress, startPc, endPcs, m_nodeId,
 				m_coreId, m_nodeCoreInstructionCache);
 
@@ -446,6 +427,10 @@ public class Engine {
 		}
 		return success;
 
+	}
+	StaticAnalysis sa;
+	public StaticAnalysis getStaticAnalysis(){
+		return sa;
 	}
 
 	public void registerNotifier(Notifier notifier) {
@@ -706,14 +691,6 @@ public class Engine {
 		return getSrcLabelTableMap(m_endpointTables);
 	}
 	
-	public void addQuery(PathQuery pq) {
-		this.m_pathQueries.add(pq);
-	}
-
-	public ArrayList<PathQuery> getPathQueries() {
-		return m_pathQueries;
-	}
-
 	public File getExecutable() {
 		return m_executableFile;
 	}
@@ -767,13 +744,10 @@ public class Engine {
 		}
 		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 
-		int nodeId = m_route.getNodeId();
-		int coreId = m_route.getCoreId();
-
-		if (m_xeLoader.isLoaded(nodeId, coreId)) {
-			MemoryImage memoryImage = m_xeLoader.getMemoryImage(nodeId, coreId);
-			SymbolTable symbolTable = m_xeLoader.getSymbolTable(nodeId, coreId);
-			DebugInfo debugInfo = m_xeLoader.getDebugInfo(nodeId, coreId);
+		if (m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
+			MemoryImage memoryImage = m_xeLoader.getMemoryImage(m_nodeId, m_coreId);
+			SymbolTable symbolTable = m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
+			DebugInfo debugInfo = m_xeLoader.getDebugInfo(m_nodeId, m_coreId);
 
 			RouteStatus status = RouteStatus.ABORTED;
 
@@ -801,7 +775,7 @@ public class Engine {
 		} else {
 			notify(Notifier.NOTIFY_ERROR, String
 					.format("Node: %d, Core: %d image not found in file: %s",
-							m_route.getNodeId(), m_route.getCoreId(),
+							m_nodeId, m_coreId,
 							m_executableFile));
 			return false;
 		}

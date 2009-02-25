@@ -10,17 +10,20 @@ public class BasicBlock implements Comparable<BasicBlock> {
 	private ArrayList<IBufferState> m_iBufferStates;
 	private ArrayList<BasicBlock> m_nextNode;
 	private ArrayList<BasicBlock> m_previousNode;
-	//private ArrayList<LinkedList<BasicBlock>> m_loops;
-	private ArrayList<PathBasicBlock> m_loopPaths;
-
+	private ArrayList<Unknown> m_unknowns;
+	
+	
 	BasicBlock(int n) {
 		m_nodeId = n;
 		m_iBufferStates = new ArrayList<IBufferState>();
 		m_instructions = new LinkedList<XtaInstruction>();
 		m_nextNode = new ArrayList<BasicBlock>();
 		m_previousNode = new ArrayList<BasicBlock>();
-		//m_loops = new ArrayList<LinkedList<BasicBlock>>();
-		m_loopPaths = new ArrayList<PathBasicBlock>();
+		m_unknowns = new ArrayList<Unknown>();
+	}
+	
+	public ArrayList<Unknown> getUnknowns(){
+		return m_unknowns;
 	}
 	
 	public String toString(){
@@ -31,10 +34,6 @@ public class BasicBlock implements Comparable<BasicBlock> {
 		if (n == this)
 			return 0;
 		return -1;
-	}
-
-	public ArrayList<PathBasicBlock> getLoopPaths(){
-		return m_loopPaths;
 	}
 	
 	public ArrayList<IBufferState> getIBufferStates(){
@@ -111,8 +110,6 @@ public class BasicBlock implements Comparable<BasicBlock> {
 		return true;
 	}
 	
-
-	
 	
 }
 
@@ -130,4 +127,7 @@ class IBufferState {
 		m_fnops = new ArrayList<Integer>();
 	}
 
+	
+	
+	
 }

@@ -1,20 +1,46 @@
 package com.xmos.xta.engine;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.TreeSet;
+import java.util.Vector;
 
-public class PathBasicBlock {
+import com.xmos.xta.engine.Status.BlockStatus;
+
+public class PathBasicBlock implements Comparable<PathBasicBlock>{
+	private static int pathBasicBlockCount;
 	private BasicBlock m_basicBlock;
 	private PathBasicBlock m_parentBasicBlock;
+	private ArrayList<PathBasicBlock> m_loopPaths;
 	private int m_seen;
-	
-	
+	private int m_pathId;
+	private HashMap<PathBasicBlock, PathAttributes> m_loopPathAttributes;
+	private int m_blockId;
+	private BasicBlockStats m_blockStats;
 	
 	public PathBasicBlock(BasicBlock basicBlock, PathBasicBlock parentBasicBlock){
 		m_basicBlock = basicBlock;
 		m_parentBasicBlock = parentBasicBlock;
 		m_seen = 0;
+		m_loopPaths = new ArrayList<PathBasicBlock>();
+		m_pathId = pathBasicBlockCount++;
+		m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
+		m_blockStats = new BasicBlockStats(this);
 	}
-
+	
+	public BasicBlockStats getBlockStats(){
+		return m_blockStats;
+	}
+	
+	public String toString(){
+		return "PathBasicBlock " + m_pathId + " " + m_basicBlock;
+	}
+	
+	public int getPathId(){
+		return m_pathId;
+	}
+	
 	public BasicBlock getThisBasicBlock(){
 		return m_basicBlock;
 	}
@@ -31,7 +57,7 @@ public class PathBasicBlock {
 		do {
 			paths.add(0, block);
 			
-			if (block.m_basicBlock.getLoopPaths().contains(this)) {
+			if (block.m_loopPaths.contains(this)) {
 				break;
 			}
 			block = block.m_parentBasicBlock;
@@ -47,7 +73,7 @@ public class PathBasicBlock {
 		PathBasicBlock block = this;
 
 		do {
-			if (block.m_basicBlock.getLoopPaths().contains(this)) {
+			if (block.m_loopPaths.contains(this)) {
 				break;
 			}
 			block = block.m_parentBasicBlock;
@@ -61,11 +87,242 @@ public class PathBasicBlock {
 	
 	public ArrayList<PathBasicBlock> getLoopPaths() {
 		if (m_seen == 0) {
-			return m_basicBlock.getLoopPaths();
+			return m_loopPaths;
 		} else {
 			return new ArrayList<PathBasicBlock>();
 		}
 	}
 	
+	public PathAttributes getLoopPathAttributes(PathBasicBlock block) {
+		PathAttributes attributes = m_loopPathAttributes.get(block);
+		return attributes;
+	}
+	
+	HashMap<PathBasicBlock, PathAttributes> getLoopPathAttributes() {
+		return m_loopPathAttributes;
+	}
+	
+	public BlockStatus getStatus() {
+		
+		return BlockStatus.SEARCHING;
+	}
+
+	public void setStatus(BlockStatus blockStatus) {
+		//m_status = blockStatus;
+	}
+
+	public int numLoopPaths() {
+		if (m_seen == 0) {
+			return m_loopPaths.size();
+		} else {
+			return 0;
+		}
+	}
+	
+	public int compareTo(PathBasicBlock path) {
+		return (int) (path.getTimeTaken(true) - getTimeTaken(true));
+	}
+
+	public int getId() {
+		return m_blockId;
+	}
+
+	public void setId(int id) {
+		m_blockId = id;
+	}
+
+	public boolean equivalent(Block block) {
+		Vector<XtaInstruction> thisI = getInstructions(false);
+		Vector<XtaInstruction> thatI = block.getInstructions(false);
+
+		if (thisI.size() != thatI.size())
+			return false;
+
+		for (int i = 0; i < thisI.size(); i++) {
+			if (thisI.get(i) != thatI.get(i))
+				return false;
+		}
+
+		return true;
+	}
+	
+	public int getNumPathBlocks() {
+		int numPathBlocks = 0;
+		PathBasicBlock block = this;
+
+		do {
+			++numPathBlocks;
+			if (block.m_loopPaths.contains(this)) {
+				break;
+			}
+			block = block.m_parentBasicBlock;
+		} while (block != null);
+
+		return numPathBlocks;
+	}
+	
+	public int getNumIterations() {
+		PathBasicBlock parent = this;
+		while (parent != null) {
+			if (parent.m_loopPaths.contains(this)) {
+				PathAttributes attributes = parent.getLoopPathAttributes(this);
+				return attributes.getNumIterations();
+			}
+			parent = parent.m_parentBasicBlock;
+		}
+		return 1;
+	}
+
+	public int getLength() {
+		int pathLength = 0;
+		for (PathBasicBlock block : getPathBlocks()) {
+			pathLength += block.getNumInstructionsThis();
+		}
+		return pathLength;
+	}
+
+	public void getAllBlocks(TreeSet<PathBasicBlock> allBlocks) {
+		for (PathBasicBlock block : getPathBlocks()) {
+			allBlocks.add(block);
+			for (PathBasicBlock loopPath : block.getLoopPaths()) {
+				loopPath.getAllBlocks(allBlocks);
+			}
+		}
+		doneWithPathBlocks();
+	}
+
+	public Vector<XtaInstruction> getInstructions(boolean recurse) {
+		Vector<XtaInstruction> insts = new Vector<XtaInstruction>();
+
+		for (PathBasicBlock block : getPathBlocks()) {
+			insts.addAll(block.getInstructionsThis());
+			if (recurse) {
+				for (PathBasicBlock loopPath : block.getLoopPaths()) {
+					insts.addAll(loopPath.getInstructions(true));
+				}
+			}
+		}
+		doneWithPathBlocks();
+		return insts;
+	}
+	
+	public Vector<XtaInstruction> getInstructionsThis() {
+		return new Vector<XtaInstruction>(m_basicBlock.getInstructions());
+	}
+	
+	public HashSet<Integer> getPcsCovered(boolean recurse) {
+		HashSet<Integer> pcsCovered = new HashSet<Integer>();
+		for (PathBasicBlock block : getPathBlocks()) {
+			pcsCovered.addAll(block.getPcsCoveredThis());		
+			if (recurse) {
+				for (PathBasicBlock loopPath : block.getLoopPaths()) {
+					pcsCovered.addAll(loopPath.getPcsCovered(true));
+				}
+			}
+		}
+		doneWithPathBlocks();		
+		return pcsCovered;
+	}
+	
+	public HashSet<Integer> getPcsCoveredThis() {
+		//TODO make this fast
+		HashSet<Integer> pcs = new HashSet<Integer>();
+		for(XtaInstruction inst : m_basicBlock.getInstructions()){
+			pcs.add(inst.getPc());
+		}
+		return pcs;
+	}
+	
+	public HashSet<Integer> getPcsCoveredLoopsOnly() {
+		HashSet<Integer> pcsCovered = new HashSet<Integer>();
+
+		for (PathBasicBlock loopPath : getLoopPaths()) {
+			pcsCovered.addAll(loopPath.getPcsCovered(true));
+		}
+		return pcsCovered;
+	}
+	
+	// --------------------------------------------------------------------- //
+	// Statistics
+	// --------------------------------------------------------------------- //	
+	
+	public double getTimeTaken(boolean recurse) { return m_blockStats.getTimeTaken(recurse);}
+	public int getNumInstructions(boolean recurse) { return m_blockStats.getNumInstructions(recurse);}
+	public int getNumFNops(boolean recurse) { return m_blockStats.getNumFNops(recurse);}
+	public int getNumCycles(boolean recurse) { return m_blockStats.getNumCycles(recurse);}
+	public int getNumPausables(boolean recurse) { return m_blockStats.getNumPausables(recurse);}
+	public int getNumUnknowns(boolean recurse) { return m_blockStats.getNumUnknowns(recurse);}
+	
+
+	// --------------------------------------------------------------------- //
+	// 'This' statistics
+	// --------------------------------------------------------------------- //		
+	public double getTimeTakenThis() {
+		double time = 0.0;
+		for (XtaInstruction instruction : m_basicBlock.getInstructions()) {
+			time += instruction.getTimeTaken();
+		}
+		return time;
+	}
+
+	public int getNumCyclesThis() {
+		int numCycles = 0;
+		for (XtaInstruction instruction : m_basicBlock.getInstructions()) {
+			numCycles += instruction.getNumCycles();
+		}
+		return numCycles;
+	}
+	
+	/*
+	 * returns the number of instructions on the basic block
+	 */
+	public int getNumInstructionsThis() {
+		return m_basicBlock.getInstructions().size();
+	}
+
+	/*
+	 * returns the maximum number of fnops in the basic block
+	 */
+	public int getNumFNopsThis() {
+		int maxFnops =0;
+		for(IBufferState ib : m_basicBlock.getIBufferStates()){
+			maxFnops = Math.max(maxFnops, ib.m_fnops.size());
+		}
+		return maxFnops;
+	}
+			
+	/*
+	 * returns the number of pausable instructions in the basic block
+	 */
+	public int getNumPausablesThis() {
+		int count = 0;
+		for(XtaInstruction inst : m_basicBlock.getInstructions()){
+			if (inst.canPause()) count++;
+		}
+		return count;
+	}	
+	
+	/*
+	 * returns the number of shown and not set Unknowns on the basic block
+	 */
+	public int getNumUnknownsThis() {
+		int num = 0;
+		for (Unknown unknown : m_basicBlock.getUnknowns()) {
+			if (unknown.isShown() && !unknown.isSet())
+				num++;
+		}
+		return num;
+	}
+	
+	// --------------------------------------------------------------------- //
+	// 'Loops only' statistics
+	// --------------------------------------------------------------------- //		
+	
+	public double getTimeTakenLoopsOnly() {	return m_blockStats.getTimeTakenLoopsOnly();}
+	public int getNumCyclesLoopsOnly() { return m_blockStats.getNumCyclesLoopsOnly();}
+	public int getNumInstructionsLoopsOnly() { return m_blockStats.getNumInstructionsLoopsOnly();}
+	public int getNumFNopsLoopsOnly() {	return m_blockStats.getNumFNopsLoopsOnly();}
+	public int getNumPausablesLoopsOnly() {	return m_blockStats.getNumPausablesLoopsOnly();}
+	public int getNumUnknownsLoopsOnly() { return m_blockStats.getNumUnknownsLoopsOnly();}
 	
 }
