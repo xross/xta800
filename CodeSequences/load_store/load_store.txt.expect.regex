@@ -1,5 +1,5 @@
 ----------------------------------
-test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/load_store\)
+test.xc \(.*load_store\)
 ----------------------------------
   1: int b=3;
   2: int main\(\)
@@ -19,7 +19,7 @@ test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/load_store\)
   16: \}
   17: 
 ----------------------------------
-test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/load_store\)
+test.xc \(.*load_store\)
 ----------------------------------
   1: int b=3;
   2: int main\(\)
@@ -39,7 +39,7 @@ test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/load_store\)
   16: \}
   17: 
 ----------------------------------
-test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/load_store\)
+test.xc \(.*load_store\)
 ----------------------------------
   1: int b=3;
   2: int main\(\)
@@ -59,7 +59,7 @@ test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/load_store\)
   16: \}
   17: 
 ----------------------------------
-test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/load_store\)
+test.xc \(.*load_store\)
 ----------------------------------
   1: int b=3;
   2: int main\(\)

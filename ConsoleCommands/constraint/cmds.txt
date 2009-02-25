@@ -1,0 +1,31 @@
+add label 0x100cc a 
+add label 0x10000 b 
+add label 0x10012 c 
+set constraint 0x100cc 
+list constraint 
+set constraint () 
+list constraint 
+set constraint ( 
+set constraint ! 
+set constraint || 
+set constraint && 
+set constraint | 
+set constraint & 
+set constraint !&& 
+set constraint !() 
+set constraint a b 
+set constraint a !b 
+set constraint a (b) 
+set constraint (a && b 
+set constraint (a && !(b || c) 
+set constraint (a && !(b) || !c 
+set constraint !!a 
+list constraint 
+set constraint 
+list constraint 
+set constraint !(a) 
+list constraint 
+set constraint a && b || c 
+list constraint 
+set constraint a || b && c 
+exit

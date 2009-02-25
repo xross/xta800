@@ -6,7 +6,7 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
         \+loop \[1 path\(s\), 0 iteration\(s\)\]
             path\(\d+\)    : 100.0/5/5/0/0/0/0
 ----------------------------------
-test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/for_loop\)
+test.xc \(.*for_loop\)
 ----------------------------------
   1: int main\(\)
 \+ 2: \{
@@ -20,7 +20,7 @@ test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/for_loop\)
   10: \}
   11: 
 ----------------------------------
-test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/for_loop\)
+test.xc \(.*for_loop\)
 ----------------------------------
   1: int main\(\)
   2: \{

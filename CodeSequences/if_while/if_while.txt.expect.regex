@@ -7,7 +7,7 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
             path\(\d+\)    : 100.0/5/5/0/0/0/0
     path\(\d+\)    : 100.0/5/4/1/0/1/0
 ----------------------------------
-test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/if_while\)
+test.xc \(.*if_while\)
 ----------------------------------
   1: int main\(\)
 \+ 2: \{
@@ -24,7 +24,7 @@ test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/if_while\)
   13: \}
   14: 
 ----------------------------------
-test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/if_while\)
+test.xc \(.*if_while\)
 ----------------------------------
   1: int main\(\)
 \+ 2: \{
@@ -41,7 +41,7 @@ test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/if_while\)
   13: \}
   14: 
 ----------------------------------
-test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/if_while\)
+test.xc \(.*if_while\)
 ----------------------------------
   1: int main\(\)
   2: \{

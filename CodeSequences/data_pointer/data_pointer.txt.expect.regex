@@ -37,7 +37,7 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
             \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
             \(20.0ns\) 0x[0-9a-fA-F]{5} retsp \(u6\) i 0x0 
 ----------------------------------
-test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/data_pointer\)
+test.xc \(.*data_pointer\)
 ----------------------------------
   1: int a = 1;
   2: int b = 2;
@@ -59,7 +59,7 @@ test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/data_pointer\)
   18: \}
   19: 
 ----------------------------------
-test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/data_pointer\)
+test.xc \(.*data_pointer\)
 ----------------------------------
   1: int a = 1;
   2: int b = 2;
