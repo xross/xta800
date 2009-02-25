@@ -3,11 +3,13 @@ package com.xmos.xta.console.commands.Set;
 import com.xmos.xta.console.Command;
 import com.xmos.xta.console.CommandContainer;
 import com.xmos.xta.console.commands.Time;
+import com.xmos.xta.console.commands.Constraint;
 
 public class Set extends CommandContainer {
 	static private Command[] m_options = { 
 		new Loop(), 
 		new Time(Time.Operation.SET), 
+		new Constraint(Constraint.Operation.SET), 
 	};
 	
 	public Set() { super("set"); }
