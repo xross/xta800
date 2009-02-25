@@ -2,7 +2,6 @@ package com.xmos.xta.engine.constraint;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,7 +9,6 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
-import com.xmos.xta.rcp.XtaEngine;
 
 /* Grammar used:
  * 

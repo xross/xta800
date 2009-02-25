@@ -12,18 +12,33 @@ public class ConstraintOr extends Constraint {
 	}
 
 	public boolean isDone() {
-		if (m_left.isDone() && m_left.isTrue())
+		if (m_isDone) {
 			return true;
-		else
-			return m_right.isDone();
-	}
+		} else {
+			if ((m_left.isDone()  && m_left.isTrue()) ||
+			    (m_right.isDone() && m_right.isTrue())) {
+				m_isTrue = true;
+				m_isDone = true;
+				return true;
 
-	public boolean isTrue() {
+			} else if (m_left.isDone() && m_right.isDone()) {
+				m_isTrue = false;
+				m_isDone = true;
+				return true;
+			}
+		}
 		return false;
 	}
 
+	public boolean isTrue() {
+		if (m_isDone)
+			return m_isTrue;
+		else
+			return (m_left.isTrue() || m_right.isTrue());
+	}
+
 	public void touchPc(int pc) {
-		if (!isDone()) {
+		if (!m_isDone) {
 			m_left.touchPc(pc);
 			m_right.touchPc(pc);
 		}
