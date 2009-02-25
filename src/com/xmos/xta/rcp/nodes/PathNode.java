@@ -9,8 +9,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-
-import com.xmos.xta.engine.Block;
+import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.dialogs.Iterations;
@@ -19,12 +18,12 @@ import com.xmos.xta.rcp.views.ViewNode.FunctionPathNode;
 import com.xmos.xta.rcp.views.ViewNode.StructurePathNode;
 
 public class PathNode extends Node {
-    private Block m_block;
+    private PathBasicBlock m_block;
     private boolean m_isRoot;
     
     private boolean m_absoluteCount;
     
-    public PathNode(Block block, Node parent, boolean isRoot) {
+    public PathNode(PathBasicBlock block, Node parent, boolean isRoot) {
     	super(parent);
     	m_block = block;
     	m_isRoot = isRoot;

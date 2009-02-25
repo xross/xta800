@@ -37,7 +37,7 @@ public class UnknownsViewLabelProvider extends LabelProvider implements ITableLa
 		
 		Unknown unknown = (Unknown)element;	
 		if (m_columnNames[columnIndex].equals(BLOCKID)) {
-			return "Block " + unknown.getPathId();
+			return "Block " + unknown.getBlockId();
 		} else if (m_columnNames[columnIndex].equals(TYPE)) {
 			return unknown.getTypeString();			
 		} else if (m_columnNames[columnIndex].equals(PC)) {

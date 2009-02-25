@@ -122,8 +122,8 @@ public class Engine {
 			assert (false);
 			return false;
 		}
-		if (m_route != null)
-			m_route.filterPaths();
+		//if (m_route != null)
+		//	m_route.filterPaths();
 
 		notify(Notifier.NOTIFY_UPDATE_EXCLUDES, "");
 		return true;
@@ -154,8 +154,8 @@ public class Engine {
 			return false;
 		}
 
-		if (m_route != null)
-			m_route.filterPaths();
+		//if (m_route != null)
+		//	m_route.filterPaths();
 
 		notify(Notifier.NOTIFY_UPDATE_EXCLUDES, "");
 		return true;
@@ -212,8 +212,7 @@ public class Engine {
 
 	public boolean anythingToDisplay() {
 		if (m_route != null) {
-			if (m_route.completePaths().size()
-					+ m_route.unresolvedPaths().size() > 0) {
+			if (m_route.getCompletedPaths().size() + m_route.getUnresolvedPaths().size() > 0) {
 				return true;
 			}
 		}
@@ -408,9 +407,8 @@ public class Engine {
 		}
 
 		m_previousRoute = m_route;
-
-		m_route = new Route(m_config, m_progress, startPc, endPcs, m_nodeId,
-				m_coreId, m_nodeCoreInstructionCache);
+		
+		m_route = new Route(startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId));
 
 		boolean success = analyseRouteSafley();
 		if (success) {
@@ -424,10 +422,6 @@ public class Engine {
 		}
 		return success;
 
-	}
-	StaticAnalysis sa;
-	public StaticAnalysis getStaticAnalysis(){
-		return sa;
 	}
 
 	public void registerNotifier(Notifier notifier) {
@@ -497,7 +491,7 @@ public class Engine {
 					iterations);
 			if (hit) {
 				m_route.invalidateAllBlocks();
-				m_route.notifyUpdate();
+				//m_route.notifyUpdate();
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			}
 			return hit;
@@ -742,13 +736,13 @@ public class Engine {
 		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 
 		if (m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
-			MemoryImage memoryImage = m_xeLoader.getMemoryImage(m_nodeId, m_coreId);
-			SymbolTable symbolTable = m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
-			DebugInfo debugInfo = m_xeLoader.getDebugInfo(m_nodeId, m_coreId);
+			//MemoryImage memoryImage = m_xeLoader.getMemoryImage(m_nodeId, m_coreId);
+			//SymbolTable symbolTable = m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
+			//DebugInfo debugInfo = m_xeLoader.getDebugInfo(m_nodeId, m_coreId);
 
 			RouteStatus status = RouteStatus.ABORTED;
 
-			status = m_route.analyse(memoryImage, symbolTable, debugInfo, this);
+			status = m_route.analyse();
 
 			switch (status) {
 			case ABORTED:
@@ -762,7 +756,7 @@ public class Engine {
 				return false;
 			}
 
-			int numUnresolvedPaths = m_route.unresolvedPaths().size();
+			int numUnresolvedPaths = m_route.getUnresolvedPaths().size();
 			if (numUnresolvedPaths > 0) {
 				notify(Notifier.NOTIFY_ERROR, String.format("Found "
 						+ numUnresolvedPaths + " unresolved path(s)"));

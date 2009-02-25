@@ -12,8 +12,8 @@ import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
-import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
 
 public class Functions extends Command {
@@ -53,7 +53,7 @@ public class Functions extends Command {
     	    int functionSize = symbolTable.functionSize(functionAddress);
     	    
         	TreeSet<Integer> pathIds = new TreeSet<Integer>();
-            for (Block path : route.completePaths()) {
+            for (PathBasicBlock path : route.getCompletedPaths()) {
             	buildPathsWithinFunctionSet(path, pathIds, functionAddress, functionSize);
             }    	
             
@@ -67,24 +67,24 @@ public class Functions extends Command {
     	}
     }
     
-    private void buildPathsWithinFunctionSet(Block path, Set<Integer> pathSet, 
+    private void buildPathsWithinFunctionSet(PathBasicBlock path, Set<Integer> pathSet, 
     		int functionAddress, int functionSize) {   
     	
-        for (Block block : path.getPathBlocks()) {
+        for (PathBasicBlock block : path.getPathBlocks()) {
             if (pathWithinFunction(block, functionAddress, functionSize)) {
-                if (!pathSet.contains(path.getId())) {
-                    pathSet.add(path.getId());
+                if (!pathSet.contains(path.getBlockId())) {
+                    pathSet.add(path.getBlockId());
                 }
             }
         
-            for (Block loopPath : block.getLoopPaths()) {
+            for (PathBasicBlock loopPath : block.getLoopPaths()) {
    		    	buildPathsWithinFunctionSet(loopPath, pathSet, functionAddress, functionSize);
        		}
         }
         path.doneWithPathBlocks();        
     }
     
-    private boolean pathWithinFunction(Block path, int functionAddress, int functionSize) {
+    private boolean pathWithinFunction(PathBasicBlock path, int functionAddress, int functionSize) {
       	for (Instruction instruction : path.getInstructions(false)) {
         	if ((instruction.getPc() >= functionAddress) &&
         	    (instruction.getPc() < (functionAddress + functionSize))) {

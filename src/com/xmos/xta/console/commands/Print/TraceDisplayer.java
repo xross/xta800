@@ -4,7 +4,7 @@ import java.util.Vector;
 
 import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
-import com.xmos.xta.engine.Block;
+import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.XtaInstruction;
 
@@ -25,11 +25,11 @@ public class TraceDisplayer {
         Vector<XtaInstruction> instructions = null;    		
         switch (m_idType) {
         case BLOCK:
-        	Block block = m_engine.getRoute().getBlock(m_id);			
+        	PathBasicBlock block = m_engine.getRoute().getBlock(m_id);			
         	instructions = block.getInstructionsThis();
         	break;
         case PATH:
-        	Block path = m_engine.getRoute().getPath(m_id);			
+        	PathBasicBlock path = m_engine.getRoute().getPath(m_id);			
         	instructions = path.getInstructions(false);
         	break;
         default:

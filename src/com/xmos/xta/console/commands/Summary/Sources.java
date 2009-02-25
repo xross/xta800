@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
-
 import com.xmos.dwarfhandler.DebugFile;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeobject.Line;
@@ -15,8 +14,8 @@ import com.xmos.xeobject.XeObject;
 import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
-import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 
@@ -49,7 +48,7 @@ public class Sources extends Command {
     	ArrayList<String> files = new ArrayList<String>();
   	    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {
         	TreeSet<Integer> pathIds = new TreeSet<Integer>();
-            for (Block path : route.completePaths()) {
+            for (PathBasicBlock path : route.getCompletedPaths()) {
             	buildPathsWithinSourcesSet(path, pathIds, debugFile.getFileName(), xeObject);
             }    	
             if (pathIds.size() > 0) {
@@ -67,17 +66,17 @@ public class Sources extends Command {
 	    }
     }   	
     
-    private void buildPathsWithinSourcesSet(Block path, Set<Integer> pathSet, String sourceFileName, XeObject xeObject) {	
+    private void buildPathsWithinSourcesSet(PathBasicBlock path, Set<Integer> pathSet, String sourceFileName, XeObject xeObject) {	
         if (pathWithinSourceFile(path, sourceFileName, xeObject)) {
-        	pathSet.add(path.getId());
+        	pathSet.add(path.getBlockId());
         }
 
-        for (Block loopPath : path.getLoopPaths()) {
+        for (PathBasicBlock loopPath : path.getLoopPaths()) {
 	    	buildPathsWithinSourcesSet(loopPath, pathSet, sourceFileName, xeObject);
    		}
     }    
     
-    private boolean pathWithinSourceFile(Block path, String sourceFileName, XeObject xeObject) {
+    private boolean pathWithinSourceFile(PathBasicBlock path, String sourceFileName, XeObject xeObject) {
         //TODO make this faster
         HashMap<String, TreeSet<Integer>> linesCovered = new HashMap<String, TreeSet<Integer>>();
         TreeSet<Integer> bob = new TreeSet<Integer>();

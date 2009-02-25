@@ -211,6 +211,7 @@ public abstract class XtaInstruction extends Instruction {
 	public double getTimeTaken() {
 		assert(m_config != null);
     	double timeTaken = 0.0;    	
+    	
         if (m_config.m_numThreads > 4) {
         	timeTaken = ((m_config.m_numThreads * 1000) / m_config.m_frequency) * m_numCycles.getNumIterations();
         }
@@ -2938,6 +2939,10 @@ public abstract class XtaInstruction extends Instruction {
         }
     	
     }
+
+	public Config getConfig() {
+		return m_config;
+	}
 
 
 }

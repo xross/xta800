@@ -15,22 +15,29 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	private ArrayList<PathBasicBlock> m_loopPaths;
 	private int m_seen;
 	private int m_pathId;
-	private HashMap<PathBasicBlock, PathAttributes> m_loopPathAttributes;
 	private int m_blockId;
+	private HashMap<PathBasicBlock, PathAttributes> m_loopPathAttributes;
 	private BasicBlockStats m_blockStats;
+	private BlockStatus m_status;
 	
 	public PathBasicBlock(BasicBlock basicBlock, PathBasicBlock parentBasicBlock){
 		m_basicBlock = basicBlock;
 		m_parentBasicBlock = parentBasicBlock;
 		m_seen = 0;
 		m_loopPaths = new ArrayList<PathBasicBlock>();
-		m_pathId = pathBasicBlockCount++;
+		m_blockId = pathBasicBlockCount++;
+		m_pathId = -1;
 		m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
 		m_blockStats = new BasicBlockStats(this);
+		m_status = BlockStatus.SEARCHING;
 	}
 	
 	public BasicBlockStats getBlockStats(){
 		return m_blockStats;
+	}
+	
+	public void setPath(int i) {
+		m_pathId = i;
 	}
 	
 	public String toString(){
@@ -41,7 +48,11 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		return m_pathId;
 	}
 	
-	public BasicBlock getThisBasicBlock(){
+	public int getBlockId(){
+		return m_blockId;
+	}
+	
+	public BasicBlock getBasicBlock(){
 		return m_basicBlock;
 	}
 	
@@ -49,20 +60,18 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		return m_parentBasicBlock;
 	}
 	
-	
 	public ArrayList<PathBasicBlock> getPathBlocks() {
 		ArrayList<PathBasicBlock> paths = new ArrayList<PathBasicBlock>();
 		PathBasicBlock block = this;
-
+		
 		do {
 			paths.add(0, block);
-			
 			if (block.m_loopPaths.contains(this)) {
 				break;
 			}
 			block = block.m_parentBasicBlock;
 		} while (block != null);
-
+		
 		if (block != null)
 			block.m_seen++;
 
@@ -71,7 +80,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	
 	public void doneWithPathBlocks() {
 		PathBasicBlock block = this;
-
 		do {
 			if (block.m_loopPaths.contains(this)) {
 				break;
@@ -103,12 +111,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	}
 	
 	public BlockStatus getStatus() {
-		
-		return BlockStatus.SEARCHING;
-	}
-
-	public void setStatus(BlockStatus blockStatus) {
-		//m_status = blockStatus;
+		return m_status;
 	}
 
 	public int numLoopPaths() {
@@ -121,29 +124,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	
 	public int compareTo(PathBasicBlock path) {
 		return (int) (path.getTimeTaken(true) - getTimeTaken(true));
-	}
-
-	public int getId() {
-		return m_blockId;
-	}
-
-	public void setId(int id) {
-		m_blockId = id;
-	}
-
-	public boolean equivalent(Block block) {
-		Vector<XtaInstruction> thisI = getInstructions(false);
-		Vector<XtaInstruction> thatI = block.getInstructions(false);
-
-		if (thisI.size() != thatI.size())
-			return false;
-
-		for (int i = 0; i < thisI.size(); i++) {
-			if (thisI.get(i) != thatI.get(i))
-				return false;
-		}
-
-		return true;
 	}
 	
 	public int getNumPathBlocks() {
@@ -207,7 +187,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	}
 	
 	public Vector<XtaInstruction> getInstructionsThis() {
-		return new Vector<XtaInstruction>(m_basicBlock.getInstructions());
+		return new Vector<XtaInstruction>(m_basicBlock.getInstructionStream());
 	}
 	
 	public HashSet<Integer> getPcsCovered(boolean recurse) {
@@ -227,7 +207,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public HashSet<Integer> getPcsCoveredThis() {
 		//TODO make this fast
 		HashSet<Integer> pcs = new HashSet<Integer>();
-		for(XtaInstruction inst : m_basicBlock.getInstructions()){
+		for(XtaInstruction inst : m_basicBlock.getInstructionStream()){
 			pcs.add(inst.getPc());
 		}
 		return pcs;
@@ -259,7 +239,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	// --------------------------------------------------------------------- //		
 	public double getTimeTakenThis() {
 		double time = 0.0;
-		for (XtaInstruction instruction : m_basicBlock.getInstructions()) {
+		for (XtaInstruction instruction : m_basicBlock.getInstructionStream()) {
 			time += instruction.getTimeTaken();
 		}
 		return time;
@@ -267,7 +247,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 
 	public int getNumCyclesThis() {
 		int numCycles = 0;
-		for (XtaInstruction instruction : m_basicBlock.getInstructions()) {
+		for (XtaInstruction instruction : m_basicBlock.getInstructionStream()) {
 			numCycles += instruction.getNumCycles();
 		}
 		return numCycles;
@@ -277,7 +257,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 * returns the number of instructions on the basic block
 	 */
 	public int getNumInstructionsThis() {
-		return m_basicBlock.getInstructions().size();
+		return m_basicBlock.getInstructionStream().size();
 	}
 
 	/*
@@ -296,7 +276,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 */
 	public int getNumPausablesThis() {
 		int count = 0;
-		for(XtaInstruction inst : m_basicBlock.getInstructions()){
+		for(XtaInstruction inst : m_basicBlock.getInstructionStream()){
 			if (inst.canPause()) count++;
 		}
 		return count;
@@ -324,5 +304,5 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public int getNumFNopsLoopsOnly() {	return m_blockStats.getNumFNopsLoopsOnly();}
 	public int getNumPausablesLoopsOnly() {	return m_blockStats.getNumPausablesLoopsOnly();}
 	public int getNumUnknownsLoopsOnly() { return m_blockStats.getNumUnknownsLoopsOnly();}
-	
+
 }

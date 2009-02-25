@@ -2,7 +2,6 @@ package com.xmos.xta.rcp.nodes;
 
 import java.util.HashSet;
 import java.util.Vector;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -10,16 +9,16 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import com.xmos.xta.engine.Block;
+import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.views.ConsoleView.ConsoleView;
 import com.xmos.xta.rcp.views.ViewNode.FunctionBlockNode;
 import com.xmos.xta.rcp.views.ViewNode.StructureBlockNode;
 
 public class BlockNode extends Node {
-	Block m_block;
+	PathBasicBlock m_block;
 	
-    public BlockNode(Block block, Node parent) {
+    public BlockNode(PathBasicBlock block, Node parent) {
     	super(parent);
     	m_block = block; 
 
@@ -28,7 +27,7 @@ public class BlockNode extends Node {
     }
     
     public int getId() {
-        return m_block.getId();
+        return m_block.getBlockId();
     }
 
     public double getTimeTaken() {
@@ -53,7 +52,7 @@ public class BlockNode extends Node {
     
     public String getToolTipText() {
         String toolTipText = "";
-        toolTipText += "Block ID: " + m_block.getId() + "\n";
+        toolTipText += "Block ID: " + m_block.getBlockId() + "\n";
         toolTipText += "----------------------------------\n";
         toolTipText += "Time taken: " + getTimeTaken() + " ns\n";
         toolTipText += "Number of cycles: " + getNumCycles() + "\n";
@@ -124,6 +123,6 @@ public class BlockNode extends Node {
 	}
 
 	public void getBlockIds(Vector<Integer> ids) {
-		ids.add(m_block.getId());
+		ids.add(m_block.getBlockId());
 	}
 }

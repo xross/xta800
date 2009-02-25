@@ -2,328 +2,177 @@ package com.xmos.xta.engine;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
 import java.util.TreeSet;
-import java.util.Vector;
-import com.xmos.xeloader.DebugInfo;
-import com.xmos.xeloader.MemoryImage;
-import com.xmos.xeloader.SymbolTable;
-import com.xmos.xeloader.XeLoader.Architecture;
-import com.xmos.xta.engine.Engine.ReferenceMode;
-import com.xmos.xta.engine.Status.ExecutionStatus;
-import com.xmos.xta.engine.references.CodeReference;
 
 public class Route {
-
+	
 	enum RouteStatus {
-		COMPLETED, ABORTED, ERROR, ANALYSING
+		COMPLETED, ABORTED, ERROR
 	}
-
-	private Config m_config;
-	private Engine m_engine;
-	private ArrayList<ExecutionState> m_executionStates;
-	private LinkedList<ExecutionState> m_schedule;
-	private Progress m_progress;
-	private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
-	private static int m_numRoutes;	
-	private HashMap<Integer, Vector<Block>> m_loopPaths;
-	private ArrayList<Unknown> m_unknowns;
-	
-	private String m_analysisString;
-	private ArrayList<Unresolved> m_unresolvedPaths;
-	private ArrayList<Block> m_completePaths;
+	private static int m_pathCount;
+	private ArrayList<BasicBlock> m_nodes;
 	private int m_startPc;
-	private TreeSet<Integer> m_endPcs;
-	private ArrayList<Block> m_allBlocks;
-	private ArrayList<String> m_warnings;
-	
-	
-	private RouteStatus m_status;
-	private ArrayList<Block> m_removedPaths;
-	
-	
-	
-	
-	
-	public Route(Config config, Progress progress, int startPc, TreeSet<Integer> endPcs, int nodeId, int coreId,
-			NodeCoreInstructionCaches nodeCoreInstructionCache) {
-		m_startPc = startPc;
-		m_endPcs = endPcs;
-		m_analysisString = "";
-		m_progress = progress;
-		m_nodeCoreInstructionCache = nodeCoreInstructionCache;
-		initialise(config, nodeId, coreId);
-	}
+	private TreeSet<Integer> m_endPcs; 
+	private ArrayList<PathBasicBlock> m_completedPaths;
+	private ArrayList<PathBasicBlock> m_allBasicBlocks;
+	private String m_analysisString = "";
+	private ArrayList<Unknown> m_unknowns;
+	private ArrayList<Unresolved> m_unresolvedPaths;
 
+	public Route(int startPc, TreeSet<Integer> endPcs, ArrayList<BasicBlock> nodes){
+		m_completedPaths = new ArrayList<PathBasicBlock>();
+		m_allBasicBlocks = new ArrayList<PathBasicBlock>();
+		m_unresolvedPaths = new ArrayList<Unresolved>();
+		m_startPc = startPc;
+		m_endPcs =endPcs;
+		m_analysisString = "";
+		m_nodes = nodes;
+		m_unknowns = new ArrayList<Unknown>();
+	}
+	
+	public ArrayList<PathBasicBlock> getCompletedPaths(){
+		return m_completedPaths;
+	}
+	
+	public ArrayList<Unresolved> getUnresolvedPaths(){
+		return m_unresolvedPaths;
+	}
+	
+	public String getStatusString() {
+		return m_analysisString;
+	}
+	
 	public ArrayList<Unknown> getUnknowns() {
 		return m_unknowns;
 	}
-
-	public final ArrayList<Block> completePaths() {
-		return m_completePaths;
-	}
-
-	public final ArrayList<Unresolved> unresolvedPaths() {
-		return m_unresolvedPaths;
-	}
-
-	public int getId() {
-		return 0;
-	}
-
-	public int getNumCycles() {
-		int maxCycles = 0;
-		for (Block path : m_completePaths) {
-			maxCycles = Math.max(path.getNumCycles(true), maxCycles);
-		}
-		return maxCycles;
-	}
-
-	public Block getBlock(int blockId) {
-		for (Block block : m_allBlocks) {
-			if (block.getId() == blockId) {
-				return block;
-			}
-		}
-		return null;
-	}
-
-	public Block getPath(int pathId) {
-		for (Block block : m_allBlocks) {
-			if (block.getPathId() == pathId) {
-				return block;
-			}
-		}
-		return null;		
+	
+	public ArrayList<PathBasicBlock> getAllBasicBlocks(){
+		return m_allBasicBlocks;
 	}
 	
 	public void invalidateAllBlocks(){
-		for(Block block : m_allBlocks){
+		for(PathBasicBlock block : m_allBasicBlocks){
 			block.getBlockStats().invalidateAll();
 		}
 	}
 	
-	public void addUnresolvedPath(Unresolved unresolved) {
-		m_unresolvedPaths.add(unresolved);
-	}
-
-	public RouteStatus getStatus(){
-		return m_status;
-	}
-
-	RouteStatus analyse(MemoryImage memoryImage, SymbolTable symbolTable, 
-			DebugInfo debugInfo, Engine engine) throws Exception {
-
-		m_progress.resetState(Progress.State.PROCESSING_PATHS, m_config.m_minimumRemainingMemory);
-
-		m_engine = engine;
-		m_status = RouteStatus.ANALYSING;
-
-		m_engine.setAbort(false);
-
-		Stack<TreeSet<Integer>> context = new Stack<TreeSet<Integer>>();
-		context.push(new TreeSet<Integer>());
-		
-		Architecture arch = m_engine.getXeLoader().getArchitecture() ;
-		
-		MachineState initialState = new MachineState(symbolTable, memoryImage, arch);
-		
-		BlockCommonComponents bc = new BlockCommonComponents(m_nodeCoreInstructionCache, 
-				memoryImage, symbolTable, m_engine.getReference(ReferenceMode.PROHIBITED), 
-				this, m_engine, m_endPcs);
-
-		new ExecutionState(this, initialState, bc, m_startPc);
-		
-		stepPath();
-		filterPaths();
+	public RouteStatus analyse(){
+		m_allBasicBlocks.clear();
+		BasicBlock startNode = getNode(m_startPc);
+		if(startNode == null){
+			return RouteStatus.ERROR;
+		}
+		PathBasicBlock startBasicBlock = new PathBasicBlock(startNode, null);
+		Stack<Integer> stack = new Stack<Integer>();
+		Stack<LinkedList<BasicBlock>> nodeContext = new Stack<LinkedList<BasicBlock>>();
+		nodeContext.push(new LinkedList<BasicBlock>());
+		followNode(startBasicBlock, stack, nodeContext);
 		sortPaths();
 		makeCompleteStatus();
-		m_progress.setState(Progress.State.IDLE);
-		return m_status;
+		return RouteStatus.COMPLETED;
 	}
-
-	private void makeCompleteStatus(){
-		m_analysisString = "from: 0x" + Integer.toHexString(m_startPc) + " to: ";
-		for(int end : m_endPcs){
-			m_analysisString += "0x" + Integer.toHexString(end) + ", ";
+	
+	private void sortPaths() {
+		Collections.sort(m_completedPaths);
+		for(PathBasicBlock block : m_allBasicBlocks){
+			Collections.sort(block.getLoopPaths());
 		}
-		m_analysisString = m_analysisString.substring(0,m_analysisString.length()-2);
-		return;
 	}
+	
+	@SuppressWarnings("unchecked")
+	private void followNode(
 			
-	void notifyUpdate() {
-		Collections.sort(m_completePaths);
+		PathBasicBlock currentBasicBlock, 
+		Stack<Integer> stack, 
+		Stack<LinkedList<BasicBlock>> nodeContext) {
+		if(reachedEnd(currentBasicBlock, m_endPcs)){
+			m_completedPaths.add(currentBasicBlock);
+			currentBasicBlock.setPath(m_pathCount++);
+			return;
+		} else {
+			PathBasicBlock loopBlock = formsLoop(currentBasicBlock, nodeContext);
+			if(loopBlock!=null){
+				//this must be true by design of the algorithm
+				assert(currentBasicBlock.getParent()!=null);
+				currentBasicBlock.getParent().setPath(m_pathCount++);
+				loopBlock.getLoopPaths().add(currentBasicBlock.getParent());
+				loopBlock.getLoopPathAttributes().put(currentBasicBlock.getParent(), new PathAttributes());
+				return;
+			}
+			XtaInstruction lastInstruction = currentBasicBlock.getBasicBlock().getInstructionStream().getLast();
+			if(lastInstruction.getReturn() && stack.size()>0){
+				BasicBlock nextNode = getNode(stack.peek());
+				Stack<LinkedList<BasicBlock>> newContext = new Stack<LinkedList<BasicBlock>>();
+				copyStack(nodeContext, newContext);
+				newContext.pop();
+				Stack<Integer> newStack = (Stack<Integer>) stack.clone();
+				newStack.pop();
+				PathBasicBlock nextPathBasicBlock = new PathBasicBlock(nextNode, currentBasicBlock);
+				followNode(nextPathBasicBlock, newStack, newContext);
+			} else {
+				for(BasicBlock nextNode : currentBasicBlock.getBasicBlock().getNextNodes()){
+					Stack<Integer> newStack = (Stack<Integer>) stack.clone();
+					Stack<LinkedList<BasicBlock>> newContext = new Stack<LinkedList<BasicBlock>>();
+					copyStack(nodeContext, newContext);
+					if(lastInstruction.getBranchLink()){
+						newStack.add(lastInstruction.getPc() + lastInstruction.getNumBytes());
+						newContext.push(new LinkedList<BasicBlock>());
+					} else {
+						newContext.peek().add(currentBasicBlock.getBasicBlock());
+					}
+					PathBasicBlock nextPathBasicBlock = new PathBasicBlock(nextNode, currentBasicBlock);
+					followNode(nextPathBasicBlock, newStack, newContext);
+				}
+			}
+		}	
 	}
-	
-	private void initialise(Config config, int nodeId, int coreId) {
-		m_unknowns = new ArrayList<Unknown>();
-		m_warnings = new ArrayList<String>();
-		m_config = config;
-		m_completePaths = new ArrayList<Block>();
-		m_unresolvedPaths = new ArrayList<Unresolved>();
-		m_removedPaths = new ArrayList<Block>();
-		m_allBlocks = new ArrayList<Block>();
-		m_loopPaths = new HashMap<Integer, Vector<Block>>();
-		m_executionStates = new ArrayList<ExecutionState>();
-		m_schedule = new LinkedList<ExecutionState>();
-		m_status = RouteStatus.COMPLETED;
-		++m_numRoutes;
-	}
-	
-	private void stepPath() throws Exception {
-		ExecutionState searching = nextBlock();
-		while (searching != null && (m_status != RouteStatus.ABORTED )) {
-			searching.build();
-			searching = nextBlock();
-			cleanSchedule();
-			checkAbort();
+
+	private void copyStack(Stack<LinkedList<BasicBlock>> nodeContext, Stack<LinkedList<BasicBlock>> temp) {
+		Iterator<LinkedList<BasicBlock>> iter = nodeContext.iterator();
+		while (iter.hasNext()) {
+			LinkedList<BasicBlock> pcs = iter.next();
+			LinkedList<BasicBlock> copy = new LinkedList<BasicBlock>(pcs);
+			temp.add(copy);
 		}
 	}
 
-	private void cleanSchedule() {		
-		Iterator<ExecutionState> shedIter = m_schedule.iterator();
-	    while ( shedIter.hasNext() ){
-	    	ExecutionState e = shedIter.next();
-	    	if (e.getStatus() == ExecutionStatus.UNRESOLVED 
-	    			|| e.getStatus() == ExecutionStatus.COMPLETE ) {
-	    		shedIter.remove();
+	private PathBasicBlock formsLoop(PathBasicBlock currentNode, Stack<LinkedList<BasicBlock>> nodeContext) {
+		if(!nodeContext.peek().contains(currentNode.getBasicBlock())) return null;
+		PathBasicBlock parent = currentNode.getParent();
+		while (parent != null) {
+			if(!nodeContext.peek().contains(parent.getBasicBlock())) return null;
+			if (parent.getBasicBlock() ==  currentNode.getBasicBlock()) {
+				return parent;
 			}
-	    }
+			parent = parent.getParent();
+		}
+		return null;
+	}
+	
+	private boolean reachedEnd(PathBasicBlock currentBasicBlock, TreeSet<Integer> pcs) {
+		for(XtaInstruction inst : currentBasicBlock.getBasicBlock().getInstructionStream()){
+			if(pcs.contains(inst.getPc())){
+				return true;
+			}
+		}
+		return false;
 	}
 
-	private ExecutionState nextBlock() {
-		for (ExecutionState executionState : m_schedule) {
-			if (executionState.getStatus() == ExecutionStatus.SEARCHING) {
-				return executionState;
+	private BasicBlock getNode(int pc) {
+		for(BasicBlock node : m_nodes){
+			for(XtaInstruction inst : node.getInstructionStream()){
+				if(inst.getPc() == pc) return node;
 			}
 		}
 		return null;
 	}
 
-	private void sortPaths() {
-		Collections.sort(m_completePaths);
-		for(Block block : m_allBlocks){
-			if(m_status == RouteStatus.ABORTED ){
-				//return the paths unsorted
-				return;
-			}
-			Collections.sort(block.getLoopPaths());
-		}
-	}
-
-	public void addUnknown(Unknown unknown) {
-		m_unknowns.add(unknown);
-	}
-
-	public void addWarning(String warning) {
-		m_warnings.add(warning);
-	}
-
-	public boolean checkAbort() {
-		if (m_engine.getAbort()) {
-			m_status = RouteStatus.ABORTED;
-			return true;
-		}
-		return false;
-	}
-	
-	public void addCompletePath(Block endBlock) {
-	
-		m_completePaths.add(endBlock);
-		endBlock.addPathId();
-	}
-	
-	public void filterPaths() {
-		ArrayList<Block> toRemove = new ArrayList<Block>();
-		
-		ArrayList<Integer> exclusions = new ArrayList<Integer>();
-		for (CodeReference ref : m_engine.getReference(ReferenceMode.FILTERED)){
-			exclusions.add(ref.getPc());
-		}
-		ArrayList<Integer> required = new ArrayList<Integer>();
-		for (CodeReference ref : m_engine.getReference(ReferenceMode.REQUIRED)){
-			required.add(ref.getPc());
-		}
-		m_completePaths.addAll(m_removedPaths);
-		m_removedPaths.clear();
-		
-		if (required.size() == 0 && exclusions.size() == 0){
-			return;
-		}
-		
-		for (Block completePath : m_completePaths){
-			HashSet<Integer> allPathPcs = completePath.getPcsCovered(true);
-			if (m_status == RouteStatus.ABORTED ){
-				//return the paths unfiltered
-				return;
-			}
-			for (int req : required){
-				if (!allPathPcs.contains(req)){
-					toRemove.add(completePath);
-					break;
-				}
-			}
-
-			for (int exc : exclusions){
-				if (allPathPcs.contains(exc)){
-					toRemove.add(completePath);
-					break;
-				}
-			}
-
-		}
-		
-		for (Unknown unknown : m_unknowns){
-			if (exclusions.contains(unknown.getPc())){
-				unknown.setIsShown(false);
-			} else {
-				unknown.setIsShown(true);
-			}
-		}
-		
-		m_completePaths.removeAll(toRemove);
-		m_removedPaths.addAll(toRemove);
-	}
-	
-	///
-	public void addLoopPath(Block startBlock) {
-		assert (startBlock != null);
-		int fromPc = startBlock.getInstructions(false).firstElement().getPc();
-
-		Vector<Block> paths = m_loopPaths.get(fromPc);
-		if (paths == null) {
-			paths = new Vector<Block>();
-			m_loopPaths.put(fromPc, paths);
-		} else {
-			Iterator<Block> iter = paths.iterator();
-			while (iter.hasNext()) {
-				Block block = iter.next();
-				if (block.equivalent(startBlock)) {
-					startBlock.setId(block.getId());
-					break;
-				}
-			}
-		}
-		paths.add(startBlock);
-	}
-
-	public void addExecutionState(ExecutionState ex) {
-		m_executionStates.add(ex);
-		m_schedule.addFirst(ex);
-	}
-
-	public void removeExecutionState(ExecutionState ex) {
-		assert (m_schedule.contains(ex));
-		m_schedule.remove(ex);
-	}
-
 	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
-		for (Block block : m_allBlocks) {
-			for (Block loopPath : block.getLoopPaths()) {
+		for (PathBasicBlock block : m_allBasicBlocks) {
+			for (PathBasicBlock loopPath : block.getLoopPaths()) {
 				if (loopPath.getPathId() == pathId) {
 					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
 					attributes.setNumIterations(iterations, absolute);
@@ -333,15 +182,31 @@ public class Route {
 		}	
 		return false;		
 	}
-
-	public void addNewBlock(Block block){
-		if(block!=null){
-			m_allBlocks.add(block);
-			m_progress.setCurValue(m_allBlocks.size());
+	
+	private void makeCompleteStatus(){
+		m_analysisString = "from: 0x" + Integer.toHexString(m_startPc) + " to: ";
+		for(int end : m_endPcs){
+			m_analysisString += "0x" + Integer.toHexString(end) + ", ";
 		}
+		m_analysisString = m_analysisString.substring(0,m_analysisString.length()-2);
+		return;
 	}
 
-	public String getStatusString() {
-		return m_analysisString;
+	public PathBasicBlock getBlock(int id) {
+		for(PathBasicBlock pbb : m_allBasicBlocks){
+			if(pbb.getBlockId() == id){
+				return pbb;
+			}
+		}
+		return null;
+	}
+
+	public PathBasicBlock getPath(int id) {
+		for(PathBasicBlock pbb : m_allBasicBlocks){
+			if(pbb.getPathId() == id){
+				return pbb;
+			}
+		}
+		return null;
 	}
 }
