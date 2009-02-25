@@ -1,0 +1,15 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+my $genDir  = shift(@ARGV);
+my $arch    = shift(@ARGV);
+my $noBuild = shift(@ARGV);
+
+if (!$noBuild) {
+system("xcc -march=xs1a -nostartfiles -g test.s -o $genDir/test.xe > $genDir/xtabranch_directive.log 2>&1");
+}
+system("@ARGV load $genDir/test.xe " .
+       "list branches " .
+       "exit > $genDir/xtabranch_directive.txt 2>&1");
+

@@ -1,0 +1,4 @@
+Label: _start, pc: 0x[0-9a-fA-F]{5}
+Label: label1, pc: 0x[0-9a-fA-F]{5}
+Label: label2, pc: 0x[0-9a-fA-F]{5}
+Label: main, pc: 0x[0-9a-fA-F]{5}

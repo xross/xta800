@@ -1,0 +1,6 @@
+Label: input1, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 11
+Label: input2, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 16
+pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 9
+pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 12
+pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 14
+pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 17
