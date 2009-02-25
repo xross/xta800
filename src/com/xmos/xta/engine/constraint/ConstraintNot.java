@@ -9,15 +9,27 @@ public class ConstraintNot extends Constraint {
 	}
 
 	public boolean isDone() {
-		return m_child.isDone();
+		if (m_isDone) {
+			return true;
+		} else {
+			if (m_child.isDone()) {
+				m_isTrue = isTrue();
+				m_isDone = true;
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean isTrue() {
-		return !m_child.isTrue();
+		if (m_isDone)
+			return m_isTrue;
+		else
+			return !m_child.isTrue();
 	}
 
 	public void touchPc(int pc) {
-		if (!isDone()) {
+		if (!m_isDone) {
 			m_child.touchPc(pc);
 		}
 	}
