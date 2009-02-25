@@ -25,7 +25,6 @@ public class List extends CommandContainer {
 		new Functions(),
 		new Sources(),
 		new Times(),
-		new Queries(),
 	};
 	
 	public List() { super("list"); }
