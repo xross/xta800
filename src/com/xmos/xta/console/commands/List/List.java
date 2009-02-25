@@ -3,6 +3,7 @@ package com.xmos.xta.console.commands.List;
 import com.xmos.xta.console.Command;
 import com.xmos.xta.console.CommandContainer;
 import com.xmos.xta.console.commands.Branch;
+import com.xmos.xta.console.commands.Constraint;
 import com.xmos.xta.console.commands.Endpoint;
 import com.xmos.xta.console.commands.Filter;
 import com.xmos.xta.console.commands.Label;
@@ -25,6 +26,7 @@ public class List extends CommandContainer {
 		new Functions(),
 		new Sources(),
 		new Times(),
+		new Constraint(Constraint.Operation.LIST),		
 	};
 	
 	public List() { super("list"); }

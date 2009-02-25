@@ -18,6 +18,7 @@ import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Route.RouteStatus;
+import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.maps.BranchMap;
 import com.xmos.xta.engine.maps.LabelMap;
 import com.xmos.xta.engine.maps.SrcLabelMap;
@@ -57,6 +58,7 @@ public class Engine {
 	private ArrayList<SrcLabelMap> m_endpoints;
 	private ArrayList<SrcTableMap> m_endpointTables;
 	private AnalysisEngine m_ae;
+	private Constraint m_constraint;
 
 	public Engine(Config config) {
 		m_xeObjects = new ArrayList<XeObject>();
@@ -80,6 +82,7 @@ public class Engine {
 		m_notifiers = new Vector<Notifier>();
 		m_abort = false;
 		m_progress = new Progress(Progress.State.IDLE, 0, 0);
+		m_constraint = null;
 
 		CodeReferenceFactory.setEngine(this);
 	}
@@ -1097,5 +1100,13 @@ public class Engine {
 			}
 		}
 		return null;
+	}
+
+	public void setConstraint(Constraint constraint) {
+		m_constraint = constraint;
+	}
+
+	public Constraint getConstraint() {
+		return m_constraint;
 	}
 }
