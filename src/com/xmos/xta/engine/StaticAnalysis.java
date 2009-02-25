@@ -11,15 +11,11 @@ public class StaticAnalysis {
 	private ArrayList<BasicBlock> m_nodes;
 	private int m_startPc;
 	private TreeSet<Integer> m_endPcs; 
-	//private ArrayList<LinkedList<BasicBlock>> m_pathList;
-	
 	private ArrayList<PathBasicBlock> m_completedPaths;
 	
 	private boolean m_analysisReady;
 	
 	public StaticAnalysis(){
-		
-
 		m_completedPaths = new ArrayList<PathBasicBlock>();
 		m_analysisReady = false;
 	}
@@ -44,31 +40,22 @@ public class StaticAnalysis {
 			return;
 		}
 		BasicBlock startNode = getNode(m_startPc);
-		
 		if(startNode == null){
 			//error
 			return;
 		}
-		
 		PathBasicBlock startBasicBlock = new PathBasicBlock(startNode, null);
-		
 		Stack<Integer> stack = new Stack<Integer>();
-		
 		Stack<LinkedList<BasicBlock>> nodeContext = new Stack<LinkedList<BasicBlock>>();
 		nodeContext.push(new LinkedList<BasicBlock>());
-		
 		followNode(startBasicBlock, stack, nodeContext);
-		
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void followNode(
 		PathBasicBlock currentBasicBlock, 
 		Stack<Integer> stack, 
 		Stack<LinkedList<BasicBlock>> nodeContext) {
-		
-		
-		
-		//nodeList.add(currentBasicBlock);	
 		
 		boolean finalBlock = reachedEnd(currentBasicBlock.getThisBasicBlock().getInstructions(), m_endPcs);
 		
@@ -76,75 +63,42 @@ public class StaticAnalysis {
 			m_completedPaths.add(currentBasicBlock);
 			return;
 		} else {
-			
-			if(formsRecursion(currentBasicBlock, nodeContext)){
-				//error
-				//System.err.println("error");
-				
+			PathBasicBlock loopBlock = formsLoop(currentBasicBlock, nodeContext);
+			if(loopBlock!=null){
+				//this must be true by design of the algorithm
+				assert(currentBasicBlock.getParent()!=null);
+				loopBlock.getLoopPaths().add(currentBasicBlock.getParent());
+				//FIXME - may be totally wrong
+				currentBasicBlock.getLoopPathAttributes().put(loopBlock, new PathAttributes());
 				return;
 			}
-			
-			//int loopIndex = formsLoop(currentBasicBlock, nodeContext);
-			
-			//PathBasicBlock loopBlock = formsLoop(currentBasicBlock, nodeContext);
-			
-			
-			//if(loopBlock!=null){
-				
-				//System.
-				
-				//LinkedList<BasicBlock> currentContext = nodeContext.peek();
-				
-				//BasicBlock formsLoopWith = currentContext.get(loopIndex -1);
-				
-				//PathBasicBlock nextPathBasicBlock = new PathBasicBlock(formsLoopWith, currentBasicBlock);
-				
-				//loopBlock.getLoopPaths().add(nextPathBasicBlock);
-			//	return;
-			//}
-			
 			XtaInstruction lastInstruction = currentBasicBlock.getThisBasicBlock().getInstructions().getLast();
-			
-			
 			if(lastInstruction.getReturn() && stack.size()>0){
-				//known returns
 				BasicBlock nextNode = getNode(stack.peek());
-				
 				Stack<LinkedList<BasicBlock>> newContext = new Stack<LinkedList<BasicBlock>>();
 				copyStack(nodeContext, newContext);
 				newContext.pop();
-
 				Stack<Integer> newStack = (Stack<Integer>) stack.clone();
 				newStack.pop();
-				
 				PathBasicBlock nextPathBasicBlock = new PathBasicBlock(nextNode, currentBasicBlock);
-				
 				followNode(nextPathBasicBlock, newStack, newContext);
 				
 			} else {
 				for(BasicBlock nextNode : currentBasicBlock.getThisBasicBlock().getNextNodes()){
 					if(lastInstruction.getBranchLink()){
-						
 						Stack<Integer> newStack = (Stack<Integer>) stack.clone();
 						newStack.add(lastInstruction.getPc() + lastInstruction.getNumBytes());
-						
 						Stack<LinkedList<BasicBlock>> newContext = new Stack<LinkedList<BasicBlock>>();
 						copyStack(nodeContext, newContext);
 						newContext.push(new LinkedList<BasicBlock>());
-						
 						PathBasicBlock nextPathBasicBlock = new PathBasicBlock(nextNode, currentBasicBlock);
-						
 						followNode(nextPathBasicBlock, newStack, newContext);
 					} else {
 						Stack<Integer> newStack = (Stack<Integer>) stack.clone();
-						
 						Stack<LinkedList<BasicBlock>> newContext = new Stack<LinkedList<BasicBlock>>();
 						copyStack(nodeContext, newContext);
-						
 						newContext.peek().add(currentBasicBlock.getThisBasicBlock());
-						
 						PathBasicBlock nextPathBasicBlock = new PathBasicBlock(nextNode, currentBasicBlock);
-						
 						followNode(nextPathBasicBlock, newStack, newContext);
 					}
 				}
@@ -161,21 +115,21 @@ public class StaticAnalysis {
 		}
 	}
 
-	private boolean formsRecursion(PathBasicBlock currentNode, Stack<LinkedList<BasicBlock>> nodeContext) {
-		LinkedList<BasicBlock> notInContext = new LinkedList<BasicBlock>();
-		for(LinkedList<BasicBlock> list : nodeContext){
-			if(nodeContext.indexOf(list)< nodeContext.size()-1){
-				notInContext.addAll(list);
+	private PathBasicBlock formsLoop(PathBasicBlock currentNode, Stack<LinkedList<BasicBlock>> nodeContext) {
+		
+		if(!nodeContext.peek().contains(currentNode.getThisBasicBlock())) return null;
+		PathBasicBlock parent = currentNode.getParent();
+		while (parent != null) {
+			if(!nodeContext.peek().contains(parent.getThisBasicBlock())) return null;
+			if (parent.getThisBasicBlock() ==  currentNode.getThisBasicBlock()) {
+				return parent;
 			}
+			parent = parent.getParent();
 		}
-		return notInContext.contains(currentNode.getThisBasicBlock());
+		return null;
 	}
 	
-	private int formsLoop(PathBasicBlock currentNode, Stack<LinkedList<BasicBlock>> nodeContext) {
-		LinkedList<BasicBlock> currentContext = nodeContext.peek();
-		return currentContext.indexOf(currentNode.getThisBasicBlock());
-	}
-
+	
 	private boolean reachedEnd(LinkedList<XtaInstruction> instructions, TreeSet<Integer> pcs) {
 		for(XtaInstruction inst : instructions){
 			if(pcs.contains(inst.getPc())){
@@ -207,16 +161,18 @@ public class StaticAnalysis {
 			t+="\t";
 		}
 		for(PathBasicBlock pbb : bb.getPathBlocks()){
+			for(PathBasicBlock loop : pbb.getLoopPaths()){
+				dumpNode(loop, indent+1);
+			}
+			
 			for(XtaInstruction inst : pbb.getThisBasicBlock().getInstructions()){
 				for(int pc : pbb.getThisBasicBlock().getIBufferStates().get(0).m_fnops){
 					if(pc == inst.getPc()) System.out.println(t+"FNOP");
 				}
 				System.out.println(t+inst);
 			}
-			for(PathBasicBlock loop : pbb.getLoopPaths()){
-				dumpNode(loop, indent+1);
-			}
 		}
+		bb.doneWithPathBlocks();
 	}
 
 }

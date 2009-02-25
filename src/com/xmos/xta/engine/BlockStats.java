@@ -200,13 +200,13 @@ public class BlockStats {
 	// Relative statistics
 	// --------------------------------------------------------------------- //	
 
-	private double getTimeTakenRelative(boolean recurse) {
+	double getTimeTakenRelative(boolean recurse) {
 		return getRelativeDouble(recurse, new DoubleRelative() {
 			public double getValueThis(Block block)     { return block.getTimeTakenThis(); }			
 			public double getValueRelative(Block block) { return block.getBlockStats().getTimeTakenRelative(true); }});
 	}
 
-	private int getNumCyclesRelative(boolean recurse) {
+	int getNumCyclesRelative(boolean recurse) {
 		return getRelativeInteger(recurse, new IntegerRelative() {
 			public int getValueThis(Block block)     { return block.getNumCyclesThis(); }			
 			public int getValueRelative(Block block) { return block.getBlockStats().getNumCyclesRelative(true); }});

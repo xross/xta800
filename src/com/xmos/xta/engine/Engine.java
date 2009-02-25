@@ -426,7 +426,7 @@ public class Engine {
 		sa.setNodes(nodes);
 		sa.setEndPoints(startPc, endPcs);
 		sa.Analyse();
-		//sa.dumpNodes();
+		sa.dumpNodes();
 		m_route = new Route(m_config, m_progress, startPc, endPcs, m_nodeId,
 				m_coreId, m_nodeCoreInstructionCache);
 
