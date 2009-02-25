@@ -1,7 +1,7 @@
 Complete paths:   2
 Unresolved paths: 0
 ----------------------------------
-test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/array\)
+test.xc \(.*array\)
 ----------------------------------
   1: int main\(\)
 \+ 2: \{
@@ -14,7 +14,7 @@ test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/array\)
   9: \}
   10: 
 ----------------------------------
-test.xc \(.*/verif_tests_sw/Tools/xta/CodeSequences/array\)
+test.xc \(.*array\)
 ----------------------------------
   1: int main\(\)
 \+ 2: \{
