@@ -10,8 +10,11 @@ public abstract class Constraint {
 		m_isTrue = false;
 	}
 	
-	public abstract boolean isDone();
+	protected boolean isDone() {
+		return m_isDone;
+	}
+
 	public abstract boolean isTrue();
-	public abstract void touchPc(int pc);
+	public abstract boolean isFalse(int pc);
 	public abstract String getString();
 }
