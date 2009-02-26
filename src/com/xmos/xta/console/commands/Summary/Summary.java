@@ -25,5 +25,5 @@ public class Summary extends CommandContainer {
 	
 	public Command[] getSubCommands() { return m_options; }
 	protected String getDescription() { return "Display timing summaries"; }
-	protected Command clone(Command command) { return new List(command); }		
+	protected Command clone(Command command) { return new Summary(command); }
 }
