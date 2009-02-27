@@ -16,16 +16,16 @@ public class Unknown {
     private UnknownType m_reason;
     private Expression m_guard;
     private Expression m_branchTarget;
-    private Block m_block;
+    private PathBasicBlock m_block;
     private boolean m_isShown;
     private boolean m_isSet;
     
-    public Unknown(Block block, XtaInstruction inst) {
+    public Unknown(PathBasicBlock block, XtaInstruction inst) {
     	initialise(block, inst);
     	m_reason = UnknownType.PAUSABLETIME;
     }    
     
-    public Unknown(Block block, XtaInstruction inst, Expression guard, Expression branchTarget) {
+    public Unknown(PathBasicBlock block, XtaInstruction inst, Expression guard, Expression branchTarget) {
     	initialise(block, inst);
     	m_guard = guard;
         m_branchTarget = branchTarget;
@@ -38,7 +38,7 @@ public class Unknown {
         }
     }
     
-    private void initialise(Block block, XtaInstruction inst) {
+    private void initialise(PathBasicBlock block, XtaInstruction inst) {
     	m_inst = inst;
     	m_block = block;
     	m_guard = new Expression(0, 0, Expression.Type.REGISTER, Expression.Status.UNDEFINED);
@@ -56,11 +56,11 @@ public class Unknown {
     		return m_inst.getPc();
     }
 
-    public int getPathId() {
+    public int getBlockId() {
     	if (m_block == null)
     		return 0;
     	else
-    		return m_block.getId();
+    		return m_block.getBlockId();
     }
 
     public String getReason() {

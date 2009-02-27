@@ -3,8 +3,8 @@ package com.xmos.xta.console.commands.Assert;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
-import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
 
 public class MaxTime extends Command  {
@@ -52,12 +52,12 @@ public class MaxTime extends Command  {
         
         Route route = engine.getRoute();
         
-        if(route == null || route.completePaths().size() == 0){
+        if(route == null || route.getCompletedPaths().size() == 0){
             console.display("FAIL (no paths found)\n");
             return;
         }
         double worstPathTime = 0;
-        for(Block path : route.completePaths()){
+        for(PathBasicBlock path : route.getCompletedPaths()){
             double time = path.getTimeTaken(true);
             worstPathTime = Math.max(worstPathTime, time);
         }

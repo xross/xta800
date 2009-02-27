@@ -172,7 +172,7 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 			Unknown unknown = (Unknown) item.getData();
 			Vector<Integer> selectedBlocks = new Vector<Integer>();
 			m_selectedNode.getBlockIds(selectedBlocks);
-			if (selectedBlocks.contains(unknown.getPathId())) {
+			if (selectedBlocks.contains(unknown.getBlockId())) {
 				item.setBackground(m_display.getSystemColor(SWT.COLOR_YELLOW));
 			} else {
 				item.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
@@ -189,7 +189,7 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 			Unknown p2 = (Unknown) e2;
 			switch(field){
 			case 0:
-				int res0 = p1.getPathId() > p2.getPathId() ? 1 : -1;
+				int res0 = p1.getBlockId() > p2.getBlockId() ? 1 : -1;
 				return res0 * direction;
 			case 1:
 				int res1 = p1.getTypeString().compareTo(p2.getReason());
@@ -201,7 +201,7 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 				int res3 = p1.getReason().compareTo(p2.getReason());
 				return res3 * direction;
 			default:
-				int resd = p1.getPathId() > p2.getPathId() ? 1 : -1;
+				int resd = p1.getBlockId() > p2.getBlockId() ? 1 : -1;
 				return resd * direction;
 			}
 		}

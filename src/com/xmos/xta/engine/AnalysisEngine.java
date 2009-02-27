@@ -246,12 +246,14 @@ public class AnalysisEngine {
 				}
 				System.out.print("max: " +maxFnops + " min: " + minFnops + "\\n");
 			}
-			for (XtaInstruction inst : node.getInstructions()) {
+			for (XtaInstruction inst : node.getInstructionStream()) {
+				/*
 				if(singular ){
 					for(int pc : node.getIBufferStates().get(0).m_fnops){
 						if(pc == inst.getPc()) System.out.print( "FNOP\\n");
 					}
 				} 
+				*/
 				System.out.print(inst + "\\n");
 			}
 			System.out.print("\", style=filled, shape=box,");
@@ -344,6 +346,10 @@ public class AnalysisEngine {
 
 	public BasicBlock[] getNodes(int nodeId, int coreId) {
 		return getBasicBlockStartPcs(nodeId, coreId).values().toArray(new BasicBlock[] {});
+	}
+
+	public ArrayList<BasicBlock> getNodeArray(int nodeId, int coreId){
+		return new ArrayList<BasicBlock>(getBasicBlockStartPcs(nodeId, coreId).values());
 	}
 
 	private void locatePoolPointers() {

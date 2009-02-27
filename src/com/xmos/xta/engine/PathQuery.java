@@ -5,7 +5,7 @@ import java.util.TreeSet;
 
 public class PathQuery {
 
-	private ArrayList<Block> m_blocks;
+	private ArrayList<PathBasicBlock> m_blocks;
 	private String m_expression;
 	private String m_queryName;
 	
@@ -13,12 +13,12 @@ public class PathQuery {
 		super();
 		m_expression = expression;
 		m_queryName = name;
-		m_blocks = new ArrayList<Block>();
+		m_blocks = new ArrayList<PathBasicBlock>();
 	}
 	
 	public void resolve(Route route){
-		for(Block path : route.completePaths()){
-			TreeSet<Block> allBlocks = new TreeSet<Block>();
+		for(PathBasicBlock path : route.getCompletedPaths()){
+			TreeSet<PathBasicBlock> allBlocks = new TreeSet<PathBasicBlock>();
 			path.getAllBlocks(allBlocks);
 			//for(Block block : allBlocks){
 				//do something with the expressions here				
@@ -28,7 +28,7 @@ public class PathQuery {
 	
 	
 	
-	public ArrayList<Block> getBlocks(){
+	public ArrayList<PathBasicBlock> getBlocks(){
 		return m_blocks;
 	}
 

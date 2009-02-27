@@ -3,8 +3,8 @@ package com.xmos.xta.console.commands.Summary;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
-import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.PathBasicBlock;
 
 public class Info extends Command {
 	private int m_id;
@@ -64,11 +64,11 @@ public class Info extends Command {
     	
     	switch (m_idType) {
         case BLOCK:
-        	Block block = engine.getRoute().getBlock(m_id);
+        	PathBasicBlock block = engine.getRoute().getBlock(m_id);
         	displayBlockSummary(console, block);
         	break;
         case PATH:
-        	Block path = engine.getRoute().getPath(m_id);			
+        	PathBasicBlock path = engine.getRoute().getPath(m_id);			
         	displayPathSummary(console, path);
         	break;
         default:
@@ -76,7 +76,7 @@ public class Info extends Command {
         }    	
     }
     
-    private void displayPathSummary(Console console, Block path) {
+    private void displayPathSummary(Console console, PathBasicBlock path) {
     	console.display(String.format("Timing(ns):       %.1f\n", path.getTimeTaken(true)));
         console.display(String.format("Thread cycles:    %d\n", path.getNumCycles(true)));
         console.display(String.format("Num Instructions: %d\n", path.getNumInstructions(true)));
@@ -85,14 +85,14 @@ public class Info extends Command {
         console.display(String.format("Num Pauseables:   %d\n", path.getNumPausables(true)));
         
         int numLoops = 0;
-        for (Block block : path.getPathBlocks()) {
+        for (PathBasicBlock block : path.getPathBlocks()) {
             numLoops += block.numLoopPaths();
         }
         path.doneWithPathBlocks();
         console.display(String.format("Num Loops:        %d\n", numLoops));
     }
 
-    private void displayBlockSummary(Console console, Block block) {
+    private void displayBlockSummary(Console console, PathBasicBlock block) {
     	console.display(String.format("Timing(ns):       %.1f\n", block.getTimeTakenThis()));
     	console.display(String.format("Thread cycles:    %d\n", block.getNumCyclesThis()));
     	console.display(String.format("Num Instructions: %d\n", block.getNumInstructionsThis()));

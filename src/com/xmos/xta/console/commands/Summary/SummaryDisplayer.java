@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.commands.Command;
-import com.xmos.xta.engine.Block;
 import com.xmos.xta.engine.Attributes;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.PathAttributes;
+import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.Status;
 import com.xmos.xta.engine.Unresolved;
@@ -51,17 +51,17 @@ public class SummaryDisplayer {
     	case complete_blocks:
     	case complete_instructions:
     		m_console.display(String.format("Path(id): Timing(ns)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute\n"));     			
-         	m_console.display(String.format("+COMPLETE [%d path(s)]\n", route.completePaths().size()));
-	        summarisePaths(route.completePaths(), "    ", null);	        	       
+         	m_console.display(String.format("+COMPLETE [%d path(s)]\n", route.getCompletedPaths().size()));
+	        summarisePaths(route.getCompletedPaths(), "    ", null);	        	       
 	        break;
     	
         case unresolved:
         case unresolved_loops:
         case unresolved_blocks:
         case unresolved_instructions:
-         	m_console.display(String.format("+UNRESOLVED [%d path(s)]\n", route.unresolvedPaths().size()));
-	        ArrayList<Block> unresolvedPaths = new ArrayList<Block>();
-	        for(Unresolved unknown : route.unresolvedPaths()){
+         	m_console.display(String.format("+UNRESOLVED [%d path(s)]\n", route.getUnresolvedPaths().size()));
+	        ArrayList<PathBasicBlock> unresolvedPaths = new ArrayList<PathBasicBlock>();
+	        for(Unresolved unknown : route.getUnresolvedPaths()){
 	        	unresolvedPaths.add(unknown.getBlock());
 	        }
          	summarisePaths(unresolvedPaths, "    ", null);
@@ -73,8 +73,8 @@ public class SummaryDisplayer {
     	}    	
     }
 	    
-    private void summarisePaths(ArrayList<Block> loopPaths, String indent, Block parent) {
-        for (Block path : loopPaths) {
+    private void summarisePaths(ArrayList<PathBasicBlock> loopPaths, String indent, PathBasicBlock parent) {
+        for (PathBasicBlock path : loopPaths) {
             int iterations = 1;
             boolean isAbsolute = false;
 
@@ -88,10 +88,10 @@ public class SummaryDisplayer {
         }
     }
     
-    private void summarisePath(Block path, String indent, int numExecutions, boolean absolute) {
+    private void summarisePath(PathBasicBlock path, String indent, int numExecutions, boolean absolute) {
    	    displayPathLevelInfo(path, indent, numExecutions, absolute);
    	    
-        for (Block block : path.getPathBlocks()) {
+        for (PathBasicBlock block : path.getPathBlocks()) {
         	
             if ((m_level == Level.complete_blocks) || 
                 (m_level == Level.unresolved_blocks) ||
@@ -115,8 +115,15 @@ public class SummaryDisplayer {
         path.doneWithPathBlocks();
     }
 
-    private void displayPathLevelInfo(Block path, String indent, int numExecutions, boolean absolute) {
-        String pathId = String.format("path(%d)", path.getPathId());
+    private void displayPathLevelInfo(PathBasicBlock path, String indent, int numExecutions, boolean absolute) {
+        
+    	
+    	String pathId = "";
+    	if(path.getPathId()!= -1){
+    		pathId = String.format("path(%d)", path.getPathId());
+    	} else {
+    		pathId = "path(none)";
+    	}
 
         if ((path.getStatus() != Status.BlockStatus.COMPLETE) ) {
             String comment = "";
@@ -135,8 +142,8 @@ public class SummaryDisplayer {
         		absolute == true ? 1 : 0));
     }
 
-    private void displayBlockLevelInfo(Block block, String indent) {
-        String blockId = String.format("block(b%d)", block.getId());
+    private void displayBlockLevelInfo(PathBasicBlock block, String indent) {
+        String blockId = String.format("block(b%d)", block.getBlockId());
 
         m_console.display(String.format("%s    %-11s: %.1f/%d/%d/%d/%d\n", 
         		indent, blockId, 
@@ -147,11 +154,11 @@ public class SummaryDisplayer {
         		block.getNumPausablesThis()));
     }
 
-    private void displayLoopLevelInfo(Block path, String indent, int numIterations) {
-        ArrayList<Block> loopPaths = path.getLoopPaths();
+    private void displayLoopLevelInfo(PathBasicBlock path, String indent, int numIterations) {
+        ArrayList<PathBasicBlock> loopPaths = path.getLoopPaths();
         if (loopPaths.size() > 0) {
             int totalIterations = 0;
-            for (Block loopPath : loopPaths) {
+            for (PathBasicBlock loopPath : loopPaths) {
                 Attributes attributes = path.getLoopPathAttributes(loopPath);
                 totalIterations += attributes.getNumIterations();
             }
@@ -162,7 +169,7 @@ public class SummaryDisplayer {
         }
     }
 
-    private void displayInstructionLevelInfo(Block path, String indent, int numExecutions) {
+    private void displayInstructionLevelInfo(PathBasicBlock path, String indent, int numExecutions) {
         if ((m_level == Level.complete_instructions) ||
             (m_level == Level.unresolved_instructions)) {
         	

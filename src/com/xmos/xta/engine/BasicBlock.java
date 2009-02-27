@@ -11,7 +11,7 @@ public class BasicBlock implements Comparable<BasicBlock> {
 	private ArrayList<BasicBlock> m_nextNode;
 	private ArrayList<BasicBlock> m_previousNode;
 	private ArrayList<Unknown> m_unknowns;
-	
+	private IBufferState m_worstIbuffer;
 	
 	BasicBlock(int n) {
 		m_nodeId = n;
@@ -40,10 +40,32 @@ public class BasicBlock implements Comparable<BasicBlock> {
 		return m_iBufferStates;
 	}
 
+	/*
+	 * this returns a list of instructions with the worst case fnops inserted
+	 */
+	public LinkedList<XtaInstruction> getInstructionStream() {
+		LinkedList<XtaInstruction> worst = new LinkedList<XtaInstruction>();
+		for(XtaInstruction inst : m_instructions){
+			for(int pc : m_worstIbuffer.m_fnops){
+				if(pc == inst.getPc()){
+					XtaInstruction fnop = new NullInstruction("--FNOP--", inst.getConfig(), 0, inst.getPc(), 0);
+					fnop.setFunctionName(inst.getFunctionName());
+					worst.add(fnop);
+				}
+			}
+			worst.add(inst);
+		}
+		return worst;
+	}
+
+	/*
+	 * this should only be used when the complete basic block is wanted,
+	 * there are no FNOPS in the list nor is it trimmed to size.
+	 */
 	public LinkedList<XtaInstruction> getInstructions() {
 		return m_instructions;
 	}
-
+	
 	public ArrayList<BasicBlock> getNextNodes() {
 		return m_nextNode;
 	}
@@ -107,10 +129,16 @@ public class BasicBlock implements Comparable<BasicBlock> {
 			}
 		}
 		m_iBufferStates.add(ib);
+		//update the worst iBuffer
+		if(m_worstIbuffer == null) m_worstIbuffer = ib;
+		for(IBufferState w : m_iBufferStates){
+			if(w.m_fnops.size()> m_worstIbuffer.m_fnops.size()){
+				m_worstIbuffer = w;
+			}
+		}
 		return true;
 	}
-	
-	
+
 }
 
 class IBufferState {

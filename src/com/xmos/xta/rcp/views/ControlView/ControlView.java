@@ -437,8 +437,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		XtaRouteInfo routeInfo = XtaNotifier.getInstance().getRouteInfo();
 		if (routeInfo != null) {
 			Route route = routeInfo.getRoute();
-			int numUnresolvedPaths = route.unresolvedPaths().size();
-			if (numUnresolvedPaths == 0 && route.completePaths().size() == 0) {
+			int numUnresolvedPaths = route.getUnresolvedPaths().size();
+			if (numUnresolvedPaths == 0 && route.getCompletedPaths().size() == 0) {
 				Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0,
 						"No complete paths found, may have found an infinite loop", null);
 		        ErrorDialog.openError(Display.getCurrent().getActiveShell(),

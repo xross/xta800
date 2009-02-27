@@ -2,8 +2,8 @@ package com.xmos.xta.engine;
 
 public interface RouteStart {
 
-	void addCompletePath(Block path);
+	void addCompletePath(PathBasicBlock path);
 
-	void addUnresolvedPath(Block path);
+	void addUnresolvedPath(PathBasicBlock path);
 
 }

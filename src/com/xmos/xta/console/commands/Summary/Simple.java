@@ -32,8 +32,8 @@ public class Simple extends Command {
     }
 
     private void displaySimple(Console console, Route route) {
-    	console.display(String.format("Complete paths:   %d\n", route.completePaths().size()));
-    	console.display(String.format("Unresolved paths: %d\n", route.unresolvedPaths().size()));
+    	console.display(String.format("Complete paths:   %d\n", route.getCompletedPaths().size()));
+    	console.display(String.format("Unresolved paths: %d\n", route.getUnresolvedPaths().size()));
     }
 	
 }

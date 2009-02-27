@@ -2,19 +2,18 @@ package com.xmos.xta.rcp.nodes;
 
 import java.util.HashSet;
 import java.util.Vector;
-
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Shell;
 
-import com.xmos.xta.engine.Block;
+import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.views.ViewNode.FunctionLoopNode;
 import com.xmos.xta.rcp.views.ViewNode.StructureLoopNode;
 
 public class LoopNode extends Node {
-    private Block m_block;
+    private PathBasicBlock m_block;
 
-    public LoopNode(Block block, Node parent){
+    public LoopNode(PathBasicBlock block, Node parent){
     	super(parent);
     	m_block = block;
 
@@ -23,7 +22,7 @@ public class LoopNode extends Node {
 }
 
     public int getId() {
-        return m_block.getId();
+        return m_block.getBlockId();
     }
     
     public double getTimeTaken() {
@@ -82,7 +81,7 @@ public class LoopNode extends Node {
 
     public int getNumIterations() {
         int numIterations = 0;
-        for (Block loopPath : m_block.getLoopPaths()) {
+        for (PathBasicBlock loopPath : m_block.getLoopPaths()) {
             numIterations += m_block.getLoopPathAttributes(loopPath).getNumIterations();
         }
         return numIterations;
