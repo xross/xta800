@@ -8,15 +8,15 @@ my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
 chdir("add") or die ("Could not chdir to directory add");
-system("xcc -march=xs1b -g -c test.xc -o ../$genDir/add.o > ../$genDir/different_compilation_directories.log 2>&1");
+system("xcc -march=$arch -g -c test.xc -o ../$genDir/add.o > ../$genDir/different_compilation_directories.log 2>&1");
 chdir("../") or die ("Could not chdir to directory ../");
 
 chdir("sub") or die ("Could not chdir to directory sub");
-system("xcc -march=xs1b -g -c test.xc -o ../$genDir/sub.o >> ../$genDir/different_compilation_directories.log 2>&1");
+system("xcc -march=$arch -g -c test.xc -o ../$genDir/sub.o >> ../$genDir/different_compilation_directories.log 2>&1");
 chdir("../") or die ("Could not chdir to directory ../");
 
-system("xcc -march=xs1b -g -c test.xc -o $genDir/test.o >> $genDir/different_compilation_directories.log 2>&1");
-system("xcc -march=xs1b -g $genDir/test.o $genDir/add.o $genDir/sub.o -o $genDir/test.xe >> $genDir/different_compilation_directories.log 2>&1");
+system("xcc -march=$arch -g -c test.xc -o $genDir/test.o >> $genDir/different_compilation_directories.log 2>&1");
+system("xcc -march=$arch -g $genDir/test.o $genDir/add.o $genDir/sub.o -o $genDir/test.xe >> $genDir/different_compilation_directories.log 2>&1");
 }
 
 system("@ARGV load $genDir/test.xe " .

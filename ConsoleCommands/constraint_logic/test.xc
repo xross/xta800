@@ -29,6 +29,10 @@ int testAorB(int x) {
 
 int main()
 {
+  // Prevent functions from being stripped
+  testA();
+  testB();
   testAandB();
+  testAorB(0);
   return 0;
 }

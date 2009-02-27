@@ -1,67 +1,67 @@
 set constraint a
 list constraint
-time function testA
+analyse function testA
 summary simple
-time function testB
+analyse function testB
 summary simple
-time function testAandB
+analyse function testAandB
 summary simple
-time function testAorB
+analyse function testAorB
 summary simple
 
 set constraint !a
 list constraint
-time function testA
+analyse function testA
 summary simple
-time function testB
+analyse function testB
 summary simple
-time function testAandB
+analyse function testAandB
 summary simple
-time function testAorB
+analyse function testAorB
 summary simple
 
 set constraint a&&b
 list constraint
-time function testA
+analyse function testA
 summary simple
-time function testB
+analyse function testB
 summary simple
-time function testAandB
+analyse function testAandB
 summary simple
-time function testAorB
+analyse function testAorB
 summary simple
 
 set constraint !(a||b)
 list constraint
-time function testA
+analyse function testA
 summary simple
-time function testB
+analyse function testB
 summary simple
-time function testAandB
+analyse function testAandB
 summary simple
-time function testAorB
+analyse function testAorB
 summary simple
 
 set constraint !a && !b
 list constraint
-time function testA
+analyse function testA
 summary simple
-time function testB
+analyse function testB
 summary simple
-time function testAandB
+analyse function testAandB
 summary simple
-time function testAorB
+analyse function testAorB
 summary simple
 
 set constraint !a || !b
 list constraint
-time function testA
+analyse function testA
 summary simple
-time function testB
+analyse function testB
 summary simple
-time function testAandB
+analyse function testAandB
 summary simple
-time function testAorB
+analyse function testAorB
 summary simple
 
 exit

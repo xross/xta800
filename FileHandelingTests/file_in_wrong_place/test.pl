@@ -8,7 +8,7 @@ my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
 system("cp a.xc test.xc");
-system("xcc -march=xs1b -g test.xc -o $genDir/test.xe > $genDir/file_in_wrong_place.log 2>&1");
+system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/file_in_wrong_place.log 2>&1");
 system("mv test.xc ./up/test.xc");
 }
 system("@ARGV load $genDir/test.xe " .

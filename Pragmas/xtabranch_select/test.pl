@@ -7,7 +7,7 @@ my $arch    = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -march=xs1a -g test.xc -o $genDir/test.xe > $genDir/xtabranch_select.log 2>&1");
+system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/xtabranch_select.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "list branches " .
