@@ -1,8 +1,8 @@
 package com.xmos.xta.console.commands.Analyse;
 
-import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
+import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 
 public class Path extends Command {
@@ -22,6 +22,10 @@ public class Path extends Command {
     public int numArgs() {
     	return 2;
     }        
+
+	public ArgType[] getArgTypes() {
+		return new Command.ArgType[] {ArgType.ENDPOINT, ArgType.ENDPOINT};
+	}    
 
     public String name() {
     	return "path";
@@ -49,5 +53,5 @@ public class Path extends Command {
 			return;			    	
 
         engine.analyseRoute(m_fromRef, m_toRef);
-    }   
+    }    
  }

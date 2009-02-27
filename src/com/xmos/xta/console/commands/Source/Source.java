@@ -4,10 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-import com.xmos.xta.console.Command;
-import com.xmos.xta.console.CommandFactory;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
+import com.xmos.xta.console.commands.Command;
+import com.xmos.xta.console.commands.CommandFactory;
 import com.xmos.xta.console.commands.Invalid;
 import com.xmos.xta.engine.Engine;
 
@@ -26,6 +26,10 @@ public class Source extends Command {
     	return 1;
     }        
 
+	public ArgType[] getArgTypes() {
+		return new Command.ArgType[] {ArgType.FILE};
+	}    
+    
     public String name() {
     	return "source";
     }        
@@ -84,9 +88,5 @@ public class Source extends Command {
         catch (IOException e) {
         	console.display(String.format("Error: Unable to open file for reading: %s\n", m_fileName)); 
         }    	
-    }    
-    
-	public boolean usesFileSystem() {
-		return true;
-	}	    
+    }        
 }

@@ -1,7 +1,7 @@
 package com.xmos.xta.console.commands.Print;
 
-import com.xmos.xta.console.Command;
-import com.xmos.xta.console.CommandContainer;
+import com.xmos.xta.console.commands.Command;
+import com.xmos.xta.console.commands.CommandContainer;
 
 public class Print extends CommandContainer {
 	static private Command[] m_options = { 

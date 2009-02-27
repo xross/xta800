@@ -1,7 +1,7 @@
 package com.xmos.xta.console.commands.Unset;
 
-import com.xmos.xta.console.Command;
-import com.xmos.xta.console.CommandContainer;
+import com.xmos.xta.console.commands.Command;
+import com.xmos.xta.console.commands.CommandContainer;
 import com.xmos.xta.console.commands.Time;
 
 public class Unset extends CommandContainer {

@@ -1,7 +1,8 @@
-package com.xmos.xta.console;
+package com.xmos.xta.console.commands;
 
 import java.util.Vector;
 
+import com.xmos.xta.console.Console;
 import com.xmos.xta.console.commands.Add.Add;
 import com.xmos.xta.console.commands.Analyse.Analyse;
 import com.xmos.xta.console.commands.Assert.Assert;

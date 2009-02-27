@@ -4,9 +4,9 @@ import java.util.Vector;
 
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
-import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
+import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 
 public class Functions extends Command {

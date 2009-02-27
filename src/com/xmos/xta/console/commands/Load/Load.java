@@ -3,10 +3,10 @@ package com.xmos.xta.console.commands.Load;
 import java.io.File;
 import java.io.IOException;
 
-import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.ConsoleFileFinder;
 import com.xmos.xta.console.Shell;
+import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 
 public class Load extends Command {
@@ -24,6 +24,10 @@ public class Load extends Command {
     	return 1;
     }        
 
+	public ArgType[] getArgTypes() {
+		return new Command.ArgType[] {ArgType.FILE};
+	}	
+    
     public String name() {
     	return "load";
     }        
@@ -58,9 +62,5 @@ public class Load extends Command {
 
 	public String toString() {
 		return commandLine();
-	}
-	
-	public boolean usesFileSystem() {
-		return true;
 	}	
 }

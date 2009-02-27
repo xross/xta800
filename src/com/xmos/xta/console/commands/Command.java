@@ -1,13 +1,22 @@
-package com.xmos.xta.console;
+package com.xmos.xta.console.commands;
 
 import java.io.File;
 
+import com.xmos.xta.console.Console;
+import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 
 public abstract class Command {
     public enum IdType {
     	PATH,
     	BLOCK,
+    }
+    
+    public enum ArgType {
+    	FILE,
+    	FUNCTION,
+    	ENDPOINT,
+    	SRCLABEL,
     }
 	
     public abstract int numArgs();
@@ -22,11 +31,11 @@ public abstract class Command {
 	}
     
 	public Command[] getSubCommands() {
-		return null;
+		return new Command[] {};
 	}
     
-	public boolean usesFileSystem() {
-		return false;
+	public ArgType[] getArgTypes() {
+		return new ArgType[] {};
 	}
 	
     public static boolean isExecutableLoaded(Engine engine, Console console) {    
