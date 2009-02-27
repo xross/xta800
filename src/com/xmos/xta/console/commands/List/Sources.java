@@ -2,9 +2,9 @@ package com.xmos.xta.console.commands.List;
 
 import com.xmos.dwarfhandler.DebugFile;
 import com.xmos.xeloader.DebugInfo;
-import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
+import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 
 public class Sources extends Command {

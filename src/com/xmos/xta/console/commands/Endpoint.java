@@ -2,7 +2,6 @@ package com.xmos.xta.console.commands;
 
 import java.util.ArrayList;
 
-import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;

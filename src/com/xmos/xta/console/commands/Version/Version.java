@@ -8,9 +8,9 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
+import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 
 public class Version extends Command {

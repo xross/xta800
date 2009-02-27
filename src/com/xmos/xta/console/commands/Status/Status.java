@@ -4,9 +4,9 @@ import java.io.File;
 
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
-import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
+import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Progress;
 import com.xmos.xta.engine.Route;

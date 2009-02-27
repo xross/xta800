@@ -3,6 +3,10 @@ package com.xmos.xta.console;
 import java.io.IOException;
 import java.util.Vector;
 
+import com.xmos.xta.console.commands.Command;
+import com.xmos.xta.console.completors.XtaCompletor;
+import com.xmos.xta.engine.Engine;
+
 
 import jline.ConsoleReader;
 
@@ -10,10 +14,10 @@ public class JLineConsole implements Console {
 	private ConsoleReader m_reader;
 	private String m_prompt;
 	
-	JLineConsole() throws IOException {
+	JLineConsole(Engine engine) throws IOException {
 		m_reader = new ConsoleReader();
 		m_reader.setBellEnabled(false);
-	  	m_reader.addCompletor(new JLineCompletor());
+	  	m_reader.addCompletor(new XtaCompletor(engine));
 	}
 	
 	public void display(String str) {

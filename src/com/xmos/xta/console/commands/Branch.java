@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
 
-import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
