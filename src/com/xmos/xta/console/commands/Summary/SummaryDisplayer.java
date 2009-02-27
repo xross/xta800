@@ -116,11 +116,18 @@ public class SummaryDisplayer {
     }
 
     private void displayPathLevelInfo(PathBasicBlock path, String indent, int numExecutions, boolean absolute) {
-        String pathId = String.format("path(%d)", path.getPathId());
+        
+    	
+    	String pathId = "";
+    	if(path.getPathId()!= -1){
+    		pathId = String.format("path(%d)", path.getPathId());
+    	} else {
+    		pathId = "path(none)";
+    	}
 
         if ((path.getStatus() != Status.BlockStatus.COMPLETE) ) {
             String comment = "";
-            //comment = path.getUnresolved().getReason();
+            comment = path.getUnresolved().getReason();
             m_console.display(String.format("%s%-11s: %s\n", indent, pathId, comment));
         }
         

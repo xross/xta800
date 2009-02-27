@@ -247,11 +247,13 @@ public class AnalysisEngine {
 				System.out.print("max: " +maxFnops + " min: " + minFnops + "\\n");
 			}
 			for (XtaInstruction inst : node.getInstructionStream()) {
+				/*
 				if(singular ){
 					for(int pc : node.getIBufferStates().get(0).m_fnops){
 						if(pc == inst.getPc()) System.out.print( "FNOP\\n");
 					}
 				} 
+				*/
 				System.out.print(inst + "\\n");
 			}
 			System.out.print("\", style=filled, shape=box,");
@@ -322,7 +324,7 @@ public class AnalysisEngine {
 
 	private BasicBlock getNode(int pc, int nodeId, int coreId) {
 		for (BasicBlock n : getBasicBlockStartPcs(nodeId, coreId).values()) {
-			LinkedList<XtaInstruction> insts = n.getInstructionStream();
+			LinkedList<XtaInstruction> insts = n.getInstructions();
 			for (XtaInstruction inst : insts) {
 				if (inst.getPc() == pc) {
 					return n;

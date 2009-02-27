@@ -19,8 +19,29 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	private HashMap<PathBasicBlock, PathAttributes> m_loopPathAttributes;
 	private BasicBlockStats m_blockStats;
 	private BlockStatus m_status;
+	private int m_startInstruction;
+	private int m_endInstruction;
+	
+	//i don't want this here so i'll move it later
+	private Unresolved m_unresolved;
 	
 	public PathBasicBlock(BasicBlock basicBlock, PathBasicBlock parentBasicBlock){
+		
+		m_parentBasicBlock = parentBasicBlock;
+		m_seen = 0;
+		m_loopPaths = new ArrayList<PathBasicBlock>();
+		m_blockId = pathBasicBlockCount++;
+		m_pathId = -1;
+		m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
+		m_blockStats = new BasicBlockStats(this);
+		m_status = BlockStatus.SEARCHING;
+		m_startInstruction = basicBlock.getInstructions().getFirst().getPc();
+		m_endInstruction = basicBlock.getInstructions().getLast().getPc();
+		m_basicBlock = basicBlock;
+	}
+	
+	public PathBasicBlock(BasicBlock basicBlock, PathBasicBlock parentBasicBlock, 
+			int instPc, boolean start){
 		m_basicBlock = basicBlock;
 		m_parentBasicBlock = parentBasicBlock;
 		m_seen = 0;
@@ -30,10 +51,34 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
 		m_blockStats = new BasicBlockStats(this);
 		m_status = BlockStatus.SEARCHING;
+		if(start){
+			m_startInstruction = instPc;
+			m_endInstruction = basicBlock.getInstructions().getLast().getPc();
+		} else {
+			m_startInstruction = basicBlock.getInstructions().getFirst().getPc();
+			m_endInstruction = instPc;
+		}
+	}
+	
+	public int getStartPc(){
+		return m_startInstruction;
+	}
+	
+	public int getEndPc(){
+		return m_endInstruction;
 	}
 	
 	public BasicBlockStats getBlockStats(){
 		return m_blockStats;
+	}
+	
+
+	public Unresolved getUnresolved() {
+		return m_unresolved;
+	}
+	
+	public void setStatus(BlockStatus status) {
+		m_status = status;
 	}
 	
 	public void setPath(int i) {
@@ -186,8 +231,26 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		return insts;
 	}
 	
+	
+	/*
+	 * gets the actual instructions of this block: trimmed with fnops included
+	 */
 	public Vector<XtaInstruction> getInstructionsThis() {
-		return new Vector<XtaInstruction>(m_basicBlock.getInstructionStream());
+		Vector<XtaInstruction> pathBasicBlockInstructions = new Vector<XtaInstruction>();
+		boolean copy = false;
+		for(XtaInstruction inst : m_basicBlock.getInstructionStream()){
+			if(inst.getPc() == m_startInstruction){
+				copy = true;
+			}
+			if(copy) {
+				pathBasicBlockInstructions.add(inst);
+			}
+			if(inst.getPc() == m_endInstruction && !inst.isFnop()){
+				copy = false;
+			}
+		}
+		
+		return pathBasicBlockInstructions;
 	}
 	
 	public HashSet<Integer> getPcsCovered(boolean recurse) {
@@ -207,7 +270,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public HashSet<Integer> getPcsCoveredThis() {
 		//TODO make this fast
 		HashSet<Integer> pcs = new HashSet<Integer>();
-		for(XtaInstruction inst : m_basicBlock.getInstructionStream()){
+		for(XtaInstruction inst : getInstructionsThis()){
 			pcs.add(inst.getPc());
 		}
 		return pcs;
@@ -239,7 +302,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	// --------------------------------------------------------------------- //		
 	public double getTimeTakenThis() {
 		double time = 0.0;
-		for (XtaInstruction instruction : m_basicBlock.getInstructionStream()) {
+		for (XtaInstruction instruction : getInstructionsThis()) {
 			time += instruction.getTimeTaken();
 		}
 		return time;
@@ -247,17 +310,18 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 
 	public int getNumCyclesThis() {
 		int numCycles = 0;
-		for (XtaInstruction instruction : m_basicBlock.getInstructionStream()) {
+		for (XtaInstruction instruction : getInstructionsThis()) {
 			numCycles += instruction.getNumCycles();
 		}
 		return numCycles;
 	}
 	
 	/*
-	 * returns the number of instructions on the basic block
+	 * returns the number of instructions in the basic block, includeing fnops
+	 * and trimmed
 	 */
 	public int getNumInstructionsThis() {
-		return m_basicBlock.getInstructionStream().size();
+		return getInstructionsThis().size();
 	}
 
 	/*
@@ -276,7 +340,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 */
 	public int getNumPausablesThis() {
 		int count = 0;
-		for(XtaInstruction inst : m_basicBlock.getInstructionStream()){
+		for(XtaInstruction inst : getInstructionsThis()){
 			if (inst.canPause()) count++;
 		}
 		return count;
@@ -304,5 +368,15 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public int getNumFNopsLoopsOnly() {	return m_blockStats.getNumFNopsLoopsOnly();}
 	public int getNumPausablesLoopsOnly() {	return m_blockStats.getNumPausablesLoopsOnly();}
 	public int getNumUnknownsLoopsOnly() { return m_blockStats.getNumUnknownsLoopsOnly();}
+
+	public void setUnresolved(Unresolved unresolved) {
+		m_unresolved= unresolved;
+		
+	}
+
+	
+	
+
+
 
 }

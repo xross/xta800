@@ -48,7 +48,9 @@ public class BasicBlock implements Comparable<BasicBlock> {
 		for(XtaInstruction inst : m_instructions){
 			for(int pc : m_worstIbuffer.m_fnops){
 				if(pc == inst.getPc()){
-					worst.add(new NullInstruction("--FNOP--", inst.getConfig(), 0, pc, 0));
+					XtaInstruction fnop = new NullInstruction("--FNOP--", inst.getConfig(), 0, inst.getPc(), 0);
+					fnop.setFunctionName(inst.getFunctionName());
+					worst.add(fnop);
 				}
 			}
 			worst.add(inst);
@@ -56,6 +58,10 @@ public class BasicBlock implements Comparable<BasicBlock> {
 		return worst;
 	}
 
+	/*
+	 * this should only be used when the complete basic block is wanted,
+	 * there are no FNOPS in the list nor is it trimmed to size.
+	 */
 	public LinkedList<XtaInstruction> getInstructions() {
 		return m_instructions;
 	}
@@ -132,8 +138,7 @@ public class BasicBlock implements Comparable<BasicBlock> {
 		}
 		return true;
 	}
-	
-	
+
 }
 
 class IBufferState {
