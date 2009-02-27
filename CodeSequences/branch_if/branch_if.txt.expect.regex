@@ -18,7 +18,8 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
  +\(20.0ns\) 0x[0-9a-fA-F]{5} eq \(2rus\) r1, r1, i 0x2 
  +\(20.0ns\) 0x[0-9a-fA-F]{5} brft \(ru6\) r1, i 0x2 
  +block\(b\d+\)  : \d+.\d+/\d+/\d+/\d+/\d+
- +\(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r0, i 0x2 
+ +\(20.0ns\) 0x[0-9a-fA-F]{5} brfu \(u6\) i 0x2 
+ +block\(b\d+\)  : \d+.\d+/\d+/\d+/\d+/\d+
  +\(20.0ns\) 0x[0-9a-fA-F]{5} retsp \(u6\) i 0x0 
  +path\(1\)    : \d+.\d+/\d+/\d+/\d+/0/1/0
  +block\(b\d+\)  : \d+.\d+/\d+/\d+/\d+/\d+
@@ -28,7 +29,8 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
  +\(20.0ns\) 0x[0-9a-fA-F]{5} eq \(2rus\) r1, r1, i 0x2 
  +\(20.0ns\) 0x[0-9a-fA-F]{5} brft \(ru6\) r1, i 0x2 
  +block\(b\d+\)  : \d+.\d+/\d+/\d+/\d+/\d+
- +\(20.0ns\) 0x[0-9a-fA-F]{5} brfu \(u6\) i 0x2 
+ +\(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r0, i 0x2 
+ +block\(b\d+\)  : \d+.\d+/\d+/\d+/\d+/\d+
  +\(20.0ns\) 0x[0-9a-fA-F]{5} retsp \(u6\) i 0x0 
 ----------------------------------
 test.xc \(.*branch_if\)
@@ -40,7 +42,7 @@ test.xc \(.*branch_if\)
 \+ 5:   int a = 2;
 \+ 6:   if \(a == 2\)
   7:   \{
-\+ 8:     b = 2;
+  8:     b = 2;
   9:   \}
 \+ 10:   return b;
   11: \}
@@ -55,7 +57,7 @@ test.xc \(.*branch_if\)
 \+ 5:   int a = 2;
 \+ 6:   if \(a == 2\)
   7:   \{
-  8:     b = 2;
+\+ 8:     b = 2;
   9:   \}
 \+ 10:   return b;
   11: \}

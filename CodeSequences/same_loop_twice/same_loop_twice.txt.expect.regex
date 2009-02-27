@@ -2,11 +2,53 @@ Complete paths:   1
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    path\(\d+\)    : 480.0/24/23/3/0/1/0
+    path\(\d+\)    : 500.0/25/25/4/0/1/0
         \+loop \[1 path\(s\), 0 iteration\(s\)\]
             path\(\d+\)    : 100.0/5/5/0/0/0/0
         \+loop \[1 path\(s\), 0 iteration\(s\)\]
             path\(\d+\)    : 100.0/5/5/0/0/0/0
+----------------------------------
+test.xc \(.*same_loop_twice\)
+----------------------------------
+  1: 
+  2: int delay\(int x\)
+  3: \{
+  4:   int j = 0;
+  5:   
+\+ 6:   for \(int i = 0; i < x; i\+\+\)
+\+ 7:     j \+= i;
+  8:     
+  9:   return j;
+  10: \}
+  11: 
+  12: int main\(\)
+  13: \{
+  14:   delay\(10\);
+  15:   delay\(20\);
+  16:   return 0;
+  17: \}
+  18: 
+----------------------------------
+test.xc \(.*same_loop_twice\)
+----------------------------------
+  1: 
+  2: int delay\(int x\)
+  3: \{
+  4:   int j = 0;
+  5:   
+\+ 6:   for \(int i = 0; i < x; i\+\+\)
+\+ 7:     j \+= i;
+  8:     
+  9:   return j;
+  10: \}
+  11: 
+  12: int main\(\)
+  13: \{
+  14:   delay\(10\);
+  15:   delay\(20\);
+  16:   return 0;
+  17: \}
+  18: 
 ----------------------------------
 test.xc \(.*same_loop_twice\)
 ----------------------------------
@@ -26,47 +68,5 @@ test.xc \(.*same_loop_twice\)
 \+ 14:   delay\(10\);
 \+ 15:   delay\(20\);
 \+ 16:   return 0;
-  17: \}
-  18: 
-----------------------------------
-test.xc \(.*same_loop_twice\)
-----------------------------------
-  1: 
-  2: int delay\(int x\)
-  3: \{
-  4:   int j = 0;
-  5:   
-\+ 6:   for \(int i = 0; i < x; i\+\+\)
-\+ 7:     j \+= i;
-  8:     
-  9:   return j;
-  10: \}
-  11: 
-  12: int main\(\)
-  13: \{
-  14:   delay\(10\);
-  15:   delay\(20\);
-  16:   return 0;
-  17: \}
-  18: 
-----------------------------------
-test.xc \(.*same_loop_twice\)
-----------------------------------
-  1: 
-  2: int delay\(int x\)
-  3: \{
-  4:   int j = 0;
-  5:   
-\+ 6:   for \(int i = 0; i < x; i\+\+\)
-\+ 7:     j \+= i;
-  8:     
-  9:   return j;
-  10: \}
-  11: 
-  12: int main\(\)
-  13: \{
-  14:   delay\(10\);
-  15:   delay\(20\);
-  16:   return 0;
   17: \}
   18: 

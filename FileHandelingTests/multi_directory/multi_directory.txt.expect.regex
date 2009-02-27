@@ -14,36 +14,6 @@ test.xc \(.*\)
   8: 
 \+ 9:   if \(condition == 1\) 
   10:   {
-\+ 11:     result = add\(2, 4\);
-  12:   }
-  13:   else
-  14:   {
-  15:     result = sub\(5, 1\);
-  16:   }
-\+ 17:   return result;
-  18: }
-  19: 
-----------------------------------
-add/add.xc \(.*\)
-----------------------------------
-  1: int add\(int a, int b\)
-\+ 2: {
-\+ 3:   int res = a \+ b;
-\+ 4:   return res;
-  5: }
-----------------------------------
-test.xc \(.*\)
-----------------------------------
-  1: int add\(int a, int b\);
-  2: int sub\(int a, int b\);
-  3: 
-  4: int main\(\)
-\+ 5: {
-\+ 6:   int result = 0;
-\+ 7:   int condition = 0;
-  8: 
-\+ 9:   if \(condition == 1\) 
-  10:   {
   11:     result = add\(2, 4\);
   12:   }
   13:   else
@@ -59,5 +29,35 @@ sub/sub.xc \(.*\)
   1: int sub\(int a, int b\)
 \+ 2: {
 \+ 3:   int res = a - b;
+\+ 4:   return res;
+  5: }
+----------------------------------
+test.xc \(.*\)
+----------------------------------
+  1: int add\(int a, int b\);
+  2: int sub\(int a, int b\);
+  3: 
+  4: int main\(\)
+\+ 5: {
+\+ 6:   int result = 0;
+\+ 7:   int condition = 0;
+  8: 
+\+ 9:   if \(condition == 1\) 
+  10:   {
+\+ 11:     result = add\(2, 4\);
+  12:   }
+  13:   else
+  14:   {
+  15:     result = sub\(5, 1\);
+  16:   }
+\+ 17:   return result;
+  18: }
+  19: 
+----------------------------------
+add/add.xc \(.*\)
+----------------------------------
+  1: int add\(int a, int b\)
+\+ 2: {
+\+ 3:   int res = a \+ b;
 \+ 4:   return res;
   5: }

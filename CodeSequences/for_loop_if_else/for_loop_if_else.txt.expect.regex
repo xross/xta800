@@ -15,9 +15,9 @@ test.xc \(.*for_loop_if_else\)
 \+ 4:   for \(int i = 0; i < 5; \+\+i\)
   5:   \{
 \+ 6:     if \(res == 0\)
-  7:       res \+= 1;
+\+ 7:       res \+= 1;
   8:     else
-\+ 9:       res \+= 2;
+  9:       res \+= 2;
   10:   \}
   11:   return res;
   12: \}
@@ -31,9 +31,9 @@ test.xc \(.*for_loop_if_else\)
 \+ 4:   for \(int i = 0; i < 5; \+\+i\)
   5:   \{
 \+ 6:     if \(res == 0\)
-\+ 7:       res \+= 1;
+  7:       res \+= 1;
   8:     else
-  9:       res \+= 2;
+\+ 9:       res \+= 2;
   10:   \}
   11:   return res;
   12: \}
