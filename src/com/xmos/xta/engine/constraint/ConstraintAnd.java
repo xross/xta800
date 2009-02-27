@@ -11,19 +11,6 @@ public class ConstraintAnd extends Constraint {
 		m_right = right;
 	}
 
-	public boolean isDone() {
-		if (m_isDone) {
-			return true;
-		} else {
-			if (m_left.isDone() && m_right.isDone()) {
-				m_isTrue = isTrue();
-				m_isDone = true;
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public boolean isTrue() {
 		if (m_isDone)
 			return m_isTrue;
@@ -31,11 +18,15 @@ public class ConstraintAnd extends Constraint {
 			return (m_left.isTrue() && m_right.isTrue());
 	}
 
-	public void touchPc(int pc) {
-		if (!m_isDone) {
-			m_left.touchPc(pc);
-			m_right.touchPc(pc);
+	public boolean isFalse(int pc) {
+		boolean leftFalse = m_left.isFalse(pc);
+		boolean rightFalse = m_right.isFalse(pc);
+		if (leftFalse || rightFalse) {
+			m_isDone = true;
+			m_isTrue = false;
+			return true;
 		}
+		return false;
 	}
 
 	public String getString() {

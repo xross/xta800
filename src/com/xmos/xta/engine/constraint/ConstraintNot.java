@@ -8,30 +8,24 @@ public class ConstraintNot extends Constraint {
 		m_child = child;
 	}
 
-	public boolean isDone() {
-		if (m_isDone) {
-			return true;
-		} else {
-			if (m_child.isDone()) {
-				m_isTrue = isTrue();
-				m_isDone = true;
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public boolean isTrue() {
 		if (m_isDone)
 			return m_isTrue;
-		else
-			return !m_child.isTrue();
+
+		return false;
 	}
 
-	public void touchPc(int pc) {
-		if (!m_isDone) {
-			m_child.touchPc(pc);
+	public boolean isFalse(int pc) {
+		if (m_isDone)
+			return !m_isTrue;
+		
+		m_child.isFalse(pc);
+		if (m_child.isDone()) {
+			m_isDone = true;
+			m_isTrue = m_child.isTrue();
+			return !m_isTrue;
 		}
+		return false;
 	}
 
 	public String getString() {

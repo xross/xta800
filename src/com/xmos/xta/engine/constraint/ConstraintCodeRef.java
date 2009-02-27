@@ -18,11 +18,12 @@ public class ConstraintCodeRef extends Constraint {
 		return m_isTrue;
 	}
 
-	public void touchPc(int pc) {
+	public boolean isFalse(int pc) {
 		if (pc == m_codeRef.getPc()) {
 			m_isDone = true;
 			m_isTrue = true;
 		}
+		return false;
 	}
 
 	public String getString() {

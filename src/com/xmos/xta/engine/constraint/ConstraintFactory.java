@@ -65,7 +65,7 @@ public class ConstraintFactory {
 		m_stringSoFar = "";
 		m_tokenString = "";
 
-        Pattern p = Pattern.compile("([\\s]+|[!()])");
+        Pattern p = Pattern.compile("([\\s&|]+|[!()])");
         String[] result = split(p, constraint, true);
         for (int i = 0; i < result.length; i++) {
 			String tok = result[i];
