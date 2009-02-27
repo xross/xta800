@@ -9,22 +9,6 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 test.xc \(.*do_while\)
 ----------------------------------
   1: int main\(\)
-  2: \{
-  3:   int res = 10;
-  4:   int i;
-  5:   do
-  6:   \{
-\+ 7:     --res;
-  8:   \}
-\+ 9:   while \(i > 0\);
-  10:  
-  11:   return res;
-  12: \}
-  13: 
-----------------------------------
-test.xc \(.*do_while\)
-----------------------------------
-  1: int main\(\)
 \+ 2: \{
 \+ 3:   int res = 10;
   4:   int i;
@@ -35,5 +19,21 @@ test.xc \(.*do_while\)
 \+ 9:   while \(i > 0\);
   10:  
 \+ 11:   return res;
+  12: \}
+  13: 
+----------------------------------
+test.xc \(.*do_while\)
+----------------------------------
+  1: int main\(\)
+  2: \{
+  3:   int res = 10;
+  4:   int i;
+  5:   do
+  6:   \{
+\+ 7:     --res;
+  8:   \}
+\+ 9:   while \(i > 0\);
+  10:  
+  11:   return res;
   12: \}
   13: 

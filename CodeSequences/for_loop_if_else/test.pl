@@ -12,7 +12,7 @@ system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "-summary simple " .
        "-summary complete_loops " .
+       "-print src 2 " .
        "-print src 1 " .
-       "-print src 0 " .
        "-exit > $genDir/for_loop_if_else.txt 2>&1");
 
