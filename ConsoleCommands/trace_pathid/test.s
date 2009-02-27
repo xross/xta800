@@ -62,4 +62,3 @@ main:
 .align 4
           .ident    "XMOS 32-bit XC Compiler This is an unreleased/unsupported version. (build xxxx)"
           .core     "XS1"
-          .corerev  "REVA"
