@@ -8,7 +8,7 @@ public class PcReference extends CodeReference {
 		setPc(pc);
 	}
 
-	public boolean resolve(Engine engine, int id, int id2) {
+	public boolean resolve(Engine engine, int nodeId, int coreId) {
 		if (engine.getXeObject().getPcToFunctionMap().containsKey(getPc())) {
 			setResolved(true);
 			return true;

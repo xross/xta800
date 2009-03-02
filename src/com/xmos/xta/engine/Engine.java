@@ -356,7 +356,8 @@ public class Engine {
 		} else {
 			TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
 			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
-			return analyseRoute(startPc, endPcs);
+			String routeDescription = String.format("function: %s", functionName);
+			return analyseRoute(startPc, endPcs, routeDescription);
 		}
 	}
 
@@ -379,11 +380,12 @@ public class Engine {
 		} else {
 			TreeSet<Integer> endPc = new TreeSet<Integer>();
 			endPc.add(toRef.getPc());
-			return analyseRoute(fromRef.getPc(), endPc);
+			String routeDescription = String.format("path: %s to %s", from, to);
+			return analyseRoute(fromRef.getPc(), endPc, routeDescription);
 		}
 	}
 
-	public boolean analyseRoute(int startPc, TreeSet<Integer> endPcs) {
+	public boolean analyseRoute(int startPc, TreeSet<Integer> endPcs, String routeDescription) {
 		boolean reachable = false;
 		for (int end : endPcs) {
 			int dist = m_ae.determineReachability(startPc, end, m_nodeId,
@@ -411,7 +413,7 @@ public class Engine {
 
 		m_previousRoute = m_route;
 		
-		m_route = new Route(startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId));
+		m_route = new Route(startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), routeDescription);
 
 		boolean success = analyseRouteSafley();
 		if (success) {

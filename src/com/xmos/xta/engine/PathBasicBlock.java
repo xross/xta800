@@ -316,7 +316,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		return numCycles;
 	}
 	
-	/*
+	/**
 	 * returns the number of instructions in the basic block, includeing fnops
 	 * and trimmed
 	 */

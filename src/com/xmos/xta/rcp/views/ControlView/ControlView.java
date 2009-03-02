@@ -424,7 +424,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		XtaRouteInfo routeInfo = XtaNotifier.getInstance().getRouteInfo();
 		if (routeInfo != null) {
 			Route route = routeInfo.getRoute();
-			String routeStatus = route.getStatusString();
+			String routeStatus = route.getDescription();
 			m_currentRoute.setText(routeStatus);
 			m_currentRoute.setToolTipText(routeStatus);
 		} else {

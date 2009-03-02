@@ -78,7 +78,7 @@ public class Status extends Command {
 	    	if (route == null) {
 	    		console.display(String.format("No Paths/Functions registered\n"));    		
 	    	} else {
-	    		console.display("Loaded " + route.getStatusString() + "\n");
+	    		console.display("Loaded " + route.getDescription() + "\n");
 	    	}
     	}
     }    
