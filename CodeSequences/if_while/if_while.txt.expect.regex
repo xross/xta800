@@ -2,10 +2,10 @@ Complete paths:   2
 Unresolved paths: 0
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    path\(\d+\)    : 160.0/8/8/1/0/1/0
+    path\(\d+\)    : 160.0/8/7/1/0/1/0
         \+loop \[1 path\(s\), 0 iteration\(s\)\]
             path\(\d+\)    : 100.0/5/5/0/0/0/0
-    path\(\d+\)    : 100.0/5/5/1/0/1/0
+    path\(\d+\)    : 100.0/5/4/1/0/1/0
 ----------------------------------
 test.xc \(.*if_while\)
 ----------------------------------

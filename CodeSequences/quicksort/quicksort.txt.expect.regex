@@ -3,7 +3,7 @@ Complete paths:   1
 Unresolved paths: 1
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    path\(\d+\)    : 240.0/12/12/2/0/1/0
+    path\(\d+\)    : 260.0/13/10/3/0/1/0
 \+UNRESOLVED \[1 path\(s\)\]
     path\(none\) : Recursion with 0x[0-9a-fA-F]{5}
-    path\(none\) : 1680.0/84/84/21/0/1/0
+    path\(none\) : 1840.0/92/63/29/0/1/0
