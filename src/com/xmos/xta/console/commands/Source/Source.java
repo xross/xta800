@@ -66,14 +66,21 @@ public class Source extends Command {
                             Command command = CommandFactory.buildCommand(
                             		tokens, 0, shell.getCommandHistory(), console, false);
                             
+                            boolean invalidCommand = false;
                             if (command != null) {
-                            	shell.addCommand(command, location+1);
-                            	location++;
+                        		invalidCommand = (command.numArgs() != (tokens.length - 1));
+                                if (!invalidCommand) {	
+                            	    shell.addCommand(command, location + 1);
+                            	    location++;
+                                }
                             } else {
-                            	shell.addCommand(new Invalid(line), location+1);
+                            	invalidCommand = true;
+                            }
+
+                            if (invalidCommand) {
+                            	String errorMessage = String.format("Invalid command in file: %s, line number: %d\n", m_fileName, lineNumber);
+                            	shell.addCommand(new Invalid(line, errorMessage), location+1);
                             	location++;
-                            	console.display(String.format("Invalid command in file: %s, line number: %d\n",
-                            		    m_fileName, lineNumber));                            	
                             }
                     	}
                     }

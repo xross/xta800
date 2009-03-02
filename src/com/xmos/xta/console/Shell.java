@@ -89,7 +89,7 @@ public class Shell {
 
     public void setHistoryStrings(Vector<String> historyStrings) {
     	for (String historyString : historyStrings) {
-    		m_commandHistory.add(new Invalid(historyString));
+    		m_commandHistory.add(new Invalid(historyString, ""));
     	}    	    	
     }
     
@@ -172,9 +172,9 @@ public class Shell {
                 	invalidCommand = true;
                 }
                 
-                if (invalidCommand) {    	        	              	
-                	m_commandHistory.add(new Invalid(line));
-                	command = null;
+                if (invalidCommand) {    
+                	command = new Invalid(line, "Invalid command (Try 'help'..)\n");
+                	m_commandHistory.add(command);
                 }
             }            
     	} while (command == null);
