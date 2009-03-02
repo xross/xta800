@@ -13,6 +13,5 @@ system("@ARGV load $genDir/test.xe " .
        "analyse path 0x10002 0x1000c " .
        "status " .
        "summary simple " .
-       "print trace 0 " .
        "exit > $genDir/pc_pc.txt 2>&1");
 

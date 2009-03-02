@@ -13,6 +13,5 @@ system("@ARGV load $genDir/test.xe " .
        "analyse path INPUT_1 INPUT_2 " .
        "status " .
        "summary simple " .
-       "print trace 0 " .
        "exit > $genDir/label_label.txt 2>&1");
 

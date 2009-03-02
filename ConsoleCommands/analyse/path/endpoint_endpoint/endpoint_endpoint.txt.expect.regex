@@ -4,7 +4,7 @@ Frequency: 400
 NumThreads: 8
 SrcPaths: .
 Loaded executable: test.xe
-Node: 0, Core: 0 (No debug information found)
-Loaded from: 0x[0-9a-fA-F]+ to: 0x[0-9a-fA-F]+
+Node: 0, Core: 0 \(No debug information found\)
+Loaded path: input1 to input2 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
 Complete paths:   1
 Unresolved paths: 0

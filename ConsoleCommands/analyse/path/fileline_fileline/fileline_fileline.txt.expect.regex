@@ -5,6 +5,6 @@ NumThreads: 8
 SrcPaths: .
 Loaded executable: test.xe
 Node: 0, Core: 0 \(No debug information found\)
-Loaded from: 0x[0-9a-fA-F]+ to: 0x[0-9a-fA-F]+
+Loaded path: test.xc:9 to test.xc:11 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
 Complete paths:   1
 Unresolved paths: 0
