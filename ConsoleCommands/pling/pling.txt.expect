@@ -1,0 +1,37 @@
+Current node: 0
+Current core: 0
+Frequency: 400
+NumThreads: 8
+SrcPaths: .
+No executable loaded
+No Paths/Functions registered
+Current node: 0
+Current core: 0
+Frequency: 400
+NumThreads: 8
+SrcPaths: .
+No executable loaded
+No Paths/Functions registered
+1: status
+2: source cmds.txt
+3: status
+4: history
+Invalid command in file: cmds.txt, line number: 8
+Error: No executable loaded
+1: status
+2: source cmds.txt
+3: status
+4: history
+5: !0
+6: list functions
+7: history
+Invalid command in file: cmds.txt, line number: 15
+1: status
+2: source cmds.txt
+3: status
+4: history
+5: !0
+6: list functions
+7: history
+8: !3
+9: history

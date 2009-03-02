@@ -1,5 +1,3 @@
-Invalid command (Try 'help'..)
-Invalid command in file: cmds.txt, line number: 5
 Current node: 0
 Current core: 0
 Frequency: 400
@@ -7,4 +5,4 @@ NumThreads: 8
 SrcPaths: .
 No executable loaded
 No Paths/Functions registered
-Invalid command (Try 'help'..)
+Invalid command in file: cmds.txt, line number: 5

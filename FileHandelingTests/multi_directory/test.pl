@@ -7,7 +7,7 @@ my $arch    = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -march=xs1b -g test.xc add/add.xc sub/sub.xc -o $genDir/test.xe > $genDir/multi_directory.log 2>&1");
+system("xcc -march=$arch -g test.xc add/add.xc sub/sub.xc -o $genDir/test.xe > $genDir/multi_directory.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "list sources " .
