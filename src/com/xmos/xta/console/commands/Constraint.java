@@ -38,7 +38,7 @@ public class Constraint extends Command {
     }        
 
     public String commandLine() {
-    	return "constraint " + m_constraintString;
+    	return "constraint" + m_constraintString;
     }
     
     public String description(Engine engine, boolean detailed) {

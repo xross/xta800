@@ -61,7 +61,7 @@ public class SrcLabel extends Command {
     	switch (m_operation) {
     	case ADD:
     		assert(m_labels.size() == 1);
-    		return "label " + m_refString + " " + m_labels.get(0); 
+    		return "srclabel " + m_refString + " " + m_labels.get(0); 
     	case REMOVE:
     		String commandLine = "srclabel";
     		for (String label : m_labels) {
