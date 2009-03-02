@@ -19,9 +19,6 @@
   [-]unset <option> <arg0> <arg1>...: Unset item from given list
   [-]version: Displays the version information
   [-]add <option> <arg0> <arg1>...: Add item to given list
-      option: filter <ref>: Adds the given reference to the filter list (post analysis action)
-      option: prohibited <ref>: Adds the given reference to the prohibited list (pre analysis action)
-      option: required <ref>: Adds the given reference to the required list (post analysis action)
       option: branch <from ref> <to ref>: Adds the given from/to reference to the branches list
       option: label <ref> <label>: Adds the given label to the labels list
       option: srclabel <ref> <label>: Adds the given source label to the source labels list
@@ -43,9 +40,6 @@
   [-]help [command]: Displays help message for the given command
   [-]history: Displays the command history
   [-]list <option> <arg0> <arg1>...: Lists the given set of items
-      option: filters: Lists the reference in the filter list
-      option: prohibited: Lists the reference in the excluded list
-      option: required: Lists the reference in the excluded list
       option: branches: Lists the branches
       option: labels: Lists the labels
       option: srclabels: Lists the source labels
@@ -56,7 +50,7 @@
       option: functions: Lists the functions in the loaded application
       option: sources: Lists the source files
       option: times: Lists the instructions which have had their times set
-      option: constraint <expression>: Defines the constraint expression
+      option: constraint <expression>: Displays the current constraint expression
   [-]load <xe file>: Loads the given xmos executable file
   [-]print <option> <arg0> <arg1>...: Display path information
       option: asm <path/block id>: Display annotated assembly for given path id
@@ -65,9 +59,6 @@
       option: trace <path/block id>: Display instruction trace for the given path/block
   [-]pwd: Displays the current working directory
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
-      option: filter <ref>: Removes the given reference from the filter list (supports regular expressions)
-      option: prohibited <ref>: Removes the given reference from the prohibited list (supports regular expressions)
-      option: required <ref>: Removes the given reference from the required list (post analysis action)
       option: branch <from ref>: Removes the given from reference from the branches list
       option: label [label]+: Removes the given labels from the labels list (supports regular expressions)
       option: srclabel [label]+: Removes the given source labels from the source labels list (supports regular expressions)

@@ -10,23 +10,11 @@ if (!$noBuild) {
 system("xcc -march=$arch test.xc -o $genDir/test.xe > $genDir/invalid_references.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "add branch 100 100 " .
-       "add label 99 silly " .
-       "add prohibited 98 " .
-       "add required 97 " .
-       "add filter 96 " .
-       "remove branch 100 " .
-       "remove label silly " .
-       "-remove prohibited 98 " .
-       "remove required 97 " .
-       "remove filter 96 " .
-       "add label 0x100c4 silly " .
-       "add label 0x100c6 silly " .
-       "add prohibited 0x100c4 " .
-       "add prohibited 0x100c4 " .
-       "add required 0x100c4 " .
-       "add required 0x100c4 " .
-       "add filter 0x100c4 " .
-       "add filter 0x100c4 " .
+       "-add branch 100 100 " .
+       "-add label 99 silly " .
+       "-remove branch 100 " .
+       "-remove label silly " .
+       "-add label 0x100c4 silly " .
+       "-add label 0x100c6 silly " .
        "exit > $genDir/invalid_references.txt 2>&1");
 

@@ -1,14 +1,5 @@
 Error: Unresolved reference: 100
 Error: Unresolved reference: 99
-Error: Unresolved reference: 98
-Error: Unresolved reference: 97
-Error: Unresolved reference: 96
 Error: Unresolved reference: 100
 Error: Unable to remove label: silly
-Error: Unable to remove reference: 98
-Error: Unable to remove reference: 97
-Error: Unable to remove reference: 96
 Error: Label already exists: silly
-Error: Reference already prohibited: 0x100c4
-Error: Reference already required: 0x100c4
-Error: Reference already filtered: 0x100c4
