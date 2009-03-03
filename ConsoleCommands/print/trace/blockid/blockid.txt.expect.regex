@@ -3,7 +3,6 @@ Unresolved paths: 0
   0.0: \(20.0ns\) 0x100d8 main \+ 0               entsp \(u6\)   i 0x4
   20.0: \(20.0ns\) 0x100da main \+ 2               ldc \(ru6\)    r0, i 0x2
   40.0: \(20.0ns\) 0x100dc main \+ 4               blrb \(u10\)   i 0x1a
-  0.0: \(20.0ns\) 0x100c4 test \+ 0               --FNOP--     
-  20.0: \(20.0ns\) 0x100c4 test \+ 0               ldc \(ru6\)    r1, i 0x0
-  40.0: \(20.0ns\) 0x100c6 test \+ 2               eq \(2rus\)    r0, r0, i 0x2
-  60.0: \(20.0ns\) 0x100c8 test \+ 4               brft \(ru6\)   r0, i 0x2
+  0.0: \(20.0ns\) 0x100c4 test \+ 0               ldc \(ru6\)    r1, i 0x0
+  20.0: \(20.0ns\) 0x100c6 test \+ 2               eq \(2rus\)    r0, r0, i 0x2
+  40.0: \(20.0ns\) 0x100c8 test \+ 4               brft \(ru6\)   r0, i 0x2

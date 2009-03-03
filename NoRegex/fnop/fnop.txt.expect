@@ -1,23 +1,25 @@
 Complete paths:   1
 Unresolved paths: 0
-Timing(ns):       80.0
-Thread cycles:    4
-Num Instructions: 4
-Num FNops:        1
+Timing(ns):       100.0
+Thread cycles:    5
+Num Instructions: 3
+Num FNops:        2
 Num Blocks:       3
 Num Pauseables:   0
 Num Loops:        0
 Path(id): Timing(ns)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 +COMPLETE [1 path(s)]
-    path(0)    : 80.0/4/4/1/0/1/0
-        block(b0)  : 20.0/1/1/0/0
+    path(0)    : 100.0/5/3/2/0/1/0
+        block(b0)  : 40.0/2/1/1/0
+            (20.0ns) 0x10002 --FNOP--  
             (20.0ns) 0x10002 blrf (u10) i 0x2 
         block(b1)  : 20.0/1/1/0/0
             (20.0ns) 0x10006 retsp (u6) i 0x0 
-        block(b3)  : 40.0/2/2/1/0
+        block(b3)  : 40.0/2/1/1/0
             (20.0ns) 0x10004 --FNOP--  
             (20.0ns) 0x10004 retsp (u6) i 0x0 
-  0.0: (20.0ns) 0x10002 main + 0               blrf (u10)   i 0x2
-  20.0: (20.0ns) 0x10006 test + 0               retsp (u6)   i 0x0
-  40.0: (20.0ns) 0x10004 main + 0               --FNOP--     
-  60.0: (20.0ns) 0x10004 main + 2               retsp (u6)   i 0x0
+  0.0: (20.0ns) 0x10002 main + 0               --FNOP--     
+  20.0: (20.0ns) 0x10002 main + 0               blrf (u10)   i 0x2
+  40.0: (20.0ns) 0x10006 test + 0               retsp (u6)   i 0x0
+  60.0: (20.0ns) 0x10004 main + 2               --FNOP--     
+  80.0: (20.0ns) 0x10004 main + 2               retsp (u6)   i 0x0
