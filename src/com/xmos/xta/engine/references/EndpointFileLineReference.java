@@ -8,7 +8,7 @@ public class EndpointFileLineReference extends CodeReference {
 		super(ref);
 	}
 
-	public boolean resolve(Engine engine, int id, int id2) {
+	public boolean resolve(Engine engine, int nodeId, int coreId) {
     	String ref  = getRef();
 		String fileName = CodeReferenceFactory.getFileName(ref);
         int lineNumber  = CodeReferenceFactory.getLineNumber(ref);		

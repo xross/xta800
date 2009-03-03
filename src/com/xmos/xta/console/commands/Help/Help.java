@@ -1,9 +1,9 @@
 package com.xmos.xta.console.commands.Help;
 
-import com.xmos.xta.console.Command;
-import com.xmos.xta.console.CommandFactory;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
+import com.xmos.xta.console.commands.Command;
+import com.xmos.xta.console.commands.CommandFactory;
 import com.xmos.xta.engine.Engine;
 
 public class Help extends Command {

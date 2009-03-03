@@ -1,11 +1,11 @@
 package com.xmos.xta.console.commands;
 
-import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
+import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
 
 public class Time extends Command {
 	public enum Operation {
@@ -137,7 +137,8 @@ public class Time extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-		CodeReference ref = CodeReferenceFactory.createEndpointReference(m_refString);
+		CodeReference ref = CodeReferenceFactory.createReference(
+				m_refString, ReferenceClass.ENDPOINT_REF);
 
 		switch (m_operation) {
     	case SET:

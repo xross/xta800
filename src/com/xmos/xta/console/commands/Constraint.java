@@ -2,7 +2,6 @@ package com.xmos.xta.console.commands;
 
 import java.util.ArrayList;
 
-import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
@@ -39,11 +38,19 @@ public class Constraint extends Command {
     }        
 
     public String commandLine() {
-    	return "constraint " + m_constraintString;
+    	return "constraint" + m_constraintString;
     }
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = "constraint <expression>: Defines the constraint expression";
+    	String descString = "";
+    	switch (m_operation) {
+    	case SET:
+        	descString = "constraint <expression>: Defines the constraint expression";
+        	break;
+    	case LIST:
+        	descString = "constraint <expression>: Displays the current constraint expression";
+        	break;
+    	}    		    	
     	return descString;
     }
 
@@ -60,7 +67,6 @@ public class Constraint extends Command {
     			constraint.m_constraintString = constraint.m_constraintString + " " + args[index + i];
     			i++;
     		}
-
     		return constraint;
     	case LIST:
     		return new Constraint(m_operation);

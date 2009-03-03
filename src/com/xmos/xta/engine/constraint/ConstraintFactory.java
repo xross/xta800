@@ -9,6 +9,7 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
+import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
 
 /* Grammar used:
  * 
@@ -209,7 +210,9 @@ public class ConstraintFactory {
 
 	private static Constraint codeRef() throws Exception {
 		if (m_token == Token.codeRef) {
-			CodeReference codeRef = CodeReferenceFactory.createReference(m_tokenString);
+			CodeReference codeRef = CodeReferenceFactory.createReference(
+					m_tokenString, ReferenceClass.REF);
+			
 			if (codeRef.resolve(m_engine, m_engine.getCoreId(), m_engine.getNodeId()) == false) {
 				error("Invalid code reference '" + m_tokenString + "'");
 			}

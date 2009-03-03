@@ -9,6 +9,7 @@ import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
+import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
 
 public class XtaNotifier implements Notifier {
 	private static XtaNotifier m_displayer;
@@ -51,10 +52,12 @@ public class XtaNotifier implements Notifier {
 			broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_ANALYSIS_COMPLETE, null, null));
 			
 		} else if (message.equals(NOTIFY_SET_START_POINT)) {
-			notifySetStartPoint(CodeReferenceFactory.createEndpointReference(argument));
+			notifySetStartPoint(CodeReferenceFactory.createReference(
+					argument, ReferenceClass.ENDPOINT_REF));
 			
 		} else if (message.equals(NOTIFY_SET_END_POINT)) {
-			notifySetEndPoint(CodeReferenceFactory.createEndpointReference(argument));
+			notifySetEndPoint(CodeReferenceFactory.createReference(
+					argument, ReferenceClass.ENDPOINT_REF));
 			
 		} else if (message.equals(NOTIFY_LOAD_EXECUTABLE)) {
 			resetState();

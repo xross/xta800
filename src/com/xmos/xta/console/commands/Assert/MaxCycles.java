@@ -1,8 +1,8 @@
 package com.xmos.xta.console.commands.Assert;
 
-import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
+import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;

@@ -1,61 +1,93 @@
 package com.xmos.xta.engine.references;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.xmos.xta.engine.Engine;
 
 public class CodeReferenceFactory {
+	public enum ReferenceClass {
+		REF, CODE_REF, SRCLABEL_REF, ENDPOINT_REF,
+	}	
+	public enum ReferenceType {
+		PC, LABEL, SRCLABEL, SRCLABEL_FILELINE, ENDPOINT, ENDPOINT_FILELINE,
+	}
 	
+	private static Map<ReferenceClass, ReferenceType[]> m_referenceClasses;	
+	static {
+		m_referenceClasses = new HashMap<ReferenceClass, ReferenceType[]>();
+		m_referenceClasses.put(ReferenceClass.REF, new ReferenceType[] {
+				ReferenceType.PC, 
+				ReferenceType.LABEL, 
+				ReferenceType.SRCLABEL, 
+				ReferenceType.SRCLABEL_FILELINE, 
+				ReferenceType.ENDPOINT, 
+				ReferenceType.ENDPOINT_FILELINE});
+		m_referenceClasses.put(ReferenceClass.CODE_REF, new ReferenceType[] {
+				ReferenceType.PC, 
+				ReferenceType.LABEL}); 
+		m_referenceClasses.put(ReferenceClass.SRCLABEL_REF, new ReferenceType[] {
+				ReferenceType.PC, 
+				ReferenceType.LABEL, 
+				ReferenceType.SRCLABEL, 
+				ReferenceType.SRCLABEL_FILELINE});
+		m_referenceClasses.put(ReferenceClass.ENDPOINT_REF, new ReferenceType[] {
+				ReferenceType.PC, 
+				ReferenceType.LABEL, 
+				ReferenceType.ENDPOINT, 
+				ReferenceType.ENDPOINT_FILELINE});		
+	}
 	private static Engine m_engine;
-
-    public static CodeReference createReference(String reference) {
-    	String ref = reference.trim();
-    	
-    	if (ref.length() == 0) {
-			return new ErrorReference(ref);
-    	} else if (isPcString(ref)) {
-			return new PcReference(ref, getPcString(ref));
-		} else if (m_engine.getLabels().containsKey(ref)) {
-			return new LabelReference(ref);
-		} else {
-			return new ErrorReference(ref);
+	
+	public static CodeReference createReference(String reference, ReferenceClass referenceClass) {
+    	if (reference.length() == 0)
+			return new ErrorReference(reference);		
+		
+		ReferenceType[] referenceTypes = m_referenceClasses.get(referenceClass);
+		assert(referenceTypes != null);
+		
+		for (ReferenceType referenceType : referenceTypes) {
+			switch (referenceType) {
+			case PC:
+				if (isPcString(reference)) {
+					return new PcReference(reference);
+				}
+				break;
+				
+			case LABEL:
+				if (m_engine.getLabels().containsKey(reference)) {
+					return new LabelReference(reference);
+				}
+				break;
+				
+			case SRCLABEL:
+				if (m_engine.getSrcLabels().containsKey(reference)) {
+					return new SrcLabelReference(reference);
+				}
+				break;
+				
+			case SRCLABEL_FILELINE:
+				if (isSourceReference(reference)) {
+		    		return new SrcLabelFileLineReference(reference);	
+				}
+				break;
+				
+			case ENDPOINT:
+				if (m_engine.getEndpoints().containsKey(reference)) {
+					return new EndpointReference(reference);
+				}
+				break;
+				
+			case ENDPOINT_FILELINE:
+				if (isSourceReference(reference)) {
+		    		return new EndpointFileLineReference(reference);
+				}
+				break;
+			}
 		}
-    }
-
-    public static CodeReference createEndpointReference(String reference) {
-    	String ref = reference.trim();
-    	
-    	if (ref.length() == 0) {
-			return new ErrorReference(ref);
-    	} else if (isPcString(ref)) {
-			return new PcReference(ref, getPcString(ref));
-    	} else if (isSourceReference(ref)) {
-    		return new EndpointFileLineReference(ref);
-		} else if (m_engine.getEndpoints().containsKey(ref)) {
-			return new EndpointReference(ref);
-		} else if (m_engine.getLabels().containsKey(ref)) {
-			return new LabelReference(ref);
-		} else {
-			return new ErrorReference(ref);
-		}
-    }
-
-    public static CodeReference createSrcLabelReference(String reference) {
-    	String ref = reference.trim();
-
-    	if (ref.length() == 0) {
-			return new ErrorReference(ref);			
-    	} else if (isPcString(ref)) {
-			return new PcReference(ref, getPcString(ref));
-    	} else if (isSourceReference(ref)) {
-    		return new SrcLabelFileLineReference(ref);			
-		} else if (m_engine.getSrcLabels().containsKey(ref)) {
-			return new SrcLabelReference(ref);
-		} else if (m_engine.getLabels().containsKey(reference)) {
-			return new LabelReference(ref);
-		} else {
-			return new ErrorReference(ref);
-		}
-    }
-    
+		return new ErrorReference(reference);
+	}
+	    
     public static void setEngine(Engine engine) {
     	assert(engine != null);
     	m_engine = engine;
@@ -115,5 +147,5 @@ public class CodeReferenceFactory {
             assert false;
         }            
         return lineNumber;
-	}
+	}	
 }

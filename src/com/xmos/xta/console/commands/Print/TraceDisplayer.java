@@ -2,8 +2,8 @@ package com.xmos.xta.console.commands.Print;
 
 import java.util.Vector;
 
-import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
+import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.XtaInstruction;

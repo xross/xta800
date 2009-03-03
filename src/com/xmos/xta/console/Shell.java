@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Vector;
 
+import com.xmos.xta.console.commands.Command;
+import com.xmos.xta.console.commands.CommandFactory;
 import com.xmos.xta.console.commands.Invalid;
 import com.xmos.xta.engine.Engine;
 
@@ -87,7 +89,7 @@ public class Shell {
 
     public void setHistoryStrings(Vector<String> historyStrings) {
     	for (String historyString : historyStrings) {
-    		m_commandHistory.add(new Invalid(historyString));
+    		m_commandHistory.add(new Invalid(historyString, ""));
     	}    	    	
     }
     
@@ -170,9 +172,9 @@ public class Shell {
                 	invalidCommand = true;
                 }
                 
-                if (invalidCommand) {    	        	              	
-                	m_commandHistory.add(new Invalid(line));
-                	command = null;
+                if (invalidCommand) {    
+                	command = new Invalid(line, "Invalid command (Try 'help'..)\n");
+                	m_commandHistory.add(command);
                 }
             }            
     	} while (command == null);

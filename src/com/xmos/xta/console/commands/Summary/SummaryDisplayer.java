@@ -2,8 +2,8 @@ package com.xmos.xta.console.commands.Summary;
 
 import java.util.ArrayList;
 
-import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
+import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Attributes;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.PathAttributes;

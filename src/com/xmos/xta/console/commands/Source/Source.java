@@ -4,10 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-import com.xmos.xta.console.Command;
-import com.xmos.xta.console.CommandFactory;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
+import com.xmos.xta.console.commands.Command;
+import com.xmos.xta.console.commands.CommandFactory;
 import com.xmos.xta.console.commands.Invalid;
 import com.xmos.xta.engine.Engine;
 
@@ -26,6 +26,10 @@ public class Source extends Command {
     	return 1;
     }        
 
+	public ArgType[] getArgTypes() {
+		return new Command.ArgType[] {ArgType.FILE};
+	}    
+    
     public String name() {
     	return "source";
     }        
@@ -62,14 +66,21 @@ public class Source extends Command {
                             Command command = CommandFactory.buildCommand(
                             		tokens, 0, shell.getCommandHistory(), console, false);
                             
+                            boolean invalidCommand = false;
                             if (command != null) {
-                            	shell.addCommand(command, location+1);
-                            	location++;
+                        		invalidCommand = (command.numArgs() != (tokens.length - 1));
+                                if (!invalidCommand) {	
+                            	    shell.addCommand(command, location + 1);
+                            	    location++;
+                                }
                             } else {
-                            	shell.addCommand(new Invalid(line), location+1);
+                            	invalidCommand = true;
+                            }
+
+                            if (invalidCommand) {
+                            	String errorMessage = String.format("Invalid command in file: %s, line number: %d\n", m_fileName, lineNumber);
+                            	shell.addCommand(new Invalid(line, errorMessage), location+1);
                             	location++;
-                            	console.display(String.format("Invalid command in file: %s, line number: %d\n",
-                            		    m_fileName, lineNumber));                            	
                             }
                     	}
                     }
@@ -84,9 +95,5 @@ public class Source extends Command {
         catch (IOException e) {
         	console.display(String.format("Error: Unable to open file for reading: %s\n", m_fileName)); 
         }    	
-    }    
-    
-	public boolean usesFileSystem() {
-		return true;
-	}	    
+    }        
 }

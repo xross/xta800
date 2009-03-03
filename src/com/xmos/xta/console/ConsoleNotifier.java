@@ -1,10 +1,6 @@
 package com.xmos.xta.console;
 
-import com.xmos.xeloader.DebugInfo;
-import com.xmos.xeloader.MemoryImage;
-import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.Route;
 
 public class ConsoleNotifier implements Notifier {
 	private Console m_console;
@@ -13,10 +9,6 @@ public class ConsoleNotifier implements Notifier {
 		m_console = console;
 	}
 	
-	public void displayRoute(Route route, DebugInfo debugInfo,
-			MemoryImage memoryImage, SymbolTable table) {				
-	}
-
 	public void notify(String message, String argument) {
 		if (message.equals(NOTIFY_ERROR)) {
 			m_console.display("Error: " + argument + "\n");		

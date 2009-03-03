@@ -21,10 +21,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 
-import com.xmos.xta.console.Command;
-import com.xmos.xta.console.JLineCompletor;
 import com.xmos.xta.console.Shell;
+import com.xmos.xta.console.commands.Command;
+import com.xmos.xta.console.completors.XtaCompletor;
 import com.xmos.xta.rcp.XtaCorePlugin;
+import com.xmos.xta.rcp.XtaEngine;
 
 public class TextReader extends Reader {	 
     public static final boolean DEBUG = false;
@@ -115,7 +116,7 @@ public class TextReader extends Reader {
 			}			
 		});    
                 
-        m_completor = new JLineCompletor();
+        m_completor = new XtaCompletor(XtaEngine.getEngine());
         m_completionHandler = new TabCompletionHandler();
 	}
 	

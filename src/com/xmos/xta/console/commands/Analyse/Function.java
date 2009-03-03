@@ -1,8 +1,8 @@
 package com.xmos.xta.console.commands.Analyse;
 
-import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
+import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 
 public class Function extends Command {
@@ -20,6 +20,10 @@ public class Function extends Command {
     	return 1;
     }        
 	
+	public ArgType[] getArgTypes() {
+		return new Command.ArgType[] {ArgType.FUNCTION};
+	}    
+    
     public String name() {
     	return "function";
     }        

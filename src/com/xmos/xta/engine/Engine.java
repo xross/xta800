@@ -27,6 +27,7 @@ import com.xmos.xta.engine.maps.SrcTableInfo;
 import com.xmos.xta.engine.maps.SrcTableMap;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
+import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
 import com.xmos.xta.engine.Unknown.UnknownType;
 
 public class Engine {
@@ -257,13 +258,17 @@ public class Engine {
 		} else {
 			TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
 			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
-			return analyseRoute(startPc, endPcs);
+			String routeDescription = String.format("function: %s", functionName);
+			return analyseRoute(startPc, endPcs, routeDescription);
 		}
 	}
 
 	public boolean analyseRoute(String from, String to) {
-		CodeReference fromRef = CodeReferenceFactory.createEndpointReference(from);
-		CodeReference toRef = CodeReferenceFactory.createEndpointReference(to);
+		CodeReference fromRef = CodeReferenceFactory.createReference(
+				from, ReferenceClass.ENDPOINT_REF);
+		CodeReference toRef = CodeReferenceFactory.createReference(
+				to, ReferenceClass.ENDPOINT_REF);
+		
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Node: %d, Core: %d image not found in file: %s", m_nodeId,
@@ -280,11 +285,12 @@ public class Engine {
 		} else {
 			TreeSet<Integer> endPc = new TreeSet<Integer>();
 			endPc.add(toRef.getPc());
-			return analyseRoute(fromRef.getPc(), endPc);
+			String routeDescription = String.format("path: %s to %s", from, to);
+			return analyseRoute(fromRef.getPc(), endPc, routeDescription);
 		}
 	}
 
-	public boolean analyseRoute(int startPc, TreeSet<Integer> endPcs) {
+	public boolean analyseRoute(int startPc, TreeSet<Integer> endPcs, String routeDescription) {
 		boolean reachable = false;
 		for (int end : endPcs) {
 			int dist = m_ae.determineReachability(startPc, end, m_nodeId,
@@ -312,7 +318,8 @@ public class Engine {
 
 		m_previousRoute = m_route;
 		
-		m_route = new Route(startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId));
+		m_route = new Route(startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), 
+				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId), routeDescription);
 
 		boolean success = analyseRouteSafley();
 		if (success) {

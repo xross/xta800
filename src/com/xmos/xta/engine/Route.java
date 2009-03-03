@@ -21,19 +21,20 @@ public class Route {
 	private TreeSet<Integer> m_endPcs; 
 	private ArrayList<PathBasicBlock> m_completedPaths;
 	private ArrayList<PathBasicBlock> m_allBasicBlocks;
-	private String m_analysisString = "";
+	private String m_description;
 	private ArrayList<Unknown> m_unknowns;
 	private ArrayList<Unresolved> m_unresolvedPaths;
 	private boolean m_firstStep;
 	private InstructionDecodeCache m_idc;
 	
-	public Route(int startPc, TreeSet<Integer> endPcs, ArrayList<BasicBlock> nodes, InstructionDecodeCache idc){
+	public Route(int startPc, TreeSet<Integer> endPcs, ArrayList<BasicBlock> nodes, InstructionDecodeCache idc, String description){
+
 		m_completedPaths = new ArrayList<PathBasicBlock>();
 		m_allBasicBlocks = new ArrayList<PathBasicBlock>();
 		m_unresolvedPaths = new ArrayList<Unresolved>();
 		m_startPc = startPc;
 		m_endPcs =endPcs;
-		m_analysisString = "";
+		m_description = description;
 		m_nodes = nodes;
 		m_unknowns = new ArrayList<Unknown>();
 		m_idc = idc;
@@ -47,8 +48,8 @@ public class Route {
 		return m_unresolvedPaths;
 	}
 	
-	public String getStatusString() {
-		return m_analysisString;
+	public String getDescription() {
+		return m_description;
 	}
 	
 	public ArrayList<Unknown> getUnknowns() {
@@ -83,7 +84,7 @@ public class Route {
 		m_firstStep = true;
 		followNode(startBasicBlock, stack, nodeContext);
 		sortPaths();
-		makeCompleteStatus();
+		updateDescription();
 		return RouteStatus.COMPLETED;
 	}
 	
@@ -150,6 +151,7 @@ public class Route {
 			if(debug) System.out.println("block complete");
 			return;
 		} else {
+
 			m_firstStep = false;
 			m_allBasicBlocks.add(currentBasicBlock);
 			if(hasResursed(currentBasicBlock, nodeContext)){
@@ -266,13 +268,13 @@ public class Route {
 		return null;
 	}
 	
-	private void makeCompleteStatus(){
-		m_analysisString = "from: 0x" + Integer.toHexString(m_startPc) + " to: ";
+	private void updateDescription(){
+		m_description +=  " (0x" + Integer.toHexString(m_startPc) + " => ";
 		for(int end : m_endPcs){
-			m_analysisString += "0x" + Integer.toHexString(end) + ", ";
+			m_description += "0x" + Integer.toHexString(end) + ", ";
 		}
-		m_analysisString = m_analysisString.substring(0,m_analysisString.length()-2);
-		return;
+		m_description = m_description.substring(0, m_description.length()-2);
+		m_description += ")";
 	}
 	
 	private void sortPaths() {

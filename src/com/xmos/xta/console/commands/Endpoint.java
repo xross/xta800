@@ -2,13 +2,13 @@ package com.xmos.xta.console.commands;
 
 import java.util.ArrayList;
 
-import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.maps.SrcLabelInfo;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
+import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
 
 public class Endpoint extends Command {
 	public enum Operation {
@@ -122,7 +122,8 @@ public class Endpoint extends Command {
     	switch (m_operation) {
     	case ADD:
     		assert(m_endpoints.size() == 1);
-    		CodeReference ref = CodeReferenceFactory.createEndpointReference(m_refString);
+    		CodeReference ref = CodeReferenceFactory.createReference(
+    				m_refString, ReferenceClass.ENDPOINT_REF);    		
 			engine.addEndpoint(m_endpoints.get(0), ref);
 			break;
     	case REMOVE:

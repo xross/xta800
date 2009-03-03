@@ -1,8 +1,8 @@
 package com.xmos.xta.console.commands.Exit;
 
-import com.xmos.xta.console.Command;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
+import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 
 public class Exit extends Command {

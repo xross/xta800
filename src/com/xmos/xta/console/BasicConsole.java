@@ -3,6 +3,8 @@ package com.xmos.xta.console;
 import java.util.Scanner;
 import java.util.Vector;
 
+import com.xmos.xta.console.commands.Command;
+
 
 public class BasicConsole implements Console {
 	public void display(String str) {
