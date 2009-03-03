@@ -1,4 +1,59 @@
+Current node: 0
+Current core: 0
+Frequency: 400
+NumThreads: 8
+SrcPaths: .
+Loaded executable: test.xe
+Node: 0, Core: 0 \(Debug information avaliable\)
+Node: 0, Core: 1 \(Debug information avaliable\)
+Node: 0, Core: 2 \(Debug information avaliable\)
+Node: 0, Core: 3 \(Debug information avaliable\)
+No Paths/Functions registered
 Error: Unresolved reference: test.xc:11
 Label: ben, pc: 0x[0-9a-fA-F]{5}
-Label: bill, pc: 0x[0-9a-fA-F]{5}
 Label: bob, pc: 0x[0-9a-fA-F]{5}
+Label: fred, pc: 0x[0-9a-fA-F]{5}
+Current node: 0
+Current core: 0
+Frequency: 400
+NumThreads: 8
+SrcPaths: .
+Loaded executable: test.xe
+Node: 0, Core: 0 \(Debug information avaliable\)
+Node: 0, Core: 1 \(Debug information avaliable\)
+Node: 0, Core: 2 \(Debug information avaliable\)
+Node: 0, Core: 3 \(Debug information avaliable\)
+No Paths/Functions registered
+Label: ben, pc: 0x[0-9a-fA-F]{5}
+Label: bob, pc: 0x[0-9a-fA-F]{5}
+Label: fred, pc: 0x[0-9a-fA-F]{5}
+Current node: 0
+Current core: 2
+Frequency: 400
+NumThreads: 8
+SrcPaths: .
+Loaded executable: test.xe
+Node: 0, Core: 0 \(Debug information avaliable\)
+Node: 0, Core: 1 \(Debug information avaliable\)
+Node: 0, Core: 2 \(Debug information avaliable\)
+Node: 0, Core: 3 \(Debug information avaliable\)
+No Paths/Functions registered
+none
+Error: Unresolved reference: test.xc:11
+Label: ben1, pc: 0x[0-9a-fA-F]{5}
+Label: bob, pc: 0x[0-9a-fA-F]{5}
+Label: fred1, pc: 0x[0-9a-fA-F]{5}
+Current node: 0
+Current core: 0
+Frequency: 400
+NumThreads: 8
+SrcPaths: .
+Loaded executable: test.xe
+Node: 0, Core: 0 \(Debug information avaliable\)
+Node: 0, Core: 1 \(Debug information avaliable\)
+Node: 0, Core: 2 \(Debug information avaliable\)
+Node: 0, Core: 3 \(Debug information avaliable\)
+No Paths/Functions registered
+Label: ben, pc: 0x[0-9a-fA-F]{5}
+Label: bob, pc: 0x[0-9a-fA-F]{5}
+Label: fred, pc: 0x[0-9a-fA-F]{5}
