@@ -23,12 +23,12 @@ public class TestCodeElement extends CodeElement {
 		file.write("}\n");
 	}
 
-	public void emitExpect(int node, BufferedWriter file, int depth) throws IOException  {
+	public void emitExpect(int node, int pathNum, BufferedWriter file, int depth) throws IOException  {
 		int numPaths = getTotalNumPaths();
 
 		file.write("Path\\(id\\): Timing\\(ns\\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute\n");
 		file.write("\\+COMPLETE \\[" + numPaths + " path\\(s\\)\\]\n");
-		super.emitExpect(node, file, depth + 1);
+		super.emitExpect(node, pathNum, file, depth + 1);
 	}
 
 	public int getNodeNumPaths() {

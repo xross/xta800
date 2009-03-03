@@ -133,7 +133,7 @@ public class AnalysisEngine {
 				fillGraphFnops(nodeId, coreId);
 
 				// TODO
-				// printDot(nodeId, coreId);
+				 //printDot(nodeId, coreId);
 			}
 		}
 	}
@@ -153,16 +153,17 @@ public class AnalysisEngine {
 	}
 
 	private void itterateOverGraph(HashMap<XtaInstruction, BasicBlock> pcToNode) {
-		
-		for(int i=0;i<pcToNode.values().size();i++){
+		boolean modified = true;
+		while(modified ){
+			modified = false;
 			for (BasicBlock node : pcToNode.values()) {
 				if (node.getPrevoiusNodes().size() == 0 && node.getIBufferStates().size() == 0) {
-					 node.setIBuferStart(0);
+					modified |= node.setIBuferStart(0, 0);
 				} else {
 					for (BasicBlock previouseNode : node.getPrevoiusNodes()) {
-						ArrayList<IBufferState> bob = new  ArrayList<IBufferState>(previouseNode.getIBufferStates());
-						for (IBufferState ibuffer : bob) {
-							node.setIBuferStart(ibuffer.finalIBuffer);
+						ArrayList<IBufferState> copy = new  ArrayList<IBufferState>(previouseNode.getIBufferStates());
+						for (IBufferState ibuffer : copy) {
+							modified |= node.setIBuferStart(ibuffer.getFinalIBuffer(), previouseNode.getInstructions().getLast().getPc());
 						}
 					}
 				}
@@ -246,14 +247,7 @@ public class AnalysisEngine {
 				}
 				System.out.print("max: " +maxFnops + " min: " + minFnops + "\\n");
 			}
-			for (XtaInstruction inst : node.getInstructionStream()) {
-				/*
-				if(singular ){
-					for(int pc : node.getIBufferStates().get(0).m_fnops){
-						if(pc == inst.getPc()) System.out.print( "FNOP\\n");
-					}
-				} 
-				*/
+			for (XtaInstruction inst : node.getInstructions()) {
 				System.out.print(inst + "\\n");
 			}
 			System.out.print("\", style=filled, shape=box,");

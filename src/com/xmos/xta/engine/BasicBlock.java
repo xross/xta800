@@ -40,25 +40,37 @@ public class BasicBlock implements Comparable<BasicBlock> {
 		return m_iBufferStates;
 	}
 
-	/*
-	 * this returns a list of instructions with the worst case fnops inserted
+	/**
+	 * get the IiBuffer that starts with startIbufferState
+	 * @param startIbufferState
+	 * @return the iBuffer state
 	 */
-	public LinkedList<XtaInstruction> getInstructionStream() {
-		LinkedList<XtaInstruction> worst = new LinkedList<XtaInstruction>();
-		for(XtaInstruction inst : m_instructions){
-			for(int pc : m_worstIbuffer.m_fnops){
-				if(pc == inst.getPc()){
-					XtaInstruction fnop = new NullInstruction("--FNOP--", inst.getConfig(), 0, inst.getPc(), 0);
-					fnop.setFunctionName(inst.getFunctionName());
-					worst.add(fnop);
+	public IBufferState getIbuffer(int callingPc) {
+		ArrayList<IBufferState> ibuffers = new ArrayList<IBufferState>();
+		for(IBufferState ib : m_iBufferStates){
+			if(ib.getCallingPc().contains(callingPc)){
+				ibuffers.add(ib);
+			}
+		}
+		if(ibuffers.size() == 0){
+			assert(false);
+			return null;
+		} else if(ibuffers.size() == 1){
+			return ibuffers.get(0);
+		} else {
+			int worst=-1;
+			IBufferState worstIbuff = null;
+			for(IBufferState ib : ibuffers){
+				if(ib.m_fnops.size() > worst){
+					worst = ib.m_fnops.size();
+					worstIbuff = ib;
 				}
 			}
-			worst.add(inst);
+			return worstIbuff;
 		}
-		return worst;
 	}
-
-	/*
+	
+	/**
 	 * this should only be used when the complete basic block is wanted,
 	 * there are no FNOPS in the list nor is it trimmed to size.
 	 */
@@ -74,22 +86,23 @@ public class BasicBlock implements Comparable<BasicBlock> {
 		return m_previousNode;
 	}
 
-	public boolean setIBuferStart(int initialFullness) {
+	public boolean setIBuferStart(int initialFullness, int previousPc) {
+
 		IBufferState ib = new IBufferState();
-		ib.initialIBuffer = initialFullness;
-		
+		ib.setInitialIBuffer(initialFullness);
+		ib.setCallingPc(previousPc);
 		for(IBufferState old : m_iBufferStates){
-			if(old.initialIBuffer == initialFullness){
+			if(old.getInitialIBuffer() == initialFullness){
+				if(!old.getCallingPc().contains(previousPc)) old.getCallingPc().add(previousPc);
 				return false;
 			}
 		}
-		
+		boolean modified = false;
 		InstructionBuffer instBuff = new InstructionBuffer();
 		instBuff.setPc(m_instructions.getFirst().getPc());
 		instBuff.m_numBytes = initialFullness;
 		for(XtaInstruction inst :  m_instructions){
 			while(!instBuff.canIssue(inst.getNumBytes())){
-				
 				instBuff.fetch();
 				ib.m_fnops.add(inst.getPc());
 			}
@@ -97,7 +110,10 @@ public class BasicBlock implements Comparable<BasicBlock> {
 				instBuff.fetch();
 			}
 			instBuff.issue(inst.getNumBytes());
+			
+			
 			if(inst.getSuccessors().size() > 0){
+				
 				for(NextPcType succ : inst.getSuccessors()){
 					if(succ.isBranch()){
 						instBuff.branchTo(succ.getPc(), inst.isLoadStore());
@@ -105,31 +121,31 @@ public class BasicBlock implements Comparable<BasicBlock> {
 						instBuff.setPc(inst.getPc() + inst.getNumBytes());
 					}
 					if(m_instructions.getLast() == inst){
-						ib.finalIBuffer = instBuff.m_numBytes;
-						ib.finalIBufferKnown = true;
-						addIbuffState(ib);
+						IBufferState copyState = new IBufferState(ib);
+						InstructionBuffer copy = new InstructionBuffer(instBuff);
+						copyState.setFinalIBuffer(copy.m_numBytes);
+						modified = addIbuffState(copyState);
 					}
 				}
 			} else {
 				instBuff.setPc(inst.getPc() + inst.getNumBytes());
 				if(m_instructions.getLast() == inst){
-					ib.finalIBuffer = instBuff.m_numBytes;
-					ib.finalIBufferKnown = true;
-					addIbuffState(ib);
+					ib.setFinalIBuffer(instBuff.m_numBytes);
+					return addIbuffState(ib);
 				}
 			}
+			
 		}
-		return true;
+		return modified;
 	}
 
+	/** 
+	 * adds unseen iBuffer states to the list of iBuffers for this basic block. 
+	 * @param iBuffer
+	 * @return return true if the new iBuffer state was added
+	 */
 	private boolean addIbuffState(IBufferState ib){
-		for(IBufferState old : m_iBufferStates){
-			if(old.finalIBuffer == ib.finalIBuffer){
-				return false;
-			}
-		}
 		m_iBufferStates.add(ib);
-		//update the worst iBuffer
 		if(m_worstIbuffer == null) m_worstIbuffer = ib;
 		for(IBufferState w : m_iBufferStates){
 			if(w.m_fnops.size()> m_worstIbuffer.m_fnops.size()){
@@ -139,23 +155,98 @@ public class BasicBlock implements Comparable<BasicBlock> {
 		return true;
 	}
 
+	/**
+	 * If the predecessor is unknown for this basic block then use the worst case fnops.
+	 * This returns such a case; 
+	 * @return fullness of iBuffer in words in the worst case
+	 */
+	public IBufferState getWorstIbufferStart() {
+		IBufferState worst = null;
+		int worstCount = -1;
+		for(IBufferState ib: m_iBufferStates){
+			if(ib.m_fnops.size()> worstCount){
+				worst = ib;
+				worstCount = ib.m_fnops.size();
+			}
+		}
+		return worst;
+	}
 }
-
 class IBufferState {
-	boolean finalIBufferKnown;
-	int initialIBuffer;
-	int finalIBuffer;
-
+	private int initialIBuffer;
+	private int finalIBuffer;
+	private int nextPc;
+	private ArrayList<Integer> callingPcs;
 	ArrayList<Integer> m_fnops;
 
 	public IBufferState() {
-		finalIBufferKnown = false;
 		initialIBuffer = 0;
 		finalIBuffer = 0;
 		m_fnops = new ArrayList<Integer>();
+		callingPcs = new ArrayList<Integer>();
 	}
 
+	public IBufferState(IBufferState copy) {
+		initialIBuffer = copy.initialIBuffer;
+		finalIBuffer = copy.finalIBuffer;
+		m_fnops = new ArrayList<Integer>(copy.m_fnops);
+		callingPcs = new ArrayList<Integer>(copy.callingPcs);
+		nextPc = copy.nextPc;
+	}
 	
+	public ArrayList<Integer> getCallingPc() {
+		return callingPcs;
+	}
+
+	public void setCallingPc(int callingPc) {
+		if(!callingPcs.contains(callingPc) )callingPcs.add(callingPc);
+	}
+	/**
+	 * returns the initial iBuffer fullness in words
+	 * @return initial count of words in the iBuffer
+	 */
+	public int getInitialIBuffer() {
+		return initialIBuffer;
+	}
+
+	/**
+	 * set the count of words in the iBuffer at the start of the basic block 
+	 * @param initialIBuffer
+	 */
+	public void setInitialIBuffer(int initialIBuffer) {
+		this.initialIBuffer = initialIBuffer;
+	}
 	
+	/**
+	 * returns the final iBuffer fullness in words
+	 * @return final count of words in the iBuffer
+	 */
+	public int getFinalIBuffer() {
+		return finalIBuffer;
+	}
+
+	/**
+	 * set the count of words in the iBuffer at the end of the basic block 
+	 * @param finalIBuffer
+	 */
+	public void setFinalIBuffer(int finalIBuffer) {
+		this.finalIBuffer = finalIBuffer;
+	}
+
+	/**
+	 * set the next PC for an iBuffer stream
+	 * @param nextPc the nextPc to set
+	 */
+	public void setNextPc(int nextPc) {
+		this.nextPc = nextPc;
+	}
+
+	/**
+	 * get the PC of the 
+	 * @return the nextPc
+	 */
+	public int getNextPc() {
+		return nextPc;
+	}
 	
 }
