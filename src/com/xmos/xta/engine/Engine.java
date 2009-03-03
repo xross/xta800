@@ -27,6 +27,7 @@ import com.xmos.xta.engine.maps.SrcTableInfo;
 import com.xmos.xta.engine.maps.SrcTableMap;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
+import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
 import com.xmos.xta.engine.Unknown.UnknownType;
 
 public class Engine {
@@ -48,9 +49,6 @@ public class Engine {
 	private Progress m_progress;
 	private String m_srcPaths;
 	private ArrayList<XeObject> m_xeObjects;
-	private ArrayList<CodeReferenceList> m_exclusions;
-	private ArrayList<CodeReferenceList> m_prohibited;
-	private ArrayList<CodeReferenceList> m_required;
 	private ArrayList<BranchMap> m_branches;
 	private ArrayList<LabelMap> m_labels;
 	private ArrayList<SrcLabelMap> m_srcLabels;
@@ -62,9 +60,6 @@ public class Engine {
 
 	public Engine(Config config) {
 		m_xeObjects = new ArrayList<XeObject>();
-		m_exclusions = new ArrayList<CodeReferenceList>();
-		m_prohibited = new ArrayList<CodeReferenceList>();
-		m_required = new ArrayList<CodeReferenceList>();
 		m_branches = new ArrayList<BranchMap>();
 		m_labels = new ArrayList<LabelMap>();
 		m_srcLabels = new ArrayList<SrcLabelMap>();
@@ -87,99 +82,9 @@ public class Engine {
 		CodeReferenceFactory.setEngine(this);
 	}
 
-	public boolean addReference(ReferenceMode mode, CodeReference ref) {
-		if (!resolveRefernece(ref, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format(
-					"Unresolved reference: %s", ref.getRef()));
-			return false;
-		}
-		if (mode == ReferenceMode.FILTERED) {
-			if (referenceListContainsReference(ref, getReferenceList(
-					m_exclusions, m_nodeId, m_coreId))) {
-				notify(Notifier.NOTIFY_ERROR, String.format(
-						"Reference already filtered: %s", ref.getRef()));
-				return false;
-			} else {
-				getReferenceList(m_exclusions, m_nodeId, m_coreId).add(ref);
-			}
-
-		} else if (mode == ReferenceMode.PROHIBITED) {
-			if (referenceListContainsReference(ref, getReferenceList(
-					m_prohibited, m_nodeId, m_coreId))) {
-				notify(Notifier.NOTIFY_ERROR, String.format(
-						"Reference already prohibited: %s", ref.getRef()));
-				return false;
-			} else {
-				getReferenceList(m_prohibited, m_nodeId, m_coreId).add(ref);
-			}
-		} else if (mode == ReferenceMode.REQUIRED) {
-			if (referenceListContainsReference(ref, getReferenceList(
-					m_required, m_nodeId, m_coreId))) {
-				notify(Notifier.NOTIFY_ERROR, String.format(
-						"Reference already required: %s", ref.getRef()));
-				return false;
-			} else {
-				getReferenceList(m_required, m_nodeId, m_coreId).add(ref);
-			}
-		} else {
-			assert (false);
-			return false;
-		}
-		//if (m_route != null)
-		//	m_route.filterPaths();
-
-		notify(Notifier.NOTIFY_UPDATE_EXCLUDES, "");
-		return true;
-	}
-
-	public boolean removeReference(ReferenceMode mode, CodeReference ref) {
-		boolean found = true;
-
-		if (mode == ReferenceMode.FILTERED) {
-			List<CodeReference> references = getReferenceList(m_exclusions,
-					m_nodeId, m_coreId);
-			found = removeReferences(ref, references);
-		} else if (mode == ReferenceMode.PROHIBITED) {
-			List<CodeReference> references = getReferenceList(m_prohibited,
-					m_nodeId, m_coreId);
-			found = removeReferences(ref, references);
-		} else if (mode == ReferenceMode.REQUIRED) {
-			List<CodeReference> references = getReferenceList(m_required,
-					m_nodeId, m_coreId);
-			found = removeReferences(ref, references);
-		} else {
-			assert (false);
-			return false;
-		}
-		if (!found) {
-			notify(Notifier.NOTIFY_ERROR, String.format(
-					"Unable to remove reference: %s", ref.getRef()));
-			return false;
-		}
-
-		//if (m_route != null)
-		//	m_route.filterPaths();
-
-		notify(Notifier.NOTIFY_UPDATE_EXCLUDES, "");
-		return true;
-	}
-
 	public void notify(String message, String argument) {
 		for (Notifier notifier : m_notifiers)
 			notifier.notify(message, argument);
-	}
-
-	public List<CodeReference> getReference(ReferenceMode mode) {
-		if (mode == ReferenceMode.FILTERED) {
-			return getReferenceList(m_exclusions, m_nodeId, m_coreId);
-		} else if (mode == ReferenceMode.PROHIBITED) {
-			return getReferenceList(m_prohibited, m_nodeId, m_coreId);
-		} else if (mode == ReferenceMode.REQUIRED) {
-			return getReferenceList(m_required, m_nodeId, m_coreId);
-		} else {
-			assert (false);
-			return null;
-		}
 	}
 
 	public Config getConfig() {
@@ -303,9 +208,6 @@ public class Engine {
 
 			runAnalysisEngine();
 
-			
-			
-			
 			m_route = null;
 
 			notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile
@@ -356,13 +258,17 @@ public class Engine {
 		} else {
 			TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
 			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
-			return analyseRoute(startPc, endPcs);
+			String routeDescription = String.format("function: %s", functionName);
+			return analyseRoute(startPc, endPcs, routeDescription);
 		}
 	}
 
 	public boolean analyseRoute(String from, String to) {
-		CodeReference fromRef = CodeReferenceFactory.createEndpointReference(from);
-		CodeReference toRef = CodeReferenceFactory.createEndpointReference(to);
+		CodeReference fromRef = CodeReferenceFactory.createReference(
+				from, ReferenceClass.ENDPOINT_REF);
+		CodeReference toRef = CodeReferenceFactory.createReference(
+				to, ReferenceClass.ENDPOINT_REF);
+		
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Node: %d, Core: %d image not found in file: %s", m_nodeId,
@@ -379,11 +285,12 @@ public class Engine {
 		} else {
 			TreeSet<Integer> endPc = new TreeSet<Integer>();
 			endPc.add(toRef.getPc());
-			return analyseRoute(fromRef.getPc(), endPc);
+			String routeDescription = String.format("path: %s to %s", from, to);
+			return analyseRoute(fromRef.getPc(), endPc, routeDescription);
 		}
 	}
 
-	public boolean analyseRoute(int startPc, TreeSet<Integer> endPcs) {
+	public boolean analyseRoute(int startPc, TreeSet<Integer> endPcs, String routeDescription) {
 		boolean reachable = false;
 		for (int end : endPcs) {
 			int dist = m_ae.determineReachability(startPc, end, m_nodeId,
@@ -411,7 +318,8 @@ public class Engine {
 
 		m_previousRoute = m_route;
 		
-		m_route = new Route(startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId));
+		m_route = new Route(startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), 
+				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId), routeDescription);
 
 		boolean success = analyseRouteSafley();
 		if (success) {
@@ -688,16 +596,6 @@ public class Engine {
 	public File getExecutable() {
 		return m_executableFile;
 	}
-	
-	private boolean referenceListContainsReference(CodeReference ref,
-			List<CodeReference> list) {
-		for (CodeReference cr : list) {
-			if (cr.getRef().equals(ref.getRef())) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	private boolean analyseRouteSafley() {
 		boolean success = false;
@@ -739,9 +637,6 @@ public class Engine {
 		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 
 		if (m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
-			//MemoryImage memoryImage = m_xeLoader.getMemoryImage(m_nodeId, m_coreId);
-			//SymbolTable symbolTable = m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
-			//DebugInfo debugInfo = m_xeLoader.getDebugInfo(m_nodeId, m_coreId);
 
 			RouteStatus status = RouteStatus.ABORTED;
 
@@ -797,38 +692,6 @@ public class Engine {
 		return ref.resolve(engine, m_nodeId, m_coreId);
 	}
 
-	private List<CodeReference> getReferenceList(
-			List<CodeReferenceList> referenceList, int nodeId, int coreId) {
-		for (CodeReferenceList references : referenceList) {
-			if ((references.getNodeId() == nodeId)
-					&& (references.getCoreId() == coreId)) {
-				return references.getReferences();
-			}
-		}
-		assert (false);
-		return new ArrayList<CodeReference>();
-	}
-
-	private boolean removeReferences(CodeReference ref,
-			List<CodeReference> references) {
-		List<CodeReference> matches = new ArrayList<CodeReference>();
-
-		for (CodeReference present : references) {
-			try {
-				if (present.getRef().matches(ref.getRef())) {
-					matches.add(present);
-				}
-			} catch (PatternSyntaxException e) {
-			}
-		}
-
-		if (matches.size() > 0) {
-			references.removeAll(matches);
-			return true;
-		}
-		return false;
-	}
-		
 	private XeObject getXeObject(int nodeId, int coreId) {
 		for (XeObject xeObject : m_xeObjects) {
 			if ((xeObject.getNodeId() == nodeId)
@@ -841,9 +704,6 @@ public class Engine {
 	}
 
 	private void initialiseLists(FileFinder fileFinder) {
-		m_exclusions.clear();
-		m_prohibited.clear();
-		m_required.clear();
 		m_branches.clear();
 		m_labels.clear();
 		m_srcLabels.clear();
@@ -854,9 +714,6 @@ public class Engine {
 
 		for (int node : m_xeLoader.getNodeIds()) {
 			for (int core : m_xeLoader.getCoreIds(node)) {
-				m_exclusions.add(new CodeReferenceList(node, core));
-				m_prohibited.add(new CodeReferenceList(node, core));
-				m_required.add(new CodeReferenceList(node, core));
 				m_branches.add(new BranchMap(node, core));
 				m_labels.add(new LabelMap(node, core));
 				m_srcLabels.add(new SrcLabelMap(node, core, ".xtalabel"));

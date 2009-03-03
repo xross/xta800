@@ -14,27 +14,30 @@ public class Route {
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR
 	}
+	
 	private static int m_pathCount;
 	private ArrayList<BasicBlock> m_nodes;
 	private int m_startPc;
 	private TreeSet<Integer> m_endPcs; 
 	private ArrayList<PathBasicBlock> m_completedPaths;
 	private ArrayList<PathBasicBlock> m_allBasicBlocks;
-	private String m_analysisString = "";
+	private String m_description;
 	private ArrayList<Unknown> m_unknowns;
 	private ArrayList<Unresolved> m_unresolvedPaths;
 	private boolean m_firstStep;
+	private InstructionDecodeCache m_idc;
 	
-	public Route(int startPc, TreeSet<Integer> endPcs, ArrayList<BasicBlock> nodes){
+	public Route(int startPc, TreeSet<Integer> endPcs, ArrayList<BasicBlock> nodes, InstructionDecodeCache idc, String description){
+
 		m_completedPaths = new ArrayList<PathBasicBlock>();
 		m_allBasicBlocks = new ArrayList<PathBasicBlock>();
 		m_unresolvedPaths = new ArrayList<Unresolved>();
 		m_startPc = startPc;
 		m_endPcs =endPcs;
-		m_analysisString = "";
+		m_description = description;
 		m_nodes = nodes;
 		m_unknowns = new ArrayList<Unknown>();
-
+		m_idc = idc;
 	}
 	
 	public ArrayList<PathBasicBlock> getCompletedPaths(){
@@ -45,8 +48,8 @@ public class Route {
 		return m_unresolvedPaths;
 	}
 	
-	public String getStatusString() {
-		return m_analysisString;
+	public String getDescription() {
+		return m_description;
 	}
 	
 	public ArrayList<Unknown> getUnknowns() {
@@ -64,7 +67,6 @@ public class Route {
 	}
 	
 	public RouteStatus analyse(){
-		m_firstStep = true;
 		m_allBasicBlocks.clear();
 		BasicBlock startNode = getNode(m_startPc);
 		if(startNode == null){
@@ -72,28 +74,52 @@ public class Route {
 		}
 		PathBasicBlock startBasicBlock;
 		if(startNode.getInstructions().getFirst().getPc() == m_startPc){
-			startBasicBlock = new PathBasicBlock(startNode, null);
+			startBasicBlock = new PathBasicBlock(startNode, null, m_idc);
 		} else {
-			startBasicBlock = new PathBasicBlock(startNode, null, m_startPc, true);
+			startBasicBlock = new PathBasicBlock(startNode, null, m_startPc, true, m_idc);
 		}
 		Stack<Integer> stack = new Stack<Integer>();
 		Stack<LinkedList<BasicBlock>> nodeContext = new Stack<LinkedList<BasicBlock>>();
 		nodeContext.push(new LinkedList<BasicBlock>());
+		m_firstStep = true;
 		followNode(startBasicBlock, stack, nodeContext);
 		sortPaths();
-		makeCompleteStatus();
+		updateDescription();
 		return RouteStatus.COMPLETED;
 	}
 	
-	private void sortPaths() {
-		Collections.sort(m_completedPaths);
-		for(PathBasicBlock block : m_allBasicBlocks){
-			Collections.sort(block.getLoopPaths());
+	public PathBasicBlock getBlock(int id) {
+		for(PathBasicBlock pbb : m_allBasicBlocks){
+			if(pbb.getBlockId() == id){
+				return pbb;
+			}
 		}
+		return null;
+	}
+
+	public PathBasicBlock getPath(int id) {
+		for(PathBasicBlock pbb : m_allBasicBlocks){
+			if(pbb.getPathId() == id){
+				return pbb;
+			}
+		}
+		return null;
+	}
+	
+	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
+		for (PathBasicBlock block : m_allBasicBlocks) {
+			for (PathBasicBlock loopPath : block.getLoopPaths()) {
+				if (loopPath.getPathId() == pathId) {
+					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
+					attributes.setNumIterations(iterations, absolute);
+					return true;
+				}
+			}
+		}	
+		return false;		
 	}
 	
 	private static final boolean debug = false;
-	
 	
 	@SuppressWarnings("unchecked")
 	private void followNode(
@@ -101,35 +127,35 @@ public class Route {
 		Stack<Integer> stack, 
 		Stack<LinkedList<BasicBlock>> nodeContext) {
 		
-		//this could be improved - ie put in a better location
-		//m_allBasicBlocks.add(currentBasicBlock);
 		if(debug) System.out.println(currentBasicBlock + " " +nodeContext.size());
 		
-		if(reachedEnd(currentBasicBlock, m_endPcs)){
-			int size = currentBasicBlock.getInstructionsThis().size()-1;
+		if(reachedEnd(currentBasicBlock)){
+			int size = currentBasicBlock.getInstructionTrimmed().size()-1;
 			int endPc =0;
 			PathBasicBlock endBlock = currentBasicBlock;
 			while(size>=0){
-				if( m_endPcs.contains(currentBasicBlock.getInstructionsThis().get(size).getPc())){
-					endPc = currentBasicBlock.getInstructionsThis().get(size).getPc();
-					endBlock = new PathBasicBlock(currentBasicBlock.getBasicBlock(), currentBasicBlock.getParent(), endPc, false);
-					
+				if( m_endPcs.contains(currentBasicBlock.getInstructionTrimmed().get(size).getPc())){
+					endPc = currentBasicBlock.getInstructionTrimmed().get(size).getPc();
+					endBlock = new PathBasicBlock(currentBasicBlock.getBasicBlock(), currentBasicBlock.getParent(), endPc, false, m_idc);
 					break;
 				}
 				size--;
 			}
+			
+			updateConstraints(endBlock);
+			
 			m_completedPaths.add(endBlock);
 			endBlock.setPath(m_pathCount++);
 			endBlock.setStatus(BlockStatus.COMPLETE);
-			m_allBasicBlocks.add(endBlock);
+			
 			if(debug) System.out.println("block complete");
 			return;
 		} else {
-			m_allBasicBlocks.add(currentBasicBlock);
+
 			m_firstStep = false;
+			m_allBasicBlocks.add(currentBasicBlock);
 			if(hasResursed(currentBasicBlock, nodeContext)){
 				String reason = "Recursion with 0x" + Integer.toHexString(currentBasicBlock.getBasicBlock().getInstructions().getFirst().getPc());
-				
 				Unresolved unresolved = new Unresolved(currentBasicBlock, currentBasicBlock.getBasicBlock().getInstructions().getLast(), reason);
 				m_unresolvedPaths.add(unresolved);
 				currentBasicBlock.setUnresolved(unresolved);
@@ -148,7 +174,7 @@ public class Route {
 				currentBasicBlock.getParent().setStatus(BlockStatus.COMPLETE);
 				return;
 			}
-			XtaInstruction lastInstruction = currentBasicBlock.getInstructionsThis().get(currentBasicBlock.getInstructionsThis().size()-1);
+			XtaInstruction lastInstruction = currentBasicBlock.getInstructionTrimmed().get(currentBasicBlock.getInstructionTrimmed().size()-1);
 			if(lastInstruction.getReturn() && stack.size()>0){
 				if(debug) System.out.println("following retsp from stack");
 				BasicBlock nextNode = getNode(stack.peek());
@@ -157,7 +183,7 @@ public class Route {
 				newContext.pop();
 				Stack<Integer> newStack = (Stack<Integer>) stack.clone();
 				newStack.pop();
-				PathBasicBlock nextPathBasicBlock = new PathBasicBlock(nextNode, currentBasicBlock);
+				PathBasicBlock nextPathBasicBlock = new PathBasicBlock(nextNode, currentBasicBlock, m_idc);
 				followNode(nextPathBasicBlock, newStack, newContext);
 			} else {
 				if(currentBasicBlock.getBasicBlock().getNextNodes().size() == 0){
@@ -179,13 +205,28 @@ public class Route {
 					} else {
 						newContext.peek().add(currentBasicBlock.getBasicBlock());
 					}
-					PathBasicBlock nextPathBasicBlock = new PathBasicBlock(nextNode, currentBasicBlock);
+					PathBasicBlock nextPathBasicBlock = new PathBasicBlock(nextNode, currentBasicBlock, m_idc);
 					followNode(nextPathBasicBlock, newStack, newContext);
 				}
 			}
 		}	
 	}
+	
+	private void updateConstraints(PathBasicBlock block) {
+		m_allBasicBlocks.add(block);
+		block.getConstraint();
+		
+	}
 
+	private boolean reachedEnd(PathBasicBlock currentBasicBlock) {
+		for(XtaInstruction inst : currentBasicBlock.getInstructionTrimmed()){
+			if(m_endPcs.contains(inst.getPc())){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private boolean hasResursed(PathBasicBlock currentBasicBlock, Stack<LinkedList<BasicBlock>> nodeContext) {
 		for(int i=0;i<nodeContext.size()-1;i++){
 			for(BasicBlock bb : nodeContext.get(i)){
@@ -217,63 +258,29 @@ public class Route {
 		}
 		return null;
 	}
-	
-	private boolean reachedEnd(PathBasicBlock currentBasicBlock, TreeSet<Integer> pcs) {
-		//if(m_firstStep) return false;
-		for(XtaInstruction inst : currentBasicBlock.getInstructionsThis()){
-			if(pcs.contains(inst.getPc())){
-				return true;
-			}
-		}
-		return false;
-	}
 
 	private BasicBlock getNode(int pc) {
 		for(BasicBlock node : m_nodes){
-			for(XtaInstruction inst : node.getInstructionStream()){
+			for(XtaInstruction inst : node.getInstructions()){
 				if(inst.getPc() == pc) return node;
 			}
 		}
 		return null;
 	}
-
-	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
-		for (PathBasicBlock block : m_allBasicBlocks) {
-			for (PathBasicBlock loopPath : block.getLoopPaths()) {
-				if (loopPath.getPathId() == pathId) {
-					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
-					attributes.setNumIterations(iterations, absolute);
-					return true;
-				}
-			}
-		}	
-		return false;		
+	
+	private void updateDescription(){
+		m_description +=  " (0x" + Integer.toHexString(m_startPc) + " => ";
+		for(int end : m_endPcs){
+			m_description += "0x" + Integer.toHexString(end) + ", ";
+		}
+		m_description = m_description.substring(0, m_description.length()-2);
+		m_description += ")";
 	}
 	
-	private void makeCompleteStatus(){
-		m_analysisString = "from: 0x" + Integer.toHexString(m_startPc) + " to: ";
-		for(int end : m_endPcs){
-			m_analysisString += "0x" + Integer.toHexString(end) + ", ";
+	private void sortPaths() {
+		Collections.sort(m_completedPaths);
+		for(PathBasicBlock block : m_allBasicBlocks){
+			Collections.sort(block.getLoopPaths());
 		}
-		m_analysisString = m_analysisString.substring(0,m_analysisString.length()-2);
-		return;
-	}
-
-	public PathBasicBlock getBlock(int id) {
-		for(PathBasicBlock pbb : m_allBasicBlocks){
-			if(pbb.getBlockId() == id){
-				return pbb;
-			}
-		}
-		return null;
-	}
-
-	public PathBasicBlock getPath(int id) {
-		for(PathBasicBlock pbb : m_allBasicBlocks){
-			if(pbb.getPathId() == id){
-				return pbb;
-			}
-		}
-		return null;
 	}
 }

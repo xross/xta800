@@ -15,7 +15,7 @@ public abstract class CodeReference {
 		m_resolved = false;
 	}
 	
-	public abstract boolean resolve(Engine engine, int m_nodeId, int m_coreId);
+	public abstract boolean resolve(Engine engine, int nodeId, int coreId);
 	
 	public String getRef() {
 	    return m_ref;	    

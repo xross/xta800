@@ -8,6 +8,7 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.maps.SrcLabelInfo;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
+import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
 
 public class SrcLabel extends Command {
 	public enum Operation {
@@ -61,7 +62,7 @@ public class SrcLabel extends Command {
     	switch (m_operation) {
     	case ADD:
     		assert(m_labels.size() == 1);
-    		return "label " + m_refString + " " + m_labels.get(0); 
+    		return "srclabel " + m_refString + " " + m_labels.get(0); 
     	case REMOVE:
     		String commandLine = "srclabel";
     		for (String label : m_labels) {
@@ -121,7 +122,8 @@ public class SrcLabel extends Command {
     	switch (m_operation) {
     	case ADD:
     		assert(m_labels.size() == 1);
-    		CodeReference ref = CodeReferenceFactory.createSrcLabelReference(m_refString);
+    		CodeReference ref = CodeReferenceFactory.createReference(
+    				m_refString, ReferenceClass.SRCLABEL_REF);
 			engine.addSrcLabel(m_labels.get(0), ref);
 			break;			
     	case REMOVE:

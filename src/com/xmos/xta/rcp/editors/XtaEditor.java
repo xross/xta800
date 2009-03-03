@@ -39,6 +39,7 @@ import com.xmos.xta.engine.Unknown;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
+import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.dialogs.InstructionTime;
@@ -429,13 +430,15 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      	});
      	setAction(RemoveStartPointID, new Action("Remove start point") {
      		public void run() {
-     			CodeReference startPoint = CodeReferenceFactory.createEndpointReference("");
+     			CodeReference startPoint = CodeReferenceFactory.createReference(
+     					"", ReferenceClass.ENDPOINT_REF);
      			XtaNotifier.getInstance().notifySetStartPoint(startPoint);     			
      		}
      	});
      	setAction(RemoveEndPointID, new Action("Remove end point") {
      		public void run() {
-     			CodeReference endPoint = CodeReferenceFactory.createEndpointReference("");
+     			CodeReference endPoint = CodeReferenceFactory.createReference(
+     					"", ReferenceClass.ENDPOINT_REF);
      			XtaNotifier.getInstance().notifySetEndPoint(endPoint);     			
      		}
      	});
@@ -475,7 +478,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		m_clickCodeRefString = getLineDescription(clickLineNum);				
 		if (m_clickCodeRefString != null) {
 			
-			m_clickCodeRef = CodeReferenceFactory.createEndpointReference(m_clickCodeRefString); 
+			m_clickCodeRef = CodeReferenceFactory.createReference(
+					m_clickCodeRefString, ReferenceClass.ENDPOINT_REF); 
 			
 			if (isStartPointSet(m_clickCodeRefString)) {
 			    addAction(menu, RemoveStartPointID);

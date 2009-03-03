@@ -7,7 +7,7 @@ public class LabelReference extends CodeReference {
 		super(ref);
 	}
 		
-	public boolean resolve(Engine engine, int m_nodeId, int m_coreId) {
+	public boolean resolve(Engine engine, int nodeId, int coreId) {
 		String ref = getRef();
 		
 	    if (engine.getLabels().containsKey(ref)) {

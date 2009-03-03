@@ -9,6 +9,7 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
+import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
 
 public class Branch extends Command {
 	public enum Operation {
@@ -114,8 +115,10 @@ public class Branch extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-		CodeReference fromRef = CodeReferenceFactory.createReference(m_fromRefString);
-		CodeReference toRef = CodeReferenceFactory.createReference(m_toRefString);
+		CodeReference fromRef = CodeReferenceFactory.createReference(
+				m_fromRefString, ReferenceClass.CODE_REF);
+		CodeReference toRef = CodeReferenceFactory.createReference(
+				m_toRefString, ReferenceClass.CODE_REF);
 
     	switch (m_operation) {
     	case ADD:
