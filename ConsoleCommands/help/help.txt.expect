@@ -5,7 +5,7 @@
   [-]clear: Clears the screen (Gui mode only)
   [-]echo "text": prints the text to the console
   [-]exit: Quits the shell (Standalone mode only)
-  [-]help [command]: Displays help message for the given command
+  [-]help [command/option]: Displays help message for the given command/option
   [-]history: Displays the command history
   [-]load <xe file>: Loads the given xmos executable file
   [-]list <option> <arg0> <arg1>...: Lists the given set of items
@@ -19,12 +19,12 @@
   [-]unset <option> <arg0> <arg1>...: Unset item from given list
   [-]version: Displays the version information
   [-]add <option> <arg0> <arg1>...: Add item to given list
-      option: branch <from ref> <to ref>: Adds the given from/to reference to the branches list
-      option: label <ref> <label>: Adds the given label to the labels list
-      option: srclabel <ref> <label>: Adds the given source label to the source labels list
-      option: endpoint <ref> <label>: Adds the given endpoint to the endpoints list
+      option: branch <from LABEL_REF> <to LABEL_REF>: Adds the given from/to reference to the branches list
+      option: label <LABEL_REF> <label>: Adds the given label to the labels list
+      option: srclabel <SRCLABEL_REF> <label>: Adds the given source label to the source labels list
+      option: endpoint <ENDPOINT_REF> <label>: Adds the given endpoint to the endpoints list
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
-      option: path <from ref> <to ref>: Sets a path start and end points
+      option: path <from ENDPOINT_REF> <to ENDPOINT_REF>: Sets a path start and end points
       option: function <name>: Sets a path to trace a given function
   [-]assert <option> <arg0> <arg1>...: Set limits on the analysis phase
       option: maxtime <ns> : Analysis fails at the given time limit
@@ -37,7 +37,8 @@
       option: srcpaths <paths>: Sets the (semicolon separated) source search path
   [-]echo "text": prints the text to the console
   [-]exit: Quits the shell (Standalone mode only)
-  [-]help [command]: Displays help message for the given command
+  [-]help [command/option]: Displays help message for the given command/option
+      options: LABEL_REF, SRCLABEL_REF, ENDPOINT_REF, CONSTRAINT_REF
   [-]history: Displays the command history
   [-]list <option> <arg0> <arg1>...: Lists the given set of items
       option: branches: Lists the branches
@@ -59,7 +60,7 @@
       option: trace <path/block id>: Display instruction trace for the given path/block
   [-]pwd: Displays the current working directory
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
-      option: branch <from ref>: Removes the given from reference from the branches list
+      option: branch <from LABEL_REF>: Removes the given from reference from the branches list
       option: label [label]+: Removes the given labels from the labels list (supports regular expressions)
       option: srclabel [label]+: Removes the given source labels from the source labels list (supports regular expressions)
       option: endpoint [label]+: Removes the given endpoints from the endpoints list (supports regular expressions)
@@ -67,7 +68,7 @@
       option: loop <path> <scope> <iterations>: Sets the number of iterations for the given path
           scope: relative/r: Iteration number propagates to the enclosing path (Default)
           scope: absolute/a: Absolute number of iterations
-      option: time <ref> <mode> <value>: Sets the time taken for the instruction at the given pc
+      option: time <ENDPOINT_REF> <mode> <value>: Sets the time taken for the instruction at the given pc
           mode: ns:     Sets the time this instruction takes in ns
           mode: cycles: Sets the time this instruction takes in thread cycles
       option: constraint <expression>: Defines the constraint expression
