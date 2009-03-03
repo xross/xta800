@@ -3,9 +3,9 @@ package com.xmos.xta.engine.references;
 import com.xmos.xta.engine.Engine;
 
 public class PcReference extends CodeReference {	
-	PcReference(String ref, int pc) {
+	PcReference(String ref) {
 		super(ref);		
-		setPc(pc);
+		setPc(CodeReferenceFactory.getPcString(ref));
 	}
 
 	public boolean resolve(Engine engine, int nodeId, int coreId) {

@@ -27,6 +27,7 @@ import com.xmos.xta.engine.maps.SrcTableInfo;
 import com.xmos.xta.engine.maps.SrcTableMap;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
+import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
 import com.xmos.xta.engine.Unknown.UnknownType;
 
 public class Engine {
@@ -362,8 +363,11 @@ public class Engine {
 	}
 
 	public boolean analyseRoute(String from, String to) {
-		CodeReference fromRef = CodeReferenceFactory.createEndpointReference(from);
-		CodeReference toRef = CodeReferenceFactory.createEndpointReference(to);
+		CodeReference fromRef = CodeReferenceFactory.createReference(
+				from, ReferenceClass.ENDPOINT_REF);
+		CodeReference toRef = CodeReferenceFactory.createReference(
+				to, ReferenceClass.ENDPOINT_REF);
+		
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Node: %d, Core: %d image not found in file: %s", m_nodeId,

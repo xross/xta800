@@ -9,6 +9,7 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
+import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
 
 public class Label extends Command {
 	public enum Operation {
@@ -122,7 +123,8 @@ public class Label extends Command {
     	switch (m_operation) {
     	case ADD:
     		assert(m_labels.size() == 1);
-    		CodeReference ref = CodeReferenceFactory.createReference(m_refString);
+    		CodeReference ref = CodeReferenceFactory.createReference(
+    				m_refString, ReferenceClass.CODE_REF);
 			engine.addLabel(m_labels.get(0), ref);
 			break;			
     	case REMOVE:

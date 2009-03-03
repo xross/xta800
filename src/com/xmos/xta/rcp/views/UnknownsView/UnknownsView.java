@@ -35,6 +35,7 @@ import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Unknown;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
+import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaRouteInfo;
@@ -228,7 +229,8 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 				Unknown unknown = (Unknown)((IStructuredSelection) selection).getFirstElement();
 				
 				if (unknown != null) {
-					m_selectedCodeRef = CodeReferenceFactory.createEndpointReference("0x" + Integer.toHexString(unknown.getPc()));
+					m_selectedCodeRef = CodeReferenceFactory.createReference(
+							"0x" + Integer.toHexString(unknown.getPc()), ReferenceClass.ENDPOINT_REF);
 					Engine engine = XtaEngine.getEngine();
 					m_selectedCodeRef.resolve(engine, engine.getNodeId(), engine.getCoreId());
 					m_setInstructionTimeAction.setEnabled(true);

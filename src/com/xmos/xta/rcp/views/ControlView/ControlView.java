@@ -46,6 +46,7 @@ import com.xmos.xta.engine.Progress;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.references.CodeReference;
 import com.xmos.xta.engine.references.CodeReferenceFactory;
+import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
 import com.xmos.xta.rcp.XtaCorePlugin;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaEngine;
@@ -100,13 +101,15 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		
 		m_startPointListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-    		    CodeReference startPoint = CodeReferenceFactory.createEndpointReference(m_startPoint.getText());
+    		    CodeReference startPoint = CodeReferenceFactory.createReference(
+    		    		m_startPoint.getText(), ReferenceClass.ENDPOINT_REF);
 			    XtaNotifier.getInstance().notifySetStartPoint(startPoint);
 			}			
 		};
 		m_endPointListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-			    CodeReference endPoint = CodeReferenceFactory.createEndpointReference(m_endPoint.getText());
+			    CodeReference endPoint = CodeReferenceFactory.createReference(
+			    		m_endPoint.getText(), ReferenceClass.ENDPOINT_REF);
 			    XtaNotifier.getInstance().notifySetEndPoint(endPoint);
 			}			
 		};
