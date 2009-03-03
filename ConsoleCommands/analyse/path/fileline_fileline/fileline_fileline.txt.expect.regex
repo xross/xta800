@@ -1,0 +1,10 @@
+Current node: 0
+Current core: 0
+Frequency: 400
+NumThreads: 8
+SrcPaths: .
+Loaded executable: test.xe
+Node: 0, Core: 0 \(No debug information found\)
+Loaded path: test.xc:9 to test.xc:11 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Complete paths:   1
+Unresolved paths: 0
