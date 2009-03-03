@@ -91,7 +91,7 @@ public abstract class CodeElement {
 
 		String name = m_namePart;
 		if (m_children.get(0).size() > 0)
-			name += "(";
+			name += "-";
 
 		for (ArrayList<CodeElement> children : m_children) {
 			for (CodeElement child : children) {
@@ -100,7 +100,7 @@ public abstract class CodeElement {
 		}
 
 		if (m_children.get(0).size() > 0)
-			name += ")";
+			name += "_";
 		return name;
 	}
 }
