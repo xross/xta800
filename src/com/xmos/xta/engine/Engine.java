@@ -355,7 +355,8 @@ public class Engine {
 
 	public void setNodeId(int nodeId) {
 		m_nodeId = nodeId;
-		notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_NODE_ID);
+		m_route = null;
+		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, Notifier.STATE_NODE_ID);
 	}
 
 	public int getNodeId() {
@@ -364,7 +365,8 @@ public class Engine {
 
 	public void setCoreId(int coreId) {
 		m_coreId = coreId;
-		notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_CORE_ID);
+		m_route = null;
+		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, Notifier.STATE_NODE_ID);
 	}
 
 	public int getCoreId() {
