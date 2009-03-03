@@ -182,6 +182,8 @@ public class Engine {
 
 		boolean success = newLoader.loadExecutable(executableFile);
 		if (success) {
+			m_nodeId = 0;
+			m_coreId = 0;
 
 			m_xeLoader = newLoader;
 			m_executableFile = executableFile;
