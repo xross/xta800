@@ -87,15 +87,15 @@ public class ScannerSource extends RuleBasedScanner {
         IToken keywordToken = new Token(new TextAttribute(color, null, SWT.BOLD));        
         for (String keyword : keywords) {
            rule.addWord(keyword, keywordToken);
-        }        
+        }
         rules.add(rule);
     }
     
     private void processPragmas(Display display, List<IRule> rules) {
     	Color color = display.getSystemColor(SWT.COLOR_RED);
     	IToken token = new Token(new TextAttribute(color));
-    	rules.add(new PatternRule("#", null, token, ' ', true));    	
-    }    
+    	rules.add(new PatternRule("#", null, token, '\0', true));    	
+    }
 
     private void processNumbers(Display display, List<IRule> rules) {
     	Color color = display.getSystemColor(SWT.COLOR_RED);
@@ -106,7 +106,7 @@ public class ScannerSource extends RuleBasedScanner {
     private void processComments(Display display, List<IRule> rules) {
     	Color color = display.getSystemColor(SWT.COLOR_DARK_GREEN);
     	IToken token = new Token(new TextAttribute(color));
-    	rules.add(new MultiLineRule("/*", "*/", token));    	
+    	rules.add(new MultiLineRule("/*", "*/", token));
     	rules.add(new PatternRule("//", null, token, '\0', true));    	
-    }    
+    }
 }
