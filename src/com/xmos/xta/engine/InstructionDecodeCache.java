@@ -6,7 +6,7 @@ import java.util.regex.PatternSyntaxException;
 
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
-import com.xmos.xta.engine.references.CodeReference;
+import com.xmos.xta.engine.references.Reference;
 
 public class InstructionDecodeCache {
 	private Engine m_engine;
@@ -151,7 +151,7 @@ public class InstructionDecodeCache {
 		}
 	}
 
-	public boolean unsetInstructionTime(CodeReference ref) {
+	public boolean unsetInstructionTime(Reference ref) {
 		if (ref.getResolved()) {
 			return unsetInstructionTime(ref.getPc());
 		}			

@@ -24,7 +24,6 @@ public class Route {
 	private String m_description;
 	private ArrayList<Unknown> m_unknowns;
 	private ArrayList<Unresolved> m_unresolvedPaths;
-	private boolean m_firstStep;
 	private InstructionDecodeCache m_idc;
 	
 	public Route(int startPc, TreeSet<Integer> endPcs, ArrayList<BasicBlock> nodes, InstructionDecodeCache idc, String description){
@@ -81,7 +80,6 @@ public class Route {
 		Stack<Integer> stack = new Stack<Integer>();
 		Stack<LinkedList<BasicBlock>> nodeContext = new Stack<LinkedList<BasicBlock>>();
 		nodeContext.push(new LinkedList<BasicBlock>());
-		m_firstStep = true;
 		followNode(startBasicBlock, stack, nodeContext);
 		sortPaths();
 		updateDescription();
@@ -152,7 +150,6 @@ public class Route {
 			return;
 		} else {
 
-			m_firstStep = false;
 			m_allBasicBlocks.add(currentBasicBlock);
 			if(hasResursed(currentBasicBlock, nodeContext)){
 				String reason = "Recursion with 0x" + Integer.toHexString(currentBasicBlock.getBasicBlock().getInstructions().getFirst().getPc());

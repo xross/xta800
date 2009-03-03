@@ -7,9 +7,9 @@ import java.util.TreeSet;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.references.CodeReference;
-import com.xmos.xta.engine.references.CodeReferenceFactory;
-import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.engine.references.ReferenceFactory;
+import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 
 public class Branch extends Command {
 	public enum Operation {
@@ -83,9 +83,9 @@ public class Branch extends Command {
 	public String description(Engine engine, boolean detailed) {
     	switch (m_operation) {
     	case ADD:
-            return "branch <from ref> <to ref>: Adds the given from/to reference to the branches list";         
+            return "branch <from LABEL_REF> <to LABEL_REF>: Adds the given from/to reference to the branches list";         
     	case REMOVE:
-            return "branch <from ref>: Removes the given from reference from the branches list";
+            return "branch <from LABEL_REF>: Removes the given from reference from the branches list";
     	case LIST:
             return "branches: Lists the branches";
         default:
@@ -115,10 +115,10 @@ public class Branch extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-		CodeReference fromRef = CodeReferenceFactory.createReference(
-				m_fromRefString, ReferenceClass.CODE_REF);
-		CodeReference toRef = CodeReferenceFactory.createReference(
-				m_toRefString, ReferenceClass.CODE_REF);
+		Reference fromRef = ReferenceFactory.createReference(
+				m_fromRefString, ReferenceClass.LABEL_REF);
+		Reference toRef = ReferenceFactory.createReference(
+				m_toRefString, ReferenceClass.LABEL_REF);
 
     	switch (m_operation) {
     	case ADD:

@@ -2,19 +2,21 @@ package com.xmos.xta.engine.references;
 
 import com.xmos.xta.engine.Engine;
 
-public abstract class CodeReference {		
+public abstract class Reference {		
 	private String m_ref;
 	private String m_shortRef;
 	private int m_pc;
 	private boolean m_resolved;
     
-	CodeReference(String ref) {
+	Reference(String ref) {
 		m_ref = ref;
 		m_shortRef = ref;
 		m_pc = 0;
 		m_resolved = false;
 	}
 	
+	public abstract String name();
+	public abstract String description();
 	public abstract boolean resolve(Engine engine, int nodeId, int coreId);
 	
 	public String getRef() {

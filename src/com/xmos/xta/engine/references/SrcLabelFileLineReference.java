@@ -3,15 +3,15 @@ package com.xmos.xta.engine.references;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.maps.SrcTableInfo;
 
-public class SrcLabelFileLineReference extends CodeReference {
+public class SrcLabelFileLineReference extends Reference {
 	SrcLabelFileLineReference(String ref) {
 		super(ref);
 	}
 
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
     	String ref  = getRef();
-		String fileName = CodeReferenceFactory.getFileName(ref);
-        int lineNumber  = CodeReferenceFactory.getLineNumber(ref);		
+		String fileName = ReferenceFactory.getFileName(ref);
+        int lineNumber  = ReferenceFactory.getLineNumber(ref);		
 
 		for (SrcTableInfo info : engine.getSrcLabelTable().values()) {
             if (info.getFileName().equals(fileName) &&
@@ -22,4 +22,12 @@ public class SrcLabelFileLineReference extends CodeReference {
 		}		
 		return false;
 	}
+
+	public String name() {
+		return "SrcLabelFileLine";
+	}
+	
+	public String description() {
+		return "Source label specified in the format: 'file name:line number'";
+	}	
 }

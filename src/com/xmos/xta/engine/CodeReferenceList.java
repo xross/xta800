@@ -3,17 +3,17 @@ package com.xmos.xta.engine;
 import java.util.List;
 import java.util.Vector;
 
-import com.xmos.xta.engine.references.CodeReference;
+import com.xmos.xta.engine.references.Reference;
 
 public class CodeReferenceList {
     private int m_nodeId;
 	private int m_coreId;
-	private Vector<CodeReference> m_references;
+	private Vector<Reference> m_references;
 		
 	CodeReferenceList(int nodeId, int coreId) {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
-		m_references = new Vector<CodeReference>(); 
+		m_references = new Vector<Reference>(); 
 	}
 		
 	int getNodeId() {
@@ -24,7 +24,7 @@ public class CodeReferenceList {
 		return m_coreId;
 	}
 		
-	List<CodeReference> getReferences() {
+	List<Reference> getReferences() {
 		return m_references;
 	}
 }

@@ -3,7 +3,7 @@ package com.xmos.xta.engine.references;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.maps.SrcLabelInfo;
 
-public class EndpointReference extends CodeReference {
+public class EndpointReference extends Reference {
 	EndpointReference(String ref) {
 		super(ref);
 	}
@@ -17,4 +17,12 @@ public class EndpointReference extends CodeReference {
 		}
 		return false;
 	}
+
+	public String name() {
+		return "Endpoint";
+	}
+	
+	public String description() {
+		return "Endpoint specified using the source level pragma mechanism";
+	}	
 }
