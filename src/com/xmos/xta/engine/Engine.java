@@ -19,6 +19,7 @@ import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Route.RouteStatus;
 import com.xmos.xta.engine.constraint.Constraint;
+import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.maps.BranchMap;
 import com.xmos.xta.engine.maps.LabelMap;
 import com.xmos.xta.engine.maps.SrcLabelMap;
@@ -77,7 +78,7 @@ public class Engine {
 		m_notifiers = new Vector<Notifier>();
 		m_abort = false;
 		m_progress = new Progress(Progress.State.IDLE, 0, 0);
-		m_constraint = null;
+		m_constraint = ConstraintFactory.createConstraint(this, "");
 
 		CodeReferenceFactory.setEngine(this);
 	}
@@ -318,7 +319,7 @@ public class Engine {
 
 		m_previousRoute = m_route;
 		
-		m_route = new Route(startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), 
+		m_route = new Route(this, startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), 
 				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId), routeDescription);
 
 		boolean success = analyseRouteSafley();
@@ -960,7 +961,12 @@ public class Engine {
 	}
 
 	public void setConstraint(Constraint constraint) {
-		m_constraint = constraint;
+		assert(constraint!= null);
+		if(constraint==null){
+			m_constraint = ConstraintFactory.createConstraint(this, "");
+		} else {
+			m_constraint = constraint;
+		}
 	}
 
 	public Constraint getConstraint() {

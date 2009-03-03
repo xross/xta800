@@ -9,6 +9,8 @@ import java.util.Vector;
 
 import com.xmos.xta.engine.Status.BlockStatus;
 import com.xmos.xta.engine.constraint.Constraint;
+import com.xmos.xta.engine.constraint.ConstraintAnd;
+import com.xmos.xta.engine.constraint.ConstraintFactory;
 
 public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	private static int pathBasicBlockCount;
@@ -28,11 +30,11 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	private LinkedList<XtaInstruction> m_instructionStream;
 	private IBufferState m_ibufferState;
 	private InstructionDecodeCache m_idc;
-	
+	private Engine m_engine;
 	//i don't want this here so i'll move it later
 	private Unresolved m_unresolved;
 	
-	public PathBasicBlock(BasicBlock basicBlock, PathBasicBlock parentBasicBlock,
+	public PathBasicBlock(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock,
 			InstructionDecodeCache idc){
 		m_parentBasicBlock = parentBasicBlock;
 		m_seen = 0;
@@ -46,14 +48,20 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		m_endInstruction = basicBlock.getInstructions().getLast().getPc();
 		m_basicBlock = basicBlock;
 		m_idc = idc;
+		m_engine = engine;
+		if(parentBasicBlock == null){
+			m_constraint = m_engine.getConstraint();
+		} else {
+			m_constraint = parentBasicBlock.getConstraint().clone();
+		}
 		createIBuffer();
 		createTrimmedInstructions(); 
 		createInstructionStream(); 
-		
 	}
 	
-	public PathBasicBlock(BasicBlock basicBlock, PathBasicBlock parentBasicBlock, 
+	public PathBasicBlock(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock, 
 			int instPc, boolean start, InstructionDecodeCache idc){
+		m_engine = engine;
 		m_basicBlock = basicBlock;
 		m_parentBasicBlock = parentBasicBlock;
 		m_seen = 0;
@@ -71,6 +79,11 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 			m_endInstruction = instPc;
 		}
 		m_idc=idc;
+		if(parentBasicBlock == null){
+			m_constraint = m_engine.getConstraint();
+		} else {
+			m_constraint = parentBasicBlock.getConstraint().clone();
+		}
 		createIBuffer();
 		createTrimmedInstructions(); 
 		createInstructionStream(); 

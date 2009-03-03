@@ -46,6 +46,10 @@ public class ConstraintFactory {
 	public static Constraint createConstraint(Engine engine, String constraint) {
 		m_engine = engine;
 		
+		if(constraint == null || constraint.equals("") ){
+			return new ConstraintNull();
+		}
+		
     	tokenise(constraint);
 
     	Constraint c = null;
@@ -254,4 +258,5 @@ public class ConstraintFactory {
 		m_engine.notify(Notifier.NOTIFY_ERROR, message);
 		throw(PARSE_ERROR);
 	}
+	
 }
