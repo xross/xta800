@@ -5,89 +5,82 @@ import java.util.Map;
 
 import com.xmos.xta.engine.Engine;
 
-public class CodeReferenceFactory {
+public class ReferenceFactory {
 	public enum ReferenceClass {
-		REF, CODE_REF, SRCLABEL_REF, ENDPOINT_REF,
-	}	
-	public enum ReferenceType {
-		PC, LABEL, SRCLABEL, SRCLABEL_FILELINE, ENDPOINT, ENDPOINT_FILELINE,
+		LABEL_REF, SRCLABEL_REF, ENDPOINT_REF, CONSTRAINT_REF
 	}
 	
-	private static Map<ReferenceClass, ReferenceType[]> m_referenceClasses;	
+	private static Map<ReferenceClass, Reference[]> m_referenceClasses;	
 	static {
-		m_referenceClasses = new HashMap<ReferenceClass, ReferenceType[]>();
-		m_referenceClasses.put(ReferenceClass.REF, new ReferenceType[] {
-				ReferenceType.PC, 
-				ReferenceType.LABEL, 
-				ReferenceType.SRCLABEL, 
-				ReferenceType.SRCLABEL_FILELINE, 
-				ReferenceType.ENDPOINT, 
-				ReferenceType.ENDPOINT_FILELINE});
-		m_referenceClasses.put(ReferenceClass.CODE_REF, new ReferenceType[] {
-				ReferenceType.PC, 
-				ReferenceType.LABEL}); 
-		m_referenceClasses.put(ReferenceClass.SRCLABEL_REF, new ReferenceType[] {
-				ReferenceType.PC, 
-				ReferenceType.LABEL, 
-				ReferenceType.SRCLABEL, 
-				ReferenceType.SRCLABEL_FILELINE});
-		m_referenceClasses.put(ReferenceClass.ENDPOINT_REF, new ReferenceType[] {
-				ReferenceType.PC, 
-				ReferenceType.LABEL, 
-				ReferenceType.ENDPOINT, 
-				ReferenceType.ENDPOINT_FILELINE});		
+		m_referenceClasses = new HashMap<ReferenceClass, Reference[]>();
+		
+		m_referenceClasses.put(ReferenceClass.LABEL_REF, new Reference[] {
+				new PcReference(null), 
+				new LabelReference(null)}); 
+		
+		m_referenceClasses.put(ReferenceClass.SRCLABEL_REF, new Reference[] {
+				new PcReference(null),
+				new LabelReference(null),
+				new SrcLabelReference(null),
+				new SrcLabelFileLineReference(null)});
+		
+		m_referenceClasses.put(ReferenceClass.ENDPOINT_REF, new Reference[] {
+				new PcReference(null), 
+				new LabelReference(null), 
+				new EndpointReference(null), 
+				new EndpointFileLineReference(null)});
+		
+		m_referenceClasses.put(ReferenceClass.CONSTRAINT_REF, new Reference[] {
+				new PcReference(null), 
+				new LabelReference(null), 
+				new SrcLabelReference(null), 
+				new SrcLabelFileLineReference(null), 
+				new EndpointReference(null), 
+				new EndpointFileLineReference(null)});		
 	}
 	private static Engine m_engine;
 	
-	public static CodeReference createReference(String reference, ReferenceClass referenceClass) {
+	public static Reference createReference(String reference, ReferenceClass referenceClass) {
     	if (reference.length() == 0)
 			return new ErrorReference(reference);		
 		
-		ReferenceType[] referenceTypes = m_referenceClasses.get(referenceClass);
-		assert(referenceTypes != null);
-		
-		for (ReferenceType referenceType : referenceTypes) {
-			switch (referenceType) {
-			case PC:
+    	Reference[] referenceTypes = getReferenceClass(referenceClass); 
+		for (Reference referenceType : referenceTypes) {					
+			if (referenceType.getClass() == PcReference.class) {
 				if (isPcString(reference)) {
 					return new PcReference(reference);
-				}
-				break;
-				
-			case LABEL:
+				}				
+			} else if (referenceType.getClass() == LabelReference.class) {
 				if (m_engine.getLabels().containsKey(reference)) {
 					return new LabelReference(reference);
-				}
-				break;
-				
-			case SRCLABEL:
+				}				
+			} else if (referenceType.getClass() == SrcLabelReference.class) {
 				if (m_engine.getSrcLabels().containsKey(reference)) {
 					return new SrcLabelReference(reference);
-				}
-				break;
-				
-			case SRCLABEL_FILELINE:
+				}				
+			} else if (referenceType.getClass() == SrcLabelFileLineReference.class) {
 				if (isSourceReference(reference)) {
 		    		return new SrcLabelFileLineReference(reference);	
-				}
-				break;
-				
-			case ENDPOINT:
+				}				
+			} else if (referenceType.getClass() == EndpointReference.class) {
 				if (m_engine.getEndpoints().containsKey(reference)) {
 					return new EndpointReference(reference);
-				}
-				break;
-				
-			case ENDPOINT_FILELINE:
+				}				
+			} else if (referenceType.getClass() == EndpointFileLineReference.class) {
 				if (isSourceReference(reference)) {
 		    		return new EndpointFileLineReference(reference);
 				}
-				break;
 			}
 		}
 		return new ErrorReference(reference);
 	}
 	    
+	public static Reference[] getReferenceClass(ReferenceClass referenceClass) {
+    	Reference[] referenceTypes = m_referenceClasses.get(referenceClass);
+		assert(referenceTypes != null);
+		return referenceTypes;
+	}
+	
     public static void setEngine(Engine engine) {
     	assert(engine != null);
     	m_engine = engine;

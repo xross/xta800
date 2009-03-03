@@ -25,9 +25,9 @@ import com.xmos.xta.engine.maps.SrcLabelMap;
 import com.xmos.xta.engine.maps.SrcLabelInfo;
 import com.xmos.xta.engine.maps.SrcTableInfo;
 import com.xmos.xta.engine.maps.SrcTableMap;
-import com.xmos.xta.engine.references.CodeReference;
-import com.xmos.xta.engine.references.CodeReferenceFactory;
-import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.engine.references.ReferenceFactory;
+import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 import com.xmos.xta.engine.Unknown.UnknownType;
 
 public class Engine {
@@ -85,10 +85,10 @@ public class Engine {
 		m_progress = new Progress(Progress.State.IDLE, 0, 0);
 		m_constraint = null;
 
-		CodeReferenceFactory.setEngine(this);
+		ReferenceFactory.setEngine(this);
 	}
 
-	public boolean addReference(ReferenceMode mode, CodeReference ref) {
+	public boolean addReference(ReferenceMode mode, Reference ref) {
 		if (!resolveRefernece(ref, this)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", ref.getRef()));
@@ -133,19 +133,19 @@ public class Engine {
 		return true;
 	}
 
-	public boolean removeReference(ReferenceMode mode, CodeReference ref) {
+	public boolean removeReference(ReferenceMode mode, Reference ref) {
 		boolean found = true;
 
 		if (mode == ReferenceMode.FILTERED) {
-			List<CodeReference> references = getReferenceList(m_exclusions,
+			List<Reference> references = getReferenceList(m_exclusions,
 					m_nodeId, m_coreId);
 			found = removeReferences(ref, references);
 		} else if (mode == ReferenceMode.PROHIBITED) {
-			List<CodeReference> references = getReferenceList(m_prohibited,
+			List<Reference> references = getReferenceList(m_prohibited,
 					m_nodeId, m_coreId);
 			found = removeReferences(ref, references);
 		} else if (mode == ReferenceMode.REQUIRED) {
-			List<CodeReference> references = getReferenceList(m_required,
+			List<Reference> references = getReferenceList(m_required,
 					m_nodeId, m_coreId);
 			found = removeReferences(ref, references);
 		} else {
@@ -170,7 +170,7 @@ public class Engine {
 			notifier.notify(message, argument);
 	}
 
-	public List<CodeReference> getReference(ReferenceMode mode) {
+	public List<Reference> getReference(ReferenceMode mode) {
 		if (mode == ReferenceMode.FILTERED) {
 			return getReferenceList(m_exclusions, m_nodeId, m_coreId);
 		} else if (mode == ReferenceMode.PROHIBITED) {
@@ -363,9 +363,9 @@ public class Engine {
 	}
 
 	public boolean analyseRoute(String from, String to) {
-		CodeReference fromRef = CodeReferenceFactory.createReference(
+		Reference fromRef = ReferenceFactory.createReference(
 				from, ReferenceClass.ENDPOINT_REF);
-		CodeReference toRef = CodeReferenceFactory.createReference(
+		Reference toRef = ReferenceFactory.createReference(
 				to, ReferenceClass.ENDPOINT_REF);
 		
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
@@ -508,7 +508,7 @@ public class Engine {
 		return false;
 	}
 
-	public boolean setInstructionTimeTaken(CodeReference ref, double timeTaken) {
+	public boolean setInstructionTimeTaken(Reference ref, double timeTaken) {
 		if (m_nodeCoreInstructionCache == null) {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
 			return false;
@@ -545,7 +545,7 @@ public class Engine {
 				m_coreId);
 	}
 
-	public boolean setInstructionNumCycles(CodeReference ref, int numCycles) {
+	public boolean setInstructionNumCycles(Reference ref, int numCycles) {
 		if (m_nodeCoreInstructionCache == null) {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
 			return false;
@@ -613,7 +613,7 @@ public class Engine {
 		m_nodeCoreInstructionCache.unsetInstructionTime(pc, m_nodeId, m_coreId);
 	}
 
-	public void unsetInstructionTime(CodeReference ref) {
+	public void unsetInstructionTime(Reference ref) {
 		if (m_nodeCoreInstructionCache == null) {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
 			return;
@@ -635,11 +635,11 @@ public class Engine {
 				m_coreId).getInstruction(pc).canPause();
 	}
 
-	public boolean addBranch(CodeReference fromRef, CodeReference toRef) {
+	public boolean addBranch(Reference fromRef, Reference toRef) {
 		return addToBranchMap(fromRef, toRef);
 	}
 
-	public void removeBranch(CodeReference fromRef) {
+	public void removeBranch(Reference fromRef) {
 		removeFromBranchMap(fromRef);
 	}
 
@@ -647,7 +647,7 @@ public class Engine {
 		return getBranchMap();
 	}
 
-	public boolean addLabel(String label, CodeReference ref) {
+	public boolean addLabel(String label, Reference ref) {
 		return addToLabelMap(label, ref);
 	}
 
@@ -659,7 +659,7 @@ public class Engine {
 		return getLabelMap();
 	}
 	
-	public boolean addSrcLabel(String label, CodeReference ref) {
+	public boolean addSrcLabel(String label, Reference ref) {
 		return addToSrcLabelMap(m_srcLabels, m_srcLabelTables, label, ref);
 	}
 
@@ -675,7 +675,7 @@ public class Engine {
 		return getSrcLabelTableMap(m_srcLabelTables);
 	}
 	
-	public boolean addEndpoint(String endpoint, CodeReference ref) {
+	public boolean addEndpoint(String endpoint, Reference ref) {
 		return addToSrcLabelMap(m_endpoints, m_endpointTables, endpoint, ref);
 	}
 
@@ -695,9 +695,9 @@ public class Engine {
 		return m_executableFile;
 	}
 	
-	private boolean referenceListContainsReference(CodeReference ref,
-			List<CodeReference> list) {
-		for (CodeReference cr : list) {
+	private boolean referenceListContainsReference(Reference ref,
+			List<Reference> list) {
+		for (Reference cr : list) {
 			if (cr.getRef().equals(ref.getRef())) {
 				return true;
 			}
@@ -799,11 +799,11 @@ public class Engine {
 		return false;
 	}
 
-	private boolean resolveRefernece(CodeReference ref, Engine engine) {
+	private boolean resolveRefernece(Reference ref, Engine engine) {
 		return ref.resolve(engine, m_nodeId, m_coreId);
 	}
 
-	private List<CodeReference> getReferenceList(
+	private List<Reference> getReferenceList(
 			List<CodeReferenceList> referenceList, int nodeId, int coreId) {
 		for (CodeReferenceList references : referenceList) {
 			if ((references.getNodeId() == nodeId)
@@ -812,14 +812,14 @@ public class Engine {
 			}
 		}
 		assert (false);
-		return new ArrayList<CodeReference>();
+		return new ArrayList<Reference>();
 	}
 
-	private boolean removeReferences(CodeReference ref,
-			List<CodeReference> references) {
-		List<CodeReference> matches = new ArrayList<CodeReference>();
+	private boolean removeReferences(Reference ref,
+			List<Reference> references) {
+		List<Reference> matches = new ArrayList<Reference>();
 
-		for (CodeReference present : references) {
+		for (Reference present : references) {
 			try {
 				if (present.getRef().matches(ref.getRef())) {
 					matches.add(present);
@@ -898,7 +898,7 @@ public class Engine {
 		}
 	}	
 			
-	private boolean addToBranchMap(CodeReference fromRef, CodeReference toRef) {
+	private boolean addToBranchMap(Reference fromRef, Reference toRef) {
 		if (!resolveRefernece(fromRef, this)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", fromRef.getRef()));
@@ -917,7 +917,7 @@ public class Engine {
 		return false;
 	}
 
-	private void removeFromBranchMap(CodeReference fromRef) {
+	private void removeFromBranchMap(Reference fromRef) {
 		if (!resolveRefernece(fromRef, this)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", fromRef.getRef()));
@@ -935,14 +935,14 @@ public class Engine {
 		}
 	}	
 	
-	private boolean addToLabelMap(String label, CodeReference ref) {
+	private boolean addToLabelMap(String label, Reference ref) {
 		if (!resolveRefernece(ref, this)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", ref.getRef()));
 			return false;
 		}
 		
-		if (CodeReferenceFactory.isPcString(label)) {
+		if (ReferenceFactory.isPcString(label)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Cannot use PC as a label: %s", label));
 			return false;
@@ -986,14 +986,14 @@ public class Engine {
 	}
 	
 	private boolean addToSrcLabelMap(List<SrcLabelMap> labelMaps, List<SrcTableMap> tableMaps,
-			String label, CodeReference ref) {
+			String label, Reference ref) {
 		if (!resolveRefernece(ref, this)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", ref.getRef()));
 			return false;
 		}
 
-		if (CodeReferenceFactory.isPcString(label)) {
+		if (ReferenceFactory.isPcString(label)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Cannot use PC as a label: %s", label));
 			return false;

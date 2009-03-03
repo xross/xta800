@@ -3,7 +3,7 @@ package com.xmos.xta.engine.references;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.maps.SrcLabelInfo;
 
-public class SrcLabelReference extends CodeReference {
+public class SrcLabelReference extends Reference {
 	SrcLabelReference(String ref) {
 		super(ref);
 	}
@@ -17,4 +17,12 @@ public class SrcLabelReference extends CodeReference {
 		}
 		return false;
 	}
+	
+	public String name() {
+		return "SrcLabel";
+	}
+	
+	public String description() {
+		return "Source label specified using the source level pragma mechanism";
+	}		
 }

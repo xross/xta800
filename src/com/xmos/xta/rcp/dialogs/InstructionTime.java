@@ -15,11 +15,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.references.CodeReference;
+import com.xmos.xta.engine.references.Reference;
 
 public class InstructionTime extends Dialog {
     Engine m_engine;
-    CodeReference m_ref;
+    Reference m_ref;
     
     boolean m_valueChanged;
     int m_originalCycles;
@@ -30,7 +30,7 @@ public class InstructionTime extends Dialog {
     ModifyListener m_nsListener;
     ModifyListener m_cyclesListener;
     
-    public InstructionTime(Shell parent, final Engine engine, CodeReference codeReference) {
+    public InstructionTime(Shell parent, final Engine engine, Reference codeReference) {
     	super(parent);
     	m_engine = engine;
     	m_ref = codeReference;

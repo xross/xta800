@@ -7,9 +7,9 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.PlatformUI;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.references.CodeReference;
-import com.xmos.xta.engine.references.CodeReferenceFactory;
-import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.engine.references.ReferenceFactory;
+import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 
 public class XtaNotifier implements Notifier {
 	private static XtaNotifier m_displayer;
@@ -17,9 +17,9 @@ public class XtaNotifier implements Notifier {
 	private XtaRouteInfo m_routeInfo;
 
 	private ISelection m_focusSelection;
-	private CodeReference m_startPoint;
-	private CodeReference m_endPoint;
-	private CodeReference m_codePoint;
+	private Reference m_startPoint;
+	private Reference m_endPoint;
+	private Reference m_codePoint;
 	private String m_notifyArgument;
 
 	private XtaNotifier() {
@@ -52,11 +52,11 @@ public class XtaNotifier implements Notifier {
 			broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_ANALYSIS_COMPLETE, null, null));
 			
 		} else if (message.equals(NOTIFY_SET_START_POINT)) {
-			notifySetStartPoint(CodeReferenceFactory.createReference(
+			notifySetStartPoint(ReferenceFactory.createReference(
 					argument, ReferenceClass.ENDPOINT_REF));
 			
 		} else if (message.equals(NOTIFY_SET_END_POINT)) {
-			notifySetEndPoint(CodeReferenceFactory.createReference(
+			notifySetEndPoint(ReferenceFactory.createReference(
 					argument, ReferenceClass.ENDPOINT_REF));
 			
 		} else if (message.equals(NOTIFY_LOAD_EXECUTABLE)) {
@@ -96,7 +96,7 @@ public class XtaNotifier implements Notifier {
 		broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_SET_FOCUS, null, null));
 	}	
 
-	public void notifySetStartPoint(CodeReference startPoint) {
+	public void notifySetStartPoint(Reference startPoint) {
 		if (startPoint != null) {
 			Engine engine = XtaEngine.getEngine();
 		    startPoint.resolve(engine, engine.getNodeId(), engine.getCoreId());
@@ -105,7 +105,7 @@ public class XtaNotifier implements Notifier {
 		broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_SET_START_POINT, null, null));
 	}
 		
-	public void notifySetEndPoint(CodeReference endPoint) {
+	public void notifySetEndPoint(Reference endPoint) {
 		if (endPoint != null) {
 			Engine engine = XtaEngine.getEngine();
 			endPoint.resolve(engine, engine.getNodeId(), engine.getCoreId());			
@@ -114,7 +114,7 @@ public class XtaNotifier implements Notifier {
 		broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_SET_END_POINT, null, null));
 	}
 
-	public void notifyShow(CodeReference codePoint) {
+	public void notifyShow(Reference codePoint) {
 		m_codePoint = codePoint;
 		broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_SHOW_CODE_POINT, null, null));
 	}
@@ -137,15 +137,15 @@ public class XtaNotifier implements Notifier {
 		return m_focusSelection;
 	}
 	
-	public CodeReference getStartPoint() {
+	public Reference getStartPoint() {
 		return m_startPoint;
 	}
 	
-	public CodeReference getEndPoint() {
+	public Reference getEndPoint() {
 		return m_endPoint;
 	}
 
-	public CodeReference getCodePoint() {
+	public Reference getCodePoint() {
 		return m_codePoint;
 	}
 	

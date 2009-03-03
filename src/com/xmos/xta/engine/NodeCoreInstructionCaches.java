@@ -3,7 +3,7 @@ package com.xmos.xta.engine;
 import java.util.ArrayList;
 import java.util.HashMap;
 import com.xmos.xeloader.XeLoader;
-import com.xmos.xta.engine.references.CodeReference;
+import com.xmos.xta.engine.references.Reference;
 
 public class NodeCoreInstructionCaches {
 	
@@ -66,7 +66,7 @@ public class NodeCoreInstructionCaches {
 		idc.unsetInstructionTime(pc);
 	}
 
-	public boolean unsetInstructionTime(CodeReference ref, int node, int core) {
+	public boolean unsetInstructionTime(Reference ref, int node, int core) {
 		InstructionDecodeCache idc = m_nodeCore.get(nodeCoreString(node, core));
 		return idc.unsetInstructionTime(ref);
 	}

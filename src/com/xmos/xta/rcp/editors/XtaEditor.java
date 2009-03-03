@@ -37,9 +37,9 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Unknown;
 import com.xmos.xta.engine.XtaInstruction;
-import com.xmos.xta.engine.references.CodeReference;
-import com.xmos.xta.engine.references.CodeReferenceFactory;
-import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.engine.references.ReferenceFactory;
+import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.dialogs.InstructionTime;
@@ -73,7 +73,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     Action m_showEndPointAction;
     Action m_setInstructionTimeAction;
     String m_clickCodeRefString;
-    CodeReference m_clickCodeRef;
+    Reference m_clickCodeRef;
 
     private static final String fnopString = "    ------- \tFNOP\n";
     
@@ -151,17 +151,17 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	    updateHighlighting();
     	    
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT)) {
-			CodeReference startPoint = XtaNotifier.getInstance().getStartPoint();
+			Reference startPoint = XtaNotifier.getInstance().getStartPoint();
 			m_startPointLine = findCodeRefLineNum(startPoint);
     	    updateHighlighting();
     	    
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT)) {
-			CodeReference endPoint = XtaNotifier.getInstance().getEndPoint();
+			Reference endPoint = XtaNotifier.getInstance().getEndPoint();
 			m_endPointLine = findCodeRefLineNum(endPoint);
     	    updateHighlighting();
     	    
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SHOW_CODE_POINT)) {
-			CodeReference codePoint = XtaNotifier.getInstance().getCodePoint();
+			Reference codePoint = XtaNotifier.getInstance().getCodePoint();
 			showCodePoint(codePoint);
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
@@ -404,7 +404,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
      	m_showStartPointAction = new Action("Show start point") {
      		public void run() {
-				CodeReference startPoint = XtaNotifier.getInstance().getStartPoint();
+				Reference startPoint = XtaNotifier.getInstance().getStartPoint();
 				XtaNotifier.getInstance().notifyShow(startPoint);
      		}
      	};
@@ -412,7 +412,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      	
      	m_showEndPointAction = new Action("Show end point") {
      		public void run() {
-				CodeReference endPoint = XtaNotifier.getInstance().getEndPoint();
+				Reference endPoint = XtaNotifier.getInstance().getEndPoint();
 				XtaNotifier.getInstance().notifyShow(endPoint);
      		}
      	} ;
@@ -430,14 +430,14 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      	});
      	setAction(RemoveStartPointID, new Action("Remove start point") {
      		public void run() {
-     			CodeReference startPoint = CodeReferenceFactory.createReference(
+     			Reference startPoint = ReferenceFactory.createReference(
      					"", ReferenceClass.ENDPOINT_REF);
      			XtaNotifier.getInstance().notifySetStartPoint(startPoint);     			
      		}
      	});
      	setAction(RemoveEndPointID, new Action("Remove end point") {
      		public void run() {
-     			CodeReference endPoint = CodeReferenceFactory.createReference(
+     			Reference endPoint = ReferenceFactory.createReference(
      					"", ReferenceClass.ENDPOINT_REF);
      			XtaNotifier.getInstance().notifySetEndPoint(endPoint);     			
      		}
@@ -461,11 +461,11 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	
 		menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
 
-		CodeReference startPoint = XtaNotifier.getInstance().getStartPoint();
+		Reference startPoint = XtaNotifier.getInstance().getStartPoint();
 		addAction(menu, ShowStartPointID);
 		m_showStartPointAction.setEnabled((startPoint != null));
 
-		CodeReference endPoint = XtaNotifier.getInstance().getEndPoint();
+		Reference endPoint = XtaNotifier.getInstance().getEndPoint();
 		addAction(menu, ShowEndPointID);
 		m_showEndPointAction.setEnabled((endPoint != null));
     }
@@ -478,7 +478,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		m_clickCodeRefString = getLineDescription(clickLineNum);				
 		if (m_clickCodeRefString != null) {
 			
-			m_clickCodeRef = CodeReferenceFactory.createReference(
+			m_clickCodeRef = ReferenceFactory.createReference(
 					m_clickCodeRefString, ReferenceClass.ENDPOINT_REF); 
 			
 			if (isStartPointSet(m_clickCodeRefString)) {
@@ -539,7 +539,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		return null;
 	}
 
-    private void showCodePoint(CodeReference codePoint) {
+    private void showCodePoint(Reference codePoint) {
     	if ((codePoint == null) || !codePoint.getResolved() || m_type.equals(XtaDocumentPartitioner.SOURCE)) {
     		return;
     	}
@@ -570,7 +570,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	}
 	}
 
-	private InputLine findCodeRefLineNum(CodeReference codeRef) {
+	private InputLine findCodeRefLineNum(Reference codeRef) {
 		if (codeRef != null) {
 			if (codeRef.getResolved()) {
 			    int pc = codeRef.getPc();
