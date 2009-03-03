@@ -1,24 +1,54 @@
-Error: No executable loaded
-Error: No executable loaded
-0x100cc
-Error: constraint parse error: missing code ref after '\(' got '\)'
-0x100cc
-Error: constraint parse error: missing code ref after '\('
-Error: constraint parse error: missing code ref after '!'
-Error: constraint parse error: missing code ref got '||'
-Error: constraint parse error: missing code ref got '&&'
-Error: Invalid code reference '|'
-Error: Invalid code reference '&'
-Error: constraint parse error: missing code ref after '!' got '&&'
-Error: constraint parse error: missing code ref after '! \(' got '\)'
-Error: constraint parse error: extra tokens after 'a'
-Error: constraint parse error: extra tokens after 'a'
-Error: constraint parse error: extra tokens after 'a'
-Error: constraint parse error:  after '\( a && b', missing expected '\)'
-Error: constraint parse error:  after '\( a && ! \( b || c \)', missing expected '\)'
-Error: constraint parse error:  after '\( a && ! \( b \) || ! c', missing expected '\)'
-Error: constraint parse error: missing code ref after '!' got '!'
 a
-No constraint set
+Complete paths:   1
+Unresolved paths: 0
+Complete paths:   0
+Unresolved paths: 0
+Complete paths:   1
+Unresolved paths: 0
+Complete paths:   1
+Unresolved paths: 0
 !a
-\(\(a && b\) || c\)
+Complete paths:   0
+Unresolved paths: 0
+Complete paths:   1
+Unresolved paths: 0
+Complete paths:   0
+Unresolved paths: 0
+Complete paths:   1
+Unresolved paths: 0
+\(a && b\)
+Complete paths:   0
+Unresolved paths: 0
+Complete paths:   0
+Unresolved paths: 0
+Complete paths:   1
+Unresolved paths: 0
+Complete paths:   0
+Unresolved paths: 0
+!\(a || b\)
+Complete paths:   0
+Unresolved paths: 0
+Complete paths:   0
+Unresolved paths: 0
+Complete paths:   0
+Unresolved paths: 0
+Complete paths:   0
+Unresolved paths: 0
+\(!a && !b\)
+Complete paths:   0
+Unresolved paths: 0
+Complete paths:   0
+Unresolved paths: 0
+Complete paths:   0
+Unresolved paths: 0
+Complete paths:   0
+Unresolved paths: 0
+\(!a || !b\)
+Complete paths:   1
+Unresolved paths: 0
+Complete paths:   1
+Unresolved paths: 0
+Complete paths:   1
+Unresolved paths: 0
+Complete paths:   2
+Unresolved paths: 0
