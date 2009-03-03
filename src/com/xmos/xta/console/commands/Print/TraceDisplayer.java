@@ -26,7 +26,7 @@ public class TraceDisplayer {
         switch (m_idType) {
         case BLOCK:
         	PathBasicBlock block = m_engine.getRoute().getBlock(m_id);			
-        	instructions = block.getInstructionsThis();
+        	instructions = new Vector<XtaInstruction>( block.getInstructionStream());
         	break;
         case PATH:
         	PathBasicBlock path = m_engine.getRoute().getPath(m_id);			

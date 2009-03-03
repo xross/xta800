@@ -2,7 +2,6 @@ package com.xmos.xta.console.commands.Summary;
 
 import com.xmos.xta.console.Command;
 import com.xmos.xta.console.CommandContainer;
-import com.xmos.xta.console.commands.List.List;
 
 public class Summary extends CommandContainer {
 	static private Command[] m_options = { 

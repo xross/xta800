@@ -173,7 +173,7 @@ public class SummaryDisplayer {
         if ((m_level == Level.complete_instructions) ||
             (m_level == Level.unresolved_instructions)) {
         	
-            for (XtaInstruction xtaInstruction : path.getInstructionsThis()) {
+            for (XtaInstruction xtaInstruction : path.getInstructionStream()) {
                 m_console.display(String.format("%s        (%.1fns) 0x%05x %s %s %s",
                 	indent,
                 	xtaInstruction.getTimeTaken(),
