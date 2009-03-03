@@ -21,13 +21,13 @@ public class WhileStatement extends CodeElement {
 		file.write("}\n");
 	}
 
-	public void emitExpect(int node, BufferedWriter file, int depth) throws IOException  {
+	public void emitExpect(int node, int pathNum, BufferedWriter file, int depth) throws IOException  {
 		int numPaths = getTotalNumPaths();
 
 		emitExpectIndent(file, depth);
 		file.write("\\+loop \\[" + numPaths + " path\\(s\\), 0 iteration\\(s\\)\\]\n");
 		
-		super.emitExpect(node, file, depth + 1);
+		super.emitExpect(node, pathNum, file, depth + 1);
 	}
 
 	public int getNodeNumPaths() {

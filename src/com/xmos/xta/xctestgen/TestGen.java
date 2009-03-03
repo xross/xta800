@@ -9,6 +9,7 @@ public class TestGen {
 
 	static String m_testDescription;
 	static int m_unique;
+	static int m_testCount;
 	
 	static boolean done() {
 		return (m_testDescription.length() == 0);
@@ -41,20 +42,28 @@ public class TestGen {
 			case 'a':
 				code.addChild(new AddStatement(m_unique));
 				break;
-			case 'i':
-				lastElement = new IfStatement(m_unique);
+			case 'd':
+				lastElement = new DoWhileStatement(m_unique);
 				code.addChild(lastElement);
 				break;
-			case 'w':
-				lastElement = new WhileStatement(m_unique);
+			case 'e':
+				lastElement = new SelectStatement(m_unique);
 				code.addChild(lastElement);
 				break;
 			case 'f':
 				lastElement = new ForStatement(m_unique);
 				code.addChild(lastElement);
 				break;
+			case 'i':
+				lastElement = new IfStatement(m_unique);
+				code.addChild(lastElement);
+				break;
 			case 's':
 				lastElement = new SwitchStatement(m_unique);
+				code.addChild(lastElement);
+				break;
+			case 'w':
+				lastElement = new WhileStatement(m_unique);
 				code.addChild(lastElement);
 				break;
 			case '(':
@@ -81,6 +90,8 @@ public class TestGen {
 			generate(test);
 			
 			String testName = test.getName();
+			m_testCount++;
+			
 			File dir = new File(testName);
 			if (!dir.exists()) {
 				boolean success = (new File(testName)).mkdir();
@@ -94,7 +105,7 @@ public class TestGen {
 			sourceFile.close();
 	
 			BufferedWriter runExpectFile = new BufferedWriter(new FileWriter(testName + "/" + testName + ".txt.expect.regex"));
-			test.emitExpect(runExpectFile, 0);
+			test.emitExpect(0, runExpectFile, 0);
 			runExpectFile.close();
 	
 			// Create empty build expect
@@ -131,25 +142,32 @@ public class TestGen {
 
 	static public void main(String[] args) {
 		String tests[] = {
-				"s(i(a)w(i(a)i(a)i(s(a)(a))))",
 				"a",
-				"i(a)",
+
+				"d(a)",
+				"e(a)(a)(a)(a)",
 				"f(a)",
+				"i(a)",
 				"s(a)(a)(a)(a)",
 				"w(a)",
-				"i(a)i(a)",
-				"i(a)f(a)",
-				"i(a)w(a)",
-				"f(a)i(a)",
-				"f(a)f(a)",
-				"f(a)w(a)",
-				"w(a)i(a)",
-				"w(a)f(a)",
-				"w(a)w(a)",
+
 				"i(a)i(i(a))",
 				"i(a)i(a)i(i(a)i(a))w(i(a)i(a)w(i(a)))",
+				"i(a)i(a)i(a)i(a)i(a)i(a)",
+				"i(i(i(i(i(i(i(i(a))))))))",
+				"s(w(i(a)i(a)i(s(a)(a))))(i(i(a)(a))i(a))(a)(i(a))",
+				"s(e(i(a))(w(a)))i(a)w(i(a))f(a)",
+				"s(i(a)w(i(a)i(a)i(s(a)(a))))",
+				"d(w(i(s(e(a)(a))(e(a)(a)))(s(a)(a))))",
+				"d(aw(i(s(e(a)(a))(e(a)(a)))(s(a)(a))))",
+				"e(e(s(i(a)i(a)i(w(a)))(d(a)))(a))(f(a))",
+				"f(i(a)(w(a)))",
+				"f(i(a)(w(a))(e(a)(a)))",
+				"f(i(a)(w(a))(e(a)(a))(s(a)(a)))",
+				"w(w(a))w(aaa)",
 		};
 
+		m_testCount = 0;
 	  for (String testDesc : tests) {
 		  createTest(testDesc);
 	  }

@@ -54,19 +54,19 @@ public abstract class CodeElement {
 
 	public abstract void emitSource(BufferedWriter file, int depth) throws IOException ;
 
-	public void emitExpect(BufferedWriter file, int depth) throws IOException  {
-		emitExpect(0, file, depth);
+	public void emitExpect(int pathNum, BufferedWriter file, int depth) throws IOException  {
+		emitExpect(0, pathNum, file, depth);
 	}
 
-	public void emitExpect(int node, BufferedWriter file, int depth) throws IOException  {
+	public void emitExpect(int node, int pathNum, BufferedWriter file, int depth) throws IOException  {
 		assert(node < m_children.size());
 		int numPaths = getTotalNumPaths(node);
 
 		for (int i = 0; i < numPaths; i++) {
 			emitExpectIndent(file, depth);
 			file.write("path\\(\\d+\\) +: \\d+\\.\\d+/\\d+/\\d+/\\d+/\\d+/\\d+/\\d+\n");
-			for (CodeElement child : m_children.get(node)) {  
-				child.emitExpect(node, file, depth + 1);
+			for (CodeElement child : m_children.get(node)) {
+				child.emitExpect(node, i, file, depth + 1);
 			}
 		}
 	}
@@ -91,7 +91,7 @@ public abstract class CodeElement {
 
 		String name = m_namePart;
 		if (m_children.get(0).size() > 0)
-			name += "+";
+			name += "(";
 
 		for (ArrayList<CodeElement> children : m_children) {
 			for (CodeElement child : children) {
@@ -100,7 +100,7 @@ public abstract class CodeElement {
 		}
 
 		if (m_children.get(0).size() > 0)
-			name += "-";
+			name += ")";
 		return name;
 	}
 }
