@@ -36,6 +36,10 @@ public class Help extends Command {
     	return 0;
     }        
 
+	public ArgType[] getArgTypes() {
+		return new Command.ArgType[] {ArgType.HELP};
+	}    
+    
     public String name() {
     	return "help";
     }        

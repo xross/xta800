@@ -17,6 +17,7 @@ public abstract class Command {
     	FUNCTION,
     	ENDPOINT,
     	SRCLABEL,
+    	HELP,
     }
 	
     public abstract int numArgs();
