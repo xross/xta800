@@ -1,11 +1,14 @@
 package com.xmos.xta.engine.constraint;
 
-import com.xmos.xta.engine.references.CodeReference;
+import com.xmos.xta.engine.references.Reference;
 
 public class ConstraintCodeRef extends Constraint {
-	CodeReference m_codeRef;
+	Reference m_codeRef;
 
-	public ConstraintCodeRef(CodeReference codeRef) {
+
+	public ConstraintCodeRef(Reference codeRef) {
+
+
 		assert(codeRef != null);
 		m_codeRef = codeRef;
 	}

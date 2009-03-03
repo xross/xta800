@@ -14,7 +14,8 @@ public class AddStatement extends CodeElement {
 		file.write("x = " + m_id + ";\n");
 	}
 
-	public void emitExpect(int node, BufferedWriter file, int depth) throws IOException  {
+	public void emitExpect(int node, int pathNum, BufferedWriter file, int depth) throws IOException  {
+		// Do nothing
 	}
 
 	public int getNodeNumPaths() {

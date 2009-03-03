@@ -24,7 +24,6 @@ public class Route {
 	private String m_description;
 	private ArrayList<Unknown> m_unknowns;
 	private ArrayList<Unresolved> m_unresolvedPaths;
-	private boolean m_firstStep;
 	private InstructionDecodeCache m_idc;
 	private Engine m_engine;
 	
@@ -82,7 +81,6 @@ public class Route {
 		Stack<Integer> stack = new Stack<Integer>();
 		Stack<LinkedList<BasicBlock>> nodeContext = new Stack<LinkedList<BasicBlock>>();
 		nodeContext.push(new LinkedList<BasicBlock>());
-		m_firstStep = true;
 		followNode(startBasicBlock, stack, nodeContext);
 		sortPaths();
 		updateDescription();
@@ -154,13 +152,10 @@ public class Route {
 			}
 			return;
 		} else {
-
-			m_firstStep = false;
 			if(updateConstraints(currentBasicBlock)){
 				currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
 				return;
 			}
-			
 			if(hasResursed(currentBasicBlock, nodeContext)){
 				String reason = "Recursion with 0x" + Integer.toHexString(currentBasicBlock.getBasicBlock().getInstructions().getFirst().getPc());
 				Unresolved unresolved = new Unresolved(currentBasicBlock, currentBasicBlock.getBasicBlock().getInstructions().getLast(), reason);

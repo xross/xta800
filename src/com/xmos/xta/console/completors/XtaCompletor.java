@@ -87,7 +87,11 @@ public class XtaCompletor implements Completor {
 	  		    case SRCLABEL:
 	  			    completors.add(new CodeReferenceCompletor(m_engine, argType));	  			
 			        break;
-
+			        
+	  		    case HELP:
+	  			    completors.add(new HelpCompletor());	  			
+			        break;
+			        
 			    default:
 				    assert(false);
 			        break;

@@ -7,9 +7,9 @@ import java.util.regex.Pattern;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.references.CodeReference;
-import com.xmos.xta.engine.references.CodeReferenceFactory;
-import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.engine.references.ReferenceFactory;
+import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 
 /* Grammar used:
  * 
@@ -214,8 +214,8 @@ public class ConstraintFactory {
 
 	private static Constraint codeRef() throws Exception {
 		if (m_token == Token.codeRef) {
-			CodeReference codeRef = CodeReferenceFactory.createReference(
-					m_tokenString, ReferenceClass.REF);
+			Reference codeRef = ReferenceFactory.createReference(
+					m_tokenString, ReferenceClass.CONSTRAINT_REF);
 			
 			if (codeRef.resolve(m_engine, m_engine.getCoreId(), m_engine.getNodeId()) == false) {
 				error("Invalid code reference '" + m_tokenString + "'");

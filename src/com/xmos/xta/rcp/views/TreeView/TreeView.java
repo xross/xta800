@@ -86,6 +86,9 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     	if (sel.isEmpty())
     		return;
     	
+    	if (m_routeInfo == null)
+    		return;
+    	
 		if (sel instanceof IStructuredSelection) {	            
             Object object = ((IStructuredSelection)sel).getFirstElement();
             if (object instanceof Node) {

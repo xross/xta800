@@ -2,7 +2,7 @@ package com.xmos.xta.engine.references;
 
 import com.xmos.xta.engine.Engine;
 
-public class LabelReference extends CodeReference {
+public class LabelReference extends Reference {
 	LabelReference(String ref) {
 		super(ref);
 	}
@@ -17,4 +17,12 @@ public class LabelReference extends CodeReference {
 	    }
 	    return false;		
 	}	
+	
+	public String name() {
+		return "Label";
+	}
+	
+	public String description() {
+		return "Any source or assembly level symbol defined with respect to an executable section";
+	}		
 }

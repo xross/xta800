@@ -3,9 +3,9 @@ package com.xmos.xta.console.commands;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.references.CodeReference;
-import com.xmos.xta.engine.references.CodeReferenceFactory;
-import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.engine.references.ReferenceFactory;
+import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 
 public class Time extends Command {
 	public enum Operation {
@@ -90,7 +90,7 @@ public class Time extends Command {
     public String description(Engine engine, boolean detailed) {
     	switch (m_operation) {
     	case SET:
-            String descString = "time <ref> <mode> <value>: Sets the time taken for the instruction at the given pc";         
+            String descString = "time <ENDPOINT_REF> <mode> <value>: Sets the time taken for the instruction at the given pc";         
         	if (detailed) {    	    	
             	descString += "\n";
         		descString += "          mode: ns:     Sets the time this instruction takes in ns\n";
@@ -137,7 +137,7 @@ public class Time extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-		CodeReference ref = CodeReferenceFactory.createReference(
+		Reference ref = ReferenceFactory.createReference(
 				m_refString, ReferenceClass.ENDPOINT_REF);
 
 		switch (m_operation) {

@@ -44,9 +44,9 @@ import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Progress;
 import com.xmos.xta.engine.Route;
-import com.xmos.xta.engine.references.CodeReference;
-import com.xmos.xta.engine.references.CodeReferenceFactory;
-import com.xmos.xta.engine.references.CodeReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.engine.references.ReferenceFactory;
+import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 import com.xmos.xta.rcp.XtaCorePlugin;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaEngine;
@@ -101,14 +101,14 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		
 		m_startPointListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-    		    CodeReference startPoint = CodeReferenceFactory.createReference(
+    		    Reference startPoint = ReferenceFactory.createReference(
     		    		m_startPoint.getText(), ReferenceClass.ENDPOINT_REF);
 			    XtaNotifier.getInstance().notifySetStartPoint(startPoint);
 			}			
 		};
 		m_endPointListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-			    CodeReference endPoint = CodeReferenceFactory.createReference(
+			    Reference endPoint = ReferenceFactory.createReference(
 			    		m_endPoint.getText(), ReferenceClass.ENDPOINT_REF);
 			    XtaNotifier.getInstance().notifySetEndPoint(endPoint);
 			}			
@@ -169,11 +169,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        updateState();
 	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT)) {
-			CodeReference startPoint = XtaNotifier.getInstance().getStartPoint();					
+			Reference startPoint = XtaNotifier.getInstance().getStartPoint();					
 			updateText(startPoint, m_startPoint, m_startPointListener);
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT)) {
-			CodeReference endPoint = XtaNotifier.getInstance().getEndPoint();
+			Reference endPoint = XtaNotifier.getInstance().getEndPoint();
 			updateText(endPoint, m_endPoint, m_endPointListener);
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_FUNCTION)) {
@@ -774,7 +774,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    return composite;
 	}
 	
-	private void updateText(CodeReference point, Text text, ModifyListener listener) {
+	private void updateText(Reference point, Text text, ModifyListener listener) {
 		if (point != null) {
 			if (point.getResolved() || point.getRef().equals("")) {		
 		     	setText(text, listener, point.getRef(), point.getRef());
