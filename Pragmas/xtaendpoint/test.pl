@@ -7,7 +7,7 @@ my $arch    = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc test.xc -o $genDir/test.xe > $genDir/xtaendpoint.log 2>&1");
+system("xcc -g test.xc -o $genDir/test.xe > $genDir/xtaendpoint.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "list endpoints " .
