@@ -406,7 +406,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		    page.openEditor(sourcesInput, SourcesEditor.ID);
 		} catch (PartInitException e) {
 			e.printStackTrace();
-		}    	
+		}
     }
 			
 	private void cancelRun() {
@@ -776,6 +776,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	
 	private void updateText(Reference point, Text text, ModifyListener listener) {
 		if (point != null) {
+			Engine engine = XtaEngine.getEngine();
+			point.resolve(engine, engine.getNodeId(), engine.getCoreId());
 			if (point.getResolved() || point.getRef().equals("")) {		
 		     	setText(text, listener, point.getRef(), point.getRef());
 		    }

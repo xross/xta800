@@ -291,7 +291,12 @@ public class Engine {
 			TreeSet<Integer> endPc = new TreeSet<Integer>();
 			endPc.add(toRef.getPc());
 			String routeDescription = String.format("path: %s to %s", from, to);
-			return analyseRoute(fromRef.getPc(), endPc, routeDescription);
+			boolean success = analyseRoute(fromRef.getPc(), endPc, routeDescription);
+			if (success) {
+				notify(Notifier.NOTIFY_SET_START_POINT, from);
+				notify(Notifier.NOTIFY_SET_END_POINT, to);
+			}
+			return success;
 		}
 	}
 
@@ -329,9 +334,6 @@ public class Engine {
 
 		boolean success = analyseRouteSafley();
 		if (success) {
-			notify(Notifier.NOTIFY_SET_START_POINT, "0x"
-					+ Integer.toHexString(startPc));
-			notify(Notifier.NOTIFY_SET_END_POINT, endString);
 			// may be able to scrap the m_previousRoute here. free a lot of
 			// memory
 		} else {

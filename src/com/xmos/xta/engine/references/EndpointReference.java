@@ -13,6 +13,7 @@ public class EndpointReference extends Reference {
 		if (engine.getEndpoints().containsKey(ref)) {			
 			SrcLabelInfo info = engine.getEndpoints().get(ref);
 			setPc(info.getPc());
+			setResolved(true);
 			return true;
 		}
 		return false;

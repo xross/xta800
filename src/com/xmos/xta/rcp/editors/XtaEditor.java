@@ -134,8 +134,16 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         m_painter.addAnnotationType(HighlightAnnotationID);
     }
     
+    public void dispose() {
+		if (DEBUG) System.out.printf("XtaEditor: dispose\n");	
+    	
+		XtaNotifier.getInstance().removePropertyChangeListener(this);
+		getSite().getPage().removeSelectionListener(this);
+		super.dispose();
+    }
+    
 	public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG) System.out.printf("Tree: propertyChange: %s\n", event.getProperty());	
+		if (DEBUG) System.out.printf("XtaEditor: propertyChange: %s\n", event.getProperty());	
 		
 		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
 			m_selectedNode = null;
