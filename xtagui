@@ -1,0 +1,7 @@
+#!/usr/bin/perl
+
+$output = `java -version 2>&1`; 
+if (($output =~ m/64-Bit/) || ($output =~ m/gcj/) || ($output =~ m/cannot execute/)){
+	die ("***Error ***\nPlease install a 32-bit Java Runtime Environment. Found the following JRE:\n\n" . $output);
+}
+system("xtagui.exe");
