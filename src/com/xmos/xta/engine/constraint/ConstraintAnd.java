@@ -4,13 +4,19 @@ public class ConstraintAnd extends Constraint {
 	Constraint m_left;
 	Constraint m_right;
 
-	ConstraintAnd(Constraint left, Constraint right) {
+	public ConstraintAnd(Constraint left, Constraint right) {
 		assert(left != null);
 		assert(right != null);
 		m_left = left;
 		m_right = right;
 	}
-
+	
+	public ConstraintAnd(ConstraintAnd copy) {
+		super(copy);
+		m_left = copy.m_left.clone();
+		m_right = copy.m_right.clone();
+	}
+	
 	public boolean isTrue() {
 		if (m_isDone)
 			return m_isTrue;
@@ -32,5 +38,10 @@ public class ConstraintAnd extends Constraint {
 	public String getString() {
 		String str = "(" + m_left.getString() + " && " + m_right.getString() + ")";
 		return str;
+	}
+
+
+	public Constraint clone() {
+		return new ConstraintAnd(this);
 	}
 }

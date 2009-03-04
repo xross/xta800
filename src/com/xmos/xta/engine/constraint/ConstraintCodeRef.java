@@ -5,11 +5,19 @@ import com.xmos.xta.engine.references.Reference;
 public class ConstraintCodeRef extends Constraint {
 	Reference m_codeRef;
 
-	ConstraintCodeRef(Reference codeRef) {
+
+	public ConstraintCodeRef(Reference codeRef) {
+
+
 		assert(codeRef != null);
 		m_codeRef = codeRef;
 	}
-
+	
+	public ConstraintCodeRef(ConstraintCodeRef copy) {
+		super(copy);
+		m_codeRef = copy.m_codeRef;
+	}
+	
 	public boolean isDone() {
 		return m_isDone;
 	}
@@ -28,5 +36,9 @@ public class ConstraintCodeRef extends Constraint {
 
 	public String getString() {
 		return m_codeRef.getRef();
+	}
+	
+	public Constraint clone() {
+		return new ConstraintCodeRef(this);
 	}
 }

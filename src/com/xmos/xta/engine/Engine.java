@@ -19,6 +19,7 @@ import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Route.RouteStatus;
 import com.xmos.xta.engine.constraint.Constraint;
+import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.maps.BranchMap;
 import com.xmos.xta.engine.maps.LabelMap;
 import com.xmos.xta.engine.maps.SrcLabelMap;
@@ -77,7 +78,7 @@ public class Engine {
 		m_notifiers = new Vector<Notifier>();
 		m_abort = false;
 		m_progress = new Progress(Progress.State.IDLE, 0, 0);
-		m_constraint = null;
+		m_constraint = ConstraintFactory.createConstraint(this, "");
 
 		ReferenceFactory.setEngine(this);
 	}
@@ -181,6 +182,8 @@ public class Engine {
 
 		boolean success = newLoader.loadExecutable(executableFile);
 		if (success) {
+			m_nodeId = 0;
+			m_coreId = 0;
 
 			m_xeLoader = newLoader;
 			m_executableFile = executableFile;
@@ -318,7 +321,7 @@ public class Engine {
 
 		m_previousRoute = m_route;
 		
-		m_route = new Route(startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), 
+		m_route = new Route(this, startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), 
 				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId), routeDescription);
 
 		boolean success = analyseRouteSafley();
@@ -355,7 +358,8 @@ public class Engine {
 
 	public void setNodeId(int nodeId) {
 		m_nodeId = nodeId;
-		notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_NODE_ID);
+		m_route = null;
+		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, Notifier.STATE_NODE_ID);
 	}
 
 	public int getNodeId() {
@@ -364,7 +368,8 @@ public class Engine {
 
 	public void setCoreId(int coreId) {
 		m_coreId = coreId;
-		notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_CORE_ID);
+		m_route = null;
+		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, Notifier.STATE_NODE_ID);
 	}
 
 	public int getCoreId() {
@@ -960,7 +965,12 @@ public class Engine {
 	}
 
 	public void setConstraint(Constraint constraint) {
-		m_constraint = constraint;
+		assert(constraint!= null);
+		if(constraint==null){
+			m_constraint = ConstraintFactory.createConstraint(this, "");
+		} else {
+			m_constraint = constraint;
+		}
 	}
 
 	public Constraint getConstraint() {

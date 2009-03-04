@@ -83,7 +83,7 @@ public class Constraint extends Command {
     	switch (m_operation) {
     	case SET:
     		if (m_constraintString.equals("")) {
-    			engine.setConstraint(null);
+    			engine.setConstraint(ConstraintFactory.createConstraint(engine, ""));
     		} else {
     			constraint = ConstraintFactory.createConstraint(engine, m_constraintString);
     			if (constraint != null)
@@ -92,10 +92,7 @@ public class Constraint extends Command {
     		return;
     	case LIST:
     		constraint = engine.getConstraint();
-    		if (constraint == null)
-    			console.display("No constraint set\n");
-    		else
-    			console.display(constraint.getString() + "\n");
+   			console.display(constraint.getString() + "\n");
     		return;
     	}
     	assert(false);
