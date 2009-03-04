@@ -13,6 +13,7 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -44,6 +45,8 @@ import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Progress;
 import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.constraint.Constraint;
+import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
@@ -73,8 +76,10 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     private Text m_fileNameTextBox;
     private Text m_startPoint;
     private Text m_endPoint;
+    private Text m_constraint;
     private ModifyListener m_startPointListener;
     private ModifyListener m_endPointListener;
+    private KeyListener m_constraintListener;
     
     private Text m_currentRoute;
     private Label m_engineStatus;
@@ -111,6 +116,22 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			    Reference endPoint = ReferenceFactory.createReference(
 			    		m_endPoint.getText(), ReferenceClass.ENDPOINT_REF);
 			    XtaNotifier.getInstance().notifySetEndPoint(endPoint);
+			}			
+		};
+		m_constraintListener = new KeyListener() {
+			public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
+				if (e.character == SWT.CR) {
+					Engine engine = XtaEngine.getEngine();
+					m_isGuiCommand = true;
+					Constraint constraint = ConstraintFactory.createConstraint(engine, m_constraint.getText());
+					if (constraint != null)
+						engine.setConstraint(constraint);
+					e.doit = false;
+				}
+			}
+
+			public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
+				// Do nothing
 			}			
 		};
 
@@ -175,6 +196,13 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT)) {
 			Reference endPoint = XtaNotifier.getInstance().getEndPoint();
 			updateText(endPoint, m_endPoint, m_endPointListener);
+			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_CONSTRAINT)) {
+			String constraint = XtaEngine.getEngine().getConstraint().getString();
+			m_constraint.setText(constraint);
+			m_constraint.setToolTipText(constraint);
+			m_constraint.setSelection(constraint.length());
+			m_isGuiCommand = false;
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_FUNCTION)) {
 			String functionName = XtaNotifier.getInstance().getNotifyArgument();
@@ -581,6 +609,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    createFileControl(composite);
 	    createFunctionControl(composite);
 	    createPathControl(composite);
+	    createConstraintControl(composite);
 	    
 	    ExpandItem barItem = new ExpandItem(bar, SWT.NONE, 0);
 	    barItem.setText("Xta Control");
@@ -651,6 +680,14 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 				executeRunPath();
 			}
 		});
+	}
+
+	private void createConstraintControl(Composite composite) {
+		Group group = createGroup(composite, "Constraint", 1, 3);
+
+	    m_constraint = new Text(group, SWT.MULTI | SWT.CENTER);
+	    m_constraint.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	    m_constraint.addKeyListener(m_constraintListener);
 	}
 
 	private void createStatusBar(ExpandBar bar) {

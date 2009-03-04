@@ -46,7 +46,7 @@ public class ConstraintFactory {
 	public static Constraint createConstraint(Engine engine, String constraint) {
 		m_engine = engine;
 		
-		if(constraint == null || constraint.equals("") ){
+		if (constraint == null || constraint.equals("") ){
 			return new ConstraintNull();
 		}
 		
@@ -60,6 +60,7 @@ public class ConstraintFactory {
 				error("constraint parse error: extra tokens after '" + m_stringSoFar + "'");
     		}
     	} catch (Exception e) {
+    		c = null;
     	}
 		return c;
     }
@@ -93,7 +94,7 @@ public class ConstraintFactory {
         Matcher m = pattern.matcher(text);
 
         while (m.find()) {
-            splitted.add(text.substring(last_match,m.start()));
+            splitted.add(text.substring(last_match, m.start()));
 
             if (keepDelimiters) {
                 splitted.add(m.group());

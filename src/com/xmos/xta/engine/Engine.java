@@ -967,12 +967,13 @@ public class Engine {
 	}
 
 	public void setConstraint(Constraint constraint) {
-		assert(constraint!= null);
-		if(constraint==null){
+		assert(constraint != null);
+		if (constraint==null){
 			m_constraint = ConstraintFactory.createConstraint(this, "");
 		} else {
 			m_constraint = constraint;
 		}
+		notify(Notifier.NOTIFY_SET_CONSTRAINT, "");
 	}
 
 	public Constraint getConstraint() {
