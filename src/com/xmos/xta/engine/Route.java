@@ -15,7 +15,7 @@ public class Route {
 		COMPLETED, ABORTED, ERROR
 	}
 	
-	private static int m_pathCount;
+	private static int s_pathCount;
 	private ArrayList<BasicBlock> m_nodes;
 	private int m_startPc;
 	private TreeSet<Integer> m_endPcs; 
@@ -38,6 +38,7 @@ public class Route {
 		m_nodes = nodes;
 		m_unknowns = new ArrayList<Unknown>();
 		m_idc = idc;
+		s_pathCount = 0;
 	}
 	
 	public ArrayList<PathBasicBlock> getCompletedPaths(){
@@ -145,7 +146,7 @@ public class Route {
 
 			if(endBlock.getConstraint().isTrue()){
 				m_completedPaths.add(endBlock);
-				endBlock.setPath(m_pathCount++);
+				endBlock.setPath(s_pathCount++);
 				endBlock.setStatus(BlockStatus.COMPLETE);
 			}  else {
 				endBlock.setStatus(BlockStatus.EXCLUDED);
@@ -170,7 +171,7 @@ public class Route {
 			if(loopBlock!=null){
 				//this must be true by design of the algorithm
 				assert(currentBasicBlock.getParent()!=null);
-				currentBasicBlock.getParent().setPath(m_pathCount++);
+				currentBasicBlock.getParent().setPath(s_pathCount++);
 				loopBlock.getLoopPaths().add(currentBasicBlock.getParent());
 				loopBlock.getLoopPathAttributes().put(currentBasicBlock.getParent(), new PathAttributes());
 				currentBasicBlock.getParent().setStatus(BlockStatus.COMPLETE);
