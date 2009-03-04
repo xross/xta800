@@ -1,0 +1,3 @@
+Warning: Warning: Ssync (multiple threads) not supported. Pc: 0x00010002
+Warning: Warning: Msync (multiple threads) not supported. Pc: 0x00010004
+Warning: Warning: Mjoin (multiple threads) not supported. Pc: 0x00010006
