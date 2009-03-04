@@ -406,7 +406,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		    page.openEditor(sourcesInput, SourcesEditor.ID);
 		} catch (PartInitException e) {
 			e.printStackTrace();
-		}    	
+		}
     }
 			
 	private void cancelRun() {
