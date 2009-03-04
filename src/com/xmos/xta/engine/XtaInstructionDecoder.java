@@ -5,7 +5,7 @@ import com.xmos.xeloader.XeLoader;
 public abstract class XtaInstructionDecoder {
     public abstract XtaInstruction decode(int opcode, int pc, Config config);
     
-    static XtaInstructionDecoder createInstrcutionDecoder(
+    static XtaInstructionDecoder createInstructionDecoder(
     		XeLoader.Architecture architecture) {
 		XtaInstructionDecoder instructionDecoder = null;
 		switch (architecture) {

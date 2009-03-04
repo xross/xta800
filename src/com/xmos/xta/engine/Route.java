@@ -10,6 +10,8 @@ import java.util.TreeSet;
 import com.xmos.xta.engine.Status.BlockStatus;
 
 public class Route {
+	static private final int SR_IEBLE_SHIFT = 1;
+	static private final int SR_IEBLE_SIZE = 1; 
 	
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR
@@ -25,9 +27,12 @@ public class Route {
 	private ArrayList<Unknown> m_unknowns;
 	private ArrayList<Unresolved> m_unresolvedPaths;
 	private InstructionDecodeCache m_idc;
+	private InstructionMnemonics m_mnenonics;
 	private Engine m_engine;
 	
-	public Route(Engine engine, int startPc, TreeSet<Integer> endPcs, ArrayList<BasicBlock> nodes, InstructionDecodeCache idc, String description){
+	public Route(Engine engine, int startPc, TreeSet<Integer> endPcs, 
+			ArrayList<BasicBlock> nodes, InstructionDecodeCache idc, 
+			InstructionMnemonics mnenonics, String description){
 		m_engine = engine;
 		m_completedPaths = new ArrayList<PathBasicBlock>();
 		m_allBasicBlocks = new ArrayList<PathBasicBlock>();
@@ -38,6 +43,7 @@ public class Route {
 		m_nodes = nodes;
 		m_unknowns = new ArrayList<Unknown>();
 		m_idc = idc;
+		m_mnenonics = mnenonics;
 		s_pathCount = 0;
 	}
 	
@@ -85,6 +91,7 @@ public class Route {
 		followNode(startBasicBlock, stack, nodeContext);
 		sortPaths();
 		updateDescription();
+		displayWarnings();
 		return RouteStatus.COMPLETED;
 	}
 	
@@ -144,6 +151,8 @@ public class Route {
 				return;
 			}
 
+			checkSupportedInstructions(endBlock);
+			
 			if(endBlock.getConstraint().isTrue()){
 				m_completedPaths.add(endBlock);
 				endBlock.setPath(s_pathCount++);
@@ -157,6 +166,9 @@ public class Route {
 				currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
 				return;
 			}
+			
+			checkSupportedInstructions(currentBasicBlock);
+			
 			if(hasResursed(currentBasicBlock, nodeContext)){
 				String reason = "Recursion with 0x" + Integer.toHexString(currentBasicBlock.getBasicBlock().getInstructions().getFirst().getPc());
 				Unresolved unresolved = new Unresolved(currentBasicBlock, currentBasicBlock.getBasicBlock().getInstructions().getLast(), reason);
@@ -213,13 +225,36 @@ public class Route {
 	}
 	
 	private boolean updateConstraints(PathBasicBlock block) {
-		m_allBasicBlocks.add(block);
+		m_allBasicBlocks.add(block);					
 		for(XtaInstruction inst : block.getInstructionTrimmed()){
 			if(block.getConstraint().isFalse(inst.getPc())){
 				return true;
 			}
-		}
+		}		
 		return false;
+	}
+	
+	private void checkSupportedInstructions(PathBasicBlock block) {
+		for(XtaInstruction inst : block.getInstructionTrimmed()){
+			
+			// Checks for threading instructions...
+			if (m_mnenonics.isSsync(inst))
+				block.addWarning(String.format("Warning: Ssync (multiple threads) not supported. Pc: 0x%08x", inst.getPc()));					
+			if (m_mnenonics.isMsync(inst))
+				block.addWarning(String.format("Warning: Msync (multiple threads) not supported. Pc: 0x%08x", inst.getPc()));				
+			if (m_mnenonics.isMjoin(inst)) {
+				block.addWarning(String.format("Warning: Mjoin (multiple threads) not supported. Pc: 0x%08x", inst.getPc()));
+			}
+			
+			// Checks for interrupt enable..
+			if (m_mnenonics.isSetSr(inst)) {	
+				int op1Field = inst.getOperandField("op1");
+				int shift = SR_IEBLE_SHIFT;
+				int mask = (1 << SR_IEBLE_SIZE) - 1;
+				if (((op1Field >> shift) & mask) == 1) 
+    				block.addWarning(String.format("Warning: Interrupt enable detected. Pc: 0x%08x", inst.getPc()));					
+			}
+		}		
 	}
 
 	private boolean reachedEnd(PathBasicBlock currentBasicBlock) {
@@ -279,6 +314,14 @@ public class Route {
 		}
 		m_description = m_description.substring(0, m_description.length()-2);
 		m_description += ")";
+	}
+	
+	private void displayWarnings() {
+		for (PathBasicBlock block : m_completedPaths) {
+			for (String message : block.getWarnings()) {
+				m_engine.notify(Notifier.NOTIFY_WARNING, message);
+			}
+		}
 	}
 	
 	private void sortPaths() {
