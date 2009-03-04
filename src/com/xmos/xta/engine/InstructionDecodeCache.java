@@ -22,7 +22,7 @@ public class InstructionDecodeCache {
 	@SuppressWarnings("unchecked")
 	InstructionDecodeCache(Engine engine, SymbolTable symbolTable, XeLoader.Architecture architecture, Config config) {
 		m_engine = engine;
-    	m_instructionDecoder = XtaInstructionDecoder.createInstrcutionDecoder(architecture);
+    	m_instructionDecoder = XtaInstructionDecoder.createInstructionDecoder(architecture);
 		m_instructionCache = new HashMap<Integer, XtaInstruction>();
         m_fnopCache = new HashMap[2];
         m_fnopCache[0] = new HashMap<Integer, XtaInstruction>();

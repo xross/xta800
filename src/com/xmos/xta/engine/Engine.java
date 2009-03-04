@@ -58,6 +58,7 @@ public class Engine {
 	private ArrayList<SrcTableMap> m_endpointTables;
 	private AnalysisEngine m_ae;
 	private Constraint m_constraint;
+	private InstructionMnemonics m_mnenonics;
 
 	public Engine(Config config) {
 		m_xeObjects = new ArrayList<XeObject>();
@@ -79,6 +80,7 @@ public class Engine {
 		m_abort = false;
 		m_progress = new Progress(Progress.State.IDLE, 0, 0);
 		m_constraint = ConstraintFactory.createConstraint(this, "");
+		m_mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
 
 		ReferenceFactory.setEngine(this);
 	}
@@ -322,7 +324,8 @@ public class Engine {
 		m_previousRoute = m_route;
 		
 		m_route = new Route(this, startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), 
-				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId), routeDescription);
+				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId),
+				m_mnenonics, routeDescription);
 
 		boolean success = analyseRouteSafley();
 		if (success) {

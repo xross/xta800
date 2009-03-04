@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -33,6 +34,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	private Engine m_engine;
 	//i don't want this here so i'll move it later
 	private Unresolved m_unresolved;
+	private List<String> m_warnings;
 	
 	public PathBasicBlock(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock,
 			InstructionDecodeCache idc){
@@ -49,6 +51,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		m_basicBlock = basicBlock;
 		m_idc = idc;
 		m_engine = engine;
+		m_warnings = new ArrayList<String>();
 		if(parentBasicBlock == null){
 			m_constraint = m_engine.getConstraint();
 		} else {
@@ -71,6 +74,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
 		m_blockStats = new BasicBlockStats(this);
 		m_status = BlockStatus.SEARCHING;
+		m_warnings = new ArrayList<String>();		
 		if(start){
 			m_startInstruction = instPc;
 			m_endInstruction = basicBlock.getInstructions().getLast().getPc();
@@ -276,6 +280,14 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 */
 	public IBufferState getIBufferState(){
 		return m_ibufferState;
+	}
+	
+	public void addWarning(String message) {
+		m_warnings.add(message);
+	}
+
+	public List<String> getWarnings() {
+		return m_warnings;
 	}
 	
 	private void createInstructionStream() {

@@ -161,7 +161,7 @@ public abstract class XtaInstruction extends Instruction {
 	}
 	
 	public abstract void execute(MachineState machineState, int thread) throws Exception;
-    		   
+	public abstract int getOperandField(String opName);    		   
 	
 	public void setFunctionName(String functionName) {
 		m_functionName = functionName;
@@ -2889,7 +2889,6 @@ public abstract class XtaInstruction extends Instruction {
         } else {
         	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
         } 
-    	
     }
     
     void SETCLK(MachineState state, int thread) throws Exception {
@@ -2937,14 +2936,11 @@ public abstract class XtaInstruction extends Instruction {
         	//this is a genuine exception
         	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
         }
-    	
     }
 
 	public Config getConfig() {
 		return m_config;
 	}
-
-
 }
 
 class NullInstruction extends XtaInstruction {    
@@ -2954,6 +2950,10 @@ class NullInstruction extends XtaInstruction {
     }
     
     public void execute(MachineState state, int thread) throws Exception {
+    }
+
+    public int getOperandField(String opName) {
+    	return 0;
     }
     
     public String getOperandString() {

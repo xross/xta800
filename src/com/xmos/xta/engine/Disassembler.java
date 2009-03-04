@@ -13,7 +13,7 @@ public class Disassembler {
 			MemoryImage memoryImage, int address, int size, XeLoader.Architecture architecture, Config config) {	
 
 		XtaInstructionDecoder instructionDecoder = 
-			XtaInstructionDecoder.createInstrcutionDecoder(architecture);
+			XtaInstructionDecoder.createInstructionDecoder(architecture);
         
         int fromAddress = address;        
         if ((fromAddress < memoryImage.getMemoryBase()) || 
