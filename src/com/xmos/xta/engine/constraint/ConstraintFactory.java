@@ -1,5 +1,6 @@
 package com.xmos.xta.engine.constraint;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
@@ -43,26 +44,31 @@ public class ConstraintFactory {
 	private static String m_stringSoFar;
 	private static Engine m_engine; 
 	
-	public static Constraint createConstraint(Engine engine, String constraint) {
+	public static Constraint createConstraint(Engine engine, String constraintString) {
+    	Constraint constraint = null;
 		m_engine = engine;
 		
-		if (constraint == null || constraint.equals("") ){
+		constraintString = constraintString.trim();
+		if (constraintString == null || constraintString.equals("") ){
 			return new ConstraintNull();
 		}
-		
-    	tokenise(constraint);
 
-    	Constraint c = null;
     	try {
+    		File executable = engine.getExecutable();
+    	    if (executable == null) {
+    	    	error("No executable loaded\n");
+    	    }
+
+    	    tokenise(constraintString);
     		moveToNextToken();
-    		c = expr();
+    		constraint = expr();
     		if ((m_tokens.size() != 0) || (m_token != Token.invalid)) {
 				error("constraint parse error: extra tokens after '" + m_stringSoFar + "'");
     		}
     	} catch (Exception e) {
-    		c = null;
+    		constraint = null;
     	}
-		return c;
+		return constraint;
     }
 
 	private static void tokenise(String constraint) {
