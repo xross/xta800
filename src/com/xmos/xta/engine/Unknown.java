@@ -3,10 +3,10 @@ package com.xmos.xta.engine;
 
 public class Unknown {
     /*
-     * ReturnValue - engine could not determine the return value of the
-     * instruction Pausable - engine does not know how long the instruction will
-     * take Branch - engine does not know which branch to take Jump - engine
-     * could not decide where to jump to
+     * ReturnValue - engine could not determine the return value of the instruction 
+     * Pausable - engine does not know how long the instruction will take 
+     * Branch - engine does not know which branch to take 
+     * Jump - engine could not decide where to jump to
      */
     public static enum UnknownType {
         GUARD, PAUSABLETIME, BRANCHTARGET, JUMP, FALSEUNKNOWN, UNKNOWN

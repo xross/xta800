@@ -405,9 +405,8 @@ public class Engine {
 		return m_config.m_numThreads;
 	}
 
-	public boolean setLoopIterations(int pathId, boolean absolute,
-			int iterations) {
-		if (this.anythingToDisplay()) {
+	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
+		if (anythingToDisplay()) {
 			boolean hit = m_route.setLoopIterations(pathId, absolute,
 					iterations);
 			if (hit) {
@@ -469,7 +468,7 @@ public class Engine {
 			return false;
 		}
 
-		if (this.anythingToDisplay())
+		if (anythingToDisplay())
 			m_route.invalidateAllBlocks();
 
 		boolean hit = m_nodeCoreInstructionCache.setInstructionNumCycles(this,
@@ -494,7 +493,7 @@ public class Engine {
 	}
 
 	public boolean updateUnknown(int pc, boolean clear) {
-		if (!this.anythingToDisplay())
+		if (!anythingToDisplay())
 			return false;
 
 		boolean found = false;

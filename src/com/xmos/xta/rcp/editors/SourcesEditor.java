@@ -10,7 +10,6 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 
 import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.XeObject;
-import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaEngine;
