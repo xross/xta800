@@ -2,6 +2,7 @@ package com.xmos.xta.engine.references;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.maps.SrcLabelInfo;
+import com.xmos.xta.engine.maps.SrcTableInfo;
 
 public class EndpointReference extends Reference {
 	EndpointReference(String ref) {
@@ -13,6 +14,12 @@ public class EndpointReference extends Reference {
 		if (engine.getEndpoints().containsKey(ref)) {			
 			SrcLabelInfo info = engine.getEndpoints().get(ref);
 			setPc(info.getPc());
+			
+			// Look up the endpoint in the endpoint table
+			SrcTableInfo endpoint = engine.getEndpoint(info.getPc());
+			setFileName(endpoint.getFileName());
+        	setLineNum(endpoint.getLineNumber());
+
 			setResolved(true);
 			return true;
 		}

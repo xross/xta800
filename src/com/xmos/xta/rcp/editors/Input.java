@@ -17,8 +17,8 @@ public class Input {
     	m_lineNumberMapping = new HashMap<Integer, Integer>();
     }
     
-	public void addHeader(String header, String headerCodeReference, int index) {
-        m_sections.add(new InputSection(header, headerCodeReference, index));    	
+	public void addHeader(String header, String headerCodeReference, int index, int lineNum) {
+        m_sections.add(new InputSection(header, headerCodeReference, index, lineNum));    	
     }
     
 	public void addLine(String line, String codeReference, int pc, int index) {
@@ -53,9 +53,9 @@ class InputSection {
 	private ArrayList<InputLine> m_fnops;
 	private int m_index;
 	
-	public InputSection(String header, String headerCodeReference, int index) {
+	public InputSection(String header, String headerCodeReference, int index, int lineNum) {
 		// Header line must have -1 index to counteract +1 in index calculations
-		m_header = new InputLine(this, header, headerCodeReference, 0, -1);
+		m_header = new InputLine(this, header, headerCodeReference, lineNum, -1);
 		m_lines = new ArrayList<InputLine>();
 		m_fnops = new ArrayList<InputLine>();
 		m_index = index;

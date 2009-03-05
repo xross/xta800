@@ -571,6 +571,14 @@ public class Engine {
 		return getSrcLabelMap(m_endpoints);
 	}
 	
+	public SrcTableInfo getEndpoint(int pc) {
+		Map<Integer, SrcTableInfo> endPointTable = getEndpointTable();
+		if (endPointTable.containsKey(pc)) {
+			return endPointTable.get(pc);
+		}
+		return null;
+	}
+	
 	public Map<Integer, SrcTableInfo> getEndpointTable() {
 		return getSrcLabelTableMap(m_endpointTables);
 	}
@@ -942,12 +950,13 @@ public class Engine {
 	}
 
 	public void setConstraint(Constraint constraint) {
-		assert(constraint!= null);
-		if(constraint==null){
+		assert(constraint != null);
+		if (constraint==null){
 			m_constraint = ConstraintFactory.createConstraint(this, "");
 		} else {
 			m_constraint = constraint;
 		}
+		notify(Notifier.NOTIFY_SET_CONSTRAINT, "");
 	}
 
 	public Constraint getConstraint() {

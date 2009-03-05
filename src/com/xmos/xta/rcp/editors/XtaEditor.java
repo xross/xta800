@@ -90,12 +90,14 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private Node m_selectedNode;
     
     private final String m_type;
+    private final String m_fileName;
     private InputLine m_startPointLine;
     private InputLine m_endPointLine;
     
     public XtaEditor(final String type, String fileName) {
 		if (DEBUG) System.out.printf("XtaEditor()\n");
 		m_type = type;
+		m_fileName = fileName;
 
 		XtaNotifier.getInstance().addPropertyChangeListener(this);
 
@@ -583,7 +585,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	    	    if (m_type.equals(XtaDocumentPartitioner.DISASSEMBLY)) {
 	    		    return findPcLine(pc);
 	    	    } else {
-	    		    return findCodeLine(pc);
+	    	    	if (m_fileName.equals(codeRef.getFileName()))
+	    		    return findCodeLine(codeRef.getLineNum());
 	    	    }
 			}			
 		}
@@ -601,12 +604,11 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		return null;
 	}
 
-	private InputLine findCodeLine(int pc) {
+	private InputLine findCodeLine(int lineNum) {
 		for (InputSection inputSection : getSections()) {
-			for (InputLine line : inputSection.getLines()) {
-				if ((line.getPc() == pc) && !inputSection.isFnop(line.getOffset())) {	
-					return inputSection.getHeader();
-				}
+			InputLine header = inputSection.getHeader();
+			if (header.getPc() == lineNum) {
+				return header;
 			}
     	}
 		return null;

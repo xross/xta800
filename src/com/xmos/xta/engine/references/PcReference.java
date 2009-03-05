@@ -1,5 +1,8 @@
 package com.xmos.xta.engine.references;
 
+import java.util.HashMap;
+
+import com.xmos.xeobject.Function;
 import com.xmos.xta.engine.Engine;
 
 public class PcReference extends Reference {	
@@ -11,7 +14,11 @@ public class PcReference extends Reference {
 	}
 
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
-		if (engine.getXeObject().getPcToFunctionMap().containsKey(getPc())) {
+		HashMap<Integer, Function> pcToFunctionMap = engine.getXeObject().getPcToFunctionMap();
+		if (pcToFunctionMap == null)
+			return false;
+
+		if (pcToFunctionMap.containsKey(getPc())) {
 			setResolved(true);
 			return true;
 		}		

@@ -22,7 +22,7 @@ public class InputDisassembly implements IEditorInput {
 		m_input = new Input(s_headerType, s_lineType);
         for (Function function : XtaEngine.getEngine().getXeObject().getFunctions()) {        	
     		String headerRef = String.format("-");
-        	m_input.addHeader(function.getText() + ":", headerRef, lineIndex);        	
+        	m_input.addHeader(function.getText() + ":", headerRef, lineIndex, 0);        	
         	++lineIndex;
 
         	for (Line line : function.getChildern()) {

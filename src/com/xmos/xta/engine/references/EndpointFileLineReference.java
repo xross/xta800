@@ -17,7 +17,11 @@ public class EndpointFileLineReference extends Reference {
             if (info.getFileName().equals(fileName) &&
             	(info.getLineNumber() == lineNumber)) {
             	setPc(info.getPc());
-            	return true;
+            	setFileName(fileName);
+            	setLineNum(lineNumber);
+
+    			setResolved(true);
+    			return true;
             }			
 		}		
 		return false;
