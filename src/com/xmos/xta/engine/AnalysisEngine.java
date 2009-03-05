@@ -206,12 +206,12 @@ public class AnalysisEngine {
 		}
 		for (XtaInstruction basicBlockStart : pcToNode.keySet()) {
 			XtaInstruction inst = basicBlockStart;
-			BasicBlock node = pcToNode.get(basicBlockStart);
-			node.getInstructions().add(basicBlockStart);
+			BasicBlock node = pcToNode.get(basicBlockStart);			
+			node.addInstruction(basicBlockStart);
 			while (inst != null && inst.getSuccessors().size() == 1) {
 				inst = inst.getSuccessors().get(0).getInstruction();
 				if (inst != null && !pcToNode.containsKey(inst)) {
-					node.getInstructions().add(inst);
+					node.addInstruction(inst);
 				} else {
 					break;
 				}

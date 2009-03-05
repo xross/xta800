@@ -33,17 +33,16 @@ public class Times extends Command {
     
     public void execute(Shell shell, Engine engine, Console console) {
     	ArrayList<Integer> pcs = engine.getPcsWithTimeSet();
-
-    	if (pcs == null)
+    	if (pcs == null)	
     		return;
-    	else if (pcs.size() == 0) {
+    	
+    	if (pcs.size() > 0) {
+	    	for (Integer pc : pcs) {
+	    	    console.display(String.format("- pc: 0x%x, %.1fns, %d cycles\n", pc, 
+	    	    		engine.getInstructionTimeTaken(pc), engine.getInstructionNumCycles(pc)));
+	    	}		
+		} else {
 			console.display("none\n");
-			return;
 		}
-
-    	for (Integer pc : pcs) {
-    	    console.display(String.format("- pc: 0x%x, %.1fns, %d cycles\n", pc, 
-    	    		engine.getInstructionTimeTaken(pc), engine.getInstructionNumCycles(pc)));
-    	}		
     }    
 }

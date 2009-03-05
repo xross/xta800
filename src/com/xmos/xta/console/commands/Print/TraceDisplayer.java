@@ -38,18 +38,22 @@ public class TraceDisplayer {
         	
     	double currentTime = 0.0;
 		for (XtaInstruction instruction : instructions) {
-         	String canPause = instruction.canPause() ? "P" : " ";
+			String isUnknown = instruction.isUnknown() ? "*" : " ";
+         	
          	String functionOffsetString = 
          		instruction.getFunctionName() + " + " + instruction.getFunctionOffset();
          	
          	m_console.display(String.format("%s %.1f: (%.1fns) 0x%05x %-22s %-12s %s",
-             		canPause,
+         			isUnknown,
              		currentTime,
              		instruction.getTimeTaken(),
                		instruction.getPc(), 
                		functionOffsetString, 
                		instruction.getNmenonic(), 
                		instruction.getOperandString()));
+         	
+         	if (instruction.canPause())
+         		m_console.display(" (P)");
          	
          	currentTime += instruction.getTimeTaken();
           	m_console.display("\n");

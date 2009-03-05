@@ -42,6 +42,9 @@ public abstract class XtaInstruction extends Instruction {
 	private boolean m_nextInstructionPcKnown;
 	private int m_nextInstructionPc;
     
+	private boolean m_isUnknown;
+	private int m_basicBlockId;
+	
 	XtaInstruction(String nmenonic, Config config, int opcode, int pc, int numBytes, 
 			boolean isLoadStore, boolean canPause, boolean usesResource, 
 		    boolean definesResource, int numCycles) {
@@ -58,6 +61,8 @@ public abstract class XtaInstruction extends Instruction {
 		m_liveOut = new HashSet<LivenessResource>();
 		m_successors = new ArrayList<NextPcType>();
 		m_predessors =  new ArrayList<XtaInstruction>();
+		m_isUnknown = canPause;
+		m_basicBlockId = 0;
 	}
 
 	public ArrayList<XtaInstruction> getPredessors(){
@@ -188,14 +193,16 @@ public abstract class XtaInstruction extends Instruction {
 		else {
 		    m_numCycles.setNumIterations(m_basicNumCycles);
 		}
-	}
-
-	public void resetNumCycles() {
-	    m_numCycles.setNumIterations(m_basicNumCycles);
+		m_isUnknown = false;
 	}
 	
 	public int getNumCycles() {
 		return m_numCycles.getNumIterations();
+	}
+
+	public void resetNumCycles() {
+	    m_numCycles.setNumIterations(m_basicNumCycles);
+	    m_isUnknown = true;
 	}
 	
 	public void setTimeTaken(double timeTaken) {
@@ -219,6 +226,18 @@ public abstract class XtaInstruction extends Instruction {
         	timeTaken = ((4.0 * 1000) / m_config.m_frequency) * m_numCycles.getNumIterations();
         }
         return timeTaken;
+	}
+	
+	public boolean isUnknown() {
+		return m_isUnknown;
+	}
+	
+	public void setBasicBlockId(int basicBlockId) {
+		m_basicBlockId = basicBlockId;
+	}
+	
+	public int getBasicBlockId() {
+		return m_basicBlockId;
 	}
 	
 	void setConfig(Config config) {

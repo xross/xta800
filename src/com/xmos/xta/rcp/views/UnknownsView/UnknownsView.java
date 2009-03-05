@@ -32,7 +32,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.Unknown;
+import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
@@ -93,12 +93,10 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 					int colIndex = 0;
 					if(col.getText().equals(UnknownsViewLabelProvider.BLOCKID)){
 						colIndex=0;
-					} else if(col.getText().equals(UnknownsViewLabelProvider.TYPE)){
-						colIndex=1;
 					} else if(col.getText().equals(UnknownsViewLabelProvider.PC)){
-						colIndex=2;
+						colIndex=1;
 					} else if(col.getText().equals(UnknownsViewLabelProvider.REASON)){
-						colIndex=3;
+						colIndex=2;
 					}
 					
 					us.setColoumn(colIndex);
@@ -170,10 +168,10 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 			System.out.printf("Unknowns: updateHighlighting\n");
 
 		for (TableItem item : m_tableViewer.getTable().getItems()) {
-			Unknown unknown = (Unknown) item.getData();
+			XtaInstruction unknownInstruction = (XtaInstruction)item.getData();
 			Vector<Integer> selectedBlocks = new Vector<Integer>();
 			m_selectedNode.getBlockIds(selectedBlocks);
-			if (selectedBlocks.contains(unknown.getBlockId())) {
+			if (selectedBlocks.contains(unknownInstruction.getBasicBlockId())) {
 				item.setBackground(m_display.getSystemColor(SWT.COLOR_YELLOW));
 			} else {
 				item.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
@@ -186,23 +184,20 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 		int direction =1;
 		
 		public int compare(Viewer viewer, Object e1, Object e2) {
-			Unknown p1 = (Unknown) e1;
-			Unknown p2 = (Unknown) e2;
+			XtaInstruction p1 = (XtaInstruction) e1;
+			XtaInstruction p2 = (XtaInstruction) e2;
 			switch(field){
 			case 0:
-				int res0 = p1.getBlockId() > p2.getBlockId() ? 1 : -1;
+				int res0 = p1.getBasicBlockId() > p2.getBasicBlockId() ? 1 : -1;
 				return res0 * direction;
 			case 1:
-				int res1 = p1.getTypeString().compareTo(p2.getReason());
-				return res1 * direction;
-			case 2:
 				int res2 = p1.getPc() > p2.getPc() ? 1 : -1;
 				return res2 * direction;
-			case 3:
-				int res3 = p1.getReason().compareTo(p2.getReason());
+			case 2:
+				int res3 = p1.getPc() > p2.getPc() ? 1 : -1;
 				return res3 * direction;
 			default:
-				int resd = p1.getBlockId() > p2.getBlockId() ? 1 : -1;
+				int resd = p1.getBasicBlockId() > p2.getBasicBlockId() ? 1 : -1;
 				return resd * direction;
 			}
 		}
@@ -226,22 +221,20 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 		m_tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection selection = event.getSelection();
-				Unknown unknown = (Unknown)((IStructuredSelection) selection).getFirstElement();
+				XtaInstruction unknownInstruction = (XtaInstruction)((IStructuredSelection) selection).getFirstElement();
 				
-				if (unknown != null) {
+				if (unknownInstruction != null) {
 					m_selectedCodeRef = ReferenceFactory.createReference(
-							"0x" + Integer.toHexString(unknown.getPc()), ReferenceClass.ENDPOINT_REF);
+							"0x" + Integer.toHexString(unknownInstruction.getPc()), ReferenceClass.ENDPOINT_REF);
 					Engine engine = XtaEngine.getEngine();
 					m_selectedCodeRef.resolve(engine, engine.getNodeId(), engine.getCoreId());
 					m_setInstructionTimeAction.setEnabled(true);
 				} else {
 					m_setInstructionTimeAction.setEnabled(false);
 				}
-			}
-			
+			}			
 		});
 		
-
 		// Create the context menu
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(false);

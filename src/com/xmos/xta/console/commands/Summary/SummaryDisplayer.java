@@ -52,7 +52,7 @@ public class SummaryDisplayer {
     	case complete_instructions:
     		m_console.display(String.format("Path(id): Timing(ns)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute\n"));     			
          	m_console.display(String.format("+COMPLETE [%d path(s)]\n", route.getCompletedPaths().size()));
-	        summarisePaths(route.getCompletedPaths(), "    ", null);	        	       
+	        summarisePaths(route.getCompletedPaths(), "  ", null);	        	       
 	        break;
     	
         case unresolved:
@@ -64,7 +64,7 @@ public class SummaryDisplayer {
 	        for(Unresolved unknown : route.getUnresolvedPaths()){
 	        	unresolvedPaths.add(unknown.getBlock());
 	        }
-         	summarisePaths(unresolvedPaths, "    ", null);
+         	summarisePaths(unresolvedPaths, "  ", null);
 	        break;
 	        
         default:
@@ -115,9 +115,7 @@ public class SummaryDisplayer {
         path.doneWithPathBlocks();
     }
 
-    private void displayPathLevelInfo(PathBasicBlock path, String indent, int numExecutions, boolean absolute) {
-        
-    	
+    private void displayPathLevelInfo(PathBasicBlock path, String indent, int numExecutions, boolean absolute) {            	
     	String pathId = "";
     	if(path.getPathId()!= -1){
     		pathId = String.format("path(%d)", path.getPathId());
@@ -128,11 +126,12 @@ public class SummaryDisplayer {
         if ((path.getStatus() != Status.BlockStatus.COMPLETE) ) {
             String comment = "";
             comment = path.getUnresolved().getReason();
-            m_console.display(String.format("%s%-11s: %s\n", indent, pathId, comment));
+            m_console.display(String.format("%s  %-11s: %s\n", indent, pathId, comment));
         }
         
-        m_console.display(String.format("%s%-11s: %.1f/%d/%d/%d/%d/%d/%d\n", 
-        		indent, pathId, 
+		String unknowns = (path.getNumUnknowns(true) > 0) ? "*" : " ";        
+        m_console.display(String.format("%s%s %-11s: %.1f/%d/%d/%d/%d/%d/%d\n", 
+        		indent, unknowns, pathId, 
         		path.getTimeTaken(true),
         		path.getNumCycles(true),
         		path.getNumInstructions(true), 
@@ -145,8 +144,9 @@ public class SummaryDisplayer {
     private void displayBlockLevelInfo(PathBasicBlock block, String indent) {
         String blockId = String.format("block(b%d)", block.getBlockId());
 
-        m_console.display(String.format("%s    %-11s: %.1f/%d/%d/%d/%d\n", 
-        		indent, blockId, 
+		String unknowns = (block.getNumUnknownsThis() > 0) ? "*" : " ";        
+        m_console.display(String.format("%s    %s %-11s: %.1f/%d/%d/%d/%d\n", 
+        		indent, unknowns, blockId, 
         		block.getTimeTakenThis(),
         		block.getNumCyclesThis(),
         		block.getNumInstructionsThis(), 
@@ -162,7 +162,7 @@ public class SummaryDisplayer {
                 Attributes attributes = path.getLoopPathAttributes(loopPath);
                 totalIterations += attributes.getNumIterations();
             }
-        	m_console.display(String.format("%s    +loop [%d path(s), %d iteration(s)]\n", 
+        	m_console.display(String.format("%s      +loop [%d path(s), %d iteration(s)]\n", 
         			indent, loopPaths.size(), totalIterations));    
             	
         	summarisePaths(loopPaths, indent + "        ", path);
@@ -174,8 +174,10 @@ public class SummaryDisplayer {
             (m_level == Level.unresolved_instructions)) {
         	
             for (XtaInstruction xtaInstruction : path.getInstructionStream()) {
-                m_console.display(String.format("%s        (%.1fns) 0x%05x %s %s %s",
-                	indent,
+    			String isUnknown = xtaInstruction.isUnknown() ? "*" : " ";
+            	
+                m_console.display(String.format("%s        %s (%.1fns) 0x%05x %s %s %s",
+                	indent, isUnknown, 
                 	xtaInstruction.getTimeTaken(),
                 	xtaInstruction.getPc(),
                 	xtaInstruction.getNmenonic(),

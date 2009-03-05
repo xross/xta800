@@ -123,6 +123,6 @@ public class BlockNode extends Node {
 	}
 
 	public void getBlockIds(Vector<Integer> ids) {
-		ids.add(m_block.getBlockId());
+		ids.add(m_block.getBasicBlock().getId());
 	}
 }

@@ -63,8 +63,8 @@ public abstract class CodeElement {
 		int numPaths = getTotalNumPaths(node);
 
 		for (int i = 0; i < numPaths; i++) {
-			emitExpectIndent(file, depth);
-			file.write("path\\(\\d+\\) +: \\d+\\.\\d+/\\d+/\\d+/\\d+/\\d+/\\d+/\\d+\n");
+			emitExpectIndent(file, depth - 1);
+			file.write("  . path\\(\\d+\\) +: \\d+\\.\\d+/\\d+/\\d+/\\d+/\\d+/\\d+/\\d+\n");
 			for (CodeElement child : m_children.get(node)) {
 				child.emitExpect(node, i, file, depth + 1);
 			}

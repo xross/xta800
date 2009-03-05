@@ -35,7 +35,6 @@ import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.Unknown;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
@@ -344,9 +343,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         HashMap<Annotation, Position> annotationPositions = 
     	    new HashMap<Annotation, Position>();		
 		
-		for (Unknown unknown : XtaNotifier.getInstance().getRouteInfo().getRoute().getUnknowns()) {
-			if (unknown.isShown() && !unknown.isSet())
-				updateAnnotations(unknown.getPc(), UnknownAnnotationID, annotations, annotationPositions, true);
+		for (XtaInstruction instruction : XtaNotifier.getInstance().getRouteInfo().getRoute().getUnknowns()) {
+			updateAnnotations(instruction.getPc(), UnknownAnnotationID, annotations, annotationPositions, true);
 		}						    
 
 		m_annotationModel.replaceAnnotations(m_previousUnknownAnnotations, annotationPositions);        

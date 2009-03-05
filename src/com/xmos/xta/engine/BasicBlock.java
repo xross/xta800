@@ -10,7 +10,6 @@ public class BasicBlock implements Comparable<BasicBlock> {
 	private ArrayList<IBufferState> m_iBufferStates;
 	private ArrayList<BasicBlock> m_nextNode;
 	private ArrayList<BasicBlock> m_previousNode;
-	private ArrayList<Unknown> m_unknowns;
 	private IBufferState m_worstIbuffer;
 	
 	BasicBlock(int n) {
@@ -19,15 +18,14 @@ public class BasicBlock implements Comparable<BasicBlock> {
 		m_instructions = new LinkedList<XtaInstruction>();
 		m_nextNode = new ArrayList<BasicBlock>();
 		m_previousNode = new ArrayList<BasicBlock>();
-		m_unknowns = new ArrayList<Unknown>();
 	}
-	
-	public ArrayList<Unknown> getUnknowns(){
-		return m_unknowns;
-	}
-	
+		
 	public String toString(){
 		return "node: " + this.m_nodeId + " " + m_instructions.getFirst();
+	}
+	
+	public int getId() {
+		return m_nodeId;
 	}
 
 	public int compareTo(BasicBlock n) {
@@ -68,6 +66,11 @@ public class BasicBlock implements Comparable<BasicBlock> {
 			}
 			return worstIbuff;
 		}
+	}
+	
+	public void addInstruction(XtaInstruction instruction) {
+		instruction.setBasicBlockId(m_nodeId);
+		m_instructions.add(instruction);
 	}
 	
 	/**

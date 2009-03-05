@@ -29,7 +29,6 @@ import com.xmos.xta.engine.maps.SrcTableMap;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
-import com.xmos.xta.engine.Unknown.UnknownType;
 
 public class Engine {
 
@@ -411,7 +410,6 @@ public class Engine {
 					iterations);
 			if (hit) {
 				m_route.invalidateAllBlocks();
-				//m_route.notifyUpdate();
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			}
 			return hit;
@@ -431,20 +429,16 @@ public class Engine {
 			return false;
 		}
 
-		if (m_route != null)
+		if (anythingToDisplay())
 			m_route.invalidateAllBlocks();
 
-		boolean hit = m_nodeCoreInstructionCache.setInstructionTimeTaken(this,
-				ref.getPc(), timeTaken, m_nodeId, m_coreId);
-		if (hit) {
-			boolean unknownsChanged = updateUnknown(ref.getPc(), true);
-			if (unknownsChanged)
-				notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-
+		if (m_nodeCoreInstructionCache.setInstructionTimeTaken(
+				this, ref.getPc(), timeTaken, m_nodeId, m_coreId)) {
+			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
 		}
-
-		return hit;
+		return false;
 	}
 
 	public double getInstructionTimeTaken(int pc) {
@@ -452,8 +446,7 @@ public class Engine {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
 			return 0;
 		}
-		return m_nodeCoreInstructionCache.getInstructionTimeTaken(pc, m_nodeId,
-				m_coreId);
+		return m_nodeCoreInstructionCache.getInstructionTimeTaken(pc, m_nodeId, m_coreId);
 	}
 
 	public boolean setInstructionNumCycles(Reference ref, int numCycles) {
@@ -471,17 +464,13 @@ public class Engine {
 		if (anythingToDisplay())
 			m_route.invalidateAllBlocks();
 
-		boolean hit = m_nodeCoreInstructionCache.setInstructionNumCycles(this,
-				ref.getPc(), numCycles, m_nodeId, m_coreId);
-		if (hit) {
-			boolean unknownsChanged = updateUnknown(ref.getPc(), true);
-			if (unknownsChanged)
-				notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-
+		if (m_nodeCoreInstructionCache.setInstructionNumCycles(
+				this, ref.getPc(), numCycles, m_nodeId, m_coreId)) {
+			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-		}
-
-		return hit;
+            return true;			
+		}		
+		return false;
 	}
 
 	public ArrayList<Integer> getPcsWithTimeSet() {
@@ -492,28 +481,12 @@ public class Engine {
 		return m_nodeCoreInstructionCache.getPcsWithTimeSet(m_nodeId, m_coreId);
 	}
 
-	public boolean updateUnknown(int pc, boolean clear) {
-		if (!anythingToDisplay())
-			return false;
-
-		boolean found = false;
-		for (Unknown unknown : m_route.getUnknowns()) {
-			if ((unknown.getPc() == pc)
-					&& (unknown.getUnknownType() == UnknownType.PAUSABLETIME)) {
-				unknown.setIsSet(clear);
-				found = true;
-			}
-		}
-		return found;
-	}
-
 	public int getInstructionNumCycles(int pc) {
 		if (m_nodeCoreInstructionCache == null) {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
 			return 0;
 		}
-		return m_nodeCoreInstructionCache.getInstructionNumCycles(pc, m_nodeId,
-				m_coreId);
+		return m_nodeCoreInstructionCache.getInstructionNumCycles(pc, m_nodeId, m_coreId);
 	}
 
 	public void unsetInstructionTime(int pc) {
@@ -545,7 +518,7 @@ public class Engine {
 		return m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId,
 				m_coreId).getInstruction(pc).canPause();
 	}
-
+	
 	public boolean addBranch(Reference fromRef, Reference toRef) {
 		return addToBranchMap(fromRef, toRef);
 	}

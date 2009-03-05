@@ -24,7 +24,6 @@ public class Route {
 	private ArrayList<PathBasicBlock> m_completedPaths;
 	private ArrayList<PathBasicBlock> m_allBasicBlocks;
 	private String m_description;
-	private ArrayList<Unknown> m_unknowns;
 	private ArrayList<Unresolved> m_unresolvedPaths;
 	private InstructionDecodeCache m_idc;
 	private InstructionMnemonics m_mnenonics;
@@ -41,7 +40,6 @@ public class Route {
 		m_endPcs =endPcs;
 		m_description = description;
 		m_nodes = nodes;
-		m_unknowns = new ArrayList<Unknown>();
 		m_idc = idc;
 		m_mnenonics = mnenonics;
 		s_pathCount = 0;
@@ -58,11 +56,7 @@ public class Route {
 	public String getDescription() {
 		return m_description;
 	}
-	
-	public ArrayList<Unknown> getUnknowns() {
-		return m_unknowns;
-	}
-	
+		
 	public ArrayList<PathBasicBlock> getAllBasicBlocks(){
 		return m_allBasicBlocks;
 	}
@@ -126,6 +120,17 @@ public class Route {
 		return false;		
 	}
 	
+	public ArrayList<XtaInstruction> getUnknowns() {
+        ArrayList<XtaInstruction> unknowns = new ArrayList<XtaInstruction>();
+		for (PathBasicBlock path : m_completedPaths) {
+			for (XtaInstruction instruction : path.getInstructions(true)) {
+				if (instruction.isUnknown()) {
+					unknowns.add(instruction);
+				}
+			}
+		}
+        return unknowns;
+	}
 	
 	@SuppressWarnings("unchecked")
 	private void followNode(
