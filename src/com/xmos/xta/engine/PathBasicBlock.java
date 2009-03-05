@@ -10,8 +10,6 @@ import java.util.Vector;
 
 import com.xmos.xta.engine.Status.BlockStatus;
 import com.xmos.xta.engine.constraint.Constraint;
-import com.xmos.xta.engine.constraint.ConstraintAnd;
-import com.xmos.xta.engine.constraint.ConstraintFactory;
 
 public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	private static int pathBasicBlockCount;
