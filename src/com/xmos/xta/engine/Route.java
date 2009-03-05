@@ -244,11 +244,11 @@ public class Route {
 			
 			// Checks for threading instructions...
 			if (m_mnenonics.isSsync(inst))
-				block.addWarning(String.format("Warning: Ssync (multiple threads) not supported. Pc: 0x%08x", inst.getPc()));					
+				block.addWarning(String.format("Ssync (multiple threads) not supported. Pc: 0x%08x", inst.getPc()));					
 			if (m_mnenonics.isMsync(inst))
-				block.addWarning(String.format("Warning: Msync (multiple threads) not supported. Pc: 0x%08x", inst.getPc()));				
+				block.addWarning(String.format("Msync (multiple threads) not supported. Pc: 0x%08x", inst.getPc()));				
 			if (m_mnenonics.isMjoin(inst)) {
-				block.addWarning(String.format("Warning: Mjoin (multiple threads) not supported. Pc: 0x%08x", inst.getPc()));
+				block.addWarning(String.format("Mjoin (multiple threads) not supported. Pc: 0x%08x", inst.getPc()));
 			}
 			
 			// Checks for interrupt enable..
@@ -257,7 +257,7 @@ public class Route {
 				int shift = SR_IEBLE_SHIFT;
 				int mask = (1 << SR_IEBLE_SIZE) - 1;
 				if (((op1Field >> shift) & mask) == 1) 
-    				block.addWarning(String.format("Warning: Interrupt enable detected. Pc: 0x%08x", inst.getPc()));					
+    				block.addWarning(String.format("Interrupt enable detected. Pc: 0x%08x", inst.getPc()));					
 			}
 		}		
 	}
