@@ -1,9 +1,9 @@
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[1 path\(s\)\]
-    path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
+  . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
         \+loop \[3 path\(s\), 0 iteration\(s\)\]
-            path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-            path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
+          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
+          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
                 \+loop \[1 path\(s\), 0 iteration\(s\)\]
-                    path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-            path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
+                  . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
+          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
