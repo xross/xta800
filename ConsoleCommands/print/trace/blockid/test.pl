@@ -12,7 +12,7 @@ system("xcc -march=$arch -g test.s -o $genDir/test.xe > $genDir/blockid.log 2>&1
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "summary simple " .
-       "-print trace b0 " .
-       "-print trace b1 " .
+       "-print trace b27 " .
+       "-print trace b22 " .
        "exit > $genDir/blockid.txt 2>&1");
 

@@ -1,6 +1,7 @@
 a
 Complete paths:   1
 Unresolved paths: 0
+Error: No valid path of execution\(Constraints applied\).
 Complete paths:   0
 Unresolved paths: 0
 Complete paths:   1
@@ -8,39 +9,52 @@ Unresolved paths: 0
 Complete paths:   1
 Unresolved paths: 0
 !a
+Error: No valid path of execution\(Constraints applied\).
 Complete paths:   0
 Unresolved paths: 0
 Complete paths:   1
 Unresolved paths: 0
+Error: No valid path of execution\(Constraints applied\).
 Complete paths:   0
 Unresolved paths: 0
 Complete paths:   1
 Unresolved paths: 0
 \(a && b\)
+Error: No valid path of execution\(Constraints applied\).
 Complete paths:   0
 Unresolved paths: 0
+Error: No valid path of execution\(Constraints applied\).
 Complete paths:   0
 Unresolved paths: 0
 Complete paths:   1
 Unresolved paths: 0
+Error: No valid path of execution\(Constraints applied\).
 Complete paths:   0
 Unresolved paths: 0
 !\(a || b\)
+Error: No valid path of execution\(Constraints applied\).
 Complete paths:   0
 Unresolved paths: 0
+Error: No valid path of execution\(Constraints applied\).
 Complete paths:   0
 Unresolved paths: 0
+Error: No valid path of execution\(Constraints applied\).
 Complete paths:   0
 Unresolved paths: 0
+Error: No valid path of execution\(Constraints applied\).
 Complete paths:   0
 Unresolved paths: 0
 \(!a && !b\)
+Error: No valid path of execution\(Constraints applied\).
 Complete paths:   0
 Unresolved paths: 0
+Error: No valid path of execution\(Constraints applied\).
 Complete paths:   0
 Unresolved paths: 0
+Error: No valid path of execution\(Constraints applied\).
 Complete paths:   0
 Unresolved paths: 0
+Error: No valid path of execution\(Constraints applied\).
 Complete paths:   0
 Unresolved paths: 0
 \(!a || !b\)

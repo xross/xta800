@@ -18,7 +18,7 @@ Error: constraint parse error:  after '\( a && b', missing expected '\)'
 Error: constraint parse error:  after '\( a && ! \( b || c \)', missing expected '\)'
 Error: constraint parse error:  after '\( a && ! \( b \) || ! c', missing expected '\)'
 Error: constraint parse error: missing code ref after '!' got '!'
-a
+0x100cc
 No constraints set
 !a
 \(\(a && b\) || c\)
