@@ -77,7 +77,7 @@ public class Functions extends Command {
                 }
             }
         
-            for (PathBasicBlock loopPath : block.getLoopPaths()) {
+            for (PathBasicBlock loopPath : block.getLoopPaths(path)) {
    		    	buildPathsWithinFunctionSet(loopPath, pathSet, functionAddress, functionSize);
        		}
         }

@@ -55,20 +55,18 @@ public class XtaRouteInfo {
 	}
 	
 	private PathNode createPath(PathBasicBlock block, Node parent, boolean isRoot) {
-        PathNode pathNode = new PathNode(block, parent, isRoot);
-                
+        PathNode pathNode = new PathNode(block, parent, isRoot);     
         for (PathBasicBlock pathBlock : block.getPathBlocks()) {            
-            if (pathBlock.numLoopPaths() > 0) {
-                LoopNode loopNode = new LoopNode(pathBlock, pathNode);
-                pathNode.addNode(loopNode);
-                
-                for (PathBasicBlock loopPath : pathBlock.getLoopPaths()) {
-                	loopNode.addNode(createPath(loopPath, loopNode, false));                    
-                }
-            }
+        	if(pathBlock.numLoopPaths(block) > 0){
+        		 LoopNode loopNode = new LoopNode(pathBlock, pathNode);
+                 pathNode.addNode(loopNode);
+                                 
+            	 for (PathBasicBlock loopPath : pathBlock.getLoopPaths(block)) {
+                 	loopNode.addNode(createPath(loopPath, loopNode, false));                    
+                 }
+        	}
         	pathNode.addNode(new BlockNode(pathBlock, pathNode));            
         }
-        block.doneWithPathBlocks();
         return pathNode;
 	}
 	

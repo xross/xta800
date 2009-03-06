@@ -11,6 +11,8 @@ import java.util.TreeSet;
 import com.xmos.isa.Instruction;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xeobject.AssemblyLine;
+import com.xmos.xeobject.Function;
+import com.xmos.xeobject.Line;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.maps.BranchMap;
 
@@ -94,7 +96,24 @@ public class AnalysisEngine {
 
 	public TreeSet<Integer> getFunctionRetuns(String functionName, int nodeId, int coreId) {
 		int functionStartPc = getXeObject(nodeId, coreId).getFunctionStartPc().get(functionName);
-		return getFunctionReturns(nodeId, coreId).getFunctionReturns(functionStartPc);
+		
+		TreeSet<Integer> returns = getFunctionReturns(nodeId, coreId).getFunctionReturns(functionStartPc);
+		
+		if(returns.size() == 0){
+			InstructionDecodeCache ncic = m_mcInstructionCache.getInstructionDecodeCache(nodeId, coreId);
+			for(Function function : getXeObject(nodeId, coreId).getFunctions()){
+				if(function.getText().equals(functionName)){
+					for(Line line : function.getChildern()){
+						XtaInstruction inst = ncic.getInstruction(line.getLineNumber());
+						if(inst != null && inst.getReturn()){
+							returns.add(line.getLineNumber());
+						}
+					}
+				}
+			}
+		}
+		
+		return returns;
 	}
 
 	private FunctionReturns getFunctionReturns(int nodeId, int coreId) {
@@ -133,7 +152,7 @@ public class AnalysisEngine {
 				fillGraphFnops(nodeId, coreId);
 
 				// TODO
-				 //printDot(nodeId, coreId);
+				// printDot(nodeId, coreId);
 			}
 		}
 	}

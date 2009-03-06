@@ -292,32 +292,13 @@ public class Engine {
 	}
 
 	public boolean analyseRoute(int startPc, TreeSet<Integer> endPcs, String routeDescription) {
-		boolean reachable = false;
-		for (int end : endPcs) {
-			int dist = m_ae.determineReachability(startPc, end, m_nodeId,
-					m_coreId);
-			if (dist != Integer.MAX_VALUE) {
-				reachable = true;
-				break;
-			}
-		}
 		String endString = "";
-		if (!reachable) {
-			for (int end : endPcs) {
-				endString += "0x" + Integer.toHexString(end) + ", ";
-			}
-			if(endString.length() > 2){
-				endString = endString.substring(0, endString.length() - 2);
-				notify(Notifier.NOTIFY_ERROR, "No valid of execution from 0x"
-						+ Integer.toHexString(startPc) + " to " + endString);
-			} else {
-				notify(Notifier.NOTIFY_ERROR, "No valid of execution from 0x"
-						+ Integer.toHexString(startPc) );
-			}			
+		m_previousRoute = m_route;
+		
+		if(endPcs.size() == 0){
+			notify(Notifier.NOTIFY_ERROR, "No terminating PC" );
 			return false;
 		}
-
-		m_previousRoute = m_route;
 		
 		m_route = new Route(this, startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), 
 				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId), routeDescription);

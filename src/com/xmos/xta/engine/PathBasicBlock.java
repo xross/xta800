@@ -9,14 +9,18 @@ import java.util.Vector;
 
 import com.xmos.xta.engine.Status.BlockStatus;
 import com.xmos.xta.engine.constraint.Constraint;
-import com.xmos.xta.engine.constraint.ConstraintAnd;
-import com.xmos.xta.engine.constraint.ConstraintFactory;
 
 public class PathBasicBlock implements Comparable<PathBasicBlock>{
+	
 	private static int pathBasicBlockCount;
+	
 	private BasicBlock m_basicBlock;
 	private PathBasicBlock m_parentBasicBlock;
-	private ArrayList<PathBasicBlock> m_loopPaths;
+	
+	
+	private LoopAttachment m_loopPaths;
+	
+	
 	private int m_seen;
 	private int m_pathId;
 	private int m_blockId;
@@ -38,7 +42,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 			InstructionDecodeCache idc){
 		m_parentBasicBlock = parentBasicBlock;
 		m_seen = 0;
-		m_loopPaths = new ArrayList<PathBasicBlock>();
+		m_loopPaths = new LoopAttachment(null);
 		m_blockId = pathBasicBlockCount++;
 		m_pathId = -1;
 		m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
@@ -65,7 +69,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		m_basicBlock = basicBlock;
 		m_parentBasicBlock = parentBasicBlock;
 		m_seen = 0;
-		m_loopPaths = new ArrayList<PathBasicBlock>();
+		m_loopPaths = new LoopAttachment(null);
 		m_blockId = pathBasicBlockCount++;
 		m_pathId = -1;
 		m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
@@ -139,26 +143,42 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		return "PathBasicBlock " + m_pathId + " " + m_basicBlock;
 	}
 	
+	/**
+	 * gets the id of the path. A block will only have a path id if it completed of formed a loop
+	 * @return pathId if valid, otherwise -1
+	 */
 	public int getPathId(){
 		return m_pathId;
 	}
 	
+	/**
+	 * returns a unique identifier for each block in the analysis 
+	 * @return block id
+	 */
 	public int getBlockId(){
 		return m_blockId;
 	}
 	
+	/**
+	 * get the underlying basic block. Should almost never be used
+	 * @return theis blocks basic block
+	 */
 	public BasicBlock getBasicBlock(){
 		return m_basicBlock;
 	}
 	
+	/**
+	 * Gets the parent block of this block. Returns null for the root. 
+	 * @return parent block
+	 */
 	public PathBasicBlock getParent(){
 		return m_parentBasicBlock;
 	}
 	
 	
 	/**
-	 * 
-	 * @return
+	 * Gets the list of all the blocks that make up that path
+	 * @return ArrayList of all the PathBasicBlock that make up that path
 	 */
 	public ArrayList<PathBasicBlock> getPathBlocks() {
 		ArrayList<PathBasicBlock> paths = new ArrayList<PathBasicBlock>();
@@ -193,12 +213,8 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		}
 	}
 	
-	public ArrayList<PathBasicBlock> getLoopPaths() {
-		if (m_seen == 0) {
-			return m_loopPaths;
-		} else {
-			return new ArrayList<PathBasicBlock>();
-		}
+	public ArrayList<PathBasicBlock> getLoopPaths(PathBasicBlock base) {
+		return m_loopPaths.getLoopPaths(base);
 	}
 	
 	public PathAttributes getLoopPathAttributes(PathBasicBlock block) {
@@ -214,12 +230,8 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		return m_status;
 	}
 
-	public int numLoopPaths() {
-		if (m_seen == 0) {
-			return m_loopPaths.size();
-		} else {
-			return 0;
-		}
+	public int numLoopPaths(PathBasicBlock base) {
+		return m_loopPaths.getLoopPaths(base).size();
 	}
 	
 	public int compareTo(PathBasicBlock path) {
@@ -263,7 +275,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	}
 
 	/**
-	 * this returns the instructions from the basic block trimmer to the correct size.
+	 * This returns the instructions from the basic block trimmed to the correct size.
 	 * It includes no FNOPs
 	 */
 	public LinkedList<XtaInstruction> getInstructionTrimmed(){
@@ -309,7 +321,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 				m_ibufferState = getBasicBlock().getWorstIbufferStart();
 			}
 		} else {
-			//m_ibufferState = getBasicBlock().getIbuffer(0);
 			m_ibufferState = getBasicBlock().getWorstIbufferStart();
 		}
 	}
@@ -347,7 +358,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public void getAllBlocks(TreeSet<PathBasicBlock> allBlocks) {
 		for (PathBasicBlock block : getPathBlocks()) {
 			allBlocks.add(block);
-			for (PathBasicBlock loopPath : block.getLoopPaths()) {
+			for (PathBasicBlock loopPath : block.getLoopPaths(this)) {
 				loopPath.getAllBlocks(allBlocks);
 			}
 		}
@@ -360,7 +371,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		for (PathBasicBlock block : getPathBlocks()) {
 			insts.addAll(block.getInstructionStream());
 			if (recurse) {
-				for (PathBasicBlock loopPath : block.getLoopPaths()) {
+				for (PathBasicBlock loopPath : block.getLoopPaths(this)) {
 					insts.addAll(loopPath.getInstructions(true));
 				}
 			}
@@ -374,7 +385,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		for (PathBasicBlock block : getPathBlocks()) {
 			pcsCovered.addAll(block.getPcsCoveredThis());		
 			if (recurse) {
-				for (PathBasicBlock loopPath : block.getLoopPaths()) {
+				for (PathBasicBlock loopPath : block.getLoopPaths(this)) {
 					pcsCovered.addAll(loopPath.getPcsCovered(true));
 				}
 			}
@@ -395,7 +406,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public HashSet<Integer> getPcsCoveredLoopsOnly() {
 		HashSet<Integer> pcsCovered = new HashSet<Integer>();
 
-		for (PathBasicBlock loopPath : getLoopPaths()) {
+		for (PathBasicBlock loopPath : getLoopPaths(this)) {
 			pcsCovered.addAll(loopPath.getPcsCovered(true));
 		}
 		return pcsCovered;
@@ -507,7 +518,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		
 	}
 
-
 	public Constraint getConstraint() {
 		return m_constraint;
 	}
@@ -515,8 +525,13 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public void setConstraint(Constraint constraint){
 		m_constraint = constraint;
 	}
-	
 
+	public void addLoopPath(PathBasicBlock pathFormingLoop) {
+		m_loopPaths.addLoop(pathFormingLoop);
+		
+	}
 
-
+	public LoopAttachment getloops() {
+		return m_loopPaths;
+	}
 }

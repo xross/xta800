@@ -109,7 +109,7 @@ public class SummaryDisplayer {
             	(m_level == Level.unresolved_loops) || 
             	(m_level == Level.unresolved_blocks) || 
             	(m_level == Level.unresolved_instructions)) {
-              	displayLoopLevelInfo(block, indent, numExecutions);          	
+              	displayLoopLevelInfo(block, indent, numExecutions, path);          	
             }
         }
         path.doneWithPathBlocks();
@@ -154,8 +154,8 @@ public class SummaryDisplayer {
         		block.getNumPausablesThis()));
     }
 
-    private void displayLoopLevelInfo(PathBasicBlock path, String indent, int numIterations) {
-        ArrayList<PathBasicBlock> loopPaths = path.getLoopPaths();
+    private void displayLoopLevelInfo(PathBasicBlock path, String indent, int numIterations, PathBasicBlock base) {
+        ArrayList<PathBasicBlock> loopPaths = path.getLoopPaths(base);
         if (loopPaths.size() > 0) {
             int totalIterations = 0;
             for (PathBasicBlock loopPath : loopPaths) {

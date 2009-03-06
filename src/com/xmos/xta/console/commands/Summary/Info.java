@@ -86,7 +86,7 @@ public class Info extends Command {
         
         int numLoops = 0;
         for (PathBasicBlock block : path.getPathBlocks()) {
-            numLoops += block.numLoopPaths();
+            numLoops += block.numLoopPaths(path);
         }
         path.doneWithPathBlocks();
         console.display(String.format("Num Loops:        %d\n", numLoops));

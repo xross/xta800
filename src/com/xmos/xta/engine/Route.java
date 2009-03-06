@@ -80,6 +80,8 @@ public class Route {
 		}
 		Stack<Integer> stack = new Stack<Integer>();
 		Stack<LinkedList<BasicBlock>> nodeContext = new Stack<LinkedList<BasicBlock>>();
+		
+		
 		nodeContext.push(new LinkedList<BasicBlock>());
 		followNode(startBasicBlock, stack, nodeContext);
 		sortPaths();
@@ -106,27 +108,33 @@ public class Route {
 	}
 	
 	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
+	
 		for (PathBasicBlock block : m_allBasicBlocks) {
-			for (PathBasicBlock loopPath : block.getLoopPaths()) {
+			
+			//TODO
+
+			for (PathBasicBlock loopPath : block.getLoopPaths(block)) {
 				if (loopPath.getPathId() == pathId) {
 					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
 					attributes.setNumIterations(iterations, absolute);
 					return true;
 				}
 			}
+
 		}	
 		return false;		
 	}
 	
+	private final static boolean debug = false;
 	
 	@SuppressWarnings("unchecked")
 	private void followNode(
 		PathBasicBlock currentBasicBlock, 
 		Stack<Integer> stack, 
 		Stack<LinkedList<BasicBlock>> nodeContext) {
-		
+		if(debug) System.out.println("currentBlock : " + currentBasicBlock);
 		if(reachedEnd(currentBasicBlock)){
-			
+			if(debug) System.out.println("\treached end");
 			int size = currentBasicBlock.getInstructionTrimmed().size()-1;
 			PathBasicBlock endBlock = currentBasicBlock;
 			while(size>=0){
@@ -156,7 +164,9 @@ public class Route {
 				currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
 				return;
 			}
+			
 			if(hasResursed(currentBasicBlock, nodeContext)){
+				if(debug) System.out.println("\recursed");
 				String reason = "Recursion with 0x" + Integer.toHexString(currentBasicBlock.getBasicBlock().getInstructions().getFirst().getPc());
 				Unresolved unresolved = new Unresolved(currentBasicBlock, currentBasicBlock.getBasicBlock().getInstructions().getLast(), reason);
 				m_unresolvedPaths.add(unresolved);
@@ -165,17 +175,12 @@ public class Route {
 				return;
 			}
 			
-			
-			PathBasicBlock loopBlock = formsLoop(currentBasicBlock, nodeContext);
-			if(loopBlock!=null){
-				//this must be true by design of the algorithm
-				assert(currentBasicBlock.getParent()!=null);
-				currentBasicBlock.getParent().setPath(m_pathCount++);
-				loopBlock.getLoopPaths().add(currentBasicBlock.getParent());
-				loopBlock.getLoopPathAttributes().put(currentBasicBlock.getParent(), new PathAttributes());
-				currentBasicBlock.getParent().setStatus(BlockStatus.COMPLETE);
+			PathBasicBlock loopDestinationBlock = formsLoop(currentBasicBlock, nodeContext);
+			if(loopDestinationBlock!=null){
+				handelLoop(currentBasicBlock.getParent(), loopDestinationBlock);
 				return;
 			}
+			
 			XtaInstruction lastInstruction = currentBasicBlock.getInstructionTrimmed().get(currentBasicBlock.getInstructionTrimmed().size()-1);
 			if(lastInstruction.getReturn() && stack.size()>0){
 				BasicBlock nextNode = getNode(stack.peek());
@@ -210,6 +215,23 @@ public class Route {
 			}
 		}	
 	}
+
+	private void handelLoop(PathBasicBlock pathFormingLoop, PathBasicBlock loopDestinationBlock) {
+		if(debug) System.out.println("\t" + pathFormingLoop +" wants to form a loop with : " + loopDestinationBlock);
+		
+		//this must be true by design of the algorithm
+		assert(pathFormingLoop != null);
+		
+		pathFormingLoop.setPath(m_pathCount++);
+
+		if(debug) System.out.println("adding loop " + pathFormingLoop  + " to "+loopDestinationBlock);
+		loopDestinationBlock.addLoopPath(pathFormingLoop);
+		loopDestinationBlock.getLoopPathAttributes().put(pathFormingLoop, new PathAttributes());
+		pathFormingLoop.setStatus(BlockStatus.COMPLETE);
+		return;
+	}
+	
+
 	
 	private boolean updateConstraints(PathBasicBlock block) {
 		m_allBasicBlocks.add(block);
@@ -283,7 +305,7 @@ public class Route {
 	private void sortPaths() {
 		Collections.sort(m_completedPaths);
 		for(PathBasicBlock block : m_allBasicBlocks){
-			Collections.sort(block.getLoopPaths());
+			Collections.sort(block.getLoopPaths(block));
 		}
 	}
 }
