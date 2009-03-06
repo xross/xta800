@@ -27,6 +27,7 @@ my $buildDirProperties = "";
 my $eclipseDir = "";
 my $buildOutput = "";
 my $target = "";
+my $exeName = "";
 
 my %ALIASES =
   (
@@ -221,6 +222,13 @@ sub DoInstall
 
   XmosBuildLib::InstallPatchFile("$DOMAIN", ".", "xtagui.ini", "xta_bin");
 
+  # Linux uses a perl script to check the jvm
+  if ($HOST ne "PC" && $HOST ne "Mac") {
+    XmosBuildLib::InstallFile("$DOMAIN", ".", "xtagui");
+    XmosBuildLib::InstallPatchFile("$DOMAIN", ".", "xtagui", "bin");
+    #XmosBuildLib::InstallReleaseFile("$DOMAIN", ".", "xtagui", "bin");
+  }
+
   chdir("$BUILDPATH") or die("oops");
 }
 
@@ -255,6 +263,7 @@ sub SetupVars
 {
   $buildDir    = "$TOOLS_XTA/tmp";
   $tmpBuildDir = "$TOOLS_XTA/../tmp";
+  $exeName     = "xtagui";
 
   if ($HOST eq "PC") {
     $tailCmd    = "tail -2";
@@ -276,6 +285,7 @@ sub SetupVars
     $tailCmd    = "tail -n2";
     $platform   = "linux";
     $buildDirProperties = $buildDir;
+    $exeName    = "$exeName.exe";
 
     my $version = `uname -m`;
     chomp($version);
@@ -328,7 +338,7 @@ sub BuildEclipse
   rename($tmpBuildDir, $buildDir);
 
   # Creates the target specific build properties file..
-  my $buildPropertiesFile = CreateBuildPropertiesFile($platform, $config, $buildDirProperties, $eclipseDir);
+  my $buildPropertiesFile = CreateBuildPropertiesFile($platform, $config, $buildDirProperties, $eclipseDir, $exeName);
   system("cp $buildPropertiesFile $buildDir/build_config/build.properties >> $buildOutput");
  
   my $buildCmd = "java -jar $eclipseDir/plugins/org.eclipse.equinox.launcher_1.0.101.R34x_v20080819.jar " .
@@ -356,6 +366,7 @@ sub CreateBuildPropertiesFile
   my $config     = shift;
   my $buildDir   = shift;
   my $eclipseDir = shift;
+  my $exeName    = shift;
 
   # Only use forward slahes in the properties file.
   $buildDir =~ s/\\/\//g; 
@@ -375,6 +386,7 @@ sub CreateBuildPropertiesFile
     $line =~ s/\[CONFIG\]/$config/;
     $line =~ s/\[BUILD_DIRECTORY\]/$buildDir\/build/;
     $line =~ s/\[ECLIPSE_DIRECTORY\]/$eclipseDir/;
+    $line =~ s/\[EXECUTABLE_NAME\]/$exeName/;
     print $outfp "$line"; 
   }
   close($infp);

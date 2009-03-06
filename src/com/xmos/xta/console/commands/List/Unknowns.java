@@ -4,7 +4,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Unknown;
+import com.xmos.xta.engine.XtaInstruction;
 
 public class Unknowns extends Command {
 	public Unknowns() {
@@ -31,8 +31,7 @@ public class Unknowns extends Command {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 
-    	return new Unknowns();
-   		    
+    	return new Unknowns();   		    
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
@@ -42,8 +41,14 @@ public class Unknowns extends Command {
 		if (!isRouteAnalysed(engine, console))
 			return;
 		
-		for(Unknown unknown : engine.getRoute().getUnknowns()){
-			console.display(unknown.getReason() + "\n");
-		}	
+		java.util.List<XtaInstruction> instructions = engine.getRoute().getUnknowns();		
+		if (instructions.size() > 0) {
+			for (XtaInstruction instruction : instructions) {					
+			    console.display(String.format("Time taken for instruction (0x%x: %s %s) is unknown\n",
+				    instruction.getPc(), instruction.getNmenonic(), instruction.getOperandString()));
+			}			
+		} else {
+		    console.display("none\n");
+		}
     }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -11,9 +12,7 @@ import com.xmos.xta.engine.Status.BlockStatus;
 import com.xmos.xta.engine.constraint.Constraint;
 
 public class PathBasicBlock implements Comparable<PathBasicBlock>{
-	
-	private static int pathBasicBlockCount;
-	
+
 	private BasicBlock m_basicBlock;
 	private PathBasicBlock m_parentBasicBlock;
 	
@@ -23,7 +22,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	
 	private int m_seen;
 	private int m_pathId;
-	private int m_blockId;
 	private HashMap<PathBasicBlock, PathAttributes> m_loopPathAttributes;
 	private BasicBlockStats m_blockStats;
 	private BlockStatus m_status;
@@ -37,13 +35,18 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	private Engine m_engine;
 	//i don't want this here so i'll move it later
 	private Unresolved m_unresolved;
+	private List<String> m_warnings;
 	
 	public PathBasicBlock(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock,
 			InstructionDecodeCache idc){
 		m_parentBasicBlock = parentBasicBlock;
 		m_seen = 0;
+
+
 		m_loopPaths = new LoopAttachment(null);
-		m_blockId = pathBasicBlockCount++;
+
+
+
 		m_pathId = -1;
 		m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
 		m_blockStats = new BasicBlockStats(this);
@@ -53,6 +56,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		m_basicBlock = basicBlock;
 		m_idc = idc;
 		m_engine = engine;
+		m_warnings = new ArrayList<String>();
 		if(parentBasicBlock == null){
 			m_constraint = m_engine.getConstraint();
 		} else {
@@ -69,12 +73,14 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		m_basicBlock = basicBlock;
 		m_parentBasicBlock = parentBasicBlock;
 		m_seen = 0;
+
 		m_loopPaths = new LoopAttachment(null);
-		m_blockId = pathBasicBlockCount++;
+
 		m_pathId = -1;
 		m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
 		m_blockStats = new BasicBlockStats(this);
 		m_status = BlockStatus.SEARCHING;
+		m_warnings = new ArrayList<String>();		
 		if(start){
 			m_startInstruction = instPc;
 			m_endInstruction = basicBlock.getInstructions().getLast().getPc();
@@ -90,8 +96,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		}
 		createIBuffer();
 		createTrimmedInstructions(); 
-		createInstructionStream(); 
-		
+		createInstructionStream(); 		
 	}
 	
 	/**
@@ -156,8 +161,9 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 * @return block id
 	 */
 	public int getBlockId(){
-		return m_blockId;
+		return m_basicBlock.getId();
 	}
+	
 	
 	/**
 	 * get the underlying basic block. Should almost never be used
@@ -173,8 +179,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 */
 	public PathBasicBlock getParent(){
 		return m_parentBasicBlock;
-	}
-	
+	}	
 	
 	/**
 	 * Gets the list of all the blocks that make up that path
@@ -290,6 +295,14 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		return m_ibufferState;
 	}
 	
+	public void addWarning(String message) {
+		m_warnings.add(message);
+	}
+
+	public List<String> getWarnings() {
+		return m_warnings;
+	}
+	
 	private void createInstructionStream() {
 		IBufferState currentIBuffer = getIBufferState();
 
@@ -345,7 +358,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 			}
 			m_instructionsTrimmed = pathBasicBlockInstructions;
 		}
-	}
+	}	
 
 	public int getLength() {
 		int pathLength = 0;
@@ -494,12 +507,11 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 * returns the number of shown and not set Unknowns on the basic block
 	 */
 	public int getNumUnknownsThis() {
-		int num = 0;
-		for (Unknown unknown : m_basicBlock.getUnknowns()) {
-			if (unknown.isShown() && !unknown.isSet())
-				num++;
+		int count = 0;
+		for(XtaInstruction inst : getInstructionStream()){
+			if (inst.isUnknown()) count++;
 		}
-		return num;
+		return count;
 	}
 	
 	// --------------------------------------------------------------------- //
@@ -534,4 +546,5 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public LoopAttachment getloops() {
 		return m_loopPaths;
 	}
+
 }

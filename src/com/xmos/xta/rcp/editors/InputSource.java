@@ -22,7 +22,7 @@ public class InputSource implements IEditorInput {
 		m_input = new Input(s_headerType, s_lineType);
         for (SourceLine sourceLine : sourceFile.getSourceLines()){        	
     		String headerRef = String.format("%s:%d", sourceFile.getFileName(), sourceLine.getLineNumber());
-        	m_input.addHeader(sourceLine.getText(), headerRef, lineIndex);        	
+        	m_input.addHeader(sourceLine.getText(), headerRef, lineIndex, sourceLine.getLineNumber());        	
         	++lineIndex;
         	
             for (Line line : sourceLine.getChildern()) {

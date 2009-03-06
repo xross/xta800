@@ -5,7 +5,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 
-import com.xmos.xta.engine.Unknown;
+import com.xmos.xta.engine.XtaInstruction;
 
 public class UnknownsViewLabelProvider extends LabelProvider implements ITableLabelProvider {
     public static final boolean DEBUG = false;
@@ -15,13 +15,12 @@ public class UnknownsViewLabelProvider extends LabelProvider implements ITableLa
     private int[] m_columnAligmnments;
     
     static final String BLOCKID = "Block Id";
-    static final String TYPE   = "Type";
-    static final String PC     = "Pc";
-    static final String REASON = "Reason";
+    static final String PC      = "Pc";
+    static final String REASON  = "Reason";
     
     public UnknownsViewLabelProvider() {
-    	m_columnNames = new String[] { BLOCKID, TYPE, PC, REASON };
-    	m_columnWidths = new int[] { 100, 100, 100, 500 };
+    	m_columnNames = new String[] { BLOCKID, PC, REASON };
+    	m_columnWidths = new int[] { 100, 100, 500 };
     	m_columnAligmnments = new int[] { SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.LEFT };
     }
     
@@ -35,15 +34,16 @@ public class UnknownsViewLabelProvider extends LabelProvider implements ITableLa
 		
 		assert((columnIndex >= 0) && (columnIndex < m_columnNames.length));
 		
-		Unknown unknown = (Unknown)element;	
+		XtaInstruction unknownInstruction = (XtaInstruction)element;	
 		if (m_columnNames[columnIndex].equals(BLOCKID)) {
-			return "Block " + unknown.getBlockId();
-		} else if (m_columnNames[columnIndex].equals(TYPE)) {
-			return unknown.getTypeString();			
+			return "Block " + unknownInstruction.getBasicBlockId();
 		} else if (m_columnNames[columnIndex].equals(PC)) {
-			return String.format("0x%08x", unknown.getPc());
-    	} else if (m_columnNames[columnIndex].equals(REASON)) {
-	    	return unknown.getReason();			
+			return String.format("0x%08x", unknownInstruction.getPc());
+    	} else if (m_columnNames[columnIndex].equals(REASON)) {    		
+		    return String.format("Time taken for instruction (0x%x: %s %s) is unknown",
+		    		unknownInstruction.getPc(), 
+		    		unknownInstruction.getNmenonic(), 
+		    		unknownInstruction.getOperandString());
 	    }		
 		assert(false);
 		return "";
@@ -59,8 +59,5 @@ public class UnknownsViewLabelProvider extends LabelProvider implements ITableLa
 
 	public int[] getColumnAligmnments() {
 		return m_columnAligmnments;
-	}
-	
-	
-	
+	}			
 }

@@ -5,14 +5,20 @@ import com.xmos.xta.engine.Engine;
 public abstract class Reference {		
 	private String m_ref;
 	private String m_shortRef;
-	private int m_pc;
+
 	private boolean m_resolved;
-    
+	private int m_pc;
+
+	private String m_fileName;
+	private int m_lineNum;
+
 	Reference(String ref) {
 		m_ref = ref;
 		m_shortRef = ref;
 		m_pc = 0;
 		m_resolved = false;
+		m_fileName = "";
+		m_lineNum = 0;
 	}
 	
 	public abstract String name();
@@ -35,7 +41,7 @@ public abstract class Reference {
 		m_shortRef = shortRef;
 	}
     
-    public boolean getResolved() {
+	public boolean getResolved() {
     	return m_resolved;
     }
 
@@ -49,5 +55,21 @@ public abstract class Reference {
 
 	public void setPc(int pc) {
 	    m_pc = pc;
+	}
+
+	public String getFileName() {
+		return m_fileName;
+	}	
+
+	public void setFileName(String fileName) {
+		m_fileName = fileName;
+	}
+
+	public int getLineNum() {
+		return m_lineNum;
+	}	
+
+	public void setLineNum(int lineNum) {
+		m_lineNum = lineNum;
 	}
 }

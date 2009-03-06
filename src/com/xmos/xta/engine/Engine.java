@@ -29,7 +29,6 @@ import com.xmos.xta.engine.maps.SrcTableMap;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
-import com.xmos.xta.engine.Unknown.UnknownType;
 
 public class Engine {
 
@@ -58,6 +57,7 @@ public class Engine {
 	private ArrayList<SrcTableMap> m_endpointTables;
 	private AnalysisEngine m_ae;
 	private Constraint m_constraint;
+	private InstructionMnemonics m_mnenonics;
 
 	public Engine(Config config) {
 		m_xeObjects = new ArrayList<XeObject>();
@@ -79,6 +79,7 @@ public class Engine {
 		m_abort = false;
 		m_progress = new Progress(Progress.State.IDLE, 0, 0);
 		m_constraint = ConstraintFactory.createConstraint(this, "");
+		m_mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
 
 		ReferenceFactory.setEngine(this);
 	}
@@ -182,6 +183,8 @@ public class Engine {
 
 		boolean success = newLoader.loadExecutable(executableFile);
 		if (success) {
+			m_nodeId = 0;
+			m_coreId = 0;
 
 			m_xeLoader = newLoader;
 			m_executableFile = executableFile;
@@ -287,12 +290,16 @@ public class Engine {
 			TreeSet<Integer> endPc = new TreeSet<Integer>();
 			endPc.add(toRef.getPc());
 			String routeDescription = String.format("path: %s to %s", from, to);
-			return analyseRoute(fromRef.getPc(), endPc, routeDescription);
+			boolean success = analyseRoute(fromRef.getPc(), endPc, routeDescription);
+			if (success) {
+				notify(Notifier.NOTIFY_SET_START_POINT, from);
+				notify(Notifier.NOTIFY_SET_END_POINT, to);
+			}
+			return success;
 		}
 	}
 
 	public boolean analyseRoute(int startPc, TreeSet<Integer> endPcs, String routeDescription) {
-		String endString = "";
 		m_previousRoute = m_route;
 		
 		if(endPcs.size() == 0){
@@ -301,20 +308,16 @@ public class Engine {
 		}
 		
 		m_route = new Route(this, startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), 
-				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId), routeDescription);
+				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId),
+				m_mnenonics, routeDescription);
 
 		boolean success = analyseRouteSafley();
 		if (success) {
-			notify(Notifier.NOTIFY_SET_START_POINT, "0x"
-					+ Integer.toHexString(startPc));
-			notify(Notifier.NOTIFY_SET_END_POINT, endString);
-			// may be able to scrap the m_previousRoute here. free a lot of
-			// memory
+			m_previousRoute = null;
 		} else {
 			m_route = m_previousRoute;
 		}
 		return success;
-
 	}
 
 	public void registerNotifier(Notifier notifier) {
@@ -379,14 +382,12 @@ public class Engine {
 		return m_config.m_numThreads;
 	}
 
-	public boolean setLoopIterations(int pathId, boolean absolute,
-			int iterations) {
-		if (this.anythingToDisplay()) {
+	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
+		if (anythingToDisplay()) {
 			boolean hit = m_route.setLoopIterations(pathId, absolute,
 					iterations);
 			if (hit) {
 				m_route.invalidateAllBlocks();
-				//m_route.notifyUpdate();
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			}
 			return hit;
@@ -406,20 +407,16 @@ public class Engine {
 			return false;
 		}
 
-		if (m_route != null)
+		if (anythingToDisplay())
 			m_route.invalidateAllBlocks();
 
-		boolean hit = m_nodeCoreInstructionCache.setInstructionTimeTaken(this,
-				ref.getPc(), timeTaken, m_nodeId, m_coreId);
-		if (hit) {
-			boolean unknownsChanged = updateUnknown(ref.getPc(), true);
-			if (unknownsChanged)
-				notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-
+		if (m_nodeCoreInstructionCache.setInstructionTimeTaken(
+				this, ref.getPc(), timeTaken, m_nodeId, m_coreId)) {
+			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
 		}
-
-		return hit;
+		return false;
 	}
 
 	public double getInstructionTimeTaken(int pc) {
@@ -427,8 +424,7 @@ public class Engine {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
 			return 0;
 		}
-		return m_nodeCoreInstructionCache.getInstructionTimeTaken(pc, m_nodeId,
-				m_coreId);
+		return m_nodeCoreInstructionCache.getInstructionTimeTaken(pc, m_nodeId, m_coreId);
 	}
 
 	public boolean setInstructionNumCycles(Reference ref, int numCycles) {
@@ -443,20 +439,16 @@ public class Engine {
 			return false;
 		}
 
-		if (this.anythingToDisplay())
+		if (anythingToDisplay())
 			m_route.invalidateAllBlocks();
 
-		boolean hit = m_nodeCoreInstructionCache.setInstructionNumCycles(this,
-				ref.getPc(), numCycles, m_nodeId, m_coreId);
-		if (hit) {
-			boolean unknownsChanged = updateUnknown(ref.getPc(), true);
-			if (unknownsChanged)
-				notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-
+		if (m_nodeCoreInstructionCache.setInstructionNumCycles(
+				this, ref.getPc(), numCycles, m_nodeId, m_coreId)) {
+			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-		}
-
-		return hit;
+            return true;			
+		}		
+		return false;
 	}
 
 	public ArrayList<Integer> getPcsWithTimeSet() {
@@ -467,28 +459,12 @@ public class Engine {
 		return m_nodeCoreInstructionCache.getPcsWithTimeSet(m_nodeId, m_coreId);
 	}
 
-	public boolean updateUnknown(int pc, boolean clear) {
-		if (!this.anythingToDisplay())
-			return false;
-
-		boolean found = false;
-		for (Unknown unknown : m_route.getUnknowns()) {
-			if ((unknown.getPc() == pc)
-					&& (unknown.getUnknownType() == UnknownType.PAUSABLETIME)) {
-				unknown.setIsSet(clear);
-				found = true;
-			}
-		}
-		return found;
-	}
-
 	public int getInstructionNumCycles(int pc) {
 		if (m_nodeCoreInstructionCache == null) {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
 			return 0;
 		}
-		return m_nodeCoreInstructionCache.getInstructionNumCycles(pc, m_nodeId,
-				m_coreId);
+		return m_nodeCoreInstructionCache.getInstructionNumCycles(pc, m_nodeId, m_coreId);
 	}
 
 	public void unsetInstructionTime(int pc) {
@@ -520,7 +496,7 @@ public class Engine {
 		return m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId,
 				m_coreId).getInstruction(pc).canPause();
 	}
-
+	
 	public boolean addBranch(Reference fromRef, Reference toRef) {
 		return addToBranchMap(fromRef, toRef);
 	}
@@ -573,6 +549,14 @@ public class Engine {
 		return getSrcLabelMap(m_endpoints);
 	}
 	
+	public SrcTableInfo getEndpoint(int pc) {
+		Map<Integer, SrcTableInfo> endPointTable = getEndpointTable();
+		if (endPointTable.containsKey(pc)) {
+			return endPointTable.get(pc);
+		}
+		return null;
+	}
+	
 	public Map<Integer, SrcTableInfo> getEndpointTable() {
 		return getSrcLabelTableMap(m_endpointTables);
 	}
@@ -600,7 +584,6 @@ public class Engine {
 		} catch (Exception e) {
 			m_progress.setState(Progress.State.IDLE);
 			notify(Notifier.NOTIFY_ERROR, "Unknown error detected");
-			e.printStackTrace();
 			return false;
 		}
 		return success;
@@ -621,13 +604,11 @@ public class Engine {
 		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 
 		if (m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
-
-			RouteStatus status = RouteStatus.ABORTED;
-
-			status = m_route.analyse();
-
+			m_route.isConstrained(false);
+			RouteStatus status = m_route.analyse();
 			switch (status) {
 			case ABORTED:
+				setAbort(false);
 				notify(Notifier.NOTIFY_ERROR, "Abort detected");
 				m_route = m_previousRoute;
 				return false;
@@ -638,21 +619,29 @@ public class Engine {
 				return false;
 			}
 
+			
+			
 			int numUnresolvedPaths = m_route.getUnresolvedPaths().size();
 			if (numUnresolvedPaths > 0) {
 				notify(Notifier.NOTIFY_ERROR, String.format("Found "
 						+ numUnresolvedPaths + " unresolved path(s)"));
+				
+			} else if(m_route.getCompletedPaths().size() == 0){
+				if(m_route.wasConstrained()){
+					notify(Notifier.NOTIFY_ERROR, "No valid path of execution(Constraints applied).");
+				} else {
+					notify(Notifier.NOTIFY_ERROR, "No valid path of execution.(No Constraints applied)");
+				}
+				;
 			}
 
 			notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, "");
 		} else {
-			notify(Notifier.NOTIFY_ERROR, String
-					.format("Node: %d, Core: %d image not found in file: %s",
-							m_nodeId, m_coreId,
-							m_executableFile));
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Node: %d, Core: %d image not found in file: %s",
+					m_nodeId, m_coreId, m_executableFile));
 			return false;
 		}
-
 		return true;
 	}
 
@@ -944,12 +933,13 @@ public class Engine {
 	}
 
 	public void setConstraint(Constraint constraint) {
-		assert(constraint!= null);
-		if(constraint==null){
+		assert(constraint != null);
+		if (constraint==null){
 			m_constraint = ConstraintFactory.createConstraint(this, "");
 		} else {
 			m_constraint = constraint;
 		}
+		notify(Notifier.NOTIFY_SET_CONSTRAINT, "");
 	}
 
 	public Constraint getConstraint() {

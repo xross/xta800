@@ -68,7 +68,7 @@ public class Sources extends Command {
     
     private void buildPathsWithinSourcesSet(PathBasicBlock path, Set<Integer> pathSet, String sourceFileName, XeObject xeObject) {	
         if (pathWithinSourceFile(path, sourceFileName, xeObject)) {
-        	pathSet.add(path.getBlockId());
+        	pathSet.add(path.getPathId());
         }
 
         for (PathBasicBlock loopPath : path.getLoopPaths(path)) {

@@ -35,7 +35,6 @@ import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.Unknown;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
@@ -91,12 +90,14 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private Node m_selectedNode;
     
     private final String m_type;
+    private final String m_fileName;
     private InputLine m_startPointLine;
     private InputLine m_endPointLine;
     
     public XtaEditor(final String type, String fileName) {
 		if (DEBUG) System.out.printf("XtaEditor()\n");
 		m_type = type;
+		m_fileName = fileName;
 
 		XtaNotifier.getInstance().addPropertyChangeListener(this);
 
@@ -134,8 +135,16 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         m_painter.addAnnotationType(HighlightAnnotationID);
     }
     
+    public void dispose() {
+		if (DEBUG) System.out.printf("XtaEditor: dispose\n");	
+    	
+		XtaNotifier.getInstance().removePropertyChangeListener(this);
+		getSite().getPage().removeSelectionListener(this);
+		super.dispose();
+    }
+    
 	public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG) System.out.printf("Tree: propertyChange: %s\n", event.getProperty());	
+		if (DEBUG) System.out.printf("XtaEditor: propertyChange: %s\n", event.getProperty());	
 		
 		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
 			m_selectedNode = null;
@@ -336,9 +345,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         HashMap<Annotation, Position> annotationPositions = 
     	    new HashMap<Annotation, Position>();		
 		
-		for (Unknown unknown : XtaNotifier.getInstance().getRouteInfo().getRoute().getUnknowns()) {
-			if (unknown.isShown() && !unknown.isSet())
-				updateAnnotations(unknown.getPc(), UnknownAnnotationID, annotations, annotationPositions, true);
+		for (XtaInstruction instruction : XtaNotifier.getInstance().getRouteInfo().getRoute().getUnknowns()) {
+			updateAnnotations(instruction.getPc(), UnknownAnnotationID, annotations, annotationPositions, true);
 		}						    
 
 		m_annotationModel.replaceAnnotations(m_previousUnknownAnnotations, annotationPositions);        
@@ -577,7 +585,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	    	    if (m_type.equals(XtaDocumentPartitioner.DISASSEMBLY)) {
 	    		    return findPcLine(pc);
 	    	    } else {
-	    		    return findCodeLine(pc);
+	    	    	if (m_fileName.equals(codeRef.getFileName()))
+	    		    return findCodeLine(codeRef.getLineNum());
 	    	    }
 			}			
 		}
@@ -595,12 +604,11 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		return null;
 	}
 
-	private InputLine findCodeLine(int pc) {
+	private InputLine findCodeLine(int lineNum) {
 		for (InputSection inputSection : getSections()) {
-			for (InputLine line : inputSection.getLines()) {
-				if ((line.getPc() == pc) && !inputSection.isFnop(line.getOffset())) {	
-					return inputSection.getHeader();
-				}
+			InputLine header = inputSection.getHeader();
+			if (header.getPc() == lineNum) {
+				return header;
 			}
     	}
 		return null;

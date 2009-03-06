@@ -22,7 +22,7 @@ public class InstructionDecodeCache {
 	@SuppressWarnings("unchecked")
 	InstructionDecodeCache(Engine engine, SymbolTable symbolTable, XeLoader.Architecture architecture, Config config) {
 		m_engine = engine;
-    	m_instructionDecoder = XtaInstructionDecoder.createInstrcutionDecoder(architecture);
+    	m_instructionDecoder = XtaInstructionDecoder.createInstructionDecoder(architecture);
 		m_instructionCache = new HashMap<Integer, XtaInstruction>();
         m_fnopCache = new HashMap[2];
         m_fnopCache[0] = new HashMap<Integer, XtaInstruction>();
@@ -68,9 +68,9 @@ public class InstructionDecodeCache {
 			if (instruction.canPause()) {
 			    instruction.setTimeTaken(timeTaken);
 			    
-			    if (!m_instructionTimeCache.contains(pc))
+			    if (!m_instructionTimeCache.contains(pc)) {
 			    	m_instructionTimeCache.add(pc);
-			    
+			    }
 			    return true;
 			}
 			
@@ -100,8 +100,9 @@ public class InstructionDecodeCache {
 			if (instruction.canPause()) {
 				instruction.setNumCycles(numCycles);
 
-			    if (!m_instructionTimeCache.contains(pc))
+			    if (!m_instructionTimeCache.contains(pc)) {
 			    	m_instructionTimeCache.add(pc);
+			    }
 			    return true;
 			}
 			
@@ -141,10 +142,7 @@ public class InstructionDecodeCache {
     		XtaInstruction instruction = m_instructionCache.get(pc);
     		instruction.resetNumCycles();
     		m_instructionTimeCache.remove((Integer)pc);
-
-    		boolean unknownsChanged = m_engine.updateUnknown(pc, false);
-    		if (unknownsChanged)
-    			m_engine.notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+   			m_engine.notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
     		return true;
 		} else {
 			return false;
@@ -154,10 +152,9 @@ public class InstructionDecodeCache {
 	public boolean unsetInstructionTime(Reference ref) {
 		if (ref.getResolved()) {
 			return unsetInstructionTime(ref.getPc());
-		}			
+		}
 		
 		ArrayList<Integer> matches = new ArrayList<Integer>();
-		boolean unknownsChanged = false; 
 
 		for (Integer pc : m_instructionTimeCache) {
     		String thisPcString = "0x" + Integer.toHexString(pc); 
@@ -168,8 +165,6 @@ public class InstructionDecodeCache {
 	        		XtaInstruction instruction = m_instructionCache.get(pc);
 	        		instruction.resetNumCycles();
 	        		matches.add(pc);
-
-	        		unknownsChanged |= m_engine.updateUnknown(pc, false);
 	    		}
 			} catch (PatternSyntaxException e) {
 				// Ignore
@@ -181,10 +176,7 @@ public class InstructionDecodeCache {
 				m_instructionTimeCache.remove(toRemove);
 		}
 
-		if (unknownsChanged)
-			m_engine.notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-		
+		m_engine.notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");		
 		return (matches.size() > 0);
 	}
-
 }

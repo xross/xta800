@@ -9,25 +9,34 @@ import java.util.TreeSet;
 
 import com.xmos.xta.engine.Status.BlockStatus;
 
+class AbortedException extends Exception {
+
+	private static final long serialVersionUID = 1L;}
+
 public class Route {
+	static private final int SR_IEBLE_SHIFT = 1;
+	static private final int SR_IEBLE_SIZE = 1; 
 	
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR
 	}
 	
-	private static int m_pathCount;
+	private static int s_pathCount;
 	private ArrayList<BasicBlock> m_nodes;
 	private int m_startPc;
 	private TreeSet<Integer> m_endPcs; 
 	private ArrayList<PathBasicBlock> m_completedPaths;
 	private ArrayList<PathBasicBlock> m_allBasicBlocks;
 	private String m_description;
-	private ArrayList<Unknown> m_unknowns;
 	private ArrayList<Unresolved> m_unresolvedPaths;
 	private InstructionDecodeCache m_idc;
+	private InstructionMnemonics m_mnenonics;
 	private Engine m_engine;
+	private boolean m_constrained;
 	
-	public Route(Engine engine, int startPc, TreeSet<Integer> endPcs, ArrayList<BasicBlock> nodes, InstructionDecodeCache idc, String description){
+	public Route(Engine engine, int startPc, TreeSet<Integer> endPcs, 
+			ArrayList<BasicBlock> nodes, InstructionDecodeCache idc, 
+			InstructionMnemonics mnenonics, String description){
 		m_engine = engine;
 		m_completedPaths = new ArrayList<PathBasicBlock>();
 		m_allBasicBlocks = new ArrayList<PathBasicBlock>();
@@ -36,8 +45,9 @@ public class Route {
 		m_endPcs =endPcs;
 		m_description = description;
 		m_nodes = nodes;
-		m_unknowns = new ArrayList<Unknown>();
 		m_idc = idc;
+		m_mnenonics = mnenonics;
+		s_pathCount = 0;
 	}
 	
 	public ArrayList<PathBasicBlock> getCompletedPaths(){
@@ -51,11 +61,7 @@ public class Route {
 	public String getDescription() {
 		return m_description;
 	}
-	
-	public ArrayList<Unknown> getUnknowns() {
-		return m_unknowns;
-	}
-	
+		
 	public ArrayList<PathBasicBlock> getAllBasicBlocks(){
 		return m_allBasicBlocks;
 	}
@@ -83,9 +89,18 @@ public class Route {
 		
 		
 		nodeContext.push(new LinkedList<BasicBlock>());
-		followNode(startBasicBlock, stack, nodeContext);
+		
+		try {
+		    followNode(startBasicBlock, stack, nodeContext);
+		} catch (AbortedException e) {
+			return RouteStatus.ABORTED;
+		}
+		
 		sortPaths();
 		updateDescription();
+		displayWarnings();
+		
+		
 		return RouteStatus.COMPLETED;
 	}
 	
@@ -125,14 +140,31 @@ public class Route {
 		return false;		
 	}
 	
+
 	private final static boolean debug = false;
-	
+
+	public ArrayList<XtaInstruction> getUnknowns() {
+        ArrayList<XtaInstruction> unknowns = new ArrayList<XtaInstruction>();
+		for (PathBasicBlock path : m_completedPaths) {
+			for (XtaInstruction instruction : path.getInstructions(true)) {
+				if (instruction.isUnknown()) {
+					unknowns.add(instruction);
+				}
+			}
+		}
+        return unknowns;
+	}
+
 	@SuppressWarnings("unchecked")
 	private void followNode(
 		PathBasicBlock currentBasicBlock, 
 		Stack<Integer> stack, 
-		Stack<LinkedList<BasicBlock>> nodeContext) {
-		if(debug) System.out.println("currentBlock : " + currentBasicBlock);
+		Stack<LinkedList<BasicBlock>> nodeContext) throws AbortedException {
+		
+		if(m_engine.getAbort()) {
+			throw new AbortedException();
+		}
+		
 		if(reachedEnd(currentBasicBlock)){
 			if(debug) System.out.println("\treached end");
 			int size = currentBasicBlock.getInstructionTrimmed().size()-1;
@@ -148,23 +180,30 @@ public class Route {
 			}
 			if(updateConstraints(endBlock)){
 				endBlock.setStatus(BlockStatus.EXCLUDED);
+				isConstrained(true);
 				return;
 			}
 
+			checkSupportedInstructions(endBlock);
+			
 			if(endBlock.getConstraint().isTrue()){
 				m_completedPaths.add(endBlock);
-				endBlock.setPath(m_pathCount++);
+				endBlock.setPath(s_pathCount++);
 				endBlock.setStatus(BlockStatus.COMPLETE);
 			}  else {
+				isConstrained(true);
 				endBlock.setStatus(BlockStatus.EXCLUDED);
 			}
 			return;
 		} else {
 			if(updateConstraints(currentBasicBlock)){
+				isConstrained(true);
 				currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
 				return;
 			}
 			
+			checkSupportedInstructions(currentBasicBlock);
+
 			if(hasResursed(currentBasicBlock, nodeContext)){
 				if(debug) System.out.println("\recursed");
 				String reason = "Recursion with 0x" + Integer.toHexString(currentBasicBlock.getBasicBlock().getInstructions().getFirst().getPc());
@@ -222,7 +261,7 @@ public class Route {
 		//this must be true by design of the algorithm
 		assert(pathFormingLoop != null);
 		
-		pathFormingLoop.setPath(m_pathCount++);
+		pathFormingLoop.setPath(s_pathCount++);
 
 		if(debug) System.out.println("adding loop " + pathFormingLoop  + " to "+loopDestinationBlock);
 		loopDestinationBlock.addLoopPath(pathFormingLoop);
@@ -234,13 +273,36 @@ public class Route {
 
 	
 	private boolean updateConstraints(PathBasicBlock block) {
-		m_allBasicBlocks.add(block);
+		m_allBasicBlocks.add(block);					
 		for(XtaInstruction inst : block.getInstructionTrimmed()){
 			if(block.getConstraint().isFalse(inst.getPc())){
 				return true;
 			}
-		}
+		}		
 		return false;
+	}
+	
+	private void checkSupportedInstructions(PathBasicBlock block) {
+		for(XtaInstruction inst : block.getInstructionTrimmed()){
+			
+			// Checks for threading instructions...
+			if (m_mnenonics.isSsync(inst))
+				block.addWarning(String.format("Ssync (multiple threads) not supported. Pc: 0x%08x", inst.getPc()));					
+			if (m_mnenonics.isMsync(inst))
+				block.addWarning(String.format("Msync (multiple threads) not supported. Pc: 0x%08x", inst.getPc()));				
+			if (m_mnenonics.isMjoin(inst)) {
+				block.addWarning(String.format("Mjoin (multiple threads) not supported. Pc: 0x%08x", inst.getPc()));
+			}
+			
+			// Checks for interrupt enable..
+			if (m_mnenonics.isSetSr(inst)) {	
+				int op1Field = inst.getOperandField("op1");
+				int shift = SR_IEBLE_SHIFT;
+				int mask = (1 << SR_IEBLE_SIZE) - 1;
+				if (((op1Field >> shift) & mask) == 1) 
+    				block.addWarning(String.format("Interrupt enable detected. Pc: 0x%08x", inst.getPc()));					
+			}
+		}		
 	}
 
 	private boolean reachedEnd(PathBasicBlock currentBasicBlock) {
@@ -302,10 +364,32 @@ public class Route {
 		m_description += ")";
 	}
 	
+	private void displayWarnings() {
+		for (PathBasicBlock block : m_completedPaths) {
+			for (String message : block.getWarnings()) {
+				m_engine.notify(Notifier.NOTIFY_WARNING, message);
+			}
+		}
+	}
+	
 	private void sortPaths() {
 		Collections.sort(m_completedPaths);
 		for(PathBasicBlock block : m_allBasicBlocks){
 			Collections.sort(block.getLoopPaths(block));
 		}
+	}
+
+	/**
+	 * @param m_constrained the m_constrained to set
+	 */
+	public void isConstrained(boolean m_constrained) {
+		this.m_constrained = m_constrained;
+	}
+
+	/**
+	 * @return the m_constrained
+	 */
+	public boolean wasConstrained() {
+		return m_constrained;
 	}
 }

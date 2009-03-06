@@ -34,8 +34,8 @@ public class XtaCompletor implements Completor {
 		if (tokens.size() > 1) {
 			String lastCompleteCommand = getLastCompleteCommand(tokens.iterator(), 
 					CommandFactory.getCommands(), "");			
-
-			if (m_subCompletors.containsKey(lastCompleteCommand)) {				
+			
+			if (m_subCompletors.containsKey(lastCompleteCommand)) {											
 				return m_subCompletors.get(lastCompleteCommand).complete(buffer, cursor, candidates);
 			} else {
 			    return 0;
@@ -125,7 +125,7 @@ public class XtaCompletor implements Completor {
 		// to this command will not start at zero, due to the command nesting.
 	    int numNullCommands = 0;
 		while (numNullCommands < commandLevel) {
-			completors.add(numNullCommands, null);
+			completors.add(numNullCommands, new NullCompletor());
 			++numNullCommands;
 		}
     }

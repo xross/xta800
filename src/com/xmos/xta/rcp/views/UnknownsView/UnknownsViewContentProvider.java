@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import com.xmos.xta.engine.Route;
-import com.xmos.xta.engine.Unknown;
+import com.xmos.xta.engine.XtaInstruction;
 
 public class UnknownsViewContentProvider implements IStructuredContentProvider {
     public static final boolean DEBUG = false;
@@ -14,12 +14,10 @@ public class UnknownsViewContentProvider implements IStructuredContentProvider {
 	public Object[] getElements(Object inputElement) {
 		if (DEBUG) System.out.printf("UnknownsViewContentProvider: getElements\n");	
 		
-		ArrayList<Unknown> show = new ArrayList<Unknown>();
+		ArrayList<XtaInstruction> show = new ArrayList<XtaInstruction>();
 		
-		for (Unknown unknown : ((Route)inputElement).getUnknowns()){
-			if (unknown.isShown() && !unknown.isSet()) {
-				show.add(unknown);
-			}
+		for (XtaInstruction instruction : ((Route)inputElement).getUnknowns()){
+			show.add(instruction);
 		}
 		return show.toArray();
 	}

@@ -39,14 +39,18 @@ public class Functions extends Command {
         
 	    int nodeId = engine.getNodeId();
 	    int coreId = engine.getCoreId();
+	    
         Vector<String> functionNames = engine.getXeLoader().getFunctionNames(nodeId, coreId);
-
-        XeLoader xeLoader = engine.getXeLoader();
-        SymbolTable symbolTable = xeLoader.getSymbolTable(nodeId, coreId);
-        
-        for (String functionName : functionNames) {
-        	int functionAddress = symbolTable.symbolAddress(functionName);
-            console.display(String.format("- %s (0x%x)\n", functionName, functionAddress));
-        }
+        if (functionNames.size() > 0) {
+            XeLoader xeLoader = engine.getXeLoader();
+            SymbolTable symbolTable = xeLoader.getSymbolTable(nodeId, coreId);
+            
+            for (String functionName : functionNames) {
+            	int functionAddress = symbolTable.symbolAddress(functionName);
+                console.display(String.format("- %s (0x%x)\n", functionName, functionAddress));
+            }        	
+        } else {
+			console.display("none\n");        	
+        }        
     }
 }

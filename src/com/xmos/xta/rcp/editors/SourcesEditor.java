@@ -22,11 +22,18 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
     private int m_disassemblyIndex;
     
 	public SourcesEditor() {
-		if (DEBUG) System.out.printf("Sources()\n");			
+		if (DEBUG) System.out.printf("SourcesEditor()\n");			
 
 		XtaNotifier.getInstance().addPropertyChangeListener(this);
 	}
 	
+	public void dispose() {
+		if (DEBUG) System.out.printf("SourcesEditor: dispose\n");
+
+		XtaNotifier.getInstance().removePropertyChangeListener(this);
+		super.dispose();
+	}
+
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("SourcesEditor: propertyChange: %s\n", event.getProperty());	
 		
@@ -59,37 +66,36 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 	}
 	
 	public void doSave(IProgressMonitor monitor) {
-		if (DEBUG) System.out.printf("Sources: doSave\n");			
+		if (DEBUG) System.out.printf("SourcesEditor: doSave\n");			
 	}
 
 	public void doSaveAs() {
-		if (DEBUG) System.out.printf("Sources: doSaveAs\n");			
+		if (DEBUG) System.out.printf("SourcesEditor: doSaveAs\n");			
 	}
 
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
-		if (DEBUG) System.out.printf("Sources: init\n");
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+		if (DEBUG) System.out.printf("SourcesEditor: init\n");
 		
 		setSite(site);
 		setInput(input);
 	}
 
 	public boolean isDirty() {
-		if (DEBUG) System.out.printf("Sources: isDirty\n");			
+		if (DEBUG) System.out.printf("SourcesEditor: isDirty\n");			
 		return false;
 	}
 
 	public boolean isSaveAsAllowed() {
-		if (DEBUG) System.out.printf("Sources: isSaveAsAllowed\n");			
+		if (DEBUG) System.out.printf("SourcesEditor: isSaveAsAllowed\n");			
 		return false;
 	}
 
 	public void setFocus() {
-		if (DEBUG) System.out.printf("Sources: setFocus\n");			
+		if (DEBUG) System.out.printf("SourcesEditor: setFocus\n");			
 	}
 
 	protected void createPages() {		
-		if (DEBUG) System.out.printf("Sources: createPages\n");	
+		if (DEBUG) System.out.printf("SourcesEditor: createPages\n");	
         try {
         	XtaEditor disassemblyEditor = new XtaEditor(XtaDocumentPartitioner.DISASSEMBLY,
         			"Disassembly");
@@ -106,9 +112,19 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 	    		index = addPage(sourceEditor, sourceEditorInput);
 		    	setPageText(index, sourceFile.getFileName());
 	        }
+	        
+			String fileName = xeObject.getFunctionFileName("main");
+			if (fileName.equals("")) {
+				setActivePage(0);
+			} else {
+				for (int i = 0; i < this.getPageCount(); i++) {
+					if (fileName.equals(this.getPageText(i))) {
+						setActivePage(i);
+					}
+				}
+			}
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}
-		setActivePage(0);
 	}
 }

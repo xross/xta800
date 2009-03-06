@@ -17,6 +17,10 @@ public class SrcLabelFileLineReference extends Reference {
             if (info.getFileName().equals(fileName) &&
             	(info.getLineNumber() == lineNumber)) {
             	setPc(info.getPc());
+            	setFileName(fileName);
+            	setLineNum(lineNumber);
+
+            	setResolved(true);
             	return true;
             }			
 		}		

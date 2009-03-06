@@ -42,6 +42,9 @@ public abstract class XtaInstruction extends Instruction {
 	private boolean m_nextInstructionPcKnown;
 	private int m_nextInstructionPc;
     
+	private boolean m_isUnknown;
+	private int m_basicBlockId;
+	
 	XtaInstruction(String nmenonic, Config config, int opcode, int pc, int numBytes, 
 			boolean isLoadStore, boolean canPause, boolean usesResource, 
 		    boolean definesResource, int numCycles) {
@@ -58,6 +61,8 @@ public abstract class XtaInstruction extends Instruction {
 		m_liveOut = new HashSet<LivenessResource>();
 		m_successors = new ArrayList<NextPcType>();
 		m_predessors =  new ArrayList<XtaInstruction>();
+		m_isUnknown = canPause;
+		m_basicBlockId = 0;
 	}
 
 	public ArrayList<XtaInstruction> getPredessors(){
@@ -161,7 +166,7 @@ public abstract class XtaInstruction extends Instruction {
 	}
 	
 	public abstract void execute(MachineState machineState, int thread) throws Exception;
-    		   
+	public abstract int getOperandField(String opName);    		   
 	
 	public void setFunctionName(String functionName) {
 		m_functionName = functionName;
@@ -188,14 +193,16 @@ public abstract class XtaInstruction extends Instruction {
 		else {
 		    m_numCycles.setNumIterations(m_basicNumCycles);
 		}
-	}
-
-	public void resetNumCycles() {
-	    m_numCycles.setNumIterations(m_basicNumCycles);
+		m_isUnknown = false;
 	}
 	
 	public int getNumCycles() {
 		return m_numCycles.getNumIterations();
+	}
+
+	public void resetNumCycles() {
+	    m_numCycles.setNumIterations(m_basicNumCycles);
+	    m_isUnknown = true;
 	}
 	
 	public void setTimeTaken(double timeTaken) {
@@ -209,16 +216,21 @@ public abstract class XtaInstruction extends Instruction {
 	}
 	
 	public double getTimeTaken() {
-		assert(m_config != null);
-    	double timeTaken = 0.0;    	
-    	
-        if (m_config.m_numThreads > 4) {
-        	timeTaken = ((m_config.m_numThreads * 1000) / m_config.m_frequency) * m_numCycles.getNumIterations();
-        }
-        else {
-        	timeTaken = ((4.0 * 1000) / m_config.m_frequency) * m_numCycles.getNumIterations();
-        }
-        return timeTaken;
+		assert(m_config != null);    	
+    	int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
+        return ((double)(threadFactor * 1000) / (double)m_config.m_frequency) * m_numCycles.getNumIterations();
+	}
+	
+	public boolean isUnknown() {
+		return m_isUnknown;
+	}
+	
+	public void setBasicBlockId(int basicBlockId) {
+		m_basicBlockId = basicBlockId;
+	}
+	
+	public int getBasicBlockId() {
+		return m_basicBlockId;
 	}
 	
 	void setConfig(Config config) {
@@ -2889,7 +2901,6 @@ public abstract class XtaInstruction extends Instruction {
         } else {
         	throw new InstructionExecption(Error.UNKNOWN_RESOURCE);
         } 
-    	
     }
     
     void SETCLK(MachineState state, int thread) throws Exception {
@@ -2937,14 +2948,11 @@ public abstract class XtaInstruction extends Instruction {
         	//this is a genuine exception
         	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
         }
-    	
     }
 
 	public Config getConfig() {
 		return m_config;
 	}
-
-
 }
 
 class NullInstruction extends XtaInstruction {    
@@ -2954,6 +2962,10 @@ class NullInstruction extends XtaInstruction {
     }
     
     public void execute(MachineState state, int thread) throws Exception {
+    }
+
+    public int getOperandField(String opName) {
+    	return 0;
     }
     
     public String getOperandString() {
