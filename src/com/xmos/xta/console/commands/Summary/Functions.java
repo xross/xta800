@@ -72,8 +72,8 @@ public class Functions extends Command {
     	
         for (PathBasicBlock block : path.getPathBlocks()) {
             if (pathWithinFunction(block, functionAddress, functionSize)) {
-                if (!pathSet.contains(path.getBlockId())) {
-                    pathSet.add(path.getBlockId());
+                if (!pathSet.contains(path.getPathId())) {
+                    pathSet.add(path.getPathId());
                 }
             }
         

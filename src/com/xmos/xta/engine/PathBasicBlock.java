@@ -12,13 +12,11 @@ import com.xmos.xta.engine.Status.BlockStatus;
 import com.xmos.xta.engine.constraint.Constraint;
 
 public class PathBasicBlock implements Comparable<PathBasicBlock>{
-	private static int pathBasicBlockCount;
 	private BasicBlock m_basicBlock;
 	private PathBasicBlock m_parentBasicBlock;
 	private ArrayList<PathBasicBlock> m_loopPaths;
 	private int m_seen;
 	private int m_pathId;
-	private int m_blockId;
 	private HashMap<PathBasicBlock, PathAttributes> m_loopPathAttributes;
 	private BasicBlockStats m_blockStats;
 	private BlockStatus m_status;
@@ -39,7 +37,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		m_parentBasicBlock = parentBasicBlock;
 		m_seen = 0;
 		m_loopPaths = new ArrayList<PathBasicBlock>();
-		m_blockId = pathBasicBlockCount++;
 		m_pathId = -1;
 		m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
 		m_blockStats = new BasicBlockStats(this);
@@ -67,7 +64,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		m_parentBasicBlock = parentBasicBlock;
 		m_seen = 0;
 		m_loopPaths = new ArrayList<PathBasicBlock>();
-		m_blockId = pathBasicBlockCount++;
 		m_pathId = -1;
 		m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
 		m_blockStats = new BasicBlockStats(this);
@@ -88,8 +84,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		}
 		createIBuffer();
 		createTrimmedInstructions(); 
-		createInstructionStream(); 
-		
+		createInstructionStream(); 		
 	}
 	
 	/**
@@ -146,17 +141,16 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	}
 	
 	public int getBlockId(){
-		return m_blockId;
+		return m_basicBlock.getId();
 	}
-	
+
 	public BasicBlock getBasicBlock(){
 		return m_basicBlock;
 	}
 	
 	public PathBasicBlock getParent(){
 		return m_parentBasicBlock;
-	}
-	
+	}	
 	
 	/**
 	 * 
@@ -345,6 +339,18 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 			m_instructionsTrimmed = pathBasicBlockInstructions;
 		}
 	}
+	
+	public void setUnresolved(Unresolved unresolved) {
+		m_unresolved= unresolved;		
+	}
+
+	public Constraint getConstraint() {
+		return m_constraint;
+	}
+
+	public void setConstraint(Constraint constraint){
+		m_constraint = constraint;
+	}	
 
 	public int getLength() {
 		int pathLength = 0;
@@ -510,22 +516,4 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public int getNumFNopsLoopsOnly() {	return m_blockStats.getNumFNopsLoopsOnly();}
 	public int getNumPausablesLoopsOnly() {	return m_blockStats.getNumPausablesLoopsOnly();}
 	public int getNumUnknownsLoopsOnly() { return m_blockStats.getNumUnknownsLoopsOnly();}
-
-	public void setUnresolved(Unresolved unresolved) {
-		m_unresolved= unresolved;
-		
-	}
-
-
-	public Constraint getConstraint() {
-		return m_constraint;
-	}
-
-	public void setConstraint(Constraint constraint){
-		m_constraint = constraint;
-	}
-	
-
-
-
 }

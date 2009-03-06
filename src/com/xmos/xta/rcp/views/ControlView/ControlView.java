@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import javax.rmi.CORBA.Util;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
