@@ -11,30 +11,30 @@ Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
     path\(\d+\)    : 220.0/11/7/4/0/1/0
-        block\(b\d+\)  : 100.0/5/3/2/0
+        block\(b\d+\) +: 100.0/5/3/2/0
             \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
             \(20.0ns\) 0x[0-9a-fA-F]{5} ldwdp \(lru6\) r0, dp\[i 0x10\] 
             \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
             \(20.0ns\) 0x[0-9a-fA-F]{5} eq \(2rus\) r0, r0, i 0x2 
             \(20.0ns\) 0x[0-9a-fA-F]{5} brft \(ru6\) r0, i 0x2 
-        block\(b\d+\)  : 40.0/2/2/0/0
+        block\(b\d+\) +: 40.0/2/2/0/0
             \(20.0ns\) 0x[0-9a-fA-F]{5} ldc \(ru6\) r0, i 0x3 
             \(20.0ns\) 0x[0-9a-fA-F]{5} stwdp \(lru6\) r0, dp\[i 0xc\] 
-        block\(b\d+\)  : 80.0/4/2/2/0
+        block\(b\d+\) +: 80.0/4/2/2/0
             \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
             \(20.0ns\) 0x[0-9a-fA-F]{5} ldwdp \(lru6\) r0, dp\[i 0x10\] 
             \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
             \(20.0ns\) 0x[0-9a-fA-F]{5} retsp \(u6\) i 0x0 
-    path\(\d+\)    : 180.0/9/6/3/0/1/0
-        block\(b\d+\)  : 100.0/5/3/2/0
+    path\(\d+\) +: 180.0/9/6/3/0/1/0
+        block\(b\d+\) +: 100.0/5/3/2/0
             \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
             \(20.0ns\) 0x[0-9a-fA-F]{5} ldwdp \(lru6\) r0, dp\[i 0x10\] 
             \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
             \(20.0ns\) 0x[0-9a-fA-F]{5} eq \(2rus\) r0, r0, i 0x2 
             \(20.0ns\) 0x[0-9a-fA-F]{5} brft \(ru6\) r0, i 0x2 
-        block\(b\d+\)  : 20.0/1/1/0/0
+        block\(b\d+\) +: 20.0/1/1/0/0
             \(20.0ns\) 0x[0-9a-fA-F]{5} brfu \(u6\) i 0x6 
-        block\(b\d+\)  : 60.0/3/2/1/0
+        block\(b\d+\) +: 60.0/3/2/1/0
             \(20.0ns\) 0x[0-9a-fA-F]{5} ldwdp \(lru6\) r0, dp\[i 0x10\] 
             \(20.0ns\) 0x[0-9a-fA-F]{5} --FNOP--  
             \(20.0ns\) 0x[0-9a-fA-F]{5} retsp \(u6\) i 0x0 
