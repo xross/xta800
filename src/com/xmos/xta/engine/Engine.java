@@ -333,13 +333,11 @@ public class Engine {
 
 		boolean success = analyseRouteSafley();
 		if (success) {
-			// may be able to scrap the m_previousRoute here. free a lot of
-			// memory
+			m_previousRoute = null;
 		} else {
 			m_route = m_previousRoute;
 		}
 		return success;
-
 	}
 
 	public void registerNotifier(Notifier notifier) {
@@ -606,7 +604,6 @@ public class Engine {
 		} catch (Exception e) {
 			m_progress.setState(Progress.State.IDLE);
 			notify(Notifier.NOTIFY_ERROR, "Unknown error detected");
-			e.printStackTrace();
 			return false;
 		}
 		return success;
@@ -627,13 +624,11 @@ public class Engine {
 		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 
 		if (m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
-
-			RouteStatus status = RouteStatus.ABORTED;
-
-			status = m_route.analyse();
-
+			
+			RouteStatus status = m_route.analyse();
 			switch (status) {
 			case ABORTED:
+				setAbort(false);
 				notify(Notifier.NOTIFY_ERROR, "Abort detected");
 				m_route = m_previousRoute;
 				return false;
@@ -652,13 +647,11 @@ public class Engine {
 
 			notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, "");
 		} else {
-			notify(Notifier.NOTIFY_ERROR, String
-					.format("Node: %d, Core: %d image not found in file: %s",
-							m_nodeId, m_coreId,
-							m_executableFile));
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Node: %d, Core: %d image not found in file: %s",
+					m_nodeId, m_coreId, m_executableFile));
 			return false;
 		}
-
 		return true;
 	}
 

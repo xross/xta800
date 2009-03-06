@@ -9,6 +9,8 @@ import java.util.TreeSet;
 
 import com.xmos.xta.engine.Status.BlockStatus;
 
+class AbortedException extends Exception {}
+
 public class Route {
 	static private final int SR_IEBLE_SHIFT = 1;
 	static private final int SR_IEBLE_SIZE = 1; 
@@ -82,7 +84,13 @@ public class Route {
 		Stack<Integer> stack = new Stack<Integer>();
 		Stack<LinkedList<BasicBlock>> nodeContext = new Stack<LinkedList<BasicBlock>>();
 		nodeContext.push(new LinkedList<BasicBlock>());
-		followNode(startBasicBlock, stack, nodeContext);
+		
+		try {
+		    followNode(startBasicBlock, stack, nodeContext);
+		} catch (AbortedException e) {
+			return RouteStatus.ABORTED;
+		}
+		
 		sortPaths();
 		updateDescription();
 		displayWarnings();
@@ -136,7 +144,11 @@ public class Route {
 	private void followNode(
 		PathBasicBlock currentBasicBlock, 
 		Stack<Integer> stack, 
-		Stack<LinkedList<BasicBlock>> nodeContext) {
+		Stack<LinkedList<BasicBlock>> nodeContext) throws AbortedException {
+		
+		if(m_engine.getAbort()) {
+			throw new AbortedException();
+		}
 		
 		if(reachedEnd(currentBasicBlock)){
 			
