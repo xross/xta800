@@ -1,0 +1,13 @@
+.text
+
+.align 2
+.globl _start
+_start:
+  bl main
+
+.align 4
+.type main, @function
+.globl main
+main:
+  in r0, res[r0]
+  retsp 0
