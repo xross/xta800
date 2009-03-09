@@ -24,7 +24,7 @@ public class Route {
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR
 	}
-	
+	private boolean m_firstStep;
 	private static int s_pathCount;
 	private ArrayList<BasicBlock> m_nodes;
 	private int m_startPc;
@@ -91,7 +91,7 @@ public class Route {
 		
 		Stack<Integer> stack = new Stack<Integer>();
 		Stack<LinkedList<BasicBlock>> nodeContext = new Stack<LinkedList<BasicBlock>>();
-		
+		m_firstStep = true;
 		
 		nodeContext.push(new LinkedList<BasicBlock>());
 		
@@ -170,7 +170,8 @@ public class Route {
 			throw new AbortedException();
 		}
 		
-		if(reachedEnd(currentBasicBlock, mode)){
+		
+		if(reachedEnd(currentBasicBlock, mode) ){
 			if(debug) System.out.println("\treached end");
 			int size = currentBasicBlock.getInstructionTrimmed().size()-1;
 			PathBasicBlock endBlock = currentBasicBlock;
@@ -208,6 +209,9 @@ public class Route {
 			}
 			return;
 		} else {
+			
+			m_firstStep = false;
+			
 			if(updateConstraints(currentBasicBlock)){
 				isConstrained(true);
 				currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
@@ -243,7 +247,7 @@ public class Route {
 				newStack.pop();
 				PathBasicBlock nextPathBasicBlock = new PathBasicBlock(m_engine, nextNode, currentBasicBlock, m_idc);
 				
-				if(this.m_endPcs.contains(nextPathBasicBlock.getInstructionStream().getFirst().getPc()) &&  mode == RouteMode.ABSLOUTE){
+				if(m_endPcs.contains(nextPathBasicBlock.getFirstPc()) &&  mode == RouteMode.ABSLOUTE ){
 					if(currentBasicBlock.getConstraint().isTrue()){
 						m_completedPaths.add(currentBasicBlock);
 						currentBasicBlock.setPath(s_pathCount++);
@@ -276,7 +280,7 @@ public class Route {
 					}
 					PathBasicBlock nextPathBasicBlock = new PathBasicBlock(m_engine, nextNode, currentBasicBlock, m_idc);
 					
-					if(this.m_endPcs.contains(nextPathBasicBlock.getInstructionStream().getFirst().getPc()) &&  mode == RouteMode.ABSLOUTE){
+					if(m_endPcs.contains(nextPathBasicBlock.getFirstPc()) &&  mode == RouteMode.ABSLOUTE){
 						if(currentBasicBlock.getConstraint().isTrue()){
 							m_completedPaths.add(currentBasicBlock);
 							currentBasicBlock.setPath(s_pathCount++);
@@ -351,7 +355,13 @@ public class Route {
 	private boolean reachedEnd(PathBasicBlock currentBasicBlock, RouteMode mode) {
 		for(XtaInstruction inst : currentBasicBlock.getInstructionTrimmed()){
 			if(m_endPcs.contains(inst.getPc())){
-				return true;
+				if(inst.getPc() == m_startPc && m_firstStep) {
+					return false;
+				}else {
+					return true;
+				}
+					
+				
 			}
 		}
 		return false;
