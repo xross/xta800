@@ -13,20 +13,22 @@ public class LoopAttachment {
 		m_subLoops = new ArrayList<LoopAttachment>();
 	}
 	
-	public boolean addLoop(PathBasicBlock newLoop){
+	
+	
+	public void addLoop(PathBasicBlock newLoop){
 		
 		for(LoopAttachment la : m_subLoops){
 			if(isSubsetOf(la.getLoop(), newLoop)){
 				LoopAttachment newLoopAttachment = new LoopAttachment(newLoop);
 				newLoopAttachment.m_subLoops.add(la);
 				m_subLoops.set(m_subLoops.indexOf(la), newLoopAttachment);
-				return true;
+				return;
 			} else if (isSubsetOf(newLoop, la.getLoop())){
-				return la.addLoop(newLoop);
+				la.addLoop(newLoop);
+				return;
 			} 
 		}
 		m_subLoops.add(new LoopAttachment(newLoop));
-		return false;
 	}
 	
 	public ArrayList<LoopAttachment> getSubLoops(){

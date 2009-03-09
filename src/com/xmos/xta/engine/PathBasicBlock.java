@@ -37,50 +37,50 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	private Unresolved m_unresolved;
 	private List<String> m_warnings;
 	
-	public PathBasicBlock(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock,
-			InstructionDecodeCache idc){
+	/**
+	 * pseudo-node constructor
+	 * @param parentBasicBlock
+	 */
+	public PathBasicBlock(PathBasicBlock parentBasicBlock){
+		m_basicBlock = new BasicBlock(-1);
+		m_idc=null;
+		
 		m_parentBasicBlock = parentBasicBlock;
 		m_seen = 0;
-
-
 		m_loopPaths = new LoopAttachment(null);
-
-
-
-		m_pathId = -1;
-		m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
-		m_blockStats = new BasicBlockStats(this);
-		m_status = BlockStatus.SEARCHING;
-		m_startInstruction = basicBlock.getInstructions().getFirst().getPc();
-		m_endInstruction = basicBlock.getInstructions().getLast().getPc();
-		m_basicBlock = basicBlock;
-		m_idc = idc;
-		m_engine = engine;
-		m_warnings = new ArrayList<String>();
-		if(parentBasicBlock == null){
-			m_constraint = m_engine.getConstraint();
-		} else {
-			m_constraint = parentBasicBlock.getConstraint().clone();
-		}
-		createIBuffer();
-		createTrimmedInstructions(); 
-		createInstructionStream(); 
-	}
-	
-	public PathBasicBlock(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock, 
-			int instPc, boolean start, InstructionDecodeCache idc){
-		m_engine = engine;
-		m_basicBlock = basicBlock;
-		m_parentBasicBlock = parentBasicBlock;
-		m_seen = 0;
-
-		m_loopPaths = new LoopAttachment(null);
-
 		m_pathId = -1;
 		m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
 		m_blockStats = new BasicBlockStats(this);
 		m_status = BlockStatus.SEARCHING;
 		m_warnings = new ArrayList<String>();		
+		
+		if(parentBasicBlock == null){
+			m_constraint = m_engine.getConstraint();
+		} else {
+			m_constraint = parentBasicBlock.getConstraint().clone();
+		}
+	}
+	
+	
+	public PathBasicBlock(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock,
+			InstructionDecodeCache idc){
+		m_engine = engine;
+		m_startInstruction = basicBlock.getInstructions().getFirst().getPc();
+		m_endInstruction = basicBlock.getInstructions().getLast().getPc();
+		init(basicBlock, parentBasicBlock, idc); 
+	}
+	
+	public PathBasicBlock(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock, 
+			int instStart, int instEnd, InstructionDecodeCache idc){
+		m_engine = engine;
+		m_startInstruction = instStart;
+		m_endInstruction = instEnd;
+		init(basicBlock, parentBasicBlock, idc); 		
+	}
+	
+	public PathBasicBlock(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock, 
+			int instPc, boolean start, InstructionDecodeCache idc){
+		m_engine = engine;
 		if(start){
 			m_startInstruction = instPc;
 			m_endInstruction = basicBlock.getInstructions().getLast().getPc();
@@ -88,6 +88,19 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 			m_startInstruction = basicBlock.getInstructions().getFirst().getPc();
 			m_endInstruction = instPc;
 		}
+		init(basicBlock, parentBasicBlock, idc); 		
+	}
+	
+	private void init(BasicBlock basicBlock, PathBasicBlock parentBasicBlock, InstructionDecodeCache idc) {
+		m_basicBlock = basicBlock;
+		m_parentBasicBlock = parentBasicBlock;
+		m_seen = 0;
+		m_loopPaths = new LoopAttachment(null);
+		m_pathId = -1;
+		m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
+		m_blockStats = new BasicBlockStats(this);
+		m_status = BlockStatus.SEARCHING;
+		m_warnings = new ArrayList<String>();		
 		m_idc=idc;
 		if(parentBasicBlock == null){
 			m_constraint = m_engine.getConstraint();
@@ -96,7 +109,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		}
 		createIBuffer();
 		createTrimmedInstructions(); 
-		createInstructionStream(); 		
+		createInstructionStream();
 	}
 	
 	/**
@@ -382,7 +395,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public Vector<XtaInstruction> getInstructions(boolean recurse) {
 		Vector<XtaInstruction> insts = new Vector<XtaInstruction>();;
 		for (PathBasicBlock block : getPathBlocks()) {
-			insts.addAll(block.getInstructionStream());
+			insts.addAll(block.getInstructionStream() );
 			if (recurse) {
 				for (PathBasicBlock loopPath : block.getLoopPaths(this)) {
 					insts.addAll(loopPath.getInstructions(true));
@@ -527,7 +540,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 
 	public void setUnresolved(Unresolved unresolved) {
 		m_unresolved= unresolved;
-		
 	}
 
 	public Constraint getConstraint() {
@@ -537,10 +549,9 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public void setConstraint(Constraint constraint){
 		m_constraint = constraint;
 	}
-
+	
 	public void addLoopPath(PathBasicBlock pathFormingLoop) {
 		m_loopPaths.addLoop(pathFormingLoop);
-		
 	}
 
 	public LoopAttachment getloops() {

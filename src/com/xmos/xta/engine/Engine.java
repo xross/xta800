@@ -17,6 +17,7 @@ import com.xmos.xeloader.XeLoader;
 import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.XeObject;
+import com.xmos.xta.engine.Route.RouteMode;
 import com.xmos.xta.engine.Route.RouteStatus;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
@@ -263,7 +264,7 @@ public class Engine {
 			TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
 			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
 			String routeDescription = String.format("function: %s", functionName);
-			return analyseRoute(startPc, endPcs, routeDescription);
+			return analyseRoute(startPc, endPcs, routeDescription, RouteMode.FUNCTION);
 		}
 	}
 
@@ -290,7 +291,9 @@ public class Engine {
 			TreeSet<Integer> endPc = new TreeSet<Integer>();
 			endPc.add(toRef.getPc());
 			String routeDescription = String.format("path: %s to %s", from, to);
-			boolean success = analyseRoute(fromRef.getPc(), endPc, routeDescription);
+			
+
+			boolean success = analyseRoute(fromRef.getPc(), endPc, routeDescription, RouteMode.ABSLOUTE);
 			if (success) {
 				notify(Notifier.NOTIFY_SET_START_POINT, from);
 				notify(Notifier.NOTIFY_SET_END_POINT, to);
@@ -299,7 +302,7 @@ public class Engine {
 		}
 	}
 
-	public boolean analyseRoute(int startPc, TreeSet<Integer> endPcs, String routeDescription) {
+	public boolean analyseRoute(int startPc, TreeSet<Integer> endPcs, String routeDescription, RouteMode mode) {
 		m_previousRoute = m_route;
 		
 		if(endPcs.size() == 0){
@@ -311,7 +314,7 @@ public class Engine {
 				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId),
 				m_mnenonics, routeDescription);
 
-		boolean success = analyseRouteSafley();
+		boolean success = analyseRouteSafley(mode);
 		if (success) {
 			m_previousRoute = null;
 		} else {
@@ -565,10 +568,10 @@ public class Engine {
 		return m_executableFile;
 	}
 
-	private boolean analyseRouteSafley() {
+	private boolean analyseRouteSafley(RouteMode mode) {
 		boolean success = false;
 		try {
-			success = analyseRoute();
+			success = analyseRoute(mode);
 		} catch (final java.lang.OutOfMemoryError e) {
 			m_route = null;
 			m_progress.setState(Progress.State.IDLE);
@@ -594,7 +597,7 @@ public class Engine {
 				.readInstructionWord(pc);
 	}
 
-	private boolean analyseRoute() throws Exception {
+	private boolean analyseRoute(RouteMode mode) throws Exception {
 		assert (m_route != null);
 
 		if (m_progress.getState() != Progress.State.IDLE) {
@@ -605,7 +608,7 @@ public class Engine {
 
 		if (m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			m_route.isConstrained(false);
-			RouteStatus status = m_route.analyse();
+			RouteStatus status = m_route.analyse(mode);
 			switch (status) {
 			case ABORTED:
 				setAbort(false);

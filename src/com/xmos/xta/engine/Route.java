@@ -14,6 +14,10 @@ class AbortedException extends Exception {
 	private static final long serialVersionUID = 1L;}
 
 public class Route {
+	
+	enum RouteMode {
+		ABSLOUTE, FUNCTION
+	};
 	static private final int SR_IEBLE_SHIFT = 1;
 	static private final int SR_IEBLE_SIZE = 1; 
 	
@@ -72,7 +76,7 @@ public class Route {
 		}
 	}
 	
-	public RouteStatus analyse(){
+	public RouteStatus analyse(RouteMode mode){
 		m_allBasicBlocks.clear();
 		BasicBlock startNode = getNode(m_startPc);
 		if(startNode == null){
@@ -84,6 +88,7 @@ public class Route {
 		} else {
 			startBasicBlock = new PathBasicBlock(m_engine,startNode, null, m_startPc, true, m_idc);
 		}
+		
 		Stack<Integer> stack = new Stack<Integer>();
 		Stack<LinkedList<BasicBlock>> nodeContext = new Stack<LinkedList<BasicBlock>>();
 		
@@ -91,7 +96,7 @@ public class Route {
 		nodeContext.push(new LinkedList<BasicBlock>());
 		
 		try {
-		    followNode(startBasicBlock, stack, nodeContext);
+		    followNode(startBasicBlock, stack, nodeContext, mode);
 		} catch (AbortedException e) {
 			return RouteStatus.ABORTED;
 		}
@@ -159,20 +164,27 @@ public class Route {
 	private void followNode(
 		PathBasicBlock currentBasicBlock, 
 		Stack<Integer> stack, 
-		Stack<LinkedList<BasicBlock>> nodeContext) throws AbortedException {
+		Stack<LinkedList<BasicBlock>> nodeContext, RouteMode mode) throws AbortedException {
 		
 		if(m_engine.getAbort()) {
 			throw new AbortedException();
 		}
 		
-		if(reachedEnd(currentBasicBlock)){
+		if(reachedEnd(currentBasicBlock, mode)){
 			if(debug) System.out.println("\treached end");
 			int size = currentBasicBlock.getInstructionTrimmed().size()-1;
 			PathBasicBlock endBlock = currentBasicBlock;
 			while(size>=0){
 				if(m_endPcs.contains(currentBasicBlock.getInstructionTrimmed().get(size).getPc())){
-					int endPc = currentBasicBlock.getInstructionTrimmed().get(size).getPc();
-					endBlock = new PathBasicBlock(m_engine, currentBasicBlock.getBasicBlock(), currentBasicBlock.getParent(), endPc, false, m_idc);
+					int endPc = 0;
+					if(mode == RouteMode.ABSLOUTE){
+						endPc = currentBasicBlock.getInstructionTrimmed().get(size-1).getPc();
+					} else {
+						endPc = currentBasicBlock.getInstructionTrimmed().get(size).getPc();
+					}
+					int startPc = currentBasicBlock.getInstructionStream().getFirst().getPc();
+					endBlock = new PathBasicBlock(m_engine, currentBasicBlock.getBasicBlock(), currentBasicBlock.getParent(), 
+							startPc, endPc, m_idc);
 					currentBasicBlock.setStatus(BlockStatus.COMPLETE);
 					break;
 				}
@@ -220,6 +232,7 @@ public class Route {
 				return;
 			}
 			
+			
 			XtaInstruction lastInstruction = currentBasicBlock.getInstructionTrimmed().get(currentBasicBlock.getInstructionTrimmed().size()-1);
 			if(lastInstruction.getReturn() && stack.size()>0){
 				BasicBlock nextNode = getNode(stack.peek());
@@ -229,7 +242,20 @@ public class Route {
 				Stack<Integer> newStack = (Stack<Integer>) stack.clone();
 				newStack.pop();
 				PathBasicBlock nextPathBasicBlock = new PathBasicBlock(m_engine, nextNode, currentBasicBlock, m_idc);
-				followNode(nextPathBasicBlock, newStack, newContext);
+				
+				if(this.m_endPcs.contains(nextPathBasicBlock.getInstructionStream().getFirst().getPc()) &&  mode == RouteMode.ABSLOUTE){
+					if(currentBasicBlock.getConstraint().isTrue()){
+						m_completedPaths.add(currentBasicBlock);
+						currentBasicBlock.setPath(s_pathCount++);
+						currentBasicBlock.setStatus(BlockStatus.COMPLETE);
+					}  else {
+						isConstrained(true);
+						currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
+					}
+					return;
+				}
+				
+				followNode(nextPathBasicBlock, newStack, newContext, mode);
 			} else {
 				if(currentBasicBlock.getBasicBlock().getNextNodes().size() == 0){;
 					Unresolved unresolved = new Unresolved(currentBasicBlock, currentBasicBlock.getBasicBlock().getInstructions().getLast(), "no known next block");
@@ -249,7 +275,19 @@ public class Route {
 						newContext.peek().add(currentBasicBlock.getBasicBlock());
 					}
 					PathBasicBlock nextPathBasicBlock = new PathBasicBlock(m_engine, nextNode, currentBasicBlock, m_idc);
-					followNode(nextPathBasicBlock, newStack, newContext);
+					
+					if(this.m_endPcs.contains(nextPathBasicBlock.getInstructionStream().getFirst().getPc()) &&  mode == RouteMode.ABSLOUTE){
+						if(currentBasicBlock.getConstraint().isTrue()){
+							m_completedPaths.add(currentBasicBlock);
+							currentBasicBlock.setPath(s_pathCount++);
+							currentBasicBlock.setStatus(BlockStatus.COMPLETE);
+						}  else {
+							isConstrained(true);
+							currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
+						}
+						return;
+					}
+					followNode(nextPathBasicBlock, newStack, newContext, mode);
 				}
 			}
 		}	
@@ -264,8 +302,13 @@ public class Route {
 		pathFormingLoop.setPath(s_pathCount++);
 
 		if(debug) System.out.println("adding loop " + pathFormingLoop  + " to "+loopDestinationBlock);
+		
+		
+		
 		loopDestinationBlock.addLoopPath(pathFormingLoop);
+		
 		loopDestinationBlock.getLoopPathAttributes().put(pathFormingLoop, new PathAttributes());
+		
 		pathFormingLoop.setStatus(BlockStatus.COMPLETE);
 		return;
 	}
@@ -305,7 +348,7 @@ public class Route {
 		}		
 	}
 
-	private boolean reachedEnd(PathBasicBlock currentBasicBlock) {
+	private boolean reachedEnd(PathBasicBlock currentBasicBlock, RouteMode mode) {
 		for(XtaInstruction inst : currentBasicBlock.getInstructionTrimmed()){
 			if(m_endPcs.contains(inst.getPc())){
 				return true;
