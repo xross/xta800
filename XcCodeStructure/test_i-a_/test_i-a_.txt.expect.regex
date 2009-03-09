@@ -1,4 +1,4 @@
 Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 \+COMPLETE \[2 path\(s\)\]
-    path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-    path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
+  . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
+  . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
