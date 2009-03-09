@@ -241,7 +241,7 @@ public class BasicBlockStats {
 		for (PathBasicBlock block : m_block.getPathBlocks()) {
 			result += val.getValueThis(block);
 			if (recurse) {
-				for (PathBasicBlock loopPath : block.getLoopPaths()) {
+				for (PathBasicBlock loopPath : block.getLoopPaths(m_block)) {
 
 					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
 					if (!attributes.isAbsolute()) {
@@ -262,7 +262,7 @@ public class BasicBlockStats {
 		for (PathBasicBlock block : m_block.getPathBlocks()) {
 			result += val.getValueThis(block);
 			if (recurse) {
-				for (PathBasicBlock loopPath : block.getLoopPaths()) {
+				for (PathBasicBlock loopPath : block.getLoopPaths(m_block)) {
 
 					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
 					if (!attributes.isAbsolute()) {
@@ -330,7 +330,7 @@ public class BasicBlockStats {
 				result =  m_absoluteDoubleTrue;
 			} else {
 				for (PathBasicBlock block : m_block.getPathBlocks()) {
-					for (PathBasicBlock loopPath : block.getLoopPaths()) {
+					for (PathBasicBlock loopPath : block.getLoopPaths(m_block)) {
 						result += val.getValueAbsolute(loopPath);
 						PathAttributes attributes = block.getLoopPathAttributes(loopPath);
 						if (attributes.isAbsolute()) {
@@ -357,7 +357,7 @@ public class BasicBlockStats {
 		if (recurse) {
 			
 			for (PathBasicBlock block : m_block.getPathBlocks()) {
-				for (PathBasicBlock loopPath : block.getLoopPaths()) {
+				for (PathBasicBlock loopPath : block.getLoopPaths(m_block)) {
 					result += val.getValueAbsolute(loopPath);
 					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
 					if (attributes.isAbsolute()) {
@@ -376,7 +376,7 @@ public class BasicBlockStats {
 	
 	private double getLoopsOnlyDouble(DoubleLoops val) {	
         double result = 0.0;
-        for (PathBasicBlock loopPath : m_block.getLoopPaths()) {
+        for (PathBasicBlock loopPath : m_block.getLoopPaths(m_block)) {
             int numIterations = m_block.getLoopPathAttributes(loopPath).getNumIterations();
             result += val.getValue(loopPath) * numIterations;
         }
@@ -385,7 +385,7 @@ public class BasicBlockStats {
 
     private int getLoopsOnlyInteger(IntegerLoops val) {
         int result = 0;
-        for (PathBasicBlock loopPath : m_block.getLoopPaths()) {
+        for (PathBasicBlock loopPath : m_block.getLoopPaths(m_block)) {
             int numIterations = m_block.getLoopPathAttributes(loopPath).getNumIterations();
             result += val.getValue(loopPath) * numIterations;
         }

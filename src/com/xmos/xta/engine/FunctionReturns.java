@@ -40,6 +40,7 @@ public class FunctionReturns {
 	public TreeSet<Integer> getFunctionReturns(int startPc){
 		TreeSet<Integer> set = m_functionReturns.get(startPc);
 		if(set == null){
+			
 			return new TreeSet<Integer>();
 		} else {
 			return set;

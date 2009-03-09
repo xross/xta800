@@ -82,7 +82,7 @@ public class Sources extends Command {
         	pathSet.add(path.getPathId());
         }
 
-        for (PathBasicBlock loopPath : path.getLoopPaths()) {
+        for (PathBasicBlock loopPath : path.getLoopPaths(path)) {
 	    	buildPathsWithinSourcesSet(loopPath, pathSet, sourceFileName, xeObject);
    		}
     }    
