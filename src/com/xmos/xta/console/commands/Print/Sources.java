@@ -1,4 +1,4 @@
-package com.xmos.xta.console.commands.Summary;
+package com.xmos.xta.console.commands.Print;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,28 +20,39 @@ import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 
 public class Sources extends Command {
-	public Sources() {}
+	private int m_routeId;
 	
-    public int numArgs()        { return 0; }        
+	public Sources() {
+		m_routeId = 0;
+	}
+	
+	public Sources(int routeId) {
+		m_routeId = routeId;		
+	}
+	
+    public int numArgs()        { return 1; }        
     public String name()        { return "sources"; }        
     public String commandLine() { return "sources"; }        
     
     public String description(Engine engine, boolean detailed) {
-    	return "sources: Show path(s) + sources";
+    	return "sources <route id>: Shows which paths touch which sources";
     }
 
     public Command clone(String[] args, int index, boolean commandLineMode) {
-   		return new Sources();
+		if ((index + numArgs()) >= args.length) 
+			return null;		
+    	
+   		return new Sources(getRouteId(args[index + 1]));
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-		if (!isRouteAnalysed(engine, console))
+		if (!validateRouteId(engine, console, m_routeId))
 			return;		    	
 
-		displaySources(console, engine.getRoute(), engine.getDebugInfo(), engine.getXeObject());
+		displaySources(console, engine.getRoute(m_routeId), engine.getDebugInfo(), engine.getXeObject());
     }
 
     private void displaySources(Console console, Route route, DebugInfo debugInfo, XeObject xeObject) {
@@ -77,7 +88,6 @@ public class Sources extends Command {
     }    
     
     private boolean pathWithinSourceFile(PathBasicBlock path, String sourceFileName, XeObject xeObject) {
-        //TODO make this faster
         HashMap<String, TreeSet<Integer>> linesCovered = new HashMap<String, TreeSet<Integer>>();
         TreeSet<Integer> bob = new TreeSet<Integer>();
         for(XtaInstruction inst : path.getInstructions(false)){

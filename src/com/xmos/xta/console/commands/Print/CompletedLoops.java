@@ -1,28 +1,28 @@
-package com.xmos.xta.console.commands.Summary;
+package com.xmos.xta.console.commands.Print;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 
-public class CompleteLoops extends Command {
-	public CompleteLoops() {}
+public class CompletedLoops extends Command {
+	public CompletedLoops() {}
 	
     public int numArgs()        { return 0; }        
-    public String name()        { return "complete_loops"; }        
-    public String commandLine() { return "complete_loops"; }        
+    public String name()        { return "completed_loops"; }        
+    public String commandLine() { return "completed_loops"; }        
     
     public String description(Engine engine, boolean detailed) {
-    	return "complete_loops: Show timing of complete path(s) + loops";
+    	return "completed_loops: Show timing of complete paths + loops";
     }
 
     public Command clone(String[] args, int index, boolean commandLineMode) {
-   		return new CompleteLoops();
+   		return new CompletedLoops();
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-		SummaryDisplayer displayer = new SummaryDisplayer(
-				engine, console, SummaryDisplayer.Level.complete_loops);		
+		TreeDisplayer displayer = new TreeDisplayer(
+				engine, console, TreeDisplayer.Level.complete_loops);		
 		displayer.display();
     }
 }

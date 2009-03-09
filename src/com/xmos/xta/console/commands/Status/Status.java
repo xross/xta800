@@ -1,6 +1,7 @@
 package com.xmos.xta.console.commands.Status;
 
 import java.io.File;
+import java.util.List;
 
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
@@ -74,11 +75,14 @@ public class Status extends Command {
     				progress.getMaxValue()));    		
     	}
     	else {
-	    	Route route = engine.getRoute();
-	    	if (route == null) {
-	    		console.display(String.format("No Paths/Functions registered\n"));    		
+    		List<Route> routes = engine.getRoutes();	    	
+	    	if (engine.getRoutes().size() > 0) {
+	    		for (Route route : routes) {
+		    		console.display(String.format("Loaded: Route(%d): %s\n", 
+		    				route.getRouteId(), route.getDescription()));	    			
+	    		}
 	    	} else {
-	    		console.display("Loaded " + route.getDescription() + "\n");
+	    		console.display(String.format("No Functions/Routes analysed\n"));    			    		
 	    	}
     	}
     }    

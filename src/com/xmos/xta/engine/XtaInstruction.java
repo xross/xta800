@@ -206,17 +206,11 @@ public abstract class XtaInstruction extends Instruction {
 	}
 	
 	public void setTimeTaken(double timeTaken) {
-		assert(m_config != null);		
-        if (m_config.m_numThreads > 4) {
-        	setNumCycles((int)((timeTaken * m_config.m_frequency) / (m_config.m_numThreads * 1000)));
-        }
-        else {
-        	setNumCycles((int)((timeTaken * m_config.m_frequency) / (4 * 1000)));
-        }
+    	int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;		
+       	setNumCycles((int)((timeTaken * m_config.m_frequency) / (threadFactor * 1000)));
 	}
 	
 	public double getTimeTaken() {
-		assert(m_config != null);    	
     	int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
         return ((double)(threadFactor * 1000) / (double)m_config.m_frequency) * m_numCycles.getNumIterations();
 	}

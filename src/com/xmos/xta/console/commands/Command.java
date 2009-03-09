@@ -5,6 +5,7 @@ import java.io.File;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Route;
 
 public abstract class Command {
     public enum IdType {
@@ -55,25 +56,50 @@ public abstract class Command {
     	}
     	return true;    	
     }
-
-    public static boolean isRouteAnalysed(Engine engine, Console console) { 
-    	if (engine.getRoute() == null) {
-    		console.display("Error: No function/path analysed\n");
+    
+    public static boolean validateRoutes(Engine engine, Console console) {
+       	if (engine.getRoutes().size() == 0) {
+    		console.display("Error: No functions/routes analysed\n");
     		return false;
-    	}
-    	return true;    	
+     	}
+        return true;  	
     }
 
-    public static boolean isIdValid(Engine engine, Console console, int id, IdType idType) {
-        switch (idType) {
+    public static boolean validateRouteId(Engine engine, Console console, int routeId) {
+    	if (engine.getRoutes().size() == 0) {
+    		console.display("Error: No functions/routes analysed\n");
+    		return false;
+    	}
+    	
+    	Route route = engine.getRoute(routeId);
+    	if (route == null) {
+    		console.display(String.format("Error: invalid route id: %d\n", routeId));
+    		return false;
+    	}
+    	return true;
+    }
+    
+    public static boolean validateIds(Engine engine, Console console, int routeId, int id, IdType idType) {
+    	if (engine.getRoutes().size() == 0) {
+    		console.display("Error: No functions/routes analysed\n");
+    		return false;
+    	}
+    	
+    	Route route = engine.getRoute(routeId);
+    	if (route == null) {
+    		console.display(String.format("Error: invalid route id: %d\n", routeId));
+    		return false;
+    	}
+    	
+    	switch (idType) {
         case BLOCK:
-        	if (engine.getRoute().getBlock(id) == null) {
+        	if (route.getBlock(id) == null) {
         		console.display(String.format("Error: invalid block id: %d\n", id));        		
         		return false;
         	}
         	return true;
         case PATH:
-        	if (engine.getRoute().getPath(id) == null) {
+        	if (route.getPath(id) == null) {
         		console.display(String.format("Error: invalid path id: %d\n", id));        		
         		return false;
         	}    	
@@ -83,7 +109,21 @@ public abstract class Command {
             return false;
         }    	
     }
-            
+    
+    public static int getRouteId(String routeId) {
+    	if (routeId.equals("-")) {
+    		return -1;
+    	}    	
+    	return Integer.parseInt(routeId);
+    }
+
+    public static String getRouteId(int routeId) {
+    	if (routeId == -1) {
+    		return "-";
+    	}
+    	return String.format("%d", routeId);
+    }
+    
     public static int getId(String idString) {    	
     	if (getIdType(idString) == IdType.BLOCK) {
     		idString = idString.substring(1);
@@ -97,7 +137,7 @@ public abstract class Command {
 		}
 		return IdType.PATH;
     }
-    
+        
     protected boolean areArgsDone(String[] args, int i) {
 		if ((i >= args.length) || args[i].startsWith("-") || args[i].startsWith("\n"))
 			return true;

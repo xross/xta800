@@ -1,28 +1,28 @@
-package com.xmos.xta.console.commands.Summary;
+package com.xmos.xta.console.commands.Print;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 
-public class Complete extends Command {
-	public Complete() {}
-		
+public class CompleteBlocks extends Command {
+	public CompleteBlocks() {}
+	
     public int numArgs()        { return 0; }        
-    public String name()        { return "complete"; }        
-    public String commandLine() { return "complete"; }        
+    public String name()        { return "completed_blocks"; }        
+    public String commandLine() { return "completed_blocks"; }        
     
     public String description(Engine engine, boolean detailed) {
-    	return "complete: Show timing of complete path(s)";
+    	return "completed_blocks: Show timing of complete paths + loops + blocks";
     }
 
     public Command clone(String[] args, int index, boolean commandLineMode) {
-   		return new Complete();
+   		return new CompleteBlocks();
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-		SummaryDisplayer displayer = new SummaryDisplayer(
-				engine, console, SummaryDisplayer.Level.complete);		
+		TreeDisplayer displayer = new TreeDisplayer(
+				engine, console, TreeDisplayer.Level.complete_blocks);		
 		displayer.display();
     }
 }

@@ -5,7 +5,6 @@ import java.util.Vector;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.commands.Add.Add;
 import com.xmos.xta.console.commands.Analyse.Analyse;
-import com.xmos.xta.console.commands.Assert.Assert;
 import com.xmos.xta.console.commands.Clear.Clear;
 import com.xmos.xta.console.commands.Config.Config;
 import com.xmos.xta.console.commands.Echo.Echo;
@@ -20,7 +19,6 @@ import com.xmos.xta.console.commands.Remove.Remove;
 import com.xmos.xta.console.commands.Set.Set;
 import com.xmos.xta.console.commands.Source.Source;
 import com.xmos.xta.console.commands.Status.Status;
-import com.xmos.xta.console.commands.Summary.Summary;
 import com.xmos.xta.console.commands.Unset.Unset;
 import com.xmos.xta.console.commands.Version.Version;
 
@@ -28,7 +26,6 @@ public class CommandFactory {
 	static private Command[] m_commands = { 
 		new Add(),
 		new Analyse(), 
-		new Assert(),
 		new Config(),
 		new Clear(),
 	    new Echo(),
@@ -43,7 +40,6 @@ public class CommandFactory {
 		new Set(),
 		new Source(),
 		new Status(),
-		new Summary(), 
 		new Unset(),
 	    new Version(),
 	};

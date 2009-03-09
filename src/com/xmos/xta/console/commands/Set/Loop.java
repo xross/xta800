@@ -6,17 +6,20 @@ import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 
 public class Loop extends Command {	
+	private int m_routeId;
 	private int m_pathId;
 	private boolean m_absolute;
 	private int m_iterations;
 	
 	public Loop() {
+		m_routeId = 0;
 		m_pathId = 0;
 		m_absolute = false;
 		m_iterations = 0;
 	}
 	
-	public Loop(int pathId, boolean absolute, int iterations) {
+	public Loop(int routeId, int pathId, boolean absolute, int iterations) {
+		m_routeId = routeId;
 		m_pathId = pathId;	
 		m_absolute = absolute;
 		m_iterations = iterations;
@@ -33,13 +36,14 @@ public class Loop extends Command {
     public String commandLine() {
     	String absStr = m_absolute ? "absolute" : "relative";
     	return "loop " + 
+    	    m_routeId + " " + 
     	    m_pathId + " " + 
     	    absStr + " " + 
     	    m_iterations;
     }
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = "loop <path> <scope> <iterations>: Sets the number of iterations for the given path";
+    	String descString = "loop <route id> <path id> <scope> <iterations>: Sets the number of iterations for the given route/path";
     	if (detailed) {
         	descString += "\n";
     		descString += "          scope: relative/r: Iteration number propagates to the enclosing path (Default)\n";                
@@ -51,20 +55,26 @@ public class Loop extends Command {
     public Command clone(String[] args, int index, boolean commandLineMode) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
-	    
+
+    	int routeId;
+    	try { routeId = Integer.parseInt(args[index + 1]); }
+	    catch (NumberFormatException e) {
+	        return null;
+	    }
+		
     	int pathId;
-    	try { pathId = Integer.parseInt(args[index + 1]); }
+    	try { pathId = Integer.parseInt(args[index + 2]); }
 	    catch (NumberFormatException e) {
 	        return null;
 	    }
 
 	    boolean absolute;
-	    if ((args[index + 2].compareTo("relative") == 0) ||  
-	    	(args[index + 2].compareTo("r") == 0)){
+	    if ((args[index + 3].compareTo("relative") == 0) ||  
+	    	(args[index + 3].compareTo("r") == 0)){
 	    	absolute = false;
 	    }
-	    else if ((args[index + 2].compareTo("absolute") == 0) ||  
-		         (args[index + 2].compareTo("a") == 0)){
+	    else if ((args[index + 3].compareTo("absolute") == 0) ||  
+		         (args[index + 3].compareTo("a") == 0)){
 	    	absolute = true;
 	    }
 	    else {
@@ -72,20 +82,20 @@ public class Loop extends Command {
 	    }
 	    	    	    
     	int iterations;
-    	try { iterations = Integer.parseInt(args[index + 3]); }
+    	try { iterations = Integer.parseInt(args[index + 4]); }
 	    catch (NumberFormatException e) {
 	        return null;
 	    }    		  
 	    
-        return new Loop(pathId, absolute, iterations);
+        return new Loop(routeId, pathId, absolute, iterations);
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-		if (!engine.setLoopIterations(m_pathId, m_absolute, m_iterations)) {
-    		console.display(String.format("Error: Failed to set loop iterations: path id: %d\n", m_pathId));    		
+		if (!engine.setLoopIterations(m_routeId, m_pathId, m_absolute, m_iterations)) {
+    		console.display(String.format("Error: Failed to set loop iterations: route id: %d path id: %d\n", m_routeId, m_pathId));    		
     	}
     }    
  }

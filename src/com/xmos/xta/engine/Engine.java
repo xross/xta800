@@ -3,6 +3,7 @@ package com.xmos.xta.engine;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -37,8 +38,7 @@ public class Engine {
 	}
 
 	private XeLoader m_xeLoader;
-	private Route m_route;
-	private Route m_previousRoute;
+	private List<Route> m_routes;
 	private Config m_config;
 	private File m_executableFile;
 	private int m_nodeId;
@@ -68,8 +68,7 @@ public class Engine {
 		m_endpoints = new ArrayList<SrcLabelMap>();
 		m_endpointTables = new ArrayList<SrcTableMap>();
 		m_xeLoader = new XeLoader();
-		m_route = null;
-		m_previousRoute = null;
+		m_routes = new LinkedList<Route>();
 		m_config = config;
 		m_executableFile = null;
 		m_nodeId = 0;
@@ -93,78 +92,42 @@ public class Engine {
 		return m_config;
 	}
 
+	public List<Route> getRoutes() {
+		return m_routes;
+	}
+	
+	public XeLoader getXeLoader() {
+		return m_xeLoader;
+	}
+	
 	public Vector<MemoryImage> getMemoryImages() {
-		if (m_xeLoader != null)
-			return m_xeLoader.getMemoryImages();
-		else {
-			System.err.println("xeLoader is missing: cannot getMemoryImages()");
-			return new Vector<MemoryImage>();
-		}
+		return m_xeLoader.getMemoryImages();
 	}
 
 	public Vector<SymbolTable> getSymbolTables() {
-		if (m_xeLoader != null)
-			return m_xeLoader.getSymbolTables();
-		else {
-			System.err.println("xeLoader is missing: cannot getSymbolTables()");
-			return new Vector<SymbolTable>();
-		}
+		return m_xeLoader.getSymbolTables();
 	}
 
 	public Vector<DebugInfo> getDebugInfos() {
-		if (m_xeLoader != null)
-			return m_xeLoader.getDebugInfos();
-		else {
-			System.err.println("xeLoader is missing: cannot getDebugInfos()");
-			return new Vector<DebugInfo>();
-		}
+		return m_xeLoader.getDebugInfos();
 	}
-
-	public boolean anythingToDisplay() {
-		if (m_route != null) {
-			if (m_route.getCompletedPaths().size() + m_route.getUnresolvedPaths().size() > 0) {
-				return true;
-			}
-		}
-		return false;
-	}
-
+	
 	public MemoryImage getMemoryImage() {
-		if (m_route != null) {
-			return m_xeLoader.getMemoryImage(m_nodeId, m_coreId);
-		}
-		return null;
+		return m_xeLoader.getMemoryImage(m_nodeId, m_coreId);
 	}
 
 	public SymbolTable getSymbolTable() {
-		if (m_route != null) {
-			return m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
-		}
-		return null;
+		return m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
 	}
 
 	public DebugInfo getDebugInfo() {
-		if (m_route != null) {
-			return m_xeLoader.getDebugInfo(m_nodeId, m_coreId);
-		}
-		return null;
-	}
-
-	public Route getRoute() {
-		// FIXME what happens if this is null
-		return m_route;
-	}
-
-	public XeLoader getXeLoader() {
-		// FIXME what happens if this is null
-		return m_xeLoader;
+		return m_xeLoader.getDebugInfo(m_nodeId, m_coreId);
 	}
 
 	public XeObject getXeObject() {
-		// FIXME what happens if this is null
 		return getXeObject(m_nodeId, m_coreId);
 	}
-
+	
 	public String getSrcPaths() {
 		if (m_srcPaths != null) {
 			return m_srcPaths;
@@ -178,6 +141,18 @@ public class Engine {
 		m_srcPaths += ";.";
 	}
 
+	public Route getRoute(int routeId) {
+		if (routeId == -1)
+			return m_routes.get(m_routes.size() - 1);
+
+		for (Route route : m_routes) {
+			if (route.getRouteId() == routeId) {
+				return route;
+			}
+		}		
+		return null;
+	}
+	
 	public boolean loadExecutable(File executableFile, FileFinder fileFinder) {
 		XeLoader newLoader = new XeLoader();
 
@@ -212,7 +187,8 @@ public class Engine {
 
 			runAnalysisEngine();
 
-			m_route = null;
+			m_routes.clear();
+			Route.resetRouteCount();
 
 			notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile
 					.getAbsolutePath());
@@ -299,47 +275,6 @@ public class Engine {
 		}
 	}
 
-	public boolean analyseRoute(int startPc, TreeSet<Integer> endPcs, String routeDescription) {
-		boolean reachable = false;
-		for (int end : endPcs) {
-			int dist = m_ae.determineReachability(startPc, end, m_nodeId,
-					m_coreId);
-			if (dist != Integer.MAX_VALUE) {
-				reachable = true;
-				break;
-			}
-		}
-		String endString = "";
-		if (!reachable) {
-			for (int end : endPcs) {
-				endString += "0x" + Integer.toHexString(end) + ", ";
-			}
-			if(endString.length() > 2){
-				endString = endString.substring(0, endString.length() - 2);
-				notify(Notifier.NOTIFY_ERROR, "No valid of execution from 0x"
-						+ Integer.toHexString(startPc) + " to " + endString);
-			} else {
-				notify(Notifier.NOTIFY_ERROR, "No valid of execution from 0x"
-						+ Integer.toHexString(startPc) );
-			}			
-			return false;
-		}
-
-		m_previousRoute = m_route;
-		
-		m_route = new Route(this, startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), 
-				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId),
-				m_mnenonics, routeDescription);
-
-		boolean success = analyseRouteSafley();
-		if (success) {
-			m_previousRoute = null;
-		} else {
-			m_route = m_previousRoute;
-		}
-		return success;
-	}
-
 	public void registerNotifier(Notifier notifier) {
 		assert (m_notifiers.contains(notifier) == false);
 		m_notifiers.add(notifier);
@@ -360,7 +295,6 @@ public class Engine {
 
 	public void setNodeId(int nodeId) {
 		m_nodeId = nodeId;
-		m_route = null;
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, Notifier.STATE_NODE_ID);
 	}
 
@@ -370,7 +304,6 @@ public class Engine {
 
 	public void setCoreId(int coreId) {
 		m_coreId = coreId;
-		m_route = null;
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, Notifier.STATE_NODE_ID);
 	}
 
@@ -380,9 +313,7 @@ public class Engine {
 
 	public void setFrequency(int frequency) {
 		m_config.m_frequency = frequency;
-		if (m_route != null) {
-			m_route.invalidateAllBlocks();
-		}
+		invalidateRouteStats();
 		notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_FREQUENCY);
 	}
 
@@ -392,9 +323,7 @@ public class Engine {
 
 	public void setNumThreads(int numThreads) {
 		m_config.m_numThreads = numThreads;
-		if (m_route != null) {
-			m_route.invalidateAllBlocks();
-		}
+		invalidateRouteStats();
 		notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_NUM_THREADS);
 	}
 
@@ -402,12 +331,12 @@ public class Engine {
 		return m_config.m_numThreads;
 	}
 
-	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
-		if (anythingToDisplay()) {
-			boolean hit = m_route.setLoopIterations(pathId, absolute,
-					iterations);
+	public boolean setLoopIterations(int routeId, int pathId, boolean absolute, int iterations) {
+		Route route = getRoute(routeId);		
+		if (route != null) {
+			boolean hit = route.setLoopIterations(pathId, absolute, iterations);
 			if (hit) {
-				m_route.invalidateAllBlocks();
+				invalidateRouteStats();
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			}
 			return hit;
@@ -427,8 +356,7 @@ public class Engine {
 			return false;
 		}
 
-		if (anythingToDisplay())
-			m_route.invalidateAllBlocks();
+		invalidateRouteStats();
 
 		if (m_nodeCoreInstructionCache.setInstructionTimeTaken(
 				this, ref.getPc(), timeTaken, m_nodeId, m_coreId)) {
@@ -459,8 +387,7 @@ public class Engine {
 			return false;
 		}
 
-		if (anythingToDisplay())
-			m_route.invalidateAllBlocks();
+		invalidateRouteStats();
 
 		if (m_nodeCoreInstructionCache.setInstructionNumCycles(
 				this, ref.getPc(), numCycles, m_nodeId, m_coreId)) {
@@ -515,6 +442,43 @@ public class Engine {
 		}
 		return m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId,
 				m_coreId).getInstruction(pc).canPause();
+	}
+	
+	
+	public boolean setRouteMaxTime(int routeId, double time) {
+		Route route = getRoute(routeId);
+		if (route != null) {
+			route.getRouteTiming().setMaxTime(time);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean setRouteMaxCycles(int routeId, int cycles) {
+		Route route = getRoute(routeId);
+		if (route != null) {
+			route.getRouteTiming().setMaxCycles(cycles);
+			return true;
+		}
+		return false;		
+	}
+	
+	public boolean unsetRouteMax(int routeId) {
+		Route route = getRoute(routeId);
+		if (route != null) {
+			route.getRouteTiming().resetMaxTime();
+			return true;
+		}
+		return false;		
+	}	
+	
+	public boolean removeRoute(int routeId) {
+		Route route = getRoute(routeId);
+		if (route != null) {
+			m_routes.remove(route);
+			return true;
+		}
+		return false;				
 	}
 	
 	public boolean addBranch(Reference fromRef, Reference toRef) {
@@ -585,18 +549,67 @@ public class Engine {
 		return m_executableFile;
 	}
 
-	private boolean analyseRouteSafley() {
+	public void setConstraint(Constraint constraint) {
+		assert(constraint != null);
+		if (constraint==null){
+			m_constraint = ConstraintFactory.createConstraint(this, "");
+		} else {
+			m_constraint = constraint;
+		}
+		notify(Notifier.NOTIFY_SET_CONSTRAINT, "");
+	}
+
+	public Constraint getConstraint() {
+		return m_constraint;
+	}
+		
+	private boolean analyseRoute(int startPc, TreeSet<Integer> endPcs, String routeDescription) {
+		boolean reachable = false;
+		for (int end : endPcs) {
+			int dist = m_ae.determineReachability(startPc, end, m_nodeId,
+					m_coreId);
+			if (dist != Integer.MAX_VALUE) {
+				reachable = true;
+				break;
+			}
+		}
+		String endString = "";
+		if (!reachable) {
+			for (int end : endPcs) {
+				endString += "0x" + Integer.toHexString(end) + ", ";
+			}
+			if(endString.length() > 2){
+				endString = endString.substring(0, endString.length() - 2);
+				notify(Notifier.NOTIFY_ERROR, "No valid of execution from 0x"
+						+ Integer.toHexString(startPc) + " to " + endString);
+			} else {
+				notify(Notifier.NOTIFY_ERROR, "No valid of execution from 0x"
+						+ Integer.toHexString(startPc) );
+			}			
+			return false;
+		}
+		
+		Route route = new Route(m_config, this, startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), 
+				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId),
+				m_mnenonics, routeDescription);
+
+		boolean success = analyseRouteSafley(route);
+		if (success) {
+			m_routes.add(route);
+		}
+		return success;
+	}
+	
+	private boolean analyseRouteSafley(Route route) {
 		boolean success = false;
 		try {
-			success = analyseRoute();
+			success = analyseRoute(route);
 		} catch (final java.lang.OutOfMemoryError e) {
-			m_route = null;
 			m_progress.setState(Progress.State.IDLE);
 			System.gc();
 			notify(Notifier.NOTIFY_ERROR, "Out of Memory (Heap)");
 			return false;
 		} catch (final java.lang.StackOverflowError e) {
-			m_route = null;
 			m_progress.setState(Progress.State.IDLE);
 			System.gc();
 			notify(Notifier.NOTIFY_ERROR, "Out of Memory (Stack)");
@@ -609,14 +622,7 @@ public class Engine {
 		return success;
 	}
 
-	private int getOpcode(int pc, int nodeId, int coreId) throws Exception {
-		return m_xeLoader.getMemoryImage(nodeId, coreId)
-				.readInstructionWord(pc);
-	}
-
-	private boolean analyseRoute() throws Exception {
-		assert (m_route != null);
-
+	private boolean analyseRoute(Route route) throws Exception {
 		if (m_progress.getState() != Progress.State.IDLE) {
 			notify(Notifier.NOTIFY_ERROR, "Engine busy");
 			return false;
@@ -625,21 +631,19 @@ public class Engine {
 
 		if (m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			
-			RouteStatus status = m_route.analyse();
+			RouteStatus status = route.analyse();
 			switch (status) {
 			case ABORTED:
 				setAbort(false);
 				notify(Notifier.NOTIFY_ERROR, "Abort detected");
-				m_route = m_previousRoute;
 				return false;
 
 			case ERROR:
 				notify(Notifier.NOTIFY_ERROR, "Cannot analyse path");
-				m_route = m_previousRoute;
 				return false;
 			}
 
-			int numUnresolvedPaths = m_route.getUnresolvedPaths().size();
+			int numUnresolvedPaths = route.getUnresolvedPaths().size();
 			if (numUnresolvedPaths > 0) {
 				notify(Notifier.NOTIFY_ERROR, String.format("Found "
 						+ numUnresolvedPaths + " unresolved path(s)"));
@@ -655,6 +659,11 @@ public class Engine {
 		return true;
 	}
 
+	private int getOpcode(int pc, int nodeId, int coreId) throws Exception {
+		return m_xeLoader.getMemoryImage(nodeId, coreId)
+				.readInstructionWord(pc);
+	}
+	
 	private boolean functionExists(String functionName) {
 		SymbolTable symbolTable = m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
 		if (symbolTable != null) {
@@ -685,7 +694,13 @@ public class Engine {
 		assert (false);
 		return null;
 	}
-
+	
+	private void invalidateRouteStats() {
+		for (Route route : m_routes) {
+			route.invalidateAllBlocks();
+		}		
+	}
+	
 	private void initialiseLists(FileFinder fileFinder) {
 		m_branches.clear();
 		m_labels.clear();
@@ -940,19 +955,5 @@ public class Engine {
 			}
 		}
 		return null;
-	}
-
-	public void setConstraint(Constraint constraint) {
-		assert(constraint != null);
-		if (constraint==null){
-			m_constraint = ConstraintFactory.createConstraint(this, "");
-		} else {
-			m_constraint = constraint;
-		}
-		notify(Notifier.NOTIFY_SET_CONSTRAINT, "");
-	}
-
-	public Constraint getConstraint() {
-		return m_constraint;
-	}
+	}	
 }

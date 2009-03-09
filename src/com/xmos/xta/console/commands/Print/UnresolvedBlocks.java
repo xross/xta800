@@ -1,4 +1,4 @@
-package com.xmos.xta.console.commands.Summary;
+package com.xmos.xta.console.commands.Print;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
@@ -13,7 +13,7 @@ public class UnresolvedBlocks extends Command {
     public String commandLine() { return "unresolved_blocks"; }        
     
     public String description(Engine engine, boolean detailed) {
-    	return "unresolved_blocks: Show timing of complete path(s) + loops + blocks";
+    	return "unresolved_blocks: Show timing of complete paths + loops + blocks";
     }
 
     public Command clone(String[] args, int index, boolean commandLineMode) {
@@ -21,8 +21,8 @@ public class UnresolvedBlocks extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-		SummaryDisplayer displayer = new SummaryDisplayer(
-				engine, console, SummaryDisplayer.Level.unresolved_blocks);		
+		TreeDisplayer displayer = new TreeDisplayer(
+				engine, console, TreeDisplayer.Level.unresolved_blocks);		
 		displayer.display();
     }
 }

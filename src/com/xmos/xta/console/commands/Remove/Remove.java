@@ -13,6 +13,7 @@ public class Remove extends CommandContainer {
 		new Label(Label.Operation.REMOVE), 
 		new SrcLabel(SrcLabel.Operation.REMOVE),		
 		new Endpoint(Endpoint.Operation.REMOVE),		
+		new Route(),		
 	};
 	
 	public Remove() { super("remove"); }

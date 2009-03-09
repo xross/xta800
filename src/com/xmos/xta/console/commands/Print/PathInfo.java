@@ -1,4 +1,4 @@
-package com.xmos.xta.console.commands.Summary;
+package com.xmos.xta.console.commands.Print;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
@@ -6,34 +6,37 @@ import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.PathBasicBlock;
 
-public class Info extends Command {
+public class PathInfo extends Command {
+	private int m_routeId;
 	private int m_id;
 	private Command.IdType m_idType;
 	
-	public Info() {
+	public PathInfo() {
+		m_routeId = 0;
 		m_id = 0;
 		m_idType = null;
 	}
 	
-	public Info(int id, IdType idType) {
+	public PathInfo(int routeId, int id, IdType idType) {
+		m_routeId = routeId;
 		m_id = id;
 		m_idType = idType;
 	}
 	
     public int numArgs() {
-   		return 1;
+   		return 2;
     }        
 
     public String name() {
-    	return "info";
+    	return "path_info";
     }        
 
     public String commandLine() {
-   	    return "info " + m_id;
+   	    return "path_info " + m_routeId + " " + m_id;
     }        
     
     public String description(Engine engine, boolean detailed) {
-    	return "info <path/block id>: Show information for given path/block";
+    	return "path_info <route id> <path/block id>: Show detailed information for the given path/block";
     }
 
     public Command clone(String[] args, int index, boolean commandLineMode) {
@@ -41,7 +44,8 @@ public class Info extends Command {
 			return null;		
 
         try { 
-            return new Info(getId(args[index + 1]), getIdType(args[index + 1]));
+            return new PathInfo(getRouteId(args[index + 1]), 
+            		getId(args[index + 2]), getIdType(args[index + 2]));
         } catch (NumberFormatException e) {        	
           	return null;
         }    		            		
@@ -51,24 +55,16 @@ public class Info extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-		if (!isRouteAnalysed(engine, console))
-			return;
-		
-	    if (!Command.isIdValid(engine, console, m_id, m_idType)) {	    	
-	    	switch (m_idType) {
-	        case BLOCK: console.display(String.format("Block: %d not found\n", m_id)); break;
-	        case PATH:  console.display(String.format("Path: %d not found\n", m_id)); break;
-	    	}
-            return;
-	    }
+	    if (!validateIds(engine, console, m_routeId, m_id, m_idType))
+		    return;
     	
     	switch (m_idType) {
         case BLOCK:
-        	PathBasicBlock block = engine.getRoute().getBlock(m_id);
+        	PathBasicBlock block = engine.getRoute(m_routeId).getBlock(m_id);
         	displayBlockSummary(console, block);
         	break;
         case PATH:
-        	PathBasicBlock path = engine.getRoute().getPath(m_id);			
+        	PathBasicBlock path = engine.getRoute(m_routeId).getPath(m_id);			
         	displayPathSummary(console, path);
         	break;
         default:

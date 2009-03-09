@@ -11,12 +11,14 @@ import com.xmos.xta.engine.XtaInstruction;
 public class TraceDisplayer {
 	private Engine m_engine;
 	private Console m_console;
+	private int m_routeId;
 	private int m_id;
 	private Command.IdType m_idType;
 		
-	public TraceDisplayer(Engine engine, Console console, int id, Command.IdType idType) {
+	public TraceDisplayer(Engine engine, Console console, int routeId, int id, Command.IdType idType) {
 		m_engine = engine;
 		m_console = console;
+		m_routeId = routeId;
 		m_id = id;
 		m_idType = idType;
 	}
@@ -25,11 +27,11 @@ public class TraceDisplayer {
         Vector<XtaInstruction> instructions = null;    		
         switch (m_idType) {
         case BLOCK:
-        	PathBasicBlock block = m_engine.getRoute().getBlock(m_id);			
+        	PathBasicBlock block = m_engine.getRoute(m_routeId).getBlock(m_id);			
         	instructions = new Vector<XtaInstruction>( block.getInstructionStream());
         	break;
         case PATH:
-        	PathBasicBlock path = m_engine.getRoute().getPath(m_id);			
+        	PathBasicBlock path = m_engine.getRoute(m_routeId).getPath(m_id);			
         	instructions = path.getInstructions(false);
         	break;
         default:

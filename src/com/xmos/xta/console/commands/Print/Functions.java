@@ -1,4 +1,4 @@
-package com.xmos.xta.console.commands.Summary;
+package com.xmos.xta.console.commands.Print;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -17,28 +17,39 @@ import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
 
 public class Functions extends Command {
-	public Functions() {}
+	private int m_routeId;
 	
-    public int numArgs()        { return 0; }        
+	public Functions() {
+		m_routeId = 0;
+	}
+	
+	public Functions(int routeId) {
+		m_routeId = routeId;		
+	}
+	
+    public int numArgs()        { return 1; }        
     public String name()        { return "functions"; }        
     public String commandLine() { return "functions"; }        
     
     public String description(Engine engine, boolean detailed) {
-    	return "functions: Show path(s) + functions";
+    	return "functions <route id>: Shows which paths touch which functions";
     }
 
     public Command clone(String[] args, int index, boolean commandLineMode) {
-   		return new Functions();
+		if ((index + numArgs()) >= args.length) 
+			return null;		
+    	
+   		return new Functions(getRouteId(args[index + 1]));
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-		if (!isRouteAnalysed(engine, console))
+		if (!validateRouteId(engine, console, m_routeId))
 			return;		    	
 
-    	displayFunctions(console, engine.getRoute(), engine.getSymbolTable());
+    	displayFunctions(console, engine.getRoute(m_routeId), engine.getSymbolTable());
     }
 	
     private void displayFunctions(Console console, Route route, SymbolTable symbolTable) {

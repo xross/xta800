@@ -9,6 +9,7 @@ import java.util.TreeSet;
 
 import com.xmos.xta.engine.Status.BlockStatus;
 
+@SuppressWarnings("serial")
 class AbortedException extends Exception {}
 
 public class Route {
@@ -18,8 +19,10 @@ public class Route {
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR
 	}
-	
+		
+	private static int s_routeCount;
 	private static int s_pathCount;
+	private int m_routeId;
 	private ArrayList<BasicBlock> m_nodes;
 	private int m_startPc;
 	private TreeSet<Integer> m_endPcs; 
@@ -29,9 +32,14 @@ public class Route {
 	private ArrayList<Unresolved> m_unresolvedPaths;
 	private InstructionDecodeCache m_idc;
 	private InstructionMnemonics m_mnenonics;
-	private Engine m_engine;
+	private Engine m_engine;	
+	private RouteTiming m_routeTiming;
 	
-	public Route(Engine engine, int startPc, TreeSet<Integer> endPcs, 
+	public static void resetRouteCount() {
+		s_routeCount = 0;
+	}
+	
+	public Route(Config config, Engine engine, int startPc, TreeSet<Integer> endPcs, 
 			ArrayList<BasicBlock> nodes, InstructionDecodeCache idc, 
 			InstructionMnemonics mnenonics, String description){
 		m_engine = engine;
@@ -44,7 +52,14 @@ public class Route {
 		m_nodes = nodes;
 		m_idc = idc;
 		m_mnenonics = mnenonics;
+		m_routeTiming = new RouteTiming(this, config, engine.getNodeId(), engine.getCoreId());
+		m_routeId = s_routeCount;
+		++s_routeCount;
 		s_pathCount = 0;
+	}
+	
+	public int getRouteId() {
+		return m_routeId;
 	}
 	
 	public ArrayList<PathBasicBlock> getCompletedPaths(){
@@ -67,6 +82,10 @@ public class Route {
 		for(PathBasicBlock block : m_allBasicBlocks){
 			block.getBlockStats().invalidateAll();
 		}
+	}
+	
+	public RouteTiming getRouteTiming() {
+		return m_routeTiming;
 	}
 	
 	public RouteStatus analyse(){
@@ -139,7 +158,7 @@ public class Route {
 		}
         return unknowns;
 	}
-	
+		
 	@SuppressWarnings("unchecked")
 	private void followNode(
 		PathBasicBlock currentBasicBlock, 

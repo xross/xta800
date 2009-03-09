@@ -1,4 +1,4 @@
-package com.xmos.xta.console.commands.Summary;
+package com.xmos.xta.console.commands.Print;
 
 import java.util.ArrayList;
 
@@ -13,14 +13,13 @@ import com.xmos.xta.engine.Status;
 import com.xmos.xta.engine.Unresolved;
 import com.xmos.xta.engine.XtaInstruction;
 
-public class SummaryDisplayer {
+public class TreeDisplayer {
 	public enum Level {
-	    simple, 
-	    complete, 
+	    complete_paths, 
 	    complete_loops, 
 	    complete_blocks, 
 	    complete_instructions, 
-	    unresolved,
+	    unresolved_paths, 
 	    unresolved_loops, 
 	    unresolved_blocks, 
 	    unresolved_instructions, 
@@ -30,7 +29,7 @@ public class SummaryDisplayer {
 	private Console m_console;
 	private Level m_level;	
 		
-	public SummaryDisplayer(Engine engine, Console console, Level level) {
+	public TreeDisplayer(Engine engine, Console console, Level level) {
 		m_engine = engine;
 		m_console = console;
 		m_level = level;
@@ -40,39 +39,48 @@ public class SummaryDisplayer {
 		if (!Command.isExecutableLoaded(m_engine, m_console))
 			return;			    	
 
-		if (!Command.isRouteAnalysed(m_engine, m_console))
+		if (!Command.validateRoutes(m_engine, m_console))
 			return;		    	
     	
-    	Route route = m_engine.getRoute();
-    	
-    	switch (m_level) {
-    	case complete:
-    	case complete_loops:
-    	case complete_blocks:
-    	case complete_instructions:
-    		m_console.display(String.format("Path(id): Timing(ns)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute\n"));     			
-         	m_console.display(String.format("+COMPLETE [%d path(s)]\n", route.getCompletedPaths().size()));
-	        summarisePaths(route.getCompletedPaths(), "  ", null);	        	       
-	        break;
-    	
-        case unresolved:
-        case unresolved_loops:
-        case unresolved_blocks:
-        case unresolved_instructions:
-         	m_console.display(String.format("+UNRESOLVED [%d path(s)]\n", route.getUnresolvedPaths().size()));
-	        ArrayList<PathBasicBlock> unresolvedPaths = new ArrayList<PathBasicBlock>();
-	        for(Unresolved unknown : route.getUnresolvedPaths()){
-	        	unresolvedPaths.add(unknown.getBlock());
-	        }
-         	summarisePaths(unresolvedPaths, "  ", null);
-	        break;
-	        
-        default:
-        	assert false;
-            break;
-    	}    	
+		for (Route route : m_engine.getRoutes()) {
+	    	switch (m_level) {
+	    	case complete_paths:
+	    	case complete_loops:
+	    	case complete_blocks:
+	    	case complete_instructions:
+	    		m_console.display(String.format("Route(%d) %s\n", 
+	    				route.getRouteId(), route.getDescription()));	    		
+	         	m_console.display(String.format("Complete [%d path%s]\n", 
+	         			route.getCompletedPaths().size(), 
+	         			route.getCompletedPaths().size() == 1 ? "" : "s"));
+		        summarisePaths(route.getCompletedPaths(), "  ", null);
+		        m_console.display("\n");
+		        break;
+	    	
+	        case unresolved_paths:
+	        case unresolved_loops:
+	        case unresolved_blocks:
+	        case unresolved_instructions:
+	    		m_console.display(String.format("Route(%d) %s\n", 
+	    				route.getRouteId(), route.getDescription()));     			
+	         	m_console.display(String.format("Unresolved [%d path%s]\n", 
+	         			route.getUnresolvedPaths().size(),
+	         			route.getUnresolvedPaths().size() == 1 ? "" : "s"));
+		        ArrayList<PathBasicBlock> unresolvedPaths = new ArrayList<PathBasicBlock>();
+		        for(Unresolved unknown : route.getUnresolvedPaths()){
+		        	unresolvedPaths.add(unknown.getBlock());
+		        }
+	         	summarisePaths(unresolvedPaths, "  ", null);
+		        m_console.display("\n");
+		        break;
+		        
+	        default:
+	        	assert false;
+	            break;
+	    	}    				
+		}
     }
-	    
+	        
     private void summarisePaths(ArrayList<PathBasicBlock> loopPaths, String indent, PathBasicBlock parent) {
         for (PathBasicBlock path : loopPaths) {
             int iterations = 1;
@@ -130,28 +138,16 @@ public class SummaryDisplayer {
         }
         
 		String unknowns = (path.getNumUnknowns(true) > 0) ? "*" : " ";        
-        m_console.display(String.format("%s%s %-11s: %.1f/%d/%d/%d/%d/%d/%d\n", 
-        		indent, unknowns, pathId, 
-        		path.getTimeTaken(true),
-        		path.getNumCycles(true),
-        		path.getNumInstructions(true), 
-        		path.getNumFNops(true),
-        		path.getNumPausables(true),
-        		numExecutions, 
-        		absolute == true ? 1 : 0));
+        m_console.display(String.format("%s%s %-11s: %.1fns\n", 
+        		indent, unknowns, pathId, path.getTimeTaken(true)));
     }
 
     private void displayBlockLevelInfo(PathBasicBlock block, String indent) {
         String blockId = String.format("block(b%d)", block.getBlockId());
 
 		String unknowns = (block.getNumUnknownsThis() > 0) ? "*" : " ";        
-        m_console.display(String.format("%s    %s %-11s: %.1f/%d/%d/%d/%d\n", 
-        		indent, unknowns, blockId, 
-        		block.getTimeTakenThis(),
-        		block.getNumCyclesThis(),
-        		block.getNumInstructionsThis(), 
-        		block.getNumFNopsThis(),
-        		block.getNumPausablesThis()));
+        m_console.display(String.format("%s    %s %-11s: %.1fns\n", 
+        		indent, unknowns, blockId, block.getTimeTakenThis()));
     }
 
     private void displayLoopLevelInfo(PathBasicBlock path, String indent, int numIterations) {
@@ -162,9 +158,10 @@ public class SummaryDisplayer {
                 Attributes attributes = path.getLoopPathAttributes(loopPath);
                 totalIterations += attributes.getNumIterations();
             }
-        	m_console.display(String.format("%s      +loop [%d path(s), %d iteration(s)]\n", 
-        			indent, loopPaths.size(), totalIterations));    
-            	
+        	m_console.display(String.format("%s      loop [%d path%s, %d iteration%s]\n", indent, 
+        			loopPaths.size(), (loopPaths.size() == 1 ? "" : "s"),
+        			totalIterations, (totalIterations == 1 ? "" : "s")));
+
         	summarisePaths(loopPaths, indent + "        ", path);
         }
     }
@@ -187,5 +184,5 @@ public class SummaryDisplayer {
                 m_console.display("\n");
             }
         }
-    }
+    }    
 }

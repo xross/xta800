@@ -161,12 +161,10 @@ public class XtaNotifier implements Notifier {
 		m_notifyArgument = null;		
 	}
 
-	private void createHierarchy() {
-		
-		//this should check that there is a route to display first
-		
+	private void createHierarchy() {		
+		// TODO: This needs to work with multiple routes..		
 		Engine engine = XtaEngine.getEngine();		
-        m_routeInfo = new XtaRouteInfo(engine.getRoute(), engine.getDebugInfo(), 
+        m_routeInfo = new XtaRouteInfo(engine.getRoute(0), engine.getDebugInfo(), 
         		engine.getMemoryImage(), engine.getSymbolTable());
 	}
 }
