@@ -123,17 +123,17 @@ void mii_rx_pins(chanend c_mii_rx)
 
                     if (endbytes == 0) {
                         length += -4 + 0;
-                    } else if (endbytes==1) {
-                        length += -4 + 1;
+                    } else if (endbytes == 3) {
+                        length += -4 + 3;
+                        tail = crc8shr(crc, tail, poly);
+                        tail = crc8shr(crc, tail, poly);
                         tail = crc8shr(crc, tail, poly);
                     } else if (endbytes == 2) {
                         length += -4 + 2;
                         tail = crc8shr(crc, tail, poly);
                         tail = crc8shr(crc, tail, poly);
-                    } else if (endbytes == 3) {
-                        length += -4 + 3;
-                        tail = crc8shr(crc, tail, poly);
-                        tail = crc8shr(crc, tail, poly);
+                    } else if (endbytes==1) {
+                        length += -4 + 1;
                         tail = crc8shr(crc, tail, poly);
                     } else {
 //                        #pragma xta label "error_overflow"
@@ -148,7 +148,7 @@ void mii_rx_pins(chanend c_mii_rx)
 //                        #pragma xta label "error_crc"
                         mii_counter_rxercrc++;
                         clearbuf(p_mii_rxd);
-                    } else if (length < 64) {
+                    } else if (length & !63) {
 //                        #pragma xta label "error_len"
                         mii_counter_rxerlen++;
                         clearbuf(p_mii_rxd);

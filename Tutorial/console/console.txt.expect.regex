@@ -1,1 +1,27 @@
-
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
+\+COMPLETE \[1 path\(s\)\]
+  \* path\(\d+\)    : \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+PASS \(required 320.0ns, worst-case 160.0ns, slack 160.0ns\)
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
+\+COMPLETE \[20 path\(s\)\]
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+  \* path\(\d+\) +: \d+.0/\d+/\d+/\d+/\d+/\d+/\d+
+PASS \(required 1240.0ns, worst-case 1220.0ns, slack 20.0ns\)
