@@ -10,7 +10,17 @@ if (!$noBuild) {
 system("xcc -march=$arch test.xc -o $genDir/test.xe > $genDir/fileline_fileline.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse path test.xc:9 test.xc:11 " .
+       "config proc 0 0 " .
+# BUG 4812 - uncalled elimination bug
+#       "analyse path test.xc:16 test.xc:17 " .
+#       "status " .
+       "analyse path test.xc:7 test.xc:8 " .
+       "status " .
+       "summary simple " .
+       "config proc 0 1 " .
+#       "analyse path test.xc:7 test.xc:8 " .
+#       "status " .
+       "analyse path test.xc:16 test.xc:17 " .
        "status " .
        "summary simple " .
        "exit > $genDir/fileline_fileline.txt 2>&1");

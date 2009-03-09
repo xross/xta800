@@ -5,6 +5,59 @@ NumThreads: 8
 SrcPaths: .
 Loaded executable: test.xe
 Node: 0, Core: 0 \(No debug information found\)
-Loaded function: main \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Node: 0, Core: 1 \(No debug information found\)
+Node: 0, Core: 2 \(No debug information found\)
+Node: 0, Core: 3 \(No debug information found\)
+Loaded function: test0 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
 Complete paths:   1
 Unresolved paths: 0
+Current node: 0
+Current core: 1
+Frequency: 400
+NumThreads: 8
+SrcPaths: .
+Loaded executable: test.xe
+Node: 0, Core: 0 \(No debug information found\)
+Node: 0, Core: 1 \(No debug information found\)
+Node: 0, Core: 2 \(No debug information found\)
+Node: 0, Core: 3 \(No debug information found\)
+Loaded function: test1 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Complete paths:   1
+Unresolved paths: 0
+Current node: 0
+Current core: 2
+Frequency: 400
+NumThreads: 8
+SrcPaths: .
+Loaded executable: test.xe
+Node: 0, Core: 0 \(No debug information found\)
+Node: 0, Core: 1 \(No debug information found\)
+Node: 0, Core: 2 \(No debug information found\)
+Node: 0, Core: 3 \(No debug information found\)
+Loaded function: test2 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Complete paths:   1
+Unresolved paths: 0
+Current node: 0
+Current core: 3
+Frequency: 400
+NumThreads: 8
+SrcPaths: .
+Loaded executable: test.xe
+Node: 0, Core: 0 \(No debug information found\)
+Node: 0, Core: 1 \(No debug information found\)
+Node: 0, Core: 2 \(No debug information found\)
+Node: 0, Core: 3 \(No debug information found\)
+Loaded function: test3 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Complete paths:   1
+Unresolved paths: 0
+Current node: 0
+Current core: 0
+Frequency: 400
+NumThreads: 8
+SrcPaths: .
+Loaded executable: test.xe
+Node: 0, Core: 0 \(No debug information found\)
+Node: 0, Core: 1 \(No debug information found\)
+Node: 0, Core: 2 \(No debug information found\)
+Node: 0, Core: 3 \(No debug information found\)
+No Paths/Functions registered

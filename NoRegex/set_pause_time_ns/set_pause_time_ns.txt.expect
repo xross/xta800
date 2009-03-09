@@ -1,0 +1,20 @@
+Time taken for instruction (0x10004: in (2r) r0, res[r0]) is unknown
+none
+Path(id): Timing(ns)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
++COMPLETE [1 path(s)]
+  * path(0)    : 40.0/2/2/0/1/1/0
+      * block(b2)  : 40.0/2/2/0/1
+          * (20.0ns) 0x10004 in (2r) r0, res[r0] (P)
+            (20.0ns) 0x10006 retsp (u6) i 0x0 
+* 0.0: (20.0ns) 0x10004 main + 0               in (2r)      r0, res[r0] (P)
+  20.0: (20.0ns) 0x10006 main + 2               retsp (u6)   i 0x0
+none
+- pc: 0x10004, 100.0ns, 5 cycles
+Path(id): Timing(ns)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
++COMPLETE [1 path(s)]
+    path(0)    : 120.0/6/2/0/1/1/0
+        block(b2)  : 120.0/6/2/0/1
+            (100.0ns) 0x10004 in (2r) r0, res[r0] (P)
+            (20.0ns) 0x10006 retsp (u6) i 0x0 
+  0.0: (100.0ns) 0x10004 main + 0               in (2r)      r0, res[r0] (P)
+  100.0: (20.0ns) 0x10006 main + 2               retsp (u6)   i 0x0

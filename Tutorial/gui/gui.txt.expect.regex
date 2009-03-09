@@ -1,0 +1,10 @@
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
+\+COMPLETE \[1 path\(s\)\]
+    path\(\d+\)    : 1440.0/72/61/11/0/1/0
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
+\+COMPLETE \[1 path\(s\)\]
+    path\(\d+\)    : 1120.0/56/49/7/0/1/0
+Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
+\+COMPLETE \[2 path\(s\)\]
+    path\(\d+\)    : 3060.0/153/126/20/0/1/0
+    path\(\d+\)    : 2920.0/146/126/20/0/1/0
