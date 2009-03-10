@@ -11,6 +11,6 @@ if (!$noBuild) {
 }
 system("@ARGV load $genDir/test_i-a_i-i-a__.xe " .
        "analyse function test " .
-       "summary complete_loops " .
+       "print completed_loops " .
        "exit > $genDir/test_i-a_i-i-a__.txt 2>&1");
 

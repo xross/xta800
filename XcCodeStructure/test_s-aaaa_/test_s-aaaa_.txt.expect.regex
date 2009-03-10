@@ -1,7 +1,8 @@
-Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-\+COMPLETE \[5 path\(s\)\]
-  . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-  . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-  . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-  . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-  . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
+Route\(0\) function: test
+Complete \[5 paths\]
+  . path\(\d+\) +: \d+\.\d+ns
+  . path\(\d+\) +: \d+\.\d+ns
+  . path\(\d+\) +: \d+\.\d+ns
+  . path\(\d+\) +: \d+\.\d+ns
+  . path\(\d+\) +: \d+\.\d+ns
+
