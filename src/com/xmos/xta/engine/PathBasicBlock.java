@@ -372,7 +372,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 
 	
 	public Vector<XtaInstruction> getInstructions(boolean recurse) {
-		Vector<XtaInstruction> insts = new Vector<XtaInstruction>();;
+		Vector<XtaInstruction> insts = new Vector<XtaInstruction>();
 		for (PathBasicBlock block : getPathBlocks()) {
 			insts.addAll(block.getInstructionStream() );
 			if (recurse) {
@@ -383,6 +383,23 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		}
 		doneWithPathBlocks();
 		return insts;
+	}
+
+	public Vector<XtaInstruction> getUnknowns() {
+		Vector<XtaInstruction> unknowns = new Vector<XtaInstruction>();
+		for (PathBasicBlock block : getPathBlocks()) {
+
+			for (XtaInstruction inst : getInstructionStream()) {
+				if (inst.isUnknown())
+					unknowns.add(inst);
+			}
+
+			for (PathBasicBlock loopPath : block.getLoopPaths(this)) {
+				unknowns.addAll(loopPath.getUnknowns());
+			}
+		}
+		doneWithPathBlocks();
+		return unknowns;
 	}
 
 	public HashSet<Integer> getPcsCovered(boolean recurse) {

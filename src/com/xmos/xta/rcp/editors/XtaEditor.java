@@ -169,6 +169,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	        m_endPointLine = null;			
 			updateFnops();
     	    updateHighlighting();
+			updateUnknowns();
     	    
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT)) {
 			Reference startPoint = XtaNotifier.getInstance().getStartPoint();
@@ -199,6 +200,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
             	m_selectedNode = (Node)object;
             	updateFnops();
         	    updateHighlighting();
+        	    updateUnknowns();
             }
         }
     }	            		         	        
@@ -351,10 +353,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         for (SrcTableInfo info : XtaEngine.getEngine().getEndpointTable().values()) {
         	if (info.getFileName().equals(m_fileName)) {
         		InputLine line = findCodeLine(info.getLineNumber());
-        		int index = line.getIndex();
-        		if (index != endPointIndex && index != startPointIndex)
-        			addAnnotation(index, EndpointID, annotations, annotationPositions);
-        		m_endPointLines.put(index, line);
+        		if (line != null) {
+        			int index = line.getIndex();
+	        		if (index != endPointIndex && index != startPointIndex)
+	        			addAnnotation(index, EndpointID, annotations, annotationPositions);
+	        		m_endPointLines.put(index, line);
+        		}
         	}
         }
 
@@ -371,7 +375,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		m_annotationModel.replaceAnnotations(m_previousHighlightAnnotations, annotationPositions);        
 		m_previousHighlightAnnotations = createArray(annotations);
 		
-//		XtaNotifier.getInstance().notify(Notifier.NOTIFY_UPDATE_HIGHLIGHTS, "");
+		XtaNotifier.getInstance().notify(Notifier.NOTIFY_UPDATE_HIGHLIGHTS, "");
 		m_updatingHighlights = false;
     }
                 
@@ -381,10 +385,16 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	    ArrayList<Annotation> annotations = new ArrayList<Annotation>();
         HashMap<Annotation, Position> annotationPositions = 
     	    new HashMap<Annotation, Position>();		
-		
-		for (XtaInstruction instruction : XtaNotifier.getInstance().getRouteInfo().getRoute().getUnknowns()) {
-			updateAnnotations(instruction.getPc(), UnknownAnnotationID, annotations, annotationPositions, true);
-		}						    
+
+    	Node pathRoot = null;
+    	if (m_selectedNode != null) {
+    		pathRoot = m_selectedNode.getPathRoot();
+    	}
+    	if (pathRoot != null) {
+			for (XtaInstruction instruction : pathRoot.getUnknowns()) {
+				updateAnnotations(instruction.getPc(), UnknownAnnotationID, annotations, annotationPositions, true);
+			}
+    	}
 
 		m_annotationModel.replaceAnnotations(m_previousUnknownAnnotations, annotationPositions);        
 		m_previousUnknownAnnotations = createArray(annotations);    		    

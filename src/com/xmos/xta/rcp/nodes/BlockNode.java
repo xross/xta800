@@ -114,6 +114,10 @@ public class BlockNode extends Node {
 		return new Vector<XtaInstruction>(m_block.getInstructionStream());
 	}
 
+	public Vector<XtaInstruction> getUnknowns() {
+		return new Vector<XtaInstruction>(m_block.getUnknowns());
+	}
+
 	public void getFnopPcs(Vector<XtaInstruction> fnops) {
 		for (XtaInstruction inst : m_block.getInstructionStream()) {
 			if (inst.isFnop() && !fnops.contains(inst)) {
