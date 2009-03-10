@@ -8,7 +8,7 @@ Node: 0, Core: 0 \(Debug information avaliable\)
 Node: 0, Core: 1 \(Debug information avaliable\)
 Node: 0, Core: 2 \(Debug information avaliable\)
 Node: 0, Core: 3 \(Debug information avaliable\)
-No Paths/Functions registered
+No routes analysed
 Error: Unresolved reference: test.xc:11
 Label: ben, pc: 0x[0-9a-fA-F]{5}
 Label: bob, pc: 0x[0-9a-fA-F]{5}
@@ -23,7 +23,7 @@ Node: 0, Core: 0 \(Debug information avaliable\)
 Node: 0, Core: 1 \(Debug information avaliable\)
 Node: 0, Core: 2 \(Debug information avaliable\)
 Node: 0, Core: 3 \(Debug information avaliable\)
-No Paths/Functions registered
+No routes analysed
 Label: ben, pc: 0x[0-9a-fA-F]{5}
 Label: bob, pc: 0x[0-9a-fA-F]{5}
 Label: fred, pc: 0x[0-9a-fA-F]{5}
@@ -37,7 +37,7 @@ Node: 0, Core: 0 \(Debug information avaliable\)
 Node: 0, Core: 1 \(Debug information avaliable\)
 Node: 0, Core: 2 \(Debug information avaliable\)
 Node: 0, Core: 3 \(Debug information avaliable\)
-No Paths/Functions registered
+No routes analysed
 none
 Error: Unresolved reference: test.xc:11
 Label: ben1, pc: 0x[0-9a-fA-F]{5}
@@ -53,7 +53,7 @@ Node: 0, Core: 0 \(Debug information avaliable\)
 Node: 0, Core: 1 \(Debug information avaliable\)
 Node: 0, Core: 2 \(Debug information avaliable\)
 Node: 0, Core: 3 \(Debug information avaliable\)
-No Paths/Functions registered
+No routes analysed
 Label: ben, pc: 0x[0-9a-fA-F]{5}
 Label: bob, pc: 0x[0-9a-fA-F]{5}
 Label: fred, pc: 0x[0-9a-fA-F]{5}

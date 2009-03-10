@@ -7,10 +7,11 @@ my $arch    = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -march=$arch -g main.xc test1.xc test2.xc test3.xc test4.xc test5.xc -o $genDir/test.xe > $genDir/sources.log 2>&1");
+system("xcc -march=$arch -g test.s -o $genDir/test.xe > $genDir/pathid.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function test " .
-       "summary sources " .
-       "-exit > $genDir/sources.txt 2>&1");
+       "print path_info - 0 " .
+       "print path_info - 1 " .
+       "exit > $genDir/pathid.txt 2>&1");
 

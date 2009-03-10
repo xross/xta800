@@ -5,6 +5,9 @@ NumThreads: 8
 SrcPaths: .
 Loaded executable: test.xe
 Node: 0, Core: 0 (No debug information found)
-Loaded path: 0x10002 to 0x1000c (0x10002 => 0x1000c)
-Complete paths:   1
-Unresolved paths: 0
+Loaded Route(0): path: 0x10002 to 0x1000c (0x10002 => 0x1000c)
+Route(0) path: 0x10002 to 0x1000c
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Fail, Timing Unspecified

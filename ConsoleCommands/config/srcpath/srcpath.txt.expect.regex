@@ -7,5 +7,5 @@ NumThreads: 8
 SrcPaths: .*/up;.
 Loaded executable: test.xe
 Node: 0, Core: 0 \(Debug information avaliable\)
-No Paths/Functions registered
+No routes analysed
 - test.xc \(.*\)

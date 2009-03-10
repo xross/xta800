@@ -1,67 +1,49 @@
 set constraint a
 list constraint
 analyse function testA
-summary simple
 analyse function testB
-summary simple
 analyse function testAandB
-summary simple
 analyse function testAorB
-summary simple
+print summary
 
 set constraint !a
 list constraint
 analyse function testA
-summary simple
 analyse function testB
-summary simple
 analyse function testAandB
-summary simple
 analyse function testAorB
-summary simple
+print summary
 
 set constraint a&&b
 list constraint
 analyse function testA
-summary simple
 analyse function testB
-summary simple
 analyse function testAandB
-summary simple
 analyse function testAorB
-summary simple
+print summary
 
 set constraint !(a||b)
 list constraint
 analyse function testA
-summary simple
 analyse function testB
-summary simple
 analyse function testAandB
-summary simple
 analyse function testAorB
-summary simple
+print summary
 
 set constraint !a && !b
 list constraint
 analyse function testA
-summary simple
 analyse function testB
-summary simple
 analyse function testAandB
-summary simple
 analyse function testAorB
-summary simple
+print summary
 
 set constraint !a || !b
 list constraint
 analyse function testA
-summary simple
 analyse function testB
-summary simple
 analyse function testAandB
-summary simple
 analyse function testAorB
-summary simple
+print summary
 
 exit

@@ -8,9 +8,12 @@ Node: 0, Core: 0 \(No debug information found\)
 Node: 0, Core: 1 \(No debug information found\)
 Node: 0, Core: 2 \(No debug information found\)
 Node: 0, Core: 3 \(No debug information found\)
-Loaded path: output0 to input0 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
-Complete paths:   1
-Unresolved paths: 0
+Loaded Route\(0\): path: output0 to input0 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Route\(0\) path: output0 to input0
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Fail, Timing Unspecified
 Current node: 0
 Current core: 1
 Frequency: 400
@@ -21,6 +24,14 @@ Node: 0, Core: 0 \(No debug information found\)
 Node: 0, Core: 1 \(No debug information found\)
 Node: 0, Core: 2 \(No debug information found\)
 Node: 0, Core: 3 \(No debug information found\)
-Loaded path: output1 to input1 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
-Complete paths:   1
-Unresolved paths: 0
+Loaded Route\(0\): path: output0 to input0 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Loaded Route\(1\): path: output1 to input1 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Route\(0\) path: output0 to input0
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Route\(1\) path: output1 to input1
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Fail, Timing Unspecified

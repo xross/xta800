@@ -11,7 +11,7 @@ system("xcc -march=$arch -nostartfiles -g test.s -o $genDir/test.xe > $genDir/pa
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "summary simple " .
-       "-print trace 0 " .
+       "print summary " .
+       "-print trace - 0 " .
        "exit > $genDir/pathid_unresolved.txt 2>&1");
 

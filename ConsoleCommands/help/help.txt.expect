@@ -1,6 +1,5 @@
   [-]add <option> <arg0> <arg1>...: Add item to given list
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
-  [-]assert <option> <arg0> <arg1>...: Set limits on the analysis phase
   [-]config <option> <arg0> <arg1>...: Configures the given option
   [-]clear: Clears the screen (Gui mode only)
   [-]echo "text": prints the text to the console
@@ -9,13 +8,12 @@
   [-]history: Displays the command history
   [-]load <xe file>: Loads the given xmos executable file
   [-]list <option> <arg0> <arg1>...: Lists the given set of items
-  [-]print <option> <arg0> <arg1>...: Display path information
+  [-]print <option> <arg0> <arg1>...: Display analysis information
   [-]pwd: Displays the current working directory
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
   [-]set <option> <arg0> <arg1>...: Set path information
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
-  [-]summary <option> <arg0> <arg1>...: Display timing summaries
   [-]unset <option> <arg0> <arg1>...: Unset item from given list
   [-]version: Displays the version information
   [-]add <option> <arg0> <arg1>...: Add item to given list
@@ -26,9 +24,6 @@
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
       option: path <from ENDPOINT_REF> <to ENDPOINT_REF>: Sets a path start and end points
       option: function <name>: Sets a path to trace a given function
-  [-]assert <option> <arg0> <arg1>...: Set limits on the analysis phase
-      option: maxtime <ns> : Analysis fails at the given time limit
-      option: maxcycles <num cycles> : Analysis fails at the given cycle limit
   [-]clear: Clears the screen (Gui mode only)
   [-]config <option> <arg0> <arg1>...: Configures the given option
       option: proc <node id> <core id>: All following analysis on given node and core (default: 0,0)
@@ -53,39 +48,44 @@
       option: times: Lists the instructions which have had their times set
       option: constraint <expression>: Displays the current constraint expression
   [-]load <xe file>: Loads the given xmos executable file
-  [-]print <option> <arg0> <arg1>...: Display path information
-      option: asm <path/block id>: Display annotated assembly for given path id
-      option: src <path/block id>: Display annotated source file(s) for given path id
-      option: mix <path/block id>: Display annotated source file(s) + assembly instructions for the given path id
-      option: trace <path/block id>: Display instruction trace for the given path/block
+  [-]print <option> <arg0> <arg1>...: Display analysis information
+      option: summary: Show routes summary
+      option: asm <route id> <path/block id>: Display annotated assembly for given path id
+      option: src <route id> <path/block id>: Display annotated source file(s) for given path id
+      option: mix <route id> <path/block id>: Display annotated source file(s) + assembly instructions for the given path id
+      option: trace <route id> <path/block id>: Display instruction trace for the given path/block
+      option: completed_paths: Show timing of complete paths
+      option: completed_loops: Show timing of complete paths + loops
+      option: completed_blocks: Show timing of complete paths + loops + blocks
+      option: completed_instructions: Show timing of complete paths + loops + blocks + instructions
+      option: unresolved_paths: Show timing of unresolved path(s)
+      option: unresolved_loops: Show timing of complete paths + loops
+      option: unresolved_blocks: Show timing of complete paths + loops + blocks
+      option: unresolved_instructions: Show timing of complete paths + loops + blocks + instructions
+      option: route_info <route id>: Show detailed information for the given route
+      option: path_info <route id> <path/block id>: Show detailed information for the given path/block
+      option: functions <route id>: Shows which paths touch which functions
+      option: sources <route id>: Shows which paths touch which sources
   [-]pwd: Displays the current working directory
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
       option: branch <from LABEL_REF>: Removes the given from reference from the branches list
       option: label [label]+: Removes the given labels from the labels list (supports regular expressions)
       option: srclabel [label]+: Removes the given source labels from the source labels list (supports regular expressions)
       option: endpoint [label]+: Removes the given endpoints from the endpoints list (supports regular expressions)
+      option: route <route id>: Removes the route with the given id from the current analysis
   [-]set <option> <arg0> <arg1>...: Set path information
-      option: loop <path> <scope> <iterations>: Sets the number of iterations for the given path
+      option: loop <route id> <path id> <scope> <iterations>: Sets the number of iterations for the given route/path
           scope: relative/r: Iteration number propagates to the enclosing path (Default)
           scope: absolute/a: Absolute number of iterations
       option: time <ENDPOINT_REF> <mode> <value>: Sets the time taken for the instruction at the given pc
           mode: ns:     Sets the time this instruction takes in ns
           mode: cycles: Sets the time this instruction takes in thread cycles
       option: constraint <expression>: Defines the constraint expression
+      option: maxtime <route id> <mode> <value>: Sets the maximum allowed time taken for the given route
+          mode: ns:     Sets the time this instruction takes in ns
+          mode: cycles: Sets the time this instruction takes in thread cycles
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
-  [-]summary <option> <arg0> <arg1>...: Display timing summaries
-      option: simple: Show simple paths summary
-      option: complete: Show timing of complete path(s)
-      option: complete_loops: Show timing of complete path(s) + loops
-      option: complete_blocks: Show timing of complete path(s) + loops + blocks
-      option: complete_instructions: Show timing of complete path(s) + loops + blocks + instructions
-      option: unresolved: Show timing of unresolved path(s)
-      option: unresolved_loops: Show timing of complete path(s) + loops
-      option: unresolved_blocks: Show timing of complete path(s) + loops + blocks
-      option: unresolved_instructions: Show timing of complete path(s) + loops + blocks + instructions
-      option: functions: Show path(s) + functions
-      option: sources: Show path(s) + sources
-      option: info <path/block id>: Show information for given path/block
   [-]unset <option> <arg0> <arg1>...: Unset item from given list
       option: time <pc>: Clears the time set for the given instructions (supports regular expressions)
+      option: time <route id>: Clears the the maximum allowed time for the given route

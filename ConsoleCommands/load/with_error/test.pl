@@ -11,11 +11,7 @@ system("xcc -march=$arch test.xc -o $genDir/test.xe > $genDir/with_error.log 2>&
 }
 system("@ARGV load $genDir/test.xe " .
   "status " .
-  "analyse function main " .
-  "summary complete " .
-  "-load not_found.xe " .
+  "load not_found.xe " .
   "status " .
-  "analyse function main " .
-  "summary complete " .
   "-exit > $genDir/with_error.txt 2>&1");
 

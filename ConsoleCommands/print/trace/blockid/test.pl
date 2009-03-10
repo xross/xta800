@@ -11,7 +11,7 @@ system("xcc -nostartfiles -march=$arch -g test.s -o $genDir/test.xe > $genDir/bl
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "summary simple " .
-       "print trace b2 " .
+       "print summary " .
+       "print trace - b2 " .
        "exit > $genDir/blockid.txt 2>&1");
 

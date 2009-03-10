@@ -5,6 +5,9 @@ NumThreads: 8
 SrcPaths: .
 Loaded executable: test.xe
 Node: 0, Core: 0 \(No debug information found\)
-Loaded path: INPUT_1 to INPUT_2 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
-Complete paths:   1
-Unresolved paths: 0
+Loaded Route\(0\): path: INPUT_1 to INPUT_2 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Route\(0\) path: INPUT_1 to INPUT_2
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Fail, Timing Unspecified

@@ -8,9 +8,12 @@ Node: 0, Core: 0 \(No debug information found\)
 Node: 0, Core: 1 \(No debug information found\)
 Node: 0, Core: 2 \(No debug information found\)
 Node: 0, Core: 3 \(No debug information found\)
-Loaded function: test0 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
-Complete paths:   1
-Unresolved paths: 0
+Loaded Route\(0\): function: test0 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Route\(0\) function: test0
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Fail, Timing Unspecified
 Current node: 0
 Current core: 1
 Frequency: 400
@@ -21,9 +24,17 @@ Node: 0, Core: 0 \(No debug information found\)
 Node: 0, Core: 1 \(No debug information found\)
 Node: 0, Core: 2 \(No debug information found\)
 Node: 0, Core: 3 \(No debug information found\)
-Loaded function: test1 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
-Complete paths:   1
-Unresolved paths: 0
+Loaded Route\(0\): function: test0 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Loaded Route\(1\): function: test1 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Route\(0\) function: test0
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Route\(1\) function: test1
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Fail, Timing Unspecified
 Current node: 0
 Current core: 2
 Frequency: 400
@@ -34,9 +45,22 @@ Node: 0, Core: 0 \(No debug information found\)
 Node: 0, Core: 1 \(No debug information found\)
 Node: 0, Core: 2 \(No debug information found\)
 Node: 0, Core: 3 \(No debug information found\)
-Loaded function: test2 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
-Complete paths:   1
-Unresolved paths: 0
+Loaded Route\(0\): function: test0 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Loaded Route\(1\): function: test1 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Loaded Route\(2\): function: test2 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Route\(0\) function: test0
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Route\(1\) function: test1
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Route\(2\) function: test2
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Fail, Timing Unspecified
 Current node: 0
 Current core: 3
 Frequency: 400
@@ -47,9 +71,27 @@ Node: 0, Core: 0 \(No debug information found\)
 Node: 0, Core: 1 \(No debug information found\)
 Node: 0, Core: 2 \(No debug information found\)
 Node: 0, Core: 3 \(No debug information found\)
-Loaded function: test3 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
-Complete paths:   1
-Unresolved paths: 0
+Loaded Route\(0\): function: test0 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Loaded Route\(1\): function: test1 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Loaded Route\(2\): function: test2 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Loaded Route\(3\): function: test3 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Route\(0\) function: test0
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Route\(1\) function: test1
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Route\(2\) function: test2
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Route\(3\) function: test3
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Fail, Timing Unspecified
 Current node: 0
 Current core: 0
 Frequency: 400
@@ -60,4 +102,7 @@ Node: 0, Core: 0 \(No debug information found\)
 Node: 0, Core: 1 \(No debug information found\)
 Node: 0, Core: 2 \(No debug information found\)
 Node: 0, Core: 3 \(No debug information found\)
-No Paths/Functions registered
+Loaded Route\(0\): function: test0 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Loaded Route\(1\): function: test1 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Loaded Route\(2\): function: test2 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
+Loaded Route\(3\): function: test3 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)

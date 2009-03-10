@@ -1,6 +1,9 @@
 Error: Found 1 unresolved path\(s\)
-Complete paths:   1
-Unresolved paths: 1
+Route\(0\) function: main
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 1
+
+Fail, Timing Unspecified
   0.0: \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 0               --FNOP--     
   20.0: \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 0               entsp \(u6\)   i 0x4
   40.0: \(20.0ns\) 0x[0-9a-fA-F]{5} main \+ 2               --FNOP--     
