@@ -230,10 +230,8 @@ public class Route {
 
 			checkSupportedInstructions(endBlock);
 			
-			if(endBlock.getConstraint().isTrue()){
-				m_completedPaths.add(endBlock);
-				endBlock.setPath(s_pathCount++);
-				endBlock.setStatus(BlockStatus.COMPLETE);
+			if (endBlock.getConstraint().isTrue()){
+				addCompletePath(endBlock);
 			}  else {
 				isConstrained(true);
 				endBlock.setStatus(BlockStatus.EXCLUDED);
@@ -254,10 +252,7 @@ public class Route {
 			if(hasResursed(currentBasicBlock, nodeContext)){
 				if(DEBUG) System.out.println("\recursed");
 				String reason = "Recursion with 0x" + Integer.toHexString(currentBasicBlock.getBasicBlock().getInstructions().getFirst().getPc());
-				Unresolved unresolved = new Unresolved(currentBasicBlock, currentBasicBlock.getBasicBlock().getInstructions().getLast(), reason);
-				m_unresolvedPaths.add(unresolved);
-				currentBasicBlock.setUnresolved(unresolved);
-				currentBasicBlock.setStatus(BlockStatus.ERROR);
+				addUnresolvedPath(currentBasicBlock, reason);
 				return;
 			}
 			
@@ -280,9 +275,7 @@ public class Route {
 				
 				if(m_endPcs.contains(nextPathBasicBlock.getFirstPc()) &&  mode == RouteMode.ABSLOUTE ){
 					if(currentBasicBlock.getConstraint().isTrue()){
-						m_completedPaths.add(currentBasicBlock);
-						currentBasicBlock.setPath(s_pathCount++);
-						currentBasicBlock.setStatus(BlockStatus.COMPLETE);
+						addCompletePath(currentBasicBlock);
 					}  else {
 						isConstrained(true);
 						currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
@@ -292,11 +285,8 @@ public class Route {
 				
 				followNode(nextPathBasicBlock, newStack, newContext, mode);
 			} else {
-				if(currentBasicBlock.getBasicBlock().getNextNodes().size() == 0){;
-					Unresolved unresolved = new Unresolved(currentBasicBlock, currentBasicBlock.getBasicBlock().getInstructions().getLast(), "no known next block");
-					m_unresolvedPaths.add(unresolved);
-					currentBasicBlock.setUnresolved(unresolved);
-					currentBasicBlock.setStatus(BlockStatus.ERROR);
+				if (currentBasicBlock.getBasicBlock().getNextNodes().size() == 0) {;
+					addUnresolvedPath(currentBasicBlock, "no known next block");
 					return;
 				}
 				for(BasicBlock nextNode : currentBasicBlock.getBasicBlock().getNextNodes()){
@@ -313,9 +303,7 @@ public class Route {
 					
 					if(m_endPcs.contains(nextPathBasicBlock.getFirstPc()) &&  mode == RouteMode.ABSLOUTE){
 						if(currentBasicBlock.getConstraint().isTrue()){
-							m_completedPaths.add(currentBasicBlock);
-							currentBasicBlock.setPath(s_pathCount++);
-							currentBasicBlock.setStatus(BlockStatus.COMPLETE);
+							addCompletePath(currentBasicBlock);
 						}  else {
 							isConstrained(true);
 							currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
@@ -326,6 +314,20 @@ public class Route {
 				}
 			}
 		}	
+	}
+
+	private void addUnresolvedPath(PathBasicBlock block, String reason) {
+		Unresolved unresolved = new Unresolved(block, block.getBasicBlock().getInstructions().getLast(), reason);
+		m_unresolvedPaths.add(unresolved);
+		block.setUnresolved(unresolved);
+		block.setPath(s_pathCount++);
+		block.setStatus(BlockStatus.ERROR);
+	}
+
+	private void addCompletePath(PathBasicBlock block) {
+		m_completedPaths.add(block);
+		block.setPath(s_pathCount++);
+		block.setStatus(BlockStatus.COMPLETE);
 	}
 
 	private void handelLoop(PathBasicBlock pathFormingLoop, PathBasicBlock loopDestinationBlock) {
@@ -339,13 +341,11 @@ public class Route {
 		if(DEBUG) System.out.println("adding loop " + pathFormingLoop  + " to "+loopDestinationBlock);				
 		
 		loopDestinationBlock.addLoopPath(pathFormingLoop);
-		
 		loopDestinationBlock.getLoopPathAttributes().put(pathFormingLoop, new PathAttributes());
-		
 		pathFormingLoop.setStatus(BlockStatus.COMPLETE);
 		return;
 	}
-		
+	
 	private boolean updateConstraints(PathBasicBlock block) {
 		m_allBasicBlocks.add(block);					
 		for(XtaInstruction inst : block.getInstructionTrimmed()){
