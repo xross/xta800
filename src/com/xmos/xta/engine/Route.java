@@ -179,6 +179,7 @@ public class Route {
 				if(m_endPcs.contains(currentBasicBlock.getInstructionTrimmed().get(size).getPc())){
 					int endPc = 0;
 					if(mode == RouteMode.ABSLOUTE){
+						//this shouldn't cause a problem but is.
 						endPc = currentBasicBlock.getInstructionTrimmed().get(size-1).getPc();
 					} else {
 						endPc = currentBasicBlock.getInstructionTrimmed().get(size).getPc();
@@ -289,7 +290,7 @@ public class Route {
 							isConstrained(true);
 							currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
 						}
-						return;
+						continue;
 					}
 					followNode(nextPathBasicBlock, newStack, newContext, mode);
 				}
