@@ -191,6 +191,9 @@ public class Engine {
 			m_routes.clear();
 			Route.resetRouteCount();
 
+			// Need to update as the executable might be of a different architecture
+			m_mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
+
 			notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile
 					.getAbsolutePath());
 		} else {
@@ -634,8 +637,7 @@ public class Engine {
 			if (numUnresolvedPaths > 0) {
 				String plural = (numUnresolvedPaths == 1) ? "" : "s";
 				notify(Notifier.NOTIFY_ERROR, String.format("Found "
-						+ numUnresolvedPaths + " unresolved path" + plural));
-				
+						+ numUnresolvedPaths + " unresolved path" + plural));				
 			} else if (route.getCompletedPaths().size() == 0){
 				if (route.wasConstrained()){
 					notify(Notifier.NOTIFY_ERROR, "No valid path of execution (constraints applied).");

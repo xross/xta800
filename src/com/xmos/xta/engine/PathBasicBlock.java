@@ -39,23 +39,20 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	
 	public PathBasicBlock(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock,
 			InstructionDecodeCache idc){
-		m_engine = engine;
 		m_startInstruction = basicBlock.getInstructions().getFirst().getPc();
 		m_endInstruction = basicBlock.getInstructions().getLast().getPc();
-		init(basicBlock, parentBasicBlock, idc); 
+		init(engine, basicBlock, parentBasicBlock, idc); 
 	}
 	
 	public PathBasicBlock(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock, 
 			int instStart, int instEnd, InstructionDecodeCache idc){
-		m_engine = engine;
 		m_startInstruction = instStart;
 		m_endInstruction = instEnd;
-		init(basicBlock, parentBasicBlock, idc); 		
+		init(engine, basicBlock, parentBasicBlock, idc); 		
 	}
 	
 	public PathBasicBlock(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock, 
 			int instPc, boolean start, InstructionDecodeCache idc){
-		m_engine = engine;
 		if(start){
 			m_startInstruction = instPc;
 			m_endInstruction = basicBlock.getInstructions().getLast().getPc();
@@ -63,10 +60,11 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 			m_startInstruction = basicBlock.getInstructions().getFirst().getPc();
 			m_endInstruction = instPc;
 		}
-		init(basicBlock, parentBasicBlock, idc); 		
+		init(engine, basicBlock, parentBasicBlock, idc); 		
 	}
 	
-	private void init(BasicBlock basicBlock, PathBasicBlock parentBasicBlock, InstructionDecodeCache idc) {
+	private void init(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock, InstructionDecodeCache idc) {
+		m_engine = engine;
 		m_basicBlock = basicBlock;
 		m_parentBasicBlock = parentBasicBlock;
 		m_seen = 0;
@@ -85,6 +83,8 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		createIBuffer();
 		createTrimmedInstructions(); 
 		createInstructionStream();
+		
+		m_engine.getProgress().incr();
 	}
 	
 	/**
@@ -372,7 +372,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 
 	
 	public Vector<XtaInstruction> getInstructions(boolean recurse) {
-		Vector<XtaInstruction> insts = new Vector<XtaInstruction>();;
+		Vector<XtaInstruction> insts = new Vector<XtaInstruction>();
 		for (PathBasicBlock block : getPathBlocks()) {
 			insts.addAll(block.getInstructionStream() );
 			if (recurse) {
@@ -383,6 +383,15 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		}
 		doneWithPathBlocks();
 		return insts;
+	}
+
+	public Vector<XtaInstruction> getUnknowns() {
+		Vector<XtaInstruction> unknowns = new Vector<XtaInstruction>();
+		for (XtaInstruction inst : getInstructions(true)) {
+			if (inst.isUnknown())
+				unknowns.add(inst);
+		}
+		return unknowns;
 	}
 
 	public HashSet<Integer> getPcsCovered(boolean recurse) {

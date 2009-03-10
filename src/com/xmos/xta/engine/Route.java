@@ -129,7 +129,6 @@ public class Route {
 		
 		sortPaths();
 		displayWarnings();
-				
 		return RouteStatus.COMPLETED;
 	}
 	
@@ -381,24 +380,22 @@ public class Route {
 	}
 
 	private boolean reachedEnd(PathBasicBlock currentBasicBlock, RouteMode mode) {
-		for(XtaInstruction inst : currentBasicBlock.getInstructionTrimmed()){
-			if(m_endPcs.contains(inst.getPc())){
-				if(inst.getPc() == m_startPc && m_firstStep) {
+		for (XtaInstruction inst : currentBasicBlock.getInstructionTrimmed()){
+			if (m_endPcs.contains(inst.getPc())) {
+				if (inst.getPc() == m_startPc && m_firstStep) {
 					return false;
-				}else {
+				} else {
 					return true;
 				}
-					
-				
 			}
 		}
 		return false;
 	}
 	
 	private boolean hasResursed(PathBasicBlock currentBasicBlock, Stack<LinkedList<BasicBlock>> nodeContext) {
-		for(int i=0;i<nodeContext.size()-1;i++){
-			for(BasicBlock bb : nodeContext.get(i)){
-				if(currentBasicBlock.getBasicBlock() == bb){
+		for (int i = 0; i < nodeContext.size() - 1; i++) {
+			for (BasicBlock bb : nodeContext.get(i)) {
+				if (currentBasicBlock.getBasicBlock() == bb) {
 					return true;
 				}
 			}
@@ -416,7 +413,7 @@ public class Route {
 	}
 
 	private PathBasicBlock formsLoop(PathBasicBlock currentNode, Stack<LinkedList<BasicBlock>> nodeContext) {
-		if(!nodeContext.peek().contains(currentNode.getBasicBlock())) return null;
+		if (!nodeContext.peek().contains(currentNode.getBasicBlock())) return null;
 		PathBasicBlock parent = currentNode.getParent();
 		while (parent != null) {
 			if (parent.getBasicBlock() ==  currentNode.getBasicBlock()) {

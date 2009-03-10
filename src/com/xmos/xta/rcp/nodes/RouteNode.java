@@ -53,6 +53,10 @@ public class RouteNode extends Node {
     	return new Vector<XtaInstruction>();
     }
 
+    public Vector<XtaInstruction> getUnknowns() {
+		return new Vector<XtaInstruction>();
+	}
+
 	public void getFnopPcs(Vector<XtaInstruction> fnops) {
 		// Do nothing
 	}

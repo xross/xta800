@@ -548,7 +548,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         				if (m_active) {
         					m_progress.setText("" + p.getCurValue());
         				}
-        			}});            	
+        			}});
 
             	try {
                     Thread.sleep(20);

@@ -145,6 +145,10 @@ public class PathNode extends Node {
 		return new Vector<XtaInstruction>();
 	}
 
+	public Vector<XtaInstruction> getUnknowns() {
+		return new Vector<XtaInstruction>(m_block.getUnknowns());
+	}
+
 	public void setIterations(int numIterations) {
 		// TODO: This needs to work with multiple routes..		
 		XtaEngine.getEngine().setLoopIterations(0, m_block.getPathId(),

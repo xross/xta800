@@ -266,7 +266,7 @@
             label="Start"
             overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
             overviewRulerPreferenceValue="false"
-            presentationLayer="6"
+            presentationLayer="5"
             showInNextPrevDropdownToolbarAction="false"
             showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
             symbolicIcon="warning"
@@ -290,7 +290,7 @@
             label="Stop"
             overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
             overviewRulerPreferenceValue="false"
-            presentationLayer="6"
+            presentationLayer="5"
             showInNextPrevDropdownToolbarAction="false"
             showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
             symbolicIcon="warning"
@@ -314,7 +314,7 @@
             label="StartStop"
             overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
             overviewRulerPreferenceValue="false"
-            presentationLayer="6"
+            presentationLayer="5"
             showInNextPrevDropdownToolbarAction="false"
             showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
             symbolicIcon="warning"
@@ -338,7 +338,7 @@
             label="Endpoint"
             overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
             overviewRulerPreferenceValue="false"
-            presentationLayer="6"
+            presentationLayer="5"
             showInNextPrevDropdownToolbarAction="false"
             showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
             symbolicIcon="warning"
@@ -356,25 +356,30 @@
          name="com.xmos.xta.rcp.highlight"
          super="org.eclipse.ui.workbench.texteditor.error"
          markerType=""
-         markerSeverity="2">
+         markerSeverity="1">
       </type>
       <type
+            markerSeverity="1"
             name="com.xmos.xta.rcp.unknown"
             super="org.eclipse.ui.workbench.texteditor.info">
       </type>
       <type
+            markerSeverity="2"
             name="com.xmos.xta.rcp.start"
             super="org.eclipse.ui.workbench.texteditor.info">
       </type>
       <type
+            markerSeverity="2"
             name="com.xmos.xta.rcp.stop"
             super="org.eclipse.ui.workbench.texteditor.info">
       </type>
       <type
+            markerSeverity="2"
             name="com.xmos.xta.rcp.startstop"
             super="org.eclipse.ui.workbench.texteditor.info">
       </type>
       <type
+            markerSeverity="2"
             name="com.xmos.xta.rcp.endpoint"
             super="org.eclipse.ui.workbench.texteditor.info">
       </type>
