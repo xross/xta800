@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
@@ -36,6 +37,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.engine.maps.SrcTableInfo;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
@@ -56,6 +58,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     public static final String UnknownAnnotationID   = "com.xmos.xta.rcp.unknown";
     public static final String StartAnnotationID     = "com.xmos.xta.rcp.start";
     public static final String StopAnnotationID      = "com.xmos.xta.rcp.stop";
+    public static final String StartStopAnnotationID = "com.xmos.xta.rcp.startstop";
+    public static final String EndpointID            = "com.xmos.xta.rcp.endpoint";
     public static final String ExpandAllID           = "com.xmos.xtagui.action.ExpandAll";
     public static final String CollapseAllID         = "com.xmos.xtagui.action.CollapseAll";
 
@@ -93,6 +97,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private final String m_fileName;
     private InputLine m_startPointLine;
     private InputLine m_endPointLine;
+    private Map<Integer,InputLine> m_endPointLines;
     
     public XtaEditor(final String type, String fileName) {
 		if (DEBUG) System.out.printf("XtaEditor()\n");
@@ -109,6 +114,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	m_startPointLine = null;
         m_endPointLine = null;
         m_hasHighlightedLines = false;
+        
+        m_endPointLines = new TreeMap<Integer,InputLine>();
     }
 
     public void createPartControl(Composite parent) {
@@ -133,6 +140,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         
         m_painter = new AnnotationPainter(viewer, getAnnotationAccess());        
         m_painter.addAnnotationType(HighlightAnnotationID);
+
+	    updateHighlighting();
     }
     
     public void dispose() {
@@ -322,14 +331,35 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 				updateAnnotations(pc, HighlightAnnotationID, annotations, annotationPositions, false);
 			}
         }
-        
+
         m_hasHighlightedLines = (annotations.size() > 0);
+
+        int startPointIndex = -1;
+        int endPointIndex = -1;
+        if (m_startPointLine != null)
+        	startPointIndex = m_startPointLine.getIndex();
+        if (m_endPointLine != null)
+        	endPointIndex = m_endPointLine.getIndex();
         
-        if (m_startPointLine != null) {
-        	addAnnotation(m_startPointLine.getIndex(), StartAnnotationID, annotations, annotationPositions);
+        m_endPointLines.clear();
+        for (SrcTableInfo info : XtaEngine.getEngine().getEndpointTable().values()) {
+        	if (info.getFileName().equals(m_fileName)) {
+        		InputLine line = findCodeLine(info.getLineNumber());
+        		int index = line.getIndex();
+        		if (index != endPointIndex && index != startPointIndex)
+        			addAnnotation(index, EndpointID, annotations, annotationPositions);
+        		m_endPointLines.put(index, line);
+        	}
         }
-        if (m_endPointLine != null) {
-        	addAnnotation(m_endPointLine.getIndex(), StopAnnotationID, annotations, annotationPositions);
+
+        if ((startPointIndex != -1) && (startPointIndex == endPointIndex)) {
+        	addAnnotation(startPointIndex, StartStopAnnotationID, annotations, annotationPositions);
+        } else {
+        	if (startPointIndex != -1)
+            	addAnnotation(startPointIndex, StartAnnotationID, annotations, annotationPositions);
+        	
+        	if (endPointIndex != -1)
+            	addAnnotation(endPointIndex, StopAnnotationID, annotations, annotationPositions);
         }
 				
 		m_annotationModel.replaceAnnotations(m_previousHighlightAnnotations, annotationPositions);        
@@ -375,7 +405,11 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     		Map<Annotation, Position> annotationPositions) {
 		if (DEBUG) System.out.printf("XtaEditor: addAnnotation, index %d\n", index); 
 
-    	IDocument document = getSourceViewer().getDocument();
+		ISourceViewer sourceViewer = getSourceViewer();
+		if (sourceViewer == null)
+			return;
+		
+    	IDocument document = sourceViewer.getDocument();
         try {
     		IRegion lineInfo = document.getLineInformation(index);
             Position position = new Position(lineInfo.getOffset(), lineInfo.getLength());
@@ -523,15 +557,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     		int endLine = startLine + inputSection.getLines().size();
     		int offset = clickLineNum - startLine;
     		if (m_type.equals(XtaDocumentPartitioner.SOURCE)) {
-    			// Must be some associated assembly
-    			if (startLine != endLine) {
-    				if ((clickLineNum >= startLine) && (clickLineNum <= endLine)) {
-        				if (offset == 0) {
-        					return inputSection.getHeader().getCodeReference();
-        				} else {
-        					return inputSection.getLine(offset - 1).getCodeReference();
-        				}
-        			}
+    			// Must be a valid end point
+    			if (m_endPointLines.containsKey(clickLineNum)) {
+    				InputLine line = m_endPointLines.get(clickLineNum);
+    				return line.getCodeReference();
+    			} else {
+    				return null;
     			}
     		} else {
     			// Don't map to the header
