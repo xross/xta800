@@ -37,31 +37,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	private Unresolved m_unresolved;
 	private List<String> m_warnings;
 	
-	/**
-	 * pseudo-node constructor
-	 * @param parentBasicBlock
-	 */
-	public PathBasicBlock(PathBasicBlock parentBasicBlock){
-		m_basicBlock = new BasicBlock(-1);
-		m_idc=null;
-		
-		m_parentBasicBlock = parentBasicBlock;
-		m_seen = 0;
-		m_loopPaths = new LoopAttachment(null);
-		m_pathId = -1;
-		m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
-		m_blockStats = new BasicBlockStats(this);
-		m_status = BlockStatus.SEARCHING;
-		m_warnings = new ArrayList<String>();		
-		
-		if(parentBasicBlock == null){
-			m_constraint = m_engine.getConstraint();
-		} else {
-			m_constraint = parentBasicBlock.getConstraint().clone();
-		}
-	}
-	
-	
 	public PathBasicBlock(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock,
 			InstructionDecodeCache idc){
 		m_engine = engine;
@@ -229,6 +204,10 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 			assert (block.m_seen > 0);
 			block.m_seen--;
 		}
+	}
+	
+	public int getFirstPc(){
+		return m_startInstruction;
 	}
 	
 	public ArrayList<PathBasicBlock> getLoopPaths(PathBasicBlock base) {

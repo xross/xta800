@@ -257,7 +257,7 @@
             colorPreferenceKey="errorIndicationColor"
             contributesToHeader="false"
             highlightPreferenceValue="false"
-            icon="icons/start.png"
+            icon="icons/source_endpoint_start.png"
             includeOnPreferencePage="false"
             isGoToNextNavigationTarget="false"
             isGoToNextNavigationTargetKey="isErrorGoToNextNavigationTarget"
@@ -281,13 +281,61 @@
             colorPreferenceKey="errorIndicationColor"
             contributesToHeader="false"
             highlightPreferenceValue="false"
-            icon="icons/stop.png"
+            icon="icons/source_endpoint_stop.png"
             includeOnPreferencePage="false"
             isGoToNextNavigationTarget="false"
             isGoToNextNavigationTargetKey="isErrorGoToNextNavigationTarget"
             isGoToPreviousNavigationTarget="false"
             isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
             label="Stop"
+            overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="false"
+            presentationLayer="6"
+            showInNextPrevDropdownToolbarAction="false"
+            showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
+            symbolicIcon="warning"
+            textPreferenceKey="errorIndication"
+            textPreferenceValue="false"
+            textStylePreferenceValue="NONE"
+            verticalRulerPreferenceKey="errorIndicationInVerticalRuler"
+            verticalRulerPreferenceValue="true">
+      </specification>
+      <specification
+            annotationType="com.xmos.xta.rcp.startstop"
+            colorPreferenceKey="errorIndicationColor"
+            contributesToHeader="false"
+            highlightPreferenceValue="false"
+            icon="icons/source_endpoint_startstop.png"
+            includeOnPreferencePage="false"
+            isGoToNextNavigationTarget="false"
+            isGoToNextNavigationTargetKey="isErrorGoToNextNavigationTarget"
+            isGoToPreviousNavigationTarget="false"
+            isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
+            label="StartStop"
+            overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="false"
+            presentationLayer="6"
+            showInNextPrevDropdownToolbarAction="false"
+            showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
+            symbolicIcon="warning"
+            textPreferenceKey="errorIndication"
+            textPreferenceValue="false"
+            textStylePreferenceValue="NONE"
+            verticalRulerPreferenceKey="errorIndicationInVerticalRuler"
+            verticalRulerPreferenceValue="true">
+      </specification>
+      <specification
+            annotationType="com.xmos.xta.rcp.endpoint"
+            colorPreferenceKey="errorIndicationColor"
+            contributesToHeader="false"
+            highlightPreferenceValue="false"
+            icon="icons/source_endpoint.png"
+            includeOnPreferencePage="false"
+            isGoToNextNavigationTarget="false"
+            isGoToNextNavigationTargetKey="isErrorGoToNextNavigationTarget"
+            isGoToPreviousNavigationTarget="false"
+            isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
+            label="Endpoint"
             overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
             overviewRulerPreferenceValue="false"
             presentationLayer="6"
@@ -320,6 +368,14 @@
       </type>
       <type
             name="com.xmos.xta.rcp.stop"
+            super="org.eclipse.ui.workbench.texteditor.info">
+      </type>
+      <type
+            name="com.xmos.xta.rcp.startstop"
+            super="org.eclipse.ui.workbench.texteditor.info">
+      </type>
+      <type
+            name="com.xmos.xta.rcp.endpoint"
             super="org.eclipse.ui.workbench.texteditor.info">
       </type>
    </extension>
