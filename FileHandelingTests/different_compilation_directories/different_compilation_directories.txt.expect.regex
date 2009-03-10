@@ -19,7 +19,7 @@ test.xc \(.*\)
 test.xc \(.*\)
 ----------------------------------
   1: int add\(int a, int b\)
-\+ 2: {
+  2: {
 \+ 3:   int res = a \+ b;
 \+ 4:   return res;
   5: }
@@ -27,7 +27,7 @@ test.xc \(.*\)
 test.xc \(.*\)
 ----------------------------------
   1: int sub\(int a, int b\)
-\+ 2: {
+  2: {
 \+ 3:   int res = a - b;
 \+ 4:   return res;
   5: }
