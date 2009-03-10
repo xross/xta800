@@ -52,7 +52,7 @@ test.xc \(.*data_pointer\)
   9: int i = 9;
   10: int j = 10;
   11: int main\(\)
-\+ 12: \{
+  12: \{
 \+ 13:   if \(b == 2\)
   14:   \{
 \+ 15:     a = 3;
@@ -74,7 +74,7 @@ test.xc \(.*data_pointer\)
   9: int i = 9;
   10: int j = 10;
   11: int main\(\)
-\+ 12: \{
+  12: \{
 \+ 13:   if \(b == 2\)
   14:   \{
   15:     a = 3;
