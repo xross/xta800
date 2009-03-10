@@ -37,8 +37,8 @@ public class InstructionMnemonics {
 	public boolean isSetSr(Instruction inst) {
 		switch (m_arch) {
 		case REVA: return (inst.getClass() == RevaXtaInstruction_setsr_u6.class) ||
-		                  (inst.getClass() == RevaXtaInstruction_setsr_u6.class); 
-		case REVB: return (inst.getClass() == RevbXtaInstruction_setsr_lu6.class) ||
+		                  (inst.getClass() == RevaXtaInstruction_setsr_lu6.class); 
+		case REVB: return (inst.getClass() == RevbXtaInstruction_setsr_u6.class) ||
                           (inst.getClass() == RevbXtaInstruction_setsr_lu6.class); 
 		}
 		return false;

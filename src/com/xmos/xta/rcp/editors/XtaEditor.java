@@ -89,6 +89,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private Annotation[] m_previousHighlightAnnotations;
     private Annotation[] m_previousUnknownAnnotations;
     private boolean m_hasHighlightedLines;
+    private boolean m_updatingHighlights;
     
     private Node m_currentPathRoot;
     private Node m_selectedNode;
@@ -114,6 +115,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	m_startPointLine = null;
         m_endPointLine = null;
         m_hasHighlightedLines = false;
+        m_updatingHighlights = false;
         
         m_endPointLines = new TreeMap<Integer,InputLine>();
     }
@@ -320,7 +322,11 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}
     
     private void updateHighlighting() {
-		if (DEBUG) System.out.printf("XtaEditor: updateHighlighting\n"); 
+		if (DEBUG) System.out.printf("XtaEditor: updateHighlighting\n");
+		
+		if (m_updatingHighlights)
+			return;
+		m_updatingHighlights = true;
 		
 	    ArrayList<Annotation> annotations = new ArrayList<Annotation>();
         HashMap<Annotation, Position> annotationPositions = 
@@ -365,7 +371,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		m_annotationModel.replaceAnnotations(m_previousHighlightAnnotations, annotationPositions);        
 		m_previousHighlightAnnotations = createArray(annotations);
 		
-		XtaNotifier.getInstance().notify(Notifier.NOTIFY_UPDATE_HIGHLIGHTS, "");
+//		XtaNotifier.getInstance().notify(Notifier.NOTIFY_UPDATE_HIGHLIGHTS, "");
+		m_updatingHighlights = false;
     }
                 
     private void updateUnknowns() {

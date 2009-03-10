@@ -215,6 +215,9 @@ public class Engine {
 
 			m_route = null;
 
+			// Need to update as the executable might be of a different architecture
+			m_mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
+
 			notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile
 					.getAbsolutePath());
 		} else {

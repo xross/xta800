@@ -10,8 +10,6 @@ import com.xmos.xta.rcp.nodes.Node;
 public class FunctionLoopNode extends ViewNode {
     public static final boolean DEBUG = false;
 
-    private int m_borderX = 3;
-
     private int m_left;
     private int m_right;
     private int m_bottom;
@@ -24,7 +22,7 @@ public class FunctionLoopNode extends ViewNode {
 	public void setNumIterations(int numIterations) {
 		m_numIterations = numIterations;
 		if (m_numIterations > 0) {
-			m_pixelsX = m_borderX * 2;
+			m_pixelsX = 0;
 			m_pixelsY = 20;
 		} else {
 			m_pixelsX = 0;
@@ -84,7 +82,7 @@ public class FunctionLoopNode extends ViewNode {
         gc.setLineWidth(m_lineWidth);
         int childrenX = getChildrenX();
         m_left = scale(m_pixelOffsetX, scale);
-        m_right = scale(m_pixelOffsetX + childrenX + (m_borderX * 2), scale);
+        m_right = scale(m_pixelOffsetX + childrenX, scale);
         m_top = m_pixelOffsetY;
         m_bottom = m_pixelOffsetY + getPixelsY();
         
@@ -92,8 +90,8 @@ public class FunctionLoopNode extends ViewNode {
         if (m_isSelected) gc.setLineWidth(m_lineWidth + 1);
         gc.drawLine(m_left, m_top, m_left, m_bottom);
         gc.drawLine(m_right, m_top, m_right, m_bottom);
-        gc.drawLine(m_left, m_bottom, scale(m_pixelOffsetX + m_borderX, scale), m_bottom);
-        gc.drawLine(scale(m_pixelOffsetX + m_borderX + childrenX, scale), m_bottom, m_right, m_bottom);
+        gc.drawLine(m_left, m_bottom, scale(m_pixelOffsetX, scale), m_bottom);
+        gc.drawLine(scale(m_pixelOffsetX + childrenX, scale), m_bottom, m_right, m_bottom);
         
 		for (Node treeNode : m_treeNode.getNodes()) {
 			ViewNode child = treeNode.getFunctionNode();
@@ -107,7 +105,7 @@ public class FunctionLoopNode extends ViewNode {
         m_pixelOffsetX = xOffset;
         m_pixelOffsetY = yOffset;
 
-        int childOffsetX = m_borderX;
+        int childOffsetX = 0;
 		for (Node treeNode : m_treeNode.getNodes()) {
 			ViewNode child = treeNode.getFunctionNode();
 			if (child != null) {
