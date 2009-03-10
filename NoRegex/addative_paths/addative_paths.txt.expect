@@ -11,7 +11,7 @@ Path(id): Timing(ns)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
   0.0: (20.0ns) 0x1000c main + 10              ldc (ru6)    r0, i 0x5
   20.0: (20.0ns) 0x1000e main + 12              ldc (ru6)    r0, i 0x6
   40.0: (20.0ns) 0x10010 main + 14              ldc (ru6)    r0, i 0x7
-  80.0: (20.0ns) 0x10012 main + 16              ldc (ru6)    r0, i 0x8
+  60.0: (20.0ns) 0x10012 main + 16              ldc (ru6)    r0, i 0x8
 Path(id): Timing(ns)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
 +COMPLETE [1 path(s)]
     path(0)    : 160.0/8/8/0/0/1/0
