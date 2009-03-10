@@ -11,7 +11,7 @@ system("xcc -nostartfiles test.s -o $genDir/test.xe > $genDir/include_retsp.log 
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "summary complete " .
-       "print trace 0 " .
+       "print completed_paths " .
+       "print trace - 0 " .
        "-exit > $genDir/include_retsp.txt 2>&1");
 
