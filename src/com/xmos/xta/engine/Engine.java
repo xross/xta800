@@ -602,7 +602,7 @@ public class Engine {
 	}
 
 	private boolean analyseRoute(RouteMode mode) throws Exception {
-		assert (m_route != null);
+		assert(m_route != null);
 
 		if (m_progress.getState() != Progress.State.IDLE) {
 			notify(Notifier.NOTIFY_ERROR, "Engine busy");
@@ -626,20 +626,17 @@ public class Engine {
 				return false;
 			}
 
-			
-			
 			int numUnresolvedPaths = m_route.getUnresolvedPaths().size();
 			if (numUnresolvedPaths > 0) {
 				notify(Notifier.NOTIFY_ERROR, String.format("Found "
 						+ numUnresolvedPaths + " unresolved path(s)"));
 				
-			} else if(m_route.getCompletedPaths().size() == 0){
-				if(m_route.wasConstrained()){
-					notify(Notifier.NOTIFY_ERROR, "No valid path of execution(Constraints applied).");
+			} else if (m_route.getCompletedPaths().size() == 0){
+				if (m_route.wasConstrained()){
+					notify(Notifier.NOTIFY_ERROR, "No valid path of execution (Constraints applied).");
 				} else {
-					notify(Notifier.NOTIFY_ERROR, "No valid path of execution.(No Constraints applied)");
+					notify(Notifier.NOTIFY_ERROR, "No valid path of execution (No Constraints applied).");
 				}
-				;
 			}
 
 			notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, "");
