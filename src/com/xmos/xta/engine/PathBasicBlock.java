@@ -387,18 +387,10 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 
 	public Vector<XtaInstruction> getUnknowns() {
 		Vector<XtaInstruction> unknowns = new Vector<XtaInstruction>();
-		for (PathBasicBlock block : getPathBlocks()) {
-
-			for (XtaInstruction inst : getInstructionStream()) {
-				if (inst.isUnknown())
-					unknowns.add(inst);
-			}
-
-			for (PathBasicBlock loopPath : block.getLoopPaths(this)) {
-				unknowns.addAll(loopPath.getUnknowns());
-			}
+		for (XtaInstruction inst : getInstructions(true)) {
+			if (inst.isUnknown())
+				unknowns.add(inst);
 		}
-		doneWithPathBlocks();
 		return unknowns;
 	}
 
