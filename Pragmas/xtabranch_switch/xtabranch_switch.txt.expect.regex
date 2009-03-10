@@ -1,3 +1,6 @@
 - 0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+ 0x[0-9a-fA-F]+ 0x[0-9a-fA-F]+ 0x[0-9a-fA-F]+ 0x[0-9a-fA-F]+
-Complete paths:   6
-Unresolved paths: 0
+Route\(0\) function: main
+    No Timing Specified
+    Complete paths: 6, Unresolved paths: 0
+
+Fail, Timing Unspecified
