@@ -10,6 +10,6 @@ if (!$noBuild) {
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "summary simple " .
+       "print summary " .
        "-exit > $genDir/dual_call.txt 2>&1");
 

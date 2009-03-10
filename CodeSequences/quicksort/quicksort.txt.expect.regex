@@ -1,9 +1,10 @@
-Error: Found 1 unresolved path\(s\)
-Complete paths:   1
-Unresolved paths: 1
-Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-\+COMPLETE \[1 path\(s\)\]
-    path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-\+UNRESOLVED \[1 path\(s\)\]
-    path\(none\) : Recursion with 0x[0-9a-fA-F]{5}
-    path\(none\) : \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
+Error: Found 1 unresolved path
+Route\(0\) function: sort
+Complete \[1 path\]
+    path\(\d+\) +: \d+\.\d+ns
+
+Route\(0\) function: sort
+Unresolved \[1 path\]
+    path\(none\) : Recursion with 0x[0-9a-zA-Z]+
+    path\(none\) +: \d+\.\d+ns
+

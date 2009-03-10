@@ -12,7 +12,6 @@ if (!$noBuild) {
 
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "-summary simple " .
-       "-summary complete_loops " .
+       "print completed_loops " .
        "-exit > $genDir/dependent_nested_loop.txt 2>&1");
 

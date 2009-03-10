@@ -1,21 +1,20 @@
-Complete paths:   1
-Unresolved paths: 0
-Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-\+COMPLETE \[1 path\(s\)\]
-    path\(\d+\)   : 120.0/6/5/1/0/1/0
-        \+loop \[15 path\(s\), 0 iteration\(s\)\]
-            path\(\d+\)    : 1100.0/55/42/13/0/0/0
-            path\(\d+\)    : 1020.0/51/39/12/0/0/0
-            path\(\d+\)    : 940.0/47/36/11/0/0/0
-            path\(\d+\)    : 860.0/43/33/10/0/0/0
-            path\(\d+\)    : 780.0/39/30/9/0/0/0
-            path\(\d+\)    : 700.0/35/27/8/0/0/0
-            path\(\d+\)    : 620.0/31/24/7/0/0/0
-            path\(\d+\)    : 540.0/27/21/6/0/0/0
-            path\(\d+\)    : 460.0/23/18/5/0/0/0
-            path\(\d+\)    : 380.0/19/15/4/0/0/0
-            path\(\d+\)   : 300.0/15/12/3/0/0/0
-            path\(\d+\)   : 220.0/11/9/2/0/0/0
-            path\(\d+\)   : 140.0/7/6/1/0/0/0
-            path\(\d+\)   : 60.0/3/3/0/0/0/0
-            path\(\d+\)   : 40.0/2/2/0/0/0/0
+Route\(0\) function: main
+Complete \[1 path\]
+    path\(\d+\) +: \d+\.\d+ns
+        loop \[15 paths, 0 iterations\]
+            path\(\d+\) +: \d+\.\d+ns
+            path\(\d+\) +: \d+\.\d+ns
+            path\(\d+\) +: \d+\.\d+ns
+            path\(\d+\) +: \d+\.\d+ns
+            path\(\d+\) +: \d+\.\d+ns
+            path\(\d+\) +: \d+\.\d+ns
+            path\(\d+\) +: \d+\.\d+ns
+            path\(\d+\) +: \d+\.\d+ns
+            path\(\d+\) +: \d+\.\d+ns
+            path\(\d+\) +: \d+\.\d+ns
+            path\(\d+\) +: \d+\.\d+ns
+            path\(\d+\) +: \d+\.\d+ns
+            path\(\d+\) +: \d+\.\d+ns
+            path\(\d+\) +: \d+\.\d+ns
+            path\(\d+\) +: \d+\.\d+ns
+

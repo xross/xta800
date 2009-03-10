@@ -10,7 +10,7 @@ if (!$noBuild) {
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "-summary simple " .
-       "-summary functions " .
+       "print summary " .
+       "print functions - " .
        "-exit > $genDir/function_call.txt 2>&1");
 

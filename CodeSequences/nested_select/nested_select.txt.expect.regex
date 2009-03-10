@@ -1,5 +1,6 @@
-Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-\+COMPLETE \[3 path\(s\)\]
-    path\(4\)\s+: 1120.0/56/56/0/14/1/0
-    path\(3\)\s+: 1120.0/56/56/0/14/1/0
-    path\(1\)\s+: 720.0/36/36/0/10/1/0
+Route\(0\) function: main
+Complete \[3 paths\]
+  \* path\(\d+\) +: \d+\.\d+ns
+  \* path\(\d+\) +: \d+\.\d+ns
+  \* path\(\d+\) +: \d+\.\d+ns
+

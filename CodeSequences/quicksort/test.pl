@@ -11,8 +11,7 @@ system("xcc -march=$arch -std=c99 test.c -o $genDir/test.xe > $genDir/quicksort.
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function sort " .
-       "-summary simple " .
-       "-summary complete_loops " .
-       "-summary unresolved " .
-       "-exit > $genDir/quicksort.txt 2>&1");
+       "print completed_loops " .
+       "print unresolved_paths " .
+       "exit > $genDir/quicksort.txt 2>&1");
 

@@ -11,6 +11,6 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/multi_path_in_c
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "summary complete_loops " .
-       "-exit > $genDir/multi_path_in_called_function.txt 2>&1");
+       "print completed_loops " .
+       "exit > $genDir/multi_path_in_called_function.txt 2>&1");
 

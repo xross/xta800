@@ -11,7 +11,6 @@ system("xcc -march=$arch -nostartfiles test.s -o $genDir/test.xe > $genDir/multi
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "-summary simple " .
-       "-summary complete_instructions " .
-       "-exit > $genDir/multicycle.txt 2>&1");
+       "print completed_instructions " .
+       "exit > $genDir/multicycle.txt 2>&1");
 
