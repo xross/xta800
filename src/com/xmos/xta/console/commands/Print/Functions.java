@@ -39,8 +39,12 @@ public class Functions extends Command {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
     	
-   		return new Functions(getRouteId(args[index + 1]));
-    }
+    	try {
+     		return new Functions(getRouteId(args[index + 1]));
+	    } catch (NumberFormatException e) {
+	        return null;
+	    }    	
+  }
     
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))

@@ -478,7 +478,10 @@ public class Engine {
 	public boolean removeRoute(int routeId) {
 		Route route = getRoute(routeId);
 		if (route != null) {
-			m_routes.remove(route);
+			m_routes.remove(route);			
+			if (m_routes.size() == 0) {
+				Route.resetRouteCount();
+			}			
 			return true;
 		}
 		return false;				
@@ -653,9 +656,9 @@ public class Engine {
 				
 			} else if (route.getCompletedPaths().size() == 0){
 				if (route.wasConstrained()){
-					notify(Notifier.NOTIFY_ERROR, "No valid path of execution(Constraints applied).");
+					notify(Notifier.NOTIFY_ERROR, "No valid path of execution (constraints applied).");
 				} else {
-					notify(Notifier.NOTIFY_ERROR, "No valid path of execution.(No Constraints applied)");
+					notify(Notifier.NOTIFY_ERROR, "No valid path of execution (no constraints applied).");
 				}
 			}
 

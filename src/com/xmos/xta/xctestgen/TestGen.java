@@ -135,7 +135,7 @@ public class TestGen {
 		file.write("}\n");
 		file.write("system(\"@ARGV load $genDir/" + testName + ".xe \" .\n");
 		file.write("       \"analyse function test \" .\n");
-		file.write("       \"summary complete_loops \" .\n");
+		file.write("       \"print completed_loops \" .\n");
 		file.write("       \"exit > $genDir/" + testName + ".txt 2>&1\");\n");
 		file.write("\n");
 	}

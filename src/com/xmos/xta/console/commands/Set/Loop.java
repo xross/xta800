@@ -26,7 +26,7 @@ public class Loop extends Command {
 	}
 			
     public int numArgs() {
-    	return 3;
+    	return 4;
     }        
 
     public String name() {
@@ -57,17 +57,14 @@ public class Loop extends Command {
 			return null;		
 
     	int routeId;
-    	try { routeId = Integer.parseInt(args[index + 1]); }
-	    catch (NumberFormatException e) {
+    	int pathId;
+    	try { 
+    		routeId = getRouteId(args[index + 1]); 
+    		pathId = getId(args[index + 2]);
+    	} catch (NumberFormatException e) {
 	        return null;
 	    }
 		
-    	int pathId;
-    	try { pathId = Integer.parseInt(args[index + 2]); }
-	    catch (NumberFormatException e) {
-	        return null;
-	    }
-
 	    boolean absolute;
 	    if ((args[index + 3].compareTo("relative") == 0) ||  
 	    	(args[index + 3].compareTo("r") == 0)){

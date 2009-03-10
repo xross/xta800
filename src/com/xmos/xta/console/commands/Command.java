@@ -59,7 +59,7 @@ public abstract class Command {
     
     public static boolean validateRoutes(Engine engine, Console console) {
        	if (engine.getRoutes().size() == 0) {
-    		console.display("Error: No functions/routes analysed\n");
+    		console.display("Error: No routes analysed\n");
     		return false;
      	}
         return true;  	
@@ -67,7 +67,7 @@ public abstract class Command {
 
     public static boolean validateRouteId(Engine engine, Console console, int routeId) {
     	if (engine.getRoutes().size() == 0) {
-    		console.display("Error: No functions/routes analysed\n");
+    		console.display("Error: No routes analysed\n");
     		return false;
     	}
     	
@@ -81,7 +81,7 @@ public abstract class Command {
     
     public static boolean validateIds(Engine engine, Console console, int routeId, int id, IdType idType) {
     	if (engine.getRoutes().size() == 0) {
-    		console.display("Error: No functions/routes analysed\n");
+    		console.display("Error: No routes analysed\n");
     		return false;
     	}
     	

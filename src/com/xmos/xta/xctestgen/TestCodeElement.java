@@ -26,9 +26,14 @@ public class TestCodeElement extends CodeElement {
 	public void emitExpect(int node, int pathNum, BufferedWriter file, int depth) throws IOException  {
 		int numPaths = getTotalNumPaths();
 
-		file.write("Path\\(id\\): Timing\\(ns\\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute\n");
-		file.write("\\+COMPLETE \\[" + numPaths + " path\\(s\\)\\]\n");
+		file.write("Route\\(0\\) function: test\n");
+		if (numPaths == 1)
+		    file.write("Complete \\[" + numPaths + " path\\]\n");
+		else
+		    file.write("Complete \\[" + numPaths + " paths\\]\n");
+		
 		super.emitExpect(node, pathNum, file, depth + 1);
+		file.write("\n");
 	}
 
 	public int getNodeNumPaths() {

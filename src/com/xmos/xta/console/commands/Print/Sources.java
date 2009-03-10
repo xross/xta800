@@ -42,7 +42,11 @@ public class Sources extends Command {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
     	
-   		return new Sources(getRouteId(args[index + 1]));
+    	try {
+       		return new Sources(getRouteId(args[index + 1]));
+	    } catch (NumberFormatException e) {
+	        return null;
+	    }    	
     }
     
     public void execute(Shell shell, Engine engine, Console console) {

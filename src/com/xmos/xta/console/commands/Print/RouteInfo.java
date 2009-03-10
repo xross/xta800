@@ -43,20 +43,21 @@ public class RouteInfo extends Command {
           	return null;
         }    		            		
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
 	    if (!validateRouteId(engine, console, m_routeId))
 		    return;
-    	
+
 	    com.xmos.xta.engine.Route route = engine.getRoute(m_routeId);
 	    RouteTiming routeTiming = route.getRouteTiming();
-	    
-    	console.display(String.format("%s, Node: %d, Core: %d\n", 
-    			route.getDescription(), routeTiming.getNodeId(), routeTiming.getCoreId()));
-    	
+
+    	console.display(String.format("%s %s, Node: %d, Core: %d\n", 
+    			route.getDescription(), route.getEndpointsPcsString(),
+    			routeTiming.getNodeId(), routeTiming.getCoreId()));    	    	
+
     	if (routeTiming.passedTiming()) {
         	console.display(String.format("Pass, Slack: %.1fns/%d thread cycles\n", 
         			routeTiming.getSlackTime(), routeTiming.getSlackCycles()));

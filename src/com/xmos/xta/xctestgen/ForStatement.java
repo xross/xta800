@@ -23,7 +23,11 @@ public class ForStatement extends CodeElement {
 		int numPaths = getTotalNumPaths();
 
 		emitExpectIndent(file, depth);
-		file.write("\\+loop \\[" + numPaths + " path\\(s\\), 0 iteration\\(s\\)\\]\n");
+		
+		if (numPaths == 1)
+		    file.write("loop \\[" + numPaths + " path, 0 iterations\\]\n");
+		else
+		    file.write("loop \\[" + numPaths + " paths, 0 iterations\\]\n");			
 		
 		super.emitExpect(node, pathNum, file, depth + 1);
 	}

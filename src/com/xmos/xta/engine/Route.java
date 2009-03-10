@@ -68,6 +68,14 @@ public class Route {
 		return m_routeId;
 	}
 	
+	public int getStartPc() {
+		return m_startPc;
+	}
+	
+	public TreeSet<Integer> getEndPcs() {
+		return m_endPcs;
+	}
+	
 	public ArrayList<PathBasicBlock> getCompletedPaths(){
 		return m_completedPaths;
 	}
@@ -119,7 +127,6 @@ public class Route {
 		}
 		
 		sortPaths();
-		updateDescription();
 		displayWarnings();
 				
 		return RouteStatus.COMPLETED;
@@ -171,6 +178,16 @@ public class Route {
 			}
 		}
         return unknowns;
+	}
+	
+	public String getEndpointsPcsString() {
+		String pcString =  "(0x" + Integer.toHexString(m_startPc) + " => ";
+		for (int end : m_endPcs) {
+			pcString += "0x" + Integer.toHexString(end) + ", ";
+		}
+		pcString = pcString.substring(0, pcString.length() - 2);
+		pcString += ")";
+		return pcString;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -406,16 +423,7 @@ public class Route {
 		}
 		return null;
 	}
-	
-	private void updateDescription(){
-		m_description +=  " (0x" + Integer.toHexString(m_startPc) + " => ";
-		for(int end : m_endPcs){
-			m_description += "0x" + Integer.toHexString(end) + ", ";
-		}
-		m_description = m_description.substring(0, m_description.length()-2);
-		m_description += ")";
-	}
-	
+		
 	private void displayWarnings() {
 		for (PathBasicBlock block : m_completedPaths) {
 			for (String message : block.getWarnings()) {

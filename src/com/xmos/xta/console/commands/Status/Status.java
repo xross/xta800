@@ -78,11 +78,13 @@ public class Status extends Command {
     		List<Route> routes = engine.getRoutes();	    	
 	    	if (engine.getRoutes().size() > 0) {
 	    		for (Route route : routes) {
-		    		console.display(String.format("Loaded: Route(%d): %s\n", 
-		    				route.getRouteId(), route.getDescription()));	    			
+		    		console.display(String.format("Loaded Route(%d): %s %s\n", 
+		    				route.getRouteId(),
+		    				route.getDescription(),
+		    				route.getEndpointsPcsString()));	    			
 	    		}
 	    	} else {
-	    		console.display(String.format("No Functions/Routes analysed\n"));    			    		
+	    		console.display(String.format("No routes analysed\n"));    			    		
 	    	}
     	}
     }    
