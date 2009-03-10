@@ -588,7 +588,7 @@ public class Engine {
 			notify(Notifier.NOTIFY_ERROR, "Out of Memory (Stack)");
 			return false;
 		} catch (Exception e) {
-//			e.printStackTrace();
+			//e.printStackTrace();
 			m_progress.setState(Progress.State.IDLE);
 			notify(Notifier.NOTIFY_ERROR, "Unknown error detected");
 			return false;
