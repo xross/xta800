@@ -570,30 +570,10 @@ public class Engine {
 	}
 		
 	private boolean analyseRoute(int startPc, TreeSet<Integer> endPcs, String routeDescription, RouteMode mode) {
-		boolean reachable = false;
-		for (int end : endPcs) {
-			int dist = m_ae.determineReachability(startPc, end, m_nodeId,
-					m_coreId);
-			if (dist != Integer.MAX_VALUE) {
-				reachable = true;
-				break;
-			}
-		}
-		String endString = "";
-		if (!reachable) {
-			for (int end : endPcs) {
-				endString += "0x" + Integer.toHexString(end) + ", ";
-			}
-			if(endString.length() > 2){
-				endString = endString.substring(0, endString.length() - 2);
-				notify(Notifier.NOTIFY_ERROR, "No valid of execution from 0x"
-						+ Integer.toHexString(startPc) + " to " + endString);
-			} else {
-				notify(Notifier.NOTIFY_ERROR, "No valid of execution from 0x"
-						+ Integer.toHexString(startPc) );
-			}			
-			return false;
-		}
+        if (endPcs.size() == 0){
+           notify(Notifier.NOTIFY_ERROR, "No terminating PC" );
+           return false;
+        }
 		
 		Route route = new Route(m_config, this, startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), 
 				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId),
@@ -652,8 +632,9 @@ public class Engine {
 
 			int numUnresolvedPaths = route.getUnresolvedPaths().size();
 			if (numUnresolvedPaths > 0) {
+				String plural = (numUnresolvedPaths == 1) ? "" : "s";
 				notify(Notifier.NOTIFY_ERROR, String.format("Found "
-						+ numUnresolvedPaths + " unresolved path(s)"));
+						+ numUnresolvedPaths + " unresolved path" + plural));
 				
 			} else if (route.getCompletedPaths().size() == 0){
 				if (route.wasConstrained()){
