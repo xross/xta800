@@ -5,6 +5,6 @@ Complete \[1 path\]
 
 Route\(0\) function: sort
 Unresolved \[1 path\]
-    path\(none\) : Recursion with 0x[0-9a-zA-Z]+
-    path\(none\) +: \d+\.\d+ns
+    path\(\d+\) +: Recursion with 0x[0-9a-zA-Z]+
+    path\(\d+\) +: \d+\.\d+ns
 
