@@ -370,8 +370,10 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     			if ((e.button == 1) || (e.button == 3)) {
 		    		for (ViewNode node : m_clickAreas) {
 		    			if (node.contains(e.x, e.y)) {
-		    	    		m_selectedNode = node.getTreeNode();
-		    	    		setSelection(new StructuredSelection(m_selectedNode));
+		    				if (node.getTreeNode() != null) {
+		    					m_selectedNode = node.getTreeNode();
+		    					setSelection(new StructuredSelection(m_selectedNode));
+		    				}
 		    				return;
 		    			}
 		    		}

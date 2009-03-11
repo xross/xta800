@@ -35,7 +35,6 @@ public class FunctionView extends ZoomedCanvasView {
     private int m_blockLength;
     private Node m_currentNode;
     private String m_currentFunction;
-    private String m_previousFunction;
 
     private int m_colorIndex;
     private Vector<Color> m_colors;
@@ -45,7 +44,7 @@ public class FunctionView extends ZoomedCanvasView {
     
 	public FunctionView() {
 		super();
-		if (DEBUG) System.out.printf("Function()\n");			
+		if (DEBUG) System.out.printf("Function()\n");
 		XtaNotifier.getInstance().addPropertyChangeListener(this);
 		
 		m_functionList = new Vector<XtaFunctionBlock>();
@@ -62,7 +61,7 @@ public class FunctionView extends ZoomedCanvasView {
 	}
 
     protected void initialiseTree() {
-		if (DEBUG) System.out.printf("Function: initialiseTree\n");			
+		if (DEBUG) System.out.printf("Function: initialiseTree\n");
     	m_routeInfo = XtaNotifier.getInstance().getRouteInfo();
 		if (m_routeInfo != null) {
     		getDebugInfo();
@@ -78,7 +77,7 @@ public class FunctionView extends ZoomedCanvasView {
 	}
 
     protected void buildClickAreas() {
-		if (DEBUG) System.out.printf("Function: buildClickAreas\n");			
+		if (DEBUG) System.out.printf("Function: buildClickAreas\n");
     	m_clickAreas.clear();
     	if (m_rootNode != null)
     		m_rootNode.getFunctionNode().buildClickAreas(m_clickAreas);
@@ -87,7 +86,7 @@ public class FunctionView extends ZoomedCanvasView {
     }
 
     protected void annotateTree(boolean isSelctionChange) {
-		if (DEBUG) System.out.printf("Function: annotateTree\n");			
+		if (DEBUG) System.out.printf("Function: annotateTree\n");
     	clearAll();
     	Node pathRoot = null;
     	if (m_selectedNode != null) {
@@ -118,7 +117,7 @@ public class FunctionView extends ZoomedCanvasView {
     }
 
     protected void updatePixelsXy() {
-		if (DEBUG) System.out.printf("Function: updatePixelsXy ");			
+		if (DEBUG) System.out.printf("Function: updatePixelsXy ");
     	Node pathRoot = null;
     	if (m_selectedNode != null) {
     		pathRoot = m_selectedNode.getPathRoot();
@@ -139,7 +138,6 @@ public class FunctionView extends ZoomedCanvasView {
         m_functionList.clear();
         m_nodeOffset = 0;
         m_currentFunction = "";
-        m_previousFunction = "";
         m_addedFunctionsToClickAreas = false;
     }
 
@@ -157,16 +155,11 @@ public class FunctionView extends ZoomedCanvasView {
 
                 if (m_currentFunction.length() == 0) {
                     m_currentFunction = functionName;
-                    m_previousFunction = functionName;
                 }
 
-                if (m_currentFunction.equals(functionName) == false) {
-                    if (m_nodeOffset > 0) {
-                        addBlock();
-                        m_currentFunction = functionName;
-                    } else {
-                        m_currentFunction = m_previousFunction;
-                    }
+                if (!m_currentFunction.equals(functionName)) {
+                    addBlock();
+                    m_currentFunction = functionName;
                 }
             	m_nodeOffset += numIterations;
             	m_blockLength += numIterations;
@@ -188,12 +181,13 @@ public class FunctionView extends ZoomedCanvasView {
 	}
 
     private void addBlock() {
+		if (DEBUG) System.out.printf("Function: addBlock " + m_currentFunction + "\n");
+		
     	Color color = m_functionColors.get(m_currentFunction);
     	XtaFunctionBlock block = new XtaFunctionBlock(m_currentFunction, color,
     			m_currentNode, m_nodeOffset);
         m_functionList.add(block);
         m_blockLength = 0;
-        m_previousFunction = m_currentFunction;
     }
 
     protected void drawCanvas(GC gc) {
@@ -221,6 +215,7 @@ public class FunctionView extends ZoomedCanvasView {
     }
     
 	private void getDebugInfo(){
+		m_functionColors.clear();
     	m_table = m_routeInfo.getSymbolTable();
         Iterator<Map.Entry<Integer, Symbol>> iter =
             m_table.getElfHandler().getFunctionsPcKeyed().entrySet().iterator();

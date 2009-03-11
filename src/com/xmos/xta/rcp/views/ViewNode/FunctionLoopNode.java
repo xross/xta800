@@ -109,7 +109,7 @@ public class FunctionLoopNode extends ViewNode {
 		for (Node treeNode : m_treeNode.getNodes()) {
 			ViewNode child = treeNode.getFunctionNode();
 			if (child != null) {
-	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_pixelsY);
+	    		child.annotateXy(xOffset + childOffsetX, yOffset);
 	    		childOffsetX += child.getPixelsX();
 			}
     	}
