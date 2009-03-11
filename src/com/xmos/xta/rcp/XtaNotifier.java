@@ -5,6 +5,8 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.PlatformUI;
+
+import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.references.Reference;
@@ -163,8 +165,8 @@ public class XtaNotifier implements Notifier {
 
 	private void createHierarchy() {		
 		// TODO: This needs to work with multiple routes..		
-		Engine engine = XtaEngine.getEngine();		
-        m_routeInfo = new XtaRouteInfo(engine.getRoute(0), engine.getDebugInfo(), 
+		Engine engine = XtaEngine.getEngine();			
+        m_routeInfo = new XtaRouteInfo(engine.getRoute(-1), engine.getDebugInfo(), 
         		engine.getMemoryImage(), engine.getSymbolTable());
 	}
 }

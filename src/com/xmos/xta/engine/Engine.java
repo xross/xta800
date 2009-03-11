@@ -243,7 +243,7 @@ public class Engine {
 			TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
 			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
 			String routeDescription = String.format("function: %s", functionName);
-			return analyseRoute(startPc, endPcs, routeDescription, RouteMode.FUNCTION);
+			return analyseRouteSafely(startPc, endPcs, routeDescription, RouteMode.FUNCTION);
 		}
 	}
 
@@ -271,8 +271,7 @@ public class Engine {
 			endPc.add(toRef.getPc());
 			String routeDescription = String.format("path: %s to %s", from, to);
 			
-
-			boolean success = analyseRoute(fromRef.getPc(), endPc, routeDescription, RouteMode.ABSLOUTE);
+			boolean success = analyseRouteSafely(fromRef.getPc(), endPc, routeDescription, RouteMode.ABSLOUTE);
 			if (success) {
 				notify(Notifier.NOTIFY_SET_START_POINT, from);
 				notify(Notifier.NOTIFY_SET_END_POINT, to);
@@ -571,28 +570,11 @@ public class Engine {
 	public Constraint getConstraint() {
 		return m_constraint;
 	}
-		
-	private boolean analyseRoute(int startPc, TreeSet<Integer> endPcs, String routeDescription, RouteMode mode) {
-        if (endPcs.size() == 0){
-           notify(Notifier.NOTIFY_ERROR, "No terminating PC" );
-           return false;
-        }
-		
-		Route route = new Route(m_config, this, startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), 
-				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId),
-				m_mnenonics, routeDescription);
-
-		boolean success = analyseRouteSafley(route, mode);
-		if (success) {
-			m_routes.add(route);
-		}
-		return success;
-	}
-	
-	private boolean analyseRouteSafley(Route route, RouteMode mode) {
+			
+	private boolean analyseRouteSafely(int startPc, TreeSet<Integer> endPcs, String routeDescription, RouteMode mode) {
 		boolean success = false;
 		try {
-			success = analyseRoute(route, mode);
+			success = doRouteAnalysis(startPc, endPcs, routeDescription, mode);
 		} catch (final java.lang.OutOfMemoryError e) {
 			m_progress.setState(Progress.State.IDLE);
 			System.gc();
@@ -604,7 +586,6 @@ public class Engine {
 			notify(Notifier.NOTIFY_ERROR, "Out of Memory (Stack)");
 			return false;
 		} catch (Exception e) {
-			//e.printStackTrace();
 			m_progress.setState(Progress.State.IDLE);
 			notify(Notifier.NOTIFY_ERROR, "Unknown error detected");
 			return false;
@@ -612,47 +593,61 @@ public class Engine {
 		return success;
 	}
 
-	private boolean analyseRoute(Route route, RouteMode mode) throws Exception {
+	private boolean doRouteAnalysis(int startPc, TreeSet<Integer> endPcs, 
+			String routeDescription, RouteMode mode) throws Exception {
+		 		
 		if (m_progress.getState() != Progress.State.IDLE) {
 			notify(Notifier.NOTIFY_ERROR, "Engine busy");
 			return false;
 		}
-		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 
-		if (m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
-			route.isConstrained(false);
-			RouteStatus status = route.analyse(mode);
-			switch (status) {
-			case ABORTED:
-				setAbort(false);
-				notify(Notifier.NOTIFY_ERROR, "Abort detected");
-				return false;
-
-			case ERROR:
-				notify(Notifier.NOTIFY_ERROR, "Cannot analyse path");
-				return false;
-			}
-
-			int numUnresolvedPaths = route.getUnresolvedPaths().size();
-			if (numUnresolvedPaths > 0) {
-				String plural = (numUnresolvedPaths == 1) ? "" : "s";
-				notify(Notifier.NOTIFY_ERROR, String.format("Found "
-						+ numUnresolvedPaths + " unresolved path" + plural));				
-			} else if (route.getCompletedPaths().size() == 0){
-				if (route.wasConstrained()){
-					notify(Notifier.NOTIFY_ERROR, "No valid path of execution (constraints applied).");
-				} else {
-					notify(Notifier.NOTIFY_ERROR, "No valid path of execution (no constraints applied).");
-				}
-			}
-
-			notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, "");
-		} else {
+		if (endPcs.size() == 0){
+            notify(Notifier.NOTIFY_ERROR, "No terminating PC" );
+            return false;
+        }
+		
+		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Node: %d, Core: %d image not found in file: %s",
 					m_nodeId, m_coreId, m_executableFile));
 			return false;
 		}
+		
+ 		Route route = new Route(m_config, this, startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), 
+ 				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId),
+ 				m_mnenonics, routeDescription);
+													
+		route.isConstrained(false);
+			
+		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
+		RouteStatus status = route.analyse(mode);
+		switch (status) {
+		case ABORTED:
+			setAbort(false);
+			notify(Notifier.NOTIFY_ERROR, "Abort detected");
+			return false;
+
+		case ERROR:
+			notify(Notifier.NOTIFY_ERROR, "Cannot analyse path");
+			return false;
+		}
+
+		int numUnresolvedPaths = route.getUnresolvedPaths().size();
+		if (numUnresolvedPaths > 0) {
+			String plural = (numUnresolvedPaths == 1) ? "" : "s";
+			notify(Notifier.NOTIFY_ERROR, String.format("Found "
+					+ numUnresolvedPaths + " unresolved path" + plural));	
+			
+		} else if (route.getCompletedPaths().size() == 0) {
+			if (route.wasConstrained()) {
+				notify(Notifier.NOTIFY_ERROR, "No valid paths of execution (constraints applied).");
+			} else {
+				notify(Notifier.NOTIFY_ERROR, "No valid paths of execution");
+			}
+		}
+
+		m_routes.add(route);
+		notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, "");
 		return true;
 	}
 
