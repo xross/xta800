@@ -1,8 +1,6 @@
 package com.xmos.xta.engine;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-
 import com.xmos.isa.Instruction;
 import com.xmos.xeloader.XeLoader.Architecture;
 import com.xmos.xta.engine.Expression.OperatorType;
@@ -24,11 +22,6 @@ public abstract class XtaInstruction extends Instruction {
   
 	private ArrayList<NextPcType> m_successors;
 	private ArrayList<XtaInstruction> m_predessors;
-	
-	private HashSet<LivenessResource> m_liveIn;
-	private HashSet<LivenessResource> m_liveOut;
-	private LivenessResource m_use;
-	private LivenessResource m_def;
 	
 	private String m_functionName;
     private int m_functionOffset;	
@@ -57,8 +50,6 @@ public abstract class XtaInstruction extends Instruction {
 		m_basicNumCycles = numCycles;
 		m_numCycles.setNumIterations(numCycles);
 		m_config = config;
-		m_liveIn = new HashSet<LivenessResource>();
-		m_liveOut = new HashSet<LivenessResource>();
 		m_successors = new ArrayList<NextPcType>();
 		m_predessors =  new ArrayList<XtaInstruction>();
 		m_isUnknown = canPause;
@@ -81,40 +72,6 @@ public abstract class XtaInstruction extends Instruction {
 		return m_nextInstructionPc;
 	}
 	
-	public void setUse(LivenessResource use){
-		m_use = use;
-	}
-	
-	public void setDef(LivenessResource def){
-		m_def = def;
-	}
-	
-	public LivenessResource getUse(){
-		if(m_use == null && this.getUsesResource()){
-			m_use = new LivenessResource(this.getUseResource());
-		}
-		return m_use;
-	}
-	
-	public LivenessResource getDef(){
-		if(m_def == null && this.getDefinesResource()){
-			m_def = new LivenessResource(this.getDefResource());
-		}
-		return m_def;
-	}
-	public void setLiveOut(HashSet<LivenessResource> liveOut) {
-		m_liveOut = liveOut;
-	}
-	
-	public void setLiveIn(HashSet<LivenessResource> liveIn) {
-		m_liveIn = liveIn;
-	}
-	public HashSet<LivenessResource> getLiveIn(){
-		return m_liveIn;
-	}
-	public HashSet<LivenessResource> getLiveOut(){
-		return m_liveOut;
-	}
 	public ArrayList<NextPcType> getSuccessors(){
 		return m_successors;
 	}
