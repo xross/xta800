@@ -640,7 +640,7 @@ public class Engine {
 			
 		} else if (route.getCompletedPaths().size() == 0) {
 			if (route.wasConstrained()) {
-				notify(Notifier.NOTIFY_ERROR, "No valid paths of execution (constraints applied).");
+				notify(Notifier.NOTIFY_ERROR, "No valid paths of execution (constraints applied)");
 			} else {
 				notify(Notifier.NOTIFY_ERROR, "No valid paths of execution");
 			}

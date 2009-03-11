@@ -6,7 +6,6 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.PlatformUI;
 
-import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.references.Reference;
