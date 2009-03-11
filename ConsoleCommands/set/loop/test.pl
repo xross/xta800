@@ -13,6 +13,7 @@ system("@ARGV load $genDir/test.xe " .
        "analyse function test " .
        "set loop - 3 r 5 " .
        "set loop - 2 r 3 " .
+       "set loop - 5 r 10 " .
        "print completed_loops " .
        "print src - 3 " .
        "print src - 0 " .
