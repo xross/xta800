@@ -25,3 +25,12 @@ Route\(1\) function: test1
     Complete paths: 1, Unresolved paths: 0
 
 Pass, Min Slack: \d+\.\d+ns, Min Frequency: \d+ Mhz
+Route\(0\) function: test0
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Route\(1\) function: test1
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Fail, Timing Unspecified

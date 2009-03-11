@@ -17,16 +17,20 @@ system("@ARGV load $genDir/test.xe " .
        "config proc 0 1 " .
        "analyse function test1 " .
 
-       "set maxtime 0 cycles 1 " .
-       "set maxtime 1 cycles 1 " .
+       "set required 0 1 cycles " .
+       "set required 1 1 cycles " .
        "print summary " .
 
-       "set maxtime 0 cycles 100 " .
-       "set maxtime 1 cycles 1 " .
+       "set required 0 100 cycles " .
+       "set required 1 1 cycles " .
        "print summary " .
 
-       "set maxtime 0 cycles 100 " .
-       "set maxtime 1 cycles 100 " .
+       "set required 0 100 cycles " .
+       "set required 1 100 cycles " .
+       "print summary " .
+
+       "unset required 0 " .
+       "unset required 1 " .
        "print summary " .
 
        "exit > $genDir/cycles.txt 2>&1");

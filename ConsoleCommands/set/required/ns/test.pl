@@ -17,16 +17,20 @@ system("@ARGV load $genDir/test.xe " .
        "config proc 0 1 " .
        "analyse function test1 " .
 
-       "set maxtime 0 ns 10 " .
-       "set maxtime 1 ns 10 " .
+       "set required 0 10 ns " .
+       "set required 1 10 ns " .
        "print summary " .
 
-       "set maxtime 0 ns 1000 " .
-       "set maxtime 1 ns 10 " .
+       "set required 0 1000 ns " .
+       "set required 1 10 ns " .
        "print summary " .
 
-       "set maxtime 0 ns 1000 " .
-       "set maxtime 1 ns 1000 " .
+       "set required 0 1000 ns " .
+       "set required 1 1000 ns " .
+       "print summary " .
+
+       "unset required 0 " .
+       "unset required 1 " .
        "print summary " .
 
        "exit > $genDir/ns.txt 2>&1");
