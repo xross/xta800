@@ -15,44 +15,59 @@ public class Time extends Command {
 
 	private enum Mode {
 		NS,
+		MHZ,
 		CYCLES,
 	}
 	
 	private String m_refString;
 	private Mode m_mode;
 	private Operation m_operation;
-	private int m_numCycles;
-	private float m_timeTaken;
+	private float m_ns;
+	private float m_mhz;
+	private int m_cycles;
 	
 	public Time(Operation operation) {
 		m_operation = operation;
 		m_mode = Mode.NS;
-		m_numCycles = 0;
-		m_timeTaken = 0;
+		m_ns = 0;
+		m_mhz = 0;
+		m_cycles = 0;
 	}
 	
 	public Time(String refString, int cycles) {
 		m_operation = Operation.SET;
 		m_mode = Mode.CYCLES;
 		m_refString = refString;
-		m_numCycles = cycles;
-		m_timeTaken = 0;
+		m_cycles = cycles;
+		m_ns = 0;
+		m_mhz = 0;
 	}
 
-	public Time(String refString, float time) {
+	public Time(String refString, float value, Mode mode) {
 		m_operation = Operation.SET;
 		m_mode = Mode.NS;
 		m_refString = refString;
-		m_timeTaken = time;
-		m_numCycles = 0;
+		m_cycles = 0;
+		
+		switch (mode) {
+		case NS: 
+		    m_ns = value;
+		    m_mhz = ((float)1.0 / value) * 1000;
+		    break;
+		case MHZ:
+		    m_ns = ((float)1.0 / value) * 1000;
+		    m_mhz = value;
+		    break;
+		}
 	}
 
 	public Time(String refString) {
 		m_operation = Operation.UNSET;
 		m_mode = Mode.NS;
 		m_refString = refString;
-		m_timeTaken = 0;
-		m_numCycles = 0;
+		m_cycles = 0;
+		m_ns = 0;
+		m_mhz = 0;
 	}
 
     public int numArgs() {
@@ -61,7 +76,7 @@ public class Time extends Command {
     		return 3; 
     	case UNSET:
     		return 1;
-    	}    			
+    	}
     	assert(false);
         return 0;
     }
@@ -75,9 +90,11 @@ public class Time extends Command {
     	case SET:
         	switch (m_mode) {
         	case NS:
-            	return String.format("time %s ns %.1f", m_refString, m_timeTaken);
+            	return String.format("time %s %.1f ns", m_refString, m_ns);
+        	case MHZ:
+            	return String.format("time %s %.1f mhz", m_refString, m_mhz);
         	case CYCLES:
-            	return String.format("time %s cycles %d", m_refString, m_numCycles);    		
+            	return String.format("time %s %d cycles", m_refString, m_cycles);    		
         	}
     	case UNSET:
     		return String.format("time %s", m_refString);
@@ -90,10 +107,11 @@ public class Time extends Command {
     public String description(Engine engine, boolean detailed) {
     	switch (m_operation) {
     	case SET:
-            String descString = "time <ENDPOINT_REF> <mode> <value>: Sets the time taken for the instruction at the given pc";         
+            String descString = "time <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc";         
         	if (detailed) {    	    	
             	descString += "\n";
         		descString += "          mode: ns:     Sets the time this instruction takes in ns\n";
+        		descString += "          mode: mhz:    Sets the time this instruction takes in mhz\n";
         		descString += "          mode: cycles: Sets the time this instruction takes in thread cycles";
         	}
         	return descString;
@@ -111,21 +129,34 @@ public class Time extends Command {
     	
     	switch (m_operation) {
     	case SET:
-    		if (args[index + 2].equals("ns")) {			
+    		String ref = args[index + 1];
+    		String value = args[index + 2];
+    		String mode = args[index + 3];
+    		
+    		if (mode.equals("ns")) {			
     		    float ns;
-    	        try { ns = Float.parseFloat(args[index + 3]); }
+    	        try { ns = Float.parseFloat(value); }
     	        catch (NumberFormatException e) {
     	            return null;
     	        }    
-    	        return new Time(args[index + 1], ns);
+    	        return new Time(ref, ns, Mode.NS);
     		    
-    		} else if (args[index + 2].equals("cycles")) {
-    		    int cycles;
-    	        try { cycles = Integer.parseInt(args[index + 3]); }
+    		} else if (mode.equals("mhz")) {
+    		    float mhz;
+    	        try { mhz = Float.parseFloat(value); }
     	        catch (NumberFormatException e) {
     	            return null;
     	        }    
-    	        return new Time(args[index + 1], cycles);
+    	        return new Time(ref, mhz, Mode.MHZ);
+    		    
+    		} else if (mode.equals("cycles")) {
+    		    int cycles;
+    	        try { cycles = Integer.parseInt(value); }
+    	        catch (NumberFormatException e) {
+    	            return null;
+    	        }    
+    	        return new Time(ref, cycles);
+    	        
     		} else {
     			return null;
     		}
@@ -144,10 +175,13 @@ public class Time extends Command {
     	case SET:
     		switch (m_mode) {
 	    	case NS:
-	            engine.setInstructionTimeTaken(ref, m_timeTaken);
+	            engine.setInstructionTimeTaken(ref, m_ns);
+	    		return;
+	    	case MHZ:
+	            engine.setInstructionTimeTaken(ref, m_mhz);
 	    		return;
 	    	case CYCLES:
-	            engine.setInstructionNumCycles(ref, m_numCycles);
+	            engine.setInstructionNumCycles(ref, m_cycles);
 	    		return;
 	    	}
     	case UNSET:
