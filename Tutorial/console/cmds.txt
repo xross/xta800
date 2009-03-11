@@ -1,11 +1,11 @@
 
 set constraint !packet_start && !eop_detected
 analyse path receive_loop receive_loop
-set maxtime - ns 320
+set required - 320 ns
 
 set constraint
 analyse path eop_detected packet_start
-set maxtime - ns 1240
+set required - 1240 ns
 
 print completed_paths
 print summary
