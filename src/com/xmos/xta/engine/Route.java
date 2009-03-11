@@ -151,22 +151,29 @@ public class Route {
 	}
 	
 	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
-	
-		for (PathBasicBlock block : m_allBasicBlocks) {
-			
-			//TODO
+		for (PathBasicBlock block : m_completedPaths) {
+			if (setLoopIterations(block, pathId, absolute, iterations))
+				return true;
+		}
+		return false;
+	}
 
-			for (PathBasicBlock loopPath : block.getLoopPaths(block)) {
+	public boolean setLoopIterations(PathBasicBlock path, int pathId, boolean absolute, int iterations) {
+		for (PathBasicBlock block : path.getPathBlocks()) {
+			for (PathBasicBlock loopPath : block.getLoopPaths(path)) {
 				if (loopPath.getPathId() == pathId) {
 					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
 					attributes.setNumIterations(iterations, absolute);
 					return true;
 				}
+					
+				if (setLoopIterations(loopPath, pathId, absolute, iterations))
+					return true;
 			}
-
-		}	
+		}
 		return false;		
 	}
+
 	
 	public ArrayList<XtaInstruction> getUnknowns() {
         ArrayList<XtaInstruction> unknowns = new ArrayList<XtaInstruction>();
