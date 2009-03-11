@@ -58,18 +58,36 @@ public class RouteInfo extends Command {
     			route.getDescription(), route.getEndpointsPcsString(),
     			routeTiming.getNodeId(), routeTiming.getCoreId()));    	    	
 
-    	if (routeTiming.passedTiming()) {
-        	console.display(String.format("Pass, Slack: %.1fns/%d thread cycles\n", 
-        			routeTiming.getSlackTime(), routeTiming.getSlackCycles()));
-    	} else {
-        	console.display(String.format("Fail, Violation: %.1fns/%d thread cycles\n", 
-        			routeTiming.getViolationTime(), routeTiming.getViolationCycles()));    		
-    	}
-    	console.display(String.format("Required Timing: %.1fns/%d thread cycles\n", 
-    			routeTiming.getMaxTime(), routeTiming.getMaxCycles()));    		    	
-    	console.display(String.format("Worst Case Timing: %.1fns/%d thread cycles\n", 
-    			routeTiming.getWorstTime(), routeTiming.getWorstCycles()));    		    	
-    	console.display(String.format("Minimum Frequency: %d Mhz\n", 
-    			routeTiming.getMinFrequency()));    		    	
-    }    
+    	console.display(String.format("Worst Case Timing:  %8.1f ns,%8.2f mhz,%8d thread cycles\n", 
+    			routeTiming.getWorstTime(), 
+    			getMhz(routeTiming.getWorstTime()),
+    			routeTiming.getWorstCycles()));    	
+    	
+		if (routeTiming.isTimingSpecified()) {  
+    	    console.display(String.format("Required Timing:    %8.1f ns,%8.2f mhz,%8d thread cycles\n", 
+    		    	routeTiming.getMaxTime(), 
+    		    	getMhz(routeTiming.getMaxTime()),
+    			    routeTiming.getMaxCycles()));
+
+			if (routeTiming.passedTiming()) {
+                console.display(String.format("Passed, Slack:      %8.1f ns,%8.2f mhz,%8d thread cycles\n", 
+        		    	routeTiming.getSlackTime(), 
+        		    	getMhz(routeTiming.getSlackTime()), 
+        			    routeTiming.getSlackCycles()));
+    	    } else {
+                console.display(String.format("Failed, Violation:  %8.1f ns,%8.2f mhz,%8d thread cycles\n", 
+        		    	routeTiming.getViolationTime(), 
+        		    	getMhz(routeTiming.getViolationTime()), 
+        			    routeTiming.getViolationCycles()));    		
+    	    }    	    
+    	    console.display(String.format("Min Core Frequency: %8d mhz\n", 
+    		    	routeTiming.getMinFrequency())); 
+		} else {
+			console.display("No Timing Specified\n");			
+		}
+    }
+    
+    private double getMhz(double ns) {
+    	return (1.0 * 1000) / ns; 
+    }
 }
