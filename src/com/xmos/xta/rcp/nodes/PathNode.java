@@ -150,8 +150,9 @@ public class PathNode extends Node {
 	}
 
 	public void setIterations(int numIterations) {
-		// TODO: This needs to work with multiple routes..		
-		XtaEngine.getEngine().setLoopIterations(0, m_block.getPathId(),
+		// Apply to the last route
+		int routeNum = XtaEngine.getEngine().getRoutes().size() - 1;
+		XtaEngine.getEngine().setLoopIterations(routeNum, m_block.getPathId(),
 				m_absoluteCount, numIterations);
 	}
 
