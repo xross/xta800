@@ -114,7 +114,16 @@ public abstract class Command {
     	if (routeId.equals("-")) {
     		return -1;
     	}    	
-    	return Integer.parseInt(routeId);
+    	
+    	int route = 0;
+    	
+    	try {
+			route = Integer.parseInt(routeId);
+		} catch (NumberFormatException e) {
+			//TODO
+		}
+    	
+    	return route;
     }
 
     public static String getRouteId(int routeId) {
@@ -128,7 +137,14 @@ public abstract class Command {
     	if (getIdType(idString) == IdType.BLOCK) {
     		idString = idString.substring(1);
     	}    	
-   		return Integer.parseInt(idString);
+    	int route = 0;
+    	
+    	try {
+			route = Integer.parseInt(idString);
+		} catch (NumberFormatException e) {
+			//TODO
+		} 
+   		return route;
     }
 
     public static IdType getIdType(String idString) {

@@ -51,6 +51,13 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		init(engine, basicBlock, parentBasicBlock, idc); 		
 	}
 	
+	public void setEndPc(int endPc) {
+		m_endInstruction = endPc;
+		createIBuffer();
+		createTrimmedInstructions(); 
+		createInstructionStream();
+	}
+	
 	public PathBasicBlock(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock, 
 			int instPc, boolean start, InstructionDecodeCache idc){
 		if(start){
@@ -133,7 +140,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 * returns a string representation of the block
 	 */
 	public String toString(){
-		return "PathBasicBlock " + m_pathId + " " + m_basicBlock;
+		return "PathBasicBlock " + this.getBlockId() + " " + m_basicBlock;
 	}
 	
 	/**
@@ -545,5 +552,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public LoopAttachment getloops() {
 		return m_loopPaths;
 	}
+
+
 
 }
