@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.TreeSet;
 
 import com.xmos.isa.Instruction;
@@ -29,7 +28,6 @@ public class AnalysisEngine {
 	private ArrayList<FunctionReturns> m_functionReturns;
 	private ArrayList<BasicBlockStartPcs> m_basicBlockStartPcs;
 
-	private static final boolean DEBUG = false;
 
 	public AnalysisEngine(XeLoader loader, NodeCoreInstructionCaches coreInstructionCache, ArrayList<XeObject> objects,
 			ArrayList<BranchMap> branches) {
@@ -303,58 +301,6 @@ public class AnalysisEngine {
 		BasicBlockStartPcs bb = new BasicBlockStartPcs(nodeId, coreId);
 		m_basicBlockStartPcs.add(bb);
 		return bb.getBasicBlockMap();
-	}
-
-	public int determineReachability(int startPc, int endPc, int nodeId, int coreId) {
-		BasicBlock to = getNode(startPc, nodeId, coreId);
-		BasicBlock from = getNode(endPc, nodeId, coreId);
-		if (from != null && to != null) {
-			if (from == to) {
-				return 0;
-			}
-			FloydWarshall fw = new FloydWarshall();
-			fw.calcShortestPaths(getNodes(nodeId, coreId), getEdges(nodeId, coreId));
-			if (DEBUG) {
-				for (BasicBlock node : fw.getShortestPath(from, to)) {
-					System.out.println("node: 0x" + Integer.toHexString(getPc(node, nodeId, coreId).getPc()));
-				}
-			}
-			return fw.getShortestDistance(from, to);
-		} else {
-			return Integer.MAX_VALUE;
-		}
-	}
-
-	private XtaInstruction getPc(BasicBlock node, int nodeId, int coreId) {
-		for (XtaInstruction pc : getBasicBlockStartPcs(nodeId, coreId).keySet()) {
-			if (getBasicBlockStartPcs(nodeId, coreId).get(pc).m_nodeId == node.m_nodeId) {
-				return pc;
-			}
-		}
-		// FIXME
-		return null;
-	}
-
-	private BasicBlock getNode(int pc, int nodeId, int coreId) {
-		for (BasicBlock n : getBasicBlockStartPcs(nodeId, coreId).values()) {
-			LinkedList<XtaInstruction> insts = n.getInstructions();
-			for (XtaInstruction inst : insts) {
-				if (inst.getPc() == pc) {
-					return n;
-				}
-			}
-		}
-		return null;
-	}
-
-	public Edge[] getEdges(int nodeId, int coreId) {
-		ArrayList<Edge> edges = new ArrayList<Edge>();
-		for (BasicBlock node : getBasicBlockStartPcs(nodeId, coreId).values()) {
-			for (BasicBlock nextNode : node.getNextNodes()) {
-				edges.add(new Edge(nextNode, node, 1));
-			}
-		}
-		return edges.toArray(new Edge[] {});
 	}
 
 	public BasicBlock[] getNodes(int nodeId, int coreId) {
