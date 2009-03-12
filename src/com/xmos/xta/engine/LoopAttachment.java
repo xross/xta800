@@ -69,9 +69,7 @@ public class LoopAttachment {
 	 */
 	private boolean isSubsetOf(PathBasicBlock a, PathBasicBlock b){
 		ArrayList<PathBasicBlock> aList = a.getPathBlocks();
-		a.doneWithPathBlocks();
 		ArrayList<PathBasicBlock> bList = b.getPathBlocks();
-		b.doneWithPathBlocks();
 		if (aList.size() > bList.size()){
 			//a cannot be a subset of b is it is bigger
 			return false;

@@ -37,6 +37,8 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	private Unresolved m_unresolved;
 	private List<String> m_warnings;
 	
+	private boolean m_loseFinalInstruction;
+	
 	public PathBasicBlock(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock,
 			InstructionDecodeCache idc){
 		m_startInstruction = basicBlock.getInstructions().getFirst().getPc();
@@ -51,13 +53,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		init(engine, basicBlock, parentBasicBlock, idc); 		
 	}
 	
-	public void setEndPc(int endPc) {
-		m_endInstruction = endPc;
-		createIBuffer();
-		createTrimmedInstructions(); 
-		createInstructionStream();
-	}
-	
 	public PathBasicBlock(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock, 
 			int instPc, boolean start, InstructionDecodeCache idc){
 		if(start){
@@ -70,8 +65,15 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		init(engine, basicBlock, parentBasicBlock, idc); 		
 	}
 	
+	public void setEndPc(int endPc) {
+		m_endInstruction = endPc;
+		createIBuffer();
+		createTrimmedInstructions(); 
+		createInstructionStream();
+	}
 	private void init(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock, InstructionDecodeCache idc) {
 		m_engine = engine;
+		m_loseFinalInstruction = false;
 		m_basicBlock = basicBlock;
 		m_parentBasicBlock = parentBasicBlock;
 		m_seen = 0;
@@ -92,6 +94,13 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		createInstructionStream();
 		
 		m_engine.getProgress().incr();
+	}
+	
+	/**
+	 * sets the last instruction as not included in the path
+	 */
+	public void setLoseFinalInstruction(boolean lose){
+		m_loseFinalInstruction = lose;
 	}
 	
 	/**
@@ -140,7 +149,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 * returns a string representation of the block
 	 */
 	public String toString(){
-		return "PathBasicBlock " + this.getBlockId() + " " + m_basicBlock;
+		return "PathBasicBlock " + m_pathId + " " + m_basicBlock;
 	}
 	
 	/**
@@ -339,7 +348,8 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	
 	private void createTrimmedInstructions() {
 		if(m_startInstruction == getBasicBlock().getInstructions().getFirst().getPc() &&
-				m_endInstruction == getBasicBlock().getInstructions().getLast().getPc()){
+				m_endInstruction == getBasicBlock().getInstructions().getLast().getPc() &&
+				m_loseFinalInstruction == false){
 			m_instructionsTrimmed = getBasicBlock().getInstructions();
 		} else {
 			LinkedList<XtaInstruction> pathBasicBlockInstructions = new LinkedList<XtaInstruction>();
@@ -347,6 +357,9 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 			for(XtaInstruction inst : m_basicBlock.getInstructions()){
 				if(inst.getPc() == m_startInstruction){
 					copy = true;
+				}
+				if(m_basicBlock.getInstructions().getLast() == inst && m_loseFinalInstruction){
+					copy = false;
 				}
 				if(copy) {
 					pathBasicBlockInstructions.add(inst);

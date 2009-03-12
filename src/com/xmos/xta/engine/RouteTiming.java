@@ -55,6 +55,7 @@ public class RouteTiming {
 	public int getWorstCycles() {
 		int worstCycles = 0;
 	    for(PathBasicBlock path : m_route.getCompletedPaths()) {
+	    	//FIXME
             worstCycles = Math.max(worstCycles, path.getNumCycles(true));
         }
         return worstCycles;	

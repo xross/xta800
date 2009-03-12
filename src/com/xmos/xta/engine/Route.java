@@ -25,6 +25,8 @@ public class Route {
 		COMPLETED, ABORTED, ERROR
 	}
 		
+	public static final boolean DEBUG = false;
+	
 	private static int s_routeCount;
 	private static int s_pathCount;
 	private boolean m_firstStep;
@@ -137,7 +139,7 @@ public class Route {
 		PathBasicBlock currentBasicBlock, Stack<Integer> stack, 
 		Stack<LinkedList<BasicBlock>> nodeContext, RouteMode mode) throws AbortedException {
 		m_allBasicBlocks.add(currentBasicBlock);
-		
+		if(DEBUG) System.out.println("begin block " + currentBasicBlock);
 		if(m_engine.getAbort()) {
 			throw new AbortedException();
 		}
@@ -188,27 +190,31 @@ public class Route {
 	private void handleNextBlock(PathBasicBlock currentBasicBlock, Stack<Integer> stack,
 			Stack<LinkedList<BasicBlock>> nodeContext, RouteMode mode, XtaInstruction lastInstruction,
 			BasicBlock nextNode) throws AbortedException {
-		System.out.println(currentBasicBlock);
-		PathBasicBlock nextPathBasicBlock = new PathBasicBlock(m_engine, nextNode, currentBasicBlock, m_idc);
 		
-		if(mode == RouteMode.ABSLOUTE && m_endPcs.contains(nextPathBasicBlock.getFirstPc()) ){
-			if(currentBasicBlock.getConstraint().isTrue()){
-				addCompletePath(currentBasicBlock);
-			}  else {
-				isConstrained(true);
-				currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
-			}
+		
+		PathBasicBlock nextPathBasicBlock = new PathBasicBlock(m_engine, nextNode, currentBasicBlock, m_idc);
+		if(DEBUG) System.out.println("from block" + currentBasicBlock+" to block: " + nextPathBasicBlock);
+		
+		Stack<Integer> newStack = (Stack<Integer>) stack.clone();
+		Stack<LinkedList<BasicBlock>> newContext = new Stack<LinkedList<BasicBlock>>();
+		copyStack(nodeContext, newContext);
+		if(lastInstruction.getBranchLink()){
+			newStack.add(lastInstruction.getPc() + lastInstruction.getNumBytes());
+			newContext.push(new LinkedList<BasicBlock>());
 		} else {
-			Stack<Integer> newStack = (Stack<Integer>) stack.clone();
-			Stack<LinkedList<BasicBlock>> newContext = new Stack<LinkedList<BasicBlock>>();
-			copyStack(nodeContext, newContext);
-			if(lastInstruction.getBranchLink()){
-				newStack.add(lastInstruction.getPc() + lastInstruction.getNumBytes());
-				newContext.push(new LinkedList<BasicBlock>());
-			} else {
-				newContext.peek().add(currentBasicBlock.getBasicBlock());
-			}
-			followNode(nextPathBasicBlock, newStack, newContext, mode);
+			newContext.peek().add(currentBasicBlock.getBasicBlock());
+		}
+		followNode(nextPathBasicBlock, newStack, newContext, mode);
+	}
+
+	private void handleCompleted(PathBasicBlock currentBasicBlock) {
+		if(currentBasicBlock.getConstraint().isTrue()){
+			if(DEBUG) System.out.println("block " + currentBasicBlock + " completed");
+			addCompletePath(currentBasicBlock);
+		}  else {
+			if(DEBUG) System.out.println("block " + currentBasicBlock + " constrained");
+			isConstrained(true);
+			currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
 		}
 	}
 
@@ -216,49 +222,27 @@ public class Route {
 	private void handleReturn(PathBasicBlock currentBasicBlock, Stack<Integer> stack,
 			Stack<LinkedList<BasicBlock>> nodeContext, RouteMode mode) throws AbortedException {
 		BasicBlock nextNode = getNode(stack.peek());
-		System.out.println(currentBasicBlock);
 		PathBasicBlock nextPathBasicBlock = new PathBasicBlock(m_engine, nextNode, currentBasicBlock, m_idc);
-		
-		if(mode == RouteMode.ABSLOUTE && m_endPcs.contains(nextPathBasicBlock.getFirstPc())){
-			if(currentBasicBlock.getConstraint().isTrue()){
-				addCompletePath(currentBasicBlock);
-			}  else {
-				isConstrained(true);
-				currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
-			}
-		} else {
-			Stack<LinkedList<BasicBlock>> newContext = new Stack<LinkedList<BasicBlock>>();
-			copyStack(nodeContext, newContext);
-			newContext.pop();
-			Stack<Integer> newStack = (Stack<Integer>) stack.clone();
-			newStack.pop();
-			followNode(nextPathBasicBlock, newStack, newContext, mode);
-		}
+		if(DEBUG) System.out.println("following block: " + nextPathBasicBlock);
+		Stack<LinkedList<BasicBlock>> newContext = new Stack<LinkedList<BasicBlock>>();
+		copyStack(nodeContext, newContext);
+		newContext.pop();
+		Stack<Integer> newStack = (Stack<Integer>) stack.clone();
+		newStack.pop();
+		followNode(nextPathBasicBlock, newStack, newContext, mode);
 	}
 
 	private void handleFinalBlock(PathBasicBlock currentBasicBlock, RouteMode mode) {
 		for(XtaInstruction inst : currentBasicBlock.getInstructionTrimmed()){
 			if(m_endPcs.contains(inst.getPc())){
-				int endPc = 0;
-				if(mode == RouteMode.ABSLOUTE){
-					int index = currentBasicBlock.getInstructionTrimmed().indexOf(inst);
-					endPc = currentBasicBlock.getInstructionTrimmed().get(index - 1).getPc();
-				} else {
-					endPc = inst.getPc();
-				}
-				currentBasicBlock.setEndPc(endPc);
-				
+				currentBasicBlock.setLoseFinalInstruction(mode == RouteMode.ABSLOUTE);
+				currentBasicBlock.setEndPc(inst.getPc());
 				if(updateConstraints(currentBasicBlock)){
 					currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
 					isConstrained(true);
 				} else {
 					checkSupportedInstructions(currentBasicBlock);
-					if (currentBasicBlock.getConstraint().isTrue()){
-						addCompletePath(currentBasicBlock);
-					}  else {
-						isConstrained(true);
-						currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
-					}
+					handleCompleted(currentBasicBlock);
 				}
 			}
 		}
@@ -280,26 +264,31 @@ public class Route {
 		}
 		return null;
 	}
-	
-	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
-	
-		for (PathBasicBlock block : m_allBasicBlocks) {
-			
-			//TODO
-			ArrayList<PathBasicBlock> bob = block.getLoopPaths(block);
-			System.out.println(bob);
 
-			for (PathBasicBlock loopPath : block.getLoopPaths(block)) {
+	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
+		for (PathBasicBlock block : m_completedPaths) {
+			if (setLoopIterations(block, pathId, absolute, iterations))
+				return true;
+		}
+		return false;
+	}
+
+	public boolean setLoopIterations(PathBasicBlock path, int pathId, boolean absolute, int iterations) {
+		for (PathBasicBlock block : path.getPathBlocks()) {
+			for (PathBasicBlock loopPath : block.getLoopPaths(path)) {
 				if (loopPath.getPathId() == pathId) {
 					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
 					attributes.setNumIterations(iterations, absolute);
 					return true;
 				}
+					
+				if (setLoopIterations(loopPath, pathId, absolute, iterations))
+					return true;
 			}
-
-		}	
+		}
 		return false;		
 	}
+
 	
 	public ArrayList<XtaInstruction> getUnknowns() {
         ArrayList<XtaInstruction> unknowns = new ArrayList<XtaInstruction>();
@@ -338,7 +327,7 @@ public class Route {
 	}
 
 	private void handelLoop(PathBasicBlock pathFormingLoop, PathBasicBlock loopDestinationBlock) {
-
+		if(DEBUG) System.out.println(loopDestinationBlock + " forms a loop with " + pathFormingLoop);
 		//this must be true by design of the algorithm
 		assert(pathFormingLoop != null);
 		

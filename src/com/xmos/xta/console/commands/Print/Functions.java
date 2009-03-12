@@ -96,7 +96,6 @@ public class Functions extends Command {
    		    	buildPathsWithinFunctionSet(loopPath, pathSet, functionAddress, functionSize);
        		}
         }
-        path.doneWithPathBlocks();        
     }
     
     private boolean pathWithinFunction(PathBasicBlock path, int functionAddress, int functionSize) {

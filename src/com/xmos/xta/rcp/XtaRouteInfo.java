@@ -62,10 +62,12 @@ public class XtaRouteInfo {
                  pathNode.addNode(loopNode);
                                  
             	 for (PathBasicBlock loopPath : pathBlock.getLoopPaths(block)) {
-                 	loopNode.addNode(createPath(loopPath, loopNode, false));                    
+            		 
+            			 loopNode.addNode(createPath(loopPath, loopNode, false));                    
                  }
         	}
-        	pathNode.addNode(new BlockNode(pathBlock, pathNode));            
+        	if(pathBlock.getNumInstructionsThis()>0)
+        		pathNode.addNode(new BlockNode(pathBlock, pathNode));            
         }
         return pathNode;
 	}
