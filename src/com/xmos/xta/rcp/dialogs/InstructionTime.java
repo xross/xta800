@@ -119,11 +119,10 @@ public class InstructionTime extends Dialog {
 
     protected void buttonPressed(int id) {
     	if (id == IDialogConstants.CANCEL_ID) {
-    		if (m_valueChanged)
+    		if (m_valueChanged) {
+        		m_engine.setInstructionNumCycles(m_ref, m_originalCycles);
     			m_engine.unsetInstructionTime(m_ref.getPc());
-    	} else {
-    		// Ensure that the value is 
-    		m_engine.setInstructionNumCycles(m_ref, m_originalCycles);
+    		}
     	}
     	super.buttonPressed(id);
     }

@@ -22,7 +22,7 @@ public class FunctionBlockNode extends ViewNode {
 	
 	public void setNumIterations(int numIterations) {
 		m_numIterations = numIterations;
-		m_pixelsX = m_treeNode.getInstructions().size() * numIterations;
+		m_pixelsX = m_treeNode.getNumCycles() * numIterations;
 		m_pixelsY = m_height;
 	}
 
@@ -91,8 +91,14 @@ public class FunctionBlockNode extends ViewNode {
     	gc.fillRectangle(m_x, m_y, m_width, m_height);
 
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-        if (m_isSelected) gc.setLineWidth(m_lineWidth + 1);
-    	gc.drawRectangle(m_x, m_y, m_width, m_height);
+        int x = m_x;
+        int y = m_y;
+        if (m_isSelected) {
+        	gc.setLineWidth(m_lineWidth + 1);
+        	x += 1;
+        	y += 1;
+        }
+    	gc.drawRectangle(x, y, m_width, m_height);
 	}
 
 	public void annotateXy(int xOffset, int yOffset) {

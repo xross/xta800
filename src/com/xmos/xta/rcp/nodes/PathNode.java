@@ -107,7 +107,7 @@ public class PathNode extends Node {
 					getActivePage().showView(ConsoleView.ID);
 				} catch (PartInitException e) {}
 				
-				console.runCommand("print trace " + m_this.getId());
+				console.runCommand("print trace - " + m_this.getId());
 			}
 		});    	
     	

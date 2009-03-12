@@ -88,8 +88,6 @@ public class FunctionLoopNode extends ViewNode {
         
         gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
         if (m_isSelected) gc.setLineWidth(m_lineWidth + 1);
-        gc.drawLine(m_left, m_top, m_left, m_bottom);
-        gc.drawLine(m_right, m_top, m_right, m_bottom);
         gc.drawLine(m_left, m_bottom, scale(m_pixelOffsetX, scale), m_bottom);
         gc.drawLine(scale(m_pixelOffsetX + childrenX, scale), m_bottom, m_right, m_bottom);
         
@@ -109,7 +107,7 @@ public class FunctionLoopNode extends ViewNode {
 		for (Node treeNode : m_treeNode.getNodes()) {
 			ViewNode child = treeNode.getFunctionNode();
 			if (child != null) {
-	    		child.annotateXy(xOffset + childOffsetX, yOffset);
+	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_pixelsY);
 	    		childOffsetX += child.getPixelsX();
 			}
     	}

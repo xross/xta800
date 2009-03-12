@@ -122,7 +122,7 @@ public class XtaNotifier implements Notifier {
 
 	public void broadcastPropertyChange(final PropertyChangeEvent event) {			
 		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-			public void run() {        	
+			public void run() {
 				for (IPropertyChangeListener listener : m_listeners) {
 					listener.propertyChange(event);
 				}
