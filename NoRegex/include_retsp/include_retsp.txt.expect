@@ -1,5 +1,6 @@
-Path(id): Timing(ns)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-+COMPLETE [1 path(s)]
-    path(0)    : 40.0/2/2/0/0/1/0
+Route(0) function: main
+Complete [1 path]
+    path(0)    : 40.0ns
+
   0.0: (20.0ns) 0x10002 main + 0               ldc (ru6)    r0, i 0x0
   20.0: (20.0ns) 0x10004 main + 2               retsp (u6)   i 0x0

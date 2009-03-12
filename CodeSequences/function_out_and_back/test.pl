@@ -10,6 +10,6 @@ if (!$noBuild) {
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse path 0x100c6 0x100c4 " .
-       "-summary complete_loops " .
+       "print completed_loops " .
        "-exit > $genDir/function_out_and_back.txt 2>&1");
 

@@ -12,9 +12,9 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/load_store.log 
 
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "print src 3 " .
-       "print src 2 " .
-       "print src 1 " .
-       "print src 0 " .
+       "print src - 3 " .
+       "print src - 2 " .
+       "print src - 1 " .
+       "print src - 0 " .
        "exit > $genDir/load_store.txt 2>&1");
 

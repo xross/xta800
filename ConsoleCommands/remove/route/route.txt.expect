@@ -1,0 +1,15 @@
+Route(0) function: test0
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Route(1) function: test1
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Fail, Timing Unspecified
+Route(1) function: test1
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Fail, Timing Unspecified
+Error: No routes analysed

@@ -22,6 +22,6 @@ system("xcc -march=$arch -g $genDir/test.o $genDir/add.o $genDir/sub.o -o $genDi
 system("@ARGV load $genDir/test.xe " .
        "list sources " .
        "analyse function main " .
-       "print src 0 " .
+       "print src - 0 " .
        "exit  > $genDir/different_compilation_directories.txt 2>&1");
 

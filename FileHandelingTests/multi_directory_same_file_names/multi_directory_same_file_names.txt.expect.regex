@@ -15,7 +15,7 @@ test.xc \(.*\)
 up/test.xc \(.*\)
 ----------------------------------
   1: int add\(int a, int b\)
-\+ 2: {
+  2: {
 \+ 3:   int res = a \+ b;
 \+ 4:   return res;
   5: }

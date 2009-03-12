@@ -10,14 +10,18 @@ if (!$noBuild) {
 system("xcc -nostartfiles test.s -o $genDir/test.xe > $genDir/addative_paths.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
+
        "analyse path A B " .
-       "summary complete " .
-       "print trace 0 " .
        "analyse path B C " .
-       "summary complete " .
-       "print trace 0 " .
        "analyse path A C " .
-       "summary complete " .
-       "print trace 0 " .
+
+       "print completed_paths " .
+       "echo ========================= " .
+       "print trace 0 0 " .
+       "echo ========================= " .
+       "print trace 1 0 " .
+       "echo ========================= " .
+       "print trace 2 0 " .
+
        "-exit > $genDir/addative_paths.txt 2>&1");
 

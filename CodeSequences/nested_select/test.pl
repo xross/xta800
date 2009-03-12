@@ -11,6 +11,6 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/nested_select.l
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "summary complete " .
+       "print completed_paths " .
        "-exit > $genDir/nested_select.txt 2>&1");
 

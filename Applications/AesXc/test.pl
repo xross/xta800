@@ -19,7 +19,7 @@ my $compareFnnops = 0;
 
 system("@ARGV load $genDir/test.xe " .
         "analyse function _Encrypt " .
-        "summary complete_instructions " .
+        "print completed_instructions " .
         "-exit > $genDir/$directory.txt 2>&1");
 
 system("xobjdump -r config.xml $genDir/test.xe > $filename.out");

@@ -4,14 +4,14 @@ Frequency: 400
 NumThreads: 8
 SrcPaths: .
 No executable loaded
-No Paths/Functions registered
+No routes analysed
 Current node: 0
 Current core: 0
 Frequency: 400
 NumThreads: 8
 SrcPaths: .
 No executable loaded
-No Paths/Functions registered
+No routes analysed
 1: status
 2: source cmds.txt
 3: status

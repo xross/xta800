@@ -1,7 +1,8 @@
-Error: Found 8 unresolved path\(s\)
-Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-\+COMPLETE \[4 path\(s\)\]
-    path\(\d+\)    : 120.0/6/5/1/0/1/0
-    path\(\d+\)    : 60.0/3/2/1/0/1/0
-    path\(\d+\)    : 60.0/3/2/1/0/1/0
-    path\(\d+\)    : 60.0/3/2/1/0/1/0
+Error: Found 8 unresolved paths
+Route\(0\) path: 0x[0-9a-fA-F]+ to 0x[0-9a-fA-F]+
+Complete \[4 paths\]
+    path\(\d+\) +: \d+\.\d+ns
+    path\(\d+\) +: \d+\.\d+ns
+    path\(\d+\) +: \d+\.\d+ns
+    path\(\d+\) +: \d+\.\d+ns
+

@@ -5,7 +5,7 @@ NumThreads: 8
 SrcPaths: .
 Loaded executable: test1.xe
 Node: 0, Core: 0 \(No debug information found\)
-No Paths/Functions registered
+No routes analysed
 Current node: 0
 Current core: 0
 Frequency: 400
@@ -13,4 +13,4 @@ NumThreads: 8
 SrcPaths: .
 Loaded executable: test2.xe
 Node: 0, Core: 0 \(No debug information found\)
-No Paths/Functions registered
+No routes analysed

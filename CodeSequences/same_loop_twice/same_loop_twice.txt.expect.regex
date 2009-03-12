@@ -1,12 +1,11 @@
-Complete paths:   1
-Unresolved paths: 0
-Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-\+COMPLETE \[1 path\(s\)\]
-    path\(\d+\)    : 460.0/23/21/2/0/1/0
-        \+loop \[1 path\(s\), 0 iteration\(s\)\]
-            path\(\d+\)    : 100.0/5/5/0/0/0/0
-        \+loop \[1 path\(s\), 0 iteration\(s\)\]
-            path\(\d+\)    : 100.0/5/5/0/0/0/0
+Route\(0\) function: main
+Complete \[1 path\]
+    path\(\d+\) +: \d+\.\d+ns
+        loop \[1 path, 0 iterations\]
+            path\(\d+\) +: \d+\.\d+ns
+        loop \[1 path, 0 iterations\]
+            path\(\d+\) +: \d+\.\d+ns
+
 ----------------------------------
 test.xc \(.*same_loop_twice\)
 ----------------------------------
@@ -54,7 +53,7 @@ test.xc \(.*same_loop_twice\)
 ----------------------------------
   1: 
   2: int delay\(int x\)
-\+ 3: \{
+  3: \{
 \+ 4:   int j = 0;
   5:   
 \+ 6:   for \(int i = 0; i < x; i\+\+\)

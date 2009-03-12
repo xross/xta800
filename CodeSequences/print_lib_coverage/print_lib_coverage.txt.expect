@@ -1,0 +1,41 @@
+Route(0) function: printchar_test
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Route(1) function: printcharln_test
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Route(2) function: printint_test
+    No Timing Specified
+    Complete paths: 21, Unresolved paths: 0
+
+Route(3) function: printintln_test
+    No Timing Specified
+    Complete paths: 63, Unresolved paths: 0
+
+Route(4) function: printuint_test
+    No Timing Specified
+    Complete paths: 5, Unresolved paths: 0
+
+Route(5) function: printuintln_test
+    No Timing Specified
+    Complete paths: 15, Unresolved paths: 0
+
+Route(6) function: printhex_test
+    No Timing Specified
+    Complete paths: 5, Unresolved paths: 0
+
+Route(7) function: printhexln_test
+    No Timing Specified
+    Complete paths: 15, Unresolved paths: 0
+
+Route(8) function: printstr_test
+    No Timing Specified
+    Complete paths: 4, Unresolved paths: 0
+
+Route(9) function: printstrln_test
+    No Timing Specified
+    Complete paths: 12, Unresolved paths: 0
+
+Fail, Timing Unspecified

@@ -22,9 +22,7 @@ int main()
           time +=2000;
           break;
       }
-      
       break;
-    
   }
   return 0;
 }

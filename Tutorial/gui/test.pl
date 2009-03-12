@@ -10,10 +10,8 @@ if (!$noBuild) {
 system("xcc -march=$arch -g tutorial_gui.xc -o $genDir/test.xe > $genDir/gui.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "-analyse function resetTable " .
-       "-summary complete " .
-       "-analyse function functionCalls " .
-       "-summary complete " .
-       "-analyse function main " .
-       "-summary complete " .
-       "-exit > $genDir/gui.txt 2>&1");
+       "analyse function resetTable " .
+       "analyse function functionCalls " .
+       "analyse function main " .
+       "print completed_paths " .
+       "exit > $genDir/gui.txt 2>&1");

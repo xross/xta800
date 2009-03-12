@@ -12,7 +12,7 @@ system("xcc -march=$arch -g test.xc add/add.xc sub/sub.xc -o $genDir/test.xe > $
 system("@ARGV load $genDir/test.xe " .
        "list sources " .
        "analyse function main " .
-       "print src 0 " .
-       "print src 1 " .
+       "print src - 0 " .
+       "print src - 1 " .
        "exit  > $genDir/multi_directory.txt 2>&1");
 

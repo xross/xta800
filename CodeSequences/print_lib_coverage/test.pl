@@ -11,25 +11,16 @@ system("xcc -march=$arch -g -Xmapper --retain test.xc -o $genDir/test.xe > $genD
 }
 
 system("@ARGV load $genDir/test.xe " .
-       "-analyse function printchar_test " .
-       "-summary simple " .
-       "-analyse function printcharln_test " .
-       "-summary simple " .
-       "-analyse function printint_test " .
-       "-summary simple " .
-       "-analyse function printintln_test " .
-       "-summary simple " .
-       "-analyse function printuint_test " .
-       "-summary simple " .
-       "-analyse function printuintln_test " .
-       "-summary simple " .
-       "-analyse function printhex_test " .
-       "-summary simple " .
-       "-analyse function printhexln_test " .
-       "-summary simple " .
-       "-analyse function printstr_test " .
-       "-summary simple " .
-       "-analyse function printstrln_test " .
-       "-summary simple " .
-       "-exit > $genDir/print_lib_coverage.txt 2>&1");
+       "analyse function printchar_test " .
+       "analyse function printcharln_test " .
+       "analyse function printint_test " .
+       "analyse function printintln_test " .
+       "analyse function printuint_test " .
+       "analyse function printuintln_test " .
+       "analyse function printhex_test " .
+       "analyse function printhexln_test " .
+       "analyse function printstr_test " .
+       "analyse function printstrln_test " .
+       "print summary " .
+       "exit > $genDir/print_lib_coverage.txt 2>&1");
 

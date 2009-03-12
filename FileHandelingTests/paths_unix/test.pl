@@ -20,6 +20,6 @@ system("@ARGV " .
        "load $genDir/test.xe " .
        "list sources " .
        "analyse function main " .
-       "print src 0 " .
+       "print src - 0 " .
        "exit  > $genDir/paths_unix.txt 2>&1");
 

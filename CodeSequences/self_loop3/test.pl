@@ -11,7 +11,6 @@ system("xcc -march=$arch -nostartfiles test.s -o $genDir/test.xe > $genDir/self_
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "-summary simple " .
-       "-summary complete_loops " .
-       "-exit > $genDir/self_loop3.txt 2>&1");
+       "print completed_loops " .
+       "exit > $genDir/self_loop3.txt 2>&1");
 

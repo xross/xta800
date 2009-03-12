@@ -11,10 +11,9 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/same_loop_twice
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "-summary simple " .
-       "-summary complete_loops " .
-       "-print src 2 " .
-       "-print src 1 " .
-       "-print src 0 " .
-       "-exit > $genDir/same_loop_twice.txt 2>&1");
+       "print completed_loops " .
+       "print src - 2 " .
+       "print src - 1 " .
+       "print src - 0 " .
+       "exit > $genDir/same_loop_twice.txt 2>&1");
 

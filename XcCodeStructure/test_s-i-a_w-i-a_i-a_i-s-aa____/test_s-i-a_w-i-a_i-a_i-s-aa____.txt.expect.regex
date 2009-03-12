@@ -1,39 +1,40 @@
-Path\(id\): Timing\(ns\)/Thread cycles/Instrs/Fnops/Pausable/Executions/Absolute
-\+COMPLETE \[3 path\(s\)\]
-  . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-        \+loop \[16 path\(s\), 0 iteration\(s\)\]
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-  . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-        \+loop \[16 path\(s\), 0 iteration\(s\)\]
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-          . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
-  . path\(\d+\) +: \d+\.\d+/\d+/\d+/\d+/\d+/\d+/\d+
+Route\(0\) function: test
+Complete \[3 paths\]
+  . path\(\d+\) +: \d+\.\d+ns
+        loop \[16 paths, 0 iterations\]
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+  . path\(\d+\) +: \d+\.\d+ns
+        loop \[16 paths, 0 iterations\]
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+          . path\(\d+\) +: \d+\.\d+ns
+  . path\(\d+\) +: \d+\.\d+ns
+

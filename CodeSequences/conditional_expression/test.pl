@@ -12,7 +12,7 @@ if (!$noBuild) {
 
 system("@ARGV load $genDir/test.xe " .
        "analyse function test " .
-       "-summary simple " .
-       "-summary complete_loops " .
-       "-exit > $genDir/conditional_expression.txt 2>&1");
+       "print summary " .
+       "print completed_loops " .
+       "exit > $genDir/conditional_expression.txt 2>&1");
 
