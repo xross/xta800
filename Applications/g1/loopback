@@ -1,0 +1,25 @@
+#!/bin/bash
+
+echo "Note: $0 must be sourced with single quotes" > /dev/stderr
+
+function extract()
+{
+  echo $(grep ".*port.* $1.*=.*XS1_PORT_" top.xc | sed 's/^.*PORT_\(..\);$/\1/')
+}
+
+function loopback()
+{
+  echo -n "--pins-plugin 0 $stimcore LoopbackPort.dll PORT_$(extract $1)_PINS 1 "
+  echo -n "--pins-plugin 0 $hdacore LoopbackPort.dll PORT_$(extract $2)_PINS 1 "
+}
+
+stimcore=2
+hdacore=1
+
+loopback s_bclk  p_bclk
+loopback s_reset p_reset
+loopback s_sync  p_sync0
+loopback s_sync  p_sync1
+loopback s_sdo   p_sdo0
+loopback s_sdo   p_sdo1
+loopback s_sdi   p_sdi

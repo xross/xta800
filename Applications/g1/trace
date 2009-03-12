@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo "Note: $0 must be sourced with double quotes" > /dev/stderr
+
+outfile=trace.vcd
+tracecore=1
+
+flags="-instructions -pipeline -clockblocks -threads -ports -pads -cycles"
+
+echo -n "-o $outfile -core $tracecore $flags"
