@@ -49,6 +49,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                                                        ISelectionProvider,
                                                        IMenuListener {
     public static final boolean DEBUG = false;
+    public static final int MIN_CANVAS_X = 100;
     public static final int MAX_CANVAS_X = 3000;
     public static final int MAX_CANVAS_Y = 500;
 
@@ -270,8 +271,11 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     }
     
 	public void zoomOut() {
-		m_scale = m_scale / 1.2;
-		refreshView();
+		// Don't zoom too far out
+		if ((int)((double)m_pixelsX * m_scale) > MIN_CANVAS_X) {
+			m_scale = m_scale / 1.2;
+			refreshView();
+		}
 	}
 
 	public void zoomIn() {
@@ -370,8 +374,10 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     			if ((e.button == 1) || (e.button == 3)) {
 		    		for (ViewNode node : m_clickAreas) {
 		    			if (node.contains(e.x, e.y)) {
-		    	    		m_selectedNode = node.getTreeNode();
-		    	    		setSelection(new StructuredSelection(m_selectedNode));
+		    				if (node.getTreeNode() != null) {
+		    					m_selectedNode = node.getTreeNode();
+		    					setSelection(new StructuredSelection(m_selectedNode));
+		    				}
 		    				return;
 		    			}
 		    		}

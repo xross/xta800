@@ -28,6 +28,9 @@ public class FunctionView extends ZoomedCanvasView {
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.rcp.views.FunctionView.Function";
 
+    private static final double MIN_PIXELS_GAP = 50;
+    private static final double MAX_PIXELS_GAP = 100;
+
     private SymbolTable m_table;
     private Vector<XtaFunctionBlock> m_functionList;
     private boolean m_addedFunctionsToClickAreas;
@@ -35,17 +38,20 @@ public class FunctionView extends ZoomedCanvasView {
     private int m_blockLength;
     private Node m_currentNode;
     private String m_currentFunction;
-    private String m_previousFunction;
 
     private int m_colorIndex;
     private Vector<Color> m_colors;
     private HashMap<String, Color> m_functionColors;
 
     private int m_functionNameY = 30;
+
+    private int m_timelineY = 15;
+    private String m_timeUnits;
+    private double m_pixelsPerTimeUnit;
     
 	public FunctionView() {
 		super();
-		if (DEBUG) System.out.printf("Function()\n");			
+		if (DEBUG) System.out.printf("Function()\n");
 		XtaNotifier.getInstance().addPropertyChangeListener(this);
 		
 		m_functionList = new Vector<XtaFunctionBlock>();
@@ -59,10 +65,13 @@ public class FunctionView extends ZoomedCanvasView {
 		m_borderX = 0;
 		m_borderY = 10;
 		m_lineWidth = 1;
+
+		m_pixelsPerTimeUnit = 1;
+		m_timeUnits = "ns";
 	}
 
     protected void initialiseTree() {
-		if (DEBUG) System.out.printf("Function: initialiseTree\n");			
+		if (DEBUG) System.out.printf("Function: initialiseTree\n");
     	m_routeInfo = XtaNotifier.getInstance().getRouteInfo();
 		if (m_routeInfo != null) {
     		getDebugInfo();
@@ -78,7 +87,7 @@ public class FunctionView extends ZoomedCanvasView {
 	}
 
     protected void buildClickAreas() {
-		if (DEBUG) System.out.printf("Function: buildClickAreas\n");			
+		if (DEBUG) System.out.printf("Function: buildClickAreas\n");
     	m_clickAreas.clear();
     	if (m_rootNode != null)
     		m_rootNode.getFunctionNode().buildClickAreas(m_clickAreas);
@@ -87,7 +96,7 @@ public class FunctionView extends ZoomedCanvasView {
     }
 
     protected void annotateTree(boolean isSelctionChange) {
-		if (DEBUG) System.out.printf("Function: annotateTree\n");			
+		if (DEBUG) System.out.printf("Function: annotateTree\n");
     	clearAll();
     	Node pathRoot = null;
     	if (m_selectedNode != null) {
@@ -100,7 +109,7 @@ public class FunctionView extends ZoomedCanvasView {
 		} else {
 			annotateTree(pathRoot, 1, false);
 
-			pathRoot.getFunctionNode().annotateXy(m_borderX, m_borderY);
+			pathRoot.getFunctionNode().annotateXy(m_borderX, m_borderY + m_timelineY);
 			if (m_blockLength > 0)
 				addBlock();
 
@@ -118,7 +127,7 @@ public class FunctionView extends ZoomedCanvasView {
     }
 
     protected void updatePixelsXy() {
-		if (DEBUG) System.out.printf("Function: updatePixelsXy ");			
+		if (DEBUG) System.out.printf("Function: updatePixelsXy ");
     	Node pathRoot = null;
     	if (m_selectedNode != null) {
     		pathRoot = m_selectedNode.getPathRoot();
@@ -129,17 +138,14 @@ public class FunctionView extends ZoomedCanvasView {
 			m_pixelsY = 0;
 		} else {
 			m_pixelsX = (m_borderX * 2) + pathRoot.getFunctionNode().getPixelsX();
-			m_pixelsY = (m_borderY * 2) + pathRoot.getFunctionNode().getPixelsY() + m_functionNameY;
+			m_pixelsY = ((m_borderY + m_timelineY) * 2) + pathRoot.getFunctionNode().getPixelsY() + m_functionNameY;
 		}
-
-		if (DEBUG) System.out.printf("%d,%d\n", m_pixelsX, m_pixelsY);			
     }
     
     private void clearAll() {
         m_functionList.clear();
         m_nodeOffset = 0;
         m_currentFunction = "";
-        m_previousFunction = "";
         m_addedFunctionsToClickAreas = false;
     }
 
@@ -157,16 +163,11 @@ public class FunctionView extends ZoomedCanvasView {
 
                 if (m_currentFunction.length() == 0) {
                     m_currentFunction = functionName;
-                    m_previousFunction = functionName;
                 }
 
-                if (m_currentFunction.equals(functionName) == false) {
-                    if (m_nodeOffset > 0) {
-                        addBlock();
-                        m_currentFunction = functionName;
-                    } else {
-                        m_currentFunction = m_previousFunction;
-                    }
+                if (!m_currentFunction.equals(functionName)) {
+                    addBlock();
+                    m_currentFunction = functionName;
                 }
             	m_nodeOffset += numIterations;
             	m_blockLength += numIterations;
@@ -188,12 +189,13 @@ public class FunctionView extends ZoomedCanvasView {
 	}
 
     private void addBlock() {
+		if (DEBUG) System.out.printf("Function: addBlock " + m_currentFunction + "\n");
+		
     	Color color = m_functionColors.get(m_currentFunction);
     	XtaFunctionBlock block = new XtaFunctionBlock(m_currentFunction, color,
     			m_currentNode, m_nodeOffset);
         m_functionList.add(block);
         m_blockLength = 0;
-        m_previousFunction = m_currentFunction;
     }
 
     protected void drawCanvas(GC gc) {
@@ -211,16 +213,21 @@ public class FunctionView extends ZoomedCanvasView {
     	}
         if (pathRoot == null)
         	return;
-        
+
+        drawTimeLine(gc);
+
 		gc.setLineWidth(m_lineWidth);
 		int blockX = m_borderX;
 		for (XtaFunctionBlock block : m_functionList) {
-			blockX += block.draw(m_display, gc, blockX, m_borderY, m_pixelsY, m_scale);
+			blockX += block.draw(m_display, gc, blockX, m_borderY + m_timelineY, m_pixelsY, m_scale);
 		}
 		pathRoot.getFunctionNode().draw(m_display, gc, m_scale);
     }
-    
+
 	private void getDebugInfo(){
+		m_functionColors.clear();
+		m_colorIndex = 0;
+		
     	m_table = m_routeInfo.getSymbolTable();
         Iterator<Map.Entry<Integer, Symbol>> iter =
             m_table.getElfHandler().getFunctionsPcKeyed().entrySet().iterator();
@@ -286,4 +293,76 @@ public class FunctionView extends ZoomedCanvasView {
             return length;
         }
     }
+
+    /*
+     * Timeline functions
+     */
+    private void drawTimeLine(GC gc) {
+		Rectangle clientArea = m_canvas.getClientArea();
+
+		gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLUE));
+    	gc.setLineStyle(SWT.LINE_DOT);
+    	
+    	gc.drawLine(0, m_timelineY, clientArea.width, m_timelineY);
+    	
+    	updateUnits();
+
+    	double timeUnit = 0; 	
+    	double timeUnitIncrement = getTimeUnitIncrement();
+        for (int x = 0; x < clientArea.width; x += (m_pixelsPerTimeUnit * m_scale * timeUnitIncrement)) {
+        	double time = timeUnit;
+        	
+        	gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
+        	gc.drawText(String.format("%.01f %s", time, m_timeUnits), x, 0); 
+       	    
+       	    gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLUE));
+            gc.drawLine(x, m_timelineY, x, m_borderY + m_timelineY);
+         	timeUnit += timeUnitIncrement;
+        }    	
+
+    	gc.setLineStyle(SWT.LINE_SOLID);
+    }
+ 
+	private double getTimeUnitIncrement() {
+    	double increment = 1.0;
+    	double numPixels = m_pixelsPerTimeUnit * m_scale;
+    	while (numPixels > MAX_PIXELS_GAP) {
+    		numPixels /= 2.0;
+    		increment /= 2.0;
+    	}
+    	while (numPixels < MIN_PIXELS_GAP) {
+    		numPixels *= 2.0;
+    		increment *= 2.0;
+    	}
+    	return increment;
+    }
+
+	private void updateUnits() {
+    	Node pathRoot = null;
+    	if (m_selectedNode != null) {
+    		pathRoot = m_selectedNode.getPathRoot();
+    	}
+
+    	if (pathRoot == null) {
+			m_timeUnits = "ns";
+			m_pixelsPerTimeUnit = 1;
+			return;
+    	}
+
+    	double timeTaken = pathRoot.getTimeTaken();
+		m_pixelsPerTimeUnit = m_pixelsX / timeTaken;
+
+		
+		double renderPixels = ((double)m_pixelsX * m_scale);
+		double endTime = timeTaken * ((double)m_canvas.getClientArea().width / renderPixels);
+		if (endTime > 2000000) {
+			m_timeUnits = "ms";
+			m_pixelsPerTimeUnit *= 1000 * 1000;
+		} else if (endTime > 2000) {
+			m_timeUnits = "us";
+			m_pixelsPerTimeUnit *= 1000;
+		} else {
+			m_timeUnits = "ns";
+		}
+	}
 }
