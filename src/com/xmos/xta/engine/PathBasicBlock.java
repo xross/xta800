@@ -101,6 +101,8 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 */
 	public void setLoseFinalInstruction(boolean lose){
 		m_loseFinalInstruction = lose;
+		createTrimmedInstructions(); 
+		createInstructionStream();
 	}
 	
 	/**
@@ -358,7 +360,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 				if(inst.getPc() == m_startInstruction){
 					copy = true;
 				}
-				if(m_basicBlock.getInstructions().getLast() == inst && m_loseFinalInstruction){
+				if(m_endInstruction == inst.getPc() && m_loseFinalInstruction){
 					copy = false;
 				}
 				if(copy) {

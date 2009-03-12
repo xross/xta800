@@ -90,8 +90,7 @@ public class TreeDisplayer {
                 PathAttributes attributes = parent.getLoopPathAttributes(path);
                 iterations = attributes.getNumIterations();
                 isAbsolute = attributes.isAbsolute();
-            }
-                
+            }  
         	summarisePath(path, indent, iterations, isAbsolute);
         }
     }
@@ -100,27 +99,27 @@ public class TreeDisplayer {
    	    displayPathLevelInfo(path, indent, numExecutions, absolute);
    	    
         for (PathBasicBlock block : path.getPathBlocks()) {
-        	
-            if ((m_level == Level.complete_blocks) || 
-                (m_level == Level.unresolved_blocks) ||
-                (m_level == Level.complete_instructions) || 
-                (m_level == Level.unresolved_instructions))
-                displayBlockLevelInfo(block, indent);                        	
-        	
-            if ((m_level == Level.complete_instructions) || 
-                (m_level == Level.unresolved_instructions))
-                displayInstructionLevelInfo(block, indent, numExecutions);                
-
-            if ((m_level == Level.complete_loops) || 
-               	(m_level == Level.complete_blocks) ||
-            	(m_level == Level.complete_instructions) ||
-            	(m_level == Level.unresolved_loops) || 
-            	(m_level == Level.unresolved_blocks) || 
-            	(m_level == Level.unresolved_instructions)) {
-              	displayLoopLevelInfo(block, indent, numExecutions, path);          	
-            }
+        	if(block.getNumInstructionsThis() >0){
+	            if ((m_level == Level.complete_blocks) || 
+	                (m_level == Level.unresolved_blocks) ||
+	                (m_level == Level.complete_instructions) || 
+	                (m_level == Level.unresolved_instructions))
+	                displayBlockLevelInfo(block, indent);                        	
+	        	
+	            if ((m_level == Level.complete_instructions) || 
+	                (m_level == Level.unresolved_instructions))
+	                displayInstructionLevelInfo(block, indent, numExecutions);                
+	
+	            if ((m_level == Level.complete_loops) || 
+	               	(m_level == Level.complete_blocks) ||
+	            	(m_level == Level.complete_instructions) ||
+	            	(m_level == Level.unresolved_loops) || 
+	            	(m_level == Level.unresolved_blocks) || 
+	            	(m_level == Level.unresolved_instructions)) {
+	              	displayLoopLevelInfo(block, indent, numExecutions, path);          	
+	            }
+        	}
         }
-        path.doneWithPathBlocks();
     }
 
     private void displayPathLevelInfo(PathBasicBlock path, String indent, int numExecutions, boolean absolute) {            	

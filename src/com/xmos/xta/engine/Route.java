@@ -235,6 +235,7 @@ public class Route {
 	private void handleFinalBlock(PathBasicBlock currentBasicBlock, RouteMode mode) {
 		for(XtaInstruction inst : currentBasicBlock.getInstructionTrimmed()){
 			if(m_endPcs.contains(inst.getPc())){
+				
 				currentBasicBlock.setLoseFinalInstruction(mode == RouteMode.ABSLOUTE);
 				currentBasicBlock.setEndPc(inst.getPc());
 				if(updateConstraints(currentBasicBlock)){
