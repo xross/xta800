@@ -1,0 +1,65 @@
+Route(0) path: sdr_input0_0 to sdr_input0_1
+    Pass, Slack: 133.0ns, Required: 333.0ns, Worst: 200.0ns, Min Frequency: 239 Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route(1) path: sdr_input0_1 to sdr_input0_2
+    Fail, Violation: 27.0ns, Required: 333.0ns, Worst: 360.0ns, Min Frequency: 431 Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route(2) path: sdr_input0_2 to sdr_input0_3
+    Pass, Slack: 113.0ns, Required: 333.0ns, Worst: 220.0ns, Min Frequency: 263 Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route(3) path: sdr_input0_3 to sdr_input0_0
+    Fail, Violation: 7.0ns, Required: 333.0ns, Worst: 340.0ns, Min Frequency: 407 Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route(4) path: sdr_input1_0 to sdr_input1_1
+    Pass, Slack: 133.0ns, Required: 333.0ns, Worst: 200.0ns, Min Frequency: 239 Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route(5) path: sdr_input1_1 to sdr_input1_2
+    Fail, Violation: 27.0ns, Required: 333.0ns, Worst: 360.0ns, Min Frequency: 431 Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route(6) path: sdr_input1_2 to sdr_input1_3
+    Pass, Slack: 113.0ns, Required: 333.0ns, Worst: 220.0ns, Min Frequency: 263 Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route(7) path: sdr_input1_3 to sdr_input1_0
+    Fail, Violation: 7.0ns, Required: 333.0ns, Worst: 340.0ns, Min Frequency: 407 Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route(8) path: sdr_input2_0 to sdr_input2_1
+    Pass, Slack: 73.0ns, Required: 333.0ns, Worst: 260.0ns, Min Frequency: 311 Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route(9) path: sdr_input2_1 to sdr_input2_2
+    Pass, Slack: 13.0ns, Required: 333.0ns, Worst: 320.0ns, Min Frequency: 383 Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route(10) path: sdr_input2_2 to sdr_input2_3
+    Pass, Slack: 73.0ns, Required: 333.0ns, Worst: 260.0ns, Min Frequency: 311 Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route(11) path: sdr_input2_3 to sdr_input2_0
+    Pass, Slack: 53.0ns, Required: 333.0ns, Worst: 280.0ns, Min Frequency: 335 Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route(12) path: sdr_input3_0 to sdr_input3_1
+    Pass, Slack: 73.0ns, Required: 333.0ns, Worst: 260.0ns, Min Frequency: 311 Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route(13) path: sdr_input3_1 to sdr_input3_2
+    Pass, Slack: 13.0ns, Required: 333.0ns, Worst: 320.0ns, Min Frequency: 383 Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route(14) path: sdr_input3_2 to sdr_input3_3
+    Pass, Slack: 73.0ns, Required: 333.0ns, Worst: 260.0ns, Min Frequency: 311 Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route(15) path: sdr_input3_3 to sdr_input3_0
+    Pass, Slack: 53.0ns, Required: 333.0ns, Worst: 280.0ns, Min Frequency: 335 Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Fail, 4/16, Max Violation: 27.0ns
