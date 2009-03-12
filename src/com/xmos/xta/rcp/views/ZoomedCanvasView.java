@@ -119,7 +119,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    createContextMenus();
 	    
 	    initialiseTree();
-    	buildClickAreas();
 		annotateTree(false);
 		refreshView();
 
@@ -140,7 +139,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 				m_toolTip.dispose ();
 	    	}
 	    	initialiseTree();
-	    	buildClickAreas();
 			annotateTree(false);
 			refreshView();
 			
@@ -362,10 +360,12 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			public void mouseDoubleClick(MouseEvent e) {
 	    		for (ViewNode node : m_clickAreas) {
 	    			if (node.contains(e.x, e.y)) {
-	    	    		m_selectedNode = node.getTreeNode();
-	    	    		ISelection selection = new StructuredSelection(m_selectedNode);
-	    	    		setSelection(selection);
-	    				XtaNotifier.getInstance().notifySetFocus(selection);
+	    				if (node.getTreeNode() != null) {
+		    	    		m_selectedNode = node.getTreeNode();
+		    	    		ISelection selection = new StructuredSelection(m_selectedNode);
+		    	    		setSelection(selection);
+		    				XtaNotifier.getInstance().notifySetFocus(selection);
+	    				}
 	    				return;
 	    			}
 	    		}

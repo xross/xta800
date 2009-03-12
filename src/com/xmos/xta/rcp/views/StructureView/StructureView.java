@@ -46,6 +46,7 @@ public class StructureView extends ZoomedCanvasView {
     			m_selectedNode = m_selectedNode.getParentNode();
     		}
     	}
+    	buildClickAreas();
 
 		m_numTreeNodes = 0;
 		annotateTree(m_doubleClickNode,

@@ -34,7 +34,6 @@ public class FunctionView extends ZoomedCanvasView {
     private SymbolTable m_table;
     private Vector<XtaFunctionBlock> m_functionList;
     private boolean m_addedFunctionsToClickAreas;
-    private int m_nodeOffset;
     private int m_blockLength;
     private Node m_currentNode;
     private String m_currentFunction;
@@ -89,8 +88,11 @@ public class FunctionView extends ZoomedCanvasView {
     protected void buildClickAreas() {
 		if (DEBUG) System.out.printf("Function: buildClickAreas\n");
     	m_clickAreas.clear();
-    	if (m_rootNode != null)
-    		m_rootNode.getFunctionNode().buildClickAreas(m_clickAreas);
+    	if (m_selectedNode != null) {
+    		Node pathRoot = m_selectedNode.getPathRoot();
+    		if (pathRoot != null)
+    			pathRoot.getFunctionNode().buildClickAreas(m_clickAreas);
+    	}
 
     	m_addedFunctionsToClickAreas = false;
     }
@@ -98,6 +100,7 @@ public class FunctionView extends ZoomedCanvasView {
     protected void annotateTree(boolean isSelctionChange) {
 		if (DEBUG) System.out.printf("Function: annotateTree\n");
     	clearAll();
+    	buildClickAreas();
     	Node pathRoot = null;
     	if (m_selectedNode != null) {
     		pathRoot = m_selectedNode.getPathRoot();
@@ -144,7 +147,6 @@ public class FunctionView extends ZoomedCanvasView {
     
     private void clearAll() {
         m_functionList.clear();
-        m_nodeOffset = 0;
         m_currentFunction = "";
         m_addedFunctionsToClickAreas = false;
     }
@@ -169,7 +171,6 @@ public class FunctionView extends ZoomedCanvasView {
                     addBlock();
                     m_currentFunction = functionName;
                 }
-            	m_nodeOffset += numIterations;
             	m_blockLength += numIterations;
             }
     	}
@@ -178,8 +179,6 @@ public class FunctionView extends ZoomedCanvasView {
     	functionNode.setLineWidth(m_lineWidth);
         functionNode.setIsSelected(selected);
         for (Node subNode : node.getNodes()) {
-        	m_nodeOffset = 0;
-        	
         	int subNumIterations = numIterations;
 			if (node.isLoopNode())
 				subNumIterations = subNode.getNumIterations() * numIterations;
@@ -192,8 +191,7 @@ public class FunctionView extends ZoomedCanvasView {
 		if (DEBUG) System.out.printf("Function: addBlock " + m_currentFunction + "\n");
 		
     	Color color = m_functionColors.get(m_currentFunction);
-    	XtaFunctionBlock block = new XtaFunctionBlock(m_currentFunction, color,
-    			m_currentNode, m_nodeOffset);
+    	XtaFunctionBlock block = new XtaFunctionBlock(m_currentFunction, color, m_currentNode);
         m_functionList.add(block);
         m_blockLength = 0;
     }
@@ -219,8 +217,14 @@ public class FunctionView extends ZoomedCanvasView {
 		gc.setLineWidth(m_lineWidth);
 		int blockX = m_borderX;
 		for (XtaFunctionBlock block : m_functionList) {
-			blockX += block.draw(m_display, gc, blockX, m_borderY + m_timelineY, m_pixelsY, m_scale);
+            int length = block.getOffsetX() - blockX;
+			block.draw(m_display, gc, blockX, m_borderY + m_timelineY, length, m_pixelsY, m_scale);
+			blockX += length;
 		}
+		XtaFunctionBlock lastBlock = m_functionList.lastElement();
+        int length = lastBlock.getEndX() - blockX;
+		lastBlock.draw(m_display, gc, blockX, m_borderY + m_timelineY, length, m_pixelsY, m_scale);
+		
 		pathRoot.getFunctionNode().draw(m_display, gc, m_scale);
     }
 
@@ -269,28 +273,28 @@ public class FunctionView extends ZoomedCanvasView {
     
     class XtaFunctionBlock {
         private Node m_node;
-        private int m_offset;
         private TextBlockNode m_textBlockNode;
         
-        public XtaFunctionBlock(String function, Color color, Node node, int offset) {
+        public XtaFunctionBlock(String function, Color color, Node node) {
             m_node = node;
-            m_offset = offset;
-            
             m_textBlockNode = new TextBlockNode(function, color);
         }
         
-        TextBlockNode getTextBlockNode() {
+        public TextBlockNode getTextBlockNode() {
         	return m_textBlockNode;
         }
+        
+        public int getOffsetX() {
+        	return m_node.getFunctionNode().getPixelOffsetX();
+        }
 
-        public int draw(Display display, GC gc, int x, int y, int height, double scale) {
+        public int getEndX() {
+        	return m_node.getFunctionNode().getPixelOffsetX() + m_node.getFunctionNode().getPixelsX();
+        }
 
-            int length = (m_node.getFunctionNode().getPixelOffsetX() + m_offset) - x;
-            
+        public void draw(Display display, GC gc, int x, int y, int length, int height, double scale) {
             m_textBlockNode.setBounds((int)((double)x * scale), y, (int)((double)length * scale) + 1, height, m_pixelsY - m_functionNameY);
             m_textBlockNode.draw(display, gc, scale);
-
-            return length;
         }
     }
 

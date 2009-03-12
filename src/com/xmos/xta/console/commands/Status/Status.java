@@ -69,10 +69,9 @@ public class Status extends Command {
     	Progress progress = engine.getProgress();
     	if (progress.getState() != Progress.State.IDLE) {
     		
-    		console.display(String.format("Currently busy: %s (%d/%d)\n", 
+    		console.display(String.format("Currently busy: %s (%d)\n", 
     				progress.getDescription(), 
-    				progress.getCurValue(), 
-    				progress.getMaxValue()));    		
+    				progress.getCurValue()));    		
     	}
     	else {
     		List<Route> routes = engine.getRoutes();	    	

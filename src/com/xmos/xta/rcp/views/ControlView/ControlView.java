@@ -249,7 +249,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			m_memoryUpdater = null;
 		}
 		if (m_progressUpdater != null) {
-			m_progressUpdater.end();
+			m_progressUpdater.end(true);
 			m_progressUpdater = null;
 		}
 	}
@@ -460,7 +460,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 	private void setDone(String status) {
         if (m_progressUpdater != null) {
-        	m_progressUpdater.end();
+        	m_progressUpdater.end(false);
         	m_progressUpdater = null;
         }
     	m_engineStatus.setText(status);
@@ -529,13 +529,15 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         private Engine m_engine;
         private Label m_progress;
         private boolean m_active;
+        private boolean m_exited;
 
         public ProgressUpdater(Engine engine, final Label progress) {
             m_engine = engine;
             m_progress = progress;
         }
 
-        public void end() {
+        public void end(boolean exited) {
+        	m_exited = exited;
         	m_active = false;
         }
 
@@ -559,10 +561,10 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
         	m_display.asyncExec(new Runnable() {
     			public void run() {
-    				if (m_active) {
+    				if (!m_exited) {
     					m_progress.setText("" + p.getCurValue());
     				}
-    			}});            	
+    			}});
         }
     }
     
