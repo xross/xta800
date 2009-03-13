@@ -20,7 +20,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	private LoopAttachment m_loopPaths;
 	
 	
-	private int m_seen;
+	//private int m_seen;
 	private int m_pathId;
 	private HashMap<PathBasicBlock, PathAttributes> m_loopPathAttributes;
 	private BasicBlockStats m_blockStats;
@@ -76,7 +76,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		m_loseFinalInstruction = false;
 		m_basicBlock = basicBlock;
 		m_parentBasicBlock = parentBasicBlock;
-		m_seen = 0;
+		//m_seen = 0;
 		m_loopPaths = new LoopAttachment(null);
 		m_pathId = -1;
 		m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
@@ -170,7 +170,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		return m_basicBlock.getId();
 	}
 	
-	
 	/**
 	 * get the underlying basic block. Should almost never be used
 	 * @return theis blocks basic block
@@ -187,43 +186,28 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		return m_parentBasicBlock;
 	}	
 	
+	private ArrayList<PathBasicBlock> m_pathBlocks;
+	
 	/**
 	 * Gets the list of all the blocks that make up that path
 	 * @return ArrayList of all the PathBasicBlock that make up that path
 	 */
 	public ArrayList<PathBasicBlock> getPathBlocks() {
-		ArrayList<PathBasicBlock> paths = new ArrayList<PathBasicBlock>();
-		PathBasicBlock block = this;
 		
-		do {
-			paths.add(0, block);
-			if (block.m_loopPaths.contains(this)) {
-				break;
-			}
-			block = block.m_parentBasicBlock;
-		} while (block != null);
-		
-		if (block != null)
-			block.m_seen++;
-
-		return paths;
+		if(m_pathBlocks == null){
+			m_pathBlocks = new ArrayList<PathBasicBlock>();
+			PathBasicBlock block = this;
+			do {
+				m_pathBlocks.add(0, block);
+				if (block.m_loopPaths.contains(this)) {
+					break;
+				}
+				block = block.m_parentBasicBlock;
+			} while (block != null);
+		} 
+		return m_pathBlocks;
 	}
-	
-	public void doneWithPathBlocks() {
-		PathBasicBlock block = this;
-		do {
-			if (block.m_loopPaths.contains(this)) {
-				break;
-			}
-			block = block.m_parentBasicBlock;
-		} while (block != null);
 
-		if (block != null) {
-			assert (block.m_seen > 0);
-			block.m_seen--;
-		}
-	}
-	
 	public int getFirstPc(){
 		return m_startInstruction;
 	}
@@ -254,30 +238,11 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	}
 	
 	public int getNumPathBlocks() {
-		int numPathBlocks = 0;
-		PathBasicBlock block = this;
-
-		do {
-			++numPathBlocks;
-			if (block.m_loopPaths.contains(this)) {
-				break;
-			}
-			block = block.m_parentBasicBlock;
-		} while (block != null);
-
-		return numPathBlocks;
+		return getPathBlocks().size();
 	}
 	
 	public int getNumIterations() {
-		PathBasicBlock parent = this;
-		while (parent != null) {
-			if (parent.m_loopPaths.contains(this)) {
-				PathAttributes attributes = parent.getLoopPathAttributes(this);
-				return attributes.getNumIterations();
-			}
-			parent = parent.m_parentBasicBlock;
-		}
-		return 1;
+		return getPathBlocks().get(0).getLoopPathAttributes(this).getNumIterations();
 	}
 
 	
@@ -389,7 +354,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 				loopPath.getAllBlocks(allBlocks);
 			}
 		}
-		doneWithPathBlocks();
+		//doneWithPathBlocks();
 	}
 
 	
@@ -403,7 +368,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 				}
 			}
 		}
-		doneWithPathBlocks();
+		//doneWithPathBlocks();
 		return insts;
 	}
 
@@ -426,7 +391,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 				}
 			}
 		}
-		doneWithPathBlocks();		
+		//doneWithPathBlocks();		
 		return pcsCovered;
 	}
 	

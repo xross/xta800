@@ -253,7 +253,7 @@ public class BasicBlockStats {
 				}
 			}
 		}
-		m_block.doneWithPathBlocks();
+		//m_block.doneWithPathBlocks();
 		return result;
 	}
 
@@ -274,7 +274,7 @@ public class BasicBlockStats {
 				}
 			}
 		}
-		m_block.doneWithPathBlocks();
+		//m_block.doneWithPathBlocks();
 		return result;
 	}
 	
@@ -343,7 +343,7 @@ public class BasicBlockStats {
 				}
 				m_absoluteDoubleTrue = result;
 				m_absoluteDoubleTrueKnown = true;
-				m_block.doneWithPathBlocks();
+				//m_block.doneWithPathBlocks();
 			}
 			
 		}
@@ -368,7 +368,7 @@ public class BasicBlockStats {
 					}
 				}
 			}
-			m_block.doneWithPathBlocks();
+			//m_block.doneWithPathBlocks();
 		}
 		
 		return result;

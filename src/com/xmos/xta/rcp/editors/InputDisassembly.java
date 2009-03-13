@@ -1,5 +1,7 @@
 package com.xmos.xta.rcp.editors;
 
+import java.util.HashMap;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
@@ -14,6 +16,7 @@ public class InputDisassembly implements IEditorInput {
     public static final String s_lineType = XtaDocumentPartitioner.DISASSEMBLY;
 
     private Input m_input;    
+    private HashMap<Integer, InputLine> m_pcToLine;
     
     public InputDisassembly() {	
 		if (DEBUG) System.out.printf("InputDisassembly()\n");	
@@ -33,7 +36,15 @@ public class InputDisassembly implements IEditorInput {
         	}
         }		
         updateLineNumberMapping();
+        m_pcToLine = new HashMap<Integer, InputLine>();
+        for(InputSection inputSection : m_input.getSections()){
+        	m_pcToLine.putAll(inputSection.getPcs());
+        }
 	}
+    
+    public HashMap<Integer, InputLine> getPcsToLines(){
+    	return m_pcToLine;
+    }
     
     public void updateLineNumberMapping() {
 		int lineIndex = 0;

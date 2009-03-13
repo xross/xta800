@@ -106,6 +106,14 @@ public class Route {
 	}
 	
 	public RouteStatus analyse(RouteMode mode){
+		
+		if(DEBUG) {
+			System.out.println("analysing from 0x" + Integer.toHexString(m_startPc));
+			for(int to : m_endPcs){
+				System.out.println("analysing to 0x" + Integer.toHexString(to));
+			}
+		}
+		
 		m_allBasicBlocks.clear();
 		BasicBlock startNode = getNode(m_startPc);
 		if (startNode == null){

@@ -15,6 +15,8 @@ public class InputSource implements IEditorInput {
 
     private Input m_input;
     
+    
+    
     public InputSource(SourceFile sourceFile) {	
 		if (DEBUG) System.out.printf("InputSource()\n");
 				
@@ -33,7 +35,10 @@ public class InputSource implements IEditorInput {
             }
         }
         updateLineNumberMapping();
+        
 	}
+    
+   
     
     public void updateLineNumberMapping() {
 		int lineIndex = 0;

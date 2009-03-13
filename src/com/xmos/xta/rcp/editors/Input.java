@@ -9,21 +9,43 @@ public class Input {
 	private String m_headerType;
 	private String m_lineType;
 	private Map<Integer, Integer> m_lineNumberMapping;
+	private HashMap<Integer, InputLine> m_pcToLine;
+	private HashMap<Integer, InputSection> m_pcToSection;
+	
+	
 	
 	public Input(String headerType, String lineType) {
     	m_sections = new ArrayList<InputSection>();
     	m_headerType = headerType;
     	m_lineType = lineType;
     	m_lineNumberMapping = new HashMap<Integer, Integer>();
+    	m_pcToLine = new HashMap<Integer, InputLine>();
+    	m_pcToSection = new HashMap<Integer, InputSection>();
+    }
+	
+	public void addPcToLine(int pc, InputLine line){
+		m_pcToLine.put(pc, line);
+	}
+	
+	public HashMap<Integer, InputLine> getPcsToLines(){
+		return m_pcToLine;
     }
     
+	public void addPcToSecion(int pc, InputSection sec){
+		m_pcToSection.put(pc, sec);
+	}
+	
+	public HashMap<Integer, InputSection> getPcsToSection(){
+		return m_pcToSection;
+    }
+	 
 	public void addHeader(String header, String headerCodeReference, int index, int lineNum) {
         m_sections.add(new InputSection(header, headerCodeReference, index, lineNum));    	
     }
     
 	public void addLine(String line, String codeReference, int pc, int index) {
     	assert(m_sections.size() > 0);
-    	m_sections.get(m_sections.size() - 1).addLine(line, codeReference, pc, index);
+    	m_sections.get(m_sections.size() - 1).addLine(line, codeReference, pc, index, this);
     }
     
 	public ArrayList<InputSection> getSections() {
@@ -52,6 +74,8 @@ class InputSection {
 	private ArrayList<InputLine> m_lines;
 	private ArrayList<InputLine> m_fnops;
 	private int m_index;
+	private HashMap<Integer, InputLine> m_pcs;
+	
 	
 	public InputSection(String header, String headerCodeReference, int index, int lineNum) {
 		// Header line must have -1 index to counteract +1 in index calculations
@@ -59,19 +83,32 @@ class InputSection {
 		m_lines = new ArrayList<InputLine>();
 		m_fnops = new ArrayList<InputLine>();
 		m_index = index;
+		m_pcs = new HashMap<Integer, InputLine>();
 	}
 	
-	public void addLine(String line, String codeReference, int pc, int index) {
-		m_lines.add(new InputLine(this, line, codeReference, pc, index - m_index - 1));
+	public void addLine(String line, String codeReference, int pc, int index, Input input) {
+		InputLine newLine = new InputLine(this, line, codeReference, pc, index - m_index - 1);
+		m_lines.add(newLine);
+		input.addPcToLine(pc, newLine);
+		input.addPcToSecion(pc, this);
+	}
+	
+	public HashMap<Integer, InputLine> getPcs(){
+		return m_pcs;
 	}
 
-	public void addFnop(String line, int pc, int index) {
+	public void addFnop(String line, int pc, int index, Input input) {
 		int offset = index - m_index - 1;
 		
 		InputLine fnop = new InputLine(this, line, "", pc, offset);
 		m_lines.add(offset, fnop);
 		m_fnops.add(fnop);
-
+		
+		//TODO check this
+		//input.addPcToLine(pc, fnop);
+		//input.addPcToSecion(pc, this);
+		
+		
 		for (int lineNum = offset + 1; lineNum < m_lines.size(); lineNum++) {
 			m_lines.get(lineNum).incrementOffset();
 		}

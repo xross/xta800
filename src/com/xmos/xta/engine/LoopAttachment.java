@@ -2,21 +2,27 @@ package com.xmos.xta.engine;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 
 public class LoopAttachment {
 
+	private HashSet<PathBasicBlock> m_allAttachedLoops;
 	private PathBasicBlock m_loop;
 	private ArrayList<LoopAttachment> m_subLoops;
 	
 	public LoopAttachment(PathBasicBlock loop){
 		m_loop = loop;
 		m_subLoops = new ArrayList<LoopAttachment>();
+		if(loop == null){
+			m_allAttachedLoops = new HashSet<PathBasicBlock>();
+		}
 	}
-	
-	
 	
 	public void addLoop(PathBasicBlock newLoop){
 		
+		if(m_allAttachedLoops != null){
+			m_allAttachedLoops.add(newLoop);
+		}
 		for(LoopAttachment la : m_subLoops){
 			if(isSubsetOf(la.getLoop(), newLoop)){
 				LoopAttachment newLoopAttachment = new LoopAttachment(newLoop);
@@ -70,21 +76,15 @@ public class LoopAttachment {
 	private boolean isSubsetOf(PathBasicBlock a, PathBasicBlock b){
 		ArrayList<PathBasicBlock> aList = a.getPathBlocks();
 		ArrayList<PathBasicBlock> bList = b.getPathBlocks();
-		if (aList.size() > bList.size()){
-			//a cannot be a subset of b is it is bigger
-			return false;
-		} else if (aList.size() < bList.size()){
-			int size = aList.size();
-			for(int i=0;i<size;i++){
-				if(aList.get(i).getBasicBlock() != bList.get(i).getBasicBlock()){
-					return false;
-				}
+		if (aList.size() < bList.size()){
+			int size = aList.size()-1;
+			//let us assume the heads of the lists are the same
+			if(aList.get(size).getBasicBlock() == bList.get(size).getBasicBlock()){
+				return true;
 			}
-			return true;
-		} else {
-			//they must be equal and thus different
-			return false;
 		}
+		return false;
+		
 	}
 
 	public ArrayList<PathBasicBlock> getLoopPaths(PathBasicBlock base) {
@@ -106,23 +106,7 @@ public class LoopAttachment {
 	}
 
 	public boolean contains(PathBasicBlock pathBasicBlock) {
-		if (m_loop == pathBasicBlock)
-			return true;
-		
-		for (LoopAttachment subLoop : m_subLoops) {
-			boolean contains = subLoop.contains(pathBasicBlock);
-			if (contains)
-				return true;
-		}
-		
-		return false;
+		return m_allAttachedLoops.contains(pathBasicBlock);
 	}
-	
-	
-	
-	
-	
-	
-	
 	
 }

@@ -84,7 +84,7 @@ public class PathInfo extends Command {
         for (PathBasicBlock block : path.getPathBlocks()) {
             numLoops += block.numLoopPaths(path);
         }
-        path.doneWithPathBlocks();
+       // path.doneWithPathBlocks();
         console.display(String.format("Num Loops:        %d\n", numLoops));
     }
 
