@@ -142,8 +142,9 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		RouteNode treeRoot = new RouteNode("");
 		treeRoot.addNode(m_routeInfo.getRouteNode());
 
-		if (m_routeInfo.getUnresolvedNode().getNodes().size() > 0) {
-			treeRoot.addNode(m_routeInfo.getUnresolvedNode());
+		Node unresolvedNode = m_routeInfo.getUnresolvedNode();
+		if (unresolvedNode.getNodes().size() > 0) {
+			treeRoot.addNode(unresolvedNode);
 		}
     	m_treeViewer.setInput(treeRoot);
 		ColumnViewerToolTipSupport.enableFor(m_treeViewer, ToolTip.NO_RECREATE);

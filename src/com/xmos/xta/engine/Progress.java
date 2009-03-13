@@ -7,16 +7,14 @@ public class Progress {
 	}
 	
 	private State m_state;
-    private int m_maxValue;
     private int m_curValue;
 	
     static public String getDescriptionName(State state){
     	return getDescription(state);
     }    
     
-    Progress(State state, int maxValue, int curValue) {
+    Progress(State state, int curValue) {
     	m_state = state;
-    	m_maxValue = maxValue;
     	m_curValue = curValue;
 	}	
 
@@ -27,10 +25,6 @@ public class Progress {
 	public State getState() {
     	return m_state;
     }
-    
-    public int getMaxValue() {
-    	return m_maxValue;
-    }
 
     public int getCurValue() {
     	return m_curValue;
@@ -40,14 +34,12 @@ public class Progress {
     	return getDescription(m_state);
     }
     
-    void resetState(State state, int maxValue) {
+    void resetState(State state) {
     	m_state = state;
-    	m_maxValue = maxValue;
     	m_curValue = 0;
     }
 
     void setCurValue(int curValue) {
-        assert(curValue <= m_maxValue);
     	m_curValue = curValue;
     }
     

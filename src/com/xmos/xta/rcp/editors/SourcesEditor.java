@@ -106,8 +106,7 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
         	
 			XeObject xeObject = XtaEngine.getEngine().getXeObject();
 	        for (SourceFile sourceFile : xeObject.getSourceFiles()) {       	        	
-	        	XtaEditor sourceEditor = new XtaEditor(XtaDocumentPartitioner.SOURCE,
-	        			sourceFile.getFile().getName());
+	        	XtaEditor sourceEditor = new XtaEditor(XtaDocumentPartitioner.SOURCE, sourceFile.getFileName());
 	        	IEditorInput sourceEditorInput = new InputSource(sourceFile);
 	    		index = addPage(sourceEditor, sourceEditorInput);
 		    	setPageText(index, sourceFile.getFileName());

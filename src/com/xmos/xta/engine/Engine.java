@@ -77,7 +77,7 @@ public class Engine {
 		m_srcPaths = ".";
 		m_notifiers = new Vector<Notifier>();
 		m_abort = false;
-		m_progress = new Progress(Progress.State.IDLE, 0, 0);
+		m_progress = new Progress(Progress.State.IDLE, 0);
 		m_constraint = ConstraintFactory.createConstraint(this, "");
 		m_mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
 
@@ -224,7 +224,7 @@ public class Engine {
 		if (m_progress != null) {
 			return m_progress;
 		} else {
-			return new Progress(Progress.State.IDLE, 0, 0);
+			return new Progress(Progress.State.IDLE, 0);
 		}
 	}
 
@@ -575,6 +575,7 @@ public class Engine {
 		boolean success = false;
 		try {
 			success = doRouteAnalysis(startPc, endPcs, routeDescription, mode);
+			m_progress.setState(Progress.State.IDLE);
 		} catch (final java.lang.OutOfMemoryError e) {
 			m_progress.setState(Progress.State.IDLE);
 			System.gc();
@@ -620,6 +621,7 @@ public class Engine {
 		route.isConstrained(false);
 			
 		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
+		m_progress.resetState(Progress.State.PROCESSING_PATHS);
 		RouteStatus status = route.analyse(mode);
 		switch (status) {
 		case ABORTED:
