@@ -13,7 +13,6 @@ public class Input {
 	private HashMap<Integer, InputSection> m_pcToSection;
 	
 	
-	
 	public Input(String headerType, String lineType) {
     	m_sections = new ArrayList<InputSection>();
     	m_headerType = headerType;
@@ -38,7 +37,7 @@ public class Input {
 	public HashMap<Integer, InputSection> getPcsToSection(){
 		return m_pcToSection;
     }
-	 
+	
 	public void addHeader(String header, String headerCodeReference, int index, int lineNum) {
         m_sections.add(new InputSection(header, headerCodeReference, index, lineNum));    	
     }
@@ -104,11 +103,6 @@ class InputSection {
 		m_lines.add(offset, fnop);
 		m_fnops.add(fnop);
 		
-		//TODO check this
-		//input.addPcToLine(pc, fnop);
-		//input.addPcToSecion(pc, this);
-		
-		
 		for (int lineNum = offset + 1; lineNum < m_lines.size(); lineNum++) {
 			m_lines.get(lineNum).incrementOffset();
 		}
@@ -148,6 +142,10 @@ class InputSection {
 		return m_fnops.size();
 	}
 
+	public ArrayList<InputLine> getFnops(){
+		return m_fnops;
+	}
+	
 	public ArrayList<InputLine> getLines() {
 		return m_lines;
 	}

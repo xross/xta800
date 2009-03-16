@@ -340,7 +340,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			
         	for (Integer pc : m_selectedNode.getPcsCovered()) {
 				updateAnnotations(pc, HighlightAnnotationID, annotations, annotationPositions, false, getInput().getPcsToLines());
-				//updateAnnotations(pc, HighlightAnnotationID, annotations, annotationPositions, false);
 			}
         }
 
@@ -377,6 +376,9 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         }
 				
         if(DEBUG) System.out.println("XtaEditor: replace highlighting");
+        
+        
+        
 		m_annotationModel.replaceAnnotations(m_previousHighlightAnnotations, annotationPositions);        
 		m_previousHighlightAnnotations = createArray(annotations);
 		
@@ -412,37 +414,27 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		m_previousUnknownAnnotations = createArray(annotations);    
 	    
     }
-/*
-    private void updateAnnotations(int pc, String type, List<Annotation> annotations, 
-    		Map<Annotation, Position> annotationPositions, boolean excludeFnops) {
 
-		for (InputSection inputSection : getSections()) {
-	    	if(inputSection.getPcs().keySet().contains(pc)){
-	    		boolean hitSection = false;
-				for (InputLine line : inputSection.getLines()) {
-					if ((line.getPc() == pc) && (!excludeFnops || !inputSection.isFnop(line.getOffset()))) {	
-						addAnnotation(line.getIndex(), type, annotations, annotationPositions);
-						hitSection = true;
-					}
-				}
-				if (hitSection) {
-					addAnnotation(inputSection.getIndex(), type, annotations, annotationPositions);
-					return;
-				}
-    		}
-		}
-    		
-    }
-*/    
-    
     private void updateAnnotations(int pc, String type, List<Annotation> annotations, 
     		Map<Annotation, Position> annotationPositions, boolean excludeFnops, HashMap<Integer, InputLine> pcToLine) {
     	InputLine line = pcToLine.get(pc);
     	if(line == null) return;
-		if (!excludeFnops || !getInput().getPcsToSection().get(pc).isFnop(line.getOffset())) {	
+		if (!getInput().getPcsToSection().get(pc).isFnop(line.getOffset())) {	
 			addAnnotation(line.getIndex(), type, annotations, annotationPositions);
 			addAnnotation(getInput().getPcsToSection().get(pc).getIndex(), type, annotations, annotationPositions);
 		}
+		
+		//TODO optimise this too with a hashmap
+		if(!excludeFnops){
+			for(InputSection section : getSections()){
+				for(InputLine fnop : section.getFnops()){
+					if(fnop.getPc() == pc) { 
+						addAnnotation(fnop.getIndex(), type, annotations, annotationPositions);
+					}
+				}
+			}
+		}
+		
     }
 
     private void addAnnotation(int index, String type, List<Annotation> annotations,

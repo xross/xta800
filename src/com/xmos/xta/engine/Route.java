@@ -427,9 +427,7 @@ public class Route {
 
 	private BasicBlock getNode(int pc) {
 		for(BasicBlock node : m_nodes){
-			for(XtaInstruction inst : node.getInstructions()){
-				if(inst.getPc() == pc) return node;
-			}
+			if(node.getPcs().contains(pc)) return node;
 		}
 		return null;
 	}

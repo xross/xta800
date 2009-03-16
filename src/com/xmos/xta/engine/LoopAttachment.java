@@ -17,21 +17,29 @@ public class LoopAttachment {
 			m_allAttachedLoops = new HashSet<PathBasicBlock>();
 		}
 	}
-	
+
 	public void addLoop(PathBasicBlock newLoop){
 		
 		if(m_allAttachedLoops != null){
 			m_allAttachedLoops.add(newLoop);
 		}
 		for(LoopAttachment la : m_subLoops){
-			if(isSubsetOf(la.getLoop(), newLoop)){
-				LoopAttachment newLoopAttachment = new LoopAttachment(newLoop);
-				newLoopAttachment.m_subLoops.add(la);
-				m_subLoops.set(m_subLoops.indexOf(la), newLoopAttachment);
-				return;
-			} else if (isSubsetOf(newLoop, la.getLoop())){
-				la.addLoop(newLoop);
-				return;
+			int a = la.getLoop().getPathBlocks().size();
+			int b = newLoop.getPathBlocks().size();
+			if(a<b){
+				if(la.getLoop().getPathBlocks().get(a-1).getBasicBlock() 
+						== newLoop.getPathBlocks().get(a-1).getBasicBlock()){
+					LoopAttachment newLoopAttachment = new LoopAttachment(newLoop);
+					newLoopAttachment.m_subLoops.add(la);
+					m_subLoops.set(m_subLoops.indexOf(la), newLoopAttachment);
+					return;
+				}
+			} else if(b<a){
+				if(newLoop.getPathBlocks().get(b-1).getBasicBlock() 
+						== la.getLoop().getPathBlocks().get(b-1).getBasicBlock()){
+					la.addLoop(newLoop);
+					return;
+				}
 			} 
 		}
 		m_subLoops.add(new LoopAttachment(newLoop));
@@ -66,26 +74,7 @@ public class LoopAttachment {
 	}
 	
 	
-	/**
-	 * returns true if for every element of the list a there is the same element in the list b, i.e.
-	 * the list b is the list a with a tail.
-	 * @param a
-	 * @param b
-	 * @return true if a is a sub set of b
-	 */
-	private boolean isSubsetOf(PathBasicBlock a, PathBasicBlock b){
-		ArrayList<PathBasicBlock> aList = a.getPathBlocks();
-		ArrayList<PathBasicBlock> bList = b.getPathBlocks();
-		if (aList.size() < bList.size()){
-			int size = aList.size()-1;
-			//let us assume the heads of the lists are the same
-			if(aList.get(size).getBasicBlock() == bList.get(size).getBasicBlock()){
-				return true;
-			}
-		}
-		return false;
-		
-	}
+
 
 	public ArrayList<PathBasicBlock> getLoopPaths(PathBasicBlock base) {
 		

@@ -1,6 +1,7 @@
 package com.xmos.xta.engine;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 public class BasicBlock implements Comparable<BasicBlock> {
@@ -11,6 +12,7 @@ public class BasicBlock implements Comparable<BasicBlock> {
 	private ArrayList<BasicBlock> m_nextNode;
 	private ArrayList<BasicBlock> m_previousNode;
 	private IBufferState m_worstIbuffer;
+	private HashSet<Integer> m_pcs;
 	
 	BasicBlock(int n) {
 		m_nodeId = n;
@@ -18,6 +20,7 @@ public class BasicBlock implements Comparable<BasicBlock> {
 		m_instructions = new LinkedList<XtaInstruction>();
 		m_nextNode = new ArrayList<BasicBlock>();
 		m_previousNode = new ArrayList<BasicBlock>();
+		m_pcs = new HashSet<Integer>();
 	}
 		
 	public String toString(){
@@ -71,6 +74,11 @@ public class BasicBlock implements Comparable<BasicBlock> {
 	public void addInstruction(XtaInstruction instruction) {
 		instruction.setBasicBlockId(m_nodeId);
 		m_instructions.add(instruction);
+		m_pcs.add(instruction.getPc());
+	}
+	
+	public HashSet<Integer> getPcs(){
+		return m_pcs;
 	}
 	
 	/**

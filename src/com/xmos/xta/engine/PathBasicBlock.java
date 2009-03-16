@@ -15,12 +15,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 
 	private BasicBlock m_basicBlock;
 	private PathBasicBlock m_parentBasicBlock;
-	
-	
 	private LoopAttachment m_loopPaths;
-	
-	
-	//private int m_seen;
 	private int m_pathId;
 	private HashMap<PathBasicBlock, PathAttributes> m_loopPathAttributes;
 	private BasicBlockStats m_blockStats;
@@ -33,9 +28,11 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	private IBufferState m_ibufferState;
 	private InstructionDecodeCache m_idc;
 	private Engine m_engine;
+	private List<String> m_warnings;
+	
 	//i don't want this here so i'll move it later
 	private Unresolved m_unresolved;
-	private List<String> m_warnings;
+	
 	
 	private boolean m_loseFinalInstruction;
 	
