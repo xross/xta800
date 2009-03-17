@@ -95,6 +95,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private Node m_currentPathRoot;
     private Node m_selectedNode;
     
+	private ISelection m_mostRecent;
     private final String m_type;
     private final String m_fileName;
     private InputLine m_startPointLine;
@@ -160,17 +161,13 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		
 		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
 			m_selectedNode = null;
-			updateFnops();
-    	    updateHighlighting();
-			updateUnknowns();
+			updateEditor();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			m_selectedNode = null;
 	    	m_startPointLine = null;
 	        m_endPointLine = null;			
-			updateFnops();
-    	    updateHighlighting();
-			updateUnknowns();
+			updateEditor();
     	    
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT)) {
 			Reference startPoint = XtaNotifier.getInstance().getStartPoint();
@@ -188,23 +185,27 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
 			updateUnknowns();
-
 		}
 	}
 
+
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
 		if (DEBUG) System.out.printf("XtaEditor: selectionChanged\n"); 
-
-		if (sel instanceof IStructuredSelection) {	            
+		if (sel != m_mostRecent  && sel instanceof IStructuredSelection) {	            
             Object object = ((IStructuredSelection)sel).getFirstElement();
             if (object instanceof Node) {
+            	m_mostRecent = sel;
             	m_selectedNode = (Node)object;
-            	updateFnops();
-        	    updateHighlighting();
-        	    updateUnknowns();
+            	updateEditor();
             }
         }
-    }	            		         	        
+    }
+
+	private void updateEditor() {
+		updateFnops();
+		updateHighlighting();
+		updateUnknowns();
+	}	            		         	        
     	
     public void updateFoldingStructure(ArrayList<Position> positions, IDocument document) {
 	    if (DEBUG) System.out.printf("XtaEditor: updateFoldingStructure\n"); 
@@ -247,18 +248,15 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     
     private void updateFnops() {
 		if (DEBUG) System.out.printf("XtaEditor: updateFnops\n"); 
-
+		
     	Node pathRoot = null;
     	if (m_selectedNode != null) {
     		pathRoot = m_selectedNode.getPathRoot();
     	}
-    	
     	// Don't bother unless the selected path has changed
     	if (pathRoot == m_currentPathRoot)
     		return;
 
-    	
-    	
     	m_currentPathRoot = pathRoot;
 		
     	HashSet<XtaInstruction> toAdd = new HashSet<XtaInstruction>();

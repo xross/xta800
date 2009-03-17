@@ -167,5 +167,6 @@ public class XtaNotifier implements Notifier {
 		Engine engine = XtaEngine.getEngine();			
         m_routeInfo = new XtaRouteInfo(engine.getRoute(-1), engine.getDebugInfo(), 
         		engine.getMemoryImage(), engine.getSymbolTable());
+        
 	}
 }

@@ -75,7 +75,6 @@ class InputSection {
 	private int m_index;
 	private HashMap<Integer, InputLine> m_pcs;
 	
-	
 	public InputSection(String header, String headerCodeReference, int index, int lineNum) {
 		// Header line must have -1 index to counteract +1 in index calculations
 		m_header = new InputLine(this, header, headerCodeReference, lineNum, -1);

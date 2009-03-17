@@ -31,7 +31,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
                                                   IMenuListener {
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.rcp.views.TreeView.Tree";
-
+    
     private TreeViewer m_treeViewer;
     private Composite m_parent;
     private XtaRouteInfo m_routeInfo;
@@ -44,13 +44,16 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	public void createPartControl(Composite parent) {
 	    if (DEBUG) System.out.printf("Tree: createPartControl\n");
 	    m_parent = parent;
-		
-	    m_treeViewer = new TreeViewer(m_parent, SWT.VIRTUAL);
+	    
+	    m_treeViewer = new TreeViewer(m_parent, SWT.BORDER | SWT.VIRTUAL);
+
 	    
 	    getSite().setSelectionProvider(m_treeViewer);
 	    getSite().getPage().addSelectionListener(this);
 
-		m_treeViewer.setContentProvider(new TreeViewContentProvider(m_treeViewer));				
+	    TreeViewContentProvider cp = new TreeViewContentProvider(m_treeViewer);
+	    
+		m_treeViewer.setContentProvider(cp);				
 		m_treeViewer.setLabelProvider(new TreeViewLabelProvider());
 		
 		m_treeViewer.addDoubleClickListener(new IDoubleClickListener() {
@@ -141,16 +144,20 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		
 		// Create the magic 'hidden' node to allow the actual node to be seen
 		// in the tree
+
 		RouteNode treeRoot = new RouteNode("");
 		treeRoot.addNode(m_routeInfo.getRouteNode());
-
 		Node unresolvedNode = m_routeInfo.getUnresolvedNode();
 		if (unresolvedNode.getChildren().size() > 0) {
 			treeRoot.addNode(unresolvedNode);
 		}
+		
+		
     	m_treeViewer.setInput(treeRoot);
 		ColumnViewerToolTipSupport.enableFor(m_treeViewer, ToolTip.NO_RECREATE);
+
 		m_treeViewer.expandToLevel(2);		
+
 	}
 	
 	private void refreshTree() {

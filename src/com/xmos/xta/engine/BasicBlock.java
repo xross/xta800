@@ -149,49 +149,6 @@ public class BasicBlock implements Comparable<BasicBlock> {
 		}
 		return modified;
 	}
-
-	public IBufferState setIBuferStartState(IBufferState previousIBuffer) {
-		/*
-			IBufferState ib = new IBufferState();
-			InstructionBuffer instBuff = new InstructionBuffer();
-			instBuff.setPc(m_instructions.getFirst().getPc());
-			instBuff.m_numBytes = initialFullness;
-			for(XtaInstruction inst :  m_instructions){
-				while(!instBuff.canIssue(inst.getNumBytes())){
-					instBuff.fetch();
-					ib.m_fnops.add(inst.getPc());
-				}
-				if (!inst.isLoadStore()) {
-					instBuff.fetch();
-				}
-				instBuff.issue(inst.getNumBytes());
-				
-				
-				if(inst.getSuccessors().size() > 0){
-					
-					for(NextPcType succ : inst.getSuccessors()){
-						if(succ.isBranch()){
-							instBuff.branchTo(succ.getPc(), inst.isLoadStore());
-						} else {
-							instBuff.setPc(inst.getPc() + inst.getNumBytes());
-						}
-						if(m_instructions.getLast() == inst){
-							IBufferState copyState = new IBufferState(ib);
-							InstructionBuffer copy = new InstructionBuffer(instBuff);
-							copyState.setFinalIBuffer(copy.m_numBytes);
-						}
-					}
-				} else {
-					instBuff.setPc(inst.getPc() + inst.getNumBytes());
-					if(m_instructions.getLast() == inst){
-						ib.setFinalIBuffer(instBuff.m_numBytes);
-					}
-				}
-				
-			}
-			return ib;*/
-		return null;
-		}
 	
 	
 	/** 

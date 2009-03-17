@@ -633,7 +633,6 @@ public class Engine {
 			notify(Notifier.NOTIFY_ERROR, "Cannot analyse path");
 			return false;
 		}
-
 		int numUnresolvedPaths = route.getUnresolvedPaths().size();
 		if (numUnresolvedPaths > 0) {
 			String plural = (numUnresolvedPaths == 1) ? "" : "s";
@@ -647,9 +646,9 @@ public class Engine {
 				notify(Notifier.NOTIFY_ERROR, "No valid paths of execution");
 			}
 		}
-
 		m_routes.add(route);
 		notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, "");
+		System.out.println("done");
 		return true;
 	}
 

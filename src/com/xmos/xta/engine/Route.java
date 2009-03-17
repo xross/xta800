@@ -136,7 +136,6 @@ public class Route {
 		} catch (AbortedException e) {
 			return RouteStatus.ABORTED;
 		}
-		
 		sortPaths();
 		displayWarnings();
 		return RouteStatus.COMPLETED;
@@ -442,9 +441,9 @@ public class Route {
 	
 	private void sortPaths() {
 		Collections.sort(m_completedPaths);
-		for(PathBasicBlock block : m_allBasicBlocks){
-			Collections.sort(block.getLoopPaths(block));
-		}
+		//for(PathBasicBlock block : m_allBasicBlocks){
+		//	Collections.sort(block.getLoopPaths(block));
+		//}
 	}
 
 	/**

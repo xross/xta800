@@ -297,11 +297,9 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	}
 
 	private void createIBuffer() {
+		
 		if (this.getParent() != null) {
 			if (m_startInstruction == getBasicBlock().getInstructions().getFirst().getPc()) {
-				
-				//m_ibufferState = getBasicBlock().getInitialIBuffer();
-				
 				m_ibufferState = getBasicBlock().getIbuffer(getParent().getEndPc());
 			} else {
 				// FIXME - this should be get the correct starting ibuff state,
