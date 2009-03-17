@@ -17,6 +17,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.engine.Notifier;
@@ -69,6 +71,10 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		
 		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
 			initialiseTree();
+			try {
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+				getActivePage().showView(TreeView.ID);
+			} catch (PartInitException e) {}
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			clearTree();
@@ -79,6 +85,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUDES)) {
 			initialiseTree();
+
 		} 
 	}
 	

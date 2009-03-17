@@ -1,9 +1,14 @@
 package com.xmos.xta.rcp;
 
 import java.util.ArrayList;
+
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xta.engine.Notifier;
@@ -21,7 +26,12 @@ public class XtaNotifier implements Notifier {
 	private Reference m_startPoint;
 	private Reference m_endPoint;
 	private Reference m_codePoint;
+
+	private String m_selectedFunction;
+	private String m_runMode;
+
 	private String m_notifyArgument;
+    private boolean m_isGuiCommand;
 
 	private XtaNotifier() {
 		m_listeners = new ArrayList<IPropertyChangeListener>();
@@ -37,10 +47,18 @@ public class XtaNotifier implements Notifier {
 		
 	public void notify(String message, String argument) {
 		if (message.equals(NOTIFY_ERROR)) {
+			if (m_isGuiCommand) {
+				displayMessageBox("Error", "Error detected\n(See log for details)");
+				m_isGuiCommand = false;
+			}
 			XtaLog.getInstance().add(XtaLog.Level.ERROR, argument);
 			broadcastPropertyChange(new PropertyChangeEvent(this, Notifier.NOTIFY_ERROR, null, null));								
 			
 		} else if (message.equals(NOTIFY_WARNING)) {
+			if (m_isGuiCommand) {
+				displayMessageBox("Warning", "Warnings detected\n(See log for details)");
+				m_isGuiCommand = false;
+			}
 			XtaLog.getInstance().add(XtaLog.Level.WARNING, argument);
 			broadcastPropertyChange(new PropertyChangeEvent(this, Notifier.NOTIFY_WARNING, null, null));								
 			
@@ -51,19 +69,29 @@ public class XtaNotifier implements Notifier {
 		} else if (message.equals(NOTIFY_ANALYSIS_COMPLETE)) {
 			createHierarchy();
 			broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_ANALYSIS_COMPLETE, null, null));
+			m_isGuiCommand = false;
 			
 		} else if (message.equals(NOTIFY_SET_START_POINT)) {
-			notifySetStartPoint(ReferenceFactory.createReference(
-					argument, ReferenceClass.ENDPOINT_REF));
+			notifySetStartPoint(ReferenceFactory.createReference(argument, ReferenceClass.ENDPOINT_REF));
 			
 		} else if (message.equals(NOTIFY_SET_END_POINT)) {
-			notifySetEndPoint(ReferenceFactory.createReference(
-					argument, ReferenceClass.ENDPOINT_REF));
+			notifySetEndPoint(ReferenceFactory.createReference(argument, ReferenceClass.ENDPOINT_REF));
 			
 		} else if (message.equals(NOTIFY_LOAD_EXECUTABLE)) {
 			resetState();
 			m_notifyArgument = argument;
 			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
+			m_isGuiCommand = false;
+			
+		} else if (message.equals(NOTIFY_SELECT_FUNCTION)) {
+			m_selectedFunction = argument;
+			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
+			
+		} else if (message.equals(NOTIFY_SET_RUN_MODE)) {
+			m_runMode = argument;
+			
+		} else if (message.equals(NOTIFY_SET_GUI_COMMAND)) {
+			m_isGuiCommand = true;
 			
 		} else if (message.equals(NOTIFY_UPDATE_EXCLUDES)) {
 			m_notifyArgument = argument;
@@ -71,6 +99,7 @@ public class XtaNotifier implements Notifier {
 				m_routeInfo.buildRouteNode();
 				broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
 			}			
+
 		} else {
 			m_notifyArgument = argument;
 			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));			
@@ -150,6 +179,14 @@ public class XtaNotifier implements Notifier {
 		return m_codePoint;
 	}
 	
+	public String getSelectedFunction() {
+		return m_selectedFunction;
+	}
+	
+	public String getRunMode() {
+		return m_runMode;
+	}
+	
 	public String getNotifyArgument() {
 		return m_notifyArgument;
 	}
@@ -159,7 +196,9 @@ public class XtaNotifier implements Notifier {
 		m_startPoint = null;
 		m_endPoint = null;
 		m_codePoint = null;
-		m_notifyArgument = null;		
+		m_notifyArgument = null;
+		m_selectedFunction = "";
+		m_runMode = Notifier.RUN_MODE_FUNCTION;
 	}
 
 	private void createHierarchy() {		
@@ -167,5 +206,15 @@ public class XtaNotifier implements Notifier {
 		Engine engine = XtaEngine.getEngine();			
         m_routeInfo = new XtaRouteInfo(engine.getRoute(-1), engine.getDebugInfo(), 
         		engine.getMemoryImage(), engine.getSymbolTable());
+	}
+
+	private void displayMessageBox(final String title, final String message) {
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0, message, null);
+		        Shell shell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
+				ErrorDialog.openError(shell, title, null, status);
+			}
+		});
 	}
 }

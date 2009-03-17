@@ -240,6 +240,9 @@ public class Engine {
 					functionName, m_executableFile, m_nodeId, m_coreId));
 			return false;
 		} else {
+			notify(Notifier.NOTIFY_SELECT_FUNCTION, functionName);
+			notify(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_FUNCTION);
+
 			TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
 			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
 			String routeDescription = String.format("function: %s", functionName);
@@ -273,6 +276,7 @@ public class Engine {
 			
 			boolean success = analyseRouteSafely(fromRef.getPc(), endPc, routeDescription, RouteMode.ABSLOUTE);
 			if (success) {
+				notify(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_PATH);
 				notify(Notifier.NOTIFY_SET_START_POINT, from);
 				notify(Notifier.NOTIFY_SET_END_POINT, to);
 			}

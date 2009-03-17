@@ -25,4 +25,11 @@ public class Icons {
 		}
 		return null;
 	}
+	
+	public static ImageDescriptor getIconDescriptor(String iconName) {
+		ImageDescriptor imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(
+				"tools_xta", "icons/" + iconName + ".png");
+
+		return imageDescriptor;
+	}
 }

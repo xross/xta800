@@ -1,14 +1,5 @@
 package com.xmos.xta.rcp.views.ControlView;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
@@ -21,43 +12,24 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.ExpandBar;
-import org.eclipse.swt.widgets.ExpandItem;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
-import com.xmos.xeobject.Function;
-import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Progress;
-import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.constraint.ConstraintNull;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
-import com.xmos.xta.rcp.XtaCorePlugin;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaEngine;
-import com.xmos.xta.rcp.XtaFileFinder;
-import com.xmos.xta.rcp.XtaRouteInfo;
-import com.xmos.xta.rcp.editors.SourcesEditor;
-import com.xmos.xta.rcp.editors.SourcesEditorInput;
 import com.xmos.xta.rcp.icons.Icons;
 
 public class ControlView extends ViewPart implements IPropertyChangeListener,
@@ -65,16 +37,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.rcp.views.ControlView.Control";
 
-    public static final String STATUS_EMPTY  = "Empty";
-    public static final String STATUS_LOADED = "Loaded";
-    public static final String STATUS_BUSY   = "Busy";
-    public static final String STATUS_DONE   = "Done";
-    
-    private Display m_display;
-    private Composite m_parent;
-    private Combo m_functions;
-
-    private Text m_fileNameTextBox;
     private Text m_startPoint;
     private Text m_endPoint;
     private Text m_constraint;
@@ -82,29 +44,14 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     private ModifyListener m_endPointListener;
     private KeyListener m_constraintListener;
     private Button m_setConstraintButton; 
+    private Button m_timePathButton;
     
-    private Text m_currentRoute;
-    private Label m_engineStatus;
-    private Label m_progress;
-
-    private MemoryUpdater m_memoryUpdater;
-    private Group m_memoryGroup;
-    private ProgressBar m_memoryUsage;
     private Spinner m_freqSpinner;
     private Spinner m_threadSpinner;
-    private Combo m_nodeIds;
-    private Combo m_coreIds;
     
-    private Button m_cancelButton;
-    private boolean m_isGuiCommand;
-        
-    private volatile ProgressUpdater m_progressUpdater;
-
 	public ControlView() {
 		if (DEBUG) System.out.println("Control(" + this.hashCode() + "): new");			
 		XtaNotifier.getInstance().addPropertyChangeListener(this);
-		
-		m_progressUpdater = null;
 		
 		m_startPointListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -137,12 +84,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			}			
 		};
 
-		m_isGuiCommand = false;
 	}
 
 	protected void setConstraint() {
 		Engine engine = XtaEngine.getEngine();
-		m_isGuiCommand = true;
+		XtaNotifier.getInstance().notify(Notifier.NOTIFY_SET_GUI_COMMAND, "");
 		Constraint constraint = ConstraintFactory.createConstraint(engine, m_constraint.getText());
 		if (constraint != null) {
 			engine.setConstraint(constraint);
@@ -152,20 +98,30 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 	public void createPartControl(Composite parent) {
 	    if (DEBUG) System.out.println("Control (" + this.hashCode() + "): createPartControl");
-	    m_parent = parent;
-	    m_display = m_parent.getDisplay();
 
-	    ExpandBar bar = new ExpandBar(m_parent, SWT.V_SCROLL);
+		Composite controls = new Composite(parent, SWT.NONE);
+	    GridLayout layout = new GridLayout();
+	    layout.numColumns = 3;
+	    controls.setLayout(layout);
+	    controls.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+	    setBackground(controls);
 
-	    createControlBar(bar);
-	    createStatusBar(bar);
-	    createSettingsBar(bar);
-	    bar.setSpacing(8);
+	    createControlBar(controls);
+	    createSettingsBar(controls);
 	    
-	    m_memoryUpdater = new MemoryUpdater(m_memoryGroup, m_memoryUsage);
-	    m_memoryUpdater.start();
+	    updateConstraint();
+	    
+	    Reference startPoint = XtaNotifier.getInstance().getStartPoint();					
+		updateText(startPoint, m_startPoint, m_startPointListener);
+
+		Reference endPoint = XtaNotifier.getInstance().getEndPoint();					
+		updateText(endPoint, m_endPoint, m_endPointListener);
 	}
 	
+	private void setBackground(Composite composite) {
+	    //composite.setBackground(m_display.getSystemColor(SWT.COLOR_GRAY));
+	}
+
 	public void setFocus() {
 		if (DEBUG) System.out.println("Control(" + this.hashCode() + "): setFocus");			
 	}
@@ -173,30 +129,10 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.println("Control(" + this.hashCode() + ") propertyChange: " + event.getProperty());	
 		
-		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
-	        m_memoryUpdater.setFastRefresh(false);
-			setDone(STATUS_DONE);
-			updateCurrentRoute();
-			checkTotalPaths();
-			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {			
-	        openEditors();
-	        setDone(STATUS_LOADED);
-	        m_progress.setText("0");
-	        m_functions.removeAll();	       	       
+		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {			
 	        setText(m_startPoint, m_startPointListener, "", "");
 	        setText(m_endPoint, m_endPointListener, "", "");
 	        updateState();
-	        updateCurrentRoute();
-	        
-		} else if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_BEGIN)) {
-	        m_memoryUpdater.setFastRefresh(true);
-			m_engineStatus.setText(STATUS_BUSY);
-			m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
-        	m_cancelButton.setEnabled(true);
-			m_progressUpdater.start();
-	        m_currentRoute.setText("");
-	        m_currentRoute.setToolTipText("");
 	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
 	        updateState();
@@ -210,144 +146,26 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			updateText(endPoint, m_endPoint, m_endPointListener);
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_CONSTRAINT)) {
-			Constraint constraint = XtaEngine.getEngine().getConstraint();
-			String str = constraint.getString();
-			if (constraint.getClass() == ConstraintNull.class) {
-				m_constraint.setText("");
-			} else { 
-				m_constraint.setText(str);
-			}
-			m_constraint.setToolTipText(str);
-			m_constraint.setSelection(str.length());
-			m_isGuiCommand = false;
+			updateConstraint();
 			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_FUNCTION)) {
-			String functionName = XtaNotifier.getInstance().getNotifyArgument();
-			setSelectedFunction(functionName);
-			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUDES)) {
-			updateState();
-			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_ERROR)) {
-	        m_memoryUpdater.setFastRefresh(false);
-			updateCurrentRoute();
-			
-			if (m_isGuiCommand) {
-				displayMessageBox("Error", "Error detected\n(See log for details)");
-			}
-			setDone(STATUS_DONE);
 		}
 	}
 	
+	private void updateConstraint() {
+		Constraint constraint = XtaEngine.getEngine().getConstraint();
+		String str = constraint.getString();
+		if (constraint.getClass() == ConstraintNull.class) {
+			m_constraint.setText("");
+		} else { 
+			m_constraint.setText(str);
+		}
+		m_constraint.setToolTipText(str);
+		m_constraint.setSelection(str.length());
+	}
+
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
 		if (DEBUG) System.out.println("Control(" + this.hashCode() + "): selectionChanged");	
      }
-	
-	public void dispose() {
-		if (m_memoryUpdater != null) {
-			m_memoryUpdater.end();
-			m_memoryUpdater = null;
-		}
-		if (m_progressUpdater != null) {
-			m_progressUpdater.end(true);
-			m_progressUpdater = null;
-		}
-	}
-	
-    public void executeLoad() {				
-		if (DEBUG) System.out.println("Control(" + this.hashCode() + "): executeLoad");	
-
-		if (!m_engineStatus.getText().equals(STATUS_BUSY)) {
-			FileDialog fileDialog = new FileDialog(getSite().getWorkbenchWindow().getShell(), SWT.OPEN);
-	        fileDialog.setText("Open Xe File");
-	        String[] filterExt = { "*.xe" };
-	        fileDialog.setFilterExtensions(filterExt);
-	        
-	        //this sets the initial path
-	        XtaCorePlugin plugin = XtaCorePlugin.getDefault();
-	        
-	        String lastDir = plugin.getPreferenceStore().getString("LastDir");
-	        
-	        fileDialog.setFilterPath(lastDir);
-	        
-	        String xeFileName = fileDialog.open();
-	        
-	        if (xeFileName == null)
-	        	return;
-	        
-	        String path = new File(xeFileName).getParent();
-	        plugin.getPreferenceStore().setValue("LastDir", path);
-
-	        if (xeFileName != null) {
-	        	if (DEBUG)
-	        		System.out.println("Control(" + this.hashCode() + "): File open: " + xeFileName);
-	        
-	        	File xeFile = new File(xeFileName);
-	        	
-	        	try {
-					xeFile = xeFile.getCanonicalFile();
-				} catch (IOException e) {
-					displayMessageBox("Error", "Cannot resolve file: " + xeFileName);
-					return;
-				}
-        	
-	        	Engine engine = XtaEngine.getEngine();
-	        	m_isGuiCommand = true;
-	        	boolean success = engine.loadExecutable(xeFile, new XtaFileFinder());
-	        	if (success) {
-	    			m_fileNameTextBox.setText(xeFile.getName());
-	    			m_fileNameTextBox.setToolTipText(xeFileName);
-
-	    			if (DEBUG)
-	                    System.out.println("Control(" + this.hashCode() + "): executeLoad, success: " + success);
-	    		}
-	        }
-		} else {
-			displayMessageBox("Error", "Cannot open file, engine currently busy");
-		}
-	}
-
-	public void executeRunFunction() {
-		if (DEBUG) System.out.println("Control(" + this.hashCode() + "): executeRunFunction");	
-
-		if (m_progressUpdater != null) {
-			return;
-		}
-
-		m_isGuiCommand = true;
-		String functionName = m_functions.getText();
-		if (!functionName.equals("")) {
-			RunEngineMethodFunc run = new RunEngineMethodFunc(functionName);
-			run.start();
-		} else {
-			XtaNotifier.getInstance().notify(Notifier.NOTIFY_ERROR, 
-					"No function/path specified");
-		}
-	}
-	
-	public void executeRunPath() {
-		if (DEBUG) System.out.println("Control(" + this.hashCode() + "): executeRunPath");	
-
-		if (m_progressUpdater != null) {
-			return;
-		}
-		
-		m_isGuiCommand = true;
-		String startRef = m_startPoint.getText();
-		String endRef = m_endPoint.getText();
-		if (startRef.equals("")) {
-			XtaNotifier.getInstance().notify(Notifier.NOTIFY_ERROR, 
-			  "Please specify a start reference");
-
-		} else if (endRef.equals("")) {
-			XtaNotifier.getInstance().notify(Notifier.NOTIFY_ERROR, 
-			  "Please specify an end reference");
-
-		} else {
-			RunEngineMethodPath run = new RunEngineMethodPath(startRef, endRef);
-			run.start();
-		}
-	}
 	
 	public int getFrequency() {
 		return XtaEngine.getEngine().getFrequency();
@@ -382,301 +200,15 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	private void updateState() {
-        populateFunctionList();
-		
 		m_freqSpinner.setSelection(XtaEngine.getEngine().getFrequency());
 		m_threadSpinner.setSelection(XtaEngine.getEngine().getNumThreads());
-
-		updateNodeIds();
-		updateCoreIds();
 	}
 	
-	private void updateNodeIds() {
-		m_nodeIds.removeAll();
-
-		int selectedNodeId = XtaEngine.getEngine().getNodeId();
-		int index = 0;
-		for (Integer nodeId : XtaEngine.getEngine().getXeLoader().getNodeIds()) {
-			m_nodeIds.add(String.format("%d", nodeId));
-			
-			if (nodeId == selectedNodeId)
-				m_nodeIds.select(index);
-			index++;
-		}
+	private void createControlBar(Composite controls) {
+	    createConstraintControl(controls);
+	    createPathControl(controls);
 	}
 
-	private void updateCoreIds() {
-		m_coreIds.removeAll();
-
-		int selectedNodeId = XtaEngine.getEngine().getNodeId();
-		int selectedCoreId = XtaEngine.getEngine().getCoreId();
-		int index = 0;
-		for (Integer coreId : XtaEngine.getEngine().getXeLoader().getCoreIds(selectedNodeId)) {
-			m_coreIds.add(String.format("%d", coreId));
-			
-			if (coreId == selectedCoreId)
-				m_coreIds.select(index);
-			index++;
-		}
-	}
-    
-	private void populateFunctionList() {
-    	// Remember current function name to select it again if it exists
-    	String currentFunction = m_functions.getText();
-    	
-    	m_functions.removeAll();
-    	XeObject xeObject = XtaEngine.getEngine().getXeObject();
-    	List<Function> functions = xeObject.getFunctions();
-    	Collections.sort(functions);
-        for (final Function function : functions) {
-           	m_functions.add(function.getText());
-        }
-        setSelectedFunction(currentFunction);
-    }
-
-    private void setSelectedFunction(String functionName) {
-    	for (int index = 0; index < m_functions.getItemCount(); index++) {
-    		if (m_functions.getItem(index).equals(functionName)) {
-    			m_functions.select(index);
-    			break;
-    		}
-    	}
-    }
-
-    private void openEditors() {
-		final IWorkbenchPage page = getSite().getWorkbenchWindow().getActivePage();
-		page.closeAllEditors(false);
-		IEditorInput sourcesInput = new SourcesEditorInput();
-		try {
-		    page.openEditor(sourcesInput, SourcesEditor.ID);
-		} catch (PartInitException e) {
-			e.printStackTrace();
-		}
-    }
-			
-	private void cancelRun() {
-		XtaEngine.getEngine().setAbort(true);
-	}
-
-	private void setDone(String status) {
-        if (m_progressUpdater != null) {
-        	m_progressUpdater.end(false);
-        	m_progressUpdater = null;
-        }
-    	m_engineStatus.setText(status);
-    	m_cancelButton.setEnabled(false);
-		m_isGuiCommand = false;
-	}
-
-	private void updateCurrentRoute() {
-		XtaRouteInfo routeInfo = XtaNotifier.getInstance().getRouteInfo();
-		if (routeInfo != null) {
-			Route route = routeInfo.getRoute();
-			String routeStatus = route.getDescription();
-			m_currentRoute.setText(routeStatus);
-			m_currentRoute.setToolTipText(routeStatus);
-		} else {
-			m_currentRoute.setText("No routes analysed.");
-			m_currentRoute.setToolTipText("");
-		}
-	}
-	
-	private void checkTotalPaths() {
-		XtaRouteInfo routeInfo = XtaNotifier.getInstance().getRouteInfo();
-		if (routeInfo != null) {
-			Route route = routeInfo.getRoute();
-			int numUnresolvedPaths = route.getUnresolvedPaths().size();
-			if (numUnresolvedPaths == 0 && route.getCompletedPaths().size() == 0) {
-				Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0,
-						"No complete paths found, may have found an infinite loop", null);
-		        ErrorDialog.openError(Display.getCurrent().getActiveShell(),
-		            "Warning", null, status);
-			}
-		}		
-	}
-	private void displayMessageBox(String title, String message) {
-		Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0, message, null);
-        ErrorDialog.openError(Display.getCurrent().getActiveShell(), title, null, status);	      				
-	}		
-	
-	class RunEngineMethodFunc extends Thread {
-        private String m_functionName;
-
-        RunEngineMethodFunc(String functionName) {
-            m_functionName = functionName;
-        }
-
-        public void run() {
-            XtaEngine.getEngine().analyseRoute(m_functionName);
-        }
-    }
-
-    class RunEngineMethodPath extends Thread {
-        private String m_startRef;
-        private String m_endRef;
-
-        RunEngineMethodPath(String startRef, String endRef) {
-        	m_startRef = startRef;
-        	m_endRef = endRef;
-        }
-
-        public void run() {
-        	XtaEngine.getEngine().analyseRoute(m_startRef, m_endRef);
-        }
-    }
-
-    class ProgressUpdater extends Thread {
-        private Engine m_engine;
-        private Label m_progress;
-        private boolean m_active;
-        private boolean m_exited;
-
-        public ProgressUpdater(Engine engine, final Label progress) {
-            m_engine = engine;
-            m_progress = progress;
-        }
-
-        public void end(boolean exited) {
-        	m_exited = exited;
-        	m_active = false;
-        }
-
-        public void run() {
-            m_active = true;
-        	final Progress p = m_engine.getProgress();  
-            while (m_active) {
-            	m_display.asyncExec(new Runnable() {
-        			public void run() {
-        				if (m_active) {
-        					m_progress.setText("" + p.getCurValue());
-        				}
-        			}});
-
-            	try {
-                    Thread.sleep(20);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-        	m_display.asyncExec(new Runnable() {
-    			public void run() {
-    				if (!m_exited) {
-    					m_progress.setText("" + p.getCurValue());
-    				}
-    			}});
-        }
-    }
-    
-    class MemoryUpdater extends Thread {
-    	private static final int SLOW_REFRESH_RATE = 1000;	
-    	private static final int FAST_REFRESH_RATE = 50;
-
-    	private Group m_memoryGroup;
-        private ProgressBar m_memoryUsage;
-        private boolean m_active;
-        private int m_refreshRate;
-
-        public MemoryUpdater(final Group memoryGroup, final ProgressBar memoryUsage) {
-        	m_memoryGroup = memoryGroup;
-        	m_memoryUsage = memoryUsage;
-        	m_refreshRate = SLOW_REFRESH_RATE;
-        }
-
-        public void end() {
-        	m_active = false;
-        }
-
-        public void run() {
-            m_active = true;
-        	int i = 0;
-            while (m_active) {
-            	if (i == 0) {
-	            	m_display.asyncExec(new Runnable() {
-	        			public void run() {
-	        				//System.gc();
-	        				double max = Runtime.getRuntime().maxMemory();
-	        				double total = Runtime.getRuntime().totalMemory();
-	        				double free = Runtime.getRuntime().freeMemory();
-	        				int usage = (int)(((total - free) / max) * 100);
-	        				
-	        				if (m_active) {
-	        					m_memoryGroup.setText(String.format("Host memory used %d%%", usage));
-	        					m_memoryUsage.setSelection(usage);
-	        				}
-	        			}});
-            	}
-
-            	try {
-                    Thread.sleep(20);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                i = (i + 1) % m_refreshRate;
-            }
-        }
-        
-        public void setFastRefresh(boolean fast) {
-        	m_refreshRate = (fast) ? FAST_REFRESH_RATE : SLOW_REFRESH_RATE;
-        }        
-    }
-    
-	private void createControlBar(ExpandBar bar) {
-		Composite composite = getBarComposite(bar, 3);
-
-	    createFileControl(composite);
-	    createFunctionControl(composite);
-	    createPathControl(composite);
-	    createConstraintControl(composite);
-	    
-	    ExpandItem barItem = new ExpandItem(bar, SWT.NONE, 0);
-	    barItem.setText("Xta Control");
-	    barItem.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
-	    barItem.setControl(composite);
-	    barItem.setExpanded(true);
-	}
-
-	private void createFileControl(Composite composite) {
-		Group group = createGroup(composite, "File", 1, 2);
-	    m_fileNameTextBox = new Text(group, SWT.SINGLE);
-	    m_fileNameTextBox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    m_fileNameTextBox.setText("");
-	    m_fileNameTextBox.setEditable(false);
-
-	    Button loadButton = new Button(composite, SWT.PUSH);
-	    loadButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-	    loadButton.setToolTipText("Open file");
-	    loadButton.setImage(Icons.getIcon("load"));
-	    loadButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				executeLoad();
-			}			
-		});
-	}
-	
-	private void createFunctionControl(Composite composite) {
-		Group group = createGroup(composite, "Function", 1, 2);
-	    m_functions = new Combo(group, SWT.NONE | SWT.DROP_DOWN | SWT.READ_ONLY);
-	    m_functions.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
-	    Button runButton = new Button(composite, SWT.PUSH);
-	    runButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-	    runButton.setToolTipText("Time selected function");
-	    runButton.setImage(Icons.getIcon("run"));
-	    runButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				executeRunFunction();
-			}			
-		});
-	}
-
-	public static class DummyAction extends Action {
-		public DummyAction (String text) {
-			super(text);
-		}
-	}
-	
 	private void createPathControl(Composite composite) {
 		Group group = createGroup(composite, "Path", 1, 2);
 
@@ -690,13 +222,16 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    m_endPoint.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	    m_endPoint.addModifyListener(m_endPointListener);
 
-	    Button timePathButton = new Button(composite, SWT.PUSH);
-	    timePathButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-	    timePathButton.setToolTipText("Time specified path");
-	    timePathButton.setImage(Icons.getIcon("run"));
-	    timePathButton.addSelectionListener(new SelectionAdapter() {
+	    m_timePathButton = new Button(composite, SWT.PUSH);
+	    m_timePathButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+	    m_timePathButton.setToolTipText("Time specified path");
+	    m_timePathButton.setImage(Icons.getIcon("run"));
+	    m_timePathButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				executeRunPath();
+				XtaNotifier notifier = XtaNotifier.getInstance();
+				notifier.notify(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_PATH);
+				notifier.notify(Notifier.NOTIFY_SET_GUI_COMMAND, "");
+				notifier.notify(Notifier.NOTIFY_RUN, "");
 			}
 		});
 	}
@@ -720,72 +255,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    m_setConstraintButton.setEnabled(false);
 	}
 
-	private void createStatusBar(ExpandBar bar) {
-		Composite composite = getBarComposite(bar, 3);
-
-		Group engineGroup = createGroup(composite, "Engine status", 1, 2);
-		m_engineStatus = new Label(engineGroup, SWT.SHADOW_NONE | SWT.CENTER);
-		m_engineStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		m_engineStatus.setText(STATUS_EMPTY);
-
-		m_cancelButton = new Button(composite, SWT.PUSH);
-		m_cancelButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-		m_cancelButton.setToolTipText("Cancel");
-		m_cancelButton.setImage(Icons.getIcon("cancel"));
-		m_cancelButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				cancelRun();
-			}
-		});
-		m_cancelButton.setEnabled(false);
-
-		Group currentGroup = createGroup(composite, "Currently analysed", 1, 3);
-	    m_currentRoute = new Text(currentGroup, SWT.SINGLE);
-	    m_currentRoute.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    m_currentRoute.setText("");
-	    m_currentRoute.setEditable(false);
-
-		Group progressGroup = createGroup(composite, "Blocks analysed", 1, 3);
-	    m_progress = new Label(progressGroup, SWT.SHADOW_NONE | SWT.CENTER);
-	    m_progress.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    m_progress.setText("0");
-
-		m_memoryGroup = createGroup(composite, "Memory used", 1, 3);
-	    m_memoryUsage = new ProgressBar(m_memoryGroup, SWT.SMOOTH | SWT.HORIZONTAL);
-	    m_memoryUsage.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    m_memoryUsage.setMaximum(0);
-	    m_memoryUsage.setMaximum(100);
-	    m_memoryUsage.setSelection(0);
-
-	    ExpandItem barItem = new ExpandItem(bar, SWT.NONE, 0);
-	    barItem.setText("Status");
-	    barItem.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
-	    barItem.setControl(composite);
-	    barItem.setExpanded(true);
-	}
-
-	private void createSettingsBar(ExpandBar bar) {
-		Composite composite = getBarComposite(bar, 2);
-
-		Group nodeGroup = createGroup(composite, "Node", 1, 1);
-	    m_nodeIds = new Combo(nodeGroup, SWT.NONE | SWT.DROP_DOWN | SWT.READ_ONLY);
-	    m_nodeIds.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    m_nodeIds.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				setNodeId(m_nodeIds.getText());
-			}			
-		});
-
-		Group coreGroup = createGroup(composite, "Core", 1, 1);
-	    m_coreIds = new Combo(coreGroup, SWT.NONE | SWT.DROP_DOWN | SWT.READ_ONLY);
-	    m_coreIds.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    m_coreIds.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				setCoreId(m_coreIds.getText());
-			}			
-		});
-
-		Group freqGroup = createGroup(composite, "Frequency", 1, 1);
+	private void createSettingsBar(Composite controls) {
+		Group freqGroup = createGroup(controls, "Frequency", 1, 1);
 	    m_freqSpinner = new Spinner(freqGroup, SWT.BORDER);
 		m_freqSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		m_freqSpinner.setMinimum(1);
@@ -799,7 +270,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			}			
 		});
 
-		Group threadsGroup = createGroup(composite, "Num threads", 1, 1);
+		Group threadsGroup = createGroup(controls, "Num threads", 1, 1);
 		m_threadSpinner = new Spinner(threadsGroup, SWT.BORDER);
 		m_threadSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		m_threadSpinner.setMinimum(1);
@@ -812,12 +283,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 				setNumThreads(m_threadSpinner.getSelection());
 			}			
 		});
-		
-		ExpandItem barItem = new ExpandItem(bar, SWT.NONE, 0);
-	    barItem.setText("Settings");
-	    barItem.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
-	    barItem.setControl(composite);
-	    barItem.setExpanded(false);
 	}
 
 	private Group createGroup(Composite parent, String description, int numColumns, int span) {
@@ -827,20 +292,10 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    group.setLayout(layout);
 	    group.setText(description);
 	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, span, 1));
+	    setBackground(group);
 	    return group;
 	}
 
-	private Composite getBarComposite(ExpandBar bar, int numColumns) { 
-	    Composite composite = new Composite(bar, SWT.NONE);
-	    GridLayout layout = new GridLayout();
-	    layout.marginLeft = layout.marginTop = layout.marginRight = layout.marginBottom = 10;
-	    layout.verticalSpacing = 10;
-	    layout.numColumns = numColumns;
-	    composite.setLayout(layout);
-	    composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-	    return composite;
-	}
-	
 	private void updateText(Reference point, Text text, ModifyListener listener) {
 		if (point != null) {
 			Engine engine = XtaEngine.getEngine();
@@ -850,9 +305,17 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		    }
 		} else {
 			setText(text, listener, "", "");
-		}		
+		}
+		updateTimePathButton();
 	}	
 	
+	private void updateTimePathButton() {
+		if (!m_startPoint.getText().equals("") && !m_endPoint.getText().equals(""))
+			m_timePathButton.setEnabled(true);
+		else
+			m_timePathButton.setEnabled(false);
+	}
+
 	private void setText(Text text, ModifyListener listener, String str, String toolTip) {
 		text.removeModifyListener(listener);
 		text.setText(str);
