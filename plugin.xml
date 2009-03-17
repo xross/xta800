@@ -60,16 +60,9 @@
       </view>
       <view
             class="com.xmos.xta.rcp.views.FunctionView.FunctionView"
-            icon="icons/function.png"
+            icon="icons/function_view.png"
             id="com.xmos.xta.rcp.views.FunctionView.Function"
             name="Function"
-            restorable="true">
-      </view>
-      <view
-            class="com.xmos.xta.rcp.views.FlowView.FlowView"
-            icon="icons/flow.png"
-            id="com.xmos.xta.rcp.views.FlowView.Flow"
-            name="Flow"
             restorable="true">
       </view>
       <view
@@ -91,6 +84,13 @@
             icon="icons/settings.png"
             id="com.xmos.xta.rcp.views.ControlView.Control"
             name="Control"
+            restorable="true">
+      </view>
+      <view
+            class="com.xmos.xta.rcp.views.StatusView.StatusView"
+            icon="icons/status.png"
+            id="com.xmos.xta.rcp.views.StatusView.Status"
+            name="Status"
             restorable="true">
       </view>
    </extension>
@@ -254,7 +254,8 @@
       </specification>
       <specification
             annotationType="com.xmos.xta.rcp.start"
-            colorPreferenceKey="errorIndicationColor"
+            colorPreferenceKey="highlight.color"
+            colorPreferenceValue="40,40,215"
             contributesToHeader="false"
             highlightPreferenceValue="false"
             icon="icons/source_endpoint_start.png"
@@ -264,21 +265,22 @@
             isGoToPreviousNavigationTarget="false"
             isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
             label="Start"
-            overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
-            overviewRulerPreferenceValue="false"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            overviewRulerPreferenceValue="true"
             presentationLayer="5"
             showInNextPrevDropdownToolbarAction="false"
             showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
             symbolicIcon="warning"
-            textPreferenceKey="errorIndication"
+            textPreferenceKey="highlight.text"
             textPreferenceValue="false"
             textStylePreferenceValue="NONE"
-            verticalRulerPreferenceKey="errorIndicationInVerticalRuler"
+            verticalRulerPreferenceKey="highlight.rulers.vertical"
             verticalRulerPreferenceValue="true">
       </specification>
       <specification
             annotationType="com.xmos.xta.rcp.stop"
-            colorPreferenceKey="errorIndicationColor"
+            colorPreferenceKey="highlight.color"
+            colorPreferenceValue="40,40,215"
             contributesToHeader="false"
             highlightPreferenceValue="false"
             icon="icons/source_endpoint_stop.png"
@@ -288,21 +290,22 @@
             isGoToPreviousNavigationTarget="false"
             isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
             label="Stop"
-            overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
             overviewRulerPreferenceValue="false"
             presentationLayer="5"
             showInNextPrevDropdownToolbarAction="false"
             showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
             symbolicIcon="warning"
-            textPreferenceKey="errorIndication"
+            textPreferenceKey="highlight.text"
             textPreferenceValue="false"
             textStylePreferenceValue="NONE"
-            verticalRulerPreferenceKey="errorIndicationInVerticalRuler"
+            verticalRulerPreferenceKey="highlight.rulers.vertical"
             verticalRulerPreferenceValue="true">
       </specification>
       <specification
             annotationType="com.xmos.xta.rcp.startstop"
-            colorPreferenceKey="errorIndicationColor"
+            colorPreferenceKey="highlight.color"
+            colorPreferenceValue="40,40,215"
             contributesToHeader="false"
             highlightPreferenceValue="false"
             icon="icons/source_endpoint_startstop.png"
@@ -312,21 +315,22 @@
             isGoToPreviousNavigationTarget="false"
             isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
             label="StartStop"
-            overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
-            overviewRulerPreferenceValue="false"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            overviewRulerPreferenceValue="true"
             presentationLayer="5"
             showInNextPrevDropdownToolbarAction="false"
             showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
             symbolicIcon="warning"
-            textPreferenceKey="errorIndication"
+            textPreferenceKey="highlight.text"
             textPreferenceValue="false"
             textStylePreferenceValue="NONE"
-            verticalRulerPreferenceKey="errorIndicationInVerticalRuler"
+            verticalRulerPreferenceKey="highlight.rulers.vertical"
             verticalRulerPreferenceValue="true">
       </specification>
       <specification
             annotationType="com.xmos.xta.rcp.endpoint"
-            colorPreferenceKey="errorIndicationColor"
+            colorPreferenceKey="highlight.color"
+            colorPreferenceValue="40,40,215"
             contributesToHeader="false"
             highlightPreferenceValue="false"
             icon="icons/source_endpoint.png"
@@ -336,16 +340,16 @@
             isGoToPreviousNavigationTarget="false"
             isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
             label="Endpoint"
-            overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
-            overviewRulerPreferenceValue="false"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            overviewRulerPreferenceValue="true"
             presentationLayer="5"
             showInNextPrevDropdownToolbarAction="false"
             showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
             symbolicIcon="warning"
-            textPreferenceKey="errorIndication"
+            textPreferenceKey="highlight.text"
             textPreferenceValue="false"
             textStylePreferenceValue="NONE"
-            verticalRulerPreferenceKey="errorIndicationInVerticalRuler"
+            verticalRulerPreferenceKey="highlight.rulers.vertical"
             verticalRulerPreferenceValue="true">
       </specification>
    </extension>

@@ -4,6 +4,9 @@ public interface Notifier {
 	public static final String NOTIFY_ERROR             = "Error";
 	public static final String NOTIFY_WARNING           = "Warning";
 	public static final String NOTIFY_INFO              = "Info";	
+	public static final String NOTIFY_RUN               = "Run";
+	public static final String NOTIFY_SET_RUN_MODE      = "SetRunMode";
+	public static final String NOTIFY_SET_GUI_COMMAND   = "SetGuiCommand";
 	public static final String NOTIFY_ANALYSIS_BEGIN    = "AnalysisBegin";
 	public static final String NOTIFY_ANALYSIS_COMPLETE = "AnalysisComplete";	
 	public static final String NOTIFY_LOAD_EXECUTABLE   = "LoadExecutable";
@@ -23,6 +26,9 @@ public interface Notifier {
 	public static final String STATE_NODE_ID     = "NodeId";
 	public static final String STATE_CORE_ID     = "CoreId";
 	public static final String STATE_RESOLVE     = "Resolve";
+	
+	public static final String RUN_MODE_FUNCTION = "Analyse function";
+	public static final String RUN_MODE_PATH     = "Analyse path";
 	
     void notify(String message, String argument);
 }
