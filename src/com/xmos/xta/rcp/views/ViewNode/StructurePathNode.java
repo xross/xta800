@@ -45,7 +45,7 @@ public class StructurePathNode extends StructureNode {
 
 	public int getChildrenX() {
 		int pixels = 0;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			if (!treeNode.isBlockNode()) {
 				StructureNode child = treeNode.getStructureNode();
 				pixels += child.getPixelsX();
@@ -56,7 +56,7 @@ public class StructurePathNode extends StructureNode {
 
 	public int getChildrenY() {
 		int pixels = 0;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			if (!treeNode.isBlockNode()) {
 				StructureNode child = treeNode.getStructureNode();
 				int childPixels = child.getPixelsY();
@@ -91,7 +91,7 @@ public class StructurePathNode extends StructureNode {
     	int childOffsetX = m_borderX;
     	int childTop = scale(m_pixelOffsetY + m_pixelsY, scale);
     	int lineTop = scale(m_pixelOffsetY + m_pixelsY - m_borderY - m_connectorY, scale);
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			if (!treeNode.isBlockNode()) {
 				StructureNode child = treeNode.getStructureNode();
 	    		child.draw(display, gc, scale);
@@ -111,7 +111,7 @@ public class StructurePathNode extends StructureNode {
 		m_pixelOffsetY = yOffset;
 
     	int childOffsetX = m_borderX;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			if (!treeNode.isBlockNode()) {
 				StructureNode child = treeNode.getStructureNode();
 	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_pixelsY);
@@ -121,7 +121,7 @@ public class StructurePathNode extends StructureNode {
 	}
 
 	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			if (!treeNode.isBlockNode()) {
 				StructureNode child = treeNode.getStructureNode();
 				child.buildClickAreas(clickAreas);

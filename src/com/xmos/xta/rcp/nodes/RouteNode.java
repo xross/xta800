@@ -26,7 +26,7 @@ public class RouteNode extends Node {
     public int getNumUnknowns()  { return 0; }    
    
     public String getDescription() {
-    	int numPaths = getNodes().size();
+    	int numPaths = getChildren().size();
     	String str = "Found " + numPaths + " " + m_type + " path";
     	if (numPaths != 1) {
     		str += "s";

@@ -178,7 +178,7 @@ public class FunctionView extends ZoomedCanvasView {
     	functionNode.setNumIterations(numIterations);
     	functionNode.setLineWidth(m_lineWidth);
         functionNode.setIsSelected(selected);
-        for (Node subNode : node.getNodes()) {
+        for (Node subNode : node.getChildren()) {
         	int subNumIterations = numIterations;
 			if (node.isLoopNode())
 				subNumIterations = subNode.getNumIterations() * numIterations;

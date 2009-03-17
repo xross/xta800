@@ -9,6 +9,7 @@ public class LoopAttachment {
 	private HashSet<PathBasicBlock> m_allAttachedLoops;
 	private PathBasicBlock m_loop;
 	private ArrayList<LoopAttachment> m_subLoops;
+	private ArrayList<PathBasicBlock> m_loopList;
 	
 	public LoopAttachment(PathBasicBlock loop){
 		m_loop = loop;
@@ -57,14 +58,15 @@ public class LoopAttachment {
 	 * returns a list of all the loops attached at and below this attachment
 	 */
 	public ArrayList<PathBasicBlock> getLoopList(){
-		ArrayList<PathBasicBlock> list = new ArrayList<PathBasicBlock>();
-		for(LoopAttachment ls : m_subLoops){
-			list.add(ls.getLoop());
+		if(m_loopList == null){
+			m_loopList = new ArrayList<PathBasicBlock>();
+			for(LoopAttachment ls : m_subLoops){
+				m_loopList.add(ls.getLoop());
+			}
+			Collections.sort(m_loopList);
 		}
-		Collections.sort(list);
-		return list;
+		return m_loopList;
 	}
-	
 	/**
 	 * gets the PathBasicBlock that forms the loop
 	 * @return
@@ -72,13 +74,9 @@ public class LoopAttachment {
 	public PathBasicBlock getLoop(){
 		return m_loop;
 	}
-	
-	
-
 
 	public ArrayList<PathBasicBlock> getLoopPaths(PathBasicBlock base) {
-		
-		if (m_loop == base)
+		if (m_loop == base )
 			return getLoopList();
 		
 		for (LoopAttachment subLoop : m_subLoops) {

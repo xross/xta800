@@ -48,7 +48,7 @@ public class FunctionBlockNode extends ViewNode {
 
 	public int getChildrenX() {
 		int pixels = 0;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			ViewNode child = treeNode.getFunctionNode();
 			if (child != null) {
 				pixels += child.getPixelsX();
@@ -59,7 +59,7 @@ public class FunctionBlockNode extends ViewNode {
 
 	public int getChildrenY() {
 		int pixels = 0;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			ViewNode child = treeNode.getFunctionNode();
 			if (child != null) {
 				int childPixels = child.getPixelsY();

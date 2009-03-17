@@ -52,7 +52,7 @@ public abstract class Node implements Comparable<Node> {
     	m_nodes.add(node);
     }
 
-    public Vector<Node> getNodes() {
+    public Vector<Node> getChildren() {
     	return m_nodes;
     }    
     

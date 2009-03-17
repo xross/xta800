@@ -107,12 +107,21 @@ class InputSection {
 			m_lines.get(lineNum).incrementOffset();
 		}
 	}
-
-	public InputLine removeFnop() {
+	
+	public InputLine removeFnop(int pc) {
 		if (m_fnops.isEmpty())
 			return null;
 		
-		InputLine firstFnop = m_fnops.remove(0);
+		int index = -1;
+		for(InputLine fnop : m_fnops){
+			if(fnop.getPc() == pc){
+				index = m_fnops.indexOf(fnop);
+				break;
+			}
+		}
+		if(index == -1) return null;
+		
+		InputLine firstFnop = m_fnops.remove(index);
 		int offset = firstFnop.getOffset();
 		m_lines.remove(firstFnop);
 

@@ -44,7 +44,7 @@ public class FunctionRouteNode extends ViewNode {
 	}
 
 	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			ViewNode child = treeNode.getFunctionNode();
     		child.buildClickAreas(clickAreas);
     	}

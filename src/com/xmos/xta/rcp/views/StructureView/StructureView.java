@@ -122,7 +122,7 @@ public class StructureView extends ZoomedCanvasView {
     	StructureNode structureNode = node.getStructureNode();
 
     	double childrenWeight = 0;
-        for (Node subNode : node.getNodes()) {
+        for (Node subNode : node.getChildren()) {
     		if (subNode.isPathNode() || subNode.isLoopNode()) {
             	if (node.isRouteNode())
             		totalTime = subNode.getTimeTaken(); // Re-compute total time for sub tree
