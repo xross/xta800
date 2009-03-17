@@ -77,6 +77,10 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 	    
 	    m_memoryUpdater = new MemoryUpdater(m_memoryGroup, m_memoryUsage);
 	    m_memoryUpdater.start();
+	    
+	    if (XtaEngine.getEngine().getProgress().getState() != Progress.State.IDLE) {
+	    	startAnalysis();
+	    }
 	}
 	
 	public void setFocus() {
@@ -98,12 +102,7 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 	        updateCurrentRoute();
 	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_BEGIN)) {
-	        m_memoryUpdater.setFastRefresh(true);
-			m_engineStatus.setText(STATUS_BUSY);
-			m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
-			m_progressUpdater.start();
-	        m_currentRoute.setText("");
-	        m_currentRoute.setToolTipText("");
+			startAnalysis();
 	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_ERROR)) {
 	        m_memoryUpdater.setFastRefresh(false);
@@ -113,6 +112,15 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 		}
 	}
 	
+	private void startAnalysis() {
+        m_memoryUpdater.setFastRefresh(true);
+		m_engineStatus.setText(STATUS_BUSY);
+		m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
+		m_progressUpdater.start();
+        m_currentRoute.setText("");
+        m_currentRoute.setToolTipText("");
+	}
+
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
 		if (DEBUG) System.out.println("Status(" + this.hashCode() + "): selectionChanged");	
      }
@@ -308,7 +316,8 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 		Group progressGroup = createGroup(composite, "Blocks analysed", 1, 3);
 	    m_progress = new Label(progressGroup, SWT.SHADOW_NONE | SWT.CENTER);
 	    m_progress.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    m_progress.setText("0");
+	    int status = XtaEngine.getEngine().getProgress().getCurValue();
+	    m_progress.setText(Integer.toString(status));
 
 		m_memoryGroup = createGroup(composite, "Memory used", 1, 3);
 	    m_memoryUsage = new ProgressBar(m_memoryGroup, SWT.SMOOTH | SWT.HORIZONTAL);
