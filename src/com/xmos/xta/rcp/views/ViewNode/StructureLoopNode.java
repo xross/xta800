@@ -41,7 +41,7 @@ public class StructureLoopNode extends StructureNode {
 
 	public int getChildrenX() {
 		int pixels = 0;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			StructureNode child = treeNode.getStructureNode();
 			if (child != null) {
 				pixels += child.getPixelsX();
@@ -52,7 +52,7 @@ public class StructureLoopNode extends StructureNode {
 
 	public int getChildrenY() {
 		int pixels = 0;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			StructureNode child = treeNode.getStructureNode();
 			if (child != null) {
 				int childPixels = child.getPixelsY();
@@ -82,7 +82,7 @@ public class StructureLoopNode extends StructureNode {
         int mid = scale(m_pixelOffsetX + (getPixelsX() / 2), scale);
     	int childOffsetX = m_pixelsX / 2;
     	int childTop = scale(m_pixelOffsetY + m_connectionY, scale);
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			StructureNode child = treeNode.getStructureNode();
 			if (child != null) {
 	    		child.draw(display, gc, scale);
@@ -102,7 +102,7 @@ public class StructureLoopNode extends StructureNode {
 		m_pixelOffsetY = yOffset;
 
         int childOffsetX = m_borderX;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			StructureNode child = treeNode.getStructureNode();
 			if (child != null) {
 	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_connectionY);
@@ -112,7 +112,7 @@ public class StructureLoopNode extends StructureNode {
 	}
 
 	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			StructureNode child = treeNode.getStructureNode();
 			child.buildClickAreas(clickAreas);
     	}

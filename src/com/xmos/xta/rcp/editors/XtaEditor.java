@@ -242,6 +242,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		initializeLineNumberRulerColumn(fLineNumberRulerColumn);
 		return fLineNumberRulerColumn;
 	}
+	
+	private HashSet<XtaInstruction> m_prevFnops = new HashSet<XtaInstruction>();
     
     private void updateFnops() {
 		if (DEBUG) System.out.printf("XtaEditor: updateFnops\n"); 
@@ -255,15 +257,44 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	if (pathRoot == m_currentPathRoot)
     		return;
 
+    	
+    	
     	m_currentPathRoot = pathRoot;
-		removeFnops();
+		
+    	HashSet<XtaInstruction> toAdd = new HashSet<XtaInstruction>();
+    	HashSet<XtaInstruction> toRemove = new HashSet<XtaInstruction>();
+    	HashSet<XtaInstruction> toKeep  = new HashSet<XtaInstruction>();
+    	
+    	//make list of new fnops to add
     	if (pathRoot != null) {
-        	Vector<XtaInstruction> fnops = new Vector<XtaInstruction>();
-        	m_currentPathRoot.getFnopPcs(fnops);
-			for (XtaInstruction inst : fnops) {
-				addFnop(inst.getPc());
-			}
+    		Vector<XtaInstruction> fnops = new Vector<XtaInstruction>();
+    		m_currentPathRoot.getFnopPcs(fnops);
+    		for(XtaInstruction inst: fnops){
+    			if(m_prevFnops.contains(inst)){
+    				toKeep.add(inst);
+    			} else {
+    				toAdd.add(inst);
+    			}
+    		}
     	}
+    
+    	//make list of old fnops to remove
+    	toRemove = m_prevFnops;
+    	toRemove.removeAll(toKeep);
+    	
+    	//remove old fnops
+    	for (XtaInstruction inst : toRemove) {
+			//TODO
+    		removeFnop(inst.getPc());
+		}
+    	
+    	//add new fnops
+    	for (XtaInstruction inst : toAdd) {
+			addFnop(inst.getPc());
+		}
+    	
+    	m_prevFnops = toKeep;
+    	m_prevFnops.addAll(toAdd);
     	
 	    if (m_type.equals(XtaDocumentPartitioner.DISASSEMBLY)) {
 		    ((InputDisassembly)getEditorInput()).updateLineNumberMapping();
@@ -271,8 +302,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		    ((InputSource)getEditorInput()).updateLineNumberMapping();	    	
 	    }
 	}
-
-    private void removeFnops() {
+    
+    private void removeFnop(int pc) {
 		if (DEBUG) System.out.printf("XtaEditor: removeFnops\n");
 		
 		int fnopsRemoved = 0;
@@ -280,7 +311,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	for (InputSection inputSection : getSections()) {
     		inputSection.setIndex(inputSection.getIndex() - fnopsRemoved);
     		
-    		InputLine fnopLine = inputSection.removeFnop();
+    		InputLine fnopLine = inputSection.removeFnop(pc);
     		while (fnopLine != null) {
     			fnopsRemoved++;
     			int index = fnopLine.getIndex();
@@ -290,11 +321,11 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 				} catch (BadLocationException e) {
 					e.printStackTrace();
 				}
-	    		fnopLine = inputSection.removeFnop();
+	    		fnopLine = inputSection.removeFnop(pc);
 			}
     	}
+		
 	}
-
     private void addFnop(int pc) {
     	boolean fnopsAdded = false;
 

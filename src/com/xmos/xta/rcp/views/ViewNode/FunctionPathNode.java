@@ -57,7 +57,7 @@ public class FunctionPathNode extends ViewNode {
 
 	public int getChildrenX() {
 		int pixels = 0;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			ViewNode child = treeNode.getFunctionNode();
 			if (child != null) {
 				pixels += child.getPixelsX();
@@ -68,7 +68,7 @@ public class FunctionPathNode extends ViewNode {
 
 	public int getChildrenY() {
 		int pixels = 0;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			ViewNode child = treeNode.getFunctionNode();
 			if (child != null) {
 				int childPixels = child.getPixelsY();
@@ -80,7 +80,7 @@ public class FunctionPathNode extends ViewNode {
 	}
 	
 	private int getBlockY() {
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			if (treeNode instanceof BlockNode) {
 				ViewNode child = treeNode.getFunctionNode();
 				if (child != null) {
@@ -108,7 +108,7 @@ public class FunctionPathNode extends ViewNode {
     	gc.drawLine(m_x, m_y, m_x, m_y);
 
         int childOffsetX = 0;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			ViewNode child = treeNode.getFunctionNode();
 			if (child != null) {
 	    		child.draw(display, gc, scale);
@@ -132,7 +132,7 @@ public class FunctionPathNode extends ViewNode {
         m_pixelOffsetY = yOffset;
 
         int childOffsetX = 0;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			ViewNode child = treeNode.getFunctionNode();
     		child.annotateXy(xOffset + childOffsetX, yOffset + m_borderY + m_lineWidth);
             childOffsetX += child.getPixelsX();
@@ -140,7 +140,7 @@ public class FunctionPathNode extends ViewNode {
 	}
 
 	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			ViewNode child = treeNode.getFunctionNode();
 			child.buildClickAreas(clickAreas);
     	}

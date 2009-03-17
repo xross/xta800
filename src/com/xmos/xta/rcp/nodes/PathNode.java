@@ -165,13 +165,13 @@ public class PathNode extends Node {
 	}
 
 	public void getFnopPcs(Vector<XtaInstruction> fnops) {
-		for (Node node : getNodes()) {
+		for (Node node : getChildren()) {
 			node.getFnopPcs(fnops);
 		}
 	}
 
 	public void getBlockIds(Vector<Integer> ids) {
-		for (Node node : getNodes()) {
+		for (Node node : getChildren()) {
 			node.getBlockIds(ids);
 		}
 	}

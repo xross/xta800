@@ -13,6 +13,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ToolTip;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.ISelectionListener;
@@ -46,11 +47,12 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	    if (DEBUG) System.out.printf("Tree: createPartControl\n");
 	    m_parent = parent;
 		
-	    m_treeViewer = new TreeViewer(m_parent);		
+	    m_treeViewer = new TreeViewer(m_parent, SWT.VIRTUAL);
+	    
 	    getSite().setSelectionProvider(m_treeViewer);
 	    getSite().getPage().addSelectionListener(this);
 
-		m_treeViewer.setContentProvider(new TreeViewContentProvider());				
+		m_treeViewer.setContentProvider(new TreeViewContentProvider(m_treeViewer));				
 		m_treeViewer.setLabelProvider(new TreeViewLabelProvider());
 		
 		m_treeViewer.addDoubleClickListener(new IDoubleClickListener() {
@@ -150,7 +152,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		treeRoot.addNode(m_routeInfo.getRouteNode());
 
 		Node unresolvedNode = m_routeInfo.getUnresolvedNode();
-		if (unresolvedNode.getNodes().size() > 0) {
+		if (unresolvedNode.getChildren().size() > 0) {
 			treeRoot.addNode(unresolvedNode);
 		}
     	m_treeViewer.setInput(treeRoot);

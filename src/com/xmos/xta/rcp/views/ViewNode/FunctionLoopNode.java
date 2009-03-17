@@ -50,7 +50,7 @@ public class FunctionLoopNode extends ViewNode {
 
 	public int getChildrenX() {
 		int pixels = 0;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			ViewNode child = treeNode.getFunctionNode();
 			if (child != null) {
 				pixels += child.getPixelsX();
@@ -61,7 +61,7 @@ public class FunctionLoopNode extends ViewNode {
 
 	public int getChildrenY() {
 		int pixels = 0;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			ViewNode child = treeNode.getFunctionNode();
 			if (child != null) {
 				int childPixels = child.getPixelsY();
@@ -91,7 +91,7 @@ public class FunctionLoopNode extends ViewNode {
         gc.drawLine(m_left, m_bottom, scale(m_pixelOffsetX, scale), m_bottom);
         gc.drawLine(scale(m_pixelOffsetX + childrenX, scale), m_bottom, m_right, m_bottom);
         
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			ViewNode child = treeNode.getFunctionNode();
 			if (child != null) {
 	    		child.draw(display, gc, scale);
@@ -104,7 +104,7 @@ public class FunctionLoopNode extends ViewNode {
         m_pixelOffsetY = yOffset;
 
         int childOffsetX = 0;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			ViewNode child = treeNode.getFunctionNode();
 			if (child != null) {
 	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_pixelsY);
@@ -114,7 +114,7 @@ public class FunctionLoopNode extends ViewNode {
 	}
 
 	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			ViewNode child = treeNode.getFunctionNode();
 			child.buildClickAreas(clickAreas);
     	}

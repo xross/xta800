@@ -40,7 +40,7 @@ public class StructureRouteNode extends StructureNode {
 	public int getChildrenX() {
 		int pixels = 0;
 		int numChildren = 0;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			StructureNode child = treeNode.getStructureNode();
 			if (child != null) {
 				pixels += child.getPixelsX();
@@ -55,7 +55,7 @@ public class StructureRouteNode extends StructureNode {
 
 	public int getChildrenY() {
 		int pixels = 0;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			StructureNode child = treeNode.getStructureNode();
 			if (child != null) {
 				int childPixels = child.getPixelsY();
@@ -72,7 +72,7 @@ public class StructureRouteNode extends StructureNode {
 
     	int childOffsetX = 0;
     	int childNum = 0;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			StructureNode child = treeNode.getStructureNode();
 			if (child != null) {
 	    		if (childNum > 0) {
@@ -110,7 +110,7 @@ public class StructureRouteNode extends StructureNode {
 
     	int childOffsetX = 0;
     	int childNum = 0;
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			StructureNode child = treeNode.getStructureNode();
 			if (child != null) {
 	    		if (childNum > 0)
@@ -124,7 +124,7 @@ public class StructureRouteNode extends StructureNode {
     }
 
 	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
-		for (Node treeNode : m_treeNode.getNodes()) {
+		for (Node treeNode : m_treeNode.getChildren()) {
 			StructureNode child = treeNode.getStructureNode();
 			child.buildClickAreas(clickAreas);
     	}
