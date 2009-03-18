@@ -58,7 +58,7 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	private void setBackground(Composite composite) {
-	    //composite.setBackground(m_display.getSystemColor(SWT.COLOR_GRAY));
+	    composite.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
 	}
 
 	public void createPartControl(Composite parent) {
@@ -178,7 +178,7 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 
 	private void updateCurrentRoute() {
 		XtaRouteInfo routeInfo = XtaNotifier.getInstance().getRouteInfo();
-		if (routeInfo != null) {
+		if ((routeInfo != null) && (routeInfo.getRoute() != null)) {
 			Route route = routeInfo.getRoute();
 			String routeStatus = route.getDescription();
 			m_currentRoute.setText(routeStatus);
@@ -306,18 +306,21 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 		m_engineStatus = new Label(engineGroup, SWT.SHADOW_NONE | SWT.CENTER);
 		m_engineStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		m_engineStatus.setText(STATUS_EMPTY);
+		m_engineStatus.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
 
 		Group currentGroup = createGroup(composite, "Currently analysed", 1, 3);
 	    m_currentRoute = new Text(currentGroup, SWT.SINGLE);
 	    m_currentRoute.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	    m_currentRoute.setText("");
 	    m_currentRoute.setEditable(false);
+	    m_currentRoute.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
 
 		Group progressGroup = createGroup(composite, "Blocks analysed", 1, 3);
 	    m_progress = new Label(progressGroup, SWT.SHADOW_NONE | SWT.CENTER);
 	    m_progress.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	    int status = XtaEngine.getEngine().getProgress().getCurValue();
 	    m_progress.setText(Integer.toString(status));
+	    m_progress.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
 
 		m_memoryGroup = createGroup(composite, "Memory used", 1, 3);
 	    m_memoryUsage = new ProgressBar(m_memoryGroup, SWT.SMOOTH | SWT.HORIZONTAL);
@@ -334,6 +337,7 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 	    group.setLayout(layout);
 	    group.setText(description);
 	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, span, 1));
+	    setBackground(group);
 	    return group;
 	}
 }

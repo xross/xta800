@@ -1,44 +1,61 @@
 package com.xmos.xta.rcp;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.Unresolved;
 import com.xmos.xta.rcp.nodes.BlockNode;
 import com.xmos.xta.rcp.nodes.LoopNode;
 import com.xmos.xta.rcp.nodes.Node;
+import com.xmos.xta.rcp.nodes.PathGroupNode;
 import com.xmos.xta.rcp.nodes.PathNode;
 import com.xmos.xta.rcp.nodes.RouteNode;
 
 public class XtaRouteInfo {
 	
 	private static final int MAXPATHS = 100;
-	private Route m_route;
-	private DebugInfo m_debugInfo;
-	private MemoryImage m_memoryImage; 
-	private SymbolTable m_symbolTable;
+	private Route m_selectedRoute;
+	private Engine m_engine;
+	
+	private List<Node> m_routes;
 	private Node m_routeNode;
 	private Node m_unresolvedNode;
 	private Node m_selectedNode;
 	
-	public XtaRouteInfo(Route route, DebugInfo debugInfo,
-			MemoryImage memoryImage, SymbolTable symbolTable) {
-		m_route = route;
-		m_debugInfo = debugInfo;
-		m_memoryImage = memoryImage;
-		m_symbolTable = symbolTable;
+	public XtaRouteInfo(Engine engine) {
+		m_engine = engine;
 		m_routeNode = null;
 		m_selectedNode = null;
 		m_selectedNode = null;
-		buildRouteNode();
+		
+		m_routes = new ArrayList<Node>();
+		buildRouteNode(-1);
 	}
 	
-	public void buildRouteNode(){
-		RouteNode routeNode = new RouteNode("complete");
+	public void update(int selectedRouteId) {
+		m_routes.clear();
+		for (Route route : m_engine.getRoutes()) {
+			m_routes.add(new RouteNode(route));
+		}
+		buildRouteNode(selectedRouteId);
+	}
+
+	private void buildRouteNode(int selectedRouteId) {
+		m_routeNode = null;
+		m_unresolvedNode = null;
+		m_selectedRoute = m_engine.getRoute(selectedRouteId);
+		if (m_selectedRoute == null)
+			return;
+	
+		PathGroupNode routeNode = new PathGroupNode("complete", selectedRouteId);
 		int i = 0;
-        for (PathBasicBlock block : m_route.getCompletedPaths()) {
+        for (PathBasicBlock block : m_selectedRoute.getCompletedPaths()) {
         	if (i >= MAXPATHS) break;
         	i++;
         	routeNode.addNode(createPath(block, routeNode, true));
@@ -46,8 +63,8 @@ public class XtaRouteInfo {
         m_routeNode = routeNode;
 		m_selectedNode = routeNode;
 		
-		m_unresolvedNode = new RouteNode("unresolved");
-		for (Unresolved unresolved : m_route.getUnresolvedPaths()) {
+		m_unresolvedNode = new PathGroupNode("unresolved", selectedRouteId);
+		for (Unresolved unresolved : m_selectedRoute.getUnresolvedPaths()) {
         	if (i >= MAXPATHS) break;
         	i++;
 			m_unresolvedNode.addNode(createPath(unresolved.getBlock(), m_unresolvedNode, true));
@@ -57,35 +74,34 @@ public class XtaRouteInfo {
 	private PathNode createPath(PathBasicBlock block, Node parent, boolean isRoot) {
         PathNode pathNode = new PathNode(block, parent, isRoot);     
         for (PathBasicBlock pathBlock : block.getPathBlocks()) {            
-        	if(pathBlock.numLoopPaths(block) > 0){
-        		 LoopNode loopNode = new LoopNode(pathBlock, pathNode);
-                 pathNode.addNode(loopNode);
+        	if (pathBlock.numLoopPaths(block) > 0){
+        		LoopNode loopNode = new LoopNode(pathBlock, pathNode);
+                pathNode.addNode(loopNode);
                                  
-            	 for (PathBasicBlock loopPath : pathBlock.getLoopPaths(block)) {
-            		 
-            			 loopNode.addNode(createPath(loopPath, loopNode, false));                    
-                 }
+            	for (PathBasicBlock loopPath : pathBlock.getLoopPaths(block)) {
+            		loopNode.addNode(createPath(loopPath, loopNode, false));                    
+                }
         	}
-        	if(pathBlock.getNumInstructionsThis()>0)
+        	if (pathBlock.getNumInstructionsThis()>0)
         		pathNode.addNode(new BlockNode(pathBlock, pathNode));            
         }
         return pathNode;
 	}
 	
 	public Route getRoute() {
-		return m_route;
+		return m_selectedRoute;
 	}
 
 	public DebugInfo getDebugInfo() {
-		return m_debugInfo;
+		return m_engine.getDebugInfo();
 	}
 
 	public MemoryImage getMemoryImage() {
-		return m_memoryImage;
+		return m_engine.getMemoryImage();
 	}
 
 	public SymbolTable getSymbolTable() {
-		return m_symbolTable;
+		return m_engine.getSymbolTable();
 	}
 	
 	public Node getRouteNode() {
@@ -100,15 +116,21 @@ public class XtaRouteInfo {
 		return m_unresolvedNode;
 	}
 
+	public List<Node> getRoutes() {
+		return m_routes;
+	}
+
 	public void setSelectedNode(Node selectedNode) {
 		m_selectedNode = selectedNode;
 	}
 
 	public void setRoute(Route route) {
-		m_route = route;
-	}	
-	
-	public void resetRouteInfo(){
-		
+		m_selectedRoute = route;
 	}
+
+	public void resetState() {
+		m_routeNode = null;
+		m_selectedNode = null;
+		m_selectedNode = null;
+	}	
 }

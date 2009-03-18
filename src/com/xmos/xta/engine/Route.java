@@ -15,11 +15,13 @@ class AbortedException extends Exception {}
 @SuppressWarnings("unchecked")
 public class Route {
 	
-	enum RouteMode {
+    public static final int INVALID_ROUTE_ID = -1;
+
+    enum RouteMode {
 		ABSLOUTE, FUNCTION
 	};
-	static private final int SR_IEBLE_SHIFT = 1;
-	static private final int SR_IEBLE_SIZE = 1; 
+	private static final int SR_IEBLE_SHIFT = 1;
+	private static final int SR_IEBLE_SIZE = 1; 
 	
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR

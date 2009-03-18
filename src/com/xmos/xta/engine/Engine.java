@@ -34,6 +34,8 @@ import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 
 public class Engine {
 
+	public static int ROUTE_ID_LAST = -1;
+	
 	public enum ReferenceMode {
 		FILTERED, PROHIBITED, REQUIRED
 	}
@@ -143,8 +145,12 @@ public class Engine {
 	}
 
 	public Route getRoute(int routeId) {
-		if (routeId == -1)
-			return m_routes.get(m_routes.size() - 1);
+		if (routeId == ROUTE_ID_LAST) {
+			if (m_routes.size() > 0)
+				return m_routes.get(m_routes.size() - 1);
+			else 
+				return null;
+		}
 
 		for (Route route : m_routes) {
 			if (route.getRouteId() == routeId) {
@@ -190,6 +196,7 @@ public class Engine {
 
 			m_routes.clear();
 			Route.resetRouteCount();
+			m_constraint = ConstraintFactory.createConstraint(this, "");
 
 			// Need to update as the executable might be of a different architecture
 			m_mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
@@ -487,11 +494,18 @@ public class Engine {
 			m_routes.remove(route);			
 			if (m_routes.size() == 0) {
 				Route.resetRouteCount();
-			}			
+			}
+			notify(Notifier.NOTIFY_REMOVE_ROUTE, "");
 			return true;
 		}
 		return false;				
 	}
+
+	public void removeAllRoutes() {
+		m_routes.clear();
+		Route.resetRouteCount();
+		notify(Notifier.NOTIFY_REMOVE_ROUTE, "");
+	}	
 	
 	public boolean addBranch(Reference fromRef, Reference toRef) {
 		return addToBranchMap(fromRef, toRef);
@@ -591,6 +605,7 @@ public class Engine {
 			notify(Notifier.NOTIFY_ERROR, "Out of Memory (Stack)");
 			return false;
 		} catch (Exception e) {
+			e.printStackTrace();
 			m_progress.setState(Progress.State.IDLE);
 			notify(Notifier.NOTIFY_ERROR, "Unknown error detected");
 			return false;
@@ -653,7 +668,7 @@ public class Engine {
 		}
 
 		m_routes.add(route);
-		notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, "");
+		notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(route.getRouteId()));
 		return true;
 	}
 
@@ -953,5 +968,5 @@ public class Engine {
 			}
 		}
 		return null;
-	}	
+	}
 }

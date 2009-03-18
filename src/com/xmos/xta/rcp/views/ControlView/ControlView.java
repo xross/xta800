@@ -13,6 +13,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
@@ -36,6 +37,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
                                                      ISelectionListener {
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.rcp.views.ControlView.Control";
+
+    private Display m_display;
 
     private Text m_startPoint;
     private Text m_endPoint;
@@ -99,6 +102,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	public void createPartControl(Composite parent) {
 	    if (DEBUG) System.out.println("Control (" + this.hashCode() + "): createPartControl");
 
+	    m_display = parent.getDisplay();
+
 		Composite controls = new Composite(parent, SWT.NONE);
 	    GridLayout layout = new GridLayout();
 	    layout.numColumns = 3;
@@ -119,7 +124,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	private void setBackground(Composite composite) {
-	    //composite.setBackground(m_display.getSystemColor(SWT.COLOR_GRAY));
+	    composite.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
 	}
 
 	public void setFocus() {

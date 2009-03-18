@@ -20,7 +20,7 @@ public class XtaPerspective implements IPerspectiveFactory {
         if (DEBUG) System.out.printf("XtaPerspective: createInitialLayout\n");
 
         IFolderLayout viewsFolder = layout.createFolder(
-        		"views.folder", IPageLayout.BOTTOM, 0.8f, layout.getEditorArea());
+        		"views.folder", IPageLayout.BOTTOM, 0.7f, layout.getEditorArea());
         
         addView(layout, viewsFolder, ConsoleView.ID);
         addView(layout, viewsFolder, LogView.ID);

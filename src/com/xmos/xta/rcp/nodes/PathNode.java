@@ -107,7 +107,8 @@ public class PathNode extends Node {
 					getActivePage().showView(ConsoleView.ID);
 				} catch (PartInitException e) {}
 				
-				console.runCommand("print trace - " + m_this.getId());
+				int routeId = getRouteId();
+				console.runCommand("print trace " + routeId + " " + m_this.getId());
 			}
 		});    	
     	
@@ -150,9 +151,7 @@ public class PathNode extends Node {
 	}
 
 	public void setIterations(int numIterations) {
-		// Apply to the last route
-		int routeNum = XtaEngine.getEngine().getRoutes().size() - 1;
-		XtaEngine.getEngine().setLoopIterations(routeNum, m_block.getPathId(),
+		XtaEngine.getEngine().setLoopIterations(getRouteId(), m_block.getPathId(),
 				m_absoluteCount, numIterations);
 	}
 

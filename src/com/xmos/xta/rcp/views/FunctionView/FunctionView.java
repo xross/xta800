@@ -233,6 +233,9 @@ public class FunctionView extends ZoomedCanvasView {
 		m_colorIndex = 0;
 		
     	m_table = m_routeInfo.getSymbolTable();
+    	if (m_table == null)
+    		return;
+    	
         Iterator<Map.Entry<Integer, Symbol>> iter =
             m_table.getElfHandler().getFunctionsPcKeyed().entrySet().iterator();
         
