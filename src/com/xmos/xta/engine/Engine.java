@@ -196,7 +196,7 @@ public class Engine {
 
 			m_routes.clear();
 			Route.resetRouteCount();
-			m_constraint = ConstraintFactory.createConstraint(this, "");
+			setConstraint(ConstraintFactory.createConstraint(this, ""));
 
 			// Need to update as the executable might be of a different architecture
 			m_mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
@@ -577,7 +577,7 @@ public class Engine {
 
 	public void setConstraint(Constraint constraint) {
 		assert(constraint != null);
-		if (constraint==null){
+		if (constraint == null){
 			m_constraint = ConstraintFactory.createConstraint(this, "");
 		} else {
 			m_constraint = constraint;
