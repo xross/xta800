@@ -651,8 +651,9 @@ public class Engine {
 			}
 		}
 		m_routes.add(route);
+		
+		
 		notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, "");
-		System.out.println("done");
 		return true;
 	}
 

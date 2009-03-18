@@ -16,14 +16,15 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xeobject.AssemblyLine;
+import com.xmos.xta.rcp.nodes.Node;
 
 public class ScannerDisassembly extends RuleBasedScanner {
     public static final boolean DEBUG = false;
-    
-    public ScannerDisassembly() {  	
+
+    public ScannerDisassembly() {  
+    	
     	Display display = PlatformUI.getWorkbench().getDisplay();
     	List<IRule> rules = new ArrayList<IRule>();
-
     	processRegisters(display, rules);
     	//processSpecialRegisters(display, rules);
     	IRule[] rulesArray = new IRule[rules.size()];
@@ -33,6 +34,7 @@ public class ScannerDisassembly extends RuleBasedScanner {
 
     private void processRegisters(Display display, List<IRule> rules) {
     	Color color = display.getSystemColor(SWT.COLOR_BLUE);
+    	
     	
         String[] keywords = {
         	"r0", "r1", "r2", "r3", 

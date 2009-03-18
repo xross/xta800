@@ -226,6 +226,11 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		return m_status;
 	}
 
+	/**
+	 * try not to use this is it is slow for what you get
+	 * @param base
+	 * @return
+	 */
 	public int numLoopPaths(PathBasicBlock base) {
 		return m_loopPaths.getLoopPaths(base).size();
 	}

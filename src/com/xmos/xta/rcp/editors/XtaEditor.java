@@ -109,8 +109,9 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
 		XtaNotifier.getInstance().addPropertyChangeListener(this);
 
-    	setSourceViewerConfiguration(new XtaConfiguration(this));
+    	setSourceViewerConfiguration(new XtaConfiguration(this, m_currentPathRoot));
     	setDocumentProvider(new XtaDocumentProvider());
+
     	
     	m_currentPathRoot = null;
     	m_selectedNode = null;
@@ -202,12 +203,39 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     }
 
 	private void updateEditor() {
+		
+		updateInputLines();
 		updateFnops();
 		updateHighlighting();
 		updateUnknowns();
 	}	            		         	        
     	
-    public void updateFoldingStructure(ArrayList<Position> positions, IDocument document) {
+    private void updateInputLines() {
+    	if(m_currentPathRoot!=null){
+    		for(InputSection inputSection :getInput().getSections()){
+				for(InputLine inputLine: inputSection.getLines()){
+					inputLine.setGrey(true);
+				}
+			}
+	    	HashSet<Integer> pcsCovered = m_currentPathRoot.getCoverage();
+			for(InputSection inputSection :getInput().getSections()){
+				for(InputLine inputLine: inputSection.getLines()){
+					
+					if(pcsCovered.contains(inputLine.getPc())){
+						inputLine.setGrey(false);
+					} 
+				}
+			}
+    	} else {
+    		for(InputSection inputSection :getInput().getSections()){
+				for(InputLine inputLine: inputSection.getLines()){
+					inputLine.setGrey(false);
+				}
+			}
+    	}
+	}
+
+	public void updateFoldingStructure(ArrayList<Position> positions, IDocument document) {
 	    if (DEBUG) System.out.printf("XtaEditor: updateFoldingStructure\n"); 
 
 	    Annotation[] annotations = new Annotation[positions.size()];
@@ -339,6 +367,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 					if (line.getPc() == pc) {
 						try {
 							IRegion lineInfo = document.getLineInformation(index);
+							
 				            document.replace(lineInfo.getOffset(), 0, fnopString);
 							inputSection.addFnop(fnopString, pc, index, getInput());
 							fnopsAdded = true;
@@ -370,8 +399,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         	for (Integer pc : m_selectedNode.getPcsCovered()) {
 				updateAnnotations(pc, HighlightAnnotationID, annotations, annotationPositions, false, getInput().getPcsToLines());
 			}
+			
         }
-
         m_hasHighlightedLines = (annotations.size() > 0);
 
         int startPointIndex = -1;

@@ -19,6 +19,7 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
     public static final String SECTION     = "PositionCategory.Section";
     public static final String SOURCE      = "SOURCE";
     public static final String DISASSEMBLY = "DISASSEMBLY";
+    public static final String GREY		   = "GREY";
     
     private Input m_input;
     private TypedRegion[] m_regions;
@@ -47,7 +48,7 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 			
 			// Adds the SOURCE region for the previous lines.
 			if (numLines > 0) {
-				addTypedRegion(document, regionList, headerOffset, m_input.getHeaderType());
+				addTypedRegion(document, regionList, headerOffset, inputSection.getHeaderType());
 			}
 
 			int offset = document.getLength();
@@ -56,10 +57,12 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 			
 			// Adds the SOURCE region for this line.
 			if (numLines > 0) {
-				addTypedRegion(document, regionList, offset, m_input.getHeaderType());
+				addTypedRegion(document, regionList, offset, inputSection.getHeaderType());
 			}			
 			
 			int linesOffset = document.getLength();
+			
+
 			for (InputLine line : inputSection.getLines()) {
 				String str = line.getLine() + "\n";
 				updateDocument(document, str);
@@ -77,8 +80,8 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 		}
 		
 		// Adds the final SOURCE region if required.
-		addTypedRegion(document, regionList, headerOffset, m_input.getHeaderType());
-					
+		//addTypedRegion(document, regionList, headerOffset, m_input.getHeaderType());
+		addTypedRegion(document, regionList, headerOffset, XtaDocumentPartitioner.GREY);		
 		m_regions = new TypedRegion[regionList.size()];
 		m_regions = regionList.toArray(m_regions);					
 		

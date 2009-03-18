@@ -67,8 +67,10 @@ public class XtaNotifier implements Notifier {
 			broadcastPropertyChange(new PropertyChangeEvent(this, Notifier.NOTIFY_INFO, null, null));								
 
 		} else if (message.equals(NOTIFY_ANALYSIS_COMPLETE)) {
-			createHierarchy();
+			 createHierarchy();
+			
 			broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_ANALYSIS_COMPLETE, null, null));
+
 			m_isGuiCommand = false;
 			
 		} else if (message.equals(NOTIFY_SET_START_POINT)) {
@@ -201,12 +203,13 @@ public class XtaNotifier implements Notifier {
 		m_runMode = Notifier.RUN_MODE_FUNCTION;
 	}
 
-	private void createHierarchy() {		
+	private boolean createHierarchy() {		
 		// TODO: This needs to work with multiple routes..		
 		Engine engine = XtaEngine.getEngine();			
         m_routeInfo = new XtaRouteInfo(engine.getRoute(-1), engine.getDebugInfo(), 
         		engine.getMemoryImage(), engine.getSymbolTable());
-        
+        if(m_routeInfo == null) return false;
+        return true;
 	}
 
 	private void displayMessageBox(final String title, final String message) {

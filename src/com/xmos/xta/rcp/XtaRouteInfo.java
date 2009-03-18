@@ -1,5 +1,7 @@
 package com.xmos.xta.rcp;
 
+import java.util.ArrayList;
+
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
@@ -14,7 +16,6 @@ import com.xmos.xta.rcp.nodes.RouteNode;
 
 public class XtaRouteInfo {
 	
-	private static final int MAXPATHS = 100;
 	private Route m_route;
 	private DebugInfo m_debugInfo;
 	private MemoryImage m_memoryImage; 
@@ -37,10 +38,8 @@ public class XtaRouteInfo {
 	
 	public void buildRouteNode(){
 		RouteNode routeNode = new RouteNode("complete");
-		int i = 0;
+		
         for (PathBasicBlock block : m_route.getCompletedPaths()) {
-        	if (i >= MAXPATHS) break;
-        	i++;
         	routeNode.addNode(createPath(block, routeNode, true));
         }		
         m_routeNode = routeNode;
@@ -48,8 +47,6 @@ public class XtaRouteInfo {
 		
 		m_unresolvedNode = new RouteNode("unresolved");
 		for (Unresolved unresolved : m_route.getUnresolvedPaths()) {
-        	if (i >= MAXPATHS) break;
-        	i++;
 			m_unresolvedNode.addNode(createPath(unresolved.getBlock(), m_unresolvedNode, true));
 		}
 	}
@@ -57,12 +54,13 @@ public class XtaRouteInfo {
 	private PathNode createPath(PathBasicBlock block, Node parent, boolean isRoot) {
         PathNode pathNode = new PathNode(block, parent, isRoot);     
         for (PathBasicBlock pathBlock : block.getPathBlocks()) {            
-        	if(pathBlock.numLoopPaths(block) > 0){
+        	
+        	ArrayList<PathBasicBlock> loopPaths = pathBlock.getLoopPaths(block);
+        	if(loopPaths.isEmpty() == false){
         		 LoopNode loopNode = new LoopNode(pathBlock, pathNode);
                  pathNode.addNode(loopNode);
                                  
-            	 for (PathBasicBlock loopPath : pathBlock.getLoopPaths(block)) {
-            		 
+            	 for (PathBasicBlock loopPath : loopPaths) {
             			 loopNode.addNode(createPath(loopPath, loopNode, false));                    
                  }
         	}

@@ -24,7 +24,8 @@ import org.eclipse.ui.PlatformUI;
 public class ScannerSource extends RuleBasedScanner {
     public static final boolean DEBUG = false;
     
-    public ScannerSource() {  	
+    
+    public ScannerSource() {
     	Display display = PlatformUI.getWorkbench().getDisplay();
     	List<IRule> rules = new ArrayList<IRule>();
       
@@ -42,7 +43,9 @@ public class ScannerSource extends RuleBasedScanner {
 
     private void processStrings(Display display, List<IRule> rules) {
     	Color color = display.getSystemColor(SWT.COLOR_BLUE);
+    	
     	IToken token = new Token(new TextAttribute(color));
+    	
     	rules.add(new SingleLineRule("\"", "\"", token, '\\'));
         rules.add(new SingleLineRule("'", "'", token, '\\'));    	
     }
@@ -57,6 +60,8 @@ public class ScannerSource extends RuleBasedScanner {
         
     private void processKeywords(Display display, List<IRule> rules) {
     	Color color = display.getSystemColor(SWT.COLOR_BLUE);
+    	
+    	
     	
         String[] keywords = {
             "auto", "else", "return", "union",

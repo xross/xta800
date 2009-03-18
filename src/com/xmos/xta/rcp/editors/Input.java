@@ -39,7 +39,7 @@ public class Input {
     }
 	
 	public void addHeader(String header, String headerCodeReference, int index, int lineNum) {
-        m_sections.add(new InputSection(header, headerCodeReference, index, lineNum));    	
+        m_sections.add(new InputSection(header, headerCodeReference, index, lineNum, m_headerType));    	
     }
     
 	public void addLine(String line, String codeReference, int pc, int index) {
@@ -74,18 +74,20 @@ class InputSection {
 	private ArrayList<InputLine> m_fnops;
 	private int m_index;
 	private HashMap<Integer, InputLine> m_pcs;
+	private String m_headerType;
 	
-	public InputSection(String header, String headerCodeReference, int index, int lineNum) {
+	public InputSection(String header, String headerCodeReference, int index, int lineNum, String headerType) {
 		// Header line must have -1 index to counteract +1 in index calculations
-		m_header = new InputLine(this, header, headerCodeReference, lineNum, -1);
+		m_header = new InputLine(this, header, headerCodeReference, lineNum, -1, m_headerType);
 		m_lines = new ArrayList<InputLine>();
 		m_fnops = new ArrayList<InputLine>();
 		m_index = index;
 		m_pcs = new HashMap<Integer, InputLine>();
+		m_headerType = headerType;
 	}
 	
 	public void addLine(String line, String codeReference, int pc, int index, Input input) {
-		InputLine newLine = new InputLine(this, line, codeReference, pc, index - m_index - 1);
+		InputLine newLine = new InputLine(this, line, codeReference, pc, index - m_index - 1, m_headerType);
 		m_lines.add(newLine);
 		input.addPcToLine(pc, newLine);
 		input.addPcToSecion(pc, this);
@@ -98,7 +100,7 @@ class InputSection {
 	public void addFnop(String line, int pc, int index, Input input) {
 		int offset = index - m_index - 1;
 		
-		InputLine fnop = new InputLine(this, line, "", pc, offset);
+		InputLine fnop = new InputLine(this, line, "", pc, offset, m_headerType);
 		m_lines.add(offset, fnop);
 		m_fnops.add(fnop);
 		
@@ -178,6 +180,15 @@ class InputSection {
 	public void decrementIndex() {
 		m_index--;
 	}
+
+	public String getHeaderType() {
+		for(InputLine line: getLines()){
+			if(!line.isGrey()){
+				return m_headerType;
+			}
+		}
+		return XtaDocumentPartitioner.GREY;
+	}
 }
 
 class InputLine {
@@ -186,13 +197,25 @@ class InputLine {
 	private String m_line;
 	private int m_pc;
 	private int m_offset;
-    
-	public InputLine(InputSection section, String line, String codeReference, int pc, int offset) {
+	private boolean m_grey;
+	private String m_headerType;
+	
+	public InputLine(InputSection section, String line, String codeReference, int pc, int offset, String headerType) {
 		m_section = section;
 		m_line = line;
 		m_codeReference = codeReference;
 		m_pc = pc;
 		m_offset = offset;
+		m_grey = false;
+		m_headerType = headerType;
+	}
+	
+	public String getHeaderType() {
+		if(!isGrey()){
+			return m_headerType;
+		} else {
+			return XtaDocumentPartitioner.GREY;
+		}
 	}
 	
 	public String getLine() {
@@ -221,5 +244,13 @@ class InputLine {
 
 	public void decrementOffset() {
 		m_offset--;
+	}
+
+	public void setGrey(boolean b) {
+		m_grey = b;
+	}
+	
+	public boolean isGrey() {
+		return m_grey;
 	}
 }

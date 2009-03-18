@@ -1,5 +1,6 @@
 package com.xmos.xta.rcp.nodes;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Vector;
 
@@ -77,5 +78,14 @@ public abstract class Node implements Comparable<Node> {
     		node = node.getParentNode();
     	}
 		return node;
+	}
+
+	public HashSet<Integer> getCoverage() {
+		HashSet<Integer> covered = new HashSet<Integer>();
+		covered.addAll(getPcsCovered());
+		for(Node node : m_nodes){
+			covered.addAll(node.getCoverage());
+		}
+		return covered;
 	}
 }

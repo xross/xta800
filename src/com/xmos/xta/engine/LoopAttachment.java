@@ -2,6 +2,7 @@ package com.xmos.xta.engine;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class LoopAttachment {
@@ -63,6 +64,7 @@ public class LoopAttachment {
 			for(LoopAttachment ls : m_subLoops){
 				m_loopList.add(ls.getLoop());
 			}
+			//TODO may have to move this out of the loop in order to maintain order
 			Collections.sort(m_loopList);
 		}
 		return m_loopList;
@@ -74,24 +76,40 @@ public class LoopAttachment {
 	public PathBasicBlock getLoop(){
 		return m_loop;
 	}
-
+	
+	
+	/**
+	 * 
+	 * @param base
+	 * @return
+	 */
 	public ArrayList<PathBasicBlock> getLoopPaths(PathBasicBlock base) {
-		if (m_loop == base )
-			return getLoopList();
 		
+
+		if (m_loop == base ){
+			return getLoopList();
+		}
+
 		for (LoopAttachment subLoop : m_subLoops) {
 			ArrayList<PathBasicBlock> subLoopPaths = subLoop.getLoopPaths(base);
-			if (subLoopPaths != null)
+			if (subLoopPaths != null){
 				return subLoopPaths;
+			}
 		}
 		
+		
 		// Top of the tree
-		if (m_loop == null)
+		if (m_loop == null){
 			return getLoopList();
-		else
+		}
+		else{
 			return null;
+		}
 	}
 
+
+	
+	
 	public boolean contains(PathBasicBlock pathBasicBlock) {
 		return m_allAttachedLoops.contains(pathBasicBlock);
 	}
