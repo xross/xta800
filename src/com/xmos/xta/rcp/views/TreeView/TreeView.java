@@ -91,6 +91,9 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 
 		m_routeInfo = XtaNotifier.getInstance().getRouteInfo();
 		getSite().getPage().addSelectionListener(this);
+		
+		m_selectedRouteId = XtaNotifier.getInstance().getSelectedRouteId();
+		initialiseTrees();
 	}
 
 	private void createTreeViewer(Sash sash, Composite parent) {
