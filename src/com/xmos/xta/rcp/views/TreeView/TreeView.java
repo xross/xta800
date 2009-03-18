@@ -46,8 +46,8 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.rcp.views.TreeView.Tree";
 
-    private TreeViewer m_treeViewer;
-    private TreeViewer m_routeViewer;
+    private TreeViewer m_selectedRouteViewer;
+    private TreeViewer m_routesViewer;
     private Composite m_parent;
     private XtaRouteInfo m_routeInfo;
     private int m_selectedRouteId;
@@ -97,38 +97,38 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	private void createTreeViewer(Sash sash, Composite parent) {
-	    m_treeViewer = new TreeViewer(parent, SWT.VIRTUAL | SWT.BORDER);
+	    m_selectedRouteViewer = new TreeViewer(parent);
 	    FormData data = new FormData();
 	    data.top = new FormAttachment(0, 0);
 	    data.bottom = new FormAttachment(sash, 0);
 	    data.left = new FormAttachment(0, 0);
 	    data.right = new FormAttachment(100, 0);
-	    m_treeViewer.getControl().setLayoutData(data);
+	    m_selectedRouteViewer.getControl().setLayoutData(data);
 	    
-	    getSite().setSelectionProvider(m_treeViewer);
+	    getSite().setSelectionProvider(m_selectedRouteViewer);
 
-		m_treeViewer.setContentProvider(new TreeViewContentProvider(m_treeViewer));				
-		m_treeViewer.setLabelProvider(new TreeViewLabelProvider());
+		m_selectedRouteViewer.setContentProvider(new TreeViewContentProvider());				
+		m_selectedRouteViewer.setLabelProvider(new TreeViewLabelProvider());
 		
-		m_treeViewer.addDoubleClickListener(new IDoubleClickListener() {
+		m_selectedRouteViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
-				XtaNotifier.getInstance().notifySetFocus(m_treeViewer.getSelection());
+				XtaNotifier.getInstance().notifySetFocus(m_selectedRouteViewer.getSelection());
 			}
 		});
 		createTreeContextMenus();
 	}
 
 	private void createRouteViewer(Sash sash, Composite parent) {
-		m_routeViewer = new TreeViewer(parent, SWT.VIRTUAL | SWT.BORDER);
+		m_routesViewer = new TreeViewer(parent);
 		FormData data = new FormData();
 	    data.top = new FormAttachment(sash, 0);
 	    data.bottom = new FormAttachment(100, 0);
 	    data.left = new FormAttachment(0, 0);
 	    data.right = new FormAttachment(100, 0);
-	    m_routeViewer.getControl().setLayoutData(data);
+	    m_routesViewer.getControl().setLayoutData(data);
 	    
-	    m_routeViewer.setContentProvider(new TreeViewContentProvider(m_routeViewer));				
-	    m_routeViewer.setLabelProvider(new TreeViewLabelProvider());
+	    m_routesViewer.setContentProvider(new TreeViewContentProvider());				
+	    m_routesViewer.setLabelProvider(new TreeViewLabelProvider());
 
 	    createRouteContextMenus();
 	}
@@ -173,7 +173,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
         	if (object instanceof Node) {
             	m_routeInfo.setSelectedNode((Node)object);
             	if (part != this) {
-            		m_treeViewer.setSelection(sel, true);
+            		m_selectedRouteViewer.setSelection(sel, true);
             	}
         	}
         }
@@ -188,17 +188,17 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 			public void menuAboutToShow(IMenuManager manager) {				
 				manager.add(new Action("expand all") {
 					public void run() {
-						m_treeViewer.expandAll();
+						m_selectedRouteViewer.expandAll();
 					}
 				});
 				manager.add(new Action("collapse all") {
 					public void run() {
-						m_treeViewer.collapseAll();
-						m_treeViewer.expandToLevel(2);
+						m_selectedRouteViewer.collapseAll();
+						m_selectedRouteViewer.expandToLevel(2);
 					}
 				});
 
-				ISelection selection = m_treeViewer.getSelection();
+				ISelection selection = m_selectedRouteViewer.getSelection();
 		        if (selection instanceof IStructuredSelection) {	            
 		            Object object = ((IStructuredSelection)selection).getFirstElement();
 		            if (object instanceof Node) {
@@ -208,10 +208,10 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 			}
 		});
 		
-		contextMenu = menuMgr.createContextMenu(m_treeViewer.getTree());
-		m_treeViewer.getTree().setMenu(contextMenu);
+		contextMenu = menuMgr.createContextMenu(m_selectedRouteViewer.getTree());
+		m_selectedRouteViewer.getTree().setMenu(contextMenu);
 		
-		m_treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		m_selectedRouteViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection sel = event.getSelection();
 		    	if (sel.isEmpty())
@@ -249,7 +249,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 					});
 				}
 				
-				ISelection selection = m_routeViewer.getSelection();
+				ISelection selection = m_routesViewer.getSelection();
 		        if (selection instanceof IStructuredSelection) {	            
 		            Object object = ((IStructuredSelection)selection).getFirstElement();
 		            if (object instanceof RouteNode) {
@@ -259,10 +259,10 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 			}
 		});
 		
-		contextMenu = menuMgr.createContextMenu(m_routeViewer.getTree());
-		m_routeViewer.getTree().setMenu(contextMenu);		
+		contextMenu = menuMgr.createContextMenu(m_routesViewer.getTree());
+		m_routesViewer.getTree().setMenu(contextMenu);		
 
-		m_routeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		m_routesViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection sel = event.getSelection();
 		    	if (sel.isEmpty()) {
@@ -287,28 +287,37 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	private void initialiseTrees() {
+		initialiseSelectedRouteView();
+		initialiseRoutesView();
+	}
+	
+	private void initialiseSelectedRouteView() {
 		// Create the magic 'hidden' node to allow the actual node to be seen
 		// in the tree
 		Node treeRoot = new HiddenNode();
-		treeRoot.addNode(m_routeInfo.getRouteNode());
+		Node routeNode = m_routeInfo.getRouteNode();
+		if (routeNode != null)
+			treeRoot.addNode(routeNode);
 
 		Node unresolvedNode = m_routeInfo.getUnresolvedNode();
 		if ((unresolvedNode!= null) && (unresolvedNode.getChildren().size() > 0)) {
 			treeRoot.addNode(unresolvedNode);
 		}
-    	m_treeViewer.setInput(treeRoot);
-		ColumnViewerToolTipSupport.enableFor(m_treeViewer, ToolTip.NO_RECREATE);
-		m_treeViewer.expandToLevel(2);
-
+    	m_selectedRouteViewer.setInput(treeRoot);
+		ColumnViewerToolTipSupport.enableFor(m_selectedRouteViewer, ToolTip.NO_RECREATE);
+		m_selectedRouteViewer.expandToLevel(2);
+	}
+	
+	private void initialiseRoutesView() {
 		// Create hidden node in the route node
 		Node routeRoot = new HiddenNode();
-		for (Node routeNode : m_routeInfo.getRoutes()) {
-			routeRoot.addNode(routeNode);
+		for (Node node : m_routeInfo.getRoutes()) {
+			routeRoot.addNode(node);
 		}
 		// Maintain the same selection
-		m_routeViewer.setInput(routeRoot);
-		ColumnViewerToolTipSupport.enableFor(m_routeViewer, ToolTip.NO_RECREATE);
-		m_routeViewer.expandToLevel(2);
+		m_routesViewer.setInput(routeRoot);
+		ColumnViewerToolTipSupport.enableFor(m_routesViewer, ToolTip.NO_RECREATE);
+		m_routesViewer.expandToLevel(2);
 		setRouteTreeSelection(routeRoot, m_selectedRouteId);
 	}
 	
@@ -316,7 +325,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		for (Node node : root.getChildren()) {
 			if (node.getId() == routeId) {
 				ISelection selection = new StructuredSelection(node);
-				m_routeViewer.setSelection(selection);
+				m_routesViewer.setSelection(selection);
 				return true;
 			}
 			if (setRouteTreeSelection(node, routeId))
@@ -326,16 +335,16 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	private void refreshTree() {
-		m_treeViewer.refresh();
-		m_routeViewer.refresh();
+		m_selectedRouteViewer.refresh();
+		m_routesViewer.refresh();
 		
 	}
 	
 	private void clearTree() {
-		m_treeViewer.setInput(new HiddenNode());
-		m_treeViewer.refresh();
+		m_selectedRouteViewer.setInput(new HiddenNode());
+		m_selectedRouteViewer.refresh();
 
-		m_routeViewer.setInput(new HiddenNode());
-		m_routeViewer.refresh();
+		m_routesViewer.setInput(new HiddenNode());
+		m_routesViewer.refresh();
 	}
 }

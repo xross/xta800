@@ -123,7 +123,11 @@ public class PathNode extends Node {
     }
 
 	public int getNumIterations() {
-		return m_block.getNumIterations();
+		if (m_isRoot) {
+			return 1;
+		} else {
+			return m_block.getNumIterations();
+		}
 	}
 
 	public boolean isBlockNode() {
