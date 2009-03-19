@@ -8,19 +8,15 @@ import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 
-import com.xmos.xta.rcp.nodes.Node;
-
 public class XtaConfiguration extends SourceViewerConfiguration {
     public static final boolean DEBUG = false;
 
 	private XtaEditor m_editor;    
-	private Node m_pathRoot;
 	
 	
-    XtaConfiguration(XtaEditor editor, Node pathRoot) {
+    XtaConfiguration(XtaEditor editor) {
 		if (DEBUG) System.out.printf("XtaConfiguration()\n");		
 		m_editor = editor;
-		m_pathRoot = pathRoot;
     }
 
     public IReconciler getReconciler(ISourceViewer sourceViewer) {

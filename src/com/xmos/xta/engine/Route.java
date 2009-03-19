@@ -2,6 +2,7 @@ package com.xmos.xta.engine;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
@@ -46,6 +47,8 @@ public class Route {
 	private RouteTiming m_routeTiming;
 	private boolean m_constrained;
 	
+	private HashSet<Integer> m_pcsHit;
+	
 	public static void resetRouteCount() {
 		s_routeCount = 0;
 	}
@@ -67,6 +70,7 @@ public class Route {
 		m_routeId = s_routeCount;
 		++s_routeCount;
 		s_pathCount = 0;
+		m_pcsHit = new HashSet<Integer>();
 	}
 	
 	public int getRouteId() {
@@ -147,7 +151,10 @@ public class Route {
 	private void followNode(
 		PathBasicBlock currentBasicBlock, Stack<Integer> stack, 
 		Stack<LinkedList<BasicBlock>> nodeContext, RouteMode mode) throws AbortedException {
+		
+		
 		m_allBasicBlocks.add(currentBasicBlock);
+		m_pcsHit.addAll(currentBasicBlock.getPcsCoveredThis());
 		if(DEBUG) System.out.println("begin block " + currentBasicBlock);
 		if(m_engine.getAbort()) {
 			throw new AbortedException();
@@ -455,6 +462,14 @@ public class Route {
 		this.m_constrained = m_constrained;
 	}
 
+	/**
+	 * return a hash set of all the pcs hit by the currently analysed route
+	 * @return HashSet<Integer> 
+	 */
+	public HashSet<Integer> getPcsHit(){
+		return m_pcsHit;
+	}
+	
 	/**
 	 * @return the m_constrained
 	 */

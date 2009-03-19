@@ -46,6 +46,7 @@ import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.dialogs.InstructionTime;
 
+import com.xmos.xta.rcp.nodes.HiddenNode;
 import com.xmos.xta.rcp.nodes.Node;
 
 public class XtaEditor extends TextEditor implements IPropertyChangeListener,
@@ -109,10 +110,9 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
 		XtaNotifier.getInstance().addPropertyChangeListener(this);
 
-    	setSourceViewerConfiguration(new XtaConfiguration(this, m_currentPathRoot));
+    	setSourceViewerConfiguration(new XtaConfiguration(this));
     	setDocumentProvider(new XtaDocumentProvider());
 
-    	
     	m_currentPathRoot = null;
     	m_selectedNode = null;
     	m_startPointLine = null;
@@ -127,9 +127,9 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("XtaEditor: createPartControl\n"); 
     	super.createPartControl(parent);
     	m_parent = parent;
-
+    	
     	ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
-            	
+    	   	
         m_projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
         m_projectionSupport.install();
 
@@ -145,7 +145,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         
         m_painter = new AnnotationPainter(viewer, getAnnotationAccess());        
         m_painter.addAnnotationType(HighlightAnnotationID);
-
+        
 	    updateHighlighting();
     }
     
@@ -161,14 +161,21 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("XtaEditor: propertyChange: %s\n", event.getProperty());	
 		
 		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
-			m_selectedNode = null;
-			updateEditor();
 			
+			m_selectedNode = null;
+        	updateEditor();
+			updateInputLines();
+			updatePartitions();
+			updateEditor();
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			m_selectedNode = null;
 	    	m_startPointLine = null;
 	        m_endPointLine = null;			
 			updateEditor();
+			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
+			updateInputLines();
+			updatePartitions();
     	    
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT)) {
 			Reference startPoint = XtaNotifier.getInstance().getStartPoint();
@@ -203,27 +210,40 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     }
 
 	private void updateEditor() {
-		
-		updateInputLines();
 		updateFnops();
 		updateHighlighting();
 		updateUnknowns();
 	}	            		         	        
     	
-    private void updateInputLines() {
-    	if(m_currentPathRoot!=null){
+    private void updatePartitions() {
+    	//System.out.println("updating partitions");
+    	XtaDocumentPartitioner xtaDocumentPartitioner = (XtaDocumentPartitioner)getDocument().getDocumentPartitioner();
+		xtaDocumentPartitioner.partitionDocument(this.getDocument(), false);
+		getSourceViewer().invalidateTextPresentation();
+	}
+
+	private void updateInputLines() {
+		
+    	if(XtaNotifier.getInstance().getRouteInfo().getRoute() != null){
+    		
     		for(InputSection inputSection :getInput().getSections()){
+    			inputSection.setGrey(true);
 				for(InputLine inputLine: inputSection.getLines()){
 					inputLine.setGrey(true);
 				}
 			}
-	    	HashSet<Integer> pcsCovered = m_currentPathRoot.getCoverage();
+    		
+	    	HashSet<Integer> pcsCovered = XtaNotifier.getInstance().getRouteInfo().getRoute().getPcsHit();
 			for(InputSection inputSection :getInput().getSections()){
+				boolean hit = false;
 				for(InputLine inputLine: inputSection.getLines()){
-					
 					if(pcsCovered.contains(inputLine.getPc())){
 						inputLine.setGrey(false);
+						hit = true;
 					} 
+				}
+				if(hit == true){
+					inputSection.setGrey(false);
 				}
 			}
     	} else {

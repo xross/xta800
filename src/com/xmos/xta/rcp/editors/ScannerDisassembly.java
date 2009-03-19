@@ -14,9 +14,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
-
 import com.xmos.xeobject.AssemblyLine;
-import com.xmos.xta.rcp.nodes.Node;
 
 public class ScannerDisassembly extends RuleBasedScanner {
     public static final boolean DEBUG = false;

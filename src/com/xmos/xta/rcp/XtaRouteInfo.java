@@ -2,6 +2,7 @@ package com.xmos.xta.rcp;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
@@ -18,18 +19,11 @@ import com.xmos.xta.rcp.nodes.RouteNode;
 
 public class XtaRouteInfo {
 	
-
-	private Route m_route;
-	private DebugInfo m_debugInfo;
-	private MemoryImage m_memoryImage; 
-	private SymbolTable m_symbolTable;
-
 	private static final int MAXPATHS = 100;
 	private Route m_selectedRoute;
 	private Engine m_engine;
 	
 	private List<Node> m_routes;
-
 	private Node m_routeNode;
 	private Node m_unresolvedNode;
 	private Node m_selectedNode;
@@ -44,7 +38,6 @@ public class XtaRouteInfo {
 		buildRouteNode(-1);
 	}
 	
-
 	public void update(int selectedRouteId) {
 		m_routes.clear();
 		for (Route route : m_engine.getRoutes()) {
@@ -81,15 +74,13 @@ public class XtaRouteInfo {
 	private PathNode createPath(PathBasicBlock block, Node parent, boolean isRoot) {
         PathNode pathNode = new PathNode(block, parent, isRoot);     
         for (PathBasicBlock pathBlock : block.getPathBlocks()) {            
-        	ArrayList<PathBasicBlock> loopPaths = pathBlock.getLoopPaths(block);
-        	if(loopPaths.isEmpty() == false){
-        		 LoopNode loopNode = new LoopNode(pathBlock, pathNode);
-                 pathNode.addNode(loopNode);
+        	if (pathBlock.numLoopPaths(block) > 0){
+        		LoopNode loopNode = new LoopNode(pathBlock, pathNode);
+                pathNode.addNode(loopNode);
                                  
-            	 for (PathBasicBlock loopPath : loopPaths) {
-            			 loopNode.addNode(createPath(loopPath, loopNode, false));                    
-                 }
-
+            	for (PathBasicBlock loopPath : pathBlock.getLoopPaths(block)) {
+            		loopNode.addNode(createPath(loopPath, loopNode, false));                    
+                }
         	}
         	if (pathBlock.getNumInstructionsThis()>0)
         		pathNode.addNode(new BlockNode(pathBlock, pathNode));            

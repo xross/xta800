@@ -46,8 +46,6 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.rcp.views.TreeView.Tree";
 
-    private TreeViewer m_treeViewer;
-
     private TreeViewer m_selectedRouteViewer;
     private TreeViewer m_routesViewer;
     private Composite m_parent;
@@ -106,18 +104,11 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	    data.left = new FormAttachment(0, 0);
 	    data.right = new FormAttachment(100, 0);
 	    m_selectedRouteViewer.getControl().setLayoutData(data);
-
-	    getSite().setSelectionProvider(m_selectedRouteViewer);
-
-
-	    //TreeViewContentProvider cp = new TreeViewContentProvider(m_treeViewer);
 	    
-		//m_treeViewer.setContentProvider(cp);				
-		m_treeViewer.setLabelProvider(new TreeViewLabelProvider());
+	    getSite().setSelectionProvider(m_selectedRouteViewer);
 
 		m_selectedRouteViewer.setContentProvider(new TreeViewContentProvider());				
 		m_selectedRouteViewer.setLabelProvider(new TreeViewLabelProvider());
-
 		
 		m_selectedRouteViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
@@ -303,8 +294,10 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	private void initialiseSelectedRouteView() {
 		// Create the magic 'hidden' node to allow the actual node to be seen
 		// in the tree
-		RouteNode treeRoot = new RouteNode("");
-		treeRoot.addNode(m_routeInfo.getRouteNode());
+		Node treeRoot = new HiddenNode();
+		Node routeNode = m_routeInfo.getRouteNode();
+		if (routeNode != null)
+			treeRoot.addNode(routeNode);
 
 		Node unresolvedNode = m_routeInfo.getUnresolvedNode();
 		if ((unresolvedNode!= null) && (unresolvedNode.getChildren().size() > 0)) {
