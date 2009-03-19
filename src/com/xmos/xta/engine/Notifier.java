@@ -11,6 +11,8 @@ public interface Notifier {
 	public static final String NOTIFY_ANALYSIS_COMPLETE = "AnalysisComplete";	
 	public static final String NOTIFY_LOAD_EXECUTABLE   = "LoadExecutable";
 	public static final String NOTIFY_SELECT_FUNCTION   = "SelectFunction";
+	public static final String NOTIFY_SELECT_ROUTE      = "SelectRoute";
+	public static final String NOTIFY_REMOVE_ROUTE      = "RemoveRoute";
 	public static final String NOTIFY_SET_START_POINT   = "SetStartPoint";
 	public static final String NOTIFY_SET_END_POINT     = "SetEndPoint";
 	public static final String NOTIFY_SET_CONSTRAINT    = "SetConstraint";

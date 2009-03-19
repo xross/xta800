@@ -7,6 +7,7 @@ import java.util.Vector;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Shell;
 
+import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.views.ViewNode.StructureNode;
 import com.xmos.xta.rcp.views.ViewNode.ViewNode;
@@ -87,5 +88,12 @@ public abstract class Node implements Comparable<Node> {
 			covered.addAll(node.getCoverage());
 		}
 		return covered;
+	}
+    public int getRouteId() {
+    	Node parent = getParentNode();
+    	if (parent != null)
+    		return parent.getRouteId();
+    	else
+    		return Route.INVALID_ROUTE_ID;
 	}
 }

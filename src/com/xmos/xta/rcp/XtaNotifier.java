@@ -27,6 +27,8 @@ public class XtaNotifier implements Notifier {
 	private Reference m_endPoint;
 	private Reference m_codePoint;
 
+	private int m_selectedRouteId;
+	
 	private String m_selectedFunction;
 	private String m_runMode;
 
@@ -35,12 +37,18 @@ public class XtaNotifier implements Notifier {
 
 	private XtaNotifier() {
 		m_listeners = new ArrayList<IPropertyChangeListener>();
+
+		Engine engine = XtaEngine.getEngine();
+		m_routeInfo = new XtaRouteInfo(engine);
+		
+		m_selectedRouteId = -1;
+		
 		resetState();
 	}
 	
 	public static XtaNotifier getInstance() {
 		if (m_displayer == null) {
-			m_displayer = new XtaNotifier();					
+			m_displayer = new XtaNotifier();
 		}
 		return m_displayer;		
 	}
@@ -67,8 +75,12 @@ public class XtaNotifier implements Notifier {
 			broadcastPropertyChange(new PropertyChangeEvent(this, Notifier.NOTIFY_INFO, null, null));								
 
 		} else if (message.equals(NOTIFY_ANALYSIS_COMPLETE)) {
+
 			 createHierarchy();
-			
+
+			m_selectedRouteId = Integer.parseInt(argument);
+			m_routeInfo.update(m_selectedRouteId);
+
 			broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_ANALYSIS_COMPLETE, null, null));
 
 			m_isGuiCommand = false;
@@ -89,6 +101,15 @@ public class XtaNotifier implements Notifier {
 			m_selectedFunction = argument;
 			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
 			
+		} else if (message.equals(NOTIFY_SELECT_ROUTE)) {
+			m_selectedRouteId = Integer.parseInt(argument);
+			m_routeInfo.update(m_selectedRouteId);
+			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
+			
+		}  else if (message.equals(NOTIFY_REMOVE_ROUTE)) {
+			m_routeInfo.update(m_selectedRouteId);
+			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
+			
 		} else if (message.equals(NOTIFY_SET_RUN_MODE)) {
 			m_runMode = argument;
 			
@@ -97,10 +118,8 @@ public class XtaNotifier implements Notifier {
 			
 		} else if (message.equals(NOTIFY_UPDATE_EXCLUDES)) {
 			m_notifyArgument = argument;
-			if (m_routeInfo != null) {
-				m_routeInfo.buildRouteNode();
-				broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
-			}			
+			m_routeInfo.update(m_selectedRouteId);
+			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
 
 		} else {
 			m_notifyArgument = argument;
@@ -185,6 +204,10 @@ public class XtaNotifier implements Notifier {
 		return m_selectedFunction;
 	}
 	
+	public int getSelectedRouteId() {
+		return m_selectedRouteId;
+	}
+
 	public String getRunMode() {
 		return m_runMode;
 	}
@@ -194,7 +217,7 @@ public class XtaNotifier implements Notifier {
 	}
 	
 	private void resetState() {
-		m_routeInfo = null;
+		m_routeInfo.resetState();
 		m_startPoint = null;
 		m_endPoint = null;
 		m_codePoint = null;
@@ -203,11 +226,11 @@ public class XtaNotifier implements Notifier {
 		m_runMode = Notifier.RUN_MODE_FUNCTION;
 	}
 
+
 	private boolean createHierarchy() {		
 		// TODO: This needs to work with multiple routes..		
 		Engine engine = XtaEngine.getEngine();			
-        m_routeInfo = new XtaRouteInfo(engine.getRoute(-1), engine.getDebugInfo(), 
-        		engine.getMemoryImage(), engine.getSymbolTable());
+        m_routeInfo = new XtaRouteInfo(engine);
         if(m_routeInfo == null) return false;
         return true;
 	}

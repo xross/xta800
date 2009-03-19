@@ -163,6 +163,14 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	        }
 			annotateTree(false);
 			refreshView();
+			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUDES) || 
+				   event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) || 
+				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
+			initialiseTree();
+			annotateTree(false);
+			refreshView();
+			
 		}
 	}
 	

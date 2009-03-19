@@ -85,7 +85,8 @@ public class BlockNode extends Node {
 					getActivePage().showView(ConsoleView.ID);
 				} catch (PartInitException e) {}
 				
-				console.runCommand("print trace - b" + m_this.getId());
+				int routeId = getRouteId();
+				console.runCommand("print trace " + routeId + " b" + m_this.getId());
 			}
 		});    	
     }
