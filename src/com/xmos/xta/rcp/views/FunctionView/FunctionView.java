@@ -316,14 +316,17 @@ public class FunctionView extends ZoomedCanvasView {
 
     	double timeUnit = 0; 	
     	double timeUnitIncrement = getTimeUnitIncrement();
-        for (int x = 0; x < clientArea.width; x += (m_pixelsPerTimeUnit * m_scale * timeUnitIncrement)) {
+		for (double x = 0; x < clientArea.width; x += m_pixelsPerTimeUnit * m_scale * timeUnitIncrement) {
         	double time = timeUnit;
         	
         	gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
-        	gc.drawText(String.format("%.01f %s", time, m_timeUnits), x, 0); 
+        	if (timeUnitIncrement < 0.1)
+        		gc.drawText(String.format("%.02f %s", time, m_timeUnits), (int)x, 0);
+        	else
+        		gc.drawText(String.format("%.01f %s", time, m_timeUnits), (int)x, 0);
        	    
        	    gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLUE));
-            gc.drawLine(x, m_timelineY, x, m_borderY + m_timelineY);
+            gc.drawLine((int)x, m_timelineY, (int)x, m_borderY + m_timelineY);
          	timeUnit += timeUnitIncrement;
         }    	
 

@@ -181,8 +181,15 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
         if (sel instanceof IStructuredSelection) {	            
             Object object = ((IStructuredSelection)sel).getFirstElement();
             if (object instanceof Node) {
+            	
+            	boolean selectionChanged = true;
+            	if (m_selectedNode == null ||
+            			(m_selectedNode.getPathRoot() != ((Node)object).getPathRoot())) {
+            		selectionChanged = false; // Cause zoom to fit
+            	}
+            		
                 m_selectedNode = (Node)object;
-                annotateTree(false);
+                annotateTree(selectionChanged);
                 refreshView();
             }
         }

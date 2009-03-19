@@ -1,6 +1,5 @@
 package com.xmos.xta.rcp.dialogs;
 
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -17,7 +16,7 @@ import org.eclipse.swt.widgets.Text;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.references.Reference;
 
-public class InstructionTime extends Dialog {
+public class InstructionTime extends XtaDialog {
     Engine m_engine;
     Reference m_ref;
     
@@ -42,7 +41,7 @@ public class InstructionTime extends Dialog {
 
     protected void configureShell(Shell newShell) {
     	super.configureShell(newShell);
-    	newShell.setText("Set Instruction Time");
+    	configureShell(newShell, "Set Instruction Time", 250, 250);
     }
 
     protected Control createDialogArea(Composite parent) {

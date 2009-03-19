@@ -462,4 +462,13 @@ public class Route {
 	public boolean wasConstrained() {
 		return m_constrained;
 	}
+
+	public String getFullDescription() {
+		String fullDescription = String.format("Route(%d) %s\n", getRouteId(), getDescription());
+		fullDescription += m_routeTiming.getDescription();
+		fullDescription += String.format("    Complete paths: %d, Unresolved paths: %d\n\n", 
+    			getCompletedPaths().size(), getUnresolvedPaths().size());
+		
+		return fullDescription;
+	}
 }

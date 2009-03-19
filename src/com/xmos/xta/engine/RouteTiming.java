@@ -95,5 +95,21 @@ public class RouteTiming {
     public int getMinFrequency() {
     	int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
         return (getWorstCycles() * 1000 * threadFactor) / (int)(getMaxTime() + 1.0);    	
-    }    
+    }
+
+	public String getDescription() {
+		String description = "";
+		if (isTimingSpecified()) {
+			if (passedTiming()) {
+				description += String.format("    Pass, Slack: %.1fns, ", getSlackTime()); 						
+			} else {
+				description += String.format("    Fail, Violation: %.1fns, ", getViolationTime()); 						
+			}
+			description += String.format("Required: %.1fns, Worst: %.1fns, Min Frequency: %d Mhz\n", 
+	    			getMaxTime(), getWorstTime(), getMinFrequency()); 				
+		} else {
+			description += "    No Timing Specified\n";
+		}
+		return description;
+	}
 }

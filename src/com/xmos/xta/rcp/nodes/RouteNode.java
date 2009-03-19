@@ -2,11 +2,16 @@ package com.xmos.xta.rcp.nodes;
 
 import java.util.HashSet;
 import java.util.Vector;
+
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Shell;
 
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.rcp.XtaEngine;
+import com.xmos.xta.rcp.dialogs.Required;
 import com.xmos.xta.rcp.views.ViewNode.FunctionRouteNode;
 import com.xmos.xta.rcp.views.ViewNode.StructureRouteNode;
 
@@ -29,18 +34,11 @@ public class RouteNode extends Node {
     public int getNumUnknowns() { return 0; }    
    
     public String getDescription() {
-    	String str = "Route " + m_route.getRouteId() + " (" + m_route.getDescription() + ")";
+    	String str = "Route (" + m_route.getRouteId() + ") " + m_route.getDescription() + "";
     	return str;
     }
     public String getToolTipText() {
-        String toolTipText = "";
-        toolTipText += "Route ID: " + m_route.getRouteId() + "\n";
-        toolTipText += "----------------------------------\n";
-        toolTipText += "Description: " + m_route.getDescription() + "\n";
-		toolTipText += "Completed paths: " + m_route.getCompletedPaths().size() + "\n";
-		toolTipText += "Unresolved paths: " + m_route.getUnresolvedPaths().size() + "\n";
-        
-        return toolTipText;
+        return m_route.getFullDescription();
     }
     
     public String getTypeName() { return "route"; }
@@ -48,8 +46,14 @@ public class RouteNode extends Node {
     public HashSet<Integer> getPcsCovered() {
     	return new HashSet<Integer>();
     }
+
     public void createContextMenu(final Shell parent, IMenuManager manager) {
-    	// Do nothing
+	    manager.add(new Separator());
+	    manager.add(new Action("Set timing requirements") {
+		    public void run() {
+			    new Required(parent, XtaEngine.getEngine(), m_route);
+		    }
+	    });
     }
     
 	public int getNumIterations() { return 1; }

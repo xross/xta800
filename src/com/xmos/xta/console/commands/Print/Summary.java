@@ -36,25 +36,7 @@ public class Summary extends Command {
     }
 
     private void displayRouteSummary(Console console, Route route) {
-    	RouteTiming routeTiming = route.getRouteTiming();
-    	    	
-    	console.display(String.format("Route(%d) %s\n", 
-    			route.getRouteId(), route.getDescription()));
-    	
-		if (routeTiming.isTimingSpecified()) {
-			if (routeTiming.passedTiming()) {
-		    	console.display(String.format("    Pass, Slack: %.1fns, ", routeTiming.getSlackTime())); 						
-			} else {
-		    	console.display(String.format("    Fail, Violation: %.1fns, ", routeTiming.getViolationTime())); 						
-			}
-	    	console.display(String.format("Required: %.1fns, Worst: %.1fns, Min Frequency: %d Mhz\n", 
-	    			routeTiming.getMaxTime(), routeTiming.getWorstTime(), routeTiming.getMinFrequency())); 				
-		} else {
-			console.display("    No Timing Specified\n");
-		}
-		
-    	console.display(String.format("    Complete paths: %d, Unresolved paths: %d\n\n", 
-    			route.getCompletedPaths().size(), route.getUnresolvedPaths().size()));
+    	console.display(route.getFullDescription());
     }
     
     private void displayOverallSummary(Console console, Engine engine) {
