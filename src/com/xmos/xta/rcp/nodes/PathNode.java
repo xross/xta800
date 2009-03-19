@@ -91,7 +91,11 @@ public class PathNode extends Node {
     }   
     
     public HashSet<Integer> getPcsCovered() {
-    	return m_block.getPcsCovered(false);
+		HashSet<Integer> pcsCovered = new HashSet<Integer>();
+		for (Node child : getChildren()) {
+			pcsCovered.addAll(child.getPcsCovered());
+        }
+        return pcsCovered;
     }
     
     PathNode m_this = this;

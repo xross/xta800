@@ -407,15 +407,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		return pcs;
 	}
 	
-	public HashSet<Integer> getPcsCoveredLoopsOnly() {
-		HashSet<Integer> pcsCovered = new HashSet<Integer>();
-
-		for (PathBasicBlock loopPath : getLoopPaths(this)) {
-			pcsCovered.addAll(loopPath.getPcsCovered(true));
-		}
-		return pcsCovered;
-	}
-	
 	// --------------------------------------------------------------------- //
 	// Statistics
 	// --------------------------------------------------------------------- //	

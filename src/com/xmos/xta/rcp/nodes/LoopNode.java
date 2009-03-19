@@ -63,7 +63,11 @@ public class LoopNode extends Node {
     }
         
     public HashSet<Integer> getPcsCovered() {
-        return m_block.getPcsCoveredLoopsOnly();
+		HashSet<Integer> pcsCovered = new HashSet<Integer>();
+		for (Node child : getChildren()) {
+			pcsCovered.addAll(child.getPcsCovered());
+        }
+        return pcsCovered;
     }
 
     public void createContextMenu(final Shell parent, IMenuManager manager) {    	
