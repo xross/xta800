@@ -1,5 +1,8 @@
 package com.xmos.xta.rcp.dialogs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -18,10 +21,10 @@ import com.xmos.xta.engine.references.Reference;
 
 public class InstructionTime extends XtaDialog {
     Engine m_engine;
-    Reference m_ref;
+    List<Reference> m_refs;
     
     boolean m_valueChanged;
-    int m_originalCycles;
+    List<Integer> m_originalCycles;
 	
     Text m_ns;
     Text m_cycles;
@@ -32,16 +35,35 @@ public class InstructionTime extends XtaDialog {
     public InstructionTime(Shell parent, final Engine engine, Reference codeReference) {
     	super(parent);
     	m_engine = engine;
-    	m_ref = codeReference;
+    	m_refs = new ArrayList<Reference>();
+    	m_refs.add(codeReference);
 
     	m_valueChanged = false;
-    	m_originalCycles = m_engine.getInstructionNumCycles(m_ref.getPc());
+    	m_originalCycles = new ArrayList<Integer>();
+    	for (Reference ref : m_refs) {
+    		m_originalCycles.add(m_engine.getInstructionNumCycles(ref.getPc()));
+    	}
+    	open();
+    }
+
+    public InstructionTime(Shell parent, final Engine engine, List<Reference> codeReferences) {
+    	super(parent);
+    	assert(codeReferences.size() > 0);
+    	
+    	m_engine = engine;
+    	m_refs = codeReferences;
+
+    	m_valueChanged = false;
+    	m_originalCycles = new ArrayList<Integer>();
+    	for (Reference ref : m_refs) {
+    		m_originalCycles.add(m_engine.getInstructionNumCycles(ref.getPc()));
+    	}
     	open();
     }
 
     protected void configureShell(Shell newShell) {
     	super.configureShell(newShell);
-    	configureShell(newShell, "Set Instruction Time", 250,  200);
+    	configureShell(newShell, "Set Instruction Time", 250,  180);
     }
 
     protected Control createDialogArea(Composite parent) {
@@ -52,9 +74,13 @@ public class InstructionTime extends XtaDialog {
 	    container.setLayout(gridLayout);
 
 		Group engineGroup = createGroup(container, "PC", 1, 2);
-		Label ref = new Label(engineGroup, SWT.SHADOW_NONE | SWT.CENTER);
-		ref.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		ref.setText(m_ref.getRef());
+		Label label = new Label(engineGroup, SWT.SHADOW_NONE | SWT.CENTER);
+		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		String labelText = "";
+		for (Reference ref : m_refs) {
+			labelText += " " + ref.getRef();
+		}
+		label.setText(labelText);
 
 		Group nsGroup = createGroup(container, "ns", 1, 1);
 		m_ns = new Text(nsGroup, SWT.SINGLE | SWT.CENTER);
@@ -63,7 +89,9 @@ public class InstructionTime extends XtaDialog {
 	    m_nsListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				try {
-					m_engine.setInstructionTimeTaken(m_ref, Double.parseDouble(m_ns.getText()));
+					for (Reference ref : m_refs) {
+						m_engine.setInstructionTimeTaken(ref, Double.parseDouble(m_ns.getText()));
+					}
 					m_valueChanged = true;
 					updateCyclesValue();
 				} catch (NumberFormatException exception) {
@@ -79,7 +107,9 @@ public class InstructionTime extends XtaDialog {
 	    m_cyclesListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				try {
-					m_engine.setInstructionNumCycles(m_ref, Integer.parseInt(m_cycles.getText()));
+					for (Reference ref : m_refs) {
+						m_engine.setInstructionNumCycles(ref, Integer.parseInt(m_cycles.getText()));
+					}
 					m_valueChanged = true;
 					updateNsValue();
 				} catch (NumberFormatException exception) {
@@ -106,21 +136,31 @@ public class InstructionTime extends XtaDialog {
 
 	private void updateNsValue() {
 		m_ns.removeModifyListener(m_nsListener);
-		m_ns.setText(Double.toString(m_engine.getInstructionTimeTaken(m_ref.getPc())));
+		m_ns.setText(Double.toString(m_engine.getInstructionTimeTaken(m_refs.get(0).getPc())));
 		m_ns.addModifyListener(m_nsListener);
 	}			
 
 	private void updateCyclesValue() {
 		m_cycles.removeModifyListener(m_cyclesListener);
-		m_cycles.setText(Integer.toString(m_engine.getInstructionNumCycles(m_ref.getPc())));
+		m_cycles.setText(Integer.toString(m_engine.getInstructionNumCycles(m_refs.get(0).getPc())));
 		m_cycles.addModifyListener(m_cyclesListener);
 	}			
 
     protected void buttonPressed(int id) {
     	if (id == IDialogConstants.CANCEL_ID) {
     		if (m_valueChanged) {
-        		m_engine.setInstructionNumCycles(m_ref, m_originalCycles);
-    			m_engine.unsetInstructionTime(m_ref.getPc());
+    			int index = 0;
+    			for (Reference ref : m_refs) {
+    				m_engine.setInstructionNumCycles(ref, m_originalCycles.get(index));
+    				m_engine.unsetInstructionTime(ref.getPc());
+    				index++;
+    			}
+    		}
+    	} else if (id == IDialogConstants.OK_ID) {
+    		int index = 0;
+    		for (Reference ref : m_refs) {
+    			m_engine.setInstructionNumCycles(ref, m_originalCycles.get(index));
+				index++;
     		}
     	}
     	super.buttonPressed(id);

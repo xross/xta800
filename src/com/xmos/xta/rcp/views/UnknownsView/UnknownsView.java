@@ -1,5 +1,7 @@
 package com.xmos.xta.rcp.views.UnknownsView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
@@ -52,13 +54,15 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 	private TableViewer m_tableViewer;
 	private Node m_selectedNode;
 	
-	Reference m_selectedCodeRef;
+	List<Reference> m_selectedCodeRefs;
 	Action m_setInstructionTimeAction;
 
 	public UnknownsView() {
 		if (DEBUG)
 			System.out.printf("Unknowns()\n");
 		XtaNotifier.getInstance().addPropertyChangeListener(this);
+		
+		m_selectedCodeRefs = new ArrayList<Reference>();
 	}
 
 	public void createPartControl(Composite parent) {
@@ -215,23 +219,31 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 	private void setupMouseListeners() {
 		m_tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
-				XtaNotifier.getInstance().notifyShow(m_selectedCodeRef);
+				if (m_selectedCodeRefs.size() == 1) {
+					XtaNotifier.getInstance().notifyShow(m_selectedCodeRefs.get(0));
+				}
 			}
 		});
 		
 		m_tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection selection = event.getSelection();
-				XtaInstruction unknownInstruction = (XtaInstruction)((IStructuredSelection) selection).getFirstElement();
-				
-				if (unknownInstruction != null) {
-					m_selectedCodeRef = ReferenceFactory.createReference(
+
+				m_setInstructionTimeAction.setEnabled(false);
+				m_selectedCodeRefs.clear();
+				for (Object object : ((IStructuredSelection) selection).toList()) {
+					XtaInstruction unknownInstruction = (XtaInstruction)object;
+					
+					if (unknownInstruction == null)
+						continue;
+					
+					Reference ref = ReferenceFactory.createReference(
 							"0x" + Integer.toHexString(unknownInstruction.getPc()), ReferenceClass.ENDPOINT_REF);
 					Engine engine = XtaEngine.getEngine();
-					m_selectedCodeRef.resolve(engine, engine.getNodeId(), engine.getCoreId());
+					ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
+					m_selectedCodeRefs.add(ref);
+					
 					m_setInstructionTimeAction.setEnabled(true);
-				} else {
-					m_setInstructionTimeAction.setEnabled(false);
 				}
 			}			
 		});
@@ -246,7 +258,7 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 		// Create the action
 		m_setInstructionTimeAction = new Action() { 
 			public void run() {
-     			new InstructionTime(m_parent.getShell(), XtaEngine.getEngine(), m_selectedCodeRef);
+     			new InstructionTime(m_parent.getShell(), XtaEngine.getEngine(), m_selectedCodeRefs);
 			}
 		}; 
 		m_setInstructionTimeAction.setText("Set instruction time");
