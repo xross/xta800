@@ -127,7 +127,9 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 			m_tableViewer.setInput(null);
 			updateDisplay();
 			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
+		} else if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE) ||
+				   event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) ||
+				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 			updateDisplay();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
@@ -152,8 +154,7 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 		if (DEBUG)
 			System.out.printf("Unknowns: updateDisplay\n");
 
-		final XtaRouteInfo routeInfo = XtaNotifier.getInstance()
-				.getRouteInfo();
+		final XtaRouteInfo routeInfo = XtaNotifier.getInstance().getRouteInfo();
 		if (routeInfo != null) {
 			m_tableViewer.setInput(routeInfo.getRoute());
 			m_selectedNode = routeInfo.getSelectedNode();

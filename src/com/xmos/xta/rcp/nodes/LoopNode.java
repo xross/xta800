@@ -70,8 +70,9 @@ public class LoopNode extends Node {
     }
             
     private String getSummary() {
-        String description = "Loop: " + m_block.numLoopPaths(m_block) + " path";
-        if (m_block.numLoopPaths(m_block) > 1) {
+        int numPaths = getChildren().size();
+		String description = "Loop: " + numPaths + " path";
+        if (numPaths > 1) {
             description += "s";
         }
         
@@ -81,8 +82,8 @@ public class LoopNode extends Node {
 
     public int getNumIterations() {
         int numIterations = 0;
-        for (PathBasicBlock loopPath : m_block.getLoopPaths(m_block)) {
-            numIterations += m_block.getLoopPathAttributes(loopPath).getNumIterations();
+        for (Node child : getChildren()) {
+            numIterations += child.getNumIterations();
         }
         return numIterations;
     }

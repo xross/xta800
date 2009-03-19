@@ -1,6 +1,6 @@
 package com.xmos.xta.rcp.views.UnknownsView;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -14,12 +14,11 @@ public class UnknownsViewContentProvider implements IStructuredContentProvider {
 	public Object[] getElements(Object inputElement) {
 		if (DEBUG) System.out.printf("UnknownsViewContentProvider: getElements\n");	
 		
-		ArrayList<XtaInstruction> show = new ArrayList<XtaInstruction>();
-		
+		HashSet<XtaInstruction> unknownsSet = new HashSet<XtaInstruction>();
 		for (XtaInstruction instruction : ((Route)inputElement).getUnknowns()){
-			show.add(instruction);
+			unknownsSet.add(instruction);
 		}
-		return show.toArray();
+		return unknownsSet.toArray();
 	}
 
 	public void dispose() {
