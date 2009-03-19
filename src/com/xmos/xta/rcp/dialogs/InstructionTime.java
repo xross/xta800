@@ -41,7 +41,7 @@ public class InstructionTime extends XtaDialog {
 
     protected void configureShell(Shell newShell) {
     	super.configureShell(newShell);
-    	configureShell(newShell, "Set Instruction Time", 250, 250);
+    	configureShell(newShell, "Set Instruction Time", 250, 150);
     }
 
     protected Control createDialogArea(Composite parent) {

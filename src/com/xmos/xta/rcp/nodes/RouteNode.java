@@ -9,6 +9,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Shell;
 
 import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.RouteTiming;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.dialogs.Required;
@@ -41,7 +42,18 @@ public class RouteNode extends Node {
         return m_route.getFullDescription();
     }
     
-    public String getTypeName() { return "route"; }
+    public String getTypeName() {
+    	RouteTiming routeTiming = m_route.getRouteTiming();
+		if (routeTiming.isTimingSpecified()) {
+			if (routeTiming.passedTiming())
+				return "required_pass";
+			else
+				return "required_fail";
+		} else {
+			return "required_notset";
+		}
+	}
+    	
     
     public HashSet<Integer> getPcsCovered() {
     	return new HashSet<Integer>();
@@ -52,6 +64,11 @@ public class RouteNode extends Node {
 	    manager.add(new Action("Set timing requirements") {
 		    public void run() {
 			    new Required(parent, XtaEngine.getEngine(), m_route);
+		    }
+	    });
+	    manager.add(new Action("Clear timing requirements") {
+		    public void run() {
+			    XtaEngine.getEngine().unsetRouteMax(m_route.getRouteId());
 		    }
 	    });
     }

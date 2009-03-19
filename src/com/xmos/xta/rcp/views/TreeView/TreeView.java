@@ -127,7 +127,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	    data.right = new FormAttachment(100, 0);
 	    m_routesViewer.getControl().setLayoutData(data);
 	    
-	    m_routesViewer.setContentProvider(new TreeViewContentProvider());				
+	    m_routesViewer.setContentProvider(new TreeViewContentProvider());
 	    m_routesViewer.setLabelProvider(new TreeViewLabelProvider());
 
 	    createRouteContextMenus();

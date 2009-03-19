@@ -31,5 +31,5 @@ class TreeViewLabelProvider extends CellLabelProvider {
 
 		Node node = (Node)element;		
 		return node.getToolTipText();
-	}		
+	}
 }

@@ -111,6 +111,10 @@ public class XtaNotifier implements Notifier {
 		} else if (message.equals(NOTIFY_SET_GUI_COMMAND)) {
 			m_isGuiCommand = true;
 			
+		} else if (message.equals(NOTIFY_SET_CONSTRAINT)) {
+			m_isGuiCommand = false;
+			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));			
+			
 		} else if (message.equals(NOTIFY_UPDATE_EXCLUDES)) {
 			m_notifyArgument = argument;
 			m_routeInfo.update(m_selectedRouteId);
