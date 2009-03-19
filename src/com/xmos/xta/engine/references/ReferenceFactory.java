@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.maps.SrcTableInfo;
 
 public class ReferenceFactory {
 	public enum ReferenceClass {
@@ -59,7 +60,7 @@ public class ReferenceFactory {
 					return new SrcLabelReference(reference);
 				}				
 			} else if (referenceType.getClass() == SrcLabelFileLineReference.class) {
-				if (isSourceReference(reference)) {
+				if (isSourceReference(reference) && inTable(reference, m_engine.getSrcLabelTable())) {
 		    		return new SrcLabelFileLineReference(reference);	
 				}				
 			} else if (referenceType.getClass() == EndpointReference.class) {
@@ -67,7 +68,7 @@ public class ReferenceFactory {
 					return new EndpointReference(reference);
 				}				
 			} else if (referenceType.getClass() == EndpointFileLineReference.class) {
-				if (isSourceReference(reference)) {
+				if (isSourceReference(reference) && inTable(reference, m_engine.getEndpointTable())) {
 		    		return new EndpointFileLineReference(reference);
 				}
 			}
@@ -75,6 +76,19 @@ public class ReferenceFactory {
 		return new ErrorReference(reference);
 	}
 	    
+	private static boolean inTable(String ref, Map<Integer, SrcTableInfo> table) {
+		String fileName = ReferenceFactory.getFileName(ref);
+        int lineNumber  = ReferenceFactory.getLineNumber(ref);		
+
+		for (SrcTableInfo info : table.values()) {
+            if (info.getFileName().equals(fileName) &&
+            	(info.getLineNumber() == lineNumber)) {
+            	return true;
+            }			
+		}		
+		return false;
+	}
+
 	public static Reference[] getReferenceClass(ReferenceClass referenceClass) {
     	Reference[] referenceTypes = m_referenceClasses.get(referenceClass);
 		assert(referenceTypes != null);
