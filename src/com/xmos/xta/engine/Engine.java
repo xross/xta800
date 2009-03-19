@@ -465,6 +465,7 @@ public class Engine {
 		Route route = getRoute(routeId);
 		if (route != null) {
 			route.getRouteTiming().setMaxTime(time);
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
 		}
 		return false;
@@ -474,6 +475,7 @@ public class Engine {
 		Route route = getRoute(routeId);
 		if (route != null) {
 			route.getRouteTiming().setMaxCycles(cycles);
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
 		}
 		return false;		
@@ -483,6 +485,7 @@ public class Engine {
 		Route route = getRoute(routeId);
 		if (route != null) {
 			route.getRouteTiming().resetMaxTime();
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
 		}
 		return false;		

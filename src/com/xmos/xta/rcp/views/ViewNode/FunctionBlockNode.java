@@ -74,7 +74,7 @@ public class FunctionBlockNode extends ViewNode {
         if (m_numIterations == 0)
         	return;
 
-        if (DEBUG) System.out.printf("Draw FunctionPath %d,%d,%f\n",
+        if (DEBUG) System.out.printf("Draw FunctionBlock %d,%d,%f\n",
         		m_pixelOffsetX, m_pixelOffsetY, scale);
 
         gc.setLineWidth(m_lineWidth);

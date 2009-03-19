@@ -1,6 +1,5 @@
 package com.xmos.xta.rcp.dialogs;
 
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -16,7 +15,8 @@ import org.eclipse.swt.widgets.Spinner;
 
 import com.xmos.xta.rcp.nodes.PathNode;
 
-public class Iterations extends Dialog {
+public class Iterations extends XtaDialog {
+	
 	private int m_numIterations;
     private boolean m_absoluteCount;
     
@@ -32,7 +32,7 @@ public class Iterations extends Dialog {
 
     protected void configureShell(Shell newShell) {
     	super.configureShell(newShell);
-    	newShell.setText("Iterations");
+    	configureShell(newShell, "Iterations", 300, 150);
     }
 
     protected Control createDialogArea(Composite parent) {

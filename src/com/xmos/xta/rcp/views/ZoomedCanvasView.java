@@ -181,8 +181,15 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
         if (sel instanceof IStructuredSelection) {	            
             Object object = ((IStructuredSelection)sel).getFirstElement();
             if (object instanceof Node) {
+            	
+            	boolean selectionChanged = true;
+            	if (m_selectedNode == null ||
+            			(m_selectedNode.getPathRoot() != ((Node)object).getPathRoot())) {
+            		selectionChanged = false; // Cause zoom to fit
+            	}
+            		
                 m_selectedNode = (Node)object;
-                annotateTree(false);
+                annotateTree(selectionChanged);
                 refreshView();
             }
         }
@@ -277,6 +284,9 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     }
     
 	public void zoomOut() {
+		if (m_selectedNode == null)
+			return;
+
 		// Don't zoom too far out
 		if ((int)((double)m_pixelsX * m_scale) > MIN_CANVAS_X) {
 			m_scale = m_scale / 1.2;
@@ -285,6 +295,9 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	}
 
 	public void zoomIn() {
+		if (m_selectedNode == null)
+			return;
+		
 		// Don't zoom any more than the maximum width
 		if ((int)((double)m_pixelsX * m_scale) < MAX_CANVAS_X) {
 			if (!m_scaleY || ((int)((double)m_pixelsY * m_scale) < MAX_CANVAS_Y)) {
@@ -363,7 +376,29 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 				}
 			}
 		};
+		
+		Listener canvasListener = new Listener() {
+			public void handleEvent(Event event) {
+				switch (event.type) {
+                case SWT.MouseWheel:
+                	if (event.count > 0)
+                		zoomIn();
+                	else
+                		zoomOut();
+                    break;
+                case SWT.KeyDown:
+                	if (event.character == '+')
+                		zoomIn();
+                	else if (event.character == '-')
+                		zoomOut();
+                	break;
+				}
+			}
+		};
 
+		m_canvas.addListener(SWT.MouseWheel, canvasListener);
+		m_canvas.addListener(SWT.KeyDown, canvasListener);
+		
 		m_canvas.addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(MouseEvent e) {
 	    		for (ViewNode node : m_clickAreas) {
