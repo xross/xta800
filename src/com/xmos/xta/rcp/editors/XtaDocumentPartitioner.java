@@ -61,6 +61,8 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 			length += header.length();
 			addTypedRegion(document, regionList, headerFrom, (headerFrom + header.length()), inputSection.getHeaderType());
 			
+			
+			//TODO make the partitioner partition in as few partitions as possible
 			for (InputLine line : inputSection.getLines()) {
 				int from = length;
 				String str = line.getLine() + "\n";

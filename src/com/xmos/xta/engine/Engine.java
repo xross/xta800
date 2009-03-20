@@ -234,7 +234,31 @@ public class Engine {
 			return new Progress(Progress.State.IDLE, 0);
 		}
 	}
-
+	
+	class RouteDescription {
+		private String m_description;
+		private RouteMode m_mode;
+		private String m_function;
+		
+		public RouteDescription(String function, String description, RouteMode mode){
+			m_description = description;
+			m_mode = mode;
+			m_function = function;
+		}
+		
+		public String getDescription(){
+			return m_description;
+		}
+		
+		public RouteMode getMode(){
+			return m_mode;
+		}
+		
+		public String getFunction(){
+			return m_function;
+		}
+	}
+	
 	public boolean analyseRoute(String functionName) {
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
@@ -252,8 +276,11 @@ public class Engine {
 
 			TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
 			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
-			String routeDescription = String.format("function: %s", functionName);
-			return analyseRouteSafely(startPc, endPcs, routeDescription, RouteMode.FUNCTION);
+			
+
+			String description = String.format("function: %s", functionName);
+			RouteDescription routeDescription = new RouteDescription(functionName, description, RouteMode.FUNCTION);
+			return analyseRouteSafely(startPc, endPcs, routeDescription);
 		}
 	}
 
@@ -279,9 +306,9 @@ public class Engine {
 		} else {
 			TreeSet<Integer> endPc = new TreeSet<Integer>();
 			endPc.add(toRef.getPc());
-			String routeDescription = String.format("path: %s to %s", from, to);
-			
-			boolean success = analyseRouteSafely(fromRef.getPc(), endPc, routeDescription, RouteMode.ABSLOUTE);
+			String description = String.format("path: %s to %s", from, to);
+			RouteDescription routeDescription = new RouteDescription(null, description, RouteMode.ABSLOUTE);
+			boolean success = analyseRouteSafely(fromRef.getPc(), endPc, routeDescription);
 			if (success) {
 				notify(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_PATH);
 				notify(Notifier.NOTIFY_SET_START_POINT, from);
@@ -592,10 +619,10 @@ public class Engine {
 		return m_constraint;
 	}
 			
-	private boolean analyseRouteSafely(int startPc, TreeSet<Integer> endPcs, String routeDescription, RouteMode mode) {
+	private boolean analyseRouteSafely(int startPc, TreeSet<Integer> endPcs, RouteDescription routeDescription) {
 		boolean success = false;
 		try {
-			success = doRouteAnalysis(startPc, endPcs, routeDescription, mode);
+			success = doRouteAnalysis(startPc, endPcs, routeDescription);
 			m_progress.setState(Progress.State.IDLE);
 		} catch (final java.lang.OutOfMemoryError e) {
 			m_progress.setState(Progress.State.IDLE);
@@ -616,8 +643,11 @@ public class Engine {
 		return success;
 	}
 
+	
+	
+	
 	private boolean doRouteAnalysis(int startPc, TreeSet<Integer> endPcs, 
-			String routeDescription, RouteMode mode) throws Exception {
+			RouteDescription routeDescription) throws Exception {
 		 		
 		if (m_progress.getState() != Progress.State.IDLE) {
 			notify(Notifier.NOTIFY_ERROR, "Engine busy");
@@ -644,7 +674,7 @@ public class Engine {
 			
 		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 		m_progress.resetState(Progress.State.PROCESSING_PATHS);
-		RouteStatus status = route.analyse(mode);
+		RouteStatus status = route.analyse(routeDescription.getMode());
 		switch (status) {
 		case ABORTED:
 			setAbort(false);

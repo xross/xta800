@@ -37,6 +37,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
+import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.engine.maps.SrcTableInfo;
 import com.xmos.xta.engine.references.Reference;
@@ -46,7 +47,6 @@ import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.dialogs.InstructionTime;
 
-import com.xmos.xta.rcp.nodes.HiddenNode;
 import com.xmos.xta.rcp.nodes.Node;
 
 public class XtaEditor extends TextEditor implements IPropertyChangeListener,
@@ -216,7 +216,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}	            		         	        
     	
     private void updatePartitions() {
-    	//System.out.println("updating partitions");
     	XtaDocumentPartitioner xtaDocumentPartitioner = (XtaDocumentPartitioner)getDocument().getDocumentPartitioner();
 		xtaDocumentPartitioner.partitionDocument(this.getDocument(), false);
 		getSourceViewer().invalidateTextPresentation();
@@ -224,7 +223,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
 	private void updateInputLines() {
 		
-    	if(XtaNotifier.getInstance().getRouteInfo().getRoute() != null){
+		Route route = XtaNotifier.getInstance().getRouteInfo().getRoute();
+    	if(route != null){
     		
     		for(InputSection inputSection :getInput().getSections()){
     			inputSection.setGrey(true);
@@ -233,18 +233,42 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 				}
 			}
     		
-	    	HashSet<Integer> pcsCovered = XtaNotifier.getInstance().getRouteInfo().getRoute().getPcsHit();
+	    	HashSet<Integer> pcsCovered = route.getPcsHit();
+	    	
+	    	
+	    	boolean foundFirstLine = false;
+	    	ArrayList<InputSection> noDebug = new ArrayList<InputSection>();
+	    	
 			for(InputSection inputSection :getInput().getSections()){
 				boolean hit = false;
 				for(InputLine inputLine: inputSection.getLines()){
 					if(pcsCovered.contains(inputLine.getPc())){
+						foundFirstLine = true;
 						inputLine.setGrey(false);
 						hit = true;
-					} 
+					} 	
+				}
+				
+				if(foundFirstLine && inputSection.getLines().size() == 0){
+					noDebug.add(inputSection);
+				}
+				
+				if(inputSection.getLines().size() > 0 && hit == false){
+					noDebug.clear();
 				}
 				if(hit == true){
 					inputSection.setGrey(false);
+					for(InputSection i : noDebug){
+						i.setGrey(false);
+					}
 				}
+				/*
+				if(route.getFunction()!= null){
+					if(inputSection.getHeader().getLine().contains(route.getFunction())){
+						inputSection.setGrey(false);
+					}
+				}
+				*/
 			}
     	} else {
     		for(InputSection inputSection :getInput().getSections()){

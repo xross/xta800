@@ -29,13 +29,12 @@ public class ScannerShownRoute extends RuleBasedScanner {
     private void processComments(Display display, List<IRule> rules) {
     	Color color = display.getSystemColor(SWT.COLOR_GRAY);
     	IToken token = new Token(new TextAttribute(color));
-    	rules.add(new PatternRule("#", null, token, '\0', true));
-    	rules.add(new PatternRule("i", null, token, '\0', true));
-    	rules.add(new PatternRule("v", null, token, '\0', true));
-    	rules.add(new PatternRule("c", null, token, '\0', true));
-    	rules.add(new PatternRule("e", null, token, '\0', true));
-    	rules.add(new PatternRule("{", null, token, '\0', true));
-    	rules.add(new PatternRule("}", null, token, '\0', true));
-    	rules.add(new PatternRule(" ", null, token, '\0', true));    	
+    	
+    	//Don't look at this
+    	
+    	//TODO make this better
+    	for(char i = 0; i < 256;i++){
+    		rules.add(new PatternRule(i+"", null, token, '\0', true));
+    	}  	
     }
 }

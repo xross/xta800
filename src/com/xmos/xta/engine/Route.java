@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.Stack;
 import java.util.TreeSet;
 
+import com.xmos.xta.engine.Engine.RouteDescription;
 import com.xmos.xta.engine.Status.BlockStatus;
 
 @SuppressWarnings("serial")
@@ -39,7 +40,7 @@ public class Route {
 	private TreeSet<Integer> m_endPcs; 
 	private ArrayList<PathBasicBlock> m_completedPaths;
 	private ArrayList<PathBasicBlock> m_allBasicBlocks;
-	private String m_description;
+	private RouteDescription m_description;
 	private ArrayList<Unresolved> m_unresolvedPaths;
 	private InstructionDecodeCache m_idc;
 	private InstructionMnemonics m_mnenonics;
@@ -55,7 +56,7 @@ public class Route {
 	
 	public Route(Config config, Engine engine, int startPc, TreeSet<Integer> endPcs, 
 			ArrayList<BasicBlock> nodes, InstructionDecodeCache idc, 
-			InstructionMnemonics mnenonics, String description){
+			InstructionMnemonics mnenonics, RouteDescription description){
 		m_engine = engine;
 		m_completedPaths = new ArrayList<PathBasicBlock>();
 		m_allBasicBlocks = new ArrayList<PathBasicBlock>();
@@ -94,9 +95,13 @@ public class Route {
 	}
 	
 	public String getDescription() {
-		return m_description;
+		return m_description.getDescription();
 	}
-		
+	
+	public String getFunction() {
+		return m_description.getFunction();
+	}
+	
 	public ArrayList<PathBasicBlock> getAllBasicBlocks(){
 		return m_allBasicBlocks;
 	}
@@ -450,9 +455,6 @@ public class Route {
 	
 	private void sortPaths() {
 		Collections.sort(m_completedPaths);
-		//for(PathBasicBlock block : m_allBasicBlocks){
-		//	Collections.sort(block.getLoopPaths(block));
-		//}
 	}
 
 	/**
