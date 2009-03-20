@@ -55,7 +55,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     
     private Composite m_parent;
 
-    public static final String ID                    = "com.xmos.xtagui.editors.Test";
+    public static final String ID                    = "com.xmos.xtagui.editors.XtaEditor.Test";
     public static final String HighlightAnnotationID = "com.xmos.xta.rcp.highlight";
     public static final String UnknownAnnotationID   = "com.xmos.xta.rcp.unknown";
     public static final String StartAnnotationID     = "com.xmos.xta.rcp.start";
@@ -64,6 +64,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     public static final String EndpointID            = "com.xmos.xta.rcp.endpoint";
     public static final String ExpandAllID           = "com.xmos.xtagui.action.ExpandAll";
     public static final String CollapseAllID         = "com.xmos.xtagui.action.CollapseAll";
+    public static final String RestoreAllHighlighID  = "com.xmos.xtagui.action.RestoreAllHighligh";
 
     public static final String ShowStartPointID      = "com.xmos.xtagui.action.ShowStartPoint";
     public static final String ShowEndPointID        = "com.xmos.xtagui.action.ShowEndPoint";
@@ -161,12 +162,13 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("XtaEditor: propertyChange: %s\n", event.getProperty());	
 		
 		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
-			
-			m_selectedNode = null;
-        	updateEditor();
-			updateInputLines();
+
+			updateInputLines(false);
 			updatePartitions();
 			updateEditor();
+		} else if (event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
+			resetGrey();
+			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			m_selectedNode = null;
 	    	m_startPointLine = null;
@@ -174,9 +176,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			updateEditor();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
-			m_selectedNode = null;
-        	updateEditor();
-			updateInputLines();
+			updateInputLines(false);
 			updatePartitions();
     	    
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT)) {
@@ -196,6 +196,15 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
 			updateUnknowns();
 		}
+	}
+
+	public void resetGrey() {
+		m_selectedNode = null;
+		m_startPointLine = null;
+		m_endPointLine = null;			
+		updateInputLines(true);
+		updatePartitions();
+		updateEditor();
 	}
 
 
@@ -223,11 +232,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		getSourceViewer().invalidateTextPresentation();
 	}
 
-	private void updateInputLines() {
-		
+	private void updateInputLines(boolean reset) {
+		m_selectedNode = null;
+	    	updateEditor();
 		Route route = XtaNotifier.getInstance().getRouteInfo().getRoute();
-    	if(route != null){
-    		
+    	if(route != null && !reset){
+	    	
     		for(InputSection inputSection :getInput().getSections()){
     			inputSection.setGrey(true);
 				for(InputLine inputLine: inputSection.getLines()){
@@ -274,6 +284,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			}
     	} else {
     		for(InputSection inputSection :getInput().getSections()){
+    			inputSection.setGrey(false);
 				for(InputLine inputLine: inputSection.getLines()){
 					inputLine.setGrey(false);
 				}
@@ -584,6 +595,14 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      		}
      	});
 
+     	setAction(RestoreAllHighlighID, new Action("Restore All Syntax Highlighting") {
+     		public void run() {
+     			resetGrey();
+     			//IDocument document = getSourceViewer().getDocument();
+     			//m_projectionAnnotationModel.expandAll(0, document.getLength());
+     		}
+     	});
+     	
      	m_showStartPointAction = new Action("Show start point") {
      		public void run() {
 				Reference startPoint = XtaNotifier.getInstance().getStartPoint();
@@ -640,7 +659,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      	menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));     	
     	addAction(menu, ExpandAllID);
     	addAction(menu, CollapseAllID);
-    	
+    	addAction(menu, RestoreAllHighlighID);
 		menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
 
 		Reference startPoint = XtaNotifier.getInstance().getStartPoint();
