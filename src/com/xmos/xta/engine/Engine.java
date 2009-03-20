@@ -463,6 +463,7 @@ public class Engine {
 			return;
 		}
 		m_nodeCoreInstructionCache.unsetInstructionTime(pc, m_nodeId, m_coreId);
+		notify(Notifier.NOTIFY_UPDATE_STATE, "");
 	}
 
 	public void unsetInstructionTime(Reference ref) {
@@ -471,11 +472,10 @@ public class Engine {
 			return;
 		}
 
-		if (!m_nodeCoreInstructionCache.unsetInstructionTime(ref, m_nodeId,
-				m_coreId)) {
-			notify(Notifier.NOTIFY_ERROR, String.format(
-					"Unable to unset time for: %s", ref.getRef()));
+		if (!m_nodeCoreInstructionCache.unsetInstructionTime(ref, m_nodeId, m_coreId)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Unable to unset time for: %s", ref.getRef()));
 		}
+		notify(Notifier.NOTIFY_UPDATE_STATE, "");
 	}
 
 	public boolean canInstructionPause(int pc) {

@@ -18,12 +18,14 @@ import org.eclipse.swt.widgets.Text;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.rcp.XtaEngine;
 
 public class InstructionTime extends XtaDialog {
     Engine m_engine;
     List<Reference> m_refs;
     
     boolean m_valueChanged;
+    List<Boolean> m_wasSet;
     List<Integer> m_originalCycles;
 	
     Text m_ns;
@@ -37,29 +39,35 @@ public class InstructionTime extends XtaDialog {
     	m_engine = engine;
     	m_refs = new ArrayList<Reference>();
     	m_refs.add(codeReference);
-
-    	m_valueChanged = false;
-    	m_originalCycles = new ArrayList<Integer>();
-    	for (Reference ref : m_refs) {
-    		m_originalCycles.add(m_engine.getInstructionNumCycles(ref.getPc()));
-    	}
-    	open();
+    	init();
     }
 
-    public InstructionTime(Shell parent, final Engine engine, List<Reference> codeReferences) {
+	public InstructionTime(Shell parent, final Engine engine, List<Reference> codeReferences) {
     	super(parent);
     	assert(codeReferences.size() > 0);
-    	
     	m_engine = engine;
-    	m_refs = codeReferences;
+    	// Create a copy since the original list can be emptied by this dialog
+    	m_refs = new ArrayList<Reference>();
+    	m_refs.addAll(codeReferences);
+    	init();
+    }
 
+	private void init() {
+    	ArrayList<Integer> setPcs = XtaEngine.getEngine().getPcsWithTimeSet();
+    	
     	m_valueChanged = false;
+    	m_wasSet = new ArrayList<Boolean>();
     	m_originalCycles = new ArrayList<Integer>();
     	for (Reference ref : m_refs) {
+    		if (setPcs.contains(ref.getPc())) {
+    			m_wasSet.add(true);
+    		} else {
+    			m_wasSet.add(false);
+    		}
     		m_originalCycles.add(m_engine.getInstructionNumCycles(ref.getPc()));
     	}
     	open();
-    }
+	}
 
     protected void configureShell(Shell newShell) {
     	super.configureShell(newShell);
@@ -120,7 +128,6 @@ public class InstructionTime extends XtaDialog {
 
 		updateNsValue();
 		updateCyclesValue();
-
     	return container;
     }
 
@@ -152,15 +159,20 @@ public class InstructionTime extends XtaDialog {
     			int index = 0;
     			for (Reference ref : m_refs) {
     				m_engine.setInstructionNumCycles(ref, m_originalCycles.get(index));
-    				m_engine.unsetInstructionTime(ref.getPc());
+    				
+    				if (!m_wasSet.get(index)) {
+    					m_engine.unsetInstructionTime(ref.getPc());
+    				}
     				index++;
     			}
     		}
     	} else if (id == IDialogConstants.OK_ID) {
-    		int index = 0;
-    		for (Reference ref : m_refs) {
-    			m_engine.setInstructionNumCycles(ref, m_originalCycles.get(index));
-				index++;
+    		if (!m_valueChanged) {
+	    		int index = 0;
+	    		for (Reference ref : m_refs) {
+	    			m_engine.setInstructionNumCycles(ref, m_originalCycles.get(index));
+					index++;
+	    		}
     		}
     	}
     	super.buttonPressed(id);

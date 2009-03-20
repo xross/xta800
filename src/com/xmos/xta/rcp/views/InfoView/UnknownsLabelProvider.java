@@ -1,4 +1,4 @@
-package com.xmos.xta.rcp.views.UnknownsView;
+package com.xmos.xta.rcp.views.InfoView;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -7,7 +7,7 @@ import org.eclipse.swt.graphics.Image;
 
 import com.xmos.xta.engine.XtaInstruction;
 
-public class UnknownsViewLabelProvider extends LabelProvider implements ITableLabelProvider {
+public class UnknownsLabelProvider extends LabelProvider implements ITableLabelProvider {
     public static final boolean DEBUG = false;
 
     private String[] m_columnNames;
@@ -18,19 +18,19 @@ public class UnknownsViewLabelProvider extends LabelProvider implements ITableLa
     static final String PC      = "Pc";
     static final String REASON  = "Reason";
     
-    public UnknownsViewLabelProvider() {
+    public UnknownsLabelProvider() {
     	m_columnNames = new String[] { BLOCKID, PC, REASON };
     	m_columnWidths = new int[] { 100, 100, 500 };
-    	m_columnAligmnments = new int[] { SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.LEFT };
+    	m_columnAligmnments = new int[] { SWT.LEFT, SWT.LEFT, SWT.LEFT };
     }
     
 	public Image getColumnImage(Object element, int columnIndex) {
-		if (DEBUG) System.out.printf("UnknownsViewLabelProvider: getColumnImage\n");	
+		if (DEBUG) System.out.printf("UnknownsLabelProvider: getColumnImage\n");	
 		return null;
 	}
 
 	public String getColumnText(Object element, int columnIndex) {
-		if (DEBUG) System.out.printf("UnknownsViewLabelProvider: getColumnText: index: %d\n", columnIndex);	
+		if (DEBUG) System.out.printf("UnknownsLabelProvider: getColumnText: index: %d\n", columnIndex);	
 		
 		assert((columnIndex >= 0) && (columnIndex < m_columnNames.length));
 		

@@ -1,4 +1,4 @@
-package com.xmos.xta.rcp.views.UnknownsView;
+package com.xmos.xta.rcp.views.InfoView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +7,6 @@ import java.util.Vector;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -21,19 +19,19 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
@@ -44,43 +42,34 @@ import com.xmos.xta.rcp.XtaRouteInfo;
 import com.xmos.xta.rcp.dialogs.InstructionTime;
 import com.xmos.xta.rcp.nodes.Node;
 
-public class UnknownsView extends ViewPart implements IPropertyChangeListener,
-		                                              ISelectionListener {
-	public static final boolean DEBUG = false;
-	public static final String ID = "com.xmos.xta.rcp.views.UnknownsView.Unknowns";
+public class UnknownsViewer {
 
-	protected Display m_display;
-	Composite m_parent;
-	private TableViewer m_tableViewer;
-	private Node m_selectedNode;
+	private Display m_display;
+	private TableViewer m_unknownsViewer;
 	
 	List<Reference> m_selectedCodeRefs;
 	Action m_setInstructionTimeAction;
 
-	public UnknownsView() {
-		if (DEBUG)
-			System.out.printf("Unknowns()\n");
-		XtaNotifier.getInstance().addPropertyChangeListener(this);
-		
+	public UnknownsViewer(Display display, Composite parent, IWorkbenchPartSite site, TabFolder folders) {
+		m_display = display;
 		m_selectedCodeRefs = new ArrayList<Reference>();
-	}
 
-	public void createPartControl(Composite parent) {
-		if (DEBUG)
-			System.out.printf("Unknowns: createPartControl\n");
+		TabItem tab = new TabItem(folders, SWT.NONE);
+		tab.setText("Unknowns");
+		Composite composite = new Composite(folders, SWT.NONE);
+		composite.setLayout(new FillLayout());
+		m_unknownsViewer = new TableViewer(composite);
+		tab.setControl(composite);
+		
+		final UnknownSorter unknownSorter = new UnknownSorter();
+		m_unknownsViewer.setSorter(unknownSorter);
 
-		m_parent = parent;
-		m_display = parent.getDisplay();
-		m_tableViewer = new TableViewer(parent);
-		final UnknownSorter us = new UnknownSorter();
-		m_tableViewer.setSorter(us);
-
-		Table table = m_tableViewer.getTable();
+		Table table = m_unknownsViewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		UnknownsViewContentProvider contentProvider = new UnknownsViewContentProvider();
-		UnknownsViewLabelProvider labelProvider = new UnknownsViewLabelProvider();
+		UnknownsContentProvider contentProvider = new UnknownsContentProvider();
+		UnknownsLabelProvider labelProvider = new UnknownsLabelProvider();
 
 		for (int i = 0; i < labelProvider.getColumnNames().length; ++i) {
 			TableColumn tableColumn = new TableColumn(table, labelProvider
@@ -88,94 +77,48 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 			tableColumn.setText(labelProvider.getColumnNames()[i]);
 			tableColumn.setWidth(labelProvider.getColumnWidths()[i]);
 		}
-		m_tableViewer.setContentProvider(contentProvider);
-		m_tableViewer.setLabelProvider(labelProvider);
-		for (final TableColumn col : m_tableViewer.getTable().getColumns()) {
-			
+		m_unknownsViewer.setContentProvider(contentProvider);
+		m_unknownsViewer.setLabelProvider(labelProvider);
+		for (final TableColumn col : m_unknownsViewer.getTable().getColumns()) {
 			col.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
 					int colIndex = 0;
-					if(col.getText().equals(UnknownsViewLabelProvider.BLOCKID)){
-						colIndex=0;
-					} else if(col.getText().equals(UnknownsViewLabelProvider.PC)){
-						colIndex=1;
-					} else if(col.getText().equals(UnknownsViewLabelProvider.REASON)){
-						colIndex=2;
+					if (col.getText().equals(UnknownsLabelProvider.BLOCKID)) {
+						colIndex = 0;
+					} else if (col.getText().equals(UnknownsLabelProvider.PC)) {
+						colIndex = 1;
+					} else if (col.getText().equals(UnknownsLabelProvider.REASON)) {
+						colIndex = 2;
 					}
 					
-					us.setColoumn(colIndex);
-					m_tableViewer.refresh();
+					unknownSorter.setColoumn(colIndex);
+					m_unknownsViewer.refresh();
 				}
 			});
-
 		}
-		updateDisplay();
-		getSite().getPage().addSelectionListener(this);
-		
-	    setupMouseListeners();
+
+		setupMouseListeners(site, parent);
 	}
 
-	public void setFocus() {
-		if (DEBUG)
-			System.out.printf("Unknowns: setFocus\n");
-		updateDisplay();
+	public void clear() {
+		m_unknownsViewer.setInput(null);
 	}
 
-	public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG) 
-			System.out.printf("Unknowns: propertyChange: %s\n", event.getProperty());
-
-		if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS) ||
-			event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUDES)) {
-			
-			m_tableViewer.setInput(null);
-			updateDisplay();
-			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE) ||
-				   event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) ||
-				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
-			updateDisplay();
-			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
-			m_tableViewer.setInput(null);
-		}
-	}
-
-	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
-		if (sel.isEmpty())
-			return;
-
-		if (sel instanceof IStructuredSelection) {
-			Object object = ((IStructuredSelection) sel).getFirstElement();
-			if (object instanceof Node) {
-				m_selectedNode = (Node) object;
-				updateHighlighting();
-			}
-		}
-	}
-
-	private void updateDisplay() {
-		if (DEBUG)
-			System.out.printf("Unknowns: updateDisplay\n");
-
+	public void update() {
 		final XtaRouteInfo routeInfo = XtaNotifier.getInstance().getRouteInfo();
 		if (routeInfo != null) {
-			m_tableViewer.setInput(routeInfo.getRoute());
-			m_selectedNode = routeInfo.getSelectedNode();
-			updateHighlighting();
+			m_unknownsViewer.setInput(routeInfo.getRoute());
+			updateHighlighting(routeInfo.getSelectedNode());
 		} else {
-			m_tableViewer.setInput(null);
+			m_unknownsViewer.setInput(null);
 		}
 	}
 
-	private void updateHighlighting() {
-		if (DEBUG)
-			System.out.printf("Unknowns: updateHighlighting\n");
-
-		for (TableItem item : m_tableViewer.getTable().getItems()) {
+	public void updateHighlighting(Node selectedNode) {
+		for (TableItem item : m_unknownsViewer.getTable().getItems()) {
 			XtaInstruction unknownInstruction = (XtaInstruction)item.getData();
 			Vector<Integer> selectedBlocks = new Vector<Integer>();
-			m_selectedNode.getBlockIds(selectedBlocks);
+			selectedNode.getBlockIds(selectedBlocks);
 			if (selectedBlocks.contains(unknownInstruction.getBasicBlockId())) {
 				item.setBackground(m_display.getSystemColor(SWT.COLOR_YELLOW));
 			} else {
@@ -185,8 +128,8 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	class UnknownSorter extends ViewerSorter {
-		int field=0;
-		int direction =1;
+		int field = 0;
+		int direction = 1;
 		
 		public int compare(Viewer viewer, Object e1, Object e2) {
 			XtaInstruction p1 = (XtaInstruction) e1;
@@ -216,8 +159,8 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 		}
 	}
 
-	private void setupMouseListeners() {
-		m_tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+	private void setupMouseListeners(IWorkbenchPartSite site, final Composite parent) {
+		m_unknownsViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				if (m_selectedCodeRefs.size() == 1) {
 					XtaNotifier.getInstance().notifyShow(m_selectedCodeRefs.get(0));
@@ -225,11 +168,13 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 			}
 		});
 		
-		m_tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		m_unknownsViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection selection = event.getSelection();
 
-				m_setInstructionTimeAction.setEnabled(false);
+				boolean enabled = ((IStructuredSelection) selection).size() > 0;
+				m_setInstructionTimeAction.setEnabled(enabled);
+
 				m_selectedCodeRefs.clear();
 				for (Object object : ((IStructuredSelection) selection).toList()) {
 					XtaInstruction unknownInstruction = (XtaInstruction)object;
@@ -242,8 +187,6 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 					Engine engine = XtaEngine.getEngine();
 					ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
 					m_selectedCodeRefs.add(ref);
-					
-					m_setInstructionTimeAction.setEnabled(true);
 				}
 			}			
 		});
@@ -251,14 +194,14 @@ public class UnknownsView extends ViewPart implements IPropertyChangeListener,
 		// Create the context menu
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(false);
-		Menu menu = menuMgr.createContextMenu(m_tableViewer.getControl());
-		m_tableViewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, m_tableViewer);
+		Menu menu = menuMgr.createContextMenu(m_unknownsViewer.getControl());
+		m_unknownsViewer.getControl().setMenu(menu);
+		site.registerContextMenu(menuMgr, m_unknownsViewer);
 		
 		// Create the action
 		m_setInstructionTimeAction = new Action() { 
 			public void run() {
-     			new InstructionTime(m_parent.getShell(), XtaEngine.getEngine(), m_selectedCodeRefs);
+     			new InstructionTime(parent.getShell(), XtaEngine.getEngine(), m_selectedCodeRefs);
 			}
 		}; 
 		m_setInstructionTimeAction.setText("Set instruction time");

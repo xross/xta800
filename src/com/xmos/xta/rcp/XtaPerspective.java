@@ -7,11 +7,11 @@ import org.eclipse.ui.IFolderLayout;
 import com.xmos.xta.rcp.views.ConsoleView.ConsoleView;
 import com.xmos.xta.rcp.views.ControlView.ControlView;
 import com.xmos.xta.rcp.views.FunctionView.FunctionView;
+import com.xmos.xta.rcp.views.InfoView.InfoView;
 import com.xmos.xta.rcp.views.LogView.LogView;
 import com.xmos.xta.rcp.views.StatusView.StatusView;
 import com.xmos.xta.rcp.views.StructureView.StructureView;
 import com.xmos.xta.rcp.views.TreeView.TreeView;
-import com.xmos.xta.rcp.views.UnknownsView.UnknownsView;
 
 public class XtaPerspective implements IPerspectiveFactory {
     public static final boolean DEBUG = false;
@@ -24,7 +24,7 @@ public class XtaPerspective implements IPerspectiveFactory {
         
         addView(layout, viewsFolder, ConsoleView.ID);
         addView(layout, viewsFolder, LogView.ID);
-        addView(layout, viewsFolder, UnknownsView.ID);
+        addView(layout, viewsFolder, InfoView.ID);
         addView(layout, viewsFolder, FunctionView.ID);
         addView(layout, viewsFolder, StructureView.ID);
 				

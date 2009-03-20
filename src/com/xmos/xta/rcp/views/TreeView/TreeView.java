@@ -235,13 +235,19 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 
 		menuMgr.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager manager) {				
-				if (m_selectedRouteId != Route.INVALID_ROUTE_ID) {
+				final ISelection selection = m_routesViewer.getSelection();
+				
+				if (((IStructuredSelection)selection).size() > 0) {
 	            	manager.add(new Action("delete") {
 						public void run() {
-							if (m_selectedRouteId != Route.INVALID_ROUTE_ID)
-								XtaEngine.getEngine().removeRoute(m_selectedRouteId);
+				            for (Object object : ((IStructuredSelection)selection).toList()) {
+								XtaEngine.getEngine().removeRoute(((RouteNode)object).getId());
+				            }
 						}
 					});
+				}
+
+				if (m_routeInfo.getRoutes().size() > 0) {
 	            	manager.add(new Action("delete all") {
 						public void run() {
 							XtaEngine.getEngine().removeAllRoutes();
@@ -249,13 +255,14 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 					});
 				}
 				
-				ISelection selection = m_routesViewer.getSelection();
-		        if (selection instanceof IStructuredSelection) {	            
-		            Object object = ((IStructuredSelection)selection).getFirstElement();
-		            if (object instanceof RouteNode) {
-		            	((Node)object).createContextMenu(m_parent.getShell(), manager);
-		            }
-		        }				
+				if (((IStructuredSelection)selection).size() == 1) {
+			        if (selection instanceof IStructuredSelection) {	            
+			            Object object = ((IStructuredSelection)selection).getFirstElement();
+			            if (object instanceof RouteNode) {
+			            	((Node)object).createContextMenu(m_parent.getShell(), manager);
+			            }
+			        }
+				}
 			}
 		});
 		
@@ -264,12 +271,12 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 
 		m_routesViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				ISelection sel = event.getSelection();
-		    	if (sel.isEmpty()) {
-		    		return;
-		    	
-				} else if (sel instanceof IStructuredSelection) {	            
-		            Object object = ((IStructuredSelection)sel).getFirstElement();
+				ISelection selection = event.getSelection();
+				if (selection instanceof IStructuredSelection) {
+					if (((IStructuredSelection)selection).size() != 1)
+						return;
+					
+		            Object object = ((IStructuredSelection)selection).getFirstElement();
 		            if (object instanceof RouteNode) {
 		            	int newId = ((RouteNode)object).getId();
 						if (newId != m_selectedRouteId) {
@@ -280,7 +287,6 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		            				Integer.toString(m_selectedRouteId));
 		            	}
 		            }
-
 		        }
 			}
 		});

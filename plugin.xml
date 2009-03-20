@@ -73,10 +73,10 @@
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.UnknownsView.UnknownsView"
+            class="com.xmos.xta.rcp.views.InfoView.InfoView"
             icon="icons/unknowns.png"
-            id="com.xmos.xta.rcp.views.UnknownsView.Unknowns"
-            name="Unknowns"
+            id="com.xmos.xta.rcp.views.InfoView.Info"
+            name="Info"
             restorable="true">
       </view>
       <view
