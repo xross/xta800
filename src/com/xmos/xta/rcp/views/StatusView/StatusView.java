@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
@@ -32,16 +31,9 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.rcp.views.StatusView.Status";
 
-    public static final String STATUS_EMPTY  = "Empty";
-    public static final String STATUS_LOADED = "Loaded";
-    public static final String STATUS_BUSY   = "Busy";
-    public static final String STATUS_DONE   = "Done";
-    
     private Display m_display;
     private Composite m_parent;
 
-    private Text m_currentRoute;
-    private Label m_engineStatus;
     private Label m_progress;
 
     private MemoryUpdater m_memoryUpdater;
@@ -92,33 +84,27 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 		
 		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
 	        m_memoryUpdater.setFastRefresh(false);
-			setDone(STATUS_DONE);
-			updateCurrentRoute();
+			setDone();
 			checkTotalPaths();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {			
-	        setDone(STATUS_LOADED);
+	        setDone();
 	        m_progress.setText("0");
-	        updateCurrentRoute();
 	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_BEGIN)) {
 			startAnalysis();
 	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_ERROR)) {
 	        m_memoryUpdater.setFastRefresh(false);
-			updateCurrentRoute();
-			setDone(STATUS_DONE);
+			setDone();
 
 		}
 	}
 	
 	private void startAnalysis() {
         m_memoryUpdater.setFastRefresh(true);
-		m_engineStatus.setText(STATUS_BUSY);
 		m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
 		m_progressUpdater.start();
-        m_currentRoute.setText("");
-        m_currentRoute.setToolTipText("");
 	}
 
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
@@ -168,27 +154,13 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
         }    	        
 	}
 
-	private void setDone(String status) {
+	private void setDone() {
         if (m_progressUpdater != null) {
         	m_progressUpdater.end(false);
         	m_progressUpdater = null;
         }
-    	m_engineStatus.setText(status);
 	}
 
-	private void updateCurrentRoute() {
-		XtaRouteInfo routeInfo = XtaNotifier.getInstance().getRouteInfo();
-		if ((routeInfo != null) && (routeInfo.getRoute() != null)) {
-			Route route = routeInfo.getRoute();
-			String routeStatus = route.getDescription();
-			m_currentRoute.setText(routeStatus);
-			m_currentRoute.setToolTipText(routeStatus);
-		} else {
-			m_currentRoute.setText("No routes analysed.");
-			m_currentRoute.setToolTipText("");
-		}
-	}
-	
 	private void checkTotalPaths() {
 		XtaRouteInfo routeInfo = XtaNotifier.getInstance().getRouteInfo();
 		if (routeInfo != null) {
@@ -301,20 +273,6 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
     }
     
 	private void createStatusBar(Composite composite) {
-		
-		Group engineGroup = createGroup(composite, "Engine status", 1, 3);
-		m_engineStatus = new Label(engineGroup, SWT.SHADOW_NONE | SWT.CENTER);
-		m_engineStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		m_engineStatus.setText(STATUS_EMPTY);
-		m_engineStatus.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
-
-		Group currentGroup = createGroup(composite, "Currently analysed", 1, 3);
-	    m_currentRoute = new Text(currentGroup, SWT.SINGLE);
-	    m_currentRoute.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    m_currentRoute.setText("");
-	    m_currentRoute.setEditable(false);
-	    m_currentRoute.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
-
 		Group progressGroup = createGroup(composite, "Blocks analysed", 1, 3);
 	    m_progress = new Label(progressGroup, SWT.SHADOW_NONE | SWT.CENTER);
 	    m_progress.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));

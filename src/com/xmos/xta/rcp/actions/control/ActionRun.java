@@ -1,5 +1,9 @@
 package com.xmos.xta.rcp.actions.control;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -102,10 +106,17 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 		}
 
 		XtaNotifier notifier = XtaNotifier.getInstance();
-		String functionName = notifier.getSelectedFunction();
+		final String functionName = notifier.getSelectedFunction();
 		if (!functionName.equals("")) {
-			RunEngineMethodFunc run = new RunEngineMethodFunc(functionName);
-			run.start();
+			Job job = new Job("Analyse: " + functionName) {
+
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					XtaEngine.getEngine().analyseRoute(functionName);
+					return Status.OK_STATUS;
+				}
+			};
+			job.schedule();
 		} else {
 			notifier.notify(Notifier.NOTIFY_ERROR, "No function/path specified");
 		}
@@ -126,34 +137,17 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 			notifier.notify(Notifier.NOTIFY_ERROR, "Please specify an end reference");
 
 		} else {
-			RunEngineMethodPath run = new RunEngineMethodPath(startPoint.getRef(), endPoint.getRef());
-			run.start();
+			final String startRef = startPoint.getRef();
+			final String endRef = endPoint.getRef();
+			Job job = new Job("Analyse: " + startRef + " -> " + endRef) {
+
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					XtaEngine.getEngine().analyseRoute(startRef, endRef);
+					return Status.OK_STATUS;
+				}
+			};
+			job.schedule();
 		}
 	}
-	
-	class RunEngineMethodFunc extends Thread {
-        private String m_functionName;
-
-        RunEngineMethodFunc(String functionName) {
-            m_functionName = functionName;
-        }
-
-        public void run() {
-            XtaEngine.getEngine().analyseRoute(m_functionName);
-        }
-    }
-
-    class RunEngineMethodPath extends Thread {
-        private String m_startRef;
-        private String m_endRef;
-
-        RunEngineMethodPath(String startRef, String endRef) {
-        	m_startRef = startRef;
-        	m_endRef = endRef;
-        }
-
-        public void run() {
-        	XtaEngine.getEngine().analyseRoute(m_startRef, m_endRef);
-        }
-    }
 }

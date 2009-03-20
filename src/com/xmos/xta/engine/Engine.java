@@ -678,7 +678,7 @@ public class Engine {
 		switch (status) {
 		case ABORTED:
 			setAbort(false);
-			notify(Notifier.NOTIFY_ERROR, "Abort detected");
+			notify(Notifier.NOTIFY_INFO, "Abort detected");
 			return false;
 
 		case ERROR:
