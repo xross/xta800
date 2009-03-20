@@ -3,6 +3,7 @@ package com.xmos.xta.engine.constraint;
 public class ConstraintNull extends Constraint {
 
 	public ConstraintNull() {
+		m_isValid = false;
 	}
 	
 	public boolean isTrue() {

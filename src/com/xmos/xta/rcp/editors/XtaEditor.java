@@ -32,6 +32,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
@@ -39,6 +41,8 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.engine.constraint.Constraint;
+import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.maps.SrcTableInfo;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
@@ -48,6 +52,7 @@ import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.dialogs.InstructionTime;
 
 import com.xmos.xta.rcp.nodes.Node;
+import com.xmos.xta.rcp.views.ControlView.ControlView;
 
 public class XtaEditor extends TextEditor implements IPropertyChangeListener,
                                                      ISelectionListener {
@@ -73,6 +78,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     public static final String RemoveEndPointID      = "com.xmos.xtagui.action.RemoveEndPoint";
     
     public static final String SetInstructionTimeID  = "com.xmos.xtagui.action.SetInstructionTime";
+    public static final String ConstrainRequireID    = "com.xmos.xtagui.action.ConstrainRequire";
+    public static final String ConstrainExcludeID    = "com.xmos.xtagui.action.ConstrainExclude";
     
     Action m_showStartPointAction;
     Action m_showEndPointAction;
@@ -625,6 +632,17 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      		}
      	});
 
+     	setAction(ConstrainRequireID, new Action("Require this") {
+     		public void run() {
+     			addToConstraint(m_clickCodeRef.getRef());
+     		}
+     	});
+     	setAction(ConstrainExcludeID, new Action("Exclude this") {
+     		public void run() {
+     			addToConstraint("!" + m_clickCodeRef.getRef());
+     		}
+     	});
+
      	m_setInstructionTimeAction = new Action("Set instruction time") {
      		public void run() {
      			new InstructionTime(m_parent.getShell(), XtaEngine.getEngine(), m_clickCodeRef);
@@ -633,7 +651,22 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      	setAction(SetInstructionTimeID, m_setInstructionTimeAction);
     }    
     
-    protected void editorContextMenuAboutToShow(IMenuManager menu) {
+    protected void addToConstraint(String toAdd) {
+		Engine engine = XtaEngine.getEngine();
+		Constraint constraint = engine.getConstraint();
+		
+		String newString = "";
+		if (constraint.isValid())		
+			newString += constraint.getString() + " && ";
+		
+		engine.setConstraint(ConstraintFactory.createConstraint(engine, newString + toAdd));
+		try {
+			PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+			getActivePage().showView(ControlView.ID);
+		} catch (PartInitException e) {}
+	}
+
+	protected void editorContextMenuAboutToShow(IMenuManager menu) {
 		if (DEBUG) System.out.printf("XtaEditor: editorContextMenuAboutToShow\n"); 
      	super.editorContextMenuAboutToShow(menu);
 
@@ -675,6 +708,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			}
 			menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
 			addAction(menu, SetInstructionTimeID);
+			addAction(menu, ConstrainExcludeID);
+			addAction(menu, ConstrainRequireID);
 			
 			Engine engine = XtaEngine.getEngine();
 			boolean resolved = m_clickCodeRef.resolve(engine, engine.getNodeId(), engine.getCoreId());

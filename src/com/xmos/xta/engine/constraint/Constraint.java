@@ -4,10 +4,12 @@ public abstract class Constraint {
 	
 	protected boolean m_isDone;
 	protected boolean m_isTrue;
+	protected boolean m_isValid;
 	
 	public Constraint() {
 		m_isDone = false;
 		m_isTrue = false;
+		m_isValid = true;
 	}
 	
 	public Constraint(Constraint copy) {
@@ -18,6 +20,10 @@ public abstract class Constraint {
 	
 	protected boolean isDone() {
 		return m_isDone;
+	}
+
+	public boolean isValid() {
+		return m_isValid;
 	}
 
 	public abstract boolean isTrue();
