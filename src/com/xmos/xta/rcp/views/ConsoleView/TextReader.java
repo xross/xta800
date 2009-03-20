@@ -61,7 +61,7 @@ public class TextReader extends Reader {
 
         		synchronized(m_keyLock) {
         			m_keyLock.notifyAll();
-        		}		
+        		}
         				
         		if ((event.keyCode == SWT.CR) || (event.keyCode == SWT.KEYPAD_CR)) {
         			handleEnter();
@@ -73,6 +73,9 @@ public class TextReader extends Reader {
         		else if (event.keyCode == SWT.ARROW_DOWN) {
         			incrementCommandIndex();
         			displayCommand();
+        		}
+        		else if (event.keyCode == SWT.HOME) {
+                    home();
         		}
         		else if (event.keyCode == SWT.TAB) {
                     complete();
@@ -97,11 +100,14 @@ public class TextReader extends Reader {
 				}
         		else if (event.keyCode == SWT.TAB) {
         			event.doit = false;
-        		}							    
+        		}
 				else if (event.keyCode == SWT.BS) {
 					if (checkCursor()) {
     					event.doit = false;				
 					}
+				}
+				else if (event.keyCode == SWT.HOME) {
+  					event.doit = false;
 				}
 				else if (event.keyCode == SWT.ARROW_LEFT) {
 					if (checkCursor()) {
@@ -113,15 +119,15 @@ public class TextReader extends Reader {
 					m_text.append("\n");
 					event.doit = false;	
 				}
-			}			
-		});    
+			}
+		});
                 
         m_completor = new XtaCompletor(XtaEngine.getEngine());
         m_completionHandler = new TabCompletionHandler();
 	}
 	
 	public void display(String str) {
-		if (DEBUG) System.out.printf("TextReader: display: %s\n", str);			
+		if (DEBUG) System.out.printf("TextReader: display: %s\n", str);
 		
 		m_string = str;
         m_display.syncExec(new Runnable() {
@@ -346,7 +352,19 @@ public class TextReader extends Reader {
 		} 
 		return false;
 	}	
+
+	private void home() {
+		int currentIndex = m_text.getCaretOffset();
+        int currentRowIndex = m_text.getLineAtOffset(currentIndex);
+		int rowStartIndex = m_text.getOffsetAtLine(currentRowIndex);
 		
+		if (currentRowIndex == (m_text.getLineCount() - 1)) {
+			m_text.setCaretOffset(rowStartIndex + m_shell.getPrompt().length());
+		} else {
+			m_text.setCaretOffset(rowStartIndex);
+		}
+	}
+
 	private void complete() {
         List<String> candidates = new ArrayList<String>();
         String buffer = getCurrentBuffer();
