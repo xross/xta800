@@ -19,7 +19,6 @@ import com.xmos.xta.rcp.nodes.RouteNode;
 
 public class XtaRouteInfo {
 	
-	private static final int MAXPATHS = 100;
 	private Route m_selectedRoute;
 	private Engine m_engine;
 	
@@ -53,10 +52,13 @@ public class XtaRouteInfo {
 		if (m_selectedRoute == null)
 			return;
 	
+		if(m_engine.getRoute(selectedRouteId).getAllBasicBlocks().size() > 2000){
+			return;
+		}
+		
 		PathGroupNode routeNode = new PathGroupNode("complete", selectedRouteId);
 		int i = 0;
         for (PathBasicBlock block : m_selectedRoute.getCompletedPaths()) {
-        	if (i >= MAXPATHS) break;
         	i++;
         	routeNode.addNode(createPath(block, routeNode, true));
         }		
@@ -65,7 +67,6 @@ public class XtaRouteInfo {
 		
 		m_unresolvedNode = new PathGroupNode("unresolved", selectedRouteId);
 		for (Unresolved unresolved : m_selectedRoute.getUnresolvedPaths()) {
-        	if (i >= MAXPATHS) break;
         	i++;
 			m_unresolvedNode.addNode(createPath(unresolved.getBlock(), m_unresolvedNode, true));
 		}
