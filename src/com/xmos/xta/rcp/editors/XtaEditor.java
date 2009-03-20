@@ -174,6 +174,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			updateEditor();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
+			m_selectedNode = null;
+        	updateEditor();
 			updateInputLines();
 			updatePartitions();
     	    
