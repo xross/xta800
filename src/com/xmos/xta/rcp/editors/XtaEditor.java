@@ -746,28 +746,24 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     }
 
 	private String getLineDescription(int clickLineNum) {
+		if (m_endPointLines.containsKey(clickLineNum)) {
+			InputLine line = m_endPointLines.get(clickLineNum);
+			return line.getCodeReference();
+		}
+		
     	for (InputSection inputSection : getSections()) {
     		int startLine = inputSection.getIndex();
     		int endLine = startLine + inputSection.getLines().size();
     		int offset = clickLineNum - startLine;
-    		if (m_type.equals(XtaDocumentPartitioner.SOURCE)) {
-    			// Must be a valid end point
-    			if (m_endPointLines.containsKey(clickLineNum)) {
-    				InputLine line = m_endPointLines.get(clickLineNum);
-    				return line.getCodeReference();
+
+    		// Don't map to the header
+    		if ((clickLineNum > startLine) && (clickLineNum <= endLine)) {
+    			if (!inputSection.isFnop(offset - 1)) {
+    				return inputSection.getLine(offset - 1).getCodeReference();
     			} else {
     				return null;
     			}
-    		} else {
-    			// Don't map to the header
-        		if ((clickLineNum > startLine) && (clickLineNum <= endLine)) {
-        			if (!inputSection.isFnop(offset - 1)) {
-        				return inputSection.getLine(offset - 1).getCodeReference();
-        			} else {
-        				return null;
-        			}
-    			}
-    		}
+			}
     	}
 		return null;
 	}
@@ -811,7 +807,9 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	    		    return findPcLine(pc);
 	    	    } else {
 	    	    	if (m_fileName.equals(codeRef.getFileName()))
-	    		    return findCodeLine(codeRef.getLineNum());
+	    	    		return findCodeLine(codeRef.getLineNum());
+	    	    	else
+	    	    		return findPcLine(pc);
 	    	    }
 			}			
 		}

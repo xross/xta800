@@ -33,6 +33,7 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 	public void propertyChange(PropertyChangeEvent event) {
 		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {			
 	        updateState();
+	        setEnabled(false);
 	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT)) {
 			m_startPoint = XtaNotifier.getInstance().getStartPoint();					
