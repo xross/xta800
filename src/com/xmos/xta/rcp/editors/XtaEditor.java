@@ -136,7 +136,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	super.createPartControl(parent);
     	m_parent = parent;
     	
-    	ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
+		ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
     	   	
         m_projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
         m_projectionSupport.install();
