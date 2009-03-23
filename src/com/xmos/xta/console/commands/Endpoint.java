@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.maps.SrcLabelInfo;
+import com.xmos.xta.engine.maps.CodePointInfo;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
@@ -146,7 +146,7 @@ public class Endpoint extends Command {
 			return;
 		}
 
-		for (SrcLabelInfo info : engine.getEndpoints().values()) {
+		for (CodePointInfo info : engine.getEndpoints().values()) {
     	    console.display(String.format("Label: %s, pc: 0x%x", info.getLabel(), info.getPc())); 
     	    
     	    if (!info.getCompilationDir().equals("")) {

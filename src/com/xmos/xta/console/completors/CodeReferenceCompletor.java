@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.maps.SrcLabelInfo;
+import com.xmos.xta.engine.maps.CodePointInfo;
 
 import jline.Completor;
 
@@ -23,7 +23,7 @@ public class CodeReferenceCompletor implements Completor {
         if (m_engine.getExecutable() != null) {
             String start = (buffer == null) ? "" : buffer;
                         
-            Collection<SrcLabelInfo> srcLabelInfos = null;
+            Collection<CodePointInfo> srcLabelInfos = null;
             switch (m_type) {
             case ENDPOINT: 
             	srcLabelInfos = m_engine.getEndpoints().values();
@@ -36,7 +36,7 @@ public class CodeReferenceCompletor implements Completor {
                 break;
             }
             
-            for (SrcLabelInfo info : srcLabelInfos) {
+            for (CodePointInfo info : srcLabelInfos) {
             	if (info.getLabel().startsWith(start)) {
         	        candidates.add(info.getLabel());
             	}            	            	

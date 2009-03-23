@@ -43,7 +43,7 @@ import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
-import com.xmos.xta.engine.maps.SrcTableInfo;
+import com.xmos.xta.engine.maps.EndpointTableInfo;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
@@ -475,7 +475,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         	endPointIndex = m_endPointLine.getIndex();
         
         m_endPointLines.clear();
-        for (SrcTableInfo info : XtaEngine.getEngine().getEndpointTable().values()) {
+        for (EndpointTableInfo info : XtaEngine.getEngine().getEndpointTable().values()) {
         	if (info.getFileName().equals(m_fileName)) {
         		InputLine line = findCodeLine(info.getLineNumber());
         		if (line != null) {

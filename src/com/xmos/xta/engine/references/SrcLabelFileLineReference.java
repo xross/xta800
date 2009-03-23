@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.references;
 
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.maps.SrcTableInfo;
+import com.xmos.xta.engine.maps.SrcLabelTableInfo;
 
 public class SrcLabelFileLineReference extends Reference {
 	SrcLabelFileLineReference(String ref) {
@@ -13,13 +13,14 @@ public class SrcLabelFileLineReference extends Reference {
 		String fileName = ReferenceFactory.getFileName(ref);
         int lineNumber  = ReferenceFactory.getLineNumber(ref);		
 
-		for (SrcTableInfo info : engine.getSrcLabelTable().values()) {
+		for (SrcLabelTableInfo info : engine.getSrcLabelTable().values()) {
             if (info.getFileName().equals(fileName) &&
-            	(info.getLineNumber() == lineNumber)) {
+            	((lineNumber >= info.getLineNumberStart()) &&
+            	 (lineNumber <= info.getLineNumberEnd()))) {
+            	
             	setPc(info.getPc());
             	setFileName(fileName);
             	setLineNum(lineNumber);
-
             	setResolved(true);
             	return true;
             }			

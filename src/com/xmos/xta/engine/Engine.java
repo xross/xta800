@@ -23,11 +23,13 @@ import com.xmos.xta.engine.Route.RouteStatus;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.maps.BranchMap;
+import com.xmos.xta.engine.maps.EndpointTableInfo;
+import com.xmos.xta.engine.maps.EndpointTableMap;
 import com.xmos.xta.engine.maps.LabelMap;
-import com.xmos.xta.engine.maps.SrcLabelMap;
-import com.xmos.xta.engine.maps.SrcLabelInfo;
-import com.xmos.xta.engine.maps.SrcTableInfo;
-import com.xmos.xta.engine.maps.SrcTableMap;
+import com.xmos.xta.engine.maps.CodePointMap;
+import com.xmos.xta.engine.maps.CodePointInfo;
+import com.xmos.xta.engine.maps.SrcLabelTableInfo;
+import com.xmos.xta.engine.maps.SrcLabelTableMap;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
@@ -54,22 +56,22 @@ public class Engine {
 	private ArrayList<XeObject> m_xeObjects;
 	private ArrayList<BranchMap> m_branches;
 	private ArrayList<LabelMap> m_labels;
-	private ArrayList<SrcLabelMap> m_srcLabels;
-	private ArrayList<SrcTableMap> m_srcLabelTables;
-	private ArrayList<SrcLabelMap> m_endpoints;
-	private ArrayList<SrcTableMap> m_endpointTables;
+	private ArrayList<CodePointMap> m_srcLabels;
+	private ArrayList<CodePointMap> m_endpoints;
+	private ArrayList<SrcLabelTableMap> m_srcLabelTables;
+	private ArrayList<EndpointTableMap> m_endpointTables;
 	private AnalysisEngine m_ae;
 	private Constraint m_constraint;
 	private InstructionMnemonics m_mnenonics;
 
 	public Engine(Config config) {
 		m_xeObjects = new ArrayList<XeObject>();
-		m_branches = new ArrayList<BranchMap>();
-		m_labels = new ArrayList<LabelMap>();
-		m_srcLabels = new ArrayList<SrcLabelMap>();
-		m_srcLabelTables = new ArrayList<SrcTableMap>();
-		m_endpoints = new ArrayList<SrcLabelMap>();
-		m_endpointTables = new ArrayList<SrcTableMap>();
+		m_branches  = new ArrayList<BranchMap>();
+		m_labels    = new ArrayList<LabelMap>();
+		m_srcLabels = new ArrayList<CodePointMap>();
+		m_endpoints = new ArrayList<CodePointMap>();
+		m_srcLabelTables = new ArrayList<SrcLabelTableMap>();
+		m_endpointTables = new ArrayList<EndpointTableMap>();
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
 		m_config = config;
@@ -163,51 +165,54 @@ public class Engine {
 	public boolean loadExecutable(File executableFile, FileFinder fileFinder) {
 		XeLoader newLoader = new XeLoader();
 
-		boolean success = newLoader.loadExecutable(executableFile);
-		if (success) {
-			m_nodeId = 0;
-			m_coreId = 0;
-
-			m_xeLoader = newLoader;
-			m_executableFile = executableFile;
-			initialiseLists(fileFinder);
-			m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(this,
-					m_xeLoader, m_config);
-
-			try {
-				decodeInstructions();
-			} catch (Exception e) {
-				notify(Notifier.NOTIFY_ERROR,
-						"Some of the pc's refered to in the executable could not be found");
-				success = false;
-			}
-
-			loadBranchMaps();
-			loadLabelMaps();
-			loadSrcLabelMaps(m_srcLabels);
-			loadSrcLabelTables(m_srcLabelTables);
-			loadSrcLabelMaps(m_endpoints);
-			loadSrcLabelTables(m_endpointTables);
-
-			m_ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache,
-					m_xeObjects, m_branches);
-
-			runAnalysisEngine();
-
-			m_routes.clear();
-			Route.resetRouteCount();
-			setConstraint(ConstraintFactory.createConstraint(this, ""));
-
-			// Need to update as the executable might be of a different architecture
-			m_mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
-
-			notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile
-					.getAbsolutePath());
-		} else {
-			notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile
-					+ "' could not be loaded.");
+		if (!newLoader.loadExecutable(executableFile)) {
+			notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile + "' could not be loaded.");
+			return false;			
 		}
-		return success;
+		
+		m_nodeId = 0;
+		m_coreId = 0;
+
+		m_xeLoader = newLoader;
+		m_executableFile = executableFile;
+		initialiseLists(fileFinder);
+		m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(this,
+				m_xeLoader, m_config);
+
+		try {
+			decodeInstructions();
+		} catch (Exception e) {
+			notify(Notifier.NOTIFY_ERROR, "Some of the pc's refered to in the executable could not be found");
+			return false;
+		}
+
+		if (!loadBranchMaps()) 
+			return false;		
+		if (!loadLabelMaps())
+		    return false;		
+		if (!loadCodePointMaps(m_srcLabels))
+		    return false;		
+		if (!loadCodePointMaps(m_endpoints))
+		    return false;		
+		if (!loadSrcLabelTables())
+		    return false;		
+		if (!loadEndpointTables())
+		    return false;		
+
+		m_ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache,
+				m_xeObjects, m_branches);
+
+		runAnalysisEngine();
+
+		m_routes.clear();
+		Route.resetRouteCount();
+		setConstraint(ConstraintFactory.createConstraint(this, ""));
+
+		// Need to update as the executable might be of a different architecture
+		m_mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
+
+		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
+		return true;
 	}
 
 	public void runAnalysisEngine() {
@@ -536,7 +541,25 @@ public class Engine {
 		Route.resetRouteCount();
 		notify(Notifier.NOTIFY_REMOVE_ROUTE, "");
 	}	
-	
+		
+	public File getExecutable() {
+		return m_executableFile;
+	}
+
+	public void setConstraint(Constraint constraint) {
+		assert(constraint != null);
+		if (constraint == null){
+			m_constraint = ConstraintFactory.createConstraint(this, "");
+		} else {
+			m_constraint = constraint;
+		}
+		notify(Notifier.NOTIFY_SET_CONSTRAINT, "");
+	}
+
+	public Constraint getConstraint() {
+		return m_constraint;
+	}
+			
 	public boolean addBranch(Reference fromRef, Reference toRef) {
 		return addToBranchMap(fromRef, toRef);
 	}
@@ -562,63 +585,37 @@ public class Engine {
 	}
 	
 	public boolean addSrcLabel(String label, Reference ref) {
-		return addToSrcLabelMap(m_srcLabels, m_srcLabelTables, label, ref);
+		return addToCodePointMap(m_srcLabels, label, ref);
 	}
 
 	public void removeSrcLabel(String label) {
-		removeFromSrcLabelMap(m_srcLabels, label);
+		removeFromCodePointMap(m_srcLabels, label);
 	}
 
-	public Map<String, SrcLabelInfo> getSrcLabels() {
-		return getSrcLabelMap(m_srcLabels);
+	public Map<String, CodePointInfo> getSrcLabels() {
+		return getCodePointMap(m_srcLabels);
 	}
 
-	public Map<Integer, SrcTableInfo> getSrcLabelTable() {
-		return getSrcLabelTableMap(m_srcLabelTables);
+	public Map<Integer, SrcLabelTableInfo> getSrcLabelTable() {
+		return getSrcLabelTableMap();
 	}
-	
+
 	public boolean addEndpoint(String endpoint, Reference ref) {
-		return addToSrcLabelMap(m_endpoints, m_endpointTables, endpoint, ref);
+		return addToCodePointMap(m_endpoints, endpoint, ref);
 	}
 
 	public void removeEndpoint(String endpoint) {
-		removeFromSrcLabelMap(m_endpoints, endpoint);
+		removeFromCodePointMap(m_endpoints, endpoint);
 	}
 	
-	public Map<String, SrcLabelInfo> getEndpoints() {
-		return getSrcLabelMap(m_endpoints);
+	public Map<String, CodePointInfo> getEndpoints() {
+		return getCodePointMap(m_endpoints);
+	}
+		
+	public Map<Integer, EndpointTableInfo> getEndpointTable() {
+		return getEndpointTableMap();
 	}
 	
-	public SrcTableInfo getEndpoint(int pc) {
-		Map<Integer, SrcTableInfo> endPointTable = getEndpointTable();
-		if (endPointTable.containsKey(pc)) {
-			return endPointTable.get(pc);
-		}
-		return null;
-	}
-	
-	public Map<Integer, SrcTableInfo> getEndpointTable() {
-		return getSrcLabelTableMap(m_endpointTables);
-	}
-	
-	public File getExecutable() {
-		return m_executableFile;
-	}
-
-	public void setConstraint(Constraint constraint) {
-		assert(constraint != null);
-		if (constraint == null){
-			m_constraint = ConstraintFactory.createConstraint(this, "");
-		} else {
-			m_constraint = constraint;
-		}
-		notify(Notifier.NOTIFY_SET_CONSTRAINT, "");
-	}
-
-	public Constraint getConstraint() {
-		return m_constraint;
-	}
-			
 	private boolean analyseRouteSafely(int startPc, TreeSet<Integer> endPcs, RouteDescription routeDescription) {
 		boolean success = false;
 		try {
@@ -643,9 +640,6 @@ public class Engine {
 		return success;
 	}
 
-	
-	
-	
 	private boolean doRouteAnalysis(int startPc, TreeSet<Integer> endPcs, 
 			RouteDescription routeDescription) throws Exception {
 		 		
@@ -760,39 +754,60 @@ public class Engine {
 			for (int core : m_xeLoader.getCoreIds(node)) {
 				m_branches.add(new BranchMap(node, core));
 				m_labels.add(new LabelMap(node, core));
-				m_srcLabels.add(new SrcLabelMap(node, core, ".xtalabel"));
-				m_srcLabelTables.add(new SrcTableMap(node, core, ".xtalabeltable"));
-				m_endpoints.add(new SrcLabelMap(node, core, ".xtaendpoint"));
-				m_endpointTables.add(new SrcTableMap(node, core, ".xtaendpointtable"));
+				m_srcLabels.add(new CodePointMap(node, core, ".xtalabel", this, "label"));
+				m_endpoints.add(new CodePointMap(node, core, ".xtaendpoint", this, "endpoint"));
+				m_srcLabelTables.add(new SrcLabelTableMap(node, core, ".xtalabeltable"));
+				m_endpointTables.add(new EndpointTableMap(node, core, ".xtaendpointtable"));
 				m_xeObjects.add(new XeObject(m_xeLoader, node, core, fileFinder));
 			}
 		}
 	}
 
-	private void loadBranchMaps() {
+	private boolean loadBranchMaps() {
 		for (BranchMap branchMap : m_branches) {
-			branchMap.load(this, m_xeLoader);
+			if (!branchMap.load(this, m_xeLoader)) {
+			    return false;
+			}
 		}
+		return true;
 	}
 	
-	private void loadLabelMaps() {
+	private boolean loadLabelMaps() {
 		for (LabelMap labelMap : m_labels) {
-			labelMap.load(this, m_xeLoader);
-		}		
+			if (!labelMap.load(this, m_xeLoader)) {
+				return false;
+			}			
+		}	
+		return true;
 	}
 
-	private void loadSrcLabelMaps(List<SrcLabelMap> labelMaps) {
-		for (SrcLabelMap labelMap : labelMaps) {
-			labelMap.load(this, m_xeLoader);
+	private boolean loadCodePointMaps(List<CodePointMap> codePointMaps) {
+		for (CodePointMap codePointMap : codePointMaps) {
+			if (!codePointMap.load(this, m_xeLoader)) {
+				return false;
+			}
 		}
+		return true;
 	}
 	
-	private void loadSrcLabelTables(List<SrcTableMap> tableMaps) {
-		for (SrcTableMap tableMap : tableMaps) {
-			tableMap.load(this, m_xeLoader);
+	private boolean loadSrcLabelTables() {
+		for (SrcLabelTableMap tableMap : m_srcLabelTables) {
+			if (!tableMap.load(this, m_xeLoader)) {
+				return false;
+			}
 		}
+		return true;
 	}	
-			
+		
+	private boolean loadEndpointTables() {
+		for (EndpointTableMap tableMap : m_endpointTables) {
+			if (!tableMap.load(this, m_xeLoader)) {
+				return false;
+			}
+		}
+		return true;
+	}	
+	
 	private boolean addToBranchMap(Reference fromRef, Reference toRef) {
 		if (!resolveRefernece(fromRef, this)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
@@ -880,8 +895,7 @@ public class Engine {
 		}
 	}
 	
-	private boolean addToSrcLabelMap(List<SrcLabelMap> labelMaps, List<SrcTableMap> tableMaps,
-			String label, Reference ref) {
+	private boolean addToCodePointMap(List<CodePointMap> codePointMaps, String label, Reference ref) {
 		if (!resolveRefernece(ref, this)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", ref.getRef()));
@@ -894,10 +908,10 @@ public class Engine {
 			return false;
 		}
 		
-		SrcLabelMap labelMap = getSrcLabelMapNull(labelMaps, m_nodeId, m_coreId);
+		CodePointMap labelMap = getCodePointMapNull(codePointMaps, m_nodeId, m_coreId);
 		if (labelMap != null) {
 			if (!labelMap.getMap().containsKey(label)) {										
-				labelMap.getMap().put(label, new SrcLabelInfo(ref.getPc(), label, "", "", 0));
+				labelMap.getMap().put(label, new CodePointInfo(ref.getPc(), label, "", "", 0));
 			} else {
 				notify(Notifier.NOTIFY_ERROR, String.format(
 						"Label already exists: %s", label));
@@ -907,8 +921,8 @@ public class Engine {
 		return false;
 	}
 
-	private void removeFromSrcLabelMap(List<SrcLabelMap> labelMaps, String label) {
-		SrcLabelMap labelMap = getSrcLabelMapNull(labelMaps, m_nodeId, m_coreId);
+	private void removeFromCodePointMap(List<CodePointMap> codePointMaps, String label) {
+		CodePointMap labelMap = getCodePointMapNull(codePointMaps, m_nodeId, m_coreId);
 		if (labelMap != null) {
 			List<String> matches = new ArrayList<String>();
 
@@ -947,20 +961,28 @@ public class Engine {
 	    return new HashMap<String, Integer>();
 	}
 
-	private Map<String, SrcLabelInfo> getSrcLabelMap(List<SrcLabelMap> labelMaps) {
-	    SrcLabelMap labelMap = getSrcLabelMapNull(labelMaps, m_nodeId, m_coreId);
+	private Map<String, CodePointInfo> getCodePointMap(List<CodePointMap> codePointMaps) {
+	    CodePointMap labelMap = getCodePointMapNull(codePointMaps, m_nodeId, m_coreId);
 	    if (labelMap != null) {
 		    return labelMap.getMap();
 	    }
-	    return new HashMap<String, SrcLabelInfo>();
+	    return new HashMap<String, CodePointInfo>();
 	}
 	
-	private Map<Integer, SrcTableInfo> getSrcLabelTableMap(List<SrcTableMap> tableMaps) {
-		SrcTableMap tableMap = getSrcLabelTableMapNull(tableMaps, m_nodeId, m_coreId);
+	private Map<Integer, SrcLabelTableInfo> getSrcLabelTableMap() {
+		SrcLabelTableMap tableMap = getSrcLabelTableMapNull(m_nodeId, m_coreId);
 		if (tableMap != null) {
 			return tableMap.getMap();
 		}
-		return new HashMap<Integer, SrcTableInfo>();
+		return new HashMap<Integer, SrcLabelTableInfo>();
+	}
+
+	private Map<Integer, EndpointTableInfo> getEndpointTableMap() {
+		EndpointTableMap tableMap = getEndpointTableMapNull(m_nodeId, m_coreId);
+		if (tableMap != null) {
+			return tableMap.getMap();
+		}
+		return new HashMap<Integer, EndpointTableInfo>();
 	}
 	
 	private BranchMap getBranchMapNull(int nodeId, int coreId) {
@@ -983,18 +1005,28 @@ public class Engine {
 		return null;
 	}
 	
-	private SrcLabelMap getSrcLabelMapNull(List<SrcLabelMap> labels, int nodeId, int coreId) {
-		for (SrcLabelMap labelMap : labels) {
-			if ((labelMap.getNodeId() == nodeId) &&
-				(labelMap.getCoreId() == coreId)) {
-				return labelMap;
+	private CodePointMap getCodePointMapNull(List<CodePointMap> codePoints, int nodeId, int coreId) {
+		for (CodePointMap codePointMap : codePoints) {
+			if ((codePointMap.getNodeId() == nodeId) &&
+				(codePointMap.getCoreId() == coreId)) {
+				return codePointMap;
 			}
 		}
 		return null;
 	}
 
-	private SrcTableMap getSrcLabelTableMapNull(List<SrcTableMap> tables, int nodeId, int coreId) {
-		for (SrcTableMap tableMap : tables) {
+	private SrcLabelTableMap getSrcLabelTableMapNull(int nodeId, int coreId) {
+		for (SrcLabelTableMap tableMap : m_srcLabelTables) {
+			if ((tableMap.getNodeId() == nodeId) &&
+				(tableMap.getCoreId() == coreId)) {
+				return tableMap;
+			}
+		}
+		return null;
+	}
+
+	private EndpointTableMap getEndpointTableMapNull(int nodeId, int coreId) {
+		for (EndpointTableMap tableMap : m_endpointTables) {
 			if ((tableMap.getNodeId() == nodeId) &&
 				(tableMap.getCoreId() == coreId)) {
 				return tableMap;
