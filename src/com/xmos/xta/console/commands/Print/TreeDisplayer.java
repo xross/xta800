@@ -87,9 +87,11 @@ public class TreeDisplayer {
             boolean isAbsolute = false;
 
             if (parent != null) {
-                PathAttributes attributes = parent.getLoopPathAttributes(path);
-                iterations = attributes.getNumIterations();
-                isAbsolute = attributes.isAbsolute();
+            	iterations = parent.getloops().getLoopIterations(path);
+            	isAbsolute = parent.getloops().getLoopAbsoluteIterations(path) != -1;
+                //PathAttributes attributes = parent.getLoopPathAttributes(path);
+                //iterations = attributes.getNumIterations();
+                //isAbsolute = attributes.isAbsolute();
             }  
         	summarisePath(path, indent, iterations, isAbsolute);
         }
@@ -154,8 +156,8 @@ public class TreeDisplayer {
         if (loopPaths.size() > 0) {
             int totalIterations = 0;
             for (PathBasicBlock loopPath : loopPaths) {
-                Attributes attributes = path.getLoopPathAttributes(loopPath);
-                totalIterations += attributes.getNumIterations();
+                //Attributes attributes = path.getLoopPathAttributes(loopPath);
+                totalIterations += path.getloops().getLoopIterations(loopPath);
             }
         	m_console.display(String.format("%s      loop [%d path%s, %d iteration%s]\n", indent, 
         			loopPaths.size(), (loopPaths.size() == 1 ? "" : "s"),

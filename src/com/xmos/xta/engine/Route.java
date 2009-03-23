@@ -74,6 +74,59 @@ public class Route {
 		m_pcsHit = new HashSet<Integer>();
 	}
 	
+	/**
+	 * this takes a pc and returns a list of the blocks that contain it
+	 * @param pc
+	 * @return
+	 */
+	private ArrayList<PathBasicBlock> pcToBlocks(int pc){
+		ArrayList<PathBasicBlock> blocks = new ArrayList<PathBasicBlock>();
+		for(PathBasicBlock pbb : m_allBasicBlocks){
+			for(XtaInstruction inst : pbb.getInstructionTrimmed()){
+				if(inst.getPc() == pc){
+					blocks.add(pbb);
+					break;
+				}
+			}
+		}
+		return blocks;
+	}
+	
+	/**
+	 * This sets the total number of iterations on a set of loops all with a common header. It
+	 * sets the count on the tightest loop around the pc.
+	 * @param a pc within the loop
+	 * @return return false if this failed to set any loop counts and true for success
+	 */
+	public boolean setLoopIterationCount(int pc, int count){
+		//translate the pc into blocks
+		ArrayList<PathBasicBlock> blocks = pcToBlocks(pc);
+		
+		//crawl up the tree until a block with loops is found
+		for(PathBasicBlock block : blocks){
+		
+			//find from the list of loops on this block the tightest loop containing the pc
+			
+			//check for inconsistency violations
+			
+			//set the number of iterations on this loop to be count
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * sets the number of iterations on a loop path
+	 * @param pc
+	 * @return fail in the case where the loop path could not be uniquely determined or where the number
+	 * of iterations violates the loop headers loop count
+	 */
+	public boolean setLoopPathIterationCount(int pc, int count){
+
+
+		return true;
+	}
+	
 	public int getRouteId() {
 		return m_routeId;
 	}
@@ -148,6 +201,8 @@ public class Route {
 			return RouteStatus.ABORTED;
 		}
 		
+		
+		
 		for(PathBasicBlock completedBlock : this.m_completedPaths){
 			addPathPcs(completedBlock);
 		}
@@ -165,9 +220,7 @@ public class Route {
 			}
 		}
 	}
-	
 
-	
 	
 	private void followNode(
 		PathBasicBlock currentBasicBlock, Stack<Integer> stack, 
@@ -303,6 +356,8 @@ public class Route {
 		return null;
 	}
 
+	
+
 	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
 		for (PathBasicBlock block : m_completedPaths) {
 			if (setLoopIterations(block, pathId, absolute, iterations))
@@ -311,17 +366,20 @@ public class Route {
 		return false;
 	}
 
+	//FIXME
 	public boolean setLoopIterations(PathBasicBlock path, int pathId, boolean absolute, int iterations) {
 		for (PathBasicBlock block : path.getPathBlocks()) {
 			for (PathBasicBlock loopPath : block.getLoopPaths(path)) {
+				
 				if (loopPath.getPathId() == pathId) {
-					PathAttributes attributes = block.getLoopPathAttributes(loopPath);
-					attributes.setNumIterations(iterations, absolute);
-					return true;
+					if(block.setLoopIterations(loopPath, iterations, absolute)){
+						return true;
+					}
 				}
-					
+				
 				if (setLoopIterations(loopPath, pathId, absolute, iterations))
 					return true;
+					
 			}
 		}
 		return false;		
@@ -372,7 +430,7 @@ public class Route {
 		pathFormingLoop.setPath(s_pathCount++);
 		
 		loopDestinationBlock.addLoopPath(pathFormingLoop);
-		loopDestinationBlock.getLoopPathAttributes().put(pathFormingLoop, new PathAttributes());
+		//loopDestinationBlock.getLoopPathAttributes().put(pathFormingLoop, new PathAttributes());
 		pathFormingLoop.setStatus(BlockStatus.COMPLETE);
 		return;
 	}

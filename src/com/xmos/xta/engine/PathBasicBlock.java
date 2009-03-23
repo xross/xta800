@@ -1,14 +1,11 @@
 package com.xmos.xta.engine;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeSet;
 import java.util.Vector;
-
 import com.xmos.xta.engine.Status.BlockStatus;
 import com.xmos.xta.engine.constraint.Constraint;
 
@@ -18,7 +15,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	private PathBasicBlock m_parentBasicBlock;
 	private LoopAttachment m_loopPaths;
 	private int m_pathId;
-	private HashMap<PathBasicBlock, PathAttributes> m_loopPathAttributes;
+	//private HashMap<PathBasicBlock, PathAttributes> m_loopPathAttributes;
 	private BasicBlockStats m_blockStats;
 	private BlockStatus m_status;
 	private int m_startInstruction;
@@ -77,7 +74,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		//m_seen = 0;
 		m_loopPaths = new LoopAttachment(null);
 		m_pathId = -1;
-		m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
+		//m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
 		m_blockStats = new BasicBlockStats(this);
 		m_status = BlockStatus.SEARCHING;
 		m_warnings = new ArrayList<String>();		
@@ -92,6 +89,15 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		createInstructionStream();
 		
 		m_engine.getProgress().incr();
+	}
+	
+	public boolean containsPc(int pc){
+		for(XtaInstruction inst : getInstructionTrimmed()){
+			if(inst.getPc() == pc){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -213,15 +219,17 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public ArrayList<PathBasicBlock> getLoopPaths(PathBasicBlock base) {
 		return m_loopPaths.getLoopPaths(base);
 	}
-	
+	/*
 	public PathAttributes getLoopPathAttributes(PathBasicBlock block) {
 		PathAttributes attributes = m_loopPathAttributes.get(block);
 		return attributes;
 	}
 	
+	
 	HashMap<PathBasicBlock, PathAttributes> getLoopPathAttributes() {
 		return m_loopPathAttributes;
 	}
+	*/
 	
 	public BlockStatus getStatus() {
 		return m_status;
@@ -247,8 +255,10 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public int getNumIterations() {
 		ArrayList<PathBasicBlock> pathBlocks = getPathBlocks();
 		PathBasicBlock pathBlock0 = pathBlocks.get(0);
-		PathAttributes loopPathAttributes = pathBlock0.getLoopPathAttributes(this);
-		return loopPathAttributes.getNumIterations();
+		return pathBlock0.getloops().getLoopIterations(this);
+		
+		//PathAttributes loopPathAttributes = pathBlock0.getLoopPathAttributes(this);
+		//return loopPathAttributes.getNumIterations();
 	}
 
 	
@@ -505,5 +515,14 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public LoopAttachment getloops() {
 		return m_loopPaths;
 	}
+
+	public boolean containsLoop(PathBasicBlock pbb) {
+		return getloops().contains(pbb);
+	}
+
+	public boolean setLoopIterations(PathBasicBlock loopPath, int iterations, boolean absolute) {
+		return m_loopPaths.setLoopIterations(loopPath, absolute, iterations);
+	}
+	
 
 }

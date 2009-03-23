@@ -6,17 +6,102 @@ import java.util.HashSet;
 
 public class LoopAttachment {
 
+	//all the loops attached on to this path basic block
 	private HashSet<PathBasicBlock> m_allAttachedLoops;
-	private PathBasicBlock m_loop;
-	private ArrayList<LoopAttachment> m_subLoops;
-	private ArrayList<PathBasicBlock> m_loopList;
 	
+	//the loop
+	private PathBasicBlock m_loop;
+	
+	//the loops that contain m_loop
+	private ArrayList<LoopAttachment> m_subLoops;
+	
+	//a list of all the loops in the m_subLoop list
+	private ArrayList<PathBasicBlock> m_loopList;
+
+	private boolean m_absolute;
+	
+	//the absolute iterations if this loop
+	private int m_absoluteIterations;
+	
+	//the relative iterations of this loop
+	private int m_relativeIterations;
+	
+	//the max iterations of this loop
+	private int maxSubLoopIterations;
+	
+	public boolean setLoopIterations(PathBasicBlock loop, boolean absolute, int count){
+		if(loop == m_loop){
+			m_absolute = absolute;
+			if(absolute){
+				m_absoluteIterations = count;
+				m_relativeIterations = -1;
+			} else {
+				m_relativeIterations = count;
+				m_absoluteIterations = -1;
+			}
+			return true;
+		} else {
+			for(LoopAttachment la : m_subLoops){
+				if(la.setLoopIterations(loop, absolute, count)) return true;
+			}
+			return false;
+		}
+	}
+	
+	public int getLoopAbsoluteIterations(PathBasicBlock loop) {
+		if(loop == m_loop){
+			if(m_absolute){
+				return m_absoluteIterations;
+			} else {
+				return -1;
+			}
+		} else {
+			for(LoopAttachment la : m_subLoops){
+				int iterations = la.getLoopAbsoluteIterations(loop);
+				if(iterations != -1){
+					return iterations;
+				}
+			}
+		}
+		return -1;
+	}
+	public int getLoopRelativeIterations(PathBasicBlock loop) {
+		if(loop == m_loop){
+			if(!m_absolute){
+				return m_relativeIterations;
+			} else {
+				return -1;
+			}
+		} else {
+			for(LoopAttachment la : m_subLoops){
+				int iterations = la.getLoopRelativeIterations(loop);
+				if(iterations != -1){
+					return iterations;
+				}
+			}
+		}
+		return -1;
+	}
+	public int getLoopIterations(PathBasicBlock loop) {
+		int absoluteLoops = getLoopAbsoluteIterations(loop);
+		if(absoluteLoops != -1){
+			return absoluteLoops;
+		}
+		int relativeLoops = getLoopRelativeIterations(loop);
+		if(relativeLoops != -1){
+			return relativeLoops;
+		}
+		return 0;
+	}
+
 	public LoopAttachment(PathBasicBlock loop){
 		m_loop = loop;
 		m_subLoops = new ArrayList<LoopAttachment>();
 		if(loop == null){
 			m_allAttachedLoops = new HashSet<PathBasicBlock>();
 		}
+		m_absoluteIterations = -1;
+		m_relativeIterations = -1;
 	}
 
 	public void addLoop(PathBasicBlock newLoop){
@@ -112,5 +197,11 @@ public class LoopAttachment {
 	public boolean contains(PathBasicBlock pathBasicBlock) {
 		return m_allAttachedLoops.contains(pathBasicBlock);
 	}
+
+
+
+
+
+
 	
 }
