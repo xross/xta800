@@ -136,7 +136,7 @@ void mii_rx_pins(chanend c_mii_rx)
                         length += -4 + 1;
                         tail = crc8shr(crc, tail, poly);
                     } else {
-//                        #pragma xta label "error_overflow"
+                        #pragma xta label "error_overflow"
                         mii_counter_rxeroverflow++;
                         clearbuf(p_mii_rxd);
                     }
@@ -145,15 +145,15 @@ void mii_rx_pins(chanend c_mii_rx)
                     outuint(c_mii_rx, length);
 
                     if (~crc) {
-//                        #pragma xta label "error_crc"
+                        #pragma xta label "error_crc"
                         mii_counter_rxercrc++;
                         clearbuf(p_mii_rxd);
                     } else if (length & !63) {
-//                        #pragma xta label "error_len"
+                        #pragma xta label "error_len"
                         mii_counter_rxerlen++;
                         clearbuf(p_mii_rxd);
                     } else if (taillen & 7) { 
-//                        #pragma xta label "error_nibble"
+                        #pragma xta label "error_nibble"
                         mii_counter_rxeralgn++;
                         clearbuf(p_mii_rxd);
                     } else {

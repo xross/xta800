@@ -3,23 +3,7 @@ Complete \[1 path\]
   \* path\(\d+\) +: \d+\.\d+ns
 
 Route\(1\) path: eop_detected to packet_start
-Complete \[20 paths\]
-  \* path\(\d+\) +: \d+\.\d+ns
-  \* path\(\d+\) +: \d+\.\d+ns
-  \* path\(\d+\) +: \d+\.\d+ns
-  \* path\(\d+\) +: \d+\.\d+ns
-  \* path\(\d+\) +: \d+\.\d+ns
-  \* path\(\d+\) +: \d+\.\d+ns
-  \* path\(\d+\) +: \d+\.\d+ns
-  \* path\(\d+\) +: \d+\.\d+ns
-  \* path\(\d+\) +: \d+\.\d+ns
-  \* path\(\d+\) +: \d+\.\d+ns
-  \* path\(\d+\) +: \d+\.\d+ns
-  \* path\(\d+\) +: \d+\.\d+ns
-  \* path\(\d+\) +: \d+\.\d+ns
-  \* path\(\d+\) +: \d+\.\d+ns
-  \* path\(\d+\) +: \d+\.\d+ns
-  \* path\(\d+\) +: \d+\.\d+ns
+Complete \[4 paths\]
   \* path\(\d+\) +: \d+\.\d+ns
   \* path\(\d+\) +: \d+\.\d+ns
   \* path\(\d+\) +: \d+\.\d+ns
@@ -30,7 +14,7 @@ Route\(0\) path: receive_loop to receive_loop
     Complete paths: 1, Unresolved paths: 0
 
 Route\(1\) path: eop_detected to packet_start
-    Pass, Slack: 20.0ns, Required: 1240.0ns, Worst: 1220.0ns, Min Frequency: 393 Mhz
-    Complete paths: 20, Unresolved paths: 0
+    Pass, Slack: 60.0ns, Required: 1240.0ns, Worst: 1180.0ns, Min Frequency: 380 Mhz
+    Complete paths: 4, Unresolved paths: 0
 
-Pass, Min Slack: 20.0ns, Min Frequency: 393 Mhz
+Pass, Min Slack: 60.0ns, Min Frequency: 380 Mhz
