@@ -7,19 +7,19 @@ import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.Engine;
 
-public class SrcLabelMap {
+public class EndpointTableMap {
 	private static final boolean DEBUG = false;
 	
 	private int m_nodeId;
 	private int m_coreId;
 	private String m_sectionName;
-	private TreeMap<String, SrcLabelInfo> m_labels;
+	private TreeMap<Integer, EndpointTableInfo> m_locations;
 	
-	public SrcLabelMap(int nodeId, int coreId, String sectionName) {
+	public EndpointTableMap(int nodeId, int coreId, String sectionName) {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_sectionName = sectionName;
-		m_labels = new TreeMap<String, SrcLabelInfo>(); 
+		m_locations = new TreeMap<Integer, EndpointTableInfo>(); 
 	}
 	
 	public int getNodeId() {
@@ -30,8 +30,8 @@ public class SrcLabelMap {
 		return m_coreId;
 	}
 	
-	public Map<String, SrcLabelInfo> getMap() {
-		return m_labels;
+	public Map<Integer, EndpointTableInfo> getMap() {
+		return m_locations;
 	}
 	
 	public boolean load(Engine engine, XeLoader xeLoader) {
@@ -58,22 +58,19 @@ public class SrcLabelMap {
     				size, version, compilationDir);
        		
            	while (byteIndex < (base + size)) {        		
+        		String fileName = ByteArrayManipulation.readString(data, byteIndex);
+        		byteIndex += fileName.length() + 1;
+
+        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
+        		byteIndex += 4;
+
         		int location = ByteArrayManipulation.readInt(data, byteIndex);
         		byteIndex += 4;
         		
-        		String label = ByteArrayManipulation.readString(data, byteIndex);
-        		byteIndex += label.length() + 1;
-
-        		String fileName = ByteArrayManipulation.readString(data, byteIndex);
-        		byteIndex += fileName.length() + 1;
+        		if (DEBUG) System.out.printf("- pc: 0x%08x, fileName: %s, lineNumber: %d\n", 
+        				location, fileName, lineNumber);
         		
-        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
-        		byteIndex += 4;
-        		        		
-        		if (DEBUG) System.out.printf("- label: %s, pc: 0x%08x, fileName: %s, lineNumber: %d\n", 
-        				label, location, fileName, lineNumber);
-        		
-        		m_labels.put(label, new SrcLabelInfo(location, label, compilationDir, fileName, lineNumber));        	        		
+        		m_locations.put(location, new EndpointTableInfo(location, compilationDir, fileName, lineNumber));        	        		
         	}
         }
         return true;

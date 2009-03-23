@@ -4,7 +4,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.maps.SrcTableInfo;
+import com.xmos.xta.engine.maps.SrcLabelTableInfo;
 
 public class AllSrcLabels extends Command {
 	public AllSrcLabels() {
@@ -39,10 +39,10 @@ public class AllSrcLabels extends Command {
 			return;
 		}
 
-		for (SrcTableInfo info : engine.getSrcLabelTable().values()) {
-    	    console.display(String.format("pc: 0x%x, compilation dir: %s, filename: %s, line number: %d\n", 
-    	    		info.getPc(), info.getCompilationDir(), 
-    	    		info.getFileName(), info.getLineNumber()));
+		for (SrcLabelTableInfo info : engine.getSrcLabelTable().values()) {
+    	    console.display(String.format("pc: 0x%x, compilation dir: %s, filename: %s, line numbers: %d - %d\n", 
+    	    		info.getPc(), info.getCompilationDir(), info.getFileName(), 
+    	    		info.getLineNumberStart(), info.getLineNumberEnd()));
     	}		        
     }
 }

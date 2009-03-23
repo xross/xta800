@@ -148,8 +148,6 @@ public class Route {
 			return RouteStatus.ABORTED;
 		}
 		
-		//now the analysis is done
-		
 		for(PathBasicBlock completedBlock : this.m_completedPaths){
 			addPathPcs(completedBlock);
 		}

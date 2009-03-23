@@ -7,19 +7,19 @@ import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.Engine;
 
-public class SrcTableMap {
+public class CodePointMap {
 	private static final boolean DEBUG = false;
 	
 	private int m_nodeId;
 	private int m_coreId;
 	private String m_sectionName;
-	private TreeMap<Integer, SrcTableInfo> m_locations;
+	private TreeMap<String, CodePointInfo> m_labels;
 	
-	public SrcTableMap(int nodeId, int coreId, String sectionName) {
+	public CodePointMap(int nodeId, int coreId, String sectionName) {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_sectionName = sectionName;
-		m_locations = new TreeMap<Integer, SrcTableInfo>(); 
+		m_labels = new TreeMap<String, CodePointInfo>(); 
 	}
 	
 	public int getNodeId() {
@@ -30,8 +30,8 @@ public class SrcTableMap {
 		return m_coreId;
 	}
 	
-	public Map<Integer, SrcTableInfo> getMap() {
-		return m_locations;
+	public Map<String, CodePointInfo> getMap() {
+		return m_labels;
 	}
 	
 	public boolean load(Engine engine, XeLoader xeLoader) {
@@ -58,19 +58,22 @@ public class SrcTableMap {
     				size, version, compilationDir);
        		
            	while (byteIndex < (base + size)) {        		
-        		String fileName = ByteArrayManipulation.readString(data, byteIndex);
-        		byteIndex += fileName.length() + 1;
-
-        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
-        		byteIndex += 4;
-
         		int location = ByteArrayManipulation.readInt(data, byteIndex);
         		byteIndex += 4;
         		
-        		if (DEBUG) System.out.printf("- pc: 0x%08x, fileName: %s, lineNumber: %d\n", 
-        				location, fileName, lineNumber);
+        		String label = ByteArrayManipulation.readString(data, byteIndex);
+        		byteIndex += label.length() + 1;
+
+        		String fileName = ByteArrayManipulation.readString(data, byteIndex);
+        		byteIndex += fileName.length() + 1;
         		
-        		m_locations.put(location, new SrcTableInfo(location, compilationDir, fileName, lineNumber));        	        		
+        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
+        		byteIndex += 4;
+        		        		
+        		if (DEBUG) System.out.printf("- label: %s, pc: 0x%08x, fileName: %s, lineNumber: %d\n", 
+        				label, location, fileName, lineNumber);
+        		
+        		m_labels.put(label, new CodePointInfo(location, label, compilationDir, fileName, lineNumber));        	        		
         	}
         }
         return true;
