@@ -3,6 +3,7 @@ package com.xmos.xta.rcp.editors;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -467,12 +468,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         }
         m_hasHighlightedLines = (annotations.size() > 0);
 
-        int startPointIndex = -1;
-        int endPointIndex = -1;
-        if (m_startPointLine != null)
-        	startPointIndex = m_startPointLine.getIndex();
-        if (m_endPointLine != null)
-        	endPointIndex = m_endPointLine.getIndex();
+        int startPointIndex = getStartPointIndex();
+        int endPointIndex = getEndPointIndex();
         
         m_endPointLines.clear();
         for (EndpointTableInfo info : XtaEngine.getEngine().getEndpointTable().values()) {
@@ -485,7 +482,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	        		m_endPointLines.put(index, line);
         		}
         	}
-        }
+        } 
 
         if ((startPointIndex != -1) && (startPointIndex == endPointIndex)) {
         	addAnnotation(startPointIndex, StartStopAnnotationID, annotations, annotationPositions);
@@ -508,7 +505,67 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		m_updatingHighlights = false;
     }
                 
-    private void updateUnknowns() {
+    public int getStartPointIndex() {
+        if (m_startPointLine != null)
+        	return m_startPointLine.getIndex();
+		return -1;
+	}
+
+    public int getEndPointIndex() {
+        if (m_endPointLine != null)
+        	return m_endPointLine.getIndex();
+		return -1;
+	}
+
+    public Vector<XtaInstruction> getUnknownsForLine(int lineNumber) {
+    	Vector<XtaInstruction> unknowns = new Vector<XtaInstruction>();
+
+    	Node pathRoot = null;
+    	if (m_selectedNode != null) {
+    		pathRoot = m_selectedNode.getPathRoot();
+    	}
+    	if (pathRoot != null) {
+        	HashSet<Integer> linePcs = getPcsForLine(lineNumber);
+
+    		for (XtaInstruction instruction : pathRoot.getUnknowns()) {
+    			if (linePcs.contains(instruction.getPc())) {
+    				unknowns.add(instruction);
+    			}
+			}
+    	}
+    	return unknowns;
+    }
+    
+	public boolean isValidEndPoint(int lineNumber) {
+		if (m_endPointLines.containsKey(lineNumber)) {
+			return true;
+		}
+		return false;
+	}
+
+	private HashSet<Integer> getPcsForLine(int lineNumber) {
+		HashSet<Integer> pcs = new HashSet<Integer>();
+		HashMap<Integer, InputLine> lineMap = getInput().getPcsToLines();
+		Iterator<Map.Entry<Integer, InputLine>> lineIter = lineMap.entrySet().iterator();
+		while (lineIter.hasNext()) {
+    	    Map.Entry<Integer, InputLine> pair = lineIter.next();
+    	    if (pair.getValue().getIndex() == lineNumber) {
+    	    	pcs.add(pair.getKey());
+    	    }                           
+    	}      
+
+		HashMap<Integer, InputSection> sectionMap = getInput().getPcsToSection();
+		Iterator<Map.Entry<Integer, InputSection>> sectionIter = sectionMap.entrySet().iterator();
+		while (sectionIter.hasNext()) {
+    	    Map.Entry<Integer, InputSection> pair = sectionIter.next();
+    	    if (pair.getValue().getIndex() == lineNumber) {
+    	    	pcs.add(pair.getKey());
+    	    }                           
+    	}      
+		return pcs;
+	}
+
+	private void updateUnknowns() {
 
 		if (DEBUG) System.out.printf("XtaEditor: upadteUnknowns\n"); 
 
@@ -531,16 +588,15 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			}
     		
     	}
-    	if(DEBUG)  System.out.println("XtaEditor: replace unknowns");
+    	if (DEBUG) System.out.println("XtaEditor: replace unknowns");
 		m_annotationModel.replaceAnnotations(m_previousUnknownAnnotations, annotationPositions);        
-		m_previousUnknownAnnotations = createArray(annotations);    
-	    
+		m_previousUnknownAnnotations = createArray(annotations);
     }
 
     private void updateAnnotations(int pc, String type, List<Annotation> annotations, 
     		Map<Annotation, Position> annotationPositions, boolean excludeFnops, HashMap<Integer, InputLine> pcToLine) {
     	InputLine line = pcToLine.get(pc);
-    	if(line == null) return;
+    	if (line == null) return;
 		if (!getInput().getPcsToSection().get(pc).isFnop(line.getOffset())) {	
 			addAnnotation(line.getIndex(), type, annotations, annotationPositions);
 			addAnnotation(getInput().getPcsToSection().get(pc).getIndex(), type, annotations, annotationPositions);

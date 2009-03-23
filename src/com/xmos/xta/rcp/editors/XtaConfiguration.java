@@ -50,6 +50,6 @@ public class XtaConfiguration extends SourceViewerConfiguration {
     }
     
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
-		return new XtaRulerAnnotationHover();
+		return new XtaRulerAnnotationHover(m_editor);
 	}
 }
