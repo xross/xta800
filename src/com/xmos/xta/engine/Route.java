@@ -147,19 +147,35 @@ public class Route {
 		} catch (AbortedException e) {
 			return RouteStatus.ABORTED;
 		}
+		
+		for(PathBasicBlock completedBlock : this.m_completedPaths){
+			addPathPcs(completedBlock);
+		}
+		
 		sortPaths();
 		displayWarnings();
 		return RouteStatus.COMPLETED;
 	}
+
+	private void addPathPcs(PathBasicBlock completedBlock) {
+		for(PathBasicBlock pathBlock : completedBlock.getPathBlocks()){
+			m_pcsHit.addAll(pathBlock.getPcsCoveredThis());
+			for(PathBasicBlock loop : pathBlock.getLoopPaths(completedBlock)){
+				addPathPcs(loop);
+			}
+		}
+	}
 	
 
+	
+	
 	private void followNode(
 		PathBasicBlock currentBasicBlock, Stack<Integer> stack, 
 		Stack<LinkedList<BasicBlock>> nodeContext, RouteMode mode) throws AbortedException {
 		
 		
 		m_allBasicBlocks.add(currentBasicBlock);
-		m_pcsHit.addAll(currentBasicBlock.getPcsCoveredThis());
+		
 		if(DEBUG) System.out.println("begin block " + currentBasicBlock);
 		if(m_engine.getAbort()) {
 			throw new AbortedException();

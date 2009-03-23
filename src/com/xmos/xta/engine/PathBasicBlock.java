@@ -1,6 +1,7 @@
 package com.xmos.xta.engine;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -169,7 +170,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	
 	/**
 	 * get the underlying basic block. Should almost never be used
-	 * @return theis blocks basic block
+	 * @return the block's basic block
 	 */
 	public BasicBlock getBasicBlock(){
 		return m_basicBlock;
@@ -352,17 +353,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		}
 		return pathLength;
 	}
-
-	public void getAllBlocks(TreeSet<PathBasicBlock> allBlocks) {
-		for (PathBasicBlock block : getPathBlocks()) {
-			allBlocks.add(block);
-			for (PathBasicBlock loopPath : block.getLoopPaths(this)) {
-				loopPath.getAllBlocks(allBlocks);
-			}
-		}
-		//doneWithPathBlocks();
-	}
-
 	
 	public Vector<XtaInstruction> getInstructions(boolean recurse) {
 		Vector<XtaInstruction> insts = new Vector<XtaInstruction>();
@@ -387,20 +377,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		return unknowns;
 	}
 
-	public HashSet<Integer> getPcsCovered(boolean recurse) {
-		HashSet<Integer> pcsCovered = new HashSet<Integer>();
-		for (PathBasicBlock block : getPathBlocks()) {
-			pcsCovered.addAll(block.getPcsCoveredThis());		
-			if (recurse) {
-				for (PathBasicBlock loopPath : block.getLoopPaths(this)) {
-					pcsCovered.addAll(loopPath.getPcsCovered(true));
-				}
-			}
-		}
-		//doneWithPathBlocks();		
-		return pcsCovered;
-	}
-	
 	public HashSet<Integer> getPcsCoveredThis() {
 		//TODO make this fast
 		HashSet<Integer> pcs = new HashSet<Integer>();
@@ -529,7 +505,5 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public LoopAttachment getloops() {
 		return m_loopPaths;
 	}
-
-
 
 }
