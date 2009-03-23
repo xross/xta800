@@ -40,9 +40,9 @@ Node: 0, Core: 3 \(Debug information avaliable\)
 No routes analysed
 none
 Error: Unresolved reference: test.xc:11
-Label: ben1, pc: 0x[0-9a-fA-F]{5}
+Error: Unresolved reference: test.xc:12
+Error: Unresolved reference: test.xc:13
 Label: bob, pc: 0x[0-9a-fA-F]{5}
-Label: fred1, pc: 0x[0-9a-fA-F]{5}
 Current node: 0
 Current core: 0
 Frequency: 400

@@ -11,19 +11,18 @@ system("xcc -march=$arch test.xc -o $genDir/test.xe > $genDir/endpoint_endpoint.
 }
 system("@ARGV load $genDir/test.xe " .
        "config proc 0 0 " .
-# BUG 4812 - uncalled elimination bug
-#       "list endpoints " .
-#       "analyse path output1 input1 " .
-#       "status " .
+       "list endpoints " .
+       "analyse path output1 input1 " .
+       "status " .
        "analyse path output0 input0 " .
        "status " .
        "print summary " .
        "config proc 0 1 " .
-#       "list endpoints " .
+       "list endpoints " .
+       "analyse path output0 input0 " .
+       "status " .
        "analyse path output1 input1 " .
        "status " .
-#       "analyse path output0 input0 " .
-#       "status " .
        "print summary " .
        "exit > $genDir/endpoint_endpoint.txt 2>&1");
 
