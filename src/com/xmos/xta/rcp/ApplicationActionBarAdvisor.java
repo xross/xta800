@@ -13,7 +13,6 @@ import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 
-import com.xmos.xta.rcp.actions.control.ActionCancel;
 import com.xmos.xta.rcp.actions.control.ActionCore;
 import com.xmos.xta.rcp.actions.control.ActionFunction;
 import com.xmos.xta.rcp.actions.control.ActionLoad;
@@ -27,7 +26,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     private IAction m_coreAction;
     private IAction m_functionAction;
     private IAction m_runAction;
-    private IAction m_cancelAction;
 
     public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
         super(configurer);
@@ -56,10 +54,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     	m_runAction = new ActionRun();
     	m_runAction.setId("com.xmos.xta.rcp.actions.control.run");
     	register(m_runAction);
-
-    	m_cancelAction = new ActionCancel();
-    	m_cancelAction.setId("com.xmos.xta.rcp.actions.control.cancel");
-    	register(m_cancelAction);
     }
 
     protected void fillMenuBar(IMenuManager menuBar) {
@@ -85,9 +79,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
     	ActionContributionItem runActionItem = new ActionContributionItem(m_runAction);
     	toolBar.add(runActionItem);
-
-    	ActionContributionItem cancelActionItem = new ActionContributionItem(m_cancelAction);
-    	toolBar.add(cancelActionItem);
 
     	coolBar.add(toolBar);
     }
