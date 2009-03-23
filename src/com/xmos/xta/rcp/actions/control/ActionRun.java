@@ -113,7 +113,9 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
-					XtaEngine.getEngine().analyseRoute(functionName);
+					Engine engine = XtaEngine.getEngine();
+					engine.setMonitor(monitor);
+					engine.analyseRoute(functionName);
 					return Status.OK_STATUS;
 				}
 			};
@@ -144,7 +146,9 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
-					XtaEngine.getEngine().analyseRoute(startRef, endRef);
+					Engine engine = XtaEngine.getEngine();
+					engine.setMonitor(monitor);
+					engine.analyseRoute(startRef, endRef);
 					return Status.OK_STATUS;
 				}
 			};

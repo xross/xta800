@@ -5,6 +5,7 @@ import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.reconciler.MonoReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
+import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 
@@ -12,7 +13,6 @@ public class XtaConfiguration extends SourceViewerConfiguration {
     public static final boolean DEBUG = false;
 
 	private XtaEditor m_editor;    
-	
 	
     XtaConfiguration(XtaEditor editor) {
 		if (DEBUG) System.out.printf("XtaConfiguration()\n");		
@@ -48,4 +48,8 @@ public class XtaConfiguration extends SourceViewerConfiguration {
         
         return reconciler;
     }
+    
+	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
+		return new XtaRulerAnnotationHover(m_editor);
+	}
 }
