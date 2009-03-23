@@ -10,7 +10,7 @@ if (!$noBuild) {
 system("xcc -march=$arch -g test.s -o $genDir/test.xe > $genDir/pathid.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse function test " .
+       "analyse function main " .
        "print summary " .
        "print trace - 1 " .
        "print trace - 0 " .
