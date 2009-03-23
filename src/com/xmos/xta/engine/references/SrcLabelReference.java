@@ -11,7 +11,7 @@ public class SrcLabelReference extends Reference {
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
 		String ref = getRef();
 		if (engine.getSrcLabels().containsKey(ref)) {			
-			CodePointInfo info = engine.getEndpoints().get(ref);
+			CodePointInfo info = engine.getSrcLabels().get(ref);
 			setPc(info.getPc());
 			return true;
 		}

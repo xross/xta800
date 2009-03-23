@@ -165,51 +165,54 @@ public class Engine {
 	public boolean loadExecutable(File executableFile, FileFinder fileFinder) {
 		XeLoader newLoader = new XeLoader();
 
-		boolean success = newLoader.loadExecutable(executableFile);
-		if (success) {
-			m_nodeId = 0;
-			m_coreId = 0;
-
-			m_xeLoader = newLoader;
-			m_executableFile = executableFile;
-			initialiseLists(fileFinder);
-			m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(this,
-					m_xeLoader, m_config);
-
-			try {
-				decodeInstructions();
-			} catch (Exception e) {
-				notify(Notifier.NOTIFY_ERROR,
-						"Some of the pc's refered to in the executable could not be found");
-				success = false;
-			}
-
-			loadBranchMaps();
-			loadLabelMaps();
-			loadCodePointMaps(m_srcLabels);
-			loadCodePointMaps(m_endpoints);
-			loadSrcLabelTables();
-			loadEndpointTables();
-
-			m_ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache,
-					m_xeObjects, m_branches);
-
-			runAnalysisEngine();
-
-			m_routes.clear();
-			Route.resetRouteCount();
-			setConstraint(ConstraintFactory.createConstraint(this, ""));
-
-			// Need to update as the executable might be of a different architecture
-			m_mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
-
-			notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile
-					.getAbsolutePath());
-		} else {
-			notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile
-					+ "' could not be loaded.");
+		if (!newLoader.loadExecutable(executableFile)) {
+			notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile + "' could not be loaded.");
+			return false;			
 		}
-		return success;
+		
+		m_nodeId = 0;
+		m_coreId = 0;
+
+		m_xeLoader = newLoader;
+		m_executableFile = executableFile;
+		initialiseLists(fileFinder);
+		m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(this,
+				m_xeLoader, m_config);
+
+		try {
+			decodeInstructions();
+		} catch (Exception e) {
+			notify(Notifier.NOTIFY_ERROR, "Some of the pc's refered to in the executable could not be found");
+			return false;
+		}
+
+		if (!loadBranchMaps()) 
+			return false;		
+		if (!loadLabelMaps())
+		    return false;		
+		if (!loadCodePointMaps(m_srcLabels))
+		    return false;		
+		if (!loadCodePointMaps(m_endpoints))
+		    return false;		
+		if (!loadSrcLabelTables())
+		    return false;		
+		if (!loadEndpointTables())
+		    return false;		
+
+		m_ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache,
+				m_xeObjects, m_branches);
+
+		runAnalysisEngine();
+
+		m_routes.clear();
+		Route.resetRouteCount();
+		setConstraint(ConstraintFactory.createConstraint(this, ""));
+
+		// Need to update as the executable might be of a different architecture
+		m_mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
+
+		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
+		return true;
 	}
 
 	public void runAnalysisEngine() {
@@ -751,8 +754,8 @@ public class Engine {
 			for (int core : m_xeLoader.getCoreIds(node)) {
 				m_branches.add(new BranchMap(node, core));
 				m_labels.add(new LabelMap(node, core));
-				m_srcLabels.add(new CodePointMap(node, core, ".xtalabel"));
-				m_endpoints.add(new CodePointMap(node, core, ".xtaendpoint"));
+				m_srcLabels.add(new CodePointMap(node, core, ".xtalabel", this, "label"));
+				m_endpoints.add(new CodePointMap(node, core, ".xtaendpoint", this, "endpoint"));
 				m_srcLabelTables.add(new SrcLabelTableMap(node, core, ".xtalabeltable"));
 				m_endpointTables.add(new EndpointTableMap(node, core, ".xtaendpointtable"));
 				m_xeObjects.add(new XeObject(m_xeLoader, node, core, fileFinder));
@@ -760,34 +763,49 @@ public class Engine {
 		}
 	}
 
-	private void loadBranchMaps() {
+	private boolean loadBranchMaps() {
 		for (BranchMap branchMap : m_branches) {
-			branchMap.load(this, m_xeLoader);
+			if (!branchMap.load(this, m_xeLoader)) {
+			    return false;
+			}
 		}
+		return true;
 	}
 	
-	private void loadLabelMaps() {
+	private boolean loadLabelMaps() {
 		for (LabelMap labelMap : m_labels) {
-			labelMap.load(this, m_xeLoader);
-		}		
+			if (!labelMap.load(this, m_xeLoader)) {
+				return false;
+			}			
+		}	
+		return true;
 	}
 
-	private void loadCodePointMaps(List<CodePointMap> codePointMaps) {
+	private boolean loadCodePointMaps(List<CodePointMap> codePointMaps) {
 		for (CodePointMap codePointMap : codePointMaps) {
-			codePointMap.load(this, m_xeLoader);
+			if (!codePointMap.load(this, m_xeLoader)) {
+				return false;
+			}
 		}
+		return true;
 	}
 	
-	private void loadSrcLabelTables() {
+	private boolean loadSrcLabelTables() {
 		for (SrcLabelTableMap tableMap : m_srcLabelTables) {
-			tableMap.load(this, m_xeLoader);
+			if (!tableMap.load(this, m_xeLoader)) {
+				return false;
+			}
 		}
+		return true;
 	}	
 		
-	private void loadEndpointTables() {
+	private boolean loadEndpointTables() {
 		for (EndpointTableMap tableMap : m_endpointTables) {
-			tableMap.load(this, m_xeLoader);
+			if (!tableMap.load(this, m_xeLoader)) {
+				return false;
+			}
 		}
+		return true;
 	}	
 	
 	private boolean addToBranchMap(Reference fromRef, Reference toRef) {
