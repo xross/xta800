@@ -35,10 +35,10 @@ public class ReferenceFactory {
 		m_referenceClasses.put(ReferenceClass.CONSTRAINT_REF, new Reference[] {
 				new PcReference(null), 
 				new LabelReference(null), 
-				new SrcLabelReference(null), 
-				new SrcLabelFileLineReference(null), 
 				new EndpointReference(null), 
-				new EndpointFileLineReference(null)});		
+				new EndpointFileLineReference(null),		
+		        new SrcLabelReference(null), 
+		        new SrcLabelFileLineReference(null)});
 	}
 	private static Engine m_engine;
 	
@@ -56,14 +56,6 @@ public class ReferenceFactory {
 				if (m_engine.getLabels().containsKey(reference)) {
 					return new LabelReference(reference);
 				}				
-			} else if (referenceType.getClass() == SrcLabelReference.class) {
-				if (m_engine.getSrcLabels().containsKey(reference)) {
-					return new SrcLabelReference(reference);
-				}				
-			} else if (referenceType.getClass() == SrcLabelFileLineReference.class) {
-				if (isSourceReference(reference) && inSrcLabelTable(reference)) {
-		    		return new SrcLabelFileLineReference(reference);	
-				}				
 			} else if (referenceType.getClass() == EndpointReference.class) {
 				if (m_engine.getEndpoints().containsKey(reference)) {
 					return new EndpointReference(reference);
@@ -72,6 +64,14 @@ public class ReferenceFactory {
 				if (isSourceReference(reference) && inEndpointTable(reference)) {
 		    		return new EndpointFileLineReference(reference);
 				}
+			} else if (referenceType.getClass() == SrcLabelReference.class) {
+				if (m_engine.getSrcLabels().containsKey(reference)) {
+					return new SrcLabelReference(reference);
+				}				
+			} else if (referenceType.getClass() == SrcLabelFileLineReference.class) {
+				if (isSourceReference(reference) && inSrcLabelTable(reference)) {
+		    		return new SrcLabelFileLineReference(reference);	
+				}				
 			}
 		}
 		return new ErrorReference(reference);
