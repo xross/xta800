@@ -1,7 +1,6 @@
 package com.xmos.xta.engine;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,7 +14,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	private PathBasicBlock m_parentBasicBlock;
 	private LoopAttachment m_loopPaths;
 	private int m_pathId;
-	//private HashMap<PathBasicBlock, PathAttributes> m_loopPathAttributes;
 	private BasicBlockStats m_blockStats;
 	private BlockStatus m_status;
 	private int m_startInstruction;
@@ -219,17 +217,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public ArrayList<PathBasicBlock> getLoopPaths(PathBasicBlock base) {
 		return m_loopPaths.getLoopPaths(base);
 	}
-	/*
-	public PathAttributes getLoopPathAttributes(PathBasicBlock block) {
-		PathAttributes attributes = m_loopPathAttributes.get(block);
-		return attributes;
-	}
-	
-	
-	HashMap<PathBasicBlock, PathAttributes> getLoopPathAttributes() {
-		return m_loopPathAttributes;
-	}
-	*/
 	
 	public BlockStatus getStatus() {
 		return m_status;

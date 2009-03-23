@@ -26,10 +26,63 @@ public class LoopAttachment {
 	//the relative iterations of this loop
 	private int m_relativeIterations;
 	
-	//the max iterations of this loop
+	//the max combined iterations of all the sub loops;
 	private int maxSubLoopIterations;
 	
+
+	public LoopAttachment(PathBasicBlock loop){
+		m_loop = loop;
+		m_subLoops = new ArrayList<LoopAttachment>();
+		if(loop == null){
+			m_allAttachedLoops = new HashSet<PathBasicBlock>();
+		}
+		m_absoluteIterations = -1;
+		m_relativeIterations = -1;
+		maxSubLoopIterations = -1;
+	}
+	
+	
+	public void setMaxSubLoopIterations(int count){
+		maxSubLoopIterations = count;
+	}
+	
+	public int getMaxSubLoopIterations(){
+		return maxSubLoopIterations;
+	}
+	
+	private LoopAttachment findLoop(PathBasicBlock loop){
+		if(m_loop == loop){
+			return this;
+		} else {
+			for(LoopAttachment la : m_subLoops){
+				LoopAttachment subLoop = la.findLoop(loop);
+				if(subLoop != null){
+					return subLoop;
+				}
+			}
+		}
+		return null;
+	}
+	
 	public boolean setLoopIterations(PathBasicBlock loop, boolean absolute, int count){
+		
+		LoopAttachment la = findLoop(loop);
+		
+		if(la!= null){
+			la.m_absolute = absolute;
+			if(absolute){
+				la.m_absoluteIterations = count;
+				la.m_relativeIterations = -1;
+			} else {
+				la.m_relativeIterations = count;
+				la.m_absoluteIterations = -1;
+			}
+			return true;
+		} else {
+			return false;
+		}
+		
+		/*
 		if(loop == m_loop){
 			m_absolute = absolute;
 			if(absolute){
@@ -46,9 +99,13 @@ public class LoopAttachment {
 			}
 			return false;
 		}
+		*/
 	}
 	
 	public int getLoopAbsoluteIterations(PathBasicBlock loop) {
+		
+		
+		
 		if(loop == m_loop){
 			if(m_absolute){
 				return m_absoluteIterations;
@@ -94,15 +151,7 @@ public class LoopAttachment {
 		return 0;
 	}
 
-	public LoopAttachment(PathBasicBlock loop){
-		m_loop = loop;
-		m_subLoops = new ArrayList<LoopAttachment>();
-		if(loop == null){
-			m_allAttachedLoops = new HashSet<PathBasicBlock>();
-		}
-		m_absoluteIterations = -1;
-		m_relativeIterations = -1;
-	}
+	
 
 	public void addLoop(PathBasicBlock newLoop){
 		
