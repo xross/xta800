@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.maps.SrcTableInfo;
+import com.xmos.xta.engine.maps.EndpointTableInfo;
+import com.xmos.xta.engine.maps.SrcLabelTableInfo;
 
 public class ReferenceFactory {
 	public enum ReferenceClass {
@@ -60,7 +61,7 @@ public class ReferenceFactory {
 					return new SrcLabelReference(reference);
 				}				
 			} else if (referenceType.getClass() == SrcLabelFileLineReference.class) {
-				if (isSourceReference(reference) && inTable(reference, m_engine.getSrcLabelTable())) {
+				if (isSourceReference(reference) && inSrcLabelTable(reference)) {
 		    		return new SrcLabelFileLineReference(reference);	
 				}				
 			} else if (referenceType.getClass() == EndpointReference.class) {
@@ -68,7 +69,7 @@ public class ReferenceFactory {
 					return new EndpointReference(reference);
 				}				
 			} else if (referenceType.getClass() == EndpointFileLineReference.class) {
-				if (isSourceReference(reference) && inTable(reference, m_engine.getEndpointTable())) {
+				if (isSourceReference(reference) && inEndpointTable(reference)) {
 		    		return new EndpointFileLineReference(reference);
 				}
 			}
@@ -76,18 +77,32 @@ public class ReferenceFactory {
 		return new ErrorReference(reference);
 	}
 	    
-	private static boolean inTable(String ref, Map<Integer, SrcTableInfo> table) {
+	private static boolean inSrcLabelTable(String ref) {
 		String fileName = ReferenceFactory.getFileName(ref);
         int lineNumber  = ReferenceFactory.getLineNumber(ref);		
 
-		for (SrcTableInfo info : table.values()) {
+		for (SrcLabelTableInfo info : m_engine.getSrcLabelTable().values()) {
+            if (info.getFileName().equals(fileName) &&
+            	((lineNumber >= info.getLineNumberStart()) &&
+            	 (lineNumber <= info.getLineNumberEnd()))) {
+            	return true;
+            }			
+		}		
+		return false;
+	}
+	
+	private static boolean inEndpointTable(String ref) {
+		String fileName = ReferenceFactory.getFileName(ref);
+        int lineNumber  = ReferenceFactory.getLineNumber(ref);		
+
+		for (EndpointTableInfo info : m_engine.getEndpointTable().values()) {
             if (info.getFileName().equals(fileName) &&
             	(info.getLineNumber() == lineNumber)) {
             	return true;
             }			
 		}		
 		return false;
-	}
+	}	
 
 	public static Reference[] getReferenceClass(ReferenceClass referenceClass) {
     	Reference[] referenceTypes = m_referenceClasses.get(referenceClass);
