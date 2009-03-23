@@ -1,6 +1,7 @@
 #include <xs1.h>
 
-int func();
+int func1();
+int func2();
 
 in port p8a = XS1_PORT_8A;
 in port p8b = XS1_PORT_8B;
@@ -16,7 +17,8 @@ int main() {
     p8b :> x;
     p8b :> x;
 
-    func();
+    func1();
+    func2();
     return x;
 }
 

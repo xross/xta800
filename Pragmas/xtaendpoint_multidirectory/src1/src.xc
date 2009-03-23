@@ -3,7 +3,7 @@
 in port p1a = XS1_PORT_1A;
 in port p1b = XS1_PORT_1B;
 
-int func() {
+int func1() {
     int x = 0;
 
     #pragma xta endpoint "input_1A" 
