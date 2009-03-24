@@ -92,9 +92,11 @@ public class PathNode extends Node {
     
     public HashSet<Integer> getPcsCovered() {
 		HashSet<Integer> pcsCovered = new HashSet<Integer>();
-		for (Node child : getChildren()) {
-			pcsCovered.addAll(child.getPcsCovered());
-        }
+		if (getNumIterations() > 0) {
+		    for (Node child : getChildren()) {
+			    pcsCovered.addAll(child.getPcsCovered());
+            }
+		}
         return pcsCovered;
     }
     
