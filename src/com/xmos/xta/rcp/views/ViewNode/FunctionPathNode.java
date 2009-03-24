@@ -28,7 +28,7 @@ public class FunctionPathNode extends ViewNode {
 		m_lineWidth = lineWidth + 1;
 	}
 	
-	public void setNumIterations(int numIterations) {
+	public void setNumIterations(long numIterations) {
 		m_numIterations = numIterations;
 		if (m_numIterations > 0) {
 			m_pixelsY = 2 * m_borderY + m_lineWidth;

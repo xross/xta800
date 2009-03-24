@@ -141,7 +141,7 @@ public abstract class XtaInstruction extends Instruction {
 		return m_functionOffset;
 	}
 	
-	public void setNumCycles(int numCycles) {
+	public void setNumCycles(long numCycles) {
 		// Makes sure the user cannot configure the instruction to take
 		// less time than is physically possible.
 		if (numCycles > m_basicNumCycles) {
@@ -153,7 +153,7 @@ public abstract class XtaInstruction extends Instruction {
 		m_isUnknown = false;
 	}
 	
-	public int getNumCycles() {
+	public long getNumCycles() {
 		return m_numCycles.getNumIterations();
 	}
 

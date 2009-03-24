@@ -94,7 +94,7 @@ public class InstructionDecodeCache {
 		return 0;    	
     }
 
-    boolean setInstructionNumCycles(Engine engine, int pc, int numCycles) {
+    boolean setInstructionNumCycles(Engine engine, int pc, long numCycles) {
 		if (m_instructionCache.containsKey(pc)) {
 			XtaInstruction instruction = m_instructionCache.get(pc);
 			if (instruction.canPause()) {
@@ -115,7 +115,7 @@ public class InstructionDecodeCache {
 		return false;
     }    
     
-    int getInstructionNumCycles(int pc) {
+    public long getInstructionNumCycles(int pc) {
 		if (m_instructionCache.containsKey(pc)) {
 			XtaInstruction instruction = m_instructionCache.get(pc);
 			if (instruction.canPause()) {

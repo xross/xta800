@@ -19,7 +19,7 @@ public class FunctionLoopNode extends ViewNode {
 		super(treeNode);
 	}
 	
-	public void setNumIterations(int numIterations) {
+	public void setNumIterations(long numIterations) {
 		m_numIterations = numIterations;
 		if (m_numIterations > 0) {
 			m_pixelsX = 0;

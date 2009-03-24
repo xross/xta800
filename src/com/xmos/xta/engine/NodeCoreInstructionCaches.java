@@ -51,12 +51,12 @@ public class NodeCoreInstructionCaches {
 		return idc.getInstructionTimeTaken(pc);
 	}
 	
-	public boolean setInstructionNumCycles(Engine engine, int pc, int numCycles, int node, int core) {
+	public boolean setInstructionNumCycles(Engine engine, int pc, long numCycles, int node, int core) {
 		InstructionDecodeCache idc = m_nodeCore.get(nodeCoreString(node, core));
 		return idc.setInstructionNumCycles(engine, pc, numCycles);
 	}
 
-	public int getInstructionNumCycles(int pc, int node, int core) {
+	public long getInstructionNumCycles(int pc, int node, int core) {
 		InstructionDecodeCache idc = m_nodeCore.get(nodeCoreString(node, core));
 		return idc.getInstructionNumCycles(pc);
 	}

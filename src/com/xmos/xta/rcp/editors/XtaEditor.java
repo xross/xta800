@@ -517,8 +517,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		return -1;
 	}
 
-    public Vector<XtaInstruction> getUnknownsForLine(int lineNumber) {
-    	Vector<XtaInstruction> unknowns = new Vector<XtaInstruction>();
+    public HashSet<XtaInstruction> getUnknownsForLine(int lineNumber) {
+    	HashSet<XtaInstruction> unknowns = new HashSet<XtaInstruction>();
 
     	Node pathRoot = null;
     	if (m_selectedNode != null) {
