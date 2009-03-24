@@ -1,0 +1,2 @@
+xmap: Warning: No root symbol found; not doing UPE.
+WARNING: '_start' symbol not found - setting ELF entry point to 0.
