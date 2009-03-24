@@ -23,15 +23,21 @@ public abstract class Node implements Comparable<Node> {
     }
     
     public final int compareTo(Node node) {
-        return node.getNumCycles() - getNumCycles();
+    	if(node.getNumCycles() - getNumCycles() > 0){
+    		return 1;
+    	} else if(node.getNumCycles() - getNumCycles() == 0){
+    		return 0;
+    	} else {
+    		return -1;
+    	}
     }
 
     public abstract int getId();
 
 	public abstract double getTimeTaken();
 	public abstract double getTimeTakenThis();
-    public abstract int getNumCycles();
-    public abstract int getNumUnknowns();
+    public abstract long getNumCycles();
+    public abstract long getNumUnknowns();
         
     public abstract String getDescription();
     public abstract String getToolTipText();
@@ -41,7 +47,7 @@ public abstract class Node implements Comparable<Node> {
     public abstract boolean isLoopNode();
     public abstract boolean isPathNode();
     public abstract boolean isRouteNode();
-    public abstract int getNumIterations();
+    public abstract long getNumIterations();
     public abstract Vector<XtaInstruction> getInstructions();
     public abstract Vector<XtaInstruction> getUnknowns();
     public abstract HashSet<Integer> getPcsCovered();

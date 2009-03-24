@@ -38,11 +38,11 @@ public class BlockNode extends Node {
         return m_block.getTimeTakenThis();
     }
     
-    public int getNumCycles() {
+    public long getNumCycles() {
         return m_block.getNumCyclesThis();
     }
 
-    public int getNumUnknowns() {
+    public long getNumUnknowns() {
         return m_block.getNumUnknownsThis();
     }
     
@@ -91,7 +91,7 @@ public class BlockNode extends Node {
 		});    	
     }
 
-	public int getNumIterations() {
+	public long getNumIterations() {
 		return 1;
 	}
 

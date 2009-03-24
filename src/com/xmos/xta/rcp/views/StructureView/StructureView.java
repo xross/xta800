@@ -61,7 +61,7 @@ public class StructureView extends ZoomedCanvasView {
 		}
     }
 
-    private int getNumIterations(Node start) {
+    private long getNumIterations(Node start) {
     	if ((start == null) || start.isRouteNode()) 
     		return 1;
     	
@@ -107,7 +107,7 @@ public class StructureView extends ZoomedCanvasView {
 		m_doubleClickNode.getStructureNode().draw(m_display, gc, m_scale);
     }
     
-	private boolean annotateTree(Node node, int numIterations, double totalTime) {
+	private boolean annotateTree(Node node, long numIterations, double totalTime) {
 		if (node == null)
 			return false;
     	m_numTreeNodes++;
@@ -127,7 +127,7 @@ public class StructureView extends ZoomedCanvasView {
             	if (node.isRouteNode())
             		totalTime = subNode.getTimeTaken(); // Re-compute total time for sub tree
 
-    			int subNumIterations = numIterations;
+    			long subNumIterations = numIterations;
     			if (node.isLoopNode())
     				subNumIterations = subNode.getNumIterations() * numIterations;
     			
