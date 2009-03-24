@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.regex.PatternSyntaxException;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import com.xmos.elfhandler.ElfHandler;
 import com.xmos.elfhandler.Symbol;
 import com.xmos.xeloader.DebugInfo;
@@ -50,8 +53,8 @@ public class Engine {
 	private int m_coreId;
 	private Vector<Notifier> m_notifiers;
 	private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
-	private boolean m_abort;
 	private Progress m_progress;
+	private IProgressMonitor m_jobMonitor;
 	private String m_srcPaths;
 	private ArrayList<XeObject> m_xeObjects;
 	private ArrayList<BranchMap> m_branches;
@@ -80,8 +83,8 @@ public class Engine {
 		m_coreId = 0;
 		m_srcPaths = ".";
 		m_notifiers = new Vector<Notifier>();
-		m_abort = false;
 		m_progress = new Progress(Progress.State.IDLE, 0);
+		m_jobMonitor = null;
 		m_constraint = ConstraintFactory.createConstraint(this, "");
 		m_mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
 
@@ -333,12 +336,10 @@ public class Engine {
 		m_notifiers.remove(notifier);
 	}
 
-	public void setAbort(boolean value) {
-		m_abort = value;
-	}
-
 	public boolean getAbort() {
-		return m_abort;
+		if (m_jobMonitor != null)
+			return m_jobMonitor.isCanceled();
+		return false;
 	}
 
 	public void setNodeId(int nodeId) {
@@ -671,7 +672,6 @@ public class Engine {
 		RouteStatus status = route.analyse(routeDescription.getMode());
 		switch (status) {
 		case ABORTED:
-			setAbort(false);
 			notify(Notifier.NOTIFY_INFO, "Abort detected");
 			return false;
 
@@ -1033,5 +1033,9 @@ public class Engine {
 			}
 		}
 		return null;
+	}
+
+	public void setMonitor(IProgressMonitor monitor) {
+		m_jobMonitor = monitor;
 	}
 }

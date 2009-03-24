@@ -40,10 +40,7 @@ public class UnknownsLabelProvider extends LabelProvider implements ITableLabelP
 		} else if (m_columnNames[columnIndex].equals(PC)) {
 			return String.format("0x%08x", unknownInstruction.getPc());
     	} else if (m_columnNames[columnIndex].equals(REASON)) {    		
-		    return String.format("Time taken for instruction (0x%x: %s %s) is unknown",
-		    		unknownInstruction.getPc(), 
-		    		unknownInstruction.getNmenonic(), 
-		    		unknownInstruction.getOperandString());
+		    return unknownInstruction.getUnknownString();
 	    }		
 		assert(false);
 		return "";
