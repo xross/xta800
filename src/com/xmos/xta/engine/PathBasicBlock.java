@@ -69,10 +69,8 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		m_loseFinalInstruction = false;
 		m_basicBlock = basicBlock;
 		m_parentBasicBlock = parentBasicBlock;
-		//m_seen = 0;
 		m_loopPaths = new LoopAttachment(null);
 		m_pathId = -1;
-		//m_loopPathAttributes = new HashMap<PathBasicBlock, PathAttributes>();
 		m_blockStats = new BasicBlockStats(this);
 		m_status = BlockStatus.SEARCHING;
 		m_warnings = new ArrayList<String>();		

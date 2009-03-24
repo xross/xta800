@@ -104,7 +104,18 @@ public class Route {
 		
 		//crawl up the tree until a block with loops is found
 		for(PathBasicBlock block : blocks){
-		
+			PathBasicBlock parent = block;
+			while(!parent.getloops().getLoopList().contains(block)){
+				parent = parent.getParent();
+			}
+			
+			boolean singular = false;
+			
+			for(PathBasicBlock attachedLoop : parent.getloops().getLoopList()){
+				parent.getLoopPaths(attachedLoop).contains(block);
+			}
+			
+			
 			//find from the list of loops on this block the tightest loop containing the pc
 			
 			//check for inconsistency violations
@@ -121,10 +132,34 @@ public class Route {
 	 * @return fail in the case where the loop path could not be uniquely determined or where the number
 	 * of iterations violates the loop headers loop count
 	 */
-	public boolean setLoopPathIterationCount(int pc, int count){
+	public boolean setLoopPathIterationCount(int pc, int count, boolean absolute) throws Exception {
+		//translate the pc into blocks
+		ArrayList<PathBasicBlock> blocks = pcToBlocks(pc);
+		boolean setLoopCount = false;
+		//crawl up the tree until a block with loops is found
+		for(PathBasicBlock block : blocks){
+			PathBasicBlock parent = block;
+			while(!parent.getloops().getLoopList().contains(block)){
+				parent = parent.getParent();
+			}
+			
+			int hits = 0;
+			ArrayList<PathBasicBlock> foundBlocks = new ArrayList<PathBasicBlock>();
+			for(PathBasicBlock attachedLoop : parent.getloops().getLoopList()){
+				if(parent.getLoopPaths(attachedLoop).contains(block)){
+					hits++;
+					foundBlocks.add(attachedLoop);
+				}
+			}
 
-
-		return true;
+			//find the tightest loop
+			
+			//check for inconsistency violations
+			
+			//set the number of iterations on this loop to be count
+		}
+		
+		return setLoopCount;
 	}
 	
 	public int getRouteId() {
