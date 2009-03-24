@@ -1,5 +1,6 @@
 package com.xmos.xta.rcp.editors;
 
+import java.util.HashSet;
 import java.util.Vector;
 
 import org.eclipse.jface.text.source.IAnnotationHover;
@@ -49,7 +50,7 @@ public class XtaRulerAnnotationHover implements IAnnotationHover {
 	private String getWarningString(int lineNumber) {
 		String warning = "";
 
-		Vector<XtaInstruction> unknowns = m_editor.getUnknownsForLine(lineNumber);
+		HashSet<XtaInstruction> unknowns = m_editor.getUnknownsForLine(lineNumber);
 		for (XtaInstruction unknown : unknowns) {
 			warning += unknown.getUnknownString() + "\n";
 		}
