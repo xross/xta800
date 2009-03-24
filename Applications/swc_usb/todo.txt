@@ -1,0 +1,36 @@
+
+Compilation requires 9.2 tools or later due to using select with default case (XUD_LLD_Line.xc)
+
+XUD
+- Fix reseti
+- Seperate enumeration command interpretation from "User" endpoint0 code
+? User transactions and transaction functions for user EP functions 
+- Code locks up if SOF channel not used
+- Suspend detection
+- Suspend clock down
+- Resume detection and clock up
+- Hot device attach (attach while running)
+- Add support for EP to be HALTed or "in trouble"
+- OUT token to data timeout (Required as per fig 8.32)
+- Add support for RxError
+- Remote wake up
+- Check reset detection
+- Enumeration in Windows
+- Only Activate non-XUD threads after enumeration
+- Use pause tokens for channel shutdown rather than end tokens?
+
+Tests Required:
+- Suspend/resume
+- Bad CRC5 in token
+
+
+Audio
+- Reconfigure codec on sample freq change - in progress
+- Clipping
+- 32bit to 24bit conversion currently just truncating
+- Add support for input
+- Check for sample replay/drop
+- 
+
+-HID_mouse
+- Get HID mouse demo up and running again in /tests/hid_mouse

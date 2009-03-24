@@ -1,0 +1,43 @@
+9/02/09
+- Added master volume/mute controls to XDK buttons for Audio demo
+
+10/02/09
+- Removed one instruction from TX loop by using array with negative index,
+this removed comparison in loop.
+- Waiting for handshake after Tx timeout code re-writen to use ValidToken port
+and port counters
+
+12/02/09
+- Modified LineMonitor thread to use XC select rather than handcoded due to
+addtion of default case in 9.2 tools
+
+15/02/09
+- Suspend/Reset detection now uses SOFs rather than polling for specific
+linestates
+
+19/02/09
+- Reset detection partially fixed.  ep_man_select has ep count hard coded due
+to what seems to be stack corruption.  Currently reset detection works, with
+threads being reset, XUD manager then restarts, and high-speed device connect
+is acheived (tested with WinXP enumeration).  Currently, however an exception
+is thrown in ep_manager (illegal resource) perhaps due to stack curruption?
+
+26/02/09
+Added chip reset on detection of USB reset condition. This is achieved though 
+a write to the PPL Control Register in ssctrl.
+
+3/03/09
+- Endpoints no longer receive CRC with OUT data
+- DoEnumReq function added
+
+04/03/09
+- Modify sync chip to for 49.152MHz (instead of 24.576). This will allow
+192k sample freq.  Codec settind modified on SetCur Sample Freq (for
+48/96/192KHz)
+
+05/03/09
+- Finished modifying codec setings on codec changed. 44.1k still needs doing
+(requres mclk change).  192k misses lrclk edge by 2 cycles.
+- Volume calculation not generates 32bit value, final sample truncated to
+24bit before output to codec.
+
