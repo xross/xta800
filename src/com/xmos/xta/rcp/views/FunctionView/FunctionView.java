@@ -151,7 +151,7 @@ public class FunctionView extends ZoomedCanvasView {
         m_addedFunctionsToClickAreas = false;
     }
 
-    private void annotateTree(Node node, int numIterations, boolean selected) {
+    private void annotateTree(Node node, long numIterations, boolean selected) {
 		if ((node == null) || node.isRouteNode())
 			return;
 
@@ -179,7 +179,7 @@ public class FunctionView extends ZoomedCanvasView {
     	functionNode.setLineWidth(m_lineWidth);
         functionNode.setIsSelected(selected);
         for (Node subNode : node.getChildren()) {
-        	int subNumIterations = numIterations;
+        	long subNumIterations = numIterations;
 			if (node.isLoopNode())
 				subNumIterations = subNode.getNumIterations() * numIterations;
 			

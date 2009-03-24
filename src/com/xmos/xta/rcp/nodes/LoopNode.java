@@ -33,11 +33,11 @@ public class LoopNode extends Node {
         return 0;
     }
     
-    public int getNumCycles() {
+    public long getNumCycles() {
         return m_block.getNumCyclesLoopsOnly();
     }
     
-    public int getNumUnknowns() {
+    public long getNumUnknowns() {
         return m_block.getNumUnknownsLoopsOnly();
     }    
     
@@ -84,7 +84,7 @@ public class LoopNode extends Node {
         return description;
     }        
 
-    public int getNumIterations() {
+    public long getNumIterations() {
         int numIterations = 0;
         for (Node child : getChildren()) {
             numIterations += child.getNumIterations();

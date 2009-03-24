@@ -6,18 +6,135 @@ import java.util.HashSet;
 
 public class LoopAttachment {
 
+	//all the loops attached on to this path basic block
 	private HashSet<PathBasicBlock> m_allAttachedLoops;
-	private PathBasicBlock m_loop;
-	private ArrayList<LoopAttachment> m_subLoops;
-	private ArrayList<PathBasicBlock> m_loopList;
 	
+	//the loop
+	private PathBasicBlock m_loop;
+	
+	//the loops that contain m_loop
+	private ArrayList<LoopAttachment> m_subLoops;
+	
+	//a list of all the loops in the m_subLoop list
+	private ArrayList<PathBasicBlock> m_loopList;
+
+	private Boolean m_absolute;
+	
+	//the absolute iterations if this loop
+	private Long m_absoluteIterations;
+	
+	//the relative iterations of this loop
+	private Long m_relativeIterations;
+	
+	//the max combined iterations of all the sub loops;
+	private Long maxSubLoopIterations;
+	
+
 	public LoopAttachment(PathBasicBlock loop){
 		m_loop = loop;
 		m_subLoops = new ArrayList<LoopAttachment>();
 		if(loop == null){
 			m_allAttachedLoops = new HashSet<PathBasicBlock>();
 		}
+		m_absoluteIterations = null;
+		m_relativeIterations = null;
+		maxSubLoopIterations = null;
+		m_absolute = null;
 	}
+	
+	private LoopAttachment findLoop(PathBasicBlock loop){
+		if(m_loop == loop){
+			return this;
+		} else {
+			for(LoopAttachment la : m_subLoops){
+				LoopAttachment subLoop = la.findLoop(loop);
+				if(subLoop != null){
+					return subLoop;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public boolean setLoopIterations(PathBasicBlock loop, boolean absolute, long count){
+		LoopAttachment la = findLoop(loop);
+		
+		if(la!= null){
+			la.m_absolute = new Boolean(absolute);
+			if(absolute){
+				la.m_absoluteIterations = new Long(count);
+				la.m_relativeIterations = null;
+			} else {
+				la.m_relativeIterations = new Long(count);
+				la.m_absoluteIterations = null;
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * this gets the relative or absolute loop iterations for a given loop 
+	 * @param loop
+	 * @param absolute
+	 * @return the count of relative or absolute iteration or causes an exception
+	 */
+	public long getLoopIterations(PathBasicBlock loop, boolean absolute) throws Exception{
+		
+		LoopAttachment la = findLoop(loop);
+		
+		if(la!= null){
+			if(la.m_absolute != null && absolute == la.m_absolute){
+				if(la.m_absolute){
+					return la.m_absoluteIterations; 
+				} else {
+					return la.m_relativeIterations;
+				}
+
+			} else {
+				//iterations not known for this type or at all
+				throw new Exception();
+			}
+		} else {
+			//loop not attached here
+			throw new Exception();
+		}
+	}
+
+	/**
+	 * this gets the loop iterations for a given loop regardless of whether it is relative or absolute 
+	 */
+	public long getLoopIterations(PathBasicBlock loop) throws Exception{
+		
+		LoopAttachment la = findLoop(loop);
+		
+		if(la!= null){
+			if(la.m_absolute != null){
+				if(la.m_absolute){
+					return la.m_absoluteIterations; 
+				} else {
+					return la.m_relativeIterations;
+				}
+			} else {
+				//iterations not set
+				throw new Exception();
+			}
+		} else {
+			//loop not attached here
+			throw new Exception();
+		}
+	}
+	
+	public boolean isAbsolute(PathBasicBlock loop) throws Exception {
+		LoopAttachment la = findLoop(loop);
+		if(la!= null){
+			return la.m_absolute;
+		} else {
+			throw new Exception();
+		}
+	}
+	
 
 	public void addLoop(PathBasicBlock newLoop){
 		
@@ -112,5 +229,11 @@ public class LoopAttachment {
 	public boolean contains(PathBasicBlock pathBasicBlock) {
 		return m_allAttachedLoops.contains(pathBasicBlock);
 	}
+
+
+
+
+
+
 	
 }

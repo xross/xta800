@@ -22,7 +22,7 @@ public class FunctionBlockNode extends ViewNode {
 	
 	public void setNumIterations(int numIterations) {
 		m_numIterations = numIterations;
-		m_pixelsX = m_treeNode.getNumCycles() * numIterations;
+		m_pixelsX = (int) (m_treeNode.getNumCycles() * numIterations);
 		m_pixelsY = m_height;
 	}
 

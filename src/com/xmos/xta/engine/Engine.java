@@ -380,7 +380,7 @@ public class Engine {
 		return m_config.m_numThreads;
 	}
 
-	public boolean setLoopIterations(int routeId, int pathId, boolean absolute, int iterations) {
+	public boolean setLoopIterations(int routeId, int pathId, boolean absolute, long iterations) {
 		Route route = getRoute(routeId);		
 		if (route != null) {
 			boolean hit = route.setLoopIterations(pathId, absolute, iterations);

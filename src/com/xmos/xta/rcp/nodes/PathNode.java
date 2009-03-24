@@ -46,11 +46,11 @@ public class PathNode extends Node {
         return m_block.getPathId();
     }
 
-    public int getNumCycles() {
+    public long getNumCycles() {
         return m_block.getNumCycles(true);
     }
 
-    public int getNumUnknowns() {
+    public long getNumUnknowns() {
         return m_block.getNumUnknowns(true);
     }    
     
@@ -128,7 +128,7 @@ public class PathNode extends Node {
     	}
     }
 
-	public int getNumIterations() {
+	public long getNumIterations() {
 		if (m_isRoot) {
 			return 1;
 		} else {
@@ -160,7 +160,7 @@ public class PathNode extends Node {
 		return new Vector<XtaInstruction>(m_block.getUnknowns());
 	}
 
-	public void setIterations(int numIterations) {
+	public void setIterations(long numIterations) {
 		XtaEngine.getEngine().setLoopIterations(getRouteId(), m_block.getPathId(),
 				m_absoluteCount, numIterations);
 	}

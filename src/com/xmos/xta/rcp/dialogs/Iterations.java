@@ -17,7 +17,7 @@ import com.xmos.xta.rcp.nodes.PathNode;
 
 public class Iterations extends XtaDialog {
 	
-	private int m_numIterations;
+	private long m_numIterations;
     private boolean m_absoluteCount;
     
     PathNode m_pathNode;
@@ -75,7 +75,8 @@ public class Iterations extends XtaDialog {
 				true, false, 2, 1));
 		spinner.setMinimum(0);
 		spinner.setMaximum(Integer.MAX_VALUE);
-		spinner.setSelection(m_numIterations);
+		//TODO - fix this
+		spinner.setSelection((int) m_numIterations);
 		spinner.setIncrement(1);
 		spinner.setPageIncrement(10);
 		spinner.addSelectionListener(new SelectionAdapter() {
