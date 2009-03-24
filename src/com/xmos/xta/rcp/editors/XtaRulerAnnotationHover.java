@@ -1,7 +1,6 @@
 package com.xmos.xta.rcp.editors;
 
 import java.util.HashSet;
-import java.util.Vector;
 
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;

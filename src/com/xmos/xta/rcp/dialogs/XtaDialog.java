@@ -13,8 +13,8 @@ public abstract class XtaDialog extends Dialog {
     }
 
     protected void configureShell(Shell shell, String title, int width, int height) {
-    	shell.setText("Iterations");
-    	shell.setSize(width, height);
+    	shell.setText(title);
+/*    	shell.setSize(width, height);
 
     	// Ensure the shell positioning is next to mouse
     	Point pos = Display.getCurrent().getCursorLocation();
@@ -25,6 +25,6 @@ public abstract class XtaDialog extends Dialog {
 		if (pos.y + height > displayBounds.height) {
 			pos.y = displayBounds.height - height - 10;
 		}
-		shell.setLocation(pos);
+		shell.setLocation(pos);*/
     }
 }
