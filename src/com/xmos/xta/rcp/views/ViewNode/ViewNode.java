@@ -17,7 +17,7 @@ public abstract class ViewNode {
     protected int m_childrenX;
     protected int m_childrenY;
 
-    protected int m_numIterations;
+    protected long m_numIterations;
     protected boolean m_isSelected;
 	
     public ViewNode(Node treeNode) {
@@ -40,7 +40,7 @@ public abstract class ViewNode {
     	m_lineWidth = lineWidth;
     }
     
-    public void setNumIterations(int numIterations) {
+    public void setNumIterations(long numIterations) {
     	m_numIterations = numIterations;
     }
     

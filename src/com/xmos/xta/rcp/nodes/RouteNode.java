@@ -31,8 +31,8 @@ public class RouteNode extends Node {
 
     public double getTimeTaken() { return 0; }
     public double getTimeTakenThis() { return 0; }
-    public int getNumCycles() { return 0; }
-    public int getNumUnknowns() { return 0; }    
+    public long getNumCycles() { return 0; }
+    public long getNumUnknowns() { return 0; }    
    
     public String getDescription() {
     	String str = "Route (" + m_route.getRouteId() + ") " + m_route.getDescription() + "";
@@ -73,7 +73,7 @@ public class RouteNode extends Node {
 	    });
     }
     
-	public int getNumIterations() { return 1; }
+	public long getNumIterations() { return 1; }
 	public boolean isBlockNode() { return false; }
 	public boolean isLoopNode() { return false; }
 	public boolean isPathNode() { return false; }

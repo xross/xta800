@@ -81,21 +81,27 @@ public class TreeDisplayer {
 	        
     private void summarisePaths(ArrayList<PathBasicBlock> loopPaths, String indent, PathBasicBlock parent) {
         for (PathBasicBlock path : loopPaths) {
-            int iterations = 1;
+            long iterations = 1;
             boolean isAbsolute = false;
 
             if (parent != null) {
-            	iterations = parent.getloops().getLoopIterations(path);
-            	isAbsolute = parent.getloops().getLoopAbsoluteIterations(path) != -1;
-                //PathAttributes attributes = parent.getLoopPathAttributes(path);
-                //iterations = attributes.getNumIterations();
-                //isAbsolute = attributes.isAbsolute();
+            	try {
+					iterations = parent.getloops().getLoopIterations(path);
+				} catch (Exception e) {
+					iterations += 0;
+				}
+            	try {
+					isAbsolute = parent.getloops().isAbsolute(path);
+				} catch (Exception e) {
+					//TODO assume is not absolute if it is not set - wont effect anything as there will be no iterations 
+					isAbsolute = false;
+				}
             }  
         	summarisePath(path, indent, iterations, isAbsolute);
         }
     }
     
-    private void summarisePath(PathBasicBlock path, String indent, int numExecutions, boolean absolute) {
+    private void summarisePath(PathBasicBlock path, String indent, long numExecutions, boolean absolute) {
    	    displayPathLevelInfo(path, indent, numExecutions, absolute);
    	    
         for (PathBasicBlock block : path.getPathBlocks()) {
@@ -122,7 +128,7 @@ public class TreeDisplayer {
         }
     }
 
-    private void displayPathLevelInfo(PathBasicBlock path, String indent, int numExecutions, boolean absolute) {            	
+    private void displayPathLevelInfo(PathBasicBlock path, String indent, long numExecutions, boolean absolute) {            	
     	String pathId = "";
     	if(path.getPathId()!= -1){
     		pathId = String.format("path(%d)", path.getPathId());
@@ -149,13 +155,16 @@ public class TreeDisplayer {
         		indent, unknowns, blockId, block.getTimeTakenThis()));
     }
 
-    private void displayLoopLevelInfo(PathBasicBlock path, String indent, int numIterations, PathBasicBlock base) {
+    private void displayLoopLevelInfo(PathBasicBlock path, String indent, long numIterations, PathBasicBlock base) {
         ArrayList<PathBasicBlock> loopPaths = path.getLoopPaths(base);
         if (loopPaths.size() > 0) {
-            int totalIterations = 0;
+            long totalIterations = 0;
             for (PathBasicBlock loopPath : loopPaths) {
-                //Attributes attributes = path.getLoopPathAttributes(loopPath);
-                totalIterations += path.getloops().getLoopIterations(loopPath);
+                try {
+					totalIterations += path.getloops().getLoopIterations(loopPath);
+				} catch (Exception e) {
+					totalIterations += 0;
+				}
             }
         	m_console.display(String.format("%s      loop [%d path%s, %d iteration%s]\n", indent, 
         			loopPaths.size(), (loopPaths.size() == 1 ? "" : "s"),
@@ -165,7 +174,7 @@ public class TreeDisplayer {
         }
     }
 
-    private void displayInstructionLevelInfo(PathBasicBlock path, String indent, int numExecutions) {
+    private void displayInstructionLevelInfo(PathBasicBlock path, String indent, long numExecutions) {
         if ((m_level == Level.complete_instructions) ||
             (m_level == Level.unresolved_instructions)) {
         	

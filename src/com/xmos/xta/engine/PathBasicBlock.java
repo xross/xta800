@@ -239,13 +239,14 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		return getPathBlocks().size();
 	}
 	
-	public int getNumIterations() {
+	public long getNumIterations() {
 		ArrayList<PathBasicBlock> pathBlocks = getPathBlocks();
-		PathBasicBlock pathBlock0 = pathBlocks.get(0);
-		return pathBlock0.getloops().getLoopIterations(this);
-		
-		//PathAttributes loopPathAttributes = pathBlock0.getLoopPathAttributes(this);
-		//return loopPathAttributes.getNumIterations();
+		PathBasicBlock block = pathBlocks.get(0);
+		try {
+			return block.getloops().getLoopIterations(this);
+		} catch (Exception e) {
+			return 0;
+		}
 	}
 
 	
@@ -507,7 +508,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		return getloops().contains(pbb);
 	}
 
-	public boolean setLoopIterations(PathBasicBlock loopPath, int iterations, boolean absolute) {
+	public boolean setLoopIterations(PathBasicBlock loopPath, long iterations, boolean absolute) {
 		return m_loopPaths.setLoopIterations(loopPath, absolute, iterations);
 	}
 	

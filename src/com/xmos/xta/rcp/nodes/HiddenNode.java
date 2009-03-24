@@ -15,8 +15,8 @@ public class HiddenNode extends Node {
     public int getId()         { return 0; }
     public double getTimeTaken() { return 0; }
     public double getTimeTakenThis() { return 0; }
-    public int getNumCycles()    { return 0; }
-    public int getNumUnknowns()  { return 0; }    
+    public long getNumCycles()    { return 0; }
+    public long getNumUnknowns()  { return 0; }    
    
     public String getDescription() { return ""; }
     public String getToolTipText() { return ""; }
@@ -25,7 +25,7 @@ public class HiddenNode extends Node {
     public HashSet<Integer> getPcsCovered() { return new HashSet<Integer>(); }
     public void createContextMenu(final Shell parent, IMenuManager manager) {}
     
-	public int getNumIterations() { return 1; }
+	public long getNumIterations() { return 1; }
 	public boolean isBlockNode() { return false; }
 	public boolean isLoopNode() { return false; }
 	public boolean isPathNode() { return false; }

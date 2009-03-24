@@ -356,9 +356,9 @@ public class Route {
 		return null;
 	}
 
-	
+	 
 
-	public boolean setLoopIterations(int pathId, boolean absolute, int iterations) {
+	public boolean setLoopIterations(int pathId, boolean absolute, long iterations) {
 		for (PathBasicBlock block : m_completedPaths) {
 			if (setLoopIterations(block, pathId, absolute, iterations))
 				return true;
@@ -367,7 +367,7 @@ public class Route {
 	}
 
 	//FIXME
-	public boolean setLoopIterations(PathBasicBlock path, int pathId, boolean absolute, int iterations) {
+	public boolean setLoopIterations(PathBasicBlock path, int pathId, boolean absolute, long iterations) {
 		for (PathBasicBlock block : path.getPathBlocks()) {
 			for (PathBasicBlock loopPath : block.getLoopPaths(path)) {
 				
