@@ -424,7 +424,7 @@ public class Engine {
 		return m_nodeCoreInstructionCache.getInstructionTimeTaken(pc, m_nodeId, m_coreId);
 	}
 
-	public boolean setInstructionNumCycles(Reference ref, int numCycles) {
+	public boolean setInstructionNumCycles(Reference ref, long numCycles) {
 		if (m_nodeCoreInstructionCache == null) {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
 			return false;
@@ -455,7 +455,7 @@ public class Engine {
 		return m_nodeCoreInstructionCache.getPcsWithTimeSet(m_nodeId, m_coreId);
 	}
 
-	public int getInstructionNumCycles(int pc) {
+	public long getInstructionNumCycles(int pc) {
 		if (m_nodeCoreInstructionCache == null) {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
 			return 0;

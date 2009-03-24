@@ -26,7 +26,7 @@ public class InstructionTime extends XtaDialog {
     
     boolean m_valueChanged;
     List<Boolean> m_wasSet;
-    List<Integer> m_originalCycles;
+    List<Long> m_originalCycles;
 	
     Text m_ns;
     Text m_cycles;
@@ -57,7 +57,7 @@ public class InstructionTime extends XtaDialog {
     	
     	m_valueChanged = false;
     	m_wasSet = new ArrayList<Boolean>();
-    	m_originalCycles = new ArrayList<Integer>();
+    	m_originalCycles = new ArrayList<Long>();
     	for (Reference ref : m_refs) {
     		if (setPcs.contains(ref.getPc())) {
     			m_wasSet.add(true);
@@ -149,7 +149,7 @@ public class InstructionTime extends XtaDialog {
 
 	private void updateCyclesValue() {
 		m_cycles.removeModifyListener(m_cyclesListener);
-		m_cycles.setText(Integer.toString(m_engine.getInstructionNumCycles(m_refs.get(0).getPc())));
+		m_cycles.setText(Long.toString(m_engine.getInstructionNumCycles(m_refs.get(0).getPc())));
 		m_cycles.addModifyListener(m_cyclesListener);
 	}			
 

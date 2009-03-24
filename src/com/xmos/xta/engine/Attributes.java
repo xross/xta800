@@ -2,7 +2,7 @@ package com.xmos.xta.engine;
 
 public class Attributes { 
     private boolean m_iterationsSet;    
-    private int m_numIterations;  
+    private long m_numIterations;  
 
     Attributes() {
         m_iterationsSet = false;    
@@ -13,12 +13,12 @@ public class Attributes {
         return m_iterationsSet;
     }
 
-    public void setNumIterations(int numIterations) {
+    public void setNumIterations(long numIterations) {
         m_iterationsSet = true;
         m_numIterations = numIterations;
     }
 
-    public int getNumIterations() {
+    public long getNumIterations() {
         return m_numIterations;
     }
 }
