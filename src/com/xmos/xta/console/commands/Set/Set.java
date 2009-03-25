@@ -9,6 +9,8 @@ import com.xmos.xta.console.commands.Constraint;
 public class Set extends CommandContainer {
 	static private Command[] m_options = { 
 		new Loop(), 
+		new LoopMax(), 
+		new LoopScope(), 
 		new Time(Time.Operation.SET), 
 		new Required(Required.Operation.SET), 
 		new Constraint(Constraint.Operation.SET),

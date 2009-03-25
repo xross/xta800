@@ -115,14 +115,16 @@ public class UnknownsViewer {
 	}
 
 	public void updateHighlighting(Node selectedNode) {
-		for (TableItem item : m_unknownsViewer.getTable().getItems()) {
-			XtaInstruction unknownInstruction = (XtaInstruction)item.getData();
-			Vector<Integer> selectedBlocks = new Vector<Integer>();
-			selectedNode.getBlockIds(selectedBlocks);
-			if (selectedBlocks.contains(unknownInstruction.getBasicBlockId())) {
-				item.setBackground(m_display.getSystemColor(SWT.COLOR_YELLOW));
-			} else {
-				item.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
+		if(selectedNode != null){
+			for (TableItem item : m_unknownsViewer.getTable().getItems()) {
+				XtaInstruction unknownInstruction = (XtaInstruction)item.getData();
+				Vector<Integer> selectedBlocks = new Vector<Integer>();
+				selectedNode.getBlockIds(selectedBlocks);
+				if (selectedBlocks.contains(unknownInstruction.getBasicBlockId())) {
+					item.setBackground(m_display.getSystemColor(SWT.COLOR_YELLOW));
+				} else {
+					item.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
+				}
 			}
 		}
 	}

@@ -37,7 +37,7 @@ public class PathNode extends Node {
     public String getDescription() {
     	String str = getTimeTaken() + " ns (path " + getId() + ")";
     	if (!m_isRoot) {
-    		str += " (iterations: " + m_block.getNumIterations() + ")";
+    		str += " (iterations: " + m_block.getHardNumIterations() + " + " + m_block.getSoftNumIterations() + ")";
     	}
     	return str;
     }
@@ -81,7 +81,7 @@ public class PathNode extends Node {
         
         if (!m_isRoot) {
             toolTipText += "\n----------------------------------\n";
-            toolTipText += "Number of iterations: " + m_block.getNumIterations();
+            toolTipText += "Number of iterations: " +  + m_block.getHardNumIterations() + " + " + m_block.getSoftNumIterations();
         }
         return toolTipText;
     }
@@ -128,6 +128,14 @@ public class PathNode extends Node {
     	}
     }
 
+    public long getHardNumIterations() {
+		if (m_isRoot) {
+			return 1;
+		} else {
+			return m_block.getHardNumIterations();
+		}
+	}
+    
 	public long getNumIterations() {
 		if (m_isRoot) {
 			return 1;
@@ -161,8 +169,7 @@ public class PathNode extends Node {
 	}
 
 	public void setIterations(long numIterations) {
-		XtaEngine.getEngine().setLoopIterations(getRouteId(), m_block.getPathId(),
-				m_absoluteCount, numIterations);
+		XtaEngine.getEngine().setLoopIterations(getRouteId(), m_block.getPathId(), numIterations);
 	}
 
 	public boolean getAbsoluteCount() {

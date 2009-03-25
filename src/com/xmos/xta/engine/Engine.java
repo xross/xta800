@@ -380,10 +380,38 @@ public class Engine {
 		return m_config.m_numThreads;
 	}
 
-	public boolean setLoopIterations(int routeId, int pathId, boolean absolute, long iterations) {
+	public boolean setLoopScope(int routeId, int pathId, boolean absolute) {
 		Route route = getRoute(routeId);		
 		if (route != null) {
-			boolean hit = route.setLoopIterations(pathId, absolute, iterations);
+			PathBasicBlock path = route.getPath(pathId);
+			
+			boolean hit = route.setLoopScope(path, absolute);
+			if (hit) {
+				invalidateRouteStats();
+				notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			}
+			return hit;
+		}
+		return false;
+	}
+	
+	public boolean setLoopMax(int routeId, int pc, long iterations) {
+		Route route = getRoute(routeId);		
+		if (route != null) {
+			boolean hit = route.setLoopIterationCount(pc, iterations);
+			if (hit) {
+				invalidateRouteStats();
+				notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			}
+			return hit;
+		}
+		return false;
+	}
+	
+	public boolean setLoopIterations(int routeId, int pathId, long iterations) {
+		Route route = getRoute(routeId);		
+		if (route != null) {
+			boolean hit = route.setLoopIterations(pathId, iterations);
 			if (hit) {
 				invalidateRouteStats();
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
@@ -1038,4 +1066,6 @@ public class Engine {
 	public void setMonitor(IProgressMonitor monitor) {
 		m_jobMonitor = monitor;
 	}
+
+
 }

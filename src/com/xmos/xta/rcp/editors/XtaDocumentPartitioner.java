@@ -58,7 +58,6 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 			String header = inputSection.getHeader().getLine() + "\n";
 			int subsectionBegining = length;
 			if(buildDocument) updateDocument(document, header);
-			//System.out.print(header);
 			length += header.length();
 			addTypedRegion(document, regionList, headerFrom, (headerFrom + header.length()), inputSection.getHeaderType());
 			
@@ -68,7 +67,6 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 				int from = length;
 				String str = line.getLine() + "\n";
 				if(buildDocument) updateDocument(document, str);
-				//System.out.print("\t" + str);
 				length += str.length();
 				addTypedRegion(document, regionList, from, from + str.length(), line.getHeaderType());
 			}

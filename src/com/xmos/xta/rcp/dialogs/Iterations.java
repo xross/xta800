@@ -6,7 +6,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -18,15 +17,13 @@ import com.xmos.xta.rcp.nodes.PathNode;
 public class Iterations extends XtaDialog {
 	
 	private long m_numIterations;
-    private boolean m_absoluteCount;
-    
+	
     PathNode m_pathNode;
 	
     public Iterations(Shell parent, final PathNode pathNode) {
     	super(parent);
     	m_pathNode = pathNode;
-    	m_numIterations = pathNode.getNumIterations();
-    	m_absoluteCount = pathNode.getAbsoluteCount();
+    	m_numIterations = pathNode.getHardNumIterations();
     	open();
     }
 
@@ -42,7 +39,6 @@ public class Iterations extends XtaDialog {
 	    gridLayout.numColumns = 3;
 	    container.setLayout(gridLayout);
 
-		createAbsoluteCountControl(container, m_pathNode);
 		createNumIterationsControl(container, m_pathNode);
 
     	return container;
@@ -54,19 +50,6 @@ public class Iterations extends XtaDialog {
 	    		false, false));
         label.setText(str);
 	}
-	
-    private void createAbsoluteCountControl(Composite parent, final PathNode pathNode) {
-		createControlLabel(parent, "Make count absolute:");
-		final Button button = new Button(parent, SWT.CHECK);
-		button.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
-				true, false, 2, 1));
-		button.setSelection(pathNode.getAbsoluteCount());		
-		button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				m_absoluteCount = button.getSelection();
-			}			
-		});
-    }
 
     private void createNumIterationsControl(Composite parent, final PathNode pathNode) {
 		createControlLabel(parent, "Num Iterations:");
@@ -74,8 +57,10 @@ public class Iterations extends XtaDialog {
 		spinner.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
 				true, false, 2, 1));
 		spinner.setMinimum(0);
-		spinner.setMaximum(Integer.MAX_VALUE);
+		
 		//TODO - fix this
+		spinner.setMaximum(Integer.MAX_VALUE);
+		
 		spinner.setSelection((int) m_numIterations);
 		spinner.setIncrement(1);
 		spinner.setPageIncrement(10);
@@ -95,7 +80,6 @@ public class Iterations extends XtaDialog {
     protected void buttonPressed(int id) {
     	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {
 			m_pathNode.setIterations(m_numIterations);
-			m_pathNode.setAbsoluteCount(m_absoluteCount);
     	}
     	super.buttonPressed(id);
     }

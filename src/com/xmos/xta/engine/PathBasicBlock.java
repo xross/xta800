@@ -69,7 +69,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		m_loseFinalInstruction = false;
 		m_basicBlock = basicBlock;
 		m_parentBasicBlock = parentBasicBlock;
-		m_loopPaths = new LoopAttachment(null);
+		m_loopPaths = new LoopAttachment(null, null);
 		m_pathId = -1;
 		m_blockStats = new BasicBlockStats(this);
 		m_status = BlockStatus.SEARCHING;
@@ -199,7 +199,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 			PathBasicBlock block = this;
 			do {
 				m_pathBlocks.add(0, block);
-				if (block.m_loopPaths.contains(this)) {
+				if (block.m_loopPaths.containsLoop(this)) {
 					break;
 				}
 				block = block.m_parentBasicBlock;
@@ -235,6 +235,26 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	
 	public int getNumPathBlocks() {
 		return getPathBlocks().size();
+	}
+	
+	public long getSoftNumIterations(){
+		ArrayList<PathBasicBlock> pathBlocks = getPathBlocks();
+		PathBasicBlock block = pathBlocks.get(0);
+		try {
+			return block.getloops().getSoftLoopIterations(this);
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+	
+	public long getHardNumIterations(){
+		ArrayList<PathBasicBlock> pathBlocks = getPathBlocks();
+		PathBasicBlock block = pathBlocks.get(0);
+		try {
+			return block.getloops().getHardLoopIterations(this);
+		} catch (Exception e) {
+			return 0;
+		}
 	}
 	
 	public long getNumIterations() {
@@ -503,11 +523,11 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	}
 
 	public boolean containsLoop(PathBasicBlock pbb) {
-		return getloops().contains(pbb);
+		return getloops().containsLoop(pbb);
 	}
 
-	public boolean setLoopIterations(PathBasicBlock loopPath, long iterations, boolean absolute) {
-		return m_loopPaths.setLoopIterations(loopPath, absolute, iterations);
+	public boolean setLoopIterations(PathBasicBlock loopPath, long iterations) {
+		return m_loopPaths.setLoopIterations(loopPath, iterations);
 	}
 	
 

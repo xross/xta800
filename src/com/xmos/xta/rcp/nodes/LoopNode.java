@@ -2,21 +2,25 @@ package com.xmos.xta.rcp.nodes;
 
 import java.util.HashSet;
 import java.util.Vector;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.swt.widgets.Shell;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.swt.widgets.Shell;
 import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.rcp.dialogs.Scope;
 import com.xmos.xta.rcp.views.ViewNode.FunctionLoopNode;
 import com.xmos.xta.rcp.views.ViewNode.StructureLoopNode;
 
 public class LoopNode extends Node {
     private PathBasicBlock m_block;
-
+    private LoopNode m_this;
+    
     public LoopNode(PathBasicBlock block, Node parent){
     	super(parent);
     	m_block = block;
-
+    	m_this = this;
     	m_functionNode = new FunctionLoopNode(this);
     	m_structureNode = new StructureLoopNode(this);
 }
@@ -71,6 +75,12 @@ public class LoopNode extends Node {
     }
 
     public void createContextMenu(final Shell parent, IMenuManager manager) {    	
+	    manager.add(new Separator());
+	    manager.add(new Action("Set scope") {
+		    public void run() {
+		    	new Scope(parent, m_this);
+		    }
+	    });
     }
             
     private String getSummary() {
@@ -127,4 +137,13 @@ public class LoopNode extends Node {
 			node.getBlockIds(ids);
 		}
 	}
+
+	public void setScope(boolean scope) {
+		m_block.getloops().setLoopScope(m_block.getloops().getSubLoops().get(0).getLoop(), scope);
+	}
+
+	public boolean getScope() {
+		return m_block.getloops().getLoopScope(m_block.getloops().getSubLoops().get(0).getLoop());
+	}
+	
 }
