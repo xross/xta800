@@ -112,17 +112,13 @@ public class LoopNode extends Node {
 		return new Vector<XtaInstruction>();
 	}
 
-	public Vector<XtaInstruction> getUnknowns() {
-		return new Vector<XtaInstruction>();
-	}
-	
 	public void getFnopPcs(Vector<XtaInstruction> fnops) {
 		for (Node node : getChildren()) {
 			node.getFnopPcs(fnops);
 		}
 	}
 
-	public void getBlockIds(Vector<Integer> ids) {
+	public void getBlockIds(HashSet<Integer> ids) {
 		for (Node node : getChildren()) {
 			node.getBlockIds(ids);
 		}

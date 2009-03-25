@@ -48,7 +48,7 @@ public class Constraint extends Command {
         	descString = "constraint <expression>: Defines the constraint expression";
         	break;
     	case LIST:
-        	descString = "constraint <expression>: Displays the current constraint expression";
+        	descString = "constraint: Displays the current constraint expression";
         	break;
     	}    		    	
     	return descString;

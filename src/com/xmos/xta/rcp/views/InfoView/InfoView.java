@@ -21,7 +21,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 	public static final String ID = "com.xmos.xta.rcp.views.InfoView.Info";
 
 	private UnknownsViewer m_unknowns;
-	private SetTimesViewer m_setTimes;
+	private SetValuesViewer m_setValues;
 	
 	public InfoView() {
 		if (DEBUG) System.out.printf("Info()\n");
@@ -33,10 +33,10 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 
 		TabFolder folders = new TabFolder(parent, SWT.BORDER);
 		m_unknowns = new UnknownsViewer(parent.getDisplay(), parent, getSite(), folders);
-		m_setTimes = new SetTimesViewer(parent, getSite(), folders);
+		m_setValues = new SetValuesViewer(parent, getSite(), folders);
 
 		m_unknowns.update();
-		m_setTimes.update();
+		m_setValues.update();
 
 		getSite().getPage().addSelectionListener(this);
 	}
@@ -51,18 +51,21 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 		if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS) ||
 			event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUDES)) {
 			m_unknowns.update();
+			m_setValues.update();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE) ||
 				   event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) ||
 				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 			m_unknowns.update();
+			m_setValues.update();
 			
 		}  else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
-			m_setTimes.update();
+			m_unknowns.update();
+			m_setValues.update();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			m_unknowns.clear();
-			m_setTimes.clear();
+			m_setValues.clear();
 		}
 	}
 

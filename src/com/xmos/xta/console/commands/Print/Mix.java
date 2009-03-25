@@ -31,7 +31,7 @@ public class Mix extends Command {
     }        
 
     public String commandLine() {
-    	return "mix " + m_routeId + " " + m_id;
+    	return "mix " + getRouteId(m_routeId) + " " + m_id;
     }
     
     public String description(Engine engine, boolean detailed) {

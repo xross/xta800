@@ -2904,13 +2904,6 @@ public abstract class XtaInstruction extends Instruction {
 	public Config getConfig() {
 		return m_config;
 	}
-
-	public String getUnknownString() {
-		return String.format("Time taken for instruction (0x%x: %s %s) is unknown",
-	    		getPc(), 
-	    		getNmenonic(), 
-	    		getOperandString());
-	}
 }
 
 class NullInstruction extends XtaInstruction {    

@@ -49,11 +49,10 @@ public abstract class Node implements Comparable<Node> {
     public abstract boolean isRouteNode();
     public abstract long getNumIterations();
     public abstract Vector<XtaInstruction> getInstructions();
-    public abstract Vector<XtaInstruction> getUnknowns();
     public abstract HashSet<Integer> getPcsCovered();
     public abstract void createContextMenu(final Shell parent, IMenuManager manager);
 	public abstract void getFnopPcs(Vector<XtaInstruction> fnops);
-	public abstract void getBlockIds(Vector<Integer> ids);
+	public abstract void getBlockIds(HashSet<Integer> ids);
     
     public void addNode(Node node) {
     	m_nodes.add(node);

@@ -17,8 +17,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.references.Reference;
-import com.xmos.xta.rcp.XtaEngine;
+import com.xmos.xta.engine.unknowns.Unknowns;
 
 public class InstructionTime extends XtaDialog {
     Engine m_engine;
@@ -34,35 +35,35 @@ public class InstructionTime extends XtaDialog {
     ModifyListener m_nsListener;
     ModifyListener m_cyclesListener;
     
-    public InstructionTime(Shell parent, final Engine engine, Reference codeReference) {
+    public InstructionTime(Shell parent, final Engine engine, Reference codeReference, Route route) {
     	super(parent);
     	m_engine = engine;
     	m_refs = new ArrayList<Reference>();
     	m_refs.add(codeReference);
-    	init();
+    	init(route);
     }
 
-	public InstructionTime(Shell parent, final Engine engine, List<Reference> codeReferences) {
+	public InstructionTime(Shell parent, final Engine engine, List<Reference> codeReferences, Route route) {
     	super(parent);
     	assert(codeReferences.size() > 0);
     	m_engine = engine;
     	// Create a copy since the original list can be emptied by this dialog
     	m_refs = new ArrayList<Reference>();
     	m_refs.addAll(codeReferences);
-    	init();
+    	init(route);
     }
 
-	private void init() {
-    	ArrayList<Integer> setPcs = XtaEngine.getEngine().getPcsWithTimeSet();
+	private void init(Route route) {
+    	Unknowns unknowns = route.getUnknowns();
     	
     	m_valueChanged = false;
     	m_wasSet = new ArrayList<Boolean>();
     	m_originalCycles = new ArrayList<Long>();
     	for (Reference ref : m_refs) {
-    		if (setPcs.contains(ref.getPc())) {
-    			m_wasSet.add(true);
-    		} else {
+    		if (unknowns.isUnknownInstructionTime(ref.getPc())) {
     			m_wasSet.add(false);
+    		} else {
+    			m_wasSet.add(true);
     		}
     		m_originalCycles.add(m_engine.getInstructionNumCycles(ref.getPc()));
     	}

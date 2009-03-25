@@ -3,6 +3,7 @@ package com.xmos.xta.engine.references;
 import java.util.HashMap;
 
 import com.xmos.xeobject.Function;
+import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Engine;
 
 public class PcReference extends Reference {	
@@ -14,7 +15,11 @@ public class PcReference extends Reference {
 	}
 
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
-		HashMap<Integer, Function> pcToFunctionMap = engine.getXeObject().getPcToFunctionMap();
+		XeObject xeObject = engine.getXeObject();
+		if (xeObject == null)
+			return false;
+		
+		HashMap<Integer, Function> pcToFunctionMap = xeObject.getPcToFunctionMap();
 		if (pcToFunctionMap == null)
 			return false;
 

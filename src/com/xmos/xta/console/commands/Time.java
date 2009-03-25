@@ -3,6 +3,7 @@ package com.xmos.xta.console.commands;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
@@ -168,8 +169,8 @@ public class Time extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-		Reference ref = ReferenceFactory.createReference(
-				m_refString, ReferenceClass.ENDPOINT_REF);
+		Reference ref = ReferenceFactory.createReference(m_refString, ReferenceClass.ENDPOINT_REF);
+		ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
 
 		switch (m_operation) {
     	case SET:
@@ -185,7 +186,9 @@ public class Time extends Command {
 	    		return;
 	    	}
     	case UNSET:
-    		engine.unsetInstructionTime(ref);
+    		for (Route route : engine.getRoutes()) {
+    			engine.unsetInstructionTime(ref, route.getUnknowns().getUnknownInstructionTimes());
+    		}
     		return;
     	}
     	assert(false);

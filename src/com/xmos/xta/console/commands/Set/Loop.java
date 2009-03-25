@@ -36,7 +36,7 @@ public class Loop extends Command {
     public String commandLine() {
     	String absStr = m_absolute ? "absolute" : "relative";
     	return "loop " + 
-    	    m_routeId + " " + 
+    		getRouteId(m_routeId) + " " + 
     	    m_pathId + " " + 
     	    absStr + " " + 
     	    m_iterations;

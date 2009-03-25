@@ -31,7 +31,7 @@ public class Src extends Command {
     }        
 
     public String commandLine() {
-    	return "src " + m_routeId + " " + m_id;
+    	return "src " + getRouteId(m_routeId) + " " + m_id;
     }
     
     public String description(Engine engine, boolean detailed) {

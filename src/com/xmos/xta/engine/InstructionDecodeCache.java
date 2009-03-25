@@ -1,18 +1,17 @@
 package com.xmos.xta.engine;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.regex.PatternSyntaxException;
 
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.engine.unknowns.Unknown;
 
 public class InstructionDecodeCache {
-	private Engine m_engine;
 	private XtaInstructionDecoder m_instructionDecoder;
 	private HashMap<Integer, XtaInstruction> m_instructionCache;
-	private ArrayList<Integer> m_instructionTimeCache;
 	private SymbolTable m_symbolTable;
 	private Config m_config;
 
@@ -20,8 +19,7 @@ public class InstructionDecodeCache {
 	private HashMap<Integer, XtaInstruction> m_fnopCache[];
     
 	@SuppressWarnings("unchecked")
-	InstructionDecodeCache(Engine engine, SymbolTable symbolTable, XeLoader.Architecture architecture, Config config) {
-		m_engine = engine;
+	InstructionDecodeCache(SymbolTable symbolTable, XeLoader.Architecture architecture, Config config) {
     	m_instructionDecoder = XtaInstructionDecoder.createInstructionDecoder(architecture);
 		m_instructionCache = new HashMap<Integer, XtaInstruction>();
         m_fnopCache = new HashMap[2];
@@ -29,19 +27,20 @@ public class InstructionDecodeCache {
         m_fnopCache[1] = new HashMap<Integer, XtaInstruction>();
         m_symbolTable = symbolTable;
         m_config = config;
-        
-        m_instructionTimeCache = new ArrayList<Integer>();
 	}
 	
 	XtaInstruction getInstruction(int pc){
-		if (m_instructionCache.containsKey(pc))
+		if (m_instructionCache.containsKey(pc)) {
             return m_instructionCache.get(pc);
-		 return null;
+		}
+		
+		return null;
 	}
 	
 	XtaInstruction decode(int opcode, int pc) {
-		if (m_instructionCache.containsKey(pc))
+		if (m_instructionCache.containsKey(pc)) {
             return m_instructionCache.get(pc);
+		}
 		        
         XtaInstruction instruction = m_instructionDecoder.decode(opcode, pc, m_config);
         instruction.setFunctionName(m_symbolTable.functionName(pc));
@@ -52,8 +51,9 @@ public class InstructionDecodeCache {
 	
     XtaInstruction getFNop(int pc, int fnopNum) {
         assert(fnopNum < 2);
-        if (m_fnopCache[fnopNum].containsKey(pc))
+        if (m_fnopCache[fnopNum].containsKey(pc)) {
             return m_fnopCache[fnopNum].get(pc);
+        }
                 
         XtaInstruction fnop = new NullInstruction("--FNOP--", m_config, 0, pc, 0);
         fnop.setFunctionName(m_symbolTable.functionName(pc));
@@ -67,10 +67,6 @@ public class InstructionDecodeCache {
 			XtaInstruction instruction = m_instructionCache.get(pc);
 			if (instruction.canPause()) {
 			    instruction.setTimeTaken(timeTaken);
-			    
-			    if (!m_instructionTimeCache.contains(pc)) {
-			    	m_instructionTimeCache.add(pc);
-			    }
 			    return true;
 			}
 			
@@ -99,10 +95,6 @@ public class InstructionDecodeCache {
 			XtaInstruction instruction = m_instructionCache.get(pc);
 			if (instruction.canPause()) {
 				instruction.setNumCycles(numCycles);
-
-			    if (!m_instructionTimeCache.contains(pc)) {
-			    	m_instructionTimeCache.add(pc);
-			    }
 			    return true;
 			}
 			
@@ -126,57 +118,36 @@ public class InstructionDecodeCache {
 		return 0;
     }
     
-    void resetInstructionTimes() {
-    	while (m_instructionTimeCache.size() > 0) {
-    		unsetInstructionTime(m_instructionTimeCache.get(0));
-    	}
-    }
-
-	public ArrayList<Integer> getPcsWithTimeSet() {
-		return m_instructionTimeCache;
-	}
-
 	public boolean unsetInstructionTime(int pc) {
-		if (m_instructionTimeCache.contains(pc)) {
-    		assert(m_instructionCache.containsKey(pc));
-    		XtaInstruction instruction = m_instructionCache.get(pc);
-    		instruction.resetNumCycles();
-    		m_instructionTimeCache.remove((Integer)pc);
-   			m_engine.notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+		if (m_instructionCache.containsKey(pc)) {
+			XtaInstruction instruction = m_instructionCache.get(pc);
+			instruction.resetNumCycles();
     		return true;
 		} else {
 			return false;
 		}
 	}
 
-	public boolean unsetInstructionTime(Reference ref) {
+	public boolean unsetInstructionTime(Reference ref, HashSet<Unknown> unknowns) {
 		if (ref.getResolved()) {
 			return unsetInstructionTime(ref.getPc());
 		}
 		
-		ArrayList<Integer> matches = new ArrayList<Integer>();
-
-		for (Integer pc : m_instructionTimeCache) {
-    		String thisPcString = "0x" + Integer.toHexString(pc); 
+		String refStr = ref.getRef();
+		int numHit = 0;
+		for (Unknown unknown : unknowns) {
+    		String thisPcString = "0x" + Integer.toHexString(unknown.getPc()); 
 
     		try {
-	    		if (thisPcString.matches(ref.getRef())) {
-	        		assert(m_instructionCache.containsKey(pc));
-	        		XtaInstruction instruction = m_instructionCache.get(pc);
-	        		instruction.resetNumCycles();
-	        		matches.add(pc);
+				if (thisPcString.matches(refStr)) {
+					unsetInstructionTime(unknown.getPc());
+					numHit++;
 	    		}
 			} catch (PatternSyntaxException e) {
 				// Ignore
 			}
 		}
     	
-		if (matches.size() > 0) {
-			for (Integer toRemove : matches)
-				m_instructionTimeCache.remove(toRemove);
-		}
-
-		m_engine.notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");		
-		return (matches.size() > 0);
+		return (numHit > 0);
 	}
 }

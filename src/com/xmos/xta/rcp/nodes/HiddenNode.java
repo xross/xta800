@@ -33,9 +33,7 @@ public class HiddenNode extends Node {
 
     public Vector<XtaInstruction> getInstructions() { return new Vector<XtaInstruction>(); }
 
-    public Vector<XtaInstruction> getUnknowns() { return new Vector<XtaInstruction>(); }
+    public void getFnopPcs(Vector<XtaInstruction> fnops) {}
 
-	public void getFnopPcs(Vector<XtaInstruction> fnops) {}
-
-	public void getBlockIds(Vector<Integer> ids) {}
+	public void getBlockIds(HashSet<Integer> ids) {}
 }

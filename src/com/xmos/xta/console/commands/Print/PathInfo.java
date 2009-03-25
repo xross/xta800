@@ -32,7 +32,7 @@ public class PathInfo extends Command {
     }        
 
     public String commandLine() {
-   	    return "path_info " + m_routeId + " " + m_id;
+   	    return "path_info " + getRouteId(m_routeId) + " " + m_id;
     }        
     
     public String description(Engine engine, boolean detailed) {

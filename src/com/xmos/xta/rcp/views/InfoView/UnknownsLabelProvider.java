@@ -5,7 +5,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 
-import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.engine.unknowns.Unknown;
 
 public class UnknownsLabelProvider extends LabelProvider implements ITableLabelProvider {
     public static final boolean DEBUG = false;
@@ -34,13 +34,13 @@ public class UnknownsLabelProvider extends LabelProvider implements ITableLabelP
 		
 		assert((columnIndex >= 0) && (columnIndex < m_columnNames.length));
 		
-		XtaInstruction unknownInstruction = (XtaInstruction)element;	
+		Unknown unknown = (Unknown)element;	
 		if (m_columnNames[columnIndex].equals(BLOCKID)) {
-			return "Block " + unknownInstruction.getBasicBlockId();
+			return "Block " + unknown.getBasicBlockId();
 		} else if (m_columnNames[columnIndex].equals(PC)) {
-			return String.format("0x%08x", unknownInstruction.getPc());
+			return String.format("0x%08x", unknown.getPc());
     	} else if (m_columnNames[columnIndex].equals(REASON)) {    		
-		    return unknownInstruction.getUnknownString();
+		    return unknown.getDescription();
 	    }		
 		assert(false);
 		return "";

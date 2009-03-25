@@ -156,10 +156,6 @@ public class PathNode extends Node {
 		return new Vector<XtaInstruction>();
 	}
 
-	public Vector<XtaInstruction> getUnknowns() {
-		return new Vector<XtaInstruction>(m_block.getUnknowns());
-	}
-
 	public void setIterations(long numIterations) {
 		XtaEngine.getEngine().setLoopIterations(getRouteId(), m_block.getPathId(),
 				m_absoluteCount, numIterations);
@@ -179,7 +175,7 @@ public class PathNode extends Node {
 		}
 	}
 
-	public void getBlockIds(Vector<Integer> ids) {
+	public void getBlockIds(HashSet<Integer> ids) {
 		for (Node node : getChildren()) {
 			node.getBlockIds(ids);
 		}

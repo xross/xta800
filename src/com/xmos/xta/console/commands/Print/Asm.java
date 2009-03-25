@@ -31,7 +31,7 @@ public class Asm extends Command {
     }        
 
     public String commandLine() {
-    	return "asm " + m_routeId + " " + m_id;
+    	return "asm " + getRouteId(m_routeId) + " " + m_id;
     }
     
     public String description(Engine engine, boolean detailed) {

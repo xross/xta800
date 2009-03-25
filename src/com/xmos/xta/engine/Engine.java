@@ -3,6 +3,7 @@ package com.xmos.xta.engine;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import com.xmos.xta.engine.maps.SrcLabelTableMap;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.unknowns.Unknown;
 
 public class Engine {
 
@@ -405,10 +407,9 @@ public class Engine {
 			return false;
 		}
 
-		invalidateRouteStats();
-
 		if (m_nodeCoreInstructionCache.setInstructionTimeTaken(
 				this, ref.getPc(), timeTaken, m_nodeId, m_coreId)) {
+			invalidateRouteStats();
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
@@ -436,23 +437,14 @@ public class Engine {
 			return false;
 		}
 
-		invalidateRouteStats();
-
 		if (m_nodeCoreInstructionCache.setInstructionNumCycles(
 				this, ref.getPc(), numCycles, m_nodeId, m_coreId)) {
+			invalidateRouteStats();
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
             return true;			
 		}		
 		return false;
-	}
-
-	public ArrayList<Integer> getPcsWithTimeSet() {
-		if (m_nodeCoreInstructionCache == null) {
-			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
-			return new ArrayList<Integer>();
-		}
-		return m_nodeCoreInstructionCache.getPcsWithTimeSet(m_nodeId, m_coreId);
 	}
 
 	public long getInstructionNumCycles(int pc) {
@@ -468,20 +460,29 @@ public class Engine {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
 			return;
 		}
-		m_nodeCoreInstructionCache.unsetInstructionTime(pc, m_nodeId, m_coreId);
-		notify(Notifier.NOTIFY_UPDATE_STATE, "");
+		if (m_nodeCoreInstructionCache.unsetInstructionTime(pc, m_nodeId, m_coreId)) {
+			invalidateRouteStats();
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+   			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+		} else {
+			notify(Notifier.NOTIFY_ERROR, String.format("Unable to unset time for: 0x%0x", pc));
+		}
 	}
 
-	public void unsetInstructionTime(Reference ref) {
+	public void unsetInstructionTime(Reference ref, HashSet<Unknown> unknowns) {
 		if (m_nodeCoreInstructionCache == null) {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
 			return;
 		}
 
-		if (!m_nodeCoreInstructionCache.unsetInstructionTime(ref, m_nodeId, m_coreId)) {
+		if (m_nodeCoreInstructionCache.unsetInstructionTime(ref, m_nodeId, m_coreId, unknowns)) {
+			invalidateRouteStats();
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+   			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+		} else {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unable to unset time for: %s", ref.getRef()));
+
 		}
-		notify(Notifier.NOTIFY_UPDATE_STATE, "");
 	}
 
 	public boolean canInstructionPause(int pc) {

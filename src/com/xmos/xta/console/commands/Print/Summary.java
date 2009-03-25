@@ -27,7 +27,7 @@ public class Summary extends Command {
 			return;			    	
 
 		if (!validateRoutes(engine, console))
-			return;		    	
+			return;
 
 		for (Route route : engine.getRoutes()) {
 		    displayRouteSummary(console, route);

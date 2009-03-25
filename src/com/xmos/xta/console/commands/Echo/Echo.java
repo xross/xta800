@@ -32,6 +32,9 @@ public class Echo extends Command {
     }
 
     public Command clone(String[] args, int index, boolean commandLineMode) {
+    	if ((index + numArgs()) >= args.length) 
+			return null;
+    	
         return new Echo(args[index + 1]);
     }
     
