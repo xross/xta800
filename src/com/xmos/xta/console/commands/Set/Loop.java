@@ -32,7 +32,7 @@ public class Loop extends Command {
 
     public String commandLine() {
     	return "loop " + 
-    	    m_routeId + " " + 
+    		getRouteId(m_routeId) + " " + 
     	    m_pathId + " " + 
     	    m_iterations;
     }

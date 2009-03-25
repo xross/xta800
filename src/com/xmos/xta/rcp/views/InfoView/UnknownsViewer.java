@@ -1,8 +1,8 @@
 package com.xmos.xta.rcp.views.InfoView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
@@ -32,10 +32,11 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.unknowns.Unknown;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaRouteInfo;
@@ -105,25 +106,28 @@ public class UnknownsViewer {
 	}
 
 	public void update() {
-		final XtaRouteInfo routeInfo = XtaNotifier.getInstance().getRouteInfo();
+		XtaNotifier notifier = XtaNotifier.getInstance();
+		m_unknownsViewer.setInput(notifier.getSelectedRoute());
+
+		XtaRouteInfo routeInfo = notifier.getRouteInfo();
 		if (routeInfo != null) {
-			m_unknownsViewer.setInput(routeInfo.getRoute());
 			updateHighlighting(routeInfo.getSelectedNode());
-		} else {
-			m_unknownsViewer.setInput(null);
 		}
 	}
 
 	public void updateHighlighting(Node selectedNode) {
+
 		if(selectedNode != null){
+
 			for (TableItem item : m_unknownsViewer.getTable().getItems()) {
-				XtaInstruction unknownInstruction = (XtaInstruction)item.getData();
-				Vector<Integer> selectedBlocks = new Vector<Integer>();
+				Unknown unknown = (Unknown)item.getData();
+				HashSet<Integer> selectedBlocks = new HashSet<Integer>();
 				selectedNode.getBlockIds(selectedBlocks);
-				if (selectedBlocks.contains(unknownInstruction.getBasicBlockId())) {
+				if (selectedBlocks.contains(unknown.getBasicBlockId())) {
 					item.setBackground(m_display.getSystemColor(SWT.COLOR_YELLOW));
 				} else {
 					item.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
+	
 				}
 			}
 		}
@@ -134,8 +138,8 @@ public class UnknownsViewer {
 		int direction = 1;
 		
 		public int compare(Viewer viewer, Object e1, Object e2) {
-			XtaInstruction p1 = (XtaInstruction) e1;
-			XtaInstruction p2 = (XtaInstruction) e2;
+			Unknown p1 = (Unknown) e1;
+			Unknown p2 = (Unknown) e2;
 			switch(field){
 			case 0:
 				int res0 = p1.getBasicBlockId() > p2.getBasicBlockId() ? 1 : -1;
@@ -179,13 +183,13 @@ public class UnknownsViewer {
 
 				m_selectedCodeRefs.clear();
 				for (Object object : ((IStructuredSelection) selection).toList()) {
-					XtaInstruction unknownInstruction = (XtaInstruction)object;
+					Unknown unknown = (Unknown)object;
 					
-					if (unknownInstruction == null)
+					if (unknown == null)
 						continue;
 					
 					Reference ref = ReferenceFactory.createReference(
-							"0x" + Integer.toHexString(unknownInstruction.getPc()), ReferenceClass.ENDPOINT_REF);
+							"0x" + Integer.toHexString(unknown.getPc()), ReferenceClass.ENDPOINT_REF);
 					Engine engine = XtaEngine.getEngine();
 					ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
 					m_selectedCodeRefs.add(ref);
@@ -203,7 +207,8 @@ public class UnknownsViewer {
 		// Create the action
 		m_setInstructionTimeAction = new Action() { 
 			public void run() {
-     			new InstructionTime(parent.getShell(), XtaEngine.getEngine(), m_selectedCodeRefs);
+				Route route = XtaNotifier.getInstance().getSelectedRoute();
+     			new InstructionTime(parent.getShell(), XtaEngine.getEngine(), m_selectedCodeRefs, route);
 			}
 		}; 
 		m_setInstructionTimeAction.setText("Set instruction time");

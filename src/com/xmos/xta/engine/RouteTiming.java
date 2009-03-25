@@ -100,11 +100,22 @@ public class RouteTiming {
 	public String getDescription() {
 		String description = "";
 		if (isTimingSpecified()) {
-			if (passedTiming()) {
-				description += String.format("    Pass, Slack: %.1fns, ", getSlackTime()); 						
-			} else {
-				description += String.format("    Fail, Violation: %.1fns, ", getViolationTime()); 						
-			}
+			if (passedTiming())
+				description += "    Pass";
+			else 
+				description += "    Fail";
+
+			int numWarnings = m_route.getUnknowns().getUnknowns().size();
+			if (numWarnings > 0)
+				description += " with " + numWarnings + " unknown";
+			if (numWarnings > 1)
+				description += "s";
+			
+			if (passedTiming())
+				description += String.format(", Slack: %.1fns, ", getSlackTime()); 						
+			else
+				description += String.format(", Violation: %.1fns, ", getViolationTime()); 						
+
 			description += String.format("Required: %.1fns, Worst: %.1fns, Min Frequency: %d Mhz\n", 
 	    			getMaxTime(), getWorstTime(), getMinFrequency()); 				
 		} else {

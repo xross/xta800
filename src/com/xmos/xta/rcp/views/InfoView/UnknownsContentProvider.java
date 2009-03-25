@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import com.xmos.xta.engine.Route;
-import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.engine.unknowns.Unknown;
 
 public class UnknownsContentProvider implements IStructuredContentProvider {
     public static final boolean DEBUG = false;
@@ -14,11 +14,8 @@ public class UnknownsContentProvider implements IStructuredContentProvider {
 	public Object[] getElements(Object inputElement) {
 		if (DEBUG) System.out.printf("UnknownsContentProvider: getElements\n");	
 		
-		HashSet<XtaInstruction> unknownsSet = new HashSet<XtaInstruction>();
-		for (XtaInstruction instruction : ((Route)inputElement).getUnknowns()){
-			unknownsSet.add(instruction);
-		}
-		return unknownsSet.toArray();
+		HashSet<Unknown> unknowns = ((Route)inputElement).getUnknowns().getUnknowns();
+		return unknowns.toArray();
 	}
 
 	public void dispose() {

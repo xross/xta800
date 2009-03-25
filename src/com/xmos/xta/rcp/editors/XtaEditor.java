@@ -48,6 +48,7 @@ import com.xmos.xta.engine.maps.EndpointTableInfo;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.unknowns.Unknown;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.dialogs.InstructionTime;
@@ -517,25 +518,43 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		return -1;
 	}
 
-    public HashSet<XtaInstruction> getUnknownsForLine(int lineNumber) {
-    	HashSet<XtaInstruction> unknowns = new HashSet<XtaInstruction>();
+    public HashSet<Unknown> getUnknownsForLine(int lineNumber) {
+    	HashSet<Unknown> unknowns = new HashSet<Unknown>();
 
-    	Node pathRoot = null;
-    	if (m_selectedNode != null) {
-    		pathRoot = m_selectedNode.getPathRoot();
-    	}
-    	if (pathRoot != null) {
-        	HashSet<Integer> linePcs = getPcsForLine(lineNumber);
+    	HashSet<Integer> linePcs = getPcsForLine(lineNumber);
 
-    		for (XtaInstruction instruction : pathRoot.getUnknowns()) {
-    			if (linePcs.contains(instruction.getPc())) {
-    				unknowns.add(instruction);
-    			}
+		for (Unknown unknown : getSelectedPathUnknowns()) {
+			if (linePcs.contains(unknown.getPc())) {
+				unknowns.add(unknown);
 			}
-    	}
+		}
     	return unknowns;
     }
     
+	private HashSet<Unknown> getSelectedPathUnknowns() {
+		int selectedRouteId = XtaNotifier.getInstance().getSelectedRouteId();
+		Route route = XtaEngine.getEngine().getRoute(selectedRouteId);
+		if (route != null) {
+			HashSet<Integer> selectedBlocks = getSelectedPathBlockIds();
+			return route.getUnknowns().getSelectedUnknowns(selectedBlocks);
+		} else {
+			return new HashSet<Unknown>();
+		}
+	}
+
+	private HashSet<Integer> getSelectedPathBlockIds() {
+		HashSet<Integer> selectedBlocks = new HashSet<Integer>();
+
+		Node pathRoot = null;
+    	if (m_selectedNode != null) {
+    		pathRoot = m_selectedNode.getPathRoot();
+    	}
+    	if (pathRoot != null)
+    		pathRoot.getBlockIds(selectedBlocks);
+
+    	return selectedBlocks;
+	}
+
 	public boolean isValidEndPoint(int lineNumber) {
 		if (m_endPointLines.containsKey(lineNumber)) {
 			return true;
@@ -566,28 +585,20 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}
 
 	private void updateUnknowns() {
-
 		if (DEBUG) System.out.printf("XtaEditor: upadteUnknowns\n"); 
 
 	    ArrayList<Annotation> annotations = new ArrayList<Annotation>();
         HashMap<Annotation, Position> annotationPositions = 
     	    new HashMap<Annotation, Position>();		
 
-    	Node pathRoot = null;
-    	if (m_selectedNode != null) {
-    		pathRoot = m_selectedNode.getPathRoot();
-    	}
-    	if (pathRoot != null) {
-    		if (DEBUG) System.out.println("XtaEditor: found " + pathRoot.getUnknowns().size() + " unknowns");
-			HashSet<Integer> unknownsSet = new HashSet<Integer>();
-    		for (XtaInstruction instruction : pathRoot.getUnknowns()) {
-    			unknownsSet.add(instruction.getPc());
-			}
-    		for (int pc : unknownsSet) {
-				updateAnnotations(pc, UnknownAnnotationID, annotations, annotationPositions, true, getInput().getPcsToLines());
-			}
+		HashSet<Integer> unknownsSet = new HashSet<Integer>();
+		for (Unknown unknown : getSelectedPathUnknowns()) {
+			unknownsSet.add(unknown.getPc());
+		}
+		for (int pc : unknownsSet) {
+			updateAnnotations(pc, UnknownAnnotationID, annotations, annotationPositions, true, getInput().getPcsToLines());
+		}
     		
-    	}
     	if (DEBUG) System.out.println("XtaEditor: replace unknowns");
 		m_annotationModel.replaceAnnotations(m_previousUnknownAnnotations, annotationPositions);        
 		m_previousUnknownAnnotations = createArray(annotations);
@@ -720,7 +731,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
      	m_setInstructionTimeAction = new Action("Set instruction time") {
      		public void run() {
-     			new InstructionTime(m_parent.getShell(), XtaEngine.getEngine(), m_clickCodeRef);
+     			Route route = XtaEngine.getEngine().getRoute(XtaNotifier.getInstance().getSelectedRouteId());
+     			new InstructionTime(m_parent.getShell(), XtaEngine.getEngine(), m_clickCodeRef, route);
      		}
      	};
      	setAction(SetInstructionTimeID, m_setInstructionTimeAction);

@@ -29,7 +29,7 @@ public class Functions extends Command {
 	
     public int numArgs()        { return 1; }        
     public String name()        { return "functions"; }        
-    public String commandLine() { return "functions"; }        
+    public String commandLine() { return "functions " + getRouteId(m_routeId); }        
     
     public String description(Engine engine, boolean detailed) {
     	return "functions <route id>: Shows which paths touch which functions";

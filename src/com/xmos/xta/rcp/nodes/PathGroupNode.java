@@ -57,15 +57,11 @@ public class PathGroupNode extends Node {
     	return new Vector<XtaInstruction>();
     }
 
-    public Vector<XtaInstruction> getUnknowns() {
-		return new Vector<XtaInstruction>();
-	}
-
 	public void getFnopPcs(Vector<XtaInstruction> fnops) {
 		// Do nothing
 	}
 
-	public void getBlockIds(Vector<Integer> ids) {
+	public void getBlockIds(HashSet<Integer> ids) {
 		// Do nothing
 	}
 

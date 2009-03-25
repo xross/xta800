@@ -29,25 +29,27 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.unknowns.Unknown;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.dialogs.InstructionTime;
 
-public class SetTimesViewer {
+public class SetValuesViewer {
 
 	private TableViewer m_setTimesViewer;
 	List<Reference> m_selectedCodeRefs;
 	Action m_setInstructionTimeAction;
 	Action m_clearInstructionTimesAction;
 
-	public SetTimesViewer(Composite parent, IWorkbenchPartSite site, TabFolder folders) {
+	public SetValuesViewer(Composite parent, IWorkbenchPartSite site, TabFolder folders) {
 		m_selectedCodeRefs = new ArrayList<Reference>();
 
 		TabItem tab = new TabItem(folders, SWT.NONE);
-		tab.setText("Instructions set");
+		tab.setText("Set values");
 		Composite composite = new Composite(folders, SWT.NONE);
 		composite.setLayout(new FillLayout());
 		m_setTimesViewer = new TableViewer(composite);
@@ -60,8 +62,8 @@ public class SetTimesViewer {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		SetTimesContentProvider contentProvider = new SetTimesContentProvider();
-		SetTimesLabelProvider labelProvider = new SetTimesLabelProvider();
+		SetValuesContentProvider contentProvider = new SetValuesContentProvider();
+		SetValuesLabelProvider labelProvider = new SetValuesLabelProvider();
 
 		for (int i = 0; i < labelProvider.getColumnNames().length; ++i) {
 			TableColumn tableColumn = new TableColumn(table, labelProvider
@@ -75,9 +77,9 @@ public class SetTimesViewer {
 			col.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
 					int colIndex = 0;
-					if (col.getText().equals(SetTimesLabelProvider.PC)) {
+					if (col.getText().equals(SetValuesLabelProvider.PC)) {
 						colIndex = 0;
-					} else if (col.getText().equals(SetTimesLabelProvider.TIME)) {
+					} else if (col.getText().equals(SetValuesLabelProvider.DESC)) {
 						colIndex = 1;
 					}
 					
@@ -94,7 +96,8 @@ public class SetTimesViewer {
 	}
 
 	public void update() {
-		m_setTimesViewer.setInput(XtaEngine.getEngine().getPcsWithTimeSet());
+		Route route = XtaNotifier.getInstance().getSelectedRoute();
+		m_setTimesViewer.setInput(route);
 	}
 
 	private void setupMouseListeners(IWorkbenchPartSite site, final Composite parent) {
@@ -117,10 +120,10 @@ public class SetTimesViewer {
 
 				m_selectedCodeRefs.clear();
 				for (Object object : ((IStructuredSelection) selection).toList()) {
-					Integer pc = (Integer)object;
+					Unknown unknown = (Unknown)object;
 
 					Reference ref = ReferenceFactory.createReference(
-							"0x" + Integer.toHexString(pc), ReferenceClass.LABEL_REF);
+							"0x" + Integer.toHexString(unknown.getPc()), ReferenceClass.LABEL_REF);
 					ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
 					m_selectedCodeRefs.add(ref);
 				}
@@ -148,7 +151,8 @@ public class SetTimesViewer {
 
 		m_setInstructionTimeAction = new Action() { 
 			public void run() {
-     			new InstructionTime(parent.getShell(), XtaEngine.getEngine(), m_selectedCodeRefs);
+				Route route = XtaNotifier.getInstance().getSelectedRoute();
+     			new InstructionTime(parent.getShell(), XtaEngine.getEngine(), m_selectedCodeRefs, route);
 			}
 		}; 
 		m_setInstructionTimeAction.setText("Set instruction time");
@@ -164,8 +168,8 @@ public class SetTimesViewer {
 		int direction = 1;
 		
 		public int compare(Viewer viewer, Object e1, Object e2) {
-			Integer pc1 = (Integer) e1;
-			Integer pc2 = (Integer) e2;
+			int pc1 = ((Unknown)e1).getPc();
+			int pc2 = ((Unknown)e2).getPc();
 			switch(field){
 			case 0:
 				int res0 = pc1 > pc2 ? 1 : -1;

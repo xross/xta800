@@ -1,20 +1,21 @@
 package com.xmos.xta.rcp.views.InfoView;
 
-import java.util.List;
+import java.util.HashSet;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import com.xmos.xta.rcp.XtaEngine;
+import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.unknowns.Unknown;
 
-public class SetTimesContentProvider implements IStructuredContentProvider {
+public class SetValuesContentProvider implements IStructuredContentProvider {
     public static final boolean DEBUG = false;
 
 	public Object[] getElements(Object inputElement) {
 		if (DEBUG) System.out.printf("UnknownsViewContentProvider: getElements\n");	
 		
-		List<Integer> pcs = XtaEngine.getEngine().getPcsWithTimeSet();
-		return pcs.toArray();
+		HashSet<Unknown> knowns = ((Route)inputElement).getUnknowns().getKnowns();
+		return knowns.toArray();
 	}
 
 	public void dispose() {

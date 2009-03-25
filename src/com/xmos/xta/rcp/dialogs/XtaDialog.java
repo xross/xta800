@@ -1,9 +1,9 @@
 package com.xmos.xta.rcp.dialogs;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.swt.graphics.Point;
+/*import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Display;*/
 import org.eclipse.swt.widgets.Shell;
 
 public abstract class XtaDialog extends Dialog {

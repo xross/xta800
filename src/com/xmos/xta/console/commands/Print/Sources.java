@@ -32,7 +32,7 @@ public class Sources extends Command {
 	
     public int numArgs()        { return 1; }        
     public String name()        { return "sources"; }        
-    public String commandLine() { return "sources"; }        
+    public String commandLine() { return "sources " + getRouteId(m_routeId); }        
     
     public String description(Engine engine, boolean detailed) {
     	return "sources <route id>: Shows which paths touch which sources";
@@ -40,7 +40,7 @@ public class Sources extends Command {
 
     public Command clone(String[] args, int index, boolean commandLineMode) {
 		if ((index + numArgs()) >= args.length) 
-			return null;		
+			return null;
     	
     	try {
        		return new Sources(getRouteId(args[index + 1]));

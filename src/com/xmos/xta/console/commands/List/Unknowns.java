@@ -1,18 +1,26 @@
 package com.xmos.xta.console.commands.List;
 
+import java.util.HashSet;
+
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Route;
-import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.engine.unknowns.Unknown;
 
 public class Unknowns extends Command {
+	private int m_routeId;
+
 	public Unknowns() {
 	}
-	
+
+	public Unknowns(int routeId) {
+		m_routeId = routeId;
+	}
+
     public int numArgs() {
-    	return 0;
+    	return 1;
     }        
 
     public String name() {
@@ -20,19 +28,26 @@ public class Unknowns extends Command {
     }        
 
     public String commandLine() {
-    	return "unknowns";
+    	return "unknowns " + getRouteId(m_routeId);
     }        
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = String.format("unknowns : Displays a list of the unknowns within the current analysis");
+    	String descString = String.format("unknowns <route id>: Displays a list of the unknowns for the given route");
     	return descString;
     }
 
     public Command clone(String[] args, int index, boolean commandLineMode) {
-		if ((index + numArgs()) >= args.length) 
+		if ((index + numArgs()) >= args.length)
 			return null;		
 
-    	return new Unknowns();   		    
+    	int routeId;
+    	try { 
+    		routeId = getRouteId(args[index + 1]); 
+    	} catch (NumberFormatException e) {
+	        return null;
+	    }
+	    
+		return new Unknowns(routeId);
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
@@ -40,16 +55,16 @@ public class Unknowns extends Command {
 			return;			    	
 
 		boolean found = false;
-		for (Route route : engine.getRoutes()) {
-			java.util.List<XtaInstruction> instructions = route.getUnknowns();		
-			if (instructions.size() > 0) {
-				for (XtaInstruction instruction : instructions) {					
-				    console.display(String.format("Time taken for instruction (0x%x: %s %s) is unknown\n",
-					    instruction.getPc(), instruction.getNmenonic(), instruction.getOperandString()));
-				    found = true;
-				}			
+		Route route = engine.getRoute(m_routeId);
+		
+		if (route != null) {
+			HashSet<Unknown> unknowns = route.getUnknowns().getUnknowns();		
+			for (Unknown unknown : unknowns) {
+			    console.display(unknown.getDescription());
+			    found = true;
 			}			
 		}
+		
 		if (!found) {
 		    console.display("none\n");
 		}

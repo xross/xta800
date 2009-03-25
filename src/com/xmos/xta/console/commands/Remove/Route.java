@@ -25,7 +25,7 @@ public class Route extends Command {
     }
     
     public String commandLine() { 
-    	return "route " + m_routeId; 
+    	return "route " + getRouteId(m_routeId); 
     }        
     
     public String description(Engine engine, boolean detailed) {

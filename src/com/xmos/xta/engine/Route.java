@@ -10,6 +10,8 @@ import java.util.TreeSet;
 
 import com.xmos.xta.engine.Engine.RouteDescription;
 import com.xmos.xta.engine.Status.BlockStatus;
+import com.xmos.xta.engine.unknowns.InstructionUnknown;
+import com.xmos.xta.engine.unknowns.Unknowns;
 
 @SuppressWarnings("serial")
 class AbortedException extends Exception {}
@@ -47,6 +49,7 @@ public class Route {
 	private Engine m_engine;	
 	private RouteTiming m_routeTiming;
 	private boolean m_constrained;
+	private Unknowns m_unknowns;
 	
 	private HashSet<Integer> m_pcsHit;
 	
@@ -72,6 +75,7 @@ public class Route {
 		++s_routeCount;
 		s_pathCount = 0;
 		m_pcsHit = new HashSet<Integer>();
+		m_unknowns = new Unknowns();
 	}
 	
 	/**
@@ -144,8 +148,9 @@ public class Route {
 	 * @return fail in the case where the loop path could not be uniquely determined or where the number
 	 * of iterations violates the loop headers loop count
 	 */
-	public boolean setLoopPathIterationCount(int pc, int count, boolean absolute) throws Exception {
-		return false;
+	public boolean setLoopPathIterationCount(int pc, int count){
+		return true;
+
 	}
 	
 	public int getRouteId() {
@@ -224,7 +229,7 @@ public class Route {
 		
 		
 		
-		for(PathBasicBlock completedBlock : this.m_completedPaths){
+		for (PathBasicBlock completedBlock : this.m_completedPaths){
 			addPathPcs(completedBlock);
 		}
 		
@@ -234,9 +239,16 @@ public class Route {
 	}
 
 	private void addPathPcs(PathBasicBlock completedBlock) {
-		for(PathBasicBlock pathBlock : completedBlock.getPathBlocks()){
+		for (PathBasicBlock pathBlock : completedBlock.getPathBlocks()) {
 			m_pcsHit.addAll(pathBlock.getPcsCoveredThis());
-			for(PathBasicBlock loop : pathBlock.getLoopPaths(completedBlock)){
+			
+			for (XtaInstruction instruction : pathBlock.getInstructionTrimmed()) {
+				if (instruction.canPause()) {
+					m_unknowns.addUnknown(new InstructionUnknown(instruction));
+				}
+			}
+			
+			for (PathBasicBlock loop : pathBlock.getLoopPaths(completedBlock)){
 				addPathPcs(loop);
 			}
 		}
@@ -250,18 +262,18 @@ public class Route {
 		
 		m_allBasicBlocks.add(currentBasicBlock);
 		
-		if(DEBUG) System.out.println("begin block " + currentBasicBlock);
-		if(m_engine.getAbort()) {
+		if (DEBUG) System.out.println("begin block " + currentBasicBlock);
+		if (m_engine.getAbort()) {
 			throw new AbortedException();
 		}
 		
-		if(reachedEnd(currentBasicBlock)){
+		if (reachedEnd(currentBasicBlock)){
 			handleFinalBlock(currentBasicBlock, mode);
 		} else {
 			
 			m_firstStep = false;
 			
-			if(updateConstraints(currentBasicBlock)){
+			if (updateConstraints(currentBasicBlock)){
 				isConstrained(true);
 				currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
 				return;
@@ -269,28 +281,28 @@ public class Route {
 			
 			checkSupportedInstructions(currentBasicBlock);
 
-			if(hasResursed(currentBasicBlock, nodeContext)){
+			if (hasResursed(currentBasicBlock, nodeContext)){
 				String reason = "Recursion with 0x" + Integer.toHexString(currentBasicBlock.getBasicBlock().getInstructions().getFirst().getPc());
 				addUnresolvedPath(currentBasicBlock, reason);
 				return;
 			}
 			
 			PathBasicBlock loopDestinationBlock = formsLoop(currentBasicBlock, nodeContext);
-			if(loopDestinationBlock!=null){
+			if (loopDestinationBlock!=null){
 				handelLoop(currentBasicBlock.getParent(), loopDestinationBlock);
 				return;
 			}
 			
 			XtaInstruction lastInstruction = currentBasicBlock.getInstructionTrimmed().getLast();
 			
-			if(lastInstruction.getReturn() && stack.size()>0){
+			if (lastInstruction.getReturn() && stack.size()>0){
 				handleReturn(currentBasicBlock, stack, nodeContext, mode);
 				return;
 			} else {
 				if (currentBasicBlock.getBasicBlock().getNextNodes().size() == 0) {;
 					addUnresolvedPath(currentBasicBlock, "no known next block");
 				} else {
-					for(BasicBlock nextNode : currentBasicBlock.getBasicBlock().getNextNodes()){
+					for (BasicBlock nextNode : currentBasicBlock.getBasicBlock().getNextNodes()){
 						handleNextBlock(currentBasicBlock, stack, nodeContext, mode, lastInstruction, nextNode);
 					}
 				}
@@ -304,12 +316,12 @@ public class Route {
 		
 		
 		PathBasicBlock nextPathBasicBlock = new PathBasicBlock(m_engine, nextNode, currentBasicBlock, m_idc);
-		if(DEBUG) System.out.println("from block" + currentBasicBlock+" to block: " + nextPathBasicBlock);
+		if (DEBUG) System.out.println("from block" + currentBasicBlock+" to block: " + nextPathBasicBlock);
 		
 		Stack<Integer> newStack = (Stack<Integer>) stack.clone();
 		Stack<LinkedList<BasicBlock>> newContext = new Stack<LinkedList<BasicBlock>>();
 		copyStack(nodeContext, newContext);
-		if(lastInstruction.getBranchLink()){
+		if (lastInstruction.getBranchLink()){
 			newStack.add(lastInstruction.getPc() + lastInstruction.getNumBytes());
 			newContext.push(new LinkedList<BasicBlock>());
 		} else {
@@ -319,11 +331,11 @@ public class Route {
 	}
 
 	private void handleCompleted(PathBasicBlock currentBasicBlock) {
-		if(currentBasicBlock.getConstraint().isTrue()){
-			if(DEBUG) System.out.println("block " + currentBasicBlock + " completed");
+		if (currentBasicBlock.getConstraint().isTrue()){
+			if (DEBUG) System.out.println("block " + currentBasicBlock + " completed");
 			addCompletePath(currentBasicBlock);
-		}  else {
-			if(DEBUG) System.out.println("block " + currentBasicBlock + " constrained");
+		} else {
+			if (DEBUG) System.out.println("block " + currentBasicBlock + " constrained");
 			isConstrained(true);
 			currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
 		}
@@ -406,19 +418,10 @@ public class Route {
 		return false;		
 	}
 
-	
-	public ArrayList<XtaInstruction> getUnknowns() {
-        ArrayList<XtaInstruction> unknowns = new ArrayList<XtaInstruction>();
-		for (PathBasicBlock path : m_completedPaths) {
-			for (XtaInstruction instruction : path.getInstructions(true)) {
-				if (instruction.isUnknown()) {
-					unknowns.add(instruction);
-				}
-			}
-		}
-        return unknowns;
+	public Unknowns getUnknowns() {
+		return m_unknowns;
 	}
-	
+
 	public String getEndpointsPcsString() {
 		String pcString =  "(0x" + Integer.toHexString(m_startPc) + " => ";
 		for (int end : m_endPcs) {
@@ -533,7 +536,7 @@ public class Route {
 	}
 
 	private BasicBlock getNode(int pc) {
-		for(BasicBlock node : m_nodes){
+		for (BasicBlock node : m_nodes){
 			if(node.getPcs().contains(pc)) return node;
 		}
 		return null;

@@ -1,9 +1,11 @@
 package com.xmos.xta.engine;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.engine.unknowns.Unknown;
 
 public class NodeCoreInstructionCaches {
 	
@@ -22,8 +24,8 @@ public class NodeCoreInstructionCaches {
 	
 	public void addNodeCore(Engine engine, int node, int core, Config config) {
 		String newNodeCore = nodeCoreString(node, core);
-		InstructionDecodeCache idc = new InstructionDecodeCache(engine,
-                m_xeLoader.getSymbolTable(node, core), m_xeLoader.getArchitecture(), config);
+		InstructionDecodeCache idc = new InstructionDecodeCache(
+				m_xeLoader.getSymbolTable(node, core), m_xeLoader.getArchitecture(), config);
 		m_nodeCore.put(newNodeCore, idc);
 	}
 	
@@ -61,19 +63,14 @@ public class NodeCoreInstructionCaches {
 		return idc.getInstructionNumCycles(pc);
 	}
 	
-	public void unsetInstructionTime(int pc, int node, int core) {
+	public boolean unsetInstructionTime(int pc, int node, int core) {
 		InstructionDecodeCache idc = m_nodeCore.get(nodeCoreString(node, core));
-		idc.unsetInstructionTime(pc);
+		return idc.unsetInstructionTime(pc);
 	}
 
-	public boolean unsetInstructionTime(Reference ref, int node, int core) {
+	public boolean unsetInstructionTime(Reference ref, int node, int core, HashSet<Unknown> unknowns) {
 		InstructionDecodeCache idc = m_nodeCore.get(nodeCoreString(node, core));
-		return idc.unsetInstructionTime(ref);
-	}
-
-	public ArrayList<Integer> getPcsWithTimeSet(int node, int core) {
-		InstructionDecodeCache idc = m_nodeCore.get(nodeCoreString(node, core));
-		return idc.getPcsWithTimeSet();
+		return idc.unsetInstructionTime(ref, unknowns);
 	}
 
 	private String nodeCoreString(int node, int core) {

@@ -8,6 +8,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Shell;
 
+import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.RouteTiming;
 import com.xmos.xta.engine.XtaInstruction;
@@ -32,7 +33,14 @@ public class RouteNode extends Node {
     public double getTimeTaken() { return 0; }
     public double getTimeTakenThis() { return 0; }
     public long getNumCycles() { return 0; }
-    public long getNumUnknowns() { return 0; }    
+
+    public long getNumUnknowns() {
+    	int numUnknowns = 0;
+	    for (PathBasicBlock path : m_route.getCompletedPaths()) {
+	    	numUnknowns += path.getNumUnknowns(true);
+        }
+	    return numUnknowns;
+    }    
    
     public String getDescription() {
     	String str = "Route (" + m_route.getRouteId() + ") " + m_route.getDescription() + "";
@@ -43,15 +51,19 @@ public class RouteNode extends Node {
     }
     
     public String getTypeName() {
+    	String typeName;
+
     	RouteTiming routeTiming = m_route.getRouteTiming();
 		if (routeTiming.isTimingSpecified()) {
 			if (routeTiming.passedTiming())
-				return "required_pass";
+				typeName = "required_pass";
 			else
-				return "required_fail";
+				typeName = "required_fail";
 		} else {
-			return "required_notset";
+			typeName = "required_notset";
 		}
+	
+		return typeName;
 	}
     	
     
@@ -83,15 +95,11 @@ public class RouteNode extends Node {
     	return new Vector<XtaInstruction>();
     }
 
-    public Vector<XtaInstruction> getUnknowns() {
-		return new Vector<XtaInstruction>();
-	}
-
 	public void getFnopPcs(Vector<XtaInstruction> fnops) {
 		// Do nothing
 	}
 
-	public void getBlockIds(Vector<Integer> ids) {
+	public void getBlockIds(HashSet<Integer> ids) {
 		// Do nothing
 	}
 }

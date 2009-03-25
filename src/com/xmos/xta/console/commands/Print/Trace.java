@@ -31,7 +31,7 @@ public class Trace extends Command {
     }        
 
     public String commandLine() {
-    	return "trace " + m_routeId + " " + m_id;
+    	return "trace " + getRouteId(m_routeId) + " " + m_id;
     }
     
     public String description(Engine engine, boolean detailed) {

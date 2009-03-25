@@ -19,7 +19,7 @@ public class List extends CommandContainer {
 		new Unknowns(),
 		new Functions(),
 		new Sources(),
-		new Times(),
+		new Knowns(),
 		new Constraint(Constraint.Operation.LIST),		
 	};
 	
