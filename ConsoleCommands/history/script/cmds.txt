@@ -1,28 +1,31 @@
 add branch fromRef toRef
-add branch 0x1000 0x1000
+add branch 0x10000 0x10000
 add label codeRef string
 add label 0x10000 string
 add srclabel codeRef string
-add srclabel 0x10000 string
+add srclabel test.xc:10 string
 add endpoint codeRef string
-add endpoint 0x10000 string
+add endpoint input1 string
 
 analyse function main
 analyse path label1 label2
 analyse path 0x1000 0x1000
 
-assert maxtime 999
-assert maxcycles 999
+invalid command with arguments
 
 config proc 9 9
+config proc 0 0
 config freq 999
 config threads 99
 config srcpaths /test/path/srcpath/
 
+echo 
+
 clear
-echo hello
+echo "Test string"
 pwd
 help
+help history
 load invalid.xe
 
 list branches
@@ -31,10 +34,12 @@ list srclabels
 list endpoints
 list allsrclabels
 list allendpoints
-list unknowns
+list unknowns -
+list unknowns 10
 list functions
 list sources
-list times
+list knowns -
+list knowns 10
 list constraint
 
 print asm 99
