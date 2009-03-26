@@ -60,7 +60,6 @@ public class BlockNode extends Node {
         toolTipText += "Number of pausables: " + m_block.getNumPausablesThis() + "\n";
         toolTipText += "Number of unknowns: " + m_block.getNumUnknownsThis();
         
-        
         return toolTipText;
     }
 

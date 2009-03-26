@@ -77,6 +77,7 @@ public class PathNode extends Node {
         toolTipText += "Number of FNOPs (this): "     + m_block.getNumFNops(false) + "\n";
         
         toolTipText += "Number of pausables (this): " + m_block.getNumPausables(false) + "\n";  
+
         toolTipText += "Number of unknowns (this): "  + m_block.getNumUnknowns(false);     
         
         if (!m_isRoot) {

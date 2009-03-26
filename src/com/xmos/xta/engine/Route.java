@@ -84,15 +84,27 @@ public class Route {
 	 * @return
 	 */
 	private ArrayList<PathBasicBlock> pcToBlocks(int pc){
-		ArrayList<PathBasicBlock> blocks = new ArrayList<PathBasicBlock>();
+		ArrayList<PathBasicBlock> loopForming = new ArrayList<PathBasicBlock>();
+		ArrayList<PathBasicBlock> nonLoopForming = new ArrayList<PathBasicBlock>();
+		
 		for(PathBasicBlock pbb : m_allBasicBlocks){
 			for(XtaInstruction inst : pbb.getInstructionTrimmed()){
 				if(inst.getPc() == pc){
-					blocks.add(pbb);
+					
+					if(pbb.getParent().getPathId() != -1){
+						loopForming.add(pbb);
+					} else {
+						nonLoopForming.add(pbb);
+					}
+					
 					break;
 				}
 			}
 		}
+		
+		ArrayList<PathBasicBlock> blocks = new ArrayList<PathBasicBlock>();
+		blocks.addAll(loopForming);
+		blocks.addAll(nonLoopForming);
 		return blocks;
 	}
 	
@@ -149,8 +161,9 @@ public class Route {
 	 * of iterations violates the loop headers loop count
 	 */
 	public boolean setLoopPathIterationCount(int pc, int count){
-		return true;
 
+		
+		return true;
 	}
 	
 	public int getRouteId() {
@@ -259,7 +272,13 @@ public class Route {
 		PathBasicBlock currentBasicBlock, Stack<Integer> stack, 
 		Stack<LinkedList<BasicBlock>> nodeContext, RouteMode mode) throws AbortedException {
 		
-		
+		boolean alreadyContains = false;
+		for(PathBasicBlock b : this.m_allBasicBlocks){
+			if(b.getBlockId() == currentBasicBlock.getBlockId()){
+				alreadyContains = true;
+			}
+		}
+		if(!alreadyContains)
 		m_allBasicBlocks.add(currentBasicBlock);
 		
 		if (DEBUG) System.out.println("begin block " + currentBasicBlock);

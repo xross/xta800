@@ -31,14 +31,14 @@ public class LoopMax extends Command {
     }        
 
     public String commandLine() {
-    	return "loop 0x" + 
+    	return "loopmax 0x" + 
     	    Integer.toHexString(m_pc) + " " + 
     	    m_routeId + " " + 
     	    m_iterations;
     }
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = "loopmax <pc> <routeId> <iterations>: Sets the number of iterations for the given route";
+    	String descString = "loopmax <pc> <routeId> <iterations>: Sets the maximum number of iterations for a loop containing the given pc";
     	return descString;
     }
 
