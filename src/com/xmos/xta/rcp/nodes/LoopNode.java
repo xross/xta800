@@ -9,6 +9,8 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Shell;
 import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.rcp.XtaEngine;
+import com.xmos.xta.rcp.dialogs.MaxIterations;
 import com.xmos.xta.rcp.dialogs.Scope;
 import com.xmos.xta.rcp.views.ViewNode.FunctionLoopNode;
 import com.xmos.xta.rcp.views.ViewNode.StructureLoopNode;
@@ -81,6 +83,12 @@ public class LoopNode extends Node {
 		    	new Scope(parent, m_this);
 		    }
 	    });
+	    
+	    manager.add(new Action("Set max iterations") {
+		    public void run() {
+		    	new MaxIterations(parent, m_this);
+		    }
+	    });
     }
             
     private String getSummary() {
@@ -133,9 +141,18 @@ public class LoopNode extends Node {
 			node.getBlockIds(ids);
 		}
 	}
+	
+	public long getLoopMax(){
+		return m_block.getloops().getLoopMax();
+	}
+	
+	public void setLoopMax(long count){
+		int pc = m_block.getInstructionTrimmed().getFirst().getPc();	
+		XtaEngine.getEngine().setLoopMax(getRouteId(), pc, count);
+	}
 
-	public void setScope(boolean scope) {
-		m_block.getloops().setLoopScope(m_block.getloops().getSubLoops().get(0).getLoop(), scope);
+	public void setScope(boolean absolute) {
+		XtaEngine.getEngine().setLoopScope(getRouteId(), m_block.getPathId(), absolute);
 	}
 
 	public boolean getScope() {

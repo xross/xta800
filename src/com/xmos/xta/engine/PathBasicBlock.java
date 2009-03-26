@@ -390,6 +390,9 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 			if (inst.isUnknown())
 				unknowns.add(inst);
 		}
+		
+		//TODO add unset loop path attributes
+		
 		return unknowns;
 	}
 

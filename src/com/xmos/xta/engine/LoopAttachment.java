@@ -3,6 +3,9 @@ package com.xmos.xta.engine;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
+
+import com.xmos.xta.engine.unknowns.LoopUnknown;
 
 public class LoopAttachment {
 
@@ -34,7 +37,6 @@ public class LoopAttachment {
 	//the relative iterations of this loop
 	private Long m_softIterations;
 	
-	
 	public LoopAttachment(PathBasicBlock loop, LoopAttachment parent){
 		m_loop = loop;
 		m_parent = parent;
@@ -42,7 +44,6 @@ public class LoopAttachment {
 		if(loop == null){
 			m_allAttachedLoops = new HashSet<PathBasicBlock>();
 		}
-		
 		m_hardIterations = null;
 		m_softIterations = null;
 		m_maxIterations = null;
@@ -109,7 +110,7 @@ public class LoopAttachment {
 				if(la.m_softIterations!= null){
 					return la.m_softIterations;
 				} else {
-					return 0;
+					throw new Exception();
 				}
 		} else {
 			//loop not found
@@ -127,7 +128,7 @@ public class LoopAttachment {
 				if(la.m_hardIterations!= null){
 					return la.m_hardIterations;
 				} else {
-					return 0;
+					throw new Exception();
 				}
 		} else {
 			//loop not found
@@ -298,6 +299,40 @@ public class LoopAttachment {
 			}
 		}
 		
+	}
+
+	public long getLoopMax() {
+		
+		if(getParent()!= null){
+			return getParent().m_maxIterations;
+		} else {
+			return 0;
+		}
+	}
+
+	public LoopUnknown getLoopUnknown(){
+		
+		if(m_hardIterations == null && m_softIterations == null){
+			return new LoopUnknown(m_loop.getPathBlocks().get(0),m_loop);
+		}
+		
+		return null;
+	}
+	
+	public LinkedList<LoopUnknown> getUnknowns() {
+		LinkedList<LoopUnknown> unknowns = new LinkedList<LoopUnknown>();
+		for(LoopAttachment la : m_subLoops){
+			unknowns.addAll(la.getUnknowns());
+			if(la.getUnknowns() != null){
+				
+				LoopUnknown lu = la.getLoopUnknown();
+				if(lu != null){
+					unknowns.add(lu);
+				}
+				
+			}
+		}
+		return unknowns;
 	}
 
 	
