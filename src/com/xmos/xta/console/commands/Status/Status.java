@@ -32,7 +32,7 @@ public class Status extends Command {
         return "status: Display current status";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
         return new Status();
     }
     

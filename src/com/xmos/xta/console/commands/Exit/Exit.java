@@ -25,7 +25,7 @@ public class Exit extends Command {
         return "exit: Quits the shell (Standalone mode only)";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
     	return new Exit();
     }
     

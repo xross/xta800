@@ -39,7 +39,7 @@ public class Path extends Command {
         return "path <from ENDPOINT_REF> <to ENDPOINT_REF>: Sets a path start and end points";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 

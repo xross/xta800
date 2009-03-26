@@ -16,7 +16,7 @@ public class UnresolvedLoops extends Command {
     	return "unresolved_loops: Show timing of complete paths + loops";
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
    		return new UnresolvedLoops();
     }
     

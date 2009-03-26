@@ -49,7 +49,7 @@ public class CommandFactory {
 	}
 	
     public static Command buildCommand(String[] args, int index, 
-    		Vector<Command> commandHistory, Console console, boolean commandLineMode) {
+    		Vector<Command> commandHistory, Console console) {
     	String arg = args[index];    	
         
         if (isPingCommand(arg)) {
@@ -59,7 +59,7 @@ public class CommandFactory {
     	arg = stripLeadingDash(arg);
     	for (Command command : m_commands) {
     		if (arg.equals(command.name())) {
-    			Command cloned = command.clone(args, index, commandLineMode);    			
+    			Command cloned = command.clone(args, index);    			
     			if (cloned == null) {
     		    	console.display(
     		    			"Invalid argument(s) to '" + command.name() + 

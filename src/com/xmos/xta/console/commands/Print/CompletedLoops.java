@@ -16,7 +16,7 @@ public class CompletedLoops extends Command {
     	return "completed_loops: Show timing of complete paths + loops";
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
    		return new CompletedLoops();
     }
     

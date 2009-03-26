@@ -32,7 +32,7 @@ public class LoopScope extends Command {
 
     public String commandLine() {
     	return "loopscope " + 
-    	    m_routeId + " " + 
+    	    getRouteId(m_routeId) + " " + 
     	    m_pathId + " " + 
     	    (m_absolute ? "absolute" : "relative");
     }
@@ -47,7 +47,7 @@ public class LoopScope extends Command {
     	return descString;
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 

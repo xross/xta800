@@ -40,7 +40,7 @@ public class Load extends Command {
         return "load <xe file>: Loads the given xmos executable file";      	
     }
     
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 

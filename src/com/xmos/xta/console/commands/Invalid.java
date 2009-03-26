@@ -29,7 +29,7 @@ public class Invalid extends Command {
         return "";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
     	assert false;
         return null;
     }

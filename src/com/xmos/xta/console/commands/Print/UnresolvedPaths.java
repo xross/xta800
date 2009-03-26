@@ -16,7 +16,7 @@ public class UnresolvedPaths extends Command {
     	return "unresolved_paths: Show timing of unresolved path(s)";
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
    		return new UnresolvedPaths();
     }
     

@@ -67,36 +67,29 @@ public class Help extends Command {
         return desc;
     }
     
-    public Command clone(String[] args, int index, boolean commandLineMode) {
-		if ((index + 1) >= args.length) {
+    public Command clone(String[] args, int index) {
+		if (areArgsDone(args, index + 1)) {
 			return new Help();
 		}
     	
 		String arg = args[index + 1];    	
-		if (commandLineMode) {
-			// If we are processing command from the command line, then we only
-			// accepts the default help (i.e. not help 'command' or 'option').
-			return new Help();    	
+		// Checks for matching commands..
+    	Command[] avaliableCommands = CommandFactory.getCommands();
+    	for (Command command : avaliableCommands) {
+    		if (command.name().equals(arg)) {
+    			return new Help(command);
+    		}
     	}
-    	else {
-    		// Checks for matching commands..
-	    	Command[] avaliableCommands = CommandFactory.getCommands();
-	    	for (Command command : avaliableCommands) {
-	    		if (command.name().equals(arg)) {
-	    			return new Help(command);
-	    		}
-	    	}
 
-    		// Checks for matching options..
-            for (ReferenceClass referenceClass : ReferenceClass.values()) {
-        	    if (referenceClass.name().equals(arg)) {
-        	    	return new Help(referenceClass);
-        	    }
-            }
-            
-            // Error..
-	    	return null;
-    	}    		    	
+		// Checks for matching options..
+        for (ReferenceClass referenceClass : ReferenceClass.values()) {
+    	    if (referenceClass.name().equals(arg)) {
+    	    	return new Help(referenceClass);
+    	    }
+        }
+        
+        // Error..
+    	return null;
     }
     
     public void execute(Shell shell, Engine engine, Console console) { 

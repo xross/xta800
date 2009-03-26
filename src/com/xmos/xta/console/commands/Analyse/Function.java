@@ -36,7 +36,7 @@ public class Function extends Command {
         return "function <name>: Sets a path to trace a given function";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 

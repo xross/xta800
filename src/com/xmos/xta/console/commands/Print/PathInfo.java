@@ -39,7 +39,7 @@ public class PathInfo extends Command {
     	return "path_info <route id> <path/block id>: Show detailed information for the given path/block";
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 

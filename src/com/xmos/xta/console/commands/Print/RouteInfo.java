@@ -33,7 +33,7 @@ public class RouteInfo extends Command {
     	return "route_info <route id>: Show detailed information for the given route";
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 

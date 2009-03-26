@@ -35,7 +35,7 @@ public class Proc extends Command {
         return "proc <node id> <core id>: All following analysis on given node and core (default: 0,0)";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 

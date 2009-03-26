@@ -38,7 +38,7 @@ public class Sources extends Command {
     	return "sources <route id>: Shows which paths touch which sources";
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;
     	

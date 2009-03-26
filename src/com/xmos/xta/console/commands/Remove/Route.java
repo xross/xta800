@@ -32,7 +32,7 @@ public class Route extends Command {
     	return "route <route id>: Removes the route with the given id from the current analysis";
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 

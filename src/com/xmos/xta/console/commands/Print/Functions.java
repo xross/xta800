@@ -35,7 +35,7 @@ public class Functions extends Command {
     	return "functions <route id>: Shows which paths touch which functions";
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
     	

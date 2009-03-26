@@ -25,7 +25,7 @@ public class Clear extends Command  {
         return "clear: Clears the screen (Gui mode only)";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
     	return new Clear();
     }
     
