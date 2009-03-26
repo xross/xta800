@@ -300,6 +300,15 @@ public class LoopAttachment {
 		
 	}
 
+	public long getLoopMax() {
+		
+		if(getParent()!= null){
+			return getParent().m_maxIterations;
+		} else {
+			return 0;
+		}
+	}
+
 	
 	
 }

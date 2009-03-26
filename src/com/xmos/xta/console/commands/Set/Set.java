@@ -11,7 +11,6 @@ public class Set extends CommandContainer {
 		new Loop(), 
 		new LoopMax(), 
 		new LoopScope(), 
-		new LoopPath(), 
 		new Time(Time.Operation.SET), 
 		new Required(Required.Operation.SET), 
 		new Constraint(Constraint.Operation.SET),

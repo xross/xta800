@@ -42,6 +42,7 @@ public class Route {
 	private TreeSet<Integer> m_endPcs; 
 	private ArrayList<PathBasicBlock> m_completedPaths;
 	private ArrayList<PathBasicBlock> m_allBasicBlocks;
+	private ArrayList<PathBasicBlock> m_loopBlocks;	//horrible
 	private RouteDescription m_description;
 	private ArrayList<Unresolved> m_unresolvedPaths;
 	private InstructionDecodeCache m_idc;
@@ -63,6 +64,7 @@ public class Route {
 		m_engine = engine;
 		m_completedPaths = new ArrayList<PathBasicBlock>();
 		m_allBasicBlocks = new ArrayList<PathBasicBlock>();
+		m_loopBlocks = new ArrayList<PathBasicBlock>();
 		m_unresolvedPaths = new ArrayList<Unresolved>();
 		m_startPc = startPc;
 		m_endPcs =endPcs;
@@ -87,7 +89,7 @@ public class Route {
 		ArrayList<PathBasicBlock> loopForming = new ArrayList<PathBasicBlock>();
 		ArrayList<PathBasicBlock> nonLoopForming = new ArrayList<PathBasicBlock>();
 		
-		for(PathBasicBlock pbb : m_allBasicBlocks){
+		for(PathBasicBlock pbb : m_loopBlocks){
 			for(XtaInstruction inst : pbb.getInstructionTrimmed()){
 				if(inst.getPc() == pc){
 					
@@ -154,18 +156,6 @@ public class Route {
 		return true;
 	}
 	
-	/**
-	 * sets the number of iterations on a loop path
-	 * @param pc
-	 * @return fail in the case where the loop path could not be uniquely determined or where the number
-	 * of iterations violates the loop headers loop count
-	 */
-	public boolean setLoopPathIterationCount(int pc, int count){
-
-		
-		return true;
-	}
-	
 	public int getRouteId() {
 		return m_routeId;
 	}
@@ -216,7 +206,7 @@ public class Route {
 				System.out.println("analysing to 0x" + Integer.toHexString(to));
 			}
 		}
-		
+		m_loopBlocks.clear();
 		m_allBasicBlocks.clear();
 		BasicBlock startNode = getNode(m_startPc);
 		if (startNode == null){
@@ -268,6 +258,7 @@ public class Route {
 	}
 
 	
+	
 	private void followNode(
 		PathBasicBlock currentBasicBlock, Stack<Integer> stack, 
 		Stack<LinkedList<BasicBlock>> nodeContext, RouteMode mode) throws AbortedException {
@@ -276,9 +267,11 @@ public class Route {
 		for(PathBasicBlock b : this.m_allBasicBlocks){
 			if(b.getBlockId() == currentBasicBlock.getBlockId()){
 				alreadyContains = true;
+				break;
 			}
 		}
 		if(!alreadyContains)
+			m_loopBlocks.add(currentBasicBlock);
 		m_allBasicBlocks.add(currentBasicBlock);
 		
 		if (DEBUG) System.out.println("begin block " + currentBasicBlock);
