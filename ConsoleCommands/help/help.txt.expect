@@ -74,7 +74,9 @@
       option: endpoint [label]+: Removes the given endpoints from the endpoints list (supports regular expressions)
       option: route <route id>: Removes the route with the given id from the current analysis
   [-]set <option> <arg0> <arg1>...: Set path information
-      option: loop <route id> <path id> <scope> <iterations>: Sets the number of iterations for the given route/path
+      option: loop <route id> <path id> <iterations>: Sets the number of iterations for the given route/path
+      option: loopmax <pc> <routeId> <iterations>: Sets the number of iterations for the given route
+      option: loopscope <route id> <path id> <scope>: Sets the scope of loop attached to a path
           scope: relative/r: Iteration number propagates to the enclosing path (Default)
           scope: absolute/a: Absolute number of iterations
       option: time <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc

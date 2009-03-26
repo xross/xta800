@@ -11,23 +11,16 @@ system("xcc -march=$arch test.xc -o $genDir/test.xe > $genDir/command_line.log 2
 }
 system("@ARGV  " .
 
-       "add branch fromRef toRef " .
-       "add branch 0x1000 0x1000 " .
-       "add label codeRef string " .
+       "add branch 0x10000 0x10000 " .
        "add label 0x10000 string " .
-       "add srclabel codeRef string " .
-       "add srclabel 0x10000 string " .
-       "add endpoint codeRef string " .
-       "add endpoint 0x10000 string " .
+       "add srclabel test.xc:10 string " .
+       "add endpoint input1 string " .
 
        "analyse function main " .
        "analyse path label1 label2 " .
-       "analyse path 0x1000 0x1000 " .
+       "analyse path 0x10000 0x10002 " .
 
-       "assert maxtime 999 " .
-       "assert maxcycles 999 " .
-
-       "config proc 9 9 " .
+       "-config proc 0 0 " .
        "config freq 999 " .
        "config threads 99 " .
        "config srcpaths /test/path/srcpath/ " .
@@ -36,6 +29,7 @@ system("@ARGV  " .
        "echo hello " .
        "pwd " .
        "help " .
+       "-help history " .
        "load invalid.xe " .
 
        "list branches " .
@@ -44,16 +38,18 @@ system("@ARGV  " .
        "list endpoints " .
        "list allsrclabels " .
        "list allendpoints " .
-       "list unknowns " .
+       "list unknowns - " .
+       "list unknowns 10 " .
        "list functions " .
        "list sources " .
-       "list times " .
+       "list knowns - " .
+       "list knowns 10 " .
        "list constraint " .
        
-       "print asm 99 " .
-       "print src 99 " .
-       "print mix 99 " .
-       "print trace 99 " .
+       "print asm - 99 " .
+       "print src - 99 " .
+       "print mix - 99 " .
+       "print trace - 99 " .
 
        "-remove branch branch1 " .
        "-remove label label1 " .
@@ -62,27 +58,27 @@ system("@ARGV  " .
 
        "-pwd " .
 
-       "-set loop 99 r 99 " .
-       "-set time test.xc:12 ns 99 " .
-       "-set time label1 cycles 99 " .
-       "-set time 0x1000 cycles 99 " .
+       "-set loop - 99 99 " .
+       "-set time test.xc:12 99 ns " .
+       "-set time label1 99 cycles " .
+       "-set time 0x1000 99 cycles " .
        "-set constraint expression " .
  
        "-source invalid.txt " .
        "status " .
 
-       "summary simple " .
-       "summary complete " .
-       "summary complete_loops " .
-       "summary complete_blocks " .
-       "summary complete_instructions " .
-       "summary unresolved " .
-       "summary unresolved_loops " .
-       "summary unresolved_blocks " .
-       "summary unresolved_instructions " .
-       "summary functions " .
-       "summary sources " .
-       "summary info 99 " .
+       "print summary " .
+       "print completed_loops " .
+       "print completed_blocks " .
+       "print completed_instructions " .
+       "print unresolved_paths " .
+       "print unresolved_loops " .
+       "print unresolved_blocks " .
+       "print unresolved_instructions " .
+       "print functions - " .
+       "print sources - " .
+       "print path_info - 10 " .
+       "print route_info 99 " .
 
        "unset time 0x10000 " .
        "version " .

@@ -11,7 +11,7 @@
 9: add endpoint input1 string
 10: analyse function main
 11: analyse path label1 label2
-12: analyse path 0x1000 0x1000
+12: analyse path 0x10000 0x10002
 13: invalid command with arguments
 14: config proc 9 9
 15: config proc 0 0
@@ -38,34 +38,33 @@
 36: list knowns -
 37: list knowns 10
 38: list constraint
-39: print asm 99
-40: print src 99
-41: print mix 99
-42: print trace 99
+39: print asm - 99
+40: print src - 99
+41: print mix - 99
+42: print trace - 99
 43: remove branch branch1
 44: remove label label1
 45: remove srclabel label1
 46: remove endpoint label1
 47: pwd
-48: -set loop 99 r 99
+48: set loop - 99 99
 49: -set time test.xc:12 ns 99
 50: -set time label1 cycles 99
 51: -set time 0x1000 cycles 99
 52: set constraint expression
 53: source invalid.txt
 54: status
-55: summary simple
-56: summary complete
-57: summary complete_loops
-58: summary complete_blocks
-59: summary complete_instructions
-60: summary unresolved
-61: summary unresolved_loops
-62: summary unresolved_blocks
-63: summary unresolved_instructions
-64: summary functions
-65: summary sources
-66: summary info 99
-67: unset time 0x10000
-68: version
-69: history
+55: print summary
+56: print completed_loops
+57: print completed_blocks
+58: print completed_instructions
+59: print unresolved
+60: print unresolved_loops
+61: print unresolved_blocks
+62: print unresolved_instructions
+63: print functions
+64: print sources
+65: print info 99
+66: unset time 0x10000
+67: version
+68: history

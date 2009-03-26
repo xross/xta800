@@ -1,66 +1,63 @@
 .*
 [^^^]
-1: add branch fromRef toRef
-2: add branch 0x1000 0x1000
-3: add label codeRef string
-4: add label 0x10000 string
-5: add srclabel codeRef string
-6: add srclabel 0x10000 string
-7: add endpoint codeRef string
-8: add endpoint 0x10000 string
-9: analyse function main
-10: analyse path label1 label2
-11: analyse path 0x1000 0x1000
-12: assert maxtime 999
-13: assert maxcycles 999
-14: config proc 9 9
-15: config freq 999
-16: config threads 99
-17: config srcpaths /test/path/srcpath/
-18: clear
-19: echo
-20: pwd
-21: help
-22: load invalid.xe
-23: list branches
-24: list labels
-25: list srclabels
-26: list endpoints
-27: list allsrclabels
-28: list allendpoints
-29: list unknowns
-30: list functions
-31: list sources
-32: list times
-33: list constraint
-34: print asm 99
-35: print src 99
-36: print mix 99
-37: print trace 99
-38: remove branch branch1
-39: remove label label1
-40: remove srclabel label1
-41: remove endpoint label1
-42: pwd
-43: set loop 99 relative 99
-44: set time test.xc:12 ns 99.0
-45: set time label1 cycles 99
-46: set time 0x1000 cycles 99
-47: set constraint expression
-48: source invalid.txt
-49: status
-50: summary simple
-51: summary complete
-52: summary complete_loops
-53: summary complete_blocks
-54: summary complete_instructions
-55: summary unresolved
-56: summary unresolved_loops
-57: summary unresolved_blocks
-58: summary unresolved_instructions
-59: summary functions
-60: summary sources
-61: summary info 99
-62: unset time 0x10000
-63: version
-64: history
+1: add branch 0x10000 0x10000
+2: add label 0x10000 string
+3: add srclabel test.xc:10 string
+4: add endpoint input1 string
+5: analyse function main
+6: analyse path label1 label2
+7: analyse path 0x10000 0x10002
+8: config proc 0 0
+9: config freq 999
+10: config threads 99
+11: config srcpaths /test/path/srcpath/
+12: clear
+13: echo
+14: pwd
+15: help
+16: help history
+17: load invalid.xe
+18: list branches
+19: list labels
+20: list srclabels
+21: list endpoints
+22: list allsrclabels
+23: list allendpoints
+24: list unknowns -
+25: list unknowns 10
+26: list functions
+27: list sources
+28: list knowns -
+29: list knowns 10
+30: list constraint
+31: print asm - 99
+32: print src - 99
+33: print mix - 99
+34: print trace - 99
+35: remove branch branch1
+36: remove label label1
+37: remove srclabel label1
+38: remove endpoint label1
+39: pwd
+40: set loop - 99 99
+41: set time test.xc:12 99.0 ns
+42: set time label1 99 cycles
+43: set time 0x1000 99 cycles
+44: set constraint expression
+45: source invalid.txt
+46: status
+47: print summary
+48: print completed_loops
+49: print completed_blocks
+50: print completed_instructions
+51: print unresolved_paths
+52: print unresolved_loops
+53: print unresolved_blocks
+54: print unresolved_instructions
+55: print functions -
+56: print sources -
+57: print path_info - 10
+58: print route_info 99
+59: unset time 0x10000
+60: version
+61: history

@@ -9,7 +9,7 @@ add endpoint input1 string
 
 analyse function main
 analyse path label1 label2
-analyse path 0x1000 0x1000
+analyse path 0x10000 0x10002
 
 invalid command with arguments
 
@@ -42,10 +42,10 @@ list knowns -
 list knowns 10
 list constraint
 
-print asm 99
-print src 99
-print mix 99
-print trace 99
+print asm - 99
+print src - 99
+print mix - 99
+print trace - 99
 
 -remove branch branch1
 -remove label label1
@@ -54,7 +54,7 @@ print trace 99
 
 -pwd
 
--set loop 99 r 99
+-set loop - 99 99
 -set time test.xc:12 ns 99
 -set time label1 cycles 99
 -set time 0x1000 cycles 99
@@ -63,18 +63,17 @@ print trace 99
 -source invalid.txt
 status
 
-summary simple
-summary complete
-summary complete_loops
-summary complete_blocks
-summary complete_instructions
-summary unresolved
-summary unresolved_loops
-summary unresolved_blocks
-summary unresolved_instructions
-summary functions
-summary sources
-summary info 99
+print summary
+print completed_loops
+print completed_blocks
+print completed_instructions
+print unresolved
+print unresolved_loops
+print unresolved_blocks
+print unresolved_instructions
+print functions
+print sources
+print info 99
 
 unset time 0x10000
 version
