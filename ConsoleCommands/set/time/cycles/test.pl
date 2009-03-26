@@ -11,19 +11,20 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/cycles.log 2>&1
 }
 
 system("@ARGV " .
-       "set time 0x100c8 1000 cycles " .
+       "set time inst 1000 cycles " .
        "load $genDir/test.xe " .
-       "set time 0x100c8 1000 cycles " .
-       "list times " .
-       "unset time 0x100c8 " .
-       "list times " .
-       "set time 0x100c8 5000 cycles " .
-       "list times " .
+       "analyse function main " .
+       "set time inst 1000 cycles " .
+       "list knowns - " .
+       "unset time inst " .
+       "list knowns - " .
+       "set time inst 5000 cycles " .
+       "list knowns - " .
        "unset time x " .
        "unset time .dfbjdb " .
-       "list times " .
-       "unset time 0x100c8 " .
-       "list times " .
+       "list knowns - " .
+       "unset time inst " .
+       "list knowns - " .
        "analyse function main " .
        "exit > $genDir/cycles.txt 2>&1");
 

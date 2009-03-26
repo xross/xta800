@@ -42,11 +42,11 @@
       option: endpoints: Lists the endpoints
       option: allsrclabels: Lists all the possible locations for source labels
       option: allendpoints: Lists all the possible locations for endpoints
-      option: unknowns : Displays a list of the unknowns within the current analysis
+      option: unknowns <route id>: Displays a list of the unknowns for the given route
       option: functions: Lists the functions in the loaded application
       option: sources: Lists the source files
-      option: times: Lists the instructions which have had their times set
-      option: constraint <expression>: Displays the current constraint expression
+      option: knowns  <route id>: Displays a list of values which have been set for the given route
+      option: constraint: Displays the current constraint expression
   [-]load <xe file>: Loads the given xmos executable file
   [-]print <option> <arg0> <arg1>...: Display analysis information
       option: summary: Show routes summary

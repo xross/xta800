@@ -5,6 +5,6 @@ add label 0x1000 one
 add label 0x10002 one
 add label 0x10004 one
 set time one 100 ns
-list times
+list knowns -
 unset time one
 add label 0x10000 0x10000

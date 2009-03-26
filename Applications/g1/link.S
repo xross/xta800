@@ -31,6 +31,8 @@
 // r10   scratch
 // r11   scratch
 //
+.align 4
+.skip 2
 .text
 hda_io:
   entsp    16

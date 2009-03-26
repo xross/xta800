@@ -1,4 +1,4 @@
-Time taken for instruction (0x10004: in (2r) r0, res[r0]) is unknown
+Time taken for instruction (0x10004: in (2r)) is unknown
 none
 Route(0) function: main
 Complete [1 path]
@@ -10,7 +10,7 @@ Complete [1 path]
 * 0.0: (20.0ns) 0x10004 main + 0               in (2r)      r0, res[r0] (P)
   20.0: (20.0ns) 0x10006 main + 2               retsp (u6)   i 0x0
 none
-- pc: 0x10004, 100.0ns, 5 cycles
+Time for instruction (0x10004: in (2r)) set to 100.0ns
 Route(0) function: main
 Complete [1 path]
     path(0)    : 120.0ns
