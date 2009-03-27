@@ -326,13 +326,28 @@ public class LoopAttachment {
 		
 	}
 
-	public long getLoopMax() {
-		
+	public long getLoopMax(PathBasicBlock loop) throws Exception {
+		/*
 		if(getParent()!= null){
 			return getParent().m_maxIterations;
 		} else {
 			return 0;
 		}
+		*/
+		
+		assert(loop != null);
+		LoopAttachment la = findLoop(loop);
+		if(la!= null){
+				if(la.m_softIterations!= null){
+					return la.getParent().m_maxIterations;
+				} else {
+					throw new Exception();
+				}
+		} else {
+			//loop not found
+			throw new Exception();
+		}
+		
 	}
 
 	public LoopIterationsUnknown getLoopUnknown(){
