@@ -1,20 +1,20 @@
 Route\(0\) function: main
 Complete \[1 path\]
-    path\(\d+\) +: \d+\.\d+ns
+  \* path\(\d+\) +: \d+\.\d+ns
         loop \[15 paths, 0 iterations\]
-            path\(\d+\) +: \d+\.\d+ns
-            path\(\d+\) +: \d+\.\d+ns
-            path\(\d+\) +: \d+\.\d+ns
-            path\(\d+\) +: \d+\.\d+ns
-            path\(\d+\) +: \d+\.\d+ns
-            path\(\d+\) +: \d+\.\d+ns
-            path\(\d+\) +: \d+\.\d+ns
-            path\(\d+\) +: \d+\.\d+ns
-            path\(\d+\) +: \d+\.\d+ns
-            path\(\d+\) +: \d+\.\d+ns
-            path\(\d+\) +: \d+\.\d+ns
-            path\(\d+\) +: \d+\.\d+ns
-            path\(\d+\) +: \d+\.\d+ns
-            path\(\d+\) +: \d+\.\d+ns
-            path\(\d+\) +: \d+\.\d+ns
+          \* path\(\d+\) +: \d+\.\d+ns
+          \* path\(\d+\) +: \d+\.\d+ns
+          \* path\(\d+\) +: \d+\.\d+ns
+          \* path\(\d+\) +: \d+\.\d+ns
+          \* path\(\d+\) +: \d+\.\d+ns
+          \* path\(\d+\) +: \d+\.\d+ns
+          \* path\(\d+\) +: \d+\.\d+ns
+          \* path\(\d+\) +: \d+\.\d+ns
+          \* path\(\d+\) +: \d+\.\d+ns
+          \* path\(\d+\) +: \d+\.\d+ns
+          \* path\(\d+\) +: \d+\.\d+ns
+          \* path\(\d+\) +: \d+\.\d+ns
+          \* path\(\d+\) +: \d+\.\d+ns
+          \* path\(\d+\) +: \d+\.\d+ns
+          \* path\(\d+\) +: \d+\.\d+ns
 

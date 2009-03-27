@@ -1,10 +1,10 @@
 Route\(0\) function: loop
 Complete \[1 path\]
-  * path\(\d+\) +: \d+\.\d+ns
+  \* path\(\d+\) +: \d+\.\d+ns
         loop \[1 path, 0 iterations\]
-          * path\(\d+\) +: \d+\.\d+ns
+          \* path\(\d+\) +: \d+\.\d+ns
                 loop \[1 path, 0 iterations\]
-                  * path\(\d+\) +: \d+\.\d+ns
+                  \* path\(\d+\) +: \d+\.\d+ns
 
 Route\(0\) function: loop
 Complete \[1 path\]
