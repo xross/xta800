@@ -1,5 +1,6 @@
 package com.xmos.xta.rcp.dialogs;
 
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -11,22 +12,31 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
-
-import com.xmos.xta.rcp.nodes.PathNode;
+import com.xmos.xta.engine.PathBasicBlock;
+import com.xmos.xta.rcp.XtaEngine;
 
 public class Iterations extends XtaDialog {
 	
 	private long m_numIterations;
+	private int m_routeId;
 	
-    PathNode m_pathNode;
 	
-    public Iterations(Shell parent, final PathNode pathNode) {
+	PathBasicBlock m_tail;
+	
+    public Iterations(Shell parent, final PathBasicBlock tail, int routeId) {
     	super(parent);
-    	m_pathNode = pathNode;
-    	m_numIterations = pathNode.getHardNumIterations();
+    	m_routeId = routeId;
+    	
+    	m_tail = tail;
+    	
+    	try {
+			m_numIterations = m_tail.getPathBlocks().get(0).getloops().getHardLoopIterations(m_tail);
+		} catch (Exception e) {
+			m_numIterations = 0;
+		}
     	open();
     }
-
+    
     protected void configureShell(Shell newShell) {
     	super.configureShell(newShell);
     	configureShell(newShell, "Iterations", 300, 150);
@@ -39,7 +49,7 @@ public class Iterations extends XtaDialog {
 	    gridLayout.numColumns = 3;
 	    container.setLayout(gridLayout);
 
-		createNumIterationsControl(container, m_pathNode);
+		createNumIterationsControl(container);
 
     	return container;
     }
@@ -51,7 +61,7 @@ public class Iterations extends XtaDialog {
         label.setText(str);
 	}
 
-    private void createNumIterationsControl(Composite parent, final PathNode pathNode) {
+    private void createNumIterationsControl(Composite parent) {
 		createControlLabel(parent, "Num Iterations:");
 		final Spinner spinner = new Spinner(parent, SWT.BORDER);
 		spinner.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
@@ -79,7 +89,7 @@ public class Iterations extends XtaDialog {
     
     protected void buttonPressed(int id) {
     	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {
-			m_pathNode.setIterations(m_numIterations);
+    		XtaEngine.getEngine().setLoopIterations(m_routeId, m_tail.getPathId(), m_numIterations);
     	}
     	super.buttonPressed(id);
     }

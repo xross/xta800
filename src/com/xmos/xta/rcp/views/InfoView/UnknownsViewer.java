@@ -32,15 +32,19 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.unknowns.LoopIterationsUnknown;
+import com.xmos.xta.engine.unknowns.PausableInstructionUnknown;
 import com.xmos.xta.engine.unknowns.Unknown;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaRouteInfo;
 import com.xmos.xta.rcp.dialogs.InstructionTime;
+import com.xmos.xta.rcp.dialogs.Iterations;
 import com.xmos.xta.rcp.nodes.Node;
 
 public class UnknownsViewer {
@@ -50,6 +54,7 @@ public class UnknownsViewer {
 	
 	List<Reference> m_selectedCodeRefs;
 	Action m_setInstructionTimeAction;
+	Action m_setLoopIterationsAction;
 
 	public UnknownsViewer(Display display, Composite parent, IWorkbenchPartSite site, TabFolder folders) {
 		m_display = display;
@@ -164,8 +169,11 @@ public class UnknownsViewer {
 			}
 		}
 	}
-
+ PathBasicBlock selectedLoopBlock;
 	private void setupMouseListeners(IWorkbenchPartSite site, final Composite parent) {
+		
+		
+		
 		m_unknownsViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				if (m_selectedCodeRefs.size() == 1) {
@@ -178,10 +186,11 @@ public class UnknownsViewer {
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection selection = event.getSelection();
 
-				boolean enabled = ((IStructuredSelection) selection).size() > 0;
-				m_setInstructionTimeAction.setEnabled(enabled);
-
 				m_selectedCodeRefs.clear();
+				
+				ArrayList<Reference> m_selectedTimeRefs = new ArrayList<Reference>();
+				ArrayList<Reference> m_selectedLoopRefs = new ArrayList<Reference>();
+				
 				for (Object object : ((IStructuredSelection) selection).toList()) {
 					Unknown unknown = (Unknown)object;
 					
@@ -189,11 +198,30 @@ public class UnknownsViewer {
 						continue;
 					
 					Reference ref = ReferenceFactory.createReference(
-							"0x" + Integer.toHexString(unknown.getPc()), ReferenceClass.ENDPOINT_REF);
-					Engine engine = XtaEngine.getEngine();
-					ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
-					m_selectedCodeRefs.add(ref);
+								"0x" + Integer.toHexString(unknown.getPc()), ReferenceClass.ENDPOINT_REF);
+						Engine engine = XtaEngine.getEngine();
+						ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
+					if(unknown.getType().equals(PausableInstructionUnknown.class.getName())){
+						m_selectedTimeRefs.add(ref);
+					} else if(unknown.getType().equals(LoopIterationsUnknown.class.getName())){
+						m_selectedLoopRefs.add(ref);
+						LoopIterationsUnknown loop = (LoopIterationsUnknown)unknown;
+						selectedLoopBlock = loop.getTail();
+					} else {
+						assert(false);
+					}
 				}
+				
+				m_setLoopIterationsAction.setEnabled(false);
+				m_setInstructionTimeAction.setEnabled(false);
+				if(m_selectedTimeRefs.size() == 0 && m_selectedLoopRefs.size() == 1){
+					m_selectedCodeRefs.addAll(m_selectedLoopRefs);
+					m_setLoopIterationsAction.setEnabled(true);
+				} else if(m_selectedTimeRefs.size() > 0 && m_selectedLoopRefs.size() == 0){
+					m_selectedCodeRefs.addAll(m_selectedTimeRefs);
+					m_setInstructionTimeAction.setEnabled(true);
+				} 
+				
 			}			
 		});
 		
@@ -214,6 +242,17 @@ public class UnknownsViewer {
 		m_setInstructionTimeAction.setText("Set instruction time");
 		menuMgr.add(m_setInstructionTimeAction);
 		m_setInstructionTimeAction.setEnabled(false);
+		
+		
+		m_setLoopIterationsAction = new Action() { 
+			public void run() {
+				Route route = XtaNotifier.getInstance().getSelectedRoute();
+     			new Iterations(parent.getShell(), selectedLoopBlock, route.getRouteId() );
+			}
+		}; 
+		m_setLoopIterationsAction.setText("Set iterations");
+		menuMgr.add(m_setLoopIterationsAction);
+		m_setLoopIterationsAction.setEnabled(false);
 		
 		// required, for extensions
 		menuMgr.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));

@@ -10,8 +10,8 @@ import java.util.TreeSet;
 
 import com.xmos.xta.engine.Engine.RouteDescription;
 import com.xmos.xta.engine.Status.BlockStatus;
-import com.xmos.xta.engine.unknowns.InstructionUnknown;
-import com.xmos.xta.engine.unknowns.LoopUnknown;
+import com.xmos.xta.engine.unknowns.PausableInstructionUnknown;
+import com.xmos.xta.engine.unknowns.LoopIterationsUnknown;
 import com.xmos.xta.engine.unknowns.Unknowns;
 
 @SuppressWarnings("serial")
@@ -245,12 +245,12 @@ public class Route {
 	private void addPathPcs(PathBasicBlock completedBlock) {
 		for (PathBasicBlock pathBlock : completedBlock.getPathBlocks()) {
 			m_pcsHit.addAll(pathBlock.getPcsCoveredThis());
-			for(LoopUnknown loopUnknown : pathBlock.getloops().getUnknowns()){
+			for(LoopIterationsUnknown loopUnknown : pathBlock.getloops().getUnknowns()){
 				m_unknowns.addUnknown(loopUnknown);
 			}
 			for (XtaInstruction instruction : pathBlock.getInstructionTrimmed()) {
 				if (instruction.canPause()) {
-					m_unknowns.addUnknown(new InstructionUnknown(instruction));
+					m_unknowns.addUnknown(new PausableInstructionUnknown(instruction));
 				}
 			}
 			

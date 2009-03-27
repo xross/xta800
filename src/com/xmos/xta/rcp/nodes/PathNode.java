@@ -123,7 +123,7 @@ public class PathNode extends Node {
 		    manager.add(new Separator());
     	    manager.add(new Action("Set iterations") {
 			    public void run() {
-				    new Iterations(parent, m_this);
+				    new Iterations(parent, m_block, getRouteId());
 			    }
 		    });
     	}

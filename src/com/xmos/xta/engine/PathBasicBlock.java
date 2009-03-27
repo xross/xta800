@@ -487,7 +487,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 * returns the number of shown and not set Unknowns on the basic block
 	 */
 	public int getNumUnknownsThis() {
-		int count = 0;
+		int count = getloops().getUnknowns().size();
 		for(XtaInstruction inst : getInstructionStream()){
 			if (inst.isUnknown()) count++;
 		}

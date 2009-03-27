@@ -51,7 +51,7 @@ public class XtaRulerAnnotationHover implements IAnnotationHover {
 
 		HashSet<Unknown> unknowns = m_editor.getUnknownsForLine(lineNumber);
 		for (Unknown unknown : unknowns) {
-			warning += unknown.getDescription();
+			warning += unknown.getDescription() + "\n";
 		}
 		
 		return warning;

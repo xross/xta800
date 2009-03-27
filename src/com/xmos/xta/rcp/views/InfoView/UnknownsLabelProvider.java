@@ -38,7 +38,7 @@ public class UnknownsLabelProvider extends LabelProvider implements ITableLabelP
 		if (m_columnNames[columnIndex].equals(BLOCKID)) {
 			return "Block " + unknown.getBasicBlockId();
 		} else if (m_columnNames[columnIndex].equals(PC)) {
-			return String.format("0x%08x", unknown.getPc());
+			return String.format("0x%05x", unknown.getPc());
     	} else if (m_columnNames[columnIndex].equals(REASON)) {    		
 		    return unknown.getDescription();
 	    }		

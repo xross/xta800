@@ -2,13 +2,13 @@ package com.xmos.xta.engine.unknowns;
 
 import com.xmos.xta.engine.PathBasicBlock;
 
-public class LoopUnknown extends Unknown {		
+public class LoopIterationsUnknown extends Unknown {		
 
 	private PathBasicBlock m_header;
 	private PathBasicBlock m_tail;
 	private long m_iterations;
 	
-	public LoopUnknown(PathBasicBlock header, PathBasicBlock tail) {
+	public LoopIterationsUnknown(PathBasicBlock header, PathBasicBlock tail) {
 		m_header = header;
 		m_tail = tail;
 	}
@@ -23,9 +23,9 @@ public class LoopUnknown extends Unknown {
 	
 	public String getDescription() {
 		if (isUnknown()) {
-			return String.format("Loop iterations on loop path " + m_tail.getPathId() + " is  unknown\n");
+			return String.format("Loop iterations on loop path " + m_tail.getPathId() + " is  unknown");
 		} else {
-			return String.format("Loop iterations on loop path " + m_tail.getPathId() + " is set to " +m_iterations + "\n");
+			return String.format("Loop iterations on loop path " + m_tail.getPathId() + " is set to " +m_iterations );
 		}
 	}
 
@@ -39,13 +39,17 @@ public class LoopUnknown extends Unknown {
 	}
 	
 	public int compareTo(Unknown unknown) {
-		if (unknown instanceof LoopUnknown) {
-			if (m_tail == ((LoopUnknown)unknown).m_tail)
+		if (unknown instanceof LoopIterationsUnknown) {
+			if (m_tail == ((LoopIterationsUnknown)unknown).m_tail)
 				return 0;
 			else
 				return 1;
 		} else {
 			return -1;
 		}
+	}
+
+	public PathBasicBlock getTail() {
+		return m_tail;
 	}
 }

@@ -391,6 +391,7 @@ public class Engine {
 			if (hit) {
 				invalidateRouteStats();
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
+				notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			}
 			return hit;
 		}
@@ -404,6 +405,7 @@ public class Engine {
 			if (hit) {
 				invalidateRouteStats();
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
+				notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			}
 			return hit;
 		}
@@ -417,6 +419,7 @@ public class Engine {
 			if (hit) {
 				invalidateRouteStats();
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
+				notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			}
 			return hit;
 		}

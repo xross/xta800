@@ -60,7 +60,7 @@ public class Unknowns extends Command {
 		if (route != null) {
 			HashSet<Unknown> unknowns = route.getUnknowns().getUnknowns();		
 			for (Unknown unknown : unknowns) {
-			    console.display(unknown.getDescription());
+			    console.display(unknown.getDescription() + "\n");
 			    found = true;
 			}			
 		}

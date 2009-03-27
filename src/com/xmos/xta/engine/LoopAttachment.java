@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import com.xmos.xta.engine.unknowns.LoopUnknown;
+import com.xmos.xta.engine.unknowns.LoopIterationsUnknown;
 
 public class LoopAttachment {
 
@@ -140,7 +140,29 @@ public class LoopAttachment {
 	 * this gets the total loop iterations for a given loop 
 	 */
 	public long getLoopIterations(PathBasicBlock loop) throws Exception{
-		return getHardLoopIterations(loop) + getSoftLoopIterations(loop); 
+		
+		long soft = 0;
+		long hard = 0;
+		
+		boolean softError = false;
+		boolean hardError = false;
+		
+		try {
+			hard = getHardLoopIterations(loop);
+		} catch (Exception e) {
+			hardError = true;
+		}
+		
+		try {
+			soft = getSoftLoopIterations(loop);
+		} catch (Exception e) {
+			softError = true;
+		}
+		
+		if(softError && hardError){
+			throw new Exception();
+		}
+		return soft + hard; 
 	}
 	
 	public boolean isAbsolute(PathBasicBlock loop) throws Exception {
@@ -310,22 +332,22 @@ public class LoopAttachment {
 		}
 	}
 
-	public LoopUnknown getLoopUnknown(){
+	public LoopIterationsUnknown getLoopUnknown(){
 		
 		if(m_hardIterations == null && m_softIterations == null){
-			return new LoopUnknown(m_loop.getPathBlocks().get(0),m_loop);
+			return new LoopIterationsUnknown(m_loop.getPathBlocks().get(0),m_loop);
 		}
 		
 		return null;
 	}
 	
-	public LinkedList<LoopUnknown> getUnknowns() {
-		LinkedList<LoopUnknown> unknowns = new LinkedList<LoopUnknown>();
+	public LinkedList<LoopIterationsUnknown> getUnknowns() {
+		LinkedList<LoopIterationsUnknown> unknowns = new LinkedList<LoopIterationsUnknown>();
 		for(LoopAttachment la : m_subLoops){
 			unknowns.addAll(la.getUnknowns());
 			if(la.getUnknowns() != null){
 				
-				LoopUnknown lu = la.getLoopUnknown();
+				LoopIterationsUnknown lu = la.getLoopUnknown();
 				if(lu != null){
 					unknowns.add(lu);
 				}

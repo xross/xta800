@@ -40,7 +40,7 @@ import com.xmos.xta.rcp.dialogs.InstructionTime;
 
 public class SetValuesViewer {
 
-	private TableViewer m_setTimesViewer;
+	private TableViewer m_resolvedUnknownsViewer;
 	List<Reference> m_selectedCodeRefs;
 	Action m_setInstructionTimeAction;
 	Action m_clearInstructionTimesAction;
@@ -52,13 +52,13 @@ public class SetValuesViewer {
 		tab.setText("Set values");
 		Composite composite = new Composite(folders, SWT.NONE);
 		composite.setLayout(new FillLayout());
-		m_setTimesViewer = new TableViewer(composite);
+		m_resolvedUnknownsViewer = new TableViewer(composite);
 		tab.setControl(composite);
 
 		final SetTimesSorter setTimesSorter = new SetTimesSorter();
-		m_setTimesViewer.setSorter(setTimesSorter);
+		m_resolvedUnknownsViewer.setSorter(setTimesSorter);
 
-		Table table = m_setTimesViewer.getTable();
+		Table table = m_resolvedUnknownsViewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
@@ -71,9 +71,9 @@ public class SetValuesViewer {
 			tableColumn.setText(labelProvider.getColumnNames()[i]);
 			tableColumn.setWidth(labelProvider.getColumnWidths()[i]);
 		}
-		m_setTimesViewer.setContentProvider(contentProvider);
-		m_setTimesViewer.setLabelProvider(labelProvider);
-		for (final TableColumn col : m_setTimesViewer.getTable().getColumns()) {
+		m_resolvedUnknownsViewer.setContentProvider(contentProvider);
+		m_resolvedUnknownsViewer.setLabelProvider(labelProvider);
+		for (final TableColumn col : m_resolvedUnknownsViewer.getTable().getColumns()) {
 			col.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
 					int colIndex = 0;
@@ -84,7 +84,7 @@ public class SetValuesViewer {
 					}
 					
 					setTimesSorter.setColoumn(colIndex);
-					m_setTimesViewer.refresh();
+					m_resolvedUnknownsViewer.refresh();
 				}
 			});
 		}
@@ -92,16 +92,16 @@ public class SetValuesViewer {
 	}
 
 	public void clear() {
-		m_setTimesViewer.setInput(null);
+		m_resolvedUnknownsViewer.setInput(null);
 	}
 
 	public void update() {
 		Route route = XtaNotifier.getInstance().getSelectedRoute();
-		m_setTimesViewer.setInput(route);
+		m_resolvedUnknownsViewer.setInput(route);
 	}
 
 	private void setupMouseListeners(IWorkbenchPartSite site, final Composite parent) {
-		m_setTimesViewer.addDoubleClickListener(new IDoubleClickListener() {
+		m_resolvedUnknownsViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				if (m_selectedCodeRefs.size() == 1) {
 					XtaNotifier.getInstance().notifyShow(m_selectedCodeRefs.get(0));
@@ -109,7 +109,7 @@ public class SetValuesViewer {
 			}
 		});
 		
-		m_setTimesViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		m_resolvedUnknownsViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection selection = event.getSelection();
 				Engine engine = XtaEngine.getEngine();
@@ -133,9 +133,9 @@ public class SetValuesViewer {
 		// Create the context menu
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(false);
-		Menu menu = menuMgr.createContextMenu(m_setTimesViewer.getControl());
-		m_setTimesViewer.getControl().setMenu(menu);
-		site.registerContextMenu(menuMgr, m_setTimesViewer);
+		Menu menu = menuMgr.createContextMenu(m_resolvedUnknownsViewer.getControl());
+		m_resolvedUnknownsViewer.getControl().setMenu(menu);
+		site.registerContextMenu(menuMgr, m_resolvedUnknownsViewer);
 		
 		// Create the action
 		m_clearInstructionTimesAction = new Action() { 

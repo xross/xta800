@@ -58,7 +58,7 @@ public class Unknowns {
 
 	public boolean isUnknownInstructionTime(int pc) {
 		for (Unknown unknown : m_unknowns) {
-			if ((unknown instanceof InstructionUnknown) && (unknown.getPc() == pc))
+			if ((unknown instanceof PausableInstructionUnknown) && (unknown.getPc() == pc))
 				return unknown.isUnknown();
 		}
 		return false;
@@ -67,7 +67,7 @@ public class Unknowns {
 	public HashSet<Unknown> getUnknownInstructionTimes() {
 		HashSet<Unknown> all = new HashSet<Unknown>();
 		for (Unknown unknown : m_unknowns) {
-			if (unknown.isUnknown() && (unknown instanceof InstructionUnknown))
+			if (unknown.isUnknown() && (unknown instanceof PausableInstructionUnknown))
 				all.add(unknown);
 		}
 		return all;
