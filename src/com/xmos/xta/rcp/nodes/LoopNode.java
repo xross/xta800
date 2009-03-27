@@ -143,7 +143,12 @@ public class LoopNode extends Node {
 	}
 	
 	public long getLoopMax(){
-		return m_block.getloops().getLoopMax();
+		PathBasicBlock parent = m_block.getPathBlocks().get(0);
+		try {
+			return parent.getloops().getLoopMax(m_block);
+		} catch (Exception e) {
+			return 0;
+		}
 	}
 	
 	public void setLoopMax(long count){

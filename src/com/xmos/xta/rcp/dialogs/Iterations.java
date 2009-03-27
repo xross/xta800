@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
+
+import com.xmos.xta.engine.LoopAttachment;
 import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.rcp.XtaEngine;
 
@@ -22,15 +24,16 @@ public class Iterations extends XtaDialog {
 	
 	
 	PathBasicBlock m_tail;
+	PathBasicBlock m_header;
 	
     public Iterations(Shell parent, final PathBasicBlock tail, int routeId) {
     	super(parent);
     	m_routeId = routeId;
     	
     	m_tail = tail;
-    	
+    	m_header = m_tail.getPathBlocks().get(0);
     	try {
-			m_numIterations = m_tail.getPathBlocks().get(0).getloops().getHardLoopIterations(m_tail);
+			m_numIterations = m_header.getloops().getHardLoopIterations(m_tail);
 		} catch (Exception e) {
 			m_numIterations = 0;
 		}
@@ -68,7 +71,26 @@ public class Iterations extends XtaDialog {
 				true, false, 2, 1));
 		spinner.setMinimum(0);
 		
-		spinner.setMaximum(Integer.MAX_VALUE);
+		long total = 0;
+		for(LoopAttachment loop : m_header.getloops().getSubLoops()){
+			try {
+				if(loop.getLoop() != m_tail)
+					total+=m_header.getloops().getHardLoopIterations(loop.getLoop());
+			} catch (Exception e1) {
+			}
+		}
+		long loopmax;
+		try {
+			loopmax = m_header.getloops().getLoopMax(m_tail);
+		} catch (Exception e1) {
+			loopmax = 0;
+		}
+		if(loopmax - total == 0){
+			spinner.setEnabled(false);
+		} else {
+			spinner.setEnabled(true);
+		}
+		spinner.setMaximum((int) (loopmax - total));
 		
 		spinner.setSelection((int) m_numIterations);
 		spinner.setIncrement(1);
