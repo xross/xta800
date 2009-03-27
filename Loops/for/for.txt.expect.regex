@@ -1,0 +1,8 @@
+Label: label1, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 12
+Label: label2, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 16
+pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 1 - 2
+pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 5 - 6
+pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 9 - 11
+pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 13 - 13
+pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 17 - 17
+pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 19 - 19
