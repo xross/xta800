@@ -4,20 +4,23 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.engine.references.ReferenceFactory;
+import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 
 public class LoopMax extends Command {	
-	private int m_pc;
+	private String m_refString;
 	private int m_iterations;
 	private int m_routeId;
 	
 	public LoopMax() {
-		m_pc = 0;
+		m_refString = "";
 		m_iterations = 0;
 		m_routeId = 0;
 	}
 	
-	public LoopMax(int routeId, int pc, int iterations) {
-		m_pc = pc;
+	public LoopMax(int routeId, String refString, int iterations) {
+		m_refString = refString;
 		m_iterations = iterations;
 		m_routeId = routeId;
 	}
@@ -31,14 +34,14 @@ public class LoopMax extends Command {
     }        
 
     public String commandLine() {
-    	return "loopmax 0x" + 
-    	    Integer.toHexString(m_pc) + " " + 
-    	    getRouteId(m_routeId) + " " + 
+    	return "loopmax " + 
+    		getRouteId(m_routeId) + " " + 
+    		m_refString + " " + 
     	    m_iterations;
     }
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = "loopmax <pc> <routeId> <iterations>: Sets the maximum number of iterations for a loop containing the given pc";
+    	String descString = "loopmax <route id> <loop SRCLABEL_REF> <iterations>: Sets the maximum number of iterations for a loop identified";
     	return descString;
     }
 
@@ -46,38 +49,36 @@ public class LoopMax extends Command {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 
-    	int pc;
-    	String number = args[index + 1];
-    	if(number.startsWith("0x")){
-    		number = number.substring(2, number.length());
-    	}
-    	try { pc = Integer.parseInt(number, 16); }
-	    catch (NumberFormatException e) {
-	        return null;
-	    } 
 	    int routeId;
-    	try { routeId = getRouteId(args[index + 2]); }
+    	try { routeId = getRouteId(args[index + 1]); }
 	    catch (NumberFormatException e) {
 	        return null;
 	    }	    	    
-    	int iterations;
+
+	    int iterations;
     	try { iterations = Integer.parseInt(args[index + 3]); }
 	    catch (NumberFormatException e) {
 	        return null;
 	    }    		  
 	    
-        return new LoopMax(routeId, pc, iterations);
+        return new LoopMax(routeId, args[index + 2], iterations);
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
-		if(engine.getRoute(m_routeId) == null){
+		if (engine.getRoute(m_routeId) == null){
 			console.display(String.format("Error: Failed to set loop iterations: no such route id: %d\n", m_routeId));   
 			return;
 		}
 
-		if (!engine.setLoopMax(m_routeId, m_pc, m_iterations)) {
+		Reference ref = ReferenceFactory.createReference(m_refString, ReferenceClass.SRCLABEL_REF);
+		if (!ref.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
+			console.display("Invalid code reference '" + m_refString + "'");
+			return;
+		}
+		
+		if (!engine.setLoopMax(m_routeId, ref.getPc(), m_iterations)) {
     		console.display(String.format("Error: Failed to set max loop iterations: route id: %d\n", m_routeId));    		
     	}
 

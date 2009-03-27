@@ -23,9 +23,9 @@ public class LoopIterationsUnknown extends Unknown {
 	
 	public String getDescription() {
 		if (isUnknown()) {
-			return String.format("Loop iterations on loop path " + m_tail.getPathId() + " is  unknown");
+			return String.format("Loop iterations on loop path " + m_tail.getPathId() + " is unknown");
 		} else {
-			return String.format("Loop iterations on loop path " + m_tail.getPathId() + " is set to " +m_iterations );
+			return String.format("Loop iterations on loop path " + m_tail.getPathId() + " is set to " + m_iterations);
 		}
 	}
 
