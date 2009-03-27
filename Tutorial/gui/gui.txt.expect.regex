@@ -4,10 +4,10 @@ Complete \[1 path\]
 
 Route\(\d+\) function: functionCalls
 Complete \[1 path\]
-    path\(\d+\) +: \d+\.\d+ns
+  \* path\(\d+\) +: \d+\.\d+ns
 
 Route\(\d+\) function: main
 Complete \[2 paths\]
-    path\(\d+\) +: \d+\.\d+ns
-    path\(\d+\) +: \d+\.\d+ns
+  \* path\(\d+\) +: \d+\.\d+ns
+  \* path\(\d+\) +: \d+\.\d+ns
 

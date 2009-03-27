@@ -193,7 +193,7 @@ static inline int deliver(int dataLength, unsigned buffer,
             value7 = bitrev(value7);
             
             //partout_timed(AUD_DOUT1,24,value,time);
-            #pragma xta endpoint deliverFinish
+            #pragma xta endpoint "deliverFinish"
             AUD_DOUT1 <: value;
             AUD_DOUT2 <: value3;
             AUD_DOUT3 <: value5;
@@ -404,7 +404,7 @@ void physical(chanend otherSide, out port p_aud_rst, port AUD_BCLK, port AUD_SCL
             AUD_LRCLK  when pinsneq(1) :> isLeft;
             AUD_LRCLK  when pinsneq(0) :> isLeft;
             AUD_LRCLK  when pinsneq(1) :> isLeft;
-            #pragma xta endpoint physicalStart
+            #pragma xta endpoint "physicalStart"
             AUD_LRCLK  when pinsneq(0) :> isLeft @ lrtime;
             
             lrtime += shift;
