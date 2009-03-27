@@ -33,6 +33,7 @@ import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.unknowns.PausableInstructionUnknown;
 import com.xmos.xta.engine.unknowns.Unknown;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaNotifier;
@@ -121,11 +122,16 @@ public class SetValuesViewer {
 				m_selectedCodeRefs.clear();
 				for (Object object : ((IStructuredSelection) selection).toList()) {
 					Unknown unknown = (Unknown)object;
-
-					Reference ref = ReferenceFactory.createReference(
-							"0x" + Integer.toHexString(unknown.getPc()), ReferenceClass.LABEL_REF);
-					ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
-					m_selectedCodeRefs.add(ref);
+					if(unknown.getType().equals(PausableInstructionUnknown.class.getName())){
+						Reference ref = ReferenceFactory.createReference(
+								"0x" + Integer.toHexString(unknown.getPc()), ReferenceClass.LABEL_REF);
+						ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
+						m_selectedCodeRefs.add(ref);
+						
+					} else {
+						m_clearInstructionTimesAction.setEnabled(false);
+						m_setInstructionTimeAction.setEnabled(false);
+					}
 				}
 			}			
 		});

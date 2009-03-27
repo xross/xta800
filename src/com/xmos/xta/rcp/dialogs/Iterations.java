@@ -68,7 +68,6 @@ public class Iterations extends XtaDialog {
 				true, false, 2, 1));
 		spinner.setMinimum(0);
 		
-		//TODO - fix this
 		spinner.setMaximum(Integer.MAX_VALUE);
 		
 		spinner.setSelection((int) m_numIterations);

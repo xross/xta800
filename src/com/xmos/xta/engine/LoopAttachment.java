@@ -317,6 +317,9 @@ public class LoopAttachment {
 						longestTime = loopTime;
 					}
 				}
+				for(LoopAttachment la : m_subLoops){
+					la.m_softIterations = new Long(0);
+				}
 				longestLoop.m_softIterations = new Long(remaining);
 			}
 		}
