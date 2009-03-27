@@ -79,7 +79,6 @@
       option: loopscope <route id> <path id> <scope>: Sets the scope of loop attached to a path
           scope: relative/r: Iteration number propagates to the enclosing path (Default)
           scope: absolute/a: Absolute number of iterations
-      option: looppath <pc> <routeId> <iterations>: Sets the number of iterations for a loop containing the given pc
       option: time <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc
           mode: ns:     Sets the time this instruction takes in ns
           mode: mhz:    Sets the time this instruction takes in mhz

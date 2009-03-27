@@ -5,8 +5,8 @@ Route\(0\) function: test
 Fail, Timing Unspecified
 Route\(0\) function: test
 Complete \[1 path\]
-    path\(\d+\) +: \d+\.\d+ns
+  * path\(\d+\) +: \d+\.\d+ns
         loop \[2 paths, 0 iterations\]
-            path\(\d+\) +: \d+\.\d+ns
-            path\(\d+\) +: \d+\.\d+ns
+          * path\(\d+\) +: \d+\.\d+ns
+          * path\(\d+\) +: \d+\.\d+ns
 
