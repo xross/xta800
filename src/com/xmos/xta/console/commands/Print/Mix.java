@@ -38,7 +38,7 @@ public class Mix extends Command {
         return "mix <route id> <path/block id>: Display annotated source file(s) + assembly instructions for the given path id";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 

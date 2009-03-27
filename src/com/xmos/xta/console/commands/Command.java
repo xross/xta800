@@ -25,7 +25,7 @@ public abstract class Command {
     public abstract String name();
     public abstract String commandLine();
     public abstract String description(Engine engine, boolean detailed);
-    public abstract Command clone(String[] args, int index, boolean commandLineMode);
+    public abstract Command clone(String[] args, int index);
     public abstract void execute(Shell shell, Engine engine, Console console);
 
 	public String toString(){

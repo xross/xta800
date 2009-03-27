@@ -26,7 +26,7 @@ public class AllEndpoints extends Command {
         return "allendpoints: Lists all the possible locations for endpoints";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
         return new AllEndpoints();
     }
     

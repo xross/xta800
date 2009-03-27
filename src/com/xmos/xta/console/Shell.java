@@ -104,7 +104,7 @@ public class Shell {
     
     private void processCommandLine(String[] args) {
 	    for (int i = 0; i < args.length; ++i) {
-	    	Command command = CommandFactory.buildCommand(args, i, m_commandHistory, m_console, true);
+	    	Command command = CommandFactory.buildCommand(args, i, m_commandHistory, m_console);
 	    	if (command == null) {
 	    		usage();
 	    	}
@@ -158,7 +158,7 @@ public class Shell {
 
                 tokens = s.toArray(tokens);
                 boolean isPingCommand = CommandFactory.isPingCommand(tokens[0]);
-                command = CommandFactory.buildCommand(tokens, 0, m_commandHistory, m_console, false);
+                command = CommandFactory.buildCommand(tokens, 0, m_commandHistory, m_console);
 
                 // Check command is valid and has consumed entire line
                 boolean invalidCommand = false;

@@ -16,7 +16,7 @@ public class CompleteBlocks extends Command {
     	return "completed_blocks: Show timing of complete paths + loops + blocks";
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
    		return new CompleteBlocks();
     }
     

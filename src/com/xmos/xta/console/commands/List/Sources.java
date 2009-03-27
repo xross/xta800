@@ -27,7 +27,7 @@ public class Sources extends Command {
         return "sources: Lists the source files";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
         return new Sources();
     }
     

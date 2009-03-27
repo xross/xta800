@@ -49,14 +49,14 @@ public abstract class CommandContainer extends Command {
     	return descString;
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
 		if ((index + 1) >= args.length) 
 			return null;		
 
     	String arg = args[index + 1];    	
     	for (Command option : getSubCommands()) {
     		if (arg.equals(option.name())) {
-    			Command opt = option.clone(args, index + 1, commandLineMode);
+    			Command opt = option.clone(args, index + 1);
     			if (opt == null)
     				return null;
     			

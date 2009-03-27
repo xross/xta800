@@ -94,7 +94,7 @@ public class Branch extends Command {
     	}    		
 	}
 
-	public Command clone(String[] args, int index, boolean commandLineMode) {
+	public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length)
 			return null;
 				

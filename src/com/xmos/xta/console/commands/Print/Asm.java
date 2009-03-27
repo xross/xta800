@@ -38,7 +38,7 @@ public class Asm extends Command {
         return "asm <route id> <path/block id>: Display annotated assembly for given path id";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
     	

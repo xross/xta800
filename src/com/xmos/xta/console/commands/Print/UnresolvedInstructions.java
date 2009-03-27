@@ -16,7 +16,7 @@ public class UnresolvedInstructions extends Command {
     	return "unresolved_instructions: Show timing of complete paths + loops + blocks + instructions";
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
    		return new UnresolvedInstructions();
     }
     

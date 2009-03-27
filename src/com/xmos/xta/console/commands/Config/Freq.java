@@ -33,7 +33,7 @@ public class Freq extends Command {
         		engine.getFrequency());      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 

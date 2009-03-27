@@ -26,7 +26,7 @@ public class AllSrcLabels extends Command {
         return "allsrclabels: Lists all the possible locations for source labels";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
         return new AllSrcLabels();
     }
     

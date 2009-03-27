@@ -29,7 +29,7 @@ public class Functions extends Command {
         return "functions: Lists the functions in the loaded application";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
         return new Functions();
     }
     

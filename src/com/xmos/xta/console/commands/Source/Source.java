@@ -42,7 +42,7 @@ public class Source extends Command {
         return "source <file name>: Sources the given command file";      	
     }
     
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 
@@ -64,7 +64,7 @@ public class Source extends Command {
                         
                     	if (!tokens[0].startsWith("#")) {
                             Command command = CommandFactory.buildCommand(
-                            		tokens, 0, shell.getCommandHistory(), console, false);
+                            		tokens, 0, shell.getCommandHistory(), console);
                             
                             boolean invalidCommand = false;
                             if (command != null) {

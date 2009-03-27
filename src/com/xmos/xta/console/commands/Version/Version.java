@@ -33,7 +33,7 @@ public class Version extends Command {
         return "version: Displays the version information";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
     	return new Version();
     }
     

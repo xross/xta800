@@ -36,7 +36,7 @@ public class Knowns extends Command {
         return "knowns  <route id>: Displays a list of values which have been set for the given route";
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length)
 			return null;
 

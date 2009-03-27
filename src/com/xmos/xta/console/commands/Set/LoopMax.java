@@ -33,7 +33,7 @@ public class LoopMax extends Command {
     public String commandLine() {
     	return "loopmax 0x" + 
     	    Integer.toHexString(m_pc) + " " + 
-    	    m_routeId + " " + 
+    	    getRouteId(m_routeId) + " " + 
     	    m_iterations;
     }
     
@@ -42,7 +42,7 @@ public class LoopMax extends Command {
     	return descString;
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 
@@ -56,7 +56,7 @@ public class LoopMax extends Command {
 	        return null;
 	    } 
 	    int routeId;
-    	try { routeId = Integer.parseInt(args[index + 2]); }
+    	try { routeId = getRouteId(args[index + 2]); }
 	    catch (NumberFormatException e) {
 	        return null;
 	    }	    	    

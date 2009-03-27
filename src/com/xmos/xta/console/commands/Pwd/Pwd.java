@@ -25,7 +25,7 @@ public class Pwd extends Command {
         return "pwd: Displays the current working directory";
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
         return new Pwd();
     }
     

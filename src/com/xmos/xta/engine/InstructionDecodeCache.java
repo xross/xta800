@@ -71,7 +71,7 @@ public class InstructionDecodeCache {
 			}
 			
 			engine.notify(Notifier.NOTIFY_ERROR, 
-					String.format("Instruction at PC: 0x%08x cannot pause", pc));			
+					String.format("Instruction at PC: 0x%x cannot pause", pc));			
             return false;
 		}
 		engine.notify(Notifier.NOTIFY_ERROR, 
@@ -99,7 +99,7 @@ public class InstructionDecodeCache {
 			}
 			
 			engine.notify(Notifier.NOTIFY_ERROR, 
-					String.format("Instruction at PC: 0x%05x cannot pause", pc));						
+					String.format("Instruction at PC: 0x%x cannot pause", pc));						
             return true;
 		}
 		engine.notify(Notifier.NOTIFY_ERROR, 

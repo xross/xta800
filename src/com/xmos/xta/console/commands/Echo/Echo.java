@@ -31,7 +31,7 @@ public class Echo extends Command {
         return "echo \"text\": prints the text to the console";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
     	if ((index + numArgs()) >= args.length) 
 			return null;
     	

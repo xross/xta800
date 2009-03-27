@@ -18,7 +18,7 @@ public class Summary extends Command {
     	return "summary: Show routes summary";
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
    		return new Summary();
     }
     

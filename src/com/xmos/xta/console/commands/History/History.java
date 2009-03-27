@@ -25,7 +25,7 @@ public class History extends Command {
         return "history: Displays the command history";      	
     }
 
-    public Command clone(String[] args, int index, boolean commandLineMode) {
+    public Command clone(String[] args, int index) {
         return new History();
     }
     
