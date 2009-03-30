@@ -460,9 +460,10 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	    new HashMap<Annotation, Position>();		
 		
         if (m_selectedNode != null) {
-        	if (DEBUG) System.out.println("XtaEditor: found " + m_selectedNode.getPcsCovered().size() + " highlights");
+        	HashSet<Integer> pcsCovered = m_selectedNode.getPcsCovered(true);
+			if (DEBUG) System.out.println("XtaEditor: found " + pcsCovered.size() + " highlights");
 			
-        	for (Integer pc : m_selectedNode.getPcsCovered()) {
+        	for (Integer pc : pcsCovered) {
 				updateAnnotations(pc, HighlightAnnotationID, annotations, annotationPositions, false, getInput().getPcsToLines());
 			}
 			

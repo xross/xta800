@@ -67,7 +67,7 @@ public class RouteNode extends Node {
 	}
     	
     
-    public HashSet<Integer> getPcsCovered() {
+    public HashSet<Integer> getPcsCovered(boolean isSelected) {
     	return new HashSet<Integer>();
     }
 

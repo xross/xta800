@@ -49,7 +49,7 @@ public abstract class Node implements Comparable<Node> {
     public abstract boolean isRouteNode();
     public abstract long getNumIterations();
     public abstract Vector<XtaInstruction> getInstructions();
-    public abstract HashSet<Integer> getPcsCovered();
+    public abstract HashSet<Integer> getPcsCovered(boolean isSelected);
     public abstract void createContextMenu(final Shell parent, IMenuManager manager);
 	public abstract void getFnopPcs(Vector<XtaInstruction> fnops);
 	public abstract void getBlockIds(HashSet<Integer> ids);
@@ -87,8 +87,8 @@ public abstract class Node implements Comparable<Node> {
 
 	public HashSet<Integer> getCoverage() {
 		HashSet<Integer> covered = new HashSet<Integer>();
-		covered.addAll(getPcsCovered());
-		for(Node node : m_nodes){
+		covered.addAll(getPcsCovered(true));
+		for (Node node : m_nodes){
 			covered.addAll(node.getCoverage());
 		}
 		return covered;

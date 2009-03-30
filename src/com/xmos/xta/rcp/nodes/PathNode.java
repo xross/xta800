@@ -91,11 +91,11 @@ public class PathNode extends Node {
         return "path";
     }   
     
-    public HashSet<Integer> getPcsCovered() {
+    public HashSet<Integer> getPcsCovered(boolean isSelected) {
 		HashSet<Integer> pcsCovered = new HashSet<Integer>();
-		if (getNumIterations() > 0) {
+		if (getNumIterations() > 0 || isSelected) {
 		    for (Node child : getChildren()) {
-			    pcsCovered.addAll(child.getPcsCovered());
+			    pcsCovered.addAll(child.getPcsCovered(false));
             }
 		}
         return pcsCovered;

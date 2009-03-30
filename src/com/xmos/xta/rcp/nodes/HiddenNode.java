@@ -22,7 +22,7 @@ public class HiddenNode extends Node {
     public String getToolTipText() { return ""; }
     public String getTypeName()    { return ""; }
     
-    public HashSet<Integer> getPcsCovered() { return new HashSet<Integer>(); }
+    public HashSet<Integer> getPcsCovered(boolean isSelected) { return new HashSet<Integer>(); }
     public void createContextMenu(final Shell parent, IMenuManager manager) {}
     
 	public long getNumIterations() { return 1; }

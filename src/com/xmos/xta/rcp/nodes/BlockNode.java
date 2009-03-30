@@ -67,7 +67,7 @@ public class BlockNode extends Node {
         return "block";
     }
     
-    public HashSet<Integer> getPcsCovered() {
+    public HashSet<Integer> getPcsCovered(boolean isSelected) {
     	return m_block.getPcsCoveredThis();
     }
     

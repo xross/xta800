@@ -68,10 +68,10 @@ public class LoopNode extends Node {
         return "loop";
     }
         
-    public HashSet<Integer> getPcsCovered() {
+    public HashSet<Integer> getPcsCovered(boolean isSelected) {
 		HashSet<Integer> pcsCovered = new HashSet<Integer>();
 		for (Node child : getChildren()) {
-			pcsCovered.addAll(child.getPcsCovered());
+			pcsCovered.addAll(child.getPcsCovered(isSelected));
         }
         return pcsCovered;
     }
