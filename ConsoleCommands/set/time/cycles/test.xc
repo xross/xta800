@@ -4,6 +4,7 @@ in port pIn = XS1_PORT_1A;
 
 int main()
 {
-  sync(pIn);
+  #pragma xta endpoint "inst"
+  pIn :> int x;
   return 0;
 }

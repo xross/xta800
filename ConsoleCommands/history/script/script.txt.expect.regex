@@ -1,66 +1,70 @@
 .*
 [^^^]
-1: add branch fromRef toRef
-2: add branch 0x1000 0x1000
-3: add label codeRef string
-4: add label 0x10000 string
-5: add srclabel codeRef string
-6: add srclabel 0x10000 string
-7: add endpoint codeRef string
-8: add endpoint 0x10000 string
-9: analyse function main
-10: analyse path label1 label2
-11: analyse path 0x1000 0x1000
-12: assert maxtime 999
-13: assert maxcycles 999
+1: source cmds.txt
+2: add branch fromRef toRef
+3: add branch 0x10000 0x10000
+4: add label codeRef string
+5: add label 0x10000 string
+6: add srclabel codeRef string
+7: add srclabel test.xc:10 string
+8: add endpoint codeRef string
+9: add endpoint input1 string
+10: analyse function main
+11: analyse path label1 label2
+12: analyse path 0x10000 0x10002
+13: invalid command with arguments
 14: config proc 9 9
-15: config freq 999
-16: config threads 99
-17: config srcpaths /test/path/srcpath/
-18: clear
+15: config proc 0 0
+16: config freq 999
+17: config threads 99
+18: config srcpaths /test/path/srcpath/
 19: echo
-20: pwd
-21: help
-22: load invalid.xe
-23: list branches
-24: list labels
-25: list srclabels
-26: list endpoints
-27: list allsrclabels
-28: list allendpoints
-29: list unknowns
-30: list functions
-31: list sources
-32: list times
-33: list constraint
-34: print asm 99
-35: print src 99
-36: print mix 99
-37: print trace 99
-38: remove branch branch1
-39: remove label label1
-40: remove srclabel label1
-41: remove endpoint label1
-42: pwd
-43: set loop 99 relative 99
-44: set time test.xc:12 ns 99.0
-45: set time label1 cycles 99
-46: set time 0x1000 cycles 99
-47: set constraint expression
-48: source invalid.txt
-49: status
-50: summary simple
-51: summary complete
-52: summary complete_loops
-53: summary complete_blocks
-54: summary complete_instructions
-55: summary unresolved
-56: summary unresolved_loops
-57: summary unresolved_blocks
-58: summary unresolved_instructions
-59: summary functions
-60: summary sources
-61: summary info 99
-62: unset time 0x10000
-63: version
-64: history
+20: clear
+21: echo "Test string"
+22: pwd
+23: help
+24: help history
+25: load invalid.xe
+26: list branches
+27: list labels
+28: list srclabels
+29: list endpoints
+30: list allsrclabels
+31: list allendpoints
+32: list unknowns -
+33: list unknowns 10
+34: list functions
+35: list sources
+36: list knowns -
+37: list knowns 10
+38: list constraint
+39: print asm - 99
+40: print src - 99
+41: print mix - 99
+42: print trace - 99
+43: remove branch branch1
+44: remove label label1
+45: remove srclabel label1
+46: remove endpoint label1
+47: pwd
+48: set loop - 99 99
+49: -set time test.xc:12 ns 99
+50: -set time label1 cycles 99
+51: -set time 0x1000 cycles 99
+52: set constraint expression
+53: source invalid.txt
+54: status
+55: print summary
+56: print completed_loops
+57: print completed_blocks
+58: print completed_instructions
+59: print unresolved
+60: print unresolved_loops
+61: print unresolved_blocks
+62: print unresolved_instructions
+63: print functions
+64: print sources
+65: print info 99
+66: unset time 0x10000
+67: version
+68: history

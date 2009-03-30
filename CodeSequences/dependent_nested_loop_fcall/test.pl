@@ -11,8 +11,8 @@ if (!$noBuild) {
 system("@ARGV load $genDir/test.xe " .
        "analyse function loop " .
        "print completed_loops " .
-       "set loop - 2 r 65 " .
-       "set loop - 1 r 55 " .
+       "set loop - 2 65 " .
+       "set loop - 1 55 " .
        "print completed_loops " .
        "-exit > $genDir/dependent_nested_loop_fcall.txt 2>&1");
 

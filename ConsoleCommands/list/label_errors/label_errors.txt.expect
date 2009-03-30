@@ -4,7 +4,6 @@ Label: one, pc: 0x10000
 Error: Unresolved reference: 0x1000
 Error: Label already exists: one
 Error: Unresolved reference: 0x10004
-Error: Instruction at PC: 0x00010000 cannot pause
+Error: Instruction at PC: 0x10000 cannot pause
 none
-Error: Unable to unset time for: one
 Error: Cannot use PC as a label: 0x10000

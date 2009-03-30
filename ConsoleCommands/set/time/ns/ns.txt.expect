@@ -1,8 +1,8 @@
 Error: No executable loaded
-- pc: 0x100c8, 1000.0ns, 50 cycles
+Time for instruction (0x100ce: in (2r)) set to 1000.0ns
 none
-- pc: 0x100c8, 5000.0ns, 250 cycles
+Time for instruction (0x100ce: in (2r)) set to 5000.0ns
 Error: Unable to unset time for: x
 Error: Unable to unset time for: .dfbjdb
-- pc: 0x100c8, 5000.0ns, 250 cycles
+Time for instruction (0x100ce: in (2r)) set to 5000.0ns
 none

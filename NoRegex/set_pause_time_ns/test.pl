@@ -12,15 +12,15 @@ system("xcc -nostartfiles test.s -o $genDir/test.xe > $genDir/set_pause_time_ns.
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
 
-       "list unknowns " .
-       "list times " .
+       "list unknowns - " .
+       "list knowns - " .
        "print completed_instructions " .
        "print trace - 0 " .
 
        "set time 0x10004 100.0 ns " .
 
-       "list unknowns " .
-       "list times " .
+       "list unknowns - " .
+       "list knowns - " .
        "print completed_instructions " .
        "print trace - 0 " .
 

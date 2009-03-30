@@ -11,19 +11,20 @@ system("xcc -march=$arch -g test.xc -o $genDir/test.xe > $genDir/mhz.log 2>&1");
 }
 
 system("@ARGV " .
-       "set time 0x100c8 1 mhz " .
+       "set time inst 1 mhz " .
        "load $genDir/test.xe " .
-       "set time 0x100c8 1 mhz " .
-       "list times " .
-       "unset time 0x100c8 " .
-       "list times " .
-       "set time 0x100c8 0.2 mhz " .
-       "list times " .
+       "analyse function main " .
+       "set time inst 1 mhz " .
+       "list knowns - " .
+       "unset time inst " .
+       "list knowns - " .
+       "set time inst 0.2 mhz " .
+       "list knowns - " .
        "unset time x " .
        "unset time .dfbjdb " .
-       "list times " .
+       "list knowns - " .
        "unset time 0x100c8 " .
-       "list times " .
+       "list knowns - " .
        "analyse function main " .
        "exit > $genDir/mhz.txt 2>&1");
 

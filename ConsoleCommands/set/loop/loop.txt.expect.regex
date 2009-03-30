@@ -1,18 +1,18 @@
 Route\(0\) function: test
 Complete \[1 path\]
-    path\(\d+\) +: \d+.\d+ns
+  \* path\(\d+\) +: \d+.\d+ns
         loop \[1 path, 5 iterations\]
-            path\(\d+\) +: \d+.\d+ns
+          \* path\(\d+\) +: \d+.\d+ns
                 loop \[1 path, 0 iterations\]
-                    path\(\d+\) +: \d+.\d+ns
+                  \* path\(\d+\) +: \d+.\d+ns
                 loop \[1 path, 10 iterations\]
                     path\(\d+\) +: \d+.\d+ns
                 loop \[1 path, 0 iterations\]
-                    path\(\d+\) +: \d+.\d+ns
+                  \* path\(\d+\) +: \d+.\d+ns
         loop \[1 path, 3 iterations\]
             path\(\d+\) +: \d+.\d+ns
         loop \[1 path, 0 iterations\]
-            path\(\d+\) +: \d+.\d+ns
+          \* path\(\d+\) +: \d+.\d+ns
 
 ----------------------------------
 test.xc \(.*\)
