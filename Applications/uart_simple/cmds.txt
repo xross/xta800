@@ -1,0 +1,44 @@
+echo ----------------------------------------
+echo Transmit
+echo ----------------------------------------
+
+set constraint !transmit_stop1 
+
+analyse path transmit_start transmit_data
+set required - 1000.0 ns
+
+analyse path transmit_data transmit_data
+set required - 1000.0 ns
+
+set constraint
+
+analyse path transmit_data transmit_stop1
+set required - 1000.0 ns
+
+analyse path transmit_stop1 transmit_stop2
+set required - 1000.0 ns
+
+print summary
+
+remove route 0 
+remove route 1 
+remove route 2 
+remove route 3 
+
+echo ----------------------------------------
+echo Recieve
+echo ----------------------------------------
+
+set constraint !start_bit_input && !start_bit_error
+
+analyse path start_bit_sample recieve_data
+set required - 1000.0 ns
+
+set constraint !recieve_complete
+
+analyse path recieve_data recieve_data
+set required - 1000.0 ns
+
+print summary
+
+exit

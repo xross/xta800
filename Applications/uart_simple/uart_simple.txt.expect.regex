@@ -1,0 +1,32 @@
+----------------------------------------
+Transmit
+----------------------------------------
+Route\(0\) path: transmit_start to transmit_data
+    Pass with \d+ unknowns, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route\(1\) path: transmit_data to transmit_data
+    Pass with \d+ unknowns, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route\(2\) path: transmit_data to transmit_stop1
+    Pass with \d+ unknowns, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Route\(3\) path: transmit_stop1 to transmit_stop2
+    Pass with \d+ unknowns, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Pass, Min Slack: \d+\.\d+ns, Min Frequency: \d+ Mhz
+----------------------------------------
+Recieve
+----------------------------------------
+Route\(0\) path: start_bit_sample to recieve_data
+    Pass with \d+ unknowns, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Complete paths: 2, Unresolved paths: 0
+
+Route\(1\) path: recieve_data to recieve_data
+    Pass with \d+ unknowns, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Complete paths: 1, Unresolved paths: 0
+
+Pass, Min Slack: \d+\.\d+ns, Min Frequency: \d+ Mhz
