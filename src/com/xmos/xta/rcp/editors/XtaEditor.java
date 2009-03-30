@@ -45,6 +45,7 @@ import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.maps.EndpointTableInfo;
+import com.xmos.xta.engine.maps.SrcLabelTableInfo;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
@@ -111,7 +112,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private final String m_fileName;
     private InputLine m_startPointLine;
     private InputLine m_endPointLine;
-    private Map<Integer,InputLine> m_endPointLines;
+    private Map<Integer,InputLine> m_endPointLineIndexes;
     
     public XtaEditor(final String type, String fileName) {
 		if (DEBUG) System.out.printf("XtaEditor()\n");
@@ -130,7 +131,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         m_hasHighlightedLines = false;
         m_updatingHighlights = false;
         
-        m_endPointLines = new TreeMap<Integer,InputLine>();
+        m_endPointLineIndexes = new TreeMap<Integer,InputLine>();
     }
 
     public void createPartControl(Composite parent) {
@@ -473,7 +474,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         int startPointIndex = getStartPointIndex();
         int endPointIndex = getEndPointIndex();
         
-        m_endPointLines.clear();
+        m_endPointLineIndexes.clear();
         for (EndpointTableInfo info : XtaEngine.getEngine().getEndpointTable().values()) {
         	if (info.getFileName().equals(m_fileName)) {
         		InputLine line = findCodeLine(info.getLineNumber());
@@ -481,7 +482,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         			int index = line.getIndex();
 	        		if (index != endPointIndex && index != startPointIndex)
 	        			addAnnotation(index, EndpointID, annotations, annotationPositions);
-	        		m_endPointLines.put(index, line);
+	        		m_endPointLineIndexes.put(index, line);
         		}
         	}
         } 
@@ -557,7 +558,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}
 
 	public boolean isValidEndPoint(int lineNumber) {
-		if (m_endPointLines.containsKey(lineNumber)) {
+		if (m_endPointLineIndexes.containsKey(lineNumber)) {
 			return true;
 		}
 		return false;
@@ -776,25 +777,26 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     protected void rulerContextMenuAboutToShow(IMenuManager menu) {
 		if (DEBUG) System.out.printf("XtaEditor: editorContextMenuAboutToShow\n");
 		
-		int clickLineNum = getVerticalRuler().getLineOfLastMouseButtonActivity();
+		int clickLineIndex = getVerticalRuler().getLineOfLastMouseButtonActivity();
 		
-		m_clickCodeRefString = getLineDescription(clickLineNum);				
+		m_clickCodeRefString = getLineDescription(clickLineIndex);				
 		if (m_clickCodeRefString != null) {
+			m_clickCodeRef = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.ENDPOINT_REF); 
 			
-			m_clickCodeRef = ReferenceFactory.createReference(
-					m_clickCodeRefString, ReferenceClass.ENDPOINT_REF); 
-			
-			if (isStartPointSet(m_clickCodeRefString)) {
-			    addAction(menu, RemoveStartPointID);
-			} else {
-			    addAction(menu, SetStartPointID);				
+			if (m_endPointLineIndexes.containsKey(clickLineIndex) ||
+					m_type.equals(XtaDocumentPartitioner.DISASSEMBLY)) {
+				if (isStartPointSet(m_clickCodeRefString)) {
+				    addAction(menu, RemoveStartPointID);
+				} else {
+				    addAction(menu, SetStartPointID);				
+				}
+				if (isEndPointSet(m_clickCodeRefString)) {						
+				    addAction(menu, RemoveEndPointID);
+				} else {
+				    addAction(menu, SetEndPointID);				
+				}
+				menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
 			}
-			if (isEndPointSet(m_clickCodeRefString)) {						
-			    addAction(menu, RemoveEndPointID);
-			} else {
-			    addAction(menu, SetEndPointID);				
-			}
-			menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
 			addAction(menu, SetInstructionTimeID);
 			addAction(menu, ConstrainExcludeID);
 			addAction(menu, ConstrainRequireID);
@@ -814,30 +816,65 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      	super.editorContextMenuAboutToShow(menu);
     }
 
-	private String getLineDescription(int clickLineNum) {
-		if (m_endPointLines.containsKey(clickLineNum)) {
-			InputLine line = m_endPointLines.get(clickLineNum);
+	private String getLineDescription(int clickLineIndex) {
+		if (m_endPointLineIndexes.containsKey(clickLineIndex)) {
+			InputLine line = m_endPointLineIndexes.get(clickLineIndex);
 			return line.getCodeReference();
 		}
 		
+		String srcLabel = getSrcLabel(clickLineIndex);
+		if (srcLabel != null)
+			return srcLabel;
+		
+		return getLineReference(clickLineIndex, false);
+	}
+
+	private String getSrcLabel(int clickLineIndex) {
+        Map<Integer, SrcLabelTableInfo> srcLabelTable = XtaEngine.getEngine().getSrcLabelTable();
+		for (SrcLabelTableInfo info : srcLabelTable.values()) {
+        	if (info.getFileName().equals(m_fileName)) {
+        		InputLine startLine = findCodeLine(info.getLineNumberStart());
+        		InputLine endLine = findCodeLine(info.getLineNumberEnd());
+        		if ((startLine != null) && (endLine != null)) {
+        			
+        			if (clickLineIndex >= startLine.getIndex() && clickLineIndex <= endLine.getIndex()) {
+        				String lineRef = getLineReference(clickLineIndex, true);
+        				if (lineRef != null)
+            				return lineRef;
+            			else
+        					return "0x" + Integer.toHexString(info.getPc());
+        			}
+        		}
+        	}
+        } 
+		return null;
+	}
+
+    private String getLineReference(int index, boolean findHeader) {
     	for (InputSection inputSection : getSections()) {
     		int startLine = inputSection.getIndex();
     		int endLine = startLine + inputSection.getLines().size();
-    		int offset = clickLineNum - startLine;
+    		int offset = index - startLine;
 
-    		// Don't map to the header
-    		if ((clickLineNum > startLine) && (clickLineNum <= endLine)) {
-    			if (!inputSection.isFnop(offset - 1)) {
-    				return inputSection.getLine(offset - 1).getCodeReference();
-    			} else {
-    				return null;
+    		if (findHeader) {
+        		if (index == startLine) {
+    				return inputSection.getHeader().getCodeReference();
     			}
-			}
+    		} else {
+	    		// Don't map to the header
+	    		if ((index > startLine) && (index <= endLine)) {
+	    			if (!inputSection.isFnop(offset - 1)) {
+	    				return inputSection.getLine(offset - 1).getCodeReference();
+	    			} else {
+	    				return null;
+	    			}
+				}
+    		}
     	}
 		return null;
 	}
 
-    private void showCodePoint(Reference codePoint) {
+	private void showCodePoint(Reference codePoint) {
     	if ((codePoint == null) || !codePoint.getResolved() || m_type.equals(XtaDocumentPartitioner.SOURCE)) {
     		return;
     	}
