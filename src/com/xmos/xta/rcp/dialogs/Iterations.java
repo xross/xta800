@@ -80,12 +80,14 @@ public class Iterations extends XtaDialog {
 			}
 		}
 		long loopmax;
+		boolean unset = false;
 		try {
 			loopmax = m_header.getloops().getLoopMax(m_tail);
 		} catch (Exception e1) {
 			loopmax = 0;
+			unset = true;
 		}
-		if(loopmax - total == 0){
+		if(loopmax - total == 0 && !unset){
 			spinner.setEnabled(false);
 		} else {
 			spinner.setEnabled(true);

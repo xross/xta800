@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import com.xmos.xta.rcp.nodes.LoopNode;
+import com.xmos.xta.rcp.nodes.Node;
+import com.xmos.xta.rcp.nodes.PathNode;
 
 public class MaxIterations extends XtaDialog {
 	
@@ -55,12 +57,18 @@ public class MaxIterations extends XtaDialog {
 		final Spinner spinner = new Spinner(parent, SWT.BORDER);
 		spinner.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
 				true, false, 2, 1));
-		spinner.setMinimum(0);
 		
-		//TODO - fix this
+		//this minimum should be set to the sum of all the hard counts on its children
+		int hardCount = 0;
+		for(Node child : m_loopNode.getChildren()){
+			PathNode path = (PathNode)child;
+			hardCount += path.getHardNumIterations();
+		}
+		spinner.setMinimum(hardCount);
+		
 		spinner.setMaximum(Integer.MAX_VALUE);
 		
-		spinner.setSelection((int) m_numIterations);
+		spinner.setSelection((int) m_loopNode.getLoopMax());
 		spinner.setIncrement(1);
 		spinner.setPageIncrement(10);
 		spinner.addSelectionListener(new SelectionAdapter() {
