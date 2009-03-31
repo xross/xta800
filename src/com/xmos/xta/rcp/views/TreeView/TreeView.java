@@ -149,7 +149,14 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 			} catch (PartInitException e) {}
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
-			clearTree();
+			m_routesViewer.setInput(new HiddenNode());
+			m_routesViewer.refresh();
+			m_selectedRouteViewer.setInput(new HiddenNode());
+			m_selectedRouteViewer.refresh();
+			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
+			m_selectedRouteViewer.setInput(new HiddenNode());
+			m_selectedRouteViewer.refresh();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE) ||
 				   event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
@@ -344,13 +351,5 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		m_selectedRouteViewer.refresh();
 		m_routesViewer.refresh();
 		
-	}
-	
-	private void clearTree() {
-		m_selectedRouteViewer.setInput(new HiddenNode());
-		m_selectedRouteViewer.refresh();
-
-		m_routesViewer.setInput(new HiddenNode());
-		m_routesViewer.refresh();
 	}
 }

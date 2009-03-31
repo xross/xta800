@@ -59,6 +59,7 @@ public class LogView extends ViewPart implements IPropertyChangeListener {
 			
     	} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
     		clearDisplay();
+
 		}
 	}
 	

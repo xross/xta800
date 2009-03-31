@@ -52,15 +52,11 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 					}
 				}
 				
-			} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
-				String argument = XtaNotifier.getInstance().getNotifyArgument();								
-				if (argument.equals(Notifier.STATE_CORE_ID) || 
-					argument.equals(Notifier.STATE_NODE_ID)) {
-					while (getPageCount() > 0) {
-						removePage(0);
-					}
-					createPages();
+			} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
+				while (getPageCount() > 0) {
+					removePage(0);
 				}
+				createPages();
 			}
 		}
 	}

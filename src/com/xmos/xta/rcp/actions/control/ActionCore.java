@@ -63,7 +63,8 @@ public class ActionCore extends Action implements IPropertyChangeListener, IMenu
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
-		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {			
+		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE) || 
+			event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {			
 	        updateState();
 	        this.setEnabled(true);
 	        

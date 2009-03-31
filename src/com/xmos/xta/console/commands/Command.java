@@ -133,18 +133,13 @@ public abstract class Command {
     	return String.format("%d", routeId);
     }
     
-    public static int getId(String idString) {    	
+    public static int getId(String idString) throws NumberFormatException {    	
     	if (getIdType(idString) == IdType.BLOCK) {
     		idString = idString.substring(1);
     	}    	
-    	int route = 0;
-    	
-    	try {
-			route = Integer.parseInt(idString);
-		} catch (NumberFormatException e) {
-			//TODO
-		} 
-   		return route;
+    	int route = Integer.parseInt(idString);
+
+    	return route;
     }
 
     public static IdType getIdType(String idString) {

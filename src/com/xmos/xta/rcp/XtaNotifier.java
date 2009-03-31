@@ -14,6 +14,7 @@ import org.eclipse.ui.PlatformUI;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.RouteTiming;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
@@ -44,7 +45,7 @@ public class XtaNotifier implements Notifier {
 		
 		m_selectedRoute = null;
 		
-		resetState();
+		resetState(true);
 	}
 	
 	public static XtaNotifier getInstance() {
@@ -87,8 +88,12 @@ public class XtaNotifier implements Notifier {
 			notifySetEndPoint(ReferenceFactory.createReference(argument, ReferenceClass.ENDPOINT_REF));
 			
 		} else if (message.equals(NOTIFY_LOAD_EXECUTABLE)) {
-			resetState();
-			m_notifyArgument = argument;
+			resetState(true);
+			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
+			m_isGuiCommand = false;
+			
+		} else if (message.equals(NOTIFY_SET_NODE_CORE)) {
+			resetState(false);
 			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
 			m_isGuiCommand = false;
 			
@@ -126,8 +131,26 @@ public class XtaNotifier implements Notifier {
 	}
 
 	private void setRouteId(int routeId) {
-		m_selectedRoute = XtaEngine.getEngine().getRoute(routeId);
+		int currentNodeId = 0;
+		int currentCoreId = 0;
+		if (m_selectedRoute != null) {
+			RouteTiming routeTiming = m_selectedRoute.getRouteTiming();
+			currentNodeId = routeTiming.getNodeId();
+			currentCoreId = routeTiming.getCoreId();
+		}
+		Engine engine = XtaEngine.getEngine();
+		m_selectedRoute = engine.getRoute(routeId);
 		m_routeInfo.update(m_selectedRoute);
+		
+		if (m_selectedRoute != null) {
+			RouteTiming routeTiming = m_selectedRoute.getRouteTiming();
+			if (currentNodeId != routeTiming.getNodeId()) {
+				engine.setNodeId(routeTiming.getNodeId());
+			}
+			if (currentCoreId != routeTiming.getCoreId()) {
+				engine.setCoreId(routeTiming.getCoreId());
+			}
+		}
 	}
 
 	public void addPropertyChangeListener(final IPropertyChangeListener listener) {
@@ -227,14 +250,17 @@ public class XtaNotifier implements Notifier {
 		return m_notifyArgument;
 	}
 	
-	private void resetState() {
-		m_routeInfo.resetState();
+	private void resetState(boolean isLoad) {
 		m_startPoint = null;
 		m_endPoint = null;
 		m_codePoint = null;
 		m_notifyArgument = null;
 		m_selectedFunction = "";
 		m_runMode = Notifier.RUN_MODE_FUNCTION;
+
+		if (isLoad) {
+			m_routeInfo.resetState();
+		}
 	}
 
 	private void displayMessageBox(final String title, final String message) {
