@@ -353,6 +353,31 @@
             verticalRulerPreferenceKey="highlight.endpoint.rulers.vertical"
             verticalRulerPreferenceValue="true">
       </specification>
+      <specification
+            annotationType="com.xmos.xta.rcp.excluded"
+            colorPreferenceKey="highlight.excluded.color"
+            colorPreferenceValue="0,0,0"
+            contributesToHeader="false"
+            highlightPreferenceValue="false"
+            icon="icons/excluded.png"
+            includeOnPreferencePage="false"
+            isGoToNextNavigationTarget="false"
+            isGoToNextNavigationTargetKey="isErrorGoToNextNavigationTarget"
+            isGoToPreviousNavigationTarget="false"
+            isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
+            label="Excluded"
+            overviewRulerPreferenceKey="highlight.excluded.rulers.overview"
+            overviewRulerPreferenceValue="true"
+            presentationLayer="5"
+            showInNextPrevDropdownToolbarAction="false"
+            showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
+            symbolicIcon="warning"
+            textPreferenceKey="highlight.excluded.text"
+            textPreferenceValue="false"
+            textStylePreferenceValue="NONE"
+            verticalRulerPreferenceKey="highlight.excluded.rulers.vertical"
+            verticalRulerPreferenceValue="true">
+      </specification>
    </extension>
  
    <extension
@@ -386,6 +411,11 @@
       <type
             markerSeverity="2"
             name="com.xmos.xta.rcp.endpoint"
+            super="org.eclipse.ui.workbench.texteditor.info">
+      </type>
+      <type
+            markerSeverity="2"
+            name="com.xmos.xta.rcp.excluded"
             super="org.eclipse.ui.workbench.texteditor.info">
       </type>
    </extension>
