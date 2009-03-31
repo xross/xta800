@@ -80,7 +80,7 @@ public class Label extends Command {
 	public String description(Engine engine, boolean detailed) {
     	switch (m_operation) {
     	case ADD:
-            return "label <LABEL_REF> <label>: Adds the given label to the labels list";         
+            return "label <CONSTRAINT_REF> <label>: Adds the given label to the labels list";         
     	case REMOVE:
             return "label [label]+: Removes the given labels from the labels list (supports regular expressions)";
     	case LIST:
@@ -124,7 +124,7 @@ public class Label extends Command {
     	case ADD:
     		assert(m_labels.size() == 1);
     		Reference ref = ReferenceFactory.createReference(
-    				m_refString, ReferenceClass.LABEL_REF);
+    				m_refString, ReferenceClass.CONSTRAINT_REF);
 			engine.addLabel(m_labels.get(0), ref);
 			break;			
     	case REMOVE:
