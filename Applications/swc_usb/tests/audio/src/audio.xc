@@ -176,6 +176,7 @@ static inline int deliver(int dataLength, unsigned buffer,
 
             if(porttimeafter(time, (short)(lrtime+64))) 
             {
+                #pragma xta label "errorCase"
                 return -1;
             }
             lrtime = time;

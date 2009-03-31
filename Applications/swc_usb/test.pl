@@ -19,8 +19,10 @@ my $compareFnnops = 0;
 
 system("@ARGV load $genDir/test.xe " .
         "config proc 0 2 " .
-        "analyse path physicalStart deliverFinish " .
-        "print completed_instructions " .
+        "set constraint !errorCase " .
+        "-analyse path physicalStart deliverFinish " .
+        "set required - 5000 ns " .
+        "print summary " .
         "-exit > $genDir/$directory.txt 2>&1");
 
 

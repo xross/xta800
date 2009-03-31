@@ -777,7 +777,7 @@ s.LC0:
           .long     .LDBG0           # low address
           .long     .LDBG175         # high address
           .asciiz   "./tests/audio/src/XUD_DoEnumReqs.xc"
-          .asciiz   "/home/andrew-local/software/sandbox2/swc_usb"
+          .asciiz   "/home/andrew-local/software/sandbox2/verif_tests_sw/Tools/xta/Applications/swc_usb"
           .short    0xc000
           .asciiz   "XMOS Dwarf Symbolic Debug Generator"
           .long     .LDBG177         # offset in .debug_lineprog
@@ -1144,50 +1144,50 @@ s.LC0:
           .section  .debug_loc,    "",    @progbits
 .cc_top XUD_DoEnumReqs.function,XUD_DoEnumReqs
 .LDBG263:
-          .int      .LDBG52-.LDBG0
-          .int      .LDBG53-.LDBG0
+          .int      .LDBG54-.LDBG0
+          .int      .LDBG55-.LDBG0
           .short    .LDBG265-.LDBG264
 .LDBG264:
           .byte     0x55
 .LDBG265:
-          .int      .LDBG48-.LDBG0
-          .int      .LDBG49-.LDBG0
+          .int      .LDBG52-.LDBG0
+          .int      .LDBG53-.LDBG0
           .short    .LDBG267-.LDBG266
 .LDBG266:
           .byte     0x55
 .LDBG267:
-          .int      .LDBG40-.LDBG0
-          .int      .LDBG41-.LDBG0
+          .int      .LDBG48-.LDBG0
+          .int      .LDBG49-.LDBG0
           .short    .LDBG269-.LDBG268
 .LDBG268:
           .byte     0x55
 .LDBG269:
-          .int      .LDBG36-.LDBG0
-          .int      .LDBG39-.LDBG0
+          .int      .LDBG40-.LDBG0
+          .int      .LDBG41-.LDBG0
           .short    .LDBG271-.LDBG270
 .LDBG270:
           .byte     0x55
 .LDBG271:
-          .int      .LDBG72-.LDBG0
-          .int      .LDBG74-.LDBG0
+          .int      .LDBG36-.LDBG0
+          .int      .LDBG39-.LDBG0
           .short    .LDBG273-.LDBG272
 .LDBG272:
           .byte     0x55
 .LDBG273:
-          .int      .LDBG63-.LDBG0
-          .int      .LDBG64-.LDBG0
+          .int      .LDBG72-.LDBG0
+          .int      .LDBG74-.LDBG0
           .short    .LDBG275-.LDBG274
 .LDBG274:
           .byte     0x55
 .LDBG275:
-          .int      .LDBG61-.LDBG0
-          .int      .LDBG62-.LDBG0
+          .int      .LDBG63-.LDBG0
+          .int      .LDBG64-.LDBG0
           .short    .LDBG277-.LDBG276
 .LDBG276:
           .byte     0x55
 .LDBG277:
-          .int      .LDBG54-.LDBG0
-          .int      .LDBG55-.LDBG0
+          .int      .LDBG61-.LDBG0
+          .int      .LDBG62-.LDBG0
           .short    .LDBG279-.LDBG278
 .LDBG278:
           .byte     0x55
@@ -1381,104 +1381,104 @@ s.LC0:
           .section  .debug_loc,    "",    @progbits
 .cc_top XUD_DoEnumReqs.function,XUD_DoEnumReqs
 .LDBG309:
-          .int      .LDBG54-.LDBG0
-          .int      .LDBG55-.LDBG0
+          .int      .LDBG56-.LDBG0
+          .int      .LDBG57-.LDBG0
           .short    .LDBG311-.LDBG310
 .LDBG310:
           .byte     0x54
 .LDBG311:
-          .int      .LDBG52-.LDBG0
-          .int      .LDBG53-.LDBG0
+          .int      .LDBG54-.LDBG0
+          .int      .LDBG55-.LDBG0
           .short    .LDBG313-.LDBG312
 .LDBG312:
           .byte     0x54
 .LDBG313:
-          .int      .LDBG50-.LDBG0
-          .int      .LDBG51-.LDBG0
+          .int      .LDBG52-.LDBG0
+          .int      .LDBG53-.LDBG0
           .short    .LDBG315-.LDBG314
 .LDBG314:
           .byte     0x54
 .LDBG315:
-          .int      .LDBG44-.LDBG0
-          .int      .LDBG45-.LDBG0
+          .int      .LDBG50-.LDBG0
+          .int      .LDBG51-.LDBG0
           .short    .LDBG317-.LDBG316
 .LDBG316:
           .byte     0x54
 .LDBG317:
-          .int      .LDBG48-.LDBG0
-          .int      .LDBG49-.LDBG0
+          .int      .LDBG44-.LDBG0
+          .int      .LDBG45-.LDBG0
           .short    .LDBG319-.LDBG318
 .LDBG318:
           .byte     0x54
 .LDBG319:
-          .int      .LDBG42-.LDBG0
-          .int      .LDBG43-.LDBG0
+          .int      .LDBG48-.LDBG0
+          .int      .LDBG49-.LDBG0
           .short    .LDBG321-.LDBG320
 .LDBG320:
           .byte     0x54
 .LDBG321:
-          .int      .LDBG40-.LDBG0
-          .int      .LDBG41-.LDBG0
+          .int      .LDBG42-.LDBG0
+          .int      .LDBG43-.LDBG0
           .short    .LDBG323-.LDBG322
 .LDBG322:
           .byte     0x54
 .LDBG323:
-          .int      .LDBG38-.LDBG0
-          .int      .LDBG39-.LDBG0
+          .int      .LDBG40-.LDBG0
+          .int      .LDBG41-.LDBG0
           .short    .LDBG325-.LDBG324
 .LDBG324:
           .byte     0x54
 .LDBG325:
-          .int      .LDBG82-.LDBG0
-          .int      .LDBG83-.LDBG0
+          .int      .LDBG38-.LDBG0
+          .int      .LDBG39-.LDBG0
           .short    .LDBG327-.LDBG326
 .LDBG326:
           .byte     0x54
 .LDBG327:
-          .int      .LDBG73-.LDBG0
-          .int      .LDBG74-.LDBG0
+          .int      .LDBG82-.LDBG0
+          .int      .LDBG83-.LDBG0
           .short    .LDBG329-.LDBG328
 .LDBG328:
           .byte     0x54
 .LDBG329:
-          .int      .LDBG70-.LDBG0
-          .int      .LDBG71-.LDBG0
+          .int      .LDBG73-.LDBG0
+          .int      .LDBG74-.LDBG0
           .short    .LDBG331-.LDBG330
 .LDBG330:
           .byte     0x54
 .LDBG331:
-          .int      .LDBG67-.LDBG0
-          .int      .LDBG68-.LDBG0
+          .int      .LDBG70-.LDBG0
+          .int      .LDBG71-.LDBG0
           .short    .LDBG333-.LDBG332
 .LDBG332:
           .byte     0x54
 .LDBG333:
-          .int      .LDBG65-.LDBG0
-          .int      .LDBG66-.LDBG0
+          .int      .LDBG67-.LDBG0
+          .int      .LDBG68-.LDBG0
           .short    .LDBG335-.LDBG334
 .LDBG334:
           .byte     0x54
 .LDBG335:
-          .int      .LDBG63-.LDBG0
-          .int      .LDBG64-.LDBG0
+          .int      .LDBG65-.LDBG0
+          .int      .LDBG66-.LDBG0
           .short    .LDBG337-.LDBG336
 .LDBG336:
           .byte     0x54
 .LDBG337:
-          .int      .LDBG59-.LDBG0
-          .int      .LDBG60-.LDBG0
+          .int      .LDBG63-.LDBG0
+          .int      .LDBG64-.LDBG0
           .short    .LDBG339-.LDBG338
 .LDBG338:
           .byte     0x54
 .LDBG339:
-          .int      .LDBG61-.LDBG0
-          .int      .LDBG62-.LDBG0
+          .int      .LDBG59-.LDBG0
+          .int      .LDBG60-.LDBG0
           .short    .LDBG341-.LDBG340
 .LDBG340:
           .byte     0x54
 .LDBG341:
-          .int      .LDBG56-.LDBG0
-          .int      .LDBG57-.LDBG0
+          .int      .LDBG61-.LDBG0
+          .int      .LDBG62-.LDBG0
           .short    .LDBG343-.LDBG342
 .LDBG342:
           .byte     0x54
@@ -2048,7 +2048,7 @@ s.LC0:
 .L55:
           .int      .L56-.L55
           .int      0x00000000
-          .asciiz   "/home/andrew-local/software/sandbox2/swc_usb"
+          .asciiz   "/home/andrew-local/software/sandbox2/verif_tests_sw/Tools/xta/Applications/swc_usb"
 .cc_top XUD_DoEnumReqs.function, XUD_DoEnumReqs
           .asciiz  "./tests/audio/src/XUD_DoEnumReqs.xc"
           .int      0x0000008e

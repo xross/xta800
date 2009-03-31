@@ -114,7 +114,7 @@ ep1_thread:
           .long     .LDBG0           # low address
           .long     .LDBG19          # high address
           .asciiz   "./tests/audio/src/ep1_thread.xc"
-          .asciiz   "/home/andrew-local/software/sandbox2/swc_usb"
+          .asciiz   "/home/andrew-local/software/sandbox2/verif_tests_sw/Tools/xta/Applications/swc_usb"
           .short    0xc000
           .asciiz   "XMOS Dwarf Symbolic Debug Generator"
           .long     .LDBG21          # offset in .debug_lineprog
@@ -343,7 +343,7 @@ ep1_thread:
 .L8:
           .int      .L9-.L8
           .int      0x00000000
-          .asciiz   "/home/andrew-local/software/sandbox2/swc_usb"
+          .asciiz   "/home/andrew-local/software/sandbox2/verif_tests_sw/Tools/xta/Applications/swc_usb"
 .cc_top ep1_thread.function, ep1_thread
           .asciiz  "./tests/audio/src/ep1_thread.xc"
           .int      0x00000005
