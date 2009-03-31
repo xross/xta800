@@ -63,7 +63,8 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 			m_unknowns.update();
 			m_setValues.update();
 			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
+		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE) || 
+				   event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 			m_unknowns.clear();
 			m_setValues.clear();
 		}

@@ -10,6 +10,7 @@ public interface Notifier {
 	public static final String NOTIFY_ANALYSIS_BEGIN    = "AnalysisBegin";
 	public static final String NOTIFY_ANALYSIS_COMPLETE = "AnalysisComplete";	
 	public static final String NOTIFY_LOAD_EXECUTABLE   = "LoadExecutable";
+	public static final String NOTIFY_SET_NODE_CORE     = "SetNodeCore";
 	public static final String NOTIFY_SELECT_FUNCTION   = "SelectFunction";
 	public static final String NOTIFY_SELECT_ROUTE      = "SelectRoute";
 	public static final String NOTIFY_REMOVE_ROUTE      = "RemoveRoute";
@@ -25,9 +26,6 @@ public interface Notifier {
 	    
 	public static final String STATE_NUM_THREADS = "NumThreads";
 	public static final String STATE_FREQUENCY   = "Frequency";
-	public static final String STATE_NODE_ID     = "NodeId";
-	public static final String STATE_CORE_ID     = "CoreId";
-	public static final String STATE_RESOLVE     = "Resolve";
 	
 	public static final String RUN_MODE_FUNCTION = "Analyse function";
 	public static final String RUN_MODE_PATH     = "Analyse path";

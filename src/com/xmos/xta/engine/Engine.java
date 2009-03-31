@@ -346,7 +346,7 @@ public class Engine {
 
 	public void setNodeId(int nodeId) {
 		m_nodeId = nodeId;
-		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, Notifier.STATE_NODE_ID);
+		notify(Notifier.NOTIFY_SET_NODE_CORE, "");
 	}
 
 	public int getNodeId() {
@@ -355,7 +355,7 @@ public class Engine {
 
 	public void setCoreId(int coreId) {
 		m_coreId = coreId;
-		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, Notifier.STATE_NODE_ID);
+		notify(Notifier.NOTIFY_SET_NODE_CORE, "");
 	}
 
 	public int getCoreId() {

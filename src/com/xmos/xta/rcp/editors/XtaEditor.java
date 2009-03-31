@@ -245,18 +245,26 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}	            		         	        
     	
     private void updatePartitions() {
-    	XtaDocumentPartitioner xtaDocumentPartitioner = (XtaDocumentPartitioner)getDocument().getDocumentPartitioner();
-		xtaDocumentPartitioner.partitionDocument(this.getDocument(), false);
-		getSourceViewer().invalidateTextPresentation();
+    	IDocument document = getDocument();
+    	if (document != null) {
+    		XtaDocumentPartitioner xtaDocumentPartitioner = (XtaDocumentPartitioner)document.getDocumentPartitioner();
+    		xtaDocumentPartitioner.partitionDocument(document, false);
+    		getSourceViewer().invalidateTextPresentation();
+    	}
 	}
 
 	private void updateInputLines(boolean reset) {
 		m_selectedNode = null;
-	    	updateEditor();
+	    updateEditor();
+
+		Input input = getInput();
+    	if (input == null)
+    		return;
+    	
 		Route route = XtaNotifier.getInstance().getRouteInfo().getRoute();
-    	if(route != null && !reset){
+		if (route != null && !reset){
 	    	
-    		for(InputSection inputSection :getInput().getSections()){
+    		for (InputSection inputSection : input.getSections()){
     			inputSection.setGrey(true);
 				for(InputLine inputLine: inputSection.getLines()){
 					inputLine.setGrey(true);
@@ -269,41 +277,41 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	    	boolean foundFirstLine = false;
 	    	ArrayList<InputSection> noDebug = new ArrayList<InputSection>();
 	    	
-			for(InputSection inputSection :getInput().getSections()){
+			for (InputSection inputSection : input.getSections()){
 				boolean hit = false;
-				for(InputLine inputLine: inputSection.getLines()){
-					if(pcsCovered.contains(inputLine.getPc())){
+				for (InputLine inputLine: inputSection.getLines()){
+					if (pcsCovered.contains(inputLine.getPc())){
 						foundFirstLine = true;
 						inputLine.setGrey(false);
 						hit = true;
 					} 	
 				}
 				
-				if(foundFirstLine && inputSection.getLines().size() == 0){
+				if (foundFirstLine && inputSection.getLines().size() == 0){
 					noDebug.add(inputSection);
 				}
 				
-				if(inputSection.getLines().size() > 0 && hit == false){
+				if (inputSection.getLines().size() > 0 && hit == false){
 					noDebug.clear();
 				}
-				if(hit == true){
+				if (hit == true){
 					inputSection.setGrey(false);
-					for(InputSection i : noDebug){
+					for (InputSection i : noDebug){
 						i.setGrey(false);
 					}
 				}
 				/*
-				if(route.getFunction()!= null){
-					if(inputSection.getHeader().getLine().contains(route.getFunction())){
+				if (route.getFunction()!= null){
+					if (inputSection.getHeader().getLine().contains(route.getFunction())){
 						inputSection.setGrey(false);
 					}
 				}
 				*/
 			}
     	} else {
-    		for(InputSection inputSection :getInput().getSections()){
+    		for (InputSection inputSection : input.getSections()){
     			inputSection.setGrey(false);
-				for(InputLine inputLine: inputSection.getLines()){
+				for (InputLine inputLine: inputSection.getLines()){
 					inputLine.setGrey(false);
 				}
 			}
@@ -317,7 +325,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         HashMap<ProjectionAnnotation, Position> annotationPositions = 
     	    new HashMap<ProjectionAnnotation, Position>();
 
-        for(int i = 0; i < positions.size();i++) {
+        for (int i = 0; i < positions.size();i++) {
             ProjectionAnnotation annotation = new ProjectionAnnotation();
             annotationPositions.put(annotation, positions.get(i));
             annotations[i] = annotation;
@@ -526,14 +534,11 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		
 		for (InputSection inputSection : getSections()) {
 			if (m_type.equals(XtaDocumentPartitioner.SOURCE)) {
-				checkLineForExclusion(constraint,
-						inputSection.getHeader().getCodeReference(),
+				checkLineForExclusion(constraint, inputSection.getHeader().getCodeReference(),
 						inputSection.getIndex());
 			}
 			for (InputLine line : inputSection.getLines()) {
-				if (checkLineForExclusion(constraint,
-						line.getCodeReference(),
-						line.getIndex())) {
+				if (checkLineForExclusion(constraint, line.getCodeReference(), line.getIndex())) {
 					m_excludedIndexes.add(inputSection.getIndex());
 				}
 			}
@@ -994,8 +999,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}
 
 	private Input getInput() {
+		IDocument document = getDocument();
+		if (document == null)
+			return null;
+		
 		XtaDocumentPartitioner xtaDocumentPartitioner =
-			(XtaDocumentPartitioner)getDocument().getDocumentPartitioner();
+			(XtaDocumentPartitioner)document.getDocumentPartitioner();
 
 		return xtaDocumentPartitioner.getInput();		
 	}
