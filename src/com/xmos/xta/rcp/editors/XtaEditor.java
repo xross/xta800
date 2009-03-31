@@ -69,10 +69,11 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     public static final String StartAnnotationID     = "com.xmos.xta.rcp.start";
     public static final String StopAnnotationID      = "com.xmos.xta.rcp.stop";
     public static final String StartStopAnnotationID = "com.xmos.xta.rcp.startstop";
+    public static final String ExcludedAnnotationID  = "com.xmos.xta.rcp.excluded";
     public static final String EndpointID            = "com.xmos.xta.rcp.endpoint";
     public static final String ExpandAllID           = "com.xmos.xtagui.action.ExpandAll";
     public static final String CollapseAllID         = "com.xmos.xtagui.action.CollapseAll";
-    public static final String RestoreAllHighlighID  = "com.xmos.xtagui.action.RestoreAllHighligh";
+    public static final String RestoreAllHighlightID = "com.xmos.xtagui.action.RestoreAllHighlight";
 
     public static final String ShowStartPointID      = "com.xmos.xtagui.action.ShowStartPoint";
     public static final String ShowEndPointID        = "com.xmos.xtagui.action.ShowEndPoint";
@@ -113,6 +114,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private InputLine m_startPointLine;
     private InputLine m_endPointLine;
     private Map<Integer,InputLine> m_endPointLineIndexes;
+    private HashSet<Integer> m_excludedIndexes;
     
     public XtaEditor(final String type, String fileName) {
 		if (DEBUG) System.out.printf("XtaEditor()\n");
@@ -132,6 +134,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         m_updatingHighlights = false;
         
         m_endPointLineIndexes = new TreeMap<Integer,InputLine>();
+        m_excludedIndexes = new HashSet<Integer>();
     }
 
     public void createPartControl(Composite parent) {
@@ -205,6 +208,11 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
 			updateUnknowns();
+
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_CONSTRAINT)) {
+			updateExcluded();
+    	    updateHighlighting();
+
 		}
 	}
 
@@ -467,7 +475,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         	for (Integer pc : pcsCovered) {
 				updateAnnotations(pc, HighlightAnnotationID, annotations, annotationPositions, false, getInput().getPcsToLines());
 			}
-			
         }
         m_hasHighlightedLines = (annotations.size() > 0);
 
@@ -496,10 +503,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         	if (endPointIndex != -1)
             	addAnnotation(endPointIndex, StopAnnotationID, annotations, annotationPositions);
         }
-				
+
+    	for (Integer excludedIndex : m_excludedIndexes) {
+    		addAnnotation(excludedIndex, ExcludedAnnotationID, annotations, annotationPositions);
+		}
+
         if(DEBUG) System.out.println("XtaEditor: replace highlighting");
-        
-        
         
 		m_annotationModel.replaceAnnotations(m_previousHighlightAnnotations, annotationPositions);        
 		m_previousHighlightAnnotations = createArray(annotations);
@@ -507,8 +516,44 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		XtaNotifier.getInstance().notify(Notifier.NOTIFY_UPDATE_HIGHLIGHTS, "");
 		m_updatingHighlights = false;
     }
-                
-    public int getStartPointIndex() {
+
+	private void updateExcluded() {
+		m_excludedIndexes.clear();
+		Constraint constraint = XtaEngine.getEngine().getConstraint();
+		if ((constraint == null) || !constraint.isValid()) {
+			return;
+		}
+		
+		for (InputSection inputSection : getSections()) {
+			if (m_type.equals(XtaDocumentPartitioner.SOURCE)) {
+				checkLineForExclusion(constraint,
+						inputSection.getHeader().getCodeReference(),
+						inputSection.getIndex());
+			}
+			for (InputLine line : inputSection.getLines()) {
+				if (checkLineForExclusion(constraint,
+						line.getCodeReference(),
+						line.getIndex())) {
+					m_excludedIndexes.add(inputSection.getIndex());
+				}
+			}
+    	}
+	}
+
+    private boolean checkLineForExclusion(Constraint constraint, String refStr, int index) {
+		Engine engine = XtaEngine.getEngine();
+		Reference headerRef = ReferenceFactory.createReference(refStr, ReferenceClass.SRCLABEL_REF);
+		if (headerRef.resolve(engine, engine.getNodeId(),engine.getCoreId())) {
+			Constraint clone = constraint.clone();
+			if (clone.isFalse(headerRef.getPc())) {
+				m_excludedIndexes.add(index);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public int getStartPointIndex() {
         if (m_startPointLine != null)
         	return m_startPointLine.getIndex();
 		return -1;
@@ -625,7 +670,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 				}
 			}
 		}
-		
     }
 
     private void addAnnotation(int index, String type, List<Annotation> annotations,
@@ -671,11 +715,9 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      		}
      	});
 
-     	setAction(RestoreAllHighlighID, new Action("Restore All Syntax Highlighting") {
+     	setAction(RestoreAllHighlightID, new Action("Restore All Syntax Highlighting") {
      		public void run() {
      			resetGrey();
-     			//IDocument document = getSourceViewer().getDocument();
-     			//m_projectionAnnotationModel.expandAll(0, document.getLength());
      		}
      	});
      	
@@ -762,7 +804,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      	menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));     	
     	addAction(menu, ExpandAllID);
     	addAction(menu, CollapseAllID);
-    	addAction(menu, RestoreAllHighlighID);
+    	addAction(menu, RestoreAllHighlightID);
 		menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
 
 		Reference startPoint = XtaNotifier.getInstance().getStartPoint();
