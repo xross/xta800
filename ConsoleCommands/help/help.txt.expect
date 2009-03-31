@@ -18,7 +18,7 @@
   [-]version: Displays the version information
   [-]add <option> <arg0> <arg1>...: Add item to given list
       option: branch <from LABEL_REF> <to LABEL_REF>: Adds the given from/to reference to the branches list
-      option: label <LABEL_REF> <label>: Adds the given label to the labels list
+      option: label <CONSTRAINT_REF> <label>: Adds the given label to the labels list
       option: srclabel <SRCLABEL_REF> <label>: Adds the given source label to the source labels list
       option: endpoint <ENDPOINT_REF> <label>: Adds the given endpoint to the endpoints list
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
@@ -93,3 +93,23 @@
   [-]unset <option> <arg0> <arg1>...: Unset item from given list
       option: time <pc>: Clears the time set for the given instructions (supports regular expressions)
       option: required <route id>: Clears the the maximum allowed time for the given route
+  Any of the following are permitted:
+    Pc: Raw program counter specified in the format: 0x*
+    Label: Any source or assembly level symbol defined with respect to an executable section
+    Endpoint: Endpoint specified using the source level pragma mechanism
+    EndpointFileLine: Endpoint specified in the format: 'file name:line number'
+    SrcLabel: Source label specified using the source level pragma mechanism
+    SrcLabelFileLine: Source label specified in the format: 'file name:line number'
+  Any of the following are permitted:
+    Pc: Raw program counter specified in the format: 0x*
+    Label: Any source or assembly level symbol defined with respect to an executable section
+  Any of the following are permitted:
+    Pc: Raw program counter specified in the format: 0x*
+    Label: Any source or assembly level symbol defined with respect to an executable section
+    SrcLabel: Source label specified using the source level pragma mechanism
+    SrcLabelFileLine: Source label specified in the format: 'file name:line number'
+  Any of the following are permitted:
+    Pc: Raw program counter specified in the format: 0x*
+    Label: Any source or assembly level symbol defined with respect to an executable section
+    Endpoint: Endpoint specified using the source level pragma mechanism
+    EndpointFileLine: Endpoint specified in the format: 'file name:line number'
