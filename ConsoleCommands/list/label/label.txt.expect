@@ -1,7 +1,0 @@
-Label: bill, pc: 0x1019a
-Label: bob, pc: 0x1019a
-Error: Unable to remove label: fred
-Label: bill, pc: 0x1019a
-Label: bob, pc: 0x1019a
-Label: bill, pc: 0x1019a
-none

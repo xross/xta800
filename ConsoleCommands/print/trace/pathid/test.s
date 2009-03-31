@@ -11,6 +11,11 @@
 .cc_top test.function,test
           .align    4
 test:
+          ldc       r1, 0x6
+loop:
+          sub       r1, r1, 1
+          bt        r1, loop
+conditional:
           ldc       r1, 0x0
           eq        r0, r0, 0x2
           bt        r0, .L1 

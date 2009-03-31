@@ -1,15 +1,24 @@
-int a = 2;
+#include <platform.h>
+
+int a0()
+{
+  #pragma xta label "l0"
+  return 0;
+}
+
+int a1()
+{
+  #pragma xta label "l1"
+  return 0;
+}
+
 int main()
 {
-  int b = 0;
-  if (a == 2)
+  par
   {
-    b = 2;
+    on stdcore[0] : a0();
+    on stdcore[1] : a1();
   }
-  else
-  {
-    b = 3;
-  }
-  return b;
+  return 0;
 }
 
