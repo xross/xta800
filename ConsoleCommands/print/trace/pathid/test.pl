@@ -11,6 +11,7 @@ system("xcc -march=$arch -g test.s -o $genDir/test.xe > $genDir/pathid.log 2>&1"
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
+       "set loopmax - loop 5 " .
        "print summary " .
        "print trace - 1 " .
        "print trace - 0 " .
