@@ -140,8 +140,9 @@ public class XtaNotifier implements Notifier {
 
 	public void removePropertyChangeListener(final IPropertyChangeListener listener) {
 		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-			public void run() {        	
-				m_listeners.remove(listener);
+			public void run() {      
+				if(m_listeners.contains(listener))
+					m_listeners.remove(listener);
 			}});
 	}
 	

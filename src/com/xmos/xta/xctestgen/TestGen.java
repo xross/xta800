@@ -142,6 +142,9 @@ public class TestGen {
 
 	static public void main(String[] args) {
 		String tests[] = {
+				//"i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)",
+				//"f(i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a)i(a))",
+				//"f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(a))))))))))))))))",
 				"a",
 				"d(a)",
 				"e(a)(a)(a)(a)",

@@ -409,10 +409,11 @@ public class AnalysisEngine {
 	private void followBranchTarget(InstructionDecodeCache decodeCache, int branchLinkTarget, int currentPc,
 			HashSet<Integer> alreadySeen, int nodeId, int coreId) {
 		boolean keepGoing = true;
-		HashSet<Integer> nowSeen = new HashSet<Integer>(alreadySeen);
+		HashSet<Integer> nowSeen = alreadySeen;
 		XtaInstruction previousInstruction = null;
 		while (keepGoing) {
 			XtaInstruction inst = decodeCache.getInstruction(currentPc);
+			alreadySeen.add(currentPc);
 			if (inst == null)
 				return;
 
