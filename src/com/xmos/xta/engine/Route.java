@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Stack;
 import java.util.TreeSet;
 
@@ -111,13 +112,59 @@ public class Route {
 		return blocks;
 	}
 	
-	public boolean setLoopScope(PathBasicBlock path, boolean absolute) {
-		PathBasicBlock parent = path;
-		while(!parent.getloops().containsBlock(path)){
-			parent = parent.getParent();
-			if(parent == null) return false;
+	/**
+	 * This sets the total number of iterations on a particular paths through 
+	 * set of loops all with a common header. It sets the count on the tightest loop around the pc.
+	 * @param a pc within the loop
+	 * @return return false if this failed to set any loop counts or the pc was on more than 
+	 * one path, and true for success
+	 */	
+	public boolean setLoopIterations(int pc, long count){
+		//translate the pc into blocks
+		ArrayList<PathBasicBlock> blocks = pcToBlocks(pc);
+		
+		HashSet<PathBasicBlock> loopHeaders = new HashSet<PathBasicBlock>();
+		//crawl up the tree until a block with the loop attached is found
+		for(PathBasicBlock block : blocks){
+			PathBasicBlock parent = block;
+			while(!parent.getloops().containsBlock(block)){
+				parent = parent.getParent();
+				if(parent == null) return false;
+			}
+			//parent should now be the block where the loop containing the pc is attached
+			loopHeaders.add(parent);
 		}
-		parent.getloops().setLoopScope(path, absolute);	
+		if(loopHeaders.isEmpty()){
+			return false;
+		}
+		//now we have a hash set of loop headers
+		
+		//for each loop header 
+		for(PathBasicBlock loopHeader : loopHeaders){
+			List<PathBasicBlock> loopList = loopHeader.getloops().getLoopList();
+			int numPathsHit = 0;
+			PathBasicBlock loopFound = null;
+			
+			for (PathBasicBlock loop : loopList) {
+				for (PathBasicBlock loopBlock : loop.getPathBlocks()) {
+					
+					if (loopBlock.getPcsCoveredThis().contains(pc)) {
+						++numPathsHit;
+						loopFound = loop;
+					}
+				}
+			}
+			
+			// If this pc is only on one of the paths through this loop, then 
+			// we can set the loop iterations on it.
+			if (numPathsHit == 1) {
+				if (!loopHeader.setLoopIterations(loopFound, count)) {
+					return false;
+			    }
+			} else {
+				return false;
+			}
+		}		
 		return true;
 	}
 	
@@ -127,7 +174,7 @@ public class Route {
 	 * @param a pc within the loop
 	 * @return return false if this failed to set any loop counts and true for success
 	 */
-	public boolean setLoopIterationCount(int pc, long count){
+	public boolean setLoopMaxIterations(int pc, long count){
 		//translate the pc into blocks
 		ArrayList<PathBasicBlock> blocks = pcToBlocks(pc);
 		
@@ -152,10 +199,43 @@ public class Route {
 			if(loopHeader.getloops().setLoopMax(pc,  count)){
 				loopHeader.getloops().reAssignLoopIterations();
 			}
-		}
-		
+		}		
 		return true;
 	}
+	
+	/**
+	 * This sets the scope on a set of loops all with a common header. It
+	 * sets the scope on the tightest loop around the pc.
+	 * @param a pc within the loop
+	 * @return returns false if this failed to set the scope or the pc was on more than 
+	 * one path, and true for success
+	 */	
+	public boolean setLoopScope(int pc, boolean absolute) {
+		//translate the pc into blocks
+		ArrayList<PathBasicBlock> blocks = pcToBlocks(pc);
+		
+		HashSet<PathBasicBlock> loopHeaders = new HashSet<PathBasicBlock>();
+		//crawl up the tree until a block with the loop attached is found
+		for(PathBasicBlock block : blocks){
+			PathBasicBlock parent = block;
+			while(!parent.getloops().containsBlock(block)){
+				parent = parent.getParent();
+				if(parent == null) return false;
+			}
+			//parent should now be the block where the loop containing the pc is attached
+			loopHeaders.add(parent);
+		}
+		if(loopHeaders.isEmpty()){
+			return false;
+		}
+		//now we have a hash set of loop headers
+		
+		//for each loop header set the scope on the tightest loop containing the pc
+		for(PathBasicBlock loopHeader : loopHeaders){
+			loopHeader.getloops().setLoopScope(pc, absolute);
+		}
+		return true;
+	}	
 	
 	public int getRouteId() {
 		return m_routeId;
@@ -405,7 +485,7 @@ public class Route {
 	}
 
 	 
-
+/*
 	public boolean setLoopIterations(int pathId, long iterations) {
 		for (PathBasicBlock block : m_completedPaths) {
 			if (setLoopIterations(block, pathId, iterations))
@@ -432,7 +512,7 @@ public class Route {
 		}
 		return false;		
 	}
-
+*/
 	public Unknowns getUnknowns() {
 		return m_unknowns;
 	}

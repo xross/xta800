@@ -73,19 +73,29 @@ public class PathInfo extends Command {
     }
     
     private void displayPathSummary(Console console, PathBasicBlock path) {
-    	console.display(String.format("Timing(ns):       %.1f\n", path.getTimeTaken(true)));
+    	console.display(String.format("Path ID:          %d\n", path.getPathId()));
+    	console.display(String.format("Time taken:       %.1f\n", path.getTimeTaken(true)));
         console.display(String.format("Thread cycles:    %d\n", path.getNumCycles(true)));
         console.display(String.format("Num Instructions: %d\n", path.getNumInstructions(true)));
         console.display(String.format("Num FNops:        %d\n", path.getNumFNops(true)));
-        console.display(String.format("Num Blocks:       %d\n", path.getNumPathBlocks()));
         console.display(String.format("Num Pauseables:   %d\n", path.getNumPausables(true)));
-        
+        console.display(String.format("Num Unknowns:     %d\n", path.getNumUnknowns(true)));
+
         int numLoops = 0;
         for (PathBasicBlock block : path.getPathBlocks()) {
             numLoops += block.numLoopPaths(path);
         }
-       // path.doneWithPathBlocks();
         console.display(String.format("Num Loops:        %d\n", numLoops));
+        
+    	console.display(String.format("Time taken (this):       %.1f\n", path.getTimeTaken(false)));
+        console.display(String.format("Thread cycles (this):    %d\n", path.getNumCycles(false)));
+        console.display(String.format("Num Instructions (this): %d\n", path.getNumInstructions(false)));
+        console.display(String.format("Num FNops (this):        %d\n", path.getNumFNops(false)));
+        console.display(String.format("Num Pauseables (this):   %d\n", path.getNumPausables(false)));
+        console.display(String.format("Num Unknowns (this):     %d\n", path.getNumUnknowns(false)));
+
+        console.display(String.format("Number of iterations:    %d + %d\n", 
+        		path.getHardNumIterations(), path.getSoftNumIterations())); 
     }
 
     private void displayBlockSummary(Console console, PathBasicBlock block) {

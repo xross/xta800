@@ -74,10 +74,8 @@ public class PathNode extends Node {
         toolTipText += "----------------------------------\n";
         toolTipText += "Time taken (this): "          + m_block.getTimeTaken(false) + " ns\n";
         toolTipText += "Number of cycles (this): "    + m_block.getNumCycles(false) + "\n";
-        toolTipText += "Number of FNOPs (this): "     + m_block.getNumFNops(false) + "\n";
-        
+        toolTipText += "Number of FNOPs (this): "     + m_block.getNumFNops(false) + "\n";        
         toolTipText += "Number of pausables (this): " + m_block.getNumPausables(false) + "\n";  
-
         toolTipText += "Number of unknowns (this): "  + m_block.getNumUnknowns(false);     
         
         if (!m_isRoot) {
@@ -166,7 +164,8 @@ public class PathNode extends Node {
 	}
 
 	public void setIterations(long numIterations) {
-		XtaEngine.getEngine().setLoopIterations(getRouteId(), m_block.getPathId(), numIterations);
+		int pc = m_block.getInstructionTrimmed().getFirst().getPc();			
+		XtaEngine.getEngine().setLoopIterations(getRouteId(), pc, numIterations);
 	}
 
 	public boolean getAbsoluteCount() {

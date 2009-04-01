@@ -382,12 +382,10 @@ public class Engine {
 		return m_config.m_numThreads;
 	}
 
-	public boolean setLoopScope(int routeId, int pathId, boolean absolute) {
+	public boolean setLoopScope(int routeId, int pc, boolean absolute) {
 		Route route = getRoute(routeId);		
 		if (route != null) {
-			PathBasicBlock path = route.getPath(pathId);
-			
-			boolean hit = route.setLoopScope(path, absolute);
+			boolean hit = route.setLoopScope(pc, absolute);
 			if (hit) {
 				invalidateRouteStats();
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
@@ -398,10 +396,10 @@ public class Engine {
 		return false;
 	}
 	
-	public boolean setLoopMax(int routeId, int pc, long iterations) {
+	public boolean setLoopIterations(int routeId, int pc, long iterations) {
 		Route route = getRoute(routeId);		
 		if (route != null) {
-			boolean hit = route.setLoopIterationCount(pc, iterations);
+			boolean hit = route.setLoopIterations(pc, iterations);
 			if (hit) {
 				invalidateRouteStats();
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
@@ -412,10 +410,10 @@ public class Engine {
 		return false;
 	}
 	
-	public boolean setLoopIterations(int routeId, int pathId, long iterations) {
+	public boolean setLoopMaxIterations(int routeId, int pc, long iterations) {
 		Route route = getRoute(routeId);		
 		if (route != null) {
-			boolean hit = route.setLoopIterations(pathId, iterations);
+			boolean hit = route.setLoopMaxIterations(pc, iterations);
 			if (hit) {
 				invalidateRouteStats();
 				notify(Notifier.NOTIFY_UPDATE_STATE, "");
@@ -425,7 +423,7 @@ public class Engine {
 		}
 		return false;
 	}
-
+	
 	public boolean setInstructionTimeTaken(Reference ref, double timeTaken) {
 		if (m_nodeCoreInstructionCache == null) {
 			notify(Notifier.NOTIFY_ERROR, "No executable loaded");

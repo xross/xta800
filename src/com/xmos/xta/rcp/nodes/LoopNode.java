@@ -54,8 +54,6 @@ public class LoopNode extends Node {
     public String getToolTipText(){
         String toolTipText = getSummary() + "\n";
         toolTipText += "----------------------------------\n";
-        toolTipText += "Loop ID: " + m_block.getPathId() + "\n";
-        toolTipText += "----------------------------------\n";
         toolTipText += "Total time taken: " + getTimeTaken() + " ns\n";
         toolTipText += "Total number of cycles: " + getNumCycles() + "\n";
         toolTipText += "Total number of FNOPs: " + m_block.getNumFNopsLoopsOnly() + "\n";
@@ -153,11 +151,12 @@ public class LoopNode extends Node {
 	
 	public void setLoopMax(long count){
 		int pc = m_block.getInstructionTrimmed().getFirst().getPc();	
-		XtaEngine.getEngine().setLoopMax(getRouteId(), pc, count);
+		XtaEngine.getEngine().setLoopMaxIterations(getRouteId(), pc, count);
 	}
 
 	public void setScope(boolean absolute) {
-		XtaEngine.getEngine().setLoopScope(getRouteId(), m_block.getPathId(), absolute);
+		int pc = m_block.getInstructionTrimmed().getFirst().getPc();	
+		XtaEngine.getEngine().setLoopScope(getRouteId(), pc, absolute);
 	}
 
 	public boolean getScope() {

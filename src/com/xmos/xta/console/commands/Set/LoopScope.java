@@ -4,21 +4,24 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.engine.references.ReferenceFactory;
+import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 
 public class LoopScope extends Command {	
 	private int m_routeId;
-	private int m_pathId;
+	private String m_refString;
 	private boolean m_absolute;
 	
 	public LoopScope() {
 		m_routeId = 0;
-		m_pathId = 0;
+		m_refString = "";
 		m_absolute = false;
 	}
 	
-	public LoopScope(int routeId, int pathId, boolean absolute) {
+	public LoopScope(int routeId, String refString, boolean absolute) {
 		m_routeId = routeId;
-		m_pathId = pathId;	
+		m_refString = refString;
 		m_absolute = absolute;
 	}
 			
@@ -33,12 +36,12 @@ public class LoopScope extends Command {
     public String commandLine() {
     	return "loopscope " + 
     	    getRouteId(m_routeId) + " " + 
-    	    m_pathId + " " + 
+    	    m_refString + " " + 
     	    (m_absolute ? "absolute" : "relative");
     }
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = "loopscope <route id> <path id> <scope>: Sets the scope of loop attached to a path";
+    	String descString = "loopscope <route id> <SRCLABEL_REF> <scope>: Sets the scope of the referenced loop";
     	if (detailed) {
         	descString += "\n";
     		descString += "          scope: relative/r: Iteration number propagates to the enclosing path (Default)\n";                
@@ -51,14 +54,11 @@ public class LoopScope extends Command {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 
-    	int routeId;
-    	int pathId;
-    	try { 
-    		routeId = getRouteId(args[index + 1]); 
-    		pathId = getId(args[index + 2]);
-    	} catch (NumberFormatException e) {
+	    int routeId;
+    	try { routeId = getRouteId(args[index + 1]); }
+	    catch (NumberFormatException e) {
 	        return null;
-	    }
+	    }	    	    
 	    	    	    
     	boolean absolute;
 	    if ((args[index + 3].compareTo("relative") == 0) ||  
@@ -74,15 +74,26 @@ public class LoopScope extends Command {
 	    }
     		  
 	    
-        return new LoopScope(routeId, pathId, absolute);
+        return new LoopScope(routeId, args[index + 2], absolute);
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-		if (!engine.setLoopScope(m_routeId, m_pathId, m_absolute)) {
-    		console.display(String.format("Error: Failed to set loop iterations: route id: %d path id: %d\n", m_routeId, m_pathId));    		
+		if (engine.getRoute(m_routeId) == null){
+			console.display(String.format("Error: Failed to set loop scope: no such route id: %d\n", m_routeId));   
+			return;
+		}
+
+		Reference ref = ReferenceFactory.createReference(m_refString, ReferenceClass.SRCLABEL_REF);
+		if (!ref.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
+			console.display("Invalid code reference '" + m_refString + "'");
+			return;
+		}
+		
+		if (!engine.setLoopScope(m_routeId, ref.getPc(), m_absolute)) {
+    		console.display(String.format("Error: Failed to set loop scope: route id: %d\n", m_routeId));    		
     	}
     }    
  }

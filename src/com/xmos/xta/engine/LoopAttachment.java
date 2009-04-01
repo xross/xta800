@@ -68,32 +68,19 @@ public class LoopAttachment {
 		}
 		return null;
 	}
-	
-	/**
-	 * set the scope of all the loops attached at a given level
-	 */
-	public void setLoopScope(PathBasicBlock loop, boolean absolute){
-		LoopAttachment la = findLoop(loop);
-		la.getParent().m_absolute = new Boolean(absolute);
-	}
-	
-	public boolean getLoopScope(PathBasicBlock loop) {
-		LoopAttachment la = findLoop(loop);
-		if(la.getParent().m_absolute!= null){
-			return la.getParent().m_absolute;
-		}
-		return false;
-	}
-	
+		
 	public boolean setLoopIterations(PathBasicBlock loop, long count){
 		assert(loop != null);
-		if(m_loop == loop){
-			m_hardIterations = new Long(count);
-			getParent().reAssignLoopIterations();
-			return true;
+		if (m_loop == loop) {
+			if (withinMaxRange(count)) {
+			    m_hardIterations = new Long(count);
+			    getParent().reAssignLoopIterations();
+			    return true;
+			}
+            return false;		
 		}
-		for(LoopAttachment la : m_subLoops){
-			if(la.setLoopIterations(loop, count)){
+		for (LoopAttachment la : m_subLoops) {						
+			if (la.setLoopIterations(loop, count)) {
 				return true;
 			}
 		}
@@ -176,9 +163,7 @@ public class LoopAttachment {
 		return false;
 	}
 	
-
-	public void addLoop(PathBasicBlock newLoop){
-		
+	public void addLoop(PathBasicBlock newLoop){		
 		if(m_allAttachedLoops != null){
 			m_allAttachedLoops.add(newLoop);
 		}
@@ -259,8 +244,6 @@ public class LoopAttachment {
 		}
 	}
 
-
-	
 	/**
 	 * returns true if block is contained within any of the loop end points
 	 */
@@ -276,7 +259,6 @@ public class LoopAttachment {
 		}
 		return false;
 	}
-
 	
 	public boolean setLoopMax(int pc, long count) {
 		//starting from the inner most loop try to set the loopmax
@@ -296,6 +278,50 @@ public class LoopAttachment {
 			found |= la.setLoopMax(pc, count);
 		}
 		return found;
+	}
+	
+	public long getLoopMax(PathBasicBlock loop) throws Exception {
+		assert(loop != null);
+		LoopAttachment la = findLoop(loop);
+		if(la!= null){
+				if(la.m_softIterations!= null){
+					return la.getParent().m_maxIterations;
+				} else {
+					throw new Exception();
+				}
+		} else {
+			//loop not found
+			throw new Exception();
+		}
+	}
+
+	/**
+	 * set the scope of all the loops attached at a given level
+	 */
+	public void setLoopScope(int pc, boolean absolute){
+		//starting from the inner most loop try to set the scope
+		
+		for(LoopAttachment la : m_subLoops){
+			for(PathBasicBlock loopBlock : la.getLoop().getPathBlocks()){
+				if(loopBlock.containsPc(pc)){
+					m_absolute = new Boolean(absolute);
+					return;
+				}
+			}	
+		}
+		
+		//FIXME - this is wrong
+		for(LoopAttachment la : m_subLoops){
+			la.setLoopScope(pc, absolute);
+		}
+	}
+	
+	public boolean getLoopScope(PathBasicBlock loop) {
+		LoopAttachment la = findLoop(loop);
+		if(la.getParent().m_absolute!= null){
+			return la.getParent().m_absolute;
+		}
+		return false;
 	}
 	
 	public void reAssignLoopIterations(){
@@ -323,39 +349,14 @@ public class LoopAttachment {
 				longestLoop.m_softIterations = new Long(remaining);
 			}
 		}
-		
 	}
 
-	public long getLoopMax(PathBasicBlock loop) throws Exception {
-		/*
-		if(getParent()!= null){
-			return getParent().m_maxIterations;
-		} else {
-			return 0;
-		}
-		*/
-		
-		assert(loop != null);
-		LoopAttachment la = findLoop(loop);
-		if(la!= null){
-				if(la.m_softIterations!= null){
-					return la.getParent().m_maxIterations;
-				} else {
-					throw new Exception();
-				}
-		} else {
-			//loop not found
-			throw new Exception();
-		}
-		
-	}
-
+	
 	public LoopIterationsUnknown getLoopUnknown(){
 		
 		if(m_hardIterations == null && m_softIterations == null){
 			return new LoopIterationsUnknown(m_loop.getPathBlocks().get(0),m_loop);
 		}
-		
 		return null;
 	}
 	
@@ -373,8 +374,38 @@ public class LoopAttachment {
 			}
 		}
 		return unknowns;
+	}	
+	
+	/**
+	 * returns a the sum of all the hard loop iterations set in the sub loops of this loop
+	 */	
+	private long getCurrentHardTotal() {			
+		long total = 0;
+		for (LoopAttachment la : m_subLoops) {
+			if (la.m_hardIterations != null) {
+				total += la.m_hardIterations;
+			}
+		}
+		return total;
 	}
 
-	
-	
+	/**
+	 * Checks that setting the current loop iteration of 'count' will not
+	 * cause the hard iterations counts of all the sub loops to overflow the max.
+	 */	
+	private boolean withinMaxRange(long count) {
+		long total = m_parent.getCurrentHardTotal();
+		if (m_hardIterations != null) 
+			total -= m_hardIterations;
+		
+		long newTotal = total + count;
+		if (newTotal < 0)
+			return false;
+		
+		if (m_parent.m_maxIterations != null) {
+			if (newTotal > m_parent.m_maxIterations)
+				return false;
+		}
+		return true;
+	}
 }
