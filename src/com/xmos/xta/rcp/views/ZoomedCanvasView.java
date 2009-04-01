@@ -145,6 +145,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE) || 
 				   event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 			clearTree();
+			nodeCoreChanged();
 			refreshView();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
@@ -475,6 +476,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		m_toolTip.setVisible(true);
 	}
 
+	protected abstract void nodeCoreChanged();
 	protected abstract void initialiseTree();
     protected abstract void drawCanvas(GC gc);    
     protected abstract void buildClickAreas();

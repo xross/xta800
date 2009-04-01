@@ -69,11 +69,15 @@ public class FunctionView extends ZoomedCanvasView {
 		m_timeUnits = "ns";
 	}
 
+    protected void nodeCoreChanged() {
+		if (DEBUG) System.out.printf("Function: nodeCoreChanged\n");
+		getDebugInfo();
+	}
+
     protected void initialiseTree() {
 		if (DEBUG) System.out.printf("Function: initialiseTree\n");
     	m_routeInfo = XtaNotifier.getInstance().getRouteInfo();
 		if (m_routeInfo != null) {
-    		getDebugInfo();
 			m_rootNode = m_routeInfo.getRouteNode();
 			m_selectedNode = m_routeInfo.getSelectedNode();
 			if (m_selectedNode != null) {
@@ -264,9 +268,18 @@ public class FunctionView extends ZoomedCanvasView {
         m_colors = new Vector<Color>();
 
         int increment = 32;
-        for (int r = increment * 2; r < 255; r += increment) {
-            for (int g = increment * 2; g < 255; g += increment) {
-                for (int b = increment * 2; b < 255; b += increment) {
+        for (int i = 32; i < 255; i += increment) {
+        	RGB r = new RGB(i, 0, 0);
+            m_colors.add(new Color(display, r));
+        	RGB g = new RGB(0, i, 0);
+            m_colors.add(new Color(display, g));
+        	RGB b = new RGB(0, 0, i);
+            m_colors.add(new Color(display, b));
+        }
+
+        for (int r = 32; r < 255; r += increment) {
+            for (int g = 32; g < 255; g += increment) {
+                for (int b = 32; b < 255; b += increment) {
                 	RGB rgb = new RGB(r, g, b);
                     m_colors.add(new Color(display, rgb));
                 }
