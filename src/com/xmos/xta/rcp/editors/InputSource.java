@@ -23,16 +23,22 @@ public class InputSource implements IEditorInput {
 		int lineIndex = 0;
 		m_input = new Input(s_headerType, s_lineType);
         for (SourceLine sourceLine : sourceFile.getSourceLines()){   
-        	
-        	
-    		String headerRef = String.format("%s:%d", sourceFile.getFileName(), sourceLine.getLineNumber());
+
+        	String headerRef = String.format("%s:%d", sourceFile.getFileName(), sourceLine.getLineNumber());
         	m_input.addHeader(sourceLine.getText(), headerRef, lineIndex, sourceLine.getLineNumber());        	
         	++lineIndex;
             for (Line line : sourceLine.getChildern()) {
-        		String str = String.format("    0x%05x %s", line.getLineNumber(), line.getText());
-        		String childRef = String.format("0x%05x", line.getLineNumber());
-            	m_input.addLine(str, childRef, line.getLineNumber(), lineIndex); 
+        		int pc = line.getLineNumber();
+				String str = String.format("    0x%05x %s", pc, line.getText());
+        		String childRef = String.format("0x%05x", pc);
+            	m_input.addLine(str, childRef, pc, lineIndex); 
         		++lineIndex;        		
+            }
+            
+            // Only associate statement PCs from debug with this source line
+            InputSection section = m_input.getLastSection();
+            for (Integer pc : sourceLine.getStatementPcs()) {
+            	m_input.addPcToSecion(pc, section);
             }
         }
         updateLineNumberMapping();

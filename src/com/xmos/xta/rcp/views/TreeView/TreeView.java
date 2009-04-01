@@ -163,11 +163,13 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 			refreshTree();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUDES) || 
-				   event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) || 
-				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
+				   event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
+			initialiseSelectedRouteView();
+
+		} else if (event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 			initialiseTrees();
 
-		} 
+		}
 	}
 	
     public void selectionChanged(IWorkbenchPart part, ISelection sel) {
@@ -221,12 +223,13 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		m_selectedRouteViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection sel = event.getSelection();
-		    	if (sel.isEmpty())
-		    		return;
-		    	
-				if (sel instanceof IStructuredSelection) {	            
+				if (sel instanceof IStructuredSelection) {
+					m_routeInfo.setSelectedNode(null);
+
+					if (((IStructuredSelection) sel).size() != 1)
+						return;
+					
 		            Object object = ((IStructuredSelection)sel).getFirstElement();
-		            
 	            	if (object instanceof Node) {
 		            	m_routeInfo.setSelectedNode((Node)object);
 	            	}
@@ -280,20 +283,23 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection selection = event.getSelection();
 				if (selection instanceof IStructuredSelection) {
-					if (((IStructuredSelection)selection).size() != 1)
-						return;
-					
-		            Object object = ((IStructuredSelection)selection).getFirstElement();
-		            if (object instanceof RouteNode) {
-		            	int newId = ((RouteNode)object).getId();
-						if (newId != m_selectedRouteId) {
-		            		m_selectedRouteId = newId;
+					int newId = m_selectedRouteId;
 
-							XtaNotifier.getInstance().notify(
-		            				Notifier.NOTIFY_SELECT_ROUTE,
-		            				Integer.toString(m_selectedRouteId));
-		            	}
-		            }
+					if (((IStructuredSelection)selection).size() == 1) {
+			            Object object = ((IStructuredSelection)selection).getFirstElement();
+			            if (object instanceof RouteNode) {
+			            	newId = ((RouteNode)object).getId();
+			            }
+					} else {
+						newId = Route.INVALID_ROUTE_ID;
+					}
+					
+					if (newId != m_selectedRouteId) {
+	            		m_selectedRouteId = newId;
+						XtaNotifier.getInstance().notify(
+								Notifier.NOTIFY_SELECT_ROUTE,
+	            				Integer.toString(m_selectedRouteId));
+	            	}
 		        }
 			}
 		});

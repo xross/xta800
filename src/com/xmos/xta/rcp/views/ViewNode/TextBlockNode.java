@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
 public class TextBlockNode extends ViewNode {
@@ -50,7 +51,13 @@ public class TextBlockNode extends ViewNode {
 		gc.setBackground(m_color);
     	gc.fillRectangle(m_left, m_top, m_right - m_left, m_bottom - m_top);
 
-        gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
+    	// If the brightness is too much, write the text in black
+    	RGB rgb = m_color.getRGB();
+    	if (((rgb.red + rgb.green + rgb.blue) > 400) || (
+    			(rgb.red > 50) && (rgb.green > 50) && (rgb.blue > 50)))
+    		gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+    	else
+    		gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
 
         double functionNameWidth = gc.getFontMetrics().getAverageCharWidth() * m_text.length();
         if (DEBUG) { System.out.print("TextBlockNode: text "); System.out.println(functionNameWidth); }

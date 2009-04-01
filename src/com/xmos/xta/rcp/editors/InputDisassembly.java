@@ -28,13 +28,16 @@ public class InputDisassembly implements IEditorInput {
         	m_input.addHeader(function.getText() + ":", headerRef, lineIndex, 0);        	
         	++lineIndex;
 
+            InputSection section = m_input.getLastSection();
         	for (Line line : function.getChildern()) {
-        		String str = String.format("    0x%05x %s", line.getLineNumber(), line.getText());
-        		String childRef = String.format("0x%05x", line.getLineNumber());
-        		m_input.addLine(str, childRef, line.getLineNumber(), lineIndex);
+        		int pc = line.getLineNumber();
+				String str = String.format("    0x%05x %s", pc, line.getText());
+        		String childRef = String.format("0x%05x", pc);
+        		m_input.addLine(str, childRef, pc, lineIndex);
         		++lineIndex;
+            	m_input.addPcToSecion(pc, section);
         	}
-        }		
+        }
         updateLineNumberMapping();
         m_pcToLine = new HashMap<Integer, InputLine>();
         for(InputSection inputSection : m_input.getSections()){

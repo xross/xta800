@@ -102,13 +102,14 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private Annotation[] m_previousProjectionAnnotations;
     private Annotation[] m_previousHighlightAnnotations;
     private Annotation[] m_previousUnknownAnnotations;
+
+    private List<Annotation> m_currentHighlightAnnotations;
+	private HashMap<Annotation, Position> m_currentHighlightAnnotationPositions;
     private boolean m_hasHighlightedLines;
-    private boolean m_updatingHighlights;
     
     private Node m_currentPathRoot;
     private Node m_selectedNode;
     
-	private ISelection m_mostRecent;
     private final String m_type;
     private final String m_fileName;
     private InputLine m_startPointLine;
@@ -131,7 +132,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	m_startPointLine = null;
         m_endPointLine = null;
         m_hasHighlightedLines = false;
-        m_updatingHighlights = false;
         
         m_endPointLineIndexes = new TreeMap<Integer,InputLine>();
         m_excludedIndexes = new HashSet<Integer>();
@@ -175,10 +175,10 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("XtaEditor: propertyChange: %s\n", event.getProperty());	
 		
 		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
-
 			updateInputLines(false);
 			updatePartitions();
 			updateEditor();
+
 		} else if (event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 			resetGrey();
 			
@@ -195,12 +195,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT)) {
 			Reference startPoint = XtaNotifier.getInstance().getStartPoint();
 			m_startPointLine = findCodeRefLineNum(startPoint);
-    	    updateHighlighting();
+	        updateAnnotations(m_currentHighlightAnnotations, m_currentHighlightAnnotationPositions);
     	    
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT)) {
 			Reference endPoint = XtaNotifier.getInstance().getEndPoint();
 			m_endPointLine = findCodeRefLineNum(endPoint);
-    	    updateHighlighting();
+	        updateAnnotations(m_currentHighlightAnnotations, m_currentHighlightAnnotationPositions);
     	    
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SHOW_CODE_POINT)) {
 			Reference codePoint = XtaNotifier.getInstance().getCodePoint();
@@ -211,15 +211,13 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_CONSTRAINT)) {
 			updateExcluded();
-    	    updateHighlighting();
+	        updateAnnotations(m_currentHighlightAnnotations, m_currentHighlightAnnotationPositions);
 
 		}
 	}
 
 	public void resetGrey() {
 		m_selectedNode = null;
-		m_startPointLine = null;
-		m_endPointLine = null;			
 		updateInputLines(true);
 		updatePartitions();
 		updateEditor();
@@ -228,18 +226,23 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
 		if (DEBUG) System.out.printf("XtaEditor: selectionChanged\n"); 
-		if (sel != m_mostRecent  && sel instanceof IStructuredSelection) {	            
+		if (sel instanceof IStructuredSelection) {
+			if (((IStructuredSelection) sel).size() != 1)
+				return;
+			
             Object object = ((IStructuredSelection)sel).getFirstElement();
             if (object instanceof Node) {
-            	m_mostRecent = sel;
-            	m_selectedNode = (Node)object;
-            	updateEditor();
+            	if (m_selectedNode != (Node)object) {
+            		m_selectedNode = (Node)object;
+            		updateEditor();
+            	}
             }
         }
     }
 
 	private void updateEditor() {
 		updateFnops();
+		updateExcluded();
 		updateHighlighting();
 		updateUnknowns();
 	}	            		         	        
@@ -273,7 +276,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     		
 	    	HashSet<Integer> pcsCovered = route.getPcsHit();
 	    	
-	    	
 	    	boolean foundFirstLine = false;
 	    	ArrayList<InputSection> noDebug = new ArrayList<InputSection>();
 	    	
@@ -300,13 +302,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 						i.setGrey(false);
 					}
 				}
-				/*
-				if (route.getFunction()!= null){
-					if (inputSection.getHeader().getLine().contains(route.getFunction())){
-						inputSection.setGrey(false);
-					}
-				}
-				*/
 			}
     	} else {
     		for (InputSection inputSection : input.getSections()){
@@ -356,7 +351,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}
 	
 	private HashSet<XtaInstruction> m_prevFnops = new HashSet<XtaInstruction>();
-    
+
     private void updateFnops() {
 		if (DEBUG) System.out.printf("XtaEditor: updateFnops\n"); 
 		
@@ -413,8 +408,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}
     
     private void removeFnop(int pc) {
-		if (DEBUG) System.out.printf("XtaEditor: removeFnops\n");
-		
 		int fnopsRemoved = 0;
 		IDocument document = getDocument();
     	for (InputSection inputSection : getSections()) {
@@ -468,13 +461,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private void updateHighlighting() {
 		if (DEBUG) System.out.printf("XtaEditor: updateHighlighting\n");
 		
-		if (m_updatingHighlights)
-			return;
-		m_updatingHighlights = true;
-		
 	    ArrayList<Annotation> annotations = new ArrayList<Annotation>();
-        HashMap<Annotation, Position> annotationPositions = 
-    	    new HashMap<Annotation, Position>();		
+        HashMap<Annotation, Position> annotationPositions = new HashMap<Annotation, Position>();		
 		
         if (m_selectedNode != null) {
         	HashSet<Integer> pcsCovered = m_selectedNode.getPcsCovered(true);
@@ -486,9 +474,25 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         }
         m_hasHighlightedLines = (annotations.size() > 0);
 
+        if (DEBUG) System.out.println("XtaEditor: replace highlighting");
+        m_currentHighlightAnnotations = annotations;
+		m_currentHighlightAnnotationPositions = annotationPositions;
+		updateAnnotations(annotations, annotationPositions);
+		
+		XtaNotifier.getInstance().notify(Notifier.NOTIFY_HIGHLIGHTS_UPDATED, "");
+    }
+
+    // Add all annotations after highlights
+	private void updateAnnotations(List<Annotation> annotations,
+			HashMap<Annotation, Position> annotationPositions) {
+
+		ArrayList<Annotation> allAnnotations = new ArrayList<Annotation>(annotations);
+		final HashMap<Annotation, Position> allAnnotationPositions =
+			new HashMap<Annotation, Position>(annotationPositions);
+		
         int startPointIndex = getStartPointIndex();
         int endPointIndex = getEndPointIndex();
-        
+
         m_endPointLineIndexes.clear();
         for (EndpointTableInfo info : XtaEngine.getEngine().getEndpointTable().values()) {
         	if (info.getFileName().equals(m_fileName)) {
@@ -496,34 +500,32 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         		if (line != null) {
         			int index = line.getIndex();
 	        		if (index != endPointIndex && index != startPointIndex)
-	        			addAnnotation(index, EndpointID, annotations, annotationPositions);
+	        			addAnnotation(index, EndpointID, allAnnotations, allAnnotationPositions);
 	        		m_endPointLineIndexes.put(index, line);
         		}
         	}
         } 
 
         if ((startPointIndex != -1) && (startPointIndex == endPointIndex)) {
-        	addAnnotation(startPointIndex, StartStopAnnotationID, annotations, annotationPositions);
+        	addAnnotation(startPointIndex, StartStopAnnotationID, allAnnotations, allAnnotationPositions);
         } else {
         	if (startPointIndex != -1)
-            	addAnnotation(startPointIndex, StartAnnotationID, annotations, annotationPositions);
+            	addAnnotation(startPointIndex, StartAnnotationID, allAnnotations, allAnnotationPositions);
         	
         	if (endPointIndex != -1)
-            	addAnnotation(endPointIndex, StopAnnotationID, annotations, annotationPositions);
+            	addAnnotation(endPointIndex, StopAnnotationID, allAnnotations, allAnnotationPositions);
         }
 
     	for (Integer excludedIndex : m_excludedIndexes) {
-    		addAnnotation(excludedIndex, ExcludedAnnotationID, annotations, annotationPositions);
+    		addAnnotation(excludedIndex, ExcludedAnnotationID, allAnnotations, allAnnotationPositions);
 		}
-
-        if(DEBUG) System.out.println("XtaEditor: replace highlighting");
-        
-		m_annotationModel.replaceAnnotations(m_previousHighlightAnnotations, annotationPositions);        
-		m_previousHighlightAnnotations = createArray(annotations);
-		
-		XtaNotifier.getInstance().notify(Notifier.NOTIFY_UPDATE_HIGHLIGHTS, "");
-		m_updatingHighlights = false;
-    }
+    	
+		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+			public void run() {      
+				m_annotationModel.replaceAnnotations(m_previousHighlightAnnotations, allAnnotationPositions);
+			}});
+		m_previousHighlightAnnotations = createArray(allAnnotations);
+	}
 
 	private void updateExcluded() {
 		m_excludedIndexes.clear();
@@ -637,10 +639,10 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}
 
 	private void updateUnknowns() {
-		if (DEBUG) System.out.printf("XtaEditor: upadteUnknowns\n"); 
+		if (DEBUG) System.out.printf("XtaEditor: updateUnknowns\n"); 
 
 	    ArrayList<Annotation> annotations = new ArrayList<Annotation>();
-        HashMap<Annotation, Position> annotationPositions = 
+        final HashMap<Annotation, Position> annotationPositions = 
     	    new HashMap<Annotation, Position>();		
 
 		HashSet<Integer> unknownsSet = new HashSet<Integer>();
@@ -652,7 +654,10 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		}
     		
     	if (DEBUG) System.out.println("XtaEditor: replace unknowns");
-		m_annotationModel.replaceAnnotations(m_previousUnknownAnnotations, annotationPositions);        
+		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+			public void run() {      
+				m_annotationModel.replaceAnnotations(m_previousUnknownAnnotations, annotationPositions);        
+			}});
 		m_previousUnknownAnnotations = createArray(annotations);
     }
 
@@ -660,16 +665,20 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     		Map<Annotation, Position> annotationPositions, boolean excludeFnops, HashMap<Integer, InputLine> pcToLine) {
     	InputLine line = pcToLine.get(pc);
     	if (line == null) return;
-		if (!getInput().getPcsToSection().get(pc).isFnop(line.getOffset())) {	
+		InputSection inputSection = getInput().getPcsToSection().get(pc);
+		if (inputSection != null) {
+			addAnnotation(inputSection.getIndex(), type, annotations, annotationPositions);
+		}
+		InputLine inputLine = getInput().getPcsToLines().get(pc);
+		if (inputLine != null) {
 			addAnnotation(line.getIndex(), type, annotations, annotationPositions);
-			addAnnotation(getInput().getPcsToSection().get(pc).getIndex(), type, annotations, annotationPositions);
 		}
 		
 		//TODO optimise this too with a hashmap
-		if(!excludeFnops){
-			for(InputSection section : getSections()){
-				for(InputLine fnop : section.getFnops()){
-					if(fnop.getPc() == pc) { 
+		if (!excludeFnops){
+			for (InputSection section : getSections()){
+				for (InputLine fnop : section.getFnops()){
+					if (fnop.getPc() == pc) { 
 						addAnnotation(fnop.getIndex(), type, annotations, annotationPositions);
 					}
 				}

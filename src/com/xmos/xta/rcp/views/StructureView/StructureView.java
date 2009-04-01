@@ -151,7 +151,12 @@ public class StructureView extends ZoomedCanvasView {
    		return selected;
 	}
 
-	protected void initialiseTree() {
+    protected void nodeCoreChanged() {
+		if (DEBUG) System.out.printf("Structure: nodeCoreChanged\n");
+	}
+
+    protected void initialiseTree() {
+		if (DEBUG) System.out.printf("Structure: initialiseTree\n");
 		m_routeInfo = XtaNotifier.getInstance().getRouteInfo();
 		if (m_routeInfo != null) {
 			m_rootNode = m_routeInfo.getRouteNode();

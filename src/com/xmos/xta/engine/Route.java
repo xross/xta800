@@ -69,7 +69,7 @@ public class Route {
 		m_loopBlocks = new ArrayList<PathBasicBlock>();
 		m_unresolvedPaths = new ArrayList<Unresolved>();
 		m_startPc = startPc;
-		m_endPcs =endPcs;
+		m_endPcs = endPcs;
 		m_description = description;
 		m_nodes = nodes;
 		m_idc = idc;
@@ -311,10 +311,11 @@ public class Route {
 			return RouteStatus.ABORTED;
 		}
 		
-		
-		
-		for (PathBasicBlock completedBlock : this.m_completedPaths){
+		for (PathBasicBlock completedBlock : m_completedPaths){
 			addPathPcs(completedBlock);
+		}
+		for (Unresolved unresolvedBlock : m_unresolvedPaths){
+			addPathPcs(unresolvedBlock.getBlock());
 		}
 		
 		sortPaths();
@@ -325,7 +326,7 @@ public class Route {
 	private void addPathPcs(PathBasicBlock completedBlock) {
 		for (PathBasicBlock pathBlock : completedBlock.getPathBlocks()) {
 			m_pcsHit.addAll(pathBlock.getPcsCoveredThis());
-			for(LoopIterationsUnknown loopUnknown : pathBlock.getloops().getUnknowns()){
+			for (LoopIterationsUnknown loopUnknown : pathBlock.getloops().getUnknowns()){
 				m_unknowns.addUnknown(loopUnknown);
 			}
 			for (XtaInstruction instruction : pathBlock.getInstructionTrimmed()) {
