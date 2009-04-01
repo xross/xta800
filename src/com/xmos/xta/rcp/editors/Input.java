@@ -43,10 +43,14 @@ public class Input {
     }
     
 	public void addLine(String line, String codeReference, int pc, int index) {
-    	assert(m_sections.size() > 0);
-    	m_sections.get(m_sections.size() - 1).addLine(line, codeReference, pc, index, this);
+    	getLastSection().addLine(line, codeReference, pc, index, this);
     }
     
+	public InputSection getLastSection() {
+		assert(m_sections.size() > 0);
+    	return m_sections.get(m_sections.size() - 1);
+    }
+	
 	public ArrayList<InputSection> getSections() {
     	return m_sections;
     }
@@ -92,7 +96,6 @@ class InputSection {
 		InputLine newLine = new InputLine(this, line, codeReference, pc, index - m_index - 1, input.getLineType());
 		m_lines.add(newLine);
 		input.addPcToLine(pc, newLine);
-		input.addPcToSecion(pc, this);
 	}
 	
 	public HashMap<Integer, InputLine> getPcs(){
