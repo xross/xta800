@@ -1833,7 +1833,7 @@ samp:
           .long     .LDBG0           # low address
           .long     .LDBG550         # high address
           .asciiz   "./tests/audio/src/audio_init_audioBoard.xc"
-          .asciiz   "/home/andrew-local/software/sandbox2/verif_tests_sw/Tools/xta/Applications/swc_usb"
+          .asciiz   "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/Applications/swc_usb"
           .short    0xc000
           .asciiz   "XMOS Dwarf Symbolic Debug Generator"
           .long     .LDBG552         # offset in .debug_lineprog
@@ -2153,26 +2153,26 @@ samp:
 .LDBG624:
           .byte     0x50
 .LDBG625:
-          .int      .LDBG65-.LDBG0
-          .int      .LDBG66-.LDBG0
+          .int      .LDBG58-.LDBG0
+          .int      .LDBG60-.LDBG0
           .short    .LDBG627-.LDBG626
 .LDBG626:
           .byte     0x50
 .LDBG627:
-          .int      .LDBG58-.LDBG0
-          .int      .LDBG60-.LDBG0
+          .int      .LDBG69-.LDBG0
+          .int      .LDBG70-.LDBG0
           .short    .LDBG629-.LDBG628
 .LDBG628:
           .byte     0x50
 .LDBG629:
-          .int      .LDBG69-.LDBG0
-          .int      .LDBG70-.LDBG0
+          .int      .LDBG67-.LDBG0
+          .int      .LDBG68-.LDBG0
           .short    .LDBG631-.LDBG630
 .LDBG630:
           .byte     0x50
 .LDBG631:
-          .int      .LDBG67-.LDBG0
-          .int      .LDBG68-.LDBG0
+          .int      .LDBG65-.LDBG0
+          .int      .LDBG66-.LDBG0
           .short    .LDBG633-.LDBG632
 .LDBG632:
           .byte     0x50
@@ -2215,50 +2215,50 @@ samp:
 .LDBG641:
           .byte     0x57
 .LDBG642:
-          .int      .LDBG65-.LDBG0
-          .int      .LDBG66-.LDBG0
+          .int      .LDBG17-.LDBG0
+          .int      .LDBG23-.LDBG0
           .short    .LDBG644-.LDBG643
 .LDBG643:
           .byte     0x57
 .LDBG644:
-          .int      .LDBG63-.LDBG0
-          .int      .LDBG64-.LDBG0
+          .int      .LDBG46-.LDBG0
+          .int      .LDBG51-.LDBG0
           .short    .LDBG646-.LDBG645
 .LDBG645:
           .byte     0x57
 .LDBG646:
-          .int      .LDBG69-.LDBG0
-          .int      .LDBG70-.LDBG0
+          .int      .LDBG38-.LDBG0
+          .int      .LDBG45-.LDBG0
           .short    .LDBG648-.LDBG647
 .LDBG647:
           .byte     0x57
 .LDBG648:
-          .int      .LDBG17-.LDBG0
-          .int      .LDBG23-.LDBG0
+          .int      .LDBG11-.LDBG0
+          .int      .LDBG16-.LDBG0
           .short    .LDBG650-.LDBG649
 .LDBG649:
           .byte     0x57
 .LDBG650:
-          .int      .LDBG46-.LDBG0
-          .int      .LDBG51-.LDBG0
+          .int      .LDBG67-.LDBG0
+          .int      .LDBG68-.LDBG0
           .short    .LDBG652-.LDBG651
 .LDBG651:
           .byte     0x57
 .LDBG652:
-          .int      .LDBG38-.LDBG0
-          .int      .LDBG45-.LDBG0
+          .int      .LDBG65-.LDBG0
+          .int      .LDBG66-.LDBG0
           .short    .LDBG654-.LDBG653
 .LDBG653:
           .byte     0x57
 .LDBG654:
-          .int      .LDBG11-.LDBG0
-          .int      .LDBG16-.LDBG0
+          .int      .LDBG63-.LDBG0
+          .int      .LDBG64-.LDBG0
           .short    .LDBG656-.LDBG655
 .LDBG655:
           .byte     0x57
 .LDBG656:
-          .int      .LDBG67-.LDBG0
-          .int      .LDBG68-.LDBG0
+          .int      .LDBG69-.LDBG0
+          .int      .LDBG70-.LDBG0
           .short    .LDBG658-.LDBG657
 .LDBG657:
           .byte     0x57
@@ -2445,50 +2445,50 @@ samp:
 .LDBG703:
           .byte     0x52
 .LDBG704:
-          .int      .LDBG69-.LDBG0
-          .int      .LDBG70-.LDBG0
+          .int      .LDBG30-.LDBG0
+          .int      .LDBG31-.LDBG0
           .short    .LDBG706-.LDBG705
 .LDBG705:
           .byte     0x52
 .LDBG706:
-          .int      .LDBG63-.LDBG0
-          .int      .LDBG64-.LDBG0
+          .int      .LDBG46-.LDBG0
+          .int      .LDBG51-.LDBG0
           .short    .LDBG708-.LDBG707
 .LDBG707:
           .byte     0x52
 .LDBG708:
-          .int      .LDBG30-.LDBG0
-          .int      .LDBG31-.LDBG0
+          .int      .LDBG17-.LDBG0
+          .int      .LDBG23-.LDBG0
           .short    .LDBG710-.LDBG709
 .LDBG709:
           .byte     0x52
 .LDBG710:
-          .int      .LDBG46-.LDBG0
-          .int      .LDBG51-.LDBG0
+          .int      .LDBG44-.LDBG0
+          .int      .LDBG45-.LDBG0
           .short    .LDBG712-.LDBG711
 .LDBG711:
           .byte     0x52
 .LDBG712:
-          .int      .LDBG17-.LDBG0
-          .int      .LDBG23-.LDBG0
+          .int      .LDBG15-.LDBG0
+          .int      .LDBG16-.LDBG0
           .short    .LDBG714-.LDBG713
 .LDBG713:
           .byte     0x52
 .LDBG714:
-          .int      .LDBG44-.LDBG0
-          .int      .LDBG45-.LDBG0
+          .int      .LDBG67-.LDBG0
+          .int      .LDBG68-.LDBG0
           .short    .LDBG716-.LDBG715
 .LDBG715:
           .byte     0x52
 .LDBG716:
-          .int      .LDBG15-.LDBG0
-          .int      .LDBG16-.LDBG0
+          .int      .LDBG69-.LDBG0
+          .int      .LDBG70-.LDBG0
           .short    .LDBG718-.LDBG717
 .LDBG717:
           .byte     0x52
 .LDBG718:
-          .int      .LDBG67-.LDBG0
-          .int      .LDBG68-.LDBG0
+          .int      .LDBG63-.LDBG0
+          .int      .LDBG64-.LDBG0
           .short    .LDBG720-.LDBG719
 .LDBG719:
           .byte     0x52
@@ -2548,38 +2548,38 @@ samp:
           .section  .debug_loc,    "",    @progbits
 .cc_top swc_audio_codec_ctl_reg_rd.function,swc_audio_codec_ctl_reg_rd
 .LDBG726:
-          .int      .LDBG244-.LDBG0
-          .int      .LDBG259-.LDBG0
+          .int      .LDBG237-.LDBG0
+          .int      .LDBG243-.LDBG0
           .short    .LDBG728-.LDBG727
 .LDBG727:
           .byte     0x50
 .LDBG728:
-          .int      .LDBG222-.LDBG0
-          .int      .LDBG228-.LDBG0
+          .int      .LDBG229-.LDBG0
+          .int      .LDBG236-.LDBG0
           .short    .LDBG730-.LDBG729
 .LDBG729:
           .byte     0x50
 .LDBG730:
-          .int      .LDBG212-.LDBG0
-          .int      .LDBG221-.LDBG0
+          .int      .LDBG260-.LDBG0
+          .int      .LDBG266-.LDBG0
           .short    .LDBG732-.LDBG731
 .LDBG731:
           .byte     0x50
 .LDBG732:
-          .int      .LDBG237-.LDBG0
-          .int      .LDBG243-.LDBG0
+          .int      .LDBG222-.LDBG0
+          .int      .LDBG228-.LDBG0
           .short    .LDBG734-.LDBG733
 .LDBG733:
           .byte     0x50
 .LDBG734:
-          .int      .LDBG229-.LDBG0
-          .int      .LDBG236-.LDBG0
+          .int      .LDBG244-.LDBG0
+          .int      .LDBG259-.LDBG0
           .short    .LDBG736-.LDBG735
 .LDBG735:
           .byte     0x50
 .LDBG736:
-          .int      .LDBG260-.LDBG0
-          .int      .LDBG266-.LDBG0
+          .int      .LDBG212-.LDBG0
+          .int      .LDBG221-.LDBG0
           .short    .LDBG738-.LDBG737
 .LDBG737:
           .byte     0x50
@@ -2617,56 +2617,56 @@ samp:
           .section  .debug_loc,    "",    @progbits
 .cc_top swc_audio_codec_ctl_reg_rd.function,swc_audio_codec_ctl_reg_rd
 .LDBG742:
-          .int      .LDBG244-.LDBG0
-          .int      .LDBG259-.LDBG0
+          .int      .LDBG274-.LDBG0
+          .int      .LDBG280-.LDBG0
           .short    .LDBG744-.LDBG743
 .LDBG743:
           .byte     0x52
 .LDBG744:
-          .int      .LDBG213-.LDBG0
-          .int      .LDBG221-.LDBG0
+          .int      .LDBG237-.LDBG0
+          .int      .LDBG243-.LDBG0
           .short    .LDBG746-.LDBG745
 .LDBG745:
           .byte     0x52
 .LDBG746:
-          .int      .LDBG274-.LDBG0
-          .int      .LDBG280-.LDBG0
+          .int      .LDBG267-.LDBG0
+          .int      .LDBG273-.LDBG0
           .short    .LDBG748-.LDBG747
 .LDBG747:
           .byte     0x52
 .LDBG748:
-          .int      .LDBG281-.LDBG0
-          .int      .LDBG289-.LDBG0
+          .int      .LDBG229-.LDBG0
+          .int      .LDBG236-.LDBG0
           .short    .LDBG750-.LDBG749
 .LDBG749:
           .byte     0x52
 .LDBG750:
-          .int      .LDBG267-.LDBG0
-          .int      .LDBG273-.LDBG0
+          .int      .LDBG222-.LDBG0
+          .int      .LDBG228-.LDBG0
           .short    .LDBG752-.LDBG751
 .LDBG751:
           .byte     0x52
 .LDBG752:
-          .int      .LDBG237-.LDBG0
-          .int      .LDBG243-.LDBG0
+          .int      .LDBG260-.LDBG0
+          .int      .LDBG266-.LDBG0
           .short    .LDBG754-.LDBG753
 .LDBG753:
           .byte     0x52
 .LDBG754:
-          .int      .LDBG229-.LDBG0
-          .int      .LDBG236-.LDBG0
+          .int      .LDBG244-.LDBG0
+          .int      .LDBG259-.LDBG0
           .short    .LDBG756-.LDBG755
 .LDBG755:
           .byte     0x52
 .LDBG756:
-          .int      .LDBG260-.LDBG0
-          .int      .LDBG266-.LDBG0
+          .int      .LDBG213-.LDBG0
+          .int      .LDBG221-.LDBG0
           .short    .LDBG758-.LDBG757
 .LDBG757:
           .byte     0x52
 .LDBG758:
-          .int      .LDBG222-.LDBG0
-          .int      .LDBG228-.LDBG0
+          .int      .LDBG281-.LDBG0
+          .int      .LDBG289-.LDBG0
           .short    .LDBG760-.LDBG759
 .LDBG759:
           .byte     0x52
@@ -2684,56 +2684,56 @@ samp:
           .section  .debug_loc,    "",    @progbits
 .cc_top swc_audio_codec_ctl_reg_rd.function,swc_audio_codec_ctl_reg_rd
 .LDBG761:
-          .int      .LDBG222-.LDBG0
-          .int      .LDBG228-.LDBG0
+          .int      .LDBG274-.LDBG0
+          .int      .LDBG280-.LDBG0
           .short    .LDBG763-.LDBG762
 .LDBG762:
           .byte     0x53
 .LDBG763:
-          .int      .LDBG244-.LDBG0
-          .int      .LDBG259-.LDBG0
+          .int      .LDBG237-.LDBG0
+          .int      .LDBG243-.LDBG0
           .short    .LDBG765-.LDBG764
 .LDBG764:
           .byte     0x53
 .LDBG765:
-          .int      .LDBG214-.LDBG0
-          .int      .LDBG221-.LDBG0
+          .int      .LDBG267-.LDBG0
+          .int      .LDBG273-.LDBG0
           .short    .LDBG767-.LDBG766
 .LDBG766:
           .byte     0x53
 .LDBG767:
-          .int      .LDBG274-.LDBG0
-          .int      .LDBG280-.LDBG0
+          .int      .LDBG229-.LDBG0
+          .int      .LDBG236-.LDBG0
           .short    .LDBG769-.LDBG768
 .LDBG768:
           .byte     0x53
 .LDBG769:
-          .int      .LDBG281-.LDBG0
-          .int      .LDBG289-.LDBG0
+          .int      .LDBG260-.LDBG0
+          .int      .LDBG266-.LDBG0
           .short    .LDBG771-.LDBG770
 .LDBG770:
           .byte     0x53
 .LDBG771:
-          .int      .LDBG267-.LDBG0
-          .int      .LDBG273-.LDBG0
+          .int      .LDBG222-.LDBG0
+          .int      .LDBG228-.LDBG0
           .short    .LDBG773-.LDBG772
 .LDBG772:
           .byte     0x53
 .LDBG773:
-          .int      .LDBG237-.LDBG0
-          .int      .LDBG243-.LDBG0
+          .int      .LDBG244-.LDBG0
+          .int      .LDBG259-.LDBG0
           .short    .LDBG775-.LDBG774
 .LDBG774:
           .byte     0x53
 .LDBG775:
-          .int      .LDBG260-.LDBG0
-          .int      .LDBG266-.LDBG0
+          .int      .LDBG214-.LDBG0
+          .int      .LDBG221-.LDBG0
           .short    .LDBG777-.LDBG776
 .LDBG776:
           .byte     0x53
 .LDBG777:
-          .int      .LDBG229-.LDBG0
-          .int      .LDBG236-.LDBG0
+          .int      .LDBG281-.LDBG0
+          .int      .LDBG289-.LDBG0
           .short    .LDBG779-.LDBG778
 .LDBG778:
           .byte     0x53
@@ -2752,38 +2752,38 @@ samp:
           .section  .debug_loc,    "",    @progbits
 .cc_top swc_audio_codec_ctl_reg_rd.function,swc_audio_codec_ctl_reg_rd
 .LDBG780:
-          .int      .LDBG287-.LDBG0
-          .int      .LDBG289-.LDBG0
+          .int      .LDBG294-.LDBG0
+          .int      .LDBG295-.LDBG0
           .short    .LDBG782-.LDBG781
 .LDBG781:
           .byte     0x50
 .LDBG782:
-          .int      .LDBG290-.LDBG0
-          .int      .LDBG291-.LDBG0
+          .int      .LDBG296-.LDBG0
+          .int      .LDBG297-.LDBG0
           .short    .LDBG784-.LDBG783
 .LDBG783:
           .byte     0x50
 .LDBG784:
-          .int      .LDBG292-.LDBG0
-          .int      .LDBG293-.LDBG0
+          .int      .LDBG298-.LDBG0
+          .int      .LDBG299-.LDBG0
           .short    .LDBG786-.LDBG785
 .LDBG785:
           .byte     0x50
 .LDBG786:
-          .int      .LDBG294-.LDBG0
-          .int      .LDBG295-.LDBG0
+          .int      .LDBG287-.LDBG0
+          .int      .LDBG289-.LDBG0
           .short    .LDBG788-.LDBG787
 .LDBG787:
           .byte     0x50
 .LDBG788:
-          .int      .LDBG296-.LDBG0
-          .int      .LDBG297-.LDBG0
+          .int      .LDBG290-.LDBG0
+          .int      .LDBG291-.LDBG0
           .short    .LDBG790-.LDBG789
 .LDBG789:
           .byte     0x50
 .LDBG790:
-          .int      .LDBG298-.LDBG0
-          .int      .LDBG299-.LDBG0
+          .int      .LDBG292-.LDBG0
+          .int      .LDBG293-.LDBG0
           .short    .LDBG792-.LDBG791
 .LDBG791:
           .byte     0x50
@@ -2802,86 +2802,86 @@ samp:
           .section  .debug_loc,    "",    @progbits
 .cc_top swc_audio_codec_ctl_reg_rd.function,swc_audio_codec_ctl_reg_rd
 .LDBG793:
-          .int      .LDBG222-.LDBG0
-          .int      .LDBG228-.LDBG0
+          .int      .LDBG292-.LDBG0
+          .int      .LDBG293-.LDBG0
           .short    .LDBG795-.LDBG794
 .LDBG794:
           .byte     0x56
 .LDBG795:
-          .int      .LDBG244-.LDBG0
-          .int      .LDBG259-.LDBG0
+          .int      .LDBG294-.LDBG0
+          .int      .LDBG295-.LDBG0
           .short    .LDBG797-.LDBG796
 .LDBG796:
           .byte     0x56
 .LDBG797:
-          .int      .LDBG215-.LDBG0
-          .int      .LDBG221-.LDBG0
+          .int      .LDBG296-.LDBG0
+          .int      .LDBG297-.LDBG0
           .short    .LDBG799-.LDBG798
 .LDBG798:
           .byte     0x56
 .LDBG799:
-          .int      .LDBG274-.LDBG0
-          .int      .LDBG280-.LDBG0
+          .int      .LDBG298-.LDBG0
+          .int      .LDBG299-.LDBG0
           .short    .LDBG801-.LDBG800
 .LDBG800:
           .byte     0x56
 .LDBG801:
-          .int      .LDBG281-.LDBG0
-          .int      .LDBG289-.LDBG0
+          .int      .LDBG274-.LDBG0
+          .int      .LDBG280-.LDBG0
           .short    .LDBG803-.LDBG802
 .LDBG802:
           .byte     0x56
 .LDBG803:
-          .int      .LDBG290-.LDBG0
-          .int      .LDBG291-.LDBG0
+          .int      .LDBG237-.LDBG0
+          .int      .LDBG243-.LDBG0
           .short    .LDBG805-.LDBG804
 .LDBG804:
           .byte     0x56
 .LDBG805:
-          .int      .LDBG292-.LDBG0
-          .int      .LDBG293-.LDBG0
+          .int      .LDBG267-.LDBG0
+          .int      .LDBG273-.LDBG0
           .short    .LDBG807-.LDBG806
 .LDBG806:
           .byte     0x56
 .LDBG807:
-          .int      .LDBG294-.LDBG0
-          .int      .LDBG295-.LDBG0
+          .int      .LDBG229-.LDBG0
+          .int      .LDBG236-.LDBG0
           .short    .LDBG809-.LDBG808
 .LDBG808:
           .byte     0x56
 .LDBG809:
-          .int      .LDBG296-.LDBG0
-          .int      .LDBG297-.LDBG0
+          .int      .LDBG260-.LDBG0
+          .int      .LDBG266-.LDBG0
           .short    .LDBG811-.LDBG810
 .LDBG810:
           .byte     0x56
 .LDBG811:
-          .int      .LDBG298-.LDBG0
-          .int      .LDBG299-.LDBG0
+          .int      .LDBG222-.LDBG0
+          .int      .LDBG228-.LDBG0
           .short    .LDBG813-.LDBG812
 .LDBG812:
           .byte     0x56
 .LDBG813:
-          .int      .LDBG267-.LDBG0
-          .int      .LDBG273-.LDBG0
+          .int      .LDBG244-.LDBG0
+          .int      .LDBG259-.LDBG0
           .short    .LDBG815-.LDBG814
 .LDBG814:
           .byte     0x56
 .LDBG815:
-          .int      .LDBG237-.LDBG0
-          .int      .LDBG243-.LDBG0
+          .int      .LDBG215-.LDBG0
+          .int      .LDBG221-.LDBG0
           .short    .LDBG817-.LDBG816
 .LDBG816:
           .byte     0x56
 .LDBG817:
-          .int      .LDBG229-.LDBG0
-          .int      .LDBG236-.LDBG0
+          .int      .LDBG290-.LDBG0
+          .int      .LDBG291-.LDBG0
           .short    .LDBG819-.LDBG818
 .LDBG818:
           .byte     0x56
 .LDBG819:
-          .int      .LDBG260-.LDBG0
-          .int      .LDBG266-.LDBG0
+          .int      .LDBG281-.LDBG0
+          .int      .LDBG289-.LDBG0
           .short    .LDBG821-.LDBG820
 .LDBG820:
           .byte     0x56
@@ -2900,116 +2900,116 @@ samp:
           .section  .debug_loc,    "",    @progbits
 .cc_top swc_audio_codec_ctl_reg_rd.function,swc_audio_codec_ctl_reg_rd
 .LDBG822:
-          .int      .LDBG262-.LDBG0
-          .int      .LDBG263-.LDBG0
+          .int      .LDBG278-.LDBG0
+          .int      .LDBG280-.LDBG0
           .short    .LDBG824-.LDBG823
 .LDBG823:
           .byte     0x51
 .LDBG824:
-          .int      .LDBG226-.LDBG0
-          .int      .LDBG227-.LDBG0
+          .int      .LDBG250-.LDBG0
+          .int      .LDBG253-.LDBG0
           .short    .LDBG826-.LDBG825
 .LDBG825:
           .byte     0x51
 .LDBG826:
-          .int      .LDBG224-.LDBG0
-          .int      .LDBG225-.LDBG0
+          .int      .LDBG246-.LDBG0
+          .int      .LDBG247-.LDBG0
           .short    .LDBG828-.LDBG827
 .LDBG827:
           .byte     0x51
 .LDBG828:
-          .int      .LDBG256-.LDBG0
-          .int      .LDBG257-.LDBG0
+          .int      .LDBG248-.LDBG0
+          .int      .LDBG249-.LDBG0
           .short    .LDBG830-.LDBG829
 .LDBG829:
           .byte     0x51
 .LDBG830:
-          .int      .LDBG254-.LDBG0
-          .int      .LDBG255-.LDBG0
+          .int      .LDBG241-.LDBG0
+          .int      .LDBG242-.LDBG0
           .short    .LDBG832-.LDBG831
 .LDBG831:
           .byte     0x51
 .LDBG832:
-          .int      .LDBG218-.LDBG0
-          .int      .LDBG219-.LDBG0
+          .int      .LDBG275-.LDBG0
+          .int      .LDBG277-.LDBG0
           .short    .LDBG834-.LDBG833
 .LDBG833:
           .byte     0x51
 .LDBG834:
-          .int      .LDBG250-.LDBG0
-          .int      .LDBG253-.LDBG0
+          .int      .LDBG239-.LDBG0
+          .int      .LDBG240-.LDBG0
           .short    .LDBG836-.LDBG835
 .LDBG835:
           .byte     0x51
 .LDBG836:
-          .int      .LDBG216-.LDBG0
-          .int      .LDBG217-.LDBG0
+          .int      .LDBG269-.LDBG0
+          .int      .LDBG273-.LDBG0
           .short    .LDBG838-.LDBG837
 .LDBG837:
           .byte     0x51
 .LDBG838:
-          .int      .LDBG248-.LDBG0
-          .int      .LDBG249-.LDBG0
+          .int      .LDBG233-.LDBG0
+          .int      .LDBG234-.LDBG0
           .short    .LDBG840-.LDBG839
 .LDBG839:
           .byte     0x51
 .LDBG840:
-          .int      .LDBG278-.LDBG0
-          .int      .LDBG280-.LDBG0
+          .int      .LDBG231-.LDBG0
+          .int      .LDBG232-.LDBG0
           .short    .LDBG842-.LDBG841
 .LDBG841:
           .byte     0x51
 .LDBG842:
-          .int      .LDBG283-.LDBG0
-          .int      .LDBG289-.LDBG0
+          .int      .LDBG264-.LDBG0
+          .int      .LDBG265-.LDBG0
           .short    .LDBG844-.LDBG843
 .LDBG843:
           .byte     0x51
 .LDBG844:
-          .int      .LDBG275-.LDBG0
-          .int      .LDBG277-.LDBG0
+          .int      .LDBG262-.LDBG0
+          .int      .LDBG263-.LDBG0
           .short    .LDBG846-.LDBG845
 .LDBG845:
           .byte     0x51
 .LDBG846:
-          .int      .LDBG269-.LDBG0
-          .int      .LDBG273-.LDBG0
+          .int      .LDBG226-.LDBG0
+          .int      .LDBG227-.LDBG0
           .short    .LDBG848-.LDBG847
 .LDBG847:
           .byte     0x51
 .LDBG848:
-          .int      .LDBG246-.LDBG0
-          .int      .LDBG247-.LDBG0
+          .int      .LDBG224-.LDBG0
+          .int      .LDBG225-.LDBG0
           .short    .LDBG850-.LDBG849
 .LDBG849:
           .byte     0x51
 .LDBG850:
-          .int      .LDBG241-.LDBG0
-          .int      .LDBG242-.LDBG0
+          .int      .LDBG218-.LDBG0
+          .int      .LDBG219-.LDBG0
           .short    .LDBG852-.LDBG851
 .LDBG851:
           .byte     0x51
 .LDBG852:
-          .int      .LDBG239-.LDBG0
-          .int      .LDBG240-.LDBG0
+          .int      .LDBG256-.LDBG0
+          .int      .LDBG257-.LDBG0
           .short    .LDBG854-.LDBG853
 .LDBG853:
           .byte     0x51
 .LDBG854:
-          .int      .LDBG264-.LDBG0
-          .int      .LDBG265-.LDBG0
+          .int      .LDBG216-.LDBG0
+          .int      .LDBG217-.LDBG0
           .short    .LDBG856-.LDBG855
 .LDBG855:
           .byte     0x51
 .LDBG856:
-          .int      .LDBG233-.LDBG0
-          .int      .LDBG234-.LDBG0
+          .int      .LDBG254-.LDBG0
+          .int      .LDBG255-.LDBG0
           .short    .LDBG858-.LDBG857
 .LDBG857:
           .byte     0x51
 .LDBG858:
-          .int      .LDBG231-.LDBG0
-          .int      .LDBG232-.LDBG0
+          .int      .LDBG283-.LDBG0
+          .int      .LDBG289-.LDBG0
           .short    .LDBG860-.LDBG859
 .LDBG859:
           .byte     0x51
@@ -3028,14 +3028,14 @@ samp:
           .section  .debug_loc,    "",    @progbits
 .cc_top swc_audio_codec_ctl_reg_rd.function,swc_audio_codec_ctl_reg_rd
 .LDBG861:
-          .int      .LDBG261-.LDBG0
-          .int      .LDBG262-.LDBG0
+          .int      .LDBG282-.LDBG0
+          .int      .LDBG283-.LDBG0
           .short    .LDBG863-.LDBG862
 .LDBG862:
           .byte     0x51
 .LDBG863:
-          .int      .LDBG223-.LDBG0
-          .int      .LDBG224-.LDBG0
+          .int      .LDBG245-.LDBG0
+          .int      .LDBG246-.LDBG0
           .short    .LDBG865-.LDBG864
 .LDBG864:
           .byte     0x51
@@ -3046,32 +3046,32 @@ samp:
 .LDBG866:
           .byte     0x51
 .LDBG867:
-          .int      .LDBG282-.LDBG0
-          .int      .LDBG283-.LDBG0
+          .int      .LDBG238-.LDBG0
+          .int      .LDBG239-.LDBG0
           .short    .LDBG869-.LDBG868
 .LDBG868:
           .byte     0x51
 .LDBG869:
-          .int      .LDBG245-.LDBG0
-          .int      .LDBG246-.LDBG0
+          .int      .LDBG268-.LDBG0
+          .int      .LDBG269-.LDBG0
           .short    .LDBG871-.LDBG870
 .LDBG870:
           .byte     0x51
 .LDBG871:
-          .int      .LDBG238-.LDBG0
-          .int      .LDBG239-.LDBG0
+          .int      .LDBG230-.LDBG0
+          .int      .LDBG231-.LDBG0
           .short    .LDBG873-.LDBG872
 .LDBG872:
           .byte     0x51
 .LDBG873:
-          .int      .LDBG268-.LDBG0
-          .int      .LDBG269-.LDBG0
+          .int      .LDBG261-.LDBG0
+          .int      .LDBG262-.LDBG0
           .short    .LDBG875-.LDBG874
 .LDBG874:
           .byte     0x51
 .LDBG875:
-          .int      .LDBG230-.LDBG0
-          .int      .LDBG231-.LDBG0
+          .int      .LDBG223-.LDBG0
+          .int      .LDBG224-.LDBG0
           .short    .LDBG877-.LDBG876
 .LDBG876:
           .byte     0x51
@@ -3104,80 +3104,80 @@ samp:
           .section  .debug_loc,    "",    @progbits
 .cc_top swc_audio_codec_ctl_reg_rd.function,swc_audio_codec_ctl_reg_rd
 .LDBG879:
-          .int      .LDBG222-.LDBG0
-          .int      .LDBG228-.LDBG0
+          .int      .LDBG296-.LDBG0
+          .int      .LDBG297-.LDBG0
           .short    .LDBG881-.LDBG880
 .LDBG880:
           .byte     0x54
 .LDBG881:
-          .int      .LDBG258-.LDBG0
-          .int      .LDBG259-.LDBG0
+          .int      .LDBG298-.LDBG0
+          .int      .LDBG299-.LDBG0
           .short    .LDBG883-.LDBG882
 .LDBG882:
           .byte     0x54
 .LDBG883:
-          .int      .LDBG220-.LDBG0
-          .int      .LDBG221-.LDBG0
+          .int      .LDBG274-.LDBG0
+          .int      .LDBG280-.LDBG0
           .short    .LDBG885-.LDBG884
 .LDBG884:
           .byte     0x54
 .LDBG885:
-          .int      .LDBG274-.LDBG0
-          .int      .LDBG280-.LDBG0
+          .int      .LDBG237-.LDBG0
+          .int      .LDBG243-.LDBG0
           .short    .LDBG887-.LDBG886
 .LDBG886:
           .byte     0x54
 .LDBG887:
-          .int      .LDBG288-.LDBG0
-          .int      .LDBG289-.LDBG0
+          .int      .LDBG272-.LDBG0
+          .int      .LDBG273-.LDBG0
           .short    .LDBG889-.LDBG888
 .LDBG888:
           .byte     0x54
 .LDBG889:
-          .int      .LDBG290-.LDBG0
-          .int      .LDBG291-.LDBG0
+          .int      .LDBG235-.LDBG0
+          .int      .LDBG236-.LDBG0
           .short    .LDBG891-.LDBG890
 .LDBG890:
           .byte     0x54
 .LDBG891:
-          .int      .LDBG292-.LDBG0
-          .int      .LDBG293-.LDBG0
+          .int      .LDBG260-.LDBG0
+          .int      .LDBG266-.LDBG0
           .short    .LDBG893-.LDBG892
 .LDBG892:
           .byte     0x54
 .LDBG893:
-          .int      .LDBG296-.LDBG0
-          .int      .LDBG297-.LDBG0
+          .int      .LDBG222-.LDBG0
+          .int      .LDBG228-.LDBG0
           .short    .LDBG895-.LDBG894
 .LDBG894:
           .byte     0x54
 .LDBG895:
-          .int      .LDBG298-.LDBG0
-          .int      .LDBG299-.LDBG0
+          .int      .LDBG258-.LDBG0
+          .int      .LDBG259-.LDBG0
           .short    .LDBG897-.LDBG896
 .LDBG896:
           .byte     0x54
 .LDBG897:
-          .int      .LDBG272-.LDBG0
-          .int      .LDBG273-.LDBG0
+          .int      .LDBG220-.LDBG0
+          .int      .LDBG221-.LDBG0
           .short    .LDBG899-.LDBG898
 .LDBG898:
           .byte     0x54
 .LDBG899:
-          .int      .LDBG237-.LDBG0
-          .int      .LDBG243-.LDBG0
+          .int      .LDBG288-.LDBG0
+          .int      .LDBG289-.LDBG0
           .short    .LDBG901-.LDBG900
 .LDBG900:
           .byte     0x54
 .LDBG901:
-          .int      .LDBG235-.LDBG0
-          .int      .LDBG236-.LDBG0
+          .int      .LDBG290-.LDBG0
+          .int      .LDBG291-.LDBG0
           .short    .LDBG903-.LDBG902
 .LDBG902:
           .byte     0x54
 .LDBG903:
-          .int      .LDBG260-.LDBG0
-          .int      .LDBG266-.LDBG0
+          .int      .LDBG292-.LDBG0
+          .int      .LDBG293-.LDBG0
           .short    .LDBG905-.LDBG904
 .LDBG904:
           .byte     0x54
@@ -3587,7 +3587,7 @@ samp:
           .byte     0x00
           .asciiz   "./tests/audio/src/audio_init_audioBoard.xc"
           .uleb128  0x0
-          .uleb128  0x49b91aba
+          .uleb128  0x49c8db41
           .uleb128  0x2d23
           .byte     0x00
 .LDBG959:
@@ -5021,7 +5021,7 @@ samp:
 .L231:
           .int      .L232-.L231
           .int      0x00000000
-          .asciiz   "/home/andrew-local/software/sandbox2/verif_tests_sw/Tools/xta/Applications/swc_usb"
+          .asciiz   "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/Applications/swc_usb"
 .cc_top swc_audio_codec_ctl_reg_rd.function, swc_audio_codec_ctl_reg_rd
           .asciiz  "./tests/audio/src/audio_init_audioBoard.xc"
           .int      0x00000145
@@ -5722,7 +5722,7 @@ samp:
 .L233:
           .int      .L234-.L233
           .int      0x00000000
-          .asciiz   "/home/andrew-local/software/sandbox2/verif_tests_sw/Tools/xta/Applications/swc_usb"
+          .asciiz   "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/Applications/swc_usb"
 .cc_top audio_init.function, audio_init
           .asciiz  "./tests/audio/src/audio_init_audioBoard.xc"
           .int      0x00000165

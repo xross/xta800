@@ -615,15 +615,15 @@ data:
           .text
 .LDBG134:
 .call readData, XUD_GetBuffer_int
-.globwrite readData, data, 0, 4, "./tests/audio/src/audio.xc:124: error: previously used here (bytes 0..4)"
+.globwrite readData, data, "./tests/audio/src/audio.xc:124: error: previously used here"
 .call readData, __builtin_out_uint
 .call readData, __builtin_out_uint
 .call readData, XUD_GetBuffer_int
-.globwrite readData, data, 0, 4, "./tests/audio/src/audio.xc:130: error: previously used here (bytes 0..4)"
+.globwrite readData, data, "./tests/audio/src/audio.xc:130: error: previously used here"
 .call readData, __builtin_out_uint
 .call readData, __builtin_out_uint
 .call readData, XUD_GetBuffer_int
-.globwrite readData, data, 0, 4, "./tests/audio/src/audio.xc:136: error: previously used here (bytes 0..4)"
+.globwrite readData, data, "./tests/audio/src/audio.xc:136: error: previously used here"
 .call readData, __builtin_out_uint
 .call readData, __builtin_out_uint
 .set __builtin_out_uint, 0
@@ -899,60 +899,60 @@ value8.stat.7:
 .cc_bottom value8.stat.7.data
 .call deliver, GetData
 .call deliver, __builtin_pins_ne
-.globread deliver, isLeft, 0, 4, "./tests/audio/src/audio.xc:175: error: previously used here (bytes 0..4)"
-.globread deliver, lrtime, 0, 2, "./tests/audio/src/audio.xc:177: error: previously used here (bytes 0..2)"
-.globwrite deliver, lrtime, 0, 2, "./tests/audio/src/audio.xc:182: error: previously used here (bytes 0..2)"
-.globread deliver, isLeft, 0, 4, "./tests/audio/src/audio.xc:184: error: previously used here (bytes 0..4)"
+.globread deliver, isLeft, "./tests/audio/src/audio.xc:175: error: previously used here"
+.globread deliver, lrtime, "./tests/audio/src/audio.xc:177: error: previously used here"
+.globwrite deliver, lrtime, "./tests/audio/src/audio.xc:182: error: previously used here"
+.globread deliver, isLeft, "./tests/audio/src/audio.xc:184: error: previously used here"
 .call deliver, __builtin_macs
 .call deliver, GetInt
 .call deliver, GetParam
 .call deliver, __builtin_bitrev
-.globread deliver, value.stat.0, 0, 4, "./tests/audio/src/audio.xc:188: error: previously used here (bytes 0..4)"
+.globread deliver, value.stat.0, "./tests/audio/src/audio.xc:188: error: previously used here"
 .call deliver, __builtin_macs
 .call deliver, GetInt
 .call deliver, GetParam
 .call deliver, __builtin_bitrev
-.globread deliver, value3.stat.2, 0, 4, "./tests/audio/src/audio.xc:190: error: previously used here (bytes 0..4)"
+.globread deliver, value3.stat.2, "./tests/audio/src/audio.xc:190: error: previously used here"
 .call deliver, __builtin_macs
 .call deliver, GetInt
 .call deliver, GetParam
 .call deliver, __builtin_bitrev
-.globread deliver, value5.stat.4, 0, 4, "./tests/audio/src/audio.xc:192: error: previously used here (bytes 0..4)"
+.globread deliver, value5.stat.4, "./tests/audio/src/audio.xc:192: error: previously used here"
 .call deliver, __builtin_macs
 .call deliver, GetInt
 .call deliver, GetParam
 .call deliver, __builtin_bitrev
-.globread deliver, value7.stat.6, 0, 4, "./tests/audio/src/audio.xc:194: error: previously used here (bytes 0..4)"
-.globread deliver, value.stat.0, 0, 4, "./tests/audio/src/audio.xc:198: error: previously used here (bytes 0..4)"
-.globread deliver, value3.stat.2, 0, 4, "./tests/audio/src/audio.xc:199: error: previously used here (bytes 0..4)"
-.globread deliver, value5.stat.4, 0, 4, "./tests/audio/src/audio.xc:200: error: previously used here (bytes 0..4)"
-.globread deliver, value7.stat.6, 0, 4, "./tests/audio/src/audio.xc:201: error: previously used here (bytes 0..4)"
+.globread deliver, value7.stat.6, "./tests/audio/src/audio.xc:194: error: previously used here"
+.globread deliver, value.stat.0, "./tests/audio/src/audio.xc:198: error: previously used here"
+.globread deliver, value3.stat.2, "./tests/audio/src/audio.xc:199: error: previously used here"
+.globread deliver, value5.stat.4, "./tests/audio/src/audio.xc:200: error: previously used here"
+.globread deliver, value7.stat.6, "./tests/audio/src/audio.xc:201: error: previously used here"
 .call deliver, __builtin_macs
 .call deliver, GetInt
 .call deliver, GetParam
 .call deliver, __builtin_bitrev
-.globread deliver, value2.stat.1, 0, 4, "./tests/audio/src/audio.xc:204: error: previously used here (bytes 0..4)"
+.globread deliver, value2.stat.1, "./tests/audio/src/audio.xc:204: error: previously used here"
 .call deliver, __builtin_macs
 .call deliver, GetInt
 .call deliver, GetParam
 .call deliver, __builtin_bitrev
-.globread deliver, value4.stat.3, 0, 4, "./tests/audio/src/audio.xc:206: error: previously used here (bytes 0..4)"
+.globread deliver, value4.stat.3, "./tests/audio/src/audio.xc:206: error: previously used here"
 .call deliver, __builtin_macs
 .call deliver, GetInt
 .call deliver, GetParam
 .call deliver, __builtin_bitrev
-.globread deliver, value6.stat.5, 0, 4, "./tests/audio/src/audio.xc:208: error: previously used here (bytes 0..4)"
+.globread deliver, value6.stat.5, "./tests/audio/src/audio.xc:208: error: previously used here"
 .call deliver, __builtin_macs
 .call deliver, GetInt
 .call deliver, GetParam
 .call deliver, __builtin_bitrev
-.globread deliver, value8.stat.7, 0, 4, "./tests/audio/src/audio.xc:210: error: previously used here (bytes 0..4)"
+.globread deliver, value8.stat.7, "./tests/audio/src/audio.xc:210: error: previously used here"
 .call deliver, GetData
 .call deliver, GetParam
-.globread deliver, value2.stat.1, 0, 4, "./tests/audio/src/audio.xc:236: error: previously used here (bytes 0..4)"
-.globread deliver, value4.stat.3, 0, 4, "./tests/audio/src/audio.xc:237: error: previously used here (bytes 0..4)"
-.globread deliver, value6.stat.5, 0, 4, "./tests/audio/src/audio.xc:238: error: previously used here (bytes 0..4)"
-.globread deliver, value8.stat.7, 0, 4, "./tests/audio/src/audio.xc:239: error: previously used here (bytes 0..4)"
+.globread deliver, value2.stat.1, "./tests/audio/src/audio.xc:236: error: previously used here"
+.globread deliver, value4.stat.3, "./tests/audio/src/audio.xc:237: error: previously used here"
+.globread deliver, value6.stat.5, "./tests/audio/src/audio.xc:238: error: previously used here"
+.globread deliver, value8.stat.7, "./tests/audio/src/audio.xc:239: error: previously used here"
 .set __builtin_pins_ne, 0
 .linkset __builtin_pins_ne.locnoside, 0
 .linkset __builtin_pins_ne.locnochandec, 1
@@ -1101,7 +1101,7 @@ deliver:
 .LDBG225:
 .LDBG226:
 .L100:
-.xtalabel errorCase, "/home/andrew-local/software/sandbox2/verif_tests_sw/Tools/xta/Applications/swc_usb", "./tests/audio/src/audio.xc", 179, deliver
+.xtalabel errorCase, "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/Applications/swc_usb", "./tests/audio/src/audio.xc", 179, deliver
 .L113:
 .LDBG273:                            # line (180)
           ldw       r11, cp[s.LC1]
@@ -1224,7 +1224,7 @@ deliver:
 .LDBG311:                            # line (198)
           ldw       r1, dp[value.stat.0] 
           ldw       r0, sp[0x2] 
-.xtaendpoint deliverFinish, "/home/andrew-local/software/sandbox2/verif_tests_sw/Tools/xta/Applications/swc_usb", "./tests/audio/src/audio.xc", 197, deliver
+.xtaendpoint deliverFinish, "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/Applications/swc_usb", "./tests/audio/src/audio.xc", 197, deliver
 .L129:
           out       res[r0], r1 
 .LDBG312:                            # line (199)
@@ -1653,16 +1653,16 @@ deliver:
 .call physical, GetParam
 .call physical, GetBufferAddress
 .globpassesref GetBufferAddress, bufferA, "./tests/audio/src/audio.xc:264: error: `physical' makes alias of global 'bufferA' in call to `GetBufferAddress'"
-.globwrite physical, bufferA, 0, 3072, "./tests/audio/src/audio.xc:264: error: previously used here (bytes 0..3072)"
-.globwrite physical, bufferA, 0, 3072, "./tests/audio/src/audio.xc:264: error: previously used here (bytes 0..3072)"
+.globwrite physical, bufferA, "./tests/audio/src/audio.xc:264: error: previously used here"
+.globwrite physical, bufferA, "./tests/audio/src/audio.xc:264: error: previously used here"
 .call physical, GetBufferAddress
 .globpassesref GetBufferAddress, bufferB, "./tests/audio/src/audio.xc:265: error: `physical' makes alias of global 'bufferB' in call to `GetBufferAddress'"
-.globwrite physical, bufferB, 0, 3072, "./tests/audio/src/audio.xc:265: error: previously used here (bytes 0..3072)"
-.globwrite physical, bufferB, 0, 3072, "./tests/audio/src/audio.xc:265: error: previously used here (bytes 0..3072)"
+.globwrite physical, bufferB, "./tests/audio/src/audio.xc:265: error: previously used here"
+.globwrite physical, bufferB, "./tests/audio/src/audio.xc:265: error: previously used here"
 .call physical, GetBufferAddress
 .globpassesref GetBufferAddress, bufferC, "./tests/audio/src/audio.xc:266: error: `physical' makes alias of global 'bufferC' in call to `GetBufferAddress'"
-.globwrite physical, bufferC, 0, 3072, "./tests/audio/src/audio.xc:266: error: previously used here (bytes 0..3072)"
-.globwrite physical, bufferC, 0, 3072, "./tests/audio/src/audio.xc:266: error: previously used here (bytes 0..3072)"
+.globwrite physical, bufferC, "./tests/audio/src/audio.xc:266: error: previously used here"
+.globwrite physical, bufferC, "./tests/audio/src/audio.xc:266: error: previously used here"
 .call physical, __builtin_timer_after
 .call physical, swc_audio_codec_ctl_reg_wr
 .call physical, swc_audio_codec_ctl_reg_wr
@@ -1707,11 +1707,12 @@ s.LC3:
 .call physical, __builtin_pins_ne
 .call physical, __builtin_pins_ne
 .call physical, __builtin_pins_ne
-.globwrite physical, lrtime, 0, 2, "./tests/audio/src/audio.xc:411: error: previously used here (bytes 0..2)"
-.globread physical, lrtime, 0, 2, "./tests/audio/src/audio.xc:412: error: previously used here (bytes 0..2)"
-.globread physical, lrtime, 0, 2, "./tests/audio/src/audio.xc:413: error: previously used here (bytes 0..2)"
-.globread physical, lrtime, 0, 2, "./tests/audio/src/audio.xc:414: error: previously used here (bytes 0..2)"
-.globread physical, lrtime, 0, 2, "./tests/audio/src/audio.xc:415: error: previously used here (bytes 0..2)"
+.globwrite physical, lrtime, "./tests/audio/src/audio.xc:156: error: previously used here"
+.globwrite physical, lrtime, "./tests/audio/src/audio.xc:411: error: previously used here"
+.globread physical, lrtime, "./tests/audio/src/audio.xc:412: error: previously used here"
+.globread physical, lrtime, "./tests/audio/src/audio.xc:413: error: previously used here"
+.globread physical, lrtime, "./tests/audio/src/audio.xc:414: error: previously used here"
+.globread physical, lrtime, "./tests/audio/src/audio.xc:415: error: previously used here"
 .call physical, deliver
 .call physical, __builtin_in_uint_byref
 .call physical, __builtin_in_uint
@@ -2291,7 +2292,7 @@ s.LC6:
 .LDBG562:                            # line (409)
 .LDBG563:                            # line (409)
           setd      res[r7], r2
-.xtaendpoint physicalStart, "/home/andrew-local/software/sandbox2/verif_tests_sw/Tools/xta/Applications/swc_usb", "./tests/audio/src/audio.xc", 408, physical
+.xtaendpoint physicalStart, "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/Applications/swc_usb", "./tests/audio/src/audio.xc", 408, physical
 .L197:
           in        r0, res[r7] 
 
@@ -2639,14 +2640,14 @@ s.LC6:
 .call XUD_Endpoint1, thread.anon.0
 .call thread.anon.0, readData
 .globpassesref readData, bufferA, "./tests/audio/src/audio.xc:468: error: `thread.anon.0' makes alias of global 'bufferA' in call to `readData'"
-.globwrite thread.anon.0, bufferA, 0, 3072, "./tests/audio/src/audio.xc:468: error: previously used here (bytes 0..3072)"
-.globwrite thread.anon.0, bufferA, 0, 3072, "./tests/audio/src/audio.xc:468: error: previously used here (bytes 0..3072)"
+.globwrite thread.anon.0, bufferA, "./tests/audio/src/audio.xc:468: error: previously used here"
+.globwrite thread.anon.0, bufferA, "./tests/audio/src/audio.xc:468: error: previously used here"
 .globpassesref readData, bufferB, "./tests/audio/src/audio.xc:468: error: `thread.anon.0' makes alias of global 'bufferB' in call to `readData'"
-.globwrite thread.anon.0, bufferB, 0, 3072, "./tests/audio/src/audio.xc:468: error: previously used here (bytes 0..3072)"
-.globwrite thread.anon.0, bufferB, 0, 3072, "./tests/audio/src/audio.xc:468: error: previously used here (bytes 0..3072)"
+.globwrite thread.anon.0, bufferB, "./tests/audio/src/audio.xc:468: error: previously used here"
+.globwrite thread.anon.0, bufferB, "./tests/audio/src/audio.xc:468: error: previously used here"
 .globpassesref readData, bufferC, "./tests/audio/src/audio.xc:468: error: `thread.anon.0' makes alias of global 'bufferC' in call to `readData'"
-.globwrite thread.anon.0, bufferC, 0, 3072, "./tests/audio/src/audio.xc:468: error: previously used here (bytes 0..3072)"
-.globwrite thread.anon.0, bufferC, 0, 3072, "./tests/audio/src/audio.xc:468: error: previously used here (bytes 0..3072)"
+.globwrite thread.anon.0, bufferC, "./tests/audio/src/audio.xc:468: error: previously used here"
+.globwrite thread.anon.0, bufferC, "./tests/audio/src/audio.xc:468: error: previously used here"
 .call XUD_Endpoint1, thread.anon.3
 .call thread.anon.3, physical
 .set __builtin_start_clock, 0
@@ -3132,29 +3133,29 @@ main.parinfo:
           .int      0x00000005
           .int      0x00000001
           .int      0x00000002
-          .int      0x00000000
           .int      0x00000003
           .int      0x00000004
+          .int      0x00000000
           .int      $N __main_xm_2
           .long stdcore + 8
           .int      0x00000002
           .int      0x00000005
-          .int      0x00000004
+          .int      0x00000003
           .int      $N __main_xm_3
           .long stdcore + 8
           .int      0x00000001
-          .int      0x00000003
+          .int      0x00000002
           .int      $N __main_xm_4
           .long stdcore + 8
           .int      0x00000001
-          .int      0x00000001
+          .int      0x00000004
 .cc_bottom main.parinfo.cc
           .text
 .LDBG650:
 .call __main_xm_4, doClock
 .globpassesref doClock, p_aud_clk, "./tests/audio/src/audio.xc:548: error: `__main_xm_4' makes alias of global 'p_aud_clk' in call to `doClock'"
-.globwrite __main_xm_4, p_aud_clk, 0, 4, "./tests/audio/src/audio.xc:548: error: previously used here (bytes 0..4)"
-.globread __main_xm_4, p_aud_clk, 0, 4, "./tests/audio/src/audio.xc:548: error: previously used here (bytes 0..4)"
+.globwrite __main_xm_4, p_aud_clk, "./tests/audio/src/audio.xc:548: error: previously used here"
+.globread __main_xm_4, p_aud_clk, "./tests/audio/src/audio.xc:548: error: previously used here"
 .globl __main_xm_4, "f{0}(chd)"
 .globl __main_xm_4.nstackwords
 .globl __main_xm_4.maxthreads
@@ -3225,35 +3226,35 @@ __main_xm_4:
 .LDBG666:
 .call __main_xm_3, XUD_Endpoint1
 .globpassesref XUD_Endpoint1, p_aud_rst, "./tests/audio/src/audio.xc:545: error: `__main_xm_3' makes alias of global 'p_aud_rst' in call to `XUD_Endpoint1'"
-.globwrite __main_xm_3, p_aud_rst, 0, 4, "./tests/audio/src/audio.xc:545: error: previously used here (bytes 0..4)"
-.globread __main_xm_3, p_aud_rst, 0, 4, "./tests/audio/src/audio.xc:545: error: previously used here (bytes 0..4)"
+.globwrite __main_xm_3, p_aud_rst, "./tests/audio/src/audio.xc:545: error: previously used here"
+.globread __main_xm_3, p_aud_rst, "./tests/audio/src/audio.xc:545: error: previously used here"
 .globpassesref XUD_Endpoint1, p_aud_sclk, "./tests/audio/src/audio.xc:545: error: `__main_xm_3' makes alias of global 'p_aud_sclk' in call to `XUD_Endpoint1'"
-.globwrite __main_xm_3, p_aud_sclk, 0, 4, "./tests/audio/src/audio.xc:545: error: previously used here (bytes 0..4)"
-.globread __main_xm_3, p_aud_sclk, 0, 4, "./tests/audio/src/audio.xc:545: error: previously used here (bytes 0..4)"
+.globwrite __main_xm_3, p_aud_sclk, "./tests/audio/src/audio.xc:545: error: previously used here"
+.globread __main_xm_3, p_aud_sclk, "./tests/audio/src/audio.xc:545: error: previously used here"
 .globpassesref XUD_Endpoint1, p_aud_scl, "./tests/audio/src/audio.xc:545: error: `__main_xm_3' makes alias of global 'p_aud_scl' in call to `XUD_Endpoint1'"
-.globwrite __main_xm_3, p_aud_scl, 0, 4, "./tests/audio/src/audio.xc:545: error: previously used here (bytes 0..4)"
-.globread __main_xm_3, p_aud_scl, 0, 4, "./tests/audio/src/audio.xc:545: error: previously used here (bytes 0..4)"
+.globwrite __main_xm_3, p_aud_scl, "./tests/audio/src/audio.xc:545: error: previously used here"
+.globread __main_xm_3, p_aud_scl, "./tests/audio/src/audio.xc:545: error: previously used here"
 .globpassesref XUD_Endpoint1, p_aud_sda, "./tests/audio/src/audio.xc:545: error: `__main_xm_3' makes alias of global 'p_aud_sda' in call to `XUD_Endpoint1'"
-.globwrite __main_xm_3, p_aud_sda, 0, 4, "./tests/audio/src/audio.xc:545: error: previously used here (bytes 0..4)"
-.globread __main_xm_3, p_aud_sda, 0, 4, "./tests/audio/src/audio.xc:545: error: previously used here (bytes 0..4)"
+.globwrite __main_xm_3, p_aud_sda, "./tests/audio/src/audio.xc:545: error: previously used here"
+.globread __main_xm_3, p_aud_sda, "./tests/audio/src/audio.xc:545: error: previously used here"
 .globpassesref XUD_Endpoint1, p_aud_lrclk, "./tests/audio/src/audio.xc:545: error: `__main_xm_3' makes alias of global 'p_aud_lrclk' in call to `XUD_Endpoint1'"
-.globwrite __main_xm_3, p_aud_lrclk, 0, 4, "./tests/audio/src/audio.xc:545: error: previously used here (bytes 0..4)"
-.globread __main_xm_3, p_aud_lrclk, 0, 4, "./tests/audio/src/audio.xc:546: error: previously used here (bytes 0..4)"
+.globwrite __main_xm_3, p_aud_lrclk, "./tests/audio/src/audio.xc:545: error: previously used here"
+.globread __main_xm_3, p_aud_lrclk, "./tests/audio/src/audio.xc:546: error: previously used here"
 .globpassesref XUD_Endpoint1, p_aud_dac1, "./tests/audio/src/audio.xc:545: error: `__main_xm_3' makes alias of global 'p_aud_dac1' in call to `XUD_Endpoint1'"
-.globwrite __main_xm_3, p_aud_dac1, 0, 4, "./tests/audio/src/audio.xc:545: error: previously used here (bytes 0..4)"
-.globread __main_xm_3, p_aud_dac1, 0, 4, "./tests/audio/src/audio.xc:546: error: previously used here (bytes 0..4)"
+.globwrite __main_xm_3, p_aud_dac1, "./tests/audio/src/audio.xc:545: error: previously used here"
+.globread __main_xm_3, p_aud_dac1, "./tests/audio/src/audio.xc:546: error: previously used here"
 .globpassesref XUD_Endpoint1, p_aud_dac2, "./tests/audio/src/audio.xc:545: error: `__main_xm_3' makes alias of global 'p_aud_dac2' in call to `XUD_Endpoint1'"
-.globwrite __main_xm_3, p_aud_dac2, 0, 4, "./tests/audio/src/audio.xc:545: error: previously used here (bytes 0..4)"
-.globread __main_xm_3, p_aud_dac2, 0, 4, "./tests/audio/src/audio.xc:546: error: previously used here (bytes 0..4)"
+.globwrite __main_xm_3, p_aud_dac2, "./tests/audio/src/audio.xc:545: error: previously used here"
+.globread __main_xm_3, p_aud_dac2, "./tests/audio/src/audio.xc:546: error: previously used here"
 .globpassesref XUD_Endpoint1, p_aud_dac3, "./tests/audio/src/audio.xc:545: error: `__main_xm_3' makes alias of global 'p_aud_dac3' in call to `XUD_Endpoint1'"
-.globwrite __main_xm_3, p_aud_dac3, 0, 4, "./tests/audio/src/audio.xc:545: error: previously used here (bytes 0..4)"
-.globread __main_xm_3, p_aud_dac3, 0, 4, "./tests/audio/src/audio.xc:546: error: previously used here (bytes 0..4)"
+.globwrite __main_xm_3, p_aud_dac3, "./tests/audio/src/audio.xc:545: error: previously used here"
+.globread __main_xm_3, p_aud_dac3, "./tests/audio/src/audio.xc:546: error: previously used here"
 .globpassesref XUD_Endpoint1, p_aud_dac4, "./tests/audio/src/audio.xc:545: error: `__main_xm_3' makes alias of global 'p_aud_dac4' in call to `XUD_Endpoint1'"
-.globwrite __main_xm_3, p_aud_dac4, 0, 4, "./tests/audio/src/audio.xc:545: error: previously used here (bytes 0..4)"
-.globread __main_xm_3, p_aud_dac4, 0, 4, "./tests/audio/src/audio.xc:546: error: previously used here (bytes 0..4)"
+.globwrite __main_xm_3, p_aud_dac4, "./tests/audio/src/audio.xc:545: error: previously used here"
+.globread __main_xm_3, p_aud_dac4, "./tests/audio/src/audio.xc:546: error: previously used here"
 .globpassesref XUD_Endpoint1, clk_aud_bit, "./tests/audio/src/audio.xc:545: error: `__main_xm_3' makes alias of global 'clk_aud_bit' in call to `XUD_Endpoint1'"
-.globwrite __main_xm_3, clk_aud_bit, 0, 4, "./tests/audio/src/audio.xc:545: error: previously used here (bytes 0..4)"
-.globread __main_xm_3, clk_aud_bit, 0, 4, "./tests/audio/src/audio.xc:546: error: previously used here (bytes 0..4)"
+.globwrite __main_xm_3, clk_aud_bit, "./tests/audio/src/audio.xc:545: error: previously used here"
+.globread __main_xm_3, clk_aud_bit, "./tests/audio/src/audio.xc:546: error: previously used here"
 .globl __main_xm_3, "f{0}(chd)"
 .globl __main_xm_3.nstackwords
 .globl __main_xm_3.maxthreads
@@ -3412,11 +3413,11 @@ __main_xm_2:
 .LDBG699:
 .call __main_xm_1, XUD_Manager
 .globpassesref XUD_Manager, p_test, "./tests/audio/src/audio.xc:540: error: `__main_xm_1' makes alias of global 'p_test' in call to `XUD_Manager'"
-.globwrite __main_xm_1, p_test, 0, 4, "./tests/audio/src/audio.xc:540: error: previously used here (bytes 0..4)"
-.globread __main_xm_1, p_test, 0, 4, "./tests/audio/src/audio.xc:540: error: previously used here (bytes 0..4)"
+.globwrite __main_xm_1, p_test, "./tests/audio/src/audio.xc:540: error: previously used here"
+.globread __main_xm_1, p_test, "./tests/audio/src/audio.xc:540: error: previously used here"
 .globpassesref XUD_Manager, p_test2, "./tests/audio/src/audio.xc:540: error: `__main_xm_1' makes alias of global 'p_test2' in call to `XUD_Manager'"
-.globwrite __main_xm_1, p_test2, 0, 4, "./tests/audio/src/audio.xc:540: error: previously used here (bytes 0..4)"
-.globread __main_xm_1, p_test2, 0, 4, "./tests/audio/src/audio.xc:540: error: previously used here (bytes 0..4)"
+.globwrite __main_xm_1, p_test2, "./tests/audio/src/audio.xc:540: error: previously used here"
+.globread __main_xm_1, p_test2, "./tests/audio/src/audio.xc:540: error: previously used here"
 .globl __main_xm_1, "f{0}(chd,chd,chd,chd,chd)"
 .globl __main_xm_1.nstackwords
 .globl __main_xm_1.maxthreads
@@ -3441,17 +3442,18 @@ __main_xm_1:
 .LDBG709:
           mov       r11, r0
 .LDBG700:
-          mov       r4, r1
 .LDBG701:
 .LDBG702:
+          mov       r4, r3
 .LDBG703:
-          ldw       r0, sp[0x6] 
+          ldw       r3, sp[0x6] 
 .LDBG704:
 .LDBG710:                            # line (527)
 .LDBG711:                            # line (540)
-          mov       r1, r3
-          mov       r3, r4
-          stw       r11, sp[0x1] 
+          mov       r0, r2
+          mov       r2, r3
+          mov       r3, r11
+          stw       r4, sp[0x1] 
           ldw       r4, dp[p_test] 
           stw       r4, sp[0x2] 
           ldw       r4, dp[p_test2] 
@@ -3511,8 +3513,8 @@ __main_xm_1:
 .LDBG721:
 .call __main_xm_0, XUD_Endpoint3
 .globpassesref XUD_Endpoint3, p_but, "./tests/audio/src/audio.xc:538: error: `__main_xm_0' makes alias of global 'p_but' in call to `XUD_Endpoint3'"
-.globwrite __main_xm_0, p_but, 0, 4, "./tests/audio/src/audio.xc:538: error: previously used here (bytes 0..4)"
-.globread __main_xm_0, p_but, 0, 4, "./tests/audio/src/audio.xc:538: error: previously used here (bytes 0..4)"
+.globwrite __main_xm_0, p_but, "./tests/audio/src/audio.xc:538: error: previously used here"
+.globread __main_xm_0, p_but, "./tests/audio/src/audio.xc:538: error: previously used here"
 .globl __main_xm_0, "f{0}(chd)"
 .globl __main_xm_0.nstackwords
 .globl __main_xm_0.maxthreads
@@ -3686,7 +3688,7 @@ isLeft:
           .long     .LDBG0           # low address
           .long     .LDBG737         # high address
           .asciiz   "./tests/audio/src/audio.xc"
-          .asciiz   "/home/andrew-local/software/sandbox2/verif_tests_sw/Tools/xta/Applications/swc_usb"
+          .asciiz   "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/Applications/swc_usb"
           .short    0xc000
           .asciiz   "XMOS Dwarf Symbolic Debug Generator"
           .long     .LDBG739         # offset in .debug_lineprog
@@ -3807,26 +3809,26 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top XUD_Endpoint3.function,XUD_Endpoint3
 .LDBG762:
-          .int      .LDBG22-.LDBG0
-          .int      .LDBG25-.LDBG0
+          .int      .LDBG26-.LDBG0
+          .int      .LDBG27-.LDBG0
           .short    .LDBG764-.LDBG763
 .LDBG763:
           .byte     0x54
 .LDBG764:
-          .int      .LDBG28-.LDBG0
-          .int      .LDBG30-.LDBG0
+          .int      .LDBG31-.LDBG0
+          .int      .LDBG32-.LDBG0
           .short    .LDBG766-.LDBG765
 .LDBG765:
           .byte     0x54
 .LDBG766:
-          .int      .LDBG26-.LDBG0
-          .int      .LDBG27-.LDBG0
+          .int      .LDBG28-.LDBG0
+          .int      .LDBG30-.LDBG0
           .short    .LDBG768-.LDBG767
 .LDBG767:
           .byte     0x54
 .LDBG768:
-          .int      .LDBG31-.LDBG0
-          .int      .LDBG32-.LDBG0
+          .int      .LDBG22-.LDBG0
+          .int      .LDBG25-.LDBG0
           .short    .LDBG770-.LDBG769
 .LDBG769:
           .byte     0x54
@@ -3844,26 +3846,26 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top XUD_Endpoint3.function,XUD_Endpoint3
 .LDBG771:
-          .int      .LDBG23-.LDBG0
-          .int      .LDBG25-.LDBG0
+          .int      .LDBG31-.LDBG0
+          .int      .LDBG32-.LDBG0
           .short    .LDBG773-.LDBG772
 .LDBG772:
           .byte     0x55
 .LDBG773:
-          .int      .LDBG26-.LDBG0
-          .int      .LDBG27-.LDBG0
+          .int      .LDBG28-.LDBG0
+          .int      .LDBG30-.LDBG0
           .short    .LDBG775-.LDBG774
 .LDBG774:
           .byte     0x55
 .LDBG775:
-          .int      .LDBG28-.LDBG0
-          .int      .LDBG30-.LDBG0
+          .int      .LDBG23-.LDBG0
+          .int      .LDBG25-.LDBG0
           .short    .LDBG777-.LDBG776
 .LDBG776:
           .byte     0x55
 .LDBG777:
-          .int      .LDBG31-.LDBG0
-          .int      .LDBG32-.LDBG0
+          .int      .LDBG26-.LDBG0
+          .int      .LDBG27-.LDBG0
           .short    .LDBG779-.LDBG778
 .LDBG778:
           .byte     0x55
@@ -3988,14 +3990,14 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top dummyEP.function,dummyEP
 .LDBG796:
-          .int      .LDBG57-.LDBG0
-          .int      .LDBG58-.LDBG0
+          .int      .LDBG59-.LDBG0
+          .int      .LDBG60-.LDBG0
           .short    .LDBG798-.LDBG797
 .LDBG797:
           .byte     0x51
 .LDBG798:
-          .int      .LDBG59-.LDBG0
-          .int      .LDBG60-.LDBG0
+          .int      .LDBG57-.LDBG0
+          .int      .LDBG58-.LDBG0
           .short    .LDBG800-.LDBG799
 .LDBG799:
           .byte     0x51
@@ -4025,8 +4027,8 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top doClock.function,doClock
 .LDBG802:
-          .int      .LDBG89-.LDBG0
-          .int      .LDBG90-.LDBG0
+          .int      .LDBG91-.LDBG0
+          .int      .LDBG93-.LDBG0
           .short    .LDBG804-.LDBG803
 .LDBG803:
           .byte     0x50
@@ -4037,8 +4039,8 @@ isLeft:
 .LDBG805:
           .byte     0x50
 .LDBG806:
-          .int      .LDBG91-.LDBG0
-          .int      .LDBG93-.LDBG0
+          .int      .LDBG89-.LDBG0
+          .int      .LDBG90-.LDBG0
           .short    .LDBG808-.LDBG807
 .LDBG807:
           .byte     0x50
@@ -4092,56 +4094,56 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top doClock.function,doClock
 .LDBG821:
-          .int      .LDBG91-.LDBG0
-          .int      .LDBG93-.LDBG0
+          .int      .LDBG83-.LDBG0
+          .int      .LDBG88-.LDBG0
           .short    .LDBG823-.LDBG822
 .LDBG822:
           .byte     0x51
 .LDBG823:
-          .int      .LDBG83-.LDBG0
-          .int      .LDBG88-.LDBG0
+          .int      .LDBG91-.LDBG0
+          .int      .LDBG93-.LDBG0
           .short    .LDBG825-.LDBG824
 .LDBG824:
           .byte     0x51
 .LDBG825:
-          .int      .LDBG89-.LDBG0
-          .int      .LDBG90-.LDBG0
+          .int      .LDBG94-.LDBG0
+          .int      .LDBG95-.LDBG0
           .short    .LDBG827-.LDBG826
 .LDBG826:
           .byte     0x51
 .LDBG827:
-          .int      .LDBG94-.LDBG0
-          .int      .LDBG95-.LDBG0
+          .int      .LDBG96-.LDBG0
+          .int      .LDBG97-.LDBG0
           .short    .LDBG829-.LDBG828
 .LDBG828:
           .byte     0x51
 .LDBG829:
-          .int      .LDBG96-.LDBG0
-          .int      .LDBG97-.LDBG0
+          .int      .LDBG98-.LDBG0
+          .int      .LDBG99-.LDBG0
           .short    .LDBG831-.LDBG830
 .LDBG830:
           .byte     0x51
 .LDBG831:
-          .int      .LDBG98-.LDBG0
-          .int      .LDBG99-.LDBG0
+          .int      .LDBG100-.LDBG0
+          .int      .LDBG101-.LDBG0
           .short    .LDBG833-.LDBG832
 .LDBG832:
           .byte     0x51
 .LDBG833:
-          .int      .LDBG100-.LDBG0
-          .int      .LDBG101-.LDBG0
+          .int      .LDBG102-.LDBG0
+          .int      .LDBG103-.LDBG0
           .short    .LDBG835-.LDBG834
 .LDBG834:
           .byte     0x51
 .LDBG835:
-          .int      .LDBG102-.LDBG0
-          .int      .LDBG103-.LDBG0
+          .int      .LDBG104-.LDBG0
+          .int      .LDBG106-.LDBG0
           .short    .LDBG837-.LDBG836
 .LDBG836:
           .byte     0x51
 .LDBG837:
-          .int      .LDBG104-.LDBG0
-          .int      .LDBG106-.LDBG0
+          .int      .LDBG89-.LDBG0
+          .int      .LDBG90-.LDBG0
           .short    .LDBG839-.LDBG838
 .LDBG838:
           .byte     0x51
@@ -4160,14 +4162,14 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top doClock.function,doClock
 .LDBG840:
-          .int      .LDBG84-.LDBG0
-          .int      .LDBG88-.LDBG0
+          .int      .LDBG89-.LDBG0
+          .int      .LDBG90-.LDBG0
           .short    .LDBG842-.LDBG841
 .LDBG841:
           .byte     0x54
 .LDBG842:
-          .int      .LDBG89-.LDBG0
-          .int      .LDBG90-.LDBG0
+          .int      .LDBG84-.LDBG0
+          .int      .LDBG88-.LDBG0
           .short    .LDBG844-.LDBG843
 .LDBG843:
           .byte     0x54
@@ -4268,20 +4270,20 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top doClock.function,doClock
 .LDBG865:
-          .int      .LDBG91-.LDBG0
-          .int      .LDBG93-.LDBG0
+          .int      .LDBG86-.LDBG0
+          .int      .LDBG88-.LDBG0
           .short    .LDBG867-.LDBG866
 .LDBG866:
           .byte     0x52
 .LDBG867:
-          .int      .LDBG86-.LDBG0
-          .int      .LDBG88-.LDBG0
+          .int      .LDBG89-.LDBG0
+          .int      .LDBG90-.LDBG0
           .short    .LDBG869-.LDBG868
 .LDBG868:
           .byte     0x52
 .LDBG869:
-          .int      .LDBG89-.LDBG0
-          .int      .LDBG90-.LDBG0
+          .int      .LDBG91-.LDBG0
+          .int      .LDBG93-.LDBG0
           .short    .LDBG871-.LDBG870
 .LDBG870:
           .byte     0x52
@@ -4374,14 +4376,14 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top readData.function,readData
 .LDBG888:
-          .int      .LDBG156-.LDBG0
-          .int      .LDBG157-.LDBG0
+          .int      .LDBG154-.LDBG0
+          .int      .LDBG155-.LDBG0
           .short    .LDBG890-.LDBG889
 .LDBG889:
           .byte     0x5a
 .LDBG890:
-          .int      .LDBG154-.LDBG0
-          .int      .LDBG155-.LDBG0
+          .int      .LDBG162-.LDBG0
+          .int      .LDBG163-.LDBG0
           .short    .LDBG892-.LDBG891
 .LDBG891:
           .byte     0x5a
@@ -4392,38 +4394,38 @@ isLeft:
 .LDBG893:
           .byte     0x5a
 .LDBG894:
-          .int      .LDBG150-.LDBG0
-          .int      .LDBG151-.LDBG0
+          .int      .LDBG160-.LDBG0
+          .int      .LDBG161-.LDBG0
           .short    .LDBG896-.LDBG895
 .LDBG895:
           .byte     0x5a
 .LDBG896:
-          .int      .LDBG148-.LDBG0
-          .int      .LDBG149-.LDBG0
+          .int      .LDBG150-.LDBG0
+          .int      .LDBG151-.LDBG0
           .short    .LDBG898-.LDBG897
 .LDBG897:
           .byte     0x5a
 .LDBG898:
-          .int      .LDBG144-.LDBG0
-          .int      .LDBG145-.LDBG0
+          .int      .LDBG148-.LDBG0
+          .int      .LDBG149-.LDBG0
           .short    .LDBG900-.LDBG899
 .LDBG899:
           .byte     0x5a
 .LDBG900:
-          .int      .LDBG162-.LDBG0
-          .int      .LDBG163-.LDBG0
+          .int      .LDBG158-.LDBG0
+          .int      .LDBG159-.LDBG0
           .short    .LDBG902-.LDBG901
 .LDBG901:
           .byte     0x5a
 .LDBG902:
-          .int      .LDBG146-.LDBG0
-          .int      .LDBG147-.LDBG0
+          .int      .LDBG144-.LDBG0
+          .int      .LDBG145-.LDBG0
           .short    .LDBG904-.LDBG903
 .LDBG903:
           .byte     0x5a
 .LDBG904:
-          .int      .LDBG160-.LDBG0
-          .int      .LDBG161-.LDBG0
+          .int      .LDBG146-.LDBG0
+          .int      .LDBG147-.LDBG0
           .short    .LDBG906-.LDBG905
 .LDBG905:
           .byte     0x5a
@@ -4434,14 +4436,14 @@ isLeft:
 .LDBG907:
           .byte     0x5a
 .LDBG908:
-          .int      .LDBG158-.LDBG0
-          .int      .LDBG159-.LDBG0
+          .int      .LDBG142-.LDBG0
+          .int      .LDBG143-.LDBG0
           .short    .LDBG910-.LDBG909
 .LDBG909:
           .byte     0x5a
 .LDBG910:
-          .int      .LDBG142-.LDBG0
-          .int      .LDBG143-.LDBG0
+          .int      .LDBG156-.LDBG0
+          .int      .LDBG157-.LDBG0
           .short    .LDBG912-.LDBG911
 .LDBG911:
           .byte     0x5a
@@ -4549,8 +4551,8 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top readData.function,readData
 .LDBG930:
-          .int      .LDBG156-.LDBG0
-          .int      .LDBG157-.LDBG0
+          .int      .LDBG162-.LDBG0
+          .int      .LDBG163-.LDBG0
           .short    .LDBG932-.LDBG931
 .LDBG931:
           .byte     0x59
@@ -4579,14 +4581,14 @@ isLeft:
 .LDBG939:
           .byte     0x59
 .LDBG940:
-          .int      .LDBG162-.LDBG0
-          .int      .LDBG163-.LDBG0
+          .int      .LDBG144-.LDBG0
+          .int      .LDBG145-.LDBG0
           .short    .LDBG942-.LDBG941
 .LDBG941:
           .byte     0x59
 .LDBG942:
-          .int      .LDBG144-.LDBG0
-          .int      .LDBG145-.LDBG0
+          .int      .LDBG160-.LDBG0
+          .int      .LDBG161-.LDBG0
           .short    .LDBG944-.LDBG943
 .LDBG943:
           .byte     0x59
@@ -4597,32 +4599,32 @@ isLeft:
 .LDBG945:
           .byte     0x59
 .LDBG946:
-          .int      .LDBG140-.LDBG0
-          .int      .LDBG141-.LDBG0
+          .int      .LDBG158-.LDBG0
+          .int      .LDBG159-.LDBG0
           .short    .LDBG948-.LDBG947
 .LDBG947:
           .byte     0x59
 .LDBG948:
-          .int      .LDBG160-.LDBG0
-          .int      .LDBG161-.LDBG0
+          .int      .LDBG156-.LDBG0
+          .int      .LDBG157-.LDBG0
           .short    .LDBG950-.LDBG949
 .LDBG949:
           .byte     0x59
 .LDBG950:
-          .int      .LDBG142-.LDBG0
-          .int      .LDBG143-.LDBG0
+          .int      .LDBG140-.LDBG0
+          .int      .LDBG141-.LDBG0
           .short    .LDBG952-.LDBG951
 .LDBG951:
           .byte     0x59
 .LDBG952:
-          .int      .LDBG138-.LDBG0
-          .int      .LDBG139-.LDBG0
+          .int      .LDBG142-.LDBG0
+          .int      .LDBG143-.LDBG0
           .short    .LDBG954-.LDBG953
 .LDBG953:
           .byte     0x59
 .LDBG954:
-          .int      .LDBG158-.LDBG0
-          .int      .LDBG159-.LDBG0
+          .int      .LDBG138-.LDBG0
+          .int      .LDBG139-.LDBG0
           .short    .LDBG956-.LDBG955
 .LDBG955:
           .byte     0x59
@@ -4771,74 +4773,74 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top deliver.function,deliver
 .LDBG975:
-          .int      .LDBG220-.LDBG0
-          .int      .LDBG221-.LDBG0
+          .int      .LDBG238-.LDBG0
+          .int      .LDBG239-.LDBG0
           .short    .LDBG977-.LDBG976
 .LDBG976:
           .byte     0x55
 .LDBG977:
-          .int      .LDBG217-.LDBG0
-          .int      .LDBG219-.LDBG0
+          .int      .LDBG240-.LDBG0
+          .int      .LDBG242-.LDBG0
           .short    .LDBG979-.LDBG978
 .LDBG978:
           .byte     0x55
 .LDBG979:
-          .int      .LDBG211-.LDBG0
-          .int      .LDBG216-.LDBG0
+          .int      .LDBG236-.LDBG0
+          .int      .LDBG237-.LDBG0
           .short    .LDBG981-.LDBG980
 .LDBG980:
           .byte     0x55
 .LDBG981:
-          .int      .LDBG238-.LDBG0
-          .int      .LDBG239-.LDBG0
+          .int      .LDBG224-.LDBG0
+          .int      .LDBG225-.LDBG0
           .short    .LDBG983-.LDBG982
 .LDBG982:
           .byte     0x55
 .LDBG983:
-          .int      .LDBG240-.LDBG0
-          .int      .LDBG242-.LDBG0
+          .int      .LDBG234-.LDBG0
+          .int      .LDBG235-.LDBG0
           .short    .LDBG985-.LDBG984
 .LDBG984:
           .byte     0x55
 .LDBG985:
-          .int      .LDBG236-.LDBG0
-          .int      .LDBG237-.LDBG0
+          .int      .LDBG228-.LDBG0
+          .int      .LDBG229-.LDBG0
           .short    .LDBG987-.LDBG986
 .LDBG986:
           .byte     0x55
 .LDBG987:
-          .int      .LDBG224-.LDBG0
-          .int      .LDBG225-.LDBG0
+          .int      .LDBG232-.LDBG0
+          .int      .LDBG233-.LDBG0
           .short    .LDBG989-.LDBG988
 .LDBG988:
           .byte     0x55
 .LDBG989:
-          .int      .LDBG234-.LDBG0
-          .int      .LDBG235-.LDBG0
+          .int      .LDBG222-.LDBG0
+          .int      .LDBG223-.LDBG0
           .short    .LDBG991-.LDBG990
 .LDBG990:
           .byte     0x55
 .LDBG991:
-          .int      .LDBG228-.LDBG0
-          .int      .LDBG229-.LDBG0
+          .int      .LDBG230-.LDBG0
+          .int      .LDBG231-.LDBG0
           .short    .LDBG993-.LDBG992
 .LDBG992:
           .byte     0x55
 .LDBG993:
-          .int      .LDBG232-.LDBG0
-          .int      .LDBG233-.LDBG0
+          .int      .LDBG220-.LDBG0
+          .int      .LDBG221-.LDBG0
           .short    .LDBG995-.LDBG994
 .LDBG994:
           .byte     0x55
 .LDBG995:
-          .int      .LDBG222-.LDBG0
-          .int      .LDBG223-.LDBG0
+          .int      .LDBG217-.LDBG0
+          .int      .LDBG219-.LDBG0
           .short    .LDBG997-.LDBG996
 .LDBG996:
           .byte     0x55
 .LDBG997:
-          .int      .LDBG230-.LDBG0
-          .int      .LDBG231-.LDBG0
+          .int      .LDBG211-.LDBG0
+          .int      .LDBG216-.LDBG0
           .short    .LDBG999-.LDBG998
 .LDBG998:
           .byte     0x55
@@ -4856,74 +4858,74 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top deliver.function,deliver
 .LDBG1000:
-          .int      .LDBG217-.LDBG0
-          .int      .LDBG219-.LDBG0
+          .int      .LDBG240-.LDBG0
+          .int      .LDBG242-.LDBG0
           .short    .LDBG1002-.LDBG1001
 .LDBG1001:
           .byte     0x59
 .LDBG1002:
-          .int      .LDBG212-.LDBG0
-          .int      .LDBG216-.LDBG0
+          .int      .LDBG228-.LDBG0
+          .int      .LDBG229-.LDBG0
           .short    .LDBG1004-.LDBG1003
 .LDBG1003:
           .byte     0x59
 .LDBG1004:
-          .int      .LDBG240-.LDBG0
-          .int      .LDBG242-.LDBG0
+          .int      .LDBG220-.LDBG0
+          .int      .LDBG221-.LDBG0
           .short    .LDBG1006-.LDBG1005
 .LDBG1005:
           .byte     0x59
 .LDBG1006:
-          .int      .LDBG228-.LDBG0
-          .int      .LDBG229-.LDBG0
+          .int      .LDBG236-.LDBG0
+          .int      .LDBG237-.LDBG0
           .short    .LDBG1008-.LDBG1007
 .LDBG1007:
           .byte     0x59
 .LDBG1008:
-          .int      .LDBG220-.LDBG0
-          .int      .LDBG221-.LDBG0
+          .int      .LDBG234-.LDBG0
+          .int      .LDBG235-.LDBG0
           .short    .LDBG1010-.LDBG1009
 .LDBG1009:
           .byte     0x59
 .LDBG1010:
-          .int      .LDBG236-.LDBG0
-          .int      .LDBG237-.LDBG0
+          .int      .LDBG222-.LDBG0
+          .int      .LDBG223-.LDBG0
           .short    .LDBG1012-.LDBG1011
 .LDBG1011:
           .byte     0x59
 .LDBG1012:
-          .int      .LDBG234-.LDBG0
-          .int      .LDBG235-.LDBG0
+          .int      .LDBG232-.LDBG0
+          .int      .LDBG233-.LDBG0
           .short    .LDBG1014-.LDBG1013
 .LDBG1013:
           .byte     0x59
 .LDBG1014:
-          .int      .LDBG222-.LDBG0
-          .int      .LDBG223-.LDBG0
+          .int      .LDBG230-.LDBG0
+          .int      .LDBG231-.LDBG0
           .short    .LDBG1016-.LDBG1015
 .LDBG1015:
           .byte     0x59
 .LDBG1016:
-          .int      .LDBG232-.LDBG0
-          .int      .LDBG233-.LDBG0
+          .int      .LDBG238-.LDBG0
+          .int      .LDBG239-.LDBG0
           .short    .LDBG1018-.LDBG1017
 .LDBG1017:
           .byte     0x59
 .LDBG1018:
-          .int      .LDBG230-.LDBG0
-          .int      .LDBG231-.LDBG0
+          .int      .LDBG224-.LDBG0
+          .int      .LDBG225-.LDBG0
           .short    .LDBG1020-.LDBG1019
 .LDBG1019:
           .byte     0x59
 .LDBG1020:
-          .int      .LDBG238-.LDBG0
-          .int      .LDBG239-.LDBG0
+          .int      .LDBG217-.LDBG0
+          .int      .LDBG219-.LDBG0
           .short    .LDBG1022-.LDBG1021
 .LDBG1021:
           .byte     0x59
 .LDBG1022:
-          .int      .LDBG224-.LDBG0
-          .int      .LDBG225-.LDBG0
+          .int      .LDBG212-.LDBG0
+          .int      .LDBG216-.LDBG0
           .short    .LDBG1024-.LDBG1023
 .LDBG1023:
           .byte     0x59
@@ -4981,74 +4983,74 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top deliver.function,deliver
 .LDBG1031:
-          .int      .LDBG224-.LDBG0
-          .int      .LDBG225-.LDBG0
+          .int      .LDBG240-.LDBG0
+          .int      .LDBG242-.LDBG0
           .short    .LDBG1033-.LDBG1032
 .LDBG1032:
           .byte     0x58
 .LDBG1033:
-          .int      .LDBG217-.LDBG0
-          .int      .LDBG219-.LDBG0
+          .int      .LDBG236-.LDBG0
+          .int      .LDBG237-.LDBG0
           .short    .LDBG1035-.LDBG1034
 .LDBG1034:
           .byte     0x58
 .LDBG1035:
-          .int      .LDBG213-.LDBG0
-          .int      .LDBG216-.LDBG0
+          .int      .LDBG228-.LDBG0
+          .int      .LDBG229-.LDBG0
           .short    .LDBG1037-.LDBG1036
 .LDBG1036:
           .byte     0x58
 .LDBG1037:
-          .int      .LDBG240-.LDBG0
-          .int      .LDBG242-.LDBG0
+          .int      .LDBG220-.LDBG0
+          .int      .LDBG221-.LDBG0
           .short    .LDBG1039-.LDBG1038
 .LDBG1038:
           .byte     0x58
 .LDBG1039:
-          .int      .LDBG236-.LDBG0
-          .int      .LDBG237-.LDBG0
+          .int      .LDBG234-.LDBG0
+          .int      .LDBG235-.LDBG0
           .short    .LDBG1041-.LDBG1040
 .LDBG1040:
           .byte     0x58
 .LDBG1041:
-          .int      .LDBG228-.LDBG0
-          .int      .LDBG229-.LDBG0
+          .int      .LDBG222-.LDBG0
+          .int      .LDBG223-.LDBG0
           .short    .LDBG1043-.LDBG1042
 .LDBG1042:
           .byte     0x58
 .LDBG1043:
-          .int      .LDBG220-.LDBG0
-          .int      .LDBG221-.LDBG0
+          .int      .LDBG232-.LDBG0
+          .int      .LDBG233-.LDBG0
           .short    .LDBG1045-.LDBG1044
 .LDBG1044:
           .byte     0x58
 .LDBG1045:
-          .int      .LDBG234-.LDBG0
-          .int      .LDBG235-.LDBG0
+          .int      .LDBG230-.LDBG0
+          .int      .LDBG231-.LDBG0
           .short    .LDBG1047-.LDBG1046
 .LDBG1046:
           .byte     0x58
 .LDBG1047:
-          .int      .LDBG222-.LDBG0
-          .int      .LDBG223-.LDBG0
+          .int      .LDBG238-.LDBG0
+          .int      .LDBG239-.LDBG0
           .short    .LDBG1049-.LDBG1048
 .LDBG1048:
           .byte     0x58
 .LDBG1049:
-          .int      .LDBG232-.LDBG0
-          .int      .LDBG233-.LDBG0
+          .int      .LDBG224-.LDBG0
+          .int      .LDBG225-.LDBG0
           .short    .LDBG1051-.LDBG1050
 .LDBG1050:
           .byte     0x58
 .LDBG1051:
-          .int      .LDBG230-.LDBG0
-          .int      .LDBG231-.LDBG0
+          .int      .LDBG217-.LDBG0
+          .int      .LDBG219-.LDBG0
           .short    .LDBG1053-.LDBG1052
 .LDBG1052:
           .byte     0x58
 .LDBG1053:
-          .int      .LDBG238-.LDBG0
-          .int      .LDBG239-.LDBG0
+          .int      .LDBG213-.LDBG0
+          .int      .LDBG216-.LDBG0
           .short    .LDBG1055-.LDBG1054
 .LDBG1054:
           .byte     0x58
@@ -5066,74 +5068,74 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top deliver.function,deliver
 .LDBG1056:
-          .int      .LDBG217-.LDBG0
-          .int      .LDBG219-.LDBG0
+          .int      .LDBG238-.LDBG0
+          .int      .LDBG239-.LDBG0
           .short    .LDBG1058-.LDBG1057
 .LDBG1057:
           .byte     0x57
 .LDBG1058:
-          .int      .LDBG214-.LDBG0
-          .int      .LDBG216-.LDBG0
+          .int      .LDBG240-.LDBG0
+          .int      .LDBG242-.LDBG0
           .short    .LDBG1060-.LDBG1059
 .LDBG1059:
           .byte     0x57
 .LDBG1060:
-          .int      .LDBG238-.LDBG0
-          .int      .LDBG239-.LDBG0
+          .int      .LDBG224-.LDBG0
+          .int      .LDBG225-.LDBG0
           .short    .LDBG1062-.LDBG1061
 .LDBG1061:
           .byte     0x57
 .LDBG1062:
-          .int      .LDBG240-.LDBG0
-          .int      .LDBG242-.LDBG0
+          .int      .LDBG236-.LDBG0
+          .int      .LDBG237-.LDBG0
           .short    .LDBG1064-.LDBG1063
 .LDBG1063:
           .byte     0x57
 .LDBG1064:
-          .int      .LDBG224-.LDBG0
-          .int      .LDBG225-.LDBG0
+          .int      .LDBG228-.LDBG0
+          .int      .LDBG229-.LDBG0
           .short    .LDBG1066-.LDBG1065
 .LDBG1065:
           .byte     0x57
 .LDBG1066:
-          .int      .LDBG236-.LDBG0
-          .int      .LDBG237-.LDBG0
+          .int      .LDBG234-.LDBG0
+          .int      .LDBG235-.LDBG0
           .short    .LDBG1068-.LDBG1067
 .LDBG1067:
           .byte     0x57
 .LDBG1068:
-          .int      .LDBG228-.LDBG0
-          .int      .LDBG229-.LDBG0
+          .int      .LDBG220-.LDBG0
+          .int      .LDBG221-.LDBG0
           .short    .LDBG1070-.LDBG1069
 .LDBG1069:
           .byte     0x57
 .LDBG1070:
-          .int      .LDBG234-.LDBG0
-          .int      .LDBG235-.LDBG0
+          .int      .LDBG222-.LDBG0
+          .int      .LDBG223-.LDBG0
           .short    .LDBG1072-.LDBG1071
 .LDBG1071:
           .byte     0x57
 .LDBG1072:
-          .int      .LDBG220-.LDBG0
-          .int      .LDBG221-.LDBG0
+          .int      .LDBG232-.LDBG0
+          .int      .LDBG233-.LDBG0
           .short    .LDBG1074-.LDBG1073
 .LDBG1073:
           .byte     0x57
 .LDBG1074:
-          .int      .LDBG222-.LDBG0
-          .int      .LDBG223-.LDBG0
+          .int      .LDBG230-.LDBG0
+          .int      .LDBG231-.LDBG0
           .short    .LDBG1076-.LDBG1075
 .LDBG1075:
           .byte     0x57
 .LDBG1076:
-          .int      .LDBG232-.LDBG0
-          .int      .LDBG233-.LDBG0
+          .int      .LDBG217-.LDBG0
+          .int      .LDBG219-.LDBG0
           .short    .LDBG1078-.LDBG1077
 .LDBG1077:
           .byte     0x57
 .LDBG1078:
-          .int      .LDBG230-.LDBG0
-          .int      .LDBG231-.LDBG0
+          .int      .LDBG214-.LDBG0
+          .int      .LDBG216-.LDBG0
           .short    .LDBG1080-.LDBG1079
 .LDBG1079:
           .byte     0x57
@@ -5260,68 +5262,68 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top deliver.function,deliver
 .LDBG1100:
-          .int      .LDBG220-.LDBG0
-          .int      .LDBG221-.LDBG0
+          .int      .LDBG241-.LDBG0
+          .int      .LDBG242-.LDBG0
           .short    .LDBG1102-.LDBG1101
 .LDBG1101:
           .byte     0x56
 .LDBG1102:
-          .int      .LDBG217-.LDBG0
-          .int      .LDBG219-.LDBG0
+          .int      .LDBG224-.LDBG0
+          .int      .LDBG225-.LDBG0
           .short    .LDBG1104-.LDBG1103
 .LDBG1103:
           .byte     0x56
 .LDBG1104:
-          .int      .LDBG215-.LDBG0
-          .int      .LDBG216-.LDBG0
+          .int      .LDBG236-.LDBG0
+          .int      .LDBG237-.LDBG0
           .short    .LDBG1106-.LDBG1105
 .LDBG1105:
           .byte     0x56
 .LDBG1106:
-          .int      .LDBG241-.LDBG0
-          .int      .LDBG242-.LDBG0
+          .int      .LDBG234-.LDBG0
+          .int      .LDBG235-.LDBG0
           .short    .LDBG1108-.LDBG1107
 .LDBG1107:
           .byte     0x56
 .LDBG1108:
-          .int      .LDBG224-.LDBG0
-          .int      .LDBG225-.LDBG0
+          .int      .LDBG228-.LDBG0
+          .int      .LDBG229-.LDBG0
           .short    .LDBG1110-.LDBG1109
 .LDBG1109:
           .byte     0x56
 .LDBG1110:
-          .int      .LDBG236-.LDBG0
-          .int      .LDBG237-.LDBG0
+          .int      .LDBG232-.LDBG0
+          .int      .LDBG233-.LDBG0
           .short    .LDBG1112-.LDBG1111
 .LDBG1111:
           .byte     0x56
 .LDBG1112:
-          .int      .LDBG234-.LDBG0
-          .int      .LDBG235-.LDBG0
+          .int      .LDBG222-.LDBG0
+          .int      .LDBG223-.LDBG0
           .short    .LDBG1114-.LDBG1113
 .LDBG1113:
           .byte     0x56
 .LDBG1114:
-          .int      .LDBG228-.LDBG0
-          .int      .LDBG229-.LDBG0
+          .int      .LDBG230-.LDBG0
+          .int      .LDBG231-.LDBG0
           .short    .LDBG1116-.LDBG1115
 .LDBG1115:
           .byte     0x56
 .LDBG1116:
-          .int      .LDBG232-.LDBG0
-          .int      .LDBG233-.LDBG0
+          .int      .LDBG220-.LDBG0
+          .int      .LDBG221-.LDBG0
           .short    .LDBG1118-.LDBG1117
 .LDBG1117:
           .byte     0x56
 .LDBG1118:
-          .int      .LDBG222-.LDBG0
-          .int      .LDBG223-.LDBG0
+          .int      .LDBG217-.LDBG0
+          .int      .LDBG219-.LDBG0
           .short    .LDBG1120-.LDBG1119
 .LDBG1119:
           .byte     0x56
 .LDBG1120:
-          .int      .LDBG230-.LDBG0
-          .int      .LDBG231-.LDBG0
+          .int      .LDBG215-.LDBG0
+          .int      .LDBG216-.LDBG0
           .short    .LDBG1122-.LDBG1121
 .LDBG1121:
           .byte     0x56
@@ -5419,32 +5421,32 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top physical.function,physical
 .LDBG1132:
-          .int      .LDBG437-.LDBG0
-          .int      .LDBG438-.LDBG0
+          .int      .LDBG441-.LDBG0
+          .int      .LDBG442-.LDBG0
           .short    .LDBG1134-.LDBG1133
 .LDBG1133:
           .byte     0x5a
 .LDBG1134:
-          .int      .LDBG435-.LDBG0
-          .int      .LDBG436-.LDBG0
+          .int      .LDBG390-.LDBG0
+          .int      .LDBG392-.LDBG0
           .short    .LDBG1136-.LDBG1135
 .LDBG1135:
           .byte     0x5a
 .LDBG1136:
-          .int      .LDBG433-.LDBG0
-          .int      .LDBG434-.LDBG0
+          .int      .LDBG393-.LDBG0
+          .int      .LDBG394-.LDBG0
           .short    .LDBG1138-.LDBG1137
 .LDBG1137:
           .byte     0x5a
 .LDBG1138:
-          .int      .LDBG431-.LDBG0
-          .int      .LDBG432-.LDBG0
+          .int      .LDBG379-.LDBG0
+          .int      .LDBG389-.LDBG0
           .short    .LDBG1140-.LDBG1139
 .LDBG1139:
           .byte     0x5a
 .LDBG1140:
-          .int      .LDBG429-.LDBG0
-          .int      .LDBG430-.LDBG0
+          .int      .LDBG439-.LDBG0
+          .int      .LDBG440-.LDBG0
           .short    .LDBG1142-.LDBG1141
 .LDBG1141:
           .byte     0x5a
@@ -5557,32 +5559,32 @@ isLeft:
 .LDBG1177:
           .byte     0x5a
 .LDBG1178:
-          .int      .LDBG441-.LDBG0
-          .int      .LDBG442-.LDBG0
+          .int      .LDBG437-.LDBG0
+          .int      .LDBG438-.LDBG0
           .short    .LDBG1180-.LDBG1179
 .LDBG1179:
           .byte     0x5a
 .LDBG1180:
-          .int      .LDBG390-.LDBG0
-          .int      .LDBG392-.LDBG0
+          .int      .LDBG435-.LDBG0
+          .int      .LDBG436-.LDBG0
           .short    .LDBG1182-.LDBG1181
 .LDBG1181:
           .byte     0x5a
 .LDBG1182:
-          .int      .LDBG393-.LDBG0
-          .int      .LDBG394-.LDBG0
+          .int      .LDBG433-.LDBG0
+          .int      .LDBG434-.LDBG0
           .short    .LDBG1184-.LDBG1183
 .LDBG1183:
           .byte     0x5a
 .LDBG1184:
-          .int      .LDBG379-.LDBG0
-          .int      .LDBG389-.LDBG0
+          .int      .LDBG431-.LDBG0
+          .int      .LDBG432-.LDBG0
           .short    .LDBG1186-.LDBG1185
 .LDBG1185:
           .byte     0x5a
 .LDBG1186:
-          .int      .LDBG439-.LDBG0
-          .int      .LDBG440-.LDBG0
+          .int      .LDBG429-.LDBG0
+          .int      .LDBG430-.LDBG0
           .short    .LDBG1188-.LDBG1187
 .LDBG1187:
           .byte     0x5a
@@ -5638,170 +5640,170 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top physical.function,physical
 .LDBG1195:
-          .int      .LDBG437-.LDBG0
-          .int      .LDBG438-.LDBG0
+          .int      .LDBG395-.LDBG0
+          .int      .LDBG396-.LDBG0
           .short    .LDBG1197-.LDBG1196
 .LDBG1196:
           .byte     0x59
 .LDBG1197:
-          .int      .LDBG435-.LDBG0
-          .int      .LDBG436-.LDBG0
+          .int      .LDBG441-.LDBG0
+          .int      .LDBG442-.LDBG0
           .short    .LDBG1199-.LDBG1198
 .LDBG1198:
           .byte     0x59
 .LDBG1199:
-          .int      .LDBG433-.LDBG0
-          .int      .LDBG434-.LDBG0
+          .int      .LDBG393-.LDBG0
+          .int      .LDBG394-.LDBG0
           .short    .LDBG1201-.LDBG1200
 .LDBG1200:
           .byte     0x59
 .LDBG1201:
-          .int      .LDBG425-.LDBG0
-          .int      .LDBG426-.LDBG0
+          .int      .LDBG390-.LDBG0
+          .int      .LDBG392-.LDBG0
           .short    .LDBG1203-.LDBG1202
 .LDBG1202:
           .byte     0x59
 .LDBG1203:
-          .int      .LDBG431-.LDBG0
-          .int      .LDBG432-.LDBG0
+          .int      .LDBG382-.LDBG0
+          .int      .LDBG389-.LDBG0
           .short    .LDBG1205-.LDBG1204
 .LDBG1204:
           .byte     0x59
 .LDBG1205:
-          .int      .LDBG429-.LDBG0
-          .int      .LDBG430-.LDBG0
+          .int      .LDBG439-.LDBG0
+          .int      .LDBG440-.LDBG0
           .short    .LDBG1207-.LDBG1206
 .LDBG1206:
           .byte     0x59
 .LDBG1207:
-          .int      .LDBG427-.LDBG0
-          .int      .LDBG428-.LDBG0
+          .int      .LDBG429-.LDBG0
+          .int      .LDBG430-.LDBG0
           .short    .LDBG1209-.LDBG1208
 .LDBG1208:
           .byte     0x59
 .LDBG1209:
-          .int      .LDBG423-.LDBG0
-          .int      .LDBG424-.LDBG0
+          .int      .LDBG427-.LDBG0
+          .int      .LDBG428-.LDBG0
           .short    .LDBG1211-.LDBG1210
 .LDBG1210:
           .byte     0x59
 .LDBG1211:
-          .int      .LDBG421-.LDBG0
-          .int      .LDBG422-.LDBG0
+          .int      .LDBG423-.LDBG0
+          .int      .LDBG424-.LDBG0
           .short    .LDBG1213-.LDBG1212
 .LDBG1212:
           .byte     0x59
 .LDBG1213:
-          .int      .LDBG419-.LDBG0
-          .int      .LDBG420-.LDBG0
+          .int      .LDBG421-.LDBG0
+          .int      .LDBG422-.LDBG0
           .short    .LDBG1215-.LDBG1214
 .LDBG1214:
           .byte     0x59
 .LDBG1215:
-          .int      .LDBG417-.LDBG0
-          .int      .LDBG418-.LDBG0
+          .int      .LDBG419-.LDBG0
+          .int      .LDBG420-.LDBG0
           .short    .LDBG1217-.LDBG1216
 .LDBG1216:
           .byte     0x59
 .LDBG1217:
-          .int      .LDBG415-.LDBG0
-          .int      .LDBG416-.LDBG0
+          .int      .LDBG417-.LDBG0
+          .int      .LDBG418-.LDBG0
           .short    .LDBG1219-.LDBG1218
 .LDBG1218:
           .byte     0x59
 .LDBG1219:
-          .int      .LDBG413-.LDBG0
-          .int      .LDBG414-.LDBG0
+          .int      .LDBG415-.LDBG0
+          .int      .LDBG416-.LDBG0
           .short    .LDBG1221-.LDBG1220
 .LDBG1220:
           .byte     0x59
 .LDBG1221:
-          .int      .LDBG411-.LDBG0
-          .int      .LDBG412-.LDBG0
+          .int      .LDBG413-.LDBG0
+          .int      .LDBG414-.LDBG0
           .short    .LDBG1223-.LDBG1222
 .LDBG1222:
           .byte     0x59
 .LDBG1223:
-          .int      .LDBG409-.LDBG0
-          .int      .LDBG410-.LDBG0
+          .int      .LDBG411-.LDBG0
+          .int      .LDBG412-.LDBG0
           .short    .LDBG1225-.LDBG1224
 .LDBG1224:
           .byte     0x59
 .LDBG1225:
-          .int      .LDBG407-.LDBG0
-          .int      .LDBG408-.LDBG0
+          .int      .LDBG409-.LDBG0
+          .int      .LDBG410-.LDBG0
           .short    .LDBG1227-.LDBG1226
 .LDBG1226:
           .byte     0x59
 .LDBG1227:
-          .int      .LDBG405-.LDBG0
-          .int      .LDBG406-.LDBG0
+          .int      .LDBG407-.LDBG0
+          .int      .LDBG408-.LDBG0
           .short    .LDBG1229-.LDBG1228
 .LDBG1228:
           .byte     0x59
 .LDBG1229:
-          .int      .LDBG403-.LDBG0
-          .int      .LDBG404-.LDBG0
+          .int      .LDBG405-.LDBG0
+          .int      .LDBG406-.LDBG0
           .short    .LDBG1231-.LDBG1230
 .LDBG1230:
           .byte     0x59
 .LDBG1231:
-          .int      .LDBG443-.LDBG0
-          .int      .LDBG444-.LDBG0
+          .int      .LDBG403-.LDBG0
+          .int      .LDBG404-.LDBG0
           .short    .LDBG1233-.LDBG1232
 .LDBG1232:
           .byte     0x59
 .LDBG1233:
-          .int      .LDBG401-.LDBG0
-          .int      .LDBG402-.LDBG0
+          .int      .LDBG443-.LDBG0
+          .int      .LDBG444-.LDBG0
           .short    .LDBG1235-.LDBG1234
 .LDBG1234:
           .byte     0x59
 .LDBG1235:
-          .int      .LDBG399-.LDBG0
-          .int      .LDBG400-.LDBG0
+          .int      .LDBG401-.LDBG0
+          .int      .LDBG402-.LDBG0
           .short    .LDBG1237-.LDBG1236
 .LDBG1236:
           .byte     0x59
 .LDBG1237:
-          .int      .LDBG397-.LDBG0
-          .int      .LDBG398-.LDBG0
+          .int      .LDBG399-.LDBG0
+          .int      .LDBG400-.LDBG0
           .short    .LDBG1239-.LDBG1238
 .LDBG1238:
           .byte     0x59
 .LDBG1239:
-          .int      .LDBG395-.LDBG0
-          .int      .LDBG396-.LDBG0
+          .int      .LDBG397-.LDBG0
+          .int      .LDBG398-.LDBG0
           .short    .LDBG1241-.LDBG1240
 .LDBG1240:
           .byte     0x59
 .LDBG1241:
-          .int      .LDBG441-.LDBG0
-          .int      .LDBG442-.LDBG0
+          .int      .LDBG437-.LDBG0
+          .int      .LDBG438-.LDBG0
           .short    .LDBG1243-.LDBG1242
 .LDBG1242:
           .byte     0x59
 .LDBG1243:
-          .int      .LDBG393-.LDBG0
-          .int      .LDBG394-.LDBG0
+          .int      .LDBG435-.LDBG0
+          .int      .LDBG436-.LDBG0
           .short    .LDBG1245-.LDBG1244
 .LDBG1244:
           .byte     0x59
 .LDBG1245:
-          .int      .LDBG390-.LDBG0
-          .int      .LDBG392-.LDBG0
+          .int      .LDBG433-.LDBG0
+          .int      .LDBG434-.LDBG0
           .short    .LDBG1247-.LDBG1246
 .LDBG1246:
           .byte     0x59
 .LDBG1247:
-          .int      .LDBG382-.LDBG0
-          .int      .LDBG389-.LDBG0
+          .int      .LDBG425-.LDBG0
+          .int      .LDBG426-.LDBG0
           .short    .LDBG1249-.LDBG1248
 .LDBG1248:
           .byte     0x59
 .LDBG1249:
-          .int      .LDBG439-.LDBG0
-          .int      .LDBG440-.LDBG0
+          .int      .LDBG431-.LDBG0
+          .int      .LDBG432-.LDBG0
           .short    .LDBG1251-.LDBG1250
 .LDBG1250:
           .byte     0x59
@@ -5819,32 +5821,32 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top physical.function,physical
 .LDBG1252:
-          .int      .LDBG437-.LDBG0
-          .int      .LDBG438-.LDBG0
+          .int      .LDBG441-.LDBG0
+          .int      .LDBG442-.LDBG0
           .short    .LDBG1254-.LDBG1253
 .LDBG1253:
           .byte     0x58
 .LDBG1254:
-          .int      .LDBG435-.LDBG0
-          .int      .LDBG436-.LDBG0
+          .int      .LDBG393-.LDBG0
+          .int      .LDBG394-.LDBG0
           .short    .LDBG1256-.LDBG1255
 .LDBG1255:
           .byte     0x58
 .LDBG1256:
-          .int      .LDBG433-.LDBG0
-          .int      .LDBG434-.LDBG0
+          .int      .LDBG390-.LDBG0
+          .int      .LDBG392-.LDBG0
           .short    .LDBG1258-.LDBG1257
 .LDBG1257:
           .byte     0x58
 .LDBG1258:
-          .int      .LDBG425-.LDBG0
-          .int      .LDBG426-.LDBG0
+          .int      .LDBG383-.LDBG0
+          .int      .LDBG389-.LDBG0
           .short    .LDBG1260-.LDBG1259
 .LDBG1259:
           .byte     0x58
 .LDBG1260:
-          .int      .LDBG431-.LDBG0
-          .int      .LDBG432-.LDBG0
+          .int      .LDBG439-.LDBG0
+          .int      .LDBG440-.LDBG0
           .short    .LDBG1262-.LDBG1261
 .LDBG1261:
           .byte     0x58
@@ -5957,32 +5959,32 @@ isLeft:
 .LDBG1297:
           .byte     0x58
 .LDBG1298:
-          .int      .LDBG441-.LDBG0
-          .int      .LDBG442-.LDBG0
+          .int      .LDBG437-.LDBG0
+          .int      .LDBG438-.LDBG0
           .short    .LDBG1300-.LDBG1299
 .LDBG1299:
           .byte     0x58
 .LDBG1300:
-          .int      .LDBG393-.LDBG0
-          .int      .LDBG394-.LDBG0
+          .int      .LDBG435-.LDBG0
+          .int      .LDBG436-.LDBG0
           .short    .LDBG1302-.LDBG1301
 .LDBG1301:
           .byte     0x58
 .LDBG1302:
-          .int      .LDBG390-.LDBG0
-          .int      .LDBG392-.LDBG0
+          .int      .LDBG433-.LDBG0
+          .int      .LDBG434-.LDBG0
           .short    .LDBG1304-.LDBG1303
 .LDBG1303:
           .byte     0x58
 .LDBG1304:
-          .int      .LDBG383-.LDBG0
-          .int      .LDBG389-.LDBG0
+          .int      .LDBG425-.LDBG0
+          .int      .LDBG426-.LDBG0
           .short    .LDBG1306-.LDBG1305
 .LDBG1305:
           .byte     0x58
 .LDBG1306:
-          .int      .LDBG439-.LDBG0
-          .int      .LDBG440-.LDBG0
+          .int      .LDBG431-.LDBG0
+          .int      .LDBG432-.LDBG0
           .short    .LDBG1308-.LDBG1307
 .LDBG1307:
           .byte     0x58
@@ -6000,32 +6002,32 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top physical.function,physical
 .LDBG1309:
-          .int      .LDBG439-.LDBG0
-          .int      .LDBG440-.LDBG0
+          .int      .LDBG395-.LDBG0
+          .int      .LDBG396-.LDBG0
           .short    .LDBG1311-.LDBG1310
 .LDBG1310:
           .byte     0x57
 .LDBG1311:
-          .int      .LDBG437-.LDBG0
-          .int      .LDBG438-.LDBG0
+          .int      .LDBG393-.LDBG0
+          .int      .LDBG394-.LDBG0
           .short    .LDBG1313-.LDBG1312
 .LDBG1312:
           .byte     0x57
 .LDBG1313:
-          .int      .LDBG435-.LDBG0
-          .int      .LDBG436-.LDBG0
+          .int      .LDBG390-.LDBG0
+          .int      .LDBG392-.LDBG0
           .short    .LDBG1315-.LDBG1314
 .LDBG1314:
           .byte     0x57
 .LDBG1315:
-          .int      .LDBG433-.LDBG0
-          .int      .LDBG434-.LDBG0
+          .int      .LDBG384-.LDBG0
+          .int      .LDBG389-.LDBG0
           .short    .LDBG1317-.LDBG1316
 .LDBG1316:
           .byte     0x57
 .LDBG1317:
-          .int      .LDBG431-.LDBG0
-          .int      .LDBG432-.LDBG0
+          .int      .LDBG441-.LDBG0
+          .int      .LDBG442-.LDBG0
           .short    .LDBG1319-.LDBG1318
 .LDBG1318:
           .byte     0x57
@@ -6138,32 +6140,32 @@ isLeft:
 .LDBG1354:
           .byte     0x57
 .LDBG1355:
-          .int      .LDBG395-.LDBG0
-          .int      .LDBG396-.LDBG0
+          .int      .LDBG439-.LDBG0
+          .int      .LDBG440-.LDBG0
           .short    .LDBG1357-.LDBG1356
 .LDBG1356:
           .byte     0x57
 .LDBG1357:
-          .int      .LDBG393-.LDBG0
-          .int      .LDBG394-.LDBG0
+          .int      .LDBG437-.LDBG0
+          .int      .LDBG438-.LDBG0
           .short    .LDBG1359-.LDBG1358
 .LDBG1358:
           .byte     0x57
 .LDBG1359:
-          .int      .LDBG390-.LDBG0
-          .int      .LDBG392-.LDBG0
+          .int      .LDBG435-.LDBG0
+          .int      .LDBG436-.LDBG0
           .short    .LDBG1361-.LDBG1360
 .LDBG1360:
           .byte     0x57
 .LDBG1361:
-          .int      .LDBG384-.LDBG0
-          .int      .LDBG389-.LDBG0
+          .int      .LDBG433-.LDBG0
+          .int      .LDBG434-.LDBG0
           .short    .LDBG1363-.LDBG1362
 .LDBG1362:
           .byte     0x57
 .LDBG1363:
-          .int      .LDBG441-.LDBG0
-          .int      .LDBG442-.LDBG0
+          .int      .LDBG431-.LDBG0
+          .int      .LDBG432-.LDBG0
           .short    .LDBG1365-.LDBG1364
 .LDBG1364:
           .byte     0x57
@@ -6363,26 +6365,26 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top physical.function,physical
 .LDBG1390:
-          .int      .LDBG397-.LDBG0
-          .int      .LDBG398-.LDBG0
+          .int      .LDBG391-.LDBG0
+          .int      .LDBG392-.LDBG0
           .short    .LDBG1392-.LDBG1391
 .LDBG1391:
           .byte     0x51
 .LDBG1392:
-          .int      .LDBG395-.LDBG0
-          .int      .LDBG396-.LDBG0
+          .int      .LDBG393-.LDBG0
+          .int      .LDBG394-.LDBG0
           .short    .LDBG1394-.LDBG1393
 .LDBG1393:
           .byte     0x51
 .LDBG1394:
-          .int      .LDBG391-.LDBG0
-          .int      .LDBG392-.LDBG0
+          .int      .LDBG397-.LDBG0
+          .int      .LDBG398-.LDBG0
           .short    .LDBG1396-.LDBG1395
 .LDBG1395:
           .byte     0x51
 .LDBG1396:
-          .int      .LDBG393-.LDBG0
-          .int      .LDBG394-.LDBG0
+          .int      .LDBG395-.LDBG0
+          .int      .LDBG396-.LDBG0
           .short    .LDBG1398-.LDBG1397
 .LDBG1397:
           .byte     0x51
@@ -6612,14 +6614,14 @@ isLeft:
           .byte     0x7e
           .sleb128  0x1c
 .LDBG1430:
-          .int      .LDBG599-.LDBG0
-          .int      .LDBG600-.LDBG0
+          .int      .LDBG597-.LDBG0
+          .int      .LDBG598-.LDBG0
           .short    .LDBG1432-.LDBG1431
 .LDBG1431:
           .byte     0x52
 .LDBG1432:
-          .int      .LDBG597-.LDBG0
-          .int      .LDBG598-.LDBG0
+          .int      .LDBG599-.LDBG0
+          .int      .LDBG600-.LDBG0
           .short    .LDBG1434-.LDBG1433
 .LDBG1433:
           .byte     0x52
@@ -6905,20 +6907,20 @@ isLeft:
           .section  .debug_loc,    "",    @progbits
 .cc_top XUD_Endpoint1.function,XUD_Endpoint1
 .LDBG1492:
-          .int      .LDBG593-.LDBG0
-          .int      .LDBG594-.LDBG0
+          .int      .LDBG591-.LDBG0
+          .int      .LDBG592-.LDBG0
           .short    .LDBG1494-.LDBG1493
 .LDBG1493:
           .byte     0x54
 .LDBG1494:
-          .int      .LDBG595-.LDBG0
-          .int      .LDBG596-.LDBG0
+          .int      .LDBG593-.LDBG0
+          .int      .LDBG594-.LDBG0
           .short    .LDBG1496-.LDBG1495
 .LDBG1495:
           .byte     0x54
 .LDBG1496:
-          .int      .LDBG591-.LDBG0
-          .int      .LDBG592-.LDBG0
+          .int      .LDBG595-.LDBG0
+          .int      .LDBG596-.LDBG0
           .short    .LDBG1498-.LDBG1497
 .LDBG1497:
           .byte     0x54
@@ -7438,7 +7440,7 @@ isLeft:
           .long     .LDBG699         # low address
           .long     .LDBG720         # high address
           .uleb128  0x5
-          .asciiz   "c_sof"
+          .asciiz   "c_ep3_dat"
           .byte     0x01
           .short    0x0218
           .int      .LDBG751-.LDBG740
@@ -7457,7 +7459,7 @@ isLeft:
 .cc_bottom __main_xm_1.function
           .section  .debug_info,   "",    @progbits
           .uleb128  0x5
-          .asciiz   "c_ep3_dat"
+          .asciiz   "c_ep1_dat"
           .byte     0x01
           .short    0x0218
           .int      .LDBG751-.LDBG740
@@ -7469,14 +7471,14 @@ isLeft:
           .int      .LDBG705-.LDBG0
           .short    .LDBG1575-.LDBG1574
 .LDBG1574:
-          .byte     0x54
+          .byte     0x51
 .LDBG1575:
           .int      0x00000000
           .int      0x00000000
 .cc_bottom __main_xm_1.function
           .section  .debug_info,   "",    @progbits
           .uleb128  0x5
-          .asciiz   "c_ep2_dat"
+          .asciiz   "c_ep0_dat"
           .byte     0x01
           .short    0x0218
           .int      .LDBG751-.LDBG740
@@ -7495,7 +7497,7 @@ isLeft:
 .cc_bottom __main_xm_1.function
           .section  .debug_info,   "",    @progbits
           .uleb128  0x5
-          .asciiz   "c_ep1_dat"
+          .asciiz   "c_sof"
           .byte     0x01
           .short    0x0218
           .int      .LDBG751-.LDBG740
@@ -7507,14 +7509,14 @@ isLeft:
           .int      .LDBG705-.LDBG0
           .short    .LDBG1581-.LDBG1580
 .LDBG1580:
-          .byte     0x53
+          .byte     0x54
 .LDBG1581:
           .int      0x00000000
           .int      0x00000000
 .cc_bottom __main_xm_1.function
           .section  .debug_info,   "",    @progbits
           .uleb128  0x5
-          .asciiz   "c_ep0_dat"
+          .asciiz   "c_ep2_dat"
           .byte     0x01
           .short    0x0218
           .int      .LDBG751-.LDBG740
@@ -7526,7 +7528,7 @@ isLeft:
           .int      .LDBG705-.LDBG0
           .short    .LDBG1584-.LDBG1583
 .LDBG1583:
-          .byte     0x50
+          .byte     0x53
 .LDBG1584:
           .int      0x00000000
           .int      0x00000000
@@ -7657,7 +7659,7 @@ isLeft:
           .byte     0x00
           .asciiz   "./tests/audio/src/audio.xc"
           .uleb128  0x0
-          .uleb128  0x49d1f34e
+          .uleb128  0x49d241cf
           .uleb128  0x483b
           .byte     0x00
 .LDBG1594:
@@ -9196,7 +9198,7 @@ isLeft:
 .L218:
           .int      .L219-.L218
           .int      0x00000000
-          .asciiz   "/home/andrew-local/software/sandbox2/verif_tests_sw/Tools/xta/Applications/swc_usb"
+          .asciiz   "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/Applications/swc_usb"
 .cc_top XUD_Endpoint1.function, XUD_Endpoint1
           .asciiz  "./tests/audio/src/audio.xc"
           .int      0x000001c2
@@ -9417,7 +9419,7 @@ isLeft:
 .L220:
           .int      .L221-.L220
           .int      0x00000000
-          .asciiz   "/home/andrew-local/software/sandbox2/verif_tests_sw/Tools/xta/Applications/swc_usb"
+          .asciiz   "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/Applications/swc_usb"
 .cc_top __main_xm_0.function, __main_xm_0
           .asciiz  "./tests/audio/src/audio.xc"
           .int      0x0000020f

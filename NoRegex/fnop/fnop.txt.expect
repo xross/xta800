@@ -3,13 +3,21 @@ Route(0) function: main
     Complete paths: 1, Unresolved paths: 0
 
 Fail, Timing Unspecified
-Timing(ns):       80.0
+Path ID:          0
+Time taken:       80.0
 Thread cycles:    4
 Num Instructions: 3
 Num FNops:        1
-Num Blocks:       3
 Num Pauseables:   0
+Num Unknowns:     0
 Num Loops:        0
+Time taken (this):       80.0
+Thread cycles (this):    4
+Num Instructions (this): 3
+Num FNops (this):        1
+Num Pauseables (this):   0
+Num Unknowns (this):     0
+Number of iterations:    0 + 0
 Route(0) function: main
 Complete [1 path]
     path(0)    : 80.0ns
