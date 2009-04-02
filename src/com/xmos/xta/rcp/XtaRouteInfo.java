@@ -19,7 +19,6 @@ import com.xmos.xta.rcp.nodes.RouteNode;
 
 public class XtaRouteInfo {
 	
-	private Route m_selectedRoute;
 	private Engine m_engine;
 	
 	private List<Node> m_routes;
@@ -31,35 +30,34 @@ public class XtaRouteInfo {
 		m_engine = engine;
 		m_routeNode = null;
 		m_selectedNode = null;
-		m_selectedNode = null;
 		
 		m_routes = new ArrayList<Node>();
-		buildRouteNode(null);
+		buildRouteNode();
 	}
 	
-	public void update(Route selectedRoute) {
+	public void update() {
 		m_routes.clear();
 		for (Route route : m_engine.getRoutes()) {
 			m_routes.add(new RouteNode(route));
 		}
-		buildRouteNode(selectedRoute);
+		buildRouteNode();
 	}
 
-	private void buildRouteNode(Route selectedRoute) {
+	private void buildRouteNode() {
 		m_routeNode = null;
 		m_unresolvedNode = null;
-		m_selectedRoute = selectedRoute;
-		if (m_selectedRoute == null)
+		Route selectedRoute = m_engine.getSelectedRoute();
+		if (selectedRoute == null)
 			return;
 	
-		if (m_selectedRoute.getAllBasicBlocks().size() > 2000){
+		if (selectedRoute.getAllBasicBlocks().size() > 2000){
 			return;
 		}
 		
-		int routeId = m_selectedRoute.getRouteId();
+		int routeId = selectedRoute.getRouteId();
 		PathGroupNode routeNode = new PathGroupNode("complete", routeId);
 		int i = 0;
-        for (PathBasicBlock block : m_selectedRoute.getCompletedPaths()) {
+        for (PathBasicBlock block : selectedRoute.getCompletedPaths()) {
         	i++;
         	routeNode.addNode(createPath(block, routeNode, true));
         }		
@@ -67,7 +65,7 @@ public class XtaRouteInfo {
 		m_selectedNode = routeNode;
 		
 		m_unresolvedNode = new PathGroupNode("unresolved", routeId);
-		for (Unresolved unresolved : m_selectedRoute.getUnresolvedPaths()) {
+		for (Unresolved unresolved : selectedRoute.getUnresolvedPaths()) {
         	i++;
 			m_unresolvedNode.addNode(createPath(unresolved.getBlock(), m_unresolvedNode, true));
 		}
@@ -90,10 +88,6 @@ public class XtaRouteInfo {
         return pathNode;
 	}
 	
-	public Route getRoute() {
-		return m_selectedRoute;
-	}
-
 	public DebugInfo getDebugInfo() {
 		return m_engine.getDebugInfo();
 	}
@@ -126,14 +120,9 @@ public class XtaRouteInfo {
 		m_selectedNode = selectedNode;
 	}
 
-	public void setRoute(Route route) {
-		m_selectedRoute = route;
-	}
-
 	public void resetState() {
 		m_routeNode = null;
 		m_selectedNode = null;
-		m_selectedRoute = null;
 		m_unresolvedNode = null;
 		m_routes.clear();
 	}	

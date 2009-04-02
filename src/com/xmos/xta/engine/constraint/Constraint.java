@@ -15,6 +15,7 @@ public abstract class Constraint {
 	public Constraint(Constraint copy) {
 		m_isDone = copy.m_isDone;
 		m_isTrue = copy.m_isTrue;
+		m_isValid = copy.isValid();
 	}
 	
 	

@@ -25,6 +25,7 @@ public class ActionNode extends Action implements IPropertyChangeListener, IMenu
 
     private List<String> m_nodeIds;
 	private SelectionListener m_listListener;
+	private int m_currentNodeId;
 
 	public ActionNode() {
 		super("node", Action.AS_DROP_DOWN_MENU);
@@ -48,11 +49,14 @@ public class ActionNode extends Action implements IPropertyChangeListener, IMenu
 
 				try {
 		        	int nodeId = Integer.parseInt(selected); 
-		        	XtaEngine.getEngine().setNodeId(nodeId);
+		        	if (nodeId != m_currentNodeId) {
+		        		XtaEngine.getEngine().setNodeId(nodeId);
+		        		m_currentNodeId = nodeId;
+		        	}
 		        } catch (NumberFormatException exception) {
 		        }
 
-				setToolTipText("Node " + selected);
+				setToolTipText("Node " + m_currentNodeId);
 			}
 		};
 	}
@@ -95,7 +99,5 @@ public class ActionNode extends Action implements IPropertyChangeListener, IMenu
 		for (Integer nodeId : XtaEngine.getEngine().getXeLoader().getNodeIds()) {
 			m_nodeIds.add(String.format("%d", nodeId));
 		}
-
-		setToolTipText(DEFAULT_TOOL_TIP);
 	}
 }

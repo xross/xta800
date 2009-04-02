@@ -24,7 +24,6 @@ import com.xmos.xta.engine.Progress;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaEngine;
-import com.xmos.xta.rcp.XtaRouteInfo;
 
 public class StatusView extends ViewPart implements IPropertyChangeListener,
                                                      ISelectionListener {
@@ -162,9 +161,8 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	private void checkTotalPaths() {
-		XtaRouteInfo routeInfo = XtaNotifier.getInstance().getRouteInfo();
-		if (routeInfo != null) {
-			Route route = routeInfo.getRoute();
+		Route route = XtaEngine.getEngine().getSelectedRoute();
+		if (route != null) {
 			int numUnresolvedPaths = route.getUnresolvedPaths().size();
 			if (numUnresolvedPaths == 0 && route.getCompletedPaths().size() == 0) {
 				Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0,

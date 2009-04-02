@@ -13,9 +13,6 @@ import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Route;
-import com.xmos.xta.engine.RouteTiming;
-import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
@@ -30,8 +27,6 @@ public class XtaNotifier implements Notifier {
 	private Reference m_endPoint;
 	private Reference m_codePoint;
 
-	private Route m_selectedRoute;
-	
 	private String m_selectedFunction;
 	private String m_runMode;
 
@@ -43,8 +38,6 @@ public class XtaNotifier implements Notifier {
 
 		Engine engine = XtaEngine.getEngine();
 		m_routeInfo = new XtaRouteInfo(engine);
-		
-		m_selectedRoute = null;
 		
 		resetState(true);
 	}
@@ -78,7 +71,7 @@ public class XtaNotifier implements Notifier {
 			broadcastPropertyChange(new PropertyChangeEvent(this, Notifier.NOTIFY_INFO, null, null));								
 
 		} else if (message.equals(NOTIFY_ANALYSIS_COMPLETE)) {
-			setRouteId(Integer.parseInt(argument));
+			m_routeInfo.update();
 			broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_ANALYSIS_COMPLETE, null, null));
 			m_isGuiCommand = false;
 			
@@ -102,12 +95,9 @@ public class XtaNotifier implements Notifier {
 			m_selectedFunction = argument;
 			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
 			
-		} else if (message.equals(NOTIFY_SELECT_ROUTE)) {
-			setRouteId(Integer.parseInt(argument));
-			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
-			
-		}  else if (message.equals(NOTIFY_REMOVE_ROUTE)) {
-			m_routeInfo.update(m_selectedRoute);
+		} else if (message.equals(NOTIFY_SELECT_ROUTE) ||
+				   message.equals(NOTIFY_REMOVE_ROUTE)) {
+			m_routeInfo.update();
 			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
 			
 		} else if (message.equals(NOTIFY_SET_RUN_MODE)) {
@@ -122,38 +112,12 @@ public class XtaNotifier implements Notifier {
 			
 		} else if (message.equals(NOTIFY_UPDATE_EXCLUDES)) {
 			m_notifyArgument = argument;
-			m_routeInfo.update(m_selectedRoute);
+			m_routeInfo.update();
 			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));
 
 		} else {
 			m_notifyArgument = argument;
 			broadcastPropertyChange(new PropertyChangeEvent(this, message, null, null));			
-		}
-	}
-
-	private void setRouteId(int routeId) {
-		int currentNodeId = 0;
-		int currentCoreId = 0;
-		if (m_selectedRoute != null) {
-			RouteTiming routeTiming = m_selectedRoute.getRouteTiming();
-			currentNodeId = routeTiming.getNodeId();
-			currentCoreId = routeTiming.getCoreId();
-		}
-		Engine engine = XtaEngine.getEngine();
-		m_selectedRoute = engine.getRoute(routeId);
-		m_routeInfo.update(m_selectedRoute);
-		
-		if (m_selectedRoute != null) {
-			RouteTiming routeTiming = m_selectedRoute.getRouteTiming();
-			if (currentNodeId != routeTiming.getNodeId()) {
-				engine.setNodeId(routeTiming.getNodeId());
-			}
-			if (currentCoreId != routeTiming.getCoreId()) {
-				engine.setCoreId(routeTiming.getCoreId());
-			}
-			
-			Constraint constraint = m_selectedRoute.getConstraint();
-			engine.setConstraint(constraint);
 		}
 	}
 
@@ -235,17 +199,6 @@ public class XtaNotifier implements Notifier {
 		return m_selectedFunction;
 	}
 	
-	public Route getSelectedRoute() {
-		return m_selectedRoute;
-	}
-
-	public int getSelectedRouteId() {
-		if (m_selectedRoute != null)
-			return m_selectedRoute.getRouteId();
-		else
-			return -1;
-	}
-
 	public String getRunMode() {
 		return m_runMode;
 	}
@@ -255,9 +208,9 @@ public class XtaNotifier implements Notifier {
 	}
 	
 	private void resetState(boolean isLoad) {
+		m_codePoint = null;
 		m_startPoint = null;
 		m_endPoint = null;
-		m_codePoint = null;
 		m_notifyArgument = null;
 		m_selectedFunction = "";
 		m_runMode = Notifier.RUN_MODE_FUNCTION;

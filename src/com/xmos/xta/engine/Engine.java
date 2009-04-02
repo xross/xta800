@@ -38,6 +38,7 @@ import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 import com.xmos.xta.engine.unknowns.Unknown;
+import com.xmos.xta.rcp.XtaNotifier;
 
 public class Engine {
 
@@ -49,6 +50,7 @@ public class Engine {
 
 	private XeLoader m_xeLoader;
 	private List<Route> m_routes;
+	private Route m_selectedRoute;
 	private Config m_config;
 	private File m_executableFile;
 	private int m_nodeId;
@@ -105,7 +107,37 @@ public class Engine {
 	public List<Route> getRoutes() {
 		return m_routes;
 	}
+
+	public Route getSelectedRoute() {
+		return m_selectedRoute;
+	}
+
+	public int getSelectedRouteId() {
+		if (m_selectedRoute != null)
+			return m_selectedRoute.getRouteId();
+		else
+			return Route.INVALID_ROUTE_ID;
+	}
+
+	public void setSelectedRoute(Route route) {
+		if (route != null) {
+			RouteTiming routeTiming = route.getRouteTiming();
+			int nodeId = routeTiming.getNodeId();
+			if (nodeId != m_nodeId)
+				setNodeId(nodeId);
 	
+			int coreId = routeTiming.getCoreId();
+			if (coreId != m_coreId)
+				setCoreId(coreId);
+		}		
+		m_selectedRoute = route;
+		XtaNotifier.getInstance().notify(Notifier.NOTIFY_SELECT_ROUTE, "");
+	}
+
+	public void setSelectedRoute(int routeId) {
+		 setSelectedRoute(getRoute(routeId));
+	}
+
 	public XeLoader getXeLoader() {
 		return m_xeLoader;
 	}
@@ -210,6 +242,7 @@ public class Engine {
 		runAnalysisEngine();
 
 		m_routes.clear();
+		setSelectedRoute(null);
 		Route.resetRouteCount();
 		setConstraint(ConstraintFactory.createConstraint(this, ""));
 
@@ -248,15 +281,21 @@ public class Engine {
 	class RouteDescription {
 		private String m_description;
 		private RouteMode m_mode;
+		private Reference m_from;
+		private Reference m_to;
 		
-		public RouteDescription(String from, String to){
-			m_description = String.format("path: %s to %s", from, to);
+		public RouteDescription(Reference from, Reference to){
+			m_description = String.format("path: %s to %s", from.getRef(), to.getRef());
 			m_mode = RouteMode.ABSLOUTE;
+			m_from = from;
+			m_to = to;
 		}
 		
 		public RouteDescription(String functionName){
 			m_description = String.format("function: %s", functionName);
 			m_mode = RouteMode.FUNCTION;
+			m_from = null;
+			m_to = null;
 		}
 		
 		public String getDescription(){
@@ -265,6 +304,14 @@ public class Engine {
 		
 		public RouteMode getMode(){
 			return m_mode;
+		}
+
+		public Reference getStartPoint() {
+			return m_from;
+		}
+
+		public Reference getEndPoint() {
+			return m_to;
 		}
 	}
 	
@@ -313,7 +360,7 @@ public class Engine {
 		} else {
 			TreeSet<Integer> endPc = new TreeSet<Integer>();
 			endPc.add(toRef.getPc());
-			RouteDescription routeDescription = new RouteDescription(from, to);
+			RouteDescription routeDescription = new RouteDescription(fromRef, toRef);
 			boolean success = analyseRouteSafely(fromRef.getPc(), endPc, routeDescription);
 			if (success) {
 				notify(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_PATH);
@@ -343,6 +390,7 @@ public class Engine {
 	public void setNodeId(int nodeId) {
 		m_nodeId = nodeId;
 		setConstraint(ConstraintFactory.createConstraint(this, ""));
+		m_selectedRoute = null;
 		notify(Notifier.NOTIFY_SET_NODE_CORE, "");
 	}
 
@@ -353,6 +401,7 @@ public class Engine {
 	public void setCoreId(int coreId) {
 		m_coreId = coreId;
 		setConstraint(ConstraintFactory.createConstraint(this, ""));
+		m_selectedRoute = null;
 		notify(Notifier.NOTIFY_SET_NODE_CORE, "");
 	}
 
@@ -558,6 +607,9 @@ public class Engine {
 			m_routes.remove(route);			
 			if (m_routes.size() == 0) {
 				Route.resetRouteCount();
+				setSelectedRoute(null);
+			} else if (m_selectedRoute.getRouteId() == routeId) {
+				m_selectedRoute = m_routes.get(m_routes.size() - 1);
 			}
 			notify(Notifier.NOTIFY_REMOVE_ROUTE, "");
 			return true;
@@ -567,6 +619,7 @@ public class Engine {
 
 	public void removeAllRoutes() {
 		m_routes.clear();
+		setSelectedRoute(null);
 		Route.resetRouteCount();
 		notify(Notifier.NOTIFY_REMOVE_ROUTE, "");
 	}	
@@ -721,6 +774,7 @@ public class Engine {
 			}
 		}
 		m_routes.add(route);
+		setSelectedRoute(route);
 
 		notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(route.getRouteId()));
 
