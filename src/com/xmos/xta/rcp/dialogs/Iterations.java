@@ -112,7 +112,8 @@ public class Iterations extends XtaDialog {
     
     protected void buttonPressed(int id) {
     	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {
-    		XtaEngine.getEngine().setLoopIterations(m_routeId, m_tail.getPathId(), m_numIterations);
+    		int pc = m_tail.getInstructionTrimmed().getFirst().getPc();			
+    		XtaEngine.getEngine().setLoopIterations(m_routeId, pc, m_numIterations);
     	}
     	super.buttonPressed(id);
     }
