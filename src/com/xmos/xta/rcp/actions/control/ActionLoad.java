@@ -3,8 +3,10 @@ package com.xmos.xta.rcp.actions.control;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -17,6 +19,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.rcp.XtaCorePlugin;
 import com.xmos.xta.rcp.XtaEngine;
@@ -72,11 +75,19 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
 				return;
 			}
     	
-        	boolean success = XtaEngine.getEngine().loadExecutable(xeFile, new XtaFileFinder());
-
-        	if (success) {
-                setToolTipText("Currently loaded " + xeFile.getAbsolutePath());
-        	}
+			final File file = xeFile;
+			Job job = new Job("Load: " + xeFileName) {
+				protected IStatus run(IProgressMonitor monitor) {
+					Engine engine = XtaEngine.getEngine();
+					engine.setMonitor(monitor);
+					boolean success = engine.loadExecutable(file, new XtaFileFinder());					
+		        	if (success) {
+		                setToolTipText("Currently loaded " + file.getAbsolutePath());
+		        	}					
+					return Status.OK_STATUS;
+				}
+			};
+			job.schedule();        	        	
         }
 	}
 

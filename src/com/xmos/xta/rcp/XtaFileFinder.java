@@ -10,9 +10,14 @@ import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xeobject.FileFinder;
 
-public class XtaFileFinder extends FileFinder {    
-	public File openFileFinder(String compilationDir, String fileName) {
-		
+public class XtaFileFinder extends FileFinder {  
+	private String m_xeFileName;
+	
+	public XtaFileFinder() {
+		m_xeFileName = "";
+	}
+	
+	public File openFileFinder(String compilationDir, String fileName) {		
 		if (findFileInCancelCache(compilationDir, fileName)) {
 			return null;
 		}
@@ -34,18 +39,22 @@ public class XtaFileFinder extends FileFinder {
 		return null;			
 	}
 		
-	private File askUserForFile(String compilationDir, String fileName) {
-    	File sourceFile = new File(compilationDir + File.separator + fileName);		
-	    Display display = PlatformUI.getWorkbench().getDisplay();
-	    Shell parent = new Shell(display);
-        FileDialog fileDialog = new FileDialog(parent, SWT.OPEN);
-        fileDialog.setText("Open Source File: " + sourceFile.getName());
-        String[] filterExt = {sourceFile.getName()};
-    
-        fileDialog.setFilterExtensions(filterExt);
-        String xeFileName = fileDialog.open();      
-        if (xeFileName != null) {
-        	File file = new File(xeFileName);
+	private File askUserForFile(final String compilationDir, final String fileName) {
+		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+			public void run() {
+		    	File sourceFile = new File(compilationDir + File.separator + fileName);		
+			    Display display = PlatformUI.getWorkbench().getDisplay();
+			    Shell parent = new Shell(display);
+		        FileDialog fileDialog = new FileDialog(parent, SWT.OPEN);
+		        fileDialog.setText("Open Source File: " + sourceFile.getName());
+		        String[] filterExt = {sourceFile.getName()};		    
+		        fileDialog.setFilterExtensions(filterExt);
+		        m_xeFileName = fileDialog.open();      
+			}
+		});
+				
+        if (m_xeFileName != null) {
+        	File file = new File(m_xeFileName);
         	addToFileCache(compilationDir, fileName, file);
 		    return file;
         } else {
