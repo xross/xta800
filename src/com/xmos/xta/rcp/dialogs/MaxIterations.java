@@ -64,10 +64,8 @@ public class MaxIterations extends XtaDialog {
 			PathNode path = (PathNode)child;
 			hardCount += path.getHardNumIterations();
 		}
-		spinner.setMinimum(hardCount);
-		
-		spinner.setMaximum(Integer.MAX_VALUE);
-		
+		spinner.setMinimum(hardCount);		
+		spinner.setMaximum(Integer.MAX_VALUE);		
 		spinner.setSelection((int) m_loopNode.getLoopMax());
 		spinner.setIncrement(1);
 		spinner.setPageIncrement(10);

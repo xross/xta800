@@ -187,4 +187,8 @@ public class PathNode extends Node {
 			node.getBlockIds(ids);
 		}
 	}
+	
+	public PathBasicBlock getPathBasicBlock() {
+		return m_block;
+	}
 }

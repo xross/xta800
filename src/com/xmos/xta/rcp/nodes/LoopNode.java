@@ -141,9 +141,11 @@ public class LoopNode extends Node {
 	}
 	
 	public long getLoopMax(){
-		PathBasicBlock parent = m_block.getPathBlocks().get(0);
+		Vector<Node> children = getChildren(); 		
+		PathNode loopEndNode = (PathNode)children.get(children.size() - 1);		
+		PathBasicBlock loopBlock = loopEndNode.getPathBasicBlock();		 		 
 		try {
-			return parent.getloops().getLoopMax(m_block);
+			return m_block.getloops().getLoopMax(loopBlock);
 		} catch (Exception e) {
 			return 0;
 		}
