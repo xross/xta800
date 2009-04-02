@@ -119,6 +119,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    createContextMenus();
 	    
 	    initialiseTree();
+	    nodeCoreChanged();
 		annotateTree(false);
 		refreshView();
 

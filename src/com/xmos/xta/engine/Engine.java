@@ -248,12 +248,15 @@ public class Engine {
 	class RouteDescription {
 		private String m_description;
 		private RouteMode m_mode;
-		private String m_function;
 		
-		public RouteDescription(String function, String description, RouteMode mode){
-			m_description = description;
-			m_mode = mode;
-			m_function = function;
+		public RouteDescription(String from, String to){
+			m_description = String.format("path: %s to %s", from, to);
+			m_mode = RouteMode.ABSLOUTE;
+		}
+		
+		public RouteDescription(String functionName){
+			m_description = String.format("function: %s", functionName);
+			m_mode = RouteMode.FUNCTION;
 		}
 		
 		public String getDescription(){
@@ -262,10 +265,6 @@ public class Engine {
 		
 		public RouteMode getMode(){
 			return m_mode;
-		}
-		
-		public String getFunction(){
-			return m_function;
 		}
 	}
 	
@@ -287,9 +286,7 @@ public class Engine {
 			TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
 			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
 			
-
-			String description = String.format("function: %s", functionName);
-			RouteDescription routeDescription = new RouteDescription(functionName, description, RouteMode.FUNCTION);
+			RouteDescription routeDescription = new RouteDescription(functionName);
 			return analyseRouteSafely(startPc, endPcs, routeDescription);
 		}
 	}
@@ -316,8 +313,7 @@ public class Engine {
 		} else {
 			TreeSet<Integer> endPc = new TreeSet<Integer>();
 			endPc.add(toRef.getPc());
-			String description = String.format("path: %s to %s", from, to);
-			RouteDescription routeDescription = new RouteDescription(null, description, RouteMode.ABSLOUTE);
+			RouteDescription routeDescription = new RouteDescription(from, to);
 			boolean success = analyseRouteSafely(fromRef.getPc(), endPc, routeDescription);
 			if (success) {
 				notify(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_PATH);
@@ -346,6 +342,7 @@ public class Engine {
 
 	public void setNodeId(int nodeId) {
 		m_nodeId = nodeId;
+		setConstraint(ConstraintFactory.createConstraint(this, ""));
 		notify(Notifier.NOTIFY_SET_NODE_CORE, "");
 	}
 
@@ -355,6 +352,7 @@ public class Engine {
 
 	public void setCoreId(int coreId) {
 		m_coreId = coreId;
+		setConstraint(ConstraintFactory.createConstraint(this, ""));
 		notify(Notifier.NOTIFY_SET_NODE_CORE, "");
 	}
 
@@ -564,7 +562,7 @@ public class Engine {
 			notify(Notifier.NOTIFY_REMOVE_ROUTE, "");
 			return true;
 		}
-		return false;				
+		return false;
 	}
 
 	public void removeAllRoutes() {
@@ -695,7 +693,7 @@ public class Engine {
  				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId),
  				m_mnenonics, routeDescription);
 													
-		route.isConstrained(false);
+		route.setConstrained(false);
 			
 		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 		m_progress.resetState(Progress.State.PROCESSING_PATHS);

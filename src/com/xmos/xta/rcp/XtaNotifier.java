@@ -15,6 +15,7 @@ import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.RouteTiming;
+import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
@@ -150,6 +151,9 @@ public class XtaNotifier implements Notifier {
 			if (currentCoreId != routeTiming.getCoreId()) {
 				engine.setCoreId(routeTiming.getCoreId());
 			}
+			
+			Constraint constraint = m_selectedRoute.getConstraint();
+			engine.setConstraint(constraint);
 		}
 	}
 

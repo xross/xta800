@@ -209,7 +209,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
 			updateUnknowns();
 
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_CONSTRAINT)) {
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_CONSTRAINT) ||
+				   event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 			updateExcluded();
 	        updateAnnotations(m_currentHighlightAnnotations, m_currentHighlightAnnotationPositions);
 

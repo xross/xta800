@@ -11,6 +11,7 @@ import java.util.TreeSet;
 
 import com.xmos.xta.engine.Engine.RouteDescription;
 import com.xmos.xta.engine.Status.BlockStatus;
+import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.unknowns.PausableInstructionUnknown;
 import com.xmos.xta.engine.unknowns.LoopIterationsUnknown;
 import com.xmos.xta.engine.unknowns.Unknowns;
@@ -53,6 +54,7 @@ public class Route {
 	private RouteTiming m_routeTiming;
 	private boolean m_constrained;
 	private Unknowns m_unknowns;
+	private Constraint m_constraint;
 	
 	private HashSet<Integer> m_pcsHit;
 	
@@ -64,6 +66,7 @@ public class Route {
 			ArrayList<BasicBlock> nodes, InstructionDecodeCache idc, 
 			InstructionMnemonics mnenonics, RouteDescription description){
 		m_engine = engine;
+		m_constraint = engine.getConstraint().clone();
 		m_completedPaths = new ArrayList<PathBasicBlock>();
 		m_allBasicBlocks = new ArrayList<PathBasicBlock>();
 		m_loopBlocks = new ArrayList<PathBasicBlock>();
@@ -263,24 +266,20 @@ public class Route {
 		return m_description.getDescription();
 	}
 	
-	public String getFunction() {
-		return m_description.getFunction();
-	}
-	
 	public ArrayList<PathBasicBlock> getAllBasicBlocks(){
 		return m_allBasicBlocks;
 	}
-	
+
 	public void invalidateAllBlocks(){
 		for(PathBasicBlock block : m_allBasicBlocks){
 			block.getBlockStats().invalidateAll();
 		}
 	}
-	
+
 	public RouteTiming getRouteTiming() {
 		return m_routeTiming;
 	}
-	
+
 	public RouteStatus analyse(RouteMode mode){
 		
 		if(DEBUG) {
@@ -372,7 +371,7 @@ public class Route {
 			m_firstStep = false;
 			
 			if (updateConstraints(currentBasicBlock)){
-				isConstrained(true);
+				setConstrained(true);
 				currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
 				return;
 			}
@@ -434,7 +433,7 @@ public class Route {
 			addCompletePath(currentBasicBlock);
 		} else {
 			if (DEBUG) System.out.println("block " + currentBasicBlock + " constrained");
-			isConstrained(true);
+			setConstrained(true);
 			currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
 		}
 	}
@@ -459,9 +458,9 @@ public class Route {
 				
 				currentBasicBlock.setLoseFinalInstruction(mode == RouteMode.ABSLOUTE);
 				currentBasicBlock.setEndPc(inst.getPc());
-				if(updateConstraints(currentBasicBlock)){
+				if (updateConstraints(currentBasicBlock)){
 					currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
-					isConstrained(true);
+					setConstrained(true);
 				} else {
 					checkSupportedInstructions(currentBasicBlock);
 					handleCompleted(currentBasicBlock);
@@ -470,8 +469,8 @@ public class Route {
 		}
 	}
 	public PathBasicBlock getBlock(int id) {
-		for(PathBasicBlock pbb : m_allBasicBlocks){
-			if(pbb.getBlockId() == id){
+		for (PathBasicBlock pbb : m_allBasicBlocks){
+			if (pbb.getBlockId() == id){
 				return pbb;
 			}
 		}
@@ -487,35 +486,6 @@ public class Route {
 		return null;
 	}
 
-	 
-/*
-	public boolean setLoopIterations(int pathId, long iterations) {
-		for (PathBasicBlock block : m_completedPaths) {
-			if (setLoopIterations(block, pathId, iterations))
-				return true;
-		}
-		return false;
-	}
-
-	//FIXME
-	public boolean setLoopIterations(PathBasicBlock path, int pathId, long iterations) {
-		for (PathBasicBlock block : path.getPathBlocks()) {
-			for (PathBasicBlock loopPath : block.getLoopPaths(path)) {
-				
-				if (loopPath.getPathId() == pathId) {
-					if(block.setLoopIterations(loopPath, iterations)){
-						return true;
-					}
-				}
-				
-				if (setLoopIterations(loopPath, pathId, iterations))
-					return true;
-					
-			}
-		}
-		return false;		
-	}
-*/
 	public Unknowns getUnknowns() {
 		return m_unknowns;
 	}
@@ -557,8 +527,8 @@ public class Route {
 	}
 	
 	private boolean updateConstraints(PathBasicBlock block) {					
-		for(XtaInstruction inst : block.getInstructionTrimmed()){
-			if(block.getConstraint().isFalse(inst.getPc())){
+		for (XtaInstruction inst : block.getInstructionTrimmed()){
+			if (block.getConstraint().isFalse(inst.getPc())){
 				return true;
 			}
 		}		
@@ -566,7 +536,7 @@ public class Route {
 	}
 	
 	private void checkSupportedInstructions(PathBasicBlock block) {
-		for(XtaInstruction inst : block.getInstructionTrimmed()){
+		for (XtaInstruction inst : block.getInstructionTrimmed()){
 			
 			// Checks for threading instructions...
 			if (m_mnenonics.isSsync(inst))
@@ -652,11 +622,8 @@ public class Route {
 		Collections.sort(m_completedPaths);
 	}
 
-	/**
-	 * @param m_constrained the m_constrained to set
-	 */
-	public void isConstrained(boolean m_constrained) {
-		this.m_constrained = m_constrained;
+	public void setConstrained(boolean constrained) {
+		m_constrained = constrained;
 	}
 
 	/**
@@ -667,13 +634,14 @@ public class Route {
 		return m_pcsHit;
 	}
 	
-	/**
-	 * @return the m_constrained
-	 */
 	public boolean wasConstrained() {
 		return m_constrained;
 	}
 
+	public Constraint getConstraint() {
+		return m_constraint;
+	}
+	
 	public String getFullDescription() {
 		String fullDescription = String.format("Route(%d) %s\n", getRouteId(), getDescription());
 		fullDescription += m_routeTiming.getDescription();
@@ -682,6 +650,4 @@ public class Route {
 		
 		return fullDescription;
 	}
-
-
 }
