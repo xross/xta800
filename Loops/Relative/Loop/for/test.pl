@@ -13,5 +13,7 @@ system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "set loop - loop 100 " .
        "print completed_loops " .
+       "unset loop - loop " .
+       "print completed_loops " .
        "exit > $genDir/for.txt 2>&1");
 

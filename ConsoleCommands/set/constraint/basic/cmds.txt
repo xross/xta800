@@ -27,5 +27,10 @@ set constraint !(a)
 list constraint 
 set constraint a && b || c 
 list constraint 
+set constraint
+list constraint 
 set constraint a || b && c 
+list constraint 
+unset constraint
+list constraint 
 exit

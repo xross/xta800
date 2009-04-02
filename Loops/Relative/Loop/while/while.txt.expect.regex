@@ -4,3 +4,9 @@ Complete \[1 path\]
         loop \[1 path, 100 iterations\]
             path\(\d+\) +: \d+\.\d+ns
 
+Route\(0\) function: main
+Complete \[1 path\]
+  \* path\(\d+\) +: \d+\.\d+ns
+        loop \[1 path, 0 iterations\]
+          \* path\(\d+\) +: \d+\.\d+ns
+
