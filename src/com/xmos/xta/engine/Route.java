@@ -196,8 +196,10 @@ public class Route {
 		
 		//for each loop header set the tightest loop containing the pc as count iterations
 		for(PathBasicBlock loopHeader : loopHeaders){
-			if(loopHeader.getloops().setLoopMax(pc,  count)){
+			if (loopHeader.getloops().setLoopMax(pc,  count)){
 				loopHeader.getloops().reAssignLoopIterations();
+			} else {
+				return false;
 			}
 		}		
 		return true;

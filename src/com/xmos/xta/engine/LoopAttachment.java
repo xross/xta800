@@ -265,9 +265,12 @@ public class LoopAttachment {
 		
 		for(LoopAttachment la : m_subLoops){
 			for(PathBasicBlock loopBlock : la.getLoop().getPathBlocks()){
-				if(loopBlock.containsPc(pc)){
-					m_maxIterations = new Long(count);
-					return true;
+				if(loopBlock.containsPc(pc)){					
+					if (withinHardIterationsRange(count)) {					
+					    m_maxIterations = new Long(count);
+					    return true;
+					}
+					return false;
 				}
 			}	
 		}
@@ -390,7 +393,7 @@ public class LoopAttachment {
 	}
 
 	/**
-	 * Checks that setting the current loop iteration of 'count' will not
+	 * Checks that setting the current loop iteration to 'count' will not
 	 * cause the hard iterations counts of all the sub loops to overflow the max.
 	 */	
 	private boolean withinMaxRange(long count) {
@@ -408,4 +411,16 @@ public class LoopAttachment {
 		}
 		return true;
 	}
+	
+	/**
+	 * Checks that setting the loop max iterations to 'count' will not
+	 * conflict with the the hard iterations counts of all the sub loops.
+	 */	
+	private boolean withinHardIterationsRange(long count) {
+		long total = getCurrentHardTotal();		
+	    if (count < total) {
+			return false;
+		}
+		return true;
+	}	
 }
