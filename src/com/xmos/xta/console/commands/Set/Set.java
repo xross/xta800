@@ -2,14 +2,11 @@ package com.xmos.xta.console.commands.Set;
 
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.console.commands.CommandContainer;
-import com.xmos.xta.console.commands.Required;
-import com.xmos.xta.console.commands.Time;
-import com.xmos.xta.console.commands.Constraint;
 
 public class Set extends CommandContainer {
 	static private Command[] m_options = { 
-		new Loop(), 
-		new LoopMax(), 
+		new Loop(Loop.Operation.SET),
+		new LoopMax(LoopMax.Operation.SET), 
 		new LoopScope(), 
 		new Time(Time.Operation.SET), 
 		new Required(Required.Operation.SET), 

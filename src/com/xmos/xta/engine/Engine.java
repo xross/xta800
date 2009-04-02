@@ -244,31 +244,7 @@ public class Engine {
 			return new Progress(Progress.State.IDLE, 0);
 		}
 	}
-	
-	class RouteDescription {
-		private String m_description;
-		private RouteMode m_mode;
-		private String m_function;
 		
-		public RouteDescription(String function, String description, RouteMode mode){
-			m_description = description;
-			m_mode = mode;
-			m_function = function;
-		}
-		
-		public String getDescription(){
-			return m_description;
-		}
-		
-		public RouteMode getMode(){
-			return m_mode;
-		}
-		
-		public String getFunction(){
-			return m_function;
-		}
-	}
-	
 	public boolean analyseRoute(String functionName) {
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
@@ -381,45 +357,63 @@ public class Engine {
 	public int getNumThreads() {
 		return m_config.m_numThreads;
 	}
-
-	public boolean setLoopScope(int routeId, int pc, boolean absolute) {
-		Route route = getRoute(routeId);		
-		if (route != null) {
-			boolean hit = route.setLoopScope(pc, absolute);
-			if (hit) {
-				invalidateRouteStats();
-				notify(Notifier.NOTIFY_UPDATE_STATE, "");
-				notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			}
-			return hit;
-		}
-		return false;
-	}
 	
 	public boolean setLoopIterations(int routeId, int pc, long iterations) {
-		Route route = getRoute(routeId);		
-		if (route != null) {
-			boolean hit = route.setLoopIterations(pc, iterations);
-			if (hit) {
-				invalidateRouteStats();
-				notify(Notifier.NOTIFY_UPDATE_STATE, "");
-				notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			}
-			return hit;
+		Route route = getRoute(routeId);
+		if (route == null)		
+		    return false;
+		
+		if (route.setLoopIterations(pc, new Long(iterations))) {
+			notifyLoopsUpdated();
+			return true;
+		}
+		return false;
+	}
+
+	public boolean setLoopMaxIterations(int routeId, int pc, long iterations) {				
+		Route route = getRoute(routeId);						
+		if (route == null) 
+			return false;
+			
+		if (route.setLoopMaxIterations(pc, new Long(iterations))) {
+			notifyLoopsUpdated();
+			return true;
 		}
 		return false;
 	}
 	
-	public boolean setLoopMaxIterations(int routeId, int pc, long iterations) {
+	public boolean setLoopScope(int routeId, int pc, boolean absolute) {
 		Route route = getRoute(routeId);		
-		if (route != null) {
-			boolean hit = route.setLoopMaxIterations(pc, iterations);
-			if (hit) {
-				invalidateRouteStats();
-				notify(Notifier.NOTIFY_UPDATE_STATE, "");
-				notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			}
-			return hit;
+		if (route == null) 
+			return false;
+		
+		if (route.setLoopScope(pc, absolute)) {
+			notifyLoopsUpdated();
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean unsetLoopIterations(int routeId, int pc) {
+		Route route = getRoute(routeId);
+		if (route == null)		
+		    return false;
+		
+		if (route.setLoopIterations(pc, null)) {
+			notifyLoopsUpdated();
+			return true;
+		}
+		return false;
+	}
+
+	public boolean unsetLoopMaxIterations(int routeId, int pc) {				
+		Route route = getRoute(routeId);						
+		if (route == null) 
+			return false;
+			
+		if (route.setLoopMaxIterations(pc, null)) {
+			notifyLoopsUpdated();
+			return true;
 		}
 		return false;
 	}
@@ -510,7 +504,6 @@ public class Engine {
    			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 		} else {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unable to unset time for: %s", ref.getRef()));
-
 		}
 	}
 
@@ -522,7 +515,6 @@ public class Engine {
 		return m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId,
 				m_coreId).getInstruction(pc).canPause();
 	}
-	
 	
 	public boolean setRouteMaxTime(int routeId, double time) {
 		Route route = getRoute(routeId);
@@ -764,6 +756,12 @@ public class Engine {
 		assert (false);
 		return null;
 	}
+	
+	private void notifyLoopsUpdated() {
+    	invalidateRouteStats();
+	    notify(Notifier.NOTIFY_UPDATE_STATE, "");
+	    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+    }
 	
 	private void invalidateRouteStats() {
 		for (Route route : m_routes) {
@@ -1068,6 +1066,4 @@ public class Engine {
 	public void setMonitor(IProgressMonitor monitor) {
 		m_jobMonitor = monitor;
 	}
-
-
 }

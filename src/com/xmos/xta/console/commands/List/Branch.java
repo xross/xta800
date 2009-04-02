@@ -1,4 +1,4 @@
-package com.xmos.xta.console.commands;
+package com.xmos.xta.console.commands.List;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -6,6 +6,7 @@ import java.util.TreeSet;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
+import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;

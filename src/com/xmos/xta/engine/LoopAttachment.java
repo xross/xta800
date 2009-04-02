@@ -69,15 +69,24 @@ public class LoopAttachment {
 		return null;
 	}
 		
-	public boolean setLoopIterations(PathBasicBlock loop, long count){
+	public boolean setLoopIterations(PathBasicBlock loop, Long count){
 		assert(loop != null);
 		if (m_loop == loop) {
-			if (withinMaxRange(count)) {
-			    m_hardIterations = new Long(count);
+			if (count == null) {
+				// Clear iteration count
+			    m_hardIterations = null;
 			    getParent().reAssignLoopIterations();
-			    return true;
+				return true;
+				
+			} else {			
+				// Set iteration count
+				if (withinMaxRange(count)) {
+				    m_hardIterations = count;
+				    getParent().reAssignLoopIterations();
+				    return true;
+				}
+	            return false;
 			}
-            return false;		
 		}
 		for (LoopAttachment la : m_subLoops) {						
 			if (la.setLoopIterations(loop, count)) {
@@ -260,17 +269,26 @@ public class LoopAttachment {
 		return false;
 	}
 	
-	public boolean setLoopMax(int pc, long count) {
+	public boolean setLoopMax(int pc, Long count) {
 		//starting from the inner most loop try to set the loopmax
 		
 		for(LoopAttachment la : m_subLoops){
 			for(PathBasicBlock loopBlock : la.getLoop().getPathBlocks()){
-				if(loopBlock.containsPc(pc)){					
-					if (withinHardIterationsRange(count)) {					
-					    m_maxIterations = new Long(count);
-					    return true;
+				if(loopBlock.containsPc(pc)){			
+					if (count == null) {
+						// Clear iteration count.
+					    m_maxIterations = null;
+					    m_softIterations = null;
+					    return true;	
+					    
+					} else {				
+						// Set iterations count.
+					    if (withinHardIterationsRange(count)) {					
+					        m_maxIterations = count;
+					        return true;
+					    }
+						return false;
 					}
-					return false;
 				}
 			}	
 		}
@@ -351,9 +369,12 @@ public class LoopAttachment {
 				}
 				longestLoop.m_softIterations = new Long(remaining);
 			}
+		} else {
+			for(LoopAttachment la : m_subLoops){
+				la.m_softIterations = null;
+			}			
 		}
 	}
-
 	
 	public LoopIterationsUnknown getLoopUnknown(){
 		

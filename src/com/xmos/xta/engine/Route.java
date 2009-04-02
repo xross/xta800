@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.TreeSet;
 
-import com.xmos.xta.engine.Engine.RouteDescription;
+import com.xmos.xta.engine.RouteDescription;
 import com.xmos.xta.engine.Status.BlockStatus;
 import com.xmos.xta.engine.unknowns.PausableInstructionUnknown;
 import com.xmos.xta.engine.unknowns.LoopIterationsUnknown;
@@ -28,11 +28,11 @@ public class Route {
 	};
 	private static final int SR_IEBLE_SHIFT = 1;
 	private static final int SR_IEBLE_SIZE = 1; 
-	
+
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR
 	}
-		
+
 	public static final boolean DEBUG = false;
 	
 	private static int s_routeCount;
@@ -119,25 +119,10 @@ public class Route {
 	 * @return return false if this failed to set any loop counts or the pc was on more than 
 	 * one path, and true for success
 	 */	
-	public boolean setLoopIterations(int pc, long count){
-		//translate the pc into blocks
-		ArrayList<PathBasicBlock> blocks = pcToBlocks(pc);
-		
-		HashSet<PathBasicBlock> loopHeaders = new HashSet<PathBasicBlock>();
-		//crawl up the tree until a block with the loop attached is found
-		for(PathBasicBlock block : blocks){
-			PathBasicBlock parent = block;
-			while(!parent.getloops().containsBlock(block)){
-				parent = parent.getParent();
-				if(parent == null) return false;
-			}
-			//parent should now be the block where the loop containing the pc is attached
-			loopHeaders.add(parent);
-		}
-		if(loopHeaders.isEmpty()){
+	public boolean setLoopIterations(int pc, Long count){
+		HashSet<PathBasicBlock> loopHeaders = getLoopHeaders(pc);
+		if (loopHeaders == null)
 			return false;
-		}
-		//now we have a hash set of loop headers
 		
 		//for each loop header 
 		for(PathBasicBlock loopHeader : loopHeaders){
@@ -174,25 +159,10 @@ public class Route {
 	 * @param a pc within the loop
 	 * @return return false if this failed to set any loop counts and true for success
 	 */
-	public boolean setLoopMaxIterations(int pc, long count){
-		//translate the pc into blocks
-		ArrayList<PathBasicBlock> blocks = pcToBlocks(pc);
-		
-		HashSet<PathBasicBlock> loopHeaders = new HashSet<PathBasicBlock>();
-		//crawl up the tree until a block with the loop attached is found
-		for(PathBasicBlock block : blocks){
-			PathBasicBlock parent = block;
-			while(!parent.getloops().containsBlock(block)){
-				parent = parent.getParent();
-				if(parent == null) return false;
-			}
-			//parent should now be the block where the loop containing the pc is attached
-			loopHeaders.add(parent);
-		}
-		if(loopHeaders.isEmpty()){
+	public boolean setLoopMaxIterations(int pc, Long count){
+		HashSet<PathBasicBlock> loopHeaders = getLoopHeaders(pc);
+		if (loopHeaders == null)
 			return false;
-		}
-		//now we have a hash set of loop headers
 		
 		//for each loop header set the tightest loop containing the pc as count iterations
 		for(PathBasicBlock loopHeader : loopHeaders){
@@ -213,24 +183,9 @@ public class Route {
 	 * one path, and true for success
 	 */	
 	public boolean setLoopScope(int pc, boolean absolute) {
-		//translate the pc into blocks
-		ArrayList<PathBasicBlock> blocks = pcToBlocks(pc);
-		
-		HashSet<PathBasicBlock> loopHeaders = new HashSet<PathBasicBlock>();
-		//crawl up the tree until a block with the loop attached is found
-		for(PathBasicBlock block : blocks){
-			PathBasicBlock parent = block;
-			while(!parent.getloops().containsBlock(block)){
-				parent = parent.getParent();
-				if(parent == null) return false;
-			}
-			//parent should now be the block where the loop containing the pc is attached
-			loopHeaders.add(parent);
-		}
-		if(loopHeaders.isEmpty()){
+		HashSet<PathBasicBlock> loopHeaders = getLoopHeaders(pc);
+		if (loopHeaders == null)
 			return false;
-		}
-		//now we have a hash set of loop headers
 		
 		//for each loop header set the scope on the tightest loop containing the pc
 		for(PathBasicBlock loopHeader : loopHeaders){
@@ -683,5 +638,27 @@ public class Route {
 		return fullDescription;
 	}
 
-
+	private HashSet<PathBasicBlock> getLoopHeaders(int pc) {
+		//translate the pc into blocks
+		ArrayList<PathBasicBlock> blocks = pcToBlocks(pc);
+		
+		HashSet<PathBasicBlock> loopHeaders = new HashSet<PathBasicBlock>();
+		//crawl up the tree until a block with the loop attached is found
+		for(PathBasicBlock block : blocks){
+			PathBasicBlock parent = block;
+			while(!parent.getloops().containsBlock(block)){
+				parent = parent.getParent();
+				if (parent == null) 
+					return null;
+			}
+			//parent should now be the block where the loop containing the pc is attached
+			loopHeaders.add(parent);
+		}
+		if (loopHeaders.isEmpty()){
+			return null;
+		}
+		//now we have a hash set of loop headers				
+		return loopHeaders;		
+	}		
 }
+

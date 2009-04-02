@@ -529,9 +529,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		return getloops().containsLoop(pbb);
 	}
 
-	public boolean setLoopIterations(PathBasicBlock loopPath, long iterations) {
+	public boolean setLoopIterations(PathBasicBlock loopPath, Long iterations) {
 		return m_loopPaths.setLoopIterations(loopPath, iterations);
 	}
-	
-
 }
