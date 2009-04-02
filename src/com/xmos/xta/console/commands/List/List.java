@@ -1,12 +1,8 @@
 package com.xmos.xta.console.commands.List;
 
-import com.xmos.xta.console.commands.Branch;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.console.commands.CommandContainer;
-import com.xmos.xta.console.commands.Constraint;
-import com.xmos.xta.console.commands.Endpoint;
-import com.xmos.xta.console.commands.Label;
-import com.xmos.xta.console.commands.SrcLabel;
+import com.xmos.xta.console.commands.Set.Constraint;
 
 public class List extends CommandContainer {
 	static private Command[] m_options = { 

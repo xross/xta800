@@ -1,15 +1,18 @@
-package com.xmos.xta.console.commands;
+package com.xmos.xta.console.commands.Set;
 
 import java.util.ArrayList;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
+import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
 
 public class Constraint extends Command {	
 	public enum Operation {
-		SET, LIST
+		SET, 
+		UNSET,
+		LIST
 	};
 
 	private ArrayList<String> m_strings;
@@ -26,6 +29,8 @@ public class Constraint extends Command {
     	switch (m_operation) {
     	case SET:
         	return m_strings.size();
+    	case UNSET:
+        	return 0;
     	case LIST:
             return 0;
     	}    		
@@ -46,6 +51,9 @@ public class Constraint extends Command {
     	switch (m_operation) {
     	case SET:
         	descString = "constraint <expression>: Defines the constraint expression";
+        	break;
+    	case UNSET:
+        	descString = "constraint: Clears the constraint expression";
         	break;
     	case LIST:
         	descString = "constraint: Displays the current constraint expression";
@@ -68,6 +76,10 @@ public class Constraint extends Command {
     			i++;
     		}
     		return constraint;
+
+    	case UNSET:
+    		return new Constraint(m_operation);
+    		
     	case LIST:
     		return new Constraint(m_operation);
     	}
@@ -90,6 +102,11 @@ public class Constraint extends Command {
     				engine.setConstraint(constraint);
     		}
     		return;
+
+    	case UNSET:
+			engine.setConstraint(ConstraintFactory.createConstraint(engine, ""));
+			return;
+    		
     	case LIST:
     		constraint = engine.getConstraint();
    			console.display(constraint.getString() + "\n");

@@ -2,13 +2,19 @@ package com.xmos.xta.console.commands.Unset;
 
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.console.commands.CommandContainer;
-import com.xmos.xta.console.commands.Required;
-import com.xmos.xta.console.commands.Time;
+import com.xmos.xta.console.commands.Set.Constraint;
+import com.xmos.xta.console.commands.Set.Loop;
+import com.xmos.xta.console.commands.Set.LoopMax;
+import com.xmos.xta.console.commands.Set.Required;
+import com.xmos.xta.console.commands.Set.Time;
 
 public class Unset extends CommandContainer {
 	static private Command[] m_options = { 
+		new Loop(Loop.Operation.UNSET),
+		new LoopMax(LoopMax.Operation.UNSET), 
 		new Time(Time.Operation.UNSET), 
 		new Required(Required.Operation.UNSET), 
+		new Constraint(Constraint.Operation.UNSET),
 	};
 	
 	public Unset() { super("unset"); }

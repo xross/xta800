@@ -22,7 +22,6 @@ import com.xmos.xeloader.XeLoader;
 import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.XeObject;
-import com.xmos.xta.engine.Route.RouteMode;
 import com.xmos.xta.engine.Route.RouteStatus;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
@@ -277,44 +276,7 @@ public class Engine {
 			return new Progress(Progress.State.IDLE, 0);
 		}
 	}
-	
-	class RouteDescription {
-		private String m_description;
-		private RouteMode m_mode;
-		private Reference m_from;
-		private Reference m_to;
-		
-		public RouteDescription(Reference from, Reference to){
-			m_description = String.format("path: %s to %s", from.getRef(), to.getRef());
-			m_mode = RouteMode.ABSLOUTE;
-			m_from = from;
-			m_to = to;
-		}
-		
-		public RouteDescription(String functionName){
-			m_description = String.format("function: %s", functionName);
-			m_mode = RouteMode.FUNCTION;
-			m_from = null;
-			m_to = null;
-		}
-		
-		public String getDescription(){
-			return m_description;
-		}
-		
-		public RouteMode getMode(){
-			return m_mode;
-		}
 
-		public Reference getStartPoint() {
-			return m_from;
-		}
-
-		public Reference getEndPoint() {
-			return m_to;
-		}
-	}
-	
 	public boolean analyseRoute(String functionName) {
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
@@ -428,45 +390,63 @@ public class Engine {
 	public int getNumThreads() {
 		return m_config.m_numThreads;
 	}
-
-	public boolean setLoopScope(int routeId, int pc, boolean absolute) {
-		Route route = getRoute(routeId);		
-		if (route != null) {
-			boolean hit = route.setLoopScope(pc, absolute);
-			if (hit) {
-				invalidateRouteStats();
-				notify(Notifier.NOTIFY_UPDATE_STATE, "");
-				notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			}
-			return hit;
-		}
-		return false;
-	}
 	
 	public boolean setLoopIterations(int routeId, int pc, long iterations) {
-		Route route = getRoute(routeId);		
-		if (route != null) {
-			boolean hit = route.setLoopIterations(pc, iterations);
-			if (hit) {
-				invalidateRouteStats();
-				notify(Notifier.NOTIFY_UPDATE_STATE, "");
-				notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			}
-			return hit;
+		Route route = getRoute(routeId);
+		if (route == null)		
+		    return false;
+		
+		if (route.setLoopIterations(pc, new Long(iterations))) {
+			notifyLoopsUpdated();
+			return true;
+		}
+		return false;
+	}
+
+	public boolean setLoopMaxIterations(int routeId, int pc, long iterations) {				
+		Route route = getRoute(routeId);						
+		if (route == null) 
+			return false;
+			
+		if (route.setLoopMaxIterations(pc, new Long(iterations))) {
+			notifyLoopsUpdated();
+			return true;
 		}
 		return false;
 	}
 	
-	public boolean setLoopMaxIterations(int routeId, int pc, long iterations) {
+	public boolean setLoopScope(int routeId, int pc, boolean absolute) {
 		Route route = getRoute(routeId);		
-		if (route != null) {
-			boolean hit = route.setLoopMaxIterations(pc, iterations);
-			if (hit) {
-				invalidateRouteStats();
-				notify(Notifier.NOTIFY_UPDATE_STATE, "");
-				notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			}
-			return hit;
+		if (route == null) 
+			return false;
+		
+		if (route.setLoopScope(pc, absolute)) {
+			notifyLoopsUpdated();
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean unsetLoopIterations(int routeId, int pc) {
+		Route route = getRoute(routeId);
+		if (route == null)		
+		    return false;
+		
+		if (route.setLoopIterations(pc, null)) {
+			notifyLoopsUpdated();
+			return true;
+		}
+		return false;
+	}
+
+	public boolean unsetLoopMaxIterations(int routeId, int pc) {				
+		Route route = getRoute(routeId);						
+		if (route == null) 
+			return false;
+			
+		if (route.setLoopMaxIterations(pc, null)) {
+			notifyLoopsUpdated();
+			return true;
 		}
 		return false;
 	}
@@ -557,7 +537,6 @@ public class Engine {
    			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 		} else {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unable to unset time for: %s", ref.getRef()));
-
 		}
 	}
 
@@ -569,7 +548,6 @@ public class Engine {
 		return m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId,
 				m_coreId).getInstruction(pc).canPause();
 	}
-	
 	
 	public boolean setRouteMaxTime(int routeId, double time) {
 		Route route = getRoute(routeId);
@@ -816,6 +794,12 @@ public class Engine {
 		assert (false);
 		return null;
 	}
+	
+	private void notifyLoopsUpdated() {
+    	invalidateRouteStats();
+	    notify(Notifier.NOTIFY_UPDATE_STATE, "");
+	    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+    }
 	
 	private void invalidateRouteStats() {
 		for (Route route : m_routes) {
@@ -1120,6 +1104,4 @@ public class Engine {
 	public void setMonitor(IProgressMonitor monitor) {
 		m_jobMonitor = monitor;
 	}
-
-
 }
