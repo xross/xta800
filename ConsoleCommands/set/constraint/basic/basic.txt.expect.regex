@@ -22,3 +22,6 @@ Error: constraint parse error: missing code ref after '!' got '!'
 No constraints set
 !a
 \(\(a && b\) || c\)
+No constraints set
+\(a || \(b && c\)\)
+No constraints set

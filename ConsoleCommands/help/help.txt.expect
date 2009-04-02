@@ -91,8 +91,11 @@
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
   [-]unset <option> <arg0> <arg1>...: Unset item from given list
+      option: loop <route id> <SRCLABEL_REF>: Clears the number of iterations for the path identified
+      option: loopmax <route id> <SRCLABEL_REF>: Clears the maximum number of iterations for the loop identified
       option: time <pc>: Clears the time set for the given instructions (supports regular expressions)
       option: required <route id>: Clears the the maximum allowed time for the given route
+      option: constraint: Clears the constraint expression
   Any of the following are permitted:
     Pc: Raw program counter specified in the format: 0x*
     Label: Any source or assembly level symbol defined with respect to an executable section

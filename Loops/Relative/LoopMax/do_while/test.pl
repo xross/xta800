@@ -13,5 +13,7 @@ system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "set loopmax - loop 100 " .
        "print completed_loops " .
+       "unset loopmax - loop " .
+       "print completed_loops " .
        "exit > $genDir/do_while.txt 2>&1");
 
