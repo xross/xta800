@@ -7,9 +7,10 @@ my $arch    = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -march=$arch -g tutorial_gui.xc -o $genDir/test.xe > $genDir/gui.log 2>&1");
+  system("xmake -f Makefile > $genDir/gui.log 2>&1");
+  rename("tutorial_gui.xe", "$genDir/tutorial_gui.xe");
 }
-system("@ARGV load $genDir/test.xe " .
+system("@ARGV load $genDir/tutorial_gui.xe " .
        "analyse function resetTable " .
        "analyse function functionCalls " .
        "analyse function main " .

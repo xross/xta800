@@ -9,7 +9,7 @@ my $noBuild = shift(@ARGV);
 my $directory = "g1";
 
 if (!$noBuild) {
-    system("xcc -Wall -O3 link.S top.xc -o $genDir/test.xe >  $genDir/$directory.log 2>&1");
+    system("xcc -Wall -g -O3 link.S top.xc -o $genDir/test.xe >  $genDir/$directory.log 2>&1");
 }
 
 my $filename = "trace";
