@@ -156,7 +156,7 @@ public class FunctionView extends ZoomedCanvasView {
     }
 
     private void annotateTree(Node node, long numIterations, boolean selected) {
-		if ((node == null) || node.isRouteNode())
+		if ((node == null) || node.isRouteNode() || (m_table == null))
 			return;
 
 		m_currentNode = node;
@@ -225,9 +225,11 @@ public class FunctionView extends ZoomedCanvasView {
 			block.draw(m_display, gc, blockX, m_borderY + m_timelineY, length, m_pixelsY, m_scale);
 			blockX += length;
 		}
-		XtaFunctionBlock lastBlock = m_functionList.lastElement();
-        int length = lastBlock.getEndX() - blockX;
-		lastBlock.draw(m_display, gc, blockX, m_borderY + m_timelineY, length, m_pixelsY, m_scale);
+		if (m_functionList.size() > 0) {
+			XtaFunctionBlock lastBlock = m_functionList.lastElement();
+	        int length = lastBlock.getEndX() - blockX;
+			lastBlock.draw(m_display, gc, blockX, m_borderY + m_timelineY, length, m_pixelsY, m_scale);
+		}
 		
 		pathRoot.getFunctionNode().draw(m_display, gc, m_scale);
     }

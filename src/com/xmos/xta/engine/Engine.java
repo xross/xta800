@@ -22,7 +22,6 @@ import com.xmos.xeloader.XeLoader;
 import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.XeObject;
-import com.xmos.xta.engine.Route.RouteMode;
 import com.xmos.xta.engine.Route.RouteStatus;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
@@ -244,7 +243,7 @@ public class Engine {
 			return new Progress(Progress.State.IDLE, 0);
 		}
 	}
-		
+
 	public boolean analyseRoute(String functionName) {
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
@@ -263,9 +262,7 @@ public class Engine {
 			TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
 			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
 			
-
-			String description = String.format("function: %s", functionName);
-			RouteDescription routeDescription = new RouteDescription(functionName, description, RouteMode.FUNCTION);
+			RouteDescription routeDescription = new RouteDescription(functionName);
 			return analyseRouteSafely(startPc, endPcs, routeDescription);
 		}
 	}
@@ -292,8 +289,7 @@ public class Engine {
 		} else {
 			TreeSet<Integer> endPc = new TreeSet<Integer>();
 			endPc.add(toRef.getPc());
-			String description = String.format("path: %s to %s", from, to);
-			RouteDescription routeDescription = new RouteDescription(null, description, RouteMode.ABSLOUTE);
+			RouteDescription routeDescription = new RouteDescription(from, to);
 			boolean success = analyseRouteSafely(fromRef.getPc(), endPc, routeDescription);
 			if (success) {
 				notify(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_PATH);
@@ -322,6 +318,7 @@ public class Engine {
 
 	public void setNodeId(int nodeId) {
 		m_nodeId = nodeId;
+		setConstraint(ConstraintFactory.createConstraint(this, ""));
 		notify(Notifier.NOTIFY_SET_NODE_CORE, "");
 	}
 
@@ -331,6 +328,7 @@ public class Engine {
 
 	public void setCoreId(int coreId) {
 		m_coreId = coreId;
+		setConstraint(ConstraintFactory.createConstraint(this, ""));
 		notify(Notifier.NOTIFY_SET_NODE_CORE, "");
 	}
 
@@ -556,7 +554,7 @@ public class Engine {
 			notify(Notifier.NOTIFY_REMOVE_ROUTE, "");
 			return true;
 		}
-		return false;				
+		return false;
 	}
 
 	public void removeAllRoutes() {
@@ -687,7 +685,7 @@ public class Engine {
  				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId),
  				m_mnenonics, routeDescription);
 													
-		route.isConstrained(false);
+		route.setConstrained(false);
 			
 		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 		m_progress.resetState(Progress.State.PROCESSING_PATHS);

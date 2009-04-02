@@ -121,9 +121,7 @@ public class UnknownsViewer {
 	}
 
 	public void updateHighlighting(Node selectedNode) {
-
-		if(selectedNode != null){
-
+		if (selectedNode != null){
 			for (TableItem item : m_unknownsViewer.getTable().getItems()) {
 				Unknown unknown = (Unknown)item.getData();
 				HashSet<Integer> selectedBlocks = new HashSet<Integer>();
@@ -132,7 +130,6 @@ public class UnknownsViewer {
 					item.setBackground(m_display.getSystemColor(SWT.COLOR_YELLOW));
 				} else {
 					item.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
-	
 				}
 			}
 		}
@@ -171,9 +168,6 @@ public class UnknownsViewer {
 	}
  PathBasicBlock selectedLoopBlock;
 	private void setupMouseListeners(IWorkbenchPartSite site, final Composite parent) {
-		
-		
-		
 		m_unknownsViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				if (m_selectedCodeRefs.size() == 1) {

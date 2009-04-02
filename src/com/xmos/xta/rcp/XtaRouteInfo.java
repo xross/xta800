@@ -133,6 +133,8 @@ public class XtaRouteInfo {
 	public void resetState() {
 		m_routeNode = null;
 		m_selectedNode = null;
-		m_selectedNode = null;
+		m_selectedRoute = null;
+		m_unresolvedNode = null;
+		m_routes.clear();
 	}	
 }
