@@ -240,7 +240,7 @@ public class UnknownsViewer {
 				
 		m_setLoopIterationsAction = new Action() { 
 			public void run() {
-				Route route = XtaNotifier.getInstance().getSelectedRoute();
+				Route route = XtaEngine.getEngine().getSelectedRoute();
      			new Iterations(parent.getShell(), route, selectedLoopBlock );
 			}
 		}; 
