@@ -112,7 +112,8 @@ public class UnknownsViewer {
 
 	public void update() {
 		XtaNotifier notifier = XtaNotifier.getInstance();
-		m_unknownsViewer.setInput(notifier.getSelectedRoute());
+		Engine engine = XtaEngine.getEngine();
+		m_unknownsViewer.setInput(engine.getSelectedRoute());
 
 		XtaRouteInfo routeInfo = notifier.getRouteInfo();
 		if (routeInfo != null) {
@@ -229,7 +230,7 @@ public class UnknownsViewer {
 		// Create the action
 		m_setInstructionTimeAction = new Action() { 
 			public void run() {
-				Route route = XtaNotifier.getInstance().getSelectedRoute();
+				Route route = XtaEngine.getEngine().getSelectedRoute();
      			new InstructionTime(parent.getShell(), XtaEngine.getEngine(), m_selectedCodeRefs, route);
 			}
 		}; 

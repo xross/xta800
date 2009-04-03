@@ -32,6 +32,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.rcp.XtaEngine;
@@ -50,12 +51,10 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     private TreeViewer m_routesViewer;
     private Composite m_parent;
     private XtaRouteInfo m_routeInfo;
-    private int m_selectedRouteId;
 
 	public TreeView() {
 		if (DEBUG) System.out.printf("Tree()\n");			
 		XtaNotifier.getInstance().addPropertyChangeListener(this);
-		m_selectedRouteId = Route.INVALID_ROUTE_ID;
 	}
 
 	public void createPartControl(final Composite parent) {
@@ -92,7 +91,6 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		m_routeInfo = XtaNotifier.getInstance().getRouteInfo();
 		getSite().getPage().addSelectionListener(this);
 		
-		m_selectedRouteId = XtaNotifier.getInstance().getSelectedRouteId();
 		initialiseTrees();
 	}
 
@@ -141,7 +139,6 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("Tree: propertyChange: %s\n", event.getProperty());	
 		
 		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
-			m_selectedRouteId = XtaNotifier.getInstance().getSelectedRouteId();
 			initialiseTrees();
 			try {
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow().
@@ -283,22 +280,19 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection selection = event.getSelection();
 				if (selection instanceof IStructuredSelection) {
-					int newId = m_selectedRouteId;
+					Engine engine = XtaEngine.getEngine();
+					int currentSelectedId = engine.getSelectedRouteId();
+					int newId = Route.INVALID_ROUTE_ID;
 
 					if (((IStructuredSelection)selection).size() == 1) {
 			            Object object = ((IStructuredSelection)selection).getFirstElement();
 			            if (object instanceof RouteNode) {
 			            	newId = ((RouteNode)object).getId();
 			            }
-					} else {
-						newId = Route.INVALID_ROUTE_ID;
 					}
 					
-					if (newId != m_selectedRouteId) {
-	            		m_selectedRouteId = newId;
-						XtaNotifier.getInstance().notify(
-								Notifier.NOTIFY_SELECT_ROUTE,
-	            				Integer.toString(m_selectedRouteId));
+					if (newId != currentSelectedId) {
+						engine.setSelectedRoute(newId);
 	            	}
 		        }
 			}
@@ -337,7 +331,9 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		m_routesViewer.setInput(routeRoot);
 		ColumnViewerToolTipSupport.enableFor(m_routesViewer, ToolTip.NO_RECREATE);
 		m_routesViewer.expandToLevel(2);
-		setRouteTreeSelection(routeRoot, m_selectedRouteId);
+		
+		int selectedRouteId = XtaEngine.getEngine().getSelectedRouteId();
+		setRouteTreeSelection(routeRoot, selectedRouteId);
 	}
 	
 	private boolean setRouteTreeSelection(Node root, int routeId) {

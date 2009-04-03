@@ -14,7 +14,7 @@ public class XtaEditorClearGreyHandler extends AbstractHandler implements IHandl
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		if (DEBUG) System.out.printf("XtaEditorClearGreyHandler: execute\n");			
 		XtaEditor control = (XtaEditor)HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().findView(XtaEditor.ID);
-		control.resetGrey();
+		control.clearGrey();
 		return null;
 	}
 

@@ -97,7 +97,7 @@ public class SetValuesViewer {
 	}
 
 	public void update() {
-		Route route = XtaNotifier.getInstance().getSelectedRoute();
+		Route route = XtaEngine.getEngine().getSelectedRoute();
 		m_resolvedUnknownsViewer.setInput(route);
 	}
 
@@ -157,7 +157,7 @@ public class SetValuesViewer {
 
 		m_setInstructionTimeAction = new Action() { 
 			public void run() {
-				Route route = XtaNotifier.getInstance().getSelectedRoute();
+				Route route = XtaEngine.getEngine().getSelectedRoute();
      			new InstructionTime(parent.getShell(), XtaEngine.getEngine(), m_selectedCodeRefs, route);
 			}
 		}; 

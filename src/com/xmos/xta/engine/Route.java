@@ -15,6 +15,7 @@ import java.util.TreeSet;
 import com.xmos.xta.engine.RouteDescription;
 import com.xmos.xta.engine.Status.BlockStatus;
 import com.xmos.xta.engine.constraint.Constraint;
+import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.unknowns.PausableInstructionUnknown;
 import com.xmos.xta.engine.unknowns.LoopIterationsUnknown;
 import com.xmos.xta.engine.unknowns.Unknowns;
@@ -614,6 +615,14 @@ public class Route {
     			getCompletedPaths().size(), getUnresolvedPaths().size());
 		
 		return fullDescription;
+	}
+
+	public Reference getStartPoint() {
+		return m_description.getStartPoint();
+	}
+
+	public Reference getEndPoint() {
+		return m_description.getEndPoint();
 	}
 
 	private HashSet<PathBasicBlock> getLoopHeaders(int pc) {

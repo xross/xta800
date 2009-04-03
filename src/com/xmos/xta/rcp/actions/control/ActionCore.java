@@ -25,6 +25,7 @@ public class ActionCore extends Action implements IPropertyChangeListener, IMenu
 
     private List<String> m_coreIds;
 	private SelectionListener m_listListener;
+	private int m_currentCoreId;
 
 	public ActionCore() {
 		super("core", Action.AS_DROP_DOWN_MENU);
@@ -36,7 +37,6 @@ public class ActionCore extends Action implements IPropertyChangeListener, IMenu
 		setEnabled(false);
 		setMenuCreator(this);
 
-		
 		m_coreIds = new ArrayList<String>();
 
 		m_listListener = new SelectionListener() {
@@ -48,12 +48,14 @@ public class ActionCore extends Action implements IPropertyChangeListener, IMenu
 				String selected = ((MenuItem)e.getSource()).getText();
 
 				try {
-		        	int nodeId = Integer.parseInt(selected); 
-		        	XtaEngine.getEngine().setCoreId(nodeId);
+		        	int coreId = Integer.parseInt(selected); 
+		        	if (coreId != m_currentCoreId) {
+		        		XtaEngine.getEngine().setCoreId(coreId);
+		        		m_currentCoreId = coreId;
+						setToolTipText("Core " + m_currentCoreId);
+		        	}
 		        } catch (NumberFormatException exception) {
 		        }
-
-				setToolTipText("Core " + selected);
 			}
 		};
 	}
@@ -98,7 +100,5 @@ public class ActionCore extends Action implements IPropertyChangeListener, IMenu
 		for (Integer coreId : XtaEngine.getEngine().getXeLoader().getCoreIds(selectedNodeId)) {
 			m_coreIds.add(String.format("%d", coreId));
 		}
-		
-		setToolTipText(DEFAULT_TOOL_TIP);
 	}
 }
