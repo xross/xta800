@@ -2,10 +2,13 @@ package com.xmos.xta.engine;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
@@ -55,6 +58,7 @@ public class Route {
 	private boolean m_constrained;
 	private Unknowns m_unknowns;
 	private Constraint m_constraint;
+	private Map<PathBasicBlock, HashSet<Integer>> m_uniqueLoopPathPcs;
 	
 	private HashSet<Integer> m_pcsHit;
 	
@@ -83,6 +87,7 @@ public class Route {
 		s_pathCount = 0;
 		m_pcsHit = new HashSet<Integer>();
 		m_unknowns = new Unknowns();
+		m_uniqueLoopPathPcs = new HashMap<PathBasicBlock, HashSet<Integer>>();
 	}
 	
 	/**
@@ -114,7 +119,7 @@ public class Route {
 		blocks.addAll(nonLoopForming);
 		return blocks;
 	}
-	
+		
 	/**
 	 * This sets the total number of iterations on a particular paths through 
 	 * set of loops all with a common header. It sets the count on the tightest loop around the pc.
@@ -234,7 +239,11 @@ public class Route {
 	public RouteTiming getRouteTiming() {
 		return m_routeTiming;
 	}
-
+	
+	public Set<Integer> getUniqueLoopPathPcs(PathBasicBlock loopPath) {
+		return m_uniqueLoopPathPcs.get(loopPath);
+	}
+	
 	public RouteStatus analyse(RouteMode mode){
 		
 		if(DEBUG) {
@@ -274,6 +283,7 @@ public class Route {
 			addPathPcs(unresolvedBlock.getBlock());
 		}
 		
+		createUniquePathPcs(); 
 		sortPaths();
 		displayWarnings();
 		return RouteStatus.COMPLETED;
@@ -628,5 +638,63 @@ public class Route {
 		//now we have a hash set of loop headers				
 		return loopHeaders;		
 	}		
+	
+	/**
+	 * This method builds up a hash of all the loop paths on this 
+	 * route containing the pc's that are unique to that particular path
+	 * through the loop.
+	 */
+	private void createUniquePathPcs() {
+		for (PathBasicBlock block : m_allBasicBlocks){        	
+			processLoopAttachment(block.getloops().getSubLoops());
+		}
+	}
+
+	private void processLoopAttachment(List<LoopAttachment> loopAttachments) {	
+		if (loopAttachments.size() == 0)
+			return;
+		
+		Map<PathBasicBlock, HashSet<Integer>> uniqueLoopPathPcs = 
+			new HashMap<PathBasicBlock, HashSet<Integer>>();
+		
+		// Creates a hash map of loop paths to all pc's on the loop path.
+		for (LoopAttachment loopAttachment : loopAttachments) {
+			PathBasicBlock loopBlock = loopAttachment.getLoop();
+			 
+			HashSet<Integer> allPcsOnThisPath = new HashSet<Integer>();
+			for (PathBasicBlock pathBlock : loopBlock.getPathBlocks()) {
+				allPcsOnThisPath.addAll(pathBlock.getPcsCoveredThis());
+			}
+			uniqueLoopPathPcs.put(loopBlock, allPcsOnThisPath);
+						
+			// Process the loops at the next level down...
+			processLoopAttachment(loopAttachment.getSubLoops());
+		}
+		
+		// Now traverse all the pc's in all the loop paths at this level, 
+		// and ensure that they are all unique.
+		for (PathBasicBlock loopPath : uniqueLoopPathPcs.keySet()) {	
+			
+			Iterator<Integer> iter = uniqueLoopPathPcs.get(loopPath).iterator();
+			while (iter.hasNext()) {
+				Integer pc = iter.next();
+				
+				boolean found = false;				
+				for (PathBasicBlock l : uniqueLoopPathPcs.keySet()) {
+				    if (loopPath != l) {
+				    	Set<Integer> pcs = uniqueLoopPathPcs.get(l);
+				    	if (pcs.contains(pc)) {
+				    		pcs.remove(pc);
+				    		found = true;
+				    	}				    					    	
+				    }
+				}				
+				if (found) {
+					iter.remove();
+				}								
+			}						
+		}
+		m_uniqueLoopPathPcs.putAll(uniqueLoopPathPcs);
+	}	
 }
 

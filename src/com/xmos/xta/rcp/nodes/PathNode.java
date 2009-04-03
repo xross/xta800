@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import com.xmos.xta.engine.PathBasicBlock;
+import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.dialogs.Iterations;
@@ -121,7 +122,8 @@ public class PathNode extends Node {
 		    manager.add(new Separator());
     	    manager.add(new Action("Set iterations") {
 			    public void run() {
-				    new Iterations(parent, m_block, getRouteId());
+			    	Route route = XtaEngine.getEngine().getRoute(getRouteId());
+				    new Iterations(parent, route, m_block);
 			    }
 		    });
     	}

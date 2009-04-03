@@ -1,6 +1,8 @@
 package com.xmos.xta.rcp.dialogs;
 
 
+import java.util.Set;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -15,20 +17,20 @@ import org.eclipse.swt.widgets.Spinner;
 
 import com.xmos.xta.engine.LoopAttachment;
 import com.xmos.xta.engine.PathBasicBlock;
+import com.xmos.xta.engine.Route;
 import com.xmos.xta.rcp.XtaEngine;
 
 public class Iterations extends XtaDialog {
 	
 	private long m_numIterations;
-	private int m_routeId;
-	
-	
+	private Route m_route;
+		
 	PathBasicBlock m_tail;
 	PathBasicBlock m_header;
 	
-    public Iterations(Shell parent, final PathBasicBlock tail, int routeId) {
+    public Iterations(Shell parent, final Route route, final PathBasicBlock tail) {
     	super(parent);
-    	m_routeId = routeId;
+    	m_route = route;
     	
     	m_tail = tail;
     	m_header = m_tail.getPathBlocks().get(0);
@@ -112,8 +114,12 @@ public class Iterations extends XtaDialog {
     
     protected void buttonPressed(int id) {
     	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {
-    		int pc = m_tail.getInstructionTrimmed().getFirst().getPc();			
-    		XtaEngine.getEngine().setLoopIterations(m_routeId, pc, m_numIterations);
+    		// Just use any pc that is unique to this particular loop path.
+    		Set<Integer> pcs = m_route.getUniqueLoopPathPcs(m_tail);
+    		assert(pcs.size() > 0);
+    		
+    		XtaEngine.getEngine().setLoopIterations(
+    				m_route.getRouteId(), pcs.iterator().next(), m_numIterations);
     	}
     	super.buttonPressed(id);
     }

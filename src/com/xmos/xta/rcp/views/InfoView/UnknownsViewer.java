@@ -236,12 +236,11 @@ public class UnknownsViewer {
 		m_setInstructionTimeAction.setText("Set instruction time");
 		menuMgr.add(m_setInstructionTimeAction);
 		m_setInstructionTimeAction.setEnabled(false);
-		
-		
+				
 		m_setLoopIterationsAction = new Action() { 
 			public void run() {
 				Route route = XtaNotifier.getInstance().getSelectedRoute();
-     			new Iterations(parent.getShell(), selectedLoopBlock, route.getRouteId() );
+     			new Iterations(parent.getShell(), route, selectedLoopBlock );
 			}
 		}; 
 		m_setLoopIterationsAction.setText("Set iterations");
