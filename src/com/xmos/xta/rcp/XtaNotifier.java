@@ -9,6 +9,7 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xta.engine.Notifier;
@@ -221,10 +222,11 @@ public class XtaNotifier implements Notifier {
 	}
 
 	private void displayMessageBox(final String title, final String message) {
-		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+		final IWorkbench workbench = PlatformUI.getWorkbench();
+		workbench.getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0, message, null);
-		        Shell shell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
+		        Shell shell = workbench.getDisplay().getActiveShell();
 				ErrorDialog.openError(shell, title, null, status);
 			}
 		});
