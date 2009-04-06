@@ -5,6 +5,7 @@ use File::Copy;
 
 my $genDir  = shift(@ARGV);
 my $arch    = shift(@ARGV);
+my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 my $directory = "AesXc";
 

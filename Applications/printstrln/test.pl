@@ -5,11 +5,12 @@ use File::Copy;
 
 my $genDir  = shift(@ARGV);
 my $arch    = shift(@ARGV);
+my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 my $directory = "printstrln";
 
 if (!$noBuild) {
-        system("xcc -march=$arch -g test.xc -o $genDir/test.xe >  $genDir/$directory.log 2>&1");
+        system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe >  $genDir/$directory.log 2>&1");
 }
 
 

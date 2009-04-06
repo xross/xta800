@@ -6,6 +6,7 @@ use File::Copy;
 use Cwd;
 my $genDir  = shift(@ARGV);
 my $arch    = shift(@ARGV);
+my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 my $cwd = getcwd();
 my $suite = basename($cwd);
@@ -34,7 +35,7 @@ while ($maxNumLevels > 0) {
 
 if ($found == 1) {
   if (!$noBuild) {
-    system("xcc -march=$arch -g $testHarness test.s -o $genDir/test.xe > $genDir/$suite.log 2>&1");
+    system("xcc -target=$target -march=$arch -g $testHarness test.s -o $genDir/test.xe > $genDir/$suite.log 2>&1");
   }
 
   system("@ARGV load $genDir/test.xe " .

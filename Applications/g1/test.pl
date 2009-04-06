@@ -5,11 +5,12 @@ use File::Copy;
 
 my $genDir  = shift(@ARGV);
 my $arch    = shift(@ARGV);
+my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 my $directory = "g1";
 
 if (!$noBuild) {
-    system("xcc -Wall -g -O3 link.S top.xc -o $genDir/test.xe >  $genDir/$directory.log 2>&1");
+    system("xcc -target=$target -Wall -g -O3 link.S top.xc -o $genDir/test.xe >  $genDir/$directory.log 2>&1");
 }
 
 my $filename = "trace";

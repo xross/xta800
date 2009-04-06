@@ -20,7 +20,7 @@ XUD_INCLUDES	= -I $(XUD_INC_DIR) \
                   -I $(XUD_SRC_UIFM_DIR) \
 		  -I $(XUD_SRC_SUP_DIR)
 
-BUILD_FLAGS 	= -Wall  -O3 -D UIFM_MODE=2  -fasm-linenum -fcomment-asm  -fall-stream-select 
+BUILD_FLAGS 	= -Wall  -O3 -D UIFM_MODE=2  -fasm-linenum -fcomment-asm  -fall-stream-select -fxta-info
 
 XUD_LIB			= xud.a
 

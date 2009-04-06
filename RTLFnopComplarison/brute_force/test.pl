@@ -7,6 +7,7 @@ use Cwd;
 
 my $genDir  = shift(@ARGV);
 my $arch    = shift(@ARGV);
+my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 my $cwd = getcwd();
 my $suite = basename($cwd);
@@ -114,7 +115,7 @@ print OUTFILE "  retsp 0\n" .
 close(OUTFILE);            
                 
 if (!$noBuild) {
-        system("xcc -march=$arch -nostartfiles test.S -I ../ -o $genDir/test.xe > $genDir/$suite.log 2>&1");
+        system("xcc -target=$target -march=$arch -nostartfiles test.S -I ../ -o $genDir/test.xe > $genDir/$suite.log 2>&1");
 }
 
 system("@ARGV load $genDir/test.xe analyse function main print trace - 0 exit > $suite.tmp 2>&1");

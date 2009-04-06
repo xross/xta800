@@ -5,12 +5,13 @@ use Cwd;
 
 my $genDir  = shift(@ARGV);
 my $arch    = shift(@ARGV);
+my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 my $cwd     = getcwd();
 
 if (!$noBuild) {
 system("cp a.xc test.xc");
-system("xcc -march=xs1b -g test.xc -o $genDir/test.xe > $genDir/srcpath.log 2>&1");
+system("xcc -target=$target -march=xs1b -g test.xc -o $genDir/test.xe > $genDir/srcpath.log 2>&1");
 system("mv test.xc ./up/test.xc");
 }
 system("@ARGV " .

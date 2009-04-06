@@ -24,7 +24,7 @@ TEST_INCLUDES  		= -I $(XUD_INC_DIR) \
 			  -I $(XUD_SRC_UIFM_DIR) \
 			  -I $(TEST_SRC_DIR) 
 
-BUILD_FLAGS   		= -Wall -O3 -D UIFM_MODE=2 -g
+BUILD_FLAGS   		= -Wall -O3 -D UIFM_MODE=2 -g -fxta-info
 
 TEST_SRC_S 		= param 
 

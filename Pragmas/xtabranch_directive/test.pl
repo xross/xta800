@@ -4,10 +4,11 @@ use warnings;
 
 my $genDir  = shift(@ARGV);
 my $arch    = shift(@ARGV);
+my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -march=$arch -nostartfiles -g test.s -o $genDir/test.xe > $genDir/xtabranch_directive.log 2>&1");
+system("xcc -target=$target -march=$arch -fxta-info -nostartfiles -g test.s -o $genDir/test.xe > $genDir/xtabranch_directive.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "list branches " .
