@@ -86,12 +86,12 @@ public class TreeDisplayer {
 
             if (parent != null) {
             	try {
-					iterations = parent.getloops().getLoopIterations(path);
+					iterations = parent.getLoops().getLoopIterations(path);
 				} catch (Exception e) {
 					iterations += 0;
 				}
             	try {
-					isAbsolute = parent.getloops().isAbsolute(path);
+					isAbsolute = parent.getLoops().isAbsolute(path);
 				} catch (Exception e) {
 					//TODO assume is not absolute if it is not set - wont effect anything as there will be no iterations 
 					isAbsolute = false;
@@ -161,7 +161,7 @@ public class TreeDisplayer {
             long totalIterations = 0;
             for (PathBasicBlock loopPath : loopPaths) {
                 try {
-					totalIterations += path.getloops().getLoopIterations(loopPath);
+					totalIterations += path.getLoops().getLoopIterations(loopPath);
 				} catch (Exception e) {
 					totalIterations += 0;
 				}

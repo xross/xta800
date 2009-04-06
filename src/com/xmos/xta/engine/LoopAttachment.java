@@ -3,7 +3,7 @@ package com.xmos.xta.engine;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.List;
 
 import com.xmos.xta.engine.unknowns.LoopIterationsUnknown;
 
@@ -173,10 +173,10 @@ public class LoopAttachment {
 	}
 	
 	public void addLoop(PathBasicBlock newLoop){		
-		if(m_allAttachedLoops != null){
+		if (m_allAttachedLoops != null){
 			m_allAttachedLoops.add(newLoop);
 		}
-		for(LoopAttachment la : m_subLoops){
+		for (LoopAttachment la : m_subLoops){
 			int a = la.getLoop().getPathBlocks().size();
 			int b = newLoop.getPathBlocks().size();
 			if(a<b){
@@ -209,10 +209,10 @@ public class LoopAttachment {
 	/**
 	 * returns a list of all the loops attached at and below this attachment
 	 */
-	public ArrayList<PathBasicBlock> getLoopList(){
+	public List<PathBasicBlock> getLoopList(){
 		if(m_loopList == null){
 			m_loopList = new ArrayList<PathBasicBlock>();
-			for(LoopAttachment ls : m_subLoops){
+			for (LoopAttachment ls : m_subLoops){
 				m_loopList.add(ls.getLoop());
 			}
 			//TODO may have to move this out of the loop in order to maintain order
@@ -234,12 +234,12 @@ public class LoopAttachment {
 	 * @param base
 	 * @return
 	 */
-	public ArrayList<PathBasicBlock> getLoopPaths(PathBasicBlock base) {
+	public List<PathBasicBlock> getLoopPaths(PathBasicBlock base) {
 		if (m_loop == base ){
 			return getLoopList();
 		}
 		for (LoopAttachment subLoop : m_subLoops) {
-			ArrayList<PathBasicBlock> subLoopPaths = subLoop.getLoopPaths(base);
+			List<PathBasicBlock> subLoopPaths = subLoop.getLoopPaths(base);
 			if (subLoopPaths != null){
 				return subLoopPaths;
 			}
@@ -304,7 +304,7 @@ public class LoopAttachment {
 	public long getLoopMax(PathBasicBlock loop) throws Exception {
 		assert(loop != null);
 		LoopAttachment la = findLoop(loop);
-		if(la!= null){
+		if (la!= null){
 				if(la.m_softIterations!= null){
 					return la.getParent().m_maxIterations;
 				} else {
@@ -322,9 +322,9 @@ public class LoopAttachment {
 	public void setLoopScope(int pc, boolean absolute){
 		//starting from the inner most loop try to set the scope
 		
-		for(LoopAttachment la : m_subLoops){
-			for(PathBasicBlock loopBlock : la.getLoop().getPathBlocks()){
-				if(loopBlock.containsPc(pc)){
+		for (LoopAttachment la : m_subLoops){
+			for (PathBasicBlock loopBlock : la.getLoop().getPathBlocks()){
+				if (loopBlock.containsPc(pc)){
 					m_absolute = new Boolean(absolute);
 					return;
 				}
@@ -352,8 +352,8 @@ public class LoopAttachment {
 				hardCount += la.m_hardIterations;
 			}
 		}
-		if(m_maxIterations != null){
-			if(m_subLoops.size() > 0){
+		if (m_maxIterations != null){
+			if (m_subLoops.size() > 0){
 				long remaining = m_maxIterations - hardCount;
 				LoopAttachment longestLoop = m_subLoops.get(0);
 				double longestTime = longestLoop.getLoop().getTimeTaken(true);
@@ -370,7 +370,7 @@ public class LoopAttachment {
 				longestLoop.m_softIterations = new Long(remaining);
 			}
 		} else {
-			for(LoopAttachment la : m_subLoops){
+			for (LoopAttachment la : m_subLoops){
 				la.m_softIterations = null;
 			}			
 		}
@@ -384,21 +384,40 @@ public class LoopAttachment {
 		return null;
 	}
 	
-	public LinkedList<LoopIterationsUnknown> getUnknowns() {
-		LinkedList<LoopIterationsUnknown> unknowns = new LinkedList<LoopIterationsUnknown>();
-		for(LoopAttachment la : m_subLoops){
+	public List<LoopIterationsUnknown> getUnknowns() {
+		List<LoopIterationsUnknown> unknowns = new ArrayList<LoopIterationsUnknown>();
+		for (LoopAttachment la : m_subLoops){
 			unknowns.addAll(la.getUnknowns());
-			if(la.getUnknowns() != null){
-				
+			if (la.getUnknowns() != null){
 				LoopIterationsUnknown lu = la.getLoopUnknown();
-				if(lu != null){
+				if (lu != null){
 					unknowns.add(lu);
 				}
-				
 			}
 		}
 		return unknowns;
 	}	
+	
+	public List<LoopIterationsUnknown> getUnknowns(PathBasicBlock base) {
+		if (m_loop == base) {
+			return getUnknowns();
+		}
+
+		List<LoopIterationsUnknown> unknowns = new ArrayList<LoopIterationsUnknown>();
+		for (LoopAttachment la : m_subLoops) {
+			List<PathBasicBlock> subLoopPaths = la.getLoopPaths(base);
+			if (subLoopPaths != null){
+				unknowns.addAll(la.getUnknowns());
+				if (la.getUnknowns() != null){
+					LoopIterationsUnknown lu = la.getLoopUnknown();
+					if (lu != null){
+						unknowns.add(lu);
+					}
+				}
+			}
+		}
+		return unknowns;
+	}
 	
 	/**
 	 * returns a the sum of all the hard loop iterations set in the sub loops of this loop

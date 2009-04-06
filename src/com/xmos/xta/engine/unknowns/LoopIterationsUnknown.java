@@ -31,7 +31,7 @@ public class LoopIterationsUnknown extends Unknown {
 
 	public boolean isUnknown() {
 		try {
-			m_iterations = m_header.getloops().getLoopIterations(m_tail);
+			m_iterations = m_header.getLoops().getLoopIterations(m_tail);
 		} catch (Exception e) {
 			return true;
 		}

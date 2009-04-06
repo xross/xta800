@@ -245,7 +245,7 @@ public class BasicBlockStats {
 					
 					boolean isAbsolute;
 					try {
-						isAbsolute = block.getloops().isAbsolute(loopPath);
+						isAbsolute = block.getLoops().isAbsolute(loopPath);
 					} catch (Exception e) {
 						isAbsolute = false;
 					}
@@ -253,7 +253,7 @@ public class BasicBlockStats {
 					if(!isAbsolute){
 						long relativeLoops;
 						try {
-							relativeLoops = block.getloops().getLoopIterations(loopPath);
+							relativeLoops = block.getLoops().getLoopIterations(loopPath);
 						} catch (Exception e) {
 							relativeLoops = 0;
 						}
@@ -277,7 +277,7 @@ public class BasicBlockStats {
 				for (PathBasicBlock loopPath : block.getLoopPaths(m_block)) {
 					boolean isAbsolute;
 					try {
-						isAbsolute = block.getloops().isAbsolute(loopPath);
+						isAbsolute = block.getLoops().isAbsolute(loopPath);
 					} catch (Exception e) {
 						isAbsolute = false;
 					}
@@ -285,7 +285,7 @@ public class BasicBlockStats {
 					if(!isAbsolute){
 						long relativeLoops;
 						try {
-							relativeLoops = block.getloops().getLoopIterations(loopPath);
+							relativeLoops = block.getLoops().getLoopIterations(loopPath);
 						} catch (Exception e) {
 							relativeLoops = 0;
 						}
@@ -358,7 +358,7 @@ public class BasicBlockStats {
 						
 						boolean isAbsolute;
 						try {
-							isAbsolute = block.getloops().isAbsolute(loopPath);
+							isAbsolute = block.getLoops().isAbsolute(loopPath);
 						} catch (Exception e) {
 							isAbsolute = false;
 						}
@@ -366,7 +366,7 @@ public class BasicBlockStats {
 						
 							long absoluteLoops;
 							try {
-								absoluteLoops = block.getloops().getLoopIterations(loopPath);
+								absoluteLoops = block.getLoops().getLoopIterations(loopPath);
 							} catch (Exception e) {
 								absoluteLoops = 0;
 							}
@@ -394,7 +394,7 @@ public class BasicBlockStats {
 					result += val.getValueAbsolute(loopPath);
 					boolean isAbsolute;
 					try {
-						isAbsolute = block.getloops().isAbsolute(loopPath);
+						isAbsolute = block.getLoops().isAbsolute(loopPath);
 					} catch (Exception e) {
 						isAbsolute = false;
 					}
@@ -402,7 +402,7 @@ public class BasicBlockStats {
 					
 						long absoluteLoops;
 						try {
-							absoluteLoops = block.getloops().getLoopIterations(loopPath);
+							absoluteLoops = block.getLoops().getLoopIterations(loopPath);
 						} catch (Exception e) {
 							absoluteLoops = 0;
 						}
@@ -424,7 +424,7 @@ public class BasicBlockStats {
         for (PathBasicBlock loopPath : m_block.getLoopPaths(m_block)) {
         	long numIterations;
 			try {
-				numIterations = m_block.getloops().getLoopIterations(loopPath);
+				numIterations = m_block.getLoops().getLoopIterations(loopPath);
 			} catch (Exception e) {
 				numIterations = 0;
 			}
@@ -438,7 +438,7 @@ public class BasicBlockStats {
         for (PathBasicBlock loopPath : m_block.getLoopPaths(m_block)) {
         	long numIterations;
 			try {
-				numIterations = m_block.getloops().getLoopIterations(loopPath);
+				numIterations = m_block.getLoops().getLoopIterations(loopPath);
 			} catch (Exception e) {
 				numIterations = 0;
 			}

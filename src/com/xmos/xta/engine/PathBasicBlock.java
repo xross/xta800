@@ -241,7 +241,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		ArrayList<PathBasicBlock> pathBlocks = getPathBlocks();
 		PathBasicBlock block = pathBlocks.get(0);
 		try {
-			return block.getloops().getSoftLoopIterations(this);
+			return block.getLoops().getSoftLoopIterations(this);
 		} catch (Exception e) {
 			return 0;
 		}
@@ -251,7 +251,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		ArrayList<PathBasicBlock> pathBlocks = getPathBlocks();
 		PathBasicBlock block = pathBlocks.get(0);
 		try {
-			return block.getloops().getHardLoopIterations(this);
+			return block.getLoops().getHardLoopIterations(this);
 		} catch (Exception e) {
 			return 0;
 		}
@@ -261,7 +261,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		ArrayList<PathBasicBlock> pathBlocks = getPathBlocks();
 		PathBasicBlock block = pathBlocks.get(0);
 		try {
-			return block.getloops().getLoopIterations(this);
+			return block.getLoops().getLoopIterations(this);
 		} catch (Exception e) {
 			return 0;
 		}
@@ -380,7 +380,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 				}
 			}
 		}
-		//doneWithPathBlocks();
 		return insts;
 	}
 
@@ -487,7 +486,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 * returns the number of shown and not set Unknowns on the basic block
 	 */
 	public int getNumUnknownsThis() {
-		int count = getloops().getUnknowns().size();
+		int count = getLoops().getUnknowns(this).size();
 		for(XtaInstruction inst : getInstructionStream()){
 			if (inst.isUnknown()) count++;
 		}
@@ -506,7 +505,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public int getNumUnknownsLoopsOnly() { return m_blockStats.getNumUnknownsLoopsOnly();}
 
 	public void setUnresolved(Unresolved unresolved) {
-		m_unresolved= unresolved;
+		m_unresolved = unresolved;
 	}
 
 	public Constraint getConstraint() {
@@ -521,12 +520,12 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		m_loopPaths.addLoop(pathFormingLoop);
 	}
 
-	public LoopAttachment getloops() {
+	public LoopAttachment getLoops() {
 		return m_loopPaths;
 	}
 
 	public boolean containsLoop(PathBasicBlock pbb) {
-		return getloops().containsLoop(pbb);
+		return getLoops().containsLoop(pbb);
 	}
 
 	public boolean setLoopIterations(PathBasicBlock loopPath, Long iterations) {

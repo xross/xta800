@@ -145,7 +145,7 @@ public class LoopNode extends Node {
 		PathNode loopEndNode = (PathNode)children.get(children.size() - 1);		
 		PathBasicBlock loopBlock = loopEndNode.getPathBasicBlock();		 		 
 		try {
-			return m_block.getloops().getLoopMax(loopBlock);
+			return m_block.getLoops().getLoopMax(loopBlock);
 		} catch (Exception e) {
 			return 0;
 		}
@@ -162,7 +162,7 @@ public class LoopNode extends Node {
 	}
 
 	public boolean getScope() {
-		return m_block.getloops().getLoopScope(m_block.getloops().getSubLoops().get(0).getLoop());
+		return m_block.getLoops().getLoopScope(m_block.getLoops().getSubLoops().get(0).getLoop());
 	}
 	
 }

@@ -130,7 +130,7 @@ public class Route {
 		
 		//for each loop header 
 		for(PathBasicBlock loopHeader : loopHeaders){
-			List<PathBasicBlock> loopList = loopHeader.getloops().getLoopList();
+			List<PathBasicBlock> loopList = loopHeader.getLoops().getLoopList();
 			int numPathsHit = 0;
 			PathBasicBlock loopFound = null;
 			
@@ -170,8 +170,8 @@ public class Route {
 		
 		//for each loop header set the tightest loop containing the pc as count iterations
 		for(PathBasicBlock loopHeader : loopHeaders){
-			if (loopHeader.getloops().setLoopMax(pc,  count)){
-				loopHeader.getloops().reAssignLoopIterations();
+			if (loopHeader.getLoops().setLoopMax(pc,  count)){
+				loopHeader.getLoops().reAssignLoopIterations();
 			} else {
 				return false;
 			}
@@ -193,7 +193,7 @@ public class Route {
 		
 		//for each loop header set the scope on the tightest loop containing the pc
 		for(PathBasicBlock loopHeader : loopHeaders){
-			loopHeader.getloops().setLoopScope(pc, absolute);
+			loopHeader.getLoops().setLoopScope(pc, absolute);
 		}
 		return true;
 	}	
@@ -283,7 +283,7 @@ public class Route {
 	private void addPathPcs(PathBasicBlock completedBlock) {
 		for (PathBasicBlock pathBlock : completedBlock.getPathBlocks()) {
 			m_pcsHit.addAll(pathBlock.getPcsCoveredThis());
-			for (LoopIterationsUnknown loopUnknown : pathBlock.getloops().getUnknowns()){
+			for (LoopIterationsUnknown loopUnknown : pathBlock.getLoops().getUnknowns()){
 				m_unknowns.addUnknown(loopUnknown);
 			}
 			for (XtaInstruction instruction : pathBlock.getInstructionTrimmed()) {
@@ -623,7 +623,7 @@ public class Route {
 		//crawl up the tree until a block with the loop attached is found
 		for(PathBasicBlock block : blocks){
 			PathBasicBlock parent = block;
-			while(!parent.getloops().containsBlock(block)){
+			while(!parent.getLoops().containsBlock(block)){
 				parent = parent.getParent();
 				if (parent == null) 
 					return null;
