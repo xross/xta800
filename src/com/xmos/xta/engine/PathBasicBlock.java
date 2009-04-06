@@ -212,7 +212,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		return m_startInstruction;
 	}
 	
-	public ArrayList<PathBasicBlock> getLoopPaths(PathBasicBlock base) {
+	public List<PathBasicBlock> getLoopPaths(PathBasicBlock base) {
 		return m_loopPaths.getLoopPaths(base);
 	}
 	

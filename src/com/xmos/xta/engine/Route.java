@@ -655,7 +655,7 @@ public class Route {
 	 */
 	private void createUniquePathPcs() {
 		for (PathBasicBlock block : m_allBasicBlocks){        	
-			processLoopAttachment(block.getloops().getSubLoops());
+			processLoopAttachment(block.getLoops().getSubLoops());
 		}
 	}
 
