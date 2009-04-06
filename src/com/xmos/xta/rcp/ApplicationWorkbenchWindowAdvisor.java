@@ -1,5 +1,7 @@
 package com.xmos.xta.rcp;
 
+import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
@@ -28,5 +30,30 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         configurer.setTitle("XMOS Timing Analysis");
 		configurer.addEditorAreaTransfer(EditorInputTransfer.getInstance());
 		configurer.configureEditorAreaDropListener(new EditorAreaDropAdapter());
-    }    
+    }
+    
+    public void postWindowOpen()
+    {
+        super.postWindowOpen();
+
+        IActionBarConfigurer configurer = getWindowConfigurer().getActionBarConfigurer();
+        
+        IContributionItem[] coolItems = configurer.getCoolBarManager().getItems();
+        for ( int i = 0; i < coolItems.length; i++ )
+        {
+        	if (coolItems[i] instanceof ToolBarContributionItem)
+        	{
+        		ToolBarContributionItem toolbarItem = (ToolBarContributionItem) coolItems[i];
+        		String id = toolbarItem.getId();
+				if (id != null && (
+						id.equals("org.eclipse.ui.edit.text.actionSet.annotationNavigation") ||
+						id.equals("org.eclipse.ui.edit.text.actionSet.navigation")))
+        		{
+        			toolbarItem.getToolBarManager().removeAll();
+        		}
+        	}
+        }
+        configurer.getCoolBarManager().update( true );
+        configurer.getMenuManager().update( true );
+	}
 }
