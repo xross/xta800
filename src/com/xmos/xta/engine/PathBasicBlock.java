@@ -193,8 +193,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 * @return ArrayList of all the PathBasicBlock that make up that path
 	 */
 	public ArrayList<PathBasicBlock> getPathBlocks() {
-		
-		if(m_pathBlocks == null){
+		if (m_pathBlocks == null){
 			m_pathBlocks = new ArrayList<PathBasicBlock>();
 			PathBasicBlock block = this;
 			do {
@@ -486,8 +485,11 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 * returns the number of shown and not set Unknowns on the basic block
 	 */
 	public int getNumUnknownsThis() {
-		int count = getLoops().getUnknowns(this).size();
-		for(XtaInstruction inst : getInstructionStream()){
+		int count = 0;
+		for (PathBasicBlock block : getPathBlocks()) {
+			count += block.getLoops().getUnknowns(this).size();
+		}
+		for (XtaInstruction inst : getInstructionStream()){
 			if (inst.isUnknown()) count++;
 		}
 		return count;

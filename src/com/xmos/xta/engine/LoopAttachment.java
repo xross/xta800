@@ -24,7 +24,6 @@ public class LoopAttachment {
 	//the maximum iterations on the sub loops
 	private Long m_maxIterations;
 	
-	
 	//this loop
 	private PathBasicBlock m_loop;
 	
@@ -41,7 +40,7 @@ public class LoopAttachment {
 		m_loop = loop;
 		m_parent = parent;
 		m_subLoops = new ArrayList<LoopAttachment>();
-		if(loop == null){
+		if (loop == null){
 			m_allAttachedLoops = new HashSet<PathBasicBlock>();
 		}
 		m_hardIterations = null;
@@ -56,12 +55,12 @@ public class LoopAttachment {
 	}
 	
 	private LoopAttachment findLoop(PathBasicBlock loop){
-		if(m_loop == loop){
+		if (m_loop == loop){
 			return this;
 		} else {
-			for(LoopAttachment la : m_subLoops){
+			for (LoopAttachment la : m_subLoops){
 				LoopAttachment subLoop = la.findLoop(loop);
-				if(subLoop != null){
+				if (subLoop != null){
 					return subLoop;
 				}
 			}
@@ -102,8 +101,8 @@ public class LoopAttachment {
 	public long getSoftLoopIterations(PathBasicBlock loop) throws Exception {
 		assert(loop != null);
 		LoopAttachment la = findLoop(loop);
-		if(la!= null){
-				if(la.m_softIterations!= null){
+		if (la!= null){
+				if (la.m_softIterations!= null){
 					return la.m_softIterations;
 				} else {
 					throw new Exception();
@@ -120,8 +119,8 @@ public class LoopAttachment {
 	public long getHardLoopIterations(PathBasicBlock loop) throws Exception {
 		assert(loop != null);
 		LoopAttachment la = findLoop(loop);
-		if(la!= null){
-				if(la.m_hardIterations!= null){
+		if (la!= null){
+				if (la.m_hardIterations!= null){
 					return la.m_hardIterations;
 				} else {
 					throw new Exception();
@@ -155,7 +154,7 @@ public class LoopAttachment {
 			softError = true;
 		}
 		
-		if(softError && hardError){
+		if (softError && hardError){
 			throw new Exception();
 		}
 		return soft + hard; 
@@ -164,8 +163,8 @@ public class LoopAttachment {
 	public boolean isAbsolute(PathBasicBlock loop) throws Exception {
 		assert(loop != null);
 		LoopAttachment la = findLoop(loop);
-		if(la!= null){
-			if(la.getParent() != null){
+		if (la!= null){
+			if (la.getParent() != null){
 				return la.getParent().m_absolute;
 			}
 		}
@@ -179,16 +178,16 @@ public class LoopAttachment {
 		for (LoopAttachment la : m_subLoops){
 			int a = la.getLoop().getPathBlocks().size();
 			int b = newLoop.getPathBlocks().size();
-			if(a<b){
-				if(la.getLoop().getPathBlocks().get(a-1).getBasicBlock() 
+			if (a<b) {
+				if (la.getLoop().getPathBlocks().get(a-1).getBasicBlock() 
 						== newLoop.getPathBlocks().get(a-1).getBasicBlock()){
 					LoopAttachment newLoopAttachment = new LoopAttachment(newLoop, la);
 					newLoopAttachment.m_subLoops.add(la);
 					m_subLoops.set(m_subLoops.indexOf(la), newLoopAttachment);
 					return;
 				}
-			} else if(b<a){
-				if(newLoop.getPathBlocks().get(b-1).getBasicBlock() 
+			} else if (b<a) {
+				if (newLoop.getPathBlocks().get(b-1).getBasicBlock() 
 						== la.getLoop().getPathBlocks().get(b-1).getBasicBlock()){
 					la.addLoop(newLoop);
 					return;
@@ -210,7 +209,7 @@ public class LoopAttachment {
 	 * returns a list of all the loops attached at and below this attachment
 	 */
 	public List<PathBasicBlock> getLoopList(){
-		if(m_loopList == null){
+		if (m_loopList == null){
 			m_loopList = new ArrayList<PathBasicBlock>();
 			for (LoopAttachment ls : m_subLoops){
 				m_loopList.add(ls.getLoop());
@@ -247,8 +246,7 @@ public class LoopAttachment {
 		// Top of the tree
 		if (m_loop == null){
 			return getLoopList();
-		}
-		else{
+		} else {
 			return null;
 		}
 	}
@@ -272,9 +270,9 @@ public class LoopAttachment {
 	public boolean setLoopMax(int pc, Long count) {
 		//starting from the inner most loop try to set the loopmax
 		
-		for(LoopAttachment la : m_subLoops){
-			for(PathBasicBlock loopBlock : la.getLoop().getPathBlocks()){
-				if(loopBlock.containsPc(pc)){			
+		for (LoopAttachment la : m_subLoops){
+			for (PathBasicBlock loopBlock : la.getLoop().getPathBlocks()){
+				if (loopBlock.containsPc(pc)){			
 					if (count == null) {
 						// Clear iteration count.
 					    m_maxIterations = null;
@@ -295,7 +293,7 @@ public class LoopAttachment {
 		
 		//FIXME - this is wrong
 		boolean found = false;
-		for(LoopAttachment la : m_subLoops){
+		for (LoopAttachment la : m_subLoops){
 			found |= la.setLoopMax(pc, count);
 		}
 		return found;
@@ -305,7 +303,7 @@ public class LoopAttachment {
 		assert(loop != null);
 		LoopAttachment la = findLoop(loop);
 		if (la!= null){
-				if(la.m_softIterations!= null){
+				if (la.m_softIterations!= null){
 					return la.getParent().m_maxIterations;
 				} else {
 					throw new Exception();
@@ -332,14 +330,14 @@ public class LoopAttachment {
 		}
 		
 		//FIXME - this is wrong
-		for(LoopAttachment la : m_subLoops){
+		for (LoopAttachment la : m_subLoops){
 			la.setLoopScope(pc, absolute);
 		}
 	}
 	
 	public boolean getLoopScope(PathBasicBlock loop) {
 		LoopAttachment la = findLoop(loop);
-		if(la.getParent().m_absolute!= null){
+		if (la.getParent().m_absolute!= null){
 			return la.getParent().m_absolute;
 		}
 		return false;
@@ -347,7 +345,7 @@ public class LoopAttachment {
 	
 	public void reAssignLoopIterations(){
 		int hardCount = 0;
-		for(LoopAttachment la : m_subLoops){
+		for (LoopAttachment la : m_subLoops){
 			if(la.m_hardIterations != null){
 				hardCount += la.m_hardIterations;
 			}
@@ -378,7 +376,7 @@ public class LoopAttachment {
 	
 	public LoopIterationsUnknown getLoopUnknown(){
 		
-		if(m_hardIterations == null && m_softIterations == null){
+		if (m_hardIterations == null && m_softIterations == null){
 			return new LoopIterationsUnknown(m_loop.getPathBlocks().get(0),m_loop);
 		}
 		return null;
@@ -399,23 +397,20 @@ public class LoopAttachment {
 	}	
 	
 	public List<LoopIterationsUnknown> getUnknowns(PathBasicBlock base) {
-		if (m_loop == base) {
-			return getUnknowns();
-		}
-
 		List<LoopIterationsUnknown> unknowns = new ArrayList<LoopIterationsUnknown>();
-		for (LoopAttachment la : m_subLoops) {
-			List<PathBasicBlock> subLoopPaths = la.getLoopPaths(base);
-			if (subLoopPaths != null){
-				unknowns.addAll(la.getUnknowns());
-				if (la.getUnknowns() != null){
-					LoopIterationsUnknown lu = la.getLoopUnknown();
-					if (lu != null){
-						unknowns.add(lu);
-					}
+
+		try {
+			LoopAttachment la = findLoop(base);
+			unknowns.addAll(la.getUnknowns());
+			if (la.getUnknowns() != null){
+				LoopIterationsUnknown lu = la.getLoopUnknown();
+				if (lu != null){
+					unknowns.add(lu);
 				}
 			}
+		} catch (Exception e) {
 		}
+
 		return unknowns;
 	}
 	
