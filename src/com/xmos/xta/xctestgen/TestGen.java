@@ -128,10 +128,11 @@ public class TestGen {
 		file.write("\n");
 		file.write("my $genDir  = shift(@ARGV);\n");
 		file.write("my $arch    = shift(@ARGV);\n");
+		file.write("my $target  = shift(@ARGV);\n");
 		file.write("my $noBuild = shift(@ARGV);\n");
 		file.write("\n");
 		file.write("if (!$noBuild) {\n");
-		file.write("  system(\"xcc -march=$arch -g " + testName + ".xc -o $genDir/" + testName + ".xe > $genDir/" + testName + ".log 2>&1\");\n");
+		file.write("  system(\"xcc -target=$target -march=$arch -g " + testName + ".xc -o $genDir/" + testName + ".xe > $genDir/" + testName + ".log 2>&1\");\n");
 		file.write("}\n");
 		file.write("system(\"@ARGV load $genDir/" + testName + ".xe \" .\n");
 		file.write("       \"analyse function test \" .\n");
