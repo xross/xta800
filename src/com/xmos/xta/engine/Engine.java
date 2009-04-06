@@ -37,7 +37,6 @@ import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 import com.xmos.xta.engine.unknowns.Unknown;
-import com.xmos.xta.rcp.XtaNotifier;
 
 public class Engine {
 
@@ -128,9 +127,9 @@ public class Engine {
 			int coreId = routeTiming.getCoreId();
 			if (coreId != m_coreId)
 				setCoreId(coreId);
-		}		
+		}	
 		m_selectedRoute = route;
-		XtaNotifier.getInstance().notify(Notifier.NOTIFY_SELECT_ROUTE, "");
+		notify(Notifier.NOTIFY_SELECT_ROUTE, "");
 	}
 
 	public void setSelectedRoute(int routeId) {
