@@ -8,7 +8,7 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-  system("xcc -target=$target -march=$arch -g test_i-i-i-i-i-i-i-i-a________.xc -o $genDir/test_i-i-i-i-i-i-i-i-a________.xe > $genDir/test_i-i-i-i-i-i-i-i-a________.log 2>&1");
+  system("xcc -target=$target -march=$arch -fxta-info -g test_i-i-i-i-i-i-i-i-a________.xc -o $genDir/test_i-i-i-i-i-i-i-i-a________.xe > $genDir/test_i-i-i-i-i-i-i-i-a________.log 2>&1");
 }
 system("@ARGV load $genDir/test_i-i-i-i-i-i-i-i-a________.xe " .
        "analyse function test " .
