@@ -1,0 +1,87 @@
+package com.xmos.xta.engine.xtagraph.nodes;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import com.xmos.xta.engine.XtaInstruction;
+
+public class MultiSection extends Node {
+	
+	//each option denotes a different path in the section - all weighted equally
+	private Collection<Node> m_options;
+	private Node m_jumpNode;
+	private Node m_selectedOption; 
+
+	public MultiSection(Collection<Node> options, Node jumpNode) {
+		super();
+		m_options = options;
+		m_selectedOption = null;
+		m_jumpNode = jumpNode;
+		
+		if(jumpNode != null){
+			addNextNode(jumpNode);
+		} else {
+			//there's probably a better way of doing this
+			addNextNode(new LinkedList<Node>(m_options).getFirst());
+		}
+		
+	}
+	
+	public Collection<Node> getOptions(){
+		return m_options;
+	}
+	
+	public Node getJumpNode(){
+		return m_jumpNode;
+	}
+	
+	public void setSelectedOption(Node selected){
+		assert(m_options.contains(selected));
+		m_selectedOption = selected;
+	}
+	
+	public List<XtaInstruction> getInstructionStream() {
+		if(m_selectedOption!= null){
+			return m_selectedOption.getInstructionStream();
+		} else {
+			return new LinkedList<XtaInstruction>();
+		}
+	}
+
+	public List<XtaInstruction> getInstructions() {
+		if(m_selectedOption!= null){
+			return m_selectedOption.getInstructions();
+		} else {
+			return new LinkedList<XtaInstruction>();
+		}
+	}
+
+	public long getNumberCycles() {
+		if(m_selectedOption!= null){
+			return m_selectedOption.getNumberCycles();
+		} else {
+			return 0;
+		}
+	}
+
+	public long getNumberFNOPS() {
+		if(m_selectedOption!= null){
+			return m_selectedOption.getNumberFNOPS();
+		} else {
+			return 0;
+		}
+	}
+
+	public Set<Integer> getPCsCovered() {
+		if(m_selectedOption!= null){
+			return m_selectedOption.getPCsCovered();
+		} else {
+			return new HashSet<Integer>();
+		}
+	}
+	
+	
+}

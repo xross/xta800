@@ -2904,6 +2904,16 @@ public abstract class XtaInstruction extends Instruction {
 	public Config getConfig() {
 		return m_config;
 	}
+
+	public boolean isNop() {
+		if(isFnop()) return true;
+		
+		
+		if(((getOpcode()>>(8*this.getNumBytes()))&0xFFFF) == 0x9000){
+			return true;
+		}
+		return false;
+	}
 }
 
 class NullInstruction extends XtaInstruction {    

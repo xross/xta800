@@ -14,6 +14,7 @@ import com.xmos.xeobject.Function;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.maps.BranchMap;
+import com.xmos.xta.engine.xtagraph.XTAGraph;
 
 public class AnalysisEngine {
 	private XeLoader m_xeLoader;
@@ -150,7 +151,7 @@ public class AnalysisEngine {
 				fillGraphFnops(nodeId, coreId);
 
 				// TODO
-				// printDot(nodeId, coreId);
+				printDot(nodeId, coreId);
 			}
 		}
 	}
@@ -247,49 +248,93 @@ public class AnalysisEngine {
 	}
 
 	public void printDot(int nodeId, int coreId) {
+		XTAGraph graph = new XTAGraph(new HashSet<BasicBlock>(getBasicBlockStartPcs(nodeId, coreId).values()));
+		
+		graph.draw();
+		
 		HashMap<XtaInstruction, BasicBlock> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
-
-		System.out.println("digraph g {");
-		for (BasicBlock node : pcToNode.values()) {
-			int maxFnops =0 ;
-			int minFnops =0x10000 ;
-			boolean singular = false;
-			System.out.print("node" + node.m_nodeId + " [label = \"");
-			if(node.getIBufferStates().size() ==1){
-				singular = true;
-			} else {
-				for(IBufferState ibs :node.getIBufferStates()){
-					maxFnops = Math.max(maxFnops, ibs.m_fnops.size());
-					minFnops = Math.min(minFnops, ibs.m_fnops.size());
+		if(false){
+			System.out.println("digraph g {");
+			for (BasicBlock node : pcToNode.values()) {
+				
+				if(node.getPrevoiusNodes().size() == 0){
+					boolean allNops = true;
+					for(XtaInstruction inst : node.getInstructions()){
+						//System.out.println(Integer.toHexString(inst.getOpcode()));
+						if(!inst.isNop()){
+							allNops =false;
+						}
+					}
+					//System.out.println("----");
+					if(allNops){
+						continue;
+					}
 				}
-				System.out.print("max: " +maxFnops + " min: " + minFnops + "\\n");
-			}
-			for (XtaInstruction inst : node.getInstructions()) {
-				System.out.print(inst + "\\n");
-			}
-			System.out.print("\", style=filled, shape=box,");
-			if(singular){
-				System.out.println("fillcolor=green];");
-			} else {
-				if(maxFnops == minFnops){
-					if(maxFnops == 0){
-						System.out.println("fillcolor=green];");
+				
+				
+				//int maxFnops =0 ;
+				//int minFnops =0x10000 ;
+				//boolean singular = false;
+				System.out.print("node" + node.m_nodeId + " [");
+				
+				System.out.print( "label = \"");
+				/*
+				if(node.getIBufferStates().size() ==1){
+					singular = true;
+				} else {
+					for(IBufferState ibs :node.getIBufferStates()){
+						maxFnops = Math.max(maxFnops, ibs.m_fnops.size());
+						minFnops = Math.min(minFnops, ibs.m_fnops.size());
+					}
+					System.out.print("max: " +maxFnops + " min: " + minFnops + "\\n");
+				}
+				*/
+			
+				for (XtaInstruction inst : node.getInstructions()) {
+					System.out.print(inst + "\\n");
+				}
+				System.out.print("\", ");
+				
+				
+				System.out.print("style=filled, shape=box,");
+				/*
+				if(singular){
+					System.out.println("fillcolor=green];");
+				} else {
+					if(maxFnops == minFnops){
+						if(maxFnops == 0){
+							System.out.println("fillcolor=green];");
+						} else {
+							System.out.println("fillcolor=blue];");
+						}
+						
 					} else {
-						System.out.println("fillcolor=blue];");
+						System.out.println("fillcolor=red];");
 					}
 					
-				} else {
+				}
+				*/
+				
+				if(node.getNextNodes().size() == 0 ){
 					System.out.println("fillcolor=red];");
+				} else {
+					if(node.getPrevoiusNodes().size() == 0){
+						System.out.println("fillcolor=blue];");
+					} else {
+						System.out.println("fillcolor=green];");
+					}
+					
 				}
 				
 			}
-		}
-		for (BasicBlock node : pcToNode.values()) {
-			for (BasicBlock nextNode : node.getNextNodes()) {
-				System.out.println("node" + node.m_nodeId + " -> node" + nextNode.m_nodeId + ";");
+			for (BasicBlock node : pcToNode.values()) {
+				for (BasicBlock nextNode : node.getNextNodes()) {
+					System.out.println("node" + node.m_nodeId + " -> node" + nextNode.m_nodeId + ";");
+				}
 			}
+			System.out.println("}");
 		}
-		System.out.println("}");
+		
 	}
 
 	private HashMap<XtaInstruction, BasicBlock> getBasicBlockStartPcs(int nodeId, int coreId) {
@@ -369,21 +414,29 @@ public class AnalysisEngine {
 
 	// TODO
 	// get rid of this and do it automatically from arch dbs
-	private static final HashSet<String> m_noNextPc = new HashSet<String>(Arrays.asList(new RevbXtaInstruction_bau_1r(
-			0, 0, null).getNmenonic(), new RevbXtaInstruction_bla_1r(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_blacp_u10(0, 0, null).getNmenonic(), new RevbXtaInstruction_blacp_lu10(0, 0, null)
-					.getNmenonic(), new RevbXtaInstruction_blat_u6(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_blat_lu6(0, 0, null).getNmenonic(), new RevbXtaInstruction_blrb_u10(0, 0, null)
-					.getNmenonic(), new RevbXtaInstruction_blrb_lu10(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_blrf_u10(0, 0, null).getNmenonic(), new RevbXtaInstruction_blrf_lu10(0, 0, null)
-					.getNmenonic(), new RevbXtaInstruction_brbu_u6(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_brbu_lu6(0, 0, null).getNmenonic(), new RevbXtaInstruction_brfu_u6(0, 0, null)
-					.getNmenonic(), new RevbXtaInstruction_brfu_lu6(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_bru_1r(0, 0, null).getNmenonic(), new RevbXtaInstruction_dret_0r(0, 0, null)
-					.getNmenonic(), new RevbXtaInstruction_kret_0r(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_retsp_u6(0, 0, null).getNmenonic(), new RevbXtaInstruction_retsp_lu6(0, 0, null)
-					.getNmenonic(), new RevbXtaInstruction_waitef_1r(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_waitet_1r(0, 0, null).getNmenonic(), new RevbXtaInstruction_waiteu_0r(0, 0, null)
+	private static final HashSet<String> m_noNextPc = new HashSet<String>(Arrays.asList(
+			new RevbXtaInstruction_bau_1r(0, 0, null).getNmenonic(), 
+			//new RevbXtaInstruction_bla_1r(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_blacp_u10(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_blacp_lu10(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_blat_u6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_blat_lu6(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_blrb_u10(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_blrb_lu10(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_blrf_u10(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_blrf_lu10(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_brbu_u6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_brbu_lu6(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_brfu_u6(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_brfu_lu6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_bru_1r(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_dret_0r(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_kret_0r(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_retsp_u6(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_retsp_lu6(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_waitef_1r(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_waitet_1r(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_waiteu_0r(0, 0, null)
 					.getNmenonic()));
 
 	/*

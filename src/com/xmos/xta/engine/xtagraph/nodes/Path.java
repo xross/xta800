@@ -1,0 +1,64 @@
+package com.xmos.xta.engine.xtagraph.nodes;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import com.xmos.xta.engine.XtaInstruction;
+
+public class Path extends Node {
+
+	List<Node> m_nodes;
+	
+	public Path(List<Node> nodes) {
+		super();
+		m_nodes = nodes;
+	}
+
+	public List<XtaInstruction> getInstructionStream() {
+		List<XtaInstruction> list = new LinkedList<XtaInstruction>();
+		for(Node node : m_nodes){
+			list.addAll(node.getInstructionStream());
+		}
+		return list;
+	}
+
+	public static boolean isPattern(Node node){
+		
+		return false;
+	}
+	
+	public List<XtaInstruction> getInstructions() {
+		List<XtaInstruction> list = new LinkedList<XtaInstruction>();
+		for(Node node : m_nodes){
+			list.addAll(node.getInstructions());
+		}
+		return list;
+	}
+
+	public long getNumberCycles() {
+		long cycles = 0;
+		for(Node node : m_nodes){
+			cycles += node.getNumberCycles();
+		}
+		return cycles;
+	}
+
+	public long getNumberFNOPS() {
+		long fnops = 0;
+		for(Node node : m_nodes){
+			fnops += node.getNumberFNOPS();
+		}
+		return fnops;
+	}
+
+	public Set<Integer> getPCsCovered() {
+		Set<Integer> pcs = new HashSet<Integer>();
+		for(Node node : m_nodes){
+			pcs.addAll(node.getPCsCovered());
+		}
+		return pcs;
+	}
+
+}

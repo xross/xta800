@@ -24,7 +24,7 @@ public class BasicBlock implements Comparable<BasicBlock> {
 	}
 		
 	public String toString(){
-		return "node: " + this.m_nodeId + " " + m_instructions.getFirst();
+		return "" +this.m_nodeId + " " + m_instructions.getFirst();
 	}
 	
 	public int getId() {
