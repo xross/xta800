@@ -2,6 +2,7 @@ package com.xmos.xta.engine.xtagraph.patterns;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 import com.xmos.xta.engine.xtagraph.nodes.MultiSection;
@@ -36,23 +37,32 @@ public class MultiSectionPatternMatcher extends PatternMatcher {
 			}
 		}
 		if(nextNextNodes.size() == 1 && (nextNextNodes.contains(jumpNode)|| jumpNode == null)){
-			updateGraph(node, sectionNodes, jumpNode, workingSet);
+			Node endNode = new LinkedList<Node>(nextNextNodes).getFirst();
+			updateGraph(node, sectionNodes, jumpNode, workingSet, endNode);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	protected void updateGraph(Node node, Collection<Node> sectionNodes, Node jumpNode, Set<Node> workingSet) {
+	protected void updateGraph(Node startNode, Collection<Node> sectionNodes, Node jumpNode, Set<Node> workingSet, Node endNode) {
 		
 		MultiSection ms = new MultiSection(sectionNodes, jumpNode);
+
+		System.out.println("made multi section " + ms);
+		System.out.println("going to the next " + endNode);
+		ms.addPrevNode(startNode);
+		ms.addNextNode(endNode);
 		
-		node.getNextNodes().clear();
-		node.addNextNode(ms);
+		startNode.getNextNodes().clear();
+		startNode.addNextNode(ms);
+		
+		endNode.getPrevNodes().clear();
+		endNode.addPrevNode(ms);
 		
 		workingSet.removeAll(sectionNodes);
-		sectionNodes.add(ms);
-		
+		workingSet.add(ms);
+
 	}
 
 	

@@ -20,14 +20,6 @@ public class MultiSection extends Node {
 		m_options = options;
 		m_selectedOption = null;
 		m_jumpNode = jumpNode;
-		
-		if(jumpNode != null){
-			addNextNode(jumpNode);
-		} else {
-			//there's probably a better way of doing this
-			addNextNode(new LinkedList<Node>(m_options).getFirst());
-		}
-		
 	}
 	
 	public Collection<Node> getOptions(){
