@@ -2,4 +2,4 @@
 all: build
 
 build:
-	xcc -target=XS1-G4B-FB512 -fxta-info -g tutorial_gui.xc core0.xc core1.xc -o tutorial_gui.xe
+	xcc -target=XS1-G4B-FB512 -fxta-info -O3 -g tutorial_gui.xc core0.xc core1.xc -o tutorial_gui.xe

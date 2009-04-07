@@ -45,7 +45,7 @@
       option: unknowns <route id>: Displays a list of the unknowns for the given route
       option: functions: Lists the functions in the loaded application
       option: sources: Lists the source files
-      option: knowns  <route id>: Displays a list of values which have been set for the given route
+      option: knowns <route id>: Displays a list of values which have been set for the given route
       option: constraint: Displays the current constraint expression
   [-]load <xe file>: Loads the given xmos executable file
   [-]print <option> <arg0> <arg1>...: Display analysis information

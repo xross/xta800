@@ -1,5 +1,5 @@
-Label: input0, pc: 0x[0-9a-fA-F]+, compilation dir: .*/endpoint_endpoint, filename: test.xc, line number: 10
-Label: output0, pc: 0x[0-9a-fA-F]+, compilation dir: .*/endpoint_endpoint, filename: test.xc, line number: 7
+Label: input0, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 10
+Label: output0, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 7
 Error: Unresolved reference: output1
 Current node: 0
 Current core: 0
@@ -28,8 +28,8 @@ Route\(0\) path: output0 to input0
     Complete paths: 1, Unresolved paths: 0
 
 Fail, Timing Unspecified
-Label: input1, pc: 0x[0-9a-fA-F]+, compilation dir: .*/endpoint_endpoint, filename: test.xc, line number: 22
-Label: output1, pc: 0x[0-9a-fA-F]+, compilation dir: .*/endpoint_endpoint, filename: test.xc, line number: 19
+Label: input1, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 22
+Label: output1, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 19
 Error: Unresolved reference: output0
 Current node: 0
 Current core: 1
