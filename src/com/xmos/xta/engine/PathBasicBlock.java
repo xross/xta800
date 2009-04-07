@@ -504,7 +504,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public int getNumInstructionsLoopsOnly() { return m_blockStats.getNumInstructionsLoopsOnly();}
 	public int getNumFNopsLoopsOnly() {	return m_blockStats.getNumFNopsLoopsOnly();}
 	public int getNumPausablesLoopsOnly() {	return m_blockStats.getNumPausablesLoopsOnly();}
-	public int getNumUnknownsLoopsOnly() { return m_blockStats.getNumUnknownsLoopsOnly();}
 
 	public void setUnresolved(Unresolved unresolved) {
 		m_unresolved = unresolved;

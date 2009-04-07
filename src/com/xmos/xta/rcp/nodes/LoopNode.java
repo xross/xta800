@@ -44,7 +44,11 @@ public class LoopNode extends Node {
     }
     
     public long getNumUnknowns() {
-        return m_block.getNumUnknownsLoopsOnly();
+        int numUnknowns = 0;
+        for (Node child : getChildren()) {
+        	numUnknowns += child.getNumUnknowns();
+        }
+        return numUnknowns;
     }    
     
     public String getDescription() {
@@ -58,7 +62,7 @@ public class LoopNode extends Node {
         toolTipText += "Total number of cycles: " + getNumCycles() + "\n";
         toolTipText += "Total number of FNOPs: " + m_block.getNumFNopsLoopsOnly() + "\n";
         toolTipText += "Total number of pausable: " + m_block.getNumPausablesLoopsOnly() + "\n";
-        toolTipText += "Total number of unknowns: " + m_block.getNumUnknownsLoopsOnly() ;
+        toolTipText += "Total number of unknowns: " + getNumUnknowns() ;
         return toolTipText;
     }
     
