@@ -25,6 +25,7 @@
       <editor
             class="com.xmos.xta.rcp.editors.SourcesEditor"
             default="false"
+            icon="icons/editor.png"
             id="com.xmos.xta.rcp.editors.Sources"
             name="Sources">
       </editor>
