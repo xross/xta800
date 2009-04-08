@@ -168,7 +168,7 @@ public class XtaNotifier implements Notifier {
 
 	public void notifyShowPaths(Reference codeRef) {
 		m_codePoint = codeRef;
-		broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_SHOW_PATHS, null, null));
+		broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_SELECT_PATHS, null, null));
 	}
 	public void broadcastPropertyChange(final PropertyChangeEvent event) {			
 		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {

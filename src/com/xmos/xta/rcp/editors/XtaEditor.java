@@ -87,7 +87,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     public static final String SetInstructionTimeID  = "com.xmos.xtagui.action.SetInstructionTime";
     public static final String ConstrainRequireID    = "com.xmos.xtagui.action.ConstrainRequire";
     public static final String ConstrainExcludeID    = "com.xmos.xtagui.action.ConstrainExclude";
-    public static final String ShowPathsID           = "com.xmos.xtagui.action.ShowPaths";
+    public static final String SelectPathsID         = "com.xmos.xtagui.action.ShowPaths";
     
     Action m_showStartPointAction;
     Action m_showEndPointAction;
@@ -815,7 +815,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      		}
      	});
 
-     	setAction(ShowPathsID, new Action("Select paths through here") {
+     	setAction(SelectPathsID, new Action("Select paths through here") {
      		public void run() {
      			Reference clickCodeRef = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.SRCLABEL_REF);
      			XtaNotifier.getInstance().notifyShowPaths(clickCodeRef);
@@ -895,7 +895,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			addAction(menu, SetInstructionTimeID);
 			addAction(menu, ConstrainExcludeID);
 			addAction(menu, ConstrainRequireID);
-			addAction(menu, ShowPathsID);
+			addAction(menu, SelectPathsID);
 			
 			Engine engine = XtaEngine.getEngine();
 			boolean resolved = m_clickCodeRef.resolve(engine, engine.getNodeId(), engine.getCoreId());

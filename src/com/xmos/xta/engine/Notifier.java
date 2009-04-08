@@ -19,7 +19,7 @@ public interface Notifier {
 	public static final String NOTIFY_SET_CONSTRAINT     = "SetConstraint";
 	public static final String NOTIFY_SET_FOCUS          = "SetFocus";
 	public static final String NOTIFY_SHOW_CODE_POINT    = "ShowCodePoint";
-	public static final String NOTIFY_SHOW_PATHS         = "ShowPaths";
+	public static final String NOTIFY_SELECT_PATHS         = "ShowPaths";
 	public static final String NOTIFY_UPDATE_STATE       = "UpdateState";
 	public static final String NOTIFY_UPDATE_EXCLUDES    = "UpdateExcludes";
 	public static final String NOTIFY_UPDATE_UNKNOWNS    = "UpdateUnknowns";

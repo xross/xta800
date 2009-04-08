@@ -1,6 +1,9 @@
 package com.xmos.xta.rcp.views.StructureView;
 
-import org.eclipse.jface.viewers.StructuredSelection;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -41,11 +44,17 @@ public class StructureView extends ZoomedCanvasView {
     }
 
     protected void annotateTree(boolean isSelctionChange) {
-		if (m_selectedNode != null) {
-    		if (m_selectedNode.isBlockNode()) {
-    			m_selectedNode = m_selectedNode.getParentNode();
-    		}
-    	}
+    	List<Node> nodesWithBlockParents = new ArrayList<Node>();
+    	Iterator<Node> iter = m_selectedNodes.iterator();
+		while (iter.hasNext()) {
+			Node node = iter.next();
+			if (node.isBlockNode())
+				nodesWithBlockParents.add(node.getParentNode());
+			else
+				nodesWithBlockParents.add(node);
+		}
+		m_selectedNodes = nodesWithBlockParents;
+		
     	buildClickAreas();
 
 		m_numTreeNodes = 0;
@@ -117,7 +126,7 @@ public class StructureView extends ZoomedCanvasView {
     		weight = (numIterations * node.getTimeTakenThis()) / totalTime;
     	}
 
-    	boolean selected = (node == m_selectedNode);
+    	boolean selected = m_selectedNodes.contains(node);
 
     	StructureNode structureNode = node.getStructureNode();
 
@@ -161,14 +170,11 @@ public class StructureView extends ZoomedCanvasView {
 		if (m_routeInfo != null) {
 			m_rootNode = m_routeInfo.getRouteNode();
 			m_doubleClickNode = m_rootNode;
-			m_selectedNode = m_routeInfo.getSelectedNode();
-			if (m_selectedNode != null) {
-				setSelection(new StructuredSelection(m_selectedNode));
-			}
+			m_selectedNodes = m_routeInfo.getSelectedNodes();
 		} else {
 			m_rootNode = null;
 			m_doubleClickNode = null;
-			m_selectedNode = null;
+			m_selectedNodes.clear();
 		}
 	}
 

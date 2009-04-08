@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Vector;
 
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -79,21 +78,18 @@ public class FunctionView extends ZoomedCanvasView {
     	m_routeInfo = XtaNotifier.getInstance().getRouteInfo();
 		if (m_routeInfo != null) {
 			m_rootNode = m_routeInfo.getRouteNode();
-			m_selectedNode = m_routeInfo.getSelectedNode();
-			if (m_selectedNode != null) {
-				setSelection(new StructuredSelection(m_selectedNode));
-			}
+			m_selectedNodes = m_routeInfo.getSelectedNodes();
 		} else {
 			m_rootNode = null;
-			m_selectedNode = null;
+			m_selectedNodes.clear();
 		}
 	}
 
     protected void buildClickAreas() {
 		if (DEBUG) System.out.printf("Function: buildClickAreas\n");
     	m_clickAreas.clear();
-    	if (m_selectedNode != null) {
-    		Node pathRoot = m_selectedNode.getPathRoot();
+    	if (m_selectedNodes.size() == 1) {
+    		Node pathRoot = m_selectedNodes.get(0).getPathRoot();
     		if (pathRoot != null)
     			pathRoot.getFunctionNode().buildClickAreas(m_clickAreas);
     	}
@@ -106,8 +102,8 @@ public class FunctionView extends ZoomedCanvasView {
     	clearAll();
     	buildClickAreas();
     	Node pathRoot = null;
-    	if (m_selectedNode != null) {
-    		pathRoot = m_selectedNode.getPathRoot();
+    	if (m_selectedNodes.size() == 1) {
+    		pathRoot = m_selectedNodes.get(0).getPathRoot();
     	}
     	
 		if (pathRoot == null) {
@@ -136,8 +132,8 @@ public class FunctionView extends ZoomedCanvasView {
     protected void updatePixelsXy() {
 		if (DEBUG) System.out.printf("Function: updatePixelsXy ");
     	Node pathRoot = null;
-    	if (m_selectedNode != null) {
-    		pathRoot = m_selectedNode.getPathRoot();
+    	if (m_selectedNodes.size() == 1) {
+    		pathRoot = m_selectedNodes.get(0).getPathRoot();
     	}
 
     	if (pathRoot == null) {
@@ -160,7 +156,7 @@ public class FunctionView extends ZoomedCanvasView {
 			return;
 
 		m_currentNode = node;
-    	selected |= (node == m_selectedNode);
+    	selected |= m_selectedNodes.contains(node);
 
 		ViewNode functionNode = node.getFunctionNode();
     	if (node.isBlockNode()) {
@@ -210,8 +206,8 @@ public class FunctionView extends ZoomedCanvasView {
         gc.fillRectangle(0, 0, clientArea.width, clientArea.height);
 
     	Node pathRoot = null;
-    	if (m_selectedNode != null) {
-    		pathRoot = m_selectedNode.getPathRoot();
+    	if (m_selectedNodes.size() == 1) {
+    		pathRoot = m_selectedNodes.get(0).getPathRoot();
     	}
         if (pathRoot == null)
         	return;
@@ -364,8 +360,8 @@ public class FunctionView extends ZoomedCanvasView {
 
 	private void updateUnits() {
     	Node pathRoot = null;
-    	if (m_selectedNode != null) {
-    		pathRoot = m_selectedNode.getPathRoot();
+    	if (m_selectedNodes.size() == 1) {
+    		pathRoot = m_selectedNodes.get(0).getPathRoot();
     	}
 
     	if (pathRoot == null) {

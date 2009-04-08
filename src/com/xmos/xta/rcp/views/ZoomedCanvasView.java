@@ -1,6 +1,8 @@
 package com.xmos.xta.rcp.views;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.jface.action.IMenuListener;
@@ -38,7 +40,10 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
+import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaRouteInfo;
 import com.xmos.xta.rcp.nodes.Node;
@@ -54,7 +59,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     public static final int MAX_CANVAS_Y = 500;
 
     protected Node m_rootNode;
-    protected Node m_selectedNode;
+    protected List<Node> m_selectedNodes;
     protected Node m_doubleClickNode;
     protected XtaRouteInfo m_routeInfo;
     
@@ -84,7 +89,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		m_listeners = new Vector<ISelectionChangedListener>();
 		m_rootNode = null;
 		m_doubleClickNode = null;
-	    m_selectedNode = null;
+	    m_selectedNodes = new ArrayList<Node>();
 
 		m_scale = 1.0;
 		m_refreshing = false;
@@ -174,36 +179,67 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			annotateTree(false);
 			refreshView();
 			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_PATHS)) {
+			selectPaths();
+			annotateTree(true);
+			refreshView();
+			
 		}
 	}
 	
+	private void selectPaths() {
+		Reference codePoint = XtaNotifier.getInstance().getCodePoint();
+		Engine engine = XtaEngine.getEngine();
+		if (codePoint.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
+			int pc = codePoint.getPc();
+			m_selectedNodes.clear();
+
+			// Add the complete paths hitting the pc
+			Node routeNode = m_routeInfo.getRouteNode();
+			if (routeNode != null) {
+				for (Node child : routeNode.getChildren()) {
+					Set<Integer> pcs = child.getPcsCovered(false);
+					if (pcs.contains(pc)) {
+						m_selectedNodes.add(child);
+					}
+				}
+			}
+		}
+	}
+
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
 		if (part == this)
 			return;
 		
-        if (sel instanceof IStructuredSelection) {	            
-            Object object = ((IStructuredSelection)sel).getFirstElement();
-            if (object instanceof Node) {
-            	
-            	boolean selectionChanged = true;
-            	if (m_selectedNode == null ||
-            			(m_selectedNode.getPathRoot() != ((Node)object).getPathRoot())) {
-            		selectionChanged = false; // Cause zoom to fit
-            	}
-            		
-                m_selectedNode = (Node)object;
-                annotateTree(selectionChanged);
-                refreshView();
+        if (sel instanceof IStructuredSelection) {
+        	IStructuredSelection sSel = (IStructuredSelection)sel;
+        	boolean selectionChanged = true;
+
+        	if (m_selectedNodes.size() != ((IStructuredSelection)sel).size())
+        		selectionChanged = false;
+
+        	List<Node> newNodes = new ArrayList<Node>();
+        	for (Object object : sSel.toArray()) {
+        		if (object instanceof Node) {
+        			newNodes.add((Node)object);
+        			
+        			if (!m_selectedNodes.contains(object)) {
+        				selectionChanged = false; // Cause zoom to fit
+        			}
+        		}
             }
+        	m_selectedNodes = newNodes;
+            annotateTree(selectionChanged);
+            refreshView();
         }
     }	            		         	        	
 
 	public void menuAboutToShow(IMenuManager manager) {
-		if (m_selectedNode != null) {
+		if (m_selectedNodes.size() == 1) {
 	    	if (m_toolTip != null  && !m_toolTip.isDisposed ()) {
 				m_toolTip.dispose ();
 	    	}
-			m_selectedNode.createContextMenu(m_parent.getShell(), manager);
+			m_selectedNodes.get(0).createContextMenu(m_parent.getShell(), manager);
 		}
 	}
 
@@ -217,11 +253,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	}
 
 	public ISelection getSelection() {
-		if (m_selectedNode == null) {
-			return null;
-		} else {
-			return new StructuredSelection(m_selectedNode);
-		}
+		return new StructuredSelection(m_selectedNodes);
 	}
 
 	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
@@ -234,13 +266,15 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		if (sel == null)
 			return;
 
-        if (sel instanceof IStructuredSelection) {	            
-            Object object = ((IStructuredSelection)sel).getFirstElement();
-            if (object instanceof Node) {
-		        m_selectedNode = (Node)object;
-		        annotateTree(true);
-		        refreshView();
+        if (sel instanceof IStructuredSelection) {
+        	m_selectedNodes.clear();
+        	for (Object object : ((IStructuredSelection)sel).toArray()) {
+        		if (object instanceof Node) {
+        			m_selectedNodes.add((Node)object);
+        		}
             }
+	        annotateTree(true);
+	        refreshView();
         }
         
 		for (ISelectionChangedListener listener : m_listeners) {
@@ -287,7 +321,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     }
     
 	public void zoomOut() {
-		if (m_selectedNode == null)
+		if (m_selectedNodes.size() == 0)
 			return;
 
 		// Don't zoom too far out
@@ -298,7 +332,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	}
 
 	public void zoomIn() {
-		if (m_selectedNode == null)
+		if (m_selectedNodes.size() == 0)
 			return;
 		
 		// Don't zoom any more than the maximum width
@@ -349,7 +383,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		}
 		m_rootNode = null;
 		m_doubleClickNode = null;
-		m_selectedNode = null;
+		m_selectedNodes.clear();
 	}
 	
 	private void createContextMenus() {
@@ -407,8 +441,9 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    		for (ViewNode node : m_clickAreas) {
 	    			if (node.contains(e.x, e.y)) {
 	    				if (node.getTreeNode() != null) {
-		    	    		m_selectedNode = node.getTreeNode();
-		    	    		ISelection selection = new StructuredSelection(m_selectedNode);
+		    	    		m_selectedNodes.clear();
+		    	    		m_selectedNodes.add(node.getTreeNode());
+		    	    		ISelection selection = new StructuredSelection(m_selectedNodes);
 		    	    		setSelection(selection);
 		    				XtaNotifier.getInstance().notifySetFocus(selection);
 	    				}
@@ -421,8 +456,9 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		    		for (ViewNode node : m_clickAreas) {
 		    			if (node.contains(e.x, e.y)) {
 		    				if (node.getTreeNode() != null) {
-		    					m_selectedNode = node.getTreeNode();
-		    					setSelection(new StructuredSelection(m_selectedNode));
+			    	    		m_selectedNodes.clear();
+			    	    		m_selectedNodes.add(node.getTreeNode());
+		    					setSelection(new StructuredSelection(m_selectedNodes));
 		    				}
 		    				return;
 		    			}

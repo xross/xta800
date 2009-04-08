@@ -24,13 +24,12 @@ public class XtaRouteInfo {
 	private List<Node> m_routes;
 	private Node m_routeNode;
 	private Node m_unresolvedNode;
-	private Node m_selectedNode;
+	private List<Node> m_selectedNodes;
 	
 	public XtaRouteInfo(Engine engine) {
 		m_engine = engine;
 		m_routeNode = null;
-		m_selectedNode = null;
-		
+		m_selectedNodes = new ArrayList<Node>();
 		m_routes = new ArrayList<Node>();
 		buildRouteNode();
 	}
@@ -62,7 +61,8 @@ public class XtaRouteInfo {
         	routeNode.addNode(createPath(block, routeNode, true));
         }		
         m_routeNode = routeNode;
-		m_selectedNode = routeNode;
+		m_selectedNodes.clear();
+		m_selectedNodes.add(routeNode);
 		
 		m_unresolvedNode = new PathGroupNode("unresolved", routeId);
 		for (Unresolved unresolved : selectedRoute.getUnresolvedPaths()) {
@@ -104,8 +104,8 @@ public class XtaRouteInfo {
 		return m_routeNode;
 	}	
 
-	public Node getSelectedNode() {
-		return m_selectedNode;
+	public List<Node> getSelectedNodes() {
+		return m_selectedNodes;
 	}	
 
 	public Node getUnresolvedNode() {
@@ -116,13 +116,13 @@ public class XtaRouteInfo {
 		return m_routes;
 	}
 
-	public void setSelectedNode(Node selectedNode) {
-		m_selectedNode = selectedNode;
+	public void setSelectedNodes(List<Node> selectedNodes) {
+		m_selectedNodes = selectedNodes;
 	}
 
 	public void resetState() {
 		m_routeNode = null;
-		m_selectedNode = null;
+		m_selectedNodes.clear();
 		m_unresolvedNode = null;
 		m_routes.clear();
 	}	

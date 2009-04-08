@@ -1,5 +1,8 @@
 package com.xmos.xta.rcp.views.InfoView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
@@ -73,14 +76,17 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
 		if (DEBUG) System.out.printf("Info: selectionChanged: %s\n");
 
-		if (sel.isEmpty())
-			return;
-
-		if (sel instanceof IStructuredSelection) {
-			Object object = ((IStructuredSelection) sel).getFirstElement();
-			if (object instanceof Node) {
-				m_unknowns.updateHighlighting((Node)object);
+		List<Node> selectedNodes = new ArrayList<Node>();
+		
+		if (!sel.isEmpty()) {
+			if (sel instanceof IStructuredSelection) {
+				for (Object object : ((IStructuredSelection)sel).toArray()) {
+					if (object instanceof Node) {
+						selectedNodes.add((Node)object);
+					}
+				}
 			}
 		}
+		m_unknowns.updateHighlighting(selectedNodes);
 	}
 }

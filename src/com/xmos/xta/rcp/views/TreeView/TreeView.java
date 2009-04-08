@@ -171,8 +171,8 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 			initialiseTrees();
 
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SHOW_PATHS)) {
-			showPaths();
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_PATHS)) {
+			selectPaths();
 
 		}
 	}
@@ -181,16 +181,18 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     	if (sel.isEmpty())
     		return;
     	
-		if (sel instanceof IStructuredSelection) {	            
-            Object object = ((IStructuredSelection)sel).getFirstElement();
-            
-        	if (object instanceof Node) {
-            	m_routeInfo.setSelectedNode((Node)object);
-            	if (part != this) {
-            		m_selectedRouteViewer.setSelection(sel, true);
-            	}
-        	}
-        }
+		List<Node> selectedNodes = new ArrayList<Node>();
+		if (sel instanceof IStructuredSelection) {
+			for (Object object : ((IStructuredSelection)sel).toArray()) {
+				if (object instanceof Node) {
+					selectedNodes.add((Node)object);
+				}
+			}
+		}
+		m_routeInfo.setSelectedNodes(selectedNodes);
+    	if (part != this) {
+    		m_selectedRouteViewer.setSelection(sel, true);
+    	}
      }
 	
 	private void createTreeContextMenus() {
@@ -229,15 +231,13 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection sel = event.getSelection();
 				if (sel instanceof IStructuredSelection) {
-					m_routeInfo.setSelectedNode(null);
-
-					if (((IStructuredSelection) sel).size() != 1)
-						return;
-					
-		            Object object = ((IStructuredSelection)sel).getFirstElement();
-	            	if (object instanceof Node) {
-		            	m_routeInfo.setSelectedNode((Node)object);
-	            	}
+					List<Node> selectedNodes = new ArrayList<Node>();
+					for (Object object : ((IStructuredSelection)sel).toArray()) {
+						if (object instanceof Node) {
+							selectedNodes.add((Node)object);
+						}
+					}
+					m_routeInfo.setSelectedNodes(selectedNodes);
 		        }
 			}
 		});
@@ -363,7 +363,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		
 	}
 
-	private void showPaths() {
+	private void selectPaths() {
 		Reference codePoint = XtaNotifier.getInstance().getCodePoint();
 		Engine engine = XtaEngine.getEngine();
 		if (codePoint.resolve(engine, engine.getNodeId(), engine.getCoreId())) {

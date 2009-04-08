@@ -117,21 +117,23 @@ public class UnknownsViewer {
 
 		XtaRouteInfo routeInfo = notifier.getRouteInfo();
 		if (routeInfo != null) {
-			updateHighlighting(routeInfo.getSelectedNode());
+			updateHighlighting(routeInfo.getSelectedNodes());
 		}
 	}
 
-	public void updateHighlighting(Node selectedNode) {
-		if (selectedNode != null){
-			for (TableItem item : m_unknownsViewer.getTable().getItems()) {
-				Unknown unknown = (Unknown)item.getData();
-				HashSet<Integer> selectedBlocks = new HashSet<Integer>();
-				selectedNode.getBlockIds(selectedBlocks);
-				if (selectedBlocks.contains(unknown.getBasicBlockId())) {
-					item.setBackground(m_display.getSystemColor(SWT.COLOR_YELLOW));
-				} else {
-					item.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
-				}
+	public void updateHighlighting(List<Node> selectedNodes) {
+		// Get blocks for all selected nodes
+		HashSet<Integer> selectedBlocks = new HashSet<Integer>();
+		for (Node node : selectedNodes) {
+			node.getBlockIds(selectedBlocks);
+		}
+
+		for (TableItem item : m_unknownsViewer.getTable().getItems()) {
+			Unknown unknown = (Unknown)item.getData();
+			if (selectedBlocks.contains(unknown.getBasicBlockId())) {
+				item.setBackground(m_display.getSystemColor(SWT.COLOR_YELLOW));
+			} else {
+				item.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
 			}
 		}
 	}
