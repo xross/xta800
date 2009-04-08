@@ -1,6 +1,7 @@
 package com.xmos.xta.rcp.nodes;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.jface.action.IMenuManager;
@@ -49,10 +50,10 @@ public abstract class Node implements Comparable<Node> {
     public abstract boolean isRouteNode();
     public abstract long getNumIterations();
     public abstract Vector<XtaInstruction> getInstructions();
-    public abstract HashSet<Integer> getPcsCovered(boolean isSelected);
+    public abstract Set<Integer> getPcsCovered(boolean isSelected);
     public abstract void createContextMenu(final Shell parent, IMenuManager manager);
 	public abstract void getFnopPcs(Vector<XtaInstruction> fnops);
-	public abstract void getBlockIds(HashSet<Integer> ids);
+	public abstract void getBlockIds(Set<Integer> ids);
     
     public void addNode(Node node) {
     	m_nodes.add(node);
@@ -85,8 +86,8 @@ public abstract class Node implements Comparable<Node> {
 		return node;
 	}
 
-	public HashSet<Integer> getCoverage() {
-		HashSet<Integer> covered = new HashSet<Integer>();
+	public Set<Integer> getCoverage() {
+		Set<Integer> covered = new HashSet<Integer>();
 		covered.addAll(getPcsCovered(true));
 		for (Node node : m_nodes){
 			covered.addAll(node.getCoverage());

@@ -1,6 +1,7 @@
 package com.xmos.xta.rcp.nodes;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Shell;
@@ -40,7 +41,7 @@ public class PathGroupNode extends Node {
     public String getToolTipText() { return ""; }
     public String getTypeName() { return "route"; }
     
-    public HashSet<Integer> getPcsCovered(boolean isSelected) {
+    public Set<Integer> getPcsCovered(boolean isSelected) {
     	return new HashSet<Integer>();
     }
     public void createContextMenu(final Shell parent, IMenuManager manager) {
@@ -61,7 +62,7 @@ public class PathGroupNode extends Node {
 		// Do nothing
 	}
 
-	public void getBlockIds(HashSet<Integer> ids) {
+	public void getBlockIds(Set<Integer> ids) {
 		// Do nothing
 	}
 

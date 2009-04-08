@@ -1,6 +1,7 @@
 package com.xmos.xta.rcp.nodes;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
@@ -67,7 +68,7 @@ public class RouteNode extends Node {
 	}
     	
     
-    public HashSet<Integer> getPcsCovered(boolean isSelected) {
+    public Set<Integer> getPcsCovered(boolean isSelected) {
     	return new HashSet<Integer>();
     }
 
@@ -99,7 +100,7 @@ public class RouteNode extends Node {
 		// Do nothing
 	}
 
-	public void getBlockIds(HashSet<Integer> ids) {
+	public void getBlockIds(Set<Integer> ids) {
 		// Do nothing
 	}
 }

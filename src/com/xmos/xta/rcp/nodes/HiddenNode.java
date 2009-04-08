@@ -1,6 +1,7 @@
 package com.xmos.xta.rcp.nodes;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Shell;
@@ -22,7 +23,7 @@ public class HiddenNode extends Node {
     public String getToolTipText() { return ""; }
     public String getTypeName()    { return ""; }
     
-    public HashSet<Integer> getPcsCovered(boolean isSelected) { return new HashSet<Integer>(); }
+    public Set<Integer> getPcsCovered(boolean isSelected) { return new HashSet<Integer>(); }
     public void createContextMenu(final Shell parent, IMenuManager manager) {}
     
 	public long getNumIterations() { return 1; }
@@ -35,5 +36,5 @@ public class HiddenNode extends Node {
 
     public void getFnopPcs(Vector<XtaInstruction> fnops) {}
 
-	public void getBlockIds(HashSet<Integer> ids) {}
+	public void getBlockIds(Set<Integer> ids) {}
 }

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -86,6 +87,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     public static final String SetInstructionTimeID  = "com.xmos.xtagui.action.SetInstructionTime";
     public static final String ConstrainRequireID    = "com.xmos.xtagui.action.ConstrainRequire";
     public static final String ConstrainExcludeID    = "com.xmos.xtagui.action.ConstrainExclude";
+    public static final String ShowPathsID           = "com.xmos.xtagui.action.ShowPaths";
     
     Action m_showStartPointAction;
     Action m_showEndPointAction;
@@ -486,7 +488,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         HashMap<Annotation, Position> annotationPositions = new HashMap<Annotation, Position>();		
 		
         if (m_selectedNode != null) {
-        	HashSet<Integer> pcsCovered = m_selectedNode.getPcsCovered(true);
+        	Set<Integer> pcsCovered = m_selectedNode.getPcsCovered(true);
         	for (Integer pc : pcsCovered) {
 				updateAnnotations(pc, HighlightAnnotationID, annotations, annotationPositions, false, getInput().getPcsToLines());
 			}
@@ -813,6 +815,13 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      		}
      	});
 
+     	setAction(ShowPathsID, new Action("Select paths through here") {
+     		public void run() {
+     			Reference clickCodeRef = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.SRCLABEL_REF);
+     			XtaNotifier.getInstance().notifyShowPaths(clickCodeRef);
+     		}
+     	});
+
      	m_setInstructionTimeAction = new Action("Set instruction time") {
      		public void run() {
      			Engine engine = XtaEngine.getEngine();
@@ -822,7 +831,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      	};
      	setAction(SetInstructionTimeID, m_setInstructionTimeAction);
     }    
-    
+
     protected void addToConstraint(String toAdd) {
 		Engine engine = XtaEngine.getEngine();
 		Constraint constraint = engine.getConstraint();
@@ -886,6 +895,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			addAction(menu, SetInstructionTimeID);
 			addAction(menu, ConstrainExcludeID);
 			addAction(menu, ConstrainRequireID);
+			addAction(menu, ShowPathsID);
 			
 			Engine engine = XtaEngine.getEngine();
 			boolean resolved = m_clickCodeRef.resolve(engine, engine.getNodeId(), engine.getCoreId());
