@@ -1,6 +1,7 @@
 package com.xmos.xta.rcp.nodes;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
@@ -90,8 +91,8 @@ public class PathNode extends Node {
         return "path";
     }   
     
-    public HashSet<Integer> getPcsCovered(boolean isSelected) {
-		HashSet<Integer> pcsCovered = new HashSet<Integer>();
+    public Set<Integer> getPcsCovered(boolean isSelected) {
+		Set<Integer> pcsCovered = new HashSet<Integer>();
 		if (getNumIterations() > 0 || isSelected) {
 		    for (Node child : getChildren()) {
 			    pcsCovered.addAll(child.getPcsCovered(false));
@@ -184,7 +185,7 @@ public class PathNode extends Node {
 		}
 	}
 
-	public void getBlockIds(HashSet<Integer> ids) {
+	public void getBlockIds(Set<Integer> ids) {
 		for (Node node : getChildren()) {
 			node.getBlockIds(ids);
 		}

@@ -33,7 +33,7 @@ public class Knowns extends Command {
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "knowns  <route id>: Displays a list of values which have been set for the given route";
+        return "knowns <route id>: Displays a list of values which have been set for the given route";
     }
 
     public Command clone(String[] args, int index) {

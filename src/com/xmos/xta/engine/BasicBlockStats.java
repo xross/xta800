@@ -171,27 +171,22 @@ public class BasicBlockStats {
 	
 	public int getNumCyclesLoopsOnly() {	
 		return getLoopsOnlyInteger(new IntegerLoops() {
-			public int getValue(PathBasicBlock block) { return block.getNumCycles(true); }});
+			public int getValue(PathBasicBlock block) { return block.getNumCycles(true); }}, true);
 	}
 
 	public int getNumInstructionsLoopsOnly() {	
 		return getLoopsOnlyInteger(new IntegerLoops() {
-			public int getValue(PathBasicBlock block) { return block.getNumInstructions(true); }});
+			public int getValue(PathBasicBlock block) { return block.getNumInstructions(true); }}, false);
 	}
 
 	public int getNumFNopsLoopsOnly() {	
 		return getLoopsOnlyInteger(new IntegerLoops() {
-			public int getValue(PathBasicBlock block) { return block.getNumFNops(true); }});
+			public int getValue(PathBasicBlock block) { return block.getNumFNops(true); }}, false);
 	}
 
 	public int getNumPausablesLoopsOnly() {	
 		return getLoopsOnlyInteger(new IntegerLoops() {
-			public int getValue(PathBasicBlock block) { return block.getNumPausables(true); }});
-	}
-	
-	public int getNumUnknownsLoopsOnly() {	
-		return getLoopsOnlyInteger(new IntegerLoops() {
-			public int getValue(PathBasicBlock block) { return block.getNumUnknowns(true); }});
+			public int getValue(PathBasicBlock block) { return block.getNumPausables(true); }}, false);
 	}
 	
 	
@@ -209,31 +204,31 @@ public class BasicBlockStats {
 	private int getNumCyclesRelative(boolean recurse) {
 		return getRelativeInteger(recurse, new IntegerRelative() {
 			public int getValueThis(PathBasicBlock block)     { return block.getNumCyclesThis(); }			
-			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumCyclesRelative(true); }});
+			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumCyclesRelative(true); }}, true);
 	}	
 	
 	private int getNumInstructionsRelative(boolean recurse) {
 		return getRelativeInteger(recurse, new IntegerRelative() {
 			public int getValueThis(PathBasicBlock block)     { return block.getNumInstructionsThis(); }			
-			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumInstructionsRelative(true); }});
+			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumInstructionsRelative(true); }}, false);
 	}	
 
 	private int getNumFNopsRelative(boolean recurse) {
 		return getRelativeInteger(recurse, new IntegerRelative() {
 			public int getValueThis(PathBasicBlock block)     { return block.getNumFNopsThis(); }			
-			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumFNopsRelative(true); }});
+			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumFNopsRelative(true); }}, false);
 	}	
 	
 	private int getNumPausablesRelative(boolean recurse) {
 		return getRelativeInteger(recurse, new IntegerRelative() {
 			public int getValueThis(PathBasicBlock block)     { return block.getNumPausablesThis(); }			
-			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumPausablesRelative(true); }});
+			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumPausablesRelative(true); }}, false);
 	}	
 
 	private int getNumUnknownsRelative(boolean recurse) {
 		return getRelativeInteger(recurse, new IntegerRelative() {
 			public int getValueThis(PathBasicBlock block)     { return block.getNumUnknownsThis(); }			
-			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumUnknownsRelative(true); }});
+			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumUnknownsRelative(true); }}, false);
 	}				
 	
 	private double getRelativeDouble(boolean recurse, DoubleRelative val) {
@@ -245,7 +240,7 @@ public class BasicBlockStats {
 					
 					boolean isAbsolute;
 					try {
-						isAbsolute = block.getloops().isAbsolute(loopPath);
+						isAbsolute = block.getLoops().isAbsolute(loopPath);
 					} catch (Exception e) {
 						isAbsolute = false;
 					}
@@ -253,7 +248,7 @@ public class BasicBlockStats {
 					if(!isAbsolute){
 						long relativeLoops;
 						try {
-							relativeLoops = block.getloops().getLoopIterations(loopPath);
+							relativeLoops = block.getLoops().getLoopIterations(loopPath);
 						} catch (Exception e) {
 							relativeLoops = 0;
 						}
@@ -269,7 +264,7 @@ public class BasicBlockStats {
 		return result;
 	}
 
-	private int getRelativeInteger(boolean recurse, IntegerRelative val) {
+	private int getRelativeInteger(boolean recurse, IntegerRelative val, boolean useIterations) {
 		int result = 0;
 		for (PathBasicBlock block : m_block.getPathBlocks()) {
 			result += val.getValueThis(block);
@@ -277,22 +272,23 @@ public class BasicBlockStats {
 				for (PathBasicBlock loopPath : block.getLoopPaths(m_block)) {
 					boolean isAbsolute;
 					try {
-						isAbsolute = block.getloops().isAbsolute(loopPath);
+						isAbsolute = block.getLoops().isAbsolute(loopPath);
 					} catch (Exception e) {
 						isAbsolute = false;
 					}
 					
-					if(!isAbsolute){
-						long relativeLoops;
-						try {
-							relativeLoops = block.getloops().getLoopIterations(loopPath);
-						} catch (Exception e) {
-							relativeLoops = 0;
-						}
-						if (relativeLoops != -1) {
-							if (relativeLoops > 0) {
-								result += val.getValueRelative(loopPath) * relativeLoops;
+					if (!isAbsolute){
+						long relativeLoops = 1;
+						if (useIterations) {
+							try {
+								relativeLoops = block.getLoops().getLoopIterations(loopPath);
+							} catch (Exception e) {
+								relativeLoops = 0;
 							}
+						}
+
+						if (relativeLoops > 0) {
+							result += val.getValueRelative(loopPath) * relativeLoops;
 						}
 					}
 				}
@@ -315,31 +311,31 @@ public class BasicBlockStats {
 	private int getNumCyclesAbsolute(boolean recurse) {
 		return getAbsoluteInteger(recurse, new IntegerAbsolute() {
 			public int getValueAbsolute(PathBasicBlock block) { return block.getBlockStats().getNumCyclesAbsolute(true); }
-			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumCyclesRelative(false); }});
+			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumCyclesRelative(false); }}, true);
 	}
 	
 	private int getNumInstructionsAbsolute(boolean recurse) {
 		return getAbsoluteInteger(recurse, new IntegerAbsolute() {
 			public int getValueAbsolute(PathBasicBlock block) { return block.getBlockStats().getNumInstructionsAbsolute(true); }
-			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumInstructionsRelative(false); }});
+			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumInstructionsRelative(false); }}, false);
 	}
 
 	private int getNumFNopsAbsolute(boolean recurse) {
 		return getAbsoluteInteger(recurse, new IntegerAbsolute() {
 			public int getValueAbsolute(PathBasicBlock block) { return block.getBlockStats().getNumFNopsAbsolute(true); }
-			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumFNopsRelative(false); }});
+			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumFNopsRelative(false); }}, false);
 	}
 
 	private int getNumPausablesAbsolute(boolean recurse) {
 		return getAbsoluteInteger(recurse, new IntegerAbsolute() {
 			public int getValueAbsolute(PathBasicBlock block) { return block.getBlockStats().getNumPausablesAbsolute(true); }
-			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumPausablesRelative(false); }});
+			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumPausablesRelative(false); }}, false);
 	}
 
 	private int getNumUnknownsAbsolute(boolean recurse) {
 		return getAbsoluteInteger(recurse, new IntegerAbsolute() {
 			public int getValueAbsolute(PathBasicBlock block) { return block.getBlockStats().getNumUnknownsAbsolute(true); }
-			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumUnknownsRelative(false); }});
+			public int getValueRelative(PathBasicBlock block) { return block.getBlockStats().getNumUnknownsRelative(false); }}, false);
 	}
 	
 	
@@ -358,7 +354,7 @@ public class BasicBlockStats {
 						
 						boolean isAbsolute;
 						try {
-							isAbsolute = block.getloops().isAbsolute(loopPath);
+							isAbsolute = block.getLoops().isAbsolute(loopPath);
 						} catch (Exception e) {
 							isAbsolute = false;
 						}
@@ -366,7 +362,7 @@ public class BasicBlockStats {
 						
 							long absoluteLoops;
 							try {
-								absoluteLoops = block.getloops().getLoopIterations(loopPath);
+								absoluteLoops = block.getLoops().getLoopIterations(loopPath);
 							} catch (Exception e) {
 								absoluteLoops = 0;
 							}
@@ -386,7 +382,7 @@ public class BasicBlockStats {
 	}
 
 	
-	private int getAbsoluteInteger(boolean recurse, IntegerAbsolute val) {
+	private int getAbsoluteInteger(boolean recurse, IntegerAbsolute val, boolean useIterations) {
 		int result = 0;
 		if (recurse) {
 			for (PathBasicBlock block : m_block.getPathBlocks()) {
@@ -394,22 +390,22 @@ public class BasicBlockStats {
 					result += val.getValueAbsolute(loopPath);
 					boolean isAbsolute;
 					try {
-						isAbsolute = block.getloops().isAbsolute(loopPath);
+						isAbsolute = block.getLoops().isAbsolute(loopPath);
 					} catch (Exception e) {
 						isAbsolute = false;
 					}
-					if(isAbsolute){
-					
-						long absoluteLoops;
-						try {
-							absoluteLoops = block.getloops().getLoopIterations(loopPath);
-						} catch (Exception e) {
-							absoluteLoops = 0;
-						}
-						if (absoluteLoops != -1) {
-							if (absoluteLoops > 0) {
-								result += val.getValueRelative(loopPath) * absoluteLoops;
+					if (isAbsolute){
+						long absoluteLoops = 1;
+						if (useIterations) {
+							try {
+								absoluteLoops = block.getLoops().getLoopIterations(loopPath);
+							} catch (Exception e) {
+								absoluteLoops = 0;
 							}
+						}
+
+						if (absoluteLoops > 0) {
+							result += val.getValueRelative(loopPath) * absoluteLoops;
 						}
 					}
 				}
@@ -424,7 +420,7 @@ public class BasicBlockStats {
         for (PathBasicBlock loopPath : m_block.getLoopPaths(m_block)) {
         	long numIterations;
 			try {
-				numIterations = m_block.getloops().getLoopIterations(loopPath);
+				numIterations = m_block.getLoops().getLoopIterations(loopPath);
 			} catch (Exception e) {
 				numIterations = 0;
 			}
@@ -433,15 +429,17 @@ public class BasicBlockStats {
         return result;
 	}
 
-    private int getLoopsOnlyInteger(IntegerLoops val) {
+    private int getLoopsOnlyInteger(IntegerLoops val, boolean useIterations) {
         int result = 0;
         for (PathBasicBlock loopPath : m_block.getLoopPaths(m_block)) {
-        	long numIterations;
-			try {
-				numIterations = m_block.getloops().getLoopIterations(loopPath);
-			} catch (Exception e) {
-				numIterations = 0;
-			}
+        	long numIterations = 1;
+        	if (useIterations) {
+				try {
+					numIterations = m_block.getLoops().getLoopIterations(loopPath);
+				} catch (Exception e) {
+					numIterations = 0;
+				}
+        	}
             result += val.getValue(loopPath) * numIterations;
         }
         return result;

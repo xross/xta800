@@ -1,6 +1,7 @@
 package com.xmos.xta.rcp.nodes;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
@@ -44,7 +45,11 @@ public class LoopNode extends Node {
     }
     
     public long getNumUnknowns() {
-        return m_block.getNumUnknownsLoopsOnly();
+        int numUnknowns = 0;
+        for (Node child : getChildren()) {
+        	numUnknowns += child.getNumUnknowns();
+        }
+        return numUnknowns;
     }    
     
     public String getDescription() {
@@ -58,7 +63,7 @@ public class LoopNode extends Node {
         toolTipText += "Total number of cycles: " + getNumCycles() + "\n";
         toolTipText += "Total number of FNOPs: " + m_block.getNumFNopsLoopsOnly() + "\n";
         toolTipText += "Total number of pausable: " + m_block.getNumPausablesLoopsOnly() + "\n";
-        toolTipText += "Total number of unknowns: " + m_block.getNumUnknownsLoopsOnly() ;
+        toolTipText += "Total number of unknowns: " + getNumUnknowns() ;
         return toolTipText;
     }
     
@@ -66,8 +71,8 @@ public class LoopNode extends Node {
         return "loop";
     }
         
-    public HashSet<Integer> getPcsCovered(boolean isSelected) {
-		HashSet<Integer> pcsCovered = new HashSet<Integer>();
+    public Set<Integer> getPcsCovered(boolean isSelected) {
+		Set<Integer> pcsCovered = new HashSet<Integer>();
 		for (Node child : getChildren()) {
 			pcsCovered.addAll(child.getPcsCovered(isSelected));
         }
@@ -134,7 +139,7 @@ public class LoopNode extends Node {
 		}
 	}
 
-	public void getBlockIds(HashSet<Integer> ids) {
+	public void getBlockIds(Set<Integer> ids) {
 		for (Node node : getChildren()) {
 			node.getBlockIds(ids);
 		}
@@ -145,7 +150,7 @@ public class LoopNode extends Node {
 		PathNode loopEndNode = (PathNode)children.get(children.size() - 1);		
 		PathBasicBlock loopBlock = loopEndNode.getPathBasicBlock();		 		 
 		try {
-			return m_block.getloops().getLoopMax(loopBlock);
+			return m_block.getLoops().getLoopMax(loopBlock);
 		} catch (Exception e) {
 			return 0;
 		}
@@ -162,7 +167,7 @@ public class LoopNode extends Node {
 	}
 
 	public boolean getScope() {
-		return m_block.getloops().getLoopScope(m_block.getloops().getSubLoops().get(0).getLoop());
+		return m_block.getLoops().getLoopScope(m_block.getLoops().getSubLoops().get(0).getLoop());
 	}
 	
 }

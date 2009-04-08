@@ -193,8 +193,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 * @return ArrayList of all the PathBasicBlock that make up that path
 	 */
 	public ArrayList<PathBasicBlock> getPathBlocks() {
-		
-		if(m_pathBlocks == null){
+		if (m_pathBlocks == null){
 			m_pathBlocks = new ArrayList<PathBasicBlock>();
 			PathBasicBlock block = this;
 			do {
@@ -212,7 +211,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		return m_startInstruction;
 	}
 	
-	public ArrayList<PathBasicBlock> getLoopPaths(PathBasicBlock base) {
+	public List<PathBasicBlock> getLoopPaths(PathBasicBlock base) {
 		return m_loopPaths.getLoopPaths(base);
 	}
 	
@@ -241,7 +240,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		ArrayList<PathBasicBlock> pathBlocks = getPathBlocks();
 		PathBasicBlock block = pathBlocks.get(0);
 		try {
-			return block.getloops().getSoftLoopIterations(this);
+			return block.getLoops().getSoftLoopIterations(this);
 		} catch (Exception e) {
 			return 0;
 		}
@@ -251,7 +250,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		ArrayList<PathBasicBlock> pathBlocks = getPathBlocks();
 		PathBasicBlock block = pathBlocks.get(0);
 		try {
-			return block.getloops().getHardLoopIterations(this);
+			return block.getLoops().getHardLoopIterations(this);
 		} catch (Exception e) {
 			return 0;
 		}
@@ -261,7 +260,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		ArrayList<PathBasicBlock> pathBlocks = getPathBlocks();
 		PathBasicBlock block = pathBlocks.get(0);
 		try {
-			return block.getloops().getLoopIterations(this);
+			return block.getLoops().getLoopIterations(this);
 		} catch (Exception e) {
 			return 0;
 		}
@@ -380,7 +379,6 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 				}
 			}
 		}
-		//doneWithPathBlocks();
 		return insts;
 	}
 
@@ -487,8 +485,11 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 * returns the number of shown and not set Unknowns on the basic block
 	 */
 	public int getNumUnknownsThis() {
-		int count = getloops().getUnknowns().size();
-		for(XtaInstruction inst : getInstructionStream()){
+		int count = 0;
+		for (PathBasicBlock block : getPathBlocks()) {
+			count += block.getLoops().getUnknowns(this).size();
+		}
+		for (XtaInstruction inst : getInstructionStream()){
 			if (inst.isUnknown()) count++;
 		}
 		return count;
@@ -503,10 +504,9 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	public int getNumInstructionsLoopsOnly() { return m_blockStats.getNumInstructionsLoopsOnly();}
 	public int getNumFNopsLoopsOnly() {	return m_blockStats.getNumFNopsLoopsOnly();}
 	public int getNumPausablesLoopsOnly() {	return m_blockStats.getNumPausablesLoopsOnly();}
-	public int getNumUnknownsLoopsOnly() { return m_blockStats.getNumUnknownsLoopsOnly();}
 
 	public void setUnresolved(Unresolved unresolved) {
-		m_unresolved= unresolved;
+		m_unresolved = unresolved;
 	}
 
 	public Constraint getConstraint() {
@@ -521,12 +521,12 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		m_loopPaths.addLoop(pathFormingLoop);
 	}
 
-	public LoopAttachment getloops() {
+	public LoopAttachment getLoops() {
 		return m_loopPaths;
 	}
 
 	public boolean containsLoop(PathBasicBlock pbb) {
-		return getloops().containsLoop(pbb);
+		return getLoops().containsLoop(pbb);
 	}
 
 	public boolean setLoopIterations(PathBasicBlock loopPath, Long iterations) {

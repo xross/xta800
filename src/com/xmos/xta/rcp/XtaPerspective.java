@@ -9,7 +9,6 @@ import com.xmos.xta.rcp.views.ControlView.ControlView;
 import com.xmos.xta.rcp.views.FunctionView.FunctionView;
 import com.xmos.xta.rcp.views.InfoView.InfoView;
 import com.xmos.xta.rcp.views.LogView.LogView;
-import com.xmos.xta.rcp.views.StatusView.StatusView;
 import com.xmos.xta.rcp.views.StructureView.StructureView;
 import com.xmos.xta.rcp.views.TreeView.TreeView;
 
@@ -31,7 +30,6 @@ public class XtaPerspective implements IPerspectiveFactory {
         IFolderLayout treeFolder = layout.createFolder(
         		"tree.folder", IPageLayout.LEFT, 0.3f, layout.getEditorArea());        
         addView(layout, treeFolder, TreeView.ID);
-        addView(layout, treeFolder, StatusView.ID);
         addView(layout, treeFolder, ControlView.ID);
 
         layout.setEditorAreaVisible(true);

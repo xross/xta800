@@ -35,7 +35,7 @@ public class Iterations extends XtaDialog {
     	m_tail = tail;
     	m_header = m_tail.getPathBlocks().get(0);
     	try {
-			m_numIterations = m_header.getloops().getHardLoopIterations(m_tail);
+			m_numIterations = m_header.getLoops().getHardLoopIterations(m_tail);
 		} catch (Exception e) {
 			m_numIterations = 0;
 		}
@@ -74,17 +74,17 @@ public class Iterations extends XtaDialog {
 		spinner.setMinimum(0);
 		
 		long total = 0;
-		for(LoopAttachment loop : m_header.getloops().getSubLoops()){
+		for(LoopAttachment loop : m_header.getLoops().getSubLoops()){
 			try {
 				if(loop.getLoop() != m_tail)
-					total+=m_header.getloops().getHardLoopIterations(loop.getLoop());
+					total+=m_header.getLoops().getHardLoopIterations(loop.getLoop());
 			} catch (Exception e1) {
 			}
 		}
 		long loopmax;
 		boolean unset = false;
 		try {
-			loopmax = m_header.getloops().getLoopMax(m_tail);
+			loopmax = m_header.getLoops().getLoopMax(m_tail);
 		} catch (Exception e1) {
 			loopmax = 0;
 			unset = true;

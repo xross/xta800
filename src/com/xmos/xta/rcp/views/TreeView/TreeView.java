@@ -1,5 +1,9 @@
 package com.xmos.xta.rcp.views.TreeView;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -35,6 +39,7 @@ import org.eclipse.ui.part.ViewPart;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaRouteInfo;
@@ -166,10 +171,13 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 			initialiseTrees();
 
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SHOW_PATHS)) {
+			showPaths();
+
 		}
 	}
 	
-    public void selectionChanged(IWorkbenchPart part, ISelection sel) {
+	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
     	if (sel.isEmpty())
     		return;
     	
@@ -353,5 +361,38 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		m_selectedRouteViewer.refresh();
 		m_routesViewer.refresh();
 		
+	}
+
+	private void showPaths() {
+		Reference codePoint = XtaNotifier.getInstance().getCodePoint();
+		Engine engine = XtaEngine.getEngine();
+		if (codePoint.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
+			int pc = codePoint.getPc();
+			List<Node> selectedPaths = new ArrayList<Node>();
+
+			// Add the complete paths hitting the pc
+			Node routeNode = m_routeInfo.getRouteNode();
+			if (routeNode != null) {
+				for (Node child : routeNode.getChildren()) {
+					Set<Integer> pcs = child.getPcsCovered(false);
+					if (pcs.contains(pc)) {
+						selectedPaths.add(child);
+					}
+				}
+			}
+			
+			// Add the unresolved paths hitting the pc
+			Node unresolvedNode = m_routeInfo.getUnresolvedNode();
+			if (unresolvedNode != null) {
+				for (Node child : unresolvedNode.getChildren()) {
+					Set<Integer> pcs = child.getPcsCovered(false);
+					if (pcs.contains(pc)) {
+						selectedPaths.add(child);
+					}
+				}
+			}
+			
+			m_selectedRouteViewer.setSelection(new StructuredSelection(selectedPaths));
+		}
 	}
 }

@@ -1,6 +1,7 @@
 package com.xmos.xta.console.commands.Print;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.commands.Command;
@@ -79,19 +80,19 @@ public class TreeDisplayer {
 		}
     }
 	        
-    private void summarisePaths(ArrayList<PathBasicBlock> loopPaths, String indent, PathBasicBlock parent) {
+    private void summarisePaths(List<PathBasicBlock> loopPaths, String indent, PathBasicBlock parent) {
         for (PathBasicBlock path : loopPaths) {
             long iterations = 1;
             boolean isAbsolute = false;
 
             if (parent != null) {
             	try {
-					iterations = parent.getloops().getLoopIterations(path);
+					iterations = parent.getLoops().getLoopIterations(path);
 				} catch (Exception e) {
 					iterations += 0;
 				}
             	try {
-					isAbsolute = parent.getloops().isAbsolute(path);
+					isAbsolute = parent.getLoops().isAbsolute(path);
 				} catch (Exception e) {
 					//TODO assume is not absolute if it is not set - wont effect anything as there will be no iterations 
 					isAbsolute = false;
@@ -156,12 +157,12 @@ public class TreeDisplayer {
     }
 
     private void displayLoopLevelInfo(PathBasicBlock path, String indent, long numIterations, PathBasicBlock base) {
-        ArrayList<PathBasicBlock> loopPaths = path.getLoopPaths(base);
+        List<PathBasicBlock> loopPaths = path.getLoopPaths(base);
         if (loopPaths.size() > 0) {
             long totalIterations = 0;
             for (PathBasicBlock loopPath : loopPaths) {
                 try {
-					totalIterations += path.getloops().getLoopIterations(loopPath);
+					totalIterations += path.getLoops().getLoopIterations(loopPath);
 				} catch (Exception e) {
 					totalIterations += 0;
 				}

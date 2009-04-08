@@ -1,6 +1,6 @@
 package com.xmos.xta.rcp.nodes;
 
-import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -67,7 +67,7 @@ public class BlockNode extends Node {
         return "block";
     }
     
-    public HashSet<Integer> getPcsCovered(boolean isSelected) {
+    public Set<Integer> getPcsCovered(boolean isSelected) {
     	return m_block.getPcsCoveredThis();
     }
     
@@ -122,7 +122,7 @@ public class BlockNode extends Node {
 		}
 	}
 
-	public void getBlockIds(HashSet<Integer> ids) {
+	public void getBlockIds(Set<Integer> ids) {
 		ids.add(m_block.getBasicBlock().getId());
 	}
 }
