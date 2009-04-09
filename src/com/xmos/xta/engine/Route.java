@@ -352,7 +352,7 @@ public class Route {
 			
 			PathBasicBlock loopDestinationBlock = formsLoop(currentBasicBlock, nodeContext);
 			if (loopDestinationBlock!=null){
-				handelLoop(currentBasicBlock.getParent(), loopDestinationBlock);
+				handleLoop(currentBasicBlock.getParent(), loopDestinationBlock);
 				return;
 			}
 			
@@ -480,7 +480,7 @@ public class Route {
 		block.setStatus(BlockStatus.COMPLETE);
 	}
 
-	private void handelLoop(PathBasicBlock pathFormingLoop, PathBasicBlock loopDestinationBlock) {
+	private void handleLoop(PathBasicBlock pathFormingLoop, PathBasicBlock loopDestinationBlock) {
 		if(DEBUG) System.out.println(loopDestinationBlock + " forms a loop with " + pathFormingLoop);
 		//this must be true by design of the algorithm
 		assert(pathFormingLoop != null);

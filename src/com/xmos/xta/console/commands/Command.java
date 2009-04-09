@@ -115,14 +115,7 @@ public abstract class Command {
     		return -1;
     	}    	
     	
-    	int route = 0;
-    	
-    	try {
-			route = Integer.parseInt(routeId);
-		} catch (NumberFormatException e) {
-			//TODO
-		}
-    	
+    	int route = Integer.parseInt(routeId);
     	return route;
     }
 
