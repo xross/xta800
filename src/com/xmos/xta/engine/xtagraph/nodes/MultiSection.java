@@ -22,6 +22,14 @@ public class MultiSection extends Node {
 		m_jumpNode = jumpNode;
 	}
 	
+	public MultiSection(MultiSection ms) {
+		super();
+		m_options = ms.m_options;
+		m_selectedOption = ms.m_selectedOption;
+		m_jumpNode = ms.m_jumpNode;
+	}
+	
+	
 	public Collection<Node> getOptions(){
 		return m_options;
 	}
@@ -73,6 +81,10 @@ public class MultiSection extends Node {
 		} else {
 			return new HashSet<Integer>();
 		}
+	}
+
+	public Node clone() {
+		return new MultiSection(this);
 	}
 	
 	

@@ -27,9 +27,18 @@ public abstract class Node {
 		return "Node " + m_id;  
 	}
 	
-	public String toGraphVizString(){
+	public String graphVizLabel(){
 		return "Node" + m_id;  
 	}
+	/*
+	public String graphVizLinks(){
+		StringBuffer sb = new StringBuffer();
+		for(Node next : m_nextNodes){
+			sb.append("Node" + m_id + " -> Node" + next.m_id + ";\n");
+		}
+		return sb.toString();
+	}
+	*/
 	
 	public Set<Node> getNextNodes(){
 		return m_nextNodes;
@@ -51,6 +60,8 @@ public abstract class Node {
 		return getInstructions().size();
 	}
 	
+	public abstract Node clone();
+	
 	public abstract Set<Integer> getPCsCovered();
 	public abstract long getNumberCycles();
 	public abstract long getNumberFNOPS();
@@ -64,7 +75,5 @@ public abstract class Node {
 	 * returns list of instructions in order with the fnops inserted.
 	 */
 	public abstract List<XtaInstruction> getInstructionStream();
-	
-	
 	
 }

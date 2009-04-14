@@ -14,6 +14,15 @@ public class Block extends Node {
 	private List<XtaInstruction> m_fnops; 
 	private List<XtaInstruction> m_instructionStream;
 	
+	public Block(Block block){
+		super();
+		m_block = block.m_block;
+		m_instructionStream = block.m_instructionStream;
+	}
+	
+	public Block clone(){
+		return new Block(this);
+	}
 	
 	public Block(BasicBlock block){
 		super();
@@ -51,6 +60,18 @@ public class Block extends Node {
 			pcs.add(inst.getPc());
 		}
 		return pcs;
+	}
+
+	public String makeGraphVisLabels() {
+		return "Node" + m_id + "[label=\"Node "+ m_id + "\"];\n";
+	}
+
+	public String makeGraphVisLinks() {
+		StringBuffer sb = new StringBuffer();
+		for(Node next : getNextNodes()){
+			sb.append("Node" + m_id + " -> Node" + next.m_id+";\n");
+		}
+		return sb.toString();
 	}
 
 }

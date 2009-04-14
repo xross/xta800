@@ -49,8 +49,6 @@ public class MultiSectionPatternMatcher extends PatternMatcher {
 		
 		MultiSection ms = new MultiSection(sectionNodes, jumpNode);
 
-		System.out.println("made multi section " + ms);
-		System.out.println("going to the next " + endNode);
 		ms.addPrevNode(startNode);
 		ms.addNextNode(endNode);
 		

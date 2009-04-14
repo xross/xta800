@@ -16,6 +16,11 @@ public class Path extends Node {
 		m_nodes = nodes;
 	}
 
+	public Path(Path path) {
+		super();
+		m_nodes = path.m_nodes;
+	}
+
 	public List<XtaInstruction> getInstructionStream() {
 		List<XtaInstruction> list = new LinkedList<XtaInstruction>();
 		for(Node node : m_nodes){
@@ -60,5 +65,10 @@ public class Path extends Node {
 		}
 		return pcs;
 	}
+
+	public Node clone() {
+		return new Path(this);
+	}
+
 
 }

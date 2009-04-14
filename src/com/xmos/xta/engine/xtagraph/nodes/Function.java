@@ -16,5 +16,4 @@ public class Function extends Path {
 		return m_functionName;
 	}
 	
-	
 }

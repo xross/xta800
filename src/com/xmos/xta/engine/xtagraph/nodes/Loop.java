@@ -9,12 +9,21 @@ import com.xmos.xta.engine.XtaInstruction;
 
 public class Loop extends Node {
 	
-	List<AttachedLoop> m_loops;
+	private List<AttachedLoop> m_loops;
+	private Node m_base;
 	
-	public Loop(Node loop) {
+	public Loop(Loop loop){
+		super();
+		m_loops = loop.m_loops;
+		m_base = loop.m_base;
+	}
+	
+	
+	public Loop(Node loop, Node base) {
 		super();
 		m_loops = new ArrayList<AttachedLoop>();
 		m_loops.add(new AttachedLoop(loop));
+		m_base = base;
 	}
 	
 	public void addLoop(Node loop){
@@ -115,4 +124,11 @@ public class Loop extends Node {
 			m_iterations = count;
 		}
 	}
+
+	public Loop clone() {
+		//FIXME
+		return new Loop(this);
+	}
+
+
 }

@@ -1,7 +1,6 @@
 package com.xmos.xta.console.commands.Print;
 
 import java.util.LinkedList;
-import java.util.Vector;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.commands.Command;
