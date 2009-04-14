@@ -14,7 +14,7 @@ Route\(0\) path: receive_loop to receive_loop
     Complete paths: 1, Unresolved paths: 0
 
 Route\(1\) path: eop_detected to packet_start
-    Pass with 13 unknowns, Slack: 60.0ns, Required: 1240.0ns, Worst: 1180.0ns, Min Frequency: 380 Mhz
+    Pass with 13 unknowns, Slack: 140.0ns, Required: 1240.0ns, Worst: 1100.0ns, Min Frequency: 354 Mhz
     Complete paths: 4, Unresolved paths: 0
 
-Pass, Min Slack: 60.0ns, Min Frequency: 380 Mhz
+Pass, Min Slack: 140.0ns, Min Frequency: 354 Mhz

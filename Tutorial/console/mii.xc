@@ -90,6 +90,7 @@ void mii_rx_pins(chanend c_mii_rx)
 
         do
         {
+            #pragma xta label "do_loop"
             select
             {
                 #pragma xta endpoint "receive_loop" 
@@ -97,7 +98,7 @@ void mii_rx_pins(chanend c_mii_rx)
                 {
                     outuint(c_mii_rx, FRAME_DATA);
                     outuint(c_mii_rx, word);
-                    length+=4;
+                    length += 4;
                     crc32(crc, word, poly);
                     break;
                 }
@@ -121,24 +122,30 @@ void mii_rx_pins(chanend c_mii_rx)
                     outuint(c_mii_rx, FRAME_DATA);
                     outuint(c_mii_rx, time);
 
-                    if (endbytes == 0) {
+                    switch (endbytes) {
+                    case 0:
                         length += -4 + 0;
-                    } else if (endbytes == 3) {
+                        break;
+                    case 1:
+                        length += -4 + 1;
+                        tail = crc8shr(crc, tail, poly);
+                        break;
+                    case 2:
+                        length += -4 + 2;
+                        tail = crc8shr(crc, tail, poly);
+                        tail = crc8shr(crc, tail, poly);
+                        break;
+                    case 3:
                         length += -4 + 3;
                         tail = crc8shr(crc, tail, poly);
                         tail = crc8shr(crc, tail, poly);
                         tail = crc8shr(crc, tail, poly);
-                    } else if (endbytes == 2) {
-                        length += -4 + 2;
-                        tail = crc8shr(crc, tail, poly);
-                        tail = crc8shr(crc, tail, poly);
-                    } else if (endbytes==1) {
-                        length += -4 + 1;
-                        tail = crc8shr(crc, tail, poly);
-                    } else {
+                        break;
+                    default:
                         #pragma xta label "error_overflow"
                         mii_counter_rxeroverflow++;
                         clearbuf(p_mii_rxd);
+                        break;
                     }
 
                     outuint(c_mii_rx, END_FRAME);
