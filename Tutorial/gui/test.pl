@@ -12,8 +12,4 @@ if (!$noBuild) {
   rename("tutorial_gui.xe", "$genDir/tutorial_gui.xe");
 }
 system("@ARGV load $genDir/tutorial_gui.xe " .
-       "analyse function resetTable " .
-       "analyse function functionCalls " .
-       "analyse function main " .
-       "print completed_paths " .
-       "exit > $genDir/gui.txt 2>&1");
+       "source cmds.txt > $genDir/gui.txt 2>&1");
