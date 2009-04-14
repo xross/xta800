@@ -127,6 +127,8 @@ public class Engine {
 			int coreId = routeTiming.getCoreId();
 			if (coreId != m_coreId)
 				setCoreId(coreId);
+			
+			m_constraint = route.getConstraint();
 		}	
 		m_selectedRoute = route;
 		notify(Notifier.NOTIFY_SELECT_ROUTE, "");

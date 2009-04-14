@@ -150,7 +150,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			Reference endPoint = XtaNotifier.getInstance().getEndPoint();
 			updateText(endPoint, m_endPoint, m_endPointListener);
 			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_CONSTRAINT)) {
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_CONSTRAINT) || 
+				   event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
 			updateConstraint();
 			
 		}
