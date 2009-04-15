@@ -33,7 +33,6 @@ public class ScannerDisassembly extends RuleBasedScanner {
     private void processRegisters(Display display, List<IRule> rules) {
     	Color color = display.getSystemColor(SWT.COLOR_BLUE);
     	
-    	
         String[] keywords = {
         	"r0", "r1", "r2", "r3", 
         	"r4", "r5", "r6", "r7",

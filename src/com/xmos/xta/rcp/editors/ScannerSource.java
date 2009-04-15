@@ -61,8 +61,6 @@ public class ScannerSource extends RuleBasedScanner {
     private void processKeywords(Display display, List<IRule> rules) {
     	Color color = display.getSystemColor(SWT.COLOR_BLUE);
     	
-    	
-    	
         String[] keywords = {
             "auto", "else", "return", "union",
             "break", "enum", "short", "unsigned",

@@ -186,8 +186,6 @@ class InputSection {
 		m_index--;
 	}
 	
-
-	
 	public void setGrey(boolean b) {
 		m_grey = b;
 	}
@@ -197,7 +195,7 @@ class InputSection {
 	}
 	
 	public String getHeaderType() {
-		if(!isGrey()) {
+		if (!isGrey()) {
 			return m_headerType;
 		} else {
 			return XtaDocumentPartitioner.GREY;

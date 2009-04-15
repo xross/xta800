@@ -40,9 +40,10 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 	
 		partitionDocument(document, true);
 
-		m_regionTypes = new String[2];
+		m_regionTypes = new String[3];
 		m_regionTypes[0] = SOURCE;
 		m_regionTypes[1] = DISASSEMBLY;
+		m_regionTypes[2] = GREY;
 	}
 
 	public void partitionDocument(IDocument document, boolean buildDocument) {
@@ -51,33 +52,74 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 		
 		document.addPositionCategory(SECTION);
 		
-		int length =0;
-		for (InputSection inputSection : m_input.getSections()) {	
+		int previousOffset = 0;
+		String previousType = XtaDocumentPartitioner.GREY;
+		int documentLength = 0;
+		
+		if (m_input.getSections().size() > 0) {
+			previousType = m_input.getSections().get(0).getHeaderType();
+		}
+		
+		for (InputSection inputSection : m_input.getSections()) {
+			int numLines = inputSection.getLines().size();
+			String headerType = inputSection.getHeaderType();
 
-			int headerFrom = length;
-			String header = inputSection.getHeader().getLine() + "\n";
-			int subsectionBegining = length;
-			if(buildDocument) updateDocument(document, header);
-			length += header.length();
-			addTypedRegion(document, regionList, headerFrom, (headerFrom + header.length()), inputSection.getHeaderType());
-			
-			
-			//TODO make the partitioner partition in as few partitions as possible
-			for (InputLine line : inputSection.getLines()) {
-				int from = length;
-				String str = line.getLine() + "\n";
-				if(buildDocument) updateDocument(document, str);
-				length += str.length();
-				addTypedRegion(document, regionList, from, from + str.length(), line.getHeaderType());
+			// Adds the SOURCE region for the previous lines.
+			if (numLines > 0 || headerType != previousType) {
+				addTypedRegion(regionList, previousOffset, documentLength - previousOffset, previousType);
 			}
-			if(inputSection.getLines().size() > 0){
-				addPositionMarker(document, subsectionBegining, length);
+			
+			int headerFrom = documentLength;
+			String header = inputSection.getHeader().getLine() + "\n";
+			if (buildDocument) updateDocument(document, header);
+			documentLength += header.length();
+			
+			if (numLines > 0) {
+				addTypedRegion(regionList, headerFrom, header.length(), inputSection.getHeaderType());
+			}
+			
+			if (numLines > 0) {
+				documentLength = partitionLines(document, regionList, buildDocument, documentLength, inputSection);
+				if (buildDocument)
+					addPositionMarker(document, headerFrom, documentLength);
+			}
+			
+			if (numLines > 0) {
+				previousOffset = documentLength;
+			}
+			
+			if (headerType != previousType) {
+				previousType = headerType;
 			}
 		}
 
+		addTypedRegion(regionList, previousOffset, documentLength - previousOffset, previousType);
 		
 		m_regions = new TypedRegion[regionList.size()];
-		m_regions = regionList.toArray(m_regions);	
+		m_regions = regionList.toArray(m_regions);
+	}
+
+	private int partitionLines(IDocument document, List<TypedRegion> regionList, boolean buildDocument,
+			int documentLength, InputSection inputSection) {
+
+		int from = documentLength;
+		String previousType = inputSection.getLines().get(0).getHeaderType();
+		
+		for (InputLine line : inputSection.getLines()) {
+			String lineType = line.getHeaderType();
+			if (!previousType.equals(lineType)) {
+				addTypedRegion(regionList, from, documentLength - from, previousType);
+				previousType = lineType;
+				from = documentLength;
+			}
+
+			String str = line.getLine() + "\n";
+			if (buildDocument) updateDocument(document, str);
+			documentLength += str.length();
+			
+		}
+		addTypedRegion(regionList, from, documentLength - from, previousType);
+		return documentLength;
 	}
 
 	public void disconnect() {
@@ -118,7 +160,6 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 	    	}
 	    }
 	    
-	    
 		return null;
 	}
 
@@ -149,7 +190,7 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 		}				
 	}
 	private void addPositionMarker(IDocument document, int from, int to) {
-	    Position position = new Position(from, to-from);				
+	    Position position = new Position(from, to - from);				
 		try {
     	    document.addPosition(SECTION, position);		
 		} catch (Exception e) {
@@ -157,13 +198,11 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 		}				
 	}	
 	
-	private void addTypedRegion(IDocument document, List<TypedRegion> regionList, int from, int to, String type) {
-		
-		int length = to - from;
-		if (length > 0) {		
-		    regionList.add(new TypedRegion(from, length, type));
+	private void addTypedRegion(List<TypedRegion> regionList, int offset, int length, String type) {
+		if (length > 0) {
+		    regionList.add(new TypedRegion(offset, length, type));
 		}
-	}
+	}	
 	
 	
 	private TypedRegion getRegion(int offset) { 
@@ -214,10 +253,10 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 	
 	private boolean overlapsRegion(TypedRegion region, int offset, int length) {
 		int start = offset;
-		int end = offset + length;
+		int end = offset + length - 1;
 		
 		int regionStart = region.getOffset();
-		int regionEnd = region.getOffset() + region.getLength();
+		int regionEnd = region.getOffset() + region.getLength() - 1;
 		
         if (((start >= regionStart) && (start < regionEnd)) ||
             ((end >= regionStart) && (start < regionEnd)) || 
