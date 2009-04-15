@@ -116,11 +116,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    
 	    updateConstraint();
 	    
-	    Reference startPoint = XtaNotifier.getInstance().getStartPoint();					
-		updateText(startPoint, m_startPoint, m_startPointListener);
+	    updateStartPoint();
 
-		Reference endPoint = XtaNotifier.getInstance().getEndPoint();					
-		updateText(endPoint, m_endPoint, m_endPointListener);
+		updateEndPoint();
 	}
 	
 	private void setBackground(Composite composite) {
@@ -143,18 +141,30 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	        updateState();
 	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT)) {
-			Reference startPoint = XtaNotifier.getInstance().getStartPoint();					
-			updateText(startPoint, m_startPoint, m_startPointListener);
+			updateStartPoint();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT)) {
-			Reference endPoint = XtaNotifier.getInstance().getEndPoint();
-			updateText(endPoint, m_endPoint, m_endPointListener);
+			updateEndPoint();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_CONSTRAINT) || 
 				   event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
 			updateConstraint();
 			
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
+			updateStartPoint();
+			updateEndPoint();
+			
 		}
+	}
+
+	private void updateEndPoint() {
+		Reference endPoint = XtaNotifier.getInstance().getEndPoint();
+		updateText(endPoint, m_endPoint, m_endPointListener);
+	}
+
+	private void updateStartPoint() {
+		Reference startPoint = XtaNotifier.getInstance().getStartPoint();
+		updateText(startPoint, m_startPoint, m_startPointListener);
 	}
 	
 	private void updateConstraint() {

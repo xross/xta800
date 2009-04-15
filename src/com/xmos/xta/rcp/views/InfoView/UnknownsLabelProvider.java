@@ -14,14 +14,13 @@ public class UnknownsLabelProvider extends LabelProvider implements ITableLabelP
     private int[] m_columnWidths;
     private int[] m_columnAligmnments;
     
-    static final String BLOCKID = "Block Id";
     static final String PC      = "Pc";
     static final String REASON  = "Reason";
     
     public UnknownsLabelProvider() {
-    	m_columnNames = new String[] { BLOCKID, PC, REASON };
-    	m_columnWidths = new int[] { 100, 100, 500 };
-    	m_columnAligmnments = new int[] { SWT.LEFT, SWT.LEFT, SWT.LEFT };
+    	m_columnNames = new String[] { PC, REASON };
+    	m_columnWidths = new int[] { 100, 500 };
+    	m_columnAligmnments = new int[] { SWT.LEFT, SWT.LEFT };
     }
     
 	public Image getColumnImage(Object element, int columnIndex) {
@@ -35,9 +34,7 @@ public class UnknownsLabelProvider extends LabelProvider implements ITableLabelP
 		assert((columnIndex >= 0) && (columnIndex < m_columnNames.length));
 		
 		Unknown unknown = (Unknown)element;	
-		if (m_columnNames[columnIndex].equals(BLOCKID)) {
-			return "Block " + unknown.getBasicBlockId();
-		} else if (m_columnNames[columnIndex].equals(PC)) {
+		if (m_columnNames[columnIndex].equals(PC)) {
 			return String.format("0x%05x", unknown.getPc());
     	} else if (m_columnNames[columnIndex].equals(REASON)) {    		
 		    return unknown.getDescription();

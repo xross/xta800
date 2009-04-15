@@ -89,9 +89,7 @@ public class UnknownsViewer {
 			col.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
 					int colIndex = 0;
-					if (col.getText().equals(UnknownsLabelProvider.BLOCKID)) {
-						colIndex = 0;
-					} else if (col.getText().equals(UnknownsLabelProvider.PC)) {
+					if (col.getText().equals(UnknownsLabelProvider.PC)) {
 						colIndex = 1;
 					} else if (col.getText().equals(UnknownsLabelProvider.REASON)) {
 						colIndex = 2;
@@ -147,12 +145,9 @@ public class UnknownsViewer {
 			Unknown p2 = (Unknown) e2;
 			switch(field){
 			case 0:
-				int res0 = p1.getBasicBlockId() > p2.getBasicBlockId() ? 1 : -1;
-				return res0 * direction;
-			case 1:
 				int res2 = p1.getPc() > p2.getPc() ? 1 : -1;
 				return res2 * direction;
-			case 2:
+			case 1:
 				int res3 = p1.getPc() > p2.getPc() ? 1 : -1;
 				return res3 * direction;
 			default:

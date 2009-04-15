@@ -40,7 +40,6 @@ public class Summary extends Command {
     }
     
     private void displayOverallSummary(Console console, Engine engine) {
-		double minSlackTime = Double.MAX_VALUE;
 		double maxViolationTime = 0.0;
 		
 		int numFails = 0;
@@ -53,9 +52,8 @@ public class Summary extends Command {
 				
 			if (routeTiming.isTimingSpecified()) {			
 				if (routeTiming.passedTiming()) {
-					double slackTime = routeTiming.getSlackTime();
-					if (slackTime < minSlackTime) {
-						minSlackTime = slackTime;
+					int frequency = routeTiming.getMinFrequency();
+					if (frequency > minFrequency) {
 						minFrequency = routeTiming.getMinFrequency();
 					}
 				} else {
@@ -76,8 +74,8 @@ public class Summary extends Command {
 			    console.display(String.format("Fail, %d/%d, Max Violation: %.1fns\n", 
 			    		numFails, total, maxViolationTime));
 			} else {
-				console.display(String.format("Pass, Min Slack: %.1fns, Min Frequency: %d Mhz\n", 
-			    		minSlackTime, minFrequency));			
+				console.display(String.format("Pass, Min Frequency: %d Mhz\n", 
+			    		minFrequency));			
 			}
 		} else {
 		    console.display("Fail, Timing Unspecified\n");
