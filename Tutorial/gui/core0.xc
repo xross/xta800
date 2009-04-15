@@ -12,8 +12,8 @@ unsigned int readWord() {
   unsigned int data;
   unsigned int control;
   
-  controlPort :> control;
   data = partin(dataPort, 24);
+  controlPort :> control;
 
   return (control << 24 | data >> 8);
 }

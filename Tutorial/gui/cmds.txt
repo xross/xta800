@@ -1,0 +1,21 @@
+
+analyse path core0.xc:26 core0.xc:26
+set required - 0.5 mhz
+print completed_paths
+
+config proc 0 1
+analyse path core1.xc:84 core1.xc:84
+print completed_paths
+
+remove route 1
+
+set constraint !core1.xc:71
+analyse path core1.xc:84 core1.xc:84
+set loopmax - core1.xc:28 23
+set loop - core1.xc:31 8
+print completed_paths
+set required - 0.5 mhz
+
+print summary
+
+exit

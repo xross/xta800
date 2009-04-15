@@ -24,7 +24,7 @@ Route\(1\) function: test1
     Pass, Slack: \d+\.\d+ns, Required: \d+\.\d+ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
     Complete paths: 1, Unresolved paths: 0
 
-Pass, Min Slack: \d+\.\d+ns, Min Frequency: \d+ Mhz
+Pass, Min Frequency: \d+ Mhz
 Route\(0\) function: test0
     No Timing Specified
     Complete paths: 1, Unresolved paths: 0

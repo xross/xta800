@@ -24,14 +24,14 @@ TEST_INCLUDES  		= -I $(XUD_INC_DIR) \
 			  -I $(XUD_SRC_UIFM_DIR) \
 			  -I $(TEST_SRC_DIR) 
 
-BUILD_FLAGS   		= -Wall -O3 -D UIFM_MODE=2 -g -fxta-info
+BUILD_FLAGS   = -Wall -O3 -D UIFM_MODE=2 -g -fxta-info -target=$(TARGET)
 
 TEST_SRC_S 		= param 
 
 TEST_SRC_XC		= $(TEST_NAME) ep1_thread audio_init_audioBoard ep_thread0 XUD_DoEnumReqs 
 
 TARGET_DIR		= $(TEST_DIR)/bin
-TARGET    		= $(TARGET_DIR)/$(TEST_NAME).xe
+TARGET_FILE		= $(TARGET_DIR)/$(TEST_NAME).xe
 
 $(TEST_NAME).xe: all
 
@@ -44,16 +44,16 @@ buildxud:
 
 #TODO Remove XUD source files.  This is due to bug in liker not finding symbols in lib
 compile:
-	$(XCC) $(BUILD_FLAGS) $(TEST_INCLUDES) -o $(TARGET) \
+	$(XCC) $(BUILD_FLAGS) $(TEST_INCLUDES) -o $(TARGET_FILE) \
 		$(addprefix $(TEST_SRC_DIR)/, $(addsuffix .xc ,$(TEST_SRC_XC))) \
 		$(addprefix $(TEST_SRC_DIR)/, $(addsuffix .S ,$(TEST_SRC_S))) $(XUD_LIBS)  
 
 	   
 
 xedump:
-	xobjdump -D $(TARGET) > $(TARGET).txt
+	xobjdump -D $(TARGET_FILE) > $(TARGET_FILE).txt
 genxb:
-	xobjdump --strip $(TARGET)
+	xobjdump --strip $(TARGET_FILE)
 	-@echo ""
 	-@ls -all $(TARGET_DIR)/$(TEST_NAME).xb
 

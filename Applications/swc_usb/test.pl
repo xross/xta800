@@ -10,8 +10,7 @@ my $noBuild = shift(@ARGV);
 my $directory = "swc_usb";
 
 if (!$noBuild) {
-#make -f ./xud/build/Makefile &&
-    system(" make -f ./tests/audio/build/Makefile  >  $genDir/$directory.log 2>&1");
+    system(" xmake -f ./tests/audio/build/Makefile TARGET=$target >  $genDir/$directory.log 2>&1");
     system(" cp ./tests/audio/bin/audio.xe $genDir/test.xe");
 }
 
