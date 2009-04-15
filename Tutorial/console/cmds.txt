@@ -6,7 +6,7 @@ set required - 320 ns
 # This is the inter-frame gap path
 set constraint !do_loop && !error_overflow && !error_crc && !error_len && !error_nibble
 analyse path eop_detected packet_start
-set required - 1240 ns
+set required - 1520 ns
 
 print completed_paths
 print summary
