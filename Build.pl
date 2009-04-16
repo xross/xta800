@@ -149,6 +149,8 @@ sub DoClean
   system("$MAKE $MAKE_FLAGS clean");
   system("ant clean");
     die() if ($? != 0);
+  rmtree("bin");
+  mkdir("bin");
   chdir("$BUILDPATH") or die("oops");
 }
 
