@@ -18,45 +18,39 @@ public class PathPatternMatcher extends PatternMatcher {
 		//has more than one (or zero) entering edges and the end node has more then one 
 		//(or zero) exiting edges.
 		
+		
 		//grow forward
-		if(currentNode.getNextNodes().size() == 1) {
-			pathList.add(currentNode);
-			//currentNode = next;
-			currentNode = new LinkedList<Node>(currentNode.getNextNodes()).getFirst();
-			
-			while(currentNode.getNextNodes().size() == 1 
-					&& currentNode.getPrevNodes().size() == 1 && !pathList.contains(currentNode)) {
-				pathList.add(currentNode);
-				//currentNode = next;
-				currentNode = new LinkedList<Node>(currentNode.getNextNodes()).getFirst();
-			}
-		} else if(currentNode.getNextNodes().size() == 0){
-			pathList.add(currentNode);
-		}
 		
-		
-		//grow backwards
-		currentNode = startNode;
 		boolean done = false;
+		pathList.add(currentNode);
 		
 		while(!done){
-			if(currentNode.getPrevNodes().size() == 1){
-				//if the previous node has one out then add it and make it the current node
-				Node previousNode = new LinkedList<Node>(currentNode.getPrevNodes()).getFirst();
-				if(previousNode.getNextNodes().size() == 1 && !pathList.contains(previousNode)) {
-					pathList.add(previousNode);
-					currentNode = previousNode;
+			if(currentNode.getNextNodes().size() == 1) {
+				Node next = new LinkedList<Node>(currentNode.getNextNodes()).getFirst();
+				if(next.getPrevNodes().size() == 1){
+					pathList.add(next);
+					currentNode = next;
 				} else {
 					done = true;
-				}		
-			} else if(currentNode.getPrevNodes().size() == 0){
-				if(pathList.isEmpty())
-					pathList.add(currentNode);
-				else {
-					if(!pathList.contains(currentNode))
-						pathList.addFirst(currentNode);
 				}
+			} else {
 				done = true;
+			}
+		}
+		
+		done = false;
+		
+		currentNode = startNode;
+		
+		while(!done){
+			if(currentNode.getPrevNodes().size() == 1) {
+				Node prev = new LinkedList<Node>(currentNode.getPrevNodes()).getFirst();
+				if(prev.getNextNodes().size() == 1){
+					pathList.addFirst(prev);
+					currentNode = prev;
+				} else {
+					done = true;
+				}
 			} else {
 				done = true;
 			}
@@ -79,18 +73,22 @@ public class PathPatternMatcher extends PatternMatcher {
 		
 		for(Node prev : startNodeInPath.getPrevNodes()){
 			path.addPrevNode(prev);
-			prev.getNextNodes().remove(startNodeInPath);
+			if(!prev.getNextNodes().remove(startNodeInPath)){
+				System.out.println("####################### this is bad ############################################################");
+			}
 			prev.addNextNode(path);
 		}
 		for(Node next : endNodeInPath.getNextNodes()){
 			path.addNextNode(next);
-			next.getPrevNodes().remove(endNodeInPath);
+			if(!next.getPrevNodes().remove(endNodeInPath)){
+				System.out.println("######################## this is bad ###########################################################");
+			}
+			
 			next.addPrevNode(path);
 		}
-
+		
 		workingSet.removeAll(pathList);
 		workingSet.add(path);
-		System.out.println("adding path " + pathList);
 	}
 	
 	

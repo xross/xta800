@@ -26,6 +26,15 @@ public class Loop extends Node {
 		m_base = base;
 	}
 	
+	public Loop(Set<Node> loops, Node base) {
+		super();
+		m_loops = new ArrayList<AttachedLoop>();
+		for(Node loop : loops){
+			m_loops.add(new AttachedLoop(loop));
+		}
+		m_base = base;
+	}
+	
 	public void addLoop(Node loop){
 		m_loops.add(new AttachedLoop(loop));
 	}

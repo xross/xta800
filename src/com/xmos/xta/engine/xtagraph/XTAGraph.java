@@ -11,8 +11,8 @@ import java.util.Set;
 import com.xmos.xta.engine.BasicBlock;
 import com.xmos.xta.engine.xtagraph.nodes.Block;
 import com.xmos.xta.engine.xtagraph.nodes.Node;
-import com.xmos.xta.engine.xtagraph.patterns.FunctionPatternMatcher;
 import com.xmos.xta.engine.xtagraph.patterns.LoopPatternMatcher;
+import com.xmos.xta.engine.xtagraph.patterns.LoopPeelingTransformer;
 import com.xmos.xta.engine.xtagraph.patterns.MultiSectionPatternMatcher;
 import com.xmos.xta.engine.xtagraph.patterns.PathPatternMatcher;
 import com.xmos.xta.engine.xtagraph.patterns.PatternMatcher;
@@ -60,10 +60,12 @@ public class XTAGraph {
 		
 		List<PatternMatcher> patternMatchers = new ArrayList<PatternMatcher>();
 		
+		patternMatchers.add(new SelfLoopTransformer());
+		
 		//these are all the basic units with the exception of par
 		patternMatchers.add(new LoopPatternMatcher());
 		patternMatchers.add(new MultiSectionPatternMatcher());
-		patternMatchers.add(new FunctionPatternMatcher());
+		//patternMatchers.add(new FunctionPatternMatcher());
 		/*
 		 * still needs
 		 * 	-non-trivial next block, i.e. when you both jump and don't jump to the next block
@@ -71,6 +73,8 @@ public class XTAGraph {
 		 */
 		
 		
+		patternMatchers.add(new PathPatternMatcher());
+		patternMatchers.add(new LoopPeelingTransformer());
 
 		//these are all the graph transformation matchers
 		/*
@@ -80,7 +84,7 @@ public class XTAGraph {
 		 * 	-function call reconstruction
 		 * 	
 		 */
-
+		printGraph(workingSet);
 		
 		while(working){
 			working = false;
@@ -90,45 +94,28 @@ public class XTAGraph {
 				for(PatternMatcher pm : patternMatchers){
 					if(pm.isMatch(node, workingSet)){
 						working = true;
+						printGraph(workingSet);
 						break;
 					}
 				}
 			}
-
+			
 		}
-		System.out.println("digraph g {");
+	}
+
+
+
+	private static int graphcount;
+	private void printGraph(Set<Node> workingSet) {
+		System.out.println("digraph g" + graphcount++ +" {");
+		
 		for(Node node : workingSet){
 			for(Node next : node.getNextNodes()){
 				System.out.println(node.graphVizLabel() + " -> " + next.graphVizLabel() +";");
 			}
 		}
-		System.out.println("};");
-		patternMatchers.add(new SelfLoopTransformer());
-		//patternMatchers.add(new PathPatternMatcher());
-		working = true;
-		while(working){
-			working = false;
-			Iterator<Node> itt = workingSet.iterator();
-			while(!working && itt.hasNext()){
-				Node node = itt.next();
-				for(PatternMatcher pm : patternMatchers){
-					if(pm.isMatch(node, workingSet)){
-						working = true;
-						break;
-					}
-				}
-			}
-
-		}
 		
-		System.out.println("digraph g {");
-		for(Node node : workingSet){
-			for(Node next : node.getNextNodes()){
-				System.out.println(node.graphVizLabel() + " -> " + next.graphVizLabel() +";");
-			}
-		}
 		System.out.println("};");
-		
 	}
 
 

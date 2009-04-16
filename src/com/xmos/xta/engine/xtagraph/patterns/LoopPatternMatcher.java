@@ -1,20 +1,63 @@
 package com.xmos.xta.engine.xtagraph.patterns;
 
+import java.util.HashSet;
 import java.util.Set;
-
+import com.xmos.xta.engine.xtagraph.nodes.Loop;
 import com.xmos.xta.engine.xtagraph.nodes.Node;
 
-public class LoopPatternMatcher extends PatternMatcher{
+public class LoopPatternMatcher extends PatternMatcher {
 
-	public boolean isMatch(Node node, Set<Node> workingSet) {
+	public boolean isMatch(Node currentNode, Set<Node> workingSet) {
+
+		// a loop pattern is when one or more nodes are doubly attached to a
+		// single node
+
+		Set<Node> intersection = new HashSet<Node>(currentNode.getNextNodes());
+
+		if(currentNode.getPrevNodes().size() < 2 || currentNode.getNextNodes().size() < 2) return false;
 		
-		// a loop pattern is when one or more nodes are doubly attached to a single node
-		
-		
-		
-		
-		
+		intersection.retainAll(currentNode.getPrevNodes());
+
+		boolean allLoopsResolved = true;
+
+		if (intersection.size() > 0) {
+			for (Node loop : intersection) {
+				if (loop.getNextNodes().size() != 1 || !loop.getNextNodes().contains(currentNode) ) {
+					allLoopsResolved = false;
+				}
+			}
+			if (allLoopsResolved) {
+				updateGraph(intersection, workingSet, currentNode);
+				return true;
+			} else {
+				return false;
+			}
+
+		}
 		return false;
+
 	}
 
+	protected void updateGraph(Set<Node> intersection, Set<Node> workingSet, Node base) {
+
+		Loop loop = new Loop(intersection, base);
+		
+		for (Node prev : base.getPrevNodes()) {
+			if(!intersection.contains(prev)){
+				loop.addPrevNode(prev);
+				prev.getNextNodes().remove(base);
+				prev.addNextNode(loop);
+			}
+		}
+		for (Node next : base.getNextNodes()) {
+			if(!intersection.contains(next)){
+				loop.addNextNode(next);
+				next.getPrevNodes().remove(base);
+				next.addPrevNode(loop);
+			}
+		}
+		workingSet.removeAll(intersection);
+		workingSet.remove(base);
+		workingSet.add(loop);
+	}
 }
