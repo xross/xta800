@@ -1,5 +1,6 @@
 package com.xmos.xta.engine.xtagraph.nodes;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -70,5 +71,11 @@ public class Path extends Node {
 		return new Path(this);
 	}
 
-
+	public Collection<Node> getContaintedNodes() {
+		Collection<Node> containedNodes = new HashSet<Node> ();
+		for(Node loop: m_nodes){
+			containedNodes.addAll(loop.getContaintedNodes());
+		}
+		return containedNodes;
+	}
 }

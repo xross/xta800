@@ -1,5 +1,6 @@
 package com.xmos.xta.engine.xtagraph.nodes;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +19,11 @@ public class Block extends Node {
 		super();
 		m_block = block.m_block;
 		m_instructionStream = block.m_instructionStream;
+	}
+	
+	//this is only used for verification
+	public Block(){
+		super();
 	}
 	
 	public Block clone(){
@@ -72,6 +78,12 @@ public class Block extends Node {
 			sb.append("Node" + m_id + " -> Node" + next.m_id+";\n");
 		}
 		return sb.toString();
+	}
+
+	public Collection<Node> getContaintedNodes() {
+		Collection<Node> containedNodes = new HashSet<Node> ();
+		containedNodes.add(this);
+		return containedNodes;
 	}
 
 }

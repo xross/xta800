@@ -1,6 +1,7 @@
 package com.xmos.xta.engine.xtagraph.nodes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -137,6 +138,17 @@ public class Loop extends Node {
 	public Loop clone() {
 		//FIXME
 		return new Loop(this);
+	}
+
+
+
+	public Collection<Node> getContaintedNodes() {
+		Collection<Node> containedNodes = new HashSet<Node> ();
+		containedNodes.addAll(m_base.getContaintedNodes());
+		for(AttachedLoop loop: m_loops){
+			containedNodes.addAll(loop.getLoop().getContaintedNodes());
+		}
+		return containedNodes;
 	}
 
 

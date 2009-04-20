@@ -1,5 +1,6 @@
 package com.xmos.xta.engine.xtagraph.nodes;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -75,5 +76,7 @@ public abstract class Node {
 	 * returns list of instructions in order with the fnops inserted.
 	 */
 	public abstract List<XtaInstruction> getInstructionStream();
+	
+	public abstract Collection<Node> getContaintedNodes();
 	
 }

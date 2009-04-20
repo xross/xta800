@@ -86,6 +86,14 @@ public class MultiSection extends Node {
 	public Node clone() {
 		return new MultiSection(this);
 	}
+
+	public Collection<Node> getContaintedNodes() {
+		Collection<Node> containedNodes = new HashSet<Node> ();
+		for(Node loop: m_options){
+			containedNodes.addAll(loop.getContaintedNodes());
+		}
+		return containedNodes;
+	}
 	
 	
 }

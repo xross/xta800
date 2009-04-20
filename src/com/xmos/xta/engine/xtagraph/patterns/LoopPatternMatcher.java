@@ -28,7 +28,7 @@ public class LoopPatternMatcher extends PatternMatcher {
 			}
 			if (allLoopsResolved) {
 				
-				System.out.println("#for node " + currentNode + " found " + intersection + " as the intersection");
+				//System.out.println("#for node " + currentNode + " found " + intersection + " as the intersection");
 				updateGraph(intersection, workingSet, currentNode);
 				return true;
 			} else {

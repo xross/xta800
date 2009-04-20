@@ -1,5 +1,6 @@
 package com.xmos.xta.engine.xtagraph.nodes;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -39,6 +40,12 @@ public class PseudoFunction extends Node {
 
 	public Node clone() {
 		return new PseudoFunction();
+	}
+
+	@Override
+	public Collection<Node> getContaintedNodes() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

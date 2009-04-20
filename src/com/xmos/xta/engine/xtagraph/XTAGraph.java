@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import com.xmos.xta.engine.BasicBlock;
 import com.xmos.xta.engine.xtagraph.nodes.Block;
@@ -15,7 +14,6 @@ import com.xmos.xta.engine.xtagraph.nodes.Node;
 import com.xmos.xta.engine.xtagraph.patterns.LoopPatternMatcher;
 import com.xmos.xta.engine.xtagraph.patterns.LoopPeelingTransformer;
 import com.xmos.xta.engine.xtagraph.patterns.MultiSectionPatternMatcher;
-import com.xmos.xta.engine.xtagraph.patterns.MultiSectionTransformer;
 import com.xmos.xta.engine.xtagraph.patterns.PathPatternMatcher;
 import com.xmos.xta.engine.xtagraph.patterns.PatternMatcher;
 import com.xmos.xta.engine.xtagraph.patterns.SelfLoopTransformer;
@@ -111,13 +109,13 @@ public class XTAGraph {
 				for(PatternMatcher pm : patternMatchers){
 					if(pm.isMatch(node, workingSet)){
 						working = true;
-						printGraph(workingSet);
+						
 						break;
 					}
 				}
 			}
 		}
-		
+		printGraph(workingSet);
 	}
 
 
@@ -131,7 +129,7 @@ public class XTAGraph {
 				System.out.println(node.graphVizLabel() + " -> " + next.graphVizLabel() +";");
 			}
 		}
-		
+
 		System.out.println("};");
 	}
 
