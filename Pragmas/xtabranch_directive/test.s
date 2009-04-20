@@ -14,7 +14,7 @@ main:
   ldc r0, 0x0
   ldc r0, 0x0
 
-.xtabranch main, Ltarget1, Ltarget2, Ltarget3, Ltarget4
+.xtabranch Ltarget1, Ltarget2, Ltarget3, Ltarget4
   bau r1
 
 Ltarget1:
