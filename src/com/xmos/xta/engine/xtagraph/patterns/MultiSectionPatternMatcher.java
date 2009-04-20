@@ -12,7 +12,7 @@ import com.xmos.xta.engine.xtagraph.nodes.Node;
 public class MultiSectionPatternMatcher extends PatternMatcher {
 
 
-	public boolean isMatch(Node node, Set<Node> workingSet) {
+	 public boolean isMatch(Node node, Set<Node> workingSet) {
 		
 		if(node.getNextNodes().size()  < 2){
 			//return false;

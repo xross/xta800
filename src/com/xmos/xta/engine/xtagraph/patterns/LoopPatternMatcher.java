@@ -14,7 +14,7 @@ public class LoopPatternMatcher extends PatternMatcher {
 
 		Set<Node> intersection = new HashSet<Node>(currentNode.getNextNodes());
 
-		if(currentNode.getPrevNodes().size() < 2 || currentNode.getNextNodes().size() < 2) return false;
+		//if(currentNode.getPrevNodes().size() < 2 || currentNode.getNextNodes().size() < 2) return false;
 		
 		intersection.retainAll(currentNode.getPrevNodes());
 
@@ -22,11 +22,13 @@ public class LoopPatternMatcher extends PatternMatcher {
 
 		if (intersection.size() > 0) {
 			for (Node loop : intersection) {
-				if (loop.getNextNodes().size() != 1 || !loop.getNextNodes().contains(currentNode) ) {
+				if (loop.getNextNodes().size() != 1 || !loop.getNextNodes().contains(currentNode) || loop.getPrevNodes().size() != 1) {
 					allLoopsResolved = false;
 				}
 			}
 			if (allLoopsResolved) {
+				
+				System.out.println("#for node " + currentNode + " found " + intersection + " as the intersection");
 				updateGraph(intersection, workingSet, currentNode);
 				return true;
 			} else {

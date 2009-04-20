@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import com.xmos.xta.engine.xtagraph.nodes.Loop;
 import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public class LoopPeelingTransformer extends PatternMatcher {
@@ -20,9 +18,50 @@ public class LoopPeelingTransformer extends PatternMatcher {
 		
 
 		followNode(currentNode, currentNode, loops, new LinkedList<Node>());
+		if(loops.size() == 0) return false;
+		
+		System.out.println(currentNode + " has as its loops: ");
+		for(List<Node> loop : loops){
+			System.out.print("[");
+			for(Node node : loop){
+				if(node.getNextNodes().size() > 1){
+					System.out.print("*" + node + " ");
+				} else {
+					System.out.print(" " + node + " ");
+				}
+				
+			}
+			System.out.println("]");
+		}
+		System.out.println();
+		
+		//never split the header
+		
+		if(loops.size() == 1){
+			//choose one of the nodes with more then one loop exit to be the loop header
+			
+			
+			
+			
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		//if there are multiple ways through the loop then it is not ready.
-
+/*
 		if(loops.size() == 1 ){
 			//now identify the farthest entry to the loop to the currentNode
 			List<Node> loop = loops.getFirst();
@@ -39,6 +78,12 @@ public class LoopPeelingTransformer extends PatternMatcher {
 					break;
 				}
 			}
+			
+			if(connectionNode == null){
+				System.out.println("connectionNode problem");
+			}
+			
+			
 			Collections.reverse(loop);
 			
 			
@@ -73,58 +118,44 @@ public class LoopPeelingTransformer extends PatternMatcher {
 				}
 			}
 			
-			/*
-			 * in the direction of the loop we have to find the closest loop entry from an out side source
-			 */
-			/*
 			for(Node loopNode : loop){
 				if(loopNode != connectionNode && loopEntryNodes.contains(loopNode)) {
-					//System.out.println("this loop needs peeling from " + loopNode + " to the connectionNode");
-					
 					int breakIndex = loop.indexOf(loopNode);
 					List<Node> nodesToPeel = loop.subList(breakIndex, loop.size());
-					//System.out.println(nodesToPeel);
+					if(loop.subList(breakIndex, loop.size()).size() == 0){
+						System.out.println("eek");
+					}
 					
-					break;
-					//unpeelForwardGraph(connectionNode, loop.get(breakIndex-1), nodesToPeel, workingSet);
-					
-					//return true;
-				}
-			}
-			*/
-			
-			Collections.reverse(loop);
-			for(Node loopNode : loop){
-				if(loopNode != connectionNode && loopExitNodes.contains(loopNode)) {
-					//System.out.println("this loop needs peeling from " + loopNode + " to the connectionNode");
-					Collections.reverse(loop);
-					int breakIndex = loop.indexOf(loopNode);
-					List<Node> nodesToPeel = loop.subList(1, breakIndex+1);
-					//System.out.println(nodesToPeel);
-					
-					
-					unpeelBackwardGraph(connectionNode, loop.get(breakIndex+1), nodesToPeel, workingSet);
-					
+					unpeelForwardGraph(connectionNode, loop.get((breakIndex+1)%loop.size()), nodesToPeel, workingSet, loop);
 					return true;
 				}
 			}
-			
-			//System.out.println();
+					
+			Collections.reverse(loop);
+			for(Node loopNode : loop){
+				if(loopNode != connectionNode && loopExitNodes.contains(loopNode)) {
+					Collections.reverse(loop);
+					int breakIndex = loop.indexOf(loopNode);
+					
+					if(loop.subList(1, breakIndex+1).size() == 0){
+						System.out.println("eek");
+					}
+					
+					List<Node> nodesToPeel = loop.subList(1, breakIndex+1);
+					unpeelBackwardGraph(connectionNode, loop.get((breakIndex+1)%loop.size()), nodesToPeel, workingSet);
+					return true;
+				}
+			}
+	
 		}
 		
-		
+		*/
 		return false;
 	}
-	
+	/*
 	protected void unpeelBackwardGraph(Node connectionNode, Node startOfBreak, List<Node> nodesToPeel, Set<Node> workingSet) {
 		//break the connection between startOfBreak and the first of the nodes to peel
 		Node endOfOldLoop = nodesToPeel.get(nodesToPeel.size() -1);
-		
-		//System.out.println("start of break : " + startOfBreak);
-		//System.out.println("end of loop    : " + endOfOldLoop);
-		//System.out.println("connectionNode: "+ connectionNode);
-		//System.out.println("nodes to peel: " + nodesToPeel);
-		
 		
 		Node current = connectionNode;
 		
@@ -170,68 +201,59 @@ public class LoopPeelingTransformer extends PatternMatcher {
 		startOfBreak.getPrevNodes().remove(endOfOldLoop);
 		workingSet.addAll(newNodes);
 		
-		
-		/*
-		endOfOldLoop.getPrevNodes().remove(startOfBreak);
-		startOfBreak.getNextNodes().remove(endOfOldLoop);
+	}
+	
+	
+	protected void unpeelForwardGraph(Node connectionNode, Node startOfBreak, List<Node> nodesToPeel, Set<Node> workingSet, List<Node> loop) {
 		
 
-		Collection<Node> newNodes = new HashSet<Node>();
-		Node prev = startOfBreak;
-		for(Node newPath : nodesToPeel){
-			Node newNode = newPath.clone();
-			newNodes.add(newNode);
-			newNode.addPrevNode(prev);
-			prev.addNextNode(newNode);
-			prev = newNode;
-		}
-		connectionNode.addPrevNode(prev);
-		prev.addNextNode(connectionNode);
-		workingSet.addAll(newNodes);
-		*/
-	}
-	
-	
-	protected void unpeelForwardGraph(Node connectionNode, Node startOfBreak, List<Node> nodesToPeel, Set<Node> workingSet) {
-		//break the connection between startOfBreak and the first of the nodes to peel
-		Node endOfOldLoop = nodesToPeel.get(nodesToPeel.size() -1);
+		//as new nodes are being created all the ins to the old ones should now point to the new ones
 		
-		endOfOldLoop.getPrevNodes().remove(startOfBreak);
-		startOfBreak.getNextNodes().remove(endOfOldLoop);
+		//but all the outs of the old ones should be duplicated on to the new ones.
 		
-		/*
-		 * now make a new path from the one we just disconnected
-		 */
+		Node previous = null;
 		Collection<Node> newNodes = new HashSet<Node>();
-		Node prev = startOfBreak;
-		for(Node newPath : nodesToPeel){
-			Node newNode = newPath.clone();
+		for(Node peel : nodesToPeel){
+			Node newNode = peel.clone();
 			newNodes.add(newNode);
-			newNode.addPrevNode(prev);
-			prev.addNextNode(newNode);
-			prev = newNode;
-		}
-		connectionNode.addPrevNode(prev);
-		prev.addNextNode(connectionNode);
-		workingSet.addAll(newNodes);
-	}
-	
-	
-	
-	private void followNode(Node node, Node startNode, Collection<List<Node>> loops, List<Node> currentList){
-		for(Node next : node.getNextNodes()){
-			List<Node> newList = new LinkedList<Node>(currentList);
-			newList.add(next);
-			if(next == startNode){
-				//we have found a loop
-				loops.add(newList);
-			} else {
-				
-				if(!currentList.contains(next))
-					followNode(next, startNode, loops, newList);
+			
+			Collection<Node> toRemove = new HashSet<Node>();
+			for(Node prev : peel.getPrevNodes()){
+				if(!loop.contains(prev)){
+					
+					newNode.addPrevNode(prev);
+					prev.addNextNode(newNode);
+					
+					prev.getNextNodes().remove(peel);
+					toRemove.add(prev);
+				}
 			}
+			if(previous != null){
+				previous.addNextNode(newNode);
+				newNode.addPrevNode(previous);
+			}
+			previous = newNode;
+			
+			peel.getPrevNodes().removeAll(toRemove);
+		}
+		previous.addNextNode(connectionNode);
+		connectionNode.addPrevNode(previous);
+		workingSet.addAll(newNodes);
+	}
+	*/
+	private void followNode(Node node, Node startNode, Collection<List<Node>> loops, List<Node> currentList){
+		//if(loops.size() > 1 ) return;
+		for(Node next : node.getNextNodes()){
+			if (currentList.contains(next))
+				continue;
+			currentList.add(next);
+			if(next == startNode){
+				loops.add(new LinkedList<Node>(currentList));
+			} else {
+				followNode(next, startNode, loops, currentList);
+			}
+			currentList.remove(currentList.size()-1);
 		}
 	}
-	
 	
 }

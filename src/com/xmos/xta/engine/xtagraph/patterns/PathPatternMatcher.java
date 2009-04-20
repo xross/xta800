@@ -19,8 +19,49 @@ public class PathPatternMatcher extends PatternMatcher {
 		//(or zero) exiting edges.
 		
 		
-		//grow forward
 		
+		pathList.add(currentNode);
+		boolean finished = false;
+		while(!finished){
+			if(currentNode.getNextNodes().size() == 1){
+				Node nextNode = new LinkedList<Node>(currentNode.getNextNodes()).getFirst();
+				if(nextNode.getPrevNodes().size() == 1 && !nextNode.getNextNodes().contains(currentNode)){
+					pathList.add(nextNode);
+					currentNode = nextNode;
+				} else {
+					finished = true;
+				}
+			} else {
+				finished = true;
+			}
+		}
+		currentNode = startNode;
+		finished = false;
+		while(!finished){
+			if(currentNode.getPrevNodes().size() == 1){
+				Node prevNode = new LinkedList<Node>(currentNode.getPrevNodes()).getFirst();
+				if(prevNode.getNextNodes().size() == 1 && !prevNode.getPrevNodes().contains(currentNode)){
+					pathList.addFirst(prevNode);
+					currentNode = prevNode;
+				} else {
+					finished = true;
+				}
+			} else {
+				finished = true;
+			}
+		}
+		if(pathList.size() > 1){
+			
+		//	System.out.println("# starting with " + startNode);
+		//	System.out.println("# found a path of " + pathList);
+			
+			updateGraph(pathList, workingSet);
+			return true;
+		} else {
+			return false;
+		}
+		//grow forward
+		/*
 		boolean done = false;
 		pathList.add(currentNode);
 		
@@ -62,10 +103,11 @@ public class PathPatternMatcher extends PatternMatcher {
 		} else {
 			return false;
 		}
+		*/
 	}
 
 	protected void updateGraph(LinkedList<Node> pathList, Set<Node> workingSet) {
-		
+		//System.out.println("#have found a path of " + pathList);
 		Path path = new Path(pathList);
 		
 		Node startNodeInPath = pathList.getFirst();

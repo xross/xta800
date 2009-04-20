@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import com.xmos.xta.engine.BasicBlock;
 import com.xmos.xta.engine.xtagraph.nodes.Block;
@@ -14,6 +15,7 @@ import com.xmos.xta.engine.xtagraph.nodes.Node;
 import com.xmos.xta.engine.xtagraph.patterns.LoopPatternMatcher;
 import com.xmos.xta.engine.xtagraph.patterns.LoopPeelingTransformer;
 import com.xmos.xta.engine.xtagraph.patterns.MultiSectionPatternMatcher;
+import com.xmos.xta.engine.xtagraph.patterns.MultiSectionTransformer;
 import com.xmos.xta.engine.xtagraph.patterns.PathPatternMatcher;
 import com.xmos.xta.engine.xtagraph.patterns.PatternMatcher;
 import com.xmos.xta.engine.xtagraph.patterns.SelfLoopTransformer;
@@ -33,6 +35,12 @@ public class XTAGraph {
 	
 	
 	private void decompose(){
+		
+		//Collection<Node> reachable = new HashSet<Node>();
+		
+		
+		
+		
 		
 		//remove all unreachable basic blocks
 		for(BasicBlock b : nodes){
@@ -63,8 +71,12 @@ public class XTAGraph {
 		patternMatchers.add(new SelfLoopTransformer());
 		
 		//these are all the basic units with the exception of par
-		patternMatchers.add(new LoopPatternMatcher());
+		
+		
+		
 		patternMatchers.add(new MultiSectionPatternMatcher());
+		patternMatchers.add(new LoopPatternMatcher());
+		
 		//patternMatchers.add(new FunctionPatternMatcher());
 		/*
 		 * still needs
@@ -74,8 +86,14 @@ public class XTAGraph {
 		
 		
 		patternMatchers.add(new PathPatternMatcher());
+		
 		patternMatchers.add(new LoopPeelingTransformer());
-
+		//patternMatchers.add(new MultiSectionTransformer());
+		
+		
+		
+		
+		
 		//these are all the graph transformation matchers
 		/*
 		 * still need 
@@ -85,7 +103,6 @@ public class XTAGraph {
 		 * 	
 		 */
 		printGraph(workingSet);
-		
 		while(working){
 			working = false;
 			Iterator<Node> itt = workingSet.iterator();
@@ -99,8 +116,8 @@ public class XTAGraph {
 					}
 				}
 			}
-			
 		}
+		
 	}
 
 
