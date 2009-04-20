@@ -149,6 +149,11 @@ sub DoClean
   system("$MAKE $MAKE_FLAGS clean");
   system("ant clean");
     die() if ($? != 0);
+
+  SetupVars();
+  unlink("$TOOLS_XTA/bin/$target");
+  rmtree("$TOOLS_XTA/bin/xta_$platform");
+
   chdir("$BUILDPATH") or die("oops");
 }
 
