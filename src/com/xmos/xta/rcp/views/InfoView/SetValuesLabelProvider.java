@@ -35,7 +35,7 @@ public class SetValuesLabelProvider extends LabelProvider implements ITableLabel
 		
 		Unknown unknown = (Unknown)element;	
 		if (m_columnNames[columnIndex].equals(PC)) {
-			return String.format("0x%08x", unknown.getPc());
+			return String.format("0x%05x", unknown.getPc());
     	} else if (m_columnNames[columnIndex].equals(DESC)) {    		
 		    return unknown.getDescription();
 	    }		

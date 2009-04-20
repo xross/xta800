@@ -293,7 +293,7 @@
             isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
             label="Stop"
             overviewRulerPreferenceKey="highlight.endpoint.rulers.overview"
-            overviewRulerPreferenceValue="false"
+            overviewRulerPreferenceValue="true"
             presentationLayer="5"
             showInNextPrevDropdownToolbarAction="false"
             showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
