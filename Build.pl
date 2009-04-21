@@ -197,12 +197,10 @@ sub DoInstall
   SetupVars();
 
   XmosBuildLib::InstallFile("$DOMAIN", "${BIN}", "xta.exe");
-  XmosBuildLib::InstallPatchFile("$DOMAIN", "${BIN}", "xta.exe", "bin");
-  #XmosBuildLib::InstallReleaseFile("$DOMAIN", "${BIN}", "xta.exe", "bin");
+  XmosBuildLib::InstallReleaseFile("$DOMAIN", "${BIN}", "xta.exe", "bin");
 
   XmosBuildLib::InstallFile("$DOMAIN", "lib", "xta.jar");
-  XmosBuildLib::InstallPatchFile("$DOMAIN", "lib", "xta.jar", "bin");
-  #XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xta.jar", "bin");
+  XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xta.jar", "bin");
 
   XmosBuildLib::InstallFile("$DOMAIN", "bin", "$target");
 
@@ -214,24 +212,23 @@ sub DoInstall
   rename("xta_$platform", "xta_bin")
     or die("Unable to rename xta_$platform to: xta_bin\n");
 
-  XmosBuildLib::InstallPatchFile("$DOMAIN", "bin", "$target", ".");
+  XmosBuildLib::InstallReleaseFile("$DOMAIN", "bin", "$target", ".");
 
   # Unzips the zip file..
-  chdir("$INSTALLPATH/External/Patch") 
-    or die("Unable to chdir to: $INSTALLPATH/External/Patch\n");
+  chdir("$INSTALLPATH/External/Product") 
+    or die("Unable to chdir to: $INSTALLPATH/External/Product\n");
   system("unzip -q -o $target");
   rmtree("xta_bin");
   rename("xta_$platform", "xta_bin")
     or die("Unable to rename xta_$platform to: xta_bin\n");
   unlink("$target");
 
-  XmosBuildLib::InstallPatchFile("$DOMAIN", ".", "xtagui.ini", "xta_bin");
+  XmosBuildLib::InstallReleaseFile("$DOMAIN", ".", "xtagui.ini", "xta_bin");
 
   # Linux uses a perl script to check the jvm
   if ($HOST ne "PC" && $HOST ne "Mac") {
     XmosBuildLib::InstallFile("$DOMAIN", ".", "xtagui");
-    XmosBuildLib::InstallPatchFile("$DOMAIN", ".", "xtagui", "bin");
-    #XmosBuildLib::InstallReleaseFile("$DOMAIN", ".", "xtagui", "bin");
+    XmosBuildLib::InstallReleaseFile("$DOMAIN", ".", "xtagui", "bin");
   }
 
   chdir("$BUILDPATH") or die("oops");
