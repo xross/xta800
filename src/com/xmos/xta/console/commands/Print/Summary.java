@@ -8,18 +8,46 @@ import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.RouteTiming;
 
 public class Summary extends Command {
-	public Summary() {}
+    private int m_verbosity;
+    private boolean m_verbositySpecified;
 	
-    public int numArgs()        { return 0; }        
+	public Summary() {
+	}
+
+	public Summary(int verbosity, boolean verbositySpecified) {		
+		m_verbosity = verbosity;
+		m_verbositySpecified = verbositySpecified;
+	}
+	
+    public int numArgs() { 
+    	if (m_verbositySpecified) { 
+    		return 1;
+        }
+    	return 0; 
+    }
+    
     public String name()        { return "summary"; }        
     public String commandLine() { return "summary"; }        
     
     public String description(Engine engine, boolean detailed) {
-    	return "summary: Show routes summary";
+    	return "summary: Show routes summary [verbosity 0|1|2|3(default)]";
     }
 
     public Command clone(String[] args, int index) {
-   		return new Summary();
+		int verbosity = 3;
+		boolean verbositySpecified = false;
+    	if (!areArgsDone(args, index + 1)) {
+        	try {
+        		verbosity = Integer.parseInt(args[index + 1]); 
+        		if ((verbosity < 0) || (verbosity > 3))
+        			return null;
+
+        	} catch (NumberFormatException e) {
+    	        return null;
+    	    }
+        	verbositySpecified = true;
+    	}    	
+   		return new Summary(verbosity, verbositySpecified);
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
@@ -28,7 +56,7 @@ public class Summary extends Command {
 
 		if (!validateRoutes(engine, console))
 			return;
-
+		
 		for (Route route : engine.getRoutes()) {
 		    displayRouteSummary(console, route);
 		}		
@@ -36,9 +64,56 @@ public class Summary extends Command {
     }
 
     private void displayRouteSummary(Console console, Route route) {
-    	console.display(route.getFullDescription());
+		switch (m_verbosity) {
+		case 0:
+			break;
+			
+		case 1:
+			displayRouteSummary(console, route, true, false);			
+			break;
+
+		case 2:
+			displayRouteSummary(console, route, true, true);			
+			break;
+			
+		case 3:
+         	console.display(route.getFullDescription());
+			break;
+			
+		default:
+			assert(false);
+		    break;
+		}  	
     }
     
+	private void displayRouteSummary(Console console, Route route, 
+			boolean displayFailures, boolean displayPasses) {
+		
+		RouteTiming routeTiming = route.getRouteTiming();				
+		if (routeTiming.isTimingSpecified()) {			
+			if (routeTiming.passedTiming()) {
+				if (displayPasses) {
+					console.display(String.format("%s: Route(%d) %s\n", 
+							routeTiming.getDescription(false), 
+							route.getRouteId(), 
+							route.getDescription()));
+				}
+			} else {
+				if (displayFailures) {
+					console.display(String.format("%s: Route(%d) %s\n", 
+							routeTiming.getDescription(false), 
+							route.getRouteId(), 
+							route.getDescription()));
+				}
+			}			
+		} else {
+			console.display(String.format("%s: Route(%d) %s\n", 
+					routeTiming.getDescription(false), 
+					route.getRouteId(), 
+					route.getDescription()));
+		}
+	}
+		
     private void displayOverallSummary(Console console, Engine engine) {
 		double maxViolationTime = 0.0;
 		

@@ -97,7 +97,7 @@ public class RouteTiming {
         return (getWorstCycles() * 1000 * threadFactor) / (int)(getMaxTime() + 1.0);    	
     }
 
-	public String getDescription() {
+	public String getDescription(boolean full) {
 		String description = "";
 		if (isTimingSpecified()) {
 			if (passedTiming())
@@ -111,13 +111,15 @@ public class RouteTiming {
 			if (numWarnings > 1)
 				description += "s";
 			
-			if (passedTiming())
-				description += String.format(", Slack: %.1fns, ", getSlackTime()); 						
-			else
-				description += String.format(", Violation: %.1fns, ", getViolationTime()); 						
+			if (full) {
+				if (passedTiming())
+					description += String.format(", Slack: %.1fns, ", getSlackTime()); 						
+				else
+					description += String.format(", Violation: %.1fns, ", getViolationTime()); 						
 
-			description += String.format("Required: %.1fns, Worst: %.1fns, Min Frequency: %d Mhz\n", 
-	    			getMaxTime(), getWorstTime(), getMinFrequency()); 				
+				description += String.format("Required: %.1fns, Worst: %.1fns, Min Frequency: %d Mhz\n", 
+		    			getMaxTime(), getWorstTime(), getMinFrequency()); 								
+			}
 		} else {
 			description += "    No Timing Specified\n";
 		}

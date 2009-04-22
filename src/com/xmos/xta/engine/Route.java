@@ -610,7 +610,7 @@ public class Route {
 	
 	public String getFullDescription() {
 		String fullDescription = String.format("Route(%d) %s\n", getRouteId(), getDescription());
-		fullDescription += m_routeTiming.getDescription();
+		fullDescription += m_routeTiming.getDescription(true);
 		fullDescription += String.format("    Complete paths: %d, Unresolved paths: %d\n\n", 
     			getCompletedPaths().size(), getUnresolvedPaths().size());
 		
