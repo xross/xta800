@@ -17,10 +17,10 @@ Complete \[1 path\]
 
 Route\(2\) path: core1\.xc:84 to core1\.xc:84
 Complete \[11 paths\]
-  \* path\(6\)    : 8320\.0ns
-  \* path\(5\)    : 8300\.0ns
-  \* path\(3\)    : 8160\.0ns
-  \* path\(2\)    : 8140\.0ns
+  \* path\(6\)    : 7560\.0ns
+  \* path\(5\)    : 7540\.0ns
+  \* path\(3\)    : 7400\.0ns
+  \* path\(2\)    : 7380\.0ns
   \* path\(0\)    : 660\.0ns
   \* path\(8\)    : 640\.0ns
   \* path\(9\)    : 620\.0ns
@@ -34,7 +34,7 @@ Route\(0\) path: core0\.xc:26 to core0\.xc:26
     Complete paths: 1, Unresolved paths: 0
 
 Route\(2\) path: core1\.xc:84 to core1\.xc:84
-    Fail with 2 unknowns, Violation: 6320\.0ns, Required: 2000\.0ns, Worst: 8320\.0ns, Min Frequency: 1663 Mhz
+    Fail with 2 unknowns, Violation: 5560\.0ns, Required: 2000\.0ns, Worst: 7560\.0ns, Min Frequency: 1511 Mhz
     Complete paths: 11, Unresolved paths: 0
 
-Fail, 1/2, Max Violation: 6320\.0ns
+Fail, 1/2, Max Violation: 5560\.0ns
