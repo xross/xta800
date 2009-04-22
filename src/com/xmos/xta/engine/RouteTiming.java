@@ -112,17 +112,26 @@ public class RouteTiming {
 				description += "s";
 			
 			if (full) {
-				if (passedTiming())
-					description += String.format(", Slack: %.1fns, ", getSlackTime()); 						
-				else
-					description += String.format(", Violation: %.1fns, ", getViolationTime()); 						
-
-				description += String.format("Required: %.1fns, Worst: %.1fns, Min Frequency: %d Mhz\n", 
-		    			getMaxTime(), getWorstTime(), getMinFrequency()); 								
+				description += ", ";
+				description += getTimingsDescription();
+				description += String.format(", Min Frequency: %d Mhz\n", getMinFrequency()); 								
 			}
 		} else {
 			description += "    No Timing Specified\n";
 		}
+		return description;
+	}
+	
+	public String getTimingsDescription() {
+		String description = "";
+		if (passedTiming())
+			description += String.format("Slack: %.1fns, ", getSlackTime()); 						
+		else
+			description += String.format("Violation: %.1fns, ", getViolationTime()); 						
+
+		description += String.format("Required: %.1fns, Worst: %.1fns", 
+    			getMaxTime(), getWorstTime());
+		
 		return description;
 	}
 }

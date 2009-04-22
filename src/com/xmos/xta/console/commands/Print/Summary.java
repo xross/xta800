@@ -93,17 +93,19 @@ public class Summary extends Command {
 		if (routeTiming.isTimingSpecified()) {			
 			if (routeTiming.passedTiming()) {
 				if (displayPasses) {
-					console.display(String.format("%s: Route(%d) %s\n", 
+					console.display(String.format("%s: Route(%d) %s, %s\n", 
 							routeTiming.getDescription(false), 
 							route.getRouteId(), 
-							route.getDescription()));
+							route.getDescription(),
+							routeTiming.getTimingsDescription()));
 				}
 			} else {
 				if (displayFailures) {
-					console.display(String.format("%s: Route(%d) %s\n", 
+					console.display(String.format("%s: Route(%d) %s, %s\n", 
 							routeTiming.getDescription(false), 
 							route.getRouteId(), 
-							route.getDescription()));
+							route.getDescription(),
+		         			routeTiming.getTimingsDescription()));
 				}
 			}			
 		} else {
