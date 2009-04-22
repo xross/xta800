@@ -141,6 +141,8 @@ public class AnalysisEngine {
 	}
 
 	private void makeAllNodeMaps() {
+		
+		
 		for (int nodeId : m_xeLoader.getNodeIds()) {
 			for (int coreId : m_xeLoader.getCoreIds(nodeId)) {
 				XeObject xeObject = getXeObject(nodeId, coreId);
@@ -312,6 +314,9 @@ public class AnalysisEngine {
 	}
 
 	private void locatePoolPointers() {
+		m_constantPoolPointers.clear();
+		m_dataPoolPointers.clear();
+		
 		for (int nodeId : m_xeLoader.getNodeIds()) {
 			for (int coreId : m_xeLoader.getCoreIds(nodeId)) {
 				int cpStart = m_xeLoader.getSymbolTable(nodeId, coreId).symbolAddress("_cp");

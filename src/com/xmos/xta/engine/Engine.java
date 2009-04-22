@@ -889,6 +889,7 @@ public class Engine {
 		BranchMap branchMap = getBranchMapNull(m_nodeId, m_coreId);
 		if (branchMap != null) {
 			branchMap.add(fromRef.getPc(), toRef.getPc());
+			m_ae.run();
 			return true;
 		}
 		return false;
@@ -905,6 +906,7 @@ public class Engine {
 		if (branchMap != null) {
 			if (branchMap.getMap().containsKey(fromRef.getPc())) {
 				branchMap.remove(fromRef.getPc());
+				m_ae.run();
 			} else {
 				notify(Notifier.NOTIFY_ERROR, String.format(
 						"Unable to remove branch: 0x%x", fromRef.getPc()));
