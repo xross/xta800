@@ -4,6 +4,8 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.RouteTiming;
 
 public class Exit extends Command {
 	public Exit() {		
@@ -30,6 +32,18 @@ public class Exit extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-    	shell.exit();
+		int numFailures = 0;
+		for (Route route : engine.getRoutes()) {
+			RouteTiming routeTiming = route.getRouteTiming();
+				
+			if (routeTiming.isTimingSpecified()) {			
+				if (!routeTiming.passedTiming()) {
+					++numFailures;				
+				}
+			} else {
+				++numFailures;
+			}
+		}    	    		
+    	shell.exit(numFailures);
     }    
 }

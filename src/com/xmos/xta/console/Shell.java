@@ -24,6 +24,7 @@ public class Shell {
     private Queue<Command> m_commands;
     private Vector<Command> m_commandHistory;
     private String m_prompt;
+	private int m_numFailures;
 		
 	public Shell(Console console, Engine engine, String[] args) {
 	    initialise(console, engine);
@@ -36,7 +37,7 @@ public class Shell {
 	    m_exitAllowed = exitAllowed;
 	}
 
-    public void execute() {    	
+    public int execute() {    	
     	while (!isComplete()) {
     		Command command = getNextCommand();
     		
@@ -47,10 +48,12 @@ public class Shell {
             }
         	m_commands.remove(command);
     	}
+    	return m_numFailures;
     }
     
-    public void exit() {        
+    public void exit(int numFailures) {        
     	m_state = State.EXIT;
+    	m_numFailures = numFailures;
     }
 
     public Vector<Command> getCommandHistory() {
