@@ -14,5 +14,5 @@ system("@ARGV load $genDir/test.xe " .
        "list branches " .
        "analyse function main " .
        "print summary " .
-       "exit > $genDir/xtabranch_select.txt 2>&1");
+       "-exit > $genDir/xtabranch_select.txt 2>&1");
 

@@ -49,7 +49,7 @@
       option: constraint: Displays the current constraint expression
   [-]load <xe file>: Loads the given xmos executable file
   [-]print <option> <arg0> <arg1>...: Display analysis information
-      option: summary: Show routes summary
+      option: summary: Show routes summary [verbosity 0|1|2|3(default)]
       option: asm <route id> <path/block id>: Display annotated assembly for given path id
       option: src <route id> <path/block id>: Display annotated source file(s) for given path id
       option: mix <route id> <path/block id>: Display annotated source file(s) + assembly instructions for the given path id

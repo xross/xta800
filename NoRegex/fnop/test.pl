@@ -13,7 +13,7 @@ system("xcc -target=$target -nostartfiles test.s -o $genDir/test.xe > $genDir/fn
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "print summary " .
-       "print path_info - 0 " .
+       "-print path_info - 0 " .
        "print completed_instructions " .
        "print trace - 0 " .
        "-exit > $genDir/fnop.txt 2>&1");

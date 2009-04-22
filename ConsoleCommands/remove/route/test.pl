@@ -14,9 +14,9 @@ system("@ARGV load $genDir/test.xe " .
        "analyse function test0 " .
        "analyse function test1 " .
        "print summary " .
-       "remove route 0 " .
+       "-remove route 0 " .
        "print summary " .
-       "remove route 1 " .
+       "-remove route 1 " .
        "print summary " .
-       "exit > $genDir/route.txt 2>&1");
+       "-exit > $genDir/route.txt 2>&1");
 

@@ -14,7 +14,7 @@ if (!$noBuild) {
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "print summary " .
-       "print completed_paths " .
+       "-print completed_paths " .
        "print src - 1 " .
        "print src - 0 " .
        "exit > $genDir/data_pointer.txt 2>&1");

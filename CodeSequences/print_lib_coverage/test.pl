@@ -23,5 +23,5 @@ system("@ARGV load $genDir/test.xe " .
        "analyse function printstr_test " .
        "analyse function printstrln_test " .
        "print summary " .
-       "exit > $genDir/print_lib_coverage.txt 2>&1");
+       "-exit > $genDir/print_lib_coverage.txt 2>&1");
 

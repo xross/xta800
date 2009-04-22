@@ -17,11 +17,11 @@ system("@ARGV load $genDir/test.xe " .
        "analyse path test.xc:7 test.xc:8 " .
        "status " .
        "print summary " .
-       "config proc 0 1 " .
+       "-config proc 0 1 " .
        "analyse path test.xc:7 test.xc:8 " .
        "status " .
        "analyse path test.xc:16 test.xc:17 " .
        "status " .
        "print summary " .
-       "exit > $genDir/fileline_fileline.txt 2>&1");
+       "-exit > $genDir/fileline_fileline.txt 2>&1");
 

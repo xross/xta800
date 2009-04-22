@@ -13,5 +13,5 @@ system("xcc -target=$target -march=$arch -nostartfiles test.s -o $genDir/test.xe
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "print summary " .
-       "exit > $genDir/multi_branch.txt 2>&1");
+       "-exit > $genDir/multi_branch.txt 2>&1");
 
