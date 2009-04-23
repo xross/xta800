@@ -94,6 +94,31 @@ public class MultiSection extends Node {
 		}
 		return containedNodes;
 	}
+
+	Collection <Node> m_nextNodes = new HashSet<Node>();
 	
+	public void appendToGraph(StringBuffer body, StringBuffer connections,
+			Collection<Node> last, Collection<Node> next) {
+		
+		body.append("subgraph " + getGraphvizName()  + " {\n");
+		body.append("style=filled;\n");
+		body.append("color=lightblue;\n");
+		
+		for (Node option : m_options) {
+			Collection<Node> nextThis = new HashSet<Node>();
+			option.appendToGraph(body, connections, last, nextThis);
+			next.addAll(nextThis);
+		}
+		body.append("}\n");
+		
+		if (m_jumpNode != null)
+			next.addAll(last);
+		
+		return;
+	}
+
+	public String getGraphvizName() {
+		return "cluster_Section" + m_id;
+	}
 	
 }

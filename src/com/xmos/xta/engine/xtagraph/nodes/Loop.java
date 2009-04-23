@@ -152,4 +152,39 @@ public class Loop extends Node {
 	}
 
 
+	public String getGraphvizName() {
+		return "cluster_Loop" + m_id;
+	}
+
+
+	public void appendToGraph(StringBuffer body, StringBuffer connections,
+			Collection<Node> last, Collection<Node> next) {
+		body.append("subgraph " + getGraphvizName()  + " {\n");
+		body.append("style=filled;\n");
+		body.append("color=yellow;\n");
+
+		Collection<Node> nextThis = new HashSet<Node>();
+		m_base.appendToGraph(body, connections, last, nextThis);
+		next.addAll(nextThis);
+		if(!m_base.getGraphvizName().startsWith("B")){
+			System.out.println(" ############################################## " +m_base.getGraphvizName());
+		}
+		
+		Collection<Node> lastThis = nextThis;
+		nextThis = new HashSet<Node>();
+		
+		for (AttachedLoop loopNode : m_loops) {
+			loopNode.getLoop().appendToGraph(body, connections, lastThis, nextThis);
+		}
+		body.append("}\n");
+
+		for (Node node : nextThis) {
+			connections.append(  node.getGraphvizName() + " -> " + m_base.getGraphvizName() + ";\n");
+		}
+		
+		return;
+		
+	}
+
+
 }

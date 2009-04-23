@@ -86,4 +86,24 @@ public class Block extends Node {
 		return containedNodes;
 	}
 
+
+	public void appendToGraph(StringBuffer body, StringBuffer connections,
+			Collection<Node> last, Collection<Node> next) {
+		
+		if(m_block!= null){
+			body.append(getGraphvizName() + " [label = \"Basic block " + m_block.getId() + "\"];\n");
+		} else {
+			body.append(getGraphvizName() + " [label = \"Basic block " + m_id + "\"];\n");
+		}
+		for (Node node : last) {
+			connections.append( node.getGraphvizName() + " -> " + getGraphvizName() + ";\n");
+		}
+		
+		next.add(this);
+	}
+
+	public String getGraphvizName() {
+		return "Block" + m_id;
+	}
+
 }

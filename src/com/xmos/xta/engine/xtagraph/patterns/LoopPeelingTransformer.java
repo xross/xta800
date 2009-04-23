@@ -4,12 +4,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public class LoopPeelingTransformer extends PatternMatcher {
 
-	public boolean isMatch(Node currentNode, Set<Node> workingSet) {
+	public boolean isMatch(Node currentNode, Collection<Node> workingSet) {
 		
 		//first detect all loops from the current node
 		
@@ -24,7 +23,7 @@ public class LoopPeelingTransformer extends PatternMatcher {
 			//System.out.print("#[");
 			for(Node node : loop){
 				if(node.getNextNodes().size() > 1){
-				//	System.out.print("*" + node + " ");
+					//System.out.print("*" + node + " ");
 				} else {
 				//	System.out.print(" " + node + " ");
 				}
@@ -33,7 +32,6 @@ public class LoopPeelingTransformer extends PatternMatcher {
 			}
 			
 			//System.out.println("]");
-			//System.out.println(weighLoopOut(loop) + " " + weighLoopIn(loop));
 		}
 		
 		
@@ -66,84 +64,39 @@ public class LoopPeelingTransformer extends PatternMatcher {
 					}
 				}
 			}
+			/*
+			if(connectionPoints.size() == 0){
+				for(Node loopNode : loop){
+					if(loopNode.getPrevNodes().size() > 1){
+						connectionPoints.add(loopNode);
+					}
+				}
+			}
+			*/
 			//connectionPoints now is a set of all the points that could be a connectionNode
 			
 			//System.out.println("# connectionPoints are : " + connectionPoints);
-			if(connectionPoints.size() == 1){
+			
+			//System.out.println("# entryPoints are : " + entryPoints);
+			//if(connectionPoints.size() == 1){
 				//we can actually split it
 				for(Node node : loop){
 					if(!connectionPoints.contains(node) && entryPoints.contains(node)){
-						wedgeDown(node, workingSet);
+						CommonMethods.wedgeDown(node, workingSet);
 						return true;
 					}
 					if(!connectionPoints.contains(node) && exitPoints.contains(node)){
-						wedgeUp(node, workingSet);
+						CommonMethods.wedgeUp(node, workingSet);
 						return true;
 					}
 				}
 				
 				
-			}
-			
-			//ideally these sets both have one node
-			
-			//System.out.println("#entry: " + entryPoints + " exit: " + exitPoints);
-			
+			//}
 			
 		}
-		
-		
-		//System.out.println();
 		return false;
 	}
-
-	private void wedgeUp(Node node, Set<Node> workingSet){
-		Collection<Node> newNodes = new HashSet<Node>();
-		for(Node next: node.getNextNodes()){
-			Node newNode = node.clone();
-			newNodes.add(newNode);
-			
-			next.getPrevNodes().remove(node);
-			next.addPrevNode(newNode);
-			newNode.addNextNode(next);
-			
-			for(Node prev: node.getPrevNodes()){
-				newNode.addPrevNode(prev);
-				prev.getNextNodes().remove(node);
-				prev.addNextNode(newNode);
-			}
-			
-		}
-		
-		workingSet.remove(node);
-		workingSet.addAll(newNodes);
-	}
-	
-	private void wedgeDown(Node node, Set<Node> workingSet){
-	
-		Collection<Node> newNodes = new HashSet<Node>();
-		for(Node prev: node.getPrevNodes()){
-			Node newNode = node.clone();
-			newNodes.add(newNode);
-			
-			prev.getNextNodes().remove(node);
-			prev.addNextNode(newNode);
-			newNode.addPrevNode(prev);
-			
-			for(Node next: node.getNextNodes()){
-				newNode.addNextNode(next);
-				next.getPrevNodes().remove(node);
-				next.addPrevNode(newNode);
-			}
-			
-		}
-		
-		workingSet.remove(node);
-		workingSet.addAll(newNodes);
-		
-		return;
-	}
-	
 	
 	private void followNode(Node node, Node startNode, Collection<List<Node>> loops, List<Node> currentList){
 		for(Node next : node.getNextNodes()){

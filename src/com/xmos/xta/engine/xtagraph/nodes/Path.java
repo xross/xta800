@@ -78,4 +78,29 @@ public class Path extends Node {
 		}
 		return containedNodes;
 	}
+
+	public String getGraphvizName() {
+		return "cluster_Path" + m_id;
+	}
+
+	public void appendToGraph(StringBuffer body, StringBuffer connections,
+			Collection<Node> last, Collection<Node> next) {
+		
+		body.append("subgraph " + getGraphvizName()  + " {\n");
+		body.append("style=filled;\n");
+		body.append("color=pink;\n");
+		
+		Collection<Node> lastThis = new HashSet<Node>(last);
+		Collection<Node> nextThis = new HashSet<Node>();
+
+		for (Node node : m_nodes) {
+			node.appendToGraph(body, connections, lastThis, nextThis);
+			lastThis = nextThis;
+			nextThis = new HashSet<Node>();
+		}
+		next.addAll(lastThis);
+		
+		body.append("}\n");
+	}
+
 }

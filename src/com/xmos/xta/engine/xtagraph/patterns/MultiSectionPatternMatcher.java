@@ -12,15 +12,103 @@ import com.xmos.xta.engine.xtagraph.nodes.Node;
 public class MultiSectionPatternMatcher extends PatternMatcher {
 
 
-	 public boolean isMatch(Node node, Set<Node> workingSet) {
+	 public boolean isMatch(Node currentNode, Collection<Node> workingSet) {
+		 /*
+		 
+		//detect all the jump nodes first
+			Set<Node> jumpNodes = new HashSet<Node>();
+			for(Node nextNode : currentNode.getNextNodes()){
+				//hop backwards
+				Set<Node> previous = new HashSet<Node>(nextNode.getPrevNodes());
+				previous.remove(currentNode);
+				previous.remove(nextNode);
+				for(Node prev : previous){
+					Set<Node> prevSet = new HashSet<Node>(prev.getPrevNodes());
+					if(prevSet.contains(currentNode)){
+						jumpNodes.add(nextNode);
+					}
+				}
+			}
+			
+			Set<Node> endNodes = new HashSet<Node>(jumpNodes);
+			List<Node> nextList = new LinkedList<Node>(currentNode.getNextNodes());
+			
+			for(int i=0;i<nextList.size()-2;i++){
+				for(int j=i+1;j<nextList.size()-1;j++){
+					Node a = nextList.get(i);
+					Node b = nextList.get(j);
+					
+					Set<Node> intersection = new HashSet<Node>(a.getNextNodes());
+					intersection.retainAll(b.getNextNodes());
+					endNodes.addAll(intersection);
+				}
+			}
+			
+			for(Node endNode : endNodes){
+				
+				Set<Node> sectionNodes = new HashSet<Node>();
+				for(Node nextNode : currentNode.getNextNodes()){
+					if( nextNode.getNextNodes().contains(endNode)){
+						if(nextNode.getNextNodes().size() == 1){
+							sectionNodes.add(nextNode);
+						} else {
+							return false;
+						}
+						
+					}
+				}
+				
+				if(jumpNodes.contains(endNode)){
+					if(sectionNodes.size() > 0){
+						updateGraph(currentNode, sectionNodes, endNode,  workingSet, endNode);
+						return true;
+					}
+				} else {
+					if(sectionNodes.size() > 1){
+						updateGraph(currentNode, sectionNodes, null,  workingSet, endNode);
+						return true;
+					}
+				}
+			}
+			return false;
+		 */
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
 		
-		if(node.getNextNodes().size()  < 2){
+		if(currentNode.getNextNodes().size()  < 2){
 			//return false;
 		}
 		
 		Set<Node> singlyLinked = new HashSet<Node>();
 		
-		for(Node next : node.getNextNodes()){
+		for(Node next : currentNode.getNextNodes()){
 			if(next.getPrevNodes().size() == 1 && next.getNextNodes().size() == 1){
 				singlyLinked.add(next);	
 			}
@@ -50,7 +138,7 @@ public class MultiSectionPatternMatcher extends PatternMatcher {
 				sectionTargets.add(set);
 			} else if(count == 1){
 				//if any edge jumps directly here then it is also sectionTarget
-				for(Node jump : node.getNextNodes()){
+				for(Node jump : currentNode.getNextNodes()){
 					if(jump == set){
 						jumpNodes.add(jump);
 						sectionTargets.add(set);
@@ -83,7 +171,7 @@ public class MultiSectionPatternMatcher extends PatternMatcher {
 			//System.out.println("# jump " + jumpNode);
 			//System.out.println("# via " + sectionNodes + "\n");
 			
-			updateGraph(node, sectionNodes, jumpNode, workingSet, sectionTarget);
+			updateGraph(currentNode, sectionNodes, jumpNode, workingSet, sectionTarget);
 			//may have to return true here.
 		}
 		return true;
@@ -92,7 +180,7 @@ public class MultiSectionPatternMatcher extends PatternMatcher {
 		
 	}
 
-	protected void updateGraph(Node startNode, Collection<Node> sectionNodes, Node jumpNode, Set<Node> workingSet, Node endNode) {
+	protected void updateGraph(Node startNode, Collection<Node> sectionNodes, Node jumpNode, Collection<Node> workingSet, Node endNode) {
 		
 		MultiSection ms = new MultiSection(sectionNodes, jumpNode);
 		

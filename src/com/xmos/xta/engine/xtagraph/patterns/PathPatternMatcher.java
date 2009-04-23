@@ -1,13 +1,13 @@
 package com.xmos.xta.engine.xtagraph.patterns;
 
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Set;
 import com.xmos.xta.engine.xtagraph.nodes.Node;
 import com.xmos.xta.engine.xtagraph.nodes.Path;
 
 public class PathPatternMatcher extends PatternMatcher {
 
-	public boolean isMatch(Node startNode, Set<Node> workingSet) {
+	public boolean isMatch(Node startNode, Collection<Node> workingSet) {
 		Node currentNode = startNode;
 		
 		//must grow in both directions in order to avoid the need to consolidate path
@@ -31,7 +31,7 @@ public class PathPatternMatcher extends PatternMatcher {
 				} else {
 					finished = true;
 				}
-			} else {
+			} else{
 				finished = true;
 			}
 		}
@@ -51,62 +51,14 @@ public class PathPatternMatcher extends PatternMatcher {
 			}
 		}
 		if(pathList.size() > 1){
-			
-		//	System.out.println("# starting with " + startNode);
-		//	System.out.println("# found a path of " + pathList);
-			
 			updateGraph(pathList, workingSet);
 			return true;
 		} else {
 			return false;
 		}
-		//grow forward
-		/*
-		boolean done = false;
-		pathList.add(currentNode);
-		
-		while(!done){
-			if(currentNode.getNextNodes().size() == 1) {
-				Node next = new LinkedList<Node>(currentNode.getNextNodes()).getFirst();
-				if(next.getPrevNodes().size() == 1){
-					pathList.add(next);
-					currentNode = next;
-				} else {
-					done = true;
-				}
-			} else {
-				done = true;
-			}
-		}
-		
-		done = false;
-		
-		currentNode = startNode;
-		
-		while(!done){
-			if(currentNode.getPrevNodes().size() == 1) {
-				Node prev = new LinkedList<Node>(currentNode.getPrevNodes()).getFirst();
-				if(prev.getNextNodes().size() == 1){
-					pathList.addFirst(prev);
-					currentNode = prev;
-				} else {
-					done = true;
-				}
-			} else {
-				done = true;
-			}
-		}
-		
-		if(pathList.size() > 1){
-			updateGraph(pathList, workingSet);
-			return true;
-		} else {
-			return false;
-		}
-		*/
 	}
 
-	protected void updateGraph(LinkedList<Node> pathList, Set<Node> workingSet) {
+	protected void updateGraph(LinkedList<Node> pathList, Collection<Node> workingSet) {
 		//System.out.println("#have found a path of " + pathList);
 		Path path = new Path(pathList);
 		

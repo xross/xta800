@@ -48,5 +48,16 @@ public class PseudoFunction extends Node {
 		return null;
 	}
 
+	@Override
+	public void appendToGraph(StringBuffer body, StringBuffer connections,
+			Collection<Node> last, Collection<Node> next) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public String getGraphvizName() {
+		return "cluster_PseudoFunction" + m_id;
+	}
+
 
 }

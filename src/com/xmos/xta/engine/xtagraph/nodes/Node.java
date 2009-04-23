@@ -31,15 +31,8 @@ public abstract class Node {
 	public String graphVizLabel(){
 		return "Node" + m_id;  
 	}
-	/*
-	public String graphVizLinks(){
-		StringBuffer sb = new StringBuffer();
-		for(Node next : m_nextNodes){
-			sb.append("Node" + m_id + " -> Node" + next.m_id + ";\n");
-		}
-		return sb.toString();
-	}
-	*/
+
+	
 	
 	public Set<Node> getNextNodes(){
 		return m_nextNodes;
@@ -78,5 +71,10 @@ public abstract class Node {
 	public abstract List<XtaInstruction> getInstructionStream();
 	
 	public abstract Collection<Node> getContaintedNodes();
+	
+	public abstract void appendToGraph(StringBuffer body, StringBuffer connections,
+			Collection<Node> last, Collection<Node> next);
+	
+	public abstract String getGraphvizName();
 	
 }

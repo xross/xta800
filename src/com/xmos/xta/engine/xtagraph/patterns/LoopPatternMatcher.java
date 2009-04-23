@@ -1,5 +1,6 @@
 package com.xmos.xta.engine.xtagraph.patterns;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import com.xmos.xta.engine.xtagraph.nodes.Loop;
@@ -7,7 +8,7 @@ import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public class LoopPatternMatcher extends PatternMatcher {
 
-	public boolean isMatch(Node currentNode, Set<Node> workingSet) {
+	public boolean isMatch(Node currentNode, Collection<Node> workingSet) {
 
 		// a loop pattern is when one or more nodes are doubly attached to a
 		// single node
@@ -40,7 +41,7 @@ public class LoopPatternMatcher extends PatternMatcher {
 
 	}
 
-	protected void updateGraph(Set<Node> intersection, Set<Node> workingSet, Node base) {
+	protected void updateGraph(Set<Node> intersection, Collection<Node> workingSet, Node base) {
 
 		Loop loop = new Loop(intersection, base);
 		

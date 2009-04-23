@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.TreeSet;
 
 import com.xmos.isa.Instruction;
@@ -15,6 +16,7 @@ import com.xmos.xeobject.Line;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.maps.BranchMap;
 import com.xmos.xta.engine.xtagraph.XTAGraph;
+import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public class AnalysisEngine {
 	private XeLoader m_xeLoader;
@@ -250,7 +252,10 @@ public class AnalysisEngine {
 	public void printDot(int nodeId, int coreId) {
 		XTAGraph graph = new XTAGraph(new HashSet<BasicBlock>(getBasicBlockStartPcs(nodeId, coreId).values()));
 		
-		graph.draw();
+		graph.decompose();
+		graph.renderGraph(new LinkedList<Node>(graph.m_nodes).getFirst());
+		//graph.printGraph(graph.m_nodes);
+		//graph.draw();
 		
 		HashMap<XtaInstruction, BasicBlock> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
 		if(false){
