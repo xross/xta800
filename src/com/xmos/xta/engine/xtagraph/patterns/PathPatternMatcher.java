@@ -1,7 +1,10 @@
 package com.xmos.xta.engine.xtagraph.patterns;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
+
 import com.xmos.xta.engine.xtagraph.nodes.Node;
 import com.xmos.xta.engine.xtagraph.nodes.Path;
 
@@ -50,7 +53,14 @@ public class PathPatternMatcher extends PatternMatcher {
 				finished = true;
 			}
 		}
+		
+		
+		
 		if(pathList.size() > 1){
+			if(pathSanityCheck(pathList)){
+				System.err.println("failed sanity check");
+				return false;
+			} 
 			updateGraph(pathList, workingSet);
 			return true;
 		} else {
@@ -58,8 +68,38 @@ public class PathPatternMatcher extends PatternMatcher {
 		}
 	}
 
+	private boolean pathSanityCheck(LinkedList<Node> pathList) {
+		Set<Node> seen = new HashSet<Node>();
+		
+		if(pathList.size() < 2){
+			return false;
+		}
+		
+		if(pathList.iterator().next().getPrevNodes().size() == 1){
+			return false;
+		}
+		
+		for(int i=0;i<pathList.size()-2 ;i++){
+			Node node = pathList.get(i);
+			
+			if(seen.contains(node)){
+				return false;
+			}
+			
+			if(node.getNextNodes().size() != 1){
+				return false;
+			}
+			
+			if(node.getNextNodes().iterator().next() != pathList.get(i+1)){
+				return false;
+			}
+			
+			seen.add(node);
+		}
+		return false;
+	}
+
 	protected void updateGraph(LinkedList<Node> pathList, Collection<Node> workingSet) {
-		//System.out.println("#have found a path of " + pathList);
 		Path path = new Path(pathList);
 		
 		Node startNodeInPath = pathList.getFirst();
@@ -67,17 +107,12 @@ public class PathPatternMatcher extends PatternMatcher {
 		
 		for(Node prev : startNodeInPath.getPrevNodes()){
 			path.addPrevNode(prev);
-			if(!prev.getNextNodes().remove(startNodeInPath)){
-				System.out.println("####################### this is bad ############################################################");
-			}
+			prev.getNextNodes().remove(startNodeInPath);
 			prev.addNextNode(path);
 		}
 		for(Node next : endNodeInPath.getNextNodes()){
 			path.addNextNode(next);
-			if(!next.getPrevNodes().remove(endNodeInPath)){
-				System.out.println("######################## this is bad ###########################################################");
-			}
-			
+			next.getPrevNodes().remove(endNodeInPath);
 			next.addPrevNode(path);
 		}
 		

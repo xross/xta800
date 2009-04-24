@@ -98,18 +98,18 @@ public class MultiSection extends Node {
 	Collection <Node> m_nextNodes = new HashSet<Node>();
 	
 	public void appendToGraph(StringBuffer body, StringBuffer connections,
-			Collection<Node> last, Collection<Node> next) {
+			Collection<Node> last, Collection<Node> next, int indent, Node parent) {
 		
-		body.append("subgraph " + getGraphvizName()  + " {\n");
-		body.append("style=filled;\n");
-		body.append("color=lightblue;\n");
-		
+		body.append(intToTab(indent) +"subgraph " + getGraphvizName()  + " {\n");
+		body.append(intToTab(indent) +"style=filled;\n");
+		body.append(intToTab(indent) +"fillcolor=lightblue;\n");
+		body.append(intToTab(indent) +"color=black;\n");
 		for (Node option : m_options) {
 			Collection<Node> nextThis = new HashSet<Node>();
-			option.appendToGraph(body, connections, last, nextThis);
+			option.appendToGraph(body, connections, last, nextThis, indent+1, this);
 			next.addAll(nextThis);
 		}
-		body.append("}\n");
+		body.append(intToTab(indent) +"}\n");
 		
 		if (m_jumpNode != null)
 			next.addAll(last);

@@ -88,12 +88,12 @@ public class Block extends Node {
 
 
 	public void appendToGraph(StringBuffer body, StringBuffer connections,
-			Collection<Node> last, Collection<Node> next) {
+			Collection<Node> last, Collection<Node> next, int indent, Node parent) {
 		
-		if(m_block!= null){
-			body.append(getGraphvizName() + " [label = \"Basic block " + m_block.getId() + "\"];\n");
+		if(m_block != null){
+			body.append(intToTab(indent) + getGraphvizName() + " [label = \"Basic block " + m_block.getId() + "\"];\n");
 		} else {
-			body.append(getGraphvizName() + " [label = \"Basic block " + m_id + "\"];\n");
+			body.append(intToTab(indent) +getGraphvizName() + " [label = \"Block " + m_id + "\"];\n");
 		}
 		for (Node node : last) {
 			connections.append( node.getGraphvizName() + " -> " + getGraphvizName() + ";\n");

@@ -19,18 +19,23 @@ public class LoopPatternMatcher extends PatternMatcher {
 		
 		intersection.retainAll(currentNode.getPrevNodes());
 
-		boolean allLoopsResolved = true;
+	//	boolean allLoopsResolved = true;
 
 		if (intersection.size() > 0) {
+			Set <Node> workingIntersection = new HashSet<Node>();
+			
 			for (Node loop : intersection) {
 				if (loop.getNextNodes().size() != 1 || !loop.getNextNodes().contains(currentNode) || loop.getPrevNodes().size() != 1) {
-					allLoopsResolved = false;
+					//allLoopsResolved = false;
+				} else {
+					workingIntersection.add(loop);
 				}
 			}
-			if (allLoopsResolved) {
+			if (workingIntersection.size() > 0) {
 				
 				//System.out.println("#for node " + currentNode + " found " + intersection + " as the intersection");
-				updateGraph(intersection, workingSet, currentNode);
+				updateGraph(workingIntersection, workingSet, currentNode);
+				//updateGraph(intersection, workingSet, currentNode);
 				return true;
 			} else {
 				return false;

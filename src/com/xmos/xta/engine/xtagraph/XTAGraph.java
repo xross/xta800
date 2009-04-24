@@ -46,37 +46,23 @@ public class XTAGraph {
 		Collection<Node> workingSet = m_nodes;
 		boolean working = true;
 		
-		// for all terminating nodes connect them to a pseudo node
-		// so the there is only one terminal
-		
-		/*
-		Block pseudoNode = new Block();
-		
-		for(Node node : m_nodes){
-			if(node.getNextNodes().size() == 0){
-				node.addNextNode(pseudoNode);
-				pseudoNode.addPrevNode(node);
-			}
-		}
-		m_nodes.add(pseudoNode);
-		*/
-		
 		List<PatternMatcher> patternMatchers = new ArrayList<PatternMatcher>();
 		
 		patternMatchers.add(new SelfLoopTransformer());
-		patternMatchers.add(new PathPatternMatcher());
-		patternMatchers.add(new MultiSectionTransformer());
-		patternMatchers.add(new MultiSectionPatternMatcher());
 		
+		
+		
+		patternMatchers.add(new PathPatternMatcher());
+		patternMatchers.add(new TerminalPatternMatcher());
+		patternMatchers.add(new MultiSectionPatternMatcher());
 		patternMatchers.add(new LoopPatternMatcher());
 		
-		patternMatchers.add(new TerminalPatternMatcher());
 		
 		
-		
+		patternMatchers.add(new MultiSectionTransformer());
 		patternMatchers.add(new LoopPeelingTransformer());
 		patternMatchers.add(new TerminalTransformer());
-
+		//System.out.println();
 		while(working){
 			
 			//check graph integrity
@@ -84,10 +70,12 @@ public class XTAGraph {
 			PatternMatcher recent = null;
 			
 			working = false;
+			
 			for(PatternMatcher pm : patternMatchers){
 				for(Node node : workingSet){
 					if(pm.isMatch(node, workingSet)){
 						working = true;
+						//System.out.println(pm.getClass().getSimpleName());
 						recent = pm;
 						break;
 					}
@@ -117,7 +105,7 @@ public class XTAGraph {
 		m_graphSize = workingSet.size();
 	}
 
-	public void printGraph(Collection<Node> workingSet) {
+	public static void printGraph(Collection<Node> workingSet) {
 		System.out.println("digraph g" + graphcount++ +" {");
 		for(Node node : workingSet){
 			for(Node next : node.getNextNodes()){
@@ -153,18 +141,18 @@ public class XTAGraph {
 		return m_graphSize;
 	}
 	
-	
+	static int g;
 	/**
 	 * this taken a single node that represents the whole program and unpeels it to
 	 * render the whole graph again with the structure
 	 * @param node
 	 */
 	public void renderGraph(Node node){
-		System.out.println("digraph g {");
+		System.out.println("digraph f" + g++ + " {");
 		StringBuffer body = new StringBuffer();
 		StringBuffer connections = new StringBuffer();
 		
-		node.appendToGraph(body, connections, new HashSet<Node>(), new HashSet<Node>());
+		node.appendToGraph(body, connections, new HashSet<Node>(), new HashSet<Node>(), 0, node);
 		
 		System.out.println(body);
 		System.out.println(connections);

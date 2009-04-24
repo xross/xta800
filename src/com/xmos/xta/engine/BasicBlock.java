@@ -14,7 +14,7 @@ public class BasicBlock implements Comparable<BasicBlock> {
 	private IBufferState m_worstIbuffer;
 	private HashSet<Integer> m_pcs;
 	
-	BasicBlock(int n) {
+	public BasicBlock(int n) {
 		m_nodeId = n;
 		m_iBufferStates = new ArrayList<IBufferState>();
 		m_instructions = new LinkedList<XtaInstruction>();

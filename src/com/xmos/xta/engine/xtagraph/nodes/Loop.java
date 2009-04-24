@@ -15,7 +15,7 @@ public class Loop extends Node {
 	
 	public Loop(Loop loop){
 		super();
-		m_loops = loop.m_loops;
+		m_loops = new ArrayList<AttachedLoop>(loop.m_loops);
 		m_base = loop.m_base;
 	}
 	
@@ -136,7 +136,6 @@ public class Loop extends Node {
 	}
 
 	public Loop clone() {
-		//FIXME
 		return new Loop(this);
 	}
 
@@ -158,28 +157,29 @@ public class Loop extends Node {
 
 
 	public void appendToGraph(StringBuffer body, StringBuffer connections,
-			Collection<Node> last, Collection<Node> next) {
-		body.append("subgraph " + getGraphvizName()  + " {\n");
-		body.append("style=filled;\n");
-		body.append("color=yellow;\n");
+			Collection<Node> last, Collection<Node> next, int indent, Node parent) {
+		body.append(intToTab(indent) +"subgraph " + getGraphvizName()  + " {\n");
+		body.append(intToTab(indent) +"style=filled;\n");
+		body.append(intToTab(indent) +"fillcolor=yellow;\n");
+		body.append(intToTab(indent) +"color=black;\n");
 
 		Collection<Node> nextThis = new HashSet<Node>();
-		m_base.appendToGraph(body, connections, last, nextThis);
+		m_base.appendToGraph(body, connections, last, nextThis, indent+1, this);
 		next.addAll(nextThis);
-		if(!m_base.getGraphvizName().startsWith("B")){
-			System.out.println(" ############################################## " +m_base.getGraphvizName());
-		}
-		
 		Collection<Node> lastThis = nextThis;
 		nextThis = new HashSet<Node>();
 		
 		for (AttachedLoop loopNode : m_loops) {
-			loopNode.getLoop().appendToGraph(body, connections, lastThis, nextThis);
+			loopNode.getLoop().appendToGraph(body, connections, lastThis, nextThis, indent+1, this);
 		}
-		body.append("}\n");
+		body.append(intToTab(indent) +"}\n");
 
+		assert(lastThis.size() == 1);
+		
+		Node base = lastThis.iterator().next();
+		
 		for (Node node : nextThis) {
-			connections.append(  node.getGraphvizName() + " -> " + m_base.getGraphvizName() + ";\n");
+			connections.append(  node.getGraphvizName() +" -> " + base.getGraphvizName() + ";\n");
 		}
 		
 		return;

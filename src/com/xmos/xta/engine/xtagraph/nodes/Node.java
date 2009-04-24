@@ -11,7 +11,9 @@ public abstract class Node {
 	
 	protected static int id;
 	protected int m_id;
-	
+	public static int getNodeCount(){
+		return id;
+	}
 	
 	//TODO - next nodes should be a divided into branching and non branching nextNodes
 	protected Set<Node> m_nextNodes;
@@ -24,6 +26,14 @@ public abstract class Node {
 		m_id = id++;
 	}
 	
+	public static String intToTab(int indent){
+		String s = "";
+		for(int i=0;i<indent;i++){
+			s +="\t";
+		}
+		return s;
+	}
+	
 	public String toString(){
 		return "Node " + m_id;  
 	}
@@ -31,8 +41,6 @@ public abstract class Node {
 	public String graphVizLabel(){
 		return "Node" + m_id;  
 	}
-
-	
 	
 	public Set<Node> getNextNodes(){
 		return m_nextNodes;
@@ -43,11 +51,31 @@ public abstract class Node {
 	}
 	
 	public void addNextNode(Node node){
-		m_nextNodes.add(node);
+		//assert(!m_nextNodes.contains(node));
+		if(!m_nextNodes.contains(node)){
+			m_nextNodes.add(node);
+		}
 	}
 	
 	public void addPrevNode(Node node){
-		m_prevNodes.add(node);
+		//assert(!m_prevNodes.contains(node));
+		if(!m_prevNodes.contains(node)){
+			m_prevNodes.add(node);
+		}
+	}
+	
+	public void removePrevNode(Node node){
+		assert(m_prevNodes.contains(node));
+		if(m_prevNodes.contains(node)){
+			m_prevNodes.remove(node);
+		}
+	}
+	
+	public void removeNextNode(Node node){
+		assert(m_nextNodes.contains(node));
+		if(m_nextNodes.contains(node)){
+			m_nextNodes.remove(node);
+		}
 	}
 	
 	public long getNumberInstructions(){
@@ -73,7 +101,7 @@ public abstract class Node {
 	public abstract Collection<Node> getContaintedNodes();
 	
 	public abstract void appendToGraph(StringBuffer body, StringBuffer connections,
-			Collection<Node> last, Collection<Node> next);
+			Collection<Node> last, Collection<Node> next, int indent, Node parent);
 	
 	public abstract String getGraphvizName();
 	

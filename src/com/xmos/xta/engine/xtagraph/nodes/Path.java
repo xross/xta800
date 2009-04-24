@@ -84,23 +84,24 @@ public class Path extends Node {
 	}
 
 	public void appendToGraph(StringBuffer body, StringBuffer connections,
-			Collection<Node> last, Collection<Node> next) {
+			Collection<Node> last, Collection<Node> next, int indent, Node parent) {
 		
-		body.append("subgraph " + getGraphvizName()  + " {\n");
-		body.append("style=filled;\n");
-		body.append("color=pink;\n");
+		body.append(intToTab(indent) +"subgraph " + getGraphvizName()  + " {\n");
+		body.append(intToTab(indent) +"style=filled;\n");
+		body.append(intToTab(indent) +"fillcolor=pink;\n");
+		body.append(intToTab(indent) +"color=black;\n");
 		
 		Collection<Node> lastThis = new HashSet<Node>(last);
 		Collection<Node> nextThis = new HashSet<Node>();
 
 		for (Node node : m_nodes) {
-			node.appendToGraph(body, connections, lastThis, nextThis);
+			node.appendToGraph(body, connections, lastThis, nextThis, indent+1, this);
 			lastThis = nextThis;
 			nextThis = new HashSet<Node>();
 		}
 		next.addAll(lastThis);
 		
-		body.append("}\n");
+		body.append(intToTab(indent) +"}\n");
 	}
 
 }
