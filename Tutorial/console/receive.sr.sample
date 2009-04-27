@@ -1,10 +1,14 @@
-load tutorial_console.xe
-add prohibited packet_start
+# This is the data receive loop path
+set constraint !packet_start && !eop_detected
 analyse path receive_loop receive_loop
-summary complete
-assert maxtime 320
-remove prohibited packet_start
+set required - 320 ns
+
+# This is the inter-frame gap path
+set constraint !do_loop && !error_overflow && !error_crc && !error_len && !error_nibble
 analyse path eop_detected packet_start
-summary complete
-assert maxtime 1240
+set required - 1520 ns
+
+print completed_paths
+print summary
+
 exit
