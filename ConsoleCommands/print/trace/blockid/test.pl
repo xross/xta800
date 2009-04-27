@@ -13,6 +13,6 @@ system("xcc -target=$target -nostartfiles -march=$arch -g test.s -o $genDir/test
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "print summary " .
-       "print trace - b2 " .
+       "-print trace - b2 " .
        "exit > $genDir/blockid.txt 2>&1");
 

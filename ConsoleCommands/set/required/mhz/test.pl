@@ -18,21 +18,21 @@ system("@ARGV load $genDir/test.xe " .
        "config proc 0 1 " .
        "analyse function test1 " .
 
-       "set required 0 1000 mhz " .
-       "set required 1 1000 mhz " .
+       "-set required 0 1000 mhz " .
+       "-set required 1 1000 mhz " .
        "print summary " .
 
-       "set required 0 1 mhz " .
-       "set required 1 1000 mhz " .
+       "-set required 0 1 mhz " .
+       "-set required 1 1000 mhz " .
        "print summary " .
 
-       "set required 0 1 mhz " .
-       "set required 1 1 mhz " .
+       "-set required 0 1 mhz " .
+       "-set required 1 1 mhz " .
        "print summary " .
 
-       "unset required 0 " .
-       "unset required 1 " .
+       "-unset required 0 " .
+       "-unset required 1 " .
        "print summary " .
 
-       "exit > $genDir/mhz.txt 2>&1");
+       "-exit > $genDir/mhz.txt 2>&1");
 

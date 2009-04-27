@@ -13,7 +13,7 @@ system("xcc -target=$target -march=$arch -fxta-info -g test.xc -o $genDir/test.x
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "print summary " .
-       "print completed_loops " .
+       "-print completed_loops " .
        "set loopmax - do 100 " .
        "set loopmax - while 50 " .
        "print completed_loops " .

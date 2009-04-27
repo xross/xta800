@@ -15,19 +15,19 @@ system("@ARGV load $genDir/test.xe " .
        "analyse function test0 " .
        "status " .
        "print summary " .
-       "config proc 0 1 " .
+       "-config proc 0 1 " .
        "analyse function test1 " .
        "status " .
        "print summary " .
-       "config proc 0 2 " .
+       "-config proc 0 2 " .
        "analyse function test2 " .
        "status " .
        "print summary " .
-       "config proc 0 3 " .
+       "-config proc 0 3 " .
        "analyse function test3 " .
        "status " .
        "print summary " .
-       "config proc 0 0 " .
+       "-config proc 0 0 " .
        "status " .
        "exit > $genDir/valid.txt 2>&1");
 

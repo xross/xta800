@@ -69,7 +69,7 @@ system("@ARGV  " .
        "status " .
 
        "print summary " .
-       "print completed_loops " .
+       "-print completed_loops " .
        "print completed_blocks " .
        "print completed_instructions " .
        "print unresolved_paths " .

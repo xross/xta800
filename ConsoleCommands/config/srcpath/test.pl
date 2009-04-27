@@ -11,7 +11,7 @@ my $cwd     = getcwd();
 
 if (!$noBuild) {
 system("cp a.xc test.xc");
-system("xcc -target=$target -march=xs1b -g test.xc -o $genDir/test.xe > $genDir/srcpath.log 2>&1");
+system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir/srcpath.log 2>&1");
 system("mv test.xc ./up/test.xc");
 }
 system("@ARGV " .
