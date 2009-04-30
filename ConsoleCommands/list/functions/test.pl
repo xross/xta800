@@ -14,9 +14,9 @@ system("@ARGV load $genDir/test.xe " .
        "list functions " .
        "config proc 0 1 " .
        "list functions " .
-       "config proc 0 3 " .
-       "list functions " .
        "config proc 0 2 " .
+       "list functions " .
+       "config proc 0 3 " .
        "list functions " .
        "exit > $genDir/functions.txt 2>&1");
 
