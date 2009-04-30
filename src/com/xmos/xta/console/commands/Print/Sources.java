@@ -75,7 +75,7 @@ public class Sources extends Command {
             }            
     	}
   	    
-  	  Collections.sort(files);
+  	    Collections.sort(files);
 	    for(String file : files){
 	    	console.display(file + "\n"); 
 	    }
