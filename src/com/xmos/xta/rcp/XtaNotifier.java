@@ -72,7 +72,6 @@ public class XtaNotifier implements Notifier {
 			broadcastPropertyChange(new PropertyChangeEvent(this, Notifier.NOTIFY_INFO, null, null));								
 
 		} else if (message.equals(NOTIFY_ANALYSIS_COMPLETE)) {
-			m_routeInfo.update();
 			broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_ANALYSIS_COMPLETE, null, null));
 			m_isGuiCommand = false;
 			

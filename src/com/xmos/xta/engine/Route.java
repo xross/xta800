@@ -276,12 +276,18 @@ public class Route {
 		} catch (AbortedException e) {
 			return RouteStatus.ABORTED;
 		}
-		
+
 		for (PathBasicBlock completedBlock : m_completedPaths){
-			addPathPcs(completedBlock);
+			addPathPcs(completedBlock);			
+			if (m_engine.getAbort()) {
+				return RouteStatus.ABORTED;
+			}			
 		}
 		for (Unresolved unresolvedBlock : m_unresolvedPaths){
 			addPathPcs(unresolvedBlock.getBlock());
+			if (m_engine.getAbort()) {
+				return RouteStatus.ABORTED;
+			}			
 		}
 		
 		createUniquePathPcs(); 
@@ -307,8 +313,6 @@ public class Route {
 			}
 		}
 	}
-
-	
 	
 	private void followNode(
 		PathBasicBlock currentBasicBlock, Stack<Integer> stack, 
@@ -325,7 +329,8 @@ public class Route {
 			m_loopBlocks.add(currentBasicBlock);
 		m_allBasicBlocks.add(currentBasicBlock);
 		
-		if (DEBUG) System.out.println("begin block " + currentBasicBlock);
+		if (DEBUG) System.out.println("begin block " + currentBasicBlock);	
+		
 		if (m_engine.getAbort()) {
 			throw new AbortedException();
 		}

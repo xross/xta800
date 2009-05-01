@@ -7,6 +7,7 @@ import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.Unresolved;
@@ -49,7 +50,10 @@ public class XtaRouteInfo {
 		if (selectedRoute == null)
 			return;
 	
-		if (selectedRoute.getAllBasicBlocks().size() > 2000){
+		if (selectedRoute.getAllBasicBlocks().size() > 2000) {
+			XtaNotifier.getInstance().notify(Notifier.NOTIFY_WARNING, 
+					"Route to complex to display in the tree view " +
+					"(Use the console to analyse the route).");
 			return;
 		}
 		

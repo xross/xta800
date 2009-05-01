@@ -1,10 +1,10 @@
 package com.xmos.xta.engine.unknowns;
 
 import java.util.HashSet;
+import java.util.Set;
 
-public class Unknowns {
-	
-	HashSet<Unknown> m_unknowns;
+public class Unknowns {	
+	private Set<Unknown> m_unknowns;
 
 	public Unknowns() {
 		m_unknowns = new HashSet<Unknown>();
@@ -12,19 +12,10 @@ public class Unknowns {
 	
 	public void addUnknown(Unknown unknown) {
 		assert(unknown != null);
-		if (!contains(unknown))
-			m_unknowns.add(unknown);
+		m_unknowns.add(unknown);
 	}
 	
-	private boolean contains(Unknown u) {
-		for (Unknown unknown : m_unknowns) {
-			if (unknown.getDescription().equals(u.getDescription()))
-				return true;
-		}
-		return false;
-	}
-
-	public HashSet<Unknown> getAll() {
+	public Set<Unknown> getAll() {
 		return m_unknowns;
 	}
 
