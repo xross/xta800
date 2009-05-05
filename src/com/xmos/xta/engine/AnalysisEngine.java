@@ -28,7 +28,6 @@ public class AnalysisEngine {
 	private ArrayList<FunctionReturns> m_functionReturns;
 	private ArrayList<BasicBlockStartPcs> m_basicBlockStartPcs;
 
-
 	public AnalysisEngine(XeLoader loader, NodeCoreInstructionCaches coreInstructionCache, ArrayList<XeObject> objects,
 			ArrayList<BranchMap> branches) {
 		m_constantPoolPointers = new HashMap<NodeCore, Integer>();
@@ -141,18 +140,15 @@ public class AnalysisEngine {
 	}
 
 	private void makeAllNodeMaps() {
-		
-		
 		for (int nodeId : m_xeLoader.getNodeIds()) {
 			for (int coreId : m_xeLoader.getCoreIds(nodeId)) {
 				XeObject xeObject = getXeObject(nodeId, coreId);
 				InstructionDecodeCache decodeCache = m_mcInstructionCache.getInstructionDecodeCache(nodeId, coreId);
 				makeNodeMap(xeObject, decodeCache, nodeId, coreId);
-
 				fillGraphFnops(nodeId, coreId);
-
-				// TODO
-				// printDot(nodeId, coreId);
+				
+				//printDot(nodeId, coreId);				
+				//printStructureTrace(nodeId, coreId);
 			}
 		}
 	}
@@ -188,7 +184,6 @@ public class AnalysisEngine {
 				}
 			}
 		}
-		return;
 	}
 
 	private void makeNodeMap(XeObject xeObject, InstructionDecodeCache decodeCache, int nodeId, int coreId) {
@@ -248,52 +243,6 @@ public class AnalysisEngine {
 		}
 	}
 
-	public void printDot(int nodeId, int coreId) {
-		HashMap<XtaInstruction, BasicBlock> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
-
-		System.out.println("digraph g {");
-		for (BasicBlock node : pcToNode.values()) {
-			int maxFnops =0 ;
-			int minFnops =0x10000 ;
-			boolean singular = false;
-			System.out.print("node" + node.m_nodeId + " [label = \"");
-			if(node.getIBufferStates().size() ==1){
-				singular = true;
-			} else {
-				for(IBufferState ibs :node.getIBufferStates()){
-					maxFnops = Math.max(maxFnops, ibs.m_fnops.size());
-					minFnops = Math.min(minFnops, ibs.m_fnops.size());
-				}
-				System.out.print("max: " +maxFnops + " min: " + minFnops + "\\n");
-			}
-			for (XtaInstruction inst : node.getInstructions()) {
-				System.out.print(inst + "\\n");
-			}
-			System.out.print("\", style=filled, shape=box,");
-			if(singular){
-				System.out.println("fillcolor=green];");
-			} else {
-				if(maxFnops == minFnops){
-					if(maxFnops == 0){
-						System.out.println("fillcolor=green];");
-					} else {
-						System.out.println("fillcolor=blue];");
-					}
-					
-				} else {
-					System.out.println("fillcolor=red];");
-				}
-				
-			}
-		}
-		for (BasicBlock node : pcToNode.values()) {
-			for (BasicBlock nextNode : node.getNextNodes()) {
-				System.out.println("node" + node.m_nodeId + " -> node" + nextNode.m_nodeId + ";");
-			}
-		}
-		System.out.println("}");
-	}
-
 	private HashMap<XtaInstruction, BasicBlock> getBasicBlockStartPcs(int nodeId, int coreId) {
 		for (BasicBlockStartPcs bbsp : m_basicBlockStartPcs) {
 			if (bbsp.getCoreId() == coreId && bbsp.getNodeId() == nodeId) {
@@ -325,11 +274,9 @@ public class AnalysisEngine {
 				m_dataPoolPointers.put(new NodeCore(nodeId, coreId), dpStart);
 			}
 		}
-
 	}
 
 	private void findAllSuccessors() {
-
 		for (int nodeId : m_xeLoader.getNodeIds()) {
 			for (int coreId : m_xeLoader.getCoreIds(nodeId)) {
 				XeObject xeObject = getXeObject(nodeId, coreId);
@@ -337,26 +284,26 @@ public class AnalysisEngine {
 				if (m_unsafeAssumptions) {
 					addNextInstruction(xeObject, decodeCache);
 				}
+								
 				addBranchMaps(xeObject, decodeCache, nodeId, coreId);
-
 				addBranches(xeObject, decodeCache, nodeId, coreId);
-
 				addUserSuccessors(xeObject, decodeCache);
-
 				traceFunctionsRetsps(xeObject, decodeCache, nodeId, coreId);
 			}
 		}
 	}
 
 	private void addBranchMaps(XeObject xeObject, InstructionDecodeCache decodeCache, int nodeId, int coreId) {
-		for (AssemblyLine al : xeObject.getInstructions()) {
-			for (BranchMap bm : m_branches) {
-				if (bm.getMap().containsKey(al.getPc())) {
-					XtaInstruction inst = decodeCache.getInstruction(al.getPc());
-					for (int target : bm.getMap().get(al.getPc())) {
-						inst.addSuccessor(decodeCache.getInstruction(target), true);
-					}
-				}
+		for (BranchMap branchMap : m_branches) {
+    		if ((branchMap.getNodeId() == nodeId) && (branchMap.getCoreId() == coreId)) {			
+	        	for (AssemblyLine al : xeObject.getInstructions()) {
+					if (branchMap.getMap().containsKey(al.getPc())) {
+						XtaInstruction inst = decodeCache.getInstruction(al.getPc());
+						for (int target : branchMap.getMap().get(al.getPc())) {
+							inst.addSuccessor(decodeCache.getInstruction(target), true);
+						}
+					}					
+				}				
 			}
 		}
 	}
@@ -522,7 +469,6 @@ public class AnalysisEngine {
 	}
 
 	private void addToBranchTable(XtaInstruction inst, boolean isBranchLink, int pc, int nodeId, int coreId) {
-
 		if (isBranchLink) {
 			inst.setBranchLink(true);
 			if (getFunctionCallLocations(nodeId, coreId).containsKey(pc)) {
@@ -546,7 +492,10 @@ public class AnalysisEngine {
 		return null;
 	}
 
-	class UserSuccessor {
+	// --------------------------------------------------------------------- //
+	// Helper Classes.
+	// --------------------------------------------------------------------- //
+	private static class UserSuccessor {
 		int m_fromPc;
 		int m_toPc;
 
@@ -556,13 +505,100 @@ public class AnalysisEngine {
 		}
 	}
 
-	class NodeCore {
+	private static class NodeCore {
 		int m_nodeId;
 		int m_coreId;
 
 		NodeCore(int node, int core) {
 			m_nodeId = node;
 			m_coreId = core;
+		}
+	}
+	
+	// --------------------------------------------------------------------- //
+	// Helper Debug Methods.
+	// --------------------------------------------------------------------- //
+	public void printDot(int nodeId, int coreId) {
+		HashMap<XtaInstruction, BasicBlock> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
+
+		System.out.println("digraph g {");
+		for (BasicBlock node : pcToNode.values()) {
+			int maxFnops =0 ;
+			int minFnops =0x10000 ;
+			boolean singular = false;
+			System.out.print("node" + node.m_nodeId + " [label = \"");
+			if(node.getIBufferStates().size() ==1){
+				singular = true;
+			} else {
+				for(IBufferState ibs :node.getIBufferStates()){
+					maxFnops = Math.max(maxFnops, ibs.m_fnops.size());
+					minFnops = Math.min(minFnops, ibs.m_fnops.size());
+				}
+				System.out.print("max: " +maxFnops + " min: " + minFnops + "\\n");
+			}
+			for (XtaInstruction inst : node.getInstructions()) {
+				System.out.print(inst + "\\n");
+			}
+			System.out.print("\", style=filled, shape=box,");
+			if(singular){
+				System.out.println("fillcolor=green];");
+			} else {
+				if(maxFnops == minFnops){
+					if(maxFnops == 0){
+						System.out.println("fillcolor=green];");
+					} else {
+						System.out.println("fillcolor=blue];");
+					}
+					
+				} else {
+					System.out.println("fillcolor=red];");
+				}
+				
+			}
+		}
+		for (BasicBlock node : pcToNode.values()) {
+			for (BasicBlock nextNode : node.getNextNodes()) {
+				System.out.println("node" + node.m_nodeId + " -> node" + nextNode.m_nodeId + ";");
+			}
+		}
+		System.out.println("}");
+	}	
+
+	public void printStructureTrace(int nodeId, int coreId) {
+		System.out.printf("===============================\n");
+		System.out.printf("NODE: %d, CORE: %d\n", nodeId, coreId);
+		System.out.printf("===============================\n");
+
+		HashMap<XtaInstruction, BasicBlock> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
+
+		for (BasicBlock node : pcToNode.values()) {
+			System.out.printf("------------------------------\n");
+			System.out.printf("(%d,%d) node %d -> ", nodeId, coreId, node.m_nodeId);
+			
+			for (BasicBlock nextNode : node.getNextNodes()) {
+				System.out.print("[" + nextNode.m_nodeId + "]");
+			}
+			System.out.print("\n");
+			
+			for (XtaInstruction inst : node.getInstructions()) {
+				System.out.print(inst + "\n");
+			}
+		}
+	}	
+	
+	public void displayInstructionSuccessors(XeObject xeObject, 
+			InstructionDecodeCache decodeCache, int nodeId, int coreId) {
+		
+		for (AssemblyLine al : xeObject.getInstructions()) {
+  			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
+  			System.out.printf("(%d,%d) ", nodeId, coreId);
+  			System.out.print(inst + " ");
+	    			
+  			ArrayList<NextPcType> successors = inst.getSuccessors();
+   			for (NextPcType successor : successors) {
+   				System.out.printf("[0x%x]", successor.getPc());
+   			}
+   			System.out.printf("\n");
 		}
 	}
 }
