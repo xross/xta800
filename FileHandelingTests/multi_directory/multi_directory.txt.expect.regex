@@ -8,7 +8,7 @@ test.xc \(.*\)
   2: int sub\(int a, int b\);
   3: 
   4: int main\(\)
-\+ 5: {
+  5: {
 \+ 6:   int result = 0;
 \+ 7:   int condition = 0;
   8: 
@@ -38,7 +38,7 @@ test.xc \(.*\)
   2: int sub\(int a, int b\);
   3: 
   4: int main\(\)
-\+ 5: {
+  5: {
 \+ 6:   int result = 0;
 \+ 7:   int condition = 0;
   8: 

@@ -6,7 +6,7 @@ test.xc \(.*\)
   1: int add\(int a, int b\);
   2: 
   3: int main\(\)
-\+ 4: {
+  4: {
   5:   #pragma xta label "label1"
 \+ 6:   int a = add\(2, 4\);
 \+ 7:   return a;

@@ -8,7 +8,7 @@ test.xc \(.*\)
   2: int sub\(int a, int b\);
   3: 
   4: int main\(\)
-\+ 5: {
+  5: {
 \+ 6:   int result1 = add\(2, 4\);
 \+ 7:   int result2 = sub\(5, 1\);
   8: 

@@ -80,7 +80,7 @@ int processData(chanend c) {
   start_streaming_slave(c);
 
   while(1) {
-    int errorCount;
+    unsigned int errorCount;
     unsigned int data = inuint(c);
     state = stateMachine(state, data, errorCount);
     statusP <: state;

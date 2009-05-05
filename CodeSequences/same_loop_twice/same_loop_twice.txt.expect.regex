@@ -63,7 +63,7 @@ test.xc \(.*same_loop_twice\)
   10: \}
   11: 
   12: int main\(\)
-\+ 13: \{
+  13: \{
 \+ 14:   delay\(10\);
 \+ 15:   delay\(20\);
 \+ 16:   return 0;
