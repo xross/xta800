@@ -278,14 +278,12 @@ public class Route {
 		}
 
 		for (PathBasicBlock completedBlock : m_completedPaths){
-			addPathPcs(completedBlock);			
-			if (m_engine.getAbort()) {
+			if (!addPathPcs(completedBlock)) {			
 				return RouteStatus.ABORTED;
 			}			
 		}
 		for (Unresolved unresolvedBlock : m_unresolvedPaths){
-			addPathPcs(unresolvedBlock.getBlock());
-			if (m_engine.getAbort()) {
+			if (!addPathPcs(unresolvedBlock.getBlock())) {
 				return RouteStatus.ABORTED;
 			}			
 		}
@@ -296,7 +294,10 @@ public class Route {
 		return RouteStatus.COMPLETED;
 	}
 
-	private void addPathPcs(PathBasicBlock completedBlock) {
+	private boolean addPathPcs(PathBasicBlock completedBlock) {
+		if (m_engine.getAbort())
+			return false;
+		
 		for (PathBasicBlock pathBlock : completedBlock.getPathBlocks()) {
 			m_pcsHit.addAll(pathBlock.getPcsCoveredThis());
 			for (LoopIterationsUnknown loopUnknown : pathBlock.getLoops().getUnknowns()){
@@ -309,9 +310,11 @@ public class Route {
 			}
 			
 			for (PathBasicBlock loop : pathBlock.getLoopPaths(completedBlock)){
-				addPathPcs(loop);
-			}
+				if (!addPathPcs(loop))
+					return false;
+			}			
 		}
+		return true;
 	}
 	
 	private void followNode(
