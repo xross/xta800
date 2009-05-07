@@ -321,6 +321,7 @@ public class Route {
 			PathBasicBlock loopDestinationBlock = formsLoop(currentBasicBlock, nodeContext);
 			if (loopDestinationBlock!=null){
 				handleLoop(currentBasicBlock.getParent(), loopDestinationBlock);
+				m_allBasicBlocks.remove(currentBasicBlock);
 				return;
 			}
 			
@@ -497,7 +498,6 @@ public class Route {
 		
 		loopDestinationBlock.addLoopPath(pathFormingLoop);
 		pathFormingLoop.setStatus(BlockStatus.COMPLETE);
-		return;
 	}
 	
 	private boolean updateConstraints(PathBasicBlock block) {					
