@@ -49,7 +49,6 @@ public class Route {
 	private TreeSet<Integer> m_endPcs; 
 	private ArrayList<PathBasicBlock> m_completedPaths;
 	private ArrayList<PathBasicBlock> m_allBasicBlocks;
-	private ArrayList<PathBasicBlock> m_loopBlocks;	//horrible
 	private RouteDescription m_description;
 	private ArrayList<Unresolved> m_unresolvedPaths;
 	private InstructionDecodeCache m_idc;
@@ -74,7 +73,6 @@ public class Route {
 		m_constraint = engine.getConstraint().clone();
 		m_completedPaths = new ArrayList<PathBasicBlock>();
 		m_allBasicBlocks = new ArrayList<PathBasicBlock>();
-		m_loopBlocks = new ArrayList<PathBasicBlock>();
 		m_unresolvedPaths = new ArrayList<Unresolved>();
 		m_startPc = startPc;
 		m_endPcs = endPcs;
@@ -90,37 +88,7 @@ public class Route {
 		m_unknowns = new Unknowns();
 		m_uniqueLoopPathPcs = new HashMap<PathBasicBlock, HashSet<Integer>>();
 	}
-	
-	/**
-	 * this takes a pc and returns a list of the blocks that contain it
-	 * @param pc
-	 * @return
-	 */
-	private ArrayList<PathBasicBlock> pcToBlocks(int pc){
-		ArrayList<PathBasicBlock> loopForming = new ArrayList<PathBasicBlock>();
-		ArrayList<PathBasicBlock> nonLoopForming = new ArrayList<PathBasicBlock>();
-		
-		for(PathBasicBlock pbb : m_loopBlocks){
-			for(XtaInstruction inst : pbb.getInstructionTrimmed()){
-				if(inst.getPc() == pc){
-					
-					if(pbb.getParent().getPathId() != -1){
-						loopForming.add(pbb);
-					} else {
-						nonLoopForming.add(pbb);
-					}
-					
-					break;
-				}
-			}
-		}
-		
-		ArrayList<PathBasicBlock> blocks = new ArrayList<PathBasicBlock>();
-		blocks.addAll(loopForming);
-		blocks.addAll(nonLoopForming);
-		return blocks;
-	}
-		
+			
 	/**
 	 * This sets the total number of iterations on a particular paths through 
 	 * set of loops all with a common header. It sets the count on the tightest loop around the pc.
@@ -245,15 +213,13 @@ public class Route {
 		return m_uniqueLoopPathPcs.get(loopPath);
 	}
 	
-	public RouteStatus analyse(RouteMode mode){
-		
-		if(DEBUG) {
-			System.out.println("analysing from 0x" + Integer.toHexString(m_startPc));
+	public RouteStatus analyse(RouteMode mode){		
+		if (DEBUG) {
+			System.out.println("Analysing from 0x" + Integer.toHexString(m_startPc));
 			for(int to : m_endPcs){
-				System.out.println("analysing to 0x" + Integer.toHexString(to));
+				System.out.println("Analysing to 0x" + Integer.toHexString(to));
 			}
 		}
-		m_loopBlocks.clear();
 		m_allBasicBlocks.clear();
 		BasicBlock startNode = getNode(m_startPc);
 		if (startNode == null){
@@ -291,6 +257,10 @@ public class Route {
 		createUniquePathPcs(); 
 		sortPaths();
 		displayWarnings();
+		
+		if (DEBUG) 
+			printCompletedPaths();
+		
 		return RouteStatus.COMPLETED;
 	}
 
@@ -319,20 +289,10 @@ public class Route {
 	
 	private void followNode(
 		PathBasicBlock currentBasicBlock, Stack<Integer> stack, 
-		Stack<LinkedList<BasicBlock>> nodeContext, RouteMode mode) throws AbortedException {
-		
-		boolean alreadyContains = false;
-		for(PathBasicBlock b : this.m_allBasicBlocks){
-			if(b.getBlockId() == currentBasicBlock.getBlockId()){
-				alreadyContains = true;
-				break;
-			}
-		}
-		if(!alreadyContains)
-			m_loopBlocks.add(currentBasicBlock);
+		Stack<LinkedList<BasicBlock>> nodeContext, RouteMode mode) throws AbortedException {		
 		m_allBasicBlocks.add(currentBasicBlock);
 		
-		if (DEBUG) System.out.println("begin block " + currentBasicBlock);	
+		if (DEBUG) System.out.println("FollowNode: " + currentBasicBlock);	
 		
 		if (m_engine.getAbort()) {
 			throw new AbortedException();
@@ -384,10 +344,9 @@ public class Route {
 	private void handleNextBlock(PathBasicBlock currentBasicBlock, Stack<Integer> stack,
 			Stack<LinkedList<BasicBlock>> nodeContext, RouteMode mode, XtaInstruction lastInstruction,
 			BasicBlock nextNode) throws AbortedException {
-		
-		
+			
 		PathBasicBlock nextPathBasicBlock = new PathBasicBlock(m_engine, nextNode, currentBasicBlock, m_idc);
-		if (DEBUG) System.out.println("from block" + currentBasicBlock+" to block: " + nextPathBasicBlock);
+		if (DEBUG) System.out.println("HandleNext: " + currentBasicBlock + " -> " + nextPathBasicBlock);
 		
 		Stack<Integer> newStack = (Stack<Integer>) stack.clone();
 		Stack<LinkedList<BasicBlock>> newContext = new Stack<LinkedList<BasicBlock>>();
@@ -403,10 +362,10 @@ public class Route {
 
 	private void handleCompleted(PathBasicBlock currentBasicBlock) {
 		if (currentBasicBlock.getConstraint().isTrue()){
-			if (DEBUG) System.out.println("block " + currentBasicBlock + " completed");
+			if (DEBUG) System.out.println("HandleCompleted " + currentBasicBlock);
 			addCompletePath(currentBasicBlock);
 		} else {
-			if (DEBUG) System.out.println("block " + currentBasicBlock + " constrained");
+			if (DEBUG) System.out.println("HandleConstrained " + currentBasicBlock);
 			setConstrained(true);
 			currentBasicBlock.setStatus(BlockStatus.EXCLUDED);
 		}
@@ -417,7 +376,7 @@ public class Route {
 			Stack<LinkedList<BasicBlock>> nodeContext, RouteMode mode) throws AbortedException {
 		BasicBlock nextNode = getNode(stack.peek());
 		PathBasicBlock nextPathBasicBlock = new PathBasicBlock(m_engine, nextNode, currentBasicBlock, m_idc);
-		if(DEBUG) System.out.println("following block: " + nextPathBasicBlock);
+		if(DEBUG) System.out.println("HandleReturn: " + nextPathBasicBlock);
 		Stack<LinkedList<BasicBlock>> newContext = new Stack<LinkedList<BasicBlock>>();
 		copyStack(nodeContext, newContext);
 		newContext.pop();
@@ -474,6 +433,47 @@ public class Route {
 		return pcString;
 	}
 	
+	public void setConstrained(boolean constrained) {
+		m_constrained = constrained;
+	}
+
+	/**
+	 * return a hash set of all the pcs hit by the currently analysed route
+	 * @return HashSet<Integer> 
+	 */
+	public HashSet<Integer> getPcsHit(){
+		return m_pcsHit;
+	}
+	
+	public boolean wasConstrained() {
+		return m_constrained;
+	}
+
+	public Constraint getConstraint() {
+		return m_constraint;
+	}
+	
+	public String getFullDescription() {
+		String fullDescription = String.format("Route(%d) %s\n", getRouteId(), getDescription());
+		fullDescription += m_routeTiming.getDescription(true);
+		fullDescription += String.format("    Complete paths: %d, Unresolved paths: %d\n\n", 
+    			getCompletedPaths().size(), getUnresolvedPaths().size());
+		
+		return fullDescription;
+	}
+
+	public Reference getStartPoint() {
+		return m_description.getStartPoint();
+	}
+
+	public Reference getEndPoint() {
+		return m_description.getEndPoint();
+	}
+	
+	public void sortPaths() {
+		Collections.sort(m_completedPaths);
+	}
+	
 	private void addUnresolvedPath(PathBasicBlock block, String reason) {
 		Unresolved unresolved = new Unresolved(block, block.getBasicBlock().getInstructions().getLast(), reason);
 		m_unresolvedPaths.add(unresolved);
@@ -489,7 +489,7 @@ public class Route {
 	}
 
 	private void handleLoop(PathBasicBlock pathFormingLoop, PathBasicBlock loopDestinationBlock) {
-		if(DEBUG) System.out.println(loopDestinationBlock + " forms a loop with " + pathFormingLoop);
+		if(DEBUG) System.out.println("HandleLoop: " + loopDestinationBlock + " -> " + pathFormingLoop);
 		//this must be true by design of the algorithm
 		assert(pathFormingLoop != null);
 		
@@ -592,47 +592,6 @@ public class Route {
 		}
 	}
 	
-	private void sortPaths() {
-		Collections.sort(m_completedPaths);
-	}
-
-	public void setConstrained(boolean constrained) {
-		m_constrained = constrained;
-	}
-
-	/**
-	 * return a hash set of all the pcs hit by the currently analysed route
-	 * @return HashSet<Integer> 
-	 */
-	public HashSet<Integer> getPcsHit(){
-		return m_pcsHit;
-	}
-	
-	public boolean wasConstrained() {
-		return m_constrained;
-	}
-
-	public Constraint getConstraint() {
-		return m_constraint;
-	}
-	
-	public String getFullDescription() {
-		String fullDescription = String.format("Route(%d) %s\n", getRouteId(), getDescription());
-		fullDescription += m_routeTiming.getDescription(true);
-		fullDescription += String.format("    Complete paths: %d, Unresolved paths: %d\n\n", 
-    			getCompletedPaths().size(), getUnresolvedPaths().size());
-		
-		return fullDescription;
-	}
-
-	public Reference getStartPoint() {
-		return m_description.getStartPoint();
-	}
-
-	public Reference getEndPoint() {
-		return m_description.getEndPoint();
-	}
-
 	private HashSet<PathBasicBlock> getLoopHeaders(int pc) {
 		//translate the pc into blocks
 		ArrayList<PathBasicBlock> blocks = pcToBlocks(pc);
@@ -643,11 +602,18 @@ public class Route {
 			PathBasicBlock parent = block;
 			while(!parent.getLoops().containsBlock(block)){
 				parent = parent.getParent();
+				
+				// Check if we have hit the root of this path. If so, then 
+				// this path block is not within a loop.
 				if (parent == null) 
-					return null;
+					break;
 			}
-			//parent should now be the block where the loop containing the pc is attached
-			loopHeaders.add(parent);
+			
+			if (parent != null) {
+     			// Parent should now be the block where the 
+				// loop containing the pc is attached.
+	    		loopHeaders.add(parent);
+			}
 		}
 		if (loopHeaders.isEmpty()){
 			return null;
@@ -655,6 +621,25 @@ public class Route {
 		//now we have a hash set of loop headers				
 		return loopHeaders;		
 	}		
+	
+	/**
+	 * this takes a pc and returns a list of the blocks that contain it
+	 * @param pc
+	 * @return
+	 */
+	private ArrayList<PathBasicBlock> pcToBlocks(int pc){
+		ArrayList<PathBasicBlock> blocks = new ArrayList<PathBasicBlock>();
+		
+		for(PathBasicBlock pbb : m_allBasicBlocks){
+			for(XtaInstruction inst : pbb.getInstructionTrimmed()){
+				if(inst.getPc() == pc){
+					blocks.add(pbb);
+					break;
+				}
+			}
+		}
+		return blocks;
+	}
 	
 	/**
 	 * This method builds up a hash of all the loop paths on this 
@@ -713,5 +698,57 @@ public class Route {
 		}
 		m_uniqueLoopPathPcs.putAll(uniqueLoopPathPcs);
 	}	
+	
+	// --------------------------------------------------------------------- //
+	// Helper Debug Methods.
+	// --------------------------------------------------------------------- //
+	public void printCompletedPaths() {
+		System.out.printf("\n");
+		System.out.printf("==============================\n");
+		System.out.printf("COMPLETED PATHS\n");
+		System.out.printf("==============================\n");
+		summarisePaths(m_completedPaths, "");
+	}
+	
+    private void summarisePaths(List<PathBasicBlock> paths, String indent) {
+        for (PathBasicBlock path : paths) {
+        	summarisePath(path, indent);
+        }
+    }
+    
+    private void summarisePath(PathBasicBlock path, String indent) {
+   	    displayPathLevelInfo(path, indent);
+   	    
+        for (PathBasicBlock block : path.getPathBlocks()) {
+            displayBlockLevelInfo(block, indent);                        	
+          	displayLoopLevelInfo(block, indent, path);          	
+        }
+    }
+
+    private void displayPathLevelInfo(PathBasicBlock path, String indent) {            	
+		System.out.printf("%spath(%-2d, b%d, p%d)\n", indent, 
+				path.getPathId(),
+				path.getBlockId(),
+				path.getPathBasicBlockId());
+    }
+
+    private void displayBlockLevelInfo(PathBasicBlock block, String indent) {
+		System.out.printf("%s    block(%-2d, b%d, p%d): ", indent, 
+				block.getPathId(),
+				block.getBlockId(),
+				block.getPathBasicBlockId());
+		
+        for (XtaInstruction xtaInstruction : block.getInstructionStream()) {
+  			System.out.printf("[0x%05x]", xtaInstruction.getPc());
+        }
+        System.out.printf("\n");		
+    }
+
+    private void displayLoopLevelInfo(PathBasicBlock path, String indent, PathBasicBlock base) {
+        List<PathBasicBlock> loopPaths = path.getLoopPaths(base);
+        if (loopPaths.size() > 0) {
+        	summarisePaths(loopPaths, indent + "        ");
+        }
+    }
 }
 

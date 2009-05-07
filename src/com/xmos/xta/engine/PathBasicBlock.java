@@ -14,6 +14,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	private PathBasicBlock m_parentBasicBlock;
 	private LoopAttachment m_loopPaths;
 	private int m_pathId;
+	private int m_pathBasicBlockId;
 	private BasicBlockStats m_blockStats;
 	private BlockStatus m_status;
 	private int m_startInstruction;
@@ -28,9 +29,10 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	
 	//i don't want this here so i'll move it later
 	private Unresolved m_unresolved;
-	
-	
+		
 	private boolean m_loseFinalInstruction;
+	
+	private static int s_numInstances = 0;
 	
 	public PathBasicBlock(Engine engine, BasicBlock basicBlock, PathBasicBlock parentBasicBlock,
 			InstructionDecodeCache idc){
@@ -85,6 +87,9 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 		createInstructionStream();
 		
 		m_engine.getProgress().incr();
+		
+		m_pathBasicBlockId = s_numInstances;
+		++s_numInstances;
 	}
 	
 	public boolean containsPc(int pc){
@@ -151,7 +156,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 * returns a string representation of the block
 	 */
 	public String toString(){
-		return "PathBasicBlock " + m_pathId + " " + m_basicBlock;
+		return "(" + m_pathBasicBlockId + ", " + m_basicBlock + ")";
 	}
 	
 	/**
@@ -160,7 +165,7 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 */
 	public int getPathId(){
 		return m_pathId;
-	}
+	}	
 	
 	/**
 	 * returns a unique identifier for each block in the analysis 
@@ -168,6 +173,10 @@ public class PathBasicBlock implements Comparable<PathBasicBlock>{
 	 */
 	public int getBlockId(){
 		return m_basicBlock.getId();
+	}
+	
+	public int getPathBasicBlockId() {
+		return m_pathBasicBlockId;
 	}
 	
 	/**

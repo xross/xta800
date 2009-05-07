@@ -374,7 +374,7 @@ public class Engine {
 
 	public void setFrequency(int frequency) {
 		m_config.m_frequency = frequency;
-		invalidateRouteStats();
+		refreshRouteStats();
 		notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_FREQUENCY);
 	}
 
@@ -384,7 +384,7 @@ public class Engine {
 
 	public void setNumThreads(int numThreads) {
 		m_config.m_numThreads = numThreads;
-		invalidateRouteStats();
+		refreshRouteStats();
 		notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_NUM_THREADS);
 	}
 
@@ -466,7 +466,7 @@ public class Engine {
 
 		if (m_nodeCoreInstructionCache.setInstructionTimeTaken(
 				this, ref.getPc(), timeTaken, m_nodeId, m_coreId)) {
-			invalidateRouteStats();
+			refreshRouteStats();
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
@@ -496,7 +496,7 @@ public class Engine {
 
 		if (m_nodeCoreInstructionCache.setInstructionNumCycles(
 				this, ref.getPc(), numCycles, m_nodeId, m_coreId)) {
-			invalidateRouteStats();
+			refreshRouteStats();
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
             return true;			
@@ -518,7 +518,7 @@ public class Engine {
 			return;
 		}
 		if (m_nodeCoreInstructionCache.unsetInstructionTime(pc, m_nodeId, m_coreId)) {
-			invalidateRouteStats();
+			refreshRouteStats();
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
    			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 		} else {
@@ -533,7 +533,7 @@ public class Engine {
 		}
 
 		if (m_nodeCoreInstructionCache.unsetInstructionTime(ref, m_nodeId, m_coreId, unknowns)) {
-			invalidateRouteStats();
+			refreshRouteStats();
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
    			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 		} else {
@@ -796,15 +796,16 @@ public class Engine {
 		return null;
 	}
 	
-	private void notifyLoopsUpdated() {
-    	invalidateRouteStats();
+	private void notifyLoopsUpdated() {        
+		refreshRouteStats();
 	    notify(Notifier.NOTIFY_UPDATE_STATE, "");
 	    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
     }
 	
-	private void invalidateRouteStats() {
+	private void refreshRouteStats() {
 		for (Route route : m_routes) {
 			route.invalidateAllBlocks();
+			route.sortPaths();
 		}		
 	}
 	
