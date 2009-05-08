@@ -4,10 +4,10 @@ Frequency: 400
 NumThreads: 8
 SrcPaths: .
 Loaded executable: test.xe
-Node: 0, Core: 0 \(Debug information avaliable\)
-Node: 0, Core: 1 \(Debug information avaliable\)
-Node: 0, Core: 2 \(Debug information avaliable\)
-Node: 0, Core: 3 \(Debug information avaliable\)
+Node: 0, Core: 0 \(No debug information found\)
+Node: 0, Core: 1 \(No debug information found\)
+Node: 0, Core: 2 \(No debug information found\)
+Node: 0, Core: 3 \(No debug information found\)
 No routes analysed
 Error: Unresolved reference: test.xc:11
 Label: ben, pc: 0x[0-9a-fA-F]{5}
@@ -19,10 +19,10 @@ Frequency: 400
 NumThreads: 8
 SrcPaths: .
 Loaded executable: test.xe
-Node: 0, Core: 0 \(Debug information avaliable\)
-Node: 0, Core: 1 \(Debug information avaliable\)
-Node: 0, Core: 2 \(Debug information avaliable\)
-Node: 0, Core: 3 \(Debug information avaliable\)
+Node: 0, Core: 0 \(No debug information found\)
+Node: 0, Core: 1 \(No debug information found\)
+Node: 0, Core: 2 \(No debug information found\)
+Node: 0, Core: 3 \(No debug information found\)
 No routes analysed
 Label: ben, pc: 0x[0-9a-fA-F]{5}
 Label: bob, pc: 0x[0-9a-fA-F]{5}
@@ -33,10 +33,10 @@ Frequency: 400
 NumThreads: 8
 SrcPaths: .
 Loaded executable: test.xe
-Node: 0, Core: 0 \(Debug information avaliable\)
-Node: 0, Core: 1 \(Debug information avaliable\)
-Node: 0, Core: 2 \(Debug information avaliable\)
-Node: 0, Core: 3 \(Debug information avaliable\)
+Node: 0, Core: 0 \(No debug information found\)
+Node: 0, Core: 1 \(No debug information found\)
+Node: 0, Core: 2 \(No debug information found\)
+Node: 0, Core: 3 \(No debug information found\)
 No routes analysed
 none
 Error: Unresolved reference: test.xc:11
@@ -49,10 +49,10 @@ Frequency: 400
 NumThreads: 8
 SrcPaths: .
 Loaded executable: test.xe
-Node: 0, Core: 0 \(Debug information avaliable\)
-Node: 0, Core: 1 \(Debug information avaliable\)
-Node: 0, Core: 2 \(Debug information avaliable\)
-Node: 0, Core: 3 \(Debug information avaliable\)
+Node: 0, Core: 0 \(No debug information found\)
+Node: 0, Core: 1 \(No debug information found\)
+Node: 0, Core: 2 \(No debug information found\)
+Node: 0, Core: 3 \(No debug information found\)
 No routes analysed
 Label: ben, pc: 0x[0-9a-fA-F]{5}
 Label: bob, pc: 0x[0-9a-fA-F]{5}
