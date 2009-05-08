@@ -1,0 +1,17 @@
+Route\(0\) path: watchdog to watchdog
+    Pass with \d+ unknowns, Slack: \d+\.\d+ns, Required: \d+\.\d+ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Complete paths: \d+, Unresolved paths: 0
+
+Route\(1\) path: recieve_local_node to recieve_local_node
+    Pass with \d+ unknowns, Slack: \d+\.\d+ns, Required: \d+\.\d+ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Complete paths: \d+, Unresolved paths: 0
+
+Route\(2\) path: recieve_external_0 to recieve_external_0
+    Pass with \d+ unknowns, Slack: \d+\.\d+ns, Required: \d+\.\d+ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Complete paths: \d+, Unresolved paths: 0
+
+Route\(3\) path: recieve_external_1 to recieve_external_1
+    Pass with \d+ unknowns, Slack: \d+\.\d+ns, Required: \d+\.\d+ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Complete paths: \d+, Unresolved paths: 0
+
+Pass, Min Frequency: \d+ Mhz

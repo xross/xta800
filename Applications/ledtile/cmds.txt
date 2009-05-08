@@ -1,0 +1,51 @@
+# =========================================================================== #
+# Time Function: ledreformat_process_mbi5026
+# =========================================================================== #
+#
+# STATUS: The function will analyse, but the loop counts cannot 
+# be scripted (from source level) due to the fact that the c compiler 
+# does not currently process the xta label pragmas.
+
+# =========================================================================== #
+# Time Function: ledreformat_process_mbi5026
+# =========================================================================== #
+#
+# STATUS: This function is currently too big to analyse. This is 
+# due to lots of calls to memcpy, which cause the path count to explode.
+# This should be ok once the new internal structure is implemented.
+
+# =========================================================================== #
+# Times each of the cases inside the select in 
+# the while(1) loop inside function: ethSwitch
+# =========================================================================== #
+config proc 0 2
+
+set constraint !recieve_external_0 && !recieve_external_1 && !recieve_local_node
+analyse path watchdog watchdog
+set required - 10000.0 ns
+
+set constraint !recieve_external_0 && !recieve_external_1 && !watchdog
+analyse path recieve_local_node recieve_local_node
+set loopmax - recieve_local_node_loop 8
+set loopmax - ethTx_loop 4
+set required - 10000.0 ns
+
+set constraint !watchdog && !recieve_external_1 && !recieve_local_node
+analyse path recieve_external_0 recieve_external_0
+set loopmax - ethPhyRx_loop 4
+set loopmax - localTx_loop 4
+set loopmax - adjustTTL_loop 4
+set loopmax - ethTx_loop 4
+set required - 10000.0 ns
+
+set constraint !recieve_external_0 && !watchdog && !recieve_local_node
+analyse path recieve_external_1 recieve_external_1
+set loopmax - ethPhyRx_loop 4
+set loopmax - localTx_loop 4
+set loopmax - adjustTTL_loop 4
+set loopmax - ethTx_loop 4
+set required - 10000.0 ns
+
+print summary
+
+exit
