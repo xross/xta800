@@ -5,7 +5,6 @@ import java.util.TreeMap;
 
 import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
-import com.xmos.xta.engine.Engine;
 
 public class EndpointTableMap {
 	private static final boolean DEBUG = false;
@@ -34,7 +33,7 @@ public class EndpointTableMap {
 		return m_locations;
 	}
 	
-	public boolean load(Engine engine, XeLoader xeLoader) {
+	public boolean load(XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(
 				m_sectionName, m_nodeId, m_coreId);
 				

@@ -14,12 +14,13 @@ public class InstructionDecodeCache {
 	private HashMap<Integer, XtaInstruction> m_instructionCache;
 	private SymbolTable m_symbolTable;
 	private Config m_config;
+	private Notifier m_notifier;
 
 	// There can be two FNOPs at one PC
 	private HashMap<Integer, XtaInstruction> m_fnopCache[];
     
 	@SuppressWarnings("unchecked")
-	InstructionDecodeCache(SymbolTable symbolTable, XeLoader.Architecture architecture, Config config) {
+	InstructionDecodeCache(SymbolTable symbolTable, XeLoader.Architecture architecture, Config config, Notifier notifier) {
     	m_instructionDecoder = XtaInstructionDecoder.createInstructionDecoder(architecture);
 		m_instructionCache = new HashMap<Integer, XtaInstruction>();
         m_fnopCache = new HashMap[2];
@@ -27,6 +28,7 @@ public class InstructionDecodeCache {
         m_fnopCache[1] = new HashMap<Integer, XtaInstruction>();
         m_symbolTable = symbolTable;
         m_config = config;
+        m_notifier = notifier;
 	}
 	
 	XtaInstruction getInstruction(int pc){
@@ -62,7 +64,7 @@ public class InstructionDecodeCache {
         return fnop;
     }
 
-    boolean setInstructionTimeTaken(Engine engine, int pc, double timeTaken) {
+    boolean setInstructionTimeTaken(int pc, double timeTaken) {
 		if (m_instructionCache.containsKey(pc)) {
 			XtaInstruction instruction = m_instructionCache.get(pc);
 			if (instruction.canPause()) {
@@ -70,11 +72,11 @@ public class InstructionDecodeCache {
 			    return true;
 			}
 			
-			engine.notify(Notifier.NOTIFY_ERROR, 
+			m_notifier.notify(Notifier.NOTIFY_ERROR, 
 					String.format("Instruction at PC: 0x%x cannot pause", pc));			
             return false;
 		}
-		engine.notify(Notifier.NOTIFY_ERROR, 
+		m_notifier.notify(Notifier.NOTIFY_ERROR, 
 				String.format("PC: 0x%08x not found", pc));			
 		return false;
     }
@@ -90,7 +92,7 @@ public class InstructionDecodeCache {
 		return 0;    	
     }
 
-    boolean setInstructionNumCycles(Engine engine, int pc, long numCycles) {
+    boolean setInstructionNumCycles(int pc, long numCycles) {
 		if (m_instructionCache.containsKey(pc)) {
 			XtaInstruction instruction = m_instructionCache.get(pc);
 			if (instruction.canPause()) {
@@ -98,11 +100,11 @@ public class InstructionDecodeCache {
 			    return true;
 			}
 			
-			engine.notify(Notifier.NOTIFY_ERROR, 
+			m_notifier.notify(Notifier.NOTIFY_ERROR, 
 					String.format("Instruction at PC: 0x%x cannot pause", pc));						
             return true;
 		}
-		engine.notify(Notifier.NOTIFY_ERROR, 
+		m_notifier.notify(Notifier.NOTIFY_ERROR, 
 				String.format("PC: 0x%05x not found", pc));			
 		return false;
     }    

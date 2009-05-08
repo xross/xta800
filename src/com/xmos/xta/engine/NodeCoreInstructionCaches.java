@@ -12,20 +12,20 @@ public class NodeCoreInstructionCaches {
 	private HashMap<String, InstructionDecodeCache> m_nodeCore;
 	private XeLoader m_xeLoader;
 	
-	public NodeCoreInstructionCaches(Engine engine, XeLoader xeLoader, Config config) {
+	public NodeCoreInstructionCaches(Notifier notifier, XeLoader xeLoader, Config config) {
 		m_xeLoader = xeLoader;
 		m_nodeCore = new HashMap<String, InstructionDecodeCache>();
 		for (int node : m_xeLoader.getNodeIds()) {
 			for (int core : m_xeLoader.getCoreIds(node)) {
-				addNodeCore(engine, node, core, config);
+				addNodeCore(notifier, node, core, config);
 			}
 		}
 	}
 	
-	public void addNodeCore(Engine engine, int node, int core, Config config) {
+	public void addNodeCore(Notifier notifier, int node, int core, Config config) {
 		String newNodeCore = nodeCoreString(node, core);
 		InstructionDecodeCache idc = new InstructionDecodeCache(
-				m_xeLoader.getSymbolTable(node, core), m_xeLoader.getArchitecture(), config);
+				m_xeLoader.getSymbolTable(node, core), m_xeLoader.getArchitecture(), config, notifier);
 		m_nodeCore.put(newNodeCore, idc);
 	}
 	
@@ -43,9 +43,9 @@ public class NodeCoreInstructionCaches {
 		return idc.getFNop(pc, fnopNum);
 	}
 	
-	public boolean setInstructionTimeTaken(Engine engine, int pc, double timeTaken, int node, int core) {
+	public boolean setInstructionTimeTaken(int pc, double timeTaken, int node, int core) {
 		InstructionDecodeCache idc = m_nodeCore.get(nodeCoreString(node, core));
-		return idc.setInstructionTimeTaken(engine, pc, timeTaken);
+		return idc.setInstructionTimeTaken(pc, timeTaken);
 	}
 	
 	public double getInstructionTimeTaken(int pc, int node, int core) {
@@ -53,9 +53,9 @@ public class NodeCoreInstructionCaches {
 		return idc.getInstructionTimeTaken(pc);
 	}
 	
-	public boolean setInstructionNumCycles(Engine engine, int pc, long numCycles, int node, int core) {
+	public boolean setInstructionNumCycles(int pc, long numCycles, int node, int core) {
 		InstructionDecodeCache idc = m_nodeCore.get(nodeCoreString(node, core));
-		return idc.setInstructionNumCycles(engine, pc, numCycles);
+		return idc.setInstructionNumCycles(pc, numCycles);
 	}
 
 	public long getInstructionNumCycles(int pc, int node, int core) {
