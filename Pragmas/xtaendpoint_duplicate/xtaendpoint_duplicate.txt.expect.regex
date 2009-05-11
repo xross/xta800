@@ -1,3 +1,3 @@
 Warning: Duplicate endpoint: SAME at pc: 0x[0-9a-fA-F]+
 Error: Duplicate endpoint: DIFFERENT
-none
+Error: No executable loaded
