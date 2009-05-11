@@ -61,16 +61,22 @@ public class BranchMap {
 			m_notifier.notify(Notifier.NOTIFY_ERROR, "Invalid size for .xtabranch section");
 			return false;
 		}
-		
-		int byteIndex = 0;
-        while (byteIndex < data.length) {        	
-        	int fromPc = ByteArrayManipulation.readInt(data, byteIndex);
-        	byteIndex += 4;        	
-        	int toPc = ByteArrayManipulation.readInt(data, byteIndex);
-        	byteIndex += 4;
 
-    		if (DEBUG) System.out.printf("- fromPc: 0x%08x, toPc: 0x%08xz\n", fromPc, toPc);        	
-    		add(fromPc, toPc);
+		try {
+			int byteIndex = 0;
+	        while (byteIndex < data.length) {        	
+	        	int fromPc = ByteArrayManipulation.readInt(data, byteIndex);
+	        	byteIndex += 4;        	
+	        	int toPc = ByteArrayManipulation.readInt(data, byteIndex);
+	        	byteIndex += 4;
+
+	    		if (DEBUG) System.out.printf("- fromPc: 0x%08x, toPc: 0x%08xz\n", fromPc, toPc);        	
+	    		add(fromPc, toPc);
+	        }        
+		} catch (Exception e) {
+		    m_notifier.notify(Notifier.NOTIFY_ERROR, String.format(
+			    	"Problem reading .xtabranch section while loading executable"));
+    	    return false;
         }        
         return true;
 	}	

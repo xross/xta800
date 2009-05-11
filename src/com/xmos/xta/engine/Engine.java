@@ -211,7 +211,6 @@ public class Engine implements Notifier {
 		m_coreId = 0;
 
 		m_xeLoader = newLoader;
-		m_executableFile = executableFile;
 		initialiseLists(fileFinder);
 		m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(this,
 				m_xeLoader, m_config);
@@ -236,6 +235,8 @@ public class Engine implements Notifier {
 		if (!loadEndpointTables())
 		    return false;		
 
+		m_executableFile = executableFile;
+		
 		m_ae = new AnalysisEngine(this, m_xeLoader, m_nodeCoreInstructionCache,
 				m_xeObjects, m_branches);
 
@@ -824,8 +825,8 @@ public class Engine implements Notifier {
 				m_labels.add(new LabelMap(node, core));
 				m_srcLabels.add(new CodePointMap(node, core, ".xtalabel", this, "label"));
 				m_endpoints.add(new CodePointMap(node, core, ".xtaendpoint", this, "endpoint"));
-				m_srcLabelTables.add(new SrcLabelTableMap(node, core, ".xtalabeltable"));
-				m_endpointTables.add(new EndpointTableMap(node, core, ".xtaendpointtable"));
+				m_srcLabelTables.add(new SrcLabelTableMap(node, core, ".xtalabeltable", this));
+				m_endpointTables.add(new EndpointTableMap(node, core, ".xtaendpointtable", this));
 				m_xeObjects.add(new XeObject(m_xeLoader, node, core, fileFinder));
 			}
 		}

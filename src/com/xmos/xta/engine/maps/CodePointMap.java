@@ -42,48 +42,54 @@ public class CodePointMap {
 		byte[] data = xeLoader.getSectionData(
 				m_sectionName, m_nodeId, m_coreId);
 				
-		if (DEBUG) System.out.printf("%s: section size: %d, node: %d, core: %d\n",
-				m_sectionName, data.length, m_nodeId, m_coreId);
+		if (DEBUG) System.out.printf("%s: section size: %d (0x%x), node: %d, core: %d\n",
+				m_sectionName, data.length, data.length, m_nodeId, m_coreId);
 
-		int byteIndex = 0;
-        while (byteIndex < data.length) {
-        	int base = byteIndex;
-        	
-        	int size = ByteArrayManipulation.readInt(data, byteIndex);
-        	byteIndex += 4;
+		try {
+			int byteIndex = 0;
+	        while (byteIndex < data.length) {
+	        	int base = byteIndex;
+	        	
+	        	int size = ByteArrayManipulation.readInt(data, byteIndex);
+	        	byteIndex += 4;
 
-       		int version = ByteArrayManipulation.readInt(data, byteIndex);
-       		byteIndex += 4;
-        		        		
-       		String compilationDir = ByteArrayManipulation.readString(data, byteIndex);
-       		byteIndex += compilationDir.length() + 1;
+	       		int version = ByteArrayManipulation.readInt(data, byteIndex);
+	       		byteIndex += 4;
+	        		        		
+	       		String compilationDir = ByteArrayManipulation.readString(data, byteIndex);
+	       		byteIndex += compilationDir.length() + 1;
 
-    		if (DEBUG) System.out.printf("size: %d, version: %s, compilationDir: %s\n",
-    				size, version, compilationDir);
-       		
-           	while (byteIndex < (base + size)) {        		
-        		int location = ByteArrayManipulation.readInt(data, byteIndex);
-        		byteIndex += 4;
-        		
-        		String codePoint = ByteArrayManipulation.readString(data, byteIndex);
-        		byteIndex += codePoint.length() + 1;
+	    		if (DEBUG) System.out.printf("size: %d (0x%x), version: %s, compilationDir: %s\n",
+	    				size, size, version, compilationDir);
+	       		
+	           	while (byteIndex < (base + size)) {        		
+	        		int location = ByteArrayManipulation.readInt(data, byteIndex);
+	        		byteIndex += 4;
+	        		
+	        		String codePoint = ByteArrayManipulation.readString(data, byteIndex);
+	        		byteIndex += codePoint.length() + 1;
 
-        		String fileName = ByteArrayManipulation.readString(data, byteIndex);
-        		byteIndex += fileName.length() + 1;
-        		
-        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
-        		byteIndex += 4;
-        		        		
-        		if (DEBUG) System.out.printf("- label: %s, pc: 0x%08x, fileName: %s, lineNumber: %d\n", 
-        				codePoint, location, fileName, lineNumber);
-        		
-        		if (validateCodePoint(codePoint, location)) {
-            		m_codePoints.put(codePoint, new CodePointInfo(location, codePoint, compilationDir, fileName, lineNumber));        	        		
-        		} else {
-        			m_codePoints.clear();
-        			return false;
-        		}
-        	}
+	        		String fileName = ByteArrayManipulation.readString(data, byteIndex);
+	        		byteIndex += fileName.length() + 1;
+	        		
+	        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
+	        		byteIndex += 4;
+	        		        		
+	        		if (DEBUG) System.out.printf("- label: %s, pc: 0x%08x, fileName: %s, lineNumber: %d\n", 
+	        				codePoint, location, fileName, lineNumber);
+	        		
+	        		if (validateCodePoint(codePoint, location)) {
+	            		m_codePoints.put(codePoint, new CodePointInfo(location, codePoint, compilationDir, fileName, lineNumber));        	        		
+	        		} else {
+	        			m_codePoints.clear();
+	        			return false;
+	        		}
+	        	}			
+		    }
+        } catch (Exception e) {
+			m_notifier.notify(Notifier.NOTIFY_ERROR, String.format(
+					"Problem reading %s section while loading executable", m_sectionName));
+        	return false;
         }
         return true;
 	}
