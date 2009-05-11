@@ -45,6 +45,8 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
 	}
 	
 	public void run() {
+		XtaNotifier.getInstance().notify(Notifier.NOTIFY_SET_GUI_COMMAND, "");
+
 		FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.OPEN);
         fileDialog.setText("Open Xe File");
         String[] filterExt = { "*.xe" };

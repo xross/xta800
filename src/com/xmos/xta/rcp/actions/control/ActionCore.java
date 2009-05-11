@@ -48,6 +48,7 @@ public class ActionCore extends Action implements IPropertyChangeListener, IMenu
 				String selected = ((MenuItem)e.getSource()).getText();
 
 				try {
+					XtaNotifier.getInstance().notify(Notifier.NOTIFY_SET_GUI_COMMAND, "");					
 		        	int coreId = Integer.parseInt(selected); 
 		        	if (coreId != m_currentCoreId) {
 		        		XtaEngine.getEngine().setCoreId(coreId);

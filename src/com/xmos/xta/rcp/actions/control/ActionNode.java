@@ -48,6 +48,7 @@ public class ActionNode extends Action implements IPropertyChangeListener, IMenu
 				String selected = ((MenuItem)e.getSource()).getText();
 
 				try {
+					XtaNotifier.getInstance().notify(Notifier.NOTIFY_SET_GUI_COMMAND, "");					
 		        	int nodeId = Integer.parseInt(selected); 
 		        	if (nodeId != m_currentNodeId) {
 		        		XtaEngine.getEngine().setNodeId(nodeId);
