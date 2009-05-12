@@ -121,4 +121,8 @@ public class MultiSection extends Node {
 		return "cluster_Section" + m_id;
 	}
 	
+	public void display(int indentLevel) {
+		printIndent(indentLevel);
+		System.out.printf("multisection\n");
+	}			
 }

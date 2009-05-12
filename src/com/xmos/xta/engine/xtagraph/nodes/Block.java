@@ -106,4 +106,13 @@ public class Block extends Node {
 		return "Block" + m_id;
 	}
 
+	public void display(int indentLevel) {
+		printIndent(indentLevel);
+		System.out.printf("block ");
+		
+		for (XtaInstruction instruction : m_block.getInstructions()) {
+			System.out.printf("[0x%x]", instruction.getPc());
+		}
+		System.out.printf("\n");
+	}		
 }
