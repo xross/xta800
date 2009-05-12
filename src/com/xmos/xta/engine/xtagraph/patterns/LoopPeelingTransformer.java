@@ -82,10 +82,12 @@ public class LoopPeelingTransformer extends PatternMatcher {
 				//we can actually split it
 				for(Node node : loop){
 					if(!connectionPoints.contains(node) && entryPoints.contains(node)){
+					
 						CommonMethods.wedgeDown(node, workingSet);
 						return true;
 					}
 					if(!connectionPoints.contains(node) && exitPoints.contains(node)){
+						
 						CommonMethods.wedgeUp(node, workingSet);
 						return true;
 					}

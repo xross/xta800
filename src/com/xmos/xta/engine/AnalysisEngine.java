@@ -252,94 +252,9 @@ public class AnalysisEngine {
 	public void printDot(int nodeId, int coreId) {
 		XTAGraph graph = new XTAGraph(new HashSet<BasicBlock>(getBasicBlockStartPcs(nodeId, coreId).values()));
 		
-		graph.decompose();
-		graph.renderGraph(new LinkedList<Node>(graph.m_nodes).getFirst());
 		//graph.printGraph(graph.m_nodes);
-		//graph.draw();
-		
-		HashMap<XtaInstruction, BasicBlock> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
-		if(false){
-			System.out.println("digraph g {");
-			for (BasicBlock node : pcToNode.values()) {
-				
-				if(node.getPrevoiusNodes().size() == 0){
-					boolean allNops = true;
-					for(XtaInstruction inst : node.getInstructions()){
-						//System.out.println(Integer.toHexString(inst.getOpcode()));
-						if(!inst.isNop()){
-							allNops =false;
-						}
-					}
-					//System.out.println("----");
-					if(allNops){
-						continue;
-					}
-				}
-				
-				
-				//int maxFnops =0 ;
-				//int minFnops =0x10000 ;
-				//boolean singular = false;
-				System.out.print("node" + node.m_nodeId + " [");
-				
-				System.out.print( "label = \"");
-				/*
-				if(node.getIBufferStates().size() ==1){
-					singular = true;
-				} else {
-					for(IBufferState ibs :node.getIBufferStates()){
-						maxFnops = Math.max(maxFnops, ibs.m_fnops.size());
-						minFnops = Math.min(minFnops, ibs.m_fnops.size());
-					}
-					System.out.print("max: " +maxFnops + " min: " + minFnops + "\\n");
-				}
-				*/
-			
-				for (XtaInstruction inst : node.getInstructions()) {
-					System.out.print(inst + "\\n");
-				}
-				System.out.print("\", ");
-				
-				
-				System.out.print("style=filled, shape=box,");
-				/*
-				if(singular){
-					System.out.println("fillcolor=green];");
-				} else {
-					if(maxFnops == minFnops){
-						if(maxFnops == 0){
-							System.out.println("fillcolor=green];");
-						} else {
-							System.out.println("fillcolor=blue];");
-						}
-						
-					} else {
-						System.out.println("fillcolor=red];");
-					}
-					
-				}
-				*/
-				
-				if(node.getNextNodes().size() == 0 ){
-					System.out.println("fillcolor=red];");
-				} else {
-					if(node.getPrevoiusNodes().size() == 0){
-						System.out.println("fillcolor=blue];");
-					} else {
-						System.out.println("fillcolor=green];");
-					}
-					
-				}
-				
-			}
-			for (BasicBlock node : pcToNode.values()) {
-				for (BasicBlock nextNode : node.getNextNodes()) {
-					System.out.println("node" + node.m_nodeId + " -> node" + nextNode.m_nodeId + ";");
-				}
-			}
-			System.out.println("}");
-		}
-		
+		graph.decompose();
+		//graph.renderGraph(new LinkedList<Node>(graph.m_nodes).getFirst());
 	}
 
 	private HashMap<XtaInstruction, BasicBlock> getBasicBlockStartPcs(int nodeId, int coreId) {
