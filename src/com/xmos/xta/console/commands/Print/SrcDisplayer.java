@@ -60,7 +60,7 @@ public class SrcDisplayer {
 	        TreeSet<Integer> fileLines = linesCovered.get(sourceFile.getFullSourceName());    
 	        if (fileLines.size() > 0) {
 				m_console.display("----------------------------------\n");
-				m_console.display(sourceFile.getFileName() + " (" + sourceFile.getCompilationDir() + ")\n");
+				m_console.display(sourceFile.getFileName() + " (" + sourceFile.getBaseDir() + ")\n");
 				m_console.display("----------------------------------\n");	        	
 	        	
 				for (SourceLine sourceLine : sourceFile.getSourceLines()) {						

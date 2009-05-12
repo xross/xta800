@@ -43,7 +43,7 @@ public class Sources extends Command {
 
 	    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {
   	    	console.display(String.format("- %s (%s)", 
-  	    			debugFile.getFileName(), debugFile.getCompilationDir()));
+  	    			debugFile.getFileName(), debugFile.getBaseDir()));
   	    	  	    	
   	    	if (debugFile.getFile() == null) {
   	    		console.display(" (File not found)"); 	    		
