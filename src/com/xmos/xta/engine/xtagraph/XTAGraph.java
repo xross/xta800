@@ -23,11 +23,11 @@ import com.xmos.xta.engine.xtagraph.patterns.TerminalTransformer;
 
 
 public class XTAGraph {	
-	
+	static int g;
 	private static int graphcount;
 	private Set<BasicBlock> m_unreachable;
 	public Collection<Node> m_nodes;
-	
+	private static final boolean DEBUG = true;
 	private int m_graphSize;
 	
 	public XTAGraph(HashSet<BasicBlock> values) {
@@ -40,6 +40,8 @@ public class XTAGraph {
 		m_nodes = new HashSet<Node>(nodes);
 	}
 	
+
+	
 	public void decompose(){
 
 		//now we start applying the rules
@@ -49,9 +51,6 @@ public class XTAGraph {
 		List<PatternMatcher> patternMatchers = new ArrayList<PatternMatcher>();
 		
 		patternMatchers.add(new SelfLoopTransformer());
-		
-		
-		
 		patternMatchers.add(new PathPatternMatcher());
 		patternMatchers.add(new TerminalPatternMatcher());
 		patternMatchers.add(new MultiSectionPatternMatcher());
@@ -62,7 +61,6 @@ public class XTAGraph {
 		patternMatchers.add(new MultiSectionTransformer());
 		patternMatchers.add(new LoopPeelingTransformer());
 		patternMatchers.add(new TerminalTransformer());
-		//System.out.println();
 		while(working){
 			
 			//check graph integrity
@@ -73,9 +71,8 @@ public class XTAGraph {
 			
 			for(PatternMatcher pm : patternMatchers){
 				for(Node node : workingSet){
-					if(pm.isMatch(node, workingSet)){
+					if(pm.isMatch(node, workingSet, DEBUG)){
 						working = true;
-						//System.out.println(pm.getClass().getSimpleName());
 						recent = pm;
 						break;
 					}
@@ -100,7 +97,6 @@ public class XTAGraph {
 				return;
 			}
 		}
-		
 		
 		m_graphSize = workingSet.size();
 	}
@@ -140,8 +136,7 @@ public class XTAGraph {
 	public int getGraphSize(){
 		return m_graphSize;
 	}
-	
-	static int g;
+
 	/**
 	 * this taken a single node that represents the whole program and unpeels it to
 	 * render the whole graph again with the structure

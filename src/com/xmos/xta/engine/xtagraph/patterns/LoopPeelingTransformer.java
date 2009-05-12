@@ -8,7 +8,9 @@ import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public class LoopPeelingTransformer extends PatternMatcher {
 
-	public boolean isMatch(Node currentNode, Collection<Node> workingSet) {
+	
+	
+	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose) {
 		
 		//first detect all loops from the current node
 		
@@ -17,25 +19,6 @@ public class LoopPeelingTransformer extends PatternMatcher {
 
 		followNode(currentNode, currentNode, loops, new LinkedList<Node>());
 		if(loops.size() == 0) return false;
-		
-		//System.out.println("# " + currentNode + " has as its loops: ");
-		for(List<Node> loop : loops){
-			//System.out.print("#[");
-			for(Node node : loop){
-				if(node.getNextNodes().size() > 1){
-					//System.out.print("*" + node + " ");
-				} else {
-				//	System.out.print(" " + node + " ");
-				}
-				
-
-			}
-			
-			//System.out.println("]");
-		}
-		
-		
-		//never split the header
 
 		for(List<Node> loop : loops){
 			Collection<Node> exitPoints= new HashSet<Node>();
@@ -82,13 +65,17 @@ public class LoopPeelingTransformer extends PatternMatcher {
 				//we can actually split it
 				for(Node node : loop){
 					if(!connectionPoints.contains(node) && entryPoints.contains(node)){
-					
-						CommonMethods.wedgeDown(node, workingSet);
+						if(verbose){
+							System.out.println("trying to peel for a loop");
+						}
+						CommonMethods.wedgeDown(node, workingSet, verbose);
 						return true;
 					}
 					if(!connectionPoints.contains(node) && exitPoints.contains(node)){
-						
-						CommonMethods.wedgeUp(node, workingSet);
+						if(verbose){
+							System.out.println("trying to peel for a loop");
+						}
+						CommonMethods.wedgeUp(node, workingSet, verbose);
 						return true;
 					}
 				}

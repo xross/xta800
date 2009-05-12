@@ -6,7 +6,7 @@ import java.util.HashSet;
 import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public class CommonMethods {
-	
+	static private final boolean DEBUG = false;
 	public static boolean isTerminal(Node node){
 		if(node.getNextNodes().size() == 0){
 			return true;
@@ -25,8 +25,10 @@ public class CommonMethods {
 		leaf.addPrevNode(root);
 	}
 	
-	public static void wedgeUp(Node node, Collection<Node> workingSet){
-		System.out.println("wedge up on " + node);
+	public static void wedgeUp(Node node, Collection<Node> workingSet, boolean verbose){
+		if(verbose) {
+			System.out.println("am wedging up on node " + node);
+		}
 		Collection<Node> newNodes = new HashSet<Node>();
 		
 		for(Node next : node.getNextNodes()){
@@ -54,8 +56,10 @@ public class CommonMethods {
 		workingSet.addAll(newNodes);
 	}
 	
-	public static void wedgeDown(Node node, Collection<Node> workingSet){
-		System.out.println("wedge down on " + node);
+	public static void wedgeDown(Node node, Collection<Node> workingSet, boolean verbose){
+		if(verbose) {
+			System.out.println("am wedging down on node " + node);
+		}
 		Collection<Node> newNodes = new HashSet<Node>();
 		
 		for(Node prev : node.getPrevNodes()){
@@ -87,7 +91,7 @@ public class CommonMethods {
 	}
 	
 	public static void wedgeDown(Node node, Node piviot, Collection<Node> workingSet){
-		System.out.println("wedge down on " + node);
+		if (DEBUG) System.out.println("wedge down on " + node);
 		assert(node.getPrevNodes().contains(piviot));
 		
 		Node newNode = node.clone();
@@ -108,7 +112,7 @@ public class CommonMethods {
 	
 	public static void wedgeUp(Node node, Node piviot, Collection<Node> workingSet){
 		assert(node.getNextNodes().contains(piviot));
-		System.out.println("wedge up on " + node);
+		if (DEBUG) System.out.println("wedge up on " + node);
 		Node newNode = node.clone();
 		
 		piviot.getPrevNodes().remove(node);

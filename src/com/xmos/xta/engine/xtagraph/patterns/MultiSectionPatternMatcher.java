@@ -10,7 +10,7 @@ import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public class MultiSectionPatternMatcher extends PatternMatcher {
 
-	public boolean isMatch(Node currentNode, Collection<Node> workingSet) {
+	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose) {
 		// detect all the jump nodes first
 		Set<Node> jumpNodes = new HashSet<Node>();
 		for (Node nextNode : currentNode.getNextNodes()) {
@@ -58,7 +58,7 @@ public class MultiSectionPatternMatcher extends PatternMatcher {
 						System.err.println("section failed sanity check");
 						return false;
 					}
-					updateGraph(currentNode, sectionNodes, endNode, workingSet, endNode);
+					updateGraph(currentNode, sectionNodes, endNode, workingSet, endNode, verbose);
 					return true;
 				}
 			} else {
@@ -67,7 +67,7 @@ public class MultiSectionPatternMatcher extends PatternMatcher {
 						System.err.println("section failed sanity check");
 						return false;
 					}
-					updateGraph(currentNode, sectionNodes, null, workingSet, endNode);
+					updateGraph(currentNode, sectionNodes, null, workingSet, endNode,verbose);
 					return true;
 				}
 			}
@@ -103,9 +103,16 @@ public class MultiSectionPatternMatcher extends PatternMatcher {
 		return true;
 	}
 
-	protected void updateGraph(Node startNode, Collection<Node> sectionNodes, Node jumpNode, Collection<Node> workingSet, Node endNode) {
-
+	protected void updateGraph(Node startNode, Collection<Node> sectionNodes, Node jumpNode, Collection<Node> workingSet, Node endNode, boolean verbose) {
 		MultiSection ms = new MultiSection(sectionNodes, jumpNode);
+		
+		if(verbose){
+			System.out.println("have found a section from " + startNode + " to " + endNode + " jump: " + (jumpNode != null));
+			System.out.println("have replaced "+sectionNodes + " with " + ms);
+		}
+		
+		
+		
 
 		startNode.getNextNodes().removeAll(sectionNodes);
 		startNode.addNextNode(ms);

@@ -10,12 +10,17 @@ import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public class TerminalTransformer extends PatternMatcher {
 
-	public boolean isMatch(Node node, Collection<Node> workingSet) {
+	public boolean isMatch(Node node, Collection<Node> workingSet, boolean verbose) {
 		
 		//no terminal may have more then one in
 		
 		if(node.getNextNodes().size() == 0 && node.getPrevNodes().size() > 1){
-			CommonMethods.wedgeDown(node, workingSet);
+			
+
+			if(verbose){
+				System.out.println("terminal node needs wedging");
+			}
+			CommonMethods.wedgeDown(node, workingSet, verbose);
 			return true;
 		} 
 		
@@ -30,7 +35,9 @@ public class TerminalTransformer extends PatternMatcher {
 				
 				List<Node> list = new LinkedList<Node>(node.getNextNodes());
 				list.removeAll(terminals);
-				
+				if(verbose){
+					System.out.println("terminal node needs wedging");
+				}
 				CommonMethods.wedgeUp(node, list.get(0), workingSet);
 				return true;
 			}
