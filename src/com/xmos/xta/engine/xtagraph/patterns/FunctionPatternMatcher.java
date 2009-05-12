@@ -6,7 +6,7 @@ import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public class FunctionPatternMatcher extends PatternMatcher {
 
-	public boolean isMatch(Node node, Collection<Node> workingSet) {
+	public boolean isMatch(Node node, Collection<Node> workingSet, boolean verbose) {
 		return false;
 	}
 

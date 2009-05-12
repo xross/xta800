@@ -6,7 +6,9 @@ import com.xmos.xta.engine.xtagraph.nodes.Node;
 public class SelfLoopTransformer  extends PatternMatcher {
 
 
-	public boolean isMatch(Node currentNode, Collection<Node> workingSet) {
+	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose) {
+		
+		
 		if(currentNode.getNextNodes().contains(currentNode)){
 			Node newNode = currentNode.clone();
 			newNode.addNextNode(currentNode);
@@ -16,6 +18,10 @@ public class SelfLoopTransformer  extends PatternMatcher {
 			currentNode.addNextNode(newNode);
 			currentNode.addPrevNode(newNode);
 			workingSet.add(newNode);
+			
+			if(verbose){
+				System.out.println("found a self loop at " + currentNode);
+			}
 			
 			return true;
 		} else {

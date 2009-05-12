@@ -10,7 +10,7 @@ import com.xmos.xta.engine.xtagraph.nodes.Path;
 
 public class PathPatternMatcher extends PatternMatcher {
 
-	public boolean isMatch(Node startNode, Collection<Node> workingSet) {
+	public boolean isMatch(Node startNode, Collection<Node> workingSet, boolean verbose) {
 		Node currentNode = startNode;
 		
 		//must grow in both directions in order to avoid the need to consolidate path
@@ -61,7 +61,7 @@ public class PathPatternMatcher extends PatternMatcher {
 				System.err.println("failed sanity check");
 				return false;
 			} 
-			updateGraph(pathList, workingSet);
+			updateGraph(pathList, workingSet, verbose);
 			return true;
 		} else {
 			return false;
@@ -99,8 +99,12 @@ public class PathPatternMatcher extends PatternMatcher {
 		return false;
 	}
 
-	protected void updateGraph(LinkedList<Node> pathList, Collection<Node> workingSet) {
+	protected void updateGraph(LinkedList<Node> pathList, Collection<Node> workingSet, boolean verbose) {
 		Path path = new Path(pathList);
+		
+		if(verbose){
+			System.out.println("make a new path from " + pathList + " called " + path);
+		}
 		
 		Node startNodeInPath = pathList.getFirst();
 		Node endNodeInPath = pathList.getLast(); 

@@ -5,6 +5,6 @@ import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public abstract class PatternMatcher {
 
-	public abstract boolean isMatch(Node node, Collection<Node> workingSet);
+	public abstract boolean isMatch(Node node, Collection<Node> workingSet, boolean verbose);
 	
 }

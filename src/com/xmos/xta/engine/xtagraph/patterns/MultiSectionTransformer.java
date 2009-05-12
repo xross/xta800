@@ -10,7 +10,7 @@ import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public class MultiSectionTransformer extends PatternMatcher {
 
-	public boolean isMatch(Node currentNode, Collection<Node> workingSet) {
+	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose) {
 		
 		//detect all the jump nodes first
 		Set<Node> jumpNodes = new HashSet<Node>();
@@ -48,11 +48,11 @@ public class MultiSectionTransformer extends PatternMatcher {
 						//then this nextNode is interesting
 						if(nextNode.getNextNodes().size() > 1){
 							//wedge up
-							CommonMethods.wedgeUp(nextNode, workingSet);
+							CommonMethods.wedgeUp(nextNode, workingSet, verbose);
 							return true;
 						} else if(nextNode.getPrevNodes().size() > 1){
 							//wedge down
-							CommonMethods.wedgeDown(nextNode, workingSet);
+							CommonMethods.wedgeDown(nextNode, workingSet, verbose);
 							return true;
 						} 
 					}
