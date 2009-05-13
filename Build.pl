@@ -196,43 +196,61 @@ sub DoInstall
 {
   SetupVars();
 
-  XmosBuildLib::InstallFile("$DOMAIN", "${BIN}", "xta.exe");
-  XmosBuildLib::InstallReleaseFile("$DOMAIN", "${BIN}", "xta.exe", "bin");
+  if ($HOST ne "PC" && $HOST ne "Mac") {
+    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
 
-  XmosBuildLib::InstallFile("$DOMAIN", "lib", "xta.jar");
-  XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xta.jar", "bin");
-
-  XmosBuildLib::InstallFile("$DOMAIN", "bin", "$target");
-
-  # Unzips the zip file..
-  chdir("$INSTALLPATH") 
-    or die("Unable to chdir to: $INSTALLPATH\n");
-  system("unzip -q -o $target");
-  rmtree("xta_bin");
-  rename("xta_$platform", "xta_bin")
-    or die("Unable to rename xta_$platform to: xta_bin\n");
-
-  XmosBuildLib::InstallReleaseFile("$DOMAIN", "bin", "$target", ".");
-
-  # Unzips the zip file..
-  chdir("$INSTALLPATH/External/Product") 
-    or die("Unable to chdir to: $INSTALLPATH/External/Product\n");
-  system("unzip -q -o $target");
-  rmtree("xta_bin");
-  rename("xta_$platform", "xta_bin")
-    or die("Unable to rename xta_$platform to: xta_bin\n");
-  unlink("$target");
-
-  XmosBuildLib::InstallReleaseFile("$DOMAIN", ".", "xtagui.ini", "xta_bin");
+    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin64 $INSTALLPATH${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin64 $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
+  }else{
+    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
+  }
+#    system("cp -r $TOOLS_ECLIPSE${SLASH}updateSite $INSTALLPATH${SLASH}");
 
   # Linux uses a perl script to check the jvm
   if ($HOST ne "PC" && $HOST ne "Mac") {
-    XmosBuildLib::InstallFile("$DOMAIN", ".", "xtagui");
-    XmosBuildLib::InstallReleaseFile("$DOMAIN", ".", "xtagui", "bin");
+      system("cp $TOOLS_XTA${SLASH}xtagui $INSTALLPATH${SLASH}");
   }
-
-  chdir("$BUILDPATH") or die("oops");
 }
+
+#  XmosBuildLib::InstallFile("$DOMAIN", "${BIN}", "xta.exe");
+#  XmosBuildLib::InstallReleaseFile("$DOMAIN", "${BIN}", "xta.exe", "bin");
+
+#  XmosBuildLib::InstallFile("$DOMAIN", "lib", "xta.jar");
+#  XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xta.jar", "bin");
+
+#  XmosBuildLib::InstallFile("$DOMAIN", "bin", "$target");
+
+  # Unzips the zip file..
+#  chdir("$INSTALLPATH") 
+#    or die("Unable to chdir to: $INSTALLPATH\n");
+#  system("unzip -q -o $target");
+#  rmtree("xta_bin");
+#  rename("xta_$platform", "xta_bin")
+#    or die("Unable to rename xta_$platform to: xta_bin\n");
+
+#  XmosBuildLib::InstallReleaseFile("$DOMAIN", "bin", "$target", ".");
+
+  # Unzips the zip file..
+#  chdir("$INSTALLPATH/External/Product") 
+#    or die("Unable to chdir to: $INSTALLPATH/External/Product\n");
+#  system("unzip -q -o $target");
+#  rmtree("xta_bin");
+#  rename("xta_$platform", "xta_bin")
+#    or die("Unable to rename xta_$platform to: xta_bin\n");
+#  unlink("$target");
+
+#  XmosBuildLib::InstallReleaseFile("$DOMAIN", ".", "xtagui.ini", "xta_bin");
+
+  # Linux uses a perl script to check the jvm
+#  if ($HOST ne "PC" && $HOST ne "Mac") {
+#    XmosBuildLib::InstallFile("$DOMAIN", ".", "xtagui");
+#    XmosBuildLib::InstallReleaseFile("$DOMAIN", ".", "xtagui", "bin");
+#  }
+
+#  chdir("$BUILDPATH") or die("oops");
+#}
 
 sub DoLint
 {
@@ -289,13 +307,15 @@ sub SetupVars
     $buildDirProperties = $buildDir;
     $exeName    = "$exeName.exe";
 
-    my $version = `uname -m`;
-    chomp($version);
-    if ($version eq "x86_64") {
-      $config = "linux, gtk, x86_64";
-    } else {
-      $config = "linux, gtk, x86";
-    }
+  $config = "linux, gtk, x86_64 & linux, gtk, x86";
+
+#    my $version = `uname -m`;
+#    chomp($version);
+#    if ($version eq "x86_64") {
+#      $config = "linux, gtk, x86_64";
+#    } else {
+#      $config = "linux, gtk, x86";
+#    }
   }
 
   $eclipseDir  = "$ENV{'ECLIPSE_HOME'}";
@@ -354,12 +374,22 @@ sub BuildEclipse
   # Installs the zip file into the bin directory.
   mkdir("$TOOLS_XTA/bin");
   unlink("$TOOLS_XTA/bin/$target");
-  system("cp $buildDir/build/I.TestBuild/*.zip $TOOLS_XTA/bin/$target");
+
+  if ($HOST ne "PC" && $HOST ne "Mac") {
+      system("mv $buildDir/build/I.TestBuild/*.zip $TOOLS_XTA/bin/");
+  }else{
+    system("mv $buildDir/build/I.TestBuild/*.zip $TOOLS_XTA/bin/$target");
+  }
  
   # Unzips the zip file..
   chdir("$TOOLS_XTA/bin") 
     or die("Unable to chdir to: $TOOLS_XTA/bin\n");
-  system("unzip -q -o $target >> $buildOutput");
+
+  if ($HOST ne "PC" && $HOST ne "Mac") {
+    system("unzip `ls | grep 64` >> $buildOutput; mv xta_bin xta_bin64 >> $buildOutput; unzip `ls | grep -v 64 | grep .zip` >> $buildOutput");
+  }else{
+    system("unzip -o $target >> $buildOutput");
+  }
 }
 
 sub CreateBuildPropertiesFile
