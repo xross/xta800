@@ -154,7 +154,24 @@ public class XTAGraph {
 		System.out.println("}");
 	}
 	
-	public void display() {
+	// --------------------------------------------------------------------- //
+	// Helper Debug Methods.
+	// --------------------------------------------------------------------- //	
+	public void displayControlFlowGraph() {				
+		for (Node node : m_nodes) {
+			System.out.printf("-----------------------------------------\n");
+			System.out.printf("%s -> ", node.toString());			
+			for (Node nextNode : node.getNextNodes()) {
+				System.out.printf("[%s]", nextNode.toString());
+			}
+		    System.out.printf("\n");
+			if (node instanceof Block) {
+			    ((Block)node).display(0);			    
+			}
+		}
+	}
+	
+	public void displayStructureTree() {
 		assert(m_nodes.size() == 1);		
 		Node rootNode = m_nodes.iterator().next();
 		rootNode.display(0);		

@@ -40,6 +40,10 @@ public class Block extends Node {
 		return m_instructionStream;
 	}
 
+	public int getBasicBlockId() {
+		return m_block.getId();
+	}
+	
 	public List<XtaInstruction> getInstructions() {
 		return m_block.getInstructions();
 	}
@@ -111,7 +115,10 @@ public class Block extends Node {
 		System.out.printf("block(%d) ", m_id);
 		
 		for (XtaInstruction instruction : m_block.getInstructions()) {
-			System.out.printf("[0x%x]", instruction.getPc());
+			System.out.printf("[%s + %d: 0x%x]", 
+					instruction.getFunctionName(),
+					instruction.getFunctionOffset(),
+					instruction.getPc());
 		}
 		System.out.printf("\n");
 	}		

@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.TreeSet;
 
 import com.xmos.isa.Instruction;
@@ -16,7 +15,6 @@ import com.xmos.xeobject.Line;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.maps.BranchMap;
 import com.xmos.xta.engine.xtagraph.XTAGraph;
-import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public class AnalysisEngine {
 	private XeLoader m_xeLoader;
@@ -153,6 +151,7 @@ public class AnalysisEngine {
 				fillGraphFnops(nodeId, coreId);
 
 				// TODO
+				//printStructureTrace(nodeId, coreId);
 				printDot(nodeId, coreId);
 			}
 		}
@@ -252,10 +251,11 @@ public class AnalysisEngine {
 	public void printDot(int nodeId, int coreId) {
 		XTAGraph graph = new XTAGraph(new HashSet<BasicBlock>(getBasicBlockStartPcs(nodeId, coreId).values()));
 		
+		//graph.displayControlFlowGraph();
 		//graph.printGraph(graph.m_nodes);
 		graph.decompose();
 		//graph.renderGraph(new LinkedList<Node>(graph.m_nodes).getFirst());
-		//graph.display();
+		//graph.displayStructureTree();
 	}
 
 	private HashMap<XtaInstruction, BasicBlock> getBasicBlockStartPcs(int nodeId, int coreId) {
@@ -532,6 +532,47 @@ public class AnalysisEngine {
 		NodeCore(int node, int core) {
 			m_nodeId = node;
 			m_coreId = core;
+		}
+	}
+	
+	// --------------------------------------------------------------------- //
+	// Helper Debug Methods.
+	// --------------------------------------------------------------------- //
+	public void printStructureTrace(int nodeId, int coreId) {
+		System.out.printf("===============================\n");
+		System.out.printf("NODE: %d, CORE: %d\n", nodeId, coreId);
+		System.out.printf("===============================\n");
+
+		HashMap<XtaInstruction, BasicBlock> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
+
+		for (BasicBlock node : pcToNode.values()) {
+			System.out.printf("------------------------------\n");
+			System.out.printf("(%d,%d) node %d -> ", nodeId, coreId, node.m_nodeId);
+			
+			for (BasicBlock nextNode : node.getNextNodes()) {
+				System.out.print("[" + nextNode.m_nodeId + "]");
+			}
+			System.out.print("\n");
+			
+			for (XtaInstruction inst : node.getInstructions()) {
+				System.out.print(inst + "\n");
+			}
+		}
+	}	
+	
+	public void displayInstructionSuccessors(XeObject xeObject, 
+			InstructionDecodeCache decodeCache, int nodeId, int coreId) {
+		
+		for (AssemblyLine al : xeObject.getInstructions()) {
+  			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
+  			System.out.printf("(%d,%d) ", nodeId, coreId);
+  			System.out.print(inst + " ");
+	    			
+  			ArrayList<NextPcType> successors = inst.getSuccessors();
+   			for (NextPcType successor : successors) {
+   				System.out.printf("[0x%x]", successor.getPc());
+   			}
+   			System.out.printf("\n");
 		}
 	}
 }
