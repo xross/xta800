@@ -19,13 +19,34 @@ public abstract class Node {
 	protected Set<Node> m_nextNodes;
 	protected Set<Node> m_prevNodes;
 	
+	protected Set<Node> m_dominators;
 	
 	public Node(){
 		m_nextNodes = new HashSet<Node>();
 		m_prevNodes = new HashSet<Node>();
+		m_dominators = new HashSet<Node>();
 		m_id = id++;
 	}
 	
+	public Set<Node> getDominators(){
+		return m_dominators;
+	}
+	
+	public Node getIdom(){
+		Set<Node> remainingDominators = new HashSet<Node>(m_dominators);
+		remainingDominators.remove(this);
+		for(Node dom : m_dominators){
+			if(dom == this) continue;
+			Set<Node> set = new HashSet<Node>(dom.getDominators());
+			set.remove(dom);
+			remainingDominators.removeAll(set);
+		}
+		if(remainingDominators.size() == 1){
+			return remainingDominators.iterator().next();
+		} else {
+			return this;
+		}
+	}
 	public static String intToTab(int indent){
 		String s = "";
 		for(int i=0;i<indent;i++){

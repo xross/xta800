@@ -47,41 +47,22 @@ public class LoopPeelingTransformer extends PatternMatcher {
 					}
 				}
 			}
-			/*
-			if(connectionPoints.size() == 0){
-				for(Node loopNode : loop){
-					if(loopNode.getPrevNodes().size() > 1){
-						connectionPoints.add(loopNode);
+			for(Node node : loop){
+				if(!connectionPoints.contains(node) && entryPoints.contains(node)){
+					if(verbose){
+						System.out.println("#trying to peel for a loop");
 					}
+					CommonMethods.wedgeDown(node, workingSet, verbose);
+					return true;
+				}
+				if(!connectionPoints.contains(node) && exitPoints.contains(node)){
+					if(verbose){
+						System.out.println("#trying to peel for a loop");
+					}
+					CommonMethods.wedgeUp(node, workingSet, verbose);
+					return true;
 				}
 			}
-			*/
-			//connectionPoints now is a set of all the points that could be a connectionNode
-			
-			//System.out.println("# connectionPoints are : " + connectionPoints);
-			
-			//System.out.println("# entryPoints are : " + entryPoints);
-			//if(connectionPoints.size() == 1){
-				//we can actually split it
-				for(Node node : loop){
-					if(!connectionPoints.contains(node) && entryPoints.contains(node)){
-						if(verbose){
-							System.out.println("trying to peel for a loop");
-						}
-						CommonMethods.wedgeDown(node, workingSet, verbose);
-						return true;
-					}
-					if(!connectionPoints.contains(node) && exitPoints.contains(node)){
-						if(verbose){
-							System.out.println("trying to peel for a loop");
-						}
-						CommonMethods.wedgeUp(node, workingSet, verbose);
-						return true;
-					}
-				}
-				
-				
-			//}
 			
 		}
 		return false;

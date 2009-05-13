@@ -23,44 +23,93 @@ import com.xmos.xta.engine.xtagraph.patterns.TerminalTransformer;
 
 
 public class XTAGraph {	
+	
+	//these are being used for debug -- they can go wehn the algorithm works
 	static int g;
+	private static final boolean DEBUG = false;
+	private int m_graphSize;
+	
+	
 	private static int graphcount;
 	private Set<BasicBlock> m_unreachable;
-	public Collection<Node> m_nodes;
-	private static final boolean DEBUG = true;
-	private int m_graphSize;
+	public Collection<Node> m_cfgNodes;
 	
 	public XTAGraph(HashSet<BasicBlock> values) {
 		m_unreachable = new HashSet<BasicBlock>();
 		basicBlocksToNodes(values);
+		init();
 	}
 	
 	public XTAGraph(Collection<Node> nodes) {
 		m_unreachable = new HashSet<BasicBlock>();
-		m_nodes = new HashSet<Node>(nodes);
+		m_cfgNodes = new HashSet<Node>(nodes);
+		init();
 	}
 	
+	private void init(){
+		buildDominatorTree();
+	}
 
+	private void buildDominatorTree(){
+		//first node is its own dominator
+		
+		Node startNode = null;
+		for(Node node : m_cfgNodes){
+			if(node.getPrevNodes().size() == 0){
+				startNode = node;
+				node.getDominators().add(startNode);
+			} else {
+				node.getDominators().addAll(m_cfgNodes);
+			}
+		}
+		boolean stillChanging = true;
+		while(stillChanging){
+			stillChanging = false;
+			for(Node node : m_cfgNodes){
+				
+				if(node == startNode){
+					continue;
+				}
+				
+				Set<Node> intersection = new HashSet<Node>(m_cfgNodes);
+				for(Node pred : node.getPrevNodes()){
+					intersection.retainAll(pred.getDominators());
+				}
+				
+				intersection.add(node);
+				
+				if(!intersection.equals(node.getDominators())){
+					node.getDominators().clear();
+					node.getDominators().addAll(intersection);
+					stillChanging = true;
+				}
+			}
+		}
+		
+	}
 	
 	public void decompose(){
 
 		//now we start applying the rules
-		Collection<Node> workingSet = m_nodes;
+		Collection<Node> workingSet = m_cfgNodes;
 		boolean working = true;
 		
 		List<PatternMatcher> patternMatchers = new ArrayList<PatternMatcher>();
 		
+		//this one comes first
 		patternMatchers.add(new SelfLoopTransformer());
-		patternMatchers.add(new PathPatternMatcher());
-		patternMatchers.add(new TerminalPatternMatcher());
-		patternMatchers.add(new MultiSectionPatternMatcher());
+		
 		patternMatchers.add(new LoopPatternMatcher());
 		
 		
+		patternMatchers.add(new MultiSectionPatternMatcher());
+		
+		patternMatchers.add(new PathPatternMatcher());
 		
 		patternMatchers.add(new MultiSectionTransformer());
 		patternMatchers.add(new LoopPeelingTransformer());
 		patternMatchers.add(new TerminalTransformer());
+		patternMatchers.add(new TerminalPatternMatcher());
 		while(working){
 			
 			//check graph integrity
@@ -79,7 +128,7 @@ public class XTAGraph {
 				}
 				if(working) break;
 			}
-			
+			if(DEBUG) printGraph(m_cfgNodes);
 			int ins=0;
 			int outs=0;
 			for(Node node : workingSet){
@@ -111,6 +160,14 @@ public class XTAGraph {
 		System.out.println("};");
 	}
 	
+	public void printDominatorTree() {
+		System.out.println("digraph d {");
+		for(Node node : m_cfgNodes){
+			System.out.println( node.getIdom().graphVizLabel() + " -> " + node.graphVizLabel()+";");
+		}
+		System.out.println("};");
+	}
+	
 	private void basicBlocksToNodes(HashSet<BasicBlock> nodes){
 		Map<BasicBlock, Node> nodeSet = new HashMap<BasicBlock, Node>();
 		//remove all unreachable basic blocks
@@ -130,7 +187,7 @@ public class XTAGraph {
 				}	
 			}
 		}
-		m_nodes = new HashSet<Node>(nodeSet.values());
+		m_cfgNodes = new HashSet<Node>(nodeSet.values());
 	}
 	
 	public int getGraphSize(){
@@ -158,7 +215,7 @@ public class XTAGraph {
 	// Helper Debug Methods.
 	// --------------------------------------------------------------------- //	
 	public void displayControlFlowGraph() {				
-		for (Node node : m_nodes) {
+		for (Node node : m_cfgNodes) {
 			System.out.printf("-----------------------------------------\n");
 			System.out.printf("%s -> ", node.toString());			
 			for (Node nextNode : node.getNextNodes()) {
@@ -172,8 +229,8 @@ public class XTAGraph {
 	}
 	
 	public void displayStructureTree() {
-		assert(m_nodes.size() == 1);		
-		Node rootNode = m_nodes.iterator().next();
+		assert(m_cfgNodes.size() == 1);		
+		Node rootNode = m_cfgNodes.iterator().next();
 		rootNode.display(0);		
 	}
 }

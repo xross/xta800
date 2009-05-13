@@ -27,8 +27,11 @@ public class MultiSectionPatternMatcher extends PatternMatcher {
 		Set<Node> endNodes = new HashSet<Node>(jumpNodes);
 		List<Node> nextList = new LinkedList<Node>(currentNode.getNextNodes());
 
-		for (int i = 0; i < nextList.size() - 2; i++) {
-			for (int j = i + 1; j < nextList.size() - 1; j++) {
+		
+		
+		
+		for (int i = 0; i <= nextList.size() - 2; i++) {
+			for (int j = i + 1; j <= nextList.size() - 1; j++) {
 				Node a = nextList.get(i);
 				Node b = nextList.get(j);
 
@@ -55,7 +58,7 @@ public class MultiSectionPatternMatcher extends PatternMatcher {
 			if (jumpNodes.contains(endNode)) {
 				if (sectionNodes.size() > 0) {
 					if (!sectionSanityCheck(currentNode, sectionNodes, endNode, endNode)) {
-						System.err.println("section failed sanity check");
+						System.err.println("#section failed sanity check");
 						return false;
 					}
 					updateGraph(currentNode, sectionNodes, endNode, workingSet, endNode, verbose);
@@ -64,7 +67,7 @@ public class MultiSectionPatternMatcher extends PatternMatcher {
 			} else {
 				if (sectionNodes.size() > 1) {
 					if (!sectionSanityCheck(currentNode, sectionNodes, null, endNode)) {
-						System.err.println("section failed sanity check");
+						System.err.println("#section failed sanity check");
 						return false;
 					}
 					updateGraph(currentNode, sectionNodes, null, workingSet, endNode,verbose);
@@ -107,8 +110,8 @@ public class MultiSectionPatternMatcher extends PatternMatcher {
 		MultiSection ms = new MultiSection(sectionNodes, jumpNode);
 		
 		if(verbose){
-			System.out.println("have found a section from " + startNode + " to " + endNode + " jump: " + (jumpNode != null));
-			System.out.println("have replaced "+sectionNodes + " with " + ms);
+			System.out.println("#have found a section from " + startNode + " to " + endNode + " jump: " + (jumpNode != null));
+			System.out.println("#have replaced "+sectionNodes + " with " + ms);
 		}
 		
 		

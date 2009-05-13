@@ -20,7 +20,7 @@ public class SelfLoopTransformer  extends PatternMatcher {
 			workingSet.add(newNode);
 			
 			if(verbose){
-				System.out.println("found a self loop at " + currentNode);
+				System.out.println("#found a self loop at " + currentNode);
 			}
 			
 			return true;

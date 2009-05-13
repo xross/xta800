@@ -26,7 +26,7 @@ public class CommonMethods {
 	
 	public static void wedgeUp(Node node, Collection<Node> workingSet, boolean verbose){
 		if(verbose) {
-			System.out.println("am wedging up on node " + node);
+			System.out.println("#am wedging up on node " + node);
 		}
 
 		Collection<Node> newNodes = new HashSet<Node>();
@@ -58,7 +58,7 @@ public class CommonMethods {
 	
 	public static void wedgeDown(Node node, Collection<Node> workingSet, boolean verbose){
 		if(verbose) {
-			System.out.println("am wedging down on node " + node);
+			System.out.println("#am wedging down on node " + node);
 		}
 
 		Collection<Node> newNodes = new HashSet<Node>();
@@ -92,7 +92,8 @@ public class CommonMethods {
 	}
 	
 	public static void wedgeDown(Node node, Node piviot, Collection<Node> workingSet){
-		//if (DEBUG) System.out.println("wedge down on " + node);
+
+
 		assert(node.getPrevNodes().contains(piviot));
 		
 		Node newNode = node.clone();
@@ -113,7 +114,7 @@ public class CommonMethods {
 	
 	public static void wedgeUp(Node node, Node piviot, Collection<Node> workingSet){
 		assert(node.getNextNodes().contains(piviot));
-		//if (DEBUG) System.out.println("wedge up on " + node);
+
 		Node newNode = node.clone();
 		
 		piviot.getPrevNodes().remove(node);

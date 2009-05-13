@@ -15,6 +15,7 @@ import com.xmos.xeobject.Line;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.maps.BranchMap;
 import com.xmos.xta.engine.xtagraph.XTAGraph;
+import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public class AnalysisEngine {
 	private XeLoader m_xeLoader;
@@ -252,6 +253,13 @@ public class AnalysisEngine {
 		XTAGraph graph = new XTAGraph(new HashSet<BasicBlock>(getBasicBlockStartPcs(nodeId, coreId).values()));
 		
 		//graph.displayControlFlowGraph();
+		for(Node node : graph.m_cfgNodes){			
+			for(Node next : node.getNextNodes()){
+				if(node.getDominators().contains(next)){
+					System.out.println(node + " has " + next + " as a loop header");
+				}
+			}
+		}	
 		//graph.printGraph(graph.m_nodes);
 		graph.decompose();
 		//graph.renderGraph(new LinkedList<Node>(graph.m_nodes).getFirst());

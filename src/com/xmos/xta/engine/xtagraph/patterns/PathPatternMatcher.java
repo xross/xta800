@@ -58,7 +58,7 @@ public class PathPatternMatcher extends PatternMatcher {
 		
 		if(pathList.size() > 1){
 			if(pathSanityCheck(pathList)){
-				System.err.println("failed sanity check");
+				System.err.println("#failed sanity check");
 				return false;
 			} 
 			updateGraph(pathList, workingSet, verbose);
@@ -103,7 +103,7 @@ public class PathPatternMatcher extends PatternMatcher {
 		Path path = new Path(pathList);
 		
 		if(verbose){
-			System.out.println("make a new path from " + pathList + " called " + path);
+			System.out.println("#make a new path from " + pathList + " called " + path);
 		}
 		
 		Node startNodeInPath = pathList.getFirst();
