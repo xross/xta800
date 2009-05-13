@@ -154,6 +154,13 @@ sub DoClean
   unlink("$TOOLS_XTA/bin/$target");
   rmtree("$TOOLS_XTA/bin/xta_$platform");
 
+  system("rm -rf $TOOLS_XTA/tmp");
+#  system("rm -rf $TOOLS_ECLIPSE/updateSite");
+  system("rm -rf $TOOLS_XTA/bin");
+#  system("rm -rf $INSTALLPATH${SLASH}updateSite");
+  system("rm -rf $INSTALLPATH${SLASH}xta_bin");
+  system("rm -rf $INSTALLPATH${SLASH}xta_bin64");
+
   chdir("$BUILDPATH") or die("oops");
 }
 
@@ -212,14 +219,15 @@ sub DoInstall
   if ($HOST ne "PC" && $HOST ne "Mac") {
       system("cp $TOOLS_XTA${SLASH}xtagui $INSTALLPATH${SLASH}");
   }
+
+
+  XmosBuildLib::InstallFile("$DOMAIN", "${BIN}", "xta.exe");
+  XmosBuildLib::InstallReleaseFile("$DOMAIN", "${BIN}", "xta.exe", "bin");
+
+  XmosBuildLib::InstallFile("$DOMAIN", "lib", "xta.jar");
+  XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xta.jar", "bin");
+
 }
-
-#  XmosBuildLib::InstallFile("$DOMAIN", "${BIN}", "xta.exe");
-#  XmosBuildLib::InstallReleaseFile("$DOMAIN", "${BIN}", "xta.exe", "bin");
-
-#  XmosBuildLib::InstallFile("$DOMAIN", "lib", "xta.jar");
-#  XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xta.jar", "bin");
-
 #  XmosBuildLib::InstallFile("$DOMAIN", "bin", "$target");
 
   # Unzips the zip file..
