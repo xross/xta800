@@ -51,18 +51,17 @@ public class XTACommonHeaderTest {
 		
 		
 		XTAGraph graph = new XTAGraph(nodes);
-		
+		/*
 		graph.printGraph(nodes);
 		
 		for(Node node : nodes){
-			
 			for(Node next : node.getNextNodes()){
 				if(node.getDominators().contains(next)){
 					System.out.println(node + " has " + next + " as a loop header");
 				}
 			}
 		}
-		
+		*/
 		
 		graph.decompose();
 		testGraph(graph);

@@ -1,5 +1,6 @@
 package com.xmos.xta.console.commands.List;
 
+import java.util.Collection;
 import java.util.Vector;
 
 import com.xmos.xeloader.SymbolTable;
@@ -40,7 +41,7 @@ public class Functions extends Command {
 	    int nodeId = engine.getNodeId();
 	    int coreId = engine.getCoreId();
 	    
-        Vector<String> functionNames = engine.getXeLoader().getFunctionNames(nodeId, coreId);
+        Collection<String> functionNames = engine.getXeLoader().getFunctionNames(nodeId, coreId);
         if (functionNames.size() > 0) {
             XeLoader xeLoader = engine.getXeLoader();
             SymbolTable symbolTable = xeLoader.getSymbolTable(nodeId, coreId);

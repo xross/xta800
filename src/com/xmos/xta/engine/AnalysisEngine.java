@@ -478,7 +478,13 @@ public class AnalysisEngine {
 				int address = getConstantPoolPointer(nodeId, coreId) + imm;
 				int word = 0;
 				for (int i = 0; i < 4; i++) {
-					byte b = m_xeLoader.getMemoryImage(nodeId, coreId).readByte(address + i);
+					byte b;
+					try {
+						b = m_xeLoader.getMemoryImage(nodeId, coreId).readByte(address + i);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					word = word | (b << (8 * i));
 				}
 				inst.addSuccessor(decodeCache.getInstruction(word), true);
@@ -490,7 +496,13 @@ public class AnalysisEngine {
 				int address = getConstantPoolPointer(nodeId, coreId) + imm;
 				int word = 0;
 				for (int i = 0; i < 4; i++) {
-					byte b = m_xeLoader.getMemoryImage(nodeId, coreId).readByte(address + i);
+					byte b;
+					try {
+						b = m_xeLoader.getMemoryImage(nodeId, coreId).readByte(address + i);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					word = word | (b << (8 * i));
 				}
 				inst.addSuccessor(decodeCache.getInstruction(word), true);
