@@ -203,6 +203,10 @@ sub DoInstall
 {
   SetupVars();
 
+  if ($HOST eq "PC") {
+    $ENV{PATH} = "C:/cygwin/bin;" . $ENV{PATH};
+  }
+
   if ($HOST ne "PC" && $HOST ne "Mac") {
     system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}");
     system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
@@ -213,13 +217,11 @@ sub DoInstall
     system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}");
     system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
   }
-#    system("cp -r $TOOLS_ECLIPSE${SLASH}updateSite $INSTALLPATH${SLASH}");
 
   # Linux uses a perl script to check the jvm
   if ($HOST ne "PC" && $HOST ne "Mac") {
       system("cp $TOOLS_XTA${SLASH}xtagui $INSTALLPATH${SLASH}");
   }
-
 
   XmosBuildLib::InstallFile("$DOMAIN", "${BIN}", "xta.exe");
   XmosBuildLib::InstallReleaseFile("$DOMAIN", "${BIN}", "xta.exe", "bin");
