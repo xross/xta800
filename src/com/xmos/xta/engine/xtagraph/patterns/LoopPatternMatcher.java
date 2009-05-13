@@ -42,7 +42,7 @@ public class LoopPatternMatcher extends PatternMatcher {
 		Loop loop = new Loop(intersection, base);
 		
 		if (verbose){
-			System.out.println("have made a new loop with " + base + " as the loop header and " + intersection + " as the intersection and new node is " +loop);
+			System.out.println("#have made a new loop with " + base + " as the loop header and " + intersection + " as the intersection and new node is " +loop);
 		}
 
 		

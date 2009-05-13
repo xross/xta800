@@ -18,7 +18,7 @@ public class TerminalTransformer extends PatternMatcher {
 			
 
 			if(verbose){
-				System.out.println("terminal node needs wedging");
+				System.out.println("#terminal node needs wedging");
 			}
 			CommonMethods.wedgeDown(node, workingSet, verbose);
 			return true;
@@ -36,7 +36,7 @@ public class TerminalTransformer extends PatternMatcher {
 				List<Node> list = new LinkedList<Node>(node.getNextNodes());
 				list.removeAll(terminals);
 				if(verbose){
-					System.out.println("terminal node needs wedging");
+					System.out.println("#terminal node needs wedging");
 				}
 				CommonMethods.wedgeUp(node, list.get(0), workingSet);
 				return true;

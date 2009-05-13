@@ -48,10 +48,16 @@ public class MultiSectionTransformer extends PatternMatcher {
 						//then this nextNode is interesting
 						if(nextNode.getNextNodes().size() > 1){
 							//wedge up
+							if(verbose){
+								System.out.println("# wedging for the multisection");
+							}
 							CommonMethods.wedgeUp(nextNode, workingSet, verbose);
 							return true;
 						} else if(nextNode.getPrevNodes().size() > 1){
 							//wedge down
+							if(verbose){
+								System.out.println("# wedging for the multisection");
+							}
 							CommonMethods.wedgeDown(nextNode, workingSet, verbose);
 							return true;
 						} 

@@ -252,6 +252,15 @@ public class AnalysisEngine {
 	public void printDot(int nodeId, int coreId) {
 		XTAGraph graph = new XTAGraph(new HashSet<BasicBlock>(getBasicBlockStartPcs(nodeId, coreId).values()));
 		
+		graph.printGraph(graph.m_cfgNodes);
+		for(Node node : graph.m_cfgNodes){
+			
+			for(Node next : node.getNextNodes()){
+				if(node.getDominators().contains(next)){
+					System.out.println(node + " has " + next + " as a loop header");
+				}
+			}
+		}	
 		//graph.printGraph(graph.m_nodes);
 		graph.decompose();
 		//graph.renderGraph(new LinkedList<Node>(graph.m_nodes).getFirst());

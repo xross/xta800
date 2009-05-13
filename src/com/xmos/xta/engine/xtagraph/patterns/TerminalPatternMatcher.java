@@ -6,7 +6,13 @@ import com.xmos.xta.engine.xtagraph.nodes.Terminal;
 
 public class TerminalPatternMatcher extends PatternMatcher {
 
+	
+
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose) {
+		
+		/*
+		 * this needs to be modified so that it can only happen when the currentNode is the first node and the next nodes are all the terminating nodes
+		 */
 		
 		//a node is a terminal node when all nodes after it terminate immediately
 		
@@ -21,7 +27,7 @@ public class TerminalPatternMatcher extends PatternMatcher {
 		Terminal newNode = new Terminal(currentNode.getNextNodes());
 		
 		if(verbose){
-			System.out.println("found a terminal node from " + currentNode + " of " + currentNode.getNextNodes());
+			System.out.println("#found a terminal node from " + currentNode + " of " + currentNode.getNextNodes());
 		}
 		
 		workingSet.removeAll(currentNode.getNextNodes());

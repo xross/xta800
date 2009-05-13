@@ -66,7 +66,7 @@ public class XTAGraphTest {
 			if(graph.getGraphSize()==1){
 				successCount++;
 			} else {
-				XTAGraph.printGraph(graph.m_nodes);
+				XTAGraph.printGraph(graph.m_cfgNodes);
 			}
 			//graph.renderGraph(graph.m_nodes.iterator().next());
 		}
