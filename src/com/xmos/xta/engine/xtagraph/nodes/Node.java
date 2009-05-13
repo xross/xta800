@@ -109,6 +109,8 @@ public abstract class Node {
 	public abstract long getNumberCycles();
 	public abstract long getNumberFNOPS();
 	
+	public abstract void display(int indentLevel);
+	
 	/**
 	 * return a list of instruction in order without the fnops inserted.
 	 */
@@ -126,4 +128,10 @@ public abstract class Node {
 	
 	public abstract String getGraphvizName();
 	
+	protected void printIndent(int indentLevel) {
+		for (int i = 0; i < indentLevel; ++i) {
+		    System.out.printf("    ");
+		}
+	}
+
 }

@@ -15,5 +15,9 @@ public class Function extends Path {
 	public String getFunctionName(){
 		return m_functionName;
 	}
-	
+
+	public void display(int indentLevel) {
+		printIndent(indentLevel);
+		System.out.printf("function\n");
+	}
 }

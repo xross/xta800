@@ -104,4 +104,11 @@ public class Path extends Node {
 		body.append(intToTab(indent) +"}\n");
 	}
 
+	public void display(int indentLevel) {
+		printIndent(indentLevel);
+		System.out.printf("path\n");
+		for (Node node : m_nodes) {
+			node.display(indentLevel + 1);
+		}
+	}			
 }

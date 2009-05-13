@@ -79,6 +79,9 @@ public class Terminal extends Node {
 		return "cluster_Terminal" + m_id;
 	}
 
-
-
+	public void display(int indentLevel) {
+		printIndent(indentLevel);
+		System.out.printf("terminal\n");
+		
+	}			
 }

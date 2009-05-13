@@ -264,6 +264,7 @@ public class AnalysisEngine {
 		//graph.printGraph(graph.m_nodes);
 		graph.decompose();
 		//graph.renderGraph(new LinkedList<Node>(graph.m_nodes).getFirst());
+		//graph.display();
 	}
 
 	private HashMap<XtaInstruction, BasicBlock> getBasicBlockStartPcs(int nodeId, int coreId) {

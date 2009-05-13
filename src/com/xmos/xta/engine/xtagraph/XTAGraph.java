@@ -211,5 +211,9 @@ public class XTAGraph {
 		System.out.println("}");
 	}
 	
-	
+	public void display() {
+		assert(m_nodes.size() == 1);		
+		Node rootNode = m_nodes.iterator().next();
+		rootNode.display(0);		
+	}
 }
