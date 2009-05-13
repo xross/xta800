@@ -39,7 +39,7 @@ import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 import com.xmos.xta.engine.unknowns.Unknown;
 
-public class Engine {
+public class Engine implements Notifier {
 
 	public static int ROUTE_ID_LAST = -1;
 	
@@ -204,7 +204,7 @@ public class Engine {
 		if (!loadEndpointTables())
 		    return false;		
 
-		m_ae = new AnalysisEngine(m_xeLoader, m_nodeCoreInstructionCache,
+		m_ae = new AnalysisEngine(this, m_xeLoader, m_nodeCoreInstructionCache,
 				m_xeObjects, m_branches);
 
 		runAnalysisEngine();
@@ -439,8 +439,9 @@ public class Engine {
 		}
 
 		if (m_nodeCoreInstructionCache.setInstructionTimeTaken(
-				this, ref.getPc(), timeTaken, m_nodeId, m_coreId)) {
+				ref.getPc(), timeTaken, m_nodeId, m_coreId)) {
 			invalidateRouteStats();
+
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
@@ -469,8 +470,9 @@ public class Engine {
 		}
 
 		if (m_nodeCoreInstructionCache.setInstructionNumCycles(
-				this, ref.getPc(), numCycles, m_nodeId, m_coreId)) {
+				 ref.getPc(), numCycles, m_nodeId, m_coreId)) {
 			invalidateRouteStats();
+
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
             return true;			
@@ -784,7 +786,7 @@ public class Engine {
 
 		for (int node : m_xeLoader.getNodeIds()) {
 			for (int core : m_xeLoader.getCoreIds(node)) {
-				m_branches.add(new BranchMap(node, core));
+				m_branches.add(new BranchMap(node, core, this));
 				m_labels.add(new LabelMap(node, core));
 				m_srcLabels.add(new CodePointMap(node, core, ".xtalabel", this, "label"));
 				m_endpoints.add(new CodePointMap(node, core, ".xtaendpoint", this, "endpoint"));
@@ -797,7 +799,7 @@ public class Engine {
 
 	private boolean loadBranchMaps() {
 		for (BranchMap branchMap : m_branches) {
-			if (!branchMap.load(this, m_xeLoader)) {
+			if (!branchMap.load(m_xeLoader)) {
 			    return false;
 			}
 		}
@@ -806,7 +808,7 @@ public class Engine {
 	
 	private boolean loadLabelMaps() {
 		for (LabelMap labelMap : m_labels) {
-			if (!labelMap.load(this, m_xeLoader)) {
+			if (!labelMap.load(m_xeLoader)) {
 				return false;
 			}			
 		}	
@@ -815,7 +817,7 @@ public class Engine {
 
 	private boolean loadCodePointMaps(List<CodePointMap> codePointMaps) {
 		for (CodePointMap codePointMap : codePointMaps) {
-			if (!codePointMap.load(this, m_xeLoader)) {
+			if (!codePointMap.load(m_xeLoader)) {
 				return false;
 			}
 		}
@@ -824,7 +826,7 @@ public class Engine {
 	
 	private boolean loadSrcLabelTables() {
 		for (SrcLabelTableMap tableMap : m_srcLabelTables) {
-			if (!tableMap.load(this, m_xeLoader)) {
+			if (!tableMap.load(m_xeLoader)) {
 				return false;
 			}
 		}
@@ -833,7 +835,7 @@ public class Engine {
 		
 	private boolean loadEndpointTables() {
 		for (EndpointTableMap tableMap : m_endpointTables) {
-			if (!tableMap.load(this, m_xeLoader)) {
+			if (!tableMap.load(m_xeLoader)) {
 				return false;
 			}
 		}

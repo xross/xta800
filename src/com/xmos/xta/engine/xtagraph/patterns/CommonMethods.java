@@ -70,14 +70,23 @@ public class CommonMethods {
 			newNodes.add(newNode);
 			
 			//remove the connection from the old node
+			//CommonMethods.disconnect(node, prev);
+			//CommonMethods.connect(newNode, prev);
+			
+
 			prev.getNextNodes().remove(node);
 			prev.addNextNode(newNode);
 			
 			//add a connection to the new node
 			newNode.addPrevNode(prev);
+		
 			
 			for(Node next : node.getNextNodes()){
 				if(next != node){
+					
+					//CommonMethods.disconnect(next, node);
+					//CommonMethods.connect(next, newNode);
+					
 					next.getPrevNodes().remove(node);
 					next.addPrevNode(newNode);
 					newNode.addNextNode(next);

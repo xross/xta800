@@ -24,9 +24,9 @@ import com.xmos.xta.engine.xtagraph.patterns.TerminalTransformer;
 
 public class XTAGraph {	
 	
-	//these are being used for debug -- they can go wehn the algorithm works
+	//these are being used for debug -- they can go when the algorithm works
 	static int g;
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	private int m_graphSize;
 	
 	
@@ -37,16 +37,12 @@ public class XTAGraph {
 	public XTAGraph(HashSet<BasicBlock> values) {
 		m_unreachable = new HashSet<BasicBlock>();
 		basicBlocksToNodes(values);
-		init();
+		buildDominatorTree();
 	}
 	
 	public XTAGraph(Collection<Node> nodes) {
 		m_unreachable = new HashSet<BasicBlock>();
 		m_cfgNodes = new HashSet<Node>(nodes);
-		init();
-	}
-	
-	private void init(){
 		buildDominatorTree();
 	}
 
@@ -55,6 +51,7 @@ public class XTAGraph {
 		
 		Node startNode = null;
 		for(Node node : m_cfgNodes){
+			node.getDominators().clear();
 			if(node.getPrevNodes().size() == 0){
 				startNode = node;
 				node.getDominators().add(startNode);
@@ -111,7 +108,7 @@ public class XTAGraph {
 		patternMatchers.add(new TerminalTransformer());
 		patternMatchers.add(new TerminalPatternMatcher());
 		while(working){
-			
+			buildDominatorTree();
 			//check graph integrity
 			
 			PatternMatcher recent = null;

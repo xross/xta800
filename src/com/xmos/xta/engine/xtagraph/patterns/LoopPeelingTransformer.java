@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+
 import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public class LoopPeelingTransformer extends PatternMatcher {
@@ -11,7 +13,28 @@ public class LoopPeelingTransformer extends PatternMatcher {
 	
 	
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose) {
+		Set<Node> leastDominantNodes = new HashSet<Node>();
+		for(Node node : workingSet){
+			for(Node next : node.getNextNodes()){
+				if(node.getDominators().contains(next)){
+					leastDominantNodes.add(node);
+				}
+			}
+		}
+		for(Node ld : leastDominantNodes){
+			System.out.println("# " +ld + " is a least dominant node");
+		}
+		if(leastDominantNodes.contains(currentNode)){
+			System.out.println("#would like to loop peel " + currentNode);
+			CommonMethods.wedgeDown(currentNode, workingSet, verbose);
+			return true;
+		}
 		
+		
+		
+		/*
+		
+
 		//first detect all loops from the current node
 		
 		LinkedList<List<Node>> loops = new LinkedList<List<Node>>();
@@ -65,6 +88,7 @@ public class LoopPeelingTransformer extends PatternMatcher {
 			}
 			
 		}
+		*/
 		return false;
 	}
 	

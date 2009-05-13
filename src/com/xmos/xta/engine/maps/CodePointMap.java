@@ -5,21 +5,20 @@ import java.util.TreeMap;
 
 import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
-import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 
 public class CodePointMap {
 	private static final boolean DEBUG = false;
 	
-	private Engine m_engine;
 	private int m_nodeId;
 	private int m_coreId;
 	private String m_sectionName;
+	private Notifier m_notifier;
 	private TreeMap<String, CodePointInfo> m_codePoints;
 	private String m_type;
 	
-	public CodePointMap(int nodeId, int coreId, String sectionName, Engine engine, String type) {
-		m_engine = engine;
+	public CodePointMap(int nodeId, int coreId, String sectionName, Notifier notifier, String type) {
+		m_notifier = notifier;
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_sectionName = sectionName;
@@ -39,7 +38,7 @@ public class CodePointMap {
 		return m_codePoints;
 	}
 	
-	public boolean load(Engine engine, XeLoader xeLoader) {
+	public boolean load(XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(
 				m_sectionName, m_nodeId, m_coreId);
 				
@@ -94,11 +93,11 @@ public class CodePointMap {
 			CodePointInfo info = m_codePoints.get(codePoint);
 			
 			if (info.getPc() == location) {
-				m_engine.notify(Notifier.NOTIFY_WARNING, 
+				m_notifier.notify(Notifier.NOTIFY_WARNING, 
 						String.format("Duplicate %s: %s at pc: 0x%x", m_type, codePoint, location));
 				return true; 
 			} else {
-				m_engine.notify(Notifier.NOTIFY_ERROR, 
+				m_notifier.notify(Notifier.NOTIFY_ERROR, 
 						String.format("Duplicate %s: %s", m_type, codePoint, location));
 				return false; 				
 			}				

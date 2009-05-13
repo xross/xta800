@@ -51,25 +51,27 @@ public class XTACommonHeaderTest {
 		
 		
 		XTAGraph graph = new XTAGraph(nodes);
-		/*
+		
 		graph.printGraph(nodes);
 		
 		for(Node node : nodes){
 			for(Node next : node.getNextNodes()){
 				if(node.getDominators().contains(next)){
-					System.out.println(node + " has " + next + " as a loop header");
+					System.out.println("#" +node + " has " + next + " as a loop header");
 				}
 			}
 		}
-		*/
+		
 		
 		graph.decompose();
 		testGraph(graph);
-		//graph.renderGraph(graph.m_nodes.iterator().next());
+		//
+		
+		graph.renderGraph(graph.m_cfgNodes.iterator().next());
 
 	}
 	
-	@Test
+	//@Test
 	public void testDominatorTreeTest(){
 		Collection<Node> nodes = new HashSet<Node>();
 		
@@ -127,7 +129,7 @@ public class XTACommonHeaderTest {
 		
 	}
 	
-	@Test
+	//@Test
 	public void testSectionOnly(){
 		Collection<Node> nodes = new HashSet<Node>();
 		
@@ -159,7 +161,7 @@ public class XTACommonHeaderTest {
 		//graph.renderGraph(graph.m_nodes.iterator().next());
 
 	}
-	@Test
+	//@Test
 	public void testMultipleLoopEntry(){
 		Collection<Node> nodes = new HashSet<Node>();
 		

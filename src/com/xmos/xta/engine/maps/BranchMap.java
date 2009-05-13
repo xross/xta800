@@ -6,7 +6,6 @@ import java.util.TreeSet;
 
 import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
-import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 
 public class BranchMap {	
@@ -14,9 +13,11 @@ public class BranchMap {
 	
 	private int m_nodeId;
 	private int m_coreId;
+	private Notifier m_notifier;
 	private TreeMap<Integer, TreeSet<Integer>> m_branches;
 	
-	public BranchMap(int nodeId, int coreId) {
+	public BranchMap(int nodeId, int coreId, Notifier notifier) {
+		m_notifier = notifier;
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_branches = new TreeMap<Integer, TreeSet<Integer>>(); 
@@ -50,14 +51,14 @@ public class BranchMap {
 		}		
 	}
 	
-	public boolean load(Engine engine, XeLoader xeLoader) {
+	public boolean load(XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(
 				".xtabranch", m_nodeId, m_coreId);
 				
 		if (DEBUG) System.out.println(".xtabranch is of size " + data.length + " bytes for node " + m_nodeId + " core: " + m_coreId);
 		
 		if ((data.length % 8) != 0) {
-			engine.notify(Notifier.NOTIFY_ERROR, "Invalid size for .xtabranch section");
+			m_notifier.notify(Notifier.NOTIFY_ERROR, "Invalid size for .xtabranch section");
 			return false;
 		}
 		

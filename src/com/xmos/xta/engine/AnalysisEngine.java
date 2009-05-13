@@ -19,6 +19,7 @@ import com.xmos.xta.engine.xtagraph.XTAGraph;
 import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public class AnalysisEngine {
+	private Notifier m_notifier;
 	private XeLoader m_xeLoader;
 	private NodeCoreInstructionCaches m_mcInstructionCache;
 	private ArrayList<XeObject> m_xeObjects;
@@ -32,8 +33,9 @@ public class AnalysisEngine {
 	private ArrayList<BasicBlockStartPcs> m_basicBlockStartPcs;
 
 
-	public AnalysisEngine(XeLoader loader, NodeCoreInstructionCaches coreInstructionCache, ArrayList<XeObject> objects,
+	public AnalysisEngine(Notifier notifier, XeLoader loader, NodeCoreInstructionCaches coreInstructionCache, ArrayList<XeObject> objects,
 			ArrayList<BranchMap> branches) {
+		m_notifier = notifier;
 		m_constantPoolPointers = new HashMap<NodeCore, Integer>();
 		m_dataPoolPointers = new HashMap<NodeCore, Integer>();
 		m_mcInstructionCache = coreInstructionCache;
@@ -467,6 +469,7 @@ public class AnalysisEngine {
 		for (AssemblyLine al : xeObject.getInstructions()) {
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
 			boolean isBranchLink = inst.getNmenonic().startsWith("bl");
+			
 			if (inst.getBranchPcRelative()) {
 				int pc = inst.getBranchPcRelativeTargetPc();
 				inst.addSuccessor(decodeCache.getInstruction(pc), true);
@@ -476,35 +479,40 @@ public class AnalysisEngine {
 			if (inst.getNmenonic().equals(new RevbXtaInstruction_blacp_u10(0, 0, null).getNmenonic())) {
 				int imm = XtaInstruction.getBits(16, 10, inst.getOpcode()) << Instruction.NUM_BYTES_PER_WORD_LOG2;
 				int address = getConstantPoolPointer(nodeId, coreId) + imm;
+								
 				int word = 0;
 				for (int i = 0; i < 4; i++) {
-					byte b;
+
 					try {
-						b = m_xeLoader.getMemoryImage(nodeId, coreId).readByte(address + i);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					word = word | (b << (8 * i));
+	    				byte b = m_xeLoader.getMemoryImage(nodeId, coreId).readByte(address + i);
+						word = word | (b << (8 * i));
+    				} catch (Exception e) {
+		    			m_notifier.notify(Notifier.NOTIFY_WARNING, 
+			  				String.format("Branch address 0x%x out of bounds", address + i));
+				    	continue;
+    				}
 				}
 				inst.addSuccessor(decodeCache.getInstruction(word), true);
 				addToBranchTable(inst, isBranchLink, word, nodeId, coreId);
-
 			}
+			
 			if (inst.getNmenonic().equals(new RevbXtaInstruction_blacp_lu10(0, 0, null).getNmenonic())) {
 				int imm = XtaInstruction.getBitsHL(16, 10, 0, 10, inst.getOpcode()) << Instruction.NUM_BYTES_PER_WORD_LOG2;
 				int address = getConstantPoolPointer(nodeId, coreId) + imm;
+				
 				int word = 0;
 				for (int i = 0; i < 4; i++) {
 					byte b;
 					try {
 						b = m_xeLoader.getMemoryImage(nodeId, coreId).readByte(address + i);
+
+						word = word | (b << (8 * i));
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						m_notifier.notify(Notifier.NOTIFY_WARNING, 
+								String.format("Branch address 0x%x out of bounds", address + i));
+						continue;
 					}
-					word = word | (b << (8 * i));
-				}
+			}
 				inst.addSuccessor(decodeCache.getInstruction(word), true);
 				addToBranchTable(inst, isBranchLink, word, nodeId, coreId);
 			}

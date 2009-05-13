@@ -7,7 +7,6 @@ import com.xmos.elfhandler.ElfHandler;
 import com.xmos.elfhandler.Symbol;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
-import com.xmos.xta.engine.Engine;
 
 public class LabelMap {	
 	private int m_nodeId;
@@ -32,7 +31,7 @@ public class LabelMap {
 		return m_labels;
 	}
 	
-	public boolean load(Engine engine, XeLoader xeLoader) {
+	public boolean load(XeLoader xeLoader) {
         SymbolTable symbolTable = xeLoader.getSymbolTable(m_nodeId, m_coreId);
         ElfHandler elfHandler = symbolTable.getElfHandler();
         
