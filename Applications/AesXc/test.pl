@@ -23,11 +23,11 @@ system("@ARGV load $genDir/test.xe " .
         "print completed_instructions " .
         "-exit > $genDir/$directory.txt 2>&1");
 
-system("xobjdump -r config.xml $genDir/test.xe > $filename.out");
-system("xsim -t $genDir/test.xe > $filename.out");
+system("xobjdump -r config.xml $genDir/test.xe > $genDir/$filename.out");
+system("xsim -t $genDir/test.xe > $genDir/$filename.out");
 
-open(INFILE, "$filename.out") or die "Can't open input file";
-open(OUTFILE, ">$filename.parsed") or die "Can't open file to write";
+open(INFILE, "$genDir/$filename.out") or die "Can't open input file";
+open(OUTFILE, ">$genDir/$filename.parsed") or die "Can't open file to write";
 
 my $foundFunction = $_;
 $foundFunction = 0;
@@ -55,7 +55,7 @@ while (<INFILE>) {
 close(INFILE);
 close(OUTFILE);
 open(INFILE, "$genDir/$directory.txt") or die "Can't open input file";
-open(OUTFILE, ">$directory.parsed") or die "Can't open file to write";
+open(OUTFILE, ">$genDir/$directory.parsed") or die "Can't open file to write";
 
 while (<INFILE>) {
     my $line = $_;
@@ -80,7 +80,5 @@ while (<INFILE>) {
 }
 close(INFILE);
 close(OUTFILE);
-system("rm $filename.out");
-system("rm $genDir/$directory.txt");
-system("mv $directory.parsed $genDir/$directory.txt");
-system("mv $filename.parsed $directory.txt.expect");
+system("mv $genDir/$directory.parsed $genDir/$directory.txt");
+system("mv $genDir/$filename.parsed $genDir/$directory.txt.expect");
