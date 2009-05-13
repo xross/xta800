@@ -62,6 +62,6 @@ public class PseudoFunction extends Node {
 
 	public void display(int indentLevel) {
 		printIndent(indentLevel);
-		System.out.printf("pseudofunction\n");
+		System.out.printf("pseudofunction(%d)\n", m_id);
 	}			
 }

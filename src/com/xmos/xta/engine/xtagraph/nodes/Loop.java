@@ -189,7 +189,7 @@ public class Loop extends Node {
 	public void display(int indentLevel) {
 		printIndent(indentLevel);
 		for (AttachedLoop attachedLoop : m_loops) {
-			System.out.printf("loop: iterations known: %s, iterations: %d\n",
+			System.out.printf("loop(%d): iterations known: %s, iterations: %d\n", m_id,
 					attachedLoop.iterationsKnown() ? "true" : "false", 
 					attachedLoop.numIterations());
 			

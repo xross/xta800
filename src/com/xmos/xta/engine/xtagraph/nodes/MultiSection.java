@@ -123,6 +123,10 @@ public class MultiSection extends Node {
 	
 	public void display(int indentLevel) {
 		printIndent(indentLevel);
-		System.out.printf("multisection\n");
+		System.out.printf("multisection(%d)\n", m_id);
+		
+		for (Node node : m_options) {
+			node.display(indentLevel + 1);
+		}		
 	}			
 }

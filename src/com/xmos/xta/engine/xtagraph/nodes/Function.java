@@ -18,6 +18,6 @@ public class Function extends Path {
 
 	public void display(int indentLevel) {
 		printIndent(indentLevel);
-		System.out.printf("function\n");
+		System.out.printf("function(%d)\n", m_id);
 	}
 }
