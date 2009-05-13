@@ -40,6 +40,10 @@ public class Block extends Node {
 		return m_instructionStream;
 	}
 
+	public int getBasicBlockId() {
+		return m_block.getId();
+	}
+	
 	public List<XtaInstruction> getInstructions() {
 		return m_block.getInstructions();
 	}
@@ -108,10 +112,14 @@ public class Block extends Node {
 
 	public void display(int indentLevel) {
 		printIndent(indentLevel);
-		System.out.printf("block ");
-		
-		for (XtaInstruction instruction : m_block.getInstructions()) {
-			System.out.printf("[0x%x]", instruction.getPc());
+		System.out.printf("block(%d) ", m_id);
+		if(m_block!= null){ 
+			for (XtaInstruction instruction : m_block.getInstructions()) {
+				System.out.printf("[%s + %d: 0x%x]", 
+						instruction.getFunctionName(),
+						instruction.getFunctionOffset(),
+						instruction.getPc());
+			}
 		}
 		System.out.printf("\n");
 	}		

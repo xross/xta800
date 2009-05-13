@@ -106,7 +106,7 @@ public class Path extends Node {
 
 	public void display(int indentLevel) {
 		printIndent(indentLevel);
-		System.out.printf("path\n");
+		System.out.printf("path(%d)\n", m_id);
 		for (Node node : m_nodes) {
 			node.display(indentLevel + 1);
 		}

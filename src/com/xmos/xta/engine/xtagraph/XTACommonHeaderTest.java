@@ -66,8 +66,8 @@ public class XTACommonHeaderTest {
 		graph.decompose();
 		testGraph(graph);
 		//
-		
-		graph.renderGraph(graph.m_cfgNodes.iterator().next());
+		graph.displayStructureTree();
+		//graph.renderGraph(graph.m_cfgNodes.iterator().next());
 
 	}
 	

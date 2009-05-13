@@ -81,7 +81,9 @@ public class Terminal extends Node {
 
 	public void display(int indentLevel) {
 		printIndent(indentLevel);
-		System.out.printf("terminal\n");
-		
+		System.out.printf("terminal(%d)\n", m_id);
+		for (Node node : m_terminals) {
+			node.display(indentLevel + 1);
+		}				
 	}			
 }

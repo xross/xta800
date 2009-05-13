@@ -130,7 +130,7 @@ public abstract class Node {
 	
 	protected void printIndent(int indentLevel) {
 		for (int i = 0; i < indentLevel; ++i) {
-		    System.out.printf("    ");
+		    System.out.printf(".    ");
 		}
 	}
 

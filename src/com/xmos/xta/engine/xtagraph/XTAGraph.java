@@ -102,9 +102,9 @@ public class XTAGraph {
 		patternMatchers.add(new MultiSectionPatternMatcher());
 		
 		patternMatchers.add(new PathPatternMatcher());
-		
-		patternMatchers.add(new MultiSectionTransformer());
 		patternMatchers.add(new LoopPeelingTransformer());
+		patternMatchers.add(new MultiSectionTransformer());
+		
 		patternMatchers.add(new TerminalTransformer());
 		patternMatchers.add(new TerminalPatternMatcher());
 		while(working){
@@ -125,7 +125,7 @@ public class XTAGraph {
 				}
 				if(working) break;
 			}
-			if(DEBUG) printGraph(m_cfgNodes);
+			//if(DEBUG) printGraph(m_cfgNodes);
 			int ins=0;
 			int outs=0;
 			for(Node node : workingSet){
@@ -208,7 +208,25 @@ public class XTAGraph {
 		System.out.println("}");
 	}
 	
-	public void display() {
+
+	// --------------------------------------------------------------------- //
+	// Helper Debug Methods.
+	// --------------------------------------------------------------------- //	
+	public void displayControlFlowGraph() {				
+		for (Node node : m_cfgNodes) {
+			System.out.printf("-----------------------------------------\n");
+			System.out.printf("%s -> ", node.toString());			
+			for (Node nextNode : node.getNextNodes()) {
+				System.out.printf("[%s]", nextNode.toString());
+			}
+		    System.out.printf("\n");
+			if (node instanceof Block) {
+			    ((Block)node).display(0);			    
+			}
+		}
+	}
+	
+	public void displayStructureTree() {
 		assert(m_cfgNodes.size() == 1);		
 		Node rootNode = m_cfgNodes.iterator().next();
 		rootNode.display(0);		
