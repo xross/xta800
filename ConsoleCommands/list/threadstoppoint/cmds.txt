@@ -1,0 +1,19 @@
+
+# On core 0
+config proc 0 0
+add threadstoppoint a1
+add threadstoppoint a0
+list threadstoppoints
+remove threadstoppoint a1
+remove threadstoppoint a0
+list threadstoppoints
+
+# On core 1
+config proc 0 1
+add threadstoppoint a0
+add threadstoppoint a1
+list threadstoppoints
+remove threadstoppoint a0
+remove threadstoppoint a1
+list threadstoppoints
+
