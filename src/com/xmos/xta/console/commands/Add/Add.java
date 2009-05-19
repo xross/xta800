@@ -6,6 +6,8 @@ import com.xmos.xta.console.commands.List.Branch;
 import com.xmos.xta.console.commands.List.Endpoint;
 import com.xmos.xta.console.commands.List.Label;
 import com.xmos.xta.console.commands.List.SrcLabel;
+import com.xmos.xta.console.commands.List.ThreadStartPoint;
+import com.xmos.xta.console.commands.List.ThreadStopPoint;
 
 public class Add extends CommandContainer {
 	static private Command[] m_options = { 
@@ -13,6 +15,8 @@ public class Add extends CommandContainer {
 		new Label(Label.Operation.ADD),
 		new SrcLabel(SrcLabel.Operation.ADD),
 		new Endpoint(Endpoint.Operation.ADD),
+		new ThreadStartPoint(ThreadStartPoint.Operation.ADD),		
+		new ThreadStopPoint(ThreadStopPoint.Operation.ADD),		
 	};
 	
 	public Add() { super("add"); }

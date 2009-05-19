@@ -2,6 +2,7 @@ package com.xmos.xta.engine;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -33,6 +34,7 @@ import com.xmos.xta.engine.maps.CodePointMap;
 import com.xmos.xta.engine.maps.CodePointInfo;
 import com.xmos.xta.engine.maps.SrcLabelTableInfo;
 import com.xmos.xta.engine.maps.SrcLabelTableMap;
+import com.xmos.xta.engine.maps.ThreadDelimiters;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
@@ -65,6 +67,8 @@ public class Engine implements Notifier {
 	private ArrayList<CodePointMap> m_endpoints;
 	private ArrayList<SrcLabelTableMap> m_srcLabelTables;
 	private ArrayList<EndpointTableMap> m_endpointTables;
+	private ArrayList<ThreadDelimiters> m_threadStartPoints;
+	private ArrayList<ThreadDelimiters> m_threadStopPoints;
 	private AnalysisEngine m_ae;
 	private Constraint m_constraint;
 	private InstructionMnemonics m_mnenonics;
@@ -77,6 +81,8 @@ public class Engine implements Notifier {
 		m_endpoints = new ArrayList<CodePointMap>();
 		m_srcLabelTables = new ArrayList<SrcLabelTableMap>();
 		m_endpointTables = new ArrayList<EndpointTableMap>();
+		m_threadStartPoints = new ArrayList<ThreadDelimiters>();
+		m_threadStopPoints = new ArrayList<ThreadDelimiters>();
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
 		m_config = config;
@@ -233,7 +239,11 @@ public class Engine implements Notifier {
 		if (!loadSrcLabelTables())
 		    return false;		
 		if (!loadEndpointTables())
-		    return false;		
+		    return false;
+		if (!loadThreadDelimiters(m_threadStartPoints))
+			return false;
+		if (!loadThreadDelimiters(m_threadStopPoints))
+			return false;
 
 		m_executableFile = executableFile;
 		
@@ -678,6 +688,34 @@ public class Engine implements Notifier {
 		return getEndpointTableMap();
 	}
 	
+	public boolean addThreadStartPoint(Reference ref) {
+		return addToThreadDelimiters(m_threadStartPoints, ref);
+	}
+
+	public void removeThreadStartPoint(Reference ref) {
+		removeFromThreadDelimiters(m_threadStartPoints, ref);
+	}
+
+	public Collection<Integer> getThreadStartPoints() {
+		return getThreadDelimiters(m_threadStartPoints);
+	}	
+
+	public boolean addThreadStopPoint(Reference ref) {
+		return addToThreadDelimiters(m_threadStopPoints, ref);
+	}
+
+	public void removeThreadStopPoint(Reference ref) {
+		removeFromThreadDelimiters(m_threadStopPoints, ref);
+	}
+
+	public Collection<Integer> getThreadStopPoints() {
+		return getThreadDelimiters(m_threadStopPoints);
+	}	
+	
+	public void setMonitor(IProgressMonitor monitor) {
+		m_jobMonitor = monitor;
+	}
+	
 	private boolean analyseRouteSafely(int startPc, TreeSet<Integer> endPcs, RouteDescription routeDescription) {
 		boolean success = false;
 		try {
@@ -817,6 +855,8 @@ public class Engine implements Notifier {
 		m_srcLabelTables.clear();
 		m_endpoints.clear();
 		m_endpointTables.clear();
+		m_threadStartPoints.clear();
+		m_threadStopPoints.clear();
 		m_xeObjects.clear();
 
 		for (int node : m_xeLoader.getNodeIds()) {
@@ -827,6 +867,8 @@ public class Engine implements Notifier {
 				m_endpoints.add(new CodePointMap(node, core, ".xtaendpoint", this, "endpoint"));
 				m_srcLabelTables.add(new SrcLabelTableMap(node, core, ".xtalabeltable", this));
 				m_endpointTables.add(new EndpointTableMap(node, core, ".xtaendpointtable", this));
+				m_threadStartPoints.add(new ThreadDelimiters(node, core, ".xtathreadstart", this));
+				m_threadStopPoints.add(new ThreadDelimiters(node, core, ".xtathreadstop", this));
 				m_xeObjects.add(new XeObject(m_xeLoader, node, core, fileFinder));
 			}
 		}
@@ -876,6 +918,15 @@ public class Engine implements Notifier {
 		}
 		return true;
 	}	
+	
+	private boolean loadThreadDelimiters(List<ThreadDelimiters> threadDelimiters) {
+		for (ThreadDelimiters threadDelimiter : threadDelimiters) {
+			if (!threadDelimiter.load(m_xeLoader)) {
+				return false;
+			}
+		}
+		return true;
+	}
 	
 	private boolean addToBranchMap(Reference fromRef, Reference toRef) {
 		if (!resolveRefernece(fromRef, this)) {
@@ -1016,6 +1067,45 @@ public class Engine implements Notifier {
 		}
 	}
 	
+	private boolean addToThreadDelimiters(
+			List<ThreadDelimiters> threadDelimiters, Reference ref) {
+
+		if (!resolveRefernece(ref, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Unresolved reference: %s", ref.getRef()));
+			return false;
+		}
+		
+		ThreadDelimiters threadDelimiter = getThreadDelimitersNull(
+				threadDelimiters, m_nodeId, m_coreId);
+		
+		if (threadDelimiter != null) {
+			threadDelimiter.getPcs().add(ref.getPc());
+			return true;
+		}
+		return false;
+	}
+
+	private void removeFromThreadDelimiters(
+		List<ThreadDelimiters> threadDelimiters, Reference ref) {
+
+		if (!resolveRefernece(ref, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Unresolved reference: %s", ref.getRef()));
+			return;
+		}
+		
+		ThreadDelimiters threadDelimiter = getThreadDelimitersNull(
+				threadDelimiters, m_nodeId, m_coreId);
+		
+		if (threadDelimiter != null) {
+			if (!threadDelimiter.getPcs().remove(ref.getPc())) {
+				notify(Notifier.NOTIFY_ERROR, String.format(
+						"Unable to remove pc: %s", ref.getPc()));
+			}
+		}
+	}
+	
 	private Map<Integer, TreeSet<Integer>> getBranchMap() {
 		BranchMap branchMap = getBranchMapNull(m_nodeId, m_coreId);
 		if (branchMap != null) {
@@ -1054,6 +1144,14 @@ public class Engine implements Notifier {
 			return tableMap.getMap();
 		}
 		return new HashMap<Integer, EndpointTableInfo>();
+	}
+	
+	private Collection<Integer> getThreadDelimiters(List<ThreadDelimiters> threadDelimiters) {
+		ThreadDelimiters threadDelimiter = getThreadDelimitersNull(threadDelimiters, m_nodeId, m_coreId);
+		if (threadDelimiter != null) {
+			return threadDelimiter.getPcs();
+		}
+		return new TreeSet<Integer>();		
 	}
 	
 	private BranchMap getBranchMapNull(int nodeId, int coreId) {
@@ -1106,7 +1204,14 @@ public class Engine implements Notifier {
 		return null;
 	}
 
-	public void setMonitor(IProgressMonitor monitor) {
-		m_jobMonitor = monitor;
-	}
+	private ThreadDelimiters getThreadDelimitersNull(
+			List<ThreadDelimiters> threadDelimiters, int nodeId, int coreId) {
+		for (ThreadDelimiters threadDelimiter : threadDelimiters) {
+			if ((threadDelimiter.getNodeId() == nodeId) &&
+				(threadDelimiter.getCoreId() == coreId)) {
+				return threadDelimiter;
+			}
+		}
+		return null;		
+	}	
 }

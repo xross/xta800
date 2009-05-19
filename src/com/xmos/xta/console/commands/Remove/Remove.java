@@ -6,14 +6,18 @@ import com.xmos.xta.console.commands.List.Branch;
 import com.xmos.xta.console.commands.List.Endpoint;
 import com.xmos.xta.console.commands.List.Label;
 import com.xmos.xta.console.commands.List.SrcLabel;
+import com.xmos.xta.console.commands.List.ThreadStartPoint;
+import com.xmos.xta.console.commands.List.ThreadStopPoint;
 
 public class Remove extends CommandContainer {
 	static private Command[] m_options = { 
 		new Branch(Branch.Operation.REMOVE),		
 		new Label(Label.Operation.REMOVE), 
 		new SrcLabel(SrcLabel.Operation.REMOVE),		
-		new Endpoint(Endpoint.Operation.REMOVE),		
-		new Route(),		
+		new Endpoint(Endpoint.Operation.REMOVE),
+		new ThreadStartPoint(ThreadStartPoint.Operation.REMOVE),		
+		new ThreadStopPoint(ThreadStopPoint.Operation.REMOVE),				
+		new Route(),	
 	};
 	
 	public Remove() { super("remove"); }
