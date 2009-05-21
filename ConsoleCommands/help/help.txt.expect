@@ -21,6 +21,8 @@
       option: label <CONSTRAINT_REF> <label>: Adds the given label to the labels list
       option: srclabel <SRCLABEL_REF> <label>: Adds the given source label to the source labels list
       option: endpoint <ENDPOINT_REF> <label>: Adds the given endpoint to the endpoints list
+      option: threadstartpoint <LABEL_REF>: Adds the given reference to the thread start points list
+      option: threadstoppoint <LABEL_REF>: Adds the given reference to the thread stop points list
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
       option: path <from ENDPOINT_REF> <to ENDPOINT_REF>: Sets a path start and end points
       option: function <name>: Sets a path to trace a given function
@@ -42,6 +44,9 @@
       option: endpoints: Lists the endpoints
       option: allsrclabels: Lists all the possible locations for source labels
       option: allendpoints: Lists all the possible locations for endpoints
+      option: threadstartpoints: Lists the thread start points
+      option: threadstoppoints: Lists the thread stop points
+      option: srccommands : Displays the command list embedded in the loaded executable
       option: unknowns <route id>: Displays a list of the unknowns for the given route
       option: functions: Lists the functions in the loaded application
       option: sources: Lists the source files
@@ -72,6 +77,8 @@
       option: label [label]+: Removes the given labels from the labels list (supports regular expressions)
       option: srclabel [label]+: Removes the given source labels from the source labels list (supports regular expressions)
       option: endpoint [label]+: Removes the given endpoints from the endpoints list (supports regular expressions)
+      option: threadstartpoint <LABEL_REF>: Removes the given from reference from the thread start points list
+      option: threadstoppoint <LABEL_REF>: Removes the given from reference from the thread stop points list
       option: route <route id>: Removes the route with the given id from the current analysis
   [-]set <option> <arg0> <arg1>...: Set path information
       option: loop <route id> <SRCLABEL_REF> <iterations>: Sets the number of iterations for the path identified
