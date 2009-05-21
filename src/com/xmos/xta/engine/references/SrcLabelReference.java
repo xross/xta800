@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.references;
 
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.maps.CodePointInfo;
+import com.xmos.xta.engine.sections.CodePointInfo;
 
 public class SrcLabelReference extends Reference {
 	SrcLabelReference(String ref) {

@@ -1,4 +1,4 @@
-package com.xmos.xta.engine.maps;
+package com.xmos.xta.engine.sections;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -17,7 +17,7 @@ public class CodePointMap {
 	private TreeMap<String, CodePointInfo> m_codePoints;
 	private String m_type;
 	
-	public CodePointMap(int nodeId, int coreId, String sectionName, Notifier notifier, String type) {
+	CodePointMap(int nodeId, int coreId, String sectionName, Notifier notifier, String type) {
 		m_notifier = notifier;
 		m_nodeId = nodeId;
 		m_coreId = coreId;
@@ -26,19 +26,19 @@ public class CodePointMap {
 		m_type = type;
 	}
 	
-	public int getNodeId() {
+	int getNodeId() {
 		return m_nodeId;
 	}
 
-	public int getCoreId() {
+	int getCoreId() {
 		return m_coreId;
 	}
 	
-	public Map<String, CodePointInfo> getMap() {
+	Map<String, CodePointInfo> getMap() {
 		return m_codePoints;
 	}
 	
-	public boolean load(XeLoader xeLoader) {
+	boolean load(XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(
 				m_sectionName, m_nodeId, m_coreId);
 				

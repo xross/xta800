@@ -1,4 +1,4 @@
-package com.xmos.xta.engine.maps;
+package com.xmos.xta.engine.sections;
 
 import java.util.Collection;
 import java.util.TreeSet;
@@ -16,7 +16,7 @@ public class ThreadDelimiters {
 	private Notifier m_notifier;	
 	private Collection<Integer> m_pcs;
 
-	public ThreadDelimiters(int nodeId, int coreId, String sectionName, Notifier notifier) {
+	ThreadDelimiters(int nodeId, int coreId, String sectionName, Notifier notifier) {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_sectionName = sectionName;
@@ -24,19 +24,19 @@ public class ThreadDelimiters {
 		m_pcs = new TreeSet<Integer>(); 
 	}
 	
-	public int getNodeId() {
+	int getNodeId() {
 		return m_nodeId;
 	}
 
-	public int getCoreId() {
+	int getCoreId() {
 		return m_coreId;
 	}
 	
-	public Collection<Integer> getPcs() {
+	Collection<Integer> getPcs() {
 		return m_pcs;
 	}
 	
-	public boolean load(XeLoader xeLoader) {
+	boolean load(XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(
 				m_sectionName, m_nodeId, m_coreId);
 				

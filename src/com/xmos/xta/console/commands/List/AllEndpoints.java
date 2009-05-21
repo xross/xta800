@@ -4,7 +4,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.maps.EndpointTableInfo;
+import com.xmos.xta.engine.sections.EndpointTableInfo;
 
 public class AllEndpoints extends Command {
 	public AllEndpoints() {

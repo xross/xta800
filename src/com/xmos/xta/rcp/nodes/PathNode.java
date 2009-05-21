@@ -111,7 +111,7 @@ public class PathNode extends Node {
 				
 				try {
 					PlatformUI.getWorkbench().getActiveWorkbenchWindow().
-					getActivePage().showView(ConsoleView.ID);
+					    getActivePage().showView(ConsoleView.ID);
 				} catch (PartInitException e) {}
 				
 				int routeId = getRouteId();

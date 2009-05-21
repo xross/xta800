@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.maps.EndpointTableInfo;
-import com.xmos.xta.engine.maps.SrcLabelTableInfo;
+import com.xmos.xta.engine.sections.EndpointTableInfo;
+import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 
 public class ReferenceFactory {
 	public enum ReferenceClass {

@@ -3,8 +3,8 @@ package com.xmos.xta.engine.references;
 import java.util.Map;
 
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.maps.CodePointInfo;
-import com.xmos.xta.engine.maps.EndpointTableInfo;
+import com.xmos.xta.engine.sections.CodePointInfo;
+import com.xmos.xta.engine.sections.EndpointTableInfo;
 
 public class EndpointReference extends Reference {
 	EndpointReference(String ref) {

@@ -14,6 +14,7 @@ public class List extends CommandContainer {
 		new AllEndpoints(),		
 		new ThreadStartPoint(ThreadStartPoint.Operation.LIST),		
 		new ThreadStopPoint(ThreadStopPoint.Operation.LIST),		
+		new SrcCommands(),		
 		new Unknowns(),
 		new Functions(),
 		new Sources(),

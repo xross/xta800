@@ -2,13 +2,13 @@ package com.xmos.xta.rcp.actions.control;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
@@ -28,6 +28,7 @@ import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.editors.SourcesEditor;
 import com.xmos.xta.rcp.editors.SourcesEditorInput;
 import com.xmos.xta.rcp.icons.Icons;
+import com.xmos.xta.rcp.views.ConsoleView.ConsoleView;
 
 public class ActionLoad extends Action implements IPropertyChangeListener {
 
@@ -40,7 +41,7 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
 	public void propertyChange(PropertyChangeEvent event) {
 		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {			
 	        openEditors();
-	        
+	        runSrcLevelCommands();
 		} 
 	}
 	
@@ -52,13 +53,10 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
         String[] filterExt = { "*.xe" };
         fileDialog.setFilterExtensions(filterExt);
         
-        //this sets the initial path
-        XtaCorePlugin plugin = XtaCorePlugin.getDefault();
-        
+        XtaCorePlugin plugin = XtaCorePlugin.getDefault();        
         String lastDir = plugin.getPreferenceStore().getString("LastDir");
         
-        fileDialog.setFilterPath(lastDir);
-        
+        fileDialog.setFilterPath(lastDir);        
         String xeFileName = fileDialog.open();
         
         if (xeFileName == null)
@@ -73,10 +71,11 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
         	try {
 				xeFile = xeFile.getCanonicalFile();
 			} catch (IOException e) {
-				displayMessageBox("Error", "Cannot resolve file: " + xeFileName);
+				XtaNotifier.getInstance().notify(Notifier.NOTIFY_ERROR, 
+						String.format("Cannot resolve file: %s", xeFileName));
 				return;
 			}
-    	
+			
 			final File file = xeFile;
 			Job job = new Job("Load: " + xeFileName) {
 				protected IStatus run(IProgressMonitor monitor) {
@@ -85,17 +84,12 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
 					boolean success = engine.loadExecutable(file, new XtaFileFinder());					
 		        	if (success) {
 		                setToolTipText("Currently loaded " + file.getAbsolutePath());
-		        	}					
+		        	}		        	
 					return Status.OK_STATUS;
 				}
 			};
 			job.schedule();        	        	
         }
-	}
-
-	private void displayMessageBox(String title, String message) {
-		Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0, message, null);
-        ErrorDialog.openError(Display.getCurrent().getActiveShell(), title, null, status);	      				
 	}
 	
     private void openEditors() {
@@ -108,4 +102,21 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
 			e.printStackTrace();
 		}
     }
+    
+    private void runSrcLevelCommands() {  
+	    ConsoleView console = (ConsoleView)PlatformUI.getWorkbench().
+            getActiveWorkbenchWindow().getActivePage().findView(ConsoleView.ID);
+    	
+    	Collection<String> srcLevelCommands = XtaEngine.getEngine().getSrcLevelCommands();    	
+    	if (srcLevelCommands.size() > 0) {    	    
+			try {
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+				    getActivePage().showView(ConsoleView.ID);
+			} catch (PartInitException e) {}    	    
+
+        	for (String command : XtaEngine.getEngine().getSrcLevelCommands()) {    	    				
+	    	    console.runCommand(command);
+    	    }
+    	}    	
+    }    
 }

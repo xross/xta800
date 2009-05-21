@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.references;
 
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.maps.SrcLabelTableInfo;
+import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 
 public class SrcLabelFileLineReference extends Reference {
 	SrcLabelFileLineReference(String ref) {

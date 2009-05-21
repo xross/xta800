@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TreeSet;
 
 import com.xmos.isa.Instruction;
@@ -13,7 +14,7 @@ import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.Function;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.XeObject;
-import com.xmos.xta.engine.maps.BranchMap;
+import com.xmos.xta.engine.sections.Sections;
 
 public class AnalysisEngine {
 	private Notifier m_notifier;
@@ -24,13 +25,14 @@ public class AnalysisEngine {
 	private ArrayList<UserSuccessor> m_userSuccessors;
 	private HashMap<NodeCore, Integer> m_constantPoolPointers;
 	private HashMap<NodeCore, Integer> m_dataPoolPointers;
-	private ArrayList<BranchMap> m_branches;
+	private Sections m_sections;
 	private ArrayList<FunctionCallLocations> m_functionCallLocations;
 	private ArrayList<FunctionReturns> m_functionReturns;
 	private ArrayList<BasicBlockStartPcs> m_basicBlockStartPcs;
 
-	public AnalysisEngine(Notifier notifier, XeLoader loader, NodeCoreInstructionCaches coreInstructionCache, ArrayList<XeObject> objects,
-			ArrayList<BranchMap> branches) {
+	public AnalysisEngine(Notifier notifier, XeLoader loader, 
+			NodeCoreInstructionCaches coreInstructionCache, 
+			ArrayList<XeObject> objects, Sections sections) {
 		m_notifier = notifier;
 		m_constantPoolPointers = new HashMap<NodeCore, Integer>();
 		m_dataPoolPointers = new HashMap<NodeCore, Integer>();
@@ -39,7 +41,7 @@ public class AnalysisEngine {
 		m_xeObjects = objects;
 		m_unsafeAssumptions = true;
 		m_userSuccessors = new ArrayList<UserSuccessor>();
-		m_branches = branches;
+		m_sections = sections;
 		m_functionCallLocations = new ArrayList<FunctionCallLocations>();
 		m_functionReturns = new ArrayList<FunctionReturns>();
 		m_basicBlockStartPcs = new ArrayList<BasicBlockStartPcs>();
@@ -296,16 +298,13 @@ public class AnalysisEngine {
 	}
 
 	private void addBranchMaps(XeObject xeObject, InstructionDecodeCache decodeCache, int nodeId, int coreId) {
-		for (BranchMap branchMap : m_branches) {
-    		if ((branchMap.getNodeId() == nodeId) && (branchMap.getCoreId() == coreId)) {			
-	        	for (AssemblyLine al : xeObject.getInstructions()) {
-					if (branchMap.getMap().containsKey(al.getPc())) {
-						XtaInstruction inst = decodeCache.getInstruction(al.getPc());
-						for (int target : branchMap.getMap().get(al.getPc())) {
-							inst.addSuccessor(decodeCache.getInstruction(target), true);
-						}
-					}					
-				}				
+		Map<Integer, TreeSet<Integer>> branchMap = m_sections.getBranchMap(nodeId, coreId);		
+       	for (AssemblyLine al : xeObject.getInstructions()) {
+			if (branchMap.containsKey(al.getPc())) {
+				XtaInstruction inst = decodeCache.getInstruction(al.getPc());
+				for (int target : branchMap.get(al.getPc())) {
+					inst.addSuccessor(decodeCache.getInstruction(target), true);
+				}
 			}
 		}
 	}

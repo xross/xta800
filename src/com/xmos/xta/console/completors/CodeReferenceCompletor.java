@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.maps.CodePointInfo;
+import com.xmos.xta.engine.sections.CodePointInfo;
 
 import jline.Completor;
 

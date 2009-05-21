@@ -5,7 +5,6 @@ import java.util.Vector;
 
 import com.xmos.xta.console.commands.Command;
 
-
 public class BasicConsole implements Console {
 	public void display(String str) {
 		System.out.printf("%s", str);

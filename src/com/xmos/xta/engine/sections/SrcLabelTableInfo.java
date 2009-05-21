@@ -1,4 +1,4 @@
-package com.xmos.xta.engine.maps;
+package com.xmos.xta.engine.sections;
 
 public class SrcLabelTableInfo {
     private int m_pc;

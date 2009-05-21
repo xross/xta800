@@ -2,11 +2,14 @@ package com.xmos.xta.console.commands.Load;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Vector;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.ConsoleFileFinder;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
+import com.xmos.xta.console.commands.CommandFactory;
+import com.xmos.xta.console.commands.Invalid;
 import com.xmos.xta.engine.Engine;
 
 public class Load extends Command {
@@ -58,9 +61,25 @@ public class Load extends Command {
 		}
 		ConsoleFileFinder fileFinder = new ConsoleFileFinder(engine, console);	
 		engine.loadExecutable(file, fileFinder);
+		runSectionCommands(shell, engine, console);
     }
 
 	public String toString() {
 		return commandLine();
-	}	
+	}
+	
+    private void runSectionCommands(Shell shell, Engine engine, Console console) {
+	    for (String commandString : engine.getSrcLevelCommands()) {
+            String[] tokens = commandString.trim().split("\\s+");
+            Command command = CommandFactory.buildCommand(
+        		tokens, 0, new Vector<Command>(), console);
+		
+            if (command == null)
+            	command = new Invalid(commandString, 
+            		    String.format("Invalid command in source file '%s'\n", commandString));
+            	
+		    command.execute(shell, engine, console);
+		    shell.addToCommandHistory(command);
+	    }		
+    }
 }

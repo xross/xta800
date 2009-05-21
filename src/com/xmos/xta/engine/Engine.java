@@ -3,14 +3,12 @@ package com.xmos.xta.engine;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
-import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -26,18 +24,13 @@ import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Route.RouteStatus;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
-import com.xmos.xta.engine.maps.BranchMap;
-import com.xmos.xta.engine.maps.EndpointTableInfo;
-import com.xmos.xta.engine.maps.EndpointTableMap;
-import com.xmos.xta.engine.maps.LabelMap;
-import com.xmos.xta.engine.maps.CodePointMap;
-import com.xmos.xta.engine.maps.CodePointInfo;
-import com.xmos.xta.engine.maps.SrcLabelTableInfo;
-import com.xmos.xta.engine.maps.SrcLabelTableMap;
-import com.xmos.xta.engine.maps.ThreadDelimiters;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.sections.CodePointInfo;
+import com.xmos.xta.engine.sections.EndpointTableInfo;
+import com.xmos.xta.engine.sections.Sections;
+import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.engine.unknowns.Unknown;
 
 public class Engine implements Notifier {
@@ -61,28 +54,13 @@ public class Engine implements Notifier {
 	private IProgressMonitor m_jobMonitor;
 	private String m_srcPaths;
 	private ArrayList<XeObject> m_xeObjects;
-	private ArrayList<BranchMap> m_branches;
-	private ArrayList<LabelMap> m_labels;
-	private ArrayList<CodePointMap> m_srcLabels;
-	private ArrayList<CodePointMap> m_endpoints;
-	private ArrayList<SrcLabelTableMap> m_srcLabelTables;
-	private ArrayList<EndpointTableMap> m_endpointTables;
-	private ArrayList<ThreadDelimiters> m_threadStartPoints;
-	private ArrayList<ThreadDelimiters> m_threadStopPoints;
 	private AnalysisEngine m_ae;
 	private Constraint m_constraint;
 	private InstructionMnemonics m_mnenonics;
+	private Sections m_sections;
 
 	public Engine(Config config) {
 		m_xeObjects = new ArrayList<XeObject>();
-		m_branches  = new ArrayList<BranchMap>();
-		m_labels    = new ArrayList<LabelMap>();
-		m_srcLabels = new ArrayList<CodePointMap>();
-		m_endpoints = new ArrayList<CodePointMap>();
-		m_srcLabelTables = new ArrayList<SrcLabelTableMap>();
-		m_endpointTables = new ArrayList<EndpointTableMap>();
-		m_threadStartPoints = new ArrayList<ThreadDelimiters>();
-		m_threadStopPoints = new ArrayList<ThreadDelimiters>();
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
 		m_config = config;
@@ -95,6 +73,7 @@ public class Engine implements Notifier {
 		m_jobMonitor = null;
 		m_constraint = ConstraintFactory.createConstraint(this, "");
 		m_mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
+		m_sections = new Sections();
 
 		ReferenceFactory.setEngine(this);
 	}
@@ -206,20 +185,26 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean loadExecutable(File executableFile, FileFinder fileFinder) {
-		XeLoader newLoader = new XeLoader();
+		XeLoader xeLoader = new XeLoader();
 
-		if (!newLoader.loadExecutable(executableFile)) {
+		if (!xeLoader.loadExecutable(executableFile)) {
 			notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile + "' could not be loaded.");
 			return false;			
 		}
+		m_xeLoader = xeLoader;
+		m_sections.initialise(m_xeLoader, this);
 		
 		m_nodeId = 0;
 		m_coreId = 0;
-
-		m_xeLoader = newLoader;
-		initialiseLists(fileFinder);
-		m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(this,
-				m_xeLoader, m_config);
+		
+		m_xeObjects.clear();
+		for (int node : m_xeLoader.getNodeIds()) {
+			for (int core : m_xeLoader.getCoreIds(node)) {
+				m_xeObjects.add(new XeObject(m_xeLoader, node, core, fileFinder));
+			}
+		}		
+		
+		m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(this, m_xeLoader, m_config);
 
 		try {
 			decodeInstructions();
@@ -228,28 +213,12 @@ public class Engine implements Notifier {
 			return false;
 		}
 
-		if (!loadBranchMaps()) 
-			return false;		
-		if (!loadLabelMaps())
-		    return false;		
-		if (!loadCodePointMaps(m_srcLabels))
-		    return false;		
-		if (!loadCodePointMaps(m_endpoints))
-		    return false;		
-		if (!loadSrcLabelTables())
-		    return false;		
-		if (!loadEndpointTables())
-		    return false;
-		if (!loadThreadDelimiters(m_threadStartPoints))
+		if (!m_sections.load())
 			return false;
-		if (!loadThreadDelimiters(m_threadStopPoints))
-			return false;
-
+				
 		m_executableFile = executableFile;
 		
-		m_ae = new AnalysisEngine(this, m_xeLoader, m_nodeCoreInstructionCache,
-				m_xeObjects, m_branches);
-
+		m_ae = new AnalysisEngine(this, m_xeLoader, m_nodeCoreInstructionCache, m_xeObjects, m_sections);
 		runAnalysisEngine();
 
 		m_routes.clear();
@@ -259,7 +228,7 @@ public class Engine implements Notifier {
 
 		// Need to update as the executable might be of a different architecture
 		m_mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
-
+		
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
 		return true;
 	}
@@ -633,84 +602,149 @@ public class Engine implements Notifier {
 	}
 			
 	public boolean addBranch(Reference fromRef, Reference toRef) {
-		return addToBranchMap(fromRef, toRef);
+		if (!resolveRefernece(fromRef, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", fromRef.getRef()));
+			return false;
+		} else if (!resolveRefernece(toRef, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", toRef.getRef()));
+			return false;
+		}		
+		
+		if (m_sections.addToBranchMap(m_nodeId, m_coreId, fromRef.getPc(), toRef.getPc())) {
+			m_ae.run();
+			return true;			
+		}		
+		return false;
 	}
 
-	public void removeBranch(Reference fromRef) {
-		removeFromBranchMap(fromRef);
+	public boolean removeBranch(Reference fromRef) {
+		if (!resolveRefernece(fromRef, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", fromRef.getRef()));
+			return false;
+		}
+		
+		if (m_sections.removeFromBranchMap(m_nodeId, m_coreId, fromRef.getPc())) {		    
+		    m_ae.run();
+		    return true;
+		}
+		return false;
 	}
 
 	public Map<Integer, TreeSet<Integer>> getBranches() {
-		return getBranchMap();
+		return m_sections.getBranchMap(m_nodeId, m_coreId);
 	}
 
 	public boolean addLabel(String label, Reference ref) {
-		return addToLabelMap(label, ref);
+		if (!resolveRefernece(ref, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
+			return false;
+		}
+		if (ReferenceFactory.isPcString(label)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a label: %s", label));
+			return false;
+		}				
+		return m_sections.addToLabelMap(m_nodeId, m_coreId, label, ref.getPc());
 	}
 
 	public void removeLabel(String label) {
-		removeFromLabelMap(label);
+		m_sections.removeFromLabelMap(m_nodeId, m_coreId, label);
 	}
 
 	public Map<String, Integer> getLabels() {
-		return getLabelMap();
+		return m_sections.getLabelMap(m_nodeId, m_coreId);
 	}
 	
 	public boolean addSrcLabel(String label, Reference ref) {
-		return addToCodePointMap(m_srcLabels, label, ref);
+		if (!resolveRefernece(ref, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
+			return false;
+		}
+		if (ReferenceFactory.isPcString(label)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a label: %s", label));
+			return false;
+		}		
+		return m_sections.addToSrcLabelMap(m_nodeId, m_coreId, label, ref.getPc());
 	}
 
 	public void removeSrcLabel(String label) {
-		removeFromCodePointMap(m_srcLabels, label);
+		m_sections.removeFromSrcLabelMap(m_nodeId, m_coreId,  label);
 	}
 
 	public Map<String, CodePointInfo> getSrcLabels() {
-		return getCodePointMap(m_srcLabels);
+		return m_sections.getSrcLabelMap(m_nodeId, m_coreId);
 	}
 
 	public Map<Integer, SrcLabelTableInfo> getSrcLabelTable() {
-		return getSrcLabelTableMap();
+		return m_sections.getSrcLabelTableMap(m_nodeId, m_coreId);
 	}
 
 	public boolean addEndpoint(String endpoint, Reference ref) {
-		return addToCodePointMap(m_endpoints, endpoint, ref);
+		if (!resolveRefernece(ref, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
+			return false;
+		}
+		if (ReferenceFactory.isPcString(endpoint)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a label: %s", endpoint));
+			return false;
+		}				
+		return m_sections.addToEndpointMap(m_nodeId, m_coreId, endpoint, ref.getPc());
 	}
 
 	public void removeEndpoint(String endpoint) {
-		removeFromCodePointMap(m_endpoints, endpoint);
+		m_sections.removeFromEndpointMap(m_nodeId, m_coreId, endpoint);
 	}
-	
+
 	public Map<String, CodePointInfo> getEndpoints() {
-		return getCodePointMap(m_endpoints);
+		return m_sections.getEndpointMap(m_nodeId, m_coreId);
 	}
 		
 	public Map<Integer, EndpointTableInfo> getEndpointTable() {
-		return getEndpointTableMap();
+		return m_sections.getEndpointTableMap(m_nodeId, m_coreId);
 	}
 	
 	public boolean addThreadStartPoint(Reference ref) {
-		return addToThreadDelimiters(m_threadStartPoints, ref);
+		if (!resolveRefernece(ref, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
+			return false;
+		}		
+		return m_sections.addToThreadStartPoints(m_nodeId, m_coreId, ref.getPc());
 	}
 
 	public void removeThreadStartPoint(Reference ref) {
-		removeFromThreadDelimiters(m_threadStartPoints, ref);
+		if (!resolveRefernece(ref, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
+			return;
+		}		
+		m_sections.removeFromThreadStartPoints(m_nodeId, m_coreId, ref.getPc());
 	}
 
 	public Collection<Integer> getThreadStartPoints() {
-		return getThreadDelimiters(m_threadStartPoints);
+		return m_sections.getThreadStartPoints(m_nodeId, m_coreId);
 	}	
 
 	public boolean addThreadStopPoint(Reference ref) {
-		return addToThreadDelimiters(m_threadStopPoints, ref);
+		if (!resolveRefernece(ref, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
+			return false;
+		}				
+		return m_sections.addToThreadStopPoints(m_nodeId, m_coreId, ref.getPc());
 	}
 
 	public void removeThreadStopPoint(Reference ref) {
-		removeFromThreadDelimiters(m_threadStopPoints, ref);
+		if (!resolveRefernece(ref, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
+			return;
+		}		
+		m_sections.removeFromThreadStopPoints(m_nodeId, m_coreId, ref.getPc());
 	}
 
 	public Collection<Integer> getThreadStopPoints() {
-		return getThreadDelimiters(m_threadStopPoints);
+		return m_sections.getThreadStopPoints(m_nodeId, m_coreId);
 	}	
+	
+	public Collection<String> getSrcLevelCommands() {
+		return m_sections.getSrcLevelCommands(m_nodeId, m_coreId);
+	}
 	
 	public void setMonitor(IProgressMonitor monitor) {
 		m_jobMonitor = monitor;
@@ -826,8 +860,8 @@ public class Engine implements Notifier {
 
 	private XeObject getXeObject(int nodeId, int coreId) {
 		for (XeObject xeObject : m_xeObjects) {
-			if ((xeObject.getNodeId() == nodeId)
-					&& (xeObject.getCoreId() == coreId)) {
+			if ((xeObject.getNodeId() == nodeId) &&
+			    (xeObject.getCoreId() == coreId)) {
 				return xeObject;
 			}
 		}
@@ -846,372 +880,5 @@ public class Engine implements Notifier {
 			route.invalidateAllBlocks();
 			route.sortPaths();
 		}		
-	}
-	
-	private void initialiseLists(FileFinder fileFinder) {
-		m_branches.clear();
-		m_labels.clear();
-		m_srcLabels.clear();
-		m_srcLabelTables.clear();
-		m_endpoints.clear();
-		m_endpointTables.clear();
-		m_threadStartPoints.clear();
-		m_threadStopPoints.clear();
-		m_xeObjects.clear();
-
-		for (int node : m_xeLoader.getNodeIds()) {
-			for (int core : m_xeLoader.getCoreIds(node)) {
-				m_branches.add(new BranchMap(node, core, this));
-				m_labels.add(new LabelMap(node, core));
-				m_srcLabels.add(new CodePointMap(node, core, ".xtalabel", this, "label"));
-				m_endpoints.add(new CodePointMap(node, core, ".xtaendpoint", this, "endpoint"));
-				m_srcLabelTables.add(new SrcLabelTableMap(node, core, ".xtalabeltable", this));
-				m_endpointTables.add(new EndpointTableMap(node, core, ".xtaendpointtable", this));
-				m_threadStartPoints.add(new ThreadDelimiters(node, core, ".xtathreadstart", this));
-				m_threadStopPoints.add(new ThreadDelimiters(node, core, ".xtathreadstop", this));
-				m_xeObjects.add(new XeObject(m_xeLoader, node, core, fileFinder));
-			}
-		}
-	}
-
-	private boolean loadBranchMaps() {
-		for (BranchMap branchMap : m_branches) {
-			if (!branchMap.load(m_xeLoader)) {
-			    return false;
-			}
-		}
-		return true;
-	}
-	
-	private boolean loadLabelMaps() {
-		for (LabelMap labelMap : m_labels) {
-			if (!labelMap.load(m_xeLoader)) {
-				return false;
-			}			
-		}	
-		return true;
-	}
-
-	private boolean loadCodePointMaps(List<CodePointMap> codePointMaps) {
-		for (CodePointMap codePointMap : codePointMaps) {
-			if (!codePointMap.load(m_xeLoader)) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	private boolean loadSrcLabelTables() {
-		for (SrcLabelTableMap tableMap : m_srcLabelTables) {
-			if (!tableMap.load(m_xeLoader)) {
-				return false;
-			}
-		}
-		return true;
-	}	
-		
-	private boolean loadEndpointTables() {
-		for (EndpointTableMap tableMap : m_endpointTables) {
-			if (!tableMap.load(m_xeLoader)) {
-				return false;
-			}
-		}
-		return true;
-	}	
-	
-	private boolean loadThreadDelimiters(List<ThreadDelimiters> threadDelimiters) {
-		for (ThreadDelimiters threadDelimiter : threadDelimiters) {
-			if (!threadDelimiter.load(m_xeLoader)) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	private boolean addToBranchMap(Reference fromRef, Reference toRef) {
-		if (!resolveRefernece(fromRef, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format(
-					"Unresolved reference: %s", fromRef.getRef()));
-			return false;
-		} else if (!resolveRefernece(toRef, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format(
-					"Unresolved reference: %s", toRef.getRef()));
-			return false;
-		}
-
-		BranchMap branchMap = getBranchMapNull(m_nodeId, m_coreId);
-		if (branchMap != null) {
-			branchMap.add(fromRef.getPc(), toRef.getPc());
-			m_ae.run();
-			return true;
-		}
-		return false;
-	}
-
-	private void removeFromBranchMap(Reference fromRef) {
-		if (!resolveRefernece(fromRef, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format(
-					"Unresolved reference: %s", fromRef.getRef()));
-			return;
-		}
-
-		BranchMap branchMap = getBranchMapNull(m_nodeId, m_coreId);
-		if (branchMap != null) {
-			if (branchMap.getMap().containsKey(fromRef.getPc())) {
-				branchMap.remove(fromRef.getPc());
-				m_ae.run();
-			} else {
-				notify(Notifier.NOTIFY_ERROR, String.format(
-						"Unable to remove branch: 0x%x", fromRef.getPc()));
-			}
-		}
-	}	
-	
-	private boolean addToLabelMap(String label, Reference ref) {
-		if (!resolveRefernece(ref, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format(
-					"Unresolved reference: %s", ref.getRef()));
-			return false;
-		}
-		
-		if (ReferenceFactory.isPcString(label)) {
-			notify(Notifier.NOTIFY_ERROR, String.format(
-					"Cannot use PC as a label: %s", label));
-			return false;
-		}		
-
-		LabelMap labelMap = getLabelMapNull(m_nodeId, m_coreId);
-		if (labelMap != null) {
-			if (!labelMap.getMap().containsKey(label)) {										
-				labelMap.getMap().put(label, ref.getPc());
-			} else {
-				notify(Notifier.NOTIFY_ERROR, String.format(
-						"Label already exists: %s", label));
-			}
-			return true;
-		}
-		return false;
-	}
-
-	private void removeFromLabelMap(String label) {
-		LabelMap labelMap = getLabelMapNull(m_nodeId, m_coreId);
-		if (labelMap != null) {
-			List<String> matches = new ArrayList<String>();
-
-			for (String mapEntry : labelMap.getMap().keySet()) {
-				try {
-					if (mapEntry.matches(label)) {
-						matches.add(mapEntry);
-					}
-				} catch (PatternSyntaxException e) {
-				}
-			}
-
-			if (matches.size() > 0) {
-				for (String toRemove : matches)
-					labelMap.getMap().remove(toRemove);
-			} else {
-				notify(Notifier.NOTIFY_ERROR, String.format(
-						"Unable to remove label: %s", label));
-			}
-		}
-	}
-	
-	private boolean addToCodePointMap(List<CodePointMap> codePointMaps, String label, Reference ref) {
-		if (!resolveRefernece(ref, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format(
-					"Unresolved reference: %s", ref.getRef()));
-			return false;
-		}
-
-		if (ReferenceFactory.isPcString(label)) {
-			notify(Notifier.NOTIFY_ERROR, String.format(
-					"Cannot use PC as a label: %s", label));
-			return false;
-		}
-		
-		CodePointMap labelMap = getCodePointMapNull(codePointMaps, m_nodeId, m_coreId);
-		if (labelMap != null) {
-			if (!labelMap.getMap().containsKey(label)) {										
-				labelMap.getMap().put(label, new CodePointInfo(ref.getPc(), label, "", "", 0));
-			} else {
-				notify(Notifier.NOTIFY_ERROR, String.format(
-						"Label already exists: %s", label));
-			}
-			return true;
-		}
-		return false;
-	}
-
-	private void removeFromCodePointMap(List<CodePointMap> codePointMaps, String label) {
-		CodePointMap labelMap = getCodePointMapNull(codePointMaps, m_nodeId, m_coreId);
-		if (labelMap != null) {
-			List<String> matches = new ArrayList<String>();
-
-			for (String mapEntry : labelMap.getMap().keySet()) {
-				try {
-					if (mapEntry.matches(label)) {
-						matches.add(mapEntry);
-					}
-				} catch (PatternSyntaxException e) {
-				}
-			}
-
-			if (matches.size() > 0) {
-				for (String toRemove : matches)
-					labelMap.getMap().remove(toRemove);
-			} else {
-				notify(Notifier.NOTIFY_ERROR, String.format(
-						"Unable to remove label: %s", label));
-			}
-		}
-	}
-	
-	private boolean addToThreadDelimiters(
-			List<ThreadDelimiters> threadDelimiters, Reference ref) {
-
-		if (!resolveRefernece(ref, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format(
-					"Unresolved reference: %s", ref.getRef()));
-			return false;
-		}
-		
-		ThreadDelimiters threadDelimiter = getThreadDelimitersNull(
-				threadDelimiters, m_nodeId, m_coreId);
-		
-		if (threadDelimiter != null) {
-			threadDelimiter.getPcs().add(ref.getPc());
-			return true;
-		}
-		return false;
-	}
-
-	private void removeFromThreadDelimiters(
-		List<ThreadDelimiters> threadDelimiters, Reference ref) {
-
-		if (!resolveRefernece(ref, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format(
-					"Unresolved reference: %s", ref.getRef()));
-			return;
-		}
-		
-		ThreadDelimiters threadDelimiter = getThreadDelimitersNull(
-				threadDelimiters, m_nodeId, m_coreId);
-		
-		if (threadDelimiter != null) {
-			if (!threadDelimiter.getPcs().remove(ref.getPc())) {
-				notify(Notifier.NOTIFY_ERROR, String.format(
-						"Unable to remove pc: %s", ref.getPc()));
-			}
-		}
-	}
-	
-	private Map<Integer, TreeSet<Integer>> getBranchMap() {
-		BranchMap branchMap = getBranchMapNull(m_nodeId, m_coreId);
-		if (branchMap != null) {
-			return branchMap.getMap();
-		}
-		return new HashMap<Integer, TreeSet<Integer>>();
-	}
-
-	private Map<String, Integer> getLabelMap() {
-	    LabelMap labelMap = getLabelMapNull(m_nodeId, m_coreId);
-	    if (labelMap != null) {
-		    return labelMap.getMap();
-	    }
-	    return new HashMap<String, Integer>();
-	}
-
-	private Map<String, CodePointInfo> getCodePointMap(List<CodePointMap> codePointMaps) {
-	    CodePointMap labelMap = getCodePointMapNull(codePointMaps, m_nodeId, m_coreId);
-	    if (labelMap != null) {
-		    return labelMap.getMap();
-	    }
-	    return new HashMap<String, CodePointInfo>();
-	}
-	
-	private Map<Integer, SrcLabelTableInfo> getSrcLabelTableMap() {
-		SrcLabelTableMap tableMap = getSrcLabelTableMapNull(m_nodeId, m_coreId);
-		if (tableMap != null) {
-			return tableMap.getMap();
-		}
-		return new HashMap<Integer, SrcLabelTableInfo>();
-	}
-
-	private Map<Integer, EndpointTableInfo> getEndpointTableMap() {
-		EndpointTableMap tableMap = getEndpointTableMapNull(m_nodeId, m_coreId);
-		if (tableMap != null) {
-			return tableMap.getMap();
-		}
-		return new HashMap<Integer, EndpointTableInfo>();
-	}
-	
-	private Collection<Integer> getThreadDelimiters(List<ThreadDelimiters> threadDelimiters) {
-		ThreadDelimiters threadDelimiter = getThreadDelimitersNull(threadDelimiters, m_nodeId, m_coreId);
-		if (threadDelimiter != null) {
-			return threadDelimiter.getPcs();
-		}
-		return new TreeSet<Integer>();		
-	}
-	
-	private BranchMap getBranchMapNull(int nodeId, int coreId) {
-		for (BranchMap branches : m_branches) {
-			if ((branches.getNodeId() == nodeId) &&
-				(branches.getCoreId() == coreId)) {
-				return branches;
-			}
-		}
-		return null;
-	}
-
-	private LabelMap getLabelMapNull(int nodeId, int coreId) {
-		for (LabelMap labels : m_labels) {
-			if ((labels.getNodeId() == nodeId) &&
-				(labels.getCoreId() == coreId)) {
-				return labels;
-			}
-		}
-		return null;
-	}
-	
-	private CodePointMap getCodePointMapNull(List<CodePointMap> codePoints, int nodeId, int coreId) {
-		for (CodePointMap codePointMap : codePoints) {
-			if ((codePointMap.getNodeId() == nodeId) &&
-				(codePointMap.getCoreId() == coreId)) {
-				return codePointMap;
-			}
-		}
-		return null;
-	}
-
-	private SrcLabelTableMap getSrcLabelTableMapNull(int nodeId, int coreId) {
-		for (SrcLabelTableMap tableMap : m_srcLabelTables) {
-			if ((tableMap.getNodeId() == nodeId) &&
-				(tableMap.getCoreId() == coreId)) {
-				return tableMap;
-			}
-		}
-		return null;
-	}
-
-	private EndpointTableMap getEndpointTableMapNull(int nodeId, int coreId) {
-		for (EndpointTableMap tableMap : m_endpointTables) {
-			if ((tableMap.getNodeId() == nodeId) &&
-				(tableMap.getCoreId() == coreId)) {
-				return tableMap;
-			}
-		}
-		return null;
-	}
-
-	private ThreadDelimiters getThreadDelimitersNull(
-			List<ThreadDelimiters> threadDelimiters, int nodeId, int coreId) {
-		for (ThreadDelimiters threadDelimiter : threadDelimiters) {
-			if ((threadDelimiter.getNodeId() == nodeId) &&
-				(threadDelimiter.getCoreId() == coreId)) {
-				return threadDelimiter;
-			}
-		}
-		return null;		
 	}	
 }

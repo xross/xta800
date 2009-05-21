@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.references;
 
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.maps.EndpointTableInfo;
+import com.xmos.xta.engine.sections.EndpointTableInfo;
 
 public class EndpointFileLineReference extends Reference {
 	EndpointFileLineReference(String ref) {

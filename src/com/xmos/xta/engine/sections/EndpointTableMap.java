@@ -1,4 +1,4 @@
-package com.xmos.xta.engine.maps;
+package com.xmos.xta.engine.sections;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -7,37 +7,36 @@ import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.Notifier;
 
-public class SrcLabelTableMap {
+public class EndpointTableMap {
 	private static final boolean DEBUG = false;
 	
 	private int m_nodeId;
 	private int m_coreId;
 	private String m_sectionName;
-	private Notifier m_notifier;	
-	private TreeMap<Integer, SrcLabelTableInfo> m_locations;
+	private Notifier m_notifier;
+	private TreeMap<Integer, EndpointTableInfo> m_locations;
 	
-	public SrcLabelTableMap(int nodeId, int coreId, String sectionName, Notifier notifier) {
+	EndpointTableMap(int nodeId, int coreId, String sectionName, Notifier notifier) {
 		m_notifier = notifier;
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_sectionName = sectionName;
-		
-		m_locations = new TreeMap<Integer, SrcLabelTableInfo>(); 
+		m_locations = new TreeMap<Integer, EndpointTableInfo>(); 
 	}
 	
-	public int getNodeId() {
+	int getNodeId() {
 		return m_nodeId;
 	}
 
-	public int getCoreId() {
+	int getCoreId() {
 		return m_coreId;
 	}
 	
-	public Map<Integer, SrcLabelTableInfo> getMap() {
+	Map<Integer, EndpointTableInfo> getMap() {
 		return m_locations;
 	}
 	
-	public boolean load(XeLoader xeLoader) {
+	boolean load(XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(
 				m_sectionName, m_nodeId, m_coreId);
 				
@@ -65,27 +64,23 @@ public class SrcLabelTableMap {
 	        		String fileName = ByteArrayManipulation.readString(data, byteIndex);
 	        		byteIndex += fileName.length() + 1;
 
-	        		int lineNumberStart = ByteArrayManipulation.readInt(data, byteIndex);
+	        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
 
-	        		int lineNumberEnd = ByteArrayManipulation.readInt(data, byteIndex);
-	        		byteIndex += 4;
-	        		
 	        		int location = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
 	        		
 	        		if (DEBUG) System.out.printf("- pc: 0x%08x, fileName: %s, lineNumber: %d\n", 
-	        				location, fileName, lineNumberStart, lineNumberEnd);
+	        				location, fileName, lineNumber);
 	        		
-	        		m_locations.put(location, new SrcLabelTableInfo(location, compilationDir, 
-	        				fileName, lineNumberStart, lineNumberEnd));        	        		
+	        		m_locations.put(location, new EndpointTableInfo(location, compilationDir, fileName, lineNumber));        	        		
 	        	}
-	        }
-	    } catch (Exception e) {
-		    m_notifier.notify(Notifier.NOTIFY_ERROR, String.format(
+	        }			
+        } catch (Exception e) {
+			m_notifier.notify(Notifier.NOTIFY_ERROR, String.format(
 					"Problem reading %s section while loading executable", m_sectionName));
-	        return false;
-		}
+        	return false;
+        }
         return true;
 	}
 }

@@ -59,6 +59,10 @@ public class Shell {
     public Vector<Command> getCommandHistory() {
     	return m_commandHistory;
     }
+    
+    public void addToCommandHistory(Command command) {
+    	m_commandHistory.add(command);
+    }
 
     public void addCommand(Command command) {
     	m_commands.add(command);
@@ -177,7 +181,6 @@ public class Shell {
                 
                 if (invalidCommand) {    
                 	command = new Invalid(line, "Invalid command (Try 'help'..)\n");
-                	m_commandHistory.add(command);
                 }
             }            
     	} while (command == null);

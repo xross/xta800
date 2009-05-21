@@ -1,4 +1,4 @@
-package com.xmos.xta.engine.maps;
+package com.xmos.xta.engine.sections;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -13,25 +13,25 @@ public class LabelMap {
 	private int m_coreId;
 	private TreeMap<String, Integer> m_labels;
 	
-	public LabelMap(int nodeId, int coreId) {
+	LabelMap(int nodeId, int coreId) {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_labels = new TreeMap<String, Integer>(); 
 	}
 	
-	public int getNodeId() {
+	int getNodeId() {
 		return m_nodeId;
 	}
 
-	public int getCoreId() {
+	int getCoreId() {
 		return m_coreId;
 	}
 	
-	public Map<String, Integer> getMap() {
+	Map<String, Integer> getMap() {
 		return m_labels;
 	}
 	
-	public boolean load(XeLoader xeLoader) {
+	boolean load(XeLoader xeLoader) {
         SymbolTable symbolTable = xeLoader.getSymbolTable(m_nodeId, m_coreId);
         ElfHandler elfHandler = symbolTable.getElfHandler();
         

@@ -3,22 +3,22 @@ package com.xmos.xta.rcp.views.ConsoleView;
 import java.util.*;
 
 public class TabCompletionHandler {
-    public void complete(final TextReader reader, final List<String> candidates, final int pos) {    	
-        String buffer = reader.getCurrentBuffer();
+    public void complete(final GuiConsole guiConsole, final List<String> candidates, final int pos) {    	
+        String buffer = guiConsole.getCurrentBuffer();
 
     	if (candidates.size() == 1) {
             String value = candidates.get(0).toString();
             if (!value.equals(buffer)) {
-                reader.insertText(value, pos);
+            	guiConsole.insertText(value, pos);
             }            
         } else if (candidates.size() > 1) {
-            printCandidates(reader, candidates, buffer);                
+            printCandidates(guiConsole, candidates, buffer);                
             String value = getUnambiguousCompletions(candidates);
-            reader.insertText(value, pos);
+            guiConsole.insertText(value, pos);
         }
     }
 
-    public static final void printCandidates(final TextReader reader, 
+    public static final void printCandidates(final GuiConsole guiConsole, 
     		Collection<String> candidates, String currentBuffer) {
     	        
         // Copy the values and make them distinct, without otherwise
@@ -34,7 +34,7 @@ public class TabCompletionHandler {
             }
             candidates = copy;
         }
-        reader.insertCompletions(candidates, currentBuffer);
+        guiConsole.insertCompletions(candidates, currentBuffer);
     }
 
     private final String getUnambiguousCompletions(final List<String> candidates) {
