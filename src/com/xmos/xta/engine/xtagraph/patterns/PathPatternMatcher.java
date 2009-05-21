@@ -3,7 +3,6 @@ package com.xmos.xta.engine.xtagraph.patterns;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import com.xmos.xta.engine.xtagraph.nodes.Node;
@@ -77,67 +76,7 @@ public class PathPatternMatcher extends PatternMatcher {
 			return false;
 		}
 	}
-	
-	/*
-	public boolean isMatch(Node startNode, Collection<Node> workingSet, boolean verbose, Node treeStart) {
-		Node currentNode = startNode;
-		
-		//must grow in both directions in order to avoid the need to consolidate path
-		//together
-		LinkedList<Node> pathList = new LinkedList<Node>();
-		
-		//a path is defined to be a sequence of nodes such that the head
-		//has more than one (or zero) entering edges and the end node has more then one 
-		//(or zero) exiting edges.
-		
-		
-		
-		pathList.add(currentNode);
-		boolean finished = false;
-		while(!finished){
-			if(currentNode.getNextNodes().size() == 1){
-				Node nextNode = new LinkedList<Node>(currentNode.getNextNodes()).getFirst();
-				if(nextNode.getPrevNodes().size() == 1 && !nextNode.getNextNodes().contains(currentNode)){
-					pathList.add(nextNode);
-					currentNode = nextNode;
-				} else {
-					finished = true;
-				}
-			} else{
-				finished = true;
-			}
-		}
-		currentNode = startNode;
-		finished = false;
-		while(!finished){
-			if(currentNode.getPrevNodes().size() == 1){
-				Node prevNode = new LinkedList<Node>(currentNode.getPrevNodes()).getFirst();
-				if(prevNode.getNextNodes().size() == 1 && !prevNode.getPrevNodes().contains(currentNode)){
-					pathList.addFirst(prevNode);
-					currentNode = prevNode;
-				} else {
-					finished = true;
-				}
-			} else {
-				finished = true;
-			}
-		}
-		
-		
-		
-		if(pathList.size() > 1){
-			if(pathSanityCheck(pathList)){
-				System.err.println("#failed sanity check");
-				return false;
-			} 
-			updateGraph(pathList, workingSet, verbose, treeStart);
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	*/
+
 	private boolean pathSanityCheck(LinkedList<Node> pathList) {
 		Set<Node> seen = new HashSet<Node>();
 		

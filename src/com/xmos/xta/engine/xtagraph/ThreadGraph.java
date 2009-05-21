@@ -15,7 +15,6 @@ import com.xmos.xta.engine.xtagraph.nodes.Block;
 import com.xmos.xta.engine.xtagraph.nodes.Function;
 import com.xmos.xta.engine.xtagraph.nodes.Node;
 import com.xmos.xta.engine.xtagraph.patterns.CommonMethods;
-import com.xmos.xta.engine.xtagraph.patterns.DownWedge;
 import com.xmos.xta.engine.xtagraph.patterns.LoopPatternMatcher;
 import com.xmos.xta.engine.xtagraph.patterns.SectionPatternMatcher;
 import com.xmos.xta.engine.xtagraph.patterns.SectionTransformer;
@@ -54,13 +53,13 @@ public class ThreadGraph {
 			functionStartNodes.add(m_threadStartNode);
 		}
 		
-		/*
+/*
 		for(Node s : functionStartNodes){
 			XtaInstruction i = s.getInstructions().get(0);
 			System.out.println("0x" +Integer.toHexString(i.getPc()) + " " + i.getFunctionName());
 		}
-		*/
-		
+*/
+
 		graphStartNodes.retainAll(functionStartNodes);
 		Collections.sort(graphStartNodes);
 		
@@ -70,6 +69,13 @@ public class ThreadGraph {
 			Collection<Node> currentGraph = new HashSet<Node>();
 
 			collectCurrentGraphNodes(functionStart, null, functionNodes, functionEndNodes, currentGraph);
+			
+			//at this point there should be a graph with one start 
+			//no graph may have zero nodes in it
+			
+			
+			
+			
 			currentGraph.addAll(functionNodes.values());
 			
 			decompose(currentGraph, functionNodes.get(functionStart));
@@ -87,7 +93,6 @@ public class ThreadGraph {
 			m_functions.add(fn);
 			m_functionNames.put(functionStart.getStartPc(), fn);
 			
-			//System.out.println("adding 0x" + Integer.toHexString(functionStart.getStartPc()) + " -> " + fucntionName);
 		}
 		return true;
 	}
@@ -113,12 +118,19 @@ public class ThreadGraph {
 		for (Node node : m_reachableNodes) {
 			if (node.getInstructions().get(node.getInstructions().size() - 1).getBranchLink()) {
 				Node startNode = node.getNextNodes().iterator().next();
-				if (!functionStartNodes.contains(startNode))
+				if (!functionStartNodes.contains(startNode)){
+					//System.out.println("have found " + node.getInstructions().get(node.getInstructions().size()-1) + "\t as a branch link to " + startNode.getInstructions().get(0).getFunctionName());
 					functionStartNodes.add(startNode);
+					System.out.println("have found " + startNode.getInstructions().get(0) +" as a start instruction");
+				}
+					
 			}
 			if (node.getInstructions().get(node.getInstructions().size() - 1).getReturn()) {
-				if (!functionEndNodes.contains(node))
+				if (!functionEndNodes.contains(node)){
+					//System.out.println("have found " + node.getInstructions().get(node.getInstructions().size()-1) +" as a end instruction");
 					functionEndNodes.add(node);
+				}
+					
 			}
 		}
 	}
@@ -207,12 +219,10 @@ public class ThreadGraph {
 		patternMatchers.add(new SectionTransformer());
 		patternMatchers.add(new UpWedge());
 		patternMatchers.add(new TerminalPatternMatcher());
-		//patternMatchers.add(new DownWedge());
 		
 		boolean working = true;
 		while (working) {
 			buildDominatorTree(workingSet, treeStart);
-			//CommonMethods.printGraph(workingSet);
 			List<Node> postOrder = new LinkedList<Node>();
 			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
 			working = false;

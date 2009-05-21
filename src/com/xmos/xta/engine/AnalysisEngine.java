@@ -14,7 +14,6 @@ import com.xmos.xeobject.Function;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.maps.BranchMap;
-import com.xmos.xta.engine.xtagraph.ThreadGraph;
 import com.xmos.xta.engine.xtagraph.XTAGraph;
 
 public class AnalysisEngine {
@@ -152,8 +151,6 @@ public class AnalysisEngine {
 
 				fillGraphFnops(nodeId, coreId);
 
-				// TODO
-				//printStructureTrace(nodeId, coreId);
 				printDot(nodeId, coreId);
 			}
 		}
@@ -346,7 +343,7 @@ public class AnalysisEngine {
 	// get rid of this and do it automatically from arch dbs
 	private static final HashSet<String> m_noNextPc = new HashSet<String>(Arrays.asList(
 			new RevbXtaInstruction_bau_1r(0, 0, null).getNmenonic(), 
-			//new RevbXtaInstruction_bla_1r(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_bla_1r(0, 0, null).getNmenonic(),
 			new RevbXtaInstruction_blacp_u10(0, 0, null).getNmenonic(), 
 			new RevbXtaInstruction_blacp_lu10(0, 0, null).getNmenonic(), 
 			new RevbXtaInstruction_blat_u6(0, 0, null).getNmenonic(),
