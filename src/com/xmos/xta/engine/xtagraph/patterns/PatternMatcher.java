@@ -4,7 +4,11 @@ import java.util.Collection;
 import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public abstract class PatternMatcher {
-
-	public abstract boolean isMatch(Node node, Collection<Node> workingSet, boolean verbose);
+	protected Node m_treeStart;
 	
+	public abstract boolean isMatch(Node node, Collection<Node> workingSet, boolean verbose, Node treeStart);
+	
+	public Node getTreeStart() {
+		return m_treeStart;
+	}
 }

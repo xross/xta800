@@ -17,13 +17,12 @@ import com.xmos.xta.engine.xtagraph.patterns.CommonMethods;
 public class XTAGraphTest {
 
 	private static final int graphSize = 40; 
-	private static final int graphLinks = 4  ;
+	private static final int graphLinks = 8  ;
 	
-	private static int graphcount = 0;
 	
 	@Test
 	public void testRandomGraph() {
-		int testCount = 1;
+		int testCount = 4;
 		int successCount = 0;
 		for(int j=0;j<testCount;j++){
 			Block root = new Block(new BasicBlock(Node.getNodeCount()));
@@ -56,23 +55,21 @@ public class XTAGraphTest {
 			startNode.addPrevNode(root);
 			nodes.add(root);
 			
-			XTAGraph graph = new XTAGraph(nodes);
-			//
-			graph.decompose();
 			
-			if(graph.getGraphSize() != 1 && graphcount < 10){
-				graphcount++;
+			Collection<Node> startNodes = new HashSet<Node>();
+			startNodes.add(root);
+			XTAGraph graph = new XTAGraph(nodes, startNodes);
+			graph.decomposeAll();
+			for(ThreadGraph tg : graph.getThreads()){
+				if(tg.getGraphSize() ==1){
+					successCount++;
+				} else {
+					//tg.printGraph();
+				}
 			}
-			if(graph.getGraphSize()==1){
-				successCount++;
-			} else {
-				XTAGraph.printGraph(graph.m_cfgNodes);
-			}
-			//graph.renderGraph(graph.m_nodes.iterator().next());
 		}
 		double successRate = (100.0*successCount)/testCount;
 		assertEquals(100.0, successRate, 0.0);
-		//System.out.println("required " + (Node.getNodeCount()/testCount) + " nodes per test");
 	}
 	
 	
@@ -101,10 +98,10 @@ public class XTAGraphTest {
 				CommonMethods.connect(mostRecent, nest);
 				mostRecent = nest;
 			}
-			XTAGraph graph = new XTAGraph(nodes);
-			//XTAGraph.printGraph(graph.m_nodes);
-			graph.decompose();
-			//graph.renderGraph(graph.m_nodes.iterator().next());
+			Collection<Node> startNodes = new HashSet<Node>();
+			startNodes.add(head);
+			XTAGraph graph = new XTAGraph(nodes, startNodes);
+			graph.decomposeAll();
 			testGraph(graph);
 			
 		}
@@ -150,16 +147,15 @@ public class XTAGraphTest {
 		CommonMethods.connect(n5, n7);
 		CommonMethods.connect(n7, n6);
 		
-		
-		
-		
-		XTAGraph graph = new XTAGraph(nodes);
-		graph.decompose();
+		Collection<Node> startNodes = new HashSet<Node>();
+		startNodes.add(n0);
+		XTAGraph graph = new XTAGraph(nodes, startNodes);
+		graph.decomposeAll();
 		testGraph(graph);
 	}
 	
 	
-	@Test
+	//@Test
 	public void testTerminal(){
 		
 		Collection<Node> nodes = new HashSet<Node>();
@@ -187,13 +183,17 @@ public class XTAGraphTest {
 		CommonMethods.connect(b2, b1);
 		CommonMethods.connect(head, b2);
 		
-		XTAGraph graph = new XTAGraph(nodes);
-		graph.decompose();
+		Collection<Node> startNodes = new HashSet<Node>();
+		startNodes.add(head);
+		XTAGraph graph = new XTAGraph(nodes, startNodes);
+		graph.decomposeAll();
 		testGraph(graph);
 	}
 
 	private void testGraph(XTAGraph graph) {
-		assertTrue(graph.getGraphSize() == 1);
+		for(ThreadGraph tg : graph.getThreads()){
+			assertTrue(tg.getGraphSize() == 1);
+		}
 	}
 	
 	@Test
@@ -227,17 +227,17 @@ public class XTAGraphTest {
 			nodes.add(tail);
 			nodes.add(leaf1);
 			nodes.add(leaf0);
-			XTAGraph graph = new XTAGraph(nodes);
-			graph.decompose();
-			
-			//graph.renderGraph(new LinkedList<Node>(graph.m_nodes).getFirst());
+			Collection<Node> startNodes = new HashSet<Node>();
+			startNodes.add(head);
+			XTAGraph graph = new XTAGraph(nodes, startNodes);
+			graph.decomposeAll();
 			testGraph(graph);
 		}
 	}
 	
 	@Test
 	public void testPath(){
-		int maxLength = 100;
+		int maxLength = 20;
 		for(int length = 0; length < maxLength;length++){
 			Collection<Node> nodes = new HashSet<Node>();
 			
@@ -266,10 +266,10 @@ public class XTAGraphTest {
 			nodes.add(tail);
 			nodes.add(leaf1);
 			nodes.add(leaf0);
-			XTAGraph graph = new XTAGraph(nodes);
-			
-			graph.decompose();
-			//graph.renderGraph(new LinkedList<Node>(graph.m_nodes).getFirst());
+			Collection<Node> startNodes = new HashSet<Node>();
+			startNodes.add(head);
+			XTAGraph graph = new XTAGraph(nodes, startNodes);
+			graph.decomposeAll();
 			testGraph(graph);
 		}
 	}
@@ -304,10 +304,10 @@ public class XTAGraphTest {
 			CommonMethods.connect(body, current);
 			
 			
-			XTAGraph graph = new XTAGraph(nodes);;
-			//graph verified
-			graph.decompose();
-			//graph.renderGraph(new LinkedList<Node>(graph.m_nodes).getFirst());
+			Collection<Node> startNodes = new HashSet<Node>();
+			startNodes.add(head);
+			XTAGraph graph = new XTAGraph(nodes, startNodes);
+			graph.decomposeAll();
 			testGraph(graph);
 		}
 	}
@@ -342,9 +342,10 @@ public class XTAGraphTest {
 				CommonMethods.connect(loopConnection, current);
 			}
 			
-			XTAGraph graph = new XTAGraph(nodes);
-			graph.decompose();
-			//graph verified
+			Collection<Node> startNodes = new HashSet<Node>();
+			startNodes.add(head);
+			XTAGraph graph = new XTAGraph(nodes, startNodes);
+			graph.decomposeAll();
 			testGraph(graph);
 		}
 	}
@@ -354,7 +355,7 @@ public class XTAGraphTest {
 	 */
 	@Test
 	public void testCommonHeader(){
-		for(int length =2; length < 40; length ++){
+		for(int length =2; length < 80; length ++){
 			Collection<Node> nodes = new HashSet<Node>();
 			Block head = new Block();
 			Node current = head;
@@ -386,10 +387,13 @@ public class XTAGraphTest {
 			nodes.add(tail);
 			nodes.add(leaf1);
 			nodes.add(leaf0);
-			XTAGraph graph = new XTAGraph(nodes);
-			//graph verified
-			graph.decompose();
-			testGraph(graph);
+			Collection<Node> startNodes = new HashSet<Node>();
+			startNodes.add(head);
+			XTAGraph graph = new XTAGraph(nodes, startNodes);
+			
+			graph.decomposeAll();
+			//graph.displayStructureTreeAll();
+			//testGraph(graph);
 		}
 	}
 	
@@ -417,10 +421,10 @@ public class XTAGraphTest {
 			}
 			
 			
-			XTAGraph graph = new XTAGraph(nodes);
-			//graph verified
-			graph.decompose();
-			//graph.renderGraph(new LinkedList<Node>(graph.m_nodes).getFirst());
+			Collection<Node> startNodes = new HashSet<Node>();
+			startNodes.add(head);
+			XTAGraph graph = new XTAGraph(nodes, startNodes);
+			graph.decomposeAll();
 			testGraph(graph);
 		}
 	}
@@ -449,10 +453,10 @@ public class XTAGraphTest {
 				
 			}
 			
-			
-			XTAGraph graph = new XTAGraph(nodes);
-			graph.decompose();
-			//graph.renderGraph(new LinkedList<Node>(graph.m_nodes).getFirst());
+			Collection<Node> startNodes = new HashSet<Node>();
+			startNodes.add(head);
+			XTAGraph graph = new XTAGraph(nodes, startNodes);
+			graph.decomposeAll();
 			testGraph(graph);
 		}
 	}
@@ -485,8 +489,10 @@ public class XTAGraphTest {
 					tails[section].addPrevNode(b);
 				}
 			}
-			XTAGraph graph = new XTAGraph(nodes);
-			graph.decompose();
+			Collection<Node> startNodes = new HashSet<Node>();
+			startNodes.add(head);
+			XTAGraph graph = new XTAGraph(nodes, startNodes);
+			graph.decomposeAll();
 			testGraph(graph);
 		}
 	}

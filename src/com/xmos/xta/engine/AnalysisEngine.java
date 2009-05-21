@@ -2,11 +2,11 @@ package com.xmos.xta.engine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeSet;
-
 import com.xmos.isa.Instruction;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xeobject.AssemblyLine;
@@ -14,8 +14,8 @@ import com.xmos.xeobject.Function;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.maps.BranchMap;
+import com.xmos.xta.engine.xtagraph.ThreadGraph;
 import com.xmos.xta.engine.xtagraph.XTAGraph;
-import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public class AnalysisEngine {
 	private Notifier m_notifier;
@@ -30,7 +30,6 @@ public class AnalysisEngine {
 	private ArrayList<FunctionCallLocations> m_functionCallLocations;
 	private ArrayList<FunctionReturns> m_functionReturns;
 	private ArrayList<BasicBlockStartPcs> m_basicBlockStartPcs;
-
 
 	public AnalysisEngine(Notifier notifier, XeLoader loader, NodeCoreInstructionCaches coreInstructionCache, ArrayList<XeObject> objects,
 			ArrayList<BranchMap> branches) {
@@ -247,25 +246,25 @@ public class AnalysisEngine {
 				if (next != null) {
 					node.getNextNodes().add(next);
 				}
+				if(node.getInstructions().getLast().getBranchLink()){
+					int retPc = node.getInstructions().getLast().getPc() + node.getInstructions().getLast().getNumBytes();
+					node.setBranchLinkReturn(pcToNode.get(decodeCache.getInstruction(retPc)));
+				}
+				
 			}
 		}
+		System.out.println();
 	}
 
-	public void printDot(int nodeId, int coreId) {
-		XTAGraph graph = new XTAGraph(new HashSet<BasicBlock>(getBasicBlockStartPcs(nodeId, coreId).values()));
-		
-		//graph.displayControlFlowGraph();
-		for(Node node : graph.m_cfgNodes){			
-			for(Node next : node.getNextNodes()){
-				if(node.getDominators().contains(next)){
-					System.out.println(node + " has " + next + " as a loop header");
-				}
+	public void printDot(int nodeId, int coreId) {		
+		Collection<BasicBlock> startBlocks = new HashSet<BasicBlock>();
+		for(BasicBlock b : getBasicBlockStartPcs(nodeId, coreId).values()){
+			if(b.getPcs().contains(0x10000)){
+				startBlocks.add(b);
 			}
-		}	
-		//graph.printGraph(graph.m_nodes);
-		graph.decompose();
-		//graph.renderGraph(new LinkedList<Node>(graph.m_nodes).getFirst());
-		//graph.displayStructureTree();
+		}
+		XTAGraph graph = new XTAGraph(startBlocks);
+		graph.decomposeAll();
 	}
 
 	private HashMap<XtaInstruction, BasicBlock> getBasicBlockStartPcs(int nodeId, int coreId) {

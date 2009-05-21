@@ -8,10 +8,10 @@ import java.util.Set;
 
 import com.xmos.xta.engine.xtagraph.nodes.Node;
 
-public class MultiSectionTransformer extends PatternMatcher {
+public class SectionTransformer extends PatternMatcher {
 
-	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose) {
-		
+	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose, Node treeStart) {
+		m_treeStart = treeStart;
 		//detect all the jump nodes first
 		Set<Node> jumpNodes = new HashSet<Node>();
 		for(Node nextNode : currentNode.getNextNodes()){

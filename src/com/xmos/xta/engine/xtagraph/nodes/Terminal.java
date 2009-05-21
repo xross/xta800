@@ -2,6 +2,7 @@ package com.xmos.xta.engine.xtagraph.nodes;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -22,25 +23,27 @@ public class Terminal extends Node {
 		return null;
 	}
 
-	@Override
 	public Collection<Node> getContaintedNodes() {
-		// TODO Auto-generated method stub
-		return null;
+		Collection<Node> containedNodes = new HashSet<Node> ();
+		for(Node loop: m_terminals){
+			containedNodes.addAll(loop.getContaintedNodes());
+		}
+		return containedNodes;
 	}
 
-	@Override
 	public List<XtaInstruction> getInstructionStream() {
 		// TODO Auto-generated method stub
-		return null;
+		return new LinkedList<XtaInstruction>();
 	}
 
-	@Override
 	public List<XtaInstruction> getInstructions() {
-		// TODO Auto-generated method stub
-		return null;
+		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
+		for(Node nodes: m_terminals){
+			insts.addAll(nodes.getInstructions());
+		}
+		return insts;
 	}
 
-	@Override
 	public long getNumberCycles() {
 		// TODO Auto-generated method stub
 		return 0;
@@ -85,5 +88,15 @@ public class Terminal extends Node {
 		for (Node node : m_terminals) {
 			node.display(indentLevel + 1);
 		}				
-	}			
+	}		
+	public boolean isFunction() {
+		return false;
+	}
+	public int getStartPc() {
+		int pc = 0;
+		for(Node n : m_terminals){
+			pc = Math.max(pc, n.getStartPc());
+		}
+		return pc;
+	}
 }

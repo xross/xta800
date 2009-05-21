@@ -3,6 +3,7 @@ package com.xmos.xta.engine.xtagraph.patterns;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.engine.xtagraph.nodes.Node;
 
 public class CommonMethods {
@@ -24,43 +25,52 @@ public class CommonMethods {
 		leaf.addPrevNode(root);
 	}
 	
-	public static void wedgeUp(Node node, Collection<Node> workingSet, boolean verbose){
+	public static boolean wedgeUp(Node node, Collection<Node> workingSet, boolean verbose){
 		if(verbose) {
 			System.out.println("#am wedging up on node " + node);
 		}
-
+		if(node.getNextNodes().size() < 2){
+			return false;
+		}
 		Collection<Node> newNodes = new HashSet<Node>();
 		
 		for(Node next : node.getNextNodes()){
-			
-			//make the new node
 			Node newNode = node.clone();
+			if(verbose) {
+				System.out.println("#made a new node: " + newNode);
+			}
 			newNodes.add(newNode);
-			
-			//remove the connection from the old node
-			next.getPrevNodes().remove(node);
 			next.addPrevNode(newNode);
-			
-			//add a connection to the new node
+			next.removePrevNode(node);
 			newNode.addNextNode(next);
-			
+		}
+
+		for(Node newNode : newNodes){
 			for(Node prev : node.getPrevNodes()){
-				if(prev != node){
-					prev.getNextNodes().remove(node);
-					prev.addNextNode(newNode);
-					newNode.addPrevNode(prev);
-				}
+				newNode.addPrevNode(prev);
+				prev.addNextNode(newNode);
 			}
 		}
+		
+		for(Node prev : node.getPrevNodes()){
+			prev.removeNextNode(node);
+		}
+		
 		workingSet.remove(node);
 		workingSet.addAll(newNodes);
+		
+		return true;
 	}
 	
-	public static void wedgeDown(Node node, Collection<Node> workingSet, boolean verbose){
+	public static boolean wedgeDown(Node node, Collection<Node> workingSet, boolean verbose){
 		if(verbose) {
 			System.out.println("#am wedging down on node " + node);
 		}
 
+		if(node.getPrevNodes().size() < 2){
+			return false;
+		}
+		
 		Collection<Node> newNodes = new HashSet<Node>();
 		
 		for(Node prev : node.getPrevNodes()){
@@ -68,11 +78,6 @@ public class CommonMethods {
 			//make the new node
 			Node newNode = node.clone();
 			newNodes.add(newNode);
-			
-			//remove the connection from the old node
-			//CommonMethods.disconnect(node, prev);
-			//CommonMethods.connect(newNode, prev);
-			
 
 			prev.getNextNodes().remove(node);
 			prev.addNextNode(newNode);
@@ -83,10 +88,6 @@ public class CommonMethods {
 			
 			for(Node next : node.getNextNodes()){
 				if(next != node){
-					
-					//CommonMethods.disconnect(next, node);
-					//CommonMethods.connect(next, newNode);
-					
 					next.getPrevNodes().remove(node);
 					next.addPrevNode(newNode);
 					newNode.addNextNode(next);
@@ -97,46 +98,58 @@ public class CommonMethods {
 		workingSet.remove(node);
 		workingSet.addAll(newNodes);
 		
-		return;
+		return true;
 	}
 	
-	public static void wedgeDown(Node node, Node piviot, Collection<Node> workingSet){
+	
+	private static int graphcount;
+	private final static boolean DOMINATORDEBUG = true;
 
+	
+	public static void printGraph(Collection<Node> nodes) {
+		System.out.println("digraph g" + graphcount++ + " {");
+		for (Node node : nodes) {
 
-		assert(node.getPrevNodes().contains(piviot));
-		
-		Node newNode = node.clone();
-		
-		piviot.getNextNodes().remove(node);
-		node.getPrevNodes().remove(piviot);
-		
-		piviot.addNextNode(newNode);
-		newNode.addPrevNode(piviot);
-		
-		for(Node next : node.getNextNodes()){
-			newNode.addNextNode(next);
-			next.addPrevNode(newNode);
+			System.out.print(node.graphVizLabel() + " [label =\"");
+				System.out.print("Name: " + node + "\\n");
+
+			
+
+			if (DOMINATORDEBUG) {
+				System.out.print("Dominators:\\n");
+				for (Node doms : node.getDominators()) {
+					System.out.print(doms + "\\n");
+				}
+			} else {
+				if (node.getInstructions().size() == 0) {
+					System.out.print("func\\n");
+				} else {
+					for (XtaInstruction inst : node.getInstructions()) {
+						System.out.print(inst + "\\n");
+					}
+				}
+			}
+			
+			System.out.println("\"];");
+
 		}
-		
-		workingSet.add(newNode);
+		for (Node node : nodes) {
+			for (Node next : node.getNextNodes()) {
+				System.out.println(node.graphVizLabel() + " -> "
+						+ next.graphVizLabel() + ";");
+			}
+		}
+		System.out.println("};");
 	}
 	
-	public static void wedgeUp(Node node, Node piviot, Collection<Node> workingSet){
-		assert(node.getNextNodes().contains(piviot));
-
-		Node newNode = node.clone();
-		
-		piviot.getPrevNodes().remove(node);
-		node.getNextNodes().remove(piviot);
-		
-		piviot.addPrevNode(newNode);
-		newNode.addNextNode(piviot);
-		
-		for(Node prev : node.getPrevNodes()){
-			newNode.addPrevNode(prev);
-			prev.addNextNode(newNode);
-		}
-		
-		workingSet.add(newNode);
+	public static void renderGraph(Node node) {
+		System.out.println("digraph f" + graphcount++ + " {");
+		StringBuffer body = new StringBuffer();
+		StringBuffer connections = new StringBuffer();
+		node.appendToGraph(body, connections, new HashSet<Node>(),
+				new HashSet<Node>(), 0, node);
+		System.out.println(body);
+		System.out.println(connections);
+		System.out.println("}");
 	}
 }

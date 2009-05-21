@@ -14,6 +14,8 @@ public class Path extends Node {
 	
 	public Path(List<Node> nodes) {
 		super();
+		assert(nodes!= null);
+		assert(nodes.size()>1);
 		m_nodes = nodes;
 	}
 
@@ -105,10 +107,17 @@ public class Path extends Node {
 	}
 
 	public void display(int indentLevel) {
-		printIndent(indentLevel);
-		System.out.printf("path(%d)\n", m_id);
+		//printIndent(indentLevel);
+		//System.out.printf("path(%d)\n", m_id);
 		for (Node node : m_nodes) {
-			node.display(indentLevel + 1);
+			node.display(indentLevel + 0);
 		}
-	}			
+	}	
+	public boolean isFunction() {
+		return false;
+	}
+
+	public int getStartPc() {
+		return m_nodes.get(0).getStartPc();
+	}
 }

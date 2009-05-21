@@ -110,17 +110,29 @@ public class Block extends Node {
 		return "Block" + m_id;
 	}
 
+	private final static boolean inst = false;
 	public void display(int indentLevel) {
 		printIndent(indentLevel);
-		System.out.printf("block(%d) ", m_id);
-		if(m_block!= null){ 
+		if(m_block != null){
+			System.out.printf("block(%d) ", this.getBasicBlockId());
+		} else {
+			System.out.printf("block(%d) ", m_id);
+		}
+		System.out.println();
+		if(m_block!= null && inst){ 
 			for (XtaInstruction instruction : m_block.getInstructions()) {
-				System.out.printf("[%s + %d: 0x%x]", 
-						instruction.getFunctionName(),
-						instruction.getFunctionOffset(),
-						instruction.getPc());
+				printIndent(indentLevel);
+				System.out.println(" " + instruction);
 			}
 		}
-		System.out.printf("\n");
+	}
+
+	public boolean isFunction() {
+		return false;
+	}
+
+	public int getStartPc() {
+		return m_block.getInstructions().getFirst().getPc();
 	}		
+
 }

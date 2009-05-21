@@ -8,21 +8,21 @@ import java.util.Set;
 
 import com.xmos.xta.engine.XtaInstruction;
 
-public class MultiSection extends Node {
+public class Section extends Node {
 	
 	//each option denotes a different path in the section - all weighted equally
 	private Collection<Node> m_options;
 	private Node m_jumpNode;
 	private Node m_selectedOption; 
 
-	public MultiSection(Collection<Node> options, Node jumpNode) {
+	public Section(Collection<Node> options, Node jumpNode) {
 		super();
 		m_options = options;
 		m_selectedOption = null;
 		m_jumpNode = jumpNode;
 	}
 	
-	public MultiSection(MultiSection ms) {
+	public Section(Section ms) {
 		super();
 		m_options = ms.m_options;
 		m_selectedOption = ms.m_selectedOption;
@@ -84,7 +84,7 @@ public class MultiSection extends Node {
 	}
 
 	public Node clone() {
-		return new MultiSection(this);
+		return new Section(this);
 	}
 
 	public Collection<Node> getContaintedNodes() {
@@ -126,7 +126,20 @@ public class MultiSection extends Node {
 		System.out.printf("multisection(%d)\n", m_id);
 		
 		for (Node node : m_options) {
+			printIndent(indentLevel);
+			System.out.printf(" option:\n");
 			node.display(indentLevel + 1);
 		}		
-	}			
+	}	
+	public boolean isFunction() {
+		return false;
+	}
+
+	public int getStartPc() {
+		int pc = 0;
+		for(Node n : m_options){
+			pc = Math.max(pc, n.getStartPc());
+		}
+		return pc;
+	}
 }

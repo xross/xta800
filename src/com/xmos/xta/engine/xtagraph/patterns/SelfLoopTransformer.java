@@ -6,8 +6,8 @@ import com.xmos.xta.engine.xtagraph.nodes.Node;
 public class SelfLoopTransformer  extends PatternMatcher {
 
 
-	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose) {
-		
+	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose, Node treeStart) {
+		m_treeStart = treeStart;
 		
 		if(currentNode.getNextNodes().contains(currentNode)){
 			Node newNode = currentNode.clone();

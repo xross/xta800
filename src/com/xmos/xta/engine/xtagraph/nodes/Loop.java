@@ -11,12 +11,12 @@ import com.xmos.xta.engine.XtaInstruction;
 public class Loop extends Node {
 	
 	private List<AttachedLoop> m_loops;
-	private Node m_base;
+	private Node m_loopHeader;
 	
 	public Loop(Loop loop){
 		super();
 		m_loops = new ArrayList<AttachedLoop>(loop.m_loops);
-		m_base = loop.m_base;
+		m_loopHeader = loop.m_loopHeader;
 	}
 	
 	
@@ -24,7 +24,7 @@ public class Loop extends Node {
 		super();
 		m_loops = new ArrayList<AttachedLoop>();
 		m_loops.add(new AttachedLoop(loop));
-		m_base = base;
+		m_loopHeader = base;
 	}
 	
 	public Loop(Set<Node> loops, Node base) {
@@ -33,7 +33,7 @@ public class Loop extends Node {
 		for(Node loop : loops){
 			m_loops.add(new AttachedLoop(loop));
 		}
-		m_base = base;
+		m_loopHeader = base;
 	}
 	
 	public void addLoop(Node loop){
@@ -54,7 +54,7 @@ public class Loop extends Node {
 	 * order of loops unspecified
 	 */
 	public List<XtaInstruction> getInstructionStream() {
-		List<XtaInstruction> insts = new ArrayList<XtaInstruction>();
+		List<XtaInstruction> insts = new ArrayList<XtaInstruction>(m_loopHeader.getInstructionStream());
 		for(AttachedLoop al : m_loops){
 			if(al.iterationsKnown()){
 				insts.addAll(al.getLoop().getInstructionStream());
@@ -64,11 +64,11 @@ public class Loop extends Node {
 	}
 
 	public List<XtaInstruction> getInstructions() {
-		List<XtaInstruction> insts = new ArrayList<XtaInstruction>();
+		List<XtaInstruction> insts = new ArrayList<XtaInstruction>(m_loopHeader.getInstructions());
 		for(AttachedLoop al : m_loops){
-			if(al.iterationsKnown()){
+			//if(al.iterationsKnown()){
 				insts.addAll(al.getLoop().getInstructions());
-			}
+			//}
 		}
 		return insts;
 	}
@@ -143,7 +143,7 @@ public class Loop extends Node {
 
 	public Collection<Node> getContaintedNodes() {
 		Collection<Node> containedNodes = new HashSet<Node> ();
-		containedNodes.addAll(m_base.getContaintedNodes());
+		containedNodes.addAll(m_loopHeader.getContaintedNodes());
 		for(AttachedLoop loop: m_loops){
 			containedNodes.addAll(loop.getLoop().getContaintedNodes());
 		}
@@ -164,7 +164,7 @@ public class Loop extends Node {
 		body.append(intToTab(indent) +"color=black;\n");
 
 		Collection<Node> nextThis = new HashSet<Node>();
-		m_base.appendToGraph(body, connections, last, nextThis, indent+1, this);
+		m_loopHeader.appendToGraph(body, connections, last, nextThis, indent+1, this);
 		next.addAll(nextThis);
 		Collection<Node> lastThis = nextThis;
 		nextThis = new HashSet<Node>();
@@ -187,10 +187,23 @@ public class Loop extends Node {
 	}
 
 	public void display(int indentLevel) {
+		printIndent(indentLevel);
+		System.out.printf("loop(%d)\n", m_id);	
+		printIndent(indentLevel);
+		System.out.printf(" header:\n", m_id);
+		m_loopHeader.display(indentLevel+1);
 		for (AttachedLoop attachedLoop : m_loops) {
 			printIndent(indentLevel);
-			System.out.printf("loop(%d)\n", m_id);			
+			System.out.printf(" body:\n", m_id);
 			attachedLoop.getLoop().display(indentLevel + 1);
+			
 		}		
 	}		
+	public boolean isFunction() {
+		return false;
+	}
+
+	public int getStartPc() {
+		return m_loopHeader.getStartPc();
+	}
 }

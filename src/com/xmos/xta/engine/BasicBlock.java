@@ -11,6 +11,7 @@ public class BasicBlock implements Comparable<BasicBlock> {
 	private ArrayList<IBufferState> m_iBufferStates;
 	private ArrayList<BasicBlock> m_nextNode;
 	private ArrayList<BasicBlock> m_previousNode;
+	private BasicBlock m_branchLinkReturn;
 	private IBufferState m_worstIbuffer;
 	private HashSet<Integer> m_pcs;
 	
@@ -23,6 +24,14 @@ public class BasicBlock implements Comparable<BasicBlock> {
 		m_pcs = new HashSet<Integer>();
 	}
 		
+	public void setBranchLinkReturn(BasicBlock b){
+		m_branchLinkReturn = b;
+	}
+	
+	public BasicBlock getBranchLinkReturn(){
+		return m_branchLinkReturn;
+	}
+	
 	public String toString(){
 		return "" +this.m_nodeId + " " + m_instructions.getFirst();
 	}

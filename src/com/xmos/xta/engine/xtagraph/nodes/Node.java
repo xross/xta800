@@ -4,21 +4,20 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import com.xmos.xta.engine.XtaInstruction;
 
-public abstract class Node {
+public abstract class Node implements Comparable<Node>{
 	
 	protected static int id;
 	protected int m_id;
+	
 	public static int getNodeCount(){
 		return id;
 	}
 	
-	//TODO - next nodes should be a divided into branching and non branching nextNodes
 	protected Set<Node> m_nextNodes;
 	protected Set<Node> m_prevNodes;
-	
+	protected Node m_branchLinkReturn;
 	protected Set<Node> m_dominators;
 	
 	public Node(){
@@ -26,6 +25,30 @@ public abstract class Node {
 		m_prevNodes = new HashSet<Node>();
 		m_dominators = new HashSet<Node>();
 		m_id = id++;
+	}
+	
+	public static void resetId(){
+		id = 0;
+	}
+	public int compareTo(Node n) {
+		
+		if(getInstructions()!= null && n.getInstructions() != null 
+				&& !getInstructions().isEmpty() && !n.getInstructions().isEmpty()){
+			int myPc = getInstructions().get(0).getPc();
+			int nodePc = n.getInstructions().get(0).getPc();
+			return Integer.signum((nodePc - myPc));
+		} else {
+			return 0;
+		}
+		
+	}
+	
+	public void setBranchLinkReturn(Node bl){
+		m_branchLinkReturn = bl;
+	}
+	
+	public Node getBranchLinkReturn(){
+		return m_branchLinkReturn;
 	}
 	
 	public Set<Node> getDominators(){
@@ -128,10 +151,16 @@ public abstract class Node {
 	
 	public abstract String getGraphvizName();
 	
+	public abstract boolean isFunction();
+	
+	public abstract int getStartPc();
+	
 	protected void printIndent(int indentLevel) {
 		for (int i = 0; i < indentLevel; ++i) {
 		    System.out.printf(".    ");
 		}
 	}
+
+	
 
 }
