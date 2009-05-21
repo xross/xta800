@@ -30,7 +30,7 @@ public class TraceDisplayer {
         case BLOCK:
         {
         	PathBasicBlock block = m_engine.getRoute(m_routeId).getBlock(m_id);
-        	this.displayBlock(block);
+        	displayBlock(block);
         	break;
         }
         case PATH:

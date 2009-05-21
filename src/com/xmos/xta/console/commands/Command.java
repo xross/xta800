@@ -112,7 +112,7 @@ public abstract class Command {
     
     public static int getRouteId(String routeId) {
     	if (routeId.equals("-")) {
-    		return -1;
+    		return Engine.ROUTE_ID_LAST;
     	}    	
     	
     	int route = Integer.parseInt(routeId);
@@ -120,7 +120,7 @@ public abstract class Command {
     }
 
     public static String getRouteId(int routeId) {
-    	if (routeId == -1) {
+    	if (routeId == Engine.ROUTE_ID_LAST) {
     		return "-";
     	}
     	return String.format("%d", routeId);
@@ -128,13 +128,26 @@ public abstract class Command {
     
     public static int getId(String idString) throws NumberFormatException {    	
     	if (getIdType(idString) == IdType.BLOCK) {
-    		idString = idString.substring(1);
+        	return Integer.parseInt(idString.substring(1));
+    	}    
+    	
+    	if (idString.equals("-")) {
+    		return Route.WORST_CASE_PATH_ID;
     	}    	
-    	int route = Integer.parseInt(idString);
-
-    	return route;
+    	return Integer.parseInt(idString);
     }
 
+    public static String getId(int id, Command.IdType idType) {
+    	if (idType == IdType.BLOCK) {
+    		return String.format("b%d", id);
+    	}
+    	
+    	if (id == Route.WORST_CASE_PATH_ID) {
+    		return "-";
+    	}
+    	return String.format("%d", id);
+    }
+    
     public static IdType getIdType(String idString) {
 		if (idString.charAt(0) == 'b') {
 			return IdType.BLOCK;

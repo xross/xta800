@@ -27,6 +27,7 @@ class AbortedException extends Exception {}
 public class Route {
 	
     public static final int INVALID_ROUTE_ID = -1;
+	public static int WORST_CASE_PATH_ID = -2;
 
     enum RouteMode {
 		ABSLOUTE, FUNCTION
@@ -412,6 +413,13 @@ public class Route {
 	}
 
 	public PathBasicBlock getPath(int id) {
+		if (id == WORST_CASE_PATH_ID) {
+			if (m_completedPaths.size() > 0)
+				return m_completedPaths.get(0);
+			else 
+				return null;				
+		}
+
 		for(PathBasicBlock pbb : m_allBasicBlocks){
 			if(pbb.getPathId() == id){
 				return pbb;
