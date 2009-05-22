@@ -18,6 +18,7 @@ import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xeloader.XeLoader.Architecture;
 import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.XeObject;
@@ -58,6 +59,7 @@ public class Engine implements Notifier {
 	private Constraint m_constraint;
 	private InstructionMnemonics m_mnenonics;
 	private Sections m_sections;
+	private Collection<String> m_functionsVisited;
 
 	public Engine(Config config) {
 		m_xeObjects = new ArrayList<XeObject>();
@@ -191,6 +193,11 @@ public class Engine implements Notifier {
 			notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile + "' could not be loaded.");
 			return false;			
 		}
+		if (xeLoader.getArchitecture() == Architecture.UNKNOWN) {
+			notify(Notifier.NOTIFY_ERROR, "Unknown architecture in '" + executableFile + "'.");
+			return false;			
+		}
+		
 		m_xeLoader = xeLoader;
 		m_sections.initialise(m_xeLoader, this);
 		
@@ -276,7 +283,7 @@ public class Engine implements Notifier {
 			TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
 			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
 			
-			RouteDescription routeDescription = new RouteDescription(functionName);
+			RouteDescription routeDescription = new RouteDescription(functionName);						
 			return analyseRouteSafely(startPc, endPcs, routeDescription);
 		}
 	}
@@ -750,7 +757,16 @@ public class Engine implements Notifier {
 		m_jobMonitor = monitor;
 	}
 	
-	private boolean analyseRouteSafely(int startPc, TreeSet<Integer> endPcs, RouteDescription routeDescription) {
+	public void provideFeedback(String feedback) {
+		if (m_jobMonitor != null)
+			m_jobMonitor.subTask(feedback);				
+	}
+	
+	public Collection<String> getFunctionsVisited() {
+		return m_functionsVisited;
+	}
+	
+	private boolean analyseRouteSafely(int startPc, TreeSet<Integer> endPcs, RouteDescription routeDescription) {				
 		boolean success = false;
 		try {
 			success = doRouteAnalysis(startPc, endPcs, routeDescription);
@@ -802,10 +818,12 @@ public class Engine implements Notifier {
 			
 		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 		m_progress.resetState(Progress.State.PROCESSING_PATHS);
-		RouteStatus status = route.analyse(routeDescription.getMode());
+		
+		RouteStatus status = route.analyse(routeDescription.getMode());		
 		switch (status) {
 		case ABORTED:
-			notify(Notifier.NOTIFY_INFO, "Abort detected");
+			m_functionsVisited = route.getFunctionsVisited();
+			notify(Notifier.NOTIFY_ANALYSIS_ABORTED, "Abort detected");
 			return false;
 
 		case ERROR:

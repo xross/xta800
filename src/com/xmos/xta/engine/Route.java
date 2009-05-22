@@ -1,6 +1,7 @@
 package com.xmos.xta.engine;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,6 +61,7 @@ public class Route {
 	private Unknowns m_unknowns;
 	private Constraint m_constraint;
 	private Map<PathBasicBlock, HashSet<Integer>> m_uniqueLoopPathPcs;
+	private Set<String> m_functionsVisited;
 	
 	private HashSet<Integer> m_pcsHit;
 	
@@ -88,6 +90,7 @@ public class Route {
 		m_pcsHit = new HashSet<Integer>();
 		m_unknowns = new Unknowns();
 		m_uniqueLoopPathPcs = new HashMap<PathBasicBlock, HashSet<Integer>>();
+		m_functionsVisited = new HashSet<String>();
 	}
 			
 	/**
@@ -221,6 +224,7 @@ public class Route {
 				System.out.println("Analysing to 0x" + Integer.toHexString(to));
 			}
 		}
+		m_functionsVisited.clear();
 		m_allBasicBlocks.clear();
 		BasicBlock startNode = getNode(m_startPc);
 		if (startNode == null){
@@ -239,24 +243,32 @@ public class Route {
 		nodeContext.push(new LinkedList<BasicBlock>());
 		
 		try {
+			m_engine.provideFeedback("Control Flow Analysis...");
 		    followNode(startBasicBlock, stack, nodeContext, mode);
 		} catch (AbortedException e) {
 			return RouteStatus.ABORTED;
 		}
 
+		m_engine.provideFeedback("Collating completed paths...");
 		for (PathBasicBlock completedBlock : m_completedPaths){
 			if (!addPathPcs(completedBlock)) {			
 				return RouteStatus.ABORTED;
 			}			
 		}
+		m_engine.provideFeedback("Collating unresolved paths...");
 		for (Unresolved unresolvedBlock : m_unresolvedPaths){
 			if (!addPathPcs(unresolvedBlock.getBlock())) {
 				return RouteStatus.ABORTED;
 			}			
 		}
 		
+		m_engine.provideFeedback("Loop Analysis...");
 		createUniquePathPcs(); 
+
+		m_engine.provideFeedback("Sorting paths...");
 		sortPaths();
+
+		m_engine.provideFeedback("Displaying Warnings...");
 		displayWarnings();
 		
 		if (DEBUG) 
@@ -265,6 +277,10 @@ public class Route {
 		return RouteStatus.COMPLETED;
 	}
 
+	public Collection<String> getFunctionsVisited() {
+		return m_functionsVisited;
+	}
+	
 	private boolean addPathPcs(PathBasicBlock completedBlock) {
 		if (m_engine.getAbort())
 			return false;
@@ -292,6 +308,11 @@ public class Route {
 		PathBasicBlock currentBasicBlock, Stack<Integer> stack, 
 		Stack<LinkedList<BasicBlock>> nodeContext, RouteMode mode) throws AbortedException {		
 		m_allBasicBlocks.add(currentBasicBlock);
+
+    	m_functionsVisited.add(currentBasicBlock.
+    			getInstructionStream().getFirst().getFunctionName());    	
+	    m_engine.provideFeedback(String.format(
+	    		"Control Flow Analysis... (Paths Found: %d)", s_pathCount)); 		
 		
 		if (DEBUG) System.out.println("FollowNode: " + currentBasicBlock);	
 		
@@ -757,6 +778,6 @@ public class Route {
         if (loopPaths.size() > 0) {
         	summarisePaths(loopPaths, indent + "        ");
         }
-    }
+    }    
 }
 

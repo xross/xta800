@@ -71,6 +71,10 @@ public class XtaNotifier implements Notifier {
 			XtaLog.getInstance().add(XtaLog.Level.INFO, argument);
 			broadcastPropertyChange(new PropertyChangeEvent(this, Notifier.NOTIFY_INFO, null, null));								
 
+		} else if (message.equals(NOTIFY_ANALYSIS_ABORTED)) {
+			displayAbortDetails();
+			broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_ANALYSIS_ABORTED, null, null));								
+			
 		} else if (message.equals(NOTIFY_ANALYSIS_COMPLETE)) {
 			broadcastPropertyChange(new PropertyChangeEvent(this, NOTIFY_ANALYSIS_COMPLETE, null, null));
 			m_isGuiCommand = false;
@@ -226,12 +230,21 @@ public class XtaNotifier implements Notifier {
 
 	private void displayMessageBox(final String title, final String message) {
 		final IWorkbench workbench = PlatformUI.getWorkbench();
-		workbench.getDisplay().asyncExec(new Runnable() {
+		workbench.getDisplay().syncExec(new Runnable() {
 			public void run() {
 				Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0, message, null);
 		        Shell shell = workbench.getDisplay().getActiveShell();
 				ErrorDialog.openError(shell, title, null, status);
 			}
 		});
+	}
+	
+	private void displayAbortDetails() {
+		String abortString = "Functions Visited: ";
+		for (String function : XtaEngine.getEngine().getFunctionsVisited()) {
+			abortString += function + ", ";
+		}			
+		abortString = abortString.substring(0, abortString.length() - 2);
+		displayMessageBox("Aborted", abortString);								
 	}
 }

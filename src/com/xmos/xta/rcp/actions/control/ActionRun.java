@@ -108,10 +108,9 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 
 		XtaNotifier notifier = XtaNotifier.getInstance();
 		final String functionName = notifier.getSelectedFunction();
-		if (!functionName.equals("")) {
+		if (!functionName.equals("")) {			
 			Job job = new Job("Analyse: " + functionName) {
-
-				@Override
+				
 				protected IStatus run(IProgressMonitor monitor) {
 					Engine engine = XtaEngine.getEngine();
 					engine.setMonitor(monitor);
@@ -119,6 +118,7 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 					return Status.OK_STATUS;
 				}
 			};
+			job.setUser(true);
 			job.schedule();
 		} else {
 			notifier.notify(Notifier.NOTIFY_ERROR, "No function/path specified");
@@ -144,7 +144,6 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 			final String endRef = endPoint.getRef();
 			Job job = new Job("Analyse: " + startRef + " -> " + endRef) {
 
-				@Override
 				protected IStatus run(IProgressMonitor monitor) {
 					Engine engine = XtaEngine.getEngine();
 					engine.setMonitor(monitor);
@@ -152,6 +151,7 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 					return Status.OK_STATUS;
 				}
 			};
+			job.setUser(true);
 			job.schedule();
 		}
 	}
