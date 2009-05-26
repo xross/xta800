@@ -1,0 +1,18 @@
+package com.xmos.xta.gui;
+
+import com.xmos.xta.engine.Config;
+import com.xmos.xta.engine.Engine;
+
+public class XtaEngine {
+	private static Engine m_engine;
+		
+	public static void initialise() {
+        m_engine = new Engine(new Config());
+        m_engine.registerNotifier(XtaNotifier.getInstance());
+	}
+	
+	public static Engine getEngine() {
+		assert(m_engine != null);
+		return m_engine;		
+	}
+}
