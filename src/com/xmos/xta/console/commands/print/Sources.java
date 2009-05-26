@@ -1,0 +1,118 @@
+package com.xmos.xta.console.commands.print;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
+import com.xmos.dwarfhandler.DebugFile;
+import com.xmos.xeloader.DebugInfo;
+import com.xmos.xeobject.Line;
+import com.xmos.xeobject.SourceFile;
+import com.xmos.xeobject.SourceLine;
+import com.xmos.xeobject.XeObject;
+import com.xmos.xta.console.Console;
+import com.xmos.xta.console.Shell;
+import com.xmos.xta.console.commands.Command;
+import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.PathBasicBlock;
+import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.XtaInstruction;
+
+public class Sources extends Command {
+	private int m_routeId;
+	
+	public Sources() {
+		m_routeId = 0;
+	}
+	
+	public Sources(int routeId) {
+		m_routeId = routeId;		
+	}
+	
+    public int numArgs()        { return 1; }        
+    public String name()        { return "sources"; }        
+    public String commandLine() { return "sources " + getRouteId(m_routeId); }        
+    
+    public String description(Engine engine, boolean detailed) {
+    	return "sources <route id>: Shows which paths touch which sources";
+    }
+
+    public Command clone(String[] args, int index) {
+		if ((index + numArgs()) >= args.length) 
+			return null;
+    	
+    	try {
+       		return new Sources(getRouteId(args[index + 1]));
+	    } catch (NumberFormatException e) {
+	        return null;
+	    }    	
+    }
+    
+    public void execute(Shell shell, Engine engine, Console console) {
+		if (!isExecutableLoaded(engine, console))
+			return;			    	
+
+		if (!validateRouteId(engine, console, m_routeId))
+			return;		    	
+
+		displaySources(console, engine.getRoute(m_routeId), engine.getDebugInfo(), engine.getXeObject());
+    }
+
+    private void displaySources(Console console, Route route, DebugInfo debugInfo, XeObject xeObject) {
+    	ArrayList<String> files = new ArrayList<String>();
+  	    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {
+        	TreeSet<Integer> pathIds = new TreeSet<Integer>();
+            for (PathBasicBlock path : route.getCompletedPaths()) {
+            	buildPathsWithinSourcesSet(path, pathIds, debugFile.getFileName(), xeObject);
+            }    	
+            if (pathIds.size() > 0) {
+            	String file = String.format("%s: ", debugFile.getFileName()); 
+            	for (Integer pathId : pathIds) {
+            		file += String.format("%d ", pathId);
+            	}
+            	files.add(file);
+            }            
+    	}
+  	    
+  	    Collections.sort(files);
+	    for(String file : files){
+	    	console.display(file + "\n"); 
+	    }
+    }   	
+    
+    private void buildPathsWithinSourcesSet(PathBasicBlock path, Set<Integer> pathSet, String sourceFileName, XeObject xeObject) {	
+        if (pathWithinSourceFile(path, sourceFileName, xeObject)) {
+        	pathSet.add(path.getPathId());
+        }
+
+        for (PathBasicBlock loopPath : path.getLoopPaths(path)) {
+	    	buildPathsWithinSourcesSet(loopPath, pathSet, sourceFileName, xeObject);
+   		}
+    }    
+    
+    private boolean pathWithinSourceFile(PathBasicBlock path, String sourceFileName, XeObject xeObject) {
+        HashMap<String, TreeSet<Integer>> linesCovered = new HashMap<String, TreeSet<Integer>>();
+        TreeSet<Integer> bob = new TreeSet<Integer>();
+        for(XtaInstruction inst : path.getInstructions(false)){
+            for(SourceFile sourceFile: xeObject.getSourceFiles()){
+                if(sourceFile.getFile().getName().equals(sourceFileName)){
+                    for(SourceLine sourceLine : sourceFile.getSourceLines()){
+                        for(Line assembly :sourceLine.getChildern()){
+                            if(assembly.getLineNumber() == inst.getPc()){
+                                bob.add(sourceLine.getLineNumber());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        linesCovered.put(sourceFileName, bob);
+        
+        if (linesCovered.containsKey(sourceFileName) && 
+    		(linesCovered.get(sourceFileName).size() > 0)) {
+        	return true;
+        }        
+        return false;
+    }           
+}
