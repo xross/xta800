@@ -51,8 +51,7 @@ public class Load extends Command {
         return new Load(executableName);        
     }
     
-    public void execute(Shell shell, Engine engine, Console console) {
-    	
+    public void execute(Shell shell, Engine engine, Console console) {    	
     	File file = new File(new File(m_executableName).getAbsolutePath());
     	try {
 			file = file.getCanonicalFile();
@@ -60,8 +59,9 @@ public class Load extends Command {
 			console.display(String.format("Error: Failed to resolve executable path: %s\n", m_executableName));
 		}
 		ConsoleFileFinder fileFinder = new ConsoleFileFinder(engine, console);	
-		engine.loadExecutable(file, fileFinder);
-		runSectionCommands(shell, engine, console);
+		if (engine.loadExecutable(file, fileFinder)) {
+		    runSectionCommands(shell, engine, console);
+		}
     }
 
 	public String toString() {

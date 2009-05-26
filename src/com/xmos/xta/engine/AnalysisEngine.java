@@ -298,7 +298,7 @@ public class AnalysisEngine {
 	}
 
 	private void addBranchMaps(XeObject xeObject, InstructionDecodeCache decodeCache, int nodeId, int coreId) {
-		Map<Integer, TreeSet<Integer>> branchMap = m_sections.getBranchMap(nodeId, coreId);		
+		Map<Integer, TreeSet<Integer>> branchMap = m_sections.getBranches(nodeId, coreId);		
        	for (AssemblyLine al : xeObject.getInstructions()) {
 			if (branchMap.containsKey(al.getPc())) {
 				XtaInstruction inst = decodeCache.getInstruction(al.getPc());

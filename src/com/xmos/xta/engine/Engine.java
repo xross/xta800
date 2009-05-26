@@ -198,9 +198,7 @@ public class Engine implements Notifier {
 			return false;			
 		}
 		
-		m_xeLoader = xeLoader;
-		m_sections.initialise(m_xeLoader, this);
-		
+		m_xeLoader = xeLoader;		
 		m_nodeId = 0;
 		m_coreId = 0;
 		
@@ -220,7 +218,7 @@ public class Engine implements Notifier {
 			return false;
 		}
 
-		if (!m_sections.load())
+		if (!m_sections.load(m_xeLoader, this))
 			return false;
 				
 		m_executableFile = executableFile;
@@ -617,7 +615,7 @@ public class Engine implements Notifier {
 			return false;
 		}		
 		
-		if (m_sections.addToBranchMap(m_nodeId, m_coreId, fromRef.getPc(), toRef.getPc())) {
+		if (m_sections.addToBranches(m_nodeId, m_coreId, fromRef.getPc(), toRef.getPc())) {
 			m_ae.run();
 			return true;			
 		}		
@@ -630,7 +628,7 @@ public class Engine implements Notifier {
 			return false;
 		}
 		
-		if (m_sections.removeFromBranchMap(m_nodeId, m_coreId, fromRef.getPc())) {		    
+		if (m_sections.removeFromBranches(m_nodeId, m_coreId, fromRef.getPc())) {		    
 		    m_ae.run();
 		    return true;
 		}
@@ -638,7 +636,7 @@ public class Engine implements Notifier {
 	}
 
 	public Map<Integer, TreeSet<Integer>> getBranches() {
-		return m_sections.getBranchMap(m_nodeId, m_coreId);
+		return m_sections.getBranches(m_nodeId, m_coreId);
 	}
 
 	public boolean addLabel(String label, Reference ref) {
@@ -650,15 +648,15 @@ public class Engine implements Notifier {
 			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a label: %s", label));
 			return false;
 		}				
-		return m_sections.addToLabelMap(m_nodeId, m_coreId, label, ref.getPc());
+		return m_sections.addToLabels(m_nodeId, m_coreId, label, ref.getPc());
 	}
 
 	public void removeLabel(String label) {
-		m_sections.removeFromLabelMap(m_nodeId, m_coreId, label);
+		m_sections.removeFromLabels(m_nodeId, m_coreId, label);
 	}
 
 	public Map<String, Integer> getLabels() {
-		return m_sections.getLabelMap(m_nodeId, m_coreId);
+		return m_sections.getLabels(m_nodeId, m_coreId);
 	}
 	
 	public boolean addSrcLabel(String label, Reference ref) {
@@ -670,19 +668,19 @@ public class Engine implements Notifier {
 			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a label: %s", label));
 			return false;
 		}		
-		return m_sections.addToSrcLabelMap(m_nodeId, m_coreId, label, ref.getPc());
+		return m_sections.addToSrcLabels(m_nodeId, m_coreId, label, ref.getPc());
 	}
 
 	public void removeSrcLabel(String label) {
-		m_sections.removeFromSrcLabelMap(m_nodeId, m_coreId,  label);
+		m_sections.removeFromSrcLabels(m_nodeId, m_coreId,  label);
 	}
 
 	public Map<String, CodePointInfo> getSrcLabels() {
-		return m_sections.getSrcLabelMap(m_nodeId, m_coreId);
+		return m_sections.getSrcLabels(m_nodeId, m_coreId);
 	}
 
 	public Map<Integer, SrcLabelTableInfo> getSrcLabelTable() {
-		return m_sections.getSrcLabelTableMap(m_nodeId, m_coreId);
+		return m_sections.getSrcLabelTable(m_nodeId, m_coreId);
 	}
 
 	public boolean addEndpoint(String endpoint, Reference ref) {
@@ -694,19 +692,19 @@ public class Engine implements Notifier {
 			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a label: %s", endpoint));
 			return false;
 		}				
-		return m_sections.addToEndpointMap(m_nodeId, m_coreId, endpoint, ref.getPc());
+		return m_sections.addToEndpoints(m_nodeId, m_coreId, endpoint, ref.getPc());
 	}
 
 	public void removeEndpoint(String endpoint) {
-		m_sections.removeFromEndpointMap(m_nodeId, m_coreId, endpoint);
+		m_sections.removeFromEndpoints(m_nodeId, m_coreId, endpoint);
 	}
 
 	public Map<String, CodePointInfo> getEndpoints() {
-		return m_sections.getEndpointMap(m_nodeId, m_coreId);
+		return m_sections.getEndpoints(m_nodeId, m_coreId);
 	}
 		
 	public Map<Integer, EndpointTableInfo> getEndpointTable() {
-		return m_sections.getEndpointTableMap(m_nodeId, m_coreId);
+		return m_sections.getEndpointTable(m_nodeId, m_coreId);
 	}
 	
 	public boolean addThreadStartPoint(Reference ref) {

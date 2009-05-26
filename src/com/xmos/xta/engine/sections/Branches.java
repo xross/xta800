@@ -8,57 +8,53 @@ import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.Notifier;
 
-public class BranchMap {	
-	private static final boolean DEBUG = false;
-	
-	private int m_nodeId;
-	private int m_coreId;
-	private Notifier m_notifier;
+public class Branches extends Section {	
 	private TreeMap<Integer, TreeSet<Integer>> m_branches;
 	
-	BranchMap(int nodeId, int coreId, Notifier notifier) {
-		m_notifier = notifier;
-		m_nodeId = nodeId;
-		m_coreId = coreId;
+	Branches(int nodeId, int coreId, Notifier notifier) {
+		super(nodeId, coreId, notifier);
 		m_branches = new TreeMap<Integer, TreeSet<Integer>>(); 
 	}
 	
-	int getNodeId() {
-		return m_nodeId;
-	}
-
-	int getCoreId() {
-		return m_coreId;
-	}
-	
-	Map<Integer, TreeSet<Integer>> getMap() {
-		return m_branches;
-	}
-	
-	void add(int fromPc, int toPc) {
+	boolean add(int fromPc, int toPc) {
 		if (!m_branches.containsKey(fromPc)) {
 			TreeSet<Integer> toPcs = new TreeSet<Integer>();
 			toPcs.add(toPc);
 			m_branches.put(fromPc, toPcs);
+			return true;
+			
 		} else {
-			m_branches.get(fromPc).add(toPc);				
-		}		
+			if (!m_branches.get(fromPc).contains(toPc)) {
+			    m_branches.get(fromPc).add(toPc);
+			    return true;
+			} else {
+				getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
+						"Unable to add branch: 0x%x, 0x%08x", fromPc, toPc));					
+				return false;				
+			}
+		}	
 	}
 	
-	void remove(int fromPc) {
+	boolean remove(int fromPc) {
 		if (m_branches.containsKey(fromPc)) {
 			m_branches.remove(fromPc);
-		}		
+			return true;
+		} else {
+			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
+					"Unable to remove branch: 0x%x", fromPc));		
+			return false;			
+		}
 	}
 	
-	boolean load(XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(
-				".xtabranch", m_nodeId, m_coreId);
-				
-		if (DEBUG) System.out.println(".xtabranch is of size " + data.length + " bytes for node " + m_nodeId + " core: " + m_coreId);
+	Map<Integer, TreeSet<Integer>> get() {
+		return m_branches;
+	}
 		
+	boolean load(XeLoader xeLoader) {
+		byte[] data = xeLoader.getSectionData(".xtabranch", getNodeId(), getCoreId());
+				
 		if ((data.length % 8) != 0) {
-			m_notifier.notify(Notifier.NOTIFY_ERROR, "Invalid size for .xtabranch section");
+			getNotifier().notify(Notifier.NOTIFY_ERROR, "Invalid size for .xtabranch section");
 			return false;
 		}
 
@@ -69,12 +65,11 @@ public class BranchMap {
 	        	byteIndex += 4;        	
 	        	int toPc = ByteArrayManipulation.readInt(data, byteIndex);
 	        	byteIndex += 4;
-
-	    		if (DEBUG) System.out.printf("- fromPc: 0x%08x, toPc: 0x%08xz\n", fromPc, toPc);        	
+	        	
 	    		add(fromPc, toPc);
 	        }        
 		} catch (Exception e) {
-		    m_notifier.notify(Notifier.NOTIFY_ERROR, String.format(
+			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
 			    	"Problem reading .xtabranch section while loading executable"));
     	    return false;
         }        

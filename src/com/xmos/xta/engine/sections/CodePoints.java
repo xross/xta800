@@ -1,50 +1,68 @@
 package com.xmos.xta.engine.sections;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.PatternSyntaxException;
 
 import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.Notifier;
 
-public class CodePointMap {
-	private static final boolean DEBUG = false;
-	
-	private int m_nodeId;
-	private int m_coreId;
+public class CodePoints extends Section  {
 	private String m_sectionName;
-	private Notifier m_notifier;
 	private TreeMap<String, CodePointInfo> m_codePoints;
 	private String m_type;
 	
-	CodePointMap(int nodeId, int coreId, String sectionName, Notifier notifier, String type) {
-		m_notifier = notifier;
-		m_nodeId = nodeId;
-		m_coreId = coreId;
+	CodePoints(int nodeId, int coreId, String sectionName, Notifier notifier, String type) {
+		super(nodeId, coreId, notifier);
 		m_sectionName = sectionName;
 		m_codePoints = new TreeMap<String, CodePointInfo>();
 		m_type = type;
 	}
 	
-	int getNodeId() {
-		return m_nodeId;
-	}
-
-	int getCoreId() {
-		return m_coreId;
+	boolean add(String label, int pc) {
+		if (!m_codePoints.containsKey(label)) {										
+			m_codePoints.put(label, new CodePointInfo(pc, label, "", "", 0));
+			return true;
+		} else {
+			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
+					"Label already exists: %s", label));
+			return false;
+		}		
 	}
 	
-	Map<String, CodePointInfo> getMap() {
+	boolean remove(String label) {
+		List<String> matches = new ArrayList<String>();
+		for (String mapEntry : m_codePoints.keySet()) {
+			try {
+				if (mapEntry.matches(label)) {
+					matches.add(mapEntry);
+				}
+			} catch (PatternSyntaxException e) {
+			}
+		}
+
+		if (matches.size() > 0) {
+			for (String toRemove : matches) {
+				m_codePoints.remove(toRemove);
+			}
+			return true;
+		} else {
+			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
+					"Unable to remove label: %s", label));
+			return false;
+		}		
+	}
+	
+	Map<String, CodePointInfo> get() {
 		return m_codePoints;
 	}
 	
 	boolean load(XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(
-				m_sectionName, m_nodeId, m_coreId);
+		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeId(), getCoreId());
 				
-		if (DEBUG) System.out.printf("%s: section size: %d (0x%x), node: %d, core: %d\n",
-				m_sectionName, data.length, data.length, m_nodeId, m_coreId);
-
 		try {
 			int byteIndex = 0;
 	        while (byteIndex < data.length) {
@@ -53,14 +71,12 @@ public class CodePointMap {
 	        	int size = ByteArrayManipulation.readInt(data, byteIndex);
 	        	byteIndex += 4;
 
-	       		int version = ByteArrayManipulation.readInt(data, byteIndex);
+	        	// Ignores the version field.
+	       		ByteArrayManipulation.readInt(data, byteIndex);
 	       		byteIndex += 4;
 	        		        		
 	       		String compilationDir = ByteArrayManipulation.readString(data, byteIndex);
 	       		byteIndex += compilationDir.length() + 1;
-
-	    		if (DEBUG) System.out.printf("size: %d (0x%x), version: %s, compilationDir: %s\n",
-	    				size, size, version, compilationDir);
 	       		
 	           	while (byteIndex < (base + size)) {        		
 	        		int location = ByteArrayManipulation.readInt(data, byteIndex);
@@ -75,9 +91,6 @@ public class CodePointMap {
 	        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
 	        		        		
-	        		if (DEBUG) System.out.printf("- label: %s, pc: 0x%08x, fileName: %s, lineNumber: %d\n", 
-	        				codePoint, location, fileName, lineNumber);
-	        		
 	        		if (validateCodePoint(codePoint, location)) {
 	            		m_codePoints.put(codePoint, new CodePointInfo(location, codePoint, compilationDir, fileName, lineNumber));        	        		
 	        		} else {
@@ -87,7 +100,7 @@ public class CodePointMap {
 	        	}			
 		    }
         } catch (Exception e) {
-			m_notifier.notify(Notifier.NOTIFY_ERROR, String.format(
+			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
 					"Problem reading %s section while loading executable", m_sectionName));
         	return false;
         }
@@ -99,11 +112,11 @@ public class CodePointMap {
 			CodePointInfo info = m_codePoints.get(codePoint);
 			
 			if (info.getPc() == location) {
-				m_notifier.notify(Notifier.NOTIFY_WARNING, 
+				getNotifier().notify(Notifier.NOTIFY_WARNING, 
 						String.format("Duplicate %s: %s at pc: 0x%x", m_type, codePoint, location));
 				return true; 
 			} else {
-				m_notifier.notify(Notifier.NOTIFY_ERROR, 
+				getNotifier().notify(Notifier.NOTIFY_ERROR, 
 						String.format("Duplicate %s: %s", m_type, codePoint, location));
 				return false; 				
 			}				
