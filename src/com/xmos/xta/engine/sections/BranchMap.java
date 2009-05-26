@@ -16,7 +16,9 @@ public class BranchMap {
 	private Notifier m_notifier;
 	private TreeMap<Integer, TreeSet<Integer>> m_branches;
 	
-	BranchMap(int nodeId, int coreId, Notifier notifier) {
+
+	public BranchMap(int nodeId, int coreId, Notifier notifier) {
+
 		m_notifier = notifier;
 		m_nodeId = nodeId;
 		m_coreId = coreId;
@@ -51,7 +53,8 @@ public class BranchMap {
 		}		
 	}
 	
-	boolean load(XeLoader xeLoader) {
+	public boolean load(XeLoader xeLoader) {
+
 		byte[] data = xeLoader.getSectionData(
 				".xtabranch", m_nodeId, m_coreId);
 				

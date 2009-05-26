@@ -11,10 +11,11 @@ public class BasicBlock implements Comparable<BasicBlock> {
 	private ArrayList<IBufferState> m_iBufferStates;
 	private ArrayList<BasicBlock> m_nextNode;
 	private ArrayList<BasicBlock> m_previousNode;
+	private BasicBlock m_branchLinkReturn;
 	private IBufferState m_worstIbuffer;
 	private HashSet<Integer> m_pcs;
 	
-	BasicBlock(int n) {
+	public BasicBlock(int n) {
 		m_nodeId = n;
 		m_iBufferStates = new ArrayList<IBufferState>();
 		m_instructions = new LinkedList<XtaInstruction>();
@@ -23,8 +24,16 @@ public class BasicBlock implements Comparable<BasicBlock> {
 		m_pcs = new HashSet<Integer>();
 	}
 		
+	public void setBranchLinkReturn(BasicBlock b){
+		m_branchLinkReturn = b;
+	}
+	
+	public BasicBlock getBranchLinkReturn(){
+		return m_branchLinkReturn;
+	}
+	
 	public String toString(){
-		return "" + m_nodeId;
+		return "" +this.m_nodeId + " " + m_instructions.getFirst();
 	}
 	
 	public int getId() {
@@ -122,7 +131,7 @@ public class BasicBlock implements Comparable<BasicBlock> {
 			}
 			instBuff.issue(inst.getNumBytes());
 			
-			
+			/*
 			if(inst.getSuccessors().size() > 0){
 				
 				for(NextPcType succ : inst.getSuccessors()){
@@ -145,6 +154,7 @@ public class BasicBlock implements Comparable<BasicBlock> {
 					return addIbuffState(ib);
 				}
 			}
+			*/
 			
 		}
 		return modified;

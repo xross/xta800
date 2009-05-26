@@ -31,7 +31,9 @@ public class LabelMap {
 		return m_labels;
 	}
 	
-	boolean load(XeLoader xeLoader) {
+
+	public boolean load(XeLoader xeLoader) {
+
         SymbolTable symbolTable = xeLoader.getSymbolTable(m_nodeId, m_coreId);
         ElfHandler elfHandler = symbolTable.getElfHandler();
         

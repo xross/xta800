@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
-
 import com.xmos.isa.Instruction;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xeobject.AssemblyLine;
@@ -33,6 +32,7 @@ public class AnalysisEngine {
 	public AnalysisEngine(Notifier notifier, XeLoader loader, 
 			NodeCoreInstructionCaches coreInstructionCache, 
 			ArrayList<XeObject> objects, Sections sections) {
+
 		m_notifier = notifier;
 		m_constantPoolPointers = new HashMap<NodeCore, Integer>();
 		m_dataPoolPointers = new HashMap<NodeCore, Integer>();
@@ -150,9 +150,9 @@ public class AnalysisEngine {
 				InstructionDecodeCache decodeCache = m_mcInstructionCache.getInstructionDecodeCache(nodeId, coreId);
 				makeNodeMap(xeObject, decodeCache, nodeId, coreId);
 				fillGraphFnops(nodeId, coreId);
-				
-				//printDot(nodeId, coreId);				
-				//printStructureTrace(nodeId, coreId);
+
+				printDot(nodeId, coreId);
+
 			}
 		}
 	}
@@ -243,8 +243,14 @@ public class AnalysisEngine {
 				if (next != null) {
 					node.getNextNodes().add(next);
 				}
+				if(node.getInstructions().getLast().getBranchLink()){
+					int retPc = node.getInstructions().getLast().getPc() + node.getInstructions().getLast().getNumBytes();
+					node.setBranchLinkReturn(pcToNode.get(decodeCache.getInstruction(retPc)));
+				}
+				
 			}
 		}
+		System.out.println();
 	}
 
 	private HashMap<XtaInstruction, BasicBlock> getBasicBlockStartPcs(int nodeId, int coreId) {
@@ -322,22 +328,29 @@ public class AnalysisEngine {
 
 	// TODO
 	// get rid of this and do it automatically from arch dbs
-	private static final HashSet<String> m_noNextPc = new HashSet<String>(Arrays.asList(new RevbXtaInstruction_bau_1r(
-			0, 0, null).getNmenonic(), new RevbXtaInstruction_bla_1r(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_blacp_u10(0, 0, null).getNmenonic(), new RevbXtaInstruction_blacp_lu10(0, 0, null)
-					.getNmenonic(), new RevbXtaInstruction_blat_u6(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_blat_lu6(0, 0, null).getNmenonic(), new RevbXtaInstruction_blrb_u10(0, 0, null)
-					.getNmenonic(), new RevbXtaInstruction_blrb_lu10(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_blrf_u10(0, 0, null).getNmenonic(), new RevbXtaInstruction_blrf_lu10(0, 0, null)
-					.getNmenonic(), new RevbXtaInstruction_brbu_u6(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_brbu_lu6(0, 0, null).getNmenonic(), new RevbXtaInstruction_brfu_u6(0, 0, null)
-					.getNmenonic(), new RevbXtaInstruction_brfu_lu6(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_bru_1r(0, 0, null).getNmenonic(), new RevbXtaInstruction_dret_0r(0, 0, null)
-					.getNmenonic(), new RevbXtaInstruction_kret_0r(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_retsp_u6(0, 0, null).getNmenonic(), new RevbXtaInstruction_retsp_lu6(0, 0, null)
-					.getNmenonic(), new RevbXtaInstruction_waitef_1r(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_waitet_1r(0, 0, null).getNmenonic(), new RevbXtaInstruction_waiteu_0r(0, 0, null)
-					.getNmenonic()));
+	private static final HashSet<String> m_noNextPc = new HashSet<String>(Arrays.asList(
+			new RevbXtaInstruction_bau_1r(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_bla_1r(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_blacp_u10(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_blacp_lu10(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_blat_u6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_blat_lu6(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_blrb_u10(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_blrb_lu10(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_blrf_u10(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_blrf_lu10(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_brbu_u6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_brbu_lu6(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_brfu_u6(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_brfu_lu6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_bru_1r(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_dret_0r(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_kret_0r(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_retsp_u6(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_retsp_lu6(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_waitef_1r(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_waitet_1r(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_waiteu_0r(0, 0, null).getNmenonic()));
 
 	/*
 	 * if the instruction doesn't unconditionally branch then add the next pc to
@@ -535,6 +548,7 @@ public class AnalysisEngine {
 	// --------------------------------------------------------------------- //
 	// Helper Debug Methods.
 	// --------------------------------------------------------------------- //
+
 	public void printDot(int nodeId, int coreId) {
 		HashMap<XtaInstruction, BasicBlock> pcToNode = getBasicBlockStartPcs(nodeId, coreId);
 
@@ -580,6 +594,7 @@ public class AnalysisEngine {
 		}
 		System.out.println("}");
 	}	
+
 
 	public void printStructureTrace(int nodeId, int coreId) {
 		System.out.printf("===============================\n");

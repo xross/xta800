@@ -1,6 +1,5 @@
 package com.xmos.xta.engine;
 
-import java.util.ArrayList;
 import com.xmos.isa.Instruction;
 import com.xmos.xeloader.XeLoader.Architecture;
 import com.xmos.xta.engine.Expression.OperatorType;
@@ -17,20 +16,16 @@ import com.xmos.xta.engine.resources.Thread.StatusRegister;
 
 public abstract class XtaInstruction extends Instruction {
 	private static final boolean INSTRUCTIONDEBUG = false;
-	private static final boolean RESOURCEDEBUG  = false;
 	private static final boolean m_uninplimented = false;
   
-	private ArrayList<NextPcType> m_successors;
-	private ArrayList<XtaInstruction> m_predessors;
-	
 	private String m_functionName;
     private int m_functionOffset;	
     private Attributes m_numCycles;
     private int m_basicNumCycles;
     private Config m_config;
-  
-    private boolean m_definesResource;
-	private boolean m_usesResource;
+    
+    private boolean m_isLink;
+    private boolean m_isBranch;
 	
 	private boolean m_nextInstructionPcKnown;
 	private int m_nextInstructionPc;
@@ -39,83 +34,25 @@ public abstract class XtaInstruction extends Instruction {
 	private int m_basicBlockId;
 	
 	XtaInstruction(String nmenonic, Config config, int opcode, int pc, int numBytes, 
-			boolean isLoadStore, boolean canPause, boolean usesResource, 
-		    boolean definesResource, int numCycles) {
+			boolean isLoadStore, boolean canPause, int numCycles, boolean isBranch, boolean isLink) {
 		super(nmenonic, opcode, pc, numBytes, isLoadStore, canPause);
-		m_definesResource = definesResource;
-		m_usesResource = usesResource;
 		m_functionName = null;
 		m_functionOffset = 0;
 		m_numCycles = new Attributes();
 		m_basicNumCycles = numCycles;
 		m_numCycles.setNumIterations(numCycles);
 		m_config = config;
-		m_successors = new ArrayList<NextPcType>();
-		m_predessors =  new ArrayList<XtaInstruction>();
 		m_isUnknown = canPause;
 		m_basicBlockId = 0;
-	}
-
-	public ArrayList<XtaInstruction> getPredessors(){
-		return m_predessors;
+		m_isLink = isLink;
+		m_isBranch= isBranch;
 	}
 	
-	public void addPredessor(XtaInstruction inst){
-		m_predessors.add(inst);
+	public boolean isBranch(){
+		return m_isBranch;
 	}
-	
-	public boolean isNextInstructionPcKnown(){
-		return m_nextInstructionPcKnown;
-	}
-	
-	public int getNextInstructionPc(){
-		return m_nextInstructionPc;
-	}
-	
-	public ArrayList<NextPcType> getSuccessors(){
-		return m_successors;
-	}
-	public int successorPcCount(int pc){
-		int count =0;
-		for(NextPcType suc : m_successors){
-			if(suc.getPc() == pc) count++;
-		}
-		return count;
-	}
-	
-	public void addSuccessor(XtaInstruction successor, boolean isBranch){
-		if(successor == null) return; 
-		int foundBranch = 0;
-		int foundNoBranch = 0;
-		for(NextPcType pc : m_successors){
-			if(pc.getInstruction().getPc() == successor.getPc() ){
-				if(pc.isBranch()){
-					foundBranch++;
-				} else {
-					foundNoBranch++;
-				}
-			}
-		}
-		if(foundBranch + foundNoBranch == 0) {
-			m_successors.add(new NextPcType(successor, isBranch));
-		} else if(isBranch ){
-			if(foundBranch == 0){
-				m_successors.add(new NextPcType(successor, isBranch));
-			}
-		} else if(!isBranch){
-			if(foundNoBranch == 0){
-				m_successors.add(new NextPcType(successor, isBranch));
-			}
-		}
-		return;
-	}
-	
-	public boolean getDefinesResource(){
-		return m_definesResource;
-	}
-	
-	public boolean getUsesResource(){
-		return m_usesResource;
+	public boolean isLink(){
+		return m_isLink;
 	}
 	
 	public String toString(){
@@ -2746,10 +2683,6 @@ public abstract class XtaInstruction extends Instruction {
             		|| resType == Resources.RES_TYPE_TIMER) {
             	EventableResource er = (EventableResource) state.getResources().getResource(resType, resNum);
             	er.setVector(reg_11);
-            	if (RESOURCEDEBUG){
-            		System.out.println("resource (resNum: " + resNum + " resType: " + resType + 
-            				") set vector to " + reg_11.getStringValue());
-            	}
             } else {
             	//FIXME - check that this is correct
             	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
@@ -2757,9 +2690,6 @@ public abstract class XtaInstruction extends Instruction {
     	} else {
     		Thread t = resources.getThread(thread);
     		t.addUnknownEventVector(reg_11);
-    		if (RESOURCEDEBUG){
-        		System.out.println("resource (resNum: ? resType: ?) set vector to " + reg_11.getStringValue());
-        	}
     	}
     	
     }
@@ -2782,10 +2712,7 @@ public abstract class XtaInstruction extends Instruction {
             		|| resType == Resources.RES_TYPE_TIMER){
             	EventableResource er = (EventableResource) state.getResources().getResource(resType, resNum);
             	er.setEnvironmentVector(reg_11);
-            	if(RESOURCEDEBUG){
-            		System.out.println("resource (resNum: " + resNum + " resType: " + resType + 
-            				") set environment vector to " + reg_11.getStringValue());
-            	}
+            	
             } else {
             	//FIXME - check that this is correct
             	throw new InstructionExecption(Error.ET_RESOURCE_DEP);
@@ -2904,11 +2831,21 @@ public abstract class XtaInstruction extends Instruction {
 	public Config getConfig() {
 		return m_config;
 	}
+
+	public boolean isNop() {
+		if(isFnop()) return true;
+		
+		
+		if(((getOpcode()>>(8*this.getNumBytes()))&0xFFFF) == 0x9000){
+			return true;
+		}
+		return false;
+	}
 }
 
 class NullInstruction extends XtaInstruction {    
     NullInstruction(String nmenonic, Config config, int opcode, int pc, int numBytes) {
-        super(nmenonic, config, opcode, pc, numBytes, false, false, false, false, 1);
+        super(nmenonic, config, opcode, pc, numBytes, false, false, 1, false, false);
         setIsFnop(true);
     }
     
@@ -2923,13 +2860,6 @@ class NullInstruction extends XtaInstruction {
     	return "";
     }
 
-	public int getDefResource() {
-		return 0;
-	}
-
-	public int getUseResource() {
-		return 0;
-	}
 }
 
 

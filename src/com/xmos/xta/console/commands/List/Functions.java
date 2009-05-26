@@ -1,7 +1,6 @@
 package com.xmos.xta.console.commands.List;
 
 import java.util.Collection;
-
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.console.Console;

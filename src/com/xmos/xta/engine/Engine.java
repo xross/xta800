@@ -22,6 +22,9 @@ import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Route.RouteStatus;
+import com.xmos.xta.engine.analysis.ControlFlowGraph;
+import com.xmos.xta.engine.analysis.StructuralAnalysisEngine;
+import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.references.Reference;
@@ -185,6 +188,85 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean loadExecutable(File executableFile, FileFinder fileFinder) {
+		
+		XeLoader xeLoader = new XeLoader();
+		
+		if (!xeLoader.loadExecutable(executableFile)) {
+			notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile + "' could not be loaded.");
+			return false;			
+		}
+		
+		m_xeLoader = xeLoader;
+		m_sections.initialise(m_xeLoader, this);
+		
+		m_nodeId = 0;
+		m_coreId = 0;
+		
+		m_xeObjects.clear();
+		for (int node : m_xeLoader.getNodeIds()) {
+			for (int core : m_xeLoader.getCoreIds(node)) {
+				m_xeObjects.add(new XeObject(m_xeLoader, node, core, fileFinder));
+			}
+		}
+		
+		if (!m_sections.load())
+			return false;
+		
+		
+		m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(this, m_xeLoader, m_config);
+		
+		for(int nodeId : m_xeLoader.getNodeIds()){
+			for(int coreId : m_xeLoader.getCoreIds(nodeId)){
+				MemoryImage mi = m_xeLoader.getMemoryImage(nodeId, coreId);
+				int cpPointer =  m_xeLoader.getSymbolTable(nodeId, coreId).symbolAddress("_cp");
+				
+		//		decode the instruction
+				InstructionDecoder id = new InstructionDecoder(mi, m_xeLoader, getConfig());
+				boolean decoded = id.decode();
+				if(!decoded) {
+					resetEngine();
+					return false;
+				}
+		//		add all successors to instructions
+				SuccessorAdder sa = new SuccessorAdder(id, m_sections.getBranchMap(nodeId, coreId), mi, cpPointer);
+				boolean added = sa.process();
+				if(!added) {
+					resetEngine();
+					return false;
+				}
+				
+		//		find all thread start and end points
+				ThreadHandeler th = new ThreadHandeler(id, m_sections.getThreadStartPoints(nodeId, coreId), 
+						m_sections.getThreadStopPoints(nodeId, coreId));
+				Collection<Node> threadStarts = th.getThreadStarts();
+				Collection<Node> threadEnds = th.getThreadEnds();
+				
+		//		add pseudo functions to graph 
+				PseudoFunctionHandeler pfh = new PseudoFunctionHandeler(id);
+				boolean functionsAdded = pfh.addPesudoFunctions();
+				if(!functionsAdded) {
+					resetEngine();
+					return false;
+				}
+				Collection<Node> functionStarts = pfh.getKnownFunctions().keySet();
+				
+				printCFG(id, pfh, threadStarts, threadEnds, functionStarts);
+				
+				if(true) System.exit(0);
+		//		add fnops to static graph
+				FnopAnalyser fa = new FnopAnalyser(id, threadStarts, threadEnds);
+				
+				ControlFlowGraph cfg = new ControlFlowGraph(threadStarts, threadEnds, functionStarts, null, nodeId, coreId);
+				
+				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
+				sae.analyse();
+			}
+		
+		}
+		
+		
+		
+		/*
 		XeLoader xeLoader = new XeLoader();
 
 		if (!xeLoader.loadExecutable(executableFile)) {
@@ -202,7 +284,7 @@ public class Engine implements Notifier {
 			for (int core : m_xeLoader.getCoreIds(node)) {
 				m_xeObjects.add(new XeObject(m_xeLoader, node, core, fileFinder));
 			}
-		}		
+		}	
 		
 		m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(this, m_xeLoader, m_config);
 
@@ -213,12 +295,14 @@ public class Engine implements Notifier {
 			return false;
 		}
 
+
 		if (!m_sections.load())
 			return false;
 				
 		m_executableFile = executableFile;
 		
 		m_ae = new AnalysisEngine(this, m_xeLoader, m_nodeCoreInstructionCache, m_xeObjects, m_sections);
+
 		runAnalysisEngine();
 
 		m_routes.clear();
@@ -230,7 +314,43 @@ public class Engine implements Notifier {
 		m_mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
 		
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
+		*/
 		return true;
+	}
+
+	private void printCFG(InstructionDecoder id, PseudoFunctionHandeler pfh, Collection<Node> threadStarts, 
+			Collection<Node> threadEnds, Collection<Node> functionStarts) {
+		System.out.println("digraph g {");
+		for(Node n : id.getInstructions()){
+			System.out.print(n.getGraphvizName() + " [label=\"" + n.getInstructions() + "\"");
+			if(threadStarts.contains(n)){
+				System.out.print(", color = green");
+			} else if(functionStarts.contains(n)){
+				System.out.print(", color = blue");
+			} else if(threadEnds.contains(n)){
+				System.out.print(", color = red");
+			} 
+			System.out.println("]; ");
+		}
+		for(Node n : pfh.getFunctions()){
+			System.out.println(n.getGraphvizName() + " [label=\"" + n.getInstructions() + "\"]; ");
+		}
+		for(Node n : id.getInstructions()){
+			for(Node next : n.getNextNodes()){
+				System.out.println(n.getGraphvizName() + " -> " + next.getGraphvizName() + ";");
+			}
+		}
+		for(Node n : pfh.getFunctions()){
+			for(Node next : n.getNextNodes()){
+				System.out.println(n.getGraphvizName() + " -> " + next.getGraphvizName() + ";");
+			}
+		}
+		System.out.println("}");
+	}
+
+	private void resetEngine() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public void runAnalysisEngine() {
@@ -446,7 +566,9 @@ public class Engine implements Notifier {
 
 		if (m_nodeCoreInstructionCache.setInstructionTimeTaken(
 				ref.getPc(), timeTaken, m_nodeId, m_coreId)) {
+
 			refreshRouteStats();
+
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
@@ -475,8 +597,10 @@ public class Engine implements Notifier {
 		}
 
 		if (m_nodeCoreInstructionCache.setInstructionNumCycles(
+
 				ref.getPc(), numCycles, m_nodeId, m_coreId)) {
 			refreshRouteStats();
+
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
             return true;			
@@ -881,4 +1005,5 @@ public class Engine implements Notifier {
 			route.sortPaths();
 		}		
 	}	
+
 }
