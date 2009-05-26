@@ -3,7 +3,7 @@ package com.xmos.xta.gui.views.log;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import com.xmos.xta.gui.XtaLog;
+import com.xmos.xta.gui.GuiLog;
 
 public class LogViewContentProvider implements IStructuredContentProvider {
     public static final boolean DEBUG = false;
@@ -11,7 +11,7 @@ public class LogViewContentProvider implements IStructuredContentProvider {
 	public Object[] getElements(Object inputElement) {
 		if (DEBUG) System.out.printf("ErrorsViewContentProvider: getElements\n");	
 		
-		return ((XtaLog)inputElement).getAll().toArray();
+		return ((GuiLog)inputElement).getAll().toArray();
 	}
 
 	public void dispose() {

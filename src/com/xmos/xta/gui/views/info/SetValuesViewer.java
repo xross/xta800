@@ -29,14 +29,14 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 import com.xmos.xta.engine.unknowns.PausableInstructionUnknown;
 import com.xmos.xta.engine.unknowns.Unknown;
-import com.xmos.xta.gui.XtaEngine;
-import com.xmos.xta.gui.XtaNotifier;
+import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.InstructionTime;
 
 public class SetValuesViewer {
@@ -97,7 +97,7 @@ public class SetValuesViewer {
 	}
 
 	public void update() {
-		Route route = XtaEngine.getEngine().getSelectedRoute();
+		Route route = GuiEngine.getEngine().getSelectedRoute();
 		m_resolvedUnknownsViewer.setInput(route);
 	}
 
@@ -105,7 +105,8 @@ public class SetValuesViewer {
 		m_resolvedUnknownsViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				if (m_selectedCodeRefs.size() == 1) {
-					XtaNotifier.getInstance().notifyShow(m_selectedCodeRefs.get(0));
+					GuiEngine.setCodePoint(m_selectedCodeRefs.get(0));
+					GuiEngine.broadcast(Notifier.NOTIFY_SHOW_CODE_POINT, "");
 				}
 			}
 		});
@@ -113,7 +114,7 @@ public class SetValuesViewer {
 		m_resolvedUnknownsViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection selection = event.getSelection();
-				Engine engine = XtaEngine.getEngine();
+				Engine engine = GuiEngine.getEngine();
 
 				boolean enabled = ((IStructuredSelection) selection).size() > 0;
 				m_clearInstructionTimesAction.setEnabled(enabled);
@@ -147,7 +148,7 @@ public class SetValuesViewer {
 		m_clearInstructionTimesAction = new Action() { 
 			public void run() {
 				for (Reference ref : m_selectedCodeRefs) {
-					XtaEngine.getEngine().unsetInstructionTime(ref.getPc());
+					GuiEngine.getEngine().unsetInstructionTime(ref.getPc());
 				}
 			}
 		}; 
@@ -157,8 +158,8 @@ public class SetValuesViewer {
 
 		m_setInstructionTimeAction = new Action() { 
 			public void run() {
-				Route route = XtaEngine.getEngine().getSelectedRoute();
-     			new InstructionTime(parent.getShell(), XtaEngine.getEngine(), m_selectedCodeRefs, route);
+				Route route = GuiEngine.getEngine().getSelectedRoute();
+     			new InstructionTime(parent.getShell(), GuiEngine.getEngine(), m_selectedCodeRefs, route);
 			}
 		}; 
 		m_setInstructionTimeAction.setText("Set instruction time");
@@ -181,7 +182,7 @@ public class SetValuesViewer {
 				int res0 = pc1 > pc2 ? 1 : -1;
 				return res0 * direction;
 			case 1:
-				Engine engine = XtaEngine.getEngine();
+				Engine engine = GuiEngine.getEngine();
 				int res2 = engine.getInstructionTimeTaken(pc1) > engine.getInstructionTimeTaken(pc2) ? 1 : -1;
 				return res2 * direction;
 			default:

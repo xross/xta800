@@ -13,7 +13,7 @@ import org.eclipse.ui.PlatformUI;
 import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
-import com.xmos.xta.gui.XtaEngine;
+import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.Iterations;
 import com.xmos.xta.gui.views.console.ConsoleView;
 import com.xmos.xta.gui.views.viewnode.FunctionPathNode;
@@ -123,7 +123,7 @@ public class PathNode extends Node {
 		    manager.add(new Separator());
     	    manager.add(new Action("Set iterations") {
 			    public void run() {
-			    	Route route = XtaEngine.getEngine().getRoute(getRouteId());
+			    	Route route = GuiEngine.getEngine().getRoute(getRouteId());
 				    new Iterations(parent, route, m_block);
 			    }
 		    });
@@ -168,7 +168,7 @@ public class PathNode extends Node {
 
 	public void setIterations(long numIterations) {
 		int pc = m_block.getInstructionTrimmed().getFirst().getPc();			
-		XtaEngine.getEngine().setLoopIterations(getRouteId(), pc, numIterations);
+		GuiEngine.getEngine().setLoopIterations(getRouteId(), pc, numIterations);
 	}
 
 	public boolean getAbsoluteCount() {

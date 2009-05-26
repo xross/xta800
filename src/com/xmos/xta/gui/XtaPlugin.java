@@ -3,10 +3,10 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 
-public class XtaCorePlugin extends AbstractUIPlugin {
-	private static XtaCorePlugin m_plugin;
+public class XtaPlugin extends AbstractUIPlugin {
+	private static XtaPlugin m_plugin;
 	
-	public XtaCorePlugin() {
+	public XtaPlugin() {
 		super();
 		m_plugin = this;
 	}
@@ -17,7 +17,7 @@ public class XtaCorePlugin extends AbstractUIPlugin {
 		getPreferenceStore().setDefault("History", "");
 	}
 
-	public static XtaCorePlugin getDefault(){
+	public static XtaPlugin getDefault(){
 		return m_plugin;
 	}
 	

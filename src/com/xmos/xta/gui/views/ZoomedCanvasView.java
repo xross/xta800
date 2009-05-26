@@ -43,9 +43,8 @@ import org.eclipse.ui.part.ViewPart;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.references.Reference;
-import com.xmos.xta.gui.XtaEngine;
-import com.xmos.xta.gui.XtaNotifier;
-import com.xmos.xta.gui.XtaRouteInfo;
+import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.gui.GuiRouteInfo;
 import com.xmos.xta.gui.nodes.Node;
 import com.xmos.xta.gui.views.viewnode.ViewNode;
 
@@ -61,7 +60,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     protected Node m_rootNode;
     protected List<Node> m_selectedNodes;
     protected Node m_doubleClickNode;
-    protected XtaRouteInfo m_routeInfo;
+    protected GuiRouteInfo m_routeInfo;
     
     private boolean m_refreshing;
     protected double m_scale;
@@ -84,7 +83,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 
 	public ZoomedCanvasView() {
 		if (DEBUG) System.out.printf("Structure()\n");			
-		XtaNotifier.getInstance().addPropertyChangeListener(this);
+		GuiEngine.addBroadcastListener(this);
 	    
 		m_listeners = new Vector<ISelectionChangedListener>();
 		m_rootNode = null;
@@ -162,7 +161,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			refreshView();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_FOCUS)) {
-			ISelection sel = XtaNotifier.getInstance().getFocusSelection();
+			ISelection sel = GuiEngine.getFocus();
 	        if (sel instanceof IStructuredSelection) {	            
 	            Object object = ((IStructuredSelection)sel).getFirstElement();
 	            if (object instanceof Node) {
@@ -188,8 +187,8 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	}
 	
 	private void selectPaths() {
-		Reference codePoint = XtaNotifier.getInstance().getCodePoint();
-		Engine engine = XtaEngine.getEngine();
+		Reference codePoint = GuiEngine.getCodePoint();
+		Engine engine = GuiEngine.getEngine();
 		if (codePoint.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
 			int pc = codePoint.getPc();
 			m_selectedNodes.clear();
@@ -445,7 +444,8 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		    	    		m_selectedNodes.add(node.getTreeNode());
 		    	    		ISelection selection = new StructuredSelection(m_selectedNodes);
 		    	    		setSelection(selection);
-		    				XtaNotifier.getInstance().notifySetFocus(selection);
+		    				GuiEngine.setFocus(selection);
+		    				GuiEngine.broadcast(Notifier.NOTIFY_SET_FOCUS, "");
 	    				}
 	    				return;
 	    			}

@@ -10,7 +10,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Shell;
 import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.XtaInstruction;
-import com.xmos.xta.gui.XtaEngine;
+import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.MaxIterations;
 import com.xmos.xta.gui.dialogs.Scope;
 import com.xmos.xta.gui.views.viewnode.FunctionLoopNode;
@@ -158,12 +158,12 @@ public class LoopNode extends Node {
 	
 	public void setLoopMax(long count){
 		int pc = m_block.getInstructionTrimmed().getFirst().getPc();	
-		XtaEngine.getEngine().setLoopMaxIterations(getRouteId(), pc, count);
+		GuiEngine.getEngine().setLoopMaxIterations(getRouteId(), pc, count);
 	}
 
 	public void setScope(boolean absolute) {
 		int pc = m_block.getInstructionTrimmed().getFirst().getPc();	
-		XtaEngine.getEngine().setLoopScope(getRouteId(), pc, absolute);
+		GuiEngine.getEngine().setLoopScope(getRouteId(), pc, absolute);
 	}
 
 	public boolean getScope() {

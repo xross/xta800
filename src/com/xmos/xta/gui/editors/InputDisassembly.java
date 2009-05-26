@@ -8,7 +8,7 @@ import org.eclipse.ui.IPersistableElement;
 
 import com.xmos.xeobject.Function;
 import com.xmos.xeobject.Line;
-import com.xmos.xta.gui.XtaEngine;
+import com.xmos.xta.gui.GuiEngine;
 
 public class InputDisassembly implements IEditorInput {
     public static final boolean DEBUG = false;
@@ -23,7 +23,7 @@ public class InputDisassembly implements IEditorInput {
 		
 		int lineIndex = 0;
 		m_input = new Input(s_headerType, s_lineType);
-        for (Function function : XtaEngine.getEngine().getXeObject().getFunctions()) {        	
+        for (Function function : GuiEngine.getEngine().getXeObject().getFunctions()) {        	
     		String headerRef = String.format("-");
         	m_input.addHeader(function.getText() + ":", headerRef, lineIndex, 0);        	
         	++lineIndex;

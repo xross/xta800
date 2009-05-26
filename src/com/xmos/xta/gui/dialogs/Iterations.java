@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Spinner;
 import com.xmos.xta.engine.LoopAttachment;
 import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
-import com.xmos.xta.gui.XtaEngine;
+import com.xmos.xta.gui.GuiEngine;
 
 public class Iterations extends XtaDialog {
 	
@@ -118,7 +118,7 @@ public class Iterations extends XtaDialog {
     		Set<Integer> pcs = m_route.getUniqueLoopPathPcs(m_tail);
     		assert(pcs.size() > 0);
     		
-    		XtaEngine.getEngine().setLoopIterations(
+    		GuiEngine.getEngine().setLoopIterations(
     				m_route.getRouteId(), pcs.iterator().next(), m_numIterations);
     	}
     	super.buttonPressed(id);

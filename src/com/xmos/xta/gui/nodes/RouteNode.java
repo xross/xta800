@@ -13,7 +13,7 @@ import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.RouteTiming;
 import com.xmos.xta.engine.XtaInstruction;
-import com.xmos.xta.gui.XtaEngine;
+import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.Required;
 import com.xmos.xta.gui.views.viewnode.FunctionRouteNode;
 import com.xmos.xta.gui.views.viewnode.StructureRouteNode;
@@ -76,12 +76,12 @@ public class RouteNode extends Node {
 	    manager.add(new Separator());
 	    manager.add(new Action("Set timing requirements") {
 		    public void run() {
-			    new Required(parent, XtaEngine.getEngine(), m_route);
+			    new Required(parent, GuiEngine.getEngine(), m_route);
 		    }
 	    });
 	    manager.add(new Action("Clear timing requirements") {
 		    public void run() {
-			    XtaEngine.getEngine().unsetRouteMax(m_route.getRouteId());
+			    GuiEngine.getEngine().unsetRouteMax(m_route.getRouteId());
 		    }
 	    });
     }

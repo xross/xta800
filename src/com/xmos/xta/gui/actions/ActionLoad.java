@@ -21,10 +21,9 @@ import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.gui.XtaCorePlugin;
-import com.xmos.xta.gui.XtaEngine;
-import com.xmos.xta.gui.XtaFileFinder;
-import com.xmos.xta.gui.XtaNotifier;
+import com.xmos.xta.gui.XtaPlugin;
+import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.gui.GuiFileFinder;
 import com.xmos.xta.gui.editors.SourcesEditor;
 import com.xmos.xta.gui.editors.SourcesEditorInput;
 import com.xmos.xta.gui.icons.Icons;
@@ -33,7 +32,7 @@ import com.xmos.xta.gui.views.console.ConsoleView;
 public class ActionLoad extends Action implements IPropertyChangeListener {
 
 	public ActionLoad() {
-		XtaNotifier.getInstance().addPropertyChangeListener(this);
+		GuiEngine.addBroadcastListener(this);
 		setImageDescriptor(Icons.getIconDescriptor("load"));
 		setToolTipText("Open Xe File");
 	}
@@ -46,14 +45,14 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
 	}
 	
 	public void run() {
-		XtaNotifier.getInstance().notify(Notifier.NOTIFY_SET_GUI_COMMAND, "");
+		GuiEngine.broadcast(Notifier.NOTIFY_SET_GUI_COMMAND, "");
 
 		FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.OPEN);
         fileDialog.setText("Open Xe File");
         String[] filterExt = { "*.xe" };
         fileDialog.setFilterExtensions(filterExt);
         
-        XtaCorePlugin plugin = XtaCorePlugin.getDefault();        
+        XtaPlugin plugin = XtaPlugin.getDefault();        
         String lastDir = plugin.getPreferenceStore().getString("LastDir");
         
         fileDialog.setFilterPath(lastDir);        
@@ -71,7 +70,7 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
         	try {
 				xeFile = xeFile.getCanonicalFile();
 			} catch (IOException e) {
-				XtaNotifier.getInstance().notify(Notifier.NOTIFY_ERROR, 
+				GuiEngine.broadcast(Notifier.NOTIFY_ERROR, 
 						String.format("Cannot resolve file: %s", xeFileName));
 				return;
 			}
@@ -79,9 +78,9 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
 			final File file = xeFile;
 			Job job = new Job("Load: " + xeFileName) {
 				protected IStatus run(IProgressMonitor monitor) {
-					Engine engine = XtaEngine.getEngine();
+					Engine engine = GuiEngine.getEngine();
 					engine.setMonitor(monitor);
-					boolean success = engine.loadExecutable(file, new XtaFileFinder());					
+					boolean success = engine.loadExecutable(file, new GuiFileFinder());					
 		        	if (success) {
 		                setToolTipText("Currently loaded " + file.getAbsolutePath());
 		        	}		        	
@@ -107,14 +106,14 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
 	    ConsoleView console = (ConsoleView)PlatformUI.getWorkbench().
             getActiveWorkbenchWindow().getActivePage().findView(ConsoleView.ID);
     	
-    	Collection<String> srcLevelCommands = XtaEngine.getEngine().getSrcLevelCommands();    	
+    	Collection<String> srcLevelCommands = GuiEngine.getEngine().getSrcLevelCommands();    	
     	if (srcLevelCommands.size() > 0) {    	    
 			try {
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 				    getActivePage().showView(ConsoleView.ID);
 			} catch (PartInitException e) {}    	    
 
-        	for (String command : XtaEngine.getEngine().getSrcLevelCommands()) {    	    				
+        	for (String command : GuiEngine.getEngine().getSrcLevelCommands()) {    	    				
 	    	    console.runCommand(command);
     	    }
     	}    	

@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Display;
 import com.xmos.elfhandler.Symbol;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.XtaInstruction;
-import com.xmos.xta.gui.XtaNotifier;
+import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.nodes.Node;
 import com.xmos.xta.gui.views.ZoomedCanvasView;
 import com.xmos.xta.gui.views.viewnode.TextBlockNode;
@@ -50,7 +50,7 @@ public class FunctionView extends ZoomedCanvasView {
 	public FunctionView() {
 		super();
 		if (DEBUG) System.out.printf("Function()\n");
-		XtaNotifier.getInstance().addPropertyChangeListener(this);
+		GuiEngine.addBroadcastListener(this);
 		
 		m_functionList = new Vector<XtaFunctionBlock>();
 		m_addedFunctionsToClickAreas = false;
@@ -75,7 +75,7 @@ public class FunctionView extends ZoomedCanvasView {
 
     protected void initialiseTree() {
 		if (DEBUG) System.out.printf("Function: initialiseTree\n");
-    	m_routeInfo = XtaNotifier.getInstance().getRouteInfo();
+    	m_routeInfo = GuiEngine.getRouteInfo();
 		if (m_routeInfo != null) {
 			m_rootNode = m_routeInfo.getRouteNode();
 			m_selectedNodes = m_routeInfo.getSelectedNodes();

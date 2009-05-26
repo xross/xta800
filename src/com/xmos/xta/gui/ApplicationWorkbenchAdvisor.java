@@ -10,7 +10,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 	
 	public void initialize(IWorkbenchConfigurer configurer) {
 		configurer.setSaveAndRestore(true);
-		XtaEngine.initialise();
+		GuiEngine.initialise();
 	}
 	
     public WorkbenchWindowAdvisor createWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {

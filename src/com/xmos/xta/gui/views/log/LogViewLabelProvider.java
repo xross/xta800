@@ -8,8 +8,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 
-import com.xmos.xta.gui.XtaLog;
-import com.xmos.xta.gui.XtaLogEntry;
+import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.gui.GuiLogEntry;
 
 public class LogViewLabelProvider extends LabelProvider implements ITableLabelProvider {
     public static final boolean DEBUG = false;
@@ -40,11 +40,11 @@ public class LogViewLabelProvider extends LabelProvider implements ITableLabelPr
 		
 		assert((columnIndex >= 0) && (columnIndex < m_columnNames.length));
 		
-		XtaLogEntry entry = (XtaLogEntry)element;	
+		GuiLogEntry entry = (GuiLogEntry)element;	
 		if (m_columnNames[columnIndex].equals(DATE)) {
 			return m_dateFormat.format(entry.getDate());
 		} else if (m_columnNames[columnIndex].equals(LEVEL)) {
-			return XtaLog.getInstance().getLevelString(entry.getLevel());			
+			return GuiEngine.getLog().getLevelString(entry.getLevel());			
 		} else if (m_columnNames[columnIndex].equals(DESCRIPTION)) {
 			return entry.getString();
 		}

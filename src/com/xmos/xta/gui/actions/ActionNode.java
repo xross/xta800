@@ -15,8 +15,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.gui.XtaEngine;
-import com.xmos.xta.gui.XtaNotifier;
+import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.icons.Icons;
 
 public class ActionNode extends Action implements IPropertyChangeListener, IMenuCreator {
@@ -30,7 +29,7 @@ public class ActionNode extends Action implements IPropertyChangeListener, IMenu
 	public ActionNode() {
 		super("node", Action.AS_DROP_DOWN_MENU);
 
-		XtaNotifier.getInstance().addPropertyChangeListener(this);
+		GuiEngine.addBroadcastListener(this);
 
 		setImageDescriptor(Icons.getIconDescriptor("node"));
 		setToolTipText(DEFAULT_TOOL_TIP);
@@ -48,10 +47,10 @@ public class ActionNode extends Action implements IPropertyChangeListener, IMenu
 				String selected = ((MenuItem)e.getSource()).getText();
 
 				try {
-					XtaNotifier.getInstance().notify(Notifier.NOTIFY_SET_GUI_COMMAND, "");					
+					GuiEngine.broadcast(Notifier.NOTIFY_SET_GUI_COMMAND, "");					
 		        	int nodeId = Integer.parseInt(selected); 
 		        	if (nodeId != m_currentNodeId) {
-		        		XtaEngine.getEngine().setNodeId(nodeId);
+		        		GuiEngine.getEngine().setNodeId(nodeId);
 		        		m_currentNodeId = nodeId;
 		        	}
 		        } catch (NumberFormatException exception) {
@@ -97,7 +96,7 @@ public class ActionNode extends Action implements IPropertyChangeListener, IMenu
 
 	private void updateState() {
 		m_nodeIds.clear();
-		for (Integer nodeId : XtaEngine.getEngine().getXeLoader().getNodeIds()) {
+		for (Integer nodeId : GuiEngine.getEngine().getXeLoader().getNodeIds()) {
 			m_nodeIds.add(String.format("%d", nodeId));
 		}
 	}

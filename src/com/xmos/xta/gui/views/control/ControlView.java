@@ -29,8 +29,7 @@ import com.xmos.xta.engine.constraint.ConstraintNull;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
-import com.xmos.xta.gui.XtaEngine;
-import com.xmos.xta.gui.XtaNotifier;
+import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.icons.Icons;
 
 public class ControlView extends ViewPart implements IPropertyChangeListener,
@@ -54,20 +53,22 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     
 	public ControlView() {
 		if (DEBUG) System.out.println("Control(" + this.hashCode() + "): new");			
-		XtaNotifier.getInstance().addPropertyChangeListener(this);
+		GuiEngine.addBroadcastListener(this);
 		
 		m_startPointListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
     		    Reference startPoint = ReferenceFactory.createReference(
     		    		m_startPoint.getText(), ReferenceClass.ENDPOINT_REF);
-			    XtaNotifier.getInstance().notifySetStartPoint(startPoint);
+			    GuiEngine.setStartPoint(startPoint);
+			    GuiEngine.broadcast(Notifier.NOTIFY_SET_START_POINT, "");
 			}			
 		};
 		m_endPointListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 			    Reference endPoint = ReferenceFactory.createReference(
 			    		m_endPoint.getText(), ReferenceClass.ENDPOINT_REF);
-			    XtaNotifier.getInstance().notifySetEndPoint(endPoint);
+			    GuiEngine.setEndPoint(endPoint);
+			    GuiEngine.broadcast(Notifier.NOTIFY_SET_END_POINT, "");
 			}			
 		};
 		m_constraintListener = new KeyListener() {
@@ -90,8 +91,8 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	protected void setConstraint() {
-		Engine engine = XtaEngine.getEngine();
-		XtaNotifier.getInstance().notify(Notifier.NOTIFY_SET_GUI_COMMAND, "");
+		Engine engine = GuiEngine.getEngine();
+		GuiEngine.broadcast(Notifier.NOTIFY_SET_GUI_COMMAND, "");
 		Constraint constraint = ConstraintFactory.createConstraint(engine, m_constraint.getText());
 		if (constraint != null) {
 			engine.setConstraint(constraint);
@@ -158,17 +159,17 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	private void updateEndPoint() {
-		Reference endPoint = XtaNotifier.getInstance().getEndPoint();
+		Reference endPoint = GuiEngine.getEndPoint();
 		updateText(endPoint, m_endPoint, m_endPointListener);
 	}
 
 	private void updateStartPoint() {
-		Reference startPoint = XtaNotifier.getInstance().getStartPoint();
+		Reference startPoint = GuiEngine.getStartPoint();
 		updateText(startPoint, m_startPoint, m_startPointListener);
 	}
 	
 	private void updateConstraint() {
-		Constraint constraint = XtaEngine.getEngine().getConstraint();
+		Constraint constraint = GuiEngine.getEngine().getConstraint();
 		String str = constraint.getString();
 		if (constraint.getClass() == ConstraintNull.class) {
 			m_constraint.setText("");
@@ -184,25 +185,25 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
      }
 	
 	public int getFrequency() {
-		return XtaEngine.getEngine().getFrequency();
+		return GuiEngine.getEngine().getFrequency();
 	}
 
 	public void setFrequency(int frequency) {
-		XtaEngine.getEngine().setFrequency(frequency);
+		GuiEngine.getEngine().setFrequency(frequency);
 	}
 
 	public int getNumThreads() {
-		return XtaEngine.getEngine().getNumThreads();
+		return GuiEngine.getEngine().getNumThreads();
 	}
 
 	public void setNumThreads(int numThreads) {
-		XtaEngine.getEngine().setNumThreads(numThreads);
+		GuiEngine.getEngine().setNumThreads(numThreads);
 	}
 
 	public void setNodeId(String string) {
         try {
         	int nodeId = Integer.parseInt(string); 
-        	XtaEngine.getEngine().setNodeId(nodeId);
+        	GuiEngine.getEngine().setNodeId(nodeId);
         } catch (NumberFormatException e) {
         }    	        
 	}
@@ -210,14 +211,14 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	public void setCoreId(String string) {
         try {
         	int coreId = Integer.parseInt(string); 
-        	XtaEngine.getEngine().setCoreId(coreId);
+        	GuiEngine.getEngine().setCoreId(coreId);
         } catch (NumberFormatException e) {
         }    	        
 	}
 
 	private void updateState() {
-		m_freqSpinner.setSelection(XtaEngine.getEngine().getFrequency());
-		m_threadSpinner.setSelection(XtaEngine.getEngine().getNumThreads());
+		m_freqSpinner.setSelection(GuiEngine.getEngine().getFrequency());
+		m_threadSpinner.setSelection(GuiEngine.getEngine().getNumThreads());
 	}
 	
 	private void createControlBar(Composite controls) {
@@ -244,10 +245,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    m_timePathButton.setImage(Icons.getIcon("run"));
 	    m_timePathButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				XtaNotifier notifier = XtaNotifier.getInstance();
-				notifier.notify(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_PATH);
-				notifier.notify(Notifier.NOTIFY_SET_GUI_COMMAND, "");
-				notifier.notify(Notifier.NOTIFY_RUN, "");
+				GuiEngine.broadcast(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_PATH);
+				GuiEngine.broadcast(Notifier.NOTIFY_SET_GUI_COMMAND, "");
+				GuiEngine.broadcast(Notifier.NOTIFY_RUN, "");
 			}
 		});
 	}
@@ -314,7 +314,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 	private void updateText(Reference point, Text text, ModifyListener listener) {
 		if (point != null) {
-			Engine engine = XtaEngine.getEngine();
+			Engine engine = GuiEngine.getEngine();
 			point.resolve(engine, engine.getNodeId(), engine.getCoreId());
 			if (point.getResolved() || point.getRef().equals("")) {		
 		     	setText(text, listener, point.getRef(), point.getRef());

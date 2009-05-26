@@ -11,8 +11,7 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.gui.XtaEngine;
-import com.xmos.xta.gui.XtaNotifier;
+import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.icons.Icons;
 
 public class SourcesEditor extends MultiPageEditorPart implements IPropertyChangeListener {
@@ -24,13 +23,13 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 	public SourcesEditor() {
 		if (DEBUG) System.out.printf("SourcesEditor()\n");			
 
-		XtaNotifier.getInstance().addPropertyChangeListener(this);
+		GuiEngine.addBroadcastListener(this);
 	}
 	
 	public void dispose() {
 		if (DEBUG) System.out.printf("SourcesEditor: dispose\n");
 
-		XtaNotifier.getInstance().removePropertyChangeListener(this);
+		GuiEngine.removeBroadcastListener(this);
 		super.dispose();
 	}
 
@@ -100,7 +99,7 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 			setPageText(index, "Disassembly");
 			m_disassemblyIndex = index;
         	
-			XeObject xeObject = XtaEngine.getEngine().getXeObject();
+			XeObject xeObject = GuiEngine.getEngine().getXeObject();
 	        for (SourceFile sourceFile : xeObject.getSourceFiles()) {       	        	
 	        	XtaEditor sourceEditor = new XtaEditor(XtaDocumentPartitioner.SOURCE, sourceFile.getFileName());
 	        	IEditorInput sourceEditorInput = new InputSource(sourceFile);

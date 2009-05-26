@@ -22,8 +22,7 @@ import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Progress;
 import com.xmos.xta.engine.Route;
-import com.xmos.xta.gui.XtaEngine;
-import com.xmos.xta.gui.XtaNotifier;
+import com.xmos.xta.gui.GuiEngine;
 
 public class StatusView extends ViewPart implements IPropertyChangeListener,
                                                      ISelectionListener {
@@ -43,7 +42,7 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 
 	public StatusView() {
 		if (DEBUG) System.out.println("Status(" + this.hashCode() + "): new");			
-		XtaNotifier.getInstance().addPropertyChangeListener(this);
+		GuiEngine.addBroadcastListener(this);
 		
 		m_progressUpdater = null;
 	}
@@ -69,7 +68,7 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 	    m_memoryUpdater = new MemoryUpdater(m_memoryGroup, m_memoryUsage);
 	    m_memoryUpdater.start();
 	    
-	    if (XtaEngine.getEngine().getProgress().getState() != Progress.State.IDLE) {
+	    if (GuiEngine.getEngine().getProgress().getState() != Progress.State.IDLE) {
 	    	startAnalysis();
 	    }
 	}
@@ -102,7 +101,7 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 	
 	private void startAnalysis() {
         m_memoryUpdater.setFastRefresh(true);
-		m_progressUpdater = new ProgressUpdater(XtaEngine.getEngine(), m_progress);
+		m_progressUpdater = new ProgressUpdater(GuiEngine.getEngine(), m_progress);
 		m_progressUpdater.start();
 	}
 
@@ -122,25 +121,25 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	public int getFrequency() {
-		return XtaEngine.getEngine().getFrequency();
+		return GuiEngine.getEngine().getFrequency();
 	}
 
 	public void setFrequency(int frequency) {
-		XtaEngine.getEngine().setFrequency(frequency);
+		GuiEngine.getEngine().setFrequency(frequency);
 	}
 
 	public int getNumThreads() {
-		return XtaEngine.getEngine().getNumThreads();
+		return GuiEngine.getEngine().getNumThreads();
 	}
 
 	public void setNumThreads(int numThreads) {
-		XtaEngine.getEngine().setNumThreads(numThreads);
+		GuiEngine.getEngine().setNumThreads(numThreads);
 	}
 
 	public void setNodeId(String string) {
         try {
         	int nodeId = Integer.parseInt(string); 
-        	XtaEngine.getEngine().setNodeId(nodeId);
+        	GuiEngine.getEngine().setNodeId(nodeId);
         } catch (NumberFormatException e) {
         }    	        
 	}
@@ -148,7 +147,7 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 	public void setCoreId(String string) {
         try {
         	int coreId = Integer.parseInt(string); 
-        	XtaEngine.getEngine().setCoreId(coreId);
+        	GuiEngine.getEngine().setCoreId(coreId);
         } catch (NumberFormatException e) {
         }    	        
 	}
@@ -161,7 +160,7 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	private void checkTotalPaths() {
-		Route route = XtaEngine.getEngine().getSelectedRoute();
+		Route route = GuiEngine.getEngine().getSelectedRoute();
 		if (route != null) {
 			int numUnresolvedPaths = route.getUnresolvedPaths().size();
 			if (numUnresolvedPaths == 0 && route.getCompletedPaths().size() == 0) {
@@ -274,7 +273,7 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 		Group progressGroup = createGroup(composite, "Blocks analysed", 1, 3);
 	    m_progress = new Label(progressGroup, SWT.SHADOW_NONE | SWT.CENTER);
 	    m_progress.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    int status = XtaEngine.getEngine().getProgress().getCurValue();
+	    int status = GuiEngine.getEngine().getProgress().getCurValue();
 	    m_progress.setText(Integer.toString(status));
 	    m_progress.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
 

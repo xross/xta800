@@ -8,7 +8,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
-import com.xmos.xta.gui.XtaNotifier;
+import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.nodes.Node;
 import com.xmos.xta.gui.views.ZoomedCanvasView;
 import com.xmos.xta.gui.views.viewnode.StructureNode;
@@ -24,7 +24,7 @@ public class StructureView extends ZoomedCanvasView {
 	public StructureView() {
 		super();
 		if (DEBUG) System.out.printf("Structure()\n");			
-		XtaNotifier.getInstance().addPropertyChangeListener(this);
+		GuiEngine.addBroadcastListener(this);
 	    
 		m_scaleY = true;
 		m_pixelsX = 0;
@@ -166,7 +166,7 @@ public class StructureView extends ZoomedCanvasView {
 
     protected void initialiseTree() {
 		if (DEBUG) System.out.printf("Structure: initialiseTree\n");
-		m_routeInfo = XtaNotifier.getInstance().getRouteInfo();
+		m_routeInfo = GuiEngine.getRouteInfo();
 		if (m_routeInfo != null) {
 			m_rootNode = m_routeInfo.getRouteNode();
 			m_doubleClickNode = m_rootNode;

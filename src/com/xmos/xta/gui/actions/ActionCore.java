@@ -15,8 +15,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.gui.XtaEngine;
-import com.xmos.xta.gui.XtaNotifier;
+import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.icons.Icons;
 
 public class ActionCore extends Action implements IPropertyChangeListener, IMenuCreator {
@@ -30,7 +29,7 @@ public class ActionCore extends Action implements IPropertyChangeListener, IMenu
 	public ActionCore() {
 		super("core", Action.AS_DROP_DOWN_MENU);
 
-		XtaNotifier.getInstance().addPropertyChangeListener(this);
+		GuiEngine.addBroadcastListener(this);
 
 		setImageDescriptor(Icons.getIconDescriptor("core"));
 		setToolTipText(DEFAULT_TOOL_TIP);
@@ -48,10 +47,10 @@ public class ActionCore extends Action implements IPropertyChangeListener, IMenu
 				String selected = ((MenuItem)e.getSource()).getText();
 
 				try {
-					XtaNotifier.getInstance().notify(Notifier.NOTIFY_SET_GUI_COMMAND, "");					
+					GuiEngine.broadcast(Notifier.NOTIFY_SET_GUI_COMMAND, "");					
 		        	int coreId = Integer.parseInt(selected); 
 		        	if (coreId != m_currentCoreId) {
-		        		XtaEngine.getEngine().setCoreId(coreId);
+		        		GuiEngine.getEngine().setCoreId(coreId);
 		        		m_currentCoreId = coreId;
 						setToolTipText("Core " + m_currentCoreId);
 		        	}
@@ -97,8 +96,8 @@ public class ActionCore extends Action implements IPropertyChangeListener, IMenu
 	private void updateState() {
 		m_coreIds.clear();
 
-		int selectedNodeId = XtaEngine.getEngine().getNodeId();
-		for (Integer coreId : XtaEngine.getEngine().getXeLoader().getCoreIds(selectedNodeId)) {
+		int selectedNodeId = GuiEngine.getEngine().getNodeId();
+		for (Integer coreId : GuiEngine.getEngine().getXeLoader().getCoreIds(selectedNodeId)) {
 			m_coreIds.add(String.format("%d", coreId));
 		}
 	}

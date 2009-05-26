@@ -51,8 +51,7 @@ import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 import com.xmos.xta.engine.sections.EndpointTableInfo;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.engine.unknowns.Unknown;
-import com.xmos.xta.gui.XtaEngine;
-import com.xmos.xta.gui.XtaNotifier;
+import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.InstructionTime;
 import com.xmos.xta.gui.nodes.Node;
 import com.xmos.xta.gui.views.control.ControlView;
@@ -125,8 +124,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		m_type = type;
 		m_fileName = fileName;
 
-		XtaNotifier notifier = XtaNotifier.getInstance();
-		notifier.addPropertyChangeListener(this);
+		GuiEngine.addBroadcastListener(this);
 
     	setSourceViewerConfiguration(new XtaConfiguration(this));
     	setDocumentProvider(new XtaDocumentProvider());
@@ -170,7 +168,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     public void dispose() {
 		if (DEBUG) System.out.printf("XtaEditor: dispose\n");	
     	
-		XtaNotifier.getInstance().removePropertyChangeListener(this);
+		GuiEngine.removeBroadcastListener(this);
 		getSite().getPage().removeSelectionListener(this);
 		super.dispose();
     }
@@ -205,7 +203,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	        updateAnnotations(m_currentHighlightAnnotations, m_currentHighlightAnnotationPositions);
     	    
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SHOW_CODE_POINT)) {
-			Reference codePoint = XtaNotifier.getInstance().getCodePoint();
+			Reference codePoint = GuiEngine.getCodePoint();
 			showCodePoint(codePoint);
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
@@ -222,12 +220,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}
 
 	private void updateStartPoint() {
-		Reference startPoint = XtaNotifier.getInstance().getStartPoint();
+		Reference startPoint = GuiEngine.getStartPoint();
 		m_startPointLine = findCodeRefLineNum(startPoint);
 	}
 
 	private void updateEndPoint() {
-		Reference endPoint = XtaNotifier.getInstance().getEndPoint();
+		Reference endPoint = GuiEngine.getEndPoint();
 		m_endPointLine = findCodeRefLineNum(endPoint);
 	}
 
@@ -283,7 +281,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	if (input == null)
     		return;
     	
-		Route route = XtaEngine.getEngine().getSelectedRoute();
+		Route route = GuiEngine.getEngine().getSelectedRoute();
 		if (route != null && !reset){
 			m_routeMaskEnabled = true;
     		for (InputSection inputSection : input.getSections()){
@@ -496,7 +494,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		m_currentHighlightAnnotationPositions = annotationPositions;
 		updateAnnotations(annotations, annotationPositions);
 		
-		XtaNotifier.getInstance().notify(Notifier.NOTIFY_HIGHLIGHTS_UPDATED, "");
+		GuiEngine.broadcast(Notifier.NOTIFY_HIGHLIGHTS_UPDATED, "");
     }
 
     // Add all annotations after highlights
@@ -511,7 +509,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         int endPointIndex = getEndPointIndex();
 
         m_endPointLineIndexes.clear();
-        for (EndpointTableInfo info : XtaEngine.getEngine().getEndpointTable().values()) {
+        for (EndpointTableInfo info : GuiEngine.getEngine().getEndpointTable().values()) {
         	if (info.getFileName().equals(m_fileName)) {
         		InputLine line = findCodeLine(info.getLineNumber());
         		if (line != null) {
@@ -546,7 +544,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
 	private void updateExcluded() {
 		m_excludedIndexes.clear();
-		Constraint constraint = XtaEngine.getEngine().getConstraint();
+		Constraint constraint = GuiEngine.getEngine().getConstraint();
 		if ((constraint == null) || !constraint.isValid()) {
 			return;
 		}
@@ -565,7 +563,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}
 
     private boolean checkLineForExclusion(Constraint constraint, String refStr, int index) {
-		Engine engine = XtaEngine.getEngine();
+		Engine engine = GuiEngine.getEngine();
 		Reference headerRef = ReferenceFactory.createReference(refStr, ReferenceClass.SRCLABEL_REF);
 		if (headerRef.resolve(engine, engine.getNodeId(),engine.getCoreId())) {
 			Constraint clone = constraint.clone();
@@ -603,7 +601,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     }
     
 	private HashSet<Unknown> getSelectedPathUnknowns() {
-		Engine engine = XtaEngine.getEngine();
+		Engine engine = GuiEngine.getEngine();
 		int selectedRouteId = engine.getSelectedRouteId();
 		Route route = engine.getRoute(selectedRouteId);
 		if (route != null) {
@@ -762,42 +760,44 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
      	m_showStartPointAction = new Action("Show start point") {
      		public void run() {
-				Reference startPoint = XtaNotifier.getInstance().getStartPoint();
-				XtaNotifier.getInstance().notifyShow(startPoint);
+				GuiEngine.broadcast(Notifier.NOTIFY_SHOW_CODE_POINT, "");
      		}
      	};
      	setAction(ShowStartPointID, m_showStartPointAction);
      	
      	m_showEndPointAction = new Action("Show end point") {
      		public void run() {
-				Reference endPoint = XtaNotifier.getInstance().getEndPoint();
-				XtaNotifier.getInstance().notifyShow(endPoint);
+				GuiEngine.broadcast(Notifier.NOTIFY_SHOW_CODE_POINT, "");
      		}
      	} ;
      	setAction(ShowEndPointID, m_showEndPointAction);
 
      	setAction(SetStartPointID, new Action("Set start point") {
      		public void run() {
-     			XtaNotifier.getInstance().notifySetStartPoint(m_clickCodeRef);
+     			GuiEngine.setStartPoint(m_clickCodeRef);
+     			GuiEngine.broadcast(Notifier.NOTIFY_SET_START_POINT, "");
      		}
      	});
      	setAction(SetEndPointID, new Action("Set end point") {
      		public void run() {
-     			XtaNotifier.getInstance().notifySetEndPoint(m_clickCodeRef);
+     			GuiEngine.setEndPoint(m_clickCodeRef);
+     			GuiEngine.broadcast(Notifier.NOTIFY_SET_END_POINT, "");
      		}
      	});
      	setAction(RemoveStartPointID, new Action("Remove start point") {
      		public void run() {
      			Reference startPoint = ReferenceFactory.createReference(
      					"", ReferenceClass.ENDPOINT_REF);
-     			XtaNotifier.getInstance().notifySetStartPoint(startPoint);     			
+     			GuiEngine.setStartPoint(startPoint);
+     			GuiEngine.broadcast(Notifier.NOTIFY_SET_START_POINT, "");     			
      		}
      	});
      	setAction(RemoveEndPointID, new Action("Remove end point") {
      		public void run() {
      			Reference endPoint = ReferenceFactory.createReference(
      					"", ReferenceClass.ENDPOINT_REF);
-     			XtaNotifier.getInstance().notifySetEndPoint(endPoint);     			
+     			GuiEngine.setEndPoint(endPoint);
+     			GuiEngine.broadcast(Notifier.NOTIFY_SET_END_POINT, "");
      		}
      	});
 
@@ -815,13 +815,14 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      	setAction(SelectPathsID, new Action("Select paths through here") {
      		public void run() {
      			Reference clickCodeRef = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.SRCLABEL_REF);
-     			XtaNotifier.getInstance().notifyShowPaths(clickCodeRef);
+     			GuiEngine.setCodePoint(clickCodeRef);
+     			GuiEngine.broadcast(Notifier.NOTIFY_SELECT_PATHS, "");
      		}
      	});
 
      	m_setInstructionTimeAction = new Action("Set instruction time") {
      		public void run() {
-     			Engine engine = XtaEngine.getEngine();
+     			Engine engine = GuiEngine.getEngine();
 				Route route = engine.getSelectedRoute();
      			new InstructionTime(m_parent.getShell(), engine, m_clickCodeRef, route);
      		}
@@ -830,7 +831,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     }    
 
     protected void addToConstraint(String toAdd) {
-		Engine engine = XtaEngine.getEngine();
+		Engine engine = GuiEngine.getEngine();
 		Constraint constraint = engine.getConstraint();
 		
 		String newString = "";
@@ -857,11 +858,11 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	m_restoreRouteMaskingAction.setEnabled(!m_routeMaskEnabled);
 		menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
 
-		Reference startPoint = XtaNotifier.getInstance().getStartPoint();
+		Reference startPoint = GuiEngine.getStartPoint();
 		addAction(menu, ShowStartPointID);
 		m_showStartPointAction.setEnabled((startPoint != null));
 
-		Reference endPoint = XtaNotifier.getInstance().getEndPoint();
+		Reference endPoint = GuiEngine.getEndPoint();
 		addAction(menu, ShowEndPointID);
 		m_showEndPointAction.setEnabled((endPoint != null));
     }
@@ -894,11 +895,11 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			addAction(menu, ConstrainRequireID);
 			addAction(menu, SelectPathsID);
 			
-			Engine engine = XtaEngine.getEngine();
+			Engine engine = GuiEngine.getEngine();
 			boolean resolved = m_clickCodeRef.resolve(engine, engine.getNodeId(), engine.getCoreId());
 			if (resolved &&
-				(XtaNotifier.getInstance().getRouteInfo() != null) &&
-			     XtaEngine.getEngine().canInstructionPause(m_clickCodeRef.getPc())) {
+				(GuiEngine.getRouteInfo() != null) &&
+			     GuiEngine.getEngine().canInstructionPause(m_clickCodeRef.getPc())) {
 				
 				m_setInstructionTimeAction.setEnabled(true);
 			} else {
@@ -923,7 +924,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}
 
 	private String getSrcLabel(int clickLineIndex) {
-        Map<Integer, SrcLabelTableInfo> srcLabelTable = XtaEngine.getEngine().getSrcLabelTable();
+        Map<Integer, SrcLabelTableInfo> srcLabelTable = GuiEngine.getEngine().getSrcLabelTable();
 		for (SrcLabelTableInfo info : srcLabelTable.values()) {
         	if (info.getFileName().equals(m_fileName)) {
         		InputLine startLine = findCodeLine(info.getLineNumberStart());

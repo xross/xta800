@@ -18,8 +18,8 @@ import org.eclipse.swt.widgets.MenuItem;
 import com.xmos.xeobject.Function;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.gui.XtaEngine;
-import com.xmos.xta.gui.XtaNotifier;
+import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.gui.GuiNotifier;
 import com.xmos.xta.gui.icons.Icons;
 
 public class ActionFunction extends Action implements IPropertyChangeListener, IMenuCreator {
@@ -31,7 +31,7 @@ public class ActionFunction extends Action implements IPropertyChangeListener, I
 	private String m_functionName;
 
 	public ActionFunction() {
-		XtaNotifier.getInstance().addPropertyChangeListener(this);
+		GuiEngine.addBroadcastListener(this);
 		
 		setImageDescriptor(Icons.getIconDescriptor("function"));
 		setToolTipText(DEFAULT_TOOL_TIP);
@@ -47,11 +47,10 @@ public class ActionFunction extends Action implements IPropertyChangeListener, I
 
 			public void widgetSelected(SelectionEvent e) {
 				String selected = ((MenuItem)e.getSource()).getText();
-				XtaNotifier notifier = XtaNotifier.getInstance();
-				notifier.notify(Notifier.NOTIFY_SELECT_FUNCTION, selected);
-				notifier.notify(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_FUNCTION);
-				notifier.notify(Notifier.NOTIFY_SET_GUI_COMMAND, "");
-				notifier.notify(Notifier.NOTIFY_RUN, "");
+				GuiEngine.broadcast(Notifier.NOTIFY_SELECT_FUNCTION, selected);
+				GuiEngine.broadcast(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_FUNCTION);
+				GuiEngine.broadcast(Notifier.NOTIFY_SET_GUI_COMMAND, "");
+				GuiEngine.broadcast(Notifier.NOTIFY_RUN, "");
 			}
 		};
 	}
@@ -70,8 +69,8 @@ public class ActionFunction extends Action implements IPropertyChangeListener, I
 	        updateState();
 	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
-			if (XtaNotifier.getInstance().getRunMode() == XtaNotifier.RUN_MODE_FUNCTION) {
-				m_functionName = XtaNotifier.getInstance().getSelectedFunction();
+			if (GuiEngine.getRunMode() == GuiNotifier.RUN_MODE_FUNCTION) {
+				m_functionName = GuiEngine.getSelectedFunction();
 				setToolTipText("Currently analysed: " + m_functionName);
 			}
 
@@ -100,7 +99,7 @@ public class ActionFunction extends Action implements IPropertyChangeListener, I
 		m_functions.clear();
 		m_functionName = "";
 		
-    	XeObject xeObject = XtaEngine.getEngine().getXeObject();
+    	XeObject xeObject = GuiEngine.getEngine().getXeObject();
     	List<Function> functions = xeObject.getFunctions();
     	Collections.sort(functions);
     	m_functions.addAll(functions);

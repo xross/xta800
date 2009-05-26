@@ -9,7 +9,7 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
-import com.xmos.xta.gui.XtaNotifier;
+import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.nodes.Node;
 
 public class ConsoleView extends ViewPart implements IPropertyChangeListener,
@@ -19,7 +19,7 @@ public class ConsoleView extends ViewPart implements IPropertyChangeListener,
     private GuiConsole m_guiConsole;
     
 	public ConsoleView() {
-		XtaNotifier.getInstance().addPropertyChangeListener(this);
+		GuiEngine.addBroadcastListener(this);
 	}
 
 	public void createPartControl(Composite parent) {

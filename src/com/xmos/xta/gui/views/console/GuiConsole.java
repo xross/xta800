@@ -25,8 +25,8 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.console.completors.XtaCompletor;
-import com.xmos.xta.gui.XtaCorePlugin;
-import com.xmos.xta.gui.XtaEngine;
+import com.xmos.xta.gui.XtaPlugin;
+import com.xmos.xta.gui.GuiEngine;
 
 public class GuiConsole implements Console {	
     public static final boolean DEBUG = false;
@@ -47,7 +47,7 @@ public class GuiConsole implements Console {
 	public GuiConsole(Composite parent) {
 		if (DEBUG) System.out.printf("GuiConsole()\n");		
 		
-		m_shell = new Shell(this, XtaEngine.getEngine(), false);		        		
+		m_shell = new Shell(this, GuiEngine.getEngine(), new GuiConsoleNotifier(this), false);		        		
 		m_commandQueue = new LinkedBlockingQueue<CommandString>();
 		m_characterQueue = new LinkedBlockingQueue<Integer>();		
         m_text = new StyledText(parent, SWT.V_SCROLL);
@@ -118,7 +118,7 @@ public class GuiConsole implements Console {
 			}
 		});
                 
-        m_completor = new XtaCompletor(XtaEngine.getEngine());
+        m_completor = new XtaCompletor(GuiEngine.getEngine());
         m_completionHandler = new TabCompletionHandler();
 	}
 	
@@ -213,7 +213,7 @@ public class GuiConsole implements Console {
 	public void close() throws IOException {
 		if (DEBUG) System.out.printf("GuiConsole: close\n");			
 
-		XtaCorePlugin plugin = XtaCorePlugin.getDefault();
+		XtaPlugin plugin = XtaPlugin.getDefault();
 		StringBuffer sb = new StringBuffer();
 		for (Command c : m_commandHistory){
 			sb.append(c.name() + " || ");

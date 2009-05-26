@@ -9,8 +9,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.gui.XtaLog;
-import com.xmos.xta.gui.XtaNotifier;
+import com.xmos.xta.gui.GuiEngine;
 
 public class LogView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
@@ -20,7 +19,7 @@ public class LogView extends ViewPart implements IPropertyChangeListener {
     
 	public LogView() {
 		if (DEBUG) System.out.printf("Errors()\n");			
-		XtaNotifier.getInstance().addPropertyChangeListener(this);
+		GuiEngine.addBroadcastListener(this);
 	}
 
 	public void createPartControl(Composite parent) {
@@ -65,12 +64,12 @@ public class LogView extends ViewPart implements IPropertyChangeListener {
 	
 	private void updateDisplay() {
 		if (DEBUG) System.out.printf("Errors: updateDisplay\n"); 
-		m_tableViewer.setInput(XtaLog.getInstance());
+		m_tableViewer.setInput(GuiEngine.getLog());
 	}
 
 	private void clearDisplay() {
 		if (DEBUG) System.out.printf("Errors: clearDisplay\n"); 
-		XtaLog.getInstance().clearAll();
+		GuiEngine.getLog().clearAll();
 		m_tableViewer.refresh();
 	}
 }

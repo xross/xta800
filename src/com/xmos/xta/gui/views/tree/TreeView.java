@@ -40,9 +40,8 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.references.Reference;
-import com.xmos.xta.gui.XtaEngine;
-import com.xmos.xta.gui.XtaNotifier;
-import com.xmos.xta.gui.XtaRouteInfo;
+import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.gui.GuiRouteInfo;
 import com.xmos.xta.gui.nodes.HiddenNode;
 import com.xmos.xta.gui.nodes.Node;
 import com.xmos.xta.gui.nodes.RouteNode;
@@ -55,11 +54,11 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
     private TreeViewer m_selectedRouteViewer;
     private TreeViewer m_routesViewer;
     private Composite m_parent;
-    private XtaRouteInfo m_routeInfo;
+    private GuiRouteInfo m_routeInfo;
 
 	public TreeView() {
 		if (DEBUG) System.out.printf("Tree()\n");			
-		XtaNotifier.getInstance().addPropertyChangeListener(this);
+		GuiEngine.addBroadcastListener(this);
 	}
 
 	public void createPartControl(final Composite parent) {
@@ -93,7 +92,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	        }
 	      });
 
-		m_routeInfo = XtaNotifier.getInstance().getRouteInfo();
+		m_routeInfo = GuiEngine.getRouteInfo();
 		getSite().getPage().addSelectionListener(this);
 		
 		initialiseTrees();
@@ -115,7 +114,8 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		
 		m_selectedRouteViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
-				XtaNotifier.getInstance().notifySetFocus(m_selectedRouteViewer.getSelection());
+				GuiEngine.setFocus(m_selectedRouteViewer.getSelection());
+				GuiEngine.broadcast(Notifier.NOTIFY_SET_FOCUS, "");
 			}
 		});
 		createTreeContextMenus();
@@ -256,7 +256,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	            	manager.add(new Action("delete") {
 						public void run() {
 				            for (Object object : ((IStructuredSelection)selection).toList()) {
-								XtaEngine.getEngine().removeRoute(((RouteNode)object).getId());
+								GuiEngine.getEngine().removeRoute(((RouteNode)object).getId());
 				            }
 						}
 					});
@@ -265,7 +265,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 				if (m_routeInfo.getRoutes().size() > 0) {
 	            	manager.add(new Action("delete all") {
 						public void run() {
-							XtaEngine.getEngine().removeAllRoutes();
+							GuiEngine.getEngine().removeAllRoutes();
 						}
 					});
 				}
@@ -288,7 +288,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection selection = event.getSelection();
 				if (selection instanceof IStructuredSelection) {
-					Engine engine = XtaEngine.getEngine();
+					Engine engine = GuiEngine.getEngine();
 					int currentSelectedId = engine.getSelectedRouteId();
 					int newId = Route.INVALID_ROUTE_ID;
 
@@ -340,7 +340,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		ColumnViewerToolTipSupport.enableFor(m_routesViewer, ToolTip.NO_RECREATE);
 		m_routesViewer.expandToLevel(2);
 		
-		int selectedRouteId = XtaEngine.getEngine().getSelectedRouteId();
+		int selectedRouteId = GuiEngine.getEngine().getSelectedRouteId();
 		setRouteTreeSelection(routeRoot, selectedRouteId);
 	}
 	
@@ -364,8 +364,8 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	private void selectPaths() {
-		Reference codePoint = XtaNotifier.getInstance().getCodePoint();
-		Engine engine = XtaEngine.getEngine();
+		Reference codePoint = GuiEngine.getCodePoint();
+		Engine engine = GuiEngine.getEngine();
 		if (codePoint.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
 			int pc = codePoint.getPc();
 			List<Node> selectedPaths = new ArrayList<Node>();

@@ -12,8 +12,7 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Progress;
 import com.xmos.xta.engine.references.Reference;
-import com.xmos.xta.gui.XtaEngine;
-import com.xmos.xta.gui.XtaNotifier;
+import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.icons.Icons;
 
 public class ActionRun extends Action implements IPropertyChangeListener {
@@ -24,7 +23,7 @@ public class ActionRun extends Action implements IPropertyChangeListener {
     private Reference m_endPoint;
 
 	public ActionRun() {
-		XtaNotifier.getInstance().addPropertyChangeListener(this);
+		GuiEngine.addBroadcastListener(this);
 		setImageDescriptor(Icons.getIconDescriptor("run"));
 		setToolTipText("Open Xe File");
 		setEnabled(false);
@@ -36,15 +35,15 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 	        setEnabled(false);
 	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT)) {
-			m_startPoint = XtaNotifier.getInstance().getStartPoint();					
+			m_startPoint = GuiEngine.getStartPoint();					
 			updateText(m_startPoint);
 
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT)) {
-			m_endPoint = XtaNotifier.getInstance().getEndPoint();					
+			m_endPoint = GuiEngine.getEndPoint();					
 			updateText(m_endPoint);
 
 		} else if (event.getProperty().equals(Notifier.NOTIFY_RUN)) {
-			String notifyArgument = XtaNotifier.getInstance().getRunMode();
+			String notifyArgument = GuiEngine.getRunMode();
 			if (notifyArgument.equals(Notifier.RUN_MODE_FUNCTION)) {
 				executeRunFunction();
 			} else if (notifyArgument.equals(Notifier.RUN_MODE_PATH)) {
@@ -57,15 +56,14 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 	}
 
 	public void run() {
-		XtaNotifier notifier = XtaNotifier.getInstance();
-		notifier.notify(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_PATH);
-		notifier.notify(Notifier.NOTIFY_SET_GUI_COMMAND, "");
-		notifier.notify(Notifier.NOTIFY_RUN, "");
+		GuiEngine.broadcast(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_PATH);
+		GuiEngine.broadcast(Notifier.NOTIFY_SET_GUI_COMMAND, "");
+		GuiEngine.broadcast(Notifier.NOTIFY_RUN, "");
 	}
 
 	private void updateText(Reference point) {
 		if (point != null) {
-			Engine engine = XtaEngine.getEngine();
+			Engine engine = GuiEngine.getEngine();
 			point.resolve(engine, engine.getNodeId(), engine.getCoreId());
 			if (!point.getResolved()) {		
 		     	point = null;
@@ -102,17 +100,16 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 	}
 
 	public void executeRunFunction() {
-		if (XtaEngine.getEngine().getProgress().getState() != Progress.State.IDLE) {
+		if (GuiEngine.getEngine().getProgress().getState() != Progress.State.IDLE) {
 			return;
 		}
 
-		XtaNotifier notifier = XtaNotifier.getInstance();
-		final String functionName = notifier.getSelectedFunction();
+		final String functionName = GuiEngine.getSelectedFunction();
 		if (!functionName.equals("")) {			
 			Job job = new Job("Analyse: " + functionName) {
 				
 				protected IStatus run(IProgressMonitor monitor) {
-					Engine engine = XtaEngine.getEngine();
+					Engine engine = GuiEngine.getEngine();
 					engine.setMonitor(monitor);
 					engine.analyseRoute(functionName);
 					return Status.OK_STATUS;
@@ -121,23 +118,22 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 			job.setUser(true);
 			job.schedule();
 		} else {
-			notifier.notify(Notifier.NOTIFY_ERROR, "No function/path specified");
+			GuiEngine.broadcast(Notifier.NOTIFY_ERROR, "No function/path specified");
 		}
 	}
 	
 	public void executeRunPath() {
-		if (XtaEngine.getEngine().getProgress().getState() != Progress.State.IDLE) {
+		if (GuiEngine.getEngine().getProgress().getState() != Progress.State.IDLE) {
 			return;
 		}
 		
-		XtaNotifier notifier = XtaNotifier.getInstance();
-		Reference startPoint = notifier.getStartPoint();
-		Reference endPoint = notifier.getEndPoint();
+		Reference startPoint = GuiEngine.getStartPoint();
+		Reference endPoint = GuiEngine.getEndPoint();
 		if ((startPoint == null) || startPoint.getRef().equals("")) {
-			notifier.notify(Notifier.NOTIFY_ERROR, "Please specify a start reference");
+			GuiEngine.broadcast(Notifier.NOTIFY_ERROR, "Please specify a start reference");
 
 		} else if ((endPoint == null) || endPoint.getRef().equals("")) {
-			notifier.notify(Notifier.NOTIFY_ERROR, "Please specify an end reference");
+			GuiEngine.broadcast(Notifier.NOTIFY_ERROR, "Please specify an end reference");
 
 		} else {
 			final String startRef = startPoint.getRef();
@@ -145,7 +141,7 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 			Job job = new Job("Analyse: " + startRef + " -> " + endRef) {
 
 				protected IStatus run(IProgressMonitor monitor) {
-					Engine engine = XtaEngine.getEngine();
+					Engine engine = GuiEngine.getEngine();
 					engine.setMonitor(monitor);
 					engine.analyseRoute(startRef, endRef);
 					return Status.OK_STATUS;

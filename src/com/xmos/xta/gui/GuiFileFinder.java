@@ -10,10 +10,10 @@ import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xeobject.FileFinder;
 
-public class XtaFileFinder extends FileFinder {  
+public class GuiFileFinder extends FileFinder {  
 	private String m_xeFileName;
 	
-	public XtaFileFinder() {
+	public GuiFileFinder() {
 		m_xeFileName = "";
 	}
 	
@@ -27,7 +27,7 @@ public class XtaFileFinder extends FileFinder {
 			return cachedFile;
 		}
 		
-		File srcPathFile = findFileInSrcPaths(XtaEngine.getEngine().getSrcPaths(), fileName);
+		File srcPathFile = findFileInSrcPaths(GuiEngine.getEngine().getSrcPaths(), fileName);
 		if (srcPathFile != null) {
 			return srcPathFile;
 		}

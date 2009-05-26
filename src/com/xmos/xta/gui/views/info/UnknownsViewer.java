@@ -32,6 +32,7 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.references.Reference;
@@ -40,21 +41,18 @@ import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 import com.xmos.xta.engine.unknowns.LoopIterationsUnknown;
 import com.xmos.xta.engine.unknowns.PausableInstructionUnknown;
 import com.xmos.xta.engine.unknowns.Unknown;
-import com.xmos.xta.gui.XtaEngine;
-import com.xmos.xta.gui.XtaNotifier;
-import com.xmos.xta.gui.XtaRouteInfo;
+import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.gui.GuiRouteInfo;
 import com.xmos.xta.gui.dialogs.InstructionTime;
 import com.xmos.xta.gui.dialogs.Iterations;
 import com.xmos.xta.gui.nodes.Node;
 
 public class UnknownsViewer {
-
 	private Display m_display;
 	private TableViewer m_unknownsViewer;
-	
-	List<Reference> m_selectedCodeRefs;
-	Action m_setInstructionTimeAction;
-	Action m_setLoopIterationsAction;
+	private List<Reference> m_selectedCodeRefs;
+	private Action m_setInstructionTimeAction;
+	private Action m_setLoopIterationsAction;
 
 	public UnknownsViewer(Display display, Composite parent, IWorkbenchPartSite site, TabFolder folders) {
 		m_display = display;
@@ -109,11 +107,10 @@ public class UnknownsViewer {
 	}
 
 	public void update() {
-		XtaNotifier notifier = XtaNotifier.getInstance();
-		Engine engine = XtaEngine.getEngine();
+		Engine engine = GuiEngine.getEngine();
 		m_unknownsViewer.setInput(engine.getSelectedRoute());
 
-		XtaRouteInfo routeInfo = notifier.getRouteInfo();
+		GuiRouteInfo routeInfo = GuiEngine.getRouteInfo();
 		if (routeInfo != null) {
 			updateHighlighting(routeInfo.getSelectedNodes());
 		}
@@ -169,7 +166,8 @@ public class UnknownsViewer {
 		m_unknownsViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				if (m_selectedCodeRefs.size() == 1) {
-					XtaNotifier.getInstance().notifyShow(m_selectedCodeRefs.get(0));
+					GuiEngine.setCodePoint(m_selectedCodeRefs.get(0));
+					GuiEngine.broadcast(Notifier.NOTIFY_SHOW_CODE_POINT, "");
 				}
 			}
 		});
@@ -191,7 +189,7 @@ public class UnknownsViewer {
 					
 					Reference ref = ReferenceFactory.createReference(
 								"0x" + Integer.toHexString(unknown.getPc()), ReferenceClass.ENDPOINT_REF);
-						Engine engine = XtaEngine.getEngine();
+						Engine engine = GuiEngine.getEngine();
 						ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
 					if(unknown.getType().equals(PausableInstructionUnknown.class.getName())){
 						m_selectedTimeRefs.add(ref);
@@ -227,8 +225,8 @@ public class UnknownsViewer {
 		// Create the action
 		m_setInstructionTimeAction = new Action() { 
 			public void run() {
-				Route route = XtaEngine.getEngine().getSelectedRoute();
-     			new InstructionTime(parent.getShell(), XtaEngine.getEngine(), m_selectedCodeRefs, route);
+				Route route = GuiEngine.getEngine().getSelectedRoute();
+     			new InstructionTime(parent.getShell(), GuiEngine.getEngine(), m_selectedCodeRefs, route);
 			}
 		}; 
 		m_setInstructionTimeAction.setText("Set instruction time");
@@ -237,7 +235,7 @@ public class UnknownsViewer {
 				
 		m_setLoopIterationsAction = new Action() { 
 			public void run() {
-				Route route = XtaEngine.getEngine().getSelectedRoute();
+				Route route = GuiEngine.getEngine().getSelectedRoute();
      			new Iterations(parent.getShell(), route, selectedLoopBlock );
 			}
 		}; 

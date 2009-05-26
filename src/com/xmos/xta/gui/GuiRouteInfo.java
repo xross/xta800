@@ -18,16 +18,14 @@ import com.xmos.xta.gui.nodes.PathGroupNode;
 import com.xmos.xta.gui.nodes.PathNode;
 import com.xmos.xta.gui.nodes.RouteNode;
 
-public class XtaRouteInfo {
-	
+public class GuiRouteInfo {
 	private Engine m_engine;
-	
 	private List<Node> m_routes;
 	private Node m_routeNode;
 	private Node m_unresolvedNode;
 	private List<Node> m_selectedNodes;
 	
-	public XtaRouteInfo(Engine engine) {
+	public GuiRouteInfo(Engine engine) {
 		m_engine = engine;
 		m_routeNode = null;
 		m_selectedNodes = new ArrayList<Node>();
@@ -51,7 +49,7 @@ public class XtaRouteInfo {
 			return;
 	
 		if (selectedRoute.getAllBasicBlocks().size() > 2000) {
-			XtaNotifier.getInstance().notify(Notifier.NOTIFY_WARNING, 
+			GuiEngine.getNotifier().notify(Notifier.NOTIFY_WARNING, 
 					"Route to complex to display in the tree view " +
 					"(Use the console to analyse the route).");
 			return;

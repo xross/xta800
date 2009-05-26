@@ -49,7 +49,7 @@ public class Engine implements Notifier {
 	private File m_executableFile;
 	private int m_nodeId;
 	private int m_coreId;
-	private Vector<Notifier> m_notifiers;
+	private Notifier m_notifier;
 	private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
 	private Progress m_progress;
 	private IProgressMonitor m_jobMonitor;
@@ -70,7 +70,6 @@ public class Engine implements Notifier {
 		m_nodeId = 0;
 		m_coreId = 0;
 		m_srcPaths = ".";
-		m_notifiers = new Vector<Notifier>();
 		m_progress = new Progress(Progress.State.IDLE, 0);
 		m_jobMonitor = null;
 		m_constraint = ConstraintFactory.createConstraint(this, "");
@@ -81,8 +80,8 @@ public class Engine implements Notifier {
 	}
 
 	public void notify(String message, String argument) {
-		for (Notifier notifier : m_notifiers)
-			notifier.notify(message, argument);
+		if (m_notifier != null)
+			m_notifier.notify(message, argument);
 	}
 
 	public Config getConfig() {
@@ -319,14 +318,12 @@ public class Engine implements Notifier {
 		}
 	}
 
-	public void registerNotifier(Notifier notifier) {
-		assert (m_notifiers.contains(notifier) == false);
-		m_notifiers.add(notifier);
+	public Notifier getNotifier() {
+		return m_notifier;
 	}
 
-	public void removeNotifier(Notifier notifier) {
-		assert (m_notifiers.contains(notifier));
-		m_notifiers.remove(notifier);
+	public void setNotifier(Notifier notifier) {
+		m_notifier = notifier;
 	}
 
 	public boolean getAbort() {
