@@ -13,11 +13,11 @@ import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 
-import com.xmos.xta.rcp.actions.control.ActionCore;
-import com.xmos.xta.rcp.actions.control.ActionFunction;
-import com.xmos.xta.rcp.actions.control.ActionLoad;
-import com.xmos.xta.rcp.actions.control.ActionNode;
-import com.xmos.xta.rcp.actions.control.ActionRun;
+import com.xmos.xta.rcp.actions.ActionCore;
+import com.xmos.xta.rcp.actions.ActionFunction;
+import com.xmos.xta.rcp.actions.ActionLoad;
+import com.xmos.xta.rcp.actions.ActionNode;
+import com.xmos.xta.rcp.actions.ActionRun;
 
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     private IWorkbenchAction m_aboutAction;

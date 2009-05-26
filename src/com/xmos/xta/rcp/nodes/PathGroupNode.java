@@ -7,8 +7,8 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Shell;
 
 import com.xmos.xta.engine.XtaInstruction;
-import com.xmos.xta.rcp.views.ViewNode.FunctionRouteNode;
-import com.xmos.xta.rcp.views.ViewNode.StructureRouteNode;
+import com.xmos.xta.rcp.views.viewnode.FunctionRouteNode;
+import com.xmos.xta.rcp.views.viewnode.StructureRouteNode;
 
 public class PathGroupNode extends Node {
 	private int m_routeId;

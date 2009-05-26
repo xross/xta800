@@ -47,7 +47,7 @@ import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.XtaRouteInfo;
 import com.xmos.xta.rcp.nodes.Node;
-import com.xmos.xta.rcp.views.ViewNode.ViewNode;
+import com.xmos.xta.rcp.views.viewnode.ViewNode;
 
 public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChangeListener,
                                                        ISelectionListener,

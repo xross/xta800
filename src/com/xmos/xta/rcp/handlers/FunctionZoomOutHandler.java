@@ -6,7 +6,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-import com.xmos.xta.rcp.views.FunctionView.FunctionView;
+import com.xmos.xta.rcp.views.function.FunctionView;
 
 public class FunctionZoomOutHandler extends AbstractHandler implements IHandler {
     public static final boolean DEBUG = false;

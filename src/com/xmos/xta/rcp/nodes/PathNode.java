@@ -15,9 +15,9 @@ import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.dialogs.Iterations;
-import com.xmos.xta.rcp.views.ConsoleView.ConsoleView;
-import com.xmos.xta.rcp.views.ViewNode.FunctionPathNode;
-import com.xmos.xta.rcp.views.ViewNode.StructurePathNode;
+import com.xmos.xta.rcp.views.console.ConsoleView;
+import com.xmos.xta.rcp.views.viewnode.FunctionPathNode;
+import com.xmos.xta.rcp.views.viewnode.StructurePathNode;
 
 public class PathNode extends Node {
     private PathBasicBlock m_block;

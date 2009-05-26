@@ -56,7 +56,7 @@ import com.xmos.xta.rcp.XtaNotifier;
 import com.xmos.xta.rcp.dialogs.InstructionTime;
 
 import com.xmos.xta.rcp.nodes.Node;
-import com.xmos.xta.rcp.views.ControlView.ControlView;
+import com.xmos.xta.rcp.views.control.ControlView;
 
 public class XtaEditor extends TextEditor implements IPropertyChangeListener,
                                                      ISelectionListener {

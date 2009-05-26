@@ -9,8 +9,8 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.XtaInstruction;
-import com.xmos.xta.rcp.views.ViewNode.StructureNode;
-import com.xmos.xta.rcp.views.ViewNode.ViewNode;
+import com.xmos.xta.rcp.views.viewnode.StructureNode;
+import com.xmos.xta.rcp.views.viewnode.ViewNode;
 
 public abstract class Node implements Comparable<Node> {
     private Node m_parent;

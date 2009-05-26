@@ -6,7 +6,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-import com.xmos.xta.rcp.views.StructureView.StructureView;
+import com.xmos.xta.rcp.views.structure.StructureView;
 
 public class StructureCumulativeHandler extends AbstractHandler implements IHandler {
     public static final boolean DEBUG = false;

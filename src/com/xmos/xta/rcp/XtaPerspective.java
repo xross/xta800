@@ -4,13 +4,13 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.IFolderLayout;
 
-import com.xmos.xta.rcp.views.ConsoleView.ConsoleView;
-import com.xmos.xta.rcp.views.ControlView.ControlView;
-import com.xmos.xta.rcp.views.FunctionView.FunctionView;
-import com.xmos.xta.rcp.views.InfoView.InfoView;
-import com.xmos.xta.rcp.views.LogView.LogView;
-import com.xmos.xta.rcp.views.StructureView.StructureView;
-import com.xmos.xta.rcp.views.TreeView.TreeView;
+import com.xmos.xta.rcp.views.console.ConsoleView;
+import com.xmos.xta.rcp.views.control.ControlView;
+import com.xmos.xta.rcp.views.function.FunctionView;
+import com.xmos.xta.rcp.views.info.InfoView;
+import com.xmos.xta.rcp.views.log.LogView;
+import com.xmos.xta.rcp.views.structure.StructureView;
+import com.xmos.xta.rcp.views.tree.TreeView;
 
 public class XtaPerspective implements IPerspectiveFactory {
     public static final boolean DEBUG = false;

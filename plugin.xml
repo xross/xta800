@@ -39,58 +39,58 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            class="com.xmos.xta.rcp.views.TreeView.TreeView"
+            class="com.xmos.xta.rcp.views.tree.TreeView"
             icon="icons/tree.png"
-            id="com.xmos.xta.rcp.views.TreeView.Tree"
+            id="com.xmos.xta.rcp.views.tree.Tree"
             name="Tree"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.ConsoleView.ConsoleView"
+            class="com.xmos.xta.rcp.views.console.ConsoleView"
             icon="icons/console.png"
-            id="com.xmos.xta.rcp.views.ConsoleView.Console"
+            id="com.xmos.xta.rcp.views.console.Console"
             name="Console"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.LogView.LogView"
+            class="com.xmos.xta.rcp.views.log.LogView"
             icon="icons/log.png"
-            id="com.xmos.xta.rcp.views.LogView.Log"
+            id="com.xmos.xta.rcp.views.log.Log"
             name="Log"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.FunctionView.FunctionView"
+            class="com.xmos.xta.rcp.views.function.FunctionView"
             icon="icons/function_view.png"
-            id="com.xmos.xta.rcp.views.FunctionView.Function"
+            id="com.xmos.xta.rcp.views.function.Function"
             name="Function"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.StructureView.StructureView"
+            class="com.xmos.xta.rcp.views.structure.StructureView"
             icon="icons/structure.png"
-            id="com.xmos.xta.rcp.views.StructureView.Structure"
+            id="com.xmos.xta.rcp.views.structure.Structure"
             name="Structure"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.InfoView.InfoView"
+            class="com.xmos.xta.rcp.views.info.InfoView"
             icon="icons/unknowns.png"
-            id="com.xmos.xta.rcp.views.InfoView.Info"
+            id="com.xmos.xta.rcp.views.info.Info"
             name="Info"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.ControlView.ControlView"
+            class="com.xmos.xta.rcp.views.control.ControlView"
             icon="icons/settings.png"
-            id="com.xmos.xta.rcp.views.ControlView.Control"
+            id="com.xmos.xta.rcp.views.control.Control"
             name="Control"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.StatusView.StatusView"
+            class="com.xmos.xta.rcp.views.status.StatusView"
             icon="icons/status.png"
-            id="com.xmos.xta.rcp.views.StatusView.Status"
+            id="com.xmos.xta.rcp.views.status.Status"
             name="Status"
             restorable="true">
       </view>

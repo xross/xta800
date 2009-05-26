@@ -13,8 +13,8 @@ import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.dialogs.MaxIterations;
 import com.xmos.xta.rcp.dialogs.Scope;
-import com.xmos.xta.rcp.views.ViewNode.FunctionLoopNode;
-import com.xmos.xta.rcp.views.ViewNode.StructureLoopNode;
+import com.xmos.xta.rcp.views.viewnode.FunctionLoopNode;
+import com.xmos.xta.rcp.views.viewnode.StructureLoopNode;
 
 public class LoopNode extends Node {
     private PathBasicBlock m_block;

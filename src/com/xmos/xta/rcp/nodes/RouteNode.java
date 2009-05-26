@@ -15,8 +15,8 @@ import com.xmos.xta.engine.RouteTiming;
 import com.xmos.xta.engine.XtaInstruction;
 import com.xmos.xta.rcp.XtaEngine;
 import com.xmos.xta.rcp.dialogs.Required;
-import com.xmos.xta.rcp.views.ViewNode.FunctionRouteNode;
-import com.xmos.xta.rcp.views.ViewNode.StructureRouteNode;
+import com.xmos.xta.rcp.views.viewnode.FunctionRouteNode;
+import com.xmos.xta.rcp.views.viewnode.StructureRouteNode;
 
 public class RouteNode extends Node {
 	private Route m_route;

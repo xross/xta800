@@ -11,9 +11,9 @@ import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.XtaInstruction;
-import com.xmos.xta.rcp.views.ConsoleView.ConsoleView;
-import com.xmos.xta.rcp.views.ViewNode.FunctionBlockNode;
-import com.xmos.xta.rcp.views.ViewNode.StructureBlockNode;
+import com.xmos.xta.rcp.views.console.ConsoleView;
+import com.xmos.xta.rcp.views.viewnode.FunctionBlockNode;
+import com.xmos.xta.rcp.views.viewnode.StructureBlockNode;
 
 public class BlockNode extends Node {
 	PathBasicBlock m_block;
