@@ -1,0 +1,91 @@
+package com.xmos.xta.gui.dialogs;
+
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Spinner;
+import com.xmos.xta.gui.nodes.LoopNode;
+import com.xmos.xta.gui.nodes.Node;
+import com.xmos.xta.gui.nodes.PathNode;
+
+public class MaxIterations extends XtaDialog {
+	
+	private long m_numIterations;
+	
+    LoopNode m_loopNode;
+	
+    public MaxIterations(Shell parent, final LoopNode pathNode) {
+    	super(parent);
+    	m_loopNode = pathNode;
+    	m_numIterations = m_loopNode.getLoopMax();
+    	open();
+    }
+
+    protected void configureShell(Shell newShell) {
+    	super.configureShell(newShell);
+    	configureShell(newShell, "Iterations", 300, 150);
+    }
+
+    protected Control createDialogArea(Composite parent) {
+    	Composite container = (Composite) super.createDialogArea(parent);
+
+	    final GridLayout gridLayout = new GridLayout();
+	    gridLayout.numColumns = 3;
+	    container.setLayout(gridLayout);
+
+		createNumIterationsControl(container, m_loopNode);
+
+    	return container;
+    }
+
+	private void createControlLabel(Composite parent, String str) {
+		Label label = new Label(parent, SWT.NONE);		        
+	    label.setLayoutData(new GridData(GridData.END, GridData.CENTER,
+	    		false, false));
+        label.setText(str);
+	}
+
+    private void createNumIterationsControl(Composite parent, final LoopNode pathNode) {
+		createControlLabel(parent, "Num Iterations:");
+		final Spinner spinner = new Spinner(parent, SWT.BORDER);
+		spinner.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
+				true, false, 2, 1));
+		
+		//this minimum should be set to the sum of all the hard counts on its children
+		int hardCount = 0;
+		for(Node child : m_loopNode.getChildren()){
+			PathNode path = (PathNode)child;
+			hardCount += path.getHardNumIterations();
+		}
+		spinner.setMinimum(hardCount);		
+		spinner.setMaximum(Integer.MAX_VALUE);		
+		spinner.setSelection((int) m_loopNode.getLoopMax());
+		spinner.setIncrement(1);
+		spinner.setPageIncrement(10);
+		spinner.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				m_numIterations = spinner.getSelection();
+			}			
+		});
+    }
+    
+    protected void createButtonsForButtonBar(Composite parent) {
+    	createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
+    	createButton(parent, IDialogConstants.PROCEED_ID, "Apply", false);
+    	createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+    }
+    
+    protected void buttonPressed(int id) {
+    	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {
+			m_loopNode.setLoopMax(m_numIterations);
+    	}
+    	super.buttonPressed(id);
+    }
+}

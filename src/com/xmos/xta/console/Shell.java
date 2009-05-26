@@ -9,6 +9,7 @@ import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.console.commands.CommandFactory;
 import com.xmos.xta.console.commands.Invalid;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Notifier;
 
 public class Shell {
 	enum State {
@@ -19,21 +20,21 @@ public class Shell {
 	private boolean m_exitAllowed;
 	private State m_state;
 	private Console m_console;
-    private ConsoleNotifier m_consoleNotifier;
+    private Notifier m_notifier;
     private Engine m_engine;
     private Queue<Command> m_commands;
     private Vector<Command> m_commandHistory;
     private String m_prompt;
 	private int m_numFailures;
 		
-	public Shell(Console console, Engine engine, String[] args) {
-	    initialise(console, engine);
+	public Shell(Console console, Engine engine, Notifier notifier, String[] args) {
+	    initialise(console, engine, notifier);
     	processCommandLine(args);	   
 	    m_exitAllowed = true;
 	}
 
-	public Shell(Console console, Engine engine, boolean exitAllowed) {
-	    initialise(console, engine);
+	public Shell(Console console, Engine engine, Notifier notifier, boolean exitAllowed) {
+	    initialise(console, engine, notifier);
 	    m_exitAllowed = exitAllowed;
 	}
 
@@ -42,9 +43,10 @@ public class Shell {
     		Command command = getNextCommand();
     		
             if (exitAllowed(command)) {
-            	m_engine.registerNotifier(m_consoleNotifier);
+            	Notifier notifier = m_engine.getNotifier();
+            	m_engine.setNotifier(m_notifier);            	
             	command.execute(this, m_engine, m_console);
-            	m_engine.removeNotifier(m_consoleNotifier);
+            	m_engine.setNotifier(notifier);
             }
         	m_commands.remove(command);
     	}
@@ -100,13 +102,13 @@ public class Shell {
     	}    	    	
     }
     
-    private void initialise(Console console, Engine engine) {
+    private void initialise(Console console, Engine engine, Notifier notifier) {
 	    m_engine = engine;
 		m_console = console;
+	    m_notifier = notifier;
 		m_state = State.RUNNING;
 	    m_commands = new LinkedList<Command>();
 	    m_commandHistory = new Vector<Command>();
-	    m_consoleNotifier = new ConsoleNotifier(console);
     }
     
     private void processCommandLine(String[] args) {

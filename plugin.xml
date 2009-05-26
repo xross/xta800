@@ -7,90 +7,90 @@
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
-               class="com.xmos.xta.rcp.Application">
+               class="com.xmos.xta.gui.Application">
          </run>
       </application>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            class="com.xmos.xta.rcp.XtaPerspective"
+            class="com.xmos.xta.gui.XtaPerspective"
             icon="icons/xta.png"
-            id="com.xmos.xta.rcp.XtaPerspective"
+            id="com.xmos.xta.gui.XtaPerspective"
             name="Xta">
       </perspective>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="com.xmos.xta.rcp.editors.SourcesEditor"
+            class="com.xmos.xta.gui.editors.SourcesEditor"
             default="false"
             icon="icons/editor.png"
-            id="com.xmos.xta.rcp.editors.Sources"
+            id="com.xmos.xta.gui.editors.Sources"
             name="Sources">
       </editor>
       <editor
-            class="com.xmos.xta.rcp.editors.XtaEditor"
+            class="com.xmos.xta.gui.editors.XtaEditor"
             default="false"
-            id="com.xmos.xta.rcp.editors.XtaEditor"
+            id="com.xmos.xta.gui.editors.XtaEditor"
             name="XtaEditor">
       </editor>
    </extension>
    <extension
          point="org.eclipse.ui.views">
       <view
-            class="com.xmos.xta.rcp.views.TreeView.TreeView"
+            class="com.xmos.xta.gui.views.tree.TreeView"
             icon="icons/tree.png"
-            id="com.xmos.xta.rcp.views.TreeView.Tree"
+            id="com.xmos.xta.gui.views.tree.Tree"
             name="Tree"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.ConsoleView.ConsoleView"
+            class="com.xmos.xta.gui.views.console.ConsoleView"
             icon="icons/console.png"
-            id="com.xmos.xta.rcp.views.ConsoleView.Console"
+            id="com.xmos.xta.gui.views.console.Console"
             name="Console"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.LogView.LogView"
+            class="com.xmos.xta.gui.views.log.LogView"
             icon="icons/log.png"
-            id="com.xmos.xta.rcp.views.LogView.Log"
+            id="com.xmos.xta.gui.views.log.Log"
             name="Log"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.FunctionView.FunctionView"
+            class="com.xmos.xta.gui.views.function.FunctionView"
             icon="icons/function_view.png"
-            id="com.xmos.xta.rcp.views.FunctionView.Function"
+            id="com.xmos.xta.gui.views.function.Function"
             name="Function"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.StructureView.StructureView"
+            class="com.xmos.xta.gui.views.structure.StructureView"
             icon="icons/structure.png"
-            id="com.xmos.xta.rcp.views.StructureView.Structure"
+            id="com.xmos.xta.gui.views.structure.Structure"
             name="Structure"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.InfoView.InfoView"
+            class="com.xmos.xta.gui.views.info.InfoView"
             icon="icons/unknowns.png"
-            id="com.xmos.xta.rcp.views.InfoView.Info"
+            id="com.xmos.xta.gui.views.info.Info"
             name="Info"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.ControlView.ControlView"
+            class="com.xmos.xta.gui.views.control.ControlView"
             icon="icons/settings.png"
-            id="com.xmos.xta.rcp.views.ControlView.Control"
+            id="com.xmos.xta.gui.views.control.Control"
             name="Control"
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.rcp.views.StatusView.StatusView"
+            class="com.xmos.xta.gui.views.status.StatusView"
             icon="icons/status.png"
-            id="com.xmos.xta.rcp.views.StatusView.Status"
+            id="com.xmos.xta.gui.views.status.Status"
             name="Status"
             restorable="true">
       </view>
@@ -99,63 +99,63 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="toolbar:com.xmos.xta.rcp.views.FunctionView.Function">
+            locationURI="toolbar:com.xmos.xta.gui.views.FunctionView.Function">
          <command
-               commandId="com.xmos.xta.rcp.function.zoomin.command"
+               commandId="com.xmos.xta.gui.function.zoomin.command"
                icon="icons/zoomin.png"
-               id="com.xmos.xta.rcp.function.zoomin.command"
+               id="com.xmos.xta.gui.function.zoomin.command"
                label="Zoom In"
                style="push">
          </command>
          <command
-               commandId="com.xmos.xta.rcp.function.zoomout.command"
+               commandId="com.xmos.xta.gui.function.zoomout.command"
                icon="icons/zoomout.png"
-               id="com.xmos.xta.rcp.function.zoomout.command"
+               id="com.xmos.xta.gui.function.zoomout.command"
                label="Zoom Out"
                style="push">
          </command>
          <command
-               commandId="com.xmos.xta.rcp.function.zoomreset.command"
+               commandId="com.xmos.xta.gui.function.zoomreset.command"
                icon="icons/zoomreset.png"
-               id="com.xmos.xta.rcp.function.zoomreset.command"
+               id="com.xmos.xta.gui.function.zoomreset.command"
                label="Reset Zoom"
                style="push">
          </command>
          <command
-               commandId="com.xmos.xta.rcp.function.zoomfit.command"
+               commandId="com.xmos.xta.gui.function.zoomfit.command"
                icon="icons/zoomfit.png"
-               id="com.xmos.xta.rcp.function.zoomfit.command"
+               id="com.xmos.xta.gui.function.zoomfit.command"
                label="Zoom to fit"
                style="push">
          </command>
       </menuContribution>
       <menuContribution
-            locationURI="toolbar:com.xmos.xta.rcp.views.StructureView.Structure">
+            locationURI="toolbar:com.xmos.xta.gui.views.StructureView.Structure">
          <command
-               commandId="com.xmos.xta.rcp.structure.zoomin.command"
+               commandId="com.xmos.xta.gui.structure.zoomin.command"
                icon="icons/zoomin.png"
-               id="com.xmos.xta.rcp.structure.zoomin.command"
+               id="com.xmos.xta.gui.structure.zoomin.command"
                label="Zoom In"
                style="push">
          </command>
          <command
-               commandId="com.xmos.xta.rcp.structure.zoomout.command"
+               commandId="com.xmos.xta.gui.structure.zoomout.command"
                icon="icons/zoomout.png"
-               id="com.xmos.xta.rcp.structure.zoomout.command"
+               id="com.xmos.xta.gui.structure.zoomout.command"
                label="Zoom Out"
                style="push">
          </command>
          <command
-               commandId="com.xmos.xta.rcp.structure.zoomreset.command"
+               commandId="com.xmos.xta.gui.structure.zoomreset.command"
                icon="icons/zoomreset.png"
-               id="com.xmos.xta.rcp.structure.zoomreset.command"
+               id="com.xmos.xta.gui.structure.zoomreset.command"
                label="Reset Zoom"
                style="push">
          </command>
          <command
-               commandId="com.xmos.xta.rcp.structure.cumulative.command"
+               commandId="com.xmos.xta.gui.structure.cumulative.command"
                icon="icons/cumulative.png"
-               id="com.xmos.xta.rcp.structure.cumulative.command"
+               id="com.xmos.xta.gui.structure.cumulative.command"
                label="Cumulative weights"
                style="push">
          </command>
@@ -163,50 +163,50 @@
    </extension> <extension
          point="org.eclipse.ui.commands">
       <command
-            defaultHandler="com.xmos.xta.rcp.handlers.StructureZoomInHandler"
-            id="com.xmos.xta.rcp.structure.zoomin.command"
-            name="com.xmos.xta.rcp.structure.zoomin.command">
+            defaultHandler="com.xmos.xta.gui.handlers.StructureZoomInHandler"
+            id="com.xmos.xta.gui.structure.zoomin.command"
+            name="com.xmos.xta.gui.structure.zoomin.command">
       </command>
       <command
-            defaultHandler="com.xmos.xta.rcp.handlers.StructureZoomOutHandler"
-            id="com.xmos.xta.rcp.structure.zoomout.command"
-            name="com.xmos.xta.rcp.structure.zoomout.command">
+            defaultHandler="com.xmos.xta.gui.handlers.StructureZoomOutHandler"
+            id="com.xmos.xta.gui.structure.zoomout.command"
+            name="com.xmos.xta.gui.structure.zoomout.command">
       </command>
       <command
-            defaultHandler="com.xmos.xta.rcp.handlers.StructureZoomResetHandler"
-            id="com.xmos.xta.rcp.structure.zoomreset.command"
-            name="com.xmos.xta.rcp.structure.zoomreset.command">
+            defaultHandler="com.xmos.xta.gui.handlers.StructureZoomResetHandler"
+            id="com.xmos.xta.gui.structure.zoomreset.command"
+            name="com.xmos.xta.gui.structure.zoomreset.command">
       </command>
       <command
-            defaultHandler="com.xmos.xta.rcp.handlers.FunctionZoomInHandler"
-            id="com.xmos.xta.rcp.function.zoomin.command"
-            name="com.xmos.xta.rcp.function.zoomin.command">
+            defaultHandler="com.xmos.xta.gui.handlers.FunctionZoomInHandler"
+            id="com.xmos.xta.gui.function.zoomin.command"
+            name="com.xmos.xta.gui.function.zoomin.command">
       </command>
       <command
-            defaultHandler="com.xmos.xta.rcp.handlers.FunctionZoomOutHandler"
-            id="com.xmos.xta.rcp.function.zoomout.command"
-            name="com.xmos.xta.rcp.function.zoomout.command">
+            defaultHandler="com.xmos.xta.gui.handlers.FunctionZoomOutHandler"
+            id="com.xmos.xta.gui.function.zoomout.command"
+            name="com.xmos.xta.gui.function.zoomout.command">
       </command>
       <command
-            defaultHandler="com.xmos.xta.rcp.handlers.FunctionZoomResetHandler"
-            id="com.xmos.xta.rcp.function.zoomreset.command"
-            name="com.xmos.xta.rcp.function.zoomreset.command">
+            defaultHandler="com.xmos.xta.gui.handlers.FunctionZoomResetHandler"
+            id="com.xmos.xta.gui.function.zoomreset.command"
+            name="com.xmos.xta.gui.function.zoomreset.command">
       </command>
       <command
-            defaultHandler="com.xmos.xta.rcp.handlers.FunctionZoomFitHandler"
-            id="com.xmos.xta.rcp.function.zoomfit.command"
-            name="com.xmos.xta.rcp.function.zoomfit.command">
+            defaultHandler="com.xmos.xta.gui.handlers.FunctionZoomFitHandler"
+            id="com.xmos.xta.gui.function.zoomfit.command"
+            name="com.xmos.xta.gui.function.zoomfit.command">
       </command>
       <command
-            defaultHandler="com.xmos.xta.rcp.handlers.StructureCumulativeHandler"
-            id="com.xmos.xta.rcp.structure.cumulative.command"
-            name="com.xmos.xta.rcp.structure.cumulative.command">
+            defaultHandler="com.xmos.xta.gui.handlers.StructureCumulativeHandler"
+            id="com.xmos.xta.gui.structure.cumulative.command"
+            name="com.xmos.xta.gui.structure.cumulative.command">
       </command>command>
    </extension>
    <extension
          point="org.eclipse.ui.editors.markerAnnotationSpecification">
       <specification
-            annotationType="com.xmos.xta.rcp.highlight"
+            annotationType="com.xmos.xta.gui.highlight"
             colorPreferenceKey="errorIndicationColor"
             colorPreferenceValue="255,125,75"
             contributesToHeader="true"
@@ -231,7 +231,7 @@
             verticalRulerPreferenceValue="false">
       </specification>
       <specification
-            annotationType="com.xmos.xta.rcp.unknown"
+            annotationType="com.xmos.xta.gui.unknown"
             colorPreferenceKey="highlight.unknown.color"
             colorPreferenceValue="255,0,0"
             contributesToHeader="false"
@@ -255,7 +255,7 @@
             verticalRulerPreferenceValue="true">
       </specification>
       <specification
-            annotationType="com.xmos.xta.rcp.start"
+            annotationType="com.xmos.xta.gui.start"
             colorPreferenceKey="highlight.endpoint.color"
             colorPreferenceValue="40,40,215"
             contributesToHeader="false"
@@ -280,7 +280,7 @@
             verticalRulerPreferenceValue="true">
       </specification>
       <specification
-            annotationType="com.xmos.xta.rcp.stop"
+            annotationType="com.xmos.xta.gui.stop"
             colorPreferenceKey="highlight.endpoint.color"
             colorPreferenceValue="40,40,215"
             contributesToHeader="false"
@@ -305,7 +305,7 @@
             verticalRulerPreferenceValue="true">
       </specification>
       <specification
-            annotationType="com.xmos.xta.rcp.startstop"
+            annotationType="com.xmos.xta.gui.startstop"
             colorPreferenceKey="highlight.endpoint.color"
             colorPreferenceValue="40,40,215"
             contributesToHeader="false"
@@ -330,7 +330,7 @@
             verticalRulerPreferenceValue="true">
       </specification>
       <specification
-            annotationType="com.xmos.xta.rcp.endpoint"
+            annotationType="com.xmos.xta.gui.endpoint"
             colorPreferenceKey="highlight.endpoint.color"
             colorPreferenceValue="40,40,215"
             contributesToHeader="false"
@@ -355,7 +355,7 @@
             verticalRulerPreferenceValue="true">
       </specification>
       <specification
-            annotationType="com.xmos.xta.rcp.excluded"
+            annotationType="com.xmos.xta.gui.excluded"
             colorPreferenceKey="highlight.excluded.color"
             colorPreferenceValue="0,0,0"
             contributesToHeader="false"
@@ -384,39 +384,39 @@
    <extension
          point="org.eclipse.ui.editors.annotationTypes">
       <type
-         name="com.xmos.xta.rcp.highlight"
+         name="com.xmos.xta.gui.highlight"
          super="org.eclipse.ui.workbench.texteditor.error"
          markerType=""
          markerSeverity="1">
       </type>
       <type
             markerSeverity="1"
-            name="com.xmos.xta.rcp.unknown"
+            name="com.xmos.xta.gui.unknown"
             super="org.eclipse.ui.workbench.texteditor.info">
       </type>
       <type
             markerSeverity="2"
-            name="com.xmos.xta.rcp.start"
+            name="com.xmos.xta.gui.start"
             super="org.eclipse.ui.workbench.texteditor.info">
       </type>
       <type
             markerSeverity="2"
-            name="com.xmos.xta.rcp.stop"
+            name="com.xmos.xta.gui.stop"
             super="org.eclipse.ui.workbench.texteditor.info">
       </type>
       <type
             markerSeverity="2"
-            name="com.xmos.xta.rcp.startstop"
+            name="com.xmos.xta.gui.startstop"
             super="org.eclipse.ui.workbench.texteditor.info">
       </type>
       <type
             markerSeverity="2"
-            name="com.xmos.xta.rcp.endpoint"
+            name="com.xmos.xta.gui.endpoint"
             super="org.eclipse.ui.workbench.texteditor.info">
       </type>
       <type
             markerSeverity="2"
-            name="com.xmos.xta.rcp.excluded"
+            name="com.xmos.xta.gui.excluded"
             super="org.eclipse.ui.workbench.texteditor.info">
       </type>
    </extension>

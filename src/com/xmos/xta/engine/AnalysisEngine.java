@@ -21,9 +21,9 @@ public class AnalysisEngine {
 	private NodeCoreInstructionCaches m_mcInstructionCache;
 	private ArrayList<XeObject> m_xeObjects;
 	private boolean m_unsafeAssumptions;
-	private ArrayList<UserSuccessor> m_userSuccessors;
-	private HashMap<NodeCore, Integer> m_constantPoolPointers;
-	private HashMap<NodeCore, Integer> m_dataPoolPointers;
+	//private ArrayList<UserSuccessor> m_userSuccessors;
+	//private HashMap<NodeCore, Integer> m_constantPoolPointers;
+	//private HashMap<NodeCore, Integer> m_dataPoolPointers;
 	private Sections m_sections;
 	private ArrayList<FunctionCallLocations> m_functionCallLocations;
 	private ArrayList<FunctionReturns> m_functionReturns;
@@ -34,19 +34,19 @@ public class AnalysisEngine {
 			ArrayList<XeObject> objects, Sections sections) {
 
 		m_notifier = notifier;
-		m_constantPoolPointers = new HashMap<NodeCore, Integer>();
-		m_dataPoolPointers = new HashMap<NodeCore, Integer>();
+		//m_constantPoolPointers = new HashMap<NodeCore, Integer>();
+		//m_dataPoolPointers = new HashMap<NodeCore, Integer>();
 		m_mcInstructionCache = coreInstructionCache;
 		m_xeLoader = loader;
 		m_xeObjects = objects;
 		m_unsafeAssumptions = true;
-		m_userSuccessors = new ArrayList<UserSuccessor>();
+	//	m_userSuccessors = new ArrayList<UserSuccessor>();
 		m_sections = sections;
 		m_functionCallLocations = new ArrayList<FunctionCallLocations>();
 		m_functionReturns = new ArrayList<FunctionReturns>();
 		m_basicBlockStartPcs = new ArrayList<BasicBlockStartPcs>();
 	}
-
+/*
 	public void run() {
 		// the order of analysis is important
 		locatePoolPointers();
@@ -304,7 +304,7 @@ public class AnalysisEngine {
 	}
 
 	private void addBranchMaps(XeObject xeObject, InstructionDecodeCache decodeCache, int nodeId, int coreId) {
-		Map<Integer, TreeSet<Integer>> branchMap = m_sections.getBranchMap(nodeId, coreId);		
+		Map<Integer, TreeSet<Integer>> branchMap = m_sections.getBranches(nodeId, coreId);		
        	for (AssemblyLine al : xeObject.getInstructions()) {
 			if (branchMap.containsKey(al.getPc())) {
 				XtaInstruction inst = decodeCache.getInstruction(al.getPc());
@@ -352,10 +352,6 @@ public class AnalysisEngine {
 			new RevbXtaInstruction_waitet_1r(0, 0, null).getNmenonic(), 
 			new RevbXtaInstruction_waiteu_0r(0, 0, null).getNmenonic()));
 
-	/*
-	 * if the instruction doesn't unconditionally branch then add the next pc to
-	 * the successor list
-	 */
 	private void addNextInstruction(XeObject xeObject, InstructionDecodeCache decodeCache) {
 		for (AssemblyLine al : xeObject.getInstructions()) {
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
@@ -443,9 +439,7 @@ public class AnalysisEngine {
 		return false;
 	}
 
-	/*
-	 * this adds the known branches to the the list of successors
-	 */
+
 	public void addBranches(XeObject xeObject, InstructionDecodeCache decodeCache, int nodeId, int coreId) {
 		for (AssemblyLine al : xeObject.getInstructions()) {
 			XtaInstruction inst = decodeCache.getInstruction(al.getPc());
@@ -633,4 +627,5 @@ public class AnalysisEngine {
    			System.out.printf("\n");
 		}
 	}
+	*/
 }

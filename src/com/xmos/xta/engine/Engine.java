@@ -18,6 +18,7 @@ import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xeloader.XeLoader.Architecture;
 import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.XeObject;
@@ -51,7 +52,7 @@ public class Engine implements Notifier {
 	private File m_executableFile;
 	private int m_nodeId;
 	private int m_coreId;
-	private Vector<Notifier> m_notifiers;
+	private Notifier m_notifier;
 	private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
 	private Progress m_progress;
 	private IProgressMonitor m_jobMonitor;
@@ -61,6 +62,7 @@ public class Engine implements Notifier {
 	private Constraint m_constraint;
 	private InstructionMnemonics m_mnenonics;
 	private Sections m_sections;
+	private Collection<String> m_functionsVisited;
 
 	public Engine(Config config) {
 		m_xeObjects = new ArrayList<XeObject>();
@@ -71,7 +73,6 @@ public class Engine implements Notifier {
 		m_nodeId = 0;
 		m_coreId = 0;
 		m_srcPaths = ".";
-		m_notifiers = new Vector<Notifier>();
 		m_progress = new Progress(Progress.State.IDLE, 0);
 		m_jobMonitor = null;
 		m_constraint = ConstraintFactory.createConstraint(this, "");
@@ -82,8 +83,8 @@ public class Engine implements Notifier {
 	}
 
 	public void notify(String message, String argument) {
-		for (Notifier notifier : m_notifiers)
-			notifier.notify(message, argument);
+		if (m_notifier != null)
+			m_notifier.notify(message, argument);
 	}
 
 	public Config getConfig() {
@@ -196,8 +197,7 @@ public class Engine implements Notifier {
 			return false;			
 		}
 		
-		m_xeLoader = xeLoader;
-		m_sections.initialise(m_xeLoader, this);
+
 		
 		m_nodeId = 0;
 		m_coreId = 0;
@@ -209,7 +209,7 @@ public class Engine implements Notifier {
 			}
 		}
 		
-		if (!m_sections.load())
+		if (!m_sections.load(m_xeLoader, this))
 			return false;
 		
 		
@@ -228,7 +228,7 @@ public class Engine implements Notifier {
 					return false;
 				}
 		//		add all successors to instructions
-				SuccessorAdder sa = new SuccessorAdder(id, m_sections.getBranchMap(nodeId, coreId), mi, cpPointer);
+				SuccessorAdder sa = new SuccessorAdder(id, m_sections.getBranches(nodeId, coreId), mi, cpPointer);
 				boolean added = sa.process();
 				if(!added) {
 					resetEngine();
@@ -267,43 +267,6 @@ public class Engine implements Notifier {
 		
 		
 		/*
-		XeLoader xeLoader = new XeLoader();
-
-		if (!xeLoader.loadExecutable(executableFile)) {
-			notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile + "' could not be loaded.");
-			return false;			
-		}
-		m_xeLoader = xeLoader;
-		m_sections.initialise(m_xeLoader, this);
-		
-		m_nodeId = 0;
-		m_coreId = 0;
-		
-		m_xeObjects.clear();
-		for (int node : m_xeLoader.getNodeIds()) {
-			for (int core : m_xeLoader.getCoreIds(node)) {
-				m_xeObjects.add(new XeObject(m_xeLoader, node, core, fileFinder));
-			}
-		}	
-		
-		m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(this, m_xeLoader, m_config);
-
-		try {
-			decodeInstructions();
-		} catch (Exception e) {
-			notify(Notifier.NOTIFY_ERROR, "Some of the pc's refered to in the executable could not be found");
-			return false;
-		}
-
-
-		if (!m_sections.load())
-			return false;
-				
-		m_executableFile = executableFile;
-		
-		m_ae = new AnalysisEngine(this, m_xeLoader, m_nodeCoreInstructionCache, m_xeObjects, m_sections);
-
-		runAnalysisEngine();
 
 		m_routes.clear();
 		setSelectedRoute(null);
@@ -353,9 +316,9 @@ public class Engine implements Notifier {
 		
 	}
 
-	public void runAnalysisEngine() {
-		m_ae.run();
-	}
+	//public void runAnalysisEngine() {
+	//	m_ae.run();
+	//}
 
 	private void decodeInstructions() throws Exception {
 		for (int nodeId : m_xeLoader.getNodeIds()) {
@@ -393,11 +356,12 @@ public class Engine implements Notifier {
 			notify(Notifier.NOTIFY_SELECT_FUNCTION, functionName);
 			notify(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_FUNCTION);
 
-			TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
-			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
-			
-			RouteDescription routeDescription = new RouteDescription(functionName);
-			return analyseRouteSafely(startPc, endPcs, routeDescription);
+			//TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
+			//int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
+			//FIXME
+			RouteDescription routeDescription = new RouteDescription(functionName);						
+			//return analyseRouteSafely(startPc, endPcs, routeDescription);
+			return false;
 		}
 	}
 
@@ -434,14 +398,12 @@ public class Engine implements Notifier {
 		}
 	}
 
-	public void registerNotifier(Notifier notifier) {
-		assert (m_notifiers.contains(notifier) == false);
-		m_notifiers.add(notifier);
+	public Notifier getNotifier() {
+		return m_notifier;
 	}
 
-	public void removeNotifier(Notifier notifier) {
-		assert (m_notifiers.contains(notifier));
-		m_notifiers.remove(notifier);
+	public void setNotifier(Notifier notifier) {
+		m_notifier = notifier;
 	}
 
 	public boolean getAbort() {
@@ -734,8 +696,9 @@ public class Engine implements Notifier {
 			return false;
 		}		
 		
-		if (m_sections.addToBranchMap(m_nodeId, m_coreId, fromRef.getPc(), toRef.getPc())) {
-			m_ae.run();
+		if (m_sections.addToBranches(m_nodeId, m_coreId, fromRef.getPc(), toRef.getPc())) {
+			//FIXME
+			//  m_ae.run();
 			return true;			
 		}		
 		return false;
@@ -747,15 +710,16 @@ public class Engine implements Notifier {
 			return false;
 		}
 		
-		if (m_sections.removeFromBranchMap(m_nodeId, m_coreId, fromRef.getPc())) {		    
-		    m_ae.run();
+		if (m_sections.removeFromBranches(m_nodeId, m_coreId, fromRef.getPc())) {		    
+		  //FIXME
+			//  m_ae.run();
 		    return true;
 		}
 		return false;
 	}
 
 	public Map<Integer, TreeSet<Integer>> getBranches() {
-		return m_sections.getBranchMap(m_nodeId, m_coreId);
+		return m_sections.getBranches(m_nodeId, m_coreId);
 	}
 
 	public boolean addLabel(String label, Reference ref) {
@@ -767,15 +731,15 @@ public class Engine implements Notifier {
 			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a label: %s", label));
 			return false;
 		}				
-		return m_sections.addToLabelMap(m_nodeId, m_coreId, label, ref.getPc());
+		return m_sections.addToLabels(m_nodeId, m_coreId, label, ref.getPc());
 	}
 
 	public void removeLabel(String label) {
-		m_sections.removeFromLabelMap(m_nodeId, m_coreId, label);
+		m_sections.removeFromLabels(m_nodeId, m_coreId, label);
 	}
 
 	public Map<String, Integer> getLabels() {
-		return m_sections.getLabelMap(m_nodeId, m_coreId);
+		return m_sections.getLabels(m_nodeId, m_coreId);
 	}
 	
 	public boolean addSrcLabel(String label, Reference ref) {
@@ -787,19 +751,19 @@ public class Engine implements Notifier {
 			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a label: %s", label));
 			return false;
 		}		
-		return m_sections.addToSrcLabelMap(m_nodeId, m_coreId, label, ref.getPc());
+		return m_sections.addToSrcLabels(m_nodeId, m_coreId, label, ref.getPc());
 	}
 
 	public void removeSrcLabel(String label) {
-		m_sections.removeFromSrcLabelMap(m_nodeId, m_coreId,  label);
+		m_sections.removeFromSrcLabels(m_nodeId, m_coreId,  label);
 	}
 
 	public Map<String, CodePointInfo> getSrcLabels() {
-		return m_sections.getSrcLabelMap(m_nodeId, m_coreId);
+		return m_sections.getSrcLabels(m_nodeId, m_coreId);
 	}
 
 	public Map<Integer, SrcLabelTableInfo> getSrcLabelTable() {
-		return m_sections.getSrcLabelTableMap(m_nodeId, m_coreId);
+		return m_sections.getSrcLabelTable(m_nodeId, m_coreId);
 	}
 
 	public boolean addEndpoint(String endpoint, Reference ref) {
@@ -811,19 +775,19 @@ public class Engine implements Notifier {
 			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a label: %s", endpoint));
 			return false;
 		}				
-		return m_sections.addToEndpointMap(m_nodeId, m_coreId, endpoint, ref.getPc());
+		return m_sections.addToEndpoints(m_nodeId, m_coreId, endpoint, ref.getPc());
 	}
 
 	public void removeEndpoint(String endpoint) {
-		m_sections.removeFromEndpointMap(m_nodeId, m_coreId, endpoint);
+		m_sections.removeFromEndpoints(m_nodeId, m_coreId, endpoint);
 	}
 
 	public Map<String, CodePointInfo> getEndpoints() {
-		return m_sections.getEndpointMap(m_nodeId, m_coreId);
+		return m_sections.getEndpoints(m_nodeId, m_coreId);
 	}
 		
 	public Map<Integer, EndpointTableInfo> getEndpointTable() {
-		return m_sections.getEndpointTableMap(m_nodeId, m_coreId);
+		return m_sections.getEndpointTable(m_nodeId, m_coreId);
 	}
 	
 	public boolean addThreadStartPoint(Reference ref) {
@@ -874,7 +838,16 @@ public class Engine implements Notifier {
 		m_jobMonitor = monitor;
 	}
 	
-	private boolean analyseRouteSafely(int startPc, TreeSet<Integer> endPcs, RouteDescription routeDescription) {
+	public void provideFeedback(String feedback) {
+		if (m_jobMonitor != null)
+			m_jobMonitor.subTask(feedback);				
+	}
+	
+	public Collection<String> getFunctionsVisited() {
+		return m_functionsVisited;
+	}
+	
+	private boolean analyseRouteSafely(int startPc, TreeSet<Integer> endPcs, RouteDescription routeDescription) {				
 		boolean success = false;
 		try {
 			success = doRouteAnalysis(startPc, endPcs, routeDescription);
@@ -917,19 +890,23 @@ public class Engine implements Notifier {
 					m_nodeId, m_coreId, m_executableFile));
 			return false;
 		}
-		
+		/*
  		Route route = new Route(m_config, this, startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), 
  				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId),
  				m_mnenonics, routeDescription);
-													
+			
+		//FIXME
+		
 		route.setConstrained(false);
 			
 		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 		m_progress.resetState(Progress.State.PROCESSING_PATHS);
-		RouteStatus status = route.analyse(routeDescription.getMode());
+		
+		RouteStatus status = route.analyse(routeDescription.getMode());		
 		switch (status) {
 		case ABORTED:
-			notify(Notifier.NOTIFY_INFO, "Abort detected");
+			m_functionsVisited = route.getFunctionsVisited();
+			notify(Notifier.NOTIFY_ANALYSIS_ABORTED, "Abort detected");
 			return false;
 
 		case ERROR:
@@ -953,7 +930,7 @@ public class Engine implements Notifier {
 		setSelectedRoute(route);
 
 		notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(route.getRouteId()));
-
+*/
 		return true;
 	}
 

@@ -23,6 +23,10 @@ public class ControlFlowGraph {
 		m_startOfMemory = startOfMemory;
 	}
 	
+	public Collection<Node> getFunctionStartInstructions(){
+		return m_functionStartInstructions;
+	}
+	
 	public Collection<Node> getThreadStartInstructions(){
 		return m_threadStartInstructions;
 	}

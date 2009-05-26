@@ -3,24 +3,24 @@ package com.xmos.xta.console.commands;
 import java.util.Vector;
 
 import com.xmos.xta.console.Console;
-import com.xmos.xta.console.commands.Add.Add;
-import com.xmos.xta.console.commands.Analyse.Analyse;
-import com.xmos.xta.console.commands.Clear.Clear;
-import com.xmos.xta.console.commands.Config.Config;
-import com.xmos.xta.console.commands.Echo.Echo;
-import com.xmos.xta.console.commands.Exit.Exit;
-import com.xmos.xta.console.commands.Help.Help;
-import com.xmos.xta.console.commands.History.History;
-import com.xmos.xta.console.commands.List.List;
-import com.xmos.xta.console.commands.Load.Load;
-import com.xmos.xta.console.commands.Print.Print;
-import com.xmos.xta.console.commands.Pwd.Pwd;
-import com.xmos.xta.console.commands.Remove.Remove;
-import com.xmos.xta.console.commands.Set.Set;
-import com.xmos.xta.console.commands.Source.Source;
-import com.xmos.xta.console.commands.Status.Status;
-import com.xmos.xta.console.commands.Unset.Unset;
-import com.xmos.xta.console.commands.Version.Version;
+import com.xmos.xta.console.commands.add.Add;
+import com.xmos.xta.console.commands.analyse.Analyse;
+import com.xmos.xta.console.commands.clear.Clear;
+import com.xmos.xta.console.commands.config.Config;
+import com.xmos.xta.console.commands.echo.Echo;
+import com.xmos.xta.console.commands.exit.Exit;
+import com.xmos.xta.console.commands.help.Help;
+import com.xmos.xta.console.commands.history.History;
+import com.xmos.xta.console.commands.list.List;
+import com.xmos.xta.console.commands.load.Load;
+import com.xmos.xta.console.commands.print.Print;
+import com.xmos.xta.console.commands.pwd.Pwd;
+import com.xmos.xta.console.commands.remove.Remove;
+import com.xmos.xta.console.commands.set.Set;
+import com.xmos.xta.console.commands.source.Source;
+import com.xmos.xta.console.commands.status.Status;
+import com.xmos.xta.console.commands.unset.Unset;
+import com.xmos.xta.console.commands.version.Version;
 
 public class CommandFactory {
 	static private Command[] m_commands = { 
