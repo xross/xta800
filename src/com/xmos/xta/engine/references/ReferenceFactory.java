@@ -73,7 +73,8 @@ public class ReferenceFactory {
 					return new EndpointReference(reference);
 				}				
 			} else if (referenceType.getClass() == EndpointFileLineReference.class) {
-				if (isSourceReference(reference) && inEndpointTable(reference)) {
+				if (isSourceReference(reference) && 
+					inCodePointTable(reference, m_engine.getEndpointTable())) {
 		    		return new EndpointFileLineReference(reference);
 				}
 			} else if (referenceType.getClass() == SrcLabelReference.class) {
@@ -81,10 +82,20 @@ public class ReferenceFactory {
 					return new SrcLabelReference(reference);
 				}				
 			} else if (referenceType.getClass() == SrcLabelFileLineReference.class) {
-				if (isSourceReference(reference) && inSrcLabelTable(reference)) {
+				if (isSourceReference(reference) && 
+					inSrcLabelTable(reference)) {
 		    		return new SrcLabelFileLineReference(reference);	
 				}				
-			}
+			} else if (referenceType.getClass() == CallReference.class) {
+				if (m_engine.getCalls().containsKey(reference)) {
+					return new CallReference(reference);
+				}				
+			} else if (referenceType.getClass() == CallFileLineReference.class) {
+				if (isSourceReference(reference) && 
+					inCodePointTable(reference, m_engine.getCallTable())) {
+		    		return new CallFileLineReference(reference);	
+				}				
+			}						
 		}
 		return new ErrorReference(reference);
 	}
@@ -103,11 +114,13 @@ public class ReferenceFactory {
 		return false;
 	}
 	
-	private static boolean inEndpointTable(String ref) {
+	private static boolean inCodePointTable(String ref, 
+			Map<Integer, CodePointTableInfo> codePointTable) {
+		
 		String fileName = ReferenceFactory.getFileName(ref);
         int lineNumber  = ReferenceFactory.getLineNumber(ref);		
 
-		for (CodePointTableInfo info : m_engine.getEndpointTable().values()) {
+		for (CodePointTableInfo info : codePointTable.values()) {
             if (info.getFileName().equals(fileName) &&
             	(info.getLineNumber() == lineNumber)) {
             	return true;
@@ -115,7 +128,7 @@ public class ReferenceFactory {
 		}		
 		return false;
 	}	
-
+	
 	public static Reference[] getReferenceClass(ReferenceClass referenceClass) {
     	Reference[] referenceTypes = m_referenceClasses.get(referenceClass);
 		assert(referenceTypes != null);
