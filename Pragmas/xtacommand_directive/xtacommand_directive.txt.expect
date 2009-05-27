@@ -1,6 +1,0 @@
-Route(0) path: STARTPOINT to ENDPOINT
-Complete [1 path]
-    path(0)    : 40.0ns
-
-analyse path STARTPOINT ENDPOINT
-print completed_paths
