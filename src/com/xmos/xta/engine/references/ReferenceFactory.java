@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.sections.EndpointTableInfo;
+import com.xmos.xta.engine.sections.CodePointTableInfo;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 
 public class ReferenceFactory {
 	public enum ReferenceClass {
-		LABEL_REF, SRCLABEL_REF, ENDPOINT_REF, CONSTRAINT_REF
+		LABEL_REF, SRCLABEL_REF, ENDPOINT_REF, CALL_REF, CONSTRAINT_REF
 	}
 	
 	private static Map<ReferenceClass, Reference[]> m_referenceClasses;	
@@ -23,14 +23,24 @@ public class ReferenceFactory {
 		m_referenceClasses.put(ReferenceClass.SRCLABEL_REF, new Reference[] {
 				new PcReference(null),
 				new LabelReference(null),
+        		new CallReference(null),
+		        new CallFileLineReference(null),
 				new SrcLabelReference(null),
 				new SrcLabelFileLineReference(null)});
 		
 		m_referenceClasses.put(ReferenceClass.ENDPOINT_REF, new Reference[] {
 				new PcReference(null), 
 				new LabelReference(null), 
+				new CallReference(null), 
+				new CallFileLineReference(null),
 				new EndpointReference(null), 
 				new EndpointFileLineReference(null)});
+
+		m_referenceClasses.put(ReferenceClass.CALL_REF, new Reference[] {
+				new PcReference(null), 
+				new LabelReference(null), 
+				new CallReference(null), 
+				new CallFileLineReference(null)});
 		
 		m_referenceClasses.put(ReferenceClass.CONSTRAINT_REF, new Reference[] {
 				new PcReference(null), 
@@ -38,7 +48,9 @@ public class ReferenceFactory {
 				new EndpointReference(null), 
 				new EndpointFileLineReference(null),		
 		        new SrcLabelReference(null), 
-		        new SrcLabelFileLineReference(null)});
+		        new SrcLabelFileLineReference(null),
+		        new CallReference(null), 
+		        new CallFileLineReference(null)});
 	}
 	private static Engine m_engine;
 	
@@ -95,7 +107,7 @@ public class ReferenceFactory {
 		String fileName = ReferenceFactory.getFileName(ref);
         int lineNumber  = ReferenceFactory.getLineNumber(ref);		
 
-		for (EndpointTableInfo info : m_engine.getEndpointTable().values()) {
+		for (CodePointTableInfo info : m_engine.getEndpointTable().values()) {
             if (info.getFileName().equals(fileName) &&
             	(info.getLineNumber() == lineNumber)) {
             	return true;

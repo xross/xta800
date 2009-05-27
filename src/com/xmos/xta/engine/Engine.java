@@ -30,7 +30,7 @@ import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 import com.xmos.xta.engine.sections.CodePointInfo;
-import com.xmos.xta.engine.sections.EndpointTableInfo;
+import com.xmos.xta.engine.sections.CodePointTableInfo;
 import com.xmos.xta.engine.sections.Sections;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.engine.unknowns.Unknown;
@@ -647,15 +647,10 @@ public class Engine implements Notifier {
 	}
 
 	public boolean addLabel(String label, Reference ref) {
-		if (!resolveRefernece(ref, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
-			return false;
+		if (checkAddParameters(label, ref, "label")) {
+			return m_sections.addToLabels(m_nodeId, m_coreId, label, ref.getPc());			
 		}
-		if (ReferenceFactory.isPcString(label)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a label: %s", label));
-			return false;
-		}				
-		return m_sections.addToLabels(m_nodeId, m_coreId, label, ref.getPc());
+		return false;
 	}
 
 	public void removeLabel(String label) {
@@ -667,19 +662,14 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean addSrcLabel(String label, Reference ref) {
-		if (!resolveRefernece(ref, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
-			return false;
+		if (checkAddParameters(label, ref, "src label")) {
+		    return m_sections.addToSrcLabels(m_nodeId, m_coreId, label, ref.getPc());
 		}
-		if (ReferenceFactory.isPcString(label)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a label: %s", label));
-			return false;
-		}		
-		return m_sections.addToSrcLabels(m_nodeId, m_coreId, label, ref.getPc());
+		return false;
 	}
 
-	public void removeSrcLabel(String label) {
-		m_sections.removeFromSrcLabels(m_nodeId, m_coreId,  label);
+	public boolean removeSrcLabel(String label) {
+		return m_sections.removeFromSrcLabels(m_nodeId, m_coreId,  label);
 	}
 
 	public Map<String, CodePointInfo> getSrcLabels() {
@@ -691,27 +681,41 @@ public class Engine implements Notifier {
 	}
 
 	public boolean addEndpoint(String endpoint, Reference ref) {
-		if (!resolveRefernece(ref, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
-			return false;
+		if (checkAddParameters(endpoint, ref, "endpoint label")) {
+    		return m_sections.addToEndpoints(m_nodeId, m_coreId, endpoint, ref.getPc());
 		}
-		if (ReferenceFactory.isPcString(endpoint)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a label: %s", endpoint));
-			return false;
-		}				
-		return m_sections.addToEndpoints(m_nodeId, m_coreId, endpoint, ref.getPc());
+		return false;
 	}
 
-	public void removeEndpoint(String endpoint) {
-		m_sections.removeFromEndpoints(m_nodeId, m_coreId, endpoint);
+	public boolean removeEndpoint(String endpoint) {
+		return m_sections.removeFromEndpoints(m_nodeId, m_coreId, endpoint);
 	}
 
 	public Map<String, CodePointInfo> getEndpoints() {
 		return m_sections.getEndpoints(m_nodeId, m_coreId);
 	}
 		
-	public Map<Integer, EndpointTableInfo> getEndpointTable() {
+	public Map<Integer, CodePointTableInfo> getEndpointTable() {
 		return m_sections.getEndpointTable(m_nodeId, m_coreId);
+	}
+	
+	public boolean addCall(String call, Reference ref) {
+		if (checkAddParameters(call, ref, "call label")) {		
+		    return m_sections.addToCalls(m_nodeId, m_coreId, call, ref.getPc());
+		}
+		return false;
+	}
+
+	public boolean removeCall(String call) {
+		return m_sections.removeFromCalls(m_nodeId, m_coreId, call);
+	}
+
+	public Map<String, CodePointInfo> getCalls() {
+		return m_sections.getCalls(m_nodeId, m_coreId);
+	}
+		
+	public Map<Integer, CodePointTableInfo> getCallTable() { 
+		return m_sections.getCallTable(m_nodeId, m_coreId);
 	}
 	
 	public boolean addThreadStartPoint(Reference ref) {
@@ -722,12 +726,12 @@ public class Engine implements Notifier {
 		return m_sections.addToThreadStartPoints(m_nodeId, m_coreId, ref.getPc());
 	}
 
-	public void removeThreadStartPoint(Reference ref) {
+	public boolean removeThreadStartPoint(Reference ref) {
 		if (!resolveRefernece(ref, this)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
-			return;
+			return false;
 		}		
-		m_sections.removeFromThreadStartPoints(m_nodeId, m_coreId, ref.getPc());
+		return m_sections.removeFromThreadStartPoints(m_nodeId, m_coreId, ref.getPc());
 	}
 
 	public Collection<Integer> getThreadStartPoints() {
@@ -742,12 +746,12 @@ public class Engine implements Notifier {
 		return m_sections.addToThreadStopPoints(m_nodeId, m_coreId, ref.getPc());
 	}
 
-	public void removeThreadStopPoint(Reference ref) {
+	public boolean removeThreadStopPoint(Reference ref) {
 		if (!resolveRefernece(ref, this)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
-			return;
+			return false;
 		}		
-		m_sections.removeFromThreadStopPoints(m_nodeId, m_coreId, ref.getPc());
+		return m_sections.removeFromThreadStopPoints(m_nodeId, m_coreId, ref.getPc());
 	}
 
 	public Collection<Integer> getThreadStopPoints() {
@@ -901,4 +905,16 @@ public class Engine implements Notifier {
 			route.sortPaths();
 		}		
 	}	
+	
+	private boolean checkAddParameters(String label, Reference ref, String type) {
+		if (!resolveRefernece(ref, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
+			return false;
+		}
+		if (ReferenceFactory.isPcString(label)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a %s: %s", type, label));
+			return false;
+		}				
+		return true;
+	}
 }

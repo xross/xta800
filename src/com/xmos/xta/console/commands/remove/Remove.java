@@ -3,6 +3,7 @@ package com.xmos.xta.console.commands.remove;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.console.commands.CommandContainer;
 import com.xmos.xta.console.commands.list.Branch;
+import com.xmos.xta.console.commands.list.Call;
 import com.xmos.xta.console.commands.list.Endpoint;
 import com.xmos.xta.console.commands.list.Label;
 import com.xmos.xta.console.commands.list.SrcLabel;
@@ -15,6 +16,7 @@ public class Remove extends CommandContainer {
 		new Label(Label.Operation.REMOVE), 
 		new SrcLabel(SrcLabel.Operation.REMOVE),		
 		new Endpoint(Endpoint.Operation.REMOVE),
+		new Call(Call.Operation.REMOVE),
 		new ThreadStartPoint(ThreadStartPoint.Operation.REMOVE),		
 		new ThreadStopPoint(ThreadStopPoint.Operation.REMOVE),				
 		new Route(),	

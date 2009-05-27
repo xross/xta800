@@ -6,12 +6,14 @@ import com.xmos.xta.console.commands.set.Constraint;
 
 public class List extends CommandContainer {
 	static private Command[] m_options = { 
-		new Branch(Branch.Operation.LIST),		
-		new Label(Label.Operation.LIST), 
-		new SrcLabel(SrcLabel.Operation.LIST),		
-		new Endpoint(Endpoint.Operation.LIST),		
-		new AllSrcLabels(),		
-		new AllEndpoints(),		
+		new Branch(Branch.Operation.LIST),
+		new Label(Label.Operation.LIST),
+		new SrcLabel(SrcLabel.Operation.LIST),
+		new Endpoint(Endpoint.Operation.LIST),
+		new Call(Call.Operation.LIST),
+		new AllSrcLabels(),
+		new AllEndpoints(),
+		new AllCalls(),
 		new ThreadStartPoint(ThreadStartPoint.Operation.LIST),		
 		new ThreadStopPoint(ThreadStopPoint.Operation.LIST),		
 		new SrcCommands(),		

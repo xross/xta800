@@ -48,7 +48,7 @@ import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
-import com.xmos.xta.engine.sections.EndpointTableInfo;
+import com.xmos.xta.engine.sections.CodePointTableInfo;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.engine.unknowns.Unknown;
 import com.xmos.xta.gui.Broadcaster;
@@ -511,7 +511,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         int endPointIndex = getEndPointIndex();
 
         m_endPointLineIndexes.clear();
-        for (EndpointTableInfo info : GuiEngine.getEngine().getEndpointTable().values()) {
+        for (CodePointTableInfo info : GuiEngine.getEngine().getEndpointTable().values()) {
         	if (info.getFileName().equals(m_fileName)) {
         		InputLine line = findCodeLine(info.getLineNumber());
         		if (line != null) {
