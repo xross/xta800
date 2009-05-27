@@ -18,7 +18,6 @@ import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
-import com.xmos.xeloader.XeLoader.Architecture;
 import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.XeObject;
@@ -58,7 +57,6 @@ public class Engine implements Notifier {
 	private IProgressMonitor m_jobMonitor;
 	private String m_srcPaths;
 	private ArrayList<XeObject> m_xeObjects;
-	private AnalysisEngine m_ae;
 	private Constraint m_constraint;
 	private InstructionMnemonics m_mnenonics;
 	private Sections m_sections;
@@ -197,7 +195,7 @@ public class Engine implements Notifier {
 			return false;			
 		}
 		
-
+		m_xeLoader = xeLoader;
 		
 		m_nodeId = 0;
 		m_coreId = 0;
@@ -209,9 +207,9 @@ public class Engine implements Notifier {
 			}
 		}
 		
-		if (!m_sections.load(m_xeLoader, this))
+		if (!m_sections.load(m_xeLoader, this)) {
 			return false;
-		
+		} 
 		
 		m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(this, m_xeLoader, m_config);
 		
@@ -227,44 +225,50 @@ public class Engine implements Notifier {
 					resetEngine();
 					return false;
 				}
+				
+		//		find all thread start and end points
+				ThreadHandeler th = new ThreadHandeler(id, m_sections.getThreadStartPoints(nodeId, coreId), 
+						m_sections.getThreadStopPoints(nodeId, coreId));
+				Collection<Node> threadStarts = th.getThreadStarts();
+				Collection<Node> threadEnds = th.getThreadEnds();				
+				
 		//		add all successors to instructions
-				SuccessorAdder sa = new SuccessorAdder(id, m_sections.getBranches(nodeId, coreId), mi, cpPointer);
+				SuccessorAdder sa = new SuccessorAdder(id, m_sections.getBranches(nodeId, coreId), mi, cpPointer, threadEnds);
 				boolean added = sa.process();
 				if(!added) {
 					resetEngine();
 					return false;
 				}
 				
-		//		find all thread start and end points
-				ThreadHandeler th = new ThreadHandeler(id, m_sections.getThreadStartPoints(nodeId, coreId), 
-						m_sections.getThreadStopPoints(nodeId, coreId));
-				Collection<Node> threadStarts = th.getThreadStarts();
-				Collection<Node> threadEnds = th.getThreadEnds();
-				
-		//		add pseudo functions to graph 
-				PseudoFunctionHandeler pfh = new PseudoFunctionHandeler(id);
-				boolean functionsAdded = pfh.addPesudoFunctions();
+		//		add functions to graph 
+				FunctionHandeler fh = new FunctionHandeler(id);
+				boolean functionsAdded = fh.addFunctions();
 				if(!functionsAdded) {
 					resetEngine();
 					return false;
 				}
-				Collection<Node> functionStarts = pfh.getKnownFunctions().keySet();
+				Collection<Node> functionStarts = fh.getKnownFunctions().keySet();
 				
-				printCFG(id, pfh, threadStarts, threadEnds, functionStarts);
+				printCFG(id, fh, threadStarts, threadEnds, functionStarts);
 				
-				if(true) System.exit(0);
-		//		add fnops to static graph
-				FnopAnalyser fa = new FnopAnalyser(id, threadStarts, threadEnds);
+				//identify and remove unreachable code
+				UnreachableCodeAnalyser uca = new UnreachableCodeAnalyser(id, threadStarts, functionStarts);
+				boolean unreachableDetected = uca.analyseReachable();
+				if(!unreachableDetected) {
+					resetEngine();
+					return false;
+				}
 				
-				ControlFlowGraph cfg = new ControlFlowGraph(threadStarts, threadEnds, functionStarts, null, nodeId, coreId);
+				//add fnops to static graph
+				//FnopAnalyser fa = new FnopAnalyser(id, threadStarts, threadEnds);
+				
+				ControlFlowGraph cfg = new ControlFlowGraph(threadStarts, functionStarts, fh.getFunctions(), nodeId, coreId);
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
 				sae.analyse();
 			}
 		
 		}
-		
-		
 		
 		/*
 
@@ -281,19 +285,19 @@ public class Engine implements Notifier {
 		return true;
 	}
 
-	private void printCFG(InstructionDecoder id, PseudoFunctionHandeler pfh, Collection<Node> threadStarts, 
+	private void printCFG(InstructionDecoder id, FunctionHandeler pfh, Collection<Node> threadStarts, 
 			Collection<Node> threadEnds, Collection<Node> functionStarts) {
 		System.out.println("digraph g {");
 		for(Node n : id.getInstructions()){
 			System.out.print(n.getGraphvizName() + " [label=\"" + n.getInstructions() + "\"");
 			if(threadStarts.contains(n)){
-				System.out.print(", color = green");
+				System.out.print(", style=filled, color = green");
 			} else if(functionStarts.contains(n)){
-				System.out.print(", color = blue");
+				System.out.print(", style=filled, color = lightblue");
 			} else if(threadEnds.contains(n)){
-				System.out.print(", color = red");
+				System.out.print(", style=filled, color = pink");
 			} 
-			System.out.println("]; ");
+			System.out.println(", shape=box]; ");
 		}
 		for(Node n : pfh.getFunctions()){
 			System.out.println(n.getGraphvizName() + " [label=\"" + n.getInstructions() + "\"]; ");
@@ -314,23 +318,6 @@ public class Engine implements Notifier {
 	private void resetEngine() {
 		// TODO Auto-generated method stub
 		
-	}
-
-	//public void runAnalysisEngine() {
-	//	m_ae.run();
-	//}
-
-	private void decodeInstructions() throws Exception {
-		for (int nodeId : m_xeLoader.getNodeIds()) {
-			for (int coreId : m_xeLoader.getCoreIds(nodeId)) {
-				XeObject xeObject = getXeObject(nodeId, coreId);
-				for (AssemblyLine al : xeObject.getInstructions()) {
-					int pc = al.getPc();
-					m_nodeCoreInstructionCache.decode(getOpcode(pc, nodeId,
-							coreId), pc, nodeId, coreId);
-				}
-			}
-		}
 	}
 
 	public Progress getProgress() {

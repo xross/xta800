@@ -9,10 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import com.xmos.xta.engine.analysis.nodes.Function;
 import com.xmos.xta.engine.analysis.nodes.Node;
-import com.xmos.xta.engine.analysis.patterns.CommonMethods;
 import com.xmos.xta.engine.analysis.patterns.LoopPatternMatcher;
 import com.xmos.xta.engine.analysis.patterns.PathPatternMatcher;
 import com.xmos.xta.engine.analysis.patterns.PatternMatcher;
@@ -24,12 +22,11 @@ import com.xmos.xta.engine.analysis.patterns.UpWedge;
 
 public class StructuralAnalysisEngine {
 	
-	private ControlFlowGraph m_mi;
+	private ControlFlowGraph m_cfg;
 	private Map<Integer, Function> m_graphStartPcs;
-	private Collection<Function> m_nonlinkedFunctions;
 	
-	public StructuralAnalysisEngine(ControlFlowGraph mi){
-		m_mi = mi;
+	public StructuralAnalysisEngine(ControlFlowGraph cfg){
+		m_cfg = cfg;
 	}
 	
 	/**
@@ -49,48 +46,53 @@ public class StructuralAnalysisEngine {
 	}
 	
 	private void LinkFunctions() {
-		for (Function func : m_nonlinkedFunctions) {
-			String fnName = func.getBranchTarget().getInstructions().get(0).getFunctionName();
-			func.setFunction(fnName, m_graphStartPcs.get(func.getBranchTarget().getStartPc()).getFunction());
+		for (Function func : m_cfg.getAllFunctions()) {
+			if(func.isFunctionKnown()){
+				String fnName = func.getBranchTarget().getInstructions().get(0).getFunctionName();
+				func.setFunction(fnName, m_graphStartPcs.get(func.getBranchTarget().getStartPc()).getFunction());
+			}
 		}
 	}
 	
 	private void buildFunctions(){
-		Collection<Node> functionStartNodes = new HashSet<Node>();
-		Collection<Node> functionEndNodes = new HashSet<Node>();
-		findFunctionNodes(m_mi.getStartOfMemory(), new HashSet<Node>(), functionStartNodes, functionEndNodes);
-		buildGraph(functionStartNodes, functionEndNodes);
+		buildGraph(m_cfg.getFunctionStartInstructions());
 	}
 	
 	private void buildThreads() {
-		buildGraph(m_mi.getThreadStartInstructions(), m_mi.getThreadEndInstructions());
+		buildGraph(m_cfg.getThreadStartInstructions());
 	}
 	
-	private boolean buildGraph(Collection<Node> graphStartNodes, Collection<Node> graphEndNodes) {
+	private boolean buildGraph(Collection<Node> graphStartNodes) {
 		
-		for (Node functionStart : graphStartNodes) {
-			
-			Map<Node, Node> functionNodes = new HashMap<Node, Node>();
+		for (Node graphStart : graphStartNodes) {
+
 			Collection<Node> currentGraph = new HashSet<Node>();
 
-			collectCurrentGraphNodes(functionStart, null, functionNodes, graphEndNodes, currentGraph);
+			collectCurrentGraphNodes(graphStart, currentGraph);
 			
-			currentGraph.addAll(functionNodes.values());
-			
-			decompose(currentGraph, functionNodes.get(functionStart));
+			decompose(currentGraph, graphStart);
 			
 			Node decomposedGraph = currentGraph.iterator().next();
 			
 			String functionName = null;
 			
-			if(functionStart.getInstructions().size() > 0){
-				functionName = functionStart.getInstructions().get(0).getFunctionName();
+			if(graphStart.getInstructions().size() > 0){
+				functionName = graphStart.getInstructions().get(0).getFunctionName();
 			}
 
 			Function fn = new Function(decomposedGraph, functionName);
-			m_graphStartPcs.put(functionStart.getStartPc(), fn);
+			m_graphStartPcs.put(graphStart.getStartPc(), fn);
 		}
 		return true;
+	}
+	
+	private void collectCurrentGraphNodes(Node node, Collection<Node> seen){
+		seen.add(node);
+		for(Node next : node.getNextNodes()){
+			if(!seen.contains(next)){
+				collectCurrentGraphNodes(next, seen);
+			}
+		}
 	}
 	
 	private void decompose(Collection<Node> workingSet, Node treeStart) {
@@ -181,65 +183,6 @@ public class StructuralAnalysisEngine {
 		}
 		if (total != 0) return false;
 		return true;
-	}
-	
-	private void collectCurrentGraphNodes(Node node, Node previousNode, Map<Node, Node> newFunctionNodes, 
-			Collection<Node> functionEnds, Collection<Node> newNodes) {
-
-		if (newFunctionNodes.keySet().contains(node)) {
-			assert (previousNode != null);
-			CommonMethods.connect(newFunctionNodes.get(node), previousNode);
-			return;
-		}
-
-		Node clonedNode = node.clone();
-		newFunctionNodes.put(node, clonedNode);
-		if (previousNode != null) {
-			CommonMethods.connect(clonedNode, previousNode);
-		}
-
-		if (functionEnds.contains(node)) {
-			return;
-		} else {
-			if (node.getBranchLinkReturn() != null) {
-
-				assert (node.getNextNodes().size() == 1);
-				Function fn = new Function(node.getNextNodes().iterator().next());
-				m_nonlinkedFunctions.add(fn);
-				newNodes.add(fn);
-				CommonMethods.connect(fn, clonedNode);
-				collectCurrentGraphNodes(node.getBranchLinkReturn(), fn, newFunctionNodes, functionEnds, newNodes);
-			} else {
-				for (Node next : node.getNextNodes()) {
-					collectCurrentGraphNodes(next, clonedNode, newFunctionNodes, functionEnds, newNodes);
-				}
-			}
-		}
-	}
-
-	/**
-	 * This finds all the places that branch and links call and all the retsps given the start of memory.
-	 * It can only find nodes that are reachable.
-	 */
-	private void findFunctionNodes(Node node, Collection<Node> seen, Collection<Node> functionStartNodes, Collection<Node> functionEndNodes) {
-		//TODO fix this call - maybe add a method to Node to determine if it ends in a branch and link
-		if (node.getInstructions().get(node.getInstructions().size() - 1).getBranchLink()) {
-			Node startNode = node.getNextNodes().iterator().next();
-			if (!functionStartNodes.contains(startNode)) {
-				functionStartNodes.add(startNode);
-			}
-		}
-		if (node.getInstructions().get(node.getInstructions().size() - 1).getReturn()) {
-			if (!functionEndNodes.contains(node)) {
-				functionEndNodes.add(node);
-			}
-		}
-		for (Node next : node.getNextNodes()) {
-			if (!seen.contains(next)) {
-				seen.add(next);
-				findFunctionNodes(next, seen, functionStartNodes, functionEndNodes);
-			}
-		}
 	}
 	
 }

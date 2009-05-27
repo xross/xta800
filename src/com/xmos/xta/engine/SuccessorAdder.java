@@ -1,6 +1,7 @@
 package com.xmos.xta.engine;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeSet;
@@ -14,10 +15,11 @@ public class SuccessorAdder {
 	private Map<Integer, TreeSet<Integer>> m_branchMap;
 	private MemoryImage m_mi;
 	private int m_cpPointer;
+	Collection<Node> m_threadEnds;
 
-	public SuccessorAdder(InstructionDecoder id, Map<Integer, TreeSet<Integer>> branchMap, MemoryImage mi, int cpPointer) {
-		
-		
+	public SuccessorAdder(InstructionDecoder id, Map<Integer, TreeSet<Integer>> branchMap, 
+			MemoryImage mi, int cpPointer, Collection<Node> threadEnds) {
+		m_threadEnds = threadEnds;
 		m_branchMap = branchMap;
 		m_id = id;
 		m_mi = mi;
@@ -70,19 +72,24 @@ public class SuccessorAdder {
 	}
 
 	private void handleNonBranchingInstructions(Node instruction, XtaInstruction inst) {
-		if(!(inst.isBranch() || inst.isLink() || m_waitInstructions.contains(inst))){
+		if(!(inst.isBranch() || inst.isLink() || m_waitInstructions.contains(inst.getNmenonic()) || m_threadEnds.contains(instruction))){
 			int nextPc = inst.getPc() + inst.getNumBytes();
 			connect(instruction, nextPc);
-		}
+		} 
 	}
 
 	private void handleBranches(Node instruction, XtaInstruction inst) {
-		//TODO make this stage more rigorous. currently it is very sloppy
+		
 		if(inst.getBranchPcRelative()){
 			int target = inst.getBranchPcRelativeTargetPc();
 			connect(instruction, target);
 		}
+		if(m_conditionalInstructions.contains(inst.getNmenonic())){
+			int target = inst.getPc() + inst.getNumBytes();
+			connect(instruction, target);
+		}
 		
+		//TODO make this stage more rigorous. currently it is sloppy
 		if (inst.getNmenonic().equals(new RevbXtaInstruction_blacp_u10(0, 0, null).getNmenonic())) {
 			int imm = XtaInstruction.getBits(16, 10, inst.getOpcode()) << Instruction.NUM_BYTES_PER_WORD_LOG2;
 			calculateCPAddress(instruction, imm);
@@ -131,4 +138,22 @@ public class SuccessorAdder {
 			new RevaXtaInstruction_waitef_1r(0, 0, null).getNmenonic(),
 			new RevaXtaInstruction_waitet_1r(0, 0, null).getNmenonic(), 
 			new RevaXtaInstruction_waiteu_0r(0, 0, null).getNmenonic()));
+	
+	private static final HashSet<String> m_conditionalInstructions = new HashSet<String>(Arrays.asList( 
+			new RevaXtaInstruction_brbf_ru6(0, 0, null).getNmenonic(),
+			new RevaXtaInstruction_brbf_lru6(0, 0, null).getNmenonic(), 
+			new RevaXtaInstruction_brbt_ru6(0, 0, null).getNmenonic(),
+			new RevaXtaInstruction_brbt_lru6(0, 0, null).getNmenonic(),
+			new RevaXtaInstruction_brff_ru6(0, 0, null).getNmenonic(), 
+			new RevaXtaInstruction_brff_lru6(0, 0, null).getNmenonic(),
+			new RevaXtaInstruction_brft_ru6(0, 0, null).getNmenonic(), 
+			new RevaXtaInstruction_brft_lru6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_brbf_ru6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_brbf_lru6(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_brbt_ru6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_brbt_lru6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_brff_ru6(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_brff_lru6(0, 0, null).getNmenonic(),
+			new RevbXtaInstruction_brft_ru6(0, 0, null).getNmenonic(), 
+			new RevbXtaInstruction_brft_lru6(0, 0, null).getNmenonic()));
 }

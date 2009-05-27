@@ -45,6 +45,10 @@ public class Function extends Node {
 		m_knownFunction = false;
 	}
 
+	public boolean isFunctionKnown(){
+		return m_branchTarget != null;
+	}
+	
 	public void setFunction(String functionName, Node fn){
 		m_function = fn;
 		m_functionName = functionName;
@@ -54,6 +58,9 @@ public class Function extends Node {
 	}
 	
 	public String getFucntionName(){
+		if(m_functionName == null){
+			m_functionName = "Unnamed function " + functionId++;
+		}
 		return m_functionName;
 	}
 	
