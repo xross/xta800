@@ -8,7 +8,7 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -march=$arch -fxta-info test.xc -o $genDir/test.xe > $genDir/fileline_fileline.log 2>&1");
+system("xcc -target=$target -march=$arch -fxta-info test.xc -o $genDir/test.xe > $genDir/endpointfileline_endpointfileline.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "config proc 0 0 " .
@@ -23,5 +23,5 @@ system("@ARGV load $genDir/test.xe " .
        "analyse path test.xc:16 test.xc:17 " .
        "status " .
        "print summary " .
-       "-exit > $genDir/fileline_fileline.txt 2>&1");
+       "-exit > $genDir/endpointfileline_endpointfileline.txt 2>&1");
 
