@@ -51,8 +51,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("Info: propertyChange: %s\n", event.getProperty());
 
-		if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS) ||
-			event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUDES)) {
+		if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
 			m_unknowns.update();
 			m_setValues.update();
 			

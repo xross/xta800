@@ -1,6 +1,7 @@
 package com.xmos.xta.engine;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -186,8 +187,14 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean loadExecutable(File executableFile, FileFinder fileFinder) {
+    	try {
+    		executableFile = executableFile.getCanonicalFile();
+		} catch (IOException e) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Error: Failed to resolve executable path: %s\n", executableFile.getName()));
+			return false;			
+		}		
+		
 		XeLoader xeLoader = new XeLoader();
-
 		if (!xeLoader.loadExecutable(executableFile)) {
 			notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile + "' could not be loaded.");
 			return false;			
@@ -274,14 +281,16 @@ public class Engine implements Notifier {
 					functionName, m_executableFile, m_nodeId, m_coreId));
 			return false;
 		} else {
-			notify(Notifier.NOTIFY_SELECT_FUNCTION, functionName);
-			notify(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_FUNCTION);
-
 			TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
 			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
 			
 			RouteDescription routeDescription = new RouteDescription(functionName);						
-			return analyseRouteSafely(startPc, endPcs, routeDescription);
+			if (analyseRouteSafely(startPc, endPcs, routeDescription)) {
+			    notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Notifier.RUN_MODE_FUNCTION);
+			    notify(Notifier.NOTIFY_SET_FUNCTION_NAME, functionName);
+			    return true;
+			}
+			return false;
 		}
 	}
 
@@ -306,15 +315,16 @@ public class Engine implements Notifier {
 			return false;
 		} else {
 			TreeSet<Integer> endPc = new TreeSet<Integer>();
-			endPc.add(toRef.getPc());
+			endPc.add(toRef.getPc());			
+			
 			RouteDescription routeDescription = new RouteDescription(fromRef, toRef);
-			boolean success = analyseRouteSafely(fromRef.getPc(), endPc, routeDescription);
-			if (success) {
-				notify(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_PATH);
+			if (analyseRouteSafely(fromRef.getPc(), endPc, routeDescription)) {
+				notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Notifier.RUN_MODE_PATH);
 				notify(Notifier.NOTIFY_SET_START_POINT, from);
 				notify(Notifier.NOTIFY_SET_END_POINT, to);
+				return true;
 			}
-			return success;
+			return false;
 		}
 	}
 
@@ -840,9 +850,6 @@ public class Engine implements Notifier {
 		}
 		m_routes.add(route);
 		setSelectedRoute(route);
-
-		notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(route.getRouteId()));
-
 		return true;
 	}
 

@@ -47,7 +47,6 @@ public class ActionNode extends Action implements IPropertyChangeListener, IMenu
 				String selected = ((MenuItem)e.getSource()).getText();
 
 				try {
-					GuiEngine.broadcast(Notifier.NOTIFY_SET_GUI_COMMAND, "");					
 		        	int nodeId = Integer.parseInt(selected); 
 		        	if (nodeId != m_currentNodeId) {
 		        		GuiEngine.getEngine().setNodeId(nodeId);

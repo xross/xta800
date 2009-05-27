@@ -40,6 +40,7 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.GuiRouteInfo;
 import com.xmos.xta.gui.nodes.HiddenNode;
@@ -115,7 +116,7 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 		m_selectedRouteViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				GuiEngine.setFocus(m_selectedRouteViewer.getSelection());
-				GuiEngine.broadcast(Notifier.NOTIFY_SET_FOCUS, "");
+				GuiEngine.broadcast(Broadcaster.BROADCAST_SET_FOCUS, "");
 			}
 		});
 		createTreeContextMenus();
@@ -164,14 +165,13 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 				   event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
 			refreshTree();
 			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUDES) || 
-				   event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
 			initialiseSelectedRouteView();
 
 		} else if (event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 			initialiseTrees();
 
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_PATHS)) {
+		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECT_PATHS)) {
 			selectPaths();
 
 		}

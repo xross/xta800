@@ -27,8 +27,7 @@ import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.constraint.ConstraintNull;
 import com.xmos.xta.engine.references.Reference;
-import com.xmos.xta.engine.references.ReferenceFactory;
-import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
+import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.icons.Icons;
 
@@ -38,7 +37,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     public static final String ID = "com.xmos.xta.gui.views.control.Control";
 
     private Display m_display;
-
     private Text m_startPoint;
     private Text m_endPoint;
     private Text m_constraint;
@@ -57,18 +55,12 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		
 		m_startPointListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-    		    Reference startPoint = ReferenceFactory.createReference(
-    		    		m_startPoint.getText(), ReferenceClass.ENDPOINT_REF);
-			    GuiEngine.setStartPoint(startPoint);
-			    GuiEngine.broadcast(Notifier.NOTIFY_SET_START_POINT, "");
+			    GuiEngine.broadcast(Broadcaster.BROADCAST_SET_START_POINT, m_startPoint.getText());
 			}			
 		};
 		m_endPointListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-			    Reference endPoint = ReferenceFactory.createReference(
-			    		m_endPoint.getText(), ReferenceClass.ENDPOINT_REF);
-			    GuiEngine.setEndPoint(endPoint);
-			    GuiEngine.broadcast(Notifier.NOTIFY_SET_END_POINT, "");
+			    GuiEngine.broadcast(Broadcaster.BROADCAST_SET_END_POINT, m_endPoint.getText());
 			}			
 		};
 		m_constraintListener = new KeyListener() {
@@ -92,7 +84,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
 	protected void setConstraint() {
 		Engine engine = GuiEngine.getEngine();
-		GuiEngine.broadcast(Notifier.NOTIFY_SET_GUI_COMMAND, "");
 		Constraint constraint = ConstraintFactory.createConstraint(engine, m_constraint.getText());
 		if (constraint != null) {
 			engine.setConstraint(constraint);
@@ -116,9 +107,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    createSettingsBar(controls);
 	    
 	    updateConstraint();
-	    
 	    updateStartPoint();
-
 		updateEndPoint();
 	}
 	
@@ -141,10 +130,12 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
 	        updateState();
 	        
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT)) {
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT) || 
+				   event.getProperty().equals(Broadcaster.BROADCAST_SET_START_POINT)) {
 			updateStartPoint();
 			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT)) {
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT) ||
+    			   event.getProperty().equals(Broadcaster.BROADCAST_SET_END_POINT)) {
 			updateEndPoint();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_CONSTRAINT) || 
@@ -153,8 +144,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 			updateStartPoint();
-			updateEndPoint();
-			
+			updateEndPoint();			
 		}
 	}
 
@@ -245,9 +235,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    m_timePathButton.setImage(Icons.getIcon("run"));
 	    m_timePathButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				GuiEngine.broadcast(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_PATH);
-				GuiEngine.broadcast(Notifier.NOTIFY_SET_GUI_COMMAND, "");
-				GuiEngine.broadcast(Notifier.NOTIFY_RUN, "");
+				GuiEngine.runPath();
 			}
 		});
 	}

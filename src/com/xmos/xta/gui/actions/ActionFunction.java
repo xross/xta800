@@ -46,17 +46,13 @@ public class ActionFunction extends Action implements IPropertyChangeListener, I
 			}
 
 			public void widgetSelected(SelectionEvent e) {
-				String selected = ((MenuItem)e.getSource()).getText();
-				GuiEngine.broadcast(Notifier.NOTIFY_SELECT_FUNCTION, selected);
-				GuiEngine.broadcast(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_FUNCTION);
-				GuiEngine.broadcast(Notifier.NOTIFY_SET_GUI_COMMAND, "");
-				GuiEngine.broadcast(Notifier.NOTIFY_RUN, "");
+				String selectedFunction = ((MenuItem)e.getSource()).getText();
+				GuiEngine.runFunction(selectedFunction);
 			}
 		};
 	}
 
 	public void dispose() {
-		// Do nothing
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
@@ -70,12 +66,11 @@ public class ActionFunction extends Action implements IPropertyChangeListener, I
 	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
 			if (GuiEngine.getRunMode() == GuiNotifier.RUN_MODE_FUNCTION) {
-				m_functionName = GuiEngine.getSelectedFunction();
 				setToolTipText("Currently analysed: " + m_functionName);
 			}
-
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_FUNCTION_NAME)) {
+			m_functionName = GuiEngine.getFunctionName();
 		}
-
 	}
 
 	public Menu getMenu(Menu parent) {
