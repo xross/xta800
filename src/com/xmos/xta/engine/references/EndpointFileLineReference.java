@@ -4,7 +4,9 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.sections.CodePointTableInfo;
 
 public class EndpointFileLineReference extends Reference {
-	EndpointFileLineReference(String ref) {
+    public static final String TYPE = "ENDPOINT";
+
+    EndpointFileLineReference(String ref) {
 		super(ref);
 	}
 

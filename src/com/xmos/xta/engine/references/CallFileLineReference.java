@@ -4,6 +4,8 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.sections.CodePointTableInfo;
 
 public class CallFileLineReference extends Reference {
+    public static final String TYPE = "CALL";
+	
 	CallFileLineReference(String ref) {
 		super(ref);
 	}

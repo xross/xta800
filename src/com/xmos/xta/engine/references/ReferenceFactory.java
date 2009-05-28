@@ -73,7 +73,7 @@ public class ReferenceFactory {
 					return new EndpointReference(reference);
 				}				
 			} else if (referenceType.getClass() == EndpointFileLineReference.class) {
-				if (isSourceReference(reference) && 
+				if (isSourceReference(reference, EndpointFileLineReference.TYPE) && 
 					inCodePointTable(reference, m_engine.getEndpointTable())) {
 		    		return new EndpointFileLineReference(reference);
 				}
@@ -82,7 +82,7 @@ public class ReferenceFactory {
 					return new SrcLabelReference(reference);
 				}				
 			} else if (referenceType.getClass() == SrcLabelFileLineReference.class) {
-				if (isSourceReference(reference) && 
+				if (isSourceReference(reference, SrcLabelFileLineReference.TYPE) && 
 					inSrcLabelTable(reference)) {
 		    		return new SrcLabelFileLineReference(reference);	
 				}				
@@ -91,7 +91,7 @@ public class ReferenceFactory {
 					return new CallReference(reference);
 				}				
 			} else if (referenceType.getClass() == CallFileLineReference.class) {
-				if (isSourceReference(reference) && 
+				if (isSourceReference(reference, CallFileLineReference.TYPE) && 
 					inCodePointTable(reference, m_engine.getCallTable())) {
 		    		return new CallFileLineReference(reference);	
 				}				
@@ -140,18 +140,24 @@ public class ReferenceFactory {
     	m_engine = engine;
     }
 
-	public static boolean isSourceReference(String ref) {
-        int colonIndex = ref.lastIndexOf(':');
-        if (colonIndex == -1) {
-        	return false;
-        }
+	public static boolean isSourceReference(String ref, String refType) {
+		String[] refArray = ref.split(":"); 
 
-		String fileName = ref.substring(0, colonIndex);
-		String lineNum = ref.substring(colonIndex + 1);
-		if (lineNum.matches("[0-9]*") && (fileName.length() > 0)) {
-			return true;
-		}
-		return false;
+		if ((refArray.length < 2) || (refArray.length > 3))
+			return false;
+				
+		String fileName = (refArray.length == 2) ? refArray[0] : refArray[1];
+		if (fileName.length() == 0)
+			return false;
+
+		String lineNum = (refArray.length == 2) ? refArray[1] : refArray[2];			
+		if (!lineNum.matches("[0-9]*")) 
+			return false;
+
+		if ((refArray.length == 3) && !refArray[0].equals(refType)) {
+			return false;			
+		}		
+		return true;
 	}
 
 	public static boolean isPcString(String ref) {
@@ -174,18 +180,18 @@ public class ReferenceFactory {
 			return 0;
 		}
 	}	
-	
+		
 	public static String getFileName(String fileLineReference) {
-        int colonIndex = fileLineReference.lastIndexOf(':');
-        assert(colonIndex != -1);
-		return fileLineReference.substring(0, colonIndex);		
+		String[] refArray = fileLineReference.split(":");
+		assert((refArray.length == 2) || (refArray.length == 3));		
+		return (refArray.length == 2) ? refArray[0] : refArray[1];		
 	}
 
 	public static int getLineNumber(String fileLineReference) {
-        int colonIndex = fileLineReference.lastIndexOf(':');
-        assert(colonIndex != -1);
+		String[] refArray = fileLineReference.split(":");
+		assert((refArray.length == 2) || (refArray.length == 3));		
 		
-		String lineNumberStr = fileLineReference.substring(colonIndex + 1);		
+		String lineNumberStr = (refArray.length == 2) ? refArray[1] : refArray[2];		        
         int lineNumber = 0;
         try {       
         	lineNumber = Integer.parseInt(lineNumberStr);
