@@ -4,6 +4,8 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 
 public class SrcLabelFileLineReference extends Reference {
+    public static final String TYPE = "SRCLABEL";
+
 	SrcLabelFileLineReference(String ref) {
 		super(ref);
 	}
