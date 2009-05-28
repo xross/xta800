@@ -27,6 +27,13 @@ public abstract class Node implements Comparable<Node>{
 		m_id = id++;
 	}
 	
+	public Node(Node node){
+		m_nextNodes = new HashSet<Node>(node.m_nextNodes);
+		m_prevNodes = new HashSet<Node>(node.m_prevNodes);
+		m_dominators = new HashSet<Node>(node.m_prevNodes);
+		m_id = id++;
+	}
+	
 	public static void resetId(){
 		id = 0;
 	}

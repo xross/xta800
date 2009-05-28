@@ -221,7 +221,7 @@ public class Engine implements Notifier {
 				int cpPointer =  m_xeLoader.getSymbolTable(nodeId, coreId).symbolAddress("_cp");
 				
 		//		decode the instruction
-				InstructionDecoder id = new InstructionDecoder(mi, m_xeLoader, getConfig());
+				InstructionDecoder id = new InstructionDecoder(mi, m_xeLoader, getConfig(), m_xeLoader.getSymbolTable(nodeId, coreId));
 				boolean decoded = id.decode();
 				if(!decoded) {
 					resetEngine();
@@ -251,7 +251,7 @@ public class Engine implements Notifier {
 				}
 				Collection<Node> functionStarts = fh.getKnownFunctions().keySet();
 				
-				printCFG(id, fh, threadStarts, threadEnds, functionStarts);
+				//printCFG(id, fh, threadStarts, threadEnds, functionStarts);
 				
 				//identify and remove unreachable code
 				UnreachableCodeAnalyser uca = new UnreachableCodeAnalyser(id, threadStarts, functionStarts);
@@ -268,6 +268,7 @@ public class Engine implements Notifier {
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
 				sae.analyse();
+				//printCFG(id, fh, threadStarts, threadEnds, functionStarts);
 			}
 		
 		}
@@ -301,8 +302,8 @@ public class Engine implements Notifier {
 			} 
 			System.out.println(", shape=box]; ");
 		}
-		for(Node n : pfh.getFunctions()){
-			System.out.println(n.getGraphvizName() + " [label=\"" + ((Function)n).isFunctionKnown() + "\"]; ");
+		for(Function n : pfh.getFunctions()){
+			System.out.println(n.getGraphvizName() + " [label=\"" + n.getFucntionName() + "\"]; ");
 		}
 		for(Node n : id.getInstructions()){
 			for(Node next : n.getNextNodes()){

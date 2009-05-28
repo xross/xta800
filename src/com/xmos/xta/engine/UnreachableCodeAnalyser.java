@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.xmos.xta.engine.analysis.nodes.Node;
+import com.xmos.xta.engine.analysis.patterns.CommonMethods;
 
 public class UnreachableCodeAnalyser {
 
@@ -25,6 +26,10 @@ public class UnreachableCodeAnalyser {
 		return m_unreachable;
 	}
 	
+	/**
+	 * This find all the code that is unreachable and removes it from the graph. It need removing from the graph so that functions 
+	 * and threads don't have invalid predecessors.
+	 */
 	public boolean analyseReachable(){
 		m_unreachable = new HashSet<Node>(m_id.getInstructions());
 		Set<Node> reachable = new HashSet<Node>();
@@ -39,6 +44,16 @@ public class UnreachableCodeAnalyser {
 			reachable.addAll(seen);
 		}
 		m_unreachable.removeAll(reachable);
+		
+		for(Node unreachable : m_unreachable){
+			for(Node next : unreachable.getNextNodes()){
+				CommonMethods.disconnect(next, unreachable);
+			}
+			for(Node prev : unreachable.getNextNodes()){
+				CommonMethods.disconnect(unreachable, prev);
+			}
+		}
+		
 		return true;
 	}
 

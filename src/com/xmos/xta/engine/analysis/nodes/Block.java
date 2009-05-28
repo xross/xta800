@@ -2,20 +2,18 @@ package com.xmos.xta.engine.analysis.nodes;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import com.xmos.xta.engine.BasicBlock;
 import com.xmos.xta.engine.XtaInstruction;
 
 public class Block extends Node {
 
-	private BasicBlock m_block;
-	private List<XtaInstruction> m_fnops; 
+	private List<Node> m_insts;
 	
 	public Block(Block block){
 		super();
-		m_block = block.m_block;
+		m_insts = block.m_insts;
 	}
 	
 	//this is only used for verification
@@ -27,17 +25,21 @@ public class Block extends Node {
 		return new Block(this);
 	}
 	
-	public Block(BasicBlock block){
+	public Block(List<Node> insts){
 		super();
-		m_block = block;
+		m_insts = insts;
 	}
 
 	public int getBasicBlockId() {
-		return m_block.getId();
+		return m_id;
 	}
 	
 	public List<XtaInstruction> getInstructions() {
-		return m_block.getInstructions();
+		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
+		for(Node i : m_insts){
+			insts.addAll(i.getInstructions());
+		}
+		return insts;
 	}
 
 	public long getNumberCycles() {
@@ -49,16 +51,16 @@ public class Block extends Node {
 	}
 
 	public long getNumberFNOPS() {
-		return m_fnops.size();
+		return 0;
 	}
 
 	public long getNumberInstructions() {
-		return m_block.getInstructions().size() + m_fnops.size();
+		return getInstructions().size();
 	}
 
 	public Set<Integer> getPCsCovered() {
 		Set<Integer> pcs = new HashSet<Integer>();
-		for(XtaInstruction inst : m_block.getInstructions()){
+		for(XtaInstruction inst : getInstructions()){
 			pcs.add(inst.getPc());
 		}
 		return pcs;
@@ -77,15 +79,13 @@ public class Block extends Node {
 	}
 
 	public Collection<Node> getContaintedNodes() {
-		Collection<Node> containedNodes = new HashSet<Node> ();
-		containedNodes.add(this);
-		return containedNodes;
+		return new HashSet<Node> (m_insts);
 	}
 
 
 	public void appendToGraph(StringBuffer body, StringBuffer connections,
 			Collection<Node> last, Collection<Node> next, int indent, Node parent) {
-		
+		/*
 		if(m_block != null){
 			body.append(intToTab(indent) + getGraphvizName() + " [label = \"Basic block " + m_block.getId() + "\"];\n");
 		} else {
@@ -96,6 +96,7 @@ public class Block extends Node {
 		}
 		
 		next.add(this);
+		*/
 	}
 
 	public String getGraphvizName() {
@@ -103,18 +104,13 @@ public class Block extends Node {
 	}
 
 	private final static boolean inst = false;
+	
 	public void display(int indentLevel) {
 		printIndent(indentLevel);
-		if(m_block != null){
-			System.out.printf("block(%d) ", this.getBasicBlockId());
-		} else {
-			System.out.printf("block(%d) ", m_id);
-		}
-		System.out.println();
-		if(m_block!= null && inst){ 
-			for (XtaInstruction instruction : m_block.getInstructions()) {
-				printIndent(indentLevel);
-				System.out.println(" " + instruction);
+		System.out.println("block(" + m_id +")");
+		if(inst){ 
+			for (Node instruction : m_insts) {
+				instruction.display(indentLevel+1);
 			}
 		}
 	}
@@ -124,7 +120,7 @@ public class Block extends Node {
 	}
 
 	public int getStartPc() {
-		return m_block.getInstructions().getFirst().getPc();
+		return getInstructions().get(0).getPc();
 	}		
 
 }

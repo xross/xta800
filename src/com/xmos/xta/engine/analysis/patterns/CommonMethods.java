@@ -2,8 +2,7 @@ package com.xmos.xta.engine.analysis.patterns;
 
 import java.util.Collection;
 import java.util.HashSet;
-
-import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.engine.analysis.nodes.Function;
 import com.xmos.xta.engine.analysis.nodes.Node;
 
 public class CommonMethods {
@@ -62,6 +61,12 @@ public class CommonMethods {
 		return true;
 	}
 	
+	public static void displayStructureTree(Function start) {
+		start.display(0);
+		System.out.println();
+
+	}
+	
 	public static boolean wedgeDown(Node node, Collection<Node> workingSet, boolean verbose){
 		if(verbose) {
 			System.out.println("#am wedging down on node " + node);
@@ -103,33 +108,13 @@ public class CommonMethods {
 	
 	
 	private static int graphcount;
-	private final static boolean DOMINATORDEBUG = true;
 
-	
 	public static void printGraph(Collection<Node> nodes) {
 		System.out.println("digraph g" + graphcount++ + " {");
 		for (Node node : nodes) {
 
 			System.out.print(node.graphVizLabel() + " [label =\"");
-				System.out.print("Name: " + node + "\\n");
-
-			
-
-			if (DOMINATORDEBUG) {
-				System.out.print("Dominators:\\n");
-				for (Node doms : node.getDominators()) {
-					System.out.print(doms + "\\n");
-				}
-			} else {
-				if (node.getInstructions().size() == 0) {
-					System.out.print("func\\n");
-				} else {
-					for (XtaInstruction inst : node.getInstructions()) {
-						System.out.print(inst + "\\n");
-					}
-				}
-			}
-			
+			System.out.print("Name: " + node.getInstructions() + "\\n");
 			System.out.println("\"];");
 
 		}

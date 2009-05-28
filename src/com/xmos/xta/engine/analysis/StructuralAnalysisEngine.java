@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import com.xmos.xta.engine.analysis.nodes.Function;
 import com.xmos.xta.engine.analysis.nodes.Node;
+import com.xmos.xta.engine.analysis.patterns.CommonMethods;
 import com.xmos.xta.engine.analysis.patterns.LoopPatternMatcher;
 import com.xmos.xta.engine.analysis.patterns.PathPatternMatcher;
 import com.xmos.xta.engine.analysis.patterns.PatternMatcher;
@@ -23,7 +24,10 @@ import com.xmos.xta.engine.analysis.patterns.UpWedge;
 public class StructuralAnalysisEngine {
 	
 	private ControlFlowGraph m_cfg;
-	private Map<Integer, Function> m_graphStartPcs;
+	private Map<Integer, Function> m_functionStartPcs;
+	private Map<Integer, Function> m_threadStartPcs;
+	
+	private StructureGraph m_sg;
 	
 	public StructuralAnalysisEngine(ControlFlowGraph cfg){
 		m_cfg = cfg;
@@ -35,61 +39,113 @@ public class StructuralAnalysisEngine {
 	 * @return true for success
 	 */
 	public boolean analyse(){
-		m_graphStartPcs = new HashMap<Integer, Function>();
-		//first extract all the function from the memory image
-		buildFunctions();
-		//then extract the threads from the memory image
-		buildThreads();
-		//perform the link stage
-		LinkFunctions();
+		m_functionStartPcs = new HashMap<Integer, Function>();
+		m_threadStartPcs = new HashMap<Integer, Function>();
+		buildStructureGraph();
+		linkFunctions();
 		return true;
 	}
 	
-	public Collection<Function> getCFG(){
-		return m_graphStartPcs.values();
+	public StructureGraph getStructureGraph(){
+		return m_sg;
 	}
 	
-	private void LinkFunctions() {
-		for (Function func : m_cfg.getAllFunctions()) {
-			if(func.isFunctionKnown()){
-				String fnName = func.getBranchTarget().getInstructions().get(0).getFunctionName();
-				func.setFunction(fnName, m_graphStartPcs.get(func.getBranchTarget().getStartPc()).getFunction());
+	private void linkFunctions() {
+		for(Function fn : m_cfg.getAllFunctions()){
+			if(fn.isFunctionKnown()){
+				String fnName = fn.getBranchTarget().getInstructions().get(0).getFunctionName();
+				fn.setFunction(fnName, m_functionStartPcs.get(fn.getBranchTarget().getStartPc()).getFunction());
+				//CommonMethods.displayStructureTree(fn);
 			}
 		}
 	}
 	
-	private void buildFunctions(){
-		buildGraph(m_cfg.getFunctionStartInstructions());
+	private void buildStructureGraph(){
+		Collection<Node> functions = buildGraph(m_cfg.getFunctionStartInstructions(), m_functionStartPcs);
+		Collection<Node> threads = buildGraph(m_cfg.getThreadStartInstructions(), m_threadStartPcs);
+		m_sg = new StructureGraph(functions, threads);
 	}
 	
-	private void buildThreads() {
-		buildGraph(m_cfg.getThreadStartInstructions());
-	}
-	
-	private boolean buildGraph(Collection<Node> graphStartNodes) {
+	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, Function> startPcs) {
+		Collection<Node> graphs = new HashSet<Node>();
 		
 		for (Node graphStart : graphStartNodes) {
 
+			if(graphStart.getPrevNodes().size() > 0){
+				System.out.println("problem with: " + graphStart.getInstructions() );
+				for(Node prev : graphStart.getPrevNodes()){
+					System.out.println("\t\tfrom: " + prev.getInstructions());
+				}
+			}
+			
+			
+			
+			int graphStartPc = graphStart.getStartPc();
+			
 			Collection<Node> currentGraph = new HashSet<Node>();
 
 			collectCurrentGraphNodes(graphStart, currentGraph);
 			
-			decompose(currentGraph, graphStart);
+			Collection<Node> basicBlocks = new HashSet<Node>();
 			
-			Node decomposedGraph = currentGraph.iterator().next();
+			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);		
+
+			decompose(basicBlocks, initialBasicBlock);
+			Node decomposedGraph = basicBlocks.iterator().next();
 			
-			String functionName = null;
-			
-			if(graphStart.getInstructions().size() > 0){
-				functionName = graphStart.getInstructions().get(0).getFunctionName();
-			}
+			String functionName = graphStart.getInstructions().get(0).getFunctionName();
 
 			Function fn = new Function(decomposedGraph, functionName);
-			m_graphStartPcs.put(graphStart.getStartPc(), fn);
+			
+			graphs.add(fn);
+			
+			startPcs.put(graphStartPc, fn);
 		}
-		return true;
+		
+		return graphs;
 	}
 	
+	/**
+	 * This step is in the flow in order to reduce the graph of instructions into basic blocks.
+	 */
+	private Node reduceGraphToBasicBlocks(Collection<Node> basicBlocks, Node initialBasicBlock, Collection<Node> currentGraph) {
+		
+		Set<Node> seen = new HashSet<Node>();
+		Map<Node, Node> cfgToStructure = new HashMap<Node, Node>();
+		Map<Node, Node> endPoint = new HashMap<Node, Node>();
+		Node treeStart = initialBasicBlock;
+		
+		for (Node node : currentGraph) {
+			if(!seen.contains(node)){
+				if(!node.isFunction()){
+					BasicBlockMatcher bbpm = new BasicBlockMatcher();
+					if(bbpm.match(node, treeStart, currentGraph)){
+						seen.addAll(bbpm.getBlock().getContaintedNodes());
+						basicBlocks.add(bbpm.getBlock());
+						treeStart = bbpm.getTreeStart();
+						cfgToStructure.put(node, bbpm.getBlock());
+						endPoint.put(bbpm.getBlock(), bbpm.getLastBlock());
+					}
+				
+				} else {
+					seen.add(node);
+					Node clone = node.clone();
+					basicBlocks.add(clone);
+					cfgToStructure.put(node, clone);
+					endPoint.put(clone, node);
+				}
+			}
+		}
+		//now add all the links
+		for(Node node : basicBlocks){
+			Node lastInstruction = endPoint.get(node);
+			for(Node next : lastInstruction.getNextNodes()){
+				CommonMethods.connect(cfgToStructure.get(next), node);
+			}	
+		}
+		return treeStart;
+	}
+
 	private void collectCurrentGraphNodes(Node node, Collection<Node> seen){
 		seen.add(node);
 		for(Node next : node.getNextNodes()){
@@ -108,7 +164,6 @@ public class StructuralAnalysisEngine {
 		patternMatchers.add(new SectionTransformer());
 		patternMatchers.add(new UpWedge());
 		patternMatchers.add(new TerminalPatternMatcher());
-		
 		boolean working = true;
 		while (working) {
 			buildDominatorTree(workingSet, treeStart);
@@ -150,7 +205,6 @@ public class StructuralAnalysisEngine {
 
 				if (treeStart == node)
 					continue;
-
 				Set<Node> intersection = new HashSet<Node>(reachableNodes);
 				for (Node pred : node.getPrevNodes()) {
 					intersection.retainAll(pred.getDominators());
@@ -174,10 +228,8 @@ public class StructuralAnalysisEngine {
 			if (!visited.contains(x)) {
 				visited.add(x);
 				DFSPostOrder(nodes, x, visited);
-				
 			}
 		}
-		
 	}
 
 	private boolean connectivitySanityCheck(Collection<Node> workingSet){

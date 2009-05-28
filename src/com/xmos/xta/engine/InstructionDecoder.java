@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.xmos.elfhandler.ElfSection;
 import com.xmos.xeloader.MemoryImage;
+import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.analysis.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.nodes.Node;
@@ -18,12 +19,14 @@ public class InstructionDecoder {
 	private XeLoader.Architecture m_architecture;
 	private XeLoader m_xeLoader;
 	private Config m_config;
+	private SymbolTable m_symbolTable;
 	
-	public InstructionDecoder(MemoryImage mi, XeLoader xeLoader, Config config) {
+	public InstructionDecoder(MemoryImage mi, XeLoader xeLoader, Config config, SymbolTable symbolTable) {
 		m_mi = mi;
 		m_architecture = xeLoader.getArchitecture();
 		m_xeLoader = xeLoader;
 		m_config = config;
+		m_symbolTable = symbolTable;
 	}
 	
 	public boolean decode(){
@@ -40,6 +43,8 @@ public class InstructionDecoder {
 		            	return false;
 		            }
 		            XtaInstruction inst = m_instructionDecoder.decode(opcode, pc, m_config);
+		            inst.setFunctionName(m_symbolTable.functionName(pc));
+		            inst.setFunctionOffset(m_symbolTable.functionOffset(pc));
 		            Node instNode = new InstructionNode(inst);
 		            Node prev = m_decodedInstructions.put(pc, instNode);
 		            assert(prev == null);

@@ -82,6 +82,7 @@ public class FunctionHandeler {
 	private boolean canReturn(Node start, Set<Node> seen){
 		seen.add(start);
 		if(start.getNextNodes().size() == 0){
+			if(start.isFunction()) return false;
 			return start.getInstructions().get(0).getReturn();
 		} else {
 			boolean canReturn = false;
