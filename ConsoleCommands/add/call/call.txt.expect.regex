@@ -1,0 +1,20 @@
+==========CORE_0==========
+Error: Unresolved reference: test.xc:11
+Label: ben, pc: 0x[0-9a-fA-F]{5}
+Label: bill, pc: 0x[0-9a-fA-F]{5}
+Label: bob, pc: 0x10000
+==========CORE_1==========
+Error: Unresolved reference: test.xc:11
+Label: ben, pc: 0x[0-9a-fA-F]{5}
+Label: bill, pc: 0x[0-9a-fA-F]{5}
+Label: bob, pc: 0x10000
+==========CORE_2==========
+Error: Unresolved reference: test.xc:9
+Error: Unresolved reference: test.xc:10
+Error: Unresolved reference: test.xc:11
+Label: bob, pc: 0x10000
+==========CORE_3==========
+Error: Unresolved reference: test.xc:9
+Error: Unresolved reference: test.xc:10
+Error: Unresolved reference: test.xc:11
+Label: bob, pc: 0x10000
