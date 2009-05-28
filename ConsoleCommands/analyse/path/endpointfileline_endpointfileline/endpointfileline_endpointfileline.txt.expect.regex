@@ -1,55 +1,5 @@
 Error: Unresolved reference: test.xc:16
-Current node: 0
-Current core: 0
-Frequency: 400
-NumThreads: 8
-SrcPaths: .
-Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
-Node: 0, Core: 1 \(No debug information found\)
-Node: 0, Core: 2 \(No debug information found\)
-Node: 0, Core: 3 \(No debug information found\)
-No routes analysed
-Current node: 0
-Current core: 0
-Frequency: 400
-NumThreads: 8
-SrcPaths: .
-Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
-Node: 0, Core: 1 \(No debug information found\)
-Node: 0, Core: 2 \(No debug information found\)
-Node: 0, Core: 3 \(No debug information found\)
-Loaded Route\(0\): path: test.xc:7 to test.xc:8 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
-Route\(0\) path: test.xc:7 to test.xc:8
-    No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
-
-Fail, Timing Unspecified
 Error: Unresolved reference: test.xc:7
-Current node: 0
-Current core: 1
-Frequency: 400
-NumThreads: 8
-SrcPaths: .
-Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
-Node: 0, Core: 1 \(No debug information found\)
-Node: 0, Core: 2 \(No debug information found\)
-Node: 0, Core: 3 \(No debug information found\)
-Loaded Route\(0\): path: test.xc:7 to test.xc:8 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
-Current node: 0
-Current core: 1
-Frequency: 400
-NumThreads: 8
-SrcPaths: .
-Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
-Node: 0, Core: 1 \(No debug information found\)
-Node: 0, Core: 2 \(No debug information found\)
-Node: 0, Core: 3 \(No debug information found\)
-Loaded Route\(0\): path: test.xc:7 to test.xc:8 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
-Loaded Route\(1\): path: test.xc:16 to test.xc:17 \(0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+\)
 Route\(0\) path: test.xc:7 to test.xc:8
     No Timing Specified
     Complete paths: 1, Unresolved paths: 0

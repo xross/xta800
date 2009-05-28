@@ -14,16 +14,11 @@ system("@ARGV load $genDir/test.xe " .
        "config proc 0 0 " .
        "list endpoints " .
        "analyse path output1 input1 " .
-       "status " .
        "analyse path output0 input0 " .
-       "status " .
-       "print summary " .
        "-config proc 0 1 " .
        "list endpoints " .
        "analyse path output0 input0 " .
-       "status " .
        "analyse path output1 input1 " .
-       "status " .
        "print summary " .
        "-exit > $genDir/endpoint_endpoint.txt 2>&1");
 

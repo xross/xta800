@@ -1,0 +1,11 @@
+Error: Unresolved reference: ENDPOINT:test.xc:16
+Error: Unresolved reference: ENDPOINT:test.xc:7
+Route\(0\) path: ENDPOINT:test.xc:7 to ENDPOINT:test.xc:8
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Route\(1\) path: ENDPOINT:test.xc:16 to ENDPOINT:test.xc:17
+    No Timing Specified
+    Complete paths: 1, Unresolved paths: 0
+
+Fail, Timing Unspecified
