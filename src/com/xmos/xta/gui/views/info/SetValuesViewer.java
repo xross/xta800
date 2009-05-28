@@ -29,13 +29,13 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 import com.xmos.xta.engine.unknowns.PausableInstructionUnknown;
 import com.xmos.xta.engine.unknowns.Unknown;
+import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.InstructionTime;
 
@@ -106,7 +106,7 @@ public class SetValuesViewer {
 			public void doubleClick(DoubleClickEvent event) {
 				if (m_selectedCodeRefs.size() == 1) {
 					GuiEngine.setCodePoint(m_selectedCodeRefs.get(0));
-					GuiEngine.broadcast(Notifier.NOTIFY_SHOW_CODE_POINT, "");
+					GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
 				}
 			}
 		});

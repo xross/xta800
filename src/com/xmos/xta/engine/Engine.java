@@ -1,6 +1,7 @@
 package com.xmos.xta.engine;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -9,21 +10,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
-
 import org.eclipse.core.runtime.IProgressMonitor;
-
 import com.xmos.elfhandler.ElfHandler;
 import com.xmos.elfhandler.Symbol;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
-import com.xmos.xeobject.AssemblyLine;
 import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.XeObject;
-import com.xmos.xta.engine.Route.RouteStatus;
 import com.xmos.xta.engine.analysis.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.StructuralAnalysisEngine;
+import com.xmos.xta.engine.analysis.nodes.Function;
 import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
@@ -31,7 +29,7 @@ import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
 import com.xmos.xta.engine.sections.CodePointInfo;
-import com.xmos.xta.engine.sections.EndpointTableInfo;
+import com.xmos.xta.engine.sections.CodePointTableInfo;
 import com.xmos.xta.engine.sections.Sections;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.engine.unknowns.Unknown;
@@ -58,7 +56,6 @@ public class Engine implements Notifier {
 	private String m_srcPaths;
 	private ArrayList<XeObject> m_xeObjects;
 	private Constraint m_constraint;
-	private InstructionMnemonics m_mnenonics;
 	private Sections m_sections;
 	private Collection<String> m_functionsVisited;
 
@@ -74,7 +71,6 @@ public class Engine implements Notifier {
 		m_progress = new Progress(Progress.State.IDLE, 0);
 		m_jobMonitor = null;
 		m_constraint = ConstraintFactory.createConstraint(this, "");
-		m_mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
 		m_sections = new Sections();
 
 		ReferenceFactory.setEngine(this);
@@ -187,9 +183,15 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean loadExecutable(File executableFile, FileFinder fileFinder) {
+    	try {
+    		executableFile = executableFile.getCanonicalFile();
+		} catch (IOException e) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Error: Failed to resolve executable path: %s\n", executableFile.getName()));
+			return false;			
+		}		
 		
 		XeLoader xeLoader = new XeLoader();
-		
+
 		if (!xeLoader.loadExecutable(executableFile)) {
 			notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile + "' could not be loaded.");
 			return false;			
@@ -300,7 +302,7 @@ public class Engine implements Notifier {
 			System.out.println(", shape=box]; ");
 		}
 		for(Node n : pfh.getFunctions()){
-			System.out.println(n.getGraphvizName() + " [label=\"" + n.getInstructions() + "\"]; ");
+			System.out.println(n.getGraphvizName() + " [label=\"" + ((Function)n).isFunctionKnown() + "\"]; ");
 		}
 		for(Node n : id.getInstructions()){
 			for(Node next : n.getNextNodes()){
@@ -340,14 +342,17 @@ public class Engine implements Notifier {
 					functionName, m_executableFile, m_nodeId, m_coreId));
 			return false;
 		} else {
-			notify(Notifier.NOTIFY_SELECT_FUNCTION, functionName);
-			notify(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_FUNCTION);
-
-			//TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
-			//int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
-			//FIXME
+/*
+			TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
+			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
+			
 			RouteDescription routeDescription = new RouteDescription(functionName);						
-			//return analyseRouteSafely(startPc, endPcs, routeDescription);
+			if (analyseRouteSafely(startPc, endPcs, routeDescription)) {
+			    notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Notifier.RUN_MODE_FUNCTION);
+			    notify(Notifier.NOTIFY_SET_FUNCTION_NAME, functionName);
+			    return true;
+			}
+			*/
 			return false;
 		}
 	}
@@ -373,15 +378,16 @@ public class Engine implements Notifier {
 			return false;
 		} else {
 			TreeSet<Integer> endPc = new TreeSet<Integer>();
-			endPc.add(toRef.getPc());
+			endPc.add(toRef.getPc());			
+			
 			RouteDescription routeDescription = new RouteDescription(fromRef, toRef);
-			boolean success = analyseRouteSafely(fromRef.getPc(), endPc, routeDescription);
-			if (success) {
-				notify(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_PATH);
+			if (analyseRouteSafely(fromRef.getPc(), endPc, routeDescription)) {
+				notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Notifier.RUN_MODE_PATH);
 				notify(Notifier.NOTIFY_SET_START_POINT, from);
 				notify(Notifier.NOTIFY_SET_END_POINT, to);
+				return true;
 			}
-			return success;
+			return false;
 		}
 	}
 
@@ -710,15 +716,10 @@ public class Engine implements Notifier {
 	}
 
 	public boolean addLabel(String label, Reference ref) {
-		if (!resolveRefernece(ref, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
-			return false;
+		if (checkAddParameters(label, ref, "label")) {
+			return m_sections.addToLabels(m_nodeId, m_coreId, label, ref.getPc());			
 		}
-		if (ReferenceFactory.isPcString(label)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a label: %s", label));
-			return false;
-		}				
-		return m_sections.addToLabels(m_nodeId, m_coreId, label, ref.getPc());
+		return false;
 	}
 
 	public void removeLabel(String label) {
@@ -730,19 +731,14 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean addSrcLabel(String label, Reference ref) {
-		if (!resolveRefernece(ref, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
-			return false;
+		if (checkAddParameters(label, ref, "src label")) {
+		    return m_sections.addToSrcLabels(m_nodeId, m_coreId, label, ref.getPc());
 		}
-		if (ReferenceFactory.isPcString(label)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a label: %s", label));
-			return false;
-		}		
-		return m_sections.addToSrcLabels(m_nodeId, m_coreId, label, ref.getPc());
+		return false;
 	}
 
-	public void removeSrcLabel(String label) {
-		m_sections.removeFromSrcLabels(m_nodeId, m_coreId,  label);
+	public boolean removeSrcLabel(String label) {
+		return m_sections.removeFromSrcLabels(m_nodeId, m_coreId,  label);
 	}
 
 	public Map<String, CodePointInfo> getSrcLabels() {
@@ -754,27 +750,41 @@ public class Engine implements Notifier {
 	}
 
 	public boolean addEndpoint(String endpoint, Reference ref) {
-		if (!resolveRefernece(ref, this)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
-			return false;
+		if (checkAddParameters(endpoint, ref, "endpoint label")) {
+    		return m_sections.addToEndpoints(m_nodeId, m_coreId, endpoint, ref.getPc());
 		}
-		if (ReferenceFactory.isPcString(endpoint)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a label: %s", endpoint));
-			return false;
-		}				
-		return m_sections.addToEndpoints(m_nodeId, m_coreId, endpoint, ref.getPc());
+		return false;
 	}
 
-	public void removeEndpoint(String endpoint) {
-		m_sections.removeFromEndpoints(m_nodeId, m_coreId, endpoint);
+	public boolean removeEndpoint(String endpoint) {
+		return m_sections.removeFromEndpoints(m_nodeId, m_coreId, endpoint);
 	}
 
 	public Map<String, CodePointInfo> getEndpoints() {
 		return m_sections.getEndpoints(m_nodeId, m_coreId);
 	}
 		
-	public Map<Integer, EndpointTableInfo> getEndpointTable() {
+	public Map<Integer, CodePointTableInfo> getEndpointTable() {
 		return m_sections.getEndpointTable(m_nodeId, m_coreId);
+	}
+	
+	public boolean addCall(String call, Reference ref) {
+		if (checkAddParameters(call, ref, "call label")) {		
+		    return m_sections.addToCalls(m_nodeId, m_coreId, call, ref.getPc());
+		}
+		return false;
+	}
+
+	public boolean removeCall(String call) {
+		return m_sections.removeFromCalls(m_nodeId, m_coreId, call);
+	}
+
+	public Map<String, CodePointInfo> getCalls() {
+		return m_sections.getCalls(m_nodeId, m_coreId);
+	}
+		
+	public Map<Integer, CodePointTableInfo> getCallTable() { 
+		return m_sections.getCallTable(m_nodeId, m_coreId);
 	}
 	
 	public boolean addThreadStartPoint(Reference ref) {
@@ -785,12 +795,12 @@ public class Engine implements Notifier {
 		return m_sections.addToThreadStartPoints(m_nodeId, m_coreId, ref.getPc());
 	}
 
-	public void removeThreadStartPoint(Reference ref) {
+	public boolean removeThreadStartPoint(Reference ref) {
 		if (!resolveRefernece(ref, this)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
-			return;
+			return false;
 		}		
-		m_sections.removeFromThreadStartPoints(m_nodeId, m_coreId, ref.getPc());
+		return m_sections.removeFromThreadStartPoints(m_nodeId, m_coreId, ref.getPc());
 	}
 
 	public Collection<Integer> getThreadStartPoints() {
@@ -805,12 +815,12 @@ public class Engine implements Notifier {
 		return m_sections.addToThreadStopPoints(m_nodeId, m_coreId, ref.getPc());
 	}
 
-	public void removeThreadStopPoint(Reference ref) {
+	public boolean removeThreadStopPoint(Reference ref) {
 		if (!resolveRefernece(ref, this)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
-			return;
+			return false;
 		}		
-		m_sections.removeFromThreadStopPoints(m_nodeId, m_coreId, ref.getPc());
+		return m_sections.removeFromThreadStopPoints(m_nodeId, m_coreId, ref.getPc());
 	}
 
 	public Collection<Integer> getThreadStopPoints() {
@@ -920,12 +930,12 @@ public class Engine implements Notifier {
 */
 		return true;
 	}
-
+/*
 	private int getOpcode(int pc, int nodeId, int coreId) throws Exception {
 		return m_xeLoader.getMemoryImage(nodeId, coreId)
 				.readInstructionWord(pc);
 	}
-	
+*/	
 	private boolean functionExists(String functionName) {
 		SymbolTable symbolTable = m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
 		if (symbolTable != null) {
@@ -969,5 +979,18 @@ public class Engine implements Notifier {
 			route.sortPaths();
 		}		
 	}	
+
+	
+	private boolean checkAddParameters(String label, Reference ref, String type) {
+		if (!resolveRefernece(ref, this)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
+			return false;
+		}
+		if (ReferenceFactory.isPcString(label)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a %s: %s", type, label));
+			return false;
+		}				
+		return true;
+	}
 
 }

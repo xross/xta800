@@ -1,7 +1,6 @@
 package com.xmos.xta.console.commands.load;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Vector;
 
 import com.xmos.xta.console.Console;
@@ -52,14 +51,8 @@ public class Load extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {    	
-    	File file = new File(new File(m_executableName).getAbsolutePath());
-    	try {
-			file = file.getCanonicalFile();
-		} catch (IOException e) {
-			console.display(String.format("Error: Failed to resolve executable path: %s\n", m_executableName));
-		}
 		ConsoleFileFinder fileFinder = new ConsoleFileFinder(engine, console);	
-		if (engine.loadExecutable(file, fileFinder)) {
+		if (engine.loadExecutable(new File(m_executableName), fileFinder)) {
 		    runSectionCommands(shell, engine, console);
 		}
     }

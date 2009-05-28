@@ -3,6 +3,7 @@ package com.xmos.xta.console.commands.add;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.console.commands.CommandContainer;
 import com.xmos.xta.console.commands.list.Branch;
+import com.xmos.xta.console.commands.list.Call;
 import com.xmos.xta.console.commands.list.Endpoint;
 import com.xmos.xta.console.commands.list.Label;
 import com.xmos.xta.console.commands.list.SrcLabel;
@@ -15,6 +16,7 @@ public class Add extends CommandContainer {
 		new Label(Label.Operation.ADD),
 		new SrcLabel(SrcLabel.Operation.ADD),
 		new Endpoint(Endpoint.Operation.ADD),
+		new Call(Call.Operation.ADD),
 		new ThreadStartPoint(ThreadStartPoint.Operation.ADD),		
 		new ThreadStopPoint(ThreadStopPoint.Operation.ADD),		
 	};

@@ -43,6 +43,7 @@ import org.eclipse.ui.part.ViewPart;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.GuiRouteInfo;
 import com.xmos.xta.gui.nodes.Node;
@@ -160,7 +161,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			annotateTree(false);
 			refreshView();
 			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_FOCUS)) {
+		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SET_FOCUS)) {
 			ISelection sel = GuiEngine.getFocus();
 	        if (sel instanceof IStructuredSelection) {	            
 	            Object object = ((IStructuredSelection)sel).getFirstElement();
@@ -171,14 +172,13 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			annotateTree(false);
 			refreshView();
 			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUDES) || 
-				   event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) || 
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) || 
 				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 			initialiseTree();
 			annotateTree(false);
 			refreshView();
 			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_PATHS)) {
+		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECT_PATHS)) {
 			selectPaths();
 			annotateTree(true);
 			refreshView();
@@ -445,7 +445,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		    	    		ISelection selection = new StructuredSelection(m_selectedNodes);
 		    	    		setSelection(selection);
 		    				GuiEngine.setFocus(selection);
-		    				GuiEngine.broadcast(Notifier.NOTIFY_SET_FOCUS, "");
+		    				GuiEngine.broadcast(Broadcaster.BROADCAST_SET_FOCUS, "");
 	    				}
 	    				return;
 	    			}

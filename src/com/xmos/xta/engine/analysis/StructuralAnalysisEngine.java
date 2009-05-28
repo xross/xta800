@@ -45,6 +45,10 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 	
+	public Collection<Function> getCFG(){
+		return m_graphStartPcs.values();
+	}
+	
 	private void LinkFunctions() {
 		for (Function func : m_cfg.getAllFunctions()) {
 			if(func.isFunctionKnown()){

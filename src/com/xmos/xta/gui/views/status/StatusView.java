@@ -95,10 +95,9 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_ERROR)) {
 	        m_memoryUpdater.setFastRefresh(false);
 			setDone();
-
 		}
 	}
-	
+
 	private void startAnalysis() {
         m_memoryUpdater.setFastRefresh(true);
 		m_progressUpdater = new ProgressUpdater(GuiEngine.getEngine(), m_progress);

@@ -49,7 +49,7 @@ public class GuiRouteInfo {
 			return;
 	
 		if (selectedRoute.getAllBasicBlocks().size() > 2000) {
-			GuiEngine.getNotifier().notify(Notifier.NOTIFY_WARNING, 
+			GuiEngine.notify(Notifier.NOTIFY_WARNING, 
 					"Route to complex to display in the tree view " +
 					"(Use the console to analyse the route).");
 			return;

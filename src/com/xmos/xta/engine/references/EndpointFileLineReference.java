@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.references;
 
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.sections.EndpointTableInfo;
+import com.xmos.xta.engine.sections.CodePointTableInfo;
 
 public class EndpointFileLineReference extends Reference {
 	EndpointFileLineReference(String ref) {
@@ -13,7 +13,7 @@ public class EndpointFileLineReference extends Reference {
 		String fileName = ReferenceFactory.getFileName(ref);
         int lineNumber  = ReferenceFactory.getLineNumber(ref);		
 
-		for (EndpointTableInfo info : engine.getEndpointTable().values()) {
+		for (CodePointTableInfo info : engine.getEndpointTable().values()) {
             if (info.getFileName().equals(fileName) &&
             	(info.getLineNumber() == lineNumber)) {
             	setPc(info.getPc());

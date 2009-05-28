@@ -11,6 +11,7 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Notifier;
+import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.icons.Icons;
 
@@ -37,10 +38,10 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 		if (DEBUG) System.out.printf("SourcesEditor: propertyChange: %s\n", event.getProperty());	
 		
 		if (getPageCount() > 0) {
-			if (event.getProperty().equals(Notifier.NOTIFY_SHOW_CODE_POINT)) {
+			if (event.getProperty().equals(Broadcaster.BROADCAST_SHOW_CODE_POINT)) {
 				setActivePage(m_disassemblyIndex);
 				
-			} else if (event.getProperty().equals(Notifier.NOTIFY_HIGHLIGHTS_UPDATED)) {
+			} else if (event.getProperty().equals(Broadcaster.BROADCAST_HIGHLIGHTS_UPDATED)) {
 				for (int i = 0; i < getPageCount(); i++) {
 					XtaEditor editor = (XtaEditor)this.getEditor(i);
 					

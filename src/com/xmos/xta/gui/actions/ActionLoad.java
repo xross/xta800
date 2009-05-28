@@ -1,7 +1,6 @@
 package com.xmos.xta.gui.actions;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -45,8 +44,6 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
 	}
 	
 	public void run() {
-		GuiEngine.broadcast(Notifier.NOTIFY_SET_GUI_COMMAND, "");
-
 		FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.OPEN);
         fileDialog.setText("Open Xe File");
         String[] filterExt = { "*.xe" };
@@ -64,33 +61,21 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
         String path = new File(xeFileName).getParent();
         plugin.getPreferenceStore().setValue("LastDir", path);
 
-        if (xeFileName != null) {
-        	File xeFile = new File(xeFileName);
-        	
-        	try {
-				xeFile = xeFile.getCanonicalFile();
-			} catch (IOException e) {
-				GuiEngine.broadcast(Notifier.NOTIFY_ERROR, 
-						String.format("Cannot resolve file: %s", xeFileName));
-				return;
+       	final File xeFile = new File(xeFileName);
+        Job job = new Job("Load: " + xeFileName) {
+			protected IStatus run(IProgressMonitor monitor) {
+				Engine engine = GuiEngine.getEngine();
+				engine.setMonitor(monitor);
+				boolean success = engine.loadExecutable(xeFile, new GuiFileFinder());					
+	        	if (success) {
+	                setToolTipText("Currently loaded " + xeFile.getAbsolutePath());
+	        	}		        	
+				return Status.OK_STATUS;
 			}
-			
-			final File file = xeFile;
-			Job job = new Job("Load: " + xeFileName) {
-				protected IStatus run(IProgressMonitor monitor) {
-					Engine engine = GuiEngine.getEngine();
-					engine.setMonitor(monitor);
-					boolean success = engine.loadExecutable(file, new GuiFileFinder());					
-		        	if (success) {
-		                setToolTipText("Currently loaded " + file.getAbsolutePath());
-		        	}		        	
-					return Status.OK_STATUS;
-				}
-			};
-			job.schedule();        	        	
-        }
-	}
-	
+		};
+		job.schedule();
+    }
+
     private void openEditors() {
 		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		page.closeAllEditors(false);

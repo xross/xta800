@@ -15,24 +15,28 @@ public class Sections {
 	private Collection<Section> m_labels;
 	private Collection<Section> m_srcLabels;
 	private Collection<Section> m_endpoints;
+	private Collection<Section> m_calls;
 	private Collection<Section> m_srcLabelTables;
 	private Collection<Section> m_endpointTables;
+	private Collection<Section> m_callTables;
 	private Collection<Section> m_threadStartPoints;
 	private Collection<Section> m_threadStopPoints;
 	private Collection<Section> m_srcLevelCommands;	
 	
     public Sections() { 
-    	m_xeLoader = null;
-    	m_notifier = null;
+    	m_xeLoader  = null;
+    	m_notifier  = null;
 		m_branches  = new ArrayList<Section>();
 		m_labels    = new ArrayList<Section>();
 		m_srcLabels = new ArrayList<Section>();
 		m_endpoints = new ArrayList<Section>();
-		m_srcLabelTables = new ArrayList<Section>();
-		m_endpointTables = new ArrayList<Section>();
+		m_calls     = new ArrayList<Section>();
+		m_srcLabelTables    = new ArrayList<Section>();
+		m_endpointTables    = new ArrayList<Section>();
+		m_callTables        = new ArrayList<Section>();
 		m_threadStartPoints = new ArrayList<Section>();
-		m_threadStopPoints = new ArrayList<Section>();
-		m_srcLevelCommands = new ArrayList<Section>();
+		m_threadStopPoints  = new ArrayList<Section>();
+		m_srcLevelCommands  = new ArrayList<Section>();
     }
 
 	public boolean load(XeLoader xeLoader, Notifier notifier) {		
@@ -41,9 +45,11 @@ public class Sections {
 		m_branches.clear();
 		m_labels.clear();
 		m_srcLabels.clear();
-		m_srcLabelTables.clear();
 		m_endpoints.clear();
+		m_calls.clear();
+		m_srcLabelTables.clear();
 		m_endpointTables.clear();
+		m_callTables.clear();
 		m_threadStartPoints.clear();
 		m_threadStopPoints.clear();
 		m_srcLevelCommands.clear();
@@ -54,8 +60,10 @@ public class Sections {
 				m_labels.add(new Labels(node, core, m_notifier));
 				m_srcLabels.add(new CodePoints(node, core, ".xtalabel", m_notifier, "label"));
 				m_endpoints.add(new CodePoints(node, core, ".xtaendpoint", m_notifier, "endpoint"));
+				m_calls.add(new CodePoints(node, core, ".xtacall", m_notifier, "call"));
 				m_srcLabelTables.add(new SrcLabelTable(node, core, ".xtalabeltable", m_notifier));
-				m_endpointTables.add(new EndpointTable(node, core, ".xtaendpointtable", m_notifier));
+				m_endpointTables.add(new CodePointTable(node, core, ".xtaendpointtable", m_notifier));
+				m_callTables.add(new CodePointTable(node, core, ".xtacalltable", m_notifier));
 				m_threadStartPoints.add(new ThreadDelimiters(node, core, ".xtathreadstart", m_notifier));
 				m_threadStopPoints.add(new ThreadDelimiters(node, core, ".xtathreadstop", m_notifier));
 				m_srcLevelCommands.add(new SrcLevelCommands(node, core, m_notifier));
@@ -70,9 +78,13 @@ public class Sections {
 			return false;
 		if (!loadSection(m_endpoints))
 			return false;
+		if (!loadSection(m_calls))
+			return false;
 		if (!loadSection(m_srcLabelTables))
 			return false;
 		if (!loadSection(m_endpointTables))
+		    return false;
+		if (!loadSection(m_callTables))
 		    return false;
 		if (!loadSection(m_threadStartPoints))
 			return false;
@@ -148,9 +160,29 @@ public class Sections {
 		CodePoints codePoints = (CodePoints)getSection(m_endpoints, nodeId, coreId);
 	    return codePoints.get();
 	}
+
+	public Map<Integer, CodePointTableInfo> getEndpointTable(int nodeId, int coreId) {
+		CodePointTable endpointTable = (CodePointTable)getSection(m_endpointTables, nodeId, coreId);
+		return endpointTable.get();		
+	}	
+
+	public boolean addToCalls(int nodeId, int coreId, String endpoint, int pc) {
+		CodePoints codePoints = (CodePoints)getSection(m_calls, nodeId, coreId);
+		return codePoints.add(endpoint, pc);
+	}
+
+	public boolean removeFromCalls(int nodeId, int coreId, String label) {
+		CodePoints codePoints = (CodePoints)getSection(m_calls, nodeId, coreId);
+		return codePoints.remove(label);
+	}	
 	
-	public Map<Integer, EndpointTableInfo> getEndpointTable(int nodeId, int coreId) {
-		EndpointTable endpointTable = (EndpointTable)getSection(m_endpointTables, nodeId, coreId);
+	public Map<String, CodePointInfo> getCalls(int nodeId, int coreId) {
+		CodePoints codePoints = (CodePoints)getSection(m_calls, nodeId, coreId);
+	    return codePoints.get();
+	}
+	
+	public Map<Integer, CodePointTableInfo> getCallTable(int nodeId, int coreId) {
+		CodePointTable endpointTable = (CodePointTable)getSection(m_callTables, nodeId, coreId);
 		return endpointTable.get();		
 	}
 		

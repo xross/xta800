@@ -47,7 +47,6 @@ public class ActionCore extends Action implements IPropertyChangeListener, IMenu
 				String selected = ((MenuItem)e.getSource()).getText();
 
 				try {
-					GuiEngine.broadcast(Notifier.NOTIFY_SET_GUI_COMMAND, "");					
 		        	int coreId = Integer.parseInt(selected); 
 		        	if (coreId != m_currentCoreId) {
 		        		GuiEngine.getEngine().setCoreId(coreId);

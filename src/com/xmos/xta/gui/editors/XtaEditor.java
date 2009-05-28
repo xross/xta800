@@ -48,9 +48,10 @@ import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
-import com.xmos.xta.engine.sections.EndpointTableInfo;
+import com.xmos.xta.engine.sections.CodePointTableInfo;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.engine.unknowns.Unknown;
+import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.InstructionTime;
 import com.xmos.xta.gui.nodes.Node;
@@ -194,15 +195,17 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			updateExcluded();
 	        updateAnnotations(m_currentHighlightAnnotations, m_currentHighlightAnnotationPositions);
     	    
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT)) {
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT) ||
+				   event.getProperty().equals(Broadcaster.BROADCAST_SET_START_POINT)) {
 			updateStartPoint();
 	        updateAnnotations(m_currentHighlightAnnotations, m_currentHighlightAnnotationPositions);
     	    
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT)) {
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT) ||
+				   event.getProperty().equals(Broadcaster.BROADCAST_SET_END_POINT)) {
 			updateEndPoint();
 	        updateAnnotations(m_currentHighlightAnnotations, m_currentHighlightAnnotationPositions);
     	    
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SHOW_CODE_POINT)) {
+		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SHOW_CODE_POINT)) {
 			Reference codePoint = GuiEngine.getCodePoint();
 			showCodePoint(codePoint);
 			
@@ -215,7 +218,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	        updateEndPoint();
 			updateExcluded();
 	        updateAnnotations(m_currentHighlightAnnotations, m_currentHighlightAnnotationPositions);
-
 		}
 	}
 
@@ -494,7 +496,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		m_currentHighlightAnnotationPositions = annotationPositions;
 		updateAnnotations(annotations, annotationPositions);
 		
-		GuiEngine.broadcast(Notifier.NOTIFY_HIGHLIGHTS_UPDATED, "");
+		GuiEngine.broadcast(Broadcaster.BROADCAST_HIGHLIGHTS_UPDATED, "");
     }
 
     // Add all annotations after highlights
@@ -509,7 +511,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         int endPointIndex = getEndPointIndex();
 
         m_endPointLineIndexes.clear();
-        for (EndpointTableInfo info : GuiEngine.getEngine().getEndpointTable().values()) {
+        for (CodePointTableInfo info : GuiEngine.getEngine().getEndpointTable().values()) {
         	if (info.getFileName().equals(m_fileName)) {
         		InputLine line = findCodeLine(info.getLineNumber());
         		if (line != null) {
@@ -760,44 +762,36 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
      	m_showStartPointAction = new Action("Show start point") {
      		public void run() {
-				GuiEngine.broadcast(Notifier.NOTIFY_SHOW_CODE_POINT, "");
+				GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
      		}
      	};
      	setAction(ShowStartPointID, m_showStartPointAction);
      	
      	m_showEndPointAction = new Action("Show end point") {
      		public void run() {
-				GuiEngine.broadcast(Notifier.NOTIFY_SHOW_CODE_POINT, "");
+				GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
      		}
-     	} ;
+     	};
      	setAction(ShowEndPointID, m_showEndPointAction);
 
      	setAction(SetStartPointID, new Action("Set start point") {
      		public void run() {
-     			GuiEngine.setStartPoint(m_clickCodeRef);
-     			GuiEngine.broadcast(Notifier.NOTIFY_SET_START_POINT, "");
+     			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_START_POINT, m_clickCodeRefString);
      		}
      	});
      	setAction(SetEndPointID, new Action("Set end point") {
      		public void run() {
-     			GuiEngine.setEndPoint(m_clickCodeRef);
-     			GuiEngine.broadcast(Notifier.NOTIFY_SET_END_POINT, "");
+     			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_END_POINT, m_clickCodeRefString);
      		}
      	});
      	setAction(RemoveStartPointID, new Action("Remove start point") {
      		public void run() {
-     			Reference startPoint = ReferenceFactory.createReference(
-     					"", ReferenceClass.ENDPOINT_REF);
-     			GuiEngine.setStartPoint(startPoint);
-     			GuiEngine.broadcast(Notifier.NOTIFY_SET_START_POINT, "");     			
+     			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_START_POINT, "");     			
      		}
      	});
      	setAction(RemoveEndPointID, new Action("Remove end point") {
      		public void run() {
-     			Reference endPoint = ReferenceFactory.createReference(
-     					"", ReferenceClass.ENDPOINT_REF);
-     			GuiEngine.setEndPoint(endPoint);
-     			GuiEngine.broadcast(Notifier.NOTIFY_SET_END_POINT, "");
+     			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_END_POINT, "");
      		}
      	});
 
@@ -816,7 +810,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      		public void run() {
      			Reference clickCodeRef = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.SRCLABEL_REF);
      			GuiEngine.setCodePoint(clickCodeRef);
-     			GuiEngine.broadcast(Notifier.NOTIFY_SELECT_PATHS, "");
+     			GuiEngine.broadcast(Broadcaster.BROADCAST_SELECT_PATHS, "");
      		}
      	});
 

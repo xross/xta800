@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.sections.CodePointInfo;
-import com.xmos.xta.engine.sections.EndpointTableInfo;
+import com.xmos.xta.engine.sections.CodePointTableInfo;
 
 public class EndpointReference extends Reference {
 	EndpointReference(String ref) {
@@ -18,11 +18,11 @@ public class EndpointReference extends Reference {
 			setPc(info.getPc());
 			
 			// Look up the endpoint in the endpoint table
-			Map<Integer, EndpointTableInfo> endpointTable = engine.getEndpointTable();
+			Map<Integer, CodePointTableInfo> endpointTable = engine.getEndpointTable();
 			if (!endpointTable.containsKey(info.getPc()))
 				return false;
 				
-		    EndpointTableInfo endpoint = endpointTable.get(info.getPc());			
+		    CodePointTableInfo endpoint = endpointTable.get(info.getPc());			
 			setFileName(endpoint.getFileName());
         	setLineNum(endpoint.getLineNumber());
 

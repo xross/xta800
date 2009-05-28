@@ -1,16 +1,11 @@
 package com.xmos.xta.gui.actions;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.Progress;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.icons.Icons;
@@ -41,24 +36,11 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT)) {
 			m_endPoint = GuiEngine.getEndPoint();					
 			updateText(m_endPoint);
-
-		} else if (event.getProperty().equals(Notifier.NOTIFY_RUN)) {
-			String notifyArgument = GuiEngine.getRunMode();
-			if (notifyArgument.equals(Notifier.RUN_MODE_FUNCTION)) {
-				executeRunFunction();
-			} else if (notifyArgument.equals(Notifier.RUN_MODE_PATH)) {
-				executeRunPath();
-			} else {
-				assert(false);
-			}
-			
 		}
 	}
 
 	public void run() {
-		GuiEngine.broadcast(Notifier.NOTIFY_SET_RUN_MODE, Notifier.RUN_MODE_PATH);
-		GuiEngine.broadcast(Notifier.NOTIFY_SET_GUI_COMMAND, "");
-		GuiEngine.broadcast(Notifier.NOTIFY_RUN, "");
+		GuiEngine.runPath();
 	}
 
 	private void updateText(Reference point) {
@@ -97,58 +79,5 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 	    m_endPoint = null;
     	
 	    setToolTipText(DEFAULT_TOOL_TIP);
-	}
-
-	public void executeRunFunction() {
-		if (GuiEngine.getEngine().getProgress().getState() != Progress.State.IDLE) {
-			return;
-		}
-
-		final String functionName = GuiEngine.getSelectedFunction();
-		if (!functionName.equals("")) {			
-			Job job = new Job("Analyse: " + functionName) {
-				
-				protected IStatus run(IProgressMonitor monitor) {
-					Engine engine = GuiEngine.getEngine();
-					engine.setMonitor(monitor);
-					engine.analyseRoute(functionName);
-					return Status.OK_STATUS;
-				}
-			};
-			job.setUser(true);
-			job.schedule();
-		} else {
-			GuiEngine.broadcast(Notifier.NOTIFY_ERROR, "No function/path specified");
-		}
-	}
-	
-	public void executeRunPath() {
-		if (GuiEngine.getEngine().getProgress().getState() != Progress.State.IDLE) {
-			return;
-		}
-		
-		Reference startPoint = GuiEngine.getStartPoint();
-		Reference endPoint = GuiEngine.getEndPoint();
-		if ((startPoint == null) || startPoint.getRef().equals("")) {
-			GuiEngine.broadcast(Notifier.NOTIFY_ERROR, "Please specify a start reference");
-
-		} else if ((endPoint == null) || endPoint.getRef().equals("")) {
-			GuiEngine.broadcast(Notifier.NOTIFY_ERROR, "Please specify an end reference");
-
-		} else {
-			final String startRef = startPoint.getRef();
-			final String endRef = endPoint.getRef();
-			Job job = new Job("Analyse: " + startRef + " -> " + endRef) {
-
-				protected IStatus run(IProgressMonitor monitor) {
-					Engine engine = GuiEngine.getEngine();
-					engine.setMonitor(monitor);
-					engine.analyseRoute(startRef, endRef);
-					return Status.OK_STATUS;
-				}
-			};
-			job.setUser(true);
-			job.schedule();
-		}
 	}
 }

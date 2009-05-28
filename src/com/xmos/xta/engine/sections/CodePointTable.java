@@ -7,17 +7,17 @@ import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.Notifier;
 
-public class EndpointTable extends Section {
+public class CodePointTable extends Section {
 	private String m_sectionName;
-	private TreeMap<Integer, EndpointTableInfo> m_locations;
+	private TreeMap<Integer, CodePointTableInfo> m_locations;
 	
-	EndpointTable(int nodeId, int coreId, String sectionName, Notifier notifier) {
+	CodePointTable(int nodeId, int coreId, String sectionName, Notifier notifier) {
 		super(nodeId, coreId, notifier);
 		m_sectionName = sectionName;
-		m_locations = new TreeMap<Integer, EndpointTableInfo>(); 
+		m_locations = new TreeMap<Integer, CodePointTableInfo>(); 
 	}
 	
-	Map<Integer, EndpointTableInfo> get() {
+	Map<Integer, CodePointTableInfo> get() {
 		return m_locations;
 	}
 	
@@ -49,7 +49,7 @@ public class EndpointTable extends Section {
 	        		int location = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
 	        		
-	        		m_locations.put(location, new EndpointTableInfo(location, compilationDir, fileName, lineNumber));        	        		
+	        		m_locations.put(location, new CodePointTableInfo(location, compilationDir, fileName, lineNumber));        	        		
 	        	}
 	        }			
         } catch (Exception e) {
