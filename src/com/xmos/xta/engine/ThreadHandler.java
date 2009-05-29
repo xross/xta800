@@ -6,41 +6,25 @@ import java.util.HashSet;
 import com.xmos.xta.engine.analysis.nodes.Node;
 
 public class ThreadHandler {
-
-	private Collection<Integer> m_threadStarts;
-	private Collection<Integer> m_threadStops;
 	private InstructionDecoder m_id;
+	private Notifier m_notifier;
 	
-	public ThreadHandler(InstructionDecoder id, Collection<Integer> threadStarts, Collection<Integer> threadStops) {
-		m_threadStarts = threadStarts;
-		m_threadStops = threadStops;
+	public ThreadHandler(InstructionDecoder id, Notifier notifier) {
 		m_id = id;
+		m_notifier = notifier;
 	}
 
-	public Collection<Node> getThreadStarts() {
-		Collection<Node> starts = new HashSet<Node>();
-		for(int pc : m_threadStarts){
-			Node threadStart = m_id.getNode(pc);
-			if(threadStart != null){
-				starts.add(threadStart);
+	public Collection<Node> getThreadNodes(Collection<Integer> threadPcs) {
+		Collection<Node> nodes = new HashSet<Node>();
+		for(int pc : threadPcs){
+			Node threadNode = m_id.getNode(pc);
+			if (threadNode != null){
+				nodes.add(threadNode);
 			} else {
-				//TODO notify of the error
+				m_notifier.notify(Notifier.NOTIFY_WARNING,
+						"Failed to find PC 0x" + Integer.toHexString(pc));
 			}
 		}
-		return starts;
+		return nodes;
 	}
-
-	public Collection<Node> getThreadEnds() {
-		Collection<Node> ends = new HashSet<Node>();
-		for(int pc : m_threadStops){
-			Node threadStop = m_id.getNode(pc);
-			if(threadStop != null){
-				ends.add(threadStop);
-			} else {
-				//TODO notify of the error
-			}
-		}
-		return ends;
-	}
-
 }

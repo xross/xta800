@@ -5,82 +5,73 @@ import java.util.Map;
 import java.util.TreeSet;
 import com.xmos.isa.Instruction;
 import com.xmos.xeloader.MemoryImage;
+import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.analysis.patterns.CommonMethods;
 import com.xmos.xta.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.engine.instructions.XtaInstruction;
+import com.xmos.xta.engine.sections.Sections;
 
 public class SuccessorAdder {
 	private InstructionDecoder m_id;
 	private Map<Integer, TreeSet<Integer>> m_branchMap;
 	private MemoryImage m_mi;
 	private int m_cpPointer;
-	Collection<Node> m_threadEnds;
-	InstructionMnemonics m_mnenonics;
+	private Collection<Node> m_threadEnds;
+	private InstructionMnemonics m_mnenonics;
+	private Notifier m_notifier;
 
-	public SuccessorAdder(InstructionDecoder id, Map<Integer, TreeSet<Integer>> branchMap, 
-			MemoryImage mi, int cpPointer, Collection<Node> threadEnds, InstructionMnemonics mnenonics) {
+	public SuccessorAdder(int nodeId, int coreId, InstructionDecoder id, Sections sections, 
+			Collection<Node> threadEnds, XeLoader xeLoader, Notifier notifier) {
 		m_threadEnds = threadEnds;
-		m_branchMap = branchMap;
+		m_branchMap = sections.getBranches(nodeId, coreId);
 		m_id = id;
-		m_mi = mi;
-		m_cpPointer = cpPointer;
-		m_mnenonics = mnenonics;
+		m_mi = xeLoader.getMemoryImage(nodeId, coreId);
+		m_cpPointer = xeLoader.getSymbolTable(nodeId, coreId).symbolAddress("_cp");
+		m_mnenonics = new InstructionMnemonics(xeLoader.getArchitecture());		
+		m_notifier = notifier;
 	}
 
-	public boolean process (){
-		//for each instruction add all its successors as connections
-		for(Node instruction : m_id.getInstructions()){
-			assert(instruction.getInstructions().size() == 1);
-			XtaInstruction inst = instruction.getInstructions().get(0);
+	public boolean process () {
+		for (Node node : m_id.getInstructions()){
+			XtaInstruction inst = node.getInstructions().get(0);
 			
-			// need to add all branch targets 
-			handleBranches(instruction, inst);
-			
-			// instructions that continue
-			handleNonBranchingInstructions(instruction, inst);
-			
-			// user and compiler added successors
-			handleSuccessors(instruction, inst);
-			
-			//add branch links when a function would go
-			addBranchLinkReturns(instruction, inst);
-			
-			//not function returns 
+			addAllBranchTargets(node, inst);
+			handleNonBranchingInstructions(node, inst);
+			addUserSuccessors(node, inst);
+			addBranchLinkReturns(node, inst);
 		}
-		//TODO - return false if there were errors 
 		return true;
 	}
 	
 	private void addBranchLinkReturns(Node instruction, XtaInstruction inst) {
-		if(inst.isLink()){
+		if (inst.isLink()){
 			int returnPc = inst.getPc() + inst.getNumBytes();
 			Node returnNode = m_id.getNode(returnPc);
-			if (returnNode != null){
+			if (returnNode != null) {
 				instruction.setBranchLinkReturn(returnNode);
 			} else {
-				//TODO notify of a warning
+				m_notifier.notify(Notifier.NOTIFY_WARNING, 
+						"Unable to find PC for return from: " + inst);
 			}
 		}
 	}
 
-	private void handleSuccessors(Node instruction, XtaInstruction inst) {
+	private void addUserSuccessors(Node instruction, XtaInstruction inst) {
 		TreeSet<Integer> nextPcs = m_branchMap.get(inst.getPc());
-		if (nextPcs != null) {
-			for(int pc : nextPcs){
-				connect(instruction, pc);
-			}
+		for (int pc : nextPcs){
+			connect(instruction, pc);
 		}
 	}
 
 	private void handleNonBranchingInstructions(Node instruction, XtaInstruction inst) {
-		if(!(inst.isBranch() || inst.isLink() || m_mnenonics.isWait(inst) || m_threadEnds.contains(instruction))){
+		if (!(inst.isBranch() || inst.isLink() || m_mnenonics.isWait(inst) || m_threadEnds.contains(instruction))){
 			int nextPc = inst.getPc() + inst.getNumBytes();
 			connect(instruction, nextPc);
 		} 
 	}
 
-	private void handleBranches(Node instruction, XtaInstruction inst) {		
+	private void addAllBranchTargets(Node instruction, XtaInstruction inst) {		
 		if (inst.getBranchPcRelative()){
 			int target = inst.getBranchPcRelativeTargetPc();
 			connect(instruction, target);
@@ -101,31 +92,23 @@ public class SuccessorAdder {
 
 	private void calculateCPAddress(Node instruction, int imm) {
 		int address = m_cpPointer + imm;
-		int word = 0;
-		boolean success = true;
-		for (int i = 0; i < 4; i++) {
-			try {
-				byte b = m_mi.readByte(address + i);
-				word = word | (b << (8 * i));
-			} catch (Exception e) {
-				//TODO
-				//m_notifier.notify(Notifier.NOTIFY_WARNING, String.format("Branch address 0x%x out of bounds", address + i));
-				success = false;
-				continue;
-			}
-		}
-		if(success){
+   		try {			
+			int word = m_mi.readInstructionWord(address);
 			connect(instruction, word);
+		} catch (Exception e) {
+			m_notifier.notify(Notifier.NOTIFY_WARNING, 
+					String.format("CP address 0x%x out of bounds", address));
 		}
 	}
 
-	private void connect(Node instruction, int word) {
-		Node target = m_id.getNode(word);
-		if(target != null){
+	private void connect(Node instruction, int pc) {
+		Node target = m_id.getNode(pc);
+		if (target != null){
 			CommonMethods.connect(target, instruction);
 		} else {
-			//TODO warn
-			//m_notifier.notify(Notifier.NOTIFY_WARNING, String.format("Branch address 0x%x out of bounds", address + i));
+			m_notifier.notify(Notifier.NOTIFY_WARNING,
+					"Instruction " + instruction + 
+					" failed to find target 0x" + Integer.toHexString(pc)); 
 		}
 	}
 }

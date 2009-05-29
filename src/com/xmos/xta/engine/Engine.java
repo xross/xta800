@@ -188,96 +188,75 @@ public class Engine implements Notifier {
 		}		
 		
 		XeLoader xeLoader = new XeLoader();
-
 		if (!xeLoader.loadExecutable(executableFile)) {
 			notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile + "' could not be loaded.");
 			return false;			
 		}
 		
-		m_xeLoader = xeLoader;
-		
-		//FIXME what is this here for?
-		m_nodeId = 0;
-		m_coreId = 0;
-		
-		InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());		
-		
 		m_xeObjects.clear();
-		for (int node : m_xeLoader.getNodeIds()) {
-			for (int core : m_xeLoader.getCoreIds(node)) {
-				m_xeObjects.add(new XeObject(m_xeLoader, node, core, fileFinder));
+		for (int node : xeLoader.getNodeIds()) {
+			for (int core : xeLoader.getCoreIds(node)) {
+				m_xeObjects.add(new XeObject(xeLoader, node, core, fileFinder));
 			}
 		}
 		
-		if (!m_sections.load(m_xeLoader, this)) {
+		if (!m_sections.load(xeLoader, this)) {
 			return false;
 		} 
 				
-		for(int nodeId : m_xeLoader.getNodeIds()){
-			for(int coreId : m_xeLoader.getCoreIds(nodeId)){
-				MemoryImage mi = m_xeLoader.getMemoryImage(nodeId, coreId);
-				int cpPointer =  m_xeLoader.getSymbolTable(nodeId, coreId).symbolAddress("_cp");
+		for(int nodeId : xeLoader.getNodeIds()){
+			for(int coreId : xeLoader.getCoreIds(nodeId)){
+				MemoryImage mi = xeLoader.getMemoryImage(nodeId, coreId);
 				
-		//		decode the instruction
-				InstructionDecoder id = new InstructionDecoder(mi, m_xeLoader, getConfig(), m_xeLoader.getSymbolTable(nodeId, coreId));
-				boolean decoded = id.decode();
-				if(!decoded) {
+		        // decode the instruction
+				InstructionDecoder id = new InstructionDecoder(m_nodeId, m_coreId, xeLoader, getConfig());
+				if(!id.decode()) {
 					resetEngine();
 					return false;
 				}
-		//		find all thread start and end points
-				ThreadHandler th = new ThreadHandler(id, m_sections.getThreadStartPoints(nodeId, coreId), 
-						m_sections.getThreadStopPoints(nodeId, coreId));
-				Collection<Node> threadStarts = th.getThreadStarts();
-				Collection<Node> threadEnds = th.getThreadEnds();				
+				
+        		// find all thread start and end points
+				ThreadHandler th = new ThreadHandler(id, this);
+				Collection<Node> threadStartNodes = 
+					th.getThreadNodes(m_sections.getThreadStartPoints(nodeId, coreId));
+				Collection<Node> threadStopNodes = 
+					th.getThreadNodes(m_sections.getThreadStopPoints(nodeId, coreId));				
 
-		//		add all successors to instructions
-				SuccessorAdder sa = new SuccessorAdder(
-						id, m_sections.getBranches(nodeId, coreId), 
-						mi, cpPointer, threadEnds, mnenonics);
-				boolean added = sa.process();
-				if(!added) {
+		        // add all successors to instructions
+				SuccessorAdder sa = new SuccessorAdder(nodeId, coreId, 
+						id, m_sections, threadStopNodes, xeLoader, this);
+				if (!sa.process()) {
 					resetEngine();
 					return false;
 				}
-		//		add functions to graph 
+				
+		        // add functions to graph 
 				FunctionHandler fh = new FunctionHandler(id);
-				boolean functionsAdded = fh.addFunctions();
-				if(!functionsAdded) {
+				if (!fh.addFunctions()) {
 					resetEngine();
 					return false;
 				}
 				Collection<Node> functionStarts = fh.getKnownFunctions().keySet();
 				
-				//printCFG(id, fh, threadStarts, threadEnds, functionStarts);
-				//identify and remove unreachable code
-				UnreachableCodeAnalyser uca = new UnreachableCodeAnalyser(id, threadStarts, functionStarts);
-				boolean unreachableDetected = uca.analyseReachable();
-				if(!unreachableDetected) {
+				// identify and remove unreachable code
+				UnreachableCodeAnalyser uca = new UnreachableCodeAnalyser(id, threadStartNodes, functionStarts);
+				if (!uca.analyseReachable()) {
 					resetEngine();
 					return false;
 				}
 				
-				//add fnops to static graph
-				//FnopAnalyser fa = new FnopAnalyser(id, threadStarts, threadEnds);
-				
-				ControlFlowGraph cfg = new ControlFlowGraph(threadStarts, functionStarts, fh.getFunctions(), nodeId, coreId);
+				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, functionStarts, fh.getFunctions(), nodeId, coreId);
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
 				sae.analyse();
-				//printCFG(id, fh, threadStarts, threadEnds, functionStarts);
-			}
-		
+			}		
 		}
 		
-		/*
-
-		m_routes.clear();
-		setSelectedRoute(null);
-		Route.resetRouteCount();
+		m_xeLoader = xeLoader;		
+		m_nodeId = 0;
+		m_coreId = 0;				
 		setConstraint(ConstraintFactory.createConstraint(this, ""));
 		
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
-		*/
 		return true;
 	}
 
