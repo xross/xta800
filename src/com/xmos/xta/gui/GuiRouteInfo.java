@@ -8,15 +8,9 @@ import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
-import com.xmos.xta.engine.Unresolved;
-import com.xmos.xta.gui.nodes.BlockNode;
-import com.xmos.xta.gui.nodes.LoopNode;
 import com.xmos.xta.gui.nodes.Node;
 import com.xmos.xta.gui.nodes.PathGroupNode;
-import com.xmos.xta.gui.nodes.PathNode;
-import com.xmos.xta.gui.nodes.RouteNode;
 
 public class GuiRouteInfo {
 	private Engine m_engine;
@@ -35,9 +29,10 @@ public class GuiRouteInfo {
 	
 	public void update() {
 		m_routes.clear();
-		for (Route route : m_engine.getRoutes()) {
-			m_routes.add(new RouteNode(route));
-		}
+// TODO		
+//		for (Route route : m_engine.getRoutes()) {
+//			m_routes.add(new RouteNode(route));
+//		}
 		buildRouteNode();
 	}
 
@@ -47,7 +42,9 @@ public class GuiRouteInfo {
 		Route selectedRoute = m_engine.getSelectedRoute();
 		if (selectedRoute == null)
 			return;
-	
+
+// TODO
+/*		
 		if (selectedRoute.getAllBasicBlocks().size() > 2000) {
 			GuiEngine.notify(Notifier.NOTIFY_WARNING, 
 					"Route to complex to display in the tree view " +
@@ -71,8 +68,11 @@ public class GuiRouteInfo {
         	i++;
 			m_unresolvedNode.addNode(createPath(unresolved.getBlock(), m_unresolvedNode, true));
 		}
+*/		
 	}
-	
+
+// TODO
+/*
 	private PathNode createPath(PathBasicBlock block, Node parent, boolean isRoot) {
         PathNode pathNode = new PathNode(block, parent, isRoot);     
         for (PathBasicBlock pathBlock : block.getPathBlocks()) {            
@@ -89,7 +89,7 @@ public class GuiRouteInfo {
         }
         return pathNode;
 	}
-	
+*/	
 	public DebugInfo getDebugInfo() {
 		return m_engine.getDebugInfo();
 	}

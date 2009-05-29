@@ -4,7 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import com.xmos.xta.engine.XtaInstruction;
+
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public abstract class Node implements Comparable<Node>{
 	

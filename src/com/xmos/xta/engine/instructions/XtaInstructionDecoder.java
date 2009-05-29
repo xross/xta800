@@ -1,11 +1,12 @@
-package com.xmos.xta.engine;
+package com.xmos.xta.engine.instructions;
 
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xta.engine.Config;
 
 public abstract class XtaInstructionDecoder {
     public abstract XtaInstruction decode(int opcode, int pc, Config config);
     
-    static XtaInstructionDecoder createInstructionDecoder(
+    public static XtaInstructionDecoder createInstructionDecoder(
     		XeLoader.Architecture architecture) {
 		XtaInstructionDecoder instructionDecoder = null;
 		switch (architecture) {

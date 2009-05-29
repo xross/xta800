@@ -45,7 +45,6 @@ import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.GuiRouteInfo;
 import com.xmos.xta.gui.nodes.HiddenNode;
 import com.xmos.xta.gui.nodes.Node;
-import com.xmos.xta.gui.nodes.RouteNode;
 
 public class TreeView extends ViewPart implements IPropertyChangeListener,
 												  ISelectionListener {
@@ -256,7 +255,9 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 	            	manager.add(new Action("delete") {
 						public void run() {
 				            for (Object object : ((IStructuredSelection)selection).toList()) {
-								GuiEngine.getEngine().removeRoute(((RouteNode)object).getId());
+
+// TODO
+//				            	GuiEngine.getEngine().removeRoute(((RouteNode)object).getId());
 				            }
 						}
 					});
@@ -273,9 +274,10 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 				if (((IStructuredSelection)selection).size() == 1) {
 			        if (selection instanceof IStructuredSelection) {	            
 			            Object object = ((IStructuredSelection)selection).getFirstElement();
-			            if (object instanceof RouteNode) {
-			            	((Node)object).createContextMenu(m_parent.getShell(), manager);
-			            }
+// TODO
+//			            if (object instanceof RouteNode) {
+//			            	((Node)object).createContextMenu(m_parent.getShell(), manager);
+//			            }
 			        }
 				}
 			}
@@ -294,9 +296,10 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 
 					if (((IStructuredSelection)selection).size() == 1) {
 			            Object object = ((IStructuredSelection)selection).getFirstElement();
-			            if (object instanceof RouteNode) {
-			            	newId = ((RouteNode)object).getId();
-			            }
+// TODO
+//			            if (object instanceof RouteNode) {
+//			            	newId = ((RouteNode)object).getId();
+//			            }
 					}
 					
 					if (newId != currentSelectedId) {

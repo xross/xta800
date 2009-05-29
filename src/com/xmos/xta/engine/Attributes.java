@@ -4,7 +4,7 @@ public class Attributes {
     private boolean m_iterationsSet;    
     private long m_numIterations;  
 
-    Attributes() {
+    public Attributes() {
         m_iterationsSet = false;    
         m_numIterations = 0;
     }

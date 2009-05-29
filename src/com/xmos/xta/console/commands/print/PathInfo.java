@@ -4,7 +4,6 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.PathBasicBlock;
 
 public class PathInfo extends Command {
 	private int m_routeId;
@@ -60,19 +59,23 @@ public class PathInfo extends Command {
     	
     	switch (m_idType) {
         case BLOCK:
-        	PathBasicBlock block = engine.getRoute(m_routeId).getBlock(m_id);
-        	displayBlockSummary(console, block);
+        	// TODO
+        	//PathBasicBlock block = engine.getRoute(m_routeId).getBlock(m_id);
+        	//displayBlockSummary(console, block);
         	break;
         case PATH:
-        	PathBasicBlock path = engine.getRoute(m_routeId).getPath(m_id);			
-        	displayPathSummary(console, path);
+        	// TODO
+        	//PathBasicBlock path = engine.getRoute(m_routeId).getPath(m_id);			
+        	//displayPathSummary(console, path);
         	break;
         default:
         	assert(false);        
         }    	
     }
     
-    private void displayPathSummary(Console console, PathBasicBlock path) {
+    private void displayPathSummary(Console console) {
+    	// TODO
+    	/*
     	console.display(String.format("Path ID:          %d\n", path.getPathId()));
     	console.display(String.format("Time taken:       %.1f\n", path.getTimeTaken(true)));
         console.display(String.format("Thread cycles:    %d\n", path.getNumCycles(true)));
@@ -95,14 +98,18 @@ public class PathInfo extends Command {
         console.display(String.format("Num Unknowns (this):     %d\n", path.getNumUnknowns(false)));
 
         console.display(String.format("Number of iterations:    %d + %d\n", 
-        		path.getHardNumIterations(), path.getSoftNumIterations())); 
+        		path.getHardNumIterations(), path.getSoftNumIterations()));
+        */ 
     }
 
-    private void displayBlockSummary(Console console, PathBasicBlock block) {
+    private void displayBlockSummary(Console console) {
+    	// TODO
+    	/*
     	console.display(String.format("Timing(ns):       %.1f\n", block.getTimeTakenThis()));
     	console.display(String.format("Thread cycles:    %d\n", block.getNumCyclesThis()));
     	console.display(String.format("Num Instructions: %d\n", block.getNumInstructionsThis()));
     	console.display(String.format("Num FNops:        %d\n", block.getNumFNopsThis()));
-    	console.display(String.format("Num Pauseables:   %d\n", block.getNumPausablesThis()));        
+    	console.display(String.format("Num Pauseables:   %d\n", block.getNumPausablesThis()));
+    	*/        
     }    
 }

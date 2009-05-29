@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class Terminal extends Node {
 

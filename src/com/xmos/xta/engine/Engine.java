@@ -25,6 +25,7 @@ import com.xmos.xta.engine.analysis.nodes.Function;
 import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
+import com.xmos.xta.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
@@ -38,23 +39,18 @@ public class Engine implements Notifier {
 
 	public static int ROUTE_ID_LAST = -1;
 	
-	public enum ReferenceMode {
-		FILTERED, PROHIBITED, REQUIRED
-	}
-
 	private XeLoader m_xeLoader;
+	private List<XeObject> m_xeObjects;
 	private List<Route> m_routes;
 	private Route m_selectedRoute;
 	private Config m_config;
 	private File m_executableFile;
 	private int m_nodeId;
 	private int m_coreId;
-	private Notifier m_notifier;
-	private NodeCoreInstructionCaches m_nodeCoreInstructionCache;
+	private Notifier m_notifier;	
 	private Progress m_progress;
 	private IProgressMonitor m_jobMonitor;
 	private String m_srcPaths;
-	private ArrayList<XeObject> m_xeObjects;
 	private Constraint m_constraint;
 	private Sections m_sections;
 	private Collection<String> m_functionsVisited;
@@ -192,133 +188,76 @@ public class Engine implements Notifier {
 		}		
 		
 		XeLoader xeLoader = new XeLoader();
-
 		if (!xeLoader.loadExecutable(executableFile)) {
 			notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile + "' could not be loaded.");
 			return false;			
 		}
 		
-		m_xeLoader = xeLoader;
-		
-		//FIXME what is this here for?
-		m_nodeId = 0;
-		m_coreId = 0;
-		
 		m_xeObjects.clear();
-		for (int node : m_xeLoader.getNodeIds()) {
-			for (int core : m_xeLoader.getCoreIds(node)) {
-				m_xeObjects.add(new XeObject(m_xeLoader, node, core, fileFinder));
+		for (int node : xeLoader.getNodeIds()) {
+			for (int core : xeLoader.getCoreIds(node)) {
+				m_xeObjects.add(new XeObject(xeLoader, node, core, fileFinder));
 			}
 		}
 		
-		if (!m_sections.load(m_xeLoader, this)) {
+		if (!m_sections.load(xeLoader, this)) {
 			return false;
 		} 
-		
-		m_nodeCoreInstructionCache = new NodeCoreInstructionCaches(this, m_xeLoader, m_config);
-		
-		for(int nodeId : m_xeLoader.getNodeIds()){
-			for(int coreId : m_xeLoader.getCoreIds(nodeId)){
-				MemoryImage mi = m_xeLoader.getMemoryImage(nodeId, coreId);
-				int cpPointer =  m_xeLoader.getSymbolTable(nodeId, coreId).symbolAddress("_cp");
 				
-		//		decode the instruction
-				InstructionDecoder id = new InstructionDecoder(mi, m_xeLoader, getConfig(), m_xeLoader.getSymbolTable(nodeId, coreId));
-				boolean decoded = id.decode();
-				if(!decoded) {
+		for(int nodeId : xeLoader.getNodeIds()){
+			for(int coreId : xeLoader.getCoreIds(nodeId)){
+				MemoryImage mi = xeLoader.getMemoryImage(nodeId, coreId);
+				
+		        // decode the instruction
+				InstructionDecoder id = new InstructionDecoder(m_nodeId, m_coreId, xeLoader, getConfig());
+				if(!id.decode()) {
 					resetEngine();
 					return false;
 				}
-		//		find all thread start and end points
-				ThreadHandeler th = new ThreadHandeler(id, m_sections.getThreadStartPoints(nodeId, coreId), 
-						m_sections.getThreadStopPoints(nodeId, coreId));
-				Collection<Node> threadStarts = th.getThreadStarts();
-				Collection<Node> threadEnds = th.getThreadEnds();				
+				
+        		// find all thread start and end points
+				ThreadHandler th = new ThreadHandler(id, this);
+				Collection<Node> threadStartNodes = 
+					th.getThreadNodes(m_sections.getThreadStartPoints(nodeId, coreId));
+				Collection<Node> threadStopNodes = 
+					th.getThreadNodes(m_sections.getThreadStopPoints(nodeId, coreId));				
 
-		//		add all successors to instructions
-				SuccessorAdder sa = new SuccessorAdder(id, m_sections.getBranches(nodeId, coreId), mi, cpPointer, threadEnds);
-				boolean added = sa.process();
-				if(!added) {
+		        // add all successors to instructions
+				SuccessorAdder sa = new SuccessorAdder(nodeId, coreId, 
+						id, m_sections, threadStopNodes, xeLoader, this);
+				if (!sa.process()) {
 					resetEngine();
 					return false;
 				}
-		//		add functions to graph 
-				FunctionHandeler fh = new FunctionHandeler(id);
-				boolean functionsAdded = fh.addFunctions();
-				if(!functionsAdded) {
+				
+		        // add functions to graph 
+				FunctionHandler fh = new FunctionHandler(id);
+				if (!fh.addFunctions()) {
 					resetEngine();
 					return false;
 				}
 				Collection<Node> functionStarts = fh.getKnownFunctions().keySet();
 				
-				//printCFG(id, fh, threadStarts, threadEnds, functionStarts);
-				//identify and remove unreachable code
-				UnreachableCodeAnalyser uca = new UnreachableCodeAnalyser(id, threadStarts, functionStarts);
-				boolean unreachableDetected = uca.analyseReachable();
-				if(!unreachableDetected) {
+				// identify and remove unreachable code
+				UnreachableCodeAnalyser uca = new UnreachableCodeAnalyser(id, threadStartNodes, functionStarts);
+				if (!uca.analyseReachable()) {
 					resetEngine();
 					return false;
 				}
 				
-				//add fnops to static graph
-				//FnopAnalyser fa = new FnopAnalyser(id, threadStarts, threadEnds);
-				
-				ControlFlowGraph cfg = new ControlFlowGraph(threadStarts, functionStarts, fh.getFunctions(), nodeId, coreId);
+				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, functionStarts, fh.getFunctions(), nodeId, coreId);
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
 				sae.analyse();
-				//printCFG(id, fh, threadStarts, threadEnds, functionStarts);
-			}
-		
+			}		
 		}
 		
-		/*
-
-		m_routes.clear();
-		setSelectedRoute(null);
-		Route.resetRouteCount();
+		m_xeLoader = xeLoader;		
+		m_nodeId = 0;
+		m_coreId = 0;				
 		setConstraint(ConstraintFactory.createConstraint(this, ""));
-
-		// Need to update as the executable might be of a different architecture
-		m_mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
 		
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
-		*/
 		return true;
-	}
-
-	private void printCFG(InstructionDecoder id, FunctionHandeler pfh, Collection<Node> threadStarts, 
-			Collection<Node> threadEnds, Collection<Node> functionStarts) {
-		System.out.println("digraph g {");
-		for(Node n : id.getInstructions()){
-			System.out.print(n.getGraphvizName() + " [label=\"" + n.getInstructions() + "\"");
-			if(threadStarts.contains(n)){
-				System.out.print(", style=filled, color = green");
-			} else if(functionStarts.contains(n)){
-				System.out.print(", style=filled, color = lightblue");
-			} else if(threadEnds.contains(n)){
-				System.out.print(", style=filled, color = pink");
-			} 
-			System.out.println(", shape=box]; ");
-		}
-		for(Function n : pfh.getFunctions()){
-			System.out.println(n.getGraphvizName() + " [label=\"" + n.getFucntionName() + "\"]; ");
-		}
-		for(Node n : id.getInstructions()){
-			for(Node next : n.getNextNodes()){
-				System.out.println(n.getGraphvizName() + " -> " + next.getGraphvizName() + ";");
-			}
-		}
-		for(Node n : pfh.getFunctions()){
-			for(Node next : n.getNextNodes()){
-				System.out.println(n.getGraphvizName() + " -> " + next.getGraphvizName() + ";");
-			}
-		}
-		System.out.println("}");
-	}
-
-	private void resetEngine() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public Progress getProgress() {
@@ -507,105 +446,82 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean setInstructionTimeTaken(Reference ref, double timeTaken) {
-		if (m_nodeCoreInstructionCache == null) {
-			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
-			return false;
-		}
-
 		if (!resolveRefernece(ref, this)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", ref.getRef()));
 			return false;
 		}
 
-		if (m_nodeCoreInstructionCache.setInstructionTimeTaken(
-				ref.getPc(), timeTaken, m_nodeId, m_coreId)) {
-
-			refreshRouteStats();
-
-			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
-		}
+// TODO		
+//		if (m_nodeCoreInstructionCache.setInstructionTimeTaken(
+//				ref.getPc(), timeTaken, m_nodeId, m_coreId)) {
+//
+//			refreshRouteStats();
+//			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+//			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+//			return true;
+//		}
 		return false;
 	}
 
 	public double getInstructionTimeTaken(int pc) {
-		if (m_nodeCoreInstructionCache == null) {
-			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
-			return 0;
-		}
-		return m_nodeCoreInstructionCache.getInstructionTimeTaken(pc, m_nodeId, m_coreId);
+// TODO		
+//		return m_nodeCoreInstructionCache.getInstructionTimeTaken(pc, m_nodeId, m_coreId);
+		return 0;
 	}
 
 	public boolean setInstructionNumCycles(Reference ref, long numCycles) {
-		if (m_nodeCoreInstructionCache == null) {
-			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
-			return false;
-		}
-
 		if (!resolveRefernece(ref, this)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", ref.getRef()));
 			return false;
 		}
 
-		if (m_nodeCoreInstructionCache.setInstructionNumCycles(
-
-				ref.getPc(), numCycles, m_nodeId, m_coreId)) {
-			refreshRouteStats();
-
-			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-            return true;			
-		}		
+// TODO		
+//		if (m_nodeCoreInstructionCache.setInstructionNumCycles(
+//				ref.getPc(), numCycles, m_nodeId, m_coreId)) {
+//			
+//			refreshRouteStats();
+//			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+//			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+//          return true;			
+//		}		
 		return false;
 	}
 
 	public long getInstructionNumCycles(int pc) {
-		if (m_nodeCoreInstructionCache == null) {
-			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
-			return 0;
-		}
-		return m_nodeCoreInstructionCache.getInstructionNumCycles(pc, m_nodeId, m_coreId);
+// TODO
+//		return m_nodeCoreInstructionCache.getInstructionNumCycles(pc, m_nodeId, m_coreId);
+		return 0;
 	}
 
 	public void unsetInstructionTime(int pc) {
-		if (m_nodeCoreInstructionCache == null) {
-			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
-			return;
-		}
-		if (m_nodeCoreInstructionCache.unsetInstructionTime(pc, m_nodeId, m_coreId)) {
-			refreshRouteStats();
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-   			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-		} else {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unable to unset time for: 0x%0x", pc));
-		}
+// TODO		
+//		if (m_nodeCoreInstructionCache.unsetInstructionTime(pc, m_nodeId, m_coreId)) {
+//			refreshRouteStats();
+//			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+//  			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+//		} else {
+//			notify(Notifier.NOTIFY_ERROR, String.format("Unable to unset time for: 0x%0x", pc));
+//		}
 	}
 
 	public void unsetInstructionTime(Reference ref, HashSet<Unknown> unknowns) {
-		if (m_nodeCoreInstructionCache == null) {
-			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
-			return;
-		}
-
-		if (m_nodeCoreInstructionCache.unsetInstructionTime(ref, m_nodeId, m_coreId, unknowns)) {
-			refreshRouteStats();
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-   			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-		} else {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unable to unset time for: %s", ref.getRef()));
-		}
+// TODO
+//		if (m_nodeCoreInstructionCache.unsetInstructionTime(ref, m_nodeId, m_coreId, unknowns)) {
+//			refreshRouteStats();
+//			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+//   			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+//		} else {
+//			notify(Notifier.NOTIFY_ERROR, String.format("Unable to unset time for: %s", ref.getRef()));
+//		}
 	}
 
 	public boolean canInstructionPause(int pc) {
-		if (m_nodeCoreInstructionCache == null) {
-			notify(Notifier.NOTIFY_ERROR, "No executable loaded");
-			return false;
-		}
-		return m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId,
-				m_coreId).getInstruction(pc).canPause();
+// TODO
+//		return m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId,
+//				m_coreId).getInstruction(pc).canPause();
+		return false;
 	}
 	
 	public boolean setRouteMaxTime(int routeId, double time) {
@@ -843,6 +759,10 @@ public class Engine implements Notifier {
 		return m_functionsVisited;
 	}
 	
+	private void resetEngine() {
+	}
+
+	
 	private boolean analyseRouteSafely(int startPc, TreeSet<Integer> endPcs, RouteDescription routeDescription) {				
 		boolean success = false;
 		try {
@@ -973,12 +893,8 @@ public class Engine implements Notifier {
     }
 	
 	private void refreshRouteStats() {
-		for (Route route : m_routes) {
-			route.invalidateAllBlocks();
-			route.sortPaths();
-		}		
+		// TODO
 	}	
-
 	
 	private boolean checkAddParameters(String label, Reference ref, String type) {
 		if (!resolveRefernece(ref, this)) {
@@ -992,4 +908,36 @@ public class Engine implements Notifier {
 		return true;
 	}
 
+	// ===================================================================== //
+	// Debug Methods
+	// ===================================================================== //
+	public void printCFG(InstructionDecoder id, FunctionHandler pfh, Collection<Node> threadStarts, 
+			Collection<Node> threadEnds, Collection<Node> functionStarts) {
+		System.out.println("digraph g {");
+		for(Node n : id.getInstructions()){
+			System.out.print(n.getGraphvizName() + " [label=\"" + n.getInstructions() + "\"");
+			if(threadStarts.contains(n)){
+				System.out.print(", style=filled, color = green");
+			} else if(functionStarts.contains(n)){
+				System.out.print(", style=filled, color = lightblue");
+			} else if(threadEnds.contains(n)){
+				System.out.print(", style=filled, color = pink");
+			} 
+			System.out.println(", shape=box]; ");
+		}
+		for(Function n : pfh.getFunctions()){
+			System.out.println(n.getGraphvizName() + " [label=\"" + n.getFucntionName() + "\"]; ");
+		}
+		for(Node n : id.getInstructions()){
+			for(Node next : n.getNextNodes()){
+				System.out.println(n.getGraphvizName() + " -> " + next.getGraphvizName() + ";");
+			}
+		}
+		for(Node n : pfh.getFunctions()){
+			for(Node next : n.getNextNodes()){
+				System.out.println(n.getGraphvizName() + " -> " + next.getGraphvizName() + ";");
+			}
+		}
+		System.out.println("}");
+	}	
 }

@@ -15,8 +15,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
-import com.xmos.xta.engine.LoopAttachment;
-import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.gui.GuiEngine;
 
@@ -25,20 +23,18 @@ public class Iterations extends XtaDialog {
 	private long m_numIterations;
 	private Route m_route;
 		
-	PathBasicBlock m_tail;
-	PathBasicBlock m_header;
-	
-    public Iterations(Shell parent, final Route route, final PathBasicBlock tail) {
+    public Iterations(Shell parent, final Route route) {
     	super(parent);
     	m_route = route;
     	
-    	m_tail = tail;
-    	m_header = m_tail.getPathBlocks().get(0);
-    	try {
-			m_numIterations = m_header.getLoops().getHardLoopIterations(m_tail);
-		} catch (Exception e) {
-			m_numIterations = 0;
-		}
+    	// TODO
+    	//m_tail = tail;
+    	//m_header = m_tail.getPathBlocks().get(0);
+    	//try {
+		//	m_numIterations = m_header.getLoops().getHardLoopIterations(m_tail);
+		//} catch (Exception e) {
+		//	m_numIterations = 0;
+		//}
     	open();
     }
     
@@ -54,11 +50,13 @@ public class Iterations extends XtaDialog {
 	    gridLayout.numColumns = 3;
 	    container.setLayout(gridLayout);
 
-		createNumIterationsControl(container);
+	    // TODO
+		//createNumIterationsControl(container);
 
     	return container;
     }
-
+// TODO    
+/*
 	private void createControlLabel(Composite parent, String str) {
 		Label label = new Label(parent, SWT.NONE);		        
 	    label.setLayoutData(new GridData(GridData.END, GridData.CENTER,
@@ -123,4 +121,5 @@ public class Iterations extends XtaDialog {
     	}
     	super.buttonPressed(id);
     }
+*/    
 }

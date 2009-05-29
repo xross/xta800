@@ -11,20 +11,19 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
-import com.xmos.xta.gui.nodes.LoopNode;
 import com.xmos.xta.gui.nodes.Node;
-import com.xmos.xta.gui.nodes.PathNode;
 
 public class MaxIterations extends XtaDialog {
 	
 	private long m_numIterations;
 	
-    LoopNode m_loopNode;
+// TODO	
+//    LoopNode m_loopNode;
 	
-    public MaxIterations(Shell parent, final LoopNode pathNode) {
+    public MaxIterations(Shell parent) {
     	super(parent);
-    	m_loopNode = pathNode;
-    	m_numIterations = m_loopNode.getLoopMax();
+//    	m_loopNode = pathNode;
+//    	m_numIterations = m_loopNode.getLoopMax();
     	open();
     }
 
@@ -40,11 +39,11 @@ public class MaxIterations extends XtaDialog {
 	    gridLayout.numColumns = 3;
 	    container.setLayout(gridLayout);
 
-		createNumIterationsControl(container, m_loopNode);
+//		createNumIterationsControl(container, m_loopNode);
 
     	return container;
     }
-
+/*
 	private void createControlLabel(Composite parent, String str) {
 		Label label = new Label(parent, SWT.NONE);		        
 	    label.setLayoutData(new GridData(GridData.END, GridData.CENTER,
@@ -88,4 +87,5 @@ public class MaxIterations extends XtaDialog {
     	}
     	super.buttonPressed(id);
     }
+*/    
 }

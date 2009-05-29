@@ -6,11 +6,8 @@ import java.util.List;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
-import com.xmos.xta.engine.Status;
-import com.xmos.xta.engine.Unresolved;
-import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class TreeDisplayer {
 	public enum Level {
@@ -40,7 +37,8 @@ public class TreeDisplayer {
 
 		if (!Command.validateRoutes(m_engine, m_console))
 			return;		    	
-    	
+// TODO
+/*
 		for (Route route : m_engine.getRoutes()) {
 	    	switch (m_level) {
 	    	case complete_paths:
@@ -78,8 +76,10 @@ public class TreeDisplayer {
 	            break;
 	    	}    				
 		}
+*/		
     }
-	        
+// TODO
+/*
     private void summarisePaths(List<PathBasicBlock> loopPaths, String indent, PathBasicBlock parent) {
         for (PathBasicBlock path : loopPaths) {
             long iterations = 1;
@@ -193,5 +193,6 @@ public class TreeDisplayer {
                 m_console.display("\n");
             }
         }
-    }    
+    }  
+*/
 }

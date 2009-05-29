@@ -6,6 +6,7 @@ import com.xmos.xta.console.commands.CommandContainer;
 public class Print extends CommandContainer {
 	static private Command[] m_options = { 
 		new Summary(), 
+		new Structure(),
 		new Asm(), 
 		new Src(), 
 		new Mix(), 

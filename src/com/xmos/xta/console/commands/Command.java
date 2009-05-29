@@ -93,16 +93,18 @@ public abstract class Command {
     	
     	switch (idType) {
         case BLOCK:
-        	if (route.getBlock(id) == null) {
-        		console.display(String.format("Error: invalid block id: %d\n", id));        		
-        		return false;
-        	}
+        	// TODO
+        	//if (route.getBlock(id) == null) {
+        	//	console.display(String.format("Error: invalid block id: %d\n", id));        		
+        	//	return false;
+        	//}
         	return true;
         case PATH:
-        	if (route.getPath(id) == null) {
-        		console.display(String.format("Error: invalid path id: %d\n", id));        		
-        		return false;
-        	}    	
+        	// TODO
+        	//if (route.getPath(id) == null) {
+        	//	console.display(String.format("Error: invalid path id: %d\n", id));        		
+        	//	return false;
+        	//}    	
         	return true;        	
         default:
         	assert(false);

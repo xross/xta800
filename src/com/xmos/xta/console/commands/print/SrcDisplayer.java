@@ -12,9 +12,8 @@ import com.xmos.xeobject.SourceLine;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.commands.Command;
-import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class SrcDisplayer {
 	private static final boolean DEBUG = false;
@@ -39,12 +38,14 @@ public class SrcDisplayer {
         Vector<XtaInstruction> instructions = null;    		
         switch (m_idType) {
         case BLOCK:
-        	PathBasicBlock block = m_engine.getRoute(m_routeId).getBlock(m_id);			
-        	instructions = new Vector<XtaInstruction>( block.getInstructionStream());
+        	// TODO
+        	//PathBasicBlock block = m_engine.getRoute(m_routeId).getBlock(m_id);			
+        	//instructions = new Vector<XtaInstruction>( block.getInstructionStream());
         	break;
         case PATH:
-        	PathBasicBlock path = m_engine.getRoute(m_routeId).getPath(m_id);			
-        	instructions = path.getInstructions(false);
+        	// TODO
+        	//PathBasicBlock path = m_engine.getRoute(m_routeId).getPath(m_id);			
+        	//instructions = path.getInstructions(false);
         	break;
         default:
         	assert(false);

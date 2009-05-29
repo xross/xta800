@@ -13,7 +13,6 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
 
 public class Functions extends Command {
@@ -68,9 +67,10 @@ public class Functions extends Command {
     	    int functionSize = symbolTable.functionSize(functionAddress);
     	    
         	TreeSet<Integer> pathIds = new TreeSet<Integer>();
-            for (PathBasicBlock path : route.getCompletedPaths()) {
-            	buildPathsWithinFunctionSet(path, pathIds, functionAddress, functionSize);
-            }    	
+        	// TODO
+            //for (PathBasicBlock path : route.getCompletedPaths()) {
+            //	buildPathsWithinFunctionSet(path, pathIds, functionAddress, functionSize);
+            //}    	
             
             if (pathIds.size() > 0) {
             	console.display(String.format("%s: ", symbol.getName())); 
@@ -81,30 +81,32 @@ public class Functions extends Command {
             }
     	}
     }
-    
-    private void buildPathsWithinFunctionSet(PathBasicBlock path, Set<Integer> pathSet, 
-    		int functionAddress, int functionSize) {   
-    	
-        for (PathBasicBlock block : path.getPathBlocks()) {
-            if (pathWithinFunction(block, functionAddress, functionSize)) {
-                if (!pathSet.contains(path.getPathId())) {
-                    pathSet.add(path.getPathId());
-                }
-            }
-        
-            for (PathBasicBlock loopPath : block.getLoopPaths(path)) {
-   		    	buildPathsWithinFunctionSet(loopPath, pathSet, functionAddress, functionSize);
-       		}
-        }
-    }
-    
-    private boolean pathWithinFunction(PathBasicBlock path, int functionAddress, int functionSize) {
-      	for (Instruction instruction : path.getInstructions(false)) {
-        	if ((instruction.getPc() >= functionAddress) &&
-        	    (instruction.getPc() < (functionAddress + functionSize))) {
-        	    return true;
-        	}
-        }
-        return false;
-    }    	                
+
+// TODO    
+//    private void buildPathsWithinFunctionSet(PathBasicBlock path, Set<Integer> pathSet, 
+//    		int functionAddress, int functionSize) {   
+//    	
+//        for (PathBasicBlock block : path.getPathBlocks()) {
+//            if (pathWithinFunction(block, functionAddress, functionSize)) {
+//                if (!pathSet.contains(path.getPathId())) {
+//                    pathSet.add(path.getPathId());
+//                }
+//            }
+//        
+//            for (PathBasicBlock loopPath : block.getLoopPaths(path)) {
+//   		    	buildPathsWithinFunctionSet(loopPath, pathSet, functionAddress, functionSize);
+//       		}
+//        }
+//    }
+ 
+// TODO    
+//    private boolean pathWithinFunction(PathBasicBlock path, int functionAddress, int functionSize) {
+//      	for (Instruction instruction : path.getInstructions(false)) {
+//        	if ((instruction.getPc() >= functionAddress) &&
+//        	    (instruction.getPc() < (functionAddress + functionSize))) {
+//        	    return true;
+//        	}
+//        }
+//        return false;
+//    }    	                
 }

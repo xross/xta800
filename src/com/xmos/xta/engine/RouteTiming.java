@@ -53,19 +53,14 @@ public class RouteTiming {
 	}
 		
 	public int getWorstCycles() {
+		// TODO
 		int worstCycles = 0;
-	    for(PathBasicBlock path : m_route.getCompletedPaths()) {
-	    	//FIXME
-            worstCycles = Math.max(worstCycles, path.getNumCycles(true));
-        }
         return worstCycles;	
 	}
 	
 	public double getWorstTime() {
+		// TODO
 		double worstTime = 0;
-	    for(PathBasicBlock path : m_route.getCompletedPaths()) {
-            worstTime = Math.max(worstTime, path.getTimeTaken(true));
-        }
         return worstTime;	
 	}
 			

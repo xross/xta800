@@ -6,7 +6,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
-import com.xmos.xta.gui.nodes.BlockNode;
 import com.xmos.xta.gui.nodes.Node;
 
 public class FunctionPathNode extends ViewNode {
@@ -81,12 +80,14 @@ public class FunctionPathNode extends ViewNode {
 	
 	private int getBlockY() {
 		for (Node treeNode : m_treeNode.getChildren()) {
-			if (treeNode instanceof BlockNode) {
-				ViewNode child = treeNode.getFunctionNode();
-				if (child != null) {
-					return child.getPixelsY();
-				}
-			}
+
+// TODO
+//			if (treeNode instanceof BlockNode) {
+//				ViewNode child = treeNode.getFunctionNode();
+//				if (child != null) {
+//					return child.getPixelsY();
+//				}
+//			}
 		}
 		return 0;
 	}
