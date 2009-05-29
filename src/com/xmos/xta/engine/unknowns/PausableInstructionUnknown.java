@@ -1,6 +1,6 @@
 package com.xmos.xta.engine.unknowns;
 
-import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class PausableInstructionUnknown extends Unknown {		
 

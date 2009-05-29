@@ -15,9 +15,8 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
-import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class Sources extends Command {
 	private int m_routeId;
@@ -60,6 +59,8 @@ public class Sources extends Command {
     }
 
     private void displaySources(Console console, Route route, DebugInfo debugInfo, XeObject xeObject) {
+    	// TODO
+    	/*
     	ArrayList<String> files = new ArrayList<String>();
   	    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {
         	TreeSet<Integer> pathIds = new TreeSet<Integer>();
@@ -79,8 +80,11 @@ public class Sources extends Command {
 	    for(String file : files){
 	    	console.display(file + "\n"); 
 	    }
+	    */
     }   	
-    
+
+// TODO
+/*
     private void buildPathsWithinSourcesSet(PathBasicBlock path, Set<Integer> pathSet, String sourceFileName, XeObject xeObject) {	
         if (pathWithinSourceFile(path, sourceFileName, xeObject)) {
         	pathSet.add(path.getPathId());
@@ -114,5 +118,6 @@ public class Sources extends Command {
         	return true;
         }        
         return false;
-    }           
+    } 
+*/         
 }

@@ -4,9 +4,8 @@ import java.util.LinkedList;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.commands.Command;
-import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class TraceDisplayer {
 	private Engine m_engine;
@@ -29,21 +28,24 @@ public class TraceDisplayer {
         switch (m_idType) {
         case BLOCK:
         {
-        	PathBasicBlock block = m_engine.getRoute(m_routeId).getBlock(m_id);
-        	displayBlock(block);
+        	// TODO
+        	//PathBasicBlock block = m_engine.getRoute(m_routeId).getBlock(m_id);
+        	//displayBlock(block);
         	break;
         }
         case PATH:
         {
-        	PathBasicBlock path = m_engine.getRoute(m_routeId).getPath(m_id);
-    		displayPath(path);
+        	// TODO
+        	//PathBasicBlock path = m_engine.getRoute(m_routeId).getPath(m_id);
+    		//displayPath(path);
         	break;
         }
         default:
         	assert(false);
         }
     }
-
+// TODO    
+/*
     private void displayPath(PathBasicBlock path) {
     	for (PathBasicBlock block : path.getPathBlocks()) {
     		for (PathBasicBlock loopPath : block.getLoopPaths(path)) {
@@ -80,4 +82,5 @@ public class TraceDisplayer {
           	m_console.display("\n");
 		}  		
     }
+*/    
 }

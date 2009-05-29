@@ -11,18 +11,18 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import com.xmos.xta.gui.nodes.LoopNode;
 
 public class Scope extends XtaDialog {
 	
 	private boolean m_scope;
 
-	LoopNode m_loopNode;
+// TODO	
+//	LoopNode m_loopNode;
 	
-    public Scope(Shell parent, final LoopNode loopNode) {
+    public Scope(Shell parent) {
     	super(parent);
-    	m_loopNode = loopNode;
-    	m_scope = loopNode.getScope();
+//    	m_loopNode = loopNode;
+//    	m_scope = loopNode.getScope();
     	open();
     }
 
@@ -36,10 +36,10 @@ public class Scope extends XtaDialog {
 	    final GridLayout gridLayout = new GridLayout();
 	    gridLayout.numColumns = 3;
 	    container.setLayout(gridLayout);
-		createAbsoluteCountControl(container, m_loopNode);
+//		createAbsoluteCountControl(container, m_loopNode);
     	return container;
     }
-
+/*
 	private void createControlLabel(Composite parent, String str) {
 		Label label = new Label(parent, SWT.NONE);		        
 	    label.setLayoutData(new GridData(GridData.END, GridData.CENTER,
@@ -72,4 +72,5 @@ public class Scope extends XtaDialog {
     	}
     	super.buttonPressed(id);
     }
+*/    
 }

@@ -9,13 +9,15 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import com.xmos.xta.engine.PathBasicBlock;
-import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.gui.views.console.ConsoleView;
 import com.xmos.xta.gui.views.viewnode.FunctionBlockNode;
 import com.xmos.xta.gui.views.viewnode.StructureBlockNode;
 
+// TODO
+/*
 public class BlockNode extends Node {
+/*
 	PathBasicBlock m_block;
 	
     public BlockNode(PathBasicBlock block, Node parent) {
@@ -126,3 +128,4 @@ public class BlockNode extends Node {
 		ids.add(m_block.getBasicBlock().getId());
 	}
 }
+*/

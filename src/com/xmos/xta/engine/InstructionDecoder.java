@@ -10,6 +10,8 @@ import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.analysis.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.nodes.Node;
+import com.xmos.xta.engine.instructions.XtaInstruction;
+import com.xmos.xta.engine.instructions.XtaInstructionDecoder;
 
 public class InstructionDecoder {
 

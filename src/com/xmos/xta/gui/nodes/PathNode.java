@@ -10,15 +10,16 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
-import com.xmos.xta.engine.XtaInstruction;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.Iterations;
 import com.xmos.xta.gui.views.console.ConsoleView;
 import com.xmos.xta.gui.views.viewnode.FunctionPathNode;
 import com.xmos.xta.gui.views.viewnode.StructurePathNode;
 
+// TODO
+/*
 public class PathNode extends Node {
     private PathBasicBlock m_block;
     private boolean m_isRoot;
@@ -195,3 +196,4 @@ public class PathNode extends Node {
 		return m_block;
 	}
 }
+*/

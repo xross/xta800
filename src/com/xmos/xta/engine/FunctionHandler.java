@@ -8,15 +8,16 @@ import java.util.Set;
 import com.xmos.xta.engine.analysis.nodes.Function;
 import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.analysis.patterns.CommonMethods;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
-public class FunctionHandeler {
+public class FunctionHandler {
 
 	private InstructionDecoder m_id;
 	private Collection<Function> m_functions;
 	private Map<Node, Node> m_instToFunc;
 	private Collection<Node> m_pseudoFunctions;
 	
-	public FunctionHandeler(InstructionDecoder id) {
+	public FunctionHandler(InstructionDecoder id) {
 		m_id = id;
 	}
 

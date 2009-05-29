@@ -1,14 +1,14 @@
 package com.xmos.xta.engine;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeSet;
 import com.xmos.isa.Instruction;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.analysis.patterns.CommonMethods;
+import com.xmos.xta.engine.instructions.InstructionMnemonics;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class SuccessorAdder {
 	private InstructionDecoder m_id;
@@ -16,14 +16,16 @@ public class SuccessorAdder {
 	private MemoryImage m_mi;
 	private int m_cpPointer;
 	Collection<Node> m_threadEnds;
+	InstructionMnemonics m_mnenonics;
 
 	public SuccessorAdder(InstructionDecoder id, Map<Integer, TreeSet<Integer>> branchMap, 
-			MemoryImage mi, int cpPointer, Collection<Node> threadEnds) {
+			MemoryImage mi, int cpPointer, Collection<Node> threadEnds, InstructionMnemonics mnenonics) {
 		m_threadEnds = threadEnds;
 		m_branchMap = branchMap;
 		m_id = id;
 		m_mi = mi;
 		m_cpPointer = cpPointer;
+		m_mnenonics = mnenonics;
 	}
 
 	public boolean process (){
@@ -72,30 +74,26 @@ public class SuccessorAdder {
 	}
 
 	private void handleNonBranchingInstructions(Node instruction, XtaInstruction inst) {
-		if(!(inst.isBranch() || inst.isLink() || m_waitInstructions.contains(inst.getNmenonic()) || m_threadEnds.contains(instruction))){
+		if(!(inst.isBranch() || inst.isLink() || m_mnenonics.isWait(inst) || m_threadEnds.contains(instruction))){
 			int nextPc = inst.getPc() + inst.getNumBytes();
 			connect(instruction, nextPc);
 		} 
 	}
 
-	private void handleBranches(Node instruction, XtaInstruction inst) {
-		
-		if(inst.getBranchPcRelative()){
+	private void handleBranches(Node instruction, XtaInstruction inst) {		
+		if (inst.getBranchPcRelative()){
 			int target = inst.getBranchPcRelativeTargetPc();
 			connect(instruction, target);
 		}
-		if(m_conditionalInstructions.contains(inst.getNmenonic())){
+		if (m_mnenonics.isConditional(inst)){
 			int target = inst.getPc() + inst.getNumBytes();
 			connect(instruction, target);
-		}
-		
-		//TODO make this stage more rigorous. currently it is sloppy
-		if (inst.getNmenonic().equals(new RevbXtaInstruction_blacp_u10(0, 0, null).getNmenonic())) {
+		}		
+		if (m_mnenonics.isBlacpShort(inst)) {
 			int imm = XtaInstruction.getBits(16, 10, inst.getOpcode()) << Instruction.NUM_BYTES_PER_WORD_LOG2;
 			calculateCPAddress(instruction, imm);
-		}
-		
-		if (inst.getNmenonic().equals(new RevbXtaInstruction_blacp_lu10(0, 0, null).getNmenonic())) {
+		}		
+		if (m_mnenonics.isBlacpLong(inst)) {
 			int imm = XtaInstruction.getBitsHL(16, 10, 0, 10, inst.getOpcode()) << Instruction.NUM_BYTES_PER_WORD_LOG2;
 			calculateCPAddress(instruction, imm);
 		}
@@ -130,30 +128,4 @@ public class SuccessorAdder {
 			//m_notifier.notify(Notifier.NOTIFY_WARNING, String.format("Branch address 0x%x out of bounds", address + i));
 		}
 	}
-	
-	private static final HashSet<String> m_waitInstructions = new HashSet<String>(Arrays.asList( 
-			new RevbXtaInstruction_waitef_1r(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_waitet_1r(0, 0, null).getNmenonic(), 
-			new RevbXtaInstruction_waiteu_0r(0, 0, null).getNmenonic(),
-			new RevaXtaInstruction_waitef_1r(0, 0, null).getNmenonic(),
-			new RevaXtaInstruction_waitet_1r(0, 0, null).getNmenonic(), 
-			new RevaXtaInstruction_waiteu_0r(0, 0, null).getNmenonic()));
-	
-	private static final HashSet<String> m_conditionalInstructions = new HashSet<String>(Arrays.asList( 
-			new RevaXtaInstruction_brbf_ru6(0, 0, null).getNmenonic(),
-			new RevaXtaInstruction_brbf_lru6(0, 0, null).getNmenonic(), 
-			new RevaXtaInstruction_brbt_ru6(0, 0, null).getNmenonic(),
-			new RevaXtaInstruction_brbt_lru6(0, 0, null).getNmenonic(),
-			new RevaXtaInstruction_brff_ru6(0, 0, null).getNmenonic(), 
-			new RevaXtaInstruction_brff_lru6(0, 0, null).getNmenonic(),
-			new RevaXtaInstruction_brft_ru6(0, 0, null).getNmenonic(), 
-			new RevaXtaInstruction_brft_lru6(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_brbf_ru6(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_brbf_lru6(0, 0, null).getNmenonic(), 
-			new RevbXtaInstruction_brbt_ru6(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_brbt_lru6(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_brff_ru6(0, 0, null).getNmenonic(), 
-			new RevbXtaInstruction_brff_lru6(0, 0, null).getNmenonic(),
-			new RevbXtaInstruction_brft_ru6(0, 0, null).getNmenonic(), 
-			new RevbXtaInstruction_brft_lru6(0, 0, null).getNmenonic()));
 }

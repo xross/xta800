@@ -160,6 +160,9 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 
 	private void checkTotalPaths() {
 		Route route = GuiEngine.getEngine().getSelectedRoute();
+	
+// TODO
+/*
 		if (route != null) {
 			int numUnresolvedPaths = route.getUnresolvedPaths().size();
 			if (numUnresolvedPaths == 0 && route.getCompletedPaths().size() == 0) {
@@ -168,7 +171,8 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 		        ErrorDialog.openError(Display.getCurrent().getActiveShell(),
 		            "Warning", null, status);
 			}
-		}		
+		}
+*/				
 	}
 
 	class ProgressUpdater extends Thread {

@@ -32,7 +32,6 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.PathBasicBlock;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
@@ -161,8 +160,8 @@ public class UnknownsViewer {
 			}
 		}
 	}
- PathBasicBlock selectedLoopBlock;
-	private void setupMouseListeners(IWorkbenchPartSite site, final Composite parent) {
+	
+ 	private void setupMouseListeners(IWorkbenchPartSite site, final Composite parent) {
 		m_unknownsViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				if (m_selectedCodeRefs.size() == 1) {
@@ -196,7 +195,8 @@ public class UnknownsViewer {
 					} else if(unknown.getType().equals(LoopIterationsUnknown.class.getName())){
 						m_selectedLoopRefs.add(ref);
 						LoopIterationsUnknown loop = (LoopIterationsUnknown)unknown;
-						selectedLoopBlock = loop.getTail();
+						// TODO
+						//selectedLoopBlock = loop.getTail();
 					} else {
 						assert(false);
 					}
@@ -236,7 +236,7 @@ public class UnknownsViewer {
 		m_setLoopIterationsAction = new Action() { 
 			public void run() {
 				Route route = GuiEngine.getEngine().getSelectedRoute();
-     			new Iterations(parent.getShell(), route, selectedLoopBlock );
+     			new Iterations(parent.getShell(), route);
 			}
 		}; 
 		m_setLoopIterationsAction.setText("Set iterations");

@@ -5,13 +5,13 @@ import java.util.HashSet;
 
 import com.xmos.xta.engine.analysis.nodes.Node;
 
-public class ThreadHandeler {
+public class ThreadHandler {
 
 	private Collection<Integer> m_threadStarts;
 	private Collection<Integer> m_threadStops;
 	private InstructionDecoder m_id;
 	
-	public ThreadHandeler(InstructionDecoder id, Collection<Integer> threadStarts, Collection<Integer> threadStops) {
+	public ThreadHandler(InstructionDecoder id, Collection<Integer> threadStarts, Collection<Integer> threadStops) {
 		m_threadStarts = threadStarts;
 		m_threadStops = threadStops;
 		m_id = id;
