@@ -82,23 +82,6 @@ public class Block extends Node {
 		return new HashSet<Node> (m_insts);
 	}
 
-
-	public void appendToGraph(StringBuffer body, StringBuffer connections,
-			Collection<Node> last, Collection<Node> next, int indent, Node parent) {
-		/*
-		if(m_block != null){
-			body.append(intToTab(indent) + getGraphvizName() + " [label = \"Basic block " + m_block.getId() + "\"];\n");
-		} else {
-			body.append(intToTab(indent) +getGraphvizName() + " [label = \"Block " + m_id + "\"];\n");
-		}
-		for (Node node : last) {
-			connections.append( node.getGraphvizName() + " -> " + getGraphvizName() + ";\n");
-		}
-		
-		next.add(this);
-		*/
-	}
-
 	public String getGraphvizName() {
 		return "Block" + m_id;
 	}

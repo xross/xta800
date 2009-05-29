@@ -2,7 +2,6 @@ package com.xmos.xta.engine.analysis;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import com.xmos.xta.engine.analysis.nodes.Block;
 import com.xmos.xta.engine.analysis.nodes.Node;
 

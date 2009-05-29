@@ -75,4 +75,7 @@ public class LoopPatternMatcher extends PatternMatcher {
 		workingSet.add(loop);
 	}
 
+	public boolean usesDominatorTree() {
+		return false;
+	}
 }

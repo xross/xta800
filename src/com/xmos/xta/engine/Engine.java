@@ -58,6 +58,7 @@ public class Engine implements Notifier {
 	private Constraint m_constraint;
 	private Sections m_sections;
 	private Collection<String> m_functionsVisited;
+	
 
 	public Engine(Config config) {
 		m_xeObjects = new ArrayList<XeObject>();
@@ -199,6 +200,7 @@ public class Engine implements Notifier {
 		
 		m_xeLoader = xeLoader;
 		
+		//FIXME what is this here for?
 		m_nodeId = 0;
 		m_coreId = 0;
 		
@@ -227,13 +229,12 @@ public class Engine implements Notifier {
 					resetEngine();
 					return false;
 				}
-				
 		//		find all thread start and end points
 				ThreadHandeler th = new ThreadHandeler(id, m_sections.getThreadStartPoints(nodeId, coreId), 
 						m_sections.getThreadStopPoints(nodeId, coreId));
 				Collection<Node> threadStarts = th.getThreadStarts();
 				Collection<Node> threadEnds = th.getThreadEnds();				
-				
+
 		//		add all successors to instructions
 				SuccessorAdder sa = new SuccessorAdder(id, m_sections.getBranches(nodeId, coreId), mi, cpPointer, threadEnds);
 				boolean added = sa.process();
@@ -241,7 +242,6 @@ public class Engine implements Notifier {
 					resetEngine();
 					return false;
 				}
-				
 		//		add functions to graph 
 				FunctionHandeler fh = new FunctionHandeler(id);
 				boolean functionsAdded = fh.addFunctions();
@@ -252,7 +252,6 @@ public class Engine implements Notifier {
 				Collection<Node> functionStarts = fh.getKnownFunctions().keySet();
 				
 				//printCFG(id, fh, threadStarts, threadEnds, functionStarts);
-				
 				//identify and remove unreachable code
 				UnreachableCodeAnalyser uca = new UnreachableCodeAnalyser(id, threadStarts, functionStarts);
 				boolean unreachableDetected = uca.analyseReachable();
@@ -265,7 +264,6 @@ public class Engine implements Notifier {
 				//FnopAnalyser fa = new FnopAnalyser(id, threadStarts, threadEnds);
 				
 				ControlFlowGraph cfg = new ControlFlowGraph(threadStarts, functionStarts, fh.getFunctions(), nodeId, coreId);
-				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
 				sae.analyse();
 				//printCFG(id, fh, threadStarts, threadEnds, functionStarts);

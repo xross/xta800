@@ -61,23 +61,6 @@ public class Terminal extends Node {
 		return null;
 	}
 
-	public void appendToGraph(StringBuffer body, StringBuffer connections,
-			Collection<Node> last, Collection<Node> next, int indent, Node parent) {
-		body.append(intToTab(indent) +"subgraph " + getGraphvizName()  + " {\n");
-		body.append(intToTab(indent) +"style=filled;\n");
-		body.append(intToTab(indent) +"fillcolor=lavender;\n");
-		body.append(intToTab(indent) +"color=black;\n");
-		
-		for(Node terminal : m_terminals){
-			Collection<Node> nextThis = new HashSet<Node>();
-			terminal.appendToGraph(body, connections, last, nextThis, indent+1, this);
-		}
-		body.append(intToTab(indent) +"}\n");
-		
-		return;
-		
-	}
-
 	public String getGraphvizName() {
 		return "cluster_Terminal" + m_id;
 	}

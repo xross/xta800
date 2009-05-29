@@ -71,32 +71,14 @@ public class Function extends Node {
 	public Node getBranchTarget(){
 		return m_branchTarget;
 	}
-	
-
-	public void appendToGraph(StringBuffer body, StringBuffer connections,
-			Collection<Node> last, Collection<Node> next, int indent,
-			Node parent) {
-		
-		if(m_function != null){
-			body.append(intToTab(indent) + getGraphvizName() + " [label = \"Function " + m_functionName + "\"];\n");
-		} else {
-			body.append(intToTab(indent) +getGraphvizName() + " [label = \"Function " + m_id + "\"];\n");
-		}
-		for (Node node : last) {
-			connections.append( node.getGraphvizName() + " -> " + getGraphvizName() + ";\n");
-		}
-		
-		next.add(this);
-		
-	}
 
 	public void display(int indentLevel) {
 		printIndent(indentLevel);
 		System.out.printf("function(%s)\n", m_functionName);
 		if(m_knownFunction){
-			if(m_branchTarget == null){
+	//		if(m_branchTarget == null){
 				m_function.display(indentLevel + 1);
-			} 
+	//		} 
 		} else {
 			printIndent(indentLevel+1);
 			System.out.printf("function unknown\n");

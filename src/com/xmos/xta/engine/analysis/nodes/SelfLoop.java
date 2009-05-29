@@ -17,11 +17,6 @@ public class SelfLoop extends Node {
 	public SelfLoop(SelfLoop loop){
 		m_loop = loop.m_loop;
 	}
-	
-	public void appendToGraph(StringBuffer body, StringBuffer connections,
-			Collection<Node> last, Collection<Node> next, int indent,
-			Node parent) {
-	}
 
 	public Node clone() {
 		return new SelfLoop(this);

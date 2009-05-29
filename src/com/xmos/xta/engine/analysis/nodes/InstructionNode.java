@@ -14,15 +14,11 @@ public class InstructionNode extends Node {
 	
 	public InstructionNode (XtaInstruction inst){
 		m_inst = inst;
-		
 	}
 	
 	public InstructionNode (InstructionNode node){
 		m_inst = node.m_inst;
 	}
-	
-	
-	
 
 	public Node clone() {
 		return new InstructionNode(this);
@@ -74,10 +70,5 @@ public class InstructionNode extends Node {
 	public boolean isFunction() {
 		return false;
 	}
-	
-	@Override
-	public void appendToGraph(StringBuffer body, StringBuffer connections, Collection<Node> last, Collection<Node> next, int indent, Node parent) {
-		// TODO Auto-generated method stub
-		
-	}
+
 }

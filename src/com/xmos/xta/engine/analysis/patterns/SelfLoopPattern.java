@@ -52,4 +52,7 @@ public class SelfLoopPattern extends PatternMatcher {
 		}
 	}
 
+	public boolean usesDominatorTree() {
+		return false;
+	}
 }

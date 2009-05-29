@@ -26,7 +26,7 @@ public class StructuralAnalysisEngine {
 	private ControlFlowGraph m_cfg;
 	private Map<Integer, Function> m_functionStartPcs;
 	private Map<Integer, Function> m_threadStartPcs;
-	
+	private static final boolean VERBOSE_ANALYSIS = true;
 	private StructureGraph m_sg;
 	
 	public StructuralAnalysisEngine(ControlFlowGraph cfg){
@@ -55,7 +55,8 @@ public class StructuralAnalysisEngine {
 			if(fn.isFunctionKnown()){
 				String fnName = fn.getBranchTarget().getInstructions().get(0).getFunctionName();
 				fn.setFunction(fnName, m_functionStartPcs.get(fn.getBranchTarget().getStartPc()).getFunction());
-				//CommonMethods.displayStructureTree(fn);
+				//
+				CommonMethods.displayStructureTree(fn);
 			}
 		}
 	}
@@ -68,28 +69,18 @@ public class StructuralAnalysisEngine {
 	
 	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, Function> startPcs) {
 		Collection<Node> graphs = new HashSet<Node>();
-		
+		int i=0;
 		for (Node graphStart : graphStartNodes) {
 
-			if(graphStart.getPrevNodes().size() > 0){
-				System.out.println("problem with: " + graphStart.getInstructions() );
-				for(Node prev : graphStart.getPrevNodes()){
-					System.out.println("\t\tfrom: " + prev.getInstructions());
-				}
-			}
-			
-			
-			
 			int graphStartPc = graphStart.getStartPc();
-			
+			if (VERBOSE_ANALYSIS) System.out.println("Analysing function at 0x" + Integer.toHexString(graphStartPc) + " -- " + i++ + " of " + graphStartNodes.size());
 			Collection<Node> currentGraph = new HashSet<Node>();
 
 			collectCurrentGraphNodes(graphStart, currentGraph);
-			
 			Collection<Node> basicBlocks = new HashSet<Node>();
 			
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);		
-
+			if (VERBOSE_ANALYSIS) System.out.println("\t\t" + basicBlocks.size() + " basic blocks " + currentGraph.size() + " nodes\n");
 			decompose(basicBlocks, initialBasicBlock);
 			Node decomposedGraph = basicBlocks.iterator().next();
 			
@@ -159,18 +150,24 @@ public class StructuralAnalysisEngine {
 		List<PatternMatcher> patternMatchers = new ArrayList<PatternMatcher>();
 		patternMatchers.add(new SelfLoopPattern());
 		patternMatchers.add(new LoopPatternMatcher());
-		patternMatchers.add(new PathPatternMatcher());
 		patternMatchers.add(new SectionPatternMatcher());
 		patternMatchers.add(new SectionTransformer());
+		patternMatchers.add(new PathPatternMatcher());
 		patternMatchers.add(new UpWedge());
 		patternMatchers.add(new TerminalPatternMatcher());
 		boolean working = true;
+		boolean dominatorTreeUpToDate = false;
+		
 		while (working) {
-			buildDominatorTree(workingSet, treeStart);
+			
 			List<Node> postOrder = new LinkedList<Node>();
 			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
 			working = false;
 			for (PatternMatcher pm : patternMatchers) {
+				if(!dominatorTreeUpToDate && pm.usesDominatorTree()){
+					buildDominatorTree(workingSet, treeStart);
+					dominatorTreeUpToDate = true;
+				}
 				for (Node node : postOrder) {
 					if (pm.isMatch(node, workingSet, false, treeStart)) {
 						treeStart = pm.getTreeStart();
@@ -178,6 +175,7 @@ public class StructuralAnalysisEngine {
 							System.err.println("failed connectivity sanity check on " + pm.getClass().getSimpleName() + " on " + node);
 							return;
 						}
+						dominatorTreeUpToDate = false;
 						working = true;
 						break;
 					}
@@ -186,7 +184,6 @@ public class StructuralAnalysisEngine {
 					break;
 			}
 		}
-		
 	}
 	
 	private void buildDominatorTree(Collection<Node> reachableNodes, Node treeStart) {
@@ -198,6 +195,8 @@ public class StructuralAnalysisEngine {
 				node.getDominators().addAll(reachableNodes);
 			}
 		}
+		
+		Set<Node> intersection = new HashSet<Node>();
 		boolean stillChanging = true;
 		while (stillChanging) {
 			stillChanging = false;
@@ -205,10 +204,16 @@ public class StructuralAnalysisEngine {
 
 				if (treeStart == node)
 					continue;
-				Set<Node> intersection = new HashSet<Node>(reachableNodes);
-				for (Node pred : node.getPrevNodes()) {
-					intersection.retainAll(pred.getDominators());
-				}
+				
+				intersection.clear();
+				
+				if(node.getPrevNodes().size() > 0){
+					intersection.addAll(node.getPrevNodes().iterator().next().getDominators());
+					for (Node pred : node.getPrevNodes()) {
+						intersection.retainAll(pred.getDominators());
+					}
+				} 
+				
 				intersection.add(node);
 
 				if (!intersection.equals(node.getDominators())) {
@@ -232,6 +237,7 @@ public class StructuralAnalysisEngine {
 		}
 	}
 
+	//FIXME - keep this until we are happy with the engine
 	private boolean connectivitySanityCheck(Collection<Node> workingSet){
 		int total = 0;
 		for (Node node : workingSet) {

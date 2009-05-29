@@ -150,4 +150,9 @@ public class SectionPatternMatcher extends PatternMatcher {
 		workingSet.add(ms);
 
 	}
+	
+
+	public boolean usesDominatorTree() {
+		return false;
+	}
 }

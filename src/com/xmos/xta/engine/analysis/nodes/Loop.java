@@ -142,37 +142,6 @@ public class Loop extends Node {
 		return "cluster_Loop" + m_id;
 	}
 
-
-	public void appendToGraph(StringBuffer body, StringBuffer connections,
-			Collection<Node> last, Collection<Node> next, int indent, Node parent) {
-		body.append(intToTab(indent) +"subgraph " + getGraphvizName()  + " {\n");
-		body.append(intToTab(indent) +"style=filled;\n");
-		body.append(intToTab(indent) +"fillcolor=yellow;\n");
-		body.append(intToTab(indent) +"color=black;\n");
-
-		Collection<Node> nextThis = new HashSet<Node>();
-		m_loopHeader.appendToGraph(body, connections, last, nextThis, indent+1, this);
-		next.addAll(nextThis);
-		Collection<Node> lastThis = nextThis;
-		nextThis = new HashSet<Node>();
-		
-		for (AttachedLoop loopNode : m_loops) {
-			loopNode.getLoop().appendToGraph(body, connections, lastThis, nextThis, indent+1, this);
-		}
-		body.append(intToTab(indent) +"}\n");
-
-		assert(lastThis.size() == 1);
-		
-		Node base = lastThis.iterator().next();
-		
-		for (Node node : nextThis) {
-			connections.append(  node.getGraphvizName() +" -> " + base.getGraphvizName() + ";\n");
-		}
-		
-		return;
-		
-	}
-
 	public void display(int indentLevel) {
 		printIndent(indentLevel);
 		System.out.printf("loop(%d)\n", m_id);	

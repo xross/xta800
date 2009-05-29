@@ -31,4 +31,7 @@ public class SelfLoopTransformer  extends PatternMatcher {
 		}
 	}
 
+	public boolean usesDominatorTree() {
+		return false;
+	}
 }

@@ -39,5 +39,8 @@ public class UpWedge extends PatternMatcher {
 		
 		return false;
 	}
-	
+
+	public boolean usesDominatorTree() {
+		return true;
+	}
 }

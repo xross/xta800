@@ -139,6 +139,9 @@ public class PathPatternMatcher extends PatternMatcher {
 		workingSet.removeAll(pathList);
 		workingSet.add(path);
 	}
-	
+
+	public boolean usesDominatorTree() {
+		return true;
+	}
 	
 }
