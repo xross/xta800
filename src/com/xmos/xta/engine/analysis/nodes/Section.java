@@ -87,27 +87,7 @@ public class Section extends Node {
 		return containedNodes;
 	}
 
-	Collection <Node> m_nextNodes = new HashSet<Node>();
-	
-	public void appendToGraph(StringBuffer body, StringBuffer connections,
-			Collection<Node> last, Collection<Node> next, int indent, Node parent) {
-		
-		body.append(intToTab(indent) +"subgraph " + getGraphvizName()  + " {\n");
-		body.append(intToTab(indent) +"style=filled;\n");
-		body.append(intToTab(indent) +"fillcolor=lightblue;\n");
-		body.append(intToTab(indent) +"color=black;\n");
-		for (Node option : m_options) {
-			Collection<Node> nextThis = new HashSet<Node>();
-			option.appendToGraph(body, connections, last, nextThis, indent+1, this);
-			next.addAll(nextThis);
-		}
-		body.append(intToTab(indent) +"}\n");
-		
-		if (m_jumpNode != null)
-			next.addAll(last);
-		
-		return;
-	}
+	//Collection <Node> m_nextNodes = new HashSet<Node>();
 
 	public String getGraphvizName() {
 		return "cluster_Section" + m_id;

@@ -2,7 +2,6 @@ package com.xmos.xta.engine.analysis.patterns;
 
 import java.util.Collection;
 import java.util.HashSet;
-import com.xmos.xta.engine.analysis.nodes.Function;
 import com.xmos.xta.engine.analysis.nodes.Node;
 
 public class CommonMethods {
@@ -61,7 +60,7 @@ public class CommonMethods {
 		return true;
 	}
 	
-	public static void displayStructureTree(Function start) {
+	public static void displayStructureTree(Node start) {
 		start.display(0);
 		System.out.println();
 
@@ -126,15 +125,5 @@ public class CommonMethods {
 		}
 		System.out.println("};");
 	}
-	
-	public static void renderGraph(Node node) {
-		System.out.println("digraph f" + graphcount++ + " {");
-		StringBuffer body = new StringBuffer();
-		StringBuffer connections = new StringBuffer();
-		node.appendToGraph(body, connections, new HashSet<Node>(),
-				new HashSet<Node>(), 0, node);
-		System.out.println(body);
-		System.out.println(connections);
-		System.out.println("}");
-	}
+
 }

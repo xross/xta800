@@ -68,4 +68,7 @@ public class SectionTransformer extends PatternMatcher {
 		return false;
 	}
 
+	public boolean usesDominatorTree() {
+		return false;
+	}
 }

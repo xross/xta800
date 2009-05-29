@@ -152,10 +152,7 @@ public abstract class Node implements Comparable<Node>{
 	public abstract List<XtaInstruction> getInstructions();
 	
 	public abstract Collection<Node> getContaintedNodes();
-	
-	public abstract void appendToGraph(StringBuffer body, StringBuffer connections,
-			Collection<Node> last, Collection<Node> next, int indent, Node parent);
-	
+
 	public abstract String getGraphvizName();
 	
 	public abstract boolean isFunction();

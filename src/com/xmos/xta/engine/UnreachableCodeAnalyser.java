@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.xmos.xta.engine.analysis.nodes.Node;
-import com.xmos.xta.engine.analysis.patterns.CommonMethods;
 
 public class UnreachableCodeAnalyser {
 
@@ -47,13 +46,11 @@ public class UnreachableCodeAnalyser {
 		
 		for(Node unreachable : m_unreachable){
 			for(Node next : unreachable.getNextNodes()){
-				CommonMethods.disconnect(next, unreachable);
+				next.removePrevNode(unreachable);
 			}
-			for(Node prev : unreachable.getNextNodes()){
-				CommonMethods.disconnect(unreachable, prev);
-			}
+			unreachable.getNextNodes().clear();
+			//don't need to remove previous nodes as if i did have to then it would be reachable
 		}
-		
 		return true;
 	}
 

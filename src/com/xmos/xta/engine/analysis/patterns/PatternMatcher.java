@@ -13,4 +13,6 @@ public abstract class PatternMatcher {
 	public Node getTreeStart() {
 		return m_treeStart;
 	}
+	
+	public abstract boolean usesDominatorTree();
 }
