@@ -14,7 +14,7 @@ public abstract class Node implements Comparable<Node>{
 	public static int getNodeCount(){
 		return id;
 	}
-	
+	protected boolean m_dominatorSetIsCompleteSet;
 	protected Set<Node> m_nextNodes;
 	protected Set<Node> m_prevNodes;
 	protected Node m_branchLinkReturn;
@@ -162,6 +162,13 @@ public abstract class Node implements Comparable<Node>{
 		for (int i = 0; i < indentLevel; ++i) {
 		    System.out.printf(".    ");
 		}
+	}
+	
+	public void setDominatorSetComplete(boolean b) {
+		m_dominatorSetIsCompleteSet = b;
+	}
+	public boolean isDominatorSetComplete(){
+		return m_dominatorSetIsCompleteSet;
 	}
 
 	

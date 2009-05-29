@@ -9,34 +9,41 @@ import java.util.Set;
 import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.analysis.nodes.Section;
 
-
 public class SectionPatternMatcher extends PatternMatcher {
 
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose, Node treeStart) {
 		m_treeStart = treeStart;
+
+		if (currentNode.getNextNodes().size() < 2) {
+			return false;
+		} 
 		
-		// detect all the jump nodes first
+		//detect all the jump nodes first
 		Set<Node> jumpNodes = new HashSet<Node>();
-		for (Node nextNode : currentNode.getNextNodes()) {
-			// hop backwards
+		for(Node nextNode : currentNode.getNextNodes()){
+			//hop backwards
 			Set<Node> previous = new HashSet<Node>(nextNode.getPrevNodes());
-			for (Node prev : previous) {
+			previous.remove(currentNode);
+			previous.remove(nextNode);
+			for(Node prev : previous){
 				Set<Node> prevSet = new HashSet<Node>(prev.getPrevNodes());
-				if (prevSet.contains(currentNode)) {
+				if(prevSet.contains(currentNode)){
 					jumpNodes.add(nextNode);
 				}
 			}
 		}
 		
 		Set<Node> endNodes = new HashSet<Node>(jumpNodes);
+		
 		List<Node> nextList = new LinkedList<Node>(currentNode.getNextNodes());
 		
 		for (int i = 0; i <= nextList.size() - 2; i++) {
+			Set<Node> intersection = new HashSet<Node>();
 			for (int j = i + 1; j <= nextList.size() - 1; j++) {
 				Node a = nextList.get(i);
 				Node b = nextList.get(j);
-
-				Set<Node> intersection = new HashSet<Node>(a.getNextNodes());
+				intersection.clear();
+				intersection.addAll(a.getNextNodes());
 				intersection.retainAll(b.getNextNodes());
 				endNodes.addAll(intersection);
 			}

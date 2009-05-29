@@ -34,12 +34,16 @@ public class Block extends Node {
 		return m_id;
 	}
 	
+	private List<XtaInstruction> m_xtaInsts ;
+	
 	public List<XtaInstruction> getInstructions() {
-		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
-		for(Node i : m_insts){
-			insts.addAll(i.getInstructions());
+		if(m_xtaInsts == null){
+			m_xtaInsts = new LinkedList<XtaInstruction>();
+			for(Node i : m_insts){
+				m_xtaInsts.addAll(i.getInstructions());
+			}
 		}
-		return insts;
+		return m_xtaInsts;
 	}
 
 	public long getNumberCycles() {

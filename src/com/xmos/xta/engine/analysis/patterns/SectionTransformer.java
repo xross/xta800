@@ -12,6 +12,11 @@ public class SectionTransformer extends PatternMatcher {
 
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose, Node treeStart) {
 		m_treeStart = treeStart;
+
+		if (currentNode.getNextNodes().size() < 2) {
+			return false;
+		} 
+		
 		//detect all the jump nodes first
 		Set<Node> jumpNodes = new HashSet<Node>();
 		for(Node nextNode : currentNode.getNextNodes()){
@@ -27,21 +32,23 @@ public class SectionTransformer extends PatternMatcher {
 			}
 		}
 		
-		Set<Node> sectionNodes = new HashSet<Node>(jumpNodes);
+		Set<Node> endNodes = new HashSet<Node>(jumpNodes);
+		
 		List<Node> nextList = new LinkedList<Node>(currentNode.getNextNodes());
 		
-		for(int i=0;i<nextList.size()-2;i++){
-			for(int j=i+1;j<nextList.size()-1;j++){
+		for (int i = 0; i <= nextList.size() - 2; i++) {
+			Set<Node> intersection = new HashSet<Node>();
+			for (int j = i + 1; j <= nextList.size() - 1; j++) {
 				Node a = nextList.get(i);
 				Node b = nextList.get(j);
-				
-				Set<Node> intersection = new HashSet<Node>(a.getNextNodes());
+				intersection.clear();
+				intersection.addAll(a.getNextNodes());
 				intersection.retainAll(b.getNextNodes());
-				sectionNodes.addAll(intersection);
+				endNodes.addAll(intersection);
 			}
 		}
 		
-		for(Node sectionEnd : sectionNodes){
+		for(Node sectionEnd : endNodes){
 			for(Node nextNode : currentNode.getNextNodes()){
 				if(!jumpNodes.contains(nextNode)){
 					if(nextNode.getNextNodes().contains(sectionEnd)){

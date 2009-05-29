@@ -44,7 +44,8 @@ public class InstructionDecoder {
 		            }
 		            XtaInstruction inst = m_instructionDecoder.decode(opcode, pc, m_config);
 		            inst.setFunctionName(m_symbolTable.functionName(pc));
-		            inst.setFunctionOffset(m_symbolTable.functionOffset(pc));
+		            //FIXME - this will do done is a lazy style when needed
+		            //inst.setFunctionOffset(m_symbolTable.functionOffset(pc));
 		            Node instNode = new InstructionNode(inst);
 		            Node prev = m_decodedInstructions.put(pc, instNode);
 		            assert(prev == null);

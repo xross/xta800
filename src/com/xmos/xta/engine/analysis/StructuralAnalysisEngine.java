@@ -26,7 +26,6 @@ public class StructuralAnalysisEngine {
 	private ControlFlowGraph m_cfg;
 	private Map<Integer, Function> m_functionStartPcs;
 	private Map<Integer, Function> m_threadStartPcs;
-	private static final boolean VERBOSE_ANALYSIS = true;
 	private StructureGraph m_sg;
 	
 	public StructuralAnalysisEngine(ControlFlowGraph cfg){
@@ -55,8 +54,6 @@ public class StructuralAnalysisEngine {
 			if(fn.isFunctionKnown()){
 				String fnName = fn.getBranchTarget().getInstructions().get(0).getFunctionName();
 				fn.setFunction(fnName, m_functionStartPcs.get(fn.getBranchTarget().getStartPc()).getFunction());
-				//
-				CommonMethods.displayStructureTree(fn);
 			}
 		}
 	}
@@ -73,14 +70,12 @@ public class StructuralAnalysisEngine {
 		for (Node graphStart : graphStartNodes) {
 
 			int graphStartPc = graphStart.getStartPc();
-			if (VERBOSE_ANALYSIS) System.out.println("Analysing function at 0x" + Integer.toHexString(graphStartPc) + " -- " + i++ + " of " + graphStartNodes.size());
 			Collection<Node> currentGraph = new HashSet<Node>();
 
 			collectCurrentGraphNodes(graphStart, currentGraph);
 			Collection<Node> basicBlocks = new HashSet<Node>();
 			
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);		
-			if (VERBOSE_ANALYSIS) System.out.println("\t\t" + basicBlocks.size() + " basic blocks " + currentGraph.size() + " nodes\n");
 			decompose(basicBlocks, initialBasicBlock);
 			Node decomposedGraph = basicBlocks.iterator().next();
 			
@@ -187,38 +182,50 @@ public class StructuralAnalysisEngine {
 	}
 	
 	private void buildDominatorTree(Collection<Node> reachableNodes, Node treeStart) {
+		
 		for (Node node : reachableNodes) {
 			node.getDominators().clear();
 			if (treeStart == node) {
+				node.setDominatorSetComplete(false);
 				node.getDominators().add(node);
 			} else {
-				node.getDominators().addAll(reachableNodes);
+				node.setDominatorSetComplete(true);
 			}
 		}
 		
 		Set<Node> intersection = new HashSet<Node>();
 		boolean stillChanging = true;
+		
 		while (stillChanging) {
 			stillChanging = false;
 			for (Node node : reachableNodes) {
-
+				boolean intersectionIsCompleteSet = true;
+				
+				if(node.getDominators().size() == 1) {
+					continue;
+				}
 				if (treeStart == node)
 					continue;
 				
 				intersection.clear();
 				
-				if(node.getPrevNodes().size() > 0){
-					intersection.addAll(node.getPrevNodes().iterator().next().getDominators());
-					for (Node pred : node.getPrevNodes()) {
-						intersection.retainAll(pred.getDominators());
+				for (Node pred : node.getPrevNodes()) {
+					if(!pred.isDominatorSetComplete()){
+						if(intersectionIsCompleteSet){
+							intersection.addAll(pred.getDominators());
+							intersectionIsCompleteSet = false;
+						} else {
+							intersection.retainAll(pred.getDominators());
+						}		
 					}
-				} 
-				
+				}
+
 				intersection.add(node);
 
 				if (!intersection.equals(node.getDominators())) {
 					node.getDominators().clear();
 					node.getDominators().addAll(intersection);
+					node.setDominatorSetComplete(intersectionIsCompleteSet);
 					stillChanging = true;
 				}
 			}
