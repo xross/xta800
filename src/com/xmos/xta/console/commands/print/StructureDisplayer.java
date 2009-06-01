@@ -22,8 +22,7 @@ public class StructureDisplayer {
 	public void display() {
 		StructureGraph structureGraph = m_engine.getStructureGraph();
 
-		//Collection<Node> nodes = structureGraph.getThreads();
-		Collection<Node> nodes = structureGraph.getFunctions();
+		Collection<Node> nodes = structureGraph.getThreads();		
 		for (Node node : nodes) {					
 		    node.traverse(0, new NodeTraverser() {
 				public void foundBlockNode(Node node, int depth) {
