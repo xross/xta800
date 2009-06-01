@@ -124,16 +124,5 @@ public class FunctionNode extends Node {
 		if (m_knownFunction) {
 		    m_function.traverse(depth, nodeTraverser);
 		}
-	}
-	
-	public void display(int indentLevel) {
-		printIndent(indentLevel);
-		System.out.printf("function(%s)\n", m_functionName);
-		if (m_knownFunction) {
-			m_function.display(indentLevel + 1);
-		} else {
-			printIndent(indentLevel+1);
-			System.out.printf("function unknown\n");
-		}
-	}		
+	}	
 }

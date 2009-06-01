@@ -109,15 +109,5 @@ public class BlockNode extends Node {
 				instruction.traverse(depth + 1, nodeTraverser);
 			}
 		}		
-	}
-	
-	public void display(int indentLevel) {
-		printIndent(indentLevel);
-		System.out.println("block(" + m_id +")");
-		if (DEBUG) { 
-			for (Node instruction : m_insts) {
-				instruction.display(indentLevel+1);
-			}
-		}
-	}
+	}	
 }

@@ -28,7 +28,6 @@ public abstract class Node implements Comparable<Node>{
 	public abstract int getStartPc();
 	public abstract Node clone();
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
-	public abstract void display(int indentLevel);
 		
 	public static int getNodeCount(){
 		return s_numNodes;
@@ -42,6 +41,10 @@ public abstract class Node implements Comparable<Node>{
 		return s;
 	}
 		
+	public static void resetId() {
+		s_numNodes = 0;
+	}
+	
 	public Node() {
 		m_nextNodes = new HashSet<Node>();
 		m_prevNodes = new HashSet<Node>();
@@ -56,9 +59,10 @@ public abstract class Node implements Comparable<Node>{
 		m_id = s_numNodes++;
 	}
 	
-	public static void resetId() {
-		s_numNodes = 0;
+	public int getId() {
+		return m_id;
 	}
+	
 	public int compareTo(Node n) {		
 		if (getInstructions()!= null && 
 			n.getInstructions() != null && 
@@ -120,14 +124,12 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public void addNextNode(Node node){
-		//assert(!m_nextNodes.contains(node));
 		if (!m_nextNodes.contains(node)) {
 			m_nextNodes.add(node);
 		}
 	}
 	
 	public void addPrevNode(Node node){
-		//assert(!m_prevNodes.contains(node));
 		if (!m_prevNodes.contains(node)) {
 			m_prevNodes.add(node);
 		}

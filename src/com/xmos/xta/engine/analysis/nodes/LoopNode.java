@@ -109,18 +109,4 @@ public class LoopNode extends Node {
 			node.traverse(depth + 1, nodeTraverser);			
 		}
 	}	
-	
-	public void display(int indentLevel) {
-		printIndent(indentLevel);
-		System.out.printf("loop(%d)\n", m_id);	
-		printIndent(indentLevel);
-		System.out.printf(" header:\n", m_id);
-		m_loopHeader.display(indentLevel+1);
-		for (Node attachedLoop : m_loops) {
-			printIndent(indentLevel);
-			System.out.printf(" body:\n", m_id);
-			attachedLoop.display(indentLevel + 1);
-			
-		}		
-	}		
 }

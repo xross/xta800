@@ -9,7 +9,7 @@ import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.analysis.nodes.NodeTraverser;
 
 public class StructureDisplayer {
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
 	private Engine m_engine;
 	private Console m_console;
@@ -27,37 +27,51 @@ public class StructureDisplayer {
 		    node.traverse(0, new NodeTraverser() {
 				public void foundBlockNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display("block\n");
+					m_console.display("block");
+					if (DEBUG) m_console.display(String.format("(%d)", node.getId()));
+					m_console.display("\n");						
 				}
 
 				public void foundFunctionNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display(String.format("function: %s\n", node.getFunctionName()));
+					m_console.display(String.format("function"));
+					if (DEBUG) m_console.display(String.format("(%d): ", node.getId()));
+					m_console.display(String.format("%s\n", node.getFunctionName()));
 				}
 
 				public void foundInstructionNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display("instruction\n");
+					m_console.display("instruction");
+					if (DEBUG) m_console.display(String.format("(%d)", node.getId()));
+					m_console.display("\n");						
 				}
 
 				public void foundLoopNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display("loop\n");
+					m_console.display("loop");
+					if (DEBUG) m_console.display(String.format("(%d)", node.getId()));
+					m_console.display("\n");						
 				}
 
 				public void foundPathNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display("path\n");
+					m_console.display("path");
+					if (DEBUG) m_console.display(String.format("(%d)", node.getId()));
+					m_console.display("\n");						
 				}
 
 				public void foundSectionNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display("section\n");
+					m_console.display("section");
+					if (DEBUG) m_console.display(String.format("(%d)", node.getId()));
+					m_console.display("\n");						
 				}
 
 				public void foundTerminalNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display("terminal\n");
+					m_console.display("terminal");
+					if (DEBUG) m_console.display(String.format("(%d)", node.getId()));
+					m_console.display("\n");						
 				}		    	
 		    });
 		}		

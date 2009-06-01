@@ -113,15 +113,4 @@ public class SectionNode extends Node {
 			node.traverse(depth + 1, nodeTraverser);			
 		}		
 	}	
-	
-	public void display(int indentLevel) {
-		printIndent(indentLevel);
-		System.out.printf("multisection(%d)\n", m_id);
-		
-		for (Node node : m_options) {
-			printIndent(indentLevel);
-			System.out.printf(" option:\n");
-			node.display(indentLevel + 1);
-		}		
-	}	
 }

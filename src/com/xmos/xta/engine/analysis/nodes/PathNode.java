@@ -90,10 +90,4 @@ public class PathNode extends Node {
 			node.traverse(depth + 1, nodeTraverser);			
 		}		
 	}	
-	
-	public void display(int indentLevel) {
-		for (Node node : m_nodes) {
-			node.display(indentLevel + 0);
-		}
-	}		
 }
