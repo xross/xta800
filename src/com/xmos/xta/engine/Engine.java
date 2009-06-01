@@ -250,9 +250,10 @@ public class Engine implements Notifier {
 		m_xeObjects = newXeObjects;
 		m_controlFlowGraph = newCfg;
 		m_structuralGraph = newStructuralGraph;
-		m_xeLoader = xeLoader;		
+		m_xeLoader = xeLoader;
+		m_executableFile = executableFile;
 		m_nodeId = 0;
-		m_coreId = 0;				
+		m_coreId = 0;			
 		setConstraint(ConstraintFactory.createConstraint(this, ""));
 		
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
