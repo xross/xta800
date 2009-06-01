@@ -87,8 +87,10 @@ public class SectionNode extends Node {
 		return containedNodes;
 	}
 
-	//Collection <Node> m_nextNodes = new HashSet<Node>();
-
+	public String getFunctionName() {
+		return "";
+	}
+	
 	public String getGraphvizName() {
 		return "cluster_Section" + m_id;
 	}
@@ -106,6 +108,10 @@ public class SectionNode extends Node {
 	}
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
+		nodeTraverser.foundSectionNode(this, depth);
+		for (Node node : m_options) {
+			node.traverse(depth + 1, nodeTraverser);			
+		}		
 	}	
 	
 	public void display(int indentLevel) {

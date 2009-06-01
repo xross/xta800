@@ -22,5 +22,4 @@ public class StructureGraph {
 	public Collection<Node> getThreads() {
 		return m_threads;
 	}
-	
 }

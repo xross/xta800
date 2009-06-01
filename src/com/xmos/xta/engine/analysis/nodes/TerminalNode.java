@@ -53,6 +53,10 @@ public class TerminalNode extends Node {
 		return null;
 	}
 
+	public String getFunctionName() {
+		return "";
+	}
+
 	public String getGraphvizName() {
 		return "cluster_Terminal" + m_id;
 	}
@@ -70,6 +74,10 @@ public class TerminalNode extends Node {
 	}
 	
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
+		nodeTraverser.foundTerminalNode(this, depth);
+		for (Node node : m_terminals) {
+			node.traverse(depth + 1, nodeTraverser);			
+		}		
 	}
 	
 	public void display(int indentLevel) {

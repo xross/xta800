@@ -8,26 +8,27 @@ import java.util.Set;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public abstract class Node implements Comparable<Node>{
-	protected static int s_numNodes;
+	static int s_numNodes;
 	
-	protected int m_id;
-	protected boolean m_dominatorSetIsCompleteSet;
-	protected Set<Node> m_nextNodes;
-	protected Set<Node> m_prevNodes;
-	protected Node m_branchLinkReturn;
-	protected Set<Node> m_dominators;
+	int m_id;
+	boolean m_dominatorSetIsCompleteSet;
+	Set<Node> m_nextNodes;
+	Set<Node> m_prevNodes;
+	Node m_branchLinkReturn;
+	Set<Node> m_dominators;
 	
 	public abstract Set<Integer> getPCsCovered();
 	public abstract long getNumberCycles();
 	public abstract long getNumberFNOPS();	
-	public abstract List<XtaInstruction> getInstructions();	
+	public abstract List<XtaInstruction> getInstructions();
 	public abstract Collection<Node> getContaintedNodes();
+	public abstract String getFunctionName();
 	public abstract String getGraphvizName();
 	public abstract boolean isFunction();
 	public abstract int getStartPc();
 	public abstract Node clone();
-	public abstract void traverse(int depth, NodeTraverser nodeTraverser);	
-	public abstract void display(int indentLevel);	
+	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
+	public abstract void display(int indentLevel);
 		
 	public static int getNodeCount(){
 		return s_numNodes;
@@ -120,28 +121,28 @@ public abstract class Node implements Comparable<Node>{
 	
 	public void addNextNode(Node node){
 		//assert(!m_nextNodes.contains(node));
-		if(!m_nextNodes.contains(node)){
+		if (!m_nextNodes.contains(node)) {
 			m_nextNodes.add(node);
 		}
 	}
 	
 	public void addPrevNode(Node node){
 		//assert(!m_prevNodes.contains(node));
-		if(!m_prevNodes.contains(node)){
+		if (!m_prevNodes.contains(node)) {
 			m_prevNodes.add(node);
 		}
 	}
 	
 	public void removePrevNode(Node node){
 		assert(m_prevNodes.contains(node));
-		if(m_prevNodes.contains(node)){
+		if (m_prevNodes.contains(node)) {
 			m_prevNodes.remove(node);
 		}
 	}
 	
 	public void removeNextNode(Node node){
 		assert(m_nextNodes.contains(node));
-		if(m_nextNodes.contains(node)){
+		if (m_nextNodes.contains(node)) {
 			m_nextNodes.remove(node);
 		}
 	}

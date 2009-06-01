@@ -87,7 +87,10 @@ public class LoopNode extends Node {
 		return containedNodes;
 	}
 
-
+	public String getFunctionName() {
+		return "";
+	}
+	
 	public String getGraphvizName() {
 		return "cluster_Loop" + m_id;
 	}
@@ -101,6 +104,10 @@ public class LoopNode extends Node {
 	}
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
+		nodeTraverser.foundLoopNode(this, depth);
+		for (Node node : m_loops) {
+			node.traverse(depth + 1, nodeTraverser);			
+		}
 	}	
 	
 	public void display(int indentLevel) {

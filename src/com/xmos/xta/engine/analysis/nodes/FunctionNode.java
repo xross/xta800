@@ -83,6 +83,10 @@ public class FunctionNode extends Node {
 		}
 	}
 	
+	public String getFunctionName() {
+		return m_functionName;
+	}
+	
 	public String getGraphvizName() {
 		return "Function" + m_id;
 	}
@@ -116,7 +120,10 @@ public class FunctionNode extends Node {
 	}
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		m_function.traverse(depth, nodeTraverser);
+		nodeTraverser.foundFunctionNode(this, depth);
+		if (m_knownFunction) {
+		    m_function.traverse(depth, nodeTraverser);
+		}
 	}
 	
 	public void display(int indentLevel) {

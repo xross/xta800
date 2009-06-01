@@ -68,6 +68,10 @@ public class PathNode extends Node {
 		return containedNodes;
 	}
 
+	public String getFunctionName() {
+		return "";
+	}
+	
 	public String getGraphvizName() {
 		return "cluster_Path" + m_id;
 	}
@@ -81,6 +85,10 @@ public class PathNode extends Node {
 	}
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
+		nodeTraverser.foundPathNode(this, depth);
+		for (Node node : m_nodes) {
+			node.traverse(depth + 1, nodeTraverser);			
+		}		
 	}	
 	
 	public void display(int indentLevel) {

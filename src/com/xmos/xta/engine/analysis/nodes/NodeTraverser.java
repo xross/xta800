@@ -1,10 +1,11 @@
 package com.xmos.xta.engine.analysis.nodes;
 
 public interface NodeTraverser {
-    void foundBlockNode(BlockNode node, int depth);
-    void foundFunctionNode(FunctionNode node, int depth);
-    void foundInstructionNode(InstructionNode node, int depth);
-    void foundLoopNode(LoopNode node, int depth);
-    void foundSectionNode(SectionNode node, int depth);
-    void foundTerminalNode(TerminalNode node, int depth);
+    void foundBlockNode(Node node, int depth);
+    void foundFunctionNode(Node node, int depth);
+    void foundInstructionNode(Node node, int depth);
+    void foundPathNode(Node node, int depth);
+    void foundLoopNode(Node node, int depth);
+    void foundSectionNode(Node node, int depth);
+    void foundTerminalNode(Node node, int depth);
 }

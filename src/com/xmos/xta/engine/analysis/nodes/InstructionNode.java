@@ -33,6 +33,10 @@ public class InstructionNode extends Node {
 		return containedNodes;
 	}
 
+	public String getFunctionName() {
+		return "";
+	}
+	
 	public String getGraphvizName() {
 		return "Instruction" + m_id;
 	}
@@ -70,6 +74,7 @@ public class InstructionNode extends Node {
 	}
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
+		nodeTraverser.foundInstructionNode(this, depth);		
 	}	
 	
 	public void display(int indentLevel) {

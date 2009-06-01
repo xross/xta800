@@ -37,9 +37,9 @@ public class BlockNode extends Node {
 	}
 		
 	public List<XtaInstruction> getInstructions() {
-		if(m_xtaInsts == null){
+		if (m_xtaInsts == null) {
 			m_xtaInsts = new LinkedList<XtaInstruction>();
-			for(Node i : m_insts){
+			for (Node i : m_insts) {
 				m_xtaInsts.addAll(i.getInstructions());
 			}
 		}
@@ -48,7 +48,7 @@ public class BlockNode extends Node {
 
 	public long getNumberCycles() {
 		long cycles = 0;
-		for(XtaInstruction inst : getInstructions()){
+		for (XtaInstruction inst : getInstructions()) {
 			cycles += inst.getNumCycles();
 		}
 		return cycles;
@@ -64,7 +64,7 @@ public class BlockNode extends Node {
 
 	public Set<Integer> getPCsCovered() {
 		Set<Integer> pcs = new HashSet<Integer>();
-		for(XtaInstruction inst : getInstructions()){
+		for (XtaInstruction inst : getInstructions()) {
 			pcs.add(inst.getPc());
 		}
 		return pcs;
@@ -76,7 +76,7 @@ public class BlockNode extends Node {
 
 	public String makeGraphVisLinks() {
 		StringBuffer sb = new StringBuffer();
-		for(Node next : getNextNodes()){
+		for (Node next : getNextNodes()) {
 			sb.append("Node" + m_id + " -> Node" + next.m_id+";\n");
 		}
 		return sb.toString();
@@ -86,6 +86,10 @@ public class BlockNode extends Node {
 		return new HashSet<Node> (m_insts);
 	}
 
+	public String getFunctionName() {
+		return "";
+	}
+	
 	public String getGraphvizName() {
 		return "Block" + m_id;
 	}
@@ -99,6 +103,7 @@ public class BlockNode extends Node {
 	}	
 	
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
+		nodeTraverser.foundBlockNode(this, depth);
 		if (DEBUG) { 
 			for (Node instruction : m_insts) {
 				instruction.traverse(depth + 1, nodeTraverser);
@@ -114,5 +119,5 @@ public class BlockNode extends Node {
 				instruction.display(indentLevel+1);
 			}
 		}
-	}	
+	}
 }
