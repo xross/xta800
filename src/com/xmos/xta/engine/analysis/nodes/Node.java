@@ -8,47 +8,66 @@ import java.util.Set;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public abstract class Node implements Comparable<Node>{
+	protected static int s_numNodes;
 	
-	protected static int id;
 	protected int m_id;
-	
-	public static int getNodeCount(){
-		return id;
-	}
 	protected boolean m_dominatorSetIsCompleteSet;
 	protected Set<Node> m_nextNodes;
 	protected Set<Node> m_prevNodes;
 	protected Node m_branchLinkReturn;
 	protected Set<Node> m_dominators;
 	
-	public Node(){
+	public abstract Set<Integer> getPCsCovered();
+	public abstract long getNumberCycles();
+	public abstract long getNumberFNOPS();	
+	public abstract List<XtaInstruction> getInstructions();	
+	public abstract Collection<Node> getContaintedNodes();
+	public abstract String getGraphvizName();
+	public abstract boolean isFunction();
+	public abstract int getStartPc();
+	public abstract Node clone();
+	public abstract void traverse(int depth, NodeTraverser nodeTraverser);	
+	public abstract void display(int indentLevel);	
+		
+	public static int getNodeCount(){
+		return s_numNodes;
+	}
+	
+	public static String intToTab(int indent){
+		String s = "";
+		for(int i=0;i<indent;i++){
+			s +="\t";
+		}
+		return s;
+	}
+		
+	public Node() {
 		m_nextNodes = new HashSet<Node>();
 		m_prevNodes = new HashSet<Node>();
 		m_dominators = new HashSet<Node>();
-		m_id = id++;
+		m_id = s_numNodes++;
 	}
 	
-	public Node(Node node){
+	public Node(Node node) {
 		m_nextNodes = new HashSet<Node>(node.m_nextNodes);
 		m_prevNodes = new HashSet<Node>(node.m_prevNodes);
 		m_dominators = new HashSet<Node>(node.m_prevNodes);
-		m_id = id++;
+		m_id = s_numNodes++;
 	}
 	
-	public static void resetId(){
-		id = 0;
+	public static void resetId() {
+		s_numNodes = 0;
 	}
-	public int compareTo(Node n) {
-		
-		if(getInstructions()!= null && n.getInstructions() != null 
-				&& !getInstructions().isEmpty() && !n.getInstructions().isEmpty()){
+	public int compareTo(Node n) {		
+		if (getInstructions()!= null && 
+			n.getInstructions() != null && 
+			!getInstructions().isEmpty() && 
+			!n.getInstructions().isEmpty()) {
 			int myPc = getInstructions().get(0).getPc();
 			int nodePc = n.getInstructions().get(0).getPc();
 			return Integer.signum((nodePc - myPc));
-		} else {
-			return 0;
-		}
-		
+		} 
+		return 0;
 	}
 	
 	public void setBranchLinkReturn(Node bl){
@@ -59,37 +78,30 @@ public abstract class Node implements Comparable<Node>{
 	 * this returns the node that this block will return to after it has branch and linked.
 	 * Will be null if this block doesn't branch and link.
 	 */
-	public Node getBranchLinkReturn(){
+	public Node getBranchLinkReturn() {
 		return m_branchLinkReturn;
 	}
 	
-	public Set<Node> getDominators(){
+	public Set<Node> getDominators() {
 		return m_dominators;
 	}
 	
-	public Node getIdom(){
+	public Node getIdom() {
 		Set<Node> remainingDominators = new HashSet<Node>(m_dominators);
 		remainingDominators.remove(this);
-		for(Node dom : m_dominators){
+		for (Node dom : m_dominators) {
 			if(dom == this) continue;
 			Set<Node> set = new HashSet<Node>(dom.getDominators());
 			set.remove(dom);
 			remainingDominators.removeAll(set);
 		}
-		if(remainingDominators.size() == 1){
+		if (remainingDominators.size() == 1) {
 			return remainingDominators.iterator().next();
 		} else {
 			return this;
 		}
 	}
-	public static String intToTab(int indent){
-		String s = "";
-		for(int i=0;i<indent;i++){
-			s +="\t";
-		}
-		return s;
-	}
-	
+		
 	public String toString(){
 		return "Node " + m_id;  
 	}
@@ -138,40 +150,17 @@ public abstract class Node implements Comparable<Node>{
 		return getInstructions().size();
 	}
 	
-	public abstract Node clone();
+	public void setDominatorSetComplete(boolean b) {
+		m_dominatorSetIsCompleteSet = b;
+	}
 	
-	public abstract Set<Integer> getPCsCovered();
-	public abstract long getNumberCycles();
-	public abstract long getNumberFNOPS();
-	
-	public abstract void display(int indentLevel);
-	
-	/**
-	 * return a list of instruction in order without the fnops inserted.
-	 */
-	public abstract List<XtaInstruction> getInstructions();
-	
-	public abstract Collection<Node> getContaintedNodes();
-
-	public abstract String getGraphvizName();
-	
-	public abstract boolean isFunction();
-	
-	public abstract int getStartPc();
+	public boolean isDominatorSetComplete(){
+		return m_dominatorSetIsCompleteSet;
+	}
 	
 	protected void printIndent(int indentLevel) {
 		for (int i = 0; i < indentLevel; ++i) {
 		    System.out.printf(".    ");
 		}
-	}
-	
-	public void setDominatorSetComplete(boolean b) {
-		m_dominatorSetIsCompleteSet = b;
-	}
-	public boolean isDominatorSetComplete(){
-		return m_dominatorSetIsCompleteSet;
-	}
-
-	
-
+	}	
 }

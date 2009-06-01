@@ -7,7 +7,7 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
-import com.xmos.xta.engine.analysis.nodes.Block;
+import com.xmos.xta.engine.analysis.nodes.BlockNode;
 import com.xmos.xta.engine.analysis.nodes.Node;
 
 
@@ -17,9 +17,9 @@ public class SectionPatternMatcherTest {
 	public void testIsMatch() {
 		Collection<Node> nodes = new HashSet<Node>();
 
-		Block [] node = new Block [5];
+		BlockNode [] node = new BlockNode [5];
 		for(int i = 0;i<5;i++){
-			node[i] = new Block();
+			node[i] = new BlockNode();
 			nodes.add(node[i]);
 		}
 		CommonMethods.connect(node[2], node[0]);

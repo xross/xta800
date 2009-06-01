@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import com.xmos.xta.engine.analysis.nodes.Function;
+import com.xmos.xta.engine.analysis.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.analysis.patterns.CommonMethods;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -13,7 +13,7 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 public class FunctionHandler {
 
 	private InstructionDecoder m_instDecoder;
-	private Collection<Function> m_functions;
+	private Collection<FunctionNode> m_functions;
 	private Map<Node, Node> m_instToFunc;
 	private Collection<Node> m_pseudoFunctions;
 	
@@ -21,7 +21,7 @@ public class FunctionHandler {
 		m_instDecoder = instDecoder;
 	}
 
-	public Collection<Function> getFunctions(){
+	public Collection<FunctionNode> getFunctions(){
 		return m_functions;
 	}
 	
@@ -43,7 +43,7 @@ public class FunctionHandler {
 	 */
 	public boolean addFunctions(){
 		m_instToFunc = new HashMap<Node, Node>();
-		m_functions = new HashSet<Function>();
+		m_functions = new HashSet<FunctionNode>();
 		m_pseudoFunctions = new HashSet<Node>();
 		
 		for (Node instruction : m_instDecoder.getInstructions() ){
@@ -51,9 +51,9 @@ public class FunctionHandler {
 			XtaInstruction inst = instruction.getInstructions().get(0);
 			if(inst.isLink()){
 				if(instruction.getNextNodes().size() > 0){
-					Collection<Function> newFunctions = new HashSet<Function>();
+					Collection<FunctionNode> newFunctions = new HashSet<FunctionNode>();
 					for(Node next : instruction.getNextNodes()){
-						Function fn = new Function(next);
+						FunctionNode fn = new FunctionNode(next);
 						m_instToFunc.put(next, fn);
 						newFunctions.add(fn);
 						next.getPrevNodes().remove(instruction);
@@ -66,7 +66,7 @@ public class FunctionHandler {
 					}
 					m_functions.addAll(newFunctions);
 				} else {
-					Function fn = new Function();
+					FunctionNode fn = new FunctionNode();
 					CommonMethods.connect(fn, instruction);
 					CommonMethods.connect(instruction.getBranchLinkReturn(), fn);
 					m_functions.add(fn);

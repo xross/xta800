@@ -18,7 +18,9 @@ public class StructureDisplayer {
 	
 	public void display() {
 		StructureGraph structureGraph = m_engine.getStructureGraph();
-		Collection<Node> nodes = structureGraph.getThreads();
+
+		//Collection<Node> nodes = structureGraph.getThreads();
+		Collection<Node> nodes = structureGraph.getFunctions();
 		for (Node node : nodes) {
 		    node.display(0);	
 		}		

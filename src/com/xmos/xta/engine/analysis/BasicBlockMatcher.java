@@ -2,12 +2,12 @@ package com.xmos.xta.engine.analysis;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import com.xmos.xta.engine.analysis.nodes.Block;
+import com.xmos.xta.engine.analysis.nodes.BlockNode;
 import com.xmos.xta.engine.analysis.nodes.Node;
 
 public class BasicBlockMatcher  {
 
-	private Block m_block;
+	private BlockNode m_block;
 	private Node m_treeStart;
 	private Node m_lastBlock;
 	
@@ -24,7 +24,7 @@ public class BasicBlockMatcher  {
 		}
 		m_lastBlock = insts.getLast();
 		if(isStart){
-			m_block = new Block(insts);
+			m_block = new BlockNode(insts);
 		}
 		if(isStart && insts.contains(treeStart)){
 			m_treeStart = m_block;

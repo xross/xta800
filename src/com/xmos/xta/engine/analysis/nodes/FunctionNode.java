@@ -8,8 +8,7 @@ import java.util.Set;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
-
-public class Function extends Node {
+public class FunctionNode extends Node {
 
 	private String m_functionName;
 	private Node m_function;
@@ -17,13 +16,13 @@ public class Function extends Node {
 	private boolean m_knownFunction;
 	private Node m_branchTarget;
 	
-	public Function (Node branchTarget) {
+	public FunctionNode (Node branchTarget) {
 		super();
 		m_branchTarget = branchTarget;
 		m_knownFunction = false;
 	}
 	
-	public Function (Node function, String functionName) {
+	public FunctionNode (Node function, String functionName) {
 		super();
 		m_function = function;
 		m_knownFunction = true;
@@ -34,13 +33,13 @@ public class Function extends Node {
 		}
 	}
 	
-	public Function (Function fn){
+	public FunctionNode (FunctionNode fn){
 		m_functionName = fn.m_functionName;
 		m_function = fn.m_function;
 		m_knownFunction = fn.m_knownFunction;
 	}
 	
-	public Function() {
+	public FunctionNode() {
 		super();
 		m_knownFunction = false;
 	}
@@ -64,29 +63,16 @@ public class Function extends Node {
 		return m_functionName;
 	}
 	
-	public Node getFunction(){
+	public Node getFunction() {
 		return m_function;
 	}
 	
-	public Node getBranchTarget(){
+	public Node getBranchTarget() {
 		return m_branchTarget;
 	}
 
-	public void display(int indentLevel) {
-		printIndent(indentLevel);
-		System.out.printf("function(%s)\n", m_functionName);
-		if(m_knownFunction){
-	//		if(m_branchTarget == null){
-				m_function.display(indentLevel + 1);
-	//		} 
-		} else {
-			printIndent(indentLevel+1);
-			System.out.printf("function unknown\n");
-		}
-	}
-	
 	public Node clone() {
-		return new Function(this);
+		return new FunctionNode(this);
 	}
 	
 	public Collection<Node> getContaintedNodes() {
@@ -120,6 +106,7 @@ public class Function extends Node {
 	public Set<Integer> getPCsCovered() {
 		return m_function.getPCsCovered();
 	}
+	
 	public boolean isFunction() {
 		return true;
 	}
@@ -127,5 +114,19 @@ public class Function extends Node {
 	public int getStartPc() {
 		return m_function.getStartPc();
 	}
+
+	public void traverse(int depth, NodeTraverser nodeTraverser) {
+		m_function.traverse(depth, nodeTraverser);
+	}
 	
+	public void display(int indentLevel) {
+		printIndent(indentLevel);
+		System.out.printf("function(%s)\n", m_functionName);
+		if (m_knownFunction) {
+			m_function.display(indentLevel + 1);
+		} else {
+			printIndent(indentLevel+1);
+			System.out.printf("function unknown\n");
+		}
+	}		
 }

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.analysis.nodes.Function;
+import com.xmos.xta.engine.analysis.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.analysis.patterns.CommonMethods;
 import com.xmos.xta.engine.analysis.patterns.LoopPatternMatcher;
@@ -25,8 +25,8 @@ import com.xmos.xta.engine.analysis.patterns.UpWedge;
 public class StructuralAnalysisEngine {
 	
 	private ControlFlowGraph m_controlFlowGraph;
-	private Map<Integer, Function> m_functionStartPcs;
-	private Map<Integer, Function> m_threadStartPcs;
+	private Map<Integer, FunctionNode> m_functionStartPcs;
+	private Map<Integer, FunctionNode> m_threadStartPcs;
 	private StructureGraph m_structureGraph;
 	
 	public StructuralAnalysisEngine(ControlFlowGraph controlFlowGraph){
@@ -38,8 +38,8 @@ public class StructuralAnalysisEngine {
 	 * all unknown branch and link targets should have a pseudo function in place. 
 	 */
 	public void analyse(Engine engine){
-		m_functionStartPcs = new HashMap<Integer, Function>();
-		m_threadStartPcs = new HashMap<Integer, Function>();
+		m_functionStartPcs = new HashMap<Integer, FunctionNode>();
+		m_threadStartPcs = new HashMap<Integer, FunctionNode>();
 		buildStructureGraph(engine);
 		linkFunctions();
 	}
@@ -49,7 +49,7 @@ public class StructuralAnalysisEngine {
 	}
 	
 	private void linkFunctions() {
-		for (Function fn : m_controlFlowGraph.getAllFunctions()) {
+		for (FunctionNode fn : m_controlFlowGraph.getAllFunctions()) {
 			if (fn.isFunctionKnown()) {
 				String fnName = fn.getBranchTarget().getInstructions().get(0).getFunctionName();
 				fn.setFunction(fnName, m_functionStartPcs.get(fn.getBranchTarget().getStartPc()).getFunction());
@@ -65,7 +65,7 @@ public class StructuralAnalysisEngine {
 	}
 	
 	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, 
-			Map<Integer, Function> startPcs, Engine engine) {
+			Map<Integer, FunctionNode> startPcs, Engine engine) {
 		
 		Collection<Node> graphs = new HashSet<Node>();
 
@@ -82,7 +82,7 @@ public class StructuralAnalysisEngine {
 			decompose(basicBlocks, initialBasicBlock);
 			Node decomposedGraph = basicBlocks.iterator().next();
 			
-			Function fn = new Function(decomposedGraph, functionName);
+			FunctionNode fn = new FunctionNode(decomposedGraph, functionName);
 			
 			graphs.add(fn);
 			

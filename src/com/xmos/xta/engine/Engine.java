@@ -21,7 +21,7 @@ import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.analysis.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.StructureGraph;
-import com.xmos.xta.engine.analysis.nodes.Function;
+import com.xmos.xta.engine.analysis.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
@@ -910,7 +910,7 @@ public class Engine implements Notifier {
 			} 
 			System.out.println(", shape=box]; ");
 		}
-		for(Function n : pfh.getFunctions()){
+		for(FunctionNode n : pfh.getFunctions()){
 			System.out.println(n.getGraphvizName() + " [label=\"" + n.getFucntionName() + "\"]; ");
 		}
 		for(Node n : id.getInstructions()){

@@ -3,7 +3,7 @@ package com.xmos.xta.engine.analysis.patterns;
 import java.util.Collection;
 
 import com.xmos.xta.engine.analysis.nodes.Node;
-import com.xmos.xta.engine.analysis.nodes.Terminal;
+import com.xmos.xta.engine.analysis.nodes.TerminalNode;
 
 public class TerminalPatternMatcher extends PatternMatcher {
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose, Node treeStart) {
@@ -24,7 +24,7 @@ public class TerminalPatternMatcher extends PatternMatcher {
 			System.out.println("#found a terminal node from " + currentNode + " of " + currentNode.getNextNodes());
 		}
 		
-		Terminal newNode = new Terminal(currentNode.getNextNodes());
+		TerminalNode newNode = new TerminalNode(currentNode.getNextNodes());
 		workingSet.removeAll(currentNode.getNextNodes());
 		workingSet.add(newNode);
 		currentNode.getNextNodes().clear();

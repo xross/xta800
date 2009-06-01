@@ -7,7 +7,7 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
-import com.xmos.xta.engine.analysis.nodes.Block;
+import com.xmos.xta.engine.analysis.nodes.BlockNode;
 import com.xmos.xta.engine.analysis.nodes.Node;
 
 public class CommonMethodsTest {
@@ -21,18 +21,18 @@ public class CommonMethodsTest {
 		int prevCount = 3;
 		int nextCount = 2;
 		
-		Block [] prevs = new Block [prevCount];
+		BlockNode [] prevs = new BlockNode [prevCount];
 		for(int i = 0;i<prevCount;i++){
-			prevs[i] = new Block();
+			prevs[i] = new BlockNode();
 			nodes.add(prevs[i]);
 		}
-		Block [] nexts = new Block [nextCount];
+		BlockNode [] nexts = new BlockNode [nextCount];
 		for(int i = 0;i<nextCount;i++){
-			nexts[i] = new Block();
+			nexts[i] = new BlockNode();
 			nodes.add(nexts[i]);
 		}
 
-		Block base = new Block();
+		BlockNode base = new BlockNode();
 		nodes.add(base);
 		for(Node prev : prevs){
 			CommonMethods.connect(base, prev);
@@ -54,18 +54,18 @@ public class CommonMethodsTest {
 		int prevCount = 2;
 		int nextCount = 3;
 		
-		Block [] prevs = new Block [prevCount];
+		BlockNode [] prevs = new BlockNode [prevCount];
 		for(int i = 0;i<prevCount;i++){
-			prevs[i] = new Block();
+			prevs[i] = new BlockNode();
 			nodes.add(prevs[i]);
 		}
-		Block [] nexts = new Block [nextCount];
+		BlockNode [] nexts = new BlockNode [nextCount];
 		for(int i = 0;i<nextCount;i++){
-			nexts[i] = new Block();
+			nexts[i] = new BlockNode();
 			nodes.add(nexts[i]);
 		}
 
-		Block base = new Block();
+		BlockNode base = new BlockNode();
 		nodes.add(base);
 		for(Node prev : prevs){
 			CommonMethods.connect(base, prev);
