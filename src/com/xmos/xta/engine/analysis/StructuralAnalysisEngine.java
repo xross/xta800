@@ -23,31 +23,31 @@ import com.xmos.xta.engine.analysis.patterns.TerminalPatternMatcher;
 import com.xmos.xta.engine.analysis.patterns.UpWedge;
 
 public class StructuralAnalysisEngine {
-	
+
 	private ControlFlowGraph m_controlFlowGraph;
 	private Map<Integer, Function> m_functionStartPcs;
 	private Map<Integer, Function> m_threadStartPcs;
 	private StructureGraph m_structureGraph;
-	
-	public StructuralAnalysisEngine(ControlFlowGraph controlFlowGraph){
+
+	public StructuralAnalysisEngine(ControlFlowGraph controlFlowGraph) {
 		m_controlFlowGraph = controlFlowGraph;
 	}
-	
+
 	/**
-	 * By the time this is called all the instructions successors should have been set and
-	 * all unknown branch and link targets should have a pseudo function in place. 
+	 * By the time this is called all the instructions successors should have
+	 * been set and all unknown branch and link targets should have a pseudo
+	 * function in place.
 	 */
-	public void analyse(Engine engine){
+	public boolean analyse(Engine engine) {
 		m_functionStartPcs = new HashMap<Integer, Function>();
 		m_threadStartPcs = new HashMap<Integer, Function>();
-		buildStructureGraph(engine);
-		linkFunctions();
+		return buildStructureGraph(engine);
 	}
-	
-	public StructureGraph getStructureGraph(){
+
+	public StructureGraph getStructureGraph() {
 		return m_structureGraph;
 	}
-	
+
 	private void linkFunctions() {
 		for (Function fn : m_controlFlowGraph.getAllFunctions()) {
 			if (fn.isFunctionKnown()) {
@@ -56,52 +56,60 @@ public class StructuralAnalysisEngine {
 			}
 		}
 	}
-	
-	private void buildStructureGraph(Engine engine){
+
+	private boolean buildStructureGraph(Engine engine) {
 		Collection<Node> functions = buildGraph(m_controlFlowGraph.getFunctionStartInstructions(), m_functionStartPcs, engine);
+		if (functions == null) {
+			return false;
+		}
 		Collection<Node> threads = buildGraph(m_controlFlowGraph.getThreadStartInstructions(), m_threadStartPcs, engine);
+		if (threads == null) {
+			return false;
+		}
 		m_structureGraph = new StructureGraph(functions, threads);
+		linkFunctions();
 		engine.provideFeedback("Done");
+		return true;
 	}
-	
-	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, 
-			Map<Integer, Function> startPcs, Engine engine) {
-		
+
+	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, Function> startPcs, Engine engine) {
 		Collection<Node> graphs = new HashSet<Node>();
 
 		for (Node graphStart : graphStartNodes) {
 			String functionName = graphStart.getInstructions().get(0).getFunctionName();
-			
-			engine.provideFeedback("Processing "  + functionName);
+
+			engine.provideFeedback("Processing " + functionName);
 
 			Collection<Node> currentGraph = new HashSet<Node>();
 			collectCurrentGraphNodes(graphStart, currentGraph);
 			Collection<Node> basicBlocks = new HashSet<Node>();
-			
-			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);		
-			decompose(basicBlocks, initialBasicBlock);
+
+			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
+			if (!createStructure(basicBlocks, initialBasicBlock, engine)) {
+				return null;
+			}
 			Node decomposedGraph = basicBlocks.iterator().next();
-			
+
 			Function fn = new Function(decomposedGraph, functionName);
-			
+
 			graphs.add(fn);
-			
-			startPcs.put(graphStart.getStartPc(), fn);			
-		}		
+
+			startPcs.put(graphStart.getStartPc(), fn);
+		}
 		return graphs;
 	}
-	
+
 	/**
-	 * This step is in the flow in order to reduce the graph of instructions into basic blocks.
+	 * This step is in the flow in order to reduce the graph of instructions
+	 * into basic blocks.
 	 */
-	private Node reduceGraphToBasicBlocks(Collection<Node> basicBlocks, 
-			Node initialBasicBlock, Collection<Node> currentGraph) {
-		
+	private Node reduceGraphToBasicBlocks(Collection<Node> basicBlocks, Node initialBasicBlock, Collection<Node> currentGraph) {
+
 		Set<Node> seen = new HashSet<Node>();
 		Map<Node, Node> cfgToStructure = new HashMap<Node, Node>();
 		Map<Node, Node> endPoint = new HashMap<Node, Node>();
 		Node treeStart = initialBasicBlock;
-		
+
 		for (Node node : currentGraph) {
 			if (!seen.contains(node)) {
 				if (!node.isFunction()) {
@@ -113,7 +121,7 @@ public class StructuralAnalysisEngine {
 						cfgToStructure.put(node, bbpm.getBlock());
 						endPoint.put(bbpm.getBlock(), bbpm.getLastBlock());
 					}
-				
+
 				} else {
 					seen.add(node);
 					Node clone = node.clone();
@@ -123,26 +131,26 @@ public class StructuralAnalysisEngine {
 				}
 			}
 		}
-		//now add all the links
+		// now add all the links
 		for (Node node : basicBlocks) {
 			Node lastInstruction = endPoint.get(node);
 			for (Node next : lastInstruction.getNextNodes()) {
 				CommonMethods.connect(cfgToStructure.get(next), node);
-			}	
+			}
 		}
 		return treeStart;
 	}
 
-	private void collectCurrentGraphNodes(Node node, Collection<Node> seen){
+	private void collectCurrentGraphNodes(Node node, Collection<Node> seen) {
 		seen.add(node);
 		for (Node next : node.getNextNodes()) {
-			if (!seen.contains(next)){
+			if (!seen.contains(next)) {
 				collectCurrentGraphNodes(next, seen);
 			}
 		}
 	}
-	
-	private void decompose(Collection<Node> workingSet, Node treeStart) {
+
+	private boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine) {
 		List<PatternMatcher> patternMatchers = new ArrayList<PatternMatcher>();
 		patternMatchers.add(new SelfLoopPattern());
 		patternMatchers.add(new LoopPatternMatcher());
@@ -153,9 +161,9 @@ public class StructuralAnalysisEngine {
 		patternMatchers.add(new TerminalPatternMatcher());
 		boolean working = true;
 		boolean dominatorTreeUpToDate = false;
-		
+
 		while (working) {
-			
+
 			List<Node> postOrder = new LinkedList<Node>();
 			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
 			working = false;
@@ -165,9 +173,12 @@ public class StructuralAnalysisEngine {
 					dominatorTreeUpToDate = true;
 				}
 				for (Node node : postOrder) {
+					if (engine.getAbort()) {
+						return false;
+					}
 					if (pm.isMatch(node, workingSet, false, treeStart)) {
 						treeStart = pm.getTreeStart();
-						assert(connectivitySanityCheck(workingSet));
+						assert (connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
 						working = true;
 						break;
@@ -177,10 +188,11 @@ public class StructuralAnalysisEngine {
 					break;
 			}
 		}
+		return true;
 	}
-	
+
 	private void buildDominatorTree(Collection<Node> reachableNodes, Node treeStart) {
-		
+
 		for (Node node : reachableNodes) {
 			node.getDominators().clear();
 			if (treeStart == node) {
@@ -190,31 +202,31 @@ public class StructuralAnalysisEngine {
 				node.setDominatorSetComplete(true);
 			}
 		}
-		
+
 		Set<Node> intersection = new HashSet<Node>();
 		boolean stillChanging = true;
-		
+
 		while (stillChanging) {
 			stillChanging = false;
 			for (Node node : reachableNodes) {
 				boolean intersectionIsCompleteSet = true;
-				
-				if(node.getDominators().size() == 1) {
+
+				if (node.getDominators().size() == 1) {
 					continue;
 				}
 				if (treeStart == node)
 					continue;
-				
+
 				intersection.clear();
-				
+
 				for (Node pred : node.getPrevNodes()) {
-					if(!pred.isDominatorSetComplete()){
-						if(intersectionIsCompleteSet){
+					if (!pred.isDominatorSetComplete()) {
+						if (intersectionIsCompleteSet) {
 							intersection.addAll(pred.getDominators());
 							intersectionIsCompleteSet = false;
 						} else {
 							intersection.retainAll(pred.getDominators());
-						}		
+						}
 					}
 				}
 
@@ -229,7 +241,7 @@ public class StructuralAnalysisEngine {
 			}
 		}
 	}
-	
+
 	private void DFSPostOrder(List<Node> nodes, Node entry, Set<Node> visited) {
 		nodes.add(entry);
 		List<Node> next = new LinkedList<Node>(entry.getNextNodes());
@@ -242,14 +254,14 @@ public class StructuralAnalysisEngine {
 		}
 	}
 
-	private boolean connectivitySanityCheck(Collection<Node> workingSet){
+	private boolean connectivitySanityCheck(Collection<Node> workingSet) {
 		int total = 0;
 		for (Node node : workingSet) {
-			total += node.getPrevNodes().size()-node.getNextNodes().size();
+			total += node.getPrevNodes().size() - node.getNextNodes().size();
 		}
 		if (total != 0) {
 			return false;
 		}
 		return true;
-	}	
+	}
 }

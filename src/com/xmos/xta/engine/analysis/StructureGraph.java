@@ -10,6 +10,7 @@ public class StructureGraph {
 	
 	public StructureGraph(Collection<Node> functions, Collection<Node> threads) {
 		super();
+		assert(threads.size() > 0);
 		m_functions = functions;
 		m_threads = threads;
 	}

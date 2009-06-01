@@ -27,4 +27,20 @@ public class ThreadHandler {
 		}
 		return nodes;
 	}
+	
+	public Collection<Node> ensureThreadStartExists(Collection<Node> threadStarts){
+		if(threadStarts.isEmpty() || threadStarts == null){
+			m_notifier.notify(Notifier.NOTIFY_WARNING,
+					"No thread starts found, assuming master thread starts at 0x10000");
+			Node threadNode = m_instDecoder.getNode(0x10000);
+			if (threadNode != null){
+				threadStarts.add(threadNode);
+			} else {
+				m_notifier.notify(Notifier.NOTIFY_WARNING,
+						"Failed to find PC 0x" + Integer.toHexString(0x10000));
+			}
+		}
+		
+		return threadStarts;
+	}
 }
