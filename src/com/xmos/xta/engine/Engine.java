@@ -57,11 +57,13 @@ public class Engine implements Notifier {
 	private NodeCoreCollection<XeObject> m_xeObjects;
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
 	private NodeCoreCollection<ControlFlowGraph> m_controlFlowGraph;
+	private NodeCoreCollection<InstructionDecoder> m_instructionDecoder;
 	
 	public Engine(Config config) {
 		m_xeObjects = new NodeCoreCollection<XeObject>();
 		m_structuralGraph = new NodeCoreCollection<StructureGraph>();
 		m_controlFlowGraph = new NodeCoreCollection<ControlFlowGraph>();
+		m_instructionDecoder = new NodeCoreCollection<InstructionDecoder>();
 		
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
@@ -163,6 +165,10 @@ public class Engine implements Notifier {
 		return m_structuralGraph.get(m_nodeId, m_coreId);
 	}
 	
+	public InstructionDecoder getInstructionDecoder() {
+		return m_instructionDecoder.get(m_nodeId, m_coreId);
+	}
+	
 	public String getSrcPaths() {
 		if (m_srcPaths != null) {
 			return m_srcPaths;
@@ -213,11 +219,13 @@ public class Engine implements Notifier {
 		NodeCoreCollection<XeObject> newXeObjects = new NodeCoreCollection<XeObject>();
 		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
 		NodeCoreCollection<ControlFlowGraph> newCfg = new NodeCoreCollection<ControlFlowGraph>();
+		NodeCoreCollection<InstructionDecoder> newInstructionDecoder = new NodeCoreCollection<InstructionDecoder>();
 		
 		for(int nodeId : xeLoader.getNodeIds()){
 			for(int coreId : xeLoader.getCoreIds(nodeId)){
 				
 				InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config);
+				
 				if(!id.decode()) 
 					return false;
 				
@@ -249,9 +257,7 @@ public class Engine implements Notifier {
 				
 			}		
 		}
-		
-		
-		
+		m_instructionDecoder = newInstructionDecoder;
 		m_sections = sections;
 		m_xeObjects = newXeObjects;
 		m_controlFlowGraph = newCfg;
@@ -271,6 +277,12 @@ public class Engine implements Notifier {
 		} else {
 			return new Progress(Progress.State.IDLE, 0);
 		}
+	}
+	
+	public Collection<Node> collectRouteNodes(int startPc, Collection<Integer> endPcs){
+		ControlFlowGraph controlFlowGraph = m_controlFlowGraph.get(m_nodeId, m_coreId);
+
+		return null;
 	}
 
 	public boolean analyseRoute(String functionName) {
