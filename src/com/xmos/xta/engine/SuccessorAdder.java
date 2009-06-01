@@ -13,7 +13,7 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.sections.Sections;
 
 public class SuccessorAdder {
-	private InstructionDecoder m_id;
+	private InstructionDecoder m_instDecoder;
 	private Map<Integer, TreeSet<Integer>> m_branchMap;
 	private MemoryImage m_mi;
 	private int m_cpPointer;
@@ -21,11 +21,11 @@ public class SuccessorAdder {
 	private InstructionMnemonics m_mnenonics;
 	private Notifier m_notifier;
 
-	public SuccessorAdder(int nodeId, int coreId, InstructionDecoder id, Sections sections, 
+	public SuccessorAdder(int nodeId, int coreId, InstructionDecoder instDecoder, Sections sections, 
 			Collection<Node> threadEnds, XeLoader xeLoader, Notifier notifier) {
 		m_threadEnds = threadEnds;
 		m_branchMap = sections.getBranches(nodeId, coreId);
-		m_id = id;
+		m_instDecoder = instDecoder;
 		m_mi = xeLoader.getMemoryImage(nodeId, coreId);
 		m_cpPointer = xeLoader.getSymbolTable(nodeId, coreId).symbolAddress("_cp");
 		m_mnenonics = new InstructionMnemonics(xeLoader.getArchitecture());		
@@ -33,7 +33,7 @@ public class SuccessorAdder {
 	}
 
 	public boolean process () {
-		for (Node node : m_id.getInstructions()){
+		for (Node node : m_instDecoder.getInstructions()){
 			XtaInstruction inst = node.getInstructions().get(0);
 			
 			addAllBranchTargets(node, inst);
@@ -47,7 +47,7 @@ public class SuccessorAdder {
 	private void addBranchLinkReturns(Node instruction, XtaInstruction inst) {
 		if (inst.isLink()){
 			int returnPc = inst.getPc() + inst.getNumBytes();
-			Node returnNode = m_id.getNode(returnPc);
+			Node returnNode = m_instDecoder.getNode(returnPc);
 			if (returnNode != null) {
 				instruction.setBranchLinkReturn(returnNode);
 			} else {
@@ -104,7 +104,7 @@ public class SuccessorAdder {
 	}
 
 	private void connect(Node instruction, int pc) {
-		Node target = m_id.getNode(pc);
+		Node target = m_instDecoder.getNode(pc);
 		if (target != null){
 			CommonMethods.connect(target, instruction);
 		} else {

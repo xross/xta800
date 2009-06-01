@@ -233,8 +233,8 @@ public class Engine implements Notifier {
 				if (!fh.addFunctions()) 
 					return false;
 				
-				UnreachableCodeFinder uca = new UnreachableCodeFinder(id, threadStartNodes, fh.getKnownFuncStarts());
-				uca.analyseReachable(); 
+				UnreachableCodeFinder uca = new UnreachableCodeFinder();
+				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
 	
 				newXeObjects.add(nodeId, coreId, new XeObject(xeLoader, nodeId, coreId, fileFinder));
 				

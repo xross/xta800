@@ -19,9 +19,7 @@ public class LoopPatternMatcher extends PatternMatcher {
 			Set <Node> workingIntersection = new HashSet<Node>();
 			
 			for (Node loop : intersection) {
-				if (loop.getNextNodes().size() != 1 || !loop.getNextNodes().contains(currentNode) || loop.getPrevNodes().size() != 1) {
-					//allLoopsResolved = false;
-				} else {
+				if (!(loop.getNextNodes().size() != 1 || !loop.getNextNodes().contains(currentNode) || loop.getPrevNodes().size() != 1)) {
 					workingIntersection.add(loop);
 				}
 			}

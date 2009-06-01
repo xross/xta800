@@ -167,10 +167,7 @@ public class StructuralAnalysisEngine {
 				for (Node node : postOrder) {
 					if (pm.isMatch(node, workingSet, false, treeStart)) {
 						treeStart = pm.getTreeStart();
-						if (!connectivitySanityCheck(workingSet)) {
-							System.err.println("failed connectivity sanity check on " + pm.getClass().getSimpleName() + " on " + node);
-							return;
-						}
+						assert(connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
 						working = true;
 						break;

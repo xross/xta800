@@ -12,13 +12,13 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class FunctionHandler {
 
-	private InstructionDecoder m_id;
+	private InstructionDecoder m_instDecoder;
 	private Collection<Function> m_functions;
 	private Map<Node, Node> m_instToFunc;
 	private Collection<Node> m_pseudoFunctions;
 	
-	public FunctionHandler(InstructionDecoder id) {
-		m_id = id;
+	public FunctionHandler(InstructionDecoder instDecoder) {
+		m_instDecoder = instDecoder;
 	}
 
 	public Collection<Function> getFunctions(){
@@ -46,7 +46,7 @@ public class FunctionHandler {
 		m_functions = new HashSet<Function>();
 		m_pseudoFunctions = new HashSet<Node>();
 		
-		for (Node instruction : m_id.getInstructions() ){
+		for (Node instruction : m_instDecoder.getInstructions() ){
 			assert(instruction.getInstructions().size() == 1);
 			XtaInstruction inst = instruction.getInstructions().get(0);
 			if(inst.isLink()){

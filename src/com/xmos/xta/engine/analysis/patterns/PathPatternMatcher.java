@@ -22,10 +22,7 @@ public class PathPatternMatcher extends PatternMatcher {
 		}
 		
 		if (pathList.size() > 1) {
-			if (!pathSanityCheck(pathList)) {
-				System.err.println("#failed sanity check");
-				return false;
-			} 
+			assert(pathSanityCheck(pathList));
 			updateGraph(pathList, workingSet, verbose, treeStart);
 			return true;
 		} else {
@@ -80,10 +77,6 @@ public class PathPatternMatcher extends PatternMatcher {
 		Set<Node> seen = new HashSet<Node>();
 		
 		if (pathList.size() < 2) {
-			return false;
-		}
-		
-		if (pathList.iterator().next().getPrevNodes().size() == 1) {
 			return false;
 		}
 		
