@@ -2,7 +2,6 @@ package com.xmos.xta.engine;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -21,11 +20,11 @@ import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.analysis.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.StructuralAnalysisEngine;
+import com.xmos.xta.engine.analysis.StructureGraph;
 import com.xmos.xta.engine.analysis.nodes.Function;
 import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
-import com.xmos.xta.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
@@ -40,7 +39,6 @@ public class Engine implements Notifier {
 	public static int ROUTE_ID_LAST = -1;
 	
 	private XeLoader m_xeLoader;
-	private List<XeObject> m_xeObjects;
 	private List<Route> m_routes;
 	private Route m_selectedRoute;
 	private Config m_config;
@@ -55,9 +53,15 @@ public class Engine implements Notifier {
 	private Sections m_sections;
 	private Collection<String> m_functionsVisited;
 	
-
+	private NodeCoreCollection<XeObject> m_xeObjects;
+	private NodeCoreCollection<StructureGraph> m_structuralGraph;
+	private NodeCoreCollection<ControlFlowGraph> m_cfg;
+	
 	public Engine(Config config) {
-		m_xeObjects = new ArrayList<XeObject>();
+		m_xeObjects = new NodeCoreCollection<XeObject>();
+		m_structuralGraph = new NodeCoreCollection<StructureGraph>();
+		m_cfg = new NodeCoreCollection<ControlFlowGraph>();
+		
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
 		m_config = config;
@@ -147,7 +151,15 @@ public class Engine implements Notifier {
 	}
 
 	public XeObject getXeObject() {
-		return getXeObject(m_nodeId, m_coreId);
+		return m_xeObjects.get(m_nodeId, m_coreId);
+	}
+	
+	public ControlFlowGraph getCFG() {
+		return m_cfg.get(m_nodeId, m_coreId);
+	}
+	
+	public StructureGraph getStructureGraph() {
+		return m_structuralGraph.get(m_nodeId, m_coreId);
 	}
 	
 	public String getSrcPaths() {
@@ -192,65 +204,53 @@ public class Engine implements Notifier {
 			notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile + "' could not be loaded.");
 			return false;			
 		}
-		
-		m_xeObjects.clear();
-		for (int node : xeLoader.getNodeIds()) {
-			for (int core : xeLoader.getCoreIds(node)) {
-				m_xeObjects.add(new XeObject(xeLoader, node, core, fileFinder));
-			}
-		}
-		
-		if (!m_sections.load(xeLoader, this)) {
+		Sections sections = new Sections();
+		if (!sections.load(xeLoader, this)) {
 			return false;
 		} 
-				
+		
+		NodeCoreCollection<XeObject> newXeObjects = new NodeCoreCollection<XeObject>();
+		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
+		NodeCoreCollection<ControlFlowGraph> newCfg = new NodeCoreCollection<ControlFlowGraph>();
+		
 		for(int nodeId : xeLoader.getNodeIds()){
 			for(int coreId : xeLoader.getCoreIds(nodeId)){
-				MemoryImage mi = xeLoader.getMemoryImage(nodeId, coreId);
 				
-		        // decode the instruction
-				InstructionDecoder id = new InstructionDecoder(m_nodeId, m_coreId, xeLoader, getConfig());
-				if(!id.decode()) {
-					resetEngine();
+				InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, getConfig());
+				if(!id.decode()) 
 					return false;
-				}
 				
-        		// find all thread start and end points
 				ThreadHandler th = new ThreadHandler(id, this);
 				Collection<Node> threadStartNodes = 
-					th.getThreadNodes(m_sections.getThreadStartPoints(nodeId, coreId));
+					th.getThreadNodes(sections.getThreadStartPoints(nodeId, coreId));
 				Collection<Node> threadStopNodes = 
-					th.getThreadNodes(m_sections.getThreadStopPoints(nodeId, coreId));				
+					th.getThreadNodes(sections.getThreadStopPoints(nodeId, coreId));				
+				SuccessorAdder sa = new SuccessorAdder(nodeId, coreId, id, sections, threadStopNodes, xeLoader, this);
+				if (!sa.process()) 
+					return false;
 
-		        // add all successors to instructions
-				SuccessorAdder sa = new SuccessorAdder(nodeId, coreId, 
-						id, m_sections, threadStopNodes, xeLoader, this);
-				if (!sa.process()) {
-					resetEngine();
-					return false;
-				}
-				
-		        // add functions to graph 
 				FunctionHandler fh = new FunctionHandler(id);
-				if (!fh.addFunctions()) {
-					resetEngine();
+				if (!fh.addFunctions()) 
 					return false;
-				}
-				Collection<Node> functionStarts = fh.getKnownFunctions().keySet();
 				
-				// identify and remove unreachable code
-				UnreachableCodeAnalyser uca = new UnreachableCodeAnalyser(id, threadStartNodes, functionStarts);
-				if (!uca.analyseReachable()) {
-					resetEngine();
+				UnreachableCodeFinder uca = new UnreachableCodeFinder(id, threadStartNodes, fh.getKnownFuncStarts());
+				if (!uca.analyseReachable()) 
 					return false;
-				}
+	
+				newXeObjects.add(nodeId, coreId, new XeObject(xeLoader, nodeId, coreId, fileFinder));
 				
-				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, functionStarts, fh.getFunctions(), nodeId, coreId);
+				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts(), fh.getFunctions(), nodeId, coreId);
+				newCfg.add(nodeId, coreId, cfg);
+				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
 				sae.analyse();
+				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
 			}		
 		}
-		
+		m_sections = sections;
+		m_xeObjects = newXeObjects;
+		m_cfg = newCfg;
+		m_structuralGraph = newStructuralGraph;
 		m_xeLoader = xeLoader;		
 		m_nodeId = 0;
 		m_coreId = 0;				
@@ -759,10 +759,6 @@ public class Engine implements Notifier {
 		return m_functionsVisited;
 	}
 	
-	private void resetEngine() {
-	}
-
-	
 	private boolean analyseRouteSafely(int startPc, TreeSet<Integer> endPcs, RouteDescription routeDescription) {				
 		boolean success = false;
 		try {
@@ -873,17 +869,6 @@ public class Engine implements Notifier {
 
 	private boolean resolveRefernece(Reference ref, Engine engine) {
 		return ref.resolve(engine, m_nodeId, m_coreId);
-	}
-
-	private XeObject getXeObject(int nodeId, int coreId) {
-		for (XeObject xeObject : m_xeObjects) {
-			if ((xeObject.getNodeId() == nodeId) &&
-			    (xeObject.getCoreId() == coreId)) {
-				return xeObject;
-			}
-		}
-		assert (false);
-		return null;
 	}
 	
 	private void notifyLoopsUpdated() {        

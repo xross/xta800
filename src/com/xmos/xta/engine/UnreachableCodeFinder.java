@@ -6,7 +6,7 @@ import java.util.Set;
 
 import com.xmos.xta.engine.analysis.nodes.Node;
 
-public class UnreachableCodeAnalyser {
+public class UnreachableCodeFinder {
 
 	private Set<Node> m_unreachable;
 	private InstructionDecoder m_id;
@@ -15,7 +15,7 @@ public class UnreachableCodeAnalyser {
 	
 	//TODO - this currently doesn't detect unreachable functions
 	
-	public UnreachableCodeAnalyser(InstructionDecoder id, Collection<Node> threadStarts, Collection<Node> functionStarts) {
+	public UnreachableCodeFinder(InstructionDecoder id, Collection<Node> threadStarts, Collection<Node> functionStarts) {
 		m_id = id;
 		m_threadStarts = threadStarts;
 		m_functionStarts = functionStarts;

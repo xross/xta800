@@ -59,8 +59,10 @@ public class SuccessorAdder {
 
 	private void addUserSuccessors(Node instruction, XtaInstruction inst) {
 		TreeSet<Integer> nextPcs = m_branchMap.get(inst.getPc());
-		for (int pc : nextPcs){
-			connect(instruction, pc);
+		if(nextPcs!= null){
+			for (int pc : nextPcs){
+				connect(instruction, pc);
+			}
 		}
 	}
 

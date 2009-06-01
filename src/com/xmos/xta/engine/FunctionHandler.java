@@ -29,6 +29,10 @@ public class FunctionHandler {
 		return m_instToFunc;
 	}
 	
+	public Collection<Node> getKnownFuncStarts(){
+		return m_instToFunc.keySet();
+	}
+	
 	public Collection<Node> getPseudoFunctions(){
 		return m_pseudoFunctions;
 	}

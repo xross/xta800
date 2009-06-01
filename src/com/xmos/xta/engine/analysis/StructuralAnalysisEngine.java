@@ -54,6 +54,7 @@ public class StructuralAnalysisEngine {
 			if(fn.isFunctionKnown()){
 				String fnName = fn.getBranchTarget().getInstructions().get(0).getFunctionName();
 				fn.setFunction(fnName, m_functionStartPcs.get(fn.getBranchTarget().getStartPc()).getFunction());
+				//CommonMethods.displayStructureTree(fn);
 			}
 		}
 	}
@@ -66,7 +67,7 @@ public class StructuralAnalysisEngine {
 	
 	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, Function> startPcs) {
 		Collection<Node> graphs = new HashSet<Node>();
-		int i=0;
+
 		for (Node graphStart : graphStartNodes) {
 
 			int graphStartPc = graphStart.getStartPc();
