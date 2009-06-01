@@ -8,25 +8,26 @@ import java.util.Set;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
-public class Block extends Node {
-
-	private List<Node> m_insts;
+public class BlockNode extends Node {
+	private final static boolean DEBUG = false;
 	
-	public Block(Block block){
+	private List<Node> m_insts;
+	private List<XtaInstruction> m_xtaInsts;
+	
+	public BlockNode(BlockNode block){
 		super();
 		m_insts = block.m_insts;
 	}
 	
-	//this is only used for verification
-	public Block(){
+	public BlockNode(){
 		super();
 	}
 	
-	public Block clone(){
-		return new Block(this);
+	public BlockNode clone(){
+		return new BlockNode(this);
 	}
 	
-	public Block(List<Node> insts){
+	public BlockNode(List<Node> insts){
 		super();
 		m_insts = insts;
 	}
@@ -34,9 +35,7 @@ public class Block extends Node {
 	public int getBasicBlockId() {
 		return m_id;
 	}
-	
-	private List<XtaInstruction> m_xtaInsts ;
-	
+		
 	public List<XtaInstruction> getInstructions() {
 		if(m_xtaInsts == null){
 			m_xtaInsts = new LinkedList<XtaInstruction>();
@@ -90,25 +89,30 @@ public class Block extends Node {
 	public String getGraphvizName() {
 		return "Block" + m_id;
 	}
-
-	private final static boolean inst = false;
 	
-	public void display(int indentLevel) {
-		printIndent(indentLevel);
-		System.out.println("block(" + m_id +")");
-		if(inst){ 
-			for (Node instruction : m_insts) {
-				instruction.display(indentLevel+1);
-			}
-		}
-	}
-
 	public boolean isFunction() {
 		return false;
 	}
 
 	public int getStartPc() {
 		return getInstructions().get(0).getPc();
-	}		
-
+	}	
+	
+	public void traverse(int depth, NodeTraverser nodeTraverser) {
+		if (DEBUG) { 
+			for (Node instruction : m_insts) {
+				instruction.traverse(depth + 1, nodeTraverser);
+			}
+		}		
+	}
+	
+	public void display(int indentLevel) {
+		printIndent(indentLevel);
+		System.out.println("block(" + m_id +")");
+		if (DEBUG) { 
+			for (Node instruction : m_insts) {
+				instruction.display(indentLevel+1);
+			}
+		}
+	}	
 }

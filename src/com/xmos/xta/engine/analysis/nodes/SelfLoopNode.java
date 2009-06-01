@@ -6,27 +6,21 @@ import java.util.Set;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
-public class SelfLoop extends Node {
+public class SelfLoopNode extends Node {
 
 	private Node m_loop; 
 	
-	public SelfLoop(Node loop){
+	public SelfLoopNode(Node loop){
 		super();
 		m_loop = loop;
 	}
 	
-	public SelfLoop(SelfLoop loop){
+	public SelfLoopNode(SelfLoopNode loop){
 		m_loop = loop.m_loop;
 	}
 
 	public Node clone() {
-		return new SelfLoop(this);
-	}
-
-	public void display(int indentLevel) {
-		printIndent(indentLevel);
-		System.out.printf("selfLoop(%d)\n", m_id);	
-		m_loop.display(indentLevel+1); 
+		return new SelfLoopNode(this);
 	}
 
 	public Collection<Node> getContaintedNodes() {
@@ -61,4 +55,12 @@ public class SelfLoop extends Node {
 		return m_loop.getStartPc();
 	}
 
+	public void traverse(int depth, NodeTraverser nodeTraverser) {
+	}	
+	
+	public void display(int indentLevel) {
+		printIndent(indentLevel);
+		System.out.printf("selfLoop(%d)\n", m_id);	
+		m_loop.display(indentLevel+1); 
+	}
 }

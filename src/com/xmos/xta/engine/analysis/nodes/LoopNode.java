@@ -8,26 +8,26 @@ import java.util.Set;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
-public class Loop extends Node {
+public class LoopNode extends Node {
 	
 	private List<AttachedLoop> m_loops;
 	private Node m_loopHeader;
 	
-	public Loop(Loop loop){
+	public LoopNode(LoopNode loop){
 		super();
 		m_loops = new ArrayList<AttachedLoop>(loop.m_loops);
 		m_loopHeader = loop.m_loopHeader;
 	}
 	
 	
-	public Loop(Node loop, Node base) {
+	public LoopNode(Node loop, Node base) {
 		super();
 		m_loops = new ArrayList<AttachedLoop>();
 		m_loops.add(new AttachedLoop(loop));
 		m_loopHeader = base;
 	}
 	
-	public Loop(Set<Node> loops, Node base) {
+	public LoopNode(Set<Node> loops, Node base) {
 		super();
 		m_loops = new ArrayList<AttachedLoop>();
 		for(Node loop : loops){
@@ -122,8 +122,8 @@ public class Loop extends Node {
 		}
 	}
 
-	public Loop clone() {
-		return new Loop(this);
+	public LoopNode clone() {
+		return new LoopNode(this);
 	}
 
 
@@ -142,6 +142,17 @@ public class Loop extends Node {
 		return "cluster_Loop" + m_id;
 	}
 
+	public boolean isFunction() {
+		return false;
+	}
+
+	public int getStartPc() {
+		return m_loopHeader.getStartPc();
+	}
+
+	public void traverse(int depth, NodeTraverser nodeTraverser) {
+	}	
+	
 	public void display(int indentLevel) {
 		printIndent(indentLevel);
 		System.out.printf("loop(%d)\n", m_id);	
@@ -155,11 +166,4 @@ public class Loop extends Node {
 			
 		}		
 	}		
-	public boolean isFunction() {
-		return false;
-	}
-
-	public int getStartPc() {
-		return m_loopHeader.getStartPc();
-	}
 }

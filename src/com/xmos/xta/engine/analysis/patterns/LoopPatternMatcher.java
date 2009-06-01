@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.xmos.xta.engine.analysis.nodes.Loop;
+import com.xmos.xta.engine.analysis.nodes.LoopNode;
 import com.xmos.xta.engine.analysis.nodes.Node;
 
 public class LoopPatternMatcher extends PatternMatcher {
@@ -36,7 +36,7 @@ public class LoopPatternMatcher extends PatternMatcher {
 	protected void updateGraph(Set<Node> intersection, Collection<Node> workingSet, 
 			Node base, boolean verbose, Node treeStart) {		
 
-		Loop loop = new Loop(intersection, base);
+		LoopNode loop = new LoopNode(intersection, base);
 		
 		if(intersection.contains(treeStart) || base == treeStart){
 			m_treeStart = loop;

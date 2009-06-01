@@ -9,7 +9,6 @@ import java.util.Set;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class InstructionNode extends Node {
-
 	private XtaInstruction m_inst;
 	
 	public InstructionNode (XtaInstruction inst){
@@ -28,11 +27,6 @@ public class InstructionNode extends Node {
 		return m_inst.toString();
 	}
 	
-	public void display(int indentLevel) {
-		printIndent(indentLevel);
-		System.out.println(m_inst);
-	}
-
 	public Collection<Node> getContaintedNodes() {
 		Collection<Node> containedNodes = new HashSet<Node> ();
 		containedNodes.add(this);
@@ -75,4 +69,11 @@ public class InstructionNode extends Node {
 		return false;
 	}
 
+	public void traverse(int depth, NodeTraverser nodeTraverser) {
+	}	
+	
+	public void display(int indentLevel) {
+		printIndent(indentLevel);
+		System.out.println(m_inst);
+	}	
 }

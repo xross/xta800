@@ -3,7 +3,7 @@ package com.xmos.xta.engine.analysis.patterns;
 import java.util.Collection;
 
 import com.xmos.xta.engine.analysis.nodes.Node;
-import com.xmos.xta.engine.analysis.nodes.SelfLoop;
+import com.xmos.xta.engine.analysis.nodes.SelfLoopNode;
 
 public class SelfLoopPattern extends PatternMatcher {
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet,
@@ -13,7 +13,7 @@ public class SelfLoopPattern extends PatternMatcher {
 		if (currentNode.getNextNodes().contains(currentNode)) {
 			assert(currentNode.getPrevNodes().contains(currentNode));
 			
-			SelfLoop loop = new SelfLoop(currentNode);
+			SelfLoopNode loop = new SelfLoopNode(currentNode);
 			
 			if (m_treeStart == currentNode) {
 				m_treeStart = loop;

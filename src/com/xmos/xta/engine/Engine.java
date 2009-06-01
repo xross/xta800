@@ -21,7 +21,7 @@ import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.analysis.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.StructureGraph;
-import com.xmos.xta.engine.analysis.nodes.Function;
+import com.xmos.xta.engine.analysis.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.analysis.patterns.CommonMethods;
 import com.xmos.xta.engine.constraint.Constraint;
@@ -262,9 +262,10 @@ public class Engine implements Notifier {
 		m_xeObjects = newXeObjects;
 		m_controlFlowGraph = newCfg;
 		m_structuralGraph = newStructuralGraph;
-		m_xeLoader = xeLoader;		
+		m_xeLoader = xeLoader;
+		m_executableFile = executableFile;
 		m_nodeId = 0;
-		m_coreId = 0;				
+		m_coreId = 0;			
 		setConstraint(ConstraintFactory.createConstraint(this, ""));
 		
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
@@ -927,7 +928,7 @@ public class Engine implements Notifier {
 			} 
 			System.out.println(", shape=box]; ");
 		}
-		for(Function n : pfh.getFunctions()){
+		for(FunctionNode n : pfh.getFunctions()){
 			System.out.println(n.getGraphvizName() + " [label=\"" + n.getFucntionName() + "\"]; ");
 		}
 		for(Node n : id.getInstructions()){

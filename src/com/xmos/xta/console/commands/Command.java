@@ -42,7 +42,7 @@ public abstract class Command {
 	
     public static boolean isExecutableLoaded(Engine engine, Console console) {    
 	    File executable = engine.getExecutable();
-    	if (executable==null) {
+    	if (executable == null) {
     		console.display("Error: No executable loaded\n");
 	        return false;
     	}

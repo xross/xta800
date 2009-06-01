@@ -8,18 +8,18 @@ import java.util.Set;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
-public class Path extends Node {
+public class PathNode extends Node {
 
 	List<Node> m_nodes;
 	
-	public Path(List<Node> nodes) {
+	public PathNode(List<Node> nodes) {
 		super();
 		assert(nodes!= null);
 		assert(nodes.size()>1);
 		m_nodes = nodes;
 	}
 
-	public Path(Path path) {
+	public PathNode(PathNode path) {
 		super();
 		m_nodes = path.m_nodes;
 	}
@@ -57,7 +57,7 @@ public class Path extends Node {
 	}
 
 	public Node clone() {
-		return new Path(this);
+		return new PathNode(this);
 	}
 
 	public Collection<Node> getContaintedNodes() {
@@ -72,13 +72,6 @@ public class Path extends Node {
 		return "cluster_Path" + m_id;
 	}
 
-	public void display(int indentLevel) {
-		//printIndent(indentLevel);
-		//System.out.printf("path(%d)\n", m_id);
-		for (Node node : m_nodes) {
-			node.display(indentLevel + 0);
-		}
-	}	
 	public boolean isFunction() {
 		return false;
 	}
@@ -86,4 +79,13 @@ public class Path extends Node {
 	public int getStartPc() {
 		return m_nodes.get(0).getStartPc();
 	}
+
+	public void traverse(int depth, NodeTraverser nodeTraverser) {
+	}	
+	
+	public void display(int indentLevel) {
+		for (Node node : m_nodes) {
+			node.display(indentLevel + 0);
+		}
+	}		
 }

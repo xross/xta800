@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.xmos.xta.engine.analysis.nodes.Node;
-import com.xmos.xta.engine.analysis.nodes.Section;
+import com.xmos.xta.engine.analysis.nodes.SectionNode;
 
 public class SectionPatternMatcher extends PatternMatcher {
 
@@ -109,7 +109,7 @@ public class SectionPatternMatcher extends PatternMatcher {
 	}
 
 	protected void updateGraph(Node startNode, Collection<Node> sectionNodes, Node jumpNode, Collection<Node> workingSet, Node endNode, boolean verbose) {
-		Section ms = new Section(sectionNodes, jumpNode);
+		SectionNode ms = new SectionNode(sectionNodes, jumpNode);
 		
 		if(verbose){
 			System.out.println("#have found a section from " + startNode + " to " + endNode + " jump: " + (jumpNode != null));
@@ -135,7 +135,7 @@ public class SectionPatternMatcher extends PatternMatcher {
 	}
 	
 	protected void updateGraph(Node startNode, Collection<Node> sectionNodes, Collection<Node> workingSet,  boolean verbose) {
-		Section ms = new Section(sectionNodes, null);
+		SectionNode ms = new SectionNode(sectionNodes, null);
 		
 		if(verbose){
 			System.out.println("#have found a section from; " + startNode + " to: none");

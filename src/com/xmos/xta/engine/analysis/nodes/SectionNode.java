@@ -8,21 +8,21 @@ import java.util.Set;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
-public class Section extends Node {
+public class SectionNode extends Node {
 	
 	//each option denotes a different path in the section - all weighted equally
 	private Collection<Node> m_options;
 	private Node m_jumpNode;
 	private Node m_selectedOption; 
 
-	public Section(Collection<Node> options, Node jumpNode) {
+	public SectionNode(Collection<Node> options, Node jumpNode) {
 		super();
 		m_options = options;
 		m_selectedOption = null;
 		m_jumpNode = jumpNode;
 	}
 	
-	public Section(Section ms) {
+	public SectionNode(SectionNode ms) {
 		super();
 		m_options = ms.m_options;
 		m_selectedOption = ms.m_selectedOption;
@@ -76,7 +76,7 @@ public class Section extends Node {
 	}
 
 	public Node clone() {
-		return new Section(this);
+		return new SectionNode(this);
 	}
 
 	public Collection<Node> getContaintedNodes() {
@@ -93,16 +93,6 @@ public class Section extends Node {
 		return "cluster_Section" + m_id;
 	}
 	
-	public void display(int indentLevel) {
-		printIndent(indentLevel);
-		System.out.printf("multisection(%d)\n", m_id);
-		
-		for (Node node : m_options) {
-			printIndent(indentLevel);
-			System.out.printf(" option:\n");
-			node.display(indentLevel + 1);
-		}		
-	}	
 	public boolean isFunction() {
 		return false;
 	}
@@ -114,4 +104,18 @@ public class Section extends Node {
 		}
 		return pc;
 	}
+
+	public void traverse(int depth, NodeTraverser nodeTraverser) {
+	}	
+	
+	public void display(int indentLevel) {
+		printIndent(indentLevel);
+		System.out.printf("multisection(%d)\n", m_id);
+		
+		for (Node node : m_options) {
+			printIndent(indentLevel);
+			System.out.printf(" option:\n");
+			node.display(indentLevel + 1);
+		}		
+	}	
 }
