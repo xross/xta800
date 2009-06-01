@@ -73,10 +73,7 @@ public class SectionPatternMatcher extends PatternMatcher {
 				}
 			} else {
 				if (sectionNodes.size() > 1) {
-					if (!sectionSanityCheck(currentNode, sectionNodes, null, endNode)) {
-						System.err.println("#section failed sanity check");
-						continue;
-					}
+					assert(sectionSanityCheck(currentNode, sectionNodes, null, endNode));
 					updateGraph(currentNode, sectionNodes, null, workingSet, endNode,verbose);
 					return true;
 				}

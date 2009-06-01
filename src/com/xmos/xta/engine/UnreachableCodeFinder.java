@@ -9,14 +9,9 @@ import com.xmos.xta.engine.analysis.nodes.Node;
 public class UnreachableCodeFinder {
 
 	private Set<Node> m_unreachable;
-	private InstructionDecoder m_id;
-	private Collection<Node> m_threadStarts;
-	private Collection<Node> m_functionStarts;
 		
-	public UnreachableCodeFinder(InstructionDecoder id, Collection<Node> threadStarts, Collection<Node> functionStarts) {
-		m_id = id;
-		m_threadStarts = threadStarts;
-		m_functionStarts = functionStarts;
+	public UnreachableCodeFinder() {
+		m_unreachable = new HashSet<Node>();
 	}
 	
 	public Collection<Node> getUnreachableCode(){
@@ -28,15 +23,16 @@ public class UnreachableCodeFinder {
 	 * It needs removing from the graph so that functions 
 	 * and threads don't have invalid predecessors.
 	 */
-	public void analyseReachable(){
-		m_unreachable = new HashSet<Node>(m_id.getInstructions());
+	public void analyseReachable(InstructionDecoder id, Collection<Node> threadStarts, Collection<Node> functionStarts){
+		m_unreachable.clear();
+		m_unreachable.addAll(id.getInstructions());
 		Set<Node> reachable = new HashSet<Node>();
-		for (Node node : m_threadStarts){
+		for (Node node : threadStarts){
 			Set<Node> seen = new HashSet<Node>();
 			explore(node , seen);
 			reachable.addAll(seen);
 		}
-		for (Node node : m_functionStarts){
+		for (Node node : functionStarts){
 			Set<Node> seen = new HashSet<Node>();
 			explore(node, seen);
 			reachable.addAll(seen);

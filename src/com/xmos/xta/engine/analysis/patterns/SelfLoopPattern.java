@@ -19,7 +19,6 @@ public class SelfLoopPattern extends PatternMatcher {
 				m_treeStart = loop;
 			}
 			
-			//TODO - replace this with a reference to CommonMethods
 			currentNode.removeNextNode(currentNode);
 			currentNode.removePrevNode(currentNode);
 			
