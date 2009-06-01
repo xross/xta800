@@ -55,12 +55,12 @@ public class Engine implements Notifier {
 	
 	private NodeCoreCollection<XeObject> m_xeObjects;
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
-	private NodeCoreCollection<ControlFlowGraph> m_cfg;
+	private NodeCoreCollection<ControlFlowGraph> m_controlFlowGraph;
 	
 	public Engine(Config config) {
 		m_xeObjects = new NodeCoreCollection<XeObject>();
 		m_structuralGraph = new NodeCoreCollection<StructureGraph>();
-		m_cfg = new NodeCoreCollection<ControlFlowGraph>();
+		m_controlFlowGraph = new NodeCoreCollection<ControlFlowGraph>();
 		
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
@@ -154,8 +154,8 @@ public class Engine implements Notifier {
 		return m_xeObjects.get(m_nodeId, m_coreId);
 	}
 	
-	public ControlFlowGraph getCFG() {
-		return m_cfg.get(m_nodeId, m_coreId);
+	public ControlFlowGraph getControlFlowGraph() {
+		return m_controlFlowGraph.get(m_nodeId, m_coreId);
 	}
 	
 	public StructureGraph getStructureGraph() {
@@ -234,12 +234,11 @@ public class Engine implements Notifier {
 					return false;
 				
 				UnreachableCodeFinder uca = new UnreachableCodeFinder(id, threadStartNodes, fh.getKnownFuncStarts());
-				if (!uca.analyseReachable()) 
-					return false;
+				uca.analyseReachable(); 
 	
 				newXeObjects.add(nodeId, coreId, new XeObject(xeLoader, nodeId, coreId, fileFinder));
 				
-				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts(), fh.getFunctions(), nodeId, coreId);
+				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts(), fh.getFunctions());
 				newCfg.add(nodeId, coreId, cfg);
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
@@ -249,7 +248,7 @@ public class Engine implements Notifier {
 		}
 		m_sections = sections;
 		m_xeObjects = newXeObjects;
-		m_cfg = newCfg;
+		m_controlFlowGraph = newCfg;
 		m_structuralGraph = newStructuralGraph;
 		m_xeLoader = xeLoader;		
 		m_nodeId = 0;

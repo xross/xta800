@@ -19,14 +19,14 @@ public class SectionTransformer extends PatternMatcher {
 		
 		//detect all the jump nodes first
 		Set<Node> jumpNodes = new HashSet<Node>();
-		for(Node nextNode : currentNode.getNextNodes()){
+		for (Node nextNode : currentNode.getNextNodes()) {
 			//hop backwards
 			Set<Node> previous = new HashSet<Node>(nextNode.getPrevNodes());
 			previous.remove(currentNode);
 			previous.remove(nextNode);
-			for(Node prev : previous){
+			for (Node prev : previous) {
 				Set<Node> prevSet = new HashSet<Node>(prev.getPrevNodes());
-				if(prevSet.contains(currentNode)){
+				if (prevSet.contains(currentNode)) {
 					jumpNodes.add(nextNode);
 				}
 			}
@@ -48,21 +48,22 @@ public class SectionTransformer extends PatternMatcher {
 			}
 		}
 		
-		for(Node sectionEnd : endNodes){
-			for(Node nextNode : currentNode.getNextNodes()){
-				if(!jumpNodes.contains(nextNode)){
-					if(nextNode.getNextNodes().contains(sectionEnd)){
+		for (Node sectionEnd : endNodes) {
+			for (Node nextNode : currentNode.getNextNodes()) {
+				if (!jumpNodes.contains(nextNode)) {
+					if (nextNode.getNextNodes().contains(sectionEnd)) {
 						//then this nextNode is interesting
-						if(nextNode.getNextNodes().size() > 1){
+						if (nextNode.getNextNodes().size() > 1) {
 							//wedge up
-							if(verbose){
+							if (verbose) {
 								System.out.println("# wedging for the multisection");
 							}
 							CommonMethods.wedgeUp(nextNode, workingSet, verbose);
 							return true;
-						} else if(nextNode.getPrevNodes().size() > 1){
+							
+						} else if (nextNode.getPrevNodes().size() > 1) {
 							//wedge down
-							if(verbose){
+							if (verbose) {
 								System.out.println("# wedging for the multisection");
 							}
 							CommonMethods.wedgeDown(nextNode, workingSet, verbose);

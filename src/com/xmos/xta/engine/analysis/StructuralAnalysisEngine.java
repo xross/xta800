@@ -24,51 +24,48 @@ import com.xmos.xta.engine.analysis.patterns.UpWedge;
 
 public class StructuralAnalysisEngine {
 	
-	private ControlFlowGraph m_cfg;
+	private ControlFlowGraph m_controlFlowGraph;
 	private Map<Integer, Function> m_functionStartPcs;
 	private Map<Integer, Function> m_threadStartPcs;
-	private StructureGraph m_sg;
+	private StructureGraph m_structureGraph;
 	
-	public StructuralAnalysisEngine(ControlFlowGraph cfg){
-		m_cfg = cfg;
+	public StructuralAnalysisEngine(ControlFlowGraph controlFlowGraph){
+		m_controlFlowGraph = controlFlowGraph;
 	}
 	
 	/**
 	 * By the time this is called all the instructions successors should have been set and
 	 * all unknown branch and link targets should have a pseudo function in place. 
-	 * @return true for success
 	 */
-	public boolean analyse(Engine engine){
+	public void analyse(Engine engine){
 		m_functionStartPcs = new HashMap<Integer, Function>();
 		m_threadStartPcs = new HashMap<Integer, Function>();
 		buildStructureGraph(engine);
 		linkFunctions();
-		return true;
 	}
 	
 	public StructureGraph getStructureGraph(){
-		return m_sg;
+		return m_structureGraph;
 	}
 	
 	private void linkFunctions() {
-		for(Function fn : m_cfg.getAllFunctions()){
-			if(fn.isFunctionKnown()){
+		for (Function fn : m_controlFlowGraph.getAllFunctions()) {
+			if (fn.isFunctionKnown()) {
 				String fnName = fn.getBranchTarget().getInstructions().get(0).getFunctionName();
 				fn.setFunction(fnName, m_functionStartPcs.get(fn.getBranchTarget().getStartPc()).getFunction());
-				//CommonMethods.displayStructureTree(fn);
 			}
 		}
 	}
 	
 	private void buildStructureGraph(Engine engine){
-		Collection<Node> functions = buildGraph(m_cfg.getFunctionStartInstructions(), m_functionStartPcs, engine);
-		Collection<Node> threads = buildGraph(m_cfg.getThreadStartInstructions(), m_threadStartPcs, engine);
-		m_sg = new StructureGraph(functions, threads);
+		Collection<Node> functions = buildGraph(m_controlFlowGraph.getFunctionStartInstructions(), m_functionStartPcs, engine);
+		Collection<Node> threads = buildGraph(m_controlFlowGraph.getThreadStartInstructions(), m_threadStartPcs, engine);
+		m_structureGraph = new StructureGraph(functions, threads);
 		engine.provideFeedback("Done");
 	}
 	
-	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, Function> startPcs, 
-			Engine engine) {
+	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, 
+			Map<Integer, Function> startPcs, Engine engine) {
 		
 		Collection<Node> graphs = new HashSet<Node>();
 
@@ -77,9 +74,7 @@ public class StructuralAnalysisEngine {
 			
 			engine.provideFeedback("Processing "  + functionName);
 
-			int graphStartPc = graphStart.getStartPc();
 			Collection<Node> currentGraph = new HashSet<Node>();
-
 			collectCurrentGraphNodes(graphStart, currentGraph);
 			Collection<Node> basicBlocks = new HashSet<Node>();
 			
@@ -91,17 +86,16 @@ public class StructuralAnalysisEngine {
 			
 			graphs.add(fn);
 			
-			startPcs.put(graphStartPc, fn);
-			
-		}
-		
+			startPcs.put(graphStart.getStartPc(), fn);			
+		}		
 		return graphs;
 	}
 	
 	/**
 	 * This step is in the flow in order to reduce the graph of instructions into basic blocks.
 	 */
-	private Node reduceGraphToBasicBlocks(Collection<Node> basicBlocks, Node initialBasicBlock, Collection<Node> currentGraph) {
+	private Node reduceGraphToBasicBlocks(Collection<Node> basicBlocks, 
+			Node initialBasicBlock, Collection<Node> currentGraph) {
 		
 		Set<Node> seen = new HashSet<Node>();
 		Map<Node, Node> cfgToStructure = new HashMap<Node, Node>();
@@ -109,10 +103,10 @@ public class StructuralAnalysisEngine {
 		Node treeStart = initialBasicBlock;
 		
 		for (Node node : currentGraph) {
-			if(!seen.contains(node)){
-				if(!node.isFunction()){
+			if (!seen.contains(node)) {
+				if (!node.isFunction()) {
 					BasicBlockMatcher bbpm = new BasicBlockMatcher();
-					if(bbpm.match(node, treeStart, currentGraph)){
+					if (bbpm.match(node, treeStart, currentGraph)) {
 						seen.addAll(bbpm.getBlock().getContaintedNodes());
 						basicBlocks.add(bbpm.getBlock());
 						treeStart = bbpm.getTreeStart();
@@ -130,9 +124,9 @@ public class StructuralAnalysisEngine {
 			}
 		}
 		//now add all the links
-		for(Node node : basicBlocks){
+		for (Node node : basicBlocks) {
 			Node lastInstruction = endPoint.get(node);
-			for(Node next : lastInstruction.getNextNodes()){
+			for (Node next : lastInstruction.getNextNodes()) {
 				CommonMethods.connect(cfgToStructure.get(next), node);
 			}	
 		}
@@ -141,8 +135,8 @@ public class StructuralAnalysisEngine {
 
 	private void collectCurrentGraphNodes(Node node, Collection<Node> seen){
 		seen.add(node);
-		for(Node next : node.getNextNodes()){
-			if(!seen.contains(next)){
+		for (Node next : node.getNextNodes()) {
+			if (!seen.contains(next)){
 				collectCurrentGraphNodes(next, seen);
 			}
 		}
@@ -166,14 +160,14 @@ public class StructuralAnalysisEngine {
 			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
 			working = false;
 			for (PatternMatcher pm : patternMatchers) {
-				if(!dominatorTreeUpToDate && pm.usesDominatorTree()){
+				if (!dominatorTreeUpToDate && pm.usesDominatorTree()) {
 					buildDominatorTree(workingSet, treeStart);
 					dominatorTreeUpToDate = true;
 				}
 				for (Node node : postOrder) {
 					if (pm.isMatch(node, workingSet, false, treeStart)) {
 						treeStart = pm.getTreeStart();
-						if(!connectivitySanityCheck(workingSet)){
+						if (!connectivitySanityCheck(workingSet)) {
 							System.err.println("failed connectivity sanity check on " + pm.getClass().getSimpleName() + " on " + node);
 							return;
 						}
@@ -251,14 +245,14 @@ public class StructuralAnalysisEngine {
 		}
 	}
 
-	//FIXME - keep this until we are happy with the engine
 	private boolean connectivitySanityCheck(Collection<Node> workingSet){
 		int total = 0;
 		for (Node node : workingSet) {
 			total += node.getPrevNodes().size()-node.getNextNodes().size();
 		}
-		if (total != 0) return false;
+		if (total != 0) {
+			return false;
+		}
 		return true;
-	}
-	
+	}	
 }

@@ -12,31 +12,28 @@ public class UpWedge extends PatternMatcher {
 		m_treeStart = treeStart;
 		
 		Set<Node> leastDominantNodes = new HashSet<Node>();
-		for(Node node : workingSet){
-			for(Node next : node.getNextNodes()){
-				if(node.getDominators().contains(next)){
+		for (Node node : workingSet) {
+			for (Node next : node.getNextNodes()) {
+				if (node.getDominators().contains(next)) {
 					leastDominantNodes.add(node);
 				}
 			}
 		}
-		if(leastDominantNodes.isEmpty()){
+		if (leastDominantNodes.isEmpty()) {
 			return false;
 		}
 		
-		//now backtrack
-		
-		if(leastDominantNodes.contains(currentNode)){	
+		if (leastDominantNodes.contains(currentNode)) {	
 			Node piviot = currentNode;
-			while(piviot.getPrevNodes().size() == 1 && piviot.getNextNodes().size() == 1){
+			while (piviot.getPrevNodes().size() == 1 && piviot.getNextNodes().size() == 1) {
 				piviot = piviot.getPrevNodes().iterator().next();
 			}
 			
-			if(piviot.getPrevNodes().size() > 1){
+			if (piviot.getPrevNodes().size() > 1) {
 				return false;
 			}
 			return CommonMethods.wedgeUp(piviot, workingSet, verbose);
-		}
-		
+		}		
 		return false;
 	}
 

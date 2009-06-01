@@ -7,11 +7,9 @@ import java.util.Set;
 import com.xmos.xta.engine.analysis.nodes.Loop;
 import com.xmos.xta.engine.analysis.nodes.Node;
 
-
 public class LoopPatternMatcher extends PatternMatcher {
 
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose, Node treeStart) {
-
 		// a loop pattern is when one or more nodes are doubly attached to a
 		// single node
 
@@ -33,14 +31,13 @@ public class LoopPatternMatcher extends PatternMatcher {
 			} else {
 				return false;
 			}
-
 		}
 		return false;
-
 	}
 
-	protected void updateGraph(Set<Node> intersection, Collection<Node> workingSet, Node base, boolean verbose, Node treeStart) {
-		
+	protected void updateGraph(Set<Node> intersection, Collection<Node> workingSet, 
+			Node base, boolean verbose, Node treeStart) {		
+
 		Loop loop = new Loop(intersection, base);
 		
 		if(intersection.contains(treeStart) || base == treeStart){
@@ -48,23 +45,20 @@ public class LoopPatternMatcher extends PatternMatcher {
 		} else {
 			m_treeStart = treeStart;
 		}
-		
-		
-		
+					
 		if (verbose){
 			System.out.println("#have made a new loop with " + base + " as the loop header and " + intersection + " as the intersection and new node is " +loop);
 		}
-
 		
 		for (Node prev : base.getPrevNodes()) {
-			if(!intersection.contains(prev)){
+			if (!intersection.contains(prev)) {
 				loop.addPrevNode(prev);
 				prev.getNextNodes().remove(base);
 				prev.addNextNode(loop);
 			}
 		}
 		for (Node next : base.getNextNodes()) {
-			if(!intersection.contains(next)){
+			if (!intersection.contains(next)) {
 				loop.addNextNode(next);
 				next.getPrevNodes().remove(base);
 				next.addPrevNode(loop);

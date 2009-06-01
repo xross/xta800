@@ -5,14 +5,6 @@ import java.util.HashSet;
 import com.xmos.xta.engine.analysis.nodes.Node;
 
 public class CommonMethods {
-	public static boolean isTerminal(Node node){
-		if(node.getNextNodes().size() == 0){
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
 	public static void disconnect(Node leaf, Node root){
 		root.getNextNodes().remove(leaf);
 		leaf.getPrevNodes().remove(root);
@@ -24,17 +16,17 @@ public class CommonMethods {
 	}
 	
 	public static boolean wedgeUp(Node node, Collection<Node> workingSet, boolean verbose){
-		if(verbose) {
+		if (verbose) {
 			System.out.println("#am wedging up on node " + node);
 		}
-		if(node.getNextNodes().size() < 2){
+		if (node.getNextNodes().size() < 2) {
 			return false;
 		}
 		Collection<Node> newNodes = new HashSet<Node>();
 		
-		for(Node next : node.getNextNodes()){
+		for (Node next : node.getNextNodes()) {
 			Node newNode = node.clone();
-			if(verbose) {
+			if (verbose) {
 				System.out.println("#made a new node: " + newNode);
 			}
 			newNodes.add(newNode);
@@ -43,41 +35,34 @@ public class CommonMethods {
 			newNode.addNextNode(next);
 		}
 
-		for(Node newNode : newNodes){
-			for(Node prev : node.getPrevNodes()){
+		for (Node newNode : newNodes){
+			for (Node prev : node.getPrevNodes()) {
 				newNode.addPrevNode(prev);
 				prev.addNextNode(newNode);
 			}
 		}
 		
-		for(Node prev : node.getPrevNodes()){
+		for (Node prev : node.getPrevNodes()) {
 			prev.removeNextNode(node);
 		}
 		
 		workingSet.remove(node);
-		workingSet.addAll(newNodes);
-		
+		workingSet.addAll(newNodes);		
 		return true;
 	}
-	
-	public static void displayStructureTree(Node start) {
-		start.display(0);
-		System.out.println();
-
-	}
-	
+		
 	public static boolean wedgeDown(Node node, Collection<Node> workingSet, boolean verbose){
-		if(verbose) {
+		if (verbose) {
 			System.out.println("#am wedging down on node " + node);
 		}
 
-		if(node.getPrevNodes().size() < 2){
+		if (node.getPrevNodes().size() < 2) {
 			return false;
 		}
 		
 		Collection<Node> newNodes = new HashSet<Node>();
 		
-		for(Node prev : node.getPrevNodes()){
+		for (Node prev : node.getPrevNodes()){
 			
 			//make the new node
 			Node newNode = node.clone();
@@ -88,8 +73,7 @@ public class CommonMethods {
 			
 			//add a connection to the new node
 			newNode.addPrevNode(prev);
-		
-			
+					
 			for(Node next : node.getNextNodes()){
 				if(next != node){
 					next.getPrevNodes().remove(node);
@@ -100,14 +84,16 @@ public class CommonMethods {
 		}
 		
 		workingSet.remove(node);
-		workingSet.addAll(newNodes);
-		
+		workingSet.addAll(newNodes);		
 		return true;
 	}
 	
+	public static void displayStructureTree(Node start) {
+		start.display(0);
+		System.out.println();
+	}
 	
 	private static int graphcount;
-
 	public static void printGraph(Collection<Node> nodes) {
 		System.out.println("digraph g" + graphcount++ + " {");
 		for (Node node : nodes) {
@@ -125,5 +111,4 @@ public class CommonMethods {
 		}
 		System.out.println("};");
 	}
-
 }

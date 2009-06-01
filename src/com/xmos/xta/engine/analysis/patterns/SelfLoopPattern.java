@@ -5,20 +5,17 @@ import java.util.Collection;
 import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.analysis.nodes.SelfLoop;
 
-
-
 public class SelfLoopPattern extends PatternMatcher {
-
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet,
 			boolean verbose, Node treeStart) {
 		m_treeStart = treeStart;
 		
-		if(currentNode.getNextNodes().contains(currentNode)){
+		if (currentNode.getNextNodes().contains(currentNode)) {
 			assert(currentNode.getPrevNodes().contains(currentNode));
 			
 			SelfLoop loop = new SelfLoop(currentNode);
 			
-			if(m_treeStart == currentNode){
+			if (m_treeStart == currentNode) {
 				m_treeStart = loop;
 			}
 			
@@ -26,13 +23,13 @@ public class SelfLoopPattern extends PatternMatcher {
 			currentNode.removeNextNode(currentNode);
 			currentNode.removePrevNode(currentNode);
 			
-			for(Node next : currentNode.getNextNodes()){
+			for (Node next : currentNode.getNextNodes()) {
 					next.removePrevNode(currentNode);
 					next.addPrevNode(loop);
 					loop.addNextNode(next);
 			}
 			
-			for(Node prev : currentNode.getPrevNodes()){
+			for (Node prev : currentNode.getPrevNodes()) {
 					prev.removeNextNode(currentNode);
 					prev.addNextNode(loop);
 					loop.addPrevNode(prev);
@@ -42,14 +39,12 @@ public class SelfLoopPattern extends PatternMatcher {
 			workingSet.remove(currentNode);
 			workingSet.add(loop);
 			
-			if(verbose){
+			if (verbose) {
 				System.out.println("#found a self loop at " + currentNode);
-			}
-			
+			}			
 			return true;
-		} else {
-			return false;
-		}
+		} 
+		return false;
 	}
 
 	public boolean usesDominatorTree() {

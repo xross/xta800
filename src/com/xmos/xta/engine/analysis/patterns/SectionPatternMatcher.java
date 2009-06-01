@@ -83,7 +83,6 @@ public class SectionPatternMatcher extends PatternMatcher {
 			}
 		}
 		return false;
-
 	}
 
 	private boolean sectionSanityCheck(Node startNode, Collection<Node> sectionNodes, Node jumpNode, Node endNode) {
@@ -109,7 +108,6 @@ public class SectionPatternMatcher extends PatternMatcher {
 				return false;
 			}
 		}
-
 		return true;
 	}
 
@@ -137,7 +135,6 @@ public class SectionPatternMatcher extends PatternMatcher {
 
 		workingSet.removeAll(sectionNodes);
 		workingSet.add(ms);
-
 	}
 	
 	protected void updateGraph(Node startNode, Collection<Node> sectionNodes, Collection<Node> workingSet,  boolean verbose) {
@@ -155,10 +152,8 @@ public class SectionPatternMatcher extends PatternMatcher {
 
 		workingSet.removeAll(sectionNodes);
 		workingSet.add(ms);
-
 	}
 	
-
 	public boolean usesDominatorTree() {
 		return false;
 	}

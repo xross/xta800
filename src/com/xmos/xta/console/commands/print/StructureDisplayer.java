@@ -2,6 +2,7 @@ package com.xmos.xta.console.commands.print;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.analysis.StructureGraph;
 
 public class StructureDisplayer {
 	private Engine m_engine;
@@ -12,6 +13,8 @@ public class StructureDisplayer {
 		m_console = console;
 	}
 	
-	public void display() {     	
+	public void display() {
+		StructureGraph structureGraph = m_engine.getStructureGraph();
+		
     }
 }
