@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.nodes.Function;
 import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.analysis.patterns.CommonMethods;
@@ -37,10 +38,10 @@ public class StructuralAnalysisEngine {
 	 * all unknown branch and link targets should have a pseudo function in place. 
 	 * @return true for success
 	 */
-	public boolean analyse(){
+	public boolean analyse(Engine engine){
 		m_functionStartPcs = new HashMap<Integer, Function>();
 		m_threadStartPcs = new HashMap<Integer, Function>();
-		buildStructureGraph();
+		buildStructureGraph(engine);
 		linkFunctions();
 		return true;
 	}
@@ -59,16 +60,22 @@ public class StructuralAnalysisEngine {
 		}
 	}
 	
-	private void buildStructureGraph(){
-		Collection<Node> functions = buildGraph(m_cfg.getFunctionStartInstructions(), m_functionStartPcs);
-		Collection<Node> threads = buildGraph(m_cfg.getThreadStartInstructions(), m_threadStartPcs);
+	private void buildStructureGraph(Engine engine){
+		Collection<Node> functions = buildGraph(m_cfg.getFunctionStartInstructions(), m_functionStartPcs, engine);
+		Collection<Node> threads = buildGraph(m_cfg.getThreadStartInstructions(), m_threadStartPcs, engine);
 		m_sg = new StructureGraph(functions, threads);
+		engine.provideFeedback("Done");
 	}
 	
-	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, Function> startPcs) {
+	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, Function> startPcs, 
+			Engine engine) {
+		
 		Collection<Node> graphs = new HashSet<Node>();
 
 		for (Node graphStart : graphStartNodes) {
+			String functionName = graphStart.getInstructions().get(0).getFunctionName();
+			
+			engine.provideFeedback("Processing "  + functionName);
 
 			int graphStartPc = graphStart.getStartPc();
 			Collection<Node> currentGraph = new HashSet<Node>();
@@ -80,13 +87,12 @@ public class StructuralAnalysisEngine {
 			decompose(basicBlocks, initialBasicBlock);
 			Node decomposedGraph = basicBlocks.iterator().next();
 			
-			String functionName = graphStart.getInstructions().get(0).getFunctionName();
-
 			Function fn = new Function(decomposedGraph, functionName);
 			
 			graphs.add(fn);
 			
 			startPcs.put(graphStartPc, fn);
+			
 		}
 		
 		return graphs;

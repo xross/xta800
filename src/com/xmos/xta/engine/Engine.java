@@ -216,7 +216,7 @@ public class Engine implements Notifier {
 		for(int nodeId : xeLoader.getNodeIds()){
 			for(int coreId : xeLoader.getCoreIds(nodeId)){
 				
-				InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, getConfig());
+				InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config);
 				if(!id.decode()) 
 					return false;
 				
@@ -243,7 +243,7 @@ public class Engine implements Notifier {
 				newCfg.add(nodeId, coreId, cfg);
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
-				sae.analyse();
+				sae.analyse(this);
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
 			}		
 		}

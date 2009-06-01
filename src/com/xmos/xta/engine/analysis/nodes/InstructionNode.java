@@ -24,6 +24,10 @@ public class InstructionNode extends Node {
 		return new InstructionNode(this);
 	}
 
+	public String toString(){
+		return m_inst.toString();
+	}
+	
 	public void display(int indentLevel) {
 		printIndent(indentLevel);
 		System.out.println(m_inst);
