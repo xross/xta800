@@ -1,62 +1,13 @@
 package com.xmos.xta.engine.analysis.nodes;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
-import com.xmos.xta.engine.instructions.XtaInstruction;
-
-public class SelfLoopNode extends Node {
+public class SelfLoopNode extends LoopNode {
 
 	private Node m_loop; 
 	
 	public SelfLoopNode(Node loop){
-		super();
+		super(loop, loop);
 		m_loop = loop;
 	}
-	
-	public SelfLoopNode(SelfLoopNode loop){
-		m_loop = loop.m_loop;
-	}
-
-	public Node clone() {
-		return new SelfLoopNode(this);
-	}
-
-	public Collection<Node> getContaintedNodes() {
-		return m_loop.getContaintedNodes();
-	}
-
-	public String getGraphvizName() {
-		return "SelfLoop" + m_id;
-	}
-
-	public List<XtaInstruction> getInstructions() {
-		return m_loop.getInstructions();
-	}
-
-	public long getNumberCycles() {
-		return m_loop.getNumberCycles();
-	}
-
-	public long getNumberFNOPS() {
-		return m_loop.getNumberFNOPS();
-	}
-
-	public Set<Integer> getPCsCovered() {
-		return m_loop.getPCsCovered();
-	}
-
-	public boolean isFunction() {
-		return false;
-	}
-
-	public int getStartPc() {
-		return m_loop.getStartPc();
-	}
-
-	public void traverse(int depth, NodeTraverser nodeTraverser) {
-	}	
 	
 	public void display(int indentLevel) {
 		printIndent(indentLevel);
