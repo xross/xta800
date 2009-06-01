@@ -23,6 +23,7 @@ import com.xmos.xta.engine.analysis.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.StructureGraph;
 import com.xmos.xta.engine.analysis.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.nodes.Node;
+import com.xmos.xta.engine.analysis.patterns.CommonMethods;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.references.Reference;
@@ -242,10 +243,15 @@ public class Engine implements Notifier {
 				newCfg.add(nodeId, coreId, cfg);
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
-				sae.analyse(this);
+				if(!sae.analyse(this))
+					return false;
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
+				
 			}		
 		}
+		
+		
+		
 		m_sections = sections;
 		m_xeObjects = newXeObjects;
 		m_controlFlowGraph = newCfg;
