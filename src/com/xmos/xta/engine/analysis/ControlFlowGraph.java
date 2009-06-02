@@ -1,7 +1,6 @@
 package com.xmos.xta.engine.analysis;
 
 import java.util.Collection;
-
 import com.xmos.xta.engine.analysis.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.nodes.Node;
 
@@ -28,4 +27,5 @@ public class ControlFlowGraph {
 	public Collection<FunctionNode> getAllFunctions(){
 		return m_allFunctions;
 	}
+	
 }

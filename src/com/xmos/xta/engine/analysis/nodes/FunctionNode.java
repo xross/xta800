@@ -83,14 +83,7 @@ public class FunctionNode extends Node {
 			m_knownFunction = true;
 		}
 	}
-	
-	public String getFucntionName() {
-		if (m_functionName == null) {
-			m_functionName = "Unnamed function " + functionId++;
-		}
-		return m_functionName;
-	}
-	
+
 	public Node getFunction() {
 		return m_function;
 	}
@@ -112,6 +105,9 @@ public class FunctionNode extends Node {
 	}
 	
 	public String getFunctionName() {
+		if(m_functionName == null){
+			m_functionName = "Unnamed function " + functionId++;
+		}
 		return m_functionName;
 	}
 	
