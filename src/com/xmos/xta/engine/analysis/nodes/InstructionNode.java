@@ -11,14 +11,34 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 public class InstructionNode extends Node {
 	private XtaInstruction m_inst;
 	
-	public InstructionNode (XtaInstruction inst){
+	public InstructionNode(XtaInstruction inst){
 		m_inst = inst;
 	}
 	
-	public InstructionNode (InstructionNode node){
+	public InstructionNode(InstructionNode node){
 		m_inst = node.m_inst;
 	}
 
+	public double getTimeTaken() {
+		return m_inst.getTimeTaken();
+	}
+	
+	public long getNumCycles() {
+		return m_inst.getNumCycles();
+	}
+
+	public long getNumInstructions() {
+		return 1;
+	}
+		
+	public long getNumFNops() {
+		if (m_inst.isFnop()) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+	
 	public Node clone() {
 		return new InstructionNode(this);
 	}
@@ -45,18 +65,6 @@ public class InstructionNode extends Node {
 		LinkedList<XtaInstruction> inst = new LinkedList<XtaInstruction>();
 		inst.add(m_inst);
 		return inst;
-	}
-
-	public long getNumberCycles() {
-		return m_inst.getNumCycles();
-	}
-
-	public long getNumberFNOPS() {
-		if(m_inst.isFnop()){
-			return 1;
-		} else {
-			return 0;
-		}
 	}
 
 	public Set<Integer> getPCsCovered() {

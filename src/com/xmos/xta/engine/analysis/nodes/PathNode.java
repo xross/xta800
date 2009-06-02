@@ -23,6 +23,34 @@ public class PathNode extends Node {
 		super();
 		m_nodes = path.m_nodes;
 	}
+
+	public double getTimeTaken() {
+		double time = 0;
+		for (Node node : m_nodes) {
+			time += node.getTimeTaken();
+		}
+		return time;
+	}
+	
+	public long getNumCycles() {
+		long cycles = 0;
+		for (Node node : m_nodes){
+			cycles += node.getNumCycles();
+		}
+		return cycles;
+	}
+
+	public long getNumInstructions() {
+		return getInstructions().size();
+	}
+	
+	public long getNumFNops() {
+		long fnops = 0;
+		for(Node node : m_nodes){
+			fnops += node.getNumFNops();
+		}
+		return fnops;
+	}
 	
 	public List<XtaInstruction> getInstructions() {
 		List<XtaInstruction> list = new LinkedList<XtaInstruction>();
@@ -30,22 +58,6 @@ public class PathNode extends Node {
 			list.addAll(node.getInstructions());
 		}
 		return list;
-	}
-
-	public long getNumberCycles() {
-		long cycles = 0;
-		for(Node node : m_nodes){
-			cycles += node.getNumberCycles();
-		}
-		return cycles;
-	}
-
-	public long getNumberFNOPS() {
-		long fnops = 0;
-		for(Node node : m_nodes){
-			fnops += node.getNumberFNOPS();
-		}
-		return fnops;
 	}
 
 	public Set<Integer> getPCsCovered() {

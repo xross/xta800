@@ -15,6 +15,22 @@ public class TerminalNode extends Node {
 	public TerminalNode(Collection<Node> terminals){
 		m_terminals = new HashSet<Node>(terminals);
 	}
+
+	public double getTimeTaken() {
+		return 0;
+	}
+	
+	public long getNumCycles() {
+		return 0;
+	}
+
+	public long getNumInstructions() {
+		return getInstructions().size();
+	}
+	
+	public long getNumFNops() {
+		return 0;
+	}
 	
 	public Node clone() {
 		return null;
@@ -28,25 +44,12 @@ public class TerminalNode extends Node {
 		return containedNodes;
 	}
 
-	public List<XtaInstruction> getInstructionStream() {
-		// TODO Auto-generated method stub
-		return new LinkedList<XtaInstruction>();
-	}
-
 	public List<XtaInstruction> getInstructions() {
 		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
 		for(Node nodes: m_terminals){
 			insts.addAll(nodes.getInstructions());
 		}
 		return insts;
-	}
-
-	public long getNumberCycles() {
-		return 0;
-	}
-
-	public long getNumberFNOPS() {
-		return 0;
 	}
 
 	public Set<Integer> getPCsCovered() {

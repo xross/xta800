@@ -16,13 +16,13 @@ public class FunctionNode extends Node {
 	private boolean m_knownFunction;
 	private Node m_branchTarget;
 	
-	public FunctionNode (Node branchTarget) {
+	public FunctionNode(Node branchTarget) {
 		super();
 		m_branchTarget = branchTarget;
 		m_knownFunction = false;
 	}
 	
-	public FunctionNode (Node function, String functionName) {
+	public FunctionNode(Node function, String functionName) {
 		super();
 		m_function = function;
 		m_knownFunction = true;
@@ -33,7 +33,7 @@ public class FunctionNode extends Node {
 		}
 	}
 	
-	public FunctionNode (FunctionNode fn){
+	public FunctionNode(FunctionNode fn){
 		m_functionName = fn.m_functionName;
 		m_function = fn.m_function;
 		m_knownFunction = fn.m_knownFunction;
@@ -44,20 +44,36 @@ public class FunctionNode extends Node {
 		m_knownFunction = false;
 	}
 
-	public boolean isFunctionKnown(){
+	public double getTimeTaken() {
+		return m_function.getTimeTaken();
+	}
+	
+	public long getNumCycles() {
+		return m_function.getNumCycles();
+	}
+
+	public long getNumInstructions() {
+		return m_function.getNumInstructions();
+	}
+	
+	public long getNumFNops() {
+		return m_function.getNumFNops();
+	}
+	
+	public boolean isFunctionKnown() {
 		return m_branchTarget != null;
 	}
 	
-	public void setFunction(String functionName, Node fn){
+	public void setFunction(String functionName, Node fn) {
 		m_function = fn;
 		m_functionName = functionName;
-		if(fn!= null){
+		if (fn!= null) {
 			m_knownFunction = true;
 		}
 	}
 	
-	public String getFucntionName(){
-		if(m_functionName == null){
+	public String getFucntionName() {
+		if (m_functionName == null) {
 			m_functionName = "Unnamed function " + functionId++;
 		}
 		return m_functionName;
@@ -92,19 +108,11 @@ public class FunctionNode extends Node {
 	}
 
 	public List<XtaInstruction> getInstructions() {
-		if(m_knownFunction){
+		if (m_knownFunction) {
 			return m_function.getInstructions();
 		} else {
 			return new LinkedList<XtaInstruction>();
 		}
-	}
-	
-	public long getNumberCycles() {
-		return m_function.getNumberCycles();
-	}
-
-	public long getNumberFNOPS() {
-		return m_function.getNumberFNOPS();
 	}
 
 	public Set<Integer> getPCsCovered() {

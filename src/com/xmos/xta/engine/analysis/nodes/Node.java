@@ -16,19 +16,22 @@ public abstract class Node implements Comparable<Node>{
 	Set<Node> m_prevNodes;
 	Node m_branchLinkReturn;
 	Set<Node> m_dominators;
+
+	public abstract double getTimeTaken();
+	public abstract long getNumCycles();
+	public abstract long getNumInstructions();
+	public abstract long getNumFNops();	
 	
 	public abstract Set<Integer> getPCsCovered();
-	public abstract long getNumberCycles();
-	public abstract long getNumberFNOPS();	
 	public abstract List<XtaInstruction> getInstructions();
-	public abstract Collection<Node> getContaintedNodes();
+	public abstract Collection<Node> getContaintedNodes();	
 	public abstract String getFunctionName();
 	public abstract String getGraphvizName();
 	public abstract boolean isFunction();
 	public abstract int getStartPc();
 	public abstract Node clone();
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
-		
+
 	public static int getNodeCount(){
 		return s_numNodes;
 	}
