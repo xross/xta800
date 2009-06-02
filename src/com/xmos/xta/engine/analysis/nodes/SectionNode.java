@@ -28,7 +28,34 @@ public class SectionNode extends Node {
 		m_selectedOption = ms.m_selectedOption;
 		m_jumpNode = ms.m_jumpNode;
 	}
+
+	public double getTimeTaken() {
+		if (m_selectedOption!= null) {
+			return m_selectedOption.getTimeTaken();
+		} else {
+			return 0;
+		}
+	}
+
+	public long getNumCycles() {
+		if (m_selectedOption!= null) {
+			return m_selectedOption.getNumCycles();
+		} else {
+			return 0;
+		}
+	}
+
+	public long getNumInstructions() {
+		return getInstructions().size();
+	}
 	
+	public long getNumFNops() {
+		if (m_selectedOption!= null) {
+			return m_selectedOption.getNumFNops();
+		} else {
+			return 0;
+		}
+	}
 	
 	public Collection<Node> getOptions(){
 		return m_options;
@@ -44,31 +71,15 @@ public class SectionNode extends Node {
 	}
 
 	public List<XtaInstruction> getInstructions() {
-		if(m_selectedOption!= null){
+		if (m_selectedOption!= null) {
 			return m_selectedOption.getInstructions();
 		} else {
 			return new LinkedList<XtaInstruction>();
 		}
 	}
 
-	public long getNumberCycles() {
-		if(m_selectedOption!= null){
-			return m_selectedOption.getNumberCycles();
-		} else {
-			return 0;
-		}
-	}
-
-	public long getNumberFNOPS() {
-		if(m_selectedOption!= null){
-			return m_selectedOption.getNumberFNOPS();
-		} else {
-			return 0;
-		}
-	}
-
 	public Set<Integer> getPCsCovered() {
-		if(m_selectedOption!= null){
+		if(m_selectedOption!= null) {
 			return m_selectedOption.getPCsCovered();
 		} else {
 			return new HashSet<Integer>();
@@ -111,17 +122,6 @@ public class SectionNode extends Node {
 		nodeTraverser.foundSectionNode(this, depth);
 		for (Node node : m_options) {
 			node.traverse(depth + 1, nodeTraverser);			
-		}		
-	}	
-	
-	public void display(int indentLevel) {
-		printIndent(indentLevel);
-		System.out.printf("multisection(%d)\n", m_id);
-		
-		for (Node node : m_options) {
-			printIndent(indentLevel);
-			System.out.printf(" option:\n");
-			node.display(indentLevel + 1);
 		}		
 	}	
 }

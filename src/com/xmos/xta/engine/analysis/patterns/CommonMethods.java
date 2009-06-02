@@ -87,12 +87,7 @@ public class CommonMethods {
 		workingSet.addAll(newNodes);		
 		return true;
 	}
-	
-	public static void displayStructureTree(Node start) {
-		start.display(0);
-		System.out.println();
-	}
-	
+		
 	private static int graphcount;
 	public static void printGraph(Collection<Node> nodes) {
 		System.out.println("digraph g" + graphcount++ + " {");

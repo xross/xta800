@@ -16,20 +16,22 @@ public abstract class Node implements Comparable<Node>{
 	Set<Node> m_prevNodes;
 	Node m_branchLinkReturn;
 	Set<Node> m_dominators;
+
+	public abstract double getTimeTaken();
+	public abstract long getNumCycles();
+	public abstract long getNumInstructions();
+	public abstract long getNumFNops();	
 	
 	public abstract Set<Integer> getPCsCovered();
-	public abstract long getNumberCycles();
-	public abstract long getNumberFNOPS();	
 	public abstract List<XtaInstruction> getInstructions();
-	public abstract Collection<Node> getContaintedNodes();
+	public abstract Collection<Node> getContaintedNodes();	
 	public abstract String getFunctionName();
 	public abstract String getGraphvizName();
 	public abstract boolean isFunction();
 	public abstract int getStartPc();
 	public abstract Node clone();
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
-	public abstract void display(int indentLevel);
-		
+
 	public static int getNodeCount(){
 		return s_numNodes;
 	}
@@ -42,6 +44,10 @@ public abstract class Node implements Comparable<Node>{
 		return s;
 	}
 		
+	public static void resetId() {
+		s_numNodes = 0;
+	}
+	
 	public Node() {
 		m_nextNodes = new HashSet<Node>();
 		m_prevNodes = new HashSet<Node>();
@@ -56,9 +62,10 @@ public abstract class Node implements Comparable<Node>{
 		m_id = s_numNodes++;
 	}
 	
-	public static void resetId() {
-		s_numNodes = 0;
+	public int getId() {
+		return m_id;
 	}
+	
 	public int compareTo(Node n) {		
 		if (getInstructions()!= null && 
 			n.getInstructions() != null && 
@@ -120,14 +127,12 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public void addNextNode(Node node){
-		//assert(!m_nextNodes.contains(node));
 		if (!m_nextNodes.contains(node)) {
 			m_nextNodes.add(node);
 		}
 	}
 	
 	public void addPrevNode(Node node){
-		//assert(!m_prevNodes.contains(node));
 		if (!m_prevNodes.contains(node)) {
 			m_prevNodes.add(node);
 		}

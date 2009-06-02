@@ -255,7 +255,8 @@ public class Engine implements Notifier {
 				if(!sae.analyse(this))
 					return false;
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
-	
+				//Stats stats = new Stats();
+				//stats.display(sae.getStructureGraph());
 			}		
 		}
 		

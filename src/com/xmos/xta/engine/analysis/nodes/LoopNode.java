@@ -13,12 +13,11 @@ public class LoopNode extends Node {
 	private List<Node> m_loops;
 	private Node m_loopHeader;
 	
-	public LoopNode(LoopNode loop){
+	public LoopNode(LoopNode loop) {
 		super();
 		m_loops = new ArrayList<Node>(loop.m_loops);
 		m_loopHeader = loop.m_loopHeader;
 	}
-	
 	
 	public LoopNode(Node loop, Node base) {
 		super();
@@ -36,7 +35,35 @@ public class LoopNode extends Node {
 		m_loopHeader = base;
 	}
 	
-	public void addLoop(Node loop){
+	public double getTimeTaken() {
+		double time = 0;
+		for (Node node : m_loops) {
+			time += node.getTimeTaken();
+		}
+		return time;
+	}
+	
+	public long getNumCycles() {
+		long count = 0;
+		for (Node node : m_loops) {
+			count += node.getNumCycles();
+		}
+		return count;
+	}
+
+	public long getNumInstructions() {
+		return getInstructions().size();
+	}
+
+	public long getNumFNops() {
+		long count = 0;
+		for (Node node : m_loops) {
+			count += node.getNumFNops();
+		}
+		return count;
+	}	
+	
+	public void addLoop(Node loop) {
 		m_loops.add(loop);
 	}
 
@@ -46,22 +73,6 @@ public class LoopNode extends Node {
 			insts.addAll(al.getInstructions());
 		}
 		return insts;
-	}
-
-	public long getNumberCycles() {
-		long count = 0;
-		for(Node al : m_loops){
-			count += al.getNumberCycles();
-		}
-		return count;
-	}
-
-	public long getNumberFNOPS() {
-		long count = 0;
-		for(Node al : m_loops){
-			count += al.getNumberFNOPS();
-		}
-		return count;
 	}
 
 	public Set<Integer> getPCsCovered() {
@@ -75,8 +86,6 @@ public class LoopNode extends Node {
 	public LoopNode clone() {
 		return new LoopNode(this);
 	}
-
-
 
 	public Collection<Node> getContaintedNodes() {
 		Collection<Node> containedNodes = new HashSet<Node> ();
@@ -109,18 +118,4 @@ public class LoopNode extends Node {
 			node.traverse(depth + 1, nodeTraverser);			
 		}
 	}	
-	
-	public void display(int indentLevel) {
-		printIndent(indentLevel);
-		System.out.printf("loop(%d)\n", m_id);	
-		printIndent(indentLevel);
-		System.out.printf(" header:\n", m_id);
-		m_loopHeader.display(indentLevel+1);
-		for (Node attachedLoop : m_loops) {
-			printIndent(indentLevel);
-			System.out.printf(" body:\n", m_id);
-			attachedLoop.display(indentLevel + 1);
-			
-		}		
-	}		
 }

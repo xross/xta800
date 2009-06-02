@@ -31,11 +31,31 @@ public class BlockNode extends Node {
 		super();
 		m_insts = insts;
 	}
-
-	public int getBasicBlockId() {
-		return m_id;
-	}
 		
+	public double getTimeTaken() {
+		double timeTaken = 0;
+		for (XtaInstruction inst : getInstructions()) {
+			timeTaken += inst.getTimeTaken();
+		}
+        return timeTaken;		
+	}
+
+	public long getNumCycles() {
+		long cycles = 0;
+		for (XtaInstruction inst : getInstructions()) {
+			cycles += inst.getNumCycles();
+		}
+		return cycles;
+	}
+
+	public long getNumInstructions() {
+		return getInstructions().size();
+	}
+	
+	public long getNumFNops() {
+		return 0;
+	}
+
 	public List<XtaInstruction> getInstructions() {
 		if (m_xtaInsts == null) {
 			m_xtaInsts = new LinkedList<XtaInstruction>();
@@ -45,23 +65,7 @@ public class BlockNode extends Node {
 		}
 		return m_xtaInsts;
 	}
-
-	public long getNumberCycles() {
-		long cycles = 0;
-		for (XtaInstruction inst : getInstructions()) {
-			cycles += inst.getNumCycles();
-		}
-		return cycles;
-	}
-
-	public long getNumberFNOPS() {
-		return 0;
-	}
-
-	public long getNumberInstructions() {
-		return getInstructions().size();
-	}
-
+		
 	public Set<Integer> getPCsCovered() {
 		Set<Integer> pcs = new HashSet<Integer>();
 		for (XtaInstruction inst : getInstructions()) {
@@ -109,15 +113,5 @@ public class BlockNode extends Node {
 				instruction.traverse(depth + 1, nodeTraverser);
 			}
 		}		
-	}
-	
-	public void display(int indentLevel) {
-		printIndent(indentLevel);
-		System.out.println("block(" + m_id +")");
-		if (DEBUG) { 
-			for (Node instruction : m_insts) {
-				instruction.display(indentLevel+1);
-			}
-		}
-	}
+	}	
 }
