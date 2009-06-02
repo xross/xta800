@@ -19,19 +19,19 @@ public class InstructionNode extends Node {
 		m_inst = node.m_inst;
 	}
 
-	public double getTimeTaken() {
+	public double getTimeTaken(Case c) {
 		return m_inst.getTimeTaken();
 	}
 	
-	public long getNumCycles() {
+	public long getNumCycles(Case c) {
 		return m_inst.getNumCycles();
 	}
 
-	public long getNumInstructions() {
+	public long getNumInstructions(Case c) {
 		return 1;
 	}
 		
-	public long getNumFNops() {
+	public long getNumFNops(Case c) {
 		if (m_inst.isFnop()) {
 			return 1;
 		} else {

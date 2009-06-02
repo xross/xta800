@@ -7,9 +7,9 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.StructureGraph;
 import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.analysis.nodes.NodeTraverser;
+import com.xmos.xta.engine.analysis.nodes.Node.Case;
 
 public class StructureDisplayer {
-	private static final boolean DEBUG = true;
 
 	private Engine m_engine;
 	private Console m_console;
@@ -25,58 +25,72 @@ public class StructureDisplayer {
 		Collection<Node> nodes = structureGraph.getThreads();	
 		for (Node node : nodes) {					
 		    node.traverse(0, new NodeTraverser() {
-				public void foundBlockNode(Node node, int depth) {
+				public boolean foundBlockNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display(String.format("%-9s", "block"));
-					if (DEBUG) m_console.display(String.format("(%d)(%d, %d)", node.getId(), node.getPrevNodes().size(), node.getNextNodes().size()));
-					m_console.display(String.format(" : %.1fns\n", node.getTimeTaken()));						
+
+					String nodeName = String.format("block(%d)", node.getId());
+					m_console.display(String.format("%-14s", nodeName));
+					m_console.display(String.format(" : %.1fns\n", 
+							node.getTimeTaken(Case.WORST)));
+					return true;
+
 				}
 
-				public void foundFunctionNode(Node node, int depth) {
+				public boolean foundFunctionNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display(String.format("%-9s(%s)", "function", node.getFunctionName()));
-					if (DEBUG) m_console.display(String.format("(%d)(%d, %d)", node.getId(), node.getPrevNodes().size(), node.getNextNodes().size()));
-					m_console.display(String.format(" : %.1fns\n", node.getTimeTaken()));						
+					String nodeName = String.format("function(%d)", node.getId());
+					m_console.display(String.format("%-14s (%s)", nodeName, node.getFunctionName()));
+					m_console.display(String.format(" : %.1fns\n", 
+							node.getTimeTaken(Case.WORST)));						
+					return true;
 				}
 
-				public void foundInstructionNode(Node node, int depth) {
+				public boolean foundInstructionNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display(String.format("%-9s", "instruction"));
-					if (DEBUG) m_console.display(String.format("(%d)(%d, %d)", node.getId(), node.getPrevNodes().size(), node.getNextNodes().size()));
-					m_console.display(String.format(" : %.1fns\n", node.getTimeTaken()));						
+					String nodeName = String.format("instruction(%d)", node.getId());
+					m_console.display(String.format("%-14s", nodeName));
+					m_console.display(String.format(" : %.1fns\n", 
+							node.getTimeTaken(Case.WORST)));						
+					return true;
 				}
 
-				public void foundLoopNode(Node node, int depth) {
+				public boolean foundLoopNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display(String.format("%-9s", "loop"));
-					if (DEBUG) m_console.display(String.format("(%d)(%d, %d)", node.getId(), node.getPrevNodes().size(), node.getNextNodes().size()));
-					m_console.display(String.format(" : %.1fns\n", node.getTimeTaken()));						
+					String nodeName = String.format("loop(%d)", node.getId());
+					m_console.display(String.format("%-14s", nodeName));
+					m_console.display(String.format(" : %.1fns\n", 
+							node.getTimeTaken(Case.WORST)));						
+					return true;
 				}
 
-				public void foundPathNode(Node node, int depth) {
+				public boolean foundPathNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display(String.format("%-9s", "path"));
-					if (DEBUG) m_console.display(String.format("(%d)(%d, %d)", node.getId(), node.getPrevNodes().size(), node.getNextNodes().size()));
-					m_console.display(String.format(" : %.1fns\n", node.getTimeTaken()));						
+					String nodeName = String.format("path(%d)", node.getId());
+					m_console.display(String.format("%-14s", nodeName));
+					m_console.display(String.format(" : %.1fns\n", 
+							node.getTimeTaken(Case.WORST)));						
+					return true;
 				}
 
-				public void foundSectionNode(Node node, int depth) {
+				public boolean foundSectionNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display(String.format("%-9s", "section"));
-					if (DEBUG) m_console.display(String.format("(%d)(%d, %d)", node.getId(), node.getPrevNodes().size(), node.getNextNodes().size()));
-					m_console.display(String.format(" : %.1fns\n", node.getTimeTaken()));						
+					String nodeName = String.format("section(%d)", node.getId());
+					m_console.display(String.format("%-14s", nodeName));
+					m_console.display(String.format(" : %.1fns\n", 
+							node.getTimeTaken(Case.WORST)));						
+					return true;
 				}
 
-				public void foundTerminalNode(Node node, int depth) {
+				public boolean foundTerminalNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display(String.format("%-9s", "terminal"));
-					if (DEBUG) m_console.display(String.format("(%d)(%d, %d)", node.getId(), node.getPrevNodes().size(), node.getNextNodes().size()));
-					m_console.display(String.format(" : %.1fns\n", node.getTimeTaken()));						
+					String nodeName = String.format("terminal(%d)", node.getId());
+					m_console.display(String.format("%-14s", nodeName));
+					m_console.display(String.format(" : %.1fns\n", 
+							node.getTimeTaken(Case.WORST)));						
+					return true;
 				}		    	
 		    });
-		System.out.println();    
-		}		
-		
+		}				
     }
 	
 	private void printIndent(int depth) {

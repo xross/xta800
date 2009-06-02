@@ -17,10 +17,15 @@ public abstract class Node implements Comparable<Node>{
 	Node m_branchLinkReturn;
 	Set<Node> m_dominators;
 
-	public abstract double getTimeTaken();
-	public abstract long getNumCycles();
-	public abstract long getNumInstructions();
-	public abstract long getNumFNops();	
+	public enum Case {
+		WORST,
+		BEST,
+	}
+	
+	public abstract double getTimeTaken(Case c);
+	public abstract long getNumCycles(Case c);
+	public abstract long getNumInstructions(Case c);
+	public abstract long getNumFNops(Case c);	
 	
 	public abstract Set<Integer> getPCsCovered();
 	public abstract List<XtaInstruction> getInstructions();
@@ -36,16 +41,8 @@ public abstract class Node implements Comparable<Node>{
 	public static int getNodeCount(){
 		return s_numNodes;
 	}
-	
-	public static String intToTab(int indent){
-		String s = "";
-		for(int i=0;i<indent;i++){
-			s +="\t";
-		}
-		return s;
-	}
-		
-	public static void resetId() {
+			
+	public static void resetNodeCount() {
 		s_numNodes = 0;
 	}
 	
@@ -94,23 +91,7 @@ public abstract class Node implements Comparable<Node>{
 	public Set<Node> getDominators() {
 		return m_dominators;
 	}
-	
-	public Node getIdom() {
-		Set<Node> remainingDominators = new HashSet<Node>(m_dominators);
-		remainingDominators.remove(this);
-		for (Node dom : m_dominators) {
-			if(dom == this) continue;
-			Set<Node> set = new HashSet<Node>(dom.getDominators());
-			set.remove(dom);
-			remainingDominators.removeAll(set);
-		}
-		if (remainingDominators.size() == 1) {
-			return remainingDominators.iterator().next();
-		} else {
-			return this;
-		}
-	}
-		
+			
 	public String toString(){
 		return "Node " + m_id;  
 	}
@@ -152,11 +133,7 @@ public abstract class Node implements Comparable<Node>{
 			m_nextNodes.remove(node);
 		}
 	}
-	
-	public long getNumberInstructions(){
-		return getInstructions().size();
-	}
-	
+		
 	public void setDominatorSetComplete(boolean b) {
 		m_dominatorSetIsCompleteSet = b;
 	}
