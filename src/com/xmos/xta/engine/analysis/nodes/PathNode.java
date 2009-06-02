@@ -24,30 +24,30 @@ public class PathNode extends Node {
 		m_nodes = path.m_nodes;
 	}
 
-	public double getTimeTaken() {
+	public double getTimeTaken(Case c) {
 		double time = 0;
-		for (Node node : m_nodes) {
-			time += node.getTimeTaken();
+	    for (Node node : m_nodes) {
+		    time += node.getTimeTaken(c);
 		}
 		return time;
 	}
 	
-	public long getNumCycles() {
-		long cycles = 0;
-		for (Node node : m_nodes){
-			cycles += node.getNumCycles();
+	public long getNumCycles(Case c) {
+   		long cycles = 0;
+    	for (Node node : m_nodes){
+	    	cycles += node.getNumCycles(c);
 		}
 		return cycles;
 	}
 
-	public long getNumInstructions() {
-		return getInstructions().size();
+	public long getNumInstructions(Case c) {
+   		return getInstructions().size();
 	}
 	
-	public long getNumFNops() {
+	public long getNumFNops(Case c) {
 		long fnops = 0;
-		for(Node node : m_nodes){
-			fnops += node.getNumFNops();
+   		for(Node node : m_nodes){
+    		fnops += node.getNumFNops(c);
 		}
 		return fnops;
 	}
@@ -97,7 +97,9 @@ public class PathNode extends Node {
 	}
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		nodeTraverser.foundPathNode(this, depth);
+		if (!nodeTraverser.foundPathNode(this, depth))
+			return;
+		
 		for (Node node : m_nodes) {
 			node.traverse(depth + 1, nodeTraverser);			
 		}		

@@ -32,7 +32,7 @@ public class BlockNode extends Node {
 		m_insts = insts;
 	}
 		
-	public double getTimeTaken() {
+	public double getTimeTaken(Case c) {
 		double timeTaken = 0;
 		for (XtaInstruction inst : getInstructions()) {
 			timeTaken += inst.getTimeTaken();
@@ -40,7 +40,7 @@ public class BlockNode extends Node {
         return timeTaken;		
 	}
 
-	public long getNumCycles() {
+	public long getNumCycles(Case c) {
 		long cycles = 0;
 		for (XtaInstruction inst : getInstructions()) {
 			cycles += inst.getNumCycles();
@@ -48,11 +48,11 @@ public class BlockNode extends Node {
 		return cycles;
 	}
 
-	public long getNumInstructions() {
+	public long getNumInstructions(Case c) {
 		return getInstructions().size();
 	}
 	
-	public long getNumFNops() {
+	public long getNumFNops(Case c) {
 		return 0;
 	}
 
@@ -107,7 +107,9 @@ public class BlockNode extends Node {
 	}	
 	
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		nodeTraverser.foundBlockNode(this, depth);
+		if (!nodeTraverser.foundBlockNode(this, depth)) 
+			return;
+			
 		if (DEBUG) { 
 			for (Node instruction : m_insts) {
 				instruction.traverse(depth + 1, nodeTraverser);

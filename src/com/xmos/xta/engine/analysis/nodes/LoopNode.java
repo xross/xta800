@@ -35,31 +35,31 @@ public class LoopNode extends Node {
 		m_loopHeader = base;
 	}
 	
-	public double getTimeTaken() {
+	public double getTimeTaken(Case c) {
 		double time = 0;
 		for (Node node : m_loops) {
-			time += node.getTimeTaken();
+			time += node.getTimeTaken(c);
 		}
 		return time;
 	}
 	
-	public long getNumCycles() {
+	public long getNumCycles(Case c) {
 		long count = 0;
-		for (Node node : m_loops) {
-			count += node.getNumCycles();
-		}
+   		for (Node node : m_loops) {
+    		count += node.getNumCycles(c);
+	    }
 		return count;
 	}
 
-	public long getNumInstructions() {
-		return getInstructions().size();
+	public long getNumInstructions(Case c) {
+   		return getInstructions().size();
 	}
 
-	public long getNumFNops() {
+	public long getNumFNops(Case c) {
 		long count = 0;
-		for (Node node : m_loops) {
-			count += node.getNumFNops();
-		}
+   		for (Node node : m_loops) {
+    		count += node.getNumFNops(c);
+   		}
 		return count;
 	}	
 	
@@ -113,7 +113,9 @@ public class LoopNode extends Node {
 	}
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		nodeTraverser.foundLoopNode(this, depth);
+		if (!nodeTraverser.foundLoopNode(this, depth))
+			return;
+		
 		for (Node node : m_loops) {
 			node.traverse(depth + 1, nodeTraverser);			
 		}

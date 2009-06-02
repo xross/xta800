@@ -44,30 +44,30 @@ public class FunctionNode extends Node {
 		m_knownFunction = false;
 	}
 
-	public double getTimeTaken() {
-		if (m_knownFunction) {		
-		    return m_function.getTimeTaken();
+	public double getTimeTaken(Case c) {
+		if (m_knownFunction) {
+			return m_function.getTimeTaken(c);	
 		}
 		return 0;
 	}
 	
-	public long getNumCycles() {
+	public long getNumCycles(Case c) {
 		if (m_knownFunction) {		
-    		return m_function.getNumCycles();
+    		return m_function.getNumCycles(c);
 		}
 		return 0;
 	}
 
-	public long getNumInstructions() {
+	public long getNumInstructions(Case c) {
 		if (m_knownFunction) {		
-    		return m_function.getNumInstructions();
+    		return m_function.getNumInstructions(c);
 		}
 		return 0;
 	}
 	
-	public long getNumFNops() {
+	public long getNumFNops(Case c) {
 		if (m_knownFunction) {		
-    		return m_function.getNumFNops();
+    		return m_function.getNumFNops(c);
 		}
 		return 0;
 	}
@@ -136,7 +136,9 @@ public class FunctionNode extends Node {
 	}
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		nodeTraverser.foundFunctionNode(this, depth);
+		if (!nodeTraverser.foundFunctionNode(this, depth))
+			return;
+		
 		if (m_knownFunction) {
 		    m_function.traverse(depth + 1, nodeTraverser);
 		}

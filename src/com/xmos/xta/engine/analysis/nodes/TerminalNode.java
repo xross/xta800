@@ -16,19 +16,19 @@ public class TerminalNode extends Node {
 		m_terminals = new HashSet<Node>(terminals);
 	}
 
-	public double getTimeTaken() {
+	public double getTimeTaken(Case c) {
 		return 0;
 	}
 	
-	public long getNumCycles() {
+	public long getNumCycles(Case c) {
 		return 0;
 	}
 
-	public long getNumInstructions() {
+	public long getNumInstructions(Case c) {
 		return getInstructions().size();
 	}
 	
-	public long getNumFNops() {
+	public long getNumFNops(Case c) {
 		return 0;
 	}
 	
@@ -77,7 +77,9 @@ public class TerminalNode extends Node {
 	}
 	
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		nodeTraverser.foundTerminalNode(this, depth);
+		if (!nodeTraverser.foundTerminalNode(this, depth))
+			return;
+		
 		for (Node node : m_terminals) {
 			node.traverse(depth + 1, nodeTraverser);			
 		}		

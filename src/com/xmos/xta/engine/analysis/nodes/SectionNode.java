@@ -9,8 +9,6 @@ import java.util.Set;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class SectionNode extends Node {
-	
-	//each option denotes a different path in the section - all weighted equally
 	private Collection<Node> m_options;
 	private Node m_jumpNode;
 	private Node m_selectedOption; 
@@ -29,29 +27,29 @@ public class SectionNode extends Node {
 		m_jumpNode = ms.m_jumpNode;
 	}
 
-	public double getTimeTaken() {
+	public double getTimeTaken(Case c) {
 		if (m_selectedOption!= null) {
-			return m_selectedOption.getTimeTaken();
+			return m_selectedOption.getTimeTaken(c);
 		} else {
 			return 0;
 		}
 	}
 
-	public long getNumCycles() {
+	public long getNumCycles(Case c) {
 		if (m_selectedOption!= null) {
-			return m_selectedOption.getNumCycles();
+			return m_selectedOption.getNumCycles(c);
 		} else {
 			return 0;
 		}
 	}
 
-	public long getNumInstructions() {
+	public long getNumInstructions(Case c) {
 		return getInstructions().size();
 	}
 	
-	public long getNumFNops() {
+	public long getNumFNops(Case c) {
 		if (m_selectedOption!= null) {
-			return m_selectedOption.getNumFNops();
+			return m_selectedOption.getNumFNops(c);
 		} else {
 			return 0;
 		}
@@ -119,7 +117,9 @@ public class SectionNode extends Node {
 	}
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		nodeTraverser.foundSectionNode(this, depth);
+		if (!nodeTraverser.foundSectionNode(this, depth))
+			return;
+		
 		for (Node node : m_options) {
 			node.traverse(depth + 1, nodeTraverser);			
 		}		
