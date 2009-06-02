@@ -23,7 +23,6 @@ import com.xmos.xta.engine.analysis.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.StructureGraph;
 import com.xmos.xta.engine.analysis.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.nodes.Node;
-import com.xmos.xta.engine.analysis.patterns.CommonMethods;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.references.Reference;
@@ -256,9 +255,13 @@ public class Engine implements Notifier {
 				if(!sae.analyse(this))
 					return false;
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
-				
+	
 			}		
 		}
+		
+		
+		
+		
 		m_instructionDecoder = newInstructionDecoder;
 		m_sections = sections;
 		m_xeObjects = newXeObjects;
@@ -282,11 +285,6 @@ public class Engine implements Notifier {
 		}
 	}
 	
-	public Collection<Node> collectRouteNodes(int startPc, Collection<Integer> endPcs){
-		ControlFlowGraph controlFlowGraph = m_controlFlowGraph.get(m_nodeId, m_coreId);
-
-		return null;
-	}
 
 	public boolean analyseRoute(String functionName) {
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
@@ -931,7 +929,7 @@ public class Engine implements Notifier {
 			System.out.println(", shape=box]; ");
 		}
 		for(FunctionNode n : pfh.getFunctions()){
-			System.out.println(n.getGraphvizName() + " [label=\"" + n.getFucntionName() + "\"]; ");
+			System.out.println(n.getGraphvizName() + " [label=\"" + n.getFunctionName() + "\"]; ");
 		}
 		for(Node n : id.getInstructions()){
 			for(Node next : n.getNextNodes()){

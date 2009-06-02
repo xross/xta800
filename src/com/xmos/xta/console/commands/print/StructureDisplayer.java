@@ -22,7 +22,7 @@ public class StructureDisplayer {
 	public void display() {
 		StructureGraph structureGraph = m_engine.getStructureGraph();
 
-		Collection<Node> nodes = structureGraph.getThreads();		
+		Collection<Node> nodes = structureGraph.getThreads();	
 		for (Node node : nodes) {					
 		    node.traverse(0, new NodeTraverser() {
 				public void foundBlockNode(Node node, int depth) {
@@ -32,7 +32,7 @@ public class StructureDisplayer {
 
 				public void foundFunctionNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display(String.format("function: %s\n", node.getFunctionName()));
+					m_console.display(String.format("function: %s %s\n", node.getFunctionName(), node));
 				}
 
 				public void foundInstructionNode(Node node, int depth) {
@@ -60,7 +60,9 @@ public class StructureDisplayer {
 					m_console.display("terminal\n");
 				}		    	
 		    });
+		System.out.println();    
 		}		
+		
     }
 	
 	private void printIndent(int depth) {

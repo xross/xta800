@@ -28,9 +28,11 @@ public class StructuralAnalysisEngine {
 	private Map<Integer, FunctionNode> m_functionStartPcs;
 	private Map<Integer, FunctionNode> m_threadStartPcs;
 	private StructureGraph m_structureGraph;
+	private Map<FunctionNode, FunctionNode> m_cfgToStruct;
 
 	public StructuralAnalysisEngine(ControlFlowGraph controlFlowGraph) {
 		m_controlFlowGraph = controlFlowGraph;
+		m_cfgToStruct = new HashMap<FunctionNode, FunctionNode>();
 	}
 
 	/**
@@ -49,11 +51,12 @@ public class StructuralAnalysisEngine {
 	}
 
 	private void linkFunctions() {
-		for (FunctionNode fn : m_controlFlowGraph.getAllFunctions()) {
-			if (fn.isFunctionKnown()) {
-				String fnName = fn.getBranchTarget().getInstructions().get(0).getFunctionName();
-				fn.setFunction(fnName, m_functionStartPcs.get(fn.getBranchTarget().getStartPc()).getFunction());
-			}
+		for(FunctionNode fn : m_cfgToStruct.keySet()){
+			if(m_cfgToStruct.get(fn).getBranchTarget() != null){
+				int pc = m_cfgToStruct.get(fn).getBranchTarget().getStartPc();
+				String fnName = m_cfgToStruct.get(fn).getBranchTarget().getInstructions().get(0).getFunctionName();
+				fn.setFunction(fnName, m_functionStartPcs.get(pc).getFunction());
+			} 
 		}
 	}
 
@@ -78,6 +81,8 @@ public class StructuralAnalysisEngine {
 		Collection<Node> graphs = new HashSet<Node>();
 
 		for (Node graphStart : graphStartNodes) {
+			
+			
 			String functionName = graphStart.getInstructions().get(0).getFunctionName();
 
 			engine.provideFeedback("Processing " + functionName);
@@ -94,7 +99,6 @@ public class StructuralAnalysisEngine {
 			
 			FunctionNode fn = new FunctionNode(decomposedGraph, functionName);
 			graphs.add(fn);
-
 			startPcs.put(graphStart.getStartPc(), fn);
 		}
 		return graphs;
@@ -126,6 +130,7 @@ public class StructuralAnalysisEngine {
 				} else {
 					seen.add(node);
 					Node clone = node.clone();
+					m_cfgToStruct.put( (FunctionNode)clone,(FunctionNode)node);
 					basicBlocks.add(clone);
 					cfgToStructure.put(node, clone);
 					endPoint.put(clone, node);
