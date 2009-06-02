@@ -163,10 +163,4 @@ public abstract class Node implements Comparable<Node>{
 	public boolean isDominatorSetComplete(){
 		return m_dominatorSetIsCompleteSet;
 	}
-	
-	protected void printIndent(int indentLevel) {
-		for (int i = 0; i < indentLevel; ++i) {
-		    System.out.printf(".    ");
-		}
-	}	
 }

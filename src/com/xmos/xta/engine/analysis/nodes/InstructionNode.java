@@ -83,10 +83,5 @@ public class InstructionNode extends Node {
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
 		nodeTraverser.foundInstructionNode(this, depth);		
-	}	
-	
-	public void display(int indentLevel) {
-		printIndent(indentLevel);
-		System.out.println(m_inst);
-	}	
+	}		
 }

@@ -9,7 +9,7 @@ import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.analysis.nodes.NodeTraverser;
 
 public class StructureDisplayer {
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
 	private Engine m_engine;
 	private Console m_console;
@@ -27,51 +27,51 @@ public class StructureDisplayer {
 		    node.traverse(0, new NodeTraverser() {
 				public void foundBlockNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display("block");
+					m_console.display(String.format("%-9s", "block"));
 					if (DEBUG) m_console.display(String.format("(%d)", node.getId()));
-					m_console.display("\n");						
+					m_console.display(String.format(" : %.1fns\n", node.getTimeTaken()));						
 				}
 
 				public void foundFunctionNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display(String.format("function"));
-					if (DEBUG) m_console.display(String.format("(%d): ", node.getId()));
-					m_console.display(String.format("%s\n", node.getFunctionName()));
+					m_console.display(String.format("%-9s", "function"));
+					if (DEBUG) m_console.display(String.format("(%d)", node.getId()));
+					m_console.display(String.format(" : %.1fns\n", node.getTimeTaken()));						
 				}
 
 				public void foundInstructionNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display("instruction");
+					m_console.display(String.format("%-9s", "instruction"));
 					if (DEBUG) m_console.display(String.format("(%d)", node.getId()));
-					m_console.display("\n");						
+					m_console.display(String.format(" : %.1fns\n", node.getTimeTaken()));						
 				}
 
 				public void foundLoopNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display("loop");
+					m_console.display(String.format("%-9s", "loop"));
 					if (DEBUG) m_console.display(String.format("(%d)", node.getId()));
-					m_console.display("\n");						
+					m_console.display(String.format(" : %.1fns\n", node.getTimeTaken()));						
 				}
 
 				public void foundPathNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display("path");
+					m_console.display(String.format("%-9s", "path"));
 					if (DEBUG) m_console.display(String.format("(%d)", node.getId()));
-					m_console.display("\n");						
+					m_console.display(String.format(" : %.1fns\n", node.getTimeTaken()));						
 				}
 
 				public void foundSectionNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display("section");
+					m_console.display(String.format("%-9s", "section"));
 					if (DEBUG) m_console.display(String.format("(%d)", node.getId()));
-					m_console.display("\n");						
+					m_console.display(String.format(" : %.1fns\n", node.getTimeTaken()));						
 				}
 
 				public void foundTerminalNode(Node node, int depth) {
 					printIndent(depth);
-					m_console.display("terminal");
+					m_console.display(String.format("%-9s", "terminal"));
 					if (DEBUG) m_console.display(String.format("(%d)", node.getId()));
-					m_console.display("\n");						
+					m_console.display(String.format(" : %.1fns\n", node.getTimeTaken()));						
 				}		    	
 		    });
 		}		
