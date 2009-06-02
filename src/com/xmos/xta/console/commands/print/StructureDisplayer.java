@@ -10,6 +10,7 @@ import com.xmos.xta.engine.analysis.nodes.NodeTraverser;
 import com.xmos.xta.engine.analysis.nodes.Node.Case;
 
 public class StructureDisplayer {
+
 	private Engine m_engine;
 	private Console m_console;
 
@@ -26,11 +27,13 @@ public class StructureDisplayer {
 		    node.traverse(0, new NodeTraverser() {
 				public boolean foundBlockNode(Node node, int depth) {
 					printIndent(depth);
+
 					String nodeName = String.format("block(%d)", node.getId());
 					m_console.display(String.format("%-14s", nodeName));
 					m_console.display(String.format(" : %.1fns\n", 
 							node.getTimeTaken(Case.WORST)));
 					return true;
+
 				}
 
 				public boolean foundFunctionNode(Node node, int depth) {

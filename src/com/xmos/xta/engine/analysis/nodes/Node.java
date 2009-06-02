@@ -35,6 +35,7 @@ public abstract class Node implements Comparable<Node>{
 	public abstract boolean isFunction();
 	public abstract int getStartPc();
 	public abstract Node clone();
+	public abstract Node deepClone();
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
 
 	public static int getNodeCount(){
