@@ -14,6 +14,7 @@ import java.util.Stack;
 import java.util.TreeSet;
 
 import com.xmos.xta.engine.RouteDescription;
+import com.xmos.xta.engine.analysis.StructureGraph;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.engine.references.Reference;
@@ -44,6 +45,8 @@ public class Route {
 	
 	private static int s_routeCount;
 	private static int s_pathCount;
+	
+	private StructureGraph m_structureGraph;
 	private boolean m_firstStep;
 	private int m_routeId;
 	private int m_startPc;
@@ -78,7 +81,11 @@ public class Route {
 		m_unknowns = new Unknowns();
 		m_functionsVisited = new HashSet<String>();
 	}
-			
+
+	public StructureGraph getStructureGraph() {
+		return m_structureGraph;
+	}
+	
 	public boolean setLoopIterations(int pc, Long count){
 		// TODO
 		return false;
