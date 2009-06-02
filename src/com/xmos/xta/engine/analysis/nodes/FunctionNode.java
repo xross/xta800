@@ -43,10 +43,22 @@ public class FunctionNode extends Node {
 		super();
 		m_knownFunction = false;
 	}
-
+	
+	public Node deepClone(){
+		FunctionNode fn = new FunctionNode();
+		if(m_knownFunction){
+			fn.m_function = m_function.deepClone();
+			fn.m_functionName = m_functionName;
+			fn.m_knownFunction = m_knownFunction;
+			fn.m_branchTarget = m_branchTarget;
+		}
+		return fn;
+	}
+	
 	public double getTimeTaken() {
 		if (m_knownFunction) {		
 		    return m_function.getTimeTaken();
+		    
 		}
 		return 0;
 	}
@@ -141,4 +153,5 @@ public class FunctionNode extends Node {
 		    m_function.traverse(depth + 1, nodeTraverser);
 		}
 	}
+
 }

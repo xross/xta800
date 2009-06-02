@@ -83,5 +83,9 @@ public class InstructionNode extends Node {
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
 		nodeTraverser.foundInstructionNode(this, depth);		
+	}
+
+	public Node deepClone() {
+		return clone();
 	}		
 }

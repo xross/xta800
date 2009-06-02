@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class PathNode extends Node {
@@ -22,6 +21,20 @@ public class PathNode extends Node {
 	public PathNode(PathNode path) {
 		super();
 		m_nodes = path.m_nodes;
+	}
+
+	public PathNode() {
+		super();
+		m_nodes = new LinkedList<Node>();
+	}
+	
+	public Node deepClone() {
+		PathNode pn = new PathNode();
+		for (Node path : m_nodes) {
+			Node clone = path.deepClone();
+			pn.m_nodes.add(clone);
+		}
+		return pn;
 	}
 
 	public double getTimeTaken() {
@@ -101,5 +114,6 @@ public class PathNode extends Node {
 		for (Node node : m_nodes) {
 			node.traverse(depth + 1, nodeTraverser);			
 		}		
-	}	
+	}
+	
 }

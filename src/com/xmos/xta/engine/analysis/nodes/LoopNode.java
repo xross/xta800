@@ -19,6 +19,12 @@ public class LoopNode extends Node {
 		m_loopHeader = loop.m_loopHeader;
 	}
 	
+	public LoopNode() {
+		super();
+		m_loops = new ArrayList<Node>();
+		m_loopHeader = null;
+	}
+	
 	public LoopNode(Node loop, Node base) {
 		super();
 		m_loops = new ArrayList<Node>();
@@ -34,7 +40,16 @@ public class LoopNode extends Node {
 		}
 		m_loopHeader = base;
 	}
-	
+
+	public Node deepClone() {
+		LoopNode ln = new LoopNode();
+		for(Node loop : m_loops){
+			Node clone = loop.deepClone();
+			ln.m_loops.add(clone);
+		}
+		ln.m_loopHeader = m_loopHeader.deepClone();
+		return ln;
+	}	
 	public double getTimeTaken() {
 		double time = 0;
 		for (Node node : m_loops) {
@@ -117,5 +132,6 @@ public class LoopNode extends Node {
 		for (Node node : m_loops) {
 			node.traverse(depth + 1, nodeTraverser);			
 		}
-	}	
+	}
+
 }

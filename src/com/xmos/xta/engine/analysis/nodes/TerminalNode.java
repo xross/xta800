@@ -15,7 +15,18 @@ public class TerminalNode extends Node {
 	public TerminalNode(Collection<Node> terminals){
 		m_terminals = new HashSet<Node>(terminals);
 	}
+	public TerminalNode(){
+		m_terminals = new HashSet<Node>();
+	}
 
+	public Node deepClone() {
+		TerminalNode tn = new TerminalNode();
+		for(Node terminal : m_terminals){
+			Node clone = terminal.clone();
+			tn.m_terminals.add(clone);
+		}
+		return tn;
+	}
 	public double getTimeTaken() {
 		return 0;
 	}
@@ -82,4 +93,5 @@ public class TerminalNode extends Node {
 			node.traverse(depth + 1, nodeTraverser);			
 		}		
 	}
+
 }

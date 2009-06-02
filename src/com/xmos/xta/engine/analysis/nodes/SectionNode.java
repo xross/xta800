@@ -29,6 +29,24 @@ public class SectionNode extends Node {
 		m_jumpNode = ms.m_jumpNode;
 	}
 
+	public SectionNode() {
+		super();
+		m_options = new HashSet<Node>();
+		m_jumpNode = null;
+	}
+
+	public Node deepClone() {
+		SectionNode sn = new SectionNode();
+		for(Node section : m_options){
+			Node clone = section.deepClone();
+			sn.m_options.add(clone);
+		}
+		if(m_jumpNode != null){
+			sn.m_jumpNode = m_jumpNode.deepClone();	
+		}
+	
+		return sn;
+	}
 	public double getTimeTaken() {
 		if (m_selectedOption!= null) {
 			return m_selectedOption.getTimeTaken();
@@ -123,5 +141,6 @@ public class SectionNode extends Node {
 		for (Node node : m_options) {
 			node.traverse(depth + 1, nodeTraverser);			
 		}		
-	}	
+	}
+	
 }

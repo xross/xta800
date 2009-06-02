@@ -22,7 +22,10 @@ public class BlockNode extends Node {
 	public BlockNode(){
 		super();
 	}
-	
+
+	public Node deepClone() {
+		return clone();
+	}
 	public BlockNode clone(){
 		return new BlockNode(this);
 	}
@@ -113,5 +116,7 @@ public class BlockNode extends Node {
 				instruction.traverse(depth + 1, nodeTraverser);
 			}
 		}		
-	}	
+	}
+
+	
 }

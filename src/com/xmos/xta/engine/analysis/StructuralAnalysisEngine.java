@@ -55,7 +55,7 @@ public class StructuralAnalysisEngine {
 			if(m_cfgToStruct.get(fn).getBranchTarget() != null){
 				int pc = m_cfgToStruct.get(fn).getBranchTarget().getStartPc();
 				String fnName = m_cfgToStruct.get(fn).getBranchTarget().getInstructions().get(0).getFunctionName();
-				fn.setFunction(fnName, m_functionStartPcs.get(pc).getFunction());
+				fn.setFunction(fnName, m_functionStartPcs.get(pc).getFunction().deepClone());
 			} 
 		}
 	}
