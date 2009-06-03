@@ -1,8 +1,8 @@
-package com.xmos.xta.engine.references;
+package com.xmos.xta.engine.references.types;
 
 import com.xmos.xta.engine.Engine;
 
-public class LabelReference extends Reference {
+public class LabelReference extends ReferenceType {
 	LabelReference(String ref) {
 		super(ref);
 	}

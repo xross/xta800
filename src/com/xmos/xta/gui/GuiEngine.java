@@ -13,7 +13,7 @@ import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Progress;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
-import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class GuiEngine {
 	private static Engine m_engine;

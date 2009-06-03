@@ -6,7 +6,7 @@ import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
-import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class ThreadStartPoint extends Command {
 	public enum Operation {

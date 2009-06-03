@@ -1,4 +1,4 @@
-package com.xmos.xta.engine.references;
+package com.xmos.xta.engine.references.types;
 
 import java.util.HashMap;
 
@@ -6,11 +6,11 @@ import com.xmos.xeobject.Function;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Engine;
 
-public class PcReference extends Reference {	
+public class PcReference extends ReferenceType {	
 	PcReference(String ref) {
 		super(ref);				
 		if (ref != null) {
-		    setPc(ReferenceFactory.getPcString(ref));
+		    setPc(ReferenceTypeFactory.getPcString(ref));
 		}
 	}
 

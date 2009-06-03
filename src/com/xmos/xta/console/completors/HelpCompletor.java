@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.console.commands.CommandFactory;
-import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 import jline.Completor;
 

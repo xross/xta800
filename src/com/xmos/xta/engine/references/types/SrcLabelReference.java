@@ -1,9 +1,9 @@
-package com.xmos.xta.engine.references;
+package com.xmos.xta.engine.references.types;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.sections.CodePointInfo;
 
-public class SrcLabelReference extends Reference {
+public class SrcLabelReference extends ReferenceType {
 	SrcLabelReference(String ref) {
 		super(ref);
 	}

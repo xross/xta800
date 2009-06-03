@@ -7,7 +7,7 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
-import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class Time extends Command {
 	public enum Operation {

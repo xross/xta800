@@ -5,9 +5,9 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.console.commands.CommandFactory;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.references.Reference;
-import com.xmos.xta.engine.references.ReferenceFactory;
-import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.references.types.ReferenceType;
+import com.xmos.xta.engine.references.types.ReferenceTypeFactory;
+import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class Help extends Command {
 	private Command m_command;
@@ -100,9 +100,10 @@ public class Help extends Command {
     		// Displays help for a specific option.
     		console.display("  Any of the following are permitted:\n");
     		
-    		Reference[] references = ReferenceFactory.getReferenceClass(m_referenceClass); 
-    		for (Reference reference : references) {
-    			console.display(String.format("    %s: %s\n", reference.name(), reference.description())); 
+    		ReferenceType[] referenceTypes = ReferenceTypeFactory.getReferenceClass(m_referenceClass); 
+    		for (ReferenceType referenceType : referenceTypes) {
+    			console.display(String.format("    %s: %s\n", 
+    					referenceType.name(), referenceType.description())); 
     		}    		
     	} else {    	
             // Displays help for all commands.    	

@@ -32,7 +32,7 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Route;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
-import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.engine.unknowns.PausableInstructionUnknown;
 import com.xmos.xta.engine.unknowns.Unknown;
 import com.xmos.xta.gui.Broadcaster;

@@ -1,9 +1,9 @@
-package com.xmos.xta.engine.references;
+package com.xmos.xta.engine.references.types;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 
-public class SrcLabelFileLineReference extends Reference {
+public class SrcLabelFileLineReference extends ReferenceType {
     public static final String TYPE = "SRCLABEL";
 
 	SrcLabelFileLineReference(String ref) {
@@ -12,8 +12,8 @@ public class SrcLabelFileLineReference extends Reference {
 
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
     	String ref  = getRef();
-		String fileName = ReferenceFactory.getFileName(ref);
-        int lineNumber  = ReferenceFactory.getLineNumber(ref);		
+		String fileName = ReferenceTypeFactory.getFileName(ref);
+        int lineNumber  = ReferenceTypeFactory.getLineNumber(ref);		
 
 		for (SrcLabelTableInfo info : engine.getSrcLabelTable().values()) {
             if (info.getFileName().equals(fileName) &&
