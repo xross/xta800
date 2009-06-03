@@ -56,10 +56,10 @@ public class Trace extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-	    if (!validateIds(engine, console, m_routeId, m_id, m_idType))
+	    if (!validateRouteId(engine, console, m_routeId))
 		    return;
 				
-		TraceDisplayer displayer = new TraceDisplayer(engine, console, m_routeId, m_id, m_idType);	
+		TraceDisplayer displayer = new TraceDisplayer(engine, console, m_routeId);	
 		displayer.display();
     }    
 }

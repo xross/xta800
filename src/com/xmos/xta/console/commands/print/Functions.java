@@ -1,19 +1,16 @@
 package com.xmos.xta.console.commands.print;
 
-import java.util.Iterator;
-import java.util.Map;
+import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.xmos.elfhandler.ElfHandler;
-import com.xmos.elfhandler.Symbol;
-import com.xmos.isa.Instruction;
-import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.analysis.StructureGraph;
+import com.xmos.xta.engine.analysis.nodes.DefaultNodeTraverser;
+import com.xmos.xta.engine.analysis.nodes.Node;
 
 public class Functions extends Command {
 	private int m_routeId;
@@ -31,7 +28,7 @@ public class Functions extends Command {
     public String commandLine() { return "functions " + getRouteId(m_routeId); }        
     
     public String description(Engine engine, boolean detailed) {
-    	return "functions <route id>: Shows which paths touch which functions";
+    	return "functions <route id>: Shows functions this route touches";
     }
 
     public Command clone(String[] args, int index) {
@@ -52,61 +49,27 @@ public class Functions extends Command {
 		if (!validateRouteId(engine, console, m_routeId))
 			return;		    	
 
-    	displayFunctions(console, engine.getRoute(m_routeId), engine.getSymbolTable());
+    	displayFunctions(engine, console);
     }
 	
-    private void displayFunctions(Console console, Route route, SymbolTable symbolTable) {
-		ElfHandler elfHandler = symbolTable.getElfHandler();        		    
-    	Iterator<Map.Entry<Integer, Symbol>> iter = 
-    		elfHandler.getFunctionsPcKeyed().entrySet().iterator();
-    	    	
-    	while (iter.hasNext()) {
-    	    Map.Entry<Integer, Symbol> pair = iter.next();
-    	    Symbol symbol = pair.getValue();       	    	        	    	   
-    	    int functionAddress = symbol.getValue();
-    	    int functionSize = symbolTable.functionSize(functionAddress);
-    	    
-        	TreeSet<Integer> pathIds = new TreeSet<Integer>();
-        	// TODO
-            //for (PathBasicBlock path : route.getCompletedPaths()) {
-            //	buildPathsWithinFunctionSet(path, pathIds, functionAddress, functionSize);
-            //}    	
-            
-            if (pathIds.size() > 0) {
-            	console.display(String.format("%s: ", symbol.getName())); 
-            	for (Integer pathId : pathIds) {
-            		console.display(String.format("%d ", pathId));
-            	}
-            	console.display("\n");
-            }
-    	}
+    private void displayFunctions(Engine engine, Console console) {
+       	for (String function : getFunctions(engine)) {
+       		console.display(String.format("- %s\n", function));
+        }
     }
 
-// TODO    
-//    private void buildPathsWithinFunctionSet(PathBasicBlock path, Set<Integer> pathSet, 
-//    		int functionAddress, int functionSize) {   
-//    	
-//        for (PathBasicBlock block : path.getPathBlocks()) {
-//            if (pathWithinFunction(block, functionAddress, functionSize)) {
-//                if (!pathSet.contains(path.getPathId())) {
-//                    pathSet.add(path.getPathId());
-//                }
-//            }
-//        
-//            for (PathBasicBlock loopPath : block.getLoopPaths(path)) {
-//   		    	buildPathsWithinFunctionSet(loopPath, pathSet, functionAddress, functionSize);
-//       		}
-//        }
-//    }
- 
-// TODO    
-//    private boolean pathWithinFunction(PathBasicBlock path, int functionAddress, int functionSize) {
-//      	for (Instruction instruction : path.getInstructions(false)) {
-//        	if ((instruction.getPc() >= functionAddress) &&
-//        	    (instruction.getPc() < (functionAddress + functionSize))) {
-//        	    return true;
-//        	}
-//        }
-//        return false;
-//    }    	                
+    private Set<String> getFunctions(Engine engine) {
+    	final Set<String> functions = new TreeSet<String>();     	
+    	StructureGraph structureGraph = engine.getRoute(m_routeId).getStructureGraph();
+		Collection<Node> nodes = structureGraph.getThreads();	
+		for (Node node : nodes) {
+		    node.traverse(0, new DefaultNodeTraverser() {
+				public boolean foundInstructionNode(Node node, int depth) {
+					functions.add(node.getInstructions().get(0).getFunctionName());
+					return true;
+				}
+		    });
+		}				    	
+    	return functions;
+    }
 }

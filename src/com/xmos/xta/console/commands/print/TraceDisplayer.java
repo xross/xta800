@@ -1,86 +1,64 @@
 package com.xmos.xta.console.commands.print;
 
-import java.util.LinkedList;
+import java.util.Collection;
+import java.util.List;
 
 import com.xmos.xta.console.Console;
-import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.analysis.StructureGraph;
+import com.xmos.xta.engine.analysis.nodes.DefaultNodeTraverser;
+import com.xmos.xta.engine.analysis.nodes.Node;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class TraceDisplayer {
 	private Engine m_engine;
 	private Console m_console;
 	private int m_routeId;
-	private int m_id;
-	private Command.IdType m_idType;
 	private double m_currentTime;
 		
-	public TraceDisplayer(Engine engine, Console console, int routeId, int id, Command.IdType idType) {
+	public TraceDisplayer(Engine engine, Console console, int routeId) {
 		m_engine = engine;
 		m_console = console;
 		m_routeId = routeId;
-		m_id = id;
-		m_idType = idType;
-		m_currentTime = 0.0;
+		m_currentTime = 0;
 	}
 	
     public void display() {
-        switch (m_idType) {
-        case BLOCK:
-        {
-        	// TODO
-        	//PathBasicBlock block = m_engine.getRoute(m_routeId).getBlock(m_id);
-        	//displayBlock(block);
-        	break;
-        }
-        case PATH:
-        {
-        	// TODO
-        	//PathBasicBlock path = m_engine.getRoute(m_routeId).getPath(m_id);
-    		//displayPath(path);
-        	break;
-        }
-        default:
-        	assert(false);
-        }
+    	StructureGraph structureGraph = m_engine.getRoute(m_routeId).getStructureGraph();
+		Collection<Node> nodes = structureGraph.getThreads();	
+		for (Node node : nodes) {					
+		    node.traverse(0, new DefaultNodeTraverser() {
+				public boolean foundInstructionNode(Node node, int depth) {
+					displayInstruction(node);
+					return true;
+				}
+		    });
+		}				
     }
-// TODO    
-/*
-    private void displayPath(PathBasicBlock path) {
-    	for (PathBasicBlock block : path.getPathBlocks()) {
-    		for (PathBasicBlock loopPath : block.getLoopPaths(path)) {
-    			for (int i = 0; i < loopPath.getNumIterations(); i++) {
-    				displayPath(loopPath);
-    			}
-    		}
-    		displayBlock(block);
-    	}
-	}
-
-	public void displayBlock(PathBasicBlock block) {
-    	LinkedList<XtaInstruction> instructions = block.getInstructionStream();
-        	
-		for (XtaInstruction instruction : instructions) {
-			String isUnknown = instruction.isUnknown() ? "*" : " ";
-         	
-         	String functionOffsetString = 
-         		instruction.getFunctionName() + " + " + instruction.getFunctionOffset();
-         	
-         	m_console.display(String.format("%s %.1f: (%.1fns) 0x%05x %-22s %-12s %s",
-         			isUnknown,
-             		m_currentTime,
-             		instruction.getTimeTaken(),
-               		instruction.getPc(), 
-               		functionOffsetString, 
-               		instruction.getNmenonic(), 
-               		instruction.getOperandString()));
-         	
-         	if (instruction.canPause())
-         		m_console.display(" (P)");
-         	
-         	m_currentTime += instruction.getTimeTaken();
-          	m_console.display("\n");
-		}  		
+    
+    private void displayInstruction(Node node) {
+		List<XtaInstruction> instructions = node.getInstructions();
+		assert(instructions.size() == 1);
+		XtaInstruction instruction = instructions.get(0);
+		
+		String isUnknown = instruction.isUnknown() ? "*" : " ";
+     	
+     	String functionOffsetString = 
+     		instruction.getFunctionName() + " + " + instruction.getFunctionOffset();
+     	
+     	m_console.display(String.format("%s %.1f: (%.1fns) 0x%05x %-22s %-12s %s",
+     			isUnknown,
+         		m_currentTime,
+         		instruction.getTimeTaken(),
+           		instruction.getPc(), 
+           		functionOffsetString, 
+           		instruction.getNmenonic(), 
+           		instruction.getOperandString()));
+     	
+     	if (instruction.canPause())
+     		m_console.display(" (P)");
+     	
+     	m_currentTime += instruction.getTimeTaken();
+      	m_console.display("\n");    	
     }
-*/    
 }

@@ -1,12 +1,8 @@
 package com.xmos.xta.console.commands.print;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
-import com.xmos.dwarfhandler.DebugFile;
-import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.SourceLine;
@@ -15,8 +11,9 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Route;
-import com.xmos.xta.engine.instructions.XtaInstruction;
+import com.xmos.xta.engine.analysis.StructureGraph;
+import com.xmos.xta.engine.analysis.nodes.DefaultNodeTraverser;
+import com.xmos.xta.engine.analysis.nodes.Node;
 
 public class Sources extends Command {
 	private int m_routeId;
@@ -55,69 +52,40 @@ public class Sources extends Command {
 		if (!validateRouteId(engine, console, m_routeId))
 			return;		    	
 
-		displaySources(console, engine.getRoute(m_routeId), engine.getDebugInfo(), engine.getXeObject());
+		displaySources(engine, console);
     }
 
-    private void displaySources(Console console, Route route, DebugInfo debugInfo, XeObject xeObject) {
-    	// TODO
-    	/*
-    	ArrayList<String> files = new ArrayList<String>();
-  	    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {
-        	TreeSet<Integer> pathIds = new TreeSet<Integer>();
-            for (PathBasicBlock path : route.getCompletedPaths()) {
-            	buildPathsWithinSourcesSet(path, pathIds, debugFile.getFileName(), xeObject);
-            }    	
-            if (pathIds.size() > 0) {
-            	String file = String.format("%s: ", debugFile.getFileName()); 
-            	for (Integer pathId : pathIds) {
-            		file += String.format("%d ", pathId);
-            	}
-            	files.add(file);
-            }            
-    	}
-  	    
-  	    Collections.sort(files);
-	    for(String file : files){
-	    	console.display(file + "\n"); 
-	    }
-	    */
+    private void displaySources(Engine engine, Console console) {
+       	for (String sources : getSources(engine)) {
+       		console.display(String.format("- %s\n", sources));
+        }    	
     }   	
 
-// TODO
-/*
-    private void buildPathsWithinSourcesSet(PathBasicBlock path, Set<Integer> pathSet, String sourceFileName, XeObject xeObject) {	
-        if (pathWithinSourceFile(path, sourceFileName, xeObject)) {
-        	pathSet.add(path.getPathId());
-        }
-
-        for (PathBasicBlock loopPath : path.getLoopPaths(path)) {
-	    	buildPathsWithinSourcesSet(loopPath, pathSet, sourceFileName, xeObject);
-   		}
+    private Set<String> getSources(Engine engine) {
+    	final Set<String> sources = new TreeSet<String>();   
+    	final XeObject xeObject = engine.getXeObject();
+    	
+    	StructureGraph structureGraph = engine.getRoute(m_routeId).getStructureGraph();
+		Collection<Node> nodes = structureGraph.getThreads();	
+		for (Node node : nodes) {
+		    node.traverse(0, new DefaultNodeTraverser() {
+				public boolean foundInstructionNode(Node node, int depth) {					
+		            for (SourceFile sourceFile: xeObject.getSourceFiles()) {
+		                for (SourceLine sourceLine : sourceFile.getSourceLines()) {
+		                    for (Line assembly :sourceLine.getChildern()) {
+		                        	
+		                      	int pc = node.getInstructions().get(0).getPc();
+		                        if (assembly.getLineNumber() == pc) {
+		                          	sources.add(sourceFile.getFileName());
+		                        }
+		                    }
+		                }
+		            }					
+					sources.add(node.getInstructions().get(0).getFunctionName());
+					return true;
+				}
+		    });
+		}				    	
+    	return sources;
     }    
-    
-    private boolean pathWithinSourceFile(PathBasicBlock path, String sourceFileName, XeObject xeObject) {
-        HashMap<String, TreeSet<Integer>> linesCovered = new HashMap<String, TreeSet<Integer>>();
-        TreeSet<Integer> bob = new TreeSet<Integer>();
-        for(XtaInstruction inst : path.getInstructions(false)){
-            for(SourceFile sourceFile: xeObject.getSourceFiles()){
-                if(sourceFile.getFile().getName().equals(sourceFileName)){
-                    for(SourceLine sourceLine : sourceFile.getSourceLines()){
-                        for(Line assembly :sourceLine.getChildern()){
-                            if(assembly.getLineNumber() == inst.getPc()){
-                                bob.add(sourceLine.getLineNumber());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        linesCovered.put(sourceFileName, bob);
-        
-        if (linesCovered.containsKey(sourceFileName) && 
-    		(linesCovered.get(sourceFileName).size() > 0)) {
-        	return true;
-        }        
-        return false;
-    } 
-*/         
 }

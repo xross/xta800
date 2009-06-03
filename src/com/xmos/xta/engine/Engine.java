@@ -34,6 +34,7 @@ import com.xmos.xta.engine.sections.Sections;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.engine.unknowns.Unknown;
 
+
 public class Engine implements Notifier {
 
 	public static int ROUTE_ID_LAST = -1;
@@ -260,7 +261,6 @@ public class Engine implements Notifier {
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
 			}		
 		}
-		
 		m_instructionDecoder = newInstructionDecoder;
 		m_sections = sections;
 		m_xeObjects = newXeObjects;
