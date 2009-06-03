@@ -32,7 +32,7 @@ public class UpWedge extends PatternMatcher {
 			if (piviot.getPrevNodes().size() > 1) {
 				return false;
 			}
-			return CommonMethods.wedgeUp(piviot, workingSet, verbose);
+			return CommonMethods.wedgeUp(piviot, workingSet);
 		}		
 		return false;
 	}

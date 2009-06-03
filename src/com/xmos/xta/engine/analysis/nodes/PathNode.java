@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
@@ -28,10 +29,10 @@ public class PathNode extends Node {
 		m_nodes = new LinkedList<Node>();
 	}
 	
-	public Node deepClone() {
+	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
 		PathNode pn = new PathNode();
 		for (Node path : m_nodes) {
-			Node clone = path.deepClone();
+			Node clone = path.deepClone(startPcs);
 			pn.m_nodes.add(clone);
 		}
 		return pn;
@@ -97,9 +98,6 @@ public class PathNode extends Node {
 		return "";
 	}
 	
-	public String getGraphvizName() {
-		return "cluster_Path" + m_id;
-	}
 
 	public boolean isFunction() {
 		return false;
@@ -118,4 +116,7 @@ public class PathNode extends Node {
 		}		
 	}
 	
+	public String toString(){
+		return "Path" + m_id;
+	}
 }

@@ -3,6 +3,7 @@ package com.xmos.xta.engine.analysis.nodes;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -27,15 +28,17 @@ public abstract class Node implements Comparable<Node>{
 	public abstract long getNumInstructions(Case c);
 	public abstract long getNumFNops(Case c);	
 	
+	/**
+	 * this returns a set of all the PCs covered by the node regardless of the way its set up
+	 */
 	public abstract Set<Integer> getPCsCovered();
 	public abstract List<XtaInstruction> getInstructions();
 	public abstract Collection<Node> getContaintedNodes();	
 	public abstract String getFunctionName();
-	public abstract String getGraphvizName();
 	public abstract boolean isFunction();
 	public abstract int getStartPc();
 	public abstract Node clone();
-	public abstract Node deepClone();
+	public abstract Node deepClone(Map<Integer, FunctionNode> startPcs);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
 
 	public static int getNodeCount(){
@@ -93,10 +96,6 @@ public abstract class Node implements Comparable<Node>{
 	}
 			
 	public String toString(){
-		return "Node " + m_id;  
-	}
-	
-	public String graphVizLabel(){
 		return "Node" + m_id;  
 	}
 	

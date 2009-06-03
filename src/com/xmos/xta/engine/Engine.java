@@ -35,6 +35,7 @@ import com.xmos.xta.engine.sections.Sections;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.engine.unknowns.Unknown;
 
+
 public class Engine implements Notifier {
 
 	public static int ROUTE_ID_LAST = -1;
@@ -60,6 +61,7 @@ public class Engine implements Notifier {
 	private NodeCoreCollection<InstructionDecoder> m_instructionDecoder;
 	
 	public Engine(Config config) {
+		
 		m_xeObjects = new NodeCoreCollection<XeObject>();
 		m_structuralGraph = new NodeCoreCollection<StructureGraph>();
 		m_controlFlowGraph = new NodeCoreCollection<ControlFlowGraph>();
@@ -80,6 +82,8 @@ public class Engine implements Notifier {
 		ReferenceTypeFactory.setEngine(this);
 	}
 
+
+	
 	public void notify(String message, String argument) {
 		if (m_notifier != null)
 			m_notifier.notify(message, argument);
@@ -258,7 +262,6 @@ public class Engine implements Notifier {
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
 			}		
 		}
-				
 		m_instructionDecoder = newInstructionDecoder;
 		m_sections = sections;
 		m_xeObjects = newXeObjects;
@@ -271,9 +274,19 @@ public class Engine implements Notifier {
 		setConstraint(ConstraintFactory.createConstraint(this, ""));
 		
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
+		
 		return true;
 	}
 
+	public void findInstancesOfPc(int pc){
+		StructureGraph sg = m_structuralGraph.get(m_nodeId, m_coreId);
+		for(Node thread : sg.getThreads()){
+			if(thread.getPCsCovered().contains(pc)){
+				System.out.println(pc +" is contained in thread " + thread);
+			}
+		}
+	}
+	
 	public Progress getProgress() {
 		if (m_progress != null) {
 			return m_progress;
@@ -879,7 +892,7 @@ public class Engine implements Notifier {
 			Collection<Node> threadEnds, Collection<Node> functionStarts) {
 		System.out.println("digraph g {");
 		for(Node n : id.getInstructions()){
-			System.out.print(n.getGraphvizName() + " [label=\"" + n.getInstructions() + "\"");
+			System.out.print(n + " [label=\"" + n.getInstructions() + "\"");
 			if(threadStarts.contains(n)){
 				System.out.print(", style=filled, color = green");
 			} else if(functionStarts.contains(n)){
@@ -890,16 +903,16 @@ public class Engine implements Notifier {
 			System.out.println(", shape=box]; ");
 		}
 		for(FunctionNode n : pfh.getFunctions()){
-			System.out.println(n.getGraphvizName() + " [label=\"" + n.getFunctionName() + "\"]; ");
+			System.out.println(n + " [label=\"" + n.getFunctionName() + "\"]; ");
 		}
 		for(Node n : id.getInstructions()){
 			for(Node next : n.getNextNodes()){
-				System.out.println(n.getGraphvizName() + " -> " + next.getGraphvizName() + ";");
+				System.out.println(n + " -> " + next + ";");
 			}
 		}
 		for(Node n : pfh.getFunctions()){
 			for(Node next : n.getNextNodes()){
-				System.out.println(n.getGraphvizName() + " -> " + next.getGraphvizName() + ";");
+				System.out.println(n + " -> " + next + ";");
 			}
 		}
 		System.out.println("}");

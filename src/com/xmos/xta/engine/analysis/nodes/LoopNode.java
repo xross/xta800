@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -41,13 +42,13 @@ public class LoopNode extends Node {
 		m_loopHeader = base;
 	}
 
-	public Node deepClone() {
+	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
 		LoopNode ln = new LoopNode();
 		for(Node loop : m_loops){
-			Node clone = loop.deepClone();
+			Node clone = loop.deepClone(startPcs);
 			ln.m_loops.add(clone);
 		}
-		ln.m_loopHeader = m_loopHeader.deepClone();
+		ln.m_loopHeader = m_loopHeader.deepClone(startPcs);
 		return ln;
 	}	
 
@@ -93,9 +94,9 @@ public class LoopNode extends Node {
 	}
 
 	public Set<Integer> getPCsCovered() {
-		Set<Integer> pcs = new HashSet<Integer>();
-		for(Node al : m_loops){
-			pcs.addAll(al.getPCsCovered());
+		Set<Integer> pcs = new HashSet<Integer>(m_loopHeader.getPCsCovered());
+		for(Node loop : m_loops){
+			pcs.addAll(loop.getPCsCovered());
 		}
 		return pcs;
 	}
@@ -117,10 +118,6 @@ public class LoopNode extends Node {
 		return "";
 	}
 	
-	public String getGraphvizName() {
-		return "cluster_Loop" + m_id;
-	}
-
 	public boolean isFunction() {
 		return false;
 	}
@@ -138,4 +135,7 @@ public class LoopNode extends Node {
 		}
 	}
 
+	public String toString(){
+		return "Loop" + m_id;
+	}
 }

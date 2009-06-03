@@ -8,7 +8,6 @@ import com.xmos.xta.engine.analysis.nodes.Node;
 public class ThreadHandler {
 	private InstructionDecoder m_instDecoder;
 	private Notifier m_notifier;
-	private static final boolean DEBUG = true;
 	
 	public ThreadHandler(InstructionDecoder instDecoder, Notifier notifier) {
 		m_instDecoder = instDecoder;
@@ -41,10 +40,6 @@ public class ThreadHandler {
 			} else {
 				m_notifier.notify(Notifier.NOTIFY_WARNING,
 						"Failed to find PC 0x" + Integer.toHexString(0x10000));
-			}
-		} else if (DEBUG) {
-			for(Node node : threadStarts){
-				System.out.println("threads starts at: " + node);
 			}
 		}
 		

@@ -50,7 +50,8 @@ public class StructureDisplayer {
 					String nodeName = String.format("instruction(%d)", node.getId());
 					m_console.display(String.format("%-14s", nodeName));
 					m_console.display(String.format(" : %.1fns\n", 
-							node.getTimeTaken(Case.WORST)));						
+							node.getTimeTaken(Case.WORST)));			
+								
 					return true;
 				}
 

@@ -55,7 +55,7 @@ public class StructuralAnalysisEngine {
 			if(m_cfgToStruct.get(fn).getBranchTarget() != null){
 				int pc = m_cfgToStruct.get(fn).getBranchTarget().getStartPc();
 				String fnName = m_cfgToStruct.get(fn).getBranchTarget().getInstructions().get(0).getFunctionName();
-				fn.setFunction(fnName, m_functionStartPcs.get(pc).getFunction().deepClone());
+				fn.setFunction(fnName, m_functionStartPcs.get(pc).getFunction().deepClone(m_functionStartPcs));
 			} 
 		}
 	}
@@ -81,7 +81,6 @@ public class StructuralAnalysisEngine {
 		Collection<Node> graphs = new HashSet<Node>();
 
 		for (Node graphStart : graphStartNodes) {
-			
 			
 			String functionName = graphStart.getInstructions().get(0).getFunctionName();
 

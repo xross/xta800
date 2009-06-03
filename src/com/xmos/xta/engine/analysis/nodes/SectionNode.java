@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -11,19 +12,16 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 public class SectionNode extends Node {
 	private Collection<Node> m_options;
 	private Node m_jumpNode;
-	private Node m_selectedOption; 
 
 	public SectionNode(Collection<Node> options, Node jumpNode) {
 		super();
 		m_options = options;
-		m_selectedOption = null;
 		m_jumpNode = jumpNode;
 	}
 	
 	public SectionNode(SectionNode ms) {
 		super();
 		m_options = ms.m_options;
-		m_selectedOption = ms.m_selectedOption;
 		m_jumpNode = ms.m_jumpNode;
 	}
 
@@ -33,34 +31,25 @@ public class SectionNode extends Node {
 		m_jumpNode = null;
 	}
 
-	public Node deepClone() {
+	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
 		SectionNode sn = new SectionNode();
 		for(Node section : m_options){
-			Node clone = section.deepClone();
+			Node clone = section.deepClone(startPcs);
 			sn.m_options.add(clone);
 		}
 		if(m_jumpNode != null){
-			sn.m_jumpNode = m_jumpNode.deepClone();	
+			sn.m_jumpNode = m_jumpNode.deepClone(startPcs);	
 		}
 	
 		return sn;
 	}
 
 	public double getTimeTaken(Case c) {
-
-		if (m_selectedOption!= null) {
-			return m_selectedOption.getTimeTaken(c);
-		} else {
-			return 0;
-		}
+		return 0;
 	}
 
 	public long getNumCycles(Case c) {
-		if (m_selectedOption!= null) {
-			return m_selectedOption.getNumCycles(c);
-		} else {
-			return 0;
-		}
+		return 0;
 	}
 
 	public long getNumInstructions(Case c) {
@@ -68,11 +57,7 @@ public class SectionNode extends Node {
 	}
 	
 	public long getNumFNops(Case c) {
-		if (m_selectedOption!= null) {
-			return m_selectedOption.getNumFNops(c);
-		} else {
-			return 0;
-		}
+		return 0;
 	}
 	
 	public Collection<Node> getOptions(){
@@ -83,25 +68,17 @@ public class SectionNode extends Node {
 		return m_jumpNode;
 	}
 	
-	public void setSelectedOption(Node selected){
-		assert(m_options.contains(selected));
-		m_selectedOption = selected;
-	}
 
 	public List<XtaInstruction> getInstructions() {
-		if (m_selectedOption!= null) {
-			return m_selectedOption.getInstructions();
-		} else {
-			return new LinkedList<XtaInstruction>();
-		}
+		return new LinkedList<XtaInstruction>();
 	}
 
 	public Set<Integer> getPCsCovered() {
-		if(m_selectedOption!= null) {
-			return m_selectedOption.getPCsCovered();
-		} else {
-			return new HashSet<Integer>();
+		Set<Integer> pcs = new HashSet<Integer>();
+		for(Node node : m_options){
+			pcs.addAll(node.getPCsCovered());
 		}
+		return pcs;
 	}
 
 	public Node clone() {
@@ -118,10 +95,6 @@ public class SectionNode extends Node {
 
 	public String getFunctionName() {
 		return "";
-	}
-	
-	public String getGraphvizName() {
-		return "cluster_Section" + m_id;
 	}
 	
 	public boolean isFunction() {
@@ -144,5 +117,7 @@ public class SectionNode extends Node {
 			node.traverse(depth + 1, nodeTraverser);			
 		}		
 	}
-	
+	public String toString(){
+		return "Section" + m_id;
+	}
 }

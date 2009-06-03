@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -56,10 +57,6 @@ public class InstructionNode extends Node {
 	public String getFunctionName() {
 		return "";
 	}
-	
-	public String getGraphvizName() {
-		return "Instruction" + m_id;
-	}
 
 	public List<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> inst = new LinkedList<XtaInstruction>();
@@ -85,7 +82,7 @@ public class InstructionNode extends Node {
 		nodeTraverser.foundInstructionNode(this, depth);		
 	}
 
-	public Node deepClone() {
+	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
 		return clone();
 	}		
 }

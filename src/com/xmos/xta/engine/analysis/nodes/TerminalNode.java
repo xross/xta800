@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -19,10 +20,10 @@ public class TerminalNode extends Node {
 		m_terminals = new HashSet<Node>();
 	}
 
-	public Node deepClone() {
+	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
 		TerminalNode tn = new TerminalNode();
 		for(Node terminal : m_terminals){
-			Node clone = terminal.clone();
+			Node clone = terminal.deepClone(startPcs);
 			tn.m_terminals.add(clone);
 		}
 		return tn;
@@ -65,15 +66,15 @@ public class TerminalNode extends Node {
 	}
 
 	public Set<Integer> getPCsCovered() {
-		return null;
+		Set<Integer> pcs = new HashSet<Integer>();
+		for(Node node : m_terminals){
+			pcs.addAll(node.getPCsCovered());
+		}
+		return pcs;
 	}
 
 	public String getFunctionName() {
 		return "";
-	}
-
-	public String getGraphvizName() {
-		return "cluster_Terminal" + m_id;
 	}
 
 	public boolean isFunction() {
@@ -96,5 +97,8 @@ public class TerminalNode extends Node {
 			node.traverse(depth + 1, nodeTraverser);			
 		}		
 	}
-
+	
+	public String toString(){
+		return "Terminal" + m_id;
+	}
 }

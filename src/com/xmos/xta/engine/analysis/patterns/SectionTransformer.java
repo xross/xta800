@@ -58,7 +58,7 @@ public class SectionTransformer extends PatternMatcher {
 							if (verbose) {
 								System.out.println("# wedging for the multisection");
 							}
-							CommonMethods.wedgeUp(nextNode, workingSet, verbose);
+							CommonMethods.wedgeUp(nextNode, workingSet);
 							return true;
 							
 						} else if (nextNode.getPrevNodes().size() > 1) {
@@ -66,7 +66,7 @@ public class SectionTransformer extends PatternMatcher {
 							if (verbose) {
 								System.out.println("# wedging for the multisection");
 							}
-							CommonMethods.wedgeDown(nextNode, workingSet, verbose);
+							CommonMethods.wedgeDown(nextNode, workingSet);
 							return true;
 						} 
 					}

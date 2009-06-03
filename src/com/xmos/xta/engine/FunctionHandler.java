@@ -54,6 +54,7 @@ public class FunctionHandler {
 					Collection<FunctionNode> newFunctions = new HashSet<FunctionNode>();
 					for(Node next : instruction.getNextNodes()){
 						FunctionNode fn = new FunctionNode(next);
+						
 						m_instToFunc.put(next, fn);
 						newFunctions.add(fn);
 						next.getPrevNodes().remove(instruction);

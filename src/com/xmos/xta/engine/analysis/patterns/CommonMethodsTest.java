@@ -41,7 +41,7 @@ public class CommonMethodsTest {
 			CommonMethods.connect(next, base);
 		}
 		
-		CommonMethods.wedgeUp(base, nodes, false);
+		CommonMethods.wedgeUp(base, nodes);
 		
 		assertTrue(nodes.size() == nextCount + prevCount + nextCount);
 		
@@ -74,7 +74,7 @@ public class CommonMethodsTest {
 			CommonMethods.connect(next, base);
 		}
 		
-		CommonMethods.wedgeDown(base, nodes, false);
+		CommonMethods.wedgeDown(base, nodes);
 		
 		assertTrue(nodes.size() == nextCount + prevCount + prevCount);
 		
