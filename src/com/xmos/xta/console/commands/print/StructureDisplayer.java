@@ -4,13 +4,13 @@ import java.util.Collection;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.analysis.structural.nodes.LoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.NodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 
 public class StructureDisplayer {
-
 	private Engine m_engine;
 	private Console m_console;
 
@@ -51,8 +51,7 @@ public class StructureDisplayer {
 					m_console.display(String.format("%-14s", nodeName));
 					m_console.display(node.toString());
 					m_console.display(String.format(" : %.1fns\n", 
-							node.getTimeTaken(Case.WORST)));			
-								
+							node.getTimeTaken(Case.WORST)));											
 					return true;
 				}
 
@@ -60,8 +59,8 @@ public class StructureDisplayer {
 					printIndent(depth);
 					String nodeName = String.format("loop(%d)", node.getId());
 					m_console.display(String.format("%-14s", nodeName));
-					m_console.display(String.format(" : %.1fns\n", 
-							node.getTimeTaken(Case.WORST)));						
+					m_console.display(String.format(" : %.1fns [%d iterations]\n", 
+							node.getTimeTaken(Case.WORST), ((LoopNode)node).getNumIterations()));
 					return true;
 				}
 

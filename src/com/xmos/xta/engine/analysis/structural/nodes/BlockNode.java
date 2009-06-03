@@ -10,11 +10,11 @@ import java.util.Set;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class BlockNode extends Node {
-	private final static boolean DEBUG = true;
+	private final static boolean DEBUG = false;
 	
 	private List<Node> m_insts;
 	private List<XtaInstruction> m_xtaInsts;
-	
+
 	public BlockNode() {
 		super();
 		m_insts = new LinkedList<Node>();
@@ -39,7 +39,7 @@ public class BlockNode extends Node {
 	
 	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
 		BlockNode bn = new BlockNode();
-		for(Node node : m_insts){
+		for (Node node : m_insts) {
 			bn.m_insts.add(node.deepClone(startPcs));
 		}
 		
@@ -47,7 +47,7 @@ public class BlockNode extends Node {
 		return bn;
 	}
 	
-	public BlockNode clone(){
+	public BlockNode clone() {
 		return new BlockNode(this);
 	}
 
@@ -116,5 +116,5 @@ public class BlockNode extends Node {
 	
 	public String toString(){
 		return "Block" + m_id;
-	}
+	}	
 }

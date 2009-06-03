@@ -16,6 +16,11 @@ public class FunctionNode extends Node {
 	private boolean m_knownFunction;
 	private Node m_branchTarget;
 	
+	public FunctionNode() {
+		super();
+		m_knownFunction = false;
+	}
+	
 	public FunctionNode(Node branchTarget) {
 		super();
 		m_branchTarget = branchTarget;
@@ -41,11 +46,6 @@ public class FunctionNode extends Node {
 		m_branchTarget = fn.m_branchTarget;
 	}
 	
-	public FunctionNode() {
-		super();
-		m_knownFunction = false;
-	}
-
 	public Node deepClone(Map<Integer, FunctionNode> startPcs){
 		FunctionNode fn = new FunctionNode();
 		if(m_knownFunction){

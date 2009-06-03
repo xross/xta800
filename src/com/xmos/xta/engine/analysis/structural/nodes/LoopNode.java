@@ -12,6 +12,7 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 public class LoopNode extends Node {
 	private List<Node> m_loops;
 	private Node m_loopHeader;
+	private long m_numIterations;
 	
 	public LoopNode(LoopNode loop) {
 		super();
@@ -128,6 +129,7 @@ public class LoopNode extends Node {
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
 		if (!nodeTraverser.foundLoopNode(this, depth))
 			return;
+		
 		m_loopHeader.traverse(depth + 1, nodeTraverser);			
 		for (Node node : m_loops) {
 			node.traverse(depth + 1, nodeTraverser);			
@@ -136,5 +138,13 @@ public class LoopNode extends Node {
 
 	public String toString(){
 		return "Loop" + m_id;
+	}
+	
+	public void setNumIterations(long numIterations) {
+		m_numIterations = numIterations;
+	}
+	
+	public long getNumIterations() {
+		return m_numIterations;
 	}
 }
