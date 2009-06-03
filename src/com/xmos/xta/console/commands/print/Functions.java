@@ -8,9 +8,9 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.analysis.StructureGraph;
-import com.xmos.xta.engine.analysis.nodes.DefaultNodeTraverser;
-import com.xmos.xta.engine.analysis.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.DefaultNodeTraverser;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.StructureGraph;
 
 public class Functions extends Command {
 	private int m_routeId;

@@ -8,7 +8,7 @@ import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.gui.nodes.Node;
 import com.xmos.xta.gui.nodes.PathGroupNode;
 

@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.unknowns.Unknowns;
 

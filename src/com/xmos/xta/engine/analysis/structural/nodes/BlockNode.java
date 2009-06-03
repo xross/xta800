@@ -1,0 +1,112 @@
+package com.xmos.xta.engine.analysis.structural.nodes;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.xmos.xta.engine.instructions.XtaInstruction;
+
+public class BlockNode extends Node {
+	private final static boolean DEBUG = false;
+	
+	private List<Node> m_insts;
+	private List<XtaInstruction> m_xtaInsts;
+	
+	public BlockNode(BlockNode block){
+		super();
+		m_insts = block.m_insts;
+		m_xtaInsts = block.m_xtaInsts;
+	}
+	
+	public BlockNode(){
+		super();
+	}
+
+	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
+		return clone();
+	}
+	public BlockNode clone(){
+		return new BlockNode(this);
+	}
+	
+	public BlockNode(List<Node> insts){
+		super();
+		m_insts = insts;
+	}
+		
+	public double getTimeTaken(Case c) {
+		double timeTaken = 0;
+		for (XtaInstruction inst : getInstructions()) {
+			timeTaken += inst.getTimeTaken();
+		}
+        return timeTaken;		
+	}
+
+	public long getNumCycles(Case c) {
+		long cycles = 0;
+		for (XtaInstruction inst : getInstructions()) {
+			cycles += inst.getNumCycles();
+		}
+		return cycles;
+	}
+
+	public long getNumInstructions(Case c) {
+		return getInstructions().size();
+	}
+	
+	public long getNumFNops(Case c) {
+		return 0;
+	}
+
+	public List<XtaInstruction> getInstructions() {
+		if (m_xtaInsts == null) {
+			m_xtaInsts = new LinkedList<XtaInstruction>();
+			for (Node i : m_insts) {
+				m_xtaInsts.addAll(i.getInstructions());
+			}
+		}
+		return m_xtaInsts;
+	}
+		
+	public Set<Integer> getPCsCovered() {
+		Set<Integer> pcs = new HashSet<Integer>();
+		for (XtaInstruction inst : getInstructions()) {
+			pcs.add(inst.getPc());
+		}
+		return pcs;
+	}
+
+	public Collection<Node> getContaintedNodes() {
+		return new HashSet<Node> (m_insts);
+	}
+
+	public String getFunctionName() {
+		return "";
+	}
+	
+	public boolean isFunction() {
+		return false;
+	}
+
+	public int getStartPc() {
+		return getInstructions().get(0).getPc();
+	}	
+	
+	public void traverse(int depth, NodeTraverser nodeTraverser) {
+		if (!nodeTraverser.foundBlockNode(this, depth)) 
+			return;
+			
+		if (DEBUG) { 
+			for (Node instruction : m_insts) {
+				instruction.traverse(depth + 1, nodeTraverser);
+			}
+		}		
+	}
+	public String toString(){
+		return "Block" + m_id;
+	}
+	
+}

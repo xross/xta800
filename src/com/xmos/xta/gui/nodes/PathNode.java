@@ -10,7 +10,8 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import com.xmos.xta.engine.Route;
+
+import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.Iterations;

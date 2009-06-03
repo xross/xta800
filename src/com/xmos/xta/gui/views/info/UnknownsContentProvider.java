@@ -5,7 +5,7 @@ import java.util.HashSet;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.unknowns.Unknown;
 
 public class UnknownsContentProvider implements IStructuredContentProvider {

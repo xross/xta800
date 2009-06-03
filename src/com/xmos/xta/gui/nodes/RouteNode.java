@@ -9,8 +9,8 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Shell;
 
-import com.xmos.xta.engine.Route;
-import com.xmos.xta.engine.RouteTiming;
+import com.xmos.xta.engine.analysis.routes.Route;
+import com.xmos.xta.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.Required;

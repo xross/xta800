@@ -21,7 +21,7 @@ import org.eclipse.ui.part.ViewPart;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Progress;
-import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.gui.GuiEngine;
 
 public class StatusView extends ViewPart implements IPropertyChangeListener,
