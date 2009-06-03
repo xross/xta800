@@ -13,10 +13,12 @@ public class InstructionNode extends Node {
 	private XtaInstruction m_inst;
 	
 	public InstructionNode(XtaInstruction inst){
+		super();
 		m_inst = inst;
 	}
 	
 	public InstructionNode(InstructionNode node){
+		super();
 		m_inst = node.m_inst;
 	}
 

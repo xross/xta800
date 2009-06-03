@@ -10,7 +10,7 @@ import java.util.Set;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class BlockNode extends Node {
-	private final static boolean DEBUG = false;
+	private final static boolean DEBUG = true;
 	
 	private List<Node> m_insts;
 	private List<XtaInstruction> m_xtaInsts;
@@ -23,10 +23,18 @@ public class BlockNode extends Node {
 	
 	public BlockNode(){
 		super();
+		m_insts = new LinkedList<Node>();
+		m_xtaInsts = new LinkedList<XtaInstruction>();
 	}
 
 	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
-		return clone();
+		BlockNode bn = new BlockNode();
+		for(Node node : m_insts){
+			bn.m_insts.add(node.deepClone(startPcs));
+		}
+		
+		bn.m_xtaInsts.addAll(m_xtaInsts);
+		return bn;
 	}
 	public BlockNode clone(){
 		return new BlockNode(this);
@@ -35,6 +43,7 @@ public class BlockNode extends Node {
 	public BlockNode(List<Node> insts){
 		super();
 		m_insts = insts;
+		m_xtaInsts = new LinkedList<XtaInstruction>();
 	}
 		
 	public double getTimeTaken(Case c) {
