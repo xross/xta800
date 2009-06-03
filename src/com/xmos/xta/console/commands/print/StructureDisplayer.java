@@ -49,6 +49,7 @@ public class StructureDisplayer {
 					printIndent(depth);
 					String nodeName = String.format("instruction(%d)", node.getId());
 					m_console.display(String.format("%-14s", nodeName));
+					m_console.display(node.toString());
 					m_console.display(String.format(" : %.1fns\n", 
 							node.getTimeTaken(Case.WORST)));			
 								
