@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -17,13 +18,14 @@ public class BlockNode extends Node {
 	public BlockNode(BlockNode block){
 		super();
 		m_insts = block.m_insts;
+		m_xtaInsts = block.m_xtaInsts;
 	}
 	
 	public BlockNode(){
 		super();
 	}
 
-	public Node deepClone() {
+	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
 		return clone();
 	}
 	public BlockNode clone(){
@@ -77,28 +79,12 @@ public class BlockNode extends Node {
 		return pcs;
 	}
 
-	public String makeGraphVisLabels() {
-		return "Node" + m_id + "[label=\"Node "+ m_id + "\"];\n";
-	}
-
-	public String makeGraphVisLinks() {
-		StringBuffer sb = new StringBuffer();
-		for (Node next : getNextNodes()) {
-			sb.append("Node" + m_id + " -> Node" + next.m_id+";\n");
-		}
-		return sb.toString();
-	}
-
 	public Collection<Node> getContaintedNodes() {
 		return new HashSet<Node> (m_insts);
 	}
 
 	public String getFunctionName() {
 		return "";
-	}
-	
-	public String getGraphvizName() {
-		return "Block" + m_id;
 	}
 	
 	public boolean isFunction() {
@@ -119,6 +105,8 @@ public class BlockNode extends Node {
 			}
 		}		
 	}
-
+	public String toString(){
+		return "Block" + m_id;
+	}
 	
 }

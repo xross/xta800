@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -31,12 +32,14 @@ public class FunctionNode extends Node {
 		} else {
 			m_functionName = functionName;
 		}
+		m_branchTarget = m_function;
 	}
 	
 	public FunctionNode(FunctionNode fn){
 		m_functionName = fn.m_functionName;
 		m_function = fn.m_function;
 		m_knownFunction = fn.m_knownFunction;
+		m_branchTarget = fn.m_branchTarget;
 	}
 	
 	public FunctionNode() {
@@ -44,15 +47,26 @@ public class FunctionNode extends Node {
 		m_knownFunction = false;
 	}
 
-	public Node deepClone(){
+	public Node deepClone(Map<Integer, FunctionNode> startPcs){
 		FunctionNode fn = new FunctionNode();
 		if(m_knownFunction){
-			fn.m_function = m_function.deepClone();
-			fn.m_functionName = m_functionName;
-			fn.m_knownFunction = m_knownFunction;
-			fn.m_branchTarget = m_branchTarget;
+			fn.m_function = m_function.deepClone(startPcs);
 		}
+		fn.m_functionName = m_functionName;
+		fn.m_knownFunction = m_knownFunction;
+		fn.m_branchTarget = m_branchTarget;
+		
+		if(fn.getBranchTarget() != null){
+			int pc = fn.getBranchTarget().getStartPc();
+			String fnName = fn.getBranchTarget().getInstructions().get(0).getFunctionName();
+			fn.setFunction(fnName, startPcs.get(pc).getFunction().deepClone(startPcs));
+		} 
+		
 		return fn;
+	}
+	
+	public String toString(){
+		return "Function" + m_id;
 	}
 
 	public double getTimeTaken(Case c) {
@@ -122,10 +136,6 @@ public class FunctionNode extends Node {
 		}
 		return m_functionName;
 	}
-	
-	public String getGraphvizName() {
-		return "Function" + m_id;
-	}
 
 	public List<XtaInstruction> getInstructions() {
 		if (m_knownFunction) {
@@ -136,7 +146,13 @@ public class FunctionNode extends Node {
 	}
 
 	public Set<Integer> getPCsCovered() {
-		return m_function.getPCsCovered();
+		
+		if(m_function == null){
+			return new HashSet<Integer>();
+		} else {
+			return m_function.getPCsCovered();
+		}
+		
 	}
 	
 	public boolean isFunction() {
@@ -144,7 +160,10 @@ public class FunctionNode extends Node {
 	}
 	
 	public int getStartPc() {
-		return m_function.getStartPc();
+		if(m_function != null){
+			return m_function.getStartPc();
+		}
+		return 0;
 	}
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
