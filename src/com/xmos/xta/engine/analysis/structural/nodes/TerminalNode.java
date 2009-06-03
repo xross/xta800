@@ -21,14 +21,14 @@ public class TerminalNode extends Node {
 
 	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
 		TerminalNode tn = new TerminalNode();
-		for(Node terminal : m_terminals){
+		for (Node terminal : m_terminals) {
 			Node clone = terminal.deepClone(startPcs);
 			tn.m_terminals.add(clone);
 		}
 		return tn;
-}
+    }
+	
 	public double getTimeTaken(Case c) {
-
 		return 0;
 	}
 	

@@ -33,14 +33,13 @@ public class SectionNode extends Node {
 
 	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
 		SectionNode sn = new SectionNode();
-		for(Node section : m_options){
+		for (Node section : m_options) {
 			Node clone = section.deepClone(startPcs);
 			sn.m_options.add(clone);
 		}
-		if(m_jumpNode != null){
+		if (m_jumpNode != null) {
 			sn.m_jumpNode = m_jumpNode.deepClone(startPcs);	
 		}
-	
 		return sn;
 	}
 

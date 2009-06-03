@@ -10,41 +10,55 @@ import java.util.Set;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class LoopNode extends Node {
-	private List<Node> m_loops;
 	private Node m_loopHeader;
+	private List<Node> m_loops;
 	private long m_numIterations;
+	private boolean m_numIterationsSet;
+	private boolean m_isAbsolute;
 	
 	public LoopNode(LoopNode loop) {
 		super();
-		m_loops = new ArrayList<Node>(loop.m_loops);
 		m_loopHeader = loop.m_loopHeader;
+		m_loops = new ArrayList<Node>(loop.m_loops);
+		m_numIterations = 0;
+		m_numIterationsSet = false;
+		m_isAbsolute = false;
 	}
 	
 	public LoopNode() {
 		super();
-		m_loops = new ArrayList<Node>();
 		m_loopHeader = null;
+		m_loops = new ArrayList<Node>();
+		m_numIterations = 0;
+		m_numIterationsSet = false;
+		m_isAbsolute = false;
 	}
 	
 	public LoopNode(Node loop, Node base) {
 		super();
+		m_loopHeader = base;
 		m_loops = new ArrayList<Node>();
 		m_loops.add(loop);
-		m_loopHeader = base;
+		m_numIterations = 0;
+		m_numIterationsSet = false;
+		m_isAbsolute = false;
 	}
 	
 	public LoopNode(Set<Node> loops, Node base) {
 		super();
+		m_loopHeader = base;
 		m_loops = new ArrayList<Node>();
-		for(Node loop : loops){
+		for (Node loop : loops) {
 			m_loops.add(loop);
 		}
-		m_loopHeader = base;
+		m_numIterations = 0;
+		m_isAbsolute = false;
+		m_numIterationsSet = false;
 	}
 
 	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
 		LoopNode ln = new LoopNode();
-		for(Node loop : m_loops){
+		for (Node loop : m_loops) {
 			Node clone = loop.deepClone(startPcs);
 			ln.m_loops.add(clone);
 		}
@@ -53,7 +67,6 @@ public class LoopNode extends Node {
 	}	
 
 	public double getTimeTaken(Case c) {
-
 		double time = 0;
 		for (Node node : m_loops) {
 			time += node.getTimeTaken(c);
@@ -142,9 +155,26 @@ public class LoopNode extends Node {
 	
 	public void setNumIterations(long numIterations) {
 		m_numIterations = numIterations;
+		setNumIterationsSet(true);
 	}
 	
 	public long getNumIterations() {
 		return m_numIterations;
+	}
+
+	public void setNumIterationsSet(boolean numIterationsSet) {
+		m_numIterationsSet = numIterationsSet;
+	}
+	
+	public boolean getNumIterationsSet() {
+		return m_numIterationsSet;
+	}
+	
+	public void setScope(boolean isAbsolute) {
+		m_isAbsolute = isAbsolute;
+	}
+	
+	public boolean getScope() {
+		return m_isAbsolute;
 	}
 }

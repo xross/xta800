@@ -47,10 +47,24 @@ public class StructureGraph {
 	}
 
 	public boolean unsetLoopMaxIterations(Reference reference) {
+		Collection<Node> nodes = getLoopNodes(reference);
+		if (nodes.size() > 0) {
+		    for (Node node : nodes) {
+			    ((LoopNode)node).setNumIterationsSet(false);
+		    }
+		    return true;
+		}
 		return false;
 	}
 	
-	public boolean setLoopScope(Reference reference, boolean scope) {
+	public boolean setLoopScope(Reference reference, boolean isAbsolute) {
+		Collection<Node> nodes = getLoopNodes(reference);
+		if (nodes.size() > 0) {
+		    for (Node node : nodes) {
+			    ((LoopNode)node).setScope(isAbsolute);
+		    }
+		    return true;
+		}
 		return false;
 	}
 	
