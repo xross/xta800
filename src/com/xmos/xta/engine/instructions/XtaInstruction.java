@@ -1,13 +1,12 @@
 package com.xmos.xta.engine.instructions;
 
 import com.xmos.isa.Instruction;
-import com.xmos.xta.engine.Attributes;
 import com.xmos.xta.engine.Config;
 
 public abstract class XtaInstruction extends Instruction {
 	private String m_functionName;
     private int m_functionOffset;	
-    private Attributes m_numCycles;
+    private long m_numCycles;
     private int m_basicNumCycles;
     private Config m_config;
     
@@ -22,9 +21,9 @@ public abstract class XtaInstruction extends Instruction {
 		super(nmenonic, opcode, pc, numBytes, isLoadStore, canPause);
 		m_functionName = null;
 		m_functionOffset = 0;
-		m_numCycles = new Attributes();
+		m_numCycles = 0;
 		m_basicNumCycles = numCycles;
-		m_numCycles.setNumIterations(numCycles);
+		m_numCycles = numCycles;
 		m_config = config;
 		m_isUnknown = canPause;
 		m_basicBlockId = 0;
@@ -65,20 +64,20 @@ public abstract class XtaInstruction extends Instruction {
 		// Makes sure the user cannot configure the instruction to take
 		// less time than is physically possible.
 		if (numCycles > m_basicNumCycles) {
-		    m_numCycles.setNumIterations(numCycles);
+		    m_numCycles = numCycles;
 		}
 		else {
-		    m_numCycles.setNumIterations(m_basicNumCycles);
+		    m_numCycles = m_basicNumCycles;
 		}
 		m_isUnknown = false;
 	}
 	
 	public long getNumCycles() {
-		return m_numCycles.getNumIterations();
+		return m_numCycles;
 	}
 
 	public void resetNumCycles() {
-	    m_numCycles.setNumIterations(m_basicNumCycles);
+	    m_numCycles = m_basicNumCycles;
 	    m_isUnknown = true;
 	}
 	
@@ -89,7 +88,7 @@ public abstract class XtaInstruction extends Instruction {
 	
 	public double getTimeTaken() {
     	int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
-        return ((double)(threadFactor * 1000) / (double)m_config.m_frequency) * m_numCycles.getNumIterations();
+        return ((double)(threadFactor * 1000) / (double)m_config.m_frequency) * m_numCycles;
 	}
 	
 	public boolean isUnknown() {

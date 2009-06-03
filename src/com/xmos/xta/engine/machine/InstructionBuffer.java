@@ -1,4 +1,4 @@
-package com.xmos.xta.engine;
+package com.xmos.xta.engine.machine;
 
 public class InstructionBuffer {
 	

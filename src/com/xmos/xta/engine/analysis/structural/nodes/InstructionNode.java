@@ -66,7 +66,7 @@ public class InstructionNode extends Node {
 		return inst;
 	}
 
-	public Set<Integer> getPCsCovered() {
+	public Set<Integer> getPCs() {
 		Set<Integer> pcs = new HashSet<Integer>();
 		pcs.add(m_inst.getPc());
 		return pcs;

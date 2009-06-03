@@ -357,11 +357,14 @@ public class Engine implements Notifier {
     }
 	
 	public void findInstancesOfPc(int pc){
+/*
 		Map<Integer, HashSet<Node>> pcToStruct = buildPcMap();
 		for(Node node : pcToStruct.get(pc)){
 			System.out.println("0x" + Integer.toHexString(pc) + " -> node " + node.getId());
+
 		}
 		System.out.println();
+		*/
 	}
 	
 	public Progress getProgress() {
@@ -489,24 +492,24 @@ public class Engine implements Notifier {
 	public int getNumThreads() {
 		return m_config.m_numThreads;
 	}
-	
+
 	public boolean setLoopIterations(int routeId, int pc, long iterations) {
 		return false;
 	}
 
 	public boolean setLoopMaxIterations(String refString, long iterations) {		
-		Reference ref = ReferenceFactory.createReference(
+		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.SRCLABEL_REF);
-		if (!resolveRefernece(ref)) {
+		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		return false;
+		return getStructureGraph().setLoopMaxIterations(reference, iterations);
 	}
-	
+
 	public boolean setLoopScope(int routeId, int pc, boolean absolute) {
 		return false;
 	}
-	
+
 	public boolean unsetLoopIterations(int routeId, int pc) {
 		return false;
 	}

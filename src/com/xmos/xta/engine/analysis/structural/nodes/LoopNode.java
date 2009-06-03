@@ -10,7 +10,6 @@ import java.util.Set;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class LoopNode extends Node {
-	
 	private List<Node> m_loops;
 	private Node m_loopHeader;
 	
@@ -93,10 +92,10 @@ public class LoopNode extends Node {
 		return insts;
 	}
 
-	public Set<Integer> getPCsCovered() {
-		Set<Integer> pcs = new HashSet<Integer>(m_loopHeader.getPCsCovered());
+	public Set<Integer> getPCs() {
+		Set<Integer> pcs = new HashSet<Integer>(m_loopHeader.getPCs());
 		for(Node loop : m_loops){
-			pcs.addAll(loop.getPCsCovered());
+			pcs.addAll(loop.getPCs());
 		}
 		return pcs;
 	}
