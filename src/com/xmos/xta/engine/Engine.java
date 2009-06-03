@@ -280,11 +280,13 @@ public class Engine implements Notifier {
 
 	public void findInstancesOfPc(int pc){
 		StructureGraph sg = m_structuralGraph.get(m_nodeId, m_coreId);
-		for(Node thread : sg.getThreads()){
-			if(thread.getPCsCovered().contains(pc)){
-				System.out.println(pc +" is contained in thread " + thread);
-			}
+		
+		for (Node thread : sg.getThreads()) {
+			
 		}
+		
+		
+		
 	}
 	
 	public Progress getProgress() {
