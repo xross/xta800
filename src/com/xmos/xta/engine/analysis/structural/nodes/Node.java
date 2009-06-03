@@ -31,7 +31,7 @@ public abstract class Node implements Comparable<Node>{
 	/**
 	 * this returns a set of all the PCs covered by the node regardless of the way its set up
 	 */
-	public abstract Set<Integer> getPCsCovered();
+	public abstract Set<Integer> getPCs();
 	public abstract List<XtaInstruction> getInstructions();
 	public abstract Collection<Node> getContaintedNodes();	
 	public abstract String getFunctionName();

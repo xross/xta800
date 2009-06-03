@@ -9,7 +9,6 @@ import java.util.Set;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class PathNode extends Node {
-
 	List<Node> m_nodes;
 	
 	public PathNode(List<Node> nodes) {
@@ -74,10 +73,10 @@ public class PathNode extends Node {
 		return list;
 	}
 
-	public Set<Integer> getPCsCovered() {
+	public Set<Integer> getPCs() {
 		Set<Integer> pcs = new HashSet<Integer>();
 		for(Node node : m_nodes){
-			pcs.addAll(node.getPCsCovered());
+			pcs.addAll(node.getPCs());
 		}
 		return pcs;
 	}

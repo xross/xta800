@@ -73,10 +73,10 @@ public class SectionNode extends Node {
 		return new LinkedList<XtaInstruction>();
 	}
 
-	public Set<Integer> getPCsCovered() {
+	public Set<Integer> getPCs() {
 		Set<Integer> pcs = new HashSet<Integer>();
 		for(Node node : m_options){
-			pcs.addAll(node.getPCsCovered());
+			pcs.addAll(node.getPCs());
 		}
 		return pcs;
 	}

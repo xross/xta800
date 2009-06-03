@@ -10,8 +10,7 @@ import java.util.Set;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class TerminalNode extends Node {
-	Collection<Node> m_terminals;
-	Node m_selectedTerminal;
+	private Collection<Node> m_terminals;
 	
 	public TerminalNode(Collection<Node> terminals){
 		m_terminals = new HashSet<Node>(terminals);
@@ -65,10 +64,10 @@ public class TerminalNode extends Node {
 		return insts;
 	}
 
-	public Set<Integer> getPCsCovered() {
+	public Set<Integer> getPCs() {
 		Set<Integer> pcs = new HashSet<Integer>();
 		for(Node node : m_terminals){
-			pcs.addAll(node.getPCsCovered());
+			pcs.addAll(node.getPCs());
 		}
 		return pcs;
 	}

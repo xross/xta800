@@ -10,7 +10,6 @@ import java.util.Set;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class FunctionNode extends Node {
-
 	private String m_functionName;
 	private Node m_function;
 	private static int functionId;
@@ -145,12 +144,12 @@ public class FunctionNode extends Node {
 		}
 	}
 
-	public Set<Integer> getPCsCovered() {
+	public Set<Integer> getPCs() {
 		
 		if(m_function == null){
 			return new HashSet<Integer>();
 		} else {
-			return m_function.getPCsCovered();
+			return m_function.getPCs();
 		}
 		
 	}

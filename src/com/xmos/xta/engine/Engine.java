@@ -289,7 +289,7 @@ public class Engine implements Notifier {
 	public void findInstancesOfPc(int pc){
 		StructureGraph sg = m_structuralGraph.get(m_nodeId, m_coreId);
 		for(Node thread : sg.getThreads()){
-			if(thread.getPCsCovered().contains(pc)){
+			if(thread.getPCs().contains(pc)){
 				System.out.println(pc +" is contained in thread " + thread);
 			}
 		}
@@ -420,24 +420,24 @@ public class Engine implements Notifier {
 	public int getNumThreads() {
 		return m_config.m_numThreads;
 	}
-	
+
 	public boolean setLoopIterations(int routeId, int pc, long iterations) {
 		return false;
 	}
 
 	public boolean setLoopMaxIterations(String refString, long iterations) {		
-		Reference ref = ReferenceFactory.createReference(
+		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.SRCLABEL_REF);
-		if (!resolveRefernece(ref)) {
+		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		return false;
+		return getStructureGraph().setLoopMaxIterations(reference, iterations);
 	}
-	
+
 	public boolean setLoopScope(int routeId, int pc, boolean absolute) {
 		return false;
 	}
-	
+
 	public boolean unsetLoopIterations(int routeId, int pc) {
 		return false;
 	}
