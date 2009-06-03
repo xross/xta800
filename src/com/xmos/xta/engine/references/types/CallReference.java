@@ -1,4 +1,4 @@
-package com.xmos.xta.engine.references;
+package com.xmos.xta.engine.references.types;
 
 import java.util.Map;
 
@@ -6,7 +6,7 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.sections.CodePointInfo;
 import com.xmos.xta.engine.sections.CodePointTableInfo;
 
-public class CallReference extends Reference {
+public class CallReference extends ReferenceType {
 	CallReference(String ref) {
 		super(ref);
 	}

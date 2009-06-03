@@ -1,8 +1,8 @@
-package com.xmos.xta.engine.references;
+package com.xmos.xta.engine.references.types;
 
 import com.xmos.xta.engine.Engine;
 
-public class ErrorReference extends Reference {
+public class ErrorReference extends ReferenceType {
 	ErrorReference(String ref) {
 		super(ref);
 	}

@@ -47,7 +47,7 @@ import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
-import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.engine.sections.CodePointTableInfo;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.engine.unknowns.Unknown;

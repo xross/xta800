@@ -27,7 +27,8 @@ import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
-import com.xmos.xta.engine.references.ReferenceFactory.ReferenceClass;
+import com.xmos.xta.engine.references.types.ReferenceTypeFactory;
+import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.engine.sections.CodePointInfo;
 import com.xmos.xta.engine.sections.CodePointTableInfo;
 import com.xmos.xta.engine.sections.Sections;
@@ -78,7 +79,7 @@ public class Engine implements Notifier {
 		m_constraint = ConstraintFactory.createConstraint(this, "");
 		m_sections = new Sections();
 
-		ReferenceFactory.setEngine(this);
+		ReferenceTypeFactory.setEngine(this);
 	}
 
 
@@ -333,11 +334,11 @@ public class Engine implements Notifier {
 					"Node: %d, Core: %d image not found in file: %s", m_nodeId,
 					m_coreId, m_executableFile));
 			return false;
-		} else if (!resolveRefernece(fromRef, this)) {
+		} else if (!resolveRefernece(fromRef)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", from));
 			return false;
-		} else if (!resolveRefernece(toRef, this)) {
+		} else if (!resolveRefernece(toRef)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", to));
 			return false;
@@ -413,67 +414,37 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean setLoopIterations(int routeId, int pc, long iterations) {
-		Route route = getRoute(routeId);
-		if (route == null)		
-		    return false;
-		
-		if (route.setLoopIterations(pc, new Long(iterations))) {
-			notifyLoopsUpdated();
-			return true;
-		}
 		return false;
 	}
 
-	public boolean setLoopMaxIterations(int routeId, int pc, long iterations) {				
-		Route route = getRoute(routeId);						
-		if (route == null) 
+	public boolean setLoopMaxIterations(String refString, long iterations) {		
+		Reference ref = ReferenceFactory.createReference(
+				refString, ReferenceClass.SRCLABEL_REF);
+		if (!resolveRefernece(ref)) {
 			return false;
-			
-		if (route.setLoopMaxIterations(pc, new Long(iterations))) {
-			notifyLoopsUpdated();
-			return true;
 		}
 		return false;
 	}
 	
 	public boolean setLoopScope(int routeId, int pc, boolean absolute) {
-		Route route = getRoute(routeId);		
-		if (route == null) 
-			return false;
-		
-		if (route.setLoopScope(pc, absolute)) {
-			notifyLoopsUpdated();
-			return true;
-		}
 		return false;
 	}
 	
 	public boolean unsetLoopIterations(int routeId, int pc) {
-		Route route = getRoute(routeId);
-		if (route == null)		
-		    return false;
-		
-		if (route.setLoopIterations(pc, null)) {
-			notifyLoopsUpdated();
-			return true;
-		}
 		return false;
 	}
 
-	public boolean unsetLoopMaxIterations(int routeId, int pc) {				
-		Route route = getRoute(routeId);						
-		if (route == null) 
+	public boolean unsetLoopMaxIterations(String refString) {				
+		Reference ref = ReferenceFactory.createReference(
+				refString, ReferenceClass.SRCLABEL_REF);
+		if (!resolveRefernece(ref)) {
 			return false;
-			
-		if (route.setLoopMaxIterations(pc, null)) {
-			notifyLoopsUpdated();
-			return true;
-		}
+		}		
 		return false;
 	}
 	
 	public boolean setInstructionTimeTaken(Reference ref, double timeTaken) {
-		if (!resolveRefernece(ref, this)) {
+		if (!resolveRefernece(ref)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", ref.getRef()));
 			return false;
@@ -498,7 +469,7 @@ public class Engine implements Notifier {
 	}
 
 	public boolean setInstructionNumCycles(Reference ref, long numCycles) {
-		if (!resolveRefernece(ref, this)) {
+		if (!resolveRefernece(ref)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", ref.getRef()));
 			return false;
@@ -623,10 +594,10 @@ public class Engine implements Notifier {
 	}
 			
 	public boolean addBranch(Reference fromRef, Reference toRef) {
-		if (!resolveRefernece(fromRef, this)) {
+		if (!resolveRefernece(fromRef)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", fromRef.getRef()));
 			return false;
-		} else if (!resolveRefernece(toRef, this)) {
+		} else if (!resolveRefernece(toRef)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", toRef.getRef()));
 			return false;
 		}		
@@ -640,7 +611,7 @@ public class Engine implements Notifier {
 	}
 
 	public boolean removeBranch(Reference fromRef) {
-		if (!resolveRefernece(fromRef, this)) {
+		if (!resolveRefernece(fromRef)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", fromRef.getRef()));
 			return false;
 		}
@@ -730,7 +701,7 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean addThreadStartPoint(Reference ref) {
-		if (!resolveRefernece(ref, this)) {
+		if (!resolveRefernece(ref)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
 			return false;
 		}		
@@ -738,7 +709,7 @@ public class Engine implements Notifier {
 	}
 
 	public boolean removeThreadStartPoint(Reference ref) {
-		if (!resolveRefernece(ref, this)) {
+		if (!resolveRefernece(ref)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
 			return false;
 		}		
@@ -750,7 +721,7 @@ public class Engine implements Notifier {
 	}	
 
 	public boolean addThreadStopPoint(Reference ref) {
-		if (!resolveRefernece(ref, this)) {
+		if (!resolveRefernece(ref)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
 			return false;
 		}				
@@ -758,7 +729,7 @@ public class Engine implements Notifier {
 	}
 
 	public boolean removeThreadStopPoint(Reference ref) {
-		if (!resolveRefernece(ref, this)) {
+		if (!resolveRefernece(ref)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
 			return false;
 		}		
@@ -894,26 +865,20 @@ public class Engine implements Notifier {
 		return false;
 	}
 
-	private boolean resolveRefernece(Reference ref, Engine engine) {
-		return ref.resolve(engine, m_nodeId, m_coreId);
+	private boolean resolveRefernece(Reference ref) {
+		return ref.resolve(this, m_nodeId, m_coreId);
 	}
-	
-	private void notifyLoopsUpdated() {        
-		refreshRouteStats();
-	    notify(Notifier.NOTIFY_UPDATE_STATE, "");
-	    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-    }
-	
+		
 	private void refreshRouteStats() {
 		// TODO
 	}	
 	
 	private boolean checkAddParameters(String label, Reference ref, String type) {
-		if (!resolveRefernece(ref, this)) {
+		if (!resolveRefernece(ref)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
 			return false;
 		}
-		if (ReferenceFactory.isPcString(label)) {
+		if (ReferenceTypeFactory.isPcString(label)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a %s: %s", type, label));
 			return false;
 		}				

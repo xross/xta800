@@ -1,9 +1,9 @@
-package com.xmos.xta.engine.references;
+package com.xmos.xta.engine.references.types;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.sections.CodePointTableInfo;
 
-public class EndpointFileLineReference extends Reference {
+public class EndpointFileLineReference extends ReferenceType {
     public static final String TYPE = "ENDPOINT";
 
     EndpointFileLineReference(String ref) {
@@ -12,8 +12,8 @@ public class EndpointFileLineReference extends Reference {
 
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
     	String ref  = getRef();
-		String fileName = ReferenceFactory.getFileName(ref);
-        int lineNumber  = ReferenceFactory.getLineNumber(ref);		
+		String fileName = ReferenceTypeFactory.getFileName(ref);
+        int lineNumber  = ReferenceTypeFactory.getLineNumber(ref);		
 
 		for (CodePointTableInfo info : engine.getEndpointTable().values()) {
             if (info.getFileName().equals(fileName) &&
