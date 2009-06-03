@@ -38,7 +38,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;

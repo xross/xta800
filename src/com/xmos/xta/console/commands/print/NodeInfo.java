@@ -6,10 +6,10 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.analysis.StructureGraph;
-import com.xmos.xta.engine.analysis.nodes.Node;
-import com.xmos.xta.engine.analysis.nodes.NodeTraverser;
-import com.xmos.xta.engine.analysis.nodes.Node.Case;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.NodeTraverser;
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.engine.analysis.structural.StructureGraph;
 
 public class NodeInfo extends Command {
 	private int m_nodeId;

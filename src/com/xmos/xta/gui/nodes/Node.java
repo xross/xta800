@@ -7,7 +7,7 @@ import java.util.Vector;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Shell;
 
-import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.gui.views.viewnode.StructureNode;
 import com.xmos.xta.gui.views.viewnode.ViewNode;

@@ -4,8 +4,8 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Route;
-import com.xmos.xta.engine.RouteTiming;
+import com.xmos.xta.engine.analysis.routes.Route;
+import com.xmos.xta.engine.analysis.routes.RouteTiming;
 
 public class Summary extends Command {
     private int m_verbosity;

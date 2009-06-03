@@ -5,7 +5,7 @@ import java.io.File;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.analysis.routes.Route;
 
 public abstract class Command {
     public enum IdType {

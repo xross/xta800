@@ -10,7 +10,7 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Progress;
-import com.xmos.xta.engine.Route;
+import com.xmos.xta.engine.analysis.routes.Route;
 
 public class Status extends Command {
 	public Status() {
