@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NodeCoreCollection<E> {
-
 	private Map<String, E> m_collectedObjects;
 	
 	public NodeCoreCollection(){
@@ -21,6 +20,5 @@ public class NodeCoreCollection<E> {
 	
 	private String nodeCoreToString(int nodeId, int coreId){
 		return nodeId + ":" + coreId;
-	}
-	
+	}	
 }

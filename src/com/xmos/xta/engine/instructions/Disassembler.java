@@ -1,4 +1,4 @@
-package com.xmos.xta.engine;
+package com.xmos.xta.engine.instructions;
 
 import java.util.HashMap;
 import java.util.Vector;
@@ -7,8 +7,7 @@ import com.xmos.isa.Instruction;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
-import com.xmos.xta.engine.instructions.XtaInstruction;
-import com.xmos.xta.engine.instructions.XtaInstructionDecoder;
+import com.xmos.xta.engine.Config;
 
 public class Disassembler {      
 	public static Vector<Instruction> disassemble(

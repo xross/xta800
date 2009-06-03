@@ -13,8 +13,8 @@ import com.xmos.xeobject.Function;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.commands.Command;
-import com.xmos.xta.engine.Disassembler;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.instructions.Disassembler;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class AsmDisplayer {

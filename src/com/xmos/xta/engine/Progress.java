@@ -44,7 +44,6 @@ public class Progress {
     }
     
     void incr() {    	
-    	//assert(m_curValue < m_maxValue);
     	++m_curValue;
     }
     
