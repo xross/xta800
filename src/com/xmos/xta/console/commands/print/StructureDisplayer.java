@@ -11,6 +11,7 @@ import com.xmos.xta.engine.analysis.structural.StructureGraph;
 
 public class StructureDisplayer {
 
+	private final static boolean DEBUG = true;
 	private Engine m_engine;
 	private Console m_console;
 
@@ -30,6 +31,10 @@ public class StructureDisplayer {
 
 					String nodeName = String.format("block(%d)", node.getId());
 					m_console.display(String.format("%-14s", nodeName));
+					if (DEBUG && node.getParent()!= null && node.getParent().whatsNext(node) != null){
+						m_console.display(node.getParent().whatsNext(node).toString());
+					}
+					
 					m_console.display(String.format(" : %.1fns\n", 
 							node.getTimeTaken(Case.WORST)));
 					return true;
@@ -40,6 +45,9 @@ public class StructureDisplayer {
 					printIndent(depth);
 					String nodeName = String.format("function(%d)", node.getId());
 					m_console.display(String.format("%-14s (%s)", nodeName, node.getFunctionName()));
+					if (DEBUG && node.getParent()!= null && node.getParent().whatsNext(node) != null){
+						m_console.display(node.getParent().whatsNext(node).toString());
+					}
 					m_console.display(String.format(" : %.1fns\n", 
 							node.getTimeTaken(Case.WORST)));						
 					return true;
@@ -49,7 +57,10 @@ public class StructureDisplayer {
 					printIndent(depth);
 					String nodeName = String.format("instruction(%d)", node.getId());
 					m_console.display(String.format("%-14s", nodeName));
-					m_console.display(node.toString());
+					if (DEBUG && node.getParent()!= null && node.getParent().whatsNext(node) != null){
+						m_console.display(node.getInstructions().toString());
+						m_console.display(node.getParent().whatsNext(node).toString());
+					}
 					m_console.display(String.format(" : %.1fns\n", 
 							node.getTimeTaken(Case.WORST)));			
 								
@@ -60,6 +71,9 @@ public class StructureDisplayer {
 					printIndent(depth);
 					String nodeName = String.format("loop(%d)", node.getId());
 					m_console.display(String.format("%-14s", nodeName));
+					if (DEBUG && node.getParent()!= null && node.getParent().whatsNext(node) != null){
+						m_console.display(node.getParent().whatsNext(node).toString());
+					}
 					m_console.display(String.format(" : %.1fns\n", 
 							node.getTimeTaken(Case.WORST)));						
 					return true;
@@ -69,6 +83,9 @@ public class StructureDisplayer {
 					printIndent(depth);
 					String nodeName = String.format("path(%d)", node.getId());
 					m_console.display(String.format("%-14s", nodeName));
+					if (DEBUG && node.getParent()!= null && node.getParent().whatsNext(node) != null){
+						m_console.display(node.getParent().whatsNext(node).toString());
+					}
 					m_console.display(String.format(" : %.1fns\n", 
 							node.getTimeTaken(Case.WORST)));						
 					return true;
@@ -78,6 +95,9 @@ public class StructureDisplayer {
 					printIndent(depth);
 					String nodeName = String.format("section(%d)", node.getId());
 					m_console.display(String.format("%-14s", nodeName));
+					if (DEBUG && node.getParent()!= null && node.getParent().whatsNext(node) != null){
+						m_console.display(node.getParent().whatsNext(node).toString());
+					}
 					m_console.display(String.format(" : %.1fns\n", 
 							node.getTimeTaken(Case.WORST)));						
 					return true;
@@ -87,6 +107,9 @@ public class StructureDisplayer {
 					printIndent(depth);
 					String nodeName = String.format("terminal(%d)", node.getId());
 					m_console.display(String.format("%-14s", nodeName));
+					if (DEBUG && node.getParent()!= null && node.getParent().whatsNext(node) != null){
+						m_console.display(node.getParent().whatsNext(node).toString());
+					}
 					m_console.display(String.format(" : %.1fns\n", 
 							node.getTimeTaken(Case.WORST)));						
 					return true;

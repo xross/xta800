@@ -100,4 +100,12 @@ public class TerminalNode extends Node {
 	public String toString(){
 		return "Terminal" + m_id;
 	}
+
+	public Collection<Node> getChildern() {
+		return m_terminals;
+	}
+
+	public Collection<Node> whatsNext(Node node) {
+		return getParent().whatsNext(this);
+	}
 }

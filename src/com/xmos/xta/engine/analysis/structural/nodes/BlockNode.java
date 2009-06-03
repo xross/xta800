@@ -117,4 +117,20 @@ public class BlockNode extends Node {
 	public String toString(){
 		return "Block" + m_id;
 	}
+
+	public Collection<Node> getChildern() {
+		return m_insts;
+	}
+
+	public Collection<Node> whatsNext(Node node) {
+		//assert(m_insts.contains(node));
+		int index = m_insts.indexOf(node);
+		if(index < m_insts.size()-1){
+			Collection<Node> next = new HashSet<Node>();
+			next.add(m_insts.get(index+1));
+			return next;
+		} else {
+			return getParent().whatsNext(this);
+		}
+	}
 }

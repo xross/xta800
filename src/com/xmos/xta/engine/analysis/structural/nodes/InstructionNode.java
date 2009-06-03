@@ -47,7 +47,7 @@ public class InstructionNode extends Node {
 	}
 
 	public String toString(){
-		return m_inst.toString();
+		return "instruction " + m_id;
 	}
 	
 	public Collection<Node> getContaintedNodes() {
@@ -86,5 +86,17 @@ public class InstructionNode extends Node {
 
 	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
 		return clone();
+	}
+
+	public Collection<Node> getChildern() {
+		return new HashSet<Node>();
+	}
+
+	public Collection<Node> whatsNext(Node node) {
+		return null;
 	}		
+	
+	public boolean isInstruction() {
+		return true;
+	}
 }

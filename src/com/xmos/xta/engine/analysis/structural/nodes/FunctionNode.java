@@ -174,4 +174,19 @@ public class FunctionNode extends Node {
 		}
 	}
 
+	public Collection<Node> getChildern() {
+		Collection<Node> children = new HashSet<Node>();
+		if(m_function!= null){
+			children.add(m_function);
+		}
+		return children;
+	}
+	
+	public Collection<Node> whatsNext(Node node) {
+		if(getParent() != null){
+			return getParent().whatsNext(this);
+		}
+		return null;
+	}
+
 }
