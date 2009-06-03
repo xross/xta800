@@ -4,14 +4,17 @@ import java.util.Collection;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.analysis.structural.nodes.LoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.NodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 
+
 public class StructureDisplayer {
 
 	private final static boolean DEBUG = true;
+
 	private Engine m_engine;
 	private Console m_console;
 
@@ -62,8 +65,7 @@ public class StructureDisplayer {
 						m_console.display(node.getParent().whatsNext(node).toString());
 					}
 					m_console.display(String.format(" : %.1fns\n", 
-							node.getTimeTaken(Case.WORST)));			
-								
+							node.getTimeTaken(Case.WORST)));											
 					return true;
 				}
 
@@ -76,6 +78,7 @@ public class StructureDisplayer {
 					}
 					m_console.display(String.format(" : %.1fns\n", 
 							node.getTimeTaken(Case.WORST)));						
+
 					return true;
 				}
 

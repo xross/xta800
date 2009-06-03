@@ -546,10 +546,24 @@ public class Engine implements Notifier {
 		return m_config.m_numThreads;
 	}
 
-	public boolean setLoopIterations(int routeId, int pc, long iterations) {
-		return false;
+	public boolean setLoopIterations(String refString, long iterations) {
+		Reference reference = ReferenceFactory.createReference(
+				refString, ReferenceClass.SRCLABEL_REF);
+		if (!resolveRefernece(reference)) {
+			return false;
+		}
+		return getStructureGraph().setLoopIterations(reference, iterations);
 	}
 
+	public boolean unsetLoopIterations(String refString) {
+		Reference reference = ReferenceFactory.createReference(
+				refString, ReferenceClass.SRCLABEL_REF);
+		if (!resolveRefernece(reference)) {
+			return false;
+		}		
+		return getStructureGraph().unsetLoopIterations(reference);
+	}
+	
 	public boolean setLoopMaxIterations(String refString, long iterations) {		
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.SRCLABEL_REF);
@@ -559,21 +573,22 @@ public class Engine implements Notifier {
 		return getStructureGraph().setLoopMaxIterations(reference, iterations);
 	}
 
-	public boolean setLoopScope(int routeId, int pc, boolean absolute) {
-		return false;
-	}
-
-	public boolean unsetLoopIterations(int routeId, int pc) {
-		return false;
-	}
-
 	public boolean unsetLoopMaxIterations(String refString) {				
-		Reference ref = ReferenceFactory.createReference(
+		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.SRCLABEL_REF);
-		if (!resolveRefernece(ref)) {
+		if (!resolveRefernece(reference)) {
 			return false;
 		}		
-		return false;
+		return getStructureGraph().unsetLoopMaxIterations(reference);
+	}
+	
+	public boolean setLoopScope(String refString, boolean absolute) {
+		Reference reference = ReferenceFactory.createReference(
+				refString, ReferenceClass.SRCLABEL_REF);
+		if (!resolveRefernece(reference)) {
+			return false;
+		}
+		return getStructureGraph().setLoopScope(reference, absolute);
 	}
 	
 	public boolean setInstructionTimeTaken(Reference ref, double timeTaken) {

@@ -16,7 +16,6 @@ public abstract class Node implements Comparable<Node>{
 	Node m_parent;
 	Collection<Node> m_next;
 	
-	
 	boolean m_dominatorSetIsCompleteSet;
 	Set<Node> m_nextNodes;
 	Set<Node> m_prevNodes;
@@ -33,9 +32,6 @@ public abstract class Node implements Comparable<Node>{
 	public abstract long getNumInstructions(Case c);
 	public abstract long getNumFNops(Case c);	
 	
-	/**
-	 * this returns a set of all the PCs covered by the node regardless of the way its set up
-	 */
 	public abstract Set<Integer> getPCs();
 	public abstract List<XtaInstruction> getInstructions();
 	public abstract Collection<Node> getContaintedNodes();	
@@ -52,7 +48,7 @@ public abstract class Node implements Comparable<Node>{
 	public static int getNodeCount(){
 		return s_numNodes;
 	}
-			
+
 	public static void resetNodeCount() {
 		s_numNodes = 0;
 	}
@@ -152,8 +148,7 @@ public abstract class Node implements Comparable<Node>{
 	public void freeMemory() {
 		m_prevNodes = null;
 		m_nextNodes = null;
-		m_dominators = null;
-		
+		m_dominators = null;		
 	}
 	
 	public Node getParent(){

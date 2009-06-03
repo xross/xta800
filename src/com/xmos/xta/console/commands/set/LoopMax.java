@@ -97,13 +97,17 @@ public class LoopMax extends Command {
     	switch (m_operation) {
     	case SET:
     		if (!engine.setLoopMaxIterations(m_refString, m_iterations)) {
-        		console.display(String.format("Error: Failed to set max loop iterations on reference: %s\n", m_refString));    		
+        		console.display(String.format(
+        				"Error: Failed to set max loop iterations on reference: %s\n", 
+        				m_refString));    		
         	}
     		break;
     		
     	case UNSET:
     		if (!engine.unsetLoopMaxIterations(m_refString)) {
-        		console.display(String.format("Error: Failed to unset max loop iterations on reference: %d\n", m_refString));    		
+        		console.display(String.format(
+        				"Error: Failed to unset max loop iterations on reference: %d\n", 
+        				m_refString));    		
         	}
     		break;
     	}    							
