@@ -12,6 +12,8 @@ public abstract class Node implements Comparable<Node>{
 	static int s_numNodes;
 	
 	int m_id;
+	
+	
 	boolean m_dominatorSetIsCompleteSet;
 	Set<Node> m_nextNodes;
 	Set<Node> m_prevNodes;
@@ -139,5 +141,12 @@ public abstract class Node implements Comparable<Node>{
 	
 	public boolean isDominatorSetComplete(){
 		return m_dominatorSetIsCompleteSet;
+	}
+	
+	public void freeMemory() {
+		m_prevNodes = null;
+		m_nextNodes = null;
+		m_dominators = null;
+		
 	}
 }

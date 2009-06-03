@@ -34,7 +34,6 @@ public class Functions extends Command {
     public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
-    	
     	try {
      		return new Functions(getRouteId(args[index + 1]));
 	    } catch (NumberFormatException e) {

@@ -129,7 +129,7 @@ public class LoopNode extends Node {
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
 		if (!nodeTraverser.foundLoopNode(this, depth))
 			return;
-		
+		m_loopHeader.traverse(depth + 1, nodeTraverser);			
 		for (Node node : m_loops) {
 			node.traverse(depth + 1, nodeTraverser);			
 		}

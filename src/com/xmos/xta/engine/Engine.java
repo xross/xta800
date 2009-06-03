@@ -3,10 +3,12 @@ package com.xmos.xta.engine;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -24,6 +26,7 @@ import com.xmos.xta.engine.analysis.controlflow.InstructionDecoder;
 import com.xmos.xta.engine.analysis.controlflow.SuccessorAdder;
 import com.xmos.xta.engine.analysis.controlflow.ThreadHandler;
 import com.xmos.xta.engine.analysis.controlflow.UnreachableCodeFinder;
+import com.xmos.xta.engine.analysis.structural.nodes.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
@@ -270,6 +273,7 @@ public class Engine implements Notifier {
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
 			}		
 		}
+		
 		m_instructionDecoder = newInstructionDecoder;
 		m_sections = sections;
 		m_xeObjects = newXeObjects;
@@ -283,18 +287,81 @@ public class Engine implements Notifier {
 		
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
 		
+		findInstancesOfPc(0x100b4);
+		
+		findInstancesOfPc(0x100ce);
+
 		return true;
 	}
 
+	private Map<Integer, HashSet<Node>> buildPcMap(StructureGraph structureGraph) {
+    	final Map<Integer, HashSet<Node>> pcToNodes = new HashMap<Integer, HashSet<Node>>();
+		for (Node node : structureGraph.getThreads()) {
+		    node.traverse(0, new DefaultNodeTraverser() {
+				public boolean foundInstructionNode(Node node, int depth) {
+					HashSet<Node> map = pcToNodes.get(node.getStartPc());
+					if(map == null){
+						map = new HashSet<Node>();
+					}
+					map.add(node);
+					pcToNodes.put(node.getStartPc(), map);
+					return true;
+				}
+		    });
+		}				    	
+    	return pcToNodes;
+    }
+	
+	private void freeMemory(int nodeId, int coreId) {
+    	StructureGraph structureGraph = m_structuralGraph.get(nodeId, coreId);
+    	final Node previousNode = null;
+    	
+		for (Node node : structureGraph.getThreads()) {
+		    node.traverse(0, new DefaultNodeTraverser() {
+		    	public boolean foundBlockNode(Node node, int depth) {
+		    		node.freeMemory();
+		        	return true;
+		        }
+		        
+		        public boolean foundFunctionNode(Node node, int depth) {
+		        	node.freeMemory();
+		        	return true;
+		        }
+		        
+		        public boolean foundInstructionNode(Node node, int depth) {
+		        	return true;
+		        }
+		        
+		        public boolean foundPathNode(Node node, int depth) {
+		        	node.freeMemory();
+		        	return true;
+		        }
+		        
+		        public boolean foundLoopNode(Node node, int depth) {
+		        	node.freeMemory();
+		        	return true;
+		        }
+		        
+		        public boolean foundSectionNode(Node node, int depth) {
+		        	node.freeMemory();
+		        	return true;
+		        }
+		        
+		        public boolean foundTerminalNode(Node node, int depth) {
+		        	node.freeMemory();
+		        	return true;
+		        }
+		    });
+		}				    	
+    	return;
+    }
+	
 	public void findInstancesOfPc(int pc){
-		StructureGraph sg = m_structuralGraph.get(m_nodeId, m_coreId);
-		
-		for (Node thread : sg.getThreads()) {
-			
+		Map<Integer, HashSet<Node>> pcToStruct = buildPcMap();
+		for(Node node : pcToStruct.get(pc)){
+			System.out.println("0x" + Integer.toHexString(pc) + " -> node " + node.getId());
 		}
-		
-		
-		
+		System.out.println();
 	}
 	
 	public Progress getProgress() {

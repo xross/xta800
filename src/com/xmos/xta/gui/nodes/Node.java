@@ -94,6 +94,7 @@ public abstract class Node implements Comparable<Node> {
 		}
 		return covered;
 	}
+	
     public int getRouteId() {
     	Node parent = getParentNode();
     	if (parent != null)

@@ -1,18 +1,8 @@
 package com.xmos.xta.engine.analysis.routes;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
-import java.util.TreeSet;
-
 import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
@@ -20,14 +10,11 @@ import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.engine.references.Reference;
-import com.xmos.xta.engine.unknowns.PausableInstructionUnknown;
-import com.xmos.xta.engine.unknowns.LoopIterationsUnknown;
 import com.xmos.xta.engine.unknowns.Unknowns;
 
 @SuppressWarnings("serial")
 class AbortedException extends Exception {}
 
-@SuppressWarnings("unchecked")
 public class Route {
 	
     public static final int INVALID_ROUTE_ID = -1;
@@ -36,25 +23,18 @@ public class Route {
     enum RouteMode {
 		ABSLOUTE, FUNCTION
 	};
-	private static final int SR_IEBLE_SHIFT = 1;
-	private static final int SR_IEBLE_SIZE = 1; 
+
 
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR
 	}
-
-	public static final boolean DEBUG = false;
 	
 	private static int s_routeCount;
-	private static int s_pathCount;
-	
+
 	private StructureGraph m_structureGraph;
-	private boolean m_firstStep;
 	private int m_routeId;
 	private int m_startPc;
 	private RouteDescription m_description;
-	private InstructionMnemonics m_mnenonics;
-	private Engine m_engine;	
 	private RouteTiming m_routeTiming;
 	private boolean m_constrained;
 	private Unknowns m_unknowns;
@@ -67,17 +47,15 @@ public class Route {
 		s_routeCount = 0;
 	}
 	
-	public Route(Config config, Engine engine, int startPc, TreeSet<Integer> endPcs, 
+	public Route(Config config, Engine engine, int startPc, Set<Integer> endPcs, 
 			InstructionMnemonics mnenonics, RouteDescription description){
-		m_engine = engine;
+		
 		m_constraint = engine.getConstraint().clone();
 		m_startPc = startPc;
 		m_description = description;
-		m_mnenonics = mnenonics;
 		m_routeTiming = new RouteTiming(this, config, engine.getNodeId(), engine.getCoreId());
 		m_routeId = s_routeCount;
 		++s_routeCount;
-		s_pathCount = 0;
 		m_endPcs = new HashSet<Integer>();
 		m_pcsHit = new HashSet<Integer>();
 		m_unknowns = new Unknowns();
@@ -172,31 +150,6 @@ public class Route {
 		return m_description.getEndPoint();
 	}
 	
-	private void checkSupportedInstructions() {
-		// TODO
-		/*
-		//for (XtaInstruction inst : block.getInstructionTrimmed()){
-			
-			// Checks for threading instructions...
-			if (m_mnenonics.isSsync(inst))
-				block.addWarning(String.format("Ssync (multiple threads) not supported. Pc: 0x%08x", inst.getPc()));					
-			if (m_mnenonics.isMsync(inst))
-				block.addWarning(String.format("Msync (multiple threads) not supported. Pc: 0x%08x", inst.getPc()));				
-			if (m_mnenonics.isMjoin(inst)) {
-				block.addWarning(String.format("Mjoin (multiple threads) not supported. Pc: 0x%08x", inst.getPc()));
-			}
-			
-			// Checks for interrupt enable..
-			if (m_mnenonics.isSetSr(inst)) {	
-				int op1Field = inst.getOperandField("op1");
-				int shift = SR_IEBLE_SHIFT;
-				int mask = (1 << SR_IEBLE_SIZE) - 1;
-				if (((op1Field >> shift) & mask) == 1) 
-    				block.addWarning(String.format("Interrupt enable detected. Pc: 0x%08x", inst.getPc()));					
-			}			
-		}		
-		*/
-	}
 }
 		
 
