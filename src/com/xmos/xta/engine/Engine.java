@@ -378,21 +378,17 @@ public class Engine implements Notifier {
 		m_progress.resetState(Progress.State.PROCESSING_PATHS);
 		
 		route.analyse();		
-		/*
-		int numUnresolvedPaths = route.getUnresolvedPaths().size();
-		if (numUnresolvedPaths > 0) {
-			String plural = (numUnresolvedPaths == 1) ? "" : "s";
-			notify(Notifier.NOTIFY_ERROR, String.format("Found "
-					+ numUnresolvedPaths + " unresolved path" + plural));	
-			
+
 		if (route.getCompletedPaths().size() == 0) {
+			/*
 			if (route.wasConstrained()) {
 				notify(Notifier.NOTIFY_ERROR, "No valid paths of execution (constraints applied)");
 			} else {
 				notify(Notifier.NOTIFY_ERROR, "No valid paths of execution");
 			}
+			*/
 		}
-		*/
+		
 		m_routes.add(route);
 		setSelectedRoute(route);
 
