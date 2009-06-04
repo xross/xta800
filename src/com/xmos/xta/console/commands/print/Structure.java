@@ -70,9 +70,6 @@ public class Structure extends Command {
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
-
-	    if (!validateRouteId(engine, console, m_routeId))
-		    return;
 		
 	    Collection<Node> nodes = null;
 	    switch (m_mode) {
@@ -81,7 +78,9 @@ public class Structure extends Command {
 	    	break;
 	    	
 	    case ROUTE:
-	    	nodes = engine.getRoute(m_routeId).getStructureGraph().getThreads();
+	    	nodes = engine.getRoute(m_routeId).getCompletedPaths();
+		    if (!validateRouteId(engine, console, m_routeId))
+			    return;
 	    	break;	    	
 	    }
 	    

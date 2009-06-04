@@ -158,7 +158,9 @@ public abstract class Command {
     }
 
     protected boolean areArgsDone(String[] args, int i) {
-		if ((i >= args.length) || args[i].startsWith("-") || args[i].startsWith("\n"))
+		if ((i >= args.length) || 
+			(args[i].startsWith("-") && (args[i].length() > 1)) || 
+			args[i].startsWith("\n"))
 			return true;
 		return false;
 	}
