@@ -35,12 +35,9 @@ public class StructuralAnalysisEngine {
 		m_controlFlowGraph = controlFlowGraph;
 		m_cfgToStruct = new HashMap<FunctionNode, FunctionNode>();
 	}
+	
+	public StructuralAnalysisEngine() {}
 
-	/**
-	 * By the time this is called all the instructions successors should have
-	 * been set and all unknown branch and link targets should have a pseudo
-	 * function in place.
-	 */
 	public boolean analyse(Engine engine) {
 		m_functionStartPcs = new HashMap<Integer, FunctionNode>();
 		m_threadStartPcs = new HashMap<Integer, FunctionNode>();
@@ -156,7 +153,8 @@ public class StructuralAnalysisEngine {
 		}
 	}
 
-	private boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine) {
+	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine) {
+		
 		List<PatternMatcher> patternMatchers = new ArrayList<PatternMatcher>();
 		patternMatchers.add(new SelfLoopPattern());
 		patternMatchers.add(new LoopPatternMatcher());
@@ -169,7 +167,6 @@ public class StructuralAnalysisEngine {
 		boolean dominatorTreeUpToDate = false;
 
 		while (working) {
-
 			List<Node> postOrder = new LinkedList<Node>();
 			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
 			working = false;
@@ -194,6 +191,7 @@ public class StructuralAnalysisEngine {
 					break;
 			}
 		}
+
 		return true;
 	}
 
@@ -265,9 +263,21 @@ public class StructuralAnalysisEngine {
 		for (Node node : workingSet) {
 			total += node.getPrevNodes().size() - node.getNextNodes().size();
 		}
-		if (total != 0) {
-			return false;
-		}
 		return true;
 	}
+	/*
+	private static int g = 0;
+	private void dumpTree(Collection<Node> workingSet){
+		System.out.println("digraph g" + g++ + " {");
+		for(Node node : workingSet){
+			for(Node next : node.getNextNodes()){
+				System.out.println(node + " -> " + next + ";");
+			}
+		}
+		System.out.println("}");
+		for (Node node : workingSet) {
+			System.out.println(node + " prev: " +  node.getPrevNodes() + " next: "+ node.getNextNodes());
+		}
+	}
+	*/
 }
