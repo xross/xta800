@@ -119,4 +119,12 @@ public class SectionNode extends Node {
 	public String toString(){
 		return "Section" + m_id;
 	}
+
+	public Collection<Node> getChildern() {
+		return m_options;
+	}
+
+	public Collection<Node> whatsNext(Node node) {
+		return getParent().whatsNext(this);
+	}
 }

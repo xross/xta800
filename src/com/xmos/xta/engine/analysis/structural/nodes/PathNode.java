@@ -118,4 +118,20 @@ public class PathNode extends Node {
 	public String toString(){
 		return "Path" + m_id;
 	}
+
+	public Collection<Node> getChildern() {
+		return m_nodes;
+	}
+	
+	public Collection<Node> whatsNext(Node node) {
+		assert(m_nodes.contains(node));
+		int index = m_nodes.indexOf(node);
+		if(index < m_nodes.size()-1){
+			Collection<Node> next = new HashSet<Node>();
+			next.add(m_nodes.get(index+1));
+			return next;
+		} else {
+			return getParent().whatsNext(this);
+		}
+	}
 }

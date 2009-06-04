@@ -11,7 +11,11 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 public abstract class Node implements Comparable<Node>{
 	static int s_numNodes;
 	
-	int m_id;	
+	int m_id;
+	
+	Node m_parent;
+	Collection<Node> m_next;
+	
 	boolean m_dominatorSetIsCompleteSet;
 	Set<Node> m_nextNodes;
 	Set<Node> m_prevNodes;
@@ -38,6 +42,9 @@ public abstract class Node implements Comparable<Node>{
 	public abstract Node deepClone(Map<Integer, FunctionNode> startPcs);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
 
+	public abstract Collection<Node> getChildern();
+	public abstract Collection<Node> whatsNext(Node node);
+	
 	public static int getNodeCount(){
 		return s_numNodes;
 	}
@@ -143,4 +150,17 @@ public abstract class Node implements Comparable<Node>{
 		m_nextNodes = null;
 		m_dominators = null;		
 	}
+	
+	public Node getParent(){
+		return m_parent;
+	}
+	
+	public void setParent(Node node) {
+		m_parent = node;
+	}
+	
+	public boolean isInstruction() {
+		return false;
+	}
+	
 }

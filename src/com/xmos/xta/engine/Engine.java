@@ -271,6 +271,8 @@ public class Engine implements Notifier {
 				if(!sae.analyse(this))
 					return false;
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
+				freeMemory(sae.getStructureGraph());
+				markAllParents(sae.getStructureGraph());
 			}		
 		}
 		
@@ -287,13 +289,30 @@ public class Engine implements Notifier {
 		
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
 		
-		findInstancesOfPc(0x100b4);
-		
-		findInstancesOfPc(0x100ce);
+		Set<Integer> fromPcs = new HashSet<Integer>();
+		fromPcs.add(0x100b6);
+		Set<Integer> toPcs = new HashSet<Integer>();
+		toPcs.add(0x100ce);
+		analyse(fromPcs, toPcs);
 
 		return true;
 	}
 
+	
+	private void markAllParents(StructureGraph structureGraph){
+		for (Node node : structureGraph.getThreads()) {
+			mark(node);
+		}
+	}
+	
+	private void mark(Node node) {
+		for(Node child : node.getChildern()){
+			child.setParent(node);
+			mark(child);
+		}
+	}
+	
+	
 	private Map<Integer, HashSet<Node>> buildPcMap(StructureGraph structureGraph) {
     	final Map<Integer, HashSet<Node>> pcToNodes = new HashMap<Integer, HashSet<Node>>();
 		for (Node node : structureGraph.getThreads()) {
@@ -312,41 +331,33 @@ public class Engine implements Notifier {
     	return pcToNodes;
     }
 	
-	private void freeMemory(int nodeId, int coreId) {
-    	StructureGraph structureGraph = m_structuralGraph.get(nodeId, coreId);
-    	final Node previousNode = null;
-    	
+	//maybe this should be moved into the analysis
+	private void freeMemory(StructureGraph structureGraph) {	
 		for (Node node : structureGraph.getThreads()) {
 		    node.traverse(0, new DefaultNodeTraverser() {
 		    	public boolean foundBlockNode(Node node, int depth) {
 		    		node.freeMemory();
 		        	return true;
-		        }
-		        
+		    	}
 		        public boolean foundFunctionNode(Node node, int depth) {
 		        	node.freeMemory();
 		        	return true;
 		        }
-		        
 		        public boolean foundInstructionNode(Node node, int depth) {
 		        	return true;
 		        }
-		        
 		        public boolean foundPathNode(Node node, int depth) {
 		        	node.freeMemory();
 		        	return true;
 		        }
-		        
 		        public boolean foundLoopNode(Node node, int depth) {
 		        	node.freeMemory();
 		        	return true;
 		        }
-		        
 		        public boolean foundSectionNode(Node node, int depth) {
 		        	node.freeMemory();
 		        	return true;
 		        }
-		        
 		        public boolean foundTerminalNode(Node node, int depth) {
 		        	node.freeMemory();
 		        	return true;
@@ -356,15 +367,57 @@ public class Engine implements Notifier {
     	return;
     }
 	
-	public void findInstancesOfPc(int pc){
-/*
-		Map<Integer, HashSet<Node>> pcToStruct = buildPcMap();
-		for(Node node : pcToStruct.get(pc)){
-			System.out.println("0x" + Integer.toHexString(pc) + " -> node " + node.getId());
-
+	public void analyse(Collection<Integer> fromPcs, Collection<Integer> endPcs){
+		Collection<Node> startNodes = new HashSet<Node>(); 
+		Collection<Node> endNodes = new HashSet<Node>(); 
+		Map<Integer, HashSet<Node>> pcToStruct = buildPcMap(m_structuralGraph.get(m_nodeId, m_coreId));
+		
+		for(int from : fromPcs){
+			startNodes.addAll(pcToStruct.get(from));
 		}
-		System.out.println();
-		*/
+		for(int to : endPcs){
+			endNodes.addAll(pcToStruct.get(to));
+		}
+		
+		System.out.println(endNodes);
+		for(Node start : startNodes){
+			System.out.println("starting from " + start);
+			Collection<Node> setExplored = new HashSet<Node>();
+			explore(start, setExplored,  endPcs, endNodes);
+			System.out.println(setExplored);
+			System.out.println();
+		}
+		
+	}
+	
+	private void explore(Node node, Collection<Node> set, Collection<Integer> endPcs, Collection<Node> endNodes){
+		if(!set.contains(node)){
+			Set<Integer> pcs = new HashSet<Integer>(endPcs);
+			pcs.retainAll(node.getPCs());
+			//if the node does not contain the pc then just add the node
+			if(pcs.isEmpty()){
+				set.add(node);
+				if(node.getParent().whatsNext(node) != null){
+					for(Node next : node.getParent().whatsNext(node)){
+						explore(next, set, endPcs, endNodes);
+					}
+				}
+			} else {
+				
+				//if this is an instruction then add the node and we are done
+				if(endNodes.contains(node)){
+					set.add(node);
+					return;
+				} else {
+					//dont add the node and start to drop down until it is found.
+					for(Node children : node.getChildern()){
+						explore(children, set, endPcs, endNodes);
+					}
+				}
+				
+				
+			}
+		}
 	}
 	
 	public Progress getProgress() {

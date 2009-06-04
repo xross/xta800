@@ -28,6 +28,43 @@ public class StructureGraph {
 	}
 
 	public boolean setLoopIterations(Reference reference, long iterations) {
+/*
+		 - Find the node in the tree at which we want to assign the iteration count.		
+		 - Check that this node is within a loop node (by looking up). Fail if it is not.		
+		 - From this nodes loop node, clear all the done bits in all nodes below.
+		 - Call 'SetIterations' on the assignment node:
+		
+		 Node::setIterations(value) {
+		     if (!done) {
+		         Set the iteration value on this node.
+		         Mark this node as done.
+		         Call 'SetIterations' on all the children.
+		         Call 'SetIterations' on the parent.
+		     }
+		 }
+		
+		 The above implementation needs to be different depending on the type of node:
+	     
+		 SectionNode::setIterations(value) {
+	       if (!done) {
+    		   Set the iteration value on this node.
+	    	   Mark this node as done.
+	    	   
+	           if (none of the options are already done) {
+	               Call setIterations on the longest path.
+	           }
+	           Call 'setIterations' on the parent.
+	       }
+	     }
+	     
+		 LoopNode::setIterations(value) {
+	       if (!done) {
+		         Set the iteration value on this node.
+		         Mark this node as done.
+		         Call 'SetIterations' on all the children.
+	       }
+	     }
+*/		
 		return false;
 	}
 

@@ -15,7 +15,7 @@ public class LoopNode extends Node {
 	private long m_numIterations;
 	private boolean m_numIterationsSet;
 	private boolean m_isAbsolute;
-	
+
 	public LoopNode(LoopNode loop) {
 		super();
 		m_loopHeader = loop.m_loopHeader;
@@ -24,7 +24,7 @@ public class LoopNode extends Node {
 		m_numIterationsSet = false;
 		m_isAbsolute = false;
 	}
-	
+
 	public LoopNode() {
 		super();
 		m_loopHeader = null;
@@ -33,7 +33,7 @@ public class LoopNode extends Node {
 		m_numIterationsSet = false;
 		m_isAbsolute = false;
 	}
-	
+
 	public LoopNode(Node loop, Node base) {
 		super();
 		m_loopHeader = base;
@@ -43,7 +43,7 @@ public class LoopNode extends Node {
 		m_numIterationsSet = false;
 		m_isAbsolute = false;
 	}
-	
+
 	public LoopNode(Set<Node> loops, Node base) {
 		super();
 		m_loopHeader = base;
@@ -64,7 +64,7 @@ public class LoopNode extends Node {
 		}
 		ln.m_loopHeader = m_loopHeader.deepClone(startPcs);
 		return ln;
-	}	
+	}
 
 	public double getTimeTaken(Case c) {
 		double time = 0;
@@ -73,34 +73,34 @@ public class LoopNode extends Node {
 		}
 		return time;
 	}
-	
+
 	public long getNumCycles(Case c) {
 		long count = 0;
-   		for (Node node : m_loops) {
-    		count += node.getNumCycles(c);
-	    }
+		for (Node node : m_loops) {
+			count += node.getNumCycles(c);
+		}
 		return count;
 	}
 
 	public long getNumInstructions(Case c) {
-   		return getInstructions().size();
+		return getInstructions().size();
 	}
 
 	public long getNumFNops(Case c) {
 		long count = 0;
-   		for (Node node : m_loops) {
-    		count += node.getNumFNops(c);
-   		}
+		for (Node node : m_loops) {
+			count += node.getNumFNops(c);
+		}
 		return count;
-	}	
-	
+	}
+
 	public void addLoop(Node loop) {
 		m_loops.add(loop);
 	}
 
 	public List<XtaInstruction> getInstructions() {
 		List<XtaInstruction> insts = new ArrayList<XtaInstruction>(m_loopHeader.getInstructions());
-		for(Node al : m_loops){
+		for (Node al : m_loops) {
 			insts.addAll(al.getInstructions());
 		}
 		return insts;
@@ -108,7 +108,7 @@ public class LoopNode extends Node {
 
 	public Set<Integer> getPCs() {
 		Set<Integer> pcs = new HashSet<Integer>(m_loopHeader.getPCs());
-		for(Node loop : m_loops){
+		for (Node loop : m_loops) {
 			pcs.addAll(loop.getPCs());
 		}
 		return pcs;
@@ -119,9 +119,9 @@ public class LoopNode extends Node {
 	}
 
 	public Collection<Node> getContaintedNodes() {
-		Collection<Node> containedNodes = new HashSet<Node> ();
+		Collection<Node> containedNodes = new HashSet<Node>();
 		containedNodes.addAll(m_loopHeader.getContaintedNodes());
-		for (Node loop: m_loops) {
+		for (Node loop : m_loops) {
 			containedNodes.addAll(loop.getContaintedNodes());
 		}
 		return containedNodes;
@@ -130,7 +130,7 @@ public class LoopNode extends Node {
 	public String getFunctionName() {
 		return "";
 	}
-	
+
 	public boolean isFunction() {
 		return false;
 	}
@@ -145,13 +145,31 @@ public class LoopNode extends Node {
 
 		m_loopHeader.traverse(depth + 1, nodeTraverser);			
 		for (Node node : m_loops) {
-			node.traverse(depth + 1, nodeTraverser);			
+			node.traverse(depth + 1, nodeTraverser);
 		}
 	}
 
-	public String toString(){
+	public String toString() {
 		return "Loop" + m_id;
 	}
+
+	public Collection<Node> getChildern() {
+		Collection<Node> children = new HashSet<Node>(m_loops);
+		children.add(m_loopHeader);
+		return children;
+	}
+
+	public Collection<Node> whatsNext(Node node) {
+		Collection<Node> next = new HashSet<Node>();
+		if (m_loopHeader == node) {
+			next.addAll(getParent().whatsNext(this));
+			next.addAll(m_loops);
+		} else {
+			next.add(this);
+		}
+		return next;
+	}
+
 	
 	public void setNumIterations(long numIterations) {
 		m_numIterations = numIterations;
@@ -177,4 +195,5 @@ public class LoopNode extends Node {
 	public boolean getScope() {
 		return m_isAbsolute;
 	}
+
 }
