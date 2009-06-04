@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.analysis.structural.nodes.LoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.NodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;

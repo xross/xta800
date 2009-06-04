@@ -373,10 +373,14 @@ public class Engine implements Notifier {
 		Map<Integer, HashSet<Node>> pcToStruct = buildPcMap(m_structuralGraph.get(m_nodeId, m_coreId));
 		
 		for(int from : fromPcs){
+			if(pcToStruct.get(from)!= null){
 			startNodes.addAll(pcToStruct.get(from));
+			}
 		}
 		for(int to : endPcs){
+			if(pcToStruct.get(to)!= null){
 			endNodes.addAll(pcToStruct.get(to));
+			}
 		}
 		
 		System.out.println(endNodes);
