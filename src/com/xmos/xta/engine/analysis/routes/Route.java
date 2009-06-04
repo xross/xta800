@@ -5,12 +5,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
+import com.xmos.xta.engine.analysis.routes.RouteDescription.RouteMode;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.DefaultNodeTraverser;
+import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.constraint.Constraint;
@@ -21,84 +22,96 @@ class AbortedException extends Exception {
 }
 
 public class Route {
-
+	
+	private static int s_routeCount;
 	public static final int INVALID_ROUTE_ID = -1;
 	public static int WORST_CASE_PATH_ID = -2;
-	private static final boolean DEBUG = false;
-
-	enum RouteMode {
-		ABSLOUTE, FUNCTION
-	};
-
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR
 	}
 
-	private static int s_routeCount;
-
 	private int m_routeId;
 	private RouteDescription m_description;
 	private Set<Integer> m_pcsHit;
-	private Set<Integer> m_startPcs;
-	private Set<Integer> m_endPcs;
 	private StructureGraph m_structureGraph;
 	private Collection<Node> m_routes;
 	private Engine m_engine;
-
+	private RouteTiming m_routeTiming;
+	private Unknowns m_unknowns;
+	private Constraint m_constraint;
+	
 	public static void resetRouteCount() {
 		s_routeCount = 0;
 	}
 
-	public Route(Config config, Engine engine, StructureGraph structureGraph, Set<Integer> startPcs, Set<Integer> endPcs, RouteDescription description) {
-		m_startPcs = startPcs;
-		m_endPcs = endPcs;
+	public Route(Engine engine, StructureGraph structureGraph, RouteDescription description) {
 		m_structureGraph = structureGraph;
 		m_pcsHit = new HashSet<Integer>();
 		m_description = description;
 		m_routeId = s_routeCount++;
 		m_routes = new HashSet<Node>();
 		m_engine = engine;
-
 		m_constraint = engine.getConstraint().clone();
-
-		m_routeTiming = new RouteTiming(this, config, engine.getNodeId(), engine.getCoreId());
+		m_routeTiming = new RouteTiming(this, engine.getConfig(), engine.getNodeId(), engine.getCoreId());
 		m_unknowns = new Unknowns();
 	}
 
 	public void analyse() {
-		Collection<Node> startNodes = new HashSet<Node>();
-		Collection<Node> endNodes = new HashSet<Node>();
-		Map<Integer, HashSet<Node>> pcToStruct = buildPcMap(m_structureGraph);
-
-		for (int from : m_startPcs) {
-			if (pcToStruct.get(from) != null) {
-				startNodes.addAll(pcToStruct.get(from));
+		if(m_description.getMode() == RouteMode.FUNCTION){
+			Map<String, HashSet<Node>> functionMap = buildFunctionMap(m_structureGraph);
+			HashSet<Node> functions = functionMap.get(m_description.getFunctionName());
+			if(functions!= null){
+				m_routes.addAll(functions);
 			}
-		}
-		for (int to : m_endPcs) {
-			if (pcToStruct.get(to) != null) {
-				endNodes.addAll(pcToStruct.get(to));
+		} else if(m_description.getMode() == RouteMode.ABSLOUTE) {
+		
+			Set<Integer> startPcs = getStartPcs();
+			Set<Integer> endPcs = getEndPcs();
+			
+			Collection<Node> startNodes = new HashSet<Node>();
+			Collection<Node> endNodes = new HashSet<Node>();
+			Map<Integer, HashSet<Node>> pcToStruct = buildPcMap(m_structureGraph);
+	
+			for (int from : startPcs) {
+				if (pcToStruct.get(from) != null) {
+					startNodes.addAll(pcToStruct.get(from));
+				}
 			}
-		}
-		m_structureGraph.removeLinks();
-		for (Node start : startNodes) {
-			if (DEBUG)
-				System.out.println("digraph g { ");
-
-			Collection<Node> setExplored = new HashSet<Node>();
-			explore(start, setExplored, m_endPcs, endNodes, null);
-
-			StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
-			sae.createStructure(setExplored, start, m_engine);
-
+			for (int to : endPcs) {
+				if (pcToStruct.get(to) != null) {
+					endNodes.addAll(pcToStruct.get(to));
+				}
+			}
 			m_structureGraph.removeLinks();
-
-			m_routes.add(setExplored.iterator().next());
-
-			if (DEBUG)
-				System.out.println("}\n");
+			for (Node start : startNodes) {
+				Collection<Node> setExplored = new HashSet<Node>();
+				explore(start, setExplored, endPcs, endNodes, null);
+	
+				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
+				sae.createStructure(setExplored, start, m_engine);
+	
+				m_structureGraph.removeLinks();
+	
+				m_routes.add(setExplored.iterator().next());
+			}
+		} else {
+			assert(false);
 		}
 
+	}
+
+	private Set<Integer> getEndPcs() {
+		Set<Integer> endPcs = new HashSet<Integer>();
+		//TODO - a reference should return a set of integers not a single one
+		endPcs.add(m_description.getEndPoint().getPc());
+		return endPcs;
+	}
+
+	private Set<Integer> getStartPcs() {
+		Set<Integer> startPcs = new HashSet<Integer>();
+		//TODO - a reference should return a set of integers not a single one
+		startPcs.add(m_description.getStartPoint().getPc());
+		return startPcs;
 	}
 
 	private boolean explore(Node node, Collection<Node> set, Collection<Integer> endPcs, Collection<Node> endNodes, Node parent) {
@@ -133,8 +146,6 @@ public class Route {
 
 	private void makeConnection(Node node, Node parent) {
 		if (parent != null) {
-			if (DEBUG)
-				System.out.println(parent + " -> " + node + ";");
 			CommonMethods.connect(node, parent);
 		}
 	}
@@ -156,31 +167,31 @@ public class Route {
 		}
 		return pcToNodes;
 	}
+	
+	private Map<String, HashSet<Node>> buildFunctionMap(StructureGraph structureGraph) {
+		final Map<String, HashSet<Node>> pcToNodes = new HashMap<String, HashSet<Node>>();
+		for (Node node : structureGraph.getThreads()) {
+			node.traverse(0, new DefaultNodeTraverser() {
+				public boolean foundFunctionNode(Node node, int depth) {
+					HashSet<Node> map = pcToNodes.get(node.getStartPc());
+					if (map == null) {
+						map = new HashSet<Node>();
+					}
+					map.add(node);
+					pcToNodes.put(((FunctionNode)node).getFunctionName(), map);
+					return true;
+				}
+			});
+		}
+		return pcToNodes;
+	}
 
 	// below here need sorting / removing
 
-	private RouteTiming m_routeTiming;
-	private boolean m_constrained;
-	private Unknowns m_unknowns;
-	private Constraint m_constraint;
+	
 
 	public StructureGraph getStructureGraph() {
 		return m_structureGraph;
-	}
-
-	public boolean setLoopIterations(int pc, Long count) {
-		// TODO
-		return false;
-	}
-
-	public boolean setLoopMaxIterations(int pc, Long count) {
-		// TODO
-		return false;
-	}
-
-	public boolean setLoopScope(int pc, boolean absolute) {
-		// TODO
-		return false;
 	}
 
 	public int getRouteId() {
@@ -200,13 +211,7 @@ public class Route {
 	}
 
 	public String getEndpointsPcsString() {
-		String pcString = "(0x" + Integer.toHexString(0) + " => ";
-		for (int end : m_endPcs) {
-			pcString += "0x" + Integer.toHexString(end) + ", ";
-		}
-		pcString = pcString.substring(0, pcString.length() - 2);
-		pcString += ")";
-		return pcString;
+		return "";
 	}
 
 	public Set<Integer> getPcsHit() {
@@ -218,10 +223,7 @@ public class Route {
 	}
 
 	public String getFullDescription() {
-		String fullDescription = String.format("Route(%d) %s\n", getRouteId(), getDescription());
-		fullDescription += m_routeTiming.getDescription(true);
-		fullDescription += String.format("    Complete paths: %d, Unresolved paths: %d\n\n", 0, 0);
-		return fullDescription;
+		return getDescription();
 	}
 
 }

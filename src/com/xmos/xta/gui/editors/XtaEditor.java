@@ -293,7 +293,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 				}
 			}
     		
-	    	HashSet<Integer> pcsCovered = route.getPcsHit();
+	    	Set<Integer> pcsCovered = route.getPcsHit();
 	    	
 	    	boolean foundFirstLine = false;
 	    	ArrayList<InputSection> noDebug = new ArrayList<InputSection>();

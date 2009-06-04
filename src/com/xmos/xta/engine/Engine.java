@@ -290,12 +290,7 @@ public class Engine implements Notifier {
 		
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
 		
-		Set<Integer> fromPcs = new HashSet<Integer>();
-		fromPcs.add(0x100b6);
-		Set<Integer> toPcs = new HashSet<Integer>();
-		toPcs.add(0x100ce);
-		
-		Route route=  new Route(m_config, this, m_structuralGraph.get(m_nodeId, m_coreId), fromPcs, toPcs, null);
+		Route route=  new Route(this, m_structuralGraph.get(m_nodeId, m_coreId), null);
 		route.analyse();
 		return true;
 	}
@@ -313,10 +308,6 @@ public class Engine implements Notifier {
 			mark(child);
 		}
 	}
-
-	
-	
-
 	
 	public Progress getProgress() {
 		if (m_progress != null) {
@@ -325,7 +316,6 @@ public class Engine implements Notifier {
 			return new Progress(Progress.State.IDLE, 0);
 		}
 	}
-	
 
 	public boolean analyseRoute(String functionName) {
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
@@ -426,7 +416,6 @@ public class Engine implements Notifier {
 
 	public void setFrequency(int frequency) {
 		m_config.m_frequency = frequency;
-		refreshRouteStats();
 		notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_FREQUENCY);
 	}
 
@@ -436,7 +425,6 @@ public class Engine implements Notifier {
 
 	public void setNumThreads(int numThreads) {
 		m_config.m_numThreads = numThreads;
-		refreshRouteStats();
 		notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_NUM_THREADS);
 	}
 
