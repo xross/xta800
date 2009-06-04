@@ -156,7 +156,7 @@ public abstract class Command {
 		}
 		return IdType.PATH;
     }
-        
+
     protected boolean areArgsDone(String[] args, int i) {
 		if ((i >= args.length) || args[i].startsWith("-") || args[i].startsWith("\n"))
 			return true;

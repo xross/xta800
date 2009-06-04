@@ -68,13 +68,13 @@ public class SectionPatternMatcher extends PatternMatcher {
 						System.err.println("#section failed sanity check");
 						continue;
 					}
-					updateGraph(currentNode, sectionNodes, endNode, workingSet, endNode, verbose);
+					updateGraph(currentNode, sectionNodes, true, workingSet, endNode, verbose);
 					return true;
 				}
 			} else {
 				if (sectionNodes.size() > 1) {
 					assert(sectionSanityCheck(currentNode, sectionNodes, null, endNode));
-					updateGraph(currentNode, sectionNodes, null, workingSet, endNode,verbose);
+					updateGraph(currentNode, sectionNodes, false, workingSet, endNode, verbose);
 					return true;
 				}
 			}
@@ -108,11 +108,11 @@ public class SectionPatternMatcher extends PatternMatcher {
 		return true;
 	}
 
-	protected void updateGraph(Node startNode, Collection<Node> sectionNodes, Node jumpNode, Collection<Node> workingSet, Node endNode, boolean verbose) {
-		SectionNode ms = new SectionNode(sectionNodes, jumpNode);
+	protected void updateGraph(Node startNode, Collection<Node> sectionNodes, boolean isOptional, Collection<Node> workingSet, Node endNode, boolean verbose) {
+		SectionNode ms = new SectionNode(sectionNodes, isOptional);
 		
-		if(verbose){
-			System.out.println("#have found a section from " + startNode + " to " + endNode + " jump: " + (jumpNode != null));
+		if (verbose){
+			System.out.println("#have found a section from " + startNode + " to " + endNode + " isOptional: " + isOptional);
 			System.out.println("#have replaced "+sectionNodes + " with " + ms);
 		}
 		
@@ -122,7 +122,7 @@ public class SectionPatternMatcher extends PatternMatcher {
 		endNode.getPrevNodes().removeAll(sectionNodes);
 		endNode.addPrevNode(ms);
 
-		if (jumpNode != null) {
+		if (isOptional) {
 			startNode.getNextNodes().remove(endNode);
 			endNode.getPrevNodes().remove(startNode);
 		}
@@ -135,7 +135,7 @@ public class SectionPatternMatcher extends PatternMatcher {
 	}
 	
 	protected void updateGraph(Node startNode, Collection<Node> sectionNodes, Collection<Node> workingSet,  boolean verbose) {
-		SectionNode ms = new SectionNode(sectionNodes, null);
+		SectionNode ms = new SectionNode(sectionNodes, false);
 		
 		if(verbose){
 			System.out.println("#have found a section from; " + startNode + " to: none");

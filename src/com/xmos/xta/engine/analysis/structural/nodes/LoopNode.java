@@ -12,26 +12,17 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 public class LoopNode extends Node {
 	private Node m_loopHeader;
 	private List<Node> m_loops;
-	private long m_numIterations;
-	private boolean m_numIterationsSet;
-	private boolean m_isAbsolute;
 
 	public LoopNode(LoopNode loop) {
 		super();
 		m_loopHeader = loop.m_loopHeader;
 		m_loops = new ArrayList<Node>(loop.m_loops);
-		m_numIterations = 0;
-		m_numIterationsSet = false;
-		m_isAbsolute = false;
 	}
 
 	public LoopNode() {
 		super();
 		m_loopHeader = null;
 		m_loops = new ArrayList<Node>();
-		m_numIterations = 0;
-		m_numIterationsSet = false;
-		m_isAbsolute = false;
 	}
 
 	public LoopNode(Node loop, Node base) {
@@ -39,9 +30,6 @@ public class LoopNode extends Node {
 		m_loopHeader = base;
 		m_loops = new ArrayList<Node>();
 		m_loops.add(loop);
-		m_numIterations = 0;
-		m_numIterationsSet = false;
-		m_isAbsolute = false;
 	}
 
 	public LoopNode(Set<Node> loops, Node base) {
@@ -51,9 +39,6 @@ public class LoopNode extends Node {
 		for (Node loop : loops) {
 			m_loops.add(loop);
 		}
-		m_numIterations = 0;
-		m_isAbsolute = false;
-		m_numIterationsSet = false;
 	}
 
 	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
@@ -165,34 +150,18 @@ public class LoopNode extends Node {
 		}
 		return next;
 	}
-
-	
-	public void setNumIterations(long numIterations) {
-		m_numIterations = numIterations;
-		setNumIterationsSet(true);
-	}
-	
-	public long getNumIterations() {
-		return m_numIterations;
-	}
-
-	public void setNumIterationsSet(boolean numIterationsSet) {
-		m_numIterationsSet = numIterationsSet;
-	}
-	
-	public boolean getNumIterationsSet() {
-		return m_numIterationsSet;
-	}
-	
-	public void setScope(boolean isAbsolute) {
-		m_isAbsolute = isAbsolute;
-	}
-	
-	public boolean getScope() {
-		return m_isAbsolute;
-	}
-	
+		
 	public boolean isLoopNode() {
 		return true;
+	}
+	
+	public void setNumIterations(long numIterations) {
+	    if (!m_numIterationsDone) {
+	    	m_numIterationsDone = true;
+	    	
+			for (Node child : getChildern()) {
+				child.setNumIterations(numIterations);
+			}
+	    }
 	}	
 }
