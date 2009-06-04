@@ -8,7 +8,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.NodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 
 public class StructureDisplayer {
-	private final static boolean DEBUG = true;
+	private final static boolean DEBUG = false;
 
 	private Console m_console;
 

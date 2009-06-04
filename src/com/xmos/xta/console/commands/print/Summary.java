@@ -77,7 +77,7 @@ public class Summary extends Command {
 			break;
 			
 		case 3:
-         	console.display(route.getFullDescription());
+         	console.display(route.getDescription());
 			break;
 			
 		default:

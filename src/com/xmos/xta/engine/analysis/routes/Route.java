@@ -3,7 +3,6 @@ package com.xmos.xta.engine.analysis.routes;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import com.xmos.xta.engine.Engine;
@@ -27,19 +26,22 @@ public class Route {
 	private static int s_routeCount;
 	public static final int INVALID_ROUTE_ID = -1;
 	public static int WORST_CASE_PATH_ID = -2;
+	
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR
 	}
 
 	private int m_routeId;
 	private RouteDescription m_description;
-	private Set<Integer> m_pcsHit;
 	private StructureGraph m_structureGraph;
 	private Collection<Node> m_routes;
 	private Engine m_engine;
 	private RouteTiming m_routeTiming;
 	private Unknowns m_unknowns;
+	
 	private Constraint m_constraint;
+	private Set<Node> m_routeExclusionNodes;
+	
 	
 	public static void resetRouteCount() {
 		s_routeCount = 0;
@@ -47,7 +49,6 @@ public class Route {
 
 	public Route(Engine engine, StructureGraph structureGraph, RouteDescription description) {
 		m_structureGraph = structureGraph;
-		m_pcsHit = new HashSet<Integer>();
 		m_description = description;
 		m_routeId = s_routeCount++;
 		m_routes = new HashSet<Node>();
@@ -55,8 +56,59 @@ public class Route {
 		m_constraint = engine.getConstraint().clone();
 		m_routeTiming = new RouteTiming(this, engine.getConfig(), engine.getNodeId(), engine.getCoreId());
 		m_unknowns = new Unknowns();
+		m_routeExclusionNodes = new HashSet<Node>();
 	}
 
+	private void buildExclustion(Constraint constraint){
+
+
+	}
+	
+	public StructureGraph getStructureGraph() {
+		return m_structureGraph;
+	}
+
+	public int getRouteId() {
+		return m_routeId;
+	}
+
+	public String getDescription() {
+		return m_description.getDescription();
+	}
+
+	public RouteTiming getRouteTiming() {
+		return m_routeTiming;
+	}
+
+	public Unknowns getUnknowns() {
+		return m_unknowns;
+	}
+
+	public String getEndpointsPcsString() {
+		return "";
+	}
+
+	public Set<Integer> getPcsHit() {
+		final Set<Integer> pcs = new HashSet<Integer>();
+		for (Node node : m_routes) {
+			node.traverse(0, new DefaultNodeTraverser() {
+				public boolean foundInstructionNode(Node node, int depth) {
+					pcs.add(node.getStartPc());
+					return true;
+				}
+			});
+		}
+		return pcs;
+	}
+
+	public Constraint getConstraint() {
+		return m_constraint;
+	}
+
+	public Collection<Node> getCompletedPaths() {
+		return m_routes;
+	}
+	
 	public void analyse() {
 		if(m_description.getMode() == RouteMode.FUNCTION){
 			Map<String, HashSet<Node>> functionMap = buildFunctionMap(m_structureGraph);
@@ -103,14 +155,12 @@ public class Route {
 
 	private Set<Integer> getEndPcs() {
 		Set<Integer> endPcs = new HashSet<Integer>();
-		//TODO - a reference should return a set of integers not a single one
 		endPcs.add(m_description.getEndPoint().getPc());
 		return endPcs;
 	}
 
 	private Set<Integer> getStartPcs() {
 		Set<Integer> startPcs = new HashSet<Integer>();
-		//TODO - a reference should return a set of integers not a single one
 		startPcs.add(m_description.getStartPoint().getPc());
 		return startPcs;
 	}
@@ -186,45 +236,4 @@ public class Route {
 		}
 		return pcToNodes;
 	}
-
-	public StructureGraph getStructureGraph() {
-		return m_structureGraph;
-	}
-
-	public int getRouteId() {
-		return m_routeId;
-	}
-
-	public String getDescription() {
-		return m_description.getDescription();
-	}
-
-	public RouteTiming getRouteTiming() {
-		return m_routeTiming;
-	}
-
-	public Unknowns getUnknowns() {
-		return m_unknowns;
-	}
-
-	public String getEndpointsPcsString() {
-		return "";
-	}
-
-	public Set<Integer> getPcsHit() {
-		return m_pcsHit;
-	}
-
-	public Constraint getConstraint() {
-		return m_constraint;
-	}
-
-	public String getFullDescription() {
-		return getDescription();
-	}
-
-	public Collection<Node> getCompletedPaths() {
-		return m_routes;
-	}
-
 }
