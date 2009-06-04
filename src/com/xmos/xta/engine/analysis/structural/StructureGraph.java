@@ -6,6 +6,7 @@ import java.util.Collection;
 import com.xmos.xta.engine.analysis.structural.nodes.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.LoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
 
 public class StructureGraph {
@@ -32,51 +33,20 @@ public class StructureGraph {
 		
 		Collection<Node> referencedNodes = getReferencedNodes(reference);		
 		for (Node referencedNode : referencedNodes) {
-			
-			Node enclosingLoopNode = getEnclosingLoopNode(referencedNode);					
-			if (enclosingLoopNode != null) {
-				
-//				enclosingLoopNode.clearLoopIterationsSet();
-//				referencedNode.setIterations(iterations);
+						
+			Node enclosingLoopNode = referencedNode.isLoopNode() ? 
+					referencedNode : 
+					referencedNode.getEnclosingLoopNode();
+								
+			if (enclosingLoopNode != null) {				
+				enclosingLoopNode.setNumIterationsDone(false);
+				referencedNode.setNumIterations(iterations);
 				loopIterationsSet = true;
-			}			
+			}
 		}
 		return loopIterationsSet;
 	}
 		
-		/*
-		 Node::setIterations(value) {
-		     if (!done) {
-		         Set the iteration value on this node.
-		         Mark this node as done.
-		         Call 'SetIterations' on all the children.
-		         Call 'SetIterations' on the parent.
-		     }
-		 }
-		
-		 The above implementation needs to be different depending on the type of node:
-	     
-		 SectionNode::setIterations(value) {
-	       if (!done) {
-    		   Set the iteration value on this node.
-	    	   Mark this node as done.
-	    	   
-	           if (none of the options are already done) {
-	               Call setIterations on the longest path.
-	           }
-	           Call 'setIterations' on the parent.
-	       }
-	     }
-	     
-		 LoopNode::setIterations(value) {
-	       if (!done) {
-		         Set the iteration value on this node.
-		         Mark this node as done.
-		         Call 'SetIterations' on all the children.
-	       }
-	     }
-*/		
-
 	public boolean unsetLoopIterations(Reference reference) {
 		return false;
 	}
@@ -93,33 +63,28 @@ public class StructureGraph {
 	}
 	
 	private Collection<Node> getReferencedNodes(Reference reference) {
-		Collection<Node> nodes = getLoopNodesContainingPc(reference.getPc());
+		Collection<Node> nodes = getNodesContainingPc(reference.getPc());
 		return checkBackTrail(nodes, reference);
 	}
-	
-	private Node getEnclosingLoopNode(Node referencedNode) {		
-		Node node = referencedNode;
-		while (!node.isLoopNode()) {
-			node = node.getParent();
-		}
-		return node;
-	}
-	
-	private Collection<Node> getLoopNodesContainingPc(final int pc) {
-		final Collection<Node> loopNodes = new ArrayList<Node>();		
-		for (Node threadNode : m_threads) {					
+		
+	private Collection<Node> getNodesContainingPc(final int pc) {
+		final Collection<Node> nodes = new ArrayList<Node>();		
+		for (Node threadNode : m_threads) {				
 			threadNode.traverse(0, new DefaultNodeTraverser() {
-				public boolean foundLoopNode(Node node, int depth) {
-					if (node.getPCs().contains(pc)) {
-						loopNodes.add(node);
+				public boolean foundBlockNode(Node node, int depth) {
+					for (XtaInstruction instruction : node.getInstructions()) {
+						if (instruction.getPc() == pc) {
+							nodes.add(node);
+							break;
+						}
 					}
 					return true;
 				}
 		    });
 		}
-		return loopNodes;
+		return nodes;
 	}
-	
+
 	private Collection<Node> checkBackTrail(Collection<Node> nodes, Reference reference) {
 		return nodes;
 	}

@@ -129,5 +129,4 @@ public class BlockNode extends Node {
 			return getParent().whatsNext(this);
 		}
 	}
-
 }

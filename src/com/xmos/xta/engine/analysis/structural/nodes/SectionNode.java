@@ -2,6 +2,7 @@ package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -11,24 +12,24 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class SectionNode extends Node {
 	private Collection<Node> m_options;
-	private Node m_jumpNode;
+	private boolean m_isOptional;
 
-	public SectionNode(Collection<Node> options, Node jumpNode) {
+	public SectionNode() {
+		super();
+		m_options = new HashSet<Node>();
+		m_isOptional = false;
+	}
+	
+	public SectionNode(Collection<Node> options, boolean isOptional) {
 		super();
 		m_options = options;
-		m_jumpNode = jumpNode;
+		m_isOptional = isOptional;
 	}
 	
 	public SectionNode(SectionNode ms) {
 		super();
 		m_options = ms.m_options;
-		m_jumpNode = ms.m_jumpNode;
-	}
-
-	public SectionNode() {
-		super();
-		m_options = new HashSet<Node>();
-		m_jumpNode = null;
+		m_isOptional = ms.m_isOptional;
 	}
 
 	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
@@ -37,9 +38,7 @@ public class SectionNode extends Node {
 			Node clone = section.deepClone(startPcs);
 			sn.m_options.add(clone);
 		}
-		if (m_jumpNode != null) {
-			sn.m_jumpNode = m_jumpNode.deepClone(startPcs);	
-		}
+		sn.m_isOptional = m_isOptional; 
 		return sn;
 	}
 
@@ -63,11 +62,6 @@ public class SectionNode extends Node {
 		return m_options;
 	}
 	
-	public Node getJumpNode(){
-		return m_jumpNode;
-	}
-	
-
 	public List<XtaInstruction> getInstructions() {
 		return new LinkedList<XtaInstruction>();
 	}
@@ -122,5 +116,55 @@ public class SectionNode extends Node {
 
 	public Collection<Node> whatsNext(Node node) {
 		return getParent().whatsNext(this);
+	}
+	
+	public void setNumIterations(long numIterations) {
+	    if (!m_numIterationsDone) {
+	    	m_numIterationsDone = true;
+	    	
+	    	boolean allChildrenNotDone = true;
+			for (Node child : getChildern()) {
+				if (child.getNumIterationsDone()) { 
+					allChildrenNotDone = false;
+				    break;
+				}
+			}
+	    	
+			if (allChildrenNotDone) {
+		    	m_numIterations = numIterations;
+		    	Node worstCaseNode = getWorstCaseOption();
+				for (Node child : getChildern()) {
+					if (child == worstCaseNode) {
+						child.setNumIterations(numIterations);
+					} else {
+					    child.setNumIterations(0);
+					}
+				}		    	
+				m_parent.setNumIterations(numIterations);
+			} else {
+		    	m_numIterations = getTotalIterations();
+				m_parent.setNumIterations(m_numIterations);
+			}
+	    }
+	}
+	
+	private Node getWorstCaseOption() {
+		Iterator<Node> iter = m_options.iterator();
+		Node worstCaseNode = iter.next();
+		while (iter.hasNext()) {
+			Node node = iter.next();
+			if (node.getTimeTaken(Case.WORST) > worstCaseNode.getTimeTaken(Case.WORST)) {
+				worstCaseNode = node;
+			}						
+		}		
+		return worstCaseNode;
+	}
+	
+	private int getTotalIterations() {
+		int totalIterations = 0;
+		for (Node child : getChildern()) {
+			totalIterations += child.getNumIterations();
+		}
+		return totalIterations;
 	}
 }

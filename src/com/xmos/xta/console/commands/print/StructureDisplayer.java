@@ -3,41 +3,30 @@ package com.xmos.xta.console.commands.print;
 import java.util.Collection;
 
 import com.xmos.xta.console.Console;
-import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.NodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
-import com.xmos.xta.engine.analysis.structural.StructureGraph;
-
 
 public class StructureDisplayer {
-
 	private final static boolean DEBUG = true;
 
-	private Engine m_engine;
 	private Console m_console;
 
-	public StructureDisplayer(Engine engine, Console console) {
-		m_engine = engine;
+	public StructureDisplayer(Console console) {
 		m_console = console;
 	}
 	
-	public void display() {
-		StructureGraph structureGraph = m_engine.getStructureGraph();
-
-		Collection<Node> nodes = structureGraph.getThreads();	
+	public void display(Collection<Node> nodes) {
 		for (Node node : nodes) {					
 		    node.traverse(0, new NodeTraverser() {
 				public boolean foundBlockNode(Node node, int depth) {
 					printIndent(depth);
 					String nodeName = String.format("block(%d)", node.getId());
 					m_console.display(String.format("%-14s", nodeName));
-					if (DEBUG && node.getParent()!= null && node.getParent().whatsNext(node) != null){
-						m_console.display(node.getParent().whatsNext(node).toString());
-					}
-					
-					m_console.display(String.format(" : %.1fns\n", 
-							node.getTimeTaken(Case.WORST)));
+					if (DEBUG) displayWhatsNext(node);
+					m_console.display(String.format(" : %.1fns", node.getTimeTaken(Case.WORST)));
+					displayNumIterations(node);
+					m_console.display("\n");
 					return true;
 				}
 
@@ -45,24 +34,10 @@ public class StructureDisplayer {
 					printIndent(depth);
 					String nodeName = String.format("function(%d)", node.getId());
 					m_console.display(String.format("%-14s (%s)", nodeName, node.getFunctionName()));
-					if (DEBUG && node.getParent()!= null && node.getParent().whatsNext(node) != null){
-						m_console.display(node.getParent().whatsNext(node).toString());
-					}
-					m_console.display(String.format(" : %.1fns\n", 
-							node.getTimeTaken(Case.WORST)));						
-					return true;
-				}
-
-				public boolean foundInstructionNode(Node node, int depth) {
-					printIndent(depth);
-					String nodeName = String.format("instruction(%d)", node.getId());
-					m_console.display(String.format("%-14s", nodeName));
-					if (DEBUG && node.getParent()!= null && node.getParent().whatsNext(node) != null){
-						m_console.display(node.getInstructions().toString());
-						m_console.display(node.getParent().whatsNext(node).toString());
-					}
-					m_console.display(String.format(" : %.1fns\n", 
-							node.getTimeTaken(Case.WORST)));											
+					if (DEBUG) displayWhatsNext(node);
+					m_console.display(String.format(" : %.1fns", node.getTimeTaken(Case.WORST)));
+					displayNumIterations(node);
+					m_console.display("\n");
 					return true;
 				}
 
@@ -70,12 +45,10 @@ public class StructureDisplayer {
 					printIndent(depth);
 					String nodeName = String.format("loop(%d)", node.getId());
 					m_console.display(String.format("%-14s", nodeName));
-					if (DEBUG && node.getParent()!= null && node.getParent().whatsNext(node) != null){
-						m_console.display(node.getParent().whatsNext(node).toString());
-					}
-					m_console.display(String.format(" : %.1fns\n", 
-							node.getTimeTaken(Case.WORST)));						
-
+					if (DEBUG) displayWhatsNext(node);
+					m_console.display(String.format(" : %.1fns", node.getTimeTaken(Case.WORST)));
+					displayNumIterations(node);
+					m_console.display("\n");
 					return true;
 				}
 
@@ -83,11 +56,10 @@ public class StructureDisplayer {
 					printIndent(depth);
 					String nodeName = String.format("path(%d)", node.getId());
 					m_console.display(String.format("%-14s", nodeName));
-					if (DEBUG && node.getParent()!= null && node.getParent().whatsNext(node) != null){
-						m_console.display(node.getParent().whatsNext(node).toString());
-					}
-					m_console.display(String.format(" : %.1fns\n", 
-							node.getTimeTaken(Case.WORST)));						
+					if (DEBUG) displayWhatsNext(node);
+					m_console.display(String.format(" : %.1fns", node.getTimeTaken(Case.WORST)));
+					displayNumIterations(node);
+					m_console.display("\n");
 					return true;
 				}
 
@@ -95,11 +67,10 @@ public class StructureDisplayer {
 					printIndent(depth);
 					String nodeName = String.format("section(%d)", node.getId());
 					m_console.display(String.format("%-14s", nodeName));
-					if (DEBUG && node.getParent()!= null && node.getParent().whatsNext(node) != null){
-						m_console.display(node.getParent().whatsNext(node).toString());
-					}
-					m_console.display(String.format(" : %.1fns\n", 
-							node.getTimeTaken(Case.WORST)));						
+					if (DEBUG) displayWhatsNext(node);
+					m_console.display(String.format(" : %.1fns", node.getTimeTaken(Case.WORST)));
+					displayNumIterations(node);
+					m_console.display("\n");
 					return true;
 				}
 
@@ -107,13 +78,25 @@ public class StructureDisplayer {
 					printIndent(depth);
 					String nodeName = String.format("terminal(%d)", node.getId());
 					m_console.display(String.format("%-14s", nodeName));
-					if (DEBUG && node.getParent()!= null && node.getParent().whatsNext(node) != null){
-						m_console.display(node.getParent().whatsNext(node).toString());
-					}
-					m_console.display(String.format(" : %.1fns\n", 
-							node.getTimeTaken(Case.WORST)));						
+					if (DEBUG) displayWhatsNext(node);
+					m_console.display(String.format(" : %.1fns", node.getTimeTaken(Case.WORST)));
+					displayNumIterations(node);
+					m_console.display("\n");
 					return true;
 				}		    	
+
+				public boolean foundInstructionNode(Node node, int depth) {
+					if (DEBUG) {
+						printIndent(depth);
+						String nodeName = String.format("instruction(%d)", node.getId());
+						m_console.display(String.format("%-14s", nodeName));
+						m_console.display(String.format(" : %.1fns", node.getTimeTaken(Case.WORST)));						
+						displayNumIterations(node);
+						displayWhatsNext(node);
+						m_console.display("\n");
+					}
+					return true;						
+				}
 		    });
 		}				
     }
@@ -122,5 +105,21 @@ public class StructureDisplayer {
 		for (int i = 0; i < depth; ++i) {
 			m_console.display(".    ");
 		}
-	}		
+	}	
+	
+	private void displayWhatsNext(Node node) {
+		if (node.getParent()!= null && node.getParent().whatsNext(node) != null){
+			m_console.display(node.getParent().whatsNext(node).toString());
+		}		
+	}
+	
+	private void displayNumIterations(Node node) {
+		if (isWithinLoop(node)) {
+		    m_console.display(String.format(" (x%d)", node.getNumIterations()));
+		}
+	}
+	
+	private boolean isWithinLoop(Node node) {		
+		return (node.getEnclosingLoopNode() != null);
+	}	
 }

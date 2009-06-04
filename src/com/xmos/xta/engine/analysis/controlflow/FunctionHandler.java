@@ -80,25 +80,23 @@ public class FunctionHandler {
 			if(!canReturn(node, new HashSet<Node>())){
 				CommonMethods.disconnect(m_instToFunc.get(node).getNextNodes().iterator().next(), m_instToFunc.get(node));
 			}
-		}
-		
+		}		
 		return true;
 	}
 
 	private boolean canReturn(Node start, Set<Node> seen){
 		seen.add(start);
-		if(start.getNextNodes().size() == 0){
-			if(start.isFunction()) return false;
+		if (start.getNextNodes().size() == 0) {
+			if (start.isFunctionNode()) return false;
 			return start.getInstructions().get(0).getReturn();
 		} else {
 			boolean canReturn = false;
-			for(Node next : start.getNextNodes()){
-				if(!seen.contains(next)){
+			for (Node next : start.getNextNodes()) {
+				if (!seen.contains(next)){
 					canReturn = canReturn || canReturn(next, seen);
 				}
 			}
 			return canReturn;
 		}
-	}
-	
+	}	
 }

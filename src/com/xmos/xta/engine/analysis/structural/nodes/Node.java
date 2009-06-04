@@ -21,6 +21,10 @@ public abstract class Node implements Comparable<Node>{
 	Set<Node> m_prevNodes;
 	Node m_branchLinkReturn;
 	Set<Node> m_dominators;
+	
+	long m_numIterations;
+	boolean m_numIterationsDone;
+	boolean m_isAbsolute;
 
 	public enum Case {
 		WORST,
@@ -169,4 +173,55 @@ public abstract class Node implements Comparable<Node>{
 	public boolean isLoopNode() {
 		return false;
 	}
+	
+	public void setNumIterations(long numIterations) {
+	    if (!m_numIterationsDone) {
+	    	m_numIterations = numIterations;
+	    	m_numIterationsDone = true;
+	    	
+			for (Node child : getChildern()) {
+				if (child.isLoopNode()) {
+					// Just set the number of iterations on the loop, 
+					// but don't propagate it down to its children
+					child.m_numIterations = numIterations;
+				} else {
+				    child.setNumIterations(numIterations);
+				}
+			}
+			m_parent.setNumIterations(numIterations);
+	     }
+	}
+	
+	public long getNumIterations() {
+		return m_numIterations;
+	}
+	
+	public void setNumIterationsDone(boolean done) {
+		m_numIterationsDone = done;
+		for (Node child : getChildern()) {
+			if (!child.isLoopNode()) {
+			    child.setNumIterationsDone(done);
+			}
+		}
+	}
+	
+	public boolean getNumIterationsDone() {
+		return m_numIterationsDone;
+	}
+	
+	public void setScope(boolean isAbsolute) {
+		m_isAbsolute = isAbsolute;
+	}
+	
+	public boolean getScope() {
+		return m_isAbsolute;
+	}
+	
+	public Node getEnclosingLoopNode() {		
+		Node node = m_parent;
+		while ((node != null) && !node.isLoopNode()) {
+			node = node.getParent();
+		}
+		return node;
+	}	
 }
