@@ -3,12 +3,10 @@ package com.xmos.xta.engine;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -26,10 +24,8 @@ import com.xmos.xta.engine.analysis.controlflow.InstructionDecoder;
 import com.xmos.xta.engine.analysis.controlflow.SuccessorAdder;
 import com.xmos.xta.engine.analysis.controlflow.ThreadHandler;
 import com.xmos.xta.engine.analysis.controlflow.UnreachableCodeFinder;
-import com.xmos.xta.engine.analysis.structural.nodes.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.routes.Route;
@@ -94,8 +90,6 @@ public class Engine implements Notifier {
 		ReferenceTypeFactory.setEngine(this);
 	}
 
-
-	
 	public void notify(String message, String argument) {
 		if (m_notifier != null)
 			m_notifier.notify(message, argument);
@@ -290,32 +284,9 @@ public class Engine implements Notifier {
 		
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
 		
-		Route route=  new Route(this, m_structuralGraph.get(m_nodeId, m_coreId), null);
-		route.analyse();
 		return true;
 	}
 
-	
-	private void markAllParents(StructureGraph structureGraph){
-		for (Node node : structureGraph.getThreads()) {
-			mark(node);
-		}
-	}
-	
-	private void mark(Node node) {
-		for(Node child : node.getChildern()){
-			child.setParent(node);
-			mark(child);
-		}
-	}
-	
-	public Progress getProgress() {
-		if (m_progress != null) {
-			return m_progress;
-		} else {
-			return new Progress(Progress.State.IDLE, 0);
-		}
-	}
 
 	public boolean analyseRoute(String functionName) {
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
@@ -329,18 +300,8 @@ public class Engine implements Notifier {
 					functionName, m_executableFile, m_nodeId, m_coreId));
 			return false;
 		} else {
-/*
-			TreeSet<Integer> endPcs = m_ae.getFunctionRetuns(functionName, m_nodeId, m_coreId);
-			int startPc = m_ae.getFunctionStartPc(functionName, m_nodeId, m_coreId);
-			
-			RouteDescription routeDescription = new RouteDescription(functionName);						
-			if (analyseRouteSafely(startPc, endPcs, routeDescription)) {
-			    notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Notifier.RUN_MODE_FUNCTION);
-			    notify(Notifier.NOTIFY_SET_FUNCTION_NAME, functionName);
-			    return true;
-			}
-			*/
-			return false;
+			RouteDescription routeDescription = new RouteDescription(functionName);		
+			return analyseRouteSafely(routeDescription);
 		}
 	}
 
@@ -363,21 +324,106 @@ public class Engine implements Notifier {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", to));
 			return false;
-		} else {
-			TreeSet<Integer> endPc = new TreeSet<Integer>();
-			endPc.add(toRef.getPc());			
-			
+		} else {		
 			RouteDescription routeDescription = new RouteDescription(fromRef, toRef);
-			if (analyseRouteSafely(fromRef.getPc(), endPc, routeDescription)) {
-				notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Notifier.RUN_MODE_PATH);
-				notify(Notifier.NOTIFY_SET_START_POINT, from);
-				notify(Notifier.NOTIFY_SET_END_POINT, to);
-				return true;
-			}
-			return false;
+			return analyseRouteSafely(routeDescription);
 		}
 	}
+	
+	private boolean analyseRouteSafely(RouteDescription routeDescription) {				
+		boolean success = false;
+		try {
+			success = doRouteAnalysis(routeDescription);
+			m_progress.setState(Progress.State.IDLE);
+		} catch (final java.lang.OutOfMemoryError e) {
+			m_progress.setState(Progress.State.IDLE);
+			System.gc();
+			notify(Notifier.NOTIFY_ERROR, "Out of Memory (Heap)");
+			return false;
+		} catch (final java.lang.StackOverflowError e) {
+			m_progress.setState(Progress.State.IDLE);
+			System.gc();
+			notify(Notifier.NOTIFY_ERROR, "Out of Memory (Stack)");
+			return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+			m_progress.setState(Progress.State.IDLE);
+			notify(Notifier.NOTIFY_ERROR, "Unknown error detected");
+			return false;
+		}
+		return success;
+	}
 
+	private boolean doRouteAnalysis(RouteDescription routeDescription) throws Exception {
+		 		
+		if (m_progress.getState() != Progress.State.IDLE) {
+			notify(Notifier.NOTIFY_ERROR, "Engine busy");
+			return false;
+		}
+		
+		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
+			notify(Notifier.NOTIFY_ERROR, String.format(
+					"Node: %d, Core: %d image not found in file: %s",
+					m_nodeId, m_coreId, m_executableFile));
+			return false;
+		}
+
+ 		Route route = new Route(this,m_structuralGraph.get(m_nodeId, m_coreId), routeDescription);
+			
+		//FIXME
+		
+		//route.setConstrained(false);
+			
+		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
+		m_progress.resetState(Progress.State.PROCESSING_PATHS);
+		
+		route.analyse();		
+		/*
+		int numUnresolvedPaths = route.getUnresolvedPaths().size();
+		if (numUnresolvedPaths > 0) {
+			String plural = (numUnresolvedPaths == 1) ? "" : "s";
+			notify(Notifier.NOTIFY_ERROR, String.format("Found "
+					+ numUnresolvedPaths + " unresolved path" + plural));	
+			
+		if (route.getCompletedPaths().size() == 0) {
+			if (route.wasConstrained()) {
+				notify(Notifier.NOTIFY_ERROR, "No valid paths of execution (constraints applied)");
+			} else {
+				notify(Notifier.NOTIFY_ERROR, "No valid paths of execution");
+			}
+		}
+		*/
+		m_routes.add(route);
+		setSelectedRoute(route);
+
+		notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(route.getRouteId()));
+
+		return true;
+	}
+
+	
+	private void markAllParents(StructureGraph structureGraph){
+		for (Node node : structureGraph.getThreads()) {
+			mark(node);
+		}
+	}
+	
+
+	private void mark(Node node) {
+		for(Node child : node.getChildern()){
+			child.setParent(node);
+			mark(child);
+		}
+	}
+	
+	public Progress getProgress() {
+		if (m_progress != null) {
+			return m_progress;
+		} else {
+			return new Progress(Progress.State.IDLE, 0);
+		}
+	}
+	
 	public Notifier getNotifier() {
 		return m_notifier;
 	}
@@ -773,98 +819,6 @@ public class Engine implements Notifier {
 		return m_functionsVisited;
 	}
 	
-	private boolean analyseRouteSafely(int startPc, TreeSet<Integer> endPcs, RouteDescription routeDescription) {				
-		boolean success = false;
-		try {
-			success = doRouteAnalysis(startPc, endPcs, routeDescription);
-			m_progress.setState(Progress.State.IDLE);
-		} catch (final java.lang.OutOfMemoryError e) {
-			m_progress.setState(Progress.State.IDLE);
-			System.gc();
-			notify(Notifier.NOTIFY_ERROR, "Out of Memory (Heap)");
-			return false;
-		} catch (final java.lang.StackOverflowError e) {
-			m_progress.setState(Progress.State.IDLE);
-			System.gc();
-			notify(Notifier.NOTIFY_ERROR, "Out of Memory (Stack)");
-			return false;
-		} catch (Exception e) {
-			e.printStackTrace();
-			m_progress.setState(Progress.State.IDLE);
-			notify(Notifier.NOTIFY_ERROR, "Unknown error detected");
-			return false;
-		}
-		return success;
-	}
-
-	private boolean doRouteAnalysis(int startPc, TreeSet<Integer> endPcs, 
-			RouteDescription routeDescription) throws Exception {
-		 		
-		if (m_progress.getState() != Progress.State.IDLE) {
-			notify(Notifier.NOTIFY_ERROR, "Engine busy");
-			return false;
-		}
-
-		if (endPcs.size() == 0){
-            notify(Notifier.NOTIFY_ERROR, "No terminating PC" );
-            return false;
-        }
-		
-		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
-			notify(Notifier.NOTIFY_ERROR, String.format(
-					"Node: %d, Core: %d image not found in file: %s",
-					m_nodeId, m_coreId, m_executableFile));
-			return false;
-		}
-		/*
- 		Route route = new Route(m_config, this, startPc, endPcs, m_ae.getNodeArray(m_nodeId, m_coreId), 
- 				m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId, m_coreId),
- 				m_mnenonics, routeDescription);
-			
-		//FIXME
-		
-		route.setConstrained(false);
-			
-		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
-		m_progress.resetState(Progress.State.PROCESSING_PATHS);
-		
-		RouteStatus status = route.analyse(routeDescription.getMode());		
-		switch (status) {
-		case ABORTED:
-			m_functionsVisited = route.getFunctionsVisited();
-			notify(Notifier.NOTIFY_ANALYSIS_ABORTED, "Abort detected");
-			return false;
-
-		case ERROR:
-			notify(Notifier.NOTIFY_ERROR, "Cannot analyse path");
-			return false;
-		}
-		int numUnresolvedPaths = route.getUnresolvedPaths().size();
-		if (numUnresolvedPaths > 0) {
-			String plural = (numUnresolvedPaths == 1) ? "" : "s";
-			notify(Notifier.NOTIFY_ERROR, String.format("Found "
-					+ numUnresolvedPaths + " unresolved path" + plural));	
-			
-		} else if (route.getCompletedPaths().size() == 0) {
-			if (route.wasConstrained()) {
-				notify(Notifier.NOTIFY_ERROR, "No valid paths of execution (constraints applied)");
-			} else {
-				notify(Notifier.NOTIFY_ERROR, "No valid paths of execution");
-			}
-		}
-		m_routes.add(route);
-		setSelectedRoute(route);
-
-		notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(route.getRouteId()));
-*/
-		return true;
-	}
-/*
-	private int getOpcode(int pc, int nodeId, int coreId) throws Exception {
-		return m_xeLoader.getMemoryImage(nodeId, coreId)
-				.readInstructionWord(pc);
-	}
-*/	
 	private boolean functionExists(String functionName) {
 		SymbolTable symbolTable = m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
 		if (symbolTable != null) {
@@ -885,10 +839,6 @@ public class Engine implements Notifier {
 		return ref.resolve(this, m_nodeId, m_coreId);
 	}
 		
-	private void refreshRouteStats() {
-		// TODO
-	}	
-	
 	private boolean checkAddParameters(String label, Reference ref, String type) {
 		if (!resolveRefernece(ref)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
