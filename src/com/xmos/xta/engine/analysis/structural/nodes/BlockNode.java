@@ -13,28 +13,28 @@ public class BlockNode extends Node {
 	private final static boolean DEBUG = false;
 	
 	private List<Node> m_insts;
-	private List<XtaInstruction> m_xtaInsts;
+	//private List<XtaInstruction> m_xtaInsts;
 
 	public BlockNode() {
 		super();
 		m_insts = new LinkedList<Node>();
-		m_xtaInsts = new LinkedList<XtaInstruction>();
+		//m_xtaInsts = new LinkedList<XtaInstruction>();
 	}
 	
 	public BlockNode(BlockNode block) {
 		super();
 		m_insts = block.m_insts;
-		m_xtaInsts = block.m_xtaInsts;
+		//m_xtaInsts = block.m_xtaInsts;
 	}
 	
 	public BlockNode(List<Node> insts) {
 		super();
 		m_insts = insts;
 		
-		m_xtaInsts = new LinkedList<XtaInstruction>();
-		for (Node i : m_insts) {
-			m_xtaInsts.addAll(i.getInstructions());
-		}
+		//m_xtaInsts = new LinkedList<XtaInstruction>();
+		//for (Node i : m_insts) {
+		//	m_xtaInsts.addAll(i.getInstructions());
+		//}
 	}
 	
 	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
@@ -43,7 +43,7 @@ public class BlockNode extends Node {
 			bn.m_insts.add(node.deepClone(startPcs));
 		}
 		
-		bn.m_xtaInsts.addAll(m_xtaInsts);
+		//bn.m_xtaInsts.addAll(m_xtaInsts);
 		return bn;
 	}
 	
@@ -76,7 +76,11 @@ public class BlockNode extends Node {
 	}
 
 	public List<XtaInstruction> getInstructions() {
-		return m_xtaInsts;
+		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
+		for(Node inst : m_insts){
+			insts.addAll(inst.getInstructions());
+		}
+		return insts;
 	}
 		
 	public Set<Integer> getPCs() {
