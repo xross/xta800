@@ -10,8 +10,6 @@ import java.util.Set;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class BlockNode extends Node {
-	private final static boolean DEBUG = false;
-	
 	private List<Node> m_insts;
 	private List<XtaInstruction> m_xtaInsts;
 
@@ -107,10 +105,8 @@ public class BlockNode extends Node {
 		if (!nodeTraverser.foundBlockNode(this, depth)) 
 			return;
 			
-		if (DEBUG) { 
-			for (Node instruction : m_insts) {
-				instruction.traverse(depth + 1, nodeTraverser);
-			}
+		for (Node instruction : m_insts) {
+			instruction.traverse(depth + 1, nodeTraverser);
 		}		
 	}
 	
