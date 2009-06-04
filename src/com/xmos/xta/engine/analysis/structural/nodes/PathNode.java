@@ -97,11 +97,6 @@ public class PathNode extends Node {
 		return "";
 	}
 	
-
-	public boolean isFunction() {
-		return false;
-	}
-
 	public int getStartPc() {
 		return m_nodes.get(0).getStartPc();
 	}

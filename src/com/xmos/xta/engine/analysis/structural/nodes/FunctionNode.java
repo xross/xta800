@@ -153,11 +153,7 @@ public class FunctionNode extends Node {
 		}
 		
 	}
-	
-	public boolean isFunction() {
-		return true;
-	}
-	
+		
 	public int getStartPc() {
 		if(m_function != null){
 			return m_function.getStartPc();
@@ -189,4 +185,7 @@ public class FunctionNode extends Node {
 		return null;
 	}
 
+	public boolean isFunctionNode() {
+		return true;
+	}	
 }

@@ -76,10 +76,6 @@ public class TerminalNode extends Node {
 		return "";
 	}
 
-	public boolean isFunction() {
-		return false;
-	}
-	
 	public int getStartPc() {
 		int pc = 0;
 		for(Node n : m_terminals){

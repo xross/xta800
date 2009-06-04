@@ -563,25 +563,7 @@ public class Engine implements Notifier {
 		}		
 		return getStructureGraph().unsetLoopIterations(reference);
 	}
-	
-	public boolean setLoopMaxIterations(String refString, long iterations) {		
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.SRCLABEL_REF);
-		if (!resolveRefernece(reference)) {
-			return false;
-		}
-		return getStructureGraph().setLoopMaxIterations(reference, iterations);
-	}
-
-	public boolean unsetLoopMaxIterations(String refString) {				
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.SRCLABEL_REF);
-		if (!resolveRefernece(reference)) {
-			return false;
-		}		
-		return getStructureGraph().unsetLoopMaxIterations(reference);
-	}
-	
+		
 	public boolean setLoopScope(String refString, boolean absolute) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.SRCLABEL_REF);

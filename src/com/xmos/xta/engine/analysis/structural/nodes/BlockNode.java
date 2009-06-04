@@ -68,7 +68,7 @@ public class BlockNode extends Node {
 	public long getNumInstructions(Case c) {
 		return getInstructions().size();
 	}
-	
+
 	public long getNumFNops(Case c) {
 		return 0;
 	}
@@ -93,10 +93,6 @@ public class BlockNode extends Node {
 		return "";
 	}
 	
-	public boolean isFunction() {
-		return false;
-	}
-
 	public int getStartPc() {
 		return getInstructions().get(0).getPc();
 	}	

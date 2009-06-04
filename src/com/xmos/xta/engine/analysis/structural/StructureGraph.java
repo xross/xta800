@@ -28,12 +28,23 @@ public class StructureGraph {
 	}
 
 	public boolean setLoopIterations(Reference reference, long iterations) {
-/*
-		 - Find the node in the tree at which we want to assign the iteration count.		
-		 - Check that this node is within a loop node (by looking up). Fail if it is not.		
-		 - From this nodes loop node, clear all the done bits in all nodes below.
-		 - Call 'SetIterations' on the assignment node:
+		boolean loopIterationsSet = false;
 		
+		Collection<Node> referencedNodes = getReferencedNodes(reference);		
+		for (Node referencedNode : referencedNodes) {
+			
+			Node enclosingLoopNode = getEnclosingLoopNode(referencedNode);					
+			if (enclosingLoopNode != null) {
+				
+//				enclosingLoopNode.clearLoopIterationsSet();
+//				referencedNode.setIterations(iterations);
+				loopIterationsSet = true;
+			}			
+		}
+		return loopIterationsSet;
+	}
+		
+		/*
 		 Node::setIterations(value) {
 		     if (!done) {
 		         Set the iteration value on this node.
@@ -65,37 +76,13 @@ public class StructureGraph {
 	       }
 	     }
 */		
-		return false;
-	}
 
 	public boolean unsetLoopIterations(Reference reference) {
 		return false;
 	}
-	
-	public boolean setLoopMaxIterations(Reference reference, long iterations) {
-		Collection<Node> nodes = getLoopNodes(reference);
-		if (nodes.size() > 0) {
-		    for (Node node : nodes) {
-			    ((LoopNode)node).setNumIterations(iterations);
-		    }
-		    return true;
-		}
-		return false;
-	}
 
-	public boolean unsetLoopMaxIterations(Reference reference) {
-		Collection<Node> nodes = getLoopNodes(reference);
-		if (nodes.size() > 0) {
-		    for (Node node : nodes) {
-			    ((LoopNode)node).setNumIterationsSet(false);
-		    }
-		    return true;
-		}
-		return false;
-	}
-	
 	public boolean setLoopScope(Reference reference, boolean isAbsolute) {
-		Collection<Node> nodes = getLoopNodes(reference);
+		Collection<Node> nodes = getReferencedNodes(reference);
 		if (nodes.size() > 0) {
 		    for (Node node : nodes) {
 			    ((LoopNode)node).setScope(isAbsolute);
@@ -105,9 +92,17 @@ public class StructureGraph {
 		return false;
 	}
 	
-	private Collection<Node> getLoopNodes(Reference reference) {
+	private Collection<Node> getReferencedNodes(Reference reference) {
 		Collection<Node> nodes = getLoopNodesContainingPc(reference.getPc());
 		return checkBackTrail(nodes, reference);
+	}
+	
+	private Node getEnclosingLoopNode(Node referencedNode) {		
+		Node node = referencedNode;
+		while (!node.isLoopNode()) {
+			node = node.getParent();
+		}
+		return node;
 	}
 	
 	private Collection<Node> getLoopNodesContainingPc(final int pc) {

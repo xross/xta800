@@ -131,10 +131,6 @@ public class LoopNode extends Node {
 		return "";
 	}
 
-	public boolean isFunction() {
-		return false;
-	}
-
 	public int getStartPc() {
 		return m_loopHeader.getStartPc();
 	}
@@ -195,5 +191,8 @@ public class LoopNode extends Node {
 	public boolean getScope() {
 		return m_isAbsolute;
 	}
-
+	
+	public boolean isLoopNode() {
+		return true;
+	}	
 }

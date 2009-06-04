@@ -26,6 +26,12 @@ public abstract class Node implements Comparable<Node>{
 		WORST,
 		BEST,
 	}
+
+	public abstract Node clone();
+	public abstract Node deepClone(Map<Integer, FunctionNode> startPcs);
+	public abstract Collection<Node> getChildern();
+	public abstract Collection<Node> whatsNext(Node node);
+	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
 	
 	public abstract double getTimeTaken(Case c);
 	public abstract long getNumCycles(Case c);
@@ -36,14 +42,7 @@ public abstract class Node implements Comparable<Node>{
 	public abstract List<XtaInstruction> getInstructions();
 	public abstract Collection<Node> getContaintedNodes();	
 	public abstract String getFunctionName();
-	public abstract boolean isFunction();
 	public abstract int getStartPc();
-	public abstract Node clone();
-	public abstract Node deepClone(Map<Integer, FunctionNode> startPcs);
-	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
-
-	public abstract Collection<Node> getChildern();
-	public abstract Collection<Node> whatsNext(Node node);
 	
 	public static int getNodeCount(){
 		return s_numNodes;
@@ -159,8 +158,15 @@ public abstract class Node implements Comparable<Node>{
 		m_parent = node;
 	}
 	
-	public boolean isInstruction() {
+	public boolean isInstructionNode() {
 		return false;
 	}
 	
+	public boolean isFunctionNode() {
+		return false;
+	}
+
+	public boolean isLoopNode() {
+		return false;
+	}
 }

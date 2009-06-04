@@ -117,7 +117,7 @@ public class StructuralAnalysisEngine {
 
 		for (Node node : currentGraph) {
 			if (!seen.contains(node)) {
-				if (!node.isFunction()) {
+				if (!node.isFunctionNode()) {
 					BasicBlockMatcher bbpm = new BasicBlockMatcher();
 					if (bbpm.match(node, treeStart, currentGraph)) {
 						seen.addAll(bbpm.getBlock().getContaintedNodes());

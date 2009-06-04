@@ -47,7 +47,7 @@ public class BasicBlockMatcher  {
 			return true;
 		} else if(node.getPrevNodes().size() ==  1){
 			Node prev = node.getPrevNodes().iterator().next();
-			if(prev.isFunction()){
+			if(prev.isFunctionNode()){
 				return true;
 			}
 			if(prev.getNextNodes().size() > 1){
@@ -68,7 +68,7 @@ public class BasicBlockMatcher  {
 		} else if(node.getNextNodes().size() ==  1){
 			Node next = node.getNextNodes().iterator().next();
 			
-			if(next.isFunction()){
+			if(next.isFunctionNode()){
 				return true;
 			}
 			if(next.getPrevNodes().size() > 1){

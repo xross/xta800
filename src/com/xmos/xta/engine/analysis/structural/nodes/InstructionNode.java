@@ -96,7 +96,7 @@ public class InstructionNode extends Node {
 		return null;
 	}		
 	
-	public boolean isInstruction() {
+	public boolean isInstructionNode() {
 		return true;
 	}
 }
