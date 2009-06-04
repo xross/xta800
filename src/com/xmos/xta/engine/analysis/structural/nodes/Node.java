@@ -26,6 +26,9 @@ public abstract class Node implements Comparable<Node>{
 	boolean m_numIterationsDone;
 	boolean m_isAbsolute;
 
+	
+	boolean isExcluded;
+
 	public enum Case {
 		WORST,
 		BEST,

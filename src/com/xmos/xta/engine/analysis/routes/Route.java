@@ -174,7 +174,7 @@ public class Route {
 		for (Node node : structureGraph.getThreads()) {
 			node.traverse(0, new DefaultNodeTraverser() {
 				public boolean foundFunctionNode(Node node, int depth) {
-					HashSet<Node> map = pcToNodes.get(node.getStartPc());
+					HashSet<Node> map = pcToNodes.get(((FunctionNode)node).getFunctionName());
 					if (map == null) {
 						map = new HashSet<Node>();
 					}
@@ -186,10 +186,6 @@ public class Route {
 		}
 		return pcToNodes;
 	}
-
-	// below here need sorting / removing
-
-	
 
 	public StructureGraph getStructureGraph() {
 		return m_structureGraph;
