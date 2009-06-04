@@ -1,13 +1,17 @@
 package com.xmos.xta.engine.analysis.routes;
 
-import com.xmos.xta.engine.analysis.routes.Route.RouteMode;
 import com.xmos.xta.engine.references.Reference;
 
 public class RouteDescription {
 	private String m_description;
+	private String m_functionName;
 	private RouteMode m_mode;
 	private Reference m_from;
 	private Reference m_to;
+	
+	enum RouteMode {
+		ABSLOUTE, FUNCTION
+	};
 	
 	public RouteDescription(Reference from, Reference to){
 		m_description = String.format("path: %s to %s", from.getRef(), to.getRef());
@@ -18,6 +22,7 @@ public class RouteDescription {
 	
 	public RouteDescription(String functionName){
 		m_description = String.format("function: %s", functionName);
+		m_functionName = functionName;
 		m_mode = RouteMode.FUNCTION;
 		m_from = null;
 		m_to = null;
@@ -37,5 +42,9 @@ public class RouteDescription {
 
 	public Reference getEndPoint() {
 		return m_to;
+	}
+
+	public String getFunctionName() {
+		return m_functionName;
 	}
 }

@@ -86,7 +86,7 @@ public class FunctionHandler {
 
 	private boolean canReturn(Node start, Set<Node> seen){
 		seen.add(start);
-		if (start.getNextNodes().size() == 0) {
+		if (start.getNextNodes().size() == 0){
 			if (start.isFunctionNode()) return false;
 			return start.getInstructions().get(0).getReturn();
 		} else {

@@ -88,4 +88,41 @@ public class StructureGraph {
 	private Collection<Node> checkBackTrail(Collection<Node> nodes, Reference reference) {
 		return nodes;
 	}
+	
+	//maybe this should be moved into the analysis
+	public void removeLinks() {	
+		for (Node node : getThreads()) {
+		    node.traverse(0, new DefaultNodeTraverser() {
+		    	public boolean foundBlockNode(Node node, int depth) {
+		    		node.freeMemory();
+		        	return true;
+		    	}
+		        public boolean foundFunctionNode(Node node, int depth) {
+		        	node.freeMemory();
+		        	return true;
+		        }
+		        public boolean foundInstructionNode(Node node, int depth) {
+		        	node.freeMemory();
+		        	return true;
+		        }
+		        public boolean foundPathNode(Node node, int depth) {
+		        	node.freeMemory();
+		        	return true;
+		        }
+		        public boolean foundLoopNode(Node node, int depth) {
+		        	node.freeMemory();
+		        	return true;
+		        }
+		        public boolean foundSectionNode(Node node, int depth) {
+		        	node.freeMemory();
+		        	return true;
+		        }
+		        public boolean foundTerminalNode(Node node, int depth) {
+		        	node.freeMemory();
+		        	return true;
+		        }
+		    });
+		}				    	
+    	return;
+    }
 }

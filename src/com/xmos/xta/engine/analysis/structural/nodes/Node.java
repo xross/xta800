@@ -149,9 +149,9 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public void freeMemory() {
-		m_prevNodes = null;
-		m_nextNodes = null;
-		m_dominators = null;		
+		m_prevNodes.clear();
+		m_nextNodes.clear();
+		m_dominators.clear();
 	}
 	
 	public Node getParent(){
