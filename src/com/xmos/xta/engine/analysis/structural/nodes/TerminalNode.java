@@ -50,10 +50,10 @@ public class TerminalNode extends Node {
 		return null;
 	}
 
-	public Collection<Node> getContaintedNodes() {
+	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new HashSet<Node> ();
 		for(Node loop: m_terminals){
-			containedNodes.addAll(loop.getContaintedNodes());
+			containedNodes.addAll(loop.getContainedNodes());
 		}
 		return containedNodes;
 	}
@@ -99,7 +99,7 @@ public class TerminalNode extends Node {
 		return "Terminal" + m_id;
 	}
 
-	public List<Node> getChildern() {
+	public List<Node> getChildren() {
 		return new LinkedList<Node>(m_terminals);
 	}
 

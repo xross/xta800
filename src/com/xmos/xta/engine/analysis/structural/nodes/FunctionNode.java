@@ -123,9 +123,9 @@ public class FunctionNode extends Node {
 		return new FunctionNode(this);
 	}
 	
-	public Collection<Node> getContaintedNodes() {
+	public Collection<Node> getContainedNodes() {
 		if (m_knownFunction) {
-			return m_function.getContaintedNodes();
+			return m_function.getContainedNodes();
 		} else {
 			return new HashSet<Node>();
 		}
@@ -172,7 +172,7 @@ public class FunctionNode extends Node {
 		}
 	}
 
-	public List<Node> getChildern() {
+	public List<Node> getChildren() {
 		List<Node> children = new LinkedList<Node>();
 		if(m_function!= null){
 			children.add(m_function);

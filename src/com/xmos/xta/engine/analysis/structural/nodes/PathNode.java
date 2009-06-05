@@ -88,10 +88,10 @@ public class PathNode extends Node {
 		return new PathNode(this);
 	}
 
-	public Collection<Node> getContaintedNodes() {
+	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new HashSet<Node> ();
 		for(Node loop: m_nodes){
-			containedNodes.addAll(loop.getContaintedNodes());
+			containedNodes.addAll(loop.getContainedNodes());
 		}
 		return containedNodes;
 	}
@@ -117,7 +117,7 @@ public class PathNode extends Node {
 		return "Path" + m_id;
 	}
 
-	public List<Node> getChildern() {
+	public List<Node> getChildren() {
 		return m_nodes;
 	}
 	

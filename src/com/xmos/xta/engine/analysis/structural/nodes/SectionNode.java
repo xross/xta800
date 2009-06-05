@@ -80,10 +80,10 @@ public class SectionNode extends Node {
 		return new SectionNode(this);
 	}
 
-	public Collection<Node> getContaintedNodes() {
+	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new HashSet<Node> ();
 		for(Node loop: m_options){
-			containedNodes.addAll(loop.getContaintedNodes());
+			containedNodes.addAll(loop.getContainedNodes());
 		}
 		return containedNodes;
 	}
@@ -112,7 +112,7 @@ public class SectionNode extends Node {
 		return "Section" + m_id;
 	}
 
-	public List<Node> getChildern() {
+	public List<Node> getChildren() {
 		return new LinkedList<Node>(m_options);
 	}
 
@@ -125,7 +125,7 @@ public class SectionNode extends Node {
 	    	m_numIterationsDone = true;
 	    	
 	    	boolean allChildrenNotDone = true;
-			for (Node child : getChildern()) {
+			for (Node child : getChildren()) {
 				if (child.getNumIterationsDone()) { 
 					allChildrenNotDone = false;
 				    break;
@@ -135,7 +135,7 @@ public class SectionNode extends Node {
 			if (allChildrenNotDone) {
 		    	m_numIterations = numIterations;
 		    	Node worstCaseNode = getWorstCaseOption();
-				for (Node child : getChildern()) {
+				for (Node child : getChildren()) {
 					if (child == worstCaseNode) {
 						child.setNumIterations(numIterations);
 					} else {
@@ -173,7 +173,7 @@ public class SectionNode extends Node {
 	
 	private int getTotalIterations() {
 		int totalIterations = 0;
-		for (Node child : getChildern()) {
+		for (Node child : getChildren()) {
 			totalIterations += child.getNumIterations();
 		}
 		return totalIterations;

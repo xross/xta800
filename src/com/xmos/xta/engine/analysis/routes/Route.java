@@ -261,8 +261,8 @@ public class Route {
 				set.add(node);
 				return;
 			} else {
-				if(!node.getChildern().isEmpty()){
-					explore(node.getChildern().get(0), set, endPcs, endNodes, parent);
+				if (!node.getChildren().isEmpty()) {
+					explore(node.getChildren().get(0), set, endPcs, endNodes, parent);
 				}
 			}
 		}

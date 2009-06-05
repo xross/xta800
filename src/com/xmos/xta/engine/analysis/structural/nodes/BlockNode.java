@@ -79,7 +79,7 @@ public class BlockNode extends Node {
 		return pcs;
 	}
 
-	public Collection<Node> getContaintedNodes() {
+	public Collection<Node> getContainedNodes() {
 		return new HashSet<Node> (m_insts);
 	}
 
@@ -104,7 +104,7 @@ public class BlockNode extends Node {
 		return "Block" + m_id;
 	}
 
-	public List<Node> getChildern() {
+	public List<Node> getChildren() {
 		return m_insts;
 	}
 

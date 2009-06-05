@@ -52,7 +52,7 @@ public class InstructionNode extends Node {
 		return "instruction" + m_id;
 	}
 	
-	public Collection<Node> getContaintedNodes() {
+	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new HashSet<Node> ();
 		containedNodes.add(this);
 		return containedNodes;
@@ -90,7 +90,7 @@ public class InstructionNode extends Node {
 		return clone();
 	}
 
-	public List<Node> getChildern() {
+	public List<Node> getChildren() {
 		return new LinkedList<Node>();
 	}
 

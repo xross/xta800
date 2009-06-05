@@ -406,7 +406,7 @@ public class Engine implements Notifier {
 	
 
 	private void mark(Node node) {
-		for(Node child : node.getChildern()){
+		for (Node child : node.getChildren()){
 			child.setParent(node);
 			mark(child);
 		}

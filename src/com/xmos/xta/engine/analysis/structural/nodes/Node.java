@@ -36,7 +36,7 @@ public abstract class Node implements Comparable<Node>{
 
 	public abstract Node clone();
 	public abstract Node deepClone(Map<Integer, FunctionNode> startPcs);
-	public abstract List<Node> getChildern();
+	public abstract List<Node> getChildren();
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
 	
@@ -47,7 +47,7 @@ public abstract class Node implements Comparable<Node>{
 	
 	public abstract Set<Integer> getPCs();
 	public abstract List<XtaInstruction> getInstructions();
-	public abstract Collection<Node> getContaintedNodes();	
+	public abstract Collection<Node> getContainedNodes();	
 	public abstract String getFunctionName();
 	public abstract int getStartPc();
 	
@@ -184,7 +184,7 @@ public abstract class Node implements Comparable<Node>{
 	    	m_numIterations = numIterations;
 	    	m_numIterationsDone = true;
 	    	
-			for (Node child : getChildern()) {
+			for (Node child : getChildren()) {
 				if (child.isLoopNode()) {
 					// Just set the number of iterations on the loop, 
 					// but don't propagate it down to its children
@@ -203,7 +203,7 @@ public abstract class Node implements Comparable<Node>{
 	
 	public void setNumIterationsDone(boolean done) {
 		m_numIterationsDone = done;
-		for (Node child : getChildern()) {
+		for (Node child : getChildren()) {
 			if (!child.isLoopNode()) {
 			    child.setNumIterationsDone(done);
 			}
@@ -247,7 +247,7 @@ public abstract class Node implements Comparable<Node>{
 		
 		// Builds up a stack of all the children up to the calling node...
 		Stack<Node> children = new Stack<Node>();
-		for (Node child : getChildern()) {
+		for (Node child : getChildren()) {
 			if (child == node)
 				break;
 			

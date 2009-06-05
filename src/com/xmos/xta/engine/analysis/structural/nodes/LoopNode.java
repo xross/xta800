@@ -106,11 +106,11 @@ public class LoopNode extends Node {
 		return new LoopNode(this);
 	}
 
-	public Collection<Node> getContaintedNodes() {
+	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new HashSet<Node>();
-		containedNodes.addAll(m_loopHeader.getContaintedNodes());
+		containedNodes.addAll(m_loopHeader.getContainedNodes());
 		for (Node loop : m_loops) {
-			containedNodes.addAll(loop.getContaintedNodes());
+			containedNodes.addAll(loop.getContainedNodes());
 		}
 		return containedNodes;
 	}
@@ -137,7 +137,7 @@ public class LoopNode extends Node {
 		return "Loop" + m_id;
 	}
 
-	public List<Node> getChildern() {
+	public List<Node> getChildren() {
 		List<Node> children = new LinkedList<Node>();
 		children.add(m_loopHeader);
 		for (Node node : m_loops) {
@@ -165,7 +165,7 @@ public class LoopNode extends Node {
 	    if (!m_numIterationsDone) {
 	    	m_numIterationsDone = true;
 	    	
-			for (Node child : getChildern()) {
+			for (Node child : getChildren()) {
 				child.setNumIterations(numIterations);
 			}
 	    }
