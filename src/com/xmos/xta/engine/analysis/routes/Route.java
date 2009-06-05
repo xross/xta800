@@ -3,6 +3,8 @@ package com.xmos.xta.engine.analysis.routes;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import com.xmos.xta.engine.Engine;
@@ -10,6 +12,7 @@ import com.xmos.xta.engine.analysis.routes.RouteDescription;
 import com.xmos.xta.engine.analysis.routes.RouteDescription.RouteMode;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
+import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.engine.analysis.structural.nodes.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -148,20 +151,71 @@ public class Route {
 			}
 			m_structureGraph.removeLinks();
 			for (Node start : startNodes) {
-				Collection<Node> setExplored = new HashSet<Node>();
-				explore(start, setExplored, endPcs, endNodes, null);
+				Collection<Node> workingSet = new HashSet<Node>();
+				explore(start, workingSet, endPcs, endNodes, null);
 	
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
-				sae.createStructure(setExplored, start, m_engine);
+				
+				Node newStart = makeBasicBlocks(start, endNodes, workingSet);
+				//Node newStart = start;
+				sae.createStructure(workingSet, newStart, m_engine);
 	
 				m_structureGraph.removeLinks();
 	
-				m_routes.add(setExplored.iterator().next());
+				m_routes.add(workingSet.iterator().next());
 			}
 		} else {
 			assert(false);
 		}
 
+	}
+	
+	private Node makeBasicBlocks(Node start, Collection<Node> endNodes, Collection<Node> workingSet){
+		//from the start instruction crawl downwards stopping at basic block boundaries
+		Node currentNode = start;
+		List<Node> startList = new LinkedList<Node>();
+		startList.add(currentNode);
+		
+		while(currentNode.getNextNodes().size() == 1 && 
+				currentNode.getNextNodes().iterator().next().isInstructionNode()){
+			currentNode = currentNode.getNextNodes().iterator().next();
+			startList.add(currentNode);
+		}
+		BlockNode startBlock = new BlockNode(startList);
+		workingSet.removeAll(startList);
+		workingSet.add(startBlock);
+		
+		for(Node next : currentNode.getNextNodes()){
+			next.removePrevNode(currentNode);
+			CommonMethods.connect(next, startBlock);
+		}
+		
+		//from every end node in the working set crawl upwards stopping at basic block boundaries
+		for(Node endNode : endNodes){
+			if(workingSet.contains(endNode)){
+				List<Node> endList = new LinkedList<Node>();
+				Node end  = endNode;
+				endList.add(end);
+				while(end.getPrevNodes().size() == 1 && 
+						end.getPrevNodes().iterator().next().isInstructionNode()){
+					end = end.getPrevNodes().iterator().next();
+					endList.add(0, end);
+				}
+				
+				BlockNode endBlock = new BlockNode(endList);
+				workingSet.removeAll(endList);
+				workingSet.add(endBlock);
+				
+				for(Node prev : end.getPrevNodes()){
+					prev.removeNextNode(end);
+					CommonMethods.connect(endBlock, prev);
+				}
+			}
+		}
+		
+		
+		return startBlock;
+		
 	}
 	
 	private void buildExclustion(){
@@ -207,10 +261,8 @@ public class Route {
 				set.add(node);
 				return;
 			} else {
-				// dont add the node and start to drop down until it is found.
-				for (Node children : node.getChildern()) {
-					explore(children, set, endPcs, endNodes, parent);
-					break;
+				if(!node.getChildern().isEmpty()){
+					explore(node.getChildern().get(0), set, endPcs, endNodes, parent);
 				}
 			}
 		}

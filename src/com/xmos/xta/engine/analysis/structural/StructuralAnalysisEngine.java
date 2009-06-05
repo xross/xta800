@@ -47,7 +47,49 @@ public class StructuralAnalysisEngine {
 	public StructureGraph getStructureGraph() {
 		return m_structureGraph;
 	}
+	
+	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine) {
+		
+		List<PatternMatcher> patternMatchers = new ArrayList<PatternMatcher>();
+		patternMatchers.add(new SelfLoopPattern());
+		patternMatchers.add(new LoopPatternMatcher());
+		patternMatchers.add(new SectionPatternMatcher());
+		patternMatchers.add(new SectionTransformer());
+		patternMatchers.add(new PathPatternMatcher());
+		patternMatchers.add(new UpWedge());
+		patternMatchers.add(new TerminalPatternMatcher());
+		boolean working = true;
+		boolean dominatorTreeUpToDate = false;
+		while (working) {
+			
+			List<Node> postOrder = new LinkedList<Node>();
+			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
+			working = false;
+			for (PatternMatcher pm : patternMatchers) {
+				if (!dominatorTreeUpToDate && pm.usesDominatorTree()) {
+					buildDominatorTree(workingSet, treeStart);
+					dominatorTreeUpToDate = true;
+				}
+				for (Node node : postOrder) {
+					if (engine.getAbort()) {
+						return false;
+					}
+					if (pm.isMatch(node, workingSet, false, treeStart)) {
+						treeStart = pm.getTreeStart();
+						assert (connectivitySanityCheck(workingSet));
+						dominatorTreeUpToDate = false;
+						working = true;
+						break;
+					}
+				}
+				if (working)
+					break;
+			}
+		}
 
+		return true;
+	}
+	
 	private void linkFunctions() {
 		for(FunctionNode fn : m_cfgToStruct.keySet()){
 			if(m_cfgToStruct.get(fn).getBranchTarget() != null){
@@ -153,48 +195,6 @@ public class StructuralAnalysisEngine {
 		}
 	}
 
-	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine) {
-		
-		List<PatternMatcher> patternMatchers = new ArrayList<PatternMatcher>();
-		patternMatchers.add(new SelfLoopPattern());
-		patternMatchers.add(new LoopPatternMatcher());
-		patternMatchers.add(new SectionPatternMatcher());
-		patternMatchers.add(new SectionTransformer());
-		patternMatchers.add(new PathPatternMatcher());
-		patternMatchers.add(new UpWedge());
-		patternMatchers.add(new TerminalPatternMatcher());
-		boolean working = true;
-		boolean dominatorTreeUpToDate = false;
-		while (working) {
-			
-			List<Node> postOrder = new LinkedList<Node>();
-			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
-			working = false;
-			for (PatternMatcher pm : patternMatchers) {
-				if (!dominatorTreeUpToDate && pm.usesDominatorTree()) {
-					buildDominatorTree(workingSet, treeStart);
-					dominatorTreeUpToDate = true;
-				}
-				for (Node node : postOrder) {
-					if (engine.getAbort()) {
-						return false;
-					}
-					if (pm.isMatch(node, workingSet, false, treeStart)) {
-						treeStart = pm.getTreeStart();
-						assert (connectivitySanityCheck(workingSet));
-						dominatorTreeUpToDate = false;
-						working = true;
-						break;
-					}
-				}
-				if (working)
-					break;
-			}
-		}
-
-		return true;
-	}
-
 	private void buildDominatorTree(Collection<Node> reachableNodes, Node treeStart) {
 
 		for (Node node : reachableNodes) {
@@ -265,6 +265,7 @@ public class StructuralAnalysisEngine {
 		}
 		return true;
 	}
+	
 	/*
 	private static int g = 0;
 	private void dumpTree(Collection<Node> workingSet){

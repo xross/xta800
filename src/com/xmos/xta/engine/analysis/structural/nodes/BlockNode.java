@@ -114,7 +114,7 @@ public class BlockNode extends Node {
 		return "Block" + m_id;
 	}
 
-	public Collection<Node> getChildern() {
+	public List<Node> getChildern() {
 		return m_insts;
 	}
 

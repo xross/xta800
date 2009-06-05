@@ -88,8 +88,8 @@ public class InstructionNode extends Node {
 		return clone();
 	}
 
-	public Collection<Node> getChildern() {
-		return new HashSet<Node>();
+	public List<Node> getChildern() {
+		return new LinkedList<Node>();
 	}
 
 	public Collection<Node> whatsNext(Node node) {

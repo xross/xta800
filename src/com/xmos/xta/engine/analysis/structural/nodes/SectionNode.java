@@ -110,8 +110,8 @@ public class SectionNode extends Node {
 		return "Section" + m_id;
 	}
 
-	public Collection<Node> getChildern() {
-		return m_options;
+	public List<Node> getChildern() {
+		return new LinkedList<Node>(m_options);
 	}
 
 	public Collection<Node> whatsNext(Node node) {

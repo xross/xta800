@@ -170,8 +170,8 @@ public class FunctionNode extends Node {
 		}
 	}
 
-	public Collection<Node> getChildern() {
-		Collection<Node> children = new HashSet<Node>();
+	public List<Node> getChildern() {
+		List<Node> children = new LinkedList<Node>();
 		if(m_function!= null){
 			children.add(m_function);
 		}

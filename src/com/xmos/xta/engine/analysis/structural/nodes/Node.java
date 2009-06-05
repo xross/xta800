@@ -35,7 +35,7 @@ public abstract class Node implements Comparable<Node>{
 
 	public abstract Node clone();
 	public abstract Node deepClone(Map<Integer, FunctionNode> startPcs);
-	public abstract Collection<Node> getChildern();
+	public abstract List<Node> getChildern();
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
 	

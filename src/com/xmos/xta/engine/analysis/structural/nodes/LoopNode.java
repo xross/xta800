@@ -3,6 +3,7 @@ package com.xmos.xta.engine.analysis.structural.nodes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -134,8 +135,8 @@ public class LoopNode extends Node {
 		return "Loop" + m_id;
 	}
 
-	public Collection<Node> getChildern() {
-		Collection<Node> children = new HashSet<Node>(m_loops);
+	public List<Node> getChildern() {
+		List<Node> children = new LinkedList<Node>(m_loops);
 		children.add(m_loopHeader);
 		return children;
 	}
