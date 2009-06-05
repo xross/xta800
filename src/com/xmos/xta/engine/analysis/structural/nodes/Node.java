@@ -16,7 +16,6 @@ public abstract class Node implements Comparable<Node>{
 	int m_id;
 	
 	Node m_parent;
-	Collection<Node> m_next;
 	
 	boolean m_dominatorSetIsCompleteSet;
 	Set<Node> m_nextNodes;
@@ -28,7 +27,7 @@ public abstract class Node implements Comparable<Node>{
 	boolean m_numIterationsDone;
 	boolean m_isAbsolute;
 	
-	boolean isExcluded;
+	boolean m_isExcluded;
 
 	public enum Case {
 		WORST,
@@ -37,7 +36,7 @@ public abstract class Node implements Comparable<Node>{
 
 	public abstract Node clone();
 	public abstract Node deepClone(Map<Integer, FunctionNode> startPcs);
-	public abstract Collection<Node> getChildern();
+	public abstract List<Node> getChildern();
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
 	
@@ -61,6 +60,7 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public Node() {
+		m_isExcluded = false;
 		m_nextNodes = new HashSet<Node>();
 		m_prevNodes = new HashSet<Node>();
 		m_dominators = new HashSet<Node>();
@@ -68,6 +68,7 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public Node(Node node) {
+		m_isExcluded = node.m_isExcluded;
 		m_nextNodes = new HashSet<Node>(node.m_nextNodes);
 		m_prevNodes = new HashSet<Node>(node.m_prevNodes);
 		m_dominators = new HashSet<Node>(node.m_prevNodes);
@@ -220,6 +221,14 @@ public abstract class Node implements Comparable<Node>{
 	public boolean getScope() {
 		return m_isAbsolute;
 	}
+	
+	public void setExcluded(boolean excluded){
+		m_isExcluded = excluded;
+	}
+	
+	public boolean isExcluded() {
+		return m_isExcluded;
+	}	
 	
 	public Node getEnclosingLoopNode() {		
 		Node node = m_parent;

@@ -99,8 +99,8 @@ public class TerminalNode extends Node {
 		return "Terminal" + m_id;
 	}
 
-	public Collection<Node> getChildern() {
-		return m_terminals;
+	public List<Node> getChildern() {
+		return new LinkedList<Node>(m_terminals);
 	}
 
 	public Collection<Node> whatsNext(Node node) {

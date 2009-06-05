@@ -117,7 +117,7 @@ public class PathNode extends Node {
 		return "Path" + m_id;
 	}
 
-	public Collection<Node> getChildern() {
+	public List<Node> getChildern() {
 		return m_nodes;
 	}
 	

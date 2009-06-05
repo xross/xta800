@@ -58,8 +58,9 @@ public class Functions extends Command {
     }
 
     private Set<String> getFunctions(Engine engine) {
-    	final Set<String> functions = new TreeSet<String>();     	
-    	StructureGraph structureGraph = engine.getRoute(m_routeId).getStructureGraph();
+    	final Set<String> functions = new TreeSet<String>();   
+    	StructureGraph structureGraph = engine.getStructureGraph();
+    	//StructureGraph structureGraph = engine.getRoute(m_routeId).getStructureGraph();
 		Collection<Node> nodes = structureGraph.getThreads();	
 		for (Node node : nodes) {
 		    node.traverse(0, new DefaultNodeTraverser() {
