@@ -24,7 +24,8 @@ public class TraceDisplayer {
 	}
 	
     public void display() {
-    	StructureGraph structureGraph = m_engine.getRoute(m_routeId).getStructureGraph();
+    	StructureGraph structureGraph = m_engine.getStructureGraph();
+    	//StructureGraph structureGraph = m_engine.getRoute(m_routeId).getStructureGraph();
 		Collection<Node> nodes = structureGraph.getThreads();	
 		for (Node node : nodes) {					
 		    node.traverse(0, new DefaultNodeTraverser() {

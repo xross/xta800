@@ -15,6 +15,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.constraint.Constraint;
+import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.unknowns.Unknowns;
 
 class AbortedException extends Exception {
@@ -41,7 +42,7 @@ public class Route {
 	
 	private Constraint m_constraint;
 	private Set<Node> m_routeExclusionNodes;
-	
+	Collection<Reference> m_excludedRefs;
 	
 	public static void resetRouteCount() {
 		s_routeCount = 0;
@@ -57,15 +58,25 @@ public class Route {
 		m_routeTiming = new RouteTiming(this, engine.getConfig(), engine.getNodeId(), engine.getCoreId());
 		m_unknowns = new Unknowns();
 		m_routeExclusionNodes = new HashSet<Node>();
+		m_excludedRefs = new HashSet<Reference>();
 	}
 
-	private void buildExclustion(Constraint constraint){
-
-
+	public void addExclededReference(Reference ref){
+		m_excludedRefs.add(ref);
+		buildExclustion();
 	}
 	
-	public StructureGraph getStructureGraph() {
-		return m_structureGraph;
+	public Collection<Reference> getExcludedReferences(){
+		return m_excludedRefs;
+	}
+	
+	public void removeExcludedReference(Reference ref){
+		m_excludedRefs.remove(ref);
+		buildExclustion();
+	}
+	
+	public boolean isExcluded(Node node){
+		return m_routeExclusionNodes.contains(node) || node.isExcluded();
 	}
 
 	public int getRouteId() {
@@ -152,7 +163,18 @@ public class Route {
 		}
 
 	}
+	
+	private void buildExclustion(){
+		//this uses the m_excludedRefs to populate the m_routeExclusionNodes
 
+		for(Reference ref : m_excludedRefs){
+			Collection<Node> refNodes = null;
+			
+			
+			
+		}
+	}
+	
 	private Set<Integer> getEndPcs() {
 		Set<Integer> endPcs = new HashSet<Integer>();
 		endPcs.add(m_description.getEndPoint().getPc());

@@ -26,7 +26,7 @@ public abstract class Node implements Comparable<Node>{
 	boolean m_isAbsolute;
 
 	
-	boolean isExcluded;
+	boolean m_isExcluded;
 
 	public enum Case {
 		WORST,
@@ -59,6 +59,7 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public Node() {
+		m_isExcluded = false;
 		m_nextNodes = new HashSet<Node>();
 		m_prevNodes = new HashSet<Node>();
 		m_dominators = new HashSet<Node>();
@@ -66,6 +67,7 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public Node(Node node) {
+		m_isExcluded = node.m_isExcluded;
 		m_nextNodes = new HashSet<Node>(node.m_nextNodes);
 		m_prevNodes = new HashSet<Node>(node.m_prevNodes);
 		m_dominators = new HashSet<Node>(node.m_prevNodes);
@@ -225,5 +227,13 @@ public abstract class Node implements Comparable<Node>{
 			node = node.getParent();
 		}
 		return node;
+	}
+	
+	public void setExcluded(boolean excluded){
+		m_isExcluded = excluded;
+	}
+	
+	public boolean isExcluded() {
+		return m_isExcluded;
 	}	
 }

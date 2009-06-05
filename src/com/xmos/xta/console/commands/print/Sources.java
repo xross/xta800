@@ -64,8 +64,8 @@ public class Sources extends Command {
     private Set<String> getSources(Engine engine) {
     	final Set<String> sources = new TreeSet<String>();   
     	final XeObject xeObject = engine.getXeObject();
-    	
-    	StructureGraph structureGraph = engine.getRoute(m_routeId).getStructureGraph();
+    	StructureGraph structureGraph = engine.getStructureGraph();
+    	//StructureGraph structureGraph = engine.getRoute(m_routeId).getStructureGraph();
 		Collection<Node> nodes = structureGraph.getThreads();	
 		for (Node node : nodes) {
 		    node.traverse(0, new DefaultNodeTraverser() {
