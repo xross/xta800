@@ -7,8 +7,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
+import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class SectionNode extends Node {
 	private Collection<Node> m_options;
@@ -78,10 +80,10 @@ public class SectionNode extends Node {
 		return new SectionNode(this);
 	}
 
-	public Collection<Node> getContaintedNodes() {
+	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new HashSet<Node> ();
 		for(Node loop: m_options){
-			containedNodes.addAll(loop.getContaintedNodes());
+			containedNodes.addAll(loop.getContainedNodes());
 		}
 		return containedNodes;
 	}
@@ -110,7 +112,7 @@ public class SectionNode extends Node {
 		return "Section" + m_id;
 	}
 
-	public List<Node> getChildern() {
+	public List<Node> getChildren() {
 		return new LinkedList<Node>(m_options);
 	}
 
@@ -123,7 +125,7 @@ public class SectionNode extends Node {
 	    	m_numIterationsDone = true;
 	    	
 	    	boolean allChildrenNotDone = true;
-			for (Node child : getChildern()) {
+			for (Node child : getChildren()) {
 				if (child.getNumIterationsDone()) { 
 					allChildrenNotDone = false;
 				    break;
@@ -133,7 +135,7 @@ public class SectionNode extends Node {
 			if (allChildrenNotDone) {
 		    	m_numIterations = numIterations;
 		    	Node worstCaseNode = getWorstCaseOption();
-				for (Node child : getChildern()) {
+				for (Node child : getChildren()) {
 					if (child == worstCaseNode) {
 						child.setNumIterations(numIterations);
 					} else {
@@ -147,6 +149,15 @@ public class SectionNode extends Node {
 			}
 	    }
 	}
+	
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
+			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
+		
+		if (!calledFromAbove) {
+		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
+		}
+		return false;
+	}	
 	
 	private Node getWorstCaseOption() {
 		Iterator<Node> iter = m_options.iterator();
@@ -162,12 +173,14 @@ public class SectionNode extends Node {
 	
 	private int getTotalIterations() {
 		int totalIterations = 0;
-		for (Node child : getChildern()) {
+		for (Node child : getChildren()) {
 			totalIterations += child.getNumIterations();
 		}
 		return totalIterations;
 	}
+	
 	public boolean isSection() {
 		return true;
 	}
+
 }

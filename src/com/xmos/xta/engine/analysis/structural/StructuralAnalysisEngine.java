@@ -160,7 +160,7 @@ public class StructuralAnalysisEngine {
 				if (!node.isFunctionNode()) {
 					BasicBlockMatcher bbpm = new BasicBlockMatcher();
 					if (bbpm.match(node, treeStart, currentGraph)) {
-						seen.addAll(bbpm.getBlock().getContaintedNodes());
+						seen.addAll(bbpm.getBlock().getContainedNodes());
 						basicBlocks.add(bbpm.getBlock());
 						treeStart = bbpm.getTreeStart();
 						cfgToStructure.put(node, bbpm.getBlock());

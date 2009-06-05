@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
+import com.xmos.xta.engine.references.types.ReferenceType;
 
 public abstract class Node implements Comparable<Node>{
 	static int s_numNodes;
@@ -24,7 +26,6 @@ public abstract class Node implements Comparable<Node>{
 	long m_numIterations;
 	boolean m_numIterationsDone;
 	boolean m_isAbsolute;
-
 	
 	boolean m_isExcluded;
 
@@ -35,7 +36,7 @@ public abstract class Node implements Comparable<Node>{
 
 	public abstract Node clone();
 	public abstract Node deepClone(Map<Integer, FunctionNode> startPcs);
-	public abstract List<Node> getChildern();
+	public abstract List<Node> getChildren();
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
 	
@@ -46,7 +47,7 @@ public abstract class Node implements Comparable<Node>{
 	
 	public abstract Set<Integer> getPCs();
 	public abstract List<XtaInstruction> getInstructions();
-	public abstract Collection<Node> getContaintedNodes();	
+	public abstract Collection<Node> getContainedNodes();	
 	public abstract String getFunctionName();
 	public abstract int getStartPc();
 	
@@ -185,7 +186,7 @@ public abstract class Node implements Comparable<Node>{
 	    	m_numIterations = numIterations;
 	    	m_numIterationsDone = true;
 	    	
-			for (Node child : getChildern()) {
+			for (Node child : getChildren()) {
 				if (child.isLoopNode()) {
 					// Just set the number of iterations on the loop, 
 					// but don't propagate it down to its children
@@ -204,7 +205,7 @@ public abstract class Node implements Comparable<Node>{
 	
 	public void setNumIterationsDone(boolean done) {
 		m_numIterationsDone = done;
-		for (Node child : getChildern()) {
+		for (Node child : getChildren()) {
 			if (!child.isLoopNode()) {
 			    child.setNumIterationsDone(done);
 			}
@@ -223,6 +224,14 @@ public abstract class Node implements Comparable<Node>{
 		return m_isAbsolute;
 	}
 	
+	public void setExcluded(boolean excluded){
+		m_isExcluded = excluded;
+	}
+	
+	public boolean isExcluded() {
+		return m_isExcluded;
+	}	
+	
 	public Node getEnclosingLoopNode() {		
 		Node node = m_parent;
 		while ((node != null) && !node.isLoopNode()) {
@@ -230,13 +239,55 @@ public abstract class Node implements Comparable<Node>{
 		}
 		return node;
 	}
-	
-	public void setExcluded(boolean excluded){
-		m_isExcluded = excluded;
+
+	public boolean checkBackTrail(Stack<ReferenceType> referenceTypes) {
+		return checkBackTrail(referenceTypes, null, false, new FunctionCallStatus());
 	}
 	
-	public boolean isExcluded() {
-		return m_isExcluded;
-	}
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
+			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
 		
+		// Builds up a stack of all the children up to the calling node...
+		Stack<Node> children = new Stack<Node>();
+		for (Node child : getChildren()) {
+			if (child == node)
+				break;
+			
+			children.push(child);
+		}
+		
+		// Now call each of the children.
+		// Note: the use of a stack causes 
+		// them to be called in reverse order.
+		while (!children.empty()) {
+			Node child = children.pop();			
+			if (child.checkBackTrail(referenceTypes, this, true, functionCallStatus))
+				return true;
+		}
+		
+		// Now if we are on are way up, then call the parent...
+		if (!calledFromAbove) {
+			if (m_parent == null) {
+				// We have reached the top of the tree...
+				return false;
+				
+			} else {		
+		        if (m_parent.checkBackTrail(referenceTypes, this, false, functionCallStatus))
+		    	    return true;
+			}
+		}
+		return false;
+	}	
+
+}
+
+class FunctionCallStatus {
+	private boolean m_status;
+	
+	FunctionCallStatus() {
+		m_status = false;
+	}
+	
+	void setStatus(boolean status) { m_status = status; }
+	boolean getStatus()            { return m_status; }
 }

@@ -6,8 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
+import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class TerminalNode extends Node {
 	private Collection<Node> m_terminals;
@@ -48,10 +50,10 @@ public class TerminalNode extends Node {
 		return null;
 	}
 
-	public Collection<Node> getContaintedNodes() {
+	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new HashSet<Node> ();
 		for(Node loop: m_terminals){
-			containedNodes.addAll(loop.getContaintedNodes());
+			containedNodes.addAll(loop.getContainedNodes());
 		}
 		return containedNodes;
 	}
@@ -97,11 +99,20 @@ public class TerminalNode extends Node {
 		return "Terminal" + m_id;
 	}
 
-	public List<Node> getChildern() {
+	public List<Node> getChildren() {
 		return new LinkedList<Node>(m_terminals);
 	}
 
 	public Collection<Node> whatsNext(Node node) {
 		return getParent().whatsNext(this);
 	}
+
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
+			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
+		
+		if (!calledFromAbove) {
+		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
+		}
+		return false;
+	}		
 }

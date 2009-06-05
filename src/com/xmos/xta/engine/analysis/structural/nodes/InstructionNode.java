@@ -6,8 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
+import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class InstructionNode extends Node {
 	private XtaInstruction m_inst;
@@ -50,7 +52,7 @@ public class InstructionNode extends Node {
 		return "instruction" + m_id;
 	}
 	
-	public Collection<Node> getContaintedNodes() {
+	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new HashSet<Node> ();
 		containedNodes.add(this);
 		return containedNodes;
@@ -88,7 +90,7 @@ public class InstructionNode extends Node {
 		return clone();
 	}
 
-	public List<Node> getChildern() {
+	public List<Node> getChildren() {
 		return new LinkedList<Node>();
 	}
 
@@ -98,5 +100,32 @@ public class InstructionNode extends Node {
 	
 	public boolean isInstructionNode() {
 		return true;
+	}
+	
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
+			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
+		
+		ReferenceType referenceType = referenceTypes.peek();		
+		
+		boolean isMatch = false;
+		if (referenceType.getPc() == m_inst.getPc()) {
+			if (referenceType.getType() == ReferenceType.Type.CALL) {
+				if (functionCallStatus.getStatus()) {
+					isMatch = true;
+				}
+			} else {
+				isMatch = true;
+			}			
+		}
+
+		if (isMatch) {
+			referenceTypes.pop();			
+			if (referenceTypes.empty()) {
+				return true;
+			}			
+		}
+		
+		functionCallStatus.setStatus(false);		
+		return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
 	}
 }

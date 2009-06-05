@@ -244,8 +244,8 @@ public class Route {
 				set.add(node);
 				return;
 			} else {
-				if (!node.getChildern().isEmpty()) {
-					explore(node.getChildern().get(0), set, endPcs, endNodes, parent);
+				if (!node.getChildren().isEmpty()) {
+					explore(node.getChildren().get(0), set, endPcs, endNodes, parent);
 				}
 			}
 		}
@@ -260,6 +260,7 @@ public class Route {
 
 	private Map<Integer, HashSet<Node>> buildPcMap(StructureGraph structureGraph) {
 		final Map<Integer, HashSet<Node>> pcToNodes = new HashMap<Integer, HashSet<Node>>();
+		
 		for (Node node : structureGraph.getThreads()) {
 			node.traverse(0, new DefaultNodeTraverser() {
 				public boolean foundInstructionNode(Node node, int depth) {

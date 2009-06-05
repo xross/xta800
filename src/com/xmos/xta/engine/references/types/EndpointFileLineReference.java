@@ -7,7 +7,7 @@ public class EndpointFileLineReference extends ReferenceType {
     public static final String TYPE = "ENDPOINT";
 
     EndpointFileLineReference(String ref) {
-		super(ref);
+		super(ref, Type.ENDPOINT);
 	}
 
 	public boolean resolve(Engine engine, int nodeId, int coreId) {

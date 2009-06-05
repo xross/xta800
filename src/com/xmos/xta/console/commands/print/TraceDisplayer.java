@@ -7,7 +7,6 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class TraceDisplayer {
@@ -24,10 +23,8 @@ public class TraceDisplayer {
 	}
 	
     public void display() {
-    	StructureGraph structureGraph = m_engine.getStructureGraph();
-    	//StructureGraph structureGraph = m_engine.getRoute(m_routeId).getStructureGraph();
-		Collection<Node> nodes = structureGraph.getThreads();	
-		for (Node node : nodes) {					
+		Collection<Node> nodes = m_engine.getRoute(m_routeId).getCompletedPaths();	
+		for (Node node : nodes) {
 		    node.traverse(0, new DefaultNodeTraverser() {
 				public boolean foundInstructionNode(Node node, int depth) {
 					displayInstruction(node);

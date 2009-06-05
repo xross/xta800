@@ -91,7 +91,7 @@ public class ReferenceTypeFactory {
 			} else if (referenceType.getClass() == SrcLabelFileLineReference.class) {
 				if (isSourceReference(reference, SrcLabelFileLineReference.TYPE) && 
 					inSrcLabelTable(reference)) {
-		    		return new SrcLabelFileLineReference(reference);	
+		    		return new SrcLabelFileLineReference(reference);
 				}				
 			} else if (referenceType.getClass() == CallReference.class) {
 				if (m_engine.getCalls().containsKey(reference)) {

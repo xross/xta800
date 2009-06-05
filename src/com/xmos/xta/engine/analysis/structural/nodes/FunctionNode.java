@@ -6,8 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
+import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class FunctionNode extends Node {
 	private String m_functionName;
@@ -121,9 +123,9 @@ public class FunctionNode extends Node {
 		return new FunctionNode(this);
 	}
 	
-	public Collection<Node> getContaintedNodes() {
+	public Collection<Node> getContainedNodes() {
 		if (m_knownFunction) {
-			return m_function.getContaintedNodes();
+			return m_function.getContainedNodes();
 		} else {
 			return new HashSet<Node>();
 		}
@@ -170,7 +172,7 @@ public class FunctionNode extends Node {
 		}
 	}
 
-	public List<Node> getChildern() {
+	public List<Node> getChildren() {
 		List<Node> children = new LinkedList<Node>();
 		if(m_function!= null){
 			children.add(m_function);
@@ -187,5 +189,15 @@ public class FunctionNode extends Node {
 
 	public boolean isFunctionNode() {
 		return true;
+	}	
+	
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
+			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
+		
+		if (!calledFromAbove) {
+			functionCallStatus.setStatus(true);
+		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
+		}
+		return false;
 	}	
 }

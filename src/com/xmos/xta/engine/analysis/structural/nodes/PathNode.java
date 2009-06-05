@@ -6,7 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
+
 import com.xmos.xta.engine.instructions.XtaInstruction;
+import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class PathNode extends Node {
 	List<Node> m_nodes;
@@ -85,10 +88,10 @@ public class PathNode extends Node {
 		return new PathNode(this);
 	}
 
-	public Collection<Node> getContaintedNodes() {
+	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new HashSet<Node> ();
 		for(Node loop: m_nodes){
-			containedNodes.addAll(loop.getContaintedNodes());
+			containedNodes.addAll(loop.getContainedNodes());
 		}
 		return containedNodes;
 	}
@@ -114,7 +117,7 @@ public class PathNode extends Node {
 		return "Path" + m_id;
 	}
 
-	public List<Node> getChildern() {
+	public List<Node> getChildren() {
 		return m_nodes;
 	}
 	
@@ -129,4 +132,13 @@ public class PathNode extends Node {
 			return getParent().whatsNext(this);
 		}
 	}
+	
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
+			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
+		
+		if (!calledFromAbove) {
+		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
+		}
+		return false;
+	}		
 }

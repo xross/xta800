@@ -7,8 +7,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
+import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class LoopNode extends Node {
 	private Node m_loopHeader;
@@ -104,11 +106,11 @@ public class LoopNode extends Node {
 		return new LoopNode(this);
 	}
 
-	public Collection<Node> getContaintedNodes() {
+	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new HashSet<Node>();
-		containedNodes.addAll(m_loopHeader.getContaintedNodes());
+		containedNodes.addAll(m_loopHeader.getContainedNodes());
 		for (Node loop : m_loops) {
-			containedNodes.addAll(loop.getContaintedNodes());
+			containedNodes.addAll(loop.getContainedNodes());
 		}
 		return containedNodes;
 	}
@@ -135,9 +137,12 @@ public class LoopNode extends Node {
 		return "Loop" + m_id;
 	}
 
-	public List<Node> getChildern() {
-		List<Node> children = new LinkedList<Node>(m_loops);
+	public List<Node> getChildren() {
+		List<Node> children = new LinkedList<Node>();
 		children.add(m_loopHeader);
+		for (Node node : m_loops) {
+			children.add(node);					
+		}
 		return children;
 	}
 
@@ -160,9 +165,18 @@ public class LoopNode extends Node {
 	    if (!m_numIterationsDone) {
 	    	m_numIterationsDone = true;
 	    	
-			for (Node child : getChildern()) {
+			for (Node child : getChildren()) {
 				child.setNumIterations(numIterations);
 			}
 	    }
 	}	
+	
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
+			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
+		
+		if (!calledFromAbove) {
+		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
+		}
+		return false;
+	}		
 }

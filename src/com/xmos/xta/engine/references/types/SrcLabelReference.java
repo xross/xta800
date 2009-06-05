@@ -5,7 +5,7 @@ import com.xmos.xta.engine.sections.CodePointInfo;
 
 public class SrcLabelReference extends ReferenceType {
 	SrcLabelReference(String ref) {
-		super(ref);
+		super(ref, Type.SRCLABEL);
 	}
 
 	public boolean resolve(Engine engine, int nodeId, int coreId) {

@@ -8,7 +8,7 @@ import com.xmos.xta.engine.sections.CodePointTableInfo;
 
 public class EndpointReference extends ReferenceType {
 	EndpointReference(String ref) {
-		super(ref);
+		super(ref, Type.ENDPOINT);
 	}
 
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
