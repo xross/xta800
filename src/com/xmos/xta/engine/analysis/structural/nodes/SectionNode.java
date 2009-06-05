@@ -183,4 +183,8 @@ public class SectionNode extends Node {
 		return true;
 	}
 
+	public boolean isOptional() {
+		return m_isOptional;
+	}
+
 }

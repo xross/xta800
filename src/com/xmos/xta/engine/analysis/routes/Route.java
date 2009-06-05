@@ -10,6 +10,7 @@ import java.util.Set;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
 import com.xmos.xta.engine.analysis.routes.RouteDescription.RouteMode;
+import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
@@ -168,35 +169,42 @@ public class Route {
 		} else {
 			assert (false);
 		}
-
 	}
-
-	
 
 	private void buildExclustion() {
 		// this uses the m_excludedRefs to populate the m_routeExclusionNodes
 		Set<Node> seenNodes = new HashSet<Node>();
+		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		for (Reference ref : m_excludedRefs) {
-			Collection<Node> refNodes = null;
-			//crawl up to my highest point then set the whole branch as excluded
-			
-			for(Node refNode : refNodes){
-				if(!seenNodes.contains(refNode)){
-					Node currentNode = refNode;
-					while(!currentNode.getParent().isSection() || noOptionsLeft(currentNode)){
-						currentNode = currentNode.getParent();
+			for(Node routeNode : m_routes){
+				Collection<Node> refNodes = referenceMatcher.getNodes(routeNode, ref);
+				//crawl up to my highest point then set the whole branch as excluded
+				
+				for(Node refNode : refNodes){
+					if(!seenNodes.contains(refNode)){
+						Node currentNode = refNode;
+						while(!currentNode.getParent().isSection() || noOptionsLeft(currentNode)){
+							currentNode = currentNode.getParent();
+						}
+						Set<Node> branch = getBranch(currentNode);
+						m_routeExclusionNodes.addAll(branch);
 					}
-					Set<Node> branch = getBranch(currentNode);
-					m_routeExclusionNodes.addAll(branch);
+					seenNodes.add(refNode);
 				}
-				seenNodes.add(refNode);
 			}
 		}
 	}
 	
 	private boolean noOptionsLeft(Node currentNode) {
-		// TODO Auto-generated method stub
-		return false;
+		SectionNode section = (SectionNode)currentNode;
+		
+		Set<Node> intersection = new HashSet<Node>(section.getOptions());
+		intersection.removeAll(m_routeExclusionNodes);
+		int options = intersection.size();
+		if(section.isOptional()) {
+			options++;
+		}
+		return (options  < 2);
 	}
 
 	private Set<Node> getBranch(Node start) {
