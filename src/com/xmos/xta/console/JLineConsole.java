@@ -43,11 +43,7 @@ public class JLineConsole implements Console {
 			return null;
 		}
 	}
-	
-	public boolean wasInternal() {
-		return false;
-	}	
-	
+		
 	public void clearScreen() {		
 	}
 	

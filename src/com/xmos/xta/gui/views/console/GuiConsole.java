@@ -37,7 +37,6 @@ public class GuiConsole implements Console {
 	private LinkedBlockingQueue<Integer> m_characterQueue;	
 	private Vector<Command> m_commandHistory;
 	private int m_commandHistoryIndex;
-	private boolean m_internal;
 	private Display m_display;
 	private String m_string;
 	private String m_prompt;
@@ -187,19 +186,13 @@ public class GuiConsole implements Console {
 	public void sendCommand(String command) {
 		if (DEBUG) System.out.printf("GuiConsole: Entering: sendCommand\n");
 		
-		m_internal = true;		
 		try {
 			m_commandQueue.put(new CommandString(command, true));
 		} catch (InterruptedException e) {}
 
 		if (DEBUG) System.out.printf("GuiConsole: Leaving: sendCommand\n");
 	}
-	
-	public boolean wasInternal() {
-		if (DEBUG) System.out.printf("GuiConsole: wasInternal\n");			
-		return m_internal;
-	}
-	
+		
 	public void clearScreen() {
 		if (DEBUG) System.out.printf("GuiConsole: Entering: clearScreen\n");			
         m_display.syncExec(new Runnable() {
@@ -302,7 +295,6 @@ public class GuiConsole implements Console {
 		String txt = m_text.getText();
 		int idx = txt.lastIndexOf('>', m_text.getCharCount() - 1);
 		
-		m_internal = false;		
 		try {
 			m_commandQueue.put(new CommandString(txt.substring(idx != -1 ? idx + 1 : 1, m_text.getCharCount()), false));
 		} catch (InterruptedException e) {}					

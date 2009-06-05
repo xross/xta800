@@ -18,11 +18,7 @@ public class BasicConsole implements Console {
     	Scanner in = new Scanner(System.in);
         return in.nextLine();
 	}
-	
-	public boolean wasInternal() {
-		return false;
-	}	
-	
+		
 	public void clearScreen() {		
 	}
 }
