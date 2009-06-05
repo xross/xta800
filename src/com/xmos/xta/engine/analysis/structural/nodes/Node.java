@@ -165,7 +165,9 @@ public abstract class Node implements Comparable<Node>{
 	public void setParent(Node node) {
 		m_parent = node;
 	}
-	
+	public boolean isSection() {
+		return false;
+	}
 	public boolean isInstructionNode() {
 		return false;
 	}
@@ -235,5 +237,6 @@ public abstract class Node implements Comparable<Node>{
 	
 	public boolean isExcluded() {
 		return m_isExcluded;
-	}	
+	}
+		
 }

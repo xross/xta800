@@ -5,28 +5,28 @@ import java.util.LinkedList;
 import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
-public class BasicBlockMatcher  {
+public class BasicBlockMatcher {
 
 	private BlockNode m_block;
 	private Node m_treeStart;
 	private Node m_lastBlock;
-	
+
 	public boolean match(Node node, Node treeStart, Collection<Node> currentGraph) {
-		
+
 		LinkedList<Node> insts = new LinkedList<Node>();
 		boolean isStart = isStart(node);
 		insts.add(node);
-		if(isStart(node)){
-			while(continueDown(node)){
+		if (isStart(node)) {
+			while (continueDown(node)) {
 				node = node.getNextNodes().iterator().next();
 				insts.add(node);
 			}
 		}
 		m_lastBlock = insts.getLast();
-		if(isStart){
+		if (isStart) {
 			m_block = new BlockNode(insts);
 		}
-		if(isStart && insts.contains(treeStart)){
+		if (isStart && insts.contains(treeStart)) {
 			m_treeStart = m_block;
 		} else {
 			m_treeStart = treeStart;
@@ -37,55 +37,55 @@ public class BasicBlockMatcher  {
 	public Node getBlock() {
 		return m_block;
 	}
-	
-	public Node getTreeStart(){
+
+	public Node getTreeStart() {
 		return m_treeStart;
 	}
-	
-	private boolean isStart(Node node){
-		if(node.getPrevNodes().size() ==  0){
+
+	private boolean isStart(Node node) {
+		if (node.getPrevNodes().size() == 0) {
 			return true;
-		} else if(node.getPrevNodes().size() ==  1){
+		} else if (node.getPrevNodes().size() == 1) {
 			Node prev = node.getPrevNodes().iterator().next();
-			if(prev.isFunctionNode()){
+			if (prev.isFunctionNode()) {
 				return true;
 			}
-			if(prev.getNextNodes().size() > 1){
+			if (prev.getNextNodes().size() > 1) {
 				return true;
 			} else {
 				return false;
 			}
-		} else if(node.getPrevNodes().size() > 1){
+		} else if (node.getPrevNodes().size() > 1) {
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
-	private boolean isEnd(Node node){
-		if(node.getNextNodes().size() ==  0){
+
+	private boolean isEnd(Node node) {
+		if (node.getNextNodes().size() == 0) {
 			return true;
-		} else if(node.getNextNodes().size() ==  1){
+		} else if (node.getNextNodes().size() == 1) {
 			Node next = node.getNextNodes().iterator().next();
-			
-			if(next.isFunctionNode()){
+
+			if (next.isFunctionNode()) {
 				return true;
 			}
-			if(next.getPrevNodes().size() > 1){
+			if (next.getPrevNodes().size() > 1) {
 				return true;
 			} else {
 				return false;
 			}
-		} else if(node.getNextNodes().size() > 1){
+		} else if (node.getNextNodes().size() > 1) {
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
-	private boolean continueDown(Node node){
-		if(node.getNextNodes().size() == 1 && !isEnd(node) 
-				&& !node.getDominators().contains(node.getNextNodes().iterator().next())){
+
+	private boolean continueDown(Node node) {
+		if (node.getNextNodes().size() == 1 && !isEnd(node) 
+				&& !node.getDominators().contains(node.getNextNodes().iterator().next())) {
 			return true;
 		} else {
 			return false;

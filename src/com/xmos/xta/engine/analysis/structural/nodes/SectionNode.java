@@ -167,4 +167,7 @@ public class SectionNode extends Node {
 		}
 		return totalIterations;
 	}
+	public boolean isSection() {
+		return true;
+	}
 }

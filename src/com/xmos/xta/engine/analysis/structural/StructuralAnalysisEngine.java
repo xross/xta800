@@ -35,8 +35,9 @@ public class StructuralAnalysisEngine {
 		m_controlFlowGraph = controlFlowGraph;
 		m_cfgToStruct = new HashMap<FunctionNode, FunctionNode>();
 	}
-	
-	public StructuralAnalysisEngine() {}
+
+	public StructuralAnalysisEngine() {
+	}
 
 	public boolean analyse(Engine engine) {
 		m_functionStartPcs = new HashMap<Integer, FunctionNode>();
@@ -47,9 +48,9 @@ public class StructuralAnalysisEngine {
 	public StructureGraph getStructureGraph() {
 		return m_structureGraph;
 	}
-	
+
 	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine) {
-		
+
 		List<PatternMatcher> patternMatchers = new ArrayList<PatternMatcher>();
 		patternMatchers.add(new SelfLoopPattern());
 		patternMatchers.add(new LoopPatternMatcher());
@@ -61,7 +62,7 @@ public class StructuralAnalysisEngine {
 		boolean working = true;
 		boolean dominatorTreeUpToDate = false;
 		while (working) {
-			
+
 			List<Node> postOrder = new LinkedList<Node>();
 			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
 			working = false;
@@ -89,14 +90,14 @@ public class StructuralAnalysisEngine {
 
 		return true;
 	}
-	
+
 	private void linkFunctions() {
-		for(FunctionNode fn : m_cfgToStruct.keySet()){
-			if(m_cfgToStruct.get(fn).getBranchTarget() != null){
+		for (FunctionNode fn : m_cfgToStruct.keySet()) {
+			if (m_cfgToStruct.get(fn).getBranchTarget() != null) {
 				int pc = m_cfgToStruct.get(fn).getBranchTarget().getStartPc();
 				String fnName = m_cfgToStruct.get(fn).getBranchTarget().getInstructions().get(0).getFunctionName();
 				fn.setFunction(fnName, m_functionStartPcs.get(pc).getFunction().deepClone(m_functionStartPcs));
-			} 
+			}
 		}
 	}
 
@@ -111,17 +112,17 @@ public class StructuralAnalysisEngine {
 		}
 		m_structureGraph = new StructureGraph(functions, threads);
 		linkFunctions();
+		m_structureGraph.removeLinks();
 		engine.provideFeedback("Done");
 		return true;
 	}
 
-	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, 
-			Map<Integer, FunctionNode> startPcs, Engine engine) {
-		
+	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, FunctionNode> startPcs, Engine engine) {
+
 		Collection<Node> graphs = new HashSet<Node>();
 
 		for (Node graphStart : graphStartNodes) {
-			
+
 			String functionName = graphStart.getInstructions().get(0).getFunctionName();
 
 			engine.provideFeedback("Processing " + functionName);
@@ -135,7 +136,7 @@ public class StructuralAnalysisEngine {
 				return null;
 			}
 			Node decomposedGraph = basicBlocks.iterator().next();
-			
+
 			FunctionNode fn = new FunctionNode(decomposedGraph, functionName);
 			graphs.add(fn);
 			startPcs.put(graphStart.getStartPc(), fn);
@@ -169,7 +170,7 @@ public class StructuralAnalysisEngine {
 				} else {
 					seen.add(node);
 					Node clone = node.clone();
-					m_cfgToStruct.put( (FunctionNode)clone,(FunctionNode)node);
+					m_cfgToStruct.put((FunctionNode) clone, (FunctionNode) node);
 					basicBlocks.add(clone);
 					cfgToStructure.put(node, clone);
 					endPoint.put(clone, node);

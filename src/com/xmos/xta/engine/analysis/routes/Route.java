@@ -16,6 +16,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.engine.analysis.structural.nodes.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.SectionNode;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.references.Reference;
@@ -26,11 +27,11 @@ class AbortedException extends Exception {
 }
 
 public class Route {
-	
+
 	private static int s_routeCount;
 	public static final int INVALID_ROUTE_ID = -1;
 	public static int WORST_CASE_PATH_ID = -2;
-	
+
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR
 	}
@@ -42,11 +43,11 @@ public class Route {
 	private Engine m_engine;
 	private RouteTiming m_routeTiming;
 	private Unknowns m_unknowns;
-	
+
 	private Constraint m_constraint;
 	private Set<Node> m_routeExclusionNodes;
 	Collection<Reference> m_excludedRefs;
-	
+
 	public static void resetRouteCount() {
 		s_routeCount = 0;
 	}
@@ -64,21 +65,21 @@ public class Route {
 		m_excludedRefs = new HashSet<Reference>();
 	}
 
-	public void addExclededReference(Reference ref){
+	public void addExclededReference(Reference ref) {
 		m_excludedRefs.add(ref);
 		buildExclustion();
 	}
-	
-	public Collection<Reference> getExcludedReferences(){
+
+	public Collection<Reference> getExcludedReferences() {
 		return m_excludedRefs;
 	}
-	
-	public void removeExcludedReference(Reference ref){
+
+	public void removeExcludedReference(Reference ref) {
 		m_excludedRefs.remove(ref);
 		buildExclustion();
 	}
-	
-	public boolean isExcluded(Node node){
+
+	public boolean isExcluded(Node node) {
 		return m_routeExclusionNodes.contains(node) || node.isExcluded();
 	}
 
@@ -122,23 +123,23 @@ public class Route {
 	public Collection<Node> getCompletedPaths() {
 		return m_routes;
 	}
-	
+
 	public void analyse() {
-		if(m_description.getMode() == RouteMode.FUNCTION){
+		if (m_description.getMode() == RouteMode.FUNCTION) {
 			Map<String, HashSet<Node>> functionMap = buildFunctionMap(m_structureGraph);
 			HashSet<Node> functions = functionMap.get(m_description.getFunctionName());
-			if(functions!= null){
+			if (functions != null) {
 				m_routes.addAll(functions);
 			}
-		} else if(m_description.getMode() == RouteMode.ABSLOUTE) {
-		
+		} else if (m_description.getMode() == RouteMode.ABSLOUTE) {
+
 			Set<Integer> startPcs = getStartPcs();
 			Set<Integer> endPcs = getEndPcs();
-			
+
 			Collection<Node> startNodes = new HashSet<Node>();
 			Collection<Node> endNodes = new HashSet<Node>();
 			Map<Integer, HashSet<Node>> pcToStruct = buildPcMap(m_structureGraph);
-	
+
 			for (int from : startPcs) {
 				if (pcToStruct.get(from) != null) {
 					startNodes.addAll(pcToStruct.get(from));
@@ -153,81 +154,63 @@ public class Route {
 			for (Node start : startNodes) {
 				Collection<Node> workingSet = new HashSet<Node>();
 				explore(start, workingSet, endPcs, endNodes, null);
-	
+
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
-				
+
 				Node newStart = makeBasicBlocks(start, endNodes, workingSet);
-				//Node newStart = start;
+				// Node newStart = start;
 				sae.createStructure(workingSet, newStart, m_engine);
-	
+
 				m_structureGraph.removeLinks();
-	
+
 				m_routes.add(workingSet.iterator().next());
 			}
 		} else {
-			assert(false);
+			assert (false);
 		}
 
 	}
+
 	
-	private Node makeBasicBlocks(Node start, Collection<Node> endNodes, Collection<Node> workingSet){
-		//from the start instruction crawl downwards stopping at basic block boundaries
-		Node currentNode = start;
-		List<Node> startList = new LinkedList<Node>();
-		startList.add(currentNode);
-		
-		while(currentNode.getNextNodes().size() == 1 && 
-				currentNode.getNextNodes().iterator().next().isInstructionNode()){
-			currentNode = currentNode.getNextNodes().iterator().next();
-			startList.add(currentNode);
-		}
-		BlockNode startBlock = new BlockNode(startList);
-		workingSet.removeAll(startList);
-		workingSet.add(startBlock);
-		
-		for(Node next : currentNode.getNextNodes()){
-			next.removePrevNode(currentNode);
-			CommonMethods.connect(next, startBlock);
-		}
-		
-		//from every end node in the working set crawl upwards stopping at basic block boundaries
-		for(Node endNode : endNodes){
-			if(workingSet.contains(endNode)){
-				List<Node> endList = new LinkedList<Node>();
-				Node end  = endNode;
-				endList.add(end);
-				while(end.getPrevNodes().size() == 1 && 
-						end.getPrevNodes().iterator().next().isInstructionNode()){
-					end = end.getPrevNodes().iterator().next();
-					endList.add(0, end);
+
+	private void buildExclustion() {
+		// this uses the m_excludedRefs to populate the m_routeExclusionNodes
+		Set<Node> seenNodes = new HashSet<Node>();
+		for (Reference ref : m_excludedRefs) {
+			Collection<Node> refNodes = null;
+			//crawl up to my highest point then set the whole branch as excluded
+			
+			for(Node refNode : refNodes){
+				if(!seenNodes.contains(refNode)){
+					Node currentNode = refNode;
+					while(!currentNode.getParent().isSection() || noOptionsLeft(currentNode)){
+						currentNode = currentNode.getParent();
+					}
+					Set<Node> branch = getBranch(currentNode);
+					m_routeExclusionNodes.addAll(branch);
 				}
-				
-				BlockNode endBlock = new BlockNode(endList);
-				workingSet.removeAll(endList);
-				workingSet.add(endBlock);
-				
-				for(Node prev : end.getPrevNodes()){
-					prev.removeNextNode(end);
-					CommonMethods.connect(endBlock, prev);
-				}
+				seenNodes.add(refNode);
 			}
 		}
-		
-		
-		return startBlock;
-		
 	}
 	
-	private void buildExclustion(){
-		//this uses the m_excludedRefs to populate the m_routeExclusionNodes
-
-		for(Reference ref : m_excludedRefs){
-			Collection<Node> refNodes = null;
-			
-			
-			
-		}
+	private boolean noOptionsLeft(Node currentNode) {
+		// TODO Auto-generated method stub
+		return false;
 	}
+
+	private Set<Node> getBranch(Node start) {
+		final Set<Node> nodes = new HashSet<Node>();
+		start.traverse(0, new DefaultNodeTraverser() {
+			public boolean foundInstructionNode(Node node, int depth) {
+				nodes.add(node);
+				return true;
+			}
+		});
+		return nodes;
+	}
+	
+	
 	
 	private Set<Integer> getEndPcs() {
 		Set<Integer> endPcs = new HashSet<Integer>();
@@ -261,7 +244,7 @@ public class Route {
 				set.add(node);
 				return;
 			} else {
-				if(!node.getChildern().isEmpty()){
+				if (!node.getChildern().isEmpty()) {
 					explore(node.getChildern().get(0), set, endPcs, endNodes, parent);
 				}
 			}
@@ -292,22 +275,67 @@ public class Route {
 		}
 		return pcToNodes;
 	}
-	
+
 	private Map<String, HashSet<Node>> buildFunctionMap(StructureGraph structureGraph) {
 		final Map<String, HashSet<Node>> pcToNodes = new HashMap<String, HashSet<Node>>();
 		for (Node node : structureGraph.getThreads()) {
 			node.traverse(0, new DefaultNodeTraverser() {
 				public boolean foundFunctionNode(Node node, int depth) {
-					HashSet<Node> map = pcToNodes.get(((FunctionNode)node).getFunctionName());
+					HashSet<Node> map = pcToNodes.get(((FunctionNode) node).getFunctionName());
 					if (map == null) {
 						map = new HashSet<Node>();
 					}
 					map.add(node);
-					pcToNodes.put(((FunctionNode)node).getFunctionName(), map);
+					pcToNodes.put(((FunctionNode) node).getFunctionName(), map);
 					return true;
 				}
 			});
 		}
 		return pcToNodes;
+	}
+	
+	private Node makeBasicBlocks(Node start, Collection<Node> endNodes, Collection<Node> workingSet) {
+		// from the start instruction crawl downwards stopping at basic block
+		// boundaries
+		Node currentNode = start;
+		List<Node> startList = new LinkedList<Node>();
+		startList.add(currentNode);
+
+		while (currentNode.getNextNodes().size() == 1 && currentNode.getNextNodes().iterator().next().isInstructionNode()) {
+			currentNode = currentNode.getNextNodes().iterator().next();
+			startList.add(currentNode);
+		}
+		BlockNode startBlock = new BlockNode(startList);
+		workingSet.removeAll(startList);
+		workingSet.add(startBlock);
+
+		for (Node next : currentNode.getNextNodes()) {
+			next.removePrevNode(currentNode);
+			CommonMethods.connect(next, startBlock);
+		}
+
+		// from every end node in the working set crawl upwards stopping at
+		// basic block boundaries
+		for (Node endNode : endNodes) {
+			if (workingSet.contains(endNode)) {
+				List<Node> endList = new LinkedList<Node>();
+				Node end = endNode;
+				endList.add(end);
+				while (end.getPrevNodes().size() == 1 && end.getPrevNodes().iterator().next().isInstructionNode()) {
+					end = end.getPrevNodes().iterator().next();
+					endList.add(0, end);
+				}
+
+				BlockNode endBlock = new BlockNode(endList);
+				workingSet.removeAll(endList);
+				workingSet.add(endBlock);
+
+				for (Node prev : end.getPrevNodes()) {
+					prev.removeNextNode(end);
+					CommonMethods.connect(endBlock, prev);
+				}
+			}
+		}
+		return startBlock;
 	}
 }

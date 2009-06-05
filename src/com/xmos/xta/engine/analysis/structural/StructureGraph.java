@@ -12,10 +12,10 @@ import com.xmos.xta.engine.references.Reference;
 public class StructureGraph {
 	private Collection<Node> m_functions;
 	private Collection<Node> m_threads;
-	
+
 	public StructureGraph(Collection<Node> functions, Collection<Node> threads) {
 		super();
-		assert(threads.size() > 0);
+		assert (threads.size() > 0);
 		m_functions = functions;
 		m_threads = threads;
 	}
@@ -30,15 +30,13 @@ public class StructureGraph {
 
 	public boolean setLoopIterations(Reference reference, long iterations) {
 		boolean loopIterationsSet = false;
-		
-		Collection<Node> referencedNodes = getReferencedNodes(reference);		
+
+		Collection<Node> referencedNodes = getReferencedNodes(reference);
 		for (Node referencedNode : referencedNodes) {
-						
-			Node enclosingLoopNode = referencedNode.isLoopNode() ? 
-					referencedNode : 
-					referencedNode.getEnclosingLoopNode();
-								
-			if (enclosingLoopNode != null) {				
+
+			Node enclosingLoopNode = referencedNode.isLoopNode() ? referencedNode : referencedNode.getEnclosingLoopNode();
+
+			if (enclosingLoopNode != null) {
 				enclosingLoopNode.setNumIterationsDone(false);
 				referencedNode.setNumIterations(iterations);
 				loopIterationsSet = true;
@@ -46,7 +44,7 @@ public class StructureGraph {
 		}
 		return loopIterationsSet;
 	}
-		
+
 	public boolean unsetLoopIterations(Reference reference) {
 		return false;
 	}
@@ -54,22 +52,22 @@ public class StructureGraph {
 	public boolean setLoopScope(Reference reference, boolean isAbsolute) {
 		Collection<Node> nodes = getReferencedNodes(reference);
 		if (nodes.size() > 0) {
-		    for (Node node : nodes) {
-			    ((LoopNode)node).setScope(isAbsolute);
-		    }
-		    return true;
+			for (Node node : nodes) {
+				((LoopNode) node).setScope(isAbsolute);
+			}
+			return true;
 		}
 		return false;
 	}
-	
+
 	private Collection<Node> getReferencedNodes(Reference reference) {
 		Collection<Node> nodes = getNodesContainingPc(reference.getPc());
 		return checkBackTrail(nodes, reference);
 	}
-		
+
 	private Collection<Node> getNodesContainingPc(final int pc) {
-		final Collection<Node> nodes = new ArrayList<Node>();		
-		for (Node threadNode : m_threads) {				
+		final Collection<Node> nodes = new ArrayList<Node>();
+		for (Node threadNode : m_threads) {
 			threadNode.traverse(0, new DefaultNodeTraverser() {
 				public boolean foundBlockNode(Node node, int depth) {
 					for (XtaInstruction instruction : node.getInstructions()) {
@@ -80,7 +78,7 @@ public class StructureGraph {
 					}
 					return true;
 				}
-		    });
+			});
 		}
 		return nodes;
 	}
@@ -88,41 +86,47 @@ public class StructureGraph {
 	private Collection<Node> checkBackTrail(Collection<Node> nodes, Reference reference) {
 		return nodes;
 	}
-	
-	//maybe this should be moved into the analysis
-	public void removeLinks() {	
+
+	// maybe this should be moved into the analysis
+	public void removeLinks() {
 		for (Node node : getThreads()) {
-		    node.traverse(0, new DefaultNodeTraverser() {
-		    	public boolean foundBlockNode(Node node, int depth) {
-		    		node.freeMemory();
-		        	return true;
-		    	}
-		        public boolean foundFunctionNode(Node node, int depth) {
-		        	node.freeMemory();
-		        	return true;
-		        }
-		        public boolean foundInstructionNode(Node node, int depth) {
-		        	node.freeMemory();
-		        	return true;
-		        }
-		        public boolean foundPathNode(Node node, int depth) {
-		        	node.freeMemory();
-		        	return true;
-		        }
-		        public boolean foundLoopNode(Node node, int depth) {
-		        	node.freeMemory();
-		        	return true;
-		        }
-		        public boolean foundSectionNode(Node node, int depth) {
-		        	node.freeMemory();
-		        	return true;
-		        }
-		        public boolean foundTerminalNode(Node node, int depth) {
-		        	node.freeMemory();
-		        	return true;
-		        }
-		    });
-		}				    	
-    	return;
-    }
+			node.traverse(0, new DefaultNodeTraverser() {
+				public boolean foundBlockNode(Node node, int depth) {
+					node.freeMemory();
+					return true;
+				}
+
+				public boolean foundFunctionNode(Node node, int depth) {
+					node.freeMemory();
+					return true;
+				}
+
+				public boolean foundInstructionNode(Node node, int depth) {
+					node.freeMemory();
+					return true;
+				}
+
+				public boolean foundPathNode(Node node, int depth) {
+					node.freeMemory();
+					return true;
+				}
+
+				public boolean foundLoopNode(Node node, int depth) {
+					node.freeMemory();
+					return true;
+				}
+
+				public boolean foundSectionNode(Node node, int depth) {
+					node.freeMemory();
+					return true;
+				}
+
+				public boolean foundTerminalNode(Node node, int depth) {
+					node.freeMemory();
+					return true;
+				}
+			});
+		}
+		return;
+	}
 }
