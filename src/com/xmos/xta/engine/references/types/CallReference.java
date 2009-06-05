@@ -11,13 +11,19 @@ public class CallReference extends ReferenceType {
 		super(ref, Type.CALL);
 	}
 
+	public ReferenceType create(Engine engine, String reference) {
+		if (engine.getCalls().containsKey(reference)) {
+			return new CallReference(reference);
+		}	
+		return null;
+	}
+	
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
 		String ref = getRef();
 		if (engine.getCalls().containsKey(ref)) {			
 			CodePointInfo info = engine.getCalls().get(ref);
 			setPc(info.getPc());
 			
-			// Look up the call in the call table
 			Map<Integer, CodePointTableInfo> callTable = engine.getCallTable();
 			if (!callTable.containsKey(info.getPc()))
 				return false;

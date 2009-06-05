@@ -8,6 +8,13 @@ public class SrcLabelReference extends ReferenceType {
 		super(ref, Type.SRCLABEL);
 	}
 
+	public ReferenceType create(Engine engine, String reference) {
+		if (engine.getSrcLabels().containsKey(reference)) {
+			return new SrcLabelReference(reference);
+		}
+		return null;
+	}
+
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
 		String ref = getRef();
 		if (engine.getSrcLabels().containsKey(ref)) {			

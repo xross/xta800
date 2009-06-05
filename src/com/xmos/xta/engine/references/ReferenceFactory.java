@@ -12,10 +12,10 @@ public class ReferenceFactory {
         		subRefs[subRefs.length - 1], referenceClass);
         
         Reference reference = new Reference(baseType);
-		for (int index = (subRefs.length - 2); index >= 0; --index) {			
+		for (int index = 0; index < (subRefs.length - 1); ++index) {			
 			reference.addToBackTrail(ReferenceTypeFactory.createReferenceType(
 					subRefs[index], ReferenceClass.ANY_REF));
-		}        
+		}
 		return reference;    	
 	}
 }

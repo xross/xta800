@@ -32,18 +32,18 @@ public class Exit extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-		int numFailures = 0;
+		int numTimingViolations = 0;
 		for (Route route : engine.getRoutes()) {
 			RouteTiming routeTiming = route.getRouteTiming();
 				
 			if (routeTiming.isTimingSpecified()) {			
 				if (!routeTiming.passedTiming()) {
-					++numFailures;				
+					++numTimingViolations;				
 				}
 			} else {
-				++numFailures;
+				++numTimingViolations;
 			}
 		}    	    		
-    	shell.exit(numFailures);
+    	shell.exit(numTimingViolations);
     }    
 }

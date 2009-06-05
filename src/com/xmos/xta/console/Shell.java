@@ -25,7 +25,7 @@ public class Shell {
     private Queue<Command> m_commands;
     private Vector<Command> m_commandHistory;
     private String m_prompt;
-	private int m_numFailures;
+	private int m_numTimingViolations;
 		
 	public Shell(Console console, Engine engine, Notifier notifier, String[] args) {
 	    initialise(console, engine, notifier);
@@ -33,9 +33,9 @@ public class Shell {
 	    m_exitAllowed = true;
 	}
 
-	public Shell(Console console, Engine engine, Notifier notifier, boolean exitAllowed) {
+	public Shell(Console console, Engine engine, Notifier notifier) {
 	    initialise(console, engine, notifier);
-	    m_exitAllowed = exitAllowed;
+	    m_exitAllowed = false;
 	}
 
     public int execute() {    	
@@ -48,14 +48,13 @@ public class Shell {
             	command.execute(this, m_engine, m_console);
             	m_engine.setNotifier(notifier);
             }
-        	m_commands.remove(command);
     	}
-    	return m_numFailures;
+    	return m_numTimingViolations;
     }
     
-    public void exit(int numFailures) {        
+    public void exit(int numTimingViolations) {        
     	m_state = State.EXIT;
-    	m_numFailures = numFailures;
+    	m_numTimingViolations = numTimingViolations;
     }
 
     public Vector<Command> getCommandHistory() {
@@ -71,20 +70,20 @@ public class Shell {
     }
     
     public int getLocation(Command command){
-    	ArrayList<Command> com = new ArrayList<Command>();
-    	com.addAll(m_commands);
-    	return com.indexOf(command);
+    	ArrayList<Command> commands = new ArrayList<Command>();
+    	commands.addAll(m_commands);
+    	return commands.indexOf(command);
     }
     
     public void addCommand(Command command, int position) {
-    	if(position == -1){
+    	if (position == -1) {
     		addCommand(command);
     	} else {
-			ArrayList<Command> com = new ArrayList<Command>();
-			com.addAll(m_commands);
-			com.add(position, command);
+			ArrayList<Command> commands = new ArrayList<Command>();
+			commands.addAll(m_commands);
+			commands.add(position, command);
 			m_commands.clear();
-			m_commands.addAll(com);
+			m_commands.addAll(commands);
     	}
     }
     
@@ -127,6 +126,7 @@ public class Shell {
 		Command command = m_commands.peek();
 		if (command != null) {
     		m_commandHistory.add(command);			
+        	m_commands.remove(command);
 			return command;	
 		}
 		return getCommandFromConsole();
@@ -134,45 +134,24 @@ public class Shell {
         
     private Command getCommandFromConsole() {
     	Command command = null;
-    	do {
+    	while (command == null) {
     		m_prompt = "xta " + (m_commandHistory.size() + 1) + ">";
-    		m_console.displayPrompt(m_prompt);    		    		
+    		m_console.displayPrompt(m_prompt);    	
+    		
             String line = m_console.getNextLine(m_commandHistory);
             line = line.trim();
-            if (line.length() > 0) {            
-                String[] tokens = line.trim().split("\\s+");
+            if (line.length() > 0) {            	
+                String[] tokens = line.trim().split("\\s+");                
+                ArrayList<String> tokenGroups = groupQuotedTokens(tokens);
+                tokens = tokenGroups.toArray(tokens);
                 
-                ArrayList<String> s = new ArrayList<String>();
-                
-                boolean multiword = false;
-                String m = "";
-                for (String word : tokens){
-                	if (word.startsWith("\"")){
-                		multiword = true;
-                		word = word.substring(1);
-                	} 
-                	if (word.endsWith("\"")){
-                		multiword = false;
-                		word = word.substring(0, word.length()-1);
-                		word = m+ " " + word ;
-                		word = word.trim();
-                		m = "";
-                	} 
-                	if (multiword){
-                		m = m + " " + word;
-                	} else {
-                		s.add(word);
-                	}
-                }
-
-                tokens = s.toArray(tokens);
-                boolean isPingCommand = CommandFactory.isPingCommand(tokens[0]);
+                boolean isPlingCommand = CommandFactory.isPlingCommand(tokens[0]);
                 command = CommandFactory.buildCommand(tokens, 0, m_commandHistory, m_console);
 
                 // Check command is valid and has consumed entire line
                 boolean invalidCommand = false;
                 if (command != null) {
-                	if (isPingCommand) {
+                	if (isPlingCommand) {
                 		invalidCommand = (tokens.length != 1);
                 	} else {
                 		invalidCommand = (command.numArgs() != (tokens.length - 1));
@@ -184,12 +163,37 @@ public class Shell {
                 if (invalidCommand) {    
                 	command = new Invalid(line, "Invalid command (Try 'help'..)\n");
                 }
-            }            
-    	} while (command == null);
-    	
+            }
+    	}    	
 		m_commandHistory.add(command);                    	
 		return command;    	
     }
+
+	private ArrayList<String> groupQuotedTokens(String[] tokens) {
+        ArrayList<String> s = new ArrayList<String>();                
+
+		boolean multiword = false;
+		String m = "";
+		for (String word : tokens){
+			if (word.startsWith("\"")){
+				multiword = true;
+				word = word.substring(1);
+			} 
+			if (word.endsWith("\"")){
+				multiword = false;
+				word = word.substring(0, word.length()-1);
+				word = m+ " " + word ;
+				word = word.trim();
+				m = "";
+			} 
+			if (multiword){
+				m = m + " " + word;
+			} else {
+				s.add(word);
+			}
+		}
+		return s;
+	}
         
     private boolean isComplete() {
     	return m_state == State.EXIT;

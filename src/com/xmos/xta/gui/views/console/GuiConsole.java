@@ -47,7 +47,7 @@ public class GuiConsole implements Console {
 	public GuiConsole(Composite parent) {
 		if (DEBUG) System.out.printf("GuiConsole()\n");		
 		
-		m_shell = new Shell(this, GuiEngine.getEngine(), new GuiConsoleNotifier(this), false);		        		
+		m_shell = new Shell(this, GuiEngine.getEngine(), new GuiConsoleNotifier(this));		        		
 		m_commandQueue = new LinkedBlockingQueue<CommandString>();
 		m_characterQueue = new LinkedBlockingQueue<Integer>();		
         m_text = new StyledText(parent, SWT.V_SCROLL);

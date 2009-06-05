@@ -1,14 +1,14 @@
 package com.xmos.xta.engine.references;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class Reference {		
 	private ReferenceType m_base;
-	private Collection<ReferenceType> m_backTrail;
+	private List<ReferenceType> m_backTrail;
 	
 	Reference(ReferenceType base) {
 		m_base = base;
@@ -50,7 +50,7 @@ public class Reference {
 		return m_base.name();
 	}
 
-	public Collection<ReferenceType> getBackTrail() {
+	public List<ReferenceType> getBackTrail() {
 		return m_backTrail;
 	}
 	

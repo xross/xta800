@@ -845,13 +845,21 @@ public class Engine implements Notifier {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
 			return false;
 		}
-		if (ReferenceTypeFactory.isPcString(label)) {
+		if (isValidPcString(label)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a %s: %s", type, label));
 			return false;
 		}				
 		return true;
 	}
 
+	private boolean isValidPcString(String ref) {
+		if (ref.matches("0x[0-9a-fA-F]+") ||
+			ref.matches("[0-9]+")) {
+			return true;
+		}
+		return false;
+	}
+	
 	// ===================================================================== //
 	// Debug Methods
 	// ===================================================================== //

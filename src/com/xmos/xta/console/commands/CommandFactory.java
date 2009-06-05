@@ -52,7 +52,7 @@ public class CommandFactory {
     		Vector<Command> commandHistory, Console console) {
     	String arg = args[index];    	
         
-        if (isPingCommand(arg)) {
+        if (isPlingCommand(arg)) {
         	return getPingCommand(arg, commandHistory);
         }
     	
@@ -79,7 +79,7 @@ public class CommandFactory {
     	return newArg;
     }
     
-    public static boolean isPingCommand(String arg) {
+    public static boolean isPlingCommand(String arg) {
         if ((arg.charAt(0) == '!'))
         	return true;
         

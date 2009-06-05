@@ -6,7 +6,14 @@ public class LabelReference extends ReferenceType {
 	LabelReference(String ref) {
 		super(ref, Type.LABEL);
 	}
-		
+	
+	public ReferenceType create(Engine engine, String reference) {
+		if (engine.getLabels().containsKey(reference)) {
+			return new LabelReference(reference);
+		}
+		return null;
+	}
+	
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
 		String ref = getRef();
 		

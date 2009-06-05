@@ -10,10 +10,18 @@ public class EndpointFileLineReference extends ReferenceType {
 		super(ref, Type.ENDPOINT);
 	}
 
+	public ReferenceType create(Engine engine, String reference) {
+		if (isSourceReference(reference, EndpointFileLineReference.TYPE) && 
+			inCodePointTable(reference, engine.getEndpointTable())) {
+	    	return new EndpointFileLineReference(reference);
+		}
+		return null;
+	}
+    
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
     	String ref  = getRef();
-		String fileName = ReferenceTypeFactory.getFileName(ref);
-        int lineNumber  = ReferenceTypeFactory.getLineNumber(ref);		
+		String fileName = getFileName(ref);
+        int lineNumber  = getLineNumber(ref);		
 
 		for (CodePointTableInfo info : engine.getEndpointTable().values()) {
             if (info.getFileName().equals(fileName) &&

@@ -10,10 +10,18 @@ public class SrcLabelFileLineReference extends ReferenceType {
 		super(ref, Type.SRCLABEL);
 	}
 
+	public ReferenceType create(Engine engine, String reference) {
+		if (isSourceReference(reference, SrcLabelFileLineReference.TYPE) && 
+			inSrcLabelTable(reference, engine.getSrcLabelTable())) {
+	    	return new SrcLabelFileLineReference(reference);
+		}
+	    return null;
+	}
+	
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
     	String ref  = getRef();
-		String fileName = ReferenceTypeFactory.getFileName(ref);
-        int lineNumber  = ReferenceTypeFactory.getLineNumber(ref);		
+		String fileName = getFileName(ref);
+        int lineNumber  = getLineNumber(ref);		
 
 		for (SrcLabelTableInfo info : engine.getSrcLabelTable().values()) {
             if (info.getFileName().equals(fileName) &&

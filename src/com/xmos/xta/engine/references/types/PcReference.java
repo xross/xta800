@@ -10,10 +10,17 @@ public class PcReference extends ReferenceType {
 	PcReference(String ref) {
 		super(ref, Type.PC);				
 		if (ref != null) {
-		    setPc(ReferenceTypeFactory.getPcString(ref));
+		    setPc(getPcString(ref));
 		}
 	}
 
+	public ReferenceType create(Engine engine, String reference) {
+		if (isPcString(reference)) {
+			return new PcReference(reference);
+		}
+		return null;
+	}
+	
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
 		XeObject xeObject = engine.getXeObject();
 		if (xeObject == null)

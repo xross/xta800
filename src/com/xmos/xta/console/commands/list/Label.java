@@ -125,7 +125,7 @@ public class Label extends Command {
     	case ADD:
     		assert(m_labels.size() == 1);
     		Reference ref = ReferenceFactory.createReference(
-    				m_refString, ReferenceClass.CONSTRAINT_REF);
+    				m_refString, ReferenceClass.ANY_REF);
 			engine.addLabel(m_labels.get(0), ref);
 			break;			
     	case REMOVE:

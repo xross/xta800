@@ -222,7 +222,7 @@ public class ConstraintFactory {
 	private static Constraint codeRef() throws Exception {
 		if (m_token == Token.codeRef) {
 			Reference codeRef = ReferenceFactory.createReference(
-					m_tokenString, ReferenceClass.CONSTRAINT_REF);
+					m_tokenString, ReferenceClass.ANY_REF);
 			
 			if (codeRef.resolve(m_engine, m_engine.getCoreId(), m_engine.getNodeId()) == false) {
 				error("Invalid code reference '" + m_tokenString + "'");
