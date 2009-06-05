@@ -34,10 +34,10 @@ public class PausableInstructionUnknown extends Unknown {
 	public boolean isUnknown() {
 		return m_instruction.isUnknown();
 	}
-	
+
 	public int compareTo(Unknown unknown) {
 		if (unknown instanceof PausableInstructionUnknown) {
-			if (m_instruction == ((PausableInstructionUnknown)unknown).m_instruction)
+			if (m_instruction == ((PausableInstructionUnknown) unknown).m_instruction)
 				return 0;
 			else
 				return 1;

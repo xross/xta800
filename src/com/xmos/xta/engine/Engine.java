@@ -19,6 +19,7 @@ import com.xmos.xeloader.XeLoader;
 import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
+import com.xmos.xta.engine.analysis.controlflow.FnopAnalyser;
 import com.xmos.xta.engine.analysis.controlflow.FunctionHandler;
 import com.xmos.xta.engine.analysis.controlflow.InstructionDecoder;
 import com.xmos.xta.engine.analysis.controlflow.SuccessorAdder;
@@ -258,9 +259,12 @@ public class Engine implements Notifier {
 				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
 	
 				newXeObjects.add(nodeId, coreId, new XeObject(xeLoader, nodeId, coreId, fileFinder));
-				
+
 				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts(), fh.getFunctions());
 				newCfg.add(nodeId, coreId, cfg);
+				
+				FnopAnalyser fnopAnalyser = new FnopAnalyser(cfg);
+				fnopAnalyser.analyse();
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
 				if(!sae.analyse(this))

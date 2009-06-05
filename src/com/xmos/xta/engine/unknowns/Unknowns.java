@@ -3,18 +3,18 @@ package com.xmos.xta.engine.unknowns;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Unknowns {	
+public class Unknowns {
 	private Set<Unknown> m_unknowns;
 
 	public Unknowns() {
 		m_unknowns = new HashSet<Unknown>();
 	}
-	
+
 	public void addUnknown(Unknown unknown) {
-		assert(unknown != null);
+		assert (unknown != null);
 		m_unknowns.add(unknown);
 	}
-	
+
 	public Set<Unknown> getAll() {
 		return m_unknowns;
 	}
