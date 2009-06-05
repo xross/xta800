@@ -14,7 +14,6 @@ public abstract class Node implements Comparable<Node>{
 	int m_id;
 	
 	Node m_parent;
-	Collection<Node> m_next;
 	
 	boolean m_dominatorSetIsCompleteSet;
 	Set<Node> m_nextNodes;

@@ -165,8 +165,8 @@ public class StructuralAnalysisEngine {
 		patternMatchers.add(new TerminalPatternMatcher());
 		boolean working = true;
 		boolean dominatorTreeUpToDate = false;
-
 		while (working) {
+			
 			List<Node> postOrder = new LinkedList<Node>();
 			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
 			working = false;
@@ -278,6 +278,7 @@ public class StructuralAnalysisEngine {
 		for (Node node : workingSet) {
 			System.out.println(node + " prev: " +  node.getPrevNodes() + " next: "+ node.getNextNodes());
 		}
+		System.out.println("\n\n");
 	}
 	*/
 }

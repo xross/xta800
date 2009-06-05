@@ -165,7 +165,7 @@ public class Route {
 		return startPcs;
 	}
 
-	private boolean explore(Node node, Collection<Node> set, Collection<Integer> endPcs, Collection<Node> endNodes, Node parent) {
+	private void explore(Node node, Collection<Node> set, Collection<Integer> endPcs, Collection<Node> endNodes, Node parent) {
 
 		Set<Integer> pcs = new HashSet<Integer>(endPcs);
 		pcs.retainAll(node.getPCs());
@@ -183,16 +183,16 @@ public class Route {
 			if (endNodes.contains(node)) {
 				makeConnection(node, parent);
 				set.add(node);
-				return true;
+				return;
 			} else {
 				// dont add the node and start to drop down until it is found.
 				for (Node children : node.getChildern()) {
-					if (explore(children, set, endPcs, endNodes, parent))
-						break;
+					explore(children, set, endPcs, endNodes, parent);
+					break;
 				}
 			}
 		}
-		return false;
+		return;
 	}
 
 	private void makeConnection(Node node, Node parent) {
