@@ -4,7 +4,7 @@ import com.xmos.xta.engine.Engine;
 
 public class ErrorReference extends ReferenceType {
 	ErrorReference(String ref) {
-		super(ref);
+		super(ref, Type.ERROR);
 	}
 		
 	public boolean resolve(Engine engine, int nodeId, int coreId) {

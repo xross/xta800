@@ -6,9 +6,10 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.NodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructureDisplayer {
-	private final static boolean DEBUG = true;
+	private final static boolean DEBUG = false;
 
 	private Console m_console;
 
@@ -92,6 +93,7 @@ public class StructureDisplayer {
 						m_console.display(String.format("%-14s", nodeName));
 						m_console.display(String.format(" : %.1fns", node.getTimeTaken(Case.WORST)));						
 						displayNumIterations(node);
+						displayInstructionTrace(node);
 						displayWhatsNext(node);
 						m_console.display("\n");
 					}
@@ -109,8 +111,17 @@ public class StructureDisplayer {
 	
 	private void displayWhatsNext(Node node) {
 		if (node.getParent()!= null && node.getParent().whatsNext(node) != null){
+			m_console.display(" ");
 			m_console.display(node.getParent().whatsNext(node).toString());
 		}		
+	}
+	
+	private void displayInstructionTrace(Node node) {
+		XtaInstruction instruction = node.getInstructions().get(0);
+		m_console.display(String.format(" 0x%x: %s %s", 
+				instruction.getPc(),
+				instruction.getNmenonic(),
+				instruction.getOperandString()));
 	}
 	
 	private void displayNumIterations(Node node) {

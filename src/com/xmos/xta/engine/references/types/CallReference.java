@@ -8,7 +8,7 @@ import com.xmos.xta.engine.sections.CodePointTableInfo;
 
 public class CallReference extends ReferenceType {
 	CallReference(String ref) {
-		super(ref);
+		super(ref, Type.CALL);
 	}
 
 	public boolean resolve(Engine engine, int nodeId, int coreId) {

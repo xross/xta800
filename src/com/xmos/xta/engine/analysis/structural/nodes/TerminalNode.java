@@ -6,8 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
+import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class TerminalNode extends Node {
 	private Collection<Node> m_terminals;
@@ -104,4 +106,13 @@ public class TerminalNode extends Node {
 	public Collection<Node> whatsNext(Node node) {
 		return getParent().whatsNext(this);
 	}
+
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
+			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
+		
+		if (!calledFromAbove) {
+		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
+		}
+		return false;
+	}		
 }

@@ -11,28 +11,20 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class BlockNode extends Node {
 	private List<Node> m_insts;
-	//private List<XtaInstruction> m_xtaInsts;
 
 	public BlockNode() {
 		super();
 		m_insts = new LinkedList<Node>();
-		//m_xtaInsts = new LinkedList<XtaInstruction>();
 	}
 	
 	public BlockNode(BlockNode block) {
 		super();
 		m_insts = block.m_insts;
-		//m_xtaInsts = block.m_xtaInsts;
 	}
 	
 	public BlockNode(List<Node> insts) {
 		super();
 		m_insts = insts;
-		
-		//m_xtaInsts = new LinkedList<XtaInstruction>();
-		//for (Node i : m_insts) {
-		//	m_xtaInsts.addAll(i.getInstructions());
-		//}
 	}
 	
 	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
@@ -40,8 +32,6 @@ public class BlockNode extends Node {
 		for (Node node : m_insts) {
 			bn.m_insts.add(node.deepClone(startPcs));
 		}
-		
-		//bn.m_xtaInsts.addAll(m_xtaInsts);
 		return bn;
 	}
 	
@@ -119,7 +109,6 @@ public class BlockNode extends Node {
 	}
 
 	public Collection<Node> whatsNext(Node node) {
-		//assert(m_insts.contains(node));
 		int index = m_insts.indexOf(node);
 		if(index < m_insts.size()-1){
 			Collection<Node> next = new HashSet<Node>();

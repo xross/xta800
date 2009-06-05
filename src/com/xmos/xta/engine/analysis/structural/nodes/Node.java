@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
+import com.xmos.xta.engine.references.types.ReferenceType;
 
 public abstract class Node implements Comparable<Node>{
 	static int s_numNodes;
@@ -25,7 +27,6 @@ public abstract class Node implements Comparable<Node>{
 	long m_numIterations;
 	boolean m_numIterationsDone;
 	boolean m_isAbsolute;
-
 	
 	boolean isExcluded;
 
@@ -226,5 +227,55 @@ public abstract class Node implements Comparable<Node>{
 			node = node.getParent();
 		}
 		return node;
-	}	
+	}
+
+	public boolean checkBackTrail(Stack<ReferenceType> referenceTypes) {
+		return checkBackTrail(referenceTypes, null, false, new FunctionCallStatus());
+	}
+	
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
+			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
+		
+		// Builds up a stack of all the children up to the calling node...
+		Stack<Node> children = new Stack<Node>();
+		for (Node child : getChildern()) {
+			if (child == node)
+				break;
+			
+			children.push(child);
+		}
+		
+		// Now call each of the children.
+		// Note: the use of a stack causes 
+		// them to be called in reverse order.
+		while (!children.empty()) {
+			Node child = children.pop();			
+			if (child.checkBackTrail(referenceTypes, this, true, functionCallStatus))
+				return true;
+		}
+		
+		// Now if we are on are way up, then call the parent...
+		if (!calledFromAbove) {
+			if (m_parent == null) {
+				// We have reached the top of the tree...
+				return false;
+				
+			} else {		
+		        if (m_parent.checkBackTrail(referenceTypes, this, false, functionCallStatus))
+		    	    return true;
+			}
+		}
+		return false;
+	}			
+}
+
+class FunctionCallStatus {
+	private boolean m_status;
+	
+	FunctionCallStatus() {
+		m_status = false;
+	}
+	
+	void setStatus(boolean status) { m_status = status; }
+	boolean getStatus()            { return m_status; }
 }

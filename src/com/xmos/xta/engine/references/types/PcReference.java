@@ -8,7 +8,7 @@ import com.xmos.xta.engine.Engine;
 
 public class PcReference extends ReferenceType {	
 	PcReference(String ref) {
-		super(ref);				
+		super(ref, Type.PC);				
 		if (ref != null) {
 		    setPc(ReferenceTypeFactory.getPcString(ref));
 		}

@@ -1,12 +1,9 @@
 package com.xmos.xta.engine.analysis.structural;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import com.xmos.xta.engine.analysis.structural.nodes.DefaultNodeTraverser;
-import com.xmos.xta.engine.analysis.structural.nodes.LoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
 
 public class StructureGraph {
@@ -30,63 +27,47 @@ public class StructureGraph {
 
 	public boolean setLoopIterations(Reference reference, long iterations) {
 		boolean loopIterationsSet = false;
+		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		
-		Collection<Node> referencedNodes = getReferencedNodes(reference);		
-		for (Node referencedNode : referencedNodes) {
-						
-			Node enclosingLoopNode = referencedNode.isLoopNode() ? 
-					referencedNode : 
-					referencedNode.getEnclosingLoopNode();
-								
-			if (enclosingLoopNode != null) {				
-				enclosingLoopNode.setNumIterationsDone(false);
-				referencedNode.setNumIterations(iterations);
-				loopIterationsSet = true;
-			}
-		}
+		for (Node threadNode : getThreads()) {
+			Collection<Node> referencedNodes = 
+				referenceMatcher.getNodes(threadNode, reference);
+			
+			for (Node referencedNode : referencedNodes) {						
+				Node enclosingLoopNode = referencedNode.isLoopNode() ? 
+						referencedNode : 
+						referencedNode.getEnclosingLoopNode();
+									
+				if (enclosingLoopNode != null) {				
+					enclosingLoopNode.setNumIterationsDone(false);
+					referencedNode.setNumIterations(iterations);
+					loopIterationsSet = true;
+				}
+			}			
+		}		
 		return loopIterationsSet;
 	}
-		
+
 	public boolean unsetLoopIterations(Reference reference) {
 		return false;
 	}
 
 	public boolean setLoopScope(Reference reference, boolean isAbsolute) {
-		Collection<Node> nodes = getReferencedNodes(reference);
-		if (nodes.size() > 0) {
-		    for (Node node : nodes) {
-			    ((LoopNode)node).setScope(isAbsolute);
-		    }
-		    return true;
-		}
-		return false;
-	}
-	
-	private Collection<Node> getReferencedNodes(Reference reference) {
-		Collection<Node> nodes = getNodesContainingPc(reference.getPc());
-		return checkBackTrail(nodes, reference);
-	}
+		boolean loopScopeSet = false;
+		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		
-	private Collection<Node> getNodesContainingPc(final int pc) {
-		final Collection<Node> nodes = new ArrayList<Node>();		
-		for (Node threadNode : m_threads) {				
-			threadNode.traverse(0, new DefaultNodeTraverser() {
-				public boolean foundBlockNode(Node node, int depth) {
-					for (XtaInstruction instruction : node.getInstructions()) {
-						if (instruction.getPc() == pc) {
-							nodes.add(node);
-							break;
-						}
-					}
-					return true;
-				}
-		    });
-		}
-		return nodes;
-	}
+		for (Node threadNode : getThreads()) {
+			Collection<Node> referencedNodes = 
+				referenceMatcher.getNodes(threadNode, reference);
 
-	private Collection<Node> checkBackTrail(Collection<Node> nodes, Reference reference) {
-		return nodes;
+			if (referencedNodes.size() > 0) {
+			    for (Node referencedNode : referencedNodes) {
+			    	referencedNode.setScope(isAbsolute);
+			    }
+			    loopScopeSet = true;
+			}			
+		}		
+		return loopScopeSet;
 	}
 	
 	//maybe this should be moved into the analysis
@@ -123,6 +104,5 @@ public class StructureGraph {
 		        }
 		    });
 		}				    	
-    	return;
     }
 }

@@ -6,8 +6,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import com.xmos.xta.engine.instructions.XtaInstruction;
+import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class LoopNode extends Node {
 	private Node m_loopHeader;
@@ -135,8 +137,11 @@ public class LoopNode extends Node {
 	}
 
 	public Collection<Node> getChildern() {
-		Collection<Node> children = new HashSet<Node>(m_loops);
+		Collection<Node> children = new ArrayList<Node>();
 		children.add(m_loopHeader);
+		for (Node node : m_loops) {
+			children.add(node);					
+		}
 		return children;
 	}
 
@@ -164,4 +169,13 @@ public class LoopNode extends Node {
 			}
 	    }
 	}	
+	
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
+			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
+		
+		if (!calledFromAbove) {
+		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
+		}
+		return false;
+	}		
 }

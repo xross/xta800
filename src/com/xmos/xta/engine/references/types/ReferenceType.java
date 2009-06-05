@@ -5,20 +5,29 @@ import com.xmos.xta.engine.Engine;
 public abstract class ReferenceType {
 	private String m_ref;
 	private String m_shortRef;
-
 	private boolean m_resolved;
 	private int m_pc;
-
 	private String m_fileName;
-	private int m_lineNum;
+	private int m_lineNum;	
+	private Type m_type;
 
-	ReferenceType(String ref) {
+	public enum Type {
+		PC,
+		LABEL,
+		ENDPOINT,
+		SRCLABEL,
+		CALL,
+		ERROR,
+	}
+	
+	ReferenceType(String ref, Type type) {
 		m_ref = ref;
 		m_shortRef = ref;
 		m_pc = 0;
 		m_resolved = false;
 		m_fileName = "";
 		m_lineNum = 0;
+		m_type = type;
 	}
 	
 	public abstract String name();
@@ -71,5 +80,9 @@ public abstract class ReferenceType {
 
 	public void setLineNum(int lineNum) {
 		m_lineNum = lineNum;
+	}
+	
+	public Type getType() {
+		return m_type;
 	}
 }

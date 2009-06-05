@@ -4,7 +4,7 @@ import com.xmos.xta.engine.Engine;
 
 public class LabelReference extends ReferenceType {
 	LabelReference(String ref) {
-		super(ref);
+		super(ref, Type.LABEL);
 	}
 		
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
