@@ -9,7 +9,7 @@ public class BasicBlockMatcher {
 
 	private BlockNode m_block;
 	private Node m_treeStart;
-	private Node m_lastBlock;
+	private Node m_lastInstruction;
 
 	public boolean match(Node node, Node treeStart, Collection<Node> currentGraph) {
 
@@ -22,7 +22,7 @@ public class BasicBlockMatcher {
 				insts.add(node);
 			}
 		}
-		m_lastBlock = insts.getLast();
+		m_lastInstruction = insts.getLast();
 		if (isStart) {
 			m_block = new BlockNode(insts);
 		}
@@ -93,6 +93,6 @@ public class BasicBlockMatcher {
 	}
 
 	public Node getLastBlock() {
-		return m_lastBlock;
+		return m_lastInstruction;
 	}
 }

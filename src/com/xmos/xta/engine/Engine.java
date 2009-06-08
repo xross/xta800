@@ -19,7 +19,6 @@ import com.xmos.xeloader.XeLoader;
 import com.xmos.xeobject.FileFinder;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
-import com.xmos.xta.engine.analysis.controlflow.FnopAnalyser;
 import com.xmos.xta.engine.analysis.controlflow.FunctionHandler;
 import com.xmos.xta.engine.analysis.controlflow.InstructionDecoder;
 import com.xmos.xta.engine.analysis.controlflow.SuccessorAdder;
@@ -270,7 +269,6 @@ public class Engine implements Notifier {
 					return false;
 				
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
-				printCFG(id, fh, threadStartNodes, threadStopNodes, fh.getKnownFuncStarts());
 				markAllParents(sae.getStructureGraph());
 			}		
 		}
