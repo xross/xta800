@@ -234,7 +234,6 @@ public class Engine implements Notifier {
 		
 		for(int nodeId : xeLoader.getNodeIds()){
 			for(int coreId : xeLoader.getCoreIds(nodeId)){
-				
 				InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config);
 				
 				if(!id.decode()) 
@@ -263,15 +262,15 @@ public class Engine implements Notifier {
 				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts(), fh.getFunctions());
 				newCfg.add(nodeId, coreId, cfg);
 				
-				FnopAnalyser fnopAnalyser = new FnopAnalyser(cfg);
-				fnopAnalyser.analyse();
+				//FnopAnalyser fnopAnalyser = new FnopAnalyser(cfg);
+				//fnopAnalyser.analyse();
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
 				if(!sae.analyse(this))
 					return false;
 				
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
-				
+				printCFG(id, fh, threadStartNodes, threadStopNodes, fh.getKnownFuncStarts());
 				markAllParents(sae.getStructureGraph());
 			}		
 		}

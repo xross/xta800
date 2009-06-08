@@ -132,6 +132,7 @@ public class StructuralAnalysisEngine {
 			Collection<Node> basicBlocks = new HashSet<Node>();
 
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
+			dumpTree(basicBlocks);
 			if (!createStructure(basicBlocks, initialBasicBlock, engine)) {
 				return null;
 			}
@@ -267,7 +268,7 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 	
-	/*
+	
 	private static int g = 0;
 	private void dumpTree(Collection<Node> workingSet){
 		System.out.println("digraph g" + g++ + " {");
@@ -282,5 +283,5 @@ public class StructuralAnalysisEngine {
 		}
 		System.out.println("\n\n");
 	}
-	*/
+	
 }

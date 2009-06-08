@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
@@ -29,6 +30,10 @@ public abstract class Node implements Comparable<Node>{
 	
 	boolean m_isExcluded;
 
+	Collection<InstructionBuffer> m_startInstructionBuffers;
+	
+	
+	
 	public enum Case {
 		WORST,
 		BEST,
@@ -61,6 +66,7 @@ public abstract class Node implements Comparable<Node>{
 	
 	public Node() {
 		m_isExcluded = false;
+		m_startInstructionBuffers = new HashSet<InstructionBuffer>();
 		m_nextNodes = new HashSet<Node>();
 		m_prevNodes = new HashSet<Node>();
 		m_dominators = new HashSet<Node>();
@@ -74,6 +80,11 @@ public abstract class Node implements Comparable<Node>{
 		m_dominators = new HashSet<Node>(node.m_prevNodes);
 		m_id = s_numNodes++;
 	}
+	
+	public Collection<InstructionBuffer> getStartInstructionBuffers(){
+		return m_startInstructionBuffers;
+	}
+	
 	
 	public int getId() {
 		return m_id;
