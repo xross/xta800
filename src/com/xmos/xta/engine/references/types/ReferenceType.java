@@ -108,7 +108,7 @@ public abstract class ReferenceType {
 		return false;
 	}	
 
-	boolean isSourceReference(String ref, String refType) {
+	boolean isSourceReference(String ref) {
 		String[] refArray = ref.split(":"); 
 
 		if ((refArray.length < 2) || (refArray.length > 3))
@@ -121,10 +121,7 @@ public abstract class ReferenceType {
 		String lineNum = (refArray.length == 2) ? refArray[1] : refArray[2];			
 		if (!lineNum.matches("[0-9]*")) 
 			return false;
-
-		if ((refArray.length == 3) && !refArray[0].equals(refType)) {
-			return false;			
-		}		
+		
 		return true;
 	}
 
@@ -168,5 +165,24 @@ public abstract class ReferenceType {
             assert false;
         }            
         return lineNumber;
+	}
+	
+	String getLabel(String reference) {
+		String[] refArray = reference.split(":");
+		assert((refArray.length == 1) || (refArray.length == 2));		
+		return (refArray.length == 1) ? refArray[0] : refArray[1];		
 	}	
+	
+	boolean checkTypeString(String reference, Type refType) {
+		String[] refArray = reference.split(":"); 
+
+		if (refArray.length == 1) {
+			return true;
+			
+		} else if ((refArray.length == 2) && 
+				   (refArray[0].equals(refType.toString()))) {
+			return true;
+		}
+		return false;
+	}
 }

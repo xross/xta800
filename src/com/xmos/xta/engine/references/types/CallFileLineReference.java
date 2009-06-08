@@ -4,14 +4,13 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.sections.CodePointTableInfo;
 
 public class CallFileLineReference extends ReferenceType {
-    public static final String TYPE = "CALL";
-	
 	CallFileLineReference(String ref) {
 		super(ref, Type.CALL);
 	}
 
 	public ReferenceType create(Engine engine, String reference) {
-		if (isSourceReference(reference, CallFileLineReference.TYPE) && 
+		if (checkTypeString(reference, Type.CALL) &&
+		    isSourceReference(reference) && 
 			inCodePointTable(reference, engine.getCallTable())) {
 	    	return new CallFileLineReference(reference);	
 		}	
