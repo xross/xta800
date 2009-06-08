@@ -62,7 +62,7 @@ public class PathNode extends Node {
 	
 	public long getNumFNops(Case c) {
 		long fnops = 0;
-   		for(Node node : m_nodes){
+   		for (Node node : m_nodes) {
     		fnops += node.getNumFNops(c);
 		}
 		return fnops;
@@ -70,7 +70,7 @@ public class PathNode extends Node {
 	
 	public List<XtaInstruction> getInstructions() {
 		List<XtaInstruction> list = new LinkedList<XtaInstruction>();
-		for(Node node : m_nodes){
+		for (Node node : m_nodes) {
 			list.addAll(node.getInstructions());
 		}
 		return list;
@@ -78,7 +78,7 @@ public class PathNode extends Node {
 
 	public Set<Integer> getPCs() {
 		Set<Integer> pcs = new HashSet<Integer>();
-		for(Node node : m_nodes){
+		for (Node node : m_nodes) {
 			pcs.addAll(node.getPCs());
 		}
 		return pcs;
