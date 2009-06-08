@@ -201,11 +201,11 @@ public class Shell {
            
     private boolean exitAllowed(Command command) {
         assert(command != null);
-        if (m_exitAllowed &&
+        if (!m_exitAllowed &&
         	command.name().equals("exit")) {
-    		return true;
+    		return false;
         }
-    	return false;
+    	return true;
     }
     
 	private void usage() {

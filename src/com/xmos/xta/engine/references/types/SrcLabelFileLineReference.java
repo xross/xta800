@@ -4,14 +4,13 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 
 public class SrcLabelFileLineReference extends ReferenceType {
-    public static final String TYPE = "SRCLABEL";
-
 	SrcLabelFileLineReference(String ref) {
 		super(ref, Type.SRCLABEL);
 	}
 
 	public ReferenceType create(Engine engine, String reference) {
-		if (isSourceReference(reference, SrcLabelFileLineReference.TYPE) && 
+		if (checkTypeString(reference, Type.SRCLABEL) &&
+		    isSourceReference(reference) && 
 			inSrcLabelTable(reference, engine.getSrcLabelTable())) {
 	    	return new SrcLabelFileLineReference(reference);
 		}

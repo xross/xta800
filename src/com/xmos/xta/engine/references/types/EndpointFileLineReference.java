@@ -4,20 +4,19 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.sections.CodePointTableInfo;
 
 public class EndpointFileLineReference extends ReferenceType {
-    public static final String TYPE = "ENDPOINT";
-
     EndpointFileLineReference(String ref) {
 		super(ref, Type.ENDPOINT);
 	}
 
 	public ReferenceType create(Engine engine, String reference) {
-		if (isSourceReference(reference, EndpointFileLineReference.TYPE) && 
+		if (checkTypeString(reference, Type.ENDPOINT) &&
+		    isSourceReference(reference) && 
 			inCodePointTable(reference, engine.getEndpointTable())) {
 	    	return new EndpointFileLineReference(reference);
 		}
 		return null;
 	}
-    
+
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
     	String ref  = getRef();
 		String fileName = getFileName(ref);

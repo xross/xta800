@@ -12,7 +12,8 @@ public class EndpointReference extends ReferenceType {
 	}
 
 	public ReferenceType create(Engine engine, String reference) {
-		if (engine.getEndpoints().containsKey(reference)) {
+		if (checkTypeString(reference, Type.ENDPOINT) &&
+		    engine.getEndpoints().containsKey(getLabel(reference))) {
 			return new EndpointReference(reference);
 		}
 		return null;
@@ -20,8 +21,10 @@ public class EndpointReference extends ReferenceType {
 	
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
 		String ref = getRef();
-		if (engine.getEndpoints().containsKey(ref)) {			
-			CodePointInfo info = engine.getEndpoints().get(ref);
+		String label = getLabel(ref);
+		
+		if (engine.getEndpoints().containsKey(label)) {			
+			CodePointInfo info = engine.getEndpoints().get(label);
 			setPc(info.getPc());
 			
 			Map<Integer, CodePointTableInfo> endpointTable = engine.getEndpointTable();
