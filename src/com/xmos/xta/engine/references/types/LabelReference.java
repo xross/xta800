@@ -8,7 +8,8 @@ public class LabelReference extends ReferenceType {
 	}
 	
 	public ReferenceType create(Engine engine, String reference) {
-		if (engine.getLabels().containsKey(reference)) {
+		if (checkTypeString(reference, Type.LABEL) &&
+		    engine.getLabels().containsKey(getLabel(reference))) {
 			return new LabelReference(reference);
 		}
 		return null;
@@ -16,9 +17,10 @@ public class LabelReference extends ReferenceType {
 	
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
 		String ref = getRef();
+		String label = getLabel(ref);
 		
-	    if (engine.getLabels().containsKey(ref)) {
-		    setPc(engine.getLabels().get(ref));
+	    if (engine.getLabels().containsKey(label)) {
+		    setPc(engine.getLabels().get(label));
 	        setResolved(true);
 	        return true;
 	    }

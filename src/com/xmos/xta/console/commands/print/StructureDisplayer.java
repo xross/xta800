@@ -9,7 +9,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructureDisplayer {
-	private final static boolean DEBUG = false;
+	private final static boolean DEBUG = true;
 
 	private Console m_console;
 

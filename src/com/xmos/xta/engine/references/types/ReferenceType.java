@@ -126,9 +126,12 @@ public abstract class ReferenceType {
 	}
 
 	boolean isPcString(String ref) {
-		if (ref.matches("0x[0-9a-fA-F]+")){
+		String[] refArray = ref.split(":"); 
+        String pcString = (refArray.length == 2) ? refArray[0] : refArray[1];	 
+		
+		if (pcString.matches("0x[0-9a-fA-F]+")){
 			return true;
-		} else if (ref.matches("[0-9]+")){
+		} else if (pcString.matches("[0-9]+")){
 			return true;
 		} else {
 			return false;
@@ -136,10 +139,13 @@ public abstract class ReferenceType {
 	}
 	
 	int getPcString(String ref) {
-		if (ref.matches("0x[0-9a-fA-F]+")){
-			return Integer.parseInt(ref.substring(2), 16);
-		} else if (ref.matches("[0-9]+")){
-			return Integer.parseInt(ref, 10);
+		String[] refArray = ref.split(":"); 
+        String pcString = (refArray.length == 2) ? refArray[0] : refArray[1];	 		
+		
+		if (pcString.matches("0x[0-9a-fA-F]+")){
+			return Integer.parseInt(pcString.substring(2), 16);
+		} else if (pcString.matches("[0-9]+")){
+			return Integer.parseInt(pcString, 10);
 		} else {
 			assert(false);
 			return 0;

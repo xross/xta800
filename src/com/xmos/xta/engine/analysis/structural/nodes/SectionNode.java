@@ -45,29 +45,30 @@ public class SectionNode extends Node {
 	}
 
 	public double getTimeTaken(Case c) {
-		return 0;
+		Node worstCaseOption = getWorstCaseOption();		
+		return worstCaseOption.getTimeTaken(c);
 	}
 
 	public long getNumCycles(Case c) {
-		return 0;
+		Node worstCaseOption = getWorstCaseOption();		
+		return worstCaseOption.getNumCycles(c);
 	}
 
-	public long getNumInstructions(Case c) {
+	public long getNumInstructions(Case c) {		
 		return getInstructions().size();
 	}
 	
 	public long getNumFNops(Case c) {
-		return 0;
+		Node worstCaseOption = getWorstCaseOption();		
+		return worstCaseOption.getNumFNops(c);
 	}
-	
-	public Collection<Node> getOptions(){
-		return m_options;
-	}
-	
+		
 	public List<XtaInstruction> getInstructions() {
-		return new LinkedList<XtaInstruction>();
+		List<XtaInstruction> list = new LinkedList<XtaInstruction>();
+		list.addAll(getWorstCaseOption().getInstructions());
+		return list;		
 	}
-
+	
 	public Set<Integer> getPCs() {
 		Set<Integer> pcs = new HashSet<Integer>();
 		for(Node node : m_options){
@@ -100,6 +101,10 @@ public class SectionNode extends Node {
 		return pc;
 	}
 
+	public Collection<Node> getOptions(){
+		return m_options;
+	}
+	
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
 		if (!nodeTraverser.foundSectionNode(this, depth))
 			return;

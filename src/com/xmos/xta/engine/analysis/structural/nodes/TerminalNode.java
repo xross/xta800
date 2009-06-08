@@ -31,11 +31,19 @@ public class TerminalNode extends Node {
     }
 	
 	public double getTimeTaken(Case c) {
-		return 0;
+		double time = 0;
+	    for (Node node : m_terminals) {
+		    time += node.getTimeTaken(c);
+		}
+		return time;
 	}
 	
 	public long getNumCycles(Case c) {
-		return 0;
+   		long cycles = 0;
+    	for (Node node : m_terminals){
+	    	cycles += node.getNumCycles(c);
+		}
+		return cycles;
 	}
 
 	public long getNumInstructions(Case c) {
@@ -43,7 +51,19 @@ public class TerminalNode extends Node {
 	}
 	
 	public long getNumFNops(Case c) {
-		return 0;
+		long fnops = 0;
+   		for (Node node : m_terminals) {
+    		fnops += node.getNumFNops(c);
+		}
+		return fnops;
+	}
+	
+	public List<XtaInstruction> getInstructions() {
+		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
+		for(Node nodes: m_terminals) {
+			insts.addAll(nodes.getInstructions());
+		}
+		return insts;
 	}
 	
 	public Node clone() {
@@ -56,14 +76,6 @@ public class TerminalNode extends Node {
 			containedNodes.addAll(loop.getContainedNodes());
 		}
 		return containedNodes;
-	}
-
-	public List<XtaInstruction> getInstructions() {
-		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
-		for(Node nodes: m_terminals){
-			insts.addAll(nodes.getInstructions());
-		}
-		return insts;
 	}
 
 	public Set<Integer> getPCs() {
