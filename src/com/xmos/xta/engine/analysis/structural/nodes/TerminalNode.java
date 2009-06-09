@@ -30,32 +30,68 @@ public class TerminalNode extends Node {
 		return tn;
     }
 	
-	public double getTimeTaken(Case c) {
+	public double getTimeTakenRelative(Case c) {
 		double time = 0;
 	    for (Node node : m_terminals) {
-		    time += node.getTimeTaken(c);
+		    time += node.getTimeTakenRelative(c);
+		}
+		return time;
+	}
+
+	public double getTimeTakenAbsolute(Case c) {
+		double time = 0;
+	    for (Node node : m_terminals) {
+		    time += node.getTimeTakenAbsolute(c);
 		}
 		return time;
 	}
 	
-	public long getNumCycles(Case c) {
-   		long cycles = 0;
+	public long getNumCyclesRelative(Case c) {
+   		long count = 0;
     	for (Node node : m_terminals){
-	    	cycles += node.getNumCycles(c);
+    		count += node.getNumCyclesRelative(c);
 		}
-		return cycles;
+		return count;
 	}
 
-	public long getNumInstructions(Case c) {
-		return getInstructions().size();
+	public long getNumCyclesAbsolute(Case c) {
+   		long count = 0;
+    	for (Node node : m_terminals){
+    		count += node.getNumCyclesAbsolute(c);
+		}
+		return count;
 	}
 	
-	public long getNumFNops(Case c) {
-		long fnops = 0;
-   		for (Node node : m_terminals) {
-    		fnops += node.getNumFNops(c);
+	public long getNumInstructionsRelative(Case c) {
+   		long count = 0;
+    	for (Node node : m_terminals){
+    		count += node.getNumInstructionsRelative(c);
 		}
-		return fnops;
+		return count;
+	}
+
+	public long getNumInstructionsAbsolute(Case c) {
+   		long count = 0;
+    	for (Node node : m_terminals){
+    		count += node.getNumInstructionsAbsolute(c);
+		}
+		return count;
+	}
+	
+	public long getNumFNopsRelative(Case c) {
+   		long count = 0;
+    	for (Node node : m_terminals){
+    		count += node.getNumFNopsRelative(c);
+		}
+		return count;
+	}
+
+	public long getNumFNopsAbsolute(Case c) {
+   		long count = 0;
+    	for (Node node : m_terminals){
+    		count += node.getNumFNopsAbsolute(c);
+		}
+		return count;
 	}
 	
 	public List<XtaInstruction> getInstructions() {

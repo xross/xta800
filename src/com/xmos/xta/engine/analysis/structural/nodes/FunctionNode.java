@@ -48,6 +48,10 @@ public class FunctionNode extends Node {
 		m_branchTarget = fn.m_branchTarget;
 	}
 	
+	public Node clone() {
+		return new FunctionNode(this);
+	}
+	
 	public Node deepClone(Map<Integer, FunctionNode> startPcs){
 		FunctionNode fn = new FunctionNode();
 		if(m_knownFunction){
@@ -70,31 +74,58 @@ public class FunctionNode extends Node {
 		return "Function" + m_id;
 	}
 
-	public double getTimeTaken(Case c) {
+	public double getTimeTakenRelative(Case c) {
 		if (m_knownFunction) {
-			return m_function.getTimeTaken(c);	
-
-		}
-		return 0;
-	}
-	
-	public long getNumCycles(Case c) {
-		if (m_knownFunction) {		
-    		return m_function.getNumCycles(c);
+			return m_function.getTimeTakenRelative(c);	
 		}
 		return 0;
 	}
 
-	public long getNumInstructions(Case c) {
-		if (m_knownFunction) {		
-    		return m_function.getNumInstructions(c);
+	public double getTimeTakenAbsolute(Case c) {
+		if (m_knownFunction) {
+			return m_function.getTimeTakenAbsolute(c);	
 		}
 		return 0;
 	}
 	
-	public long getNumFNops(Case c) {
+	public long getNumCyclesRelative(Case c) {
 		if (m_knownFunction) {		
-    		return m_function.getNumFNops(c);
+    		return m_function.getNumCyclesRelative(c);
+		}
+		return 0;
+	}
+
+	public long getNumCyclesAbsolute(Case c) {
+		if (m_knownFunction) {		
+    		return m_function.getNumCyclesAbsolute(c);
+		}
+		return 0;
+	}
+	
+	public long getNumInstructionsRelative(Case c) {
+		if (m_knownFunction) {		
+    		return m_function.getNumInstructionsRelative(c);
+		}
+		return 0;
+	}
+
+	public long getNumInstructionsAbsolute(Case c) {
+		if (m_knownFunction) {		
+    		return m_function.getNumInstructionsAbsolute(c);
+		}
+		return 0;
+	}
+	
+	public long getNumFNopsRelative(Case c) {
+		if (m_knownFunction) {		
+    		return m_function.getNumFNopsRelative(c);
+		}
+		return 0;
+	}
+
+	public long getNumFNopsAbsolute(Case c) {
+		if (m_knownFunction) {		
+    		return m_function.getNumFNopsAbsolute(c);
 		}
 		return 0;
 	}
@@ -117,10 +148,6 @@ public class FunctionNode extends Node {
 	
 	public Node getBranchTarget() {
 		return m_branchTarget;
-	}
-
-	public Node clone() {
-		return new FunctionNode(this);
 	}
 	
 	public Collection<Node> getContainedNodes() {

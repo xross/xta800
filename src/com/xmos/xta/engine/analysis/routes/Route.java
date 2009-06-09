@@ -151,9 +151,10 @@ public class Route {
 					endNodes.addAll(pcToStruct.get(to));
 				}
 			}
-			m_structureGraph.removeLinks();
 			for (Node start : startNodes) {
 				Collection<Node> workingSet = new HashSet<Node>();
+
+				m_structureGraph.removeLinks();
 				explore(start, workingSet, endPcs, endNodes, null);
 
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
@@ -161,8 +162,6 @@ public class Route {
 				Node newStart = makeBasicBlocks(start, endNodes, workingSet);
 				// Node newStart = start;
 				sae.createStructure(workingSet, newStart, m_engine);
-
-				m_structureGraph.removeLinks();
 
 				m_routes.add(workingSet.iterator().next());
 			}
@@ -183,7 +182,7 @@ public class Route {
 				for(Node refNode : refNodes){
 					if(!seenNodes.contains(refNode)){
 						Node currentNode = refNode;
-						while(!currentNode.getParent().isSection() || noOptionsLeft(currentNode)){
+						while(!currentNode.getParent().isSectionNode() || noOptionsLeft(currentNode)){
 							currentNode = currentNode.getParent();
 						}
 						Set<Node> branch = getBranch(currentNode);

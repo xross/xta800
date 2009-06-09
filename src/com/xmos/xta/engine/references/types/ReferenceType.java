@@ -127,7 +127,7 @@ public abstract class ReferenceType {
 
 	boolean isPcString(String ref) {
 		String[] refArray = ref.split(":"); 
-        String pcString = (refArray.length == 2) ? refArray[0] : refArray[1];	 
+        String pcString = (refArray.length == 2) ? refArray[1] : refArray[0];	 
 		
 		if (pcString.matches("0x[0-9a-fA-F]+")){
 			return true;
