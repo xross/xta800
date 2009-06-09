@@ -25,6 +25,7 @@ public class BlockNode extends Node {
 	public BlockNode(List<Node> insts) {
 		super();
 		m_insts = insts;
+		//m_branchTargets.addAll(m_insts.get(m_insts.size()-1).m_branchTargets);
 	}
 	
 	public BlockNode clone() {

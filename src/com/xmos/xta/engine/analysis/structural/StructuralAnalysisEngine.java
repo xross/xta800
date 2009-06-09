@@ -12,6 +12,7 @@ import java.util.Set;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.DefaultNodeTraverser;
+import com.xmos.xta.engine.analysis.controlflow.FnopAnalyser;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
@@ -93,7 +94,8 @@ public class StructuralAnalysisEngine {
 	}
 
 	private boolean buildStructureGraph(Engine engine) {
-		Collection<Node> functions = buildGraph(m_controlFlowGraph.getFunctionStartInstructions(), m_functionStartPcs, engine);
+		Collection<Node> functions = buildGraph(m_controlFlowGraph.getFunctionStartInstructions(), m_functionStartPcs,
+				engine);
 		if (functions == null) {
 			return false;
 		}
@@ -112,7 +114,8 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, FunctionNode> startPcs, Engine engine) {
+	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, FunctionNode> startPcs,
+			Engine engine) {
 
 		Collection<Node> graphs = new HashSet<Node>();
 
@@ -127,6 +130,12 @@ public class StructuralAnalysisEngine {
 			Collection<Node> basicBlocks = new HashSet<Node>();
 
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
+
+			FnopAnalyser fnopAnalyser = new FnopAnalyser();
+			fnopAnalyser.analyse(initialBasicBlock, true);
+			// FIXME - this is not always true
+
+			//dumpTree(basicBlocks);
 			if (!createStructure(basicBlocks, initialBasicBlock, engine)) {
 				return null;
 			}
@@ -143,7 +152,8 @@ public class StructuralAnalysisEngine {
 	 * This step is in the flow in order to reduce the graph of instructions
 	 * into basic blocks.
 	 */
-	private Node reduceGraphToBasicBlocks(Collection<Node> basicBlocks, Node initialBasicBlock, Collection<Node> currentGraph) {
+	private Node reduceGraphToBasicBlocks(Collection<Node> basicBlocks, Node initialBasicBlock,
+			Collection<Node> currentGraph) {
 
 		Set<Node> seen = new HashSet<Node>();
 		Map<Node, Node> cfgToStructure = new HashMap<Node, Node>();
@@ -175,6 +185,11 @@ public class StructuralAnalysisEngine {
 		// now add all the links
 		for (Node node : basicBlocks) {
 			Node lastInstruction = endPoint.get(node);
+
+			for (Node branch : lastInstruction.getBranchTargets()) {
+				node.getBranchTargets().add(cfgToStructure.get(branch));
+			}
+
 			for (Node next : lastInstruction.getNextNodes()) {
 				CommonMethods.connect(cfgToStructure.get(next), node);
 			}
@@ -304,18 +319,36 @@ public class StructuralAnalysisEngine {
 
 	/*
 	private static int g = 0;
-	private void dumpTree(Collection<Node> workingSet){
-		System.out.println("digraph g" + g++ + " {");
-		for(Node node : workingSet){
-			for(Node next : node.getNextNodes()){
-				System.out.println(node + " -> " + next + ";");
+	private void dumpTree(Collection<Node> workingSet) {
+		if (workingSet.size() > 1) {
+			System.out.println("digraph g" + g++ + " {");
+			for (Node node : workingSet) {
+				for (Node next : node.getNextNodes()) {
+
+					if (node.getBranchTargets().contains(next)) {
+						System.out.println(node + " -> " + next + " [style=dotted];");
+					} else {
+						System.out.println(node + " -> " + next + ";");
+					}
+
+				}
+
+				if (node.getIbufferStates().size() > 1) {
+					
+					if(node.getFnopCountDiff() == 1){
+						System.out.println(node + " [label=\"" + node + "\", style=filled, color = lightblue];");
+					} else {
+						System.out.println(node + " [label=\"" + node + "\", style=filled, color = red];");
+					}
+					
+					
+				} else {
+					System.out.println(node + " [label=\"" + node + "\"];");
+				}
+
 			}
+			System.out.println("}\n");
 		}
-		System.out.println("}");
-		for (Node node : workingSet) {
-			System.out.println(node + " prev: " +  node.getPrevNodes() + " next: "+ node.getNextNodes());
-		}
-		System.out.println("\n\n");
 	}
-	*/
+    */
 }

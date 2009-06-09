@@ -1,4 +1,4 @@
-package com.xmos.xta.engine.machine;
+package com.xmos.xta.engine.analysis.controlflow;
 
 public class InstructionBuffer {
 	
@@ -13,11 +13,21 @@ public class InstructionBuffer {
         m_numBytes = 0;
 	}
 
+    public InstructionBuffer(int startPc) {
+    	m_pc = startPc;
+        m_numBytes = 0;
+	}
+    
     public InstructionBuffer(InstructionBuffer instructionBuffer) {
         m_numBytes = instructionBuffer.m_numBytes;
         m_pc = instructionBuffer.m_pc;
     }
 	
+    public boolean isEqual(InstructionBuffer ib){
+    	//assert(m_pc == ib.m_pc);
+    	return (m_numBytes == ib.m_numBytes);
+    }
+    
     public void setPc(int pc) {
         m_pc = pc;
     }

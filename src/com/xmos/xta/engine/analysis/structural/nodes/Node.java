@@ -1,12 +1,14 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
@@ -29,6 +31,8 @@ public abstract class Node implements Comparable<Node>{
 	boolean m_isExcluded;
 	boolean m_isLoopHeader;
 
+	Set<Node> m_branchTargets;
+	Map<Integer, IBufferSequence> m_ibufferStates;
 	public enum Case {
 		WORST,
 		BEST,
@@ -66,6 +70,8 @@ public abstract class Node implements Comparable<Node>{
 	public Node() {
 		m_isExcluded = false;
 		m_isLoopHeader = false;
+		m_ibufferStates = new HashMap<Integer, IBufferSequence>();
+		m_branchTargets = new HashSet<Node>();
 		m_nextNodes = new HashSet<Node>();
 		m_prevNodes = new HashSet<Node>();
 		m_dominators = new HashSet<Node>();
@@ -75,10 +81,21 @@ public abstract class Node implements Comparable<Node>{
 	public Node(Node node) {
 		m_isExcluded = node.m_isExcluded;
 		m_isLoopHeader = node.m_isLoopHeader;
+		m_ibufferStates = new HashMap<Integer, IBufferSequence>(node.m_ibufferStates);
 		m_nextNodes = new HashSet<Node>(node.m_nextNodes);
 		m_prevNodes = new HashSet<Node>(node.m_prevNodes);
 		m_dominators = new HashSet<Node>(node.m_prevNodes);
 		m_id = s_numNodes++;
+	}
+	
+	public Collection<InstructionBuffer> getEndInstructionBuffers(){
+		HashSet<InstructionBuffer> ibuffers = new HashSet<InstructionBuffer>();
+		
+		for(IBufferSequence ibs : m_ibufferStates.values()){
+			ibuffers.add(ibs.m_endInstBuffer);
+		}
+		
+		return ibuffers;
 	}
 	
 	public int getId() {
@@ -312,8 +329,49 @@ public abstract class Node implements Comparable<Node>{
 			}
 		}
 		return false;
-	}	
+	}
+	
+	public Set<Node> getBranchTargets(){
+		return m_branchTargets;
+	}
+	
+	public boolean branchesTo(Node block) {
+		return m_branchTargets.contains(block);
+	}
 
+	class IBufferSequence {
+		InstructionBuffer m_endInstBuffer;
+		List<Integer> m_fnopPcs;
+		
+		public IBufferSequence(InstructionBuffer endInstBuffer, List<Integer> fnopPcs) {
+			super();
+			m_endInstBuffer = endInstBuffer;
+			m_fnopPcs = fnopPcs;
+		}
+	}
+	
+	
+	public Map<Integer, IBufferSequence> getIbufferStates(){
+		return m_ibufferStates;
+	}
+	
+	public boolean addEndInstructionBuffer(int numStartBytes, InstructionBuffer endInstBuffer, List<Integer> fnopPcs) {
+		if(!m_ibufferStates.containsKey(numStartBytes)){
+			m_ibufferStates.put(numStartBytes, new IBufferSequence(endInstBuffer, fnopPcs));
+			return true;
+		} else {
+			return false;
+		}
+	}	
+	
+	public int getFnopCountDiff(){
+		Set<Integer> set = new HashSet<Integer>();
+		for(IBufferSequence i : m_ibufferStates.values()){
+			set.add(i.m_fnopPcs.size());
+		}
+		return set.size();
+	}
+	
 }
 
 class FunctionCallStatus {

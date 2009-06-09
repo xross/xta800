@@ -64,12 +64,14 @@ public class FunctionHandler {
 					for(Node f : newFunctions){
 						CommonMethods.connect(f, instruction);
 						CommonMethods.connect(instruction.getBranchLinkReturn(), f);
+						f.getBranchTargets().add(instruction.getBranchLinkReturn());
 					}
 					m_functions.addAll(newFunctions);
 				} else {
 					FunctionNode fn = new FunctionNode();
 					CommonMethods.connect(fn, instruction);
 					CommonMethods.connect(instruction.getBranchLinkReturn(), fn);
+					fn.getBranchTargets().add(instruction.getBranchLinkReturn());
 					m_functions.add(fn);
 					m_pseudoFunctions.add(fn);
 				}
