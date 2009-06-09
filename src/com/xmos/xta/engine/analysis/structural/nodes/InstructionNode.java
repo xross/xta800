@@ -25,6 +25,8 @@ public class InstructionNode extends Node {
 	public InstructionNode(InstructionNode node){
 		super();
 		m_inst = node.m_inst;
+		m_numCycles = node.m_numCycles;
+		m_isUnknown = node.m_isUnknown;
 	}
 
 	public Node shallowCopy() {
@@ -119,9 +121,9 @@ public class InstructionNode extends Node {
 	public void setInstructionNumCycles(long numCycles) {
 		if (m_inst.canPause()) {
 			if (numCycles > m_inst.getNumCycles()) {
-				m_numCycles = m_inst.getNumCycles();				
+				m_numCycles = numCycles;		
 			} else {								
-			    m_numCycles = numCycles;
+			    m_numCycles = m_inst.getNumCycles();	
 			}
 			m_isUnknown = false;			
 		}					

@@ -196,11 +196,13 @@ public class Time extends Command {
         				"Error: Failed to set instruction time on reference id: %s\n", m_refString));    			            	
 	            break;
 	    	}
+    		break;
     		
     	case UNSET:
    			if (!engine.unsetInstructionTimeTaken(m_refString))
     		    console.display(String.format(
-       				"Error: Failed to unset instruction time on reference id: %s\n", m_refString));    			            	   				
+       				"Error: Failed to unset instruction time on reference id: %s\n", m_refString));
+   			break;
     	}
     }    
 }

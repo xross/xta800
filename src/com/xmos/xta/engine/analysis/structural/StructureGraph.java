@@ -64,11 +64,11 @@ public class StructureGraph {
 	
 	public boolean setLoopIterations(Reference reference, long iterations) {
 		boolean found = false;
-		for (Node referencedNode : getReferencedNodes(reference)) {						
-			Node enclosingLoopNode = getEncolsingLoopNode(referencedNode);
+		for (Node node : getReferencedNodes(reference)) {						
+			Node enclosingLoopNode = getEncolsingLoopNode(node);
 			if (enclosingLoopNode != null) {				
 				enclosingLoopNode.setNumIterationsDone(false);
-				referencedNode.setNumIterations(iterations);
+				node.setNumIterations(iterations);
 				found = true;
 			}
 		}		
@@ -82,8 +82,8 @@ public class StructureGraph {
 
 	public boolean setLoopScope(Reference reference, boolean isAbsolute) {
 		boolean found = false;
-	    for (Node referencedNode : getReferencedNodes(reference)) {
-			Node enclosingLoopNode = getEncolsingLoopNode(referencedNode);
+	    for (Node node : getReferencedNodes(reference)) {
+			Node enclosingLoopNode = getEncolsingLoopNode(node);
 			if (enclosingLoopNode != null) {				
 				enclosingLoopNode.setIsAbsolute(isAbsolute);
 				found = true;
@@ -94,8 +94,8 @@ public class StructureGraph {
 	
 	public boolean setInstructionTimeTaken(Reference reference, double timeTaken) {
 		boolean found = false;
-	    for (Node referencedNode : getReferencedNodes(reference)) {
-	    	referencedNode.setInstructionTimeTaken(timeTaken);
+	    for (Node node : getReferencedNodes(reference)) {
+	    	node.setInstructionTimeTaken(timeTaken);
 	    	found = true;
 		}
 		return found;
@@ -103,8 +103,8 @@ public class StructureGraph {
 	
 	public boolean unsetInstructionTimeTaken(Reference reference) {
 		boolean found = false;
-	    for (Node referencedNode : getReferencedNodes(reference)) {
-	    	referencedNode.unsetInstructionTimeTaken();
+	    for (Node node : getReferencedNodes(reference)) {
+	    	node.unsetInstructionTimeTaken();
 	    	found = true;
 		}
 		return found;
@@ -112,8 +112,8 @@ public class StructureGraph {
 	
 	public boolean setInstructionNumCycles(Reference reference, long numCycles) {
 		boolean found = false;
-	    for (Node referencedNode : getReferencedNodes(reference)) {
-	    	referencedNode.setInstructionNumCycles(numCycles);
+	    for (Node node : getReferencedNodes(reference)) {
+	    	node.setInstructionNumCycles(numCycles);
 	    	found = true;
 		}
 		return found;
@@ -121,8 +121,8 @@ public class StructureGraph {
 	
 	public boolean unsetInstructionNumCycles(Reference reference) {
 		boolean found = false;
-        for (Node referencedNode : getReferencedNodes(reference)) {
-	    	referencedNode.unsetInstructionNumCycles();
+        for (Node node : getReferencedNodes(reference)) {
+        	node.unsetInstructionNumCycles();
 	    	found = true;
 		}
 		return found;
