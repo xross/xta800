@@ -140,7 +140,7 @@ public class StructuralAnalysisEngine {
 			fnopAnalyser.analyse(initialBasicBlock, true);
 			// FIXME - this is not always true
 
-			dumpTree(basicBlocks);
+			//dumpTree(basicBlocks);
 			if (!createStructure(basicBlocks, initialBasicBlock, engine)) {
 				return null;
 			}
