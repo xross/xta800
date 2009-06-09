@@ -44,8 +44,77 @@ public class PathNode extends Node {
 		return pn;
 	}
 
+<<<<<<< HEAD:src/com/xmos/xta/engine/analysis/structural/nodes/PathNode.java
 	public List<XtaInstruction> getInstructions() {
 		List<XtaInstruction> list = new LinkedList<XtaInstruction>();
+=======
+	public double getTimeTakenRelative(Case c) {
+		double time = 0;
+	    for (Node node : m_nodes) {
+		    time += node.getTimeTakenRelative(c);
+		}
+		return time;
+	}
+
+	public double getTimeTakenAbsolute(Case c) {
+		double time = 0;
+	    for (Node node : m_nodes) {
+		    time += node.getTimeTakenAbsolute(c);
+		}
+		return time;
+	}
+	
+	public long getNumCyclesRelative(Case c) {
+   		long count = 0;
+    	for (Node node : m_nodes){
+    		count += node.getNumCyclesRelative(c);
+		}
+		return count;
+	}
+
+	public long getNumCyclesAbsolute(Case c) {
+   		long count = 0;
+    	for (Node node : m_nodes){
+    		count += node.getNumCyclesAbsolute(c);
+		}
+		return count;
+	}
+	
+	public long getNumInstructionsRelative(Case c) {
+   		long count = 0;
+    	for (Node node : m_nodes){
+    		count += node.getNumInstructionsRelative(c);
+		}
+		return count;
+	}
+
+	public long getNumInstructionsAbsolute(Case c) {
+   		long count = 0;
+    	for (Node node : m_nodes){
+    		count += node.getNumInstructionsAbsolute(c);
+		}
+		return count;
+	}
+	
+	public long getNumFNopsRelative(Case c) {
+		long fnops = 0;
+   		for (Node node : m_nodes) {
+    		fnops += node.getNumFNopsRelative(c);
+		}
+		return fnops;
+	}
+
+	public long getNumFNopsAbsolute(Case c) {
+		long fnops = 0;
+   		for (Node node : m_nodes) {
+    		fnops += node.getNumFNopsRelative(c);
+		}
+		return fnops;
+	}
+	
+	public LinkedList<XtaInstruction> getInstructions() {
+		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
+>>>>>>> 9414cf08dc0923f0a33963a19b05a32314c9336d:src/com/xmos/xta/engine/analysis/structural/nodes/PathNode.java
 		for (Node node : m_nodes) {
 			list.addAll(node.getInstructions());
 		}
@@ -113,6 +182,7 @@ public class PathNode extends Node {
 		}
 		return false;
 	}
+<<<<<<< HEAD:src/com/xmos/xta/engine/analysis/structural/nodes/PathNode.java
 	
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
@@ -180,4 +250,14 @@ public class PathNode extends Node {
 		}
 		return fnops;
 	}	
+=======
+
+	public List<XtaInstruction> getInstructionStream(Case c) {
+		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
+		for (Node node : m_nodes) {
+			list.addAll(node.getInstructionStream(c));
+		}
+		return list;
+	}		
+>>>>>>> 9414cf08dc0923f0a33963a19b05a32314c9336d:src/com/xmos/xta/engine/analysis/structural/nodes/PathNode.java
 }

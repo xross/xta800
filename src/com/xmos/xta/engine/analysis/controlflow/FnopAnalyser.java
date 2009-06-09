@@ -53,11 +53,11 @@ public class FnopAnalyser {
 					// now
 					pretransitionIB.branchTo(block.getStartPc(), true);
 				} else {
-					XtaInstruction prevInst = parent.getInstructions().get(parent.getInstructions().size() - 1);
+					XtaInstruction prevInst = parent.getInstructions().getLast();
 					pretransitionIB.branchTo(block.getStartPc(), prevInst.isLoadStore());
 				}
 			} else {
-				XtaInstruction prevInst = parent.getInstructions().get(parent.getInstructions().size() - 1);
+				XtaInstruction prevInst = parent.getInstructions().getLast();
 				pretransitionIB.branchTo(block.getStartPc(), prevInst.isLoadStore());
 			}
 		}

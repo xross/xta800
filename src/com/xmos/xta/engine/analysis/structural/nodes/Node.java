@@ -3,6 +3,7 @@ package com.xmos.xta.engine.analysis.structural.nodes;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,8 +54,12 @@ public abstract class Node implements Comparable<Node>{
 	public abstract List<Node> getChildren();
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
+	public abstract List<XtaInstruction> getInstructionStream(Case c);
+	
+
 	public abstract Set<Integer> getPCs();
-	public abstract List<XtaInstruction> getInstructions();
+	
+	public abstract LinkedList<XtaInstruction> getInstructions();
 	public abstract Collection<Node> getContainedNodes();	
 	public abstract String getFunctionName();
 	public abstract int getStartPc();
@@ -118,6 +123,7 @@ public abstract class Node implements Comparable<Node>{
 		return getNumFNopsRelative(c) + getNumFNopsAbsolute(c);				
 	}
 	
+<<<<<<< HEAD:src/com/xmos/xta/engine/analysis/structural/nodes/Node.java
 	public int compareTo(Node node) {	
 		double thisTimeTaken = getTimeTaken(Case.WORST);
 		double nodeTimeTaken = node.getTimeTaken(Case.WORST);
@@ -142,6 +148,18 @@ public abstract class Node implements Comparable<Node>{
 			} 
 			return 0;			
 		}			
+=======
+	public int compareTo(Node n) {		
+		if (getInstructions()!= null && 
+			n.getInstructions() != null && 
+			!getInstructions().isEmpty() && 
+			!n.getInstructions().isEmpty()) {
+			int myPc = getInstructions().getFirst().getPc();
+			int nodePc = n.getInstructions().getFirst().getPc();
+			return Integer.signum((nodePc - myPc));
+		} 
+		return 0;
+>>>>>>> 9414cf08dc0923f0a33963a19b05a32314c9336d:src/com/xmos/xta/engine/analysis/structural/nodes/Node.java
 	}
 	
 	public void setBranchLinkReturn(Node bl){

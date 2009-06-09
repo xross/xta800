@@ -1,6 +1,5 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -39,8 +38,9 @@ public class SelfLoopNode extends Node{
 		return ln;
 	}
 	
-	public List<XtaInstruction> getInstructions() {
-		List<XtaInstruction> insts = new ArrayList<XtaInstruction>(m_loop.getInstructions());
+	public LinkedList<XtaInstruction> getInstructions() {
+	LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loop.getInstructions());
+
 		return insts;
 	}
 
@@ -110,6 +110,7 @@ public class SelfLoopNode extends Node{
 		}
 		return false;
 	}
+<<<<<<< HEAD:src/com/xmos/xta/engine/analysis/structural/nodes/SelfLoopNode.java
 	
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
@@ -145,4 +146,15 @@ public class SelfLoopNode extends Node{
 	public long getNumFNopsAbsolute(Case c) {
 		return m_loop.getNumFNopsAbsolute(c);
 	}	
+=======
+
+
+	public List<XtaInstruction> getInstructionStream(Case c) {
+		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
+		for(int i=0;i< m_numIterations;i++){
+			insts.addAll(m_loop.getInstructionStream(c));
+		}
+		return insts;
+	}		
+>>>>>>> 9414cf08dc0923f0a33963a19b05a32314c9336d:src/com/xmos/xta/engine/analysis/structural/nodes/SelfLoopNode.java
 }

@@ -121,7 +121,7 @@ public class StructuralAnalysisEngine {
 
 		for (Node graphStart : graphStartNodes) {
 
-			String functionName = graphStart.getInstructions().get(0).getFunctionName();
+			String functionName = graphStart.getInstructions().getFirst().getFunctionName();
 
 			engine.provideFeedback("Processing " + functionName);
 
@@ -276,6 +276,7 @@ public class StructuralAnalysisEngine {
 		}
 		return true;
 	}
+
 	
 	private void linkFunctions() {
 		for (FunctionNode fn : m_cfgToStruct.keySet()) {
@@ -318,6 +319,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	/*
+
 	private static int g = 0;
 	private void dumpTree(Collection<Node> workingSet) {
 		if (workingSet.size() > 1) {
@@ -350,5 +352,6 @@ public class StructuralAnalysisEngine {
 			System.out.println("}\n");
 		}
 	}
-    */
+
+*/
 }

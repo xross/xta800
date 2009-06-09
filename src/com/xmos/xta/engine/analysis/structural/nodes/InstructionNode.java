@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
@@ -46,7 +45,7 @@ public class InstructionNode extends Node {
 		return "";
 	}
 
-	public List<XtaInstruction> getInstructions() {
+	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> inst = new LinkedList<XtaInstruction>();
 		inst.add(m_inst);
 		return inst;
@@ -108,6 +107,7 @@ public class InstructionNode extends Node {
 		functionCallStatus.setStatus(false);		
 		return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
 	}
+<<<<<<< HEAD:src/com/xmos/xta/engine/analysis/structural/nodes/InstructionNode.java
 	
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
@@ -155,4 +155,10 @@ public class InstructionNode extends Node {
 		}
 		return 0;
 	}	
+=======
+
+	public List<XtaInstruction> getInstructionStream(Case c) {
+		return getInstructions();
+	}
+>>>>>>> 9414cf08dc0923f0a33963a19b05a32314c9336d:src/com/xmos/xta/engine/analysis/structural/nodes/InstructionNode.java
 }

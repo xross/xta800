@@ -65,7 +65,7 @@ public class Functions extends Command {
 		for (Node node : nodes) {
 		    node.traverse(0, new DefaultNodeTraverser() {
 				public boolean foundInstructionNode(Node node, int depth) {
-					functions.add(node.getInstructions().get(0).getFunctionName());
+					functions.add(node.getInstructions().getFirst().getFunctionName());
 					return true;
 				}
 		    });
