@@ -28,40 +28,57 @@ public class SelfLoopNode extends Node{
 		m_loop = base;
 	}
 
-	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
+	public SelfLoopNode shallowCopy() {
+		return new SelfLoopNode(this);
+	}
+	
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		SelfLoopNode ln = new SelfLoopNode();
-		ln.m_loop = m_loop.deepClone(startPcs);
+		ln.m_loop = m_loop.deepCopy(startPcs);
 		return ln;
 	}
 
-	public double getTimeTaken(Case c) {
-		return m_loop.getTimeTaken(c);
+	public double getTimeTakenRelative(Case c) {
+		return m_loop.getTimeTakenRelative(c);
 	}
 
-	public long getNumCycles(Case c) {
-		return m_loop.getNumCycles(c);
+	public double getTimeTakenAbsolute(Case c) {
+		return m_loop.getTimeTakenAbsolute(c);
+	}
+	
+	public long getNumCyclesRelative(Case c) {
+		return m_loop.getNumCyclesRelative(c);
 	}
 
-	public long getNumInstructions(Case c) {
-		return getInstructions().size();
+	public long getNumCyclesAbsolute(Case c) {
+		return m_loop.getNumCyclesAbsolute(c);
+	}
+	
+	public long getNumInstructionsRelative(Case c) {
+		return m_loop.getNumInstructionsRelative(c);
 	}
 
-	public long getNumFNops(Case c) {
-		return m_loop.getNumFNops(c);
+	public long getNumInstructionsAbsolute(Case c) {
+		return m_loop.getNumInstructionsAbsolute(c);
+	}
+	
+	public long getNumFNopsRelative(Case c) {
+		return m_loop.getNumFNopsRelative(c);
 	}
 
+	public long getNumFNopsAbsolute(Case c) {
+		return m_loop.getNumFNopsAbsolute(c);
+	}
+	
 	public LinkedList<XtaInstruction> getInstructions() {
-		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loop.getInstructions());
+	LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loop.getInstructions());
+
 		return insts;
 	}
 
 	public Set<Integer> getPCs() {
 		Set<Integer> pcs = new HashSet<Integer>(m_loop.getPCs());
 		return pcs;
-	}
-
-	public SelfLoopNode clone() {
-		return new SelfLoopNode(this);
 	}
 
 	public Collection<Node> getContainedNodes() {

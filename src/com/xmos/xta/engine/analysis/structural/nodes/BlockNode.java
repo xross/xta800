@@ -27,42 +27,82 @@ public class BlockNode extends Node {
 		m_insts = insts;
 	}
 	
-	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
+	public BlockNode shallowCopy() {
+		return new BlockNode(this);
+	}
+	
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		BlockNode bn = new BlockNode();
 		for (Node node : m_insts) {
-			bn.m_insts.add(node.deepClone(startPcs));
+			bn.m_insts.add(node.deepCopy(startPcs));
 		}
 		return bn;
 	}
 	
-	public BlockNode clone() {
-		return new BlockNode(this);
-	}
-
-	public double getTimeTaken(Case c) {
-		double timeTaken = 0;
-		for (XtaInstruction inst : getInstructions()) {
-			timeTaken += inst.getTimeTaken();
+	public double getTimeTakenRelative(Case c) {
+		double time = 0;
+		for (Node node : m_insts) {
+			time += node.getTimeTakenRelative(c);
 		}
-        return timeTaken;		
+        return time;		
 	}
 
-	public long getNumCycles(Case c) {
-		long cycles = 0;
-		for (XtaInstruction inst : getInstructions()) {
-			cycles += inst.getNumCycles();
+	public double getTimeTakenAbsolute(Case c) {
+		double time = 0;
+		for (Node node : m_insts) {
+			time += node.getTimeTakenAbsolute(c);
 		}
-		return cycles;
+        return time;		
+	}
+	
+	public long getNumCyclesRelative(Case c) {
+		long count = 0;
+		for (Node node : m_insts) {
+			count += node.getNumCyclesRelative(c);
+		}
+		return count;
 	}
 
-	public long getNumInstructions(Case c) {
-		return getInstructions().size();
+	public long getNumCyclesAbsolute(Case c) {
+		long count = 0;
+		for (Node node : m_insts) {
+			count += node.getNumCyclesAbsolute(c);
+		}
+		return count;
+	}
+	
+	public long getNumInstructionsRelative(Case c) {
+		long count = 0;
+		for (Node node : m_insts) {
+			count += node.getNumInstructionsRelative(c);
+		}
+		return count;
 	}
 
-	public long getNumFNops(Case c) {
-		return 0;
+	public long getNumInstructionsAbsolute(Case c) {
+		long count = 0;
+		for (Node node : m_insts) {
+			count += node.getNumInstructionsAbsolute(c);
+		}
+		return count;
+	}
+	
+	public long getNumFNopsRelative(Case c) {
+		long count = 0;
+		for (Node node : m_insts) {
+			count += node.getNumFNopsRelative(c);
+		}
+		return count;
 	}
 
+	public long getNumFNopsAbsolute(Case c) {
+		long count = 0;
+		for (Node node : m_insts) {
+			count += node.getNumFNopsAbsolute(c);
+		}
+		return count;
+	}
+	
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>();
 		for(Node inst : m_insts){

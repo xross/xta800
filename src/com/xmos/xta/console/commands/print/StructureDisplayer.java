@@ -9,7 +9,9 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructureDisplayer {
+
 	private final static boolean DEBUG = false;
+	private final static boolean DEBUG_LOOP_ITERATIONS = false;
 
 	private Console m_console;
 
@@ -22,10 +24,9 @@ public class StructureDisplayer {
 		    node.traverse(0, new NodeTraverser() {
 				public boolean foundBlockNode(Node node, int depth) {
 					printIndent(depth);
-					String nodeName = String.format("block(%d)", node.getId());
-					m_console.display(String.format("%-14s", nodeName));
+					displayNodeName(node, "block");
 					if (DEBUG) displayWhatsNext(node);
-					m_console.display(String.format(" : %.1fns", node.getTimeTaken(Case.WORST)));
+					displayTimeTaken(node);
 					displayNumIterations(node);
 					m_console.display("\n");
 					return true;
@@ -33,10 +34,10 @@ public class StructureDisplayer {
 
 				public boolean foundFunctionNode(Node node, int depth) {
 					printIndent(depth);
-					String nodeName = String.format("function(%d)", node.getId());
-					m_console.display(String.format("%-14s (%s)", nodeName, node.getFunctionName()));
+					displayNodeName(node, "function");
+					displayFunctionName(node);
 					if (DEBUG) displayWhatsNext(node);
-					m_console.display(String.format(" : %.1fns", node.getTimeTaken(Case.WORST)));
+					displayTimeTaken(node);
 					displayNumIterations(node);
 					m_console.display("\n");
 					return true;
@@ -44,10 +45,9 @@ public class StructureDisplayer {
 
 				public boolean foundLoopNode(Node node, int depth) {
 					printIndent(depth);
-					String nodeName = String.format("loop(%d)", node.getId());
-					m_console.display(String.format("%-14s", nodeName));
+					displayNodeName(node, "loop");
 					if (DEBUG) displayWhatsNext(node);
-					m_console.display(String.format(" : %.1fns", node.getTimeTaken(Case.WORST)));
+					displayTimeTaken(node);
 					displayNumIterations(node);
 					m_console.display("\n");
 					return true;
@@ -55,10 +55,9 @@ public class StructureDisplayer {
 
 				public boolean foundPathNode(Node node, int depth) {
 					printIndent(depth);
-					String nodeName = String.format("path(%d)", node.getId());
-					m_console.display(String.format("%-14s", nodeName));
+					displayNodeName(node, "path");
 					if (DEBUG) displayWhatsNext(node);
-					m_console.display(String.format(" : %.1fns", node.getTimeTaken(Case.WORST)));
+					displayTimeTaken(node);
 					displayNumIterations(node);
 					m_console.display("\n");
 					return true;
@@ -66,10 +65,9 @@ public class StructureDisplayer {
 
 				public boolean foundSectionNode(Node node, int depth) {
 					printIndent(depth);
-					String nodeName = String.format("section(%d)", node.getId());
-					m_console.display(String.format("%-14s", nodeName));
+					displayNodeName(node, "section");
 					if (DEBUG) displayWhatsNext(node);
-					m_console.display(String.format(" : %.1fns", node.getTimeTaken(Case.WORST)));
+					displayTimeTaken(node);
 					displayNumIterations(node);
 					m_console.display("\n");
 					return true;
@@ -77,10 +75,9 @@ public class StructureDisplayer {
 
 				public boolean foundTerminalNode(Node node, int depth) {
 					printIndent(depth);
-					String nodeName = String.format("terminal(%d)", node.getId());
-					m_console.display(String.format("%-14s", nodeName));
+					displayNodeName(node, "terminal");
 					if (DEBUG) displayWhatsNext(node);
-					m_console.display(String.format(" : %.1fns", node.getTimeTaken(Case.WORST)));
+					displayTimeTaken(node);
 					displayNumIterations(node);
 					m_console.display("\n");
 					return true;
@@ -89,9 +86,8 @@ public class StructureDisplayer {
 				public boolean foundInstructionNode(Node node, int depth) {
 					if (DEBUG) {
 						printIndent(depth);
-						String nodeName = String.format("instruction(%d)", node.getId());
-						m_console.display(String.format("%-14s", nodeName));
-						m_console.display(String.format(" : %.1fns", node.getTimeTaken(Case.WORST)));						
+						displayNodeName(node, "instruction");
+						displayTimeTaken(node);
 						displayNumIterations(node);
 						displayInstructionTrace(node);
 						displayWhatsNext(node);
@@ -111,6 +107,26 @@ public class StructureDisplayer {
 		}
 	}	
 	
+	private void displayNodeName(Node node, String nodeType) {	
+		String nodeName = "";
+		if (node.isLoopHeader()) {
+			nodeName = String.format("header(%d)", node.getId());			
+		} else {
+			nodeName = String.format("%s(%d)", nodeType, node.getId());
+		}
+		m_console.display(String.format("%-14s", nodeName));		
+	}
+
+	private void displayFunctionName(Node node) {
+		m_console.display(String.format("[%s]", node.getFunctionName()));
+	}
+	
+	private void displayTimeTaken(Node node) {
+		m_console.display(String.format(" : %.1fns", 
+				node.getTimeTaken(Case.WORST)));					
+        displayLoopIterationCalculation(node);        
+	}	
+
 	private void displayWhatsNext(Node node) {
 		if (node.getParent()!= null && node.getParent().whatsNext(node) != null){
 			m_console.display(" ");
@@ -127,12 +143,40 @@ public class StructureDisplayer {
 	}
 	
 	private void displayNumIterations(Node node) {
-		if (isWithinLoop(node)) {
-		    m_console.display(String.format(" (x%d)", node.getNumIterations()));
+		Node parent = node.getParent();
+		if ((parent != null) && parent.isSectionNode()) {
+    	    m_console.display(String.format(" (%d iterations)", node.getNumIterations()));
 		}
 	}
 	
-	private boolean isWithinLoop(Node node) {		
-		return (node.getEnclosingLoopNode() != null);
-	}	
+	private void displayLoopIterationCalculation(Node node) {
+		// Only display these calculations on the children of a loop node..
+		Node parent = node.getParent();
+		if ((parent != null) && parent.isLoopNode()) {	
+			double relativeTimeTaken = node.getTimeTakenRelative(Case.WORST);
+			double absoluteTimeTaken = node.getTimeTakenAbsolute(Case.WORST);
+			
+			// Displays a more complete calculation for the case when absolutes are involved.
+			if ((absoluteTimeTaken != 0) && !parent.getIsAbsolute()) {								   								
+			    m_console.display(String.format(" ((%.1fns x %d) + %.1fns)",
+			    		relativeTimeTaken, 
+			    		node.getNumIterations(),
+			    		absoluteTimeTaken));				
+			} else {
+			    m_console.display(String.format(" x %d", node.getNumIterations()));
+			}
+		}
+		
+		if (DEBUG_LOOP_ITERATIONS) {
+		    m_console.display(String.format(" {%.1fns/%.1fns}", 
+			    	node.getTimeTakenRelative(Case.WORST),
+				    node.getTimeTakenAbsolute(Case.WORST)));
+		    
+		    if (node.getIsAbsolute()) {
+		    	m_console.display(" (ABS)");
+		    } else {
+		    	m_console.display(" (REL)");		    	
+		    }
+		}			
+	}
 }

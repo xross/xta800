@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
+import com.xmos.xta.engine.analysis.structural.nodes.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.controlflow.FnopAnalyser;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -92,16 +93,6 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	private void linkFunctions() {
-		for (FunctionNode fn : m_cfgToStruct.keySet()) {
-			if (m_cfgToStruct.get(fn).getBranchTarget() != null) {
-				int pc = m_cfgToStruct.get(fn).getBranchTarget().getStartPc();
-				String fnName = m_cfgToStruct.get(fn).getBranchTarget().getInstructions().getFirst().getFunctionName();
-				fn.setFunction(fnName, m_functionStartPcs.get(pc).getFunction().deepClone(m_functionStartPcs));
-			}
-		}
-	}
-
 	private boolean buildStructureGraph(Engine engine) {
 		Collection<Node> functions = buildGraph(m_controlFlowGraph.getFunctionStartInstructions(), m_functionStartPcs,
 				engine);
@@ -112,9 +103,13 @@ public class StructuralAnalysisEngine {
 		if (threads == null) {
 			return false;
 		}
+		
 		m_structureGraph = new StructureGraph(functions, threads);
-		linkFunctions();
-		m_structureGraph.removeLinks();
+		
+		linkFunctions();		
+		markAllParents();
+		setInitialIterations();		
+		
 		engine.provideFeedback("Done");
 		return true;
 	}
@@ -179,7 +174,7 @@ public class StructuralAnalysisEngine {
 
 				} else {
 					seen.add(node);
-					Node clone = node.clone();
+					Node clone = node.shallowCopy();
 					m_cfgToStruct.put((FunctionNode) clone, (FunctionNode) node);
 					basicBlocks.add(clone);
 					cfgToStructure.put(node, clone);
@@ -281,9 +276,51 @@ public class StructuralAnalysisEngine {
 		}
 		return true;
 	}
-/*
-	private static int g = 0;
 
+	
+	private void linkFunctions() {
+		for (FunctionNode fn : m_cfgToStruct.keySet()) {
+			if (m_cfgToStruct.get(fn).getBranchTarget() != null) {
+				int pc = m_cfgToStruct.get(fn).getBranchTarget().getStartPc();
+				String fnName = m_cfgToStruct.get(fn).getBranchTarget().getInstructions().get(0).getFunctionName();
+				fn.setFunction(fnName, m_functionStartPcs.get(pc).getFunction().deepCopy(m_functionStartPcs));
+			}
+		}
+	}
+		
+	private void setInitialIterations() {
+		// Sets the top level nodes to iterate once..
+		for (Node node : m_structureGraph.getThreads()) {
+			node.setNumIterationsDone(false);
+			node.setNumIterations(1);					
+		}
+		// Sets all the loops to zero iterations..
+		for (Node node : m_structureGraph.getThreads()) {							
+	        node.traverse(0, new DefaultNodeTraverser() {
+	            public boolean foundLoopNode(Node node, int depth) {
+	            	node.setNumIterations(0);
+	            	return true;
+	            }	        	
+	        });
+		}
+	}
+	
+	private void markAllParents() {
+		for (Node node : m_structureGraph.getThreads()) {
+			mark(node);
+		}
+	}
+	
+	private void mark(Node node) {
+		for (Node child : node.getChildren()){
+			child.setParent(node);
+			mark(child);
+		}
+	}
+
+	/*
+
+	private static int g = 0;
 	private void dumpTree(Collection<Node> workingSet) {
 		if (workingSet.size() > 1) {
 			System.out.println("digraph g" + g++ + " {");
@@ -315,5 +352,6 @@ public class StructuralAnalysisEngine {
 			System.out.println("}\n");
 		}
 	}
+
 */
 }

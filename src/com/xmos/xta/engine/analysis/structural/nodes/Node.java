@@ -28,9 +28,9 @@ public abstract class Node implements Comparable<Node>{
 	
 	long m_numIterations;
 	boolean m_numIterationsDone;
-	boolean m_isAbsolute;
-	
+	boolean m_isAbsolute;	
 	boolean m_isExcluded;
+	boolean m_isLoopHeader;
 
 	Set<Node> m_branchTargets;
 	Map<Integer, IBufferSequence> m_ibufferStates;
@@ -39,18 +39,24 @@ public abstract class Node implements Comparable<Node>{
 		BEST,
 	}
 
-	public abstract Node clone();
-	public abstract Node deepClone(Map<Integer, FunctionNode> startPcs);
+	public abstract Node shallowCopy();
+	public abstract Node deepCopy(Map<Integer, FunctionNode> startPcs);
+	
+	public abstract double getTimeTakenRelative(Case c);
+	public abstract double getTimeTakenAbsolute(Case c);
+	public abstract long getNumCyclesRelative(Case c);
+	public abstract long getNumCyclesAbsolute(Case c);
+	public abstract long getNumInstructionsRelative(Case c);
+	public abstract long getNumInstructionsAbsolute(Case c);
+	public abstract long getNumFNopsRelative(Case c);	
+	public abstract long getNumFNopsAbsolute(Case c);	
+	
 	public abstract List<Node> getChildren();
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
-	
-	public abstract double getTimeTaken(Case c);
-	public abstract long getNumCycles(Case c);
-	public abstract long getNumInstructions(Case c);
-	public abstract long getNumFNops(Case c);	
 	public abstract List<XtaInstruction> getInstructionStream(Case c);
 	
+
 	public abstract Set<Integer> getPCs();
 	
 	public abstract LinkedList<XtaInstruction> getInstructions();
@@ -68,6 +74,7 @@ public abstract class Node implements Comparable<Node>{
 	
 	public Node() {
 		m_isExcluded = false;
+		m_isLoopHeader = false;
 		m_ibufferStates = new HashMap<Integer, IBufferSequence>();
 		m_branchTargets = new HashSet<Node>();
 		m_nextNodes = new HashSet<Node>();
@@ -78,6 +85,7 @@ public abstract class Node implements Comparable<Node>{
 	
 	public Node(Node node) {
 		m_isExcluded = node.m_isExcluded;
+		m_isLoopHeader = node.m_isLoopHeader;
 		m_ibufferStates = new HashMap<Integer, IBufferSequence>(node.m_ibufferStates);
 		m_nextNodes = new HashSet<Node>(node.m_nextNodes);
 		m_prevNodes = new HashSet<Node>(node.m_prevNodes);
@@ -98,6 +106,22 @@ public abstract class Node implements Comparable<Node>{
 	public int getId() {
 		return m_id;
 	}
+
+	public double getTimeTaken(Case c) {
+		return getTimeTakenRelative(c) + getTimeTakenAbsolute(c);
+	}
+	
+	public long getNumCycles(Case c) {
+		return getNumCyclesRelative(c) + getNumCyclesAbsolute(c);		
+	}
+	
+	public long getNumInstructions(Case c) {
+		return getNumInstructionsRelative(c) + getNumInstructionsAbsolute(c);				
+	}
+	
+	public long getNumFNops(Case c) {
+		return getNumFNopsRelative(c) + getNumFNopsAbsolute(c);				
+	}
 	
 	public int compareTo(Node n) {		
 		if (getInstructions()!= null && 
@@ -115,10 +139,6 @@ public abstract class Node implements Comparable<Node>{
 		m_branchLinkReturn = bl;
 	}
 	
-	/**
-	 * this returns the node that this block will return to after it has branch and linked.
-	 * Will be null if this block doesn't branch and link.
-	 */
 	public Node getBranchLinkReturn() {
 		return m_branchLinkReturn;
 	}
@@ -186,9 +206,11 @@ public abstract class Node implements Comparable<Node>{
 	public void setParent(Node node) {
 		m_parent = node;
 	}
-	public boolean isSection() {
+	
+	public boolean isSectionNode() {
 		return false;
 	}
+	
 	public boolean isInstructionNode() {
 		return false;
 	}
@@ -215,7 +237,9 @@ public abstract class Node implements Comparable<Node>{
 				    child.setNumIterations(numIterations);
 				}
 			}
-			m_parent.setNumIterations(numIterations);
+			
+			if (m_parent != null)
+			    m_parent.setNumIterations(numIterations);
 	     }
 	}
 	
@@ -236,22 +260,35 @@ public abstract class Node implements Comparable<Node>{
 		return m_numIterationsDone;
 	}
 	
-	public void setScope(boolean isAbsolute) {
+	public void setIsAbsolute(boolean isAbsolute) {
 		m_isAbsolute = isAbsolute;
+		for (Node child : getChildren()) {
+			if (!child.isLoopNode()) {
+			    child.setIsAbsolute(isAbsolute);
+			}
+		}
 	}
 	
-	public boolean getScope() {
+	public boolean getIsAbsolute() {
 		return m_isAbsolute;
 	}
 	
-	public void setExcluded(boolean excluded){
-		m_isExcluded = excluded;
+	public void setIsExcluded(boolean isExcluded) {
+		m_isExcluded = isExcluded;
 	}
 	
 	public boolean isExcluded() {
 		return m_isExcluded;
 	}	
 	
+	public void setIsLoopHeader(boolean isLoopHeader) {
+		m_isLoopHeader = isLoopHeader;
+	}
+
+	public boolean isLoopHeader() {
+		return m_isLoopHeader;
+	}	
+
 	public Node getEnclosingLoopNode() {		
 		Node node = m_parent;
 		while ((node != null) && !node.isLoopNode()) {

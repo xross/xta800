@@ -15,6 +15,7 @@ public class StructureGraph {
 		assert(threads.size() > 0);
 		m_functions = functions;
 		m_threads = threads;
+		removeLinks();
 	}
 
 	public Collection<Node> getFunctions() {
@@ -59,18 +60,21 @@ public class StructureGraph {
 		for (Node threadNode : getThreads()) {
 			Collection<Node> referencedNodes = 
 				referenceMatcher.getNodes(threadNode, reference);
+			
+		    for (Node referencedNode : referencedNodes) {
+				Node enclosingLoopNode = referencedNode.isLoopNode() ? 
+						referencedNode : 
+						referencedNode.getEnclosingLoopNode();
 
-			if (referencedNodes.size() > 0) {
-			    for (Node referencedNode : referencedNodes) {
-			    	referencedNode.setScope(isAbsolute);
-			    }
-			    loopScopeSet = true;
+				if (enclosingLoopNode != null) {				
+					enclosingLoopNode.setIsAbsolute(isAbsolute);
+	    		    loopScopeSet = true;
+				}
 			}			
 		}		
 		return loopScopeSet;
 	}
 	
-	//maybe this should be moved into the analysis
 	public void removeLinks() {	
 		for (Node node : getThreads()) {
 		    node.traverse(0, new DefaultNodeTraverser() {
@@ -102,7 +106,7 @@ public class StructureGraph {
 		        	node.freeMemory();
 		        	return true;
 		        }
-		    });
-		}				    	
-    }
+		    });	   
+		}	
+	}	
 }

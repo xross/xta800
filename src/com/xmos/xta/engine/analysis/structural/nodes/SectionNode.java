@@ -34,35 +34,52 @@ public class SectionNode extends Node {
 		m_isOptional = ms.m_isOptional;
 	}
 
-	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
+	public Node shallowCopy() {
+		return new SectionNode(this);
+	}
+	
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		SectionNode sn = new SectionNode();
 		for (Node section : m_options) {
-			Node clone = section.deepClone(startPcs);
+			Node clone = section.deepCopy(startPcs);
 			sn.m_options.add(clone);
 		}
 		sn.m_isOptional = m_isOptional; 
 		return sn;
 	}
 
-	public double getTimeTaken(Case c) {
-		Node worstCaseOption = getWorstCaseOption();		
-		return worstCaseOption.getTimeTaken(c);
+	public double getTimeTakenRelative(Case c) {
+		return getWorstCaseOption().getTimeTakenRelative(c);
 	}
 
-	public long getNumCycles(Case c) {
-		Node worstCaseOption = getWorstCaseOption();		
-		return worstCaseOption.getNumCycles(c);
-	}
-
-	public long getNumInstructions(Case c) {		
-		return getInstructions().size();
+	public double getTimeTakenAbsolute(Case c) {
+		return getWorstCaseOption().getTimeTakenAbsolute(c);
 	}
 	
-	public long getNumFNops(Case c) {
-		Node worstCaseOption = getWorstCaseOption();		
-		return worstCaseOption.getNumFNops(c);
+	public long getNumCyclesRelative(Case c) {
+		return getWorstCaseOption().getNumCyclesRelative(c);
 	}
-		
+
+	public long getNumCyclesAbsolute(Case c) {
+		return getWorstCaseOption().getNumCyclesAbsolute(c);
+	}
+	
+	public long getNumInstructionsRelative(Case c) {		
+		return getWorstCaseOption().getNumInstructionsRelative(c);
+	}
+	
+	public long getNumInstructionsAbsolute(Case c) {		
+		return getWorstCaseOption().getNumInstructionsAbsolute(c);
+	}
+	
+	public long getNumFNopsRelative(Case c) {
+		return getWorstCaseOption().getNumFNopsRelative(c);
+	}
+
+	public long getNumFNopsAbsolute(Case c) {
+		return getWorstCaseOption().getNumFNopsAbsolute(c);
+	}
+	
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
 		list.addAll(getWorstCaseOption().getInstructions());
@@ -75,10 +92,6 @@ public class SectionNode extends Node {
 			pcs.addAll(node.getPCs());
 		}
 		return pcs;
-	}
-
-	public Node clone() {
-		return new SectionNode(this);
 	}
 
 	public Collection<Node> getContainedNodes() {
@@ -196,7 +209,7 @@ public class SectionNode extends Node {
 		return totalIterations;
 	}
 	
-	public boolean isSection() {
+	public boolean isSectionNode() {
 		return true;
 	}
 

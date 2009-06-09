@@ -24,7 +24,7 @@ public class CommonMethods {
 		Collection<Node> newNodes = new HashSet<Node>();
 		
 		for (Node next : node.getNextNodes()) {
-			Node newNode = node.clone();
+			Node newNode = node.shallowCopy();
 
 			newNodes.add(newNode);
 			next.addPrevNode(newNode);
@@ -59,7 +59,7 @@ public class CommonMethods {
 		for (Node prev : node.getPrevNodes()){
 			
 			//make the new node
-			Node newNode = node.clone();
+			Node newNode = node.shallowCopy();
 			newNodes.add(newNode);
 
 			prev.getNextNodes().remove(node);

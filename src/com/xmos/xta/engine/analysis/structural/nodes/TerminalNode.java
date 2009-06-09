@@ -14,48 +14,89 @@ import com.xmos.xta.engine.references.types.ReferenceType;
 public class TerminalNode extends Node {
 	private Collection<Node> m_terminals;
 	
-	public TerminalNode(Collection<Node> terminals){
+	public TerminalNode(Collection<Node> terminals) {
 		m_terminals = new HashSet<Node>(terminals);
 	}
-	public TerminalNode(){
+	
+	public TerminalNode() {
 		m_terminals = new HashSet<Node>();
 	}
 
-	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
+	public Node shallowCopy() {
+		return null;
+	}
+	
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		TerminalNode tn = new TerminalNode();
 		for (Node terminal : m_terminals) {
-			Node clone = terminal.deepClone(startPcs);
+			Node clone = terminal.deepCopy(startPcs);
 			tn.m_terminals.add(clone);
 		}
 		return tn;
     }
 	
-	public double getTimeTaken(Case c) {
+	public double getTimeTakenRelative(Case c) {
 		double time = 0;
 	    for (Node node : m_terminals) {
-		    time += node.getTimeTaken(c);
+		    time += node.getTimeTakenRelative(c);
+		}
+		return time;
+	}
+
+	public double getTimeTakenAbsolute(Case c) {
+		double time = 0;
+	    for (Node node : m_terminals) {
+		    time += node.getTimeTakenAbsolute(c);
 		}
 		return time;
 	}
 	
-	public long getNumCycles(Case c) {
-   		long cycles = 0;
+	public long getNumCyclesRelative(Case c) {
+   		long count = 0;
     	for (Node node : m_terminals){
-	    	cycles += node.getNumCycles(c);
+    		count += node.getNumCyclesRelative(c);
 		}
-		return cycles;
+		return count;
 	}
 
-	public long getNumInstructions(Case c) {
-		return getInstructions().size();
+	public long getNumCyclesAbsolute(Case c) {
+   		long count = 0;
+    	for (Node node : m_terminals){
+    		count += node.getNumCyclesAbsolute(c);
+		}
+		return count;
 	}
 	
-	public long getNumFNops(Case c) {
-		long fnops = 0;
-   		for (Node node : m_terminals) {
-    		fnops += node.getNumFNops(c);
+	public long getNumInstructionsRelative(Case c) {
+   		long count = 0;
+    	for (Node node : m_terminals){
+    		count += node.getNumInstructionsRelative(c);
 		}
-		return fnops;
+		return count;
+	}
+
+	public long getNumInstructionsAbsolute(Case c) {
+   		long count = 0;
+    	for (Node node : m_terminals){
+    		count += node.getNumInstructionsAbsolute(c);
+		}
+		return count;
+	}
+	
+	public long getNumFNopsRelative(Case c) {
+   		long count = 0;
+    	for (Node node : m_terminals){
+    		count += node.getNumFNopsRelative(c);
+		}
+		return count;
+	}
+
+	public long getNumFNopsAbsolute(Case c) {
+   		long count = 0;
+    	for (Node node : m_terminals){
+    		count += node.getNumFNopsAbsolute(c);
+		}
+		return count;
 	}
 	
 	public LinkedList<XtaInstruction> getInstructions() {
@@ -66,10 +107,6 @@ public class TerminalNode extends Node {
 		return insts;
 	}
 	
-	public Node clone() {
-		return null;
-	}
-
 	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new HashSet<Node> ();
 		for(Node loop: m_terminals){

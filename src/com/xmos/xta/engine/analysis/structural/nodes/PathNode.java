@@ -31,39 +31,79 @@ public class PathNode extends Node {
 		m_nodes = new LinkedList<Node>();
 	}
 	
-	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
+	public Node shallowCopy() {
+		return new PathNode(this);
+	}
+	
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		PathNode pn = new PathNode();
 		for (Node path : m_nodes) {
-			Node clone = path.deepClone(startPcs);
+			Node clone = path.deepCopy(startPcs);
 			pn.m_nodes.add(clone);
 		}
 		return pn;
 	}
 
-	public double getTimeTaken(Case c) {
+	public double getTimeTakenRelative(Case c) {
 		double time = 0;
 	    for (Node node : m_nodes) {
-		    time += node.getTimeTaken(c);
+		    time += node.getTimeTakenRelative(c);
+		}
+		return time;
+	}
+
+	public double getTimeTakenAbsolute(Case c) {
+		double time = 0;
+	    for (Node node : m_nodes) {
+		    time += node.getTimeTakenAbsolute(c);
 		}
 		return time;
 	}
 	
-	public long getNumCycles(Case c) {
-   		long cycles = 0;
+	public long getNumCyclesRelative(Case c) {
+   		long count = 0;
     	for (Node node : m_nodes){
-	    	cycles += node.getNumCycles(c);
+    		count += node.getNumCyclesRelative(c);
 		}
-		return cycles;
+		return count;
 	}
 
-	public long getNumInstructions(Case c) {
-   		return getInstructions().size();
+	public long getNumCyclesAbsolute(Case c) {
+   		long count = 0;
+    	for (Node node : m_nodes){
+    		count += node.getNumCyclesAbsolute(c);
+		}
+		return count;
 	}
 	
-	public long getNumFNops(Case c) {
+	public long getNumInstructionsRelative(Case c) {
+   		long count = 0;
+    	for (Node node : m_nodes){
+    		count += node.getNumInstructionsRelative(c);
+		}
+		return count;
+	}
+
+	public long getNumInstructionsAbsolute(Case c) {
+   		long count = 0;
+    	for (Node node : m_nodes){
+    		count += node.getNumInstructionsAbsolute(c);
+		}
+		return count;
+	}
+	
+	public long getNumFNopsRelative(Case c) {
 		long fnops = 0;
    		for (Node node : m_nodes) {
-    		fnops += node.getNumFNops(c);
+    		fnops += node.getNumFNopsRelative(c);
+		}
+		return fnops;
+	}
+
+	public long getNumFNopsAbsolute(Case c) {
+		long fnops = 0;
+   		for (Node node : m_nodes) {
+    		fnops += node.getNumFNopsRelative(c);
 		}
 		return fnops;
 	}
@@ -82,10 +122,6 @@ public class PathNode extends Node {
 			pcs.addAll(node.getPCs());
 		}
 		return pcs;
-	}
-
-	public Node clone() {
-		return new PathNode(this);
 	}
 
 	public Collection<Node> getContainedNodes() {

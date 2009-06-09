@@ -2,17 +2,17 @@ package com.xmos.xta.console.commands.print;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import com.xmos.xeobject.Line;
 import com.xmos.xeobject.SourceFile;
 import com.xmos.xeobject.SourceLine;
 import com.xmos.xeobject.XeObject;
 import com.xmos.xta.console.Console;
-import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class SrcDisplayer {
@@ -20,72 +20,57 @@ public class SrcDisplayer {
 
 	private Engine m_engine;
 	private Console m_console;
-	//private int m_routeId;
-	//private int m_id;
-	private Command.IdType m_idType;
+	private int m_routeId;
 	private boolean m_displayAssembly;
 
-	public SrcDisplayer(Engine engine, Console console, int routeId, int id, Command.IdType idType, boolean displayAssembly) {		
+	public SrcDisplayer(Engine engine, Console console, int routeId, boolean displayAssembly) {		
 		m_engine = engine;
 		m_console = console;
-		//m_routeId = routeId;
-		//m_id = id;
-		m_idType = idType;
+		m_routeId = routeId;
 		m_displayAssembly = displayAssembly;
 	}
 
 	public void display() {    	
-        Vector<XtaInstruction> instructions = null;    		
-        switch (m_idType) {
-        case BLOCK:
-        	// TODO
-        	//PathBasicBlock block = m_engine.getRoute(m_routeId).getBlock(m_id);			
-        	//instructions = new Vector<XtaInstruction>( block.getInstructionStream());
-        	break;
-        case PATH:
-        	// TODO
-        	//PathBasicBlock path = m_engine.getRoute(m_routeId).getPath(m_id);			
-        	//instructions = path.getInstructions(false);
-        	break;
-        default:
-        	assert(false);
-        }
+        for (Node node : m_engine.getRoute(m_routeId).getSubRoutes()) {
+      	    List<XtaInstruction> instructions = node.getInstructions();
+      	    
+    		XeObject xeObject = m_engine.getXeObject();
+            HashMap<String, TreeSet<Integer>> linesCovered = 
+            	createSrcLinesCovered(instructions, xeObject);                                                                   
+            
+            if (DEBUG) 
+            	displaySrcLinesCovered(linesCovered);
+            
+    		for (SourceFile sourceFile : xeObject.getSourceFiles()) {									
+    	        TreeSet<Integer> fileLines = linesCovered.get(sourceFile.getFullSourceName());    
+    	        if (fileLines.size() > 0) {
+    				m_console.display("----------------------------------\n");
+    				m_console.display(sourceFile.getFileName() + " (" + sourceFile.getBaseDir() + ")\n");
+    				m_console.display("----------------------------------\n");	        	
+    	        	
+    				for (SourceLine sourceLine : sourceFile.getSourceLines()) {						
+    					if (fileLines.contains(sourceLine.getLineNumber())) {
+    						m_console.display(String.format("+"));
+    					}
+    					else {
+    	                   	m_console.display(String.format(" "));						
+    					}
+    					m_console.display(String.format(" %d: %s\n", 
+    							sourceLine.getLineNumber(), 
+    							sourceLine.getText()));
 
-		XeObject xeObject = m_engine.getXeObject();
-        HashMap<String, TreeSet<Integer>> linesCovered = createSrcLinesCovered(instructions, xeObject);                                                                   
-        
-        if (DEBUG) 
-        	displaySrcLinesCovered(linesCovered);
-        
-		for (SourceFile sourceFile : xeObject.getSourceFiles()) {									
-	        TreeSet<Integer> fileLines = linesCovered.get(sourceFile.getFullSourceName());    
-	        if (fileLines.size() > 0) {
-				m_console.display("----------------------------------\n");
-				m_console.display(sourceFile.getFileName() + " (" + sourceFile.getBaseDir() + ")\n");
-				m_console.display("----------------------------------\n");	        	
-	        	
-				for (SourceLine sourceLine : sourceFile.getSourceLines()) {						
-					if (fileLines.contains(sourceLine.getLineNumber())) {
-						m_console.display(String.format("+"));
-					}
-					else {
-	                   	m_console.display(String.format(" "));						
-					}
-					m_console.display(String.format(" %d: %s\n", 
-							sourceLine.getLineNumber(), 
-							sourceLine.getText()));
-
-					if (m_displayAssembly) {
-					    for (Line assemblyLine : sourceLine.getChildern()) {					    	
-							m_console.display(String.format("       -- %s\n", assemblyLine.getText())); 
-					    }
-					}				
-				}				        	
-	        }	        
-		}        
+    					if (m_displayAssembly) {
+    					    for (Line assemblyLine : sourceLine.getChildern()) {					    	
+    							m_console.display(String.format("       -- %s\n", assemblyLine.getText())); 
+    					    }
+    					}				
+    				}				        	
+    	        }	        
+    		}              	    
+        }		
     }
 
-	private HashMap<String, TreeSet<Integer>> createSrcLinesCovered(Vector<XtaInstruction> instructions,
+	private HashMap<String, TreeSet<Integer>> createSrcLinesCovered(List<XtaInstruction> instructions,
 			XeObject xeObject) {
 
 		HashMap<String, TreeSet<Integer>> linesCovered = new HashMap<String, TreeSet<Integer>>();

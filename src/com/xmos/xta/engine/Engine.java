@@ -265,11 +265,10 @@ public class Engine implements Notifier {
 				//fnopAnalyser.analyse();
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
-				if(!sae.analyse(this))
+				if (!sae.analyse(this))
 					return false;
 				
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
-				markAllParents(sae.getStructureGraph());
 			}		
 		}
 		
@@ -381,7 +380,7 @@ public class Engine implements Notifier {
 		
 		route.analyse();		
 
-		if (route.getCompletedPaths().size() == 0) {
+		if (route.getSubRoutes().size() == 0) {
 			/*
 			if (route.wasConstrained()) {
 				notify(Notifier.NOTIFY_ERROR, "No valid paths of execution (constraints applied)");
@@ -397,21 +396,6 @@ public class Engine implements Notifier {
 		notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(route.getRouteId()));
 
 		return true;
-	}
-
-	
-	private void markAllParents(StructureGraph structureGraph){
-		for (Node node : structureGraph.getThreads()) {
-			mark(node);
-		}
-	}
-	
-
-	private void mark(Node node) {
-		for (Node child : node.getChildren()){
-			child.setParent(node);
-			mark(child);
-		}
 	}
 	
 	public Progress getProgress() {

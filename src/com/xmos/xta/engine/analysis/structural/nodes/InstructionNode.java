@@ -23,30 +23,58 @@ public class InstructionNode extends Node {
 		m_inst = node.m_inst;
 	}
 
-	public double getTimeTaken(Case c) {
-		return m_inst.getTimeTaken();
+	public Node shallowCopy() {
+		return new InstructionNode(this);
 	}
 	
-	public long getNumCycles(Case c) {
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
+		return shallowCopy();
+	}
+
+	public double getTimeTakenRelative(Case c) {
+		if (!m_isAbsolute) {
+		    return m_inst.getTimeTaken();
+		}
+		return 0;
+	}
+
+	public double getTimeTakenAbsolute(Case c) {
+		if (m_isAbsolute) {
+		    return m_inst.getTimeTaken();
+		}
+		return 0;
+	}
+	
+	public long getNumCyclesRelative(Case c) {
 		return m_inst.getNumCycles();
 	}
 
-	public long getNumInstructions(Case c) {
-		return 1;
-	}
-		
-	public long getNumFNops(Case c) {
-		if (m_inst.isFnop()) {
-			return 1;
-		} else {
-			return 0;
-		}
+	public long getNumCyclesAbsolute(Case c) {
+		return m_inst.getNumCycles();
 	}
 	
-	public Node clone() {
-		return new InstructionNode(this);
+	public long getNumInstructionsRelative(Case c) {
+		return 1;
 	}
 
+	public long getNumInstructionsAbsolute(Case c) {
+		return 1;
+	}
+	
+	public long getNumFNopsRelative(Case c) {
+		if (m_inst.isFnop()) {
+			return 1;
+		}
+		return 0;
+	}
+
+	public long getNumFNopsAbsolute(Case c) {
+		if (m_inst.isFnop()) {
+			return 1;
+		}
+		return 0;
+	}
+	
 	public String toString(){
 		return "instruction" + m_id;
 	}
@@ -83,10 +111,6 @@ public class InstructionNode extends Node {
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
 		nodeTraverser.foundInstructionNode(this, depth);		
-	}
-
-	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
-		return clone();
 	}
 
 	public List<Node> getChildren() {

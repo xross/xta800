@@ -47,10 +47,14 @@ public class FunctionNode extends Node {
 		m_branchTarget = fn.m_branchTarget;
 	}
 	
-	public Node deepClone(Map<Integer, FunctionNode> startPcs){
+	public Node shallowCopy() {
+		return new FunctionNode(this);
+	}
+	
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs){
 		FunctionNode fn = new FunctionNode();
 		if(m_knownFunction){
-			fn.m_function = m_function.deepClone(startPcs);
+			fn.m_function = m_function.deepCopy(startPcs);
 		}
 		fn.m_functionName = m_functionName;
 		fn.m_knownFunction = m_knownFunction;
@@ -59,7 +63,7 @@ public class FunctionNode extends Node {
 		if(fn.getBranchTarget() != null){
 			int pc = fn.getBranchTarget().getStartPc();
 			String fnName = fn.getBranchTarget().getInstructions().getFirst().getFunctionName();
-			fn.setFunction(fnName, startPcs.get(pc).getFunction().deepClone(startPcs));
+			fn.setFunction(fnName, startPcs.get(pc).getFunction().deepCopy(startPcs));
 		} 
 		
 		return fn;
@@ -69,31 +73,58 @@ public class FunctionNode extends Node {
 		return "Function" + m_id;
 	}
 
-	public double getTimeTaken(Case c) {
+	public double getTimeTakenRelative(Case c) {
 		if (m_knownFunction) {
-			return m_function.getTimeTaken(c);	
-
-		}
-		return 0;
-	}
-	
-	public long getNumCycles(Case c) {
-		if (m_knownFunction) {		
-    		return m_function.getNumCycles(c);
+			return m_function.getTimeTakenRelative(c);	
 		}
 		return 0;
 	}
 
-	public long getNumInstructions(Case c) {
-		if (m_knownFunction) {		
-    		return m_function.getNumInstructions(c);
+	public double getTimeTakenAbsolute(Case c) {
+		if (m_knownFunction) {
+			return m_function.getTimeTakenAbsolute(c);	
 		}
 		return 0;
 	}
 	
-	public long getNumFNops(Case c) {
+	public long getNumCyclesRelative(Case c) {
 		if (m_knownFunction) {		
-    		return m_function.getNumFNops(c);
+    		return m_function.getNumCyclesRelative(c);
+		}
+		return 0;
+	}
+
+	public long getNumCyclesAbsolute(Case c) {
+		if (m_knownFunction) {		
+    		return m_function.getNumCyclesAbsolute(c);
+		}
+		return 0;
+	}
+	
+	public long getNumInstructionsRelative(Case c) {
+		if (m_knownFunction) {		
+    		return m_function.getNumInstructionsRelative(c);
+		}
+		return 0;
+	}
+
+	public long getNumInstructionsAbsolute(Case c) {
+		if (m_knownFunction) {		
+    		return m_function.getNumInstructionsAbsolute(c);
+		}
+		return 0;
+	}
+	
+	public long getNumFNopsRelative(Case c) {
+		if (m_knownFunction) {		
+    		return m_function.getNumFNopsRelative(c);
+		}
+		return 0;
+	}
+
+	public long getNumFNopsAbsolute(Case c) {
+		if (m_knownFunction) {		
+    		return m_function.getNumFNopsAbsolute(c);
 		}
 		return 0;
 	}
@@ -116,10 +147,6 @@ public class FunctionNode extends Node {
 	
 	public Node getBranchTarget() {
 		return m_branchTarget;
-	}
-
-	public Node clone() {
-		return new FunctionNode(this);
 	}
 	
 	public Collection<Node> getContainedNodes() {
