@@ -41,70 +41,6 @@ public class BlockNode extends Node {
 		return bn;
 	}
 	
-	public double getTimeTakenRelative(Case c) {
-		double time = 0;
-		for (Node node : m_insts) {
-			time += node.getTimeTakenRelative(c);
-		}
-        return time;		
-	}
-
-	public double getTimeTakenAbsolute(Case c) {
-		double time = 0;
-		for (Node node : m_insts) {
-			time += node.getTimeTakenAbsolute(c);
-		}
-        return time;		
-	}
-	
-	public long getNumCyclesRelative(Case c) {
-		long count = 0;
-		for (Node node : m_insts) {
-			count += node.getNumCyclesRelative(c);
-		}
-		return count;
-	}
-
-	public long getNumCyclesAbsolute(Case c) {
-		long count = 0;
-		for (Node node : m_insts) {
-			count += node.getNumCyclesAbsolute(c);
-		}
-		return count;
-	}
-	
-	public long getNumInstructionsRelative(Case c) {
-		long count = 0;
-		for (Node node : m_insts) {
-			count += node.getNumInstructionsRelative(c);
-		}
-		return count;
-	}
-
-	public long getNumInstructionsAbsolute(Case c) {
-		long count = 0;
-		for (Node node : m_insts) {
-			count += node.getNumInstructionsAbsolute(c);
-		}
-		return count;
-	}
-	
-	public long getNumFNopsRelative(Case c) {
-		long count = 0;
-		for (Node node : m_insts) {
-			count += node.getNumFNopsRelative(c);
-		}
-		return count;
-	}
-
-	public long getNumFNopsAbsolute(Case c) {
-		long count = 0;
-		for (Node node : m_insts) {
-			count += node.getNumFNopsAbsolute(c);
-		}
-		return count;
-	}
-	
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>();
 		for(Node inst : m_insts){
@@ -181,5 +117,72 @@ public class BlockNode extends Node {
 			}
 		}
 	}
+
 	
+	// --------------------------------------------------------------------- //
+	// Statistics Gathering Methods
+	// --------------------------------------------------------------------- //
+	public double getTimeTakenRelative(Case c) {
+		double time = 0;
+		for (Node node : m_insts) {
+			time += node.getTimeTakenRelative(c);
+		}
+        return time;		
+	}
+
+	public double getTimeTakenAbsolute(Case c) {
+		double time = 0;
+		for (Node node : m_insts) {
+			time += node.getTimeTakenAbsolute(c);
+		}
+        return time;		
+	}
+	
+	public long getNumCyclesRelative(Case c) {
+		long count = 0;
+		for (Node node : m_insts) {
+			count += node.getNumCyclesRelative(c);
+		}
+		return count;
+	}
+
+	public long getNumCyclesAbsolute(Case c) {
+		long count = 0;
+		for (Node node : m_insts) {
+			count += node.getNumCyclesAbsolute(c);
+		}
+		return count;
+	}
+	
+	public long getNumInstructionsRelative(Case c) {
+		long count = 0;
+		for (Node node : m_insts) {
+			count += node.getNumInstructionsRelative(c);
+		}
+		return count;
+	}
+
+	public long getNumInstructionsAbsolute(Case c) {
+		long count = 0;
+		for (Node node : m_insts) {
+			count += node.getNumInstructionsAbsolute(c);
+		}
+		return count;
+	}
+	
+	public long getNumFNopsRelative(Case c) {
+		long count = 0;
+		for (Node node : m_insts) {
+			count += node.getNumFNopsRelative(c);
+		}
+		return count;
+	}
+
+	public long getNumFNopsAbsolute(Case c) {
+		long count = 0;
+		for (Node node : m_insts) {
+			count += node.getNumFNopsAbsolute(c);
+		}
+		return count;
+	}
 }

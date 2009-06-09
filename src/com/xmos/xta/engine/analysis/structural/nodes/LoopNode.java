@@ -61,6 +61,12 @@ public class LoopNode extends Node {
 		return ln;
 	}
 
+	
+		
+	
+	// --------------------------------------------------------------------- //
+	// Statistics Gathering Methods
+	// --------------------------------------------------------------------- //
 	public double getTimeTakenRelative(Case c) {
 		if (!m_isAbsolute) {
 			// This loop is relative, so take the relative component 
@@ -203,7 +209,7 @@ public class LoopNode extends Node {
 	    	return 0;
 		}
 	}
-	
+
 	public void addLoop(Node loop) {
 		m_loops.add(loop);
 	}

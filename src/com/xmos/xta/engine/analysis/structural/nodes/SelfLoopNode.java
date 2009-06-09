@@ -37,38 +37,6 @@ public class SelfLoopNode extends Node{
 		ln.m_loop = m_loop.deepCopy(startPcs);
 		return ln;
 	}
-
-	public double getTimeTakenRelative(Case c) {
-		return m_loop.getTimeTakenRelative(c);
-	}
-
-	public double getTimeTakenAbsolute(Case c) {
-		return m_loop.getTimeTakenAbsolute(c);
-	}
-	
-	public long getNumCyclesRelative(Case c) {
-		return m_loop.getNumCyclesRelative(c);
-	}
-
-	public long getNumCyclesAbsolute(Case c) {
-		return m_loop.getNumCyclesAbsolute(c);
-	}
-	
-	public long getNumInstructionsRelative(Case c) {
-		return m_loop.getNumInstructionsRelative(c);
-	}
-
-	public long getNumInstructionsAbsolute(Case c) {
-		return m_loop.getNumInstructionsAbsolute(c);
-	}
-	
-	public long getNumFNopsRelative(Case c) {
-		return m_loop.getNumFNopsRelative(c);
-	}
-
-	public long getNumFNopsAbsolute(Case c) {
-		return m_loop.getNumFNopsAbsolute(c);
-	}
 	
 	public LinkedList<XtaInstruction> getInstructions() {
 	LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loop.getInstructions());
@@ -142,8 +110,7 @@ public class SelfLoopNode extends Node{
 		}
 		return false;
 	}
-
-
+	
 	public List<XtaInstruction> getInstructionStream(Case c) {
 		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
 		for(int i=0;i< m_numIterations;i++){
@@ -157,4 +124,39 @@ public class SelfLoopNode extends Node{
 		// TODO Auto-generated method stub
 		
 	}		
+		
+	// --------------------------------------------------------------------- //
+	// Statistics Gathering Methods
+	// --------------------------------------------------------------------- //
+	public double getTimeTakenRelative(Case c) {
+		return m_loop.getTimeTakenRelative(c);
+	}
+
+	public double getTimeTakenAbsolute(Case c) {
+		return m_loop.getTimeTakenAbsolute(c);
+	}
+	
+	public long getNumCyclesRelative(Case c) {
+		return m_loop.getNumCyclesRelative(c);
+	}
+
+	public long getNumCyclesAbsolute(Case c) {
+		return m_loop.getNumCyclesAbsolute(c);
+	}
+	
+	public long getNumInstructionsRelative(Case c) {
+		return m_loop.getNumInstructionsRelative(c);
+	}
+
+	public long getNumInstructionsAbsolute(Case c) {
+		return m_loop.getNumInstructionsAbsolute(c);
+	}
+	
+	public long getNumFNopsRelative(Case c) {
+		return m_loop.getNumFNopsRelative(c);
+	}
+
+	public long getNumFNopsAbsolute(Case c) {
+		return m_loop.getNumFNopsAbsolute(c);
+	}	
 }

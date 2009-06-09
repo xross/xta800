@@ -73,62 +73,6 @@ public class FunctionNode extends Node {
 		return "Function" + m_id;
 	}
 
-	public double getTimeTakenRelative(Case c) {
-		if (m_knownFunction) {
-			return m_function.getTimeTakenRelative(c);	
-		}
-		return 0;
-	}
-
-	public double getTimeTakenAbsolute(Case c) {
-		if (m_knownFunction) {
-			return m_function.getTimeTakenAbsolute(c);	
-		}
-		return 0;
-	}
-	
-	public long getNumCyclesRelative(Case c) {
-		if (m_knownFunction) {		
-    		return m_function.getNumCyclesRelative(c);
-		}
-		return 0;
-	}
-
-	public long getNumCyclesAbsolute(Case c) {
-		if (m_knownFunction) {		
-    		return m_function.getNumCyclesAbsolute(c);
-		}
-		return 0;
-	}
-	
-	public long getNumInstructionsRelative(Case c) {
-		if (m_knownFunction) {		
-    		return m_function.getNumInstructionsRelative(c);
-		}
-		return 0;
-	}
-
-	public long getNumInstructionsAbsolute(Case c) {
-		if (m_knownFunction) {		
-    		return m_function.getNumInstructionsAbsolute(c);
-		}
-		return 0;
-	}
-	
-	public long getNumFNopsRelative(Case c) {
-		if (m_knownFunction) {		
-    		return m_function.getNumFNopsRelative(c);
-		}
-		return 0;
-	}
-
-	public long getNumFNopsAbsolute(Case c) {
-		if (m_knownFunction) {		
-    		return m_function.getNumFNopsAbsolute(c);
-		}
-		return 0;
-	}
-	
 	public boolean isFunctionKnown() {
 		return m_branchTarget != null;
 	}
@@ -226,8 +170,7 @@ public class FunctionNode extends Node {
 		}
 		return false;
 	}
-
-
+	
 	public List<XtaInstruction> getInstructionStream(Case c) {
 		return m_function.getInstructionStream(c);
 	}
@@ -236,4 +179,65 @@ public class FunctionNode extends Node {
 		m_function.getInstructionStream(c, ibuffer, instructions);
 		
 	}	
+
+	
+	// --------------------------------------------------------------------- //
+	// Statistics Gathering Methods
+	// --------------------------------------------------------------------- //	
+	public double getTimeTakenRelative(Case c) {
+		if (m_knownFunction) {
+			return m_function.getTimeTakenRelative(c);	
+		}
+		return 0;
+	}
+
+	public double getTimeTakenAbsolute(Case c) {
+		if (m_knownFunction) {
+			return m_function.getTimeTakenAbsolute(c);	
+		}
+		return 0;
+	}
+	
+	public long getNumCyclesRelative(Case c) {
+		if (m_knownFunction) {		
+    		return m_function.getNumCyclesRelative(c);
+		}
+		return 0;
+	}
+
+	public long getNumCyclesAbsolute(Case c) {
+		if (m_knownFunction) {		
+    		return m_function.getNumCyclesAbsolute(c);
+		}
+		return 0;
+	}
+	
+	public long getNumInstructionsRelative(Case c) {
+		if (m_knownFunction) {		
+    		return m_function.getNumInstructionsRelative(c);
+		}
+		return 0;
+	}
+
+	public long getNumInstructionsAbsolute(Case c) {
+		if (m_knownFunction) {		
+    		return m_function.getNumInstructionsAbsolute(c);
+		}
+		return 0;
+	}
+	
+	public long getNumFNopsRelative(Case c) {
+		if (m_knownFunction) {		
+    		return m_function.getNumFNopsRelative(c);
+		}
+		return 0;
+	}
+
+	public long getNumFNopsAbsolute(Case c) {
+		if (m_knownFunction) {		
+    		return m_function.getNumFNopsAbsolute(c);
+		}
+		return 0;
+	}
+
 }

@@ -1,6 +1,8 @@
 package com.xmos.xta.engine.analysis.routes;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -9,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
-import com.xmos.xta.engine.analysis.routes.RouteDescription.RouteMode;
 import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
@@ -28,10 +29,8 @@ class AbortedException extends Exception {
 }
 
 public class Route {
-
 	private static int s_routeCount;
 	public static final int INVALID_ROUTE_ID = -1;
-	public static int WORST_CASE_PATH_ID = -2;
 
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR
@@ -39,15 +38,14 @@ public class Route {
 
 	private int m_routeId;
 	private RouteDescription m_description;
-	private StructureGraph m_structureGraph;
-	private Collection<Node> m_subRoutes;
-	private Engine m_engine;
 	private RouteTiming m_routeTiming;
+	private StructureGraph m_structureGraph;
+	private List<Node> m_subRoutes;
+	private Engine m_engine;
 	private Unknowns m_unknowns;
-
 	private Constraint m_constraint;
 	private Set<Node> m_routeExclusionNodes;
-	Collection<Reference> m_excludedRefs;
+	private Collection<Reference> m_excludedRefs;
 
 	public static void resetRouteCount() {
 		s_routeCount = 0;
@@ -57,7 +55,7 @@ public class Route {
 		m_structureGraph = structureGraph;
 		m_description = description;
 		m_routeId = s_routeCount++;
-		m_subRoutes = new HashSet<Node>();
+		m_subRoutes = new ArrayList<Node>();
 		m_engine = engine;
 		m_constraint = engine.getConstraint().clone();
 		m_routeTiming = new RouteTiming(this, engine.getConfig(), engine.getNodeId(), engine.getCoreId());
@@ -126,14 +124,17 @@ public class Route {
 	}
 
 	public void analyse() {
-		if (m_description.getMode() == RouteMode.FUNCTION) {
+		switch (m_description.getMode()) {
+		case FUNCTION:
 			Map<String, HashSet<Node>> functionMap = buildFunctionMap(m_structureGraph);
 			HashSet<Node> functions = functionMap.get(m_description.getFunctionName());
 			if (functions != null) {
 				m_subRoutes.addAll(functions);
 			}
-		} else if (m_description.getMode() == RouteMode.ABSLOUTE) {
-
+			sortSubRoutes();
+			break;
+			
+		case ABSOLUTE:
 			Set<Integer> startPcs = getStartPcs();
 			Set<Integer> endPcs = getEndPcs();
 
@@ -165,11 +166,19 @@ public class Route {
 
 				m_subRoutes.add(workingSet.iterator().next());
 			}
-		} else {
-			assert (false);
+			sortSubRoutes();
+			break;
+			
+		default:
+			assert(false);
+		    break;
 		}
 	}
 
+	public void sortSubRoutes() {
+		Collections.sort(m_subRoutes);
+	}
+	
 	private void buildExclustion() {
 		// this uses the m_excludedRefs to populate the m_routeExclusionNodes
 		Set<Node> seenNodes = new HashSet<Node>();
@@ -216,9 +225,7 @@ public class Route {
 		});
 		return nodes;
 	}
-	
-	
-	
+		
 	private Set<Integer> getEndPcs() {
 		Set<Integer> endPcs = new HashSet<Integer>();
 		endPcs.add(m_description.getEndPoint().getPc());

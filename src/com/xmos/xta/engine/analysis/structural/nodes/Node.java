@@ -123,17 +123,31 @@ public abstract class Node implements Comparable<Node>{
 		return getNumFNopsRelative(c) + getNumFNopsAbsolute(c);				
 	}
 	
-	public int compareTo(Node n) {		
-		if (getInstructions()!= null && 
-			n.getInstructions() != null && 
-			!getInstructions().isEmpty() && 
-			!n.getInstructions().isEmpty()) {
-			int myPc = getInstructions().getFirst().getPc();
-			int nodePc = n.getInstructions().getFirst().getPc();
-			return Integer.signum((nodePc - myPc));
-		} 
-		return 0;
-	}
+	public int compareTo(Node node) {	
+		double thisTimeTaken = getTimeTaken(Case.WORST);
+		double nodeTimeTaken = node.getTimeTaken(Case.WORST);
+		
+		// First compare based on time taken...
+		if (thisTimeTaken > nodeTimeTaken) {
+			return 1;
+			
+		} else if (thisTimeTaken < nodeTimeTaken) {
+		    return -1;
+		    
+		} else {
+			// If the time taken is the same, then 
+			// use the pcs to define the ordering..
+			if (getInstructions()!= null && 
+				node.getInstructions() != null && 
+				!getInstructions().isEmpty() && 
+				!node.getInstructions().isEmpty()) {
+				int myPc = getInstructions().get(0).getPc();
+				int nodePc = node.getInstructions().get(0).getPc();
+				return Integer.signum((nodePc - myPc));
+			} 
+			return 0;			
+		}			
+    }
 	
 	public void setBranchLinkReturn(Node bl){
 		m_branchLinkReturn = bl;
