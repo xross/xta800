@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.engine.analysis.structural.nodes.Node.IBufferSequence;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class BlockNode extends Node {
@@ -166,4 +168,18 @@ public class BlockNode extends Node {
 		}
 		return insts;
 	}
+
+	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
+		
+		IBufferSequence ibufferSeq = m_ibufferStates.get(ibuffer);
+		List<Integer> fnops = ibufferSeq.m_fnopPcs;
+		for(Node inst : m_insts){
+			instructions.addAll(inst.getInstructions());
+			if(fnops.contains(inst.getStartPc())){
+				//add an fnop or two
+				
+			}
+		}
+	}
+	
 }

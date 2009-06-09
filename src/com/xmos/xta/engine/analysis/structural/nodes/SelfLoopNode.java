@@ -150,5 +150,11 @@ public class SelfLoopNode extends Node{
 			insts.addAll(m_loop.getInstructionStream(c));
 		}
 		return insts;
+	}
+
+	@Override
+	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
+		// TODO Auto-generated method stub
+		
 	}		
 }

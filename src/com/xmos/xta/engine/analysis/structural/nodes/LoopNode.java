@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
@@ -302,18 +303,28 @@ public class LoopNode extends Node {
 	public List<XtaInstruction> getInstructionStream(Case c) {
 		
 		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>();
-		
 		List<Node> loopList = new LinkedList<Node>(m_loops);
 		Collections.sort(loopList);
 		for (Node loop : loopList) {
-			for(int i=0;i<loop.getNumInstructions(c);i++){
+			for(int i=0;i<loop.getNumIterations();i++){
 				insts.addAll(m_loopHeader.getInstructionStream(c));
 				insts.addAll(loop.getInstructionStream(c));
 			}
 		}
-		
 		insts.addAll(m_loopHeader.getInstructionStream(c));
 		
 		return insts;
 	}		
+	
+	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
+		List<Node> loopList = new LinkedList<Node>(m_loops);
+		Collections.sort(loopList);
+		for (Node loop : loopList) {
+			for(int i=0;i<loop.getNumIterations();i++){
+				m_loopHeader.getInstructionStream(c, ibuffer, instructions);
+				loop.getInstructionStream(c, ibuffer, instructions);
+			}
+		}
+		m_loopHeader.getInstructionStream(c, ibuffer, instructions);	
+	}
 }

@@ -155,4 +155,8 @@ public class InstructionNode extends Node {
 	public List<XtaInstruction> getInstructionStream(Case c) {
 		return getInstructions();
 	}
+
+	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
+		instructions.add(m_inst);
+	}
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
@@ -225,6 +226,16 @@ public class SectionNode extends Node {
 		} else {
 			assert(false);
 			return null;
+		}
+	}
+	
+	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
+		if(c == Case.WORST){
+			getWorstCaseOption().getInstructionStream(Case.WORST, ibuffer, instructions);
+		} else if(c == Case.BEST){
+			getBestCaseOption().getInstructionStream(Case.BEST, ibuffer, instructions);
+		} else {
+			assert(false);
 		}
 	}
 
