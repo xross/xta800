@@ -173,7 +173,13 @@ public class FunctionNode extends Node {
 	
 	public List<XtaInstruction> getInstructionStream(Case c) {
 		return m_function.getInstructionStream(c);
-	}		
+	}
+
+	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
+		m_function.getInstructionStream(c, ibuffer, instructions);
+		
+	}	
+
 	
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
@@ -233,4 +239,5 @@ public class FunctionNode extends Node {
 		}
 		return 0;
 	}
+
 }

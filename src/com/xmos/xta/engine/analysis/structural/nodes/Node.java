@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
@@ -34,6 +33,7 @@ public abstract class Node implements Comparable<Node>{
 
 	Set<Node> m_branchTargets;
 	Map<Integer, IBufferSequence> m_ibufferStates;
+	
 	public enum Case {
 		WORST,
 		BEST,
@@ -55,6 +55,7 @@ public abstract class Node implements Comparable<Node>{
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
 	public abstract List<XtaInstruction> getInstructionStream(Case c);
+	public abstract void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions);
 	public abstract Set<Integer> getPCs();
 	public abstract LinkedList<XtaInstruction> getInstructions();
 	public abstract Collection<Node> getContainedNodes();	
@@ -90,11 +91,11 @@ public abstract class Node implements Comparable<Node>{
 		m_id = s_numNodes++;
 	}
 	
-	public Collection<InstructionBuffer> getEndInstructionBuffers(){
-		HashSet<InstructionBuffer> ibuffers = new HashSet<InstructionBuffer>();
+	public Collection<IBufferSequence> getEndInstructionBuffers(){
+		Collection<IBufferSequence> ibuffers = new HashSet<IBufferSequence>();
 		
-		for(IBufferSequence ibs : m_ibufferStates.values()){
-			ibuffers.add(ibs.m_endInstBuffer);
+		for(IBufferSequence endIbuff : m_ibufferStates.values()){
+			ibuffers.add(endIbuff);
 		}
 		
 		return ibuffers;
@@ -356,10 +357,10 @@ public abstract class Node implements Comparable<Node>{
 	}
 
 	class IBufferSequence {
-		InstructionBuffer m_endInstBuffer;
+		Integer m_endInstBuffer;
 		List<Integer> m_fnopPcs;
 		
-		public IBufferSequence(InstructionBuffer endInstBuffer, List<Integer> fnopPcs) {
+		public IBufferSequence(int endInstBuffer, List<Integer> fnopPcs) {
 			super();
 			m_endInstBuffer = endInstBuffer;
 			m_fnopPcs = fnopPcs;
@@ -371,9 +372,9 @@ public abstract class Node implements Comparable<Node>{
 		return m_ibufferStates;
 	}
 	
-	public boolean addEndInstructionBuffer(int numStartBytes, InstructionBuffer endInstBuffer, List<Integer> fnopPcs) {
+	public boolean addEndInstructionBuffer(int numStartBytes, int endNumBytes, List<Integer> fnopPcs) {
 		if(!m_ibufferStates.containsKey(numStartBytes)){
-			m_ibufferStates.put(numStartBytes, new IBufferSequence(endInstBuffer, fnopPcs));
+			m_ibufferStates.put(numStartBytes, new IBufferSequence(endNumBytes, fnopPcs));
 			return true;
 		} else {
 			return false;

@@ -25,9 +25,9 @@ public class FnopAnalyser {
 				ib.fetch();
 			statesUpdated |= iterateOverInstructions(block, ib, parent);
 		} else {
-			for (InstructionBuffer ib : parent.getEndInstructionBuffers()) {
-				statesUpdated |= iterateOverInstructions(block, ib, parent);
-			}
+			//for (InstructionBuffer ib : parent.getEndInstructionBuffers()) {
+			//	statesUpdated |= iterateOverInstructions(block, ib, parent);
+			//}
 		}
 		if (statesUpdated) {
 			for (Node next : block.getNextNodes()) {
@@ -77,7 +77,7 @@ public class FnopAnalyser {
 
 		}
 
-		return block.addEndInstructionBuffer(numStartBytes, endInstBuffer, fnopPcs);
+		return block.addEndInstructionBuffer(numStartBytes, endInstBuffer.m_numBytes, fnopPcs);
 	}
 
 	private void update(InstructionBuffer ib, List<Integer> fnopPcs, XtaInstruction inst) {

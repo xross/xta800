@@ -179,6 +179,11 @@ public class InstructionNode extends Node {
 	public long getNumCyclesAbsolute(Case c) {
 		return getInstructionNumCycles();
 	}
+
+	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
+		instructions.add(m_inst);
+	}
+
 	
 	public long getNumInstructionsRelative(Case c) {
 		return 1;

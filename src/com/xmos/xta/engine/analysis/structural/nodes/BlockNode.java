@@ -102,6 +102,20 @@ public class BlockNode extends Node {
 		}
 		return insts;
 	}
+
+	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
+		
+		IBufferSequence ibufferSeq = m_ibufferStates.get(ibuffer);
+		List<Integer> fnops = ibufferSeq.m_fnopPcs;
+		for(Node inst : m_insts){
+			instructions.addAll(inst.getInstructions());
+			if(fnops.contains(inst.getStartPc())){
+				//add an fnop or two
+				
+			}
+		}
+	}
+
 	
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods

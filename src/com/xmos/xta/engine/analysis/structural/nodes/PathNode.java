@@ -120,6 +120,13 @@ public class PathNode extends Node {
 			list.addAll(node.getInstructionStream(c));
 		}
 		return list;
+	}
+
+
+	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
+		for (Node node : m_nodes) {
+			node.getInstructionStream(c, ibuffer, instructions);
+		}
 	}		
 		
 	// --------------------------------------------------------------------- //

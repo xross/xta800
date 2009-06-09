@@ -196,6 +196,14 @@ public class SectionNode extends Node {
 		}
 	}
 	
+	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
+		if(c == Case.WORST){
+			getWorstCaseOption().getInstructionStream(Case.WORST, ibuffer, instructions);
+		} else if(c == Case.BEST){
+			getBestCaseOption().getInstructionStream(Case.BEST, ibuffer, instructions);
+		} 
+	}
+
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
 	// --------------------------------------------------------------------- //
