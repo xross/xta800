@@ -380,7 +380,7 @@ public class Engine implements Notifier {
 		
 		route.analyse();		
 
-		if (route.getCompletedPaths().size() == 0) {
+		if (route.getSubRoutes().size() == 0) {
 			/*
 			if (route.wasConstrained()) {
 				notify(Notifier.NOTIFY_ERROR, "No valid paths of execution (constraints applied)");

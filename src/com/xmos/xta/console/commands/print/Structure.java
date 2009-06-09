@@ -52,7 +52,7 @@ public class Structure extends Command {
     }
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = "structure : Displays the structure for the program, or if sepcified, just the given route";
+    	String descString = "structure [route id]: Displays the structure for the program, or if sepcified, just the given route";
     	return descString;    	                
     }
 
@@ -78,7 +78,7 @@ public class Structure extends Command {
 	    	break;
 	    	
 	    case ROUTE:
-	    	nodes = engine.getRoute(m_routeId).getCompletedPaths();
+	    	nodes = engine.getRoute(m_routeId).getSubRoutes();
 		    if (!validateRouteId(engine, console, m_routeId))
 			    return;
 	    	break;	    	

@@ -23,7 +23,7 @@ public class TraceDisplayer {
 	}
 	
     public void display() {
-		Collection<Node> nodes = m_engine.getRoute(m_routeId).getCompletedPaths();	
+		Collection<Node> nodes = m_engine.getRoute(m_routeId).getSubRoutes();	
 		for (Node node : nodes) {						
 		    node.traverse(0, new DefaultNodeTraverser() {
 				public boolean foundInstructionNode(Node node, int depth) {

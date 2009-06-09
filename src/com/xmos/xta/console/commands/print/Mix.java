@@ -7,23 +7,17 @@ import com.xmos.xta.engine.Engine;
 
 public class Mix extends Command {
 	private int m_routeId;
-	private int m_id;
-	private Command.IdType m_idType;
 
 	public Mix() {
 		m_routeId = 0;
-		m_id = 0;
-		m_idType = null;
 	}
 
-	public Mix(int routeId, int id, IdType idType) {
+	public Mix(int routeId) {
 		m_routeId = routeId;
-		m_id = id;
-		m_idType = idType;
 	}
 	
     public int numArgs() {
-    	return 2;
+    	return 1;
     }        
 
     public String name() {
@@ -31,11 +25,11 @@ public class Mix extends Command {
     }        
 
     public String commandLine() {
-    	return "mix " + getRouteId(m_routeId) + " " + getId(m_id, m_idType);
+    	return "mix " + getRouteId(m_routeId);
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "mix <route id> <path/block id>: Display annotated source file(s) + assembly instructions for the given path id";      	
+        return "mix <route id>: Display annotated source file(s) + assembly instructions for the given route";      	
     }
 
     public Command clone(String[] args, int index) {
@@ -43,8 +37,7 @@ public class Mix extends Command {
 			return null;		
 
     	try {
-    		return new Mix(getRouteId(args[index + 1]), 
-    				getId(args[index + 2]), getIdType(args[index + 2]));
+    		return new Mix(getRouteId(args[index + 1]));
     	}
     	catch (NumberFormatException e) {
     	    return null;
@@ -55,10 +48,10 @@ public class Mix extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-	    if (!validateIds(engine, console, m_routeId, m_id, m_idType))
+	    if (!validateRouteId(engine, console, m_routeId))
 		    return;
 		
-		SrcDisplayer displayer = new SrcDisplayer(engine, console, m_routeId, m_id, m_idType, true);
+		SrcDisplayer displayer = new SrcDisplayer(engine, console, m_routeId, true);
 		displayer.display();
    }    
 }

@@ -40,7 +40,7 @@ public class Route {
 	private int m_routeId;
 	private RouteDescription m_description;
 	private StructureGraph m_structureGraph;
-	private Collection<Node> m_routes;
+	private Collection<Node> m_subRoutes;
 	private Engine m_engine;
 	private RouteTiming m_routeTiming;
 	private Unknowns m_unknowns;
@@ -57,7 +57,7 @@ public class Route {
 		m_structureGraph = structureGraph;
 		m_description = description;
 		m_routeId = s_routeCount++;
-		m_routes = new HashSet<Node>();
+		m_subRoutes = new HashSet<Node>();
 		m_engine = engine;
 		m_constraint = engine.getConstraint().clone();
 		m_routeTiming = new RouteTiming(this, engine.getConfig(), engine.getNodeId(), engine.getCoreId());
@@ -106,7 +106,7 @@ public class Route {
 
 	public Set<Integer> getPcsHit() {
 		final Set<Integer> pcs = new HashSet<Integer>();
-		for (Node node : m_routes) {
+		for (Node node : m_subRoutes) {
 			node.traverse(0, new DefaultNodeTraverser() {
 				public boolean foundInstructionNode(Node node, int depth) {
 					pcs.add(node.getStartPc());
@@ -121,8 +121,8 @@ public class Route {
 		return m_constraint;
 	}
 
-	public Collection<Node> getCompletedPaths() {
-		return m_routes;
+	public Collection<Node> getSubRoutes() {
+		return m_subRoutes;
 	}
 
 	public void analyse() {
@@ -130,7 +130,7 @@ public class Route {
 			Map<String, HashSet<Node>> functionMap = buildFunctionMap(m_structureGraph);
 			HashSet<Node> functions = functionMap.get(m_description.getFunctionName());
 			if (functions != null) {
-				m_routes.addAll(functions);
+				m_subRoutes.addAll(functions);
 			}
 		} else if (m_description.getMode() == RouteMode.ABSLOUTE) {
 
@@ -163,7 +163,7 @@ public class Route {
 				// Node newStart = start;
 				sae.createStructure(workingSet, newStart, m_engine);
 
-				m_routes.add(workingSet.iterator().next());
+				m_subRoutes.add(workingSet.iterator().next());
 			}
 		} else {
 			assert (false);
@@ -175,7 +175,7 @@ public class Route {
 		Set<Node> seenNodes = new HashSet<Node>();
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		for (Reference ref : m_excludedRefs) {
-			for(Node routeNode : m_routes){
+			for(Node routeNode : m_subRoutes){
 				Collection<Node> refNodes = referenceMatcher.getNodes(routeNode, ref);
 				//crawl up to my highest point then set the whole branch as excluded
 				
