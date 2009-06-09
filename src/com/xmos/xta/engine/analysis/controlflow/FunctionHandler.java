@@ -48,7 +48,7 @@ public class FunctionHandler {
 		
 		for (Node instruction : m_instDecoder.getInstructions() ){
 			assert(instruction.getInstructions().size() == 1);
-			XtaInstruction inst = instruction.getInstructions().get(0);
+			XtaInstruction inst = instruction.getInstructions().getFirst();
 			if(inst.isLink()){
 				if(instruction.getNextNodes().size() > 0){
 					Collection<FunctionNode> newFunctions = new HashSet<FunctionNode>();
@@ -90,7 +90,7 @@ public class FunctionHandler {
 		seen.add(start);
 		if (start.getNextNodes().size() == 0){
 			if (start.isFunctionNode()) return false;
-			return start.getInstructions().get(0).getReturn();
+			return start.getInstructions().getFirst().getReturn();
 		} else {
 			boolean canReturn = false;
 			for (Node next : start.getNextNodes()) {

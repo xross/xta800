@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
@@ -62,7 +61,7 @@ public class InstructionNode extends Node {
 		return "";
 	}
 
-	public List<XtaInstruction> getInstructions() {
+	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> inst = new LinkedList<XtaInstruction>();
 		inst.add(m_inst);
 		return inst;
@@ -127,5 +126,9 @@ public class InstructionNode extends Node {
 		
 		functionCallStatus.setStatus(false);		
 		return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
+	}
+
+	public List<XtaInstruction> getInstructionStream(Case c) {
+		return getInstructions();
 	}
 }

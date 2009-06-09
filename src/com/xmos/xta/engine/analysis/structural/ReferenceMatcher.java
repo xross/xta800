@@ -20,7 +20,7 @@ public class ReferenceMatcher {
 		final Collection<Node> matchingNodes = new ArrayList<Node>();		
 		node.traverse(0, new DefaultNodeTraverser() {
 			public boolean foundInstructionNode(Node node, int depth) {							
-				XtaInstruction instruction = node.getInstructions().get(0);					
+				XtaInstruction instruction = node.getInstructions().getFirst();				
 				if (instruction.getPc() == pc) {
 					matchingNodes.add(node);
 				}

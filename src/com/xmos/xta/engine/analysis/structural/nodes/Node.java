@@ -3,6 +3,7 @@ package com.xmos.xta.engine.analysis.structural.nodes;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,9 +49,11 @@ public abstract class Node implements Comparable<Node>{
 	public abstract long getNumCycles(Case c);
 	public abstract long getNumInstructions(Case c);
 	public abstract long getNumFNops(Case c);	
+	public abstract List<XtaInstruction> getInstructionStream(Case c);
 	
 	public abstract Set<Integer> getPCs();
-	public abstract List<XtaInstruction> getInstructions();
+	
+	public abstract LinkedList<XtaInstruction> getInstructions();
 	public abstract Collection<Node> getContainedNodes();	
 	public abstract String getFunctionName();
 	public abstract int getStartPc();
@@ -101,8 +104,8 @@ public abstract class Node implements Comparable<Node>{
 			n.getInstructions() != null && 
 			!getInstructions().isEmpty() && 
 			!n.getInstructions().isEmpty()) {
-			int myPc = getInstructions().get(0).getPc();
-			int nodePc = n.getInstructions().get(0).getPc();
+			int myPc = getInstructions().getFirst().getPc();
+			int nodePc = n.getInstructions().getFirst().getPc();
 			return Integer.signum((nodePc - myPc));
 		} 
 		return 0;

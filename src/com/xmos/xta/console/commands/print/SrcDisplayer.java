@@ -20,16 +20,16 @@ public class SrcDisplayer {
 
 	private Engine m_engine;
 	private Console m_console;
-	private int m_routeId;
-	private int m_id;
+	//private int m_routeId;
+	//private int m_id;
 	private Command.IdType m_idType;
 	private boolean m_displayAssembly;
 
 	public SrcDisplayer(Engine engine, Console console, int routeId, int id, Command.IdType idType, boolean displayAssembly) {		
 		m_engine = engine;
 		m_console = console;
-		m_routeId = routeId;
-		m_id = id;
+		//m_routeId = routeId;
+		//m_id = id;
 		m_idType = idType;
 		m_displayAssembly = displayAssembly;
 	}

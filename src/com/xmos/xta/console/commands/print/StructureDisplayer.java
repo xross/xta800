@@ -9,7 +9,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructureDisplayer {
-	private final static boolean DEBUG = true;
+	private final static boolean DEBUG = false;
 
 	private Console m_console;
 
@@ -100,7 +100,9 @@ public class StructureDisplayer {
 					return true;						
 				}
 		    });
-		}				
+		    m_console.display("\n"); 
+		}		
+		
     }
 	
 	private void printIndent(int depth) {
@@ -117,7 +119,7 @@ public class StructureDisplayer {
 	}
 	
 	private void displayInstructionTrace(Node node) {
-		XtaInstruction instruction = node.getInstructions().get(0);
+		XtaInstruction instruction = node.getInstructions().getFirst();
 		m_console.display(String.format(" 0x%x: %s %s", 
 				instruction.getPc(),
 				instruction.getNmenonic(),

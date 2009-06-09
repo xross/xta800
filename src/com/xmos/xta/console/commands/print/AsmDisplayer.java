@@ -20,19 +20,20 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 public class AsmDisplayer {
 	private Engine m_engine;
 	private Console m_console;
-	private int m_routeId;
-	private int m_id;
+	//private int m_routeId;
+	//private int m_id;
 	private Command.IdType m_idType;
 	
 	public AsmDisplayer(Engine engine, Console console, int routeId, int id, Command.IdType idType) {
 		m_engine = engine;
 		m_console = console;
-		m_routeId = routeId;
-		m_id = id;
+		//m_routeId = routeId;
+		//m_id = id;
 		m_idType = idType;
 	}
 	
-    public void display() {     	
+    @SuppressWarnings("null")
+	public void display() {     	
         Vector<XtaInstruction> instructions = null;    		
         switch (m_idType) {
         case BLOCK:
@@ -51,7 +52,7 @@ public class AsmDisplayer {
 
     	MemoryImage memoryImage = m_engine.getMemoryImage();
     	SymbolTable symbolTable = m_engine.getSymbolTable();
-    	    	
+    	   
         if (instructions.size() > 0) { 
 	    	HashMap<String, TreeSet<Integer>> asmLinesCovered = createAsmPcsCovered(instructions, m_engine.getXeObject());
 	    	
@@ -103,6 +104,7 @@ public class AsmDisplayer {
 	        }
         
         }
+        
     }
 
     private HashMap<String, TreeSet<Integer>> createAsmPcsCovered(

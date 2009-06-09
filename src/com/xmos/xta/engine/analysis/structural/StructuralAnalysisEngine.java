@@ -96,7 +96,7 @@ public class StructuralAnalysisEngine {
 		for (FunctionNode fn : m_cfgToStruct.keySet()) {
 			if (m_cfgToStruct.get(fn).getBranchTarget() != null) {
 				int pc = m_cfgToStruct.get(fn).getBranchTarget().getStartPc();
-				String fnName = m_cfgToStruct.get(fn).getBranchTarget().getInstructions().get(0).getFunctionName();
+				String fnName = m_cfgToStruct.get(fn).getBranchTarget().getInstructions().getFirst().getFunctionName();
 				fn.setFunction(fnName, m_functionStartPcs.get(pc).getFunction().deepClone(m_functionStartPcs));
 			}
 		}
@@ -126,7 +126,7 @@ public class StructuralAnalysisEngine {
 
 		for (Node graphStart : graphStartNodes) {
 
-			String functionName = graphStart.getInstructions().get(0).getFunctionName();
+			String functionName = graphStart.getInstructions().getFirst().getFunctionName();
 
 			engine.provideFeedback("Processing " + functionName);
 
@@ -281,7 +281,7 @@ public class StructuralAnalysisEngine {
 		}
 		return true;
 	}
-
+/*
 	private static int g = 0;
 
 	private void dumpTree(Collection<Node> workingSet) {
@@ -315,5 +315,5 @@ public class StructuralAnalysisEngine {
 			System.out.println("}\n");
 		}
 	}
-
+*/
 }

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
@@ -59,7 +58,7 @@ public class FunctionNode extends Node {
 		
 		if(fn.getBranchTarget() != null){
 			int pc = fn.getBranchTarget().getStartPc();
-			String fnName = fn.getBranchTarget().getInstructions().get(0).getFunctionName();
+			String fnName = fn.getBranchTarget().getInstructions().getFirst().getFunctionName();
 			fn.setFunction(fnName, startPcs.get(pc).getFunction().deepClone(startPcs));
 		} 
 		
@@ -138,7 +137,7 @@ public class FunctionNode extends Node {
 		return m_functionName;
 	}
 
-	public List<XtaInstruction> getInstructions() {
+	public LinkedList<XtaInstruction> getInstructions() {
 		if (m_knownFunction) {
 			return m_function.getInstructions();
 		} else {
@@ -199,5 +198,10 @@ public class FunctionNode extends Node {
 		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
 		}
 		return false;
+	}
+
+
+	public List<XtaInstruction> getInstructionStream(Case c) {
+		return m_function.getInstructionStream(c);
 	}	
 }

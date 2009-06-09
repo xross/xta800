@@ -2,6 +2,7 @@ package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -86,8 +87,8 @@ public class LoopNode extends Node {
 		m_loops.add(loop);
 	}
 
-	public List<XtaInstruction> getInstructions() {
-		List<XtaInstruction> insts = new ArrayList<XtaInstruction>(m_loopHeader.getInstructions());
+	public LinkedList<XtaInstruction> getInstructions() {
+		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loopHeader.getInstructions());
 		for (Node al : m_loops) {
 			insts.addAll(al.getInstructions());
 		}
@@ -178,5 +179,24 @@ public class LoopNode extends Node {
 		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
 		}
 		return false;
+	}
+
+
+	public List<XtaInstruction> getInstructionStream(Case c) {
+		
+		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>();
+		
+		List<Node> loopList = new LinkedList<Node>(m_loops);
+		Collections.sort(loopList);
+		for (Node loop : loopList) {
+			for(int i=0;i<loop.getNumInstructions(c);i++){
+				insts.addAll(m_loopHeader.getInstructionStream(c));
+				insts.addAll(loop.getInstructionStream(c));
+			}
+		}
+		
+		insts.addAll(m_loopHeader.getInstructionStream(c));
+		
+		return insts;
 	}		
 }

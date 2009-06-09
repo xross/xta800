@@ -68,8 +68,8 @@ public class PathNode extends Node {
 		return fnops;
 	}
 	
-	public List<XtaInstruction> getInstructions() {
-		List<XtaInstruction> list = new LinkedList<XtaInstruction>();
+	public LinkedList<XtaInstruction> getInstructions() {
+		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
 		for (Node node : m_nodes) {
 			list.addAll(node.getInstructions());
 		}
@@ -140,5 +140,13 @@ public class PathNode extends Node {
 		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
 		}
 		return false;
+	}
+
+	public List<XtaInstruction> getInstructionStream(Case c) {
+		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
+		for (Node node : m_nodes) {
+			list.addAll(node.getInstructionStream(c));
+		}
+		return list;
 	}		
 }

@@ -74,14 +74,14 @@ public class Sources extends Command {
 		                for (SourceLine sourceLine : sourceFile.getSourceLines()) {
 		                    for (Line assembly :sourceLine.getChildern()) {
 		                        	
-		                      	int pc = node.getInstructions().get(0).getPc();
+		                      	int pc = node.getInstructions().getFirst().getPc();
 		                        if (assembly.getLineNumber() == pc) {
 		                          	sources.add(sourceFile.getFileName());
 		                        }
 		                    }
 		                }
 		            }					
-					sources.add(node.getInstructions().get(0).getFunctionName());
+					sources.add(node.getInstructions().getFirst().getFunctionName());
 					return true;
 				}
 		    });

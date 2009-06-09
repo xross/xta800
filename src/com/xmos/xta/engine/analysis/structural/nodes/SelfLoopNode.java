@@ -1,6 +1,5 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -51,8 +50,8 @@ public class SelfLoopNode extends Node{
 		return m_loop.getNumFNops(c);
 	}
 
-	public List<XtaInstruction> getInstructions() {
-		List<XtaInstruction> insts = new ArrayList<XtaInstruction>(m_loop.getInstructions());
+	public LinkedList<XtaInstruction> getInstructions() {
+		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loop.getInstructions());
 		return insts;
 	}
 
@@ -125,5 +124,14 @@ public class SelfLoopNode extends Node{
 		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
 		}
 		return false;
+	}
+
+
+	public List<XtaInstruction> getInstructionStream(Case c) {
+		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
+		for(int i=0;i< m_numIterations;i++){
+			insts.addAll(m_loop.getInstructionStream(c));
+		}
+		return insts;
 	}		
 }

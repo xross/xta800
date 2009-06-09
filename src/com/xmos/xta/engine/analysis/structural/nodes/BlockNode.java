@@ -25,7 +25,6 @@ public class BlockNode extends Node {
 	public BlockNode(List<Node> insts) {
 		super();
 		m_insts = insts;
-		//m_branchTargets.addAll(m_insts.get(m_insts.size()-1).m_branchTargets);
 	}
 	
 	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
@@ -64,8 +63,8 @@ public class BlockNode extends Node {
 		return 0;
 	}
 
-	public List<XtaInstruction> getInstructions() {
-		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
+	public LinkedList<XtaInstruction> getInstructions() {
+		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>();
 		for(Node inst : m_insts){
 			insts.addAll(inst.getInstructions());
 		}
@@ -89,7 +88,7 @@ public class BlockNode extends Node {
 	}
 	
 	public int getStartPc() {
-		return getInstructions().get(0).getPc();
+		return getInstructions().getFirst().getPc();
 	}	
 	
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
@@ -118,5 +117,13 @@ public class BlockNode extends Node {
 		} else {
 			return getParent().whatsNext(this);
 		}
+	}
+
+	public List<XtaInstruction> getInstructionStream(Case c) {
+		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
+		for(Node inst : m_insts){
+			insts.addAll(inst.getInstructions());
+		}
+		return insts;
 	}
 }

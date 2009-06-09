@@ -63,8 +63,8 @@ public class SectionNode extends Node {
 		return worstCaseOption.getNumFNops(c);
 	}
 		
-	public List<XtaInstruction> getInstructions() {
-		List<XtaInstruction> list = new LinkedList<XtaInstruction>();
+	public LinkedList<XtaInstruction> getInstructions() {
+		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
 		list.addAll(getWorstCaseOption().getInstructions());
 		return list;		
 	}
@@ -176,6 +176,18 @@ public class SectionNode extends Node {
 		return worstCaseNode;
 	}
 	
+	private Node getBestCaseOption() {
+		Iterator<Node> iter = m_options.iterator();
+		Node worstCaseNode = iter.next();
+		while (iter.hasNext()) {
+			Node node = iter.next();
+			if (node.getTimeTaken(Case.BEST) < worstCaseNode.getTimeTaken(Case.BEST)) {
+				worstCaseNode = node;
+			}						
+		}		
+		return worstCaseNode;
+	}
+	
 	private int getTotalIterations() {
 		int totalIterations = 0;
 		for (Node child : getChildren()) {
@@ -190,6 +202,17 @@ public class SectionNode extends Node {
 
 	public boolean isOptional() {
 		return m_isOptional;
+	}
+
+	public List<XtaInstruction> getInstructionStream(Case c) {
+		if(c == Case.WORST){
+			return getWorstCaseOption().getInstructionStream(Case.WORST);
+		} else if(c == Case.BEST){
+			return getBestCaseOption().getInstructionStream(Case.BEST);
+		} else {
+			assert(false);
+			return null;
+		}
 	}
 
 }
