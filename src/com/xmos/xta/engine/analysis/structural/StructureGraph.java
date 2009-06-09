@@ -1,5 +1,6 @@
 package com.xmos.xta.engine.analysis.structural;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import com.xmos.xta.engine.analysis.structural.nodes.DefaultNodeTraverser;
@@ -26,55 +27,6 @@ public class StructureGraph {
 		return m_threads;
 	}
 
-	public boolean setLoopIterations(Reference reference, long iterations) {
-		boolean loopIterationsSet = false;
-		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
-		
-		for (Node threadNode : getThreads()) {
-			Collection<Node> referencedNodes = 
-				referenceMatcher.getNodes(threadNode, reference);
-			
-			for (Node referencedNode : referencedNodes) {						
-				Node enclosingLoopNode = referencedNode.isLoopNode() ? 
-						referencedNode : 
-						referencedNode.getEnclosingLoopNode();
-									
-				if (enclosingLoopNode != null) {				
-					enclosingLoopNode.setNumIterationsDone(false);
-					referencedNode.setNumIterations(iterations);
-					loopIterationsSet = true;
-				}
-			}			
-		}		
-		return loopIterationsSet;
-	}
-
-	public boolean unsetLoopIterations(Reference reference) {
-		return false;
-	}
-
-	public boolean setLoopScope(Reference reference, boolean isAbsolute) {
-		boolean loopScopeSet = false;
-		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
-		
-		for (Node threadNode : getThreads()) {
-			Collection<Node> referencedNodes = 
-				referenceMatcher.getNodes(threadNode, reference);
-			
-		    for (Node referencedNode : referencedNodes) {
-				Node enclosingLoopNode = referencedNode.isLoopNode() ? 
-						referencedNode : 
-						referencedNode.getEnclosingLoopNode();
-
-				if (enclosingLoopNode != null) {				
-					enclosingLoopNode.setIsAbsolute(isAbsolute);
-	    		    loopScopeSet = true;
-				}
-			}			
-		}		
-		return loopScopeSet;
-	}
-	
 	public void removeLinks() {	
 		for (Node node : getThreads()) {
 		    node.traverse(0, new DefaultNodeTraverser() {
@@ -109,4 +61,98 @@ public class StructureGraph {
 		    });	   
 		}	
 	}	
+	
+	public boolean setLoopIterations(Reference reference, long iterations) {
+		boolean found = false;
+		for (Node referencedNode : getReferencedNodes(reference)) {						
+			Node enclosingLoopNode = getEncolsingLoopNode(referencedNode);
+			if (enclosingLoopNode != null) {				
+				enclosingLoopNode.setNumIterationsDone(false);
+				referencedNode.setNumIterations(iterations);
+				found = true;
+			}
+		}		
+		return found;
+	}
+
+	public boolean unsetLoopIterations(Reference reference) {
+		// TODO
+		return false;
+	}
+
+	public boolean setLoopScope(Reference reference, boolean isAbsolute) {
+		boolean found = false;
+	    for (Node referencedNode : getReferencedNodes(reference)) {
+			Node enclosingLoopNode = getEncolsingLoopNode(referencedNode);
+			if (enclosingLoopNode != null) {				
+				enclosingLoopNode.setIsAbsolute(isAbsolute);
+				found = true;
+			}
+		}		
+		return found;
+	}
+	
+	public boolean setInstructionTimeTaken(Reference reference, double timeTaken) {
+		boolean found = false;
+	    for (Node referencedNode : getReferencedNodes(reference)) {
+	    	referencedNode.setInstructionTimeTaken(timeTaken);
+	    	found = true;
+		}
+		return found;
+	}
+	
+	public boolean unsetInstructionTimeTaken(Reference reference) {
+		boolean found = false;
+	    for (Node referencedNode : getReferencedNodes(reference)) {
+	    	referencedNode.unsetInstructionTimeTaken();
+	    	found = true;
+		}
+		return found;
+	}
+	
+	public boolean setInstructionNumCycles(Reference reference, long numCycles) {
+		boolean found = false;
+	    for (Node referencedNode : getReferencedNodes(reference)) {
+	    	referencedNode.setInstructionNumCycles(numCycles);
+	    	found = true;
+		}
+		return found;
+	}
+	
+	public boolean unsetInstructionNumCycles(Reference reference) {
+		boolean found = false;
+        for (Node referencedNode : getReferencedNodes(reference)) {
+	    	referencedNode.unsetInstructionNumCycles();
+	    	found = true;
+		}
+		return found;
+	}
+	
+	public double getInstructionTimeTaken(Reference reference) {
+		// TODO
+		return 0;
+	}
+	
+	public long getInstructionNumCycles(Reference reference) {
+		// TODO
+		return 0;
+	}
+	
+	public boolean canInstructionPause(Reference reference) {
+		// TODO
+		return false;
+	}
+	
+	private Collection<Node> getReferencedNodes(Reference reference) {
+		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
+		Collection<Node> referencedNodes = new ArrayList<Node>();
+		for (Node threadNode : getThreads()) {
+			referencedNodes.addAll(referenceMatcher.getNodes(threadNode, reference));
+		}
+		return referencedNodes;		
+	}
+	
+	private Node getEncolsingLoopNode(Node node) {
+		return node.isLoopNode() ? node : node.getEnclosingLoopNode();		
+	}
 }

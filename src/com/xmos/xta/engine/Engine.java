@@ -3,7 +3,6 @@ package com.xmos.xta.engine;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -41,11 +40,8 @@ import com.xmos.xta.engine.sections.CodePointInfo;
 import com.xmos.xta.engine.sections.CodePointTableInfo;
 import com.xmos.xta.engine.sections.Sections;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
-import com.xmos.xta.engine.unknowns.Unknown;
-
 
 public class Engine implements Notifier {
-
 	public static int ROUTE_ID_LAST = -1;
 	
 	private XeLoader m_xeLoader;
@@ -478,7 +474,7 @@ public class Engine implements Notifier {
 				refString, ReferenceClass.SRCLABEL_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
-		}		
+		}
 		if (getStructureGraph().unsetLoopIterations(reference)) {
 			sortSubRoutes();
 			return true;
@@ -499,83 +495,91 @@ public class Engine implements Notifier {
 		return false;
 	}
 	
-	public boolean setInstructionTimeTaken(Reference ref, double timeTaken) {
-		if (!resolveRefernece(ref)) {
-			notify(Notifier.NOTIFY_ERROR, String.format(
-					"Unresolved reference: %s", ref.getRef()));
+	public boolean setInstructionTimeTaken(String refString, double timeTaken) {
+		Reference reference = ReferenceFactory.createReference(
+				refString, ReferenceClass.ENDPOINT_REF);
+		if (!resolveRefernece(reference)) {
 			return false;
 		}
-
-// TODO		
-//		if (m_nodeCoreInstructionCache.setInstructionTimeTaken(
-//				ref.getPc(), timeTaken, m_nodeId, m_coreId)) {
-//
-//			refreshRouteStats();
-//			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-//			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-//			return true;
-//		}
+		if (getStructureGraph().setInstructionTimeTaken(reference, timeTaken)) {
+			sortSubRoutes();
+			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}
 		return false;
 	}
 
-	public double getInstructionTimeTaken(int pc) {
-// TODO		
-//		return m_nodeCoreInstructionCache.getInstructionTimeTaken(pc, m_nodeId, m_coreId);
-		return 0;
-	}
-
-	public boolean setInstructionNumCycles(Reference ref, long numCycles) {
-		if (!resolveRefernece(ref)) {
-			notify(Notifier.NOTIFY_ERROR, String.format(
-					"Unresolved reference: %s", ref.getRef()));
+	public boolean unsetInstructionTimeTaken(String refString) {
+		Reference reference = ReferenceFactory.createReference(
+				refString, ReferenceClass.ENDPOINT_REF);
+		if (!resolveRefernece(reference)) {
 			return false;
 		}
-
-// TODO		
-//		if (m_nodeCoreInstructionCache.setInstructionNumCycles(
-//				ref.getPc(), numCycles, m_nodeId, m_coreId)) {
-//			
-//			refreshRouteStats();
-//			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-//			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-//          return true;			
-//		}		
+		if (getStructureGraph().unsetInstructionTimeTaken(reference)) {
+			sortSubRoutes();
+			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}
+		return false;
+	}
+	
+	public double getInstructionTimeTaken(String refString) {
+		Reference reference = ReferenceFactory.createReference(
+				refString, ReferenceClass.ENDPOINT_REF);
+		if (!resolveRefernece(reference)) {
+			return 0;
+		}
+		return getStructureGraph().getInstructionTimeTaken(reference);
+	}
+	
+	public boolean setInstructionNumCycles(String refString, long numCycles) {
+		Reference reference = ReferenceFactory.createReference(
+				refString, ReferenceClass.ENDPOINT_REF);
+		if (!resolveRefernece(reference)) {
+			return false;
+		}
+		if (getStructureGraph().setInstructionNumCycles(reference, numCycles)) {
+			sortSubRoutes();
+			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}
 		return false;
 	}
 
-	public long getInstructionNumCycles(int pc) {
-// TODO
-//		return m_nodeCoreInstructionCache.getInstructionNumCycles(pc, m_nodeId, m_coreId);
-		return 0;
-	}
-
-	public void unsetInstructionTime(int pc) {
-// TODO		
-//		if (m_nodeCoreInstructionCache.unsetInstructionTime(pc, m_nodeId, m_coreId)) {
-//			refreshRouteStats();
-//			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-//  			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-//		} else {
-//			notify(Notifier.NOTIFY_ERROR, String.format("Unable to unset time for: 0x%0x", pc));
-//		}
-	}
-
-	public void unsetInstructionTime(Reference ref, HashSet<Unknown> unknowns) {
-// TODO
-//		if (m_nodeCoreInstructionCache.unsetInstructionTime(ref, m_nodeId, m_coreId, unknowns)) {
-//			refreshRouteStats();
-//			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-//   			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-//		} else {
-//			notify(Notifier.NOTIFY_ERROR, String.format("Unable to unset time for: %s", ref.getRef()));
-//		}
-	}
-
-	public boolean canInstructionPause(int pc) {
-// TODO
-//		return m_nodeCoreInstructionCache.getInstructionDecodeCache(m_nodeId,
-//				m_coreId).getInstruction(pc).canPause();
+	public boolean unsetInstructionNumCycles(String refString) {
+		Reference reference = ReferenceFactory.createReference(
+				refString, ReferenceClass.ENDPOINT_REF);
+		if (!resolveRefernece(reference)) {
+			return false;
+		}
+		if (getStructureGraph().unsetInstructionNumCycles(reference)) {
+			sortSubRoutes();
+			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}
 		return false;
+	}
+	
+	public long getInstructionNumCycles(String refString) {
+		Reference reference = ReferenceFactory.createReference(
+				refString, ReferenceClass.ENDPOINT_REF);
+		if (!resolveRefernece(reference)) {
+			return 0;
+		}
+		return getStructureGraph().getInstructionNumCycles(reference);		
+	}
+		
+	public boolean canInstructionPause(String refString) {
+		Reference reference = ReferenceFactory.createReference(
+				refString, ReferenceClass.ENDPOINT_REF);
+		if (!resolveRefernece(reference)) {
+			return false;
+		}
+		return getStructureGraph().canInstructionPause(reference);			
 	}
 	
 	public boolean setRouteMaxTime(int routeId, double time) {

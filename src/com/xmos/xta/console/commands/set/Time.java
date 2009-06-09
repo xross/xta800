@@ -4,7 +4,6 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
@@ -180,21 +179,28 @@ public class Time extends Command {
     	case SET:
     		switch (m_mode) {
 	    	case NS:
-	            engine.setInstructionTimeTaken(ref, m_ns);
-	    		return;
+	            if (!engine.setInstructionTimeTaken(m_refString, m_ns))
+	        		console.display(String.format(
+	        			"Error: Failed to set instruction time on reference id: %s\n", m_refString));    			            	
+	    		break;
+	    		
 	    	case MHZ:
-	            engine.setInstructionTimeTaken(ref, m_mhz);
-	    		return;
+	            if (!engine.setInstructionTimeTaken(m_refString, m_mhz))
+        		    console.display(String.format(
+        			    "Error: Failed to set instruction time on reference id: %s\n", m_refString));    			            	
+	            break;
+	    		
 	    	case CYCLES:
-	            engine.setInstructionNumCycles(ref, m_cycles);
-	    		return;
+	            if (!engine.setInstructionNumCycles(m_refString, m_cycles))
+        		    console.display(String.format(
+        				"Error: Failed to set instruction time on reference id: %s\n", m_refString));    			            	
+	            break;
 	    	}
+    		
     	case UNSET:
-    		for (Route route : engine.getRoutes()) {
-    			engine.unsetInstructionTime(ref, route.getUnknowns().getUnknownInstructionTimes());
-    		}
-    		return;
+   			if (!engine.unsetInstructionTimeTaken(m_refString))
+    		    console.display(String.format(
+       				"Error: Failed to unset instruction time on reference id: %s\n", m_refString));    			            	   				
     	}
-    	assert(false);
     }    
 }

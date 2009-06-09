@@ -12,10 +12,14 @@ import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class InstructionNode extends Node {
 	private XtaInstruction m_inst;
+	private long m_numCycles;
+	private boolean m_isUnknown;
 	
 	public InstructionNode(XtaInstruction inst){
 		super();
 		m_inst = inst;
+		m_numCycles = inst.getNumCycles();
+		m_isUnknown = inst.canPause();
 	}
 	
 	public InstructionNode(InstructionNode node){
@@ -112,29 +116,68 @@ public class InstructionNode extends Node {
 	    return getInstructions();
     }
 
+	public void setInstructionNumCycles(long numCycles) {
+		if (m_inst.canPause()) {
+			if (numCycles > m_inst.getNumCycles()) {
+				m_numCycles = m_inst.getNumCycles();				
+			} else {								
+			    m_numCycles = numCycles;
+			}
+			m_isUnknown = false;			
+		}					
+	}
+
+	public void unsetInstructionNumCycles() {
+	    m_numCycles = m_inst.getNumCycles();
+	    m_isUnknown = true;
+	}
+	
+	public long getInstructionNumCycles() {
+		return m_numCycles;
+	}
+	
+	public void setInstructionTimeTaken(double timeTaken) {
+    	int threadFactor = (m_inst.getConfig().m_numThreads > 4) ? m_inst.getConfig().m_numThreads : 4;		
+       	setInstructionNumCycles((int)((timeTaken * m_inst.getConfig().m_frequency) / (threadFactor * 1000)));
+	}
+
+	public void unsetInstructionTimeTaken() {
+	    m_numCycles = m_inst.getNumCycles();
+	    m_isUnknown = true;
+	}
+	
+	public double getInstructionTimeTaken() {
+    	int threadFactor = (m_inst.getConfig().m_numThreads > 4) ? m_inst.getConfig().m_numThreads : 4;
+        return ((double)(threadFactor * 1000) / (double)m_inst.getConfig().m_frequency) * m_numCycles;
+	}
+	
+	public boolean isInstructionUnknown() {
+		return m_isUnknown;
+	}
+    
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
 	// --------------------------------------------------------------------- //
 	public double getTimeTakenRelative(Case c) {
 		if (!m_isAbsolute) {
-		    return m_inst.getTimeTaken();
+		    return getInstructionTimeTaken();
 		}
 		return 0;
 	}
 
 	public double getTimeTakenAbsolute(Case c) {
 		if (m_isAbsolute) {
-		    return m_inst.getTimeTaken();
+		    return getInstructionTimeTaken();
 		}
 		return 0;
 	}
 	
 	public long getNumCyclesRelative(Case c) {
-		return m_inst.getNumCycles();
+		return getInstructionNumCycles();
 	}
 
 	public long getNumCyclesAbsolute(Case c) {
-		return m_inst.getNumCycles();
+		return getInstructionNumCycles();
 	}
 	
 	public long getNumInstructionsRelative(Case c) {
@@ -146,16 +189,12 @@ public class InstructionNode extends Node {
 	}
 	
 	public long getNumFNopsRelative(Case c) {
-		if (m_inst.isFnop()) {
-			return 1;
-		}
+		assert(false);
 		return 0;
 	}
 
 	public long getNumFNopsAbsolute(Case c) {
-		if (m_inst.isFnop()) {
-			return 1;
-		}
+		assert(false);
 		return 0;
 	}	
 }

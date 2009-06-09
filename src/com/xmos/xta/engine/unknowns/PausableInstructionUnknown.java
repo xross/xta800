@@ -1,38 +1,44 @@
 package com.xmos.xta.engine.unknowns;
 
+import java.util.LinkedList;
+import java.util.Set;
+
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class PausableInstructionUnknown extends Unknown {		
 
-	private XtaInstruction m_instruction;
+	private Node m_instruction;
 	
-	public PausableInstructionUnknown(XtaInstruction instruction) {
+	public PausableInstructionUnknown(Node instruction) {
 		m_instruction = instruction;
 	}
 	
 	public int getPc() {
-		return m_instruction.getPc();
+		Set<Integer> pcs = m_instruction.getPCs();
+		assert(pcs.size() == 1);
+		return pcs.iterator().next();
 	}
 	
-	public int getBasicBlockId() {
-		return m_instruction.getBasicBlockId();
+	public int getNodeId() {
+		return m_instruction.getId();
 	}
 
 	public String getDescription() {
 		if (isUnknown()) {
 			return String.format("Time taken for instruction (0x%x: %s) is unknown",
-					m_instruction.getPc(),
-					m_instruction.getNmenonic());
+					getPc(),
+					getNmenonic());
 		} else {
 			return String.format("Time for instruction (0x%x: %s) set to %sns",
-					m_instruction.getPc(),
-					m_instruction.getNmenonic(),
-					Double.toString(m_instruction.getTimeTaken()));
+					getPc(),
+					getNmenonic(),
+					Double.toString(m_instruction.getInstructionTimeTaken()));
 		}
 	}
 
 	public boolean isUnknown() {
-		return m_instruction.isUnknown();
+		return m_instruction.isInstructionUnknown();
 	}
 
 	public int compareTo(Unknown unknown) {
@@ -44,5 +50,11 @@ public class PausableInstructionUnknown extends Unknown {
 		} else {
 			return -1;
 		}
+	}
+	
+	private String getNmenonic() {
+		LinkedList<XtaInstruction> instructions = m_instruction.getInstructions();
+		assert(instructions.size() == 1);
+		return instructions.iterator().next().getNmenonic();
 	}
 }

@@ -867,9 +867,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		int clickLineIndex = getVerticalRuler().getLineOfLastMouseButtonActivity();
 		
 		m_clickCodeRefString = getLineDescription(clickLineIndex);				
-		if (m_clickCodeRefString != null) {
-			m_clickCodeRef = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.ENDPOINT_REF); 
-			
+		if (m_clickCodeRefString != null) {			
 			if (m_endPointLineIndexes.containsKey(clickLineIndex) ||
 					m_type.equals(XtaDocumentPartitioner.DISASSEMBLY)) {
 				if (isStartPointSet(m_clickCodeRefString)) {
@@ -889,11 +887,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			addAction(menu, ConstrainRequireID);
 			addAction(menu, SelectPathsID);
 			
-			Engine engine = GuiEngine.getEngine();
-			boolean resolved = m_clickCodeRef.resolve(engine, engine.getNodeId(), engine.getCoreId());
-			if (resolved &&
-				(GuiEngine.getRouteInfo() != null) &&
-			     GuiEngine.getEngine().canInstructionPause(m_clickCodeRef.getPc())) {
+			if ((GuiEngine.getRouteInfo() != null) &&
+			     GuiEngine.getEngine().canInstructionPause(m_clickCodeRefString)) {
 				
 				m_setInstructionTimeAction.setEnabled(true);
 			} else {

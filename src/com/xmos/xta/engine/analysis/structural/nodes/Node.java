@@ -55,10 +55,7 @@ public abstract class Node implements Comparable<Node>{
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
 	public abstract List<XtaInstruction> getInstructionStream(Case c);
-	
-
 	public abstract Set<Integer> getPCs();
-	
 	public abstract LinkedList<XtaInstruction> getInstructions();
 	public abstract Collection<Node> getContainedNodes();	
 	public abstract String getFunctionName();
@@ -391,6 +388,36 @@ public abstract class Node implements Comparable<Node>{
 		return set.size();
 	}
 	
+	public void setInstructionNumCycles(long numCycles) {
+		assert(false);		
+	}
+
+	public void unsetInstructionNumCycles() {
+		assert(false);		
+	}
+	
+	public long getInstructionNumCycles() {
+		assert(false);		
+		return 0;
+	}
+	
+	public void setInstructionTimeTaken(double timeTaken) {
+		assert(false);		
+	}
+
+	public void unsetInstructionTimeTaken() {
+		assert(false);		
+	}
+	
+	public double getInstructionTimeTaken() {
+		assert(false);		
+		return 0;
+	}
+	
+	public boolean isInstructionUnknown() {
+		assert(false);		
+		return false;
+	}	
 }
 
 class FunctionCallStatus {

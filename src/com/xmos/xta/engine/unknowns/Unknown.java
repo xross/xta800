@@ -21,7 +21,7 @@ public abstract class Unknown implements Comparable<Unknown> {
 
 	public abstract int getPc();
 
-	public abstract int getBasicBlockId();
+	public abstract int getNodeId();
 
 	public abstract String getDescription();
 

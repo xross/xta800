@@ -8,7 +8,7 @@ public class LoopIterationsUnknown extends Unknown {
 		return 0;
 	}
 
-	public int getBasicBlockId() {
+	public int getNodeId() {
 		return 0;
 	}
 

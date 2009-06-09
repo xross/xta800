@@ -148,7 +148,8 @@ public class SetValuesViewer {
 		m_clearInstructionTimesAction = new Action() { 
 			public void run() {
 				for (Reference ref : m_selectedCodeRefs) {
-					GuiEngine.getEngine().unsetInstructionTime(ref.getPc());
+					//TODO
+					//GuiEngine.getEngine().unsetInstructionTime(ref.getPc());
 				}
 			}
 		}; 
@@ -183,8 +184,10 @@ public class SetValuesViewer {
 				return res0 * direction;
 			case 1:
 				Engine engine = GuiEngine.getEngine();
-				int res2 = engine.getInstructionTimeTaken(pc1) > engine.getInstructionTimeTaken(pc2) ? 1 : -1;
-				return res2 * direction;
+				//TODO
+				//int res2 = engine.getInstructionTimeTaken(pc1) > engine.getInstructionTimeTaken(pc2) ? 1 : -1;
+				//return res2 * direction;
+				return 0;
 			default:
 				int resd = pc1 > pc2 ? 1 : -1;
 				return resd * direction;

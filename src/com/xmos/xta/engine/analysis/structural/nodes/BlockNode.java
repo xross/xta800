@@ -110,7 +110,7 @@ public class BlockNode extends Node {
 		double time = 0;
 		for (Node node : m_insts) {
 			time += node.getTimeTakenRelative(c);
-		}
+		}		
         return time;		
 	}
 

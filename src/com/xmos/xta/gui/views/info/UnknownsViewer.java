@@ -124,7 +124,7 @@ public class UnknownsViewer {
 
 		for (TableItem item : m_unknownsViewer.getTable().getItems()) {
 			Unknown unknown = (Unknown)item.getData();
-			if (selectedBlocks.contains(unknown.getBasicBlockId())) {
+			if (selectedBlocks.contains(unknown.getNodeId())) {
 				item.setBackground(m_display.getSystemColor(SWT.COLOR_YELLOW));
 			} else {
 				item.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
@@ -147,7 +147,7 @@ public class UnknownsViewer {
 				int res3 = p1.getPc() > p2.getPc() ? 1 : -1;
 				return res3 * direction;
 			default:
-				int resd = p1.getBasicBlockId() > p2.getBasicBlockId() ? 1 : -1;
+				int resd = p1.getNodeId() > p2.getNodeId() ? 1 : -1;
 				return resd * direction;
 			}
 		}

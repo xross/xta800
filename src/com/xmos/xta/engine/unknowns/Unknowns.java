@@ -40,7 +40,7 @@ public class Unknowns {
 	public HashSet<Unknown> getSelectedUnknowns(HashSet<Integer> selectedBlocks) {
 		HashSet<Unknown> unknowns = new HashSet<Unknown>();
 		for (Unknown unknown : m_unknowns) {
-			if (unknown.isUnknown() && selectedBlocks.contains(unknown.getBasicBlockId())) {
+			if (unknown.isUnknown() && selectedBlocks.contains(unknown.getNodeId())) {
 				unknowns.add(unknown);
 			}
 		}
