@@ -174,7 +174,7 @@ public class StructuralAnalysisEngine {
 
 				} else {
 					seen.add(node);
-					Node clone = node.clone();
+					Node clone = node.shallowCopy();
 					m_cfgToStruct.put((FunctionNode) clone, (FunctionNode) node);
 					basicBlocks.add(clone);
 					cfgToStructure.put(node, clone);
@@ -282,7 +282,7 @@ public class StructuralAnalysisEngine {
 			if (m_cfgToStruct.get(fn).getBranchTarget() != null) {
 				int pc = m_cfgToStruct.get(fn).getBranchTarget().getStartPc();
 				String fnName = m_cfgToStruct.get(fn).getBranchTarget().getInstructions().get(0).getFunctionName();
-				fn.setFunction(fnName, m_functionStartPcs.get(pc).getFunction().deepClone(m_functionStartPcs));
+				fn.setFunction(fnName, m_functionStartPcs.get(pc).getFunction().deepCopy(m_functionStartPcs));
 			}
 		}
 	}

@@ -14,17 +14,22 @@ import com.xmos.xta.engine.references.types.ReferenceType;
 public class TerminalNode extends Node {
 	private Collection<Node> m_terminals;
 	
-	public TerminalNode(Collection<Node> terminals){
+	public TerminalNode(Collection<Node> terminals) {
 		m_terminals = new HashSet<Node>(terminals);
 	}
-	public TerminalNode(){
+	
+	public TerminalNode() {
 		m_terminals = new HashSet<Node>();
 	}
 
-	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
+	public Node shallowCopy() {
+		return null;
+	}
+	
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		TerminalNode tn = new TerminalNode();
 		for (Node terminal : m_terminals) {
-			Node clone = terminal.deepClone(startPcs);
+			Node clone = terminal.deepCopy(startPcs);
 			tn.m_terminals.add(clone);
 		}
 		return tn;
@@ -102,10 +107,6 @@ public class TerminalNode extends Node {
 		return insts;
 	}
 	
-	public Node clone() {
-		return null;
-	}
-
 	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new HashSet<Node> ();
 		for(Node loop: m_terminals){

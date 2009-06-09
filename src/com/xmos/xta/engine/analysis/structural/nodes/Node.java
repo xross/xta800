@@ -38,11 +38,8 @@ public abstract class Node implements Comparable<Node>{
 		BEST,
 	}
 
-	public abstract Node clone();
-	public abstract Node deepClone(Map<Integer, FunctionNode> startPcs);
-	public abstract List<Node> getChildren();
-	public abstract Collection<Node> whatsNext(Node node);
-	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
+	public abstract Node shallowCopy();
+	public abstract Node deepCopy(Map<Integer, FunctionNode> startPcs);
 	
 	public abstract double getTimeTakenRelative(Case c);
 	public abstract double getTimeTakenAbsolute(Case c);
@@ -53,6 +50,9 @@ public abstract class Node implements Comparable<Node>{
 	public abstract long getNumFNopsRelative(Case c);	
 	public abstract long getNumFNopsAbsolute(Case c);	
 	
+	public abstract List<Node> getChildren();
+	public abstract Collection<Node> whatsNext(Node node);
+	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
 	public abstract Set<Integer> getPCs();
 	public abstract List<XtaInstruction> getInstructions();
 	public abstract Collection<Node> getContainedNodes();	

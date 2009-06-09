@@ -31,14 +31,14 @@ public class PathNode extends Node {
 		m_nodes = new LinkedList<Node>();
 	}
 	
-	public Node clone() {
+	public Node shallowCopy() {
 		return new PathNode(this);
 	}
 	
-	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		PathNode pn = new PathNode();
 		for (Node path : m_nodes) {
-			Node clone = path.deepClone(startPcs);
+			Node clone = path.deepCopy(startPcs);
 			pn.m_nodes.add(clone);
 		}
 		return pn;

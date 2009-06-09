@@ -24,12 +24,12 @@ public class InstructionNode extends Node {
 		m_inst = node.m_inst;
 	}
 
-	public Node clone() {
+	public Node shallowCopy() {
 		return new InstructionNode(this);
 	}
 	
-	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
-		return clone();
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
+		return shallowCopy();
 	}
 
 	public double getTimeTakenRelative(Case c) {

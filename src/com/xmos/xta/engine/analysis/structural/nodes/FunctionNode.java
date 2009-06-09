@@ -48,14 +48,14 @@ public class FunctionNode extends Node {
 		m_branchTarget = fn.m_branchTarget;
 	}
 	
-	public Node clone() {
+	public Node shallowCopy() {
 		return new FunctionNode(this);
 	}
 	
-	public Node deepClone(Map<Integer, FunctionNode> startPcs){
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs){
 		FunctionNode fn = new FunctionNode();
 		if(m_knownFunction){
-			fn.m_function = m_function.deepClone(startPcs);
+			fn.m_function = m_function.deepCopy(startPcs);
 		}
 		fn.m_functionName = m_functionName;
 		fn.m_knownFunction = m_knownFunction;
@@ -64,7 +64,7 @@ public class FunctionNode extends Node {
 		if(fn.getBranchTarget() != null){
 			int pc = fn.getBranchTarget().getStartPc();
 			String fnName = fn.getBranchTarget().getInstructions().get(0).getFunctionName();
-			fn.setFunction(fnName, startPcs.get(pc).getFunction().deepClone(startPcs));
+			fn.setFunction(fnName, startPcs.get(pc).getFunction().deepCopy(startPcs));
 		} 
 		
 		return fn;

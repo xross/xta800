@@ -29,13 +29,13 @@ public class SelfLoopNode extends Node{
 		m_loop = base;
 	}
 
-	public SelfLoopNode clone() {
+	public SelfLoopNode shallowCopy() {
 		return new SelfLoopNode(this);
 	}
 	
-	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		SelfLoopNode ln = new SelfLoopNode();
-		ln.m_loop = m_loop.deepClone(startPcs);
+		ln.m_loop = m_loop.deepCopy(startPcs);
 		return ln;
 	}
 

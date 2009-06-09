@@ -34,14 +34,14 @@ public class SectionNode extends Node {
 		m_isOptional = ms.m_isOptional;
 	}
 
-	public Node clone() {
+	public Node shallowCopy() {
 		return new SectionNode(this);
 	}
 	
-	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		SectionNode sn = new SectionNode();
 		for (Node section : m_options) {
-			Node clone = section.deepClone(startPcs);
+			Node clone = section.deepCopy(startPcs);
 			sn.m_options.add(clone);
 		}
 		sn.m_isOptional = m_isOptional; 

@@ -44,17 +44,17 @@ public class LoopNode extends Node {
 		}
 	}
 
-	public LoopNode clone() {
+	public LoopNode shallowCopy() {
 		return new LoopNode(this);
 	}
 	
-	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		LoopNode ln = new LoopNode();
 		for (Node loop : m_loops) {
-			Node clone = loop.deepClone(startPcs);
+			Node clone = loop.deepCopy(startPcs);
 			ln.m_loops.add(clone);
 		}
-		ln.m_loopHeader = m_loopHeader.deepClone(startPcs);
+		ln.m_loopHeader = m_loopHeader.deepCopy(startPcs);
 		ln.m_loopHeader.setIsLoopHeader(true);
 		return ln;
 	}

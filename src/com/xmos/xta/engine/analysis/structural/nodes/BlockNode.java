@@ -28,14 +28,14 @@ public class BlockNode extends Node {
 		//m_branchTargets.addAll(m_insts.get(m_insts.size()-1).m_branchTargets);
 	}
 	
-	public BlockNode clone() {
+	public BlockNode shallowCopy() {
 		return new BlockNode(this);
 	}
 	
-	public Node deepClone(Map<Integer, FunctionNode> startPcs) {
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		BlockNode bn = new BlockNode();
 		for (Node node : m_insts) {
-			bn.m_insts.add(node.deepClone(startPcs));
+			bn.m_insts.add(node.deepCopy(startPcs));
 		}
 		return bn;
 	}
