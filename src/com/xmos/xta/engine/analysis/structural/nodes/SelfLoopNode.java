@@ -38,38 +38,6 @@ public class SelfLoopNode extends Node{
 		ln.m_loop = m_loop.deepCopy(startPcs);
 		return ln;
 	}
-
-	public double getTimeTakenRelative(Case c) {
-		return m_loop.getTimeTakenRelative(c);
-	}
-
-	public double getTimeTakenAbsolute(Case c) {
-		return m_loop.getTimeTakenAbsolute(c);
-	}
-	
-	public long getNumCyclesRelative(Case c) {
-		return m_loop.getNumCyclesRelative(c);
-	}
-
-	public long getNumCyclesAbsolute(Case c) {
-		return m_loop.getNumCyclesAbsolute(c);
-	}
-	
-	public long getNumInstructionsRelative(Case c) {
-		return m_loop.getNumInstructionsRelative(c);
-	}
-
-	public long getNumInstructionsAbsolute(Case c) {
-		return m_loop.getNumInstructionsAbsolute(c);
-	}
-	
-	public long getNumFNopsRelative(Case c) {
-		return m_loop.getNumFNopsRelative(c);
-	}
-
-	public long getNumFNopsAbsolute(Case c) {
-		return m_loop.getNumFNopsAbsolute(c);
-	}
 	
 	public List<XtaInstruction> getInstructions() {
 		List<XtaInstruction> insts = new ArrayList<XtaInstruction>(m_loop.getInstructions());
@@ -141,5 +109,40 @@ public class SelfLoopNode extends Node{
 		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
 		}
 		return false;
-	}		
+	}
+	
+	// --------------------------------------------------------------------- //
+	// Statistics Gathering Methods
+	// --------------------------------------------------------------------- //
+	public double getTimeTakenRelative(Case c) {
+		return m_loop.getTimeTakenRelative(c);
+	}
+
+	public double getTimeTakenAbsolute(Case c) {
+		return m_loop.getTimeTakenAbsolute(c);
+	}
+	
+	public long getNumCyclesRelative(Case c) {
+		return m_loop.getNumCyclesRelative(c);
+	}
+
+	public long getNumCyclesAbsolute(Case c) {
+		return m_loop.getNumCyclesAbsolute(c);
+	}
+	
+	public long getNumInstructionsRelative(Case c) {
+		return m_loop.getNumInstructionsRelative(c);
+	}
+
+	public long getNumInstructionsAbsolute(Case c) {
+		return m_loop.getNumInstructionsAbsolute(c);
+	}
+	
+	public long getNumFNopsRelative(Case c) {
+		return m_loop.getNumFNopsRelative(c);
+	}
+
+	public long getNumFNopsAbsolute(Case c) {
+		return m_loop.getNumFNopsAbsolute(c);
+	}	
 }

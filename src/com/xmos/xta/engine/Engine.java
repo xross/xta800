@@ -369,7 +369,7 @@ public class Engine implements Notifier {
 			return false;
 		}
 
- 		Route route = new Route(this,m_structuralGraph.get(m_nodeId, m_coreId), routeDescription);
+ 		Route route = new Route(this, m_structuralGraph.get(m_nodeId, m_coreId), routeDescription);
 			
 		//FIXME
 		
@@ -466,7 +466,11 @@ public class Engine implements Notifier {
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		return getStructureGraph().setLoopIterations(reference, iterations);
+		if (getStructureGraph().setLoopIterations(reference, iterations)) {
+			sortSubRoutes();
+			return true;
+		}
+		return false;
 	}
 
 	public boolean unsetLoopIterations(String refString) {
@@ -475,7 +479,11 @@ public class Engine implements Notifier {
 		if (!resolveRefernece(reference)) {
 			return false;
 		}		
-		return getStructureGraph().unsetLoopIterations(reference);
+		if (getStructureGraph().unsetLoopIterations(reference)) {
+			sortSubRoutes();
+			return true;
+		}
+		return false;
 	}
 		
 	public boolean setLoopScope(String refString, boolean absolute) {
@@ -484,7 +492,11 @@ public class Engine implements Notifier {
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		return getStructureGraph().setLoopScope(reference, absolute);
+		if (getStructureGraph().setLoopScope(reference, absolute)) {
+			sortSubRoutes();
+			return true;
+		}
+		return false;
 	}
 	
 	public boolean setInstructionTimeTaken(Reference ref, double timeTaken) {
@@ -839,6 +851,12 @@ public class Engine implements Notifier {
 			return true;
 		}
 		return false;
+	}
+	
+	private void sortSubRoutes() {
+		for (Route route : m_routes) {
+			route.sortSubRoutes();
+		}
 	}
 	
 	// ===================================================================== //

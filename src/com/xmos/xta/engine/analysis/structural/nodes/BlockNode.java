@@ -40,6 +40,65 @@ public class BlockNode extends Node {
 		return bn;
 	}
 	
+	public List<XtaInstruction> getInstructions() {
+		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
+		for(Node inst : m_insts){
+			insts.addAll(inst.getInstructions());
+		}
+		return insts;
+	}
+		
+	public Set<Integer> getPCs() {
+		Set<Integer> pcs = new HashSet<Integer>();
+		for (XtaInstruction inst : getInstructions()) {
+			pcs.add(inst.getPc());
+		}
+		return pcs;
+	}
+
+	public Collection<Node> getContainedNodes() {
+		return new HashSet<Node> (m_insts);
+	}
+
+	public String getFunctionName() {
+		return "";
+	}
+	
+	public int getStartPc() {
+		return getInstructions().get(0).getPc();
+	}	
+	
+	public void traverse(int depth, NodeTraverser nodeTraverser) {
+		if (!nodeTraverser.foundBlockNode(this, depth)) 
+			return;
+			
+		for (Node instruction : m_insts) {
+			instruction.traverse(depth + 1, nodeTraverser);
+		}		
+	}
+	
+	public String toString(){
+		return "Block" + m_id;
+	}
+
+	public List<Node> getChildren() {
+		return m_insts;
+	}
+
+	public Collection<Node> whatsNext(Node node) {
+		int index = m_insts.indexOf(node);
+		if(index < m_insts.size()-1){
+			Collection<Node> next = new HashSet<Node>();
+			next.add(m_insts.get(index+1));
+			return next;
+		} else {
+			return getParent().whatsNext(this);
+		}
+	}
+	
+	// --------------------------------------------------------------------- //
+	// Statistics Gathering Methods
+	// --------------------------------------------------------------------- //
 	public double getTimeTakenRelative(Case c) {
 		double time = 0;
 		for (Node node : m_insts) {
@@ -102,61 +161,5 @@ public class BlockNode extends Node {
 			count += node.getNumFNopsAbsolute(c);
 		}
 		return count;
-	}
-	
-	public List<XtaInstruction> getInstructions() {
-		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
-		for(Node inst : m_insts){
-			insts.addAll(inst.getInstructions());
-		}
-		return insts;
-	}
-		
-	public Set<Integer> getPCs() {
-		Set<Integer> pcs = new HashSet<Integer>();
-		for (XtaInstruction inst : getInstructions()) {
-			pcs.add(inst.getPc());
-		}
-		return pcs;
-	}
-
-	public Collection<Node> getContainedNodes() {
-		return new HashSet<Node> (m_insts);
-	}
-
-	public String getFunctionName() {
-		return "";
-	}
-	
-	public int getStartPc() {
-		return getInstructions().get(0).getPc();
 	}	
-	
-	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundBlockNode(this, depth)) 
-			return;
-			
-		for (Node instruction : m_insts) {
-			instruction.traverse(depth + 1, nodeTraverser);
-		}		
-	}
-	
-	public String toString(){
-		return "Block" + m_id;
-	}
-
-	public List<Node> getChildren() {
-		return m_insts;
-	}
-
-	public Collection<Node> whatsNext(Node node) {
-		int index = m_insts.indexOf(node);
-		if(index < m_insts.size()-1){
-			Collection<Node> next = new HashSet<Node>();
-			next.add(m_insts.get(index+1));
-			return next;
-		} else {
-			return getParent().whatsNext(this);
-		}
-	}
 }

@@ -34,7 +34,7 @@ public class Summary extends Command {
     }
 
     public Command clone(String[] args, int index) {
-		int verbosity = 3;
+		int verbosity = 2;
 		boolean verbositySpecified = false;
     	if (!areArgsDone(args, index + 1)) {
         	try {
@@ -75,11 +75,7 @@ public class Summary extends Command {
 		case 2:
 			displayRouteSummary(console, route, true, true);			
 			break;
-			
-		case 3:
-         	console.display(route.getDescription());
-			break;
-			
+						
 		default:
 			assert(false);
 		    break;
@@ -88,31 +84,30 @@ public class Summary extends Command {
     
 	private void displayRouteSummary(Console console, Route route, 
 			boolean displayFailures, boolean displayPasses) {
+
 		
 		RouteTiming routeTiming = route.getRouteTiming();				
 		if (routeTiming.isTimingSpecified()) {			
 			if (routeTiming.passedTiming()) {
 				if (displayPasses) {
-					console.display(String.format("%s: Route(%d) %s, %s\n", 
-							routeTiming.getDescription(false), 
+					console.display(String.format("Route(%d) %s\n%s\n", 
 							route.getRouteId(), 
 							route.getDescription(),
-							routeTiming.getTimingsDescription()));
+							routeTiming.getDescription(true))); 
 				}
 			} else {
 				if (displayFailures) {
-					console.display(String.format("%s: Route(%d) %s, %s\n", 
-							routeTiming.getDescription(false), 
+					console.display(String.format("Route(%d) %s\n%s\n", 
 							route.getRouteId(), 
 							route.getDescription(),
-		         			routeTiming.getTimingsDescription()));
+							routeTiming.getDescription(true))); 
 				}
 			}			
 		} else {
-			console.display(String.format("%s: Route(%d) %s\n", 
-					routeTiming.getDescription(false), 
+			console.display(String.format("Route(%d) %s\n%s\n", 
 					route.getRouteId(), 
-					route.getDescription()));
+					route.getDescription(),
+			        routeTiming.getDescription(false)));
 		}
 	}
 		

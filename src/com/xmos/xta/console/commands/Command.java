@@ -128,35 +128,6 @@ public abstract class Command {
     	return String.format("%d", routeId);
     }
     
-    public static int getId(String idString) throws NumberFormatException {    	
-    	if (getIdType(idString) == IdType.BLOCK) {
-        	return Integer.parseInt(idString.substring(1));
-    	}    
-    	
-    	if (idString.equals("-")) {
-    		return Route.WORST_CASE_PATH_ID;
-    	}    	
-    	return Integer.parseInt(idString);
-    }
-
-    public static String getId(int id, Command.IdType idType) {
-    	if (idType == IdType.BLOCK) {
-    		return String.format("b%d", id);
-    	}
-    	
-    	if (id == Route.WORST_CASE_PATH_ID) {
-    		return "-";
-    	}
-    	return String.format("%d", id);
-    }
-    
-    public static IdType getIdType(String idString) {
-		if (idString.charAt(0) == 'b') {
-			return IdType.BLOCK;
-		}
-		return IdType.PATH;
-    }
-
     protected boolean areArgsDone(String[] args, int i) {
 		if ((i >= args.length) || 
 			(args[i].startsWith("-") && (args[i].length() > 1)) || 

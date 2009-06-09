@@ -1,6 +1,8 @@
 package com.xmos.xta.engine.analysis.routes;
 
 import com.xmos.xta.engine.Config;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 
 public class RouteTiming {
 	private Route m_route;
@@ -54,16 +56,14 @@ public class RouteTiming {
 		m_maxTimeSet = false;
 	}
 
-	public int getWorstCycles() {
-		// TODO
-		int worstCycles = 0;
-		return worstCycles;
+	public long getWorstCycles() {
+		Node worstCaseSubRoute = m_route.getSubRoutes().iterator().next();
+		return worstCaseSubRoute.getNumCycles(Case.WORST);
 	}
 
 	public double getWorstTime() {
-		// TODO
-		double worstTime = 0;
-		return worstTime;
+		Node worstCaseSubRoute = m_route.getSubRoutes().iterator().next();		
+		return worstCaseSubRoute.getTimeTaken(Case.WORST);
 	}
 
 	public boolean passedTiming() {
@@ -73,7 +73,7 @@ public class RouteTiming {
 		return true;
 	}
 
-	public int getViolationCycles() {
+	public long getViolationCycles() {
 		return getWorstCycles() - getMaxCycles();
 	}
 
@@ -81,7 +81,7 @@ public class RouteTiming {
 		return getWorstTime() - getMaxTime();
 	}
 
-	public int getSlackCycles() {
+	public long getSlackCycles() {
 		return getMaxCycles() - getWorstCycles();
 	}
 
@@ -91,7 +91,7 @@ public class RouteTiming {
 
 	public int getMinFrequency() {
 		int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
-		return (getWorstCycles() * 1000 * threadFactor) / (int) (getMaxTime() + 1.0);
+		return (int)(getWorstCycles() * 1000 * threadFactor) / (int)(getMaxTime() + 1.0);
 	}
 
 	public String getDescription(boolean full) {

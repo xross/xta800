@@ -47,38 +47,6 @@ public class SectionNode extends Node {
 		sn.m_isOptional = m_isOptional; 
 		return sn;
 	}
-
-	public double getTimeTakenRelative(Case c) {
-		return getWorstCaseOption().getTimeTakenRelative(c);
-	}
-
-	public double getTimeTakenAbsolute(Case c) {
-		return getWorstCaseOption().getTimeTakenAbsolute(c);
-	}
-	
-	public long getNumCyclesRelative(Case c) {
-		return getWorstCaseOption().getNumCyclesRelative(c);
-	}
-
-	public long getNumCyclesAbsolute(Case c) {
-		return getWorstCaseOption().getNumCyclesAbsolute(c);
-	}
-	
-	public long getNumInstructionsRelative(Case c) {		
-		return getWorstCaseOption().getNumInstructionsRelative(c);
-	}
-
-	public long getNumInstructionsAbsolute(Case c) {		
-		return getWorstCaseOption().getNumInstructionsAbsolute(c);
-	}
-	
-	public long getNumFNopsRelative(Case c) {
-		return getWorstCaseOption().getNumFNopsRelative(c);
-	}
-
-	public long getNumFNopsAbsolute(Case c) {
-		return getWorstCaseOption().getNumFNopsAbsolute(c);
-	}
 	
 	public List<XtaInstruction> getInstructions() {
 		List<XtaInstruction> list = new LinkedList<XtaInstruction>();
@@ -204,4 +172,39 @@ public class SectionNode extends Node {
 	public boolean isOptional() {
 		return m_isOptional;
 	}
+	
+	// --------------------------------------------------------------------- //
+	// Statistics Gathering Methods
+	// --------------------------------------------------------------------- //
+	public double getTimeTakenRelative(Case c) {
+		return getWorstCaseOption().getTimeTakenRelative(c);
+	}
+
+	public double getTimeTakenAbsolute(Case c) {
+		return getWorstCaseOption().getTimeTakenAbsolute(c);
+	}
+	
+	public long getNumCyclesRelative(Case c) {
+		return getWorstCaseOption().getNumCyclesRelative(c);
+	}
+
+	public long getNumCyclesAbsolute(Case c) {
+		return getWorstCaseOption().getNumCyclesAbsolute(c);
+	}
+	
+	public long getNumInstructionsRelative(Case c) {		
+		return getWorstCaseOption().getNumInstructionsRelative(c);
+	}
+
+	public long getNumInstructionsAbsolute(Case c) {		
+		return getWorstCaseOption().getNumInstructionsAbsolute(c);
+	}
+	
+	public long getNumFNopsRelative(Case c) {
+		return getWorstCaseOption().getNumFNopsRelative(c);
+	}
+
+	public long getNumFNopsAbsolute(Case c) {
+		return getWorstCaseOption().getNumFNopsAbsolute(c);
+	}	
 }
