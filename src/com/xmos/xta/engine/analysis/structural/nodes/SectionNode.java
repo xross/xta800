@@ -47,41 +47,6 @@ public class SectionNode extends Node {
 		sn.m_isOptional = m_isOptional; 
 		return sn;
 	}
-<<<<<<< HEAD:src/com/xmos/xta/engine/analysis/structural/nodes/SectionNode.java
-=======
-
-	public double getTimeTakenRelative(Case c) {
-		return getWorstCaseOption().getTimeTakenRelative(c);
-	}
-
-	public double getTimeTakenAbsolute(Case c) {
-		return getWorstCaseOption().getTimeTakenAbsolute(c);
-	}
-	
-	public long getNumCyclesRelative(Case c) {
-		return getWorstCaseOption().getNumCyclesRelative(c);
-	}
-
-	public long getNumCyclesAbsolute(Case c) {
-		return getWorstCaseOption().getNumCyclesAbsolute(c);
-	}
-	
-	public long getNumInstructionsRelative(Case c) {		
-		return getWorstCaseOption().getNumInstructionsRelative(c);
-	}
-	
-	public long getNumInstructionsAbsolute(Case c) {		
-		return getWorstCaseOption().getNumInstructionsAbsolute(c);
-	}
-	
-	public long getNumFNopsRelative(Case c) {
-		return getWorstCaseOption().getNumFNopsRelative(c);
-	}
-
-	public long getNumFNopsAbsolute(Case c) {
-		return getWorstCaseOption().getNumFNopsAbsolute(c);
-	}
->>>>>>> 9414cf08dc0923f0a33963a19b05a32314c9336d:src/com/xmos/xta/engine/analysis/structural/nodes/SectionNode.java
 	
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
@@ -219,7 +184,17 @@ public class SectionNode extends Node {
 	public boolean isOptional() {
 		return m_isOptional;
 	}
-<<<<<<< HEAD:src/com/xmos/xta/engine/analysis/structural/nodes/SectionNode.java
+	
+	public List<XtaInstruction> getInstructionStream(Case c) {
+		if(c == Case.WORST){
+			return getWorstCaseOption().getInstructionStream(Case.WORST);
+		} else if(c == Case.BEST){
+			return getBestCaseOption().getInstructionStream(Case.BEST);
+		} else {
+			assert(false);
+			return null;
+		}
+	}
 	
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
@@ -255,18 +230,4 @@ public class SectionNode extends Node {
 	public long getNumFNopsAbsolute(Case c) {
 		return getWorstCaseOption().getNumFNopsAbsolute(c);
 	}	
-=======
-
-	public List<XtaInstruction> getInstructionStream(Case c) {
-		if(c == Case.WORST){
-			return getWorstCaseOption().getInstructionStream(Case.WORST);
-		} else if(c == Case.BEST){
-			return getBestCaseOption().getInstructionStream(Case.BEST);
-		} else {
-			assert(false);
-			return null;
-		}
-	}
-
->>>>>>> 9414cf08dc0923f0a33963a19b05a32314c9336d:src/com/xmos/xta/engine/analysis/structural/nodes/SectionNode.java
 }

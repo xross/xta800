@@ -107,8 +107,11 @@ public class InstructionNode extends Node {
 		functionCallStatus.setStatus(false);		
 		return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
 	}
-<<<<<<< HEAD:src/com/xmos/xta/engine/analysis/structural/nodes/InstructionNode.java
 	
+    public List<XtaInstruction> getInstructionStream(Case c) {
+	    return getInstructions();
+    }
+
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
 	// --------------------------------------------------------------------- //
@@ -155,10 +158,4 @@ public class InstructionNode extends Node {
 		}
 		return 0;
 	}	
-=======
-
-	public List<XtaInstruction> getInstructionStream(Case c) {
-		return getInstructions();
-	}
->>>>>>> 9414cf08dc0923f0a33963a19b05a32314c9336d:src/com/xmos/xta/engine/analysis/structural/nodes/InstructionNode.java
 }

@@ -39,8 +39,8 @@ public class BlockNode extends Node {
 		return bn;
 	}
 	
-	public List<XtaInstruction> getInstructions() {
-		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
+	public LinkedList<XtaInstruction> getInstructions() {
+		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>();
 		for(Node inst : m_insts){
 			insts.addAll(inst.getInstructions());
 		}
@@ -64,7 +64,7 @@ public class BlockNode extends Node {
 	}
 	
 	public int getStartPc() {
-		return getInstructions().get(0).getPc();
+		return getInstructions().getFirst().getPc();
 	}	
 	
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
@@ -93,6 +93,14 @@ public class BlockNode extends Node {
 		} else {
 			return getParent().whatsNext(this);
 		}
+	}
+
+	public List<XtaInstruction> getInstructionStream(Case c) {
+		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
+		for(Node inst : m_insts){
+			insts.addAll(inst.getInstructions());
+		}
+		return insts;
 	}
 	
 	// --------------------------------------------------------------------- //
@@ -160,73 +168,5 @@ public class BlockNode extends Node {
 			count += node.getNumFNopsAbsolute(c);
 		}
 		return count;
-<<<<<<< HEAD:src/com/xmos/xta/engine/analysis/structural/nodes/BlockNode.java
-	}	
-=======
 	}
-	
-	public LinkedList<XtaInstruction> getInstructions() {
-		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>();
-		for(Node inst : m_insts){
-			insts.addAll(inst.getInstructions());
-		}
-		return insts;
-	}
-		
-	public Set<Integer> getPCs() {
-		Set<Integer> pcs = new HashSet<Integer>();
-		for (XtaInstruction inst : getInstructions()) {
-			pcs.add(inst.getPc());
-		}
-		return pcs;
-	}
-
-	public Collection<Node> getContainedNodes() {
-		return new HashSet<Node> (m_insts);
-	}
-
-	public String getFunctionName() {
-		return "";
-	}
-	
-	public int getStartPc() {
-		return getInstructions().getFirst().getPc();
-	}	
-	
-	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundBlockNode(this, depth)) 
-			return;
-			
-		for (Node instruction : m_insts) {
-			instruction.traverse(depth + 1, nodeTraverser);
-		}		
-	}
-	
-	public String toString(){
-		return "Block" + m_id;
-	}
-
-	public List<Node> getChildren() {
-		return m_insts;
-	}
-
-	public Collection<Node> whatsNext(Node node) {
-		int index = m_insts.indexOf(node);
-		if(index < m_insts.size()-1){
-			Collection<Node> next = new HashSet<Node>();
-			next.add(m_insts.get(index+1));
-			return next;
-		} else {
-			return getParent().whatsNext(this);
-		}
-	}
-
-	public List<XtaInstruction> getInstructionStream(Case c) {
-		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
-		for(Node inst : m_insts){
-			insts.addAll(inst.getInstructions());
-		}
-		return insts;
-	}
->>>>>>> 9414cf08dc0923f0a33963a19b05a32314c9336d:src/com/xmos/xta/engine/analysis/structural/nodes/BlockNode.java
 }

@@ -123,7 +123,6 @@ public abstract class Node implements Comparable<Node>{
 		return getNumFNopsRelative(c) + getNumFNopsAbsolute(c);				
 	}
 	
-<<<<<<< HEAD:src/com/xmos/xta/engine/analysis/structural/nodes/Node.java
 	public int compareTo(Node node) {	
 		double thisTimeTaken = getTimeTaken(Case.WORST);
 		double nodeTimeTaken = node.getTimeTaken(Case.WORST);
@@ -148,19 +147,7 @@ public abstract class Node implements Comparable<Node>{
 			} 
 			return 0;			
 		}			
-=======
-	public int compareTo(Node n) {		
-		if (getInstructions()!= null && 
-			n.getInstructions() != null && 
-			!getInstructions().isEmpty() && 
-			!n.getInstructions().isEmpty()) {
-			int myPc = getInstructions().getFirst().getPc();
-			int nodePc = n.getInstructions().getFirst().getPc();
-			return Integer.signum((nodePc - myPc));
-		} 
-		return 0;
->>>>>>> 9414cf08dc0923f0a33963a19b05a32314c9336d:src/com/xmos/xta/engine/analysis/structural/nodes/Node.java
-	}
+    }
 	
 	public void setBranchLinkReturn(Node bl){
 		m_branchLinkReturn = bl;

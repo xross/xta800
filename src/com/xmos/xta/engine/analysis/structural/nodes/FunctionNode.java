@@ -170,7 +170,10 @@ public class FunctionNode extends Node {
 		}
 		return false;
 	}
-<<<<<<< HEAD:src/com/xmos/xta/engine/analysis/structural/nodes/FunctionNode.java
+	
+	public List<XtaInstruction> getInstructionStream(Case c) {
+		return m_function.getInstructionStream(c);
+	}		
 	
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
@@ -229,11 +232,5 @@ public class FunctionNode extends Node {
     		return m_function.getNumFNopsAbsolute(c);
 		}
 		return 0;
-=======
-
-
-	public List<XtaInstruction> getInstructionStream(Case c) {
-		return m_function.getInstructionStream(c);
->>>>>>> 9414cf08dc0923f0a33963a19b05a32314c9336d:src/com/xmos/xta/engine/analysis/structural/nodes/FunctionNode.java
-	}	
+	}
 }
