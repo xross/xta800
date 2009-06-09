@@ -107,15 +107,15 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public long getNumCycles(Case c) {
-		return getNumCyclesRelative(c);// + getNumCyclesAbsolute(c);		
+		return getNumCyclesRelative(c) + getNumCyclesAbsolute(c);		
 	}
 	
 	public long getNumInstructions(Case c) {
-		return getNumInstructionsRelative(c);// + getNumInstructionsAbsolute(c);				
+		return getNumInstructionsRelative(c) + getNumInstructionsAbsolute(c);				
 	}
 	
 	public long getNumFNops(Case c) {
-		return getNumFNopsRelative(c);// + getNumFNopsAbsolute(c);				
+		return getNumFNopsRelative(c) + getNumFNopsAbsolute(c);				
 	}
 	
 	public int compareTo(Node n) {		
