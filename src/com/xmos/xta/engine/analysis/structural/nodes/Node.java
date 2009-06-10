@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
@@ -16,7 +17,6 @@ public abstract class Node implements Comparable<Node>{
 	static int s_numNodes;
 	
 	int m_id;
-	
 	Node m_parent;
 	
 	boolean m_dominatorSetIsCompleteSet;
@@ -31,6 +31,8 @@ public abstract class Node implements Comparable<Node>{
 	boolean m_isExcluded;
 	boolean m_isLoopHeader;
 
+	private NodeAttributes m_nodeAttributes;
+	
 	Set<Node> m_branchTargets;
 	Map<Integer, IBufferSequence> m_ibufferStates;
 	
@@ -53,7 +55,7 @@ public abstract class Node implements Comparable<Node>{
 	
 	public abstract List<Node> getChildren();
 	public abstract Collection<Node> whatsNext(Node node);
-	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
+	public abstract void traverse(int depth, NodeTraverser nodeTraverser);	
 	public abstract List<XtaInstruction> getInstructionStream(Case c);
 	public abstract void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions);
 	public abstract Set<Integer> getPCs();
@@ -61,7 +63,7 @@ public abstract class Node implements Comparable<Node>{
 	public abstract Collection<Node> getContainedNodes();	
 	public abstract String getFunctionName();
 	public abstract int getStartPc();
-	
+
 	public static int getNodeCount(){
 		return s_numNodes;
 	}
@@ -71,6 +73,7 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public Node() {
+		m_nodeAttributes = new NodeAttributes(this);
 		m_isExcluded = false;
 		m_isLoopHeader = false;
 		m_ibufferStates = new HashMap<Integer, IBufferSequence>();
@@ -82,6 +85,7 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public Node(Node node) {
+		m_nodeAttributes = new NodeAttributes(node.m_nodeAttributes);
 		m_isExcluded = node.m_isExcluded;
 		m_isLoopHeader = node.m_isLoopHeader;
 		m_ibufferStates = new HashMap<Integer, IBufferSequence>(node.m_ibufferStates);
@@ -105,6 +109,10 @@ public abstract class Node implements Comparable<Node>{
 		return m_id;
 	}
 
+	public NodeAttributes getNodeAttributes() {
+		return m_nodeAttributes;
+	}
+	
 	public double getTimeTaken(Case c) {
 		return getTimeTakenRelative(c) + getTimeTakenAbsolute(c);
 	}
@@ -355,18 +363,6 @@ public abstract class Node implements Comparable<Node>{
 	public boolean branchesTo(Node block) {
 		return m_branchTargets.contains(block);
 	}
-
-	class IBufferSequence {
-		Integer m_endInstBuffer;
-		List<Integer> m_fnopPcs;
-		
-		public IBufferSequence(int endInstBuffer, List<Integer> fnopPcs) {
-			super();
-			m_endInstBuffer = endInstBuffer;
-			m_fnopPcs = fnopPcs;
-		}
-	}
-	
 	
 	public Map<Integer, IBufferSequence> getIbufferStates(){
 		return m_ibufferStates;
@@ -419,6 +415,17 @@ public abstract class Node implements Comparable<Node>{
 		assert(false);		
 		return false;
 	}	
+}
+
+class IBufferSequence {
+	Integer m_endInstBuffer;
+	List<Integer> m_fnopPcs;
+	
+	public IBufferSequence(int endInstBuffer, List<Integer> fnopPcs) {
+		super();
+		m_endInstBuffer = endInstBuffer;
+		m_fnopPcs = fnopPcs;
+	}
 }
 
 class FunctionCallStatus {

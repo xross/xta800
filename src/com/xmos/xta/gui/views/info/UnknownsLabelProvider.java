@@ -5,8 +5,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 
-import com.xmos.xta.engine.unknowns.Unknown;
-
 public class UnknownsLabelProvider extends LabelProvider implements ITableLabelProvider {
     public static final boolean DEBUG = false;
 
@@ -32,13 +30,14 @@ public class UnknownsLabelProvider extends LabelProvider implements ITableLabelP
 		if (DEBUG) System.out.printf("UnknownsLabelProvider: getColumnText: index: %d\n", columnIndex);	
 		
 		assert((columnIndex >= 0) && (columnIndex < m_columnNames.length));
-		
+/* TODO		
 		Unknown unknown = (Unknown)element;	
 		if (m_columnNames[columnIndex].equals(PC)) {
 			return String.format("0x%05x", unknown.getPc());
     	} else if (m_columnNames[columnIndex].equals(REASON)) {    		
 		    return unknown.getDescription();
-	    }		
+        }
+*/        	    		
 		assert(false);
 		return "";
 	}

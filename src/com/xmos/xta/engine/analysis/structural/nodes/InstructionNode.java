@@ -7,26 +7,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import com.xmos.xta.engine.analysis.structural.nodes.NodeAttributes.UnknownState;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class InstructionNode extends Node {
 	private XtaInstruction m_inst;
 	private long m_numCycles;
-	private boolean m_isUnknown;
 	
 	public InstructionNode(XtaInstruction inst){
 		super();
 		m_inst = inst;
 		m_numCycles = inst.getNumCycles();
-		m_isUnknown = inst.canPause();
 	}
 	
 	public InstructionNode(InstructionNode node){
 		super();
 		m_inst = node.m_inst;
 		m_numCycles = node.m_numCycles;
-		m_isUnknown = node.m_isUnknown;
 	}
 
 	public Node shallowCopy() {
@@ -125,13 +125,12 @@ public class InstructionNode extends Node {
 			} else {								
 			    m_numCycles = m_inst.getNumCycles();	
 			}
-			m_isUnknown = false;			
 		}					
 	}
 
 	public void unsetInstructionNumCycles() {
 	    m_numCycles = m_inst.getNumCycles();
-	    m_isUnknown = true;
+		getNodeAttributes().setUnknownState(UnknownState.UNKNOWN);				    
 	}
 	
 	public long getInstructionNumCycles() {
@@ -144,19 +143,18 @@ public class InstructionNode extends Node {
 	}
 
 	public void unsetInstructionTimeTaken() {
-	    m_numCycles = m_inst.getNumCycles();
-	    m_isUnknown = true;
+		unsetInstructionNumCycles();
 	}
 	
 	public double getInstructionTimeTaken() {
     	int threadFactor = (m_inst.getConfig().m_numThreads > 4) ? m_inst.getConfig().m_numThreads : 4;
         return ((double)(threadFactor * 1000) / (double)m_inst.getConfig().m_frequency) * m_numCycles;
 	}
-	
-	public boolean isInstructionUnknown() {
-		return m_isUnknown;
+
+	public XtaInstruction getXtaInstruction() {
+		return m_inst;
 	}
-    
+	
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
 	// --------------------------------------------------------------------- //

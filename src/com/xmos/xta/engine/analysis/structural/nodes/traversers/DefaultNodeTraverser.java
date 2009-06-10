@@ -1,7 +1,9 @@
-package com.xmos.xta.engine.analysis.structural.nodes;
+package com.xmos.xta.engine.analysis.structural.nodes.traversers;
+
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
 public class DefaultNodeTraverser implements NodeTraverser {
-    public boolean foundBlockNode(Node node, int depth) {
+	public boolean foundBlockNode(Node node, int depth) {
     	return true;
     }
     

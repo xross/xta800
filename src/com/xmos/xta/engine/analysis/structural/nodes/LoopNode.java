@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
@@ -60,8 +61,129 @@ public class LoopNode extends Node {
 		return ln;
 	}
 
-	
+	public void addLoop(Node loop) {
+		m_loops.add(loop);
+	}
+
+	public LinkedList<XtaInstruction> getInstructions() {
+		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loopHeader.getInstructions());
+		for (Node al : m_loops) {
+			insts.addAll(al.getInstructions());
+		}
+		return insts;
+	}
+
+	public Set<Integer> getPCs() {
+		Set<Integer> pcs = new HashSet<Integer>(m_loopHeader.getPCs());
+		for (Node loop : m_loops) {
+			pcs.addAll(loop.getPCs());
+		}
+		return pcs;
+	}
+
+	public Collection<Node> getContainedNodes() {
+		Collection<Node> containedNodes = new HashSet<Node>();
+		containedNodes.addAll(m_loopHeader.getContainedNodes());
+		for (Node loop : m_loops) {
+			containedNodes.addAll(loop.getContainedNodes());
+		}
+		return containedNodes;
+	}
+
+	public String getFunctionName() {
+		return "";
+	}
+
+	public int getStartPc() {
+		return m_loopHeader.getStartPc();
+	}
+
+	public void traverse(int depth, NodeTraverser nodeTraverser) {
+		if (!nodeTraverser.foundLoopNode(this, depth))
+			return;
+
+		m_loopHeader.traverse(depth + 1, nodeTraverser);			
+		for (Node node : m_loops) {
+			node.traverse(depth + 1, nodeTraverser);
+		}
+	}
+
+	public String toString() {
+		return "Loop" + m_id;
+	}
+
+	public List<Node> getChildren() {
+		List<Node> children = new LinkedList<Node>();
+		children.add(m_loopHeader);
+		for (Node node : m_loops) {
+			children.add(node);					
+		}
+		return children;
+	}
+
+	public Collection<Node> whatsNext(Node node) {
+		Collection<Node> next = new HashSet<Node>();
+		if (m_loopHeader == node) {
+			next.addAll(getParent().whatsNext(this));
+			next.addAll(m_loops);
+		} else {
+			next.add(this);
+		}
+		return next;
+	}
 		
+	public boolean isLoopNode() {
+		return true;
+	}
+	
+	public void setNumIterations(long numIterations) {
+	    if (!m_numIterationsDone) {
+	    	m_numIterationsDone = true;
+	    	
+	    	m_loopHeader.setNumIterations(numIterations + 1);
+			for (Node child : m_loops) {
+				child.setNumIterations(numIterations);
+			}
+	    }
+	}
+	
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
+			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
+		
+		if (!calledFromAbove) {
+		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
+		}
+		return false;
+	}
+
+
+	public List<XtaInstruction> getInstructionStream(Case c) {
+		
+		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>();
+		List<Node> loopList = new LinkedList<Node>(m_loops);
+		Collections.sort(loopList);
+		for (Node loop : loopList) {
+			for(int i=0;i<loop.getNumIterations();i++){
+				insts.addAll(m_loopHeader.getInstructionStream(c));
+				insts.addAll(loop.getInstructionStream(c));
+			}
+		}
+		insts.addAll(m_loopHeader.getInstructionStream(c));
+		
+		return insts;
+	}		
+	
+	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
+		List<Node> loopList = new LinkedList<Node>(m_loops);
+		Collections.sort(loopList);
+		for (Node loop : loopList) {
+			for(int i=0;i<loop.getNumIterations();i++){
+				m_loopHeader.getInstructionStream(c, ibuffer, instructions);
+				loop.getInstructionStream(c, ibuffer, instructions);
+			}
+		}
+		m_loopHeader.getInstructionStream(c, ibuffer, instructions);	
+	}
 	
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
@@ -207,129 +329,5 @@ public class LoopNode extends Node {
 			// beneath here will contribute to the absolute time.
 	    	return 0;
 		}
-	}
-
-	public void addLoop(Node loop) {
-		m_loops.add(loop);
-	}
-
-	public LinkedList<XtaInstruction> getInstructions() {
-		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loopHeader.getInstructions());
-		for (Node al : m_loops) {
-			insts.addAll(al.getInstructions());
-		}
-		return insts;
-	}
-
-	public Set<Integer> getPCs() {
-		Set<Integer> pcs = new HashSet<Integer>(m_loopHeader.getPCs());
-		for (Node loop : m_loops) {
-			pcs.addAll(loop.getPCs());
-		}
-		return pcs;
-	}
-
-	public Collection<Node> getContainedNodes() {
-		Collection<Node> containedNodes = new HashSet<Node>();
-		containedNodes.addAll(m_loopHeader.getContainedNodes());
-		for (Node loop : m_loops) {
-			containedNodes.addAll(loop.getContainedNodes());
-		}
-		return containedNodes;
-	}
-
-	public String getFunctionName() {
-		return "";
-	}
-
-	public int getStartPc() {
-		return m_loopHeader.getStartPc();
-	}
-
-	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundLoopNode(this, depth))
-			return;
-
-		m_loopHeader.traverse(depth + 1, nodeTraverser);			
-		for (Node node : m_loops) {
-			node.traverse(depth + 1, nodeTraverser);
-		}
-	}
-
-	public String toString() {
-		return "Loop" + m_id;
-	}
-
-	public List<Node> getChildren() {
-		List<Node> children = new LinkedList<Node>();
-		children.add(m_loopHeader);
-		for (Node node : m_loops) {
-			children.add(node);					
-		}
-		return children;
-	}
-
-	public Collection<Node> whatsNext(Node node) {
-		Collection<Node> next = new HashSet<Node>();
-		if (m_loopHeader == node) {
-			next.addAll(getParent().whatsNext(this));
-			next.addAll(m_loops);
-		} else {
-			next.add(this);
-		}
-		return next;
-	}
-		
-	public boolean isLoopNode() {
-		return true;
-	}
-	
-	public void setNumIterations(long numIterations) {
-	    if (!m_numIterationsDone) {
-	    	m_numIterationsDone = true;
-	    	
-	    	m_loopHeader.setNumIterations(numIterations + 1);
-			for (Node child : m_loops) {
-				child.setNumIterations(numIterations);
-			}
-	    }
-	}
-	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
-			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
-		
-		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
-		}
-		return false;
-	}
-
-
-	public List<XtaInstruction> getInstructionStream(Case c) {
-		
-		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>();
-		List<Node> loopList = new LinkedList<Node>(m_loops);
-		Collections.sort(loopList);
-		for (Node loop : loopList) {
-			for(int i=0;i<loop.getNumIterations();i++){
-				insts.addAll(m_loopHeader.getInstructionStream(c));
-				insts.addAll(loop.getInstructionStream(c));
-			}
-		}
-		insts.addAll(m_loopHeader.getInstructionStream(c));
-		
-		return insts;
-	}		
-	
-	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
-		List<Node> loopList = new LinkedList<Node>(m_loops);
-		Collections.sort(loopList);
-		for (Node loop : loopList) {
-			for(int i=0;i<loop.getNumIterations();i++){
-				m_loopHeader.getInstructionStream(c, ibuffer, instructions);
-				loop.getInstructionStream(c, ibuffer, instructions);
-			}
-		}
-		m_loopHeader.getInstructionStream(c, ibuffer, instructions);	
-	}
+	}	
 }

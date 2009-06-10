@@ -15,14 +15,13 @@ import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
-import com.xmos.xta.engine.analysis.structural.nodes.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.SectionNode;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.references.Reference;
-import com.xmos.xta.engine.unknowns.Unknowns;
 
 class AbortedException extends Exception {
 	private static final long serialVersionUID = 1L;
@@ -42,7 +41,6 @@ public class Route {
 	private StructureGraph m_structureGraph;
 	private List<Node> m_subRoutes;
 	private Engine m_engine;
-	private Unknowns m_unknowns;
 	private Constraint m_constraint;
 	private Set<Node> m_routeExclusionNodes;
 	private Collection<Reference> m_excludedRefs;
@@ -59,7 +57,6 @@ public class Route {
 		m_engine = engine;
 		m_constraint = engine.getConstraint().clone();
 		m_routeTiming = new RouteTiming(this, engine.getConfig(), engine.getNodeId(), engine.getCoreId());
-		m_unknowns = new Unknowns();
 		m_routeExclusionNodes = new HashSet<Node>();
 		m_excludedRefs = new HashSet<Reference>();
 	}
@@ -92,10 +89,6 @@ public class Route {
 
 	public RouteTiming getRouteTiming() {
 		return m_routeTiming;
-	}
-
-	public Unknowns getUnknowns() {
-		return m_unknowns;
 	}
 
 	public String getEndpointsPcsString() {

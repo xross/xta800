@@ -5,8 +5,6 @@ import java.util.HashSet;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 
-import com.xmos.xta.engine.unknowns.Unknown;
-
 public class XtaRulerAnnotationHover implements IAnnotationHover {
 
 	private XtaEditor m_editor;
@@ -48,12 +46,12 @@ public class XtaRulerAnnotationHover implements IAnnotationHover {
 
 	private String getWarningString(int lineNumber) {
 		String warning = "";
-
+/* TODO
 		HashSet<Unknown> unknowns = m_editor.getUnknownsForLine(lineNumber);
 		for (Unknown unknown : unknowns) {
 			warning += unknown.getDescription() + "\n";
 		}
-		
+*/		
 		return warning;
 	}
 

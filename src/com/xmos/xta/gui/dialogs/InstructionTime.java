@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.Text;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.references.Reference;
-import com.xmos.xta.engine.unknowns.Unknowns;
 
 public class InstructionTime extends XtaDialog {
     Engine m_engine;
@@ -54,17 +53,17 @@ public class InstructionTime extends XtaDialog {
     }
 
 	private void init(Route route) {
-    	Unknowns unknowns = route.getUnknowns();
+//TODO   	Unknowns unknowns = route.getUnknowns();
     	
     	m_valueChanged = false;
     	m_wasSet = new ArrayList<Boolean>();
     	m_originalCycles = new ArrayList<Long>();
     	for (Reference ref : m_refs) {
-    		if (unknowns.isUnknownInstructionTime(ref.getPc())) {
-    			m_wasSet.add(false);
-    		} else {
-    			m_wasSet.add(true);
-    		}
+//    		if (unknowns.isUnknownInstructionTime(ref.getPc())) {
+//   			m_wasSet.add(false);
+//    		} else {
+//    			m_wasSet.add(true);
+ //   		}
 //TODO   		
 //    		m_originalCycles.add(m_engine.getInstructionNumCycles(ref.getPc()));
     	}

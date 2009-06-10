@@ -101,13 +101,13 @@ public class RouteTiming {
 				description += "    Pass";
 			else
 				description += "    Fail";
-
+/* TODO
 			int numWarnings = m_route.getUnknowns().getUnknowns().size();
 			if (numWarnings > 0)
 				description += " with " + numWarnings + " unknown";
 			if (numWarnings > 1)
 				description += "s";
-
+*/
 			if (full) {
 				description += ", ";
 				description += getTimingsDescription();

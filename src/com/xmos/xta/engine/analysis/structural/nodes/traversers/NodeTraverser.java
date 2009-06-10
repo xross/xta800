@@ -1,4 +1,6 @@
-package com.xmos.xta.engine.analysis.structural.nodes;
+package com.xmos.xta.engine.analysis.structural.nodes.traversers;
+
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
 public interface NodeTraverser {
     boolean foundBlockNode(Node node, int depth);

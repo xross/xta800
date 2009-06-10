@@ -4,8 +4,8 @@ import java.util.Collection;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.NodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructureDisplayer {
@@ -24,6 +24,7 @@ public class StructureDisplayer {
 		    node.traverse(0, new NodeTraverser() {
 				public boolean foundBlockNode(Node node, int depth) {
 					printIndent(depth);
+					printUnknown(node);
 					displayNodeName(node, "block");
 					if (DEBUG) displayWhatsNext(node);
 					displayTimeTaken(node);
@@ -34,6 +35,7 @@ public class StructureDisplayer {
 
 				public boolean foundFunctionNode(Node node, int depth) {
 					printIndent(depth);
+					printUnknown(node);
 					displayNodeName(node, "function");
 					displayFunctionName(node);
 					if (DEBUG) displayWhatsNext(node);
@@ -45,6 +47,7 @@ public class StructureDisplayer {
 
 				public boolean foundLoopNode(Node node, int depth) {
 					printIndent(depth);
+					printUnknown(node);
 					displayNodeName(node, "loop");
 					if (DEBUG) displayWhatsNext(node);
 					displayTimeTaken(node);
@@ -55,6 +58,7 @@ public class StructureDisplayer {
 
 				public boolean foundPathNode(Node node, int depth) {
 					printIndent(depth);
+					printUnknown(node);
 					displayNodeName(node, "path");
 					if (DEBUG) displayWhatsNext(node);
 					displayTimeTaken(node);
@@ -65,6 +69,7 @@ public class StructureDisplayer {
 
 				public boolean foundSectionNode(Node node, int depth) {
 					printIndent(depth);
+					printUnknown(node);
 					displayNodeName(node, "section");
 					if (DEBUG) displayWhatsNext(node);
 					displayTimeTaken(node);
@@ -75,6 +80,7 @@ public class StructureDisplayer {
 
 				public boolean foundTerminalNode(Node node, int depth) {
 					printIndent(depth);
+					printUnknown(node);
 					displayNodeName(node, "terminal");
 					if (DEBUG) displayWhatsNext(node);
 					displayTimeTaken(node);
@@ -86,6 +92,7 @@ public class StructureDisplayer {
 				public boolean foundInstructionNode(Node node, int depth) {
 					if (DEBUG) {
 						printIndent(depth);
+						printUnknown(node);
 						displayNodeName(node, "instruction");
 						displayTimeTaken(node);
 						displayNumIterations(node);
@@ -102,8 +109,16 @@ public class StructureDisplayer {
     }
 	
 	private void printIndent(int depth) {
-		for (int i = 0; i < depth; ++i) {
+		for (int i = 0; i < depth - 1; ++i) {
 			m_console.display(".    ");
+		}
+	}	
+
+	private void printUnknown(Node node) {
+		if (node.getNodeAttributes().getDisplayUnknown()) {
+			m_console.display(".  * ");
+		} else {
+			m_console.display(".    ");			
 		}
 	}	
 	
