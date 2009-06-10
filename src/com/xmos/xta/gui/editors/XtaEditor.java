@@ -50,7 +50,6 @@ import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.engine.sections.CodePointTableInfo;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
-import com.xmos.xta.engine.unknowns.Unknown;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.InstructionTime;
@@ -588,7 +587,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         	return m_endPointLine.getIndex();
 		return -1;
 	}
-
+/* TODO
     public HashSet<Unknown> getUnknownsForLine(int lineNumber) {
     	HashSet<Unknown> unknowns = new HashSet<Unknown>();
 
@@ -601,7 +600,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		}
     	return unknowns;
     }
-    
+*/
+/* TODO
 	private HashSet<Unknown> getSelectedPathUnknowns() {
 		Engine engine = GuiEngine.getEngine();
 		int selectedRouteId = engine.getSelectedRouteId();
@@ -613,7 +613,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			return new HashSet<Unknown>();
 		}
 	}
-
+*/
 	private HashSet<Integer> getSelectedPathBlockIds() {
 		HashSet<Integer> selectedBlocks = new HashSet<Integer>();
 
@@ -664,9 +664,9 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	    new HashMap<Annotation, Position>();		
 
 		HashSet<Integer> unknownsSet = new HashSet<Integer>();
-		for (Unknown unknown : getSelectedPathUnknowns()) {
-			unknownsSet.add(unknown.getPc());
-		}
+// TODO		for (Unknown unknown : getSelectedPathUnknowns()) {
+//			unknownsSet.add(unknown.getPc());
+//		}
 		for (int pc : unknownsSet) {
 			updateAnnotations(pc, UnknownAnnotationID, annotations, annotationPositions, true, getInput().getPcsToLines());
 		}
@@ -867,9 +867,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		int clickLineIndex = getVerticalRuler().getLineOfLastMouseButtonActivity();
 		
 		m_clickCodeRefString = getLineDescription(clickLineIndex);				
-		if (m_clickCodeRefString != null) {
-			m_clickCodeRef = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.ENDPOINT_REF); 
-			
+		if (m_clickCodeRefString != null) {			
 			if (m_endPointLineIndexes.containsKey(clickLineIndex) ||
 					m_type.equals(XtaDocumentPartitioner.DISASSEMBLY)) {
 				if (isStartPointSet(m_clickCodeRefString)) {
@@ -889,11 +887,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			addAction(menu, ConstrainRequireID);
 			addAction(menu, SelectPathsID);
 			
-			Engine engine = GuiEngine.getEngine();
-			boolean resolved = m_clickCodeRef.resolve(engine, engine.getNodeId(), engine.getCoreId());
-			if (resolved &&
-				(GuiEngine.getRouteInfo() != null) &&
-			     GuiEngine.getEngine().canInstructionPause(m_clickCodeRef.getPc())) {
+			if ((GuiEngine.getRouteInfo() != null) &&
+			     GuiEngine.getEngine().canInstructionPause(m_clickCodeRefString)) {
 				
 				m_setInstructionTimeAction.setEnabled(true);
 			} else {

@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
@@ -59,10 +59,6 @@ public class TerminalNode extends Node {
 			pcs.addAll(node.getPCs());
 		}
 		return pcs;
-	}
-
-	public String getFunctionName() {
-		return "";
 	}
 
 	public int getStartPc() {
@@ -198,11 +194,11 @@ public class TerminalNode extends Node {
 		
 	}
 
-	public void updateFnops(Case c, int startIBuffer) {
-		m_iBufferStart = startIBuffer;
-		for(Node terminal: m_terminals){
-			terminal.updateFnops(c, m_iBufferStart);
-		}
-		m_iBufferEnd = 0;
-	}	
+	@Override
+	public void updateFnops(Case c, IBufferVector ibv) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 }

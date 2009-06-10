@@ -33,8 +33,6 @@ import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
-import com.xmos.xta.engine.unknowns.PausableInstructionUnknown;
-import com.xmos.xta.engine.unknowns.Unknown;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.InstructionTime;
@@ -119,11 +117,11 @@ public class SetValuesViewer {
 				boolean enabled = ((IStructuredSelection) selection).size() > 0;
 				m_clearInstructionTimesAction.setEnabled(enabled);
 				m_setInstructionTimeAction.setEnabled(enabled);
-
+/* TODO
 				m_selectedCodeRefs.clear();
 				for (Object object : ((IStructuredSelection) selection).toList()) {
 					Unknown unknown = (Unknown)object;
-					if(unknown.getType().equals(PausableInstructionUnknown.class.getName())){
+					if(unknown.getType().equals(InstructionTimeUnknown.class.getName())){
 						Reference ref = ReferenceFactory.createReference(
 								"0x" + Integer.toHexString(unknown.getPc()), ReferenceClass.LABEL_REF);
 						ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
@@ -134,6 +132,7 @@ public class SetValuesViewer {
 						m_setInstructionTimeAction.setEnabled(false);
 					}
 				}
+*/				
 			}			
 		});
 		
@@ -148,7 +147,8 @@ public class SetValuesViewer {
 		m_clearInstructionTimesAction = new Action() { 
 			public void run() {
 				for (Reference ref : m_selectedCodeRefs) {
-					GuiEngine.getEngine().unsetInstructionTime(ref.getPc());
+					//TODO
+					//GuiEngine.getEngine().unsetInstructionTime(ref.getPc());
 				}
 			}
 		}; 
@@ -175,16 +175,18 @@ public class SetValuesViewer {
 		int direction = 1;
 		
 		public int compare(Viewer viewer, Object e1, Object e2) {
-			int pc1 = ((Unknown)e1).getPc();
-			int pc2 = ((Unknown)e2).getPc();
+			int pc1 = 0;// TODO ((Unknown)e1).getPc();
+			int pc2 = 0;// TODO ((Unknown)e2).getPc();
 			switch(field){
 			case 0:
 				int res0 = pc1 > pc2 ? 1 : -1;
 				return res0 * direction;
 			case 1:
 				Engine engine = GuiEngine.getEngine();
-				int res2 = engine.getInstructionTimeTaken(pc1) > engine.getInstructionTimeTaken(pc2) ? 1 : -1;
-				return res2 * direction;
+				//TODO
+				//int res2 = engine.getInstructionTimeTaken(pc1) > engine.getInstructionTimeTaken(pc2) ? 1 : -1;
+				//return res2 * direction;
+				return 0;
 			default:
 				int resd = pc1 > pc2 ? 1 : -1;
 				return resd * direction;

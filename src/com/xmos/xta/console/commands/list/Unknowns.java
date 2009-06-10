@@ -1,26 +1,45 @@
 package com.xmos.xta.console.commands.list;
 
-import java.util.HashSet;
+import java.util.Collection;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.analysis.routes.Route;
-import com.xmos.xta.engine.unknowns.Unknown;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.NodeAttributes.UnknownState;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 
 public class Unknowns extends Command {
+	public enum Mode {
+		GLOBAL,
+		ROUTE,
+	}
+	private Mode m_mode;
 	private int m_routeId;
+	private boolean m_found;
 
 	public Unknowns() {
+		m_mode = Mode.GLOBAL;
+		m_found = false;
 	}
 
-	public Unknowns(int routeId) {
+	public Unknowns(Mode mode, int routeId) {
+		m_mode = mode;
 		m_routeId = routeId;
+		m_found = false;
 	}
 
     public int numArgs() {
-    	return 1;
+    	switch (m_mode) {
+    	case GLOBAL:
+    		return 0;
+    	case ROUTE:
+    		return 1;
+    	}
+		assert(false);
+	    return 0;
     }        
 
     public String name() {
@@ -28,44 +47,62 @@ public class Unknowns extends Command {
     }        
 
     public String commandLine() {
-    	return "unknowns " + getRouteId(m_routeId);
+    	switch (m_mode) {
+    	case GLOBAL:
+    		return "unknowns";
+    	case ROUTE:
+    		return "unknowns " + getRouteId(m_routeId);
+    	}
+		assert(false);
+	    return "";    	
     }        
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = String.format("unknowns <route id>: Displays a list of the unknowns for the given route");
-    	return descString;
+        return "unknowns [route id]: Displays a list of unknowns for the program, or if sepcified, just the given route";
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length)
-			return null;		
-
-    	int routeId;
-    	try { 
-    		routeId = getRouteId(args[index + 1]); 
-    	} catch (NumberFormatException e) {
-	        return null;
-	    }
-	    
-		return new Unknowns(routeId);
+		if (!areArgsDone(args, index + 1)) {
+	    	try {
+	    	    return new Unknowns(Mode.ROUTE, getRouteId(args[index + 1]));
+		    } catch (NumberFormatException e) {
+		        return null;
+		    }    	
+		}
+    	return new Unknowns(Mode.GLOBAL, 0);		
     }
     
-    public void execute(Shell shell, Engine engine, Console console) {
+    public void execute(Shell shell, Engine engine, final Console console) {
 		if (!isExecutableLoaded(engine, console))
-			return;			    	
-
-		boolean found = false;
-		Route route = engine.getRoute(m_routeId);
+			return;
 		
-		if (route != null) {
-			HashSet<Unknown> unknowns = route.getUnknowns().getUnknowns();		
-			for (Unknown unknown : unknowns) {
-			    console.display(unknown.getDescription() + "\n");
-			    found = true;
-			}			
-		}
-		
-		if (!found) {
+	    Collection<Node> nodes = null;
+	    switch (m_mode) {
+	    case GLOBAL:
+	    	nodes = engine.getStructureGraph().getThreads();
+	    	break;
+	    	
+	    case ROUTE:
+	    	nodes = engine.getRoute(m_routeId).getSubRoutes();
+		    if (!validateRouteId(engine, console, m_routeId))
+			    return;
+	    	break;	    	
+	    }
+				
+		for (Node node : nodes) {
+		    node.traverse(0, new UntypedNodeTraverser() {
+		    	public boolean foundNode(Node node, int depth) {
+		    		NodeAttributes nodeAttributes = node.getNodeAttributes();		    		
+		    		if (nodeAttributes.isUnknown() &&
+		    			(nodeAttributes.getUnknownState() == UnknownState.UNKNOWN)) {
+		    			console.display(nodeAttributes.getUnknownDescription() + "\n");
+		    			m_found = true;
+		    		}		    			
+		        	return true;
+		    	}
+		    });
+		}		
+		if (!m_found) {
 		    console.display("none\n");
 		}
     }

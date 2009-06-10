@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class BlockNode extends Node {
@@ -57,10 +59,6 @@ public class BlockNode extends Node {
 	public Collection<Node> getContainedNodes() {
 		return new HashSet<Node> (m_insts);
 	}
-
-	public String getFunctionName() {
-		return "";
-	}
 	
 	public int getStartPc() {
 		return getInstructions().getFirst().getPc();
@@ -108,7 +106,7 @@ public class BlockNode extends Node {
 		double time = 0;
 		for (Node node : m_insts) {
 			time += node.getTimeTakenRelative(c);
-		}
+		}		
         return time;		
 	}
 
@@ -178,4 +176,5 @@ public class BlockNode extends Node {
 		
 		
 	}
+
 }

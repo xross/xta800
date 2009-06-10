@@ -36,9 +36,6 @@ import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
-import com.xmos.xta.engine.unknowns.LoopIterationsUnknown;
-import com.xmos.xta.engine.unknowns.PausableInstructionUnknown;
-import com.xmos.xta.engine.unknowns.Unknown;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.GuiRouteInfo;
@@ -121,15 +118,16 @@ public class UnknownsViewer {
 		for (Node node : selectedNodes) {
 			node.getBlockIds(selectedBlocks);
 		}
-
+/* TODO
 		for (TableItem item : m_unknownsViewer.getTable().getItems()) {
 			Unknown unknown = (Unknown)item.getData();
-			if (selectedBlocks.contains(unknown.getBasicBlockId())) {
+			if (selectedBlocks.contains(unknown.getNodeId())) {
 				item.setBackground(m_display.getSystemColor(SWT.COLOR_YELLOW));
 			} else {
 				item.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
 			}
 		}
+*/		
 	}
 
 	class UnknownSorter extends ViewerSorter {
@@ -137,6 +135,7 @@ public class UnknownsViewer {
 		int direction = 1;
 		
 		public int compare(Viewer viewer, Object e1, Object e2) {
+/* TODO			
 			Unknown p1 = (Unknown) e1;
 			Unknown p2 = (Unknown) e2;
 			switch(field){
@@ -147,9 +146,11 @@ public class UnknownsViewer {
 				int res3 = p1.getPc() > p2.getPc() ? 1 : -1;
 				return res3 * direction;
 			default:
-				int resd = p1.getBasicBlockId() > p2.getBasicBlockId() ? 1 : -1;
+				int resd = p1.getNodeId() > p2.getNodeId() ? 1 : -1;
 				return resd * direction;
 			}
+*/
+return 0;
 		}
 
 		public void setColoumn(int i) {
@@ -181,6 +182,7 @@ public class UnknownsViewer {
 				ArrayList<Reference> m_selectedLoopRefs = new ArrayList<Reference>();
 				
 				for (Object object : ((IStructuredSelection) selection).toList()) {
+/* TODO					
 					Unknown unknown = (Unknown)object;
 					
 					if (unknown == null)
@@ -190,7 +192,7 @@ public class UnknownsViewer {
 								"0x" + Integer.toHexString(unknown.getPc()), ReferenceClass.ENDPOINT_REF);
 						Engine engine = GuiEngine.getEngine();
 						ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
-					if(unknown.getType().equals(PausableInstructionUnknown.class.getName())){
+					if(unknown.getType().equals(InstructionTimeUnknown.class.getName())){
 						m_selectedTimeRefs.add(ref);
 					} else if(unknown.getType().equals(LoopIterationsUnknown.class.getName())){
 						m_selectedLoopRefs.add(ref);
@@ -200,6 +202,7 @@ public class UnknownsViewer {
 					} else {
 						assert(false);
 					}
+*/					
 				}
 				
 				m_setLoopIterationsAction.setEnabled(false);

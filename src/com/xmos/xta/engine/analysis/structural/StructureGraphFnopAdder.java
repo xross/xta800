@@ -7,7 +7,7 @@ public class StructureGraphFnopAdder {
 
 	public void analyse(Case c, Node graph, boolean isFunction) {
 		//FIXME
-		graph.updateFnops(c, 0);
+
 	}
 
 }

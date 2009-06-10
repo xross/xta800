@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
@@ -67,10 +68,6 @@ public class SectionNode extends Node {
 			containedNodes.addAll(loop.getContainedNodes());
 		}
 		return containedNodes;
-	}
-
-	public String getFunctionName() {
-		return "";
 	}
 	
 	public int getStartPc() {
@@ -227,66 +224,11 @@ public class SectionNode extends Node {
 		return getWorstCaseOption().getNumFNopsAbsolute(c);
 	}
 
-	Node m_worst;
-	Node m_best;
+	@Override
+	public void updateFnops(Case c, IBufferVector ibv) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
-	public void updateFnops(Case c, int startIBuffer) {
-		
-		//TODO - what if the user skips the node!
-		
-		double bestTimeTaken = Double.MAX_VALUE;
-		double worstTimeTaken = 0;
-		
-		int bestEndIbuffer = 0;
-		int worstEndIbuffer = 0;
-		
-		m_iBufferStart = startIBuffer;
-		
-		if(getParent().isLoopNode()){
-			for(Node option : m_options){
-				option.m_iBufferStart = m_iBufferStart;
-				option.updateFnops(c, m_iBufferStart);
-				
-				if(option.m_iBufferEnd > worstEndIbuffer){
-					worstTimeTaken = option.getTimeTaken(c);
-					m_worst = option;
-					worstEndIbuffer = option.m_iBufferEnd;
-				}
-				if(option.m_iBufferEnd < bestEndIbuffer){
-					bestTimeTaken = option.getTimeTaken(c);
-					m_best = option;
-					bestEndIbuffer = option.m_iBufferEnd;
-				}
-			}
-			if(c == Case.BEST){
-				m_iBufferEnd = bestEndIbuffer;
-			} else {
-				m_iBufferEnd = worstEndIbuffer;
-			}
-			
-		} else {
-			for(Node option : m_options){
-				option.m_iBufferStart = m_iBufferStart;
-				option.updateFnops(c, m_iBufferStart);
-				double timeTaken = option.getTimeTaken(c);
-				if(timeTaken > worstTimeTaken){
-					worstTimeTaken = timeTaken;
-					m_worst = option;
-					worstEndIbuffer = option.m_iBufferEnd;
-				}
-				if(timeTaken < bestTimeTaken){
-					bestTimeTaken = timeTaken;
-					m_best = option;
-					bestEndIbuffer = option.m_iBufferEnd;
-				}
-			}
-			if(c == Case.BEST){
-				m_iBufferEnd = bestEndIbuffer;
-			} else {
-				m_iBufferEnd = worstEndIbuffer;
-			}
-			
-		}
-		
-	}	
 }

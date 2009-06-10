@@ -11,10 +11,13 @@ import java.util.Map;
 import java.util.Set;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
-import com.xmos.xta.engine.analysis.structural.nodes.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.controlflow.FnopAnalyser;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.NodeAttributes.UnknownType;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.analysis.structural.patterns.LoopPatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.PathPatternMatcher;
@@ -27,6 +30,7 @@ import com.xmos.xta.engine.analysis.structural.patterns.UpWedge;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructuralAnalysisEngine {
+	private static final boolean DEBUG = false;
 
 	private ControlFlowGraph m_controlFlowGraph;
 	private Map<Integer, FunctionNode> m_functionStartPcs;
@@ -105,13 +109,21 @@ public class StructuralAnalysisEngine {
 			return false;
 		}
 		
-		m_structureGraph = new StructureGraph(functions, threads);
+		m_structureGraph = new StructureGraph(threads);
 		
+		engine.provideFeedback("Linking functions..");
 		linkFunctions();		
-		markAllParents();
+
+		engine.provideFeedback("Setting parent nodes..");
+		setParents();
+
+		engine.provideFeedback("Setting unknown nodes..");
+		setUnknowns();
+
+		engine.provideFeedback("Setting initial loop iterations..");
 		setInitialIterations();		
 		
-		engine.provideFeedback("Done");
+		engine.provideFeedback("Complete");
 		return true;
 	}
 
@@ -135,8 +147,9 @@ public class StructuralAnalysisEngine {
 			FnopAnalyser fnopAnalyser = new FnopAnalyser();
 			fnopAnalyser.analyse(initialBasicBlock, isFunction);
 
-
-			if (false) dumpTree(basicBlocks);
+			if (DEBUG) 
+				dumpTree(basicBlocks);
+			
 			if (!createStructure(basicBlocks, initialBasicBlock, engine)) {
 				return null;
 			}
@@ -292,6 +305,28 @@ public class StructuralAnalysisEngine {
 		}
 	}
 		
+	private void setUnknowns() {
+		for (Node node : m_structureGraph.getThreads()) {
+		    node.traverse(0, new DefaultNodeTraverser() {
+				public boolean foundInstructionNode(Node node, int depth) {
+					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
+					if (instruction.canPause()) {
+						NodeAttributes nodeAttributes = node.getNodeAttributes();
+						nodeAttributes.setUnknownType(UnknownType.INSTRUCTION_TIME);
+					}
+					return true;
+				}
+
+				public boolean foundLoopNode(Node node, int depth) {
+					NodeAttributes nodeAttributes = node.getNodeAttributes();
+					nodeAttributes.setUnknownType(UnknownType.LOOP_ITERATIONS);
+					return true;
+				}
+		    });			
+		}
+		m_structureGraph.refreshDisplayedUnknowns();
+	}
+	
 	private void setInitialIterations() {
 		// Sets the top level nodes to iterate once..
 		for (Node node : m_structureGraph.getThreads()) {
@@ -309,20 +344,18 @@ public class StructuralAnalysisEngine {
 		}
 	}
 	
-	private void markAllParents() {
+	private void setParents() {
 		for (Node node : m_structureGraph.getThreads()) {
-			mark(node);
+			setParent(node);
 		}
 	}
 	
-	private void mark(Node node) {
+	private void setParent(Node node) {
 		for (Node child : node.getChildren()){
 			child.setParent(node);
-			mark(child);
+			setParent(child);
 		}
 	}
-
-	
 
 	private static int g = 0;
 	private void dumpTree(Collection<Node> workingSet) {
@@ -330,13 +363,13 @@ public class StructuralAnalysisEngine {
 			System.out.println("digraph g" + g++ + " {");
 			for (Node node : workingSet) {
 				for (Node next : node.getNextNodes()) {
-
 					if (node.getBranchTargets().contains(next)) {
 						System.out.println(node + " -> " + next + " [style=dotted];");
 					} else {
 						System.out.println(node + " -> " + next + ";");
 					}
 				}
+
 
 				System.out.print(node + " [label=\"" );
 				
@@ -361,6 +394,5 @@ public class StructuralAnalysisEngine {
 			System.out.println("}\n");
 		}
 	}
-
 
 }

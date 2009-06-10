@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
@@ -235,10 +237,8 @@ public class FunctionNode extends Node {
 		return 0;
 	}
 
-	public void updateFnops(Case c, int startIbuffer) {
-		m_iBufferStart = startIbuffer;
-		m_function.updateFnops(c , m_iBufferStart);
-		m_iBufferEnd = m_function.m_iBufferEnd;
+	public void updateFnops(Case c, IBufferVector ibv) {
+		
 	}
 
 }

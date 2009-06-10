@@ -6,16 +6,17 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import com.xmos.xta.engine.analysis.routes.Route;
-import com.xmos.xta.engine.unknowns.Unknown;
 
 public class UnknownsContentProvider implements IStructuredContentProvider {
     public static final boolean DEBUG = false;
 
 	public Object[] getElements(Object inputElement) {
 		if (DEBUG) System.out.printf("UnknownsContentProvider: getElements\n");	
-		
+/* TODO		
 		HashSet<Unknown> unknowns = ((Route)inputElement).getUnknowns().getUnknowns();
 		return unknowns.toArray();
+*/
+return null;
 	}
 
 	public void dispose() {

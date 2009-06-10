@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
@@ -30,6 +31,8 @@ public abstract class Node implements Comparable<Node>{
 	boolean m_isAbsolute;	
 	boolean m_isExcluded;
 	boolean m_isLoopHeader;
+	
+	private NodeAttributes m_nodeAttributes;
 
 	Set<Node> m_branchTargets;
 	Collection<IBufferSequence> m_ibufferSequences;
@@ -58,7 +61,6 @@ public abstract class Node implements Comparable<Node>{
 	
 	public abstract LinkedList<XtaInstruction> getInstructions();
 	public abstract Collection<Node> getContainedNodes();	
-	public abstract String getFunctionName();
 	public abstract int getStartPc();
 	
 	public static int getNodeCount(){
@@ -70,6 +72,8 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public Node() {
+		m_nodeAttributes = new NodeAttributes(this);
+
 		m_isExcluded = false;
 		m_isLoopHeader = false;
 		m_ibufferSequences = new HashSet<IBufferSequence>();
@@ -81,6 +85,8 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public Node(Node node) {
+		m_nodeAttributes = new NodeAttributes(node.m_nodeAttributes);
+
 		m_isExcluded = node.m_isExcluded;
 		m_isLoopHeader = node.m_isLoopHeader;
 		m_ibufferSequences = new HashSet<IBufferSequence>(node.m_ibufferSequences);
@@ -410,7 +416,40 @@ public abstract class Node implements Comparable<Node>{
 		}
 		return true;
 	}
+	public NodeAttributes getNodeAttributes() {
+		return m_nodeAttributes;
+	}
+	public void setInstructionNumCycles(long numCycles) {
+		assert(false);		
+	}
+
+	public void unsetInstructionNumCycles() {
+		assert(false);		
+	}
 	
+	public long getInstructionNumCycles() {
+		assert(false);		
+		return 0;
+	}
+
+	public void setInstructionTimeTaken(double timeTaken) {
+		assert(false);		
+	}
+
+	public void unsetInstructionTimeTaken() {
+		assert(false);		
+	}
+	
+	public double getInstructionTimeTaken() {
+		assert(false);		
+		return 0;
+	}
+	
+	public boolean isInstructionUnknown() {
+		assert(false);		
+		return false;
+	}	
+
 	public int fnopCount(int pc){
 		if(isFnopsDeterministic()){
 			int count =0;
@@ -423,6 +462,10 @@ public abstract class Node implements Comparable<Node>{
 		}
 	}
 	
+	public String getFunctionName() {
+		return "";
+	}
+
 	IBufferVector m_worstCaseIbuffer;
 	IBufferVector m_bestCaseIbuffer;
 	

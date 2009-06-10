@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.Text;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.references.Reference;
-import com.xmos.xta.engine.unknowns.Unknowns;
 
 public class InstructionTime extends XtaDialog {
     Engine m_engine;
@@ -54,18 +53,19 @@ public class InstructionTime extends XtaDialog {
     }
 
 	private void init(Route route) {
-    	Unknowns unknowns = route.getUnknowns();
+//TODO   	Unknowns unknowns = route.getUnknowns();
     	
     	m_valueChanged = false;
     	m_wasSet = new ArrayList<Boolean>();
     	m_originalCycles = new ArrayList<Long>();
     	for (Reference ref : m_refs) {
-    		if (unknowns.isUnknownInstructionTime(ref.getPc())) {
-    			m_wasSet.add(false);
-    		} else {
-    			m_wasSet.add(true);
-    		}
-    		m_originalCycles.add(m_engine.getInstructionNumCycles(ref.getPc()));
+//    		if (unknowns.isUnknownInstructionTime(ref.getPc())) {
+//   			m_wasSet.add(false);
+//    		} else {
+//    			m_wasSet.add(true);
+ //   		}
+//TODO   		
+//    		m_originalCycles.add(m_engine.getInstructionNumCycles(ref.getPc()));
     	}
     	open();
 	}
@@ -99,7 +99,8 @@ public class InstructionTime extends XtaDialog {
 			public void modifyText(ModifyEvent e) {
 				try {
 					for (Reference ref : m_refs) {
-						m_engine.setInstructionTimeTaken(ref, Double.parseDouble(m_ns.getText()));
+						//TODO
+						//m_engine.setInstructionTimeTaken(ref, Double.parseDouble(m_ns.getText()));
 					}
 					m_valueChanged = true;
 					updateCyclesValue();
@@ -117,7 +118,8 @@ public class InstructionTime extends XtaDialog {
 			public void modifyText(ModifyEvent e) {
 				try {
 					for (Reference ref : m_refs) {
-						m_engine.setInstructionNumCycles(ref, Integer.parseInt(m_cycles.getText()));
+						//TODO
+						//m_engine.setInstructionNumCycles(ref, Integer.parseInt(m_cycles.getText()));
 					}
 					m_valueChanged = true;
 					updateNsValue();
@@ -144,13 +146,15 @@ public class InstructionTime extends XtaDialog {
 
 	private void updateNsValue() {
 		m_ns.removeModifyListener(m_nsListener);
-		m_ns.setText(Double.toString(m_engine.getInstructionTimeTaken(m_refs.get(0).getPc())));
+		//TODO
+		//m_ns.setText(Double.toString(m_engine.getInstructionTimeTaken(m_refs.get(0).getPc())));
 		m_ns.addModifyListener(m_nsListener);
 	}			
 
 	private void updateCyclesValue() {
 		m_cycles.removeModifyListener(m_cyclesListener);
-		m_cycles.setText(Long.toString(m_engine.getInstructionNumCycles(m_refs.get(0).getPc())));
+		//TODO
+		//m_cycles.setText(Long.toString(m_engine.getInstructionNumCycles(m_refs.get(0).getPc())));
 		m_cycles.addModifyListener(m_cyclesListener);
 	}			
 
@@ -159,10 +163,12 @@ public class InstructionTime extends XtaDialog {
     		if (m_valueChanged) {
     			int index = 0;
     			for (Reference ref : m_refs) {
-    				m_engine.setInstructionNumCycles(ref, m_originalCycles.get(index));
+    				//TODO
+    				//m_engine.setInstructionNumCycles(ref, m_originalCycles.get(index));
     				
     				if (!m_wasSet.get(index)) {
-    					m_engine.unsetInstructionTime(ref.getPc());
+    					//TODO
+    					//m_engine.unsetInstructionTime(ref.getPc());
     				}
     				index++;
     			}
@@ -171,7 +177,8 @@ public class InstructionTime extends XtaDialog {
     		if (!m_valueChanged) {
 	    		int index = 0;
 	    		for (Reference ref : m_refs) {
-	    			m_engine.setInstructionNumCycles(ref, m_originalCycles.get(index));
+	    			//TODO
+	    			//m_engine.setInstructionNumCycles(ref, m_originalCycles.get(index));
 					index++;
 	    		}
     		}
