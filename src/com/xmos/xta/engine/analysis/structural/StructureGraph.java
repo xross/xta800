@@ -168,7 +168,14 @@ public class StructureGraph {
 	}
 	
 	private Node getEncolsingLoopNode(Node node) {
-		return node.isLoopNode() ? node : node.getEnclosingLoopNode();		
+		if (node.isLoopNode())
+			return node;
+				
+		Node n = node.getParent();
+		while ((n != null) && !n.isLoopNode()) {
+			n = node.getParent();
+		}
+		return n;		
 	}
 
 	private void setUnknownState(Node node, UnknownState unknownState) {

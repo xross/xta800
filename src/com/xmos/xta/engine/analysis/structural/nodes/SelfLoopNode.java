@@ -57,10 +57,6 @@ public class SelfLoopNode extends Node{
 		return containedNodes;
 	}
 
-	public String getFunctionName() {
-		return "";
-	}
-
 	public int getStartPc() {
 		return m_loop.getStartPc();
 	}

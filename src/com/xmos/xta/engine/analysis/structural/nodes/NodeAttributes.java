@@ -94,7 +94,7 @@ public class NodeAttributes {
 
 			case KNOWN:
 				return String.format("Loop iterations on loop " + 
-						m_node.getId() + " is set to " + m_node.getNumIterations());
+						m_node.getId() + " are known");
 			}
 			assert(false);
 			return "";

@@ -90,10 +90,6 @@ public class LoopNode extends Node {
 		return containedNodes;
 	}
 
-	public String getFunctionName() {
-		return "";
-	}
-
 	public int getStartPc() {
 		return m_loopHeader.getStartPc();
 	}

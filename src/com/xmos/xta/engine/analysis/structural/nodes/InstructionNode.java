@@ -47,10 +47,6 @@ public class InstructionNode extends Node {
 		return containedNodes;
 	}
 
-	public String getFunctionName() {
-		return "";
-	}
-
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> inst = new LinkedList<XtaInstruction>();
 		inst.add(m_inst);

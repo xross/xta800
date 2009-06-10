@@ -68,10 +68,6 @@ public class PathNode extends Node {
 		}
 		return containedNodes;
 	}
-
-	public String getFunctionName() {
-		return "";
-	}
 	
 	public int getStartPc() {
 		return m_nodes.get(0).getStartPc();

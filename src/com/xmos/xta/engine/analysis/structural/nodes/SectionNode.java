@@ -70,10 +70,6 @@ public class SectionNode extends Node {
 		}
 		return containedNodes;
 	}
-
-	public String getFunctionName() {
-		return "";
-	}
 	
 	public int getStartPc() {
 		int pc = 0;

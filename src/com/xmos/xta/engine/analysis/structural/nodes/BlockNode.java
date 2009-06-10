@@ -59,10 +59,6 @@ public class BlockNode extends Node {
 	public Collection<Node> getContainedNodes() {
 		return new HashSet<Node> (m_insts);
 	}
-
-	public String getFunctionName() {
-		return "";
-	}
 	
 	public int getStartPc() {
 		return getInstructions().getFirst().getPc();

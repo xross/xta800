@@ -61,7 +61,6 @@ public abstract class Node implements Comparable<Node>{
 	public abstract Set<Integer> getPCs();
 	public abstract LinkedList<XtaInstruction> getInstructions();
 	public abstract Collection<Node> getContainedNodes();	
-	public abstract String getFunctionName();
 	public abstract int getStartPc();
 
 	public static int getNodeCount(){
@@ -227,6 +226,10 @@ public abstract class Node implements Comparable<Node>{
 		m_parent = node;
 	}
 	
+	public String getFunctionName() {
+		return "";
+	}
+	
 	public boolean isSectionNode() {
 		return false;
 	}
@@ -308,14 +311,6 @@ public abstract class Node implements Comparable<Node>{
 	public boolean isLoopHeader() {
 		return m_isLoopHeader;
 	}	
-
-	public Node getEnclosingLoopNode() {		
-		Node node = m_parent;
-		while ((node != null) && !node.isLoopNode()) {
-			node = node.getParent();
-		}
-		return node;
-	}
 
 	public boolean checkBackTrail(Stack<ReferenceType> referenceTypes) {
 		return checkBackTrail(referenceTypes, null, false, new FunctionCallStatus());

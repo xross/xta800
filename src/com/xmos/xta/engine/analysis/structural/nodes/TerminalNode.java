@@ -61,10 +61,6 @@ public class TerminalNode extends Node {
 		return pcs;
 	}
 
-	public String getFunctionName() {
-		return "";
-	}
-
 	public int getStartPc() {
 		int pc = 0;
 		for(Node n : m_terminals){
