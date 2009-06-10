@@ -33,15 +33,14 @@ import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.Route;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
-import com.xmos.xta.gui.GuiRouteInfo;
 import com.xmos.xta.gui.dialogs.InstructionTime;
 import com.xmos.xta.gui.dialogs.Iterations;
-import com.xmos.xta.gui.nodes.Node;
 
 public class UnknownsViewer {
 	private Display m_display;
@@ -105,20 +104,16 @@ public class UnknownsViewer {
 	public void update() {
 		Engine engine = GuiEngine.getEngine();
 		m_unknownsViewer.setInput(engine.getSelectedRoute());
-
-		GuiRouteInfo routeInfo = GuiEngine.getRouteInfo();
-		if (routeInfo != null) {
-			updateHighlighting(routeInfo.getSelectedNodes());
-		}
+		updateHighlighting(GuiEngine.getSelectedNodes());
 	}
 
 	public void updateHighlighting(List<Node> selectedNodes) {
 		// Get blocks for all selected nodes
 		HashSet<Integer> selectedBlocks = new HashSet<Integer>();
+/* TODO
 		for (Node node : selectedNodes) {
 			node.getBlockIds(selectedBlocks);
 		}
-/* TODO
 		for (TableItem item : m_unknownsViewer.getTable().getItems()) {
 			Unknown unknown = (Unknown)item.getData();
 			if (selectedBlocks.contains(unknown.getNodeId())) {

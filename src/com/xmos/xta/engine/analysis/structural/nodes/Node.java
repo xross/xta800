@@ -41,6 +41,8 @@ public abstract class Node implements Comparable<Node>{
 		BEST,
 	}
 
+	public abstract String getTypeName();
+	
 	public abstract Node shallowCopy();
 	public abstract Node deepCopy(Map<Integer, FunctionNode> startPcs);
 	
@@ -52,7 +54,7 @@ public abstract class Node implements Comparable<Node>{
 	public abstract long getNumInstructionsAbsolute(Case c);
 	public abstract long getNumFNopsRelative(Case c);	
 	public abstract long getNumFNopsAbsolute(Case c);	
-	
+		
 	public abstract List<Node> getChildren();
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);	

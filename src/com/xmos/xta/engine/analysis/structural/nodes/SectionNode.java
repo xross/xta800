@@ -49,6 +49,10 @@ public class SectionNode extends Node {
 		return sn;
 	}
 	
+    public String getTypeName() {
+        return "section";
+    }
+	
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
 		list.addAll(getWorstCaseOption().getInstructions());

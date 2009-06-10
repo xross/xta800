@@ -1,5 +1,5 @@
 package com.xmos.xta.gui.views;
-
+/*
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -242,9 +242,9 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		}
 	}
 
-	/*
-	 * Methods for implementing the ISelectionProvider
-	 */
+	//
+	// Methods for implementing the ISelectionProvider
+	//
 	public void addSelectionChangedListener(ISelectionChangedListener listener) {
 		if (!m_listeners.contains(listener)) {
 			m_listeners.add(listener);
@@ -281,9 +281,9 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		}
 	}
 
-	/*
-	 * Structure view methods 
-	 */
+	//
+	// Structure view methods 
+	//
 	protected void refreshView() {
 		if (m_refreshing)
 			return;
@@ -520,3 +520,4 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     protected abstract void annotateTree(boolean isSelctionChange);
     protected abstract void updatePixelsXy();
 }
+*/

@@ -86,6 +86,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 				}
 			}
 		}
-		m_unknowns.updateHighlighting(selectedNodes);
+		//TODO
+		//m_unknowns.updateHighlighting(selectedNodes);
 	}
 }

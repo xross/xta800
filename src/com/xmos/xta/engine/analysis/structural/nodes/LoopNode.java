@@ -61,6 +61,10 @@ public class LoopNode extends Node {
 		return ln;
 	}
 
+    public String getTypeName() {
+        return "loop";
+    }
+		
 	public void addLoop(Node loop) {
 		m_loops.add(loop);
 	}

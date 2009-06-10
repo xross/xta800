@@ -25,7 +25,7 @@ public class StructureDisplayer {
 				public boolean foundBlockNode(Node node, int depth) {
 					printIndent(depth);
 					printUnknown(node);
-					displayNodeName(node, "block");
+					displayNodeName(node);
 					if (DEBUG) displayWhatsNext(node);
 					displayTimeTaken(node);
 					displayNumIterations(node);
@@ -36,7 +36,7 @@ public class StructureDisplayer {
 				public boolean foundFunctionNode(Node node, int depth) {
 					printIndent(depth);
 					printUnknown(node);
-					displayNodeName(node, "function");
+					displayNodeName(node);
 					displayFunctionName(node);
 					if (DEBUG) displayWhatsNext(node);
 					displayTimeTaken(node);
@@ -48,7 +48,7 @@ public class StructureDisplayer {
 				public boolean foundLoopNode(Node node, int depth) {
 					printIndent(depth);
 					printUnknown(node);
-					displayNodeName(node, "loop");
+					displayNodeName(node);
 					if (DEBUG) displayWhatsNext(node);
 					displayTimeTaken(node);
 					displayNumIterations(node);
@@ -59,7 +59,7 @@ public class StructureDisplayer {
 				public boolean foundPathNode(Node node, int depth) {
 					printIndent(depth);
 					printUnknown(node);
-					displayNodeName(node, "path");
+					displayNodeName(node);
 					if (DEBUG) displayWhatsNext(node);
 					displayTimeTaken(node);
 					displayNumIterations(node);
@@ -70,7 +70,7 @@ public class StructureDisplayer {
 				public boolean foundSectionNode(Node node, int depth) {
 					printIndent(depth);
 					printUnknown(node);
-					displayNodeName(node, "section");
+					displayNodeName(node);
 					if (DEBUG) displayWhatsNext(node);
 					displayTimeTaken(node);
 					displayNumIterations(node);
@@ -81,7 +81,7 @@ public class StructureDisplayer {
 				public boolean foundTerminalNode(Node node, int depth) {
 					printIndent(depth);
 					printUnknown(node);
-					displayNodeName(node, "terminal");
+					displayNodeName(node);
 					if (DEBUG) displayWhatsNext(node);
 					displayTimeTaken(node);
 					displayNumIterations(node);
@@ -93,7 +93,7 @@ public class StructureDisplayer {
 					if (DEBUG) {
 						printIndent(depth);
 						printUnknown(node);
-						displayNodeName(node, "instruction");
+						displayNodeName(node);
 						displayTimeTaken(node);
 						displayNumIterations(node);
 						displayInstructionTrace(node);
@@ -122,12 +122,12 @@ public class StructureDisplayer {
 		}
 	}	
 	
-	private void displayNodeName(Node node, String nodeType) {	
+	private void displayNodeName(Node node) {	
 		String nodeName = "";
 		if (node.isLoopHeader()) {
 			nodeName = String.format("header(%d)", node.getId());			
 		} else {
-			nodeName = String.format("%s(%d)", nodeType, node.getId());
+			nodeName = String.format("%s(%d)", node.getTypeName(), node.getId());
 		}
 		m_console.display(String.format("%-14s", nodeName));		
 	}

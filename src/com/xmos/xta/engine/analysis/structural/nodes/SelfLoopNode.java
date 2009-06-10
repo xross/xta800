@@ -40,6 +40,10 @@ public class SelfLoopNode extends Node{
 		return ln;
 	}
 	
+    public String getTypeName() {
+        return "selfloop";
+    }
+	
 	public LinkedList<XtaInstruction> getInstructions() {
 	LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loop.getInstructions());
 

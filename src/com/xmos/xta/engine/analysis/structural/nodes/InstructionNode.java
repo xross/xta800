@@ -28,7 +28,7 @@ public class InstructionNode extends Node {
 		m_inst = node.m_inst;
 		m_numCycles = node.m_numCycles;
 	}
-
+	
 	public Node shallowCopy() {
 		return new InstructionNode(this);
 	}
@@ -36,6 +36,10 @@ public class InstructionNode extends Node {
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		return shallowCopy();
 	}
+
+    public String getTypeName() {
+        return "instruction";
+    }
 	
 	public String toString(){
 		return "instruction" + m_id;

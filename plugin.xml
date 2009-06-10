@@ -39,6 +39,13 @@
    <extension
          point="org.eclipse.ui.views">
       <view
+            class="com.xmos.xta.gui.views.routes.RoutesView"
+            icon="icons/tree.png"
+            id="com.xmos.xta.gui.views.routes.Routes"
+            name="Routes"
+            restorable="true">
+      </view>
+      <view
             class="com.xmos.xta.gui.views.tree.TreeView"
             icon="icons/tree.png"
             id="com.xmos.xta.gui.views.tree.Tree"
@@ -57,20 +64,6 @@
             icon="icons/log.png"
             id="com.xmos.xta.gui.views.log.Log"
             name="Log"
-            restorable="true">
-      </view>
-      <view
-            class="com.xmos.xta.gui.views.function.FunctionView"
-            icon="icons/function_view.png"
-            id="com.xmos.xta.gui.views.function.Function"
-            name="Function"
-            restorable="true">
-      </view>
-      <view
-            class="com.xmos.xta.gui.views.structure.StructureView"
-            icon="icons/structure.png"
-            id="com.xmos.xta.gui.views.structure.Structure"
-            name="Structure"
             restorable="true">
       </view>
       <view
@@ -100,108 +93,12 @@
          point="org.eclipse.ui.menus">
       <menuContribution
             locationURI="toolbar:com.xmos.xta.gui.views.FunctionView.Function">
-         <command
-               commandId="com.xmos.xta.gui.function.zoomin.command"
-               icon="icons/zoomin.png"
-               id="com.xmos.xta.gui.function.zoomin.command"
-               label="Zoom In"
-               style="push">
-         </command>
-         <command
-               commandId="com.xmos.xta.gui.function.zoomout.command"
-               icon="icons/zoomout.png"
-               id="com.xmos.xta.gui.function.zoomout.command"
-               label="Zoom Out"
-               style="push">
-         </command>
-         <command
-               commandId="com.xmos.xta.gui.function.zoomreset.command"
-               icon="icons/zoomreset.png"
-               id="com.xmos.xta.gui.function.zoomreset.command"
-               label="Reset Zoom"
-               style="push">
-         </command>
-         <command
-               commandId="com.xmos.xta.gui.function.zoomfit.command"
-               icon="icons/zoomfit.png"
-               id="com.xmos.xta.gui.function.zoomfit.command"
-               label="Zoom to fit"
-               style="push">
-         </command>
       </menuContribution>
       <menuContribution
             locationURI="toolbar:com.xmos.xta.gui.views.StructureView.Structure">
-         <command
-               commandId="com.xmos.xta.gui.structure.zoomin.command"
-               icon="icons/zoomin.png"
-               id="com.xmos.xta.gui.structure.zoomin.command"
-               label="Zoom In"
-               style="push">
-         </command>
-         <command
-               commandId="com.xmos.xta.gui.structure.zoomout.command"
-               icon="icons/zoomout.png"
-               id="com.xmos.xta.gui.structure.zoomout.command"
-               label="Zoom Out"
-               style="push">
-         </command>
-         <command
-               commandId="com.xmos.xta.gui.structure.zoomreset.command"
-               icon="icons/zoomreset.png"
-               id="com.xmos.xta.gui.structure.zoomreset.command"
-               label="Reset Zoom"
-               style="push">
-         </command>
-         <command
-               commandId="com.xmos.xta.gui.structure.cumulative.command"
-               icon="icons/cumulative.png"
-               id="com.xmos.xta.gui.structure.cumulative.command"
-               label="Cumulative weights"
-               style="push">
-         </command>
       </menuContribution>
    </extension> <extension
-         point="org.eclipse.ui.commands">
-      <command
-            defaultHandler="com.xmos.xta.gui.handlers.StructureZoomInHandler"
-            id="com.xmos.xta.gui.structure.zoomin.command"
-            name="com.xmos.xta.gui.structure.zoomin.command">
-      </command>
-      <command
-            defaultHandler="com.xmos.xta.gui.handlers.StructureZoomOutHandler"
-            id="com.xmos.xta.gui.structure.zoomout.command"
-            name="com.xmos.xta.gui.structure.zoomout.command">
-      </command>
-      <command
-            defaultHandler="com.xmos.xta.gui.handlers.StructureZoomResetHandler"
-            id="com.xmos.xta.gui.structure.zoomreset.command"
-            name="com.xmos.xta.gui.structure.zoomreset.command">
-      </command>
-      <command
-            defaultHandler="com.xmos.xta.gui.handlers.FunctionZoomInHandler"
-            id="com.xmos.xta.gui.function.zoomin.command"
-            name="com.xmos.xta.gui.function.zoomin.command">
-      </command>
-      <command
-            defaultHandler="com.xmos.xta.gui.handlers.FunctionZoomOutHandler"
-            id="com.xmos.xta.gui.function.zoomout.command"
-            name="com.xmos.xta.gui.function.zoomout.command">
-      </command>
-      <command
-            defaultHandler="com.xmos.xta.gui.handlers.FunctionZoomResetHandler"
-            id="com.xmos.xta.gui.function.zoomreset.command"
-            name="com.xmos.xta.gui.function.zoomreset.command">
-      </command>
-      <command
-            defaultHandler="com.xmos.xta.gui.handlers.FunctionZoomFitHandler"
-            id="com.xmos.xta.gui.function.zoomfit.command"
-            name="com.xmos.xta.gui.function.zoomfit.command">
-      </command>
-      <command
-            defaultHandler="com.xmos.xta.gui.handlers.StructureCumulativeHandler"
-            id="com.xmos.xta.gui.structure.cumulative.command"
-            name="com.xmos.xta.gui.structure.cumulative.command">
-      </command>command>
+         point="org.eclipse.ui.commands">command>
    </extension>
    <extension
          point="org.eclipse.ui.editors.markerAnnotationSpecification">

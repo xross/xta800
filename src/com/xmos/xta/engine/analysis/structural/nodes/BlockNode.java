@@ -27,7 +27,7 @@ public class BlockNode extends Node {
 		super();
 		m_insts = insts;
 	}
-	
+		
 	public BlockNode shallowCopy() {
 		return new BlockNode(this);
 	}
@@ -39,7 +39,11 @@ public class BlockNode extends Node {
 		}
 		return bn;
 	}
-	
+
+    public String getTypeName() {
+        return "block";
+    }
+    
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>();
 		for(Node inst : m_insts){

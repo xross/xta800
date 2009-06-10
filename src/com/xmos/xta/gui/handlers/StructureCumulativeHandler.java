@@ -1,5 +1,5 @@
 package com.xmos.xta.gui.handlers;
-
+/*
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -21,5 +21,5 @@ public class StructureCumulativeHandler extends AbstractHandler implements IHand
 		control.setWeightCumulative(m_isCumulative);
 		return null;
 	}
-
 }
+*/

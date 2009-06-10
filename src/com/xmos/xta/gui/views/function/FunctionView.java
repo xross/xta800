@@ -1,5 +1,5 @@
 package com.xmos.xta.gui.views.function;
-
+/*
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -312,9 +312,9 @@ public class FunctionView extends ZoomedCanvasView {
         }
     }
 
-    /*
-     * Timeline functions
-     */
+    //
+    // Timeline functions
+    //
     private void drawTimeLine(GC gc) {
 		Rectangle clientArea = m_canvas.getClientArea();
 
@@ -387,3 +387,4 @@ public class FunctionView extends ZoomedCanvasView {
 		}
 	}
 }
+*/
