@@ -36,18 +36,18 @@ public class InstructionBuffer {
         return m_pc;
     }
     
-    int getNumBytes() {
+    public int getNumBytes() {
         return m_numBytes;
     }
     
-    boolean canIssue(int numBytes) {
+    public boolean canIssue(int numBytes) {
         if (m_numBytes < numBytes)
             return false;
         else
             return true;
     }
     
-    int fetch() {
+    public int fetch() {
         // Need room for a word before fetching
         if (m_numBytes <= (IBUFFER_NUM_BYTES - BYTES_PER_WORD))
         {
@@ -63,12 +63,12 @@ public class InstructionBuffer {
         return 0;
     }
 
-    void issue(int numBytes) {
+    public void issue(int numBytes) {
         assert(m_numBytes >= numBytes);
         m_numBytes -= numBytes;
     }
 
-    int branchTo(int targetAddress, boolean isLoadStore) {
+    public int branchTo(int targetAddress, boolean isLoadStore) {
         m_pc = targetAddress;
         
         if (isLoadStore) {

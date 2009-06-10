@@ -2,15 +2,12 @@ package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
-import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
@@ -303,34 +300,20 @@ public class LoopNode extends Node {
 		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
 		}
 		return false;
+	}	
+	
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
+
 	}
 
-
-	public List<XtaInstruction> getInstructionStream(Case c) {
+	public void updateFnops(Case c, int startIBuffer) {
 		
-		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>();
-		List<Node> loopList = new LinkedList<Node>(m_loops);
-		Collections.sort(loopList);
-		for (Node loop : loopList) {
-			for(int i=0;i<loop.getNumIterations();i++){
-				insts.addAll(m_loopHeader.getInstructionStream(c));
-				insts.addAll(loop.getInstructionStream(c));
+		
+		for(Node loop : m_loops){
+			if(loop.getNumIterations() > 0){
+				
 			}
 		}
-		insts.addAll(m_loopHeader.getInstructionStream(c));
 		
-		return insts;
-	}		
-	
-	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
-		List<Node> loopList = new LinkedList<Node>(m_loops);
-		Collections.sort(loopList);
-		for (Node loop : loopList) {
-			for(int i=0;i<loop.getNumIterations();i++){
-				m_loopHeader.getInstructionStream(c, ibuffer, instructions);
-				loop.getInstructionStream(c, ibuffer, instructions);
-			}
-		}
-		m_loopHeader.getInstructionStream(c, ibuffer, instructions);	
 	}
 }

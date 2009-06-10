@@ -110,20 +110,6 @@ public class SelfLoopNode extends Node{
 		}
 		return false;
 	}
-	
-	public List<XtaInstruction> getInstructionStream(Case c) {
-		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
-		for(int i=0;i< m_numIterations;i++){
-			insts.addAll(m_loop.getInstructionStream(c));
-		}
-		return insts;
-	}
-
-	@Override
-	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
-		// TODO Auto-generated method stub
-		
-	}		
 		
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
@@ -158,5 +144,17 @@ public class SelfLoopNode extends Node{
 
 	public long getNumFNopsAbsolute(Case c) {
 		return m_loop.getNumFNopsAbsolute(c);
+	}
+
+	@Override
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateFnops(Case c, int startIBuffer) {
+		// TODO Auto-generated method stub
+		
 	}	
 }

@@ -46,7 +46,8 @@ public class Route {
 	private Constraint m_constraint;
 	private Set<Node> m_routeExclusionNodes;
 	private Collection<Reference> m_excludedRefs;
-
+	
+	
 	public static void resetRouteCount() {
 		s_routeCount = 0;
 	}

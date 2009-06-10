@@ -8,16 +8,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class PathNode extends Node {
 	List<Node> m_nodes;
-	
+
 	public PathNode(List<Node> nodes) {
 		super();
-		assert(nodes!= null);
-		assert(nodes.size()>1);
+		assert (nodes != null);
+		assert (nodes.size() > 1);
 		m_nodes = nodes;
 	}
 
@@ -30,11 +31,11 @@ public class PathNode extends Node {
 		super();
 		m_nodes = new LinkedList<Node>();
 	}
-	
+
 	public Node shallowCopy() {
 		return new PathNode(this);
 	}
-	
+
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		PathNode pn = new PathNode();
 		for (Node path : m_nodes) {
@@ -61,8 +62,8 @@ public class PathNode extends Node {
 	}
 
 	public Collection<Node> getContainedNodes() {
-		Collection<Node> containedNodes = new HashSet<Node> ();
-		for(Node loop: m_nodes){
+		Collection<Node> containedNodes = new HashSet<Node>();
+		for (Node loop : m_nodes) {
 			containedNodes.addAll(loop.getContainedNodes());
 		}
 		return containedNodes;
@@ -71,7 +72,7 @@ public class PathNode extends Node {
 	public String getFunctionName() {
 		return "";
 	}
-	
+
 	public int getStartPc() {
 		return m_nodes.get(0).getStartPc();
 	}
@@ -79,120 +80,120 @@ public class PathNode extends Node {
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
 		if (!nodeTraverser.foundPathNode(this, depth))
 			return;
-		
+
 		for (Node node : m_nodes) {
-			node.traverse(depth + 1, nodeTraverser);			
-		}		
+			node.traverse(depth + 1, nodeTraverser);
+		}
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		return "Path" + m_id;
 	}
 
 	public List<Node> getChildren() {
 		return m_nodes;
 	}
-	
+
 	public Collection<Node> whatsNext(Node node) {
-		assert(m_nodes.contains(node));
+		assert (m_nodes.contains(node));
 		int index = m_nodes.indexOf(node);
-		if(index < m_nodes.size()-1){
+		if (index < m_nodes.size() - 1) {
 			Collection<Node> next = new HashSet<Node>();
-			next.add(m_nodes.get(index+1));
+			next.add(m_nodes.get(index + 1));
 			return next;
 		} else {
 			return getParent().whatsNext(this);
 		}
 	}
-	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
-			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
-		
+
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove,
+			FunctionCallStatus functionCallStatus) {
+
 		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
+			return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
 		}
 		return false;
 	}
-	
-	public List<XtaInstruction> getInstructionStream(Case c) {
-		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
-		for (Node node : m_nodes) {
-			list.addAll(node.getInstructionStream(c));
-		}
-		return list;
+
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
+
 	}
 
-
-	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
-		for (Node node : m_nodes) {
-			node.getInstructionStream(c, ibuffer, instructions);
-		}
-	}		
-		
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
 	// --------------------------------------------------------------------- //
 	public double getTimeTakenRelative(Case c) {
 		double time = 0;
-	    for (Node node : m_nodes) {
-		    time += node.getTimeTakenRelative(c);
+		for (Node node : m_nodes) {
+			time += node.getTimeTakenRelative(c);
 		}
 		return time;
 	}
 
 	public double getTimeTakenAbsolute(Case c) {
 		double time = 0;
-	    for (Node node : m_nodes) {
-		    time += node.getTimeTakenAbsolute(c);
+		for (Node node : m_nodes) {
+			time += node.getTimeTakenAbsolute(c);
 		}
 		return time;
 	}
-	
+
 	public long getNumCyclesRelative(Case c) {
-   		long count = 0;
-    	for (Node node : m_nodes){
-    		count += node.getNumCyclesRelative(c);
+		long count = 0;
+		for (Node node : m_nodes) {
+			count += node.getNumCyclesRelative(c);
 		}
 		return count;
 	}
 
 	public long getNumCyclesAbsolute(Case c) {
-   		long count = 0;
-    	for (Node node : m_nodes){
-    		count += node.getNumCyclesAbsolute(c);
+		long count = 0;
+		for (Node node : m_nodes) {
+			count += node.getNumCyclesAbsolute(c);
 		}
 		return count;
 	}
-	
+
 	public long getNumInstructionsRelative(Case c) {
-   		long count = 0;
-    	for (Node node : m_nodes){
-    		count += node.getNumInstructionsRelative(c);
+		long count = 0;
+		for (Node node : m_nodes) {
+			count += node.getNumInstructionsRelative(c);
 		}
 		return count;
 	}
 
 	public long getNumInstructionsAbsolute(Case c) {
-   		long count = 0;
-    	for (Node node : m_nodes){
-    		count += node.getNumInstructionsAbsolute(c);
+		long count = 0;
+		for (Node node : m_nodes) {
+			count += node.getNumInstructionsAbsolute(c);
 		}
 		return count;
 	}
-	
+
 	public long getNumFNopsRelative(Case c) {
 		long fnops = 0;
-   		for (Node node : m_nodes) {
-    		fnops += node.getNumFNopsRelative(c);
+		for (Node node : m_nodes) {
+			fnops += node.getNumFNopsRelative(c);
 		}
 		return fnops;
 	}
 
 	public long getNumFNopsAbsolute(Case c) {
 		long fnops = 0;
-   		for (Node node : m_nodes) {
-    		fnops += node.getNumFNopsRelative(c);
+		for (Node node : m_nodes) {
+			fnops += node.getNumFNopsRelative(c);
 		}
 		return fnops;
-	}	
+	}
+
+	public void updateFnops(Case c, IBufferVector predessorIBufferVector) {
+		IBufferVector endVector = new IBufferVector();
+		
+		for(Node pathNode : m_nodes){
+			
+		}
+		
+		
+		
+	}
 }

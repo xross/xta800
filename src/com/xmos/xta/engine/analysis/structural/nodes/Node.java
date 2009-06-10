@@ -1,7 +1,6 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,8 +32,7 @@ public abstract class Node implements Comparable<Node>{
 	boolean m_isLoopHeader;
 
 	Set<Node> m_branchTargets;
-	Map<Integer, IBufferSequence> m_ibufferStates;
-	
+	Collection<IBufferSequence> m_ibufferSequences;
 	public enum Case {
 		WORST,
 		BEST,
@@ -55,8 +53,7 @@ public abstract class Node implements Comparable<Node>{
 	public abstract List<Node> getChildren();
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
-	public abstract List<XtaInstruction> getInstructionStream(Case c);
-	public abstract void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions);
+	public abstract void getInstructionStream(Case c, List<XtaInstruction> instructions);
 	public abstract Set<Integer> getPCs();
 	
 	public abstract LinkedList<XtaInstruction> getInstructions();
@@ -75,7 +72,7 @@ public abstract class Node implements Comparable<Node>{
 	public Node() {
 		m_isExcluded = false;
 		m_isLoopHeader = false;
-		m_ibufferStates = new HashMap<Integer, IBufferSequence>();
+		m_ibufferSequences = new HashSet<IBufferSequence>();
 		m_branchTargets = new HashSet<Node>();
 		m_nextNodes = new HashSet<Node>();
 		m_prevNodes = new HashSet<Node>();
@@ -86,21 +83,12 @@ public abstract class Node implements Comparable<Node>{
 	public Node(Node node) {
 		m_isExcluded = node.m_isExcluded;
 		m_isLoopHeader = node.m_isLoopHeader;
-		m_ibufferStates = new HashMap<Integer, IBufferSequence>(node.m_ibufferStates);
+		m_ibufferSequences = new HashSet<IBufferSequence>(node.m_ibufferSequences);
+		m_branchTargets = new HashSet<Node>(node.m_branchTargets);
 		m_nextNodes = new HashSet<Node>(node.m_nextNodes);
 		m_prevNodes = new HashSet<Node>(node.m_prevNodes);
 		m_dominators = new HashSet<Node>(node.m_prevNodes);
 		m_id = s_numNodes++;
-	}
-	
-	public Collection<IBufferSequence> getEndInstructionBuffers(){
-		Collection<IBufferSequence> ibuffers = new HashSet<IBufferSequence>();
-		
-		for(IBufferSequence endIbuff : m_ibufferStates.values()){
-			ibuffers.add(endIbuff);
-		}
-		
-		return ibuffers;
 	}
 	
 	public int getId() {
@@ -359,29 +347,95 @@ public abstract class Node implements Comparable<Node>{
 	}
 
 	class IBufferSequence {
-		Integer m_endInstBuffer;
-		List<Integer> m_fnopPcs;
+		private int m_startIbuffer;
+		private int m_endIbuffer;
+		private List<Integer> m_fnopPcs;
+		private InstructionBuffer m_endInstructionBuffer;
 		
-		public IBufferSequence(int endInstBuffer, List<Integer> fnopPcs) {
+		public IBufferSequence(int startIbuffer, int endIbuffer, List<Integer> fnopPcs, InstructionBuffer ib) {
 			super();
-			m_endInstBuffer = endInstBuffer;
+			m_startIbuffer = startIbuffer;
+			m_endIbuffer = endIbuffer;
 			m_fnopPcs = fnopPcs;
+			m_endInstructionBuffer = ib;
+		}
+		
+		public int getEndIbuffer(){
+			return m_endIbuffer;
+		}
+		public List<Integer> getfnops(){
+			return m_fnopPcs;
+		}
+		public int getStartIbuffer(){
+			return m_startIbuffer;
+		}
+		public InstructionBuffer getInstructionBuffer(){
+			return m_endInstructionBuffer;
 		}
 	}
+
 	
 	
-	public Map<Integer, IBufferSequence> getIbufferStates(){
-		return m_ibufferStates;
+	boolean m_deterministicFnops;
+	IBufferSequence m_ibs;
+	
+	public abstract void updateFnops(Case c, IBufferVector ibv);	
+
+	public boolean isFnopsDeterministic(){
+		return m_deterministicFnops;
 	}
 	
-	public boolean addEndInstructionBuffer(int numStartBytes, int endNumBytes, List<Integer> fnopPcs) {
-		if(!m_ibufferStates.containsKey(numStartBytes)){
-			m_ibufferStates.put(numStartBytes, new IBufferSequence(endNumBytes, fnopPcs));
-			return true;
+	public Collection<InstructionBuffer> getEndInstructionBuffers() {
+		HashSet<InstructionBuffer> set = new HashSet<InstructionBuffer>();
+		for(IBufferSequence ibs :m_ibufferSequences ){
+			set.add(ibs.getInstructionBuffer());
+		}
+		return set;
+	}
+	
+	public boolean addEndInstructionBuffer(int numStartBytes, InstructionBuffer endInstBuffer, List<Integer> fnopPcs) {
+		for(IBufferSequence i : m_ibufferSequences){
+			if(i.getStartIbuffer() == numStartBytes){
+				return false;
+			}
+		}
+		IBufferSequence ibs = new IBufferSequence(numStartBytes, endInstBuffer.getNumBytes(), fnopPcs, endInstBuffer);
+		m_ibufferSequences.add(ibs);
+		
+		if(m_ibufferSequences.size() == 1){
+			m_ibs = m_ibufferSequences.iterator().next();
+			m_deterministicFnops = true;
 		} else {
-			return false;
+			m_deterministicFnops = false;
 		}
-	}	
+		return true;
+	}
+	
+	public int fnopCount(int pc){
+		if(isFnopsDeterministic()){
+			int count =0;
+			for(int fnopPc : m_ibs.getfnops()){
+				if(fnopPc == pc) count++;
+			}
+			return count;
+		} else {
+			return 0;
+		}
+	}
+	
+	IBufferVector m_worstCaseIbuffer;
+	IBufferVector m_bestCaseIbuffer;
+	
+	public IBufferVector getIBufferVector(Case c){
+		if(c == Case.WORST){
+			return m_worstCaseIbuffer;
+		} else if(c == Case.BEST){
+			return m_bestCaseIbuffer;
+		} else {
+			assert(false);
+			return null;
+		}
+	}
 	
 }
 

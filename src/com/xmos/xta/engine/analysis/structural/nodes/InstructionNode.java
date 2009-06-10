@@ -12,13 +12,13 @@ import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class InstructionNode extends Node {
 	private XtaInstruction m_inst;
-	
-	public InstructionNode(XtaInstruction inst){
+
+	public InstructionNode(XtaInstruction inst) {
 		super();
 		m_inst = inst;
 	}
-	
-	public InstructionNode(InstructionNode node){
+
+	public InstructionNode(InstructionNode node) {
 		super();
 		m_inst = node.m_inst;
 	}
@@ -26,17 +26,17 @@ public class InstructionNode extends Node {
 	public Node shallowCopy() {
 		return new InstructionNode(this);
 	}
-	
+
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		return shallowCopy();
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		return "instruction" + m_id;
 	}
-	
+
 	public Collection<Node> getContainedNodes() {
-		Collection<Node> containedNodes = new HashSet<Node> ();
+		Collection<Node> containedNodes = new HashSet<Node>();
 		containedNodes.add(this);
 		return containedNodes;
 	}
@@ -66,7 +66,7 @@ public class InstructionNode extends Node {
 	}
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		nodeTraverser.foundInstructionNode(this, depth);		
+		nodeTraverser.foundInstructionNode(this, depth);
 	}
 
 	public List<Node> getChildren() {
@@ -75,17 +75,17 @@ public class InstructionNode extends Node {
 
 	public Collection<Node> whatsNext(Node node) {
 		return null;
-	}		
-	
+	}
+
 	public boolean isInstructionNode() {
 		return true;
 	}
-	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
-			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
-		
-		ReferenceType referenceType = referenceTypes.peek();		
-		
+
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove,
+			FunctionCallStatus functionCallStatus) {
+
+		ReferenceType referenceType = referenceTypes.peek();
+
 		boolean isMatch = false;
 		if (referenceType.getPc() == m_inst.getPc()) {
 			if (referenceType.getType() == ReferenceType.Type.CALL) {
@@ -94,41 +94,37 @@ public class InstructionNode extends Node {
 				}
 			} else {
 				isMatch = true;
-			}			
+			}
 		}
 
 		if (isMatch) {
-			referenceTypes.pop();			
+			referenceTypes.pop();
 			if (referenceTypes.empty()) {
 				return true;
-			}			
+			}
 		}
-		
-		functionCallStatus.setStatus(false);		
+
+		functionCallStatus.setStatus(false);
 		return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
 	}
-	
-    public List<XtaInstruction> getInstructionStream(Case c) {
-	    return getInstructions();
-    }
 
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
 	// --------------------------------------------------------------------- //
 	public double getTimeTakenRelative(Case c) {
 		if (!m_isAbsolute) {
-		    return m_inst.getTimeTaken();
+			return m_inst.getTimeTaken();
 		}
 		return 0;
 	}
 
 	public double getTimeTakenAbsolute(Case c) {
 		if (m_isAbsolute) {
-		    return m_inst.getTimeTaken();
+			return m_inst.getTimeTaken();
 		}
 		return 0;
 	}
-	
+
 	public long getNumCyclesRelative(Case c) {
 		return m_inst.getNumCycles();
 	}
@@ -137,11 +133,10 @@ public class InstructionNode extends Node {
 		return m_inst.getNumCycles();
 	}
 
-	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
 		instructions.add(m_inst);
 	}
 
-	
 	public long getNumInstructionsRelative(Case c) {
 		return 1;
 	}
@@ -149,7 +144,7 @@ public class InstructionNode extends Node {
 	public long getNumInstructionsAbsolute(Case c) {
 		return 1;
 	}
-	
+
 	public long getNumFNopsRelative(Case c) {
 		if (m_inst.isFnop()) {
 			return 1;
@@ -162,5 +157,10 @@ public class InstructionNode extends Node {
 			return 1;
 		}
 		return 0;
-	}	
+	}
+
+	public void updateFnops(Case c, int startIBuffer) {
+		// never go here
+		assert (false);
+	}
 }

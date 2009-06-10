@@ -24,6 +24,7 @@ import com.xmos.xta.engine.analysis.structural.patterns.SectionTransformer;
 import com.xmos.xta.engine.analysis.structural.patterns.SelfLoopPattern;
 import com.xmos.xta.engine.analysis.structural.patterns.TerminalPatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.UpWedge;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructuralAnalysisEngine {
 
@@ -95,11 +96,11 @@ public class StructuralAnalysisEngine {
 
 	private boolean buildStructureGraph(Engine engine) {
 		Collection<Node> functions = buildGraph(m_controlFlowGraph.getFunctionStartInstructions(), m_functionStartPcs,
-				engine);
+				engine, true);
 		if (functions == null) {
 			return false;
 		}
-		Collection<Node> threads = buildGraph(m_controlFlowGraph.getThreadStartInstructions(), m_threadStartPcs, engine);
+		Collection<Node> threads = buildGraph(m_controlFlowGraph.getThreadStartInstructions(), m_threadStartPcs, engine, false);
 		if (threads == null) {
 			return false;
 		}
@@ -115,7 +116,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, FunctionNode> startPcs,
-			Engine engine) {
+			Engine engine, boolean isFunction) {
 
 		Collection<Node> graphs = new HashSet<Node>();
 
@@ -132,15 +133,18 @@ public class StructuralAnalysisEngine {
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
 
 			FnopAnalyser fnopAnalyser = new FnopAnalyser();
-			fnopAnalyser.analyse(initialBasicBlock, true);
-			// FIXME - this is not always true
+			fnopAnalyser.analyse(initialBasicBlock, isFunction);
 
-			//dumpTree(basicBlocks);
+
+			if (false) dumpTree(basicBlocks);
 			if (!createStructure(basicBlocks, initialBasicBlock, engine)) {
 				return null;
 			}
 			Node decomposedGraph = basicBlocks.iterator().next();
 
+			//StructureGraphFnopAdder sgfa = new StructureGraphFnopAdder();
+			//sgfa.analyse(decomposedGraph, true);
+			
 			FunctionNode fn = new FunctionNode(decomposedGraph, functionName);
 			graphs.add(fn);
 			startPcs.put(graphStart.getStartPc(), fn);
@@ -318,7 +322,7 @@ public class StructuralAnalysisEngine {
 		}
 	}
 
-	/*
+	
 
 	private static int g = 0;
 	private void dumpTree(Collection<Node> workingSet) {
@@ -332,26 +336,31 @@ public class StructuralAnalysisEngine {
 					} else {
 						System.out.println(node + " -> " + next + ";");
 					}
-
 				}
 
-				if (node.getIbufferStates().size() > 1) {
+				System.out.print(node + " [label=\"" );
+				
+				for(XtaInstruction inst : node.getInstructions()){
 					
-					if(node.getFnopCountDiff() == 1){
-						System.out.println(node + " [label=\"" + node + "\", style=filled, color = lightblue];");
-					} else {
-						System.out.println(node + " [label=\"" + node + "\", style=filled, color = red];");
+					for(int i =0 ;i< node.fnopCount(inst.getPc());i++){
+						System.out.print("FNOP\\n");
 					}
-					
-					
-				} else {
-					System.out.println(node + " [label=\"" + node + "\"];");
+					System.out.print(inst + "\\n");
 				}
+				
+				System.out.print("\"");
+				if (node.getEndInstructionBuffers().size() > 1) {
+					System.out.print(", style=filled, color = red");
+					
+					
+				} 
+				System.out.println("];");
+
 
 			}
 			System.out.println("}\n");
 		}
 	}
 
-*/
+
 }
