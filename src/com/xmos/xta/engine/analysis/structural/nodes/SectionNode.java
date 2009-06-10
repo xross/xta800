@@ -1,6 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
@@ -186,22 +188,11 @@ public class SectionNode extends Node {
 		return m_isOptional;
 	}
 	
-	public List<XtaInstruction> getInstructionStream(Case c) {
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
 		if(c == Case.WORST){
-			return getWorstCaseOption().getInstructionStream(Case.WORST);
+			getWorstCaseOption().getInstructionStream(Case.WORST, instructions);
 		} else if(c == Case.BEST){
-			return getBestCaseOption().getInstructionStream(Case.BEST);
-		} else {
-			assert(false);
-			return null;
-		}
-	}
-	
-	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
-		if(c == Case.WORST){
-			getWorstCaseOption().getInstructionStream(Case.WORST, ibuffer, instructions);
-		} else if(c == Case.BEST){
-			getBestCaseOption().getInstructionStream(Case.BEST, ibuffer, instructions);
+			getBestCaseOption().getInstructionStream(Case.BEST, instructions);
 		} 
 	}
 
@@ -238,5 +229,32 @@ public class SectionNode extends Node {
 
 	public long getNumFNopsAbsolute(Case c) {
 		return getWorstCaseOption().getNumFNopsAbsolute(c);
+	}
+
+	public void updateFnops(Case c, IBufferVector ibv) {
+		Map<Node, IBufferVector> nodeToIBuff = new HashMap<Node, IBufferVector>();
+		for(Node option : m_options){
+			option.updateFnops(c, ibv);
+			nodeToIBuff.put(option, option.getIBufferVector(c));
+		}
+		if(c == Case.WORST){
+			m_worstCaseEndIbuffer = maximiseWorst(nodeToIBuff);
+		} else if(c == Case.BEST){
+			m_bestCaseEndIbuffer = maximiseBest(nodeToIBuff);
+		} else {
+			assert(false);
+		}
+	}
+
+	private IBufferVector maximiseBest(Map<Node, IBufferVector> nodeToIBuff) {
+		//TODO add something that produces the end state
+		return null;
+		
+	}
+
+	private IBufferVector maximiseWorst(Map<Node, IBufferVector> nodeToIBuff) {
+		return null;
 	}	
+
+	
 }

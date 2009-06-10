@@ -15,6 +15,7 @@ import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class InstructionNode extends Node {
 	private XtaInstruction m_inst;
+
 	private long m_numCycles;
 	
 	public InstructionNode(XtaInstruction inst){
@@ -22,8 +23,8 @@ public class InstructionNode extends Node {
 		m_inst = inst;
 		m_numCycles = inst.getNumCycles();
 	}
-	
-	public InstructionNode(InstructionNode node){
+
+	public InstructionNode(InstructionNode node) {
 		super();
 		m_inst = node.m_inst;
 		m_numCycles = node.m_numCycles;
@@ -32,7 +33,7 @@ public class InstructionNode extends Node {
 	public Node shallowCopy() {
 		return new InstructionNode(this);
 	}
-	
+
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		return shallowCopy();
 	}
@@ -41,12 +42,12 @@ public class InstructionNode extends Node {
         return "instruction";
     }
 	
-	public String toString(){
+	public String toString() {
 		return "instruction" + m_id;
 	}
-	
+
 	public Collection<Node> getContainedNodes() {
-		Collection<Node> containedNodes = new HashSet<Node> ();
+		Collection<Node> containedNodes = new HashSet<Node>();
 		containedNodes.add(this);
 		return containedNodes;
 	}
@@ -72,7 +73,7 @@ public class InstructionNode extends Node {
 	}
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		nodeTraverser.foundInstructionNode(this, depth);		
+		nodeTraverser.foundInstructionNode(this, depth);
 	}
 
 	public List<Node> getChildren() {
@@ -81,17 +82,17 @@ public class InstructionNode extends Node {
 
 	public Collection<Node> whatsNext(Node node) {
 		return null;
-	}		
-	
+	}
+
 	public boolean isInstructionNode() {
 		return true;
 	}
-	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
-			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
-		
-		ReferenceType referenceType = referenceTypes.peek();		
-		
+
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove,
+			FunctionCallStatus functionCallStatus) {
+
+		ReferenceType referenceType = referenceTypes.peek();
+
 		boolean isMatch = false;
 		if (referenceType.getPc() == m_inst.getPc()) {
 			if (referenceType.getType() == ReferenceType.Type.CALL) {
@@ -100,23 +101,19 @@ public class InstructionNode extends Node {
 				}
 			} else {
 				isMatch = true;
-			}			
+			}
 		}
 
 		if (isMatch) {
-			referenceTypes.pop();			
+			referenceTypes.pop();
 			if (referenceTypes.empty()) {
 				return true;
-			}			
+			}
 		}
-		
-		functionCallStatus.setStatus(false);		
+
+		functionCallStatus.setStatus(false);
 		return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
 	}
-	
-    public List<XtaInstruction> getInstructionStream(Case c) {
-	    return getInstructions();
-    }
 
 	public void setInstructionNumCycles(long numCycles) {
 		if (m_inst.canPause()) {
@@ -171,7 +168,7 @@ public class InstructionNode extends Node {
 		}
 		return 0;
 	}
-	
+
 	public long getNumCyclesRelative(Case c) {
 		return getInstructionNumCycles();
 	}
@@ -180,11 +177,10 @@ public class InstructionNode extends Node {
 		return getInstructionNumCycles();
 	}
 
-	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
 		instructions.add(m_inst);
 	}
 
-	
 	public long getNumInstructionsRelative(Case c) {
 		return 1;
 	}
@@ -192,7 +188,7 @@ public class InstructionNode extends Node {
 	public long getNumInstructionsAbsolute(Case c) {
 		return 1;
 	}
-	
+
 	public long getNumFNopsRelative(Case c) {
 		assert(false);
 		return 0;
@@ -201,5 +197,9 @@ public class InstructionNode extends Node {
 	public long getNumFNopsAbsolute(Case c) {
 		assert(false);
 		return 0;
-	}	
+	}
+
+	public void updateFnops(Case c, IBufferVector ibv) {
+		assert(false);
+	}
 }

@@ -2,14 +2,13 @@ package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
@@ -156,34 +155,6 @@ public class LoopNode extends Node {
 		return false;
 	}
 
-
-	public List<XtaInstruction> getInstructionStream(Case c) {
-		
-		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>();
-		List<Node> loopList = new LinkedList<Node>(m_loops);
-		Collections.sort(loopList);
-		for (Node loop : loopList) {
-			for(int i=0;i<loop.getNumIterations();i++){
-				insts.addAll(m_loopHeader.getInstructionStream(c));
-				insts.addAll(loop.getInstructionStream(c));
-			}
-		}
-		insts.addAll(m_loopHeader.getInstructionStream(c));
-		
-		return insts;
-	}		
-	
-	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
-		List<Node> loopList = new LinkedList<Node>(m_loops);
-		Collections.sort(loopList);
-		for (Node loop : loopList) {
-			for(int i=0;i<loop.getNumIterations();i++){
-				m_loopHeader.getInstructionStream(c, ibuffer, instructions);
-				loop.getInstructionStream(c, ibuffer, instructions);
-			}
-		}
-		m_loopHeader.getInstructionStream(c, ibuffer, instructions);	
-	}
 	
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
@@ -329,5 +300,37 @@ public class LoopNode extends Node {
 			// beneath here will contribute to the absolute time.
 	    	return 0;
 		}
+
+	}
+
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
+		
+	}
+
+	public void updateFnops(Case c, IBufferVector ibv) {
+		Map<Node, IBufferVector> nodeToIBuff = new HashMap<Node, IBufferVector>();
+		
+		
+		
+		if(c == Case.WORST){
+			m_worstCaseEndIbuffer = maximiseWorst();
+		} else if(c == Case.BEST){
+			m_bestCaseEndIbuffer = maximiseBest();
+		} else {
+			assert(false);
+		}
+	}
+
+	private IBufferVector maximiseBest() {
+		
+		
+		
+		return null;
+		
+	}
+
+	private IBufferVector maximiseWorst() {
+		return null;
 	}	
+
 }

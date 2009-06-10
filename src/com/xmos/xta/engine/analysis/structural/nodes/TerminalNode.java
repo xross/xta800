@@ -103,28 +103,6 @@ public class TerminalNode extends Node {
 		return false;
 	}
 	
-	public List<XtaInstruction> getInstructionStream(Case c) {
-		if(c == Case.WORST){
-			return getWorstCaseOption().getInstructionStream(Case.WORST);
-		} else if(c == Case.BEST){
-			return getBestCaseOption().getInstructionStream(Case.BEST);
-		} else {
-			assert(false);
-			return null;
-		}
-	}		
-	
-	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
-		if(c == Case.WORST){
-			getWorstCaseOption().getInstructionStream(Case.WORST, ibuffer, instructions);
-		} else if(c == Case.BEST){
-			getBestCaseOption().getInstructionStream(Case.BEST, ibuffer, instructions);
-		} else {
-			assert(false);
-		}
-	}
-	
-	
 	private Node getWorstCaseOption() {
 		Iterator<Node> iter = m_terminals.iterator();
 		Node worstCaseNode = iter.next();
@@ -214,5 +192,17 @@ public class TerminalNode extends Node {
     		count += node.getNumFNopsAbsolute(c);
 		}
 		return count;
-	}	
+	}
+
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
+		
+	}
+
+	@Override
+	public void updateFnops(Case c, IBufferVector ibv) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 }

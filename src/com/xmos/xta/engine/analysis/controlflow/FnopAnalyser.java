@@ -25,9 +25,10 @@ public class FnopAnalyser {
 				ib.fetch();
 			statesUpdated |= iterateOverInstructions(block, ib, parent);
 		} else {
-			//for (InstructionBuffer ib : parent.getEndInstructionBuffers()) {
-			//	statesUpdated |= iterateOverInstructions(block, ib, parent);
-			//}
+			
+			for (InstructionBuffer ib : parent.getEndInstructionBuffers()) {
+				statesUpdated |= iterateOverInstructions(block, ib, parent);
+			}
 		}
 		if (statesUpdated) {
 			for (Node next : block.getNextNodes()) {
@@ -43,7 +44,10 @@ public class FnopAnalyser {
 		}
 
 		List<Integer> fnopPcs = new LinkedList<Integer>();
-
+		
+		
+		InstructionBuffer endInstBuffer = new InstructionBuffer(pretransitionIB);
+		
 		if (parent == null) {
 			
 		} else {
@@ -51,20 +55,20 @@ public class FnopAnalyser {
 				if (parent.isFunctionNode()) {
 					// FIXME - this wont always be a load store but it is for
 					// now
-					pretransitionIB.branchTo(block.getStartPc(), true);
+					endInstBuffer.branchTo(block.getStartPc(), true);
 				} else {
 					XtaInstruction prevInst = parent.getInstructions().getLast();
-					pretransitionIB.branchTo(block.getStartPc(), prevInst.isLoadStore());
+					endInstBuffer.branchTo(block.getStartPc(), prevInst.isLoadStore());
 				}
 			} else {
 				XtaInstruction prevInst = parent.getInstructions().getLast();
-				pretransitionIB.branchTo(block.getStartPc(), prevInst.isLoadStore());
+				endInstBuffer.branchTo(block.getStartPc(), prevInst.isLoadStore());
 			}
 		}
 		
-		InstructionBuffer endInstBuffer = new InstructionBuffer(pretransitionIB);
 		
-		int numStartBytes = pretransitionIB.getNumBytes();
+		
+		int numStartBytes = endInstBuffer.getNumBytes();
 
 		for (XtaInstruction inst : block.getInstructions()) {
 
@@ -77,7 +81,7 @@ public class FnopAnalyser {
 
 		}
 
-		return block.addEndInstructionBuffer(numStartBytes, endInstBuffer.m_numBytes, fnopPcs);
+		return block.addEndInstructionBuffer(numStartBytes, endInstBuffer, fnopPcs);
 	}
 
 	private void update(InstructionBuffer ib, List<Integer> fnopPcs, XtaInstruction inst) {

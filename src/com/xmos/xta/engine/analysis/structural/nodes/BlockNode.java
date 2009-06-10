@@ -96,25 +96,10 @@ public class BlockNode extends Node {
 		}
 	}
 
-	public List<XtaInstruction> getInstructionStream(Case c) {
-		List<XtaInstruction> insts = new LinkedList<XtaInstruction>();
-		for(Node inst : m_insts){
-			insts.addAll(inst.getInstructions());
-		}
-		return insts;
-	}
 
-	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
 		
-		IBufferSequence ibufferSeq = m_ibufferStates.get(ibuffer);
-		List<Integer> fnops = ibufferSeq.m_fnopPcs;
-		for(Node inst : m_insts){
-			instructions.addAll(inst.getInstructions());
-			if(fnops.contains(inst.getStartPc())){
-				//add an fnop or two
-				
-			}
-		}
+
 	}
 
 	
@@ -184,4 +169,16 @@ public class BlockNode extends Node {
 		}
 		return count;
 	}
+
+	public void updateFnops(Case c, IBufferVector predessorIBufferVector) {
+		IBufferVector endVector = new IBufferVector();
+		for(int startNumBytes : predessorIBufferVector.getVectors()){
+			if(startNumBytes > 0){
+				
+			}
+		}
+		
+		
+	}
+
 }

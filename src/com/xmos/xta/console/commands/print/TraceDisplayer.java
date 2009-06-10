@@ -30,7 +30,7 @@ public class TraceDisplayer {
     private void displayInstruction(Node node) {
     	m_currentTime = 0;
     	
-    	List<XtaInstruction> instructions = node.getInstructionStream(Case.WORST);
+    	List<XtaInstruction> instructions = node.getInstructions();
 		for(XtaInstruction instruction : instructions){
 			
 			String isUnknown = node.isInstructionUnknown() ? "*" : " ";

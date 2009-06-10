@@ -177,13 +177,8 @@ public class FunctionNode extends Node {
 		return false;
 	}
 	
-	public List<XtaInstruction> getInstructionStream(Case c) {
-		return m_function.getInstructionStream(c);
-	}
-
-	public void getInstructionStream(Case c, Integer ibuffer, List<XtaInstruction> instructions) {
-		m_function.getInstructionStream(c, ibuffer, instructions);
-		
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
+		m_function.getInstructionStream(c, instructions);
 	}	
 
 	
@@ -244,6 +239,10 @@ public class FunctionNode extends Node {
     		return m_function.getNumFNopsAbsolute(c);
 		}
 		return 0;
+	}
+
+	public void updateFnops(Case c, IBufferVector ibv) {
+		
 	}
 
 }
