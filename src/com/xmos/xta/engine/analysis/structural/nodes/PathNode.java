@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
@@ -187,13 +186,11 @@ public class PathNode extends Node {
 	}
 
 	public void updateFnops(Case c, IBufferVector predessorIBufferVector) {
-		IBufferVector endVector = new IBufferVector();
-		
+		IBufferVector current = predessorIBufferVector;
 		for(Node pathNode : m_nodes){
-			
+			pathNode.updateFnops(c, current);
+			current = pathNode.getIBufferVector(c);
 		}
-		
-		
-		
+		setIBufferVector(c, current);
 	}
 }

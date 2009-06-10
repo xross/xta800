@@ -1,6 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -8,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
@@ -224,11 +227,30 @@ public class SectionNode extends Node {
 		return getWorstCaseOption().getNumFNopsAbsolute(c);
 	}
 
-	@Override
 	public void updateFnops(Case c, IBufferVector ibv) {
-		// TODO Auto-generated method stub
+		Map<Node, IBufferVector> nodeToIBuff = new HashMap<Node, IBufferVector>();
+		for(Node option : m_options){
+			option.updateFnops(c, ibv);
+			nodeToIBuff.put(option, option.getIBufferVector(c));
+		}
+		if(c == Case.WORST){
+			m_worstCaseEndIbuffer = maximiseWorst(nodeToIBuff);
+		} else if(c == Case.BEST){
+			m_bestCaseEndIbuffer = maximiseBest(nodeToIBuff);
+		} else {
+			assert(false);
+		}
+	}
+
+	private IBufferVector maximiseBest(Map<Node, IBufferVector> nodeToIBuff) {
+		//TODO add something that produces the end state
+		return null;
 		
 	}
+
+	private IBufferVector maximiseWorst(Map<Node, IBufferVector> nodeToIBuff) {
+		return null;
+	}	
 
 	
 }

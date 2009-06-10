@@ -466,17 +466,26 @@ public abstract class Node implements Comparable<Node>{
 		return "";
 	}
 
-	IBufferVector m_worstCaseIbuffer;
-	IBufferVector m_bestCaseIbuffer;
+	IBufferVector m_worstCaseEndIbuffer;
+	IBufferVector m_bestCaseEndIbuffer;
 	
 	public IBufferVector getIBufferVector(Case c){
 		if(c == Case.WORST){
-			return m_worstCaseIbuffer;
+			return m_worstCaseEndIbuffer;
 		} else if(c == Case.BEST){
-			return m_bestCaseIbuffer;
+			return m_bestCaseEndIbuffer;
 		} else {
 			assert(false);
 			return null;
+		}
+	}
+	public void setIBufferVector(Case c, IBufferVector ibv){
+		if(c == Case.WORST){
+			m_worstCaseEndIbuffer = ibv;
+		} else if(c == Case.BEST){
+			m_bestCaseEndIbuffer = ibv;
+		} else {
+			assert(false);
 		}
 	}
 	

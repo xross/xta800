@@ -196,6 +196,6 @@ public class InstructionNode extends Node {
 	}
 
 	public void updateFnops(Case c, IBufferVector ibv) {
-		
+		assert(false);
 	}
 }
