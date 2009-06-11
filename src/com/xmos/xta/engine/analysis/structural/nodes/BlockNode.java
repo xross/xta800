@@ -155,19 +155,11 @@ public class BlockNode extends Node {
 	}
 	
 	public long getNumFNopsRelative(Case c) {
-		long count = 0;
-		for (Node node : m_insts) {
-			count += node.getNumFNopsRelative(c);
-		}
-		return count;
+		return 0;
 	}
 
 	public long getNumFNopsAbsolute(Case c) {
-		long count = 0;
-		for (Node node : m_insts) {
-			count += node.getNumFNopsAbsolute(c);
-		}
-		return count;
+		return 0;
 	}
 
 	public void updateFnops(Case c, IBufferVector predessorIBufferVector) {
@@ -176,9 +168,6 @@ public class BlockNode extends Node {
 			if(startNumBytes > 0){
 				
 			}
-		}
-		
-		
+		}		
 	}
-
 }

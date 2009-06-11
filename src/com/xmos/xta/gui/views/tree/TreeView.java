@@ -64,24 +64,13 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 				getActivePage().showView(TreeView.ID);
 			} catch (PartInitException e) {}
 						
-		} /*else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
-			m_selectedRouteViewer.setInput(new HiddenNode());
-			m_selectedRouteViewer.refresh();
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
+			initialiseTree();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE) ||
 				   event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
-			refreshTree();
-			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
-			initialiseSelectedRouteView();
-
-		} else if (event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
-			initialiseTrees();
-
-		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECT_PATHS)) {
-			selectPaths();
+			refreshTree();			
 		}
-*/		
 	}
 	
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
@@ -174,57 +163,8 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 			
 		}		
 	}
-	/*	
-	private boolean setRouteTreeSelection(Node root, int routeId) {
-		for (Node node : root.getChildren()) {
-			if (node.getId() == routeId) {
-				ISelection selection = new StructuredSelection(node);
-				m_routesViewer.setSelection(selection);
-				return true;
-			}
-			if (setRouteTreeSelection(node, routeId))
-				return true;
-		}
-		return false;
-	}
 
 	private void refreshTree() {
-		m_selectedRouteViewer.refresh();
-		m_routesViewer.refresh();
-		
+		m_treeViewer.refresh();		
 	}
-
-	private void selectPaths() {
-		Reference codePoint = GuiEngine.getCodePoint();
-		Engine engine = GuiEngine.getEngine();
-		if (codePoint.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
-			int pc = codePoint.getPc();
-			List<Node> selectedPaths = new ArrayList<Node>();
-
-			// Add the complete paths hitting the pc
-			Node routeNode = m_routeInfo.getRouteNode();
-			if (routeNode != null) {
-				for (Node child : routeNode.getChildren()) {
-					Set<Integer> pcs = child.getPcsCovered(false);
-					if (pcs.contains(pc)) {
-						selectedPaths.add(child);
-					}
-				}
-			}
-			
-			// Add the unresolved paths hitting the pc
-			Node unresolvedNode = m_routeInfo.getUnresolvedNode();
-			if (unresolvedNode != null) {
-				for (Node child : unresolvedNode.getChildren()) {
-					Set<Integer> pcs = child.getPcsCovered(false);
-					if (pcs.contains(pc)) {
-						selectedPaths.add(child);
-					}
-				}
-			}
-			
-			m_selectedRouteViewer.setSelection(new StructuredSelection(selectedPaths));
-		}
-	}
-	*/
 }

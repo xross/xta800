@@ -16,8 +16,14 @@ class TreeViewLabelProvider extends CellLabelProvider {
 	public void update(ViewerCell cell) {
 		if (DEBUG) System.out.printf("TreeViewLabelProvider: update\n");	
 
-		Node node = (Node)cell.getElement();		
-		cell.setText(node.getTypeName()); //TODO
+		Node node = (Node)cell.getElement();
+		
+		String nodeText = node.getTypeName();
+		if (node.getFunctionName() != "")
+			nodeText += " " + node.getFunctionName();
+		nodeText += " " + node.getTimingSummary();
+		
+		cell.setText(nodeText);
 		
 		String iconName = node.getTypeName() + "_node";
 		if (node.getNodeAttributes().getDisplayUnknown()) {
@@ -30,6 +36,6 @@ class TreeViewLabelProvider extends CellLabelProvider {
 		if (DEBUG) System.out.printf("TreeViewLabelProvider: getToolTipText\n");	
 
 		Node node = (Node)element;		
-		return node.getTypeName(); //TODO
+		return node.getTimingDetails();
 	}
 }

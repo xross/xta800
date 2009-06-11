@@ -5,7 +5,6 @@ import java.util.List;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class TraceDisplayer {
