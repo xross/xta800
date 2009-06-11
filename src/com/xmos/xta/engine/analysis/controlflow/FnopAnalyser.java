@@ -3,6 +3,8 @@ package com.xmos.xta.engine.analysis.controlflow;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
+import com.xmos.xta.engine.analysis.structural.nodes.IbufferNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
@@ -13,35 +15,36 @@ public class FnopAnalyser {
 
 	public void analyse(Node startNode, boolean isFunction) {
 		assert (!startNode.isFunctionNode());
-		simulateBasicBlock(startNode, null, isFunction);
+		assert(startNode instanceof IbufferNode);
+		simulateBasicBlock((IbufferNode)startNode, null, isFunction);
 
 	}
 
-	private void simulateBasicBlock(Node block, Node parent, boolean isFunction) {
+	private void simulateBasicBlock(IbufferNode block, IbufferNode parent, boolean isFunction) {
 		boolean statesUpdated = false;
 		if (parent == null || parent.isFunctionNode()) {
 			InstructionBuffer ib = new InstructionBuffer(block.getStartPc());
-			if (isFunction)
+			if (isFunction) {
 				ib.fetch();
-			statesUpdated |= iterateOverInstructions(block, ib, parent);
+				statesUpdated = true;
+			}
+				
+			statesUpdated |= iterateOverBasicBlocks(block, ib, parent);
 		} else {
 			
 			for (InstructionBuffer ib : parent.getEndInstructionBuffers()) {
-				statesUpdated |= iterateOverInstructions(block, ib, parent);
+				statesUpdated |= iterateOverBasicBlocks(block, ib, parent);
 			}
 		}
 		if (statesUpdated) {
-			for (Node next : block.getNextNodes()) {
+			for (IbufferNode next : block.getNextIbufferNodes()) {
 				simulateBasicBlock(next, block, isFunction);
 			}
 		}
 
 	}
 
-	private boolean iterateOverInstructions(Node block, InstructionBuffer pretransitionIB, Node parent) {
-		if (block.isFunctionNode()) {
-			return true;
-		}
+	private boolean iterateOverBasicBlocks(IbufferNode block, InstructionBuffer pretransitionIB, IbufferNode parent) {
 
 		List<Integer> fnopPcs = new LinkedList<Integer>();
 		
@@ -53,8 +56,7 @@ public class FnopAnalyser {
 		} else {
 			if (parent.branchesTo(block)) {
 				if (parent.isFunctionNode()) {
-					// FIXME - this wont always be a load store but it is for
-					// now
+					// FIXME - this wont always be a load store but it is for now
 					endInstBuffer.branchTo(block.getStartPc(), true);
 				} else {
 					XtaInstruction prevInst = parent.getInstructions().getLast();

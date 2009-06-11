@@ -1,31 +1,35 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
-public class BlockNode extends Node {
+public class BlockNode extends IbufferNode {
 	private List<Node> m_insts;
+	private Map<Integer, Integer> m_startToEndIbuffer;
 
 	public BlockNode() {
 		super();
 		m_insts = new LinkedList<Node>();
+		m_startToEndIbuffer = new HashMap<Integer, Integer>();
 	}
 	
 	public BlockNode(BlockNode block) {
 		super();
 		m_insts = block.m_insts;
+		m_startToEndIbuffer = block.m_startToEndIbuffer;
 	}
 	
 	public BlockNode(List<Node> insts) {
 		super();
 		m_insts = insts;
+		m_startToEndIbuffer = new HashMap<Integer, Integer>();
 	}
 	
 	public BlockNode shallowCopy() {
@@ -33,7 +37,9 @@ public class BlockNode extends Node {
 	}
 	
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
+		
 		BlockNode bn = new BlockNode();
+		bn.m_startToEndIbuffer = m_startToEndIbuffer;
 		for (Node node : m_insts) {
 			bn.m_insts.add(node.deepCopy(startPcs));
 		}
@@ -92,13 +98,6 @@ public class BlockNode extends Node {
 		}
 	}
 
-
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
-		
-
-	}
-
-	
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
 	// --------------------------------------------------------------------- //
@@ -166,15 +165,37 @@ public class BlockNode extends Node {
 		return count;
 	}
 
+
+
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
+		
+
+	}
+
+	
+	
 	public void updateFnops(Case c, IBufferVector predessorIBufferVector) {
 		IBufferVector endVector = new IBufferVector();
-		for(int startNumBytes : predessorIBufferVector.getVectors()){
-			if(startNumBytes > 0){
-				
+		int byteNum = 0;
+		for(int startNumBytesCount : predessorIBufferVector.getVectors()){
+			if(startNumBytesCount > 0){
+				endVector.add(iBufferTransition(byteNum), startNumBytesCount);
 			}
+			byteNum++;
 		}
+		m_worstCaseEndIbuffer = endVector;
+		m_bestCaseEndIbuffer = endVector;
 		
-		
+	}
+	
+	
+	/**
+	 * each block has input ibuffers and output ibuffers. This function takes the input and returns 
+	 * the state of the output
+	 */
+	private int iBufferTransition(int byteNum) {
+		assert(m_startToEndIbuffer.containsKey(byteNum));
+		return m_startToEndIbuffer.get(byteNum);
 	}
 
 }

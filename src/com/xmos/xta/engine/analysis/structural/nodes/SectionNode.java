@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
-import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
@@ -243,13 +241,21 @@ public class SectionNode extends Node {
 	}
 
 	private IBufferVector maximiseBest(Map<Node, IBufferVector> nodeToIBuff) {
-		//TODO add something that produces the end state
-		return null;
-		
+		if(nodeToIBuff.size() == 1){
+			return nodeToIBuff.values().iterator().next();
+		} else {
+			//must work out the best mixture of the fnops to take
+			return null;
+		}
 	}
 
 	private IBufferVector maximiseWorst(Map<Node, IBufferVector> nodeToIBuff) {
-		return null;
+		if(nodeToIBuff.size() == 1){
+			return nodeToIBuff.values().iterator().next();
+		} else {
+			//must work out the best mixture of the fnops to take
+			return null;
+		}
 	}	
 
 	

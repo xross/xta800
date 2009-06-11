@@ -12,7 +12,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
-public class FunctionNode extends Node {
+public class FunctionNode extends IbufferNode {
 	private String m_functionName;
 	private Node m_function;
 	private static int functionId;

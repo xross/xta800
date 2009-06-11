@@ -306,27 +306,10 @@ public class LoopNode extends Node {
 	public void updateFnops(Case c, IBufferVector ibv) {
 		Map<Node, IBufferVector> nodeToIBuff = new HashMap<Node, IBufferVector>();
 		
+		//this need to multiply up the ibv to scale it for the number of iterations 
+		//then return it to its original scale for the end
 		
-		
-		if(c == Case.WORST){
-			m_worstCaseEndIbuffer = maximiseWorst();
-		} else if(c == Case.BEST){
-			m_bestCaseEndIbuffer = maximiseBest();
-		} else {
-			assert(false);
-		}
-	}
-
-	private IBufferVector maximiseBest() {
-		
-		
-		
-		return null;
 		
 	}
-
-	private IBufferVector maximiseWorst() {
-		return null;
-	}	
 
 }
