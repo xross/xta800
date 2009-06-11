@@ -8,6 +8,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -19,6 +20,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
@@ -28,6 +30,8 @@ import org.eclipse.ui.part.ViewPart;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.gui.dialogs.Iterations;
+import com.xmos.xta.gui.dialogs.Scope;
 
 public class TreeView extends ViewPart implements IPropertyChangeListener,
 												  ISelectionListener {
@@ -126,10 +130,9 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 				ISelection selection = m_treeViewer.getSelection();
 		        if (selection instanceof IStructuredSelection) {	            
 		            Object object = ((IStructuredSelection)selection).getFirstElement();
-		            //TODO
-		            //if (object instanceof Node) {
-						//((Node)object).createContextMenu(m_parent.getShell(), manager);
-		            //}
+		            if (object instanceof Node) {
+		            	TreeViewNodeContextMenu.createNodeContextMenu(m_parent.getShell(), manager, (Node)object);
+		            }
 		        }				
 			}
 		});
@@ -166,5 +169,5 @@ public class TreeView extends ViewPart implements IPropertyChangeListener,
 
 	private void refreshTree() {
 		m_treeViewer.refresh();		
-	}
+	}	
 }

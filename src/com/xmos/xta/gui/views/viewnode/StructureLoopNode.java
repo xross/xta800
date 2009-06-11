@@ -1,5 +1,5 @@
 package com.xmos.xta.gui.views.viewnode;
-
+/*
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
@@ -128,3 +128,4 @@ public class StructureLoopNode extends StructureNode {
 		return false;
 	}
 }
+*/

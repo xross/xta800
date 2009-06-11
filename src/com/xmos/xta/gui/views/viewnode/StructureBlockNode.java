@@ -1,5 +1,5 @@
 package com.xmos.xta.gui.views.viewnode;
-
+/*
 import java.util.ArrayList;
 
 import org.eclipse.swt.graphics.GC;
@@ -45,3 +45,4 @@ public class StructureBlockNode extends StructureNode {
 		return false;
 	}
 }
+*/

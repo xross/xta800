@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
+
 public class Scope extends XtaDialog {
 	
 	private boolean m_scope;
@@ -19,7 +21,7 @@ public class Scope extends XtaDialog {
 // TODO	
 //	LoopNode m_loopNode;
 	
-    public Scope(Shell parent) {
+    public Scope(Shell parent, Node node) {
     	super(parent);
 //    	m_loopNode = loopNode;
 //    	m_scope = loopNode.getScope();

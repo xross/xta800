@@ -16,16 +16,15 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
 import com.xmos.xta.engine.analysis.routes.Route;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
 
 public class Iterations extends XtaDialog {
 	
 	private long m_numIterations;
-	private Route m_route;
 		
-    public Iterations(Shell parent, final Route route) {
+    public Iterations(Shell parent, Node node) {
     	super(parent);
-    	m_route = route;
     	
     	// TODO
     	//m_tail = tail;

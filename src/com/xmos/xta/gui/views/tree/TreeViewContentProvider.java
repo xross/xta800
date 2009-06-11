@@ -5,7 +5,7 @@ import org.eclipse.jface.viewers.Viewer;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
-class TreeViewContentProvider implements ITreeContentProvider  {
+public class TreeViewContentProvider implements ITreeContentProvider  {
     private static final boolean DEBUG = true;
 
 	public TreeViewContentProvider() {

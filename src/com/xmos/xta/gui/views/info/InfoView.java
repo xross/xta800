@@ -15,8 +15,8 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.engine.Notifier;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
-import com.xmos.xta.gui.nodes.Node;
 
 public class InfoView extends ViewPart implements IPropertyChangeListener,
 		                                              ISelectionListener {

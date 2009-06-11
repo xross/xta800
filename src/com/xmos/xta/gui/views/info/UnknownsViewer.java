@@ -230,13 +230,15 @@ return 0;
 		m_setInstructionTimeAction.setText("Set instruction time");
 		menuMgr.add(m_setInstructionTimeAction);
 		m_setInstructionTimeAction.setEnabled(false);
-				
+
+/* TODO		
 		m_setLoopIterationsAction = new Action() { 
 			public void run() {
 				Route route = GuiEngine.getEngine().getSelectedRoute();
      			new Iterations(parent.getShell(), route);
 			}
-		}; 
+		};
+*/		 
 		m_setLoopIterationsAction.setText("Set iterations");
 		menuMgr.add(m_setLoopIterationsAction);
 		m_setLoopIterationsAction.setEnabled(false);

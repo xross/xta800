@@ -6,10 +6,10 @@ import org.eclipse.jface.viewers.ViewerCell;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.icons.Icons;
 
-class TreeViewLabelProvider extends CellLabelProvider {
+public class TreeViewLabelProvider extends CellLabelProvider {
     private static final boolean DEBUG = true;
 	
-    TreeViewLabelProvider() {
+    public TreeViewLabelProvider() {
 		if (DEBUG) System.out.printf("TreeViewLabelProvider()\n");	
 	}
 

@@ -8,6 +8,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -30,6 +31,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Sash;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
@@ -43,7 +45,9 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
-import com.xmos.xta.gui.nodes.HiddenNode;
+import com.xmos.xta.gui.views.tree.TreeViewContentProvider;
+import com.xmos.xta.gui.views.tree.TreeViewLabelProvider;
+import com.xmos.xta.gui.views.tree.TreeViewNodeContextMenu;
 
 public class RoutesView extends ViewPart implements IPropertyChangeListener,
 												    ISelectionListener {
@@ -109,13 +113,13 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 			} catch (PartInitException e) {}
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
-			m_routesViewer.setInput(new HiddenNode());
+			m_routesViewer.setInput(null);
 			m_routesViewer.refresh();
-			m_selectedRouteViewer.setInput(new HiddenNode());
+			m_selectedRouteViewer.setInput(null);
 			m_selectedRouteViewer.refresh();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
-			m_selectedRouteViewer.setInput(new HiddenNode());
+			m_selectedRouteViewer.setInput(null);
 			m_selectedRouteViewer.refresh();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE) ||
@@ -130,7 +134,6 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECT_PATHS)) {
 			selectPaths();
-
 		}
 	}
 	
@@ -165,8 +168,8 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 	    
 	    getSite().setSelectionProvider(m_selectedRouteViewer);
 
-		m_selectedRouteViewer.setContentProvider(new RoutesViewContentProvider());				
-		m_selectedRouteViewer.setLabelProvider(new RoutesViewLabelProvider());
+		m_selectedRouteViewer.setContentProvider(new TreeViewContentProvider());				
+		m_selectedRouteViewer.setLabelProvider(new TreeViewLabelProvider());
 		
 		m_selectedRouteViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
@@ -186,8 +189,8 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 	    data.right = new FormAttachment(100, 0);
 	    m_routesViewer.getControl().setLayoutData(data);
 	    
-	    m_routesViewer.setContentProvider(new RoutesViewContentProvider());
-	    m_routesViewer.setLabelProvider(new RoutesViewLabelProvider());
+	    m_routesViewer.setContentProvider(new TreeViewContentProvider());
+	    m_routesViewer.setLabelProvider(new TreeViewLabelProvider());
 
 	    createRouteContextMenus();
 	}
@@ -214,10 +217,9 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 				ISelection selection = m_selectedRouteViewer.getSelection();
 		        if (selection instanceof IStructuredSelection) {	            
 		            Object object = ((IStructuredSelection)selection).getFirstElement();
-		            //TODO
-		            //if (object instanceof Node) {
-					//	((Node)object).createContextMenu(m_parent.getShell(), manager);
-		            //}
+		            if (object instanceof Node) {
+						TreeViewNodeContextMenu.createNodeContextMenu(m_parent.getShell(), manager, (Node)object);						
+		            }
 		        }				
 			}
 		});
@@ -254,9 +256,10 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 	            	manager.add(new Action("delete") {
 						public void run() {
 				            for (Object object : ((IStructuredSelection)selection).toList()) {
-
-// TODO
-//				            	GuiEngine.getEngine().removeRoute(((RouteNode)object).getId());
+				            	// TODO
+					            //if (object instanceof RouteNode) {
+ 				            	//    GuiEngine.getEngine().removeRoute(((RouteNode)object).getId());
+				            	//}
 				            }
 						}
 					});
@@ -273,10 +276,10 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 				if (((IStructuredSelection)selection).size() == 1) {
 			        if (selection instanceof IStructuredSelection) {	            
 			            Object object = ((IStructuredSelection)selection).getFirstElement();
-// TODO
-//			            if (object instanceof RouteNode) {
-//			            	((Node)object).createContextMenu(m_parent.getShell(), manager);
-//			            }
+		            	// TODO
+			            //if (object instanceof RouteNode) {
+			            //    createContextMenu(m_parent.getShell(), manager, (RouteNode)object);
+			            //}
 			        }
 				}
 			}
@@ -401,6 +404,22 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 			
 			m_selectedRouteViewer.setSelection(new StructuredSelection(selectedPaths));			
 		}
-*/	
+*/			
 	}
+	
+    private void createContextMenu(final Shell parent, IMenuManager manager) {
+	    manager.add(new Separator());
+	    manager.add(new Action("Set timing requirements") {
+		    public void run() {
+		    	// TODO
+			    //new Required(parent, XtaEngine.getEngine(), m_route);
+		    }
+	    });
+	    manager.add(new Action("Clear timing requirements") {
+		    public void run() {
+		    	// TODO
+			    // XtaEngine.getEngine().unsetRouteMax(m_route.getRouteId());
+		    }
+	    });
+    }	
 }
