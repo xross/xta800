@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
@@ -186,14 +185,6 @@ public class SectionNode extends Node {
 	public boolean isOptional() {
 		return m_isOptional;
 	}
-	
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
-		if (c == Case.WORST) {
-			getWorstCaseOption().getInstructionStream(Case.WORST, instructions);
-		} else if (c == Case.BEST) {
-			getBestCaseOption().getInstructionStream(Case.BEST, instructions);
-		} 
-	}
 
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
@@ -285,7 +276,7 @@ public class SectionNode extends Node {
 		assert(false);
 		return 0;		
 	}
-
+/*
 	public void updateFnops(Case c, IBufferVector ibv) {
 		Map<Node, IBufferVector> nodeToIBuff = new HashMap<Node, IBufferVector>();
 		for(Node option : m_options){
@@ -300,16 +291,32 @@ public class SectionNode extends Node {
 			assert(false);
 		}
 	}
-
+*/
 	private IBufferVector maximiseBest(Map<Node, IBufferVector> nodeToIBuff) {
-		//TODO add something that produces the end state
-		return null;
-		
+		if(nodeToIBuff.size() == 1){
+			return nodeToIBuff.values().iterator().next();
+		} else {
+			//must work out the best mixture of the fnops to take
+			return null;
+		}
 	}
 
 	private IBufferVector maximiseWorst(Map<Node, IBufferVector> nodeToIBuff) {
-		return null;
+		if(nodeToIBuff.size() == 1){
+			return nodeToIBuff.values().iterator().next();
+		} else {
+			//must work out the best mixture of the fnops to take
+			return null;
+		}
 	}	
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
+		
+	}
 
+
+	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
+
+		
+	}
 	
 }

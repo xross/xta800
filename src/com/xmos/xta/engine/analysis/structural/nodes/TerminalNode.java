@@ -1,20 +1,21 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class TerminalNode extends Node {
 	private Collection<Node> m_terminals;
+	private Node m_worst;
+	private Node m_best;
 	
 	public TerminalNode(Collection<Node> terminals) {
 		m_terminals = new HashSet<Node>(terminals);
@@ -102,31 +103,7 @@ public class TerminalNode extends Node {
 		}
 		return false;
 	}
-	
-	private Node getWorstCaseOption() {
-		Iterator<Node> iter = m_terminals.iterator();
-		Node worstCaseNode = iter.next();
-		while (iter.hasNext()) {
-			Node node = iter.next();
-			if (node.getTimeTaken(Case.WORST) > worstCaseNode.getTimeTaken(Case.WORST)) {
-				worstCaseNode = node;
-			}						
-		}		
-		return worstCaseNode;
-	}
-	
-	private Node getBestCaseOption() {
-		Iterator<Node> iter = m_terminals.iterator();
-		Node worstCaseNode = iter.next();
-		while (iter.hasNext()) {
-			Node node = iter.next();
-			if (node.getTimeTaken(Case.BEST) < worstCaseNode.getTimeTaken(Case.BEST)) {
-				worstCaseNode = node;
-			}						
-		}		
-		return worstCaseNode;
-	}
-	
+
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
 	// --------------------------------------------------------------------- //
@@ -198,11 +175,65 @@ public class TerminalNode extends Node {
 		
 	}
 
-	@Override
+
+/*
 	public void updateFnops(Case c, IBufferVector ibv) {
+		Map<Node, IBufferVector> nodeToIBuff = new HashMap<Node, IBufferVector>();
+		for(Node option : m_terminals){
+			option.updateFnops(c, ibv);
+			nodeToIBuff.put(option, option.getIBufferVector(c));
+		}
+		if(c == Case.WORST){
+			m_worst = maximiseWorst(c, nodeToIBuff);
+			m_worstCaseEndIbuffer = nodeToIBuff.get(m_worst);
+		} else if(c == Case.BEST){
+			m_best = maximiseBest(c, nodeToIBuff);
+			m_bestCaseEndIbuffer = nodeToIBuff.get(m_best);
+		} else {
+			assert(false);
+		}
+	}
+*/
+	private Node maximiseBest(Case c, Map<Node, IBufferVector> nodeToIBuff) {
+		if(nodeToIBuff.size() == 1){
+			return m_terminals.iterator().next();
+		} else {
+			Node bestNode = null;
+			double bestTime = 0;
+			for(Node terminal : m_terminals){
+				double time = terminal.getTimeTaken(c);
+				if(time > bestTime){
+					bestTime = time;
+					bestNode = terminal;
+				}
+			}
+			return bestNode;
+		}
+	}
+
+	private Node maximiseWorst(Case c, Map<Node, IBufferVector> nodeToIBuff) {
+		if(nodeToIBuff.size() == 1){
+			return m_terminals.iterator().next();
+		} else {
+			Node worstNode = null;
+			double worstTime = 0;
+			for(Node terminal : m_terminals){
+				double time = terminal.getTimeTaken(c);
+				if(time > worstTime){
+					worstTime = time;
+					worstNode = terminal;
+				}
+			}
+			return worstNode;
+		}
+	}
+
+	@Override
+	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
 		// TODO Auto-generated method stub
 		
-	}
+	}	
+
 
 	
 }

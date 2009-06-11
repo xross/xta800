@@ -12,7 +12,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
-public class FunctionNode extends Node {
+public class FunctionNode extends IbufferNode {
 	private String m_functionName;
 	private Node m_function;
 	private static int functionId;
@@ -176,10 +176,7 @@ public class FunctionNode extends Node {
 		}
 		return false;
 	}
-	
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
-		m_function.getInstructionStream(c, instructions);
-	}	
+
 
 	
 	// --------------------------------------------------------------------- //
@@ -241,8 +238,16 @@ public class FunctionNode extends Node {
 		return 0;
 	}
 
-	public void updateFnops(Case c, IBufferVector ibv) {
-		
+	
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
+		m_function.getInstructionStream(c, instructions);
 	}
 
+	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
+		m_bestCaseStartIbuffer = bestVector;
+		m_worstCaseStartIbuffer = worstVector;
+		m_function.updateFnops(m_bestCaseStartIbuffer, m_worstCaseStartIbuffer);
+		m_bestCaseEndIbuffer = m_function.m_bestCaseEndIbuffer;
+		m_worstCaseEndIbuffer = m_function.m_worstCaseEndIbuffer;
+	}	
 }

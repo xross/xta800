@@ -155,9 +155,10 @@ public class SelfLoopNode extends Node{
 	}
 
 	@Override
-	public void updateFnops(Case c, IBufferVector ibv) {
+	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
 		// TODO Auto-generated method stub
 		
 	}
+
 
 }

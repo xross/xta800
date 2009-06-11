@@ -375,18 +375,18 @@ public class StructuralAnalysisEngine {
 				
 				for(XtaInstruction inst : node.getInstructions()){
 					
-					for(int i =0 ;i< node.fnopCount(inst.getPc());i++){
-						System.out.print("FNOP\\n");
-					}
+					//for(int i =0 ;i< node.fnopCount(inst.getPc());i++){
+					//	System.out.print("FNOP\\n");
+					//}
 					System.out.print(inst + "\\n");
 				}
 				
 				System.out.print("\"");
-				if (node.getEndInstructionBuffers().size() > 1) {
-					System.out.print(", style=filled, color = red");
+				//if (node.getEndInstructionBuffers().size() > 1) {
+				//	System.out.print(", style=filled, color = red");
 					
 					
-				} 
+				//} 
 				System.out.println("];");
 
 

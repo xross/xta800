@@ -70,20 +70,5 @@ public abstract class XtaInstruction extends Instruction {
 	}
 }
 
-class NullInstruction extends XtaInstruction {    
-    NullInstruction(String nmenonic, Config config, int opcode, int pc, int numBytes) {
-        super(nmenonic, config, opcode, pc, numBytes, false, false, 1, false, false);
-        setIsFnop(true);
-    }
-    
-    public int getOperandField(String opName) {
-    	return 0;
-    }
-    
-    public String getOperandString() {
-    	return "";
-    }
-
-}
 
 

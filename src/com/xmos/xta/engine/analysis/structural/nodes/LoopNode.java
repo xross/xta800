@@ -2,7 +2,6 @@ package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -307,30 +306,8 @@ public class LoopNode extends Node {
 		
 	}
 
-	public void updateFnops(Case c, IBufferVector ibv) {
-		Map<Node, IBufferVector> nodeToIBuff = new HashMap<Node, IBufferVector>();
-		
-		
-		
-		if(c == Case.WORST){
-			m_worstCaseEndIbuffer = maximiseWorst();
-		} else if(c == Case.BEST){
-			m_bestCaseEndIbuffer = maximiseBest();
-		} else {
-			assert(false);
-		}
-	}
-
-	private IBufferVector maximiseBest() {
-		
-		
-		
-		return null;
+	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
 		
 	}
-
-	private IBufferVector maximiseWorst() {
-		return null;
-	}	
 
 }

@@ -118,9 +118,7 @@ public class PathNode extends Node {
 		return false;
 	}
 
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
 
-	}
 
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
@@ -189,12 +187,26 @@ public class PathNode extends Node {
 		return fnops;
 	}
 
-	public void updateFnops(Case c, IBufferVector predessorIBufferVector) {
-		IBufferVector current = predessorIBufferVector;
+
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
 		for(Node pathNode : m_nodes){
-			pathNode.updateFnops(c, current);
-			current = pathNode.getIBufferVector(c);
+			pathNode.getInstructionStream(c, instructions);
 		}
-		setIBufferVector(c, current);
+	}
+
+	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
+		m_bestCaseStartIbuffer = bestVector;
+		m_worstCaseStartIbuffer = worstVector;
+		
+		IBufferVector currentBest = bestVector;
+		IBufferVector currentWorst = worstVector;
+		for(Node pathNode : m_nodes){
+			pathNode.updateFnops(currentBest, currentWorst);
+			currentBest = pathNode.m_bestCaseEndIbuffer;
+			currentWorst = pathNode.m_worstCaseEndIbuffer;
+		}
+		
+		m_bestCaseEndIbuffer = currentBest;
+		m_worstCaseEndIbuffer = currentWorst;
 	}
 }
