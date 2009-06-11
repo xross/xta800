@@ -38,6 +38,10 @@ public class TerminalNode extends Node {
 		return tn;
     }
 		
+    public String getTypeName() {
+        return "terminal";
+    }
+		
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>();
 		for(Node nodes: m_terminals) {

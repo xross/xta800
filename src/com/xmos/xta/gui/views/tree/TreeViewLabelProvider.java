@@ -3,24 +3,30 @@ package com.xmos.xta.gui.views.tree;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
 
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.icons.Icons;
-import com.xmos.xta.gui.nodes.Node;
 
-class TreeViewLabelProvider extends CellLabelProvider {
-    private static final boolean DEBUG = false;
+public class TreeViewLabelProvider extends CellLabelProvider {
+    private static final boolean DEBUG = true;
 	
-	TreeViewLabelProvider() {
+    public TreeViewLabelProvider() {
 		if (DEBUG) System.out.printf("TreeViewLabelProvider()\n");	
 	}
 
 	public void update(ViewerCell cell) {
 		if (DEBUG) System.out.printf("TreeViewLabelProvider: update\n");	
+
+		Node node = (Node)cell.getElement();
 		
-		Node node = (Node)cell.getElement();		
-		cell.setText(node.getDescription());
+		String nodeText = node.getTypeName();
+		if (node.getFunctionName() != "")
+			nodeText += " " + node.getFunctionName();
+		nodeText += " " + node.getTimingSummary();
 		
-		String iconName = node.getTypeName();
-		if (node.getNumUnknowns() > 0) {
+		cell.setText(nodeText);
+		
+		String iconName = node.getTypeName() + "_node";
+		if (node.getNodeAttributes().getDisplayUnknown()) {
 			iconName += ".unknown";
 		}
 		cell.setImage(Icons.getIcon(iconName));
@@ -30,6 +36,6 @@ class TreeViewLabelProvider extends CellLabelProvider {
 		if (DEBUG) System.out.printf("TreeViewLabelProvider: getToolTipText\n");	
 
 		Node node = (Node)element;		
-		return node.getToolTipText();
+		return node.getTimingDetails();
 	}
 }

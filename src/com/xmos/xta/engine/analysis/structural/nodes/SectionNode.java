@@ -49,6 +49,10 @@ public class SectionNode extends Node {
 		return sn;
 	}
 	
+    public String getTypeName() {
+        return "section";
+    }
+	
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
 		list.addAll(getWorstCaseOption().getInstructions());
@@ -181,42 +185,96 @@ public class SectionNode extends Node {
 	public boolean isOptional() {
 		return m_isOptional;
 	}
-	
-	
 
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
 	// --------------------------------------------------------------------- //
 	public double getTimeTakenRelative(Case c) {
-		return getWorstCaseOption().getTimeTakenRelative(c);
+		switch (c) {
+		case BEST:
+		    return (!m_isOptional) ? getBestCaseOption().getTimeTakenRelative(c) : 0;
+		case WORST:
+			return getWorstCaseOption().getTimeTakenRelative(c);
+		}
+		assert(false);
+		return 0;		
 	}
 
 	public double getTimeTakenAbsolute(Case c) {
-		return getWorstCaseOption().getTimeTakenAbsolute(c);
+		switch (c) {
+		case BEST:
+		    return (!m_isOptional) ? getBestCaseOption().getTimeTakenAbsolute(c) : 0;
+		case WORST:
+			return getWorstCaseOption().getTimeTakenAbsolute(c);
+		}
+		assert(false);
+		return 0;		
 	}
 	
 	public long getNumCyclesRelative(Case c) {
-		return getWorstCaseOption().getNumCyclesRelative(c);
+		switch (c) {
+		case BEST:
+		    return (!m_isOptional) ? getBestCaseOption().getNumCyclesRelative(c) : 0;
+		case WORST:
+			return getWorstCaseOption().getNumCyclesRelative(c);
+		}
+		assert(false);
+		return 0;		
 	}
 
 	public long getNumCyclesAbsolute(Case c) {
-		return getWorstCaseOption().getNumCyclesAbsolute(c);
+		switch (c) {
+		case BEST:
+		    return (!m_isOptional) ? getBestCaseOption().getNumCyclesAbsolute(c) : 0;
+		case WORST:
+			return getWorstCaseOption().getNumCyclesAbsolute(c);
+		}
+		assert(false);
+		return 0;		
 	}
 	
 	public long getNumInstructionsRelative(Case c) {		
-		return getWorstCaseOption().getNumInstructionsRelative(c);
+		switch (c) {
+		case BEST:
+		    return (!m_isOptional) ? getBestCaseOption().getNumInstructionsRelative(c) : 0;
+		case WORST:
+			return getWorstCaseOption().getNumInstructionsRelative(c);
+		}
+		assert(false);
+		return 0;		
 	}
 
 	public long getNumInstructionsAbsolute(Case c) {		
-		return getWorstCaseOption().getNumInstructionsAbsolute(c);
+		switch (c) {
+		case BEST:
+		    return (!m_isOptional) ? getBestCaseOption().getNumInstructionsAbsolute(c) : 0;
+		case WORST:
+			return getWorstCaseOption().getNumInstructionsAbsolute(c);
+		}
+		assert(false);
+		return 0;		
 	}
 	
 	public long getNumFNopsRelative(Case c) {
-		return getWorstCaseOption().getNumFNopsRelative(c);
+		switch (c) {
+		case BEST:
+		    return (!m_isOptional) ? getBestCaseOption().getNumFNopsRelative(c) : 0;
+		case WORST:
+			return getWorstCaseOption().getNumFNopsRelative(c);
+		}
+		assert(false);
+		return 0;		
 	}
 
 	public long getNumFNopsAbsolute(Case c) {
-		return getWorstCaseOption().getNumFNopsAbsolute(c);
+		switch (c) {
+		case BEST:
+		    return (!m_isOptional) ? getBestCaseOption().getNumFNopsAbsolute(c) : 0;
+		case WORST:
+			return getWorstCaseOption().getNumFNopsAbsolute(c);
+		}
+		assert(false);
+		return 0;		
 	}
 /*
 	public void updateFnops(Case c, IBufferVector ibv) {

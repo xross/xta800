@@ -1,5 +1,5 @@
 package com.xmos.xta.gui.views.viewnode;
-
+/*
 import com.xmos.xta.gui.nodes.Node;
 
 public abstract class StructureNode extends ViewNode {
@@ -18,3 +18,4 @@ public abstract class StructureNode extends ViewNode {
     	m_weight = weight;
     }    
 }
+*/

@@ -28,7 +28,7 @@ public class BlockNode extends IbufferNode {
 		super();
 		m_insts = insts;
 	}
-	
+		
 	public BlockNode shallowCopy() {
 		return new BlockNode(this);
 	}
@@ -42,7 +42,11 @@ public class BlockNode extends IbufferNode {
 		}
 		return bn;
 	}
-	
+
+    public String getTypeName() {
+        return "block";
+    }
+    
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>();
 		for(Node inst : m_insts){
@@ -147,19 +151,11 @@ public class BlockNode extends IbufferNode {
 	}
 	
 	public long getNumFNopsRelative(Case c) {
-		long count = 0;
-		for (Node node : m_insts) {
-			count += node.getNumFNopsRelative(c);
-		}
-		return count;
+		return 0;
 	}
 
 	public long getNumFNopsAbsolute(Case c) {
-		long count = 0;
-		for (Node node : m_insts) {
-			count += node.getNumFNopsAbsolute(c);
-		}
-		return count;
+		return 0;
 	}
 
 	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {

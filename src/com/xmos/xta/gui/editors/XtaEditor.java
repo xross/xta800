@@ -42,6 +42,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.routes.Route;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -53,7 +54,6 @@ import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.InstructionTime;
-import com.xmos.xta.gui.nodes.Node;
 import com.xmos.xta.gui.views.control.ControlView;
 
 public class XtaEditor extends TextEditor implements IPropertyChangeListener,
@@ -373,7 +373,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
     private void updateFnops() {
 		if (DEBUG) System.out.printf("XtaEditor: updateFnops\n"); 
-		
+/* TODO
     	Node pathRoot = null;
     	if (m_selectedNode != null) {
     		pathRoot = m_selectedNode.getPathRoot();
@@ -424,6 +424,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	    } else {
 		    ((InputSource)getEditorInput()).updateLineNumberMapping();	    	
 	    }
+*/	    
 	}
     
     private void removeFnop(int pc) {
@@ -479,7 +480,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     
     private void updateHighlighting() {
 		if (DEBUG) System.out.printf("XtaEditor: updateHighlighting\n");
-		
+/* TODO		
 	    ArrayList<Annotation> annotations = new ArrayList<Annotation>();
         HashMap<Annotation, Position> annotationPositions = new HashMap<Annotation, Position>();		
 		
@@ -496,6 +497,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		updateAnnotations(annotations, annotationPositions);
 		
 		GuiEngine.broadcast(Broadcaster.BROADCAST_HIGHLIGHTS_UPDATED, "");
+*/		
     }
 
     // Add all annotations after highlights
@@ -617,13 +619,14 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	private HashSet<Integer> getSelectedPathBlockIds() {
 		HashSet<Integer> selectedBlocks = new HashSet<Integer>();
 
+/* TODO		
 		Node pathRoot = null;
     	if (m_selectedNode != null) {
     		pathRoot = m_selectedNode.getPathRoot();
     	}
     	if (pathRoot != null)
     		pathRoot.getBlockIds(selectedBlocks);
-
+*/    	
     	return selectedBlocks;
 	}
 
@@ -887,7 +890,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			addAction(menu, ConstrainRequireID);
 			addAction(menu, SelectPathsID);
 			
-			if ((GuiEngine.getRouteInfo() != null) &&
+			if ((GuiEngine.getEngine().getRoutes().size() > 0) &&
 			     GuiEngine.getEngine().canInstructionPause(m_clickCodeRefString)) {
 				
 				m_setInstructionTimeAction.setEnabled(true);

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
-import com.xmos.xta.gui.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
 public abstract class ViewNode {
     protected Node m_treeNode;
@@ -86,6 +86,6 @@ public abstract class ViewNode {
     public abstract boolean contains(int x, int y);
 
 	public String getToolTipText() {
-		return m_treeNode.getToolTipText();
+		return m_treeNode.getTimingDetails();
 	}
 }

@@ -1,5 +1,5 @@
 package com.xmos.xta.gui.views.structure;
-
+/*
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -184,3 +184,4 @@ public class StructureView extends ZoomedCanvasView {
 		annotateTree(false);
 	}
 }
+*/

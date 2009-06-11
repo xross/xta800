@@ -70,7 +70,11 @@ public class FunctionNode extends IbufferNode {
 		
 		return fn;
 	}
-	
+
+    public String getTypeName() {
+        return "function";
+    }
+		
 	public String toString(){
 		return "Function" + m_id;
 	}

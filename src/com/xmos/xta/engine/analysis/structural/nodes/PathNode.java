@@ -44,6 +44,10 @@ public class PathNode extends Node {
 		return pn;
 	}
 
+    public String getTypeName() {
+        return "path";
+    }
+		
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
 		for (Node node : m_nodes) {

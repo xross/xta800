@@ -73,6 +73,7 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
 				return Status.OK_STATUS;
 			}
 		};
+		job.setUser(true);
 		job.schedule();
     }
 

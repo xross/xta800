@@ -29,7 +29,7 @@ public class InstructionNode extends Node {
 		m_inst = node.m_inst;
 		m_numCycles = node.m_numCycles;
 	}
-
+	
 	public Node shallowCopy() {
 		return new InstructionNode(this);
 	}
@@ -38,6 +38,10 @@ public class InstructionNode extends Node {
 		return shallowCopy();
 	}
 
+    public String getTypeName() {
+        return "instruction";
+    }
+	
 	public String toString() {
 		return "instruction" + m_id;
 	}

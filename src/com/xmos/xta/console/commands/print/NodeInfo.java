@@ -7,8 +7,7 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
-import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 
 public class NodeInfo extends Command {
@@ -64,13 +63,8 @@ public class NodeInfo extends Command {
     	if (node == null) {
     		console.display(String.format("Error: Node id: %d nt found\n", m_nodeId));
     		return;
-    	}
-    	
-    	console.display(String.format("Node Id:          %d\n", node.getId()));
-    	console.display(String.format("Time taken:       %.1f\n", node.getTimeTaken(Case.WORST)));
-        console.display(String.format("Thread cycles:    %d\n", node.getNumCycles(Case.WORST)));
-        console.display(String.format("Num Instructions: %d\n", node.getNumInstructions(Case.WORST)));
-        console.display(String.format("Num FNops:        %d\n", node.getNumFNops(Case.WORST)));
+    	}    	
+    	console.display(node.getTimingDetails());
     }
     
     private Node getNode(Engine engine, final int nodeId) {
@@ -78,62 +72,14 @@ public class NodeInfo extends Command {
 
 		Collection<Node> nodes = structureGraph.getThreads();	
 		for (Node node : nodes) {					
-		    node.traverse(0, new NodeTraverser() {
-				public boolean foundBlockNode(Node node, int depth) {
+		    node.traverse(0, new UntypedNodeTraverser() {
+				public boolean foundNode(Node node, int depth) {
 					if (node.getId() == nodeId) {
 						m_node = node;
 						return false;
 					}
 					return true;
 				}
-
-				public boolean foundFunctionNode(Node node, int depth) {
-					if (node.getId() == nodeId) {
-						m_node = node;
-						return false;
-					}
-					return true;
-				}
-
-				public boolean foundInstructionNode(Node node, int depth) {
-					if (node.getId() == nodeId) {
-						m_node = node;
-						return false;
-					}
-					return true;
-				}
-
-				public boolean foundLoopNode(Node node, int depth) {
-					if (node.getId() == nodeId) {
-						m_node = node;
-						return false;
-					}
-					return true;
-				}
-
-				public boolean foundPathNode(Node node, int depth) {
-					if (node.getId() == nodeId) {
-						m_node = node;
-						return false;
-					}
-					return true;
-				}
-
-				public boolean foundSectionNode(Node node, int depth) {
-					if (node.getId() == nodeId) {
-						m_node = node;
-						return false;
-					}
-					return true;
-				}
-
-				public boolean foundTerminalNode(Node node, int depth) {
-					if (node.getId() == nodeId) {
-						m_node = node;
-						return false;
-					}
-					return true;
-				}		    	
 		    });
 		}
         return m_node;   	

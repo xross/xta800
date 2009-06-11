@@ -1,11 +1,13 @@
 package com.xmos.xta.gui.views.viewnode;
-
+/*
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
-import com.xmos.xta.gui.nodes.Node;
+
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 
 public class FunctionBlockNode extends ViewNode {
     public static final boolean DEBUG = false;
@@ -22,7 +24,7 @@ public class FunctionBlockNode extends ViewNode {
 	
 	public void setNumIterations(long numIterations) {
 		m_numIterations = numIterations;
-		m_pixelsX = (int) (m_treeNode.getNumCycles() * numIterations);
+		m_pixelsX = (int) (m_treeNode.getNumCycles(Case.WORST) * numIterations);
 		m_pixelsY = m_height;
 	}
 
@@ -119,3 +121,4 @@ public class FunctionBlockNode extends ViewNode {
 		return false;
 	}
 }
+*/

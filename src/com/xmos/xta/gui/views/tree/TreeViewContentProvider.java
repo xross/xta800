@@ -1,16 +1,15 @@
 package com.xmos.xta.gui.views.tree;
 
-import java.util.Arrays;
-
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import com.xmos.xta.gui.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
-class TreeViewContentProvider implements ITreeContentProvider  {
-    private static final boolean DEBUG = false;
+public class TreeViewContentProvider implements ITreeContentProvider  {
+    private static final boolean DEBUG = true;
 
 	public TreeViewContentProvider() {
+		if (DEBUG) System.out.printf("TreeViewContentProvider()\n");
 	}
 
 	public Object[] getChildren(Object parentElement) {
@@ -18,9 +17,6 @@ class TreeViewContentProvider implements ITreeContentProvider  {
 				parentElement.toString());
 
 		Object[] res = ((Node)parentElement).getChildren().toArray();
-		if (((Node)parentElement).isRouteNode()) {
-			Arrays.sort(res);
-		}
 		return res;
 	}
 
@@ -28,7 +24,7 @@ class TreeViewContentProvider implements ITreeContentProvider  {
 		if (DEBUG) System.out.printf("TreeViewContentProvider: getParent: %s\n", 
 				element.toString());	
 
-		return ((Node)element).getParentNode();
+		return ((Node)element).getParent();
 	}
 
 	public boolean hasChildren(Object element) {
