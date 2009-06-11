@@ -158,6 +158,28 @@ public class StructureGraph {
 		return false;
 	}
 	
+	public boolean setExclusion(Reference reference) {
+		boolean found = false;
+        for (Node node : getReferencedNodes(reference)) {
+        	node.setIsExcluded(true);
+	    	found = true;
+		}
+		return found;
+	}
+
+	public boolean unsetExclusion(Reference reference) {
+		boolean found = false;
+        for (Node node : getReferencedNodes(reference)) {
+        	node.setIsExcluded(false);
+	    	found = true;
+		}
+		return found;
+	}
+
+	public Collection<Reference> getExclusions() {
+		return null;
+	}
+	
 	private Collection<Node> getReferencedNodes(Reference reference) {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		Collection<Node> referencedNodes = new ArrayList<Node>();

@@ -2,7 +2,7 @@ package com.xmos.xta.console.commands.list;
 
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.console.commands.CommandContainer;
-import com.xmos.xta.console.commands.set.Constraint;
+import com.xmos.xta.console.commands.set.Exclusion;
 
 public class List extends CommandContainer {
 	static private Command[] m_options = { 
@@ -21,7 +21,7 @@ public class List extends CommandContainer {
 		new Functions(),
 		new Sources(),
 		new Knowns(),
-		new Constraint(Constraint.Operation.LIST),		
+		new Exclusion(Exclusion.Operation.LIST),		
 	};
 	
 	public List() { super("list"); }

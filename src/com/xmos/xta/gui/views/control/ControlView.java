@@ -23,9 +23,6 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.constraint.Constraint;
-import com.xmos.xta.engine.constraint.ConstraintFactory;
-import com.xmos.xta.engine.constraint.ConstraintNull;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
@@ -83,12 +80,14 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	protected void setConstraint() {
+/* TODO		
 		Engine engine = GuiEngine.getEngine();
 		Constraint constraint = ConstraintFactory.createConstraint(engine, m_constraint.getText());
 		if (constraint != null) {
 			engine.setConstraint(constraint);
 		    m_setConstraintButton.setEnabled(false);
 		}
+*/		
 	}
 
 	public void createPartControl(Composite parent) {
@@ -159,6 +158,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	private void updateConstraint() {
+/* TODO		
 		Constraint constraint = GuiEngine.getEngine().getConstraint();
 		String str = constraint.getString();
 		if (constraint.getClass() == ConstraintNull.class) {
@@ -168,6 +168,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		}
 		m_constraint.setToolTipText(str);
 		m_constraint.setSelection(str.length());
+*/		
 	}
 
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
