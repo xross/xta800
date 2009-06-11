@@ -43,8 +43,6 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.constraint.Constraint;
-import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
@@ -546,6 +544,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	}
 
 	private void updateExcluded() {
+/* TODO		
 		m_excludedIndexes.clear();
 		Constraint constraint = GuiEngine.getEngine().getConstraint();
 		if ((constraint == null) || !constraint.isValid()) {
@@ -563,8 +562,9 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 				}
 			}
     	}
+*/    	
 	}
-
+/* TODO
     private boolean checkLineForExclusion(Constraint constraint, String refStr, int index) {
 		Engine engine = GuiEngine.getEngine();
 		Reference headerRef = ReferenceFactory.createReference(refStr, ReferenceClass.SRCLABEL_REF);
@@ -577,7 +577,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		}
 		return false;
 	}
-
+*/
 	public int getStartPointIndex() {
         if (m_startPointLine != null)
         	return m_startPointLine.getIndex();
@@ -828,6 +828,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     }    
 
     protected void addToConstraint(String toAdd) {
+/* TODO  	
 		Engine engine = GuiEngine.getEngine();
 		Constraint constraint = engine.getConstraint();
 		
@@ -840,6 +841,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 			getActivePage().showView(ControlView.ID);
 		} catch (PartInitException e) {}
+*/		
 	}
 
 	protected void editorContextMenuAboutToShow(IMenuManager menu) {

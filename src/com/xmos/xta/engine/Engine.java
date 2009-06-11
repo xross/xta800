@@ -30,8 +30,6 @@ import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
 import com.xmos.xta.engine.analysis.routes.RouteTiming;
-import com.xmos.xta.engine.constraint.Constraint;
-import com.xmos.xta.engine.constraint.ConstraintFactory;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.types.ReferenceTypeFactory;
@@ -55,7 +53,6 @@ public class Engine implements Notifier {
 	private Progress m_progress;
 	private IProgressMonitor m_jobMonitor;
 	private String m_srcPaths;
-	private Constraint m_constraint;
 	private Sections m_sections;
 	private Collection<String> m_functionsVisited;
 	
@@ -80,7 +77,6 @@ public class Engine implements Notifier {
 		m_srcPaths = ".";
 		m_progress = new Progress(Progress.State.IDLE, 0);
 		m_jobMonitor = null;
-		m_constraint = ConstraintFactory.createConstraint(this, "");
 		m_sections = new Sections();
 
 		ReferenceTypeFactory.setEngine(this);
@@ -120,8 +116,6 @@ public class Engine implements Notifier {
 			int coreId = routeTiming.getCoreId();
 			if (coreId != m_coreId)
 				setCoreId(coreId);
-			
-			m_constraint = route.getConstraint();
 		}	
 		m_selectedRoute = route;
 		notify(Notifier.NOTIFY_SELECT_ROUTE, "");
@@ -277,10 +271,8 @@ public class Engine implements Notifier {
 		m_executableFile = executableFile;
 		m_nodeId = 0;
 		m_coreId = 0;			
-		setConstraint(ConstraintFactory.createConstraint(this, ""));
 		
-		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());
-		
+		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());		
 		return true;
 	}
 
@@ -418,7 +410,6 @@ public class Engine implements Notifier {
 
 	public void setNodeId(int nodeId) {
 		m_nodeId = nodeId;
-		setConstraint(ConstraintFactory.createConstraint(this, ""));
 		m_selectedRoute = null;
 		notify(Notifier.NOTIFY_SET_NODE_CORE, "");
 	}
@@ -429,7 +420,6 @@ public class Engine implements Notifier {
 
 	public void setCoreId(int coreId) {
 		m_coreId = coreId;
-		setConstraint(ConstraintFactory.createConstraint(this, ""));
 		m_selectedRoute = null;
 		notify(Notifier.NOTIFY_SET_NODE_CORE, "");
 	}
@@ -639,20 +629,74 @@ public class Engine implements Notifier {
 		return m_executableFile;
 	}
 
-	public void setConstraint(Constraint constraint) {
-		assert(constraint != null);
-		if (constraint == null){
-			m_constraint = ConstraintFactory.createConstraint(this, "");
-		} else {
-			m_constraint = constraint;
+	public boolean setGlobalExclusion(String refString) {
+		Reference reference = ReferenceFactory.createReference(
+				refString, ReferenceClass.ANY_REF);
+		if (!resolveRefernece(reference)) {
+			return false;
 		}
-		notify(Notifier.NOTIFY_SET_CONSTRAINT, "");
+		if (getStructureGraph().setExclusion(reference)) {
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}		
+		return false;
 	}
 
-	public Constraint getConstraint() {
-		return m_constraint;
+	public boolean unsetGlobalExclusion(String refString) {
+		Reference reference = ReferenceFactory.createReference(
+				refString, ReferenceClass.ANY_REF);
+		if (!resolveRefernece(reference)) {
+			return false;
+		}
+		if (getStructureGraph().unsetExclusion(reference)) {
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}		
+		return false;
 	}
-			
+
+	public Collection<Reference> getGlobalExclusions() {
+		return getStructureGraph().getExclusions();
+	}
+
+	public boolean setRouteExclusion(String refString, int routeId) {
+		Reference reference = ReferenceFactory.createReference(
+				refString, ReferenceClass.ANY_REF);
+		if (!resolveRefernece(reference)) {
+			return false;
+		}
+		Route route = getRoute(routeId);
+		if (route == null) {
+			return false;
+		}
+		route.setExclusion(reference);
+		notify(Notifier.NOTIFY_UPDATE_STATE, "");
+		return true;
+	}
+
+	public boolean unsetRouteExclusion(String refString, int routeId) {
+		Reference reference = ReferenceFactory.createReference(
+				refString, ReferenceClass.ANY_REF);
+		if (!resolveRefernece(reference)) {
+			return false;
+		}
+		Route route = getRoute(routeId);
+		if (route == null) {
+			return false;
+		}
+		route.unsetExclusion(reference);
+		notify(Notifier.NOTIFY_UPDATE_STATE, "");
+		return true;
+	}
+
+	public Collection<Reference> getRouteExclusions(int routeId) {
+		Route route = getRoute(routeId);
+		if (route == null) {
+			return null;
+		}
+		return route.getExclusions();
+	}
+	
 	public boolean addBranch(Reference fromRef, Reference toRef) {
 		if (!resolveRefernece(fromRef)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", fromRef.getRef()));

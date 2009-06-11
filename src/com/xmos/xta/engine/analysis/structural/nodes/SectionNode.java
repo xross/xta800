@@ -159,14 +159,14 @@ public class SectionNode extends Node {
 	
 	private Node getBestCaseOption() {
 		Iterator<Node> iter = m_options.iterator();
-		Node worstCaseNode = iter.next();
+		Node bestCaseNode = iter.next();
 		while (iter.hasNext()) {
 			Node node = iter.next();
-			if (node.getTimeTaken(Case.BEST) < worstCaseNode.getTimeTaken(Case.BEST)) {
-				worstCaseNode = node;
+			if (node.getTimeTaken(Case.BEST) < bestCaseNode.getTimeTaken(Case.BEST)) {
+				bestCaseNode = node;
 			}						
 		}		
-		return worstCaseNode;
+		return bestCaseNode;
 	}
 	
 	private int getTotalIterations() {

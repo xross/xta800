@@ -20,7 +20,6 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.SectionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
-import com.xmos.xta.engine.constraint.Constraint;
 import com.xmos.xta.engine.references.Reference;
 
 class AbortedException extends Exception {
@@ -41,7 +40,6 @@ public class Route {
 	private StructureGraph m_structureGraph;
 	private List<Node> m_subRoutes;
 	private Engine m_engine;
-	private Constraint m_constraint;
 	private Set<Node> m_routeExclusionNodes;
 	private Collection<Reference> m_excludedRefs;
 	
@@ -56,24 +54,23 @@ public class Route {
 		m_routeId = s_routeCount++;
 		m_subRoutes = new ArrayList<Node>();
 		m_engine = engine;
-		m_constraint = engine.getConstraint().clone();
 		m_routeTiming = new RouteTiming(this, engine.getConfig(), engine.getNodeId(), engine.getCoreId());
 		m_routeExclusionNodes = new HashSet<Node>();
 		m_excludedRefs = new HashSet<Reference>();
 	}
 
-	public void addExclededReference(Reference ref) {
-		m_excludedRefs.add(ref);
-		buildExclustion();
+	public void setExclusion(Reference reference) {
+		m_excludedRefs.add(reference);
+		refreshExclusions();
 	}
 
-	public Collection<Reference> getExcludedReferences() {
+	public void unsetExclusion(Reference reference) {
+		m_excludedRefs.remove(reference);
+		refreshExclusions();
+	}
+	
+	public Collection<Reference> getExclusions() {
 		return m_excludedRefs;
-	}
-
-	public void removeExcludedReference(Reference ref) {
-		m_excludedRefs.remove(ref);
-		buildExclustion();
 	}
 
 	public boolean isExcluded(Node node) {
@@ -108,11 +105,7 @@ public class Route {
 		}
 		return pcs;
 	}
-
-	public Constraint getConstraint() {
-		return m_constraint;
-	}
-
+	
 	public Collection<Node> getSubRoutes() {
 		return m_subRoutes;
 	}
@@ -173,7 +166,7 @@ public class Route {
 		Collections.sort(m_subRoutes);
 	}
 	
-	private void buildExclustion() {
+	private void refreshExclusions() {
 		// this uses the m_excludedRefs to populate the m_routeExclusionNodes
 		Set<Node> seenNodes = new HashSet<Node>();
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
