@@ -194,43 +194,7 @@ public class TerminalNode extends Node {
 		}
 	}
 */
-	private Node maximiseBest(Case c, Map<Node, IBufferVector> nodeToIBuff) {
-		if(nodeToIBuff.size() == 1){
-			return m_terminals.iterator().next();
-		} else {
-			Node bestNode = null;
-			double bestTime = 0;
-			for(Node terminal : m_terminals){
-				double time = terminal.getTimeTaken(c);
-				if(time > bestTime){
-					bestTime = time;
-					bestNode = terminal;
-				}
-			}
-			return bestNode;
-		}
-	}
-
-	private Node maximiseWorst(Case c, Map<Node, IBufferVector> nodeToIBuff) {
-		if(nodeToIBuff.size() == 1){
-			return m_terminals.iterator().next();
-		} else {
-			Node worstNode = null;
-			double worstTime = 0;
-			for(Node terminal : m_terminals){
-				double time = terminal.getTimeTaken(c);
-				if(time > worstTime){
-					worstTime = time;
-					worstNode = terminal;
-				}
-			}
-			return worstNode;
-		}
-	}
-
-	@Override
 	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
-		// TODO Auto-generated method stub
 		
 	}	
 
