@@ -2,7 +2,6 @@ package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -303,12 +302,7 @@ public class LoopNode extends Node {
 		
 	}
 
-	public void updateFnops(Case c, IBufferVector ibv) {
-		Map<Node, IBufferVector> nodeToIBuff = new HashMap<Node, IBufferVector>();
-		
-		//this need to multiply up the ibv to scale it for the number of iterations 
-		//then return it to its original scale for the end
-		
+	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
 		
 	}
 

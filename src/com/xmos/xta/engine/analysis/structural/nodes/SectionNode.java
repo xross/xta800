@@ -182,13 +182,7 @@ public class SectionNode extends Node {
 		return m_isOptional;
 	}
 	
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
-		if(c == Case.WORST){
-			getWorstCaseOption().getInstructionStream(Case.WORST, instructions);
-		} else if(c == Case.BEST){
-			getBestCaseOption().getInstructionStream(Case.BEST, instructions);
-		} 
-	}
+	
 
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
@@ -224,7 +218,7 @@ public class SectionNode extends Node {
 	public long getNumFNopsAbsolute(Case c) {
 		return getWorstCaseOption().getNumFNopsAbsolute(c);
 	}
-
+/*
 	public void updateFnops(Case c, IBufferVector ibv) {
 		Map<Node, IBufferVector> nodeToIBuff = new HashMap<Node, IBufferVector>();
 		for(Node option : m_options){
@@ -239,7 +233,7 @@ public class SectionNode extends Node {
 			assert(false);
 		}
 	}
-
+*/
 	private IBufferVector maximiseBest(Map<Node, IBufferVector> nodeToIBuff) {
 		if(nodeToIBuff.size() == 1){
 			return nodeToIBuff.values().iterator().next();
@@ -257,6 +251,14 @@ public class SectionNode extends Node {
 			return null;
 		}
 	}	
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
+		
+	}
 
+
+	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
+
+		
+	}
 	
 }

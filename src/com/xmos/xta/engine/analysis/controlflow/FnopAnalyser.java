@@ -2,8 +2,6 @@ package com.xmos.xta.engine.analysis.controlflow;
 
 import java.util.LinkedList;
 import java.util.List;
-
-import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.engine.analysis.structural.nodes.IbufferNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -17,7 +15,6 @@ public class FnopAnalyser {
 		assert (!startNode.isFunctionNode());
 		assert(startNode instanceof IbufferNode);
 		simulateBasicBlock((IbufferNode)startNode, null, isFunction);
-
 	}
 
 	private void simulateBasicBlock(IbufferNode block, IbufferNode parent, boolean isFunction) {
@@ -28,10 +25,8 @@ public class FnopAnalyser {
 				ib.fetch();
 				statesUpdated = true;
 			}
-				
 			statesUpdated |= iterateOverBasicBlocks(block, ib, parent);
 		} else {
-			
 			for (InstructionBuffer ib : parent.getEndInstructionBuffers()) {
 				statesUpdated |= iterateOverBasicBlocks(block, ib, parent);
 			}
@@ -89,8 +84,6 @@ public class FnopAnalyser {
 	private void update(InstructionBuffer ib, List<Integer> fnopPcs, XtaInstruction inst) {
 		while (!ib.canIssue(inst.getNumBytes())) {
 			ib.fetch();
-
-			// make a record of the fnops
 			fnopPcs.add(inst.getPc());
 		}
 		if (!inst.isLoadStore()) {

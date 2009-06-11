@@ -1,35 +1,32 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
+import com.xmos.xta.engine.instructions.NullInstruction;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class BlockNode extends IbufferNode {
 	private List<Node> m_insts;
-	private Map<Integer, Integer> m_startToEndIbuffer;
+	
 
 	public BlockNode() {
 		super();
 		m_insts = new LinkedList<Node>();
-		m_startToEndIbuffer = new HashMap<Integer, Integer>();
 	}
 	
 	public BlockNode(BlockNode block) {
 		super();
 		m_insts = block.m_insts;
-		m_startToEndIbuffer = block.m_startToEndIbuffer;
 	}
 	
 	public BlockNode(List<Node> insts) {
 		super();
 		m_insts = insts;
-		m_startToEndIbuffer = new HashMap<Integer, Integer>();
 	}
 	
 	public BlockNode shallowCopy() {
@@ -165,37 +162,43 @@ public class BlockNode extends IbufferNode {
 		return count;
 	}
 
-
-
 	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
-		
-
+		for(XtaInstruction inst : getInstructions()){
+			for(int i=0;i<fnopCount(inst.getPc());i++){
+				instructions.add(new NullInstruction("--FNOP--", inst.getConfig(), 0, inst.getPc(), 0));
+			}
+			instructions.add(inst);
+		}
 	}
-
 	
-	
-	public void updateFnops(Case c, IBufferVector predessorIBufferVector) {
+	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
+		m_bestCaseStartIbuffer = bestVector;
+		m_worstCaseStartIbuffer = worstVector;
+		
 		IBufferVector endVector = new IBufferVector();
 		int byteNum = 0;
-		for(int startNumBytesCount : predessorIBufferVector.getVectors()){
+		for(int startNumBytesCount : m_worstCaseStartIbuffer.getVectors()){
 			if(startNumBytesCount > 0){
 				endVector.add(iBufferTransition(byteNum), startNumBytesCount);
 			}
 			byteNum++;
 		}
 		m_worstCaseEndIbuffer = endVector;
-		m_bestCaseEndIbuffer = endVector;
 		
-	}
-	
-	
-	/**
-	 * each block has input ibuffers and output ibuffers. This function takes the input and returns 
-	 * the state of the output
-	 */
-	private int iBufferTransition(int byteNum) {
-		assert(m_startToEndIbuffer.containsKey(byteNum));
-		return m_startToEndIbuffer.get(byteNum);
+		endVector = new IBufferVector();
+		byteNum = 0;
+		for(int startNumBytesCount : m_bestCaseStartIbuffer.getVectors()){
+			if(startNumBytesCount > 0){
+				endVector.add(iBufferTransition(byteNum), startNumBytesCount);
+			}
+			byteNum++;
+		}
+		m_bestCaseEndIbuffer = endVector;
 	}
 
+	//this function takes an ibuffer fullness and returns the corresponding fnops
+	private List<Integer> iBufferToFnops(int numBytes){
+		return null;
+	}
+	
 }

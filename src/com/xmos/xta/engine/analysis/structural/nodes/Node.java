@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
@@ -35,7 +34,7 @@ public abstract class Node implements Comparable<Node>{
 	private NodeAttributes m_nodeAttributes;
 
 	Set<Node> m_branchTargets;
-	Collection<IBufferSequence> m_ibufferSequences;
+
 	public enum Case {
 		WORST,
 		BEST,
@@ -76,7 +75,7 @@ public abstract class Node implements Comparable<Node>{
 
 		m_isExcluded = false;
 		m_isLoopHeader = false;
-		m_ibufferSequences = new HashSet<IBufferSequence>();
+		
 		m_branchTargets = new HashSet<Node>();
 		m_nextNodes = new HashSet<Node>();
 		m_prevNodes = new HashSet<Node>();
@@ -89,7 +88,6 @@ public abstract class Node implements Comparable<Node>{
 
 		m_isExcluded = node.m_isExcluded;
 		m_isLoopHeader = node.m_isLoopHeader;
-		m_ibufferSequences = new HashSet<IBufferSequence>(node.m_ibufferSequences);
 		m_branchTargets = new HashSet<Node>(node.m_branchTargets);
 		m_nextNodes = new HashSet<Node>(node.m_nextNodes);
 		m_prevNodes = new HashSet<Node>(node.m_prevNodes);
@@ -352,41 +350,15 @@ public abstract class Node implements Comparable<Node>{
 		return m_branchTargets.contains(block);
 	}
 
-	class IBufferSequence {
-		private int m_startIbuffer;
-		private int m_endIbuffer;
-		private List<Integer> m_fnopPcs;
-		private InstructionBuffer m_endInstructionBuffer;
-		
-		public IBufferSequence(int startIbuffer, int endIbuffer, List<Integer> fnopPcs, InstructionBuffer ib) {
-			super();
-			m_startIbuffer = startIbuffer;
-			m_endIbuffer = endIbuffer;
-			m_fnopPcs = fnopPcs;
-			m_endInstructionBuffer = ib;
-		}
-		
-		public int getEndIbuffer(){
-			return m_endIbuffer;
-		}
-		public List<Integer> getfnops(){
-			return m_fnopPcs;
-		}
-		public int getStartIbuffer(){
-			return m_startIbuffer;
-		}
-		public InstructionBuffer getInstructionBuffer(){
-			return m_endInstructionBuffer;
-		}
-	}
 
-	
-	
 
+	public abstract void updateFnops(IBufferVector bestVector, IBufferVector worstVector);	
+	IBufferVector m_worstCaseStartIbuffer;
+	IBufferVector m_bestCaseStartIbuffer;
+	IBufferVector m_worstCaseEndIbuffer;
+	IBufferVector m_bestCaseEndIbuffer;
 	
-	public abstract void updateFnops(Case c, IBufferVector ibv);	
-
-	
+	//add a function called get error
 	
 	
 	public NodeAttributes getNodeAttributes() {
@@ -422,36 +394,11 @@ public abstract class Node implements Comparable<Node>{
 		assert(false);		
 		return false;
 	}	
-
-	
 	
 	public String getFunctionName() {
 		return "";
 	}
 
-	IBufferVector m_worstCaseEndIbuffer;
-	IBufferVector m_bestCaseEndIbuffer;
-	
-	public IBufferVector getIBufferVector(Case c){
-		if(c == Case.WORST){
-			return m_worstCaseEndIbuffer;
-		} else if(c == Case.BEST){
-			return m_bestCaseEndIbuffer;
-		} else {
-			assert(false);
-			return null;
-		}
-	}
-	public void setIBufferVector(Case c, IBufferVector ibv){
-		if(c == Case.WORST){
-			m_worstCaseEndIbuffer = ibv;
-		} else if(c == Case.BEST){
-			m_bestCaseEndIbuffer = ibv;
-		} else {
-			assert(false);
-		}
-	}
-	
 }
 
 class FunctionCallStatus {

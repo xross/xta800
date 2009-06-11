@@ -1,20 +1,29 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-
 import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
 
 public abstract class IbufferNode extends Node {
-
 	
+	Map<Integer, Integer> m_startToEndIbuffer;
 	boolean m_deterministicFnops;
 	IBufferSequence m_ibs;
 	
+	Collection<IBufferSequence> m_ibufferSequences;
 	
+	public IbufferNode(){
+		super();
+		m_deterministicFnops = false;
+		m_startToEndIbuffer = new HashMap<Integer, Integer>();
+		m_ibufferSequences = new HashSet<IBufferSequence>();
+	}
 	
+	//this whole function is a complete mess and will be refactored
 	
 	public boolean isFnopsDeterministic(){
 		return m_deterministicFnops;
@@ -67,5 +76,36 @@ public abstract class IbufferNode extends Node {
 		return ibuffNodes;
 	}
 	
+	public int iBufferTransition(int byteNum) {
+		assert(m_startToEndIbuffer.containsKey(byteNum));
+		return m_startToEndIbuffer.get(byteNum);
+	}
 	
+	class IBufferSequence {
+		private int m_startIbuffer;
+		private int m_endIbuffer;
+		private List<Integer> m_fnopPcs;
+		private InstructionBuffer m_endInstructionBuffer;
+		
+		public IBufferSequence(int startIbuffer, int endIbuffer, List<Integer> fnopPcs, InstructionBuffer ib) {
+			super();
+			m_startIbuffer = startIbuffer;
+			m_endIbuffer = endIbuffer;
+			m_fnopPcs = fnopPcs;
+			m_endInstructionBuffer = ib;
+		}
+		
+		public int getEndIbuffer(){
+			return m_endIbuffer;
+		}
+		public List<Integer> getfnops(){
+			return m_fnopPcs;
+		}
+		public int getStartIbuffer(){
+			return m_startIbuffer;
+		}
+		public InstructionBuffer getInstructionBuffer(){
+			return m_endInstructionBuffer;
+		}
+	}
 }

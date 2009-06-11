@@ -174,7 +174,7 @@ public class InstructionNode extends Node {
 	}
 
 	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
-		instructions.add(m_inst);
+		assert(false);
 	}
 
 	public long getNumInstructionsRelative(Case c) {
@@ -195,7 +195,7 @@ public class InstructionNode extends Node {
 		return 0;
 	}
 
-	public void updateFnops(Case c, IBufferVector ibv) {
+	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
 		assert(false);
 	}
 }

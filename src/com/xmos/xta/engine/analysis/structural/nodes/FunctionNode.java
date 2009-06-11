@@ -172,10 +172,7 @@ public class FunctionNode extends IbufferNode {
 		}
 		return false;
 	}
-	
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
-		m_function.getInstructionStream(c, instructions);
-	}	
+
 
 	
 	// --------------------------------------------------------------------- //
@@ -237,8 +234,16 @@ public class FunctionNode extends IbufferNode {
 		return 0;
 	}
 
-	public void updateFnops(Case c, IBufferVector ibv) {
-		
+	
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
+		m_function.getInstructionStream(c, instructions);
 	}
 
+	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
+		m_bestCaseStartIbuffer = bestVector;
+		m_worstCaseStartIbuffer = worstVector;
+		m_function.updateFnops(m_bestCaseStartIbuffer, m_worstCaseStartIbuffer);
+		m_bestCaseEndIbuffer = m_function.m_bestCaseEndIbuffer;
+		m_worstCaseEndIbuffer = m_function.m_worstCaseEndIbuffer;
+	}	
 }

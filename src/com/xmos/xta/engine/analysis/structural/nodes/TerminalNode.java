@@ -172,7 +172,7 @@ public class TerminalNode extends Node {
 	}
 
 
-
+/*
 	public void updateFnops(Case c, IBufferVector ibv) {
 		Map<Node, IBufferVector> nodeToIBuff = new HashMap<Node, IBufferVector>();
 		for(Node option : m_terminals){
@@ -189,7 +189,7 @@ public class TerminalNode extends Node {
 			assert(false);
 		}
 	}
-
+*/
 	private Node maximiseBest(Case c, Map<Node, IBufferVector> nodeToIBuff) {
 		if(nodeToIBuff.size() == 1){
 			return m_terminals.iterator().next();
@@ -222,6 +222,12 @@ public class TerminalNode extends Node {
 			}
 			return worstNode;
 		}
+	}
+
+	@Override
+	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
+		// TODO Auto-generated method stub
+		
 	}	
 
 
