@@ -219,5 +219,19 @@ public class TerminalNode extends Node {
 		}
 		option.getInstructionStream(c, instructions, iteration);
 	}
+
+
+	public long getError(Case c) {
+		Node option = null;
+		switch (c){
+		case WORST:
+			option = getWorstCaseOption();
+			break;
+		case BEST:
+			option = getBestCaseOption();
+			break;
+		}
+		return option.getError(c);
+	}
 	
 }

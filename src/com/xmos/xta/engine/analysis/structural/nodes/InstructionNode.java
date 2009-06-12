@@ -150,10 +150,6 @@ public class InstructionNode extends Node {
 		return m_attributes.getInstructionNumCycles();
 	}
 
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
-		assert(false);
-	}
-
 	public long getNumInstructionsRelative(Case c) {
 		return 1;
 	}
@@ -172,11 +168,11 @@ public class InstructionNode extends Node {
 		return 0;
 	}
 
-	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
 		assert(false);
 	}
 
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
-		assert(false);
+	public long getError(Case c) {
+		return 0;
 	}
 }

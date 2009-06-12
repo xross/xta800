@@ -8,12 +8,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.engine.analysis.structural.nodes.IBufferNode;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
-public class FunctionNode extends IbufferNode {
+public class FunctionNode extends IBufferNode {
 	private NodeAttributes m_attributes;	
 	private String m_functionName;
 	private Node m_function;
@@ -252,5 +253,14 @@ public class FunctionNode extends IbufferNode {
 		if(m_knownFunction){
 			m_function.getInstructionStream(c, instructions, iteration);
 		}
+	}
+
+	public long getError(Case c) {
+		if(m_knownFunction){
+			return m_function.getError(c);
+		} else {
+			return 0;
+		}
+	
 	}	
 }

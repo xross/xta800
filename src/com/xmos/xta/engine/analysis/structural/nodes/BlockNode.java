@@ -7,12 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.xmos.xta.engine.analysis.structural.nodes.IBufferNode;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.NullInstruction;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
-public class BlockNode extends IbufferNode {
+public class BlockNode extends IBufferNode {
 	private NodeAttributes m_attributes;	
 	private List<InstructionNode> m_insts;
 	
@@ -44,7 +45,6 @@ public class BlockNode extends IbufferNode {
 
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {		
 		BlockNode bn = new BlockNode();
-		bn.m_startToEndIbuffer = m_startToEndIbuffer;
 		for (Node node : m_insts) {
 			bn.m_insts.add((InstructionNode)node.deepCopy(startPcs));
 		}
@@ -196,5 +196,9 @@ public class BlockNode extends IbufferNode {
 			}
 			instructions.add(inst);
 		}
+	}
+
+	public long getError(Case c) {
+		return getFNOPDifference();
 	}
 }
