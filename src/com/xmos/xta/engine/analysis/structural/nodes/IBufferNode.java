@@ -19,7 +19,7 @@ public abstract class IBufferNode extends Node {
 	}
 	
 	public IBufferNode(IBufferNode node){
-		m_ibufferSequences = node.m_ibufferSequences;
+		m_ibufferSequences = new HashSet<IBufferSequence>(node.m_ibufferSequences);
 		m_worstIbufferSequence = node.m_worstIbufferSequence;
 	}
 
