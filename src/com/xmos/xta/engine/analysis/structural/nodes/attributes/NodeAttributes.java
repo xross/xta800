@@ -131,7 +131,9 @@ public class NodeAttributes {
     	}
 	}
 
-	public void setLoopPathIterations(long numIterations) {
+	public boolean setLoopPathIterations(Node loopNode, Node optionNode, long numIterations) {
+		assert(false);
+		return false;
 	}
 	
 	public void setNumIterations(long numIterations) {

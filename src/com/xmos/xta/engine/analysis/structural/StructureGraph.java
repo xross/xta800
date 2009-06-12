@@ -58,6 +58,9 @@ public class StructureGraph {
 	}	
 	
 	public boolean setLoopIterations(Reference reference, long iterations) {
+		if (iterations < 0)
+			return false;
+		
 		boolean found = false;
 		for (Node node : getReferencedNodes(reference)) {						
 			Node enclosingLoopNode = getEncolsingLoopNode(node);
@@ -79,8 +82,32 @@ public class StructureGraph {
 	}
 
 	public boolean setLoopPathIterations(Reference reference, long iterations) {
-		// TODO
-		return false;
+		if (iterations < 0)
+			return false;
+
+		boolean found = false;
+		for (Node node : getReferencedNodes(reference)) {						
+			Node loopNode = getEncolsingLoopNode(node);
+			if (loopNode == null)
+				continue;
+			
+			Node sectionNode = getEncolsingSectionNode(node);
+			if (sectionNode == null)
+				continue;
+			
+			Node optionNode = getEncolsingOptionNode(node);
+			if (optionNode == null)
+				continue;
+			
+			if (!sectionNode.getAttributes().setLoopPathIterations(loopNode, optionNode, iterations))
+				continue;
+			
+			found = true;
+		}		
+		if (found) {
+			refreshDisplayedUnknowns();			
+		}		
+		return found;		
 	}
 
 	public boolean unsetLoopPathIterations(Reference reference) {
@@ -204,6 +231,22 @@ public class StructureGraph {
 				
 		Node n = node.getParent();
 		while ((n != null) && !n.isLoopNode()) {
+			n = n.getParent();
+		}
+		return n;		
+	}
+
+	private Node getEncolsingSectionNode(Node node) {
+		Node n = node.getParent();
+		while ((n != null) && !n.isSectionNode()) {
+			n = n.getParent();
+		}
+		return n;		
+	}
+
+	private Node getEncolsingOptionNode(Node node) {
+		Node n = node;
+		while ((n.getParent() != null) && !n.getParent().isSectionNode()) {
 			n = n.getParent();
 		}
 		return n;		
