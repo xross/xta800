@@ -20,7 +20,7 @@ public class BlockNode extends IBufferNode {
 	}
 	
 	public BlockNode(BlockNode block) {
-		super();
+		super(block);
 		m_insts = block.m_insts;
 	}
 	
@@ -182,6 +182,7 @@ public class BlockNode extends IBufferNode {
 	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
 		for(XtaInstruction inst : getInstructions()){
 			for(long i=0;i<fnopCount(inst.getPc());i++){
+				System.out.println("found an fnop");
 				instructions.add(new NullInstruction("--FNOP--", inst.getConfig(), 0, inst.getPc(), 0));
 			}
 			instructions.add(inst);
