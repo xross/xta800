@@ -303,11 +303,11 @@ public class LoopNode extends Node {
 	}
 
 	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
-		
-	}
 
+	}
+/*
 	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
 		
 	}
-
+*/
 }

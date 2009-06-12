@@ -1,6 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -290,7 +291,7 @@ public class SectionNode extends Node {
 			assert(false);
 		}
 	}
-*/
+
 	private IBufferVector maximiseBest(Map<Node, IBufferVector> nodeToIBuff) {
 		if(nodeToIBuff.size() == 1){
 			return nodeToIBuff.values().iterator().next();
@@ -308,14 +309,24 @@ public class SectionNode extends Node {
 			return null;
 		}
 	}	
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
-		
-	}
-
-
+	
 	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
 
 		
 	}
+	
+	*/
+
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions, int iteration) {
+		List<Node> sectionList = new LinkedList<Node>(m_options);
+		Collections.sort(sectionList);
+		int itt=0;
+		for(Node option : sectionList){
+			option.getInstructionStream(c, instructions, itt);
+			itt++;
+		}
+	}
+
+
 	
 }

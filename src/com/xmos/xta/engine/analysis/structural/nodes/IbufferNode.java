@@ -11,23 +11,18 @@ import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
 public abstract class IbufferNode extends Node {
 	
 	Map<Integer, Integer> m_startToEndIbuffer;
-	boolean m_deterministicFnops;
+	
 	IBufferSequence m_ibs;
 	
 	Collection<IBufferSequence> m_ibufferSequences;
 	
 	public IbufferNode(){
 		super();
-		m_deterministicFnops = false;
 		m_startToEndIbuffer = new HashMap<Integer, Integer>();
 		m_ibufferSequences = new HashSet<IBufferSequence>();
 	}
 	
 	//this whole function is a complete mess and will be refactored
-	
-	public boolean isFnopsDeterministic(){
-		return m_deterministicFnops;
-	}
 
 	public Collection<InstructionBuffer> getEndInstructionBuffers() {
 		Set<InstructionBuffer> set = new HashSet<InstructionBuffer>();
@@ -48,23 +43,24 @@ public abstract class IbufferNode extends Node {
 		
 		if(m_ibufferSequences.size() == 1){
 			m_ibs = m_ibufferSequences.iterator().next();
-			m_deterministicFnops = true;
 		} else {
-			m_deterministicFnops = false;
+			int worstCount = m_ibs.m_fnopPcs.size();
+			for(IBufferSequence currentState : m_ibufferSequences){
+				if(currentState.m_fnopPcs.size() > worstCount){
+					m_ibs = currentState;
+				}
+			}
 		}
 		return true;
 	}
 	
 	public int fnopCount(int pc){
-		if(isFnopsDeterministic()){
-			int count =0;
-			for(int fnopPc : m_ibs.getfnops()){
-				if(fnopPc == pc) count++;
-			}
-			return count;
-		} else {
-			return 0;
+		int count =0;
+		for(int fnopPc : m_ibs.getfnops()){
+			if(fnopPc == pc) count++;
 		}
+		return count;
+
 	}
 	
 	public Collection<IbufferNode> getNextIbufferNodes(){

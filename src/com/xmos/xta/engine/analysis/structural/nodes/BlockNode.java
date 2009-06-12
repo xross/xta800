@@ -166,7 +166,7 @@ public class BlockNode extends IbufferNode {
 			instructions.add(inst);
 		}
 	}
-	
+	/*
 	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
 		m_bestCaseStartIbuffer = bestVector;
 		m_worstCaseStartIbuffer = worstVector;
@@ -196,5 +196,5 @@ public class BlockNode extends IbufferNode {
 	private List<Integer> iBufferToFnops(int numBytes){
 		return null;
 	}
-	
+	*/
 }
