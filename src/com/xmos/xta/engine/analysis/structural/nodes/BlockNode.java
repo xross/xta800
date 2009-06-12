@@ -6,45 +6,54 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.NullInstruction;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class BlockNode extends IbufferNode {
+	private NodeAttributes m_attributes;	
 	private List<Node> m_insts;
-	
 
 	public BlockNode() {
 		super();
 		m_insts = new LinkedList<Node>();
+		m_attributes = new NodeAttributes(this);
 	}
 	
 	public BlockNode(BlockNode block) {
 		super();
 		m_insts = block.m_insts;
+		m_attributes = block.m_attributes;
 	}
 	
 	public BlockNode(List<Node> insts) {
 		super();
 		m_insts = insts;
+		m_attributes = new NodeAttributes(this);
 	}
 		
 	public BlockNode shallowCopy() {
 		return new BlockNode(this);
 	}
-	
-	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
-		
+
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {		
 		BlockNode bn = new BlockNode();
 		bn.m_startToEndIbuffer = m_startToEndIbuffer;
 		for (Node node : m_insts) {
 			bn.m_insts.add(node.deepCopy(startPcs));
 		}
+		m_attributes = new NodeAttributes(bn.m_attributes);
 		return bn;
 	}
 
     public String getTypeName() {
         return "block";
+    }
+    
+    public NodeAttributes getAttributes() {
+    	return m_attributes;
     }
     
 	public LinkedList<XtaInstruction> getInstructions() {

@@ -7,8 +7,8 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.NodeAttributes;
-import com.xmos.xta.engine.analysis.structural.nodes.NodeAttributes.UnknownState;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 
 public class Unknowns extends Command {
@@ -92,7 +92,7 @@ public class Unknowns extends Command {
 		for (Node node : nodes) {
 		    node.traverse(0, new UntypedNodeTraverser() {
 		    	public boolean foundNode(Node node, int depth) {
-		    		NodeAttributes nodeAttributes = node.getNodeAttributes();		    		
+		    		NodeAttributes nodeAttributes = node.getAttributes();		    		
 		    		if (nodeAttributes.isUnknown() &&
 		    			(nodeAttributes.getUnknownState() == UnknownState.UNKNOWN)) {
 		    			console.display(nodeAttributes.getUnknownDescription() + "\n");

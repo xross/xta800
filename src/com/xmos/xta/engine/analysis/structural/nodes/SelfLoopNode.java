@@ -8,26 +8,32 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.SelfLoopNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class SelfLoopNode extends Node{
+	private SelfLoopNodeAttributes m_attributes;
 	private Node m_loop;
 
 	public SelfLoopNode(SelfLoopNode loop) {
 		super();
 		m_loop = loop.m_loop;
+		m_attributes = loop.m_attributes;
 	}
 
 	public SelfLoopNode() {
 		super();
 		m_loop = null;
+		m_attributes = new SelfLoopNodeAttributes(this);
 	}
 
 	public SelfLoopNode(Node base) {
 		super();
 		m_loop = base;
+		m_attributes = new SelfLoopNodeAttributes(this);
 	}
 
 	public SelfLoopNode shallowCopy() {
@@ -37,6 +43,7 @@ public class SelfLoopNode extends Node{
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		SelfLoopNode ln = new SelfLoopNode();
 		ln.m_loop = m_loop.deepCopy(startPcs);
+		ln.m_attributes = new SelfLoopNodeAttributes(m_attributes);
 		return ln;
 	}
 	
@@ -44,6 +51,10 @@ public class SelfLoopNode extends Node{
         return "selfloop";
     }
 	
+    public NodeAttributes getAttributes() {
+    	return m_attributes;
+    }    
+    
 	public LinkedList<XtaInstruction> getInstructions() {
 	LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loop.getInstructions());
 
@@ -93,17 +104,7 @@ public class SelfLoopNode extends Node{
 	public boolean isLoopNode() {
 		return true;
 	}
-	
-	public void setNumIterations(long numIterations) {
-	    if (!m_numIterationsDone) {
-	    	m_numIterationsDone = true;
-	    	
-			for (Node child : getChildren()) {
-				child.setNumIterations(numIterations);
-			}
-	    }
-	}	
-	
+		
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
 			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
 		

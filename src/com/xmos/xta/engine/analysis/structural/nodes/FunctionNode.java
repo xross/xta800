@@ -8,11 +8,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class FunctionNode extends IbufferNode {
+	private NodeAttributes m_attributes;	
 	private String m_functionName;
 	private Node m_function;
 	private static int functionId;
@@ -22,12 +24,14 @@ public class FunctionNode extends IbufferNode {
 	public FunctionNode() {
 		super();
 		m_knownFunction = false;
+		m_attributes = new NodeAttributes(this);
 	}
 	
 	public FunctionNode(Node branchTarget) {
 		super();
 		m_branchTarget = branchTarget;
 		m_knownFunction = false;
+		m_attributes = new NodeAttributes(this);
 	}
 	
 	public FunctionNode(Node function, String functionName) {
@@ -40,6 +44,7 @@ public class FunctionNode extends IbufferNode {
 			m_functionName = functionName;
 		}
 		m_branchTarget = m_function;
+		m_attributes = new NodeAttributes(this);
 	}
 	
 	public FunctionNode(FunctionNode fn){
@@ -47,6 +52,7 @@ public class FunctionNode extends IbufferNode {
 		m_function = fn.m_function;
 		m_knownFunction = fn.m_knownFunction;
 		m_branchTarget = fn.m_branchTarget;
+		m_attributes = fn.m_attributes;
 	}
 	
 	public Node shallowCopy() {
@@ -56,7 +62,7 @@ public class FunctionNode extends IbufferNode {
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs){
 		FunctionNode fn = new FunctionNode();
 		if(m_knownFunction){
-			fn.m_function = m_function.deepCopy(startPcs);
+			fn.m_function = m_function.deepCopy(startPcs);			
 		}
 		fn.m_functionName = m_functionName;
 		fn.m_knownFunction = m_knownFunction;
@@ -67,7 +73,7 @@ public class FunctionNode extends IbufferNode {
 			String fnName = fn.getBranchTarget().getInstructions().getFirst().getFunctionName();
 			fn.setFunction(fnName, startPcs.get(pc).getFunction().deepCopy(startPcs));
 		} 
-		
+		m_attributes = new NodeAttributes(this);
 		return fn;
 	}
 
@@ -75,6 +81,10 @@ public class FunctionNode extends IbufferNode {
         return "function";
     }
 		
+    public NodeAttributes getAttributes() {
+    	return m_attributes;
+    }
+    
 	public String toString(){
 		return "Function" + m_id;
 	}

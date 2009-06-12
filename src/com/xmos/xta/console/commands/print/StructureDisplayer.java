@@ -8,7 +8,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructureDisplayer {
-	private final static boolean DEBUG = false;
+	private final static boolean DEBUG = true;
 
 	private Console m_console;
 
@@ -107,7 +107,7 @@ public class StructureDisplayer {
 		if (depth > 0) {
 			if (node.isExcluded()) {
 				m_console.display(".  X ");
-			} else if (node.getNodeAttributes().getDisplayUnknown()) {
+			} else if (node.getAttributes().getDisplayUnknown()) {
 				m_console.display(".  * ");
 			} else {
 				m_console.display(".    ");			
@@ -117,7 +117,7 @@ public class StructureDisplayer {
 	
 	private void displayNodeName(Node node) {	
 		String nodeName = "";
-		if (node.isLoopHeader()) {
+		if (node.getAttributes().isLoopHeader()) {
 			nodeName = String.format("header(%d)", node.getId());			
 		} else {
 			nodeName = String.format("%s(%d)", node.getTypeName(), node.getId());
@@ -131,6 +131,11 @@ public class StructureDisplayer {
 	
 	private void displayTimeTaken(Node node) {
 		m_console.display(node.getTimingSummary()); 
+		
+		if (DEBUG) {
+			m_console.display(String.format(" {%d}", 
+					node.getAttributes().getNumIterations()));
+		}
 	}	
 
 	private void displayWhatsNext(Node node) {

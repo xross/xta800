@@ -8,26 +8,26 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import com.xmos.xta.engine.analysis.structural.nodes.NodeAttributes.UnknownState;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class InstructionNode extends Node {
+	private InstructionNodeAttributes m_attributes;	
 	private XtaInstruction m_inst;
-
-	private long m_numCycles;
 	
 	public InstructionNode(XtaInstruction inst){
 		super();
 		m_inst = inst;
-		m_numCycles = inst.getNumCycles();
+		m_attributes = new InstructionNodeAttributes(this);
 	}
 
 	public InstructionNode(InstructionNode node) {
 		super();
 		m_inst = node.m_inst;
-		m_numCycles = node.m_numCycles;
+		m_attributes = node.m_attributes;
 	}
 	
 	public Node shallowCopy() {
@@ -35,13 +35,19 @@ public class InstructionNode extends Node {
 	}
 
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
-		return shallowCopy();
+		InstructionNode in = new InstructionNode(this);
+		in.m_attributes = new InstructionNodeAttributes(m_attributes);
+		return in;
 	}
 
     public String getTypeName() {
         return "instruction";
     }
 	
+    public NodeAttributes getAttributes() {
+    	return m_attributes;
+    }
+    
 	public String toString() {
 		return "instruction" + m_id;
 	}
@@ -115,39 +121,6 @@ public class InstructionNode extends Node {
 		return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
 	}
 
-	public void setInstructionNumCycles(long numCycles) {
-		if (m_inst.canPause()) {
-			if (numCycles > m_inst.getNumCycles()) {
-				m_numCycles = numCycles;		
-			} else {								
-			    m_numCycles = m_inst.getNumCycles();	
-			}
-		}					
-	}
-
-	public void unsetInstructionNumCycles() {
-	    m_numCycles = m_inst.getNumCycles();
-		getNodeAttributes().setUnknownState(UnknownState.UNKNOWN);				    
-	}
-	
-	public long getInstructionNumCycles() {
-		return m_numCycles;
-	}
-	
-	public void setInstructionTimeTaken(double timeTaken) {
-    	int threadFactor = (m_inst.getConfig().m_numThreads > 4) ? m_inst.getConfig().m_numThreads : 4;		
-       	setInstructionNumCycles((int)((timeTaken * m_inst.getConfig().m_frequency) / (threadFactor * 1000)));
-	}
-
-	public void unsetInstructionTimeTaken() {
-		unsetInstructionNumCycles();
-	}
-	
-	public double getInstructionTimeTaken() {
-    	int threadFactor = (m_inst.getConfig().m_numThreads > 4) ? m_inst.getConfig().m_numThreads : 4;
-        return ((double)(threadFactor * 1000) / (double)m_inst.getConfig().m_frequency) * m_numCycles;
-	}
-
 	public XtaInstruction getXtaInstruction() {
 		return m_inst;
 	}
@@ -156,25 +129,25 @@ public class InstructionNode extends Node {
 	// Statistics Gathering Methods
 	// --------------------------------------------------------------------- //
 	public double getTimeTakenRelative(Case c) {
-		if (!m_isAbsolute) {
-		    return getInstructionTimeTaken();
+		if (!m_attributes.getIsAbsolute()) {
+		    return m_attributes.getInstructionTimeTaken();
 		}
 		return 0;
 	}
 
 	public double getTimeTakenAbsolute(Case c) {
-		if (m_isAbsolute) {
-		    return getInstructionTimeTaken();
+		if (m_attributes.getIsAbsolute()) {
+		    return m_attributes.getInstructionTimeTaken();
 		}
 		return 0;
 	}
 
 	public long getNumCyclesRelative(Case c) {
-		return getInstructionNumCycles();
+		return m_attributes.getInstructionNumCycles();
 	}
 
 	public long getNumCyclesAbsolute(Case c) {
-		return getInstructionNumCycles();
+		return m_attributes.getInstructionNumCycles();
 	}
 
 	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {

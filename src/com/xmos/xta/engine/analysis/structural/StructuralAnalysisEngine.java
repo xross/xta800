@@ -15,8 +15,8 @@ import com.xmos.xta.engine.analysis.controlflow.FnopAnalyser;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.NodeAttributes;
-import com.xmos.xta.engine.analysis.structural.nodes.NodeAttributes.UnknownType;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownType;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.analysis.structural.patterns.LoopPatternMatcher;
@@ -311,14 +311,14 @@ public class StructuralAnalysisEngine {
 				public boolean foundInstructionNode(Node node, int depth) {
 					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
 					if (instruction.canPause()) {
-						NodeAttributes nodeAttributes = node.getNodeAttributes();
+						NodeAttributes nodeAttributes = node.getAttributes();
 						nodeAttributes.setUnknownType(UnknownType.INSTRUCTION_TIME);
 					}
 					return true;
 				}
 
 				public boolean foundLoopNode(Node node, int depth) {
-					NodeAttributes nodeAttributes = node.getNodeAttributes();
+					NodeAttributes nodeAttributes = node.getAttributes();
 					nodeAttributes.setUnknownType(UnknownType.LOOP_ITERATIONS);
 					return true;
 				}
@@ -330,18 +330,17 @@ public class StructuralAnalysisEngine {
 	private void setInitialIterations() {
 		// Sets the top level nodes to iterate once..
 		for (Node node : m_structureGraph.getThreads()) {
-			node.setNumIterationsDone(false);
-			node.setNumIterations(1);					
+			node.getAttributes().setNumIterations(1, true);					
 		}
 		// Sets all the loops to zero iterations..
-		for (Node node : m_structureGraph.getThreads()) {							
-	        node.traverse(0, new DefaultNodeTraverser() {
-	            public boolean foundLoopNode(Node node, int depth) {
-	            	node.setNumIterations(0);
-	            	return true;
-	            }	        	
-	        });
-		}
+//		for (Node node : m_structureGraph.getThreads()) {							
+//	        node.traverse(0, new DefaultNodeTraverser() {
+//	            public boolean foundLoopNode(Node node, int depth) {
+//	            	node.getAttributes().setNumIterations(0, true);
+//	            	return true;
+//	            }	        	
+//	        });
+//		}
 	}
 	
 	private void setParents() {

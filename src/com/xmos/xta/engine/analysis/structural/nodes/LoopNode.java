@@ -8,11 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.LoopNodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class LoopNode extends Node {
+	private LoopNodeAttributes m_attributes;	
 	private Node m_loopHeader;
 	private List<Node> m_loops;
 
@@ -20,12 +24,14 @@ public class LoopNode extends Node {
 		super();
 		m_loopHeader = loop.m_loopHeader;
 		m_loops = new ArrayList<Node>(loop.m_loops);
+		m_attributes = new LoopNodeAttributes(m_attributes);
 	}
 
 	public LoopNode() {
 		super();
 		m_loopHeader = null;
 		m_loops = new ArrayList<Node>();
+		m_attributes = new LoopNodeAttributes(this);
 	}
 
 	public LoopNode(Node loop, Node base) {
@@ -33,6 +39,7 @@ public class LoopNode extends Node {
 		m_loopHeader = base;
 		m_loops = new ArrayList<Node>();
 		m_loops.add(loop);
+		m_attributes = new LoopNodeAttributes(this);
 	}
 
 	public LoopNode(Set<Node> loops, Node base) {
@@ -42,6 +49,7 @@ public class LoopNode extends Node {
 		for (Node loop : loops) {
 			m_loops.add(loop);
 		}
+		m_attributes = new LoopNodeAttributes(this);
 	}
 
 	public LoopNode shallowCopy() {
@@ -55,7 +63,8 @@ public class LoopNode extends Node {
 			ln.m_loops.add(clone);
 		}
 		ln.m_loopHeader = m_loopHeader.deepCopy(startPcs);
-		ln.m_loopHeader.setIsLoopHeader(true);
+		ln.m_loopHeader.getAttributes().setIsLoopHeader(true);
+		ln.m_attributes = new LoopNodeAttributes(m_attributes);
 		return ln;
 	}
 
@@ -63,10 +72,22 @@ public class LoopNode extends Node {
         return "loop";
     }
 		
+    public NodeAttributes getAttributes() {
+    	return m_attributes;
+    }
+    
 	public void addLoop(Node loop) {
 		m_loops.add(loop);
 	}
 
+	public Node getLoopHeader() {
+		return m_loopHeader;
+	}
+	
+	public List<Node> getLoopBodies() {
+		return m_loops;
+	}
+	
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loopHeader.getInstructions());
 		for (Node al : m_loops) {
@@ -133,18 +154,7 @@ public class LoopNode extends Node {
 	public boolean isLoopNode() {
 		return true;
 	}
-	
-	public void setNumIterations(long numIterations) {
-	    if (!m_numIterationsDone) {
-	    	m_numIterationsDone = true;
-	    	
-	    	m_loopHeader.setNumIterations(numIterations + 1);
-			for (Node child : m_loops) {
-				child.setNumIterations(numIterations);
-			}
-	    }
-	}
-	
+		
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
 			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
 		
@@ -159,12 +169,12 @@ public class LoopNode extends Node {
 	// Statistics Gathering Methods
 	// --------------------------------------------------------------------- //
 	public double getTimeTakenRelative(Case c) {
-		if (!m_isAbsolute) {
+		if (!m_attributes.getIsAbsolute()) {
 			// This loop is relative, so take the relative component 
 			// only and multiply up by the number of iterations.
-			double time = m_loopHeader.getTimeTaken(c) * m_loopHeader.getNumIterations();
+			double time = m_loopHeader.getTimeTaken(c) * m_loopHeader.getAttributes().getNumIterations();
 			for (Node node : m_loops) {
-				time += node.getTimeTakenRelative(c) * node.getNumIterations();
+				time += node.getTimeTakenRelative(c) * node.getAttributes().getNumIterations();
 			}
 			return time;			
 		} else {
@@ -175,12 +185,12 @@ public class LoopNode extends Node {
 	}
 
 	public double getTimeTakenAbsolute(Case c) {
-		if (m_isAbsolute) {
+		if (m_attributes.getIsAbsolute()) {
 			// This loop is absolute, so both the relative and absolute components
 			// beneath contribute toward the absolute component at this level.			
-			double time = m_loopHeader.getTimeTaken(c) * m_loopHeader.getNumIterations();
+			double time = m_loopHeader.getTimeTaken(c) * m_loopHeader.getAttributes().getNumIterations();
 			for (Node node : m_loops) {
-				time += node.getTimeTaken(c) * node.getNumIterations();
+				time += node.getTimeTaken(c) * node.getAttributes().getNumIterations();
 			}
 			return time;
 			
@@ -196,12 +206,12 @@ public class LoopNode extends Node {
 	}
 	
 	public long getNumCyclesRelative(Case c) {
-		if (!m_isAbsolute) {
+		if (!m_attributes.getIsAbsolute()) {
 			// This loop is relative, so take the relative component 
 			// only and multiply up by the number of iterations.
-			long count = m_loopHeader.getNumCyclesRelative(c) * m_loopHeader.getNumIterations();
+			long count = m_loopHeader.getNumCyclesRelative(c) * m_loopHeader.getAttributes().getNumIterations();
 			for (Node node : m_loops) {
-				count += node.getNumCyclesRelative(c) * node.getNumIterations();
+				count += node.getNumCyclesRelative(c) * node.getAttributes().getNumIterations();
 			}
 			return count;			
 		} else {
@@ -212,12 +222,12 @@ public class LoopNode extends Node {
 	}
 	
 	public long getNumCyclesAbsolute(Case c) {
-		if (m_isAbsolute) {
+		if (m_attributes.getIsAbsolute()) {
 			// This loop is absolute, so both the relative and absolute components
 			// beneath contribute toward the absolute component at this level.			
-			long count = m_loopHeader.getNumCyclesAbsolute(c) * m_loopHeader.getNumIterations();
+			long count = m_loopHeader.getNumCyclesAbsolute(c) * m_loopHeader.getAttributes().getNumIterations();
 			for (Node node : m_loops) {
-				count += node.getNumCyclesAbsolute(c) * node.getNumIterations();
+				count += node.getNumCyclesAbsolute(c) * node.getAttributes().getNumIterations();
 			}
 			return count;
 			
@@ -233,12 +243,12 @@ public class LoopNode extends Node {
 	}	
 
 	public long getNumInstructionsRelative(Case c) {
-		if (!m_isAbsolute) {
+		if (!m_attributes.getIsAbsolute()) {
 			// This loop is relative, so take the relative component 
 			// only and multiply up by the number of iterations.
-			long count = m_loopHeader.getNumInstructionsRelative(c) * m_loopHeader.getNumIterations();
+			long count = m_loopHeader.getNumInstructionsRelative(c) * m_loopHeader.getAttributes().getNumIterations();
 			for (Node node : m_loops) {
-				count += node.getNumInstructionsRelative(c) * node.getNumIterations();
+				count += node.getNumInstructionsRelative(c) * node.getAttributes().getNumIterations();
 			}
 			return count;			
 		} else {
@@ -249,12 +259,12 @@ public class LoopNode extends Node {
 	}
 
 	public long getNumInstructionsAbsolute(Case c) {
-		if (m_isAbsolute) {
+		if (m_attributes.getIsAbsolute()) {
 			// This loop is absolute, so both the relative and absolute components
 			// beneath contribute toward the absolute component at this level.			
-			long count = m_loopHeader.getNumInstructionsAbsolute(c) * m_loopHeader.getNumIterations();
+			long count = m_loopHeader.getNumInstructionsAbsolute(c) * m_loopHeader.getAttributes().getNumIterations();
 			for (Node node : m_loops) {
-				count += node.getNumInstructionsAbsolute(c) * node.getNumIterations();
+				count += node.getNumInstructionsAbsolute(c) * node.getAttributes().getNumIterations();
 			}
 			return count;
 			
@@ -270,12 +280,12 @@ public class LoopNode extends Node {
 	}	
 	
 	public long getNumFNopsRelative(Case c) {
-		if (!m_isAbsolute) {
+		if (!m_attributes.getIsAbsolute()) {
 			// This loop is relative, so take the relative component 
 			// only and multiply up by the number of iterations.
-			long count = m_loopHeader.getNumFNopsRelative(c) * m_loopHeader.getNumIterations();
+			long count = m_loopHeader.getNumFNopsRelative(c) * m_loopHeader.getAttributes().getNumIterations();
 			for (Node node : m_loops) {
-				count += node.getNumFNopsRelative(c) * node.getNumIterations();
+				count += node.getNumFNopsRelative(c) * node.getAttributes().getNumIterations();
 			}
 			return count;			
 		} else {
@@ -286,12 +296,12 @@ public class LoopNode extends Node {
 	}
 
 	public long getNumFNopsAbsolute(Case c) {
-		if (!m_isAbsolute) {
+		if (!m_attributes.getIsAbsolute()) {
 			// This loop is relative, so take the relative component 
 			// only and multiply up by the number of iterations.
-			long count = m_loopHeader.getNumFNopsAbsolute(c) * m_loopHeader.getNumIterations();
+			long count = m_loopHeader.getNumFNopsAbsolute(c) * m_loopHeader.getAttributes().getNumIterations();
 			for (Node node : m_loops) {
-				count += node.getNumFNopsAbsolute(c) * node.getNumIterations();
+				count += node.getNumFNopsAbsolute(c) * node.getAttributes().getNumIterations();
 			}
 			return count;			
 		} else {
@@ -299,7 +309,6 @@ public class LoopNode extends Node {
 			// beneath here will contribute to the absolute time.
 	    	return 0;
 		}
-
 	}
 
 
