@@ -13,9 +13,11 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.controlflow.FnopAnalyser;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.engine.analysis.structural.nodes.IBufferNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.analysis.structural.nodes.NodeAttributes.UnknownType;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
@@ -375,18 +377,19 @@ public class StructuralAnalysisEngine {
 				
 				for(XtaInstruction inst : node.getInstructions()){
 					
-					//for(int i =0 ;i< node.fnopCount(inst.getPc());i++){
-					//	System.out.print("FNOP\\n");
-					//}
+					for(int i =0 ;i< ((IBufferNode)node).fnopCount(inst.getPc());i++){
+						System.out.print("FNOP\\n");
+					}
 					System.out.print(inst + "\\n");
 				}
 				
 				System.out.print("\"");
-				//if (node.getEndInstructionBuffers().size() > 1) {
-				//	System.out.print(", style=filled, color = red");
+					
+				if (node.getError(Case.WORST) > 0) {
+					System.out.print(", style=filled, color = red");
 					
 					
-				//} 
+				} 
 				System.out.println("];");
 
 

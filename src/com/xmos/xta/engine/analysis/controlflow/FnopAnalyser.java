@@ -2,7 +2,7 @@ package com.xmos.xta.engine.analysis.controlflow;
 
 import java.util.LinkedList;
 import java.util.List;
-import com.xmos.xta.engine.analysis.structural.nodes.IbufferNode;
+import com.xmos.xta.engine.analysis.structural.nodes.IBufferNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
@@ -13,11 +13,11 @@ public class FnopAnalyser {
 
 	public void analyse(Node startNode, boolean isFunction) {
 		assert (!startNode.isFunctionNode());
-		assert(startNode instanceof IbufferNode);
-		simulateBasicBlock((IbufferNode)startNode, null, isFunction);
+		assert(startNode instanceof IBufferNode);
+		simulateBasicBlock((IBufferNode)startNode, null, isFunction);
 	}
 
-	private void simulateBasicBlock(IbufferNode block, IbufferNode parent, boolean isFunction) {
+	private void simulateBasicBlock(IBufferNode block, IBufferNode parent, boolean isFunction) {
 		boolean statesUpdated = false;
 		if (parent == null || parent.isFunctionNode()) {
 			InstructionBuffer ib = new InstructionBuffer(block.getStartPc());
@@ -32,14 +32,14 @@ public class FnopAnalyser {
 			}
 		}
 		if (statesUpdated) {
-			for (IbufferNode next : block.getNextIbufferNodes()) {
+			for (IBufferNode next : block.getNextIbufferNodes()) {
 				simulateBasicBlock(next, block, isFunction);
 			}
 		}
 
 	}
 
-	private boolean iterateOverBasicBlocks(IbufferNode block, InstructionBuffer pretransitionIB, IbufferNode parent) {
+	private boolean iterateOverBasicBlocks(IBufferNode block, InstructionBuffer pretransitionIB, IBufferNode parent) {
 
 		List<Integer> fnopPcs = new LinkedList<Integer>();
 		

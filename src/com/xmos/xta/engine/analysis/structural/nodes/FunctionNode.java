@@ -12,7 +12,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
-public class FunctionNode extends IbufferNode {
+public class FunctionNode extends IBufferNode {
 	private String m_functionName;
 	private Node m_function;
 	private static int functionId;
@@ -242,5 +242,14 @@ public class FunctionNode extends IbufferNode {
 		if(m_knownFunction){
 			m_function.getInstructionStream(c, instructions, iteration);
 		}
+	}
+
+	public long getError(Case c) {
+		if(m_knownFunction){
+			return m_function.getError(c);
+		} else {
+			return 0;
+		}
+	
 	}	
 }

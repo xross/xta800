@@ -293,5 +293,12 @@ public class SectionNode extends Node {
 	}
 
 
+	public long getError(Case c) {
+		long error = 0;
+		
+		return error;
+	}
+
+
 	
 }

@@ -155,5 +155,9 @@ public class SelfLoopNode extends Node{
 		}
 	}
 
+	public long getError(Case c) {
+		return m_loop.getError(c) * m_loop.getNumIterations();
+	}
+
 
 }

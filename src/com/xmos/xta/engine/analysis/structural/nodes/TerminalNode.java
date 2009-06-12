@@ -1,7 +1,6 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -9,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
-import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
@@ -211,6 +208,20 @@ public class TerminalNode extends Node {
 			break;
 		}
 		option.getInstructionStream(c, instructions, iteration);
+	}
+
+
+	public long getError(Case c) {
+		Node option = null;
+		switch (c){
+		case WORST:
+			option = getWorstCaseOption();
+			break;
+		case BEST:
+			option = getBestCaseOption();
+			break;
+		}
+		return option.getError(c);
 	}
 	
 }

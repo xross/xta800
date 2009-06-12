@@ -58,6 +58,7 @@ public abstract class Node implements Comparable<Node>{
 	public abstract List<Node> getChildren();
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
+	public abstract long getError(Case c);
 	public abstract void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration);
 	public abstract Set<Integer> getPCs();
 	
@@ -444,6 +445,8 @@ public abstract class Node implements Comparable<Node>{
 		return "";
 	}
 
+	
+	
 }
 
 class FunctionCallStatus {

@@ -314,4 +314,13 @@ public class LoopNode extends Node {
 		}
 		m_loopHeader.getInstructionStream(c, instructions, iteration);
 	}
+
+
+	public long getError(Case c) {
+		long error = 0;
+		for(Node loop : m_loops){
+			error += loop.getNumIterations() * loop.getError(c);
+		}
+		return error;
+	}
 }

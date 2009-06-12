@@ -192,4 +192,12 @@ public class PathNode extends Node {
 			pathNode.getInstructionStream(c, instructions, iteration);
 		}
 	}
+
+	public long getError(Case c) {
+		long error = 0;
+		for(Node pathNode : m_nodes){
+			error += pathNode.getError(c);
+		}
+		return error;
+	}
 }
