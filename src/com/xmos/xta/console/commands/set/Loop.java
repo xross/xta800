@@ -62,9 +62,9 @@ public class Loop extends Command {
     public String description(Engine engine, boolean detailed) {
     	switch (m_operation) {
     	case SET:
-    		return "loop <SRCLABEL_REF> <iterations>: Sets the number of iterations for the path identified";
+    		return "loop <SRCLABEL_REF> <iterations>: Sets the number of iterations for the loop identified";
     	case UNSET:
-    		return "loop <SRCLABEL_REF>: Clears the number of iterations for the path identified";
+    		return "loop <SRCLABEL_REF>: Clears the number of iterations for the loop identified";
     	}    			
     	assert(false);
     	return "";    	    

@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.controlflow.FnopAnalyser;
@@ -16,9 +17,9 @@ import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.IBufferNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownType;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
-import com.xmos.xta.engine.analysis.structural.nodes.NodeAttributes.UnknownType;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.analysis.structural.patterns.LoopPatternMatcher;
@@ -123,7 +124,7 @@ public class StructuralAnalysisEngine {
 		setUnknowns();
 
 		engine.provideFeedback("Setting initial loop iterations..");
-		setInitialIterations();		
+		setInitialIterations();				
 		
 		engine.provideFeedback("Complete");
 		return true;
@@ -315,14 +316,14 @@ public class StructuralAnalysisEngine {
 				public boolean foundInstructionNode(Node node, int depth) {
 					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
 					if (instruction.canPause()) {
-						NodeAttributes nodeAttributes = node.getNodeAttributes();
+						NodeAttributes nodeAttributes = node.getAttributes();
 						nodeAttributes.setUnknownType(UnknownType.INSTRUCTION_TIME);
 					}
 					return true;
 				}
 
 				public boolean foundLoopNode(Node node, int depth) {
-					NodeAttributes nodeAttributes = node.getNodeAttributes();
+					NodeAttributes nodeAttributes = node.getAttributes();
 					nodeAttributes.setUnknownType(UnknownType.LOOP_ITERATIONS);
 					return true;
 				}
@@ -331,17 +332,16 @@ public class StructuralAnalysisEngine {
 		m_structureGraph.refreshDisplayedUnknowns();
 	}
 	
-	private void setInitialIterations() {
+	private void setInitialIterations() {		
 		// Sets the top level nodes to iterate once..
 		for (Node node : m_structureGraph.getThreads()) {
-			node.setNumIterationsDone(false);
-			node.setNumIterations(1);					
+			node.getAttributes().setLoopIterations(1);					
 		}
 		// Sets all the loops to zero iterations..
 		for (Node node : m_structureGraph.getThreads()) {							
 	        node.traverse(0, new DefaultNodeTraverser() {
 	            public boolean foundLoopNode(Node node, int depth) {
-	            	node.setNumIterations(0);
+	            	node.getAttributes().setLoopIterations(0);
 	            	return true;
 	            }	        	
 	        });

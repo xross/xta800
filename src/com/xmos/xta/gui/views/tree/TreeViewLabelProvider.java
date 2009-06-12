@@ -26,7 +26,7 @@ public class TreeViewLabelProvider extends CellLabelProvider {
 		cell.setText(nodeText);
 		
 		String iconName = node.getTypeName() + "_node";
-		if (node.getNodeAttributes().getDisplayUnknown()) {
+		if (node.getAttributes().getDisplayUnknown()) {
 			iconName += ".unknown";
 		}
 		cell.setImage(Icons.getIcon(iconName));

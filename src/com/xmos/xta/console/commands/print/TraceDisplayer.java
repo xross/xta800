@@ -35,7 +35,7 @@ public class TraceDisplayer {
     	node.getInstructionStream(Case.WORST, instructions, 0);
 		for(XtaInstruction instruction : instructions){
 			
-			String isUnknown = node.isInstructionUnknown() ? "*" : " ";
+			String isUnknown = node.getAttributes().isInstructionUnknown() ? "*" : " ";
 	     	
 	     	String functionOffsetString = 
 	     		instruction.getFunctionName() + " + " + instruction.getFunctionOffset();
@@ -43,7 +43,7 @@ public class TraceDisplayer {
 	     	m_console.display(String.format("%s %.1f: (%.1fns) 0x%05x %-22s %-12s %s",
 	     			isUnknown,
 	         		m_currentTime,
-	         		node.getInstructionTimeTaken(),
+	         		node.getAttributes().getInstructionTimeTaken(),
 	           		instruction.getPc(), 
 	           		functionOffsetString, 
 	           		instruction.getNmenonic(), 
@@ -52,7 +52,7 @@ public class TraceDisplayer {
 	     	if (instruction.canPause())
 	     		m_console.display(" (P)");
 	     	
-	     	m_currentTime += node.getInstructionTimeTaken();
+	     	m_currentTime += node.getAttributes().getInstructionTimeTaken();
 	      	m_console.display("\n");    	
 		}
 		m_console.display("\n");    	

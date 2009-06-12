@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
@@ -26,14 +27,8 @@ public abstract class Node implements Comparable<Node>{
 	Node m_branchLinkReturn;
 	Set<Node> m_dominators;
 	
-	long m_numIterations;
-	boolean m_numIterationsDone;
-	boolean m_isAbsolute;	
 	boolean m_isExcluded;
-	boolean m_isLoopHeader;
 	
-	private NodeAttributes m_nodeAttributes;
-
 	Set<Node> m_branchTargets;
 
 	public enum Case {
@@ -42,6 +37,7 @@ public abstract class Node implements Comparable<Node>{
 	}
 
 	public abstract String getTypeName();
+	public abstract NodeAttributes getAttributes();
 	
 	public abstract Node shallowCopy();
 	public abstract Node deepCopy(Map<Integer, FunctionNode> startPcs);
@@ -75,11 +71,7 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public Node() {
-		m_nodeAttributes = new NodeAttributes(this);
-
 		m_isExcluded = false;
-		m_isLoopHeader = false;
-		
 		m_branchTargets = new HashSet<Node>();
 		m_nextNodes = new HashSet<Node>();
 		m_prevNodes = new HashSet<Node>();
@@ -88,10 +80,7 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public Node(Node node) {
-		m_nodeAttributes = new NodeAttributes(node.m_nodeAttributes);
-
 		m_isExcluded = node.m_isExcluded;
-		m_isLoopHeader = node.m_isLoopHeader;
 		m_branchTargets = new HashSet<Node>(node.m_branchTargets);
 		m_nextNodes = new HashSet<Node>(node.m_nextNodes);
 		m_prevNodes = new HashSet<Node>(node.m_prevNodes);
@@ -157,13 +146,15 @@ public abstract class Node implements Comparable<Node>{
 			double absoluteTimeTaken = getTimeTakenAbsolute(Case.WORST);
 				
 			// Displays a more complete calculation for the case when absolutes are involved.
-			if ((absoluteTimeTaken != 0) && !m_parent.getIsAbsolute()) {								   								
+			if ((absoluteTimeTaken != 0) && !m_parent.getAttributes().getIsAbsolute()) {								   								
 				timingSummary += String.format(" ((%.1fns x %d) + %.1fns)",
 			    		relativeTimeTaken, 
-			    		getNumIterations(),
+			    		getAttributes().getNumIterations(),
 			    		absoluteTimeTaken);				
 			} else {
-				timingSummary += String.format(" x %d", getNumIterations());
+				timingSummary += String.format(" (%.1fns x %d)",
+						relativeTimeTaken,
+						getAttributes().getNumIterations());
 			}
 			
 			if (DEBUG) {
@@ -171,7 +162,7 @@ public abstract class Node implements Comparable<Node>{
 				    	getTimeTakenRelative(Case.WORST),
 					    getTimeTakenAbsolute(Case.WORST));
 			    
-			    if (getIsAbsolute()) {
+			    if (getAttributes().getIsAbsolute()) {
 			    	timingSummary += " (ABS)";
 			    } else {
 			    	timingSummary += " (REL)";		    	
@@ -181,7 +172,7 @@ public abstract class Node implements Comparable<Node>{
 
 	    // Displays the iteration count for section options only..
 		if ((m_parent != null) && m_parent.isSectionNode()) {
-			timingSummary += String.format(" (%d iterations)", getNumIterations());
+			timingSummary += String.format(" (%d iterations)", getAttributes().getNumIterations());
 		}
 	    return timingSummary;
 	}
@@ -285,57 +276,7 @@ public abstract class Node implements Comparable<Node>{
 	public boolean isLoopNode() {
 		return false;
 	}
-	
-	public void setNumIterations(long numIterations) {
-	    if (!m_numIterationsDone) {
-	    	m_numIterations = numIterations;
-	    	m_numIterationsDone = true;
-	    	
-			for (Node child : getChildren()) {
-				if (child.isLoopNode()) {
-					// Just set the number of iterations on the loop, 
-					// but don't propagate it down to its children
-					child.m_numIterations = numIterations;
-				} else {
-				    child.setNumIterations(numIterations);
-				}
-			}
-			
-			if (m_parent != null)
-			    m_parent.setNumIterations(numIterations);
-	     }
-	}
-	
-	public long getNumIterations() {
-		return m_numIterations;
-	}
-	
-	public void setNumIterationsDone(boolean done) {
-		m_numIterationsDone = done;
-		for (Node child : getChildren()) {
-			if (!child.isLoopNode()) {
-			    child.setNumIterationsDone(done);
-			}
-		}
-	}
-	
-	public boolean getNumIterationsDone() {
-		return m_numIterationsDone;
-	}
-	
-	public void setIsAbsolute(boolean isAbsolute) {
-		m_isAbsolute = isAbsolute;
-		for (Node child : getChildren()) {
-			if (!child.isLoopNode()) {
-			    child.setIsAbsolute(isAbsolute);
-			}
-		}
-	}
-	
-	public boolean getIsAbsolute() {
-		return m_isAbsolute;
-	}
-	
+		
 	public void setIsExcluded(boolean isExcluded) {
 		m_isExcluded = isExcluded;
 	}
@@ -344,14 +285,6 @@ public abstract class Node implements Comparable<Node>{
 		return m_isExcluded;
 	}	
 	
-	public void setIsLoopHeader(boolean isLoopHeader) {
-		m_isLoopHeader = isLoopHeader;
-	}
-
-	public boolean isLoopHeader() {
-		return m_isLoopHeader;
-	}	
-
 	public Node getEnclosingLoopNode() {		
 		Node node = m_parent;
 		while ((node != null) && !node.isLoopNode()) {
@@ -406,41 +339,16 @@ public abstract class Node implements Comparable<Node>{
 	public boolean branchesTo(Node block) {
 		return m_branchTargets.contains(block);
 	}
-	
-	public NodeAttributes getNodeAttributes() {
-		return m_nodeAttributes;
-	}
-	public void setInstructionNumCycles(long numCycles) {
-		assert(false);		
-	}
 
-	public void unsetInstructionNumCycles() {
-		assert(false);		
-	}
-	
-	public long getInstructionNumCycles() {
-		assert(false);		
-		return 0;
-	}
-
-	public void setInstructionTimeTaken(double timeTaken) {
-		assert(false);		
-	}
-
-	public void unsetInstructionTimeTaken() {
-		assert(false);		
-	}
-	
-	public double getInstructionTimeTaken() {
-		//assert(false);		
-		return 0;
-	}
-	
-	public boolean isInstructionUnknown() {
-		//assert(false);		
-		return false;
-	}	
-	
+/*
+	public abstract void updateFnops(IBufferVector bestVector, IBufferVector worstVector);	
+	IBufferVector m_worstCaseStartIbuffer;
+	IBufferVector m_bestCaseStartIbuffer;
+	IBufferVector m_worstCaseEndIbuffer;
+	IBufferVector m_bestCaseEndIbuffer;
+	*/
+	//add a function called get error
+				
 	public String getFunctionName() {
 		return "";
 	}

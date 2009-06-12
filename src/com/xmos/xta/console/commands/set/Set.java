@@ -6,6 +6,7 @@ import com.xmos.xta.console.commands.CommandContainer;
 public class Set extends CommandContainer {
 	static private Command[] m_options = { 
 		new Loop(Loop.Operation.SET),
+		new LoopPath(LoopPath.Operation.SET),
 		new LoopScope(), 
 		new Time(Time.Operation.SET), 
 		new Required(Required.Operation.SET), 

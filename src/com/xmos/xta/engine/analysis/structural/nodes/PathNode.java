@@ -7,11 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class PathNode extends Node {
+	private NodeAttributes m_attributes;
 	List<Node> m_nodes;
 
 	public PathNode(List<Node> nodes) {
@@ -19,16 +22,19 @@ public class PathNode extends Node {
 		assert (nodes != null);
 		assert (nodes.size() > 1);
 		m_nodes = nodes;
+		m_attributes = new NodeAttributes(this);
 	}
 
 	public PathNode(PathNode path) {
 		super();
 		m_nodes = path.m_nodes;
+		m_attributes = new NodeAttributes(this);
 	}
 
 	public PathNode() {
 		super();
 		m_nodes = new LinkedList<Node>();
+		m_attributes = new NodeAttributes(this);
 	}
 
 	public Node shallowCopy() {
@@ -41,12 +47,17 @@ public class PathNode extends Node {
 			Node clone = path.deepCopy(startPcs);
 			pn.m_nodes.add(clone);
 		}
+		pn.m_attributes = new NodeAttributes(pn);
 		return pn;
 	}
 
     public String getTypeName() {
         return "path";
     }
+    
+    public NodeAttributes getAttributes() {
+    	return m_attributes;
+    }    
 		
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();

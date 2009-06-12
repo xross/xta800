@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.NodeAttributes.UnknownState;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.engine.references.Reference;
 
@@ -38,7 +38,7 @@ public class StructureGraph {
 		for (Node node : getThreads()) {
 		    node.traverse(0, new UntypedNodeTraverser() {
 		    	public boolean foundNode(Node node, int depth) {
-		    		node.getNodeAttributes().setDisplayUnknown(false);
+		    		node.getAttributes().setDisplayUnknown(false);
 		        	return true;
 		    	}
 		    });
@@ -47,8 +47,8 @@ public class StructureGraph {
 		for (Node node : getThreads()) {
 		    node.traverse(0, new UntypedNodeTraverser() {
 		    	public boolean foundNode(Node node, int depth) {
-		    		if (node.getNodeAttributes().isUnknown() &&
-		    			node.getNodeAttributes().getUnknownState() == UnknownState.UNKNOWN) {
+		    		if (node.getAttributes().isUnknown() &&
+		    			node.getAttributes().getUnknownState() == UnknownState.UNKNOWN) {
 		    			setDisplayUnknownOnParentNodes(node);
 		    		}
 		        	return true;
@@ -62,9 +62,8 @@ public class StructureGraph {
 		for (Node node : getReferencedNodes(reference)) {						
 			Node enclosingLoopNode = getEncolsingLoopNode(node);
 			if (enclosingLoopNode != null) {				
-				enclosingLoopNode.setNumIterationsDone(false);				
-				node.setNumIterations(iterations);
-				setUnknownState(enclosingLoopNode, UnknownState.KNOWN);	  				
+				enclosingLoopNode.getAttributes().setLoopIterations(iterations);
+				enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
 				found = true;
 			}
 		}		
@@ -79,12 +78,22 @@ public class StructureGraph {
 		return false;
 	}
 
+	public boolean setLoopPathIterations(Reference reference, long iterations) {
+		// TODO
+		return false;
+	}
+
+	public boolean unsetLoopPathIterations(Reference reference) {
+		// TODO
+		return false;
+	}
+	
 	public boolean setLoopScope(Reference reference, boolean isAbsolute) {
 		boolean found = false;
 	    for (Node node : getReferencedNodes(reference)) {
 			Node enclosingLoopNode = getEncolsingLoopNode(node);
 			if (enclosingLoopNode != null) {				
-				enclosingLoopNode.setIsAbsolute(isAbsolute);
+				enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
 				found = true;
 			}
 		}		
@@ -94,8 +103,8 @@ public class StructureGraph {
 	public boolean setInstructionTimeTaken(Reference reference, double timeTaken) {
 		boolean found = false;
 	    for (Node node : getReferencedNodes(reference)) {
-	    	node.setInstructionTimeTaken(timeTaken);
-	    	setUnknownState(node, UnknownState.KNOWN);
+	    	node.getAttributes().setInstructionTimeTaken(timeTaken);
+			node.getAttributes().setUnknownState(UnknownState.KNOWN);	
 	    	found = true;
 		}
 		if (found) {
@@ -107,8 +116,8 @@ public class StructureGraph {
 	public boolean unsetInstructionTimeTaken(Reference reference) {
 		boolean found = false;
 	    for (Node node : getReferencedNodes(reference)) {
-	    	node.unsetInstructionTimeTaken();
-	    	setUnknownState(node, UnknownState.UNKNOWN);	    	
+	    	node.getAttributes().unsetInstructionTimeTaken();
+			node.getAttributes().setUnknownState(UnknownState.UNKNOWN);	
 	    	found = true;
 		}
 		if (found) {
@@ -120,8 +129,8 @@ public class StructureGraph {
 	public boolean setInstructionNumCycles(Reference reference, long numCycles) {
 		boolean found = false;
 	    for (Node node : getReferencedNodes(reference)) {
-	    	node.setInstructionNumCycles(numCycles);
-	    	setUnknownState(node, UnknownState.KNOWN);
+	    	node.getAttributes().setInstructionNumCycles(numCycles);
+			node.getAttributes().setUnknownState(UnknownState.KNOWN);	
 	    	found = true;
 		}
 		if (found) {
@@ -133,8 +142,8 @@ public class StructureGraph {
 	public boolean unsetInstructionNumCycles(Reference reference) {
 		boolean found = false;
         for (Node node : getReferencedNodes(reference)) {
-        	node.unsetInstructionNumCycles();
-        	setUnknownState(node, UnknownState.UNKNOWN);	
+        	node.getAttributes().unsetInstructionNumCycles();
+			node.getAttributes().setUnknownState(UnknownState.UNKNOWN);	
 	    	found = true;
 		}
 		if (found) {
@@ -199,15 +208,11 @@ public class StructureGraph {
 		}
 		return n;		
 	}
-
-	private void setUnknownState(Node node, UnknownState unknownState) {
-		node.getNodeAttributes().setUnknownState(unknownState);					
-	}
 	
 	private void setDisplayUnknownOnParentNodes(Node node) {
 		Node parent = node;
 		while (parent != null) {
-			parent.getNodeAttributes().setDisplayUnknown(true);
+			parent.getAttributes().setDisplayUnknown(true);
 			parent = parent.getParent();		    
 		}
 	}		

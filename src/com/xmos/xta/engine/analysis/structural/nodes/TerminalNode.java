@@ -8,19 +8,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class TerminalNode extends Node {
+	private NodeAttributes m_attributes;
 	private Collection<Node> m_terminals;
 	
 	public TerminalNode(Collection<Node> terminals) {
 		m_terminals = new HashSet<Node>(terminals);
+		m_attributes = new NodeAttributes(this);
 	}
 	
 	public TerminalNode() {
 		m_terminals = new HashSet<Node>();
+		m_attributes = new NodeAttributes(this);
 	}
 
 	public Node shallowCopy() {
@@ -33,6 +38,7 @@ public class TerminalNode extends Node {
 			Node clone = terminal.deepCopy(startPcs);
 			tn.m_terminals.add(clone);
 		}
+		tn.m_attributes = new NodeAttributes(tn);
 		return tn;
     }
 		
@@ -40,6 +46,10 @@ public class TerminalNode extends Node {
         return "terminal";
     }
 		
+    public NodeAttributes getAttributes() {
+    	return m_attributes;
+    }    
+    
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>();
 		for(Node nodes: m_terminals) {

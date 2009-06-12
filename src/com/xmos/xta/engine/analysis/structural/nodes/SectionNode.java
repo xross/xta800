@@ -9,11 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.SectionNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class SectionNode extends Node {
+	private SectionNodeAttributes m_attributes;
 	private Collection<Node> m_options;
 	private boolean m_isOptional;
 
@@ -21,18 +25,21 @@ public class SectionNode extends Node {
 		super();
 		m_options = new HashSet<Node>();
 		m_isOptional = false;
+		m_attributes = new SectionNodeAttributes(this);
 	}
 	
 	public SectionNode(Collection<Node> options, boolean isOptional) {
 		super();
 		m_options = options;
 		m_isOptional = isOptional;
+		m_attributes = new SectionNodeAttributes(this);
 	}
 	
 	public SectionNode(SectionNode ms) {
 		super();
 		m_options = ms.m_options;
 		m_isOptional = ms.m_isOptional;
+		m_attributes = new SectionNodeAttributes(this);
 	}
 
 	public Node shallowCopy() {
@@ -46,6 +53,7 @@ public class SectionNode extends Node {
 			sn.m_options.add(clone);
 		}
 		sn.m_isOptional = m_isOptional; 
+		sn.m_attributes = new SectionNodeAttributes(sn);
 		return sn;
 	}
 	
@@ -53,6 +61,10 @@ public class SectionNode extends Node {
         return "section";
     }
 	
+    public NodeAttributes getAttributes() {
+    	return m_attributes;
+    }    
+    
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
 		list.addAll(getWorstCaseOption().getInstructions());
@@ -106,47 +118,8 @@ public class SectionNode extends Node {
 	public Collection<Node> whatsNext(Node node) {
 		return getParent().whatsNext(this);
 	}
-	
-	public void setNumIterations(long numIterations) {
-	    if (!m_numIterationsDone) {
-	    	m_numIterationsDone = true;
-	    	
-	    	boolean allChildrenNotDone = true;
-			for (Node child : getChildren()) {
-				if (child.getNumIterationsDone()) { 
-					allChildrenNotDone = false;
-				    break;
-				}
-			}
-	    	
-			if (allChildrenNotDone) {
-		    	m_numIterations = numIterations;
-		    	Node worstCaseNode = getWorstCaseOption();
-				for (Node child : getChildren()) {
-					if (child == worstCaseNode) {
-						child.setNumIterations(numIterations);
-					} else {
-					    child.setNumIterations(0);
-					}
-				}		    	
-				m_parent.setNumIterations(numIterations);
-			} else {
-		    	m_numIterations = getTotalIterations();
-				m_parent.setNumIterations(m_numIterations);
-			}
-	    }
-	}
-	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
-			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
 		
-		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
-		}
-		return false;
-	}	
-	
-	private Node getWorstCaseOption() {
+	public Node getWorstCaseOption() {
 		Iterator<Node> iter = m_options.iterator();
 		Node worstCaseNode = iter.next();
 		while (iter.hasNext()) {
@@ -158,7 +131,7 @@ public class SectionNode extends Node {
 		return worstCaseNode;
 	}
 	
-	private Node getBestCaseOption() {
+	public Node getBestCaseOption() {
 		Iterator<Node> iter = m_options.iterator();
 		Node bestCaseNode = iter.next();
 		while (iter.hasNext()) {
@@ -169,15 +142,7 @@ public class SectionNode extends Node {
 		}		
 		return bestCaseNode;
 	}
-	
-	private int getTotalIterations() {
-		int totalIterations = 0;
-		for (Node child : getChildren()) {
-			totalIterations += child.getNumIterations();
-		}
-		return totalIterations;
-	}
-	
+		
 	public boolean isSectionNode() {
 		return true;
 	}
@@ -186,6 +151,15 @@ public class SectionNode extends Node {
 		return m_isOptional;
 	}
 
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
+			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
+		
+		if (!calledFromAbove) {
+		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
+		}
+		return false;
+	}	
+	
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
 	// --------------------------------------------------------------------- //
@@ -282,7 +256,7 @@ public class SectionNode extends Node {
 		Collections.sort(sectionList);
 		int itt=0;
 		for(Node option : sectionList){
-			itt += option.getNumIterations();
+			itt += option.getAttributes().getNumIterations();
 			
 			if(itt > iteration) {
 				option.getInstructionStream(c, instructions, iteration);
