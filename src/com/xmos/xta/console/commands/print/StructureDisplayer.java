@@ -21,7 +21,7 @@ public class StructureDisplayer {
 		    node.traverse(0, new NodeTraverser() {
 				public boolean foundBlockNode(Node node, int depth) {
 					printIndent(depth);
-					printUnknown(node, depth);
+					printModifiers(node, depth);
 					displayNodeName(node);
 					if (DEBUG) displayWhatsNext(node);
 					displayTimeTaken(node);
@@ -31,7 +31,7 @@ public class StructureDisplayer {
 
 				public boolean foundFunctionNode(Node node, int depth) {
 					printIndent(depth);
-					printUnknown(node, depth);
+					printModifiers(node, depth);
 					displayNodeName(node);
 					displayFunctionName(node);
 					if (DEBUG) displayWhatsNext(node);
@@ -42,7 +42,7 @@ public class StructureDisplayer {
 
 				public boolean foundLoopNode(Node node, int depth) {
 					printIndent(depth);
-					printUnknown(node, depth);
+					printModifiers(node, depth);
 					displayNodeName(node);
 					if (DEBUG) displayWhatsNext(node);
 					displayTimeTaken(node);
@@ -52,7 +52,7 @@ public class StructureDisplayer {
 
 				public boolean foundPathNode(Node node, int depth) {
 					printIndent(depth);
-					printUnknown(node, depth);
+					printModifiers(node, depth);
 					displayNodeName(node);
 					if (DEBUG) displayWhatsNext(node);
 					displayTimeTaken(node);
@@ -62,7 +62,7 @@ public class StructureDisplayer {
 
 				public boolean foundSectionNode(Node node, int depth) {
 					printIndent(depth);
-					printUnknown(node, depth);
+					printModifiers(node, depth);
 					displayNodeName(node);
 					if (DEBUG) displayWhatsNext(node);
 					displayTimeTaken(node);
@@ -72,7 +72,7 @@ public class StructureDisplayer {
 
 				public boolean foundTerminalNode(Node node, int depth) {
 					printIndent(depth);
-					printUnknown(node, depth);
+					printModifiers(node, depth);
 					displayNodeName(node);
 					if (DEBUG) displayWhatsNext(node);
 					displayTimeTaken(node);
@@ -83,7 +83,7 @@ public class StructureDisplayer {
 				public boolean foundInstructionNode(Node node, int depth) {
 					if (DEBUG) {
 						printIndent(depth);
-						printUnknown(node, depth);
+						printModifiers(node, depth);
 						displayNodeName(node);
 						displayTimeTaken(node);
 						displayInstructionTrace(node);
@@ -103,9 +103,11 @@ public class StructureDisplayer {
 		}
 	}	
 
-	private void printUnknown(Node node, int depth) {
+	private void printModifiers(Node node, int depth) {
 		if (depth > 0) {
-			if (node.getNodeAttributes().getDisplayUnknown()) {
+			if (node.isExcluded()) {
+				m_console.display(".  X ");
+			} else if (node.getNodeAttributes().getDisplayUnknown()) {
 				m_console.display(".  * ");
 			} else {
 				m_console.display(".    ");			
