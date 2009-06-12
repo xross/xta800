@@ -149,13 +149,7 @@ public class SelfLoopNode extends Node{
 	}
 
 	@Override
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions, int iteration) {
 		// TODO Auto-generated method stub
 		
 	}

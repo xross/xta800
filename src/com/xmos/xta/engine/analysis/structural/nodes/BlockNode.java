@@ -197,4 +197,10 @@ public class BlockNode extends IbufferNode {
 		return null;
 	}
 	*/
+
+	@Override
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions, int iteration) {
+		// TODO Auto-generated method stub
+		
+	}
 }

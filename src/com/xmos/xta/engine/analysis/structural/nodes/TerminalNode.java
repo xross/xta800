@@ -200,6 +200,12 @@ public class TerminalNode extends Node {
 		return worstCaseNode;
 	}
 
+	@Override
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions, int iteration) {
+		// TODO Auto-generated method stub
+		
+	}
+
 /*
 	public void updateFnops(Case c, IBufferVector ibv) {
 		Map<Node, IBufferVector> nodeToIBuff = new HashMap<Node, IBufferVector>();
@@ -217,14 +223,14 @@ public class TerminalNode extends Node {
 			assert(false);
 		}
 	}
-*/
+
 	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
 		m_bestCaseStartIbuffer = bestVector;
 		m_worstCaseStartIbuffer = worstVector;
 		
 		
 	}	
-
+*/
 
 	
 }

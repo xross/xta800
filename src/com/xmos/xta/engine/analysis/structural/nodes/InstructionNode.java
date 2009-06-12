@@ -202,4 +202,10 @@ public class InstructionNode extends Node {
 	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
 		assert(false);
 	}
+
+	@Override
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions, int iteration) {
+		// TODO Auto-generated method stub
+		
+	}
 }

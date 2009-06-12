@@ -187,7 +187,7 @@ public class PathNode extends Node {
 		return fnops;
 	}
 
-
+/*
 	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
 		for(Node pathNode : m_nodes){
 			pathNode.getInstructionStream(c, instructions);
@@ -208,5 +208,11 @@ public class PathNode extends Node {
 		
 		m_bestCaseEndIbuffer = currentBest;
 		m_worstCaseEndIbuffer = currentWorst;
+	}
+*/
+	@Override
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions, int iteration) {
+		// TODO Auto-generated method stub
+		
 	}
 }
