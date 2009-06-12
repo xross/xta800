@@ -2,6 +2,7 @@ package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
@@ -14,6 +15,12 @@ public abstract class IBufferNode extends Node {
 	public IBufferNode(){
 		super();
 		m_ibufferSequences = new HashSet<IBufferSequence>();
+		m_worstIbufferSequence = new IBufferSequence();
+	}
+	
+	public IBufferNode(IBufferNode node){
+		m_ibufferSequences = new HashSet<IBufferSequence>(node.m_ibufferSequences);
+		m_worstIbufferSequence = node.m_worstIbufferSequence;
 	}
 
 	public Collection<InstructionBuffer> getEndInstructionBuffers() {
@@ -33,16 +40,10 @@ public abstract class IBufferNode extends Node {
 		IBufferSequence ibs = new IBufferSequence(numStartBytes, fnopPcs, endInstBuffer);
 		m_ibufferSequences.add(ibs);
 		
-		if(m_ibufferSequences.size() == 1){
-			m_worstIbufferSequence = m_ibufferSequences.iterator().next();
-		} else {
-			int worstCount = m_worstIbufferSequence.m_fnopPcs.size();
-			for(IBufferSequence currentState : m_ibufferSequences){
-				if(currentState.m_fnopPcs.size() > worstCount){
-					m_worstIbufferSequence = currentState;
-				}
-			}
+		if(ibs.m_fnopPcs.size() >= m_worstIbufferSequence.m_fnopPcs.size()){
+			m_worstIbufferSequence = ibs;
 		}
+
 		return true;
 	}
 	
@@ -51,7 +52,6 @@ public abstract class IBufferNode extends Node {
 	}
 	
 	public int fnopCount(int pc){
-		if(m_worstIbufferSequence == null) return 0;
 		int count =0;
 		
 		for(int fnopPc : m_worstIbufferSequence.getfnops()){
@@ -84,6 +84,10 @@ public abstract class IBufferNode extends Node {
 		private int m_startIbuffer;
 		private List<Integer> m_fnopPcs;
 		private InstructionBuffer m_endInstructionBuffer;
+		
+		public IBufferSequence(){
+			m_fnopPcs = new LinkedList<Integer>();
+		}
 		
 		public IBufferSequence(int startIbuffer, List<Integer> fnopPcs, InstructionBuffer ib) {
 			super();

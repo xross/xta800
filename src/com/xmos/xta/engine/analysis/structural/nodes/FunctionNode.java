@@ -49,6 +49,7 @@ public class FunctionNode extends IBufferNode {
 	}
 	
 	public FunctionNode(FunctionNode fn){
+		super(fn);
 		m_functionName = fn.m_functionName;
 		m_function = fn.m_function;
 		m_knownFunction = fn.m_knownFunction;

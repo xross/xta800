@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.SectionNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -252,6 +251,7 @@ public class SectionNode extends Node {
 	}
 
 	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
+		/*
 		List<Node> sectionList = new LinkedList<Node>(m_options);
 		Collections.sort(sectionList);
 		int itt=0;
@@ -264,15 +264,14 @@ public class SectionNode extends Node {
 			}
 			
 		}
+		*/
+		getWorstCaseOption().getInstructionStream(c, instructions, iteration);
 	}
 
 
 	public long getError(Case c) {
 		long error = 0;
-		
 		return error;
 	}
-
-
 	
 }

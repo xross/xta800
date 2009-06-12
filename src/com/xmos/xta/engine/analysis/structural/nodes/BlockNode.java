@@ -24,7 +24,7 @@ public class BlockNode extends IBufferNode {
 	}
 	
 	public BlockNode(BlockNode block) {
-		super();
+		super(block);
 		m_insts = block.m_insts;
 		m_attributes = new NodeAttributes(this);
 	}
@@ -45,6 +45,8 @@ public class BlockNode extends IBufferNode {
 
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {		
 		BlockNode bn = new BlockNode();
+		bn.m_ibufferSequences = this.m_ibufferSequences;
+		bn.m_worstIbufferSequence = this.m_worstIbufferSequence;
 		for (Node node : m_insts) {
 			bn.m_insts.add((InstructionNode)node.deepCopy(startPcs));
 		}

@@ -195,6 +195,8 @@ public class StructuralAnalysisEngine {
 				} else {
 					seen.add(node);
 					Node clone = node.shallowCopy();
+					
+					
 					m_cfgToStruct.put((FunctionNode) clone, (FunctionNode) node);
 					basicBlocks.add(clone);
 					cfgToStructure.put(node, clone);
