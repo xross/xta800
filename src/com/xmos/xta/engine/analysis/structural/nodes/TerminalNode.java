@@ -207,37 +207,17 @@ public class TerminalNode extends Node {
 		return worstCaseNode;
 	}
 
-	@Override
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions, int iteration) {
-		// TODO Auto-generated method stub
-		
-	}
-
-/*
-	public void updateFnops(Case c, IBufferVector ibv) {
-		Map<Node, IBufferVector> nodeToIBuff = new HashMap<Node, IBufferVector>();
-		for(Node option : m_terminals){
-			option.updateFnops(c, ibv);
-			nodeToIBuff.put(option, option.getIBufferVector(c));
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
+		Node option = null;
+		switch (c){
+		case WORST:
+			option = getWorstCaseOption();
+			break;
+		case BEST:
+			option = getBestCaseOption();
+			break;
 		}
-		if(c == Case.WORST){
-			m_worst = maximiseWorst(c, nodeToIBuff);
-			m_worstCaseEndIbuffer = nodeToIBuff.get(m_worst);
-		} else if(c == Case.BEST){
-			m_best = maximiseBest(c, nodeToIBuff);
-			m_bestCaseEndIbuffer = nodeToIBuff.get(m_best);
-		} else {
-			assert(false);
-		}
+		option.getInstructionStream(c, instructions, iteration);
 	}
-
-	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
-		m_bestCaseStartIbuffer = bestVector;
-		m_worstCaseStartIbuffer = worstVector;
-		
-		
-	}	
-*/
-
 	
 }

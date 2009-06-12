@@ -248,19 +248,9 @@ public class FunctionNode extends IbufferNode {
 		return 0;
 	}
 
-/*
-	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
-		m_bestCaseStartIbuffer = bestVector;
-		m_worstCaseStartIbuffer = worstVector;
-		m_function.updateFnops(m_bestCaseStartIbuffer, m_worstCaseStartIbuffer);
-		m_bestCaseEndIbuffer = m_function.m_bestCaseEndIbuffer;
-		m_worstCaseEndIbuffer = m_function.m_worstCaseEndIbuffer;
-	}
-	*/
-
-	@Override
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions, int iteration) {
-		// TODO Auto-generated method stub
-		
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
+		if(m_knownFunction){
+			m_function.getInstructionStream(c, instructions, iteration);
+		}
 	}	
 }

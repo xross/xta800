@@ -198,32 +198,9 @@ public class PathNode extends Node {
 		return fnops;
 	}
 
-/*
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
 		for(Node pathNode : m_nodes){
-			pathNode.getInstructionStream(c, instructions);
+			pathNode.getInstructionStream(c, instructions, iteration);
 		}
-	}
-
-	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
-		m_bestCaseStartIbuffer = bestVector;
-		m_worstCaseStartIbuffer = worstVector;
-		
-		IBufferVector currentBest = bestVector;
-		IBufferVector currentWorst = worstVector;
-		for(Node pathNode : m_nodes){
-			pathNode.updateFnops(currentBest, currentWorst);
-			currentBest = pathNode.m_bestCaseEndIbuffer;
-			currentWorst = pathNode.m_worstCaseEndIbuffer;
-		}
-		
-		m_bestCaseEndIbuffer = currentBest;
-		m_worstCaseEndIbuffer = currentWorst;
-	}
-*/
-	@Override
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions, int iteration) {
-		// TODO Auto-generated method stub
-		
 	}
 }

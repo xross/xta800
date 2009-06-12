@@ -1,10 +1,12 @@
 package com.xmos.xta.console.commands.print;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class TraceDisplayer {
@@ -29,7 +31,8 @@ public class TraceDisplayer {
     private void displayInstruction(Node node) {
     	m_currentTime = 0;
     	
-    	List<XtaInstruction> instructions = node.getInstructions();
+    	List<XtaInstruction> instructions = new LinkedList<XtaInstruction>();
+    	node.getInstructionStream(Case.WORST, instructions, 0);
 		for(XtaInstruction instruction : instructions){
 			
 			String isUnknown = node.getAttributes().isInstructionUnknown() ? "*" : " ";

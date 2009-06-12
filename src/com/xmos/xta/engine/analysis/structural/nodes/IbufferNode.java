@@ -54,8 +54,14 @@ public abstract class IbufferNode extends Node {
 		return true;
 	}
 	
+	public int getNodeFnops(){
+		return m_ibs.m_fnopPcs.size();
+	}
+	
 	public int fnopCount(int pc){
+		if(m_ibs == null) return 0;
 		int count =0;
+		
 		for(int fnopPc : m_ibs.getfnops()){
 			if(fnopPc == pc) count++;
 		}

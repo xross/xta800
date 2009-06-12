@@ -54,7 +54,7 @@ public abstract class Node implements Comparable<Node>{
 	public abstract List<Node> getChildren();
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
-	public abstract void getInstructionStream(Case c, List<XtaInstruction> instructions, int iteration);
+	public abstract void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration);
 	public abstract Set<Integer> getPCs();
 	
 	public abstract LinkedList<XtaInstruction> getInstructions();
@@ -337,7 +337,6 @@ public abstract class Node implements Comparable<Node>{
 		return m_branchTargets.contains(block);
 	}
 
-
 /*
 	public abstract void updateFnops(IBufferVector bestVector, IBufferVector worstVector);	
 	IBufferVector m_worstCaseStartIbuffer;
@@ -346,7 +345,7 @@ public abstract class Node implements Comparable<Node>{
 	IBufferVector m_bestCaseEndIbuffer;
 	*/
 	//add a function called get error
-			
+				
 	public String getFunctionName() {
 		return "";
 	}
