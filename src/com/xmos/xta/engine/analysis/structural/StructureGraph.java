@@ -195,7 +195,7 @@ public class StructureGraph {
 				
 		Node n = node.getParent();
 		while ((n != null) && !n.isLoopNode()) {
-			n = node.getParent();
+			n = n.getParent();
 		}
 		return n;		
 	}
