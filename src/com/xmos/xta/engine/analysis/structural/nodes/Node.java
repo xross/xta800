@@ -58,7 +58,7 @@ public abstract class Node implements Comparable<Node>{
 	public abstract List<Node> getChildren();
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
-	public abstract void getInstructionStream(Case c, List<XtaInstruction> instructions, int iteration);
+	public abstract void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration);
 	public abstract Set<Integer> getPCs();
 	
 	public abstract LinkedList<XtaInstruction> getInstructions();
@@ -405,17 +405,6 @@ public abstract class Node implements Comparable<Node>{
 	public boolean branchesTo(Node block) {
 		return m_branchTargets.contains(block);
 	}
-
-
-/*
-	public abstract void updateFnops(IBufferVector bestVector, IBufferVector worstVector);	
-	IBufferVector m_worstCaseStartIbuffer;
-	IBufferVector m_bestCaseStartIbuffer;
-	IBufferVector m_worstCaseEndIbuffer;
-	IBufferVector m_bestCaseEndIbuffer;
-	*/
-	//add a function called get error
-	
 	
 	public NodeAttributes getNodeAttributes() {
 		return m_nodeAttributes;
@@ -442,12 +431,12 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public double getInstructionTimeTaken() {
-		assert(false);		
+		//assert(false);		
 		return 0;
 	}
 	
 	public boolean isInstructionUnknown() {
-		assert(false);		
+		//assert(false);		
 		return false;
 	}	
 	

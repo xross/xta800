@@ -148,10 +148,11 @@ public class SelfLoopNode extends Node{
 		return m_loop.getNumFNopsAbsolute(c);
 	}
 
-	@Override
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions, int iteration) {
-		// TODO Auto-generated method stub
-		
+
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
+		for(int i=0;i< getNumIterations();i++){
+			m_loop.getInstructionStream(c, instructions, m_loop.getNumIterations());
+		}
 	}
 
 

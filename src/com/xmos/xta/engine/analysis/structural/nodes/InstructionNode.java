@@ -203,9 +203,7 @@ public class InstructionNode extends Node {
 		assert(false);
 	}
 
-	@Override
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions, int iteration) {
-		// TODO Auto-generated method stub
-		
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
+		assert(false);
 	}
 }

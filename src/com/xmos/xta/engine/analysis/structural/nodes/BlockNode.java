@@ -11,12 +11,12 @@ import com.xmos.xta.engine.instructions.NullInstruction;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class BlockNode extends IbufferNode {
-	private List<Node> m_insts;
+	private List<InstructionNode> m_insts;
 	
 
 	public BlockNode() {
 		super();
-		m_insts = new LinkedList<Node>();
+		m_insts = new LinkedList<InstructionNode>();
 	}
 	
 	public BlockNode(BlockNode block) {
@@ -26,7 +26,11 @@ public class BlockNode extends IbufferNode {
 	
 	public BlockNode(List<Node> insts) {
 		super();
-		m_insts = insts;
+		m_insts = new LinkedList<InstructionNode>();
+		for(Node node : insts){
+			assert(node instanceof InstructionNode);
+			m_insts.add((InstructionNode)node);
+		}
 	}
 		
 	public BlockNode shallowCopy() {
@@ -38,7 +42,7 @@ public class BlockNode extends IbufferNode {
 		BlockNode bn = new BlockNode();
 		bn.m_startToEndIbuffer = m_startToEndIbuffer;
 		for (Node node : m_insts) {
-			bn.m_insts.add(node.deepCopy(startPcs));
+			bn.m_insts.add((InstructionNode)node.deepCopy(startPcs));
 		}
 		return bn;
 	}
@@ -85,7 +89,11 @@ public class BlockNode extends IbufferNode {
 	}
 
 	public List<Node> getChildren() {
-		return m_insts;
+		LinkedList<Node> children = new LinkedList<Node>();
+		for(InstructionNode node : m_insts){
+			children.add(node);
+		}
+		return children;
 	}
 
 	public Collection<Node> whatsNext(Node node) {
@@ -99,13 +107,24 @@ public class BlockNode extends IbufferNode {
 		}
 	}
 
+	private double getFNOPTimeTaken(InstructionNode instNode) {
+		XtaInstruction inst = instNode.getXtaInstruction();
+		XtaInstruction fnop = new NullInstruction("--FNOP--", inst.getConfig(), 0, inst.getPc(), 0);
+    	int threadFactor = (inst.getConfig().m_numThreads > 4) ? inst.getConfig().m_numThreads : 4;
+        return ((double)(threadFactor * 1000) / (double)inst.getConfig().m_frequency) * fnop.getNumCycles();
+	}
+	
 	// --------------------------------------------------------------------- //
 	// Statistics Gathering Methods
 	// --------------------------------------------------------------------- //
 	public double getTimeTakenRelative(Case c) {
 		double time = 0;
 		for (Node node : m_insts) {
+			for(int i=0;i<this.fnopCount(node.getStartPc());i++){
+				time += getFNOPTimeTaken((InstructionNode)node);
+			}
 			time += node.getTimeTakenRelative(c);
+			
 		}		
         return time;		
 	}
@@ -113,6 +132,9 @@ public class BlockNode extends IbufferNode {
 	public double getTimeTakenAbsolute(Case c) {
 		double time = 0;
 		for (Node node : m_insts) {
+			for(int i=0;i<this.fnopCount(node.getStartPc());i++){
+				time += getFNOPTimeTaken((InstructionNode)node);
+			}
 			time += node.getTimeTakenAbsolute(c);
 		}
         return time;		
@@ -151,56 +173,19 @@ public class BlockNode extends IbufferNode {
 	}
 	
 	public long getNumFNopsRelative(Case c) {
-		return 0;
+		return getNodeFnops();
 	}
 
 	public long getNumFNopsAbsolute(Case c) {
-		return 0;
+		return getNodeFnops();
 	}
 
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
 		for(XtaInstruction inst : getInstructions()){
-			for(int i=0;i<fnopCount(inst.getPc());i++){
+			for(long i=0;i<fnopCount(inst.getPc());i++){
 				instructions.add(new NullInstruction("--FNOP--", inst.getConfig(), 0, inst.getPc(), 0));
 			}
 			instructions.add(inst);
 		}
-	}
-	/*
-	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
-		m_bestCaseStartIbuffer = bestVector;
-		m_worstCaseStartIbuffer = worstVector;
-		
-		IBufferVector endVector = new IBufferVector();
-		int byteNum = 0;
-		for(int startNumBytesCount : m_worstCaseStartIbuffer.getVectors()){
-			if(startNumBytesCount > 0){
-				endVector.add(iBufferTransition(byteNum), startNumBytesCount);
-			}
-			byteNum++;
-		}
-		m_worstCaseEndIbuffer = endVector;
-		
-		endVector = new IBufferVector();
-		byteNum = 0;
-		for(int startNumBytesCount : m_bestCaseStartIbuffer.getVectors()){
-			if(startNumBytesCount > 0){
-				endVector.add(iBufferTransition(byteNum), startNumBytesCount);
-			}
-			byteNum++;
-		}
-		m_bestCaseEndIbuffer = endVector;
-	}
-
-	//this function takes an ibuffer fullness and returns the corresponding fnops
-	private List<Integer> iBufferToFnops(int numBytes){
-		return null;
-	}
-	*/
-
-	@Override
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions, int iteration) {
-		// TODO Auto-generated method stub
-		
 	}
 }

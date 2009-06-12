@@ -303,9 +303,15 @@ public class LoopNode extends Node {
 	}
 
 
-	@Override
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions, int iteration) {
-		// TODO Auto-generated method stub
+
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
 		
+		for(Node loop : m_loops){
+			for(long i=0;i<loop.getNumIterations();i++){
+				m_loopHeader.getInstructionStream(c, instructions, i);
+				loop.getInstructionStream(c, instructions, i);
+			}
+		}
+		m_loopHeader.getInstructionStream(c, instructions, iteration);
 	}
 }

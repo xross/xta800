@@ -276,54 +276,19 @@ public class SectionNode extends Node {
 		assert(false);
 		return 0;		
 	}
-/*
-	public void updateFnops(Case c, IBufferVector ibv) {
-		Map<Node, IBufferVector> nodeToIBuff = new HashMap<Node, IBufferVector>();
-		for(Node option : m_options){
-			option.updateFnops(c, ibv);
-			nodeToIBuff.put(option, option.getIBufferVector(c));
-		}
-		if(c == Case.WORST){
-			m_worstCaseEndIbuffer = maximiseWorst(nodeToIBuff);
-		} else if(c == Case.BEST){
-			m_bestCaseEndIbuffer = maximiseBest(nodeToIBuff);
-		} else {
-			assert(false);
-		}
-	}
 
-	private IBufferVector maximiseBest(Map<Node, IBufferVector> nodeToIBuff) {
-		if(nodeToIBuff.size() == 1){
-			return nodeToIBuff.values().iterator().next();
-		} else {
-			//must work out the best mixture of the fnops to take
-			return null;
-		}
-	}
-
-	private IBufferVector maximiseWorst(Map<Node, IBufferVector> nodeToIBuff) {
-		if(nodeToIBuff.size() == 1){
-			return nodeToIBuff.values().iterator().next();
-		} else {
-			//must work out the best mixture of the fnops to take
-			return null;
-		}
-	}	
-	
-	public void updateFnops(IBufferVector bestVector, IBufferVector worstVector) {
-
-		
-	}
-	
-	*/
-
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions, int iteration) {
+	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
 		List<Node> sectionList = new LinkedList<Node>(m_options);
 		Collections.sort(sectionList);
 		int itt=0;
 		for(Node option : sectionList){
-			option.getInstructionStream(c, instructions, itt);
-			itt++;
+			itt += option.getNumIterations();
+			
+			if(itt > iteration) {
+				option.getInstructionStream(c, instructions, iteration);
+				return;
+			}
+			
 		}
 	}
 
