@@ -24,7 +24,7 @@ public class LoopNode extends Node {
 		super();
 		m_loopHeader = loop.m_loopHeader;
 		m_loops = new ArrayList<Node>(loop.m_loops);
-		m_attributes = new LoopNodeAttributes(m_attributes);
+		m_attributes = new LoopNodeAttributes(this);
 	}
 
 	public LoopNode() {
@@ -64,7 +64,7 @@ public class LoopNode extends Node {
 		}
 		ln.m_loopHeader = m_loopHeader.deepCopy(startPcs);
 		ln.m_loopHeader.getAttributes().setIsLoopHeader(true);
-		ln.m_attributes = new LoopNodeAttributes(m_attributes);
+		ln.m_attributes = new LoopNodeAttributes(ln);
 		return ln;
 	}
 

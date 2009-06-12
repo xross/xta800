@@ -38,7 +38,7 @@ public class TerminalNode extends Node {
 			Node clone = terminal.deepCopy(startPcs);
 			tn.m_terminals.add(clone);
 		}
-		tn.m_attributes = new NodeAttributes(m_attributes);
+		tn.m_attributes = new NodeAttributes(tn);
 		return tn;
     }
 		

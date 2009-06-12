@@ -39,7 +39,7 @@ public class SectionNode extends Node {
 		super();
 		m_options = ms.m_options;
 		m_isOptional = ms.m_isOptional;
-		m_attributes = ms.m_attributes;
+		m_attributes = new SectionNodeAttributes(this);
 	}
 
 	public Node shallowCopy() {
@@ -53,7 +53,7 @@ public class SectionNode extends Node {
 			sn.m_options.add(clone);
 		}
 		sn.m_isOptional = m_isOptional; 
-		sn.m_attributes = new SectionNodeAttributes(m_attributes);
+		sn.m_attributes = new SectionNodeAttributes(sn);
 		return sn;
 	}
 	

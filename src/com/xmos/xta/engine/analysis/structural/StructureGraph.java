@@ -62,8 +62,8 @@ public class StructureGraph {
 		for (Node node : getReferencedNodes(reference)) {						
 			Node enclosingLoopNode = getEncolsingLoopNode(node);
 			if (enclosingLoopNode != null) {				
-				node.getAttributes().setNumIterations(iterations, true);
-				setUnknownState(enclosingLoopNode, UnknownState.KNOWN);	  				
+				enclosingLoopNode.getAttributes().setLoopIterations(iterations);
+				enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
 				found = true;
 			}
 		}		
@@ -78,6 +78,16 @@ public class StructureGraph {
 		return false;
 	}
 
+	public boolean setLoopPathIterations(Reference reference, long iterations) {
+		// TODO
+		return false;
+	}
+
+	public boolean unsetLoopPathIterations(Reference reference) {
+		// TODO
+		return false;
+	}
+	
 	public boolean setLoopScope(Reference reference, boolean isAbsolute) {
 		boolean found = false;
 	    for (Node node : getReferencedNodes(reference)) {
@@ -94,7 +104,7 @@ public class StructureGraph {
 		boolean found = false;
 	    for (Node node : getReferencedNodes(reference)) {
 	    	node.getAttributes().setInstructionTimeTaken(timeTaken);
-	    	setUnknownState(node, UnknownState.KNOWN);
+			node.getAttributes().setUnknownState(UnknownState.KNOWN);	
 	    	found = true;
 		}
 		if (found) {
@@ -107,7 +117,7 @@ public class StructureGraph {
 		boolean found = false;
 	    for (Node node : getReferencedNodes(reference)) {
 	    	node.getAttributes().unsetInstructionTimeTaken();
-	    	setUnknownState(node, UnknownState.UNKNOWN);	    	
+			node.getAttributes().setUnknownState(UnknownState.UNKNOWN);	
 	    	found = true;
 		}
 		if (found) {
@@ -120,7 +130,7 @@ public class StructureGraph {
 		boolean found = false;
 	    for (Node node : getReferencedNodes(reference)) {
 	    	node.getAttributes().setInstructionNumCycles(numCycles);
-	    	setUnknownState(node, UnknownState.KNOWN);
+			node.getAttributes().setUnknownState(UnknownState.KNOWN);	
 	    	found = true;
 		}
 		if (found) {
@@ -133,7 +143,7 @@ public class StructureGraph {
 		boolean found = false;
         for (Node node : getReferencedNodes(reference)) {
         	node.getAttributes().unsetInstructionNumCycles();
-        	setUnknownState(node, UnknownState.UNKNOWN);	
+			node.getAttributes().setUnknownState(UnknownState.UNKNOWN);	
 	    	found = true;
 		}
 		if (found) {
@@ -197,10 +207,6 @@ public class StructureGraph {
 			n = n.getParent();
 		}
 		return n;		
-	}
-
-	private void setUnknownState(Node node, UnknownState unknownState) {
-		node.getAttributes().setUnknownState(unknownState);					
 	}
 	
 	private void setDisplayUnknownOnParentNodes(Node node) {

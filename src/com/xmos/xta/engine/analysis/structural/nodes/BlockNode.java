@@ -25,7 +25,7 @@ public class BlockNode extends IbufferNode {
 	public BlockNode(BlockNode block) {
 		super();
 		m_insts = block.m_insts;
-		m_attributes = block.m_attributes;
+		m_attributes = new NodeAttributes(this);
 	}
 	
 	public BlockNode(List<Node> insts) {
@@ -48,7 +48,7 @@ public class BlockNode extends IbufferNode {
 		for (Node node : m_insts) {
 			bn.m_insts.add((InstructionNode)node.deepCopy(startPcs));
 		}
-		m_attributes = new NodeAttributes(bn.m_attributes);
+		bn.m_attributes = new NodeAttributes(bn);
 		return bn;
 	}
 

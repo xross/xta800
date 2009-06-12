@@ -21,7 +21,7 @@ public class SelfLoopNode extends Node{
 	public SelfLoopNode(SelfLoopNode loop) {
 		super();
 		m_loop = loop.m_loop;
-		m_attributes = loop.m_attributes;
+		m_attributes = new SelfLoopNodeAttributes(this);
 	}
 
 	public SelfLoopNode() {
@@ -43,7 +43,7 @@ public class SelfLoopNode extends Node{
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		SelfLoopNode ln = new SelfLoopNode();
 		ln.m_loop = m_loop.deepCopy(startPcs);
-		ln.m_attributes = new SelfLoopNodeAttributes(m_attributes);
+		ln.m_attributes = new SelfLoopNodeAttributes(ln);
 		return ln;
 	}
 	

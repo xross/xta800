@@ -14,7 +14,7 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
 public abstract class Node implements Comparable<Node>{
-	private final static boolean DEBUG = true;
+	private final static boolean DEBUG = false;
 
 	static int s_numNodes;
 	
@@ -151,7 +151,9 @@ public abstract class Node implements Comparable<Node>{
 			    		getAttributes().getNumIterations(),
 			    		absoluteTimeTaken);				
 			} else {
-				timingSummary += String.format(" x %d", getAttributes().getNumIterations());
+				timingSummary += String.format(" (%.1fns x %d)",
+						relativeTimeTaken,
+						getAttributes().getNumIterations());
 			}
 			
 			if (DEBUG) {

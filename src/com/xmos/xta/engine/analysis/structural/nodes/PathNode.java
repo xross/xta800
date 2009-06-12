@@ -28,7 +28,7 @@ public class PathNode extends Node {
 	public PathNode(PathNode path) {
 		super();
 		m_nodes = path.m_nodes;
-		m_attributes = path.m_attributes;
+		m_attributes = new NodeAttributes(this);
 	}
 
 	public PathNode() {
@@ -47,7 +47,7 @@ public class PathNode extends Node {
 			Node clone = path.deepCopy(startPcs);
 			pn.m_nodes.add(clone);
 		}
-		pn.m_attributes = new NodeAttributes(m_attributes);
+		pn.m_attributes = new NodeAttributes(pn);
 		return pn;
 	}
 

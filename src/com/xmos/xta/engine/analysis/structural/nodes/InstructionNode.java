@@ -27,7 +27,7 @@ public class InstructionNode extends Node {
 	public InstructionNode(InstructionNode node) {
 		super();
 		m_inst = node.m_inst;
-		m_attributes = node.m_attributes;
+		m_attributes = new InstructionNodeAttributes(this);
 	}
 	
 	public Node shallowCopy() {
@@ -36,7 +36,7 @@ public class InstructionNode extends Node {
 
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
 		InstructionNode in = new InstructionNode(this);
-		in.m_attributes = new InstructionNodeAttributes(m_attributes);
+		in.m_attributes = new InstructionNodeAttributes(in);
 		return in;
 	}
 

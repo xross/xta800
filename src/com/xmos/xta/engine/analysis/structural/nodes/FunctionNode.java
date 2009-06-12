@@ -52,11 +52,11 @@ public class FunctionNode extends IbufferNode {
 		m_function = fn.m_function;
 		m_knownFunction = fn.m_knownFunction;
 		m_branchTarget = fn.m_branchTarget;
-		m_attributes = fn.m_attributes;
+		m_attributes = new NodeAttributes(this);
 	}
 	
 	public Node shallowCopy() {
-		return new FunctionNode(this);
+    	return new FunctionNode(this);
 	}
 	
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs){
@@ -73,7 +73,7 @@ public class FunctionNode extends IbufferNode {
 			String fnName = fn.getBranchTarget().getInstructions().getFirst().getFunctionName();
 			fn.setFunction(fnName, startPcs.get(pc).getFunction().deepCopy(startPcs));
 		} 
-		m_attributes = new NodeAttributes(this);
+		fn.m_attributes = new NodeAttributes(fn);
 		return fn;
 	}
 

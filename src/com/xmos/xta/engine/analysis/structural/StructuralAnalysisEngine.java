@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.controlflow.FnopAnalyser;
@@ -121,7 +122,7 @@ public class StructuralAnalysisEngine {
 		setUnknowns();
 
 		engine.provideFeedback("Setting initial loop iterations..");
-		setInitialIterations();		
+		setInitialIterations();				
 		
 		engine.provideFeedback("Complete");
 		return true;
@@ -327,20 +328,20 @@ public class StructuralAnalysisEngine {
 		m_structureGraph.refreshDisplayedUnknowns();
 	}
 	
-	private void setInitialIterations() {
+	private void setInitialIterations() {		
 		// Sets the top level nodes to iterate once..
 		for (Node node : m_structureGraph.getThreads()) {
-			node.getAttributes().setNumIterations(1, true);					
+			node.getAttributes().setLoopIterations(1);					
 		}
 		// Sets all the loops to zero iterations..
-//		for (Node node : m_structureGraph.getThreads()) {							
-//	        node.traverse(0, new DefaultNodeTraverser() {
-//	            public boolean foundLoopNode(Node node, int depth) {
-//	            	node.getAttributes().setNumIterations(0, true);
-//	            	return true;
-//	            }	        	
-//	        });
-//		}
+		for (Node node : m_structureGraph.getThreads()) {							
+	        node.traverse(0, new DefaultNodeTraverser() {
+	            public boolean foundLoopNode(Node node, int depth) {
+	            	node.getAttributes().setLoopIterations(0);
+	            	return true;
+	            }	        	
+	        });
+		}
 	}
 	
 	private void setParents() {
