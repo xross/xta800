@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -145,6 +147,30 @@ public class PathNode extends Node {
 	public void addFnops() {
 		for(Node pathNode : m_nodes){
 			pathNode.addFnops();
+		}
+		Node lastNode = m_nodes.get(m_nodes.size()-1);
+		for(InstructionBuffer ib : lastNode.getIbufferDueToWorstTime()){
+			getParent().addEndIbufferDueToWorst(ib);
+		}
+		for(InstructionBuffer ib : lastNode.getIbufferDueToBestTime()){
+			getParent().addEndIbufferDueToBest(ib);
+		}
+	}
+
+
+	public Collection<Node> whatsBefore(Node node) {
+		assert(m_nodes.contains(node));
+		int index = m_nodes.indexOf(node);
+		if(index > 0){
+			Collection<Node> before = new HashSet<Node>();
+			before.add(m_nodes.get(index-1));
+			return before;
+		} else {
+			if(getParent()!= null){
+				return getParent().whatsBefore(this);
+			} else {
+				return new HashSet<Node>();
+			}
 		}
 	}
 }

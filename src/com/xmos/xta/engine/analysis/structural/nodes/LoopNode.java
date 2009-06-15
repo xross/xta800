@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.LoopNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -188,5 +189,24 @@ public class LoopNode extends Node {
 		for(Node loop : m_loops){
 			loop.addFnops();
 		}
+		for(InstructionBuffer ib : m_loopHeader.getIbufferDueToWorstTime()){
+			getParent().addEndIbufferDueToWorst(ib);
+		}
+		for(InstructionBuffer ib : m_loopHeader.getIbufferDueToBestTime()){
+			getParent().addEndIbufferDueToBest(ib);
+		}
+	}
+
+	public Collection<Node> whatsBefore(Node node) {
+		Collection<Node> before = new HashSet<Node>();
+		if(node == m_loopHeader){
+			before.addAll(m_loops);
+			if(getParent()!= null){
+				before.addAll(getParent().whatsBefore(this));
+			}
+		} else if(m_loops.contains(node)){
+			before.add(m_loopHeader);
+		}
+		return before;
 	}
 }

@@ -47,6 +47,7 @@ public abstract class Node implements Comparable<Node>{
 			
 	public abstract List<Node> getChildren();
 	public abstract Collection<Node> whatsNext(Node node);
+	public abstract Collection<Node> whatsBefore(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
 	public abstract long getError(Case c);
 	public abstract void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration);
@@ -307,10 +308,6 @@ public abstract class Node implements Comparable<Node>{
 	}
 	public Collection<InstructionBuffer> getIbufferDueToBestTime(){
 		return m_iBuffersDueToBestTime;
-	}
-	
-	public Collection<BlockNode> getPrevBlocks(){
-		return null;
 	}
 }
 

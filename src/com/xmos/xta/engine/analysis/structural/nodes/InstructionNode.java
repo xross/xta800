@@ -180,4 +180,9 @@ public class InstructionNode extends Node {
 		assert(false);
 		
 	}
+
+	public Collection<Node> whatsBefore(Node node) {
+		assert(false);
+		return null;
+	}
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
 import com.xmos.xta.engine.analysis.structural.nodes.IBufferNode;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -206,5 +207,21 @@ public class FunctionNode extends IBufferNode {
 
 	public void addFnops() {
 		m_function.addFnops();
+		if(m_parent!= null){
+			for(InstructionBuffer ib : m_function.getIbufferDueToWorstTime()){
+				getParent().addEndIbufferDueToWorst(ib);
+			}
+			for(InstructionBuffer ib : m_function.getIbufferDueToBestTime()){
+				getParent().addEndIbufferDueToBest(ib);
+			}
+		}
+	}
+
+	public Collection<Node> whatsBefore(Node node) {
+		if(getParent()!= null){
+			return getParent().whatsBefore(this);
+		} else {
+			return new HashSet<Node>();
+		}
 	}	
 }
