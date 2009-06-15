@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
+import com.xmos.xta.engine.analysis.structural.StructureFnoper;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.SectionNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -250,22 +253,39 @@ public class SectionNode extends Node {
 		return 0;		
 	}
 
+	private int totalIterations(){
+		return 0;
+	}
+	
 	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
-		/*
-		List<Node> sectionList = new LinkedList<Node>(m_options);
-		Collections.sort(sectionList);
-		int itt=0;
-		for(Node option : sectionList){
-			itt += option.getAttributes().getNumIterations();
-			
-			if(itt > iteration) {
-				option.getInstructionStream(c, instructions, iteration);
-				return;
+
+		if(totalIterations() == 1){
+			switch (c) {
+			case BEST:
+			    if(!m_isOptional){
+			    	getBestCaseOption().getInstructionStream(c, instructions, iteration);
+			    } else {
+			    	return;
+			    }
+			case WORST:
+				getWorstCaseOption().getInstructionStream(c, instructions, iteration);
 			}
-			
+		} else {
+			List<Node> sectionList = new LinkedList<Node>(m_options);
+			Collections.sort(sectionList);
+			int itt=0;
+			for(Node option : sectionList){
+				itt += option.getAttributes().getNumIterations();
+				
+				if(itt > iteration) {
+					option.getInstructionStream(c, instructions, iteration);
+					return;
+				}
+				
+			}
 		}
-		*/
-		getWorstCaseOption().getInstructionStream(c, instructions, iteration);
+		
+		
 	}
 
 
@@ -273,5 +293,14 @@ public class SectionNode extends Node {
 		long error = 0;
 		return error;
 	}
+
+	public void addFnops() {
+		for(Node node : m_options){
+			node.addFnops();
+		}
+		
+	}
+
+
 	
 }

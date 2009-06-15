@@ -160,5 +160,9 @@ public class SelfLoopNode extends Node{
 		return m_loop.getError(c) * m_loop.getAttributes().getNumIterations();
 	}
 
+	public void addFnops() {
+		m_loop.addFnops();
+	}
+
 
 }

@@ -78,7 +78,7 @@ public class FnopAnalyser {
 
 		}
 
-		return block.addEndInstructionBuffer(numStartBytes, endInstBuffer, fnopPcs);
+		return block.addEndInstructionBuffer(numStartBytes, endInstBuffer, fnopPcs, parent);
 	}
 
 	private void update(InstructionBuffer ib, List<Integer> fnopPcs, XtaInstruction inst) {

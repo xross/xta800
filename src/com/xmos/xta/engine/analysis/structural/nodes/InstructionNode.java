@@ -175,4 +175,9 @@ public class InstructionNode extends Node {
 	public long getError(Case c) {
 		return 0;
 	}
+
+	public void addFnops() {
+		assert(false);
+		
+	}
 }

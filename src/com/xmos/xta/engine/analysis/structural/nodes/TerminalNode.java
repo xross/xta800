@@ -233,5 +233,11 @@ public class TerminalNode extends Node {
 		}
 		return option.getError(c);
 	}
+
+	@Override
+	public void addFnops() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
