@@ -48,7 +48,7 @@ public class NodeAttributes {
 		// Displays the worst case timing.
 	    String timingSummary = "";
 	    timingSummary += String.format(" : %.1fns", getTimeTaken(Case.WORST, false));
-		if (m_node.isBlockNode()) {			
+		if (m_node.isBlockNode()) {					
 			timingSummary += String.format(" (x %d)", 
 					m_node.getAttributes().getTotalIterations(Case.WORST));
 		}
@@ -197,7 +197,9 @@ public class NodeAttributes {
 	
 	public long getTotalIterations(Case c) {
 		Node enclosingLoopNode = getNode().getEnclosingLoopNode();
-		if (enclosingLoopNode != null) {
+		if ((enclosingLoopNode != null) && 
+			(!enclosingLoopNode.getAttributes().getIsAbsolute())) {
+			
 			long cummulativeIterations = 
 				enclosingLoopNode.getParent().getAttributes().getCummulativeIterations(c);  
 			
