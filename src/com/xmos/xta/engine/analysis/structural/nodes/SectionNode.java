@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -66,7 +66,7 @@ public class SectionNode extends Node {
     
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
-		list.addAll(getWorstCaseOption().getInstructions());
+		list.addAll(getOption(Case.WORST, false).getInstructions());
 		return list;		
 	}
 	
@@ -118,28 +118,32 @@ public class SectionNode extends Node {
 		return getParent().whatsNext(this);
 	}
 		
-	public Node getWorstCaseOption() {
-		Iterator<Node> iter = m_options.iterator();
-		Node worstCaseNode = iter.next();
+	public Node getOption(Case c, boolean ignoreIterations) {
+		// Gets the best/worst case option taken from each of the 
+		// option nodes that does not have its iteration 
+		// count explicitly set by the user.		
+		Iterator<Node> iter = getUnsetOptions().iterator();
+		Node caseNode = iter.next();
+		
 		while (iter.hasNext()) {
-			Node node = iter.next();
-			if (node.getTimeTaken(Case.WORST) > worstCaseNode.getTimeTaken(Case.WORST)) {
-				worstCaseNode = node;
-			}						
+			Node node = iter.next();	
+			switch (c) {
+			case WORST:
+				if (node.getAttributes().getTimeTaken(c, ignoreIterations) > 
+			        caseNode.getAttributes().getTimeTaken(c, ignoreIterations)) {
+				    caseNode = node;
+			    }										
+				break;
+				
+			case BEST:
+				if (node.getAttributes().getTimeTaken(c, ignoreIterations) < 
+		            caseNode.getAttributes().getTimeTaken(c, ignoreIterations)) {
+			        caseNode = node;
+		        }										
+				break;
+			}			
 		}		
-		return worstCaseNode;
-	}
-	
-	public Node getBestCaseOption() {
-		Iterator<Node> iter = m_options.iterator();
-		Node bestCaseNode = iter.next();
-		while (iter.hasNext()) {
-			Node node = iter.next();
-			if (node.getTimeTaken(Case.BEST) < bestCaseNode.getTimeTaken(Case.BEST)) {
-				bestCaseNode = node;
-			}						
-		}		
-		return bestCaseNode;
+		return caseNode;
 	}
 		
 	public boolean isSectionNode() {
@@ -159,97 +163,6 @@ public class SectionNode extends Node {
 		return false;
 	}	
 	
-	// --------------------------------------------------------------------- //
-	// Statistics Gathering Methods
-	// --------------------------------------------------------------------- //
-	public double getTimeTakenRelative(Case c) {
-		switch (c) {
-		case BEST:
-		    return (!m_isOptional) ? getBestCaseOption().getTimeTakenRelative(c) : 0;
-		case WORST:
-			return getWorstCaseOption().getTimeTakenRelative(c);
-		}
-		assert(false);
-		return 0;		
-	}
-
-	public double getTimeTakenAbsolute(Case c) {
-		switch (c) {
-		case BEST:
-		    return (!m_isOptional) ? getBestCaseOption().getTimeTakenAbsolute(c) : 0;
-		case WORST:
-			return getWorstCaseOption().getTimeTakenAbsolute(c);
-		}
-		assert(false);
-		return 0;		
-	}
-	
-	public long getNumCyclesRelative(Case c) {
-		switch (c) {
-		case BEST:
-		    return (!m_isOptional) ? getBestCaseOption().getNumCyclesRelative(c) : 0;
-		case WORST:
-			return getWorstCaseOption().getNumCyclesRelative(c);
-		}
-		assert(false);
-		return 0;		
-	}
-
-	public long getNumCyclesAbsolute(Case c) {
-		switch (c) {
-		case BEST:
-		    return (!m_isOptional) ? getBestCaseOption().getNumCyclesAbsolute(c) : 0;
-		case WORST:
-			return getWorstCaseOption().getNumCyclesAbsolute(c);
-		}
-		assert(false);
-		return 0;		
-	}
-	
-	public long getNumInstructionsRelative(Case c) {		
-		switch (c) {
-		case BEST:
-		    return (!m_isOptional) ? getBestCaseOption().getNumInstructionsRelative(c) : 0;
-		case WORST:
-			return getWorstCaseOption().getNumInstructionsRelative(c);
-		}
-		assert(false);
-		return 0;		
-	}
-
-	public long getNumInstructionsAbsolute(Case c) {		
-		switch (c) {
-		case BEST:
-		    return (!m_isOptional) ? getBestCaseOption().getNumInstructionsAbsolute(c) : 0;
-		case WORST:
-			return getWorstCaseOption().getNumInstructionsAbsolute(c);
-		}
-		assert(false);
-		return 0;		
-	}
-	
-	public long getNumFNopsRelative(Case c) {
-		switch (c) {
-		case BEST:
-		    return (!m_isOptional) ? getBestCaseOption().getNumFNopsRelative(c) : 0;
-		case WORST:
-			return getWorstCaseOption().getNumFNopsRelative(c);
-		}
-		assert(false);
-		return 0;		
-	}
-
-	public long getNumFNopsAbsolute(Case c) {
-		switch (c) {
-		case BEST:
-		    return (!m_isOptional) ? getBestCaseOption().getNumFNopsAbsolute(c) : 0;
-		case WORST:
-			return getWorstCaseOption().getNumFNopsAbsolute(c);
-		}
-		assert(false);
-		return 0;		
-	}
-
 	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
 		/*
 		List<Node> sectionList = new LinkedList<Node>(m_options);
@@ -265,7 +178,7 @@ public class SectionNode extends Node {
 			
 		}
 		*/
-		getWorstCaseOption().getInstructionStream(c, instructions, iteration);
+		getOption(Case.WORST, false).getInstructionStream(c, instructions, iteration);
 	}
 
 
@@ -274,4 +187,15 @@ public class SectionNode extends Node {
 		return error;
 	}
 	
+	public List<Node> getUnsetOptions() {
+		Map<Node, Boolean> setOptionMap = getAttributes().getSetOptions();
+		
+		List<Node> unsetOptions = new ArrayList<Node>();
+		for (Node option : m_options) {
+			if (!setOptionMap.get(option)) {
+				unsetOptions.add(option);
+			}
+		}
+		return unsetOptions;
+	}
 }

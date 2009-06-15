@@ -2,6 +2,7 @@ package com.xmos.xta.engine.analysis.structural.nodes.attributes;
 
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class InstructionNodeAttributes extends NodeAttributes {
@@ -12,6 +13,22 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		super(node);
 		m_instruction = ((InstructionNode)node).getXtaInstruction();
 		m_numCycles = m_instruction.getNumCycles();
+	}
+	
+	public double getTimeTaken(Case c, boolean ignoreIterations) {
+		return getInstructionTimeTaken();
+	}
+
+	public long getNumCycles(Case c, boolean ignoreIterations) {
+		return m_numCycles;
+	}
+	
+	public long getNumInstructions(Case c, boolean ignoreIterations) {		
+		return 1;
+	}
+	
+	public long getNumFNops(Case c, boolean ignoreIterations) {
+		return 0;
 	}
 	
 	public void setInstructionNumCycles(long numCycles) {

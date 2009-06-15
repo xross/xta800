@@ -130,12 +130,7 @@ public class StructureDisplayer {
 	}
 	
 	private void displayTimeTaken(Node node) {
-		m_console.display(node.getTimingSummary()); 
-		
-		if (DEBUG) {
-			m_console.display(String.format(" {%d}", 
-					node.getAttributes().getNumIterations()));
-		}
+		m_console.display(node.getAttributes().getTimingSummary()); 		
 	}	
 
 	private void displayWhatsNext(Node node) {
