@@ -219,6 +219,6 @@ public class Exclusion extends Command {
 	    	}    	    	
 	    } else {
 	    	console.display("none\n");
-	    }    	            
+	    }
     }
  }

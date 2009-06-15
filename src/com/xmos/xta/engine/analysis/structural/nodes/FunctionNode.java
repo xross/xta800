@@ -7,15 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
 import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
-import com.xmos.xta.engine.analysis.structural.nodes.IBufferNode;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
-public class FunctionNode extends IBufferNode {
+public class FunctionNode extends Node {
 	private NodeAttributes m_attributes;	
 	private String m_functionName;
 	private Node m_function;
@@ -50,7 +48,7 @@ public class FunctionNode extends IBufferNode {
 	}
 	
 	public FunctionNode(FunctionNode fn){
-		super(fn);
+		//super(fn);
 		m_functionName = fn.m_functionName;
 		m_function = fn.m_function;
 		m_knownFunction = fn.m_knownFunction;

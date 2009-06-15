@@ -80,8 +80,8 @@ public class SectionNodeAttributes extends NodeAttributes {
    		// Allocates the remainder to the best/worst case of the options
    		// that have not been explicitly set by the user.
    		if (remainder > 0) {
-   			sectionNode.getOption(Case.WORST, false).getAttributes().setLoopIterations(Case.WORST, remainder);
-   			sectionNode.getOption(Case.BEST, false).getAttributes().setLoopIterations(Case.BEST, remainder);
+   			sectionNode.getOption(Case.WORST, true).getAttributes().setLoopIterations(Case.WORST, remainder);
+   			sectionNode.getOption(Case.BEST, true).getAttributes().setLoopIterations(Case.BEST, remainder);
    		}   	
 		return true;
 	}

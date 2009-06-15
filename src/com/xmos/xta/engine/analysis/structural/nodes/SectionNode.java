@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
 import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.SectionNodeAttributes;
@@ -123,14 +122,14 @@ public class SectionNode extends Node {
 	public Node getOption(Case c, boolean ignoreIterations) {
 		// Gets the best/worst case option taken from each of the 
 		// option nodes that does not have its iteration 
-		// count explicitly set by the user.		
+		// count explicitly set by the user.				
 		Iterator<Node> iter = getUnsetOptions().iterator();
 		Node caseNode = iter.next();
 		
 		while (iter.hasNext()) {
-			Node node = iter.next();	
+			Node node = iter.next();
 			switch (c) {
-			case WORST:
+			case WORST:				
 				if (node.getAttributes().getTimeTaken(c, ignoreIterations) > 
 			        caseNode.getAttributes().getTimeTaken(c, ignoreIterations)) {
 				    caseNode = node;

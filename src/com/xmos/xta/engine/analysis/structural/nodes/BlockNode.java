@@ -14,7 +14,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
-public class BlockNode extends IBufferNode {
+public class BlockNode extends Node {
 
 
 	private BlockNodeAttributes m_attributes;	
@@ -32,7 +32,7 @@ public class BlockNode extends IBufferNode {
 	}
 	
 	public BlockNode(BlockNode block) {
-		super(block);
+		//super(block);
 		m_insts = block.m_insts;
 		m_attributes = new BlockNodeAttributes(this);
 	}

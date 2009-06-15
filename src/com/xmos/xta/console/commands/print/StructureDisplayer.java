@@ -11,9 +11,11 @@ public class StructureDisplayer {
 	private final static boolean DEBUG = false;
 
 	private Console m_console;
+	private int m_verbosity;
 
-	public StructureDisplayer(Console console) {
+	public StructureDisplayer(Console console, int verbosity) {
 		m_console = console;
+		m_verbosity = verbosity;
 	}
 	
 	public void display(Collection<Node> nodes) {
@@ -81,7 +83,7 @@ public class StructureDisplayer {
 				}		    	
 
 				public boolean foundInstructionNode(Node node, int depth) {
-					if (DEBUG) {
+					if (m_verbosity > 0) {
 						printIndent(depth);
 						printModifiers(node, depth);
 						displayNodeName(node);
