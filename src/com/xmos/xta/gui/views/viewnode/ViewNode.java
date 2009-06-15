@@ -86,6 +86,6 @@ public abstract class ViewNode {
     public abstract boolean contains(int x, int y);
 
 	public String getToolTipText() {
-		return m_treeNode.getTimingDetails();
+		return m_treeNode.getAttributes().getTimingDetails();
 	}
 }

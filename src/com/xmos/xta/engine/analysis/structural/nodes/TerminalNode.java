@@ -112,73 +112,6 @@ public class TerminalNode extends Node {
 		return false;
 	}
 
-	// --------------------------------------------------------------------- //
-	// Statistics Gathering Methods
-	// --------------------------------------------------------------------- //
-	public double getTimeTakenRelative(Case c) {
-		double time = 0;
-	    for (Node node : m_terminals) {
-		    time += node.getTimeTakenRelative(c);
-		}
-		return time;
-	}
-
-	public double getTimeTakenAbsolute(Case c) {
-		double time = 0;
-	    for (Node node : m_terminals) {
-		    time += node.getTimeTakenAbsolute(c);
-		}
-		return time;
-	}
-	
-	public long getNumCyclesRelative(Case c) {
-   		long count = 0;
-    	for (Node node : m_terminals){
-    		count += node.getNumCyclesRelative(c);
-		}
-		return count;
-	}
-
-	public long getNumCyclesAbsolute(Case c) {
-   		long count = 0;
-    	for (Node node : m_terminals){
-    		count += node.getNumCyclesAbsolute(c);
-		}
-		return count;
-	}
-	
-	public long getNumInstructionsRelative(Case c) {
-   		long count = 0;
-    	for (Node node : m_terminals){
-    		count += node.getNumInstructionsRelative(c);
-		}
-		return count;
-	}
-
-	public long getNumInstructionsAbsolute(Case c) {
-   		long count = 0;
-    	for (Node node : m_terminals){
-    		count += node.getNumInstructionsAbsolute(c);
-		}
-		return count;
-	}
-	
-	public long getNumFNopsRelative(Case c) {
-   		long count = 0;
-    	for (Node node : m_terminals){
-    		count += node.getNumFNopsRelative(c);
-		}
-		return count;
-	}
-
-	public long getNumFNopsAbsolute(Case c) {
-   		long count = 0;
-    	for (Node node : m_terminals){
-    		count += node.getNumFNopsAbsolute(c);
-		}
-		return count;
-	}
-
 	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
 		
 	}
@@ -188,7 +121,8 @@ public class TerminalNode extends Node {
 		Node worstCaseNode = iter.next();
 		while (iter.hasNext()) {
 			Node node = iter.next();
-			if (node.getTimeTaken(Case.WORST) > worstCaseNode.getTimeTaken(Case.WORST)) {
+			if (node.getAttributes().getTimeTaken(Case.WORST, true) > 
+			    worstCaseNode.getAttributes().getTimeTaken(Case.WORST, true)) {
 				worstCaseNode = node;
 			}						
 		}		
@@ -200,7 +134,8 @@ public class TerminalNode extends Node {
 		Node worstCaseNode = iter.next();
 		while (iter.hasNext()) {
 			Node node = iter.next();
-			if (node.getTimeTaken(Case.BEST) < worstCaseNode.getTimeTaken(Case.BEST)) {
+			if (node.getAttributes().getTimeTaken(Case.BEST, true) < 
+			    worstCaseNode.getAttributes().getTimeTaken(Case.BEST, true)) {
 				worstCaseNode = node;
 			}						
 		}		

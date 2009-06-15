@@ -21,7 +21,7 @@ public class TreeViewLabelProvider extends CellLabelProvider {
 		String nodeText = node.getTypeName();
 		if (node.getFunctionName() != "")
 			nodeText += " " + node.getFunctionName();
-		nodeText += " " + node.getTimingSummary();
+		nodeText += " " + node.getAttributes().getTimingSummary();
 		
 		cell.setText(nodeText);
 		
@@ -36,6 +36,6 @@ public class TreeViewLabelProvider extends CellLabelProvider {
 		if (DEBUG) System.out.printf("TreeViewLabelProvider: getToolTipText\n");	
 
 		Node node = (Node)element;		
-		return node.getTimingDetails();
+		return node.getAttributes().getTimingDetails();
 	}
 }

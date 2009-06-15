@@ -64,7 +64,7 @@ public class NodeInfo extends Command {
     		console.display(String.format("Error: Node id: %d nt found\n", m_nodeId));
     		return;
     	}    	
-    	console.display(node.getTimingDetails());
+    	console.display(node.getAttributes().getTimingDetails());
     }
     
     private Node getNode(Engine engine, final int nodeId) {

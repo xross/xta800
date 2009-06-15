@@ -459,19 +459,6 @@ public class Engine implements Notifier {
 		return false;
 	}
 
-	public boolean unsetLoopIterations(String refString) {
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.SRCLABEL_REF);
-		if (!resolveRefernece(reference)) {
-			return false;
-		}
-		if (getStructureGraph().unsetLoopIterations(reference)) {
-			sortSubRoutes();
-			return true;
-		}
-		return false;
-	}
-
 	public boolean setLoopPathIterations(String refString, long iterations) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.SRCLABEL_REF);
@@ -479,19 +466,6 @@ public class Engine implements Notifier {
 			return false;
 		}
 		if (getStructureGraph().setLoopPathIterations(reference, iterations)) {
-			sortSubRoutes();
-			return true;
-		}
-		return false;
-	}
-
-	public boolean unsetLoopPathIterations(String refString) {
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.SRCLABEL_REF);
-		if (!resolveRefernece(reference)) {
-			return false;
-		}
-		if (getStructureGraph().unsetLoopPathIterations(reference)) {
 			sortSubRoutes();
 			return true;
 		}

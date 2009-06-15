@@ -58,9 +58,12 @@ public class StructureGraph {
 	}	
 	
 	public boolean setLoopIterations(Reference reference, long iterations) {
+		if (iterations < 0)
+			return false;
+		
 		boolean found = false;
 		for (Node node : getReferencedNodes(reference)) {						
-			Node enclosingLoopNode = getEncolsingLoopNode(node);
+			Node enclosingLoopNode = node.getEnclosingLoopNode();
 			if (enclosingLoopNode != null) {				
 				enclosingLoopNode.getAttributes().setLoopIterations(iterations);
 				enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
@@ -73,25 +76,39 @@ public class StructureGraph {
 		return found;
 	}
 
-	public boolean unsetLoopIterations(Reference reference) {
-		// TODO
-		return false;
-	}
-
 	public boolean setLoopPathIterations(Reference reference, long iterations) {
-		// TODO
-		return false;
-	}
+		if (iterations < 0)
+			return false;
 
-	public boolean unsetLoopPathIterations(Reference reference) {
-		// TODO
-		return false;
+		boolean found = false;
+		for (Node node : getReferencedNodes(reference)) {						
+			Node loopNode = node.getEnclosingLoopNode();
+			if (loopNode == null)
+				continue;
+			
+			Node sectionNode = node.getEnclosingSectionNode();
+			if (sectionNode == null)
+				continue;
+			
+			Node optionNode = node.getEnclosingOptionNode();
+			if (optionNode == null)
+				continue;
+			
+			if (!sectionNode.getAttributes().setLoopPathIterations(loopNode, optionNode, iterations))
+				continue;
+			
+			found = true;
+		}		
+		if (found) {
+			refreshDisplayedUnknowns();			
+		}		
+		return found;		
 	}
 	
 	public boolean setLoopScope(Reference reference, boolean isAbsolute) {
 		boolean found = false;
 	    for (Node node : getReferencedNodes(reference)) {
-			Node enclosingLoopNode = getEncolsingLoopNode(node);
+			Node enclosingLoopNode = node.getEnclosingLoopNode();
 			if (enclosingLoopNode != null) {				
 				enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
 				found = true;
@@ -197,18 +214,7 @@ public class StructureGraph {
 		}
 		return referencedNodes;		
 	}
-	
-	private Node getEncolsingLoopNode(Node node) {
-		if (node.isLoopNode())
-			return node;
-				
-		Node n = node.getParent();
-		while ((n != null) && !n.isLoopNode()) {
-			n = n.getParent();
-		}
-		return n;		
-	}
-	
+		
 	private void setDisplayUnknownOnParentNodes(Node node) {
 		Node parent = node;
 		while (parent != null) {

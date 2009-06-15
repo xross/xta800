@@ -58,12 +58,12 @@ public class RouteTiming {
 
 	public long getWorstCycles() {
 		Node worstCaseSubRoute = m_route.getSubRoutes().iterator().next();
-		return worstCaseSubRoute.getNumCycles(Case.WORST);
+		return worstCaseSubRoute.getAttributes().getNumCycles(Case.WORST, false);
 	}
 
 	public double getWorstTime() {
 		Node worstCaseSubRoute = m_route.getSubRoutes().iterator().next();		
-		return worstCaseSubRoute.getTimeTaken(Case.WORST);
+		return worstCaseSubRoute.getAttributes().getTimeTaken(Case.WORST, false);
 	}
 
 	public boolean passedTiming() {

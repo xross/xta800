@@ -114,50 +114,14 @@ public class SelfLoopNode extends Node{
 		return false;
 	}
 		
-	// --------------------------------------------------------------------- //
-	// Statistics Gathering Methods
-	// --------------------------------------------------------------------- //
-	public double getTimeTakenRelative(Case c) {
-		return m_loop.getTimeTakenRelative(c);
-	}
-
-	public double getTimeTakenAbsolute(Case c) {
-		return m_loop.getTimeTakenAbsolute(c);
-	}
-	
-	public long getNumCyclesRelative(Case c) {
-		return m_loop.getNumCyclesRelative(c);
-	}
-
-	public long getNumCyclesAbsolute(Case c) {
-		return m_loop.getNumCyclesAbsolute(c);
-	}
-	
-	public long getNumInstructionsRelative(Case c) {
-		return m_loop.getNumInstructionsRelative(c);
-	}
-
-	public long getNumInstructionsAbsolute(Case c) {
-		return m_loop.getNumInstructionsAbsolute(c);
-	}
-	
-	public long getNumFNopsRelative(Case c) {
-		return m_loop.getNumFNopsRelative(c);
-	}
-
-	public long getNumFNopsAbsolute(Case c) {
-		return m_loop.getNumFNopsAbsolute(c);
-	}
-
-
 	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
-		for(int i=0;i< getAttributes().getNumIterations();i++){
-			m_loop.getInstructionStream(c, instructions, m_loop.getAttributes().getNumIterations());
+		for(int i=0;i< getAttributes().getNumIterations(c);i++){
+			m_loop.getInstructionStream(c, instructions, m_loop.getAttributes().getNumIterations(c));
 		}
 	}
 
 	public long getError(Case c) {
-		return m_loop.getError(c) * m_loop.getAttributes().getNumIterations();
+		return m_loop.getError(c) * m_loop.getAttributes().getNumIterations(c);
 	}
 
 	public void addFnops() {

@@ -15,8 +15,6 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
 public abstract class Node implements Comparable<Node>{
-	private final static boolean DEBUG = false;
-
 	static int s_numNodes;
 	
 	int m_id;
@@ -46,16 +44,7 @@ public abstract class Node implements Comparable<Node>{
 	
 	public abstract Node shallowCopy();
 	public abstract Node deepCopy(Map<Integer, FunctionNode> startPcs);
-	
-	public abstract double getTimeTakenRelative(Case c);
-	public abstract double getTimeTakenAbsolute(Case c);
-	public abstract long getNumCyclesRelative(Case c);
-	public abstract long getNumCyclesAbsolute(Case c);
-	public abstract long getNumInstructionsRelative(Case c);
-	public abstract long getNumInstructionsAbsolute(Case c);
-	public abstract long getNumFNopsRelative(Case c);	
-	public abstract long getNumFNopsAbsolute(Case c);	
-		
+			
 	public abstract List<Node> getChildren();
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
@@ -100,25 +89,9 @@ public abstract class Node implements Comparable<Node>{
 		return m_id;
 	}
 
-	public double getTimeTaken(Case c) {
-		return getTimeTakenRelative(c) + getTimeTakenAbsolute(c);
-	}
-	
-	public long getNumCycles(Case c) {
-		return getNumCyclesRelative(c) + getNumCyclesAbsolute(c);		
-	}
-	
-	public long getNumInstructions(Case c) {
-		return getNumInstructionsRelative(c) + getNumInstructionsAbsolute(c);				
-	}
-	
-	public long getNumFNops(Case c) {
-		return getNumFNopsRelative(c) + getNumFNopsAbsolute(c);				
-	}
-	
 	public int compareTo(Node node) {	
-		double thisTimeTaken = getTimeTaken(Case.WORST);
-		double nodeTimeTaken = node.getTimeTaken(Case.WORST);
+		double thisTimeTaken = getAttributes().getTimeTaken(Case.WORST, false);
+		double nodeTimeTaken = node.getAttributes().getTimeTaken(Case.WORST, false);
 		
 		// First compare based on time taken...
 		if (thisTimeTaken > nodeTimeTaken) {
@@ -141,61 +114,6 @@ public abstract class Node implements Comparable<Node>{
 			return 0;			
 		}			
     }
-	
-	public String getTimingSummary() { 
-		// Displays the best/worst case timing.
-	    String timingSummary = String.format(" : %.1fns - %.1fns", 
-			getTimeTaken(Case.WORST),
-			getTimeTaken(Case.BEST));
-	    
-		// Only display the loop iteration calculations on the children of a loop node..		
-		if ((m_parent != null) && m_parent.isLoopNode()) {	
-			double relativeTimeTaken = getTimeTakenRelative(Case.WORST);
-			double absoluteTimeTaken = getTimeTakenAbsolute(Case.WORST);
-				
-			// Displays a more complete calculation for the case when absolutes are involved.
-			if ((absoluteTimeTaken != 0) && !m_parent.getAttributes().getIsAbsolute()) {								   								
-				timingSummary += String.format(" ((%.1fns x %d) + %.1fns)",
-			    		relativeTimeTaken, 
-			    		getAttributes().getNumIterations(),
-			    		absoluteTimeTaken);				
-			} else {
-				timingSummary += String.format(" (%.1fns x %d)",
-						relativeTimeTaken,
-						getAttributes().getNumIterations());
-			}
-			
-			if (DEBUG) {
-				timingSummary += String.format(" {%.1fns/%.1fns}", 
-				    	getTimeTakenRelative(Case.WORST),
-					    getTimeTakenAbsolute(Case.WORST));
-			    
-			    if (getAttributes().getIsAbsolute()) {
-			    	timingSummary += " (ABS)";
-			    } else {
-			    	timingSummary += " (REL)";		    	
-			    }
-			}			
-		}		
-
-	    // Displays the iteration count for section options only..
-		if ((m_parent != null) && m_parent.isSectionNode()) {
-			timingSummary += String.format(" (%d iterations)", getAttributes().getNumIterations());
-		}
-	    return timingSummary;
-	}
-	
-	public String getTimingDetails() {
-		return String.format("Node Id:          %d\n", getId()) +
-    	       String.format("Time taken:       %.1f - %.1f\n", 
-    	    		   getTimeTaken(Case.WORST), getTimeTaken(Case.BEST)) +  	    		   
-               String.format("Thread cycles:    %d - %d\n", 
-            		   getNumCycles(Case.WORST), getNumCycles(Case.BEST)) + 
-               String.format("Num Instructions: %d - %d\n", 
-            		   getNumInstructions(Case.WORST), getNumInstructions(Case.BEST)) + 
-               String.format("Num FNops:        %d - %d\n", 
-            		   getNumFNops(Case.WORST), getNumFNops(Case.BEST));
-	}
 	
 	public void setBranchLinkReturn(Node bl){
 		m_branchLinkReturn = bl;
@@ -284,7 +202,11 @@ public abstract class Node implements Comparable<Node>{
 	public boolean isLoopNode() {
 		return false;
 	}
-		
+
+	public boolean isBlockNode() {
+		return false;
+	}
+	
 	public void setIsExcluded(boolean isExcluded) {
 		m_isExcluded = isExcluded;
 	}
@@ -301,6 +223,22 @@ public abstract class Node implements Comparable<Node>{
 		return node;
 	}
 
+	public Node getEnclosingSectionNode() {
+		Node node = m_parent;
+		while ((node != null) && !node.isSectionNode()) {
+			node = node.getParent();
+		}
+		return node;		
+	}
+
+	public Node getEnclosingOptionNode() {
+		Node node = this;
+		while ((node.getParent() != null) && !node.getParent().isSectionNode()) {
+			node = node.getParent();
+		}
+		return node;		
+	}
+	
 	public boolean checkBackTrail(Stack<ReferenceType> referenceTypes) {
 		return checkBackTrail(referenceTypes, null, false, new FunctionCallStatus());
 	}
@@ -369,6 +307,10 @@ public abstract class Node implements Comparable<Node>{
 	}
 	public Collection<InstructionBuffer> getIbufferDueToBestTime(){
 		return m_iBuffersDueToBestTime;
+	}
+	
+	public Collection<BlockNode> getPrevBlocks(){
+		return null;
 	}
 }
 

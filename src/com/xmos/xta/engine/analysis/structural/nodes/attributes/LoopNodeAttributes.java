@@ -1,22 +1,19 @@
 package com.xmos.xta.engine.analysis.structural.nodes.attributes;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 
 public class LoopNodeAttributes extends NodeAttributes {
 	public LoopNodeAttributes(Node node) {
 		super(node);
 	}
-/*		
-	public void setNumIterations(long numIterations, boolean recurse) {
-	    if (!m_numIterationsDone) {
-	    	m_numIterationsDone = true;
-	    	
-	    	LoopNode loopNode = (LoopNode)getNode();
-	    	loopNode.getLoopHeader().getAttributes().setNumIterations(numIterations + 1);
-			for (Node child : loopNode.getLoopBodies()) {
-				child.getAttributes().setNumIterations(numIterations);
-			}
-	    }
-	}
-		*/
+	
+	public long getCummulativeIterations(Case c) {
+		if (getIsAbsolute()) {
+			return getNumIterations(c);
+		}
+		Node parent = getNode().getParent();
+		assert(parent != null);
+		return parent.getAttributes().getCummulativeIterations(c) * getNumIterations(c);
+	}	
 }
