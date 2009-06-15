@@ -276,7 +276,6 @@ public class Engine implements Notifier {
 		return true;
 	}
 
-
 	public boolean analyseRoute(String functionName) {
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
