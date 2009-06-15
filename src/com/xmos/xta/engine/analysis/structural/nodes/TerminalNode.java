@@ -169,10 +169,17 @@ public class TerminalNode extends Node {
 		return option.getError(c);
 	}
 
-	@Override
 	public void addFnops() {
-		// TODO Auto-generated method stub
 		
+	}
+
+	public Collection<Node> whatsBefore(Node node) {
+		assert(m_terminals.contains(node));
+		if(getParent()!= null){
+			return getParent().whatsBefore(this);
+		} else {
+			return new HashSet<Node>();
+		}
 	}
 	
 }
