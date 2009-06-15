@@ -12,7 +12,6 @@ import java.util.Set;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
-import com.xmos.xta.engine.analysis.controlflow.FnopAnalyser;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.IBufferNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
@@ -147,19 +146,17 @@ public class StructuralAnalysisEngine {
 
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
 
-			FnopAnalyser fnopAnalyser = new FnopAnalyser();
-			fnopAnalyser.analyse(initialBasicBlock, isFunction);
-
 			if (DEBUG) 
 				dumpTree(basicBlocks);
 			
 			if (!createStructure(basicBlocks, initialBasicBlock, engine)) {
 				return null;
 			}
+			
 			Node decomposedGraph = basicBlocks.iterator().next();
-
-			//StructureGraphFnopAdder sgfa = new StructureGraphFnopAdder();
-			//sgfa.analyse(decomposedGraph, true);
+			
+			StructureFnoper sf = new StructureFnoper();
+			sf.analyse(decomposedGraph, isFunction);
 			
 			FunctionNode fn = new FunctionNode(decomposedGraph, functionName);
 			graphs.add(fn);
@@ -373,10 +370,7 @@ public class StructuralAnalysisEngine {
 						System.out.println(node + " -> " + next + ";");
 					}
 				}
-
-
 				System.out.print(node + " [label=\"" );
-				
 				for(XtaInstruction inst : node.getInstructions()){
 					
 					for(int i =0 ;i< ((IBufferNode)node).fnopCount(inst.getPc());i++){
@@ -384,17 +378,11 @@ public class StructuralAnalysisEngine {
 					}
 					System.out.print(inst + "\\n");
 				}
-				
 				System.out.print("\"");
-					
 				if (node.getError(Case.WORST) > 0) {
 					System.out.print(", style=filled, color = red");
-					
-					
 				} 
 				System.out.println("];");
-
-
 			}
 			System.out.println("}\n");
 		}

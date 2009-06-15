@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
+import com.xmos.xta.engine.analysis.structural.StructureFnoper;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.SectionNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -170,22 +173,37 @@ double t2 = caseNode.getAttributes().getTimeTaken(c, ignoreIterations);
 		return false;
 	}	
 	
+
 	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
-		/*
-		List<Node> sectionList = new LinkedList<Node>(m_options);
-		Collections.sort(sectionList);
-		int itt=0;
-		for(Node option : sectionList){
-			itt += option.getAttributes().getNumIterations();
-			
-			if(itt > iteration) {
-				option.getInstructionStream(c, instructions, iteration);
-				return;
+/*
+		if(totalIterations() == 1){
+			switch (c) {
+			case BEST:
+			    if(!m_isOptional){
+			    	getBestCaseOption().getInstructionStream(c, instructions, iteration);
+			    } else {
+			    	return;
+			    }
+			case WORST:
+				getWorstCaseOption().getInstructionStream(c, instructions, iteration);
 			}
-			
+		} else {
+			List<Node> sectionList = new LinkedList<Node>(m_options);
+			Collections.sort(sectionList);
+			int itt=0;
+			for(Node option : sectionList){
+				itt += option.getAttributes().getNumIterations();
+				
+				if(itt > iteration) {
+					option.getInstructionStream(c, instructions, iteration);
+					return;
+				}
+				
+			}
 		}
-		*/
+*/
 		getOption(Case.WORST, false).getInstructionStream(c, instructions, iteration);
+
 	}
 
 
@@ -193,6 +211,15 @@ double t2 = caseNode.getAttributes().getTimeTaken(c, ignoreIterations);
 		long error = 0;
 		return error;
 	}
+
+	public void addFnops() {
+		for(Node node : m_options){
+			node.addFnops();
+		}
+		
+	}
+
+
 	
 	public List<Node> getUnsetOptions() {
 		Map<Node, Boolean> setOptionMap = getAttributes().getSetOptions();

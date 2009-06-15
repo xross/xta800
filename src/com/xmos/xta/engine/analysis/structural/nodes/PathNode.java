@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -141,5 +140,11 @@ public class PathNode extends Node {
 			error += pathNode.getError(c);
 		}
 		return error;
+	}
+
+	public void addFnops() {
+		for(Node pathNode : m_nodes){
+			pathNode.addFnops();
+		}
 	}
 }

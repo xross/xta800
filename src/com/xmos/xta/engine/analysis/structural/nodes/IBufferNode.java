@@ -31,13 +31,13 @@ public abstract class IBufferNode extends Node {
 		return set;
 	}
 	
-	public boolean addEndInstructionBuffer(int numStartBytes, InstructionBuffer endInstBuffer, List<Integer> fnopPcs) {
+	public boolean addEndInstructionBuffer(int numStartBytes, InstructionBuffer endInstBuffer, List<Integer> fnopPcs, Node parent) {
 		for(IBufferSequence i : m_ibufferSequences){
 			if(i.getStartIbuffer() == numStartBytes){
 				return false;
 			}
 		}
-		IBufferSequence ibs = new IBufferSequence(numStartBytes, fnopPcs, endInstBuffer);
+		IBufferSequence ibs = new IBufferSequence(numStartBytes, fnopPcs, endInstBuffer, parent);
 		m_ibufferSequences.add(ibs);
 		
 		if(ibs.m_fnopPcs.size() >= m_worstIbufferSequence.m_fnopPcs.size()){
@@ -53,7 +53,6 @@ public abstract class IBufferNode extends Node {
 	
 	public int fnopCount(int pc){
 		int count =0;
-		
 		for(int fnopPc : m_worstIbufferSequence.getfnops()){
 			if(fnopPc == pc) count++;
 		}
@@ -84,16 +83,21 @@ public abstract class IBufferNode extends Node {
 		private int m_startIbuffer;
 		private List<Integer> m_fnopPcs;
 		private InstructionBuffer m_endInstructionBuffer;
+		private Node m_parent;
 		
 		public IBufferSequence(){
 			m_fnopPcs = new LinkedList<Integer>();
 		}
 		
-		public IBufferSequence(int startIbuffer, List<Integer> fnopPcs, InstructionBuffer ib) {
+		public IBufferSequence(int startIbuffer, List<Integer> fnopPcs, InstructionBuffer ib, Node parent) {
 			super();
 			m_startIbuffer = startIbuffer;
 			m_fnopPcs = fnopPcs;
 			m_endInstructionBuffer = ib;
+			m_parent = parent;
+		}
+		Node getParent(){
+			return m_parent;
 		}
 		
 		List<Integer> getfnops(){

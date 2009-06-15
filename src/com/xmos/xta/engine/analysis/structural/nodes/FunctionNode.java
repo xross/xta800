@@ -202,5 +202,9 @@ public class FunctionNode extends IBufferNode {
 			return 0;
 		}
 	
+	}
+
+	public void addFnops() {
+		m_function.addFnops();
 	}	
 }

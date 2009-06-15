@@ -182,4 +182,11 @@ public class LoopNode extends Node {
 		}
 		return error;
 	}
+
+	public void addFnops() {
+		m_loopHeader.addFnops();
+		for(Node loop : m_loops){
+			loop.addFnops();
+		}
+	}
 }

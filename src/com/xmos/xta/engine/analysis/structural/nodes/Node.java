@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -29,6 +30,10 @@ public abstract class Node implements Comparable<Node>{
 	
 	Set<Node> m_branchTargets;
 
+	//fnop data
+	Map<Node, Integer> m_parentToStartIbuffer;
+	
+	
 	public enum Case {
 		WORST,
 		BEST,
@@ -76,6 +81,9 @@ public abstract class Node implements Comparable<Node>{
 		m_dominators = new HashSet<Node>(node.m_prevNodes);
 		m_id = s_numNodes++;
 	}
+	
+	
+	
 	
 	public int getId() {
 		return m_id;
@@ -277,22 +285,33 @@ public abstract class Node implements Comparable<Node>{
 	public boolean branchesTo(Node block) {
 		return m_branchTargets.contains(block);
 	}
-
-/*
-	public abstract void updateFnops(IBufferVector bestVector, IBufferVector worstVector);	
-	IBufferVector m_worstCaseStartIbuffer;
-	IBufferVector m_bestCaseStartIbuffer;
-	IBufferVector m_worstCaseEndIbuffer;
-	IBufferVector m_bestCaseEndIbuffer;
-	*/
-	//add a function called get error
-				
+		
 	public String getFunctionName() {
 		return "";
 	}
+	public abstract void addFnops();
 
+	Collection<InstructionBuffer> m_iBuffersDueToWorstTime;
+	Collection<InstructionBuffer> m_iBuffersDueToBestTime;
 	
+	public void addEndIbufferDueToWorst(InstructionBuffer ib){
+		m_iBuffersDueToWorstTime.add(ib);
+	}
 	
+	public void addEndIbufferDueToBest(InstructionBuffer ib){
+		m_iBuffersDueToBestTime.add(ib);
+	}
+	
+	public Collection<InstructionBuffer> getIbufferDueToWorstTime(){
+		return m_iBuffersDueToWorstTime;
+	}
+	public Collection<InstructionBuffer> getIbufferDueToBestTime(){
+		return m_iBuffersDueToBestTime;
+	}
+	
+	public Collection<BlockNode> getPrevBlocks(){
+		return null;
+	}
 }
 
 class FunctionCallStatus {
