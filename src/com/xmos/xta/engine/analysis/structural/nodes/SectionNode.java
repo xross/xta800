@@ -122,13 +122,20 @@ public class SectionNode extends Node {
 		// Gets the best/worst case option taken from each of the 
 		// option nodes that does not have its iteration 
 		// count explicitly set by the user.		
+		
+List<Node> oo = getUnsetOptions();		
+		
 		Iterator<Node> iter = getUnsetOptions().iterator();
 		Node caseNode = iter.next();
 		
 		while (iter.hasNext()) {
-			Node node = iter.next();	
+			Node node = iter.next();
+			
+double t1 = node.getAttributes().getTimeTaken(c, ignoreIterations);
+double t2 = caseNode.getAttributes().getTimeTaken(c, ignoreIterations);
+
 			switch (c) {
-			case WORST:
+			case WORST:				
 				if (node.getAttributes().getTimeTaken(c, ignoreIterations) > 
 			        caseNode.getAttributes().getTimeTaken(c, ignoreIterations)) {
 				    caseNode = node;
