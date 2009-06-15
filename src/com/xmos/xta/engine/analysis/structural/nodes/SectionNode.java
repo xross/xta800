@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
-import com.xmos.xta.engine.analysis.structural.StructureFnoper;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.SectionNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -124,19 +122,12 @@ public class SectionNode extends Node {
 	public Node getOption(Case c, boolean ignoreIterations) {
 		// Gets the best/worst case option taken from each of the 
 		// option nodes that does not have its iteration 
-		// count explicitly set by the user.		
-		
-List<Node> oo = getUnsetOptions();		
-		
+		// count explicitly set by the user.				
 		Iterator<Node> iter = getUnsetOptions().iterator();
 		Node caseNode = iter.next();
 		
 		while (iter.hasNext()) {
 			Node node = iter.next();
-			
-double t1 = node.getAttributes().getTimeTaken(c, ignoreIterations);
-double t2 = caseNode.getAttributes().getTimeTaken(c, ignoreIterations);
-
 			switch (c) {
 			case WORST:				
 				if (node.getAttributes().getTimeTaken(c, ignoreIterations) > 
@@ -213,9 +204,9 @@ double t2 = caseNode.getAttributes().getTimeTaken(c, ignoreIterations);
 	}
 
 	public void addFnops() {
-		for(Node node : m_options){
-			node.addFnops();
-		}
+//		for(Node node : m_options){
+//			node.addFnops();
+//		}
 		
 	}
 
