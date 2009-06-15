@@ -25,6 +25,7 @@ public class Exclusion extends Command {
 	
 	public Exclusion(Operation operation) {
 		m_operation = operation;
+		m_mode = Mode.GLOBAL;
 	}
 
 	public Exclusion(Operation operation, String reference, Mode mode, int routeId) {
@@ -165,7 +166,7 @@ public class Exclusion extends Command {
         				m_reference));    		        		
         	}
         	break;
-        	
+
         case ROUTE:
     	    if (!engine.setRouteExclusion(m_reference, m_routeId)) {
         		console.display(String.format(

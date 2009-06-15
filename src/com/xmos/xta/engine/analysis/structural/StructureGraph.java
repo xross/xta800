@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.SectionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.engine.references.Reference;
@@ -186,8 +187,9 @@ public class StructureGraph {
 	
 	public boolean setExclusion(Reference reference) {
 		boolean found = false;
-        for (Node node : getReferencedNodes(reference)) {
-        	node.setIsExcluded(true);
+        for (Node node : getReferencedNodes(reference)) {        	
+			Node sectionOption = getSectionOption(node);
+			excludeNodes(sectionOption, true);						
 	    	found = true;
 		}
 		return found;
@@ -196,13 +198,15 @@ public class StructureGraph {
 	public boolean unsetExclusion(Reference reference) {
 		boolean found = false;
         for (Node node : getReferencedNodes(reference)) {
-        	node.setIsExcluded(false);
+			Node sectionOption = getSectionOption(node);
+			excludeNodes(sectionOption, false);						
 	    	found = true;
 		}
 		return found;
 	}
 
 	public Collection<Reference> getExclusions() {
+		// TODO
 		return null;
 	}
 	
@@ -221,5 +225,39 @@ public class StructureGraph {
 			parent.getAttributes().setDisplayUnknown(true);
 			parent = parent.getParent();		    
 		}
-	}		
+	}	
+	
+	private Node getSectionOption(Node node) {
+		Node currentNode = node;
+		while (!currentNode.getParent().isSectionNode() || 
+				noOptionsLeft(currentNode.getParent())) {
+			currentNode = currentNode.getParent();
+		}
+		return currentNode;
+	}
+	
+	private boolean noOptionsLeft(Node currentNode) {
+		SectionNode section = (SectionNode)currentNode;
+						
+		int numOptionsLeft = 0;
+		for (Node option : section.getOptions()) {
+			if (!option.isExcluded())
+			    ++numOptionsLeft;
+		}
+		
+		if (section.isOptional()) {
+			++numOptionsLeft;
+		}
+		return (numOptionsLeft < 2);
+	}	
+	
+	private void excludeNodes(Node node, final boolean value) {
+		node.setIsExcluded(value);
+		node.traverse(0, new UntypedNodeTraverser() {
+			public boolean foundNode(Node node, int depth) {
+				node.setIsExcluded(value);
+				return true;
+			}
+		});
+	}	
 }

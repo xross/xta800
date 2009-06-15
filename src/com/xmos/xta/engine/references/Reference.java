@@ -14,7 +14,7 @@ public class Reference {
 		m_base = base;
 		m_backTrail = new ArrayList<ReferenceType>();
 	}
-
+	
 	public String getRef() {
 		assert(m_base != null);
 		return m_base.getRef();

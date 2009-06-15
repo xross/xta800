@@ -3,6 +3,8 @@ package com.xmos.xta.console.commands.print;
 import java.util.Collection;
 
 import com.xmos.xta.console.Console;
+import com.xmos.xta.console.commands.print.Structure.Mode;
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -10,12 +12,18 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 public class StructureDisplayer {
 	private final static boolean DEBUG = false;
 
+	private Engine m_engine;
 	private Console m_console;
 	private int m_verbosity;
+	private Mode m_mode;
+	private int m_routeId;
 
-	public StructureDisplayer(Console console, int verbosity) {
+	public StructureDisplayer(Engine engine, Console console, int verbosity, Mode mode, int routeId) {
+		m_engine = engine;
 		m_console = console;
 		m_verbosity = verbosity;
+		m_mode = mode;
+		m_routeId = routeId;
 	}
 	
 	public void display(Collection<Node> nodes) {
@@ -107,7 +115,7 @@ public class StructureDisplayer {
 
 	private void printModifiers(Node node, int depth) {
 		if (depth > 0) {
-			if (node.isExcluded()) {
+			if (isExcluded(node)) {
 				m_console.display(".  X ");
 			} else if (node.getAttributes().getDisplayUnknown()) {
 				m_console.display(".  * ");
@@ -149,4 +157,16 @@ public class StructureDisplayer {
 				instruction.getNmenonic(),
 				instruction.getOperandString()));
 	}	
+	
+	private boolean isExcluded(Node node) {
+		switch (m_mode) {
+		case GLOBAL:
+			return node.isExcluded();
+			
+		case ROUTE:
+			return m_engine.getRoute(m_routeId).isExcluded(node);
+		}
+		assert(false);
+		return false;
+	}
 }

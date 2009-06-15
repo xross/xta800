@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.SectionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.references.Reference;
 
@@ -59,12 +61,12 @@ public class Route {
 	}
 
 	public void setExclusion(Reference reference) {
-		m_excludedRefs.add(reference);
+		addExclusion(reference);
 		refreshExclusions();
 	}
 
 	public void unsetExclusion(Reference reference) {
-		m_excludedRefs.remove(reference);
+		removeExclusion(reference);
 		refreshExclusions();
 	}
 	
@@ -165,23 +167,39 @@ public class Route {
 		Collections.sort(m_subRoutes);
 	}
 	
+	private void addExclusion(Reference reference) {
+		m_excludedRefs.add(reference);		
+	}
+
+	private void removeExclusion(Reference reference) {
+		Iterator<Reference> iter = m_excludedRefs.iterator();
+		while (iter.hasNext()) {
+			Reference ref = iter.next();
+			if (ref.getPc() == reference.getPc()) {
+				iter.remove();
+			}
+		}
+	}
+	
 	private void refreshExclusions() {
-		// this uses the m_excludedRefs to populate the m_routeExclusionNodes
+		// this uses the m_excludedRefs to populate the m_routeExclusionNodes		
+		m_routeExclusionNodes.clear();
+
 		Set<Node> seenNodes = new HashSet<Node>();
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		for (Reference ref : m_excludedRefs) {
-			for(Node routeNode : m_subRoutes){
+			for (Node routeNode : m_subRoutes){
 				Collection<Node> refNodes = referenceMatcher.getNodes(routeNode, ref);
-				//crawl up to my highest point then set the whole branch as excluded
 				
-				for(Node refNode : refNodes){
-					if(!seenNodes.contains(refNode)){
+				//crawl up to my highest point then set the whole branch as excluded				
+				for (Node refNode : refNodes) {
+					if (!seenNodes.contains(refNode)) {
 						Node currentNode = refNode;
-						while(!currentNode.getParent().isSectionNode() || noOptionsLeft(currentNode)){
+						while (!currentNode.getParent().isSectionNode() || 
+								noOptionsLeft(currentNode.getParent())) {
 							currentNode = currentNode.getParent();
 						}
-						Set<Node> branch = getBranch(currentNode);
-						m_routeExclusionNodes.addAll(branch);
+						excludeNodes(currentNode);						
 					}
 					seenNodes.add(refNode);
 				}
@@ -195,21 +213,20 @@ public class Route {
 		Set<Node> intersection = new HashSet<Node>(section.getOptions());
 		intersection.removeAll(m_routeExclusionNodes);
 		int options = intersection.size();
-		if(section.isOptional()) {
+		if (section.isOptional()) {
 			options++;
 		}
-		return (options  < 2);
+		return (options < 2);
 	}
 
-	private Set<Node> getBranch(Node start) {
-		final Set<Node> nodes = new HashSet<Node>();
-		start.traverse(0, new DefaultNodeTraverser() {
-			public boolean foundInstructionNode(Node node, int depth) {
-				nodes.add(node);
+	private void excludeNodes(Node node) {
+		m_routeExclusionNodes.add(node);
+		node.traverse(0, new UntypedNodeTraverser() {
+			public boolean foundNode(Node node, int depth) {
+				m_routeExclusionNodes.add(node);
 				return true;
 			}
 		});
-		return nodes;
 	}
 		
 	private Set<Integer> getEndPcs() {
