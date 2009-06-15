@@ -48,16 +48,16 @@ public class NodeAttributes {
 		// Displays the worst case timing.
 	    String timingSummary = "";
 	    timingSummary += String.format(" : %.1fns", getTimeTaken(Case.WORST, false));
-		if (m_node.isBlockNode()) {
-			timingSummary += String.format(" (x%d)", 
-					m_node.getAttributes().getNumIterations(Case.WORST));
+		if (m_node.isBlockNode()) {			
+			timingSummary += String.format(" (x %d)", 
+					m_node.getAttributes().getTotalIterations(Case.WORST));
 		}
 
 		// Displays the best case timing.
 	    timingSummary += String.format(" - %.1fns", getTimeTaken(Case.BEST, false));
 		if (m_node.isBlockNode()) {
-			timingSummary += String.format(" (x%d)", 
-					m_node.getAttributes().getNumIterations(Case.BEST));
+			timingSummary += String.format(" (x %d)", 
+					m_node.getAttributes().getTotalIterations(Case.BEST));
 		}
 	    return timingSummary;
 	}
@@ -194,6 +194,18 @@ public class NodeAttributes {
 		return 1;
 	}
 	
+	
+	public long getTotalIterations(Case c) {
+		Node enclosingLoopNode = getNode().getEnclosingLoopNode();
+		if (enclosingLoopNode != null) {
+			long cummulativeIterations = 
+				enclosingLoopNode.getParent().getAttributes().getCummulativeIterations(c);  
+			
+			return getNumIterations(c) * cummulativeIterations;
+		}
+		return getNumIterations(c);
+	}
+	
 	public void setLoopIterations(long numIterations) {
 		setLoopIterations(Case.WORST, numIterations);
 		setLoopIterations(Case.BEST, numIterations);
@@ -207,6 +219,12 @@ public class NodeAttributes {
    				// Just set the number of iterations on the loop, 
    				// but don't propagate it down to its children
    				child.getAttributes().setNumIterations(c, numIterations);
+   				
+   			} else if (child.getAttributes().isLoopHeader()) {
+   				// For a loop, the header always executes 
+   				// one more time than the body
+   				child.getAttributes().setLoopIterations(c, numIterations + 1);
+   				
    			} else {
    			    child.getAttributes().setLoopIterations(c, numIterations);
    			}			

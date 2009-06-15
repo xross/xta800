@@ -35,15 +35,4 @@ public class BlockNodeAttributes extends NodeAttributes {
 		}
 		return super.getNumFNops(c, ignoreIterations) * getTotalIterations(c);
 	}	
-	
-	private long getTotalIterations(Case c) {
-		Node enclosingLoopNode = getNode().getEnclosingLoopNode();
-		if (enclosingLoopNode != null) {
-			long cummulativeIterations = 
-				enclosingLoopNode.getParent().getAttributes().getCummulativeIterations(c);  
-			
-			return getNumIterations(c) * cummulativeIterations;
-		}
-		return getNumIterations(c);
-	}
 }
