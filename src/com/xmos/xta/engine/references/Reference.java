@@ -14,7 +14,25 @@ public class Reference {
 		m_base = base;
 		m_backTrail = new ArrayList<ReferenceType>();
 	}
-	
+
+	public boolean equals(Object obj) {
+		// A reference is equal to another if its base pc, and
+		// all of its back trail pc's, match.
+		Reference reference = (Reference)obj;
+		
+		if (getPc() != reference.getPc())
+			return false;
+		
+		if (m_backTrail.size() != reference.getBackTrail().size()) 
+			return false;
+		
+		for (int i = 0; i < m_backTrail.size(); ++i) {
+			if (m_backTrail.get(i).getPc() != getBackTrail().get(i).getPc())
+				return false;
+		}
+		return true;
+	}
+		
 	public String getRef() {
 		assert(m_base != null);
 		return m_base.getRef();

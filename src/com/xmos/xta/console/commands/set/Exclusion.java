@@ -49,7 +49,14 @@ public class Exclusion extends Command {
     	    return 0;
         	
     	case LIST:
-            return 0;
+        	switch (m_mode) {
+        	case GLOBAL:
+        		return 0;
+        	case ROUTE:
+        		return 1;
+        	}
+    		assert(false);
+    	    return 0;
     	}    		
     	assert(false);
         return 0;
@@ -81,7 +88,14 @@ public class Exclusion extends Command {
     	    return "";
     	    
     	case LIST:
-    		return "exclusions";
+        	switch (m_mode) {
+        	case GLOBAL:
+        		return "exclusions";
+        	case ROUTE:
+        		return "exclusions " + getRouteId(m_routeId);
+        	}
+    		assert(false);
+    	    return "";
     	}    			
     	assert(false);
         return "";    	
@@ -91,10 +105,10 @@ public class Exclusion extends Command {
     	String descString = "";
     	switch (m_operation) {
     	case SET:
-        	descString = "exclusion <ANY_REF> [route id]: Excludes the block containing the given reference";
+        	descString = "exclusion <ANY_REF> [route id]: Excludes the block containing the given reference on the given route/global tree";
         	break;
     	case UNSET:
-        	descString = "exclusion: <ANY_REF> [route id]: Un-excludes the block containing the given reference";
+        	descString = "exclusion: <ANY_REF> [route id]: Un-excludes the block containing the given reference on the given route/global tree";
         	break;
     	case LIST:
         	descString = "exclusions [route id]: Displays the exclusions for the given route/global tree";
@@ -215,7 +229,7 @@ public class Exclusion extends Command {
         	    
 	    if (exclusions.size() > 0) {
 	    	for (Reference exclusion : exclusions) {
-	    	    console.display(String.format("- 0x%x: %s", 
+	    	    console.display(String.format("- 0x%x: %s\n", 
 	    	    		exclusion.getPc(), exclusion.getRef()));
 	    	}    	    	
 	    } else {

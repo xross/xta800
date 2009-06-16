@@ -2,6 +2,7 @@ package com.xmos.xta.engine.analysis.structural;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.SectionNode;
@@ -11,11 +12,13 @@ import com.xmos.xta.engine.references.Reference;
 
 public class StructureGraph {
 	private Collection<Node> m_threads;
+	private Collection<Reference> m_exclusions;
 	
 	public StructureGraph(Collection<Node> threads) {
 		super();
 		assert(threads.size() > 0);
 		m_threads = threads;
+		m_exclusions = new ArrayList<Reference>();
 		removeLinks();
 	}
 
@@ -188,8 +191,9 @@ public class StructureGraph {
 	public boolean setExclusion(Reference reference) {
 		boolean found = false;
         for (Node node : getReferencedNodes(reference)) {        	
-			Node sectionOption = getSectionOption(node);
-			excludeNodes(sectionOption, true);						
+			Node sectionOption = getSectionOption(node);			
+			excludeNodes(sectionOption, true);
+			addToExclusionList(reference);
 	    	found = true;
 		}
 		return found;
@@ -200,14 +204,14 @@ public class StructureGraph {
         for (Node node : getReferencedNodes(reference)) {
 			Node sectionOption = getSectionOption(node);
 			excludeNodes(sectionOption, false);						
+			removeFromExclusionList(reference);
 	    	found = true;
 		}
 		return found;
 	}
 
 	public Collection<Reference> getExclusions() {
-		// TODO
-		return null;
+		return m_exclusions;
 	}
 	
 	private Collection<Node> getReferencedNodes(Reference reference) {
@@ -259,5 +263,19 @@ public class StructureGraph {
 				return true;
 			}
 		});
+	}
+	
+	private void addToExclusionList(Reference reference) {
+		m_exclusions.add(reference);		
+	}
+
+	private void removeFromExclusionList(Reference reference) {
+		Iterator<Reference> iter = m_exclusions.iterator();
+		while (iter.hasNext()) {
+			Reference ref = iter.next();
+			if (ref.equals(reference)) {
+				iter.remove();
+			}
+		}
 	}	
 }

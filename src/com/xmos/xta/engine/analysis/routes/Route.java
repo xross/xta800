@@ -175,7 +175,7 @@ public class Route {
 		Iterator<Reference> iter = m_excludedRefs.iterator();
 		while (iter.hasNext()) {
 			Reference ref = iter.next();
-			if (ref.getPc() == reference.getPc()) {
+			if (ref.equals(reference)) {
 				iter.remove();
 			}
 		}
@@ -266,7 +266,6 @@ public class Route {
 				}
 			}
 		}
-		return;
 	}
 
 	private void makeConnection(Node node, Node parent) {
