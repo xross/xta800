@@ -114,7 +114,7 @@ public class Structure extends Command {
 	    	break;	    	
 	    }
 	    
-		StructureDisplayer displayer = new StructureDisplayer(engine, console, m_verbosity, m_mode, m_routeId);	
+		StructureDisplayer displayer = new StructureDisplayer(console, m_verbosity);	
 		displayer.display(nodes);
     }
 }

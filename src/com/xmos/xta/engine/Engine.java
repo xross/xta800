@@ -628,7 +628,7 @@ public class Engine implements Notifier {
 		return m_executableFile;
 	}
 
-	public boolean setGlobalExclusion(String refString) {
+	public boolean setExclusion(String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ANY_REF);
 		if (!resolveRefernece(reference)) {
@@ -641,7 +641,7 @@ public class Engine implements Notifier {
 		return false;
 	}
 
-	public boolean unsetGlobalExclusion(String refString) {
+	public boolean unsetExclusion(String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ANY_REF);
 		if (!resolveRefernece(reference)) {
@@ -654,46 +654,8 @@ public class Engine implements Notifier {
 		return false;
 	}
 
-	public Collection<Reference> getGlobalExclusions() {
+	public Collection<Reference> getExclusions() {
 		return getStructureGraph().getExclusions();
-	}
-
-	public boolean setRouteExclusion(String refString, int routeId) {
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.ANY_REF);
-		if (!resolveRefernece(reference)) {
-			return false;
-		}
-		Route route = getRoute(routeId);
-		if (route == null) {
-			return false;
-		}
-		route.setExclusion(reference);
-		notify(Notifier.NOTIFY_UPDATE_STATE, "");
-		return true;
-	}
-
-	public boolean unsetRouteExclusion(String refString, int routeId) {
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.ANY_REF);
-		if (!resolveRefernece(reference)) {
-			return false;
-		}
-		Route route = getRoute(routeId);
-		if (route == null) {
-			return false;
-		}
-		route.unsetExclusion(reference);
-		notify(Notifier.NOTIFY_UPDATE_STATE, "");
-		return true;
-	}
-
-	public Collection<Reference> getRouteExclusions(int routeId) {
-		Route route = getRoute(routeId);
-		if (route == null) {
-			return null;
-		}
-		return route.getExclusions();
 	}
 	
 	public boolean addBranch(Reference fromRef, Reference toRef) {

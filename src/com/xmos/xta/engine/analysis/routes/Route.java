@@ -5,24 +5,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
-import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.SectionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
-import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
-import com.xmos.xta.engine.references.Reference;
 
 class AbortedException extends Exception {
 	private static final long serialVersionUID = 1L;
@@ -42,8 +37,6 @@ public class Route {
 	private StructureGraph m_structureGraph;
 	private List<Node> m_subRoutes;
 	private Engine m_engine;
-	private Set<Node> m_routeExclusionNodes;
-	private Collection<Reference> m_excludedRefs;
 	
 	public static void resetRouteCount() {
 		s_routeCount = 0;
@@ -56,26 +49,6 @@ public class Route {
 		m_subRoutes = new ArrayList<Node>();
 		m_engine = engine;
 		m_routeTiming = new RouteTiming(this, engine.getConfig(), engine.getNodeId(), engine.getCoreId());
-		m_routeExclusionNodes = new HashSet<Node>();
-		m_excludedRefs = new HashSet<Reference>();
-	}
-
-	public void setExclusion(Reference reference) {
-		addExclusion(reference);
-		refreshExclusions();
-	}
-
-	public void unsetExclusion(Reference reference) {
-		removeExclusion(reference);
-		refreshExclusions();
-	}
-	
-	public Collection<Reference> getExclusions() {
-		return m_excludedRefs;
-	}
-
-	public boolean isExcluded(Node node) {
-		return m_routeExclusionNodes.contains(node) || node.isExcluded();
 	}
 
 	public int getRouteId() {
@@ -166,69 +139,7 @@ public class Route {
 	public void sortSubRoutes() {
 		Collections.sort(m_subRoutes);
 	}
-	
-	private void addExclusion(Reference reference) {
-		m_excludedRefs.add(reference);		
-	}
-
-	private void removeExclusion(Reference reference) {
-		Iterator<Reference> iter = m_excludedRefs.iterator();
-		while (iter.hasNext()) {
-			Reference ref = iter.next();
-			if (ref.equals(reference)) {
-				iter.remove();
-			}
-		}
-	}
-	
-	private void refreshExclusions() {
-		// this uses the m_excludedRefs to populate the m_routeExclusionNodes		
-		m_routeExclusionNodes.clear();
-
-		Set<Node> seenNodes = new HashSet<Node>();
-		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
-		for (Reference ref : m_excludedRefs) {
-			for (Node routeNode : m_subRoutes){
-				Collection<Node> refNodes = referenceMatcher.getNodes(routeNode, ref);
-				
-				//crawl up to my highest point then set the whole branch as excluded				
-				for (Node refNode : refNodes) {
-					if (!seenNodes.contains(refNode)) {
-						Node currentNode = refNode;
-						while (!currentNode.getParent().isSectionNode() || 
-								noOptionsLeft(currentNode.getParent())) {
-							currentNode = currentNode.getParent();
-						}
-						excludeNodes(currentNode);						
-					}
-					seenNodes.add(refNode);
-				}
-			}
-		}
-	}
-	
-	private boolean noOptionsLeft(Node currentNode) {
-		SectionNode section = (SectionNode)currentNode;
-		
-		Set<Node> intersection = new HashSet<Node>(section.getOptions());
-		intersection.removeAll(m_routeExclusionNodes);
-		int options = intersection.size();
-		if (section.isOptional()) {
-			options++;
-		}
-		return (options < 2);
-	}
-
-	private void excludeNodes(Node node) {
-		m_routeExclusionNodes.add(node);
-		node.traverse(0, new UntypedNodeTraverser() {
-			public boolean foundNode(Node node, int depth) {
-				m_routeExclusionNodes.add(node);
-				return true;
-			}
-		});
-	}
-		
+			
 	private Set<Integer> getEndPcs() {
 		Set<Integer> endPcs = new HashSet<Integer>();
 		endPcs.add(m_description.getEndPoint().getPc());
