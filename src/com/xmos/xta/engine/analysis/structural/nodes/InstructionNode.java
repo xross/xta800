@@ -40,6 +40,10 @@ public class InstructionNode extends Node {
 		return in;
 	}
 
+	public String toString(){
+		return m_inst.toString();
+	}
+	
     public String getTypeName() {
         return "instruction";
     }
@@ -48,9 +52,9 @@ public class InstructionNode extends Node {
     	return m_attributes;
     }
     
-	public String toString() {
-		return "instruction" + m_id;
-	}
+	//public String toString() {
+	//	return "instruction" + m_id;
+	//}
 
 	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new HashSet<Node>();
@@ -168,7 +172,7 @@ public class InstructionNode extends Node {
 		return 0;
 	}
 
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
+	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
 		assert(false);
 	}
 

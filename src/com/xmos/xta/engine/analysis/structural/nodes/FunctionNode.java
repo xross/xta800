@@ -171,7 +171,7 @@ public class FunctionNode extends Node {
 		if(getParent() != null){
 			return getParent().whatsNext(this);
 		}
-		return null;
+		return new HashSet<Node>();
 	}
 
 	public boolean isFunctionNode() {
@@ -188,7 +188,7 @@ public class FunctionNode extends Node {
 		return false;
 	}	
 
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
+	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
 		if(m_knownFunction){
 			m_function.getInstructionStream(c, instructions, iteration);
 		}
@@ -204,15 +204,25 @@ public class FunctionNode extends Node {
 	}
 
 	public void addFnops() {
-		m_function.addFnops();
-		if(m_parent!= null){
-			for(InstructionBuffer ib : m_function.getIbufferDueToWorstTime()){
-				getParent().addEndIbufferDueToWorst(ib);
+		if(m_knownFunction){
+			m_function.addFnops();
+			
+			if(m_parent!= null){
+				for(InstructionBuffer ib : m_function.getIbufferDueToWorstTime()){
+					getParent().addEndIbufferDueToWorst(ib);
+				}
+				for(InstructionBuffer ib : m_function.getIbufferDueToBestTime()){
+					getParent().addEndIbufferDueToBest(ib);
+				}
 			}
-			for(InstructionBuffer ib : m_function.getIbufferDueToBestTime()){
-				getParent().addEndIbufferDueToBest(ib);
-			}
+			
+			
+			
+		} else {
+			
 		}
+		
+		
 	}
 
 	public Collection<Node> whatsBefore(Node node) {

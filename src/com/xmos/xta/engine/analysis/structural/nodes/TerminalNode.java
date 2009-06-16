@@ -142,7 +142,7 @@ public class TerminalNode extends Node {
 		return worstCaseNode;
 	}
 
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
+	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
 		Node option = null;
 		switch (c){
 		case WORST:

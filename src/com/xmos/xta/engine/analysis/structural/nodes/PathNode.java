@@ -130,7 +130,7 @@ public class PathNode extends Node {
 		return false;
 	}
 
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
+	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
 		for(Node pathNode : m_nodes){
 			pathNode.getInstructionStream(c, instructions, iteration);
 		}
@@ -149,12 +149,14 @@ public class PathNode extends Node {
 			pathNode.addFnops();
 		}
 		Node lastNode = m_nodes.get(m_nodes.size()-1);
+
 		for(InstructionBuffer ib : lastNode.getIbufferDueToWorstTime()){
 			getParent().addEndIbufferDueToWorst(ib);
 		}
 		for(InstructionBuffer ib : lastNode.getIbufferDueToBestTime()){
 			getParent().addEndIbufferDueToBest(ib);
 		}
+
 	}
 
 

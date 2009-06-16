@@ -8,7 +8,8 @@ import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructureDisplayer {
-	private final static boolean DEBUG = false;
+	private final static boolean DEBUG_NEXT = true;
+	private final static boolean DEBUG_BEFORE = false;
 
 	private Console m_console;
 	private int m_verbosity;
@@ -25,7 +26,8 @@ public class StructureDisplayer {
 					printIndent(depth);
 					printModifiers(node, depth);
 					displayNodeName(node);
-					if (DEBUG) displayWhatsNext(node);
+					if (DEBUG_NEXT) displayWhatsNext(node);
+					if (DEBUG_BEFORE) displayWhatsBefore(node);
 					displayTimeTaken(node);
 					m_console.display("\n");
 					return true;
@@ -36,7 +38,8 @@ public class StructureDisplayer {
 					printModifiers(node, depth);
 					displayNodeName(node);
 					displayFunctionName(node);
-					if (DEBUG) displayWhatsNext(node);
+					if (DEBUG_NEXT) displayWhatsNext(node);
+					if (DEBUG_BEFORE) displayWhatsBefore(node);
 					displayTimeTaken(node);
 					m_console.display("\n");
 					return true;
@@ -46,7 +49,8 @@ public class StructureDisplayer {
 					printIndent(depth);
 					printModifiers(node, depth);
 					displayNodeName(node);
-					if (DEBUG) displayWhatsNext(node);
+					if (DEBUG_NEXT) displayWhatsNext(node);
+					if (DEBUG_BEFORE) displayWhatsBefore(node);
 					displayTimeTaken(node);
 					m_console.display("\n");
 					return true;
@@ -56,7 +60,8 @@ public class StructureDisplayer {
 					printIndent(depth);
 					printModifiers(node, depth);
 					displayNodeName(node);
-					if (DEBUG) displayWhatsNext(node);
+					if (DEBUG_NEXT) displayWhatsNext(node);
+					if (DEBUG_BEFORE) displayWhatsBefore(node);
 					displayTimeTaken(node);
 					m_console.display("\n");
 					return true;
@@ -66,7 +71,8 @@ public class StructureDisplayer {
 					printIndent(depth);
 					printModifiers(node, depth);
 					displayNodeName(node);
-					if (DEBUG) displayWhatsNext(node);
+					if (DEBUG_NEXT) displayWhatsNext(node);
+					if (DEBUG_BEFORE) displayWhatsBefore(node);
 					displayTimeTaken(node);
 					m_console.display("\n");
 					return true;
@@ -76,7 +82,8 @@ public class StructureDisplayer {
 					printIndent(depth);
 					printModifiers(node, depth);
 					displayNodeName(node);
-					if (DEBUG) displayWhatsNext(node);
+					if (DEBUG_NEXT) displayWhatsNext(node);
+					if (DEBUG_BEFORE) displayWhatsBefore(node);
 					displayTimeTaken(node);
 					m_console.display("\n");
 					return true;
@@ -137,8 +144,17 @@ public class StructureDisplayer {
 
 	private void displayWhatsNext(Node node) {
 		if (node.getParent()!= null && node.getParent().whatsNext(node) != null){
-			m_console.display(" ");
+			m_console.display(" ---after: ");
 			m_console.display(node.getParent().whatsNext(node).toString());
+			m_console.display("---");
+		}		
+	}
+	
+	private void displayWhatsBefore(Node node) {
+		if (node.getParent()!= null && node.getParent().whatsBefore(node) != null){
+			m_console.display(" ---before: ");
+			m_console.display(node.getParent().whatsBefore(node).toString());
+			m_console.display("---");
 		}		
 	}
 	

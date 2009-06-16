@@ -12,6 +12,7 @@ import com.xmos.xta.engine.analysis.structural.StructureFnoper;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.BlockNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
+import com.xmos.xta.engine.instructions.NullInstruction;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class BlockNode extends Node {
@@ -139,13 +140,32 @@ public class BlockNode extends Node {
 */
 
 	
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
-		for(XtaInstruction inst : getInstructions()){
-			//for(long i=0;i<fnopCount(inst.getPc());i++){
-			//	instructions.add(new NullInstruction("--FNOP--", inst.getConfig(), 0, inst.getPc(), 0));
-			//}
+	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
+		for(InstructionNode inst : m_insts){
+			
+			List<Integer> fnops = null;
+			switch (c){
+			case BEST:
+				fnops = m_bestCaseFnops;
+				break;
+			case WORST:
+				fnops = m_worstCaseFnops;
+				break;
+			}
+			if(fnops!= null){
+			XtaInstruction xtaInst = inst.getXtaInstruction();
+			for(int pc : fnops){
+				
+				if(xtaInst.getPc() == pc){
+					XtaInstruction fnop = new NullInstruction("--FNOP--", xtaInst.getConfig(), 0, xtaInst.getPc(), 0);
+					InstructionNode fnopNode = new InstructionNode(fnop);
+					instructions.add(fnopNode);
+				}
+			}
+			}
 			instructions.add(inst);
 		}
+
 	}
 
 	public long getError(Case c) {
@@ -158,21 +178,23 @@ public class BlockNode extends Node {
 		for(Node prevBlock : whatsBefore(this)){
 			for(InstructionBuffer ib : prevBlock.getIbufferDueToWorstTime()){
 				InstructionBuffer copy = new InstructionBuffer(ib);
-				List<Integer> fnopList = StructureFnoper.makeFnops(prevBlock, copy);
+				List<Integer> fnopList = StructureFnoper.makeFnops(prevBlock, copy, getParent());
 				if(fnopList.size() > worstCount){
 					worstInstructionBuffer = copy;
 					worstCount = fnopList.size();
 					m_worstCaseFnops = fnopList;
+					
 				}
 			}
 		}
 		addEndIbufferDueToWorst(worstInstructionBuffer);
+
 		worstCount = -1;
 		InstructionBuffer bestInstructionBuffer = null;
 		for(Node prevBlock : whatsBefore(this)){
 			for(InstructionBuffer ib : prevBlock.getIbufferDueToBestTime()){
 				InstructionBuffer copy = new InstructionBuffer(ib);
-				List<Integer> fnopList = StructureFnoper.makeFnops(prevBlock, copy);
+				List<Integer> fnopList = StructureFnoper.makeFnops(prevBlock, copy, getParent());
 				if(fnopList.size() > worstCount){
 					bestInstructionBuffer = copy;
 					worstCount = fnopList.size();
@@ -181,6 +203,18 @@ public class BlockNode extends Node {
 			}
 		}
 		addEndIbufferDueToBest(bestInstructionBuffer);
+
+		
+		/*
+		
+		List<InstructionNode> insts = new LinkedList<InstructionNode>();
+		getInstructionStream(Case.WORST, insts , 0);
+		
+		for(InstructionNode inst : insts){
+			System.out.println(inst);
+		}
+		System.out.println();
+		*/
 	}
 
 	public Collection<Node> whatsBefore(Node node) {

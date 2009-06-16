@@ -165,7 +165,7 @@ public class SectionNode extends Node {
 	}	
 	
 
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
+	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
 /*
 		if(totalIterations() == 1){
 			switch (c) {

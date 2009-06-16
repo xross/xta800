@@ -29,10 +29,11 @@ public abstract class Node implements Comparable<Node>{
 	boolean m_isExcluded;
 	
 	Set<Node> m_branchTargets;
-
+	Set<Integer> m_branchTargetPcs;
 	//fnop data
 	Map<Node, Integer> m_parentToStartIbuffer;
-	
+	Collection<InstructionBuffer> m_iBuffersDueToWorstTime;
+	Collection<InstructionBuffer> m_iBuffersDueToBestTime;
 	
 	public enum Case {
 		WORST,
@@ -50,7 +51,7 @@ public abstract class Node implements Comparable<Node>{
 	public abstract Collection<Node> whatsBefore(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
 	public abstract long getError(Case c);
-	public abstract void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration);
+	public abstract void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration);
 	public abstract Set<Integer> getPCs();
 	
 	public abstract LinkedList<XtaInstruction> getInstructions();
@@ -68,18 +69,26 @@ public abstract class Node implements Comparable<Node>{
 	public Node() {
 		m_isExcluded = false;
 		m_branchTargets = new HashSet<Node>();
+		m_branchTargetPcs = new HashSet<Integer>();
 		m_nextNodes = new HashSet<Node>();
 		m_prevNodes = new HashSet<Node>();
 		m_dominators = new HashSet<Node>();
+		m_iBuffersDueToWorstTime = new HashSet<InstructionBuffer>();
+		m_iBuffersDueToBestTime = new HashSet<InstructionBuffer>();
 		m_id = s_numNodes++;
 	}
 	
 	public Node(Node node) {
 		m_isExcluded = node.m_isExcluded;
 		m_branchTargets = new HashSet<Node>(node.m_branchTargets);
+		m_branchTargetPcs = new HashSet<Integer>(node.m_branchTargetPcs);
 		m_nextNodes = new HashSet<Node>(node.m_nextNodes);
 		m_prevNodes = new HashSet<Node>(node.m_prevNodes);
 		m_dominators = new HashSet<Node>(node.m_prevNodes);
+		m_iBuffersDueToWorstTime = new HashSet<InstructionBuffer>();
+		m_iBuffersDueToWorstTime.addAll(node.m_iBuffersDueToWorstTime);
+		m_iBuffersDueToBestTime = new HashSet<InstructionBuffer>(node.m_iBuffersDueToBestTime);
+		m_iBuffersDueToBestTime.addAll(node.m_iBuffersDueToBestTime);
 		m_id = s_numNodes++;
 	}
 	
@@ -286,21 +295,32 @@ public abstract class Node implements Comparable<Node>{
 	public boolean branchesTo(Node block) {
 		return m_branchTargets.contains(block);
 	}
+	public boolean branchesTo(int pc) {
+		return m_branchTargetPcs.contains(pc);
+	}
 		
 	public String getFunctionName() {
 		return "";
 	}
 	public abstract void addFnops();
 
-	Collection<InstructionBuffer> m_iBuffersDueToWorstTime;
-	Collection<InstructionBuffer> m_iBuffersDueToBestTime;
+	
 	
 	public void addEndIbufferDueToWorst(InstructionBuffer ib){
-		m_iBuffersDueToWorstTime.add(ib);
+		if(ib == null){
+			//System.out.println("eek");
+		} else {
+			m_iBuffersDueToWorstTime.add(ib);
+		}
+		
 	}
 	
 	public void addEndIbufferDueToBest(InstructionBuffer ib){
-		m_iBuffersDueToBestTime.add(ib);
+		if(ib == null){
+			//System.out.println("eek");
+		} else {
+			m_iBuffersDueToBestTime.add(ib);
+		}
 	}
 	
 	public Collection<InstructionBuffer> getIbufferDueToWorstTime(){

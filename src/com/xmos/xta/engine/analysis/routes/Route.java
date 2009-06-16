@@ -225,14 +225,17 @@ public class Route {
 	}
 
 	private void explore(Node node, Collection<Node> set, Collection<Integer> endPcs, Collection<Node> endNodes, Node parent) {
-
+		
+		
+		//System.out.println("expolring: " + parent + " -> " + node);
+		if(set.contains(node)) return;
 		Set<Integer> pcs = new HashSet<Integer>(endPcs);
 		pcs.retainAll(node.getPCs());
 		// if the node does not contain the pc then just add the node
-		if (pcs.isEmpty()) {
+		if (pcs.isEmpty() || set.size() == 0) {
 			makeConnection(node, parent);
 			set.add(node);
-			if (node.getParent().whatsNext(node) != null) {
+			if (!node.getParent().whatsNext(node).isEmpty()) {
 				for (Node next : node.getParent().whatsNext(node)) {
 					explore(next, set, endPcs, endNodes, node);
 				}

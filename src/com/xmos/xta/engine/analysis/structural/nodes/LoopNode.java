@@ -165,7 +165,7 @@ public class LoopNode extends Node {
 		return false;
 	}
 
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions, long iteration) {
+	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
 		
 		for(Node loop : m_loops){
 			for(long i=0;i<loop.getAttributes().getNumIterations(c);i++){
@@ -189,11 +189,13 @@ public class LoopNode extends Node {
 		for(Node loop : m_loops){
 			loop.addFnops();
 		}
-		for(InstructionBuffer ib : m_loopHeader.getIbufferDueToWorstTime()){
-			getParent().addEndIbufferDueToWorst(ib);
-		}
-		for(InstructionBuffer ib : m_loopHeader.getIbufferDueToBestTime()){
-			getParent().addEndIbufferDueToBest(ib);
+		if(getParent()!= null){
+			for(InstructionBuffer ib : m_loopHeader.getIbufferDueToWorstTime()){
+				getParent().addEndIbufferDueToWorst(ib);
+			}
+			for(InstructionBuffer ib : m_loopHeader.getIbufferDueToBestTime()){
+				getParent().addEndIbufferDueToBest(ib);
+			}
 		}
 	}
 

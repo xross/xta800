@@ -9,11 +9,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
-import com.xmos.xta.engine.analysis.structural.nodes.IBufferNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
@@ -113,20 +111,34 @@ public class StructuralAnalysisEngine {
 		
 		m_structureGraph = new StructureGraph(threads);
 		
-		engine.provideFeedback("Linking functions..");
-		linkFunctions();		
-
-		engine.provideFeedback("Setting parent nodes..");
+		engine.provideFeedback("Linking functions...");
+		linkFunctions();
+		
+		engine.provideFeedback("Setting parent nodes...");
 		setParents();
-
-		engine.provideFeedback("Setting unknown nodes..");
+		
+		//engine.provideFeedback("Calculating FNOPs...");
+		//setFnops();
+		
+		engine.provideFeedback("Setting unknown nodes...");
 		setUnknowns();
 
-		engine.provideFeedback("Setting initial loop iterations..");
+		engine.provideFeedback("Setting initial loop iterations...");
 		setInitialIterations();				
 		
 		engine.provideFeedback("Complete");
 		return true;
+	}
+
+	private void setFnops() {
+		for(FunctionNode threadStart : m_threadStartPcs.values()){
+			StructureFnoper sf = new StructureFnoper();
+			sf.analyse(threadStart, false);
+		}
+		for(FunctionNode functionStart : m_functionStartPcs.values()){
+			StructureFnoper sf = new StructureFnoper();
+			sf.analyse(functionStart, true);
+		}
 	}
 
 	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, FunctionNode> startPcs,
@@ -154,12 +166,18 @@ public class StructuralAnalysisEngine {
 			}
 			
 			Node decomposedGraph = basicBlocks.iterator().next();
+		
 			
-			StructureFnoper sf = new StructureFnoper();
-			sf.analyse(decomposedGraph, isFunction);
+			
 			
 			FunctionNode fn = new FunctionNode(decomposedGraph, functionName);
 			graphs.add(fn);
+			
+			setParent(fn);
+			
+			//StructureFnoper sf = new StructureFnoper();
+			//sf.analyse(fn, isFunction);
+			
 			startPcs.put(graphStart.getStartPc(), fn);
 		}
 		return graphs;
@@ -372,10 +390,6 @@ public class StructuralAnalysisEngine {
 				}
 				System.out.print(node + " [label=\"" );
 				for(XtaInstruction inst : node.getInstructions()){
-					
-					for(int i =0 ;i< ((IBufferNode)node).fnopCount(inst.getPc());i++){
-						System.out.print("FNOP\\n");
-					}
 					System.out.print(inst + "\\n");
 				}
 				System.out.print("\"");
