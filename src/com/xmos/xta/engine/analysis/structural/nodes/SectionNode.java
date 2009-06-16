@@ -118,12 +118,16 @@ public class SectionNode extends Node {
 	public Collection<Node> whatsNext(Node node) {
 		return getParent().whatsNext(this);
 	}
-		
+
 	public Node getOption(Case c, boolean ignoreIterations) {
 		// Gets the best/worst case option taken from each of the 
 		// option nodes that does not have its iteration 
-		// count explicitly set by the user.				
-		Iterator<Node> iter = getUnsetOptions().iterator();
+		// count explicitly set by the user.
+		List<Node> allUnsetOptions = getAllUnsetOptions();
+		if (allUnsetOptions.isEmpty())
+			return null;
+		
+		Iterator<Node> iter = getAllUnsetOptions().iterator();
 		Node caseNode = iter.next();
 		
 		while (iter.hasNext()) {
@@ -197,7 +201,6 @@ public class SectionNode extends Node {
 
 	}
 
-
 	public long getError(Case c) {
 		long error = 0;
 		return error;
@@ -228,21 +231,31 @@ public class SectionNode extends Node {
 			}
 		}
 	}
-
-
 	
-	public List<Node> getUnsetOptions() {
+	public List<Node> getAllUnsetOptions() {
 		Map<Node, Boolean> setOptionMap = getAttributes().getSetOptions();
 		
 		List<Node> unsetOptions = new ArrayList<Node>();
 		for (Node option : m_options) {
-			if (!setOptionMap.get(option)) {
+			if (!setOptionMap.get(option) && !option.isExcluded()) {
 				unsetOptions.add(option);
 			}
 		}
 		return unsetOptions;
 	}
 
+	public List<Node> getAllSetOptions() {
+		Map<Node, Boolean> setOptionMap = getAttributes().getSetOptions();
+		
+		List<Node> setOptions = new ArrayList<Node>();
+		for (Node option : m_options) {
+			if (setOptionMap.get(option) && !option.isExcluded()) {
+				setOptions.add(option);
+			}
+		}
+		return setOptions;
+	}
+	
 	public Collection<Node> whatsBefore(Node node) {
 		assert(m_options.contains(node));
 		if(getParent() != null){
