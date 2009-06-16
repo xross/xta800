@@ -48,12 +48,12 @@ public class Structure extends Command {
     	switch (m_mode) {
     	case GLOBAL:
     		return m_verbositySpecified ? 
-    			"structure" : 
-    			"structure " + m_verbosity;
+       			"structure " + m_verbosity :
+    			"structure";
     	case ROUTE:
     		return m_verbositySpecified ? 
-    			"structure " + getRouteId(m_routeId) : 
-    			"structure " + getRouteId(m_routeId) + " " + m_verbosity;
+       			"structure " + getRouteId(m_routeId) + " " + m_verbosity :
+    			"structure " + getRouteId(m_routeId);
     	}
 		assert(false);
 	    return "";    	

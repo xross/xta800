@@ -174,7 +174,7 @@ public abstract class Node implements Comparable<Node>{
 			m_nextNodes.remove(node);
 		}
 	}
-		
+
 	public void setDominatorSetComplete(boolean b) {
 		m_dominatorSetIsCompleteSet = b;
 	}

@@ -14,12 +14,7 @@ public class Exclusion extends Command {
 		UNSET,
 		LIST
 	};
-	public enum Mode {
-		GLOBAL,
-		ROUTE,
-	}
-	private Mode m_mode;
-	private int m_routeId;
+	
 	private String m_reference;
 	private Operation m_operation;
 	
@@ -27,31 +22,22 @@ public class Exclusion extends Command {
 		m_operation = operation;
 	}
 
-	public Exclusion(Operation operation, String reference, Mode mode, int routeId) {
+	public Exclusion(Operation operation, String reference) {
 		m_operation = operation;
 		m_reference = reference;
-		m_mode = mode;
-		m_routeId = routeId;
 	}
 	
     public int numArgs() {
     	switch (m_operation) {
     	case SET:
     	case UNSET:
-        	switch (m_mode) {
-        	case GLOBAL:
-        		return 1;
-        	case ROUTE:
-        		return 2;
-        	}
-    		assert(false);
-    	    return 0;
+       		return 1;
         	
     	case LIST:
-            return 0;
-    	}    		
+       		return 0;
+    	}
     	assert(false);
-        return 0;
+    	return 0;
     }        
 
     public String name() {
@@ -70,17 +56,10 @@ public class Exclusion extends Command {
     	switch (m_operation) {
     	case SET:
     	case UNSET:
-        	switch (m_mode) {
-        	case GLOBAL:
-        		return "exclusion " + m_reference;
-        	case ROUTE:
-        		return "exclusion " + m_reference + " " + getRouteId(m_routeId);
-        	}
-    		assert(false);
-    	    return "";
+       		return "exclusion " + m_reference;
     	    
     	case LIST:
-    		return "exclusions";
+       		return "exclusions";
     	}    			
     	assert(false);
         return "";    	
@@ -90,13 +69,13 @@ public class Exclusion extends Command {
     	String descString = "";
     	switch (m_operation) {
     	case SET:
-        	descString = "exclusion <ANY_REF> [route id]: Excludes the block containing the given reference";
+        	descString = "exclusion <ANY_REF>: Excludes the block containing the given reference";
         	break;
     	case UNSET:
-        	descString = "exclusion: <ANY_REF> [route id]: Un-excludes the block containing the given reference";
+        	descString = "exclusion: <ANY_REF>: Un-excludes the block containing the given reference";
         	break;
     	case LIST:
-        	descString = "exclusions [route id]: Displays the exclusions for the given route/global tree";
+        	descString = "exclusions: Displays the exclusions";
         	break;
     	}
     	return descString;
@@ -109,29 +88,10 @@ public class Exclusion extends Command {
     	switch (m_operation) {
     	case SET:    		
     	case UNSET:
-    		String reference = args[index + 1];    		
-    		if (!areArgsDone(args, index + 2)) {
-    	    	try {
-    	    	    return new Exclusion(m_operation, reference, 
-    	    	    		Mode.ROUTE, getRouteId(args[index + 2]));
-    	    	    
-    		    } catch (NumberFormatException e) {
-    		        return null;
-    		    }    	
-    		}
-        	return new Exclusion(m_operation, reference, Mode.GLOBAL, 0);
+        	return new Exclusion(m_operation, args[index + 1]);
 
     	case LIST:
-    		if (!areArgsDone(args, index + 1)) {
-    	    	try {
-    	    	    return new Exclusion(m_operation, "",
-    	    	    		Mode.ROUTE, getRouteId(args[index + 1]));
-    	    	    
-    		    } catch (NumberFormatException e) {
-    		        return null;
-    		    }    	
-    		}
-        	return new Exclusion(m_operation, "", Mode.GLOBAL, 0);
+        	return new Exclusion(m_operation, "");
     	}
     	assert(false);
 		return null;    						
@@ -157,64 +117,29 @@ public class Exclusion extends Command {
     }
     
     private void setExclusion(Engine engine, Console console) {
-        switch (m_mode) {
-        case GLOBAL:
-        	if (!engine.setGlobalExclusion(m_reference)) {
-        		console.display(String.format(
-        				"Error: Failed to set exclusion on reference: %s\n", 
-        				m_reference));    		        		
-        	}
-        	break;
-        	
-        case ROUTE:
-    	    if (!engine.setRouteExclusion(m_reference, m_routeId)) {
-        		console.display(String.format(
-        				"Error: Failed to set exclusion on reference: %s\n", 
-        				m_reference));
-    	    }
-        	break;
-        }
+       	if (!engine.setExclusion(m_reference)) {
+       		console.display(String.format(
+       				"Error: Failed to set exclusion on reference: %s\n", 
+       				m_reference));    		        		
+       	}
     }
 
     private void unsetExclusion(Engine engine, Console console) {
-        switch (m_mode) {
-        case GLOBAL:
-        	if (!engine.unsetGlobalExclusion(m_reference)) {
-        		console.display(String.format(
-        				"Error: Failed to unset exclusion on reference: %s\n", 
-        				m_reference));    		        		
-        	}
-        	break;
-        	
-        case ROUTE:
-    	    if (!engine.unsetRouteExclusion(m_reference, m_routeId)) {
-        		console.display(String.format(
-        				"Error: Failed to unset exclusion on reference: %s\n", 
-        				m_reference));
-    	    }
-        	break;
-        }    	
+       	if (!engine.unsetExclusion(m_reference)) {
+       		console.display(String.format(
+       				"Error: Failed to unset exclusion on reference: %s\n", 
+       				m_reference));    		        		
+       	}
     }
 
     private void listExclusions(Engine engine, Console console) {
-    	Collection<Reference> exclusions = null;
-    	
-        switch (m_mode) {
-        case GLOBAL:
-    	    exclusions = engine.getGlobalExclusions();
-        	break;
-        	
-        case ROUTE:
-    	    exclusions = engine.getRouteExclusions(m_routeId);
-        	break;
-        }
-
+    	Collection<Reference> exclusions = engine.getExclusions();
         if (exclusions == null)
 	    	return;
         	    
 	    if (exclusions.size() > 0) {
 	    	for (Reference exclusion : exclusions) {
-	    	    console.display(String.format("- 0x%x: %s", 
+	    	    console.display(String.format("- 0x%x: %s\n", 
 	    	    		exclusion.getPc(), exclusion.getRef()));
 	    	}    	    	
 	    } else {

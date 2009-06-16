@@ -58,7 +58,7 @@ public class Knowns extends Command {
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "knowns [route id]: Displays a list of unknowns set for the program, or if sepcified, just the given route";
+        return "knowns [route id]: Displays the list of unknowns set for the given route/global tree";
     }
 
     public Command clone(String[] args, int index) {

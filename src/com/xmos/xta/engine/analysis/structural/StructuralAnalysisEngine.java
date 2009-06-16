@@ -99,16 +99,16 @@ public class StructuralAnalysisEngine {
 	}
 
 	private boolean buildStructureGraph(Engine engine) {
-		Collection<Node> functions = buildGraph(m_controlFlowGraph.getFunctionStartInstructions(), m_functionStartPcs,
-				engine, true);
+		Collection<Node> functions = buildGraph(m_controlFlowGraph.getFunctionStartInstructions(), 
+				m_functionStartPcs, engine, true);
 		if (functions == null) {
 			return false;
 		}
-		Collection<Node> threads = buildGraph(m_controlFlowGraph.getThreadStartInstructions(), m_threadStartPcs, engine, false);
+		Collection<Node> threads = buildGraph(m_controlFlowGraph.getThreadStartInstructions(), 
+				m_threadStartPcs, engine, false);
 		if (threads == null) {
 			return false;
-		}
-		
+		}		
 		m_structureGraph = new StructureGraph(threads);
 		
 		engine.provideFeedback("Linking functions...");
@@ -168,7 +168,10 @@ public class StructuralAnalysisEngine {
 			Node decomposedGraph = basicBlocks.iterator().next();
 		
 			
-			
+		
+//			StructureFnoper sf = new StructureFnoper();
+//			sf.analyse(decomposedGraph, isFunction);
+
 			
 			FunctionNode fn = new FunctionNode(decomposedGraph, functionName);
 			graphs.add(fn);
