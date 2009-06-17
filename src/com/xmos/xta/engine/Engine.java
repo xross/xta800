@@ -446,53 +446,40 @@ public class Engine implements Notifier {
 		return m_config.m_numThreads;
 	}
 
-	public boolean setLoopIterations(String refString, long iterations) {
+	public boolean setLoopIterations(int routeId, String refString, long iterations) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.SRCLABEL_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
-		}
-		if (getStructureGraph().setLoopIterations(reference, iterations)) {
-			sortSubRoutes();
-			return true;
-		}
-		return false;
+		}		
+		return getRoute(routeId).setLoopIterations(reference, iterations);
 	}
 
-	public boolean setLoopPathIterations(String refString, long iterations) {
+	public boolean setLoopPathIterations(int routeId, String refString, long iterations) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.SRCLABEL_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		if (getStructureGraph().setLoopPathIterations(reference, iterations)) {
-			sortSubRoutes();
-			return true;
-		}
-		return false;
+		return getRoute(routeId).setLoopPathIterations(reference, iterations);
 	}
 	
-	public boolean setLoopScope(String refString, boolean absolute) {
+	public boolean setLoopScope(int routeId, String refString, boolean absolute) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.SRCLABEL_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		if (getStructureGraph().setLoopScope(reference, absolute)) {
-			sortSubRoutes();
-			return true;
-		}
-		return false;
+		return getRoute(routeId).setLoopScope(reference, absolute);
 	}
 	
-	public boolean setInstructionTimeTaken(String refString, double timeTaken) {
+	public boolean setInstructionTimeTaken(int routeId, String refString, double timeTaken) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		if (getStructureGraph().setInstructionTimeTaken(reference, timeTaken)) {
-			sortSubRoutes();
+		if (getRoute(routeId).setInstructionTimeTaken(reference, timeTaken)) {
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
@@ -500,14 +487,13 @@ public class Engine implements Notifier {
 		return false;
 	}
 
-	public boolean unsetInstructionTimeTaken(String refString) {
+	public boolean unsetInstructionTimeTaken(int routeId, String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		if (getStructureGraph().unsetInstructionTimeTaken(reference)) {
-			sortSubRoutes();
+		if (getRoute(routeId).unsetInstructionTimeTaken(reference)) {
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
@@ -515,23 +501,22 @@ public class Engine implements Notifier {
 		return false;
 	}
 	
-	public double getInstructionTimeTaken(String refString) {
+	public double getInstructionTimeTaken(int routeId, String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return 0;
 		}
-		return getStructureGraph().getInstructionTimeTaken(reference);
+		return getRoute(routeId).getInstructionTimeTaken(reference);
 	}
 	
-	public boolean setInstructionNumCycles(String refString, long numCycles) {
+	public boolean setInstructionNumCycles(int routeId, String refString, long numCycles) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		if (getStructureGraph().setInstructionNumCycles(reference, numCycles)) {
-			sortSubRoutes();
+		if (getRoute(routeId).setInstructionNumCycles(reference, numCycles)) {
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
@@ -539,14 +524,13 @@ public class Engine implements Notifier {
 		return false;
 	}
 
-	public boolean unsetInstructionNumCycles(String refString) {
+	public boolean unsetInstructionNumCycles(int routeId, String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		if (getStructureGraph().unsetInstructionNumCycles(reference)) {
-			sortSubRoutes();
+		if (getRoute(routeId).unsetInstructionNumCycles(reference)) {
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
@@ -554,22 +538,22 @@ public class Engine implements Notifier {
 		return false;
 	}
 	
-	public long getInstructionNumCycles(String refString) {
+	public long getInstructionNumCycles(int routeId, String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return 0;
 		}
-		return getStructureGraph().getInstructionNumCycles(reference);		
+		return getRoute(routeId).getInstructionNumCycles(reference);		
 	}
 		
-	public boolean canInstructionPause(String refString) {
+	public boolean canInstructionPause(int routeId, String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		return getStructureGraph().canInstructionPause(reference);			
+		return getRoute(routeId).canInstructionPause(reference);			
 	}
 	
 	public boolean setRouteMaxTime(int routeId, double time) {
@@ -862,13 +846,7 @@ public class Engine implements Notifier {
 		}
 		return false;
 	}
-	
-	private void sortSubRoutes() {
-		for (Route route : m_routes) {
-			route.sortSubRoutes();
-		}
-	}
-	
+		
 	// ===================================================================== //
 	// Debug Methods
 	// ===================================================================== //

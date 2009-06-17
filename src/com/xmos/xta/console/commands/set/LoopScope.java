@@ -6,21 +6,24 @@ import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 
 public class LoopScope extends Command {	
+	private int m_routeId;
 	private String m_refString;
 	private boolean m_absolute;
 	
 	public LoopScope() {
+		m_routeId = 0;		
 		m_refString = "";
 		m_absolute = false;
 	}
 	
-	public LoopScope(String refString, boolean absolute) {
+	public LoopScope(int routeId, String refString, boolean absolute) {
+		m_routeId = routeId;		
 		m_refString = refString;
 		m_absolute = absolute;
 	}
 
     public int numArgs() {
-    	return 2;
+    	return 3;
     }        
 
     public String name() {
@@ -29,12 +32,13 @@ public class LoopScope extends Command {
 
     public String commandLine() {
     	return "loopscope " + 
+    	    getRouteId(m_routeId) + " " +
     	    m_refString + " " + 
     	    (m_absolute ? "absolute" : "relative");
     }
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = "loopscope <SRCLABEL_REF> <scope>: Sets the scope of the referenced loop";
+    	String descString = "loopscope <route id> <SRCLABEL_REF> <scope>: Sets the scope of the referenced loop";
     	if (detailed) {
         	descString += "\n";
     		descString += "          scope: relative/r: Iteration number propagates to the enclosing path (Default)\n";                
@@ -47,28 +51,32 @@ public class LoopScope extends Command {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 
+		int routeId;
+    	try { routeId = getRouteId(args[index + 1]);
+	    } catch (NumberFormatException e) {
+	        return null;
+	    }    			
+		
     	boolean absolute;
-	    if ((args[index + 2].compareTo("relative") == 0) ||  
-	    	(args[index + 2].compareTo("r") == 0)){
+	    if ((args[index + 3].compareTo("relative") == 0) ||  
+	    	(args[index + 3].compareTo("r") == 0)){
 	    	absolute = false;
 	    }
-	    else if ((args[index + 2].compareTo("absolute") == 0) ||  
-		         (args[index + 2].compareTo("a") == 0)){
+	    else if ((args[index + 3].compareTo("absolute") == 0) ||  
+		         (args[index + 3].compareTo("a") == 0)){
 	    	absolute = true;
 	    }
 	    else {
 	    	return null;
-	    }
-    		  
-	    
-        return new LoopScope(args[index + 1], absolute);
+	    }    		 	    
+        return new LoopScope(routeId, args[index + 2], absolute);
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 		
-		if (!engine.setLoopScope(m_refString, m_absolute)) {
+		if (!engine.setLoopScope(m_routeId, m_refString, m_absolute)) {
     		console.display(String.format(
     				"Error: Failed to set loop scope on reference: %s\n", 
     				m_refString));    		
