@@ -57,7 +57,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine) {
-
+		
 		List<PatternMatcher> patternMatchers = new ArrayList<PatternMatcher>();
 		patternMatchers.add(new SelfLoopPattern());
 		patternMatchers.add(new LoopPatternMatcher());
@@ -380,7 +380,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	private static int g = 0;
-	private void dumpTree(Collection<Node> workingSet) {
+	public static void dumpTree(Collection<Node> workingSet) {
 		if (workingSet.size() > 1) {
 			System.out.println("digraph g" + g++ + " {");
 			for (Node node : workingSet) {
@@ -396,9 +396,6 @@ public class StructuralAnalysisEngine {
 					System.out.print(inst + "\\n");
 				}
 				System.out.print("\"");
-				if (node.getError(Case.WORST) > 0) {
-					System.out.print(", style=filled, color = red");
-				} 
 				System.out.println("];");
 			}
 			System.out.println("}\n");

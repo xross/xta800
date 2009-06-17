@@ -40,9 +40,9 @@ public class InstructionNode extends Node {
 		return in;
 	}
 
-	public String toString(){
-		return m_inst.toString();
-	}
+	//public String toString(){
+	//	return m_inst.toString();
+	//}
 	
     public String getTypeName() {
         return "instruction";
@@ -52,9 +52,9 @@ public class InstructionNode extends Node {
     	return m_attributes;
     }
     
-	//public String toString() {
-	//	return "instruction" + m_id;
-	//}
+	public String toString() {
+		return "instruction" + m_id;
+	}
 
 	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new HashSet<Node>();
@@ -186,6 +186,11 @@ public class InstructionNode extends Node {
 	}
 
 	public Collection<Node> whatsBefore(Node node) {
+		assert(false);
+		return null;
+	}
+
+	public List<Node> getImmediateChildren() {
 		assert(false);
 		return null;
 	}

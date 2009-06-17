@@ -175,4 +175,10 @@ public class PathNode extends Node {
 			}
 		}
 	}
+
+	public List<Node> getImmediateChildren() {
+		List<Node> list = new LinkedList<Node>();
+		list.add(m_nodes.get(0));
+		return list;
+	}
 }
