@@ -61,7 +61,7 @@ public class SectionNodeAttributes extends NodeAttributes {
    		// that hasn't had its iterations set...
    		long remainder = loopIterations - newTotal;
    		if (remainder > 0) {
-   			List<Node> unsetNodes = sectionNode.getUnsetOptions(); 
+   			List<Node> unsetNodes = sectionNode.getAllUnsetOptions(); 
    			unsetNodes.remove(optionNode);
    			if (unsetNodes.size() == 0)
    	   			return false;

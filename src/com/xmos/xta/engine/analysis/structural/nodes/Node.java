@@ -303,9 +303,23 @@ public abstract class Node implements Comparable<Node>{
 	public String getFunctionName() {
 		return "";
 	}
-	public abstract void addFnops();
 
+	public Node getOption(Case c, boolean ignoreIterations) {
+		assert(false);
+		return null;
+	}
 	
+	public List<Node> getAllUnsetOptions() {
+		assert(false);
+		return null;
+	}
+
+	public List<Node> getAllSetOptions() {
+		assert(false);
+		return null;
+	}
+	
+	public abstract void addFnops();
 	
 	public void addEndIbufferDueToWorst(InstructionBuffer ib){
 		if(ib == null){
