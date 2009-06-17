@@ -10,12 +10,12 @@ public class RouteDescription {
 	private Reference m_to;
 
 	enum RouteMode {
-		ABSOLUTE, FUNCTION
+		PATH, FUNCTION
 	};
 
 	public RouteDescription(Reference from, Reference to) {
 		m_description = String.format("path: %s to %s", from.getRef(), to.getRef());
-		m_mode = RouteMode.ABSOLUTE;
+		m_mode = RouteMode.PATH;
 		m_from = from;
 		m_to = to;
 	}

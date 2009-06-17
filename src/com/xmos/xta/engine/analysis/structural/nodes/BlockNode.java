@@ -224,6 +224,11 @@ public class BlockNode extends Node {
 		return new HashSet<Node>();
 	}
 
+	public List<Node> getImmediateChildren() {
+		return new LinkedList<Node>(m_insts.subList(0, 1));
+	}
+
+
 	
 
 }

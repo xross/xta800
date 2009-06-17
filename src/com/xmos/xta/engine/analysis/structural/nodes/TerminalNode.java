@@ -181,5 +181,7 @@ public class TerminalNode extends Node {
 			return new HashSet<Node>();
 		}
 	}
-	
+	public List<Node> getImmediateChildren() {
+		return new LinkedList<Node> (m_terminals);
+	}
 }
