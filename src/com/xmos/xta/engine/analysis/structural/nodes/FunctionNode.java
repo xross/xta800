@@ -68,12 +68,25 @@ public class FunctionNode extends Node {
 		fn.m_functionName = m_functionName;
 		fn.m_knownFunction = m_knownFunction;
 		fn.m_branchTarget = m_branchTarget;
-		
+		/*
 		if(fn.getBranchTarget() != null){
 			int pc = fn.getBranchTarget().getStartPc();
 			String fnName = fn.getBranchTarget().getInstructions().getFirst().getFunctionName();
-			fn.setFunction(fnName, startPcs.get(pc).getFunction().deepCopy(startPcs));
+			
+			FunctionNode bob = startPcs.get(pc);
+			
+			if(bob == null){
+				System.out.println("bob 0x" + Integer.toHexString(pc) + "\n\n");
+			}
+			Node bill = bob.getFunction();
+			if(bill == null){
+				System.out.println("bill");
+			}
+			
+			
+			fn.setFunction(fnName, bill.deepCopy(startPcs));
 		} 
+		*/
 		fn.m_attributes = new NodeAttributes(fn);
 		return fn;
 	}

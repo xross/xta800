@@ -12,12 +12,7 @@ import java.util.Set;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
-import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
-import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownType;
-import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
-import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.analysis.structural.patterns.LoopPatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.PathPatternMatcher;
@@ -119,17 +114,6 @@ public class StructuralAnalysisEngine {
 		
 		engine.provideFeedback("Complete");
 		return true;
-	}
-
-	private void setFnops() {
-		for(FunctionNode threadStart : m_threadStartPcs.values()){
-			StructureFnoper sf = new StructureFnoper();
-			sf.analyse(threadStart, false);
-		}
-		for(FunctionNode functionStart : m_functionStartPcs.values()){
-			StructureFnoper sf = new StructureFnoper();
-			sf.analyse(functionStart, true);
-		}
 	}
 
 	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, FunctionNode> startPcs,

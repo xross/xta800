@@ -147,7 +147,7 @@ public class Route {
 
 				pruneGraphOfExcludedPaths(workingSet);
 				
-				if (false) StructuralAnalysisEngine.dumpTree(workingSet);
+				if (true) StructuralAnalysisEngine.dumpTree(workingSet);
 				Node newStart = makeBasicBlocks(start, endNodes, workingSet);
 				
 				//copy every node into a new working set
