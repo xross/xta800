@@ -2,7 +2,9 @@ package com.xmos.xta.engine;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,7 @@ public class Engine implements Notifier {
 	
 	private XeLoader m_xeLoader;
 	private List<Route> m_routes;
+	private Collection<Reference> m_exclusions;
 	private Route m_selectedRoute;
 	private Config m_config;
 	private File m_executableFile;
@@ -70,6 +73,7 @@ public class Engine implements Notifier {
 		
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
+		m_exclusions = new ArrayList<Reference>();
 		m_config = config;
 		m_executableFile = null;
 		m_nodeId = 0;
@@ -250,9 +254,6 @@ public class Engine implements Notifier {
 
 				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts(), fh.getFunctions());
 				newCfg.add(nodeId, coreId, cfg);
-				
-				//FnopAnalyser fnopAnalyser = new FnopAnalyser(cfg);
-				//fnopAnalyser.analyse();
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
 				if (!sae.analyse(this))
@@ -628,34 +629,34 @@ public class Engine implements Notifier {
 		return m_executableFile;
 	}
 
-	public boolean setExclusion(String refString) {
+	public boolean addExclusion(String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ANY_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		if (getStructureGraph().setExclusion(reference)) {
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
-		}		
-		return false;
+		m_exclusions.add(reference);		
+		return true;
 	}
-
-	public boolean unsetExclusion(String refString) {
+	
+	public boolean removeExclusion(String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ANY_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		if (getStructureGraph().unsetExclusion(reference)) {
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
-		}		
-		return false;
+		Iterator<Reference> iter = m_exclusions.iterator();
+		while (iter.hasNext()) {
+			Reference ref = iter.next();
+			if (ref.equals(reference)) {
+				iter.remove();
+			}
+		}
+		return true;
 	}
 
 	public Collection<Reference> getExclusions() {
-		return getStructureGraph().getExclusions();
+		return m_exclusions;
 	}
 	
 	public boolean addBranch(Reference fromRef, Reference toRef) {
@@ -682,7 +683,7 @@ public class Engine implements Notifier {
 		}
 		
 		if (m_sections.removeFromBranches(m_nodeId, m_coreId, fromRef.getPc())) {		    
-		  //FIXME
+		    //FIXME
 			//  m_ae.run();
 		    return true;
 		}

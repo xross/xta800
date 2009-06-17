@@ -117,15 +117,6 @@ public class StructuralAnalysisEngine {
 		engine.provideFeedback("Setting parent nodes...");
 		setParents();
 		
-		//engine.provideFeedback("Calculating FNOPs...");
-		//setFnops();
-		
-		engine.provideFeedback("Setting unknown nodes...");
-		setUnknowns();
-
-		engine.provideFeedback("Setting initial loop iterations...");
-		setInitialIterations();				
-		
 		engine.provideFeedback("Complete");
 		return true;
 	}
@@ -328,43 +319,7 @@ public class StructuralAnalysisEngine {
 		}
 	}
 		
-	private void setUnknowns() {
-		for (Node node : m_structureGraph.getThreads()) {
-		    node.traverse(0, new DefaultNodeTraverser() {
-				public boolean foundInstructionNode(Node node, int depth) {
-					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
-					if (instruction.canPause()) {
-						NodeAttributes nodeAttributes = node.getAttributes();
-						nodeAttributes.setUnknownType(UnknownType.INSTRUCTION_TIME);
-					}
-					return true;
-				}
-
-				public boolean foundLoopNode(Node node, int depth) {
-					NodeAttributes nodeAttributes = node.getAttributes();
-					nodeAttributes.setUnknownType(UnknownType.LOOP_ITERATIONS);
-					return true;
-				}
-		    });			
-		}
-		m_structureGraph.refreshDisplayedUnknowns();
-	}
 	
-	private void setInitialIterations() {		
-		// Sets the top level nodes to iterate once..
-		for (Node node : m_structureGraph.getThreads()) {
-			node.getAttributes().setLoopIterations(1);					
-		}
-		// Sets all the loops to zero iterations..
-		for (Node node : m_structureGraph.getThreads()) {							
-	        node.traverse(0, new DefaultNodeTraverser() {
-	            public boolean foundLoopNode(Node node, int depth) {
-	            	node.getAttributes().setLoopIterations(0);
-	            	return true;
-	            }	        	
-	        });
-		}
-	}
 	
 	private void setParents() {
 		for (Node node : m_structureGraph.getThreads()) {

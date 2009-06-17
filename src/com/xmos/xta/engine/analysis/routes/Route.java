@@ -11,13 +11,19 @@ import java.util.Map;
 import java.util.Set;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
+import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownType;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
+import com.xmos.xta.engine.instructions.XtaInstruction;
+import com.xmos.xta.engine.references.Reference;
 
 class AbortedException extends Exception {
 	private static final long serialVersionUID = 1L;
@@ -37,6 +43,7 @@ public class Route {
 	private StructureGraph m_structureGraph;
 	private List<Node> m_subRoutes;
 	private Engine m_engine;
+	private Collection<Node> m_exclusions;
 	
 	public static void resetRouteCount() {
 		s_routeCount = 0;
@@ -49,6 +56,7 @@ public class Route {
 		m_subRoutes = new ArrayList<Node>();
 		m_engine = engine;
 		m_routeTiming = new RouteTiming(this, engine.getConfig(), engine.getNodeId(), engine.getCoreId());
+		createExclusions();
 	}
 
 	public int getRouteId() {
@@ -139,7 +147,13 @@ public class Route {
 				sae.createStructure(workingSet, newStart, m_engine);
 
 				Node baseNode = workingSet.iterator().next();
-				m_subRoutes.add(baseNode.deepCopy(new HashMap<Integer, FunctionNode>()));
+				Node newGraph = baseNode.deepCopy(new HashMap<Integer, FunctionNode>());
+			
+				setUnknowns(newGraph);
+				
+				setInitialIterations(newGraph);
+				
+				m_subRoutes.add(newGraph);
 			}
 			sortSubRoutes();
 			break;
@@ -149,7 +163,38 @@ public class Route {
 		    break;
 		}
 	}
+	
+	private void setUnknowns(Node node) {
+	    node.traverse(0, new DefaultNodeTraverser() {
+			public boolean foundInstructionNode(Node node, int depth) {
+				XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
+				if (instruction.canPause()) {
+					NodeAttributes nodeAttributes = node.getAttributes();
+					nodeAttributes.setUnknownType(UnknownType.INSTRUCTION_TIME);
+				}
+				return true;
+			}
 
+			public boolean foundLoopNode(Node node, int depth) {
+				NodeAttributes nodeAttributes = node.getAttributes();
+				nodeAttributes.setUnknownType(UnknownType.LOOP_ITERATIONS);
+				return true;
+			}
+	    });			
+		//m_structureGraph.refreshDisplayedUnknowns();
+	}
+	
+	private void setInitialIterations(Node node) {		
+		// Sets the top level nodes to iterate once..
+			node.getAttributes().setLoopIterations(1);					
+		// Sets all the loops to zero iterations..							
+	        node.traverse(0, new DefaultNodeTraverser() {
+	            public boolean foundLoopNode(Node node, int depth) {
+	            	node.getAttributes().setLoopIterations(0);
+	            	return true;
+	            }	        	
+	        });
+	}
 	public void sortSubRoutes() {
 		Collections.sort(m_subRoutes);
 	}
@@ -178,8 +223,8 @@ public class Route {
 				return;
 			}
 			set.add(node);
-			if(node.isExcluded()){
-				// this is here to allow exclusions to be added so that they may be pruned off after
+			if(m_exclusions.contains(node)){
+				
 				return;
 			}
 			assert(node.getParent() != null);
@@ -343,4 +388,16 @@ public class Route {
 		}
 	}
 	 */
+
+	
+	private void createExclusions() {
+		m_exclusions = new ArrayList<Node>();
+		
+		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
+		for (Reference reference : m_engine.getExclusions()) {
+			for (Node threadNode : m_structureGraph.getThreads()) {
+    			m_exclusions.addAll(referenceMatcher.getNodes(threadNode, reference));
+			}
+		}
+	}
 }

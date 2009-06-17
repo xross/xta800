@@ -10,7 +10,6 @@ public class Set extends CommandContainer {
 		new LoopScope(), 
 		new Time(Time.Operation.SET), 
 		new Required(Required.Operation.SET), 
-		new Exclusion(Exclusion.Operation.SET),
 	};
 	
 	public Set() { super("set"); }

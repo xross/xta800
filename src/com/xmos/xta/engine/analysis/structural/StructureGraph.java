@@ -2,26 +2,19 @@ package com.xmos.xta.engine.analysis.structural;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.SectionNode;
-import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.engine.references.Reference;
 
 public class StructureGraph {
 	private Collection<Node> m_threads;
-	private Collection<Reference> m_exclusions;
 	
 	public StructureGraph(Collection<Node> threads) {
 		super();
 		assert(threads.size() > 0);
 		m_threads = threads;
-		m_exclusions = new ArrayList<Reference>();
 		removeLinks();
 	}
 
@@ -190,37 +183,7 @@ public class StructureGraph {
 		// TODO
 		return false;
 	}
-	
-	public boolean setExclusion(Reference reference) {
-		boolean found = false;
-        for (Node node : getReferencedNodes(reference)) {        	
-			Node exclusionRootNode = getExclusionRoot(node);			
-			if (checkIterationsPreExclusion(node)) {
-    			excludeNodes(exclusionRootNode, true);
-    			refreshIterationsPostExclusion(exclusionRootNode);
-	    		addToExclusionList(reference);
-	        	found = true;
-			}
-		}
-		return found;
-	}
-
-	public boolean unsetExclusion(Reference reference) {
-		boolean found = false;
-        for (Node node : getReferencedNodes(reference)) {
-			Node exclusionRootNode = getExclusionRoot(node);
-			excludeNodes(exclusionRootNode, false);
-			refreshIterationsPostExclusion(exclusionRootNode);
-			removeFromExclusionList(reference);
-	    	found = true;
-		}
-		return found;
-	}
-
-	public Collection<Reference> getExclusions() {
-		return m_exclusions;
-	}
-	
+		
 	private Collection<Node> getReferencedNodes(Reference reference) {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		Collection<Node> referencedNodes = new ArrayList<Node>();
@@ -236,121 +199,5 @@ public class StructureGraph {
 			parent.getAttributes().setDisplayUnknown(true);
 			parent = parent.getParent();		    
 		}
-	}	
-	
-	private Node getExclusionRoot(Node node) {
-		Node currentNode = node;
-		while (!currentNode.getParent().isSectionNode() || 
-				noOptionsLeft(currentNode.getParent())) {
-			
-			currentNode = currentNode.getParent();
-			if (currentNode.getParent() == null)
-				break;
-		}
-		return currentNode;
-	}
-	
-	private boolean noOptionsLeft(Node currentNode) {
-		SectionNode section = (SectionNode)currentNode;
-						
-		int numOptionsLeft = 0;
-		for (Node option : section.getOptions()) {
-			if (!option.isExcluded())
-			    ++numOptionsLeft;
-		}
-		
-		if (section.isOptional()) {
-			++numOptionsLeft;
-		}
-		return (numOptionsLeft < 2);
-	}	
-	
-	private void excludeNodes(Node node, final boolean value) {
-		node.setIsExcluded(value);
-		node.traverse(0, new UntypedNodeTraverser() {
-			public boolean foundNode(Node node, int depth) {
-				node.setIsExcluded(value);
-				return true;
-			}
-		});
-	}
-	
-	private void addToExclusionList(Reference reference) {
-		m_exclusions.add(reference);		
-	}
-
-	private void removeFromExclusionList(Reference reference) {
-		Iterator<Reference> iter = m_exclusions.iterator();
-		while (iter.hasNext()) {
-			Reference ref = iter.next();
-			if (ref.equals(reference)) {
-				iter.remove();
-			}
-		}
-	}	
-	
-	private boolean checkIterationsPreExclusion(Node node) {
-		// This checks that we are not setting an exclusion on
-		// a node where we shouldn't be...
-		Node currentNode = node;
-		while (!currentNode.getParent().isSectionNode() || 
-				noOptionsLeft(currentNode.getParent())) {
-			
-			currentNode = currentNode.getParent();			
-			if (currentNode.getParent() == null)
-				return true;
-		}
-		
-		if (currentNode.getParent().isSectionNode()) {
-			Node sectionNode = currentNode.getParent();
-			Map<Node, Boolean> setOptionsMap = sectionNode.getAttributes().getSetOptions();
-			
-			// The iterations have been explicitly set by the user,
-			// so this is not allowed..
-			if (setOptionsMap.get(currentNode)) 
-				return false;
-			
-			// If we were to exclude this option, and this option had some iterations
-			// that contribute toward the total, then is there another option available
-			// that can take on the ones that will be excluded?
-			List<Node> setOptions = sectionNode.getAllSetOptions();
-			List<Node> unsetOptions = sectionNode.getAllUnsetOptions();
-			if ((setOptions.size() > 1) && (unsetOptions.size() < 1))
-				return false;
-		}		
-		return true;
-	}
-	
-	private void refreshIterationsPostExclusion(Node exclusionRootNode) {
-		// Once an exclusion has been done, then this makes sure
-		// that any (non explicit) best/worst iterations that were assigned
-		// to a excluded node are reassigned to the next best/worst case.		
-		exclusionRootNode.traverse(0, new UntypedNodeTraverser() {
-			public boolean foundNode(Node node, int depth) {
-				if (node.isExcluded()) {
-					refreshIterationsPostExclusion(node, Case.WORST);
-					refreshIterationsPostExclusion(node, Case.BEST);					
-				}								
-				return true;
-			}
-	    });		
-	}
-	
-	private void refreshIterationsPostExclusion(Node node, Case c) {
-		long numIterations = node.getAttributes().getNumIterations(c);
-   		if (numIterations > 0) {
-   			// Makes sure that the excluded nodes iterations are set to zero...
-   			node.getAttributes().setLoopIterations(c, 0);			   			
-   			
-   			// If this is a section, then reassign the excluded iterations 
-   			// to the nest best/worst case option..
-   			Node sectionNode = node.getEnclosingSectionNode();
-   			if (sectionNode != null) {
-	   			Node worstCaseOption = sectionNode.getOption(c, true);
-	   			if (worstCaseOption != null) {
-	   				worstCaseOption.getAttributes().setLoopIterations(c, numIterations);
-	   			}			   				
-   			}			   			
-   		}		
 	}	
 }

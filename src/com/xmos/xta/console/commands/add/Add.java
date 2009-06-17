@@ -5,6 +5,7 @@ import com.xmos.xta.console.commands.CommandContainer;
 import com.xmos.xta.console.commands.list.Branch;
 import com.xmos.xta.console.commands.list.Call;
 import com.xmos.xta.console.commands.list.Endpoint;
+import com.xmos.xta.console.commands.list.Exclusion;
 import com.xmos.xta.console.commands.list.Label;
 import com.xmos.xta.console.commands.list.SrcLabel;
 import com.xmos.xta.console.commands.list.ThreadStartPoint;
@@ -19,6 +20,7 @@ public class Add extends CommandContainer {
 		new Call(Call.Operation.ADD),
 		new ThreadStartPoint(ThreadStartPoint.Operation.ADD),		
 		new ThreadStopPoint(ThreadStopPoint.Operation.ADD),		
+		new Exclusion(Exclusion.Operation.ADD),		
 	};
 	
 	public Add() { super("add"); }
