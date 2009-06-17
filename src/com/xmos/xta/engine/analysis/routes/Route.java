@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +19,10 @@ import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownType;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
@@ -46,6 +47,7 @@ public class Route {
 	private Engine m_engine;
 	private Collection<Node> m_exclusions;
 	private Set<Node> m_excludedRouteNodes;
+	
 	public static void resetRouteCount() {
 		s_routeCount = 0;
 	}
@@ -106,7 +108,7 @@ public class Route {
 			}
 			sortSubRoutes();
 			break;
-			
+
 		case PATH:
 			Set<Integer> startPcs = getStartPcs();
 			Set<Integer> endPcs = getEndPcs();
@@ -142,7 +144,7 @@ public class Route {
 				explore(start, workingSet, endPcs, endNodes, null);
 
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
-				
+
 				pruneGraphOfExcludedPaths(workingSet);
 				
 				if (false) StructuralAnalysisEngine.dumpTree(workingSet);
@@ -168,7 +170,7 @@ public class Route {
 		    break;
 		}
 	}
-	
+
 	private void pruneGraphOfExcludedPaths(Collection<Node> workingSet) {
 		while(!m_excludedRouteNodes.isEmpty()){
 			Node excludedNode = m_excludedRouteNodes.iterator().next();
@@ -184,40 +186,141 @@ public class Route {
 		}
 		
 	}
-
-	private void setUnknowns(Node node) {
-	    node.traverse(0, new DefaultNodeTraverser() {
-			public boolean foundInstructionNode(Node node, int depth) {
-				XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
-				if (instruction.canPause()) {
-					NodeAttributes nodeAttributes = node.getAttributes();
-					nodeAttributes.setUnknownType(UnknownType.INSTRUCTION_TIME);
-				}
-				return true;
+		
+	public boolean setLoopIterations(Reference reference, long iterations) {
+		if (iterations < 0)
+			return false;
+		
+		boolean found = false;
+		for (Node node : getReferencedNodes(reference)) {						
+			Node enclosingLoopNode = node.getEnclosingLoopNode();
+			if (enclosingLoopNode != null) {				
+				enclosingLoopNode.getAttributes().setLoopIterations(iterations);
+				enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
+				found = true;
 			}
+		}		
+		if (found) {
+			refreshDisplayedUnknowns();
+			sortSubRoutes();
+		}		
+		return found;
+	}
 
-			public boolean foundLoopNode(Node node, int depth) {
-				NodeAttributes nodeAttributes = node.getAttributes();
-				nodeAttributes.setUnknownType(UnknownType.LOOP_ITERATIONS);
-				return true;
-			}
-	    });			
-		//m_structureGraph.refreshDisplayedUnknowns();
+	public boolean setLoopPathIterations(Reference reference, long iterations) {
+		if (iterations < 0)
+			return false;
+
+		boolean found = false;
+		for (Node node : getReferencedNodes(reference)) {						
+			Node loopNode = node.getEnclosingLoopNode();
+			if (loopNode == null)
+				continue;
+			
+			Node sectionNode = node.getEnclosingSectionNode();
+			if (sectionNode == null)
+				continue;
+			
+			Node optionNode = node.getEnclosingOptionNode();
+			if (optionNode == null)
+				continue;
+			
+			if (!sectionNode.getAttributes().setLoopPathIterations(loopNode, optionNode, iterations))
+				continue;
+			
+			found = true;
+		}		
+		if (found) {
+			refreshDisplayedUnknowns();			
+			sortSubRoutes();
+		}		
+		return found;		
 	}
 	
-	private void setInitialIterations(Node node) {		
-		// Sets the top level nodes to iterate once..
-			node.getAttributes().setLoopIterations(1);					
-		// Sets all the loops to zero iterations..							
-	        node.traverse(0, new DefaultNodeTraverser() {
-	            public boolean foundLoopNode(Node node, int depth) {
-	            	node.getAttributes().setLoopIterations(0);
-	            	return true;
-	            }	        	
-	        });
+	public boolean setLoopScope(Reference reference, boolean isAbsolute) {
+		boolean found = false;
+	    for (Node node : getReferencedNodes(reference)) {
+			Node enclosingLoopNode = node.getEnclosingLoopNode();
+			if (enclosingLoopNode != null) {				
+				enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
+				found = true;
+			}
+		}		
+		if (found) {
+			sortSubRoutes();
+		}		
+		return found;
 	}
-	public void sortSubRoutes() {
-		Collections.sort(m_subRoutes);
+	
+	public boolean setInstructionTimeTaken(Reference reference, double timeTaken) {
+		boolean found = false;
+	    for (Node node : getReferencedNodes(reference)) {
+	    	node.getAttributes().setInstructionTimeTaken(timeTaken);
+			node.getAttributes().setUnknownState(UnknownState.KNOWN);	
+	    	found = true;
+		}
+		if (found) {
+			refreshDisplayedUnknowns();			
+			sortSubRoutes();
+		}		
+		return found;
+	}
+
+	public boolean unsetInstructionTimeTaken(Reference reference) {
+		boolean found = false;
+	    for (Node node : getReferencedNodes(reference)) {
+	    	node.getAttributes().unsetInstructionTimeTaken();
+			node.getAttributes().setUnknownState(UnknownState.UNKNOWN);	
+	    	found = true;
+		}
+		if (found) {
+			refreshDisplayedUnknowns();
+			sortSubRoutes();
+		}		
+		return found;
+	}
+	
+	public boolean setInstructionNumCycles(Reference reference, long numCycles) {
+		boolean found = false;
+	    for (Node node : getReferencedNodes(reference)) {
+	    	node.getAttributes().setInstructionNumCycles(numCycles);
+			node.getAttributes().setUnknownState(UnknownState.KNOWN);	
+	    	found = true;
+		}
+		if (found) {
+			refreshDisplayedUnknowns();			
+			sortSubRoutes();
+		}		
+		return found;
+	}
+	
+	public boolean unsetInstructionNumCycles(Reference reference) {
+		boolean found = false;
+        for (Node node : getReferencedNodes(reference)) {
+        	node.getAttributes().unsetInstructionNumCycles();
+			node.getAttributes().setUnknownState(UnknownState.UNKNOWN);	
+	    	found = true;
+		}
+		if (found) {
+			refreshDisplayedUnknowns();			
+			sortSubRoutes();
+		}		
+		return found;
+	}
+	
+	public double getInstructionTimeTaken(Reference reference) {
+		// TODO
+		return 0;
+	}
+	
+	public long getInstructionNumCycles(Reference reference) {
+		// TODO
+		return 0;
+	}
+	
+	public boolean canInstructionPause(Reference reference) {
+		// TODO
+		return false;
 	}
 			
 	private Set<Integer> getEndPcs() {
@@ -231,11 +334,8 @@ public class Route {
 		startPcs.add(m_description.getStartPoint().getPc());
 		return startPcs;
 	}
-
-
 	
-	private void explore(Node node, Collection<Node> set, Collection<Integer> endPcs, Collection<Node> endNodes, Node parent) {
-		
+	private void explore(Node node, Collection<Node> set, Collection<Integer> endPcs, Collection<Node> endNodes, Node parent) {	
 		Set<Integer> pcs = new HashSet<Integer>(endPcs);
 		pcs.retainAll(node.getPCs());
 		if (pcs.isEmpty() || set.isEmpty()) {
@@ -412,6 +512,9 @@ public class Route {
 	}
 	 */
 
+	private void sortSubRoutes() {
+		Collections.sort(m_subRoutes);
+	}		
 	
 	private void createExclusions() {
 		m_exclusions = new ArrayList<Node>();
@@ -422,5 +525,85 @@ public class Route {
     			m_exclusions.addAll(referenceMatcher.getNodes(threadNode, reference));
 			}
 		}
+	}
+	
+	private void setInitialIterations(Node node) {		
+		// Sets the top level nodes to iterate once..
+	    node.getAttributes().setLoopIterations(1);
+	    
+		// Sets all the loops to zero iterations..							
+	    node.traverse(0, new DefaultNodeTraverser() {
+	        public boolean foundLoopNode(Node node, int depth) {
+	           	node.getAttributes().setLoopIterations(0);
+	         	return true;
+	        }	        	
+	    });
+	}
+	
+	private void setUnknowns(Node node) {
+	    node.traverse(0, new DefaultNodeTraverser() {
+			// Sets all the pausing instructions to unknown.
+			public boolean foundInstructionNode(Node node, int depth) {
+				XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
+				if (instruction.canPause()) {
+					NodeAttributes nodeAttributes = node.getAttributes();
+					nodeAttributes.setUnknownType(UnknownType.INSTRUCTION_TIME);
+				}
+				return true;
+			}
+
+			// Sets all the loop iterations to unknown.
+			public boolean foundLoopNode(Node node, int depth) {
+				NodeAttributes nodeAttributes = node.getAttributes();
+				nodeAttributes.setUnknownType(UnknownType.LOOP_ITERATIONS);
+				return true;
+			}
+	    });			
+		
+	    refreshDisplayedUnknowns(node);
+	}
+	
+	private void refreshDisplayedUnknowns() {
+		for (Node subRouteNode : m_subRoutes) {
+			refreshDisplayedUnknowns(subRouteNode);
+		}
+	}
+	
+	private void refreshDisplayedUnknowns(Node node) {	
+		// Clears the display unknown flags on all nodes..
+	    node.traverse(0, new UntypedNodeTraverser() {
+	    	public boolean foundNode(Node node, int depth) {
+	    		node.getAttributes().setDisplayUnknown(false);
+	        	return true;
+	    	}
+	    });
+
+		// On each of the unknown nodes, mark all of their parents to 'display unknown'.
+	    node.traverse(0, new UntypedNodeTraverser() {
+	    	public boolean foundNode(Node node, int depth) {
+	    		if (node.getAttributes().isUnknown() &&
+	    			node.getAttributes().getUnknownState() == UnknownState.UNKNOWN) {
+	    			setDisplayUnknownOnParentNodes(node);
+	    		}
+	        	return true;
+	    	}
+	    });	   
+	}
+	
+	private void setDisplayUnknownOnParentNodes(Node node) {
+		Node parent = node;
+		while (parent != null) {
+			parent.getAttributes().setDisplayUnknown(true);
+			parent = parent.getParent();		    
+		}
+	}		
+	
+	private Collection<Node> getReferencedNodes(Reference reference) {
+		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
+		Collection<Node> referencedNodes = new ArrayList<Node>();
+		for (Node subRouteNode : m_subRoutes) {
+			referencedNodes.addAll(referenceMatcher.getNodes(subRouteNode, reference));
+		}
+		return referencedNodes;		
 	}
 }

@@ -891,7 +891,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			addAction(menu, ConstrainExcludeID);
 			addAction(menu, ConstrainRequireID);
 			addAction(menu, SelectPathsID);
-			
+/* TODO			
 			if ((GuiEngine.getEngine().getRoutes().size() > 0) &&
 			     GuiEngine.getEngine().canInstructionPause(m_clickCodeRefString)) {
 				
@@ -899,6 +899,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			} else {
 				m_setInstructionTimeAction.setEnabled(false);
 			}
+*/			
 		}
 
      	super.editorContextMenuAboutToShow(menu);

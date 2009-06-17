@@ -6,21 +6,24 @@ import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 
 public class LoopPath extends Command {	
+	private int m_routeId;
 	private String m_refString;
 	private int m_iterations;
 	
 	public LoopPath() {
+		m_routeId = 0;
 		m_refString = "";
 		m_iterations = 0;
 	}
 	
-	public LoopPath(String refString, int iterations) {
+	public LoopPath(int routeId, String refString, int iterations) {
+		m_routeId = routeId;
 		m_refString = refString;
 		m_iterations = iterations;
 	}
 
     public int numArgs() {
-   		return 2; 
+   		return 3; 
     }        
 
     public String name() {
@@ -28,30 +31,35 @@ public class LoopPath extends Command {
     }        
 
     public String commandLine() {
-       	return "looppath " + " " + m_refString + " " + m_iterations;        	
+       	return "looppath " + " " + getRouteId(m_routeId) + " " + m_refString + " " + m_iterations;        	
     }
     
     public String description(Engine engine, boolean detailed) {
-   		return "looppath <SRCLABEL_REF> <iterations>: Sets the number of iterations for the path identified";
+   		return "looppath <route id> <SRCLABEL_REF> <iterations>: Sets the number of iterations for the path identified";
     }
 
     public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 
+		int routeId;
+    	try { routeId = getRouteId(args[index + 1]);
+	    } catch (NumberFormatException e) {
+	        return null;
+	    }    			
    	    int iterations;
-       	try { iterations = Integer.parseInt(args[index + 2]); }
+       	try { iterations = Integer.parseInt(args[index + 3]); }
    	    catch (NumberFormatException e) {
    	        return null;
    	    }    		      	    
-        return new LoopPath(args[index + 1], iterations);    		
+        return new LoopPath(routeId, args[index + 2], iterations);    		
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-   		if (!engine.setLoopPathIterations(m_refString, m_iterations)) {
+   		if (!engine.setLoopPathIterations(m_routeId, m_refString, m_iterations)) {
        		console.display(String.format(
        				"Error: Failed to set loop path iterations on reference: %s\n", 
        				m_refString));    		
