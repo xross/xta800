@@ -21,7 +21,6 @@ public class PathNode extends Node {
 	public PathNode(List<Node> nodes) {
 		super();
 		assert (nodes != null);
-		assert (nodes.size() > 1);
 		m_nodes = nodes;
 		m_attributes = new NodeAttributes(this);
 	}

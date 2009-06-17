@@ -190,7 +190,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	        updateStartPoint();
 	        updateEndPoint();
 			updateExcluded();
-	        updateAnnotations(m_currentHighlightAnnotations, m_currentHighlightAnnotationPositions);
+	        // TODO updateAnnotations(m_currentHighlightAnnotations, m_currentHighlightAnnotationPositions);
     	    
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT) ||
 				   event.getProperty().equals(Broadcaster.BROADCAST_SET_START_POINT)) {

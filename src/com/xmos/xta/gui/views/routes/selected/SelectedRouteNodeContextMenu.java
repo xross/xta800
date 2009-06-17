@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.tree;
+package com.xmos.xta.gui.views.routes.selected;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -9,7 +9,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.dialogs.Iterations;
 import com.xmos.xta.gui.dialogs.Scope;
 
-public class TreeViewNodeContextMenu {
+public class SelectedRouteNodeContextMenu {
     public static void createNodeContextMenu(final Shell parent, IMenuManager manager, final Node node) {
     	// Adds the 'Trace in console' option.
 		manager.add(new Separator());

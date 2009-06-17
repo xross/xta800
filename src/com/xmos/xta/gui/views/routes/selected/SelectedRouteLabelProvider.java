@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.tree;
+package com.xmos.xta.gui.views.routes.selected;
 
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -6,15 +6,15 @@ import org.eclipse.jface.viewers.ViewerCell;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.icons.Icons;
 
-public class TreeViewLabelProvider extends CellLabelProvider {
+public class SelectedRouteLabelProvider extends CellLabelProvider {
     private static final boolean DEBUG = true;
 	
-    public TreeViewLabelProvider() {
-		if (DEBUG) System.out.printf("TreeViewLabelProvider()\n");	
+    public SelectedRouteLabelProvider() {
+		if (DEBUG) System.out.printf("SelectedRouteLabelProvider()\n");	
 	}
 
 	public void update(ViewerCell cell) {
-		if (DEBUG) System.out.printf("TreeViewLabelProvider: update\n");	
+		if (DEBUG) System.out.printf("SelectedRouteLabelProvider: update\n");	
 
 		Node node = (Node)cell.getElement();
 		
@@ -33,7 +33,7 @@ public class TreeViewLabelProvider extends CellLabelProvider {
 	}
 
 	public String getToolTipText(Object element) {
-		if (DEBUG) System.out.printf("TreeViewLabelProvider: getToolTipText\n");	
+		if (DEBUG) System.out.printf("SelectedRouteLabelProvider: getToolTipText\n");	
 
 		Node node = (Node)element;		
 		return node.getAttributes().getTimingDetails();

@@ -2,7 +2,6 @@ package com.xmos.xta.gui.views.routes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -42,16 +41,19 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.engine.analysis.structural.nodes.PathNode;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
-import com.xmos.xta.gui.views.tree.TreeViewContentProvider;
-import com.xmos.xta.gui.views.tree.TreeViewLabelProvider;
-import com.xmos.xta.gui.views.tree.TreeViewNodeContextMenu;
+import com.xmos.xta.gui.views.routes.selected.SelectedRouteContentProvider;
+import com.xmos.xta.gui.views.routes.selected.SelectedRouteLabelProvider;
+import com.xmos.xta.gui.views.routes.selected.SelectedRouteNodeContextMenu;
+import com.xmos.xta.gui.views.routes.selector.RouteNode;
+import com.xmos.xta.gui.views.routes.selector.RouteSelectorContentProvider;
+import com.xmos.xta.gui.views.routes.selector.RouteSelectorLabelProvider;
 
 public class RoutesView extends ViewPart implements IPropertyChangeListener,
 												    ISelectionListener {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public static final String ID = "com.xmos.xta.gui.views.routes.Routes";
 
     private TreeViewer m_selectedRouteViewer;
@@ -168,8 +170,8 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 	    
 	    getSite().setSelectionProvider(m_selectedRouteViewer);
 
-		m_selectedRouteViewer.setContentProvider(new TreeViewContentProvider());				
-		m_selectedRouteViewer.setLabelProvider(new TreeViewLabelProvider());
+		m_selectedRouteViewer.setContentProvider(new SelectedRouteContentProvider());				
+		m_selectedRouteViewer.setLabelProvider(new SelectedRouteLabelProvider());
 		
 		m_selectedRouteViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
@@ -189,8 +191,8 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 	    data.right = new FormAttachment(100, 0);
 	    m_routesViewer.getControl().setLayoutData(data);
 	    
-	    m_routesViewer.setContentProvider(new TreeViewContentProvider());
-	    m_routesViewer.setLabelProvider(new TreeViewLabelProvider());
+	    m_routesViewer.setContentProvider(new RouteSelectorContentProvider());
+	    m_routesViewer.setLabelProvider(new RouteSelectorLabelProvider());
 
 	    createRouteContextMenus();
 	}
@@ -218,7 +220,7 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 		        if (selection instanceof IStructuredSelection) {	            
 		            Object object = ((IStructuredSelection)selection).getFirstElement();
 		            if (object instanceof Node) {
-						TreeViewNodeContextMenu.createNodeContextMenu(m_parent.getShell(), manager, (Node)object);						
+						SelectedRouteNodeContextMenu.createNodeContextMenu(m_parent.getShell(), manager, (Node)object);						
 		            }
 		        }				
 			}
@@ -256,10 +258,9 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 	            	manager.add(new Action("delete") {
 						public void run() {
 				            for (Object object : ((IStructuredSelection)selection).toList()) {
-				            	// TODO
-					            //if (object instanceof RouteNode) {
- 				            	//    GuiEngine.getEngine().removeRoute(((RouteNode)object).getId());
-				            	//}
+					            if (object instanceof RouteNode) {
+ 				            	    GuiEngine.getEngine().removeRoute(((RouteNode)object).getRoute().getRouteId());
+				            	}
 				            }
 						}
 					});
@@ -276,10 +277,9 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 				if (((IStructuredSelection)selection).size() == 1) {
 			        if (selection instanceof IStructuredSelection) {	            
 			            Object object = ((IStructuredSelection)selection).getFirstElement();
-		            	// TODO
-			            //if (object instanceof RouteNode) {
-			            //    createContextMenu(m_parent.getShell(), manager, (RouteNode)object);
-			            //}
+			            if (object instanceof RouteNode) {
+			                createContextMenu(m_parent.getShell(), manager, (RouteNode)object);
+			            }
 			        }
 				}
 			}
@@ -298,10 +298,9 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 
 					if (((IStructuredSelection)selection).size() == 1) {
 			            Object object = ((IStructuredSelection)selection).getFirstElement();
-// TODO
-//			            if (object instanceof RouteNode) {
-//			            	newId = ((RouteNode)object).getId();
-//			            }
+			            if (object instanceof RouteNode) {
+			            	newId = ((RouteNode)object).getRoute().getRouteId();
+			            }
 					}
 					
 					if (newId != currentSelectedId) {
@@ -318,50 +317,39 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	private void initialiseSelectedRouteView() {
-		// Create the magic 'hidden' node to allow the actual node to be seen
-		// in the tree
-/*TODO	
-		Node treeRoot = new HiddenNode();
-		Node routeNode = m_routeInfo.getRouteNode();
-		if (routeNode != null)
-			treeRoot.addNode(routeNode);
-
-		Node unresolvedNode = m_routeInfo.getUnresolvedNode();
-		if ((unresolvedNode!= null) && (unresolvedNode.getChildren().size() > 0)) {
-			treeRoot.addNode(unresolvedNode);
+		int selectedRouteId = GuiEngine.getEngine().getSelectedRouteId();
+		Route selectedRoute = GuiEngine.getEngine().getRoute(selectedRouteId);
+		if (selectedRoute != null) {
+			List<Node> subRouteNodes = GuiEngine.getEngine().getRoute(selectedRouteId).getSubRoutes();
+			PathNode hiddenRouteNode = new PathNode(subRouteNodes);
+			
+			m_selectedRouteViewer.setInput(hiddenRouteNode);
+			ColumnViewerToolTipSupport.enableFor(m_selectedRouteViewer, ToolTip.NO_RECREATE);
+			m_selectedRouteViewer.expandToLevel(2);		
 		}
-    	m_selectedRouteViewer.setInput(treeRoot);
-		ColumnViewerToolTipSupport.enableFor(m_selectedRouteViewer, ToolTip.NO_RECREATE);
-		m_selectedRouteViewer.expandToLevel(2);
-*/		
 	}
 	
-	private void initialiseRoutesView() {
-/* TODO		
-		// Create hidden node in the route node
-		Node routeRoot = new HiddenNode();
-		for (Node node : m_routeInfo.getRoutes()) {
-			routeRoot.addNode(node);
+	private void initialiseRoutesView() {	
+		RouteNode hiddenRouteNode = new RouteNode(null, null);		
+		for (Route route : GuiEngine.getEngine().getRoutes()) {
+			hiddenRouteNode.addChild(route);
 		}
-		// Maintain the same selection
-		m_routesViewer.setInput(routeRoot);
+				
+		m_routesViewer.setInput(hiddenRouteNode);
 		ColumnViewerToolTipSupport.enableFor(m_routesViewer, ToolTip.NO_RECREATE);
 		m_routesViewer.expandToLevel(2);
 		
 		int selectedRouteId = GuiEngine.getEngine().getSelectedRouteId();
-		setRouteTreeSelection(routeRoot, selectedRouteId);
-*/		
+		setRouteTreeSelection(hiddenRouteNode, selectedRouteId);
 	}
 	
-	private boolean setRouteTreeSelection(Node root, int routeId) {
-		for (Node node : root.getChildren()) {
-			if (node.getId() == routeId) {
+	private boolean setRouteTreeSelection(RouteNode root, int routeId) {
+		for (RouteNode node : root.getChildren()) {
+			if (node.getRoute().getRouteId() == routeId) {
 				ISelection selection = new StructuredSelection(node);
 				m_routesViewer.setSelection(selection);
 				return true;
 			}
-			if (setRouteTreeSelection(node, routeId))
-				return true;
 		}
 		return false;
 	}
@@ -407,7 +395,7 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 */			
 	}
 	
-    private void createContextMenu(final Shell parent, IMenuManager manager) {
+    private void createContextMenu(final Shell parent, IMenuManager manager, RouteNode routeNode) {
 	    manager.add(new Separator());
 	    manager.add(new Action("Set timing requirements") {
 		    public void run() {
