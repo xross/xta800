@@ -2,7 +2,6 @@ package com.xmos.xta.console.commands.list;
 
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.console.commands.CommandContainer;
-import com.xmos.xta.console.commands.set.Exclusion;
 
 public class List extends CommandContainer {
 	static private Command[] m_options = { 

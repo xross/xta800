@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
+import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
@@ -18,6 +19,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
+import com.xmos.xta.engine.references.Reference;
 
 class AbortedException extends Exception {
 	private static final long serialVersionUID = 1L;
@@ -37,6 +39,7 @@ public class Route {
 	private StructureGraph m_structureGraph;
 	private List<Node> m_subRoutes;
 	private Engine m_engine;
+	private Collection<Node> m_exclusions;
 	
 	public static void resetRouteCount() {
 		s_routeCount = 0;
@@ -49,6 +52,7 @@ public class Route {
 		m_subRoutes = new ArrayList<Node>();
 		m_engine = engine;
 		m_routeTiming = new RouteTiming(this, engine.getConfig(), engine.getNodeId(), engine.getCoreId());
+		createExclusions();
 	}
 
 	public int getRouteId() {
@@ -268,5 +272,16 @@ public class Route {
 			}
 		}
 		return startBlock;
+	}
+	
+	private void createExclusions() {
+		m_exclusions = new ArrayList<Node>();
+		
+		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
+		for (Reference reference : m_engine.getExclusions()) {
+			for (Node threadNode : m_structureGraph.getThreads()) {
+    			m_exclusions.addAll(referenceMatcher.getNodes(threadNode, reference));
+			}
+		}
 	}
 }

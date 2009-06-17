@@ -1,4 +1,4 @@
-package com.xmos.xta.console.commands.set;
+package com.xmos.xta.console.commands.list;
 
 import java.util.Collection;
 
@@ -10,9 +10,7 @@ import com.xmos.xta.engine.references.Reference;
 
 public class Exclusion extends Command {	
 	public enum Operation {
-		SET, 
-		UNSET,
-		LIST
+		ADD, REMOVE, LIST
 	};
 	
 	private String m_reference;
@@ -29,8 +27,8 @@ public class Exclusion extends Command {
 	
     public int numArgs() {
     	switch (m_operation) {
-    	case SET:
-    	case UNSET:
+    	case ADD:
+    	case REMOVE:
        		return 1;
         	
     	case LIST:
@@ -42,8 +40,8 @@ public class Exclusion extends Command {
 
     public String name() {
     	switch (m_operation) {
-    	case SET:
-    	case UNSET:
+    	case ADD:
+    	case REMOVE:
     		return "exclusion"; 
     	case LIST:
     		return "exclusions";
@@ -54,8 +52,8 @@ public class Exclusion extends Command {
 
     public String commandLine() {
     	switch (m_operation) {
-    	case SET:
-    	case UNSET:
+    	case ADD:
+    	case REMOVE:
        		return "exclusion " + m_reference;
     	    
     	case LIST:
@@ -68,10 +66,10 @@ public class Exclusion extends Command {
     public String description(Engine engine, boolean detailed) {
     	String descString = "";
     	switch (m_operation) {
-    	case SET:
+    	case ADD:
         	descString = "exclusion <ANY_REF>: Excludes the block containing the given reference";
         	break;
-    	case UNSET:
+    	case REMOVE:
         	descString = "exclusion: <ANY_REF>: Un-excludes the block containing the given reference";
         	break;
     	case LIST:
@@ -86,8 +84,8 @@ public class Exclusion extends Command {
 			return null;		
 	    
     	switch (m_operation) {
-    	case SET:    		
-    	case UNSET:
+    	case ADD:    		
+    	case REMOVE:
         	return new Exclusion(m_operation, args[index + 1]);
 
     	case LIST:
@@ -102,12 +100,12 @@ public class Exclusion extends Command {
 			return;
 
     	switch (m_operation) {
-    	case SET:
-    		setExclusion(engine, console);
+    	case ADD:
+    		addExclusion(engine, console);
     		break;
 
-    	case UNSET:
-    		unsetExclusion(engine, console);
+    	case REMOVE:
+    		removeExclusion(engine, console);
     		break;
     		
     	case LIST:
@@ -116,16 +114,16 @@ public class Exclusion extends Command {
     	}
     }
     
-    private void setExclusion(Engine engine, Console console) {
-       	if (!engine.setExclusion(m_reference)) {
+    private void addExclusion(Engine engine, Console console) {
+       	if (!engine.addExclusion(m_reference)) {
        		console.display(String.format(
        				"Error: Failed to set exclusion on reference: %s\n", 
        				m_reference));    		        		
        	}
     }
 
-    private void unsetExclusion(Engine engine, Console console) {
-       	if (!engine.unsetExclusion(m_reference)) {
+    private void removeExclusion(Engine engine, Console console) {
+       	if (!engine.removeExclusion(m_reference)) {
        		console.display(String.format(
        				"Error: Failed to unset exclusion on reference: %s\n", 
        				m_reference));    		        		
