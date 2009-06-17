@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,7 @@ public class Route {
 	private List<Node> m_subRoutes;
 	private Engine m_engine;
 	private Collection<Node> m_exclusions;
-	
+	private Set<Node> m_excludedRouteNodes;
 	public static void resetRouteCount() {
 		s_routeCount = 0;
 	}
@@ -98,7 +99,10 @@ public class Route {
 			Map<String, HashSet<Node>> functionMap = buildFunctionMap(m_structureGraph);
 			HashSet<Node> functions = functionMap.get(m_description.getFunctionName());
 			if (functions != null) {
-				m_subRoutes.addAll(functions);
+				for(Node function : functions){
+					m_subRoutes.add(function.deepCopy(new HashMap<Integer, FunctionNode>()));
+				}
+				
 			}
 			sortSubRoutes();
 			break;
@@ -134,11 +138,12 @@ public class Route {
 				Collection<Node> workingSet = new HashSet<Node>();
 
 				m_structureGraph.removeLinks();
+				m_excludedRouteNodes = new HashSet<Node>();
 				explore(start, workingSet, endPcs, endNodes, null);
 
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
 				
-				
+				pruneGraphOfExcludedPaths(workingSet);
 				
 				if (false) StructuralAnalysisEngine.dumpTree(workingSet);
 				Node newStart = makeBasicBlocks(start, endNodes, workingSet);
@@ -164,6 +169,22 @@ public class Route {
 		}
 	}
 	
+	private void pruneGraphOfExcludedPaths(Collection<Node> workingSet) {
+		while(!m_excludedRouteNodes.isEmpty()){
+			Node excludedNode = m_excludedRouteNodes.iterator().next();
+			for(Node prev : excludedNode.getPrevNodes()){
+				prev.removeNextNode(excludedNode);
+				if(prev.getNextNodes().size() == 0){
+					m_excludedRouteNodes.add(prev);
+				}
+			}
+			m_excludedRouteNodes.remove(excludedNode);
+			workingSet.remove(excludedNode);
+			
+		}
+		
+	}
+
 	private void setUnknowns(Node node) {
 	    node.traverse(0, new DefaultNodeTraverser() {
 			public boolean foundInstructionNode(Node node, int depth) {
@@ -223,8 +244,10 @@ public class Route {
 				return;
 			}
 			set.add(node);
-			if(m_exclusions.contains(node)){
-				
+			Collection<Node> exclusions = new HashSet<Node>(m_exclusions);
+			exclusions.retainAll(node.getContainedNodes());
+			if(!exclusions.isEmpty()){
+				m_excludedRouteNodes.add(node);
 				return;
 			}
 			assert(node.getParent() != null);
