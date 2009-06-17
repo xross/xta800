@@ -39,10 +39,6 @@ public class InstructionNode extends Node {
 		in.m_attributes = new InstructionNodeAttributes(in);
 		return in;
 	}
-
-	//public String toString(){
-	//	return m_inst.toString();
-	//}
 	
     public String getTypeName() {
         return "instruction";

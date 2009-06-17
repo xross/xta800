@@ -60,7 +60,7 @@ public class BlockNode extends Node {
 		bn.m_attributes = new BlockNodeAttributes(bn);
 		return bn;
 	}
-
+	
     public String getTypeName() {
         return "block";
     }
