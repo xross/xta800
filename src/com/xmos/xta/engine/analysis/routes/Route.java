@@ -95,7 +95,7 @@ public class Route {
 			sortSubRoutes();
 			break;
 			
-		case ABSOLUTE:
+		case PATH:
 			Set<Integer> startPcs = getStartPcs();
 			Set<Integer> endPcs = getEndPcs();
 
@@ -131,7 +131,7 @@ public class Route {
 
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
 				
-				StructuralAnalysisEngine.dumpTree(workingSet);
+				if (debug) StructuralAnalysisEngine.dumpTree(workingSet);
 				Node newStart = makeBasicBlocks(start, endNodes, workingSet);
 				
 				sae.createStructure(workingSet, newStart, m_engine);
