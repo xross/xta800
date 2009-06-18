@@ -47,9 +47,9 @@ import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.Required;
+import com.xmos.xta.gui.views.console.ConsoleView;
 import com.xmos.xta.gui.views.routes.selected.SelectedRouteContentProvider;
 import com.xmos.xta.gui.views.routes.selected.SelectedRouteLabelProvider;
-import com.xmos.xta.gui.views.routes.selected.SelectedRouteNodeContextMenu;
 import com.xmos.xta.gui.views.routes.selector.RouteNode;
 import com.xmos.xta.gui.views.routes.selector.RouteSelectorContentProvider;
 import com.xmos.xta.gui.views.routes.selector.RouteSelectorLabelProvider;
@@ -221,9 +221,39 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 
 				ISelection selection = m_selectedRouteViewer.getSelection();
 		        if (selection instanceof IStructuredSelection) {	            
-		            Object object = ((IStructuredSelection)selection).getFirstElement();
+		            final Object object = ((IStructuredSelection)selection).getFirstElement();
 		            if (object instanceof Node) {
-						SelectedRouteNodeContextMenu.createNodeContextMenu(m_parent.getShell(), manager, (Node)object);						
+				    	// Adds the 'Trace in console' option.
+						manager.add(new Separator());
+				    	manager.add(new Action("Trace in console") {
+							public void run() {
+								ConsoleView console = (ConsoleView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+									getActivePage().findView(ConsoleView.ID);
+								
+								try {
+									PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+									    getActivePage().showView(ConsoleView.ID);
+								} catch (PartInitException e) {}
+								
+								int routeId = GuiEngine.getEngine().getSelectedRouteId();
+								//TODO console.runCommand("print trace " + routeId + " b" + m_this.getId());
+							}
+						});  
+   	
+				    	// Adds the 'Set iterations' option.
+					    manager.add(new Separator());
+					    manager.add(new Action("Set iterations") {
+						    public void run() {
+						    	// TODO new Iterations(m_parent.getShell(), (Node)object);
+						    }
+					    });
+
+				    	// Adds the 'Set scope' option.
+					    manager.add(new Action("Set scope") {
+						    public void run() {
+						    	// TODO new Scope(m_parent.getShell(), (Node)object);
+						    }
+					    });
 		            }
 		        }				
 			}

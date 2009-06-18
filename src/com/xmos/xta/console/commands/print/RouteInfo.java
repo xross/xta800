@@ -4,6 +4,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.routes.RouteTiming;
 
 public class RouteInfo extends Command {
@@ -51,7 +52,7 @@ public class RouteInfo extends Command {
 	    if (!validateRouteId(engine, console, m_routeId))
 		    return;
 
-	    com.xmos.xta.engine.analysis.routes.Route route = engine.getRoute(m_routeId);
+	    Route route = engine.getRoute(m_routeId);
 	    RouteTiming routeTiming = route.getRouteTiming();
 
     	console.display(String.format("%s %s, Node: %d, Core: %d\n", 

@@ -6,6 +6,8 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.Route;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 
 public abstract class Command {
     public enum IdType {
@@ -21,13 +23,15 @@ public abstract class Command {
     	HELP,
     }
 	
+    private static boolean m_found;
+    
     public abstract int numArgs();
     public abstract String name();
     public abstract String commandLine();
     public abstract String description(Engine engine, boolean detailed);
     public abstract Command clone(String[] args, int index);
     public abstract void execute(Shell shell, Engine engine, Console console);
-
+    
 	public String toString(){
 		return commandLine();
 	}
@@ -79,7 +83,7 @@ public abstract class Command {
     	return true;
     }
     
-    public static boolean validateIds(Engine engine, Console console, int routeId, int id, IdType idType) {
+    public static boolean validateNodeId(Engine engine, Console console, final int routeId, final int nodeId) {
     	if (engine.getRoutes().size() == 0) {
     		console.display("Error: No routes analysed\n");
     		return false;
@@ -91,25 +95,18 @@ public abstract class Command {
     		return false;
     	}
     	
-    	switch (idType) {
-        case BLOCK:
-        	// TODO
-        	//if (route.getBlock(id) == null) {
-        	//	console.display(String.format("Error: invalid block id: %d\n", id));        		
-        	//	return false;
-        	//}
-        	return true;
-        case PATH:
-        	// TODO
-        	//if (route.getPath(id) == null) {
-        	//	console.display(String.format("Error: invalid path id: %d\n", id));        		
-        	//	return false;
-        	//}    	
-        	return true;        	
-        default:
-        	assert(false);
-            return false;
-        }    	
+    	m_found = false;
+    	for (Node node : route.getSubRoutes()) {
+    	    node.traverse(0, new UntypedNodeTraverser() {
+    	    	public boolean foundNode(Node node, int depth) {
+    	    		if (node.getId() == nodeId) {
+    	    			m_found = true;
+    	    		}
+    	        	return true;
+    	    	}
+    	    });    		
+    	}
+    	return m_found;
     }
     
     public static int getRouteId(String routeId) {
@@ -131,8 +128,9 @@ public abstract class Command {
     protected boolean areArgsDone(String[] args, int i) {
 		if ((i >= args.length) || 
 			(args[i].startsWith("-") && (args[i].length() > 1)) || 
-			args[i].startsWith("\n"))
+			args[i].startsWith("\n")) {
 			return true;
+		}
 		return false;
 	}
 }
