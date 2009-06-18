@@ -809,11 +809,11 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      		}
      	});
 
-     	setAction(SelectPathsID, new Action("Select paths through here") {
+     	setAction(SelectPathsID, new Action("Select nodes through here") {
      		public void run() {
      			Reference clickCodeRef = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.SRCLABEL_REF);
      			GuiEngine.setCodePoint(clickCodeRef);
-     			GuiEngine.broadcast(Broadcaster.BROADCAST_SELECT_PATHS, "");
+     			GuiEngine.broadcast(Broadcaster.BROADCAST_SELECT_NODES, "");
      		}
      	});
 

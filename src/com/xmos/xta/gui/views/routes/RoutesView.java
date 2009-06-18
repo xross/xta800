@@ -42,8 +42,11 @@ import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.PathNode;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
+import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.gui.dialogs.Required;
 import com.xmos.xta.gui.views.routes.selected.SelectedRouteContentProvider;
 import com.xmos.xta.gui.views.routes.selected.SelectedRouteLabelProvider;
 import com.xmos.xta.gui.views.routes.selected.SelectedRouteNodeContextMenu;
@@ -134,8 +137,8 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 			initialiseTrees();
 
-		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECT_PATHS)) {
-			selectPaths();
+		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECT_NODES)) {
+			selectNodes();
 		}
 	}
 	
@@ -278,7 +281,7 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 			        if (selection instanceof IStructuredSelection) {	            
 			            Object object = ((IStructuredSelection)selection).getFirstElement();
 			            if (object instanceof RouteNode) {
-			                createContextMenu(m_parent.getShell(), manager, (RouteNode)object);
+			                createContextMenu(m_parent.getShell(), manager, ((RouteNode)object).getRoute());
 			            }
 			        }
 				}
@@ -360,53 +363,44 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 		
 	}
 
-	private void selectPaths() {
-/* TODO
+	private void selectNodes() {
+		// This method selects all the nodes in the tree that 
+		// contains the given pc in one of their children..		
 		Reference codePoint = GuiEngine.getCodePoint();
 		Engine engine = GuiEngine.getEngine();
 		if (codePoint.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
-			int pc = codePoint.getPc();
-			List<Node> selectedPaths = new ArrayList<Node>();
+			final int pc = codePoint.getPc();
+			final List<Node> selectedNodes = new ArrayList<Node>();
 
-			// Add the complete paths hitting the pc
-			Node routeNode = m_routeInfo.getRouteNode();
-			if (routeNode != null) {
-				for (Node child : routeNode.getChildren()) {
-					Set<Integer> pcs = child.getPcsCovered(false);
-					if (pcs.contains(pc)) {
-						selectedPaths.add(child);
-					}
+			// Add the nodes hitting the pc
+			int selectedRouteId = GuiEngine.getEngine().getSelectedRouteId();
+			Route selectedRoute = GuiEngine.getEngine().getRoute(selectedRouteId);
+			if (selectedRoute != null) {								
+				for (Node subRoute : selectedRoute.getSubRoutes()) {
+					subRoute.traverse(0, new UntypedNodeTraverser() {
+						public boolean foundNode(Node node, int depth) {
+							if (node.getPCs().contains(pc)) {
+								selectedNodes.add(node);
+							}
+							return true;
+						}
+					});
 				}
 			}
-			
-			// Add the unresolved paths hitting the pc
-			Node unresolvedNode = m_routeInfo.getUnresolvedNode();
-			if (unresolvedNode != null) {
-				for (Node child : unresolvedNode.getChildren()) {
-					Set<Integer> pcs = child.getPcsCovered(false);
-					if (pcs.contains(pc)) {
-						selectedPaths.add(child);
-					}
-				}
-			}
-			
-			m_selectedRouteViewer.setSelection(new StructuredSelection(selectedPaths));			
+			m_selectedRouteViewer.setSelection(new StructuredSelection(selectedNodes));			
 		}
-*/			
 	}
 	
-    private void createContextMenu(final Shell parent, IMenuManager manager, RouteNode routeNode) {
+    private void createContextMenu(final Shell parent, IMenuManager manager, final Route route) {
 	    manager.add(new Separator());
 	    manager.add(new Action("Set timing requirements") {
 		    public void run() {
-		    	// TODO
-			    //new Required(parent, XtaEngine.getEngine(), m_route);
+			    new Required(parent, GuiEngine.getEngine(), route);
 		    }
 	    });
 	    manager.add(new Action("Clear timing requirements") {
 		    public void run() {
-		    	// TODO
-			    // XtaEngine.getEngine().unsetRouteMax(m_route.getRouteId());
+		    	GuiEngine.getEngine().unsetRouteMax(route.getRouteId());
 		    }
 	    });
     }	

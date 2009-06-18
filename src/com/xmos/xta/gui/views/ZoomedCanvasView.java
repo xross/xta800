@@ -178,7 +178,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			annotateTree(false);
 			refreshView();
 			
-		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECT_PATHS)) {
+		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECT_NODES)) {
 			selectPaths();
 			annotateTree(true);
 			refreshView();
