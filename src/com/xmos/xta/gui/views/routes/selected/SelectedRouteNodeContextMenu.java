@@ -28,7 +28,7 @@ public class SelectedRouteNodeContextMenu {
 				//console.runCommand("print trace " + routeId + " b" + m_this.getId());
 			}
 		});  
-    	
+ /* TODO   	
     	// Adds the 'Set iterations' option.
 	    manager.add(new Separator());
 	    manager.add(new Action("Set iterations") {
@@ -43,6 +43,6 @@ public class SelectedRouteNodeContextMenu {
 		    	new Scope(parent, node);
 		    }
 	    });
+*/    
     }
-
 }

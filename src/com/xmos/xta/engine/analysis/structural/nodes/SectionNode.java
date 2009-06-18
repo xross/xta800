@@ -237,7 +237,7 @@ public class SectionNode extends Node {
 		
 		List<Node> unsetOptions = new ArrayList<Node>();
 		for (Node option : m_options) {
-			if (!setOptionMap.get(option) && !option.isExcluded()) {
+			if (!setOptionMap.get(option)) {
 				unsetOptions.add(option);
 			}
 		}
@@ -249,7 +249,7 @@ public class SectionNode extends Node {
 		
 		List<Node> setOptions = new ArrayList<Node>();
 		for (Node option : m_options) {
-			if (setOptionMap.get(option) && !option.isExcluded()) {
+			if (setOptionMap.get(option)) {
 				setOptions.add(option);
 			}
 		}

@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.info;
+package com.xmos.xta.gui.views.info.knowns;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,14 +37,14 @@ import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.InstructionTime;
 
-public class SetValuesViewer {
+public class KnownsViewer {
 
 	private TableViewer m_resolvedUnknownsViewer;
 	List<Reference> m_selectedCodeRefs;
 	Action m_setInstructionTimeAction;
 	Action m_clearInstructionTimesAction;
 
-	public SetValuesViewer(Composite parent, IWorkbenchPartSite site, TabFolder folders) {
+	public KnownsViewer(Composite parent, IWorkbenchPartSite site, TabFolder folders) {
 		m_selectedCodeRefs = new ArrayList<Reference>();
 
 		TabItem tab = new TabItem(folders, SWT.NONE);
@@ -61,8 +61,8 @@ public class SetValuesViewer {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		SetValuesContentProvider contentProvider = new SetValuesContentProvider();
-		SetValuesLabelProvider labelProvider = new SetValuesLabelProvider();
+		KnownsContentProvider contentProvider = new KnownsContentProvider();
+		KnownsLabelProvider labelProvider = new KnownsLabelProvider();
 
 		for (int i = 0; i < labelProvider.getColumnNames().length; ++i) {
 			TableColumn tableColumn = new TableColumn(table, labelProvider
@@ -76,9 +76,9 @@ public class SetValuesViewer {
 			col.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
 					int colIndex = 0;
-					if (col.getText().equals(SetValuesLabelProvider.PC)) {
+					if (col.getText().equals(KnownsLabelProvider.PC)) {
 						colIndex = 0;
-					} else if (col.getText().equals(SetValuesLabelProvider.DESC)) {
+					} else if (col.getText().equals(KnownsLabelProvider.DESC)) {
 						colIndex = 1;
 					}
 					

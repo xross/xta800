@@ -17,6 +17,8 @@ import org.eclipse.ui.part.ViewPart;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.gui.views.info.knowns.KnownsViewer;
+import com.xmos.xta.gui.views.info.unknowns.UnknownsViewer;
 
 public class InfoView extends ViewPart implements IPropertyChangeListener,
 		                                              ISelectionListener {
@@ -24,7 +26,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 	public static final String ID = "com.xmos.xta.gui.views.info.Info";
 
 	private UnknownsViewer m_unknowns;
-	private SetValuesViewer m_setValues;
+	private KnownsViewer m_knowns;
 	
 	public InfoView() {
 		if (DEBUG) System.out.printf("Info()\n");
@@ -36,10 +38,10 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 
 		TabFolder folders = new TabFolder(parent, SWT.BORDER);
 		m_unknowns = new UnknownsViewer(parent.getDisplay(), parent, getSite(), folders);
-		m_setValues = new SetValuesViewer(parent, getSite(), folders);
+		m_knowns = new KnownsViewer(parent, getSite(), folders);
 
 		m_unknowns.update();
-		m_setValues.update();
+		m_knowns.update();
 
 		getSite().getPage().addSelectionListener(this);
 	}
@@ -53,22 +55,22 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 
 		if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
 			m_unknowns.update();
-			m_setValues.update();
+			m_knowns.update();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE) ||
 				   event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) ||
 				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 			m_unknowns.update();
-			m_setValues.update();
+			m_knowns.update();
 			
 		}  else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
 			m_unknowns.update();
-			m_setValues.update();
+			m_knowns.update();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE) || 
 				   event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 			m_unknowns.clear();
-			m_setValues.clear();
+			m_knowns.clear();
 		}
 	}
 

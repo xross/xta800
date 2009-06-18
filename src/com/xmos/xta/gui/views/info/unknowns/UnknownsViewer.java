@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.info;
+package com.xmos.xta.gui.views.info.unknowns;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -176,7 +176,7 @@ return 0;
 				ArrayList<Reference> m_selectedTimeRefs = new ArrayList<Reference>();
 				ArrayList<Reference> m_selectedLoopRefs = new ArrayList<Reference>();
 				
-				for (Object object : ((IStructuredSelection) selection).toList()) {
+				for (Object object : ((IStructuredSelection)selection).toList()) {
 /* TODO					
 					Unknown unknown = (Unknown)object;
 					
@@ -231,14 +231,13 @@ return 0;
 		menuMgr.add(m_setInstructionTimeAction);
 		m_setInstructionTimeAction.setEnabled(false);
 
-/* TODO		
 		m_setLoopIterationsAction = new Action() { 
 			public void run() {
 				Route route = GuiEngine.getEngine().getSelectedRoute();
      			new Iterations(parent.getShell(), route);
 			}
 		};
-*/		 
+		 
 		m_setLoopIterationsAction.setText("Set iterations");
 		menuMgr.add(m_setLoopIterationsAction);
 		m_setLoopIterationsAction.setEnabled(false);

@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.info;
+package com.xmos.xta.gui.views.info.knowns;
 
 import java.util.HashSet;
 
@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.Viewer;
 
 import com.xmos.xta.engine.analysis.routes.Route;
 
-public class SetValuesContentProvider implements IStructuredContentProvider {
+public class KnownsContentProvider implements IStructuredContentProvider {
     public static final boolean DEBUG = false;
 
 	public Object[] getElements(Object inputElement) {
