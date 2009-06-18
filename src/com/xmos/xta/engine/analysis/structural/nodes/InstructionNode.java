@@ -176,11 +176,6 @@ public class InstructionNode extends Node {
 		return 0;
 	}
 
-	public void addFnops() {
-		assert(false);
-		
-	}
-
 	public Collection<Node> whatsBefore(Node node) {
 		assert(false);
 		return null;

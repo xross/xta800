@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
-import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.SelfLoopNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -126,17 +124,6 @@ public class SelfLoopNode extends Node{
 	public long getError(Case c) {
 		return m_loop.getError(c) * m_loop.getAttributes().getNumIterations(c);
 	}
-
-	public void addFnops() {
-		m_loop.addFnops();
-		for(InstructionBuffer ib : m_loop.getIbufferDueToWorstTime()){
-			getParent().addEndIbufferDueToWorst(ib);
-		}
-		for(InstructionBuffer ib : m_loop.getIbufferDueToBestTime()){
-			getParent().addEndIbufferDueToBest(ib);
-		}
-	}
-
 
 	public Collection<Node> whatsBefore(Node node) {
 		assert(m_loop == node);

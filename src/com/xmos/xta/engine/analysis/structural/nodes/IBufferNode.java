@@ -102,4 +102,6 @@ public abstract class IBufferNode extends Node {
 			return m_endInstructionBuffer;
 		}
 	}
+
+	public abstract void insertFnops();
 }

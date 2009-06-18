@@ -28,7 +28,7 @@ public abstract class Node implements Comparable<Node>{
 		
 	Set<Node> m_branchTargets;
 	Set<Integer> m_branchTargetPcs;
-	//fnop data
+
 	Map<Node, Integer> m_parentToStartIbuffer;
 	Collection<InstructionBuffer> m_iBuffersDueToWorstTime;
 	Collection<InstructionBuffer> m_iBuffersDueToBestTime;
@@ -292,8 +292,8 @@ public abstract class Node implements Comparable<Node>{
 		return null;
 	}
 	
-	public abstract void addFnops();
-	
+
+	/*
 	public void addEndIbufferDueToWorst(InstructionBuffer ib){
 		if(ib == null){
 			//System.out.println("eek");
@@ -317,6 +317,7 @@ public abstract class Node implements Comparable<Node>{
 	public Collection<InstructionBuffer> getIbufferDueToBestTime(){
 		return m_iBuffersDueToBestTime;
 	}
+	*/
 }
 
 class FunctionCallStatus {
