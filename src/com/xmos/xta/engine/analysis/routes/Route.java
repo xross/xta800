@@ -120,6 +120,7 @@ public class Route {
 			Collection<Node> startNodes = new HashSet<Node>();
 			Collection<Node> endNodes = new HashSet<Node>();
 			Map<Integer, HashSet<Node>> pcToStruct = buildPcMap(m_structureGraph);
+			
 			for (int from : startPcs) {
 				if (pcToStruct.get(from) != null) {
 					HashSet<Node> start = pcToStruct.get(from);
@@ -133,12 +134,12 @@ public class Route {
 					}
 				} 
 			}
+			
 			for (int to : endPcs) {
 				if (pcToStruct.get(to) != null) {
 					endNodes.addAll(pcToStruct.get(to));
 				}
 			}
-			
 			
 			for (Node start : startNodes) {
 				Collection<Node> workingSet = new HashSet<Node>();
@@ -149,27 +150,17 @@ public class Route {
 								
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 				pruneGraphOfExcludedPaths(workingSet);
-				
-				//StructuralAnalysisEngine.dumpTree(workingSet);
-				
 				Set<Node> newEndNodes = removeFinalInstruction(endNodes, start,
 						workingSet);
-				
-				
 				
 				Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
 
 				assert(cfgSanityCheck(workingSet));
 				
-				//StructuralAnalysisEngine.dumpTree(workingSet);
-				
-				//copy every node into a new working set
 				sae.createStructure(workingSet, newStart, m_engine, true);
-				
-				
+
 				Node baseNode = workingSet.iterator().next();
-				//StructuralAnalysisEngine.dumpTree(workingSet);
-				
+
 				Node newGraph = baseNode.deepCopy(new HashMap<Integer, FunctionNode>());
 							
 				m_subRoutes.add(newGraph);
@@ -179,7 +170,6 @@ public class Route {
 			setInitialIterations();
 			sortSubRoutes();
 			break;
-			
 		default:
 			assert(false);
 		    break;
@@ -188,7 +178,6 @@ public class Route {
 
 	private Set<Node> removeFinalInstruction(Collection<Node> endNodes,
 			Node start, Collection<Node> workingSet) {
-		
 		
 		Set<Node> newEndNodes = new HashSet<Node>();
 		for(Node node : endNodes){
@@ -507,10 +496,9 @@ public class Route {
 			CommonMethods.connect(node, parent);
 		}
 	}
-	private static int c = 0;
+	
 	private Map<Integer, HashSet<Node>> buildPcMap(StructureGraph structureGraph) {
 		final Map<Integer, HashSet<Node>> pcToNodes = new HashMap<Integer, HashSet<Node>>();
-		
 		
 		for (Node node : structureGraph.getThreads()) {
 			node.traverse(0, new DefaultNodeTraverser() {
@@ -522,12 +510,10 @@ public class Route {
 					}
 					map.add(node);
 					pcToNodes.put(node.getStartPc(), map);
-					c++;
 					return true;
 				}
 			});
 		}
-		//System.out.println(c);
 		return pcToNodes;
 	}
 
@@ -548,7 +534,7 @@ public class Route {
 		}
 		return pcToNodes;
 	}
-	
+			
 	private void setParents() {
 		for (Node node : m_subRoutes) {
 			setParent(node);
@@ -660,7 +646,6 @@ public class Route {
 		return referencedNodes;		
 	}
 	
-
 	private boolean cfgSanityCheck(Collection<Node> workingSet) {
 		//this checks to see that all nodes point to another node in the workingSet and no other
 		for(Node node : workingSet){
