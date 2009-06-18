@@ -2,6 +2,7 @@ package com.xmos.xta.engine.analysis.controlflow;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.TreeSet;
 
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -16,7 +17,7 @@ public class ThreadHandler {
 	}
 
 	public Collection<Node> getThreadNodes(Collection<Integer> threadPcs) {
-		Collection<Node> nodes = new HashSet<Node>();
+		Collection<Node> nodes = new TreeSet<Node>();
 		for(int pc : threadPcs){
 			Node threadNode = m_instDecoder.getNode(pc);
 			if (threadNode != null){
