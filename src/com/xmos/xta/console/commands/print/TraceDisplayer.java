@@ -4,25 +4,19 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import com.xmos.xta.console.Console;
-import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 
 public class TraceDisplayer {
-	private Engine m_engine;
 	private Console m_console;
-	private int m_routeId;
 	private double m_currentTime;
 		
-	public TraceDisplayer(Engine engine, Console console, int routeId) {
-		m_engine = engine;
+	public TraceDisplayer(Console console) {
 		m_console = console;
-		m_routeId = routeId;
 	}
 	
-    public void display() {
-		Collection<Node> nodes = m_engine.getRoute(m_routeId).getSubRoutes();	
+    public void display(Collection<Node> nodes) {
 		for (Node node : nodes) {
 			displayInstruction(node);
 		}				

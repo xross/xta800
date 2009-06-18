@@ -47,7 +47,8 @@ public class Route {
 	private Engine m_engine;
 	private Collection<Node> m_exclusions;
 	private Set<Node> m_excludedRouteNodes;
-	
+	private Node m_searchNode;
+
 	public static void resetRouteCount() {
 		s_routeCount = 0;
 	}
@@ -189,6 +190,22 @@ public class Route {
 		}
 		return unknowns;
 	}	
+	
+    public Node getNode(final int nodeId) {
+    	m_searchNode = null;
+		for (Node node : m_subRoutes) {					
+		    node.traverse(0, new UntypedNodeTraverser() {
+				public boolean foundNode(Node node, int depth) {
+					if (node.getId() == nodeId) {
+						m_searchNode = node;
+						return false;
+					}
+					return true;
+				}
+		    });
+		}
+        return m_searchNode;   	
+    }	
 	
 	private void pruneGraphOfExcludedPaths(Collection<Node> workingSet) {
 		while(!m_excludedRouteNodes.isEmpty()){
