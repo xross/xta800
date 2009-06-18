@@ -138,8 +138,8 @@ public class StructuralAnalysisEngine {
 			
 			//now do fnop analysis
 			
-			//FnopAnalyser fa = new FnopAnalyser();
-			//fa.analyse(initialBasicBlock, isFunction);
+			FnopAnalyser fa = new FnopAnalyser();
+			fa.analyse(initialBasicBlock, isFunction);
 			
 			assert(basicBlocks.contains(initialBasicBlock));
 			
