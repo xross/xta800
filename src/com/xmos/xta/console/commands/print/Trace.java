@@ -29,7 +29,7 @@ public class Trace extends Command {
     }
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = String.format("trace <route id>: Display instruction trace for the worst case path of the given route");
+    	String descString = String.format("trace <route/node id>: Display instruction trace for the worst case path of the given route/node");
     	return descString;    	                
     }
 
