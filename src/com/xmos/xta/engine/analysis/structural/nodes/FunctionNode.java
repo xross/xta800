@@ -181,7 +181,7 @@ public class FunctionNode extends Node {
 	}
 	
 	public Collection<Node> whatsNext(Node node) {
-		if(getParent() != null){
+		if (getParent() != null){
 			return getParent().whatsNext(this);
 		}
 		return new HashSet<Node>();

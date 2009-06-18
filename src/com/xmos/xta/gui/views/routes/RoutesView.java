@@ -56,7 +56,7 @@ import com.xmos.xta.gui.views.routes.selector.RouteSelectorLabelProvider;
 
 public class RoutesView extends ViewPart implements IPropertyChangeListener,
 												    ISelectionListener {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.gui.views.routes.Routes";
 
     private TreeViewer m_selectedRouteViewer;
@@ -320,10 +320,9 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	private void initialiseSelectedRouteView() {
-		int selectedRouteId = GuiEngine.getEngine().getSelectedRouteId();
-		Route selectedRoute = GuiEngine.getEngine().getRoute(selectedRouteId);
+		Route selectedRoute = GuiEngine.getEngine().getSelectedRoute();
 		if (selectedRoute != null) {
-			List<Node> subRouteNodes = GuiEngine.getEngine().getRoute(selectedRouteId).getSubRoutes();
+			List<Node> subRouteNodes = selectedRoute.getSubRoutes();
 			PathNode hiddenRouteNode = new PathNode(subRouteNodes);
 			
 			m_selectedRouteViewer.setInput(hiddenRouteNode);
@@ -373,8 +372,7 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 			final List<Node> selectedNodes = new ArrayList<Node>();
 
 			// Add the nodes hitting the pc
-			int selectedRouteId = GuiEngine.getEngine().getSelectedRouteId();
-			Route selectedRoute = GuiEngine.getEngine().getRoute(selectedRouteId);
+			Route selectedRoute = GuiEngine.getEngine().getSelectedRoute();
 			if (selectedRoute != null) {								
 				for (Node subRoute : selectedRoute.getSubRoutes()) {
 					subRoute.traverse(0, new UntypedNodeTraverser() {

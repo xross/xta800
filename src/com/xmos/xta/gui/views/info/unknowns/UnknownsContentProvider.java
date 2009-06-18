@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.info;
+package com.xmos.xta.gui.views.info.unknowns;
 
 import java.util.HashSet;
 

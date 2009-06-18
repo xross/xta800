@@ -25,9 +25,7 @@ public abstract class Node implements Comparable<Node>{
 	Set<Node> m_prevNodes;
 	Node m_branchLinkReturn;
 	Set<Node> m_dominators;
-	
-	boolean m_isExcluded;
-	
+		
 	Set<Node> m_branchTargets;
 	Set<Integer> m_branchTargetPcs;
 	//fnop data
@@ -68,7 +66,6 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public Node() {
-		m_isExcluded = false;
 		m_branchTargets = new HashSet<Node>();
 		m_branchTargetPcs = new HashSet<Integer>();
 		m_nextNodes = new HashSet<Node>();
@@ -80,7 +77,6 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public Node(Node node) {
-		m_isExcluded = node.m_isExcluded;
 		m_branchTargets = new HashSet<Node>(node.m_branchTargets);
 		m_branchTargetPcs = new HashSet<Integer>(node.m_branchTargetPcs);
 		m_nextNodes = new HashSet<Node>(node.m_nextNodes);
@@ -202,15 +198,7 @@ public abstract class Node implements Comparable<Node>{
 	public boolean isBlockNode() {
 		return false;
 	}
-	
-	public void setIsExcluded(boolean isExcluded) {
-		m_isExcluded = isExcluded;
-	}
-	
-	public boolean isExcluded() {
-		return m_isExcluded;
-	}	
-	
+		
 	public Node getEnclosingLoopNode() {		
 		Node node = m_parent;
 		while ((node != null) && !node.isLoopNode()) {

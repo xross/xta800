@@ -1,6 +1,5 @@
 package com.xmos.xta.gui.dialogs;
 
-
 import java.util.Set;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -23,7 +22,7 @@ public class Iterations extends XtaDialog {
 	
 	private long m_numIterations;
 		
-    public Iterations(Shell parent, Node node) {
+    public Iterations(Shell parent, Route route) {
     	super(parent);
     	
     	// TODO

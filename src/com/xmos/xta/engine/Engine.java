@@ -456,7 +456,7 @@ public class Engine implements Notifier {
 	
 	public boolean setLoopIterations(int routeId, String refString, long iterations) {
 		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.SRCLABEL_REF);
+				refString, ReferenceClass.ANY_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}		
@@ -465,7 +465,7 @@ public class Engine implements Notifier {
 
 	public boolean setLoopPathIterations(int routeId, String refString, long iterations) {
 		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.SRCLABEL_REF);
+				refString, ReferenceClass.ANY_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
@@ -474,7 +474,7 @@ public class Engine implements Notifier {
 	
 	public boolean setLoopScope(int routeId, String refString, boolean absolute) {
 		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.SRCLABEL_REF);
+				refString, ReferenceClass.ANY_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}

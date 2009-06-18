@@ -116,7 +116,10 @@ public class SectionNode extends Node {
 	}
 
 	public Collection<Node> whatsNext(Node node) {
-		return getParent().whatsNext(this);
+		if (getParent() != null){
+			return getParent().whatsNext(this);
+		}
+		return new HashSet<Node>();		
 	}
 
 	public Node getOption(Case c, boolean ignoreIterations) {
@@ -237,7 +240,7 @@ public class SectionNode extends Node {
 		
 		List<Node> unsetOptions = new ArrayList<Node>();
 		for (Node option : m_options) {
-			if (!setOptionMap.get(option) && !option.isExcluded()) {
+			if (!setOptionMap.get(option)) {
 				unsetOptions.add(option);
 			}
 		}
@@ -249,7 +252,7 @@ public class SectionNode extends Node {
 		
 		List<Node> setOptions = new ArrayList<Node>();
 		for (Node option : m_options) {
-			if (setOptionMap.get(option) && !option.isExcluded()) {
+			if (setOptionMap.get(option)) {
 				setOptions.add(option);
 			}
 		}

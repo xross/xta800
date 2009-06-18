@@ -111,13 +111,11 @@ public class StructureDisplayer {
 		for (int i = 0; i < depth - 1; ++i) {
 			m_console.display(".    ");
 		}
-	}	
+	}
 
 	private void printModifiers(Node node, int depth) {
 		if (depth > 0) {
-			if (node.isExcluded()) {
-				m_console.display(".  X ");
-			} else if (node.getAttributes().getDisplayUnknown()) {
+			if (node.getAttributes().getDisplayUnknown()) {
 				m_console.display(".  * ");
 			} else {
 				m_console.display(".    ");			

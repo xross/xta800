@@ -108,7 +108,7 @@ public class StructuralAnalysisEngine {
 		
 		engine.provideFeedback("Setting parent nodes...");
 		setParents();
-		
+
 		engine.provideFeedback("Complete");
 		return true;
 	}
@@ -294,13 +294,13 @@ public class StructuralAnalysisEngine {
 			}
 		}
 	}
-		
+
 	private void setParents() {
 		for (Node node : m_structureGraph.getThreads()) {
 			setParent(node);
 		}
 	}
-	
+
 	private void setParent(Node node) {
 		for (Node child : node.getChildren()){
 			child.setParent(node);

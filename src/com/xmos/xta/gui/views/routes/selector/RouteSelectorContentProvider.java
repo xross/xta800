@@ -4,7 +4,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 public class RouteSelectorContentProvider implements ITreeContentProvider  {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
 	public RouteSelectorContentProvider() {
 		if (DEBUG) System.out.printf("RouteSelectorContentProvider()\n");
