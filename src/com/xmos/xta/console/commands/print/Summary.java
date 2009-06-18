@@ -8,21 +8,10 @@ import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.routes.RouteTiming;
 
 public class Summary extends Command {
-    private int m_verbosity;
-    private boolean m_verbositySpecified;
-	
 	public Summary() {
 	}
 
-	public Summary(int verbosity, boolean verbositySpecified) {		
-		m_verbosity = verbosity;
-		m_verbositySpecified = verbositySpecified;
-	}
-	
     public int numArgs() { 
-    	if (m_verbositySpecified) { 
-    		return 1;
-        }
     	return 0; 
     }
     
@@ -30,24 +19,11 @@ public class Summary extends Command {
     public String commandLine() { return "summary"; }        
     
     public String description(Engine engine, boolean detailed) {
-    	return "summary: Show routes summary [verbosity 0|1|2|3(default)]";
+    	return "summary: Show routes summary (verbosity -2|-1|0)";
     }
 
     public Command clone(String[] args, int index) {
-		int verbosity = 2;
-		boolean verbositySpecified = false;
-    	if (!areArgsDone(args, index + 1)) {
-        	try {
-        		verbosity = Integer.parseInt(args[index + 1]); 
-        		if ((verbosity < 0) || (verbosity > 3))
-        			return null;
-
-        	} catch (NumberFormatException e) {
-    	        return null;
-    	    }
-        	verbositySpecified = true;
-    	}    	
-   		return new Summary(verbosity, verbositySpecified);
+   		return new Summary();
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
@@ -58,28 +34,18 @@ public class Summary extends Command {
 			return;
 		
 		for (Route route : engine.getRoutes()) {
-		    displayRouteSummary(console, route);
+		    displayRouteSummary(console, route, engine.getVerbosity());
 		}		
 		displayOverallSummary(console, engine);
     }
 
-    private void displayRouteSummary(Console console, Route route) {
-		switch (m_verbosity) {
-		case 0:
-			break;
-			
-		case 1:
-			displayRouteSummary(console, route, true, false);			
-			break;
-
-		case 2:
+    private void displayRouteSummary(Console console, Route route, int verbosity) {
+    	if (verbosity >= 0) {
 			displayRouteSummary(console, route, true, true);			
-			break;
-						
-		default:
-			assert(false);
-		    break;
-		}  	
+    		    	
+    	} else if (verbosity == -1) {
+			displayRouteSummary(console, route, true, false);			
+		} 
     }
     
 	private void displayRouteSummary(Console console, Route route, 

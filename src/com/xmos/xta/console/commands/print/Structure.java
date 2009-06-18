@@ -15,26 +15,22 @@ public class Structure extends Command {
 	}
 	private Mode m_mode;
 	private int m_routeId;
-    private int m_verbosity;
-    private boolean m_verbositySpecified;
 	
 	public Structure() {
 		m_mode = Mode.GLOBAL;
 	}
 
-	public Structure(Mode mode, int routeId, int verbosity, boolean verbositySpecified) {
+	public Structure(Mode mode, int routeId) {
 		m_mode = mode;
 		m_routeId = routeId;
-		m_verbosity = verbosity;
-		m_verbositySpecified = verbositySpecified;
 	}
 
     public int numArgs() {
     	switch (m_mode) {
     	case GLOBAL:
-    		return m_verbositySpecified ? 1 : 0;
+    		return 0;
     	case ROUTE:
-    		return m_verbositySpecified ? 2 : 1;
+    		return 1;
     	}
 		assert(false);
 	    return 0;
@@ -47,26 +43,22 @@ public class Structure extends Command {
     public String commandLine() {
     	switch (m_mode) {
     	case GLOBAL:
-    		return m_verbositySpecified ? 
-       			"structure " + m_verbosity :
-    			"structure";
+    		return "structure";
     	case ROUTE:
-    		return m_verbositySpecified ? 
-       			"structure " + getRouteId(m_routeId) + " " + m_verbosity :
-    			"structure " + getRouteId(m_routeId);
+    		return "structure " + getRouteId(m_routeId);
     	}
 		assert(false);
 	    return "";    	
     }
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = "structure [route id] [verbosity 0|1]: Displays the structure for the program, or if sepcified, just the given route";
+    	String descString = "structure [route id]: Displays the structure for the program, or if sepcified, just the given route (verbosity 0|1)";
     	return descString;    	                
     }
 
     public Command clone(String[] args, int index) {    
+    	Mode mode = Mode.GLOBAL;
     	int routeId = 0;
-    	boolean routeIdSpecified = false;
 		if (!areArgsDone(args, index + 1)) {
 	    	try {
 	    		routeId = getRouteId(args[index + 1]);	
@@ -74,27 +66,9 @@ public class Structure extends Command {
 		    } catch (NumberFormatException e) {
 		        return null;
 		    }    	
-		    routeIdSpecified = true;
-		}
-		
-		int verbosity = 0;
-		boolean verbositySpecified = false;
-    	if (!areArgsDone(args, index + 2)) {
-        	try {
-        		verbosity = Integer.parseInt(args[index + 2]); 
-        		if ((verbosity < 0) || (verbosity > 1))
-        			return null;
-
-        	} catch (NumberFormatException e) {
-    	        return null;
-    	    }
-        	verbositySpecified = true;
-    	}		
-    	
-    	if (routeIdSpecified) { 
-    	    return new Structure(Mode.ROUTE, routeId, verbosity, verbositySpecified);
-    	}    	
-    	return new Structure(Mode.GLOBAL, 0, verbosity, verbositySpecified);
+		    mode = Mode.ROUTE;
+		}		
+    	return new Structure(mode, routeId);
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
@@ -114,7 +88,7 @@ public class Structure extends Command {
 	    	break;	    	
 	    }
 	    
-		StructureDisplayer displayer = new StructureDisplayer(console, m_verbosity);	
+		StructureDisplayer displayer = new StructureDisplayer(console, engine.getVerbosity());	
 		displayer.display(nodes);
     }
 }

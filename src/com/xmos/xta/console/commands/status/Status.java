@@ -47,12 +47,13 @@ public class Status extends Command {
     	console.display(String.format("Frequency: %d\n", engine.getConfig().m_frequency));    	
     	console.display(String.format("NumThreads: %d\n", engine.getConfig().m_numThreads));
     	
-    	console.display("SrcPaths: " + engine.getSrcPaths() + "\n");
+    	console.display(String.format("SrcPaths: %s\n", engine.getSrcPaths()));
+    	console.display(String.format("Verbosity: %d\n", engine.getVerbosity()));
     	
-    	if (executable==null)
-    		console.display(String.format("No executable loaded\n"));
-    	else
+    	if (executable != null)
     		console.display(String.format("Loaded executable: %s\n", executable.getName()));
+    	else
+    		console.display(String.format("No executable loaded\n"));
     	
     	for (MemoryImage memoryImage : engine.getMemoryImages()) {
     		int node = memoryImage.getNodeId();

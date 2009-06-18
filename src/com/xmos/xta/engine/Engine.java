@@ -446,6 +446,14 @@ public class Engine implements Notifier {
 		return m_config.m_numThreads;
 	}
 
+	public void setVerbosity(int verbosity) {
+		m_config.m_verbosity = verbosity;
+	}
+
+	public int getVerbosity() {
+		return m_config.m_verbosity;
+	}
+	
 	public boolean setLoopIterations(int routeId, String refString, long iterations) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.SRCLABEL_REF);
