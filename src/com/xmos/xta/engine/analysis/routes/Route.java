@@ -123,7 +123,7 @@ public class Route {
 					
 					for(Node node : start){
 						Node nodeToAdd = node;
-						if (nodeToAdd.getParent() != null && !nodeToAdd.getParent().isInstructionNode()){
+						if (nodeToAdd.getParent() != null && nodeToAdd.getParent().getImmediateChildren().contains(nodeToAdd)){
 							nodeToAdd = nodeToAdd.getParent();
 						}
 						startNodes.add(nodeToAdd);
