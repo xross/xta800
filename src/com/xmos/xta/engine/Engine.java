@@ -460,7 +460,11 @@ public class Engine implements Notifier {
 		if (!resolveRefernece(reference)) {
 			return false;
 		}		
-		return getRoute(routeId).setLoopIterations(reference, iterations);
+		if (getRoute(routeId).setLoopIterations(reference, iterations)) {
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}
+		return false;
 	}
 
 	public boolean setLoopPathIterations(int routeId, String refString, long iterations) {
@@ -469,7 +473,11 @@ public class Engine implements Notifier {
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		return getRoute(routeId).setLoopPathIterations(reference, iterations);
+		if (getRoute(routeId).setLoopPathIterations(reference, iterations)) {
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}
+		return false;
 	}
 	
 	public boolean setLoopScope(int routeId, String refString, boolean absolute) {
@@ -478,7 +486,11 @@ public class Engine implements Notifier {
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		return getRoute(routeId).setLoopScope(reference, absolute);
+		if (getRoute(routeId).setLoopScope(reference, absolute)) {
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}
+		return false;
 	}
 	
 	public boolean setInstructionTimeTaken(int routeId, String refString, double timeTaken) {
@@ -632,17 +644,22 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean removeExclusion(String refString) {
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.ANY_REF);
-		if (!resolveRefernece(reference)) {
-			return false;
-		}
-		Iterator<Reference> iter = m_exclusions.iterator();
-		while (iter.hasNext()) {
-			Reference ref = iter.next();
-			if (ref.equals(reference)) {
-				iter.remove();
+		if (refString.equals("*")) {
+			m_exclusions.clear();
+
+		} else {
+			Reference reference = ReferenceFactory.createReference(
+					refString, ReferenceClass.ANY_REF);
+			if (!resolveRefernece(reference)) {
+				return false;
 			}
+			Iterator<Reference> iter = m_exclusions.iterator();
+			while (iter.hasNext()) {
+				Reference ref = iter.next();
+				if (ref.equals(reference)) {
+					iter.remove();
+				}
+			}			
 		}
 		return true;
 	}

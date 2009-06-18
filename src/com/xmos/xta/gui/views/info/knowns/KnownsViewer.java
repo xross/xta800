@@ -13,8 +13,6 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -30,12 +28,14 @@ import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.Route;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.InstructionTime;
+import com.xmos.xta.gui.views.info.InfoSorter;
 
 public class KnownsViewer {
 
@@ -54,8 +54,8 @@ public class KnownsViewer {
 		m_resolvedUnknownsViewer = new TableViewer(composite);
 		tab.setControl(composite);
 
-		final SetTimesSorter setTimesSorter = new SetTimesSorter();
-		m_resolvedUnknownsViewer.setSorter(setTimesSorter);
+		final InfoSorter knownSorter = new InfoSorter();
+		m_resolvedUnknownsViewer.setSorter(knownSorter);
 
 		Table table = m_resolvedUnknownsViewer.getTable();
 		table.setHeaderVisible(true);
@@ -82,7 +82,7 @@ public class KnownsViewer {
 						colIndex = 1;
 					}
 					
-					setTimesSorter.setColoumn(colIndex);
+					knownSorter.setColoumn(colIndex);
 					m_resolvedUnknownsViewer.refresh();
 				}
 			});
@@ -117,22 +117,25 @@ public class KnownsViewer {
 				boolean enabled = ((IStructuredSelection) selection).size() > 0;
 				m_clearInstructionTimesAction.setEnabled(enabled);
 				m_setInstructionTimeAction.setEnabled(enabled);
-/* TODO
+
 				m_selectedCodeRefs.clear();
 				for (Object object : ((IStructuredSelection) selection).toList()) {
-					Unknown unknown = (Unknown)object;
-					if(unknown.getType().equals(InstructionTimeUnknown.class.getName())){
-						Reference ref = ReferenceFactory.createReference(
-								"0x" + Integer.toHexString(unknown.getPc()), ReferenceClass.LABEL_REF);
+					Node node = (Node)object;
+					
+					switch (node.getAttributes().getUnknownType()) {
+					case INSTRUCTION_TIME:
+						Reference ref = ReferenceFactory.createReference("0x" + 
+								Integer.toHexString(node.getStartPc()), ReferenceClass.LABEL_REF);
 						ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
 						m_selectedCodeRefs.add(ref);
+						break;
 						
-					} else {
+					case LOOP_ITERATIONS:
 						m_clearInstructionTimesAction.setEnabled(false);
 						m_setInstructionTimeAction.setEnabled(false);
+						break;
 					}
 				}
-*/				
 			}			
 		});
 		
@@ -147,8 +150,8 @@ public class KnownsViewer {
 		m_clearInstructionTimesAction = new Action() { 
 			public void run() {
 				for (Reference ref : m_selectedCodeRefs) {
-					//TODO
-					//GuiEngine.getEngine().unsetInstructionTime(ref.getPc());
+					int routeId = GuiEngine.getEngine().getSelectedRouteId();
+					GuiEngine.getEngine().unsetInstructionTimeTaken(routeId, ref.getRef());
 				}
 			}
 		}; 
@@ -168,37 +171,5 @@ public class KnownsViewer {
 
 		// required, for extensions
 		menuMgr.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-	}
-
-	class SetTimesSorter extends ViewerSorter {
-		int field = 0;
-		int direction = 1;
-		
-		public int compare(Viewer viewer, Object e1, Object e2) {
-			int pc1 = 0;// TODO ((Unknown)e1).getPc();
-			int pc2 = 0;// TODO ((Unknown)e2).getPc();
-			switch(field){
-			case 0:
-				int res0 = pc1 > pc2 ? 1 : -1;
-				return res0 * direction;
-			case 1:
-				Engine engine = GuiEngine.getEngine();
-				//TODO
-				//int res2 = engine.getInstructionTimeTaken(pc1) > engine.getInstructionTimeTaken(pc2) ? 1 : -1;
-				//return res2 * direction;
-				return 0;
-			default:
-				int resd = pc1 > pc2 ? 1 : -1;
-				return resd * direction;
-			}
-		}
-
-		public void setColoumn(int i) {
-			if(field == i) direction = -1*direction;
-			else {
-				field = i;
-				direction = 1;
-			}
-		}
 	}
 }

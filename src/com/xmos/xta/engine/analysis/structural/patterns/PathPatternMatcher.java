@@ -52,10 +52,15 @@ public class PathPatternMatcher extends PatternMatcher {
 	}
 	
 	private boolean isEnd(Node node) {
+		
 		if (node.getNextNodes().size() ==  0){
 			return true;
 		} else if (node.getNextNodes().size() ==  1) {
 			Node next = node.getNextNodes().iterator().next();
+			
+			if(next == m_treeStart){
+				return true;
+			}
 			if (next.getPrevNodes().size() > 1) {
 				return true;
 			} else {

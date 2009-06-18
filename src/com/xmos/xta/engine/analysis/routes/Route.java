@@ -107,6 +107,8 @@ public class Route {
 				
 			}			
 			setParents();
+			setUnknowns();				
+			setInitialIterations();
 			sortSubRoutes();
 			break;
 
@@ -147,7 +149,7 @@ public class Route {
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 				pruneGraphOfExcludedPaths(workingSet);
 				
-				StructuralAnalysisEngine.dumpTree(workingSet);
+				//StructuralAnalysisEngine.dumpTree(workingSet);
 				
 				Set<Node> newEndNodes = removeFinalInstruction(endNodes, start,
 						workingSet);
@@ -158,23 +160,22 @@ public class Route {
 
 				assert(cfgSanityCheck(workingSet));
 				
-				StructuralAnalysisEngine.dumpTree(workingSet);
+				//StructuralAnalysisEngine.dumpTree(workingSet);
 				
 				//copy every node into a new working set
 				sae.createStructure(workingSet, newStart, m_engine, true);
 				
 				
 				Node baseNode = workingSet.iterator().next();
-				StructuralAnalysisEngine.dumpTree(workingSet);
+				//StructuralAnalysisEngine.dumpTree(workingSet);
 				
 				Node newGraph = baseNode.deepCopy(new HashMap<Integer, FunctionNode>());
-			
-				setUnknowns(newGraph);				
-				setInitialIterations(newGraph);
-				
+							
 				m_subRoutes.add(newGraph);
 			}
 			setParents();
+			setUnknowns();				
+			setInitialIterations();
 			sortSubRoutes();
 			break;
 			
@@ -266,6 +267,25 @@ public class Route {
 		}
 		return startBlock;
 	}
+
+	public Collection<Node> getUnknowns(final UnknownState unknownState) {
+	    final Collection<Node> unknowns = new ArrayList<Node>();
+
+		for (Node node : m_subRoutes) {
+		    node.traverse(0, new UntypedNodeTraverser() {
+		    	public boolean foundNode(Node node, int depth) {
+		    		NodeAttributes nodeAttributes = node.getAttributes();		    		
+		    		if (nodeAttributes.isUnknown() &&
+		    			(nodeAttributes.getUnknownState() == unknownState)) {
+		    			unknowns.add(node);
+		    		}		    			
+		        	return true;
+		    	}
+		    });
+		}
+		return unknowns;
+	}	
+	
 
 	private void pruneGraphOfExcludedPaths(Collection<Node> workingSet) {
 		while(!m_excludedRouteNodes.isEmpty()){
@@ -543,40 +563,43 @@ public class Route {
 		}
 	}
 	
-	private void setInitialIterations(Node node) {		
-		// Sets the top level nodes to iterate once..
-	    node.getAttributes().setLoopIterations(1);
-	    
-		// Sets all the loops to zero iterations..							
-	    node.traverse(0, new DefaultNodeTraverser() {
-	        public boolean foundLoopNode(Node node, int depth) {
-	           	node.getAttributes().setLoopIterations(0);
-	         	return true;
-	        }	        	
-	    });
+	private void setInitialIterations() {		
+		for (Node node : m_subRoutes) {
+			// Sets the top level nodes to iterate once..
+			node.getAttributes().setLoopIterations(1);
+		    
+			// Sets all the loops to zero iterations..							
+			node.traverse(0, new DefaultNodeTraverser() {
+		        public boolean foundLoopNode(Node node, int depth) {
+		           	node.getAttributes().setLoopIterations(0);
+		         	return true;
+		        }	        	
+		    });			
+		}
 	}
 	
-	private void setUnknowns(Node node) {
-	    node.traverse(0, new DefaultNodeTraverser() {
-			// Sets all the pausing instructions to unknown.
-			public boolean foundInstructionNode(Node node, int depth) {
-				XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
-				if (instruction.canPause()) {
-					NodeAttributes nodeAttributes = node.getAttributes();
-					nodeAttributes.setUnknownType(UnknownType.INSTRUCTION_TIME);
+	private void setUnknowns() {
+		for (Node node : m_subRoutes) {
+			node.traverse(0, new DefaultNodeTraverser() {
+				// Sets all the pausing instructions to unknown.
+				public boolean foundInstructionNode(Node node, int depth) {
+					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
+					if (instruction.canPause()) {
+						NodeAttributes nodeAttributes = node.getAttributes();
+						nodeAttributes.setUnknownType(UnknownType.INSTRUCTION_TIME);
+					}
+					return true;
 				}
-				return true;
-			}
 
-			// Sets all the loop iterations to unknown.
-			public boolean foundLoopNode(Node node, int depth) {
-				NodeAttributes nodeAttributes = node.getAttributes();
-				nodeAttributes.setUnknownType(UnknownType.LOOP_ITERATIONS);
-				return true;
-			}
-	    });			
-		
-	    refreshDisplayedUnknowns(node);
+				// Sets all the loop iterations to unknown.
+				public boolean foundLoopNode(Node node, int depth) {
+					NodeAttributes nodeAttributes = node.getAttributes();
+					nodeAttributes.setUnknownType(UnknownType.LOOP_ITERATIONS);
+					return true;
+				}
+		    });						
+		    refreshDisplayedUnknowns(node);			
+		}
 	}
 	
 	private void refreshDisplayedUnknowns() {

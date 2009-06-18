@@ -67,9 +67,7 @@ public class StructuralAnalysisEngine {
 			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
 			working = false;
 			for (PatternMatcher pm : m_patternMatchers) {
-				if(debug) {
-					System.out.println(pm.getClass().getSimpleName());
-				}
+				
 				if (!dominatorTreeUpToDate && pm.usesDominatorTree()) {
 					buildDominatorTree(workingSet, treeStart);
 					dominatorTreeUpToDate = true;
@@ -79,7 +77,6 @@ public class StructuralAnalysisEngine {
 						return false;
 					}
 					if (pm.isMatch(node, workingSet, false, treeStart)) {
-						
 						treeStart = pm.getTreeStart();
 						assert (connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
