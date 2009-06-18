@@ -1,5 +1,6 @@
 package com.xmos.xta.engine.analysis.structural;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,6 +18,20 @@ public class FnopAnalyser {
 		assert (!startNode.isFunctionNode());
 		assert(startNode instanceof IBufferNode);
 		simulateBasicBlock((IBufferNode)startNode, null, isFunction);
+	}
+
+	public void addFnopsToBasicBlocks(Node startNode){
+		explore((IBufferNode)startNode, new HashSet<Node>());
+	}
+	
+	private void explore(IBufferNode startNode, HashSet<Node> seen) {
+		seen.add(startNode);
+		startNode.insertFnops();
+		for(IBufferNode next : startNode.getNextIbufferNodes()){
+			if(!seen.contains(next)){
+				explore(next, seen);
+			}
+		}
 	}
 
 	private void simulateBasicBlock(IBufferNode block, IBufferNode parent, boolean isFunction) {
@@ -44,8 +59,6 @@ public class FnopAnalyser {
 	private boolean iterateOverBasicBlocks(IBufferNode block, InstructionBuffer pretransitionIB, IBufferNode parent) {
 
 		List<Integer> fnopPcs = new LinkedList<Integer>();
-		
-		
 		InstructionBuffer endInstBuffer = new InstructionBuffer(pretransitionIB);
 		
 		if (parent == null) {

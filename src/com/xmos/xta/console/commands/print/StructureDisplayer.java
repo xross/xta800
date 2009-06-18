@@ -97,7 +97,8 @@ public class StructureDisplayer {
 						displayNodeName(node);
 						displayTimeTaken(node);
 						displayInstructionTrace(node);
-						displayWhatsNext(node);
+						if (DEBUG_NEXT) displayWhatsNext(node);
+						if (DEBUG_BEFORE) displayWhatsBefore(node);
 						m_console.display("\n");
 					}
 					return true;						

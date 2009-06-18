@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -216,28 +215,6 @@ public class FunctionNode extends IBufferNode {
 	
 	}
 
-	public void addFnops() {
-		if(m_knownFunction){
-			m_function.addFnops();
-			
-			if(m_parent!= null){
-				for(InstructionBuffer ib : m_function.getIbufferDueToWorstTime()){
-					getParent().addEndIbufferDueToWorst(ib);
-				}
-				for(InstructionBuffer ib : m_function.getIbufferDueToBestTime()){
-					getParent().addEndIbufferDueToBest(ib);
-				}
-			}
-			
-			
-			
-		} else {
-			
-		}
-		
-		
-	}
-
 	public Collection<Node> whatsBefore(Node node) {
 		if(getParent()!= null){
 			return getParent().whatsBefore(this);
@@ -251,6 +228,11 @@ public class FunctionNode extends IBufferNode {
 		List<Node> list = new LinkedList<Node>();
 		list.add(m_function);
 		return list;
+	}
+
+	public void insertFnops() {
+
+		
 	}
 	
 }

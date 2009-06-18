@@ -135,12 +135,9 @@ public class StructuralAnalysisEngine {
 			
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
 			
-			
-			//now do fnop analysis
-			
 			FnopAnalyser fa = new FnopAnalyser();
 			fa.analyse(initialBasicBlock, isFunction);
-			
+			fa.addFnopsToBasicBlocks(initialBasicBlock);
 			assert(basicBlocks.contains(initialBasicBlock));
 			
 			if (DEBUG) 

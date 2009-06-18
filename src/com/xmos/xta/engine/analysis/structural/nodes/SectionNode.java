@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.SectionNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -207,32 +206,6 @@ public class SectionNode extends Node {
 	public long getError(Case c) {
 		long error = 0;
 		return error;
-	}
-
-	public void addFnops() {
-		for(Node node : m_options){
-			node.addFnops();
-		}
-		Collection<Node> sectionNodesContributingToIbufferDueToWorstCase = new HashSet<Node>();
-		Collection<Node> sectionNodesContributingToIbufferDueToBestCase = new HashSet<Node>();
-		for(Node node : m_options){
-			if(node.getAttributes().getNumIterations(Case.WORST) > 0) {
-				sectionNodesContributingToIbufferDueToWorstCase.add(node);
-			}
-			if(node.getAttributes().getNumIterations(Case.BEST) > 0) {
-				sectionNodesContributingToIbufferDueToBestCase.add(node);
-			}
-		}
-		for(Node node : sectionNodesContributingToIbufferDueToWorstCase){
-			for(InstructionBuffer ib : node.getIbufferDueToWorstTime()){
-				getParent().addEndIbufferDueToWorst(ib);
-			}
-		}
-		for(Node node : sectionNodesContributingToIbufferDueToWorstCase){
-			for(InstructionBuffer ib : node.getIbufferDueToBestTime()){
-				getParent().addEndIbufferDueToBest(ib);
-			}
-		}
 	}
 	
 	public List<Node> getAllUnsetOptions() {
