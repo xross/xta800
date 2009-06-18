@@ -34,6 +34,7 @@ import org.eclipse.ui.IWorkbenchPartSite;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownType;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
@@ -124,38 +125,6 @@ public class UnknownsViewer {
 		}
 */		
 	}
-
-	class UnknownSorter extends ViewerSorter {
-		int field = 0;
-		int direction = 1;
-		
-		public int compare(Viewer viewer, Object e1, Object e2) {
-/* TODO			
-			Unknown p1 = (Unknown) e1;
-			Unknown p2 = (Unknown) e2;
-			switch(field){
-			case 0:
-				int res2 = p1.getPc() > p2.getPc() ? 1 : -1;
-				return res2 * direction;
-			case 1:
-				int res3 = p1.getPc() > p2.getPc() ? 1 : -1;
-				return res3 * direction;
-			default:
-				int resd = p1.getNodeId() > p2.getNodeId() ? 1 : -1;
-				return resd * direction;
-			}
-*/
-return 0;
-		}
-
-		public void setColoumn(int i) {
-			if(field == i) direction = -1*direction;
-			else {
-				field = i;
-				direction = 1;
-			}
-		}
-	}
 	
  	private void setupMouseListeners(IWorkbenchPartSite site, final Composite parent) {
 		m_unknownsViewer.addDoubleClickListener(new IDoubleClickListener() {
@@ -177,35 +146,37 @@ return 0;
 				ArrayList<Reference> m_selectedLoopRefs = new ArrayList<Reference>();
 				
 				for (Object object : ((IStructuredSelection)selection).toList()) {
-/* TODO					
-					Unknown unknown = (Unknown)object;
-					
-					if (unknown == null)
-						continue;
+					Node node = (Node)object;
 					
 					Reference ref = ReferenceFactory.createReference(
-								"0x" + Integer.toHexString(unknown.getPc()), ReferenceClass.ENDPOINT_REF);
-						Engine engine = GuiEngine.getEngine();
-						ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
-					if(unknown.getType().equals(InstructionTimeUnknown.class.getName())){
+								"0x" + Integer.toHexString(node.getStartPc()), ReferenceClass.ENDPOINT_REF);
+					
+					Engine engine = GuiEngine.getEngine();
+					ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
+					
+					UnknownType unknownType = node.getAttributes().getUnknownType();
+					
+					if (unknownType == UnknownType.INSTRUCTION_TIME) {
 						m_selectedTimeRefs.add(ref);
-					} else if(unknown.getType().equals(LoopIterationsUnknown.class.getName())){
+						
+					} else if (unknownType == UnknownType.LOOP_ITERATIONS) {
 						m_selectedLoopRefs.add(ref);
-						LoopIterationsUnknown loop = (LoopIterationsUnknown)unknown;
 						// TODO
+						//LoopIterationsUnknown loop = (LoopIterationsUnknown)unknown;
 						//selectedLoopBlock = loop.getTail();
 					} else {
 						assert(false);
 					}
-*/					
 				}
 				
 				m_setLoopIterationsAction.setEnabled(false);
 				m_setInstructionTimeAction.setEnabled(false);
-				if(m_selectedTimeRefs.size() == 0 && m_selectedLoopRefs.size() == 1){
+				
+				if (m_selectedTimeRefs.size() == 0 && m_selectedLoopRefs.size() == 1) {
 					m_selectedCodeRefs.addAll(m_selectedLoopRefs);
 					m_setLoopIterationsAction.setEnabled(true);
-				} else if(m_selectedTimeRefs.size() > 0 && m_selectedLoopRefs.size() == 0){
+					
+				} else if (m_selectedTimeRefs.size() > 0 && m_selectedLoopRefs.size() == 0) {
 					m_selectedCodeRefs.addAll(m_selectedTimeRefs);
 					m_setInstructionTimeAction.setEnabled(true);
 				} 
@@ -245,4 +216,36 @@ return 0;
 		// required, for extensions
 		menuMgr.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
+ 	
+	class UnknownSorter extends ViewerSorter {
+		int field = 0;
+		int direction = 1;
+		
+		public int compare(Viewer viewer, Object e1, Object e2) {
+/* TODO			
+			Unknown p1 = (Unknown) e1;
+			Unknown p2 = (Unknown) e2;
+			switch(field){
+			case 0:
+				int res2 = p1.getPc() > p2.getPc() ? 1 : -1;
+				return res2 * direction;
+			case 1:
+				int res3 = p1.getPc() > p2.getPc() ? 1 : -1;
+				return res3 * direction;
+			default:
+				int resd = p1.getNodeId() > p2.getNodeId() ? 1 : -1;
+				return resd * direction;
+			}
+*/
+return 0;
+		}
+
+		public void setColoumn(int i) {
+			if(field == i) direction = -1*direction;
+			else {
+				field = i;
+				direction = 1;
+			}
+		}
+	} 	
 }

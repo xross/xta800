@@ -5,6 +5,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
+
 public class KnownsLabelProvider extends LabelProvider implements ITableLabelProvider {
     public static final boolean DEBUG = false;
 
@@ -30,14 +32,13 @@ public class KnownsLabelProvider extends LabelProvider implements ITableLabelPro
 		if (DEBUG) System.out.printf("SetTimesLabelProvider: getColumnText: index: %d\n", columnIndex);	
 		
 		assert((columnIndex >= 0) && (columnIndex < m_columnNames.length));
-/* TODO		
-		Unknown unknown = (Unknown)element;	
+		
+		Node node = (Node)element;	
 		if (m_columnNames[columnIndex].equals(PC)) {
-			return String.format("0x%05x", unknown.getPc());
+			return String.format("0x%x", node.getStartPc());
     	} else if (m_columnNames[columnIndex].equals(DESC)) {    		
-		    return unknown.getDescription();
+		    return node.getAttributes().getUnknownDescription();
 	    }
-	    		*/
 		assert(false);
 		return "";
 	}
