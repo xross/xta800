@@ -567,7 +567,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 /* TODO
     private boolean checkLineForExclusion(Constraint constraint, String refStr, int index) {
 		Engine engine = GuiEngine.getEngine();
-		Reference headerRef = ReferenceFactory.createReference(refStr, ReferenceClass.SRCLABEL_REF);
+		Reference headerRef = ReferenceFactory.createReference(refStr, ReferenceClass.ANY_REF);
 		if (headerRef.resolve(engine, engine.getNodeId(),engine.getCoreId())) {
 			Constraint clone = constraint.clone();
 			if (clone.isFalse(headerRef.getPc())) {
@@ -811,7 +811,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
      	setAction(SelectPathsID, new Action("Select nodes through here") {
      		public void run() {
-     			Reference clickCodeRef = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.SRCLABEL_REF);
+     			Reference clickCodeRef = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.ANY_REF);
      			GuiEngine.setCodePoint(clickCodeRef);
      			GuiEngine.broadcast(Broadcaster.BROADCAST_SELECT_NODES, "");
      		}

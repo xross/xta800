@@ -3,9 +3,6 @@ package com.xmos.xta.engine.analysis.structural;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-//import java.util.HashMap;
-//import java.util.HashSet;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -114,7 +111,7 @@ public class StructuralAnalysisEngine {
 		
 		engine.provideFeedback("Setting parent nodes...");
 		setParents();
-		
+
 		engine.provideFeedback("Complete");
 		return true;
 	}
@@ -299,15 +296,13 @@ public class StructuralAnalysisEngine {
 			}
 		}
 	}
-		
-	
-	
+
 	private void setParents() {
 		for (Node node : m_structureGraph.getThreads()) {
 			setParent(node);
 		}
 	}
-	
+
 	private void setParent(Node node) {
 		for (Node child : node.getChildren()){
 			child.setParent(node);

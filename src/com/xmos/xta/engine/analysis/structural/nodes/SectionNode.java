@@ -116,7 +116,10 @@ public class SectionNode extends Node {
 	}
 
 	public Collection<Node> whatsNext(Node node) {
-		return getParent().whatsNext(this);
+		if (getParent() != null){
+			return getParent().whatsNext(this);
+		}
+		return new HashSet<Node>();		
 	}
 
 	public Node getOption(Case c, boolean ignoreIterations) {

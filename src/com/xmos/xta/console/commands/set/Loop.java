@@ -35,7 +35,7 @@ public class Loop extends Command {
     }
     
     public String description(Engine engine, boolean detailed) {
-   		return "loop <route id> <SRCLABEL_REF> <iterations>: Sets the number of iterations for the loop identified";
+   		return "loop <route id> <ANY_REF> <iterations>: Sets the number of iterations for the loop identified";
     }
 
     public Command clone(String[] args, int index) {

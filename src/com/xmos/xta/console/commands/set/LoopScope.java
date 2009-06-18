@@ -38,7 +38,7 @@ public class LoopScope extends Command {
     }
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = "loopscope <route id> <SRCLABEL_REF> <scope>: Sets the scope of the referenced loop";
+    	String descString = "loopscope <route id> <ANY_REF> <scope>: Sets the scope of the referenced loop";
     	if (detailed) {
         	descString += "\n";
     		descString += "          scope: relative/r: Iteration number propagates to the enclosing path (Default)\n";                

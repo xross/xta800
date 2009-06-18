@@ -35,7 +35,7 @@ public class LoopPath extends Command {
     }
     
     public String description(Engine engine, boolean detailed) {
-   		return "looppath <route id> <SRCLABEL_REF> <iterations>: Sets the number of iterations for the path identified";
+   		return "looppath <route id> <ANY_REF> <iterations>: Sets the number of iterations for the path identified";
     }
 
     public Command clone(String[] args, int index) {

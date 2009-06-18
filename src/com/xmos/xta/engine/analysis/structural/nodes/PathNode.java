@@ -116,7 +116,10 @@ public class PathNode extends Node {
 			next.add(m_nodes.get(index + 1));
 			return next;
 		} else {
-			return getParent().whatsNext(this);
+			if (getParent() != null){
+				return getParent().whatsNext(this);
+			}
+			return new HashSet<Node>();
 		}
 	}
 

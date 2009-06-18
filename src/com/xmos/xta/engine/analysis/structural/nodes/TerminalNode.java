@@ -100,7 +100,10 @@ public class TerminalNode extends Node {
 	}
 
 	public Collection<Node> whatsNext(Node node) {
-		return getParent().whatsNext(this);
+		if (getParent() != null){
+			return getParent().whatsNext(this);
+		}
+		return new HashSet<Node>();
 	}
 
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 

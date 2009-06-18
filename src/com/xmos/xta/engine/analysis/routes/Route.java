@@ -105,7 +105,8 @@ public class Route {
 					m_subRoutes.add(function.deepCopy(new HashMap<Integer, FunctionNode>()));
 				}
 				
-			}
+			}			
+			setParents();
 			sortSubRoutes();
 			break;
 
@@ -142,12 +143,8 @@ public class Route {
 				m_structureGraph.removeLinks();
 				m_excludedRouteNodes = new HashSet<Node>();
 				explore(start, workingSet, endPcs, endNodes, null);
-
-				
-				
-				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
-				
-				
+								
+				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 				pruneGraphOfExcludedPaths(workingSet);
 				
 				if (false) StructuralAnalysisEngine.dumpTree(workingSet);
@@ -159,12 +156,12 @@ public class Route {
 				Node baseNode = workingSet.iterator().next();
 				Node newGraph = baseNode.deepCopy(new HashMap<Integer, FunctionNode>());
 			
-				setUnknowns(newGraph);
-				
+				setUnknowns(newGraph);				
 				setInitialIterations(newGraph);
 				
 				m_subRoutes.add(newGraph);
 			}
+			setParents();
 			sortSubRoutes();
 			break;
 			
@@ -468,6 +465,19 @@ public class Route {
 		return startBlock;
 	}
 
+	private void setParents() {
+		for (Node node : m_subRoutes) {
+			setParent(node);
+		}
+	}
+
+	private void setParent(Node node) {
+		for (Node child : node.getChildren()){
+			child.setParent(node);
+			setParent(child);
+		}
+	}
+	
 	private void sortSubRoutes() {
 		Collections.sort(m_subRoutes);
 	}		
