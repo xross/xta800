@@ -77,8 +77,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
 		if (DEBUG) System.out.printf("Info: selectionChanged: %s\n");
 
-		List<Node> selectedNodes = new ArrayList<Node>();
-		
+		List<Node> selectedNodes = new ArrayList<Node>();		
 		if (!sel.isEmpty()) {
 			if (sel instanceof IStructuredSelection) {
 				for (Object object : ((IStructuredSelection)sel).toArray()) {
@@ -88,7 +87,6 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 				}
 			}
 		}
-		//TODO
-		//m_unknowns.updateHighlighting(selectedNodes);
+		m_unknowns.updateHighlighting(selectedNodes);
 	}
 }

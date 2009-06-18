@@ -1,7 +1,6 @@
 package com.xmos.xta.gui.views.info.unknowns;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -14,8 +13,6 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -34,7 +31,6 @@ import org.eclipse.ui.IWorkbenchPartSite;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownType;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
@@ -42,6 +38,7 @@ import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.InstructionTime;
 import com.xmos.xta.gui.dialogs.Iterations;
+import com.xmos.xta.gui.views.info.InfoSorter;
 
 public class UnknownsViewer {
 	private Display m_display;
@@ -61,7 +58,7 @@ public class UnknownsViewer {
 		m_unknownsViewer = new TableViewer(composite);
 		tab.setControl(composite);
 		
-		final UnknownSorter unknownSorter = new UnknownSorter();
+		final InfoSorter unknownSorter = new InfoSorter();
 		m_unknownsViewer.setSorter(unknownSorter);
 
 		Table table = m_unknownsViewer.getTable();
@@ -109,21 +106,14 @@ public class UnknownsViewer {
 	}
 
 	public void updateHighlighting(List<Node> selectedNodes) {
-		// Get blocks for all selected nodes
-		HashSet<Integer> selectedBlocks = new HashSet<Integer>();
-/* TODO
-		for (Node node : selectedNodes) {
-			node.getBlockIds(selectedBlocks);
-		}
 		for (TableItem item : m_unknownsViewer.getTable().getItems()) {
-			Unknown unknown = (Unknown)item.getData();
-			if (selectedBlocks.contains(unknown.getNodeId())) {
+			Node node = (Node)item.getData();			
+			if (selectedNodes.contains(node)) {
 				item.setBackground(m_display.getSystemColor(SWT.COLOR_YELLOW));
 			} else {
 				item.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
 			}
 		}
-*/		
 	}
 	
  	private void setupMouseListeners(IWorkbenchPartSite site, final Composite parent) {
@@ -154,18 +144,14 @@ public class UnknownsViewer {
 					Engine engine = GuiEngine.getEngine();
 					ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
 					
-					UnknownType unknownType = node.getAttributes().getUnknownType();
-					
-					if (unknownType == UnknownType.INSTRUCTION_TIME) {
+					switch (node.getAttributes().getUnknownType()) {
+					case INSTRUCTION_TIME:
 						m_selectedTimeRefs.add(ref);
+						break;
 						
-					} else if (unknownType == UnknownType.LOOP_ITERATIONS) {
+					case LOOP_ITERATIONS:
 						m_selectedLoopRefs.add(ref);
-						// TODO
-						//LoopIterationsUnknown loop = (LoopIterationsUnknown)unknown;
-						//selectedLoopBlock = loop.getTail();
-					} else {
-						assert(false);
+						break;
 					}
 				}
 				
@@ -179,8 +165,7 @@ public class UnknownsViewer {
 				} else if (m_selectedTimeRefs.size() > 0 && m_selectedLoopRefs.size() == 0) {
 					m_selectedCodeRefs.addAll(m_selectedTimeRefs);
 					m_setInstructionTimeAction.setEnabled(true);
-				} 
-				
+				} 				
 			}			
 		});
 		
@@ -215,37 +200,5 @@ public class UnknownsViewer {
 		
 		// required, for extensions
 		menuMgr.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-	}
- 	
-	class UnknownSorter extends ViewerSorter {
-		int field = 0;
-		int direction = 1;
-		
-		public int compare(Viewer viewer, Object e1, Object e2) {
-/* TODO			
-			Unknown p1 = (Unknown) e1;
-			Unknown p2 = (Unknown) e2;
-			switch(field){
-			case 0:
-				int res2 = p1.getPc() > p2.getPc() ? 1 : -1;
-				return res2 * direction;
-			case 1:
-				int res3 = p1.getPc() > p2.getPc() ? 1 : -1;
-				return res3 * direction;
-			default:
-				int resd = p1.getNodeId() > p2.getNodeId() ? 1 : -1;
-				return resd * direction;
-			}
-*/
-return 0;
-		}
-
-		public void setColoumn(int i) {
-			if(field == i) direction = -1*direction;
-			else {
-				field = i;
-				direction = 1;
-			}
-		}
 	} 	
 }
