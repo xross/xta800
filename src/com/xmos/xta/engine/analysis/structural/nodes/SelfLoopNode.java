@@ -94,8 +94,8 @@ public class SelfLoopNode extends Node{
 	}
 
 	public Collection<Node> whatsNext(Node node) {
-		Collection<Node> next = new HashSet<Node>();
-		if(getParent() != null){
+		Collection<Node> next = new HashSet<Node>();		
+		if (getParent() != null){
 			next.addAll(getParent().whatsNext(this));
 		}
 		next.add(m_loop);
