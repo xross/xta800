@@ -3,8 +3,7 @@ package com.xmos.xta.engine.analysis.structural;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-//import java.util.HashMap;
-//import java.util.HashSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,13 +35,17 @@ public class StructuralAnalysisEngine {
 	private Map<Integer, FunctionNode> m_threadStartPcs;
 	private StructureGraph m_structureGraph;
 	private Map<FunctionNode, FunctionNode> m_cfgToStruct;
-
+	private List<PatternMatcher> m_patternMatchers;
+	
+	
 	public StructuralAnalysisEngine(ControlFlowGraph controlFlowGraph) {
 		m_controlFlowGraph = controlFlowGraph;
 		m_cfgToStruct = new TreeMap<FunctionNode, FunctionNode>();
+		setUpPatternMatcher();
 	}
 
 	public StructuralAnalysisEngine() {
+		setUpPatternMatcher();
 	}
 
 	public boolean analyse(Engine engine) {
@@ -57,22 +60,13 @@ public class StructuralAnalysisEngine {
 
 	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine, boolean debug) {
 		if(workingSet.size() == 1) return true;
-		List<PatternMatcher> patternMatchers = new ArrayList<PatternMatcher>();
-		patternMatchers.add(new SelfLoopPattern());
-		patternMatchers.add(new LoopPatternMatcher());
-		patternMatchers.add(new SectionPatternMatcher());
-		patternMatchers.add(new SectionTransformer());
-		patternMatchers.add(new PathPatternMatcher());
-		patternMatchers.add(new UpWedge());
-		patternMatchers.add(new TerminalPatternMatcher());
 		boolean working = true;
 		boolean dominatorTreeUpToDate = false;
 		while (working) {
-
 			List<Node> postOrder = new LinkedList<Node>();
-			DFSPostOrder(postOrder, treeStart, new TreeSet<Node>());
+			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
 			working = false;
-			for (PatternMatcher pm : patternMatchers) {
+			for (PatternMatcher pm : m_patternMatchers) {
 				if (!dominatorTreeUpToDate && pm.usesDominatorTree()) {
 					buildDominatorTree(workingSet, treeStart);
 					dominatorTreeUpToDate = true;
@@ -122,7 +116,7 @@ public class StructuralAnalysisEngine {
 	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, FunctionNode> startPcs,
 			Engine engine, boolean isFunction) {
 
-		Collection<Node> graphs = new TreeSet<Node>();
+		Collection<Node> graphs = new HashSet<Node>();
 
 		List<Node> orderedGraphs = new LinkedList<Node>(graphStartNodes);
 		Collections.sort(orderedGraphs);
@@ -132,11 +126,15 @@ public class StructuralAnalysisEngine {
 
 			engine.provideFeedback("Processing " + functionName);
 
+			//TODO
 			Collection<Node> currentGraph = new TreeSet<Node>();
 			collectCurrentGraphNodes(graphStart, currentGraph);
+			
 			Collection<Node> basicBlocks = new TreeSet<Node>();
-
+			
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
+			
+			assert(basicBlocks.contains(initialBasicBlock));
 			
 			if (DEBUG) 
 				dumpTree(basicBlocks);
@@ -158,16 +156,12 @@ public class StructuralAnalysisEngine {
 		return graphs;
 	}
 
-	/**
-	 * This step is in the flow in order to reduce the graph of instructions
-	 * into basic blocks.
-	 */
 	private Node reduceGraphToBasicBlocks(Collection<Node> basicBlocks, Node initialBasicBlock,
 			Collection<Node> currentGraph) {
 
-		Set<Node> seen = new TreeSet<Node>();
-		Map<Node, Node> cfgToStructure = new TreeMap<Node, Node>();
-		Map<Node, Node> endPoint = new TreeMap<Node, Node>();
+		Set<Node> seen = new HashSet<Node>();
+		Map<Node, Node> cfgToStructure = new HashMap<Node, Node>();
+		Map<Node, Node> endPoint = new HashMap<Node, Node>();
 		Node treeStart = initialBasicBlock;
 
 		for (Node node : currentGraph) {
@@ -230,7 +224,7 @@ public class StructuralAnalysisEngine {
 			}
 		}
 
-		Set<Node> intersection = new TreeSet<Node>();
+		Set<Node> intersection = new HashSet<Node>();
 		boolean stillChanging = true;
 
 		while (stillChanging) {
@@ -271,6 +265,8 @@ public class StructuralAnalysisEngine {
 
 	private void DFSPostOrder(List<Node> nodes, Node entry, Set<Node> visited) {
 		nodes.add(entry);
+		
+
 		List<Node> next = new LinkedList<Node>(entry.getNextNodes());
 		Collections.sort(next);
 		for (Node x : next) {
@@ -289,7 +285,6 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	
 	private void linkFunctions() {
 		for (FunctionNode fn : m_cfgToStruct.keySet()) {
 			if (m_cfgToStruct.get(fn).getBranchTarget() != null) {
@@ -300,8 +295,6 @@ public class StructuralAnalysisEngine {
 		}
 	}
 		
-	
-	
 	private void setParents() {
 		for (Node node : m_structureGraph.getThreads()) {
 			setParent(node);
@@ -337,5 +330,15 @@ public class StructuralAnalysisEngine {
 			System.out.println("}\n");
 		}
 	}
-
+	
+	private void setUpPatternMatcher() {
+		m_patternMatchers = new ArrayList<PatternMatcher>();
+		m_patternMatchers.add(new SelfLoopPattern());
+		m_patternMatchers.add(new LoopPatternMatcher());
+		m_patternMatchers.add(new SectionPatternMatcher());
+		m_patternMatchers.add(new SectionTransformer());
+		m_patternMatchers.add(new PathPatternMatcher());
+		m_patternMatchers.add(new UpWedge());
+		m_patternMatchers.add(new TerminalPatternMatcher());
+	}
 }

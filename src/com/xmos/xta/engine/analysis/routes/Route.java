@@ -378,7 +378,7 @@ public class Route {
 			CommonMethods.connect(node, parent);
 		}
 	}
-
+	private static int c = 0;
 	private Map<Integer, HashSet<Node>> buildPcMap(StructureGraph structureGraph) {
 		final Map<Integer, HashSet<Node>> pcToNodes = new HashMap<Integer, HashSet<Node>>();
 		
@@ -393,12 +393,15 @@ public class Route {
 					}
 					map.add(node);
 					pcToNodes.put(node.getStartPc(), map);
+					c++;
 					return true;
 				}
 			});
 		}
+		System.out.println(c);
 		return pcToNodes;
 	}
+
 
 	private Map<String, HashSet<Node>> buildFunctionMap(StructureGraph structureGraph) {
 		final Map<String, HashSet<Node>> pcToNodes = new HashMap<String, HashSet<Node>>();
