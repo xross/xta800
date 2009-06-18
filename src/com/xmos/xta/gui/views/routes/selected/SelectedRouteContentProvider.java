@@ -1,19 +1,19 @@
-package com.xmos.xta.gui.views.tree;
+package com.xmos.xta.gui.views.routes.selected;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
-public class TreeViewContentProvider implements ITreeContentProvider  {
+public class SelectedRouteContentProvider implements ITreeContentProvider  {
     private static final boolean DEBUG = true;
 
-	public TreeViewContentProvider() {
-		if (DEBUG) System.out.printf("TreeViewContentProvider()\n");
+	public SelectedRouteContentProvider() {
+		if (DEBUG) System.out.printf("SelectedRouteContentProvider()\n");
 	}
 
 	public Object[] getChildren(Object parentElement) {
-		if (DEBUG) System.out.printf("TreeViewContentProvider: getChildren: %s\n",
+		if (DEBUG) System.out.printf("SelectedRouteContentProvider: getChildren: %s\n",
 				parentElement.toString());
 
 		Object[] res = ((Node)parentElement).getChildren().toArray();
@@ -21,31 +21,31 @@ public class TreeViewContentProvider implements ITreeContentProvider  {
 	}
 
 	public Object getParent(Object element) {
-		if (DEBUG) System.out.printf("TreeViewContentProvider: getParent: %s\n", 
+		if (DEBUG) System.out.printf("SelectedRouteContentProvider: getParent: %s\n", 
 				element.toString());	
 
 		return ((Node)element).getParent();
 	}
 
 	public boolean hasChildren(Object element) {
-		if (DEBUG) System.out.printf("TreeViewContentProvider: hasChildren: %s\n",
+		if (DEBUG) System.out.printf("SelectedRouteContentProvider: hasChildren: %s\n",
 				element.toString());	
 
 		return ((Node)element).getChildren().size() > 0;
 	}
 
 	public Object[] getElements(Object inputElement) {
-		if (DEBUG) System.out.printf("TreeViewContentProvider: getElements: %s\n",
+		if (DEBUG) System.out.printf("SelectedRouteContentProvider: getElements: %s\n",
 				inputElement.toString());	
 
         return ((Node)inputElement).getChildren().toArray();
 	}
 
 	public void dispose() {
-		if (DEBUG) System.out.printf("TreeViewContentProvider: dispose\n");	
+		if (DEBUG) System.out.printf("SelectedRouteContentProvider: dispose\n");	
 	}
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		if (DEBUG) System.out.printf("TreeViewContentProvider: inputChanged\n");	
+		if (DEBUG) System.out.printf("SelectedRouteContentProvider: inputChanged\n");	
 	}
 }

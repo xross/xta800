@@ -4,11 +4,12 @@ import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.console.commands.CommandContainer;
 
 public class Config extends CommandContainer {
-	static private Command[] m_options = { 
+	static private Command[] m_options = {
 		new Proc(), 
 		new Freq(), 
 		new Threads(), 
 		new SrcPaths(), 
+		new Verbosity(),
 	};
 	
 	public Config() { super("config"); }

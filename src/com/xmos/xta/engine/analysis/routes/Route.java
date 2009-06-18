@@ -91,7 +91,7 @@ public class Route {
 		return pcs;
 	}
 	
-	public Collection<Node> getSubRoutes() {
+	public List<Node> getSubRoutes() {
 		return m_subRoutes;
 	}
 

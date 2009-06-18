@@ -8,7 +8,6 @@ import com.xmos.xta.gui.views.console.ConsoleView;
 import com.xmos.xta.gui.views.control.ControlView;
 import com.xmos.xta.gui.views.info.InfoView;
 import com.xmos.xta.gui.views.log.LogView;
-import com.xmos.xta.gui.views.tree.TreeView;
 import com.xmos.xta.gui.views.routes.RoutesView;
 
 public class XtaPerspective implements IPerspectiveFactory {
@@ -26,7 +25,6 @@ public class XtaPerspective implements IPerspectiveFactory {
 
         IFolderLayout treeFolder = layout.createFolder(
         		"tree.folder", IPageLayout.LEFT, 0.3f, layout.getEditorArea());        
-        addView(layout, treeFolder, TreeView.ID);
         addView(layout, treeFolder, RoutesView.ID);
         addView(layout, treeFolder, ControlView.ID);
 

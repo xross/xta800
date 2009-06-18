@@ -46,13 +46,6 @@
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.gui.views.tree.TreeView"
-            icon="icons/tree.png"
-            id="com.xmos.xta.gui.views.tree.Tree"
-            name="Tree"
-            restorable="true">
-      </view>
-      <view
             class="com.xmos.xta.gui.views.console.ConsoleView"
             icon="icons/console.png"
             id="com.xmos.xta.gui.views.console.Console"
