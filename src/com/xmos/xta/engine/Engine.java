@@ -366,16 +366,10 @@ public class Engine implements Notifier {
 		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 		m_progress.resetState(Progress.State.PROCESSING_PATHS);
 		
-		route.analyse();		
+		boolean foundAtLeastOneSubRoute = route.analyse();		
 
-		if (route.getSubRoutes().size() == 0) {
-			/*
-			if (route.wasConstrained()) {
-				notify(Notifier.NOTIFY_ERROR, "No valid paths of execution (constraints applied)");
-			} else {
-				notify(Notifier.NOTIFY_ERROR, "No valid paths of execution");
-			}
-			*/
+		if (!foundAtLeastOneSubRoute) {
+			notify(Notifier.NOTIFY_ERROR, "No valid paths of execution");
 		}
 		
 		m_routes.add(route);
