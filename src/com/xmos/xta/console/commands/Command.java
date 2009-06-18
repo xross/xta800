@@ -1,13 +1,14 @@
 package com.xmos.xta.console.commands;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 
 public abstract class Command {
     public enum IdType {
@@ -125,4 +126,10 @@ public abstract class Command {
 		}
 		return false;
 	}
+
+    protected Collection<Node> getCollection(Node node) {
+    	Collection<Node> nodes = new ArrayList<Node>();
+    	nodes.add(node);
+    	return nodes;    	
+    }    
 }

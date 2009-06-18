@@ -1,39 +1,32 @@
 package com.xmos.xta.console.commands.print;
 
-import java.util.Collection;
-
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
 public class Structure extends Command {
-	public enum Mode {
-		GLOBAL,
-		ROUTE,
-	}
-	private Mode m_mode;
 	private int m_routeId;
+	private int m_nodeId;
+	private boolean m_nodeIdSet;
 	
 	public Structure() {
-		m_mode = Mode.GLOBAL;
+		m_routeId = 0;
+		m_nodeId = 0;
+		m_nodeIdSet = false;
 	}
 
-	public Structure(Mode mode, int routeId) {
-		m_mode = mode;
+	public Structure(int routeId, int nodeId, boolean nodeIdSpecified) {
 		m_routeId = routeId;
+		m_nodeId = nodeId;
+		m_nodeIdSet = nodeIdSpecified;
 	}
 
     public int numArgs() {
-    	switch (m_mode) {
-    	case GLOBAL:
-    		return 0;
-    	case ROUTE:
-    		return 1;
+    	if (m_nodeIdSet) {
+    		return 2;
     	}
-		assert(false);
-	    return 0;
+    	return 1;
     }        
 
     public String name() {
@@ -41,54 +34,53 @@ public class Structure extends Command {
     }        
 
     public String commandLine() {
-    	switch (m_mode) {
-    	case GLOBAL:
-    		return "structure";
-    	case ROUTE:
-    		return "structure " + getRouteId(m_routeId);
-    	}
-		assert(false);
-	    return "";    	
+       	if (m_nodeIdSet) {
+           	return "structure " + getRouteId(m_routeId) + " " + m_nodeId;
+       	}
+   		return "structure " + getRouteId(m_routeId);
     }
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = "structure [route id]: Displays the structure for the program, or if sepcified, just the given route (verbosity 0|1)";
+    	String descString = "structure <route id> [node id]: Display the structure for given route/node (verbosity 0|1)";
     	return descString;    	                
     }
 
     public Command clone(String[] args, int index) {    
-    	Mode mode = Mode.GLOBAL;
+		if ((index + numArgs()) >= args.length) 
+			return null;		
+
     	int routeId = 0;
-		if (!areArgsDone(args, index + 1)) {
+    	try {
+    		routeId = getRouteId(args[index + 1]);
+	    } catch (NumberFormatException e) { 
+	    	return null; 
+	    }
+	    
+		if (!areArgsDone(args, index + 2)) {
 	    	try {
-	    		routeId = getRouteId(args[index + 1]);	
-	    		
-		    } catch (NumberFormatException e) {
-		        return null;
-		    }    	
-		    mode = Mode.ROUTE;
-		}		
-    	return new Structure(mode, routeId);
+	    		return new Structure(routeId, Integer.parseInt(args[index + 2]), true);
+		    } catch (NumberFormatException e) { 
+		    	return null; 
+		    }
+		}
+		return new Structure(routeId, 0, false);
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 		
-	    Collection<Node> nodes = null;
-	    switch (m_mode) {
-	    case GLOBAL:
-	    	nodes = engine.getStructureGraph().getThreads();
-	    	break;
-	    	
-	    case ROUTE:
-	    	nodes = engine.getRoute(m_routeId).getSubRoutes();
-		    if (!validateRouteId(engine, console, m_routeId))
-			    return;
-	    	break;	    	
-	    }
+	    if (!validateRouteId(engine, console, m_routeId))
+		    return;
+
+	    if (m_nodeIdSet && !validateNodeId(engine, console, m_routeId, m_nodeId))
+		    return;	    	
 	    
 		StructureDisplayer displayer = new StructureDisplayer(console, engine.getVerbosity());	
-		displayer.display(nodes);
+		if (m_nodeIdSet) {
+			displayer.display(getCollection(engine.getRoute(m_routeId).getNode(m_nodeId)));						
+		} else {
+			displayer.display(engine.getRoute(m_routeId).getSubRoutes());			
+		}        
     }
 }

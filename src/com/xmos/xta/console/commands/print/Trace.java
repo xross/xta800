@@ -1,13 +1,9 @@
 package com.xmos.xta.console.commands.print;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
 public class Trace extends Command {
 	private int m_routeId;
@@ -80,18 +76,11 @@ public class Trace extends Command {
 	    if (m_nodeIdSet && !validateNodeId(engine, console, m_routeId, m_nodeId))
 		    return;	    	
 
-		TraceDisplayer displayer = new TraceDisplayer(console);
-		
+		TraceDisplayer displayer = new TraceDisplayer(console);		
 		if (m_nodeIdSet) {
 			displayer.display(getCollection(engine.getRoute(m_routeId).getNode(m_nodeId)));						
 		} else {
 			displayer.display(engine.getRoute(m_routeId).getSubRoutes());			
 		}
-    }
-    
-    private Collection<Node> getCollection(Node node) {
-    	Collection<Node> nodes = new ArrayList<Node>();
-    	nodes.add(node);
-    	return nodes;    	
-    }
+    }    
 }
