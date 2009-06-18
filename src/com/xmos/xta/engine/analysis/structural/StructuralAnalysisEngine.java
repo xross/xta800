@@ -3,12 +3,16 @@ package com.xmos.xta.engine.analysis.structural;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+//import java.util.HashMap;
+//import java.util.HashSet;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
@@ -35,15 +39,15 @@ public class StructuralAnalysisEngine {
 
 	public StructuralAnalysisEngine(ControlFlowGraph controlFlowGraph) {
 		m_controlFlowGraph = controlFlowGraph;
-		m_cfgToStruct = new HashMap<FunctionNode, FunctionNode>();
+		m_cfgToStruct = new TreeMap<FunctionNode, FunctionNode>();
 	}
 
 	public StructuralAnalysisEngine() {
 	}
 
 	public boolean analyse(Engine engine) {
-		m_functionStartPcs = new HashMap<Integer, FunctionNode>();
-		m_threadStartPcs = new HashMap<Integer, FunctionNode>();
+		m_functionStartPcs = new TreeMap<Integer, FunctionNode>();
+		m_threadStartPcs = new TreeMap<Integer, FunctionNode>();
 		return buildStructureGraph(engine);
 	}
 
@@ -51,8 +55,8 @@ public class StructuralAnalysisEngine {
 		return m_structureGraph;
 	}
 
-	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine) {
-		
+	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine, boolean debug) {
+		if(workingSet.size() == 1) return true;
 		List<PatternMatcher> patternMatchers = new ArrayList<PatternMatcher>();
 		patternMatchers.add(new SelfLoopPattern());
 		patternMatchers.add(new LoopPatternMatcher());
@@ -66,7 +70,7 @@ public class StructuralAnalysisEngine {
 		while (working) {
 
 			List<Node> postOrder = new LinkedList<Node>();
-			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
+			DFSPostOrder(postOrder, treeStart, new TreeSet<Node>());
 			working = false;
 			for (PatternMatcher pm : patternMatchers) {
 				if (!dominatorTreeUpToDate && pm.usesDominatorTree()) {
@@ -89,7 +93,6 @@ public class StructuralAnalysisEngine {
 					break;
 			}
 		}
-
 		return true;
 	}
 
@@ -119,42 +122,36 @@ public class StructuralAnalysisEngine {
 	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, FunctionNode> startPcs,
 			Engine engine, boolean isFunction) {
 
-		Collection<Node> graphs = new HashSet<Node>();
+		Collection<Node> graphs = new TreeSet<Node>();
 
-		for (Node graphStart : graphStartNodes) {
+		List<Node> orderedGraphs = new LinkedList<Node>(graphStartNodes);
+		Collections.sort(orderedGraphs);
+		for (Node graphStart : orderedGraphs) {
 
 			String functionName = graphStart.getInstructions().getFirst().getFunctionName();
 
 			engine.provideFeedback("Processing " + functionName);
 
-			Collection<Node> currentGraph = new HashSet<Node>();
+			Collection<Node> currentGraph = new TreeSet<Node>();
 			collectCurrentGraphNodes(graphStart, currentGraph);
-			Collection<Node> basicBlocks = new HashSet<Node>();
+			Collection<Node> basicBlocks = new TreeSet<Node>();
 
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
-
+			
 			if (DEBUG) 
 				dumpTree(basicBlocks);
 			
-			if (!createStructure(basicBlocks, initialBasicBlock, engine)) {
+			if (!createStructure(basicBlocks, initialBasicBlock, engine, false)) {
 				return null;
 			}
 			
 			Node decomposedGraph = basicBlocks.iterator().next();
 		
 			
-		
-//			StructureFnoper sf = new StructureFnoper();
-//			sf.analyse(decomposedGraph, isFunction);
-
-			
 			FunctionNode fn = new FunctionNode(decomposedGraph, functionName);
 			graphs.add(fn);
 			
 			setParent(fn);
-			
-			//StructureFnoper sf = new StructureFnoper();
-			//sf.analyse(fn, isFunction);
 			
 			startPcs.put(graphStart.getStartPc(), fn);
 		}
@@ -168,15 +165,16 @@ public class StructuralAnalysisEngine {
 	private Node reduceGraphToBasicBlocks(Collection<Node> basicBlocks, Node initialBasicBlock,
 			Collection<Node> currentGraph) {
 
-		Set<Node> seen = new HashSet<Node>();
-		Map<Node, Node> cfgToStructure = new HashMap<Node, Node>();
-		Map<Node, Node> endPoint = new HashMap<Node, Node>();
+		Set<Node> seen = new TreeSet<Node>();
+		Map<Node, Node> cfgToStructure = new TreeMap<Node, Node>();
+		Map<Node, Node> endPoint = new TreeMap<Node, Node>();
 		Node treeStart = initialBasicBlock;
 
 		for (Node node : currentGraph) {
 			if (!seen.contains(node)) {
 				if (!node.isFunctionNode()) {
 					BasicBlockMatcher bbpm = new BasicBlockMatcher();
+					
 					if (bbpm.match(node, treeStart, currentGraph)) {
 						seen.addAll(bbpm.getBlock().getContainedNodes());
 						basicBlocks.add(bbpm.getBlock());
@@ -188,7 +186,6 @@ public class StructuralAnalysisEngine {
 				} else {
 					seen.add(node);
 					Node clone = node.shallowCopy();
-					
 					
 					m_cfgToStruct.put((FunctionNode) clone, (FunctionNode) node);
 					basicBlocks.add(clone);
@@ -233,7 +230,7 @@ public class StructuralAnalysisEngine {
 			}
 		}
 
-		Set<Node> intersection = new HashSet<Node>();
+		Set<Node> intersection = new TreeSet<Node>();
 		boolean stillChanging = true;
 
 		while (stillChanging) {

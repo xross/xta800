@@ -3,6 +3,7 @@ package com.xmos.xta.engine.analysis.controlflow;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
@@ -11,7 +12,7 @@ public class UnreachableCodeFinder {
 	private Set<Node> m_unreachable;
 		
 	public UnreachableCodeFinder() {
-		m_unreachable = new HashSet<Node>();
+		m_unreachable = new TreeSet<Node>();
 	}
 	
 	public Collection<Node> getUnreachableCode(){

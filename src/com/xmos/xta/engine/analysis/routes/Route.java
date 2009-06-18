@@ -116,11 +116,10 @@ public class Route {
 			Collection<Node> startNodes = new HashSet<Node>();
 			Collection<Node> endNodes = new HashSet<Node>();
 			Map<Integer, HashSet<Node>> pcToStruct = buildPcMap(m_structureGraph);
-
 			for (int from : startPcs) {
 				if (pcToStruct.get(from) != null) {
-					
 					HashSet<Node> start = pcToStruct.get(from);
+					
 					for(Node node : start){
 						Node nodeToAdd = node;
 						if (nodeToAdd.getParent() != null && !nodeToAdd.getParent().isInstructionNode()){
@@ -128,13 +127,14 @@ public class Route {
 						}
 						startNodes.add(nodeToAdd);
 					}
-				}
+				} 
 			}
 			for (int to : endPcs) {
 				if (pcToStruct.get(to) != null) {
 					endNodes.addAll(pcToStruct.get(to));
 				}
 			}
+			
 			
 			for (Node start : startNodes) {
 				Collection<Node> workingSet = new HashSet<Node>();
@@ -143,15 +143,18 @@ public class Route {
 				m_excludedRouteNodes = new HashSet<Node>();
 				explore(start, workingSet, endPcs, endNodes, null);
 
+				
+				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
-
+				
+				
 				pruneGraphOfExcludedPaths(workingSet);
 				
-				if (true) StructuralAnalysisEngine.dumpTree(workingSet);
+				if (false) StructuralAnalysisEngine.dumpTree(workingSet);
 				Node newStart = makeBasicBlocks(start, endNodes, workingSet);
 				
 				//copy every node into a new working set
-				sae.createStructure(workingSet, newStart, m_engine);
+				sae.createStructure(workingSet, newStart, m_engine, true);
 
 				Node baseNode = workingSet.iterator().next();
 				Node newGraph = baseNode.deepCopy(new HashMap<Integer, FunctionNode>());
@@ -379,8 +382,10 @@ public class Route {
 	private Map<Integer, HashSet<Node>> buildPcMap(StructureGraph structureGraph) {
 		final Map<Integer, HashSet<Node>> pcToNodes = new HashMap<Integer, HashSet<Node>>();
 		
+		
 		for (Node node : structureGraph.getThreads()) {
 			node.traverse(0, new DefaultNodeTraverser() {
+				
 				public boolean foundInstructionNode(Node node, int depth) {
 					HashSet<Node> map = pcToNodes.get(node.getStartPc());
 					if (map == null) {
@@ -462,55 +467,6 @@ public class Route {
 		}
 		return startBlock;
 	}
-
-	/*
-	 private boolean debug = false;
-	 private void explore(Node node, Collection<Node> set, Collection<Integer> endPcs, Collection<Node> endNodes, Node parent) {
-		
-		//if(set.contains(node)) return;
-		if (debug) System.out.println(node);
-		Set<Integer> pcs = new HashSet<Integer>(endPcs);
-		pcs.retainAll(node.getPCs());
-
-		if (debug) System.out.println("\t" + node + " contains an end pc: " + !pcs.isEmpty() );
-		// if the node does not contain the pc then just add the node
-		if (pcs.isEmpty() || set.isEmpty()) {
-			
-			makeConnection(node, parent);
-			if(set.contains(node)) {
-				if (debug) System.out.println("ive seen this node alreads");
-				return;
-			}
-			if (debug) System.out.println("this node does not contain the end node");
-			set.add(node);
-			if(node.isExcluded()){
-				return;
-			}
-			if (!node.getParent().whatsNext(node).isEmpty()) {
-				for (Node next : node.getParent().whatsNext(node)) {
-					if (debug) System.out.println("following next node of " + node + " -> " + next);
-					explore(next, set, endPcs, endNodes, node);
-				}
-			}
-		} else {
-
-			if (debug) System.out.println("this node does contain the end node");
-			// if this is an instruction then add the node and we are done
-			if (endNodes.contains(node)) {
-				if (debug) System.out.println("found end node");
-				makeConnection(node, parent);
-				set.add(node);
-				return;
-			} else {
-				assert (!node.getImmediateChildren().isEmpty());
-				for(Node child : node.getImmediateChildren()){
-					if (debug) System.out.println("following immediate childer of " + node + " -> " + child);
-					explore(child, set, endPcs, endNodes, parent);
-				}
-			}
-		}
-	}
-	 */
 
 	private void sortSubRoutes() {
 		Collections.sort(m_subRoutes);

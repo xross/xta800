@@ -3,6 +3,7 @@ package com.xmos.xta.engine.analysis.controlflow;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.xmos.elfhandler.ElfSection;
 import com.xmos.xeloader.MemoryImage;
@@ -26,7 +27,7 @@ public class InstructionDecoder {
 		m_coreId = coreId;
 		m_xeLoader = xeLoader;
 		m_config = config;
-		m_decodedInstructions = new HashMap<Integer, Node>();
+		m_decodedInstructions = new TreeMap<Integer, Node>();
 	}
 	
 	public boolean decode(){		

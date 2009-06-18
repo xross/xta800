@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
@@ -42,9 +45,9 @@ public class FunctionHandler {
 	 * All branch and link targets have to be set before this can be reliably run. 
 	 */
 	public boolean addFunctions(){
-		m_instToFunc = new HashMap<Node, Node>();
-		m_functions = new HashSet<FunctionNode>();
-		m_pseudoFunctions = new HashSet<Node>();
+		m_instToFunc = new TreeMap<Node, Node>();
+		m_functions = new TreeSet<FunctionNode>();
+		m_pseudoFunctions = new TreeSet<Node>();
 		
 		for (Node instruction : m_instDecoder.getInstructions() ){
 			assert(instruction.getInstructions().size() == 1);
