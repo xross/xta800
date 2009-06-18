@@ -31,7 +31,11 @@ public class PathPatternMatcher extends PatternMatcher {
 	}
 
 	private boolean isStart(Node node){
-		if (node.getPrevNodes().size() ==  0) {
+		//im really not over happy about this. will have to verify it
+		if(node == m_treeStart){
+			return true;
+		} else 
+			if (node.getPrevNodes().size() ==  0) {
 			return true;
 		} else if (node.getPrevNodes().size() ==  1) {
 			Node prev = node.getPrevNodes().iterator().next();
@@ -48,10 +52,15 @@ public class PathPatternMatcher extends PatternMatcher {
 	}
 	
 	private boolean isEnd(Node node) {
+		
 		if (node.getNextNodes().size() ==  0){
 			return true;
 		} else if (node.getNextNodes().size() ==  1) {
 			Node next = node.getNextNodes().iterator().next();
+			
+			if(next == m_treeStart){
+				return true;
+			}
 			if (next.getPrevNodes().size() > 1) {
 				return true;
 			} else {

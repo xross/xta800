@@ -1,7 +1,6 @@
 package com.xmos.xta.engine.analysis.controlflow;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 

@@ -150,13 +150,26 @@ public class Route {
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 				pruneGraphOfExcludedPaths(workingSet);
 				
-				if (false) StructuralAnalysisEngine.dumpTree(workingSet);
-				Node newStart = makeBasicBlocks(start, endNodes, workingSet);
+				//StructuralAnalysisEngine.dumpTree(workingSet);
+				
+				Set<Node> newEndNodes = removeFinalInstruction(endNodes, start,
+						workingSet);
+				
+				
+				
+				Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
+
+				assert(cfgSanityCheck(workingSet));
+				
+				//StructuralAnalysisEngine.dumpTree(workingSet);
 				
 				//copy every node into a new working set
 				sae.createStructure(workingSet, newStart, m_engine, true);
-
+				
+				
 				Node baseNode = workingSet.iterator().next();
+				//StructuralAnalysisEngine.dumpTree(workingSet);
+				
 				Node newGraph = baseNode.deepCopy(new HashMap<Integer, FunctionNode>());
 							
 				m_subRoutes.add(newGraph);
@@ -171,6 +184,89 @@ public class Route {
 			assert(false);
 		    break;
 		}
+	}
+
+	private Set<Node> removeFinalInstruction(Collection<Node> endNodes,
+			Node start, Collection<Node> workingSet) {
+		
+		
+		Set<Node> newEndNodes = new HashSet<Node>();
+		for(Node node : endNodes){
+			for(Node prev : node.getPrevNodes()){
+				newEndNodes.add(prev);
+			}
+		}
+		
+		//FIXME - the endNodes night have a single instruction but the start may be a block
+		if(endNodes.contains(start)){
+			endNodes.remove(start);
+		}
+		
+		for(Node endNode : endNodes){
+			for(Node prev : endNode.getPrevNodes()){
+				CommonMethods.disconnect(endNode, prev);
+			}
+			workingSet.remove(endNode);
+		}
+		return newEndNodes;
+	}
+	
+	private Node makeBasicBlocks(Node start, Collection<Node> endNodes, Collection<Node> workingSet) {
+		// from the start instruction crawl downwards stopping at basic block
+		// boundaries
+		Node startBlock = null;
+		if(!start.isBlockNode()){
+			Node currentNode = start;
+			List<Node> startList = new LinkedList<Node>();
+			
+			startList.add(currentNode);
+	
+			while (currentNode.getNextNodes().size() == 1 && currentNode.getNextNodes().iterator().next().isInstructionNode()) {
+				currentNode = currentNode.getNextNodes().iterator().next();
+				startList.add(currentNode);
+			}
+			startBlock = new BlockNode(startList);
+			workingSet.removeAll(startList);
+			workingSet.add(startBlock);
+	
+			for (Node next : currentNode.getNextNodes()) {
+				next.removePrevNode(currentNode);
+				CommonMethods.connect(next, startBlock);
+			}
+			for(Node prev  : start.getPrevNodes()){
+				prev.removeNextNode(start);
+				CommonMethods.connect(startBlock, prev);
+			}
+		} else {
+			startBlock = start;
+		}
+		// from every end node in the working set crawl upwards stopping at
+		// basic block boundaries
+		for (Node endNode : endNodes) {
+			if (workingSet.contains(endNode)) {
+				List<Node> endList = new LinkedList<Node>();
+				Node end = endNode;
+				endList.add(end);
+				while (end.getPrevNodes().size() == 1 && end.getPrevNodes().iterator().next().isInstructionNode()) {
+					end = end.getPrevNodes().iterator().next();
+					endList.add(0, end);
+				}
+
+				BlockNode endBlock = new BlockNode(endList);
+				workingSet.removeAll(endList);
+				workingSet.add(endBlock);
+
+				for (Node prev : end.getPrevNodes()) {
+					prev.removeNextNode(end);
+					CommonMethods.connect(endBlock, prev);
+				}
+				for (Node next : endNode.getNextNodes()) {
+					next.removePrevNode(endNode);
+					CommonMethods.connect(next, endBlock);
+				}
+			}
+		}
+		return startBlock;
 	}
 
 	public Collection<Node> getUnknowns(final UnknownState unknownState) {
@@ -435,7 +531,6 @@ public class Route {
 		return pcToNodes;
 	}
 
-
 	private Map<String, HashSet<Node>> buildFunctionMap(StructureGraph structureGraph) {
 		final Map<String, HashSet<Node>> pcToNodes = new HashMap<String, HashSet<Node>>();
 		for (Node node : structureGraph.getThreads()) {
@@ -454,56 +549,6 @@ public class Route {
 		return pcToNodes;
 	}
 	
-	private Node makeBasicBlocks(Node start, Collection<Node> endNodes, Collection<Node> workingSet) {
-		// from the start instruction crawl downwards stopping at basic block
-		// boundaries
-		Node startBlock = null;
-		if(!start.isBlockNode()){
-			Node currentNode = start;
-			List<Node> startList = new LinkedList<Node>();
-			
-			startList.add(currentNode);
-	
-			while (currentNode.getNextNodes().size() == 1 && currentNode.getNextNodes().iterator().next().isInstructionNode()) {
-				currentNode = currentNode.getNextNodes().iterator().next();
-				startList.add(currentNode);
-			}
-			startBlock = new BlockNode(startList);
-			workingSet.removeAll(startList);
-			workingSet.add(startBlock);
-	
-			for (Node next : currentNode.getNextNodes()) {
-				next.removePrevNode(currentNode);
-				CommonMethods.connect(next, startBlock);
-			}
-		} else {
-			startBlock = start;
-		}
-		// from every end node in the working set crawl upwards stopping at
-		// basic block boundaries
-		for (Node endNode : endNodes) {
-			if (workingSet.contains(endNode)) {
-				List<Node> endList = new LinkedList<Node>();
-				Node end = endNode;
-				endList.add(end);
-				while (end.getPrevNodes().size() == 1 && end.getPrevNodes().iterator().next().isInstructionNode()) {
-					end = end.getPrevNodes().iterator().next();
-					endList.add(0, end);
-				}
-
-				BlockNode endBlock = new BlockNode(endList);
-				workingSet.removeAll(endList);
-				workingSet.add(endBlock);
-
-				for (Node prev : end.getPrevNodes()) {
-					prev.removeNextNode(end);
-					CommonMethods.connect(endBlock, prev);
-				}
-			}
-		}
-		return startBlock;
-	}
-
 	private void setParents() {
 		for (Node node : m_subRoutes) {
 			setParent(node);
@@ -614,4 +659,23 @@ public class Route {
 		}
 		return referencedNodes;		
 	}
+	
+
+	private boolean cfgSanityCheck(Collection<Node> workingSet) {
+		//this checks to see that all nodes point to another node in the workingSet and no other
+		for(Node node : workingSet){
+			for(Node next: node.getNextNodes()){
+				if(!workingSet.contains(next)){
+					return false;
+				}
+			}
+			for(Node prev: node.getPrevNodes()){
+				if(!workingSet.contains(prev)){
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 }

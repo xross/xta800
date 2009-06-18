@@ -200,8 +200,10 @@ public class NodeAttributes {
 		if ((enclosingLoopNode != null) && 
 			(!enclosingLoopNode.getAttributes().getIsAbsolute())) {
 			
-			long cummulativeIterations = 
+			long cummulativeIterations = 1;
+			if(enclosingLoopNode.getParent()  != null ){
 				enclosingLoopNode.getParent().getAttributes().getCummulativeIterations(c);  
+			}
 			
 			return getNumIterations(c) * cummulativeIterations;
 		}
