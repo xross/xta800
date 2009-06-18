@@ -83,7 +83,7 @@ public class Label extends Command {
     	case ADD:
             return "label <CONSTRAINT_REF> <label>: Adds the given label to the labels list";         
     	case REMOVE:
-            return "label [label]+: Removes the given labels from the labels list (supports regular expressions)";
+            return "label <label>+: Removes the given labels from the labels list (supports regular expressions)";
     	case LIST:
             return "labels: Lists the labels";
     	}    		

@@ -67,10 +67,10 @@ public class Exclusion extends Command {
     	String descString = "";
     	switch (m_operation) {
     	case ADD:
-        	descString = "exclusion <ANY_REF>: Excludes the block containing the given reference";
+        	descString = "exclusion <ANY_REF>: Adds the given reference to the list of exclusions";
         	break;
     	case REMOVE:
-        	descString = "exclusion: <ANY_REF>: Un-excludes the block containing the given reference";
+        	descString = "exclusion: <ANY_REF|*>: Removes the given reference (or all if '*') from the list of exclusions";
         	break;
     	case LIST:
         	descString = "exclusions: Displays the exclusions";

@@ -632,17 +632,22 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean removeExclusion(String refString) {
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.ANY_REF);
-		if (!resolveRefernece(reference)) {
-			return false;
-		}
-		Iterator<Reference> iter = m_exclusions.iterator();
-		while (iter.hasNext()) {
-			Reference ref = iter.next();
-			if (ref.equals(reference)) {
-				iter.remove();
+		if (refString.equals("*")) {
+			m_exclusions.clear();
+
+		} else {
+			Reference reference = ReferenceFactory.createReference(
+					refString, ReferenceClass.ANY_REF);
+			if (!resolveRefernece(reference)) {
+				return false;
 			}
+			Iterator<Reference> iter = m_exclusions.iterator();
+			while (iter.hasNext()) {
+				Reference ref = iter.next();
+				if (ref.equals(reference)) {
+					iter.remove();
+				}
+			}			
 		}
 		return true;
 	}
