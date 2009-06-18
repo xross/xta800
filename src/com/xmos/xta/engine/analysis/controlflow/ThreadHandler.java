@@ -1,7 +1,6 @@
 package com.xmos.xta.engine.analysis.controlflow;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.TreeSet;
 
 import com.xmos.xta.engine.Notifier;

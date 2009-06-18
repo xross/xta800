@@ -67,6 +67,9 @@ public class StructuralAnalysisEngine {
 			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
 			working = false;
 			for (PatternMatcher pm : m_patternMatchers) {
+				if(debug) {
+					System.out.println(pm.getClass().getSimpleName());
+				}
 				if (!dominatorTreeUpToDate && pm.usesDominatorTree()) {
 					buildDominatorTree(workingSet, treeStart);
 					dominatorTreeUpToDate = true;
@@ -76,6 +79,7 @@ public class StructuralAnalysisEngine {
 						return false;
 					}
 					if (pm.isMatch(node, workingSet, false, treeStart)) {
+						
 						treeStart = pm.getTreeStart();
 						assert (connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
@@ -133,6 +137,12 @@ public class StructuralAnalysisEngine {
 			Collection<Node> basicBlocks = new TreeSet<Node>();
 			
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
+			
+			
+			//now do fnop analysis
+			
+			//FnopAnalyser fa = new FnopAnalyser();
+			//fa.analyse(initialBasicBlock, isFunction);
 			
 			assert(basicBlocks.contains(initialBasicBlock));
 			
