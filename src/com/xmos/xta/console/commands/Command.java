@@ -1,13 +1,14 @@
 package com.xmos.xta.console.commands;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 
 public abstract class Command {
     public enum IdType {
@@ -22,9 +23,7 @@ public abstract class Command {
     	SRCLABEL,
     	HELP,
     }
-	
-    private static boolean m_found;
-    
+	    
     public abstract int numArgs();
     public abstract String name();
     public abstract String commandLine();
@@ -83,7 +82,7 @@ public abstract class Command {
     	return true;
     }
     
-    public static boolean validateNodeId(Engine engine, Console console, final int routeId, final int nodeId) {
+    public static boolean validateNodeId(Engine engine, Console console, int routeId, int nodeId) {
     	if (engine.getRoutes().size() == 0) {
     		console.display("Error: No routes analysed\n");
     		return false;
@@ -94,19 +93,13 @@ public abstract class Command {
     		console.display(String.format("Error: invalid route id: %d\n", routeId));
     		return false;
     	}
-    	
-    	m_found = false;
-    	for (Node node : route.getSubRoutes()) {
-    	    node.traverse(0, new UntypedNodeTraverser() {
-    	    	public boolean foundNode(Node node, int depth) {
-    	    		if (node.getId() == nodeId) {
-    	    			m_found = true;
-    	    		}
-    	        	return true;
-    	    	}
-    	    });    		
+    	    	
+    	Node node = route.getNode(nodeId);
+    	if (node == null) {
+    		console.display(String.format("Error: invalid node id: %d\n", nodeId));
+    		return false;    		
     	}
-    	return m_found;
+    	return true;
     }
     
     public static int getRouteId(String routeId) {
@@ -133,4 +126,10 @@ public abstract class Command {
 		}
 		return false;
 	}
+
+    protected Collection<Node> getCollection(Node node) {
+    	Collection<Node> nodes = new ArrayList<Node>();
+    	nodes.add(node);
+    	return nodes;    	
+    }    
 }

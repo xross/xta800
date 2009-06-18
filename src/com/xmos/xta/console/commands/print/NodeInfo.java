@@ -4,25 +4,20 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 
 public class NodeInfo extends Command {
 	private int m_routeId;
 	private int m_nodeId;
-	private Node m_node;
 	
 	public NodeInfo() {
 		m_routeId = 0;
 		m_nodeId = 0;
-		m_node = null;
 	}
 	
 	public NodeInfo(int routeId, int nodeId) {
 		m_routeId = 0;
 		m_nodeId = nodeId;
-		m_node = null;
 	}
 	
     public int numArgs() {
@@ -63,27 +58,11 @@ public class NodeInfo extends Command {
     }
     
     private void displayNodeSummary(Engine engine, Console console) {
-    	Node node = getNode(engine, m_routeId, m_nodeId);
+    	Node node = engine.getRoute(m_routeId).getNode(m_nodeId);	
     	if (node == null) {
     		console.display(String.format("Error: Node id: %d nt found\n", m_nodeId));
     		return;
     	}    	
     	console.display(node.getAttributes().getTimingDetails());
-    }
-    
-    private Node getNode(Engine engine, final int routeId, final int nodeId) {
-		Route route = engine.getRoute(m_routeId);		
-		for (Node node : route.getSubRoutes()) {					
-		    node.traverse(0, new UntypedNodeTraverser() {
-				public boolean foundNode(Node node, int depth) {
-					if (node.getId() == nodeId) {
-						m_node = node;
-						return false;
-					}
-					return true;
-				}
-		    });
-		}
-        return m_node;   	
     }
 }

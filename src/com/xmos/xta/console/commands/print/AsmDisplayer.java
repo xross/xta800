@@ -1,5 +1,6 @@
 package com.xmos.xta.console.commands.print;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -21,16 +22,14 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 public class AsmDisplayer {
 	private Engine m_engine;
 	private Console m_console;
-	private int m_routeId;
 	
-	public AsmDisplayer(Engine engine, Console console, int routeId) {
+	public AsmDisplayer(Engine engine, Console console) {
 		m_engine = engine;
 		m_console = console;
-		m_routeId = routeId;
 	}
 	
-    public void display() {     	      
-        for (Node node : m_engine.getRoute(m_routeId).getSubRoutes()) {
+    public void display(Collection<Node> nodes) {     	      
+        for (Node node : nodes) {
       	    List<XtaInstruction> instructions = node.getInstructions();
       	    
         	MemoryImage memoryImage = m_engine.getMemoryImage();
