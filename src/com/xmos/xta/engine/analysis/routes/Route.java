@@ -61,6 +61,7 @@ public class Route {
 		m_engine = engine;
 		m_routeTiming = new RouteTiming(this, engine.getConfig(), engine.getNodeId(), engine.getCoreId());
 		createExclusions();
+		
 	}
 
 	public int getRouteId() {
@@ -140,8 +141,10 @@ public class Route {
 					endNodes.addAll(pcToStruct.get(to));
 				}
 			}
-			
+			printCollection("exclusions", m_exclusions);
+			printCollection("end nodes", endNodes);
 			for (Node start : startNodes) {
+				System.out.println("start node: " + start);
 				Collection<Node> workingSet = new HashSet<Node>();
 
 				m_structureGraph.removeLinks();
@@ -149,24 +152,25 @@ public class Route {
 				explore(start, workingSet, endPcs, endNodes, null);
 				
 				
-				//StructuralAnalysisEngine.dumpTree(workingSet);			
+				StructuralAnalysisEngine.dumpTree(workingSet);	
+				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 				pruneGraphOfExcludedPaths(workingSet);
 				if(workingSet.isEmpty()){
 					continue;
 				}
 				
-				//StructuralAnalysisEngine.dumpTree(workingSet);			
+				StructuralAnalysisEngine.dumpTree(workingSet);			
 				Set<Node> newEndNodes = removeFinalInstruction(endNodes, start,
 						workingSet);
 				
 				
-				//StructuralAnalysisEngine.dumpTree(workingSet);			
+				StructuralAnalysisEngine.dumpTree(workingSet);			
 				Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
 				assert(cfgSanityCheck(workingSet));
 				
 				
-				//StructuralAnalysisEngine.dumpTree(workingSet);
+				StructuralAnalysisEngine.dumpTree(workingSet);
 				sae.createStructure(workingSet, newStart, m_engine, true);
 				assert(workingSet.size() == 1);
 				Node baseNode = workingSet.iterator().next();
@@ -187,6 +191,15 @@ public class Route {
 		return !m_subRoutes.isEmpty();
 	}
 
+	
+	private void printCollection(String name, Collection<Node> coll){
+		System.out.print(name + ": " + coll);
+		for(Node node : coll){
+			System.out.print(" 0x" + Integer.toHexString(node.getStartPc()));
+		}
+		System.out.println();
+	}
+	
 	private Set<Node> removeFinalInstruction(Collection<Node> endNodes,
 			Node start, Collection<Node> workingSet) {
 		
@@ -304,6 +317,8 @@ public class Route {
     }	
 	
 	private void pruneGraphOfExcludedPaths(Collection<Node> workingSet) {
+		System.out.println(m_excludedRouteNodes);
+		
 		while(!m_excludedRouteNodes.isEmpty()){
 			Node excludedNode = m_excludedRouteNodes.iterator().next();
 			for(Node prev : excludedNode.getPrevNodes()){
@@ -470,21 +485,41 @@ public class Route {
 	private void explore(Node node, Collection<Node> set, Collection<Integer> endPcs, Collection<Node> endNodes, Node parent) {	
 		Set<Integer> pcs = new HashSet<Integer>(endPcs);
 		pcs.retainAll(node.getPCs());
+		System.out.println("\nexploring node: " + node);
+		
+		Collection<Node> exclusions = new HashSet<Node>(m_exclusions);
+		exclusions.retainAll(node.getContainedNodes());
+		
+
 		if (pcs.isEmpty() || set.isEmpty()) {
-			makeConnection(node, parent);
+			
+			
+			
+			if(!exclusions.isEmpty() ){
+				//if( node.isSectionNode()){
+				if( node.isBlockNode() ){
+					m_excludedRouteNodes.add(node);
+				} else {
+					assert (!node.getImmediateChildren().isEmpty());
+					for(Node child : node.getImmediateChildren()){
+						explore(child, set, endPcs, endNodes, parent);
+					}
+				}
+				return;
+			}
 			if(set.contains(node)) {
 				return;
 			}
 			set.add(node);
-			Collection<Node> exclusions = new HashSet<Node>(m_exclusions);
-			exclusions.retainAll(node.getContainedNodes());
-			if(!exclusions.isEmpty()){
-				m_excludedRouteNodes.add(node);
-				return;
-			}
+			
+			makeConnection(node, parent);
+			
 			assert(node.getParent() != null);
 			if (!node.getParent().whatsNext(node).isEmpty()) {
-				for (Node next : node.getParent().whatsNext(node)) {
+				
+				Collection<Node> nextNodes = node.getParent().whatsNext(node);
+				System.out.println(node + " -> " + nextNodes);
+				for (Node next : nextNodes) {
 					explore(next, set, endPcs, endNodes, node);
 				}
 			}

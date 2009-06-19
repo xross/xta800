@@ -324,12 +324,14 @@ public class StructuralAnalysisEngine {
 						System.out.println(node + " -> " + next + ";");
 					}
 				}
+				/*
 				System.out.print(node + " [label=\"" );
 				for(XtaInstruction inst : node.getInstructions()){
 					System.out.print(inst + "\\n");
 				}
 				System.out.print("\"");
 				System.out.println("];");
+				*/
 			}
 			System.out.println("}\n");
 		}
