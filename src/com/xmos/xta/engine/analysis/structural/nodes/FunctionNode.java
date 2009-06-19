@@ -130,8 +130,15 @@ public class FunctionNode extends IBufferNode {
 		}
 	}
 	
+	public String getDescription() {
+		if (m_functionName == null) {
+			m_functionName = "Unnamed function " + functionId++;
+		}
+		return m_functionName;
+	}
+	
 	public String getFunctionName() {
-		if(m_functionName == null){
+		if (m_functionName == null) {
 			m_functionName = "Unnamed function " + functionId++;
 		}
 		return m_functionName;

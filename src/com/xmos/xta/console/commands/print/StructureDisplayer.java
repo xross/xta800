@@ -4,8 +4,7 @@ import java.util.Collection;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.engine.instructions.XtaInstruction;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 
 public class StructureDisplayer {
 
@@ -22,91 +21,29 @@ public class StructureDisplayer {
 	
 	public void display(Collection<Node> nodes) {
 		for (Node node : nodes) {					
-		    node.traverse(0, new NodeTraverser() {
-				public boolean foundBlockNode(Node node, int depth) {
-					printIndent(depth);
-					printModifiers(node, depth);
-					displayNodeName(node);
-					if (DEBUG_NEXT) displayWhatsNext(node);
-					if (DEBUG_BEFORE) displayWhatsBefore(node);
-					displayTimeTaken(node);
-					m_console.display("\n");
-					return true;
-				}
-
-				public boolean foundFunctionNode(Node node, int depth) {
-					printIndent(depth);
-					printModifiers(node, depth);
-					displayNodeName(node);
-					displayFunctionName(node);
-					if (DEBUG_NEXT) displayWhatsNext(node);
-					if (DEBUG_BEFORE) displayWhatsBefore(node);
-					displayTimeTaken(node);
-					m_console.display("\n");
-					return true;
-				}
-
-				public boolean foundLoopNode(Node node, int depth) {
-					printIndent(depth);
-					printModifiers(node, depth);
-					displayNodeName(node);
-					if (DEBUG_NEXT) displayWhatsNext(node);
-					if (DEBUG_BEFORE) displayWhatsBefore(node);
-					displayTimeTaken(node);
-					m_console.display("\n");
-					return true;
-				}
-
-				public boolean foundPathNode(Node node, int depth) {
-					printIndent(depth);
-					printModifiers(node, depth);
-					displayNodeName(node);
-					if (DEBUG_NEXT) displayWhatsNext(node);
-					if (DEBUG_BEFORE) displayWhatsBefore(node);
-					displayTimeTaken(node);
-					m_console.display("\n");
-					return true;
-				}
-
-				public boolean foundSectionNode(Node node, int depth) {
-					printIndent(depth);
-					printModifiers(node, depth);
-					displayNodeName(node);
-					if (DEBUG_NEXT) displayWhatsNext(node);
-					if (DEBUG_BEFORE) displayWhatsBefore(node);
-					displayTimeTaken(node);
-					m_console.display("\n");
-					return true;
-				}
-
-				public boolean foundTerminalNode(Node node, int depth) {
-					printIndent(depth);
-					printModifiers(node, depth);
-					displayNodeName(node);
-					if (DEBUG_NEXT) displayWhatsNext(node);
-					if (DEBUG_BEFORE) displayWhatsBefore(node);
-					displayTimeTaken(node);
-					m_console.display("\n");
-					return true;
-				}		    	
-
-				public boolean foundInstructionNode(Node node, int depth) {
-					if (m_verbosity > 0) {
-						printIndent(depth);
-						printModifiers(node, depth);
-						displayNodeName(node);
-						displayTimeTaken(node);
-						displayInstructionTrace(node);
-						if (DEBUG_NEXT) displayWhatsNext(node);
-						if (DEBUG_BEFORE) displayWhatsBefore(node);
-						m_console.display("\n");
-					}
+		    node.traverse(0, new UntypedNodeTraverser() {
+				public boolean foundNode(Node node, int depth) {
+					displayNodeInfo(node, depth);
 					return true;						
 				}
 		    });
 		    m_console.display("\n"); 
 		}				
     }
+	
+	private void displayNodeInfo(Node node, int depth) {
+		if (node.isInstructionNode() && (m_verbosity <= 0))
+			return;
+		
+		printIndent(depth);
+		printModifiers(node, depth);
+		displayNodeName(node);
+		displayTimeTaken(node);
+		displayDescription(node);
+		if (DEBUG_NEXT) displayWhatsNext(node);
+		if (DEBUG_BEFORE) displayWhatsBefore(node);
+		m_console.display("\n");		
+	}
 	
 	private void printIndent(int depth) {
 		for (int i = 0; i < depth - 1; ++i) {
@@ -125,23 +62,18 @@ public class StructureDisplayer {
 	}	
 	
 	private void displayNodeName(Node node) {	
-		String nodeName = "";
-		if (node.getAttributes().isLoopHeader()) {
-			nodeName = String.format("header(%d)", node.getId());			
-		} else {
-			nodeName = String.format("%s(%d)", node.getTypeName(), node.getId());
-		}
+		String nodeName = String.format("%s(%d)", node.getTypeName(), node.getId());
 		m_console.display(String.format("%-14s", nodeName));		
-	}
-
-	private void displayFunctionName(Node node) {
-		m_console.display(String.format("[%s]", node.getFunctionName()));
 	}
 	
 	private void displayTimeTaken(Node node) {
 		m_console.display(node.getAttributes().getTimingSummary()); 		
 	}	
 
+	private void displayDescription(Node node) {
+		m_console.display(" " + node.getDescription());
+	}
+	
 	private void displayWhatsNext(Node node) {
 		if (node.getParent()!= null && node.getParent().whatsNext(node) != null){
 			m_console.display(" ---after: ");
@@ -157,12 +89,4 @@ public class StructureDisplayer {
 			m_console.display("---");
 		}		
 	}
-	
-	private void displayInstructionTrace(Node node) {
-		XtaInstruction instruction = node.getInstructions().getFirst();
-		m_console.display(String.format(" 0x%x: %s %s", 
-				instruction.getPc(),
-				instruction.getNmenonic(),
-				instruction.getOperandString()));
-	}	
 }

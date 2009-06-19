@@ -51,8 +51,7 @@ public abstract class Node implements Comparable<Node>{
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
 	public abstract long getError(Case c);
 	public abstract void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration);
-	public abstract Set<Integer> getPCs();
-	
+	public abstract Set<Integer> getPCs();	
 	public abstract LinkedList<XtaInstruction> getInstructions();
 	public abstract Collection<Node> getContainedNodes();	
 	public abstract int getStartPc();
@@ -285,6 +284,10 @@ public abstract class Node implements Comparable<Node>{
 		return m_branchTargetPcs.contains(pc);
 	}
 		
+	public String getDescription() {
+		return "";
+	}
+	
 	public String getFunctionName() {
 		return "";
 	}
