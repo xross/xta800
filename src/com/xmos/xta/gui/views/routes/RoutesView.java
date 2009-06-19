@@ -236,9 +236,9 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 								} catch (PartInitException e) {}
 								
 								int routeId = GuiEngine.getEngine().getSelectedRouteId();
-								//TODO console.runCommand("print trace " + routeId + " b" + m_this.getId());
+								console.runCommand("print trace " + routeId + " " + ((Node)object).getId());
 							}
-						});  
+						});
    	
 				    	// Adds the 'Set iterations' option.
 					    manager.add(new Separator());

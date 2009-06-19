@@ -8,7 +8,7 @@ public class LabelReference extends ReferenceType {
 	}
 	
 	public ReferenceType create(Engine engine, String reference) {
-		if (checkTypeString(reference, Type.LABEL) &&
+		if (checkTypeString(reference, Type.LABEL, 1) &&
 		    engine.getLabels().containsKey(getLabel(reference))) {
 			return new LabelReference(reference);
 		}

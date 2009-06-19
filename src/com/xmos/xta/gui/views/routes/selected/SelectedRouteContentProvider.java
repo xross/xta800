@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.Viewer;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
 public class SelectedRouteContentProvider implements ITreeContentProvider  {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
 	public SelectedRouteContentProvider() {
 		if (DEBUG) System.out.printf("SelectedRouteContentProvider()\n");

@@ -179,13 +179,13 @@ public abstract class ReferenceType {
 		return (refArray.length == 1) ? refArray[0] : refArray[1];		
 	}	
 	
-	boolean checkTypeString(String reference, Type refType) {
+	boolean checkTypeString(String reference, Type refType, int numElements) {
 		String[] refArray = reference.split(":"); 
 
-		if (refArray.length == 1) {
+		if (refArray.length == numElements) {
 			return true;
 			
-		} else if ((refArray.length == 2) && 
+		} else if ((refArray.length == (numElements + 1)) && 
 				   (refArray[0].equals(refType.toString()))) {
 			return true;
 		}

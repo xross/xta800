@@ -9,7 +9,7 @@ public class CallFileLineReference extends ReferenceType {
 	}
 
 	public ReferenceType create(Engine engine, String reference) {
-		if (checkTypeString(reference, Type.CALL) &&
+		if (checkTypeString(reference, Type.CALL, 2) &&
 		    isSourceReference(reference) && 
 			inCodePointTable(reference, engine.getCallTable())) {
 	    	return new CallFileLineReference(reference);	

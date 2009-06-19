@@ -12,7 +12,7 @@ public class CallReference extends ReferenceType {
 	}
 
 	public ReferenceType create(Engine engine, String reference) {
-		if (checkTypeString(reference, Type.CALL) &&
+		if (checkTypeString(reference, Type.CALL, 1) &&
 			engine.getCalls().containsKey(getLabel(reference))) {
 			return new CallReference(reference);
 		}	

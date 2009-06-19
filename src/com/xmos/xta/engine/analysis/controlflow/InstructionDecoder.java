@@ -46,6 +46,7 @@ public class InstructionDecoder {
 		            
 		            XtaInstruction inst = instructionDecoder.decode(opcode, pc, m_config);
 		            inst.setFunctionName(symbolTable.functionName(pc)); 
+		            inst.setFunctionOffset(symbolTable.functionOffset(pc));
 		            
 		            Node instNode = new InstructionNode(inst);
 		            Node prev = m_decodedInstructions.put(pc, instNode);
