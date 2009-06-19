@@ -3,7 +3,7 @@ package com.xmos.xta.engine.analysis.structural.patterns;
 import static org.junit.Assert.*;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 
 import org.junit.Test;
 
@@ -14,7 +14,7 @@ public class SectionPatternMatcherTest {
 
 	@Test
 	public void testIsMatch() {
-		Collection<Node> nodes = new HashSet<Node>();
+		Collection<Node> nodes = new TreeSet<Node>();
 
 		BlockNode [] node = new BlockNode [5];
 		for(int i = 0;i<5;i++){

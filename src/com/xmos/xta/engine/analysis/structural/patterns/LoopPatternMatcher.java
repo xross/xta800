@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.patterns;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.Set;
 
 import com.xmos.xta.engine.analysis.structural.nodes.LoopNode;
@@ -13,10 +13,10 @@ public class LoopPatternMatcher extends PatternMatcher {
 		// a loop pattern is when one or more nodes are doubly attached to a
 		// single node
 
-		Set<Node> intersection = new HashSet<Node>(currentNode.getNextNodes());
+		Set<Node> intersection = new TreeSet<Node>(currentNode.getNextNodes());
 		intersection.retainAll(currentNode.getPrevNodes());
 		if (intersection.size() > 0) {
-			Set <Node> workingIntersection = new HashSet<Node>();
+			Set <Node> workingIntersection = new TreeSet<Node>();
 			
 			for (Node loop : intersection) {
 				if (!(loop.getNextNodes().size() != 1 || !loop.getNextNodes().contains(currentNode) || loop.getPrevNodes().size() != 1)) {

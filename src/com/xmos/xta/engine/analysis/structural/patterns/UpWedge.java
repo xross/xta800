@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.patterns;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.Set;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -11,7 +11,7 @@ public class UpWedge extends PatternMatcher {
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose, Node treeStart) {
 		m_treeStart = treeStart;
 		
-		Set<Node> leastDominantNodes = new HashSet<Node>();
+		Set<Node> leastDominantNodes = new TreeSet<Node>();
 		for (Node node : workingSet) {
 			for (Node next : node.getNextNodes()) {
 				if (node.getDominators().contains(next)) {

@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.patterns;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
 public class CommonMethods {
@@ -21,7 +21,7 @@ public class CommonMethods {
 		if (node.getNextNodes().size() < 2) {
 			return false;
 		}
-		Collection<Node> newNodes = new HashSet<Node>();
+		Collection<Node> newNodes = new TreeSet<Node>();
 		
 		for (Node next : node.getNextNodes()) {
 			Node newNode = node.shallowCopy();
@@ -54,7 +54,7 @@ public class CommonMethods {
 			return false;
 		}
 		
-		Collection<Node> newNodes = new HashSet<Node>();
+		Collection<Node> newNodes = new TreeSet<Node>();
 		
 		for (Node prev : node.getPrevNodes()){
 			

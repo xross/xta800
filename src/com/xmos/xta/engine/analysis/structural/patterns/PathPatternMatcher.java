@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.patterns;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -83,7 +83,7 @@ public class PathPatternMatcher extends PatternMatcher {
 	}
 
 	private boolean pathSanityCheck(LinkedList<Node> pathList) {
-		Set<Node> seen = new HashSet<Node>();
+		Set<Node> seen = new TreeSet<Node>();
 		
 		if (pathList.size() < 2) {
 			return false;

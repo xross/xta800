@@ -1,6 +1,6 @@
 package com.xmos.xta.engine.analysis.structural;
 
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,10 +21,10 @@ public class FnopAnalyser {
 	}
 
 	public void addFnopsToBasicBlocks(Node startNode){
-		explore((IBufferNode)startNode, new HashSet<Node>());
+		explore((IBufferNode)startNode, new TreeSet<Node>());
 	}
 	
-	private void explore(IBufferNode startNode, HashSet<Node> seen) {
+	private void explore(IBufferNode startNode, TreeSet<Node> seen) {
 		seen.add(startNode);
 		startNode.insertFnops();
 		for(IBufferNode next : startNode.getNextIbufferNodes()){

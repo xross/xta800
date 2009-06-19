@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +66,7 @@ public class PathNode extends Node {
 	}
 
 	public Set<Integer> getPCs() {
-		Set<Integer> pcs = new HashSet<Integer>();
+		Set<Integer> pcs = new TreeSet<Integer>();
 		for (Node node : m_nodes) {
 			pcs.addAll(node.getPCs());
 		}
@@ -74,7 +74,7 @@ public class PathNode extends Node {
 	}
 
 	public Collection<Node> getContainedNodes() {
-		Collection<Node> containedNodes = new HashSet<Node>();
+		Collection<Node> containedNodes = new TreeSet<Node>();
 		for (Node loop : m_nodes) {
 			containedNodes.addAll(loop.getContainedNodes());
 		}
@@ -110,14 +110,14 @@ public class PathNode extends Node {
 		assert (m_nodes.contains(node));
 		int index = m_nodes.indexOf(node);
 		if (index < m_nodes.size() - 1) {
-			Collection<Node> next = new HashSet<Node>();
+			Collection<Node> next = new TreeSet<Node>();
 			next.add(m_nodes.get(index + 1));
 			return next;
 		} else {
 			if (getParent() != null){
 				return getParent().whatsNext(this);
 			}
-			return new HashSet<Node>();
+			return new TreeSet<Node>();
 		}
 	}
 
@@ -148,14 +148,14 @@ public class PathNode extends Node {
 		assert(m_nodes.contains(node));
 		int index = m_nodes.indexOf(node);
 		if(index > 0){
-			Collection<Node> before = new HashSet<Node>();
+			Collection<Node> before = new TreeSet<Node>();
 			before.add(m_nodes.get(index-1));
 			return before;
 		} else {
 			if(getParent()!= null){
 				return getParent().whatsBefore(this);
 			} else {
-				return new HashSet<Node>();
+				return new TreeSet<Node>();
 			}
 		}
 	}

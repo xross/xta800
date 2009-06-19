@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.patterns;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -18,26 +18,26 @@ public class SectionTransformer extends PatternMatcher {
 		} 
 		
 		//detect all the jump nodes first
-		Set<Node> jumpNodes = new HashSet<Node>();
+		Set<Node> jumpNodes = new TreeSet<Node>();
 		for (Node nextNode : currentNode.getNextNodes()) {
 			//hop backwards
-			Set<Node> previous = new HashSet<Node>(nextNode.getPrevNodes());
+			Set<Node> previous = new TreeSet<Node>(nextNode.getPrevNodes());
 			previous.remove(currentNode);
 			previous.remove(nextNode);
 			for (Node prev : previous) {
-				Set<Node> prevSet = new HashSet<Node>(prev.getPrevNodes());
+				Set<Node> prevSet = new TreeSet<Node>(prev.getPrevNodes());
 				if (prevSet.contains(currentNode)) {
 					jumpNodes.add(nextNode);
 				}
 			}
 		}
 		
-		Set<Node> endNodes = new HashSet<Node>(jumpNodes);
+		Set<Node> endNodes = new TreeSet<Node>(jumpNodes);
 		
 		List<Node> nextList = new LinkedList<Node>(currentNode.getNextNodes());
 		
 		for (int i = 0; i <= nextList.size() - 2; i++) {
-			Set<Node> intersection = new HashSet<Node>();
+			Set<Node> intersection = new TreeSet<Node>();
 			for (int j = i + 1; j <= nextList.size() - 1; j++) {
 				Node a = nextList.get(i);
 				Node b = nextList.get(j);

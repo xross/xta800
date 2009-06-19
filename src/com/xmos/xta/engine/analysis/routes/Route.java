@@ -3,8 +3,8 @@ package com.xmos.xta.engine.analysis.routes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +80,7 @@ public class Route {
 	}
 
 	public Set<Integer> getPcsHit() {
-		final Set<Integer> pcs = new HashSet<Integer>();
+		final Set<Integer> pcs = new TreeSet<Integer>();
 		for (Node node : m_subRoutes) {
 			node.traverse(0, new DefaultNodeTraverser() {
 				public boolean foundInstructionNode(Node node, int depth) {
@@ -99,11 +99,11 @@ public class Route {
 	public boolean analyse() {
 		switch (m_description.getMode()) {
 		case FUNCTION:
-			Map<String, HashSet<Node>> functionMap = buildFunctionMap(m_structureGraph);
-			HashSet<Node> functions = functionMap.get(m_description.getFunctionName());
+			Map<String, TreeSet<Node>> functionMap = buildFunctionMap(m_structureGraph);
+			TreeSet<Node> functions = functionMap.get(m_description.getFunctionName());
 			if (functions != null) {
 				for(Node function : functions){
-					m_subRoutes.add(function.deepCopy(new HashMap<Integer, FunctionNode>()));
+					m_subRoutes.add(function.deepCopy(new TreeMap<Integer, FunctionNode>()));
 				}
 				
 			}			
@@ -117,13 +117,13 @@ public class Route {
 			Set<Integer> startPcs = getStartPcs();
 			Set<Integer> endPcs = getEndPcs();
 
-			Collection<Node> startNodes = new HashSet<Node>();
-			Collection<Node> endNodes = new HashSet<Node>();
-			Map<Integer, HashSet<Node>> pcToStruct = buildPcMap(m_structureGraph);
+			Collection<Node> startNodes = new TreeSet<Node>();
+			Collection<Node> endNodes = new TreeSet<Node>();
+			Map<Integer, TreeSet<Node>> pcToStruct = buildPcMap(m_structureGraph);
 			
 			for (int from : startPcs) {
 				if (pcToStruct.get(from) != null) {
-					HashSet<Node> start = pcToStruct.get(from);
+					TreeSet<Node> start = pcToStruct.get(from);
 					
 					for(Node node : start){
 						Node nodeToAdd = node;
@@ -140,18 +140,18 @@ public class Route {
 					endNodes.addAll(pcToStruct.get(to));
 				}
 			}
-			printCollection("exclusions", m_exclusions);
-			printCollection("end nodes", endNodes);
+			//printCollection("exclusions", m_exclusions);
+			//printCollection("end nodes", endNodes);
 			for (Node start : startNodes) {
-				System.out.println("start node: " + start);
-				Collection<Node> workingSet = new HashSet<Node>();
+				//System.out.println("start node: " + start);
+				Collection<Node> workingSet = new TreeSet<Node>();
 
 				m_structureGraph.removeLinks();
-				m_excludedRouteNodes = new HashSet<Node>();
+				m_excludedRouteNodes = new TreeSet<Node>();
 				explore(start, workingSet, endPcs, endNodes, null);
 				
-				printCollection("excludedRouteNodes", m_excludedRouteNodes);
-				StructuralAnalysisEngine.dumpTree(workingSet);	
+				//printCollection("excludedRouteNodes", m_excludedRouteNodes);
+				//StructuralAnalysisEngine.dumpTree(workingSet);	
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 				pruneGraphOfExcludedPaths(workingSet);
@@ -159,7 +159,7 @@ public class Route {
 					continue;
 				}
 				
-				StructuralAnalysisEngine.dumpTree(workingSet);			
+				//StructuralAnalysisEngine.dumpTree(workingSet);			
 				Set<Node> newEndNodes = removeFinalInstruction(endNodes, start,
 						workingSet);
 				
@@ -174,7 +174,7 @@ public class Route {
 				assert(workingSet.size() == 1);
 				Node baseNode = workingSet.iterator().next();
 
-				Node newGraph = baseNode.deepCopy(new HashMap<Integer, FunctionNode>());
+				Node newGraph = baseNode.deepCopy(new TreeMap<Integer, FunctionNode>());
 							
 				m_subRoutes.add(newGraph);
 			}
@@ -191,11 +191,11 @@ public class Route {
 	}
 
 	private void explore(Node node, Collection<Node> set, Collection<Integer> endPcs, Collection<Node> endNodes, Node parent) {	
-		Set<Integer> pcs = new HashSet<Integer>(endPcs);
+		Set<Integer> pcs = new TreeSet<Integer>(endPcs);
 		pcs.retainAll(node.getPCs());
-		System.out.println("\nexploring node: " + node);
+		//System.out.println("\nexploring node: " + node);
 		
-		Collection<Node> exclusions = new HashSet<Node>(m_exclusions);
+		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
 		exclusions.retainAll(node.getContainedNodes());
 		
 
@@ -261,7 +261,7 @@ public class Route {
 	private Set<Node> removeFinalInstruction(Collection<Node> endNodes,
 			Node start, Collection<Node> workingSet) {
 		
-		Set<Node> newEndNodes = new HashSet<Node>();
+		Set<Node> newEndNodes = new TreeSet<Node>();
 		for(Node node : endNodes){
 			for(Node prev : node.getPrevNodes()){
 				newEndNodes.add(prev);
@@ -375,7 +375,7 @@ public class Route {
     }	
 	
 	private void pruneGraphOfExcludedPaths(Collection<Node> workingSet) {
-		System.out.println(m_excludedRouteNodes);
+		//System.out.println(m_excludedRouteNodes);
 		
 		while(!m_excludedRouteNodes.isEmpty()){
 			Node excludedNode = m_excludedRouteNodes.iterator().next();
@@ -529,13 +529,13 @@ public class Route {
 	}
 			
 	private Set<Integer> getEndPcs() {
-		Set<Integer> endPcs = new HashSet<Integer>();
+		Set<Integer> endPcs = new TreeSet<Integer>();
 		endPcs.add(m_description.getEndPoint().getPc());
 		return endPcs;
 	}
 
 	private Set<Integer> getStartPcs() {
-		Set<Integer> startPcs = new HashSet<Integer>();
+		Set<Integer> startPcs = new TreeSet<Integer>();
 		startPcs.add(m_description.getStartPoint().getPc());
 		return startPcs;
 	}
@@ -548,16 +548,16 @@ public class Route {
 		}
 	}
 	
-	private Map<Integer, HashSet<Node>> buildPcMap(StructureGraph structureGraph) {
-		final Map<Integer, HashSet<Node>> pcToNodes = new HashMap<Integer, HashSet<Node>>();
+	private Map<Integer, TreeSet<Node>> buildPcMap(StructureGraph structureGraph) {
+		final Map<Integer, TreeSet<Node>> pcToNodes = new TreeMap<Integer, TreeSet<Node>>();
 		
 		for (Node node : structureGraph.getThreads()) {
 			node.traverse(0, new DefaultNodeTraverser() {
 				
 				public boolean foundInstructionNode(Node node, int depth) {
-					HashSet<Node> map = pcToNodes.get(node.getStartPc());
+					TreeSet<Node> map = pcToNodes.get(node.getStartPc());
 					if (map == null) {
-						map = new HashSet<Node>();
+						map = new TreeSet<Node>();
 					}
 					map.add(node);
 					pcToNodes.put(node.getStartPc(), map);
@@ -568,14 +568,14 @@ public class Route {
 		return pcToNodes;
 	}
 
-	private Map<String, HashSet<Node>> buildFunctionMap(StructureGraph structureGraph) {
-		final Map<String, HashSet<Node>> pcToNodes = new HashMap<String, HashSet<Node>>();
+	private Map<String, TreeSet<Node>> buildFunctionMap(StructureGraph structureGraph) {
+		final Map<String, TreeSet<Node>> pcToNodes = new TreeMap<String, TreeSet<Node>>();
 		for (Node node : structureGraph.getThreads()) {
 			node.traverse(0, new DefaultNodeTraverser() {
 				public boolean foundFunctionNode(Node node, int depth) {
-					HashSet<Node> map = pcToNodes.get(((FunctionNode) node).getFunctionName());
+					TreeSet<Node> map = pcToNodes.get(((FunctionNode) node).getFunctionName());
 					if (map == null) {
-						map = new HashSet<Node>();
+						map = new TreeSet<Node>();
 					}
 					map.add(node);
 					pcToNodes.put(((FunctionNode) node).getFunctionName(), map);

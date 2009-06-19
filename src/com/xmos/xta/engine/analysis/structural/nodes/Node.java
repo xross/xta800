@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -66,25 +66,25 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public Node() {
-		m_branchTargets = new HashSet<Node>();
-		m_branchTargetPcs = new HashSet<Integer>();
-		m_nextNodes = new HashSet<Node>();
-		m_prevNodes = new HashSet<Node>();
-		m_dominators = new HashSet<Node>();
-		m_iBuffersDueToWorstTime = new HashSet<InstructionBuffer>();
-		m_iBuffersDueToBestTime = new HashSet<InstructionBuffer>();
+		m_branchTargets = new TreeSet<Node>();
+		m_branchTargetPcs = new TreeSet<Integer>();
+		m_nextNodes = new TreeSet<Node>();
+		m_prevNodes = new TreeSet<Node>();
+		m_dominators = new TreeSet<Node>();
+		m_iBuffersDueToWorstTime = new TreeSet<InstructionBuffer>();
+		m_iBuffersDueToBestTime = new TreeSet<InstructionBuffer>();
 		m_id = s_numNodes++;
 	}
 	
 	public Node(Node node) {
-		m_branchTargets = new HashSet<Node>(node.m_branchTargets);
-		m_branchTargetPcs = new HashSet<Integer>(node.m_branchTargetPcs);
-		m_nextNodes = new HashSet<Node>(node.m_nextNodes);
-		m_prevNodes = new HashSet<Node>(node.m_prevNodes);
-		m_dominators = new HashSet<Node>(node.m_prevNodes);
-		m_iBuffersDueToWorstTime = new HashSet<InstructionBuffer>();
+		m_branchTargets = new TreeSet<Node>(node.m_branchTargets);
+		m_branchTargetPcs = new TreeSet<Integer>(node.m_branchTargetPcs);
+		m_nextNodes = new TreeSet<Node>(node.m_nextNodes);
+		m_prevNodes = new TreeSet<Node>(node.m_prevNodes);
+		m_dominators = new TreeSet<Node>(node.m_prevNodes);
+		m_iBuffersDueToWorstTime = new TreeSet<InstructionBuffer>();
 		m_iBuffersDueToWorstTime.addAll(node.m_iBuffersDueToWorstTime);
-		m_iBuffersDueToBestTime = new HashSet<InstructionBuffer>(node.m_iBuffersDueToBestTime);
+		m_iBuffersDueToBestTime = new TreeSet<InstructionBuffer>(node.m_iBuffersDueToBestTime);
 		m_iBuffersDueToBestTime.addAll(node.m_iBuffersDueToBestTime);
 		m_id = s_numNodes++;
 	}
@@ -97,6 +97,13 @@ public abstract class Node implements Comparable<Node>{
 	}
 
 	public int compareTo(Node node) {	
+		if( getAttributes() == null){
+			System.out.println("eek " + this);
+		}
+		if(node.getAttributes() == null){
+			System.out.println("eek " + node);
+		}
+		
 		double thisTimeTaken = getAttributes().getTimeTaken(Case.WORST, false);
 		double nodeTimeTaken = node.getAttributes().getTimeTaken(Case.WORST, false);
 
@@ -260,6 +267,11 @@ public abstract class Node implements Comparable<Node>{
 			}
 		}
 		return false;
+	}
+	
+	public void addBranchTarget(Node newNode){
+		if(newNode == null) return;
+		m_branchTargets.add(newNode);
 	}
 	
 	public Set<Node> getBranchTargets(){

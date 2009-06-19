@@ -9,7 +9,7 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructureDisplayer {
 
-	private final static boolean DEBUG_NEXT = false;
+	private final static boolean DEBUG_NEXT = true;
 	private final static boolean DEBUG_BEFORE = false;
 
 	private Console m_console;
