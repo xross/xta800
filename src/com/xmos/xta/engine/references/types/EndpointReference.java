@@ -12,7 +12,7 @@ public class EndpointReference extends ReferenceType {
 	}
 
 	public ReferenceType create(Engine engine, String reference) {
-		if (checkTypeString(reference, Type.ENDPOINT) &&
+		if (checkTypeString(reference, Type.ENDPOINT, 1) &&
 		    engine.getEndpoints().containsKey(getLabel(reference))) {
 			return new EndpointReference(reference);
 		}

@@ -9,7 +9,7 @@ public class EndpointFileLineReference extends ReferenceType {
 	}
 
 	public ReferenceType create(Engine engine, String reference) {
-		if (checkTypeString(reference, Type.ENDPOINT) &&
+		if (checkTypeString(reference, Type.ENDPOINT, 2) &&
 		    isSourceReference(reference) && 
 			inCodePointTable(reference, engine.getEndpointTable())) {
 	    	return new EndpointFileLineReference(reference);

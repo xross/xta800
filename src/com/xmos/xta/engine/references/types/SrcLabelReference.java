@@ -9,7 +9,7 @@ public class SrcLabelReference extends ReferenceType {
 	}
 
 	public ReferenceType create(Engine engine, String reference) {
-		if (checkTypeString(reference, Type.SRCLABEL) &&
+		if (checkTypeString(reference, Type.SRCLABEL, 1) &&
 		    engine.getSrcLabels().containsKey(getLabel(reference))) {
 			return new SrcLabelReference(reference);
 		}

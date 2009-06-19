@@ -38,11 +38,10 @@ import com.xmos.xta.gui.dialogs.InstructionTime;
 import com.xmos.xta.gui.views.info.InfoSorter;
 
 public class KnownsViewer {
-
 	private TableViewer m_resolvedUnknownsViewer;
-	List<Reference> m_selectedCodeRefs;
-	Action m_setInstructionTimeAction;
-	Action m_clearInstructionTimesAction;
+	private List<Reference> m_selectedCodeRefs;
+	private Action m_setInstructionTimeAction;
+	private Action m_clearInstructionTimesAction;
 
 	public KnownsViewer(Composite parent, IWorkbenchPartSite site, TabFolder folders) {
 		m_selectedCodeRefs = new ArrayList<Reference>();

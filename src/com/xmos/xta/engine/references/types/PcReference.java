@@ -15,7 +15,7 @@ public class PcReference extends ReferenceType {
 	}
 
 	public ReferenceType create(Engine engine, String reference) {
-		if (checkTypeString(reference, Type.PC) &&
+		if (checkTypeString(reference, Type.PC, 1) &&
 		    isPcString(reference)) {
 			return new PcReference(reference);
 		}

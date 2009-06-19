@@ -7,7 +7,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.icons.Icons;
 
 public class SelectedRouteLabelProvider extends CellLabelProvider {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 	
     public SelectedRouteLabelProvider() {
 		if (DEBUG) System.out.printf("SelectedRouteLabelProvider()\n");	
