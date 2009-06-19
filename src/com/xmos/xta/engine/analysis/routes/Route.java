@@ -96,7 +96,7 @@ public class Route {
 		return m_subRoutes;
 	}
 
-	public void analyse() {
+	public boolean analyse() {
 		switch (m_description.getMode()) {
 		case FUNCTION:
 			Map<String, HashSet<Node>> functionMap = buildFunctionMap(m_structureGraph);
@@ -147,18 +147,28 @@ public class Route {
 				m_structureGraph.removeLinks();
 				m_excludedRouteNodes = new HashSet<Node>();
 				explore(start, workingSet, endPcs, endNodes, null);
-								
+				
+				
+				//StructuralAnalysisEngine.dumpTree(workingSet);			
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 				pruneGraphOfExcludedPaths(workingSet);
+				if(workingSet.isEmpty()){
+					continue;
+				}
+				
+				//StructuralAnalysisEngine.dumpTree(workingSet);			
 				Set<Node> newEndNodes = removeFinalInstruction(endNodes, start,
 						workingSet);
 				
+				
+				//StructuralAnalysisEngine.dumpTree(workingSet);			
 				Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
-
 				assert(cfgSanityCheck(workingSet));
 				
+				
+				//StructuralAnalysisEngine.dumpTree(workingSet);
 				sae.createStructure(workingSet, newStart, m_engine, true);
-
+				assert(workingSet.size() == 1);
 				Node baseNode = workingSet.iterator().next();
 
 				Node newGraph = baseNode.deepCopy(new HashMap<Integer, FunctionNode>());
@@ -174,6 +184,7 @@ public class Route {
 			assert(false);
 		    break;
 		}
+		return !m_subRoutes.isEmpty();
 	}
 
 	private Set<Node> removeFinalInstruction(Collection<Node> endNodes,
