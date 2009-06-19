@@ -1,9 +1,12 @@
 package com.xmos.xta.console.commands.print;
 
+import java.util.Collection;
+
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
 public class Structure extends Command {
 	private int m_routeId;
@@ -54,8 +57,8 @@ public class Structure extends Command {
     		routeId = getRouteId(args[index + 1]);
 	    } catch (NumberFormatException e) { 
 	    	return null; 
-	    }
-	    
+	    }			
+		
 		if (!areArgsDone(args, index + 2)) {
 	    	try {
 	    		return new Structure(routeId, Integer.parseInt(args[index + 2]), true);
@@ -69,18 +72,28 @@ public class Structure extends Command {
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
-		
+
 	    if (!validateRouteId(engine, console, m_routeId))
 		    return;
 
 	    if (m_nodeIdSet && !validateNodeId(engine, console, m_routeId, m_nodeId))
 		    return;	    	
-	    
-		StructureDisplayer displayer = new StructureDisplayer(console, engine.getVerbosity());	
-		if (m_nodeIdSet) {
-			displayer.display(getCollection(engine.getRoute(m_routeId).getNode(m_nodeId)));						
+
+		Collection<Node> nodes = null;
+		if (m_routeId == Engine.ROUTE_ID_GLOBAL) {
+    		if (m_nodeIdSet) {
+    			nodes = getCollection(engine.getStructureGraph().getNode(m_nodeId));
+    		} else {
+    			nodes = engine.getStructureGraph().getThreads();    			
+    		}			
 		} else {
-			displayer.display(engine.getRoute(m_routeId).getSubRoutes());			
-		}        
+    		if (m_nodeIdSet) {
+	    		nodes = getCollection(engine.getRoute(m_routeId).getNode(m_nodeId));			
+		    } else {
+			    nodes = engine.getRoute(m_routeId).getSubRoutes();
+		    }
+		}		
+		StructureDisplayer displayer = new StructureDisplayer(console, engine.getVerbosity());
+		displayer.display(nodes);
     }
 }
