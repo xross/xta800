@@ -1,8 +1,5 @@
 package com.xmos.xta.gui.views.status;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
@@ -21,7 +18,6 @@ import org.eclipse.ui.part.ViewPart;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Progress;
-import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.gui.GuiEngine;
 
 public class StatusView extends ViewPart implements IPropertyChangeListener,
@@ -83,7 +79,6 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
 		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
 	        m_memoryUpdater.setFastRefresh(false);
 			setDone();
-			checkTotalPaths();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {			
 	        setDone();
@@ -156,23 +151,6 @@ public class StatusView extends ViewPart implements IPropertyChangeListener,
         	m_progressUpdater.end(false);
         	m_progressUpdater = null;
         }
-	}
-
-	private void checkTotalPaths() {
-		Route route = GuiEngine.getEngine().getSelectedRoute();
-	
-// TODO
-/*
-		if (route != null) {
-			int numUnresolvedPaths = route.getUnresolvedPaths().size();
-			if (numUnresolvedPaths == 0 && route.getCompletedPaths().size() == 0) {
-				Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0,
-						"No complete paths found, may have found an infinite loop", null);
-		        ErrorDialog.openError(Display.getCurrent().getActiveShell(),
-		            "Warning", null, status);
-			}
-		}
-*/				
 	}
 
 	class ProgressUpdater extends Thread {
