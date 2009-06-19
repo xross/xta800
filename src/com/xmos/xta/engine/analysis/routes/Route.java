@@ -151,7 +151,7 @@ public class Route {
 				m_excludedRouteNodes = new HashSet<Node>();
 				explore(start, workingSet, endPcs, endNodes, null);
 				
-				
+				printCollection("excludedRouteNodes", m_excludedRouteNodes);
 				StructuralAnalysisEngine.dumpTree(workingSet);	
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
@@ -165,12 +165,12 @@ public class Route {
 						workingSet);
 				
 				
-				StructuralAnalysisEngine.dumpTree(workingSet);			
+				//StructuralAnalysisEngine.dumpTree(workingSet);			
 				Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
 				assert(cfgSanityCheck(workingSet));
 				
 				
-				StructuralAnalysisEngine.dumpTree(workingSet);
+				//StructuralAnalysisEngine.dumpTree(workingSet);
 				sae.createStructure(workingSet, newStart, m_engine, true);
 				assert(workingSet.size() == 1);
 				Node baseNode = workingSet.iterator().next();
@@ -191,6 +191,65 @@ public class Route {
 		return !m_subRoutes.isEmpty();
 	}
 
+	private void explore(Node node, Collection<Node> set, Collection<Integer> endPcs, Collection<Node> endNodes, Node parent) {	
+		Set<Integer> pcs = new HashSet<Integer>(endPcs);
+		pcs.retainAll(node.getPCs());
+		System.out.println("\nexploring node: " + node);
+		
+		Collection<Node> exclusions = new HashSet<Node>(m_exclusions);
+		exclusions.retainAll(node.getContainedNodes());
+		
+
+		if (pcs.isEmpty() || set.isEmpty()) {
+
+			if(!exclusions.isEmpty() ){
+				//if( node.isSectionNode()){
+				if( node.isBlockNode() ){
+					if(set.contains(node)) {
+						return;
+					}
+					set.add(node);
+					
+					makeConnection(node, parent);
+					
+					m_excludedRouteNodes.add(node);
+				} else {
+					assert (!node.getImmediateChildren().isEmpty());
+					for(Node child : node.getImmediateChildren()){
+						explore(child, set, endPcs, endNodes, parent);
+					}
+				}
+				return;
+			}
+			if(set.contains(node)) {
+				return;
+			}
+			set.add(node);
+			
+			makeConnection(node, parent);
+			
+			assert(node.getParent() != null);
+			if (!node.getParent().whatsNext(node).isEmpty()) {
+				
+				Collection<Node> nextNodes = node.getParent().whatsNext(node);
+				//System.out.println(node + " -> " + nextNodes);
+				for (Node next : nextNodes) {
+					explore(next, set, endPcs, endNodes, node);
+				}
+			}
+		} else {
+			if (endNodes.contains(node)) {
+				makeConnection(node, parent);
+				set.add(node);
+				return;
+			} else {
+				assert (!node.getImmediateChildren().isEmpty());
+				for(Node child : node.getImmediateChildren()){
+					explore(child, set, endPcs, endNodes, parent);
+				}
+			}
+		}
+	}
 	
 	private void printCollection(String name, Collection<Node> coll){
 		System.out.print(name + ": " + coll);
@@ -482,60 +541,7 @@ public class Route {
 		return startPcs;
 	}
 	
-	private void explore(Node node, Collection<Node> set, Collection<Integer> endPcs, Collection<Node> endNodes, Node parent) {	
-		Set<Integer> pcs = new HashSet<Integer>(endPcs);
-		pcs.retainAll(node.getPCs());
-		System.out.println("\nexploring node: " + node);
-		
-		Collection<Node> exclusions = new HashSet<Node>(m_exclusions);
-		exclusions.retainAll(node.getContainedNodes());
-		
-
-		if (pcs.isEmpty() || set.isEmpty()) {
-			
-			
-			
-			if(!exclusions.isEmpty() ){
-				//if( node.isSectionNode()){
-				if( node.isBlockNode() ){
-					m_excludedRouteNodes.add(node);
-				} else {
-					assert (!node.getImmediateChildren().isEmpty());
-					for(Node child : node.getImmediateChildren()){
-						explore(child, set, endPcs, endNodes, parent);
-					}
-				}
-				return;
-			}
-			if(set.contains(node)) {
-				return;
-			}
-			set.add(node);
-			
-			makeConnection(node, parent);
-			
-			assert(node.getParent() != null);
-			if (!node.getParent().whatsNext(node).isEmpty()) {
-				
-				Collection<Node> nextNodes = node.getParent().whatsNext(node);
-				System.out.println(node + " -> " + nextNodes);
-				for (Node next : nextNodes) {
-					explore(next, set, endPcs, endNodes, node);
-				}
-			}
-		} else {
-			if (endNodes.contains(node)) {
-				makeConnection(node, parent);
-				set.add(node);
-				return;
-			} else {
-				assert (!node.getImmediateChildren().isEmpty());
-				for(Node child : node.getImmediateChildren()){
-					explore(child, set, endPcs, endNodes, parent);
-				}
-			}
-		}
-	}
+	
 
 	private void makeConnection(Node node, Node parent) {
 		if (parent != null) {
