@@ -19,10 +19,8 @@ public class SelectedRouteLabelProvider extends CellLabelProvider {
 		Node node = (Node)cell.getElement();
 		
 		String nodeText = node.getTypeName();
-		if (node.getFunctionName() != "")
-			nodeText += " " + node.getFunctionName();
+		nodeText += " " + node.getDescription();
 		nodeText += " " + node.getAttributes().getTimingSummary();
-		
 		cell.setText(nodeText);
 		
 		String iconName = node.getTypeName() + "_node";

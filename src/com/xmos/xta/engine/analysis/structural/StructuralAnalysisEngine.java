@@ -25,7 +25,6 @@ import com.xmos.xta.engine.analysis.structural.patterns.SectionTransformer;
 import com.xmos.xta.engine.analysis.structural.patterns.SelfLoopPattern;
 import com.xmos.xta.engine.analysis.structural.patterns.TerminalPatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.UpWedge;
-import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructuralAnalysisEngine {
 	private static final boolean DEBUG = false;

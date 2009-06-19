@@ -92,7 +92,7 @@ public class BlockNode extends IBufferNode {
 	public int getStartPc() {
 		return getInstructions().getFirst().getPc();
 	}	
-	
+		
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
 		if (!nodeTraverser.foundBlockNode(this, depth)) 
 			return;

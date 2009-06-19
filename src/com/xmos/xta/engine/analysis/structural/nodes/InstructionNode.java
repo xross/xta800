@@ -121,6 +121,13 @@ public class InstructionNode extends Node {
 		return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
 	}
 
+	public String getDescription() {
+		return String.format("0x%x: %s %s", 
+				m_inst.getPc(),
+				m_inst.getNmenonic(),
+				m_inst.getOperandString());
+	}
+	
 	public XtaInstruction getXtaInstruction() {
 		return m_inst;
 	}
