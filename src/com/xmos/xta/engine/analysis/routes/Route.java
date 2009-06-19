@@ -33,7 +33,6 @@ class AbortedException extends Exception {
 
 public class Route {
 	private static int s_routeCount;
-	public static final int INVALID_ROUTE_ID = -1;
 
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR

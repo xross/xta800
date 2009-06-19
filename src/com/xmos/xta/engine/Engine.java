@@ -42,7 +42,9 @@ import com.xmos.xta.engine.sections.Sections;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 
 public class Engine implements Notifier {
-	public static int ROUTE_ID_LAST = -1;
+	public static final int ROUTE_ID_LAST = -1;
+	public static final int ROUTE_ID_INVALID = -2;
+	public static final int ROUTE_ID_GLOBAL = -3;
 	
 	private XeLoader m_xeLoader;
 	private List<Route> m_routes;
@@ -107,7 +109,7 @@ public class Engine implements Notifier {
 		if (m_selectedRoute != null)
 			return m_selectedRoute.getRouteId();
 		else
-			return Route.INVALID_ROUTE_ID;
+			return ROUTE_ID_INVALID;
 	}
 
 	public void setSelectedRoute(Route route) {

@@ -327,7 +327,7 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 				if (selection instanceof IStructuredSelection) {
 					Engine engine = GuiEngine.getEngine();
 					int currentSelectedId = engine.getSelectedRouteId();
-					int newId = Route.INVALID_ROUTE_ID;
+					int newId = Engine.ROUTE_ID_INVALID;
 
 					if (((IStructuredSelection)selection).size() == 1) {
 			            Object object = ((IStructuredSelection)selection).getFirstElement();

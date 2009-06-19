@@ -69,44 +69,52 @@ public abstract class Command {
     }
 
     public static boolean validateRouteId(Engine engine, Console console, int routeId) {
-    	if (engine.getRoutes().size() == 0) {
-    		console.display("Error: No routes analysed\n");
-    		return false;
-    	}
-    	
-    	Route route = engine.getRoute(routeId);
-    	if (route == null) {
-    		console.display(String.format("Error: invalid route id: %d\n", routeId));
-    		return false;
+    	if (routeId != Engine.ROUTE_ID_GLOBAL) {
+    	    if (engine.getRoutes().size() == 0) {
+    		    console.display("Error: No routes analysed\n");
+    		    return false;
+    	    }
+        	Route route = engine.getRoute(routeId);
+        	if (route == null) {
+        		console.display(String.format("Error: invalid route id: %d\n", routeId));
+        		return false;
+        	}
     	}
     	return true;
     }
     
     public static boolean validateNodeId(Engine engine, Console console, int routeId, int nodeId) {
-    	if (engine.getRoutes().size() == 0) {
-    		console.display("Error: No routes analysed\n");
-    		return false;
-    	}
-    	
-    	Route route = engine.getRoute(routeId);
-    	if (route == null) {
-    		console.display(String.format("Error: invalid route id: %d\n", routeId));
-    		return false;
-    	}
-    	    	
-    	Node node = route.getNode(nodeId);
-    	if (node == null) {
-    		console.display(String.format("Error: invalid node id: %d\n", nodeId));
-    		return false;    		
-    	}
+    	if (routeId == Engine.ROUTE_ID_GLOBAL) {
+        	Node node = engine.getStructureGraph().getNode(nodeId);
+        	if (node == null) {
+        		console.display(String.format("Error: invalid node id: %d\n", nodeId));
+        		return false;    		
+        	}        	    		    		
+    	} else {
+	    	if (engine.getRoutes().size() == 0) {
+	    		console.display("Error: No routes analysed\n");
+	    		return false;
+	    	}    	
+        	Route route = engine.getRoute(routeId);
+        	if (route == null) {
+        		console.display(String.format("Error: invalid route id: %d\n", routeId));
+        		return false;
+        	}   
+        	Node node = route.getNode(nodeId);
+        	if (node == null) {
+        		console.display(String.format("Error: invalid node id: %d\n", nodeId));
+        		return false;    		
+        	}        	
+    	}    	    	    	
     	return true;
     }
     
     public static int getRouteId(String routeId) {
     	if (routeId.equals("-")) {
     		return Engine.ROUTE_ID_LAST;
-    	}    	
-    	
+    	} else if (routeId.equals("#")) {
+    		return Engine.ROUTE_ID_GLOBAL;
+    	}
     	int route = Integer.parseInt(routeId);
     	return route;
     }
@@ -114,6 +122,8 @@ public abstract class Command {
     public static String getRouteId(int routeId) {
     	if (routeId == Engine.ROUTE_ID_LAST) {
     		return "-";
+    	} else if (routeId == Engine.ROUTE_ID_GLOBAL) {
+    		return "#";
     	}
     	return String.format("%d", routeId);
     }
