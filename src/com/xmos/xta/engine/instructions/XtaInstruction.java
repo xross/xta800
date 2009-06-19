@@ -22,9 +22,12 @@ public abstract class XtaInstruction extends Instruction {
 		m_isBranch= isBranch;
 	}
 	
+	public abstract int getOperandField(String opName);    		   
+	
 	public boolean isBranch(){
 		return m_isBranch;
 	}
+	
 	public boolean isLink(){
 		return m_isLink;
 	}
@@ -32,9 +35,7 @@ public abstract class XtaInstruction extends Instruction {
 	public String toString(){
 		return "0x" + Integer.toHexString(getPc()) + " " + getNmenonic() + " " + getOperandString();
 	}
-	
-	public abstract int getOperandField(String opName);    		   
-	
+		
 	public void setFunctionName(String functionName) {
 		m_functionName = functionName;
 	}
@@ -57,16 +58,6 @@ public abstract class XtaInstruction extends Instruction {
 		
 	public Config getConfig() {
 		return m_config;
-	}
-
-	public boolean isNop() {
-		if(isFnop()) return true;
-		
-		
-		if(((getOpcode()>>(8*this.getNumBytes()))&0xFFFF) == 0x9000){
-			return true;
-		}
-		return false;
 	}
 }
 
