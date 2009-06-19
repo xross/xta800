@@ -48,17 +48,17 @@ public class NodeAttributes {
 		// Displays the worst case timing.
 	    String timingSummary = "";
 	    timingSummary += String.format(" : %.1fns", getTimeTaken(Case.WORST, false));
-		//if (m_node.isBlockNode()) {					
+		if (m_node.isBlockNode()) {					
 			timingSummary += String.format(" (x %d)", 
 					m_node.getAttributes().getTotalIterations(Case.WORST));
-		//}
+		}
 
 		// Displays the best case timing.
 	    timingSummary += String.format(" - %.1fns", getTimeTaken(Case.BEST, false));
-		//if (m_node.isBlockNode()) {
+		if (m_node.isBlockNode()) {
 			timingSummary += String.format(" (x %d)", 
 					m_node.getAttributes().getTotalIterations(Case.BEST));
-		//}
+		}
 	    return timingSummary;
 	}
 	
