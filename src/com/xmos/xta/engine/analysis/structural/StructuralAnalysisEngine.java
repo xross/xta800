@@ -3,8 +3,6 @@ package com.xmos.xta.engine.analysis.structural;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +61,7 @@ public class StructuralAnalysisEngine {
 		boolean dominatorTreeUpToDate = false;
 		while (working) {
 			List<Node> postOrder = new LinkedList<Node>();
-			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
+			DFSPostOrder(postOrder, treeStart, new TreeSet<Node>());
 			working = false;
 			for (PatternMatcher pm : m_patternMatchers) {
 				
@@ -116,7 +114,7 @@ public class StructuralAnalysisEngine {
 	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, FunctionNode> startPcs,
 			Engine engine, boolean isFunction) {
 
-		Collection<Node> graphs = new HashSet<Node>();
+		Collection<Node> graphs = new TreeSet<Node>();
 
 		List<Node> orderedGraphs = new LinkedList<Node>(graphStartNodes);
 		Collections.sort(orderedGraphs);
@@ -162,9 +160,9 @@ public class StructuralAnalysisEngine {
 	private Node reduceGraphToBasicBlocks(Collection<Node> basicBlocks, Node initialBasicBlock,
 			Collection<Node> currentGraph) {
 
-		Set<Node> seen = new HashSet<Node>();
-		Map<Node, Node> cfgToStructure = new HashMap<Node, Node>();
-		Map<Node, Node> endPoint = new HashMap<Node, Node>();
+		Set<Node> seen = new TreeSet<Node>();
+		Map<Node, Node> cfgToStructure = new TreeMap<Node, Node>();
+		Map<Node, Node> endPoint = new TreeMap<Node, Node>();
 		Node treeStart = initialBasicBlock;
 
 		for (Node node : currentGraph) {
@@ -196,7 +194,8 @@ public class StructuralAnalysisEngine {
 			Node lastInstruction = endPoint.get(node);
 
 			for (Node branch : lastInstruction.getBranchTargets()) {
-				node.getBranchTargets().add(cfgToStructure.get(branch));
+				//node.getBranchTargets().add(cfgToStructure.get(branch));
+				node.addBranchTarget(cfgToStructure.get(branch));
 			}
 
 			for (Node next : lastInstruction.getNextNodes()) {
@@ -227,7 +226,7 @@ public class StructuralAnalysisEngine {
 			}
 		}
 
-		Set<Node> intersection = new HashSet<Node>();
+		Set<Node> intersection = new TreeSet<Node>();
 		boolean stillChanging = true;
 
 		while (stillChanging) {

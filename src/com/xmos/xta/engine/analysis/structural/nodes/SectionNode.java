@@ -2,7 +2,7 @@ package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,7 +22,7 @@ public class SectionNode extends Node {
 
 	public SectionNode() {
 		super();
-		m_options = new HashSet<Node>();
+		m_options = new TreeSet<Node>();
 		m_isOptional = false;
 		m_attributes = new SectionNodeAttributes(this);
 	}
@@ -71,7 +71,7 @@ public class SectionNode extends Node {
 	}
 	
 	public Set<Integer> getPCs() {
-		Set<Integer> pcs = new HashSet<Integer>();
+		Set<Integer> pcs = new TreeSet<Integer>();
 		for(Node node : m_options){
 			pcs.addAll(node.getPCs());
 		}
@@ -79,7 +79,7 @@ public class SectionNode extends Node {
 	}
 
 	public Collection<Node> getContainedNodes() {
-		Collection<Node> containedNodes = new HashSet<Node> ();
+		Collection<Node> containedNodes = new TreeSet<Node> ();
 		for(Node loop: m_options){
 			containedNodes.addAll(loop.getContainedNodes());
 		}
@@ -118,7 +118,7 @@ public class SectionNode extends Node {
 		if (getParent() != null){
 			return getParent().whatsNext(this);
 		}
-		return new HashSet<Node>();		
+		return new TreeSet<Node>();		
 	}
 
 	public Node getOption(Case c, boolean ignoreIterations) {
@@ -237,7 +237,7 @@ public class SectionNode extends Node {
 		if(getParent() != null){
 			return getParent().whatsBefore(this);
 		} else {
-			return new HashSet<Node>();
+			return new TreeSet<Node>();
 		}
 	}
 

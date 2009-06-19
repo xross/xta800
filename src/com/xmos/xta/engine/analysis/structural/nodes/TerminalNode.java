@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,12 +19,12 @@ public class TerminalNode extends Node {
 	private Collection<Node> m_terminals;
 	
 	public TerminalNode(Collection<Node> terminals) {
-		m_terminals = new HashSet<Node>(terminals);
+		m_terminals = new TreeSet<Node>(terminals);
 		m_attributes = new NodeAttributes(this);
 	}
 	
 	public TerminalNode() {
-		m_terminals = new HashSet<Node>();
+		m_terminals = new TreeSet<Node>();
 		m_attributes = new NodeAttributes(this);
 	}
 
@@ -59,7 +59,7 @@ public class TerminalNode extends Node {
 	}
 	
 	public Collection<Node> getContainedNodes() {
-		Collection<Node> containedNodes = new HashSet<Node> ();
+		Collection<Node> containedNodes = new TreeSet<Node> ();
 		for(Node loop: m_terminals){
 			containedNodes.addAll(loop.getContainedNodes());
 		}
@@ -67,7 +67,7 @@ public class TerminalNode extends Node {
 	}
 
 	public Set<Integer> getPCs() {
-		Set<Integer> pcs = new HashSet<Integer>();
+		Set<Integer> pcs = new TreeSet<Integer>();
 		for(Node node : m_terminals){
 			pcs.addAll(node.getPCs());
 		}
@@ -103,7 +103,7 @@ public class TerminalNode extends Node {
 		if (getParent() != null){
 			return getParent().whatsNext(this);
 		}
-		return new HashSet<Node>();
+		return new TreeSet<Node>();
 	}
 
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
@@ -181,7 +181,7 @@ public class TerminalNode extends Node {
 		if(getParent()!= null){
 			return getParent().whatsBefore(this);
 		} else {
-			return new HashSet<Node>();
+			return new TreeSet<Node>();
 		}
 	}
 	public List<Node> getImmediateChildren() {

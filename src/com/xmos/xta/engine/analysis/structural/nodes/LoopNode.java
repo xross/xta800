@@ -2,7 +2,7 @@ package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -96,7 +96,7 @@ public class LoopNode extends Node {
 	}
 
 	public Set<Integer> getPCs() {
-		Set<Integer> pcs = new HashSet<Integer>(m_loopHeader.getPCs());
+		Set<Integer> pcs = new TreeSet<Integer>(m_loopHeader.getPCs());
 		for (Node loop : m_loops) {
 			pcs.addAll(loop.getPCs());
 		}
@@ -104,7 +104,7 @@ public class LoopNode extends Node {
 	}
 
 	public Collection<Node> getContainedNodes() {
-		Collection<Node> containedNodes = new HashSet<Node>();
+		Collection<Node> containedNodes = new TreeSet<Node>();
 		containedNodes.addAll(m_loopHeader.getContainedNodes());
 		for (Node loop : m_loops) {
 			containedNodes.addAll(loop.getContainedNodes());
@@ -140,7 +140,7 @@ public class LoopNode extends Node {
 	}
 
 	public Collection<Node> whatsNext(Node node) {
-		Collection<Node> next = new HashSet<Node>();
+		Collection<Node> next = new TreeSet<Node>();
 		if (m_loopHeader == node) {
 			next.addAll(getParent().whatsNext(this));
 			next.addAll(m_loops);
@@ -183,7 +183,7 @@ public class LoopNode extends Node {
 	}
 
 	public Collection<Node> whatsBefore(Node node) {
-		Collection<Node> before = new HashSet<Node>();
+		Collection<Node> before = new TreeSet<Node>();
 		if(node == m_loopHeader){
 			before.addAll(m_loops);
 			if(getParent()!= null){

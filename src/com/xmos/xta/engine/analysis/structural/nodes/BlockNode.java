@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +78,7 @@ public class BlockNode extends IBufferNode {
 	}
 		
 	public Set<Integer> getPCs() {
-		Set<Integer> pcs = new HashSet<Integer>();
+		Set<Integer> pcs = new TreeSet<Integer>();
 		for (XtaInstruction inst : getInstructions()) {
 			pcs.add(inst.getPc());
 		}
@@ -86,7 +86,7 @@ public class BlockNode extends IBufferNode {
 	}
 
 	public Collection<Node> getContainedNodes() {
-		return new HashSet<Node> (m_insts);
+		return new TreeSet<Node> (m_insts);
 	}
 	
 	public int getStartPc() {
@@ -117,14 +117,14 @@ public class BlockNode extends IBufferNode {
 	public Collection<Node> whatsNext(Node node) {
 		int index = m_insts.indexOf(node);
 		if(index < m_insts.size()-1){
-			Collection<Node> next = new HashSet<Node>();
+			Collection<Node> next = new TreeSet<Node>();
 			next.add(m_insts.get(index+1));
 			return next;
 		} else {
 			if (getParent() != null){
 				return getParent().whatsNext(this);
 			}
-			return new HashSet<Node>();
+			return new TreeSet<Node>();
 		}
 	}
 
@@ -176,7 +176,7 @@ public class BlockNode extends IBufferNode {
 		if(getParent()!= null){
 			return getParent().whatsBefore(node);
 		}
-		return new HashSet<Node>();
+		return new TreeSet<Node>();
 	}
 
 	public List<Node> getImmediateChildren() {

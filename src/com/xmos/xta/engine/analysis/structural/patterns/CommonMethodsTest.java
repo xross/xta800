@@ -3,7 +3,7 @@ package com.xmos.xta.engine.analysis.structural.patterns;
 import static org.junit.Assert.*;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 
 import org.junit.Test;
 
@@ -16,7 +16,7 @@ public class CommonMethodsTest {
 	
 	@Test
 	public void testWedgeUpNodeCollectionOfNodeBoolean() {
-		Collection<Node> nodes = new HashSet<Node>();
+		Collection<Node> nodes = new TreeSet<Node>();
 		
 		int prevCount = 3;
 		int nextCount = 2;
@@ -49,7 +49,7 @@ public class CommonMethodsTest {
 
 	@Test
 	public void testWedgeDownNodeCollectionOfNodeBoolean() {
-		Collection<Node> nodes = new HashSet<Node>();
+		Collection<Node> nodes = new TreeSet<Node>();
 		
 		int prevCount = 2;
 		int nextCount = 3;

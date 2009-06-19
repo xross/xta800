@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -61,12 +61,12 @@ public class SelfLoopNode extends Node{
 	}
 
 	public Set<Integer> getPCs() {
-		Set<Integer> pcs = new HashSet<Integer>(m_loop.getPCs());
+		Set<Integer> pcs = new TreeSet<Integer>(m_loop.getPCs());
 		return pcs;
 	}
 
 	public Collection<Node> getContainedNodes() {
-		Collection<Node> containedNodes = new HashSet<Node>();
+		Collection<Node> containedNodes = new TreeSet<Node>();
 		containedNodes.addAll(m_loop.getContainedNodes());
 		return containedNodes;
 	}
@@ -94,7 +94,7 @@ public class SelfLoopNode extends Node{
 	}
 
 	public Collection<Node> whatsNext(Node node) {
-		Collection<Node> next = new HashSet<Node>();		
+		Collection<Node> next = new TreeSet<Node>();		
 		if (getParent() != null){
 			next.addAll(getParent().whatsNext(this));
 		}
@@ -127,7 +127,7 @@ public class SelfLoopNode extends Node{
 
 	public Collection<Node> whatsBefore(Node node) {
 		assert(m_loop == node);
-		Collection<Node> before = new HashSet<Node>();
+		Collection<Node> before = new TreeSet<Node>();
 		before.add(m_loop);
 		if(getParent() != null){
 			before.addAll(getParent().whatsBefore(this));

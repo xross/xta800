@@ -107,8 +107,11 @@ public class SuccessorAdder {
 	private void connect(Node instruction, int pc, boolean branching) {
 		Node target = m_instDecoder.getNode(pc);
 		if (target != null) {
-			if (branching)
-				instruction.getBranchTargets().add(target);
+			if (branching){
+				//instruction.getBranchTargets().add(target);
+				instruction.addBranchTarget(target);
+			}
+				
 			CommonMethods.connect(target, instruction);
 		} else {
 			m_notifier.notify(Notifier.NOTIFY_WARNING, "Instruction " + instruction + " failed to find target 0x"

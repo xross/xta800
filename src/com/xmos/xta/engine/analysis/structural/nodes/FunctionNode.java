@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -126,7 +126,7 @@ public class FunctionNode extends IBufferNode {
 		if (m_knownFunction) {
 			return m_function.getContainedNodes();
 		} else {
-			return new HashSet<Node>();
+			return new TreeSet<Node>();
 		}
 	}
 	
@@ -155,7 +155,7 @@ public class FunctionNode extends IBufferNode {
 	public Set<Integer> getPCs() {
 		
 		if(m_function == null){
-			return new HashSet<Integer>();
+			return new TreeSet<Integer>();
 		} else {
 			return m_function.getPCs();
 		}
@@ -190,7 +190,7 @@ public class FunctionNode extends IBufferNode {
 		if (getParent() != null){
 			return getParent().whatsNext(this);
 		}
-		return new HashSet<Node>();
+		return new TreeSet<Node>();
 	}
 
 	public boolean isFunctionNode() {
@@ -226,7 +226,7 @@ public class FunctionNode extends IBufferNode {
 		if(getParent()!= null){
 			return getParent().whatsBefore(this);
 		} else {
-			return new HashSet<Node>();
+			return new TreeSet<Node>();
 		}
 	}
 

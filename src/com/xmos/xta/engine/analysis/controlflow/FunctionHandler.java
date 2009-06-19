@@ -1,7 +1,6 @@
 package com.xmos.xta.engine.analysis.controlflow;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -53,7 +52,7 @@ public class FunctionHandler {
 			XtaInstruction inst = instruction.getInstructions().getFirst();
 			if(inst.isLink()){
 				if(instruction.getNextNodes().size() > 0){
-					Collection<FunctionNode> newFunctions = new HashSet<FunctionNode>();
+					Collection<FunctionNode> newFunctions = new TreeSet<FunctionNode>();
 					for(Node next : instruction.getNextNodes()){
 						FunctionNode fn = new FunctionNode(next);
 						
@@ -66,14 +65,17 @@ public class FunctionHandler {
 					for(Node f : newFunctions){
 						CommonMethods.connect(f, instruction);
 						CommonMethods.connect(instruction.getBranchLinkReturn(), f);
-						f.getBranchTargets().add(instruction.getBranchLinkReturn());
+						//f.getBranchTargets().add(instruction.getBranchLinkReturn());
+						f.addBranchTarget(instruction.getBranchLinkReturn());
 					}
 					m_functions.addAll(newFunctions);
 				} else {
 					FunctionNode fn = new FunctionNode();
 					CommonMethods.connect(fn, instruction);
 					CommonMethods.connect(instruction.getBranchLinkReturn(), fn);
-					fn.getBranchTargets().add(instruction.getBranchLinkReturn());
+					
+					//fn.getBranchTargets().add(instruction.getBranchLinkReturn());
+					fn.addBranchTarget(instruction.getBranchLinkReturn());
 					m_functions.add(fn);
 					m_pseudoFunctions.add(fn);
 				}
@@ -81,7 +83,7 @@ public class FunctionHandler {
 		}
 		
 		for(Node node : m_instToFunc.keySet()){
-			if(!canReturn(node, new HashSet<Node>())){
+			if(!canReturn(node, new TreeSet<Node>())){
 				CommonMethods.disconnect(m_instToFunc.get(node).getNextNodes().iterator().next(), m_instToFunc.get(node));
 			}
 		}		

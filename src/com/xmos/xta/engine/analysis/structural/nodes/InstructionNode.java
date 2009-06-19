@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +53,7 @@ public class InstructionNode extends Node {
 	}
 
 	public Collection<Node> getContainedNodes() {
-		Collection<Node> containedNodes = new HashSet<Node>();
+		Collection<Node> containedNodes = new TreeSet<Node>();
 		containedNodes.add(this);
 		return containedNodes;
 	}
@@ -65,7 +65,7 @@ public class InstructionNode extends Node {
 	}
 
 	public Set<Integer> getPCs() {
-		Set<Integer> pcs = new HashSet<Integer>();
+		Set<Integer> pcs = new TreeSet<Integer>();
 		pcs.add(m_inst.getPc());
 		return pcs;
 	}
