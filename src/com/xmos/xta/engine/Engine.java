@@ -633,9 +633,11 @@ public class Engine implements Notifier {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ANY_REF);
 		if (!resolveRefernece(reference)) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Failed to add exclusion at reference: %s", refString));			
 			return false;
 		}
-		m_exclusions.add(reference);		
+		m_exclusions.add(reference);
+		notify(Notifier.NOTIFY_UPDATE_EXCLUSIONS, "");
 		return true;
 	}
 	
@@ -647,6 +649,7 @@ public class Engine implements Notifier {
 			Reference reference = ReferenceFactory.createReference(
 					refString, ReferenceClass.ANY_REF);
 			if (!resolveRefernece(reference)) {
+				notify(Notifier.NOTIFY_ERROR, String.format("Failed to remove exclusion at reference: %s", refString));			
 				return false;
 			}
 			Iterator<Reference> iter = m_exclusions.iterator();
@@ -657,6 +660,7 @@ public class Engine implements Notifier {
 				}
 			}			
 		}
+		notify(Notifier.NOTIFY_UPDATE_EXCLUSIONS, "");
 		return true;
 	}
 

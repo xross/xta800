@@ -9,6 +9,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -45,6 +46,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     private Text m_exclusionsText;
     private List m_exclusionsList;
     private KeyListener m_exclusionsTextListener;
+    private SelectionListener m_exclusionsListListener;
     private Button m_addExclusionButton;
     private Button m_removeExclusionButton; 
 
@@ -78,9 +80,16 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			}
 
 			public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
-				// Do nothing
 			}			
 		};
+		m_exclusionsListListener = new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				m_removeExclusionButton.setEnabled(true);
+			}			
+		};		
 	}
 	
 	public void createPartControl(Composite parent) {
@@ -98,7 +107,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    createControlBar(controls);
 	    createSettingsBar(controls);
 	    
-	    updateConstraint();
+	    updateExclusions();
 	    updateStartPoint();
 		updateEndPoint();
 	}
@@ -118,6 +127,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
 	        updateState();
 	        
+		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUSIONS)) {
+	        updateExclusions();
+	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT) || 
 				   event.getProperty().equals(Broadcaster.BROADCAST_SET_START_POINT)) {
 			updateStartPoint();
@@ -125,11 +137,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT) ||
     			   event.getProperty().equals(Broadcaster.BROADCAST_SET_END_POINT)) {
 			updateEndPoint();
-			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_CONSTRAINT) || 
-				   event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
-			updateConstraint();
-			
+						
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 			updateStartPoint();
 			updateEndPoint();			
@@ -183,31 +191,21 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	}
 	
 	private void addExclusion() {
-		/* TODO		
-				Engine engine = GuiEngine.getEngine();
-				Constraint constraint = ConstraintFactory.createConstraint(engine, m_constraint.getText());
-				if (constraint != null) {
-					engine.setConstraint(constraint);
-				    m_setConstraintButton.setEnabled(false);
-				}
-		*/		
+		String exclusion = m_exclusionsText.getText();
+		GuiEngine.getEngine().addExclusion(exclusion);
 	}
 
-	private void removeExclusion() {		
-	}
-	
-	private void updateConstraint() {
-/* TODO		
-		Constraint constraint = GuiEngine.getEngine().getConstraint();
-		String str = constraint.getString();
-		if (constraint.getClass() == ConstraintNull.class) {
-			m_constraint.setText("");
-		} else { 
-			m_constraint.setText(str);
+	private void removeExclusion() {
+		for (String exclusion : m_exclusionsList.getSelection()) {
+			GuiEngine.getEngine().removeExclusion(exclusion);
 		}
-		m_constraint.setToolTipText(str);
-		m_constraint.setSelection(str.length());
-*/		
+	}
+
+	private void updateExclusions() {		
+		m_exclusionsList.removeAll();
+		for (Reference exclusion : GuiEngine.getEngine().getExclusions()) {
+		    m_exclusionsList.add(exclusion.getRef());
+		}
 	}
 
 	private void setBackground(Composite composite) {
@@ -216,7 +214,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		
 	private void updateState() {
 		m_freqSpinner.setSelection(GuiEngine.getEngine().getFrequency());
-		m_threadSpinner.setSelection(GuiEngine.getEngine().getNumThreads());
+		m_threadSpinner.setSelection(GuiEngine.getEngine().getNumThreads());		
 	}
 	
 	private void createControlBar(Composite controls) {
@@ -262,8 +260,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		m_exclusionsText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 2));		
 		m_exclusionsText.addKeyListener(m_exclusionsTextListener);
 
-		m_exclusionsList = new List(group, SWT.BORDER | SWT.CENTER);
-		m_exclusionsText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
+		m_exclusionsList = new List(group, SWT.BORDER | SWT.CENTER | SWT.V_SCROLL);
+		m_exclusionsList.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
+		m_exclusionsList.addSelectionListener(m_exclusionsListListener);
 		
 		Composite buttons = new Composite(composite, SWT.NONE);
 	    GridLayout layout = new GridLayout();

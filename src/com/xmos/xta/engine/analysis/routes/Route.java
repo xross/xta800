@@ -250,6 +250,7 @@ public class Route {
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void printCollection(String name, Collection<Node> coll){
 		System.out.print(name + ": " + coll);
 		for(Node node : coll){
