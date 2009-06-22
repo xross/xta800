@@ -17,7 +17,7 @@ public class RouteSelectorLabelProvider extends CellLabelProvider {
 		
 		RouteNode routeNode = (RouteNode)cell.getElement();
 		cell.setText(routeNode.getRoute().getDescription());
-		cell.setImage(Icons.getIcon("route"));
+		cell.setImage(Icons.getIcon("routes"));
 	}
 
 	public String getToolTipText(Object element) {
