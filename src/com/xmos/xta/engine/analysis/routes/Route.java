@@ -18,6 +18,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.SelfLoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownType;
@@ -151,7 +152,7 @@ public class Route {
 				explore(start, workingSet, endPcs, endNodes, null);
 				
 				printCollection("excludedRouteNodes", m_excludedRouteNodes);
-				//StructuralAnalysisEngine.dumpTree(workingSet);	
+				StructuralAnalysisEngine.dumpTree(workingSet);	
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 				pruneGraphOfExcludedPaths(workingSet);
@@ -159,14 +160,11 @@ public class Route {
 					continue;
 				}
 				
-				//StructuralAnalysisEngine.dumpTree(workingSet);			
+				StructuralAnalysisEngine.dumpTree(workingSet);			
 				Set<Node> newEndNodes = removeFinalInstruction(endNodes, start,
 						workingSet);
 				
-				
-				
-				//System.out.println(newEndNodes);
-				//StructuralAnalysisEngine.dumpTree(workingSet);			
+				StructuralAnalysisEngine.dumpTree(workingSet);			
 				Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
 				assert(cfgSanityCheck(workingSet));
 				
@@ -176,6 +174,12 @@ public class Route {
 				assert(workingSet.size() == 1);
 				Node baseNode = workingSet.iterator().next();
 
+				
+				if(baseNode.isSelfLoopNode()) {
+					SelfLoopNode sln = (SelfLoopNode)baseNode;
+					baseNode = sln.getLoop();
+				}
+				
 				Node newGraph = baseNode.deepCopy(new TreeMap<Integer, FunctionNode>());
 							
 				m_subRoutes.add(newGraph);
@@ -195,10 +199,6 @@ public class Route {
 	private void explore(Node node, Collection<Node> set, Collection<Integer> endPcs, Collection<Node> endNodes, Node parent) {	
 		Set<Integer> pcs = new TreeSet<Integer>(endPcs);
 		pcs.retainAll(node.getPCs());
-		//System.out.println("\nexploring node: " + node);
-		if(node.getId() == 3218){
-			System.out.println();
-		}
 		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
 		exclusions.retainAll(node.getContainedNodes());
 		
@@ -206,7 +206,6 @@ public class Route {
 		if (pcs.isEmpty() || set.isEmpty()) {
 			
 			if(!exclusions.isEmpty() ){
-				//if( node.isSectionNode()){
 				if( node.isBlockNode() ){
 					
 					if(set.contains(node)) {
@@ -319,7 +318,7 @@ public class Route {
 		// from every end node in the working set crawl upwards stopping at
 		// basic block boundaries
 		for (Node endNode : endNodes) {
-			if (workingSet.contains(endNode)) {
+			if (workingSet.contains(endNode) && !endNode.isBlockNode()) {
 				List<Node> endList = new LinkedList<Node>();
 				Node end = endNode;
 				endList.add(end);

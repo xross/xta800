@@ -204,6 +204,10 @@ public abstract class Node implements Comparable<Node>{
 	public boolean isBlockNode() {
 		return false;
 	}
+	
+	public boolean isSelfLoopNode() {
+		return false;
+	}
 		
 	public Node getEnclosingLoopNode() {		
 		Node node = m_parent;

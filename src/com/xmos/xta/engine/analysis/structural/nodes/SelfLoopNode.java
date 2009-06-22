@@ -139,5 +139,11 @@ public class SelfLoopNode extends Node{
 		list.add(m_loop);
 		return list;
 	}
+	public boolean isSelfLoopNode() {
+		return true;
+	}
 
+	public Node getLoop() {
+		return m_loop;
+	}
 }
