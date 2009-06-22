@@ -2,6 +2,7 @@ package com.xmos.xta.engine.analysis.routes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.TreeSet;
 import java.util.Set;
 import com.xmos.xta.engine.Engine;
@@ -12,6 +13,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
 
 class AbortedException extends Exception {
@@ -212,20 +214,17 @@ public class Route {
 		}		
 		return found;
 	}
-	
-	public double getInstructionTimeTaken(Reference reference) {
-		// TODO
-		return 0;
-	}
-	
-	public long getInstructionNumCycles(Reference reference) {
-		// TODO
-		return 0;
-	}
-	
+		
 	public boolean canInstructionPause(Reference reference) {
-		// TODO
-		return false;
+		boolean canPause = true;
+        for (Node node : getReferencedNodes(reference)) {
+        	LinkedList<XtaInstruction> instructions = node.getInstructions();
+        	assert(instructions.size() == 1);
+        	if (!instructions.getFirst().canPause()) {
+        		canPause = false;
+        	}
+		}
+		return canPause;
 	}
 	
 	private void refreshDisplayedUnknowns() {
