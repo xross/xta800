@@ -222,57 +222,13 @@ public class Engine implements Notifier {
 		if (!sections.load(xeLoader, this)) {
 			return false;
 		} 
-		
-		NodeCoreCollection<XeObject> newXeObjects = new NodeCoreCollection<XeObject>();
-		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
-		NodeCoreCollection<ControlFlowGraph> newCfg = new NodeCoreCollection<ControlFlowGraph>();
-		NodeCoreCollection<InstructionDecoder> newInstructionDecoder = new NodeCoreCollection<InstructionDecoder>();
-		
-		for(int nodeId : xeLoader.getNodeIds()){
-			for(int coreId : xeLoader.getCoreIds(nodeId)){
-				InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config);
-				
-				if(!id.decode()) 
-					return false;
-				
-				ThreadHandler th = new ThreadHandler(id, this);
-				Collection<Node> threadStartNodes = 
-					th.getThreadNodes(sections.getThreadStartPoints(nodeId, coreId));
-				Collection<Node> threadStopNodes = 
-					th.getThreadNodes(sections.getThreadStopPoints(nodeId, coreId));				
-				threadStartNodes = th.ensureThreadStartExists(threadStartNodes);
-				
-				SuccessorAdder sa = new SuccessorAdder(nodeId, coreId, id, sections, threadStopNodes, xeLoader, this);
-				if (!sa.process()) 
-					return false;
 
-				FunctionHandler fh = new FunctionHandler(id);
-				if (!fh.addFunctions()) 
-					return false;
-				
-				UnreachableCodeFinder uca = new UnreachableCodeFinder();
-				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
-	
-				newXeObjects.add(nodeId, coreId, new XeObject(xeLoader, nodeId, coreId, fileFinder));
-
-				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts(), fh.getFunctions());
-				newCfg.add(nodeId, coreId, cfg);
-				
-				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
-				if (!sae.analyse(this))
-					return false;
-				
-				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
-			}		
-		}
+		if (!buildGlobalStructure(xeLoader, sections, fileFinder))
+			return false;
 		
-		m_instructionDecoder = newInstructionDecoder;
-		m_sections = sections;
-		m_xeObjects = newXeObjects;
-		m_controlFlowGraph = newCfg;
-		m_structuralGraph = newStructuralGraph;
-		m_xeLoader = xeLoader;
 		m_executableFile = executableFile;
+		m_xeLoader = xeLoader;
+		m_sections = sections;
 		m_nodeId = 0;
 		m_coreId = 0;			
 		
@@ -513,16 +469,7 @@ public class Engine implements Notifier {
 		}
 		return false;
 	}
-	
-	public double getInstructionTimeTaken(int routeId, String refString) {
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.ENDPOINT_REF);
-		if (!resolveRefernece(reference)) {
-			return 0;
-		}
-		return getRoute(routeId).getInstructionTimeTaken(reference);
-	}
-	
+		
 	public boolean setInstructionNumCycles(int routeId, String refString, long numCycles) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
@@ -550,16 +497,7 @@ public class Engine implements Notifier {
 		}
 		return false;
 	}
-	
-	public long getInstructionNumCycles(int routeId, String refString) {
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.ENDPOINT_REF);
-		if (!resolveRefernece(reference)) {
-			return 0;
-		}
-		return getRoute(routeId).getInstructionNumCycles(reference);		
-	}
-		
+			
 	public boolean canInstructionPause(int routeId, String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
@@ -827,6 +765,57 @@ public class Engine implements Notifier {
 	
 	public Collection<String> getFunctionsVisited() {
 		return m_functionsVisited;
+	}
+	
+	private boolean buildGlobalStructure(XeLoader xeLoader, Sections sections, FileFinder fileFinder) {
+		NodeCoreCollection<XeObject> newXeObjects = new NodeCoreCollection<XeObject>();
+		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
+		NodeCoreCollection<ControlFlowGraph> newCfg = new NodeCoreCollection<ControlFlowGraph>();
+		NodeCoreCollection<InstructionDecoder> newInstructionDecoder = new NodeCoreCollection<InstructionDecoder>();
+		
+		for (int nodeId : xeLoader.getNodeIds()){
+			for (int coreId : xeLoader.getCoreIds(nodeId)){
+				InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config);
+				
+				if (!id.decode()) 
+					return false;
+				
+				ThreadHandler th = new ThreadHandler(id, this);
+				Collection<Node> threadStartNodes = 
+					th.getThreadNodes(sections.getThreadStartPoints(nodeId, coreId));
+				Collection<Node> threadStopNodes = 
+					th.getThreadNodes(sections.getThreadStopPoints(nodeId, coreId));				
+				threadStartNodes = th.ensureThreadStartExists(threadStartNodes);
+
+				SuccessorAdder sa = new SuccessorAdder(nodeId, coreId, id, sections, threadStopNodes, xeLoader, this);
+				if (!sa.process()) 
+					return false;
+
+				FunctionHandler fh = new FunctionHandler(id);
+				if (!fh.addFunctions()) 
+					return false;
+				
+				UnreachableCodeFinder uca = new UnreachableCodeFinder();
+				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
+	
+				newXeObjects.add(nodeId, coreId, new XeObject(xeLoader, nodeId, coreId, fileFinder));
+
+				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts(), fh.getFunctions());
+				newCfg.add(nodeId, coreId, cfg);
+				
+				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
+				if (!sae.analyse(this))
+					return false;
+				
+				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
+			}		
+		}
+		
+		m_instructionDecoder = newInstructionDecoder;
+		m_xeObjects = newXeObjects;
+		m_controlFlowGraph = newCfg;
+		m_structuralGraph = newStructuralGraph;
+		return true;
 	}
 	
 	private boolean functionExists(String functionName) {
