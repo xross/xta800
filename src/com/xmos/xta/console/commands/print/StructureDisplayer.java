@@ -76,7 +76,7 @@ public class StructureDisplayer {
 	
 	private void displayWhatsNext(Node node) {
 		if (node.getParent()!= null && node.getParent().whatsNext(node) != null){
-			m_console.display(" ---after: ");
+			m_console.display(" ---next: ");
 			m_console.display(node.getParent().whatsNext(node).toString());
 			m_console.display("---");
 		}		

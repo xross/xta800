@@ -23,6 +23,7 @@ import com.xmos.xta.engine.analysis.structural.patterns.SectionTransformer;
 import com.xmos.xta.engine.analysis.structural.patterns.SelfLoopPattern;
 import com.xmos.xta.engine.analysis.structural.patterns.TerminalPatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.UpWedge;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructuralAnalysisEngine {
 	private static final boolean DEBUG = false;
@@ -322,16 +323,17 @@ public class StructuralAnalysisEngine {
 						System.out.println(node + " -> " + next + ";");
 					}
 				}
-				/*
-				System.out.print(node + " [label=\"" );
-				for(XtaInstruction inst : node.getInstructions()){
-					System.out.print(inst + "\\n");
+				if(node.isBlockNode()){
+					System.out.print(node + " [label=\"" );
+					for(XtaInstruction inst : node.getInstructions()){
+						System.out.print(inst + "\\n");
+					}
+					System.out.print("\"");
+					System.out.println("];");
 				}
-				System.out.print("\"");
-				System.out.println("];");
-				*/
 			}
 			System.out.println("}\n");
+			
 		}
 	}
 	

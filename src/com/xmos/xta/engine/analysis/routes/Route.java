@@ -140,17 +140,17 @@ public class Route {
 					endNodes.addAll(pcToStruct.get(to));
 				}
 			}
-			//printCollection("exclusions", m_exclusions);
-			//printCollection("end nodes", endNodes);
+			printCollection("exclusions", m_exclusions);
+			printCollection("end nodes", endNodes);
 			for (Node start : startNodes) {
-				//System.out.println("start node: " + start);
+				System.out.println("start node: " + start);
 				Collection<Node> workingSet = new TreeSet<Node>();
 
 				m_structureGraph.removeLinks();
 				m_excludedRouteNodes = new TreeSet<Node>();
 				explore(start, workingSet, endPcs, endNodes, null);
 				
-				//printCollection("excludedRouteNodes", m_excludedRouteNodes);
+				printCollection("excludedRouteNodes", m_excludedRouteNodes);
 				//StructuralAnalysisEngine.dumpTree(workingSet);	
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
@@ -164,12 +164,14 @@ public class Route {
 						workingSet);
 				
 				
+				
+				//System.out.println(newEndNodes);
 				//StructuralAnalysisEngine.dumpTree(workingSet);			
 				Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
 				assert(cfgSanityCheck(workingSet));
 				
 				
-				//StructuralAnalysisEngine.dumpTree(workingSet);
+				StructuralAnalysisEngine.dumpTree(workingSet);
 				sae.createStructure(workingSet, newStart, m_engine, true);
 				assert(workingSet.size() == 1);
 				Node baseNode = workingSet.iterator().next();
@@ -194,23 +196,24 @@ public class Route {
 		Set<Integer> pcs = new TreeSet<Integer>(endPcs);
 		pcs.retainAll(node.getPCs());
 		//System.out.println("\nexploring node: " + node);
-		
+		if(node.getId() == 3218){
+			System.out.println();
+		}
 		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
 		exclusions.retainAll(node.getContainedNodes());
 		
 
 		if (pcs.isEmpty() || set.isEmpty()) {
-
+			
 			if(!exclusions.isEmpty() ){
 				//if( node.isSectionNode()){
 				if( node.isBlockNode() ){
+					
 					if(set.contains(node)) {
 						return;
 					}
 					set.add(node);
-					
 					makeConnection(node, parent);
-					
 					m_excludedRouteNodes.add(node);
 				} else {
 					assert (!node.getImmediateChildren().isEmpty());
@@ -220,12 +223,13 @@ public class Route {
 				}
 				return;
 			}
+			makeConnection(node, parent);
 			if(set.contains(node)) {
 				return;
 			}
 			set.add(node);
 			
-			makeConnection(node, parent);
+			
 			
 			assert(node.getParent() != null);
 			if (!node.getParent().whatsNext(node).isEmpty()) {
