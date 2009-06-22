@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.Viewer;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
 public class SelectedRouteContentProvider implements ITreeContentProvider  {
+	private static Object[] EMPTY_ARRAY = new Object[]{};
     private static final boolean DEBUG = false;
 
 	public SelectedRouteContentProvider() {
@@ -16,29 +17,36 @@ public class SelectedRouteContentProvider implements ITreeContentProvider  {
 		if (DEBUG) System.out.printf("SelectedRouteContentProvider: getChildren: %s\n",
 				parentElement.toString());
 
-		Object[] res = ((Node)parentElement).getChildren().toArray();
-		return res;
+		if (parentElement instanceof Node){
+			return ((Node)parentElement).getChildren().toArray();
+		}
+		
+		return EMPTY_ARRAY;
 	}
 
 	public Object getParent(Object element) {
 		if (DEBUG) System.out.printf("SelectedRouteContentProvider: getParent: %s\n", 
 				element.toString());	
 
-		return ((Node)element).getParent();
+		if (element instanceof Node){
+			return ((Node)element).getParent();
+		}
+		return null;
 	}
 
 	public boolean hasChildren(Object element) {
 		if (DEBUG) System.out.printf("SelectedRouteContentProvider: hasChildren: %s\n",
-				element.toString());	
-
-		return ((Node)element).getChildren().size() > 0;
+				element.toString());
+		
+		if (element instanceof Node){
+			return ((Node)element).getChildren().size() > 0;
+		}
+		
+		return false;
 	}
 
 	public Object[] getElements(Object inputElement) {
-		if (DEBUG) System.out.printf("SelectedRouteContentProvider: getElements: %s\n",
-				inputElement.toString());	
-
-        return ((Node)inputElement).getChildren().toArray();
+		return getChildren(inputElement);
 	}
 
 	public void dispose() {

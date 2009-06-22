@@ -58,6 +58,11 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
         if (xeFileName == null)
         	return;
         
+        loadFile(xeFileName);
+    }
+	
+	public void loadFile(String xeFileName){
+		XtaPlugin plugin = XtaPlugin.getDefault();
         String path = new File(xeFileName).getParent();
         plugin.getPreferenceStore().setValue("LastDir", path);
 
@@ -74,8 +79,8 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
 			}
 		};
 		job.setUser(true);
-		job.schedule();
-    }
+		job.schedule();		
+	}
 
     private void openEditors() {
 		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
