@@ -19,6 +19,14 @@ public class SectionNodeAttributes extends NodeAttributes {
    		}		
 	}
 
+	public long getNumPaths() {
+		long value = 0;
+		for (Node child : getNode().getChildren()) {
+			value += child.getAttributes().getNumPaths();
+		}
+		return value;
+	}
+	
 	public void setLoopIterations(Case c, long numIterations) {
     	setNumIterations(c, numIterations);
     	
