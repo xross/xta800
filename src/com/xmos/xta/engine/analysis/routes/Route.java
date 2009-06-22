@@ -141,8 +141,6 @@ public class Route {
 					endNodes.addAll(pcToStruct.get(to));
 				}
 			}
-			printCollection("exclusions", m_exclusions);
-			printCollection("end nodes", endNodes);
 			for (Node start : startNodes) {
 				//System.out.println("start node: " + start);
 				Collection<Node> workingSet = new TreeSet<Node>();
@@ -171,6 +169,8 @@ public class Route {
 				
 				//StructuralAnalysisEngine.dumpTree(workingSet);
 				sae.createStructure(workingSet, newStart, m_engine, true);
+				//StructuralAnalysisEngine.dumpTree(workingSet);
+				
 				assert(workingSet.size() == 1);
 				Node baseNode = workingSet.iterator().next();
 
@@ -251,14 +251,6 @@ public class Route {
 				}
 			}
 		}
-	}
-	
-	private void printCollection(String name, Collection<Node> coll){
-		System.out.print(name + ": " + coll);
-		for(Node node : coll){
-			System.out.print(" 0x" + Integer.toHexString(node.getStartPc()));
-		}
-		System.out.println();
 	}
 	
 	private Set<Node> removeFinalInstruction(Collection<Node> endNodes,

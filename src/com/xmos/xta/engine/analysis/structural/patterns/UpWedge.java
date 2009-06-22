@@ -11,6 +11,7 @@ public class UpWedge extends PatternMatcher {
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose, Node treeStart) {
 		m_treeStart = treeStart;
 		
+		//the set of least dominant nodes is the set of nodes that cause a loop to be formed.
 		Set<Node> leastDominantNodes = new TreeSet<Node>();
 		for (Node node : workingSet) {
 			for (Node next : node.getNextNodes()) {
@@ -19,10 +20,10 @@ public class UpWedge extends PatternMatcher {
 				}
 			}
 		}
+		
 		if (leastDominantNodes.isEmpty()) {
 			return false;
 		}
-		
 		if (leastDominantNodes.contains(currentNode)) {	
 			Node piviot = currentNode;
 			while (piviot.getPrevNodes().size() == 1 && piviot.getNextNodes().size() == 1) {
@@ -30,9 +31,11 @@ public class UpWedge extends PatternMatcher {
 			}
 			
 			if (piviot.getPrevNodes().size() > 1) {
-				return false;
+				return CommonMethods.wedgeDown(piviot, workingSet);
+			} else {
+				return CommonMethods.wedgeUp(piviot, workingSet);
 			}
-			return CommonMethods.wedgeUp(piviot, workingSet);
+			
 		}		
 		return false;
 	}
