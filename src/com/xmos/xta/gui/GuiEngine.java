@@ -31,7 +31,7 @@ public class GuiEngine {
 	private static String s_runMode;
 	private static List<Node> s_selectedNodes;
 
-	public static void initialise() {
+	static {
         s_engine = new Engine(new Config());
         s_notifier = new GuiNotifier();
         s_broadcaster = new Broadcaster();        
