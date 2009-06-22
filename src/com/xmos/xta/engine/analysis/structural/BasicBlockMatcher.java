@@ -12,7 +12,7 @@ public class BasicBlockMatcher {
 	private Node m_lastInstruction;
 
 	public boolean match(Node node, Node treeStart, Collection<Node> currentGraph) {
-
+		m_treeStart = node;
 		LinkedList<Node> insts = new LinkedList<Node>();
 		boolean isStart = isStart(node);
 		insts.add(node);
@@ -43,7 +43,10 @@ public class BasicBlockMatcher {
 	}
 
 	private boolean isStart(Node node) {
-		if (node.getPrevNodes().size() == 0) {
+		if(node == m_treeStart){
+			return true;
+		} else 
+			if (node.getPrevNodes().size() == 0) {
 			return true;
 		} else if (node.getPrevNodes().size() == 1) {
 			Node prev = node.getPrevNodes().iterator().next();
@@ -67,7 +70,9 @@ public class BasicBlockMatcher {
 			return true;
 		} else if (node.getNextNodes().size() == 1) {
 			Node next = node.getNextNodes().iterator().next();
-
+			if(next == m_treeStart){
+				return true;
+			}
 			if (next.isFunctionNode()) {
 				return true;
 			}

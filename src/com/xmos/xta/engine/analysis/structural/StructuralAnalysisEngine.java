@@ -125,15 +125,16 @@ public class StructuralAnalysisEngine {
 
 			engine.provideFeedback("Processing " + functionName);
 
-			//TODO
 			Collection<Node> currentGraph = new TreeSet<Node>();
 			collectCurrentGraphNodes(graphStart, currentGraph);
 			
 			Collection<Node> basicBlocks = new TreeSet<Node>();
-			
+
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
+			assert(!basicBlocks.isEmpty());
 			
 			FnopAnalyser fa = new FnopAnalyser();
+			
 			fa.analyse(initialBasicBlock, isFunction);
 			fa.addFnopsToBasicBlocks(initialBasicBlock);
 			assert(basicBlocks.contains(initialBasicBlock));
@@ -313,6 +314,8 @@ public class StructuralAnalysisEngine {
 
 	private static int g = 0;
 	public static void dumpTree(Collection<Node> workingSet) {
+		
+		
 		if (workingSet.size() > 1) {
 			System.out.println("digraph g" + g++ + " {");
 			for (Node node : workingSet) {
@@ -334,6 +337,8 @@ public class StructuralAnalysisEngine {
 			}
 			System.out.println("}\n");
 			
+		} else {
+			System.out.println("# graph has only " + workingSet.size() + " nodes");
 		}
 	}
 	

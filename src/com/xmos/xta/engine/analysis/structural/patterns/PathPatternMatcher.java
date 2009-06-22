@@ -34,8 +34,7 @@ public class PathPatternMatcher extends PatternMatcher {
 		//im really not over happy about this. will have to verify it
 		if(node == m_treeStart){
 			return true;
-		} else 
-			if (node.getPrevNodes().size() ==  0) {
+		} else if (node.getPrevNodes().size() ==  0) {
 			return true;
 		} else if (node.getPrevNodes().size() ==  1) {
 			Node prev = node.getPrevNodes().iterator().next();

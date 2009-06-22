@@ -49,6 +49,7 @@ public class InstructionNode extends Node {
     }
     
 	public String toString() {
+		//return this.getXtaInstruction().toString();
 		return "instruction" + m_id;
 	}
 
