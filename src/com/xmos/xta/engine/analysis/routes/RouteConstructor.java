@@ -75,9 +75,7 @@ public class RouteConstructor {
 					} else {
 						break;
 					}
-					
 				}
-				
 			}		
 			seenEndPoint = true;
 			setParents();
@@ -99,13 +97,25 @@ public class RouteConstructor {
 					
 					for(Node node : start){
 						Node nodeToAdd = node;
-						if (nodeToAdd.getParent() != null && nodeToAdd.getParent().getImmediateChildren().contains(nodeToAdd)){
+						if (nodeToAdd.getParent() != null 
+								&& nodeToAdd.getParent().getImmediateChildren().contains(nodeToAdd)
+								&& doesNotContainAnEndpoint(nodeToAdd.getParent(), endNodes)){
 							nodeToAdd = nodeToAdd.getParent();
 						}
 						startNodes.add(nodeToAdd);
 					}
 				} 
 			}
+			/*
+			startNodes.addAll(getReferencedNodes(m_description.getStartPoint()));
+			endNodes.addAll(getReferencedNodes(m_description.getEndPoint()));
+			for(Node startNode : startNodes){
+				startPcs.add(startNode.getStartPc());
+			}
+			*/
+			System.out.println("startNodes: " + startNodes);
+			System.out.println("endNodes: " + endNodes);
+			
 			
 			for (int to : endPcs) {
 				if (pcToStruct.get(to) != null) {
@@ -166,6 +176,15 @@ public class RouteConstructor {
 		return seenEndPoint;
 	}
 
+	private boolean doesNotContainAnEndpoint(Node parent, Collection<Node> endNodes) {
+		for(Node endNode : endNodes){
+			if(parent.getContainedNodes().contains(endNode)){
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private boolean explore(Node node, Collection<Node> set, Collection<Integer> endPcs, Collection<Node> endNodes, Node parent) {	
 		Set<Integer> pcs = new TreeSet<Integer>(endPcs);
 		pcs.retainAll(node.getPCs());
@@ -197,14 +216,11 @@ public class RouteConstructor {
 				return false;
 			}
 			set.add(node);
-			
-			
-			
+
 			assert(node.getParent() != null);
 			if (!node.getParent().whatsNext(node).isEmpty()) {
 				
 				Collection<Node> nextNodes = node.getParent().whatsNext(node);
-				//System.out.println(node + " -> " + nextNodes);
 				for (Node next : nextNodes) {
 					seenEndPoint |= explore(next, set, endPcs, endNodes, node);
 				}
@@ -235,6 +251,16 @@ public class RouteConstructor {
 		}
 		
 		//FIXME - the endNodes night have a single instruction but the start may be a block
+		if(start.isBlockNode()){
+			
+			//end nodes should be a list of instruction nodes - however due to the prune
+			//some of them may be blocks
+			
+			
+			
+			System.out.println("there is a block as the final node");
+		}
+		
 		if(endNodes.contains(start)){
 			endNodes.remove(start);
 		}
@@ -332,6 +358,7 @@ public class RouteConstructor {
 	private Set<Integer> getStartPcs() {
 		Set<Integer> startPcs = new TreeSet<Integer>();
 		startPcs.add(m_description.getStartPoint().getPc());
+		
 		return startPcs;
 	}
 	
@@ -494,5 +521,14 @@ public class RouteConstructor {
 			}
 		}
 		return true;
+	}
+	
+	private Collection<Node> getReferencedNodes(Reference reference) {
+		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
+		Collection<Node> referencedNodes = new ArrayList<Node>();
+		for(Node thread : m_structureGraph.getThreads()){
+			referencedNodes.addAll(referenceMatcher.getNodes(thread, reference));
+		}
+		return referencedNodes;		
 	}
 }

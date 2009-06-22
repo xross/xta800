@@ -365,9 +365,9 @@ public class Engine implements Notifier {
 		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 		m_progress.resetState(Progress.State.PROCESSING_PATHS);
 		
-		boolean foundAtLeastOneSubRoute = routeConstructor.analyse();		
+		boolean foundAtLeastOneEndPoint = routeConstructor.analyse();		
 
-		if (!foundAtLeastOneSubRoute) {
+		if (!foundAtLeastOneEndPoint ) {
 			notify(Notifier.NOTIFY_ERROR, "No valid paths of execution");
 			return false;
 		} else {
@@ -376,10 +376,14 @@ public class Engine implements Notifier {
 				m_routes.add(route);
 				
 			}
-			setSelectedRoute(m_routes.get(0));
-			
+			if(!m_routes.isEmpty()){
+				setSelectedRoute(m_routes.get(0));
+				notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(0).getRouteId()));
+			} else {
+				notify(Notifier.NOTIFY_WARNING, "No paths added");
+			}
 	
-			notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(0).getRouteId()));
+			
 			return true;
 		}
 		
