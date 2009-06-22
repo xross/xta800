@@ -218,14 +218,16 @@ public class Engine implements Notifier {
 			notify(Notifier.NOTIFY_ERROR, "The file '" + executableFile + "' could not be loaded.");
 			return false;			
 		}
+		
 		Sections sections = new Sections();
 		if (!sections.load(xeLoader, this)) {
 			return false;
 		} 
-
-		if (!buildGlobalStructure(xeLoader, sections, fileFinder))
-			return false;
 		
+		if (!initialiseGlobalStructure(xeLoader, sections))
+			return false;
+
+		initialiseXeObjects(xeLoader, fileFinder);		
 		m_executableFile = executableFile;
 		m_xeLoader = xeLoader;
 		m_sections = sections;
@@ -619,8 +621,9 @@ public class Engine implements Notifier {
 		}		
 		
 		if (m_sections.addToBranches(m_nodeId, m_coreId, fromRef.getPc(), toRef.getPc())) {
-			//FIXME
-			//  m_ae.run();
+			if (!initialiseGlobalStructure(m_xeLoader, m_sections)) {
+				return false;
+			}
 			return true;			
 		}		
 		return false;
@@ -633,9 +636,10 @@ public class Engine implements Notifier {
 		}
 		
 		if (m_sections.removeFromBranches(m_nodeId, m_coreId, fromRef.getPc())) {		    
-		    //FIXME
-			//  m_ae.run();
-		    return true;
+			if (!initialiseGlobalStructure(m_xeLoader, m_sections)) {
+				return false;
+			}
+			return true;			
 		}
 		return false;
 	}
@@ -773,8 +777,7 @@ public class Engine implements Notifier {
 		return m_functionsVisited;
 	}
 	
-	private boolean buildGlobalStructure(XeLoader xeLoader, Sections sections, FileFinder fileFinder) {
-		NodeCoreCollection<XeObject> newXeObjects = new NodeCoreCollection<XeObject>();
+	private boolean initialiseGlobalStructure(XeLoader xeLoader, Sections sections) {
 		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
 		NodeCoreCollection<ControlFlowGraph> newCfg = new NodeCoreCollection<ControlFlowGraph>();
 		NodeCoreCollection<InstructionDecoder> newInstructionDecoder = new NodeCoreCollection<InstructionDecoder>();
@@ -804,8 +807,6 @@ public class Engine implements Notifier {
 				UnreachableCodeFinder uca = new UnreachableCodeFinder();
 				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
 	
-				newXeObjects.add(nodeId, coreId, new XeObject(xeLoader, nodeId, coreId, fileFinder));
-
 				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts(), fh.getFunctions());
 				newCfg.add(nodeId, coreId, cfg);
 				
@@ -815,13 +816,20 @@ public class Engine implements Notifier {
 				
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
 			}		
-		}
-		
+		}		
 		m_instructionDecoder = newInstructionDecoder;
-		m_xeObjects = newXeObjects;
 		m_controlFlowGraph = newCfg;
 		m_structuralGraph = newStructuralGraph;
 		return true;
+	}
+	
+	private void initialiseXeObjects(XeLoader xeLoader, FileFinder fileFinder) {
+		NodeCoreCollection<XeObject> m_xeObjects = new NodeCoreCollection<XeObject>();
+		for (int nodeId : xeLoader.getNodeIds()){
+			for (int coreId : xeLoader.getCoreIds(nodeId)){
+				m_xeObjects.add(nodeId, coreId, new XeObject(xeLoader, nodeId, coreId, fileFinder));
+			}
+		}		
 	}
 	
 	private boolean functionExists(String functionName) {
