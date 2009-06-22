@@ -51,7 +51,6 @@ public class Summary extends Command {
 	private void displayRouteSummary(Console console, Route route, 
 			boolean displayFailures, boolean displayPasses) {
 
-		
 		RouteTiming routeTiming = route.getRouteTiming();				
 		if (routeTiming.isTimingSpecified()) {			
 			if (routeTiming.passedTiming()) {
