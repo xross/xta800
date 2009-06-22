@@ -65,13 +65,14 @@ public class FunctionNode extends IBufferNode {
 		fn.m_knownFunction = m_knownFunction;
 		fn.m_branchTarget = m_branchTarget;
 		
-		if(m_knownFunction){
-			fn.m_function = m_function.deepCopy(startPcs);			
-		} else {
+		if(m_function != null){
+			fn.m_function = m_function.deepCopy(startPcs);		
+		} else if(m_branchTarget != null){
 			int pc = m_branchTarget.getStartPc();
 			String fnName = startPcs.get(pc).getFunctionName();
 			fn.setFunction(fnName, startPcs.get(pc).getFunction().deepCopy(startPcs));
 		}
+		
 		fn.m_attributes = new NodeAttributes(fn);
 		return fn;
 	}

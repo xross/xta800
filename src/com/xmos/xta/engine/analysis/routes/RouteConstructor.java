@@ -88,7 +88,13 @@ public class RouteConstructor {
 			Set<Integer> endPcs = getEndPcs();
 
 			Collection<Node> startNodes = new TreeSet<Node>();
+			//Collection<Node> testStartNodes = new TreeSet<Node>();
 			Collection<Node> endNodes = new TreeSet<Node>();
+			//Collection<Node> testEndNodes = new TreeSet<Node>();
+			
+			//testStartNodes = getReferencedNodes(m_description.getStartPoint());
+			//testEndNodes = getReferencedNodes(m_description.getEndPoint());
+			
 			Map<Integer, TreeSet<Node>> pcToStruct = buildPcMap(m_structureGraph);
 			
 			for (int from : startPcs) {
@@ -112,6 +118,13 @@ public class RouteConstructor {
 					endNodes.addAll(pcToStruct.get(to));
 				}
 			}
+			
+			
+			//System.out.println("old start nodes: " + startNodes);
+			//System.out.println("new start nodes: " + testStartNodes);
+			//System.out.println("old end nodes: " + endNodes);
+			//System.out.println("new end nodes: " + testEndNodes);
+			
 			
 			for (Node start : startNodes) {
 				Collection<Node> workingSet = new TreeSet<Node>();
