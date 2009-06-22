@@ -30,6 +30,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.routes.Route;
+import com.xmos.xta.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
 import com.xmos.xta.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.engine.references.Reference;
@@ -359,25 +360,25 @@ public class Engine implements Notifier {
 			return false;
 		}
 
- 		Route route = new Route(this, m_structuralGraph.get(m_nodeId, m_coreId), routeDescription);
-			
-		//FIXME
-		
-		//route.setConstrained(false);
+		RouteConstructor routeConstructor = new RouteConstructor(this, m_structuralGraph.get(m_nodeId, m_coreId), routeDescription);
 			
 		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 		m_progress.resetState(Progress.State.PROCESSING_PATHS);
 		
-		boolean foundAtLeastOneSubRoute = route.analyse();		
+		boolean foundAtLeastOneSubRoute = routeConstructor.analyse();		
 
 		if (!foundAtLeastOneSubRoute) {
 			notify(Notifier.NOTIFY_ERROR, "No valid paths of execution");
 		}
+		for(Node subRoute : routeConstructor.getSubRoutes()){
+			Route route = new Route(this, subRoute, routeDescription);
+			m_routes.add(route);
+			
+		}
+		setSelectedRoute(m_routes.get(0));
 		
-		m_routes.add(route);
-		setSelectedRoute(route);
 
-		notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(route.getRouteId()));
+		notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(0).getRouteId()));
 
 		return true;
 	}

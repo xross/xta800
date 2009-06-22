@@ -16,10 +16,8 @@ public class TraceDisplayer {
 		m_console = console;
 	}
 	
-    public void display(Collection<Node> nodes) {
-		for (Node node : nodes) {
-			displayInstruction(node);
-		}				
+    public void display(Node node) {
+		displayInstruction(node);			
     }
     
     private void displayInstruction(Node node) {

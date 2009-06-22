@@ -58,12 +58,12 @@ public class RouteTiming {
 	}
 
 	public long getWorstCycles() {
-		Node worstCaseSubRoute = m_route.getSubRoutes().iterator().next();
+		Node worstCaseSubRoute = m_route.getSubRoute();
 		return worstCaseSubRoute.getAttributes().getNumCycles(Case.WORST, false);
 	}
 
 	public double getWorstTime() {
-		Node worstCaseSubRoute = m_route.getSubRoutes().iterator().next();		
+		Node worstCaseSubRoute = m_route.getSubRoute();		
 		return worstCaseSubRoute.getAttributes().getTimeTaken(Case.WORST, false);
 	}
 
@@ -96,7 +96,7 @@ public class RouteTiming {
 	}
 
 	public long getNumPaths() {
-		Node worstCaseSubRoute = m_route.getSubRoutes().iterator().next();
+		Node worstCaseSubRoute = m_route.getSubRoute();
 		return worstCaseSubRoute.getAttributes().getNumPaths();		
 	}
 		
