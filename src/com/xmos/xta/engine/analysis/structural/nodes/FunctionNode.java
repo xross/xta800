@@ -61,31 +61,18 @@ public class FunctionNode extends IBufferNode {
 	
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs){
 		FunctionNode fn = new FunctionNode();
-		if(m_knownFunction){
-			fn.m_function = m_function.deepCopy(startPcs);			
-		}
 		fn.m_functionName = m_functionName;
 		fn.m_knownFunction = m_knownFunction;
 		fn.m_branchTarget = m_branchTarget;
-		/*
-		if(fn.getBranchTarget() != null){
-			int pc = fn.getBranchTarget().getStartPc();
-			String fnName = fn.getBranchTarget().getInstructions().getFirst().getFunctionName();
-			
-			FunctionNode bob = startPcs.get(pc);
-			
-			if(bob == null){
-				System.out.println("bob 0x" + Integer.toHexString(pc) + "\n\n");
-			}
-			Node bill = bob.getFunction();
-			if(bill == null){
-				System.out.println("bill");
-			}
-			
-			
-			fn.setFunction(fnName, bill.deepCopy(startPcs));
-		} 
-		*/
+		
+		if(m_function != null){
+			fn.m_function = m_function.deepCopy(startPcs);		
+		} else if(m_branchTarget != null){
+			int pc = m_branchTarget.getStartPc();
+			String fnName = startPcs.get(pc).getFunctionName();
+			fn.setFunction(fnName, startPcs.get(pc).getFunction().deepCopy(startPcs));
+		}
+		
 		fn.m_attributes = new NodeAttributes(fn);
 		return fn;
 	}
