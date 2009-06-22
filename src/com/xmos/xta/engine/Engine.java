@@ -346,13 +346,11 @@ public class Engine implements Notifier {
 		return success;
 	}
 
-	private boolean doRouteAnalysis(RouteDescription routeDescription) throws Exception {
-		 		
+	private boolean doRouteAnalysis(RouteDescription routeDescription) throws Exception {	
 		if (m_progress.getState() != Progress.State.IDLE) {
 			notify(Notifier.NOTIFY_ERROR, "Engine busy");
 			return false;
 		}
-		
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Node: %d, Core: %d image not found in file: %s",
@@ -383,10 +381,8 @@ public class Engine implements Notifier {
 				notify(Notifier.NOTIFY_WARNING, "No paths added");
 			}
 	
-			
 			return true;
-		}
-		
+		}		
 	}
 	
 	public Progress getProgress() {
