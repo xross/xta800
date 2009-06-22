@@ -7,7 +7,6 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 
 public class StructureDisplayer {
-
 	private final static boolean DEBUG_NEXT = false;
 	private final static boolean DEBUG_BEFORE = false;
 
@@ -39,6 +38,7 @@ public class StructureDisplayer {
 		printModifiers(node, depth);
 		displayNodeName(node);
 		displayTimeTaken(node);
+		displayNumPaths(node);
 		displayDescription(node);
 		if (DEBUG_NEXT) displayWhatsNext(node);
 		if (DEBUG_BEFORE) displayWhatsBefore(node);
@@ -70,6 +70,12 @@ public class StructureDisplayer {
 		m_console.display(node.getAttributes().getTimingSummary()); 		
 	}	
 
+	private void displayNumPaths(Node node) {
+		if (m_verbosity >= 10)
+		    m_console.display(String.format(" [%d]", 
+		    		node.getAttributes().getNumPaths())); 		
+	}	
+	
 	private void displayDescription(Node node) {
 		m_console.display(" " + node.getDescription());
 	}

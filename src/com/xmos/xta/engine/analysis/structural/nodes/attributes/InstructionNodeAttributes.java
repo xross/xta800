@@ -31,6 +31,10 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		return 0;
 	}
 	
+	public long getNumPaths() {
+		return 1;
+	}
+	
 	public void setInstructionNumCycles(long numCycles) {
 		if (m_instruction.canPause()) {
 			if (numCycles > m_instruction.getNumCycles()) {

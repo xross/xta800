@@ -313,6 +313,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	private static int g = 0;
+	private static final boolean verbose = true;
 	public static void dumpTree(Collection<Node> workingSet) {
 		
 		
@@ -326,10 +327,16 @@ public class StructuralAnalysisEngine {
 						System.out.println(node + " -> " + next + ";");
 					}
 				}
-				if(node.isBlockNode()){
+				if(verbose){
 					System.out.print(node + " [label=\"" );
-					for(XtaInstruction inst : node.getInstructions()){
-						System.out.print(inst + "\\n");
+					System.out.print(node + ": \\n");
+					if(node.isBlockNode()){
+						for(XtaInstruction inst : node.getInstructions()){
+							System.out.print(inst + "\\n");
+						}
+					}
+					for(Node dom : node.getDominators()){
+						System.out.print("dominator:" + dom + "\\n");
 					}
 					System.out.print("\"");
 					System.out.println("];");

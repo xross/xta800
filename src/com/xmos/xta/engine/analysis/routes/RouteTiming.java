@@ -3,6 +3,7 @@ package com.xmos.xta.engine.analysis.routes;
 import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 
 public class RouteTiming {
 	private Route m_route;
@@ -57,12 +58,12 @@ public class RouteTiming {
 	}
 
 	public long getWorstCycles() {
-		Node worstCaseSubRoute = m_route.getSubRoutes().iterator().next();
+		Node worstCaseSubRoute = m_route.getSubRoute();
 		return worstCaseSubRoute.getAttributes().getNumCycles(Case.WORST, false);
 	}
 
 	public double getWorstTime() {
-		Node worstCaseSubRoute = m_route.getSubRoutes().iterator().next();		
+		Node worstCaseSubRoute = m_route.getSubRoute();		
 		return worstCaseSubRoute.getAttributes().getTimeTaken(Case.WORST, false);
 	}
 
@@ -94,6 +95,11 @@ public class RouteTiming {
 		return (int)(getWorstCycles() * 1000 * threadFactor) / (int)(getMaxTime() + 1.0);
 	}
 
+	public long getNumPaths() {
+		Node worstCaseSubRoute = m_route.getSubRoute();
+		return worstCaseSubRoute.getAttributes().getNumPaths();		
+	}
+		
 	public String getDescription(boolean full) {
 		String description = "";
 		if (isTimingSpecified()) {
@@ -101,16 +107,16 @@ public class RouteTiming {
 				description += "    Pass";
 			else
 				description += "    Fail";
-/* TODO
-			int numWarnings = m_route.getUnknowns().getUnknowns().size();
+
+			int numWarnings = m_route.getUnknowns(UnknownState.UNKNOWN).size();
 			if (numWarnings > 0)
 				description += " with " + numWarnings + " unknown";
 			if (numWarnings > 1)
 				description += "s";
-*/
+
 			if (full) {
-				description += ", ";
-				description += getTimingsDescription();
+				description += ", Num Paths: " + getNumPaths();
+				description += ", " + getTimingsDescription();
 				description += String.format(", Min Frequency: %d Mhz\n", getMinFrequency());
 			}
 		} else {

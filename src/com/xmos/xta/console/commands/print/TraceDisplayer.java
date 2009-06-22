@@ -1,6 +1,5 @@
 package com.xmos.xta.console.commands.print;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import com.xmos.xta.console.Console;
@@ -16,10 +15,8 @@ public class TraceDisplayer {
 		m_console = console;
 	}
 	
-    public void display(Collection<Node> nodes) {
-		for (Node node : nodes) {
-			displayInstruction(node);
-		}				
+    public void display(Node node) {
+		displayInstruction(node);			
     }
     
     private void displayInstruction(Node node) {

@@ -2,30 +2,16 @@ package com.xmos.xta.engine.analysis.routes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
 import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
-import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
-import com.xmos.xta.engine.analysis.structural.StructureGraph;
-import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
-import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
-import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.SelfLoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
-import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownType;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
-import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
-import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
 
 class AbortedException extends Exception {
@@ -42,25 +28,18 @@ public class Route {
 	private int m_routeId;
 	private RouteDescription m_description;
 	private RouteTiming m_routeTiming;
-	private StructureGraph m_structureGraph;
-	private List<Node> m_subRoutes;
-	private Engine m_engine;
-	private Collection<Node> m_exclusions;
-	private Set<Node> m_excludedRouteNodes;
+	private Node m_subRoute;
 	private Node m_searchNode;
 
 	public static void resetRouteCount() {
 		s_routeCount = 0;
 	}
 
-	public Route(Engine engine, StructureGraph structureGraph, RouteDescription description) {
-		m_structureGraph = structureGraph;
+	public Route(Engine engine, Node subRoute, RouteDescription description) {
 		m_description = description;
 		m_routeId = s_routeCount++;
-		m_subRoutes = new ArrayList<Node>();
-		m_engine = engine;
+		m_subRoute = subRoute;
 		m_routeTiming = new RouteTiming(this, engine.getConfig(), engine.getNodeId(), engine.getCoreId());
-		createExclusions();
 		
 	}
 
@@ -82,289 +61,34 @@ public class Route {
 
 	public Set<Integer> getPcsHit() {
 		final Set<Integer> pcs = new TreeSet<Integer>();
-		for (Node node : m_subRoutes) {
-			node.traverse(0, new DefaultNodeTraverser() {
-				public boolean foundInstructionNode(Node node, int depth) {
-					pcs.add(node.getStartPc());
-					return true;
-				}
-			});
-		}
+		m_subRoute.traverse(0, new DefaultNodeTraverser() {
+			public boolean foundInstructionNode(Node node, int depth) {
+				pcs.add(node.getStartPc());
+				return true;
+			}
+		});
 		return pcs;
 	}
-	
-	public List<Node> getSubRoutes() {
-		return m_subRoutes;
-	}
 
-	public boolean analyse() {
-		switch (m_description.getMode()) {
-		case FUNCTION:
-			Map<String, TreeSet<Node>> functionMap = buildFunctionMap(m_structureGraph);
-			TreeSet<Node> functions = functionMap.get(m_description.getFunctionName());
-			if (functions != null) {
-				for(Node function : functions){
-					m_subRoutes.add(function.deepCopy(new TreeMap<Integer, FunctionNode>()));
-				}
-				
-			}			
-			setParents();
-			setUnknowns();				
-			setInitialIterations();
-			sortSubRoutes();
-			break;
-
-		case PATH:
-			Set<Integer> startPcs = getStartPcs();
-			Set<Integer> endPcs = getEndPcs();
-
-			Collection<Node> startNodes = new TreeSet<Node>();
-			Collection<Node> endNodes = new TreeSet<Node>();
-			Map<Integer, TreeSet<Node>> pcToStruct = buildPcMap(m_structureGraph);
-			
-			for (int from : startPcs) {
-				if (pcToStruct.get(from) != null) {
-					TreeSet<Node> start = pcToStruct.get(from);
-					
-					for(Node node : start){
-						Node nodeToAdd = node;
-						if (nodeToAdd.getParent() != null && nodeToAdd.getParent().getImmediateChildren().contains(nodeToAdd)){
-							nodeToAdd = nodeToAdd.getParent();
-						}
-						startNodes.add(nodeToAdd);
-					}
-				} 
-			}
-			
-			for (int to : endPcs) {
-				if (pcToStruct.get(to) != null) {
-					endNodes.addAll(pcToStruct.get(to));
-				}
-			}
-			printCollection("exclusions", m_exclusions);
-			printCollection("end nodes", endNodes);
-			for (Node start : startNodes) {
-				//System.out.println("start node: " + start);
-				Collection<Node> workingSet = new TreeSet<Node>();
-
-				m_structureGraph.removeLinks();
-				m_excludedRouteNodes = new TreeSet<Node>();
-				explore(start, workingSet, endPcs, endNodes, null);
-				
-				//printCollection("excludedRouteNodes", m_excludedRouteNodes);
-				//StructuralAnalysisEngine.dumpTree(workingSet);	
-				
-				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
-				pruneGraphOfExcludedPaths(workingSet);
-				if(workingSet.isEmpty()){
-					continue;
-				}
-				
-				//StructuralAnalysisEngine.dumpTree(workingSet);			
-				Set<Node> newEndNodes = removeFinalInstruction(endNodes, start,
-						workingSet);
-				
-				//StructuralAnalysisEngine.dumpTree(workingSet);			
-				Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
-				assert(cfgSanityCheck(workingSet));
-				
-				
-				//StructuralAnalysisEngine.dumpTree(workingSet);
-				sae.createStructure(workingSet, newStart, m_engine, true);
-				assert(workingSet.size() == 1);
-				Node baseNode = workingSet.iterator().next();
-
-				
-				if(baseNode.isSelfLoopNode()) {
-					SelfLoopNode sln = (SelfLoopNode)baseNode;
-					baseNode = sln.getLoop();
-				}
-				
-				Node newGraph = baseNode.deepCopy(new TreeMap<Integer, FunctionNode>());
-							
-				m_subRoutes.add(newGraph);
-			}
-			setParents();
-			setUnknowns();				
-			setInitialIterations();
-			sortSubRoutes();
-			break;
-		default:
-			assert(false);
-		    break;
-		}
-		return !m_subRoutes.isEmpty();
-	}
-
-	private void explore(Node node, Collection<Node> set, Collection<Integer> endPcs, Collection<Node> endNodes, Node parent) {	
-		Set<Integer> pcs = new TreeSet<Integer>(endPcs);
-		pcs.retainAll(node.getPCs());
-		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
-		exclusions.retainAll(node.getContainedNodes());
-		
-
-		if (pcs.isEmpty() || set.isEmpty()) {
-			
-			if(!exclusions.isEmpty() ){
-				if( node.isBlockNode() ){
-					
-					if(set.contains(node)) {
-						return;
-					}
-					set.add(node);
-					makeConnection(node, parent);
-					m_excludedRouteNodes.add(node);
-				} else {
-					assert (!node.getImmediateChildren().isEmpty());
-					for(Node child : node.getImmediateChildren()){
-						explore(child, set, endPcs, endNodes, parent);
-					}
-				}
-				return;
-			}
-			makeConnection(node, parent);
-			if(set.contains(node)) {
-				return;
-			}
-			set.add(node);
-			
-			
-			
-			assert(node.getParent() != null);
-			if (!node.getParent().whatsNext(node).isEmpty()) {
-				
-				Collection<Node> nextNodes = node.getParent().whatsNext(node);
-				//System.out.println(node + " -> " + nextNodes);
-				for (Node next : nextNodes) {
-					explore(next, set, endPcs, endNodes, node);
-				}
-			}
-		} else {
-			if (endNodes.contains(node)) {
-				makeConnection(node, parent);
-				set.add(node);
-				return;
-			} else {
-				assert (!node.getImmediateChildren().isEmpty());
-				for(Node child : node.getImmediateChildren()){
-					explore(child, set, endPcs, endNodes, parent);
-				}
-			}
-		}
-	}
-	
-	private void printCollection(String name, Collection<Node> coll){
-		System.out.print(name + ": " + coll);
-		for(Node node : coll){
-			System.out.print(" 0x" + Integer.toHexString(node.getStartPc()));
-		}
-		System.out.println();
-	}
-	
-	private Set<Node> removeFinalInstruction(Collection<Node> endNodes,
-			Node start, Collection<Node> workingSet) {
-		
-		Set<Node> newEndNodes = new TreeSet<Node>();
-		for(Node node : endNodes){
-			for(Node prev : node.getPrevNodes()){
-				newEndNodes.add(prev);
-			}
-		}
-		
-		//FIXME - the endNodes night have a single instruction but the start may be a block
-		if(endNodes.contains(start)){
-			endNodes.remove(start);
-		}
-		
-		for(Node endNode : endNodes){
-			for(Node prev : endNode.getPrevNodes()){
-				CommonMethods.disconnect(endNode, prev);
-			}
-			workingSet.remove(endNode);
-		}
-		return newEndNodes;
-	}
-	
-	private Node makeBasicBlocks(Node start, Collection<Node> endNodes, Collection<Node> workingSet) {
-		// from the start instruction crawl downwards stopping at basic block
-		// boundaries
-		Node startBlock = null;
-		if(!start.isBlockNode()){
-			Node currentNode = start;
-			List<Node> startList = new LinkedList<Node>();
-			
-			startList.add(currentNode);
-	
-			while (currentNode.getNextNodes().size() == 1 && currentNode.getNextNodes().iterator().next().isInstructionNode()) {
-				currentNode = currentNode.getNextNodes().iterator().next();
-				startList.add(currentNode);
-			}
-			startBlock = new BlockNode(startList);
-			workingSet.removeAll(startList);
-			workingSet.add(startBlock);
-	
-			for (Node next : currentNode.getNextNodes()) {
-				next.removePrevNode(currentNode);
-				CommonMethods.connect(next, startBlock);
-			}
-			for(Node prev  : start.getPrevNodes()){
-				prev.removeNextNode(start);
-				CommonMethods.connect(startBlock, prev);
-			}
-		} else {
-			startBlock = start;
-		}
-		// from every end node in the working set crawl upwards stopping at
-		// basic block boundaries
-		for (Node endNode : endNodes) {
-			if (workingSet.contains(endNode) && !endNode.isBlockNode()) {
-				List<Node> endList = new LinkedList<Node>();
-				Node end = endNode;
-				endList.add(end);
-				while (end.getPrevNodes().size() == 1 && end.getPrevNodes().iterator().next().isInstructionNode()) {
-					end = end.getPrevNodes().iterator().next();
-					endList.add(0, end);
-				}
-
-				BlockNode endBlock = new BlockNode(endList);
-				workingSet.removeAll(endList);
-				workingSet.add(endBlock);
-
-				for (Node prev : end.getPrevNodes()) {
-					prev.removeNextNode(end);
-					CommonMethods.connect(endBlock, prev);
-				}
-				for (Node next : endNode.getNextNodes()) {
-					next.removePrevNode(endNode);
-					CommonMethods.connect(next, endBlock);
-				}
-			}
-		}
-		return startBlock;
-	}
 
 	public Collection<Node> getUnknowns(final UnknownState unknownState) {
 	    final Collection<Node> unknowns = new ArrayList<Node>();
-
-		for (Node node : m_subRoutes) {
-		    node.traverse(0, new UntypedNodeTraverser() {
-		    	public boolean foundNode(Node node, int depth) {
-		    		NodeAttributes nodeAttributes = node.getAttributes();		    		
-		    		if (nodeAttributes.isUnknown() &&
-		    			(nodeAttributes.getUnknownState() == unknownState)) {
-		    			unknowns.add(node);
-		    		}		    			
-		        	return true;
-		    	}
-		    });
-		}
+		m_subRoute.traverse(0, new UntypedNodeTraverser() {
+	    	public boolean foundNode(Node node, int depth) {
+	    		NodeAttributes nodeAttributes = node.getAttributes();		    		
+	    		if (nodeAttributes.isUnknown() &&
+	    			(nodeAttributes.getUnknownState() == unknownState)) {
+	    			unknowns.add(node);
+	    		}		    			
+	        	return true;
+	    	}
+	    });
 		return unknowns;
 	}	
 	
     public Node getNode(final int nodeId) {
-    	m_searchNode = null;
-		for (Node node : m_subRoutes) {					
-		    node.traverse(0, new UntypedNodeTraverser() {
+    	m_searchNode = null;			
+    	m_subRoute.traverse(0, new UntypedNodeTraverser() {
 				public boolean foundNode(Node node, int depth) {
 					if (node.getId() == nodeId) {
 						m_searchNode = node;
@@ -373,27 +97,8 @@ public class Route {
 					return true;
 				}
 		    });
-		}
         return m_searchNode;   	
     }	
-	
-	private void pruneGraphOfExcludedPaths(Collection<Node> workingSet) {
-		//System.out.println(m_excludedRouteNodes);
-		
-		while(!m_excludedRouteNodes.isEmpty()){
-			Node excludedNode = m_excludedRouteNodes.iterator().next();
-			for(Node prev : excludedNode.getPrevNodes()){
-				prev.removeNextNode(excludedNode);
-				if(prev.getNextNodes().size() == 0){
-					m_excludedRouteNodes.add(prev);
-				}
-			}
-			m_excludedRouteNodes.remove(excludedNode);
-			workingSet.remove(excludedNode);
-			
-		}
-		
-	}
 		
 	public boolean setLoopIterations(Reference reference, long iterations) {
 		if (iterations < 0)
@@ -410,7 +115,6 @@ public class Route {
 		}		
 		if (found) {
 			refreshDisplayedUnknowns();
-			sortSubRoutes();
 		}		
 		return found;
 	}
@@ -440,7 +144,6 @@ public class Route {
 		}		
 		if (found) {
 			refreshDisplayedUnknowns();			
-			sortSubRoutes();
 		}		
 		return found;		
 	}
@@ -454,9 +157,7 @@ public class Route {
 				found = true;
 			}
 		}		
-		if (found) {
-			sortSubRoutes();
-		}		
+
 		return found;
 	}
 	
@@ -469,7 +170,6 @@ public class Route {
 		}
 		if (found) {
 			refreshDisplayedUnknowns();			
-			sortSubRoutes();
 		}		
 		return found;
 	}
@@ -483,7 +183,6 @@ public class Route {
 		}
 		if (found) {
 			refreshDisplayedUnknowns();
-			sortSubRoutes();
 		}		
 		return found;
 	}
@@ -497,7 +196,6 @@ public class Route {
 		}
 		if (found) {
 			refreshDisplayedUnknowns();			
-			sortSubRoutes();
 		}		
 		return found;
 	}
@@ -511,7 +209,6 @@ public class Route {
 		}
 		if (found) {
 			refreshDisplayedUnknowns();			
-			sortSubRoutes();
 		}		
 		return found;
 	}
@@ -530,136 +227,9 @@ public class Route {
 		// TODO
 		return false;
 	}
-			
-	private Set<Integer> getEndPcs() {
-		Set<Integer> endPcs = new TreeSet<Integer>();
-		endPcs.add(m_description.getEndPoint().getPc());
-		return endPcs;
-	}
-
-	private Set<Integer> getStartPcs() {
-		Set<Integer> startPcs = new TreeSet<Integer>();
-		startPcs.add(m_description.getStartPoint().getPc());
-		return startPcs;
-	}
-	
-	
-
-	private void makeConnection(Node node, Node parent) {
-		if (parent != null) {
-			CommonMethods.connect(node, parent);
-		}
-	}
-	
-	private Map<Integer, TreeSet<Node>> buildPcMap(StructureGraph structureGraph) {
-		final Map<Integer, TreeSet<Node>> pcToNodes = new TreeMap<Integer, TreeSet<Node>>();
-		
-		for (Node node : structureGraph.getThreads()) {
-			node.traverse(0, new DefaultNodeTraverser() {
-				
-				public boolean foundInstructionNode(Node node, int depth) {
-					TreeSet<Node> map = pcToNodes.get(node.getStartPc());
-					if (map == null) {
-						map = new TreeSet<Node>();
-					}
-					map.add(node);
-					pcToNodes.put(node.getStartPc(), map);
-					return true;
-				}
-			});
-		}
-		return pcToNodes;
-	}
-
-	private Map<String, TreeSet<Node>> buildFunctionMap(StructureGraph structureGraph) {
-		final Map<String, TreeSet<Node>> pcToNodes = new TreeMap<String, TreeSet<Node>>();
-		for (Node node : structureGraph.getThreads()) {
-			node.traverse(0, new DefaultNodeTraverser() {
-				public boolean foundFunctionNode(Node node, int depth) {
-					TreeSet<Node> map = pcToNodes.get(((FunctionNode) node).getFunctionName());
-					if (map == null) {
-						map = new TreeSet<Node>();
-					}
-					map.add(node);
-					pcToNodes.put(((FunctionNode) node).getFunctionName(), map);
-					return true;
-				}
-			});
-		}
-		return pcToNodes;
-	}
-			
-	private void setParents() {
-		for (Node node : m_subRoutes) {
-			setParent(node);
-		}
-	}
-
-	private void setParent(Node node) {
-		for (Node child : node.getChildren()){
-			child.setParent(node);
-			setParent(child);
-		}
-	}
-	
-	private void sortSubRoutes() {
-		Collections.sort(m_subRoutes);
-	}		
-	
-	private void createExclusions() {
-		m_exclusions = new ArrayList<Node>();
-		
-		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
-		for (Reference reference : m_engine.getExclusions()) {
-			for (Node threadNode : m_structureGraph.getThreads()) {
-    			m_exclusions.addAll(referenceMatcher.getNodes(threadNode, reference));
-			}
-		}
-	}
-	
-	private void setInitialIterations() {		
-		for (Node node : m_subRoutes) {
-			// Sets the top level nodes to iterate once..
-			node.getAttributes().setLoopIterations(1);
-		    
-			// Sets all the loops to zero iterations..							
-			node.traverse(0, new DefaultNodeTraverser() {
-		        public boolean foundLoopNode(Node node, int depth) {
-		           	node.getAttributes().setLoopIterations(0);
-		         	return true;
-		        }	        	
-		    });			
-		}
-	}
-	
-	private void setUnknowns() {
-		for (Node node : m_subRoutes) {
-			node.traverse(0, new DefaultNodeTraverser() {
-				// Sets all the pausing instructions to unknown.
-				public boolean foundInstructionNode(Node node, int depth) {
-					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
-					if (instruction.canPause()) {
-						NodeAttributes nodeAttributes = node.getAttributes();
-						nodeAttributes.setUnknownType(UnknownType.INSTRUCTION_TIME);
-					}
-					return true;
-				}
-
-				// Sets all the loop iterations to unknown.
-				public boolean foundLoopNode(Node node, int depth) {
-					NodeAttributes nodeAttributes = node.getAttributes();
-					nodeAttributes.setUnknownType(UnknownType.LOOP_ITERATIONS);
-					return true;
-				}
-		    });						
-		    refreshDisplayedUnknowns(node);			
-		}
-	}
 	
 	private void refreshDisplayedUnknowns() {
-		for (Node subRouteNode : m_subRoutes) {
-			refreshDisplayedUnknowns(subRouteNode);
-		}
+		refreshDisplayedUnknowns(m_subRoute);
 	}
 	
 	private void refreshDisplayedUnknowns(Node node) {	
@@ -694,27 +264,13 @@ public class Route {
 	private Collection<Node> getReferencedNodes(Reference reference) {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		Collection<Node> referencedNodes = new ArrayList<Node>();
-		for (Node subRouteNode : m_subRoutes) {
-			referencedNodes.addAll(referenceMatcher.getNodes(subRouteNode, reference));
-		}
+		referencedNodes.addAll(referenceMatcher.getNodes(m_subRoute, reference));
 		return referencedNodes;		
 	}
-	
-	private boolean cfgSanityCheck(Collection<Node> workingSet) {
-		//this checks to see that all nodes point to another node in the workingSet and no other
-		for(Node node : workingSet){
-			for(Node next: node.getNextNodes()){
-				if(!workingSet.contains(next)){
-					return false;
-				}
-			}
-			for(Node prev: node.getPrevNodes()){
-				if(!workingSet.contains(prev)){
-					return false;
-				}
-			}
-		}
-		return true;
+
+	public Node getSubRoute() {
+		return m_subRoute;
 	}
+	
 
 }

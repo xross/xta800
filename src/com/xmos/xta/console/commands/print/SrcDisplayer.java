@@ -1,6 +1,5 @@
 package com.xmos.xta.console.commands.print;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -29,44 +28,42 @@ public class SrcDisplayer {
 		m_displayAssembly = displayAssembly;
 	}
 
-	public void display(Collection<Node> nodes) {    	
-        for (Node node : nodes) {
-      	    List<XtaInstruction> instructions = node.getInstructions();
-      	    
-    		XeObject xeObject = m_engine.getXeObject();
-            HashMap<String, TreeSet<Integer>> linesCovered = 
-            	createSrcLinesCovered(instructions, xeObject);                                                                   
-            
-            if (DEBUG) 
-            	displaySrcLinesCovered(linesCovered);
-            
-    		for (SourceFile sourceFile : xeObject.getSourceFiles()) {									
-    	        TreeSet<Integer> fileLines = linesCovered.get(sourceFile.getFullSourceName());    
-    	        if (fileLines.size() > 0) {
-    				m_console.display("----------------------------------\n");
-    				m_console.display(sourceFile.getFileName() + " (" + sourceFile.getBaseDir() + ")\n");
-    				m_console.display("----------------------------------\n");	        	
-    	        	
-    				for (SourceLine sourceLine : sourceFile.getSourceLines()) {						
-    					if (fileLines.contains(sourceLine.getLineNumber())) {
-    						m_console.display(String.format("+"));
-    					}
-    					else {
-    	                   	m_console.display(String.format(" "));						
-    					}
-    					m_console.display(String.format(" %d: %s\n", 
-    							sourceLine.getLineNumber(), 
-    							sourceLine.getText()));
+	public void display(Node node) {    	
+  	    List<XtaInstruction> instructions = node.getInstructions();
+  	    
+		XeObject xeObject = m_engine.getXeObject();
+        HashMap<String, TreeSet<Integer>> linesCovered = 
+        	createSrcLinesCovered(instructions, xeObject);                                                                   
+        
+        if (DEBUG) 
+        	displaySrcLinesCovered(linesCovered);
+        
+		for (SourceFile sourceFile : xeObject.getSourceFiles()) {									
+	        TreeSet<Integer> fileLines = linesCovered.get(sourceFile.getFullSourceName());    
+	        if (fileLines.size() > 0) {
+				m_console.display("----------------------------------\n");
+				m_console.display(sourceFile.getFileName() + " (" + sourceFile.getBaseDir() + ")\n");
+				m_console.display("----------------------------------\n");	        	
+	        	
+				for (SourceLine sourceLine : sourceFile.getSourceLines()) {						
+					if (fileLines.contains(sourceLine.getLineNumber())) {
+						m_console.display(String.format("+"));
+					}
+					else {
+	                   	m_console.display(String.format(" "));						
+					}
+					m_console.display(String.format(" %d: %s\n", 
+							sourceLine.getLineNumber(), 
+							sourceLine.getText()));
 
-    					if (m_displayAssembly) {
-    					    for (Line assemblyLine : sourceLine.getChildern()) {					    	
-    							m_console.display(String.format("       -- %s\n", assemblyLine.getText())); 
-    					    }
-    					}				
-    				}				        	
-    	        }	        
-    		}              	    
-        }		
+					if (m_displayAssembly) {
+					    for (Line assemblyLine : sourceLine.getChildern()) {					    	
+							m_console.display(String.format("       -- %s\n", assemblyLine.getText())); 
+					    }
+					}				
+				}				        	
+	        }	        
+		}              	    		
     }
 
 	private HashMap<String, TreeSet<Integer>> createSrcLinesCovered(List<XtaInstruction> instructions,

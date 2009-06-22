@@ -109,6 +109,14 @@ public class NodeAttributes {
 		return value;
 	}
 
+	public long getNumPaths() {
+		long value = 1;
+		for (Node child : getNode().getChildren()) {
+			value *= child.getAttributes().getNumPaths();
+		}
+		return value;
+	}
+
 	// --------------------------------------------------------------------- //
 	// Unknown Status Methods
 	// --------------------------------------------------------------------- //		

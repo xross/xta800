@@ -1,6 +1,7 @@
 package com.xmos.xta.gui.views.routes;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -352,7 +353,8 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 	private void initialiseSelectedRouteView() {
 		Route selectedRoute = GuiEngine.getEngine().getSelectedRoute();
 		if (selectedRoute != null) {
-			List<Node> subRouteNodes = selectedRoute.getSubRoutes();
+			List<Node> subRouteNodes = new LinkedList<Node>();
+			subRouteNodes.add(selectedRoute.getSubRoute());
 			PathNode hiddenRouteNode = new PathNode(subRouteNodes);
 			
 			m_selectedRouteViewer.setInput(hiddenRouteNode);
@@ -404,16 +406,14 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 			// Add the nodes hitting the pc
 			Route selectedRoute = GuiEngine.getEngine().getSelectedRoute();
 			if (selectedRoute != null) {								
-				for (Node subRoute : selectedRoute.getSubRoutes()) {
-					subRoute.traverse(0, new UntypedNodeTraverser() {
-						public boolean foundNode(Node node, int depth) {
-							if (node.getPCs().contains(pc)) {
-								selectedNodes.add(node);
-							}
-							return true;
+				selectedRoute.getSubRoute().traverse(0, new UntypedNodeTraverser() {
+					public boolean foundNode(Node node, int depth) {
+						if (node.getPCs().contains(pc)) {
+							selectedNodes.add(node);
 						}
-					});
-				}
+						return true;
+					}
+				});
 			}
 			m_selectedRouteViewer.setSelection(new StructuredSelection(selectedNodes));			
 		}

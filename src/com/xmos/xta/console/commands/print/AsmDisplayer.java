@@ -1,6 +1,5 @@
 package com.xmos.xta.console.commands.print;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -28,63 +27,62 @@ public class AsmDisplayer {
 		m_console = console;
 	}
 	
-    public void display(Collection<Node> nodes) {     	      
-        for (Node node : nodes) {
-      	    List<XtaInstruction> instructions = node.getInstructions();
-      	    
-        	MemoryImage memoryImage = m_engine.getMemoryImage();
-        	SymbolTable symbolTable = m_engine.getSymbolTable();
-        	    	
-            if (instructions.size() > 0) { 
-    	    	HashMap<String, TreeSet<Integer>> asmLinesCovered = 
-    	    		createAsmPcsCovered(instructions, m_engine.getXeObject());
-    	    	
-    	        for (Iterator<Map.Entry<String, TreeSet<Integer>>> iter = 
-    	        	asmLinesCovered.entrySet().iterator(); iter.hasNext();) {
-    	        	
-    	            Map.Entry<String, TreeSet<Integer>> entry = 
-    	                (Map.Entry<String, TreeSet<Integer>>)iter.next();    
-    	            
-    	            String functionName = (String)entry.getKey();                    
-    	            TreeSet<Integer> functionLinesCovered = (TreeSet<Integer>)entry.getValue();
+    public void display(Node node) {     	      
 
-    	            int functionAddress = symbolTable.functionAddress(functionLinesCovered.first());
-    	            int functionSize = symbolTable.functionSize(functionAddress);  
-    	            
-    	            if ((functionAddress == 0) && (functionSize == 0)) {
-    	            	// We can't seem to find the actual address + size (maybe the information
-    	            	// is missing from the symbol table, so just use the highest and lowest 
-    	            	// address from the path to be displayed.
-    	            	functionAddress = getLowestAddress(instructions);
-    	            	functionSize = getHighestAddress(instructions) - functionAddress;
-    	            }
-    	            
-    	            m_console.display(String.format("<%s>:\n", functionName));	            
-    	            Vector<Instruction> disassemblyVector = Disassembler.disassemble(
-    	            		memoryImage, functionAddress, functionSize, m_engine.getXeLoader().getArchitecture(),
-    	            		m_engine.getConfig());
-    	            
-    	            HashMap<Integer, String> branchTargetMap = Disassembler.createBranchTargetMap(
-    	            		symbolTable, disassemblyVector);	            
-    	            
-    	            for (Instruction instruction : disassemblyVector) {
-    	            	String disassembly = String.format("%-7s 0x%05x %s %s %s", 
-    	            		getBranchDest(branchTargetMap, instruction), 
-    	            		instruction.getPc(),
-                            instruction.getNmenonic(), 
-                            instruction.getOperandString(),
-                    		getBranchTarget(branchTargetMap, instruction, symbolTable));
-    	            	
-    	            	if (functionLinesCovered.contains(instruction.getPc()))
-    	            		m_console.display(String.format("+ %s\n", disassembly));
-    	            	else
-    	            		m_console.display(String.format("  %s\n", disassembly));	            		
-    	            }
-    	            m_console.display("\n");
-    	            m_console.display("...\n");
-    	            m_console.display("\n");    	            
-    	        }
-            }
+  	    List<XtaInstruction> instructions = node.getInstructions();
+  	    
+    	MemoryImage memoryImage = m_engine.getMemoryImage();
+    	SymbolTable symbolTable = m_engine.getSymbolTable();
+    	    	
+        if (instructions.size() > 0) { 
+	    	HashMap<String, TreeSet<Integer>> asmLinesCovered = 
+	    		createAsmPcsCovered(instructions, m_engine.getXeObject());
+	    	
+	        for (Iterator<Map.Entry<String, TreeSet<Integer>>> iter = 
+	        	asmLinesCovered.entrySet().iterator(); iter.hasNext();) {
+	        	
+	            Map.Entry<String, TreeSet<Integer>> entry = 
+	                (Map.Entry<String, TreeSet<Integer>>)iter.next();    
+	            
+	            String functionName = (String)entry.getKey();                    
+	            TreeSet<Integer> functionLinesCovered = (TreeSet<Integer>)entry.getValue();
+
+	            int functionAddress = symbolTable.functionAddress(functionLinesCovered.first());
+	            int functionSize = symbolTable.functionSize(functionAddress);  
+	            
+	            if ((functionAddress == 0) && (functionSize == 0)) {
+	            	// We can't seem to find the actual address + size (maybe the information
+	            	// is missing from the symbol table, so just use the highest and lowest 
+	            	// address from the path to be displayed.
+	            	functionAddress = getLowestAddress(instructions);
+	            	functionSize = getHighestAddress(instructions) - functionAddress;
+	            }
+	            
+	            m_console.display(String.format("<%s>:\n", functionName));	            
+	            Vector<Instruction> disassemblyVector = Disassembler.disassemble(
+	            		memoryImage, functionAddress, functionSize, m_engine.getXeLoader().getArchitecture(),
+	            		m_engine.getConfig());
+	            
+	            HashMap<Integer, String> branchTargetMap = Disassembler.createBranchTargetMap(
+	            		symbolTable, disassemblyVector);	            
+	            
+	            for (Instruction instruction : disassemblyVector) {
+	            	String disassembly = String.format("%-7s 0x%05x %s %s %s", 
+	            		getBranchDest(branchTargetMap, instruction), 
+	            		instruction.getPc(),
+                        instruction.getNmenonic(), 
+                        instruction.getOperandString(),
+                		getBranchTarget(branchTargetMap, instruction, symbolTable));
+	            	
+	            	if (functionLinesCovered.contains(instruction.getPc()))
+	            		m_console.display(String.format("+ %s\n", disassembly));
+	            	else
+	            		m_console.display(String.format("  %s\n", disassembly));	            		
+	            }
+	            m_console.display("\n");
+	            m_console.display("...\n");
+	            m_console.display("\n");    	            
+	        }
         }
     }
 

@@ -78,9 +78,9 @@ public class Trace extends Command {
 
 		TraceDisplayer displayer = new TraceDisplayer(console);		
 		if (m_nodeIdSet) {
-			displayer.display(getCollection(engine.getRoute(m_routeId).getNode(m_nodeId)));						
+			displayer.display(engine.getRoute(m_routeId).getNode(m_nodeId));						
 		} else {
-			displayer.display(engine.getRoute(m_routeId).getSubRoutes());			
+			displayer.display(engine.getRoute(m_routeId).getSubRoute());			
 		}
     }    
 }
