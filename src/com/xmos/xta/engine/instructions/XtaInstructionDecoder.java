@@ -16,6 +16,9 @@ public abstract class XtaInstructionDecoder {
 		case REVB:
 			instructionDecoder = new RevbXtaInstructionDecoder();
 			break;
+		case REVC:
+			instructionDecoder = new RevbXtaInstructionDecoder();
+			break;
 		default:
 			assert(false);
 		    break;

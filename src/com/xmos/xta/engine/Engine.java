@@ -317,10 +317,11 @@ public class Engine implements Notifier {
 		RouteConstructor routeConstructor = new RouteConstructor(this, m_structuralGraph.get(m_nodeId, m_coreId), routeDescription);
 			
 		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
-		m_progress.resetState(Progress.State.PROCESSING_PATHS);		
-		boolean foundAtLeastOneSubRoute = routeConstructor.analyse();		
+		m_progress.resetState(Progress.State.PROCESSING_PATHS);
+		
+		boolean foundAtLeastOneEndPoint = routeConstructor.analyse();		
 
-		if (!foundAtLeastOneSubRoute) {
+		if (!foundAtLeastOneEndPoint ) {
 			notify(Notifier.NOTIFY_ERROR, "No valid paths of execution");
 			return false;
 		} else {
@@ -329,8 +330,13 @@ public class Engine implements Notifier {
 				m_routes.add(route);
 				
 			}
-			setSelectedRoute(m_routes.get(0));			
-			notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(0).getRouteId()));
+			if(!m_routes.isEmpty()){
+				setSelectedRoute(m_routes.get(0));
+				notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(0).getRouteId()));
+			} else {
+				notify(Notifier.NOTIFY_WARNING, "No paths added");
+			}
+	
 			return true;
 		}		
 	}
