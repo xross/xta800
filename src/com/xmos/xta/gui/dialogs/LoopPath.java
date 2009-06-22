@@ -18,11 +18,11 @@ import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
 
-public class Iterations extends XtaDialog {
+public class LoopPath extends XtaDialog {
 	
 	private long m_numIterations;
 		
-    public Iterations(Shell parent, Route route) {
+    public LoopPath(Shell parent, Node node) {
     	super(parent);
     	
     	// TODO

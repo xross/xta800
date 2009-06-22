@@ -228,6 +228,7 @@ public class Engine implements Notifier {
 			return false;
 
 		initialiseXeObjects(xeLoader, fileFinder);		
+		
 		m_executableFile = executableFile;
 		m_xeLoader = xeLoader;
 		m_sections = sections;
@@ -824,7 +825,7 @@ public class Engine implements Notifier {
 	}
 	
 	private void initialiseXeObjects(XeLoader xeLoader, FileFinder fileFinder) {
-		NodeCoreCollection<XeObject> m_xeObjects = new NodeCoreCollection<XeObject>();
+		m_xeObjects = new NodeCoreCollection<XeObject>();
 		for (int nodeId : xeLoader.getNodeIds()){
 			for (int coreId : xeLoader.getCoreIds(nodeId)){
 				m_xeObjects.add(nodeId, coreId, new XeObject(xeLoader, nodeId, coreId, fileFinder));

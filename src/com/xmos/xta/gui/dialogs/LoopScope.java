@@ -12,16 +12,17 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
+import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
-public class Scope extends XtaDialog {
+public class LoopScope extends XtaDialog {
 	
 	private boolean m_scope;
 
 // TODO	
 //	LoopNode m_loopNode;
 	
-    public Scope(Shell parent, Node node) {
+    public LoopScope(Shell parent, Node node) {
     	super(parent);
 //    	m_loopNode = loopNode;
 //    	m_scope = loopNode.getScope();

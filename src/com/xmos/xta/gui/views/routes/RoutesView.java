@@ -47,6 +47,9 @@ import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTrave
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.gui.dialogs.Loop;
+import com.xmos.xta.gui.dialogs.LoopPath;
+import com.xmos.xta.gui.dialogs.LoopScope;
 import com.xmos.xta.gui.dialogs.Required;
 import com.xmos.xta.gui.views.console.ConsoleView;
 import com.xmos.xta.gui.views.routes.selected.SelectedRouteContentProvider;
@@ -243,16 +246,24 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
    	
 				    	// Adds the 'Set iterations' option.
 					    manager.add(new Separator());
-					    manager.add(new Action("Set iterations") {
+					    manager.add(new Action("Set loop iterations") {
 						    public void run() {
-						    	// TODO new Iterations(m_parent.getShell(), (Node)object);
+						    	new Loop(m_parent.getShell(), (Node)object);
 						    }
 					    });
 
-				    	// Adds the 'Set scope' option.
-					    manager.add(new Action("Set scope") {
+				    	// Adds the 'Set iterations' option.
+					    manager.add(new Separator());
+					    manager.add(new Action("Set loop path iterations") {
 						    public void run() {
-						    	// TODO new Scope(m_parent.getShell(), (Node)object);
+						    	new LoopPath(m_parent.getShell(), (Node)object);
+						    }
+					    });
+					    
+				    	// Adds the 'Set scope' option.
+					    manager.add(new Action("Set loop scope") {
+						    public void run() {
+						    	new LoopScope(m_parent.getShell(), (Node)object);
 						    }
 					    });
 		            }

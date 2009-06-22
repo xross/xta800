@@ -37,7 +37,7 @@ import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.InstructionTime;
-import com.xmos.xta.gui.dialogs.Iterations;
+import com.xmos.xta.gui.dialogs.Loop;
 import com.xmos.xta.gui.views.info.InfoSorter;
 
 public class UnknownsViewer {
@@ -158,11 +158,11 @@ public class UnknownsViewer {
 				m_setLoopIterationsAction.setEnabled(false);
 				m_setInstructionTimeAction.setEnabled(false);
 				
-				if (m_selectedTimeRefs.size() == 0 && m_selectedLoopRefs.size() == 1) {
+				if ((m_selectedTimeRefs.size() == 0) && (m_selectedLoopRefs.size() == 1)) {
 					m_selectedCodeRefs.addAll(m_selectedLoopRefs);
 					m_setLoopIterationsAction.setEnabled(true);
 					
-				} else if (m_selectedTimeRefs.size() > 0 && m_selectedLoopRefs.size() == 0) {
+				} else if ((m_selectedTimeRefs.size() > 0) && (m_selectedLoopRefs.size() == 0)) {
 					m_selectedCodeRefs.addAll(m_selectedTimeRefs);
 					m_setInstructionTimeAction.setEnabled(true);
 				} 				
@@ -190,14 +190,13 @@ public class UnknownsViewer {
 		m_setLoopIterationsAction = new Action() { 
 			public void run() {
 				Route route = GuiEngine.getEngine().getSelectedRoute();
-     			new Iterations(parent.getShell(), route);
+     			//TODO new Loop(parent.getShell(), route);
 			}
 		};
-		 
 		m_setLoopIterationsAction.setText("Set iterations");
 		menuMgr.add(m_setLoopIterationsAction);
 		m_setLoopIterationsAction.setEnabled(false);
-		
+
 		// required, for extensions
 		menuMgr.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	} 	

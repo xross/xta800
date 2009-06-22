@@ -107,13 +107,9 @@ public class Route {
 			return false;
 		
 		boolean found = false;
-		for (Node node : getReferencedNodes(reference)) {						
-			Node enclosingLoopNode = node.getEnclosingLoopNode();
-			if (enclosingLoopNode != null) {				
-				enclosingLoopNode.getAttributes().setLoopIterations(iterations);
-				enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
+		for (Node node : getReferencedNodes(reference)) {
+			if (setLoopIterations(node, iterations))
 				found = true;
-			}
 		}		
 		if (found) {
 			refreshDisplayedUnknowns();
@@ -121,28 +117,24 @@ public class Route {
 		return found;
 	}
 
+	public boolean setLoopIterations(Node node, long iterations) {
+		Node enclosingLoopNode = node.getEnclosingLoopNode();
+		if (enclosingLoopNode != null) {				
+			enclosingLoopNode.getAttributes().setLoopIterations(iterations);
+			enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
+			return true;
+		}
+		return false;
+	}
+	
 	public boolean setLoopPathIterations(Reference reference, long iterations) {
 		if (iterations < 0)
 			return false;
 
 		boolean found = false;
-		for (Node node : getReferencedNodes(reference)) {						
-			Node loopNode = node.getEnclosingLoopNode();
-			if (loopNode == null)
-				continue;
-			
-			Node sectionNode = node.getEnclosingSectionNode();
-			if (sectionNode == null)
-				continue;
-			
-			Node optionNode = node.getEnclosingOptionNode();
-			if (optionNode == null)
-				continue;
-			
-			if (!sectionNode.getAttributes().setLoopPathIterations(loopNode, optionNode, iterations))
-				continue;
-			
-			found = true;
+		for (Node node : getReferencedNodes(reference)) {
+			if (setLoopPathIterations(node, iterations))
+				found = true;
 		}		
 		if (found) {
 			refreshDisplayedUnknowns();			
@@ -150,18 +142,42 @@ public class Route {
 		return found;		
 	}
 	
+	public boolean setLoopPathIterations(Node node, long iterations) {
+		Node loopNode = node.getEnclosingLoopNode();
+		if (loopNode == null)
+			return false;
+		
+		Node sectionNode = node.getEnclosingSectionNode();
+		if (sectionNode == null)
+			return false;
+		
+		Node optionNode = node.getEnclosingOptionNode();
+		if (optionNode == null)
+			return false;
+		
+		if (!sectionNode.getAttributes().setLoopPathIterations(loopNode, optionNode, iterations))
+			return false;
+		
+		return true;		
+	}
+	
 	public boolean setLoopScope(Reference reference, boolean isAbsolute) {
 		boolean found = false;
 	    for (Node node : getReferencedNodes(reference)) {
-			Node enclosingLoopNode = node.getEnclosingLoopNode();
-			if (enclosingLoopNode != null) {				
-				enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
-				found = true;
-			}
+	    	if (setLoopScope(node, isAbsolute))
+	    		found = true;
 		}		
-
 		return found;
 	}
+	
+	public boolean setLoopScope(Node node, boolean isAbsolute) {
+		Node enclosingLoopNode = node.getEnclosingLoopNode();
+		if (enclosingLoopNode != null) {				
+			enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
+			return true;
+		}
+		return false;
+	}	
 	
 	public boolean setInstructionTimeTaken(Reference reference, double timeTaken) {
 		boolean found = false;
