@@ -106,16 +106,6 @@ public class RouteConstructor {
 					}
 				} 
 			}
-			/*
-			startNodes.addAll(getReferencedNodes(m_description.getStartPoint()));
-			endNodes.addAll(getReferencedNodes(m_description.getEndPoint()));
-			for(Node startNode : startNodes){
-				startPcs.add(startNode.getStartPc());
-			}
-			*/
-			System.out.println("startNodes: " + startNodes);
-			System.out.println("endNodes: " + endNodes);
-			
 			
 			for (int to : endPcs) {
 				if (pcToStruct.get(to) != null) {

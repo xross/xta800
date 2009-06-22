@@ -30,7 +30,7 @@ public class StructuralAnalysisEngine {
 
 	private ControlFlowGraph m_controlFlowGraph;
 	private Map<Integer, FunctionNode> m_functionStartPcs;
-	private Map<Integer, FunctionNode> m_threadStartPcs;
+	//private Map<Integer, FunctionNode> m_threadStartPcs;
 	private StructureGraph m_structureGraph;
 	private Map<FunctionNode, FunctionNode> m_cfgToStruct;
 	private List<PatternMatcher> m_patternMatchers;
@@ -48,7 +48,7 @@ public class StructuralAnalysisEngine {
 
 	public boolean analyse(Engine engine) {
 		m_functionStartPcs = new TreeMap<Integer, FunctionNode>();
-		m_threadStartPcs = new TreeMap<Integer, FunctionNode>();
+		//m_threadStartPcs = new TreeMap<Integer, FunctionNode>();
 		return buildStructureGraph(engine);
 	}
 
@@ -96,7 +96,7 @@ public class StructuralAnalysisEngine {
 			return false;
 		}
 		Collection<Node> threads = buildGraph(m_controlFlowGraph.getThreadStartInstructions(), 
-				m_threadStartPcs, engine, false);
+				m_functionStartPcs, engine, false);
 		if (threads == null) {
 			return false;
 		}		
@@ -124,6 +124,7 @@ public class StructuralAnalysisEngine {
 			String functionName = graphStart.getInstructions().getFirst().getFunctionName();
 
 			engine.provideFeedback("Processing " + functionName);
+			//System.out.println("found function " + functionName);
 
 			Collection<Node> currentGraph = new TreeSet<Node>();
 			collectCurrentGraphNodes(graphStart, currentGraph);
@@ -155,6 +156,9 @@ public class StructuralAnalysisEngine {
 			setParent(fn);
 			
 			startPcs.put(graphStart.getStartPc(), fn);
+			
+			//System.out.println("0x" + Integer.toHexString(graphStart.getStartPc()) + " -> " + fn + " (" + functionName + ")");
+			
 		}
 		return graphs;
 	}
@@ -293,7 +297,7 @@ public class StructuralAnalysisEngine {
 		for (FunctionNode fn : m_cfgToStruct.keySet()) {
 			if (m_cfgToStruct.get(fn).getBranchTarget() != null) {
 				int pc = m_cfgToStruct.get(fn).getBranchTarget().getStartPc();
-				String fnName = m_cfgToStruct.get(fn).getBranchTarget().getInstructions().get(0).getFunctionName();
+				String fnName = m_functionStartPcs.get(pc).getFunctionName();
 				fn.setFunction(fnName, m_functionStartPcs.get(pc).getFunction().deepCopy(m_functionStartPcs));
 			}
 		}
