@@ -369,18 +369,20 @@ public class Engine implements Notifier {
 
 		if (!foundAtLeastOneSubRoute) {
 			notify(Notifier.NOTIFY_ERROR, "No valid paths of execution");
-		}
-		for(Node subRoute : routeConstructor.getSubRoutes()){
-			Route route = new Route(this, subRoute, routeDescription);
-			m_routes.add(route);
+			return false;
+		} else {
+			for(Node subRoute : routeConstructor.getSubRoutes()){
+				Route route = new Route(this, subRoute, routeDescription);
+				m_routes.add(route);
+				
+			}
+			setSelectedRoute(m_routes.get(0));
 			
+	
+			notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(0).getRouteId()));
+			return true;
 		}
-		setSelectedRoute(m_routes.get(0));
 		
-
-		notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(0).getRouteId()));
-
-		return true;
 	}
 	
 	public Progress getProgress() {

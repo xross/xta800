@@ -1,6 +1,5 @@
 package com.xmos.xta.console.commands.print;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import com.xmos.xta.console.Console;
