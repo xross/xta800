@@ -346,13 +346,11 @@ public class Engine implements Notifier {
 		return success;
 	}
 
-	private boolean doRouteAnalysis(RouteDescription routeDescription) throws Exception {
-		 		
+	private boolean doRouteAnalysis(RouteDescription routeDescription) throws Exception {	
 		if (m_progress.getState() != Progress.State.IDLE) {
 			notify(Notifier.NOTIFY_ERROR, "Engine busy");
 			return false;
 		}
-		
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Node: %d, Core: %d image not found in file: %s",
@@ -363,8 +361,7 @@ public class Engine implements Notifier {
 		RouteConstructor routeConstructor = new RouteConstructor(this, m_structuralGraph.get(m_nodeId, m_coreId), routeDescription);
 			
 		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
-		m_progress.resetState(Progress.State.PROCESSING_PATHS);
-		
+		m_progress.resetState(Progress.State.PROCESSING_PATHS);		
 		boolean foundAtLeastOneSubRoute = routeConstructor.analyse();		
 
 		if (!foundAtLeastOneSubRoute) {
@@ -376,13 +373,10 @@ public class Engine implements Notifier {
 				m_routes.add(route);
 				
 			}
-			setSelectedRoute(m_routes.get(0));
-			
-	
+			setSelectedRoute(m_routes.get(0));			
 			notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(0).getRouteId()));
 			return true;
-		}
-		
+		}		
 	}
 	
 	public Progress getProgress() {
