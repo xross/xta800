@@ -9,12 +9,14 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISelectionListener;
@@ -34,15 +36,20 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
     public static final String ID = "com.xmos.xta.gui.views.control.Control";
 
     private Display m_display;
+
     private Text m_startPoint;
     private Text m_endPoint;
-    private Text m_constraint;
     private ModifyListener m_startPointListener;
     private ModifyListener m_endPointListener;
-    private KeyListener m_constraintListener;
-    private Button m_setConstraintButton; 
     private Button m_timePathButton;
-    
+
+    private Text m_exclusionsText;
+    private List m_exclusionsList;
+    private KeyListener m_exclusionsTextListener;
+    private SelectionListener m_exclusionsListListener;
+    private Button m_addExclusionButton;
+    private Button m_removeExclusionButton; 
+
     private Spinner m_freqSpinner;
     private Spinner m_threadSpinner;
     
@@ -60,36 +67,31 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 			    GuiEngine.broadcast(Broadcaster.BROADCAST_SET_END_POINT, m_endPoint.getText());
 			}			
 		};
-		m_constraintListener = new KeyListener() {
+		m_exclusionsTextListener = new KeyListener() {
 			public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
 				if (e.character == SWT.CR) {
-					setConstraint();
+					addExclusion();
 					e.doit = false;
 				} else if ((e.character >= 0x20 && e.character <= 0xf7) ||
-						e.character == SWT.BS) {
+						    e.character == SWT.BS) {
 					// Any typing characters
-				    m_setConstraintButton.setEnabled(true);
+					m_addExclusionButton.setEnabled(true);
 				}
 			}
 
 			public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
-				// Do nothing
 			}			
 		};
+		m_exclusionsListListener = new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
 
+			public void widgetSelected(SelectionEvent e) {
+				m_removeExclusionButton.setEnabled(true);
+			}			
+		};		
 	}
-
-	protected void setConstraint() {
-/* TODO		
-		Engine engine = GuiEngine.getEngine();
-		Constraint constraint = ConstraintFactory.createConstraint(engine, m_constraint.getText());
-		if (constraint != null) {
-			engine.setConstraint(constraint);
-		    m_setConstraintButton.setEnabled(false);
-		}
-*/		
-	}
-
+	
 	public void createPartControl(Composite parent) {
 	    if (DEBUG) System.out.println("Control (" + this.hashCode() + "): createPartControl");
 
@@ -105,15 +107,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    createControlBar(controls);
 	    createSettingsBar(controls);
 	    
-	    updateConstraint();
+	    updateExclusions();
 	    updateStartPoint();
 		updateEndPoint();
 	}
 	
-	private void setBackground(Composite composite) {
-	    composite.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
-	}
-
 	public void setFocus() {
 		if (DEBUG) System.out.println("Control(" + this.hashCode() + "): setFocus");			
 	}
@@ -129,6 +127,9 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
 	        updateState();
 	        
+		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUSIONS)) {
+	        updateExclusions();
+	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT) || 
 				   event.getProperty().equals(Broadcaster.BROADCAST_SET_START_POINT)) {
 			updateStartPoint();
@@ -136,39 +137,11 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT) ||
     			   event.getProperty().equals(Broadcaster.BROADCAST_SET_END_POINT)) {
 			updateEndPoint();
-			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_CONSTRAINT) || 
-				   event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
-			updateConstraint();
-			
+						
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 			updateStartPoint();
 			updateEndPoint();			
 		}
-	}
-
-	private void updateEndPoint() {
-		Reference endPoint = GuiEngine.getEndPoint();
-		updateText(endPoint, m_endPoint, m_endPointListener);
-	}
-
-	private void updateStartPoint() {
-		Reference startPoint = GuiEngine.getStartPoint();
-		updateText(startPoint, m_startPoint, m_startPointListener);
-	}
-	
-	private void updateConstraint() {
-/* TODO		
-		Constraint constraint = GuiEngine.getEngine().getConstraint();
-		String str = constraint.getString();
-		if (constraint.getClass() == ConstraintNull.class) {
-			m_constraint.setText("");
-		} else { 
-			m_constraint.setText(str);
-		}
-		m_constraint.setToolTipText(str);
-		m_constraint.setSelection(str.length());
-*/		
 	}
 
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
@@ -207,13 +180,45 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         }    	        
 	}
 
+	private void updateEndPoint() {
+		Reference endPoint = GuiEngine.getEndPoint();
+		updateText(endPoint, m_endPoint, m_endPointListener);
+	}
+
+	private void updateStartPoint() {
+		Reference startPoint = GuiEngine.getStartPoint();
+		updateText(startPoint, m_startPoint, m_startPointListener);
+	}
+	
+	private void addExclusion() {
+		String exclusion = m_exclusionsText.getText();
+		GuiEngine.getEngine().addExclusion(exclusion);
+	}
+
+	private void removeExclusion() {
+		for (String exclusion : m_exclusionsList.getSelection()) {
+			GuiEngine.getEngine().removeExclusion(exclusion);
+		}
+	}
+
+	private void updateExclusions() {		
+		m_exclusionsList.removeAll();
+		for (Reference exclusion : GuiEngine.getEngine().getExclusions()) {
+		    m_exclusionsList.add(exclusion.getRef());
+		}
+	}
+
+	private void setBackground(Composite composite) {
+	    composite.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
+	}
+		
 	private void updateState() {
 		m_freqSpinner.setSelection(GuiEngine.getEngine().getFrequency());
-		m_threadSpinner.setSelection(GuiEngine.getEngine().getNumThreads());
+		m_threadSpinner.setSelection(GuiEngine.getEngine().getNumThreads());		
 	}
 	
 	private void createControlBar(Composite controls) {
-	    createConstraintControl(controls);
+		createExclusionControl(controls);
 	    createPathControl(controls);
 	}
 
@@ -230,7 +235,14 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    m_endPoint.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	    m_endPoint.addModifyListener(m_endPointListener);
 
-	    m_timePathButton = new Button(composite, SWT.PUSH);
+		Composite buttons = new Composite(composite, SWT.NONE);
+	    GridLayout layout = new GridLayout();
+	    layout.numColumns = 1;
+	    buttons.setLayout(layout);
+	    buttons.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));		
+	    setBackground(buttons);
+	    
+	    m_timePathButton = new Button(buttons, SWT.PUSH);
 	    m_timePathButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 	    m_timePathButton.setToolTipText("Time specified path");
 	    m_timePathButton.setImage(Icons.getIcon("run"));
@@ -241,23 +253,45 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		});
 	}
 
-	private void createConstraintControl(Composite composite) {
-		Group group = createGroup(composite, "Constraint", 1, 2);
+	private void createExclusionControl(Composite composite) {
+		Group group = createGroup(composite, "Exclusions", 1, 2);
 
-	    m_constraint = new Text(group, SWT.SINGLE | SWT.CENTER);
-	    m_constraint.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    m_constraint.addKeyListener(m_constraintListener);
+		m_exclusionsText = new Text(group, SWT.SINGLE | SWT.BORDER | SWT.CENTER);
+		m_exclusionsText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 2));		
+		m_exclusionsText.addKeyListener(m_exclusionsTextListener);
 
-	    m_setConstraintButton = new Button(composite, SWT.PUSH);
-	    m_setConstraintButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-	    m_setConstraintButton.setToolTipText("Set the constraint");
-	    m_setConstraintButton.setImage(Icons.getIcon("setconstraint"));
-	    m_setConstraintButton.addSelectionListener(new SelectionAdapter() {
+		m_exclusionsList = new List(group, SWT.BORDER | SWT.CENTER | SWT.V_SCROLL);
+		m_exclusionsList.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
+		m_exclusionsList.addSelectionListener(m_exclusionsListListener);
+		
+		Composite buttons = new Composite(composite, SWT.NONE);
+	    GridLayout layout = new GridLayout();
+	    layout.numColumns = 1;
+	    buttons.setLayout(layout);
+	    buttons.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));		
+	    setBackground(buttons);
+	    
+		m_addExclusionButton = new Button(buttons, SWT.PUSH);
+		m_addExclusionButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		m_addExclusionButton.setToolTipText("Add the exclusion");
+		m_addExclusionButton.setImage(Icons.getIcon("add_exclusion"));
+		m_addExclusionButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				setConstraint();
+				addExclusion();
 			}
 		});
-	    m_setConstraintButton.setEnabled(false);
+		m_addExclusionButton.setEnabled(false);
+	    
+		m_removeExclusionButton = new Button(buttons, SWT.PUSH);
+		m_removeExclusionButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		m_removeExclusionButton.setToolTipText("Add the exclusion");
+		m_removeExclusionButton.setImage(Icons.getIcon("remove_exclusion"));
+		m_removeExclusionButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				removeExclusion();
+			}
+		});
+		m_removeExclusionButton.setEnabled(false);
 	}
 
 	private void createSettingsBar(Composite controls) {

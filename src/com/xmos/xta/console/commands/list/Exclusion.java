@@ -101,11 +101,11 @@ public class Exclusion extends Command {
 
     	switch (m_operation) {
     	case ADD:
-    		addExclusion(engine, console);
+    		engine.addExclusion(m_reference);
     		break;
 
     	case REMOVE:
-    		removeExclusion(engine, console);
+    		engine.removeExclusion(m_reference);
     		break;
     		
     	case LIST:
@@ -114,22 +114,6 @@ public class Exclusion extends Command {
     	}
     }
     
-    private void addExclusion(Engine engine, Console console) {
-       	if (!engine.addExclusion(m_reference)) {
-       		console.display(String.format(
-       				"Error: Failed to set exclusion on reference: %s\n", 
-       				m_reference));    		        		
-       	}
-    }
-
-    private void removeExclusion(Engine engine, Console console) {
-       	if (!engine.removeExclusion(m_reference)) {
-       		console.display(String.format(
-       				"Error: Failed to unset exclusion on reference: %s\n", 
-       				m_reference));    		        		
-       	}
-    }
-
     private void listExclusions(Engine engine, Console console) {
     	Collection<Reference> exclusions = engine.getExclusions();
         if (exclusions == null)
