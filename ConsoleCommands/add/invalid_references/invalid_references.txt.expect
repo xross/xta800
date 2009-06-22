@@ -4,36 +4,3 @@ Error: Unresolved reference: 100
 Error: Unable to remove label: silly
 Error: Label already exists: silly
 Error: Cannot use PC as a label: 0x1ab1e
-Current node: 0
-Current core: 2
-Frequency: 400
-NumThreads: 8
-SrcPaths: .
-Loaded executable: test.xe
-Node: 0, Core: 0 (Debug information avaliable)
-Node: 0, Core: 1 (Debug information avaliable)
-Node: 0, Core: 2 (Debug information avaliable)
-Node: 0, Core: 3 (Debug information avaliable)
-No routes analysed
-Current node: 0
-Current core: 1
-Frequency: 400
-NumThreads: 8
-SrcPaths: .
-Loaded executable: test.xe
-Node: 0, Core: 0 (Debug information avaliable)
-Node: 0, Core: 1 (Debug information avaliable)
-Node: 0, Core: 2 (Debug information avaliable)
-Node: 0, Core: 3 (Debug information avaliable)
-No routes analysed
-Current node: 0
-Current core: 0
-Frequency: 400
-NumThreads: 8
-SrcPaths: .
-Loaded executable: test.xe
-Node: 0, Core: 0 (Debug information avaliable)
-Node: 0, Core: 1 (Debug information avaliable)
-Node: 0, Core: 2 (Debug information avaliable)
-Node: 0, Core: 3 (Debug information avaliable)
-No routes analysed

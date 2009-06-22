@@ -2,7 +2,9 @@
 .align 2
 .globl _start
 _start:
+.xtathreadstart
   bl main
+.xtathreadstop
 
 .type main, @function
 .globl main

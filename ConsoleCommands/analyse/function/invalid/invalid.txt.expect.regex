@@ -15,12 +15,13 @@ Current core: 0
 Frequency: 400
 NumThreads: 8
 SrcPaths: .
+Verbosity: 0
 Loaded executable: test.xe
 Node: 0, Core: 0 \(No debug information found\)
 Node: 0, Core: 1 \(No debug information found\)
 Node: 0, Core: 2 \(No debug information found\)
 Node: 0, Core: 3 \(No debug information found\)
-Loaded Route\(\d+\): function: test\d+ \(0x[0-9a-fA-F]{5} => 0x[0-9a-fA-F]{5}\)
-Loaded Route\(\d+\): function: test\d+ \(0x[0-9a-fA-F]{5} => 0x[0-9a-fA-F]{5}\)
-Loaded Route\(\d+\): function: test\d+ \(0x[0-9a-fA-F]{5} => 0x[0-9a-fA-F]{5}\)
-Loaded Route\(\d+\): function: test\d+ \(0x[0-9a-fA-F]{5} => 0x[0-9a-fA-F]{5}\)
+Loaded Route\(\d+\): function: test\d+ 
+Loaded Route\(\d+\): function: test\d+ 
+Loaded Route\(\d+\): function: test\d+ 
+Loaded Route\(\d+\): function: test\d+ 

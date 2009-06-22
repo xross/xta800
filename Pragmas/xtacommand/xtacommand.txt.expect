@@ -4,18 +4,14 @@ function_c...
 function_d...
 Route(0) function: function_a
     No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
 
 Route(1) function: function_b
     No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
 
 Route(2) function: function_c
     No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
 
 Route(3) function: function_d
     No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
 
 Fail, Timing Unspecified
