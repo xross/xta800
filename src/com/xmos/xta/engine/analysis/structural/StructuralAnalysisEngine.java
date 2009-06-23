@@ -13,6 +13,7 @@ import java.util.TreeSet;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.analysis.structural.patterns.LoopPatternMatcher;
@@ -32,7 +33,6 @@ public class StructuralAnalysisEngine {
 	private StructureGraph m_structureGraph;
 	private Map<FunctionNode, FunctionNode> m_cfgToStruct;
 	private List<PatternMatcher> m_patternMatchers;
-	
 	
 	public StructuralAnalysisEngine(ControlFlowGraph controlFlowGraph) {
 		m_controlFlowGraph = controlFlowGraph;
@@ -109,7 +109,7 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, FunctionNode> startPcs,
+	private Collection<Node> buildGraph(Collection<InstructionNode> graphStartNodes, Map<Integer, FunctionNode> startPcs,
 			Engine engine, boolean isFunction) {
 
 		Collection<Node> graphs = new TreeSet<Node>();
@@ -124,14 +124,11 @@ public class StructuralAnalysisEngine {
 
 			Collection<Node> currentGraph = new TreeSet<Node>();
 			collectCurrentGraphNodes(graphStart, currentGraph);
-			
-			//dumpTree(currentGraph);
-			
+						
 			Collection<Node> basicBlocks = new TreeSet<Node>();
 
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
 			assert(!basicBlocks.isEmpty());
-			//dumpTree(basicBlocks);
 			FnopAnalyser fa = new FnopAnalyser();
 			
 			fa.analyse(initialBasicBlock, isFunction);
@@ -215,39 +212,6 @@ public class StructuralAnalysisEngine {
 			}
 		}
 	}
-/*
-	private void buildDominatorTree(Collection<Node> reachableNodes, Node treeStart) {
-		for (Node node : reachableNodes) {
-			node.getDominators().clear();
-			if (treeStart == node) {
-				node.getDominators().add(node);
-			} else {
-				node.getDominators().addAll(reachableNodes);
-			}
-		}
-		boolean stillChanging = true;
-		while (stillChanging) {
-			stillChanging = false;
-			for (Node node : reachableNodes) {
-
-				if (treeStart == node)
-					continue;
-
-				Set<Node> intersection = new TreeSet<Node>(reachableNodes);
-				for (Node pred : node.getPrevNodes()) {
-					intersection.retainAll(pred.getDominators());
-				}
-				intersection.add(node);
-
-				if (!intersection.equals(node.getDominators())) {
-					node.getDominators().clear();
-					node.getDominators().addAll(intersection);
-					stillChanging = true;
-				}
-			}
-		}
-	}
-*/
 	
 	private void buildDominatorTree(Collection<Node> reachableNodes, Node treeStart) {
 

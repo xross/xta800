@@ -16,7 +16,7 @@ public class FunctionHandler {
 
 	private InstructionDecoder m_instDecoder;
 	private Collection<FunctionNode> m_functions;
-	private Map<Node, FunctionNode> m_instToFunc;
+	private Map<InstructionNode, FunctionNode> m_instToFunc;
 	private Collection<Node> m_pseudoFunctions;
 	
 	public FunctionHandler(InstructionDecoder instDecoder) {
@@ -27,11 +27,11 @@ public class FunctionHandler {
 		return m_functions;
 	}
 	
-	public Map<Node, FunctionNode> getKnownFunctions(){
+	public Map<InstructionNode, FunctionNode> getKnownFunctions(){
 		return m_instToFunc;
 	}
 	
-	public Collection<Node> getKnownFuncStarts(){
+	public Collection<InstructionNode> getKnownFuncStarts(){
 		return m_instToFunc.keySet();
 	}
 	
@@ -44,7 +44,7 @@ public class FunctionHandler {
 	 * All branch and link targets have to be set before this can be reliably run. 
 	 */
 	public boolean addFunctions(){
-		m_instToFunc = new TreeMap<Node, FunctionNode>();
+		m_instToFunc = new TreeMap<InstructionNode, FunctionNode>();
 		m_functions = new TreeSet<FunctionNode>();
 		m_pseudoFunctions = new TreeSet<Node>();
 		
@@ -55,9 +55,10 @@ public class FunctionHandler {
 				if(instruction.getNextNodes().size() > 0){
 					Collection<FunctionNode> newFunctions = new TreeSet<FunctionNode>();
 					for(Node next : instruction.getNextNodes()){
-						FunctionNode fn = new FunctionNode(next);
+						InstructionNode instNode  = (InstructionNode)next;
+						FunctionNode fn = new FunctionNode(instNode);
 						
-						m_instToFunc.put(next, fn);
+						m_instToFunc.put(instNode, fn);
 						newFunctions.add(fn);
 						next.getPrevNodes().remove(instruction);
 						

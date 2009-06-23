@@ -26,6 +26,7 @@ import com.xmos.xta.engine.analysis.controlflow.SuccessorAdder;
 import com.xmos.xta.engine.analysis.controlflow.ThreadHandler;
 import com.xmos.xta.engine.analysis.controlflow.UnreachableCodeFinder;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
@@ -872,13 +873,15 @@ public class Engine implements Notifier {
 			for (int coreId : xeLoader.getCoreIds(nodeId)){
 				InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config);
 				
+				newFunctionNames.add(nodeId, coreId, new TreeSet<String>());
+				
 				if (!id.decode()) 
 					return false;
 				
 				ThreadHandler th = new ThreadHandler(id, this);
-				Collection<Node> threadStartNodes = 
+				Collection<InstructionNode> threadStartNodes = 
 					th.getThreadNodes(sections.getThreadStartPoints(nodeId, coreId));
-				Collection<Node> threadStopNodes = 
+				Collection<InstructionNode> threadStopNodes = 
 					th.getThreadNodes(sections.getThreadStopPoints(nodeId, coreId));				
 				threadStartNodes = th.ensureThreadStartExists(threadStartNodes);
 
@@ -889,18 +892,14 @@ public class Engine implements Notifier {
 				FunctionHandler fh = new FunctionHandler(id);
 				if (!fh.addFunctions()) 
 					return false;
-				/*
-				for(Node knownFunction : fh.getKnownFuncStarts()){
-					FunctionNode fn = (FunctionNode)knownFunction;
-					TreeSet<String> functions = newFunctionNames.get(nodeId, coreId);
-					if(functions == null){
-						functions = new TreeSet<String>();
-					}
+				
+				
+				//for(InstructionNode inst : fh.getKnownFuncStarts()){
 					
-					functions.add(fn.getFunctionName());
-					newFunctionNames.add(nodeId, coreId, functions);
-				}
-				*/
+				//}
+				
+				
+				
 				UnreachableCodeFinder uca = new UnreachableCodeFinder();
 				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
 	
