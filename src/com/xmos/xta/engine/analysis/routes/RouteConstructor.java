@@ -9,6 +9,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.netbeans.modules.cnd.dwarfdump.dump.DumpDwarf;
+
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
 import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
@@ -84,6 +87,8 @@ public class RouteConstructor {
 			break;
 
 		case PATH:
+			
+			/*
 			Set<Integer> startPcs = getStartPcs();
 			Set<Integer> endPcs = getEndPcs();
 
@@ -124,6 +129,9 @@ public class RouteConstructor {
 			//System.out.println("new start nodes: " + testStartNodes);
 			//System.out.println("old end nodes: " + endNodes);
 			//System.out.println("new end nodes: " + testEndNodes);
+			*/
+			Collection<Node> startNodes =getReferencedNodes(m_description.getStartPoint());
+			Collection<Node> endNodes = getReferencedNodes(m_description.getEndPoint());
 			
 			
 			for (Node start : startNodes) {
@@ -131,28 +139,23 @@ public class RouteConstructor {
 
 				m_structureGraph.removeLinks();
 				m_excludedRouteNodes = new TreeSet<Node>();
-				seenEndPoint |= explore(start, workingSet, endPcs, endNodes, null);
+				seenEndPoint |= explore(start, workingSet, endNodes, null);
 				
-				StructuralAnalysisEngine.dumpTree(workingSet);	
+				//StructuralAnalysisEngine.dumpTree(workingSet);
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 				pruneGraphOfExcludedPaths(workingSet);
 				if(workingSet.isEmpty()){
 					continue;
 				}
-				
-				StructuralAnalysisEngine.dumpTree(workingSet);			
+		
 				Set<Node> newEndNodes = removeFinalInstruction(endNodes, start,
 						workingSet);
-				
-				StructuralAnalysisEngine.dumpTree(workingSet);			
+		
 				Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
 				assert(cfgSanityCheck(workingSet));
 				
-				
-				StructuralAnalysisEngine.dumpTree(workingSet);
 				sae.createStructure(workingSet, newStart, m_engine, true);
-				StructuralAnalysisEngine.dumpTree(workingSet);
 				
 				assert(workingSet.size() == 1);
 				
@@ -188,14 +191,15 @@ public class RouteConstructor {
 		return true;
 	}
 
-	private boolean explore(Node node, Collection<Node> set, Collection<Integer> endPcs, Collection<Node> endNodes, Node parent) {	
-		Set<Integer> pcs = new TreeSet<Integer>(endPcs);
-		pcs.retainAll(node.getPCs());
+	private boolean explore(Node node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
+		Set<Node> nodes = new TreeSet<Node>(endNodes);
+		nodes.retainAll(node.getContainedNodes());
+		
 		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
 		exclusions.retainAll(node.getContainedNodes());
 		boolean seenEndPoint = false;
 
-		if (pcs.isEmpty() || set.isEmpty()) {
+		if (nodes.isEmpty() || set.isEmpty()) {
 			
 			if(!exclusions.isEmpty() ){
 				if( node.isBlockNode() ){
@@ -209,7 +213,7 @@ public class RouteConstructor {
 				} else {
 					assert (!node.getImmediateChildren().isEmpty());
 					for(Node child : node.getImmediateChildren()){
-						seenEndPoint |= explore(child, set, endPcs, endNodes, parent);
+						seenEndPoint |= explore(child, set, endNodes, parent);
 					}
 				}
 				return false;
@@ -225,7 +229,7 @@ public class RouteConstructor {
 				
 				Collection<Node> nextNodes = node.getParent().whatsNext(node);
 				for (Node next : nextNodes) {
-					seenEndPoint |= explore(next, set, endPcs, endNodes, node);
+					seenEndPoint |= explore(next, set, endNodes, node);
 				}
 			}
 		} else {
@@ -236,11 +240,11 @@ public class RouteConstructor {
 			} else {
 				assert (!node.getImmediateChildren().isEmpty());
 				for(Node child : node.getImmediateChildren()){
-					seenEndPoint |= explore(child, set, endPcs, endNodes, parent);
+					seenEndPoint |= explore(child, set, endNodes, parent);
 				}
 			}
 		}
-		return false;
+		return seenEndPoint;
 	}
 	
 	private Set<Node> removeFinalInstruction(Collection<Node> endNodes,

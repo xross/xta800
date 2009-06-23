@@ -14,7 +14,6 @@ public class SectionTransformer extends PatternMatcher {
 	private boolean explore(Node node, TreeSet<Node> seen, Set<Node> dominators, Node start, Collection<Node> workingSet) {
 		seen.add(node);
 		
-		
 		if(node.getDominators().containsAll(dominators) && node.getDominators().size() == dominators.size() + 1){
 			//then this must be one of the nodes we are looking for
 			
@@ -23,7 +22,6 @@ public class SectionTransformer extends PatternMatcher {
 				CommonMethods.wedgeUp(node, workingSet);
 				return true;
 			}
-			
 		}
 		
 		boolean found = false;

@@ -110,7 +110,7 @@ public class FunctionNode extends IBufferNode {
 	}
 	
 	public Collection<Node> getContainedNodes() {
-		if (m_knownFunction) {
+		if(m_function != null){
 			return m_function.getContainedNodes();
 		} else {
 			return new TreeSet<Node>();

@@ -66,9 +66,7 @@ public class SelfLoopNode extends Node{
 	}
 
 	public Collection<Node> getContainedNodes() {
-		Collection<Node> containedNodes = new TreeSet<Node>();
-		containedNodes.addAll(m_loop.getContainedNodes());
-		return containedNodes;
+		return m_loop.getContainedNodes();
 	}
 
 	public int getStartPc() {
