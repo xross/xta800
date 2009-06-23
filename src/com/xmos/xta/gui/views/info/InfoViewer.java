@@ -1,9 +1,8 @@
-package com.xmos.xta.gui.views.info.knowns;
+package com.xmos.xta.gui.views.info;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -18,6 +17,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -27,39 +27,47 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
-import com.xmos.xta.gui.views.info.InfoSorter;
 
-public class KnownsViewer {
-	private TableViewer m_knownsViewer;
+abstract class InfoViewer {
+	private Composite m_parent;
+	private Display m_display;
+	private TableViewer m_viewer;
 	private List<Node> m_selectedNodes;
-	private Action m_clearInstructionTimesAction;
 
-	public KnownsViewer(Composite parent, IWorkbenchPartSite site, TabFolder folders) {
+	abstract InfoViewerContentProvider createContentProvider();
+	abstract InfoViewerLabelProvider createLabelProvider();
+	abstract void createContextMenuActions(MenuManager menuMgr);	
+	abstract void enableContextMenuActions(int numInstructionTimeNodes, int numLoopIterationsNodes);
+	abstract void update();
+	abstract void updateHighlighting(List<Node> selectedNodes);
+	
+	InfoViewer(Display display, Composite parent, IWorkbenchPartSite site, TabFolder folders, String displayText) {
+		m_parent = parent;
+		m_display = display;
 		m_selectedNodes = new ArrayList<Node>();
 
 		TabItem tab = new TabItem(folders, SWT.NONE);
-		tab.setText("Set values");
+		tab.setText(displayText);
 		Composite composite = new Composite(folders, SWT.NONE);
 		composite.setLayout(new FillLayout());
-		m_knownsViewer = new TableViewer(composite);
+		m_viewer = new TableViewer(composite);
 		tab.setControl(composite);
+		
+		final InfoSorter unknownSorter = new InfoSorter();
+		m_viewer.setSorter(unknownSorter);
 
-		final InfoSorter knownSorter = new InfoSorter();
-		m_knownsViewer.setSorter(knownSorter);
-
-		Table table = m_knownsViewer.getTable();
+		Table table = m_viewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		KnownsContentProvider contentProvider = new KnownsContentProvider();
-		KnownsLabelProvider labelProvider = new KnownsLabelProvider();
+		InfoViewerContentProvider contentProvider = createContentProvider();;
+		InfoViewerLabelProvider labelProvider = createLabelProvider();
 
 		for (int i = 0; i < labelProvider.getColumnNames().length; ++i) {
 			TableColumn tableColumn = new TableColumn(table, labelProvider
@@ -67,37 +75,25 @@ public class KnownsViewer {
 			tableColumn.setText(labelProvider.getColumnNames()[i]);
 			tableColumn.setWidth(labelProvider.getColumnWidths()[i]);
 		}
-		m_knownsViewer.setContentProvider(contentProvider);
-		m_knownsViewer.setLabelProvider(labelProvider);
-		for (final TableColumn col : m_knownsViewer.getTable().getColumns()) {
+		m_viewer.setContentProvider(contentProvider);
+		m_viewer.setLabelProvider(labelProvider);
+		for (final TableColumn col : m_viewer.getTable().getColumns()) {
 			col.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
 					int colIndex = 0;
-					if (col.getText().equals(KnownsLabelProvider.PC)) {
-						colIndex = 0;
-					} else if (col.getText().equals(KnownsLabelProvider.DESC)) {
+					if (col.getText().equals(InfoViewerLabelProvider.PC)) {
 						colIndex = 1;
+					} else if (col.getText().equals(InfoViewerLabelProvider.DESC)) {
+						colIndex = 2;
 					}
 					
-					knownSorter.setColoumn(colIndex);
-					m_knownsViewer.refresh();
+					unknownSorter.setColoumn(colIndex);
+					m_viewer.refresh();
 				}
 			});
 		}
-	    setupMouseListeners(site, parent);
-	}
-
-	public void clear() {
-		m_knownsViewer.setInput(null);
-	}
-
-	public void update() {
-		Route route = GuiEngine.getEngine().getSelectedRoute();
-		m_knownsViewer.setInput(route);
-	}
-
-	private void setupMouseListeners(IWorkbenchPartSite site, final Composite parent) {
-		m_knownsViewer.addDoubleClickListener(new IDoubleClickListener() {
+		
+		m_viewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				if (m_selectedNodes.size() == 1) {					
 					Reference ref = ReferenceFactory.createReference("0x" + 
@@ -110,20 +106,18 @@ public class KnownsViewer {
 					GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
 				}
 			}
-		});
-		
-		m_knownsViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		});		
+
+		m_viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection selection = event.getSelection();
 
-				boolean enabled = ((IStructuredSelection) selection).size() > 0;
-				m_clearInstructionTimesAction.setEnabled(enabled);
-				m_selectedNodes.clear();
-
+				m_selectedNodes.clear();				
 				int numInstructionTimeNodes = 0;
-				int numLoopIterationsNodes = 0;				
-				for (Object object : ((IStructuredSelection) selection).toList()) {
-					Node node = (Node)object;
+				int numLoopIterationsNodes = 0;
+				
+				for (Object object : ((IStructuredSelection)selection).toList()) {
+					Node node = (Node)object;			
 					
 					switch (node.getAttributes().getUnknownType()) {
 					case INSTRUCTION_TIME:
@@ -132,40 +126,49 @@ public class KnownsViewer {
 						
 					case LOOP_ITERATIONS:
 						++numLoopIterationsNodes;
-						m_clearInstructionTimesAction.setEnabled(false);
 						break;
 					}
 					m_selectedNodes.add(node);
 				}
-				
-				m_clearInstructionTimesAction.setEnabled(false);
-				if ((numInstructionTimeNodes > 0) && (numLoopIterationsNodes == 0)) {
-					m_clearInstructionTimesAction.setEnabled(true);					
-				} 			
+				enableContextMenuActions(numInstructionTimeNodes, numLoopIterationsNodes);
 			}			
-		});
+		});		
 		
 		// Create the context menu
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(false);
-		Menu menu = menuMgr.createContextMenu(m_knownsViewer.getControl());
-		m_knownsViewer.getControl().setMenu(menu);
-		site.registerContextMenu(menuMgr, m_knownsViewer);
-		
-		// Create the action
-		m_clearInstructionTimesAction = new Action() { 
-			public void run() {
-				for (Node node : m_selectedNodes) {
-					GuiEngine.getEngine().unsetInstructionTimeTaken(node);
-					m_knownsViewer.refresh();
-				}
-			}
-		}; 
-		m_clearInstructionTimesAction.setText("Clear instruction time");
-		menuMgr.add(m_clearInstructionTimesAction);
-		m_clearInstructionTimesAction.setEnabled(false);
-
-		// required, for extensions
+		Menu menu = menuMgr.createContextMenu(getViewer().getControl());
+		getViewer().getControl().setMenu(menu);
+		site.registerContextMenu(menuMgr, getViewer());		
+		createContextMenuActions(menuMgr);	
 		menuMgr.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+     }
+
+	Composite getParent() {
+		return m_parent;
+	}
+
+	Display getDisplay() {
+		return m_display;
+	}
+
+	TableViewer getViewer() {
+		return m_viewer;
+	}
+	
+	List<Node> getSelectedNodes() {
+		return m_selectedNodes;
+	}
+	
+	void clear() {
+		m_viewer.setInput(null);
+	}
+	
+	int getNumInstructionTimeNodesSelected(ISelection selection) {
+		return 0;
+	}
+
+	int getNumLoopIterationsNodesSelected(ISelection selection) {
+		return 0;
 	}
 }

@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.info.unknowns;
+package com.xmos.xta.gui.views.info;
 
 import java.util.Collection;
 
@@ -9,21 +9,21 @@ import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 
-public class UnknownsContentProvider implements IStructuredContentProvider {
-    public static final boolean DEBUG = false;
+public class InfoViewerContentProvider implements IStructuredContentProvider {
+    private UnknownState m_unknownState;
 
+    InfoViewerContentProvider(UnknownState unknownState) {
+    	m_unknownState = unknownState;
+    }
+    
 	public Object[] getElements(Object inputElement) {
-		if (DEBUG) System.out.printf("UnknownsContentProvider: getElements\n");	
-
-	    Collection<Node> nodes = ((Route)inputElement).getUnknowns(UnknownState.UNKNOWN);
+	    Collection<Node> nodes = ((Route)inputElement).getUnknowns(m_unknownState);
 		return nodes.toArray();
 	}
 
 	public void dispose() {
-		if (DEBUG) System.out.printf("UnknownsContentProvider: dispose\n");	
 	}
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		if (DEBUG) System.out.printf("UnknownsContentProvider: inputChanged\n");	
 	}
 }

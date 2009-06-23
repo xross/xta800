@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.info.knowns;
+package com.xmos.xta.gui.views.info;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -7,9 +7,7 @@ import org.eclipse.swt.graphics.Image;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
-public class KnownsLabelProvider extends LabelProvider implements ITableLabelProvider {
-    public static final boolean DEBUG = false;
-
+public class InfoViewerLabelProvider extends LabelProvider implements ITableLabelProvider {
     private String[] m_columnNames;
     private int[] m_columnWidths;
     private int[] m_columnAligmnments;
@@ -17,20 +15,17 @@ public class KnownsLabelProvider extends LabelProvider implements ITableLabelPro
     static final String PC    = "Pc";
     static final String DESC  = "Description";
     
-    public KnownsLabelProvider() {
+    public InfoViewerLabelProvider() {
     	m_columnNames = new String[] { PC, DESC };
     	m_columnWidths = new int[] { 100, 500 };
     	m_columnAligmnments = new int[] { SWT.LEFT, SWT.LEFT };
     }
     
 	public Image getColumnImage(Object element, int columnIndex) {
-		if (DEBUG) System.out.printf("SetTimesLabelProvider: getColumnImage\n");	
 		return null;
 	}
 
 	public String getColumnText(Object element, int columnIndex) {
-		if (DEBUG) System.out.printf("SetTimesLabelProvider: getColumnText: index: %d\n", columnIndex);	
-		
 		assert((columnIndex >= 0) && (columnIndex < m_columnNames.length));
 		
 		Node node = (Node)element;	
