@@ -17,16 +17,14 @@ import org.eclipse.ui.part.ViewPart;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
-import com.xmos.xta.gui.views.info.knowns.KnownsViewer;
-import com.xmos.xta.gui.views.info.unknowns.UnknownsViewer;
 
 public class InfoView extends ViewPart implements IPropertyChangeListener,
 		                                              ISelectionListener {
 	public static final boolean DEBUG = false;
 	public static final String ID = "com.xmos.xta.gui.views.info.Info";
 
-	private UnknownsViewer m_unknowns;
-	private KnownsViewer m_knowns;
+	private InfoViewer m_unknowns;
+	private InfoViewer m_knowns;
 	
 	public InfoView() {
 		if (DEBUG) System.out.printf("Info()\n");
@@ -38,7 +36,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 
 		TabFolder folders = new TabFolder(parent, SWT.BORDER);
 		m_unknowns = new UnknownsViewer(parent.getDisplay(), parent, getSite(), folders);
-		m_knowns = new KnownsViewer(parent, getSite(), folders);
+		m_knowns = new KnownsViewer(parent.getDisplay(), parent, getSite(), folders);
 
 		m_unknowns.update();
 		m_knowns.update();
