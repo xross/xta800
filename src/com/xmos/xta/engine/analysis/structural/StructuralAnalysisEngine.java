@@ -128,9 +128,7 @@ public class StructuralAnalysisEngine {
 			Collection<Node> currentGraph = new TreeSet<Node>();
 			collectCurrentGraphNodes(graphStart, currentGraph);
 			
-			if(functionName.equals("__unpack_d")){
-				dumpTree(currentGraph);
-			}
+
 			
 			Collection<Node> basicBlocks = new TreeSet<Node>();
 
@@ -143,25 +141,18 @@ public class StructuralAnalysisEngine {
 			fa.addFnopsToBasicBlocks(initialBasicBlock);
 			assert(basicBlocks.contains(initialBasicBlock));
 			
-			if(functionName.equals("__unpack_d")){
-				dumpTree(basicBlocks);
-			}
+
 			
 			if (!createStructure(basicBlocks, initialBasicBlock, engine, false)) {
 				return null;
 			}
 			
-			if(functionName.equals("__unpack_d")){
-				dumpTree(basicBlocks);
-			}
+
 			
 			assert(basicBlocks.size() == 1);
 			Node decomposedGraph = basicBlocks.iterator().next();
 			
-			if(functionName.equals("__unpack_d")){
-				System.out.println(decomposedGraph + " " + decomposedGraph.getClass().getSimpleName());
-			}
-			
+
 			FunctionNode fn = new FunctionNode(decomposedGraph, functionName);
 			graphs.add(fn);
 			

@@ -45,10 +45,6 @@ public class SuccessorAdder {
 			handleNonBranchingInstructions(node, inst, debug);
 			addUserSuccessors(node, inst, debug);
 			addBranchLinkReturns(node, inst);
-			if(inst.getPc() == 0x1057c){
-				System.out.println("next: " +node.getNextNodes().size());
-			}
-			
 			
 		}
 		return true;
