@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -90,6 +91,10 @@ public class Engine implements Notifier {
 		ReferenceTypeFactory.setEngine(this);
 	}
 
+	public Set<String> getFunctionNames(int nodeId, int coreId){
+		return m_functionNames.get(nodeId, coreId);
+	}
+	
 	public void notify(String message, String argument) {
 		if (m_notifier != null)
 			m_notifier.notify(message, argument);
@@ -894,11 +899,12 @@ public class Engine implements Notifier {
 					return false;
 				
 				
-				//for(InstructionNode inst : fh.getKnownFuncStarts()){
-					
-				//}
-				
-				
+				for(InstructionNode inst : fh.getKnownFuncStarts()){
+					TreeSet<String> functionName =newFunctionNames.get(nodeId, coreId);
+					String name = xeLoader.getSymbolTable(nodeId, coreId).functionName(inst.getStartPc());
+					assert(!functionName.contains(name));
+					functionName.add(name);
+				}
 				
 				UnreachableCodeFinder uca = new UnreachableCodeFinder();
 				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
