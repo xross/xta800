@@ -65,7 +65,6 @@ public class FunctionHandler {
 					for(Node f : newFunctions){
 						CommonMethods.connect(f, instruction);
 						CommonMethods.connect(instruction.getBranchLinkReturn(), f);
-						//f.getBranchTargets().add(instruction.getBranchLinkReturn());
 						f.addBranchTarget(instruction.getBranchLinkReturn());
 					}
 					m_functions.addAll(newFunctions);
@@ -73,8 +72,6 @@ public class FunctionHandler {
 					FunctionNode fn = new FunctionNode();
 					CommonMethods.connect(fn, instruction);
 					CommonMethods.connect(instruction.getBranchLinkReturn(), fn);
-					
-					//fn.getBranchTargets().add(instruction.getBranchLinkReturn());
 					fn.addBranchTarget(instruction.getBranchLinkReturn());
 					m_functions.add(fn);
 					m_pseudoFunctions.add(fn);

@@ -42,7 +42,6 @@ public class Route {
 		m_routeId = s_routeCount++;
 		m_subRoute = subRoute;
 		m_routeTiming = new RouteTiming(this, engine.getConfig(), engine.getNodeId(), engine.getCoreId());
-		
 	}
 
 	public int getRouteId() {
@@ -118,13 +117,17 @@ public class Route {
 	}
 
 	public boolean setLoopIterations(Node node, long iterations) {
-		Node enclosingLoopNode = node.getEnclosingLoopNode();
-		if (enclosingLoopNode != null) {				
+		if (canSetLoopIterations(node)) {
+    		Node enclosingLoopNode = node.getEnclosingLoopNode();
 			enclosingLoopNode.getAttributes().setLoopIterations(iterations);
 			enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
 			return true;
 		}
 		return false;
+	}
+
+	public boolean canSetLoopIterations(Node node) {
+		return node.getEnclosingLoopNode() != null;
 	}
 	
 	public boolean setLoopPathIterations(Reference reference, long iterations) {
@@ -143,22 +146,26 @@ public class Route {
 	}
 	
 	public boolean setLoopPathIterations(Node node, long iterations) {
-		Node loopNode = node.getEnclosingLoopNode();
-		if (loopNode == null)
+		if (canSetLoopPathIterations(node)) {
+			Node loopNode = node.getEnclosingLoopNode();
+			Node sectionNode = node.getEnclosingSectionNode();
+			Node optionNode = node.getEnclosingOptionNode();
+			return sectionNode.getAttributes().setLoopPathIterations(loopNode, optionNode, iterations);
+		}
+		return false;		
+	}
+
+	public boolean canSetLoopPathIterations(Node node) {
+		if (node.getEnclosingLoopNode() == null)
 			return false;
 		
-		Node sectionNode = node.getEnclosingSectionNode();
-		if (sectionNode == null)
+		if (node.getEnclosingSectionNode() == null)
 			return false;
 		
-		Node optionNode = node.getEnclosingOptionNode();
-		if (optionNode == null)
+		if (node.getEnclosingOptionNode() == null)
 			return false;
 		
-		if (!sectionNode.getAttributes().setLoopPathIterations(loopNode, optionNode, iterations))
-			return false;
-		
-		return true;		
+		return true;
 	}
 	
 	public boolean setLoopScope(Reference reference, boolean isAbsolute) {
@@ -171,13 +178,17 @@ public class Route {
 	}
 	
 	public boolean setLoopScope(Node node, boolean isAbsolute) {
-		Node enclosingLoopNode = node.getEnclosingLoopNode();
-		if (enclosingLoopNode != null) {				
+		if (canSetLoopScope(node)) {		
+        	Node enclosingLoopNode = node.getEnclosingLoopNode();
 			enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
 			return true;
 		}
 		return false;
 	}	
+
+	public boolean canSetLoopScope(Node node) {
+		return node.getEnclosingLoopNode() != null;
+	}
 	
 	public boolean setInstructionTimeTaken(Reference reference, double timeTaken) {
 		boolean found = false;

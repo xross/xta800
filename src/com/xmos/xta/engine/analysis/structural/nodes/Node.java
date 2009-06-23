@@ -210,7 +210,7 @@ public abstract class Node implements Comparable<Node>{
 	}
 		
 	public Node getEnclosingLoopNode() {		
-		Node node = m_parent;
+		Node node = this;
 		while ((node != null) && !node.isLoopNode()) {
 			node = node.getParent();
 		}

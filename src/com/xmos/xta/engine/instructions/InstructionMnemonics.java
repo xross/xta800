@@ -14,6 +14,7 @@ public class InstructionMnemonics {
 		switch (m_arch) {
 		case REVA: return inst.getClass() == RevaXtaInstruction_ssync_0r.class;
 		case REVB: return inst.getClass() == RevbXtaInstruction_ssync_0r.class;
+		case REVC: return inst.getClass() == RevbXtaInstruction_ssync_0r.class;
 		}
 		return false;
 	}
@@ -22,6 +23,7 @@ public class InstructionMnemonics {
 		switch (m_arch) {
 		case REVA: return inst.getClass() == RevaXtaInstruction_msync_1r.class;
 		case REVB: return inst.getClass() == RevbXtaInstruction_msync_1r.class;
+		case REVC: return inst.getClass() == RevbXtaInstruction_msync_1r.class;
 		}
 		return false;
 	}
@@ -30,6 +32,7 @@ public class InstructionMnemonics {
 		switch (m_arch) {
 		case REVA: return inst.getClass() == RevaXtaInstruction_mjoin_1r.class;
 		case REVB: return inst.getClass() == RevbXtaInstruction_mjoin_1r.class;
+		case REVC: return inst.getClass() == RevbXtaInstruction_mjoin_1r.class;
 		}
 		return false;
 	}
@@ -40,6 +43,8 @@ public class InstructionMnemonics {
 		                  (inst.getClass() == RevaXtaInstruction_setsr_lu6.class); 
 		case REVB: return (inst.getClass() == RevbXtaInstruction_setsr_u6.class) ||
                           (inst.getClass() == RevbXtaInstruction_setsr_lu6.class); 
+		case REVC: return (inst.getClass() == RevbXtaInstruction_setsr_u6.class) ||
+						  (inst.getClass() == RevbXtaInstruction_setsr_lu6.class); 
 		}
 		return false;
 	}	
@@ -52,6 +57,9 @@ public class InstructionMnemonics {
 		case REVB: return (inst.getClass() == RevbXtaInstruction_waitef_1r.class) ||
 		                  (inst.getClass() == RevbXtaInstruction_waitet_1r.class) ||
                           (inst.getClass() == RevbXtaInstruction_waiteu_0r.class); 
+		case REVC: return (inst.getClass() == RevbXtaInstruction_waitef_1r.class) ||
+				          (inst.getClass() == RevbXtaInstruction_waitet_1r.class) ||
+				          (inst.getClass() == RevbXtaInstruction_waiteu_0r.class); 
 		}		
 		return false;
 	}
@@ -73,7 +81,15 @@ public class InstructionMnemonics {
 				          (inst.getClass() == RevbXtaInstruction_brff_ru6.class) ||
 						  (inst.getClass() == RevbXtaInstruction_brff_lru6.class) ||
 						  (inst.getClass() == RevbXtaInstruction_brft_ru6.class) || 
-                          (inst.getClass() == RevbXtaInstruction_brft_lru6.class);		
+                          (inst.getClass() == RevbXtaInstruction_brft_lru6.class);
+		case REVC: return (inst.getClass() == RevbXtaInstruction_brbf_ru6.class) ||
+					      (inst.getClass() == RevbXtaInstruction_brbf_lru6.class) ||
+					      (inst.getClass() == RevbXtaInstruction_brbt_ru6.class) ||
+					      (inst.getClass() == RevbXtaInstruction_brbt_lru6.class) ||
+					      (inst.getClass() == RevbXtaInstruction_brff_ru6.class) ||
+					      (inst.getClass() == RevbXtaInstruction_brff_lru6.class) ||
+						  (inst.getClass() == RevbXtaInstruction_brft_ru6.class) || 
+					      (inst.getClass() == RevbXtaInstruction_brft_lru6.class);
 		}		
 		return false;
 	}	
@@ -82,6 +98,7 @@ public class InstructionMnemonics {
 		switch (m_arch) {
 		case REVA: return (inst.getClass() == RevaXtaInstruction_blacp_u10.class);
 		case REVB: return (inst.getClass() == RevbXtaInstruction_blacp_u10.class);
+		case REVC: return (inst.getClass() == RevbXtaInstruction_blacp_u10.class);
 		}		
 		return false;
 	}	
@@ -90,6 +107,7 @@ public class InstructionMnemonics {
 		switch (m_arch) {
 		case REVA: return (inst.getClass() == RevaXtaInstruction_blacp_lu10.class);
 		case REVB: return (inst.getClass() == RevbXtaInstruction_blacp_lu10.class);
+		case REVC: return (inst.getClass() == RevbXtaInstruction_blacp_lu10.class);
 		}		
 		return false;
 	}	

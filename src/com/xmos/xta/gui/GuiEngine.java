@@ -1,5 +1,6 @@
 package com.xmos.xta.gui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -36,6 +37,7 @@ public class GuiEngine {
         s_notifier = new GuiNotifier();
         s_broadcaster = new Broadcaster();        
         s_log = new GuiLog();
+        s_selectedNodes = new ArrayList<Node>();
 
         s_engine.setNotifier(s_notifier);
 	}

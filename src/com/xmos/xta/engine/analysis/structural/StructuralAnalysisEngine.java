@@ -124,10 +124,13 @@ public class StructuralAnalysisEngine {
 			String functionName = graphStart.getInstructions().getFirst().getFunctionName();
 
 			engine.provideFeedback("Processing " + functionName);
-			//System.out.println("found function " + functionName);
 
 			Collection<Node> currentGraph = new TreeSet<Node>();
 			collectCurrentGraphNodes(graphStart, currentGraph);
+			
+			if(functionName.equals("__unpack_d")){
+				dumpTree(currentGraph);
+			}
 			
 			Collection<Node> basicBlocks = new TreeSet<Node>();
 
@@ -140,15 +143,24 @@ public class StructuralAnalysisEngine {
 			fa.addFnopsToBasicBlocks(initialBasicBlock);
 			assert(basicBlocks.contains(initialBasicBlock));
 			
-			if (DEBUG) 
+			if(functionName.equals("__unpack_d")){
 				dumpTree(basicBlocks);
+			}
 			
 			if (!createStructure(basicBlocks, initialBasicBlock, engine, false)) {
 				return null;
 			}
 			
+			if(functionName.equals("__unpack_d")){
+				dumpTree(basicBlocks);
+			}
+			
+			assert(basicBlocks.size() == 1);
 			Node decomposedGraph = basicBlocks.iterator().next();
-		
+			
+			if(functionName.equals("__unpack_d")){
+				System.out.println(decomposedGraph + " " + decomposedGraph.getClass().getSimpleName());
+			}
 			
 			FunctionNode fn = new FunctionNode(decomposedGraph, functionName);
 			graphs.add(fn);
@@ -156,8 +168,6 @@ public class StructuralAnalysisEngine {
 			setParent(fn);
 			
 			startPcs.put(graphStart.getStartPc(), fn);
-			
-			//System.out.println("0x" + Integer.toHexString(graphStart.getStartPc()) + " -> " + fn + " (" + functionName + ")");
 			
 		}
 		return graphs;
@@ -334,15 +344,15 @@ public class StructuralAnalysisEngine {
 				if(verbose){
 					System.out.print(node + " [label=\"" );
 					System.out.print(node + ": \\n");
-					if(node.isBlockNode()){
+					if(node.isBlockNode() || node.isInstructionNode()){
 						for(XtaInstruction inst : node.getInstructions()){
-							System.out.print(inst + "\\n");
+							System.out.print(inst  +"\\n");
 						}
 					}
 					for(Node dom : node.getDominators()){
 						System.out.print("dominator:" + dom + "\\n");
 					}
-					System.out.print("\"");
+					System.out.print( "\"");
 					System.out.println("];");
 				}
 			}

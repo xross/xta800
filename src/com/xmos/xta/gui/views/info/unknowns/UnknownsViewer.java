@@ -107,7 +107,7 @@ public class UnknownsViewer {
 
 	public void updateHighlighting(List<Node> selectedNodes) {
 		for (TableItem item : m_unknownsViewer.getTable().getItems()) {
-			Node node = (Node)item.getData();			
+			Node node = (Node)item.getData();					
 			if (selectedNodes.contains(node)) {
 				item.setBackground(m_display.getSystemColor(SWT.COLOR_YELLOW));
 			} else {
@@ -115,7 +115,7 @@ public class UnknownsViewer {
 			}
 		}
 	}
-	
+
  	private void setupMouseListeners(IWorkbenchPartSite site, final Composite parent) {
 		m_unknownsViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
@@ -189,8 +189,13 @@ public class UnknownsViewer {
 
 		m_setLoopIterationsAction = new Action() { 
 			public void run() {
-				Route route = GuiEngine.getEngine().getSelectedRoute();
-     			//TODO new Loop(parent.getShell(), route);
+				ISelection selection = m_unknownsViewer.getSelection();
+		        if (selection instanceof IStructuredSelection) {	            
+		            final Object object = ((IStructuredSelection)selection).getFirstElement();
+		            if (object instanceof Node) {				
+     			        new Loop(parent.getShell(), (Node)object);
+		            }
+		        }
 			}
 		};
 		m_setLoopIterationsAction.setText("Set iterations");

@@ -1,7 +1,5 @@
 package com.xmos.xta.gui.dialogs;
 
-import java.util.Set;
-
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -14,25 +12,17 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
-import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
 
 public class LoopPath extends XtaDialog {
-	
-	private long m_numIterations;
+	private Node m_node;
+	private long m_iterations;
 		
     public LoopPath(Shell parent, Node node) {
     	super(parent);
-    	
-    	// TODO
-    	//m_tail = tail;
-    	//m_header = m_tail.getPathBlocks().get(0);
-    	//try {
-		//	m_numIterations = m_header.getLoops().getHardLoopIterations(m_tail);
-		//} catch (Exception e) {
-		//	m_numIterations = 0;
-		//}
+    	m_node = node;
+    	m_iterations = 0;
     	open();
     }
     
@@ -48,13 +38,10 @@ public class LoopPath extends XtaDialog {
 	    gridLayout.numColumns = 3;
 	    container.setLayout(gridLayout);
 
-	    // TODO
-		//createNumIterationsControl(container);
-
+		createNumIterationsControl(container);
     	return container;
     }
-// TODO    
-/*
+
 	private void createControlLabel(Composite parent, String str) {
 		Label label = new Label(parent, SWT.NONE);		        
 	    label.setLayoutData(new GridData(GridData.END, GridData.CENTER,
@@ -67,37 +54,15 @@ public class LoopPath extends XtaDialog {
 		final Spinner spinner = new Spinner(parent, SWT.BORDER);
 		spinner.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
 				true, false, 2, 1));
-		spinner.setMinimum(0);
-		
-		long total = 0;
-		for(LoopAttachment loop : m_header.getLoops().getSubLoops()){
-			try {
-				if(loop.getLoop() != m_tail)
-					total+=m_header.getLoops().getHardLoopIterations(loop.getLoop());
-			} catch (Exception e1) {
-			}
-		}
-		long loopmax;
-		boolean unset = false;
-		try {
-			loopmax = m_header.getLoops().getLoopMax(m_tail);
-		} catch (Exception e1) {
-			loopmax = 0;
-			unset = true;
-		}
-		if(loopmax - total == 0 && !unset){
-			spinner.setEnabled(false);
-		} else {
-			spinner.setEnabled(true);
-		}
-		spinner.setMaximum((int) (loopmax - total));
-		
-		spinner.setSelection((int) m_numIterations);
+
+		spinner.setMinimum(0);		
+		spinner.setEnabled(true);
+		spinner.setSelection(0);
 		spinner.setIncrement(1);
 		spinner.setPageIncrement(10);
 		spinner.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				m_numIterations = spinner.getSelection();
+				m_iterations = spinner.getSelection();
 			}			
 		});
     }
@@ -109,15 +74,9 @@ public class LoopPath extends XtaDialog {
     }
     
     protected void buttonPressed(int id) {
-    	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {
-    		// Just use any pc that is unique to this particular loop path.
-    		Set<Integer> pcs = m_route.getUniqueLoopPathPcs(m_tail);
-    		assert(pcs.size() > 0);
-    		
-    		GuiEngine.getEngine().setLoopIterations(
-    				m_route.getRouteId(), pcs.iterator().next(), m_numIterations);
+    	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {    		
+    		GuiEngine.getEngine().setLoopPathIterations(m_node, m_iterations);    		
     	}
     	super.buttonPressed(id);
     }
-*/    
 }
