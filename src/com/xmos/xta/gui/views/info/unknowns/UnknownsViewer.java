@@ -29,7 +29,6 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
@@ -43,13 +42,13 @@ import com.xmos.xta.gui.views.info.InfoSorter;
 public class UnknownsViewer {
 	private Display m_display;
 	private TableViewer m_unknownsViewer;
-	private List<Reference> m_selectedCodeRefs;
+	private List<Node> m_selectedNodes;
 	private Action m_setInstructionTimeAction;
 	private Action m_setLoopIterationsAction;
 
 	public UnknownsViewer(Display display, Composite parent, IWorkbenchPartSite site, TabFolder folders) {
 		m_display = display;
-		m_selectedCodeRefs = new ArrayList<Reference>();
+		m_selectedNodes = new ArrayList<Node>();
 
 		TabItem tab = new TabItem(folders, SWT.NONE);
 		tab.setText("Unknowns");
@@ -119,8 +118,14 @@ public class UnknownsViewer {
  	private void setupMouseListeners(IWorkbenchPartSite site, final Composite parent) {
 		m_unknownsViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
-				if (m_selectedCodeRefs.size() == 1) {
-					GuiEngine.setCodePoint(m_selectedCodeRefs.get(0));
+				if (m_selectedNodes.size() == 1) {
+					Reference ref = ReferenceFactory.createReference("0x" + 
+							Integer.toHexString(m_selectedNodes.get(0).getStartPc()), ReferenceClass.LABEL_REF);
+					
+					Engine engine = GuiEngine.getEngine();
+					ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
+										
+					GuiEngine.setCodePoint(ref);
 					GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
 				}
 			}
@@ -130,42 +135,32 @@ public class UnknownsViewer {
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection selection = event.getSelection();
 
-				m_selectedCodeRefs.clear();
+				m_selectedNodes.clear();
 				
-				ArrayList<Reference> m_selectedTimeRefs = new ArrayList<Reference>();
-				ArrayList<Reference> m_selectedLoopRefs = new ArrayList<Reference>();
-				
+				int numInstructionTimeNodes = 0;
+				int numLoopIterationsNodes = 0;				
 				for (Object object : ((IStructuredSelection)selection).toList()) {
-					Node node = (Node)object;
-					
-					Reference ref = ReferenceFactory.createReference(
-								"0x" + Integer.toHexString(node.getStartPc()), ReferenceClass.ENDPOINT_REF);
-					
-					Engine engine = GuiEngine.getEngine();
-					ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
+					Node node = (Node)object;			
 					
 					switch (node.getAttributes().getUnknownType()) {
 					case INSTRUCTION_TIME:
-						m_selectedTimeRefs.add(ref);
+						++numInstructionTimeNodes;
 						break;
 						
 					case LOOP_ITERATIONS:
-						m_selectedLoopRefs.add(ref);
+						++numLoopIterationsNodes;
 						break;
 					}
+					m_selectedNodes.add(node);
 				}
 				
 				m_setLoopIterationsAction.setEnabled(false);
 				m_setInstructionTimeAction.setEnabled(false);
-				
-				if ((m_selectedTimeRefs.size() == 0) && (m_selectedLoopRefs.size() == 1)) {
-					m_selectedCodeRefs.addAll(m_selectedLoopRefs);
+				if ((numInstructionTimeNodes > 0) && (numLoopIterationsNodes == 0)) {
+					m_setInstructionTimeAction.setEnabled(true);					
+				} else if ((numLoopIterationsNodes > 0) && (numInstructionTimeNodes == 0)) {
 					m_setLoopIterationsAction.setEnabled(true);
-					
-				} else if ((m_selectedTimeRefs.size() > 0) && (m_selectedLoopRefs.size() == 0)) {
-					m_selectedCodeRefs.addAll(m_selectedTimeRefs);
-					m_setInstructionTimeAction.setEnabled(true);
-				} 				
+				}
 			}			
 		});
 		
@@ -179,8 +174,8 @@ public class UnknownsViewer {
 		// Create the action
 		m_setInstructionTimeAction = new Action() { 
 			public void run() {
-				Route route = GuiEngine.getEngine().getSelectedRoute();
-     			new InstructionTime(parent.getShell(), GuiEngine.getEngine(), m_selectedCodeRefs, route);
+     			new InstructionTime(parent.getShell(), m_selectedNodes);
+     			m_unknownsViewer.refresh();
 			}
 		}; 
 		m_setInstructionTimeAction.setText("Set instruction time");
@@ -194,6 +189,7 @@ public class UnknownsViewer {
 		            final Object object = ((IStructuredSelection)selection).getFirstElement();
 		            if (object instanceof Node) {				
      			        new Loop(parent.getShell(), (Node)object);
+     			       m_unknownsViewer.refresh();
 		            }
 		        }
 			}

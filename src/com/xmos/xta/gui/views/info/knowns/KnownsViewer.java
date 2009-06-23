@@ -34,29 +34,27 @@ import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
-import com.xmos.xta.gui.dialogs.InstructionTime;
 import com.xmos.xta.gui.views.info.InfoSorter;
 
 public class KnownsViewer {
-	private TableViewer m_resolvedUnknownsViewer;
-	private List<Reference> m_selectedCodeRefs;
-	private Action m_setInstructionTimeAction;
+	private TableViewer m_knownsViewer;
+	private List<Node> m_selectedNodes;
 	private Action m_clearInstructionTimesAction;
 
 	public KnownsViewer(Composite parent, IWorkbenchPartSite site, TabFolder folders) {
-		m_selectedCodeRefs = new ArrayList<Reference>();
+		m_selectedNodes = new ArrayList<Node>();
 
 		TabItem tab = new TabItem(folders, SWT.NONE);
 		tab.setText("Set values");
 		Composite composite = new Composite(folders, SWT.NONE);
 		composite.setLayout(new FillLayout());
-		m_resolvedUnknownsViewer = new TableViewer(composite);
+		m_knownsViewer = new TableViewer(composite);
 		tab.setControl(composite);
 
 		final InfoSorter knownSorter = new InfoSorter();
-		m_resolvedUnknownsViewer.setSorter(knownSorter);
+		m_knownsViewer.setSorter(knownSorter);
 
-		Table table = m_resolvedUnknownsViewer.getTable();
+		Table table = m_knownsViewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
@@ -69,9 +67,9 @@ public class KnownsViewer {
 			tableColumn.setText(labelProvider.getColumnNames()[i]);
 			tableColumn.setWidth(labelProvider.getColumnWidths()[i]);
 		}
-		m_resolvedUnknownsViewer.setContentProvider(contentProvider);
-		m_resolvedUnknownsViewer.setLabelProvider(labelProvider);
-		for (final TableColumn col : m_resolvedUnknownsViewer.getTable().getColumns()) {
+		m_knownsViewer.setContentProvider(contentProvider);
+		m_knownsViewer.setLabelProvider(labelProvider);
+		for (final TableColumn col : m_knownsViewer.getTable().getColumns()) {
 			col.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
 					int colIndex = 0;
@@ -82,7 +80,7 @@ public class KnownsViewer {
 					}
 					
 					knownSorter.setColoumn(colIndex);
-					m_resolvedUnknownsViewer.refresh();
+					m_knownsViewer.refresh();
 				}
 			});
 		}
@@ -90,83 +88,82 @@ public class KnownsViewer {
 	}
 
 	public void clear() {
-		m_resolvedUnknownsViewer.setInput(null);
+		m_knownsViewer.setInput(null);
 	}
 
 	public void update() {
 		Route route = GuiEngine.getEngine().getSelectedRoute();
-		m_resolvedUnknownsViewer.setInput(route);
+		m_knownsViewer.setInput(route);
 	}
 
 	private void setupMouseListeners(IWorkbenchPartSite site, final Composite parent) {
-		m_resolvedUnknownsViewer.addDoubleClickListener(new IDoubleClickListener() {
+		m_knownsViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
-				if (m_selectedCodeRefs.size() == 1) {
-					GuiEngine.setCodePoint(m_selectedCodeRefs.get(0));
+				if (m_selectedNodes.size() == 1) {					
+					Reference ref = ReferenceFactory.createReference("0x" + 
+							Integer.toHexString(m_selectedNodes.get(0).getStartPc()), ReferenceClass.LABEL_REF);
+					
+					Engine engine = GuiEngine.getEngine();
+					ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
+					
+					GuiEngine.setCodePoint(ref);
 					GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
 				}
 			}
 		});
 		
-		m_resolvedUnknownsViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		m_knownsViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection selection = event.getSelection();
-				Engine engine = GuiEngine.getEngine();
 
 				boolean enabled = ((IStructuredSelection) selection).size() > 0;
 				m_clearInstructionTimesAction.setEnabled(enabled);
-				m_setInstructionTimeAction.setEnabled(enabled);
+				m_selectedNodes.clear();
 
-				m_selectedCodeRefs.clear();
+				int numInstructionTimeNodes = 0;
+				int numLoopIterationsNodes = 0;				
 				for (Object object : ((IStructuredSelection) selection).toList()) {
 					Node node = (Node)object;
 					
 					switch (node.getAttributes().getUnknownType()) {
 					case INSTRUCTION_TIME:
-						Reference ref = ReferenceFactory.createReference("0x" + 
-								Integer.toHexString(node.getStartPc()), ReferenceClass.LABEL_REF);
-						ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
-						m_selectedCodeRefs.add(ref);
+						++numInstructionTimeNodes;
 						break;
 						
 					case LOOP_ITERATIONS:
+						++numLoopIterationsNodes;
 						m_clearInstructionTimesAction.setEnabled(false);
-						m_setInstructionTimeAction.setEnabled(false);
 						break;
 					}
+					m_selectedNodes.add(node);
 				}
+				
+				m_clearInstructionTimesAction.setEnabled(false);
+				if ((numInstructionTimeNodes > 0) && (numLoopIterationsNodes == 0)) {
+					m_clearInstructionTimesAction.setEnabled(true);					
+				} 			
 			}			
 		});
 		
 		// Create the context menu
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(false);
-		Menu menu = menuMgr.createContextMenu(m_resolvedUnknownsViewer.getControl());
-		m_resolvedUnknownsViewer.getControl().setMenu(menu);
-		site.registerContextMenu(menuMgr, m_resolvedUnknownsViewer);
+		Menu menu = menuMgr.createContextMenu(m_knownsViewer.getControl());
+		m_knownsViewer.getControl().setMenu(menu);
+		site.registerContextMenu(menuMgr, m_knownsViewer);
 		
 		// Create the action
 		m_clearInstructionTimesAction = new Action() { 
 			public void run() {
-				for (Reference ref : m_selectedCodeRefs) {
-					int routeId = GuiEngine.getEngine().getSelectedRouteId();
-					GuiEngine.getEngine().unsetInstructionTimeTaken(routeId, ref.getRef());
+				for (Node node : m_selectedNodes) {
+					GuiEngine.getEngine().unsetInstructionTimeTaken(node);
+					m_knownsViewer.refresh();
 				}
 			}
 		}; 
 		m_clearInstructionTimesAction.setText("Clear instruction time");
 		menuMgr.add(m_clearInstructionTimesAction);
 		m_clearInstructionTimesAction.setEnabled(false);
-
-		m_setInstructionTimeAction = new Action() { 
-			public void run() {
-				Route route = GuiEngine.getEngine().getSelectedRoute();
-     			new InstructionTime(parent.getShell(), GuiEngine.getEngine(), m_selectedCodeRefs, route);
-			}
-		}; 
-		m_setInstructionTimeAction.setText("Set instruction time");
-		menuMgr.add(m_setInstructionTimeAction);
-		m_setInstructionTimeAction.setEnabled(false);
 
 		// required, for extensions
 		menuMgr.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
