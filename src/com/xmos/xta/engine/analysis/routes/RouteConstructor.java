@@ -133,7 +133,7 @@ public class RouteConstructor {
 				m_excludedRouteNodes = new TreeSet<Node>();
 				seenEndPoint |= explore(start, workingSet, endPcs, endNodes, null);
 				
-				//StructuralAnalysisEngine.dumpTree(workingSet);	
+				StructuralAnalysisEngine.dumpTree(workingSet);	
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 				pruneGraphOfExcludedPaths(workingSet);
@@ -141,18 +141,18 @@ public class RouteConstructor {
 					continue;
 				}
 				
-				//StructuralAnalysisEngine.dumpTree(workingSet);			
+				StructuralAnalysisEngine.dumpTree(workingSet);			
 				Set<Node> newEndNodes = removeFinalInstruction(endNodes, start,
 						workingSet);
 				
-				//StructuralAnalysisEngine.dumpTree(workingSet);			
+				StructuralAnalysisEngine.dumpTree(workingSet);			
 				Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
 				assert(cfgSanityCheck(workingSet));
 				
 				
-				//StructuralAnalysisEngine.dumpTree(workingSet);
+				StructuralAnalysisEngine.dumpTree(workingSet);
 				sae.createStructure(workingSet, newStart, m_engine, true);
-				//StructuralAnalysisEngine.dumpTree(workingSet);
+				StructuralAnalysisEngine.dumpTree(workingSet);
 				
 				assert(workingSet.size() == 1);
 				
