@@ -125,11 +125,13 @@ public class StructuralAnalysisEngine {
 			Collection<Node> currentGraph = new TreeSet<Node>();
 			collectCurrentGraphNodes(graphStart, currentGraph);
 			
+			//dumpTree(currentGraph);
+			
 			Collection<Node> basicBlocks = new TreeSet<Node>();
 
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
 			assert(!basicBlocks.isEmpty());
-			
+			//dumpTree(basicBlocks);
 			FnopAnalyser fa = new FnopAnalyser();
 			
 			fa.analyse(initialBasicBlock, isFunction);
@@ -140,7 +142,9 @@ public class StructuralAnalysisEngine {
 			if (!createStructure(basicBlocks, initialBasicBlock, engine, false)) {
 				return null;
 			}
-			
+			if(basicBlocks.size() != 1) {
+				dumpTree(basicBlocks);
+			}
 			assert(basicBlocks.size() == 1);
 			Node decomposedGraph = basicBlocks.iterator().next();
 			
@@ -168,7 +172,6 @@ public class StructuralAnalysisEngine {
 			if (!seen.contains(node)) {
 				if (!node.isFunctionNode()) {
 					BasicBlockMatcher bbpm = new BasicBlockMatcher();
-					
 					if (bbpm.match(node, treeStart, currentGraph)) {
 						seen.addAll(bbpm.getBlock().getContainedNodes());
 						basicBlocks.add(bbpm.getBlock());
@@ -212,7 +215,40 @@ public class StructuralAnalysisEngine {
 			}
 		}
 	}
+/*
+	private void buildDominatorTree(Collection<Node> reachableNodes, Node treeStart) {
+		for (Node node : reachableNodes) {
+			node.getDominators().clear();
+			if (treeStart == node) {
+				node.getDominators().add(node);
+			} else {
+				node.getDominators().addAll(reachableNodes);
+			}
+		}
+		boolean stillChanging = true;
+		while (stillChanging) {
+			stillChanging = false;
+			for (Node node : reachableNodes) {
 
+				if (treeStart == node)
+					continue;
+
+				Set<Node> intersection = new TreeSet<Node>(reachableNodes);
+				for (Node pred : node.getPrevNodes()) {
+					intersection.retainAll(pred.getDominators());
+				}
+				intersection.add(node);
+
+				if (!intersection.equals(node.getDominators())) {
+					node.getDominators().clear();
+					node.getDominators().addAll(intersection);
+					stillChanging = true;
+				}
+			}
+		}
+	}
+*/
+	
 	private void buildDominatorTree(Collection<Node> reachableNodes, Node treeStart) {
 
 		for (Node node : reachableNodes) {

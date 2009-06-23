@@ -66,12 +66,14 @@ public class Engine implements Notifier {
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
 	private NodeCoreCollection<ControlFlowGraph> m_controlFlowGraph;
 	private NodeCoreCollection<InstructionDecoder> m_instructionDecoder;
+	private NodeCoreCollection<TreeSet<String>> m_functionNames;
 	
 	public Engine(Config config) {		
 		m_xeObjects = new NodeCoreCollection<XeObject>();
 		m_structuralGraph = new NodeCoreCollection<StructureGraph>();
 		m_controlFlowGraph = new NodeCoreCollection<ControlFlowGraph>();
-		m_instructionDecoder = new NodeCoreCollection<InstructionDecoder>();		
+		m_instructionDecoder = new NodeCoreCollection<InstructionDecoder>();
+		m_functionNames = new NodeCoreCollection<TreeSet<String>>();
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
 		m_exclusions = new ArrayList<Reference>();
@@ -821,7 +823,7 @@ public class Engine implements Notifier {
 		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
 		NodeCoreCollection<ControlFlowGraph> newCfg = new NodeCoreCollection<ControlFlowGraph>();
 		NodeCoreCollection<InstructionDecoder> newInstructionDecoder = new NodeCoreCollection<InstructionDecoder>();
-		
+		NodeCoreCollection<TreeSet<String>> newFunctionNames = new NodeCoreCollection<TreeSet<String>>();
 		for (int nodeId : xeLoader.getNodeIds()){
 			for (int coreId : xeLoader.getCoreIds(nodeId)){
 				InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config);
@@ -843,7 +845,18 @@ public class Engine implements Notifier {
 				FunctionHandler fh = new FunctionHandler(id);
 				if (!fh.addFunctions()) 
 					return false;
-				
+				/*
+				for(Node knownFunction : fh.getKnownFuncStarts()){
+					FunctionNode fn = (FunctionNode)knownFunction;
+					TreeSet<String> functions = newFunctionNames.get(nodeId, coreId);
+					if(functions == null){
+						functions = new TreeSet<String>();
+					}
+					
+					functions.add(fn.getFunctionName());
+					newFunctionNames.add(nodeId, coreId, functions);
+				}
+				*/
 				UnreachableCodeFinder uca = new UnreachableCodeFinder();
 				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
 	
@@ -860,6 +873,7 @@ public class Engine implements Notifier {
 		m_instructionDecoder = newInstructionDecoder;
 		m_controlFlowGraph = newCfg;
 		m_structuralGraph = newStructuralGraph;
+		m_functionNames = newFunctionNames;
 		return true;
 	}
 	

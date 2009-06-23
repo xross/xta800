@@ -10,36 +10,8 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
 public class SectionTransformer extends PatternMatcher {
 	
-	
-	private boolean explore(Node node, TreeSet<Node> seen, Set<Node> dominators, Node start, Collection<Node> workingSet) {
-		seen.add(node);
-		
-		if(node.getDominators().containsAll(dominators) && node.getDominators().size() == dominators.size() + 1){
-			//then this must be one of the nodes we are looking for
-			
-			if(node.getNextNodes().size() >1){
-				//System.out.println("node " + node + " is mega dominated by " + start);
-				CommonMethods.wedgeUp(node, workingSet);
-				return true;
-			}
-		}
-		
-		boolean found = false;
-		for(Node next : node.getNextNodes()){
-			if(!seen.contains(next)){
-				found = explore(next, seen, dominators, start, workingSet);
-			}
-			if(found) return true;
-		}
-		return false;
-	}
-
-	
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose, Node treeStart) {
 		m_treeStart = treeStart;
-		boolean found = explore(currentNode, new TreeSet<Node>(), currentNode.getDominators(), currentNode, workingSet);
-		
-		if(found) return true;
 		
 		if (currentNode.getNextNodes().size() < 2) {
 			return false;
@@ -100,9 +72,31 @@ public class SectionTransformer extends PatternMatcher {
 				}
 			}
 		}
+		return explore(currentNode, new TreeSet<Node>(), currentNode.getDominators(), currentNode, workingSet);
+	}
+	
+	private boolean explore(Node node, TreeSet<Node> seen, Set<Node> dominators, Node start, Collection<Node> workingSet) {
+		seen.add(node);
+		
+		if(node.getDominators().containsAll(dominators) && node.getDominators().size() == dominators.size() + 1){
+			//then this must be one of the nodes we are looking for
+			
+			if(node.getNextNodes().size() >1 && node.getPrevNodes().size() > 0){
+				CommonMethods.wedgeUp(node, workingSet);
+				return true;
+			}
+		}
+		
+		boolean found = false;
+		for(Node next : node.getNextNodes()){
+			if(!seen.contains(next)){
+				found = explore(next, seen, dominators, start, workingSet);
+			}
+			if(found) return true;
+		}
 		return false;
 	}
-
+	
 	public boolean usesDominatorTree() {
 		return true;
 	}

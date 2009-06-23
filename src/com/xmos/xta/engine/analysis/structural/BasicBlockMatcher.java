@@ -12,7 +12,7 @@ public class BasicBlockMatcher {
 	private Node m_lastInstruction;
 
 	public boolean match(Node node, Node treeStart, Collection<Node> currentGraph) {
-		m_treeStart = node;
+		m_treeStart = treeStart;
 		LinkedList<Node> insts = new LinkedList<Node>();
 		boolean isStart = isStart(node);
 		insts.add(node);

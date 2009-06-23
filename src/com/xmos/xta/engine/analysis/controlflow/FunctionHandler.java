@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -15,7 +16,7 @@ public class FunctionHandler {
 
 	private InstructionDecoder m_instDecoder;
 	private Collection<FunctionNode> m_functions;
-	private Map<Node, Node> m_instToFunc;
+	private Map<Node, FunctionNode> m_instToFunc;
 	private Collection<Node> m_pseudoFunctions;
 	
 	public FunctionHandler(InstructionDecoder instDecoder) {
@@ -26,7 +27,7 @@ public class FunctionHandler {
 		return m_functions;
 	}
 	
-	public Map<Node, Node> getKnownFunctions(){
+	public Map<Node, FunctionNode> getKnownFunctions(){
 		return m_instToFunc;
 	}
 	
@@ -43,11 +44,11 @@ public class FunctionHandler {
 	 * All branch and link targets have to be set before this can be reliably run. 
 	 */
 	public boolean addFunctions(){
-		m_instToFunc = new TreeMap<Node, Node>();
+		m_instToFunc = new TreeMap<Node, FunctionNode>();
 		m_functions = new TreeSet<FunctionNode>();
 		m_pseudoFunctions = new TreeSet<Node>();
 		
-		for (Node instruction : m_instDecoder.getInstructions() ){
+		for (InstructionNode instruction : m_instDecoder.getInstructions() ){
 			assert(instruction.getInstructions().size() == 1);
 			XtaInstruction inst = instruction.getInstructions().getFirst();
 			if(inst.isLink()){
