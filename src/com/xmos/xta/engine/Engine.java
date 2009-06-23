@@ -100,36 +100,6 @@ public class Engine implements Notifier {
 		return m_routes;
 	}
 
-	public Route getSelectedRoute() {
-		return m_selectedRoute;
-	}
-
-	public int getSelectedRouteId() {
-		if (m_selectedRoute != null)
-			return m_selectedRoute.getRouteId();
-		else
-			return ROUTE_ID_INVALID;
-	}
-
-	public void setSelectedRoute(Route route) {
-		if (route != null) {
-			RouteTiming routeTiming = route.getRouteTiming();
-			int nodeId = routeTiming.getNodeId();
-			if (nodeId != m_nodeId)
-				setNodeId(nodeId);
-	
-			int coreId = routeTiming.getCoreId();
-			if (coreId != m_coreId)
-				setCoreId(coreId);
-		}	
-		m_selectedRoute = route;
-		notify(Notifier.NOTIFY_SELECT_ROUTE, "");
-	}
-
-	public void setSelectedRoute(int routeId) {
-		 setSelectedRoute(getRoute(routeId));
-	}
-
 	public XeLoader getXeLoader() {
 		return m_xeLoader;
 	}
@@ -410,6 +380,124 @@ public class Engine implements Notifier {
 		return m_config.m_verbosity;
 	}
 	
+	public boolean canInstructionPause(int routeId, String refString) {
+		Reference reference = ReferenceFactory.createReference(
+				refString, ReferenceClass.ENDPOINT_REF);
+		if (!resolveRefernece(reference)) {
+			return false;
+		}
+		return getRoute(routeId).canInstructionPause(reference);			
+	}
+		
+	public boolean removeRoute(int routeId) {
+		Route route = getRoute(routeId);
+		if (route != null) {
+			m_routes.remove(route);			
+			if (m_routes.size() == 0) {
+				Route.resetRouteCount();
+				setSelectedRoute(null);
+			} else if (m_selectedRoute.getRouteId() == routeId) {
+				m_selectedRoute = m_routes.get(m_routes.size() - 1);
+			}
+			notify(Notifier.NOTIFY_REMOVE_ROUTE, "");
+			return true;
+		}
+		return false;
+	}
+
+	public void removeAllRoutes() {
+		m_routes.clear();
+		setSelectedRoute(null);
+		Route.resetRouteCount();
+		notify(Notifier.NOTIFY_REMOVE_ROUTE, "");
+	}	
+		
+	public File getExecutable() {
+		return m_executableFile;
+	}
+
+	public void setMonitor(IProgressMonitor monitor) {
+		m_jobMonitor = monitor;
+	}
+	
+	public void provideFeedback(String feedback) {
+		if (m_jobMonitor != null)
+			m_jobMonitor.subTask(feedback);				
+	}
+	
+	public Collection<String> getFunctionsVisited() {
+		return m_functionsVisited;
+	}
+	
+	// ===================================================================== //
+	// Route Selection Methods
+	// ===================================================================== //			
+	public Route getSelectedRoute() {
+		return m_selectedRoute;
+	}
+
+	public int getSelectedRouteId() {
+		if (m_selectedRoute != null)
+			return m_selectedRoute.getRouteId();
+		else
+			return ROUTE_ID_INVALID;
+	}
+
+	public void setSelectedRoute(Route route) {
+		if (route != null) {
+			RouteTiming routeTiming = route.getRouteTiming();
+			int nodeId = routeTiming.getNodeId();
+			if (nodeId != m_nodeId)
+				setNodeId(nodeId);
+	
+			int coreId = routeTiming.getCoreId();
+			if (coreId != m_coreId)
+				setCoreId(coreId);
+		}	
+		m_selectedRoute = route;
+		notify(Notifier.NOTIFY_SELECT_ROUTE, "");
+	}
+
+	public void setSelectedRoute(int routeId) {
+		 setSelectedRoute(getRoute(routeId));
+	}
+	
+	// ===================================================================== //
+	// Requirements Methods
+	// ===================================================================== //		
+	public boolean setRouteMaxTime(int routeId, double time) {
+		Route route = getRoute(routeId);
+		if (route != null) {
+			route.getRouteTiming().setMaxTime(time);
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}
+		return false;
+	}
+
+	public boolean setRouteMaxCycles(int routeId, int cycles) {
+		Route route = getRoute(routeId);
+		if (route != null) {
+			route.getRouteTiming().setMaxCycles(cycles);
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}
+		return false;		
+	}
+	
+	public boolean unsetRouteMax(int routeId) {
+		Route route = getRoute(routeId);
+		if (route != null) {
+			route.getRouteTiming().resetMaxTime();
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}
+		return false;		
+	}	
+	
+	// ===================================================================== //
+	// Unknown (Loop Iteration) Methods
+	// ===================================================================== //		
 	public boolean setLoopIterations(int routeId, String refString, long iterations) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ANY_REF);
@@ -485,6 +573,9 @@ public class Engine implements Notifier {
 		return m_selectedRoute.canSetLoopScope(node);
 	}
 	
+	// ===================================================================== //
+	// Unknown (Instruction Time) Methods
+	// ===================================================================== //			
 	public boolean setInstructionTimeTaken(int routeId, String refString, double timeTaken) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
@@ -493,12 +584,16 @@ public class Engine implements Notifier {
 		}
 		if (getRoute(routeId).setInstructionTimeTaken(reference, timeTaken)) {
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
 		}
 		return false;
 	}
 
+	public void setInstructionTimeTaken(Node node, double timeTaken) {
+		m_selectedRoute.setInstructionTimeTaken(node, timeTaken);
+		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+	}
+	
 	public boolean unsetInstructionTimeTaken(int routeId, String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
@@ -507,12 +602,16 @@ public class Engine implements Notifier {
 		}
 		if (getRoute(routeId).unsetInstructionTimeTaken(reference)) {
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
 		}
 		return false;
 	}
-		
+
+	public void unsetInstructionTimeTaken(Node node) {
+		m_selectedRoute.unsetInstructionTimeTaken(node);
+		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+	}
+	
 	public boolean setInstructionNumCycles(int routeId, String refString, long numCycles) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
@@ -521,12 +620,16 @@ public class Engine implements Notifier {
 		}
 		if (getRoute(routeId).setInstructionNumCycles(reference, numCycles)) {
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
 		}
 		return false;
 	}
 
+	public void setInstructionNumCycles(Node node, long numCycles) {
+		m_selectedRoute.setInstructionNumCycles(node, numCycles);
+		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+	}
+	
 	public boolean unsetInstructionNumCycles(int routeId, String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
@@ -535,78 +638,19 @@ public class Engine implements Notifier {
 		}
 		if (getRoute(routeId).unsetInstructionNumCycles(reference)) {
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
-		}
-		return false;
-	}
-			
-	public boolean canInstructionPause(int routeId, String refString) {
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.ENDPOINT_REF);
-		if (!resolveRefernece(reference)) {
-			return false;
-		}
-		return getRoute(routeId).canInstructionPause(reference);			
-	}
-	
-	public boolean setRouteMaxTime(int routeId, double time) {
-		Route route = getRoute(routeId);
-		if (route != null) {
-			route.getRouteTiming().setMaxTime(time);
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
 		}
 		return false;
 	}
 
-	public boolean setRouteMaxCycles(int routeId, int cycles) {
-		Route route = getRoute(routeId);
-		if (route != null) {
-			route.getRouteTiming().setMaxCycles(cycles);
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
-		}
-		return false;		
-	}
-	
-	public boolean unsetRouteMax(int routeId) {
-		Route route = getRoute(routeId);
-		if (route != null) {
-			route.getRouteTiming().resetMaxTime();
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
-		}
-		return false;		
-	}	
-	
-	public boolean removeRoute(int routeId) {
-		Route route = getRoute(routeId);
-		if (route != null) {
-			m_routes.remove(route);			
-			if (m_routes.size() == 0) {
-				Route.resetRouteCount();
-				setSelectedRoute(null);
-			} else if (m_selectedRoute.getRouteId() == routeId) {
-				m_selectedRoute = m_routes.get(m_routes.size() - 1);
-			}
-			notify(Notifier.NOTIFY_REMOVE_ROUTE, "");
-			return true;
-		}
-		return false;
+	public void unsetInstructionNumCycles(Node node) {
+		m_selectedRoute.unsetInstructionNumCycles(node);
+		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 
-	public void removeAllRoutes() {
-		m_routes.clear();
-		setSelectedRoute(null);
-		Route.resetRouteCount();
-		notify(Notifier.NOTIFY_REMOVE_ROUTE, "");
-	}	
-		
-	public File getExecutable() {
-		return m_executableFile;
-	}
-
+	// ===================================================================== //
+	// Exclusion Methods
+	// ===================================================================== //	
 	public boolean addExclusion(String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ANY_REF);
@@ -645,7 +689,10 @@ public class Engine implements Notifier {
 	public Collection<Reference> getExclusions() {
 		return m_exclusions;
 	}
-	
+					
+	// ===================================================================== //
+	// Section Methods
+	// ===================================================================== //
 	public boolean addBranch(Reference fromRef, Reference toRef) {
 		if (!resolveRefernece(fromRef)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", fromRef.getRef()));
@@ -799,19 +846,9 @@ public class Engine implements Notifier {
 		return m_sections.getSrcLevelCommands(m_nodeId, m_coreId);
 	}
 	
-	public void setMonitor(IProgressMonitor monitor) {
-		m_jobMonitor = monitor;
-	}
-	
-	public void provideFeedback(String feedback) {
-		if (m_jobMonitor != null)
-			m_jobMonitor.subTask(feedback);				
-	}
-	
-	public Collection<String> getFunctionsVisited() {
-		return m_functionsVisited;
-	}
-	
+	// ===================================================================== //
+	// Private Methods
+	// ===================================================================== //
 	private boolean initialiseGlobalStructure(XeLoader xeLoader, Sections sections) {
 		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
 		NodeCoreCollection<ControlFlowGraph> newCfg = new NodeCoreCollection<ControlFlowGraph>();
@@ -906,7 +943,7 @@ public class Engine implements Notifier {
 		}
 		return false;
 	}
-		
+	
 	// ===================================================================== //
 	// Debug Methods
 	// ===================================================================== //

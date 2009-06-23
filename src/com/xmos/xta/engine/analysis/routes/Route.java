@@ -30,17 +30,17 @@ public class Route {
 	private int m_routeId;
 	private RouteDescription m_description;
 	private RouteTiming m_routeTiming;
-	private Node m_subRoute;
+	private Node m_node;
 	private Node m_searchNode;
 
 	public static void resetRouteCount() {
 		s_routeCount = 0;
 	}
 
-	public Route(Engine engine, Node subRoute, RouteDescription description) {
+	public Route(Engine engine, Node node, RouteDescription description) {
 		m_description = description;
 		m_routeId = s_routeCount++;
-		m_subRoute = subRoute;
+		m_node = node;
 		m_routeTiming = new RouteTiming(this, engine.getConfig(), engine.getNodeId(), engine.getCoreId());
 	}
 
@@ -62,7 +62,7 @@ public class Route {
 
 	public Set<Integer> getPcsHit() {
 		final Set<Integer> pcs = new TreeSet<Integer>();
-		m_subRoute.traverse(0, new DefaultNodeTraverser() {
+		m_node.traverse(0, new DefaultNodeTraverser() {
 			public boolean foundInstructionNode(Node node, int depth) {
 				pcs.add(node.getStartPc());
 				return true;
@@ -74,7 +74,7 @@ public class Route {
 
 	public Collection<Node> getUnknowns(final UnknownState unknownState) {
 	    final Collection<Node> unknowns = new ArrayList<Node>();
-		m_subRoute.traverse(0, new UntypedNodeTraverser() {
+	    m_node.traverse(0, new UntypedNodeTraverser() {
 	    	public boolean foundNode(Node node, int depth) {
 	    		NodeAttributes nodeAttributes = node.getAttributes();		    		
 	    		if (nodeAttributes.isUnknown() &&
@@ -89,15 +89,15 @@ public class Route {
 	
     public Node getNode(final int nodeId) {
     	m_searchNode = null;			
-    	m_subRoute.traverse(0, new UntypedNodeTraverser() {
-				public boolean foundNode(Node node, int depth) {
-					if (node.getId() == nodeId) {
-						m_searchNode = node;
-						return false;
-					}
-					return true;
+    	m_node.traverse(0, new UntypedNodeTraverser() {
+			public boolean foundNode(Node node, int depth) {
+				if (node.getId() == nodeId) {
+					m_searchNode = node;
+					return false;
 				}
-		    });
+				return true;
+			}
+		});
         return m_searchNode;   	
     }	
 		
@@ -110,9 +110,6 @@ public class Route {
 			if (setLoopIterations(node, iterations))
 				found = true;
 		}		
-		if (found) {
-			refreshDisplayedUnknowns();
-		}		
 		return found;
 	}
 
@@ -121,6 +118,7 @@ public class Route {
     		Node enclosingLoopNode = node.getEnclosingLoopNode();
 			enclosingLoopNode.getAttributes().setLoopIterations(iterations);
 			enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
+			refreshDisplayedUnknowns();
 			return true;
 		}
 		return false;
@@ -139,9 +137,6 @@ public class Route {
 			if (setLoopPathIterations(node, iterations))
 				found = true;
 		}		
-		if (found) {
-			refreshDisplayedUnknowns();			
-		}		
 		return found;		
 	}
 	
@@ -150,7 +145,11 @@ public class Route {
 			Node loopNode = node.getEnclosingLoopNode();
 			Node sectionNode = node.getEnclosingSectionNode();
 			Node optionNode = node.getEnclosingOptionNode();
-			return sectionNode.getAttributes().setLoopPathIterations(loopNode, optionNode, iterations);
+			if (sectionNode.getAttributes().setLoopPathIterations(loopNode, optionNode, iterations)) {
+				refreshDisplayedUnknowns();		
+				return true;
+			}		
+			return false;		
 		}
 		return false;		
 	}
@@ -193,53 +192,61 @@ public class Route {
 	public boolean setInstructionTimeTaken(Reference reference, double timeTaken) {
 		boolean found = false;
 	    for (Node node : getReferencedNodes(reference)) {
-	    	node.getAttributes().setInstructionTimeTaken(timeTaken);
-			node.getAttributes().setUnknownState(UnknownState.KNOWN);	
+	    	setInstructionTimeTaken(node, timeTaken);
 	    	found = true;
 		}
-		if (found) {
-			refreshDisplayedUnknowns();			
-		}		
 		return found;
+	}
+	
+	public void setInstructionTimeTaken(Node node, double timeTaken) {
+    	node.getAttributes().setInstructionTimeTaken(timeTaken);
+		node.getAttributes().setUnknownState(UnknownState.KNOWN);	
+		refreshDisplayedUnknowns();	
 	}
 
 	public boolean unsetInstructionTimeTaken(Reference reference) {
 		boolean found = false;
 	    for (Node node : getReferencedNodes(reference)) {
-	    	node.getAttributes().unsetInstructionTimeTaken();
-			node.getAttributes().setUnknownState(UnknownState.UNKNOWN);	
+	    	unsetInstructionTimeTaken(node);
 	    	found = true;
 		}
-		if (found) {
-			refreshDisplayedUnknowns();
-		}		
 		return found;
+	}
+
+	public void unsetInstructionTimeTaken(Node node) {
+    	node.getAttributes().unsetInstructionTimeTaken();
+		node.getAttributes().setUnknownState(UnknownState.UNKNOWN);	
+		refreshDisplayedUnknowns();
 	}
 	
 	public boolean setInstructionNumCycles(Reference reference, long numCycles) {
 		boolean found = false;
 	    for (Node node : getReferencedNodes(reference)) {
-	    	node.getAttributes().setInstructionNumCycles(numCycles);
-			node.getAttributes().setUnknownState(UnknownState.KNOWN);	
+	    	setInstructionNumCycles(node, numCycles);
 	    	found = true;
 		}
-		if (found) {
-			refreshDisplayedUnknowns();			
-		}		
 		return found;
+	}
+
+	public void setInstructionNumCycles(Node node, long numCycles) {
+    	node.getAttributes().setInstructionNumCycles(numCycles);
+		node.getAttributes().setUnknownState(UnknownState.KNOWN);	
+		refreshDisplayedUnknowns();		
 	}
 	
 	public boolean unsetInstructionNumCycles(Reference reference) {
 		boolean found = false;
         for (Node node : getReferencedNodes(reference)) {
-        	node.getAttributes().unsetInstructionNumCycles();
-			node.getAttributes().setUnknownState(UnknownState.UNKNOWN);	
+        	unsetInstructionNumCycles(node);
 	    	found = true;
 		}
-		if (found) {
-			refreshDisplayedUnknowns();			
-		}		
 		return found;
+	}
+
+	public void unsetInstructionNumCycles(Node node) {
+    	node.getAttributes().unsetInstructionNumCycles();
+		node.getAttributes().setUnknownState(UnknownState.UNKNOWN);			
+		refreshDisplayedUnknowns();			
 	}
 		
 	public boolean canInstructionPause(Reference reference) {
@@ -255,7 +262,7 @@ public class Route {
 	}
 	
 	private void refreshDisplayedUnknowns() {
-		refreshDisplayedUnknowns(m_subRoute);
+		refreshDisplayedUnknowns(m_node);
 	}
 	
 	private void refreshDisplayedUnknowns(Node node) {	
@@ -290,13 +297,11 @@ public class Route {
 	private Collection<Node> getReferencedNodes(Reference reference) {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		Collection<Node> referencedNodes = new ArrayList<Node>();
-		referencedNodes.addAll(referenceMatcher.getNodes(m_subRoute, reference));
+		referencedNodes.addAll(referenceMatcher.getNodes(m_node, reference));
 		return referencedNodes;		
 	}
 
-	public Node getSubRoute() {
-		return m_subRoute;
+	public Node getNode() {
+		return m_node;
 	}
-	
-
 }

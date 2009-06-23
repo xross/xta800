@@ -800,9 +800,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
      	m_setInstructionTimeAction = new Action("Set instruction time") {
      		public void run() {
-     			Engine engine = GuiEngine.getEngine();
-				Route route = engine.getSelectedRoute();
-     			new InstructionTime(m_parent.getShell(), engine, m_clickCodeRef, route);
+     			// TODO new InstructionTime(m_parent.getShell(), m_clickCodeRef);
      		}
      	};
      	setAction(SetInstructionTimeID, m_setInstructionTimeAction);

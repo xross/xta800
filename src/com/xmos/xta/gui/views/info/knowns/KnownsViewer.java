@@ -39,12 +39,12 @@ import com.xmos.xta.gui.views.info.InfoSorter;
 
 public class KnownsViewer {
 	private TableViewer m_resolvedUnknownsViewer;
-	private List<Reference> m_selectedCodeRefs;
+	private List<Node> m_selectedNodes;
 	private Action m_setInstructionTimeAction;
 	private Action m_clearInstructionTimesAction;
 
 	public KnownsViewer(Composite parent, IWorkbenchPartSite site, TabFolder folders) {
-		m_selectedCodeRefs = new ArrayList<Reference>();
+		m_selectedNodes = new ArrayList<Node>();
 
 		TabItem tab = new TabItem(folders, SWT.NONE);
 		tab.setText("Set values");
@@ -101,8 +101,14 @@ public class KnownsViewer {
 	private void setupMouseListeners(IWorkbenchPartSite site, final Composite parent) {
 		m_resolvedUnknownsViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
-				if (m_selectedCodeRefs.size() == 1) {
-					GuiEngine.setCodePoint(m_selectedCodeRefs.get(0));
+				if (m_selectedNodes.size() == 1) {					
+					Reference ref = ReferenceFactory.createReference("0x" + 
+							Integer.toHexString(m_selectedNodes.get(0).getStartPc()), ReferenceClass.LABEL_REF);
+					
+					Engine engine = GuiEngine.getEngine();
+					ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
+					
+					GuiEngine.setCodePoint(ref);
 					GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
 				}
 			}
@@ -111,22 +117,18 @@ public class KnownsViewer {
 		m_resolvedUnknownsViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection selection = event.getSelection();
-				Engine engine = GuiEngine.getEngine();
 
 				boolean enabled = ((IStructuredSelection) selection).size() > 0;
 				m_clearInstructionTimesAction.setEnabled(enabled);
 				m_setInstructionTimeAction.setEnabled(enabled);
 
-				m_selectedCodeRefs.clear();
+				m_selectedNodes.clear();
 				for (Object object : ((IStructuredSelection) selection).toList()) {
 					Node node = (Node)object;
 					
 					switch (node.getAttributes().getUnknownType()) {
 					case INSTRUCTION_TIME:
-						Reference ref = ReferenceFactory.createReference("0x" + 
-								Integer.toHexString(node.getStartPc()), ReferenceClass.LABEL_REF);
-						ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
-						m_selectedCodeRefs.add(ref);
+						m_selectedNodes.add(node);
 						break;
 						
 					case LOOP_ITERATIONS:
@@ -148,9 +150,8 @@ public class KnownsViewer {
 		// Create the action
 		m_clearInstructionTimesAction = new Action() { 
 			public void run() {
-				for (Reference ref : m_selectedCodeRefs) {
-					int routeId = GuiEngine.getEngine().getSelectedRouteId();
-					GuiEngine.getEngine().unsetInstructionTimeTaken(routeId, ref.getRef());
+				for (Node node : m_selectedNodes) {
+					GuiEngine.getEngine().unsetInstructionTimeTaken(node);
 				}
 			}
 		}; 
@@ -160,8 +161,7 @@ public class KnownsViewer {
 
 		m_setInstructionTimeAction = new Action() { 
 			public void run() {
-				Route route = GuiEngine.getEngine().getSelectedRoute();
-     			new InstructionTime(parent.getShell(), GuiEngine.getEngine(), m_selectedCodeRefs, route);
+     			new InstructionTime(parent.getShell(), m_selectedNodes);
 			}
 		}; 
 		m_setInstructionTimeAction.setText("Set instruction time");

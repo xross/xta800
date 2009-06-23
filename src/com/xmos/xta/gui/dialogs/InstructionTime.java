@@ -18,55 +18,36 @@ import org.eclipse.swt.widgets.Text;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.Route;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.gui.GuiEngine;
 
 public class InstructionTime extends XtaDialog {
-    Engine m_engine;
-    List<Reference> m_refs;
-    
+    List<Node> m_nodes;    
     boolean m_valueChanged;
-    List<Boolean> m_wasSet;
-    List<Long> m_originalCycles;
-	
     Text m_ns;
-    Text m_cycles;
-    
+    Text m_cycles;    
     ModifyListener m_nsListener;
     ModifyListener m_cyclesListener;
     
-    public InstructionTime(Shell parent, final Engine engine, Reference codeReference, Route route) {
+    public InstructionTime(Shell parent, Node node) {
     	super(parent);
-    	m_engine = engine;
-    	m_refs = new ArrayList<Reference>();
-    	m_refs.add(codeReference);
-    	init(route);
+    	m_nodes = new ArrayList<Node>();
+    	m_nodes.add(node);
+    	initialise();
     }
 
-	public InstructionTime(Shell parent, final Engine engine, List<Reference> codeReferences, Route route) {
+	public InstructionTime(Shell parent, List<Node> nodes) {
     	super(parent);
-    	assert(codeReferences.size() > 0);
-    	m_engine = engine;
+    	assert(nodes.size() > 0);
     	// Create a copy since the original list can be emptied by this dialog
-    	m_refs = new ArrayList<Reference>();
-    	m_refs.addAll(codeReferences);
-    	init(route);
+    	m_nodes = new ArrayList<Node>();
+    	m_nodes.addAll(nodes);
+    	initialise();
     }
 
-	private void init(Route route) {
-//TODO   	Unknowns unknowns = route.getUnknowns();
-    	
+	private void initialise() {
     	m_valueChanged = false;
-    	m_wasSet = new ArrayList<Boolean>();
-    	m_originalCycles = new ArrayList<Long>();
-    	for (Reference ref : m_refs) {
-//    		if (unknowns.isUnknownInstructionTime(ref.getPc())) {
-//   			m_wasSet.add(false);
-//    		} else {
-//    			m_wasSet.add(true);
- //   		}
-//TODO   		
-//    		m_originalCycles.add(m_engine.getInstructionNumCycles(ref.getPc()));
-    	}
     	open();
 	}
 
@@ -85,10 +66,11 @@ public class InstructionTime extends XtaDialog {
 		Group engineGroup = createGroup(container, "PC", 1, 2);
 		Label label = new Label(engineGroup, SWT.SHADOW_NONE | SWT.CENTER);
 		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		String labelText = "";
-		for (Reference ref : m_refs) {
+
+		String labelText = "Hello";
+/* TODO		for (Reference ref : m_refs) {
 			labelText += " " + ref.getRef();
-		}
+		}*/
 		label.setText(labelText);
 
 		Group nsGroup = createGroup(container, "ns", 1, 1);
@@ -98,9 +80,8 @@ public class InstructionTime extends XtaDialog {
 	    m_nsListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				try {
-					for (Reference ref : m_refs) {
-						//TODO
-						//m_engine.setInstructionTimeTaken(ref, Double.parseDouble(m_ns.getText()));
+					for (Node node : m_nodes) {
+						GuiEngine.getEngine().setInstructionTimeTaken(node, Double.parseDouble(m_ns.getText()));
 					}
 					m_valueChanged = true;
 					updateCyclesValue();
@@ -117,9 +98,8 @@ public class InstructionTime extends XtaDialog {
 	    m_cyclesListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				try {
-					for (Reference ref : m_refs) {
-						//TODO
-						//m_engine.setInstructionNumCycles(ref, Integer.parseInt(m_cycles.getText()));
+					for (Node node : m_nodes) {
+						GuiEngine.getEngine().setInstructionNumCycles(node, Integer.parseInt(m_cycles.getText()));
 					}
 					m_valueChanged = true;
 					updateNsValue();
@@ -146,15 +126,13 @@ public class InstructionTime extends XtaDialog {
 
 	private void updateNsValue() {
 		m_ns.removeModifyListener(m_nsListener);
-		//TODO
-		//m_ns.setText(Double.toString(m_engine.getInstructionTimeTaken(m_refs.get(0).getPc())));
+		// TODO m_ns.setText(Double.toString(GuiEngine.getEngine().getInstructionTimeTaken(m_nodes.get(0))));
 		m_ns.addModifyListener(m_nsListener);
 	}			
 
 	private void updateCyclesValue() {
 		m_cycles.removeModifyListener(m_cyclesListener);
-		//TODO
-		//m_cycles.setText(Long.toString(m_engine.getInstructionNumCycles(m_refs.get(0).getPc())));
+		// TODO m_cycles.setText(Long.toString(GuiEngine.getEngine().getInstructionNumCycles(m_nodes.get(0))));
 		m_cycles.addModifyListener(m_cyclesListener);
 	}			
 
@@ -162,25 +140,29 @@ public class InstructionTime extends XtaDialog {
     	if (id == IDialogConstants.CANCEL_ID) {
     		if (m_valueChanged) {
     			int index = 0;
-    			for (Reference ref : m_refs) {
-    				//TODO
-    				//m_engine.setInstructionNumCycles(ref, m_originalCycles.get(index));
+/* TODO    			
+    			for (Node node : m_nodes) {
+    				int selectedRouteId = GuiEngine.getEngine().getSelectedRouteId();
+    				GuiEngine.getEngine().setInstructionNumCycles(
+    						selectedRouteId, node, m_originalCycles.get(index));
     				
     				if (!m_wasSet.get(index)) {
-    					//TODO
-    					//m_engine.unsetInstructionTime(ref.getPc());
+    					GuiEngine.getEngine().unsetInstructionTime(
+    							selectedRouteId, ref.getRef());
     				}
     				index++;
-    			}
+    			} */
     		}
     	} else if (id == IDialogConstants.OK_ID) {
     		if (!m_valueChanged) {
 	    		int index = 0;
+/* TODO	    		
 	    		for (Reference ref : m_refs) {
-	    			//TODO
-	    			//m_engine.setInstructionNumCycles(ref, m_originalCycles.get(index));
+    				int selectedRouteId = GuiEngine.getEngine().getSelectedRouteId();
+    				GuiEngine.getEngine().setInstructionNumCycles(
+    						selectedRouteId, ref.getRef(), m_originalCycles.get(index));
 					index++;
-	    		}
+	    		}*/
     		}
     	}
     	super.buttonPressed(id);

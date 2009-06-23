@@ -79,9 +79,9 @@ public class SelectedRouteViewer {
 	public void initialise() {
 		Route selectedRoute = GuiEngine.getEngine().getSelectedRoute();
 		if (selectedRoute != null) {
-			List<Node> subRouteNodes = new LinkedList<Node>();
-			subRouteNodes.add(selectedRoute.getSubRoute());
-			PathNode hiddenRouteNode = new PathNode(subRouteNodes);
+			List<Node> nodes = new LinkedList<Node>();
+			nodes.add(selectedRoute.getNode());
+			PathNode hiddenRouteNode = new PathNode(nodes);
 			
 			m_viewer.setInput(hiddenRouteNode);
 			ColumnViewerToolTipSupport.enableFor(m_viewer, ToolTip.NO_RECREATE);
@@ -109,7 +109,7 @@ public class SelectedRouteViewer {
 			// Add the nodes hitting the pc
 			Route selectedRoute = GuiEngine.getEngine().getSelectedRoute();
 			if (selectedRoute != null) {								
-				selectedRoute.getSubRoute().traverse(0, new UntypedNodeTraverser() {
+				selectedRoute.getNode().traverse(0, new UntypedNodeTraverser() {
 					public boolean foundNode(Node node, int depth) {
 						if (node.getPCs().contains(pc)) {
 							selectedNodes.add(node);
