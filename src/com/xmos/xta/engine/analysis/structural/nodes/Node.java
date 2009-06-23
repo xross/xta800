@@ -53,6 +53,10 @@ public abstract class Node implements Comparable<Node>{
 	public abstract void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration);
 	public abstract Set<Integer> getPCs();	
 	public abstract LinkedList<XtaInstruction> getInstructions();
+	
+	/**
+	 * This returns all the instruction nodes that could possible be contained within this node
+	 */
 	public abstract Collection<Node> getContainedNodes();	
 	public abstract int getStartPc();
 	
@@ -88,20 +92,11 @@ public abstract class Node implements Comparable<Node>{
 		m_id = s_numNodes++;
 	}
 	
-	
-	
-	
 	public int getId() {
 		return m_id;
 	}
 
 	public int compareTo(Node node) {	
-		if( getAttributes() == null){
-			System.out.println("eek " + this);
-		}
-		if(node.getAttributes() == null){
-			System.out.println("eek " + node);
-		}
 		
 		double thisTimeTaken = getAttributes().getTimeTaken(Case.WORST, false);
 		double nodeTimeTaken = node.getAttributes().getTimeTaken(Case.WORST, false);

@@ -1,5 +1,5 @@
 package com.xmos.xta.gui.views.structure;
-/*
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -9,16 +9,13 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 import com.xmos.xta.gui.GuiEngine;
-import com.xmos.xta.gui.nodes.Node;
 import com.xmos.xta.gui.views.ZoomedCanvasView;
-import com.xmos.xta.gui.views.viewnode.StructureNode;
 
 public class StructureView extends ZoomedCanvasView {
 
 	public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.gui.views.structure.Structure";
 
-    private boolean m_weightIsCumulative;
     private int m_numTreeNodes;
 
 	public StructureView() {
@@ -33,10 +30,45 @@ public class StructureView extends ZoomedCanvasView {
 		m_borderY = 10;
 		m_lineWidth = 1;
 		m_numTreeNodes = 0;
-		m_weightIsCumulative = false;
 	}
 
-    protected void buildClickAreas() {
+	@Override
+	protected void annotateTree(boolean isSelctionChange) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void buildClickAreas() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void drawCanvas(GC gc) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void initialiseTree() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void nodeCoreChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void updatePixelsXy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+/*    protected void buildClickAreas() {
     	m_clickAreas.clear();
     	if (m_rootNode != null) {
     		m_rootNode.getStructureNode().buildClickAreas(m_clickAreas);
@@ -149,12 +181,6 @@ public class StructureView extends ZoomedCanvasView {
     		}
         }
 
-        if (m_weightIsCumulative) {
-        	structureNode.setWeight(weight + childrenWeight);
-        } else {
-        	structureNode.setWeight(weight);
-        }
-        
     	structureNode.setLineWidth(m_lineWidth);
         structureNode.setIsSelected(selected);
    		return selected;
@@ -182,6 +208,5 @@ public class StructureView extends ZoomedCanvasView {
 		m_weightIsCumulative = cumulative;
 		refreshView();
 		annotateTree(false);
-	}
+	}*/
 }
-*/

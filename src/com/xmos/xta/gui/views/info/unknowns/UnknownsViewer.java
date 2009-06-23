@@ -138,8 +138,8 @@ public class UnknownsViewer {
 
 				m_selectedNodes.clear();
 				
-				ArrayList<Reference> selectedTimeRefs = new ArrayList<Reference>();
-				ArrayList<Reference> selectedLoopRefs = new ArrayList<Reference>();
+				ArrayList<Reference> m_selectedTimeRefs = new ArrayList<Reference>();
+				ArrayList<Reference> m_selectedLoopRefs = new ArrayList<Reference>();
 				
 				for (Object object : ((IStructuredSelection)selection).toList()) {
 					Node node = (Node)object;
@@ -152,27 +152,26 @@ public class UnknownsViewer {
 					
 					switch (node.getAttributes().getUnknownType()) {
 					case INSTRUCTION_TIME:
-						selectedTimeRefs.add(ref);
+						m_selectedTimeRefs.add(ref);
 						break;
 						
 					case LOOP_ITERATIONS:
-						selectedLoopRefs.add(ref);
+						m_selectedLoopRefs.add(ref);
 						break;
 					}
 				}
 				
 				m_setLoopIterationsAction.setEnabled(false);
 				m_setInstructionTimeAction.setEnabled(false);
-/* TODO				
-				if ((selectedTimeRefs.size() == 0) && (selectedLoopRefs.size() == 1)) {
-					selectedCodeRefs.addAll(selectedLoopRefs);
+		/* TODO		
+				if ((m_selectedTimeRefs.size() == 0) && (m_selectedLoopRefs.size() == 1)) {
+					m_selectedCodeRefs.addAll(m_selectedLoopRefs);
 					m_setLoopIterationsAction.setEnabled(true);
 					
-				} else if ((selectedTimeRefs.size() > 0) && (m_selectedLoopRefs.size() == 0)) {
+				} else if ((m_selectedTimeRefs.size() > 0) && (m_selectedLoopRefs.size() == 0)) {
 					m_selectedCodeRefs.addAll(m_selectedTimeRefs);
 					m_setInstructionTimeAction.setEnabled(true);
-				}
-				 				*/
+				} 	*/			
 			}			
 		});
 		

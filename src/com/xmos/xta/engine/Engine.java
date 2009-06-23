@@ -174,6 +174,7 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean loadExecutable(File executableFile, FileFinder fileFinder) {
+		
     	try {
     		executableFile = executableFile.getCanonicalFile();
 		} catch (IOException e) {
@@ -202,6 +203,7 @@ public class Engine implements Notifier {
 		m_sections = sections;
 		m_nodeId = 0;
 		m_coreId = 0;			
+		m_routes.clear();
 		
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());		
 		return true;
@@ -296,14 +298,15 @@ public class Engine implements Notifier {
 			notify(Notifier.NOTIFY_ERROR, "No valid paths of execution");
 			return false;
 		} else {
+			int currentSize = m_routes.size();
 			for(Node subRoute : routeConstructor.getSubRoutes()){
 				Route route = new Route(this, subRoute, routeDescription);
 				m_routes.add(route);
 				
 			}
-			if(!m_routes.isEmpty()){
-				setSelectedRoute(m_routes.get(0));
-				notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(0).getRouteId()));
+			if(!m_routes.isEmpty() && !routeConstructor.getSubRoutes().isEmpty()){
+				setSelectedRoute(m_routes.get(currentSize));
+				notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
 			} else {
 				notify(Notifier.NOTIFY_WARNING, "No paths added");
 			}
@@ -638,11 +641,12 @@ public class Engine implements Notifier {
 		}
 		if (getRoute(routeId).unsetInstructionNumCycles(reference)) {
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
 		}
 		return false;
 	}
-
+			
 	public void unsetInstructionNumCycles(Node node) {
 		m_selectedRoute.unsetInstructionNumCycles(node);
 		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
