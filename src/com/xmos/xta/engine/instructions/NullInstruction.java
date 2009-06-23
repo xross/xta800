@@ -15,6 +15,5 @@ public class NullInstruction extends XtaInstruction {
     public String getOperandString() {
     	return "";
     }
-
 }
 

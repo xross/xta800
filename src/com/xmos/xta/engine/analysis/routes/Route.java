@@ -43,11 +43,15 @@ public class Route {
 		m_node = node;
 		m_routeTiming = new RouteTiming(this, engine.getConfig(), engine.getNodeId(), engine.getCoreId());
 	}
-
+	
 	public int getRouteId() {
 		return m_routeId;
 	}
 
+	public Node getNode() {
+		return m_node;
+	}
+	
 	public String getDescription() {
 		return m_description.getDescription();
 	}
@@ -269,6 +273,13 @@ public class Route {
 		return canPause;
 	}
 	
+	public Collection<Node> getReferencedNodes(Reference reference) {
+		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
+		Collection<Node> referencedNodes = new ArrayList<Node>();
+		referencedNodes.addAll(referenceMatcher.getNodes(m_node, reference));
+		return referencedNodes;		
+	}
+	
 	private void refreshDisplayedUnknowns() {
 		refreshDisplayedUnknowns(m_node);
 	}
@@ -301,15 +312,4 @@ public class Route {
 			parent = parent.getParent();		    
 		}
 	}		
-	
-	private Collection<Node> getReferencedNodes(Reference reference) {
-		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
-		Collection<Node> referencedNodes = new ArrayList<Node>();
-		referencedNodes.addAll(referenceMatcher.getNodes(m_node, reference));
-		return referencedNodes;		
-	}
-
-	public Node getNode() {
-		return m_node;
-	}
 }
