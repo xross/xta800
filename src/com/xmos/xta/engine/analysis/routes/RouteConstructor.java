@@ -181,7 +181,7 @@ public class RouteConstructor {
 		}
 		return seenEndPoint;
 	}
-
+/*
 	private boolean doesNotContainAnEndpoint(Node parent, Collection<Node> endNodes) {
 		for(Node endNode : endNodes){
 			if(parent.getContainedNodes().contains(endNode)){
@@ -190,7 +190,7 @@ public class RouteConstructor {
 		}
 		return true;
 	}
-
+*/
 	private boolean explore(Node node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
 		Set<Node> nodes = new TreeSet<Node>(endNodes);
 		nodes.retainAll(node.getContainedNodes());
