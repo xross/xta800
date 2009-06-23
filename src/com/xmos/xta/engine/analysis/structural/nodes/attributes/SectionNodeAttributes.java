@@ -68,11 +68,17 @@ public class SectionNodeAttributes extends NodeAttributes {
    		// if there is a remainder, checks that we have at least one option
    		// that hasn't had its iterations set...
    		long remainder = loopIterations - newTotal;
+   		boolean allocateRemainderToOptionalSection = false;
    		if (remainder > 0) {
    			List<Node> unsetNodes = sectionNode.getAllUnsetOptions(); 
    			unsetNodes.remove(optionNode);
-   			if (unsetNodes.size() == 0)
-   	   			return false;
+   			if (unsetNodes.size() == 0) {
+   				if (sectionNode.isSectionOptional()) {
+   					allocateRemainderToOptionalSection = true;
+   				} else {
+   	   	   			return false;   					
+   				}
+   			}
    		}
 
    		// Sets the iterations on the given section option node..
@@ -87,7 +93,7 @@ public class SectionNodeAttributes extends NodeAttributes {
    		
    		// Allocates the remainder to the best/worst case of the options
    		// that have not been explicitly set by the user.
-   		if (remainder > 0) {
+   		if ((remainder > 0) && !allocateRemainderToOptionalSection) {
    			sectionNode.getOption(Case.WORST, true).getAttributes().setLoopIterations(Case.WORST, remainder);
    			sectionNode.getOption(Case.BEST, true).getAttributes().setLoopIterations(Case.BEST, remainder);
    		}   	
