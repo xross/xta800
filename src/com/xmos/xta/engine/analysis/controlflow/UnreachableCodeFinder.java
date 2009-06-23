@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
 public class UnreachableCodeFinder {
@@ -23,7 +24,8 @@ public class UnreachableCodeFinder {
 	 * It needs removing from the graph so that functions 
 	 * and threads don't have invalid predecessors.
 	 */
-	public void analyseReachable(InstructionDecoder id, Collection<Node> threadStarts, Collection<Node> functionStarts){
+	public void analyseReachable(InstructionDecoder id, Collection<InstructionNode> threadStarts, 
+			Collection<InstructionNode> functionStarts){
 		m_unreachable.clear();
 		m_unreachable.addAll(id.getInstructions());
 		Set<Node> reachable = new TreeSet<Node>();

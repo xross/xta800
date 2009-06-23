@@ -17,7 +17,7 @@ import com.xmos.xta.engine.instructions.XtaInstructionDecoder;
 public class InstructionDecoder {
 	private int m_nodeId;
 	private int m_coreId;
-	private Map<Integer, Node> m_decodedInstructions;
+	private Map<Integer, InstructionNode> m_decodedInstructions;
 	private XeLoader m_xeLoader;
 	private Config m_config;
 	
@@ -26,7 +26,7 @@ public class InstructionDecoder {
 		m_coreId = coreId;
 		m_xeLoader = xeLoader;
 		m_config = config;
-		m_decodedInstructions = new TreeMap<Integer, Node>();
+		m_decodedInstructions = new TreeMap<Integer, InstructionNode>();
 	}
 	
 	public boolean decode(){		
@@ -48,7 +48,7 @@ public class InstructionDecoder {
 		            inst.setFunctionName(symbolTable.functionName(pc)); 
 		            inst.setFunctionOffset(symbolTable.functionOffset(pc));
 		            
-		            Node instNode = new InstructionNode(inst);
+		            InstructionNode instNode = new InstructionNode(inst);
 		            Node prev = m_decodedInstructions.put(pc, instNode);
 		            assert(prev == null);
 		            pc += inst.getNumBytes();
@@ -58,11 +58,11 @@ public class InstructionDecoder {
 		return true;
 	}
 	
-	public Collection<Node> getInstructions(){
+	public Collection<InstructionNode> getInstructions(){
 		return m_decodedInstructions.values();
 	}
 	
-	public Node getNode(int pc){
+	public InstructionNode getNode(int pc){
 		return m_decodedInstructions.get(pc);
 	}
 }

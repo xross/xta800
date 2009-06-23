@@ -7,6 +7,7 @@ import com.xmos.isa.Instruction;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.Notifier;
+import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.instructions.InstructionMnemonics;
@@ -18,12 +19,12 @@ public class SuccessorAdder {
 	private Map<Integer, TreeSet<Integer>> m_branchMap;
 	private MemoryImage m_mi;
 	private int m_cpPointer;
-	private Collection<Node> m_threadEnds;
+	private Collection<InstructionNode> m_threadEnds;
 	private InstructionMnemonics m_mnenonics;
 	private Notifier m_notifier;
 
 	public SuccessorAdder(int nodeId, int coreId, InstructionDecoder instDecoder, Sections sections,
-			Collection<Node> threadEnds, XeLoader xeLoader, Notifier notifier) {
+			Collection<InstructionNode> threadEnds, XeLoader xeLoader, Notifier notifier) {
 		m_threadEnds = threadEnds;
 		m_branchMap = sections.getBranches(nodeId, coreId);
 		m_instDecoder = instDecoder;

@@ -2,25 +2,25 @@ package com.xmos.xta.engine.analysis.controlflow;
 
 import java.util.Collection;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
-import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 
 public class ControlFlowGraph {
-	private Collection<Node> m_threadStartInstructions;
-	private Collection<Node> m_functionStartInstructions;
+	private Collection<InstructionNode> m_threadStartInstructions;
+	private Collection<InstructionNode> m_functionStartInstructions;
 	private Collection<FunctionNode> m_allFunctions;
 	
-	public ControlFlowGraph(Collection<Node> threadStarts,  
-			Collection<Node> functionStarts, Collection<FunctionNode> allFunctions) {
+	public ControlFlowGraph(Collection<InstructionNode> threadStarts,  
+			Collection<InstructionNode> functionStarts, Collection<FunctionNode> allFunctions) {
 		m_functionStartInstructions = functionStarts;
 		m_threadStartInstructions = threadStarts;
 		m_allFunctions = allFunctions;
 	}
 	
-	public Collection<Node> getFunctionStartInstructions(){
+	public Collection<InstructionNode> getFunctionStartInstructions(){
 		return m_functionStartInstructions;
 	}
 	
-	public Collection<Node> getThreadStartInstructions(){
+	public Collection<InstructionNode> getThreadStartInstructions(){
 		return m_threadStartInstructions;
 	}
 		

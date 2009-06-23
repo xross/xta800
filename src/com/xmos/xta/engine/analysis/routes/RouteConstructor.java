@@ -9,9 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.netbeans.modules.cnd.dwarfdump.dump.DumpDwarf;
-
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
 import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
@@ -351,50 +348,13 @@ public class RouteConstructor {
 			}
 			m_excludedRouteNodes.remove(excludedNode);
 			workingSet.remove(excludedNode);
-			
 		}
-		
 	}
-
-	private Set<Integer> getEndPcs() {
-		Set<Integer> endPcs = new TreeSet<Integer>();
-		endPcs.add(m_description.getEndPoint().getPc());
-		return endPcs;
-	}
-
-	private Set<Integer> getStartPcs() {
-		Set<Integer> startPcs = new TreeSet<Integer>();
-		startPcs.add(m_description.getStartPoint().getPc());
-		
-		return startPcs;
-	}
-	
-	
 
 	private void makeConnection(Node node, Node parent) {
 		if (parent != null) {
 			CommonMethods.connect(node, parent);
 		}
-	}
-	
-	private Map<Integer, TreeSet<Node>> buildPcMap(StructureGraph structureGraph) {
-		final Map<Integer, TreeSet<Node>> pcToNodes = new TreeMap<Integer, TreeSet<Node>>();
-		
-		for (Node node : structureGraph.getThreads()) {
-			node.traverse(0, new DefaultNodeTraverser() {
-				
-				public boolean foundInstructionNode(Node node, int depth) {
-					TreeSet<Node> map = pcToNodes.get(node.getStartPc());
-					if (map == null) {
-						map = new TreeSet<Node>();
-					}
-					map.add(node);
-					pcToNodes.put(node.getStartPc(), map);
-					return true;
-				}
-			});
-		}
-		return pcToNodes;
 	}
 
 	private Map<String, TreeSet<Node>> buildFunctionMap(StructureGraph structureGraph) {
