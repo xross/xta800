@@ -28,6 +28,9 @@ public class InstructionNodeAttributes extends NodeAttributes {
 	}
 	
 	public long getNumFNops(Case c, boolean ignoreIterations) {
+		if (m_instruction.isFnop()) {
+			return 1;
+		}
 		return 0;
 	}
 	

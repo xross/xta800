@@ -917,8 +917,8 @@ public class Engine implements Notifier {
 					return false;
 				
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
-			}		
-		}		
+			}
+		}
 		m_instructionDecoder = newInstructionDecoder;
 		m_controlFlowGraph = newCfg;
 		m_structuralGraph = newStructuralGraph;
