@@ -57,7 +57,6 @@ public class Loop extends XtaDialog {
 		
 		spinner.setMinimum(0);		
 		spinner.setEnabled(true);
-		spinner.setMaximum(100);		
 		spinner.setSelection(0);
 		spinner.setIncrement(1);
 		spinner.setPageIncrement(10);
@@ -76,7 +75,7 @@ public class Loop extends XtaDialog {
     
     protected void buttonPressed(int id) {
     	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {
-    		GuiEngine.getEngine().getSelectedRoute().setLoopIterations(m_node, m_iterations);
+    		GuiEngine.getEngine().setLoopIterations(m_node, m_iterations);
     	}
     	super.buttonPressed(id);
     }

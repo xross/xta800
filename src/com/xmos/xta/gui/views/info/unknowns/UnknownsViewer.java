@@ -189,8 +189,13 @@ public class UnknownsViewer {
 
 		m_setLoopIterationsAction = new Action() { 
 			public void run() {
-				Route route = GuiEngine.getEngine().getSelectedRoute();
-     			//TODO new Loop(parent.getShell(), route);
+				ISelection selection = m_unknownsViewer.getSelection();
+		        if (selection instanceof IStructuredSelection) {	            
+		            final Object object = ((IStructuredSelection)selection).getFirstElement();
+		            if (object instanceof Node) {				
+     			        new Loop(parent.getShell(), (Node)object);
+		            }
+		        }
 			}
 		};
 		m_setLoopIterationsAction.setText("Set iterations");
