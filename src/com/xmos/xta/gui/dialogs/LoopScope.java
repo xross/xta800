@@ -12,20 +12,17 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.gui.GuiEngine;
 
 public class LoopScope extends XtaDialog {
-	
+	private Node m_node;
 	private boolean m_scope;
 
-// TODO	
-//	LoopNode m_loopNode;
-	
     public LoopScope(Shell parent, Node node) {
     	super(parent);
-//    	m_loopNode = loopNode;
-//    	m_scope = loopNode.getScope();
+    	m_node = node;
+    	m_scope = false;
     	open();
     }
 
@@ -36,13 +33,15 @@ public class LoopScope extends XtaDialog {
 
     protected Control createDialogArea(Composite parent) {
     	Composite container = (Composite) super.createDialogArea(parent);
+    	
 	    final GridLayout gridLayout = new GridLayout();
 	    gridLayout.numColumns = 3;
 	    container.setLayout(gridLayout);
-//		createAbsoluteCountControl(container, m_loopNode);
+	    
+		createAbsoluteCountControl(container);
     	return container;
     }
-/*
+
 	private void createControlLabel(Composite parent, String str) {
 		Label label = new Label(parent, SWT.NONE);		        
 	    label.setLayoutData(new GridData(GridData.END, GridData.CENTER,
@@ -50,7 +49,7 @@ public class LoopScope extends XtaDialog {
         label.setText(str);
 	}
 
-    private void createAbsoluteCountControl(Composite parent, final LoopNode m_loopNode) {
+    private void createAbsoluteCountControl(Composite parent) {
 		createControlLabel(parent, "Make count absolute:");
 		final Button button = new Button(parent, SWT.CHECK);
 		button.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
@@ -71,9 +70,8 @@ public class LoopScope extends XtaDialog {
     
     protected void buttonPressed(int id) {
     	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {
-			m_loopNode.setScope(m_scope);
+    		GuiEngine.getEngine().setLoopScope(m_node, m_scope);  
     	}
     	super.buttonPressed(id);
-    }
-*/    
+    } 
 }

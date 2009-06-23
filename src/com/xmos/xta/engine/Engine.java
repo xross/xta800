@@ -67,13 +67,11 @@ public class Engine implements Notifier {
 	private NodeCoreCollection<ControlFlowGraph> m_controlFlowGraph;
 	private NodeCoreCollection<InstructionDecoder> m_instructionDecoder;
 	
-	public Engine(Config config) {
-		
+	public Engine(Config config) {		
 		m_xeObjects = new NodeCoreCollection<XeObject>();
 		m_structuralGraph = new NodeCoreCollection<StructureGraph>();
 		m_controlFlowGraph = new NodeCoreCollection<ControlFlowGraph>();
-		m_instructionDecoder = new NodeCoreCollection<InstructionDecoder>();
-		
+		m_instructionDecoder = new NodeCoreCollection<InstructionDecoder>();		
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
 		m_exclusions = new ArrayList<Reference>();
@@ -425,6 +423,18 @@ public class Engine implements Notifier {
 		return false;
 	}
 
+	public boolean setLoopIterations(Node node, long iterations) {
+		if (m_selectedRoute.setLoopIterations(node, iterations)) {
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}
+		return false;
+	}
+
+	public boolean canSetLoopIterations(Node node) {
+		return m_selectedRoute.canSetLoopIterations(node);
+	}
+	
 	public boolean setLoopPathIterations(int routeId, String refString, long iterations) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ANY_REF);
@@ -436,6 +446,18 @@ public class Engine implements Notifier {
 			return true;
 		}
 		return false;
+	}
+
+	public boolean setLoopPathIterations(Node node, long iterations) {
+		if (m_selectedRoute.setLoopPathIterations(node, iterations)) {
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}
+		return false;
+	}
+
+	public boolean canSetLoopPathIterations(Node node) {
+		return m_selectedRoute.canSetLoopPathIterations(node);
 	}
 	
 	public boolean setLoopScope(int routeId, String refString, boolean absolute) {
@@ -449,6 +471,18 @@ public class Engine implements Notifier {
 			return true;
 		}
 		return false;
+	}
+
+	public boolean setLoopScope(Node node, boolean absolute) {
+		if (m_selectedRoute.setLoopScope(node, absolute)) {
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}
+		return false;
+	}
+
+	public boolean canSetLoopScope(Node node) {
+		return m_selectedRoute.canSetLoopScope(node);
 	}
 	
 	public boolean setInstructionTimeTaken(int routeId, String refString, double timeTaken) {
