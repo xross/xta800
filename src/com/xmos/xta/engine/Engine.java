@@ -614,7 +614,11 @@ public class Engine implements Notifier {
 		m_selectedRoute.unsetInstructionTimeTaken(node);
 		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
-	
+
+	public double getInstructionTimeTaken(Node node) {
+		return m_selectedRoute.getInstructionTimeTaken(node);
+	}
+
 	public boolean setInstructionNumCycles(int routeId, String refString, long numCycles) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
@@ -651,6 +655,10 @@ public class Engine implements Notifier {
 		m_selectedRoute.unsetInstructionNumCycles(node);
 		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
+	
+	public long getInstructionNumCycles(Node node) {
+		return m_selectedRoute.getInstructionNumCycles(node);
+	}	
 
 	// ===================================================================== //
 	// Exclusion Methods

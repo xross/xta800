@@ -12,19 +12,18 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.gui.GuiEngine;
 
 public class InstructionTime extends XtaDialog {
     List<Node> m_nodes;    
     boolean m_valueChanged;
+    List<Boolean> m_wasSet;
+    List<Long> m_originalCycles;
     Text m_ns;
     Text m_cycles;    
     ModifyListener m_nsListener;
@@ -47,7 +46,13 @@ public class InstructionTime extends XtaDialog {
     }
 
 	private void initialise() {
-    	m_valueChanged = false;
+    	m_valueChanged = false;    	
+    	m_wasSet = new ArrayList<Boolean>();
+    	m_originalCycles = new ArrayList<Long>();
+    	for (Node node : m_nodes) {
+    		m_wasSet.add(node.getAttributes().getUnknownState() == UnknownState.UNKNOWN ? false : true);
+    		m_originalCycles.add(node.getAttributes().getInstructionNumCycles());
+    	}    	
     	open();
 	}
 
@@ -62,16 +67,6 @@ public class InstructionTime extends XtaDialog {
 	    final GridLayout gridLayout = new GridLayout();
 	    gridLayout.numColumns = 2;
 	    container.setLayout(gridLayout);
-
-		Group engineGroup = createGroup(container, "PC", 1, 2);
-		Label label = new Label(engineGroup, SWT.SHADOW_NONE | SWT.CENTER);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
-		String labelText = "Hello";
-/* TODO		for (Reference ref : m_refs) {
-			labelText += " " + ref.getRef();
-		}*/
-		label.setText(labelText);
 
 		Group nsGroup = createGroup(container, "ns", 1, 1);
 		m_ns = new Text(nsGroup, SWT.SINGLE | SWT.CENTER);
@@ -126,43 +121,38 @@ public class InstructionTime extends XtaDialog {
 
 	private void updateNsValue() {
 		m_ns.removeModifyListener(m_nsListener);
-		// TODO m_ns.setText(Double.toString(GuiEngine.getEngine().getInstructionTimeTaken(m_nodes.get(0))));
+	    m_ns.setText(Double.toString(GuiEngine.getEngine().getInstructionTimeTaken(m_nodes.get(0))));
 		m_ns.addModifyListener(m_nsListener);
 	}			
 
 	private void updateCyclesValue() {
 		m_cycles.removeModifyListener(m_cyclesListener);
-		// TODO m_cycles.setText(Long.toString(GuiEngine.getEngine().getInstructionNumCycles(m_nodes.get(0))));
+		m_cycles.setText(Long.toString(GuiEngine.getEngine().getInstructionNumCycles(m_nodes.get(0))));
 		m_cycles.addModifyListener(m_cyclesListener);
 	}			
 
     protected void buttonPressed(int id) {
     	if (id == IDialogConstants.CANCEL_ID) {
     		if (m_valueChanged) {
-    			int index = 0;
-/* TODO    			
+    			int index = 0;    			
     			for (Node node : m_nodes) {
-    				int selectedRouteId = GuiEngine.getEngine().getSelectedRouteId();
     				GuiEngine.getEngine().setInstructionNumCycles(
-    						selectedRouteId, node, m_originalCycles.get(index));
+    						node, m_originalCycles.get(index));
     				
     				if (!m_wasSet.get(index)) {
-    					GuiEngine.getEngine().unsetInstructionTime(
-    							selectedRouteId, ref.getRef());
+    					GuiEngine.getEngine().unsetInstructionTimeTaken(node);
     				}
     				index++;
-    			} */
+    			}
     		}
     	} else if (id == IDialogConstants.OK_ID) {
     		if (!m_valueChanged) {
-	    		int index = 0;
-/* TODO	    		
-	    		for (Reference ref : m_refs) {
-    				int selectedRouteId = GuiEngine.getEngine().getSelectedRouteId();
+	    		int index = 0;	    		
+	    		for (Node node : m_nodes) {
     				GuiEngine.getEngine().setInstructionNumCycles(
-    						selectedRouteId, ref.getRef(), m_originalCycles.get(index));
+    						node, m_originalCycles.get(index));
 					index++;
-	    		}*/
+	    		}
     		}
     	}
     	super.buttonPressed(id);

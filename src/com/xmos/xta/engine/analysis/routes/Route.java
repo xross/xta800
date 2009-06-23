@@ -219,6 +219,10 @@ public class Route {
 		refreshDisplayedUnknowns();
 	}
 	
+	public double getInstructionTimeTaken(Node node) {
+		return node.getAttributes().getInstructionTimeTaken();
+	}	
+
 	public boolean setInstructionNumCycles(Reference reference, long numCycles) {
 		boolean found = false;
 	    for (Node node : getReferencedNodes(reference)) {
@@ -249,6 +253,10 @@ public class Route {
 		refreshDisplayedUnknowns();			
 	}
 		
+	public long getInstructionNumCycles(Node node) {
+		return node.getAttributes().getInstructionNumCycles();
+	}	
+	
 	public boolean canInstructionPause(Reference reference) {
 		boolean canPause = true;
         for (Node node : getReferencedNodes(reference)) {
