@@ -46,7 +46,7 @@ public class NodeAttributes {
 	
 	public String getTimingSummary() { 
 		// Displays the worst case timing.
-	    String timingSummary = "";
+	    String timingSummary = "";	    
 	    timingSummary += String.format(" : %.1fns", getTimeTaken(Case.WORST, false));
 		if (m_node.isBlockNode()) {					
 			timingSummary += String.format(" (x %d)", 
@@ -71,7 +71,9 @@ public class NodeAttributes {
                String.format("Num Instructions: %d - %d\n", 
             		   getNumInstructions(Case.WORST, false), getNumInstructions(Case.BEST, false)) + 
                String.format("Num FNops:        %d - %d\n", 
-            		   getNumFNops(Case.WORST, false), getNumFNops(Case.BEST, false));
+            		   getNumFNops(Case.WORST, false), getNumFNops(Case.BEST, false)) +
+               String.format("Num Iterations:   %d - %d\n", 
+            		   m_worstCaseIterations, m_bestCaseIterations);
 	}
 		
 	// --------------------------------------------------------------------- //
