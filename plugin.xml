@@ -15,7 +15,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="com.xmos.xta.gui.XtaPerspective"
-            icon="icons/xta.png"
+            icon="icons/xta16x16.png"
             id="com.xmos.xta.gui.XtaPerspective"
             name="Xta">
       </perspective>
@@ -27,7 +27,7 @@
             default="false"
             icon="icons/editor.png"
             id="com.xmos.xta.gui.editors.Sources"
-            name="Sources">
+            name="Xta">
       </editor>
       <editor
             class="com.xmos.xta.gui.editors.XtaEditor"
@@ -358,6 +358,54 @@
           	value="icons/xta16x16.png,icons/xta32x32.png">
          </property>
       </product>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="tools_xta.actionSet"
+            label="controls"
+            visible="true">
+         <action
+               class="com.xmos.xta.gui.actions.ActionCore"
+               icon="icons/core.png"
+               id="com.xmos.xta.gui.actions.core"
+               label="Core 0"
+               style="pulldown"
+               toolbarPath="Normal/controls">
+         </action>            
+         <action
+               class="com.xmos.xta.gui.actions.ActionNode"
+               icon="icons/node.png"
+               id="com.xmos.xta.gui.actions.node"
+               label="Node 0"
+               style="pulldown"
+               toolbarPath="Normal/controls">
+         </action>
+         <action
+               class="com.xmos.xta.gui.actions.ActionRun"
+               icon="icons/run.png"
+               id="com.xmos.xta.gui.actions.run"
+               label="Analyse Path"
+               style="push"
+               toolbarPath="Normal/controls">
+         </action>         
+         <action
+               class="com.xmos.xta.gui.actions.ActionFunction"
+               icon="icons/function.png"
+               id="com.xmos.xta.gui.actions.function"
+               label="Select Function to Analyse"
+               style="pulldown"
+               toolbarPath="Normal/controls">
+         </action>         
+         <action
+               class="com.xmos.xta.gui.actions.ActionLoad"
+               icon="icons/load.png"
+               id="com.xmos.xta.gui.actions.load"
+               label="Open Xe File"
+               style="push"
+               toolbarPath="Normal/controls">
+         </action>
+      </actionSet>
    </extension>
   
 </plugin>

@@ -7,16 +7,20 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.ActionDelegate;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
@@ -25,25 +29,24 @@ import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.GuiFileFinder;
 import com.xmos.xta.gui.editors.SourcesEditor;
 import com.xmos.xta.gui.editors.SourcesEditorInput;
-import com.xmos.xta.gui.icons.Icons;
 import com.xmos.xta.gui.views.console.ConsoleView;
 
-public class ActionLoad extends Action implements IPropertyChangeListener {
-
+public class ActionLoad extends ActionDelegate implements IPropertyChangeListener, 
+                                                          IWorkbenchWindowActionDelegate {
+	private IAction m_action;
+	
 	public ActionLoad() {
 		GuiEngine.addBroadcastListener(this);
-		setImageDescriptor(Icons.getIconDescriptor("load"));
-		setToolTipText("Open Xe File");
 	}
 
-	public void propertyChange(PropertyChangeEvent event) {
-		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {			
-	        openEditors();
-	        runSrcLevelCommands();
-		} 
+	public void init(IAction action) {
+		m_action = action;
 	}
 	
-	public void run() {
+	public void init(IWorkbenchWindow window) {
+	}
+
+	public void run(IAction action) {
 		FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.OPEN);
         fileDialog.setText("Open Xe File");
         String[] filterExt = { "*.xe" };
@@ -57,34 +60,47 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
         
         if (xeFileName == null)
         	return;
-        
-        loadFile(xeFileName);
-    }
-	
-	public void loadFile(String xeFileName){
-		XtaPlugin plugin = XtaPlugin.getDefault();
+                
         String path = new File(xeFileName).getParent();
         plugin.getPreferenceStore().setValue("LastDir", path);
-
+        loadFile(xeFileName);
+	}
+	
+	public void loadFile(String xeFileName) {
        	final File xeFile = new File(xeFileName);
         Job job = new Job("Load: " + xeFileName) {
 			protected IStatus run(IProgressMonitor monitor) {
 				Engine engine = GuiEngine.getEngine();
 				engine.setMonitor(monitor);
 				boolean success = engine.loadExecutable(xeFile, new GuiFileFinder());					
-	        	if (success) {
-	                setToolTipText("Currently loaded " + xeFile.getAbsolutePath());
+	        	if (success && (m_action != null)) {	        		
+	        		m_action.setToolTipText("Currently loaded " + xeFile.getAbsolutePath());
 	        	}		        	
 				return Status.OK_STATUS;
 			}
 		};
 		job.setUser(true);
-		job.schedule();		
+		job.schedule();		        		
+	}
+	
+	public void propertyChange(PropertyChangeEvent event) {
+		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {			
+	        openEditors();
+	        runSrcLevelCommands();
+		}
 	}
 
     private void openEditors() {
 		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		page.closeAllEditors(false);
+		
+		// Need to close any xta editors already open..
+		for (IEditorReference editorReference : page.getEditorReferences()) {
+			if (editorReference.getId().equals(SourcesEditor.ID)) {
+				page.closeEditor(editorReference.getEditor(false), false);
+			}
+		}
+		
+		// Opens a new xta editor.. 
 		IEditorInput sourcesInput = new SourcesEditorInput();
 		try {
 		    page.openEditor(sourcesInput, SourcesEditor.ID);
@@ -108,5 +124,5 @@ public class ActionLoad extends Action implements IPropertyChangeListener {
 	    	    console.runCommand(command);
     	    }
     	}    	
-    }    
+    }
 }
