@@ -1,33 +1,46 @@
 package com.xmos.xta.gui.actions;
 
-import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+import org.eclipse.ui.actions.ActionDelegate;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.gui.GuiEngine;
-import com.xmos.xta.gui.icons.Icons;
 
-public class ActionRun extends Action implements IPropertyChangeListener {
+public class ActionRun extends ActionDelegate implements IPropertyChangeListener,
+                                                         IWorkbenchWindowActionDelegate {
 
 	private static final String DEFAULT_TOOL_TIP = "First set start/end points";
 
     private Reference m_startPoint;
     private Reference m_endPoint;
+	private IAction m_action;
 
 	public ActionRun() {
 		GuiEngine.addBroadcastListener(this);
-		setImageDescriptor(Icons.getIconDescriptor("run"));
-		setToolTipText("Open Xe File");
-		setEnabled(false);
 	}
 
+	public void init(IAction action) {
+		m_action = action;
+		m_action.setEnabled(false);
+	}
+	
+	public void init(IWorkbenchWindow window) {
+	}
+
+	public void run(IAction action) {
+		GuiEngine.runPath();
+	}
+	
 	public void propertyChange(PropertyChangeEvent event) {
 		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {			
 	        updateState();
-	        setEnabled(false);
+	        m_action.setEnabled(false);
 	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT)) {
 			m_startPoint = GuiEngine.getStartPoint();					
@@ -37,10 +50,6 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 			m_endPoint = GuiEngine.getEndPoint();					
 			updateText(m_endPoint);
 		}
-	}
-
-	public void run() {
-		GuiEngine.runPath();
 	}
 
 	private void updateText(Reference point) {
@@ -53,8 +62,8 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 		}		
 
 		if (m_startPoint == null && m_endPoint == null) { 
-			setToolTipText(DEFAULT_TOOL_TIP);
-			setEnabled(false);
+			m_action.setToolTipText(DEFAULT_TOOL_TIP);
+			m_action.setEnabled(false);
 		} else {
 			String startText = "";
 			String endText = "";
@@ -64,12 +73,12 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 			if (m_endPoint != null)
 				endText = m_endPoint.getRef();
 				
-			setToolTipText(startText + " -> " + endText);
+			m_action.setToolTipText(startText + " -> " + endText);
 			
 			if (!startText.equals("") && !endText.equals("")) {
-				setEnabled(true);
+				m_action.setEnabled(true);
 			} else {
-				setEnabled(false);
+				m_action.setEnabled(false);
 			}
 		}
 	}	
@@ -78,6 +87,6 @@ public class ActionRun extends Action implements IPropertyChangeListener {
 	    m_startPoint = null;
 	    m_endPoint = null;
     	
-	    setToolTipText(DEFAULT_TOOL_TIP);
+	    m_action.setToolTipText(DEFAULT_TOOL_TIP);
 	}
 }
