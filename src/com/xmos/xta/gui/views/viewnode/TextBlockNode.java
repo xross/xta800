@@ -29,22 +29,22 @@ public class TextBlockNode extends ViewNode {
 	}
 	
 	public int getPixelsX() {
-		return m_pixelsX;
+		return 0;
 	}
 
 	public int getPixelsY() {
-		return m_pixelsY;
+		return 0;
 	}
 
 	public int getChildrenX() {
-		return m_pixelsX;
+		return 0;
 	}
 
 	public int getChildrenY() {
-		return m_pixelsY;
+		return 0;
 	}
 
-	public void draw(Display display, GC gc, double scale) {
+	public void draw(Display display, GC gc, double scale, boolean isWorstCase) {
         if (DEBUG) System.out.printf("TextBlockNode: draw %d,%d,%d,%d,%d\n",
         		m_left, m_top, m_right, m_bottom, m_textBase);
 

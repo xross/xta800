@@ -11,28 +11,20 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 public class StructureFunctionNode extends ViewNode {
     public static final boolean DEBUG = false;
 
-    private int m_connectorLen = 7;
     private int m_borderX = 5;
     private int m_borderY = 5;
-
-    private int m_x;
-    private int m_y;
-    private int m_width;
-    private int m_height;
+    private int m_textAreaY = 20;
 
 	public StructureFunctionNode(Node treeNode) {
 		super(treeNode);
-		
-		m_pixelsX = 2 * m_borderX;
-		m_pixelsY = 2 * m_borderY;
 	}
 
 	public int getPixelsX() {
-		return getChildrenX() + m_pixelsX;
+		return getChildrenX() + (2 * m_borderX);
 	}
 
 	public int getPixelsY() {
-		return getChildrenY() + m_pixelsY;
+		return getChildrenY() + (2 * m_borderY) + m_textAreaY;
 	}
 
 	public int getChildrenX() {
@@ -40,7 +32,6 @@ public class StructureFunctionNode extends ViewNode {
 		for (ViewNode child : getChildren()) {
 			pixels += child.getPixelsX();
 		}
-		pixels += (getChildren().size() - 1) * m_connectorLen;
 		return pixels;
 	}
 
@@ -54,29 +45,33 @@ public class StructureFunctionNode extends ViewNode {
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc, double scale) {
-        gc.setLineWidth(m_lineWidth);
+	public void draw(Display display, GC gc, double scale, boolean isWorstCase) {
+		// Don't currently support connecting up nodes like a path
+		assert(getChildren().size() == 1);
+
         m_x = scale(m_pixelOffsetX, scale);
         m_y = scale(m_pixelOffsetY, scale);
         m_width = scale(getPixelsX(), scale);
         m_height = scale(getPixelsY(), scale);
+        drawThis(display, gc);
 
-        gc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
-    	gc.fillRectangle(m_x, m_y, m_width, m_height);
+    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+    	if (m_isSelected) gc.setLineWidth(m_lineWidth + 1);
+       	gc.drawRectangle(m_x, m_y, m_width, m_height);
+       	if (m_isSelected) gc.setLineWidth(m_lineWidth);
 
-        if (m_isSelected) {
-        	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-        	gc.setLineWidth(m_lineWidth + 1);
-           	gc.drawRectangle(m_x, m_y, m_width, m_height);
-        	gc.setLineWidth(m_lineWidth);
-        }
-
-    	int childOffsetX = m_borderX;
 		for (ViewNode child : getChildren()) {
-    		child.draw(display, gc, scale);
-    		int childX = child.getPixelsX();
-            childOffsetX += childX + m_connectorLen;
+    		child.draw(display, gc, scale, isWorstCase);
     	}
+		
+		// Draw the function name
+        int textBase = scale(m_pixelOffsetY + m_borderY, scale);
+		gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+		gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+        int functionNameWidth = gc.getFontMetrics().getAverageCharWidth() * m_treeNode.getFunctionName().length();
+        if (m_width >= functionNameWidth) {
+        	gc.drawString(m_treeNode.getFunctionName(),  m_x + m_borderX, textBase);
+        }
 	}
 
 	public void annotateXy(int xOffset, int yOffset) {
@@ -84,12 +79,11 @@ public class StructureFunctionNode extends ViewNode {
         m_pixelOffsetX = xOffset;
 		m_pixelOffsetY = yOffset;
 
-    	int childOffsetX = m_borderX;
     	int childrenY = getChildrenY();
+    	int childOffsetY = yOffset + m_borderY + m_textAreaY;
 		for (ViewNode child : getChildren()) {
 			int childY = child.getPixelsY();
-    		child.annotateXy(xOffset + childOffsetX, yOffset + m_borderY + ((childrenY - childY) / 2));
-            childOffsetX += child.getPixelsX() + m_connectorLen;
+    		child.annotateXy(xOffset + m_borderX, childOffsetY + ((childrenY - childY) / 2));
     	}
 	}
 
