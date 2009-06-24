@@ -157,7 +157,7 @@ public class SectionNode extends Node {
 		return true;
 	}
 
-	public boolean isOptional() {
+	public boolean isSectionOptional() {
 		return m_isOptional;
 	}
 
@@ -169,7 +169,6 @@ public class SectionNode extends Node {
 		}
 		return false;
 	}	
-	
 
 	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
 /*

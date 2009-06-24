@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.TreeSet;
 
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 
 public class ThreadHandler {
 	private InstructionDecoder m_instDecoder;
@@ -15,10 +15,10 @@ public class ThreadHandler {
 		m_notifier = notifier;
 	}
 
-	public Collection<Node> getThreadNodes(Collection<Integer> threadPcs) {
-		Collection<Node> nodes = new TreeSet<Node>();
+	public Collection<InstructionNode> getThreadNodes(Collection<Integer> threadPcs) {
+		Collection<InstructionNode> nodes = new TreeSet<InstructionNode>();
 		for(int pc : threadPcs){
-			Node threadNode = m_instDecoder.getNode(pc);
+			InstructionNode threadNode = m_instDecoder.getNode(pc);
 			if (threadNode != null){
 				nodes.add(threadNode);
 			} else {
@@ -29,13 +29,13 @@ public class ThreadHandler {
 		return nodes;
 	}
 	
-	public Collection<Node> ensureThreadStartExists(Collection<Node> threadStarts){
+	public Collection<InstructionNode> ensureThreadStartExists(Collection<InstructionNode> threadStarts){
 		
 		
 		if(threadStarts.isEmpty() || threadStarts == null){
 			m_notifier.notify(Notifier.NOTIFY_WARNING,
 					"No thread starts found, assuming master thread starts at 0x10000");
-			Node threadNode = m_instDecoder.getNode(0x10000);
+			InstructionNode threadNode = m_instDecoder.getNode(0x10000);
 			if (threadNode != null){
 				threadStarts.add(threadNode);
 			} else {

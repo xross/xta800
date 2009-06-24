@@ -84,6 +84,8 @@ public class RouteConstructor {
 			break;
 
 		case PATH:
+			
+			/*
 			Set<Integer> startPcs = getStartPcs();
 			Set<Integer> endPcs = getEndPcs();
 
@@ -124,6 +126,9 @@ public class RouteConstructor {
 			//System.out.println("new start nodes: " + testStartNodes);
 			//System.out.println("old end nodes: " + endNodes);
 			//System.out.println("new end nodes: " + testEndNodes);
+			*/
+			Collection<Node> startNodes =getReferencedNodes(m_description.getStartPoint());
+			Collection<Node> endNodes = getReferencedNodes(m_description.getEndPoint());
 			
 			
 			for (Node start : startNodes) {
@@ -131,28 +136,23 @@ public class RouteConstructor {
 
 				m_structureGraph.removeLinks();
 				m_excludedRouteNodes = new TreeSet<Node>();
-				seenEndPoint |= explore(start, workingSet, endPcs, endNodes, null);
+				seenEndPoint |= explore(start, workingSet, endNodes, null);
 				
-				StructuralAnalysisEngine.dumpTree(workingSet);	
+				//StructuralAnalysisEngine.dumpTree(workingSet);
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 				pruneGraphOfExcludedPaths(workingSet);
 				if(workingSet.isEmpty()){
 					continue;
 				}
-				
-				StructuralAnalysisEngine.dumpTree(workingSet);			
+		
 				Set<Node> newEndNodes = removeFinalInstruction(endNodes, start,
 						workingSet);
-				
-				StructuralAnalysisEngine.dumpTree(workingSet);			
+		
 				Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
 				assert(cfgSanityCheck(workingSet));
 				
-				
-				StructuralAnalysisEngine.dumpTree(workingSet);
 				sae.createStructure(workingSet, newStart, m_engine, true);
-				StructuralAnalysisEngine.dumpTree(workingSet);
 				
 				assert(workingSet.size() == 1);
 				
@@ -178,7 +178,7 @@ public class RouteConstructor {
 		}
 		return seenEndPoint;
 	}
-
+/*
 	private boolean doesNotContainAnEndpoint(Node parent, Collection<Node> endNodes) {
 		for(Node endNode : endNodes){
 			if(parent.getContainedNodes().contains(endNode)){
@@ -187,15 +187,16 @@ public class RouteConstructor {
 		}
 		return true;
 	}
-
-	private boolean explore(Node node, Collection<Node> set, Collection<Integer> endPcs, Collection<Node> endNodes, Node parent) {	
-		Set<Integer> pcs = new TreeSet<Integer>(endPcs);
-		pcs.retainAll(node.getPCs());
+*/
+	private boolean explore(Node node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
+		Set<Node> nodes = new TreeSet<Node>(endNodes);
+		nodes.retainAll(node.getContainedNodes());
+		
 		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
 		exclusions.retainAll(node.getContainedNodes());
 		boolean seenEndPoint = false;
 
-		if (pcs.isEmpty() || set.isEmpty()) {
+		if (nodes.isEmpty() || set.isEmpty()) {
 			
 			if(!exclusions.isEmpty() ){
 				if( node.isBlockNode() ){
@@ -209,7 +210,7 @@ public class RouteConstructor {
 				} else {
 					assert (!node.getImmediateChildren().isEmpty());
 					for(Node child : node.getImmediateChildren()){
-						seenEndPoint |= explore(child, set, endPcs, endNodes, parent);
+						seenEndPoint |= explore(child, set, endNodes, parent);
 					}
 				}
 				return false;
@@ -225,7 +226,7 @@ public class RouteConstructor {
 				
 				Collection<Node> nextNodes = node.getParent().whatsNext(node);
 				for (Node next : nextNodes) {
-					seenEndPoint |= explore(next, set, endPcs, endNodes, node);
+					seenEndPoint |= explore(next, set, endNodes, node);
 				}
 			}
 		} else {
@@ -236,11 +237,11 @@ public class RouteConstructor {
 			} else {
 				assert (!node.getImmediateChildren().isEmpty());
 				for(Node child : node.getImmediateChildren()){
-					seenEndPoint |= explore(child, set, endPcs, endNodes, parent);
+					seenEndPoint |= explore(child, set, endNodes, parent);
 				}
 			}
 		}
-		return false;
+		return seenEndPoint;
 	}
 	
 	private Set<Node> removeFinalInstruction(Collection<Node> endNodes,
@@ -347,50 +348,13 @@ public class RouteConstructor {
 			}
 			m_excludedRouteNodes.remove(excludedNode);
 			workingSet.remove(excludedNode);
-			
 		}
-		
 	}
-
-	private Set<Integer> getEndPcs() {
-		Set<Integer> endPcs = new TreeSet<Integer>();
-		endPcs.add(m_description.getEndPoint().getPc());
-		return endPcs;
-	}
-
-	private Set<Integer> getStartPcs() {
-		Set<Integer> startPcs = new TreeSet<Integer>();
-		startPcs.add(m_description.getStartPoint().getPc());
-		
-		return startPcs;
-	}
-	
-	
 
 	private void makeConnection(Node node, Node parent) {
 		if (parent != null) {
 			CommonMethods.connect(node, parent);
 		}
-	}
-	
-	private Map<Integer, TreeSet<Node>> buildPcMap(StructureGraph structureGraph) {
-		final Map<Integer, TreeSet<Node>> pcToNodes = new TreeMap<Integer, TreeSet<Node>>();
-		
-		for (Node node : structureGraph.getThreads()) {
-			node.traverse(0, new DefaultNodeTraverser() {
-				
-				public boolean foundInstructionNode(Node node, int depth) {
-					TreeSet<Node> map = pcToNodes.get(node.getStartPc());
-					if (map == null) {
-						map = new TreeSet<Node>();
-					}
-					map.add(node);
-					pcToNodes.put(node.getStartPc(), map);
-					return true;
-				}
-			});
-		}
-		return pcToNodes;
 	}
 
 	private Map<String, TreeSet<Node>> buildFunctionMap(StructureGraph structureGraph) {

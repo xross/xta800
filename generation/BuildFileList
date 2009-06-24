@@ -1,0 +1,30 @@
+
+prebuild:
+
+preclean:
+
+predepend:
+
+SOURCE  = \
+  XtaGeneration.cpp \
+  DecoderGenerator.cpp \
+  InstructionClassGenerator.cpp
+
+OBJS    = \
+  $(OBJDIR)/XtaGeneration$(OBJEXT) \
+  $(OBJDIR)/DecoderGenerator$(OBJEXT) \
+  $(OBJDIR)/InstructionClassGenerator$(OBJEXT)
+
+INCDIRS = \
+  -I./ \
+  -I$(XMOS_ROOT)/infr_libs_cpp/export/include
+
+LIBS    = \
+  $(XMOS_ROOT)/infr_libs_cpp/$(BINEXP)/DbInterface$(LIBEXT) \
+  $(XMOS_ROOT)/infr_libs_cpp/$(BINEXP)/XmlParser$(LIBEXT) \
+  $(XMOS_ROOT)/infr_libs_cpp/$(BINEXP)/StringLibrary$(LIBEXT) \
+  $(XMOS_ROOT)/infr_libs_cpp/$(BINEXP)/ErrorHandler$(LIBEXT)
+
+TARGETNAME = XtaGeneration
+
+TARGETS    = $(BINDIR)/$(TARGETNAME)$(EXEEXT)

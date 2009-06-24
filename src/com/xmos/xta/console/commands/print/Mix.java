@@ -79,7 +79,7 @@ public class Mix extends Command {
 		if (m_nodeIdSet) {
 			displayer.display(engine.getRoute(m_routeId).getNode(m_nodeId));						
 		} else {
-			displayer.display(engine.getRoute(m_routeId).getSubRoute());			
+			displayer.display(engine.getRoute(m_routeId).getNode());			
 		}        
    }    
 }

@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -26,6 +27,7 @@ import com.xmos.xta.engine.analysis.controlflow.SuccessorAdder;
 import com.xmos.xta.engine.analysis.controlflow.ThreadHandler;
 import com.xmos.xta.engine.analysis.controlflow.UnreachableCodeFinder;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
@@ -66,12 +68,14 @@ public class Engine implements Notifier {
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
 	private NodeCoreCollection<ControlFlowGraph> m_controlFlowGraph;
 	private NodeCoreCollection<InstructionDecoder> m_instructionDecoder;
+	private NodeCoreCollection<TreeSet<String>> m_functionNames;
 	
 	public Engine(Config config) {		
 		m_xeObjects = new NodeCoreCollection<XeObject>();
 		m_structuralGraph = new NodeCoreCollection<StructureGraph>();
 		m_controlFlowGraph = new NodeCoreCollection<ControlFlowGraph>();
-		m_instructionDecoder = new NodeCoreCollection<InstructionDecoder>();		
+		m_instructionDecoder = new NodeCoreCollection<InstructionDecoder>();
+		m_functionNames = new NodeCoreCollection<TreeSet<String>>();
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
 		m_exclusions = new ArrayList<Reference>();
@@ -87,6 +91,10 @@ public class Engine implements Notifier {
 		ReferenceTypeFactory.setEngine(this);
 	}
 
+	public Set<String> getFunctionNames(int nodeId, int coreId){
+		return m_functionNames.get(nodeId, coreId);
+	}
+	
 	public void notify(String message, String argument) {
 		if (m_notifier != null)
 			m_notifier.notify(message, argument);
@@ -98,36 +106,6 @@ public class Engine implements Notifier {
 
 	public List<Route> getRoutes() {
 		return m_routes;
-	}
-
-	public Route getSelectedRoute() {
-		return m_selectedRoute;
-	}
-
-	public int getSelectedRouteId() {
-		if (m_selectedRoute != null)
-			return m_selectedRoute.getRouteId();
-		else
-			return ROUTE_ID_INVALID;
-	}
-
-	public void setSelectedRoute(Route route) {
-		if (route != null) {
-			RouteTiming routeTiming = route.getRouteTiming();
-			int nodeId = routeTiming.getNodeId();
-			if (nodeId != m_nodeId)
-				setNodeId(nodeId);
-	
-			int coreId = routeTiming.getCoreId();
-			if (coreId != m_coreId)
-				setCoreId(coreId);
-		}	
-		m_selectedRoute = route;
-		notify(Notifier.NOTIFY_SELECT_ROUTE, "");
-	}
-
-	public void setSelectedRoute(int routeId) {
-		 setSelectedRoute(getRoute(routeId));
 	}
 
 	public XeLoader getXeLoader() {
@@ -204,6 +182,7 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean loadExecutable(File executableFile, FileFinder fileFinder) {
+		
     	try {
     		executableFile = executableFile.getCanonicalFile();
 		} catch (IOException e) {
@@ -232,6 +211,7 @@ public class Engine implements Notifier {
 		m_sections = sections;
 		m_nodeId = 0;
 		m_coreId = 0;			
+		m_routes.clear();
 		
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());		
 		return true;
@@ -326,14 +306,15 @@ public class Engine implements Notifier {
 			notify(Notifier.NOTIFY_ERROR, "No valid paths of execution");
 			return false;
 		} else {
+			int currentSize = m_routes.size();
 			for(Node subRoute : routeConstructor.getSubRoutes()){
 				Route route = new Route(this, subRoute, routeDescription);
 				m_routes.add(route);
 				
 			}
-			if(!m_routes.isEmpty()){
-				setSelectedRoute(m_routes.get(0));
-				notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(0).getRouteId()));
+			if(!m_routes.isEmpty() && !routeConstructor.getSubRoutes().isEmpty()){
+				setSelectedRoute(m_routes.get(currentSize));
+				notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
 			} else {
 				notify(Notifier.NOTIFY_WARNING, "No paths added");
 			}
@@ -410,6 +391,124 @@ public class Engine implements Notifier {
 		return m_config.m_verbosity;
 	}
 	
+	public boolean canInstructionPause(int routeId, String refString) {
+		Reference reference = ReferenceFactory.createReference(
+				refString, ReferenceClass.ENDPOINT_REF);
+		if (!resolveRefernece(reference)) {
+			return false;
+		}
+		return getRoute(routeId).canInstructionPause(reference);			
+	}
+		
+	public boolean removeRoute(int routeId) {
+		Route route = getRoute(routeId);
+		if (route != null) {
+			m_routes.remove(route);			
+			if (m_routes.size() == 0) {
+				Route.resetRouteCount();
+				setSelectedRoute(null);
+			} else if (m_selectedRoute.getRouteId() == routeId) {
+				m_selectedRoute = m_routes.get(m_routes.size() - 1);
+			}
+			notify(Notifier.NOTIFY_REMOVE_ROUTE, "");
+			return true;
+		}
+		return false;
+	}
+
+	public void removeAllRoutes() {
+		m_routes.clear();
+		setSelectedRoute(null);
+		Route.resetRouteCount();
+		notify(Notifier.NOTIFY_REMOVE_ROUTE, "");
+	}	
+		
+	public File getExecutable() {
+		return m_executableFile;
+	}
+
+	public void setMonitor(IProgressMonitor monitor) {
+		m_jobMonitor = monitor;
+	}
+	
+	public void provideFeedback(String feedback) {
+		if (m_jobMonitor != null)
+			m_jobMonitor.subTask(feedback);				
+	}
+	
+	public Collection<String> getFunctionsVisited() {
+		return m_functionsVisited;
+	}
+	
+	// ===================================================================== //
+	// Route Selection Methods
+	// ===================================================================== //			
+	public Route getSelectedRoute() {
+		return m_selectedRoute;
+	}
+
+	public int getSelectedRouteId() {
+		if (m_selectedRoute != null)
+			return m_selectedRoute.getRouteId();
+		else
+			return ROUTE_ID_INVALID;
+	}
+
+	public void setSelectedRoute(Route route) {
+		if (route != null) {
+			RouteTiming routeTiming = route.getRouteTiming();
+			int nodeId = routeTiming.getNodeId();
+			if (nodeId != m_nodeId)
+				setNodeId(nodeId);
+	
+			int coreId = routeTiming.getCoreId();
+			if (coreId != m_coreId)
+				setCoreId(coreId);
+		}	
+		m_selectedRoute = route;
+		notify(Notifier.NOTIFY_SELECT_ROUTE, "");
+	}
+
+	public void setSelectedRoute(int routeId) {
+		 setSelectedRoute(getRoute(routeId));
+	}
+	
+	// ===================================================================== //
+	// Requirements Methods
+	// ===================================================================== //		
+	public boolean setRouteMaxTime(int routeId, double time) {
+		Route route = getRoute(routeId);
+		if (route != null) {
+			route.getRouteTiming().setMaxTime(time);
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}
+		return false;
+	}
+
+	public boolean setRouteMaxCycles(int routeId, int cycles) {
+		Route route = getRoute(routeId);
+		if (route != null) {
+			route.getRouteTiming().setMaxCycles(cycles);
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}
+		return false;		
+	}
+	
+	public boolean unsetRouteMax(int routeId) {
+		Route route = getRoute(routeId);
+		if (route != null) {
+			route.getRouteTiming().resetMaxTime();
+			notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			return true;
+		}
+		return false;		
+	}	
+	
+	// ===================================================================== //
+	// Unknown (Loop Iteration) Methods
+	// ===================================================================== //		
 	public boolean setLoopIterations(int routeId, String refString, long iterations) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ANY_REF);
@@ -485,6 +584,9 @@ public class Engine implements Notifier {
 		return m_selectedRoute.canSetLoopScope(node);
 	}
 	
+	// ===================================================================== //
+	// Unknown (Instruction Time) Methods
+	// ===================================================================== //			
 	public boolean setInstructionTimeTaken(int routeId, String refString, double timeTaken) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
@@ -493,12 +595,16 @@ public class Engine implements Notifier {
 		}
 		if (getRoute(routeId).setInstructionTimeTaken(reference, timeTaken)) {
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
 		}
 		return false;
 	}
 
+	public void setInstructionTimeTaken(Node node, double timeTaken) {
+		m_selectedRoute.setInstructionTimeTaken(node, timeTaken);
+		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+	}
+	
 	public boolean unsetInstructionTimeTaken(int routeId, String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
@@ -507,12 +613,20 @@ public class Engine implements Notifier {
 		}
 		if (getRoute(routeId).unsetInstructionTimeTaken(reference)) {
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
 		}
 		return false;
 	}
-		
+
+	public void unsetInstructionTimeTaken(Node node) {
+		m_selectedRoute.unsetInstructionTimeTaken(node);
+		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+	}
+
+	public double getInstructionTimeTaken(Node node) {
+		return m_selectedRoute.getInstructionTimeTaken(node);
+	}
+
 	public boolean setInstructionNumCycles(int routeId, String refString, long numCycles) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
@@ -521,12 +635,16 @@ public class Engine implements Notifier {
 		}
 		if (getRoute(routeId).setInstructionNumCycles(reference, numCycles)) {
 			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
 		}
 		return false;
 	}
 
+	public void setInstructionNumCycles(Node node, long numCycles) {
+		m_selectedRoute.setInstructionNumCycles(node, numCycles);
+		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+	}
+	
 	public boolean unsetInstructionNumCycles(int routeId, String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
@@ -541,72 +659,18 @@ public class Engine implements Notifier {
 		return false;
 	}
 			
-	public boolean canInstructionPause(int routeId, String refString) {
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.ENDPOINT_REF);
-		if (!resolveRefernece(reference)) {
-			return false;
-		}
-		return getRoute(routeId).canInstructionPause(reference);			
+	public void unsetInstructionNumCycles(Node node) {
+		m_selectedRoute.unsetInstructionNumCycles(node);
+		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	
-	public boolean setRouteMaxTime(int routeId, double time) {
-		Route route = getRoute(routeId);
-		if (route != null) {
-			route.getRouteTiming().setMaxTime(time);
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
-		}
-		return false;
-	}
-
-	public boolean setRouteMaxCycles(int routeId, int cycles) {
-		Route route = getRoute(routeId);
-		if (route != null) {
-			route.getRouteTiming().setMaxCycles(cycles);
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
-		}
-		return false;		
-	}
-	
-	public boolean unsetRouteMax(int routeId) {
-		Route route = getRoute(routeId);
-		if (route != null) {
-			route.getRouteTiming().resetMaxTime();
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
-		}
-		return false;		
+	public long getInstructionNumCycles(Node node) {
+		return m_selectedRoute.getInstructionNumCycles(node);
 	}	
-	
-	public boolean removeRoute(int routeId) {
-		Route route = getRoute(routeId);
-		if (route != null) {
-			m_routes.remove(route);			
-			if (m_routes.size() == 0) {
-				Route.resetRouteCount();
-				setSelectedRoute(null);
-			} else if (m_selectedRoute.getRouteId() == routeId) {
-				m_selectedRoute = m_routes.get(m_routes.size() - 1);
-			}
-			notify(Notifier.NOTIFY_REMOVE_ROUTE, "");
-			return true;
-		}
-		return false;
-	}
 
-	public void removeAllRoutes() {
-		m_routes.clear();
-		setSelectedRoute(null);
-		Route.resetRouteCount();
-		notify(Notifier.NOTIFY_REMOVE_ROUTE, "");
-	}	
-		
-	public File getExecutable() {
-		return m_executableFile;
-	}
-
+	// ===================================================================== //
+	// Exclusion Methods
+	// ===================================================================== //	
 	public boolean addExclusion(String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ANY_REF);
@@ -645,7 +709,10 @@ public class Engine implements Notifier {
 	public Collection<Reference> getExclusions() {
 		return m_exclusions;
 	}
-	
+					
+	// ===================================================================== //
+	// Section Methods
+	// ===================================================================== //
 	public boolean addBranch(Reference fromRef, Reference toRef) {
 		if (!resolveRefernece(fromRef)) {
 			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", fromRef.getRef()));
@@ -799,35 +866,27 @@ public class Engine implements Notifier {
 		return m_sections.getSrcLevelCommands(m_nodeId, m_coreId);
 	}
 	
-	public void setMonitor(IProgressMonitor monitor) {
-		m_jobMonitor = monitor;
-	}
-	
-	public void provideFeedback(String feedback) {
-		if (m_jobMonitor != null)
-			m_jobMonitor.subTask(feedback);				
-	}
-	
-	public Collection<String> getFunctionsVisited() {
-		return m_functionsVisited;
-	}
-	
+	// ===================================================================== //
+	// Private Methods
+	// ===================================================================== //
 	private boolean initialiseGlobalStructure(XeLoader xeLoader, Sections sections) {
 		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
 		NodeCoreCollection<ControlFlowGraph> newCfg = new NodeCoreCollection<ControlFlowGraph>();
 		NodeCoreCollection<InstructionDecoder> newInstructionDecoder = new NodeCoreCollection<InstructionDecoder>();
-		
+		NodeCoreCollection<TreeSet<String>> newFunctionNames = new NodeCoreCollection<TreeSet<String>>();
 		for (int nodeId : xeLoader.getNodeIds()){
 			for (int coreId : xeLoader.getCoreIds(nodeId)){
 				InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config);
+				
+				newFunctionNames.add(nodeId, coreId, new TreeSet<String>());
 				
 				if (!id.decode()) 
 					return false;
 				
 				ThreadHandler th = new ThreadHandler(id, this);
-				Collection<Node> threadStartNodes = 
+				Collection<InstructionNode> threadStartNodes = 
 					th.getThreadNodes(sections.getThreadStartPoints(nodeId, coreId));
-				Collection<Node> threadStopNodes = 
+				Collection<InstructionNode> threadStopNodes = 
 					th.getThreadNodes(sections.getThreadStopPoints(nodeId, coreId));				
 				threadStartNodes = th.ensureThreadStartExists(threadStartNodes);
 
@@ -838,6 +897,14 @@ public class Engine implements Notifier {
 				FunctionHandler fh = new FunctionHandler(id);
 				if (!fh.addFunctions()) 
 					return false;
+				
+				
+				for(InstructionNode inst : fh.getKnownFuncStarts()){
+					TreeSet<String> functionName =newFunctionNames.get(nodeId, coreId);
+					String name = xeLoader.getSymbolTable(nodeId, coreId).functionName(inst.getStartPc());
+					assert(!functionName.contains(name));
+					functionName.add(name);
+				}
 				
 				UnreachableCodeFinder uca = new UnreachableCodeFinder();
 				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
@@ -850,11 +917,12 @@ public class Engine implements Notifier {
 					return false;
 				
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
-			}		
-		}		
+			}
+		}
 		m_instructionDecoder = newInstructionDecoder;
 		m_controlFlowGraph = newCfg;
 		m_structuralGraph = newStructuralGraph;
+		m_functionNames = newFunctionNames;
 		return true;
 	}
 	
@@ -906,7 +974,7 @@ public class Engine implements Notifier {
 		}
 		return false;
 	}
-		
+	
 	// ===================================================================== //
 	// Debug Methods
 	// ===================================================================== //

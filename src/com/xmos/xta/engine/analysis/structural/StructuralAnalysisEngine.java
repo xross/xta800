@@ -13,6 +13,7 @@ import java.util.TreeSet;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.analysis.structural.patterns.LoopPatternMatcher;
@@ -26,15 +27,12 @@ import com.xmos.xta.engine.analysis.structural.patterns.UpWedge;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructuralAnalysisEngine {
-	private static final boolean DEBUG = false;
 
 	private ControlFlowGraph m_controlFlowGraph;
 	private Map<Integer, FunctionNode> m_functionStartPcs;
-	//private Map<Integer, FunctionNode> m_threadStartPcs;
 	private StructureGraph m_structureGraph;
 	private Map<FunctionNode, FunctionNode> m_cfgToStruct;
 	private List<PatternMatcher> m_patternMatchers;
-	
 	
 	public StructuralAnalysisEngine(ControlFlowGraph controlFlowGraph) {
 		m_controlFlowGraph = controlFlowGraph;
@@ -48,7 +46,6 @@ public class StructuralAnalysisEngine {
 
 	public boolean analyse(Engine engine) {
 		m_functionStartPcs = new TreeMap<Integer, FunctionNode>();
-		//m_threadStartPcs = new TreeMap<Integer, FunctionNode>();
 		return buildStructureGraph(engine);
 	}
 
@@ -112,7 +109,7 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	private Collection<Node> buildGraph(Collection<Node> graphStartNodes, Map<Integer, FunctionNode> startPcs,
+	private Collection<Node> buildGraph(Collection<InstructionNode> graphStartNodes, Map<Integer, FunctionNode> startPcs,
 			Engine engine, boolean isFunction) {
 
 		Collection<Node> graphs = new TreeSet<Node>();
@@ -127,28 +124,24 @@ public class StructuralAnalysisEngine {
 
 			Collection<Node> currentGraph = new TreeSet<Node>();
 			collectCurrentGraphNodes(graphStart, currentGraph);
-			
-
-			
+						
 			Collection<Node> basicBlocks = new TreeSet<Node>();
 
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
 			assert(!basicBlocks.isEmpty());
-			
 			FnopAnalyser fa = new FnopAnalyser();
 			
 			fa.analyse(initialBasicBlock, isFunction);
 			fa.addFnopsToBasicBlocks(initialBasicBlock);
-			assert(basicBlocks.contains(initialBasicBlock));
 			
-
+			assert(basicBlocks.contains(initialBasicBlock));
 			
 			if (!createStructure(basicBlocks, initialBasicBlock, engine, false)) {
 				return null;
 			}
-			
-
-			
+			if(basicBlocks.size() != 1) {
+				dumpTree(basicBlocks);
+			}
 			assert(basicBlocks.size() == 1);
 			Node decomposedGraph = basicBlocks.iterator().next();
 			
@@ -176,7 +169,6 @@ public class StructuralAnalysisEngine {
 			if (!seen.contains(node)) {
 				if (!node.isFunctionNode()) {
 					BasicBlockMatcher bbpm = new BasicBlockMatcher();
-					
 					if (bbpm.match(node, treeStart, currentGraph)) {
 						seen.addAll(bbpm.getBlock().getContainedNodes());
 						basicBlocks.add(bbpm.getBlock());
@@ -220,7 +212,7 @@ public class StructuralAnalysisEngine {
 			}
 		}
 	}
-
+	
 	private void buildDominatorTree(Collection<Node> reachableNodes, Node treeStart) {
 
 		for (Node node : reachableNodes) {

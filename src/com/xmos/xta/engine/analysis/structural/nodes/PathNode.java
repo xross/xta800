@@ -75,8 +75,8 @@ public class PathNode extends Node {
 
 	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new TreeSet<Node>();
-		for (Node loop : m_nodes) {
-			containedNodes.addAll(loop.getContainedNodes());
+		for (Node path : m_nodes) {
+			containedNodes.addAll(path.getContainedNodes());
 		}
 		return containedNodes;
 	}

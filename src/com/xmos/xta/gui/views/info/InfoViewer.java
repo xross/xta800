@@ -1,0 +1,174 @@
+package com.xmos.xta.gui.views.info;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPartSite;
+
+import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.engine.references.ReferenceFactory;
+import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
+import com.xmos.xta.gui.Broadcaster;
+import com.xmos.xta.gui.GuiEngine;
+
+abstract class InfoViewer {
+	private Composite m_parent;
+	private Display m_display;
+	private TableViewer m_viewer;
+	private List<Node> m_selectedNodes;
+
+	abstract InfoViewerContentProvider createContentProvider();
+	abstract InfoViewerLabelProvider createLabelProvider();
+	abstract void createContextMenuActions(MenuManager menuMgr);	
+	abstract void enableContextMenuActions(int numInstructionTimeNodes, int numLoopIterationsNodes);
+	abstract void update();
+	abstract void updateHighlighting(List<Node> selectedNodes);
+	
+	InfoViewer(Display display, Composite parent, IWorkbenchPartSite site, TabFolder folders, String displayText) {
+		m_parent = parent;
+		m_display = display;
+		m_selectedNodes = new ArrayList<Node>();
+
+		TabItem tab = new TabItem(folders, SWT.NONE);
+		tab.setText(displayText);
+		Composite composite = new Composite(folders, SWT.NONE);
+		composite.setLayout(new FillLayout());
+		m_viewer = new TableViewer(composite);
+		tab.setControl(composite);
+		
+		final InfoSorter unknownSorter = new InfoSorter();
+		m_viewer.setSorter(unknownSorter);
+
+		Table table = m_viewer.getTable();
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
+
+		InfoViewerContentProvider contentProvider = createContentProvider();;
+		InfoViewerLabelProvider labelProvider = createLabelProvider();
+
+		for (int i = 0; i < labelProvider.getColumnNames().length; ++i) {
+			TableColumn tableColumn = new TableColumn(table, labelProvider
+					.getColumnAligmnments()[i]);
+			tableColumn.setText(labelProvider.getColumnNames()[i]);
+			tableColumn.setWidth(labelProvider.getColumnWidths()[i]);
+		}
+		m_viewer.setContentProvider(contentProvider);
+		m_viewer.setLabelProvider(labelProvider);
+		for (final TableColumn col : m_viewer.getTable().getColumns()) {
+			col.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent event) {
+					int colIndex = 0;
+					if (col.getText().equals(InfoViewerLabelProvider.PC)) {
+						colIndex = 1;
+					} else if (col.getText().equals(InfoViewerLabelProvider.DESC)) {
+						colIndex = 2;
+					}
+					
+					unknownSorter.setColoumn(colIndex);
+					m_viewer.refresh();
+				}
+			});
+		}
+		
+		m_viewer.addDoubleClickListener(new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent event) {
+				if (m_selectedNodes.size() == 1) {					
+					Reference ref = ReferenceFactory.createReference("0x" + 
+							Integer.toHexString(m_selectedNodes.get(0).getStartPc()), ReferenceClass.LABEL_REF);
+					
+					Engine engine = GuiEngine.getEngine();
+					ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
+					
+					GuiEngine.setCodePoint(ref);
+					GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
+				}
+			}
+		});		
+
+		m_viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				ISelection selection = event.getSelection();
+
+				m_selectedNodes.clear();				
+				int numInstructionTimeNodes = 0;
+				int numLoopIterationsNodes = 0;
+				
+				for (Object object : ((IStructuredSelection)selection).toList()) {
+					Node node = (Node)object;			
+					
+					switch (node.getAttributes().getUnknownType()) {
+					case INSTRUCTION_TIME:
+						++numInstructionTimeNodes;
+						break;
+						
+					case LOOP_ITERATIONS:
+						++numLoopIterationsNodes;
+						break;
+					}
+					m_selectedNodes.add(node);
+				}
+				enableContextMenuActions(numInstructionTimeNodes, numLoopIterationsNodes);
+			}			
+		});		
+		
+		// Create the context menu
+		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		menuMgr.setRemoveAllWhenShown(false);
+		Menu menu = menuMgr.createContextMenu(getViewer().getControl());
+		getViewer().getControl().setMenu(menu);
+		site.registerContextMenu(menuMgr, getViewer());		
+		createContextMenuActions(menuMgr);	
+		menuMgr.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+     }
+
+	Composite getParent() {
+		return m_parent;
+	}
+
+	Display getDisplay() {
+		return m_display;
+	}
+
+	TableViewer getViewer() {
+		return m_viewer;
+	}
+	
+	List<Node> getSelectedNodes() {
+		return m_selectedNodes;
+	}
+	
+	void clear() {
+		m_viewer.setInput(null);
+	}
+	
+	int getNumInstructionTimeNodesSelected(ISelection selection) {
+		return 0;
+	}
+
+	int getNumLoopIterationsNodesSelected(ISelection selection) {
+		return 0;
+	}
+}
