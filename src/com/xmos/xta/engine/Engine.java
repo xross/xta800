@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -49,6 +50,8 @@ public class Engine implements Notifier {
 	public static final int ROUTE_ID_INVALID = -2;
 	public static final int ROUTE_ID_GLOBAL = -3;
 	
+	private static final boolean DEBUG = true;
+	
 	private XeLoader m_xeLoader;
 	private List<Route> m_routes;
 	private Collection<Reference> m_exclusions;
@@ -68,14 +71,14 @@ public class Engine implements Notifier {
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
 	private NodeCoreCollection<ControlFlowGraph> m_controlFlowGraph;
 	private NodeCoreCollection<InstructionDecoder> m_instructionDecoder;
-	private NodeCoreCollection<TreeSet<String>> m_functionNames;
+	private NodeCoreCollection<TreeMap<String, InstructionNode>> m_functionNames;
 	
 	public Engine(Config config) {		
 		m_xeObjects = new NodeCoreCollection<XeObject>();
 		m_structuralGraph = new NodeCoreCollection<StructureGraph>();
 		m_controlFlowGraph = new NodeCoreCollection<ControlFlowGraph>();
 		m_instructionDecoder = new NodeCoreCollection<InstructionDecoder>();
-		m_functionNames = new NodeCoreCollection<TreeSet<String>>();
+		m_functionNames = new NodeCoreCollection<TreeMap<String, InstructionNode>>();
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
 		m_exclusions = new ArrayList<Reference>();
@@ -92,7 +95,7 @@ public class Engine implements Notifier {
 	}
 
 	public Set<String> getFunctionNames(int nodeId, int coreId){
-		return m_functionNames.get(nodeId, coreId);
+		return m_functionNames.get(nodeId, coreId).keySet();
 	}
 	
 	public void notify(String message, String argument) {
@@ -873,12 +876,12 @@ public class Engine implements Notifier {
 		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
 		NodeCoreCollection<ControlFlowGraph> newCfg = new NodeCoreCollection<ControlFlowGraph>();
 		NodeCoreCollection<InstructionDecoder> newInstructionDecoder = new NodeCoreCollection<InstructionDecoder>();
-		NodeCoreCollection<TreeSet<String>> newFunctionNames = new NodeCoreCollection<TreeSet<String>>();
+		NodeCoreCollection<TreeMap<String, InstructionNode>> newFunctionNames = new NodeCoreCollection<TreeMap<String, InstructionNode>>();
 		for (int nodeId : xeLoader.getNodeIds()){
 			for (int coreId : xeLoader.getCoreIds(nodeId)){
 				InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config);
 				
-				newFunctionNames.add(nodeId, coreId, new TreeSet<String>());
+				newFunctionNames.add(nodeId, coreId, new TreeMap<String, InstructionNode>());
 				
 				if (!id.decode()) 
 					return false;
@@ -900,12 +903,35 @@ public class Engine implements Notifier {
 				
 				
 				for(InstructionNode inst : fh.getKnownFuncStarts()){
-					TreeSet<String> functionName =newFunctionNames.get(nodeId, coreId);
+					TreeMap<String, InstructionNode> functionName = newFunctionNames.get(nodeId, coreId);
 					String name = xeLoader.getSymbolTable(nodeId, coreId).functionName(inst.getStartPc());
-					assert(!functionName.contains(name));
-					functionName.add(name);
+					
+					if(functionName.containsKey(name)){
+						//the one with the lower pc will stay in the set and the other will take an auto-generated name.
+						
+						InstructionNode instNode = functionName.get(name);
+						
+						if(instNode.getStartPc() > inst.getStartPc()){
+							name = "unnamed function at 0x" + Integer.toHexString(inst.getStartPc());
+							functionName.put(name, inst);
+						} else if(instNode.getStartPc() < inst.getStartPc()){
+							String newName = "unnamed function at 0x" + Integer.toHexString(instNode.getStartPc());
+							functionName.put(newName, instNode);
+							functionName.put(name, inst);
+						} else {
+							assert(false);
+						}
+					} else {
+						assert(!functionName.containsKey(name));
+						functionName.put(name, inst);
+					}
 				}
 				
+				if (DEBUG) {
+					for(String fnName : newFunctionNames.get(nodeId, coreId).keySet()){
+						System.out.println(fnName +" -> 0x" + Integer.toHexString(newFunctionNames.get(nodeId, coreId).get(fnName).getStartPc()));
+					}
+				}
 				UnreachableCodeFinder uca = new UnreachableCodeFinder();
 				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
 	
@@ -923,6 +949,9 @@ public class Engine implements Notifier {
 		m_controlFlowGraph = newCfg;
 		m_structuralGraph = newStructuralGraph;
 		m_functionNames = newFunctionNames;
+		
+		
+		
 		return true;
 	}
 	

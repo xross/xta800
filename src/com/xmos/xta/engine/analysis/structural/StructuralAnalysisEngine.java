@@ -193,7 +193,6 @@ public class StructuralAnalysisEngine {
 			Node lastInstruction = endPoint.get(node);
 
 			for (Node branch : lastInstruction.getBranchTargets()) {
-				//node.getBranchTargets().add(cfgToStructure.get(branch));
 				node.addBranchTarget(cfgToStructure.get(branch));
 			}
 

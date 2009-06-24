@@ -254,17 +254,6 @@ public class RouteConstructor {
 			}
 		}
 		
-		//FIXME - the endNodes night have a single instruction but the start may be a block
-		if(start.isBlockNode()){
-			
-			//end nodes should be a list of instruction nodes - however due to the prune
-			//some of them may be blocks
-			
-			
-			
-			System.out.println("there is a block as the final node");
-		}
-		
 		if(endNodes.contains(start)){
 			endNodes.remove(start);
 		}
