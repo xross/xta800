@@ -1,7 +1,9 @@
 package com.xmos.xta.gui.views.viewnode;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
@@ -20,6 +22,8 @@ public abstract class ViewNode {
     protected long m_numIterations;
     protected boolean m_isSelected;
 	
+    private List<ViewNode> m_children;
+    
     public ViewNode(Node treeNode) {
     	m_treeNode = treeNode;
     	m_lineWidth = 0;
@@ -34,6 +38,8 @@ public abstract class ViewNode {
 	    m_pixelsY = 0;
 
 		m_isSelected = false;
+		
+		m_children = new ArrayList<ViewNode>();
     }
     
     public void setLineWidth(int lineWidth) {
@@ -87,5 +93,21 @@ public abstract class ViewNode {
 
 	public String getToolTipText() {
 		return m_treeNode.getAttributes().getTimingDetails();
+	}
+
+	public void addChild(ViewNode child) {
+		m_children.add(child);
+	}
+	
+	public List<ViewNode> getChildren() {
+		return m_children;
+	}
+
+	public void drawConnection(Display display, GC gc, int x1, int y1, int x2, int y2) {
+    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+        gc.setLineWidth(m_lineWidth + 1);
+		gc.drawLine(x1, y1, x2, y2);
+		gc.setLineWidth(m_lineWidth);
+
 	}
 }

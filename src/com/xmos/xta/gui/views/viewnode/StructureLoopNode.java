@@ -1,13 +1,14 @@
 package com.xmos.xta.gui.views.viewnode;
-/*
+
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
-import com.xmos.xta.gui.nodes.Node;
 
-public class StructureLoopNode extends StructureNode {
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
+
+public class StructureLoopNode extends ViewNode {
     public static final boolean DEBUG = false;
 
     private int m_borderX = 4;
@@ -41,8 +42,7 @@ public class StructureLoopNode extends StructureNode {
 
 	public int getChildrenX() {
 		int pixels = 0;
-		for (Node treeNode : m_treeNode.getChildren()) {
-			StructureNode child = treeNode.getStructureNode();
+		for (ViewNode child : getChildren()) {
 			if (child != null) {
 				pixels += child.getPixelsX();
 			}
@@ -52,8 +52,7 @@ public class StructureLoopNode extends StructureNode {
 
 	public int getChildrenY() {
 		int pixels = 0;
-		for (Node treeNode : m_treeNode.getChildren()) {
-			StructureNode child = treeNode.getStructureNode();
+		for (ViewNode child : getChildren()) {
 			if (child != null) {
 				int childPixels = child.getPixelsY();
 				if (childPixels > pixels)
@@ -82,8 +81,7 @@ public class StructureLoopNode extends StructureNode {
         int mid = scale(m_pixelOffsetX + (getPixelsX() / 2), scale);
     	int childOffsetX = m_pixelsX / 2;
     	int childTop = scale(m_pixelOffsetY + m_connectionY, scale);
-		for (Node treeNode : m_treeNode.getChildren()) {
-			StructureNode child = treeNode.getStructureNode();
+		for (ViewNode child : getChildren()) {
 			if (child != null) {
 	    		child.draw(display, gc, scale);
 	    		int childX = child.getPixelsX();
@@ -102,8 +100,7 @@ public class StructureLoopNode extends StructureNode {
 		m_pixelOffsetY = yOffset;
 
         int childOffsetX = m_borderX;
-		for (Node treeNode : m_treeNode.getChildren()) {
-			StructureNode child = treeNode.getStructureNode();
+		for (ViewNode child : getChildren()) {
 			if (child != null) {
 	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_connectionY);
 	    		childOffsetX +=  child.getPixelsX();
@@ -112,8 +109,7 @@ public class StructureLoopNode extends StructureNode {
 	}
 
 	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
-		for (Node treeNode : m_treeNode.getChildren()) {
-			StructureNode child = treeNode.getStructureNode();
+		for (ViewNode child : getChildren()) {
 			child.buildClickAreas(clickAreas);
     	}
     	clickAreas.add(this);
@@ -128,4 +124,3 @@ public class StructureLoopNode extends StructureNode {
 		return false;
 	}
 }
-*/

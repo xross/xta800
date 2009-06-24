@@ -90,7 +90,7 @@ public class Structure extends Command {
     		if (m_nodeIdSet) {
 	    		nodes = getCollection(engine.getRoute(m_routeId).getNode(m_nodeId));			
 		    } else {
-			    nodes =getCollection( engine.getRoute(m_routeId).getSubRoute());
+			    nodes = getCollection(engine.getRoute(m_routeId).getSubRoute());
 		    }
 		}		
 		StructureDisplayer displayer = new StructureDisplayer(console, engine.getVerbosity());

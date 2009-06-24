@@ -1,18 +1,17 @@
 package com.xmos.xta.gui.views.viewnode;
-/*
+
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
-import com.xmos.xta.gui.nodes.Node;
 
-public class StructurePathNode extends StructureNode {
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
+
+public class StructurePathNode extends ViewNode {
     public static final boolean DEBUG = false;
 
-    private int m_blockX = 10;
-    private int m_blockY = 20;
-    private int m_connectorY = 7;
+    private int m_connectorLen = 7;
     private int m_borderX = 5;
     private int m_borderY = 5;
 
@@ -24,108 +23,97 @@ public class StructurePathNode extends StructureNode {
 	public StructurePathNode(Node treeNode) {
 		super(treeNode);
 		
-		m_pixelsX = m_blockX + (2 * m_borderX);
-		m_pixelsY = m_blockY + m_connectorY + m_borderY;
+		m_pixelsX = 2 * m_borderX;
+		m_pixelsY = 2 * m_borderY;
 	}
 
 	public int getPixelsX() {
-		int pixels = getChildrenX() + 2 * m_borderX;
-		if (pixels < m_pixelsX)
-			pixels = m_pixelsX;
-
-		if (DEBUG) System.out.printf("StructurePath X %d\n", pixels);
-		return pixels;
+		return getChildrenX() + m_pixelsX;
 	}
 
 	public int getPixelsY() {
-		int pixels = getChildrenY() + m_pixelsY;
-		if (DEBUG) System.out.printf("StructurePath Y %d\n", pixels);
-		return pixels;
+		return getChildrenY() + m_pixelsY;
 	}
 
 	public int getChildrenX() {
 		int pixels = 0;
-		for (Node treeNode : m_treeNode.getChildren()) {
-			if (!treeNode.isBlockNode()) {
-				StructureNode child = treeNode.getStructureNode();
-				pixels += child.getPixelsX();
-			}
+		for (ViewNode child : getChildren()) {
+			pixels += child.getPixelsX();
 		}
+		pixels += (getChildren().size() - 1) * m_connectorLen;
 		return pixels;
 	}
 
 	public int getChildrenY() {
 		int pixels = 0;
-		for (Node treeNode : m_treeNode.getChildren()) {
-			if (!treeNode.isBlockNode()) {
-				StructureNode child = treeNode.getStructureNode();
-				int childPixels = child.getPixelsY();
-				if (childPixels > pixels)
-					pixels = childPixels;
-			}
+		for (ViewNode child : getChildren()) {
+			int childPixels = child.getPixelsY();
+			if (childPixels > pixels)
+				pixels = childPixels;
 		}
 		return pixels;
 	}
 
 	public void draw(Display display, GC gc, double scale) {
-        if (DEBUG) System.out.printf("Draw StructurePath %d,%d,%f\n",
-        		m_pixelOffsetX, m_pixelOffsetY, scale);
-
         gc.setLineWidth(m_lineWidth);
-        m_x = scale(m_pixelOffsetX + m_borderX, scale);
+        m_x = scale(m_pixelOffsetX, scale);
         m_y = scale(m_pixelOffsetY, scale);
-        m_width = scale(getPixelsX() - (2 * m_borderX), scale);
-        m_height = scale(m_pixelsY - m_borderY - m_connectorY, scale);
+        m_width = scale(getPixelsX(), scale);
+        m_height = scale(getPixelsY(), scale);
 
-    	gc.setAlpha((int)(255.0 * m_weight));
-        gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+        gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
     	gc.fillRectangle(m_x, m_y, m_width, m_height);
 
-    	gc.setAlpha(255);
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-        
-        if (m_isSelected) gc.setLineWidth(m_lineWidth + 1);
-    	gc.drawRectangle(m_x, m_y, m_width, m_height);
-        if (m_isSelected) gc.setLineWidth(m_lineWidth);
+       
+        if (m_isSelected) {
+        	gc.setLineWidth(m_lineWidth + 1);
+        	gc.drawRectangle(m_x, m_y, m_width, m_height);
+        	gc.setLineWidth(m_lineWidth);
+        }
 
+        boolean first = true;
     	int childOffsetX = m_borderX;
-    	int childTop = scale(m_pixelOffsetY + m_pixelsY, scale);
-    	int lineTop = scale(m_pixelOffsetY + m_pixelsY - m_borderY - m_connectorY, scale);
-		for (Node treeNode : m_treeNode.getChildren()) {
-			if (!treeNode.isBlockNode()) {
-				StructureNode child = treeNode.getStructureNode();
-	    		child.draw(display, gc, scale);
-	    		int childX = child.getPixelsX();
-	    		
-	    		int lineX = scale(m_pixelOffsetX + childOffsetX + (childX / 2), scale);
-	        	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-	            gc.drawLine(lineX, lineTop, lineX, childTop);
-	
-	            childOffsetX += childX;
-			}
+    	int lineY = scale(m_pixelOffsetY + (getPixelsY() / 2), scale);
+    	int lineLeft = 0;
+    	int lineRight = 0;
+		for (ViewNode child : getChildren()) {
+    		child.draw(display, gc, scale);
+    		int childX = child.getPixelsX();
+    		
+        	if (!first) {
+        		drawConnection(display, gc, lineLeft, lineY, lineRight, lineY);
+        	} else {
+        		first = false;
+        	}
+
+            lineLeft = scale(m_x + childOffsetX + childX, scale);
+            lineRight = scale(m_x + childOffsetX + childX + m_connectorLen, scale);
+            childOffsetX += childX + m_connectorLen;
     	}
-	}
+
+		drawConnection(display, gc, m_x, lineY, m_x + m_borderX, lineY);
+		drawConnection(display, gc, lineLeft, lineY, m_x + m_width, lineY);
+    }
 
 	public void annotateXy(int xOffset, int yOffset) {
-        m_pixelOffsetX = xOffset;
+		if (DEBUG) System.out.printf("Annotate StructurePath (%d, %d\n", xOffset, yOffset);
+
+		m_pixelOffsetX = xOffset;
 		m_pixelOffsetY = yOffset;
 
     	int childOffsetX = m_borderX;
-		for (Node treeNode : m_treeNode.getChildren()) {
-			if (!treeNode.isBlockNode()) {
-				StructureNode child = treeNode.getStructureNode();
-	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_pixelsY);
-	            childOffsetX += child.getPixelsX();
-			}
+    	int childrenY = getChildrenY();
+		for (ViewNode child : getChildren()) {
+			int childY = child.getPixelsY();
+    		child.annotateXy(xOffset + childOffsetX, yOffset + m_borderY + ((childrenY - childY) / 2));
+            childOffsetX += child.getPixelsX() + m_connectorLen;
     	}
 	}
 
 	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
-		for (Node treeNode : m_treeNode.getChildren()) {
-			if (!treeNode.isBlockNode()) {
-				StructureNode child = treeNode.getStructureNode();
-				child.buildClickAreas(clickAreas);
-			}
+		for (ViewNode child : getChildren()) {
+			child.buildClickAreas(clickAreas);
     	}
     	clickAreas.add(this);
 	}
@@ -139,4 +127,3 @@ public class StructurePathNode extends StructureNode {
 		return false;
 	}
 }
-*/

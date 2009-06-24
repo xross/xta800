@@ -1,23 +1,27 @@
 package com.xmos.xta.gui.views.structure;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
+import com.xmos.xta.engine.analysis.routes.Route;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.views.ZoomedCanvasView;
+import com.xmos.xta.gui.views.viewnode.StructureBlockNode;
+import com.xmos.xta.gui.views.viewnode.StructureFunctionNode;
+import com.xmos.xta.gui.views.viewnode.StructureLoopNode;
+import com.xmos.xta.gui.views.viewnode.StructurePathNode;
+import com.xmos.xta.gui.views.viewnode.StructureSectionNode;
+import com.xmos.xta.gui.views.viewnode.ViewNode;
 
 public class StructureView extends ZoomedCanvasView {
 
 	public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.gui.views.structure.Structure";
 
-    private int m_numTreeNodes;
-
+    private ViewNode m_viewNode;
+    
 	public StructureView() {
 		super();
 		if (DEBUG) System.out.printf("Structure()\n");			
@@ -29,106 +33,34 @@ public class StructureView extends ZoomedCanvasView {
 		m_borderX = 10;
 		m_borderY = 10;
 		m_lineWidth = 1;
-		m_numTreeNodes = 0;
 	}
 
-	@Override
-	protected void annotateTree(boolean isSelctionChange) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void buildClickAreas() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void drawCanvas(GC gc) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void initialiseTree() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void nodeCoreChanged() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void updatePixelsXy() {
-		// TODO Auto-generated method stub
-		
-	}
-
-/*    protected void buildClickAreas() {
+    protected void buildClickAreas() {
     	m_clickAreas.clear();
-    	if (m_rootNode != null) {
-    		m_rootNode.getStructureNode().buildClickAreas(m_clickAreas);
+    	if (m_viewNode != null) {
+    		m_viewNode.buildClickAreas(m_clickAreas);
     	}
     }
 
     protected void annotateTree(boolean isSelctionChange) {
-    	List<Node> nodesWithBlockParents = new ArrayList<Node>();
-    	Iterator<Node> iter = m_selectedNodes.iterator();
-		while (iter.hasNext()) {
-			Node node = iter.next();
-			if (node.isBlockNode())
-				nodesWithBlockParents.add(node.getParentNode());
-			else
-				nodesWithBlockParents.add(node);
-		}
-		m_selectedNodes = nodesWithBlockParents;
-		
     	buildClickAreas();
-
-		m_numTreeNodes = 0;
-		annotateTree(m_doubleClickNode,
-				getNumIterations(m_doubleClickNode),
-				getTotalWeight(m_doubleClickNode));
+		m_viewNode = buildViewNode(m_doubleClickNode);
 		
 		// Build up a new list of click areas and then swap to ensure the old ones are available
 		// for double clicks
-		if (m_doubleClickNode != null) {
-			m_doubleClickNode.getStructureNode().annotateXy(m_borderX, m_borderY);
+		if (m_viewNode != null) {
+			m_viewNode.annotateXy(m_borderX, m_borderY);
 			updatePixelsXy();
 		}
     }
-
-    private long getNumIterations(Node start) {
-    	if ((start == null) || start.isRouteNode()) 
-    		return 1;
-    	
-		return (start.getNumIterations() * getNumIterations(start.getParentNode()));
-	}
-
-    private double getTotalWeight(Node start) {
-    	if ((start == null) || start.isRouteNode()) { 
-    		return 1;
-    	} else {
-    		Node parent = start.getParentNode();
-    		if (parent.isRouteNode()) {
-    			return start.getTimeTaken();
-    		} else {
-    			return getTotalWeight(parent);
-    		}
-    	}
-	}
 
     protected void updatePixelsXy() {
     	if (m_doubleClickNode == null) {
 			m_pixelsX = 0;
 			m_pixelsY = 0;
 		} else {
-			m_pixelsX = (m_borderX  * 2) + m_doubleClickNode.getStructureNode().getPixelsX();
-			m_pixelsY = (m_borderY * 2) + m_doubleClickNode.getStructureNode().getPixelsY();
+			m_pixelsX = (m_borderX  * 2) + m_viewNode.getPixelsX();
+			m_pixelsY = (m_borderY * 2) + m_viewNode.getPixelsY();
 		}
     }
     
@@ -145,45 +77,39 @@ public class StructureView extends ZoomedCanvasView {
         	return;
         
 		gc.setLineWidth(m_lineWidth);
-		m_doubleClickNode.getStructureNode().draw(m_display, gc, m_scale);
+		m_viewNode.draw(m_display, gc, m_scale);
     }
     
-	private boolean annotateTree(Node node, long numIterations, double totalTime) {
+	private ViewNode buildViewNode(Node node) {
 		if (node == null)
-			return false;
-    	m_numTreeNodes++;
+			return null;
 		
-    	double weight = 0;
-    	if (totalTime > 0) {
-    		weight = (numIterations * node.getTimeTakenThis()) / totalTime;
-    	}
-
     	boolean selected = m_selectedNodes.contains(node);
-
-    	StructureNode structureNode = node.getStructureNode();
-
-    	double childrenWeight = 0;
+    	ViewNode viewNode = null;
+    	
+    	if (node.isBlockNode()) {
+    		return new StructureBlockNode(node);
+    	} else if (node.isFunctionNode()) {
+    		viewNode = new StructureFunctionNode(node);
+    	} else if (node.isSectionNode()) {
+    		viewNode = new StructureSectionNode(node); 
+    	} else if (node.isLoopNode()) {
+    		viewNode = new StructureLoopNode(node); 
+    	} else if (node.isSelfLoopNode()) {
+    		viewNode = new StructureLoopNode(node); 
+    	} else {
+    		viewNode = new StructurePathNode(node);
+    	}
+    	
         for (Node subNode : node.getChildren()) {
-    		if (subNode.isPathNode() || subNode.isLoopNode()) {
-            	if (node.isRouteNode())
-            		totalTime = subNode.getTimeTaken(); // Re-compute total time for sub tree
-
-    			long subNumIterations = numIterations;
-    			if (node.isLoopNode())
-    				subNumIterations = subNode.getNumIterations() * numIterations;
-    			
-    			selected |= annotateTree(subNode, subNumIterations, totalTime);
-    			
-    			StructureNode subStructureNode = subNode.getStructureNode();
-    			if (subStructureNode != null) {
-    				childrenWeight += subStructureNode.getWeight();
-    			}
-    		}
+        	ViewNode child = buildViewNode(subNode);
+        	if (child != null)
+        		viewNode.addChild(child);
         }
+        viewNode.setLineWidth(m_lineWidth);
+        viewNode.setIsSelected(selected);
 
-    	structureNode.setLineWidth(m_lineWidth);
-        structureNode.setIsSelected(selected);
-   		return selected;
+    	return viewNode;
 	}
 
     protected void nodeCoreChanged() {
@@ -192,21 +118,15 @@ public class StructureView extends ZoomedCanvasView {
 
     protected void initialiseTree() {
 		if (DEBUG) System.out.printf("Structure: initialiseTree\n");
-		m_routeInfo = GuiEngine.getRouteInfo();
-		if (m_routeInfo != null) {
-			m_rootNode = m_routeInfo.getRouteNode();
+		Route route = GuiEngine.getEngine().getSelectedRoute();
+		if (route != null) {
+			m_rootNode = route.getSubRoute();
 			m_doubleClickNode = m_rootNode;
-			m_selectedNodes = m_routeInfo.getSelectedNodes();
+			m_selectedNodes = GuiEngine.getSelectedNodes();
 		} else {
 			m_rootNode = null;
 			m_doubleClickNode = null;
 			m_selectedNodes.clear();
 		}
 	}
-
-	public void setWeightCumulative(boolean cumulative) {
-		m_weightIsCumulative = cumulative;
-		refreshView();
-		annotateTree(false);
-	}*/
 }
