@@ -364,7 +364,7 @@
       <actionSet
             id="tools_xta.actionSet"
             label="controls"
-            visible="true">
+            visible="false">
          <action
                class="com.xmos.xta.gui.actions.ActionCore"
                icon="icons/core.png"
@@ -406,6 +406,15 @@
                toolbarPath="Normal/controls">
          </action>
       </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="com.xmos.xta.gui.XtaPerspective">
+         <actionSet
+               id="tools_xta.actionSet">
+         </actionSet>
+      </perspectiveExtension>
    </extension>
   
 </plugin>
