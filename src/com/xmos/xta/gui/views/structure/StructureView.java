@@ -120,7 +120,7 @@ public class StructureView extends ZoomedCanvasView {
 		if (DEBUG) System.out.printf("Structure: initialiseTree\n");
 		Route route = GuiEngine.getEngine().getSelectedRoute();
 		if (route != null) {
-			m_rootNode = route.getSubRoute();
+			m_rootNode = route.getNode();
 			m_doubleClickNode = m_rootNode;
 			m_selectedNodes = GuiEngine.getSelectedNodes();
 		} else {
