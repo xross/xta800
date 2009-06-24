@@ -911,10 +911,10 @@ public class Engine implements Notifier {
 						
 						InstructionNode instNode = functionName.get(name);
 						
-						if(instNode.getStartPc() > inst.getStartPc()){
+						if(instNode.getStartPc() < inst.getStartPc()){
 							name = "unnamed function at 0x" + Integer.toHexString(inst.getStartPc());
 							functionName.put(name, inst);
-						} else if(instNode.getStartPc() < inst.getStartPc()){
+						} else if(instNode.getStartPc() > inst.getStartPc()){
 							String newName = "unnamed function at 0x" + Integer.toHexString(instNode.getStartPc());
 							functionName.put(newName, instNode);
 							functionName.put(name, inst);
