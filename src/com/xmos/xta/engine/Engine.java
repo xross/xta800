@@ -50,8 +50,6 @@ public class Engine implements Notifier {
 	public static final int ROUTE_ID_INVALID = -2;
 	public static final int ROUTE_ID_GLOBAL = -3;
 	
-	private static final boolean DEBUG = true;
-	
 	private XeLoader m_xeLoader;
 	private List<Route> m_routes;
 	private Collection<Reference> m_exclusions;
@@ -901,7 +899,6 @@ public class Engine implements Notifier {
 				if (!fh.addFunctions()) 
 					return false;
 				
-				
 				for(InstructionNode inst : fh.getKnownFuncStarts()){
 					TreeMap<String, InstructionNode> functionName = newFunctionNames.get(nodeId, coreId);
 					String name = xeLoader.getSymbolTable(nodeId, coreId).functionName(inst.getStartPc());
@@ -927,11 +924,6 @@ public class Engine implements Notifier {
 					}
 				}
 				
-				if (DEBUG) {
-					for(String fnName : newFunctionNames.get(nodeId, coreId).keySet()){
-						System.out.println(fnName +" -> 0x" + Integer.toHexString(newFunctionNames.get(nodeId, coreId).get(fnName).getStartPc()));
-					}
-				}
 				UnreachableCodeFinder uca = new UnreachableCodeFinder();
 				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
 	
@@ -939,7 +931,7 @@ public class Engine implements Notifier {
 				newCfg.add(nodeId, coreId, cfg);
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
-				if (!sae.analyse(this))
+				if (!sae.analyse(this, newFunctionNames.get(nodeId, coreId)))
 					return false;
 				
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
@@ -949,8 +941,6 @@ public class Engine implements Notifier {
 		m_controlFlowGraph = newCfg;
 		m_structuralGraph = newStructuralGraph;
 		m_functionNames = newFunctionNames;
-		
-		
 		
 		return true;
 	}

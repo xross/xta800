@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.NodeCoreCollection;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
@@ -44,9 +45,9 @@ public class StructuralAnalysisEngine {
 		setUpPatternMatcher();
 	}
 
-	public boolean analyse(Engine engine) {
+	public boolean analyse(Engine engine, TreeMap<String, InstructionNode> treeMap) {
 		m_functionStartPcs = new TreeMap<Integer, FunctionNode>();
-		return buildStructureGraph(engine);
+		return buildStructureGraph(engine, treeMap);
 	}
 
 	public StructureGraph getStructureGraph() {
@@ -86,14 +87,14 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	private boolean buildStructureGraph(Engine engine) {
+	private boolean buildStructureGraph(Engine engine, TreeMap<String, InstructionNode> treeMap) {
 		Collection<Node> functions = buildGraph(m_controlFlowGraph.getFunctionStartInstructions(), 
-				m_functionStartPcs, engine, true);
+				m_functionStartPcs, engine, true, treeMap);
 		if (functions == null) {
 			return false;
 		}
 		Collection<Node> threads = buildGraph(m_controlFlowGraph.getThreadStartInstructions(), 
-				m_functionStartPcs, engine, false);
+				m_functionStartPcs, engine, false, treeMap);
 		if (threads == null) {
 			return false;
 		}		
@@ -110,7 +111,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	private Collection<Node> buildGraph(Collection<InstructionNode> graphStartNodes, Map<Integer, FunctionNode> startPcs,
-			Engine engine, boolean isFunction) {
+			Engine engine, boolean isFunction, TreeMap<String, InstructionNode> treeMap) {
 
 		Collection<Node> graphs = new TreeSet<Node>();
 
@@ -118,8 +119,11 @@ public class StructuralAnalysisEngine {
 		Collections.sort(orderedGraphs);
 		for (Node graphStart : orderedGraphs) {
 
-			String functionName = graphStart.getInstructions().getFirst().getFunctionName();
-
+			
+			//String functionName = graphStart.getInstructions().getFirst().getFunctionName();
+			String functionName = getFunctionName(graphStart, treeMap);
+			
+			
 			engine.provideFeedback("Processing " + functionName);
 
 			Collection<Node> currentGraph = new TreeSet<Node>();
@@ -155,6 +159,18 @@ public class StructuralAnalysisEngine {
 			
 		}
 		return graphs;
+	}
+
+	private String getFunctionName(Node graphStart,
+			TreeMap<String, InstructionNode> treeMap) {
+		for(String functionName : treeMap.keySet()){
+			InstructionNode instNode = treeMap.get(functionName);
+			if(instNode.getStartPc() == graphStart.getStartPc()){
+				return functionName;
+			}
+		}
+		assert(false);
+		return null;
 	}
 
 	private Node reduceGraphToBasicBlocks(Collection<Node> basicBlocks, Node initialBasicBlock,
