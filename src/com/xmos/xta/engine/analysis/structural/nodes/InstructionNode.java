@@ -133,49 +133,6 @@ public class InstructionNode extends Node {
 		return m_inst;
 	}
 	
-	// --------------------------------------------------------------------- //
-	// Statistics Gathering Methods
-	// --------------------------------------------------------------------- //
-	public double getTimeTakenRelative(Case c) {
-		if (!m_attributes.getIsAbsolute()) {
-		    return m_attributes.getInstructionTimeTaken();
-		}
-		return 0;
-	}
-
-	public double getTimeTakenAbsolute(Case c) {
-		if (m_attributes.getIsAbsolute()) {
-		    return m_attributes.getInstructionTimeTaken();
-		}
-		return 0;
-	}
-
-	public long getNumCyclesRelative(Case c) {
-		return m_attributes.getInstructionNumCycles();
-	}
-
-	public long getNumCyclesAbsolute(Case c) {
-		return m_attributes.getInstructionNumCycles();
-	}
-
-	public long getNumInstructionsRelative(Case c) {
-		return 1;
-	}
-
-	public long getNumInstructionsAbsolute(Case c) {
-		return 1;
-	}
-
-	public long getNumFNopsRelative(Case c) {
-		assert(false);
-		return 0;
-	}
-
-	public long getNumFNopsAbsolute(Case c) {
-		assert(false);
-		return 0;
-	}
-
 	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
 		assert(false);
 	}

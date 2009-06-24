@@ -306,6 +306,9 @@ public abstract class Node implements Comparable<Node>{
 		return null;
 	}
 	
+	public boolean isSectionOptional() {
+		return false;
+	}	
 
 	/*
 	public void addEndIbufferDueToWorst(InstructionBuffer ib){

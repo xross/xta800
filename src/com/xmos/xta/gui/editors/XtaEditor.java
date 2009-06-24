@@ -45,6 +45,7 @@ import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
@@ -108,9 +109,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	private HashMap<Annotation, Position> m_currentHighlightAnnotationPositions;
     private boolean m_hasHighlightedLines;
     
-    private Node m_currentPathRoot;
-    private Node m_selectedNode;
-    
+    private Node m_selectedNode;    
     private final String m_type;
     private final String m_fileName;
     private InputLine m_startPointLine;
@@ -118,7 +117,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private Map<Integer,InputLine> m_endPointLineIndexes;
     private HashSet<Integer> m_excludedIndexes;
     private boolean m_routeMaskEnabled;
-	private HashSet<XtaInstruction> m_prevFnops = new HashSet<XtaInstruction>();
+	private HashSet<XtaInstruction> m_previousFnops;
 
     public XtaEditor(final String type, String fileName) {
 		if (DEBUG) System.out.printf("XtaEditor()\n");
@@ -130,12 +129,13 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	setSourceViewerConfiguration(new XtaConfiguration(this));
     	setDocumentProvider(new XtaDocumentProvider());
 
-    	m_currentPathRoot = null;
     	m_selectedNode = null;
         m_hasHighlightedLines = false;
         
         m_endPointLineIndexes = new TreeMap<Integer,InputLine>();
         m_excludedIndexes = new HashSet<Integer>();
+        
+        m_previousFnops = new HashSet<XtaInstruction>();
     }
 
     public void createPartControl(Composite parent) {
@@ -373,60 +373,59 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	
     private void updateFnops() {
 		if (DEBUG) System.out.printf("XtaEditor: updateFnops\n"); 
-/* TODO
-    	Node pathRoot = null;
-    	if (m_selectedNode != null) {
-    		pathRoot = m_selectedNode.getPathRoot();
-    	}
-    	// Don't bother unless the selected path has changed
-    	if (pathRoot == m_currentPathRoot)
-    		return;
 
-    	m_currentPathRoot = pathRoot;
+    	if (m_selectedNode == null)
+    		return;
 		
     	HashSet<XtaInstruction> toAdd = new HashSet<XtaInstruction>();
     	HashSet<XtaInstruction> toRemove = new HashSet<XtaInstruction>();
     	HashSet<XtaInstruction> toKeep  = new HashSet<XtaInstruction>();
     	
-    	//make list of new fnops to add
-    	if (pathRoot != null) {
-    		Vector<XtaInstruction> fnops = new Vector<XtaInstruction>();
-    		m_currentPathRoot.getFnopPcs(fnops);
-    		for(XtaInstruction inst: fnops){
-    			if(m_prevFnops.contains(inst)){
-    				toKeep.add(inst);
-    			} else {
-    				toAdd.add(inst);
-    			}
-    		}
-    	}
+    	// Gets a list of all the fnops for the selected node...
+   		final Collection<XtaInstruction> fnops = new Vector<XtaInstruction>();
+   		m_selectedNode.traverse(0, new DefaultNodeTraverser() {
+   		    public boolean foundInstructionNode(Node node, int depth) {
+   		    	XtaInstruction instruction = node.getInstructions().getFirst();
+   		    	if (instruction.isFnop()) {   		    		
+   	   		    	fnops.add(instruction);
+   		    	}
+   		    	return true;
+   		    }   			
+   		});
+   		
+   		// Makes a list of all the fnops to add.
+   		for (XtaInstruction inst: fnops){
+   			if (m_previousFnops.contains(inst)){
+   				toKeep.add(inst);
+   			} else {
+   				toAdd.add(inst);
+   			}
+   		}
     
-    	//make list of old fnops to remove
-    	toRemove = m_prevFnops;
+    	// Makes a list of old fnops to remove
+    	toRemove = m_previousFnops;
     	toRemove.removeAll(toKeep);
     	
-    	//remove old fnops
+    	// Removes the old fnops
     	for (XtaInstruction inst : toRemove) {
-			//TODO
     		removeFnop(inst.getPc());
 		}
     	
-    	//add new fnops
+    	// Adds the new fnops
     	for (XtaInstruction inst : toAdd) {
 			addFnop(inst.getPc());
 		}
     	
-    	m_prevFnops = toKeep;
-    	m_prevFnops.addAll(toAdd);
+    	m_previousFnops = toKeep;
+    	m_previousFnops.addAll(toAdd);
     	
 	    if (m_type.equals(XtaDocumentPartitioner.DISASSEMBLY)) {
 		    ((InputDisassembly)getEditorInput()).updateLineNumberMapping();
 	    } else {
 		    ((InputSource)getEditorInput()).updateLineNumberMapping();	    	
 	    }
-*/	    
 	}
-    
+        
     private void removeFnop(int pc) {
 		int fnopsRemoved = 0;
 		IDocument document = getDocument();
@@ -800,27 +799,18 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
      	m_setInstructionTimeAction = new Action("Set instruction time") {
      		public void run() {
-     			// TODO new InstructionTime(m_parent.getShell(), m_clickCodeRef);
+     			new InstructionTime(m_parent.getShell(), m_clickCodeRef);
      		}
      	};
      	setAction(SetInstructionTimeID, m_setInstructionTimeAction);
     }    
 
-    protected void addToExclusion(String toAdd) {
-/* TODO  	
-		Engine engine = GuiEngine.getEngine();
-		Constraint constraint = engine.getConstraint();
-		
-		String newString = "";
-		if (constraint.isValid())		
-			newString += constraint.getString() + " && ";
-		
-		engine.setConstraint(ConstraintFactory.createConstraint(engine, newString + toAdd));
+    protected void addToExclusion(String refString) {  	
+		GuiEngine.getEngine().addExclusion(refString);		
 		try {
 			PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 			getActivePage().showView(ControlView.ID);
-		} catch (PartInitException e) {}
-*/		
+		} catch (PartInitException e) {}	
 	}
 
 	protected void editorContextMenuAboutToShow(IMenuManager menu) {

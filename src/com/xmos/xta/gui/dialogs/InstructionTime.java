@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.gui.GuiEngine;
 
 public class InstructionTime extends XtaDialog {
@@ -29,19 +30,17 @@ public class InstructionTime extends XtaDialog {
     ModifyListener m_nsListener;
     ModifyListener m_cyclesListener;
     
-    public InstructionTime(Shell parent, Node node) {
-    	super(parent);
+    public InstructionTime(Shell parent, Reference reference) {
+    	super(parent);    	
     	m_nodes = new ArrayList<Node>();
-    	m_nodes.add(node);
+    	m_nodes.addAll(GuiEngine.getEngine().getSelectedRoute().getReferencedNodes(reference));
     	initialise();
     }
 
 	public InstructionTime(Shell parent, List<Node> nodes) {
     	super(parent);
     	assert(nodes.size() > 0);
-    	// Create a copy since the original list can be emptied by this dialog
-    	m_nodes = new ArrayList<Node>();
-    	m_nodes.addAll(nodes);
+    	m_nodes = nodes;
     	initialise();
     }
 

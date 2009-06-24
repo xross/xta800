@@ -1,13 +1,14 @@
 package com.xmos.xta.gui.views.viewnode;
-/*
+
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
-import com.xmos.xta.gui.nodes.Node;
 
-public class StructureRouteNode extends StructureNode {
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
+
+public class StructureRouteNode extends ViewNode {
     public static final boolean DEBUG = false;
 
     private int m_pathDividerGap = 5;
@@ -40,8 +41,7 @@ public class StructureRouteNode extends StructureNode {
 	public int getChildrenX() {
 		int pixels = 0;
 		int numChildren = 0;
-		for (Node treeNode : m_treeNode.getChildren()) {
-			StructureNode child = treeNode.getStructureNode();
+		for (ViewNode child : getChildren()) {
 			if (child != null) {
 				pixels += child.getPixelsX();
 				numChildren++;
@@ -55,8 +55,7 @@ public class StructureRouteNode extends StructureNode {
 
 	public int getChildrenY() {
 		int pixels = 0;
-		for (Node treeNode : m_treeNode.getChildren()) {
-			StructureNode child = treeNode.getStructureNode();
+		for (ViewNode child : getChildren()) {
 			if (child != null) {
 				int childPixels = child.getPixelsY();
 				if (childPixels > pixels)
@@ -72,8 +71,7 @@ public class StructureRouteNode extends StructureNode {
 
     	int childOffsetX = 0;
     	int childNum = 0;
-		for (Node treeNode : m_treeNode.getChildren()) {
-			StructureNode child = treeNode.getStructureNode();
+		for (ViewNode child : getChildren()) {
 			if (child != null) {
 	    		if (childNum > 0) {
 	        		drawDivider(display, gc, m_pixelOffsetX + childOffsetX + 
@@ -98,10 +96,8 @@ public class StructureRouteNode extends StructureNode {
         int top = scale(yOffset, scale);
         int bottom = scale(yOffset + getPixelsY(), scale);
 
-        gc.setAlpha(100);
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
     	gc.drawLine(x, top, x, bottom);
-        gc.setAlpha(255);
     }
 
 	public void annotateXy(int xOffset, int yOffset) {
@@ -110,8 +106,7 @@ public class StructureRouteNode extends StructureNode {
 
     	int childOffsetX = 0;
     	int childNum = 0;
-		for (Node treeNode : m_treeNode.getChildren()) {
-			StructureNode child = treeNode.getStructureNode();
+		for (ViewNode child : getChildren()) {
 			if (child != null) {
 	    		if (childNum > 0)
 	    			childOffsetX += m_pathDividerGap;
@@ -124,8 +119,7 @@ public class StructureRouteNode extends StructureNode {
     }
 
 	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
-		for (Node treeNode : m_treeNode.getChildren()) {
-			StructureNode child = treeNode.getStructureNode();
+		for (ViewNode child : getChildren()) {
 			child.buildClickAreas(clickAreas);
     	}
     }
@@ -134,4 +128,3 @@ public class StructureRouteNode extends StructureNode {
 		return false;
 	}
 }
-*/

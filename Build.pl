@@ -155,9 +155,7 @@ sub DoClean
   rmtree("$TOOLS_XTA/bin/xta_$platform");
 
   system("rm -rf $TOOLS_XTA/tmp");
-#  system("rm -rf $TOOLS_ECLIPSE/updateSite");
   system("rm -rf $TOOLS_XTA/bin");
-#  system("rm -rf $INSTALLPATH${SLASH}updateSite");
   system("rm -rf $INSTALLPATH${SLASH}xta_bin");
   system("rm -rf $INSTALLPATH${SLASH}xta_bin64");
 
@@ -176,6 +174,12 @@ sub DoRealClean
 
 sub DoPreBuild
 {
+  print(" + Building Generation Tools\n");
+  chdir("$TOOLS_XTA${SLASH}generation") 
+    or confess("Build failed to find $TOOLS_XTA${SLASH}generation\n");
+  system("$MAKE $MAKE_FLAGS");
+  confess() if ($? != 0);
+
   print(" + Generating files from Databases\n");
 
   CreateXtaFiles("reva", "Reva");
@@ -280,7 +284,7 @@ sub CreateXtaFiles
   my $version = shift;
    
   chdir("$ARCH_DBS_XML${SLASH}xs1_$versionDir") or die("Generation failed to find $version databases\n");
-  system("$INFR_TOOLS_CPP${SLASH}${BIN}${SLASH}XtaGeneration.exe XSystemDb${SLASH}XS1-040.xml $version");
+  system("$TOOLS_XTA${SLASH}${BIN}${SLASH}XtaGeneration.exe XSystemDb${SLASH}XS1-040.xml $version");
 
   print(" + Installing $version generated xta files\n");
   rename("XtaInstructionDecoder.java", "$TOOLS_XTA${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta${SLASH}engine${SLASH}instructions${SLASH}${version}XtaInstructionDecoder.java") 
