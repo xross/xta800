@@ -2,6 +2,7 @@ package com.xmos.xta.gui.actions;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jface.action.IAction;
@@ -17,15 +18,13 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate;
 import org.eclipse.ui.actions.ActionDelegate;
 
-import com.xmos.xeobject.Function;
-import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.GuiNotifier;
 
 public class ActionFunction extends ActionDelegate implements IPropertyChangeListener, 
                                                               IWorkbenchWindowPulldownDelegate {
-	private List<Function> m_functions;
+	private List<String> m_functions;
 	private SelectionListener m_listListener;
 	private String m_functionName;
 	private IAction m_action;
@@ -33,8 +32,7 @@ public class ActionFunction extends ActionDelegate implements IPropertyChangeLis
 	public ActionFunction() {
 		GuiEngine.addBroadcastListener(this);
 		
-		m_functions = new ArrayList<Function>();
-		
+		m_functions = new ArrayList<String>();
 		m_listListener = new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				assert(false);
@@ -79,23 +77,17 @@ public class ActionFunction extends ActionDelegate implements IPropertyChangeLis
 	public Menu getMenu(Control parent) {
 		Menu menu = new Menu(parent);
 		
-        for (final Function function : m_functions) {
+        for (final String function : m_functions) {
     		MenuItem item = new MenuItem(menu, SWT.NONE);
-    		item.setText(function.getText());
+    		item.setText(function);
     		item.addSelectionListener(m_listListener);
         }		
 		return menu;
 	}
 
 	private void updateState() {
-		m_functions.clear();
-		m_functionName = "";
-		
-    	XeObject xeObject = GuiEngine.getEngine().getXeObject();
-    	List<Function> functions = xeObject.getFunctions();
-    	Collections.sort(functions);
-    	m_functions.addAll(functions);
-    	
+    	m_functions = new LinkedList<String>(GuiEngine.getEngine().getFunctionNames());
+    	Collections.sort(m_functions);
     	m_action.setToolTipText("Select function to analyse");
 	}
 }

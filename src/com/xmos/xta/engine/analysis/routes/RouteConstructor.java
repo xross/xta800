@@ -85,48 +85,6 @@ public class RouteConstructor {
 
 		case PATH:
 			
-			/*
-			Set<Integer> startPcs = getStartPcs();
-			Set<Integer> endPcs = getEndPcs();
-
-			Collection<Node> startNodes = new TreeSet<Node>();
-			//Collection<Node> testStartNodes = new TreeSet<Node>();
-			Collection<Node> endNodes = new TreeSet<Node>();
-			//Collection<Node> testEndNodes = new TreeSet<Node>();
-			
-			//testStartNodes = getReferencedNodes(m_description.getStartPoint());
-			//testEndNodes = getReferencedNodes(m_description.getEndPoint());
-			
-			Map<Integer, TreeSet<Node>> pcToStruct = buildPcMap(m_structureGraph);
-			
-			for (int from : startPcs) {
-				if (pcToStruct.get(from) != null) {
-					TreeSet<Node> start = pcToStruct.get(from);
-					
-					for(Node node : start){
-						Node nodeToAdd = node;
-						if (nodeToAdd.getParent() != null 
-								&& nodeToAdd.getParent().getImmediateChildren().contains(nodeToAdd)
-								&& doesNotContainAnEndpoint(nodeToAdd.getParent(), endNodes)){
-							nodeToAdd = nodeToAdd.getParent();
-						}
-						startNodes.add(nodeToAdd);
-					}
-				} 
-			}
-			
-			for (int to : endPcs) {
-				if (pcToStruct.get(to) != null) {
-					endNodes.addAll(pcToStruct.get(to));
-				}
-			}
-			
-			
-			//System.out.println("old start nodes: " + startNodes);
-			//System.out.println("new start nodes: " + testStartNodes);
-			//System.out.println("old end nodes: " + endNodes);
-			//System.out.println("new end nodes: " + testEndNodes);
-			*/
 			Collection<Node> startNodes =getReferencedNodes(m_description.getStartPoint());
 			Collection<Node> endNodes = getReferencedNodes(m_description.getEndPoint());
 			
@@ -137,8 +95,6 @@ public class RouteConstructor {
 				m_structureGraph.removeLinks();
 				m_excludedRouteNodes = new TreeSet<Node>();
 				seenEndPoint |= explore(start, workingSet, endNodes, null);
-				
-				//StructuralAnalysisEngine.dumpTree(workingSet);
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 				pruneGraphOfExcludedPaths(workingSet);
@@ -178,16 +134,7 @@ public class RouteConstructor {
 		}
 		return seenEndPoint;
 	}
-/*
-	private boolean doesNotContainAnEndpoint(Node parent, Collection<Node> endNodes) {
-		for(Node endNode : endNodes){
-			if(parent.getContainedNodes().contains(endNode)){
-				return false;
-			}
-		}
-		return true;
-	}
-*/
+
 	private boolean explore(Node node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
 		Set<Node> nodes = new TreeSet<Node>(endNodes);
 		nodes.retainAll(node.getContainedNodes());
