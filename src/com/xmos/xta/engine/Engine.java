@@ -153,6 +153,10 @@ public class Engine implements Notifier {
 		return m_instructionDecoder.get(m_nodeId, m_coreId);
 	}
 	
+	public Set<String> getFunctionNames() {
+		return m_functionNames.get(m_nodeId, m_coreId).keySet();
+	}
+	
 	public String getSrcPaths() {
 		if (m_srcPaths != null) {
 			return m_srcPaths;
@@ -866,6 +870,7 @@ public class Engine implements Notifier {
 	public Collection<String> getSrcLevelCommands() {
 		return m_sections.getSrcLevelCommands(m_nodeId, m_coreId);
 	}
+	
 	
 	// ===================================================================== //
 	// Private Methods

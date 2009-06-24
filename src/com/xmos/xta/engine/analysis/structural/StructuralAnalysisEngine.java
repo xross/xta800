@@ -9,9 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.NodeCoreCollection;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
@@ -122,7 +120,6 @@ public class StructuralAnalysisEngine {
 			
 			//String functionName = graphStart.getInstructions().getFirst().getFunctionName();
 			String functionName = getFunctionName(graphStart, treeMap);
-			
 			
 			engine.provideFeedback("Processing " + functionName);
 
