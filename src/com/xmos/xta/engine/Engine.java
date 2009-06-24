@@ -904,7 +904,10 @@ public class Engine implements Notifier {
 				if (!fh.addFunctions()) 
 					return false;
 				
-				for(InstructionNode inst : fh.getKnownFuncStarts()){
+				Set<InstructionNode> starts = new TreeSet<InstructionNode>();
+				starts.addAll(fh.getKnownFuncStarts());
+				starts.addAll(threadStartNodes);
+				for(InstructionNode inst : starts){
 					TreeMap<String, InstructionNode> functionName = newFunctionNames.get(nodeId, coreId);
 					String name = xeLoader.getSymbolTable(nodeId, coreId).functionName(inst.getStartPc());
 					
@@ -928,6 +931,10 @@ public class Engine implements Notifier {
 						functionName.put(name, inst);
 					}
 				}
+				
+				//for(String functionName : newFunctionNames.get(nodeId, coreId).keySet()){
+				//	System.out.println("0x" + Integer.toHexString(newFunctionNames.get(nodeId, coreId).get(functionName).getStartPc()) + " " + functionName);
+				//}
 				
 				UnreachableCodeFinder uca = new UnreachableCodeFinder();
 				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
