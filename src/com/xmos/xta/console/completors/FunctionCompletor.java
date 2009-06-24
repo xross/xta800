@@ -1,8 +1,7 @@
 package com.xmos.xta.console.completors;
 
 import java.util.List;
-
-import com.xmos.xeobject.Function;
+import java.util.Set;
 import com.xmos.xta.engine.Engine;
 
 import jline.Completor;
@@ -19,10 +18,10 @@ public class FunctionCompletor implements Completor {
         if (m_engine.getExecutable() != null) {
             String start = (buffer == null) ? "" : buffer;
             
-            List<Function> functions = m_engine.getXeObject().getFunctions();
-            for (Function function : functions) {              	
-            	if (function.getText().startsWith(start)) {
-        	        candidates.add(function.getText());
+            Set<String> functions = m_engine.getFunctionNames();
+            for (String function : functions) {              	
+            	if (function.startsWith(start)) {
+        	        candidates.add(function);
             	}            	
             }        	
         }

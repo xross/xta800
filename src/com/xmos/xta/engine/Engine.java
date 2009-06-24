@@ -13,8 +13,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 import org.eclipse.core.runtime.IProgressMonitor;
-import com.xmos.elfhandler.ElfHandler;
-import com.xmos.elfhandler.Symbol;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
@@ -907,7 +905,7 @@ public class Engine implements Notifier {
 				Set<InstructionNode> starts = new TreeSet<InstructionNode>();
 				starts.addAll(fh.getKnownFuncStarts());
 				starts.addAll(threadStartNodes);
-				for(InstructionNode inst : starts){
+				for(InstructionNode inst : fh.getKnownFuncStarts()){
 					TreeMap<String, InstructionNode> functionName = newFunctionNames.get(nodeId, coreId);
 					String name = xeLoader.getSymbolTable(nodeId, coreId).functionName(inst.getStartPc());
 					
@@ -917,10 +915,10 @@ public class Engine implements Notifier {
 						InstructionNode instNode = functionName.get(name);
 						
 						if(instNode.getStartPc() < inst.getStartPc()){
-							name = "unnamed function at 0x" + Integer.toHexString(inst.getStartPc());
+							name = "unnamed_function_at_0x" + Integer.toHexString(inst.getStartPc());
 							functionName.put(name, inst);
 						} else if(instNode.getStartPc() > inst.getStartPc()){
-							String newName = "unnamed function at 0x" + Integer.toHexString(instNode.getStartPc());
+							String newName = "unnamed_function_at_0x" + Integer.toHexString(instNode.getStartPc());
 							functionName.put(newName, instNode);
 							functionName.put(name, inst);
 						} else {
@@ -931,6 +929,7 @@ public class Engine implements Notifier {
 						functionName.put(name, inst);
 					}
 				}
+				
 				
 				//for(String functionName : newFunctionNames.get(nodeId, coreId).keySet()){
 				//	System.out.println("0x" + Integer.toHexString(newFunctionNames.get(nodeId, coreId).get(functionName).getStartPc()) + " " + functionName);
@@ -967,19 +966,7 @@ public class Engine implements Notifier {
 	}
 	
 	private boolean functionExists(String functionName) {
-		SymbolTable symbolTable = m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
-		if (symbolTable != null) {
-			ElfHandler elfHandler = symbolTable.getElfHandler();
-
-			Symbol symbol = elfHandler.getSymbolsNameKeyed().get(functionName);
-			if (symbol != null) {
-				if (symbol.isFunction()) {
-					return true;
-				}
-			}
-			return false;
-		}
-		return false;
+		return getFunctionNames().contains(functionName);
 	}
 
 	private boolean resolveRefernece(Reference ref) {
