@@ -6,8 +6,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.SelfLoopNode;
 
 public class SelfLoopPattern extends PatternMatcher {
-	public boolean isMatch(Node currentNode, Collection<Node> workingSet,
-			boolean verbose, Node treeStart) {
+	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
 		m_treeStart = treeStart;
 		
 		if (currentNode.getNextNodes().contains(currentNode)) {
@@ -37,10 +36,7 @@ public class SelfLoopPattern extends PatternMatcher {
 			assert(workingSet.contains(currentNode));
 			workingSet.remove(currentNode);
 			workingSet.add(loop);
-			
-			if (verbose) {
-				System.out.println("#found a self loop at " + currentNode);
-			}			
+		
 			return true;
 		} 
 		return false;

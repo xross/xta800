@@ -11,7 +11,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.SectionNode;
 
 public class SectionPatternMatcher extends PatternMatcher {
 
-	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose, Node treeStart) {
+	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
 		m_treeStart = treeStart;
 
 		if (currentNode.getNextNodes().size() < 2) {
@@ -68,13 +68,13 @@ public class SectionPatternMatcher extends PatternMatcher {
 						System.err.println("#section failed sanity check");
 						continue;
 					}
-					updateGraph(currentNode, sectionNodes, true, workingSet, endNode, verbose);
+					updateGraph(currentNode, sectionNodes, true, workingSet, endNode);
 					return true;
 				}
 			} else {
 				if (sectionNodes.size() > 1) {
 					assert(sectionSanityCheck(currentNode, sectionNodes, null, endNode));
-					updateGraph(currentNode, sectionNodes, false, workingSet, endNode, verbose);
+					updateGraph(currentNode, sectionNodes, false, workingSet, endNode);
 					return true;
 				}
 			}
@@ -108,13 +108,8 @@ public class SectionPatternMatcher extends PatternMatcher {
 		return true;
 	}
 
-	protected void updateGraph(Node startNode, Collection<Node> sectionNodes, boolean isOptional, Collection<Node> workingSet, Node endNode, boolean verbose) {
+	protected void updateGraph(Node startNode, Collection<Node> sectionNodes, boolean isOptional, Collection<Node> workingSet, Node endNode) {
 		SectionNode ms = new SectionNode(sectionNodes, isOptional);
-		
-		if (verbose){
-			System.out.println("#have found a section from " + startNode + " to " + endNode + " isOptional: " + isOptional);
-			System.out.println("#have replaced "+sectionNodes + " with " + ms);
-		}
 		
 		startNode.getNextNodes().removeAll(sectionNodes);
 		startNode.addNextNode(ms);

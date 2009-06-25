@@ -9,7 +9,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.PathNode;
 
 public class PathPatternMatcher extends PatternMatcher {	
-	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose, Node treeStart) {
+	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
 		
 		m_treeStart = treeStart;
 		LinkedList<Node> pathList = new LinkedList<Node>();
@@ -23,7 +23,7 @@ public class PathPatternMatcher extends PatternMatcher {
 		
 		if (pathList.size() > 1) {
 			assert(pathSanityCheck(pathList));
-			updateGraph(pathList, workingSet, verbose, treeStart);
+			updateGraph(pathList, workingSet, treeStart);
 			return true;
 		} else {
 			return false;
@@ -108,17 +108,13 @@ public class PathPatternMatcher extends PatternMatcher {
 		return true;
 	}
 
-	protected void updateGraph(LinkedList<Node> pathList, Collection<Node> workingSet, boolean verbose, Node treeStart) {
+	protected void updateGraph(LinkedList<Node> pathList, Collection<Node> workingSet, Node treeStart) {
 		PathNode path = new PathNode(pathList);
 		
 		if (pathList.contains(treeStart)) {
 			m_treeStart = path;
 		} else {
 			m_treeStart = treeStart;
-		}
-		
-		if (verbose){
-			System.out.println("#make a new path from " + pathList + " called " + path);
 		}
 		
 		Node startNodeInPath = pathList.getFirst();
