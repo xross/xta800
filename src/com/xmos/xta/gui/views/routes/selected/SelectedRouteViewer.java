@@ -66,6 +66,7 @@ public class SelectedRouteViewer {
 	    
 	    m_viewer.setContentProvider(new SelectedRouteContentProvider());				
 	    m_viewer.setLabelProvider(new SelectedRouteLabelProvider());
+		ColumnViewerToolTipSupport.enableFor(m_viewer, ToolTip.NO_RECREATE);
 		
 	    m_viewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
@@ -77,6 +78,8 @@ public class SelectedRouteViewer {
 	}
 
 	public void initialise() {
+		clear();
+		
 		Route selectedRoute = GuiEngine.getEngine().getSelectedRoute();
 		if (selectedRoute != null) {
 			List<Node> nodes = new LinkedList<Node>();
@@ -84,8 +87,7 @@ public class SelectedRouteViewer {
 			PathNode hiddenRouteNode = new PathNode(nodes);
 			
 			m_viewer.setInput(hiddenRouteNode);
-			ColumnViewerToolTipSupport.enableFor(m_viewer, ToolTip.NO_RECREATE);
-			m_viewer.expandToLevel(2);		
+			m_viewer.expandToLevel(2);
 		}
 	}
     
