@@ -11,7 +11,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTrave
 public class StructureDisplayer {
 	private final static boolean DEBUG_NEXT = false;
 	private final static boolean DEBUG_BEFORE = false;
-	private final static boolean DEBUG_ATTRIBUTES = false;
+	private final static boolean DEBUG_ATTRIBUTES = true;
 
 	private Console m_console;
 	private int m_verbosity;

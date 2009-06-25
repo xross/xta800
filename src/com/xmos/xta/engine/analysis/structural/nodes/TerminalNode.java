@@ -1,5 +1,6 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeSet;
 import java.util.Iterator;
@@ -10,22 +11,23 @@ import java.util.Set;
 import java.util.Stack;
 
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.TerminalNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class TerminalNode extends Node {
-	private NodeAttributes m_attributes;
+	private TerminalNodeAttributes m_attributes;
 	private Collection<Node> m_terminals;
 	
 	public TerminalNode(Collection<Node> terminals) {
 		m_terminals = new TreeSet<Node>(terminals);
-		m_attributes = new NodeAttributes(this);
+		m_attributes = new TerminalNodeAttributes(this);
 	}
 	
 	public TerminalNode() {
 		m_terminals = new TreeSet<Node>();
-		m_attributes = new NodeAttributes(this);
+		m_attributes = new TerminalNodeAttributes(this);
 	}
 
 	public Node shallowCopy() {
@@ -38,7 +40,7 @@ public class TerminalNode extends Node {
 			Node clone = terminal.deepCopy(startPcs);
 			tn.m_terminals.add(clone);
 		}
-		tn.m_attributes = new NodeAttributes(tn);
+		tn.m_attributes = new TerminalNodeAttributes(tn);
 		return tn;
     }
 		
@@ -106,6 +108,38 @@ public class TerminalNode extends Node {
 		return new TreeSet<Node>();
 	}
 
+	public Node getOption(Case c, boolean ignoreIterations) {
+		// Gets the best/worst case option taken from each of the 
+		// option nodes that does not have its iteration 
+		// count explicitly set by the user.
+		List<Node> allUnsetOptions = getAllUnsetOptions();
+		if (allUnsetOptions.isEmpty())
+			return null;
+		
+		Iterator<Node> iter = getAllUnsetOptions().iterator();
+		Node caseNode = iter.next();
+		
+		while (iter.hasNext()) {
+			Node node = iter.next();
+			switch (c) {
+			case WORST:				
+				if (node.getAttributes().getTimeTaken(c, ignoreIterations) > 
+			        caseNode.getAttributes().getTimeTaken(c, ignoreIterations)) {
+				    caseNode = node;
+			    }										
+				break;
+				
+			case BEST:
+				if (node.getAttributes().getTimeTaken(c, ignoreIterations) < 
+		            caseNode.getAttributes().getTimeTaken(c, ignoreIterations)) {
+			        caseNode = node;
+		        }										
+				break;
+			}			
+		}		
+		return caseNode;
+	}
+			
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
 			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
 		
@@ -114,68 +148,27 @@ public class TerminalNode extends Node {
 		}
 		return false;
 	}
-
-	public void getInstructionStream(Case c, List<XtaInstruction> instructions) {
-		
-	}
 	
-	private Node getWorstCaseOption() {
-		Iterator<Node> iter = m_terminals.iterator();
-		Node worstCaseNode = iter.next();
-		while (iter.hasNext()) {
-			Node node = iter.next();
-			if (node.getAttributes().getTimeTaken(Case.WORST, true) > 
-			    worstCaseNode.getAttributes().getTimeTaken(Case.WORST, true)) {
-				worstCaseNode = node;
-			}						
-		}		
-		return worstCaseNode;
-	}
-	
-	private Node getBestCaseOption() {
-		Iterator<Node> iter = m_terminals.iterator();
-		Node worstCaseNode = iter.next();
-		while (iter.hasNext()) {
-			Node node = iter.next();
-			if (node.getAttributes().getTimeTaken(Case.BEST, true) < 
-			    worstCaseNode.getAttributes().getTimeTaken(Case.BEST, true)) {
-				worstCaseNode = node;
-			}						
-		}		
-		return worstCaseNode;
-	}
-
 	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
-		Node option = null;
-		switch (c){
-		case WORST:
-			option = getWorstCaseOption();
-			break;
-		case BEST:
-			option = getBestCaseOption();
-			break;
-		}
-		option.getInstructionStream(c, instructions, iteration);
+		getOption(c, false).getInstructionStream(c, instructions, iteration);
 	}
-
 
 	public long getError(Case c) {
-		Node option = null;
-		switch (c){
-		case WORST:
-			option = getWorstCaseOption();
-			break;
-		case BEST:
-			option = getBestCaseOption();
-			break;
-		}
-		return option.getError(c);
+		return getOption(c, false).getError(c);
 	}
 
-	public void addFnops() {
+	public List<Node> getAllUnsetOptions() {
+		Map<Node, Boolean> setOptionMap = getAttributes().getSetOptions();
 		
+		List<Node> unsetOptions = new ArrayList<Node>();
+		for (Node option : m_terminals) {
+			if (!setOptionMap.get(option)) {
+				unsetOptions.add(option);
+			}
+		}
+		return unsetOptions;
 	}
-
+	
 	public Collection<Node> whatsBefore(Node node) {
 		assert(m_terminals.contains(node));
 		if(getParent()!= null){

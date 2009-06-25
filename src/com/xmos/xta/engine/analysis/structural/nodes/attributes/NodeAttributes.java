@@ -95,7 +95,7 @@ public class NodeAttributes {
 		}
 		return value;
 	}
-	
+
 	public long getNumInstructions(Case c, boolean ignoreIterations) {
 		long value = 0;
 		for (Node child : getNode().getChildren()) {
@@ -103,7 +103,7 @@ public class NodeAttributes {
 		}
 		return value;
 	}
-	
+
 	public long getNumFNops(Case c, boolean ignoreIterations) {
 		long value = 0;
 		for (Node child : getNode().getChildren()) {
@@ -234,7 +234,7 @@ public class NodeAttributes {
    				// but don't propagate it down to its children
    				child.getAttributes().setNumIterations(c, numIterations);
    				
-   			} else {
+   			} else {   				
    			    child.getAttributes().setLoopIterations(c, numIterations);
    			}			
     	}		
