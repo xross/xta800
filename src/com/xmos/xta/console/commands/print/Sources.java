@@ -3,10 +3,6 @@ package com.xmos.xta.console.commands.print;
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
-import com.xmos.xeobject.Line;
-import com.xmos.xeobject.SourceFile;
-import com.xmos.xeobject.SourceLine;
-import com.xmos.xeobject.XeObject;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
@@ -14,6 +10,10 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
+import com.xmos.xta.sourcemapper.Line;
+import com.xmos.xta.sourcemapper.SourceFile;
+import com.xmos.xta.sourcemapper.SourceLine;
+import com.xmos.xta.sourcemapper.SourceMapper;
 
 public class Sources extends Command {
 	private int m_routeId;
@@ -63,14 +63,14 @@ public class Sources extends Command {
 
     private Set<String> getSources(Engine engine) {
     	final Set<String> sources = new TreeSet<String>();   
-    	final XeObject xeObject = engine.getXeObject();
+    	final SourceMapper sourceMapper = engine.getSourceMapper();
     	StructureGraph structureGraph = engine.getStructureGraph();
-    	//StructureGraph structureGraph = engine.getRoute(m_routeId).getStructureGraph();
+    	
 		Collection<Node> nodes = structureGraph.getThreads();	
 		for (Node node : nodes) {
 		    node.traverse(0, new DefaultNodeTraverser() {
 				public boolean foundInstructionNode(Node node, int depth) {					
-		            for (SourceFile sourceFile: xeObject.getSourceFiles()) {
+		            for (SourceFile sourceFile: sourceMapper.getSourceFiles()) {
 		                for (SourceLine sourceLine : sourceFile.getSourceLines()) {
 		                    for (Line assembly :sourceLine.getChildern()) {
 		                        	

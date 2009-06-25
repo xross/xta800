@@ -2,8 +2,8 @@ package com.xmos.xta.console;
 
 import java.io.File;
 
-import com.xmos.xeobject.FileFinder;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.sourcemapper.FileFinder;
 
 public class ConsoleFileFinder extends FileFinder {
     private Engine m_engine; 

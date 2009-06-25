@@ -5,10 +5,9 @@ import java.util.HashMap;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-
-import com.xmos.xeobject.Function;
-import com.xmos.xeobject.Line;
 import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.sourcemapper.Function;
+import com.xmos.xta.sourcemapper.Line;
 
 public class InputDisassembly implements IEditorInput {
     public static final boolean DEBUG = false;
@@ -23,7 +22,7 @@ public class InputDisassembly implements IEditorInput {
 		
 		int lineIndex = 0;
 		m_input = new Input(s_headerType, s_lineType);
-        for (Function function : GuiEngine.getEngine().getXeObject().getFunctions()) {        	
+        for (Function function : GuiEngine.getEngine().getSourceMapper().getFunctions()) {        	
     		String headerRef = String.format("-");
         	m_input.addHeader(function.getText() + ":", headerRef, lineIndex, 0);        	
         	++lineIndex;

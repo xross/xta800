@@ -4,9 +4,9 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 
-import com.xmos.xeobject.Line;
-import com.xmos.xeobject.SourceFile;
-import com.xmos.xeobject.SourceLine;
+import com.xmos.xta.sourcemapper.Line;
+import com.xmos.xta.sourcemapper.SourceFile;
+import com.xmos.xta.sourcemapper.SourceLine;
 
 public class InputSource implements IEditorInput {
     public static final boolean DEBUG = false;

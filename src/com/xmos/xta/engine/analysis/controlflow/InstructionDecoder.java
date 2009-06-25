@@ -1,6 +1,7 @@
 package com.xmos.xta.engine.analysis.controlflow;
 
-import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -18,6 +19,8 @@ public class InstructionDecoder {
 	private int m_nodeId;
 	private int m_coreId;
 	private Map<Integer, InstructionNode> m_decodedInstructions;
+	private List<InstructionNode> m_orderedInstructions;
+	
 	private XeLoader m_xeLoader;
 	private Config m_config;
 	
@@ -27,6 +30,7 @@ public class InstructionDecoder {
 		m_xeLoader = xeLoader;
 		m_config = config;
 		m_decodedInstructions = new TreeMap<Integer, InstructionNode>();
+		m_orderedInstructions = new LinkedList<InstructionNode>();
 	}
 	
 	public boolean decode(){		
@@ -50,6 +54,7 @@ public class InstructionDecoder {
 		            
 		            InstructionNode instNode = new InstructionNode(inst);
 		            Node prev = m_decodedInstructions.put(pc, instNode);
+		            m_orderedInstructions.add(instNode);
 		            assert(prev == null);
 		            pc += inst.getNumBytes();
 				}
@@ -58,8 +63,8 @@ public class InstructionDecoder {
 		return true;
 	}
 	
-	public Collection<InstructionNode> getInstructions(){
-		return m_decodedInstructions.values();
+	public List<InstructionNode> getInstructions(){
+		return m_orderedInstructions;
 	}
 	
 	public InstructionNode getNode(int pc){

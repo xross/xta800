@@ -10,6 +10,7 @@ import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.console.commands.CommandFactory;
 import com.xmos.xta.console.commands.Invalid;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.sourcemapper.FileFinder;
 
 public class Load extends Command {
 	private String m_executableName;
@@ -51,7 +52,7 @@ public class Load extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {    	
-		ConsoleFileFinder fileFinder = new ConsoleFileFinder(engine, console);	
+		FileFinder fileFinder = new ConsoleFileFinder(engine, console);	
 		if (engine.loadExecutable(new File(m_executableName), fileFinder)) {
 		    runSectionCommands(shell, engine, console);
 		}
