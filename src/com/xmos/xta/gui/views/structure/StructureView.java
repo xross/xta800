@@ -77,7 +77,7 @@ public class StructureView extends ZoomedCanvasView {
         	return;
         
 		gc.setLineWidth(m_lineWidth);
-		m_viewNode.draw(m_display, gc, m_scale);
+		m_viewNode.draw(m_display, gc, m_scale, true);
     }
     
 	private ViewNode buildViewNode(Node node) {
@@ -91,12 +91,12 @@ public class StructureView extends ZoomedCanvasView {
     		return new StructureBlockNode(node);
     	} else if (node.isFunctionNode()) {
     		viewNode = new StructureFunctionNode(node);
-    	} else if (node.isSectionNode()) {
-    		viewNode = new StructureSectionNode(node); 
     	} else if (node.isLoopNode()) {
-    		viewNode = new StructureLoopNode(node); 
-    	} else if (node.isSelfLoopNode()) {
-    		viewNode = new StructureLoopNode(node); 
+    		viewNode = new StructureLoopNode(node);
+    	} else if (node.isSectionNode()) {
+    		viewNode = new StructureSectionNode(node, true); 
+    	} else if (node.isTerminalNode()) {
+    		viewNode = new StructureSectionNode(node, false); 
     	} else {
     		viewNode = new StructurePathNode(node);
     	}

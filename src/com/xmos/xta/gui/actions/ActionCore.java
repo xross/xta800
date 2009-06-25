@@ -3,8 +3,7 @@ package com.xmos.xta.gui.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuCreator;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
@@ -13,31 +12,24 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.IWorkbenchWindowPulldownDelegate;
+import org.eclipse.ui.actions.ActionDelegate;
 
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.gui.GuiEngine;
-import com.xmos.xta.gui.icons.Icons;
 
-public class ActionCore extends Action implements IPropertyChangeListener, IMenuCreator {
-
-	private static final String DEFAULT_TOOL_TIP = "Core 0";
-
+public class ActionCore extends ActionDelegate implements IPropertyChangeListener, 
+                                                          IWorkbenchWindowPulldownDelegate {
     private List<String> m_coreIds;
 	private SelectionListener m_listListener;
 	private int m_currentCoreId;
+	private IAction m_action;
 
 	public ActionCore() {
-		super("core", Action.AS_DROP_DOWN_MENU);
-
 		GuiEngine.addBroadcastListener(this);
 
-		setImageDescriptor(Icons.getIconDescriptor("core"));
-		setToolTipText(DEFAULT_TOOL_TIP);
-		setEnabled(false);
-		setMenuCreator(this);
-
 		m_coreIds = new ArrayList<String>();
-
 		m_listListener = new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				assert(false);
@@ -51,7 +43,7 @@ public class ActionCore extends Action implements IPropertyChangeListener, IMenu
 		        	if (coreId != m_currentCoreId) {
 		        		GuiEngine.getEngine().setCoreId(coreId);
 		        		m_currentCoreId = coreId;
-						setToolTipText("Core " + m_currentCoreId);
+		        		m_action.setToolTipText("Core " + m_currentCoreId);
 		        	}
 		        } catch (NumberFormatException exception) {
 		        }
@@ -59,19 +51,25 @@ public class ActionCore extends Action implements IPropertyChangeListener, IMenu
 		};
 	}
 
-	public void dispose() {
-		// Do nothing
+	public void init(IAction action) {
+		m_action = action;
+		m_action.setEnabled(false);
+	}
+	
+	public void init(IWorkbenchWindow window) {
 	}
 
+	public void run(IAction action) {
+	}
+		
 	public void propertyChange(PropertyChangeEvent event) {
 		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE) || 
 			event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {			
 	        updateState();
-	        this.setEnabled(true);
+	        m_action.setEnabled(true);
 	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
 	        updateState();
-	        
 		}
 	}
 

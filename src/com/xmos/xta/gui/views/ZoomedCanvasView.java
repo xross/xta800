@@ -53,7 +53,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                                                        IMenuListener {
     public static final boolean DEBUG = false;
     public static final int MIN_CANVAS_X = 100;
-    public static final int MAX_CANVAS_X = 3000;
+    public static final int MAX_CANVAS_X = 10000;
     public static final int MAX_CANVAS_Y = 500;
 
     protected Node m_rootNode;

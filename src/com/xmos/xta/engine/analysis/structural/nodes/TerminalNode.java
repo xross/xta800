@@ -187,4 +187,8 @@ public class TerminalNode extends Node {
 	public List<Node> getImmediateChildren() {
 		return new LinkedList<Node> (m_terminals);
 	}
+
+	public boolean isTerminalNode() {
+		return true;
+	}	
 }
