@@ -215,6 +215,7 @@ public class Engine implements Notifier {
 		m_nodeId = 0;
 		m_coreId = 0;			
 		m_routes.clear();
+		m_selectedRoute = null;
 		
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());		
 		return true;
