@@ -16,7 +16,7 @@ public class SectionNodeAttributes extends NodeAttributes {
 		m_setOptions = new HashMap<Node, Boolean>();
    		for (Node child : getNode().getChildren()) {
    			m_setOptions.put(child, false);
-   		}		
+   		}
 	}
 
 	public long getNumPaths() {
@@ -29,7 +29,7 @@ public class SectionNodeAttributes extends NodeAttributes {
 	
 	public void setLoopIterations(Case c, long numIterations) {
     	setNumIterations(c, numIterations);
-    	
+
     	// Allocates the best/worst case iterations to the best/worst 
        	// case child options, and assigns zero to the best/worst case of 
        	// all the other options.
