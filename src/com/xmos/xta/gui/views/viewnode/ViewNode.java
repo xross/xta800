@@ -104,7 +104,7 @@ public abstract class ViewNode {
 
 	public void drawThis(Display display, GC gc) {
 	    if (m_isSelected) {
-	    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+	    	gc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
 	    	gc.setAlpha(100);
 	    	gc.fillRoundRectangle(m_x, m_y, m_width, m_height, m_cornerRounding, m_cornerRounding);
 	    	gc.setAlpha(255);
@@ -115,7 +115,7 @@ public abstract class ViewNode {
 		if (childIsWorstCase) {
 			gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
 		} else {
-			gc.setForeground(display.getSystemColor(SWT.COLOR_GREEN));
+			gc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
 		}
 	}
 

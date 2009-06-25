@@ -43,8 +43,8 @@ public class StructureView extends ZoomedCanvasView {
     }
 
     protected void annotateTree(boolean isSelctionChange) {
-    	buildClickAreas();
 		m_viewNode = buildViewNode(m_doubleClickNode);
+    	buildClickAreas();
 		
 		// Build up a new list of click areas and then swap to ensure the old ones are available
 		// for double clicks
@@ -88,7 +88,7 @@ public class StructureView extends ZoomedCanvasView {
     	ViewNode viewNode = null;
     	
     	if (node.isBlockNode()) {
-    		return new StructureBlockNode(node);
+    		viewNode = new StructureBlockNode(node);
     	} else if (node.isFunctionNode()) {
     		viewNode = new StructureFunctionNode(node);
     	} else if (node.isLoopNode()) {
@@ -101,11 +101,13 @@ public class StructureView extends ZoomedCanvasView {
     		viewNode = new StructurePathNode(node);
     	}
     	
-        for (Node subNode : node.getChildren()) {
-        	ViewNode child = buildViewNode(subNode);
-        	if (child != null)
-        		viewNode.addChild(child);
-        }
+    	if (!node.isBlockNode()) {
+	        for (Node subNode : node.getChildren()) {
+	        	ViewNode child = buildViewNode(subNode);
+	        	if (child != null)
+	        		viewNode.addChild(child);
+	        }
+    	}
         viewNode.setLineWidth(m_lineWidth);
         viewNode.setIsSelected(selected);
 

@@ -313,9 +313,8 @@ public class Engine implements Notifier {
 			for(Node subRoute : routeConstructor.getSubRoutes()){
 				Route route = new Route(this, subRoute, routeDescription);
 				m_routes.add(route);
-				
 			}
-			if(!m_routes.isEmpty() && !routeConstructor.getSubRoutes().isEmpty()){
+			if (!m_routes.isEmpty() && !routeConstructor.getSubRoutes().isEmpty()) {
 				setSelectedRoute(m_routes.get(currentSize));
 				notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
 			} else {

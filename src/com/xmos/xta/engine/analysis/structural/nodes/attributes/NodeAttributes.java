@@ -63,7 +63,7 @@ public class NodeAttributes {
 	}
 	
 	public String getTimingDetails() {
-		return String.format("Node Id:          %d\n", m_node.getId()) +
+		return String.format("%s %s\n", m_node.getTypeName(), m_node.getFunctionName()) +
     	       String.format("Time taken:       %.1f - %.1f\n", 
     	    		   getTimeTaken(Case.WORST, false), getTimeTaken(Case.BEST, false)) +  	    		   
                String.format("Thread cycles:    %d - %d\n", 
@@ -73,7 +73,8 @@ public class NodeAttributes {
                String.format("Num FNops:        %d - %d\n", 
             		   getNumFNops(Case.WORST, false), getNumFNops(Case.BEST, false)) +
                String.format("Num Iterations:   %d - %d\n", 
-            		   m_worstCaseIterations, m_bestCaseIterations);
+            		   m_worstCaseIterations, m_bestCaseIterations) +
+               String.format("Node Id:          %d\n", m_node.getId());
 	}
 		
 	// --------------------------------------------------------------------- //

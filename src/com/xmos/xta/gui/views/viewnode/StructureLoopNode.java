@@ -103,6 +103,19 @@ public class StructureLoopNode extends ViewNode {
         }
     	setConnectionColour(display, gc, loopWorstCase);
 		drawConnection(display, gc, headerInX, headerY, headerInX, loopReturnY);
+		
+		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+		int[] outTriangle = {
+				headerOutX, headerY + (2 * m_borderY),
+				headerOutX + (m_borderX / 2), headerY + m_borderY,
+				headerOutX - (m_borderX / 2), headerY + m_borderY,};
+		gc.fillPolygon(outTriangle);
+
+		int[] returnTriangle = {
+				headerInX, headerY + m_borderY,
+				headerInX + (m_borderX / 2), headerY + (2 * m_borderY),
+				headerInX - (m_borderX / 2), headerY + (2 * m_borderY),};
+		gc.fillPolygon(returnTriangle);
 	}
 
 	private void drawHeader(Display display, GC gc, double scale, boolean isWorstCase) {
@@ -138,6 +151,7 @@ public class StructureLoopNode extends ViewNode {
 	}
 
 	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
+		m_headerNode.buildClickAreas(clickAreas);
 		for (ViewNode child : getChildren()) {
 			child.buildClickAreas(clickAreas);
     	}
