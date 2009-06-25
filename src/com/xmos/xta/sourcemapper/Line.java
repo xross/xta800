@@ -6,5 +6,4 @@ public interface Line {
 	public String getText();
 	public List<Line> getChildern();
 	public int getLineNumber();
-	public boolean isGreyedOut();
 }
