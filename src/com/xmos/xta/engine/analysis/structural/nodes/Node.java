@@ -203,7 +203,7 @@ public abstract class Node implements Comparable<Node>{
 	public boolean isSelfLoopNode() {
 		return false;
 	}
-		
+
 	public Node getEnclosingLoopNode() {		
 		Node node = this;
 		while ((node != null) && !node.isLoopNode()) {

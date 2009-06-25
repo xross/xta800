@@ -8,7 +8,7 @@ public class LoopNodeAttributes extends NodeAttributes {
 		super(node);
 	}
 	
-	public long getCummulativeIterations(Case c) {
+	long getCummulativeIterations(Case c) {
 		if (getIsAbsolute()) {
 			return getNumIterations(c);
 		}
