@@ -53,13 +53,6 @@ public class SourceLine implements Line {
     public ArrayList<Line> getChildern() {
         return m_assembly;
     }
-
-    public boolean isGreyedOut() {
-        for(Line childLine : m_assembly){
-            if(childLine.isGreyedOut()) return true;
-        }
-        return false;
-    }
 }
 
 

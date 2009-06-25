@@ -23,10 +23,6 @@ public class AssemblyLine implements Line {
 		return m_instructionNode.getXtaInstruction().toString();
 	}
 
-	public boolean isGreyedOut() {
-		 return false;
-	}
-
 	public int getPc() {
 		return m_instructionNode.getXtaInstruction().getPc();
 	}

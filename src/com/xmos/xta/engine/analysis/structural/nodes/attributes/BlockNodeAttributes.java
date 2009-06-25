@@ -21,7 +21,7 @@ public class BlockNodeAttributes extends NodeAttributes {
 		}
 		return super.getNumCycles(c, ignoreIterations) * getTotalIterations(c);
 	}
-	
+
 	public long getNumInstructions(Case c, boolean ignoreIterations) {
 		if (ignoreIterations) {
 			return super.getNumInstructions(c, ignoreIterations);

@@ -89,7 +89,7 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("RoutesView: propertyChange: %s\n", event.getProperty());	
 		
 		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
-			initialiseTrees();
+		    m_routeSelectorViewer.initialise();
 			try {
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 				getActivePage().showView(RoutesView.ID);
@@ -113,7 +113,7 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 			m_selectedRouteViewer.initialise();
 
 		} else if (event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
-			initialiseTrees();
+		    m_routeSelectorViewer.initialise();
 
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECT_NODES)) {
 			m_selectedRouteViewer.selectNodes();

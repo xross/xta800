@@ -48,6 +48,7 @@ public class RouteSelectorViewer {
 	    
 	    m_viewer.setContentProvider(new RouteSelectorContentProvider());
 	    m_viewer.setLabelProvider(new RouteSelectorLabelProvider());
+		ColumnViewerToolTipSupport.enableFor(m_viewer, ToolTip.NO_RECREATE);
 
 	    createContextMenus();
 	}
@@ -59,7 +60,6 @@ public class RouteSelectorViewer {
 		}
 				
 		m_viewer.setInput(hiddenRouteNode);
-		ColumnViewerToolTipSupport.enableFor(m_viewer, ToolTip.NO_RECREATE);
 		m_viewer.expandToLevel(2);
 		
 		int selectedRouteId = GuiEngine.getEngine().getSelectedRouteId();
@@ -132,7 +132,7 @@ public class RouteSelectorViewer {
 			            }
 					}
 					
-					if (newId != currentSelectedId) {
+					if ((newId != currentSelectedId) && (newId != Engine.ROUTE_ID_INVALID)) {
 						engine.setSelectedRoute(newId);
 	            	}
 		        }

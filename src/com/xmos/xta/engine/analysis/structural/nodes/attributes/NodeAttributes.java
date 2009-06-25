@@ -19,7 +19,7 @@ public class NodeAttributes {
 		UNKNOWN,
 		KNOWN,
 	}
-	
+
 	private boolean m_isUnknown;
 	private UnknownType m_unknownType;
 	private UnknownState m_unknownState; 	
@@ -63,7 +63,7 @@ public class NodeAttributes {
 	}
 	
 	public String getTimingDetails() {
-		return String.format("Node Id:          %d\n", m_node.getId()) +
+		return String.format("%s %s\n", m_node.getTypeName(), m_node.getFunctionName()) +
     	       String.format("Time taken:       %.1f - %.1f\n", 
     	    		   getTimeTaken(Case.WORST, false), getTimeTaken(Case.BEST, false)) +  	    		   
                String.format("Thread cycles:    %d - %d\n", 
@@ -73,7 +73,8 @@ public class NodeAttributes {
                String.format("Num FNops:        %d - %d\n", 
             		   getNumFNops(Case.WORST, false), getNumFNops(Case.BEST, false)) +
                String.format("Num Iterations:   %d - %d\n", 
-            		   m_worstCaseIterations, m_bestCaseIterations);
+            		   m_worstCaseIterations, m_bestCaseIterations) +
+               String.format("Node Id:          %d\n", m_node.getId());
 	}
 		
 	// --------------------------------------------------------------------- //
@@ -94,7 +95,7 @@ public class NodeAttributes {
 		}
 		return value;
 	}
-	
+
 	public long getNumInstructions(Case c, boolean ignoreIterations) {
 		long value = 0;
 		for (Node child : getNode().getChildren()) {
@@ -102,7 +103,7 @@ public class NodeAttributes {
 		}
 		return value;
 	}
-	
+
 	public long getNumFNops(Case c, boolean ignoreIterations) {
 		long value = 0;
 		for (Node child : getNode().getChildren()) {
@@ -196,26 +197,25 @@ public class NodeAttributes {
 	// --------------------------------------------------------------------- //
 	// Loop Iteration Methods
 	// --------------------------------------------------------------------- //	
-	public long getCummulativeIterations(Case c) {
-		Node parent = getNode().getParent();
-		if (parent != null) {
-			return parent.getAttributes().getCummulativeIterations(c);
-		}
-		return 1;
-	}
-	
-	
 	public long getTotalIterations(Case c) {
+		// Need to treat relative and absolute loops differently..
 		Node enclosingLoopNode = getNode().getEnclosingLoopNode();
-		if ((enclosingLoopNode != null) && 
-			(!enclosingLoopNode.getAttributes().getIsAbsolute())) {
-			
-			long cummulativeIterations = 1;
-			if (enclosingLoopNode.getParent() != null) {
-				cummulativeIterations = enclosingLoopNode.getParent().getAttributes().getCummulativeIterations(c);  
-			}
-			return getNumIterations(c) * cummulativeIterations;
+		if (enclosingLoopNode != null) {
+			if (!enclosingLoopNode.getAttributes().getIsAbsolute()) {				
+				// We are within a relative loop, so multiply up by the 
+				// iterations of the above loops. 
+				long cummulativeIterations = enclosingLoopNode.getAttributes().getCummulativeIterations(c);				
+				long headerAdjustment = getIsLoopHeader() ? 1 : 0;				
+				return (getNumIterations(c) + headerAdjustment) * cummulativeIterations;
+				
+		    } else {
+		    	// We are within an absolute loop, so no need to multiply
+		    	// up with the above iterations.
+		    	long headerAdjustment = getIsLoopHeader() ? enclosingLoopNode.getAttributes().getNumIterations(c) : 0;		    	
+				return getNumIterations(c) + headerAdjustment;		    	
+		    }
 		}
+		// At the outermost scope, i.e. not inside a loop..
 		return getNumIterations(c);
 	}
 	
@@ -225,7 +225,8 @@ public class NodeAttributes {
 	}
 
 	public void setLoopIterations(Case c, long numIterations) {
-		setNumIterations(c, numIterations);
+		if (!getNode().isLoopNode() &&  !getNode().isSelfLoopNode())
+		    setNumIterations(c, numIterations);
 
    		for (Node child : m_node.getChildren()) {
    			if (child.isLoopNode()) {
@@ -233,12 +234,7 @@ public class NodeAttributes {
    				// but don't propagate it down to its children
    				child.getAttributes().setNumIterations(c, numIterations);
    				
-   			} else if (child.getAttributes().isLoopHeader()) {
-   				// For a loop, the header always executes 
-   				// one more time than the body
-   				child.getAttributes().setLoopIterations(c, numIterations + 1);
-   				
-   			} else {
+   			} else {   				
    			    child.getAttributes().setLoopIterations(c, numIterations);
    			}			
     	}		
@@ -273,16 +269,21 @@ public class NodeAttributes {
 			}
 		}
 	}
-	
+
 	public boolean getIsAbsolute() {
 		return m_isAbsolute;
 	}
 	
 	public void setIsLoopHeader(boolean isLoopHeader) {
 		m_isLoopHeader = isLoopHeader;
+		for (Node child : m_node.getChildren()) {
+			if (!child.isLoopNode()) {
+			    child.getAttributes().setIsLoopHeader(isLoopHeader);
+			}
+		}
 	}
 
-	public boolean isLoopHeader() {
+	public boolean getIsLoopHeader() {
 		return m_isLoopHeader;
 	}		
 	
@@ -291,6 +292,14 @@ public class NodeAttributes {
 		return null;
 	}
 	
+	long getCummulativeIterations(Case c) {
+		Node parent = getNode().getParent();
+		if (parent != null) {
+			return parent.getAttributes().getCummulativeIterations(c);
+		}
+		return 1;
+	}
+		
 	// --------------------------------------------------------------------- //
 	// Instruction Time Methods
 	// --------------------------------------------------------------------- //

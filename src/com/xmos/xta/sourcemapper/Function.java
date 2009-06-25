@@ -24,15 +24,6 @@ public class Function implements Line, Comparable<Object> {
 		return 0;
 	}
 
-	public boolean isGreyedOut() {
-		for (Line childLine : m_assembly) {
-			if (childLine.isGreyedOut()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public int compareTo(Object o) throws ClassCastException {
 		Function f = (Function) o; 
 		if (m_functionName.charAt(0) == '_') {

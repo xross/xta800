@@ -4,6 +4,8 @@ import java.util.Collection;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 
 public class StructureDisplayer {
@@ -40,6 +42,7 @@ public class StructureDisplayer {
 		displayTimeTaken(node);
 		displayNumPaths(node);
 		displayDescription(node);
+		displayAttributes(node);
 		if (DEBUG_NEXT) displayWhatsNext(node);
 		if (DEBUG_BEFORE) displayWhatsBefore(node);
 		m_console.display("\n");		
@@ -78,6 +81,20 @@ public class StructureDisplayer {
 	
 	private void displayDescription(Node node) {
 		m_console.display(" " + node.getDescription());
+	}
+	
+	private void displayAttributes(Node node) {		
+		if (m_verbosity >= 50) {
+			NodeAttributes nodeAttributes = node.getAttributes();
+			String scope  = nodeAttributes.getIsAbsolute() ? "ABS" : "REL";
+			String header = nodeAttributes.getIsLoopHeader() ? "H" : "B";
+
+			m_console.display(String.format(" (%s, %s: %d, %d, %d, %d)", scope, header,
+					nodeAttributes.getNumIterations(Case.WORST),
+					nodeAttributes.getNumIterations(Case.BEST),
+					nodeAttributes.getTotalIterations(Case.WORST),
+					nodeAttributes.getTotalIterations(Case.BEST)));			
+		}
 	}
 	
 	private void displayWhatsNext(Node node) {

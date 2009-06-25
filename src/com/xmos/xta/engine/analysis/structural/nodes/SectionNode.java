@@ -171,35 +171,7 @@ public class SectionNode extends Node {
 	}	
 
 	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
-/*
-		if(totalIterations() == 1){
-			switch (c) {
-			case BEST:
-			    if(!m_isOptional){
-			    	getBestCaseOption().getInstructionStream(c, instructions, iteration);
-			    } else {
-			    	return;
-			    }
-			case WORST:
-				getWorstCaseOption().getInstructionStream(c, instructions, iteration);
-			}
-		} else {
-			List<Node> sectionList = new LinkedList<Node>(m_options);
-			Collections.sort(sectionList);
-			int itt=0;
-			for(Node option : sectionList){
-				itt += option.getAttributes().getNumIterations();
-				
-				if(itt > iteration) {
-					option.getInstructionStream(c, instructions, iteration);
-					return;
-				}
-				
-			}
-		}
-*/
-		getOption(Case.WORST, false).getInstructionStream(c, instructions, iteration);
-
+		getOption(c, false).getInstructionStream(c, instructions, iteration);
 	}
 
 	public long getError(Case c) {
@@ -243,6 +215,4 @@ public class SectionNode extends Node {
 	public List<Node> getImmediateChildren() {
 		return new LinkedList<Node> (m_options);
 	}
-
-	
 }
