@@ -204,6 +204,10 @@ public abstract class Node implements Comparable<Node>{
 		return false;
 	}
 
+	public boolean isTerminalNode() {
+		return false;
+	}	
+
 	public Node getEnclosingLoopNode() {		
 		Node node = this;
 		while ((node != null) && !node.isLoopNode()) {
@@ -308,8 +312,7 @@ public abstract class Node implements Comparable<Node>{
 	
 	public boolean isSectionOptional() {
 		return false;
-	}	
-
+	}
 	/*
 	public void addEndIbufferDueToWorst(InstructionBuffer ib){
 		if(ib == null){

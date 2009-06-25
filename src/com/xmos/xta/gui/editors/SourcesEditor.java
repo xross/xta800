@@ -8,12 +8,12 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.MultiPageEditorPart;
 
-import com.xmos.xeobject.SourceFile;
-import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.icons.Icons;
+import com.xmos.xta.sourcemapper.SourceFile;
+import com.xmos.xta.sourcemapper.SourceMapper;
 
 public class SourcesEditor extends MultiPageEditorPart implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
@@ -100,7 +100,7 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 			setPageText(index, "Disassembly");
 			m_disassemblyIndex = index;
         	
-			XeObject xeObject = GuiEngine.getEngine().getXeObject();
+			SourceMapper xeObject = GuiEngine.getEngine().getSourceMapper();
 	        for (SourceFile sourceFile : xeObject.getSourceFiles()) {       	        	
 	        	XtaEditor sourceEditor = new XtaEditor(XtaDocumentPartitioner.SOURCE, sourceFile.getFileName());
 	        	IEditorInput sourceEditorInput = new InputSource(sourceFile);

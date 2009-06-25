@@ -2,7 +2,6 @@ package com.xmos.xta.gui.views.viewnode;
 
 import java.util.ArrayList;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
@@ -12,27 +11,19 @@ public class StructurePathNode extends ViewNode {
     public static final boolean DEBUG = false;
 
     private int m_connectorLen = 7;
-    private int m_borderX = 5;
-    private int m_borderY = 5;
-
-    private int m_x;
-    private int m_y;
-    private int m_width;
-    private int m_height;
+    private int m_borderX = 4;
+    private int m_borderY = 2;
 
 	public StructurePathNode(Node treeNode) {
 		super(treeNode);
-		
-		m_pixelsX = 2 * m_borderX;
-		m_pixelsY = 2 * m_borderY;
 	}
 
 	public int getPixelsX() {
-		return getChildrenX() + m_pixelsX;
+		return getChildrenX() + (2 * m_borderX);
 	}
 
 	public int getPixelsY() {
-		return getChildrenY() + m_pixelsY;
+		return getChildrenY() + (2 * m_borderY);
 	}
 
 	public int getChildrenX() {
@@ -54,23 +45,13 @@ public class StructurePathNode extends ViewNode {
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc, double scale) {
+	public void draw(Display display, GC gc, double scale, boolean isWorstCase) {
         gc.setLineWidth(m_lineWidth);
         m_x = scale(m_pixelOffsetX, scale);
         m_y = scale(m_pixelOffsetY, scale);
         m_width = scale(getPixelsX(), scale);
         m_height = scale(getPixelsY(), scale);
-
-        gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-    	gc.fillRectangle(m_x, m_y, m_width, m_height);
-
-    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-       
-        if (m_isSelected) {
-        	gc.setLineWidth(m_lineWidth + 1);
-        	gc.drawRectangle(m_x, m_y, m_width, m_height);
-        	gc.setLineWidth(m_lineWidth);
-        }
+        drawThis(display, gc);
 
         boolean first = true;
     	int childOffsetX = m_borderX;
@@ -78,26 +59,29 @@ public class StructurePathNode extends ViewNode {
     	int lineLeft = 0;
     	int lineRight = 0;
 		for (ViewNode child : getChildren()) {
-    		child.draw(display, gc, scale);
     		int childX = child.getPixelsX();
     		
         	if (!first) {
+            	setConnectionColour(display, gc, isWorstCase);
         		drawConnection(display, gc, lineLeft, lineY, lineRight, lineY);
         	} else {
         		first = false;
         	}
 
-            lineLeft = scale(m_x + childOffsetX + childX, scale);
-            lineRight = scale(m_x + childOffsetX + childX + m_connectorLen, scale);
+            lineLeft = scale(m_pixelOffsetX + childOffsetX + childX, scale);
+            lineRight = scale(m_pixelOffsetX + childOffsetX + childX + m_connectorLen, scale);
             childOffsetX += childX + m_connectorLen;
-    	}
 
-		drawConnection(display, gc, m_x, lineY, m_x + m_borderX, lineY);
-		drawConnection(display, gc, lineLeft, lineY, m_x + m_width, lineY);
+    		child.draw(display, gc, scale, isWorstCase);
+		}
+
+    	setConnectionColour(display, gc, isWorstCase);
+		drawConnection(display, gc, m_x, lineY, scale(m_pixelOffsetX + m_borderX, scale), lineY);
+		drawConnection(display, gc, lineLeft, lineY, scale(m_pixelOffsetX + getPixelsX(), scale), lineY);
     }
 
 	public void annotateXy(int xOffset, int yOffset) {
-		if (DEBUG) System.out.printf("Annotate StructurePath (%d, %d\n", xOffset, yOffset);
+		if (DEBUG) System.out.printf("Annotate StructurePath (%d, %d)\n", xOffset, yOffset);
 
 		m_pixelOffsetX = xOffset;
 		m_pixelOffsetY = yOffset;

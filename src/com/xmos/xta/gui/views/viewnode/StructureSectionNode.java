@@ -2,45 +2,35 @@ package com.xmos.xta.gui.views.viewnode;
 
 import java.util.ArrayList;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.SectionNode;
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 
 public class StructureSectionNode extends ViewNode {
     public static final boolean DEBUG = false;
 
     private int m_borderX = 4;
-    private int m_borderY = 4;
-    private int m_gapLen = 16;
+    private int m_borderY = 2;
+    private int m_gapY = 12;
     
-    private int m_x;
-    private int m_y;
-    private int m_width;
-    private int m_height;
     private boolean m_isOptional;
+    private boolean m_continues;
     
-	public StructureSectionNode(Node treeNode) {
+	public StructureSectionNode(Node treeNode, boolean continues) {
 		super(treeNode);
 		
-		m_isOptional = ((SectionNode)m_treeNode).isSectionOptional();
-
-		m_pixelsX = 2 * m_borderX;
-		m_pixelsY = 2 * m_borderY;
+		m_isOptional = m_treeNode.isSectionOptional();
+		m_continues = continues;
 	}
 	
 	public int getPixelsX() {
-		int pixels = getChildrenX() + m_pixelsX;
-		if (DEBUG) System.out.printf("StructureSection X %d\n", pixels);
-		return pixels;
+		return getChildrenX() + (2 * m_borderX);
 	}
 
 	public int getPixelsY() {
-		int pixels = getChildrenY() + m_pixelsY;
-		if (DEBUG) System.out.printf("StructureSection Y %d\n", pixels);
-		return pixels;
+		return getChildrenY() + (2 * m_borderY);
 	}
 
 	public int getChildrenX() {
@@ -58,59 +48,58 @@ public class StructureSectionNode extends ViewNode {
 	public int getChildrenY() {
 		int pixels = 0;
 		for (ViewNode child : getChildren()) {
-			if (child != null) {
-				pixels += child.getPixelsY();
-			}
+			pixels += child.getPixelsY();
 		}
-		pixels += (getChildren().size() - 1) * m_gapLen;
+		pixels += (getChildren().size() - 1) * m_gapY;
 		
 		if (m_isOptional)
-			pixels += m_gapLen;
+			pixels += m_gapY;
 		
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc, double scale) {
-        if (DEBUG) System.out.printf("Draw StructureSection %d,%d,%f\n",
-        		m_pixelOffsetX, m_pixelOffsetY, scale);
-
+	public void draw(Display display, GC gc, double scale, boolean isWorstCase) {
         gc.setLineWidth(m_lineWidth);
         m_x = scale(m_pixelOffsetX, scale);
         m_y = scale(m_pixelOffsetY, scale);
         m_width = scale(getPixelsX(), scale);
         m_height = scale(getPixelsY(), scale);
-        
-//        gc.setBackground(display.getSystemColor(SWT.COLOR_YELLOW));
-//    	gc.fillRectangle(m_x, m_y, m_width, m_height);
+        drawThis(display, gc);
 
-        int mid = scale(m_pixelOffsetY + (getPixelsY() / 2), scale);
+        int midY = scale(m_pixelOffsetY + (getPixelsY() / 2), scale);
     	int childOffsetY = m_borderY;
 		for (ViewNode child : getChildren()) {
-    		child.draw(display, gc, scale);
+			boolean childIsWorstCase = isWorstCase && (child.getTreeNode().getAttributes().getTimeTaken(Case.WORST, false) > 0);
 
     		int childY = child.getPixelsY();
     		int childMid = scale(m_pixelOffsetY + childOffsetY + (childY / 2), scale);
 
         	int childLeft = scale(child.getPixelOffsetX(), scale);
         	int childRight = scale(child.getPixelOffsetX() + child.getPixelsX(), scale);
-        	drawConnection(display, gc, m_x, mid, m_x, childMid);
+        	setConnectionColour(display, gc, childIsWorstCase);
+        	drawConnection(display, gc, m_x, midY, m_x, childMid);
         	drawConnection(display, gc, m_x, childMid, childLeft, childMid);
-        	drawConnection(display, gc, m_x + m_width, mid, m_x + m_width, childMid);
-        	drawConnection(display, gc, m_x + m_width, childMid, childRight, childMid);
+        	
+        	if (m_continues) {
+        		drawConnection(display, gc, m_x + m_width, midY, m_x + m_width, childMid);
+        		drawConnection(display, gc, m_x + m_width, childMid, childRight, childMid);
+        	}
+            childOffsetY += childY + m_gapY;
 
-            childOffsetY += childY;
+            child.draw(display, gc, scale, childIsWorstCase);
     	}
 
 		if (m_isOptional) {
-			int optionalMid = scale(m_pixelOffsetY + childOffsetY + m_gapLen / 2, scale);
-			drawConnection(display, gc, m_x, mid, m_x, optionalMid);
+        	setConnectionColour(display, gc, false);
+			int optionalMid = scale(m_pixelOffsetY + childOffsetY - (m_gapY / 2), scale);
+			drawConnection(display, gc, m_x, midY, m_x, optionalMid);
 			drawConnection(display, gc, m_x, optionalMid, m_x + m_width, optionalMid);
-			drawConnection(display, gc, m_x + m_width, mid, m_x + m_width, optionalMid);
+			drawConnection(display, gc, m_x + m_width, midY, m_x + m_width, optionalMid);
 		}
 	}
 
 	public void annotateXy(int xOffset, int yOffset) {
-		if (DEBUG) System.out.printf("Annotate StructureSection (%d, %d\n", xOffset, yOffset);
+		if (DEBUG) System.out.printf("Annotate StructureSection (%d, %d)\n", xOffset, yOffset);
 
 		m_pixelOffsetX = xOffset;
 		m_pixelOffsetY = yOffset;
@@ -120,7 +109,7 @@ public class StructureSectionNode extends ViewNode {
 		for (ViewNode child : getChildren()) {
 			int childX = child.getPixelsX();
     		child.annotateXy(xOffset + m_borderX + ((childrenX - childX) / 2), yOffset + childOffsetY);
-    		childOffsetY += child.getPixelsY() + m_gapLen;
+    		childOffsetY += child.getPixelsY() + m_gapY;
     	}
 	}
 

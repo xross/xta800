@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
-import com.xmos.xeobject.FileFinder;
+import com.xmos.xta.sourcemapper.FileFinder;
 
 public class GuiFileFinder extends FileFinder {  
 	private String m_xeFileName;

@@ -95,7 +95,7 @@
             locationURI="toolbar:com.xmos.xta.gui.views.FunctionView.Function">
       </menuContribution>
       <menuContribution
-            locationURI="toolbar:com.xmos.xta.gui.views.StructureView.Structure">
+            locationURI="toolbar:com.xmos.xta.gui.views.structure.Structure">
             <command
 				commandId="com.xmos.xta.gui.structure.zoomin.command"
 				icon="icons/zoomin.png"
@@ -120,7 +120,22 @@
 		</menuContribution>
    </extension>
    <extension
-         point="org.eclipse.ui.commands">command>
+         point="org.eclipse.ui.commands">
+	<command
+            defaultHandler="com.xmos.xta.gui.handlers.StructureZoomInHandler"
+            id="com.xmos.xta.gui.structure.zoomin.command"
+            name="com.xmos.xta.gui.structure.zoomin.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.gui.handlers.StructureZoomOutHandler"
+            id="com.xmos.xta.gui.structure.zoomout.command"
+            name="com.xmos.xta.gui.structure.zoomout.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.gui.handlers.StructureZoomResetHandler"
+            id="com.xmos.xta.gui.structure.zoomreset.command"
+            name="com.xmos.xta.gui.structure.zoomreset.command">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.editors.markerAnnotationSpecification">

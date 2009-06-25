@@ -39,10 +39,8 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
-import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.views.viewnode.ViewNode;
@@ -53,7 +51,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                                                        IMenuListener {
     public static final boolean DEBUG = false;
     public static final int MIN_CANVAS_X = 100;
-    public static final int MAX_CANVAS_X = 3000;
+    public static final int MAX_CANVAS_X = 10000;
     public static final int MAX_CANVAS_Y = 500;
 
     protected Node m_rootNode;
@@ -317,7 +315,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     }
     
 	public void zoomOut() {
-		if (m_selectedNodes.size() == 0)
+		if (m_doubleClickNode == null)
 			return;
 
 		// Don't zoom too far out
@@ -328,7 +326,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	}
 
 	public void zoomIn() {
-		if (m_selectedNodes.size() == 0)
+		if (m_doubleClickNode == null)
 			return;
 		
 		// Don't zoom any more than the maximum width

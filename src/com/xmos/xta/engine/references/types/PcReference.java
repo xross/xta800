@@ -1,10 +1,7 @@
 package com.xmos.xta.engine.references.types;
 
-import java.util.HashMap;
-
-import com.xmos.xeobject.Function;
-import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.sourcemapper.SourceMapper;
 
 public class PcReference extends ReferenceType {	
 	PcReference(String ref) {
@@ -23,19 +20,10 @@ public class PcReference extends ReferenceType {
 	}
 	
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
-		XeObject xeObject = engine.getXeObject();
-		if (xeObject == null)
+		SourceMapper sourceMapper = engine.getSourceMapper();
+		if(sourceMapper == null) 
 			return false;
-		
-		HashMap<Integer, Function> pcToFunctionMap = xeObject.getPcToFunctionMap();
-		if (pcToFunctionMap == null)
-			return false;
-
-		if (pcToFunctionMap.containsKey(getPc())) {
-			setResolved(true);
-			return true;
-		}		
-		return false;
+		return sourceMapper.isProfilablePc(getPc());
 	}
 	
 	public String name() {

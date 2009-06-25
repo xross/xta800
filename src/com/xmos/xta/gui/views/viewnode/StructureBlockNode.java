@@ -11,27 +11,19 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 public class StructureBlockNode extends ViewNode {
     public static final boolean DEBUG = false;
 
-    private int m_blockX = 10;
-    private int m_blockY = 10;
-
-    private int m_x;
-    private int m_y;
-    private int m_width;
-    private int m_height;
+    private int m_minBlockX = 10;
+    private int m_minBlockY = 10;
 
 	public StructureBlockNode(Node treeNode) {
 		super(treeNode);
-		
-		m_pixelsX = m_blockX;
-		m_pixelsY = m_blockY;
 	}
 
 	public int getPixelsX() {
-		return m_blockX;
+		return m_minBlockX + m_treeNode.getChildren().size();
 	}
 
 	public int getPixelsY() {
-		return m_blockY;
+		return m_minBlockY;
 	}
 
 	public int getChildrenX() {
@@ -42,18 +34,18 @@ public class StructureBlockNode extends ViewNode {
 		return 0;
 	}
 
-	public void draw(Display display, GC gc, double scale) {
+	public void draw(Display display, GC gc, double scale, boolean isWorstCase) {
         gc.setLineWidth(m_lineWidth);
         m_x = scale(m_pixelOffsetX, scale);
         m_y = scale(m_pixelOffsetY, scale);
-        m_width = scale(m_blockX, scale);
-        m_height = scale(m_blockY, scale);
+        m_width = scale(getPixelsX(), scale);
+        m_height = scale(getPixelsY(), scale);
 
-        gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+        gc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
     	gc.fillRectangle(m_x, m_y, m_width, m_height);
-    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-        
+       
         if (m_isSelected) gc.setLineWidth(m_lineWidth + 1);
+    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
     	gc.drawRectangle(m_x, m_y, m_width, m_height);
         if (m_isSelected) gc.setLineWidth(m_lineWidth);
 	}

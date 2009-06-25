@@ -10,13 +10,13 @@ import java.util.Vector;
 import com.xmos.isa.Instruction;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
-import com.xmos.xeobject.Function;
-import com.xmos.xeobject.XeObject;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.instructions.Disassembler;
 import com.xmos.xta.engine.instructions.XtaInstruction;
+import com.xmos.xta.sourcemapper.Function;
+import com.xmos.xta.sourcemapper.SourceMapper;
 
 public class AsmDisplayer {
 	private Engine m_engine;
@@ -36,7 +36,7 @@ public class AsmDisplayer {
     	    	
         if (instructions.size() > 0) { 
 	    	HashMap<String, TreeSet<Integer>> asmLinesCovered = 
-	    		createAsmPcsCovered(instructions, m_engine.getXeObject());
+	    		createAsmPcsCovered(instructions, m_engine.getSourceMapper());
 	    	
 	        for (Iterator<Map.Entry<String, TreeSet<Integer>>> iter = 
 	        	asmLinesCovered.entrySet().iterator(); iter.hasNext();) {
@@ -87,13 +87,11 @@ public class AsmDisplayer {
     }
 
     private HashMap<String, TreeSet<Integer>> createAsmPcsCovered(
-    		List<XtaInstruction> instructions, XeObject xeObject) {
+    		List<XtaInstruction> instructions, SourceMapper sourceMapper) {
 			
         HashMap<String, TreeSet<Integer>> asmLinesCovered = new HashMap<String, TreeSet<Integer>>();
         for(XtaInstruction inst : instructions){
-            int pc = inst.getPc();
-            HashMap<Integer, Function> functionMap = xeObject.getPcToFunctionMap();
-            Function function = functionMap.get(pc);
+            Function function = sourceMapper.getFunction(inst.getPc());
             if (function != null) {
 	            String instString = function.getText();
 	            if (asmLinesCovered.containsKey(instString)){

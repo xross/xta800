@@ -1,0 +1,65 @@
+package com.xmos.xta.sourcemapper;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+public class SourceLine implements Line {
+	
+	private String             m_line;
+    private ArrayList<Line>    m_assembly;
+	private int                m_lineNumber;
+	private ArrayList<Integer> m_statementPcs;
+	
+	public SourceLine(String line, int lineNumber) {
+	    assert(line!=null);
+	    assert(lineNumber>0);
+		m_line = line;
+		m_lineNumber = lineNumber;
+		m_assembly = new ArrayList<Line>();
+		m_statementPcs = new ArrayList<Integer>();
+	}
+	
+	public void addAssembly(List<Line> assembly){
+	    assert(assembly!=null);
+	    for(Line al : assembly){
+	        addAssembly((AssemblyLine)al);
+	    }
+	}
+	
+	public void addAssembly(AssemblyLine newInst){
+	    assert(newInst!=null);
+		m_assembly.add(newInst);
+	}
+	
+	public void addStatementPcs(Collection<Long> pcs) {
+		for (long pc : pcs) {
+			m_statementPcs.add((int)pc);
+		}
+	}
+
+	public Collection<Integer> getStatementPcs() {
+		return m_statementPcs;
+	}
+
+	public int getLineNumber() {
+		return m_lineNumber;
+	}
+
+    public String getText() {
+        return m_line;
+    }
+
+    public ArrayList<Line> getChildern() {
+        return m_assembly;
+    }
+
+    public boolean isGreyedOut() {
+        for(Line childLine : m_assembly){
+            if(childLine.isGreyedOut()) return true;
+        }
+        return false;
+    }
+}
+
+

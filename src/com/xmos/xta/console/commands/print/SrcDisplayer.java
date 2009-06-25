@@ -5,15 +5,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
-
-import com.xmos.xeobject.Line;
-import com.xmos.xeobject.SourceFile;
-import com.xmos.xeobject.SourceLine;
-import com.xmos.xeobject.XeObject;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.instructions.XtaInstruction;
+import com.xmos.xta.sourcemapper.Line;
+import com.xmos.xta.sourcemapper.SourceFile;
+import com.xmos.xta.sourcemapper.SourceLine;
+import com.xmos.xta.sourcemapper.SourceMapper;
 
 public class SrcDisplayer {
 	private static final boolean DEBUG = false;
@@ -30,15 +29,14 @@ public class SrcDisplayer {
 
 	public void display(Node node) {    	
   	    List<XtaInstruction> instructions = node.getInstructions();
-  	    
-		XeObject xeObject = m_engine.getXeObject();
+		SourceMapper sourceMapper = m_engine.getSourceMapper();
         HashMap<String, TreeSet<Integer>> linesCovered = 
-        	createSrcLinesCovered(instructions, xeObject);                                                                   
+        	createSrcLinesCovered(instructions, sourceMapper);                                                                   
         
         if (DEBUG) 
         	displaySrcLinesCovered(linesCovered);
         
-		for (SourceFile sourceFile : xeObject.getSourceFiles()) {									
+		for (SourceFile sourceFile : sourceMapper.getSourceFiles()) {									
 	        TreeSet<Integer> fileLines = linesCovered.get(sourceFile.getFullSourceName());    
 	        if (fileLines.size() > 0) {
 				m_console.display("----------------------------------\n");
@@ -67,11 +65,11 @@ public class SrcDisplayer {
     }
 
 	private HashMap<String, TreeSet<Integer>> createSrcLinesCovered(List<XtaInstruction> instructions,
-			XeObject xeObject) {
+			SourceMapper sourceMapper) {
 
 		HashMap<String, TreeSet<Integer>> linesCovered = new HashMap<String, TreeSet<Integer>>();
 		for (XtaInstruction inst : instructions) {
-			for (SourceFile sourceFile : xeObject.getSourceFiles()) {
+			for (SourceFile sourceFile : sourceMapper.getSourceFiles()) {
 				
 				String compilationName = sourceFile.getFullSourceName();
 				TreeSet<Integer> sourceLines;

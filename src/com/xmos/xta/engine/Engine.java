@@ -17,8 +17,6 @@ import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
-import com.xmos.xeobject.FileFinder;
-import com.xmos.xeobject.XeObject;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.controlflow.FunctionHandler;
 import com.xmos.xta.engine.analysis.controlflow.InstructionDecoder;
@@ -42,6 +40,8 @@ import com.xmos.xta.engine.sections.CodePointInfo;
 import com.xmos.xta.engine.sections.CodePointTableInfo;
 import com.xmos.xta.engine.sections.Sections;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
+import com.xmos.xta.sourcemapper.FileFinder;
+import com.xmos.xta.sourcemapper.SourceMapper;
 
 public class Engine implements Notifier {
 	public static final int ROUTE_ID_LAST = -1;
@@ -63,14 +63,14 @@ public class Engine implements Notifier {
 	private Sections m_sections;
 	private Collection<String> m_functionsVisited;
 	
-	private NodeCoreCollection<XeObject> m_xeObjects;
+	private NodeCoreCollection<SourceMapper> m_sourceMapper;
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
 	private NodeCoreCollection<ControlFlowGraph> m_controlFlowGraph;
 	private NodeCoreCollection<InstructionDecoder> m_instructionDecoder;
 	private NodeCoreCollection<TreeMap<String, InstructionNode>> m_functionNames;
 	
 	public Engine(Config config) {		
-		m_xeObjects = new NodeCoreCollection<XeObject>();
+		m_sourceMapper = new NodeCoreCollection<SourceMapper>();
 		m_structuralGraph = new NodeCoreCollection<StructureGraph>();
 		m_controlFlowGraph = new NodeCoreCollection<ControlFlowGraph>();
 		m_instructionDecoder = new NodeCoreCollection<InstructionDecoder>();
@@ -135,8 +135,8 @@ public class Engine implements Notifier {
 		return m_xeLoader.getDebugInfo(m_nodeId, m_coreId);
 	}
 
-	public XeObject getXeObject() {
-		return m_xeObjects.get(m_nodeId, m_coreId);
+	public SourceMapper getSourceMapper() {
+		return m_sourceMapper.get(m_nodeId, m_coreId);
 	}
 	
 	public ControlFlowGraph getControlFlowGraph() {
@@ -204,10 +204,10 @@ public class Engine implements Notifier {
 			return false;
 		} 
 		
-		if (!initialiseGlobalStructure(xeLoader, sections))
+		if (!initialiseGlobalStructure(xeLoader, sections, fileFinder))
 			return false;
 
-		initialiseXeObjects(xeLoader, fileFinder);		
+		//initialiseXeObjects(xeLoader, fileFinder);		
 		
 		m_executableFile = executableFile;
 		m_xeLoader = xeLoader;
@@ -313,9 +313,8 @@ public class Engine implements Notifier {
 			for(Node subRoute : routeConstructor.getSubRoutes()){
 				Route route = new Route(this, subRoute, routeDescription);
 				m_routes.add(route);
-				
 			}
-			if(!m_routes.isEmpty() && !routeConstructor.getSubRoutes().isEmpty()){
+			if (!m_routes.isEmpty() && !routeConstructor.getSubRoutes().isEmpty()) {
 				setSelectedRoute(m_routes.get(currentSize));
 				notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
 			} else {
@@ -726,7 +725,8 @@ public class Engine implements Notifier {
 		}		
 		
 		if (m_sections.addToBranches(m_nodeId, m_coreId, fromRef.getPc(), toRef.getPc())) {
-			if (!initialiseGlobalStructure(m_xeLoader, m_sections)) {
+			//FIXME null is not good
+			if (!initialiseGlobalStructure(m_xeLoader, m_sections, null)) {
 				return false;
 			}
 			return true;			
@@ -740,8 +740,9 @@ public class Engine implements Notifier {
 			return false;
 		}
 		
-		if (m_sections.removeFromBranches(m_nodeId, m_coreId, fromRef.getPc())) {		    
-			if (!initialiseGlobalStructure(m_xeLoader, m_sections)) {
+		if (m_sections.removeFromBranches(m_nodeId, m_coreId, fromRef.getPc())) {	
+			//FIXME null is not good
+			if (!initialiseGlobalStructure(m_xeLoader, m_sections, null)) {
 				return false;
 			}
 			return true;			
@@ -873,11 +874,14 @@ public class Engine implements Notifier {
 	// ===================================================================== //
 	// Private Methods
 	// ===================================================================== //
-	private boolean initialiseGlobalStructure(XeLoader xeLoader, Sections sections) {
+	private boolean initialiseGlobalStructure(XeLoader xeLoader, Sections sections, FileFinder fileFinder) {
 		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
 		NodeCoreCollection<ControlFlowGraph> newCfg = new NodeCoreCollection<ControlFlowGraph>();
 		NodeCoreCollection<InstructionDecoder> newInstructionDecoder = new NodeCoreCollection<InstructionDecoder>();
 		NodeCoreCollection<TreeMap<String, InstructionNode>> newFunctionNames = new NodeCoreCollection<TreeMap<String, InstructionNode>>();
+		NodeCoreCollection<SourceMapper> newSourceMappers = new NodeCoreCollection<SourceMapper>();
+		
+		
 		for (int nodeId : xeLoader.getNodeIds()){
 			for (int coreId : xeLoader.getCoreIds(nodeId)){
 				InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config);
@@ -905,40 +909,22 @@ public class Engine implements Notifier {
 				Set<InstructionNode> starts = new TreeSet<InstructionNode>();
 				starts.addAll(fh.getKnownFuncStarts());
 				starts.addAll(threadStartNodes);
-				for(InstructionNode inst : starts){
-					TreeMap<String, InstructionNode> functionName = newFunctionNames.get(nodeId, coreId);
-					String name = xeLoader.getSymbolTable(nodeId, coreId).functionName(inst.getStartPc());
-					
-					if(functionName.containsKey(name)){
-						//the one with the lower pc will stay in the set and the other will take an auto-generated name.
-						
-						InstructionNode instNode = functionName.get(name);
-						
-						if(instNode.getStartPc() < inst.getStartPc()){
-							name = "unnamed_function_at_0x" + Integer.toHexString(inst.getStartPc());
-							functionName.put(name, inst);
-						} else if(instNode.getStartPc() > inst.getStartPc()){
-							String newName = "unnamed_function_at_0x" + Integer.toHexString(instNode.getStartPc());
-							functionName.put(newName, instNode);
-							functionName.put(name, inst);
-						} else {
-							assert(false);
-						}
-					} else {
-						assert(!functionName.containsKey(name));
-						functionName.put(name, inst);
-					}
-				}
-								
-				//for(String functionName : newFunctionNames.get(nodeId, coreId).keySet()){
-				//	System.out.println("0x" + Integer.toHexString(newFunctionNames.get(nodeId, coreId).get(functionName).getStartPc()) + " " + functionName);
-				//}
 				
+				ensureAllFunctionsAreNamed(xeLoader.getSymbolTable(nodeId, coreId), 
+						newFunctionNames.get(nodeId, coreId), starts);
+				
+				SourceMapper sourceMapper = new SourceMapper(xeLoader, nodeId, coreId, starts, 
+						fileFinder, id, newFunctionNames.get(nodeId, coreId));
+				
+				newSourceMappers.add(nodeId, coreId, sourceMapper);
+				
+
 				UnreachableCodeFinder uca = new UnreachableCodeFinder();
 				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
 	
 				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts(), fh.getFunctions());
 				newCfg.add(nodeId, coreId, cfg);
+				
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
 				if (!sae.analyse(this, newFunctionNames.get(nodeId, coreId)))
@@ -951,18 +937,49 @@ public class Engine implements Notifier {
 		m_controlFlowGraph = newCfg;
 		m_structuralGraph = newStructuralGraph;
 		m_functionNames = newFunctionNames;
-		
+		m_sourceMapper = newSourceMappers;
 		return true;
 	}
-	
+
+
+
+	private void ensureAllFunctionsAreNamed(SymbolTable symbolTable,
+			TreeMap<String, InstructionNode> functionName,
+			Set<InstructionNode> starts ) {
+		for(InstructionNode inst : starts){
+			String name = symbolTable.functionName(inst.getStartPc());
+			
+			if(functionName.containsKey(name)){
+				//the one with the lower pc will stay in the set and the other will take an auto-generated name.
+				
+				InstructionNode instNode = functionName.get(name);
+				
+				if(instNode.getStartPc() < inst.getStartPc()){
+					name = "unnamed_at_0x" + Integer.toHexString(inst.getStartPc());
+					functionName.put(name, inst);
+				} else if(instNode.getStartPc() > inst.getStartPc()){
+					String newName = "unnamed_at_0x" + Integer.toHexString(instNode.getStartPc());
+					functionName.put(newName, instNode);
+					functionName.put(name, inst);
+				} else {
+					assert(false);
+				}
+			} else {
+				assert(!functionName.containsKey(name));
+				functionName.put(name, inst);
+			}
+		}
+	}
+	/*
 	private void initialiseXeObjects(XeLoader xeLoader, FileFinder fileFinder) {
 		m_xeObjects = new NodeCoreCollection<XeObject>();
 		for (int nodeId : xeLoader.getNodeIds()){
 			for (int coreId : xeLoader.getCoreIds(nodeId)){
-				m_xeObjects.add(nodeId, coreId, new XeObject(xeLoader, nodeId, coreId, fileFinder));
+				//m_xeObjects.add(nodeId, coreId, new XeObject(xeLoader, nodeId, coreId, fileFinder));
 			}
 		}		
 	}
+	*/
 	
 	private boolean functionExists(String functionName) {
 		return getFunctionNames().contains(functionName);

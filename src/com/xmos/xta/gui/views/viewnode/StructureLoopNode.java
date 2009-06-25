@@ -7,108 +7,151 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 
 public class StructureLoopNode extends ViewNode {
     public static final boolean DEBUG = false;
 
-    private int m_borderX = 4;
-    private int m_bottomBorder = 4;
-    private int m_connectionY = 10;
-    private int m_cornerRounding = 7;
+    private int m_borderX = 8;
+    private int m_borderY = 4;
+    private int m_gapX = 8;
+    private int m_gapY = 4;
     
-    private int m_x;
-    private int m_y;
-    private int m_width;
-    private int m_height;
+    private ViewNode m_headerNode = null;
     
 	public StructureLoopNode(Node treeNode) {
 		super(treeNode);
-		
-		m_pixelsX = 2 * m_borderX;
-		m_pixelsY = m_connectionY + m_bottomBorder;
 	}
 	
 	public int getPixelsX() {
-		int pixels = getChildrenX() + m_pixelsX;
-		if (DEBUG) System.out.printf("StructureLoop X %d\n", pixels);
-		return pixels;
+		return getChildrenX() + m_gapX + (2 * m_borderX);
 	}
 
 	public int getPixelsY() {
-		int pixels = getChildrenY() + m_pixelsY;
-		if (DEBUG) System.out.printf("StructureLoop Y %d\n", pixels);
-		return pixels;
+		return getChildrenY() + (2 * m_borderY);
 	}
 
 	public int getChildrenX() {
-		int pixels = 0;
+		int pixels = m_headerNode.getPixelsX() + m_gapX;
+
+		int childrenX = 0;
 		for (ViewNode child : getChildren()) {
-			if (child != null) {
-				pixels += child.getPixelsX();
-			}
+			int childX = child.getPixelsX();
+			if (childX > childrenX)
+				childrenX = childX;
 		}
-		return pixels;
+		return pixels + childrenX;
 	}
 
 	public int getChildrenY() {
-		int pixels = 0;
+		int pixels = m_headerNode.getPixelsY() + m_gapY;
 		for (ViewNode child : getChildren()) {
-			if (child != null) {
-				int childPixels = child.getPixelsY();
-				if (childPixels > pixels)
-					pixels = childPixels;
-			}
+			pixels += child.getPixelsY() + m_gapY;
 		}
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc, double scale) {
-        if (DEBUG) System.out.printf("Draw StructureLoop %d,%d,%f\n",
-        		m_pixelOffsetX, m_pixelOffsetY, scale);
-
+	public void draw(Display display, GC gc, double scale, boolean isWorstCase) {
         gc.setLineWidth(m_lineWidth);
-        m_x = scale(m_pixelOffsetX + m_borderX, scale);
+        m_x = scale(m_pixelOffsetX, scale);
         m_y = scale(m_pixelOffsetY, scale);
-        m_width = scale(getPixelsX() - (2 * m_borderX), scale);
-        m_height = scale(getPixelsY() - m_bottomBorder, scale);
+        m_width = scale(getPixelsX(), scale);
+        m_height = scale(getPixelsY(), scale);
         
-    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+        drawThis(display, gc);
 
-        if (m_isSelected) gc.setLineWidth(m_lineWidth + 1);
-    	gc.drawRoundRectangle(m_x, m_y, m_width, m_height, m_cornerRounding, m_cornerRounding);
-        if (m_isSelected) gc.setLineWidth(m_lineWidth);
+        drawHeader(display, gc, scale, isWorstCase);
+        
+        int headerY = scale(m_headerNode.getPixelOffsetY() + (m_headerNode.getPixelsY() / 2), scale);
+        int headerOutX = scale(m_headerNode.getPixelOffsetX() + m_headerNode.getPixelsX() + (m_gapX / 2), scale);
+        int headerInX = scale(m_headerNode.getPixelOffsetX() - (m_gapX / 2), scale);
+        int loopReturnX = scale(m_pixelOffsetX + getPixelsX() - (m_gapX / 2), scale);
+        int loopReturnY = scale(m_pixelOffsetY + getPixelsY() - (m_gapY / 2), scale);
 
-        int mid = scale(m_pixelOffsetX + (getPixelsX() / 2), scale);
-    	int childOffsetX = m_pixelsX / 2;
-    	int childTop = scale(m_pixelOffsetY + m_connectionY, scale);
-		for (ViewNode child : getChildren()) {
-			if (child != null) {
-	    		child.draw(display, gc, scale);
-	    		int childX = child.getPixelsX();
-	
-	    		int childMid = scale(m_pixelOffsetX + childOffsetX + (childX / 2), scale);
-	        	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-	            gc.drawLine(mid, m_y, childMid, childTop);
-	
-	    		childOffsetX += childX;
-			}
-    	}
+        boolean loopWorstCase = false; 
+        if (getChildren().size() > 0) {
+	        int childMinY = 0;
+	        int childMaxY = 0;
+	    	for (ViewNode child : getChildren()) {
+				boolean childIsWorstCase = isWorstCase && (child.getTreeNode().getAttributes().getTimeTaken(Case.WORST, false) > 0);
+	            int childY = scale(child.getPixelOffsetY() + (child.getPixelsY() / 2), scale);
+	            int childLeft = scale(child.getPixelOffsetX(), scale);
+	            int childRight = scale(child.getPixelOffsetX() + child.getPixelsX(), scale);
+
+	        	setConnectionColour(display, gc, childIsWorstCase);
+	        	drawConnection(display, gc, headerOutX, childY, childLeft, childY);
+	    		drawConnection(display, gc, childRight, childY, loopReturnX, childY);
+	    		
+	    		if (childMinY == 0) {
+	    			childMinY = childY;
+	    		}
+	    		childMaxY = childY;
+	    		
+	    		child.draw(display, gc, scale, childIsWorstCase);
+	    		loopWorstCase |= childIsWorstCase;
+	    	}
+	    	
+	    	setConnectionColour(display, gc, loopWorstCase);
+			drawConnection(display, gc, headerOutX, headerY, headerOutX, childMaxY);
+			drawConnection(display, gc, loopReturnX, childMinY, loopReturnX, loopReturnY);
+			drawConnection(display, gc, headerInX, loopReturnY, loopReturnX, loopReturnY);
+        } else {
+        	loopWorstCase = m_headerNode.getTreeNode().getAttributes().getNumIterations(Case.WORST) > 0;
+        	setConnectionColour(display, gc, loopWorstCase);
+			drawConnection(display, gc, headerOutX, headerY, headerOutX, loopReturnY);
+			drawConnection(display, gc, headerInX, loopReturnY, headerOutX, loopReturnY);
+        }
+    	setConnectionColour(display, gc, loopWorstCase);
+		drawConnection(display, gc, headerInX, headerY, headerInX, loopReturnY);
+		
+		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+		int[] outTriangle = {
+				headerOutX, headerY + (2 * m_borderY),
+				headerOutX + (m_borderX / 2), headerY + m_borderY,
+				headerOutX - (m_borderX / 2), headerY + m_borderY,};
+		gc.fillPolygon(outTriangle);
+
+		int[] returnTriangle = {
+				headerInX, headerY + m_borderY,
+				headerInX + (m_borderX / 2), headerY + (2 * m_borderY),
+				headerInX - (m_borderX / 2), headerY + (2 * m_borderY),};
+		gc.fillPolygon(returnTriangle);
+	}
+
+	private void drawHeader(Display display, GC gc, double scale, boolean isWorstCase) {
+        m_headerNode.draw(display, gc, scale, isWorstCase);
+
+        // Wire through the header
+        int midY = scale(m_pixelOffsetY + (getPixelsY() / 2), scale);
+        int right = m_x + m_width;
+        int headerY = scale(m_headerNode.getPixelOffsetY() + (m_headerNode.getPixelsY() / 2), scale);
+        int headerRight = scale(m_headerNode.getPixelOffsetX() + m_headerNode.getPixelsX(), scale);
+
+    	setConnectionColour(display, gc, isWorstCase);
+    	drawConnection(display, gc, m_x, midY, m_x, headerY);
+		drawConnection(display, gc, m_x, headerY, scale(m_headerNode.getPixelOffsetX(), scale), headerY);
+		drawConnection(display, gc, headerRight, headerY, right, headerY);
+		drawConnection(display, gc, right, midY, right, headerY);
 	}
 
 	public void annotateXy(int xOffset, int yOffset) {
-        m_pixelOffsetX = xOffset;
-		m_pixelOffsetY = yOffset;
+		if (DEBUG) System.out.printf("Annotate StructureLoop (%d, %d\n", xOffset, yOffset);
 
-        int childOffsetX = m_borderX;
+		m_pixelOffsetX = xOffset;
+		m_pixelOffsetY = yOffset;
+		
+		m_headerNode.annotateXy(xOffset + m_borderX + m_gapX, yOffset + m_borderY);
+
+        int childOffsetX = m_borderX + m_headerNode.getPixelsX() + (2 * m_gapX);
+        int childOffsetY = m_borderY + m_headerNode.getPixelsY() + m_gapY;
 		for (ViewNode child : getChildren()) {
-			if (child != null) {
-	    		child.annotateXy(xOffset + childOffsetX, yOffset + m_connectionY);
-	    		childOffsetX +=  child.getPixelsX();
-			}
+    		child.annotateXy(xOffset + childOffsetX, yOffset + childOffsetY);
+    		childOffsetY += child.getPixelsY() + m_gapY;
     	}
 	}
 
 	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
+		m_headerNode.buildClickAreas(clickAreas);
 		for (ViewNode child : getChildren()) {
 			child.buildClickAreas(clickAreas);
     	}
@@ -122,5 +165,13 @@ public class StructureLoopNode extends ViewNode {
 			}
 		}
 		return false;
+	}
+
+	public void addChild(ViewNode child) {
+		if (m_headerNode == null) {
+			m_headerNode = child;
+		} else {
+			super.addChild(child);
+		}
 	}
 }

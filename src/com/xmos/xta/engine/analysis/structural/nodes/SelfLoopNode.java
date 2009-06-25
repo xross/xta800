@@ -100,10 +100,6 @@ public class SelfLoopNode extends Node{
 		return next;
 	}
 		
-	public boolean isLoopNode() {
-		return true;
-	}
-		
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
 			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
 		
@@ -137,6 +133,11 @@ public class SelfLoopNode extends Node{
 		list.add(m_loop);
 		return list;
 	}
+
+	public boolean isLoopNode() {
+		return true;
+	}
+		
 	public boolean isSelfLoopNode() {
 		return true;
 	}
