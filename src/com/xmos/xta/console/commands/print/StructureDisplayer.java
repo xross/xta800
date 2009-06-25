@@ -11,7 +11,6 @@ import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTrave
 public class StructureDisplayer {
 	private final static boolean DEBUG_NEXT = false;
 	private final static boolean DEBUG_BEFORE = false;
-	private final static boolean DEBUG_ATTRIBUTES = false;
 
 	private Console m_console;
 	private int m_verbosity;
@@ -43,7 +42,7 @@ public class StructureDisplayer {
 		displayTimeTaken(node);
 		displayNumPaths(node);
 		displayDescription(node);
-		if (DEBUG_ATTRIBUTES) displayAttributes(node);
+		displayAttributes(node);
 		if (DEBUG_NEXT) displayWhatsNext(node);
 		if (DEBUG_BEFORE) displayWhatsBefore(node);
 		m_console.display("\n");		
@@ -85,15 +84,17 @@ public class StructureDisplayer {
 	}
 	
 	private void displayAttributes(Node node) {		
-		NodeAttributes nodeAttributes = node.getAttributes();
-		String scope  = nodeAttributes.getIsAbsolute() ? "ABS" : "REL";
-		String header = nodeAttributes.getIsLoopHeader() ? "H" : "B";
+		if (m_verbosity >= 50) {
+			NodeAttributes nodeAttributes = node.getAttributes();
+			String scope  = nodeAttributes.getIsAbsolute() ? "ABS" : "REL";
+			String header = nodeAttributes.getIsLoopHeader() ? "H" : "B";
 
-		m_console.display(String.format(" (%s, %s: %d, %d, %d, %d)", scope, header,
-				nodeAttributes.getNumIterations(Case.WORST),
-				nodeAttributes.getNumIterations(Case.BEST),
-				nodeAttributes.getTotalIterations(Case.WORST),
-				nodeAttributes.getTotalIterations(Case.BEST)));
+			m_console.display(String.format(" (%s, %s: %d, %d, %d, %d)", scope, header,
+					nodeAttributes.getNumIterations(Case.WORST),
+					nodeAttributes.getNumIterations(Case.BEST),
+					nodeAttributes.getTotalIterations(Case.WORST),
+					nodeAttributes.getTotalIterations(Case.BEST)));			
+		}
 	}
 	
 	private void displayWhatsNext(Node node) {

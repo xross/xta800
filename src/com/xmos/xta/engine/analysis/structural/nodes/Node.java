@@ -313,31 +313,6 @@ public abstract class Node implements Comparable<Node>{
 	public boolean isSectionOptional() {
 		return false;
 	}
-	/*
-	public void addEndIbufferDueToWorst(InstructionBuffer ib){
-		if(ib == null){
-			//System.out.println("eek");
-		} else {
-			m_iBuffersDueToWorstTime.add(ib);
-		}
-		
-	}
-	
-	public void addEndIbufferDueToBest(InstructionBuffer ib){
-		if(ib == null){
-			//System.out.println("eek");
-		} else {
-			m_iBuffersDueToBestTime.add(ib);
-		}
-	}
-	
-	public Collection<InstructionBuffer> getIbufferDueToWorstTime(){
-		return m_iBuffersDueToWorstTime;
-	}
-	public Collection<InstructionBuffer> getIbufferDueToBestTime(){
-		return m_iBuffersDueToBestTime;
-	}
-	*/
 }
 
 class FunctionCallStatus {

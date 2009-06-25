@@ -49,6 +49,7 @@ public class Engine implements Notifier {
 	public static final int ROUTE_ID_GLOBAL = -3;
 	
 	private XeLoader m_xeLoader;
+	private FileFinder m_fileFinder;
 	private List<Route> m_routes;
 	private Collection<Reference> m_exclusions;
 	private Route m_selectedRoute;
@@ -80,6 +81,7 @@ public class Engine implements Notifier {
 		m_exclusions = new ArrayList<Reference>();
 		m_config = config;
 		m_executableFile = null;
+		m_fileFinder = null;
 		m_nodeId = 0;
 		m_coreId = 0;
 		m_srcPaths = ".";
@@ -185,7 +187,6 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean loadExecutable(File executableFile, FileFinder fileFinder) {
-		
     	try {
     		executableFile = executableFile.getCanonicalFile();
 		} catch (IOException e) {
@@ -206,10 +207,9 @@ public class Engine implements Notifier {
 		
 		if (!initialiseGlobalStructure(xeLoader, sections, fileFinder))
 			return false;
-
-		//initialiseXeObjects(xeLoader, fileFinder);		
 		
 		m_executableFile = executableFile;
+		m_fileFinder = fileFinder;
 		m_xeLoader = xeLoader;
 		m_sections = sections;
 		m_nodeId = 0;
@@ -725,8 +725,7 @@ public class Engine implements Notifier {
 		}		
 		
 		if (m_sections.addToBranches(m_nodeId, m_coreId, fromRef.getPc(), toRef.getPc())) {
-			//FIXME null is not good
-			if (!initialiseGlobalStructure(m_xeLoader, m_sections, null)) {
+			if (!initialiseGlobalStructure(m_xeLoader, m_sections, m_fileFinder)) {
 				return false;
 			}
 			return true;			
@@ -741,8 +740,7 @@ public class Engine implements Notifier {
 		}
 		
 		if (m_sections.removeFromBranches(m_nodeId, m_coreId, fromRef.getPc())) {	
-			//FIXME null is not good
-			if (!initialiseGlobalStructure(m_xeLoader, m_sections, null)) {
+			if (!initialiseGlobalStructure(m_xeLoader, m_sections, m_fileFinder)) {
 				return false;
 			}
 			return true;			
@@ -875,17 +873,18 @@ public class Engine implements Notifier {
 	// Private Methods
 	// ===================================================================== //
 	private boolean initialiseGlobalStructure(XeLoader xeLoader, Sections sections, FileFinder fileFinder) {
+		assert(fileFinder != null);
+		
 		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
 		NodeCoreCollection<ControlFlowGraph> newCfg = new NodeCoreCollection<ControlFlowGraph>();
 		NodeCoreCollection<InstructionDecoder> newInstructionDecoder = new NodeCoreCollection<InstructionDecoder>();
 		NodeCoreCollection<TreeMap<String, InstructionNode>> newFunctionNames = new NodeCoreCollection<TreeMap<String, InstructionNode>>();
 		NodeCoreCollection<SourceMapper> newSourceMappers = new NodeCoreCollection<SourceMapper>();
 		
-		
 		for (int nodeId : xeLoader.getNodeIds()){
 			for (int coreId : xeLoader.getCoreIds(nodeId)){
 				InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config);
-				
+
 				newFunctionNames.add(nodeId, coreId, new TreeMap<String, InstructionNode>());
 				
 				if (!id.decode()) 
@@ -941,8 +940,6 @@ public class Engine implements Notifier {
 		return true;
 	}
 
-
-
 	private void ensureAllFunctionsAreNamed(SymbolTable symbolTable,
 			TreeMap<String, InstructionNode> functionName,
 			Set<InstructionNode> starts ) {
@@ -970,16 +967,6 @@ public class Engine implements Notifier {
 			}
 		}
 	}
-	/*
-	private void initialiseXeObjects(XeLoader xeLoader, FileFinder fileFinder) {
-		m_xeObjects = new NodeCoreCollection<XeObject>();
-		for (int nodeId : xeLoader.getNodeIds()){
-			for (int coreId : xeLoader.getCoreIds(nodeId)){
-				//m_xeObjects.add(nodeId, coreId, new XeObject(xeLoader, nodeId, coreId, fileFinder));
-			}
-		}		
-	}
-	*/
 	
 	private boolean functionExists(String functionName) {
 		return getFunctionNames().contains(functionName);
