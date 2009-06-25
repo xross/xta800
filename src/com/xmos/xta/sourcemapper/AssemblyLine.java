@@ -19,15 +19,11 @@ public class AssemblyLine implements Line {
 		return m_instructionNode.getXtaInstruction().getPc();
 	}
 
-	public DisplayType getLineNumberType() {
-		return DisplayType.hex;
-	}
-
 	public String getText() {
 		return m_instructionNode.getXtaInstruction().toString();
 	}
 
-	public boolean isExcluded() {
+	public boolean isGreyedOut() {
 		 return false;
 	}
 

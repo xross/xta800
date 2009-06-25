@@ -133,13 +133,9 @@ public class SourceMapper {
                 for (long pc : addresses) {
                 	if (m_pcToAsm.containsKey((int)pc)) {
                         AssemblyLine assemblyLine = m_pcToAsm.get((int)pc);
-                        
                         Function fn = m_pcToFunction.get((int)pc);
                         m_functionToFile.put(fn.getText(), sourceFile.getFileName());
-                        
-                        
-                        sourceLine.addAssembly(assemblyLine);
-                    	if (DEBUG) System.out.printf("     - 0x%08x: %s\n", pc, assemblyLine.getText());                        
+                        sourceLine.addAssembly(assemblyLine);                    
                 	} else {
                 		System.err.println("Could not find assembly line correspinding to 0x" + 
                 				Integer.toHexString((int)pc) + " in debug information. ");

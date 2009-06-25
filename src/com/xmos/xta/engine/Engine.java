@@ -919,30 +919,6 @@ public class Engine implements Notifier {
 				
 				newSourceMappers.add(nodeId, coreId, sourceMapper);
 				
-				for(InstructionNode inst : starts){
-					TreeMap<String, InstructionNode> functionName = newFunctionNames.get(nodeId, coreId);
-					String name = xeLoader.getSymbolTable(nodeId, coreId).functionName(inst.getStartPc());
-					
-					if(functionName.containsKey(name)){
-						//the one with the lower pc will stay in the set and the other will take an auto-generated name.
-						
-						InstructionNode instNode = functionName.get(name);
-						
-						if(instNode.getStartPc() < inst.getStartPc()){
-							name = "unnamed_function_at_0x" + Integer.toHexString(inst.getStartPc());
-							functionName.put(name, inst);
-						} else if(instNode.getStartPc() > inst.getStartPc()){
-							String newName = "unnamed_function_at_0x" + Integer.toHexString(instNode.getStartPc());
-							functionName.put(newName, instNode);
-							functionName.put(name, inst);
-						} else {
-							assert(false);
-						}
-					} else {
-						assert(!functionName.containsKey(name));
-						functionName.put(name, inst);
-					}
-				}
 
 				UnreachableCodeFinder uca = new UnreachableCodeFinder();
 				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
@@ -954,8 +930,6 @@ public class Engine implements Notifier {
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
 				if (!sae.analyse(this, newFunctionNames.get(nodeId, coreId)))
 					return false;
-				
-				
 				
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
 			}

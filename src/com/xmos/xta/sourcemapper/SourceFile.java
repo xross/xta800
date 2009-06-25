@@ -9,10 +9,6 @@ import java.util.List;
 
 import com.xmos.dwarfhandler.DebugFile;
 
-/*
- * This class encapsulates a source file in two ways: by a list of
- * source lines and a list of functions containing their assembly
- */
 public class SourceFile {
 	private DebugFile m_debugFile;
 	private ArrayList<SourceLine> m_sourceLines;
