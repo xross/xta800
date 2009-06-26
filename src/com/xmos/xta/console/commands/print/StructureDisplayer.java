@@ -11,6 +11,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTrave
 public class StructureDisplayer {
 	private final static boolean DEBUG_NEXT = false;
 	private final static boolean DEBUG_BEFORE = false;
+	private final static boolean DEBUG_ATTRIBUTES = false;
 
 	private Console m_console;
 	private int m_verbosity;
@@ -84,12 +85,14 @@ public class StructureDisplayer {
 	}
 	
 	private void displayAttributes(Node node) {		
-		if (m_verbosity >= 50) {
+		if ((m_verbosity >= 50) || (DEBUG_ATTRIBUTES == true)) {
 			NodeAttributes nodeAttributes = node.getAttributes();
 			String scope  = nodeAttributes.getIsAbsolute() ? "ABS" : "REL";
 			String header = nodeAttributes.getIsLoopHeader() ? "H" : "B";
+			String optional = node.isSectionOptional() ? "OPT" : "COM";
 
-			m_console.display(String.format(" (%s, %s: %d, %d, %d, %d)", scope, header,
+			m_console.display(String.format(" (%s, %s, %s: %d, %d, %d, %d)", 
+					scope, header, optional,
 					nodeAttributes.getNumIterations(Case.WORST),
 					nodeAttributes.getNumIterations(Case.BEST),
 					nodeAttributes.getTotalIterations(Case.WORST),

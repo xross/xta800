@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.SectionNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -66,7 +67,10 @@ public class SectionNode extends Node {
     
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
-		list.addAll(getOption(Case.WORST, false).getInstructions());
+		Node option = getOption(Case.WORST, false);
+		if (option != null) {			
+			list.addAll(option.getInstructions());
+		}
 		return list;		
 	}
 	
@@ -122,6 +126,11 @@ public class SectionNode extends Node {
 	}
 
 	public Node getOption(Case c, boolean ignoreIterations) {
+		// Returns the best/worst case option of this section.
+		return getOption(c, ignoreIterations, m_options);
+    }
+	
+	public Node getUnsetOption(Case c, boolean ignoreIterations) {
 		// Gets the best/worst case option taken from each of the 
 		// option nodes that does not have its iteration 
 		// count explicitly set by the user.
@@ -129,28 +138,7 @@ public class SectionNode extends Node {
 		if (allUnsetOptions.isEmpty())
 			return null;
 		
-		Iterator<Node> iter = getAllUnsetOptions().iterator();
-		Node caseNode = iter.next();
-		
-		while (iter.hasNext()) {
-			Node node = iter.next();
-			switch (c) {
-			case WORST:				
-				if (node.getAttributes().getTimeTaken(c, ignoreIterations) > 
-			        caseNode.getAttributes().getTimeTaken(c, ignoreIterations)) {
-				    caseNode = node;
-			    }										
-				break;
-				
-			case BEST:
-				if (node.getAttributes().getTimeTaken(c, ignoreIterations) < 
-		            caseNode.getAttributes().getTimeTaken(c, ignoreIterations)) {
-			        caseNode = node;
-		        }										
-				break;
-			}			
-		}		
-		return caseNode;
+		return getOption(c, ignoreIterations, allUnsetOptions);
 	}
 		
 	public boolean isSectionNode() {
@@ -171,7 +159,10 @@ public class SectionNode extends Node {
 	}	
 
 	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
-		getOption(c, false).getInstructionStream(c, instructions, iteration);
+		Node option = getOption(c, false);
+		if (option != null) {
+			option.getInstructionStream(c, instructions, iteration);			
+		}
 	}
 
 	public long getError(Case c) {
@@ -214,5 +205,34 @@ public class SectionNode extends Node {
 
 	public List<Node> getImmediateChildren() {
 		return new LinkedList<Node> (m_options);
+	}
+	
+	private Node getOption(Case c, boolean ignoreIterations, Collection<Node> nodes) {
+		// Must handle optional sections as a special case.. 
+		if ((c == Case.BEST) && (m_isOptional))
+			return null;
+		
+		// Finds the best/worst case of the real options..
+		Iterator<Node> iter = nodes.iterator();
+		Node caseNode = iter.next();		
+		while (iter.hasNext()) {
+			Node node = iter.next();
+			switch (c) {
+			case WORST:				
+				if (node.getAttributes().getTimeTaken(c, ignoreIterations) > 
+			        caseNode.getAttributes().getTimeTaken(c, ignoreIterations)) {
+				    caseNode = node;
+			    }										
+				break;
+				
+			case BEST:
+				if (node.getAttributes().getTimeTaken(c, ignoreIterations) < 
+		            caseNode.getAttributes().getTimeTaken(c, ignoreIterations)) {
+			        caseNode = node;
+		        }										
+				break;
+			}			
+		}		
+		return caseNode;		
 	}
 }

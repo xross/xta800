@@ -45,17 +45,26 @@ public class NodeAttributes {
 	}
 	
 	public String getTimingSummary() { 
+	    String timingSummary = "";
+	    
 		// Displays the worst case timing.
-	    String timingSummary = "";	    
-	    timingSummary += String.format(" : %.1fns", getTimeTaken(Case.WORST, false));
-		if (m_node.isBlockNode()) {					
+	    boolean worstCaseTimingInvalid = (getNumIterations(Case.WORST) == 0);
+	    String worstCaseTimingStr = worstCaseTimingInvalid ? 
+	    		"-" : String.format("%.1fns", getTimeTaken(Case.WORST, false));
+	    
+	    timingSummary += String.format(" : %s", worstCaseTimingStr);
+		if (m_node.isBlockNode() && !worstCaseTimingInvalid) {					
 			timingSummary += String.format(" (x %d)", 
 					m_node.getAttributes().getTotalIterations(Case.WORST));
 		}
 
 		// Displays the best case timing.
-	    timingSummary += String.format(" - %.1fns", getTimeTaken(Case.BEST, false));
-		if (m_node.isBlockNode()) {
+	    boolean bestCaseTimingInvalid = (getNumIterations(Case.BEST) == 0);
+	    String bestCaseTimingStr = bestCaseTimingInvalid ? 
+	    		"-" : String.format("%.1fns", getTimeTaken(Case.BEST, false));
+				
+	    timingSummary += String.format(" / %s", bestCaseTimingStr);
+		if (m_node.isBlockNode() && !bestCaseTimingInvalid) {
 			timingSummary += String.format(" (x %d)", 
 					m_node.getAttributes().getTotalIterations(Case.BEST));
 		}
