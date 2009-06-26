@@ -1,11 +1,11 @@
-package com.xmos.xta.gui.views.info;
+package com.xmos.xta.gui.views.info.unknowns;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
-public class InfoSorter extends ViewerSorter {
+class InfoSorter extends ViewerSorter {
 	private int m_field = 0;
 	private int m_direction = 1;
 	

@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.info;
+package com.xmos.xta.gui.views.info.unknowns;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,8 +128,12 @@ abstract class InfoViewer {
 		site.registerContextMenu(menuMgr, getViewer());		
 		createContextMenuActions(menuMgr);	
 		menuMgr.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-     }
+    }
 
+	public void clear() {
+		m_viewer.setInput(null);
+	}
+	
 	Composite getParent() {
 		return m_parent;
 	}
@@ -145,11 +149,7 @@ abstract class InfoViewer {
 	List<Node> getSelectedNodes() {
 		return m_selectedNodes;
 	}
-	
-	void clear() {
-		m_viewer.setInput(null);
-	}
-	
+		
 	int getNumInstructionTimeNodesSelected(ISelection selection) {
 		return 0;
 	}

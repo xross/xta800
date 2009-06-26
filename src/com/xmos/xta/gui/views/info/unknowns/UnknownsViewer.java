@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.info;
+package com.xmos.xta.gui.views.info.unknowns;
 
 import java.util.List;
 
@@ -19,14 +19,30 @@ import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.InstructionTime;
 import com.xmos.xta.gui.dialogs.Loop;
 
-class UnknownsViewer extends InfoViewer {
+public class UnknownsViewer extends InfoViewer {
 	private Action m_setInstructionTimeAction;
 	private Action m_setLoopIterationsAction;
 
-	UnknownsViewer(Display display, Composite parent, IWorkbenchPartSite site, TableViewer tableViewer) {
+	public UnknownsViewer(Display display, Composite parent, IWorkbenchPartSite site, TableViewer tableViewer) {
 		super(display, parent, site, tableViewer);
 	}
 
+	public void update() {
+		getViewer().setInput(GuiEngine.getEngine().getSelectedRoute());
+		updateHighlighting(GuiEngine.getSelectedNodes());
+	}
+	
+	public void updateHighlighting(List<Node> selectedNodes) {
+		for (TableItem item : getViewer().getTable().getItems()) {
+			Node node = (Node)item.getData();					
+			if (selectedNodes.contains(node)) {
+				item.setBackground(getDisplay().getSystemColor(SWT.COLOR_YELLOW));
+			} else {
+				item.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+			}
+		}
+	}
+	
 	InfoViewerContentProvider createContentProvider() {
 		return new InfoViewerContentProvider(UnknownState.UNKNOWN);
 	}
@@ -72,21 +88,5 @@ class UnknownsViewer extends InfoViewer {
 		m_setLoopIterationsAction.setText("Set iterations");
 		menuMgr.add(m_setLoopIterationsAction);
 		m_setLoopIterationsAction.setEnabled(false);
-	} 	
-	
-	void update() {
-		getViewer().setInput(GuiEngine.getEngine().getSelectedRoute());
-		updateHighlighting(GuiEngine.getSelectedNodes());
-	}
-
-	void updateHighlighting(List<Node> selectedNodes) {
-		for (TableItem item : getViewer().getTable().getItems()) {
-			Node node = (Node)item.getData();					
-			if (selectedNodes.contains(node)) {
-				item.setBackground(getDisplay().getSystemColor(SWT.COLOR_YELLOW));
-			} else {
-				item.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
-			}
-		}
-	}
+	} 		
 }

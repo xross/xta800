@@ -21,22 +21,26 @@ import org.eclipse.ui.part.ViewPart;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
-import com.xmos.xta.gui.views.info.allendpoints.AllEndpointsViewer;
-import com.xmos.xta.gui.views.info.allsrclabels.AllSrcLabelsViewer;
-import com.xmos.xta.gui.views.info.endpoints.EndpointsViewer;
-import com.xmos.xta.gui.views.info.srclabels.SrcLabelsViewer;
+import com.xmos.xta.gui.views.info.sections.AllEndpointsViewer;
+import com.xmos.xta.gui.views.info.sections.AllSrcLabelsViewer;
+import com.xmos.xta.gui.views.info.sections.BranchesViewer;
+import com.xmos.xta.gui.views.info.sections.EndpointsViewer;
+import com.xmos.xta.gui.views.info.sections.SrcLabelsViewer;
+import com.xmos.xta.gui.views.info.unknowns.KnownsViewer;
+import com.xmos.xta.gui.views.info.unknowns.UnknownsViewer;
 
 public class InfoView extends ViewPart implements IPropertyChangeListener,
 		                                              ISelectionListener {
 	public static final boolean DEBUG = false;
 	public static final String ID = "com.xmos.xta.gui.views.info.Info";
 
-	private InfoViewer m_unknowns;
-	private InfoViewer m_knowns;
+	private UnknownsViewer m_unknowns;
+	private KnownsViewer m_knowns;
 	private EndpointsViewer m_endpoints;
 	private AllEndpointsViewer m_allEndpoints;
 	private SrcLabelsViewer m_srcLabels;
 	private AllSrcLabelsViewer m_allSrcLabels;	
+	private BranchesViewer m_branches;	
 	
 	public InfoView() {
 		if (DEBUG) System.out.printf("Info()\n");
@@ -59,13 +63,11 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 				createNewViewer("SrcLabels", folders));		
 		m_allSrcLabels = new AllSrcLabelsViewer(parent.getDisplay(), parent, getSite(),
 				createNewViewer("All SrcLabels", folders));		
+		m_branches = new BranchesViewer(parent.getDisplay(), parent, getSite(),
+				createNewViewer("Branches", folders));	
 
 		m_unknowns.update();
 		m_knowns.update();
-		m_endpoints.update();
-		m_allEndpoints.update();
-		m_srcLabels.update();
-		m_allSrcLabels.update();
 
 		getSite().getPage().addSelectionListener(this);
 	}
@@ -99,6 +101,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 			m_allEndpoints.update();
 			m_srcLabels.update();
 			m_allSrcLabels.update();
+			m_branches.update();
 		}
 	}
 

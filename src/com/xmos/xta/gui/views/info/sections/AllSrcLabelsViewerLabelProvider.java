@@ -1,17 +1,11 @@
-package com.xmos.xta.gui.views.info.allsrclabels;
+package com.xmos.xta.gui.views.info.sections;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 
-public class AllSrcLabelsViewerLabelProvider extends LabelProvider implements ITableLabelProvider {
-    private String[] m_columnNames;
-    private int[] m_columnWidths;
-    private int[] m_columnAligmnments;
-    
+class AllSrcLabelsViewerLabelProvider extends SectionsViewerLabelProvider implements ITableLabelProvider {
     static final String PC               = "Pc";
     static final String COMPDIR          = "Compilation Directory";
     static final String FILENAME         = "File Name";
@@ -23,10 +17,6 @@ public class AllSrcLabelsViewerLabelProvider extends LabelProvider implements IT
     	m_columnWidths = new int[] { 100, 200, 100, 100, 100 };
     	m_columnAligmnments = new int[] { SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.LEFT };
     }
-    
-	public Image getColumnImage(Object element, int columnIndex) {
-		return null;
-	}
 
 	public String getColumnText(Object element, int columnIndex) {
 		assert((columnIndex >= 0) && (columnIndex < m_columnNames.length));
@@ -50,16 +40,4 @@ public class AllSrcLabelsViewerLabelProvider extends LabelProvider implements IT
 		assert(false);
 		return "";
 	}
-		
-	public String[] getColumnNames() {
-		return m_columnNames;
-	}
-
-	public int[] getColumnWidths() {
-		return m_columnWidths;
-	}
-
-	public int[] getColumnAligmnments() {
-		return m_columnAligmnments;
-	}			
 }
