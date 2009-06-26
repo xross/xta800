@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
 
 public class BasicBlockMatcher {
 
@@ -66,6 +67,8 @@ public class BasicBlockMatcher {
 	}
 
 	private boolean isEnd(Node node) {
+		
+		
 		if (node.getNextNodes().size() == 0) {
 			return true;
 		} else if (node.getNextNodes().size() == 1) {
@@ -73,6 +76,10 @@ public class BasicBlockMatcher {
 			if(next == m_treeStart){
 				return true;
 			}
+			if(next instanceof NullNode ){
+				return true;
+			}
+			
 			if (next.isFunctionNode()) {
 				return true;
 			}

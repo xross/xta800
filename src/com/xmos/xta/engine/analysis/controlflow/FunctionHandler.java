@@ -9,6 +9,7 @@ import java.util.TreeSet;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
@@ -38,6 +39,7 @@ public class FunctionHandler {
 	public Collection<Node> getPseudoFunctions(){
 		return m_pseudoFunctions;
 	}
+	
 	
 	/** 
 	 * For each function call this places a function node as its successor. The link stage resolves which function it actually is.
@@ -86,7 +88,40 @@ public class FunctionHandler {
 				CommonMethods.disconnect(m_instToFunc.get(node).getNextNodes().iterator().next(), m_instToFunc.get(node));
 			}
 		}		
+		
+		for(InstructionNode functionStart : getKnownFuncStarts()){
+			//find all function ends and connect them to a common nullNode
+			NullNode nullNode = new NullNode();
+			Set<Node> terminals = new TreeSet<Node>();
+			Set<Node> seen = new TreeSet<Node>();
+			findTerminals(functionStart, seen, terminals);
+			
+			System.out.println("terminals for node " + functionStart + " are " + terminals);
+			
+			for(Node terminal : terminals){
+				CommonMethods.connect(nullNode, terminal);
+			}
+		}
+		
+		
 		return true;
+	}
+
+	private void findTerminals(Node node, Set<Node> seen,
+			Set<Node> terminals) {
+		seen.add(node);
+		
+		if(node.getNextNodes().isEmpty()){
+			assert(!terminals.contains(node));
+			terminals.add(node);
+		}
+		
+		for(Node next : node.getNextNodes()){
+			if(!seen.contains(next)){
+				findTerminals(next, seen, terminals);
+			}
+		}
+		
 	}
 
 	private boolean canReturn(Node start, Set<Node> seen){

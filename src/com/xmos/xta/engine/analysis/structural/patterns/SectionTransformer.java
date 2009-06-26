@@ -10,17 +10,14 @@ public class SectionTransformer extends PatternMatcher {
 
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
 		m_treeStart = treeStart;
-		
 		if (currentNode.getNextNodes().size() < 2) {
 			return false;
 		} 
-
 		return explore(currentNode, new TreeSet<Node>(), currentNode.getDominators(), currentNode, workingSet);
 	}
 
 	private boolean explore(Node node, TreeSet<Node> seen, Set<Node> dominators, Node start, Collection<Node> workingSet) {
 		seen.add(node);
-		
 		if(node.getDominators().containsAll(dominators) && node.getDominators().size() == dominators.size() + 1){
 			
 			if(node.getNextNodes().size() >1 && node.getPrevNodes().size() == 1){
@@ -46,6 +43,5 @@ public class SectionTransformer extends PatternMatcher {
 	public boolean usesDominatorTree() {
 		return true;
 	}
-
 
 }

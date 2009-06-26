@@ -435,8 +435,19 @@ public class Engine implements Notifier {
 	}
 	
 	public void provideFeedback(String feedback) {
-		if (m_jobMonitor != null)
-			m_jobMonitor.subTask(feedback);				
+		if (m_jobMonitor != null){
+			m_jobMonitor.subTask(feedback);	
+		}		
+	}
+	
+	public void startAnalysis(String task, int functionCount){
+		if (m_jobMonitor != null){
+			m_jobMonitor.beginTask(task, functionCount);
+		}	
+	}
+	
+	public void provideWorkDone(int work){
+		m_jobMonitor.worked(work);
 	}
 	
 	public Collection<String> getFunctionsVisited() {

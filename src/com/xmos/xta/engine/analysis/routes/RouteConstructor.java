@@ -108,7 +108,7 @@ public class RouteConstructor {
 				Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
 				assert(cfgSanityCheck(workingSet));
 				
-				sae.createStructure(workingSet, newStart, m_engine, true);
+				sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
 				
 				assert(workingSet.size() == 1);
 				

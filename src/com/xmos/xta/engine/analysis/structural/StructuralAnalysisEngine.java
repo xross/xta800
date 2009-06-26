@@ -14,6 +14,7 @@ import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.analysis.structural.patterns.LoopPatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.PathPatternMatcher;
@@ -51,11 +52,14 @@ public class StructuralAnalysisEngine {
 		return m_structureGraph;
 	}
 
-	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine, boolean debug) {
+	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine, boolean debug, String jobPrefix) {
+		
+		
 		if(workingSet.size() == 1) return true;
 		boolean working = true;
 		boolean dominatorTreeUpToDate = false;
 		while (working) {
+			engine.provideFeedback(jobPrefix + " - nodes left: " + workingSet.size());
 			List<Node> postOrder = new LinkedList<Node>();
 			DFSPostOrder(postOrder, treeStart, new TreeSet<Node>());
 			working = false;
@@ -69,7 +73,6 @@ public class StructuralAnalysisEngine {
 						return false;
 					}
 					if (pm.isMatch(node, workingSet, treeStart)) {
-						if(debug ) System.out.println("\t" + pm.getClass().getSimpleName() + " -> " + workingSet.size());
 						treeStart = pm.getTreeStart();
 						assert (connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
@@ -85,16 +88,17 @@ public class StructuralAnalysisEngine {
 	}
 
 	private boolean buildStructureGraph(Engine engine, TreeMap<String, InstructionNode> treeMap) {
+		Collection<Node> threads = buildGraph(m_controlFlowGraph.getThreadStartInstructions(), 
+				m_functionStartPcs, engine, false, treeMap);
+		if (threads == null) {
+			return false;
+		}
 		Collection<Node> functions = buildGraph(m_controlFlowGraph.getFunctionStartInstructions(), 
 				m_functionStartPcs, engine, true, treeMap);
 		if (functions == null) {
 			return false;
 		}
-		Collection<Node> threads = buildGraph(m_controlFlowGraph.getThreadStartInstructions(), 
-				m_functionStartPcs, engine, false, treeMap);
-		if (threads == null) {
-			return false;
-		}		
+				
 		m_structureGraph = new StructureGraph(threads);
 		
 		engine.provideFeedback("Linking functions...");
@@ -114,10 +118,20 @@ public class StructuralAnalysisEngine {
 
 		List<Node> orderedGraphs = new LinkedList<Node>(graphStartNodes);
 		Collections.sort(orderedGraphs);
+		
+		if(isFunction){
+			engine.startAnalysis("Analysing functions", orderedGraphs.size());
+		} else {
+			engine.startAnalysis("Analysing threads", orderedGraphs.size());
+		}
+		
+		
 		for (Node graphStart : orderedGraphs) {
 
 			String functionName = getFunctionName(graphStart, treeMap);
-			engine.provideFeedback("Processing " + functionName);
+			String jobName = "Processing " + functionName;
+			
+			
 			Collection<Node> currentGraph = new TreeSet<Node>();
 			collectCurrentGraphNodes(graphStart, currentGraph);
 						
@@ -129,9 +143,9 @@ public class StructuralAnalysisEngine {
 			
 			fa.analyse(initialBasicBlock, isFunction);
 			fa.addFnopsToBasicBlocks(initialBasicBlock);
-			
+			dumpTree(basicBlocks);
 			assert(basicBlocks.contains(initialBasicBlock));
-			if (!createStructure(basicBlocks, initialBasicBlock, engine, functionName.equals("vfiprintf"))) {
+			if (!createStructure(basicBlocks, initialBasicBlock, engine, false, jobName)) {
 				return null;
 			}
 			if(basicBlocks.size() != 1) {
@@ -147,7 +161,7 @@ public class StructuralAnalysisEngine {
 			setParent(fn);
 			
 			startPcs.put(graphStart.getStartPc(), fn);
-			
+			engine.provideWorkDone(1);
 		}
 		return graphs;
 	}
@@ -174,7 +188,7 @@ public class StructuralAnalysisEngine {
 
 		for (Node node : currentGraph) {
 			if (!seen.contains(node)) {
-				if (!node.isFunctionNode()) {
+				if (node.isInstructionNode()) {
 					BasicBlockMatcher bbpm = new BasicBlockMatcher();
 					if (bbpm.match(node, treeStart, currentGraph)) {
 						seen.addAll(bbpm.getBlock().getContainedNodes());
@@ -184,11 +198,17 @@ public class StructuralAnalysisEngine {
 						endPoint.put(bbpm.getBlock(), bbpm.getLastBlock());
 					}
 
-				} else {
+				} else if(node.isFunctionNode()){
 					seen.add(node);
 					Node clone = node.shallowCopy();
 					
 					m_cfgToStruct.put((FunctionNode) clone, (FunctionNode) node);
+					basicBlocks.add(clone);
+					cfgToStructure.put(node, clone);
+					endPoint.put(clone, node);
+				} else {
+					seen.add(node);
+					Node clone = node.shallowCopy();
 					basicBlocks.add(clone);
 					cfgToStructure.put(node, clone);
 					endPoint.put(clone, node);
@@ -204,7 +224,10 @@ public class StructuralAnalysisEngine {
 			}
 
 			for (Node next : lastInstruction.getNextNodes()) {
-				CommonMethods.connect(cfgToStructure.get(next), node);
+				
+				Node root = node;
+				Node leaf = cfgToStructure.get(next);
+				CommonMethods.connect(leaf, root);
 			}
 		}
 		return treeStart;
@@ -358,37 +381,4 @@ public class StructuralAnalysisEngine {
 		m_patternMatchers.add(new PathPatternMatcher());
 		m_patternMatchers.add(new TerminalPatternMatcher());
 	}
-	
-/*	
-	private void buildOldDominatorTree(Collection<Node> reachableNodes, Node treeStart) {
-		for (Node node : reachableNodes) {
-			node.getDominators().clear();
-			if (treeStart == node) {
-				node.getDominators().add(node);
-			} else {
-				node.getDominators().addAll(reachableNodes);
-			}
-		}
-		boolean stillChanging = true;
-		while (stillChanging) {
-			stillChanging = false;
-			for (Node node : reachableNodes) {
-
-				if (treeStart == node)
-					continue;
-				Set<Node> intersection = new TreeSet<Node>(reachableNodes);
-				for (Node pred : node.getPrevNodes()) {
-					intersection.retainAll(pred.getDominators());
-				}
-				intersection.add(node);
-
-				if (!intersection.equals(node.getDominators())) {
-					node.getDominators().clear();
-					node.getDominators().addAll(intersection);
-					stillChanging = true;
-				}
-			}
-		}
-	}
-*/
 }
