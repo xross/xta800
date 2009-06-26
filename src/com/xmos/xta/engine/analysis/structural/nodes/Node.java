@@ -300,6 +300,11 @@ public abstract class Node implements Comparable<Node>{
 		return null;
 	}
 	
+	public Node getUnsetOption(Case c, boolean ignoreIterations) {
+		assert(false);
+		return null;
+	}
+	
 	public List<Node> getAllUnsetOptions() {
 		assert(false);
 		return null;

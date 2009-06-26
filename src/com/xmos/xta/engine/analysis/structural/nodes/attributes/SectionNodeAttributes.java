@@ -29,7 +29,7 @@ public class SectionNodeAttributes extends NodeAttributes {
 	
 	public void setLoopIterations(Case c, long numIterations) {
     	setNumIterations(c, numIterations);
-
+    	
     	// Allocates the best/worst case iterations to the best/worst 
        	// case child options, and assigns zero to the best/worst case of 
        	// all the other options.
@@ -94,8 +94,8 @@ public class SectionNodeAttributes extends NodeAttributes {
    		// Allocates the remainder to the best/worst case of the options
    		// that have not been explicitly set by the user.
    		if ((remainder > 0) && !allocateRemainderToOptionalSection) {
-   			sectionNode.getOption(Case.WORST, true).getAttributes().setLoopIterations(Case.WORST, remainder);
-   			sectionNode.getOption(Case.BEST, true).getAttributes().setLoopIterations(Case.BEST, remainder);
+   			sectionNode.getUnsetOption(Case.WORST, true).getAttributes().setLoopIterations(Case.WORST, remainder);
+   			sectionNode.getUnsetOption(Case.BEST, true).getAttributes().setLoopIterations(Case.BEST, remainder);
    		}   	
 		return true;
 	}
