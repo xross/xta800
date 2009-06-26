@@ -71,12 +71,12 @@ public class BlockNode extends IBufferNode {
     
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>();
-		for(Node inst : m_insts){
+		for (Node inst : m_insts){
 			insts.addAll(inst.getInstructions());
 		}
 		return insts;
 	}
-		
+			
 	public Set<Integer> getPCs() {
 		Set<Integer> pcs = new TreeSet<Integer>();
 		for (XtaInstruction inst : getInstructions()) {
