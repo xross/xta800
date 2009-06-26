@@ -117,6 +117,13 @@
 				label="Reset Zoom"
 				style="push">
 			</command>
+   <command
+         commandId="com.xmos.xta.gui.structure.zoomfit.command"
+         icon="icons/zoomfit.png"
+         id="com.xmos.xta.gui.structure.zoomfit.command"
+         label="Zoom to fit"
+         style="push">
+   </command>
 		</menuContribution>
    </extension>
    <extension
@@ -135,6 +142,11 @@
             defaultHandler="com.xmos.xta.gui.handlers.StructureZoomResetHandler"
             id="com.xmos.xta.gui.structure.zoomreset.command"
             name="com.xmos.xta.gui.structure.zoomreset.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.gui.handlers.StructureZoomFitHandler"
+            id="com.xmos.xta.gui.structure.zoomfit.command"
+            name="com.xmos.xta.gui.structure.zoomfit.command">
       </command>
    </extension>
    <extension

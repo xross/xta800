@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -34,14 +35,10 @@ public class StructureBlockNode extends ViewNode {
 		return 0;
 	}
 
-	public void draw(Display display, GC gc, double scale, boolean isWorstCase) {
-        gc.setLineWidth(m_lineWidth);
-        m_x = scale(m_pixelOffsetX, scale);
-        m_y = scale(m_pixelOffsetY, scale);
-        m_width = scale(getPixelsX(), scale);
-        m_height = scale(getPixelsY(), scale);
+	public void draw(Display display, GC gc, double scale, Rectangle renderArea, boolean isWorstCase) {
+		setXy(scale, renderArea);
 
-        gc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
+		gc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
     	gc.fillRectangle(m_x, m_y, m_width, m_height);
        
         if (m_isSelected) gc.setLineWidth(m_lineWidth + 1);
