@@ -30,7 +30,7 @@ public class StructureDisplayer {
 				}
 		    });
 		    m_console.display("\n"); 
-		}				
+		}
     }
 	
 	private void displayNodeInfo(Node node, int depth) {

@@ -143,7 +143,7 @@ public class StructuralAnalysisEngine {
 			
 			fa.analyse(initialBasicBlock, isFunction);
 			fa.addFnopsToBasicBlocks(initialBasicBlock);
-			dumpTree(basicBlocks);
+			//dumpTree(basicBlocks);
 			assert(basicBlocks.contains(initialBasicBlock));
 			if (!createStructure(basicBlocks, initialBasicBlock, engine, false, jobName)) {
 				return null;

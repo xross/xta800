@@ -56,8 +56,11 @@ public class Unknowns extends Command {
 	    Collection<Node> nodes = engine.getRoute(m_routeId).getUnknowns(UnknownState.UNKNOWN);
 	    if (nodes.size() > 0) {
 			for (Node node : nodes) {			
-			    console.display(node.getAttributes().getUnknownDescription() + "\n");
-			}			    	
+			    console.display(String.format("%s, pc: 0x%x, backtrace: %s\n", 
+			    		node.getAttributes().getUnknownDescription(),
+			    		node.getStartPc(), 
+			    		node.getBackTrace("")));
+			}
 	    } else {
 		    console.display("none\n");
 		}		

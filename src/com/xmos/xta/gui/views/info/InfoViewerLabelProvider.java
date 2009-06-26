@@ -12,13 +12,14 @@ public class InfoViewerLabelProvider extends LabelProvider implements ITableLabe
     private int[] m_columnWidths;
     private int[] m_columnAligmnments;
     
-    static final String PC    = "Pc";
-    static final String DESC  = "Description";
+    static final String PC         = "Pc";
+    static final String DESC       = "Description";
+    static final String BACKTRACE  = "Back Trace";
     
     public InfoViewerLabelProvider() {
-    	m_columnNames = new String[] { PC, DESC };
-    	m_columnWidths = new int[] { 100, 500 };
-    	m_columnAligmnments = new int[] { SWT.LEFT, SWT.LEFT };
+    	m_columnNames = new String[] { PC, DESC, BACKTRACE };
+    	m_columnWidths = new int[] { 100, 350, 350 };
+    	m_columnAligmnments = new int[] { SWT.LEFT, SWT.LEFT, SWT.LEFT };
     }
     
 	public Image getColumnImage(Object element, int columnIndex) {
@@ -33,7 +34,9 @@ public class InfoViewerLabelProvider extends LabelProvider implements ITableLabe
 			return String.format("0x%x", node.getStartPc());
     	} else if (m_columnNames[columnIndex].equals(DESC)) {    		
 		    return node.getAttributes().getUnknownDescription();
-	    }
+    	} else if (m_columnNames[columnIndex].equals(BACKTRACE)) {    		
+	        return node.getBackTrace("");
+        }
 		assert(false);
 		return "";
 	}

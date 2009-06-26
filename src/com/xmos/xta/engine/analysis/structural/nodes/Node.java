@@ -53,7 +53,7 @@ public abstract class Node implements Comparable<Node>{
 	public abstract void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration);
 	public abstract Set<Integer> getPCs();	
 	public abstract LinkedList<XtaInstruction> getInstructions();
-	
+
 	/**
 	 * This returns all the instruction nodes that could possible be contained within this node
 	 */
@@ -273,6 +273,13 @@ public abstract class Node implements Comparable<Node>{
 			}
 		}
 		return false;
+	}
+	
+	public String getBackTrace(String backTrace) {
+		if (m_parent != null) {
+			return m_parent.getBackTrace(backTrace);
+		}
+		return backTrace;
 	}
 	
 	public void addBranchTarget(Node newNode){
