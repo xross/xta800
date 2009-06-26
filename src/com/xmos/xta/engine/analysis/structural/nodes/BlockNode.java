@@ -13,10 +13,7 @@ import com.xmos.xta.engine.instructions.NullInstruction;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class BlockNode extends IBufferNode {
-
-
 	private BlockNodeAttributes m_attributes;	
-
 	private List<InstructionNode> m_insts;
 	private List<Integer> m_worstCaseFnops;
 	private List<Integer> m_bestCaseFnops;

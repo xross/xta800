@@ -7,9 +7,13 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
@@ -17,6 +21,10 @@ import org.eclipse.ui.part.ViewPart;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.gui.views.info.allendpoints.AllEndpointsViewer;
+import com.xmos.xta.gui.views.info.allsrclabels.AllSrcLabelsViewer;
+import com.xmos.xta.gui.views.info.endpoints.EndpointsViewer;
+import com.xmos.xta.gui.views.info.srclabels.SrcLabelsViewer;
 
 public class InfoView extends ViewPart implements IPropertyChangeListener,
 		                                              ISelectionListener {
@@ -25,6 +33,10 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 
 	private InfoViewer m_unknowns;
 	private InfoViewer m_knowns;
+	private EndpointsViewer m_endpoints;
+	private AllEndpointsViewer m_allEndpoints;
+	private SrcLabelsViewer m_srcLabels;
+	private AllSrcLabelsViewer m_allSrcLabels;	
 	
 	public InfoView() {
 		if (DEBUG) System.out.printf("Info()\n");
@@ -35,11 +47,25 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("Info: createPartControl\n");
 
 		TabFolder folders = new TabFolder(parent, SWT.BORDER);
-		m_unknowns = new UnknownsViewer(parent.getDisplay(), parent, getSite(), folders);
-		m_knowns = new KnownsViewer(parent.getDisplay(), parent, getSite(), folders);
+		m_unknowns = new UnknownsViewer(parent.getDisplay(), parent, getSite(), 
+				createNewViewer("Unknowns", folders));		
+		m_knowns = new KnownsViewer(parent.getDisplay(), parent, getSite(),
+				createNewViewer("Knowns", folders));		
+		m_endpoints = new EndpointsViewer(parent.getDisplay(), parent, getSite(),
+				createNewViewer("Endpoints", folders));				
+		m_allEndpoints = new AllEndpointsViewer(parent.getDisplay(), parent, getSite(),
+				createNewViewer("All Endpoints", folders));		
+		m_srcLabels = new SrcLabelsViewer(parent.getDisplay(), parent, getSite(),
+				createNewViewer("SrcLabels", folders));		
+		m_allSrcLabels = new AllSrcLabelsViewer(parent.getDisplay(), parent, getSite(),
+				createNewViewer("All SrcLabels", folders));		
 
 		m_unknowns.update();
 		m_knowns.update();
+		m_endpoints.update();
+		m_allEndpoints.update();
+		m_srcLabels.update();
+		m_allSrcLabels.update();
 
 		getSite().getPage().addSelectionListener(this);
 	}
@@ -68,7 +94,11 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE) || 
 				   event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 			m_unknowns.clear();
-			m_knowns.clear();
+			m_knowns.clear();			
+			m_endpoints.update();
+			m_allEndpoints.update();
+			m_srcLabels.update();
+			m_allSrcLabels.update();
 		}
 	}
 
@@ -87,4 +117,18 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 		}
 		m_unknowns.updateHighlighting(selectedNodes);
 	}
+	
+	private TableViewer createNewViewer(String displayText, TabFolder folders) {
+		TabItem tab = new TabItem(folders, SWT.NONE);
+		tab.setText(displayText);
+		Composite composite = new Composite(folders, SWT.NONE);
+		composite.setLayout(new FillLayout());
+		TableViewer viewer = new TableViewer(composite);
+		tab.setControl(composite);
+		Table table = viewer.getTable();
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);		
+		return viewer;
+	}
+	
 }

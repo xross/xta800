@@ -12,16 +12,11 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
@@ -47,36 +42,27 @@ abstract class InfoViewer {
 	abstract void update();
 	abstract void updateHighlighting(List<Node> selectedNodes);
 	
-	InfoViewer(Display display, Composite parent, IWorkbenchPartSite site, TabFolder folders, String displayText) {
+	InfoViewer(Display display, Composite parent, IWorkbenchPartSite site, TableViewer viewer) {
 		m_parent = parent;
 		m_display = display;
 		m_selectedNodes = new ArrayList<Node>();
+		m_viewer = viewer;
 
-		TabItem tab = new TabItem(folders, SWT.NONE);
-		tab.setText(displayText);
-		Composite composite = new Composite(folders, SWT.NONE);
-		composite.setLayout(new FillLayout());
-		m_viewer = new TableViewer(composite);
-		tab.setControl(composite);
-		
 		final InfoSorter unknownSorter = new InfoSorter();
 		m_viewer.setSorter(unknownSorter);
-
-		Table table = m_viewer.getTable();
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
 
 		InfoViewerContentProvider contentProvider = createContentProvider();;
 		InfoViewerLabelProvider labelProvider = createLabelProvider();
 
 		for (int i = 0; i < labelProvider.getColumnNames().length; ++i) {
-			TableColumn tableColumn = new TableColumn(table, labelProvider
+			TableColumn tableColumn = new TableColumn(m_viewer.getTable(), labelProvider
 					.getColumnAligmnments()[i]);
 			tableColumn.setText(labelProvider.getColumnNames()[i]);
 			tableColumn.setWidth(labelProvider.getColumnWidths()[i]);
 		}
 		m_viewer.setContentProvider(contentProvider);
 		m_viewer.setLabelProvider(labelProvider);
+		
 		for (final TableColumn col : m_viewer.getTable().getColumns()) {
 			col.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {

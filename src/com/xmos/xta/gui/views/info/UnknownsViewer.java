@@ -6,10 +6,10 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPartSite;
 
@@ -23,8 +23,8 @@ class UnknownsViewer extends InfoViewer {
 	private Action m_setInstructionTimeAction;
 	private Action m_setLoopIterationsAction;
 
-	UnknownsViewer(Display display, Composite parent, IWorkbenchPartSite site, TabFolder folders) {
-		super(display, parent, site, folders, "Unknowns");
+	UnknownsViewer(Display display, Composite parent, IWorkbenchPartSite site, TableViewer tableViewer) {
+		super(display, parent, site, tableViewer);
 	}
 
 	InfoViewerContentProvider createContentProvider() {
