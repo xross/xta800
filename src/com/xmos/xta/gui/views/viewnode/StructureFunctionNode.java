@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -45,14 +46,10 @@ public class StructureFunctionNode extends ViewNode {
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc, double scale, boolean isWorstCase) {
+	public void draw(Display display, GC gc, double scale, Rectangle renderArea, boolean isWorstCase) {
 		// Don't currently support connecting up nodes like a path
 		assert(getChildren().size() == 1);
-
-        m_x = scale(m_pixelOffsetX, scale);
-        m_y = scale(m_pixelOffsetY, scale);
-        m_width = scale(getPixelsX(), scale);
-        m_height = scale(getPixelsY(), scale);
+		setXy(scale, renderArea);
         drawThis(display, gc);
 
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
@@ -61,11 +58,11 @@ public class StructureFunctionNode extends ViewNode {
        	if (m_isSelected) gc.setLineWidth(m_lineWidth);
 
 		for (ViewNode child : getChildren()) {
-    		child.draw(display, gc, scale, isWorstCase);
+    		child.draw(display, gc, scale, renderArea, isWorstCase);
     	}
 		
 		// Draw the function name
-        int textBase = scale(m_pixelOffsetY + m_borderY, scale);
+        int textBase = scaleY(m_pixelOffsetY + m_borderY);
 		gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 		gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
         int functionNameWidth = gc.getFontMetrics().getAverageCharWidth() * m_treeNode.getFunctionName().length();

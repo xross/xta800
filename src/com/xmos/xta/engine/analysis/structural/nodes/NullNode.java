@@ -96,4 +96,8 @@ public class NullNode extends IBufferNode {
 		
 	}
 
+	public boolean isNullNode() {
+		return true;
+	}
+
 }

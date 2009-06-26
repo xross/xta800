@@ -6,17 +6,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 public class TextBlockNode extends ViewNode {
     public static final boolean DEBUG = false;
 
-    private int m_left;
-    private int m_right;
-    private int m_bottom;
-    private int m_top;
     private int m_textBase;
-    
     private Color m_color;
     private String m_text;
     
@@ -44,12 +40,10 @@ public class TextBlockNode extends ViewNode {
 		return 0;
 	}
 
-	public void draw(Display display, GC gc, double scale, boolean isWorstCase) {
-        if (DEBUG) System.out.printf("TextBlockNode: draw %d,%d,%d,%d,%d\n",
-        		m_left, m_top, m_right, m_bottom, m_textBase);
-
+	public void draw(Display display, GC gc, double scale, Rectangle renderArea, boolean isWorstCase) {
+		setXy(scale, renderArea);
 		gc.setBackground(m_color);
-    	gc.fillRectangle(m_left, m_top, m_right - m_left, m_bottom - m_top);
+    	gc.fillRectangle(m_x, m_y, m_width, m_height);
 
     	// If the brightness is too much, write the text in black
     	RGB rgb = m_color.getRGB();
@@ -61,9 +55,9 @@ public class TextBlockNode extends ViewNode {
 
         double functionNameWidth = gc.getFontMetrics().getAverageCharWidth() * m_text.length();
         if (DEBUG) { System.out.print("TextBlockNode: text "); System.out.println(functionNameWidth); }
-        if (((double)m_right - m_left) > functionNameWidth){
+        if (((double)m_width) > functionNameWidth){
             gc.drawString(m_text,
-                    (int)(((((double)m_left + ((double)(m_right - m_left) / 2.0))) - (functionNameWidth)/2.0)),
+                    (int)(((((double)m_x + ((double)m_width / 2.0))) - (functionNameWidth)/2.0)),
                     m_textBase);
         }
 	}
@@ -77,8 +71,8 @@ public class TextBlockNode extends ViewNode {
 	}
 
 	public boolean contains(int x, int y) {
-		if ((x >= m_left) && (x <= m_right)) {
-			if ((y >= m_top) && (y <= m_bottom)) {
+		if ((x >= m_x) && (x <= (m_x + m_width))) {
+			if ((y >= m_y) && (y <= (m_y + m_height))) {
 				return true;
 			}
 		}
@@ -87,18 +81,5 @@ public class TextBlockNode extends ViewNode {
 
 	public String getToolTipText() {
 		return m_text;
-	}
-
-	public void setBounds(int x, int y, int width, int height, int textBase) {
-		m_left = x;
-		m_top = y;
-
-		m_right = x + width;
-		m_bottom = y + height;
-		
-		m_textBase = textBase;
-
-        if (DEBUG) System.out.printf("TextBlockNode: setBounds %d,%d,%d,%d,%d\n",
-        		m_left, m_top, m_right, m_bottom, m_textBase);
 	}
 }
