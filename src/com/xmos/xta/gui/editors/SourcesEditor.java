@@ -111,10 +111,10 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 			String fileName = xeObject.getFunctionFileName("main");
 			
 			// If single core main doesn't exist, try multi-core main
-			if (fileName.equals(""))
+			if ((fileName == null) || fileName.equals(""))
 				fileName = xeObject.getFunctionFileName("__mcmain");
 
-			if (fileName.equals("")) {
+			if ((fileName == null) || fileName.equals("")) {
 				setActivePage(0);
 			} else {
 				for (int i = 0; i < this.getPageCount(); i++) {
