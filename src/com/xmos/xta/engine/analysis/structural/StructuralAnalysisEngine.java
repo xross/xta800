@@ -133,7 +133,23 @@ public class StructuralAnalysisEngine {
 			
 			
 			Collection<Node> currentGraph = new TreeSet<Node>();
+			
+			
 			collectCurrentGraphNodes(graphStart, currentGraph);
+			
+			/*
+			System.out.println("# " + Integer.toHexString(graphStart.getStartPc()));
+				System.out.println("digraph graph" + g++ + " {");
+				for(Node node : currentGraph){
+					for(Node next : node.getNextNodes()){
+						System.out.println(node + " -> " + next + ";");
+					}
+				}
+				System.out.println("}");
+	*/
+			
+			
+			
 						
 			Collection<Node> basicBlocks = new TreeSet<Node>();
 
@@ -143,7 +159,7 @@ public class StructuralAnalysisEngine {
 			
 			fa.analyse(initialBasicBlock, isFunction);
 			fa.addFnopsToBasicBlocks(initialBasicBlock);
-			//dumpTree(basicBlocks);
+			dumpTree(basicBlocks);
 			assert(basicBlocks.contains(initialBasicBlock));
 			if (!createStructure(basicBlocks, initialBasicBlock, engine, false, jobName)) {
 				return null;
@@ -186,6 +202,8 @@ public class StructuralAnalysisEngine {
 		Map<Node, Node> endPoint = new TreeMap<Node, Node>();
 		Node treeStart = initialBasicBlock;
 
+		
+
 		for (Node node : currentGraph) {
 			if (!seen.contains(node)) {
 				if (node.isInstructionNode()) {
@@ -207,6 +225,7 @@ public class StructuralAnalysisEngine {
 					cfgToStructure.put(node, clone);
 					endPoint.put(clone, node);
 				} else {
+					assert(node instanceof NullNode);
 					seen.add(node);
 					Node clone = node.shallowCopy();
 					basicBlocks.add(clone);
@@ -215,8 +234,10 @@ public class StructuralAnalysisEngine {
 				}
 			}
 		}
+		//System.out.println();
 		// now add all the links
 		for (Node node : basicBlocks) {
+			
 			Node lastInstruction = endPoint.get(node);
 
 			for (Node branch : lastInstruction.getBranchTargets()) {
@@ -227,9 +248,12 @@ public class StructuralAnalysisEngine {
 				
 				Node root = node;
 				Node leaf = cfgToStructure.get(next);
+				
+				//System.out.println("#connecting " +root + " to " + leaf);
 				CommonMethods.connect(leaf, root);
 			}
 		}
+		
 		return treeStart;
 	}
 
@@ -377,8 +401,9 @@ public class StructuralAnalysisEngine {
 		m_patternMatchers.add(new SelfLoopPattern());
 		m_patternMatchers.add(new LoopPatternMatcher());
 		m_patternMatchers.add(new SectionPatternMatcher());
-		m_patternMatchers.add(new SectionTransformer());
+		
 		m_patternMatchers.add(new PathPatternMatcher());
-		m_patternMatchers.add(new TerminalPatternMatcher());
+		m_patternMatchers.add(new SectionTransformer());
+		//m_patternMatchers.add(new TerminalPatternMatcher());
 	}
 }

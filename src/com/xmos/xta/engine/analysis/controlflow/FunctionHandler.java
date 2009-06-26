@@ -53,6 +53,7 @@ public class FunctionHandler {
 		for (InstructionNode instruction : m_instDecoder.getInstructions() ){
 			assert(instruction.getInstructions().size() == 1);
 			XtaInstruction inst = instruction.getInstructions().getFirst();
+
 			if(inst.isLink()){
 				if(instruction.getNextNodes().size() > 0){
 					Collection<FunctionNode> newFunctions = new TreeSet<FunctionNode>();
@@ -67,6 +68,7 @@ public class FunctionHandler {
 					}
 					instruction.getNextNodes().clear();
 					for(Node f : newFunctions){
+						
 						CommonMethods.connect(f, instruction);
 						CommonMethods.connect(instruction.getBranchLinkReturn(), f);
 						f.addBranchTarget(instruction.getBranchLinkReturn());
@@ -80,7 +82,7 @@ public class FunctionHandler {
 					m_functions.add(fn);
 					m_pseudoFunctions.add(fn);
 				}
-			}
+			} 
 		}
 		
 		for(Node node : m_instToFunc.keySet()){
@@ -90,7 +92,6 @@ public class FunctionHandler {
 		}		
 		
 		for(InstructionNode functionStart : getKnownFuncStarts()){
-			//find all function ends and connect them to a common nullNode
 			NullNode nullNode = new NullNode();
 			Set<Node> terminals = new TreeSet<Node>();
 			Set<Node> seen = new TreeSet<Node>();
@@ -100,8 +101,6 @@ public class FunctionHandler {
 				CommonMethods.connect(nullNode, terminal);
 			}
 		}
-		
-		
 		return true;
 	}
 
