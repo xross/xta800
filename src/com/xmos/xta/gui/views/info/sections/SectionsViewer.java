@@ -6,6 +6,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbenchPartSite;
 
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.gui.GuiEngine;
 
 abstract class SectionsViewer {
@@ -27,11 +28,15 @@ abstract class SectionsViewer {
 		}
 		m_viewer.setContentProvider(contentProvider);
 		m_viewer.setLabelProvider(labelProvider);
-		m_viewer.setInput(null);
 	}
 
 	public void update() {
-		m_viewer.setInput(GuiEngine.getEngine());
+		Engine engine = GuiEngine.getEngine();
+		if (engine.getExecutable() != null) {
+		    m_viewer.setInput(GuiEngine.getEngine());
+		} else {
+			m_viewer.setInput(null);
+		}
 	}
 	
 	void clear() {
