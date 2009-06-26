@@ -3,6 +3,7 @@ package com.xmos.xta.gui.views.viewnode;
 import java.util.ArrayList;
 
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -45,17 +46,13 @@ public class StructurePathNode extends ViewNode {
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc, double scale, boolean isWorstCase) {
-        gc.setLineWidth(m_lineWidth);
-        m_x = scale(m_pixelOffsetX, scale);
-        m_y = scale(m_pixelOffsetY, scale);
-        m_width = scale(getPixelsX(), scale);
-        m_height = scale(getPixelsY(), scale);
+	public void draw(Display display, GC gc, double scale, Rectangle renderArea, boolean isWorstCase) {
+		setXy(scale, renderArea);
         drawThis(display, gc);
 
         boolean first = true;
     	int childOffsetX = m_borderX;
-    	int lineY = scale(m_pixelOffsetY + (getPixelsY() / 2), scale);
+    	int lineY = scaleY(m_pixelOffsetY + (getPixelsY() / 2));
     	int lineLeft = 0;
     	int lineRight = 0;
 		for (ViewNode child : getChildren()) {
@@ -68,16 +65,16 @@ public class StructurePathNode extends ViewNode {
         		first = false;
         	}
 
-            lineLeft = scale(m_pixelOffsetX + childOffsetX + childX, scale);
-            lineRight = scale(m_pixelOffsetX + childOffsetX + childX + m_connectorLen, scale);
+            lineLeft = scaleX(m_pixelOffsetX + childOffsetX + childX);
+            lineRight = scaleX(m_pixelOffsetX + childOffsetX + childX + m_connectorLen);
             childOffsetX += childX + m_connectorLen;
 
-    		child.draw(display, gc, scale, isWorstCase);
+    		child.draw(display, gc, scale, renderArea, isWorstCase);
 		}
 
     	setConnectionColour(display, gc, isWorstCase);
-		drawConnection(display, gc, m_x, lineY, scale(m_pixelOffsetX + m_borderX, scale), lineY);
-		drawConnection(display, gc, lineLeft, lineY, scale(m_pixelOffsetX + getPixelsX(), scale), lineY);
+		drawConnection(display, gc, m_x, lineY, scaleX(m_pixelOffsetX + m_borderX), lineY);
+		drawConnection(display, gc, lineLeft, lineY, scaleX(m_pixelOffsetX + getPixelsX()), lineY);
     }
 
 	public void annotateXy(int xOffset, int yOffset) {

@@ -2,6 +2,7 @@ package com.xmos.xta.gui.views.structure;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 
 import com.xmos.xta.engine.analysis.routes.Route;
@@ -65,23 +66,32 @@ public class StructureView extends ZoomedCanvasView {
     }
     
     protected void drawCanvas(GC gc) {
-    	gc.setAntialias(SWT.ON);
-    	gc.setTextAntialias(SWT.ON);
-    	
 		Rectangle clientArea = m_canvas.getClientArea();
-		m_canvas.setSize(clientArea.width, clientArea.height);
-    	gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
-        gc.fillRectangle(0, 0, clientArea.width, clientArea.height);
-
-        if (m_doubleClickNode == null)
-        	return;
+		int renderX = clientArea.width;
+		int renderY = clientArea.height;
+        Image bufferedImage = new Image(m_display, renderX, renderY);
+        GC bufferedGc = new GC(bufferedImage);    	
         
-		gc.setLineWidth(m_lineWidth);
-		m_viewNode.draw(m_display, gc, m_scale, true);
+        bufferedGc.setAntialias(SWT.ON);
+        bufferedGc.setTextAntialias(SWT.ON);
+
+        bufferedGc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
+        bufferedGc.fillRectangle(0, 0, renderX, renderY);
+
+        if (m_doubleClickNode != null) {
+        	int offsetX = m_hScroll.getSelection();
+        	int offsetY = m_vScroll.getSelection();
+        	Rectangle renderArea = new Rectangle(offsetX, offsetY, renderX, renderY);
+	        bufferedGc.setLineWidth(m_lineWidth);
+			m_viewNode.draw(m_display, bufferedGc, m_scale, renderArea, true);
+        }
+        gc.drawImage(bufferedImage, 0, 0);
+        bufferedGc.dispose();
+        bufferedImage.dispose();
     }
     
 	private ViewNode buildViewNode(Node node) {
-		if (node == null)
+		if (node == null || node.isNullNode())
 			return null;
 		
     	boolean selected = m_selectedNodes.contains(node);

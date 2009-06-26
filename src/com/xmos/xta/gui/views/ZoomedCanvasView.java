@@ -16,7 +16,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -34,6 +33,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -50,9 +50,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                                                        ISelectionProvider,
                                                        IMenuListener {
     public static final boolean DEBUG = false;
-    public static final int MIN_CANVAS_X = 100;
-    public static final int MAX_CANVAS_X = 10000;
-    public static final int MAX_CANVAS_Y = 500;
 
     protected Node m_rootNode;
     protected List<Node> m_selectedNodes;
@@ -70,8 +67,9 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     
     private Composite m_parent;
     protected Display m_display;
-    protected ScrolledComposite m_scrollArea;
     protected Canvas m_canvas;
+    protected ScrollBar m_hScroll;
+    protected ScrollBar m_vScroll;
     
     private Shell m_toolTip;
     private Label m_tipLabel;
@@ -95,25 +93,36 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    m_parent = parent;
 	    m_display = m_parent.getDisplay();
 
-	    m_scrollArea = new ScrolledComposite(m_parent,
-	    		SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL); 
-	    m_canvas = new Canvas(m_scrollArea, SWT.NO_BACKGROUND); 
+	    final Composite composite = new Composite(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL); 	    
+	    FillLayout fillLayout = new FillLayout();
+	    composite.setLayout(fillLayout); 
 
-	    m_scrollArea.setAlwaysShowScrollBars(true); 
-	    m_scrollArea.setContent(m_canvas); 
+	    m_canvas = new Canvas(composite, SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED);
 	    
-	    m_scrollArea.addPaintListener(new PaintListener() {
-	        public void paintControl(PaintEvent e) {
-	        	prepareCanvas();
+	    // Sets up the horizontal waves scroll bar.
+	    m_hScroll = composite.getHorizontalBar();
+	    m_hScroll.addListener(SWT.Selection, new Listener() {
+	        public void handleEvent(Event e) {
+	        	refreshView();
 	        }
 	    });
-
+	    m_hScroll.setMaximum(1);
+	    
+	    // Sets up the vertical waves scroll bar.
+	    m_vScroll = composite.getVerticalBar();
+	    m_vScroll.addListener(SWT.Selection, new Listener() {
+	        public void handleEvent(Event e) {	 	        	
+	        	refreshView();
+	        }
+	    });
+	    m_vScroll.setMaximum(1);
+	    	    
 	    m_canvas.addPaintListener(new PaintListener() {
 	        public void paintControl(PaintEvent e) {
 	        	drawCanvas(e.gc);
- 	        }
-	    });
-	    
+		    }
+	    });	
+
 	    m_clickAreas = new ArrayList<ViewNode>();
 	    setupMouseListeners();
 	    createContextMenus();
@@ -287,7 +296,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			public void run() {
 				m_refreshing = true;
 				prepareCanvas();
-				m_scrollArea.redraw();
 				m_canvas.redraw();
 				m_refreshing = false;
 			}});
@@ -297,32 +305,28 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     	if (m_scale == 0) {
     		zoomFit();
     	}
+		Rectangle clientArea = m_canvas.getClientArea();
+		int canvasX = clientArea.width;
+		int canvasY = clientArea.height;
 
-    	Rectangle clientArea = m_scrollArea.getClientArea();
 		int renderX = (int)((double)m_pixelsX * m_scale);
 		int renderY = m_pixelsY;
 		if (m_scaleY)
 			renderY = (int)((double)m_pixelsY * m_scale);
-		
-		int x = (clientArea.width > renderX) ? clientArea.width : renderX;
-		int y = (clientArea.height > renderY) ? clientArea.height : renderY;
-		m_canvas.setSize(x, y);
 
-		if (DEBUG) {
-			System.out.printf("ZoomedCanvasView: prepareCanvas %d,%d (%d, %d) %f\n",
-				x, y, clientArea.width, clientArea.height, m_scale);
-		}
+	    m_hScroll.setMaximum(renderX);
+    	m_hScroll.setThumb(canvasX);
+	    
+	    m_vScroll.setMaximum(renderY);	    
+    	m_vScroll.setThumb(canvasY);
     }
     
 	public void zoomOut() {
 		if (m_doubleClickNode == null)
 			return;
 
-		// Don't zoom too far out
-		if ((int)((double)m_pixelsX * m_scale) > MIN_CANVAS_X) {
-			m_scale = m_scale / 1.2;
-			refreshView();
-		}
+		m_scale = m_scale / 1.2;
+		refreshView();
 	}
 
 	public void zoomIn() {
@@ -330,32 +334,20 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			return;
 		
 		// Don't zoom any more than the maximum width
-		if ((int)((double)m_pixelsX * m_scale) < MAX_CANVAS_X) {
-			if (!m_scaleY || ((int)((double)m_pixelsY * m_scale) < MAX_CANVAS_Y)) {
-				m_scale = m_scale * 1.2;
-				refreshView();
-			}
+		if (m_scale < 5) {
+			m_scale = m_scale * 1.2;
+			refreshView();
 		}
 	}
 
 	public void zoomReset() {
-		// Don't zoom any more than the maximum width
-		if ((m_pixelsX < MAX_CANVAS_X) &&
-			(m_pixelsY < MAX_CANVAS_Y)) {
-			m_scale = 1.0;
-		} else {
-			// Ensure both dimensions are within the desired range
-			double xScale = (double)MAX_CANVAS_X / (double)m_pixelsX;
-			double yScale = (double)MAX_CANVAS_Y / (double)m_pixelsY;
-			m_scale = (xScale < yScale) ? xScale : yScale;
-		}
-
+		m_scale = 1.0;
 		refreshView();
 	}
 
 	public void zoomFit() {
-		double xScale = (double)m_scrollArea.getClientArea().width / (double)m_pixelsX;
-		double yScale = (double)m_scrollArea.getClientArea().height / (double)m_pixelsY;
+		double xScale = (double)m_canvas.getClientArea().width / (double)m_pixelsX;
+		double yScale = (double)m_canvas.getClientArea().height / (double)m_pixelsY;
 
 		if (m_scaleY) {
 			m_scale = (xScale < yScale) ? xScale : yScale;

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -25,8 +26,10 @@ public abstract class ViewNode {
 
     protected long m_numIterations;
     protected boolean m_isSelected;
-	
-    private List<ViewNode> m_children;
+
+    private double m_scale;
+    private Rectangle m_renderArea;
+	private List<ViewNode> m_children;
     
     public ViewNode(Node treeNode) {
     	m_treeNode = treeNode;
@@ -63,8 +66,16 @@ public abstract class ViewNode {
     	return m_pixelOffsetY;
     }
 
-    public int scale(int x, double scale) {
-    	return (int)((double)x * scale);
+    public int scale(int value) {
+    	return (int)((double)value * m_scale);
+    }
+
+    public int scaleX(int value) {
+    	return scale(value) - m_renderArea.x;
+    }
+
+    public int scaleY(int value) {
+    	return scale(value) - m_renderArea.y;
     }
 
     public boolean isSelected() {
@@ -79,7 +90,7 @@ public abstract class ViewNode {
     public abstract int getPixelsY();
     public abstract int getChildrenX();
     public abstract int getChildrenY();
-    public abstract void draw(Display display, GC gc, double scale, boolean isWorstCase);
+    public abstract void draw(Display display, GC gc, double scale, Rectangle renderArea, boolean isWorstCase);
     public abstract void annotateXy(int xOffset, int yOffset);
     public abstract void buildClickAreas(ArrayList<ViewNode> clickAreas);
     public abstract boolean contains(int x, int y);
@@ -119,4 +130,12 @@ public abstract class ViewNode {
 		}
 	}
 
+	protected void setXy(double scale, Rectangle renderArea) {
+		m_scale = scale;
+		m_renderArea = renderArea;
+        m_x = scaleX(m_pixelOffsetX);
+        m_y = scaleY(m_pixelOffsetY);
+        m_width = scale(getPixelsX());
+        m_height = scale(getPixelsY());
+	}
 }

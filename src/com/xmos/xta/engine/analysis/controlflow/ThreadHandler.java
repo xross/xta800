@@ -1,10 +1,14 @@
 package com.xmos.xta.engine.analysis.controlflow;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.TreeSet;
 
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
+import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 
 public class ThreadHandler {
 	private InstructionDecoder m_instDecoder;
@@ -45,5 +49,33 @@ public class ThreadHandler {
 		}
 		
 		return threadStarts;
+	}
+	
+	public void addTerminators(Collection<InstructionNode> threadStarts){
+		for(Node threadStart : threadStarts){
+			Set<Node> terminals  = new TreeSet<Node>();
+			findTerminals(threadStart, new TreeSet<Node>(), terminals);
+			NullNode nullNode = new NullNode();
+			for(Node terminal : terminals){
+				CommonMethods.connect(nullNode, terminal);
+			}
+		}
+	}
+	
+	private void findTerminals(Node node, Set<Node> seen,
+			Set<Node> terminals) {
+		seen.add(node);
+		
+		if(node.getNextNodes().isEmpty()){
+			assert(!terminals.contains(node));
+			terminals.add(node);
+		}
+		
+		for(Node next : node.getNextNodes()){
+			if(!seen.contains(next)){
+				findTerminals(next, seen, terminals);
+			}
+		}
+		
 	}
 }

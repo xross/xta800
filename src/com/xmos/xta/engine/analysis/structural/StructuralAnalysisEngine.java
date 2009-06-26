@@ -22,7 +22,6 @@ import com.xmos.xta.engine.analysis.structural.patterns.PatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.SectionPatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.SectionTransformer;
 import com.xmos.xta.engine.analysis.structural.patterns.SelfLoopPattern;
-import com.xmos.xta.engine.analysis.structural.patterns.TerminalPatternMatcher;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructuralAnalysisEngine {
@@ -131,10 +130,10 @@ public class StructuralAnalysisEngine {
 			String functionName = getFunctionName(graphStart, treeMap);
 			String jobName = "Processing " + functionName;
 			
-			
 			Collection<Node> currentGraph = new TreeSet<Node>();
+			
 			collectCurrentGraphNodes(graphStart, currentGraph);
-						
+			
 			Collection<Node> basicBlocks = new TreeSet<Node>();
 
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
@@ -143,7 +142,7 @@ public class StructuralAnalysisEngine {
 			
 			fa.analyse(initialBasicBlock, isFunction);
 			fa.addFnopsToBasicBlocks(initialBasicBlock);
-			//dumpTree(basicBlocks);
+
 			assert(basicBlocks.contains(initialBasicBlock));
 			if (!createStructure(basicBlocks, initialBasicBlock, engine, false, jobName)) {
 				return null;
@@ -186,6 +185,8 @@ public class StructuralAnalysisEngine {
 		Map<Node, Node> endPoint = new TreeMap<Node, Node>();
 		Node treeStart = initialBasicBlock;
 
+		
+
 		for (Node node : currentGraph) {
 			if (!seen.contains(node)) {
 				if (node.isInstructionNode()) {
@@ -207,6 +208,7 @@ public class StructuralAnalysisEngine {
 					cfgToStructure.put(node, clone);
 					endPoint.put(clone, node);
 				} else {
+					assert(node instanceof NullNode);
 					seen.add(node);
 					Node clone = node.shallowCopy();
 					basicBlocks.add(clone);
@@ -217,6 +219,7 @@ public class StructuralAnalysisEngine {
 		}
 		// now add all the links
 		for (Node node : basicBlocks) {
+			
 			Node lastInstruction = endPoint.get(node);
 
 			for (Node branch : lastInstruction.getBranchTargets()) {
@@ -224,12 +227,12 @@ public class StructuralAnalysisEngine {
 			}
 
 			for (Node next : lastInstruction.getNextNodes()) {
-				
 				Node root = node;
 				Node leaf = cfgToStructure.get(next);
 				CommonMethods.connect(leaf, root);
 			}
 		}
+		
 		return treeStart;
 	}
 
@@ -377,8 +380,7 @@ public class StructuralAnalysisEngine {
 		m_patternMatchers.add(new SelfLoopPattern());
 		m_patternMatchers.add(new LoopPatternMatcher());
 		m_patternMatchers.add(new SectionPatternMatcher());
-		m_patternMatchers.add(new SectionTransformer());
 		m_patternMatchers.add(new PathPatternMatcher());
-		m_patternMatchers.add(new TerminalPatternMatcher());
+		m_patternMatchers.add(new SectionTransformer());
 	}
 }

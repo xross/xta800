@@ -23,7 +23,6 @@ import com.xmos.xta.engine.analysis.controlflow.InstructionDecoder;
 import com.xmos.xta.engine.analysis.controlflow.SuccessorAdder;
 import com.xmos.xta.engine.analysis.controlflow.ThreadHandler;
 import com.xmos.xta.engine.analysis.controlflow.UnreachableCodeFinder;
-import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
@@ -910,6 +909,8 @@ public class Engine implements Notifier {
 				Collection<InstructionNode> threadStopNodes = 
 					th.getThreadNodes(sections.getThreadStopPoints(nodeId, coreId));				
 				threadStartNodes = th.ensureThreadStartExists(threadStartNodes);
+				
+				
 
 				SuccessorAdder sa = new SuccessorAdder(nodeId, coreId, id, sections, threadStopNodes, xeLoader, this);
 				if (!sa.process()) 
@@ -918,6 +919,7 @@ public class Engine implements Notifier {
 				FunctionHandler fh = new FunctionHandler(id);
 				if (!fh.addFunctions()) 
 					return false;
+				th.addTerminators(threadStartNodes);
 				
 				Set<InstructionNode> starts = new TreeSet<InstructionNode>();
 				starts.addAll(fh.getKnownFuncStarts());
@@ -1009,37 +1011,4 @@ public class Engine implements Notifier {
 		}
 		return false;
 	}
-	
-	// ===================================================================== //
-	// Debug Methods
-	// ===================================================================== //
-	public void printCFG(InstructionDecoder id, FunctionHandler pfh, Collection<Node> threadStarts, 
-			Collection<Node> threadEnds, Collection<Node> functionStarts) {
-		System.out.println("digraph g {");
-		for(Node n : id.getInstructions()){
-			System.out.print(n + " [label=\"" + n.getInstructions() + "\"");
-			if(threadStarts.contains(n)){
-				System.out.print(", style=filled, color = green");
-			} else if(functionStarts.contains(n)){
-				System.out.print(", style=filled, color = lightblue");
-			} else if(threadEnds.contains(n)){
-				System.out.print(", style=filled, color = pink");
-			} 
-			System.out.println(", shape=box]; ");
-		}
-		for(FunctionNode n : pfh.getFunctions()){
-			System.out.println(n + " [label=\"" + n.getFunctionName() + "\"]; ");
-		}
-		for(Node n : id.getInstructions()){
-			for(Node next : n.getNextNodes()){
-				System.out.println(n + " -> " + next + ";");
-			}
-		}
-		for(Node n : pfh.getFunctions()){
-			for(Node next : n.getNextNodes()){
-				System.out.println(n + " -> " + next + ";");
-			}
-		}
-		System.out.println("}");
-	}	
 }
