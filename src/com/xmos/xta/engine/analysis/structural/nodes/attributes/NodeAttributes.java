@@ -48,7 +48,7 @@ public class NodeAttributes {
 	    String timingSummary = "";
 	    
 		// Displays the worst case timing.
-	    boolean worstCaseTimingInvalid = (getNumIterations(Case.WORST) == 0);
+	    boolean worstCaseTimingInvalid = (getTotalIterations(Case.WORST) == 0);
 	    String worstCaseTimingStr = worstCaseTimingInvalid ? 
 	    		"-" : String.format("%.1fns", getTimeTaken(Case.WORST, false));
 	    
@@ -59,7 +59,7 @@ public class NodeAttributes {
 		}
 
 		// Displays the best case timing.
-	    boolean bestCaseTimingInvalid = (getNumIterations(Case.BEST) == 0);
+	    boolean bestCaseTimingInvalid = (getTotalIterations(Case.BEST) == 0);
 	    String bestCaseTimingStr = bestCaseTimingInvalid ? 
 	    		"-" : String.format("%.1fns", getTimeTaken(Case.BEST, false));
 				
