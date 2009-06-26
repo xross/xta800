@@ -24,6 +24,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
@@ -304,14 +305,20 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     	if (m_scale == 0) {
     		zoomFit();
     	}
+		Rectangle clientArea = m_canvas.getClientArea();
+		int canvasX = clientArea.width;
+		int canvasY = clientArea.height;
 
 		int renderX = (int)((double)m_pixelsX * m_scale);
 		int renderY = m_pixelsY;
 		if (m_scaleY)
 			renderY = (int)((double)m_pixelsY * m_scale);
 
-	    m_hScroll.setMaximum(renderX);	    
+	    m_hScroll.setMaximum(renderX);
+    	m_hScroll.setThumb(canvasX);
+	    
 	    m_vScroll.setMaximum(renderY);	    
+    	m_vScroll.setThumb(canvasY);
     }
     
 	public void zoomOut() {

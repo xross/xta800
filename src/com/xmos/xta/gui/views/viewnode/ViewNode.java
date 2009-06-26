@@ -71,11 +71,11 @@ public abstract class ViewNode {
     }
 
     public int scaleX(int value) {
-    	return scale(value - m_renderArea.x);
+    	return scale(value) - m_renderArea.x;
     }
 
     public int scaleY(int value) {
-    	return scale(value - m_renderArea.y);
+    	return scale(value) - m_renderArea.y;
     }
 
     public boolean isSelected() {
