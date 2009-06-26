@@ -447,7 +447,9 @@ public class Engine implements Notifier {
 	}
 	
 	public void provideWorkDone(int work){
-		m_jobMonitor.worked(work);
+		if (m_jobMonitor != null){
+			m_jobMonitor.worked(work);
+		}
 	}
 	
 	public Collection<String> getFunctionsVisited() {

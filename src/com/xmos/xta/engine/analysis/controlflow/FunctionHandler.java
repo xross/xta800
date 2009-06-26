@@ -96,8 +96,6 @@ public class FunctionHandler {
 			Set<Node> seen = new TreeSet<Node>();
 			findTerminals(functionStart, seen, terminals);
 			
-			System.out.println("terminals for node " + functionStart + " are " + terminals);
-			
 			for(Node terminal : terminals){
 				CommonMethods.connect(nullNode, terminal);
 			}
