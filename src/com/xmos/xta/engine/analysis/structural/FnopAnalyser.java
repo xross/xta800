@@ -73,9 +73,12 @@ public class FnopAnalyser {
 					endInstBuffer.branchTo(block.getStartPc(), prevInst.isLoadStore());
 				}
 			} else {
-				//FIXME
-				//XtaInstruction prevInst = parent.getInstructions().getLast();
-				//endInstBuffer.branchTo(block.getStartPc(), prevInst.isLoadStore());
+				if(!parent.getInstructions().isEmpty()){
+					XtaInstruction prevInst = parent.getInstructions().getLast();
+					endInstBuffer.branchTo(block.getStartPc(), prevInst.isLoadStore());
+				}
+				
+				
 			}
 		}
 		
