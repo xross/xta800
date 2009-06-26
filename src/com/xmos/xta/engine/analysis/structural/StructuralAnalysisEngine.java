@@ -22,7 +22,6 @@ import com.xmos.xta.engine.analysis.structural.patterns.SectionPatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.SectionTransformer;
 import com.xmos.xta.engine.analysis.structural.patterns.SelfLoopPattern;
 import com.xmos.xta.engine.analysis.structural.patterns.TerminalPatternMatcher;
-import com.xmos.xta.engine.analysis.structural.patterns.UpWedge;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructuralAnalysisEngine {
@@ -61,7 +60,6 @@ public class StructuralAnalysisEngine {
 			DFSPostOrder(postOrder, treeStart, new TreeSet<Node>());
 			working = false;
 			for (PatternMatcher pm : m_patternMatchers) {
-				
 				if (!dominatorTreeUpToDate && pm.usesDominatorTree()) {
 					buildDominatorTree(workingSet, treeStart);
 					dominatorTreeUpToDate = true;
@@ -70,7 +68,8 @@ public class StructuralAnalysisEngine {
 					if (engine.getAbort()) {
 						return false;
 					}
-					if (pm.isMatch(node, workingSet, false, treeStart)) {
+					if (pm.isMatch(node, workingSet, treeStart)) {
+						if(debug ) System.out.println("\t" + pm.getClass().getSimpleName() + " -> " + workingSet.size());
 						treeStart = pm.getTreeStart();
 						assert (connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
@@ -117,12 +116,8 @@ public class StructuralAnalysisEngine {
 		Collections.sort(orderedGraphs);
 		for (Node graphStart : orderedGraphs) {
 
-			
-			//String functionName = graphStart.getInstructions().getFirst().getFunctionName();
 			String functionName = getFunctionName(graphStart, treeMap);
-			
 			engine.provideFeedback("Processing " + functionName);
-
 			Collection<Node> currentGraph = new TreeSet<Node>();
 			collectCurrentGraphNodes(graphStart, currentGraph);
 						
@@ -136,8 +131,7 @@ public class StructuralAnalysisEngine {
 			fa.addFnopsToBasicBlocks(initialBasicBlock);
 			
 			assert(basicBlocks.contains(initialBasicBlock));
-			
-			if (!createStructure(basicBlocks, initialBasicBlock, engine, false)) {
+			if (!createStructure(basicBlocks, initialBasicBlock, engine, functionName.equals("vfiprintf"))) {
 				return null;
 			}
 			if(basicBlocks.size() != 1) {
@@ -224,7 +218,7 @@ public class StructuralAnalysisEngine {
 			}
 		}
 	}
-	
+
 	private void buildDominatorTree(Collection<Node> reachableNodes, Node treeStart) {
 
 		for (Node node : reachableNodes) {
@@ -245,9 +239,6 @@ public class StructuralAnalysisEngine {
 			for (Node node : reachableNodes) {
 				boolean intersectionIsCompleteSet = true;
 
-				if (node.getDominators().size() == 1) {
-					continue;
-				}
 				if (treeStart == node)
 					continue;
 
@@ -322,7 +313,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	private static int g = 0;
-	private static final boolean verbose = true;
+	private static final boolean verbose = false;
 	public static void dumpTree(Collection<Node> workingSet) {
 		
 		
@@ -365,7 +356,39 @@ public class StructuralAnalysisEngine {
 		m_patternMatchers.add(new SectionPatternMatcher());
 		m_patternMatchers.add(new SectionTransformer());
 		m_patternMatchers.add(new PathPatternMatcher());
-		m_patternMatchers.add(new UpWedge());
 		m_patternMatchers.add(new TerminalPatternMatcher());
 	}
+	
+/*	
+	private void buildOldDominatorTree(Collection<Node> reachableNodes, Node treeStart) {
+		for (Node node : reachableNodes) {
+			node.getDominators().clear();
+			if (treeStart == node) {
+				node.getDominators().add(node);
+			} else {
+				node.getDominators().addAll(reachableNodes);
+			}
+		}
+		boolean stillChanging = true;
+		while (stillChanging) {
+			stillChanging = false;
+			for (Node node : reachableNodes) {
+
+				if (treeStart == node)
+					continue;
+				Set<Node> intersection = new TreeSet<Node>(reachableNodes);
+				for (Node pred : node.getPrevNodes()) {
+					intersection.retainAll(pred.getDominators());
+				}
+				intersection.add(node);
+
+				if (!intersection.equals(node.getDominators())) {
+					node.getDominators().clear();
+					node.getDominators().addAll(intersection);
+					stillChanging = true;
+				}
+			}
+		}
+	}
+*/
 }

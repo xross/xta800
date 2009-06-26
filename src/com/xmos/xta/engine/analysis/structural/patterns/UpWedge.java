@@ -8,7 +8,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
 public class UpWedge extends PatternMatcher {
 
-	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose, Node treeStart) {
+	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
 		m_treeStart = treeStart;
 		
 		//the set of least dominant nodes is the set of nodes that cause a loop to be formed.

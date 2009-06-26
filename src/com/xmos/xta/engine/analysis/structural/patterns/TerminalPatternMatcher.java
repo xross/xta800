@@ -6,7 +6,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.TerminalNode;
 
 public class TerminalPatternMatcher extends PatternMatcher {
-	public boolean isMatch(Node currentNode, Collection<Node> workingSet, boolean verbose, Node treeStart) {
+	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
 		m_treeStart = treeStart;
 		
 		if(currentNode.getNextNodes().size() < 2){
@@ -18,10 +18,6 @@ public class TerminalPatternMatcher extends PatternMatcher {
 			if (!(next.getNextNodes().size() == 0 && next.getPrevNodes().size() == 1)) {
 				return false;
 			}
-		}
-		
-		if (verbose) {
-			System.out.println("#found a terminal node from " + currentNode + " of " + currentNode.getNextNodes());
 		}
 		
 		TerminalNode newNode = new TerminalNode(currentNode.getNextNodes());
