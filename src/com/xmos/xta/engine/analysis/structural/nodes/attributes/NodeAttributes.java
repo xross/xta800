@@ -48,41 +48,57 @@ public class NodeAttributes {
 	    String timingSummary = "";
 	    
 		// Displays the worst case timing.
-	    boolean worstCaseTimingInvalid = (getTotalIterations(Case.WORST) == 0);
+	    long worstCaseIterations = getTotalIterations(Case.WORST);
+	    boolean worstCaseTimingInvalid = (worstCaseIterations == 0);
 	    String worstCaseTimingStr = worstCaseTimingInvalid ? 
 	    		"-" : String.format("%.1fns", getTimeTaken(Case.WORST, false));
 	    
 	    timingSummary += String.format(" : %s", worstCaseTimingStr);
 		if (m_node.isBlockNode() && !worstCaseTimingInvalid) {					
-			timingSummary += String.format(" (x %d)", 
-					m_node.getAttributes().getTotalIterations(Case.WORST));
+			timingSummary += String.format(" (x %d)", worstCaseIterations);
 		}
 
 		// Displays the best case timing.
-	    boolean bestCaseTimingInvalid = (getTotalIterations(Case.BEST) == 0);
+	    long bestCaseIterations = getTotalIterations(Case.BEST);
+	    boolean bestCaseTimingInvalid = (bestCaseIterations == 0);
 	    String bestCaseTimingStr = bestCaseTimingInvalid ? 
 	    		"-" : String.format("%.1fns", getTimeTaken(Case.BEST, false));
 				
 	    timingSummary += String.format(" / %s", bestCaseTimingStr);
 		if (m_node.isBlockNode() && !bestCaseTimingInvalid) {
-			timingSummary += String.format(" (x %d)", 
-					m_node.getAttributes().getTotalIterations(Case.BEST));
+			timingSummary += String.format(" (x %d)", bestCaseIterations);
 		}
 	    return timingSummary;
 	}
 	
-	public String getTimingDetails() {
+	public String getTimingDetails() {		
+		String worstCaseTimeTaken = "-";
+		String worstCaseThreadCycles = "-";
+		String worstCaseInstructions = "-";
+		String worstCaseFnops = "-";
+		if (getTotalIterations(Case.WORST) != 0) {
+			worstCaseTimeTaken    = String.format("%.1fns", getTimeTaken(Case.WORST, false));
+			worstCaseThreadCycles = String.format("%d", getNumCycles(Case.WORST, false));
+			worstCaseInstructions = String.format("%d", getNumInstructions(Case.WORST, false));
+			worstCaseFnops        = String.format("%d", getNumFNops(Case.WORST, false));
+		}
+		
+		String bestCaseTimeTaken = "-";
+		String bestCaseThreadCycles = "-";
+		String bestCaseInstructions = "-";
+		String bestCaseFnops = "-";		
+		if (getTotalIterations(Case.BEST) != 0) {
+			bestCaseTimeTaken    = String.format("%.1fns", getTimeTaken(Case.BEST, false));
+			bestCaseThreadCycles = String.format("%d", getNumCycles(Case.BEST, false));
+			bestCaseInstructions = String.format("%d", getNumInstructions(Case.BEST, false));
+			bestCaseFnops        = String.format("%d", getNumFNops(Case.BEST, false));			
+		}
+		
 		return String.format("%s %s\n", m_node.getTypeName(), m_node.getFunctionName()) +
-    	       String.format("Time taken:       %.1f - %.1f\n", 
-    	    		   getTimeTaken(Case.WORST, false), getTimeTaken(Case.BEST, false)) +  	    		   
-               String.format("Thread cycles:    %d - %d\n", 
-            		   getNumCycles(Case.WORST, false), getNumCycles(Case.BEST, false)) + 
-               String.format("Num Instructions: %d - %d\n", 
-            		   getNumInstructions(Case.WORST, false), getNumInstructions(Case.BEST, false)) + 
-               String.format("Num FNops:        %d - %d\n", 
-            		   getNumFNops(Case.WORST, false), getNumFNops(Case.BEST, false)) +
-               String.format("Num Iterations:   %d - %d\n", 
-            		   m_worstCaseIterations, m_bestCaseIterations) +
+    	       String.format("Time taken:       %s / %s\n", worstCaseTimeTaken, bestCaseTimeTaken) +
+               String.format("Thread cycles:    %s / %s\n", worstCaseThreadCycles, bestCaseThreadCycles) +
+               String.format("Num Instructions: %s / %s\n", worstCaseInstructions, bestCaseInstructions) +
+               String.format("Num Fnops:        %s / %s\n", worstCaseFnops, bestCaseFnops) +            		   
                String.format("Node Id:          %d\n", m_node.getId());
 	}
 		
