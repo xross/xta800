@@ -27,13 +27,8 @@ public class StructureView extends ZoomedCanvasView {
 		super();
 		if (DEBUG) System.out.printf("Structure()\n");			
 		GuiEngine.addBroadcastListener(this);
-	    
+
 		m_scaleY = true;
-		m_pixelsX = 0;
-		m_pixelsY = 0;
-		m_borderX = 10;
-		m_borderY = 10;
-		m_lineWidth = 1;
 	}
 
     protected void buildClickAreas() {
@@ -43,25 +38,18 @@ public class StructureView extends ZoomedCanvasView {
     	}
     }
 
-    protected void annotateTree(boolean isSelctionChange) {
-		m_viewNode = buildViewNode(m_doubleClickNode);
-    	buildClickAreas();
-		
-		// Build up a new list of click areas and then swap to ensure the old ones are available
-		// for double clicks
+    protected void annotateTree() {
 		if (m_viewNode != null) {
-			m_viewNode.annotateXy(m_borderX, m_borderY);
+			m_viewNode.annotateXy(0, 0);
 			updatePixelsXy();
 		}
     }
 
     protected void updatePixelsXy() {
     	if (m_doubleClickNode == null) {
-			m_pixelsX = 0;
-			m_pixelsY = 0;
+    		m_canvasProperties.setPixels(0, 0);
 		} else {
-			m_pixelsX = (m_borderX  * 2) + m_viewNode.getPixelsX();
-			m_pixelsY = (m_borderY * 2) + m_viewNode.getPixelsY();
+    		m_canvasProperties.setPixels(m_viewNode.getPixelsX(), m_viewNode.getPixelsY());
 		}
     }
     
@@ -70,7 +58,7 @@ public class StructureView extends ZoomedCanvasView {
 		int renderX = clientArea.width;
 		int renderY = clientArea.height;
         Image bufferedImage = new Image(m_display, renderX, renderY);
-        GC bufferedGc = new GC(bufferedImage);    	
+        GC bufferedGc = new GC(bufferedImage);
         
         bufferedGc.setAntialias(SWT.ON);
         bufferedGc.setTextAntialias(SWT.ON);
@@ -81,45 +69,47 @@ public class StructureView extends ZoomedCanvasView {
         if (m_doubleClickNode != null) {
         	int offsetX = m_hScroll.getSelection();
         	int offsetY = m_vScroll.getSelection();
-        	Rectangle renderArea = new Rectangle(offsetX, offsetY, renderX, renderY);
-	        bufferedGc.setLineWidth(m_lineWidth);
-			m_viewNode.draw(m_display, bufferedGc, m_scale, renderArea, true);
+        	Rectangle visibleArea = new Rectangle(offsetX, offsetY, renderX, renderY);
+        	m_canvasProperties.setVisibleArea(visibleArea);
+        	m_canvasProperties.setScale(m_scale);
+        	m_canvasProperties.setSelected(m_selectedNodes);
+        	
+        	if (DEBUG) System.out.println("Draw canvas rectangle " + offsetX + ", " + offsetY + " in area " + renderX + ", " + renderY);
+			m_viewNode.draw(m_display, bufferedGc, true, true);
         }
         gc.drawImage(bufferedImage, 0, 0);
         bufferedGc.dispose();
         bufferedImage.dispose();
+		buildClickAreas();
     }
     
-	private ViewNode buildViewNode(Node node) {
+	private ViewNode buildViewNode(Node node, int depth) {
 		if (node == null || node.isNullNode())
 			return null;
 		
-    	boolean selected = m_selectedNodes.contains(node);
     	ViewNode viewNode = null;
     	
     	if (node.isBlockNode()) {
-    		viewNode = new StructureBlockNode(node);
+    		viewNode = new StructureBlockNode(node, m_canvasProperties);
     	} else if (node.isFunctionNode()) {
-    		viewNode = new StructureFunctionNode(node);
+    		viewNode = new StructureFunctionNode(node, m_canvasProperties);
+    		if (depth > 3)
+    			viewNode.setFolded(true, false);
     	} else if (node.isLoopNode()) {
-    		viewNode = new StructureLoopNode(node);
+    		viewNode = new StructureLoopNode(node, m_canvasProperties);
     	} else if (node.isSectionNode()) {
-    		viewNode = new StructureSectionNode(node, true); 
-    	} else if (node.isTerminalNode()) {
-    		viewNode = new StructureSectionNode(node, false); 
+    		viewNode = new StructureSectionNode(node, m_canvasProperties);
     	} else {
-    		viewNode = new StructurePathNode(node);
+    		viewNode = new StructurePathNode(node, m_canvasProperties);
     	}
     	
     	if (!node.isBlockNode()) {
 	        for (Node subNode : node.getChildren()) {
-	        	ViewNode child = buildViewNode(subNode);
+	        	ViewNode child = buildViewNode(subNode, depth + 1);
 	        	if (child != null)
 	        		viewNode.addChild(child);
 	        }
     	}
-        viewNode.setLineWidth(m_lineWidth);
-        viewNode.setIsSelected(selected);
 
     	return viewNode;
 	}
@@ -135,6 +125,8 @@ public class StructureView extends ZoomedCanvasView {
 			m_rootNode = route.getNode();
 			m_doubleClickNode = m_rootNode;
 			m_selectedNodes = GuiEngine.getSelectedNodes();
+			m_viewNode = buildViewNode(m_doubleClickNode, 0);
+			annotateTree();
 		} else {
 			m_rootNode = null;
 			m_doubleClickNode = null;

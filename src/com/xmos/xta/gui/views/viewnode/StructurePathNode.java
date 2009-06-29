@@ -1,12 +1,10 @@
 package com.xmos.xta.gui.views.viewnode;
 
-import java.util.ArrayList;
-
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
 public class StructurePathNode extends ViewNode {
     public static final boolean DEBUG = false;
@@ -15,8 +13,8 @@ public class StructurePathNode extends ViewNode {
     private int m_borderX = 4;
     private int m_borderY = 2;
 
-	public StructurePathNode(Node treeNode) {
-		super(treeNode);
+	public StructurePathNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
+		super(treeNode, canvasProperties);
 	}
 
 	public int getPixelsX() {
@@ -46,8 +44,11 @@ public class StructurePathNode extends ViewNode {
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc, double scale, Rectangle renderArea, boolean isWorstCase) {
-		setXy(scale, renderArea);
+	public void draw(Display display, GC gc, boolean isWorstCase, boolean isBestCase) {
+		setXy();
+		if (!isVisible()) {
+			return;
+		}
         drawThis(display, gc);
 
         boolean first = true;
@@ -59,8 +60,7 @@ public class StructurePathNode extends ViewNode {
     		int childX = child.getPixelsX();
     		
         	if (!first) {
-            	setConnectionColour(display, gc, isWorstCase);
-        		drawConnection(display, gc, lineLeft, lineY, lineRight, lineY);
+        		drawConnection(display, gc, lineLeft, lineY, lineRight, lineY, isWorstCase, isBestCase);
         	} else {
         		first = false;
         	}
@@ -69,12 +69,11 @@ public class StructurePathNode extends ViewNode {
             lineRight = scaleX(m_pixelOffsetX + childOffsetX + childX + m_connectorLen);
             childOffsetX += childX + m_connectorLen;
 
-    		child.draw(display, gc, scale, renderArea, isWorstCase);
+    		child.draw(display, gc, isWorstCase, isBestCase);
 		}
 
-    	setConnectionColour(display, gc, isWorstCase);
-		drawConnection(display, gc, m_x, lineY, scaleX(m_pixelOffsetX + m_borderX), lineY);
-		drawConnection(display, gc, lineLeft, lineY, scaleX(m_pixelOffsetX + getPixelsX()), lineY);
+		drawConnection(display, gc, m_x, lineY, scaleX(m_pixelOffsetX + m_borderX), lineY, isWorstCase, isBestCase);
+		drawConnection(display, gc, lineLeft, lineY, scaleX(m_pixelOffsetX + getPixelsX()), lineY, isWorstCase, isBestCase);
     }
 
 	public void annotateXy(int xOffset, int yOffset) {
@@ -92,19 +91,7 @@ public class StructurePathNode extends ViewNode {
     	}
 	}
 
-	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
-		for (ViewNode child : getChildren()) {
-			child.buildClickAreas(clickAreas);
-    	}
-    	clickAreas.add(this);
-	}
-
-	public boolean contains(int x, int y) {
-		if ((x >= m_x) && (x <= (m_x + m_width))) {
-			if ((y >= m_y) && (y <= (m_y + m_height))) {
-				return true;
-			}
-		}
+	public boolean isFolded() {
 		return false;
 	}
 }

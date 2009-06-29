@@ -1,5 +1,5 @@
 package com.xmos.xta.gui.views.viewnode;
-
+/*
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
@@ -17,7 +17,7 @@ public class TextBlockNode extends ViewNode {
     private String m_text;
     
 	public TextBlockNode(String text, Color color) {
-		super(null);
+		super(null, null);
 		
 		m_color = color;
 		m_text = text;
@@ -66,20 +66,8 @@ public class TextBlockNode extends ViewNode {
 		// Do nothing
 	}
 
-	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
-    	clickAreas.add(this);
-	}
-
-	public boolean contains(int x, int y) {
-		if ((x >= m_x) && (x <= (m_x + m_width))) {
-			if ((y >= m_y) && (y <= (m_y + m_height))) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public String getToolTipText() {
 		return m_text;
 	}
 }
+*/

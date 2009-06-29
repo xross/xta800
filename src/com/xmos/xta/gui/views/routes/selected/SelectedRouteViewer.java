@@ -8,7 +8,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -24,8 +23,6 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Sash;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.Route;
@@ -35,17 +32,11 @@ import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTrave
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
-import com.xmos.xta.gui.dialogs.Loop;
-import com.xmos.xta.gui.dialogs.LoopPath;
-import com.xmos.xta.gui.dialogs.LoopScope;
-import com.xmos.xta.gui.views.console.ConsoleView;
+import com.xmos.xta.gui.views.Views;
 
 public class SelectedRouteViewer {	
     private TreeViewer m_viewer;
     private Composite m_parent;
-    private Action m_setLoopIterationsAction;    
-    private Action m_setLoopPathIterationsAction;    
-    private Action m_setLoopScopeAction;    
 	
     public SelectedRouteViewer(Composite parent) {    	
     	m_parent = parent;
@@ -143,67 +134,7 @@ public class SelectedRouteViewer {
 					}
 				});
 
-				ISelection selection = m_viewer.getSelection();
-		        if (selection instanceof IStructuredSelection) {	            
-		            final Object object = ((IStructuredSelection)selection).getFirstElement();
-		            if (object instanceof Node) {
-						manager.add(new Separator());
-
-		            	// Adds the 'Trace in console' option.
-				    	manager.add(new Action("Trace in console") {
-							public void run() {
-								ConsoleView console = (ConsoleView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
-									getActivePage().findView(ConsoleView.ID);
-								
-								try {
-									PlatformUI.getWorkbench().getActiveWorkbenchWindow().
-									    getActivePage().showView(ConsoleView.ID);
-								} catch (PartInitException e) {}
-								
-								int routeId = GuiEngine.getEngine().getSelectedRouteId();
-								console.runCommand("print trace " + routeId + " " + ((Node)object).getId());
-							}
-						});
-
-					    manager.add(new Separator());
-				    	
-				    	// Adds the 'Set iterations' option.
-					    m_setLoopIterationsAction = new Action("Set loop iterations") {
-						    public void run() {
-						    	new Loop(m_parent.getShell(), (Node)object);
-						    }
-					    };
-					    manager.add(m_setLoopIterationsAction);
-					    if (GuiEngine.getEngine().canSetLoopIterations((Node)object))
-					        m_setLoopIterationsAction.setEnabled(true);
-					    else
-					    	m_setLoopIterationsAction.setEnabled(false);
-
-				    	// Adds the 'Set iterations' option.
-					    m_setLoopPathIterationsAction = new Action("Set loop path iterations") {
-						    public void run() {
-						    	new LoopPath(m_parent.getShell(), (Node)object);
-						    }
-					    };
-					    manager.add(m_setLoopPathIterationsAction);
-					    if (GuiEngine.getEngine().canSetLoopPathIterations((Node)object))
-					        m_setLoopPathIterationsAction.setEnabled(true);
-					    else
-					        m_setLoopPathIterationsAction.setEnabled(false);
-					    
-				    	// Adds the 'Set scope' option.
-					    m_setLoopScopeAction = new Action("Set loop scope") {
-						    public void run() {
-						    	new LoopScope(m_parent.getShell(), (Node)object);
-						    }
-					    };
-					    manager.add(m_setLoopScopeAction);
-					    if (GuiEngine.getEngine().canSetLoopScope((Node)object))
-    					    m_setLoopScopeAction.setEnabled(true);
-					    else
-    					    m_setLoopScopeAction.setEnabled(false);
-		            }
-		        }				
+	        	Views.createContextMenu(manager, GuiEngine.getSelectedNodes(), m_parent.getShell());
 			}
 		});
 		

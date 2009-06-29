@@ -23,6 +23,7 @@ import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -56,20 +57,19 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     protected Node m_doubleClickNode;
     
     private boolean m_refreshing;
-    protected double m_scale;
-    protected boolean m_scaleY;
-    protected int m_lineWidth;
-    protected int m_pixelsX;
-    protected int m_pixelsY;
-    protected int m_borderX;
-    protected int m_borderY;
     protected ArrayList<ViewNode> m_clickAreas;
     
     private Composite m_parent;
     protected Display m_display;
     protected Canvas m_canvas;
+    protected ZoomedCanvasProperties m_canvasProperties;
     protected ScrollBar m_hScroll;
     protected ScrollBar m_vScroll;
+	protected int m_hScrollPosition;
+	protected int m_vScrollPosition;
+
+	protected double m_scale;
+	protected boolean m_scaleY;
     
     private Shell m_toolTip;
     private Label m_tipLabel;
@@ -84,8 +84,9 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		m_doubleClickNode = null;
 	    m_selectedNodes = new ArrayList<Node>();
 
-		m_scale = 1.0;
+	    m_canvasProperties = new ZoomedCanvasProperties();
 		m_refreshing = false;
+		m_scale = 1;
 	}
 
 	public void createPartControl(Composite parent) {
@@ -93,6 +94,14 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    m_parent = parent;
 	    m_display = m_parent.getDisplay();
 
+	    // Determine average font metrics
+        Image image = new Image(m_display, 1, 1);
+        GC gc = new GC(image);
+        m_canvasProperties.setAverageCharWidth(gc.getFontMetrics().getAverageCharWidth());
+        gc.dispose();
+        image.dispose();
+
+	    
 	    final Composite composite = new Composite(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL); 	    
 	    FillLayout fillLayout = new FillLayout();
 	    composite.setLayout(fillLayout); 
@@ -103,6 +112,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    m_hScroll = composite.getHorizontalBar();
 	    m_hScroll.addListener(SWT.Selection, new Listener() {
 	        public void handleEvent(Event e) {
+	    		m_hScrollPosition = (int)((double)m_hScroll.getSelection() / m_scale);
 	        	refreshView();
 	        }
 	    });
@@ -111,7 +121,8 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    // Sets up the vertical waves scroll bar.
 	    m_vScroll = composite.getVerticalBar();
 	    m_vScroll.addListener(SWT.Selection, new Listener() {
-	        public void handleEvent(Event e) {	 	        	
+	        public void handleEvent(Event e) {
+	    		m_vScrollPosition = (int)((double)m_vScroll.getSelection() / m_scale);
 	        	refreshView();
 	        }
 	    });
@@ -129,7 +140,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    
 	    initialiseTree();
 	    nodeCoreChanged();
-		annotateTree(false);
+		annotateTree();
 		refreshView();
 
 		getSite().getPage().addSelectionListener(this);
@@ -149,7 +160,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 				m_toolTip.dispose ();
 	    	}
 	    	initialiseTree();
-			annotateTree(false);
 			refreshView();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE) || 
@@ -162,7 +172,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    	if (m_toolTip != null  && !m_toolTip.isDisposed ()) {
 				m_toolTip.dispose ();
 	    	}
-			annotateTree(false);
+			annotateTree();
 			refreshView();
 			
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SET_FOCUS)) {
@@ -173,66 +183,37 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	                m_doubleClickNode = (Node)object;
 	            }
 	        }
-			annotateTree(false);
 			refreshView();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) || 
 				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 			initialiseTree();
-			annotateTree(false);
 			refreshView();
 			
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECT_NODES)) {
-			selectPaths();
-			annotateTree(true);
 			refreshView();
 			
-		}
+		} else if (event.getProperty().equals(Broadcaster.BROADCAST_UPDATE_FOLDING)) {
+			annotateTree();
+			refreshView();
+			
+		} 
 	}
 	
-	private void selectPaths() {
-/*		Reference codePoint = GuiEngine.getCodePoint();
-		Engine engine = GuiEngine.getEngine();
-		if (codePoint.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
-			int pc = codePoint.getPc();
-			m_selectedNodes.clear();
-
-			// Add the complete paths hitting the pc
-			Node routeNode = m_routeInfo.getRouteNode();
-			if (routeNode != null) {
-				for (Node child : routeNode.getChildren()) {
-					Set<Integer> pcs = child.getPcsCovered(false);
-					if (pcs.contains(pc)) {
-						m_selectedNodes.add(child);
-					}
-				}
-			}
-		}*/
-	}
-
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
 		if (part == this)
 			return;
 		
         if (sel instanceof IStructuredSelection) {
         	IStructuredSelection sSel = (IStructuredSelection)sel;
-        	boolean selectionChanged = true;
-
-        	if (m_selectedNodes.size() != ((IStructuredSelection)sel).size())
-        		selectionChanged = false;
 
         	List<Node> newNodes = new ArrayList<Node>();
         	for (Object object : sSel.toArray()) {
         		if (object instanceof Node) {
         			newNodes.add((Node)object);
-        			
-        			if (!m_selectedNodes.contains(object)) {
-        				selectionChanged = false; // Cause zoom to fit
-        			}
         		}
             }
         	m_selectedNodes = newNodes;
-            annotateTree(selectionChanged);
             refreshView();
         }
     }	            		         	        	
@@ -242,7 +223,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    	if (m_toolTip != null  && !m_toolTip.isDisposed ()) {
 				m_toolTip.dispose ();
 	    	}
-//			m_selectedNodes.get(0).createContextMenu(m_parent.getShell(), manager);
+	    	Views.createContextMenu(manager, m_selectedNodes, m_parent.getShell());
 		}
 	}
 
@@ -276,7 +257,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
         			m_selectedNodes.add((Node)object);
         		}
             }
-	        annotateTree(true);
 	        refreshView();
         }
         
@@ -308,24 +288,32 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		Rectangle clientArea = m_canvas.getClientArea();
 		int canvasX = clientArea.width;
 		int canvasY = clientArea.height;
-
-		int renderX = (int)((double)m_pixelsX * m_scale);
-		int renderY = m_pixelsY;
+		
+		
+		int renderX = (int)((double)m_canvasProperties.getPixelsX() * m_scale);
+		int renderY = m_canvasProperties.getPixelsY();
 		if (m_scaleY)
-			renderY = (int)((double)m_pixelsY * m_scale);
+			renderY = (int)((double)m_canvasProperties.getPixelsY() * m_scale);
 
 	    m_hScroll.setMaximum(renderX);
     	m_hScroll.setThumb(canvasX);
+		m_hScroll.setSelection((int)((double)m_hScrollPosition * m_scale));
 	    
-	    m_vScroll.setMaximum(renderY);	    
+	    m_vScroll.setMaximum(renderY);
     	m_vScroll.setThumb(canvasY);
+		m_vScroll.setSelection((int)((double)m_vScrollPosition * m_scale));
+    	
+    	if (DEBUG) System.out.println("Prepared render " + renderX + ", " + renderY + " in canvas " + canvasX + ", " + canvasY);
     }
     
 	public void zoomOut() {
 		if (m_doubleClickNode == null)
 			return;
 
+		m_hScrollPosition = (int)((double)m_hScroll.getSelection() / m_scale);
+		m_vScrollPosition = (int)((double)m_vScroll.getSelection() / m_scale);
 		m_scale = m_scale / 1.2;
+		if (DEBUG) System.out.printf("ZoomedCanvasView: zoomOut %f\n", m_scale);
 		refreshView();
 	}
 
@@ -335,19 +323,26 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		
 		// Don't zoom any more than the maximum width
 		if (m_scale < 5) {
+			m_hScrollPosition = (int)((double)m_hScroll.getSelection() / m_scale);
+			m_vScrollPosition = (int)((double)m_vScroll.getSelection() / m_scale);
 			m_scale = m_scale * 1.2;
+			if (DEBUG) System.out.printf("ZoomedCanvasView: zoomIn %f\n", m_scale);
 			refreshView();
 		}
 	}
 
 	public void zoomReset() {
+		m_hScrollPosition = (int)((double)m_hScroll.getSelection() / m_scale);
+		m_vScrollPosition = (int)((double)m_vScroll.getSelection() / m_scale);
 		m_scale = 1.0;
+
+		if (DEBUG) System.out.printf("ZoomedCanvasView: zoomReset %f\n", m_scale);
 		refreshView();
 	}
 
 	public void zoomFit() {
-		double xScale = (double)m_canvas.getClientArea().width / (double)m_pixelsX;
-		double yScale = (double)m_canvas.getClientArea().height / (double)m_pixelsY;
+		double xScale = (double)m_canvas.getClientArea().width / (double)m_canvasProperties.getPixelsX();
+		double yScale = (double)m_canvas.getClientArea().height / (double)m_canvasProperties.getPixelsY();
 
 		if (m_scaleY) {
 			m_scale = (xScale < yScale) ? xScale : yScale;
@@ -355,11 +350,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			m_scale = xScale;
 		}
 
-		if (DEBUG) {
-			System.out.printf("ZoomedCanvasView: zoomFit %f (%d, %d)\n",
-				m_scale, m_parent.getBounds().width, m_parent.getBounds().height);
-		}
-
+		if (DEBUG) System.out.printf("ZoomedCanvasView: zoomFit %f\n", m_scale);
 		refreshView();
 	}
 
@@ -426,14 +417,15 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			public void mouseDoubleClick(MouseEvent e) {
 	    		for (ViewNode node : m_clickAreas) {
 	    			if (node.contains(e.x, e.y)) {
-	    				if (node.getTreeNode() != null) {
-		    	    		m_selectedNodes.clear();
-		    	    		m_selectedNodes.add(node.getTreeNode());
-		    	    		ISelection selection = new StructuredSelection(m_selectedNodes);
-		    	    		setSelection(selection);
-		    				GuiEngine.setFocus(selection);
-		    				GuiEngine.broadcast(Broadcaster.BROADCAST_SET_FOCUS, "");
-	    				}
+	    				node.setFolded(!node.isFolded(), false);
+	    				annotateTree();
+
+	    	    		m_selectedNodes.clear();
+	    	    		m_selectedNodes.add(node.getTreeNode());
+	    	    		ISelection selection = new StructuredSelection(m_selectedNodes);
+	    	    		setSelection(selection);
+	    				GuiEngine.setFocus(selection);
+	    				GuiEngine.broadcast(Broadcaster.BROADCAST_SET_FOCUS, "");
 	    				return;
 	    			}
 	    		}
@@ -504,7 +496,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	protected abstract void initialiseTree();
     protected abstract void drawCanvas(GC gc);    
     protected abstract void buildClickAreas();
-    protected abstract void annotateTree(boolean isSelctionChange);
+    protected abstract void annotateTree();
     protected abstract void updatePixelsXy();
 }
 
