@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.info;
+package com.xmos.xta.gui.views.info.unknowns;
 
 import java.util.Collection;
 
@@ -9,7 +9,7 @@ import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 
-public class InfoViewerContentProvider implements IStructuredContentProvider {
+class InfoViewerContentProvider implements IStructuredContentProvider {
     private UnknownState m_unknownState;
 
     InfoViewerContentProvider(UnknownState unknownState) {

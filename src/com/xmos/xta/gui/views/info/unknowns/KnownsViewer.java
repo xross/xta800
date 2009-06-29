@@ -1,25 +1,32 @@
-package com.xmos.xta.gui.views.info;
+package com.xmos.xta.gui.views.info.unknowns;
 
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.gui.GuiEngine;
 
-class KnownsViewer extends InfoViewer {
+public class KnownsViewer extends InfoViewer {
 	private Action m_clearInstructionTimesAction;
 
-	KnownsViewer(Display display, Composite parent, IWorkbenchPartSite site, TabFolder folders) {
-		super(display, parent, site, folders, "Knowns");
+	public KnownsViewer(Display display, Composite parent, IWorkbenchPartSite site, TableViewer tableViewer) {
+		super(display, parent, site, tableViewer);
 	}
 
+	public void update() {
+		getViewer().setInput(GuiEngine.getEngine().getSelectedRoute());
+	}	
+	
+	public void updateHighlighting(List<Node> selectedNodes) {
+	}
+	
 	InfoViewerContentProvider createContentProvider() {
 		return new InfoViewerContentProvider(UnknownState.KNOWN);
 	}
@@ -48,13 +55,5 @@ class KnownsViewer extends InfoViewer {
 		m_clearInstructionTimesAction.setText("Clear instruction time");
 		menuMgr.add(m_clearInstructionTimesAction);
 		m_clearInstructionTimesAction.setEnabled(false);
-	}
-	
-	void update() {
-		getViewer().setInput(GuiEngine.getEngine().getSelectedRoute());
 	}	
-	
-	void updateHighlighting(List<Node> selectedNodes) {
-	}
-	
 }
