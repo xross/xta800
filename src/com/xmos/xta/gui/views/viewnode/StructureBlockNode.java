@@ -33,25 +33,19 @@ public class StructureBlockNode extends ViewNode {
 		return 0;
 	}
 
-	public void draw(Display display, GC gc, boolean isWorstCase, boolean isBestCase) {
-		if (!isVisible()) {
-			return;
-		}
-
+	public void draw(Display display, GC gc) {
 		gc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
+		gc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
     	gc.fillRectangle(m_x, m_y, m_width, m_height);
        
         if (isSelected()) gc.setLineWidth(getLineWidth() + 1);
+    	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
     	gc.drawRectangle(m_x, m_y, m_width, m_height);
         if (isSelected()) gc.setLineWidth(getLineWidth());
 	}
 
-	public void drawTimes(Display display, GC gc, boolean isWorstCase, boolean isBestCase) {
-		if (!isVisibleX()) {
-			return;
-		}
-		
+	public void drawTimes(Display display, GC gc) {
 		if (!setTimesY())
 			return;
 
@@ -68,7 +62,7 @@ public class StructureBlockNode extends ViewNode {
     	}
     	
 		for (ViewNode child : getChildren()) {
-    		child.drawTimes(display, gc, isWorstCase, isBestCase);
+    		child.drawTimes(display, gc);
     	}
 	}
 

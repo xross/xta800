@@ -14,8 +14,6 @@ public class ZoomedCanvasProperties {
     private double m_scale;
 
     private int m_lineWidth;
-    private int m_pixelsX;
-    private int m_pixelsY;
     
     private double m_totalBest;
     private double m_totalWorst;
@@ -35,6 +33,8 @@ public class ZoomedCanvasProperties {
 		m_totalWorst = 0.0;
 
 		m_selectedNodes = new ArrayList<Node>();
+		m_visibleArea = new Rectangle(0, 0, 0, 0);
+		m_timesHeight = 0;
 	}
 
 	public double getScale() {
@@ -59,20 +59,6 @@ public class ZoomedCanvasProperties {
 
 	public void setTotalWorst(double totalWorst) {
 		m_totalWorst = totalWorst;
-	}
-
-	public void setPixels(int x, int y) {
-		if (DEBUG) System.out.printf("ZoomedCanvasView: re-sized to %d, %d\n", x, y);			
-		m_pixelsX = x;
-		m_pixelsY = y;
-	}
-
-	public int getPixelsX() {
-		return m_pixelsX;
-	}
-
-	public int getPixelsY() {
-		return m_pixelsY;
 	}
 
 	public void setSelected(List<Node> nodes) {

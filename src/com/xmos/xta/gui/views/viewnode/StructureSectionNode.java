@@ -4,7 +4,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.gui.views.structure.ZoomedCanvasProperties;
 
 public class StructureSectionNode extends ViewNode {
@@ -55,34 +54,33 @@ public class StructureSectionNode extends ViewNode {
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc, boolean isWorstCase, boolean isBestCase) {
-		if (!isVisible()) {
-			return;
-		}
+	public void draw(Display display, GC gc) {
 		drawThis(display, gc);
+		boolean isWorstCase = isWorstCase();
+		boolean isBestCase = isBestCase();
 
-        int midY = scaleY(m_pixelOffsetY + (getPixelsY() / 2));
+        int midY = scale(m_pixelOffsetY + (getPixelsY() / 2));
     	int childOffsetY = m_borderY;
 		for (ViewNode child : getChildren()) {
-			boolean childIsWorstCase = isWorstCase && (child.getTreeNode().getAttributes().getTimeTaken(Case.WORST, false) > 0);
-			boolean childIsBestCase = isBestCase && (child.getTreeNode().getAttributes().getTimeTaken(Case.BEST, false) > 0);
+			boolean childIsWorstCase = isWorstCase && child.isWorstCase();
+			boolean childIsBestCase = isBestCase && child.isBestCase();
 
     		int childY = child.getPixelsY();
-    		int childMid = scaleY(m_pixelOffsetY + childOffsetY + (childY / 2));
+    		int childMid = scale(m_pixelOffsetY + childOffsetY + (childY / 2));
 
-        	int childLeft = scaleX(child.getPixelOffsetX());
-        	int childRight = scaleX(child.getPixelOffsetX() + child.getPixelsX());
+        	int childLeft = scale(child.getPixelOffsetX());
+        	int childRight = scale(child.getPixelOffsetX() + child.getPixelsX());
         	drawConnection(display, gc, m_x, midY, m_x, childMid, childIsWorstCase, childIsBestCase);
         	drawConnection(display, gc, m_x, childMid, childLeft, childMid, childIsWorstCase, childIsBestCase);
     		drawConnection(display, gc, m_x + m_width, midY, m_x + m_width, childMid, childIsWorstCase, childIsBestCase);
     		drawConnection(display, gc, m_x + m_width, childMid, childRight, childMid, childIsWorstCase, childIsBestCase);
             childOffsetY += childY + m_gapY;
 
-            child.draw(display, gc, childIsWorstCase, childIsBestCase);
+            child.draw(display, gc);
     	}
 
 		if (m_isOptional) {
-			int optionalMid = scaleY(m_pixelOffsetY + childOffsetY - (m_gapY / 2));
+			int optionalMid = scale(m_pixelOffsetY + childOffsetY - (m_gapY / 2));
 			drawConnection(display, gc, m_x, midY, m_x, optionalMid, false, isBestCase);
 			drawConnection(display, gc, m_x, optionalMid, m_x + m_width, optionalMid, false, isBestCase);
 			drawConnection(display, gc, m_x + m_width, midY, m_x + m_width, optionalMid, false, isBestCase);

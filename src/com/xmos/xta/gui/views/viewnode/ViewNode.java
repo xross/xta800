@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -13,8 +12,6 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.gui.views.structure.ZoomedCanvasProperties;
 
 public abstract class ViewNode {
-	private static final int MIN_PIXELS = 2;
-
 	protected Node m_treeNode;
     private List<ViewNode> m_children;
     
@@ -30,8 +27,6 @@ public abstract class ViewNode {
     protected int m_bestHeight;
     protected int m_worstHeight;
 
-    private boolean m_isVisibleX;
-    private boolean m_isVisibleY;
     private ZoomedCanvasProperties m_canvasProperties;
 	
     public ViewNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
@@ -40,9 +35,6 @@ public abstract class ViewNode {
 	    m_pixelOffsetX = 0;
 	    m_pixelOffsetY = 0;
 
-		m_isVisibleX = true;
-		m_isVisibleY = true;
-		
 		m_children = new ArrayList<ViewNode>();
 		m_canvasProperties = canvasProperties;
     }
@@ -51,7 +43,7 @@ public abstract class ViewNode {
     public abstract int getPixelsY();
     public abstract int getChildrenX();
     public abstract int getChildrenY();
-    public abstract void draw(Display display, GC gc, boolean isWorstCase, boolean isBestCase);
+    public abstract void draw(Display display, GC gc);
     public abstract void annotateXy(int xOffset, int yOffset);
 
     public Node getTreeNode() {
@@ -70,16 +62,16 @@ public abstract class ViewNode {
     	return (int)((double)value * m_canvasProperties.getScale());
     }
 
-    public int scaleX(int value) {
-    	return scale(value) - m_canvasProperties.getVisibleArea().x;
-    }
-
-    public int scaleY(int value) {
-    	return scale(value) - m_canvasProperties.getVisibleArea().y;
-    }
-
     public boolean isSelected() {
 		return m_canvasProperties.isSelected(this);
+	}
+
+    public boolean isBestCase() {
+		return (m_treeNode.getAttributes().getTimeTaken(Case.BEST, false) > 0);
+	}
+
+    public boolean isWorstCase() {
+		return (m_treeNode.getAttributes().getTimeTaken(Case.WORST, false) > 0);
 	}
 
 	public String getToolTipText() {
@@ -95,21 +87,21 @@ public abstract class ViewNode {
 	}
 
 	public void drawConnection(Display display, GC gc, int x1, int y1, int x2, int y2,
-			boolean childIsWorstCase, boolean childIsBestCase) {
+			boolean isWorstCase, boolean isBestCase) {
 		gc.setLineWidth(getLineWidth() + 1);
 		
-		if (childIsBestCase) {
+		if (isBestCase) {
 			gc.setForeground(display.getSystemColor(SWT.COLOR_GREEN));
 			gc.drawLine(x1, y1, x2, y2);
 			
-			if (childIsWorstCase) {
+			if (isWorstCase) {
 				gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
 				gc.setLineStyle(SWT.LINE_DASH);
 				gc.drawLine(x1, y1, x2, y2);
 				gc.setLineStyle(SWT.LINE_SOLID);
 			}
 
-		} else if (childIsWorstCase) {
+		} else if (isWorstCase) {
 			gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
 			gc.drawLine(x1, y1, x2, y2);
 
@@ -123,44 +115,28 @@ public abstract class ViewNode {
 
 	public void drawThis(Display display, GC gc) {
 	    if (isSelected()) {
+	    	gc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
 	    	gc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
 	    	gc.setAlpha(100);
 	    	gc.fillRoundRectangle(m_x, m_y, m_width, m_height, m_cornerRounding, m_cornerRounding);
 	    	gc.setAlpha(255);
+	    } else {
+	    	gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+	    	gc.fillRectangle(m_x, m_y, m_width, m_height);
 	    }
 	}
 
-	public void updateXy() {
+	public void updateScaledXy() {
 		int pixelsX = getPixelsX();
 		int pixelsY = getPixelsY();
-	    Rectangle visibleArea = m_canvasProperties.getVisibleArea();
 		
-        m_x = scaleX(m_pixelOffsetX);
-        m_y = scaleY(m_pixelOffsetY);
+        m_x = scale(m_pixelOffsetX);
+        m_y = scale(m_pixelOffsetY);
         m_width = scale(pixelsX);
         m_height = scale(pixelsY);
-        
-        int offsetX = scale(m_pixelOffsetX);
-        int offsetY = scale(m_pixelOffsetY);
-        
-		if (m_width < MIN_PIXELS ||
-			(offsetX + m_width < visibleArea.x) ||
-			(offsetX > visibleArea.x + visibleArea.width)) {
-	        m_isVisibleX = false;
-		} else {
-			m_isVisibleX = true;
-		}
-
-		if (m_height < MIN_PIXELS ||
-				(offsetY + m_height < visibleArea.y) ||
-				(offsetY > visibleArea.y + visibleArea.height)) {
-	        m_isVisibleY = false;
-		} else {
-			m_isVisibleY = true;
-		}
 
 		for (ViewNode child : getChildren()) {
-    		child.updateXy();
+    		child.updateScaledXy();
 		}
 	}
 
@@ -178,11 +154,7 @@ public abstract class ViewNode {
 		return true;
 	}
 
-	public void drawTimes(Display display, GC gc, boolean isWorstCase, boolean isBestCase) {
-		if (!isVisibleX()) {
-			return;
-		}
-		
+	public void drawTimes(Display display, GC gc) {
 		if (isFolded()) {
 			if (!setTimesY())
 				return;
@@ -200,19 +172,22 @@ public abstract class ViewNode {
 	    	}
 		} else {
 			for (ViewNode child : getChildren()) {
-				child.drawTimes(display, gc, isWorstCase, isBestCase);
+				child.drawTimes(display, gc);
 			}
 		}
 	}
 	
-	protected boolean isVisible() {
-		return m_isVisibleX && m_isVisibleY;
+	public void redraw(Display display, GC structureGc, GC timesGc, List<Node> nodes) {
+		if (nodes.contains(m_treeNode)) {
+			draw(display, structureGc);
+			drawTimes(display, timesGc);
+		} else {
+			for (ViewNode child : getChildren()) {
+				child.redraw(display, structureGc, timesGc, nodes);
+			}
+		}
 	}
-
-	protected boolean isVisibleX() {
-		return m_isVisibleX;
-	}
-
+	
 	protected int getLineWidth() {
 		return m_canvasProperties.getLineWidth();
 	}
@@ -226,8 +201,8 @@ public abstract class ViewNode {
 	}
 
 	public boolean contains(int x, int y) {
-		int thisX = scaleX(m_pixelOffsetX);
-		int thisY = scaleY(m_pixelOffsetY);
+		int thisX = scale(m_pixelOffsetX);
+		int thisY = scale(m_pixelOffsetY);
 		int width = scale(getPixelsX());
 		int height = scale(getPixelsY());
 		if ((x >= thisX) && (x <= (thisX + width))) {
@@ -238,15 +213,16 @@ public abstract class ViewNode {
 		return false;
 	}
 
-	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
-		if (!isVisible()) {
-			return;
-		}
-		if (!isFolded()) {
+	public ViewNode getClickNode(int x, int y) {
+		if (this.contains(x, y)) {
 			for (ViewNode child : getChildren()) {
-				child.buildClickAreas(clickAreas);
+				ViewNode clickNode = child.getClickNode(x, y);
+				if (clickNode != null)
+					return clickNode;
 	    	}
+			return this;
+		} else {
+			return null;
 		}
-    	clickAreas.add(this);
 	}
 }

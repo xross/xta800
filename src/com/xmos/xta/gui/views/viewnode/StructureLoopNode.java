@@ -1,7 +1,5 @@
 package com.xmos.xta.gui.views.viewnode;
 
-import java.util.ArrayList;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
@@ -18,12 +16,15 @@ public class StructureLoopNode extends ViewNode {
     private int m_gapX = 8;
     private int m_gapY = 4;
     
-    private ViewNode m_headerNode = null;
-    
 	public StructureLoopNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
 		super(treeNode, canvasProperties);
 	}
 	
+	private ViewNode getHeaderNode() {
+		assert(getChildren().size() > 0);
+		return getChildren().get(0);
+	}
+
 	public int getPixelsX() {
 		return getChildrenX() + m_gapX + (2 * m_borderX);
 	}
@@ -33,10 +34,11 @@ public class StructureLoopNode extends ViewNode {
 	}
 
 	public int getChildrenX() {
-		int pixels = m_headerNode.getPixelsX() + m_gapX;
+		int pixels = getHeaderNode().getPixelsX() + m_gapX;
 
 		int childrenX = 0;
-		for (ViewNode child : getChildren()) {
+		for (int i = 1; i < getChildren().size(); i++) {
+			ViewNode child = getChildren().get(i);
 			int childX = child.getPixelsX();
 			if (childX > childrenX)
 				childrenX = childX;
@@ -45,38 +47,40 @@ public class StructureLoopNode extends ViewNode {
 	}
 
 	public int getChildrenY() {
-		int pixels = m_headerNode.getPixelsY() + m_gapY;
-		for (ViewNode child : getChildren()) {
+		int pixels = getHeaderNode().getPixelsY() + m_gapY;
+		for (int i = 1; i < getChildren().size(); i++) {
+			ViewNode child = getChildren().get(i);
 			pixels += child.getPixelsY() + m_gapY;
 		}
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc, boolean isWorstCase, boolean isBestCase) {
-		if (!isVisible()) {
-			return;
-		}
+	public void draw(Display display, GC gc) {
 		drawThis(display, gc);
 
+		boolean isWorstCase = isWorstCase();
+		boolean isBestCase = isBestCase();
         drawHeader(display, gc, isWorstCase, isBestCase);
         
-        int headerY = scaleY(m_headerNode.getPixelOffsetY() + (m_headerNode.getPixelsY() / 2));
-        int headerOutX = scaleX(m_headerNode.getPixelOffsetX() + m_headerNode.getPixelsX() + (m_gapX / 2));
-        int headerInX = scaleX(m_headerNode.getPixelOffsetX() - (m_gapX / 2));
-        int loopReturnX = scaleX(m_pixelOffsetX + getPixelsX() - (m_gapX / 2));
-        int loopReturnY = scaleY(m_pixelOffsetY + getPixelsY() - (m_gapY / 2));
+        ViewNode headerNode = getHeaderNode();
+        int headerY = scale(headerNode.getPixelOffsetY() + (headerNode.getPixelsY() / 2));
+        int headerOutX = scale(headerNode.getPixelOffsetX() + headerNode.getPixelsX() + (m_gapX / 2));
+        int headerInX = scale(headerNode.getPixelOffsetX() - (m_gapX / 2));
+        int loopReturnX = scale(m_pixelOffsetX + getPixelsX() - (m_gapX / 2));
+        int loopReturnY = scale(m_pixelOffsetY + getPixelsY() - (m_gapY / 2));
 
         boolean loopWorstCase = false; 
         boolean loopBestCase = false; 
-        if (getChildren().size() > 0) {
+        if (getChildren().size() > 1) {
 	        int childMinY = 0;
 	        int childMaxY = 0;
-	    	for (ViewNode child : getChildren()) {
-				boolean childIsWorstCase = isWorstCase && (child.getTreeNode().getAttributes().getTimeTaken(Case.WORST, false) > 0);
-				boolean childIsBestCase = isBestCase && (child.getTreeNode().getAttributes().getTimeTaken(Case.BEST, false) > 0);
-	            int childY = scaleY(child.getPixelOffsetY() + (child.getPixelsY() / 2));
-	            int childLeft = scaleX(child.getPixelOffsetX());
-	            int childRight = scaleX(child.getPixelOffsetX() + child.getPixelsX());
+			for (int i = 1; i < getChildren().size(); i++) {
+				ViewNode child = getChildren().get(i);
+				boolean childIsWorstCase = isWorstCase && child.isWorstCase();
+				boolean childIsBestCase = isBestCase && child.isBestCase();
+	            int childY = scale(child.getPixelOffsetY() + (child.getPixelsY() / 2));
+	            int childLeft = scale(child.getPixelOffsetX());
+	            int childRight = scale(child.getPixelOffsetX() + child.getPixelsX());
 
 	        	drawConnection(display, gc, headerOutX, childY, childLeft, childY, childIsWorstCase, childIsBestCase);
 	    		drawConnection(display, gc, childRight, childY, loopReturnX, childY, childIsWorstCase, childIsBestCase);
@@ -86,7 +90,7 @@ public class StructureLoopNode extends ViewNode {
 	    		}
 	    		childMaxY = childY;
 	    		
-	    		child.draw(display, gc, childIsWorstCase, childIsBestCase);
+	    		child.draw(display, gc);
 	    		loopWorstCase |= childIsWorstCase;
 	    		loopBestCase |= childIsBestCase;
 	    	}
@@ -95,7 +99,7 @@ public class StructureLoopNode extends ViewNode {
 			drawConnection(display, gc, loopReturnX, childMinY, loopReturnX, loopReturnY, loopWorstCase, loopBestCase);
 			drawConnection(display, gc, headerInX, loopReturnY, loopReturnX, loopReturnY, loopWorstCase, loopBestCase);
         } else {
-        	loopWorstCase = m_headerNode.getTreeNode().getAttributes().getNumIterations(Case.WORST) > 0;
+        	loopWorstCase = headerNode.getTreeNode().getAttributes().getNumIterations(Case.WORST) > 0;
 			drawConnection(display, gc, headerOutX, headerY, headerOutX, loopReturnY, loopWorstCase, loopBestCase);
 			drawConnection(display, gc, headerInX, loopReturnY, headerOutX, loopReturnY, loopWorstCase, loopBestCase);
         }
@@ -116,32 +120,19 @@ public class StructureLoopNode extends ViewNode {
 	}
 
 	private void drawHeader(Display display, GC gc, boolean isWorstCase, boolean isBestCase) {
-        m_headerNode.draw(display, gc, isWorstCase, isBestCase);
+        ViewNode headerNode = getHeaderNode();
+        headerNode.draw(display, gc);
 
         // Wire through the header
-        int midY = scaleY(m_pixelOffsetY + (getPixelsY() / 2));
+        int midY = scale(m_pixelOffsetY + (getPixelsY() / 2));
         int right = m_x + m_width;
-        int headerY = scaleY(m_headerNode.getPixelOffsetY() + (m_headerNode.getPixelsY() / 2));
-        int headerRight = scaleX(m_headerNode.getPixelOffsetX() + m_headerNode.getPixelsX());
+        int headerY = scale(headerNode.getPixelOffsetY() + (headerNode.getPixelsY() / 2));
+        int headerRight = scale(headerNode.getPixelOffsetX() + headerNode.getPixelsX());
 
     	drawConnection(display, gc, m_x, midY, m_x, headerY, isWorstCase, isBestCase);
-		drawConnection(display, gc, m_x, headerY, scaleX(m_headerNode.getPixelOffsetX()), headerY, isWorstCase, isBestCase);
+		drawConnection(display, gc, m_x, headerY, scale(headerNode.getPixelOffsetX()), headerY, isWorstCase, isBestCase);
 		drawConnection(display, gc, headerRight, headerY, right, headerY, isWorstCase, isBestCase);
 		drawConnection(display, gc, right, midY, right, headerY, isWorstCase, isBestCase);
-	}
-
-	public void drawTimes(Display display, GC gc, boolean isWorstCase, boolean isBestCase) {
-		if (!isVisibleX()) {
-			return;
-		}
-		
-		m_headerNode.drawTimes(display, gc, isWorstCase, isBestCase);
-		super.drawTimes(display, gc, isWorstCase, isBestCase);
-	}
-
-	public void updateXy() {
-		m_headerNode.updateXy();
-		super.updateXy();
 	}
 
 	public void annotateXy(int xOffset, int yOffset) {
@@ -150,27 +141,16 @@ public class StructureLoopNode extends ViewNode {
 		m_pixelOffsetX = xOffset;
 		m_pixelOffsetY = yOffset;
 		
-		m_headerNode.annotateXy(xOffset + m_borderX + m_gapX, yOffset + m_borderY);
+        ViewNode headerNode = getHeaderNode();
+		headerNode.annotateXy(xOffset + m_borderX + m_gapX, yOffset + m_borderY);
 
-        int childOffsetX = m_borderX + m_headerNode.getPixelsX() + (2 * m_gapX);
-        int childOffsetY = m_borderY + m_headerNode.getPixelsY() + m_gapY;
-		for (ViewNode child : getChildren()) {
+        int childOffsetX = m_borderX + headerNode.getPixelsX() + (2 * m_gapX);
+        int childOffsetY = m_borderY + headerNode.getPixelsY() + m_gapY;
+		for (int i = 1; i < getChildren().size(); i++) {
+			ViewNode child = getChildren().get(i);
     		child.annotateXy(xOffset + childOffsetX, yOffset + childOffsetY);
     		childOffsetY += child.getPixelsY() + m_gapY;
     	}
-	}
-
-	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
-		m_headerNode.buildClickAreas(clickAreas);
-		super.buildClickAreas(clickAreas);
-	}
-
-	public void addChild(ViewNode child) {
-		if (m_headerNode == null) {
-			m_headerNode = child;
-		} else {
-			super.addChild(child);
-		}
 	}
 
 	public boolean isFolded() {

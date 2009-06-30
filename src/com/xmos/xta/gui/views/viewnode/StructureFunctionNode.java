@@ -55,12 +55,9 @@ public class StructureFunctionNode extends ViewNode {
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc, boolean isWorstCase, boolean isBestCase) {
+	public void draw(Display display, GC gc) {
 		// Don't currently support connecting up nodes like a path
 		assert(getChildren().size() == 1);
-		if (!isVisible()) {
-			return;
-		}
         drawThis(display, gc);
 
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
@@ -69,28 +66,31 @@ public class StructureFunctionNode extends ViewNode {
        	if (isSelected()) gc.setLineWidth(getLineWidth());
 
        	if (!isFolded()) {
-            int childRightX = 0;
+    		int childRightX = 0;
             int childMidY = 0;
 			for (ViewNode child : getChildren()) {
-	    		child.draw(display, gc, isWorstCase, isBestCase);
+	    		child.draw(display, gc);
 
-	    		childRightX = scaleX(child.getPixelOffsetX() + child.getPixelsX());
-	    		childMidY = scaleY(child.getPixelOffsetY() + (child.getPixelsY() / 2));
+	    		childRightX = scale(child.getPixelOffsetX() + child.getPixelsX());
+	    		childMidY = scale(child.getPixelOffsetY() + (child.getPixelsY() / 2));
 	    	}
 
-	    	int midY = scaleY(m_pixelOffsetY + (getPixelsY() / 2));
-	    	int childLeftX = scaleX(m_pixelOffsetX + m_borderX + m_textAreaX);
-			drawConnection(display, gc, m_x, midY, childLeftX, midY, isWorstCase, isBestCase);
+	    	int midY = scale(m_pixelOffsetY + (getPixelsY() / 2));
+	    	int childLeftX = scale(m_pixelOffsetX + m_borderX + m_textAreaX);
+
+    		boolean isWorstCase = isWorstCase();
+    		boolean isBestCase = isBestCase();
+    		drawConnection(display, gc, m_x, midY, childLeftX, midY, isWorstCase, isBestCase);
 			drawConnection(display, gc, childLeftX, midY, childLeftX, childMidY, isWorstCase, isBestCase);
 
 			drawConnection(display, gc, childRightX, childMidY, childRightX, midY, isWorstCase, isBestCase);
-			drawConnection(display, gc, childRightX, midY, scaleX(m_pixelOffsetX + getPixelsX()), midY, isWorstCase, isBestCase);
+			drawConnection(display, gc, childRightX, midY, scale(m_pixelOffsetX + getPixelsX()), midY, isWorstCase, isBestCase);
        	}
 		
 		// Draw the function name
-		if (scaleY(m_height) > gc.getFontMetrics().getHeight() &&
-			scaleX(m_width) > m_textAreaX) {
-	        int textBase = scaleY(m_pixelOffsetY + m_borderY);
+		if (scale(m_height) > gc.getFontMetrics().getHeight() &&
+			scale(m_width) > m_textAreaX) {
+	        int textBase = scale(m_pixelOffsetY + m_borderY);
 			gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 
