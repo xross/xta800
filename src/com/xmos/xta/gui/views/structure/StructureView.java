@@ -61,7 +61,7 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
                                                        ISelectionListener,
                                                        ISelectionProvider,
                                                        IMenuListener {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.gui.views.structure.Structure";
 
     private static final int MAX_IMAGE_SIZE = 1024 * 1024 * 20;
