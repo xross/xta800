@@ -9,7 +9,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.gui.views.ZoomedCanvasProperties;
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.gui.views.structure.ZoomedCanvasProperties;
 
 public abstract class ViewNode {
 	private static final int MIN_PIXELS = 2;
@@ -25,8 +26,12 @@ public abstract class ViewNode {
     protected int m_y;
     protected int m_width;
     protected int m_height;
+    
+    protected int m_bestHeight;
+    protected int m_worstHeight;
 
-    private boolean m_isVisible;
+    private boolean m_isVisibleX;
+    private boolean m_isVisibleY;
     private ZoomedCanvasProperties m_canvasProperties;
 	
     public ViewNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
@@ -35,7 +40,8 @@ public abstract class ViewNode {
 	    m_pixelOffsetX = 0;
 	    m_pixelOffsetY = 0;
 
-		m_isVisible = true;
+		m_isVisibleX = true;
+		m_isVisibleY = true;
 		
 		m_children = new ArrayList<ViewNode>();
 		m_canvasProperties = canvasProperties;
@@ -124,7 +130,7 @@ public abstract class ViewNode {
 	    }
 	}
 
-	protected void setXy() {
+	public void updateXy() {
 		int pixelsX = getPixelsX();
 		int pixelsY = getPixelsY();
 	    Rectangle visibleArea = m_canvasProperties.getVisibleArea();
@@ -136,19 +142,75 @@ public abstract class ViewNode {
         
         int offsetX = scale(m_pixelOffsetX);
         int offsetY = scale(m_pixelOffsetY);
-		if (m_height < MIN_PIXELS || m_width < MIN_PIXELS ||
+        
+		if (m_width < MIN_PIXELS ||
 			(offsetX + m_width < visibleArea.x) ||
-			(offsetX > visibleArea.x + visibleArea.width) ||
-			(offsetY + m_height < visibleArea.y) ||
-			(offsetY > visibleArea.y + visibleArea.height)) {
-	        m_isVisible = false;
+			(offsetX > visibleArea.x + visibleArea.width)) {
+	        m_isVisibleX = false;
 		} else {
-			m_isVisible = true;
+			m_isVisibleX = true;
+		}
+
+		if (m_height < MIN_PIXELS ||
+				(offsetY + m_height < visibleArea.y) ||
+				(offsetY > visibleArea.y + visibleArea.height)) {
+	        m_isVisibleY = false;
+		} else {
+			m_isVisibleY = true;
+		}
+
+		for (ViewNode child : getChildren()) {
+    		child.updateXy();
 		}
 	}
 
+	protected boolean setTimesY() {
+	    int timesHeight = m_canvasProperties.getTimesHeight();
+        m_bestHeight = (int)((double)timesHeight * 
+        	getTreeNode().getAttributes().getTimeTaken(Case.BEST, false) / m_canvasProperties.getTotalBest());
+
+        m_worstHeight = (int)((double)timesHeight * 
+    		getTreeNode().getAttributes().getTimeTaken(Case.WORST, false) / m_canvasProperties.getTotalWorst());
+
+		if (m_bestHeight < 1 && m_worstHeight < 1) {
+	        return false;
+		}
+		return true;
+	}
+
+	public void drawTimes(Display display, GC gc, boolean isWorstCase, boolean isBestCase) {
+		if (!isVisibleX()) {
+			return;
+		}
+		
+		if (isFolded()) {
+			if (!setTimesY())
+				return;
+			
+			gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+	    	gc.fillRectangle(m_x, 0, 5, m_worstHeight);
+			gc.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
+	    	gc.fillRectangle(m_x + 5, 0, 5, m_bestHeight);
+
+	    	if (isSelected()) {
+		        gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+		    	gc.drawRectangle(m_x, 0, 5, m_worstHeight);
+		    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+		    	gc.drawRectangle(m_x + 5, 0, 5, m_bestHeight);
+	    	}
+		} else {
+			for (ViewNode child : getChildren()) {
+				child.drawTimes(display, gc, isWorstCase, isBestCase);
+			}
+		}
+	}
+	
 	protected boolean isVisible() {
-		return m_isVisible;
+		return m_isVisibleX && m_isVisibleY;
+	}
+
+	protected boolean isVisibleX() {
+		return m_isVisibleX;
 	}
 
 	protected int getLineWidth() {

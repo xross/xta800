@@ -5,7 +5,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.gui.views.ZoomedCanvasProperties;
+import com.xmos.xta.gui.views.structure.ZoomedCanvasProperties;
 
 public class StructureFunctionNode extends ViewNode {
     public static final boolean DEBUG = false;
@@ -58,7 +58,6 @@ public class StructureFunctionNode extends ViewNode {
 	public void draw(Display display, GC gc, boolean isWorstCase, boolean isBestCase) {
 		// Don't currently support connecting up nodes like a path
 		assert(getChildren().size() == 1);
-		setXy();
 		if (!isVisible()) {
 			return;
 		}
@@ -89,7 +88,8 @@ public class StructureFunctionNode extends ViewNode {
        	}
 		
 		// Draw the function name
-		if (m_height > gc.getFontMetrics().getHeight()) {
+		if (scaleY(m_height) > gc.getFontMetrics().getHeight() &&
+			scaleX(m_width) > m_textAreaX) {
 	        int textBase = scaleY(m_pixelOffsetY + m_borderY);
 			gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));

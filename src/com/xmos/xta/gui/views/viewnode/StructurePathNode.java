@@ -4,7 +4,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.gui.views.ZoomedCanvasProperties;
+import com.xmos.xta.gui.views.structure.ZoomedCanvasProperties;
 
 public class StructurePathNode extends ViewNode {
     public static final boolean DEBUG = false;
@@ -45,7 +45,6 @@ public class StructurePathNode extends ViewNode {
 	}
 
 	public void draw(Display display, GC gc, boolean isWorstCase, boolean isBestCase) {
-		setXy();
 		if (!isVisible()) {
 			return;
 		}

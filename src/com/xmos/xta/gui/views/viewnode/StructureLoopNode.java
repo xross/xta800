@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
-import com.xmos.xta.gui.views.ZoomedCanvasProperties;
+import com.xmos.xta.gui.views.structure.ZoomedCanvasProperties;
 
 public class StructureLoopNode extends ViewNode {
     public static final boolean DEBUG = false;
@@ -53,7 +53,6 @@ public class StructureLoopNode extends ViewNode {
 	}
 
 	public void draw(Display display, GC gc, boolean isWorstCase, boolean isBestCase) {
-		setXy();
 		if (!isVisible()) {
 			return;
 		}
@@ -129,6 +128,20 @@ public class StructureLoopNode extends ViewNode {
 		drawConnection(display, gc, m_x, headerY, scaleX(m_headerNode.getPixelOffsetX()), headerY, isWorstCase, isBestCase);
 		drawConnection(display, gc, headerRight, headerY, right, headerY, isWorstCase, isBestCase);
 		drawConnection(display, gc, right, midY, right, headerY, isWorstCase, isBestCase);
+	}
+
+	public void drawTimes(Display display, GC gc, boolean isWorstCase, boolean isBestCase) {
+		if (!isVisibleX()) {
+			return;
+		}
+		
+		m_headerNode.drawTimes(display, gc, isWorstCase, isBestCase);
+		super.drawTimes(display, gc, isWorstCase, isBestCase);
+	}
+
+	public void updateXy() {
+		m_headerNode.updateXy();
+		super.updateXy();
 	}
 
 	public void annotateXy(int xOffset, int yOffset) {
