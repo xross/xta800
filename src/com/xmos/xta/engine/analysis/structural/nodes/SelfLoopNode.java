@@ -110,13 +110,13 @@ public class SelfLoopNode extends Node{
 	}
 		
 	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
-		for(int i=0;i< getAttributes().getNumIterations(c);i++){
-			m_loop.getInstructionStream(c, instructions, m_loop.getAttributes().getNumIterations(c));
+		for(int i=0;i< getAttributes().getLoopIterations();i++){
+			m_loop.getInstructionStream(c, instructions, m_loop.getAttributes().getLoopIterations());
 		}
 	}
 
 	public long getError(Case c) {
-		return m_loop.getError(c) * m_loop.getAttributes().getNumIterations(c);
+		return m_loop.getError(c) * m_loop.getAttributes().getLoopIterations();
 	}
 
 	public Collection<Node> whatsBefore(Node node) {
@@ -132,10 +132,6 @@ public class SelfLoopNode extends Node{
 		List<Node> list = new LinkedList<Node>();
 		list.add(m_loop);
 		return list;
-	}
-
-	public boolean isLoopNode() {
-		return true;
 	}
 		
 	public boolean isSelfLoopNode() {

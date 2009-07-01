@@ -1,19 +1,19 @@
 package com.xmos.xta.engine.analysis.structural.nodes.attributes;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 
 public class SelfLoopNodeAttributes extends NodeAttributes {
+	private long m_numIterations;
+	
 	public SelfLoopNodeAttributes(Node node) {
 		super(node);
 	}
+
+	public void setLoopIterations(long numIterations) {
+		m_numIterations = numIterations;
+	}
 	
-	long getCummulativeIterations(Case c) {
-		if (getIsAbsolute()) {
-			return getNumIterations(c);
-		}
-		Node parent = getNode().getParent();
-		assert(parent != null);
-		return parent.getAttributes().getCummulativeIterations(c) * getNumIterations(c);
-	}	
+	public long getLoopIterations() {
+		return m_numIterations;
+	}		
 }

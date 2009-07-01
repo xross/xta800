@@ -80,7 +80,6 @@ public class RouteConstructor {
 			seenEndPoint = true;
 			setParents();
 			setUnknowns();				
-			setInitialIterations();
 			break;
 
 		case PATH:
@@ -125,7 +124,6 @@ public class RouteConstructor {
 			}
 			setParents();
 			setUnknowns();				
-			setInitialIterations();
 			sortSubRoutes();
 			break;
 		default:
@@ -338,22 +336,7 @@ public class RouteConstructor {
 			}
 		}
 	}
-	
-	private void setInitialIterations() {		
-		for (Node node : m_subRoutes) {
-			// Sets the top level nodes to iterate once..
-			node.getAttributes().setLoopIterations(1);
-		    
-			// Sets all the loops to zero iterations..							
-			node.traverse(0, new DefaultNodeTraverser() {
-		        public boolean foundLoopNode(Node node, int depth) {
-		           	node.getAttributes().setLoopIterations(0);
-		         	return true;
-		        }	        	
-		    });			
-		}
-	}
-	
+		
 	private void setUnknowns() {
 		for (Node node : m_subRoutes) {
 			node.traverse(0, new DefaultNodeTraverser() {

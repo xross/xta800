@@ -166,7 +166,7 @@ public class LoopNode extends Node {
 	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
 		
 		for(Node loop : m_loops){
-			for(long i=0;i<loop.getAttributes().getNumIterations(c);i++){
+			for(long i=0;i<loop.getAttributes().getLoopIterations();i++){
 				m_loopHeader.getInstructionStream(c, instructions, i);
 				loop.getInstructionStream(c, instructions, i);
 			}
@@ -177,7 +177,7 @@ public class LoopNode extends Node {
 	public long getError(Case c) {
 		long error = 0;
 		for(Node loop : m_loops){
-			error += loop.getAttributes().getNumIterations(c) * loop.getError(c);
+			error += loop.getAttributes().getLoopIterations() * loop.getError(c);
 		}
 		return error;
 	}

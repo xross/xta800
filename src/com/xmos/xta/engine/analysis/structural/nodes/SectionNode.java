@@ -171,23 +171,19 @@ public class SectionNode extends Node {
 	}
 	
 	public List<Node> getAllUnsetOptions() {
-		Map<Node, Boolean> setOptionMap = getAttributes().getSetOptions();
-		
 		List<Node> unsetOptions = new ArrayList<Node>();
 		for (Node option : m_options) {
-			if (!setOptionMap.get(option)) {
-				unsetOptions.add(option);
+			if (!getAttributes().getSetOption(option)) {
+				unsetOptions.add(option);				
 			}
 		}
 		return unsetOptions;
 	}
 
 	public List<Node> getAllSetOptions() {
-		Map<Node, Boolean> setOptionMap = getAttributes().getSetOptions();
-		
 		List<Node> setOptions = new ArrayList<Node>();
 		for (Node option : m_options) {
-			if (setOptionMap.get(option)) {
+			if (getAttributes().getSetOption(option)) {
 				setOptions.add(option);
 			}
 		}
@@ -218,18 +214,20 @@ public class SectionNode extends Node {
 		while (iter.hasNext()) {
 			Node node = iter.next();
 			switch (c) {
-			case WORST:				
-				if (node.getAttributes().getTimeTaken(c, ignoreIterations) > 
-			        caseNode.getAttributes().getTimeTaken(c, ignoreIterations)) {
+			case WORST:
+				double w1 = node.getAttributes().getTimeTaken(c, ignoreIterations);
+				double w2 = caseNode.getAttributes().getTimeTaken(c, ignoreIterations);				
+				if (w1 > w2) {
 				    caseNode = node;
-			    }										
+				}
 				break;
 				
 			case BEST:
-				if (node.getAttributes().getTimeTaken(c, ignoreIterations) < 
-		            caseNode.getAttributes().getTimeTaken(c, ignoreIterations)) {
-			        caseNode = node;
-		        }										
+				double b1 = node.getAttributes().getTimeTaken(c, ignoreIterations);
+				double b2 = caseNode.getAttributes().getTimeTaken(c, ignoreIterations);				
+				if (b1 < b2) {
+				    caseNode = node;
+				}
 				break;
 			}			
 		}		

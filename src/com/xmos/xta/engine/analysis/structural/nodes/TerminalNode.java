@@ -157,16 +157,25 @@ public class TerminalNode extends Node {
 		return getOption(c, false).getError(c);
 	}
 
+	
 	public List<Node> getAllUnsetOptions() {
-		Map<Node, Boolean> setOptionMap = getAttributes().getSetOptions();
-		
 		List<Node> unsetOptions = new ArrayList<Node>();
 		for (Node option : m_terminals) {
-			if (!setOptionMap.get(option)) {
-				unsetOptions.add(option);
+			if (!getAttributes().getSetOption(option)) {
+				unsetOptions.add(option);				
 			}
 		}
 		return unsetOptions;
+	}
+
+	public List<Node> getAllSetOptions() {
+		List<Node> setOptions = new ArrayList<Node>();
+		for (Node option : m_terminals) {
+			if (getAttributes().getSetOption(option)) {
+				setOptions.add(option);
+			}
+		}
+		return setOptions;
 	}
 	
 	public Collection<Node> whatsBefore(Node node) {
