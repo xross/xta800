@@ -136,14 +136,6 @@ public class PathNode extends Node {
 		}
 	}
 
-	public long getError(Case c) {
-		long error = 0;
-		for(Node pathNode : m_nodes){
-			error += pathNode.getError(c);
-		}
-		return error;
-	}
-
 	public Collection<Node> whatsBefore(Node node) {
 		assert(m_nodes.contains(node));
 		int index = m_nodes.indexOf(node);

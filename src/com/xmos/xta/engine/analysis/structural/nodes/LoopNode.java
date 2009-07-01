@@ -174,14 +174,6 @@ public class LoopNode extends Node {
 		m_loopHeader.getInstructionStream(c, instructions, iteration);
 	}
 
-	public long getError(Case c) {
-		long error = 0;
-		for(Node loop : m_loops){
-			error += loop.getAttributes().getNumIterations(c) * loop.getError(c);
-		}
-		return error;
-	}
-
 	public Collection<Node> whatsBefore(Node node) {
 		Collection<Node> before = new TreeSet<Node>();
 		if(node == m_loopHeader){

@@ -204,15 +204,6 @@ public class FunctionNode extends IBufferNode {
 		}
 	}
 
-	public long getError(Case c) {
-		if(m_knownFunction){
-			return m_function.getError(c);
-		} else {
-			return 0;
-		}
-	
-	}
-
 	public Collection<Node> whatsBefore(Node node) {
 		if(getParent()!= null){
 			return getParent().whatsBefore(this);

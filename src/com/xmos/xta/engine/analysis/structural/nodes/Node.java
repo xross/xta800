@@ -20,15 +20,18 @@ public abstract class Node implements Comparable<Node>{
 	int m_id;
 	Node m_parent;
 	
+	
+	//these are needed for analysis
 	boolean m_dominatorSetIsCompleteSet;
 	Set<Node> m_nextNodes;
 	Set<Node> m_prevNodes;
 	Node m_branchLinkReturn;
 	Set<Node> m_dominators;
-		
+	
 	Set<Node> m_branchTargets;
 	Set<Integer> m_branchTargetPcs;
 
+	//these are needed for fnops calculation
 	Map<Node, Integer> m_parentToStartIbuffer;
 	Collection<InstructionBuffer> m_iBuffersDueToWorstTime;
 	Collection<InstructionBuffer> m_iBuffersDueToBestTime;
@@ -49,7 +52,6 @@ public abstract class Node implements Comparable<Node>{
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract Collection<Node> whatsBefore(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
-	public abstract long getError(Case c);
 	public abstract void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration);
 	public abstract Set<Integer> getPCs();	
 	public abstract LinkedList<XtaInstruction> getInstructions();
@@ -60,13 +62,6 @@ public abstract class Node implements Comparable<Node>{
 	public abstract Collection<Node> getContainedNodes();	
 	public abstract int getStartPc();
 	
-	public static int getNodeCount(){
-		return s_numNodes;
-	}
-
-	public static void resetNodeCount() {
-		s_numNodes = 0;
-	}
 	
 	public Node() {
 		m_branchTargets = new TreeSet<Node>();

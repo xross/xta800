@@ -17,15 +17,11 @@ public class BlockNode extends IBufferNode {
 
 	private BlockNodeAttributes m_attributes;	
 
-	private List<InstructionNode> m_insts;
-	private List<Integer> m_worstCaseFnops;
-	private List<Integer> m_bestCaseFnops;
+	private List<Node> m_insts;
 	
 	public BlockNode() {
 		super();
-		m_worstCaseFnops = new LinkedList<Integer>();
-		m_bestCaseFnops = new LinkedList<Integer>();
-		m_insts = new LinkedList<InstructionNode>();
+		m_insts = new LinkedList<Node>();
         m_attributes = new BlockNodeAttributes(this);
 	}
 	
@@ -36,11 +32,14 @@ public class BlockNode extends IBufferNode {
 	
 	public BlockNode(List<Node> insts) {
 		super();
-		m_insts = new LinkedList<InstructionNode>();
+		/*
+		m_insts = new LinkedList<Node>();
 		for(Node node : insts){
 			assert(node instanceof InstructionNode);
 			m_insts.add((InstructionNode)node);
 		}
+		*/
+		m_insts = insts;
         m_attributes = new BlockNodeAttributes(this);
 	}
 		
@@ -107,11 +106,7 @@ public class BlockNode extends IBufferNode {
 	}
 
 	public List<Node> getChildren() {
-		LinkedList<Node> children = new LinkedList<Node>();
-		for(InstructionNode node : m_insts){
-			children.add(node);
-		}
-		return children;
+		return m_insts;
 	}
 
 	public Collection<Node> whatsNext(Node node) {
@@ -127,51 +122,14 @@ public class BlockNode extends IBufferNode {
 			return new TreeSet<Node>();
 		}
 	}
-
-
-/*
-	private double getFNOPTimeTaken(InstructionNode instNode) {
-		XtaInstruction inst = instNode.getXtaInstruction();
-		XtaInstruction fnop = new NullInstruction("--FNOP--", inst.getConfig(), 0, inst.getPc(), 0);
-    	int threadFactor = (inst.getConfig().m_numThreads > 4) ? inst.getConfig().m_numThreads : 4;
-        return ((double)(threadFactor * 1000) / (double)inst.getConfig().m_frequency) * fnop.getNumCycles();
-	}
-*/
-
 	
 	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
-		for(InstructionNode inst : m_insts){
-			/*
-			List<Integer> fnops = null;
-			switch (c){
-			case BEST:
-				fnops = m_worstIbufferSequence.getfnops();
-				break;
-			case WORST:
-				fnops = m_worstIbufferSequence.getfnops();
-				break;
-			}
-			if(fnops!= null){
-			XtaInstruction xtaInst = inst.getXtaInstruction();
-			for(int pc : fnops){
-				
-				if(xtaInst.getPc() == pc){
-					XtaInstruction fnop = new NullInstruction("--FNOP--", xtaInst.getConfig(), 0, xtaInst.getPc(), 0);
-					InstructionNode fnopNode = new InstructionNode(fnop);
-					instructions.add(fnopNode);
-				}
-			}
-			}
-			*/
-			instructions.add(inst);
+		for(Node inst : m_insts){
+			instructions.add((InstructionNode)inst);
 		}
 
 	}
-
-	public long getError(Case c) {
-		return m_worstCaseFnops.size() - m_bestCaseFnops.size();
-	}
-
+	
 	public Collection<Node> whatsBefore(Node node) {
 		if(getParent()!= null){
 			return getParent().whatsBefore(node);
@@ -184,12 +142,12 @@ public class BlockNode extends IBufferNode {
 	}
 
 	public void insertFnops() {
-		List<InstructionNode> insts = new LinkedList<InstructionNode>();
-		for(InstructionNode inst : m_insts){
+		List<Node> insts = new LinkedList<Node>();
+		for(Node inst : m_insts){
 
 			List<Integer> fnops =  m_worstIbufferSequence.getfnops();
 
-			XtaInstruction xtaInst = inst.getXtaInstruction();
+			XtaInstruction xtaInst =((InstructionNode) inst).getXtaInstruction();
 			for(int pc : fnops){
 				
 				if(xtaInst.getPc() == pc){
