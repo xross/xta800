@@ -35,7 +35,9 @@ public abstract class Node implements Comparable<Node>{
 	Map<Node, Integer> m_parentToStartIbuffer;
 	Collection<InstructionBuffer> m_iBuffersDueToWorstTime;
 	Collection<InstructionBuffer> m_iBuffersDueToBestTime;
-	
+
+	private boolean m_isFolded;
+
 	public enum Case {
 		WORST,
 		BEST,
@@ -72,6 +74,8 @@ public abstract class Node implements Comparable<Node>{
 		m_iBuffersDueToWorstTime = new TreeSet<InstructionBuffer>();
 		m_iBuffersDueToBestTime = new TreeSet<InstructionBuffer>();
 		m_id = s_numNodes++;
+
+		m_isFolded = false;
 	}
 	
 	public Node(Node node) {
@@ -85,6 +89,8 @@ public abstract class Node implements Comparable<Node>{
 		m_iBuffersDueToBestTime = new TreeSet<InstructionBuffer>(node.m_iBuffersDueToBestTime);
 		m_iBuffersDueToBestTime.addAll(node.m_iBuffersDueToBestTime);
 		m_id = s_numNodes++;
+
+		m_isFolded = false;
 	}
 	
 	public int getId() {
@@ -323,6 +329,19 @@ public abstract class Node implements Comparable<Node>{
 	
 	public boolean isSectionOptional() {
 		return false;
+	}
+	
+	public void setFolded(boolean folded, boolean applyToChildren) {
+		m_isFolded = folded;
+		if (applyToChildren) {
+			for (Node child : getChildren()) {
+				child.setFolded(folded, applyToChildren);
+			}
+		}
+	}
+
+	public boolean isFolded() {
+		return m_isFolded;
 	}
 }
 

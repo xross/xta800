@@ -5,55 +5,47 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.gui.views.structure.ZoomedCanvasProperties;
 
 public abstract class ViewNode {
-    protected Node m_treeNode;
-    protected int m_lineWidth;
+	protected Node m_treeNode;
+    private List<ViewNode> m_children;
+    
     protected int m_pixelOffsetX;
     protected int m_pixelOffsetY;
-    protected int m_childrenX;
-    protected int m_childrenY;
 
     protected int m_cornerRounding = 7;
     protected int m_x;
     protected int m_y;
     protected int m_width;
     protected int m_height;
-
-    protected long m_numIterations;
-    protected boolean m_isSelected;
-
-    private double m_scale;
-    private Rectangle m_renderArea;
-	private List<ViewNode> m_children;
     
-    public ViewNode(Node treeNode) {
-    	m_treeNode = treeNode;
-    	m_lineWidth = 0;
+    protected int m_bestHeight;
+    protected int m_worstHeight;
 
-		m_childrenX = 0;
-		m_childrenY = 0;
+    private ZoomedCanvasProperties m_canvasProperties;
+	
+    public ViewNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
+    	m_treeNode = treeNode;
 
 	    m_pixelOffsetX = 0;
 	    m_pixelOffsetY = 0;
 
-		m_isSelected = false;
-		
 		m_children = new ArrayList<ViewNode>();
+		m_canvasProperties = canvasProperties;
     }
     
-    public void setLineWidth(int lineWidth) {
-    	m_lineWidth = lineWidth;
-    }
-    
-    public void setNumIterations(long numIterations) {
-    	m_numIterations = numIterations;
-    }
-    
+    public abstract int getPixelsX();
+    public abstract int getPixelsY();
+    public abstract int getChildrenX();
+    public abstract int getChildrenY();
+    public abstract void draw(Display display, GC gc);
+    public abstract void annotateXy(int xOffset, int yOffset);
+
     public Node getTreeNode() {
     	return m_treeNode;
     }
@@ -67,33 +59,20 @@ public abstract class ViewNode {
     }
 
     public int scale(int value) {
-    	return (int)((double)value * m_scale);
-    }
-
-    public int scaleX(int value) {
-    	return scale(value - m_renderArea.x);
-    }
-
-    public int scaleY(int value) {
-    	return scale(value - m_renderArea.y);
+    	return (int)((double)value * m_canvasProperties.getScale());
     }
 
     public boolean isSelected() {
-		return m_isSelected;
+		return m_canvasProperties.isSelected(this);
 	}
 
-	public void setIsSelected(boolean isSelected) {
-		m_isSelected = isSelected;
+    public boolean isBestCase() {
+		return (m_treeNode.getAttributes().getTimeTaken(Case.BEST, false) > 0);
 	}
 
-    public abstract int getPixelsX();
-    public abstract int getPixelsY();
-    public abstract int getChildrenX();
-    public abstract int getChildrenY();
-    public abstract void draw(Display display, GC gc, double scale, Rectangle renderArea, boolean isWorstCase);
-    public abstract void annotateXy(int xOffset, int yOffset);
-    public abstract void buildClickAreas(ArrayList<ViewNode> clickAreas);
-    public abstract boolean contains(int x, int y);
+    public boolean isWorstCase() {
+		return (m_treeNode.getAttributes().getTimeTaken(Case.WORST, false) > 0);
+	}
 
 	public String getToolTipText() {
 		return m_treeNode.getAttributes().getTimingDetails();
@@ -107,35 +86,143 @@ public abstract class ViewNode {
 		return m_children;
 	}
 
-	public void drawConnection(Display display, GC gc, int x1, int y1, int x2, int y2) {
-        gc.setLineWidth(m_lineWidth + 1);
-		gc.drawLine(x1, y1, x2, y2);
-		gc.setLineWidth(m_lineWidth);
+	public void drawConnection(Display display, GC gc, int x1, int y1, int x2, int y2,
+			boolean isWorstCase, boolean isBestCase) {
+		gc.setLineWidth(getLineWidth() + 1);
+		
+		if (isBestCase) {
+			gc.setForeground(display.getSystemColor(SWT.COLOR_GREEN));
+			gc.drawLine(x1, y1, x2, y2);
+			
+			if (isWorstCase) {
+				gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
+				gc.setLineStyle(SWT.LINE_DASH);
+				gc.drawLine(x1, y1, x2, y2);
+				gc.setLineStyle(SWT.LINE_SOLID);
+			}
+
+		} else if (isWorstCase) {
+			gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
+			gc.drawLine(x1, y1, x2, y2);
+
+		} else {
+			gc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
+			gc.drawLine(x1, y1, x2, y2);
+			
+		}
+		gc.setLineWidth(getLineWidth());
 	}
 
 	public void drawThis(Display display, GC gc) {
-	    if (m_isSelected) {
+	    if (isSelected()) {
 	    	gc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
+	    	gc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
 	    	gc.setAlpha(100);
 	    	gc.fillRoundRectangle(m_x, m_y, m_width, m_height, m_cornerRounding, m_cornerRounding);
 	    	gc.setAlpha(255);
+	    } else {
+	    	gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+	    	gc.fillRectangle(m_x, m_y, m_width, m_height);
 	    }
 	}
 
-	public void setConnectionColour(Display display, GC gc, boolean childIsWorstCase) {
-		if (childIsWorstCase) {
-			gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
-		} else {
-			gc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
+	public void updateScaledXy() {
+		int pixelsX = getPixelsX();
+		int pixelsY = getPixelsY();
+		
+        m_x = scale(m_pixelOffsetX);
+        m_y = scale(m_pixelOffsetY);
+        m_width = scale(pixelsX);
+        m_height = scale(pixelsY);
+
+		for (ViewNode child : getChildren()) {
+    		child.updateScaledXy();
 		}
 	}
 
-	protected void setXy(double scale, Rectangle renderArea) {
-		m_scale = scale;
-		m_renderArea = renderArea;
-        m_x = scaleX(m_pixelOffsetX);
-        m_y = scaleY(m_pixelOffsetY);
-        m_width = scale(getPixelsX());
-        m_height = scale(getPixelsY());
+	protected boolean setTimesY() {
+	    int timesHeight = m_canvasProperties.getTimesHeight();
+        m_bestHeight = (int)((double)timesHeight * 
+        	getTreeNode().getAttributes().getTimeTaken(Case.BEST, false) / m_canvasProperties.getTotalBest());
+
+        m_worstHeight = (int)((double)timesHeight * 
+    		getTreeNode().getAttributes().getTimeTaken(Case.WORST, false) / m_canvasProperties.getTotalWorst());
+
+		if (m_bestHeight < 1 && m_worstHeight < 1) {
+	        return false;
+		}
+		return true;
+	}
+
+	public void drawTimes(Display display, GC gc) {
+		if (isFolded()) {
+			if (!setTimesY())
+				return;
+			
+			gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+	    	gc.fillRectangle(m_x, 0, 5, m_worstHeight);
+			gc.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
+	    	gc.fillRectangle(m_x + 5, 0, 5, m_bestHeight);
+
+	    	if (isSelected()) {
+		        gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+		    	gc.drawRectangle(m_x, 0, 5, m_worstHeight);
+		    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+		    	gc.drawRectangle(m_x + 5, 0, 5, m_bestHeight);
+	    	}
+		} else {
+			for (ViewNode child : getChildren()) {
+				child.drawTimes(display, gc);
+			}
+		}
+	}
+	
+	public void redraw(Display display, GC structureGc, GC timesGc, List<Node> nodes) {
+		if (nodes.contains(m_treeNode)) {
+			draw(display, structureGc);
+			drawTimes(display, timesGc);
+		} else {
+			for (ViewNode child : getChildren()) {
+				child.redraw(display, structureGc, timesGc, nodes);
+			}
+		}
+	}
+	
+	protected int getLineWidth() {
+		return m_canvasProperties.getLineWidth();
+	}
+
+	public void setFolded(boolean folded, boolean applyToChildren) {
+		m_treeNode.setFolded(folded, applyToChildren);
+	}
+
+	public boolean isFolded() {
+		return m_treeNode.isFolded();
+	}
+
+	public boolean contains(int x, int y) {
+		int thisX = scale(m_pixelOffsetX);
+		int thisY = scale(m_pixelOffsetY);
+		int width = scale(getPixelsX());
+		int height = scale(getPixelsY());
+		if ((x >= thisX) && (x <= (thisX + width))) {
+			if ((y >= thisY) && (y <= (thisY + height))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public ViewNode getClickNode(int x, int y) {
+		if (this.contains(x, y)) {
+			for (ViewNode child : getChildren()) {
+				ViewNode clickNode = child.getClickNode(x, y);
+				if (clickNode != null)
+					return clickNode;
+	    	}
+			return this;
+		} else {
+			return null;
+		}
 	}
 }

@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.info;
+package com.xmos.xta.gui.views.info.unknowns;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -7,7 +7,7 @@ import org.eclipse.swt.graphics.Image;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
-public class InfoViewerLabelProvider extends LabelProvider implements ITableLabelProvider {
+class InfoViewerLabelProvider extends LabelProvider implements ITableLabelProvider {
     private String[] m_columnNames;
     private int[] m_columnWidths;
     private int[] m_columnAligmnments;
@@ -16,7 +16,7 @@ public class InfoViewerLabelProvider extends LabelProvider implements ITableLabe
     static final String DESC       = "Description";
     static final String BACKTRACE  = "Back Trace";
     
-    public InfoViewerLabelProvider() {
+    InfoViewerLabelProvider() {
     	m_columnNames = new String[] { PC, DESC, BACKTRACE };
     	m_columnWidths = new int[] { 100, 350, 350 };
     	m_columnAligmnments = new int[] { SWT.LEFT, SWT.LEFT, SWT.LEFT };

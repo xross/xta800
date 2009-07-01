@@ -13,6 +13,7 @@ public class Broadcaster {
 	public static final String BROADCAST_SHOW_CODE_POINT    = "ShowCodePoint";
 	public static final String BROADCAST_SELECT_NODES       = "ShowNodes";
 	public static final String BROADCAST_HIGHLIGHTS_UPDATED = "HighlightsUpdated";
+	public static final String BROADCAST_UPDATE_FOLDING     = "UpdateFolding";
 	
 	private ArrayList<IPropertyChangeListener> m_listeners;
 
