@@ -55,12 +55,12 @@ public class StructureLoopNode extends ViewNode {
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc) {
-		drawThis(display, gc);
+	public void draw(Display display, GC structureGc, GC timesGc) {
+		drawThis(display, structureGc);
 
 		boolean isWorstCase = isWorstCase();
 		boolean isBestCase = isBestCase();
-        drawHeader(display, gc, isWorstCase, isBestCase);
+        drawHeader(display, structureGc, timesGc, isWorstCase, isBestCase);
         
         ViewNode headerNode = getHeaderNode();
         int headerY = scale(headerNode.getPixelOffsetY() + (headerNode.getPixelsY() / 2));
@@ -82,46 +82,46 @@ public class StructureLoopNode extends ViewNode {
 	            int childLeft = scale(child.getPixelOffsetX());
 	            int childRight = scale(child.getPixelOffsetX() + child.getPixelsX());
 
-	        	drawConnection(display, gc, headerOutX, childY, childLeft, childY, childIsWorstCase, childIsBestCase);
-	    		drawConnection(display, gc, childRight, childY, loopReturnX, childY, childIsWorstCase, childIsBestCase);
+	        	drawConnection(display, structureGc, headerOutX, childY, childLeft, childY, childIsWorstCase, childIsBestCase);
+	    		drawConnection(display, structureGc, childRight, childY, loopReturnX, childY, childIsWorstCase, childIsBestCase);
 	    		
 	    		if (childMinY == 0) {
 	    			childMinY = childY;
 	    		}
 	    		childMaxY = childY;
 	    		
-	    		child.draw(display, gc);
+	    		child.draw(display, structureGc, timesGc);
 	    		loopWorstCase |= childIsWorstCase;
 	    		loopBestCase |= childIsBestCase;
 	    	}
 	    	
-			drawConnection(display, gc, headerOutX, headerY, headerOutX, childMaxY, loopWorstCase, loopBestCase);
-			drawConnection(display, gc, loopReturnX, childMinY, loopReturnX, loopReturnY, loopWorstCase, loopBestCase);
-			drawConnection(display, gc, headerInX, loopReturnY, loopReturnX, loopReturnY, loopWorstCase, loopBestCase);
+			drawConnection(display, structureGc, headerOutX, headerY, headerOutX, childMaxY, loopWorstCase, loopBestCase);
+			drawConnection(display, structureGc, loopReturnX, childMinY, loopReturnX, loopReturnY, loopWorstCase, loopBestCase);
+			drawConnection(display, structureGc, headerInX, loopReturnY, loopReturnX, loopReturnY, loopWorstCase, loopBestCase);
         } else {
         	loopWorstCase = headerNode.getTreeNode().getAttributes().getNumIterations(Case.WORST) > 0;
-			drawConnection(display, gc, headerOutX, headerY, headerOutX, loopReturnY, loopWorstCase, loopBestCase);
-			drawConnection(display, gc, headerInX, loopReturnY, headerOutX, loopReturnY, loopWorstCase, loopBestCase);
+			drawConnection(display, structureGc, headerOutX, headerY, headerOutX, loopReturnY, loopWorstCase, loopBestCase);
+			drawConnection(display, structureGc, headerInX, loopReturnY, headerOutX, loopReturnY, loopWorstCase, loopBestCase);
         }
-		drawConnection(display, gc, headerInX, headerY, headerInX, loopReturnY, loopWorstCase, loopBestCase);
+		drawConnection(display, structureGc, headerInX, headerY, headerInX, loopReturnY, loopWorstCase, loopBestCase);
 		
-		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+		structureGc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
 		int[] outTriangle = {
 				headerOutX, headerY + (2 * m_borderY),
 				headerOutX + (m_borderX / 2), headerY + m_borderY,
 				headerOutX - (m_borderX / 2), headerY + m_borderY,};
-		gc.fillPolygon(outTriangle);
+		structureGc.fillPolygon(outTriangle);
 
 		int[] returnTriangle = {
 				headerInX, headerY + m_borderY,
 				headerInX + (m_borderX / 2), headerY + (2 * m_borderY),
 				headerInX - (m_borderX / 2), headerY + (2 * m_borderY),};
-		gc.fillPolygon(returnTriangle);
+		structureGc.fillPolygon(returnTriangle);
 	}
 
-	private void drawHeader(Display display, GC gc, boolean isWorstCase, boolean isBestCase) {
+	private void drawHeader(Display display, GC structureGc, GC timesGc, boolean isWorstCase, boolean isBestCase) {
         ViewNode headerNode = getHeaderNode();
-        headerNode.draw(display, gc);
+        headerNode.draw(display, structureGc, timesGc);
 
         // Wire through the header
         int midY = scale(m_pixelOffsetY + (getPixelsY() / 2));
@@ -129,10 +129,10 @@ public class StructureLoopNode extends ViewNode {
         int headerY = scale(headerNode.getPixelOffsetY() + (headerNode.getPixelsY() / 2));
         int headerRight = scale(headerNode.getPixelOffsetX() + headerNode.getPixelsX());
 
-    	drawConnection(display, gc, m_x, midY, m_x, headerY, isWorstCase, isBestCase);
-		drawConnection(display, gc, m_x, headerY, scale(headerNode.getPixelOffsetX()), headerY, isWorstCase, isBestCase);
-		drawConnection(display, gc, headerRight, headerY, right, headerY, isWorstCase, isBestCase);
-		drawConnection(display, gc, right, midY, right, headerY, isWorstCase, isBestCase);
+    	drawConnection(display, structureGc, m_x, midY, m_x, headerY, isWorstCase, isBestCase);
+		drawConnection(display, structureGc, m_x, headerY, scale(headerNode.getPixelOffsetX()), headerY, isWorstCase, isBestCase);
+		drawConnection(display, structureGc, headerRight, headerY, right, headerY, isWorstCase, isBestCase);
+		drawConnection(display, structureGc, right, midY, right, headerY, isWorstCase, isBestCase);
 	}
 
 	public void annotateXy(int xOffset, int yOffset) {

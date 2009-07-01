@@ -44,8 +44,8 @@ public class StructurePathNode extends ViewNode {
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc) {
-        drawThis(display, gc);
+	public void draw(Display display, GC structureGc, GC timesGc) {
+        drawThis(display, structureGc);
 		boolean isWorstCase = isWorstCase();
 		boolean isBestCase = isBestCase();
 
@@ -58,7 +58,7 @@ public class StructurePathNode extends ViewNode {
     		int childX = child.getPixelsX();
     		
         	if (!first) {
-        		drawConnection(display, gc, lineLeft, lineY, lineRight, lineY, isWorstCase, isBestCase);
+        		drawConnection(display, structureGc, lineLeft, lineY, lineRight, lineY, isWorstCase, isBestCase);
         	} else {
         		first = false;
         	}
@@ -67,11 +67,11 @@ public class StructurePathNode extends ViewNode {
             lineRight = scale(m_pixelOffsetX + childOffsetX + childX + m_connectorLen);
             childOffsetX += childX + m_connectorLen;
 
-    		child.draw(display, gc);
+    		child.draw(display, structureGc, timesGc);
 		}
 
-		drawConnection(display, gc, m_x, lineY, scale(m_pixelOffsetX + m_borderX), lineY, isWorstCase, isBestCase);
-		drawConnection(display, gc, lineLeft, lineY, scale(m_pixelOffsetX + getPixelsX()), lineY, isWorstCase, isBestCase);
+		drawConnection(display, structureGc, m_x, lineY, scale(m_pixelOffsetX + m_borderX), lineY, isWorstCase, isBestCase);
+		drawConnection(display, structureGc, lineLeft, lineY, scale(m_pixelOffsetX + getPixelsX()), lineY, isWorstCase, isBestCase);
     }
 
 	public void annotateXy(int xOffset, int yOffset) {

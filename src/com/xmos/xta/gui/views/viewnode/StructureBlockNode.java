@@ -33,37 +33,22 @@ public class StructureBlockNode extends ViewNode {
 		return 0;
 	}
 
-	public void draw(Display display, GC gc) {
-		gc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
-		gc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
-    	gc.fillRectangle(m_x, m_y, m_width, m_height);
+	public void draw(Display display, GC structureGc, GC timesGc) {
+		structureGc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
+		structureGc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
+    	structureGc.fillRectangle(m_x, m_y, m_width, m_height);
        
-        if (isSelected()) gc.setLineWidth(getLineWidth() + 1);
-    	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
-    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-    	gc.drawRectangle(m_x, m_y, m_width, m_height);
-        if (isSelected()) gc.setLineWidth(getLineWidth());
-	}
+    	structureGc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+    	structureGc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+        if (isSelected()) {
+        	structureGc.setLineWidth(getLineWidth() + 1);
+        	structureGc.drawRectangle(m_x + 1, m_y + 1, m_width - 1, m_height - 1);
+        	structureGc.setLineWidth(getLineWidth() + 1);
+        } else {
+        	structureGc.drawRectangle(m_x, m_y, m_width, m_height);
+        }
 
-	public void drawTimes(Display display, GC gc) {
-		if (!setTimesY())
-			return;
-
-		gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
-    	gc.fillRectangle(m_x, 0, 5, m_worstHeight);
-		gc.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
-    	gc.fillRectangle(m_x + 5, 0, 5, m_bestHeight);
-
-    	if (isSelected()) {
-	        gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-	    	gc.drawRectangle(m_x, 0, 5, m_worstHeight);
-	    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-	    	gc.drawRectangle(m_x + 5, 0, 5, m_bestHeight);
-    	}
-    	
-		for (ViewNode child : getChildren()) {
-    		child.drawTimes(display, gc);
-    	}
+        drawTimes(display, timesGc);
 	}
 
 	public void annotateXy(int xOffset, int yOffset) {

@@ -55,21 +55,25 @@ public class StructureFunctionNode extends ViewNode {
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc) {
+	public void draw(Display display, GC structureGc, GC timesGc) {
 		// Don't currently support connecting up nodes like a path
 		assert(getChildren().size() == 1);
-        drawThis(display, gc);
+        drawThis(display, structureGc);
 
-    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-    	if (isSelected()) gc.setLineWidth(getLineWidth() + 1);
-       	gc.drawRectangle(m_x, m_y, m_width, m_height);
-       	if (isSelected()) gc.setLineWidth(getLineWidth());
+    	structureGc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+    	if (isSelected()) {
+    		structureGc.setLineWidth(getLineWidth() + 1);
+           	structureGc.drawRectangle(m_x + 1, m_y + 1, m_width - 1, m_height - 1);
+    		structureGc.setLineWidth(getLineWidth());
+    	} else {
+    		structureGc.drawRectangle(m_x, m_y, m_width, m_height);
+    	}
 
        	if (!isFolded()) {
     		int childRightX = 0;
             int childMidY = 0;
 			for (ViewNode child : getChildren()) {
-	    		child.draw(display, gc);
+	    		child.draw(display, structureGc, timesGc);
 
 	    		childRightX = scale(child.getPixelOffsetX() + child.getPixelsX());
 	    		childMidY = scale(child.getPixelOffsetY() + (child.getPixelsY() / 2));
@@ -80,21 +84,23 @@ public class StructureFunctionNode extends ViewNode {
 
     		boolean isWorstCase = isWorstCase();
     		boolean isBestCase = isBestCase();
-    		drawConnection(display, gc, m_x, midY, childLeftX, midY, isWorstCase, isBestCase);
-			drawConnection(display, gc, childLeftX, midY, childLeftX, childMidY, isWorstCase, isBestCase);
+    		drawConnection(display, structureGc, m_x, midY, childLeftX, midY, isWorstCase, isBestCase);
+			drawConnection(display, structureGc, childLeftX, midY, childLeftX, childMidY, isWorstCase, isBestCase);
 
-			drawConnection(display, gc, childRightX, childMidY, childRightX, midY, isWorstCase, isBestCase);
-			drawConnection(display, gc, childRightX, midY, scale(m_pixelOffsetX + getPixelsX()), midY, isWorstCase, isBestCase);
+			drawConnection(display, structureGc, childRightX, childMidY, childRightX, midY, isWorstCase, isBestCase);
+			drawConnection(display, structureGc, childRightX, midY, scale(m_pixelOffsetX + getPixelsX()), midY, isWorstCase, isBestCase);
+       	} else {
+       		drawTimes(display, timesGc);
        	}
 		
 		// Draw the function name
-		if (scale(m_height) > gc.getFontMetrics().getHeight() &&
+		if (scale(m_height) > structureGc.getFontMetrics().getHeight() &&
 			scale(m_width) > m_textAreaX) {
 	        int textBase = scale(m_pixelOffsetY + m_borderY);
-			gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+			structureGc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+			structureGc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 
-			gc.drawString(m_treeNode.getFunctionName(),  m_x + m_borderX, textBase);
+			structureGc.drawString(m_treeNode.getFunctionName(),  m_x + m_borderX, textBase);
 		}
 	}
 
