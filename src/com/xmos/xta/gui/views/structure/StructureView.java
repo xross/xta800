@@ -746,29 +746,25 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
     
 	private void renderImages() {
     	// Draw the structure
-        GC gc = new GC(m_structureImage);
-        gc.setAntialias(SWT.ON);
-        gc.setTextAntialias(SWT.ON);
-        gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
+        GC structureGc = new GC(m_structureImage);
+        structureGc.setAntialias(SWT.ON);
+        structureGc.setTextAntialias(SWT.ON);
+        structureGc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
         Rectangle imageBounds = m_structureImage.getBounds();
-		gc.fillRectangle(0, 0, imageBounds.width, imageBounds.height);
+        structureGc.fillRectangle(0, 0, imageBounds.width, imageBounds.height);
 
-        if (m_viewNode != null) {
-			m_viewNode.draw(m_display, gc);
-        }
-        gc.dispose();
-
-		// Draw the time
-        gc = new GC(m_timesImage);
-        gc.setAntialias(SWT.ON);
-        gc.setTextAntialias(SWT.ON);
+        GC timesGc = new GC(m_timesImage);
+        timesGc.setAntialias(SWT.ON);
+        timesGc.setTextAntialias(SWT.ON);
         imageBounds = m_timesImage.getBounds();
-		gc.fillRectangle(0, 0, imageBounds.width, imageBounds.height);
+        timesGc.fillRectangle(0, 0, imageBounds.width, imageBounds.height);
 
         if (m_viewNode != null) {
-			m_viewNode.drawTimes(m_display, gc);
+			m_viewNode.draw(m_display, structureGc, timesGc);
         }
-        gc.dispose();
+        
+        structureGc.dispose();
+        timesGc.dispose();
 	}
 
     protected void drawStructureCanvas(GC gc) {

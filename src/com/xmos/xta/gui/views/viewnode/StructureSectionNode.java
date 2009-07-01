@@ -54,8 +54,8 @@ public class StructureSectionNode extends ViewNode {
 		return pixels;
 	}
 
-	public void draw(Display display, GC gc) {
-		drawThis(display, gc);
+	public void draw(Display display, GC structureGc, GC timesGc) {
+		drawThis(display, structureGc);
 		boolean isWorstCase = isWorstCase();
 		boolean isBestCase = isBestCase();
 
@@ -70,20 +70,20 @@ public class StructureSectionNode extends ViewNode {
 
         	int childLeft = scale(child.getPixelOffsetX());
         	int childRight = scale(child.getPixelOffsetX() + child.getPixelsX());
-        	drawConnection(display, gc, m_x, midY, m_x, childMid, childIsWorstCase, childIsBestCase);
-        	drawConnection(display, gc, m_x, childMid, childLeft, childMid, childIsWorstCase, childIsBestCase);
-    		drawConnection(display, gc, m_x + m_width, midY, m_x + m_width, childMid, childIsWorstCase, childIsBestCase);
-    		drawConnection(display, gc, m_x + m_width, childMid, childRight, childMid, childIsWorstCase, childIsBestCase);
+        	drawConnection(display, structureGc, m_x, midY, m_x, childMid, childIsWorstCase, childIsBestCase);
+        	drawConnection(display, structureGc, m_x, childMid, childLeft, childMid, childIsWorstCase, childIsBestCase);
+    		drawConnection(display, structureGc, m_x + m_width, midY, m_x + m_width, childMid, childIsWorstCase, childIsBestCase);
+    		drawConnection(display, structureGc, m_x + m_width, childMid, childRight, childMid, childIsWorstCase, childIsBestCase);
             childOffsetY += childY + m_gapY;
 
-            child.draw(display, gc);
+            child.draw(display, structureGc, timesGc);
     	}
 
 		if (m_isOptional) {
 			int optionalMid = scale(m_pixelOffsetY + childOffsetY - (m_gapY / 2));
-			drawConnection(display, gc, m_x, midY, m_x, optionalMid, false, isBestCase);
-			drawConnection(display, gc, m_x, optionalMid, m_x + m_width, optionalMid, false, isBestCase);
-			drawConnection(display, gc, m_x + m_width, midY, m_x + m_width, optionalMid, false, isBestCase);
+			drawConnection(display, structureGc, m_x, midY, m_x, optionalMid, false, isBestCase);
+			drawConnection(display, structureGc, m_x, optionalMid, m_x + m_width, optionalMid, false, isBestCase);
+			drawConnection(display, structureGc, m_x + m_width, midY, m_x + m_width, optionalMid, false, isBestCase);
 		}
 	}
 

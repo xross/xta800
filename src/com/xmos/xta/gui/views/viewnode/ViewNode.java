@@ -14,11 +14,13 @@ import com.xmos.xta.gui.views.structure.ZoomedCanvasProperties;
 public abstract class ViewNode {
 	protected Node m_treeNode;
     private List<ViewNode> m_children;
-    
+
+    private static final int TIMES_WIDTH = 6;
+    private static final int CORNER_ROUNDING = 7;
+
     protected int m_pixelOffsetX;
     protected int m_pixelOffsetY;
 
-    protected int m_cornerRounding = 7;
     protected int m_x;
     protected int m_y;
     protected int m_width;
@@ -43,7 +45,7 @@ public abstract class ViewNode {
     public abstract int getPixelsY();
     public abstract int getChildrenX();
     public abstract int getChildrenY();
-    public abstract void draw(Display display, GC gc);
+    public abstract void draw(Display display, GC structureGc, GC timesGc);
     public abstract void annotateXy(int xOffset, int yOffset);
 
     public Node getTreeNode() {
@@ -67,11 +69,11 @@ public abstract class ViewNode {
 	}
 
     public boolean isBestCase() {
-		return (m_treeNode.getAttributes().getTimeTaken(Case.BEST, false) > 0);
+		return (m_treeNode.getAttributes().getNumIterations(Case.BEST) > 0);
 	}
 
     public boolean isWorstCase() {
-		return (m_treeNode.getAttributes().getTimeTaken(Case.WORST, false) > 0);
+		return (m_treeNode.getAttributes().getNumIterations(Case.WORST) > 0);
 	}
 
 	public String getToolTipText() {
@@ -118,7 +120,7 @@ public abstract class ViewNode {
 	    	gc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
 	    	gc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
 	    	gc.setAlpha(100);
-	    	gc.fillRoundRectangle(m_x, m_y, m_width, m_height, m_cornerRounding, m_cornerRounding);
+	    	gc.fillRoundRectangle(m_x, m_y, m_width, m_height, CORNER_ROUNDING, CORNER_ROUNDING);
 	    	gc.setAlpha(255);
 	    } else {
 	    	gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
@@ -154,33 +156,26 @@ public abstract class ViewNode {
 		return true;
 	}
 
-	public void drawTimes(Display display, GC gc) {
-		if (isFolded()) {
-			if (!setTimesY())
-				return;
-			
-			gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
-	    	gc.fillRectangle(m_x, 0, 5, m_worstHeight);
-			gc.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
-	    	gc.fillRectangle(m_x + 5, 0, 5, m_bestHeight);
+	public void drawTimes(Display display, GC timesGc) {
+		if (!setTimesY())
+			return;
+		
+		timesGc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+    	timesGc.fillRectangle(m_x, 0, TIMES_WIDTH, m_worstHeight);
+		timesGc.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
+    	timesGc.fillRectangle(m_x + TIMES_WIDTH, 0, TIMES_WIDTH, m_bestHeight);
 
-	    	if (isSelected()) {
-		        gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-		    	gc.drawRectangle(m_x, 0, 5, m_worstHeight);
-		    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-		    	gc.drawRectangle(m_x + 5, 0, 5, m_bestHeight);
-	    	}
-		} else {
-			for (ViewNode child : getChildren()) {
-				child.drawTimes(display, gc);
-			}
-		}
+    	if (isSelected()) {
+	        timesGc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+	    	timesGc.drawRectangle(m_x, 0, TIMES_WIDTH - 1, m_worstHeight - 1);
+	    	timesGc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+	    	timesGc.drawRectangle(m_x + TIMES_WIDTH, 0, TIMES_WIDTH - 1, m_bestHeight - 1);
+    	}
 	}
 	
 	public void redraw(Display display, GC structureGc, GC timesGc, List<Node> nodes) {
 		if (nodes.contains(m_treeNode)) {
-			draw(display, structureGc);
-			drawTimes(display, timesGc);
+			draw(display, structureGc, timesGc);
 		} else {
 			for (ViewNode child : getChildren()) {
 				child.redraw(display, structureGc, timesGc, nodes);
