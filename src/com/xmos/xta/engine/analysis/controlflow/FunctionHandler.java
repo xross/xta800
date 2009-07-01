@@ -55,7 +55,7 @@ public class FunctionHandler {
 			XtaInstruction inst = instruction.getInstructions().getFirst();
 
 			if(inst.isLink()){
-				if(instruction.getNextNodes().size() > 0){
+				if(instruction.getNextNodesSize() > 0){
 					Collection<FunctionNode> newFunctions = new TreeSet<FunctionNode>();
 					for(Node next : instruction.getNextNodes()){
 						InstructionNode instNode  = (InstructionNode)next;
@@ -63,10 +63,12 @@ public class FunctionHandler {
 						
 						m_instToFunc.put(instNode, fn);
 						newFunctions.add(fn);
-						next.getPrevNodes().remove(instruction);
+						
+						next.removePrevNode(instruction);
+						//next.getPrevNodes().remove(instruction);
 						
 					}
-					instruction.getNextNodes().clear();
+					instruction.clearNextNodes();
 					for(Node f : newFunctions){
 						
 						CommonMethods.connect(f, instruction);
@@ -87,7 +89,7 @@ public class FunctionHandler {
 		
 		for(Node node : m_instToFunc.keySet()){
 			if(!canReturn(node, new TreeSet<Node>())){
-				CommonMethods.disconnect(m_instToFunc.get(node).getNextNodes().iterator().next(), m_instToFunc.get(node));
+				CommonMethods.disconnect(m_instToFunc.get(node).getNextNode(), m_instToFunc.get(node));
 			}
 		}		
 		
@@ -108,7 +110,7 @@ public class FunctionHandler {
 			Set<Node> terminals) {
 		seen.add(node);
 		
-		if(node.getNextNodes().isEmpty()){
+		if(node.getNextNodesSize() == 0){
 			assert(!terminals.contains(node));
 			terminals.add(node);
 		}
@@ -123,7 +125,7 @@ public class FunctionHandler {
 
 	private boolean canReturn(Node start, Set<Node> seen){
 		seen.add(start);
-		if (start.getNextNodes().size() == 0){
+		if (start.getNextNodesSize() == 0){
 			if (start.isFunctionNode()) return false;
 			return start.getInstructions().getFirst().getReturn();
 		} else {

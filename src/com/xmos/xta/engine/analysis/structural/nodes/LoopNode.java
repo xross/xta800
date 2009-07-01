@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.LoopNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -55,13 +57,13 @@ public class LoopNode extends Node {
 		return new LoopNode(this);
 	}
 	
-	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {
 		LoopNode ln = new LoopNode();
 		for (Node loop : m_loops) {
-			Node clone = loop.deepCopy(startPcs);
+			Node clone = loop.deepCopy(startPcs, engine);
 			ln.m_loops.add(clone);
 		}
-		ln.m_loopHeader = m_loopHeader.deepCopy(startPcs);
+		ln.m_loopHeader = m_loopHeader.deepCopy(startPcs, engine);
 		ln.m_loopHeader.getAttributes().setIsLoopHeader(true);
 		ln.m_attributes = new LoopNodeAttributes(ln);
 		return ln;
@@ -172,14 +174,6 @@ public class LoopNode extends Node {
 			}
 		}
 		m_loopHeader.getInstructionStream(c, instructions, iteration);
-	}
-
-	public long getError(Case c) {
-		long error = 0;
-		for(Node loop : m_loops){
-			error += loop.getAttributes().getLoopIterations() * loop.getError(c);
-		}
-		return error;
 	}
 
 	public Collection<Node> whatsBefore(Node node) {

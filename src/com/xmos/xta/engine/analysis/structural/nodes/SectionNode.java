@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.SectionNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -46,10 +47,10 @@ public class SectionNode extends Node {
 		return new SectionNode(this);
 	}
 	
-	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {
 		SectionNode sn = new SectionNode();
 		for (Node section : m_options) {
-			Node clone = section.deepCopy(startPcs);
+			Node clone = section.deepCopy(startPcs, engine);
 			sn.m_options.add(clone);
 		}
 		sn.m_isOptional = m_isOptional; 

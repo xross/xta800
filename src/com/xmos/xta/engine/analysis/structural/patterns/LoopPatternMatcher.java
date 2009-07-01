@@ -19,7 +19,7 @@ public class LoopPatternMatcher extends PatternMatcher {
 			Set <Node> workingIntersection = new TreeSet<Node>();
 			
 			for (Node loop : intersection) {
-				if (!(loop.getNextNodes().size() != 1 || !loop.getNextNodes().contains(currentNode) || loop.getPrevNodes().size() != 1)) {
+				if (!(loop.getNextNodesSize() != 1 || !loop.getNextNodes().contains(currentNode) || loop.getPrevNodesSize() != 1)) {
 					workingIntersection.add(loop);
 				}
 			}
@@ -47,14 +47,17 @@ public class LoopPatternMatcher extends PatternMatcher {
 		for (Node prev : base.getPrevNodes()) {
 			if (!intersection.contains(prev)) {
 				loop.addPrevNode(prev);
-				prev.getNextNodes().remove(base);
+				prev.removeNextNode(base);
+				//prev.getNextNodes().remove(base);
 				prev.addNextNode(loop);
 			}
 		}
 		for (Node next : base.getNextNodes()) {
 			if (!intersection.contains(next)) {
 				loop.addNextNode(next);
-				next.getPrevNodes().remove(base);
+				
+				next.removePrevNode(base);
+				//next.getPrevNodes().remove(base);
 				next.addPrevNode(loop);
 			}
 		}

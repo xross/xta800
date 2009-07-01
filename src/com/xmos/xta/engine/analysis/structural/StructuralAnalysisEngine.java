@@ -100,8 +100,14 @@ public class StructuralAnalysisEngine {
 				
 		m_structureGraph = new StructureGraph(threads);
 		
+		
+		engine.provideFeedback("Analysing for recursion...");
+		boolean recurrses = detectRecursion(engine);
+		if(recurrses){
+			return false;
+		}
 		engine.provideFeedback("Linking functions...");
-		linkFunctions();
+		linkFunctions(engine);
 		
 		engine.provideFeedback("Setting parent nodes...");
 		setParents();
@@ -310,17 +316,114 @@ public class StructuralAnalysisEngine {
 	private boolean connectivitySanityCheck(Collection<Node> workingSet) {
 		int total = 0;
 		for (Node node : workingSet) {
-			total += node.getPrevNodes().size() - node.getNextNodes().size();
+			total += node.getPrevNodesSize() - node.getNextNodesSize();
 		}
 		return true;
 	}
 
-	private void linkFunctions() {
+	
+	private static final boolean recursionDebug = true;
+	private boolean detectRecursion(Engine engine){
+		
+		Map<FunctionNode, TreeSet<FunctionNode>> links = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
+		
+		if ( recursionDebug ) System.out.println("digraph g {");
+		for(FunctionNode fn : m_functionStartPcs.values()){
+			for(FunctionNode linksTo : fn.getContainedFunctions()){
+				if(m_cfgToStruct.get(linksTo).getBranchTarget() != null){
+					int pc = m_cfgToStruct.get(linksTo).getBranchTarget().getStartPc();
+					
+					
+					FunctionNode linkingFn = m_functionStartPcs.get(pc);
+					TreeSet<FunctionNode> fnLinks = links.get(fn);
+					
+					if(fnLinks == null){
+						fnLinks = new TreeSet<FunctionNode>();
+						links.put(fn, fnLinks);
+					}
+					
+					if(!fnLinks.contains(linkingFn)){
+						if ( recursionDebug ) System.out.println(fn.getFunctionName() + " -> " + linkingFn.getFunctionName() + ";");
+						fnLinks.add(m_functionStartPcs.get(pc));
+					}
+					
+				}
+			}
+		}
+		if ( recursionDebug ) System.out.println("}");
+		Collection<FunctionNode> loops = new TreeSet<FunctionNode>();
+		for(InstructionNode threadStart : m_controlFlowGraph.getThreadStartInstructions()){
+			Map<FunctionNode, TreeSet<FunctionNode>> fnDominators = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
+			FunctionNode start = m_functionStartPcs.get(threadStart.getStartPc());
+			TreeSet<FunctionNode> seen = new TreeSet<FunctionNode>();
+			crawlFunctionGraph(start, links, seen);
+			buildFunctionDominatorTree(seen, start, fnDominators);
+			
+			for(FunctionNode fn : seen){
+				if(links.get(fn) != null){
+					for(FunctionNode next : links.get(fn)){
+						if(!fnDominators.get(next).contains(fn)|| links.get(fn).contains(fn)){
+							loops.add(fn);
+						}
+					}
+				}
+			}
+			
+		}
+		return !loops.isEmpty();
+	}
+	private void buildFunctionDominatorTree(Collection<FunctionNode> reachableNodes, 
+			FunctionNode treeStart, Map<FunctionNode, TreeSet<FunctionNode>> fnDominators) {
+		for (FunctionNode node : reachableNodes) {
+			fnDominators.put(node, new TreeSet<FunctionNode>());
+			if (treeStart == node) {
+				fnDominators.get(node).add(node);
+			} else {
+				fnDominators.get(node).addAll(reachableNodes);
+			}
+		}
+		boolean stillChanging = true;
+		while (stillChanging) {
+			stillChanging = false;
+			for (FunctionNode node : reachableNodes) {
+
+				if (treeStart == node)
+					continue;
+
+				Set<FunctionNode> intersection = new TreeSet<FunctionNode>(reachableNodes);
+				for (Node pred : node.getPrevNodes()) {
+					intersection.retainAll(fnDominators.get(pred));
+				}
+				intersection.add(node);
+				if (!intersection.equals(fnDominators.get(node))) {
+					fnDominators.get(node).clear();
+					fnDominators.get(node).addAll(intersection);
+					stillChanging = true;
+				}
+			}
+		}
+	}
+	
+	
+	private void crawlFunctionGraph(FunctionNode fn, Map<FunctionNode, TreeSet<FunctionNode>> links, Set<FunctionNode> seen ){
+		seen.add(fn);
+		if(links.get(fn)!= null){
+			for(FunctionNode nextFn : links.get(fn)){	
+				if(!seen.contains(nextFn)){
+					crawlFunctionGraph(nextFn, links, seen);
+				}
+			}
+		}
+		
+	}
+	
+	private void linkFunctions(Engine engine) {
 		for (FunctionNode fn : m_cfgToStruct.keySet()) {
 			if (m_cfgToStruct.get(fn).getBranchTarget() != null) {
 				int pc = m_cfgToStruct.get(fn).getBranchTarget().getStartPc();
 				String fnName = m_functionStartPcs.get(pc).getFunctionName();
-				fn.setFunction(fnName, m_functionStartPcs.get(pc).getFunction().deepCopy(m_functionStartPcs));
+				engine.provideFeedback("Linking function: " + fnName);
+				fn.setFunction(fnName, m_functionStartPcs.get(pc).getFunction().deepCopy(m_functionStartPcs, engine));	
 			}
 		}
 	}

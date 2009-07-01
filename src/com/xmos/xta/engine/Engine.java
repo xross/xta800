@@ -909,8 +909,6 @@ public class Engine implements Notifier {
 				Collection<InstructionNode> threadStopNodes = 
 					th.getThreadNodes(sections.getThreadStopPoints(nodeId, coreId));				
 				threadStartNodes = th.ensureThreadStartExists(threadStartNodes);
-				
-				
 
 				SuccessorAdder sa = new SuccessorAdder(nodeId, coreId, id, sections, threadStopNodes, xeLoader, this);
 				if (!sa.process()) 

@@ -16,7 +16,7 @@ public class PathPatternMatcher extends PatternMatcher {
 		pathList.add(currentNode);
 		if (isStart(currentNode)) {
 			while (continueDown(currentNode)) {
-				currentNode = currentNode.getNextNodes().iterator().next();
+				currentNode = currentNode.getNextNode();
 				pathList.add(currentNode);
 			}
 		}
@@ -34,16 +34,16 @@ public class PathPatternMatcher extends PatternMatcher {
 		//im really not over happy about this. will have to verify it
 		if(node == m_treeStart){
 			return true;
-		} else if (node.getPrevNodes().size() ==  0) {
+		} else if (node.getPrevNodesSize() ==  0) {
 			return true;
-		} else if (node.getPrevNodes().size() ==  1) {
-			Node prev = node.getPrevNodes().iterator().next();
-			if (prev.getNextNodes().size() > 1) {
+		} else if (node.getPrevNodesSize() ==  1) {
+			Node prev = node.getPrevNode();
+			if (prev.getNextNodesSize() > 1) {
 				return true;
 			} else {
 				return false;
 			}
-		} else if (node.getPrevNodes().size() > 1) {
+		} else if (node.getPrevNodesSize() > 1) {
 			return true;
 		} else {
 			return false;
@@ -52,20 +52,20 @@ public class PathPatternMatcher extends PatternMatcher {
 	
 	private boolean isEnd(Node node) {
 		
-		if (node.getNextNodes().size() ==  0){
+		if (node.getNextNodesSize() ==  0){
 			return true;
-		} else if (node.getNextNodes().size() ==  1) {
-			Node next = node.getNextNodes().iterator().next();
+		} else if (node.getNextNodesSize() ==  1) {
+			Node next = node.getNextNode();
 			
 			if(next == m_treeStart){
 				return true;
 			}
-			if (next.getPrevNodes().size() > 1) {
+			if (next.getPrevNodesSize() > 1) {
 				return true;
 			} else {
 				return false;
 			}
-		} else if (node.getNextNodes().size() > 1) {
+		} else if (node.getNextNodesSize() > 1) {
 			return true;
 		} else {
 			return false;
@@ -73,8 +73,8 @@ public class PathPatternMatcher extends PatternMatcher {
 	}
 	
 	private boolean continueDown(Node node){
-		if (node.getNextNodes().size() == 1 && !isEnd(node) 
-				&& !node.getDominators().contains(node.getNextNodes().iterator().next())) {
+		if (node.getNextNodesSize() == 1 && !isEnd(node) 
+				&& !node.getDominators().contains(node.getNextNode())) {
 			return true;
 		} else {
 			return false;
@@ -95,11 +95,11 @@ public class PathPatternMatcher extends PatternMatcher {
 				return false;
 			}
 			
-			if (node.getNextNodes().size() != 1) {
+			if (node.getNextNodesSize() != 1) {
 				return false;
 			}
 			
-			if (node.getNextNodes().iterator().next() != pathList.get(i + 1)) {
+			if (node.getNextNode() != pathList.get(i + 1)) {
 				return false;
 			}
 			
@@ -122,12 +122,16 @@ public class PathPatternMatcher extends PatternMatcher {
 		
 		for (Node prev : startNodeInPath.getPrevNodes()) {
 			path.addPrevNode(prev);
-			prev.getNextNodes().remove(startNodeInPath);
+			
+			
+			prev.removeNextNode(startNodeInPath);
+			//prev.getNextNodes().remove(startNodeInPath);
 			prev.addNextNode(path);
 		}
 		for (Node next : endNodeInPath.getNextNodes()) {
 			path.addNextNode(next);
-			next.getPrevNodes().remove(endNodeInPath);
+			
+			next.removePrevNode(endNodeInPath);
 			next.addPrevNode(path);
 		}
 		

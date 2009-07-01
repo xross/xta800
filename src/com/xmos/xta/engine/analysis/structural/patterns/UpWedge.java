@@ -26,11 +26,11 @@ public class UpWedge extends PatternMatcher {
 		}
 		if (leastDominantNodes.contains(currentNode)) {	
 			Node piviot = currentNode;
-			while (piviot.getPrevNodes().size() == 1 && piviot.getNextNodes().size() == 1) {
-				piviot = piviot.getPrevNodes().iterator().next();
+			while (piviot.getPrevNodesSize() == 1 && piviot.getNextNodesSize() == 1) {
+				piviot = piviot.getPrevNode();
 			}
 			
-			if (piviot.getPrevNodes().size() > 1) {
+			if (piviot.getPrevNodesSize() > 1) {
 				return CommonMethods.wedgeDown(piviot, workingSet);
 			} else {
 				return CommonMethods.wedgeUp(piviot, workingSet);
