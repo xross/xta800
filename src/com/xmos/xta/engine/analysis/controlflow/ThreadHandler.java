@@ -66,7 +66,7 @@ public class ThreadHandler {
 			Set<Node> terminals) {
 		seen.add(node);
 		
-		if(node.getNextNodes().isEmpty()){
+		if(node.getNextNodesSize() == 0){
 			assert(!terminals.contains(node));
 			terminals.add(node);
 		}

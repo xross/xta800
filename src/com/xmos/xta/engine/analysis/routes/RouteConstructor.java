@@ -71,7 +71,7 @@ public class RouteConstructor {
 			if (functions != null) {
 				for(Node function : functions){
 					if(m_subRoutes.isEmpty()){
-						m_subRoutes.add(function.deepCopy(new TreeMap<Integer, FunctionNode>()));
+						m_subRoutes.add(function.deepCopy(new TreeMap<Integer, FunctionNode>(), m_engine));
 					} else {
 						break;
 					}
@@ -119,7 +119,7 @@ public class RouteConstructor {
 					baseNode = sln.getLoop();
 				}
 				
-				Node newGraph = baseNode.deepCopy(new TreeMap<Integer, FunctionNode>());
+				Node newGraph = baseNode.deepCopy(new TreeMap<Integer, FunctionNode>(), m_engine);
 							
 				m_subRoutes.add(newGraph);
 			}
@@ -224,8 +224,8 @@ public class RouteConstructor {
 			
 			startList.add(currentNode);
 	
-			while (currentNode.getNextNodes().size() == 1 && currentNode.getNextNodes().iterator().next().isInstructionNode()) {
-				currentNode = currentNode.getNextNodes().iterator().next();
+			while (currentNode.getNextNodesSize() == 1 && currentNode.getNextNode().isInstructionNode()) {
+				currentNode = currentNode.getNextNode();
 				startList.add(currentNode);
 			}
 			startBlock = new BlockNode(startList);
@@ -250,8 +250,8 @@ public class RouteConstructor {
 				List<Node> endList = new LinkedList<Node>();
 				Node end = endNode;
 				endList.add(end);
-				while (end.getPrevNodes().size() == 1 && end.getPrevNodes().iterator().next().isInstructionNode()) {
-					end = end.getPrevNodes().iterator().next();
+				while (end.getPrevNodesSize() == 1 && end.getPrevNode().isInstructionNode()) {
+					end = end.getPrevNode();
 					endList.add(0, end);
 				}
 				BlockNode endBlock = new BlockNode(endList);
@@ -278,7 +278,7 @@ public class RouteConstructor {
 			Node excludedNode = m_excludedRouteNodes.iterator().next();
 			for(Node prev : excludedNode.getPrevNodes()){
 				prev.removeNextNode(excludedNode);
-				if(prev.getNextNodes().size() == 0){
+				if(prev.getNextNodesSize() == 0){
 					m_excludedRouteNodes.add(prev);
 				}
 			}

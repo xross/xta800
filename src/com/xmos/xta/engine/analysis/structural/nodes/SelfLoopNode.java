@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.SelfLoopNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -39,9 +41,9 @@ public class SelfLoopNode extends Node{
 		return new SelfLoopNode(this);
 	}
 	
-	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {
 		SelfLoopNode ln = new SelfLoopNode();
-		ln.m_loop = m_loop.deepCopy(startPcs);
+		ln.m_loop = m_loop.deepCopy(startPcs, engine);
 		ln.m_attributes = new SelfLoopNodeAttributes(ln);
 		return ln;
 	}

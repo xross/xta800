@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.BlockNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -44,10 +46,10 @@ public class BlockNode extends IBufferNode {
 		return new BlockNode(this);
 	}
 
-	public Node deepCopy(Map<Integer, FunctionNode> startPcs) {		
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {		
 		BlockNode bn = new BlockNode();
 		for (Node node : m_insts) {
-			bn.m_insts.add((InstructionNode)node.deepCopy(startPcs));
+			bn.m_insts.add((InstructionNode)node.deepCopy(startPcs, engine));
 		}
 		bn.m_attributes = new BlockNodeAttributes(bn);
 		return bn;

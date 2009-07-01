@@ -14,7 +14,7 @@ public class SectionPatternMatcher extends PatternMatcher {
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
 		m_treeStart = treeStart;
 
-		if (currentNode.getNextNodes().size() < 2) {
+		if (currentNode.getNextNodesSize()< 2) {
 			return false;
 		} 
 		
@@ -55,7 +55,7 @@ public class SectionPatternMatcher extends PatternMatcher {
 			Set<Node> sectionNodes = new TreeSet<Node>();
 			for (Node nextNode : currentNode.getNextNodes()) {
 				if (nextNode.getNextNodes().contains(endNode)) {
-					if (nextNode.getNextNodes().size() == 1 && nextNode.getPrevNodes().size() == 1) {
+					if (nextNode.getNextNodesSize() == 1 && nextNode.getPrevNodes().size() == 1) {
 						sectionNodes.add(nextNode);
 					} else {
 						continue;
@@ -111,14 +111,22 @@ public class SectionPatternMatcher extends PatternMatcher {
 	protected void updateGraph(Node startNode, Collection<Node> sectionNodes, boolean isOptional, Collection<Node> workingSet, Node endNode) {
 		SectionNode ms = new SectionNode(sectionNodes, isOptional);
 		
-		startNode.getNextNodes().removeAll(sectionNodes);
+		for(Node sectionNode : sectionNodes){
+			startNode.removeNextNode(sectionNode);
+		}
+		
+		//startNode.getNextNodes().removeAll(sectionNodes);
 		startNode.addNextNode(ms);
 
+		
+		
 		endNode.getPrevNodes().removeAll(sectionNodes);
 		endNode.addPrevNode(ms);
 
 		if (isOptional) {
-			startNode.getNextNodes().remove(endNode);
+			
+			startNode.removeNextNode(endNode);
+			//startNode.getNextNodes().remove(endNode);
 			endNode.getPrevNodes().remove(startNode);
 		}
 
@@ -137,7 +145,11 @@ public class SectionPatternMatcher extends PatternMatcher {
 			System.out.println("#have replaced "+sectionNodes + " with " + ms);
 		}
 
-		startNode.getNextNodes().removeAll(sectionNodes);
+		for (Node sectionNode : sectionNodes){
+			startNode.removeNextNode(sectionNode);
+		}
+		
+		//startNode.getNextNodes().removeAll(sectionNodes);
 		startNode.addNextNode(ms);
 
 		ms.addPrevNode(startNode);

@@ -19,7 +19,7 @@ public class BasicBlockMatcher {
 		insts.add(node);
 		if (isStart(node)) {
 			while (continueDown(node)) {
-				node = node.getNextNodes().iterator().next();
+				node = node.getNextNode();
 				insts.add(node);
 			}
 		}
@@ -47,19 +47,19 @@ public class BasicBlockMatcher {
 		if(node == m_treeStart){
 			return true;
 		} else 
-			if (node.getPrevNodes().size() == 0) {
+			if (node.getPrevNodesSize() == 0) {
 			return true;
-		} else if (node.getPrevNodes().size() == 1) {
-			Node prev = node.getPrevNodes().iterator().next();
+		} else if (node.getPrevNodesSize() == 1) {
+			Node prev = node.getPrevNode();
 			if (prev.isFunctionNode()) {
 				return true;
 			}
-			if (prev.getNextNodes().size() > 1) {
+			if (prev.getNextNodesSize() > 1) {
 				return true;
 			} else {
 				return false;
 			}
-		} else if (node.getPrevNodes().size() > 1) {
+		} else if (node.getPrevNodesSize() > 1) {
 			return true;
 		} else {
 			return false;
@@ -69,10 +69,10 @@ public class BasicBlockMatcher {
 	private boolean isEnd(Node node) {
 		
 		
-		if (node.getNextNodes().size() == 0) {
+		if (node.getNextNodesSize() == 0) {
 			return true;
-		} else if (node.getNextNodes().size() == 1) {
-			Node next = node.getNextNodes().iterator().next();
+		} else if (node.getNextNodesSize() == 1) {
+			Node next = node.getNextNode();
 			if(next == m_treeStart){
 				return true;
 			}
@@ -83,12 +83,12 @@ public class BasicBlockMatcher {
 			if (next.isFunctionNode()) {
 				return true;
 			}
-			if (next.getPrevNodes().size() > 1) {
+			if (next.getPrevNodesSize() > 1) {
 				return true;
 			} else {
 				return false;
 			}
-		} else if (node.getNextNodes().size() > 1) {
+		} else if (node.getNextNodesSize() > 1) {
 			return true;
 		} else {
 			return false;
@@ -96,8 +96,8 @@ public class BasicBlockMatcher {
 	}
 
 	private boolean continueDown(Node node) {
-		if (node.getNextNodes().size() == 1 && !isEnd(node) 
-				&& !node.getDominators().contains(node.getNextNodes().iterator().next())) {
+		if (node.getNextNodesSize() == 1 && !isEnd(node) 
+				&& !node.getDominators().contains(node.getNextNode())) {
 			return true;
 		} else {
 			return false;
