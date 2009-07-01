@@ -89,12 +89,11 @@ public class StructureDisplayer {
 			NodeAttributes nodeAttributes = node.getAttributes();
 			
 			if (node.isLoopNode()) {
-				String scope = nodeAttributes.getIsAbsolute() ? "ABS" : "REL";
-
-				m_console.display(String.format(" (%s: %d, %d, %d)", scope,
-						nodeAttributes.getLoopIterations(),
-						nodeAttributes.getTotalIterations(Case.WORST),
-						nodeAttributes.getTotalIterations(Case.BEST)));							
+				m_console.display(String.format(" [%d]",
+						nodeAttributes.getLoopIterations()));
+				
+				if (nodeAttributes.getIsAbsolute())
+					m_console.display(" (ABSOLUTE)"); 				
 				
 			} else if (node.isSectionNode()) {
 				Node enclosingLoopNode = node.getEnclosingLoopNode();
