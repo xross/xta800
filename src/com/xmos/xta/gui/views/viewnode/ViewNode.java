@@ -69,11 +69,11 @@ public abstract class ViewNode {
 	}
 
     public boolean isBestCase() {
-		return (m_treeNode.getAttributes().getNumIterations(Case.BEST) > 0);
+		return (m_treeNode.getAttributes().getTimeTaken(Case.BEST, false) > 0);
 	}
 
     public boolean isWorstCase() {
-		return (m_treeNode.getAttributes().getNumIterations(Case.WORST) > 0);
+		return (m_treeNode.getAttributes().getTimeTaken(Case.WORST, false) > 0);
 	}
 
 	public String getToolTipText() {

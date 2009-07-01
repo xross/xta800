@@ -108,7 +108,8 @@ public abstract class Node implements Comparable<Node>{
 		return m_id;
 	}
 
-	public int compareTo(Node node) {		
+	public int compareTo(Node node) {	
+// TODO		
 //		double thisTimeTaken = getAttributes().getTimeTaken(Case.WORST, false);
 //		double nodeTimeTaken = node.getAttributes().getTimeTaken(Case.WORST, false);
 //

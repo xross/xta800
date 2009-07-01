@@ -148,13 +148,18 @@ public class SectionNodeAttributes extends NodeAttributes {
 		return m_setOptions.get(optionNode);
 	}
 	
-	public void clearNumIterations() {
+	public void resetPathIterations() {
+		clearNumIterations();
+		clearSetOptions();
+	}
+	
+	private void clearNumIterations() {
    		for (Node node : m_numIterations.keySet()) {
    			m_numIterations.put(node, (long)0);
    		}		
 	}
 
-	public void clearSetOptions() {
+	private void clearSetOptions() {
    		for (Node node : m_setOptions.keySet()) {
    			m_setOptions.put(node, false);
    		}		

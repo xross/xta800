@@ -5,7 +5,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.gui.views.structure.ZoomedCanvasProperties;
 
 public class StructureLoopNode extends ViewNode {
@@ -99,7 +98,7 @@ public class StructureLoopNode extends ViewNode {
 			drawConnection(display, structureGc, loopReturnX, childMinY, loopReturnX, loopReturnY, loopWorstCase, loopBestCase);
 			drawConnection(display, structureGc, headerInX, loopReturnY, loopReturnX, loopReturnY, loopWorstCase, loopBestCase);
         } else {
-        	loopWorstCase = headerNode.getTreeNode().getAttributes().getNumIterations(Case.WORST) > 0;
+        	loopWorstCase = headerNode.isWorstCase();
 			drawConnection(display, structureGc, headerOutX, headerY, headerOutX, loopReturnY, loopWorstCase, loopBestCase);
 			drawConnection(display, structureGc, headerInX, loopReturnY, headerOutX, loopReturnY, loopWorstCase, loopBestCase);
         }

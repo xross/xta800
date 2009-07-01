@@ -203,7 +203,7 @@ public class SectionNode extends Node {
 	public List<Node> getImmediateChildren() {
 		return new LinkedList<Node> (m_options);
 	}
-	
+
 	private Node getOption(Case c, boolean ignoreIterations, Collection<Node> nodes) {
 		// Must handle optional sections as a special case.. 
 		if ((c == Case.BEST) && (m_isOptional))

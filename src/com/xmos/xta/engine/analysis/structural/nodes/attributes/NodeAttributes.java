@@ -270,6 +270,10 @@ public class NodeAttributes {
 		return false;
 	}
 	
+	public void resetPathIterations() {
+		assert(false);		
+	}
+	
 	public void setIsAbsolute(boolean isAbsolute) {
 		m_isAbsolute = isAbsolute;
 		for (Node child : m_node.getChildren()) {

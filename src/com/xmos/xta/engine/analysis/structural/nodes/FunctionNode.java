@@ -1,7 +1,6 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
