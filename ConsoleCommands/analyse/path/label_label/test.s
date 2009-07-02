@@ -1,6 +1,7 @@
 .text
 .align 2
 .globl _start
+.xtathreadstart
 _start:
   bl main
 
@@ -20,4 +21,3 @@ INPUT_2:
   in r0, res[r0]
 
   retsp 0
-

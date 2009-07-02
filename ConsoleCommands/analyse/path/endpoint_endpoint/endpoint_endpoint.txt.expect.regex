@@ -6,10 +6,8 @@ Label: output1, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filena
 Error: Unresolved reference: output0
 Route\(0\) path: output0 to input0
     No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
 
 Route\(1\) path: output1 to input1
     No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
 
 Fail, Timing Unspecified
