@@ -4,6 +4,8 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.SectionNode;
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.gui.views.structure.ZoomedCanvasProperties;
 
 public class StructureSectionNode extends ViewNode {
@@ -87,19 +89,31 @@ public class StructureSectionNode extends ViewNode {
 		}
 	}
 
-	public void annotateXy(int xOffset, int yOffset) {
+	public void annotateNodes(int xOffset, int yOffset, boolean isBestCase, boolean isWorstCase) {
 		if (DEBUG) System.out.printf("Annotate StructureSection (%d, %d)\n", xOffset, yOffset);
 
 		m_pixelOffsetX = xOffset;
 		m_pixelOffsetY = yOffset;
 
+		SectionNode sectionNode = (SectionNode)m_treeNode;
+		Node bestCaseNode = sectionNode.getOption(Case.BEST, false);
+		Node worstCaseNode = sectionNode.getOption(Case.WORST, false);
+		
     	int childOffsetY = m_borderY;
     	int childrenX = getChildrenX();
 		for (ViewNode child : getChildren()) {
+			Node childTreeNode = child.getTreeNode();
+			boolean childIsBestCase = isBestCase && (childTreeNode == bestCaseNode);
+			boolean childIsWorstCase = isWorstCase && (childTreeNode == worstCaseNode);
+
 			int childX = child.getPixelsX();
-    		child.annotateXy(xOffset + m_borderX + ((childrenX - childX) / 2), yOffset + childOffsetY);
+    		child.annotateNodes(xOffset + m_borderX + ((childrenX - childX) / 2), yOffset + childOffsetY,
+    				childIsBestCase, childIsWorstCase);
     		childOffsetY += child.getPixelsY() + m_gapY;
     	}
+
+		m_isBestCase = isBestCase;
+		m_isWorstCase = isWorstCase;
 	}
 
 	public boolean isFolded() {

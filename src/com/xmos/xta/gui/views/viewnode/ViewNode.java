@@ -26,6 +26,8 @@ public abstract class ViewNode {
     protected int m_width;
     protected int m_height;
     
+    protected boolean m_isBestCase;
+    protected boolean m_isWorstCase;
     protected int m_bestHeight;
     protected int m_worstHeight;
 
@@ -36,6 +38,9 @@ public abstract class ViewNode {
 
 	    m_pixelOffsetX = 0;
 	    m_pixelOffsetY = 0;
+	    
+	    m_isBestCase = false;
+	    m_isWorstCase = false;
 
 		m_children = new ArrayList<ViewNode>();
 		m_canvasProperties = canvasProperties;
@@ -46,7 +51,7 @@ public abstract class ViewNode {
     public abstract int getChildrenX();
     public abstract int getChildrenY();
     public abstract void draw(Display display, GC structureGc, GC timesGc);
-    public abstract void annotateXy(int xOffset, int yOffset);
+    public abstract void annotateNodes(int xOffset, int yOffset, boolean isBestCase, boolean isWorstCase);
 
     public Node getTreeNode() {
     	return m_treeNode;
@@ -69,11 +74,11 @@ public abstract class ViewNode {
 	}
 
     public boolean isBestCase() {
-		return (m_treeNode.getAttributes().getTimeTaken(Case.BEST, false) > 0);
+		return m_isBestCase;
 	}
 
     public boolean isWorstCase() {
-		return (m_treeNode.getAttributes().getTimeTaken(Case.WORST, false) > 0);
+		return m_isWorstCase;
 	}
 
 	public String getToolTipText() {
@@ -144,11 +149,17 @@ public abstract class ViewNode {
 
 	protected boolean setTimesY() {
 	    int timesHeight = m_canvasProperties.getTimesHeight();
-        m_bestHeight = (int)((double)timesHeight * 
-        	getTreeNode().getAttributes().getTimeTaken(Case.BEST, false) / m_canvasProperties.getTotalBest());
+	    m_bestHeight = 0;
+	    if (m_isBestCase) {
+	        m_bestHeight = (int)((double)timesHeight * 
+	        	getTreeNode().getAttributes().getTimeTaken(Case.BEST, false) / m_canvasProperties.getTotalBest());
+	    }
 
-        m_worstHeight = (int)((double)timesHeight * 
-    		getTreeNode().getAttributes().getTimeTaken(Case.WORST, false) / m_canvasProperties.getTotalWorst());
+	    m_worstHeight = 0;
+	    if (m_isWorstCase) {
+	        m_worstHeight = (int)((double)timesHeight * 
+	    		getTreeNode().getAttributes().getTimeTaken(Case.WORST, false) / m_canvasProperties.getTotalWorst());
+	    }
 
 		if (m_bestHeight < 1 && m_worstHeight < 1) {
 	        return false;

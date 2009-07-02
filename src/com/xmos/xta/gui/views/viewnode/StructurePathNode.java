@@ -74,7 +74,7 @@ public class StructurePathNode extends ViewNode {
 		drawConnection(display, structureGc, lineLeft, lineY, scale(m_pixelOffsetX + getPixelsX()), lineY, isWorstCase, isBestCase);
     }
 
-	public void annotateXy(int xOffset, int yOffset) {
+	public void annotateNodes(int xOffset, int yOffset, boolean isBestCase, boolean isWorstCase) {
 		if (DEBUG) System.out.printf("Annotate StructurePath (%d, %d)\n", xOffset, yOffset);
 
 		m_pixelOffsetX = xOffset;
@@ -84,9 +84,13 @@ public class StructurePathNode extends ViewNode {
     	int childrenY = getChildrenY();
 		for (ViewNode child : getChildren()) {
 			int childY = child.getPixelsY();
-    		child.annotateXy(xOffset + childOffsetX, yOffset + m_borderY + ((childrenY - childY) / 2));
+    		child.annotateNodes(xOffset + childOffsetX, yOffset + m_borderY + ((childrenY - childY) / 2),
+    				isBestCase, isWorstCase);
             childOffsetX += child.getPixelsX() + m_connectorLen;
     	}
+
+		m_isBestCase = isBestCase;
+		m_isWorstCase = isWorstCase;
 	}
 
 	public boolean isFolded() {
