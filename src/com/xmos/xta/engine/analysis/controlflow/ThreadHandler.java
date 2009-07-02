@@ -19,8 +19,8 @@ public class ThreadHandler {
 		m_notifier = notifier;
 	}
 
-	public Collection<InstructionNode> getThreadNodes(Collection<Integer> threadPcs) {
-		Collection<InstructionNode> nodes = new TreeSet<InstructionNode>();
+	public Set<InstructionNode> getThreadNodes(Collection<Integer> threadPcs) {
+		Set<InstructionNode> nodes = new TreeSet<InstructionNode>();
 		for(int pc : threadPcs){
 			InstructionNode threadNode = m_instDecoder.getNode(pc);
 			if (threadNode != null){
@@ -33,9 +33,7 @@ public class ThreadHandler {
 		return nodes;
 	}
 	
-	public Collection<InstructionNode> ensureThreadStartExists(Collection<InstructionNode> threadStarts){
-		
-		
+	public Set<InstructionNode> ensureThreadStartExists(Set<InstructionNode> threadStarts){
 		if(threadStarts.isEmpty() || threadStarts == null){
 			m_notifier.notify(Notifier.NOTIFY_WARNING,
 					"No thread starts found, assuming master thread starts at 0x10000");
@@ -47,7 +45,6 @@ public class ThreadHandler {
 						"Failed to find PC 0x" + Integer.toHexString(0x10000));
 			}
 		}
-		
 		return threadStarts;
 	}
 	

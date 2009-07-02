@@ -904,10 +904,10 @@ public class Engine implements Notifier {
 					return false;
 				
 				ThreadHandler th = new ThreadHandler(id, this);
-				Collection<InstructionNode> threadStartNodes = 
-					th.getThreadNodes(sections.getThreadStartPoints(nodeId, coreId));
-				Collection<InstructionNode> threadStopNodes = 
-					th.getThreadNodes(sections.getThreadStopPoints(nodeId, coreId));				
+				
+				Set<InstructionNode> threadStartNodes = th.getThreadNodes(sections.getThreadStartPoints(nodeId, coreId));
+				Set<InstructionNode> threadStopNodes = th.getThreadNodes(sections.getThreadStopPoints(nodeId, coreId));				
+				
 				threadStartNodes = th.ensureThreadStartExists(threadStartNodes);
 
 				SuccessorAdder sa = new SuccessorAdder(nodeId, coreId, id, sections, threadStopNodes, xeLoader, this);
@@ -931,7 +931,6 @@ public class Engine implements Notifier {
 				
 				newSourceMappers.add(nodeId, coreId, sourceMapper);
 				
-
 				UnreachableCodeFinder uca = new UnreachableCodeFinder();
 				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
 	
@@ -951,10 +950,10 @@ public class Engine implements Notifier {
 		m_structuralGraph = newStructuralGraph;
 		m_functionNames = newFunctionNames;
 		m_sourceMapper = newSourceMappers;
-		Runtime runtime = Runtime.getRuntime();  
-		System.out.println("max memory: " + runtime.maxMemory() / 1024 / 1024); 
-		System.out.println("allocated memory: " + runtime.totalMemory() / 1024/ 1024);
-		System.out.println("free memory: " + runtime.freeMemory() / 1024/ 1024);  
+		//Runtime runtime = Runtime.getRuntime();  
+		//System.out.println("max memory: " + runtime.maxMemory() / 1024 / 1024); 
+		//System.out.println("allocated memory: " + runtime.totalMemory() / 1024/ 1024);
+		//System.out.println("free memory: " + runtime.freeMemory() / 1024/ 1024);  
 		return true;
 	}
 

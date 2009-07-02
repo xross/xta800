@@ -16,28 +16,15 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class BlockNode extends IBufferNode {
 	private BlockNodeAttributes m_attributes;	
-	private List<Node> m_insts;
-	
-	public BlockNode() {
-		super();
-		m_insts = new LinkedList<Node>();
-        m_attributes = new BlockNodeAttributes(this);
-	}
+	private List<InstructionNode> m_insts;
 	
 	public BlockNode(BlockNode block) {
 		m_insts = block.m_insts;
 		m_attributes = new BlockNodeAttributes(this);
 	}
 	
-	public BlockNode(List<Node> insts) {
+	public BlockNode(List<InstructionNode> insts) {
 		super();
-		/*
-		m_insts = new LinkedList<Node>();
-		for(Node node : insts){
-			assert(node instanceof InstructionNode);
-			m_insts.add((InstructionNode)node);
-		}
-		*/
 		m_insts = insts;
         m_attributes = new BlockNodeAttributes(this);
 	}
@@ -47,12 +34,7 @@ public class BlockNode extends IBufferNode {
 	}
 
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {		
-		BlockNode bn = new BlockNode();
-		for (Node node : m_insts) {
-			bn.m_insts.add((InstructionNode)node.deepCopy(startPcs, engine));
-		}
-		bn.m_attributes = new BlockNodeAttributes(bn);
-		return bn;
+		return new BlockNode(m_insts);
 	}
 	
     public String getTypeName() {
@@ -105,7 +87,7 @@ public class BlockNode extends IBufferNode {
 	}
 
 	public List<Node> getChildren() {
-		return m_insts;
+		return new LinkedList<Node>(m_insts);
 	}
 
 	public Collection<Node> whatsNext(Node node) {
@@ -123,8 +105,8 @@ public class BlockNode extends IBufferNode {
 	}
 	
 	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
-		for(Node inst : m_insts){
-			instructions.add((InstructionNode)inst);
+		for(InstructionNode inst : m_insts){
+			instructions.add(inst);
 		}
 
 	}
@@ -141,22 +123,17 @@ public class BlockNode extends IBufferNode {
 	}
 
 	public void insertFnops() {
-		List<Node> insts = new LinkedList<Node>();
-		for(Node inst : m_insts){
-
+		List<InstructionNode> insts = new LinkedList<InstructionNode>();
+		for(InstructionNode inst : m_insts){
 			List<Integer> fnops =  m_worstIbufferSequence.getfnops();
-
-			XtaInstruction xtaInst =((InstructionNode) inst).getXtaInstruction();
+			XtaInstruction xtaInst = inst.getXtaInstruction();
 			for(int pc : fnops){
-				
 				if(xtaInst.getPc() == pc){
 					XtaInstruction fnop = new NullInstruction("--FNOP--", xtaInst.getConfig(), 0, xtaInst.getPc(), 0);
 					InstructionNode fnopNode = new InstructionNode(fnop);
 					insts.add(fnopNode);
 				}
 			}
-
-
 			insts.add(inst);
 		}
 		m_insts = insts;
