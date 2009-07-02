@@ -98,7 +98,7 @@ public class StructureLoopNode extends ViewNode {
 			drawConnection(display, structureGc, loopReturnX, childMinY, loopReturnX, loopReturnY, loopWorstCase, loopBestCase);
 			drawConnection(display, structureGc, headerInX, loopReturnY, loopReturnX, loopReturnY, loopWorstCase, loopBestCase);
         } else {
-        	loopWorstCase = headerNode.isWorstCase();
+        	loopWorstCase = m_isWorstCase && headerNode.getTreeNode().getAttributes().getLoopIterations() > 0;
 			drawConnection(display, structureGc, headerOutX, headerY, headerOutX, loopReturnY, loopWorstCase, loopBestCase);
 			drawConnection(display, structureGc, headerInX, loopReturnY, headerOutX, loopReturnY, loopWorstCase, loopBestCase);
         }
@@ -134,22 +134,25 @@ public class StructureLoopNode extends ViewNode {
 		drawConnection(display, structureGc, right, midY, right, headerY, isWorstCase, isBestCase);
 	}
 
-	public void annotateXy(int xOffset, int yOffset) {
+	public void annotateNodes(int xOffset, int yOffset, boolean isBestCase, boolean isWorstCase) {
 		if (DEBUG) System.out.printf("Annotate StructureLoop (%d, %d\n", xOffset, yOffset);
 
 		m_pixelOffsetX = xOffset;
 		m_pixelOffsetY = yOffset;
 		
         ViewNode headerNode = getHeaderNode();
-		headerNode.annotateXy(xOffset + m_borderX + m_gapX, yOffset + m_borderY);
+		headerNode.annotateNodes(xOffset + m_borderX + m_gapX, yOffset + m_borderY, isBestCase, isWorstCase);
 
         int childOffsetX = m_borderX + headerNode.getPixelsX() + (2 * m_gapX);
         int childOffsetY = m_borderY + headerNode.getPixelsY() + m_gapY;
 		for (int i = 1; i < getChildren().size(); i++) {
 			ViewNode child = getChildren().get(i);
-    		child.annotateXy(xOffset + childOffsetX, yOffset + childOffsetY);
+    		child.annotateNodes(xOffset + childOffsetX, yOffset + childOffsetY, isBestCase, isWorstCase);
     		childOffsetY += child.getPixelsY() + m_gapY;
     	}
+
+		m_isBestCase = isBestCase;
+		m_isWorstCase = isWorstCase;
 	}
 
 	public boolean isFolded() {
