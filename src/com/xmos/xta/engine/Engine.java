@@ -904,13 +904,14 @@ public class Engine implements Notifier {
 					return false;
 				
 				ThreadHandler th = new ThreadHandler(id, this);
-				Collection<InstructionNode> threadStartNodes = 
-					th.getThreadNodes(sections.getThreadStartPoints(nodeId, coreId));
-				Collection<InstructionNode> threadStopNodes = 
-					th.getThreadNodes(sections.getThreadStopPoints(nodeId, coreId));				
+
+				Set<InstructionNode> threadStartNodes = 
+					th.getThreadNodes(sections.getThreadStartPoints(nodeId, coreId), "thread start");
+				Set<InstructionNode> threadStopNodes = 
+					th.getThreadNodes(sections.getThreadStopPoints(nodeId, coreId), "thread stop");
+
+				
 				threadStartNodes = th.ensureThreadStartExists(threadStartNodes);
-				
-				
 
 				SuccessorAdder sa = new SuccessorAdder(nodeId, coreId, id, sections, threadStopNodes, xeLoader, this);
 				if (!sa.process()) 
@@ -924,16 +925,15 @@ public class Engine implements Notifier {
 				Set<InstructionNode> starts = new TreeSet<InstructionNode>();
 				starts.addAll(fh.getKnownFuncStarts());
 				starts.addAll(threadStartNodes);
-				
+
 				ensureAllFunctionsAreNamed(xeLoader.getSymbolTable(nodeId, coreId), 
-						newFunctionNames.get(nodeId, coreId), starts);
+						newFunctionNames.get(nodeId, coreId), fh.getKnownFuncStarts(), threadStartNodes);
 				
 				SourceMapper sourceMapper = new SourceMapper(xeLoader, nodeId, coreId, starts, 
 						fileFinder, id, newFunctionNames.get(nodeId, coreId));
 				
 				newSourceMappers.add(nodeId, coreId, sourceMapper);
 				
-
 				UnreachableCodeFinder uca = new UnreachableCodeFinder();
 				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
 	
@@ -958,8 +958,11 @@ public class Engine implements Notifier {
 
 	private void ensureAllFunctionsAreNamed(SymbolTable symbolTable,
 			TreeMap<String, InstructionNode> functionName,
-			Set<InstructionNode> starts ) {
-		for(InstructionNode inst : starts){
+			Collection<InstructionNode> funcStarts, Set<InstructionNode> threadStarts ) {
+		
+		
+		
+		for(InstructionNode inst : funcStarts){
 			String name = symbolTable.functionName(inst.getStartPc());
 			
 			if(functionName.containsKey(name)){
@@ -968,15 +971,26 @@ public class Engine implements Notifier {
 				InstructionNode instNode = functionName.get(name);
 				
 				if(instNode.getStartPc() < inst.getStartPc()){
-					name = "unnamed_at_0x" + Integer.toHexString(inst.getStartPc());
+					name = "unnamed_function_at_0x" + Integer.toHexString(inst.getStartPc());
 					functionName.put(name, inst);
 				} else if(instNode.getStartPc() > inst.getStartPc()){
-					String newName = "unnamed_at_0x" + Integer.toHexString(instNode.getStartPc());
+					String newName = "unnamed_function_at_0x" + Integer.toHexString(instNode.getStartPc());
 					functionName.put(newName, instNode);
 					functionName.put(name, inst);
 				} else {
 					assert(false);
 				}
+			} else {
+				assert(!functionName.containsKey(name));
+				functionName.put(name, inst);
+			}
+		}
+		for(InstructionNode inst : threadStarts){
+			String name = symbolTable.functionName(inst.getStartPc());
+			
+			if(functionName.containsKey(name)){
+				name = "unnamed_thread_at_0x" + Integer.toHexString(inst.getStartPc());
+				functionName.put(name, inst);
 			} else {
 				assert(!functionName.containsKey(name));
 				functionName.put(name, inst);

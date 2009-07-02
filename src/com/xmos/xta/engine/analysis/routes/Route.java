@@ -120,6 +120,7 @@ public class Route {
 	public boolean setLoopIterations(Node node, long iterations) {
 		if (canSetLoopIterations(node)) {
     		Node enclosingLoopNode = node.getEnclosingLoopNode();
+    		clearPathIterations(enclosingLoopNode);
 			enclosingLoopNode.getAttributes().setLoopIterations(iterations);
 			enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
 			refreshDisplayedUnknowns();
@@ -311,5 +312,15 @@ public class Route {
 			parent.getAttributes().setDisplayUnknown(true);
 			parent = parent.getParent();		    
 		}
-	}		
+	}
+	
+	private void clearPathIterations(Node node) {
+	    node.traverse(0, new DefaultNodeTraverser() {
+	    	public boolean foundSectionNode(Node node, int depth) {
+	    		node.getAttributes().resetPathIterations();
+	        	return true;
+	    	}
+	    });		
+	}
 }
+

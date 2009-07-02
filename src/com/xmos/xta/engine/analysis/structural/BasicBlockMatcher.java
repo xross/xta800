@@ -3,6 +3,7 @@ package com.xmos.xta.engine.analysis.structural;
 import java.util.Collection;
 import java.util.LinkedList;
 import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
+import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
 
@@ -14,20 +15,25 @@ public class BasicBlockMatcher {
 
 	public boolean match(Node node, Node treeStart, Collection<Node> currentGraph) {
 		m_treeStart = treeStart;
-		LinkedList<Node> insts = new LinkedList<Node>();
+		LinkedList<Node> nodes = new LinkedList<Node>();
 		boolean isStart = isStart(node);
-		insts.add(node);
+		nodes.add(node);
 		if (isStart(node)) {
 			while (continueDown(node)) {
-				node = node.getNextNodes().iterator().next();
-				insts.add(node);
+				node = node.getNextNode();
+				nodes.add(node);
 			}
 		}
-		m_lastInstruction = insts.getLast();
+		m_lastInstruction = nodes.getLast();
 		if (isStart) {
+			LinkedList<InstructionNode> insts = new LinkedList<InstructionNode>();
+			for(Node n : nodes){
+				insts.add((InstructionNode)n);
+			}
+			
 			m_block = new BlockNode(insts);
 		}
-		if (isStart && insts.contains(treeStart)) {
+		if (isStart && nodes.contains(treeStart)) {
 			m_treeStart = m_block;
 		} else {
 			m_treeStart = treeStart;
@@ -47,19 +53,19 @@ public class BasicBlockMatcher {
 		if(node == m_treeStart){
 			return true;
 		} else 
-			if (node.getPrevNodes().size() == 0) {
+			if (node.getPrevNodesSize() == 0) {
 			return true;
-		} else if (node.getPrevNodes().size() == 1) {
-			Node prev = node.getPrevNodes().iterator().next();
+		} else if (node.getPrevNodesSize() == 1) {
+			Node prev = node.getPrevNode();
 			if (prev.isFunctionNode()) {
 				return true;
 			}
-			if (prev.getNextNodes().size() > 1) {
+			if (prev.getNextNodesSize() > 1) {
 				return true;
 			} else {
 				return false;
 			}
-		} else if (node.getPrevNodes().size() > 1) {
+		} else if (node.getPrevNodesSize() > 1) {
 			return true;
 		} else {
 			return false;
@@ -69,10 +75,10 @@ public class BasicBlockMatcher {
 	private boolean isEnd(Node node) {
 		
 		
-		if (node.getNextNodes().size() == 0) {
+		if (node.getNextNodesSize() == 0) {
 			return true;
-		} else if (node.getNextNodes().size() == 1) {
-			Node next = node.getNextNodes().iterator().next();
+		} else if (node.getNextNodesSize() == 1) {
+			Node next = node.getNextNode();
 			if(next == m_treeStart){
 				return true;
 			}
@@ -83,12 +89,12 @@ public class BasicBlockMatcher {
 			if (next.isFunctionNode()) {
 				return true;
 			}
-			if (next.getPrevNodes().size() > 1) {
+			if (next.getPrevNodesSize() > 1) {
 				return true;
 			} else {
 				return false;
 			}
-		} else if (node.getNextNodes().size() > 1) {
+		} else if (node.getNextNodesSize() > 1) {
 			return true;
 		} else {
 			return false;
@@ -96,8 +102,8 @@ public class BasicBlockMatcher {
 	}
 
 	private boolean continueDown(Node node) {
-		if (node.getNextNodes().size() == 1 && !isEnd(node) 
-				&& !node.getDominators().contains(node.getNextNodes().iterator().next())) {
+		if (node.getNextNodesSize() == 1 && !isEnd(node)
+				&& !node.dominatorsContain(node.getNextNode())) {
 			return true;
 		} else {
 			return false;

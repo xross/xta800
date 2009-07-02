@@ -19,23 +19,23 @@ public class ThreadHandler {
 		m_notifier = notifier;
 	}
 
-	public Collection<InstructionNode> getThreadNodes(Collection<Integer> threadPcs) {
-		Collection<InstructionNode> nodes = new TreeSet<InstructionNode>();
+
+	public Set<InstructionNode> getThreadNodes(Collection<Integer> threadPcs, String type) {
+		Set<InstructionNode> nodes = new TreeSet<InstructionNode>();
 		for(int pc : threadPcs){
 			InstructionNode threadNode = m_instDecoder.getNode(pc);
 			if (threadNode != null){
 				nodes.add(threadNode);
 			} else {
 				m_notifier.notify(Notifier.NOTIFY_WARNING,
-						"Failed to find PC 0x" + Integer.toHexString(pc));
+						"Failed to find " + type + " at PC 0x" + Integer.toHexString(pc));
 			}
 		}
 		return nodes;
 	}
 	
-	public Collection<InstructionNode> ensureThreadStartExists(Collection<InstructionNode> threadStarts){
-		
-		
+
+	public Set<InstructionNode> ensureThreadStartExists(Set<InstructionNode> threadStarts){
 		if(threadStarts.isEmpty() || threadStarts == null){
 			m_notifier.notify(Notifier.NOTIFY_WARNING,
 					"No thread starts found, assuming master thread starts at 0x10000");
@@ -44,10 +44,9 @@ public class ThreadHandler {
 				threadStarts.add(threadNode);
 			} else {
 				m_notifier.notify(Notifier.NOTIFY_WARNING,
-						"Failed to find PC 0x" + Integer.toHexString(0x10000));
+						"Failed to find thread start at PC 0x" + Integer.toHexString(0x10000));
 			}
 		}
-		
 		return threadStarts;
 	}
 	
@@ -62,11 +61,10 @@ public class ThreadHandler {
 		}
 	}
 	
-	private void findTerminals(Node node, Set<Node> seen,
-			Set<Node> terminals) {
+	private void findTerminals(Node node, Set<Node> seen, Set<Node> terminals) {
 		seen.add(node);
 		
-		if(node.getNextNodes().isEmpty()){
+		if(node.getNextNodesSize() == 0){
 			assert(!terminals.contains(node));
 			terminals.add(node);
 		}
@@ -75,7 +73,6 @@ public class ThreadHandler {
 			if(!seen.contains(next)){
 				findTerminals(next, seen, terminals);
 			}
-		}
-		
+		}	
 	}
 }

@@ -71,7 +71,7 @@ public class RouteConstructor {
 			if (functions != null) {
 				for(Node function : functions){
 					if(m_subRoutes.isEmpty()){
-						m_subRoutes.add(function.deepCopy(new TreeMap<Integer, FunctionNode>()));
+						m_subRoutes.add(function.deepCopy(new TreeMap<Integer, FunctionNode>(), m_engine));
 					} else {
 						break;
 					}
@@ -80,7 +80,6 @@ public class RouteConstructor {
 			seenEndPoint = true;
 			setParents();
 			setUnknowns();				
-			setInitialIterations();
 			break;
 
 		case PATH:
@@ -119,13 +118,12 @@ public class RouteConstructor {
 					baseNode = sln.getLoop();
 				}
 				
-				Node newGraph = baseNode.deepCopy(new TreeMap<Integer, FunctionNode>());
+				Node newGraph = baseNode.deepCopy(new TreeMap<Integer, FunctionNode>(), m_engine);
 							
 				m_subRoutes.add(newGraph);
 			}
 			setParents();
 			setUnknowns();				
-			setInitialIterations();
 			sortSubRoutes();
 			break;
 		default:
@@ -219,13 +217,13 @@ public class RouteConstructor {
 		// boundaries
 		Node startBlock = null;
 		if(!start.isBlockNode()){
-			Node currentNode = start;
-			List<Node> startList = new LinkedList<Node>();
+			InstructionNode currentNode = (InstructionNode)start;
+			List<InstructionNode> startList = new LinkedList<InstructionNode>();
 			
 			startList.add(currentNode);
 	
-			while (currentNode.getNextNodes().size() == 1 && currentNode.getNextNodes().iterator().next().isInstructionNode()) {
-				currentNode = currentNode.getNextNodes().iterator().next();
+			while (currentNode.getNextNodesSize() == 1 && currentNode.getNextNode().isInstructionNode()) {
+				currentNode = (InstructionNode)currentNode.getNextNode();
 				startList.add(currentNode);
 			}
 			startBlock = new BlockNode(startList);
@@ -246,12 +244,12 @@ public class RouteConstructor {
 		// from every end node in the working set crawl upwards stopping at
 		// basic block boundaries
 		for (Node endNode : endNodes) {
-			if (workingSet.contains(endNode) && !endNode.isBlockNode()) {
-				List<Node> endList = new LinkedList<Node>();
-				Node end = endNode;
+			if (workingSet.contains(endNode) && endNode.isInstructionNode()) {
+				List<InstructionNode> endList = new LinkedList<InstructionNode>();
+				InstructionNode end = (InstructionNode)endNode;
 				endList.add(end);
-				while (end.getPrevNodes().size() == 1 && end.getPrevNodes().iterator().next().isInstructionNode()) {
-					end = end.getPrevNodes().iterator().next();
+				while (end.getPrevNodesSize() == 1 && end.getPrevNode().isInstructionNode()) {
+					end = (InstructionNode)end.getPrevNode();
 					endList.add(0, end);
 				}
 				BlockNode endBlock = new BlockNode(endList);
@@ -278,7 +276,7 @@ public class RouteConstructor {
 			Node excludedNode = m_excludedRouteNodes.iterator().next();
 			for(Node prev : excludedNode.getPrevNodes()){
 				prev.removeNextNode(excludedNode);
-				if(prev.getNextNodes().size() == 0){
+				if(prev.getNextNodesSize() == 0){
 					m_excludedRouteNodes.add(prev);
 				}
 			}
@@ -338,22 +336,7 @@ public class RouteConstructor {
 			}
 		}
 	}
-	
-	private void setInitialIterations() {		
-		for (Node node : m_subRoutes) {
-			// Sets the top level nodes to iterate once..
-			node.getAttributes().setLoopIterations(1);
-		    
-			// Sets all the loops to zero iterations..							
-			node.traverse(0, new DefaultNodeTraverser() {
-		        public boolean foundLoopNode(Node node, int depth) {
-		           	node.getAttributes().setLoopIterations(0);
-		         	return true;
-		        }	        	
-		    });			
-		}
-	}
-	
+		
 	private void setUnknowns() {
 		for (Node node : m_subRoutes) {
 			node.traverse(0, new DefaultNodeTraverser() {

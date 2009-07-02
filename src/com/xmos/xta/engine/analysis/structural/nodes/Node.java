@@ -1,15 +1,14 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
-import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.edges.Edges;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
@@ -19,19 +18,9 @@ public abstract class Node implements Comparable<Node>{
 	
 	int m_id;
 	Node m_parent;
-	
 	boolean m_dominatorSetIsCompleteSet;
-	Set<Node> m_nextNodes;
-	Set<Node> m_prevNodes;
+	Edges m_edges;
 	Node m_branchLinkReturn;
-	Set<Node> m_dominators;
-		
-	Set<Node> m_branchTargets;
-	Set<Integer> m_branchTargetPcs;
-
-	Map<Node, Integer> m_parentToStartIbuffer;
-	Collection<InstructionBuffer> m_iBuffersDueToWorstTime;
-	Collection<InstructionBuffer> m_iBuffersDueToBestTime;
 
 	private boolean m_isFolded;
 
@@ -44,14 +33,13 @@ public abstract class Node implements Comparable<Node>{
 	public abstract NodeAttributes getAttributes();
 	
 	public abstract Node shallowCopy();
-	public abstract Node deepCopy(Map<Integer, FunctionNode> startPcs);
+	public abstract Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine);
 			
 	public abstract List<Node> getChildren();
 	public abstract List<Node> getImmediateChildren();
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract Collection<Node> whatsBefore(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
-	public abstract long getError(Case c);
 	public abstract void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration);
 	public abstract Set<Integer> getPCs();	
 	public abstract LinkedList<XtaInstruction> getInstructions();
@@ -62,39 +50,17 @@ public abstract class Node implements Comparable<Node>{
 	public abstract Collection<Node> getContainedNodes();	
 	public abstract int getStartPc();
 	
-	public static int getNodeCount(){
-		return s_numNodes;
-	}
-
-	public static void resetNodeCount() {
-		s_numNodes = 0;
-	}
 	
 	public Node() {
-		m_branchTargets = new TreeSet<Node>();
-		m_branchTargetPcs = new TreeSet<Integer>();
-		m_nextNodes = new TreeSet<Node>();
-		m_prevNodes = new TreeSet<Node>();
-		m_dominators = new TreeSet<Node>();
-		m_iBuffersDueToWorstTime = new TreeSet<InstructionBuffer>();
-		m_iBuffersDueToBestTime = new TreeSet<InstructionBuffer>();
 		m_id = s_numNodes++;
-
+		m_edges = new Edges();
 		m_isFolded = false;
 	}
 	
 	public Node(Node node) {
-		m_branchTargets = new TreeSet<Node>(node.m_branchTargets);
-		m_branchTargetPcs = new TreeSet<Integer>(node.m_branchTargetPcs);
-		m_nextNodes = new TreeSet<Node>(node.m_nextNodes);
-		m_prevNodes = new TreeSet<Node>(node.m_prevNodes);
-		m_dominators = new TreeSet<Node>(node.m_prevNodes);
-		m_iBuffersDueToWorstTime = new TreeSet<InstructionBuffer>();
-		m_iBuffersDueToWorstTime.addAll(node.m_iBuffersDueToWorstTime);
-		m_iBuffersDueToBestTime = new TreeSet<InstructionBuffer>(node.m_iBuffersDueToBestTime);
-		m_iBuffersDueToBestTime.addAll(node.m_iBuffersDueToBestTime);
+		//FIXME i dont think any of this copying comes to any use!
+		m_edges = new Edges(node.m_edges);
 		m_id = s_numNodes++;
-
 		m_isFolded = false;
 	}
 	
@@ -103,15 +69,16 @@ public abstract class Node implements Comparable<Node>{
 	}
 
 	public int compareTo(Node node) {	
-		
+	/*
 		double thisTimeTaken = getAttributes().getTimeTaken(Case.WORST, false);
 		double nodeTimeTaken = node.getAttributes().getTimeTaken(Case.WORST, false);
 
 		if (thisTimeTaken - nodeTimeTaken != 0) {
 			return Integer.signum((int) (thisTimeTaken - nodeTimeTaken));
 		} else {
+		*/
 			return Integer.signum(m_id - node.m_id);			
-		}			
+		//}			
     }
 	
 	public void setBranchLinkReturn(Node bl){
@@ -123,46 +90,80 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public Set<Node> getDominators() {
-		return m_dominators;
+		return m_edges.getDominators();
 	}
 			
+	public boolean dominatorsContain(Node node){
+		return m_edges.dominatorsContain(node);
+	}
+	
+	public void clearDominators(){
+		m_edges.clearDominators();
+	}
+	
+	public void addDominator(Node node){
+		m_edges.addDominator(node);
+	}
+	
+	public void addAllDominators(Collection<Node> nodes){
+		m_edges.addAllDominators(nodes);
+	}
+
 	public String toString(){
 		return "Node" + m_id;  
 	}
 	
 	public Set<Node> getNextNodes(){
-		return m_nextNodes;
+		return m_edges.getNextNodes();
 	}
 	
 	public Set<Node> getPrevNodes(){
-		return m_prevNodes;
+		return m_edges.getPrevNodes();
+	}
+	
+	public Node getNextNode(){
+		return m_edges.getNextNode();
+	}
+	
+	public Node getPrevNode(){
+		return m_edges.getPrevNode();
+	}
+	
+	public void clearNextNodes(){
+		m_edges.clearNextNodes();
+	}
+	
+	public void clearPrevNodes(){
+		m_edges.clearPrevNodes();
+	}
+	
+	public int getNextNodesSize(){
+		return m_edges.getNextNodesSize();
+	}
+	
+	public int getPrevNodesSize(){
+		return m_edges.getPrevNodesSize();
 	}
 	
 	public void addNextNode(Node node){
-		if (!m_nextNodes.contains(node)) {
-			m_nextNodes.add(node);
-		}
+		m_edges.addNextNode(node);
 	}
 	
 	public void addPrevNode(Node node){
-		if (!m_prevNodes.contains(node)) {
-			m_prevNodes.add(node);
-		}
+		m_edges.addPrevNode(node);
 	}
 	
 	public void removePrevNode(Node node){
-		assert(m_prevNodes.contains(node));
-		if (m_prevNodes.contains(node)) {
-			m_prevNodes.remove(node);
-		}
+		m_edges.removePrevNode(node);
 	}
 	
 	public void removeNextNode(Node node){
-		assert(m_nextNodes.contains(node));
-		if (m_nextNodes.contains(node)) {
-			m_nextNodes.remove(node);
-		}
+		m_edges.removeNextNode(node);
 	}
+	
+	
+	
+	
 
 	public void setDominatorSetComplete(boolean b) {
 		m_dominatorSetIsCompleteSet = b;
@@ -173,9 +174,7 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public void freeMemory() {
-		m_prevNodes.clear();
-		m_nextNodes.clear();
-		m_dominators.clear();
+		m_edges.freeMemory();
 	}
 	
 	public Node getParent(){
@@ -289,19 +288,15 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public void addBranchTarget(Node newNode){
-		if(newNode == null) return;
-		m_branchTargets.add(newNode);
+		m_edges.addBranchTarget(newNode);
 	}
 	
 	public Set<Node> getBranchTargets(){
-		return m_branchTargets;
+		return m_edges.getBranchTargets();
 	}
 	
 	public boolean branchesTo(Node block) {
-		return m_branchTargets.contains(block);
-	}
-	public boolean branchesTo(int pc) {
-		return m_branchTargetPcs.contains(pc);
+		return m_edges.branchesTo(block);
 	}
 		
 	public String getDescription() {
@@ -327,11 +322,6 @@ public abstract class Node implements Comparable<Node>{
 		return null;
 	}
 
-	public List<Node> getAllSetOptions() {
-		assert(false);
-		return null;
-	}
-	
 	public boolean isSectionOptional() {
 		return false;
 	}

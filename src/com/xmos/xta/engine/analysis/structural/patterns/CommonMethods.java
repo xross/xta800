@@ -7,8 +7,8 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 public class CommonMethods {
 	
 	public static void disconnect(Node leaf, Node root){
-		root.getNextNodes().remove(leaf);
-		leaf.getPrevNodes().remove(root);
+		root.removeNextNode(leaf);
+		leaf.removePrevNode(root);
 	}
 	
 	public static void connect(Node leaf, Node root){
@@ -18,7 +18,7 @@ public class CommonMethods {
 	
 	public static boolean wedgeUp(Node node, Collection<Node> workingSet){
 
-		if (node.getNextNodes().size() < 2) {
+		if (node.getNextNodesSize() < 2) {
 			return false;
 		}
 		Collection<Node> newNodes = new TreeSet<Node>();
@@ -48,9 +48,12 @@ public class CommonMethods {
 		return true;
 	}
 		
+	//TODO find out why these functions aren't symmetric
+	
+	
 	public static boolean wedgeDown(Node node, Collection<Node> workingSet){
 
-		if (node.getPrevNodes().size() < 2) {
+		if (node.getPrevNodesSize() < 2) {
 			return false;
 		}
 		
@@ -62,7 +65,9 @@ public class CommonMethods {
 			Node newNode = node.shallowCopy();
 			newNodes.add(newNode);
 
-			prev.getNextNodes().remove(node);
+			prev.removeNextNode(node);
+			
+			//prev.getNextNodes().remove(node);
 			prev.addNextNode(newNode);
 			
 			//add a connection to the new node
@@ -70,7 +75,7 @@ public class CommonMethods {
 					
 			for(Node next : node.getNextNodes()){
 				if(next != node){
-					next.getPrevNodes().remove(node);
+					next.removePrevNode(node);
 					next.addPrevNode(newNode);
 					newNode.addNextNode(next);
 				}

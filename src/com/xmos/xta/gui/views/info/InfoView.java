@@ -25,6 +25,7 @@ import com.xmos.xta.gui.views.info.sections.AllEndpointsViewer;
 import com.xmos.xta.gui.views.info.sections.AllSrcLabelsViewer;
 import com.xmos.xta.gui.views.info.sections.BranchesViewer;
 import com.xmos.xta.gui.views.info.sections.EndpointsViewer;
+import com.xmos.xta.gui.views.info.sections.LabelsViewer;
 import com.xmos.xta.gui.views.info.sections.SrcLabelsViewer;
 import com.xmos.xta.gui.views.info.unknowns.KnownsViewer;
 import com.xmos.xta.gui.views.info.unknowns.UnknownsViewer;
@@ -41,6 +42,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 	private SrcLabelsViewer m_srcLabels;
 	private AllSrcLabelsViewer m_allSrcLabels;	
 	private BranchesViewer m_branches;	
+	private LabelsViewer m_labels;	
 	
 	public InfoView() {
 		if (DEBUG) System.out.printf("Info()\n");
@@ -65,9 +67,17 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 				createNewViewer("All SrcLabels", folders));		
 		m_branches = new BranchesViewer(parent.getDisplay(), parent, getSite(),
 				createNewViewer("Branches", folders));	
+		m_labels = new LabelsViewer(parent.getDisplay(), parent, getSite(),
+				createNewViewer("Labels", folders));	
 
 		m_unknowns.update();
 		m_knowns.update();
+		m_endpoints.update();
+		m_allEndpoints.update();
+		m_srcLabels.update();
+		m_allSrcLabels.update();
+		m_branches.update();
+		m_labels.update();
 
 		getSite().getPage().addSelectionListener(this);
 	}
@@ -102,6 +112,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 			m_srcLabels.update();
 			m_allSrcLabels.update();
 			m_branches.update();
+			m_labels.update();
 		}
 	}
 

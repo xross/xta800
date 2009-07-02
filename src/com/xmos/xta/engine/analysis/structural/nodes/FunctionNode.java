@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
@@ -59,20 +62,22 @@ public class FunctionNode extends IBufferNode {
     	return new FunctionNode(this);
 	}
 	
-	public Node deepCopy(Map<Integer, FunctionNode> startPcs){
+	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine){
 		FunctionNode fn = new FunctionNode();
 		fn.m_functionName = m_functionName;
 		fn.m_knownFunction = m_knownFunction;
 		fn.m_branchTarget = m_branchTarget;
 		
 		if(m_function != null){
-			fn.m_function = m_function.deepCopy(startPcs);		
+			engine.provideFeedback("linking function: " + m_function.getFunctionName());
+			fn.m_function = m_function.deepCopy(startPcs, engine);		
+			
 		} else if(m_branchTarget != null){
 			int pc = m_branchTarget.getStartPc();
 			String fnName = startPcs.get(pc).getFunctionName();
-			fn.setFunction(fnName, startPcs.get(pc).getFunction().deepCopy(startPcs));
+			engine.provideFeedback("linking function: " + fnName);
+			fn.setFunction(fnName, startPcs.get(pc).getFunction().deepCopy(startPcs, engine));
 		}
-		
 		fn.m_attributes = new NodeAttributes(fn);
 		return fn;
 	}
@@ -204,15 +209,6 @@ public class FunctionNode extends IBufferNode {
 		}
 	}
 
-	public long getError(Case c) {
-		if(m_knownFunction){
-			return m_function.getError(c);
-		} else {
-			return 0;
-		}
-	
-	}
-
 	public Collection<Node> whatsBefore(Node node) {
 		if(getParent()!= null){
 			return getParent().whatsBefore(this);
@@ -231,6 +227,20 @@ public class FunctionNode extends IBufferNode {
 	public void insertFnops() {
 
 		
+	}
+	
+	public Collection<FunctionNode> getContainedFunctions() {
+		final Collection<FunctionNode> functions = new TreeSet<FunctionNode>();
+		
+		if(m_function != null){
+			m_function.traverse(0, new DefaultNodeTraverser() {
+				public boolean foundFunctionNode(Node node, int depth) {
+					functions.add((FunctionNode) node);
+					return true;
+				}
+			});
+		}
+		return functions;
 	}
 	
 }

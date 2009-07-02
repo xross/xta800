@@ -85,18 +85,32 @@ public class StructureDisplayer {
 	}
 	
 	private void displayAttributes(Node node) {		
-		if ((m_verbosity >= 50) || (DEBUG_ATTRIBUTES == true)) {
+		if ((m_verbosity >= 50) || (DEBUG_ATTRIBUTES == true)) {			
 			NodeAttributes nodeAttributes = node.getAttributes();
-			String scope  = nodeAttributes.getIsAbsolute() ? "ABS" : "REL";
-			String header = nodeAttributes.getIsLoopHeader() ? "H" : "B";
-			String optional = node.isSectionOptional() ? "OPT" : "COM";
-
-			m_console.display(String.format(" (%s, %s, %s: %d, %d, %d, %d)", 
-					scope, header, optional,
-					nodeAttributes.getNumIterations(Case.WORST),
-					nodeAttributes.getNumIterations(Case.BEST),
-					nodeAttributes.getTotalIterations(Case.WORST),
-					nodeAttributes.getTotalIterations(Case.BEST)));			
+			
+			if (node.isLoopNode()) {
+				m_console.display(String.format(" [%d]",
+						nodeAttributes.getLoopIterations()));
+				
+				if (nodeAttributes.getIsAbsolute())
+					m_console.display(" (ABSOLUTE)"); 				
+				
+			} else if (node.isSectionNode()) {
+				Node enclosingLoopNode = node.getEnclosingLoopNode();
+				if (enclosingLoopNode != null) {
+	                for (Node option : node.getChildren()) {
+	                	String optionSet = nodeAttributes.getSetOption(option) ? "T" : "F";
+	                	m_console.display(String.format("[%s,%d,%d]", optionSet, 
+	                			nodeAttributes.getLoopPathIterations(enclosingLoopNode, option, Case.WORST),
+	                			nodeAttributes.getLoopPathIterations(enclosingLoopNode, option, Case.BEST)));
+	                }					
+				}
+				if (node.isSectionOptional())		
+				    m_console.display(" (OPTIONAL)"); 				
+				
+			} else if (node.getAttributes().getIsLoopHeader())  {
+				m_console.display(" (HEADER)"); 
+			}			
 		}
 	}
 	

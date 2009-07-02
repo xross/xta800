@@ -1,7 +1,5 @@
 package com.xmos.xta.engine.analysis.structural.nodes.attributes;
 
-import java.util.Map;
-
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
@@ -25,8 +23,6 @@ public class NodeAttributes {
 	private UnknownState m_unknownState; 	
     private boolean m_displayUnknown;
 
-	private long m_worstCaseIterations;
-	private long m_bestCaseIterations;
 	private boolean m_isAbsolute;	
 	private boolean m_isLoopHeader;
 
@@ -34,8 +30,6 @@ public class NodeAttributes {
 		m_node = node;
 		m_isUnknown = false;
 		m_unknownType = null;		
-		m_worstCaseIterations = 0;
-		m_bestCaseIterations = 0;
 		m_isAbsolute = false;
 		m_isLoopHeader = false;				
 	}
@@ -48,51 +42,31 @@ public class NodeAttributes {
 	    String timingSummary = "";
 	    
 		// Displays the worst case timing.
-	    long worstCaseIterations = getTotalIterations(Case.WORST);
-	    boolean worstCaseTimingInvalid = (worstCaseIterations == 0);
-	    String worstCaseTimingStr = worstCaseTimingInvalid ? 
-	    		"-" : String.format("%.1fns", getTimeTaken(Case.WORST, false));
-	    
+	    String worstCaseTimingStr = String.format("%.1fns", getTimeTaken(Case.WORST, false));	    
 	    timingSummary += String.format(" : %s", worstCaseTimingStr);
-		if (m_node.isBlockNode() && !worstCaseTimingInvalid) {					
-			timingSummary += String.format(" (x %d)", worstCaseIterations);
+		if (m_node.isBlockNode()) {					
+			timingSummary += String.format(" (x %d)", getTotalIterations(Case.WORST));
 		}
 
 		// Displays the best case timing.
-	    long bestCaseIterations = getTotalIterations(Case.BEST);
-	    boolean bestCaseTimingInvalid = (bestCaseIterations == 0);
-	    String bestCaseTimingStr = bestCaseTimingInvalid ? 
-	    		"-" : String.format("%.1fns", getTimeTaken(Case.BEST, false));
-				
+        String bestCaseTimingStr = String.format("%.1fns", getTimeTaken(Case.BEST, false));
 	    timingSummary += String.format(" / %s", bestCaseTimingStr);
-		if (m_node.isBlockNode() && !bestCaseTimingInvalid) {
-			timingSummary += String.format(" (x %d)", bestCaseIterations);
+		if (m_node.isBlockNode()) {
+			timingSummary += String.format(" (x %d)", getTotalIterations(Case.BEST));
 		}
 	    return timingSummary;
 	}
 	
 	public String getTimingDetails() {		
-		String worstCaseTimeTaken = "-";
-		String worstCaseThreadCycles = "-";
-		String worstCaseInstructions = "-";
-		String worstCaseFnops = "-";
-		if (getTotalIterations(Case.WORST) != 0) {
-			worstCaseTimeTaken    = String.format("%.1fns", getTimeTaken(Case.WORST, false));
-			worstCaseThreadCycles = String.format("%d", getNumCycles(Case.WORST, false));
-			worstCaseInstructions = String.format("%d", getNumInstructions(Case.WORST, false));
-			worstCaseFnops        = String.format("%d", getNumFNops(Case.WORST, false));
-		}
+		String worstCaseTimeTaken    = String.format("%.1fns", getTimeTaken(Case.WORST, false));
+		String worstCaseThreadCycles = String.format("%d", getNumCycles(Case.WORST, false));
+		String worstCaseInstructions = String.format("%d", getNumInstructions(Case.WORST, false));
+		String worstCaseFnops        = String.format("%d", getNumFNops(Case.WORST, false));
 		
-		String bestCaseTimeTaken = "-";
-		String bestCaseThreadCycles = "-";
-		String bestCaseInstructions = "-";
-		String bestCaseFnops = "-";		
-		if (getTotalIterations(Case.BEST) != 0) {
-			bestCaseTimeTaken    = String.format("%.1fns", getTimeTaken(Case.BEST, false));
-			bestCaseThreadCycles = String.format("%d", getNumCycles(Case.BEST, false));
-			bestCaseInstructions = String.format("%d", getNumInstructions(Case.BEST, false));
-			bestCaseFnops        = String.format("%d", getNumFNops(Case.BEST, false));			
-		}
+		String bestCaseTimeTaken    = String.format("%.1fns", getTimeTaken(Case.BEST, false));
+		String bestCaseThreadCycles = String.format("%d", getNumCycles(Case.BEST, false));
+		String bestCaseInstructions = String.format("%d", getNumInstructions(Case.BEST, false));
+		String bestCaseFnops        = String.format("%d", getNumFNops(Case.BEST, false));			
 		
 		return String.format("%s %s\n", m_node.getTypeName(), m_node.getFunctionName()) +
     	       String.format("Time taken:       %s / %s\n", worstCaseTimeTaken, bestCaseTimeTaken) +
@@ -223,69 +197,81 @@ public class NodeAttributes {
 	// Loop Iteration Methods
 	// --------------------------------------------------------------------- //	
 	public long getTotalIterations(Case c) {
-		// Need to treat relative and absolute loops differently..
 		Node enclosingLoopNode = getNode().getEnclosingLoopNode();
 		if (enclosingLoopNode != null) {
+
+			// We are inside a loop, so we need to get the loop iterations.
+			// If we are in a section, then get them from the section.
+			// Otherwise, take the iterations from the enclosing loop.
+			long numIterations = 0;
+			boolean foundSectionIterations = false;
+			Node node = getNode();
+			while (node != enclosingLoopNode) {				
+				if (node.getParent().isSectionNode()) {
+					numIterations = node.getParent().getAttributes().getLoopPathIterations(enclosingLoopNode, node, c);
+					foundSectionIterations = true;
+					break;
+				}
+				node = node.getParent();
+			}
+			if (!foundSectionIterations) {
+				numIterations = enclosingLoopNode.getAttributes().getLoopIterations();
+			}
+
+			// Need to treat relative and absolute loops differently..
 			if (!enclosingLoopNode.getAttributes().getIsAbsolute()) {				
 				// We are within a relative loop, so multiply up by the 
-				// iterations of the above loops. 
-				long cummulativeIterations = enclosingLoopNode.getAttributes().getCummulativeIterations(c);				
+				// iterations of the above loops. 				
+				long cummulativeIterations = 1;
+				Node n = enclosingLoopNode.getParent();
+				while (n != null) {
+                    if (n.isLoopNode() || n.isSelfLoopNode()) {
+                    	cummulativeIterations *= n.getAttributes().getLoopIterations();
+                    }					
+					n = n.getParent();
+				}				
 				long headerAdjustment = getIsLoopHeader() ? 1 : 0;				
-				return (getNumIterations(c) + headerAdjustment) * cummulativeIterations;
+				return (numIterations + headerAdjustment) * cummulativeIterations;
 				
 		    } else {
 		    	// We are within an absolute loop, so no need to multiply
 		    	// up with the above iterations.
-		    	long headerAdjustment = getIsLoopHeader() ? enclosingLoopNode.getAttributes().getNumIterations(c) : 0;		    	
-				return getNumIterations(c) + headerAdjustment;		    	
+		    	long headerAdjustment = getIsLoopHeader() ? numIterations : 0;		    	
+				return numIterations + headerAdjustment;		    	
 		    }
 		}
 		// At the outermost scope, i.e. not inside a loop..
-		return getNumIterations(c);
+		return 1;
+	}
+
+	public void setLoopIterations(long numIterations) {
+		assert(false);		
 	}
 	
-	public void setLoopIterations(long numIterations) {
-		setLoopIterations(Case.WORST, numIterations);
-		setLoopIterations(Case.BEST, numIterations);
-	}
-
-	public void setLoopIterations(Case c, long numIterations) {
-		if (!getNode().isLoopNode() &&  !getNode().isSelfLoopNode())
-		    setNumIterations(c, numIterations);
-
-   		for (Node child : m_node.getChildren()) {
-   			if (child.isLoopNode()) {
-   				// Just set the number of iterations on the loop, 
-   				// but don't propagate it down to its children
-   				child.getAttributes().setNumIterations(c, numIterations);
-   				
-   			} else {   				
-   			    child.getAttributes().setLoopIterations(c, numIterations);
-   			}			
-    	}		
+	public long getLoopIterations() {
+		assert(false);
+		return 0;
 	}
 	
 	public boolean setLoopPathIterations(Node loopNode, Node optionNode, long numIterations) {
 		assert(false);
 		return false;
 	}
-	
-	public void setNumIterations(Case c, long numIterations) {
-		switch (c) {
-		case WORST: m_worstCaseIterations = numIterations; break;
-		case BEST:  m_bestCaseIterations = numIterations; break;		
-		}
-	}
-	
-	public long getNumIterations(Case c) {
-		switch (c) {
-		case WORST: return m_worstCaseIterations;
-		case BEST:  return m_bestCaseIterations;
-		}
+		
+	public long getLoopPathIterations(Node loopNode, Node optionNode, Case c) {
 		assert(false);
 		return 0;
 	}
-
+	
+	public boolean getSetOption(Node optionNode) {
+		assert(false);
+		return false;
+	}
+	
+	public void resetPathIterations() {
+		assert(false);		
+	}
+	
 	public void setIsAbsolute(boolean isAbsolute) {
 		m_isAbsolute = isAbsolute;
 		for (Node child : m_node.getChildren()) {
@@ -311,20 +297,7 @@ public class NodeAttributes {
 	public boolean getIsLoopHeader() {
 		return m_isLoopHeader;
 	}		
-	
-	public Map<Node, Boolean> getSetOptions() {
-		assert(false);
-		return null;
-	}
-	
-	long getCummulativeIterations(Case c) {
-		Node parent = getNode().getParent();
-		if (parent != null) {
-			return parent.getAttributes().getCummulativeIterations(c);
-		}
-		return 1;
-	}
-		
+
 	// --------------------------------------------------------------------- //
 	// Instruction Time Methods
 	// --------------------------------------------------------------------- //

@@ -1,7 +1,6 @@
 package com.xmos.xta.engine.analysis.structural.nodes.attributes;
 
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
@@ -9,9 +8,9 @@ public class InstructionNodeAttributes extends NodeAttributes {
 	private long m_numCycles;
 	private XtaInstruction m_instruction;
 
-	public InstructionNodeAttributes(Node node) {
+	public InstructionNodeAttributes(InstructionNode node) {
 		super(node);
-		m_instruction = ((InstructionNode)node).getXtaInstruction();
+		m_instruction = node.getXtaInstruction();
 		m_numCycles = m_instruction.getNumCycles();
 	}
 	
