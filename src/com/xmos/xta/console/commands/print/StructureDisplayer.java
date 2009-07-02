@@ -36,7 +36,8 @@ public class StructureDisplayer {
 	private void displayNodeInfo(Node node, int depth) {
 		if (node.isInstructionNode() && (m_verbosity <= 0))
 			return;
-		
+		if (node.isNullNode() && (m_verbosity <= 50))
+			return;
 		printIndent(depth);
 		printModifiers(node, depth);
 		displayNodeName(node);

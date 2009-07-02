@@ -3,8 +3,8 @@ package com.xmos.xta.engine.analysis.controlflow;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
@@ -46,9 +46,9 @@ public class FunctionHandler {
 	 * All branch and link targets have to be set before this can be reliably run. 
 	 */
 	public boolean addFunctions(){
-		m_instToFunc = new TreeMap<InstructionNode, FunctionNode>();
-		m_functions = new TreeSet<FunctionNode>();
-		m_pseudoFunctions = new TreeSet<Node>();
+		m_instToFunc = new HashMap<InstructionNode, FunctionNode>();
+		m_functions = new HashSet<FunctionNode>();
+		m_pseudoFunctions = new HashSet<Node>();
 		
 		for (InstructionNode instruction : m_instDecoder.getInstructions() ){
 			
@@ -58,7 +58,7 @@ public class FunctionHandler {
 			if(inst.isLink()){
 				
 				if(instruction.getNextNodesSize() > 0){
-					Collection<FunctionNode> newFunctions = new TreeSet<FunctionNode>();
+					Collection<FunctionNode> newFunctions = new HashSet<FunctionNode>();
 					for(Node next : instruction.getNextNodes()){
 						InstructionNode instNode  = (InstructionNode)next;
 						FunctionNode fn = new FunctionNode(instNode);
@@ -88,15 +88,15 @@ public class FunctionHandler {
 		}
 		
 		for(Node node : m_instToFunc.keySet()){
-			if(!canReturn(node, new TreeSet<Node>())){
+			if(!canReturn(node, new HashSet<Node>())){
 				CommonMethods.disconnect(m_instToFunc.get(node).getNextNode(), m_instToFunc.get(node));
 			}
 		}		
 		
 		for(InstructionNode functionStart : getKnownFuncStarts()){
 			NullNode nullNode = new NullNode();
-			Set<Node> terminals = new TreeSet<Node>();
-			Set<Node> seen = new TreeSet<Node>();
+			Set<Node> terminals = new HashSet<Node>();
+			Set<Node> seen = new HashSet<Node>();
 			findTerminals(functionStart, seen, terminals);
 			
 			for(Node terminal : terminals){

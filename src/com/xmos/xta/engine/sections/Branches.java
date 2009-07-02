@@ -1,25 +1,24 @@
 package com.xmos.xta.engine.sections;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
 import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.Notifier;
 
 public class Branches extends Section {	
-	private TreeMap<Integer, TreeSet<Integer>> m_branches;
+	private HashMap<Integer, HashSet<Integer>> m_branches;
 
 	Branches(int nodeId, int coreId, Notifier notifier) {
 		super(nodeId, coreId, notifier);
 
-		m_branches = new TreeMap<Integer, TreeSet<Integer>>(); 
+		m_branches = new HashMap<Integer, HashSet<Integer>>(); 
 	}
 	
 	boolean add(int fromPc, int toPc) {
 		if (!m_branches.containsKey(fromPc)) {
-			TreeSet<Integer> toPcs = new TreeSet<Integer>();
+			HashSet<Integer> toPcs = new HashSet<Integer>();
 			toPcs.add(toPc);
 			m_branches.put(fromPc, toPcs);
 			return true;
@@ -48,7 +47,7 @@ public class Branches extends Section {
 	}
 
 	
-	Map<Integer, TreeSet<Integer>> get() {
+	Map<Integer, HashSet<Integer>> get() {
 		return m_branches;
 	}
 		

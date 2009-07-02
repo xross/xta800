@@ -4,12 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -67,14 +68,14 @@ public class Engine implements Notifier {
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
 	private NodeCoreCollection<ControlFlowGraph> m_controlFlowGraph;
 	private NodeCoreCollection<InstructionDecoder> m_instructionDecoder;
-	private NodeCoreCollection<TreeMap<String, InstructionNode>> m_functionNames;
+	private NodeCoreCollection<HashMap<String, InstructionNode>> m_functionNames;
 	
 	public Engine(Config config) {		
 		m_sourceMapper = new NodeCoreCollection<SourceMapper>();
 		m_structuralGraph = new NodeCoreCollection<StructureGraph>();
 		m_controlFlowGraph = new NodeCoreCollection<ControlFlowGraph>();
 		m_instructionDecoder = new NodeCoreCollection<InstructionDecoder>();
-		m_functionNames = new NodeCoreCollection<TreeMap<String, InstructionNode>>();
+		m_functionNames = new NodeCoreCollection<HashMap<String, InstructionNode>>();
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
 		m_exclusions = new ArrayList<Reference>();
@@ -761,7 +762,7 @@ public class Engine implements Notifier {
 		return false;
 	}
 
-	public Map<Integer, TreeSet<Integer>> getBranches() {
+	public Map<Integer, HashSet<Integer>> getBranches() {
 		return m_sections.getBranches(m_nodeId, m_coreId);
 	}
 
@@ -891,14 +892,14 @@ public class Engine implements Notifier {
 		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
 		NodeCoreCollection<ControlFlowGraph> newCfg = new NodeCoreCollection<ControlFlowGraph>();
 		NodeCoreCollection<InstructionDecoder> newInstructionDecoder = new NodeCoreCollection<InstructionDecoder>();
-		NodeCoreCollection<TreeMap<String, InstructionNode>> newFunctionNames = new NodeCoreCollection<TreeMap<String, InstructionNode>>();
+		NodeCoreCollection<HashMap<String, InstructionNode>> newFunctionNames = new NodeCoreCollection<HashMap<String, InstructionNode>>();
 		NodeCoreCollection<SourceMapper> newSourceMappers = new NodeCoreCollection<SourceMapper>();
 		
 		for (int nodeId : xeLoader.getNodeIds()){
 			for (int coreId : xeLoader.getCoreIds(nodeId)){
 				InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config);
 
-				newFunctionNames.add(nodeId, coreId, new TreeMap<String, InstructionNode>());
+				newFunctionNames.add(nodeId, coreId, new HashMap<String, InstructionNode>());
 				
 				if (!id.decode()) 
 					return false;
@@ -922,10 +923,11 @@ public class Engine implements Notifier {
 					return false;
 				th.addTerminators(threadStartNodes);
 				
-				Set<InstructionNode> starts = new TreeSet<InstructionNode>();
+				Set<InstructionNode> starts = new HashSet<InstructionNode>();
 				starts.addAll(fh.getKnownFuncStarts());
 				starts.addAll(threadStartNodes);
 
+				
 				ensureAllFunctionsAreNamed(xeLoader.getSymbolTable(nodeId, coreId), 
 						newFunctionNames.get(nodeId, coreId), fh.getKnownFuncStarts(), threadStartNodes);
 				
@@ -957,7 +959,7 @@ public class Engine implements Notifier {
 	}
 
 	private void ensureAllFunctionsAreNamed(SymbolTable symbolTable,
-			TreeMap<String, InstructionNode> functionName,
+			HashMap<String, InstructionNode> functionName,
 			Collection<InstructionNode> funcStarts, Set<InstructionNode> threadStarts ) {
 		
 		

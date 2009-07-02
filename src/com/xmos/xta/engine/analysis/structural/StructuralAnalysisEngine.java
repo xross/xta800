@@ -3,6 +3,7 @@ package com.xmos.xta.engine.analysis.structural;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -42,8 +43,8 @@ public class StructuralAnalysisEngine {
 		setUpPatternMatcher();
 	}
 
-	public boolean analyse(Engine engine, TreeMap<String, InstructionNode> treeMap) {
-		m_functionStartPcs = new TreeMap<Integer, FunctionNode>();
+	public boolean analyse(Engine engine, HashMap<String, InstructionNode> treeMap) {
+		m_functionStartPcs = new HashMap<Integer, FunctionNode>();
 		return buildStructureGraph(engine, treeMap);
 	}
 
@@ -86,7 +87,7 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	private boolean buildStructureGraph(Engine engine, TreeMap<String, InstructionNode> treeMap) {
+	private boolean buildStructureGraph(Engine engine, HashMap<String, InstructionNode> treeMap) {
 		Collection<Node> threads = buildGraph(m_controlFlowGraph.getThreadStartInstructions(), 
 				m_functionStartPcs, engine, false, treeMap);
 		if (threads == null) {
@@ -117,7 +118,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	private Collection<Node> buildGraph(Collection<InstructionNode> graphStartNodes, Map<Integer, FunctionNode> startPcs,
-			Engine engine, boolean isFunction, TreeMap<String, InstructionNode> treeMap) {
+			Engine engine, boolean isFunction, HashMap<String, InstructionNode> treeMap) {
 
 		Collection<Node> graphs = new TreeSet<Node>();
 
@@ -170,7 +171,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	private String getFunctionName(Node graphStart,
-			TreeMap<String, InstructionNode> treeMap) {
+			HashMap<String, InstructionNode> treeMap) {
 		for(String functionName : treeMap.keySet()){
 			InstructionNode instNode = treeMap.get(functionName);
 			if(instNode.getStartPc() == graphStart.getStartPc()){

@@ -1,9 +1,8 @@
 package com.xmos.xta.engine.analysis.controlflow;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
-
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -21,7 +20,7 @@ public class ThreadHandler {
 
 
 	public Set<InstructionNode> getThreadNodes(Collection<Integer> threadPcs, String type) {
-		Set<InstructionNode> nodes = new TreeSet<InstructionNode>();
+		Set<InstructionNode> nodes = new HashSet<InstructionNode>();
 		for(int pc : threadPcs){
 			InstructionNode threadNode = m_instDecoder.getNode(pc);
 			if (threadNode != null){
@@ -52,8 +51,8 @@ public class ThreadHandler {
 	
 	public void addTerminators(Collection<InstructionNode> threadStarts){
 		for(Node threadStart : threadStarts){
-			Set<Node> terminals  = new TreeSet<Node>();
-			findTerminals(threadStart, new TreeSet<Node>(), terminals);
+			Set<Node> terminals  = new HashSet<Node>();
+			findTerminals(threadStart, new HashSet<Node>(), terminals);
 			NullNode nullNode = new NullNode();
 			for(Node terminal : terminals){
 				CommonMethods.connect(nullNode, terminal);

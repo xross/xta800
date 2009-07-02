@@ -1,9 +1,8 @@
 package com.xmos.xta.console.commands.list;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeSet;
-
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
@@ -143,11 +142,11 @@ public class Branch extends Command {
 			return;
 		}
 		
-    	Iterator<Map.Entry<Integer, TreeSet<Integer>>> iter = engine.getBranches().entrySet().iterator();        
+    	Iterator<Map.Entry<Integer, HashSet<Integer>>> iter = engine.getBranches().entrySet().iterator();        
     	while (iter.hasNext()) {
-    	    Map.Entry<Integer, TreeSet<Integer>> pair = iter.next();
+    	    Map.Entry<Integer, HashSet<Integer>> pair = iter.next();
     	    Integer fromPc = pair.getKey();
-    	    TreeSet<Integer> toPcs = pair.getValue();
+    	    HashSet<Integer> toPcs = pair.getValue();
     	    
     	    console.display(String.format("- 0x%x =>", fromPc));
     	    for (Integer toPc : toPcs) {
