@@ -3,6 +3,7 @@ package com.xmos.xta.engine.analysis.structural;
 import java.util.Collection;
 import java.util.LinkedList;
 import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
+import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
 
@@ -14,20 +15,25 @@ public class BasicBlockMatcher {
 
 	public boolean match(Node node, Node treeStart, Collection<Node> currentGraph) {
 		m_treeStart = treeStart;
-		LinkedList<Node> insts = new LinkedList<Node>();
+		LinkedList<Node> nodes = new LinkedList<Node>();
 		boolean isStart = isStart(node);
-		insts.add(node);
+		nodes.add(node);
 		if (isStart(node)) {
 			while (continueDown(node)) {
 				node = node.getNextNode();
-				insts.add(node);
+				nodes.add(node);
 			}
 		}
-		m_lastInstruction = insts.getLast();
+		m_lastInstruction = nodes.getLast();
 		if (isStart) {
+			LinkedList<InstructionNode> insts = new LinkedList<InstructionNode>();
+			for(Node n : nodes){
+				insts.add((InstructionNode)n);
+			}
+			
 			m_block = new BlockNode(insts);
 		}
-		if (isStart && insts.contains(treeStart)) {
+		if (isStart && nodes.contains(treeStart)) {
 			m_treeStart = m_block;
 		} else {
 			m_treeStart = treeStart;

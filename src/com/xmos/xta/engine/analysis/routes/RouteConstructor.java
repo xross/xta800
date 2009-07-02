@@ -217,13 +217,13 @@ public class RouteConstructor {
 		// boundaries
 		Node startBlock = null;
 		if(!start.isBlockNode()){
-			Node currentNode = start;
-			List<Node> startList = new LinkedList<Node>();
+			InstructionNode currentNode = (InstructionNode)start;
+			List<InstructionNode> startList = new LinkedList<InstructionNode>();
 			
 			startList.add(currentNode);
 	
 			while (currentNode.getNextNodesSize() == 1 && currentNode.getNextNode().isInstructionNode()) {
-				currentNode = currentNode.getNextNode();
+				currentNode = (InstructionNode)currentNode.getNextNode();
 				startList.add(currentNode);
 			}
 			startBlock = new BlockNode(startList);
@@ -244,12 +244,12 @@ public class RouteConstructor {
 		// from every end node in the working set crawl upwards stopping at
 		// basic block boundaries
 		for (Node endNode : endNodes) {
-			if (workingSet.contains(endNode) && !endNode.isBlockNode()) {
-				List<Node> endList = new LinkedList<Node>();
-				Node end = endNode;
+			if (workingSet.contains(endNode) && endNode.isInstructionNode()) {
+				List<InstructionNode> endList = new LinkedList<InstructionNode>();
+				InstructionNode end = (InstructionNode)endNode;
 				endList.add(end);
 				while (end.getPrevNodesSize() == 1 && end.getPrevNode().isInstructionNode()) {
-					end = end.getPrevNode();
+					end = (InstructionNode)end.getPrevNode();
 					endList.add(0, end);
 				}
 				BlockNode endBlock = new BlockNode(endList);

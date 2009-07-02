@@ -904,10 +904,12 @@ public class Engine implements Notifier {
 					return false;
 				
 				ThreadHandler th = new ThreadHandler(id, this);
-				Collection<InstructionNode> threadStartNodes = 
+
+				Set<InstructionNode> threadStartNodes = 
 					th.getThreadNodes(sections.getThreadStartPoints(nodeId, coreId), "thread start");
-				Collection<InstructionNode> threadStopNodes = 
+				Set<InstructionNode> threadStopNodes = 
 					th.getThreadNodes(sections.getThreadStopPoints(nodeId, coreId), "thread stop");
+
 				
 				threadStartNodes = th.ensureThreadStartExists(threadStartNodes);
 
@@ -932,7 +934,6 @@ public class Engine implements Notifier {
 				
 				newSourceMappers.add(nodeId, coreId, sourceMapper);
 				
-
 				UnreachableCodeFinder uca = new UnreachableCodeFinder();
 				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
 	

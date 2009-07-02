@@ -55,13 +55,10 @@ public class FunctionHandler {
 			
 			assert(instruction.getInstructions().size() == 1);
 			XtaInstruction inst = instruction.getInstructions().getFirst();
-			//System.out.println("on instruction  " + instruction + " "+ inst.toString() + " "+ inst.isLink());
 			if(inst.isLink()){
 				
 				if(instruction.getNextNodesSize() > 0){
 					Collection<FunctionNode> newFunctions = new TreeSet<FunctionNode>();
-					
-					//System.out.println(instruction.getNextNodes());
 					for(Node next : instruction.getNextNodes()){
 						InstructionNode instNode  = (InstructionNode)next;
 						FunctionNode fn = new FunctionNode(instNode);
