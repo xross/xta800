@@ -1,5 +1,7 @@
 package com.xmos.xta.gui.views.viewnode;
 
+import java.util.List;
+
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
@@ -58,24 +60,42 @@ public class StructureSectionNode extends ViewNode {
 
 	public void draw(Display display, GC structureGc, GC timesGc) {
 		drawThis(display, structureGc);
-		boolean isWorstCase = isWorstCase();
 		boolean isBestCase = isBestCase();
+		boolean isWorstCase = isWorstCase();
+		boolean verticalIsBestCase = false;
+		boolean verticalIsWorstCase = false;
 
         int midY = scale(m_pixelOffsetY + (getPixelsY() / 2));
     	int childOffsetY = m_borderY;
-		for (ViewNode child : getChildren()) {
-			boolean childIsWorstCase = isWorstCase && child.isWorstCase();
+    	List<ViewNode> children = getChildren();
+		for (int i = 0; i < children.size(); i++) {
+    		ViewNode child = children.get(i);
 			boolean childIsBestCase = isBestCase && child.isBestCase();
+			boolean childIsWorstCase = isWorstCase && child.isWorstCase();
 
     		int childY = child.getPixelsY();
-    		int childMid = scale(m_pixelOffsetY + childOffsetY + (childY / 2));
+    		int childMidY = scale(m_pixelOffsetY + childOffsetY + (childY / 2));
+
+    		// Ensure the worst/best case lines join up all the way above the midpoint in sections
+    		// otherwise they are overwritten by later children
+    		if (childMidY > midY || i == 0) {
+    			verticalIsBestCase = childIsBestCase;
+    			verticalIsWorstCase = childIsWorstCase;
+    		} else {
+    			verticalIsBestCase |= childIsBestCase;
+    			verticalIsWorstCase |= childIsWorstCase;
+    		}
 
         	int childLeft = scale(child.getPixelOffsetX());
         	int childRight = scale(child.getPixelOffsetX() + child.getPixelsX());
-        	drawConnection(display, structureGc, m_x, midY, m_x, childMid, childIsWorstCase, childIsBestCase);
-        	drawConnection(display, structureGc, m_x, childMid, childLeft, childMid, childIsWorstCase, childIsBestCase);
-    		drawConnection(display, structureGc, m_x + m_width, midY, m_x + m_width, childMid, childIsWorstCase, childIsBestCase);
-    		drawConnection(display, structureGc, m_x + m_width, childMid, childRight, childMid, childIsWorstCase, childIsBestCase);
+        	drawConnection(display, structureGc, m_x, midY, m_x, childMidY,
+        			verticalIsBestCase, verticalIsWorstCase);
+        	drawConnection(display, structureGc, m_x, childMidY, childLeft, childMidY,
+        			childIsBestCase, childIsWorstCase);
+    		drawConnection(display, structureGc, m_x + m_width, midY, m_x + m_width, childMidY,
+    				verticalIsBestCase, verticalIsWorstCase);
+    		drawConnection(display, structureGc, m_x + m_width, childMidY, childRight, childMidY,
+    				childIsBestCase, childIsWorstCase);
             childOffsetY += childY + m_gapY;
 
             child.draw(display, structureGc, timesGc);
@@ -83,9 +103,12 @@ public class StructureSectionNode extends ViewNode {
 
 		if (m_isOptional) {
 			int optionalMid = scale(m_pixelOffsetY + childOffsetY - (m_gapY / 2));
-			drawConnection(display, structureGc, m_x, midY, m_x, optionalMid, false, isBestCase);
-			drawConnection(display, structureGc, m_x, optionalMid, m_x + m_width, optionalMid, false, isBestCase);
-			drawConnection(display, structureGc, m_x + m_width, midY, m_x + m_width, optionalMid, false, isBestCase);
+			drawConnection(display, structureGc, m_x, midY, m_x, optionalMid,
+					isBestCase, false);
+			drawConnection(display, structureGc, m_x, optionalMid, m_x + m_width, optionalMid,
+					isBestCase, false);
+			drawConnection(display, structureGc, m_x + m_width, midY, m_x + m_width, optionalMid,
+					isBestCase, false);
 		}
 	}
 
