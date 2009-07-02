@@ -31,7 +31,7 @@ public class Loop extends Command {
     }        
 
     public String commandLine() {
-       	return "loop " + " " + getRouteId(m_routeId) + " " + m_refString + " " + m_iterations;        	
+       	return "loop " + getRouteId(m_routeId) + " " + m_refString + " " + m_iterations;        	
     }
     
     public String description(Engine engine, boolean detailed) {
