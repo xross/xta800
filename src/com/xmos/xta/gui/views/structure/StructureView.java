@@ -6,7 +6,6 @@ import java.util.Vector;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -64,39 +63,26 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.gui.views.structure.Structure";
 
-    private static final int MAX_IMAGE_SIZE = 1024 * 1024 * 20;
-
-    private int m_borderX = 2;
-    private int m_borderY = 2;
-
     private ViewNode m_viewNode;
+    private ZoomedCanvasProperties m_canvasProperties;
+    private Canvas m_structureCanvas;
+    private Canvas m_timesCanvas;
 
     private Node m_rootNode;
     private List<Node> m_selectedNodes;
     private Node m_doubleClickNode;
-    
-    private boolean m_refreshing;
     
     private Composite m_parent;
     private Display m_display;
     private ScrollBar m_hScroll;
     private ScrollBar m_vScroll;
 
-    private ZoomedCanvasProperties m_canvasProperties;
-    private Canvas m_structureCanvas;
-    private Image m_structureImage;
-
-    private Canvas m_timesCanvas;
-    private Image m_timesImage;
-
-    private int m_hScrollPosition;
-    private int m_vScrollPosition;
-
-    private double m_scale;
-	
     private Shell m_toolTip;
     private Label m_tipLabel;
     private Vector<ISelectionChangedListener> m_listeners;
+    
+    private RendererControl m_renderControl;
+    private Renderer m_renderer;
 
 	public StructureView() {
 		if (DEBUG) System.out.printf("Structure()\n");			
@@ -107,25 +93,15 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		m_doubleClickNode = null;
 	    m_selectedNodes = new ArrayList<Node>();
 
-	    m_canvasProperties = new ZoomedCanvasProperties();
-   
-		m_refreshing = false;
+		m_canvasProperties = new ZoomedCanvasProperties();
 	}
 
 	public void createPartControl(Composite parent) {
 		if (DEBUG) System.out.printf("ZoomedCanvasView: createPartControl\n");
 	    m_parent = parent;
 	    m_display = m_parent.getDisplay();
+		m_renderControl = new RendererControl(m_display);
 
-	    // Dimensions must be minimum of 1
-		m_structureImage = new Image(m_display, 1, 1);
-		m_timesImage = new Image(m_display, 1, 1);
-
-	    // Determine font metrics
-        GC gc = new GC(m_structureImage);
-        m_canvasProperties.setAverageCharWidth(gc.getFontMetrics().getAverageCharWidth());
-        gc.dispose();
-	    
 	    final Composite composite = new Composite(parent, SWT.BORDER | SWT.H_SCROLL); 	    
 	    composite.setLayout(new FillLayout()); 
 
@@ -138,15 +114,13 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	    structureComposite.addControlListener(new ControlListener() {
 			public void controlResized(ControlEvent e) {
 				Rectangle clientArea = structureComposite.getClientArea();
-				m_structureCanvas.setSize(clientArea.width, clientArea.height);
-		    	resizeImages();
-				m_structureCanvas.redraw();
+				m_renderControl.setStructureCanvasSize(clientArea.width, clientArea.height);
+				updateScrollBars();
 			}
 			public void controlMoved(ControlEvent e) {
 				Rectangle clientArea = structureComposite.getClientArea();
-				m_structureCanvas.setSize(clientArea.width, clientArea.height);
-		    	resizeImages();
-				m_structureCanvas.redraw();
+				m_renderControl.setStructureCanvasSize(clientArea.width, clientArea.height);
+				updateScrollBars();
 			}
 	    });	    
 
@@ -156,15 +130,13 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	    timesComposite.addControlListener(new ControlListener() {
 			public void controlResized(ControlEvent e) {
 				Rectangle clientArea = timesComposite.getClientArea();
-				m_timesCanvas.setSize(clientArea.width, clientArea.height);
-		    	resizeImages();
-				m_timesCanvas.redraw();
+				m_renderControl.setTimesCanvasHeight(clientArea.height);
+				updateScrollBars();
 			}
 			public void controlMoved(ControlEvent e) {
 				Rectangle clientArea = timesComposite.getClientArea();
-				m_timesCanvas.setSize(clientArea.width, clientArea.height);
-		    	resizeImages();
-				m_timesCanvas.redraw();
+				m_renderControl.setTimesCanvasHeight(clientArea.height);
+				updateScrollBars();
 			}	    	
 	    });	    
 
@@ -174,9 +146,7 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	    m_hScroll = composite.getHorizontalBar();
 	    m_hScroll.addListener(SWT.Selection, new Listener() {
 	        public void handleEvent(Event e) {
-	    		m_hScrollPosition = m_hScroll.getSelection();
-	    		updateCanvasProperties();
-	    		refreshView();
+	    		m_renderControl.setOffsetX(m_hScroll.getSelection());
 	        }
 	    });
 	    m_hScroll.setMaximum(1);
@@ -185,16 +155,14 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	    m_vScroll = structureComposite.getVerticalBar();
 	    m_vScroll.addListener(SWT.Selection, new Listener() {
 	        public void handleEvent(Event e) {
-	    		m_vScrollPosition = m_vScroll.getSelection();
-	    		updateCanvasProperties();
-	    		refreshView();
+	        	m_renderControl.setOffsetY(m_vScroll.getSelection());
 	        }
 	    });
 	    m_vScroll.setMaximum(1);
-	    	    
+
 	    structureComposite.addPaintListener(new PaintListener() {
 	        public void paintControl(PaintEvent e) {
-	        	m_structureCanvas.redraw();
+	        	m_renderControl.refresh();
 		    }
 	    });
 
@@ -206,31 +174,33 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 
 	    timesComposite.addPaintListener(new PaintListener() {
 	        public void paintControl(PaintEvent e) {
-	        	m_timesCanvas.redraw();
+	        	m_renderControl.refresh();
 		    }
-	    });	
+	    });
 
 	    m_timesCanvas.addPaintListener(new PaintListener() {
 	        public void paintControl(PaintEvent e) {
 	        	drawTimesCanvas(e.gc);
 		    }
-	    });	
-
+	    });
+	    
 	    setupMouseListeners();
 	    createContextMenus();
 	    
-	    initialiseTree();
-		setScale(1);
-		resizeNodes();
-		refreshView();
-
 		getSite().getPage().addSelectionListener(this);
 		getSite().setSelectionProvider(this);
+
+	    m_renderer = new Renderer(m_display, m_renderControl, m_canvasProperties);
+		(new Thread(m_renderer)).start();
+		(new Thread(new Updater(m_display, m_renderControl, m_structureCanvas, m_timesCanvas))).start();
+	
+	    initialiseTree();
+	    m_renderControl.refresh();
+		updateScrollBars();
 	}
 
 	public void setFocus() {
 		if (DEBUG) System.out.printf("ZoomedCanvasView: setFocus\n");
-		refreshView();
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
@@ -241,23 +211,19 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 				m_toolTip.dispose ();
 	    	}
 	    	initialiseTree();
-	    	resizeNodes();
-	    	resizeImages();
-			refreshView();
+			m_renderControl.refresh();
+			updateScrollBars();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE) || 
 				   event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 			clearView();
-			resizeImages();
-			refreshView();
+			m_renderControl.refresh();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
 	    	if (m_toolTip != null  && !m_toolTip.isDisposed ()) {
 				m_toolTip.dispose ();
 	    	}
 	    	updateState();
-	        renderImages();
-			refreshView();
 			
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SET_FOCUS)) {
 			ISelection sel = GuiEngine.getFocus();
@@ -267,21 +233,15 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	                m_doubleClickNode = (Node)object;
 	            }
 	        }
-			refreshView();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) || 
 				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 			initialiseTree();
-	    	resizeNodes();
-	    	resizeImages();
-	    	refreshView();
-			
-		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECT_NODES)) {
-			refreshView();
+			m_renderControl.refresh();
 			
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_UPDATE_FOLDING)) {
-			resizeNodes();
-			refreshView();
+			m_renderControl.refresh();
+			updateScrollBars();
 			
 		} 
 	}
@@ -289,8 +249,9 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	private void updateState() {
 		if (m_viewNode != null) {
 	    	Node treeNode = m_viewNode.getTreeNode();
-			m_canvasProperties.setTotalBest(treeNode.getAttributes().getTimeTaken(Case.BEST, false));
-	    	m_canvasProperties.setTotalWorst(treeNode.getAttributes().getTimeTaken(Case.WORST, false));
+	    	m_renderControl.setBestWorstTimes(
+	    			treeNode.getAttributes().getTimeTaken(Case.BEST, false),
+	    			treeNode.getAttributes().getTimeTaken(Case.WORST, false));
 		}
 	}
 
@@ -312,34 +273,8 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
     }	            		         	        	
 
 	private void updateSelection(List<Node> newNodes) {
-    	List<Node> wasSelected = m_selectedNodes;
     	m_selectedNodes = newNodes;
-
-    	if (selectionChanged(wasSelected, m_selectedNodes)) {
-    		m_canvasProperties.setSelected(m_selectedNodes);
-            GC structureGc = new GC(m_structureImage);
-            GC timesGc = new GC(m_timesImage);
-            if (m_viewNode != null) {
-            	if (wasSelected.size() > 0)
-            		m_viewNode.redraw(m_display, structureGc, timesGc, wasSelected);
-            	if (m_selectedNodes.size() > 0)
-            		m_viewNode.redraw(m_display, structureGc, timesGc, m_selectedNodes);
-            }
-            structureGc.dispose();
-            timesGc.dispose();
-    		refreshView();
-    	}
-	}
-
-	private boolean selectionChanged(List<Node> oldList, List<Node> newList) {
-		if (oldList.size() != newList.size())
-			return true;
-		
-		for (Node node : oldList) {
-			if (!newList.contains(node))
-				return true;
-		}
-		return false;
+    	m_renderControl.setSelection(newNodes);
 	}
 
 	public void menuAboutToShow(IMenuManager manager) {
@@ -389,86 +324,48 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		}
 	}
 
-	//
-	// Structure view methods 
-	//
-	protected void refreshView() {
-		if (m_refreshing)
-			return;
-		
-		m_display.syncExec(new Runnable() {
-			public void run() {
-				m_refreshing = true;
-				m_structureCanvas.redraw();
-				m_timesCanvas.redraw();
-				m_refreshing = false;
-			}});
-	}
-
-    private void updateCanvasProperties() {
-		if (m_viewNode != null) {
-			Rectangle canvas = m_structureCanvas.getClientArea();
-        	Rectangle visibleArea = new Rectangle(m_hScrollPosition, m_vScrollPosition, canvas.width, canvas.height);
-        	m_canvasProperties.setVisibleArea(visibleArea);
-        	m_canvasProperties.setTimesHeight(m_timesCanvas.getClientArea().height);
-		} else {
-        	m_canvasProperties.setVisibleArea(new Rectangle(0, 0, 0, 0));
-        	m_canvasProperties.setTimesHeight(0);
-		}
-    }
-    
 	private void updateScrollBars() {
-    	Rectangle clientArea = m_structureCanvas.getClientArea();
-		int canvasX = clientArea.width;
-		int canvasY = clientArea.height;
+		int canvasX = m_renderControl.getStructureCanvasWidth();
+		int canvasY = m_renderControl.getStructureCanvasHeight();
 		
-		int renderX = (int)((double)getPixelsX() * m_scale);
-		int renderY = (int)((double)getPixelsY() * m_scale);
+		double scale = m_renderControl.getScale();
+		int renderX = (int)((double)m_renderControl.getPixelsX() * scale);
+		int renderY = (int)((double)m_renderControl.getPixelsY() * scale);
 
 		m_hScroll.setMaximum(renderX);
     	m_hScroll.setThumb(canvasX);
-    	if (m_hScrollPosition > (renderX - canvasX))
-    		m_hScrollPosition = renderX - canvasX;
-    	if (m_hScrollPosition < 0)
-    		m_hScrollPosition = 0;
-		m_hScroll.setSelection(m_hScrollPosition);
+    	int position = setScrollPosition(m_hScroll, m_renderControl.getOffsetX());
+    	m_renderControl.setOffsetX(position);
 	    
 	    m_vScroll.setMaximum(renderY);
     	m_vScroll.setThumb(canvasY);
-    	if (m_vScrollPosition > (renderY - canvasY))
-    		m_vScrollPosition = renderY - canvasY;
-    	if (m_vScrollPosition < 0)
-    		m_vScrollPosition = 0;
-		m_vScroll.setSelection(m_vScrollPosition);
+    	position = setScrollPosition(m_vScroll, m_renderControl.getOffsetY());
+    	m_renderControl.setOffsetY(position);
+    	
+		if (DEBUG) System.out.printf("updateScrollBars (%d, %d, %d) (%d, %d, %d)\n",
+			m_hScroll.getMaximum(), m_hScroll.getThumb(), m_hScroll.getSelection(),
+			m_vScroll.getMaximum(), m_vScroll.getThumb(), m_vScroll.getSelection());
 	}
 
-	private void setScale(double scale) {
-		int renderX = (int)((double)getPixelsX() * m_scale);
-		int renderY = (int)((double)getPixelsY() * m_scale);
-		boolean scaledDown = false;
-		while ((renderX * renderY) > MAX_IMAGE_SIZE) {
-			scale /= 1.2;
-			renderX = (int)((double)getPixelsX() * m_scale);
-			renderY = (int)((double)getPixelsY() * m_scale);
-			scaledDown = true;
-		}
-		if (scaledDown) {
-			System.out.println("Image too large");
-		}
-		
-		m_scale = scale;
-		m_canvasProperties.setScale(scale);
-    	resizeImages();
-		refreshView();
+	private int setScrollPosition(ScrollBar scrollBar, int position) {
+		// Need to ensure the scroll bar is in the valid range
+		int scrollRange = (scrollBar.getMaximum() - scrollBar.getThumb());
+    	if (position > scrollRange)
+    		position = scrollRange;
+    	if (position < 0)
+    		position = 0;
+    	scrollBar.setSelection(position);
+    	return position;
 	}
 
 	public void zoomOut() {
 		if (m_viewNode == null)
 			return;
 
-		m_hScrollPosition = m_hScroll.getSelection();
-		m_vScrollPosition = m_vScroll.getSelection();
-		setScale(m_scale / 1.2);
+		m_renderControl.setOffsetX(m_hScroll.getSelection());
+		m_renderControl.setOffsetY(m_vScroll.getSelection());
+		m_renderControl.setScale(m_renderControl.getScale() / 1.2);
+		updateScrollBars();
 	}
 
 	public void zoomIn() {
@@ -476,26 +373,29 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 			return;
 		
 		// Don't zoom any more than the maximum width
-		if (m_scale < 5) {
-			m_hScrollPosition = m_hScroll.getSelection();
-			m_vScrollPosition = m_vScroll.getSelection();
-			setScale(m_scale * 1.2);
+		double scale = m_renderControl.getScale();
+		if (scale < 5) {
+			m_renderControl.setOffsetX(m_hScroll.getSelection());
+			m_renderControl.setOffsetY(m_vScroll.getSelection());
+			m_renderControl.setScale(scale * 1.2);
+			updateScrollBars();
 		}
 	}
 
 	public void zoomReset() {
-		m_hScrollPosition = 0;
-		m_vScrollPosition = 0;
-		setScale(1.0);
+		m_renderControl.setOffsetX(0);
+		m_renderControl.setOffsetY(0);
+		m_renderControl.setScale(1.0);
+		updateScrollBars();
 	}
 
 	public void zoomFit() {
-		Rectangle clientArea = m_structureCanvas.getClientArea();
-		double xScale = (double)clientArea.width / (double)getPixelsX();
-		double yScale = (double)clientArea.height / (double)getPixelsY();
-		m_hScrollPosition = 0;
-		m_vScrollPosition = 0;
-		setScale((xScale < yScale) ? xScale : yScale);
+		double xScale = (double)m_renderControl.getStructureCanvasWidth() / (double)m_renderControl.getPixelsX();
+		double yScale = (double)m_renderControl.getStructureCanvasHeight() / (double)m_renderControl.getPixelsY();
+		m_renderControl.setOffsetX(0);
+		m_renderControl.setOffsetY(0);
+		m_renderControl.setScale((xScale < yScale) ? xScale : yScale);
+		updateScrollBars();
 	}
 
 	private void clearView() {
@@ -505,10 +405,8 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		m_viewNode = null;
 		m_rootNode = null;
 		m_doubleClickNode = null;
-		m_selectedNodes.clear();
-
-		m_hScrollPosition = 0;
-		m_vScrollPosition = 0;
+		updateSelection(new ArrayList<Node>());
+		m_renderControl.reset();
 	}
 	
 	private void createContextMenus() {
@@ -564,10 +462,13 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		m_structureCanvas.addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(MouseEvent e) {
 				if (m_viewNode != null) {
-					ViewNode clickNode = m_viewNode.getClickNode(e.x + m_hScrollPosition, e.y + m_vScrollPosition);
+					int offsetX = m_renderControl.getOffsetX();
+					int offsetY = m_renderControl.getOffsetY();
+					ViewNode clickNode = m_viewNode.getClickNode(e.x + offsetX, e.y + offsetY);
 					if (clickNode != null) {
 						clickNode.setFolded(!clickNode.isFolded(), false);
-	    				resizeNodes();
+	    				m_renderControl.refresh();
+	    				updateScrollBars();
 
 	    	        	List<Node> newNodes = new ArrayList<Node>();
 	    	        	newNodes.add(clickNode.getTreeNode());
@@ -581,7 +482,9 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	    	public void mouseDown(MouseEvent e) {
     			if ((e.button == 1) || (e.button == 3)) {
     				if (m_viewNode != null) {
-    					ViewNode clickNode = m_viewNode.getClickNode(e.x + m_hScrollPosition, e.y + m_vScrollPosition);
+    					int offsetX = m_renderControl.getOffsetX();
+    					int offsetY = m_renderControl.getOffsetY();
+    					ViewNode clickNode = m_viewNode.getClickNode(e.x + offsetX, e.y + offsetY);
     					if (clickNode != null) {
     	    	        	List<Node> newNodes = new ArrayList<Node>();
     	    	        	newNodes.add(clickNode.getTreeNode());
@@ -606,7 +509,9 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		     }
 		     public void mouseHover(MouseEvent e) { 
  				if (m_viewNode != null) {
-					ViewNode clickNode = m_viewNode.getClickNode(e.x + m_hScrollPosition, e.y + m_vScrollPosition);
+					int offsetX = m_renderControl.getOffsetX();
+					int offsetY = m_renderControl.getOffsetY();
+					ViewNode clickNode = m_viewNode.getClickNode(e.x + offsetX, e.y + offsetY);
 					if (clickNode != null) {
 	    	    		if (m_toolTip != null  && !m_toolTip.isDisposed ())
 	    	    			m_toolTip.dispose ();
@@ -639,13 +544,6 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	}
 
     
-    protected void resizeNodes() {
-		if (m_viewNode != null) {
-			m_viewNode.annotateXy(m_borderX, m_borderY);
-			resizeImages();
-		}
-    }
-
 	private ViewNode buildViewNode(Node node, int depth) {
 		if (node == null || node.isNullNode())
 			return null;
@@ -658,7 +556,7 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
     		viewNode = new StructureFunctionNode(node, m_canvasProperties);
     		if (depth > 3)
     			viewNode.setFolded(true, false);
-    	} else if (node.isLoopNode()) {
+    	} else if (node.isLoopNode() || node.isSelfLoopNode()) {
     		viewNode = new StructureLoopNode(node, m_canvasProperties);
     	} else if (node.isSectionNode()) {
     		viewNode = new StructureSectionNode(node, m_canvasProperties);
@@ -683,10 +581,11 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		if (route != null) {
 			m_rootNode = route.getNode();
 			m_doubleClickNode = m_rootNode;
-			m_selectedNodes = GuiEngine.getSelectedNodes();
+			updateSelection(GuiEngine.getSelectedNodes());
 	    	m_canvasProperties.setSelected(m_selectedNodes);
 
 			m_viewNode = buildViewNode(m_doubleClickNode, 0);
+			m_renderControl.setViewNode(m_viewNode);
 			updateState();
 		} else {
 			m_rootNode = null;
@@ -696,87 +595,11 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		}
 	}
 
-	private int getPixelsX() {
-    	int pixelsX = (2 * m_borderX);
-    	if (m_viewNode != null) {
-    		pixelsX += m_viewNode.getPixelsX();
-    	}
-		return pixelsX;
-	}
-
-	private int getPixelsY() {
-    	int pixelsY = (2 * m_borderY);
-    	if (m_viewNode != null) {
-    		pixelsY += m_viewNode.getPixelsY();
-    	}
-		return pixelsY;
-	}
-
-    protected void resizeImages() {
-		int imageX = (int)((double)getPixelsX() * m_scale);
-		int imageY = (int)((double)getPixelsY() * m_scale);
-
-    	Rectangle clientArea = m_structureCanvas.getClientArea();
-		int structureCanvasX = clientArea.width;
-    	int structureCanvasY = clientArea.height;
-    	int timesCanvasY = m_timesCanvas.getClientArea().height;
-
-		if (structureCanvasX > imageX)
-			imageX = structureCanvasX;
-		if (structureCanvasY > imageY)
-			imageY = structureCanvasY;
-    	
-		m_structureImage.dispose();
-		if (DEBUG) System.out.println("Resize m_structureImage " + imageX + ", " + imageY);
-		m_structureImage = new Image(m_display, imageX, imageY);
-
-		m_timesImage.dispose();
-		if (timesCanvasY == 0) timesCanvasY = 1;
-		if (DEBUG) System.out.println("Resize m_timesImage " + imageX + ", " + timesCanvasY);
-		m_timesImage = new Image(m_display, imageX, timesCanvasY);
-
-    	updateCanvasProperties();
-		updateScrollBars();
-
-		if (m_viewNode != null) {
-    		m_viewNode.updateScaledXy();
-    	}
-		renderImages();
-    }
-    
-	private void renderImages() {
-    	// Draw the structure
-        GC structureGc = new GC(m_structureImage);
-        structureGc.setAntialias(SWT.ON);
-        structureGc.setTextAntialias(SWT.ON);
-        structureGc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
-        Rectangle imageBounds = m_structureImage.getBounds();
-        structureGc.fillRectangle(0, 0, imageBounds.width, imageBounds.height);
-
-        GC timesGc = new GC(m_timesImage);
-        timesGc.setAntialias(SWT.ON);
-        timesGc.setTextAntialias(SWT.ON);
-        imageBounds = m_timesImage.getBounds();
-        timesGc.fillRectangle(0, 0, imageBounds.width, imageBounds.height);
-
-        if (m_viewNode != null) {
-			m_viewNode.draw(m_display, structureGc, timesGc);
-        }
-        
-        structureGc.dispose();
-        timesGc.dispose();
-	}
-
     protected void drawStructureCanvas(GC gc) {
-		Rectangle visibleArea = m_canvasProperties.getVisibleArea();
-    	gc.drawImage(m_structureImage, visibleArea.x, visibleArea.y, visibleArea.width, visibleArea.height,
-    			0, 0, visibleArea.width, visibleArea.height);
+		gc.drawImage(m_renderControl.getStructureCanvasImage(), 0, 0);
     }
 
     protected void drawTimesCanvas(GC gc) {
-		Rectangle visibleArea = m_canvasProperties.getVisibleArea();
-		int height = m_canvasProperties.getTimesHeight();
-    	gc.drawImage(m_timesImage, visibleArea.x, 0, visibleArea.width, height,
-    			0, 0, visibleArea.width, height);
+    	gc.drawImage(m_renderControl.getTimesCanvasImage(), 0, 0);
     }
 }
