@@ -951,6 +951,10 @@ public class Engine implements Notifier {
 		m_structuralGraph = newStructuralGraph;
 		m_functionNames = newFunctionNames;
 		m_sourceMapper = newSourceMappers;
+		Runtime runtime = Runtime.getRuntime();  
+		System.out.println("max memory: " + runtime.maxMemory() / 1024 / 1024); 
+		System.out.println("allocated memory: " + runtime.totalMemory() / 1024/ 1024);
+		System.out.println("free memory: " + runtime.freeMemory() / 1024/ 1024);  
 		return true;
 	}
 

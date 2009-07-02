@@ -330,17 +330,13 @@ public class StructuralAnalysisEngine {
 	}
 
 	
-	private static final boolean recursionDebug = true;
 	private boolean detectRecursion(Engine engine){
 		
 		Map<FunctionNode, TreeSet<FunctionNode>> links = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
-		
-		if ( recursionDebug ) System.out.println("digraph g {");
 		for(FunctionNode fn : m_functionStartPcs.values()){
 			for(FunctionNode linksTo : fn.getContainedFunctions()){
 				if(m_cfgToStruct.get(linksTo).getBranchTarget() != null){
 					int pc = m_cfgToStruct.get(linksTo).getBranchTarget().getStartPc();
-					
 					
 					FunctionNode linkingFn = m_functionStartPcs.get(pc);
 					TreeSet<FunctionNode> fnLinks = links.get(fn);
@@ -351,14 +347,12 @@ public class StructuralAnalysisEngine {
 					}
 					
 					if(!fnLinks.contains(linkingFn)){
-						if ( recursionDebug ) System.out.println(fn.getFunctionName() + " -> " + linkingFn.getFunctionName() + ";");
 						fnLinks.add(m_functionStartPcs.get(pc));
 					}
 					
 				}
 			}
 		}
-		if ( recursionDebug ) System.out.println("}");
 		Collection<FunctionNode> loops = new TreeSet<FunctionNode>();
 		for(InstructionNode threadStart : m_controlFlowGraph.getThreadStartInstructions()){
 			Map<FunctionNode, TreeSet<FunctionNode>> fnDominators = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
