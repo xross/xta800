@@ -307,7 +307,7 @@ public class RendererControl {
 		return m_timesCanvasImage;
 	}
 
-	public synchronized void updateCanvasImages(Image structureImage, Image timesImage) {
+	public void updateCanvasImages(Image structureImage, Image timesImage) {
 		if (DEBUG) System.out.println("RendererControl::updateCanvasImages()");
 		copyImage(structureImage, m_structureCanvasImage, m_offsetX, m_offsetY);
 		copyImage(timesImage, m_timesCanvasImage, m_offsetX, 0);

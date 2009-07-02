@@ -66,6 +66,9 @@ public class RouteConstructor {
 		boolean seenEndPoint = false;
 		switch (m_description.getMode()) {
 		case FUNCTION:
+			
+			
+			
 			Map<String, TreeSet<Node>> functionMap = buildFunctionMap(m_structureGraph);
 			TreeSet<Node> functions = functionMap.get(m_description.getFunctionName());
 			if (functions != null) {
@@ -76,7 +79,17 @@ public class RouteConstructor {
 						break;
 					}
 				}
-			}		
+			}
+			
+			if(m_subRoutes.isEmpty()){
+				Collection<FunctionNode> functionss = m_structureGraph.getFunctions();
+				for(FunctionNode function : functionss ){
+					if(m_description.getFunctionName().equals(function.getFunctionName())){
+						m_subRoutes.add(function.deepCopy(new TreeMap<Integer, FunctionNode>(), m_engine));
+						break;
+					}
+				}
+			}
 			seenEndPoint = true;
 			setParents();
 			setUnknowns();				
@@ -86,8 +99,6 @@ public class RouteConstructor {
 			
 			Collection<Node> startNodes =getReferencedNodes(m_description.getStartPoint());
 			Collection<Node> endNodes = getReferencedNodes(m_description.getEndPoint());
-			
-			
 			for (Node start : startNodes) {
 				Collection<Node> workingSet = new TreeSet<Node>();
 

@@ -70,7 +70,7 @@ public abstract class Node implements Comparable<Node>{
 
 	
 	//private static final boolean s = true;
-	private static final boolean s = true;
+	private static final boolean s = false;
 	public int compareTo(Node node) {
 		if (s) {
 			double thisTimeTaken = getAttributes().getTimeTaken(Case.WORST,

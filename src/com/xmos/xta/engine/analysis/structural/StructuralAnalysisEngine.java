@@ -89,18 +89,18 @@ public class StructuralAnalysisEngine {
 	}
 
 	private boolean buildStructureGraph(Engine engine, HashMap<String, InstructionNode> treeMap) {
-		Collection<Node> threads = buildGraph(m_controlFlowGraph.getThreadStartInstructions(), 
+		Collection<FunctionNode> threads = buildGraph(m_controlFlowGraph.getThreadStartInstructions(), 
 				m_functionStartPcs, engine, false, treeMap);
 		if (threads == null) {
 			return false;
 		}
-		Collection<Node> functions = buildGraph(m_controlFlowGraph.getFunctionStartInstructions(), 
+		Collection<FunctionNode> functions = buildGraph(m_controlFlowGraph.getFunctionStartInstructions(), 
 				m_functionStartPcs, engine, true, treeMap);
 		if (functions == null) {
 			return false;
 		}
 				
-		m_structureGraph = new StructureGraph(threads);
+		m_structureGraph = new StructureGraph(threads, functions);
 		
 		
 		engine.provideFeedback("Analysing for recursion...");
@@ -118,10 +118,10 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	private Collection<Node> buildGraph(Collection<InstructionNode> graphStartNodes, Map<Integer, FunctionNode> startPcs,
+	private Collection<FunctionNode> buildGraph(Collection<InstructionNode> graphStartNodes, Map<Integer, FunctionNode> startPcs,
 			Engine engine, boolean isFunction, HashMap<String, InstructionNode> treeMap) {
 
-		Collection<Node> graphs = new HashSet<Node>();
+		Collection<FunctionNode> graphs = new HashSet<FunctionNode>();
 
 		List<Node> orderedGraphs = new LinkedList<Node>(graphStartNodes);
 		Collections.sort(orderedGraphs);
