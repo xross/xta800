@@ -132,16 +132,14 @@ public class StructuralAnalysisEngine {
 		
 		
 		for (Node graphStart : orderedGraphs) {
-
+			
 			String functionName = getFunctionName(graphStart, treeMap);
 			String jobName = "Processing " + functionName;
 			
 			Collection<Node> currentGraph = new TreeSet<Node>();
-			
 			collectCurrentGraphNodes(graphStart, currentGraph);
-			
 			Collection<Node> basicBlocks = new TreeSet<Node>();
-
+			
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
 			assert(!basicBlocks.isEmpty());
 			FnopAnalyser fa = new FnopAnalyser();
@@ -153,9 +151,9 @@ public class StructuralAnalysisEngine {
 			if (!createStructure(basicBlocks, initialBasicBlock, engine, false, jobName)) {
 				return null;
 			}
-			//if(basicBlocks.size() != 1) {
-			//	dumpTree(basicBlocks);
-			//}
+			if(basicBlocks.size() != 1) {
+				dumpTree(basicBlocks);
+			}
 			assert(basicBlocks.size() == 1);
 			Node decomposedGraph = basicBlocks.iterator().next();
 			
@@ -238,10 +236,6 @@ public class StructuralAnalysisEngine {
 				CommonMethods.connect(leaf, root);
 			}
 		}
-		
-		for(Node inst : currentGraph){
-			inst.freeMemory();
-		}
 		return treeStart;
 	}
 
@@ -260,7 +254,6 @@ public class StructuralAnalysisEngine {
 			node.clearDominators();
 			if (treeStart == node) {
 				node.setDominatorSetComplete(false);
-				//node.getDominators().add(node);
 				node.addDominator(node);
 			} else {
 				node.setDominatorSetComplete(true);
@@ -294,12 +287,8 @@ public class StructuralAnalysisEngine {
 				intersection.add(node);
 
 				if (!intersection.equals(node.getDominators())) {
-					
 					node.clearDominators();
 					node.addAllDominators(intersection);
-					
-					//node.getDominators().clear();
-					//node.getDominators().addAll(intersection);
 					node.setDominatorSetComplete(intersectionIsCompleteSet);
 					stillChanging = true;
 				}

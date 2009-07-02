@@ -71,7 +71,6 @@ public class FunctionHandler {
 					}
 					instruction.clearNextNodes();
 					for(Node f : newFunctions){
-						
 						CommonMethods.connect(f, instruction);
 						CommonMethods.connect(instruction.getBranchLinkReturn(), f);
 						f.addBranchTarget(instruction.getBranchLinkReturn());

@@ -925,9 +925,9 @@ public class Engine implements Notifier {
 				Set<InstructionNode> starts = new TreeSet<InstructionNode>();
 				starts.addAll(fh.getKnownFuncStarts());
 				starts.addAll(threadStartNodes);
-				
+
 				ensureAllFunctionsAreNamed(xeLoader.getSymbolTable(nodeId, coreId), 
-						newFunctionNames.get(nodeId, coreId), starts);
+						newFunctionNames.get(nodeId, coreId), fh.getKnownFuncStarts(), threadStartNodes);
 				
 				SourceMapper sourceMapper = new SourceMapper(xeLoader, nodeId, coreId, starts, 
 						fileFinder, id, newFunctionNames.get(nodeId, coreId));
@@ -953,17 +953,16 @@ public class Engine implements Notifier {
 		m_structuralGraph = newStructuralGraph;
 		m_functionNames = newFunctionNames;
 		m_sourceMapper = newSourceMappers;
-		//Runtime runtime = Runtime.getRuntime();  
-		//System.out.println("max memory: " + runtime.maxMemory() / 1024 / 1024); 
-		//System.out.println("allocated memory: " + runtime.totalMemory() / 1024/ 1024);
-		//System.out.println("free memory: " + runtime.freeMemory() / 1024/ 1024);  
 		return true;
 	}
 
 	private void ensureAllFunctionsAreNamed(SymbolTable symbolTable,
 			TreeMap<String, InstructionNode> functionName,
-			Set<InstructionNode> starts ) {
-		for(InstructionNode inst : starts){
+			Collection<InstructionNode> funcStarts, Set<InstructionNode> threadStarts ) {
+		
+		
+		
+		for(InstructionNode inst : funcStarts){
 			String name = symbolTable.functionName(inst.getStartPc());
 			
 			if(functionName.containsKey(name)){
@@ -972,15 +971,26 @@ public class Engine implements Notifier {
 				InstructionNode instNode = functionName.get(name);
 				
 				if(instNode.getStartPc() < inst.getStartPc()){
-					name = "unnamed_at_0x" + Integer.toHexString(inst.getStartPc());
+					name = "unnamed_function_at_0x" + Integer.toHexString(inst.getStartPc());
 					functionName.put(name, inst);
 				} else if(instNode.getStartPc() > inst.getStartPc()){
-					String newName = "unnamed_at_0x" + Integer.toHexString(instNode.getStartPc());
+					String newName = "unnamed_function_at_0x" + Integer.toHexString(instNode.getStartPc());
 					functionName.put(newName, instNode);
 					functionName.put(name, inst);
 				} else {
 					assert(false);
 				}
+			} else {
+				assert(!functionName.containsKey(name));
+				functionName.put(name, inst);
+			}
+		}
+		for(InstructionNode inst : threadStarts){
+			String name = symbolTable.functionName(inst.getStartPc());
+			
+			if(functionName.containsKey(name)){
+				name = "unnamed_thread_at_0x" + Integer.toHexString(inst.getStartPc());
+				functionName.put(name, inst);
 			} else {
 				assert(!functionName.containsKey(name));
 				functionName.put(name, inst);

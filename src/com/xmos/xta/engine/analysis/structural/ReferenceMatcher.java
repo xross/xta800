@@ -21,7 +21,7 @@ public class ReferenceMatcher {
 		node.traverse(0, new DefaultNodeTraverser() {
 			public boolean foundInstructionNode(Node node, int depth) {							
 				XtaInstruction instruction = node.getInstructions().getFirst();				
-				if (instruction.getPc() == pc) {
+				if (instruction.getPc() == pc && !instruction.isFnop()) {
 					matchingNodes.add(node);
 				}
 				return true;
