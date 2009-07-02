@@ -104,7 +104,7 @@ public class StructureFunctionNode extends ViewNode {
 		}
 	}
 
-	public void annotateXy(int xOffset, int yOffset) {
+	public void annotateNodes(int xOffset, int yOffset, boolean isBestCase, boolean isWorstCase) {
 		if (DEBUG) System.out.printf("Annotate StructureFunction (%d, %d)\n", xOffset, yOffset);
         m_pixelOffsetX = xOffset;
 		m_pixelOffsetY = yOffset;
@@ -113,7 +113,11 @@ public class StructureFunctionNode extends ViewNode {
     	int childOffsetY = yOffset + m_borderY + m_textAreaY;
 		for (ViewNode child : getChildren()) {
 			int childY = child.getPixelsY();
-    		child.annotateXy(xOffset + m_borderX + m_textAreaX, childOffsetY + ((childrenY - childY) / 2));
+    		child.annotateNodes(xOffset + m_borderX + m_textAreaX, childOffsetY + ((childrenY - childY) / 2),
+    				isBestCase, isWorstCase);
     	}
+		
+		m_isBestCase = isBestCase;
+		m_isWorstCase = isWorstCase;
 	}
 }

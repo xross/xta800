@@ -51,10 +51,13 @@ public class StructureBlockNode extends ViewNode {
         drawTimes(display, timesGc);
 	}
 
-	public void annotateXy(int xOffset, int yOffset) {
+	public void annotateNodes(int xOffset, int yOffset, boolean isBestCase, boolean isWorstCase) {
 		if (DEBUG) System.out.printf("Annotate StructureBlock (%d, %d)\n", xOffset, yOffset);
         m_pixelOffsetX = xOffset;
 		m_pixelOffsetY = yOffset;
+		
+		m_isBestCase = isBestCase;
+		m_isWorstCase = isWorstCase;
 	}
 
 	public boolean isFolded() {

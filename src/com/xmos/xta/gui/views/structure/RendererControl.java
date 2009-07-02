@@ -85,7 +85,7 @@ public class RendererControl {
 
 	public synchronized void refresh() {
 		if (m_viewNode != null) {
-			m_viewNode.annotateXy(m_borderX, m_borderY);
+			m_viewNode.annotateNodes(m_borderX, m_borderY, true, true);
 			updatePixelsXy();
 			signalChange();
 		}
