@@ -18,12 +18,12 @@ unsigned int readWord() {
   return (control << 24 | data >> 8);
 }
 
-int inputData(chanend c) {
-  start_streaming_master(c);
-  
+int inputData(streaming chanend c) {
+
+
   while(1) {
     unsigned int data = readWord();
-    outuint(c, data);
+    c <: data;
   }
   return 0;
 }

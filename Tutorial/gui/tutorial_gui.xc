@@ -4,11 +4,11 @@
  */
 #include <platform.h>
 
-int inputData(chanend c);
-int processData(chanend c);
+int inputData(streaming chanend c);
+int processData(streaming chanend c);
 
 int main() {
-  chan c;
+  streaming chan c;
   par
   {
     on stdcore[0] : inputData(c);

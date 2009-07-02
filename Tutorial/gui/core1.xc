@@ -75,13 +75,13 @@ int stateMachine(int state, unsigned int data, unsigned int &errorCount) {
   return nextState;
 }
 
-int processData(chanend c) {
+int processData(streaming chanend c) {
   int state = STATE_IDLE;
-  start_streaming_slave(c);
+
 
   while(1) {
     unsigned int errorCount;
-    unsigned int data = inuint(c);
+    unsigned int data;   c :> data;
     state = stateMachine(state, data, errorCount);
     statusP <: state;
   }
