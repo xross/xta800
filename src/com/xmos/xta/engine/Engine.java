@@ -904,9 +904,12 @@ public class Engine implements Notifier {
 					return false;
 				
 				ThreadHandler th = new ThreadHandler(id, this);
-				
-				Set<InstructionNode> threadStartNodes = th.getThreadNodes(sections.getThreadStartPoints(nodeId, coreId));
-				Set<InstructionNode> threadStopNodes = th.getThreadNodes(sections.getThreadStopPoints(nodeId, coreId));				
+
+				Set<InstructionNode> threadStartNodes = 
+					th.getThreadNodes(sections.getThreadStartPoints(nodeId, coreId), "thread start");
+				Set<InstructionNode> threadStopNodes = 
+					th.getThreadNodes(sections.getThreadStopPoints(nodeId, coreId), "thread stop");
+
 				
 				threadStartNodes = th.ensureThreadStartExists(threadStartNodes);
 
