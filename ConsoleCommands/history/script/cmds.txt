@@ -55,22 +55,13 @@ print trace - 99
 -pwd
 
 -set loop - 99 99
--set time test.xc:12 ns 99
--set time label1 cycles 99
--set time 0x1000 cycles 99
--set constraint expression
-
+-set time - test.xc:12 99.0 ns
+-set time - label1 99 cycles
+-set time - 0x1000 99 cycles
 -source invalid.txt
 status
 
 print summary
-print completed_loops
-print completed_blocks
-print completed_instructions
-print unresolved
-print unresolved_loops
-print unresolved_blocks
-print unresolved_instructions
 print functions
 print sources
 print info 99

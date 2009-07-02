@@ -4,6 +4,9 @@
 .xtathreadstart
 _start:
   bl main
+  clre 
+.xtathreadstop
+  waiteu
 
 .type main, @function
 .globl main

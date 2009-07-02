@@ -6,10 +6,8 @@ Label: call_function_b1, pc: 0x[0-9a-fA-F]+, compilation dir: .*call_call, filen
 Error: Unresolved reference: call_function_a0
 Route\(0\) path: call_function_a0 to call_function_b0
     No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
 
 Route\(1\) path: call_function_a1 to call_function_b1
     No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
 
 Fail, Timing Unspecified

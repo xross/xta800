@@ -1,3 +1,4 @@
+Invalid argument(s) to 'help' command (Try 'help help'..)
   [-]add <option> <arg0> <arg1>...: Add item to given list
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
   [-]config <option> <arg0> <arg1>...: Configures the given option
@@ -21,8 +22,10 @@
       option: label <CONSTRAINT_REF> <label>: Adds the given label to the labels list
       option: srclabel <SRCLABEL_REF> <label>: Adds the given source label to the source labels list
       option: endpoint <ENDPOINT_REF> <label>: Adds the given endpoint to the endpoints list
+      option: call <CALL_REF> <label>: Adds the given call to the calls list
       option: threadstartpoint <LABEL_REF>: Adds the given reference to the thread start points list
       option: threadstoppoint <LABEL_REF>: Adds the given reference to the thread stop points list
+      option: exclusion <ANY_REF>: Adds the given reference to the list of exclusions
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
       option: path <from ENDPOINT_REF> <to ENDPOINT_REF>: Sets a path start and end points
       option: function <name>: Sets a path to trace a given function
@@ -32,61 +35,59 @@
       option: freq <core frequency>: Sets the core frequency (default: 400)
       option: threads <num threads>: Sets number of threads currently executing (default: 8)
       option: srcpaths <paths>: Sets the (semicolon separated) source search path
+      option: verbosity <level>: Sets the tool verbosity level (range: -10 -> +10, default: 0)
   [-]echo "text": prints the text to the console
   [-]exit: Quits the shell (Standalone mode only)
   [-]help [command/option]: Displays help message for the given command/option
-      options: LABEL_REF, SRCLABEL_REF, ENDPOINT_REF, CONSTRAINT_REF
+      options: LABEL_REF, SRCLABEL_REF, ENDPOINT_REF, CALL_REF, ANY_REF
   [-]history: Displays the command history
   [-]list <option> <arg0> <arg1>...: Lists the given set of items
       option: branches: Lists the branches
       option: labels: Lists the labels
       option: srclabels: Lists the source labels
       option: endpoints: Lists the endpoints
+      option: calls: Lists the calls
       option: allsrclabels: Lists all the possible locations for source labels
       option: allendpoints: Lists all the possible locations for endpoints
+      option: allcalls: Lists all the possible locations for calls
       option: threadstartpoints: Lists the thread start points
       option: threadstoppoints: Lists the thread stop points
       option: srccommands : Displays the command list embedded in the loaded executable
-      option: unknowns <route id>: Displays a list of the unknowns for the given route
+      option: unknowns <route id>: Displays the list of unknowns for the given route
       option: functions: Lists the functions in the loaded application
       option: sources: Lists the source files
-      option: knowns <route id>: Displays a list of values which have been set for the given route
-      option: constraint: Displays the current constraint expression
+      option: knowns <route id>: Displays the list of knowns set for the given route
+      option: exclusions: Displays the exclusions
   [-]load <xe file>: Loads the given xmos executable file
   [-]print <option> <arg0> <arg1>...: Display analysis information
-      option: summary: Show routes summary [verbosity 0|1|2|3(default)]
-      option: asm <route id> <path/block id>: Display annotated assembly for given path id
-      option: src <route id> <path/block id>: Display annotated source file(s) for given path id
-      option: mix <route id> <path/block id>: Display annotated source file(s) + assembly instructions for the given path id
-      option: trace <route id> <path/block id>: Display instruction trace for the given path/block
-      option: completed_paths: Show timing of complete paths
-      option: completed_loops: Show timing of complete paths + loops
-      option: completed_blocks: Show timing of complete paths + loops + blocks
-      option: completed_instructions: Show timing of complete paths + loops + blocks + instructions
-      option: unresolved_paths: Show timing of unresolved path(s)
-      option: unresolved_loops: Show timing of complete paths + loops
-      option: unresolved_blocks: Show timing of complete paths + loops + blocks
-      option: unresolved_instructions: Show timing of complete paths + loops + blocks + instructions
+      option: summary: Show routes summary (verbosity -2|-1|0)
+      option: structure <route id> [node id]: Display the structure for given route/node (verbosity 0|1)
+      option: asm <route id> [node id]: Display annotated assembly for the given route/node
+      option: src <route id> [node id]: Display annotated source file(s) for given route/node
+      option: mix <route id> [node id]: Display annotated source file(s) + assembly instructions for the given route/node
+      option: trace <route id> [node id]: Display instruction trace for the worst case path of the given route/node
       option: route_info <route id>: Show detailed information for the given route
-      option: path_info <route id> <path/block id>: Show detailed information for the given path/block
-      option: functions <route id>: Shows which paths touch which functions
+      option: node_info <route id> <node id>: Show detailed information for the given node in the given route
+      option: functions <route id>: Shows functions this route touches
       option: sources <route id>: Shows which paths touch which sources
   [-]pwd: Displays the current working directory
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
       option: branch <from LABEL_REF>: Removes the given from reference from the branches list
-      option: label [label]+: Removes the given labels from the labels list (supports regular expressions)
+      option: label <label>+: Removes the given labels from the labels list (supports regular expressions)
       option: srclabel [label]+: Removes the given source labels from the source labels list (supports regular expressions)
       option: endpoint [label]+: Removes the given endpoints from the endpoints list (supports regular expressions)
+      option: call [label]+: Removes the given calls from the calls list (supports regular expressions)
       option: threadstartpoint <LABEL_REF>: Removes the given from reference from the thread start points list
       option: threadstoppoint <LABEL_REF>: Removes the given from reference from the thread stop points list
+      option: exclusion: <ANY_REF|*>: Removes the given reference (or all if '*') from the list of exclusions
       option: route <route id>: Removes the route with the given id from the current analysis
   [-]set <option> <arg0> <arg1>...: Set path information
-      option: loop <route id> <SRCLABEL_REF> <iterations>: Sets the number of iterations for the path identified
-      option: loopmax <route id> <SRCLABEL_REF> <iterations>: Sets the maximum number of iterations for the loop identified
-      option: loopscope <route id> <SRCLABEL_REF> <scope>: Sets the scope of the referenced loop
+      option: loop <route id> <ANY_REF> <iterations>: Sets the number of iterations for the loop identified
+      option: looppath <route id> <ANY_REF> <iterations>: Sets the number of iterations for the path identified
+      option: loopscope <route id> <ANY_REF> <scope>: Sets the scope of the referenced loop
           scope: relative/r: Iteration number propagates to the enclosing path (Default)
           scope: absolute/a: Absolute number of iterations
-      option: time <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc
+      option: time <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc
           mode: ns:     Sets the time this instruction takes in ns
           mode: mhz:    Sets the time this instruction takes in mhz
           mode: cycles: Sets the time this instruction takes in thread cycles
@@ -94,28 +95,20 @@
           mode: ns:     Sets the required route time in ns
           mode: mhz:    Sets the required route time in mhz
           mode: cycles: Sets the required route time in thread cycles
-      option: constraint <expression>: Defines the constraint expression
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
   [-]unset <option> <arg0> <arg1>...: Unset item from given list
-      option: loop <route id> <SRCLABEL_REF>: Clears the number of iterations for the path identified
-      option: loopmax <route id> <SRCLABEL_REF>: Clears the maximum number of iterations for the loop identified
-      option: time <pc>: Clears the time set for the given instructions (supports regular expressions)
+      option: time <route id> <pc>: Clears the time set for the given instructions (supports regular expressions)
       option: required <route id>: Clears the the maximum allowed time for the given route
-      option: constraint: Clears the constraint expression
-  Any of the following are permitted:
-    Pc: Raw program counter specified in the format: 0x*
-    Label: Any source or assembly level symbol defined with respect to an executable section
-    Endpoint: Endpoint specified using the source level pragma mechanism
-    EndpointFileLine: Endpoint specified in the format: 'file name:line number'
-    SrcLabel: Source label specified using the source level pragma mechanism
-    SrcLabelFileLine: Source label specified in the format: 'file name:line number'
+Invalid command in file: cmds.txt, line number: 19
   Any of the following are permitted:
     Pc: Raw program counter specified in the format: 0x*
     Label: Any source or assembly level symbol defined with respect to an executable section
   Any of the following are permitted:
     Pc: Raw program counter specified in the format: 0x*
     Label: Any source or assembly level symbol defined with respect to an executable section
+    Call: Call specified using the source level pragma mechanism
+    CallFileLine: Call specified in the format: 'file name:line number'
     SrcLabel: Source label specified using the source level pragma mechanism
     SrcLabelFileLine: Source label specified in the format: 'file name:line number'
   Any of the following are permitted:
@@ -123,3 +116,5 @@
     Label: Any source or assembly level symbol defined with respect to an executable section
     Endpoint: Endpoint specified using the source level pragma mechanism
     EndpointFileLine: Endpoint specified in the format: 'file name:line number'
+    Call: Call specified using the source level pragma mechanism
+    CallFileLine: Call specified in the format: 'file name:line number'

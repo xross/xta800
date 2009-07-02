@@ -48,23 +48,15 @@
 46: remove endpoint label1
 47: pwd
 48: set loop - 99 99
-49: -set time test.xc:12 ns 99
-50: -set time label1 cycles 99
-51: -set time 0x1000 cycles 99
-52: set constraint expression
-53: source invalid.txt
-54: status
-55: print summary
-56: print completed_loops
-57: print completed_blocks
-58: print completed_instructions
-59: print unresolved
-60: print unresolved_loops
-61: print unresolved_blocks
-62: print unresolved_instructions
-63: print functions
-64: print sources
-65: print info 99
-66: unset time 0x10000
-67: version
-68: history
+49: set time - test.xc:12 99.0 ns
+50: set time - label1 99 cycles
+51: set time - 0x1000 99 cycles
+52: source invalid.txt
+53: status
+54: print summary
+55: print functions
+56: print sources
+57: print info 99
+58: unset time 0x10000
+59: version
+60: history
