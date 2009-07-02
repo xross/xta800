@@ -134,6 +134,7 @@ public class RendererControl {
 		    m_bestTime = bestTime;
 		    m_worstTime = worstTime;
 			m_renderRequired = true;
+			m_viewNode.annotateNodes(m_borderX, m_borderY, true, true);
 			signalChange();
 		}
 	}

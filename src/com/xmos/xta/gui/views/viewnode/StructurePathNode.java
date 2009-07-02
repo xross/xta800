@@ -58,7 +58,8 @@ public class StructurePathNode extends ViewNode {
     		int childX = child.getPixelsX();
     		
         	if (!first) {
-        		drawConnection(display, structureGc, lineLeft, lineY, lineRight, lineY, isWorstCase, isBestCase);
+        		drawConnection(display, structureGc, lineLeft, lineY, lineRight, lineY,
+        				isBestCase, isWorstCase);
         	} else {
         		first = false;
         	}
@@ -70,8 +71,10 @@ public class StructurePathNode extends ViewNode {
     		child.draw(display, structureGc, timesGc);
 		}
 
-		drawConnection(display, structureGc, m_x, lineY, scale(m_pixelOffsetX + m_borderX), lineY, isWorstCase, isBestCase);
-		drawConnection(display, structureGc, lineLeft, lineY, scale(m_pixelOffsetX + getPixelsX()), lineY, isWorstCase, isBestCase);
+		drawConnection(display, structureGc, m_x, lineY, scale(m_pixelOffsetX + m_borderX), lineY,
+				isBestCase, isWorstCase);
+		drawConnection(display, structureGc, lineLeft, lineY, scale(m_pixelOffsetX + getPixelsX()), lineY,
+				isBestCase, isWorstCase);
     }
 
 	public void annotateNodes(int xOffset, int yOffset, boolean isBestCase, boolean isWorstCase) {

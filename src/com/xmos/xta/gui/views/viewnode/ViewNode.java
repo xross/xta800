@@ -94,7 +94,7 @@ public abstract class ViewNode {
 	}
 
 	public void drawConnection(Display display, GC gc, int x1, int y1, int x2, int y2,
-			boolean isWorstCase, boolean isBestCase) {
+			boolean isBestCase, boolean isWorstCase) {
 		gc.setLineWidth(getLineWidth() + 1);
 		
 		if (isBestCase) {

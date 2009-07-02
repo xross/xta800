@@ -216,6 +216,7 @@ public class SectionNode extends Node {
 			Node node = iter.next();
 			switch (c) {
 			case WORST:
+				// Finds the worst case option...
 				double w1 = node.getAttributes().getTimeTaken(c, ignoreIterations);
 				double w2 = caseNode.getAttributes().getTimeTaken(c, ignoreIterations);				
 				if (w1 > w2) {
@@ -224,9 +225,12 @@ public class SectionNode extends Node {
 				break;
 				
 			case BEST:
+				// Finds the best (non-zero) case option... 
 				double b1 = node.getAttributes().getTimeTaken(c, ignoreIterations);
 				double b2 = caseNode.getAttributes().getTimeTaken(c, ignoreIterations);				
-				if (b1 < b2) {
+				if ((b2 == 0) && (b1 != 0)) {
+					caseNode = node;
+				} else if ((b1 > 0) && (b1 < b2)) {
 				    caseNode = node;
 				}
 				break;

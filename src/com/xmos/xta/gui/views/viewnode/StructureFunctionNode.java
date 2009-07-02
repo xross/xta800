@@ -84,11 +84,15 @@ public class StructureFunctionNode extends ViewNode {
 
     		boolean isWorstCase = isWorstCase();
     		boolean isBestCase = isBestCase();
-    		drawConnection(display, structureGc, m_x, midY, childLeftX, midY, isWorstCase, isBestCase);
-			drawConnection(display, structureGc, childLeftX, midY, childLeftX, childMidY, isWorstCase, isBestCase);
+    		drawConnection(display, structureGc, m_x, midY, childLeftX, midY,
+    				isBestCase, isWorstCase);
+			drawConnection(display, structureGc, childLeftX, midY, childLeftX, childMidY,
+					isBestCase, isWorstCase);
 
-			drawConnection(display, structureGc, childRightX, childMidY, childRightX, midY, isWorstCase, isBestCase);
-			drawConnection(display, structureGc, childRightX, midY, scale(m_pixelOffsetX + getPixelsX()), midY, isWorstCase, isBestCase);
+			drawConnection(display, structureGc, childRightX, childMidY, childRightX, midY,
+					isBestCase, isWorstCase);
+			drawConnection(display, structureGc, childRightX, midY, scale(m_pixelOffsetX + getPixelsX()), midY,
+					isBestCase, isWorstCase);
        	} else {
        		drawTimes(display, timesGc);
        	}
