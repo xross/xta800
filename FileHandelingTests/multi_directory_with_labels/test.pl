@@ -13,6 +13,6 @@ system("xcc -target=$target -march=$arch -fxta-info -g test.xc up/up.xc -o $genD
 system("@ARGV load $genDir/test.xe " . 
        "list srclabels " .
        "analyse function main " .
-       "print src 0 0 " .
-       "exit  > $genDir/multi_directory_with_labels.txt 2>&1");
+       "print src - " .
+       "-exit  > $genDir/multi_directory_with_labels.txt 2>&1");
 
