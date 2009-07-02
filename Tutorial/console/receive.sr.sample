@@ -1,14 +1,18 @@
 # This is the data receive loop path
-set constraint !packet_start && !eop_detected
+add exclusion packet_start
+add exclusion eop_detected
 analyse path receive_loop receive_loop
 set required - 320 ns
 
 # This is the inter-frame gap path
-set constraint !do_loop && !error_overflow && !error_crc && !error_len && !error_nibble
+remove exclusion *
+add exclusion do_loop
+add exclusion error_overflow 
+add exclusion error_crc 
+add exclusion error_len 
+add exclusion error_nibble
 analyse path eop_detected packet_start
 set required - 1520 ns
 
-print completed_paths
 print summary
-
 exit

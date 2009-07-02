@@ -13,6 +13,6 @@ system("xcc -target=$target -march=$arch -g test.xc up/test.xc -o $genDir/test.x
 system("@ARGV load $genDir/test.xe " .
        "list sources " .
        "analyse function main " .
-       "print src - 0 " .
-       "exit  > $genDir/multi_directory_same_file_names.txt 2>&1");
+       "print src - " .
+       "-exit  > $genDir/multi_directory_same_file_names.txt 2>&1");
 

@@ -12,6 +12,6 @@ system("xcc -target=$target -march=$arch -g test.c -o $genDir/test.xe > $genDir/
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "print src - 0 " .
-       "exit  > $genDir/view_c_source.txt 2>&1");
+       "print src - " .
+       "-exit  > $genDir/view_c_source.txt 2>&1");
 

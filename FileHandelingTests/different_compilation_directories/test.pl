@@ -23,6 +23,6 @@ system("xcc -target=$target -march=$arch -g $genDir/test.o $genDir/add.o $genDir
 system("@ARGV load $genDir/test.xe " .
        "list sources " .
        "analyse function main " .
-       "print src - 0 " .
-       "exit  > $genDir/different_compilation_directories.txt 2>&1");
+       "print src - " .
+       "-exit  > $genDir/different_compilation_directories.txt 2>&1");
 

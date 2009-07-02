@@ -12,9 +12,9 @@ system("xcc -target=$target -march=$arch -fxta-info -g test.xc -o $genDir/test.x
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "set loopmax - outer_loop 10 " .
+       "set loop - outer_loop 10 " .
+       "set loop - inner_loop 55 " .
        "set loopscope - inner_loop a " .
-       "set loopmax - inner_loop 55 " .
-       "print completed_loops " .
+       "print structure - " .
        "-exit > $genDir/dependent_nested_loop.txt 2>&1");
 

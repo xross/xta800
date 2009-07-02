@@ -11,6 +11,7 @@ void rawSampleThread (chanend rawSampleChan) {
   int   sampleCount = 0;
   int   sampleTime;
   
+  #pragma xta label "begin"
   sampleTimer :> sampleTime;
   while (1) {
     for (sampleCount = 0 ; sampleCount <480; sampleCount++){
@@ -28,4 +29,7 @@ void rawSampleThread (chanend rawSampleChan) {
       }
     }
   }
+
+  #pragma xta label "end"
+  return;
 }

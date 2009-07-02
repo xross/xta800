@@ -21,6 +21,6 @@ system("@ARGV " .
        "load $genDir/test.xe " .
        "list sources " .
        "analyse function main " .
-       "print src - 0 " .
-       "exit  > $genDir/paths_windows.txt 2>&1");
+       "print src - " .
+       "-exit  > $genDir/paths_windows.txt 2>&1");
 
