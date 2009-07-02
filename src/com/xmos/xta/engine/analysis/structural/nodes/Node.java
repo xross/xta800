@@ -68,18 +68,26 @@ public abstract class Node implements Comparable<Node>{
 		return m_id;
 	}
 
-	public int compareTo(Node node) {	
-	/*
-		double thisTimeTaken = getAttributes().getTimeTaken(Case.WORST, false);
-		double nodeTimeTaken = node.getAttributes().getTimeTaken(Case.WORST, false);
+	
+	//private static final boolean s = true;
+	private static final boolean s = true;
+	public int compareTo(Node node) {
+		if (s) {
+			double thisTimeTaken = getAttributes().getTimeTaken(Case.WORST,
+					false);
+			double nodeTimeTaken = node.getAttributes().getTimeTaken(
+					Case.WORST, false);
 
-		if (thisTimeTaken - nodeTimeTaken != 0) {
-			return Integer.signum((int) (thisTimeTaken - nodeTimeTaken));
+			if (thisTimeTaken - nodeTimeTaken != 0) {
+				return Integer.signum((int) (thisTimeTaken - nodeTimeTaken));
+			} else {
+
+				return Integer.signum(m_id - node.m_id);
+			}
 		} else {
-		*/
-			return Integer.signum(m_id - node.m_id);			
-		//}			
-    }
+			return Integer.signum(m_id - node.m_id);
+		}
+	}
 	
 	public void setBranchLinkReturn(Node bl){
 		m_branchLinkReturn = bl;

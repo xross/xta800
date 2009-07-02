@@ -11,7 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.Vector;
 import org.eclipse.core.runtime.IProgressMonitor;
 import com.xmos.xeloader.DebugInfo;
@@ -963,7 +962,7 @@ public class Engine implements Notifier {
 			Collection<InstructionNode> funcStarts, Set<InstructionNode> threadStarts ) {
 		
 		
-		
+		//TODO test this properly
 		for(InstructionNode inst : funcStarts){
 			String name = symbolTable.functionName(inst.getStartPc());
 			
