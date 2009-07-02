@@ -239,6 +239,9 @@ public class StructuralAnalysisEngine {
 			}
 		}
 		
+		for(Node inst : currentGraph){
+			inst.freeMemory();
+		}
 		return treeStart;
 	}
 
@@ -254,10 +257,11 @@ public class StructuralAnalysisEngine {
 	private void buildDominatorTree(Collection<Node> reachableNodes, Node treeStart) {
 
 		for (Node node : reachableNodes) {
-			node.getDominators().clear();
+			node.clearDominators();
 			if (treeStart == node) {
 				node.setDominatorSetComplete(false);
-				node.getDominators().add(node);
+				//node.getDominators().add(node);
+				node.addDominator(node);
 			} else {
 				node.setDominatorSetComplete(true);
 			}
@@ -290,8 +294,12 @@ public class StructuralAnalysisEngine {
 				intersection.add(node);
 
 				if (!intersection.equals(node.getDominators())) {
-					node.getDominators().clear();
-					node.getDominators().addAll(intersection);
+					
+					node.clearDominators();
+					node.addAllDominators(intersection);
+					
+					//node.getDominators().clear();
+					//node.getDominators().addAll(intersection);
 					node.setDominatorSetComplete(intersectionIsCompleteSet);
 					stillChanging = true;
 				}

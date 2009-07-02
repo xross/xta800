@@ -96,8 +96,8 @@ public class BasicBlockMatcher {
 	}
 
 	private boolean continueDown(Node node) {
-		if (node.getNextNodesSize() == 1 && !isEnd(node) 
-				&& !node.getDominators().contains(node.getNextNode())) {
+		if (node.getNextNodesSize() == 1 && !isEnd(node)
+				&& !node.dominatorsContain(node.getNextNode())) {
 			return true;
 		} else {
 			return false;

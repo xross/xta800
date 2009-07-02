@@ -1,7 +1,6 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,7 +61,7 @@ public class FunctionNode extends IBufferNode {
 	public Node shallowCopy() {
     	return new FunctionNode(this);
 	}
-	
+	private static int count ;
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine){
 		FunctionNode fn = new FunctionNode();
 		fn.m_functionName = m_functionName;
@@ -79,7 +78,7 @@ public class FunctionNode extends IBufferNode {
 			engine.provideFeedback("linking function: " + fnName);
 			fn.setFunction(fnName, startPcs.get(pc).getFunction().deepCopy(startPcs, engine));
 		}
-		
+		System.out.println(count++);
 		fn.m_attributes = new NodeAttributes(fn);
 		return fn;
 	}

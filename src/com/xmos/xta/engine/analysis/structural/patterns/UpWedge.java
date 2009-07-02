@@ -15,7 +15,7 @@ public class UpWedge extends PatternMatcher {
 		Set<Node> leastDominantNodes = new TreeSet<Node>();
 		for (Node node : workingSet) {
 			for (Node next : node.getNextNodes()) {
-				if (node.getDominators().contains(next)) {
+				if (node.dominatorsContain(next)) {
 					leastDominantNodes.add(node);
 				}
 			}
