@@ -153,9 +153,9 @@ public class StructuralAnalysisEngine {
 			if (!createStructure(basicBlocks, initialBasicBlock, engine, false, jobName)) {
 				return null;
 			}
-			if(basicBlocks.size() != 1) {
-				dumpTree(basicBlocks);
-			}
+			//if(basicBlocks.size() != 1) {
+			//	dumpTree(basicBlocks);
+			//}
 			assert(basicBlocks.size() == 1);
 			Node decomposedGraph = basicBlocks.iterator().next();
 			
@@ -329,7 +329,6 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	
 	private boolean detectRecursion(Engine engine){
 		
 		Map<FunctionNode, TreeSet<FunctionNode>> links = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
