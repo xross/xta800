@@ -70,29 +70,35 @@ public class StructureFunctionNode extends ViewNode {
     	}
 
        	if (!isFolded()) {
-    		int childRightX = 0;
-            int childMidY = 0;
-			for (ViewNode child : getChildren()) {
-	    		child.draw(display, structureGc, timesGc);
-
-	    		childRightX = scale(child.getPixelOffsetX() + child.getPixelsX());
-	    		childMidY = scale(child.getPixelOffsetY() + (child.getPixelsY() / 2));
-	    	}
-
-	    	int midY = scale(m_pixelOffsetY + (getPixelsY() / 2));
-	    	int childLeftX = scale(m_pixelOffsetX + m_borderX + m_textAreaX);
-
     		boolean isWorstCase = isWorstCase();
     		boolean isBestCase = isBestCase();
-    		drawConnection(display, structureGc, m_x, midY, childLeftX, midY,
-    				isBestCase, isWorstCase);
-			drawConnection(display, structureGc, childLeftX, midY, childLeftX, childMidY,
-					isBestCase, isWorstCase);
-
-			drawConnection(display, structureGc, childRightX, childMidY, childRightX, midY,
-					isBestCase, isWorstCase);
-			drawConnection(display, structureGc, childRightX, midY, scale(m_pixelOffsetX + getPixelsX()), midY,
-					isBestCase, isWorstCase);
+       		if ((getChildren().size() > 0)) {
+	    		int childRightX = 0;
+	            int childMidY = 0;
+				for (ViewNode child : getChildren()) {
+		    		child.draw(display, structureGc, timesGc);
+	
+		    		childRightX = scale(child.getPixelOffsetX() + child.getPixelsX());
+		    		childMidY = scale(child.getPixelOffsetY() + (child.getPixelsY() / 2));
+		    	}
+	
+		    	int midY = scale(m_pixelOffsetY + (getPixelsY() / 2));
+		    	int childLeftX = scale(m_pixelOffsetX + m_borderX + m_textAreaX);
+	
+	    		drawConnection(display, structureGc, m_x, midY, childLeftX, midY,
+	    				isBestCase, isWorstCase);
+				drawConnection(display, structureGc, childLeftX, midY, childLeftX, childMidY,
+						isBestCase, isWorstCase);
+	
+				drawConnection(display, structureGc, childRightX, childMidY, childRightX, midY,
+						isBestCase, isWorstCase);
+				drawConnection(display, structureGc, childRightX, midY, scale(m_pixelOffsetX + getPixelsX()), midY,
+						isBestCase, isWorstCase);
+       		} else {
+		    	int midY = scale(m_pixelOffsetY + (getPixelsY() / 2));
+	    		drawConnection(display, structureGc, m_x, midY, scale(m_pixelOffsetX + getPixelsX()), midY,
+	    				isBestCase, isWorstCase);
+       		}
        	} else {
        		drawTimes(display, timesGc);
        	}
