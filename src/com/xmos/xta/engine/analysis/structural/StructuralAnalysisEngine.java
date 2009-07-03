@@ -146,8 +146,8 @@ public class StructuralAnalysisEngine {
 			String jobName = "Processing " + functionName;
 			
 			//There are the only two sets that need to be ordered as they determine the number of the blocks
-			Collection<Node> currentGraph = new LinkedList<Node>();
-			Collection<Node> basicBlocks = new LinkedList<Node>();
+			Collection<Node> currentGraph = new TreeSet<Node>();
+			Collection<Node> basicBlocks = new TreeSet<Node>();
 			
 			collectCurrentGraphNodes(graphStart, currentGraph);
 			
@@ -441,7 +441,7 @@ public class StructuralAnalysisEngine {
 	}
 	
 	private void linkFunctions(Engine engine, Map<FunctionNode, HashSet<FunctionNode>> allFunctionObjects) {
-
+		engine.startAnalysis("linking functions:", allFunctionObjects.size());
 		while (!allFunctionObjects.isEmpty()) {
 			// first make a set of nodes to eliminate (leaf nodes).
 			Set<FunctionNode> leafs = new HashSet<FunctionNode>();
@@ -461,10 +461,10 @@ public class StructuralAnalysisEngine {
 									.getStartPc()) {
 								
 								//symbolic link
-								//fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction());
+								fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction());
 
 								//copying link
-								fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction().deepCopy());
+								//fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction().deepCopy());
 								
 								toRemove.add(fnLink);
 							}
@@ -478,6 +478,7 @@ public class StructuralAnalysisEngine {
 
 			for (FunctionNode leaf : leafs) {
 				allFunctionObjects.remove(leaf);
+				engine.provideWorkDone(1);
 			}
 
 		}
