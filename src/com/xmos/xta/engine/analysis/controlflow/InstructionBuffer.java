@@ -1,6 +1,8 @@
 package com.xmos.xta.engine.analysis.controlflow;
 
-public class InstructionBuffer {
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
+
+public class InstructionBuffer implements Comparable<InstructionBuffer>{
 	
     static final int IBUFFER_NUM_BYTES = 8;
     static final int BYTES_PER_WORD = 4;
@@ -91,5 +93,14 @@ public class InstructionBuffer {
         else
             return false;
     }
+
+	public int compareTo(InstructionBuffer o) {
+		if(m_pc - o.m_pc != 0){
+			return Integer.signum(m_pc - o.m_pc);
+		} else {
+			return Integer.signum(m_numBytes - o.m_numBytes);
+		}
+		
+	}
 
 }

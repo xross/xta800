@@ -1,8 +1,5 @@
 package com.xmos.xta.engine.analysis.structural.nodes.attributes;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
@@ -21,15 +18,23 @@ public class NodeAttributes {
 		KNOWN,
 	}
 
-	private Map<Case, Double> m_cachedTimeTaken;
-	private Map<Case, Long> m_cachedNumCycles;
-	private Map<Case, Long> m_cachedNumInstructions;
-	private Map<Case, Long> m_cachedNumFnops;
-	
-	private Map<Case, Boolean> m_cachedTimeTakenValid;
-	private Map<Case, Boolean> m_cachedNumCyclesValid;
-	private Map<Case, Boolean> m_cachedNumInstructionsValid;
-	private Map<Case, Boolean> m_cachedNumFnopsValid;	
+	private double m_cachedWorstTimeTaken;
+	private long m_cachedWorstNumCycles;
+	private long m_cachedWorstNumInstructions;
+	private long m_cachedWorstNumFnops;
+	private double m_cachedBestTimeTaken;
+	private long m_cachedBestNumCycles;
+	private long m_cachedBestNumInstructions;
+	private long m_cachedBestNumFnops;
+
+	private boolean m_cachedWorstTimeTakenValid;
+	private boolean m_cachedWorstNumCyclesValid;
+	private boolean m_cachedWorstNumInstructionsValid;
+	private boolean m_cachedWorstNumFnopsValid;	
+	private boolean m_cachedBestTimeTakenValid;
+	private boolean m_cachedBestNumCyclesValid;
+	private boolean m_cachedBestNumInstructionsValid;
+	private boolean m_cachedBestNumFnopsValid;	
 	
 	private boolean m_isUnknown;
 	private UnknownType m_unknownType;
@@ -154,15 +159,23 @@ public class NodeAttributes {
 	// Cached Statistics Methods
 	// --------------------------------------------------------------------- //			
 	void initialiseCachedStats() {
-		m_cachedTimeTaken       = new HashMap<Case, Double>();		
-		m_cachedNumCycles       = new HashMap<Case, Long>();
-		m_cachedNumInstructions = new HashMap<Case, Long>();
-		m_cachedNumFnops        = new HashMap<Case, Long>();
+		m_cachedWorstTimeTaken       = 0;		
+		m_cachedBestTimeTaken        = 0;		
+		m_cachedWorstNumCycles       = 0;
+		m_cachedBestNumCycles        = 0;
+		m_cachedWorstNumInstructions = 0;
+		m_cachedBestNumInstructions  = 0;
+		m_cachedWorstNumFnops        = 0;
+		m_cachedBestNumFnops         = 0;
 		
-		m_cachedTimeTakenValid            = new HashMap<Case, Boolean>(); 
-		m_cachedNumCyclesValid       = new HashMap<Case, Boolean>(); 
-		m_cachedNumInstructionsValid = new HashMap<Case, Boolean>(); 
-		m_cachedNumFnopsValid        = new HashMap<Case, Boolean>(); 
+		m_cachedWorstTimeTakenValid       = false; 
+		m_cachedBestTimeTakenValid        = false; 
+		m_cachedWorstNumCyclesValid       = false; 
+		m_cachedBestNumCyclesValid        = false; 
+		m_cachedWorstNumInstructionsValid = false; 
+		m_cachedBestNumInstructionsValid  = false; 
+		m_cachedWorstNumFnopsValid        = false; 
+		m_cachedBestNumFnopsValid         = false; 
 	}
 	
 	public void invalidateCachedStats() {
@@ -185,26 +198,26 @@ public class NodeAttributes {
 		setCachedNumFnopsValid(Case.BEST, false);
     }
 
-	double getCachedTimeTaken(Case c)     { return m_cachedTimeTaken.get(c); }
-	long getCachedNumCycles(Case c)       { return m_cachedNumCycles.get(c); }
-	long getCachedNumInstructions(Case c) { return m_cachedNumInstructions.get(c); }
-	long getCachedNumFnops(Case c)        { return m_cachedNumFnops.get(c); }
+	double getCachedTimeTaken(Case c)     { return (c == Case.WORST) ? m_cachedWorstTimeTaken       : m_cachedBestTimeTaken; }	
+	long getCachedNumCycles(Case c)       { return (c == Case.WORST) ? m_cachedWorstNumCycles       : m_cachedBestNumCycles; }
+	long getCachedNumInstructions(Case c) { return (c == Case.WORST) ? m_cachedWorstNumInstructions : m_cachedBestNumInstructions; }
+	long getCachedNumFnops(Case c)        { return (c == Case.WORST) ? m_cachedWorstNumFnops        : m_cachedBestNumFnops; }
 
-	void setCachedTimeTaken(Case c, Double value)     { m_cachedTimeTaken.put(c, value); }
-	void setCachedNumCycles(Case c, Long value)       { m_cachedNumCycles.put(c, value); }
-	void setCachedNumInstructions(Case c, Long value) { m_cachedNumInstructions.put(c, value); }
-	void setCachedNumFnops(Case c, Long value)        { m_cachedNumFnops.put(c, value); }
-	
-	boolean getCachedTimeTakenValid(Case c)       { return m_cachedTimeTakenValid.get(c); }
-	boolean getCachedNumCyclesValid(Case c)       { return m_cachedNumCyclesValid.get(c); }
-	boolean getCachedNumInstructionsValid(Case c) { return m_cachedNumInstructionsValid.get(c); }
-	boolean getCachedNumFnopsValid(Case c)        { return m_cachedNumFnopsValid.get(c); }
-	
-	void setCachedTimeTakenValid(Case c, boolean value)       { m_cachedTimeTakenValid.put(c, value); }
-	void setCachedNumCyclesValid(Case c, boolean value)       { m_cachedNumCyclesValid.put(c, value); }
-	void setCachedNumInstructionsValid(Case c, boolean value) { m_cachedNumInstructionsValid.put(c, value); }
-	void setCachedNumFnopsValid(Case c, boolean value)        { m_cachedNumFnopsValid.put(c, value); }
+	void setCachedTimeTaken(Case c, Double value)     { if (c == Case.WORST) m_cachedWorstTimeTaken = value;       else m_cachedBestTimeTaken = value; }
+	void setCachedNumCycles(Case c, Long value)       { if (c == Case.WORST) m_cachedWorstNumCycles = value;       else m_cachedBestNumCycles = value; }
+	void setCachedNumInstructions(Case c, Long value) { if (c == Case.WORST) m_cachedWorstNumInstructions = value; else m_cachedBestNumInstructions = value; }
+	void setCachedNumFnops(Case c, Long value)        { if (c == Case.WORST) m_cachedWorstNumFnops = value;        else m_cachedBestNumFnops = value; }
 
+	boolean getCachedTimeTakenValid(Case c)       { return (c == Case.WORST) ? m_cachedWorstTimeTakenValid       : m_cachedBestTimeTakenValid; }	
+	boolean getCachedNumCyclesValid(Case c)       { return (c == Case.WORST) ? m_cachedWorstNumCyclesValid       : m_cachedBestNumCyclesValid; }
+	boolean getCachedNumInstructionsValid(Case c) { return (c == Case.WORST) ? m_cachedWorstNumInstructionsValid : m_cachedBestNumInstructionsValid; }
+	boolean getCachedNumFnopsValid(Case c)        { return (c == Case.WORST) ? m_cachedWorstNumFnopsValid        : m_cachedBestNumFnopsValid; }
+
+	void setCachedTimeTakenValid(Case c, boolean value)       { if (c == Case.WORST) m_cachedWorstTimeTakenValid = value;       else m_cachedBestTimeTakenValid = value; }
+	void setCachedNumCyclesValid(Case c, boolean value)       { if (c == Case.WORST) m_cachedWorstNumCyclesValid = value;       else m_cachedBestNumCyclesValid = value; }
+	void setCachedNumInstructionsValid(Case c, boolean value) { if (c == Case.WORST) m_cachedWorstNumInstructionsValid = value; else m_cachedBestNumInstructionsValid = value; }
+	void setCachedNumFnopsValid(Case c, boolean value)        { if (c == Case.WORST) m_cachedWorstNumFnopsValid = value;        else m_cachedBestNumFnopsValid = value; }
+	
 	// --------------------------------------------------------------------- //
 	// Unknown Status Methods
 	// --------------------------------------------------------------------- //		
