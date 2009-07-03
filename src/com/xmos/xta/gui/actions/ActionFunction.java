@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
@@ -24,10 +25,13 @@ import com.xmos.xta.gui.GuiNotifier;
 
 public class ActionFunction extends ActionDelegate implements IPropertyChangeListener, 
                                                               IWorkbenchWindowPulldownDelegate {
+	private static int s_numInstances = 0;
+	
 	private List<String> m_functions;
 	private SelectionListener m_listListener;
 	private String m_functionName;
 	private IAction m_action;
+	private int m_instanceId;
 
 	public ActionFunction() {
 		GuiEngine.addBroadcastListener(this);
@@ -43,17 +47,28 @@ public class ActionFunction extends ActionDelegate implements IPropertyChangeLis
 				GuiEngine.runFunction(selectedFunction);
 			}
 		};
+		m_instanceId = s_numInstances;
+		++s_numInstances;
 	}
 
 	public void init(IAction action) {
-		m_action = action;
-		m_action.setEnabled(false);
+	    m_action = action;
+	    
+	    // Note: This is a really nasty hack to get around the fact that the eclipse
+	    // platform seems to create another instance of this at exit.
+	    // This needs further investigation.
+	    if (m_instanceId == 0) {
+	        m_action.setEnabled(false);
+	    }
 	}
-	
+
 	public void init(IWorkbenchWindow window) {
 	}
 
 	public void run(IAction action) {
+	}
+
+	public void dispose() {
 	}
 	
 	public void propertyChange(PropertyChangeEvent event) {
