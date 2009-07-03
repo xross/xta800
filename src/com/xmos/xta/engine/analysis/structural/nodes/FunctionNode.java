@@ -61,7 +61,7 @@ public class FunctionNode extends IBufferNode {
 	public Node shallowCopy() {
     	return new FunctionNode(this);
 	}
-	
+	/*
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine){
 		FunctionNode fn = new FunctionNode();
 		fn.m_functionName = m_functionName;
@@ -79,6 +79,18 @@ public class FunctionNode extends IBufferNode {
 			fn.setFunction(fnName, startPcs.get(pc).getFunction().deepCopy(startPcs, engine));
 		}
 		fn.m_attributes = new NodeAttributes(fn);
+		return fn;
+	}
+	*/
+	public Node deepCopy(){
+		FunctionNode fn = new FunctionNode();
+		fn.m_functionName = m_functionName;
+		fn.m_knownFunction = m_knownFunction;
+		fn.m_branchTarget = m_branchTarget;
+		fn.m_attributes = new NodeAttributes(fn);
+		if(m_function!= null){
+			fn.m_function = m_function.deepCopy();
+		}
 		return fn;
 	}
 

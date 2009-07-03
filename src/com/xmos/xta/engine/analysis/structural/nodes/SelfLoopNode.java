@@ -40,14 +40,20 @@ public class SelfLoopNode extends Node{
 	public SelfLoopNode shallowCopy() {
 		return new SelfLoopNode(this);
 	}
-	
+	/*
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {
 		SelfLoopNode ln = new SelfLoopNode();
 		ln.m_loop = m_loop.deepCopy(startPcs, engine);
 		ln.m_attributes = new SelfLoopNodeAttributes(ln);
 		return ln;
 	}
-	
+	*/
+	public Node deepCopy() {
+		SelfLoopNode ln = new SelfLoopNode();
+		ln.m_loop = m_loop.deepCopy();
+		ln.m_attributes = new SelfLoopNodeAttributes(ln);
+		return ln;
+	}
     public String getTypeName() {
         return "selfloop";
     }

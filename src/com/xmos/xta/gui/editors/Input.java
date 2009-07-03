@@ -12,7 +12,6 @@ public class Input {
 	private HashMap<Integer, InputLine> m_pcToLine;
 	private HashMap<Integer, InputSection> m_pcToSection;
 	
-	
 	public Input(String headerType, String lineType) {
     	m_sections = new ArrayList<InputSection>();
     	m_headerType = headerType;

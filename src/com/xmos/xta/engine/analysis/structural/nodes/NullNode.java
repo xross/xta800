@@ -28,7 +28,9 @@ public class NullNode extends IBufferNode {
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {
 		return new NullNode();
 	}
-
+	public Node deepCopy() {
+		return new NullNode();
+	}
 	public NodeAttributes getAttributes() {
 		return m_attributes;	
 	}

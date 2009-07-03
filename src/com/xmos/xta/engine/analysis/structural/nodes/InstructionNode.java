@@ -41,6 +41,12 @@ public class InstructionNode extends Node {
 		return in;
 	}
 	
+	public Node deepCopy() {
+		InstructionNode in = new InstructionNode(this);
+		in.m_attributes = new InstructionNodeAttributes(in);
+		return in;
+	}
+	
     public String getTypeName() {
     	
         return "instruction";
@@ -152,4 +158,6 @@ public class InstructionNode extends Node {
 		assert(false);
 		return null;
 	}
+
+
 }

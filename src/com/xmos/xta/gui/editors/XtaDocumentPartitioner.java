@@ -3,6 +3,7 @@ package com.xmos.xta.gui.editors;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentPartitioner;
@@ -50,6 +51,9 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 		if (DEBUG) System.out.printf("XtaDocumentPartitioner: partitionDocument\n");		
 		List<TypedRegion> regionList = new ArrayList<TypedRegion>();
 		
+		try {
+			document.removePositionCategory(SECTION);
+		} catch (BadPositionCategoryException e) {}
 		document.addPositionCategory(SECTION);
 		
 		int previousOffset = 0;
@@ -59,11 +63,11 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 		if (m_input.getSections().size() > 0) {
 			previousType = m_input.getSections().get(0).getHeaderType();
 		}
-		
+
 		for (InputSection inputSection : m_input.getSections()) {
 			int numLines = inputSection.getLines().size();
 			String headerType = inputSection.getHeaderType();
-
+						
 			// Adds the SOURCE region for the previous lines.
 			if (numLines > 0 || headerType != previousType) {
 				addTypedRegion(regionList, previousOffset, documentLength - previousOffset, previousType);
@@ -80,8 +84,7 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 			
 			if (numLines > 0) {
 				documentLength = partitionLines(document, regionList, buildDocument, documentLength, inputSection);
-				if (buildDocument)
-					addPositionMarker(document, headerFrom, documentLength);
+				addPositionMarker(document, headerFrom, documentLength);
 			}
 			
 			if (numLines > 0) {
@@ -115,8 +118,7 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 
 			String str = line.getLine() + "\n";
 			if (buildDocument) updateDocument(document, str);
-			documentLength += str.length();
-			
+			documentLength += str.length();			
 		}
 		addTypedRegion(regionList, from, documentLength - from, previousType);
 		return documentLength;
@@ -198,12 +200,11 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 		}				
 	}	
 	
-	private void addTypedRegion(List<TypedRegion> regionList, int offset, int length, String type) {
+	private void addTypedRegion(List<TypedRegion> regionList, int offset, int length, String type) {		
 		if (length > 0) {
 		    regionList.add(new TypedRegion(offset, length, type));
 		}
 	}	
-	
 	
 	private TypedRegion getRegion(int offset) { 
 	    for (TypedRegion region : m_regions) {

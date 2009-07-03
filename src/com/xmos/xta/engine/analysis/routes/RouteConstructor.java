@@ -66,17 +66,23 @@ public class RouteConstructor {
 		boolean seenEndPoint = false;
 		switch (m_description.getMode()) {
 		case FUNCTION:
-			Map<String, TreeSet<Node>> functionMap = buildFunctionMap(m_structureGraph);
-			TreeSet<Node> functions = functionMap.get(m_description.getFunctionName());
-			if (functions != null) {
-				for(Node function : functions){
-					if(m_subRoutes.isEmpty()){
-						m_subRoutes.add(function.deepCopy(new TreeMap<Integer, FunctionNode>(), m_engine));
-					} else {
+
+			Collection<FunctionNode> threads = m_structureGraph.getThreads();
+			for(FunctionNode function : threads ){
+				if(m_description.getFunctionName().equals(function.getFunctionName())){
+					m_subRoutes.add(function.deepCopy());
+					break;
+				}
+			}
+			if(m_subRoutes.isEmpty()){
+				Collection<FunctionNode> functions = m_structureGraph.getFunctions();
+				for(FunctionNode function : functions ){
+					if(m_description.getFunctionName().equals(function.getFunctionName())){
+						m_subRoutes.add(function.deepCopy());
 						break;
 					}
 				}
-			}		
+			}
 			seenEndPoint = true;
 			setParents();
 			setUnknowns();				
@@ -86,8 +92,6 @@ public class RouteConstructor {
 			
 			Collection<Node> startNodes =getReferencedNodes(m_description.getStartPoint());
 			Collection<Node> endNodes = getReferencedNodes(m_description.getEndPoint());
-			
-			
 			for (Node start : startNodes) {
 				Collection<Node> workingSet = new TreeSet<Node>();
 
@@ -118,7 +122,7 @@ public class RouteConstructor {
 					baseNode = sln.getLoop();
 				}
 				
-				Node newGraph = baseNode.deepCopy(new TreeMap<Integer, FunctionNode>(), m_engine);
+				Node newGraph = baseNode.deepCopy();
 							
 				m_subRoutes.add(newGraph);
 			}
