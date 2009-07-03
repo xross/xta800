@@ -12,7 +12,7 @@ public class SectionNodeAttributes extends NodeAttributes {
 	private Map<Node, Boolean> m_setOptions;
 	
 	public SectionNodeAttributes(Node node) {
-		super(node);		
+		super(node);	
 		initialiseNumIterations();
 		initialiseSetOptions();
 	}
