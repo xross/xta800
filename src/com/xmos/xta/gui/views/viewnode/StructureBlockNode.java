@@ -34,18 +34,21 @@ public class StructureBlockNode extends ViewNode {
 	}
 
 	public void draw(Display display, GC structureGc, GC timesGc) {
+		if (!isVisible())
+			return;
+
 		structureGc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
 		structureGc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
-    	structureGc.fillRectangle(m_x, m_y, m_width, m_height);
+    	structureGc.fillRectangle(m_renderX, m_renderY, m_width, m_height);
        
     	structureGc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
     	structureGc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
         if (isSelected()) {
         	structureGc.setLineWidth(getLineWidth() + 1);
-        	structureGc.drawRectangle(m_x + 1, m_y + 1, m_width - 1, m_height - 1);
+        	structureGc.drawRectangle(m_renderX + 1, m_renderY + 1, m_width - 1, m_height - 1);
         	structureGc.setLineWidth(getLineWidth() + 1);
         } else {
-        	structureGc.drawRectangle(m_x, m_y, m_width, m_height);
+        	structureGc.drawRectangle(m_renderX, m_renderY, m_width, m_height);
         }
 
         drawTimes(display, timesGc);

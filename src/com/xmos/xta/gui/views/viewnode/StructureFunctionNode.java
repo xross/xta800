@@ -56,6 +56,9 @@ public class StructureFunctionNode extends ViewNode {
 	}
 
 	public void draw(Display display, GC structureGc, GC timesGc) {
+		if (!isVisible())
+			return;
+		
 		// Don't currently support connecting up nodes like a path
 		assert(getChildren().size() == 1);
         drawThis(display, structureGc);
@@ -63,10 +66,10 @@ public class StructureFunctionNode extends ViewNode {
     	structureGc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
     	if (isSelected()) {
     		structureGc.setLineWidth(getLineWidth() + 1);
-           	structureGc.drawRectangle(m_x + 1, m_y + 1, m_width - 1, m_height - 1);
+           	structureGc.drawRectangle(m_renderX + 1, m_renderY + 1, m_width - 1, m_height - 1);
     		structureGc.setLineWidth(getLineWidth());
     	} else {
-    		structureGc.drawRectangle(m_x, m_y, m_width, m_height);
+    		structureGc.drawRectangle(m_renderX, m_renderY, m_width, m_height);
     	}
 
        	if (!isFolded()) {
@@ -78,25 +81,25 @@ public class StructureFunctionNode extends ViewNode {
 				for (ViewNode child : getChildren()) {
 		    		child.draw(display, structureGc, timesGc);
 	
-		    		childRightX = scale(child.getPixelOffsetX() + child.getPixelsX());
-		    		childMidY = scale(child.getPixelOffsetY() + (child.getPixelsY() / 2));
+		    		childRightX = scaleX(child.getPixelOffsetX() + child.getPixelsX());
+		    		childMidY = scaleY(child.getPixelOffsetY() + (child.getPixelsY() / 2));
 		    	}
 	
-		    	int midY = scale(m_pixelOffsetY + (getPixelsY() / 2));
-		    	int childLeftX = scale(m_pixelOffsetX + m_borderX + m_textAreaX);
+		    	int midY = scaleY(m_pixelOffsetY + (getPixelsY() / 2));
+		    	int childLeftX = scaleX(m_pixelOffsetX + m_borderX + m_textAreaX);
 	
-	    		drawConnection(display, structureGc, m_x, midY, childLeftX, midY,
+	    		drawConnection(display, structureGc, m_renderX, midY, childLeftX, midY,
 	    				isBestCase, isWorstCase);
 				drawConnection(display, structureGc, childLeftX, midY, childLeftX, childMidY,
 						isBestCase, isWorstCase);
 	
 				drawConnection(display, structureGc, childRightX, childMidY, childRightX, midY,
 						isBestCase, isWorstCase);
-				drawConnection(display, structureGc, childRightX, midY, scale(m_pixelOffsetX + getPixelsX()), midY,
+				drawConnection(display, structureGc, childRightX, midY, scaleX(m_pixelOffsetX + getPixelsX()), midY,
 						isBestCase, isWorstCase);
        		} else {
-		    	int midY = scale(m_pixelOffsetY + (getPixelsY() / 2));
-	    		drawConnection(display, structureGc, m_x, midY, scale(m_pixelOffsetX + getPixelsX()), midY,
+		    	int midY = scaleY(m_pixelOffsetY + (getPixelsY() / 2));
+	    		drawConnection(display, structureGc, m_renderX, midY, scaleX(m_pixelOffsetX + getPixelsX()), midY,
 	    				isBestCase, isWorstCase);
        		}
        	} else {
@@ -104,13 +107,13 @@ public class StructureFunctionNode extends ViewNode {
        	}
 		
 		// Draw the function name
-		if (scale(m_height) > structureGc.getFontMetrics().getHeight() &&
+		if (scaleY(m_height) > structureGc.getFontMetrics().getHeight() &&
 			scale(m_width) > m_textAreaX) {
-	        int textBase = scale(m_pixelOffsetY + m_borderY);
+	        int textBase = scaleY(m_pixelOffsetY + m_borderY);
 			structureGc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 			structureGc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 
-			structureGc.drawString(m_treeNode.getFunctionName(),  m_x + m_borderX, textBase);
+			structureGc.drawString(m_treeNode.getFunctionName(),  m_renderX + m_borderX, textBase);
 		}
 	}
 

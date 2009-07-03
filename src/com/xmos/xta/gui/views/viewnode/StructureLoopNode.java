@@ -56,6 +56,9 @@ public class StructureLoopNode extends ViewNode {
 	}
 
 	public void draw(Display display, GC structureGc, GC timesGc) {
+		if (!isVisible())
+			return;
+
 		drawThis(display, structureGc);
 
 		boolean isWorstCase = isWorstCase();
@@ -63,11 +66,11 @@ public class StructureLoopNode extends ViewNode {
         drawHeader(display, structureGc, timesGc, isWorstCase, isBestCase);
         
         ViewNode headerNode = getHeaderNode();
-        int headerY = scale(headerNode.getPixelOffsetY() + (headerNode.getPixelsY() / 2));
-        int headerOutX = scale(headerNode.getPixelOffsetX() + headerNode.getPixelsX() + (m_gapX / 2));
-        int headerInX = scale(headerNode.getPixelOffsetX() - (m_gapX / 2));
-        int loopReturnX = scale(m_pixelOffsetX + getPixelsX() - (m_gapX / 2));
-        int loopReturnY = scale(m_pixelOffsetY + getPixelsY() - (m_gapY / 2));
+        int headerY = scaleY(headerNode.getPixelOffsetY() + (headerNode.getPixelsY() / 2));
+        int headerOutX = scaleX(headerNode.getPixelOffsetX() + headerNode.getPixelsX() + (m_gapX / 2));
+        int headerInX = scaleX(headerNode.getPixelOffsetX() - (m_gapX / 2));
+        int loopReturnX = scaleX(m_pixelOffsetX + getPixelsX() - (m_gapX / 2));
+        int loopReturnY = scaleY(m_pixelOffsetY + getPixelsY() - (m_gapY / 2));
 
         boolean loopWorstCase = false; 
         boolean loopBestCase = false; 
@@ -78,9 +81,9 @@ public class StructureLoopNode extends ViewNode {
 				ViewNode child = getChildren().get(i);
 				boolean childIsWorstCase = isWorstCase && child.isWorstCase();
 				boolean childIsBestCase = isBestCase && child.isBestCase();
-	            int childY = scale(child.getPixelOffsetY() + (child.getPixelsY() / 2));
-	            int childLeft = scale(child.getPixelOffsetX());
-	            int childRight = scale(child.getPixelOffsetX() + child.getPixelsX());
+	            int childY = scaleY(child.getPixelOffsetY() + (child.getPixelsY() / 2));
+	            int childLeft = scaleX(child.getPixelOffsetX());
+	            int childRight = scaleX(child.getPixelOffsetX() + child.getPixelsX());
 
 	        	drawConnection(display, structureGc, headerOutX, childY, childLeft, childY,
 	        			childIsBestCase, childIsWorstCase);
@@ -132,14 +135,14 @@ public class StructureLoopNode extends ViewNode {
         headerNode.draw(display, structureGc, timesGc);
 
         // Wire through the header
-        int midY = scale(m_pixelOffsetY + (getPixelsY() / 2));
-        int right = m_x + m_width;
-        int headerY = scale(headerNode.getPixelOffsetY() + (headerNode.getPixelsY() / 2));
-        int headerRight = scale(headerNode.getPixelOffsetX() + headerNode.getPixelsX());
+        int midY = scaleY(m_pixelOffsetY + (getPixelsY() / 2));
+        int right = m_renderX + m_width;
+        int headerY = scaleY(headerNode.getPixelOffsetY() + (headerNode.getPixelsY() / 2));
+        int headerRight = scaleX(headerNode.getPixelOffsetX() + headerNode.getPixelsX());
 
-    	drawConnection(display, structureGc, m_x, midY, m_x, headerY,
+    	drawConnection(display, structureGc, m_renderX, midY, m_renderX, headerY,
     			isBestCase, isWorstCase);
-		drawConnection(display, structureGc, m_x, headerY, scale(headerNode.getPixelOffsetX()), headerY,
+		drawConnection(display, structureGc, m_renderX, headerY, scaleX(headerNode.getPixelOffsetX()), headerY,
 				isBestCase, isWorstCase);
 		drawConnection(display, structureGc, headerRight, headerY, right, headerY,
 				isBestCase, isWorstCase);

@@ -238,8 +238,6 @@ public class RendererControl {
 	
 	public void updateCanvasProperties(ZoomedCanvasProperties canvasProperties) {
 		if (m_viewNode != null) {
-        	Rectangle visibleArea = new Rectangle(m_offsetX, m_offsetY, m_structureCanvasWidth, m_structureCanvasHeight);
-        	canvasProperties.setVisibleArea(visibleArea);
         	canvasProperties.setTimesHeight(m_timesCanvasHeight);
 
 			canvasProperties.setTotalBest(m_bestTime);
@@ -307,10 +305,10 @@ public class RendererControl {
 		return m_timesCanvasImage;
 	}
 
-	public synchronized void updateCanvasImages(Image structureImage, Image timesImage) {
+	public synchronized void updateCanvasImages(Image structureImage, Image timesImage, int offsetX) {
 		if (DEBUG) System.out.println("RendererControl::updateCanvasImages()");
-		copyImage(structureImage, m_structureCanvasImage, m_offsetX, m_offsetY);
-		copyImage(timesImage, m_timesCanvasImage, m_offsetX, 0);
+		copyImage(structureImage, m_structureCanvasImage, offsetX, m_offsetY);
+		copyImage(timesImage, m_timesCanvasImage, offsetX, 0);
 	}
 
 	// Copy images, ensuring bounds are valid
@@ -336,6 +334,7 @@ public class RendererControl {
 				0, 0, canvasX, canvasY);
 		gc.dispose();
 	}
+
 
 	private boolean selectionChanged(List<Node> oldList, List<Node> newList) {
 		if (oldList.size() != newList.size())

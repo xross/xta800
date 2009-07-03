@@ -582,17 +582,15 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 			m_rootNode = route.getNode();
 			m_doubleClickNode = m_rootNode;
 			updateSelection(GuiEngine.getSelectedNodes());
-	    	m_canvasProperties.setSelected(m_selectedNodes);
-
 			m_viewNode = buildViewNode(m_doubleClickNode, 0);
-			m_renderControl.setViewNode(m_viewNode);
-			updateState();
 		} else {
 			m_rootNode = null;
 			m_doubleClickNode = null;
 			m_viewNode = null;
-			m_selectedNodes.clear();
+			updateSelection(new ArrayList<Node>());
 		}
+		m_renderControl.setViewNode(m_viewNode);
+		updateState();
 	}
 
     protected void drawStructureCanvas(GC gc) {
