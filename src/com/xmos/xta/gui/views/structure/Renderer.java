@@ -1,6 +1,5 @@
 package com.xmos.xta.gui.views.structure;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -55,10 +54,14 @@ public class Renderer implements Runnable {
 			    }
 		    	
 			    if (m_imageTooLarge) {
-					m_display.syncExec(new Runnable() {
-						public void run() {
-							render(m_control.getOffsetX(), m_control.getOffsetY());
-						}});
+			    	if (m_control.renderRequired() || m_control.imageMoved()) {
+			    		m_display.syncExec(new Runnable() {
+			    			public void run() {
+			    				render(m_control.getOffsetX(), m_control.getOffsetY());
+			    			}});
+						m_control.clearRenderRequired();
+						m_control.clearImageMoved();
+			    	}
 					m_control.updateCanvasImages(m_structureImage, m_timesImage, 0);
 					
 			    } else {
@@ -72,6 +75,7 @@ public class Renderer implements Runnable {
 					m_control.updateCanvasImages(m_structureImage, m_timesImage, m_control.getOffsetX());
 			    	
 			    }
+			    m_control.signalRenderComplete();
 			}
 		}
 	}
@@ -89,15 +93,15 @@ public class Renderer implements Runnable {
 
 	    // Draw the structure
         structureGc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
-        Rectangle imageBounds = m_structureImage.getBounds();
-        structureGc.fillRectangle(0, 0, imageBounds.width, imageBounds.height);
+        Rectangle structureBounds = m_structureImage.getBounds();
+        structureGc.fillRectangle(0, 0, structureBounds.width, structureBounds.height);
 
-        imageBounds = m_timesImage.getBounds();
-        timesGc.fillRectangle(0, 0, imageBounds.width, imageBounds.height);
+        Rectangle timesBounds = m_timesImage.getBounds();
+        timesGc.fillRectangle(0, 0, timesBounds.width, timesBounds.height);
 
         ViewNode viewNode = m_control.getViewNode();
         if (viewNode != null) {
-        	Rectangle visibleArea = new Rectangle(offsetX, offsetY, imageBounds.width, imageBounds.height);
+        	Rectangle visibleArea = new Rectangle(offsetX, offsetY, structureBounds.width, structureBounds.height);
         	m_canvasProperties.setVisibleArea(visibleArea);
     		viewNode.updateScaledXy();
         	viewNode.draw(m_display, structureGc, timesGc);
@@ -167,8 +171,8 @@ public class Renderer implements Runnable {
 		m_timesImage.dispose();
 
 		if ((imageX * imageY) > MAX_IMAGE_SIZE) {
-			m_imageTooLarge = true;
 			assert((structureCanvasX * structureCanvasY) < MAX_IMAGE_SIZE);
+			m_imageTooLarge = true;
 			imageX = structureCanvasX;
 			imageY = structureCanvasY;
 		} else {
@@ -186,11 +190,4 @@ public class Renderer implements Runnable {
     		viewNode.updateScaledXy();
     	}
 	}
-	
-    protected void resizeImages() {
-		double scale = m_control.getScale();
-		int imageX = (int)((double)m_control.getPixelsX() * scale);
-		int imageY = (int)((double)m_control.getPixelsY() * scale);
-
-    }
 }

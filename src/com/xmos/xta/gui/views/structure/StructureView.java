@@ -44,7 +44,6 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.views.Views;
 import com.xmos.xta.gui.views.viewnode.StructureBlockNode;
@@ -60,7 +59,7 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
                                                        ISelectionListener,
                                                        ISelectionProvider,
                                                        IMenuListener {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public static final String ID = "com.xmos.xta.gui.views.structure.Structure";
 
     private ViewNode m_viewNode;
@@ -76,6 +75,8 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
     private Display m_display;
     private ScrollBar m_hScroll;
     private ScrollBar m_vScroll;
+    private int m_hScrollPosition;
+    private int m_vScrollPosition;
 
     private Shell m_toolTip;
     private Label m_tipLabel;
@@ -144,18 +145,22 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 
 	    // Sets up the horizontal scroll bar.
 	    m_hScroll = composite.getHorizontalBar();
+	    m_hScrollPosition = 0;
 	    m_hScroll.addListener(SWT.Selection, new Listener() {
 	        public void handleEvent(Event e) {
 	    		m_renderControl.setOffsetX(m_hScroll.getSelection());
+	    		m_hScrollPosition = (int)((double)m_hScroll.getSelection() / m_renderControl.getScale());
 	        }
 	    });
 	    m_hScroll.setMaximum(1);
 	    
 	    // Sets up the vertical scroll bar.
 	    m_vScroll = structureComposite.getVerticalBar();
+	    m_vScrollPosition = 0;
 	    m_vScroll.addListener(SWT.Selection, new Listener() {
 	        public void handleEvent(Event e) {
 	        	m_renderControl.setOffsetY(m_vScroll.getSelection());
+	    		m_vScrollPosition = (int)((double)m_vScroll.getSelection() / m_renderControl.getScale());
 	        }
 	    });
 	    m_vScroll.setMaximum(1);
@@ -223,7 +228,7 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	    	if (m_toolTip != null  && !m_toolTip.isDisposed ()) {
 				m_toolTip.dispose ();
 	    	}
-	    	updateState();
+	    	m_renderControl.refresh();
 			
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SET_FOCUS)) {
 			ISelection sel = GuiEngine.getFocus();
@@ -246,15 +251,6 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		} 
 	}
 	
-	private void updateState() {
-		if (m_viewNode != null) {
-	    	Node treeNode = m_viewNode.getTreeNode();
-	    	m_renderControl.setBestWorstTimes(
-	    			treeNode.getAttributes().getTimeTaken(Case.BEST, false),
-	    			treeNode.getAttributes().getTimeTaken(Case.WORST, false));
-		}
-	}
-
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
 		if (part == this)
 			return;
@@ -334,12 +330,12 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 
 		m_hScroll.setMaximum(renderX);
     	m_hScroll.setThumb(canvasX);
-    	int position = setScrollPosition(m_hScroll, m_renderControl.getOffsetX());
+    	int position = setScrollPosition(m_hScroll, (int)((double)m_hScrollPosition * scale));
     	m_renderControl.setOffsetX(position);
 	    
 	    m_vScroll.setMaximum(renderY);
     	m_vScroll.setThumb(canvasY);
-    	position = setScrollPosition(m_vScroll, m_renderControl.getOffsetY());
+    	position = setScrollPosition(m_vScroll, (int)((double)m_vScrollPosition * scale));
     	m_renderControl.setOffsetY(position);
     	
 		if (DEBUG) System.out.printf("updateScrollBars (%d, %d, %d) (%d, %d, %d)\n",
@@ -362,9 +358,10 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		if (m_viewNode == null)
 			return;
 
-		m_renderControl.setOffsetX(m_hScroll.getSelection());
-		m_renderControl.setOffsetY(m_vScroll.getSelection());
-		m_renderControl.setScale(m_renderControl.getScale() / 1.2);
+		double scale = m_renderControl.getScale();
+		m_hScrollPosition = (int)((double)m_hScroll.getSelection() / scale);
+		m_vScrollPosition = (int)((double)m_vScroll.getSelection() / scale);
+		m_renderControl.setScale(scale / 1.2);
 		updateScrollBars();
 	}
 
@@ -375,16 +372,16 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		// Don't zoom any more than the maximum width
 		double scale = m_renderControl.getScale();
 		if (scale < 5) {
-			m_renderControl.setOffsetX(m_hScroll.getSelection());
-			m_renderControl.setOffsetY(m_vScroll.getSelection());
+			m_hScrollPosition = (int)((double)m_hScroll.getSelection() / scale);
+			m_vScrollPosition = (int)((double)m_vScroll.getSelection() / scale);
 			m_renderControl.setScale(scale * 1.2);
 			updateScrollBars();
 		}
 	}
 
 	public void zoomReset() {
-		m_renderControl.setOffsetX(0);
-		m_renderControl.setOffsetY(0);
+		m_hScrollPosition = 0;
+		m_vScrollPosition = 0;
 		m_renderControl.setScale(1.0);
 		updateScrollBars();
 	}
@@ -392,8 +389,8 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	public void zoomFit() {
 		double xScale = (double)m_renderControl.getStructureCanvasWidth() / (double)m_renderControl.getPixelsX();
 		double yScale = (double)m_renderControl.getStructureCanvasHeight() / (double)m_renderControl.getPixelsY();
-		m_renderControl.setOffsetX(0);
-		m_renderControl.setOffsetY(0);
+		m_hScrollPosition = 0;
+		m_vScrollPosition = 0;
 		m_renderControl.setScale((xScale < yScale) ? xScale : yScale);
 		updateScrollBars();
 	}
@@ -590,7 +587,6 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 			updateSelection(new ArrayList<Node>());
 		}
 		m_renderControl.setViewNode(m_viewNode);
-		updateState();
 	}
 
     protected void drawStructureCanvas(GC gc) {
