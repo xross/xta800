@@ -18,7 +18,6 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -59,13 +58,12 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
                                                        ISelectionListener,
                                                        ISelectionProvider,
                                                        IMenuListener {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.gui.views.structure.Structure";
 
     private ViewNode m_viewNode;
     private ZoomedCanvasProperties m_canvasProperties;
-    private Canvas m_structureCanvas;
-    private Canvas m_timesCanvas;
+    private Canvas m_canvas;
 
     private Node m_rootNode;
     private List<Node> m_selectedNodes;
@@ -103,45 +101,22 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	    m_display = m_parent.getDisplay();
 		m_renderControl = new RendererControl(m_display);
 
-	    final Composite composite = new Composite(parent, SWT.BORDER | SWT.H_SCROLL); 	    
+	    final Composite composite = new Composite(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL); 	    
 	    composite.setLayout(new FillLayout()); 
 
-	    SashForm sashForm = new SashForm(composite, SWT.VERTICAL);
-		sashForm.setLayout(new FillLayout());	
-
-	    final Composite structureComposite = new Composite(sashForm, SWT.BORDER | SWT.V_SCROLL); 	    
-	    structureComposite.setLayout(new FillLayout()); 
-	    m_structureCanvas = new Canvas(structureComposite, SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED);
-	    structureComposite.addControlListener(new ControlListener() {
+	    m_canvas = new Canvas(composite, SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED);
+	    composite.addControlListener(new ControlListener() {
 			public void controlResized(ControlEvent e) {
-				Rectangle clientArea = structureComposite.getClientArea();
-				m_renderControl.setStructureCanvasSize(clientArea.width, clientArea.height);
+				Rectangle clientArea = composite.getClientArea();
+				m_renderControl.setCanvasSize(clientArea.width, clientArea.height);
 				updateScrollBars();
 			}
 			public void controlMoved(ControlEvent e) {
-				Rectangle clientArea = structureComposite.getClientArea();
-				m_renderControl.setStructureCanvasSize(clientArea.width, clientArea.height);
+				Rectangle clientArea = composite.getClientArea();
+				m_renderControl.setCanvasSize(clientArea.width, clientArea.height);
 				updateScrollBars();
 			}
 	    });	    
-
-	    final Composite timesComposite = new Composite(sashForm, SWT.BORDER); 	    
-	    timesComposite.setLayout(new FillLayout()); 
-	    m_timesCanvas = new Canvas(timesComposite, SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED);
-	    timesComposite.addControlListener(new ControlListener() {
-			public void controlResized(ControlEvent e) {
-				Rectangle clientArea = timesComposite.getClientArea();
-				m_renderControl.setTimesCanvasHeight(clientArea.height);
-				updateScrollBars();
-			}
-			public void controlMoved(ControlEvent e) {
-				Rectangle clientArea = timesComposite.getClientArea();
-				m_renderControl.setTimesCanvasHeight(clientArea.height);
-				updateScrollBars();
-			}	    	
-	    });	    
-
-		sashForm.setWeights(new int[]{3, 1});
 
 	    // Sets up the horizontal scroll bar.
 	    m_hScroll = composite.getHorizontalBar();
@@ -155,7 +130,7 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	    m_hScroll.setMaximum(1);
 	    
 	    // Sets up the vertical scroll bar.
-	    m_vScroll = structureComposite.getVerticalBar();
+	    m_vScroll = composite.getVerticalBar();
 	    m_vScrollPosition = 0;
 	    m_vScroll.addListener(SWT.Selection, new Listener() {
 	        public void handleEvent(Event e) {
@@ -165,30 +140,18 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	    });
 	    m_vScroll.setMaximum(1);
 
-	    structureComposite.addPaintListener(new PaintListener() {
+	    composite.addPaintListener(new PaintListener() {
 	        public void paintControl(PaintEvent e) {
 	        	m_renderControl.refresh();
 		    }
 	    });
 
-	    m_structureCanvas.addPaintListener(new PaintListener() {
+	    m_canvas.addPaintListener(new PaintListener() {
 	        public void paintControl(PaintEvent e) {
-	        	drawStructureCanvas(e.gc);
+	        	drawCanvas(e.gc);
 		    }
 	    });	
 
-	    timesComposite.addPaintListener(new PaintListener() {
-	        public void paintControl(PaintEvent e) {
-	        	m_renderControl.refresh();
-		    }
-	    });
-
-	    m_timesCanvas.addPaintListener(new PaintListener() {
-	        public void paintControl(PaintEvent e) {
-	        	drawTimesCanvas(e.gc);
-		    }
-	    });
-	    
 	    setupMouseListeners();
 	    createContextMenus();
 	    
@@ -197,7 +160,7 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 
 	    m_renderer = new Renderer(m_display, m_renderControl, m_canvasProperties);
 		(new Thread(m_renderer)).start();
-		(new Thread(new Updater(m_display, m_renderControl, m_structureCanvas, m_timesCanvas))).start();
+		(new Thread(new Updater(m_display, m_renderControl, m_canvas))).start();
 	
 	    initialiseTree();
 	    m_renderControl.refresh();
@@ -321,8 +284,8 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	private void updateScrollBars() {
-		int canvasX = m_renderControl.getStructureCanvasWidth();
-		int canvasY = m_renderControl.getStructureCanvasHeight();
+		int canvasX = m_renderControl.getCanvasWidth();
+		int canvasY = m_renderControl.getCanvasHeight();
 		
 		double scale = m_renderControl.getScale();
 		int renderX = (int)((double)m_renderControl.getPixelsX() * scale);
@@ -387,8 +350,8 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	public void zoomFit() {
-		double xScale = (double)m_renderControl.getStructureCanvasWidth() / (double)m_renderControl.getPixelsX();
-		double yScale = (double)m_renderControl.getStructureCanvasHeight() / (double)m_renderControl.getPixelsY();
+		double xScale = (double)m_renderControl.getCanvasWidth() / (double)m_renderControl.getPixelsX();
+		double yScale = (double)m_renderControl.getCanvasHeight() / (double)m_renderControl.getPixelsY();
 		m_hScrollPosition = 0;
 		m_vScrollPosition = 0;
 		m_renderControl.setScale((xScale < yScale) ? xScale : yScale);
@@ -411,8 +374,8 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(this);
-		contextMenu = menuMgr.createContextMenu(m_structureCanvas);
-		m_structureCanvas.setMenu(contextMenu);
+		contextMenu = menuMgr.createContextMenu(m_canvas);
+		m_canvas.setMenu(contextMenu);
 	}
 	
 	private void setupMouseListeners() {
@@ -453,10 +416,10 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 			}
 		};
 
-		m_structureCanvas.addListener(SWT.MouseWheel, canvasListener);
-		m_structureCanvas.addListener(SWT.KeyDown, canvasListener);
+		m_canvas.addListener(SWT.MouseWheel, canvasListener);
+		m_canvas.addListener(SWT.KeyDown, canvasListener);
 		
-		m_structureCanvas.addMouseListener(new MouseAdapter() {
+		m_canvas.addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(MouseEvent e) {
 				if (m_viewNode != null) {
 					int offsetX = m_renderControl.getOffsetX();
@@ -492,14 +455,14 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 	    	} 
 	    });
 	    
-	    m_structureCanvas.addMouseMoveListener(new MouseMoveListener() {
+	    m_canvas.addMouseMoveListener(new MouseMoveListener() {
 	        public void mouseMove(MouseEvent e) {
 	        	if (m_toolTip != null  && !m_toolTip.isDisposed ())
 	    			m_toolTip.dispose ();
 	        }
 	      });
 	    
-	    m_structureCanvas.addMouseTrackListener(new MouseTrackListener() { 
+	    m_canvas.addMouseTrackListener(new MouseTrackListener() { 
 		     public void mouseEnter(MouseEvent e) { 
 		     }  
 		     public void mouseExit(MouseEvent e) {
@@ -589,11 +552,7 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
 		m_renderControl.setViewNode(m_viewNode);
 	}
 
-    protected void drawStructureCanvas(GC gc) {
-		gc.drawImage(m_renderControl.getStructureCanvasImage(), 0, 0);
-    }
-
-    protected void drawTimesCanvas(GC gc) {
-    	gc.drawImage(m_renderControl.getTimesCanvasImage(), 0, 0);
+    protected void drawCanvas(GC gc) {
+		gc.drawImage(m_renderControl.getCanvasImage(), 0, 0);
     }
 }

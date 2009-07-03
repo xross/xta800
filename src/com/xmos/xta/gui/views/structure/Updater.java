@@ -6,14 +6,12 @@ import org.eclipse.swt.widgets.Display;
 public class Updater implements Runnable {
     private Display m_display;
     private RendererControl m_control;
-    private Canvas m_structureCanvas;
-    private Canvas m_timesCanvas;
+    private Canvas m_canvas;
     
-	public Updater(Display display, RendererControl control, Canvas structureCanvas, Canvas timesCanvas) {
+	public Updater(Display display, RendererControl control, Canvas canvas) {
 		m_display = display;
 		m_control = control;
-		m_structureCanvas = structureCanvas;
-		m_timesCanvas = timesCanvas;
+		m_canvas = canvas;
 	}
 
 	public void run() {
@@ -23,8 +21,7 @@ public class Updater implements Runnable {
 			if (!done) {
 				m_display.syncExec(new Runnable() {
 					public void run() {
-						m_structureCanvas.redraw();
-						m_timesCanvas.redraw();
+						m_canvas.redraw();
 					}});
 			}
 		}

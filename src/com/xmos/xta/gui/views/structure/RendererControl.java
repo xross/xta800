@@ -11,7 +11,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.gui.views.viewnode.ViewNode;
 
 public class RendererControl {
@@ -36,24 +35,18 @@ public class RendererControl {
     private int m_offsetX;
     private int m_offsetY;
     
-    private int m_structureCanvasWidth;
-    private int m_structureCanvasHeight;
-    private int m_timesCanvasHeight;
+    private int m_canvasWidth;
+    private int m_canvasHeight;
     
-    private double m_worstTime;
-    private double m_bestTime;
-
     private Queue<List<Node>> m_previousSelections;
     private List<Node> m_currentSelection;
 
     private Display m_display;
-    private Image m_structureCanvasImage;
-    private Image m_timesCanvasImage;
+    private Image m_canvasImage;
 
 	public RendererControl(Display display) {
 		m_display = display;
-		m_structureCanvasImage = new Image(m_display, 1, 1);
-		m_timesCanvasImage = new Image(m_display, 1, 1);
+		m_canvasImage = new Image(m_display, 1, 1);
 		
 	    m_imageChanged = false;
 	    m_selectionChanged = false;
@@ -62,9 +55,8 @@ public class RendererControl {
 	    
 	    m_previousSelections = new LinkedList<List<Node>>();
 	    m_currentSelection = new ArrayList<Node>();
-	    m_structureCanvasWidth = 0;
-	    m_structureCanvasHeight = 0;
-	    m_timesCanvasHeight = 0;
+	    m_canvasWidth = 0;
+	    m_canvasHeight = 0;
 
 	    resetState();
 	}
@@ -89,9 +81,6 @@ public class RendererControl {
 	public synchronized void refresh() {
 		if (DEBUG) System.out.println("RendererControl::refresh()");
 	    if (m_viewNode != null) {
-	    	Node treeNode = m_viewNode.getTreeNode();
-		    m_bestTime = treeNode.getAttributes().getTimeTaken(Case.BEST, false);
-		    m_worstTime = treeNode.getAttributes().getTimeTaken(Case.WORST, false);
 			m_viewNode.annotateNodes(m_borderX, m_borderY, true, true);
 			updatePixelsXy();
 	    	m_renderRequired = true;
@@ -170,30 +159,14 @@ public class RendererControl {
 		m_imageMoved = false;
 	}
 	
-	public synchronized void setStructureCanvasSize(int width, int height) {
-		if (m_structureCanvasWidth != width || m_structureCanvasHeight != height) {
-			if (DEBUG) System.out.println("RendererControl::setStructureCanvasSize(" + width + ", " + height + ")");
-			m_structureCanvasWidth = width;
-			m_structureCanvasHeight = height;
+	public synchronized void setCanvasSize(int width, int height) {
+		if (m_canvasWidth != width || m_canvasHeight != height) {
+			if (DEBUG) System.out.println("RendererControl::setCanvasSize(" + width + ", " + height + ")");
+			m_canvasWidth = width;
+			m_canvasHeight = height;
 
-			m_structureCanvasImage.dispose();
-			m_structureCanvasImage = createImage(m_display, m_structureCanvasWidth, m_structureCanvasHeight);
-
-			// Need to resize the times view as well
-			m_timesCanvasImage.dispose();
-			m_timesCanvasImage = createImage(m_display, m_structureCanvasWidth, m_timesCanvasHeight);
-
-			signalChange();
-		}
-	}
-
-	public synchronized void setTimesCanvasHeight(int height) {
-		if (m_timesCanvasHeight != height) {
-			if (DEBUG) System.out.println("RendererControl::setTimesCanvasHeight(" + height + ")");
-			m_timesCanvasHeight = height;
-
-			m_timesCanvasImage.dispose();
-			m_timesCanvasImage = createImage(m_display, m_structureCanvasWidth, m_timesCanvasHeight);
+			m_canvasImage.dispose();
+			m_canvasImage = createImage(m_display, m_canvasWidth, m_canvasHeight);
 
 			signalChange();
 		}
@@ -249,32 +222,19 @@ public class RendererControl {
 
 	public synchronized void updateCanvasProperties(ZoomedCanvasProperties canvasProperties) {
 		if (m_viewNode != null) {
-			if (DEBUG) System.out.printf("RendererControl::updateCanvasProperties(%d, %f, %f, %f)\n",
-					m_timesCanvasHeight, m_bestTime, m_worstTime, m_scale);
-        	canvasProperties.setTimesHeight(m_timesCanvasHeight);
-
-			canvasProperties.setTotalBest(m_bestTime);
-	    	canvasProperties.setTotalWorst(m_worstTime);
 	    	canvasProperties.setScale(m_scale);
 		} else {
 			if (DEBUG) System.out.printf("RendererControl::updateCanvasProperties(0, 0, 0, 0)\n");
         	canvasProperties.setVisibleArea(new Rectangle(0, 0, 0, 0));
-        	canvasProperties.setTimesHeight(0);
-			canvasProperties.setTotalBest(0);
-	    	canvasProperties.setTotalWorst(0);
 		}
     }
 
-	public int getStructureCanvasWidth() {
-		return m_structureCanvasWidth;
+	public int getCanvasWidth() {
+		return m_canvasWidth;
 	}
 
-	public int getStructureCanvasHeight() {
-		return m_structureCanvasHeight;
-	}
-
-	public int getTimesCanvasHeight() {
-		return m_timesCanvasHeight;
+	public int getCanvasHeight() {
+		return m_canvasHeight;
 	}
 
 	public int getPixelsX() {
@@ -295,9 +255,6 @@ public class RendererControl {
 	    m_offsetX = 0;
 	    m_offsetY = 0;
 	    
-	    m_worstTime = 0;
-	    m_bestTime = 0;
-
 	    m_scale = 1.0;
 	    updatePixelsXy();
 	}
@@ -313,18 +270,13 @@ public class RendererControl {
 		if (DEBUG) System.out.println("RendererControl::updatePixelsXy() - " + m_pixelsX + ", " + m_pixelsY);
 	}
 
-	public synchronized Image getStructureCanvasImage() {
-		return m_structureCanvasImage;
+	public synchronized Image getCanvasImage() {
+		return m_canvasImage;
 	}
 
-	public synchronized Image getTimesCanvasImage() {
-		return m_timesCanvasImage;
-	}
-
-	public synchronized void updateCanvasImages(Image structureImage, Image timesImage, int offsetX) {
+	public synchronized void updateCanvasImages(Image image, int offsetX) {
 		if (DEBUG) System.out.println("RendererControl::updateCanvasImages()");
-		copyImage(structureImage, m_structureCanvasImage, offsetX, m_offsetY);
-		copyImage(timesImage, m_timesCanvasImage, offsetX, 0);
+		copyImage(image, m_canvasImage, offsetX, m_offsetY);
 	}
 
 	// Copy images, ensuring bounds are valid
