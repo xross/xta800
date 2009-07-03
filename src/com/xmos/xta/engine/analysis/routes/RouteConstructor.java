@@ -3,11 +3,9 @@ package com.xmos.xta.engine.analysis.routes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
@@ -48,6 +46,7 @@ public class RouteConstructor {
 		m_subRoutes = new ArrayList<Node>();
 		m_engine = engine;
 		createExclusions();
+		
 	}
 
 	public int getRouteId() {
@@ -63,6 +62,7 @@ public class RouteConstructor {
 	}
 
 	public boolean analyse() {
+		//System.out.println("when route begines there are " + Node.s_numNodes + " nodes");
 		boolean seenEndPoint = false;
 		switch (m_description.getMode()) {
 		case FUNCTION:
@@ -293,24 +293,6 @@ public class RouteConstructor {
 		if (parent != null) {
 			CommonMethods.connect(node, parent);
 		}
-	}
-
-	private Map<String, TreeSet<Node>> buildFunctionMap(StructureGraph structureGraph) {
-		final Map<String, TreeSet<Node>> pcToNodes = new TreeMap<String, TreeSet<Node>>();
-		for (Node node : structureGraph.getThreads()) {
-			node.traverse(0, new DefaultNodeTraverser() {
-				public boolean foundFunctionNode(Node node, int depth) {
-					TreeSet<Node> map = pcToNodes.get(((FunctionNode) node).getFunctionName());
-					if (map == null) {
-						map = new TreeSet<Node>();
-					}
-					map.add(node);
-					pcToNodes.put(((FunctionNode) node).getFunctionName(), map);
-					return true;
-				}
-			});
-		}
-		return pcToNodes;
 	}
 			
 	private void setParents() {
