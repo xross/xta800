@@ -2,7 +2,7 @@ package com.xmos.xta.engine.sections;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.Map;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.Notifier;
@@ -105,7 +105,7 @@ public class Sections {
 		return branches.remove(fromPc);			
 	}	
 	
-	public Map<Integer, HashSet<Integer>> getBranches(int nodeId, int coreId) {
+	public Map<Integer, TreeSet<Integer>> getBranches(int nodeId, int coreId) {
 		Branches branches = (Branches)getSection(m_branches, nodeId, coreId);
 		return branches.get();
 	}

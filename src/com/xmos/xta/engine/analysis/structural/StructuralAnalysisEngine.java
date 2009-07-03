@@ -30,12 +30,10 @@ public class StructuralAnalysisEngine {
 	private ControlFlowGraph m_controlFlowGraph;
 	private Map<Integer, FunctionNode> m_functionStartPcs;
 	private StructureGraph m_structureGraph;
-	private Map<FunctionNode, FunctionNode> m_cfgToStruct;
 	private List<PatternMatcher> m_patternMatchers;
 	
 	public StructuralAnalysisEngine(ControlFlowGraph controlFlowGraph) {
 		m_controlFlowGraph = controlFlowGraph;
-		m_cfgToStruct = new TreeMap<FunctionNode, FunctionNode>();
 		setUpPatternMatcher();
 	}
 
@@ -138,9 +136,10 @@ public class StructuralAnalysisEngine {
 		
 		for (Node graphStart : orderedGraphs) {
 			
+			
 			String functionName = getFunctionName(graphStart, treeMap);
 			String jobName = "Processing " + functionName;
-			
+			int start = Node.s_numNodes;
 			//There are the only two sets that need to be ordered as they determine the number of the blocks
 			Collection<Node> currentGraph = new TreeSet<Node>();
 			Collection<Node> basicBlocks = new TreeSet<Node>();
@@ -150,10 +149,10 @@ public class StructuralAnalysisEngine {
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
 			
 			assert(!basicBlocks.isEmpty());
-			FnopAnalyser fa = new FnopAnalyser();
+			//FnopAnalyser fa = new FnopAnalyser();
 			
-			fa.analyse(initialBasicBlock, isFunction);
-			fa.addFnopsToBasicBlocks(initialBasicBlock);
+			//fa.analyse(initialBasicBlock, isFunction);
+			//fa.addFnopsToBasicBlocks(initialBasicBlock);
 
 			assert(basicBlocks.contains(initialBasicBlock));
 			if (!createStructure(basicBlocks, initialBasicBlock, engine, false, jobName)) {
@@ -188,6 +187,7 @@ public class StructuralAnalysisEngine {
 			
 			startPcs.put(graphStart.getStartPc(), fn);
 			engine.provideWorkDone(1);
+			System.out.println((Node.s_numNodes - start) + " for function " + functionName);
 		}
 		return graphs;
 	}
@@ -227,8 +227,6 @@ public class StructuralAnalysisEngine {
 				} else if(node.isFunctionNode()){
 					seen.add(node);
 					Node clone = node.shallowCopy();
-					
-					m_cfgToStruct.put((FunctionNode) clone, (FunctionNode) node);
 					basicBlocks.add(clone);
 					cfgToStructure.put(node, clone);
 					endPoint.put(clone, node);
@@ -341,35 +339,26 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	private static final boolean recursionDebug = false;
-	private boolean detectRecursion(Engine engine,
-			Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects){
+	private boolean detectRecursion(Engine engine, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects){
 		Map<FunctionNode, TreeSet<FunctionNode>> links = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
-		if ( recursionDebug ) System.out.println("digraph g {");
-		for(FunctionNode fn : m_functionStartPcs.values()){
-			for(FunctionNode linksTo : fn.getContainedFunctions()){
-				if(m_cfgToStruct.get(linksTo).getBranchTarget() != null){
-					int pc = m_cfgToStruct.get(linksTo).getBranchTarget().getStartPc();
-					
-					
+		for(FunctionNode fn : allFunctionObjects.keySet()){
+			for(FunctionNode linksTo : allFunctionObjects.get(fn)){
+				if(linksTo.getBranchTarget() != null){
+					int pc = linksTo.getBranchTarget().getStartPc();
 					FunctionNode linkingFn = m_functionStartPcs.get(pc);
 					TreeSet<FunctionNode> fnLinks = links.get(fn);
-					
 					if(fnLinks == null){
 						fnLinks = new TreeSet<FunctionNode>();
 						links.put(fn, fnLinks);
 					}
-					
 					if(!fnLinks.contains(linkingFn)){
-						if ( recursionDebug ) System.out.println(fn.getFunctionName() + " -> " + linkingFn.getFunctionName() + ";");
 						fnLinks.add(m_functionStartPcs.get(pc));
 					}
 					
 				}
 			}
 		}
-		if ( recursionDebug ) System.out.println("}");
-
+		
 		Collection<FunctionNode> loops = new TreeSet<FunctionNode>();
 		for(InstructionNode threadStart : m_controlFlowGraph.getThreadStartInstructions()){
 			Map<FunctionNode, TreeSet<FunctionNode>> fnDominators = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();

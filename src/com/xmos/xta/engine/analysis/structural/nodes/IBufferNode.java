@@ -1,9 +1,10 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
+
 import com.xmos.xta.engine.analysis.controlflow.InstructionBuffer;
 
 public abstract class IBufferNode extends Node {
@@ -13,11 +14,11 @@ public abstract class IBufferNode extends Node {
 	
 	public IBufferNode(){
 		super();
-		m_ibufferSequences = new HashSet<IBufferSequence>();
+		m_ibufferSequences = new TreeSet<IBufferSequence>();
 	}
 
 	public Collection<InstructionBuffer> getEndInstructionBuffers() {
-		Set<InstructionBuffer> set = new HashSet<InstructionBuffer>();
+		Set<InstructionBuffer> set = new TreeSet<InstructionBuffer>();
 		for(IBufferSequence ibs :m_ibufferSequences ){
 			set.add(ibs.getInstructionBuffer());
 		}
@@ -72,21 +73,25 @@ public abstract class IBufferNode extends Node {
 	}
 	
 	public Collection<IBufferNode> getNextIbufferNodes(){
-		Collection<IBufferNode> ibuffNodes = new HashSet<IBufferNode>();
+		Collection<IBufferNode> ibuffNodes = new TreeSet<IBufferNode>();
 		for(Node node : getNextNodes()){
 			assert(node instanceof IBufferNode);
 			ibuffNodes.add((IBufferNode)node);
 		}
 		return ibuffNodes;
 	}
-	
-	class IBufferSequence {
+	private static int id;
+	class IBufferSequence implements Comparable<IBufferSequence>{
+		
+		
+		private int m_id;
 		private int m_startIbuffer;
 		private List<Integer> m_fnopPcs;
 		private InstructionBuffer m_endInstructionBuffer;
 		
 		public IBufferSequence(int startIbuffer, List<Integer> fnopPcs, InstructionBuffer ib) {
 			super();
+			m_id = id++;
 			m_startIbuffer = startIbuffer;
 			m_fnopPcs = fnopPcs;
 			m_endInstructionBuffer = ib;
@@ -100,6 +105,10 @@ public abstract class IBufferNode extends Node {
 		}
 		InstructionBuffer getInstructionBuffer(){
 			return m_endInstructionBuffer;
+		}
+
+		public int compareTo(IBufferSequence o) {
+			return Integer.signum(m_id - o.m_id);
 		}
 	}
 

@@ -3,6 +3,8 @@ package com.xmos.xta.engine.analysis.controlflow;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.TreeSet;
+
 import com.xmos.isa.Instruction;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.XeLoader;
@@ -16,7 +18,7 @@ import com.xmos.xta.engine.sections.Sections;
 
 public class SuccessorAdder {
 	private InstructionDecoder m_instDecoder;
-	private Map<Integer, HashSet<Integer>> m_branchMap;
+	private Map<Integer, TreeSet<Integer>> m_branchMap;
 	private MemoryImage m_mi;
 	private int m_cpPointer;
 	private Collection<InstructionNode> m_threadEnds;
@@ -60,7 +62,7 @@ public class SuccessorAdder {
 	}
 
 	private void addUserSuccessors(Node instruction, XtaInstruction inst, boolean debug) {
-		HashSet<Integer> nextPcs = m_branchMap.get(inst.getPc());
+		TreeSet<Integer> nextPcs = m_branchMap.get(inst.getPc());
 
 		//FIXME - this should not be allowed for instruction that are not branches
 		if (nextPcs != null) {
