@@ -456,10 +456,10 @@ public class StructuralAnalysisEngine {
 									.getStartPc()) {
 								
 								//symbolic link
-								fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction());
+								//fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction());
 
 								//copying link
-								//fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction().deepCopy());
+								fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction().deepCopy());
 								
 								toRemove.add(fnLink);
 							}

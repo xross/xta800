@@ -942,11 +942,11 @@ public class Engine implements Notifier {
 				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts(), fh.getFunctions());
 				newCfg.add(nodeId, coreId, cfg);
 				
-				System.out.println("before structural analysis there are " + Node.s_numNodes + " nodes");
+				//System.out.println("before structural analysis there are " + Node.s_numNodes + " nodes");
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
 				if (!sae.analyse(this, newFunctionNames.get(nodeId, coreId)))
 					return false;
-				System.out.println("when a node and core is done are " + Node.s_numNodes + " nodes");
+				//System.out.println("when a node and core is done are " + Node.s_numNodes + " nodes");
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
 			}
 		}

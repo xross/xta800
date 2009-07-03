@@ -62,7 +62,7 @@ public class RouteConstructor {
 	}
 
 	public boolean analyse() {
-		System.out.println("when route begines there are " + Node.s_numNodes + " nodes");
+		//System.out.println("when route begines there are " + Node.s_numNodes + " nodes");
 		boolean seenEndPoint = false;
 		switch (m_description.getMode()) {
 		case FUNCTION:
