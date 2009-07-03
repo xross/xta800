@@ -4,11 +4,8 @@ import java.util.Collection;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
-import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -40,17 +37,7 @@ public class PathNode extends Node {
 	public Node shallowCopy() {
 		return new PathNode(this);
 	}
-/*
-	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {
-		PathNode pn = new PathNode();
-		for (Node path : m_nodes) {
-			Node clone = path.deepCopy(startPcs, engine);
-			pn.m_nodes.add(clone);
-		}
-		pn.m_attributes = new NodeAttributes(pn);
-		return pn;
-	}
-	*/
+
 	public Node deepCopy() {
 		PathNode pn = new PathNode();
 		for (Node path : m_nodes) {

@@ -6,11 +6,8 @@ import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
-import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.SectionNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -46,18 +43,7 @@ public class SectionNode extends Node {
 	public Node shallowCopy() {
 		return new SectionNode(this);
 	}
-	/*
-	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {
-		SectionNode sn = new SectionNode();
-		for (Node section : m_options) {
-			Node clone = section.deepCopy(startPcs, engine);
-			sn.m_options.add(clone);
-		}
-		sn.m_isOptional = m_isOptional; 
-		sn.m_attributes = new SectionNodeAttributes(sn);
-		return sn;
-	}
-	*/
+
 	public Node deepCopy() {
 		SectionNode sn = new SectionNode();
 		for (Node section : m_options) {

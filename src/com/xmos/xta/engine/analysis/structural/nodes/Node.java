@@ -3,10 +3,8 @@ package com.xmos.xta.engine.analysis.structural.nodes;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.edges.Edges;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -14,7 +12,7 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
 public abstract class Node implements Comparable<Node>{
-	static int s_numNodes;
+	public static int s_numNodes;
 	
 	int m_id;
 	Node m_parent;
@@ -33,7 +31,6 @@ public abstract class Node implements Comparable<Node>{
 	public abstract NodeAttributes getAttributes();
 	
 	public abstract Node shallowCopy();
-	//public abstract Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine);
 	public abstract Node deepCopy();
 			
 	public abstract List<Node> getChildren();

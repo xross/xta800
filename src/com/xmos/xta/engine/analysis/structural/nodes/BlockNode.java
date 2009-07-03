@@ -4,10 +4,7 @@ import java.util.Collection;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-
-import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.BlockNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -17,6 +14,8 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 public class BlockNode extends IBufferNode {
 	private BlockNodeAttributes m_attributes;	
 	private List<InstructionNode> m_insts;
+
+	private static final boolean COPY_INSTRUCTIONS = false;
 	
 	public BlockNode(BlockNode block) {
 		m_insts = block.m_insts;
@@ -33,11 +32,18 @@ public class BlockNode extends IBufferNode {
 		return new BlockNode(this);
 	}
 
-	//public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {		
-	//	return new BlockNode(m_insts);
-	//}
-	public Node deepCopy() {		
-		return new BlockNode(m_insts);
+	
+	public Node deepCopy() {
+		List<InstructionNode> insts;
+		if(COPY_INSTRUCTIONS){
+			insts = new LinkedList<InstructionNode>();
+			for(InstructionNode inst : m_insts){
+				insts.add((InstructionNode) inst.deepCopy());
+			}
+		} else {
+			insts = m_insts;
+		}
+		return new BlockNode(insts);
 	}
 	
     public String getTypeName() {

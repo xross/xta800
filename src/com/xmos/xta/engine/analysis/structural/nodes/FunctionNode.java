@@ -4,11 +4,8 @@ import java.util.Collection;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
-import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -61,27 +58,7 @@ public class FunctionNode extends IBufferNode {
 	public Node shallowCopy() {
     	return new FunctionNode(this);
 	}
-	/*
-	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine){
-		FunctionNode fn = new FunctionNode();
-		fn.m_functionName = m_functionName;
-		fn.m_knownFunction = m_knownFunction;
-		fn.m_branchTarget = m_branchTarget;
-		
-		if(m_function != null){
-			engine.provideFeedback("linking function: " + m_function.getFunctionName());
-			fn.m_function = m_function.deepCopy(startPcs, engine);		
-			
-		} else if(m_branchTarget != null){
-			int pc = m_branchTarget.getStartPc();
-			String fnName = startPcs.get(pc).getFunctionName();
-			engine.provideFeedback("linking function: " + fnName);
-			fn.setFunction(fnName, startPcs.get(pc).getFunction().deepCopy(startPcs, engine));
-		}
-		fn.m_attributes = new NodeAttributes(fn);
-		return fn;
-	}
-	*/
+
 	public Node deepCopy(){
 		FunctionNode fn = new FunctionNode();
 		fn.m_functionName = m_functionName;
