@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -12,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Vector;
 import org.eclipse.core.runtime.IProgressMonitor;
 import com.xmos.xeloader.DebugInfo;
@@ -762,7 +762,7 @@ public class Engine implements Notifier {
 		return false;
 	}
 
-	public Map<Integer, HashSet<Integer>> getBranches() {
+	public Map<Integer, TreeSet<Integer>> getBranches() {
 		return m_sections.getBranches(m_nodeId, m_coreId);
 	}
 
@@ -942,11 +942,11 @@ public class Engine implements Notifier {
 				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts(), fh.getFunctions());
 				newCfg.add(nodeId, coreId, cfg);
 				
-				//System.out.println("before structural analysis there are " + Node.s_numNodes + " nodes");
+				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
+				
 				if (!sae.analyse(this, newFunctionNames.get(nodeId, coreId)))
 					return false;
-				//System.out.println("when a node and core is done are " + Node.s_numNodes + " nodes");
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
 			}
 		}
