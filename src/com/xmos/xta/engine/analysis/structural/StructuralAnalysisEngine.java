@@ -139,7 +139,6 @@ public class StructuralAnalysisEngine {
 			
 			String functionName = getFunctionName(graphStart, treeMap);
 			String jobName = "Processing " + functionName;
-			int start = Node.s_numNodes;
 			//There are the only two sets that need to be ordered as they determine the number of the blocks
 			Collection<Node> currentGraph = new TreeSet<Node>();
 			Collection<Node> basicBlocks = new TreeSet<Node>();
@@ -163,10 +162,8 @@ public class StructuralAnalysisEngine {
 			}
 			assert(basicBlocks.size() == 1);
 			Node decomposedGraph = basicBlocks.iterator().next();
-			
 
 			final FunctionNode fn = new FunctionNode(decomposedGraph, functionName);
-			
 			
 			final TreeSet<FunctionNode> unlinkedFunctions = new TreeSet<FunctionNode>();
 			
@@ -187,7 +184,6 @@ public class StructuralAnalysisEngine {
 			
 			startPcs.put(graphStart.getStartPc(), fn);
 			engine.provideWorkDone(1);
-			System.out.println((Node.s_numNodes - start) + " for function " + functionName);
 		}
 		return graphs;
 	}
@@ -425,7 +421,11 @@ public class StructuralAnalysisEngine {
 	}
 	
 	private void linkFunctions(Engine engine, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects) {
-
+		int totalWork = 0;
+		for(FunctionNode fn : allFunctionObjects.keySet()){
+			totalWork += allFunctionObjects.get(fn).size();
+		}
+		engine.startAnalysis("Linking functions:", totalWork);
 		while (!allFunctionObjects.isEmpty()) {
 			// first make a set of nodes to eliminate (leaf nodes).
 			Set<FunctionNode> leafs = new TreeSet<FunctionNode>();
@@ -451,9 +451,11 @@ public class StructuralAnalysisEngine {
 								fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction().deepCopy());
 								
 								toRemove.add(fnLink);
+								engine.provideWorkDone(1);
 							}
 						} else {
 							toRemove.add(fnLink);
+							engine.provideWorkDone(1);
 						}
 					}
 					allFunctionObjects.get(fn).removeAll(toRemove);
@@ -461,6 +463,7 @@ public class StructuralAnalysisEngine {
 			}
 			for (FunctionNode leaf : leafs) {
 				allFunctionObjects.remove(leaf);
+				
 			}
 		}
 

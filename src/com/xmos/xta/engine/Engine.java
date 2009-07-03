@@ -945,10 +945,8 @@ public class Engine implements Notifier {
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
 				
-				System.out.println("before structural analysis there are " + Node.s_numNodes + " nodes");
 				if (!sae.analyse(this, newFunctionNames.get(nodeId, coreId)))
 					return false;
-				System.out.println("after  structural analysis there are " + Node.s_numNodes + " nodes\n");
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
 			}
 		}
