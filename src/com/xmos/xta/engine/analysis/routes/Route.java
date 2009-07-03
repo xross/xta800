@@ -124,6 +124,7 @@ public class Route {
 			enclosingLoopNode.getAttributes().setLoopIterations(iterations);
 			enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
 			refreshDisplayedUnknowns();
+			invalidateCachedStats();
 			return true;
 		}
 		return false;
@@ -152,6 +153,7 @@ public class Route {
 			Node optionNode = node.getEnclosingOptionNode();
 			if (sectionNode.getAttributes().setLoopPathIterations(loopNode, optionNode, iterations)) {
 				refreshDisplayedUnknowns();		
+				invalidateCachedStats();
 				return true;
 			}		
 			return false;		
@@ -185,6 +187,7 @@ public class Route {
 		if (canSetLoopScope(node)) {		
         	Node enclosingLoopNode = node.getEnclosingLoopNode();
 			enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
+			invalidateCachedStats();
 			return true;
 		}
 		return false;
@@ -207,6 +210,7 @@ public class Route {
     	node.getAttributes().setInstructionTimeTaken(timeTaken);
 		node.getAttributes().setUnknownState(UnknownState.KNOWN);	
 		refreshDisplayedUnknowns();	
+		invalidateCachedStats();
 	}
 
 	public boolean unsetInstructionTimeTaken(Reference reference) {
@@ -222,6 +226,7 @@ public class Route {
     	node.getAttributes().unsetInstructionTimeTaken();
 		node.getAttributes().setUnknownState(UnknownState.UNKNOWN);	
 		refreshDisplayedUnknowns();
+		invalidateCachedStats();
 	}
 	
 	public double getInstructionTimeTaken(Node node) {
@@ -241,6 +246,7 @@ public class Route {
     	node.getAttributes().setInstructionNumCycles(numCycles);
 		node.getAttributes().setUnknownState(UnknownState.KNOWN);	
 		refreshDisplayedUnknowns();		
+		invalidateCachedStats();
 	}
 	
 	public boolean unsetInstructionNumCycles(Reference reference) {
@@ -256,6 +262,7 @@ public class Route {
     	node.getAttributes().unsetInstructionNumCycles();
 		node.getAttributes().setUnknownState(UnknownState.UNKNOWN);			
 		refreshDisplayedUnknowns();			
+		invalidateCachedStats();
 	}
 		
 	public long getInstructionNumCycles(Node node) {
@@ -280,7 +287,7 @@ public class Route {
 		referencedNodes.addAll(referenceMatcher.getNodes(m_node, reference));
 		return referencedNodes;		
 	}
-	
+		
 	private void refreshDisplayedUnknowns() {
 		refreshDisplayedUnknowns(m_node);
 	}
@@ -322,5 +329,14 @@ public class Route {
 	    	}
 	    });		
 	}
+	
+	private void invalidateCachedStats() {
+		m_node.traverse(0, new UntypedNodeTraverser() {
+	    	public boolean foundNode(Node node, int depth) {
+	    		node.getAttributes().invalidateCachedStats();
+	        	return true;
+	    	}
+	    });		
+	}	
 }
 

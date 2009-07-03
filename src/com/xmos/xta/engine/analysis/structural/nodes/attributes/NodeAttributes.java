@@ -18,6 +18,16 @@ public class NodeAttributes {
 		KNOWN,
 	}
 
+	protected double m_cachedTimeTaken;
+	protected long m_cachedNumCycles;
+	protected long m_cachedNumInstructions;
+	protected long m_cachedNumFnops;
+	
+	protected boolean m_cachedTimeTakenValid;
+	protected boolean m_cachedNumCyclesValid;
+	protected boolean m_cachedNumInstructionsValid;
+	protected boolean m_cachedNumFnopsValid;	
+	
 	private boolean m_isUnknown;
 	private UnknownType m_unknownType;
 	private UnknownState m_unknownState; 	
@@ -80,36 +90,52 @@ public class NodeAttributes {
 	// Statistics Methods
 	// --------------------------------------------------------------------- //			
 	public double getTimeTaken(Case c, boolean ignoreIterations) {
-		double value = 0;
-		for (Node child : getNode().getChildren()) {
-			value += child.getAttributes().getTimeTaken(c, ignoreIterations);
+		if (!m_cachedTimeTakenValid && !ignoreIterations) {
+			double value = 0;
+			for (Node child : getNode().getChildren()) {
+				value += child.getAttributes().getTimeTaken(c, ignoreIterations);
+			}
+			m_cachedTimeTaken = value;
+			m_cachedTimeTakenValid = true;
 		}
-		return value;
+		return m_cachedTimeTaken;			
 	}
 
 	public long getNumCycles(Case c, boolean ignoreIterations) {
-		long value = 0;
-		for (Node child : getNode().getChildren()) {
-			value += child.getAttributes().getNumCycles(c, ignoreIterations);
+		if (!m_cachedNumCyclesValid && !ignoreIterations) {
+			long value = 0;
+			for (Node child : getNode().getChildren()) {
+				value += child.getAttributes().getNumCycles(c, ignoreIterations);
+			}			
+			m_cachedNumCycles = value;
+			m_cachedNumCyclesValid = true;
 		}
-		return value;
+		return m_cachedNumCycles;
 	}
 
 	public long getNumInstructions(Case c, boolean ignoreIterations) {
-		long value = 0;
-		for (Node child : getNode().getChildren()) {
-			value += child.getAttributes().getNumInstructions(c, ignoreIterations);
+		if (!m_cachedNumInstructionsValid && !ignoreIterations) {
+			long value = 0;
+			for (Node child : getNode().getChildren()) {
+				value += child.getAttributes().getNumInstructions(c, ignoreIterations);
+			}			
+			m_cachedNumInstructions = value;
+			m_cachedNumInstructionsValid = true;
 		}
-		return value;
+		return m_cachedNumInstructions;
 	}
 
 	public long getNumFNops(Case c, boolean ignoreIterations) {
-		long value = 0;
-		for (Node child : getNode().getChildren()) {
-			value += child.getAttributes().getNumFNops(c, ignoreIterations);
+		if (!m_cachedNumFnopsValid && !ignoreIterations) {
+			long value = 0;
+			for (Node child : getNode().getChildren()) {
+				value += child.getAttributes().getNumFNops(c, ignoreIterations);
+			}			
+			m_cachedNumFnops = value;
+			m_cachedNumFnopsValid = true;
 		}
-		return value;
-	}
+		return m_cachedNumFnops;
+	}	
 
 	public long getNumPaths() {
 		long value = 1;
@@ -119,6 +145,17 @@ public class NodeAttributes {
 		return value;
 	}
 
+	public void invalidateCachedStats() {
+		m_cachedTimeTaken = 0;
+		m_cachedNumCycles = 0;
+		m_cachedNumInstructions = 0;
+		m_cachedNumFnops = 0;		
+		m_cachedTimeTakenValid = false;
+		m_cachedNumCyclesValid = false;
+		m_cachedNumInstructionsValid = false;
+		m_cachedNumFnopsValid = false;					
+	}
+		
 	// --------------------------------------------------------------------- //
 	// Unknown Status Methods
 	// --------------------------------------------------------------------- //		
