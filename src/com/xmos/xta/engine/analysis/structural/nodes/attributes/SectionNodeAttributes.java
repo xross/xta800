@@ -21,7 +21,7 @@ public class SectionNodeAttributes extends NodeAttributes {
 	// Statistics Methods
 	// --------------------------------------------------------------------- //	
 	public double getTimeTaken(Case c, boolean ignoreIterations) {
-		if (!m_cachedTimeTakenValid && !ignoreIterations) {
+		if (!getCachedTimeTakenValid(c) && !ignoreIterations) {
 			double value = 0;
 			for (Node child : getNode().getChildren()) {
 				if (m_setOptions.get(child))
@@ -31,14 +31,14 @@ public class SectionNodeAttributes extends NodeAttributes {
 			if (option != null) {
 				value += option.getAttributes().getTimeTaken(c, ignoreIterations); 
 			}			
-			m_cachedTimeTaken = value;
-			m_cachedTimeTakenValid = true;
+			setCachedTimeTaken(c, value);
+			setCachedTimeTakenValid(c, true);
 		}
-		return m_cachedTimeTaken;			
+		return getCachedTimeTaken(c);			
 	}
 
 	public long getNumCycles(Case c, boolean ignoreIterations) {
-    	if (!m_cachedNumCyclesValid && !ignoreIterations) {
+    	if (!getCachedNumCyclesValid(c) && !ignoreIterations) {
     		long value = 0;
     		for (Node child : getNode().getChildren()) {
     			if (m_setOptions.get(child))
@@ -48,14 +48,14 @@ public class SectionNodeAttributes extends NodeAttributes {
     		if (option != null) {
     			value += option.getAttributes().getNumCycles(c, ignoreIterations); 
     		}    		
-			m_cachedNumCycles = value;
-			m_cachedNumCyclesValid = true;
+			setCachedNumCycles(c, value);
+			setCachedNumCyclesValid(c, true);
 		}
-		return m_cachedNumCycles;
+		return getCachedNumCycles(c);
 	}
 
 	public long getNumInstructions(Case c, boolean ignoreIterations) {
-		if (!m_cachedNumInstructionsValid && !ignoreIterations) {
+		if (!getCachedNumInstructionsValid(c) && !ignoreIterations) {
 			long value = 0;
 			for (Node child : getNode().getChildren()) {
 				if (m_setOptions.get(child))
@@ -65,14 +65,14 @@ public class SectionNodeAttributes extends NodeAttributes {
 			if (option != null) {
 				value += option.getAttributes().getNumInstructions(c, ignoreIterations); 
 			}			
-			m_cachedNumInstructions = value;
-			m_cachedNumInstructionsValid = true;
+			setCachedNumInstructions(c, value);
+			setCachedNumInstructionsValid(c, true);
 		}
-		return m_cachedNumInstructions;
+		return getCachedNumInstructions(c);
 	}
 
 	public long getNumFNops(Case c, boolean ignoreIterations) {
-		if (!m_cachedNumFnopsValid && !ignoreIterations) {
+		if (!getCachedNumFnopsValid(c) && !ignoreIterations) {
 			long value = 0;
 			for (Node child : getNode().getChildren()) {
 				if (m_setOptions.get(child))
@@ -82,10 +82,10 @@ public class SectionNodeAttributes extends NodeAttributes {
 			if (option != null) {
 				value += option.getAttributes().getNumFNops(c, ignoreIterations); 
 			}			
-			m_cachedNumFnops = value;
-			m_cachedNumFnopsValid = true;
+			setCachedNumFnops(c, value);
+			setCachedNumFnopsValid(c, true);
 		}
-		return m_cachedNumFnops;
+		return getCachedNumFnops(c);
 	}
 
 	public long getNumPaths() {
