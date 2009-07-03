@@ -1,5 +1,8 @@
 package com.xmos.xta.engine.analysis.structural.nodes.attributes;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
@@ -18,15 +21,15 @@ public class NodeAttributes {
 		KNOWN,
 	}
 
-	protected double m_cachedTimeTaken;
-	protected long m_cachedNumCycles;
-	protected long m_cachedNumInstructions;
-	protected long m_cachedNumFnops;
+	private Map<Case, Double> m_cachedTimeTaken;
+	private Map<Case, Long> m_cachedNumCycles;
+	private Map<Case, Long> m_cachedNumInstructions;
+	private Map<Case, Long> m_cachedNumFnops;
 	
-	protected boolean m_cachedTimeTakenValid;
-	protected boolean m_cachedNumCyclesValid;
-	protected boolean m_cachedNumInstructionsValid;
-	protected boolean m_cachedNumFnopsValid;	
+	private Map<Case, Boolean> m_cachedTimeTakenValid;
+	private Map<Case, Boolean> m_cachedNumCyclesValid;
+	private Map<Case, Boolean> m_cachedNumInstructionsValid;
+	private Map<Case, Boolean> m_cachedNumFnopsValid;	
 	
 	private boolean m_isUnknown;
 	private UnknownType m_unknownType;
@@ -41,7 +44,9 @@ public class NodeAttributes {
 		m_isUnknown = false;
 		m_unknownType = null;		
 		m_isAbsolute = false;
-		m_isLoopHeader = false;				
+		m_isLoopHeader = false;		
+		initialiseCachedStats();
+		invalidateCachedStats();
 	}
 	
 	public Node getNode() {
@@ -90,51 +95,51 @@ public class NodeAttributes {
 	// Statistics Methods
 	// --------------------------------------------------------------------- //			
 	public double getTimeTaken(Case c, boolean ignoreIterations) {
-		if (!m_cachedTimeTakenValid && !ignoreIterations) {
+		if (!getCachedTimeTakenValid(c) && !ignoreIterations) {
 			double value = 0;
 			for (Node child : getNode().getChildren()) {
 				value += child.getAttributes().getTimeTaken(c, ignoreIterations);
 			}
-			m_cachedTimeTaken = value;
-			m_cachedTimeTakenValid = true;
+			setCachedTimeTaken(c, value);
+			setCachedTimeTakenValid(c, true);
 		}
-		return m_cachedTimeTaken;			
+		return getCachedTimeTaken(c);			
 	}
 
 	public long getNumCycles(Case c, boolean ignoreIterations) {
-		if (!m_cachedNumCyclesValid && !ignoreIterations) {
+		if (!getCachedNumCyclesValid(c) && !ignoreIterations) {
 			long value = 0;
 			for (Node child : getNode().getChildren()) {
 				value += child.getAttributes().getNumCycles(c, ignoreIterations);
 			}			
-			m_cachedNumCycles = value;
-			m_cachedNumCyclesValid = true;
+			setCachedNumCycles(c, value);
+			setCachedNumCyclesValid(c, true);
 		}
-		return m_cachedNumCycles;
+		return getCachedNumCycles(c);
 	}
 
 	public long getNumInstructions(Case c, boolean ignoreIterations) {
-		if (!m_cachedNumInstructionsValid && !ignoreIterations) {
+		if (!getCachedNumInstructionsValid(c) && !ignoreIterations) {
 			long value = 0;
 			for (Node child : getNode().getChildren()) {
 				value += child.getAttributes().getNumInstructions(c, ignoreIterations);
 			}			
-			m_cachedNumInstructions = value;
-			m_cachedNumInstructionsValid = true;
+			setCachedNumInstructions(c, value);
+			setCachedNumInstructionsValid(c, true);
 		}
-		return m_cachedNumInstructions;
+		return getCachedNumInstructions(c);
 	}
 
 	public long getNumFNops(Case c, boolean ignoreIterations) {
-		if (!m_cachedNumFnopsValid && !ignoreIterations) {
+		if (!getCachedNumFnopsValid(c) && !ignoreIterations) {
 			long value = 0;
 			for (Node child : getNode().getChildren()) {
 				value += child.getAttributes().getNumFNops(c, ignoreIterations);
 			}			
-			m_cachedNumFnops = value;
-			m_cachedNumFnopsValid = true;
+			setCachedNumFnops(c, value);
+			setCachedNumFnopsValid(c, true);
 		}
-		return m_cachedNumFnops;
+		return getCachedNumFnops(c);
 	}	
 
 	public long getNumPaths() {
@@ -145,17 +150,61 @@ public class NodeAttributes {
 		return value;
 	}
 
-	public void invalidateCachedStats() {
-		m_cachedTimeTaken = 0;
-		m_cachedNumCycles = 0;
-		m_cachedNumInstructions = 0;
-		m_cachedNumFnops = 0;		
-		m_cachedTimeTakenValid = false;
-		m_cachedNumCyclesValid = false;
-		m_cachedNumInstructionsValid = false;
-		m_cachedNumFnopsValid = false;					
-	}
+	// --------------------------------------------------------------------- //
+	// Cached Statistics Methods
+	// --------------------------------------------------------------------- //			
+	void initialiseCachedStats() {
+		m_cachedTimeTaken       = new HashMap<Case, Double>();		
+		m_cachedNumCycles       = new HashMap<Case, Long>();
+		m_cachedNumInstructions = new HashMap<Case, Long>();
+		m_cachedNumFnops        = new HashMap<Case, Long>();
 		
+		m_cachedTimeTakenValid            = new HashMap<Case, Boolean>(); 
+		m_cachedNumCyclesValid       = new HashMap<Case, Boolean>(); 
+		m_cachedNumInstructionsValid = new HashMap<Case, Boolean>(); 
+		m_cachedNumFnopsValid        = new HashMap<Case, Boolean>(); 
+	}
+	
+	public void invalidateCachedStats() {
+		setCachedTimeTaken(Case.WORST, (double)0);
+		setCachedTimeTaken(Case.BEST, (double)0);		
+		setCachedNumCycles(Case.WORST, (long)0);
+		setCachedNumCycles(Case.BEST, (long)0);
+		setCachedNumInstructions(Case.WORST, (long)0);
+		setCachedNumInstructions(Case.BEST, (long)0);
+		setCachedNumFnops(Case.WORST, (long)0);
+		setCachedNumFnops(Case.BEST, (long)0);		
+		
+		setCachedTimeTakenValid(Case.WORST, false);
+		setCachedTimeTakenValid(Case.BEST, false);		
+		setCachedNumCyclesValid(Case.WORST, false);
+		setCachedNumCyclesValid(Case.BEST, false);
+		setCachedNumInstructionsValid(Case.WORST, false);
+		setCachedNumInstructionsValid(Case.BEST, false);
+		setCachedNumFnopsValid(Case.WORST, false);
+		setCachedNumFnopsValid(Case.BEST, false);
+    }
+
+	double getCachedTimeTaken(Case c)     { return m_cachedTimeTaken.get(c); }
+	long getCachedNumCycles(Case c)       { return m_cachedNumCycles.get(c); }
+	long getCachedNumInstructions(Case c) { return m_cachedNumInstructions.get(c); }
+	long getCachedNumFnops(Case c)        { return m_cachedNumFnops.get(c); }
+
+	void setCachedTimeTaken(Case c, Double value)     { m_cachedTimeTaken.put(c, value); }
+	void setCachedNumCycles(Case c, Long value)       { m_cachedNumCycles.put(c, value); }
+	void setCachedNumInstructions(Case c, Long value) { m_cachedNumInstructions.put(c, value); }
+	void setCachedNumFnops(Case c, Long value)        { m_cachedNumFnops.put(c, value); }
+	
+	boolean getCachedTimeTakenValid(Case c)       { return m_cachedTimeTakenValid.get(c); }
+	boolean getCachedNumCyclesValid(Case c)       { return m_cachedNumCyclesValid.get(c); }
+	boolean getCachedNumInstructionsValid(Case c) { return m_cachedNumInstructionsValid.get(c); }
+	boolean getCachedNumFnopsValid(Case c)        { return m_cachedNumFnopsValid.get(c); }
+	
+	void setCachedTimeTakenValid(Case c, boolean value)       { m_cachedTimeTakenValid.put(c, value); }
+	void setCachedNumCyclesValid(Case c, boolean value)       { m_cachedNumCyclesValid.put(c, value); }
+	void setCachedNumInstructionsValid(Case c, boolean value) { m_cachedNumInstructionsValid.put(c, value); }
+	void setCachedNumFnopsValid(Case c, boolean value)        { m_cachedNumFnopsValid.put(c, value); }
+
 	// --------------------------------------------------------------------- //
 	// Unknown Status Methods
 	// --------------------------------------------------------------------- //		
