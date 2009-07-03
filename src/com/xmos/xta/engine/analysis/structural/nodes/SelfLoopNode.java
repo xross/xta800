@@ -4,11 +4,8 @@ import java.util.Collection;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
-import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.SelfLoopNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -40,14 +37,7 @@ public class SelfLoopNode extends Node{
 	public SelfLoopNode shallowCopy() {
 		return new SelfLoopNode(this);
 	}
-	/*
-	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {
-		SelfLoopNode ln = new SelfLoopNode();
-		ln.m_loop = m_loop.deepCopy(startPcs, engine);
-		ln.m_attributes = new SelfLoopNodeAttributes(ln);
-		return ln;
-	}
-	*/
+
 	public Node deepCopy() {
 		SelfLoopNode ln = new SelfLoopNode();
 		ln.m_loop = m_loop.deepCopy();

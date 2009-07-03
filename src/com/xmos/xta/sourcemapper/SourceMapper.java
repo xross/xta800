@@ -3,7 +3,6 @@ package com.xmos.xta.sourcemapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -26,12 +25,12 @@ public class SourceMapper {
     private List<Function> m_functions;
 	private List<SourceFile> m_sourceFiles;
 	private List<AssemblyLine> m_instructions;
-	private HashMap<Integer, SourceFile> m_pcToFile;
+	private Map<Integer, SourceFile> m_pcToFile;
 	private FileFinder m_fileFinder;
 	
 	private InstructionDecoder m_instructionDecoder;
 	private Set<InstructionNode> m_starts;
-	private HashMap<String, InstructionNode> m_functionNames;
+	private Map<String, InstructionNode> m_functionNames;
 	private Map<Integer, AssemblyLine> m_pcToAsm;
 	private Map<Integer, Function> m_pcToFunction;
 	private Map<String, String> m_functionToFile;
@@ -39,11 +38,11 @@ public class SourceMapper {
 	
     public SourceMapper(XeLoader xeLoader, int nodeId, int coreId,
 			Set<InstructionNode> starts, FileFinder fileFinder, InstructionDecoder instructionDecoder, 
-			HashMap<String, InstructionNode> functionNames) {
+			TreeMap<String, InstructionNode> treeMap) {
     	m_fileFinder = fileFinder;
         m_instructionDecoder = instructionDecoder;
         m_starts = starts;
-        m_functionNames = functionNames;
+        m_functionNames = treeMap;
         m_pcToAsm = new TreeMap<Integer, AssemblyLine>();
         m_pcToFunction = new TreeMap<Integer, Function>();
         m_functionToFile = new TreeMap<String, String>();
@@ -51,7 +50,7 @@ public class SourceMapper {
 	}
 
     public void initialise(XeLoader xeLoader, int nodeId, int coreId) {
-        m_pcToFile = new HashMap <Integer, SourceFile> ();
+        m_pcToFile = new TreeMap <Integer, SourceFile> ();
         m_instructions = createAssemblyLines();
         m_functions = createFunctions();
         m_sourceFiles = createSourceFiles(xeLoader, nodeId, coreId);

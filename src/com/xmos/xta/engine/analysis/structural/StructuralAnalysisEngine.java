@@ -3,16 +3,12 @@ package com.xmos.xta.engine.analysis.structural;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.Vector;
-
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
@@ -39,7 +35,7 @@ public class StructuralAnalysisEngine {
 	
 	public StructuralAnalysisEngine(ControlFlowGraph controlFlowGraph) {
 		m_controlFlowGraph = controlFlowGraph;
-		m_cfgToStruct = new HashMap<FunctionNode, FunctionNode>();
+		m_cfgToStruct = new TreeMap<FunctionNode, FunctionNode>();
 		setUpPatternMatcher();
 	}
 
@@ -47,8 +43,8 @@ public class StructuralAnalysisEngine {
 		setUpPatternMatcher();
 	}
 
-	public boolean analyse(Engine engine, HashMap<String, InstructionNode> treeMap) {
-		m_functionStartPcs = new HashMap<Integer, FunctionNode>();
+	public boolean analyse(Engine engine, TreeMap<String, InstructionNode> treeMap) {
+		m_functionStartPcs = new TreeMap<Integer, FunctionNode>();
 		return buildStructureGraph(engine, treeMap);
 	}
 
@@ -64,7 +60,7 @@ public class StructuralAnalysisEngine {
 		while (working) {
 			engine.provideFeedback(jobPrefix + " - nodes left: " + workingSet.size());
 			List<Node> postOrder = new LinkedList<Node>();
-			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
+			DFSPostOrder(postOrder, treeStart, new TreeSet<Node>());
 			working = false;
 			for (PatternMatcher pm : m_patternMatchers) {
 				if (!dominatorTreeUpToDate && pm.usesDominatorTree()) {
@@ -90,9 +86,9 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	private boolean buildStructureGraph(Engine engine, HashMap<String, InstructionNode> treeMap) {
+	private boolean buildStructureGraph(Engine engine, TreeMap<String, InstructionNode> treeMap) {
 		
-		Map<FunctionNode, HashSet<FunctionNode>> allFunctionObjects = new HashMap<FunctionNode, HashSet<FunctionNode>>();
+		Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
 		
 		
 		Collection<FunctionNode> threads = buildGraph(m_controlFlowGraph.getThreadStartInstructions(), 
@@ -109,8 +105,8 @@ public class StructuralAnalysisEngine {
 		m_structureGraph = new StructureGraph(threads, functions);
 		
 		engine.provideFeedback("Analysing for recursion...");
-		Map<FunctionNode, HashSet<FunctionNode>> functionLinks = new HashMap<FunctionNode, HashSet<FunctionNode>>();
-		boolean recurrses = detectRecursion(engine, functionLinks, allFunctionObjects);
+		
+		boolean recurrses = detectRecursion(engine, allFunctionObjects);
 		if(recurrses){
 			return false;
 		}
@@ -126,9 +122,9 @@ public class StructuralAnalysisEngine {
 	}
 
 	private Collection<FunctionNode> buildGraph(Collection<InstructionNode> graphStartNodes, Map<Integer, FunctionNode> startPcs,
-			Engine engine, boolean isFunction, HashMap<String, InstructionNode> treeMap, Map<FunctionNode, HashSet<FunctionNode>> allFunctionObjects) {
+			Engine engine, boolean isFunction, TreeMap<String, InstructionNode> treeMap, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects) {
 
-		Collection<FunctionNode> graphs = new HashSet<FunctionNode>();
+		Collection<FunctionNode> graphs = new TreeSet<FunctionNode>();
 
 		List<Node> orderedGraphs = new LinkedList<Node>(graphStartNodes);
 		Collections.sort(orderedGraphs);
@@ -173,7 +169,7 @@ public class StructuralAnalysisEngine {
 			final FunctionNode fn = new FunctionNode(decomposedGraph, functionName);
 			
 			
-			final HashSet<FunctionNode> unlinkedFunctions = new HashSet<FunctionNode>();
+			final TreeSet<FunctionNode> unlinkedFunctions = new TreeSet<FunctionNode>();
 			
 			fn.traverse(0, new DefaultNodeTraverser() {
 	   		    public boolean foundFunctionNode(Node node, int depth) {
@@ -197,7 +193,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	private String getFunctionName(Node graphStart,
-			HashMap<String, InstructionNode> treeMap) {
+			TreeMap<String, InstructionNode> treeMap) {
 		for(String functionName : treeMap.keySet()){
 			InstructionNode instNode = treeMap.get(functionName);
 			if(instNode.getStartPc() == graphStart.getStartPc()){
@@ -211,9 +207,9 @@ public class StructuralAnalysisEngine {
 	private Node reduceGraphToBasicBlocks(Collection<Node> basicBlocks, Node initialBasicBlock,
 			Collection<Node> currentGraph) {
 
-		Set<Node> seen = new HashSet<Node>();
-		Map<Node, Node> cfgToStructure = new HashMap<Node, Node>();
-		Map<Node, Node> endPoint = new HashMap<Node, Node>();
+		Set<Node> seen = new TreeSet<Node>();
+		Map<Node, Node> cfgToStructure = new TreeMap<Node, Node>();
+		Map<Node, Node> endPoint = new TreeMap<Node, Node>();
 		Node treeStart = initialBasicBlock;
 
 		for (Node node : currentGraph) {
@@ -287,7 +283,7 @@ public class StructuralAnalysisEngine {
 			}
 		}
 
-		Set<Node> intersection = new HashSet<Node>();
+		Set<Node> intersection = new TreeSet<Node>();
 		boolean stillChanging = true;
 
 		while (stillChanging) {
@@ -346,9 +342,9 @@ public class StructuralAnalysisEngine {
 	}
 
 	private static final boolean recursionDebug = false;
-	private boolean detectRecursion(Engine engine, Map<FunctionNode, HashSet<FunctionNode>> links,
-			Map<FunctionNode, HashSet<FunctionNode>> allFunctionObjects){
-		
+	private boolean detectRecursion(Engine engine,
+			Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects){
+		Map<FunctionNode, TreeSet<FunctionNode>> links = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
 		if ( recursionDebug ) System.out.println("digraph g {");
 		for(FunctionNode fn : m_functionStartPcs.values()){
 			for(FunctionNode linksTo : fn.getContainedFunctions()){
@@ -357,10 +353,10 @@ public class StructuralAnalysisEngine {
 					
 					
 					FunctionNode linkingFn = m_functionStartPcs.get(pc);
-					HashSet<FunctionNode> fnLinks = links.get(fn);
+					TreeSet<FunctionNode> fnLinks = links.get(fn);
 					
 					if(fnLinks == null){
-						fnLinks = new HashSet<FunctionNode>();
+						fnLinks = new TreeSet<FunctionNode>();
 						links.put(fn, fnLinks);
 					}
 					
@@ -374,9 +370,9 @@ public class StructuralAnalysisEngine {
 		}
 		if ( recursionDebug ) System.out.println("}");
 
-		Collection<FunctionNode> loops = new HashSet<FunctionNode>();
+		Collection<FunctionNode> loops = new TreeSet<FunctionNode>();
 		for(InstructionNode threadStart : m_controlFlowGraph.getThreadStartInstructions()){
-			Map<FunctionNode, HashSet<FunctionNode>> fnDominators = new TreeMap<FunctionNode, HashSet<FunctionNode>>();
+			Map<FunctionNode, TreeSet<FunctionNode>> fnDominators = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
 			FunctionNode start = m_functionStartPcs.get(threadStart.getStartPc());
 			TreeSet<FunctionNode> seen = new TreeSet<FunctionNode>();
 			crawlFunctionGraph(start, links, seen);
@@ -392,14 +388,13 @@ public class StructuralAnalysisEngine {
 					}
 				}
 			}
-			
 		}
 		return !loops.isEmpty();
 	}
 	private void buildFunctionDominatorTree(Collection<FunctionNode> reachableNodes, 
-			FunctionNode treeStart, Map<FunctionNode, HashSet<FunctionNode>> fnDominators) {
+			FunctionNode treeStart, Map<FunctionNode, TreeSet<FunctionNode>> fnDominators) {
 		for (FunctionNode node : reachableNodes) {
-			fnDominators.put(node, new HashSet<FunctionNode>());
+			fnDominators.put(node, new TreeSet<FunctionNode>());
 			if (treeStart == node) {
 				fnDominators.get(node).add(node);
 			} else {
@@ -414,7 +409,7 @@ public class StructuralAnalysisEngine {
 				if (treeStart == node)
 					continue;
 
-				Set<FunctionNode> intersection = new HashSet<FunctionNode>(reachableNodes);
+				Set<FunctionNode> intersection = new TreeSet<FunctionNode>(reachableNodes);
 				for (Node pred : node.getPrevNodes()) {
 					intersection.retainAll(fnDominators.get(pred));
 				}
@@ -429,7 +424,7 @@ public class StructuralAnalysisEngine {
 	}
 	
 	
-	private void crawlFunctionGraph(FunctionNode fn, Map<FunctionNode, HashSet<FunctionNode>> links, Set<FunctionNode> seen ){
+	private void crawlFunctionGraph(FunctionNode fn, Map<FunctionNode, TreeSet<FunctionNode>> links, Set<FunctionNode> seen ){
 		seen.add(fn);
 		if(links.get(fn)!= null){
 			for(FunctionNode nextFn : links.get(fn)){	
@@ -440,11 +435,11 @@ public class StructuralAnalysisEngine {
 		}
 	}
 	
-	private void linkFunctions(Engine engine, Map<FunctionNode, HashSet<FunctionNode>> allFunctionObjects) {
-		engine.startAnalysis("linking functions:", allFunctionObjects.size());
+	private void linkFunctions(Engine engine, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects) {
+
 		while (!allFunctionObjects.isEmpty()) {
 			// first make a set of nodes to eliminate (leaf nodes).
-			Set<FunctionNode> leafs = new HashSet<FunctionNode>();
+			Set<FunctionNode> leafs = new TreeSet<FunctionNode>();
 			for (FunctionNode fn : allFunctionObjects.keySet()) {
 				if (allFunctionObjects.get(fn).isEmpty()) {
 					leafs.add(fn);
@@ -454,17 +449,17 @@ public class StructuralAnalysisEngine {
 			// for every function that call any of these leaf functions, link them
 			for (FunctionNode fn : allFunctionObjects.keySet()) {
 				for (FunctionNode leaf : leafs) {
-					Collection<FunctionNode> toRemove = new HashSet<FunctionNode>();
+					Collection<FunctionNode> toRemove = new TreeSet<FunctionNode>();
 					for (FunctionNode fnLink : allFunctionObjects.get(fn)) {
 						if (fnLink.getBranchTarget() != null) {
 							if (fnLink.getBranchTarget().getStartPc() == leaf
 									.getStartPc()) {
 								
 								//symbolic link
-								fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction());
+								//fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction());
 
 								//copying link
-								//fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction().deepCopy());
+								fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction().deepCopy());
 								
 								toRemove.add(fnLink);
 							}
@@ -475,12 +470,9 @@ public class StructuralAnalysisEngine {
 					allFunctionObjects.get(fn).removeAll(toRemove);
 				}
 			}
-
 			for (FunctionNode leaf : leafs) {
 				allFunctionObjects.remove(leaf);
-				engine.provideWorkDone(1);
 			}
-
 		}
 
 	}
