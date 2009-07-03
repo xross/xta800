@@ -56,7 +56,7 @@ public class LoopNode extends Node {
 	public LoopNode shallowCopy() {
 		return new LoopNode(this);
 	}
-	
+	/*
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {
 		LoopNode ln = new LoopNode();
 		for (Node loop : m_loops) {
@@ -64,6 +64,18 @@ public class LoopNode extends Node {
 			ln.m_loops.add(clone);
 		}
 		ln.m_loopHeader = m_loopHeader.deepCopy(startPcs, engine);
+		ln.m_loopHeader.getAttributes().setIsLoopHeader(true);
+		ln.m_attributes = new LoopNodeAttributes(ln);
+		return ln;
+	}
+	*/
+	public Node deepCopy() {
+		LoopNode ln = new LoopNode();
+		for (Node loop : m_loops) {
+			Node clone = loop.deepCopy();
+			ln.m_loops.add(clone);
+		}
+		ln.m_loopHeader = m_loopHeader.deepCopy();
 		ln.m_loopHeader.getAttributes().setIsLoopHeader(true);
 		ln.m_attributes = new LoopNodeAttributes(ln);
 		return ln;

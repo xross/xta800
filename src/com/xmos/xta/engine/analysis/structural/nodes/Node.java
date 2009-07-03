@@ -33,7 +33,8 @@ public abstract class Node implements Comparable<Node>{
 	public abstract NodeAttributes getAttributes();
 	
 	public abstract Node shallowCopy();
-	public abstract Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine);
+	//public abstract Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine);
+	public abstract Node deepCopy();
 			
 	public abstract List<Node> getChildren();
 	public abstract List<Node> getImmediateChildren();

@@ -33,7 +33,10 @@ public class BlockNode extends IBufferNode {
 		return new BlockNode(this);
 	}
 
-	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {		
+	//public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {		
+	//	return new BlockNode(m_insts);
+	//}
+	public Node deepCopy() {		
 		return new BlockNode(m_insts);
 	}
 	

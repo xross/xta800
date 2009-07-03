@@ -46,11 +46,22 @@ public class SectionNode extends Node {
 	public Node shallowCopy() {
 		return new SectionNode(this);
 	}
-	
+	/*
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {
 		SectionNode sn = new SectionNode();
 		for (Node section : m_options) {
 			Node clone = section.deepCopy(startPcs, engine);
+			sn.m_options.add(clone);
+		}
+		sn.m_isOptional = m_isOptional; 
+		sn.m_attributes = new SectionNodeAttributes(sn);
+		return sn;
+	}
+	*/
+	public Node deepCopy() {
+		SectionNode sn = new SectionNode();
+		for (Node section : m_options) {
+			Node clone = section.deepCopy();
 			sn.m_options.add(clone);
 		}
 		sn.m_isOptional = m_isOptional; 

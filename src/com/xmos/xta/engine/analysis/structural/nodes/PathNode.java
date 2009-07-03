@@ -40,11 +40,21 @@ public class PathNode extends Node {
 	public Node shallowCopy() {
 		return new PathNode(this);
 	}
-
+/*
 	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {
 		PathNode pn = new PathNode();
 		for (Node path : m_nodes) {
 			Node clone = path.deepCopy(startPcs, engine);
+			pn.m_nodes.add(clone);
+		}
+		pn.m_attributes = new NodeAttributes(pn);
+		return pn;
+	}
+	*/
+	public Node deepCopy() {
+		PathNode pn = new PathNode();
+		for (Node path : m_nodes) {
+			Node clone = path.deepCopy();
 			pn.m_nodes.add(clone);
 		}
 		pn.m_attributes = new NodeAttributes(pn);
