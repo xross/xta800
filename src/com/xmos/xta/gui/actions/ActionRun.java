@@ -14,20 +14,30 @@ import com.xmos.xta.gui.GuiEngine;
 
 public class ActionRun extends ActionDelegate implements IPropertyChangeListener,
                                                          IWorkbenchWindowActionDelegate {
+	private static int s_numInstances = 0;
 
 	private static final String DEFAULT_TOOL_TIP = "First set start/end points";
 
     private Reference m_startPoint;
     private Reference m_endPoint;
 	private IAction m_action;
+	private int m_instanceId;
 
 	public ActionRun() {
 		GuiEngine.addBroadcastListener(this);
+		m_instanceId = s_numInstances;
+		++s_numInstances;
 	}
 
 	public void init(IAction action) {
 		m_action = action;
-		m_action.setEnabled(false);
+		
+	    // Note: This is a really nasty hack to get around the fact that the eclipse
+	    // platform seems to create another instance of this at exit.
+	    // This needs further investigation.
+	    if (m_instanceId == 0) {
+	        m_action.setEnabled(false);
+	    }		
 	}
 	
 	public void init(IWorkbenchWindow window) {
