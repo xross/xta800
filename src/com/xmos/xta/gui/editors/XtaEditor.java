@@ -61,8 +61,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
                                                      ISelectionListener {
     public static final boolean DEBUG = false;
     
-    private Composite m_parent;
-
     public static final String ID                    = "com.xmos.xta.gui.editors.XtaEditor.Test";
     public static final String HighlightAnnotationID = "com.xmos.xta.gui.highlight";
     public static final String UnknownAnnotationID   = "com.xmos.xta.gui.unknown";
@@ -85,7 +83,10 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     public static final String ConstrainRequireID    = "com.xmos.xta.gui.action.ConstrainRequire";
     public static final String ConstrainExcludeID    = "com.xmos.xta.gui.action.ConstrainExclude";
     public static final String SelectPathsID         = "com.xmos.xta.gui.action.ShowPaths";
+
+    private static final String fnopString = "    ------- \tFNOP\n";
     
+    private Composite m_parent;
     private Action m_showStartPointAction;
     private Action m_showEndPointAction;
     private Action m_setInstructionTimeAction;
@@ -93,22 +94,14 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private Action m_restoreRouteMaskingAction;
     private String m_clickCodeRefString;
     private Reference m_clickCodeRef;
-
-    private static final String fnopString = "    ------- \tFNOP\n";
-    
     private ProjectionSupport m_projectionSupport;    
     private ProjectionAnnotationModel m_projectionAnnotationModel;
     private IAnnotationModelExtension m_annotationModel;
     private AnnotationPainter m_painter;
-
     private Annotation[] m_previousProjectionAnnotations;
     private Annotation[] m_previousHighlightAnnotations;
     private Annotation[] m_previousUnknownAnnotations;
-
-    private List<Annotation> m_currentHighlightAnnotations;
-	private HashMap<Annotation, Position> m_currentHighlightAnnotationPositions;
     private boolean m_hasHighlightedLines;
-    
     private Node m_selectedNode;    
     private final String m_type;
     private final String m_fileName;
@@ -159,11 +152,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         getSite().getPage().addSelectionListener(this);
         
         m_painter = new AnnotationPainter(viewer, getAnnotationAccess());        
-        m_painter.addAnnotationType(HighlightAnnotationID);
-        
-		updateExcluded();
-		setGrey();
-	    updateHighlighting();
+        m_painter.addAnnotationType(HighlightAnnotationID);        
     }
     
     public void dispose() {
@@ -176,35 +165,41 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("XtaEditor: propertyChange: %s\n", event.getProperty());	
-		
+
 		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
-			setGrey();
+			updateInputLinesGreyStatus();
+			updatePartitions();
 
 		} else if (event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
-			clearGrey();
-			
+			clearInputLinesGreyStatus();
+			updatePartitions();
+
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			m_selectedNode = null;
-			updateEditor();
-			
+			updateFnops();
+			updateExcluded();
+			updateUnknowns();
+			updateHighlighting();
+
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
-			updateInputLines(false);
+			m_selectedNode = null;
+			updateFnops();
+			updateExcluded();
+			updateUnknowns();
+			updateHighlighting();
+			updateInputLinesGreyStatus();
 			updatePartitions();
 	        updateStartPoint();
 	        updateEndPoint();
-			updateExcluded();
-	        updateAnnotations(m_currentHighlightAnnotations, m_currentHighlightAnnotationPositions);
-    	    
+
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT) ||
 				   event.getProperty().equals(Broadcaster.BROADCAST_SET_START_POINT)) {
 			updateStartPoint();
-	        updateAnnotations(m_currentHighlightAnnotations, m_currentHighlightAnnotationPositions);
-    	    
+
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT) ||
 				   event.getProperty().equals(Broadcaster.BROADCAST_SET_END_POINT)) {
 			updateEndPoint();
-	        updateAnnotations(m_currentHighlightAnnotations, m_currentHighlightAnnotationPositions);
-    	    
+
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SHOW_CODE_POINT)) {
 			Reference codePoint = GuiEngine.getCodePoint();
 			showCodePoint(codePoint);
@@ -218,30 +213,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 	        updateStartPoint();
 	        updateEndPoint();
-	        updateAnnotations(m_currentHighlightAnnotations, m_currentHighlightAnnotationPositions);
 		}
-	}
-
-	private void updateStartPoint() {
-		Reference startPoint = GuiEngine.getStartPoint();
-		m_startPointLine = findCodeRefLineNum(startPoint);
-	}
-
-	private void updateEndPoint() {
-		Reference endPoint = GuiEngine.getEndPoint();
-		m_endPointLine = findCodeRefLineNum(endPoint);
-	}
-
-	public void setGrey() {
-		updateInputLines(false);
-		updatePartitions();
-		updateEditor();
-	}
-
-	public void clearGrey() {
-		updateInputLines(true);
-		updatePartitions();
-		updateEditor();
 	}
 
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
@@ -254,19 +226,271 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
             if (object instanceof Node) {
             	if (m_selectedNode != (Node)object) {
             		m_selectedNode = (Node)object;
-            		updateEditor();
+            		updateFnops();
+            		updateExcluded();
+            		updateUnknowns();
+            		updateHighlighting();
             	}
             }
         }
     }
 
-	private void updateEditor() {
-		updateFnops();
-		updateExcluded();
-		updateHighlighting();
-		updateUnknowns();
-	}	            		         	        
+    public HashSet<Node> getUnknownsForLine(int lineNumber) {
+	    if (DEBUG) System.out.printf("XtaEditor: getUnknownsForLine\n"); 
+
+    	HashSet<Node> nodes = new HashSet<Node>();
     	
+    	HashSet<Integer> linePcs = getPcsForLine(lineNumber);
+		for (Node node : getSelectedRouteUnknowns()) {
+			if (linePcs.contains(node.getStartPc())) {
+				nodes.add(node);
+			}
+		}
+    	return nodes;
+    }
+	
+	public void updateFoldingStructure(ArrayList<Position> positions, IDocument document) {
+	    if (DEBUG) System.out.printf("XtaEditor: updateFoldingStructure\n"); 
+
+	    Annotation[] annotations = new Annotation[positions.size()];
+        HashMap<ProjectionAnnotation, Position> annotationPositions = 
+    	    new HashMap<ProjectionAnnotation, Position>();
+
+        for (int i = 0; i < positions.size();i++) {
+            ProjectionAnnotation annotation = new ProjectionAnnotation();
+            annotationPositions.put(annotation, positions.get(i));
+            annotations[i] = annotation;
+        }
+       
+        m_projectionAnnotationModel.modifyAnnotations(
+        		m_previousProjectionAnnotations, annotationPositions, null);
+        
+        m_projectionAnnotationModel.collapseAll(0, document.getLength());
+        m_previousProjectionAnnotations = annotations;       
+    }
+
+	public int getStartPointIndex() {
+	    if (DEBUG) System.out.printf("XtaEditor: getStartPointIndex\n"); 
+
+		if (m_startPointLine != null)
+        	return m_startPointLine.getIndex();
+		return -1;
+	}
+
+    public int getEndPointIndex() {
+	    if (DEBUG) System.out.printf("XtaEditor: getEndPointIndex\n"); 
+    	if (m_endPointLine != null) {
+        	return m_endPointLine.getIndex();
+        }
+		return -1;
+	}
+	
+	public boolean isValidEndPoint(int lineNumber) {
+	    if (DEBUG) System.out.printf("XtaEditor: isValidEndPoint\n"); 
+		if (m_endPointLineIndexes.containsKey(lineNumber)) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean hasHighlightedLines() {
+	    if (DEBUG) System.out.printf("XtaEditor: hasHighlightedLines\n"); 
+		return m_hasHighlightedLines;
+	}
+	
+	protected ISourceViewer createSourceViewer(Composite parent,
+    		IVerticalRuler ruler, int styles) {
+    	if (DEBUG) System.out.printf("XtaEditor: createSourceViewer\n"); 
+
+        ISourceViewer viewer = new ProjectionViewer(parent, ruler,
+		    getOverviewRuler(), isOverviewRulerVisible(), styles);
+
+        getSourceViewerDecorationSupport(viewer);
+        return viewer;
+    }
+    
+	protected IVerticalRulerColumn createLineNumberRulerColumn() {
+    	if (DEBUG) System.out.printf("XtaEditor: createLineNumberRulerColumn\n"); 
+
+		fLineNumberRulerColumn= new XtaLineNumberRulerColumn(getInput());
+		initializeLineNumberRulerColumn(fLineNumberRulerColumn);
+		return fLineNumberRulerColumn;
+	}
+		
+    protected void createActions() {
+		if (DEBUG) System.out.printf("XtaEditor: createActions\n"); 
+     	super.createActions();
+     	
+     	setAction(ExpandAllID, new Action("Expand All") {
+     		public void run() {
+     			IDocument document = getSourceViewer().getDocument();
+     			m_projectionAnnotationModel.expandAll(0, document.getLength());
+     		}
+     	});
+     	
+     	setAction(CollapseAllID, new Action("Collapse All") {
+     		public void run() {
+     			IDocument document = getSourceViewer().getDocument();
+     			m_projectionAnnotationModel.collapseAll(0, document.getLength());
+     		}
+     	});
+
+     	m_clearRouteMaskingAction =  new Action("Clear route masking") {
+     		public void run() {
+     			clearInputLinesGreyStatus();
+     			updatePartitions();
+     		}
+     	};
+     	setAction(ClearRouteMaskingID, m_clearRouteMaskingAction);
+
+     	m_restoreRouteMaskingAction = new Action("Restore route masking") {
+     		public void run() {
+     			updateInputLinesGreyStatus();
+     			updatePartitions();
+     		}
+     	};
+     	setAction(RestoreRouteMaskingID, m_restoreRouteMaskingAction);
+
+     	m_showStartPointAction = new Action("Show start point") {
+     		public void run() {
+				GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
+     		}
+     	};
+     	setAction(ShowStartPointID, m_showStartPointAction);
+     	
+     	m_showEndPointAction = new Action("Show end point") {
+     		public void run() {
+				GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
+     		}
+     	};
+     	setAction(ShowEndPointID, m_showEndPointAction);
+
+     	setAction(SetStartPointID, new Action("Set start point") {
+     		public void run() {
+     			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_START_POINT, m_clickCodeRefString);
+     		}
+     	});
+     	
+     	setAction(SetEndPointID, new Action("Set end point") {
+     		public void run() {
+     			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_END_POINT, m_clickCodeRefString);
+     		}
+     	});
+     	
+     	setAction(RemoveStartPointID, new Action("Remove start point") {
+     		public void run() {
+     			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_START_POINT, "");     			
+     		}
+     	});
+     	
+     	setAction(RemoveEndPointID, new Action("Remove end point") {
+     		public void run() {
+     			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_END_POINT, "");
+     		}
+     	});
+     	
+     	setAction(ConstrainExcludeID, new Action("Exclude this") {
+     		public void run() {
+     			addToExclusion("!" + m_clickCodeRef.getRef());
+     		}
+     	});
+
+     	setAction(SelectPathsID, new Action("Select nodes through here") {
+     		public void run() {
+     			Reference clickCodeRef = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.ANY_REF);
+     			GuiEngine.setCodePoint(clickCodeRef);
+     			GuiEngine.broadcast(Broadcaster.BROADCAST_SELECT_NODES, "");
+     		}
+     	});
+
+     	m_setInstructionTimeAction = new Action("Set instruction time") {
+     		public void run() {
+     			new InstructionTime(m_parent.getShell(), m_clickCodeRef);
+     		}
+     	};
+     	setAction(SetInstructionTimeID, m_setInstructionTimeAction);
+    }    
+
+    protected void addToExclusion(String refString) {  	
+		if (DEBUG) System.out.printf("XtaEditor: addToExclusion\n"); 
+
+    	GuiEngine.getEngine().addExclusion(refString);		
+		try {
+			PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+			getActivePage().showView(ControlView.ID);
+		} catch (PartInitException e) {}	
+	}
+
+	protected void editorContextMenuAboutToShow(IMenuManager menu) {
+		if (DEBUG) System.out.printf("XtaEditor: editorContextMenuAboutToShow\n"); 
+     	super.editorContextMenuAboutToShow(menu);
+
+     	menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));     	
+    	addAction(menu, ExpandAllID);
+    	addAction(menu, CollapseAllID);
+    	addAction(menu, ClearRouteMaskingID);
+    	addAction(menu, RestoreRouteMaskingID);
+    	m_clearRouteMaskingAction.setEnabled(m_routeMaskEnabled);
+    	m_restoreRouteMaskingAction.setEnabled(!m_routeMaskEnabled);
+		menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
+
+		Reference startPoint = GuiEngine.getStartPoint();
+		addAction(menu, ShowStartPointID);
+		m_showStartPointAction.setEnabled((startPoint != null));
+
+		Reference endPoint = GuiEngine.getEndPoint();
+		addAction(menu, ShowEndPointID);
+		m_showEndPointAction.setEnabled((endPoint != null));
+    }
+
+    protected void rulerContextMenuAboutToShow(IMenuManager menu) {
+		if (DEBUG) System.out.printf("XtaEditor: rulerContextMenuAboutToShow\n");
+		
+		int clickLineIndex = getVerticalRuler().getLineOfLastMouseButtonActivity();
+		
+		m_clickCodeRefString = getLineDescription(clickLineIndex);				
+		if (m_clickCodeRefString != null) {			
+			if (m_endPointLineIndexes.containsKey(clickLineIndex) ||
+				m_type.equals(XtaDocumentPartitioner.DISASSEMBLY)) {
+				if (isStartPointSet(m_clickCodeRefString)) {
+				    addAction(menu, RemoveStartPointID);
+				} else {
+				    addAction(menu, SetStartPointID);				
+				}
+				if (isEndPointSet(m_clickCodeRefString)) {						
+				    addAction(menu, RemoveEndPointID);
+				} else {
+				    addAction(menu, SetEndPointID);				
+				}
+				menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
+			}
+			addAction(menu, SetInstructionTimeID);
+			addAction(menu, ConstrainExcludeID);
+			addAction(menu, ConstrainRequireID);
+			addAction(menu, SelectPathsID);
+			
+			int selectedRouteId = GuiEngine.getEngine().getSelectedRouteId();
+			if ((GuiEngine.getEngine().getRoutes().size() > 0) &&
+			     GuiEngine.getEngine().canInstructionPause(selectedRouteId, m_clickCodeRefString)) {
+				
+				m_setInstructionTimeAction.setEnabled(true);
+			} else {
+				m_setInstructionTimeAction.setEnabled(false);
+			}
+		}
+     	super.editorContextMenuAboutToShow(menu);
+    }
+	
+	private void updateStartPoint() {
+		Reference startPoint = GuiEngine.getStartPoint();
+		m_startPointLine = findCodeRefLineNum(startPoint);
+	}
+
+	private void updateEndPoint() {
+		Reference endPoint = GuiEngine.getEndPoint();
+		m_endPointLine = findCodeRefLineNum(endPoint);
+	}
+	    	
     private void updatePartitions() {
     	IDocument document = getDocument();
     	if (document != null) {
@@ -276,16 +500,13 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	}
 	}
 
-	private void updateInputLines(boolean reset) {
-		m_selectedNode = null;
-	    updateEditor();
-
+	private void updateInputLinesGreyStatus() {
 		Input input = getInput();
     	if (input == null)
     		return;
     	
 		Route route = GuiEngine.getEngine().getSelectedRoute();
-		if (route != null && !reset){
+		if (route != null) {
 			m_routeMaskEnabled = true;
     		for (InputSection inputSection : input.getSections()){
     			inputSection.setGrey(true);
@@ -324,74 +545,43 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 				}
 			}
     	} else {
-    		m_routeMaskEnabled = false;
-    		for (InputSection inputSection : input.getSections()){
-    			inputSection.setGrey(false);
-				for (InputLine inputLine: inputSection.getLines()){
-					inputLine.setGrey(false);
-				}
-			}
+    		clearInputLinesGreyStatus();
     	}
 	}
 
-	public void updateFoldingStructure(ArrayList<Position> positions, IDocument document) {
-	    if (DEBUG) System.out.printf("XtaEditor: updateFoldingStructure\n"); 
-
-	    Annotation[] annotations = new Annotation[positions.size()];
-        HashMap<ProjectionAnnotation, Position> annotationPositions = 
-    	    new HashMap<ProjectionAnnotation, Position>();
-
-        for (int i = 0; i < positions.size();i++) {
-            ProjectionAnnotation annotation = new ProjectionAnnotation();
-            annotationPositions.put(annotation, positions.get(i));
-            annotations[i] = annotation;
-        }
-       
-        m_projectionAnnotationModel.modifyAnnotations(
-        		m_previousProjectionAnnotations, annotationPositions, null);
-        
-        m_projectionAnnotationModel.collapseAll(0, document.getLength());
-        m_previousProjectionAnnotations = annotations;       
-    }
-
-	protected ISourceViewer createSourceViewer(Composite parent,
-    		IVerticalRuler ruler, int styles) {
-    	if (DEBUG) System.out.printf("XtaEditor: createSourceViewer\n"); 
-
-        ISourceViewer viewer = new ProjectionViewer(parent, ruler,
-		    getOverviewRuler(), isOverviewRulerVisible(), styles);
-
-        getSourceViewerDecorationSupport(viewer);
-        return viewer;
-    }
-    
-	protected IVerticalRulerColumn createLineNumberRulerColumn() {
-		fLineNumberRulerColumn= new XtaLineNumberRulerColumn(getInput());
-		initializeLineNumberRulerColumn(fLineNumberRulerColumn);
-		return fLineNumberRulerColumn;
+	private void clearInputLinesGreyStatus() {
+		Input input = getInput();
+    	if (input == null)
+    		return;
+		
+		m_routeMaskEnabled = false;
+		for (InputSection inputSection : input.getSections()){
+			inputSection.setGrey(false);
+			for (InputLine inputLine: inputSection.getLines()){
+				inputLine.setGrey(false);
+			}
+		}		
 	}
 	
     private void updateFnops() {
 		if (DEBUG) System.out.printf("XtaEditor: updateFnops\n"); 
-
-    	if (m_selectedNode == null)
-    		return;
 		
     	HashSet<XtaInstruction> toAdd = new HashSet<XtaInstruction>();
     	HashSet<XtaInstruction> toRemove = new HashSet<XtaInstruction>();
     	HashSet<XtaInstruction> toKeep  = new HashSet<XtaInstruction>();
     	
-    	// Gets a list of all the fnops for the selected node...
    		final Collection<XtaInstruction> fnops = new Vector<XtaInstruction>();
-   		m_selectedNode.traverse(0, new DefaultNodeTraverser() {
-   		    public boolean foundInstructionNode(Node node, int depth) {
-   		    	XtaInstruction instruction = node.getInstructions().getFirst();
-   		    	if (instruction.isFnop()) {   		    		
-   	   		    	fnops.add(instruction);
-   		    	}
-   		    	return true;
-   		    }   			
-   		});
+    	if (m_selectedNode != null) {
+       		m_selectedNode.traverse(0, new DefaultNodeTraverser() {
+       		    public boolean foundInstructionNode(Node node, int depth) {
+       		    	XtaInstruction instruction = node.getInstructions().getFirst();
+       		    	if (instruction.isFnop()) {   		    		
+       	   		    	fnops.add(instruction);
+       		    	}
+       		    	return true;
+       		    }   			
+       		});    		
+    	}
    		
    		// Makes a list of all the fnops to add.
    		for (XtaInstruction inst: fnops){
@@ -410,7 +600,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	for (XtaInstruction inst : toRemove) {
     		removeFnop(inst.getPc());
 		}
-    	
+
     	// Adds the new fnops
     	for (XtaInstruction inst : toAdd) {
 			addFnop(inst.getPc());
@@ -444,13 +634,13 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 				}
 	    		fnopLine = inputSection.removeFnop(pc);
 			}
-    	}
-		
+    	}	
 	}
+    
     private void addFnop(int pc) {
     	boolean fnopsAdded = false;
 
-    	IDocument document = getDocument();
+    	IDocument document = getDocument();    	
     	for (InputSection inputSection : getSections()) {
     		if (fnopsAdded) {
     			inputSection.incrementIndex();
@@ -491,14 +681,10 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         }
         m_hasHighlightedLines = (annotations.size() > 0);
 
-        m_currentHighlightAnnotations = annotations;
-		m_currentHighlightAnnotationPositions = annotationPositions;
-		updateAnnotations(annotations, annotationPositions);
-		
+		updateAnnotations(annotations, annotationPositions);		
 		GuiEngine.broadcast(Broadcaster.BROADCAST_HIGHLIGHTS_UPDATED, "");	
     }
 
-    // Add all annotations after highlights
 	private void updateAnnotations(List<Annotation> annotations,
 			HashMap<Annotation, Position> annotationPositions) {
 
@@ -577,31 +763,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		return false;
 	}
 
-	public int getStartPointIndex() {
-        if (m_startPointLine != null)
-        	return m_startPointLine.getIndex();
-		return -1;
-	}
-
-    public int getEndPointIndex() {
-        if (m_endPointLine != null) {
-        	return m_endPointLine.getIndex();
-        }
-		return -1;
-	}
-
-    public HashSet<Node> getUnknownsForLine(int lineNumber) {
-    	HashSet<Node> nodes = new HashSet<Node>();
-    	
-    	HashSet<Integer> linePcs = getPcsForLine(lineNumber);
-		for (Node node : getSelectedRouteUnknowns()) {
-			if (linePcs.contains(node.getStartPc())) {
-				nodes.add(node);
-			}
-		}
-    	return nodes;
-    }
-
 	private Collection<Node> getSelectedRouteUnknowns() {
 		Engine engine = GuiEngine.getEngine();
 		Route route = engine.getSelectedRoute();
@@ -610,13 +771,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		} else {
 			return new HashSet<Node>();
 		}
-	}
-
-	public boolean isValidEndPoint(int lineNumber) {
-		if (m_endPointLineIndexes.containsKey(lineNumber)) {
-			return true;
-		}
-		return false;
 	}
 
 	private HashSet<Integer> getPcsForLine(int lineNumber) {
@@ -659,7 +813,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			public void run() {      
 				m_annotationModel.replaceAnnotations(m_previousUnknownAnnotations, annotationPositions);        
-			}});
+			}
+		});
 		m_previousUnknownAnnotations = createArray(annotations);
     }
 
@@ -711,166 +866,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private Annotation[] createArray(List<Annotation> annotationList) {
     	Annotation[] annotationArray = new Annotation[annotationList.size()];
     	return annotationList.toArray(annotationArray);    	
-    }
-
-    protected void createActions() {
-		if (DEBUG) System.out.printf("XtaEditor: createActions\n"); 
-     	super.createActions();
-     	
-     	setAction(ExpandAllID, new Action("Expand All") {
-     		public void run() {
-     			IDocument document = getSourceViewer().getDocument();
-     			m_projectionAnnotationModel.expandAll(0, document.getLength());
-     		}
-     	});
-     	
-     	setAction(CollapseAllID, new Action("Collapse All") {
-     		public void run() {
-     			IDocument document = getSourceViewer().getDocument();
-     			m_projectionAnnotationModel.collapseAll(0, document.getLength());
-     		}
-     	});
-
-     	m_clearRouteMaskingAction =  new Action("Clear route masking") {
-     		public void run() {
-     			clearGrey();
-     		}
-     	};
-     	setAction(ClearRouteMaskingID, m_clearRouteMaskingAction);
-
-     	m_restoreRouteMaskingAction = new Action("Restore route masking") {
-     		public void run() {
-     			setGrey();
-     		}
-     	};
-     	setAction(RestoreRouteMaskingID, m_restoreRouteMaskingAction);
-
-     	m_showStartPointAction = new Action("Show start point") {
-     		public void run() {
-				GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
-     		}
-     	};
-     	setAction(ShowStartPointID, m_showStartPointAction);
-     	
-     	m_showEndPointAction = new Action("Show end point") {
-     		public void run() {
-				GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
-     		}
-     	};
-     	setAction(ShowEndPointID, m_showEndPointAction);
-
-     	setAction(SetStartPointID, new Action("Set start point") {
-     		public void run() {
-     			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_START_POINT, m_clickCodeRefString);
-     		}
-     	});
-     	
-     	setAction(SetEndPointID, new Action("Set end point") {
-     		public void run() {
-     			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_END_POINT, m_clickCodeRefString);
-     		}
-     	});
-     	
-     	setAction(RemoveStartPointID, new Action("Remove start point") {
-     		public void run() {
-     			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_START_POINT, "");     			
-     		}
-     	});
-     	
-     	setAction(RemoveEndPointID, new Action("Remove end point") {
-     		public void run() {
-     			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_END_POINT, "");
-     		}
-     	});
-     	
-     	setAction(ConstrainExcludeID, new Action("Exclude this") {
-     		public void run() {
-     			addToExclusion("!" + m_clickCodeRef.getRef());
-     		}
-     	});
-
-     	setAction(SelectPathsID, new Action("Select nodes through here") {
-     		public void run() {
-     			Reference clickCodeRef = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.ANY_REF);
-     			GuiEngine.setCodePoint(clickCodeRef);
-     			GuiEngine.broadcast(Broadcaster.BROADCAST_SELECT_NODES, "");
-     		}
-     	});
-
-     	m_setInstructionTimeAction = new Action("Set instruction time") {
-     		public void run() {
-     			new InstructionTime(m_parent.getShell(), m_clickCodeRef);
-     		}
-     	};
-     	setAction(SetInstructionTimeID, m_setInstructionTimeAction);
-    }    
-
-    protected void addToExclusion(String refString) {  	
-		GuiEngine.getEngine().addExclusion(refString);		
-		try {
-			PlatformUI.getWorkbench().getActiveWorkbenchWindow().
-			getActivePage().showView(ControlView.ID);
-		} catch (PartInitException e) {}	
-	}
-
-	protected void editorContextMenuAboutToShow(IMenuManager menu) {
-		if (DEBUG) System.out.printf("XtaEditor: editorContextMenuAboutToShow\n"); 
-     	super.editorContextMenuAboutToShow(menu);
-
-     	menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));     	
-    	addAction(menu, ExpandAllID);
-    	addAction(menu, CollapseAllID);
-    	addAction(menu, ClearRouteMaskingID);
-    	addAction(menu, RestoreRouteMaskingID);
-    	m_clearRouteMaskingAction.setEnabled(m_routeMaskEnabled);
-    	m_restoreRouteMaskingAction.setEnabled(!m_routeMaskEnabled);
-		menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
-
-		Reference startPoint = GuiEngine.getStartPoint();
-		addAction(menu, ShowStartPointID);
-		m_showStartPointAction.setEnabled((startPoint != null));
-
-		Reference endPoint = GuiEngine.getEndPoint();
-		addAction(menu, ShowEndPointID);
-		m_showEndPointAction.setEnabled((endPoint != null));
-    }
-
-    protected void rulerContextMenuAboutToShow(IMenuManager menu) {
-		if (DEBUG) System.out.printf("XtaEditor: editorContextMenuAboutToShow\n");
-		
-		int clickLineIndex = getVerticalRuler().getLineOfLastMouseButtonActivity();
-		
-		m_clickCodeRefString = getLineDescription(clickLineIndex);				
-		if (m_clickCodeRefString != null) {			
-			if (m_endPointLineIndexes.containsKey(clickLineIndex) ||
-				m_type.equals(XtaDocumentPartitioner.DISASSEMBLY)) {
-				if (isStartPointSet(m_clickCodeRefString)) {
-				    addAction(menu, RemoveStartPointID);
-				} else {
-				    addAction(menu, SetStartPointID);				
-				}
-				if (isEndPointSet(m_clickCodeRefString)) {						
-				    addAction(menu, RemoveEndPointID);
-				} else {
-				    addAction(menu, SetEndPointID);				
-				}
-				menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
-			}
-			addAction(menu, SetInstructionTimeID);
-			addAction(menu, ConstrainExcludeID);
-			addAction(menu, ConstrainRequireID);
-			addAction(menu, SelectPathsID);
-			
-			int selectedRouteId = GuiEngine.getEngine().getSelectedRouteId();
-			if ((GuiEngine.getEngine().getRoutes().size() > 0) &&
-			     GuiEngine.getEngine().canInstructionPause(selectedRouteId, m_clickCodeRefString)) {
-				
-				m_setInstructionTimeAction.setEnabled(true);
-			} else {
-				m_setInstructionTimeAction.setEnabled(false);
-			}
-		}
-     	super.editorContextMenuAboutToShow(menu);
     }
 
 	private String getLineDescription(int clickLineIndex) {
@@ -1044,9 +1039,5 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			}
 		}
 	    return false;	
-	}
-
-	public boolean hasHighlightedLines() {
-		return m_hasHighlightedLines;
 	}
 }
