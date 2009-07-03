@@ -19,57 +19,73 @@ public class SectionNodeAttributes extends NodeAttributes {
 
 	// --------------------------------------------------------------------- //
 	// Statistics Methods
-	// --------------------------------------------------------------------- //		
+	// --------------------------------------------------------------------- //	
 	public double getTimeTaken(Case c, boolean ignoreIterations) {
-		double value = 0;
-		for (Node child : getNode().getChildren()) {
-			if (m_setOptions.get(child))
-			    value += child.getAttributes().getTimeTaken(c, ignoreIterations);
+		if (!m_cachedTimeTakenValid && !ignoreIterations) {
+			double value = 0;
+			for (Node child : getNode().getChildren()) {
+				if (m_setOptions.get(child))
+				    value += child.getAttributes().getTimeTaken(c, ignoreIterations);
+			}
+			Node option = getNode().getUnsetOption(c, ignoreIterations);
+			if (option != null) {
+				value += option.getAttributes().getTimeTaken(c, ignoreIterations); 
+			}			
+			m_cachedTimeTaken = value;
+			m_cachedTimeTakenValid = true;
 		}
-		Node option = getNode().getUnsetOption(c, ignoreIterations);
-		if (option != null) {
-			value += option.getAttributes().getTimeTaken(c, ignoreIterations); 
-		}
-		return value;
+		return m_cachedTimeTaken;			
 	}
 
 	public long getNumCycles(Case c, boolean ignoreIterations) {
-		long value = 0;
-		for (Node child : getNode().getChildren()) {
-			if (m_setOptions.get(child))
-			    value += child.getAttributes().getNumCycles(c, ignoreIterations);
-		}		
-		Node option = getNode().getUnsetOption(c, ignoreIterations);
-		if (option != null) {
-			value += option.getAttributes().getNumCycles(c, ignoreIterations); 
+    	if (!m_cachedNumCyclesValid && !ignoreIterations) {
+    		long value = 0;
+    		for (Node child : getNode().getChildren()) {
+    			if (m_setOptions.get(child))
+    			    value += child.getAttributes().getNumCycles(c, ignoreIterations);
+    		}		
+    		Node option = getNode().getUnsetOption(c, ignoreIterations);
+    		if (option != null) {
+    			value += option.getAttributes().getNumCycles(c, ignoreIterations); 
+    		}    		
+			m_cachedNumCycles = value;
+			m_cachedNumCyclesValid = true;
 		}
-		return value;
+		return m_cachedNumCycles;
 	}
 
 	public long getNumInstructions(Case c, boolean ignoreIterations) {
-		long value = 0;
-		for (Node child : getNode().getChildren()) {
-			if (m_setOptions.get(child))
-			    value += child.getAttributes().getNumInstructions(c, ignoreIterations);
-		}		
-		Node option = getNode().getUnsetOption(c, ignoreIterations);
-		if (option != null) {
-			value += option.getAttributes().getNumInstructions(c, ignoreIterations); 
+		if (!m_cachedNumInstructionsValid && !ignoreIterations) {
+			long value = 0;
+			for (Node child : getNode().getChildren()) {
+				if (m_setOptions.get(child))
+				    value += child.getAttributes().getNumInstructions(c, ignoreIterations);
+			}		
+			Node option = getNode().getUnsetOption(c, ignoreIterations);
+			if (option != null) {
+				value += option.getAttributes().getNumInstructions(c, ignoreIterations); 
+			}			
+			m_cachedNumInstructions = value;
+			m_cachedNumInstructionsValid = true;
 		}
-		return value;
+		return m_cachedNumInstructions;
 	}
 
 	public long getNumFNops(Case c, boolean ignoreIterations) {
-		long value = 0;
-		for (Node child : getNode().getChildren()) {
-			if (m_setOptions.get(child))
-			    value += child.getAttributes().getNumFNops(c, ignoreIterations);
-		}		
-		Node option = getNode().getUnsetOption(c, ignoreIterations);
-		if (option != null) {
-			value += option.getAttributes().getNumFNops(c, ignoreIterations); 
+		if (!m_cachedNumFnopsValid && !ignoreIterations) {
+			long value = 0;
+			for (Node child : getNode().getChildren()) {
+				if (m_setOptions.get(child))
+				    value += child.getAttributes().getNumFNops(c, ignoreIterations);
+			}		
+			Node option = getNode().getUnsetOption(c, ignoreIterations);
+			if (option != null) {
+				value += option.getAttributes().getNumFNops(c, ignoreIterations); 
+			}			
+			m_cachedNumFnops = value;
+			m_cachedNumFnopsValid = true;
 		}
-		return value;
+		return m_cachedNumFnops;
 	}
 
 	public long getNumPaths() {
