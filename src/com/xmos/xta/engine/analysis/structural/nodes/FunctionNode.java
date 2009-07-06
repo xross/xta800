@@ -192,9 +192,9 @@ public class FunctionNode extends IBufferNode {
 		return super.getBackTrace(m_functionName + ":" + backTrace); 
 	}
 
-	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
+	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
 		if(m_knownFunction){
-			m_function.getInstructionStream(c, instructions, iteration);
+			m_function.getInstructionStream(c, instructions);
 		}
 	}
 

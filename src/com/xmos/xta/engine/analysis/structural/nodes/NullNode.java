@@ -51,7 +51,7 @@ public class NullNode extends IBufferNode {
 		return new LinkedList<Node>();
 	}
 
-	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
+	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
 		
 	}
 

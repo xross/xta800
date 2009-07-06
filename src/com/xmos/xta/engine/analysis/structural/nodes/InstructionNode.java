@@ -141,7 +141,7 @@ public class InstructionNode extends Node {
 		return m_inst;
 	}
 	
-	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
+	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
 		assert(false);
 	}
 

@@ -106,10 +106,10 @@ public class SelfLoopNode extends Node{
 		}
 		return false;
 	}
-		
-	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
+
+	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
 		for(int i=0;i< getAttributes().getLoopIterations();i++){
-			m_loop.getInstructionStream(c, instructions, m_loop.getAttributes().getLoopIterations());
+			m_loop.getInstructionStream(c, instructions);
 		}
 	}
 

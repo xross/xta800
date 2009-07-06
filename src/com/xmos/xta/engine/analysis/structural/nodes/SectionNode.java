@@ -156,10 +156,10 @@ public class SectionNode extends Node {
 		return false;
 	}	
 
-	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
+	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
 		Node option = getOption(c, false);
 		if (option != null) {
-			option.getInstructionStream(c, instructions, iteration);			
+			option.getInstructionStream(c, instructions);			
 		}
 	}
 
