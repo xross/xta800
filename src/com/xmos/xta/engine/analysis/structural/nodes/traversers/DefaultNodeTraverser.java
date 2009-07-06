@@ -22,6 +22,10 @@ public class DefaultNodeTraverser implements NodeTraverser {
     public boolean foundLoopNode(Node node, int depth) {
     	return true;
     }
+
+    public boolean foundSelfLoopNode(Node node, int depth) {
+    	return true;
+    }
     
     public boolean foundSectionNode(Node node, int depth) {
     	return true;

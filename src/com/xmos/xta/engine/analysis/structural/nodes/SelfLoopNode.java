@@ -72,7 +72,7 @@ public class SelfLoopNode extends Node{
 	}
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundLoopNode(this, depth))
+		if (!nodeTraverser.foundSelfLoopNode(this, depth))
 			return;
 
 		m_loop.traverse(depth + 1, nodeTraverser);			
