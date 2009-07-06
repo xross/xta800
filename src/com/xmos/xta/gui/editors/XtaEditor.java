@@ -213,6 +213,10 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 	        updateStartPoint();
 	        updateEndPoint();
+	        
+			Input input = getInput();
+	    	if (input == null)
+	    		return;	        
 		}
 	}
 
@@ -1003,8 +1007,9 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
 	private Input getInput() {
 		IDocument document = getDocument();
-		if (document == null)
+		if (document == null) {
 			return null;
+		}
 		
 		XtaDocumentPartitioner xtaDocumentPartitioner =
 			(XtaDocumentPartitioner)document.getDocumentPartitioner();

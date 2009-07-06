@@ -46,7 +46,6 @@ public class RouteConstructor {
 		m_subRoutes = new ArrayList<Node>();
 		m_engine = engine;
 		createExclusions();
-		
 	}
 
 	public int getRouteId() {
@@ -86,6 +85,7 @@ public class RouteConstructor {
 			seenEndPoint = true;
 			setParents();
 			setUnknowns();				
+			setSelfLoops();				
 			break;
 
 		case PATH:
@@ -342,11 +342,29 @@ public class RouteConstructor {
 					nodeAttributes.setUnknownType(UnknownType.LOOP_ITERATIONS);
 					return true;
 				}
-		    });						
+				// Sets all the self loop iterations to unknown.
+				public boolean foundSelfLoopNode(Node node, int depth) {
+					NodeAttributes nodeAttributes = node.getAttributes();
+					nodeAttributes.setUnknownType(UnknownType.LOOP_ITERATIONS);
+					return true;
+				}
+		    });
 		    refreshDisplayedUnknowns(node);			
 		}
 	}
 
+	private void setSelfLoops() {
+		// Sets the iteration count of all self loops to 1
+		for (Node node : m_subRoutes) {
+			node.traverse(0, new DefaultNodeTraverser() {
+				public boolean foundSelfLoopNode(Node node, int depth) {
+					NodeAttributes nodeAttributes = node.getAttributes();
+					nodeAttributes.setLoopIterations(1);
+					return true;
+				}
+			});
+		}
+	}
 	
 	private void refreshDisplayedUnknowns(Node node) {	
 		// Clears the display unknown flags on all nodes..

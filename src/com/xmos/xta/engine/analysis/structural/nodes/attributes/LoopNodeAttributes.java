@@ -10,8 +10,9 @@ public class LoopNodeAttributes extends NodeAttributes {
 		m_numIterations = 0;
 	}
 	
-	public void setLoopIterations(long numIterations) {
+	public boolean setLoopIterations(long numIterations) {
 		m_numIterations = numIterations;
+		return true;
 	}
 	
 	public long getLoopIterations() {

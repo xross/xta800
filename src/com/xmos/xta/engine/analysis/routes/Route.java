@@ -121,11 +121,13 @@ public class Route {
 		if (canSetLoopIterations(node)) {
     		Node enclosingLoopNode = node.getEnclosingLoopNode();
     		clearPathIterations(enclosingLoopNode);
-			enclosingLoopNode.getAttributes().setLoopIterations(iterations);
-			enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
-			refreshDisplayedUnknowns();
-			invalidateCachedStats();
-			return true;
+    		
+			if (enclosingLoopNode.getAttributes().setLoopIterations(iterations)) {
+				enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
+				refreshDisplayedUnknowns();
+				invalidateCachedStats();				
+				return true;
+			}
 		}
 		return false;
 	}

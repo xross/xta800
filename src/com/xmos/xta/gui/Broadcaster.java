@@ -1,6 +1,7 @@
 package com.xmos.xta.gui;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -20,33 +21,40 @@ public class Broadcaster {
     public Broadcaster() {
     	m_listeners = new ArrayList<IPropertyChangeListener>();    	
     }
-		
+	    
 	public void addListener(final IPropertyChangeListener listener) {
-		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-			public void run() {        	
-				if (!m_listeners.contains(listener))
-					m_listeners.add(listener);
-			}});
+		if (!m_listeners.contains(listener))
+			m_listeners.add(listener);
 	}
 
 	public void removeListener(final IPropertyChangeListener listener) {
-		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-			public void run() {      
-				if (m_listeners.contains(listener))
-					m_listeners.remove(listener);
-			}
-		});
+		if (m_listeners.contains(listener))
+			m_listeners.remove(listener);
 	}	
-	
+
 	public void broadcast(final String message, final String argument) {		
 		GuiEngine.updateGuiState(message, argument);
-		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+		
+		final List<IPropertyChangeListener> listeners = getListeners();
+		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			public void run() {
-				PropertyChangeEvent event = new PropertyChangeEvent(this, message, null, null);
-				for (IPropertyChangeListener listener : m_listeners) {
+				PropertyChangeEvent event = new PropertyChangeEvent(this, message, null, null);				
+				for (IPropertyChangeListener listener : listeners) {
 					listener.propertyChange(event);
 				}
 			}
 		});
-	}		
+	}
+	
+	private List<IPropertyChangeListener> getListeners() {
+		// Note: This creates a copy of the listeners list so as to avoid the situation 
+		// where the call to propertyChange for one listener needs to remove another
+		// listener from the list. Without making the copy, we would get concurrent
+		// modification errors..
+		List<IPropertyChangeListener> listeners = new ArrayList<IPropertyChangeListener>();
+		for (IPropertyChangeListener listener : m_listeners) {
+			listeners.add(listener);
+		}
+		return listeners;
+	}
 }

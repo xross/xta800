@@ -9,8 +9,12 @@ public class SelfLoopNodeAttributes extends NodeAttributes {
 		super(node);
 	}
 
-	public void setLoopIterations(long numIterations) {
-		m_numIterations = numIterations;
+	public boolean setLoopIterations(long numIterations) {
+		if (numIterations > 0) {
+			m_numIterations = numIterations;
+			return true;
+		}
+		return false;
 	}
 	
 	public long getLoopIterations() {
