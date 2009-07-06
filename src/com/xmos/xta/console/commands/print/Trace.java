@@ -58,7 +58,7 @@ public class Trace extends Command {
 	    
 		if (!areArgsDone(args, index + 2)) {
 	    	try {
-	    		return new Trace(routeId, Integer.parseInt(args[index + 2]), true);
+	    		return new Trace(routeId, getNodeId(args[index + 2]), true);
 		    } catch (NumberFormatException e) { 
 		    	return null; 
 		    }
@@ -78,9 +78,9 @@ public class Trace extends Command {
 
 		TraceDisplayer displayer = new TraceDisplayer(console);		
 		if (m_nodeIdSet) {
-			displayer.display(engine.getRoute(m_routeId).getNode(m_nodeId));						
+			displayer.display(engine.getRoute(m_routeId).getNode(m_nodeId), engine.getCase());						
 		} else {
-			displayer.display(engine.getRoute(m_routeId).getNode());			
+			displayer.display(engine.getRoute(m_routeId).getNode(), engine.getCase());			
 		}
     }    
 }

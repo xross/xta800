@@ -26,6 +26,7 @@ import com.xmos.xta.engine.analysis.controlflow.ThreadHandler;
 import com.xmos.xta.engine.analysis.controlflow.UnreachableCodeFinder;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.routes.Route;
@@ -47,6 +48,7 @@ public class Engine implements Notifier {
 	public static final int ROUTE_ID_LAST = -1;
 	public static final int ROUTE_ID_INVALID = -2;
 	public static final int ROUTE_ID_GLOBAL = -3;
+	public static final int NODE_ID_TOP_LEVEL = -4;
 	
 	private XeLoader m_xeLoader;
 	private FileFinder m_fileFinder;
@@ -387,6 +389,15 @@ public class Engine implements Notifier {
 		return m_config.m_numThreads;
 	}
 
+	public void setCase(Case c) {
+		m_config.m_case = c;
+		notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_CASE);
+	}
+
+	public Case getCase() {
+		return m_config.m_case;
+	}
+	
 	public void setVerbosity(int verbosity) {
 		m_config.m_verbosity = verbosity;
 	}

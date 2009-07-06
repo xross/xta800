@@ -1,6 +1,5 @@
 package com.xmos.xta.console.commands.print;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -8,10 +7,8 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
-import com.xmos.xta.engine.analysis.structural.StructureGraph;
 
 public class Functions extends Command {
 	private int m_routeId;
@@ -60,17 +57,13 @@ public class Functions extends Command {
 
     private Set<String> getFunctions(Engine engine) {
     	final Set<String> functions = new TreeSet<String>();   
-    	StructureGraph structureGraph = engine.getStructureGraph();
-    	//StructureGraph structureGraph = engine.getRoute(m_routeId).getStructureGraph();
-		Collection<FunctionNode> nodes = structureGraph.getThreads();	
-		for (Node node : nodes) {
-		    node.traverse(0, new DefaultNodeTraverser() {
-				public boolean foundInstructionNode(Node node, int depth) {
-					functions.add(node.getInstructions().getFirst().getFunctionName());
-					return true;
-				}
-		    });
-		}				    	
+		Node node = engine.getRoute(m_routeId).getNode();
+	    node.traverse(0, new DefaultNodeTraverser() {
+			public boolean foundInstructionNode(Node node, int depth) {
+				functions.add(node.getInstructions().getFirst().getFunctionName());
+				return true;
+			}
+	    });
     	return functions;
     }
 }

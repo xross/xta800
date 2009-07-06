@@ -92,17 +92,22 @@ public class Route {
 	}	
 	
     public Node getNode(final int nodeId) {
-    	m_searchNode = null;			
-    	m_node.traverse(0, new UntypedNodeTraverser() {
-			public boolean foundNode(Node node, int depth) {
-				if (node.getId() == nodeId) {
-					m_searchNode = node;
-					return false;
-				}
-				return true;
-			}
-		});
-        return m_searchNode;   	
+    	if (nodeId == Engine.NODE_ID_TOP_LEVEL) {
+    		return m_node;
+    		
+    	} else {
+        	m_searchNode = null;			
+        	m_node.traverse(0, new UntypedNodeTraverser() {
+    			public boolean foundNode(Node node, int depth) {
+    				if (node.getId() == nodeId) {
+    					m_searchNode = node;
+    					return false;
+    				}
+    				return true;
+    			}
+    		});
+            return m_searchNode;   	    		
+    	}    	
     }	
 		
 	public boolean setLoopIterations(Reference reference, long iterations) {

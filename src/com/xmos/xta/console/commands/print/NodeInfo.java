@@ -16,7 +16,7 @@ public class NodeInfo extends Command {
 	}
 	
 	public NodeInfo(int routeId, int nodeId) {
-		m_routeId = 0;
+		m_routeId = routeId;
 		m_nodeId = nodeId;
 	}
 	
@@ -29,7 +29,7 @@ public class NodeInfo extends Command {
     }        
 
     public String commandLine() {
-   	    return "node_info " + m_routeId + " " + m_nodeId;
+   	    return "node_info " + getRouteId(m_routeId) + " " + getNodeId(m_nodeId);
     }        
     
     public String description(Engine engine, boolean detailed) {
@@ -40,8 +40,8 @@ public class NodeInfo extends Command {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 
-        try { 
-            return new NodeInfo(getRouteId(args[index + 1]), Integer.parseInt(args[index + 2])); 
+        try {
+            return new NodeInfo(getRouteId(args[index + 1]), getNodeId(args[index + 2])); 
         } catch (NumberFormatException e) {        	
           	return null;
         }    		            				
