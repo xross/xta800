@@ -11,6 +11,8 @@ import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTrave
 public class StructureDisplayer {
 	private final static boolean DEBUG_NEXT = false;
 	private final static boolean DEBUG_BEFORE = false;
+	private final static boolean DEBUG_CHILDREN = false;
+	
 	private final static boolean DEBUG_ATTRIBUTES = false;
 
 	private Console m_console;
@@ -47,6 +49,7 @@ public class StructureDisplayer {
 		displayAttributes(node);
 		if (DEBUG_NEXT) displayWhatsNext(node);
 		if (DEBUG_BEFORE) displayWhatsBefore(node);
+		if (DEBUG_CHILDREN) displayChildren(node);
 		m_console.display("\n");		
 	}
 	
@@ -127,6 +130,14 @@ public class StructureDisplayer {
 		if (node.getParent()!= null && node.getParent().whatsBefore(node) != null){
 			m_console.display(" ---before: ");
 			m_console.display(node.getParent().whatsBefore(node).toString());
+			m_console.display("---");
+		}		
+	}
+	
+	private void displayChildren(Node node) {
+		if (node.getChildren() != null){
+			m_console.display(" ---children: ");
+			m_console.display(node.getChildren().toString());
 			m_console.display("---");
 		}		
 	}
