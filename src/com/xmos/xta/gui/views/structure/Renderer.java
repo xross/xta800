@@ -12,7 +12,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.views.viewnode.ViewNode;
 
 public class Renderer implements Runnable {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     private static final int MAX_IMAGE_SIZE = 1024 * 1024 * 50;
 
@@ -47,12 +47,12 @@ public class Renderer implements Runnable {
 					selectionChanged();
 				}
 				
-			    if (m_control.renderRequired()) {
-			    	updateCanvasProperties();
-			    }
-		    	
 			    if (m_imageTooLarge) {
-			    	if (m_control.renderRequired() || m_control.imageMoved()) {
+				    if (m_control.renderRequired() || m_control.canvasResized()) {
+				    	updateCanvasProperties();
+				    }
+
+				    if (m_control.renderRequired() || m_control.imageMoved() || m_control.canvasResized()) {
 			    		m_display.syncExec(new Runnable() {
 			    			public void run() {
 			    				render(m_control.getOffsetX(), m_control.getOffsetY());
@@ -63,6 +63,10 @@ public class Renderer implements Runnable {
 					m_control.updateCanvasImages(m_image, 0);
 					
 			    } else {
+				    if (m_control.renderRequired()) {
+				    	updateCanvasProperties();
+				    }
+
 			    	if (m_control.renderRequired()) {
 						m_display.syncExec(new Runnable() {
 							public void run() {
@@ -142,8 +146,10 @@ public class Renderer implements Runnable {
 		int imageX = (int)((double)m_control.getPixelsX() * scale);
 		int imageY = (int)((double)m_control.getPixelsY() * scale);
 		
-		int canvasX = m_control.getCanvasWidth();
-    	int canvasY = m_control.getCanvasHeight();
+		Image canvasImage = m_control.getResizedCanvas();
+		Rectangle bounds = canvasImage.getBounds();
+		int canvasX = bounds.width;
+    	int canvasY = bounds.height;
 
 		if (canvasX > imageX)
 			imageX = canvasX;

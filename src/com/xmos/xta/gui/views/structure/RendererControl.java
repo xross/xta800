@@ -14,7 +14,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.views.viewnode.ViewNode;
 
 public class RendererControl {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     private int m_borderX = 2;
     private int m_borderY = 2;
@@ -28,15 +28,13 @@ public class RendererControl {
     private boolean m_imageComplete;
     private boolean m_renderRequired;
     private boolean m_imageMoved;
+    private boolean m_canvasResized;
     private boolean m_done;
 	
     private double m_scale;
 	
     private int m_offsetX;
     private int m_offsetY;
-    
-    private int m_canvasWidth;
-    private int m_canvasHeight;
     
     private Queue<List<Node>> m_previousSelections;
     private List<Node> m_currentSelection;
@@ -52,11 +50,10 @@ public class RendererControl {
 	    m_selectionChanged = false;
 	    m_imageComplete = false;
 	    m_imageMoved = false;
+	    m_canvasResized = false;
 	    
 	    m_previousSelections = new LinkedList<List<Node>>();
 	    m_currentSelection = new ArrayList<Node>();
-	    m_canvasWidth = 0;
-	    m_canvasHeight = 0;
 
 	    resetState();
 	}
@@ -83,9 +80,9 @@ public class RendererControl {
 	    if (m_viewNode != null) {
 			m_viewNode.annotateNodes(m_borderX, m_borderY, true, true);
 			updatePixelsXy();
-	    	m_renderRequired = true;
-			signalChange();
 		}
+    	m_renderRequired = true;
+		signalChange();
 	}
 
 	public synchronized void signalDone() {
@@ -159,15 +156,21 @@ public class RendererControl {
 		m_imageMoved = false;
 	}
 	
+	public synchronized Image getResizedCanvas() {
+		if (DEBUG) System.out.println("RendererControl::clearCanvasResized()");
+		m_canvasResized = false;
+		return m_canvasImage;
+	}
+	
 	public synchronized void setCanvasSize(int width, int height) {
-		if (m_canvasWidth != width || m_canvasHeight != height) {
+		Rectangle bounds = m_canvasImage.getBounds();
+		if (bounds.width != width || bounds.height != height) {
 			if (DEBUG) System.out.println("RendererControl::setCanvasSize(" + width + ", " + height + ")");
-			m_canvasWidth = width;
-			m_canvasHeight = height;
 
 			m_canvasImage.dispose();
-			m_canvasImage = createImage(m_display, m_canvasWidth, m_canvasHeight);
+			m_canvasImage = createImage(m_display, width, height);
 
+			m_canvasResized = true;
 			signalChange();
 		}
 	}
@@ -220,6 +223,10 @@ public class RendererControl {
 		return m_imageMoved;
 	}
 
+	public boolean canvasResized() {
+		return m_canvasResized;
+	}
+
 	public synchronized void updateCanvasProperties(ZoomedCanvasProperties canvasProperties) {
 		if (m_viewNode != null) {
 	    	canvasProperties.setScale(m_scale);
@@ -228,14 +235,6 @@ public class RendererControl {
         	canvasProperties.setVisibleArea(new Rectangle(0, 0, 0, 0));
 		}
     }
-
-	public int getCanvasWidth() {
-		return m_canvasWidth;
-	}
-
-	public int getCanvasHeight() {
-		return m_canvasHeight;
-	}
 
 	public int getPixelsX() {
 		return m_pixelsX;
@@ -319,5 +318,13 @@ public class RendererControl {
 		if (x < 1) x = 1;
 		if (y < 1) y = 1;
 		return new Image(display, x, y);
+	}
+
+	public int getCanvasWidth() {
+		return m_canvasImage.getBounds().width;
+	}
+
+	public int getCanvasHeight() {
+		return m_canvasImage.getBounds().height;
 	}
 }
