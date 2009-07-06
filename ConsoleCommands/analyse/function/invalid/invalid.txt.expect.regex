@@ -10,18 +10,16 @@ Error: Cannot find function: test3 in file: .*test.xe, node: 0, core: 1
 Error: Cannot find function: test1 in file: .*test.xe, node: 0, core: 0
 Error: Cannot find function: test2 in file: .*test.xe, node: 0, core: 0
 Error: Cannot find function: test3 in file: .*test.xe, node: 0, core: 0
-Current node: 0
-Current core: 0
-Frequency: 400
-NumThreads: 8
-SrcPaths: .
-Verbosity: 0
-Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
-Node: 0, Core: 1 \(No debug information found\)
-Node: 0, Core: 2 \(No debug information found\)
-Node: 0, Core: 3 \(No debug information found\)
-Loaded Route\(\d+\): function: test\d+ 
-Loaded Route\(\d+\): function: test\d+ 
-Loaded Route\(\d+\): function: test\d+ 
-Loaded Route\(\d+\): function: test\d+ 
+Route\(0\) function: test3
+    No Timing Specified
+
+Route\(1\) function: test2
+    No Timing Specified
+
+Route\(2\) function: test1
+    No Timing Specified
+
+Route\(3\) function: test0
+    No Timing Specified
+
+Fail, Timing Unspecified

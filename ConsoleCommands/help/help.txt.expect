@@ -36,6 +36,7 @@ Invalid argument(s) to 'help' command (Try 'help help'..)
       option: threads <num threads>: Sets number of threads currently executing (default: 8)
       option: srcpaths <paths>: Sets the (semicolon separated) source search path
       option: verbosity <level>: Sets the tool verbosity level (range: -10 -> +10, default: 0)
+      option: case <BEST/WORST>: Sets the case (default: WORST)
   [-]echo "text": prints the text to the console
   [-]exit: Quits the shell (Standalone mode only)
   [-]help [command/option]: Displays help message for the given command/option

@@ -31,6 +31,6 @@ system("@ARGV load $genDir/test.xe " .
        "analyse function test1 " .
        "analyse function test2 " .
        "analyse function test3 " .
-       "status " .
+       "print summary " .
        "exit > $genDir/invalid.txt 2>&1");
 

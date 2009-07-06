@@ -36,7 +36,7 @@
 34: print summary
 35: print functions -
 36: print sources -
-37: print node_info 0 0
+37: print node_info - 0
 38: print route_info 0
 39: remove branch branch1
 40: remove label label1
