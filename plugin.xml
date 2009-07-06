@@ -80,13 +80,6 @@
             name="Control"
             restorable="true">
       </view>
-      <view
-            class="com.xmos.xta.gui.views.status.StatusView"
-            icon="icons/status.png"
-            id="com.xmos.xta.gui.views.status.Status"
-            name="Status"
-            restorable="true">
-      </view>
    </extension>
   
    <extension
