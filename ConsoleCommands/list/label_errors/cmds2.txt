@@ -4,7 +4,7 @@ list labels
 add label 0x1000 one
 add label 0x10002 one
 add label 0x10004 one
-set time one 100 ns
+set time - one 100 ns
 list knowns -
-unset time one
+unset time - one
 add label 0x10000 0x10000

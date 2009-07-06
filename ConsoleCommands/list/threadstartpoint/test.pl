@@ -8,7 +8,7 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -march=$arch -fxta-info test.xc -o $genDir/test.xe > $genDir/threadstartpoint.log 2>&1");
+system("xcc -target=$target -fxta-info -march=$arch test.xc -o $genDir/test.xe > $genDir/threadstartpoint.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "source cmds.txt " .

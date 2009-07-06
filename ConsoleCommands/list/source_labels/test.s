@@ -1,4 +1,5 @@
 .globl _start
+.xtathreadstart
 _start:
   bl main
 
