@@ -77,13 +77,9 @@ public class FnopAnalyser {
 					XtaInstruction prevInst = parent.getInstructions().getLast();
 					endInstBuffer.branchTo(block.getStartPc(), prevInst.isLoadStore());
 				}
-				
-				
 			}
 		}
-		
-		
-		
+
 		int numStartBytes = endInstBuffer.getNumBytes();
 
 		for (XtaInstruction inst : block.getInstructions()) {

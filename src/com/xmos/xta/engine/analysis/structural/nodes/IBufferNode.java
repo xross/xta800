@@ -41,6 +41,14 @@ public abstract class IBufferNode extends Node {
 			for(IBufferSequence currentState : m_ibufferSequences){
 				if(currentState.m_fnopPcs.size() > worstCount){
 					m_worstIbufferSequence = currentState;
+				} else {
+					/*
+					if(currentState.m_fnopPcs.size() == worstCount){
+						if(currentState.getInstructionBuffer().getNumBytes() < m_worstIbufferSequence.getInstructionBuffer().getNumBytes()){
+							m_worstIbufferSequence = currentState;
+						}
+					}
+					*/
 				}
 			}
 		}
@@ -60,16 +68,6 @@ public abstract class IBufferNode extends Node {
 		}
 		return count;
 
-	}
-	
-	public long getFNOPDifference(){
-		long worstFnopCount = 0;
-		long bestFnopCount = Integer.MAX_VALUE;
-		for(IBufferSequence ibs : m_ibufferSequences){
-			worstFnopCount = Math.max(ibs.getfnops().size(), worstFnopCount);
-			bestFnopCount = Math.min(ibs.getfnops().size(), bestFnopCount);
-		}
-		return Math.abs(worstFnopCount - bestFnopCount);
 	}
 	
 	public Collection<IBufferNode> getNextIbufferNodes(){
