@@ -2,9 +2,9 @@
 
 .align 2
 .globl _start
+.xtathreadstart
 _start:
   bl main
-
 
 .type main, @function
 .globl main
@@ -15,7 +15,11 @@ main:
   ldc r0, 0x0
   ldc r0, 0x0
   ldc r0, 0x0
-  bf r0, end
   bau r1
-end:
+
+COMPLETE:
+  ldc r0, 0x0
+  ldc r0, 0x0
+  ldc r0, 0x0
+  ldc r0, 0x0
   retsp 1

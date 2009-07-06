@@ -13,6 +13,6 @@ system("xcc -target=$target -march=$arch -g test.s -o $genDir/test.xe > $genDir/
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "print summary " .
-       "-print asm 0 0 " .
-       "exit > $genDir/asm.txt 2>&1");
+       "-print asm 0 " .
+       "-exit > $genDir/asm.txt 2>&1");
 

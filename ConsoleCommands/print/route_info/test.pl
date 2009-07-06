@@ -8,11 +8,10 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -march=$arch -nostartfiles -g test.s -o $genDir/test.xe > $genDir/pathid_unresolved.log 2>&1");
+system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir/route_info.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "print summary " .
-       "-print trace - 0 " .
-       "exit > $genDir/pathid_unresolved.txt 2>&1");
+       "-print route_info - " .
+       "-exit > $genDir/route_info.txt 2>&1");
 

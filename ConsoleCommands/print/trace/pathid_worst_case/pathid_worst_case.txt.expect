@@ -1,4 +1,0 @@
-  0.0: (20.0ns) 0x10004 main + 0               ldc (ru6)    r0, i 0x0
-  20.0: (20.0ns) 0x10006 main + 2               brft (ru6)   r0, i 0x2
-  40.0: (20.0ns) 0x10008 main + 4               ldc (ru6)    r0, i 0x1
-  60.0: (20.0ns) 0x1000a main + 6               retsp (u6)   i 0x0

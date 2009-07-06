@@ -1,7 +1,0 @@
-Route\(0\) function: main
-    No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
-
-Fail, Timing Unspecified
-  0.0: \(20.0ns\) 0x10004 main \+ 0               ldc \(ru6\)    r0, i 0x0
-  20.0: \(20.0ns\) 0x10006 main \+ 2               retsp \(u6\)   i 0x0

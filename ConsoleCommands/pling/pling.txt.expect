@@ -3,6 +3,7 @@ Current core: 0
 Frequency: 400
 NumThreads: 8
 SrcPaths: .
+Verbosity: 0
 No executable loaded
 No routes analysed
 Current node: 0
@@ -10,6 +11,7 @@ Current core: 0
 Frequency: 400
 NumThreads: 8
 SrcPaths: .
+Verbosity: 0
 No executable loaded
 No routes analysed
 1: status

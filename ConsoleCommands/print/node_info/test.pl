@@ -8,11 +8,10 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -nostartfiles -march=$arch -g test.s -o $genDir/test.xe > $genDir/blockid.log 2>&1");
+system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir/node_info.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "print summary " .
-       "-print trace - b2 " .
-       "exit > $genDir/blockid.txt 2>&1");
+       "-print node_info - - " .
+       "-exit > $genDir/node_info.txt 2>&1");
 
