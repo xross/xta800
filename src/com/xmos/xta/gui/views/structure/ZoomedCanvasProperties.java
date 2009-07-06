@@ -15,12 +15,8 @@ public class ZoomedCanvasProperties {
 
     private int m_lineWidth;
     
-    private double m_totalBest;
-    private double m_totalWorst;
-    
     private int m_averageCharWidth;
 
-    private int m_timesHeight;
     private Rectangle m_visibleArea;
     private List<Node> m_selectedNodes;
 
@@ -29,12 +25,9 @@ public class ZoomedCanvasProperties {
 		m_lineWidth = 1;
 
 		m_scale = 1.0;
-		m_totalBest = 0.0;
-		m_totalWorst = 0.0;
 
 		m_selectedNodes = new ArrayList<Node>();
 		m_visibleArea = new Rectangle(0, 0, 0, 0);
-		m_timesHeight = 0;
 	}
 
 	public double getScale() {
@@ -43,22 +36,6 @@ public class ZoomedCanvasProperties {
 
 	public void setScale(double scale) {
 		m_scale = scale;
-	}
-
-	public double getTotalBest() {
-		return m_totalBest;
-	}
-
-	public void setTotalBest(double totalBest) {
-		m_totalBest = totalBest;
-	}
-
-	public double getTotalWorst() {
-		return m_totalWorst;
-	}
-
-	public void setTotalWorst(double totalWorst) {
-		m_totalWorst = totalWorst;
 	}
 
 	public void setSelected(List<Node> nodes) {
@@ -91,14 +68,6 @@ public class ZoomedCanvasProperties {
 
 	public int getAverageCharWidth() {
 		return m_averageCharWidth;
-	}
-
-	public int getTimesHeight() {
-		return m_timesHeight;
-	}
-
-	public void setTimesHeight(int timesHeight) {
-		m_timesHeight = timesHeight;
 	}
 }
 

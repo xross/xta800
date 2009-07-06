@@ -33,22 +33,23 @@ public class StructureBlockNode extends ViewNode {
 		return 0;
 	}
 
-	public void draw(Display display, GC structureGc, GC timesGc) {
-		structureGc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
-		structureGc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
-    	structureGc.fillRectangle(m_x, m_y, m_width, m_height);
-       
-    	structureGc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
-    	structureGc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-        if (isSelected()) {
-        	structureGc.setLineWidth(getLineWidth() + 1);
-        	structureGc.drawRectangle(m_x + 1, m_y + 1, m_width - 1, m_height - 1);
-        	structureGc.setLineWidth(getLineWidth() + 1);
-        } else {
-        	structureGc.drawRectangle(m_x, m_y, m_width, m_height);
-        }
+	public void draw(Display display, GC gc) {
+		if (!isVisible())
+			return;
 
-        drawTimes(display, timesGc);
+		gc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
+		gc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
+    	gc.fillRectangle(m_renderX, m_renderY, m_width, m_height);
+       
+    	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+        if (isSelected()) {
+        	gc.setLineWidth(getLineWidth() + 1);
+        	gc.drawRectangle(m_renderX + 1, m_renderY + 1, m_width - 1, m_height - 1);
+        	gc.setLineWidth(getLineWidth() + 1);
+        } else {
+        	gc.drawRectangle(m_renderX, m_renderY, m_width, m_height);
+        }
 	}
 
 	public void annotateNodes(int xOffset, int yOffset, boolean isBestCase, boolean isWorstCase) {

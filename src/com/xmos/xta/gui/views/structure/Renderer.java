@@ -14,26 +14,26 @@ import com.xmos.xta.gui.views.viewnode.ViewNode;
 public class Renderer implements Runnable {
     public static final boolean DEBUG = false;
 
+    private static final int MAX_IMAGE_SIZE = 1024 * 1024 * 50;
+
     private Display m_display;
     private RendererControl m_control;
     private ZoomedCanvasProperties m_canvasProperties;
 
-    private Image m_structureImage;
-    private Image m_timesImage;
-
+    private Image m_image;
+    private boolean m_imageTooLarge;
+    
 	public Renderer(Display display, RendererControl control, ZoomedCanvasProperties canvasProperties) {
 		if (DEBUG) System.out.printf("Renderer()\n");
 		m_display = display;
 		m_control = control;
-
 		m_canvasProperties = canvasProperties;
 		
 	    // Dimensions must be minimum of 1
-		m_structureImage = new Image(m_display, 1, 1);
-		m_timesImage = new Image(m_display, 1, 1);
+		m_image = new Image(m_display, 1, 1);
 
 	    // Determine font metrics
-        GC gc = new GC(m_structureImage);
+        GC gc = new GC(m_image);
         m_canvasProperties.setAverageCharWidth(gc.getFontMetrics().getAverageCharWidth());
         gc.dispose();
 	}
@@ -43,121 +43,136 @@ public class Renderer implements Runnable {
 		while (!done) {
 			done = m_control.waitForChange();
 			if (!done) {
-			    if (m_control.renderRequired() || m_control.hasPreviousSelection()) {
-					if (DEBUG) System.out.printf("Renderer::startSyncExec()\n");
-					m_display.syncExec(new Runnable() {
-						public void run() {
-							draw();
-						}});
-
-					m_control.clearRenderRequired();
-			    }
+				if (m_control.hasPreviousSelection()) {
+					selectionChanged();
+				}
 				
-				m_control.updateCanvasImages(m_structureImage, m_timesImage);
-				m_control.signalRenderComplete();
+			    if (m_imageTooLarge) {
+				    if (m_control.renderRequired() || m_control.canvasResized()) {
+				    	updateCanvasProperties();
+				    }
+
+				    if (m_control.renderRequired() || m_control.imageMoved() || m_control.canvasResized()) {
+			    		m_display.syncExec(new Runnable() {
+			    			public void run() {
+			    				render(m_control.getOffsetX(), m_control.getOffsetY());
+			    			}});
+						m_control.clearRenderRequired();
+						m_control.clearImageMoved();
+			    	}
+					m_control.updateCanvasImages(m_image, 0);
+					
+			    } else {
+				    if (m_control.renderRequired()) {
+				    	updateCanvasProperties();
+				    }
+
+			    	if (m_control.renderRequired()) {
+						m_display.syncExec(new Runnable() {
+							public void run() {
+								render(0, 0);
+							}});
+						m_control.clearRenderRequired();
+			    	}
+					m_control.updateCanvasImages(m_image, m_control.getOffsetX());
+			    	
+			    }
+			    m_control.signalRenderComplete();
 			}
 		}
 	}
 
-	private void draw() {
-		if (DEBUG) System.out.printf("StructureRenderer::draw()\n");
+	private void render(int offsetX, int offsetY) {
+		if (DEBUG) System.out.printf("StructureRenderer::render(%d, %d)\n", offsetX, offsetY);
 
-	    if (m_control.hasPreviousSelection()) {
-    		selectionChanged();
-	    } 
-	    
-	    if (m_control.renderRequired()) {
-		    m_control.updateCanvasProperties(m_canvasProperties);
-	    	resizeImages();
-	    	renderImages();
-	    }
-		if (DEBUG) System.out.printf("StructureRenderer::draw() done\n");
+	    GC gc = new GC(m_image);
+	    gc.setAntialias(SWT.ON);
+	    gc.setTextAntialias(SWT.ON);
+
+	    // Draw the structure
+        gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
+        Rectangle structureBounds = m_image.getBounds();
+        gc.fillRectangle(0, 0, structureBounds.width, structureBounds.height);
+
+        ViewNode viewNode = m_control.getViewNode();
+        if (viewNode != null) {
+        	Rectangle visibleArea = new Rectangle(offsetX, offsetY, structureBounds.width, structureBounds.height);
+        	m_canvasProperties.setVisibleArea(visibleArea);
+    		viewNode.updateScaledXy();
+        	viewNode.draw(m_display, gc);
+        }
+	    gc.dispose();
+
+	    if (DEBUG) System.out.printf("StructureRenderer::render() done\n");
 	}
 
-    protected void resizeImages() {
-		double scale = m_control.getScale();
+	private void selectionChanged() {
+	    ViewNode viewNode = m_control.getViewNode();
+		List<Node> currentSelection = m_control.getCurrentSelection();
+		m_canvasProperties.setSelected(currentSelection);
+
+    	while (m_control.hasPreviousSelection()) {
+    		// Must iterate over the previous selections in order to clear the list
+			List<Node> previousSelection = m_control.getPreviousSelection();
+
+			if (m_control.renderRequired() || (viewNode == null) ||
+				(previousSelection.size() == 0) || m_imageTooLarge) {
+    			continue;
+    		}
+    		redraw(viewNode, previousSelection);
+    	}
+
+    	if ((currentSelection.size() > 0) && (viewNode != null)) {
+    		redraw(viewNode, currentSelection);
+		}
+	}
+
+	private void redraw(final ViewNode viewNode, final List<Node> selection) {
+		final GC gc = new GC(m_image);
+	    gc.setAntialias(SWT.ON);
+	    gc.setTextAntialias(SWT.ON);
+
+		m_display.syncExec(new Runnable() {
+			public void run() {
+    	    	viewNode.redraw(m_display, gc, selection);
+			}});
+
+	    gc.dispose();
+	}
+
+	private void updateCanvasProperties() {
+    	m_control.updateCanvasProperties(m_canvasProperties);
+    	double scale = m_control.getScale();
 		int imageX = (int)((double)m_control.getPixelsX() * scale);
 		int imageY = (int)((double)m_control.getPixelsY() * scale);
+		
+		Image canvasImage = m_control.getResizedCanvas();
+		Rectangle bounds = canvasImage.getBounds();
+		int canvasX = bounds.width;
+    	int canvasY = bounds.height;
 
-		int structureCanvasX = m_control.getStructureCanvasWidth();
-    	int structureCanvasY = m_control.getStructureCanvasHeight();
-    	int timesCanvasY = m_control.getTimesCanvasHeight();
+		if (canvasX > imageX)
+			imageX = canvasX;
+		if (canvasY > imageY)
+			imageY = canvasY;
 
-		if (structureCanvasX > imageX)
-			imageX = structureCanvasX;
-		if (structureCanvasY > imageY)
-			imageY = structureCanvasY;
-    	
-		m_structureImage.dispose();
-		m_structureImage = new Image(m_display, imageX, imageY);
+		m_image.dispose();
+
+		if ((imageX * imageY) > MAX_IMAGE_SIZE) {
+			assert((canvasX * canvasY) < MAX_IMAGE_SIZE);
+			m_imageTooLarge = true;
+			imageX = canvasX;
+			imageY = canvasY;
+		} else {
+			m_imageTooLarge = false;
+		}
+
+		m_image = new Image(m_display, imageX, imageY);
 		if (DEBUG) System.out.println("Resize m_structureImage " + imageX + ", " + imageY);
-
-		m_timesImage.dispose();
-		if (timesCanvasY == 0) timesCanvasY = 1;
-		m_timesImage = new Image(m_display, imageX, timesCanvasY);
-		if (DEBUG) System.out.println("Resize m_timesImage " + imageX + ", " + timesCanvasY);
 
         ViewNode viewNode = m_control.getViewNode();
 		if (viewNode != null) {
     		viewNode.updateScaledXy();
     	}
-    }
-    
-	private void renderImages() {
-	    GC structureGc = new GC(m_structureImage);
-	    structureGc.setAntialias(SWT.ON);
-	    structureGc.setTextAntialias(SWT.ON);
-
-	    GC timesGc = new GC(m_timesImage);
-	    timesGc.setAntialias(SWT.ON);
-	    timesGc.setTextAntialias(SWT.ON);
-
-	    // Draw the structure
-        structureGc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
-        Rectangle imageBounds = m_structureImage.getBounds();
-        structureGc.fillRectangle(0, 0, imageBounds.width, imageBounds.height);
-
-        imageBounds = m_timesImage.getBounds();
-        timesGc.fillRectangle(0, 0, imageBounds.width, imageBounds.height);
-
-        ViewNode viewNode = m_control.getViewNode();
-        if (viewNode != null) {
-			viewNode.draw(m_display, structureGc, timesGc);
-        }
-	    structureGc.dispose();
-	    timesGc.dispose();
-	}
-
-	private void selectionChanged() {
-	    GC structureGc = new GC(m_structureImage);
-	    structureGc.setAntialias(SWT.ON);
-	    structureGc.setTextAntialias(SWT.ON);
-
-	    GC timesGc = new GC(m_timesImage);
-	    timesGc.setAntialias(SWT.ON);
-	    timesGc.setTextAntialias(SWT.ON);
-	    
-	    ViewNode viewNode = m_control.getViewNode();
-		List<Node> currentSelection = m_control.getCurrentSelection();
-		m_canvasProperties.setSelected(currentSelection);
-
-		if (!m_control.renderRequired()) {
-			// Only draw if it isn't going to be redrawn anyway
-	    	while (m_control.hasPreviousSelection()) {
-				List<Node> previousSelection = m_control.getPreviousSelection();
-		    	if (previousSelection.size() > 0) {
-		    	    if (viewNode != null)
-		    	    	viewNode.redraw(m_display, structureGc, timesGc, previousSelection);
-		    	}
-	    	}
-		    	
-	    	if (currentSelection.size() > 0) {
-	    	    if (viewNode != null)
-	    	    	viewNode.redraw(m_display, structureGc, timesGc, currentSelection);
-	    	}
-		}
-    
-	    structureGc.dispose();
-	    timesGc.dispose();
 	}
 }

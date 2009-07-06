@@ -21,10 +21,13 @@ import com.xmos.xta.gui.GuiEngine;
 
 public class ActionNode extends ActionDelegate implements IPropertyChangeListener, 
                                                   IWorkbenchWindowPulldownDelegate {
-    private List<String> m_nodeIds;
+	private static int s_numInstances = 0;
+
+	private List<String> m_nodeIds;
 	private SelectionListener m_listListener;
 	private int m_currentNodeId;
 	private IAction m_action;
+	private int m_instanceId;
 
 	public ActionNode() {
 		GuiEngine.addBroadcastListener(this);
@@ -50,11 +53,19 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 		        m_action.setToolTipText("Node " + m_currentNodeId);
 			}
 		};
+		m_instanceId = s_numInstances;
+		++s_numInstances;
 	}
 
 	public void init(IAction action) {
 		m_action = action;
-		m_action.setEnabled(false);
+		
+	    // Note: This is a really nasty hack to get around the fact that the eclipse
+	    // platform seems to create another instance of this at exit.
+	    // This needs further investigation.
+	    if (m_instanceId == 0) {
+	        m_action.setEnabled(false);
+	    }
 	}
 	
 	public void init(IWorkbenchWindow window) {
