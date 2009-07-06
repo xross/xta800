@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.engine.analysis.structural.nodes.PathNode;
 
 public class PathPatternMatcher extends PatternMatcher {	
@@ -109,7 +110,19 @@ public class PathPatternMatcher extends PatternMatcher {
 	}
 
 	protected void updateGraph(LinkedList<Node> pathList, Collection<Node> workingSet, Node treeStart) {
-		PathNode path = new PathNode(pathList);
+
+		Node path = null;
+		boolean allNodesNull = true;
+		for(Node node : pathList){
+			if(!node.isNullNode()){
+				allNodesNull = false;
+			}
+		}
+		if(allNodesNull){
+			path = new NullNode();
+		} else {
+			path = new PathNode(pathList);
+		}
 		
 		if (pathList.contains(treeStart)) {
 			m_treeStart = path;
