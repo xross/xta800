@@ -1,5 +1,6 @@
 package com.xmos.xta.engine.analysis.structural;
 
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,12 +22,19 @@ public class FnopAnalyser {
 	}
 
 	public void addFnopsToBasicBlocks(Node startNode){
-		explore((IBufferNode)startNode, new TreeSet<Node>());
+		
+		Set<IBufferNode> nodes = new TreeSet<IBufferNode>();
+		explore((IBufferNode)startNode, nodes);
+		
+		for(IBufferNode node : nodes){
+			System.out.println(node);
+			node.insertFnops();
+		}
+		
 	}
 	
-	private void explore(IBufferNode startNode, TreeSet<Node> seen) {
+	private void explore(IBufferNode startNode, Set<IBufferNode> seen) {
 		seen.add(startNode);
-		startNode.insertFnops();
 		for(IBufferNode next : startNode.getNextIbufferNodes()){
 			if(!seen.contains(next)){
 				explore(next, seen);
@@ -77,13 +85,9 @@ public class FnopAnalyser {
 					XtaInstruction prevInst = parent.getInstructions().getLast();
 					endInstBuffer.branchTo(block.getStartPc(), prevInst.isLoadStore());
 				}
-				
-				
 			}
 		}
-		
-		
-		
+
 		int numStartBytes = endInstBuffer.getNumBytes();
 
 		for (XtaInstruction inst : block.getInstructions()) {

@@ -1,6 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -11,6 +12,7 @@ public abstract class IBufferNode extends Node {
 	
 	IBufferSequence m_worstIbufferSequence;
 	Collection<IBufferSequence> m_ibufferSequences;
+	private HashSet<Integer> startBytes = new HashSet<Integer>();
 	
 	public IBufferNode(){
 		super();
@@ -25,13 +27,13 @@ public abstract class IBufferNode extends Node {
 		return set;
 	}
 	
+	
 	public boolean addEndInstructionBuffer(int numStartBytes, InstructionBuffer endInstBuffer, List<Integer> fnopPcs) {
-		for(IBufferSequence i : m_ibufferSequences){
-			if(i.getStartIbuffer() == numStartBytes){
-				return false;
-			}
-		}
-		IBufferSequence ibs = new IBufferSequence(numStartBytes, fnopPcs, endInstBuffer);
+		
+		if(startBytes.contains(numStartBytes)) return false;
+		startBytes.add(numStartBytes);
+		
+		IBufferSequence ibs = new IBufferSequence(fnopPcs, endInstBuffer);
 		m_ibufferSequences.add(ibs);
 		
 		if(m_ibufferSequences.size() == 1){
@@ -41,7 +43,7 @@ public abstract class IBufferNode extends Node {
 			for(IBufferSequence currentState : m_ibufferSequences){
 				if(currentState.m_fnopPcs.size() > worstCount){
 					m_worstIbufferSequence = currentState;
-				}
+				} 
 			}
 		}
 		return true;
@@ -62,16 +64,6 @@ public abstract class IBufferNode extends Node {
 
 	}
 	
-	public long getFNOPDifference(){
-		long worstFnopCount = 0;
-		long bestFnopCount = Integer.MAX_VALUE;
-		for(IBufferSequence ibs : m_ibufferSequences){
-			worstFnopCount = Math.max(ibs.getfnops().size(), worstFnopCount);
-			bestFnopCount = Math.min(ibs.getfnops().size(), bestFnopCount);
-		}
-		return Math.abs(worstFnopCount - bestFnopCount);
-	}
-	
 	public Collection<IBufferNode> getNextIbufferNodes(){
 		Collection<IBufferNode> ibuffNodes = new TreeSet<IBufferNode>();
 		for(Node node : getNextNodes()){
@@ -80,19 +72,18 @@ public abstract class IBufferNode extends Node {
 		}
 		return ibuffNodes;
 	}
+	
 	private static int id;
 	class IBufferSequence implements Comparable<IBufferSequence>{
 		
 		
 		private int m_id;
-		private int m_startIbuffer;
 		private List<Integer> m_fnopPcs;
 		private InstructionBuffer m_endInstructionBuffer;
 		
-		public IBufferSequence(int startIbuffer, List<Integer> fnopPcs, InstructionBuffer ib) {
+		public IBufferSequence(List<Integer> fnopPcs, InstructionBuffer ib) {
 			super();
 			m_id = id++;
-			m_startIbuffer = startIbuffer;
 			m_fnopPcs = fnopPcs;
 			m_endInstructionBuffer = ib;
 		}
@@ -100,9 +91,7 @@ public abstract class IBufferNode extends Node {
 		List<Integer> getfnops(){
 			return m_fnopPcs;
 		}
-		int getStartIbuffer(){
-			return m_startIbuffer;
-		}
+
 		InstructionBuffer getInstructionBuffer(){
 			return m_endInstructionBuffer;
 		}

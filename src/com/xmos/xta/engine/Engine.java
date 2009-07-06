@@ -945,8 +945,10 @@ public class Engine implements Notifier {
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
 				
+				
 				if (!sae.analyse(this, newFunctionNames.get(nodeId, coreId)))
 					return false;
+				
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
 			}
 		}

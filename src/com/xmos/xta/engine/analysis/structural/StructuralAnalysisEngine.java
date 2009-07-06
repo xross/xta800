@@ -70,6 +70,7 @@ public class StructuralAnalysisEngine {
 						return false;
 					}
 					if (pm.isMatch(node, workingSet, treeStart)) {
+						//System.out.println(pm.getClass().getSimpleName() + " " + Node.s_numNodes);
 						treeStart = pm.getTreeStart();
 						assert (connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
@@ -133,7 +134,6 @@ public class StructuralAnalysisEngine {
 			engine.startAnalysis("Analysing threads", orderedGraphs.size());
 		}
 		
-		
 		for (Node graphStart : orderedGraphs) {
 			
 			
@@ -144,7 +144,6 @@ public class StructuralAnalysisEngine {
 			Collection<Node> basicBlocks = new TreeSet<Node>();
 			
 			collectCurrentGraphNodes(graphStart, currentGraph);
-			
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
 			
 			assert(!basicBlocks.isEmpty());
@@ -207,7 +206,6 @@ public class StructuralAnalysisEngine {
 		Map<Node, Node> cfgToStructure = new TreeMap<Node, Node>();
 		Map<Node, Node> endPoint = new TreeMap<Node, Node>();
 		Node treeStart = initialBasicBlock;
-
 		for (Node node : currentGraph) {
 			if (!seen.contains(node)) {
 				if (node.isInstructionNode()) {
