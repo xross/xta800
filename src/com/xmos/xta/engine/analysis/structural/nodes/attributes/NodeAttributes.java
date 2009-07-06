@@ -343,8 +343,9 @@ public class NodeAttributes {
 		return 1;
 	}
 
-	public void setLoopIterations(long numIterations) {
-		assert(false);		
+	public boolean setLoopIterations(long numIterations) {
+		assert(false);
+		return false;
 	}
 	
 	public long getLoopIterations() {
