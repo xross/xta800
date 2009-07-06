@@ -23,7 +23,7 @@ public class TraceDisplayer {
     	m_currentTime = 0;
     	
     	List<InstructionNode> instructions = new LinkedList<InstructionNode>();
-    	node.getInstructionStream(Case.WORST, instructions, 0);
+    	node.getInstructionStream(Case.WORST, instructions);
 		for(InstructionNode instruction : instructions){
 			
 			String isUnknown = instruction.getAttributes().getDisplayUnknown() ? "*" : " ";

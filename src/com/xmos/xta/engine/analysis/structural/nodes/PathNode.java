@@ -129,9 +129,9 @@ public class PathNode extends Node {
 		return false;
 	}
 
-	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
+	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
 		for(Node pathNode : m_nodes){
-			pathNode.getInstructionStream(c, instructions, iteration);
+			pathNode.getInstructionStream(c, instructions);
 		}
 	}
 

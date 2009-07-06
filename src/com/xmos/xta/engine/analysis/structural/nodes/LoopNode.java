@@ -162,15 +162,15 @@ public class LoopNode extends Node {
 		return false;
 	}
 
-	public void getInstructionStream(Case c, List<InstructionNode> instructions, long iteration) {
+	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
 		
 		for(Node loop : m_loops){
 			for(long i=0;i<loop.getAttributes().getLoopIterations();i++){
-				m_loopHeader.getInstructionStream(c, instructions, i);
-				loop.getInstructionStream(c, instructions, i);
+				m_loopHeader.getInstructionStream(c, instructions);
+				loop.getInstructionStream(c, instructions);
 			}
 		}
-		m_loopHeader.getInstructionStream(c, instructions, iteration);
+		m_loopHeader.getInstructionStream(c, instructions);
 	}
 
 	public Collection<Node> whatsBefore(Node node) {
