@@ -400,7 +400,11 @@ public class Engine implements Notifier {
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		return getRoute(routeId).canInstructionPause(reference);			
+		Route route = getRoute(routeId);
+		if (route == null)
+			return false;
+		
+		return route.canInstructionPause(reference);			
 	}
 		
 	public boolean removeRoute(int routeId) {
@@ -531,9 +535,12 @@ public class Engine implements Notifier {
 		if (!resolveRefernece(reference)) {
 			return false;
 		}		
-		if (getRoute(routeId).setLoopIterations(reference, iterations)) {
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
+		Route route = getRoute(routeId);
+		if (route != null) {
+		    if (route.setLoopIterations(reference, iterations)) {
+			    notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			    return true;
+		    }
 		}
 		return false;
 	}
@@ -556,9 +563,12 @@ public class Engine implements Notifier {
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		if (getRoute(routeId).setLoopPathIterations(reference, iterations)) {
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
+		Route route = getRoute(routeId);
+		if (route != null) {		
+		    if (route.setLoopPathIterations(reference, iterations)) {
+			    notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			    return true;
+		    }
 		}
 		return false;
 	}
@@ -581,9 +591,12 @@ public class Engine implements Notifier {
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		if (getRoute(routeId).setLoopScope(reference, absolute)) {
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
+		Route route = getRoute(routeId);
+		if (route != null) {				
+		    if (route.setLoopScope(reference, absolute)) {
+			    notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			    return true;
+		    }
 		}
 		return false;
 	}
@@ -609,9 +622,12 @@ public class Engine implements Notifier {
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		if (getRoute(routeId).setInstructionTimeTaken(reference, timeTaken)) {
-			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			return true;
+		Route route = getRoute(routeId);
+		if (route != null) {						
+		    if (route.setInstructionTimeTaken(reference, timeTaken)) {
+			    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+			    return true;
+		    }
 		}
 		return false;
 	}
@@ -627,9 +643,12 @@ public class Engine implements Notifier {
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		if (getRoute(routeId).unsetInstructionTimeTaken(reference)) {
-			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			return true;
+		Route route = getRoute(routeId);
+		if (route != null) {								
+		    if (route.unsetInstructionTimeTaken(reference)) {
+			    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+			    return true;
+		    }
 		}
 		return false;
 	}
@@ -649,9 +668,12 @@ public class Engine implements Notifier {
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		if (getRoute(routeId).setInstructionNumCycles(reference, numCycles)) {
-			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			return true;
+		Route route = getRoute(routeId);
+		if (route != null) {								
+     		if (route.setInstructionNumCycles(reference, numCycles)) {
+			    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+			    return true;
+     		}
 		}
 		return false;
 	}
@@ -667,10 +689,13 @@ public class Engine implements Notifier {
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		if (getRoute(routeId).unsetInstructionNumCycles(reference)) {
-			notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
+		Route route = getRoute(routeId);
+		if (route != null) {								
+		    if (route.unsetInstructionNumCycles(reference)) {
+			    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+			    notify(Notifier.NOTIFY_UPDATE_STATE, "");
+			    return true;
+		    }
 		}
 		return false;
 	}
