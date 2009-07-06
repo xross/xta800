@@ -5,31 +5,28 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.gui.views.structure.ZoomedCanvasProperties;
 
 public abstract class ViewNode {
 	protected Node m_treeNode;
     private List<ViewNode> m_children;
 
-    private static final int TIMES_WIDTH = 6;
     private static final int CORNER_ROUNDING = 7;
 
     protected int m_pixelOffsetX;
     protected int m_pixelOffsetY;
 
-    protected int m_x;
-    protected int m_y;
+    protected int m_renderX;
+    protected int m_renderY;
     protected int m_width;
     protected int m_height;
     
     protected boolean m_isBestCase;
     protected boolean m_isWorstCase;
-    protected int m_bestHeight;
-    protected int m_worstHeight;
 
     private ZoomedCanvasProperties m_canvasProperties;
 	
@@ -50,7 +47,7 @@ public abstract class ViewNode {
     public abstract int getPixelsY();
     public abstract int getChildrenX();
     public abstract int getChildrenY();
-    public abstract void draw(Display display, GC structureGc, GC timesGc);
+    public abstract void draw(Display display, GC gc);
     public abstract void annotateNodes(int xOffset, int yOffset, boolean isBestCase, boolean isWorstCase);
 
     public Node getTreeNode() {
@@ -67,6 +64,14 @@ public abstract class ViewNode {
 
     public int scale(int value) {
     	return (int)((double)value * m_canvasProperties.getScale());
+    }
+
+    public int scaleX(int value) {
+    	return scale(value) - m_canvasProperties.getVisibleArea().x;
+    }
+
+    public int scaleY(int value) {
+    	return scale(value) - m_canvasProperties.getVisibleArea().y;
     }
 
     public boolean isSelected() {
@@ -125,11 +130,11 @@ public abstract class ViewNode {
 	    	gc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
 	    	gc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
 	    	gc.setAlpha(100);
-	    	gc.fillRoundRectangle(m_x, m_y, m_width, m_height, CORNER_ROUNDING, CORNER_ROUNDING);
+	    	gc.fillRoundRectangle(m_renderX, m_renderY, m_width, m_height, CORNER_ROUNDING, CORNER_ROUNDING);
 	    	gc.setAlpha(255);
 	    } else {
 	    	gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-	    	gc.fillRectangle(m_x, m_y, m_width, m_height);
+	    	gc.fillRectangle(m_renderX, m_renderY, m_width, m_height);
 	    }
 	}
 
@@ -137,8 +142,8 @@ public abstract class ViewNode {
 		int pixelsX = getPixelsX();
 		int pixelsY = getPixelsY();
 		
-        m_x = scale(m_pixelOffsetX);
-        m_y = scale(m_pixelOffsetY);
+        m_renderX = scaleX(m_pixelOffsetX);
+        m_renderY = scaleY(m_pixelOffsetY);
         m_width = scale(pixelsX);
         m_height = scale(pixelsY);
 
@@ -147,49 +152,12 @@ public abstract class ViewNode {
 		}
 	}
 
-	protected boolean setTimesY() {
-	    int timesHeight = m_canvasProperties.getTimesHeight();
-	    m_bestHeight = 0;
-	    if (m_isBestCase) {
-	        m_bestHeight = (int)((double)timesHeight * 
-	        	getTreeNode().getAttributes().getTimeTaken(Case.BEST, false) / m_canvasProperties.getTotalBest());
-	    }
-
-	    m_worstHeight = 0;
-	    if (m_isWorstCase) {
-	        m_worstHeight = (int)((double)timesHeight * 
-	    		getTreeNode().getAttributes().getTimeTaken(Case.WORST, false) / m_canvasProperties.getTotalWorst());
-	    }
-
-		if (m_bestHeight < 1 && m_worstHeight < 1) {
-	        return false;
-		}
-		return true;
-	}
-
-	public void drawTimes(Display display, GC timesGc) {
-		if (!setTimesY())
-			return;
-		
-		timesGc.setBackground(display.getSystemColor(SWT.COLOR_RED));
-    	timesGc.fillRectangle(m_x, 0, TIMES_WIDTH, m_worstHeight);
-		timesGc.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
-    	timesGc.fillRectangle(m_x + TIMES_WIDTH, 0, TIMES_WIDTH, m_bestHeight);
-
-    	if (isSelected()) {
-	        timesGc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-	    	timesGc.drawRectangle(m_x, 0, TIMES_WIDTH - 1, m_worstHeight - 1);
-	    	timesGc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-	    	timesGc.drawRectangle(m_x + TIMES_WIDTH, 0, TIMES_WIDTH - 1, m_bestHeight - 1);
-    	}
-	}
-	
-	public void redraw(Display display, GC structureGc, GC timesGc, List<Node> nodes) {
+	public void redraw(Display display, GC gc, List<Node> nodes) {
 		if (nodes.contains(m_treeNode)) {
-			draw(display, structureGc, timesGc);
+			draw(display, gc);
 		} else {
 			for (ViewNode child : getChildren()) {
-				child.redraw(display, structureGc, timesGc, nodes);
+				child.redraw(display, gc, nodes);
 			}
 		}
 	}
@@ -200,6 +168,21 @@ public abstract class ViewNode {
 
 	public void setFolded(boolean folded, boolean applyToChildren) {
 		m_treeNode.setFolded(folded, applyToChildren);
+	}
+
+	public boolean isVisible() {
+		Rectangle visibleArea = m_canvasProperties.getVisibleArea();
+		int x = scale(m_pixelOffsetX);
+		int y = scale(m_pixelOffsetY);
+		if (m_width < 1 || m_height < 1 ||
+			(x + m_width < visibleArea.x) ||
+			(x > visibleArea.x + visibleArea.width) ||
+			(y + m_height < visibleArea.y) ||
+			(y > visibleArea.y + visibleArea.height)) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	public boolean isFolded() {

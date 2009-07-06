@@ -44,36 +44,39 @@ public class StructurePathNode extends ViewNode {
 		return pixels;
 	}
 
-	public void draw(Display display, GC structureGc, GC timesGc) {
-        drawThis(display, structureGc);
+	public void draw(Display display, GC gc) {
+		if (!isVisible())
+			return;
+
+		drawThis(display, gc);
 		boolean isWorstCase = isWorstCase();
 		boolean isBestCase = isBestCase();
 
         boolean first = true;
     	int childOffsetX = m_borderX;
-    	int lineY = scale(m_pixelOffsetY + (getPixelsY() / 2));
+    	int lineY = scaleY(m_pixelOffsetY + (getPixelsY() / 2));
     	int lineLeft = 0;
     	int lineRight = 0;
 		for (ViewNode child : getChildren()) {
     		int childX = child.getPixelsX();
     		
         	if (!first) {
-        		drawConnection(display, structureGc, lineLeft, lineY, lineRight, lineY,
+        		drawConnection(display, gc, lineLeft, lineY, lineRight, lineY,
         				isBestCase, isWorstCase);
         	} else {
         		first = false;
         	}
 
-            lineLeft = scale(m_pixelOffsetX + childOffsetX + childX);
-            lineRight = scale(m_pixelOffsetX + childOffsetX + childX + m_connectorLen);
+            lineLeft = scaleX(m_pixelOffsetX + childOffsetX + childX);
+            lineRight = scaleX(m_pixelOffsetX + childOffsetX + childX + m_connectorLen);
             childOffsetX += childX + m_connectorLen;
 
-    		child.draw(display, structureGc, timesGc);
+    		child.draw(display, gc);
 		}
 
-		drawConnection(display, structureGc, m_x, lineY, scale(m_pixelOffsetX + m_borderX), lineY,
+		drawConnection(display, gc, m_renderX, lineY, scaleX(m_pixelOffsetX + m_borderX), lineY,
 				isBestCase, isWorstCase);
-		drawConnection(display, structureGc, lineLeft, lineY, scale(m_pixelOffsetX + getPixelsX()), lineY,
+		drawConnection(display, gc, lineLeft, lineY, scaleX(m_pixelOffsetX + getPixelsX()), lineY,
 				isBestCase, isWorstCase);
     }
 
