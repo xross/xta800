@@ -12,7 +12,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.views.viewnode.ViewNode;
 
 public class Renderer implements Runnable {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private static final int MAX_IMAGE_SIZE = 1024 * 1024 * 50;
 

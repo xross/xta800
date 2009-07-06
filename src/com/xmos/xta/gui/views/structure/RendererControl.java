@@ -14,7 +14,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.views.viewnode.ViewNode;
 
 public class RendererControl {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private int m_borderX = 2;
     private int m_borderY = 2;

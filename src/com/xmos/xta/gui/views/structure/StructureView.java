@@ -58,7 +58,7 @@ public class StructureView extends ViewPart implements IPropertyChangeListener,
                                                        ISelectionListener,
                                                        ISelectionProvider,
                                                        IMenuListener {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.gui.views.structure.Structure";
 
     private ViewNode m_viewNode;
