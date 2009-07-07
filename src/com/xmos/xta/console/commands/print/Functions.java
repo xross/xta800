@@ -59,8 +59,8 @@ public class Functions extends Command {
     	final Set<String> functions = new TreeSet<String>();   
 		Node node = engine.getRoute(m_routeId).getNode();
 	    node.traverse(0, new DefaultNodeTraverser() {
-			public boolean foundInstructionNode(Node node, int depth) {
-				functions.add(node.getInstructions().getFirst().getFunctionName());
+			public boolean foundFunctionNode(Node node, int depth) {
+				functions.add(node.getFunctionName());
 				return true;
 			}
 	    });
