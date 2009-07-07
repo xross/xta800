@@ -1,6 +1,4 @@
 package com.xmos.xta.gui.views.viewnode;
-/*
-import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
@@ -8,117 +6,64 @@ import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
-public class FunctionBlockNode extends ViewNode {
+public class FunctionBlockNode extends FunctionNode {
     public static final boolean DEBUG = false;
 
-    private int m_height = 20;
+    private int m_blockHeight = TEXT_AREA_Y;
 
-    private int m_x;
-    private int m_y;
-    private int m_width;
-
-	public FunctionBlockNode(Node treeNode) {
-		super(treeNode);
+	public FunctionBlockNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
+		super(treeNode, canvasProperties);
 	}
 	
-	public void setNumIterations(long numIterations) {
-		m_numIterations = numIterations;
-		m_pixelsX = (int) (m_treeNode.getNumCycles(Case.WORST) * numIterations);
-		m_pixelsY = m_height;
-	}
-
 	public int getPixelsX() {
-		if (m_numIterations == 0)
-			return 0;
-		
-		int pixels = getChildrenX();
-		if (m_pixelsX > pixels)
-			pixels = m_pixelsX;
-		if (DEBUG) System.out.printf("FunctionBlock X %d\n", pixels);
-		return pixels;
+		return (int)m_treeNode.getAttributes().getTimeTaken(Case.WORST, false);
 	}
 
 	public int getPixelsY() {
-		if (m_numIterations == 0)
-			return 0;
-		
-		int pixels = getChildrenY() + m_pixelsY;
-		if (DEBUG) System.out.printf("FunctionBlock Y %d\n", pixels);
-		return pixels;
+		return m_blockHeight;
+	}
+
+	public int getPixelsY(Case c) {
+		return m_blockHeight;
 	}
 
 	public int getChildrenX() {
-		int pixels = 0;
-		for (Node treeNode : m_treeNode.getChildren()) {
-			ViewNode child = treeNode.getFunctionNode();
-			if (child != null) {
-				pixels += child.getPixelsX();
-			}
-		}
-		return pixels;
+		return 0;
 	}
 
 	public int getChildrenY() {
-		int pixels = 0;
-		for (Node treeNode : m_treeNode.getChildren()) {
-			ViewNode child = treeNode.getFunctionNode();
-			if (child != null) {
-				int childPixels = child.getPixelsY();
-				if (childPixels > pixels)
-					pixels = childPixels;
-			}
-		}
-		return pixels;
+		return 0;
 	}
 
-	public void draw(Display display, GC gc, double scale) {
-        if (m_numIterations == 0)
-        	return;
+	public double draw(Display display, GC gc, Case c, double x, double y) {
+        if (!isVisible((int)x, (int)y))
+        	return x + m_width;
 
-        if (DEBUG) System.out.printf("Draw FunctionBlock %d,%d,%f\n",
-        		m_pixelOffsetX, m_pixelOffsetY, scale);
+        int widthInPixels = ((int)m_width < 1) ? 1 : (int)m_width;
+        int heightInPixels = ((int)m_height < 1) ? 1 : (int)m_height;
 
-        gc.setLineWidth(m_lineWidth);
-        m_x = scale(m_pixelOffsetX, scale);
-        m_y = m_pixelOffsetY;
-        m_width = scale(m_pixelsX, scale);
-        m_height = m_pixelsY;
-
-        if (m_isSelected) {
-        	gc.setBackground(display.getSystemColor(SWT.COLOR_YELLOW));
-        } else { 
-        	gc.setBackground(display.getSystemColor(SWT.COLOR_DARK_YELLOW));
+        if (c == Case.BEST) {
+        	gc.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
+        	gc.setForeground(display.getSystemColor(SWT.COLOR_GREEN));
+        } else {
+        	gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
+        	gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
         }
-    	gc.fillRectangle(m_x, m_y, m_width, m_height);
+        gc.setAlpha(100);
+    	gc.fillRectangle(offsetX((int)x), offsetY((int)y), widthInPixels, heightInPixels);
+        gc.setAlpha(255);
 
-    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-        int x = m_x;
-        int y = m_y;
-        if (m_isSelected) {
-        	gc.setLineWidth(m_lineWidth + 1);
-        	x += 1;
-        	y += 1;
+        if (isSelected()) {
+    		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+    		gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+        	gc.drawRectangle(offsetX((int)x), offsetY((int)y), widthInPixels, heightInPixels);
         }
-    	gc.drawRectangle(x, y, m_width, m_height);
+        return x + m_width;
 	}
 
-	public void annotateXy(int xOffset, int yOffset) {
-        m_pixelOffsetX = xOffset;
-        m_pixelOffsetY = yOffset;
-	}
-
-	public void buildClickAreas(ArrayList<ViewNode> clickAreas) {
-        clickAreas.add(this);
-	}
-
-	public boolean contains(int x, int y) {
-		if ((x >= m_x) && (x <= (m_x + m_width))) {
-			if ((y >= m_y) && (y <= (m_y + m_height))) {
-				return true;
-			}
-		}
-		return false;
+	public void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase) {
+		if (DEBUG) System.out.printf("Annotate FunctionBlock (%d, %d)\n", offsetX, offsetY);
 	}
 }
-*/

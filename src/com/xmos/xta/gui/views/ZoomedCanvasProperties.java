@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.structure;
+package com.xmos.xta.gui.views;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,7 @@ public class ZoomedCanvasProperties {
     public static final boolean DEBUG = false;
 
     private double m_scale;
+    private boolean m_scaleY;
 
     private int m_lineWidth;
     
@@ -20,11 +21,12 @@ public class ZoomedCanvasProperties {
     private Rectangle m_visibleArea;
     private List<Node> m_selectedNodes;
 
-    public ZoomedCanvasProperties() {
+    public ZoomedCanvasProperties(boolean scaleY) {
 		if (DEBUG) System.out.printf("ZoomedCanvasProperties()\n");			
 		m_lineWidth = 1;
 
 		m_scale = 1.0;
+		m_scaleY = scaleY;
 
 		m_selectedNodes = new ArrayList<Node>();
 		m_visibleArea = new Rectangle(0, 0, 0, 0);
@@ -68,6 +70,10 @@ public class ZoomedCanvasProperties {
 
 	public int getAverageCharWidth() {
 		return m_averageCharWidth;
+	}
+
+	public boolean scaleY() {
+		return m_scaleY;
 	}
 }
 

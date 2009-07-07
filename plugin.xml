@@ -80,12 +80,47 @@
             name="Control"
             restorable="true">
       </view>
+      <view
+            class="com.xmos.xta.gui.views.function.FunctionView"
+            icon="icons/function_view.png"
+            id="com.xmos.xta.gui.views.function.Function"
+            name="Function"
+            restorable="true">
+      </view>
    </extension>
   
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="toolbar:com.xmos.xta.gui.views.FunctionView.Function">
+            locationURI="toolbar:com.xmos.xta.gui.views.function.Function">
+         <command
+               commandId="com.xmos.xta.gui.function.zoomin.command"
+               icon="icons/zoomin.png"
+               id="com.xmos.xta.gui.function.zoomin.command"
+               label="Zoom In"
+               style="push">
+         </command>
+         <command
+               commandId="com.xmos.xta.gui.function.zoomout.command"
+               icon="icons/zoomout.png"
+               id="com.xmos.xta.gui.function.zoomout.command"
+               label="Zoom Out"
+               style="push">
+         </command>
+         <command
+               commandId="com.xmos.xta.gui.function.zoomreset.command"
+               icon="icons/zoomreset.png"
+               id="com.xmos.xta.gui.function.zoomreset.command"
+               label="Reset Zoom"
+               style="push">
+         </command>
+         <command
+               commandId="com.xmos.xta.gui.function.zoomfit.command"
+               icon="icons/zoomfit.png"
+               id="com.xmos.xta.gui.function.zoomfit.command"
+               label="Zoom to fit"
+               style="push">
+         </command>
       </menuContribution>
       <menuContribution
             locationURI="toolbar:com.xmos.xta.gui.views.structure.Structure">
@@ -140,6 +175,26 @@
             defaultHandler="com.xmos.xta.gui.handlers.StructureZoomFitHandler"
             id="com.xmos.xta.gui.structure.zoomfit.command"
             name="com.xmos.xta.gui.structure.zoomfit.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.gui.handlers.FunctionZoomInHandler"
+            id="com.xmos.xta.gui.function.zoomin.command"
+            name="com.xmos.xta.gui.function.zoomin.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.gui.handlers.FunctionZoomOutHandler"
+            id="com.xmos.xta.gui.function.zoomout.command"
+            name="com.xmos.xta.gui.function.zoomout.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.gui.handlers.FunctionZoomResetHandler"
+            id="com.xmos.xta.gui.function.zoomreset.command"
+            name="com.xmos.xta.gui.function.zoomreset.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.gui.handlers.FunctionZoomFitHandler"
+            id="com.xmos.xta.gui.function.zoomfit.command"
+            name="com.xmos.xta.gui.function.zoomfit.command">
       </command>
    </extension>
    <extension

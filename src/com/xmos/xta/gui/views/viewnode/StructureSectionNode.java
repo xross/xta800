@@ -8,9 +8,9 @@ import org.eclipse.swt.widgets.Display;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.SectionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
-import com.xmos.xta.gui.views.structure.ZoomedCanvasProperties;
+import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
-public class StructureSectionNode extends ViewNode {
+public class StructureSectionNode extends StructureNode {
     public static final boolean DEBUG = false;
 
     private int m_borderX = 4;
@@ -95,9 +95,9 @@ public class StructureSectionNode extends ViewNode {
         			verticalIsBestCase, verticalIsWorstCase);
         	drawConnection(display, gc, m_renderX, childMidY, childLeft, childMidY,
         			childIsBestCase, childIsWorstCase);
-    		drawConnection(display, gc, m_renderX + m_width, midY, m_renderX + m_width, childMidY,
+    		drawConnection(display, gc, m_renderX + (int)m_width, midY, m_renderX + (int)m_width, childMidY,
     				verticalIsBestCase, verticalIsWorstCase);
-    		drawConnection(display, gc, m_renderX + m_width, childMidY, childRight, childMidY,
+    		drawConnection(display, gc, m_renderX + (int)m_width, childMidY, childRight, childMidY,
     				childIsBestCase, childIsWorstCase);
             childOffsetY += childY + m_gapY;
 
@@ -108,18 +108,18 @@ public class StructureSectionNode extends ViewNode {
 			int optionalMid = scaleY(m_pixelOffsetY + childOffsetY - (m_gapY / 2));
 			drawConnection(display, gc, m_renderX, midY, m_renderX, optionalMid,
 					isBestCase, false);
-			drawConnection(display, gc, m_renderX, optionalMid, m_renderX + m_width, optionalMid,
+			drawConnection(display, gc, m_renderX, optionalMid, m_renderX + (int)m_width, optionalMid,
 					isBestCase, false);
-			drawConnection(display, gc, m_renderX + m_width, midY, m_renderX + m_width, optionalMid,
+			drawConnection(display, gc, m_renderX + (int)m_width, midY, m_renderX + (int)m_width, optionalMid,
 					isBestCase, false);
 		}
 	}
 
-	public void annotateNodes(int xOffset, int yOffset, boolean isBestCase, boolean isWorstCase) {
-		if (DEBUG) System.out.printf("Annotate StructureSection (%d, %d)\n", xOffset, yOffset);
+	public void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase) {
+		if (DEBUG) System.out.printf("Annotate StructureSection (%d, %d)\n", offsetX, offsetY);
 
-		m_pixelOffsetX = xOffset;
-		m_pixelOffsetY = yOffset;
+		m_pixelOffsetX = offsetX;
+		m_pixelOffsetY = offsetY;
 
 		SectionNode sectionNode = (SectionNode)m_treeNode;
 		Node bestCaseNode = sectionNode.getOption(Case.BEST, false);
@@ -133,7 +133,7 @@ public class StructureSectionNode extends ViewNode {
 			boolean childIsWorstCase = isWorstCase && (childTreeNode == worstCaseNode);
 
 			int childX = child.getPixelsX();
-    		child.annotateNodes(xOffset + m_borderX + ((childrenX - childX) / 2), yOffset + childOffsetY,
+    		child.annotateNodes(offsetX + m_borderX + ((childrenX - childX) / 2), offsetY + childOffsetY,
     				childIsBestCase, childIsWorstCase);
     		childOffsetY += child.getPixelsY() + m_gapY;
     	}
