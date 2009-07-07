@@ -2,13 +2,13 @@ package com.xmos.xta.engine.analysis.routes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
+import com.xmos.xta.engine.analysis.routes.RouteDescription.RouteMode;
 import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
@@ -64,77 +64,65 @@ public class RouteConstructor {
 		
 		resetParent();
 		boolean seenEndPoint = false;
-		switch (m_description.getMode()) {
-		case FUNCTION:
-
-			Collection<FunctionNode> threads = m_structureGraph.getThreads();
-			for(FunctionNode function : threads ){
-				if(m_description.getFunctionName().equals(function.getFunctionName())){
-					m_subRoutes.add(function.deepCopy());
-					break;
-				}
-			}
-			if(m_subRoutes.isEmpty()){
-				Collection<FunctionNode> functions = m_structureGraph.getFunctions();
-				for(FunctionNode function : functions ){
-					if(m_description.getFunctionName().equals(function.getFunctionName())){
-						m_subRoutes.add(function.deepCopy());
-						break;
-					}
-				}
-			}
-			seenEndPoint = true;
-			setParents();
-			setUnknowns();				
-			setSelfLoops();				
-			break;
-
-		case PATH:
-			
-			Collection<Node> startNodes =getReferencedNodes(m_description.getStartPoint());
-			Collection<Node> endNodes = getReferencedNodes(m_description.getEndPoint());
-			
-			for (Node start : startNodes) {
-				Collection<Node> workingSet = new TreeSet<Node>();
-
-				m_structureGraph.removeLinks();
-				m_excludedRouteNodes = new TreeSet<Node>();
-				seenEndPoint |= explore(start, workingSet, endNodes, null);
-				
-				StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
-				pruneGraphOfExcludedPaths(workingSet);
-				if(workingSet.isEmpty()){
-					continue;
-				}
+		Collection<Node> startNodes =getReferencedNodes(m_description.getStartPoint());
+		Collection<Node> endNodes = new TreeSet<Node>();
+		for(Reference endPoint : m_description.getEndPoint()){
+			endNodes.addAll(getReferencedNodes(endPoint));
+		}
+		for (Node start : startNodes) {
+			seenEndPoint = follow(seenEndPoint, endNodes, start);
+		}
+		setParents();
+		setUnknowns();				
+		setSelfLoops();	
 		
-				Set<Node> newEndNodes = removeFinalInstruction(endNodes, start,
-						workingSet);
+		return seenEndPoint;
+	}
+
+	private boolean follow(boolean seenEndPoint, Collection<Node> endNodes,
+			Node start) {
+		Collection<Node> workingSet = new TreeSet<Node>();
+
+		m_structureGraph.removeLinks();
+		m_excludedRouteNodes = new TreeSet<Node>();
+		seenEndPoint |= explore(start, workingSet, endNodes, null);
 		
-				Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
-				assert(cfgSanityCheck(workingSet));
-				
-				sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
-				
-				assert(workingSet.size() == 1);
-				
-				Node baseNode = workingSet.iterator().next();
-				
-				if(baseNode.isSelfLoopNode()) {
-					SelfLoopNode sln = (SelfLoopNode)baseNode;
-					baseNode = sln.getLoop();
-				}
-				
-				Node newGraph = baseNode.deepCopy();
-							
-				m_subRoutes.add(newGraph);
+		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
+		pruneGraphOfExcludedPaths(workingSet);
+		
+		
+		if(!workingSet.isEmpty()){
+			
+			Set<Node> newEndNodes;
+			if(m_description.getMode() == RouteMode.PATH){
+				newEndNodes = removeFinalInstruction(endNodes, start,workingSet);
+			} else {
+				newEndNodes = new TreeSet<Node>(endNodes);
 			}
-			setParents();
-			setUnknowns();				
-			sortSubRoutes();
-			break;
-		default:
-			assert(false);
-		    break;
+
+			Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
+			assert(cfgSanityCheck(workingSet));
+			
+			sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
+			
+			assert(workingSet.size() == 1);
+			
+			Node baseNode = workingSet.iterator().next();
+			
+			if(m_description.getMode() == RouteMode.PATH){
+				 baseNode = workingSet.iterator().next();
+			} else {
+				 baseNode = new FunctionNode(workingSet.iterator().next(), m_description.getFunctionName());
+			}
+			
+			if(baseNode.isSelfLoopNode()) {
+				SelfLoopNode sln = (SelfLoopNode)baseNode;
+				baseNode = sln.getLoop();
+			}
+			
+			Node newGraph = baseNode.deepCopy();
+						
+			m_subRoutes.add(newGraph);
 		}
 		return seenEndPoint;
 	}
@@ -322,10 +310,6 @@ public class RouteConstructor {
 			setParent(child);
 		}
 	}
-	
-	private void sortSubRoutes() {
-		Collections.sort(m_subRoutes);
-	}		
 	
 	private void createExclusions() {
 		m_exclusions = new ArrayList<Node>();

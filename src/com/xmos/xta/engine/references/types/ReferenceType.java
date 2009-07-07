@@ -21,6 +21,8 @@ public abstract class ReferenceType {
 		SRCLABEL,
 		CALL,
 		ERROR,
+		FUNCTIONSTART,
+		FUNCTIONEND
 	}
 	
 	ReferenceType(String ref, Type type) {

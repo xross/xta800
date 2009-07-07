@@ -1,7 +1,9 @@
 package com.xmos.xta.engine.analysis.controlflow;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.xmos.xta.engine.Notifier;
@@ -50,18 +52,20 @@ public class ThreadHandler {
 		return threadStarts;
 	}
 	
-	public void addTerminators(Collection<InstructionNode> threadStarts){
+	public Map<Integer, TreeSet<Node>> addTerminators(Collection<InstructionNode> threadStarts){
 		
-		
-		for(Node threadStart : threadStarts){
-			Set<Node> terminals  = new TreeSet<Node>();
+		Map<Integer, TreeSet<Node>> threadToEndPoints = new TreeMap<Integer, TreeSet<Node>>();
+		for(InstructionNode threadStart : threadStarts){
+			TreeSet<Node> terminals  = new TreeSet<Node>();
 			findTerminals(threadStart, new TreeSet<Node>(), terminals);
 			NullNode nullNode = new NullNode();
+			threadToEndPoints.put(threadStart.getStartPc(), terminals);
 			for(Node terminal : terminals){
 				if(!terminal.isNullNode())
 				CommonMethods.connect(nullNode, terminal);
 			}
 		}
+		return threadToEndPoints;
 	}
 	
 	private void findTerminals(Node node, Set<Node> seen, Set<Node> terminals) {

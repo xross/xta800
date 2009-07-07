@@ -1,6 +1,8 @@
 package com.xmos.xta.engine.analysis.structural;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.TreeSet;
 
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -10,16 +12,21 @@ public class StructureGraph {
 	private Collection<FunctionNode> m_threads;
 	private Collection<FunctionNode> m_functions;
 	private Node m_searchNode;
+	private Map<Integer, TreeSet<Node>> m_pcToEndPoints;
 	
-	
-	public StructureGraph(Collection<FunctionNode> threads, Collection<FunctionNode> functions) {
+	public StructureGraph(Collection<FunctionNode> threads, Collection<FunctionNode> functions, Map<Integer, TreeSet<Node>> pcToEndPoints) {
 		super();
 		assert(threads.size() > 0);
 		m_threads = threads;
 		m_functions = functions;
+		m_pcToEndPoints = pcToEndPoints;
 		removeLinks();
 	}
 
+	public Map<Integer, TreeSet<Node>> getPcToEndPoints(){
+		return m_pcToEndPoints;
+	}
+	
 	public Collection<FunctionNode> getThreads() {
 		return m_threads;
 	}

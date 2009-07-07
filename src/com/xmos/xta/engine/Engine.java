@@ -237,7 +237,7 @@ public class Engine implements Notifier {
 					functionName, m_executableFile, m_nodeId, m_coreId));
 			return false;
 		} else {
-			RouteDescription routeDescription = new RouteDescription(functionName, m_nodeId, m_coreId);		
+			RouteDescription routeDescription = new RouteDescription(functionName, this, m_nodeId, m_coreId);		
 			return analyseRouteSafely(routeDescription);
 		}
 	}
@@ -958,7 +958,9 @@ public class Engine implements Notifier {
 				FunctionHandler fh = new FunctionHandler(id);
 				if (!fh.addFunctions()) 
 					return false;
-				th.addTerminators(threadStartNodes);
+				
+				Map<Integer, TreeSet<Node>> pcToEndPoints = th.addTerminators(threadStartNodes);
+				pcToEndPoints.putAll(fh.getFunctionsToEndPoints());
 				
 				Set<InstructionNode> starts = new TreeSet<InstructionNode>();
 				starts.addAll(fh.getKnownFuncStarts());
@@ -980,7 +982,7 @@ public class Engine implements Notifier {
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
 				
-				if (!sae.analyse(this, newFunctionNames.get(nodeId, coreId)))
+				if (!sae.analyse(this, newFunctionNames.get(nodeId, coreId), pcToEndPoints))
 					return false;
 				
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
