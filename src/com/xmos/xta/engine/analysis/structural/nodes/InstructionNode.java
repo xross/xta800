@@ -47,8 +47,7 @@ public class InstructionNode extends Node {
 		return in;
 	}
 	
-    public String getTypeName() {
-    	
+    public String getTypeName() {    	
         return "instruction";
     }
 	
@@ -58,7 +57,6 @@ public class InstructionNode extends Node {
     
 	public String toString() {
 		return m_inst.toString();
-//		return "instruction" + m_id;
 	}
 
 	public Collection<Node> getContainedNodes() {

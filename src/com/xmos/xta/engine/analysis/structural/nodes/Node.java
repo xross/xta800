@@ -78,7 +78,6 @@ public abstract class Node implements Comparable<Node>{
 		return m_id;
 	}
 	
-	//private static final boolean s = true;
 	private static final boolean s = false;
 	public int compareTo(Node node) {
 		if (s) {
