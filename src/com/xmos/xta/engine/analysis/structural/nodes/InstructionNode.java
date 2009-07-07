@@ -56,7 +56,8 @@ public class InstructionNode extends Node {
     }
     
 	public String toString() {
-		return m_inst.toString();
+		return "instruction" + m_id;
+		//return m_inst.toString();
 	}
 
 	public Collection<Node> getContainedNodes() {

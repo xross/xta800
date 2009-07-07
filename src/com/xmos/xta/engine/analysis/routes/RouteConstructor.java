@@ -61,7 +61,6 @@ public class RouteConstructor {
 	}
 
 	public boolean analyse() {
-		
 		resetParent();
 		boolean seenEndPoint = false;
 		Collection<Node> startNodes =getReferencedNodes(m_description.getStartPoint());
@@ -80,7 +79,6 @@ public class RouteConstructor {
 		} else {
 			return true;
 		}
-		
 	}
 
 	private boolean follow(boolean seenEndPoint, Collection<Node> endNodes,
@@ -89,8 +87,9 @@ public class RouteConstructor {
 
 		m_structureGraph.removeLinks();
 		m_excludedRouteNodes = new TreeSet<Node>();
-		seenEndPoint |= explore(start, workingSet, endNodes, null);
 		
+		seenEndPoint |= explore(start, workingSet, endNodes, null);
+		//StructuralAnalysisEngine.dumpTree(workingSet);
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 		pruneGraphOfExcludedPaths(workingSet);
 		
