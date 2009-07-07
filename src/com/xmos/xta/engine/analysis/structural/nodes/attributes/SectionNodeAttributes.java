@@ -20,16 +20,16 @@ public class SectionNodeAttributes extends NodeAttributes {
 	// --------------------------------------------------------------------- //
 	// Statistics Methods
 	// --------------------------------------------------------------------- //	
-	public double getTimeTaken(Case c, boolean ignoreIterations) {
+	public double getTimeTaken(Case c, Status status, boolean ignoreIterations) {
 		if (!getCachedTimeTakenValid(c) && !ignoreIterations) {
 			double value = 0;
 			for (Node child : getNode().getChildren()) {
 				if (m_setOptions.get(child))
-				    value += child.getAttributes().getTimeTaken(c, ignoreIterations);
+				    value += child.getAttributes().getTimeTaken(c, status, ignoreIterations);
 			}
 			Node option = getNode().getUnsetOption(c, ignoreIterations);
 			if (option != null) {
-				value += option.getAttributes().getTimeTaken(c, ignoreIterations); 
+				value += option.getAttributes().getTimeTaken(c, status, ignoreIterations); 
 			}			
 			setCachedTimeTaken(c, value);
 			setCachedTimeTakenValid(c, true);
@@ -37,16 +37,16 @@ public class SectionNodeAttributes extends NodeAttributes {
 		return getCachedTimeTaken(c);			
 	}
 
-	public long getNumCycles(Case c, boolean ignoreIterations) {
+	public long getNumCycles(Case c, Status status, boolean ignoreIterations) {
     	if (!getCachedNumCyclesValid(c) && !ignoreIterations) {
     		long value = 0;
     		for (Node child : getNode().getChildren()) {
     			if (m_setOptions.get(child))
-    			    value += child.getAttributes().getNumCycles(c, ignoreIterations);
+    			    value += child.getAttributes().getNumCycles(c, status, ignoreIterations);
     		}		
     		Node option = getNode().getUnsetOption(c, ignoreIterations);
     		if (option != null) {
-    			value += option.getAttributes().getNumCycles(c, ignoreIterations); 
+    			value += option.getAttributes().getNumCycles(c, status, ignoreIterations); 
     		}    		
 			setCachedNumCycles(c, value);
 			setCachedNumCyclesValid(c, true);
@@ -54,16 +54,16 @@ public class SectionNodeAttributes extends NodeAttributes {
 		return getCachedNumCycles(c);
 	}
 
-	public long getNumInstructions(Case c, boolean ignoreIterations) {
+	public long getNumInstructions(Case c, Status status, boolean ignoreIterations) {
 		if (!getCachedNumInstructionsValid(c) && !ignoreIterations) {
 			long value = 0;
 			for (Node child : getNode().getChildren()) {
 				if (m_setOptions.get(child))
-				    value += child.getAttributes().getNumInstructions(c, ignoreIterations);
+				    value += child.getAttributes().getNumInstructions(c, status, ignoreIterations);
 			}		
 			Node option = getNode().getUnsetOption(c, ignoreIterations);
 			if (option != null) {
-				value += option.getAttributes().getNumInstructions(c, ignoreIterations); 
+				value += option.getAttributes().getNumInstructions(c, status, ignoreIterations); 
 			}			
 			setCachedNumInstructions(c, value);
 			setCachedNumInstructionsValid(c, true);
@@ -71,16 +71,16 @@ public class SectionNodeAttributes extends NodeAttributes {
 		return getCachedNumInstructions(c);
 	}
 
-	public long getNumFNops(Case c, boolean ignoreIterations) {
+	public long getNumFNops(Case c, Status status, boolean ignoreIterations) {
 		if (!getCachedNumFnopsValid(c) && !ignoreIterations) {
 			long value = 0;
 			for (Node child : getNode().getChildren()) {
 				if (m_setOptions.get(child))
-				    value += child.getAttributes().getNumFNops(c, ignoreIterations);
+				    value += child.getAttributes().getNumFNops(c, status, ignoreIterations);
 			}		
 			Node option = getNode().getUnsetOption(c, ignoreIterations);
 			if (option != null) {
-				value += option.getAttributes().getNumFNops(c, ignoreIterations); 
+				value += option.getAttributes().getNumFNops(c, status, ignoreIterations); 
 			}			
 			setCachedNumFnops(c, value);
 			setCachedNumFnopsValid(c, true);

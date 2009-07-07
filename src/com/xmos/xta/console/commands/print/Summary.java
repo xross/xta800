@@ -6,6 +6,8 @@ import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.routes.RouteTiming;
+import com.xmos.xta.engine.analysis.routes.RouteTiming.Level;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status;
 
 public class Summary extends Command {
 	public Summary() {
@@ -58,21 +60,21 @@ public class Summary extends Command {
 					console.display(String.format("Route(%d) %s\n%s\n", 
 							route.getRouteId(), 
 							route.getDescription(),
-							routeTiming.getDescription(true))); 
+							routeTiming.getDescription(Level.DETAILED))); 
 				}
 			} else {
 				if (displayFailures) {
 					console.display(String.format("Route(%d) %s\n%s\n", 
 							route.getRouteId(), 
 							route.getDescription(),
-							routeTiming.getDescription(true))); 
+							routeTiming.getDescription(Level.DETAILED))); 
 				}
 			}			
 		} else {
 			console.display(String.format("Route(%d) %s\n%s\n", 
 					route.getRouteId(), 
 					route.getDescription(),
-			        routeTiming.getDescription(false)));
+			        routeTiming.getDescription(Level.SIMPLE)));
 		}
 	}
 		
@@ -89,13 +91,15 @@ public class Summary extends Command {
 				
 			if (routeTiming.isTimingSpecified()) {			
 				if (routeTiming.passedTiming()) {
-					int frequency = routeTiming.getMinFrequency();
-					if (frequency > minFrequency) {
-						minFrequency = routeTiming.getMinFrequency();
+					Status status = new Status();
+					int frequency = routeTiming.getMinFrequency(status);
+					if (status.isComplete() && (frequency > minFrequency)) {
+						minFrequency = frequency;
 					}
 				} else {
-					double violationTime = routeTiming.getViolationTime();				
-					if (violationTime > maxViolationTime) {
+					Status status = new Status();
+					double violationTime = routeTiming.getViolationTime(status);				
+					if (status.isComplete() && (violationTime > maxViolationTime)) {
 						maxViolationTime = violationTime;
 					}
 					++numFails;				

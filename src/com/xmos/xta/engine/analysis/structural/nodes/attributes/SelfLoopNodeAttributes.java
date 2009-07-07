@@ -7,6 +7,7 @@ public class SelfLoopNodeAttributes extends NodeAttributes {
 	
 	public SelfLoopNodeAttributes(Node node) {
 		super(node);
+		m_numIterations = 0;
 	}
 
 	public boolean setLoopIterations(long numIterations) {

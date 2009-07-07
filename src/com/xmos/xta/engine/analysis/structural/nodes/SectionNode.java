@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.Stack;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.SectionNodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
@@ -207,6 +208,7 @@ public class SectionNode extends Node {
 			return null;
 		
 		// Finds the best/worst case of the real options..
+		Status status = new Status();
 		Iterator<Node> iter = nodes.iterator();
 		Node caseNode = iter.next();		
 		while (iter.hasNext()) {
@@ -214,8 +216,8 @@ public class SectionNode extends Node {
 			switch (c) {
 			case WORST:
 				// Finds the worst case option...
-				double w1 = node.getAttributes().getTimeTaken(c, ignoreIterations);
-				double w2 = caseNode.getAttributes().getTimeTaken(c, ignoreIterations);				
+				double w1 = node.getAttributes().getTimeTaken(c, status, ignoreIterations);
+				double w2 = caseNode.getAttributes().getTimeTaken(c, status, ignoreIterations);				
 				if (w1 > w2) {
 				    caseNode = node;
 				}
@@ -223,8 +225,8 @@ public class SectionNode extends Node {
 				
 			case BEST:
 				// Finds the best (non-zero) case option... 
-				double b1 = node.getAttributes().getTimeTaken(c, ignoreIterations);
-				double b2 = caseNode.getAttributes().getTimeTaken(c, ignoreIterations);				
+				double b1 = node.getAttributes().getTimeTaken(c, status, ignoreIterations);
+				double b2 = caseNode.getAttributes().getTimeTaken(c, status, ignoreIterations);				
 				if ((b2 == 0) && (b1 != 0)) {
 					caseNode = node;
 				} else if ((b1 > 0) && (b1 < b2)) {

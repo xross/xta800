@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.engine.analysis.structural.nodes.edges.Edges;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -71,10 +72,9 @@ public abstract class Node implements Comparable<Node>{
 	private static final boolean s = false;
 	public int compareTo(Node node) {
 		if (s) {
-			double thisTimeTaken = getAttributes().getTimeTaken(Case.WORST,
-					false);
-			double nodeTimeTaken = node.getAttributes().getTimeTaken(
-					Case.WORST, false);
+			Status status = new Status();
+			double thisTimeTaken = getAttributes().getTimeTaken(Case.WORST, status, false);
+			double nodeTimeTaken = node.getAttributes().getTimeTaken(Case.WORST, status, false);
 
 			if (thisTimeTaken - nodeTimeTaken != 0) {
 				return Integer.signum((int) (thisTimeTaken - nodeTimeTaken));
@@ -249,6 +249,14 @@ public abstract class Node implements Comparable<Node>{
 			node = node.getParent();
 		}
 		return node;		
+	}
+	
+	public Node getEnclosingInfiniteLoopNode() {		
+		Node node = this;
+		while ((node != null) && !node.isInfiniteLoopNode() && !node.isInfiniteSelfLoopNode()) {
+			node = node.getParent();
+		}
+		return node;
 	}
 	
 	public boolean checkBackTrail(Stack<ReferenceType> referenceTypes) {
