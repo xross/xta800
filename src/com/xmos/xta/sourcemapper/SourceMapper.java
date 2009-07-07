@@ -3,6 +3,8 @@ package com.xmos.xta.sourcemapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -196,6 +198,9 @@ public class SourceMapper {
     private List<Function> createFunctions() {
     	List<Function> functions = new LinkedList<Function>();
     	List<InstructionNode> instList = m_instructionDecoder.getInstructions();
+    	
+    	Map<Integer, Function> pcToFunction = new HashMap<Integer, Function>();
+    	
     	for(InstructionNode inst : m_starts){
     		int startIndex = instList.indexOf(inst);
     		List<Line> functionAssemby = new LinkedList<Line>();
@@ -212,10 +217,20 @@ public class SourceMapper {
     		for(Line assembly : functionAssemby){
     			m_pcToFunction.put(assembly.getLineNumber(), function);
     		}
-    		
+    		pcToFunction.put(inst.getStartPc(), function);
     		functions.add(function);
     	}
-    	return functions;
+    	
+    	//sort the functions into ascending pc order
+    	List<Integer> pcs = new LinkedList<Integer>();
+    	pcs.addAll(pcToFunction.keySet());
+    	Collections.sort(pcs);
+    	
+    	List<Function> sortedFunctions = new LinkedList<Function>();
+    	for(int pc : pcs){
+    		sortedFunctions.add(pcToFunction.get(pc));
+    	}
+    	return sortedFunctions;
     }
     
     private String getFunctionName(InstructionNode inst) {
