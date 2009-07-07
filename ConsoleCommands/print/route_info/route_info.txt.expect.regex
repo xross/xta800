@@ -1,3 +1,2 @@
-function: main , Node: 0, Core: 0
-Worst Case Timing:      \d+\.\d+ ns,   \d+\.\d+ mhz,       \d+ thread cycles
-No Timing Specified
+function: main 
+    No Timing Specified
