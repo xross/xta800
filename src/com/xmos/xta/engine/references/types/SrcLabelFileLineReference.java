@@ -9,7 +9,7 @@ public class SrcLabelFileLineReference extends ReferenceType {
 	}
 
 	public ReferenceType create(Engine engine, String reference) {
-		if (checkTypeString(reference, Type.SRCLABEL, 1) &&
+		if (checkTypeString(reference, Type.SRCLABEL, 2) &&
 		    isSourceReference(reference) && 
 			inSrcLabelTable(reference, engine.getSrcLabelTable())) {
 	    	return new SrcLabelFileLineReference(reference);

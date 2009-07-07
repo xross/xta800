@@ -313,6 +313,7 @@ public class Engine implements Notifier {
 		if (!foundAtLeastOneEndPoint ) {
 			notify(Notifier.NOTIFY_ERROR, "No valid paths of execution");
 			return false;
+			
 		} else {
 			int currentSize = m_routes.size();
 			for(Node subRoute : routeConstructor.getSubRoutes()){
@@ -323,9 +324,8 @@ public class Engine implements Notifier {
 				setSelectedRoute(m_routes.get(currentSize));
 				notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
 			} else {
-				notify(Notifier.NOTIFY_WARNING, "No paths added");
+				notify(Notifier.NOTIFY_WARNING, "No valid paths of execution");
 			}
-	
 			return true;
 		}		
 	}
