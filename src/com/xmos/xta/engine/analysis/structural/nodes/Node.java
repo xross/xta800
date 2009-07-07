@@ -45,6 +45,8 @@ public abstract class Node implements Comparable<Node>{
 	public abstract Set<Integer> getPCs();	
 	public abstract LinkedList<XtaInstruction> getInstructions();
 	
+	public abstract void getTimeSpread(Collection<Integer> times);
+	
 	/**
 	 * This returns all the instruction nodes that could possible be contained within this node
 	 */

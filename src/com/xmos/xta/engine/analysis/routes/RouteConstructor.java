@@ -75,8 +75,12 @@ public class RouteConstructor {
 		setParents();
 		setUnknowns();				
 		setSelfLoops();	
+		if(m_description.getMode() == RouteMode.PATH){
+			return seenEndPoint;
+		} else {
+			return true;
+		}
 		
-		return seenEndPoint;
 	}
 
 	private boolean follow(boolean seenEndPoint, Collection<Node> endNodes,

@@ -190,4 +190,10 @@ public class InfiniteLoopNode extends Node {
 		list.add(m_loopHeader);
 		return list;
 	}
+
+	@Override
+	public void getTimeSpread(Collection<Integer> times) {
+		// TODO Auto-generated method stub
+		
+	}
 }

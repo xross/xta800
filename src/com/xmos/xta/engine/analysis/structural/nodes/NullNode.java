@@ -96,5 +96,8 @@ public class NullNode extends IBufferNode {
 	public boolean isNullNode() {
 		return true;
 	}
-
+	
+	public void getTimeSpread(Collection<Integer> times) {
+	
+	}
 }

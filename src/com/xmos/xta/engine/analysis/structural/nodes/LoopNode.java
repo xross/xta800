@@ -190,4 +190,8 @@ public class LoopNode extends Node {
 		list.add(m_loopHeader);
 		return list;
 	}
+	
+	public void getTimeSpread(Collection<Integer> times) {
+		assert(false);		
+	}
 }

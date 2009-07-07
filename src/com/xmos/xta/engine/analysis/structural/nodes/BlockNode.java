@@ -20,14 +20,7 @@ public class BlockNode extends IBufferNode {
 	public BlockNode(BlockNode block) {
 		m_insts = block.m_insts;
 		m_attributes = new BlockNodeAttributes(this);
-		/*
-		for(InstructionNode inst : m_insts){
-			if(inst.isUnresolved()){
-				this.setUnresolved(true);
-				break;
-			}
-		}
-		*/
+
 	}
 	
 	public BlockNode(List<InstructionNode> insts) {
@@ -153,6 +146,13 @@ public class BlockNode extends IBufferNode {
 			insts.add(inst);
 		}
 		m_insts = insts;
+	}
+
+	public void getTimeSpread(Collection<Integer> times) {
+		for(Integer time : times){
+			//TODO this will do for now
+			time += m_insts.size();
+		}
 	}
 
 }
