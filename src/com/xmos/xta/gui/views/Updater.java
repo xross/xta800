@@ -1,7 +1,8 @@
-package com.xmos.xta.gui.views.structure;
+package com.xmos.xta.gui.views;
 
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
+
 
 public class Updater implements Runnable {
     private Display m_display;

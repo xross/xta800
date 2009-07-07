@@ -98,8 +98,10 @@ public class Engine implements Notifier {
 	}
 	
 	public void notify(String message, String argument) {
-		if (m_notifier != null)
+		if (m_notifier != null){
 			m_notifier.notify(message, argument);
+		}
+			
 	}
 
 	public Config getConfig() {
@@ -924,7 +926,7 @@ public class Engine implements Notifier {
 	// ===================================================================== //
 	private boolean initialiseGlobalStructure(XeLoader xeLoader, Sections sections, FileFinder fileFinder) {
 		assert(fileFinder != null);
-		
+		notify(Notifier.HOLD_MESSAGES, "");
 		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
 		NodeCoreCollection<ControlFlowGraph> newCfg = new NodeCoreCollection<ControlFlowGraph>();
 		NodeCoreCollection<InstructionDecoder> newInstructionDecoder = new NodeCoreCollection<InstructionDecoder>();
@@ -946,7 +948,6 @@ public class Engine implements Notifier {
 					th.getThreadNodes(sections.getThreadStartPoints(nodeId, coreId), "thread start");
 				Set<InstructionNode> threadStopNodes = 
 					th.getThreadNodes(sections.getThreadStopPoints(nodeId, coreId), "thread stop");
-
 				
 				threadStartNodes = th.ensureThreadStartExists(threadStartNodes);
 
@@ -962,7 +963,6 @@ public class Engine implements Notifier {
 				Set<InstructionNode> starts = new TreeSet<InstructionNode>();
 				starts.addAll(fh.getKnownFuncStarts());
 				starts.addAll(threadStartNodes);
-
 				
 				ensureAllFunctionsAreNamed(xeLoader.getSymbolTable(nodeId, coreId), 
 						newFunctionNames.get(nodeId, coreId), fh.getKnownFuncStarts(), threadStartNodes);
@@ -978,9 +978,7 @@ public class Engine implements Notifier {
 				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts(), fh.getFunctions());
 				newCfg.add(nodeId, coreId, cfg);
 				
-				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
-				
 				
 				if (!sae.analyse(this, newFunctionNames.get(nodeId, coreId)))
 					return false;
@@ -993,6 +991,7 @@ public class Engine implements Notifier {
 		m_structuralGraph = newStructuralGraph;
 		m_functionNames = newFunctionNames;
 		m_sourceMapper = newSourceMappers;
+		notify(Notifier.RELEASE_MESSAGES, "");
 		return true;
 	}
 

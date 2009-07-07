@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.structure;
+package com.xmos.xta.gui.views;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -16,8 +16,11 @@ import com.xmos.xta.gui.views.viewnode.ViewNode;
 public class RendererControl {
     public static final boolean DEBUG = false;
 
-    private int m_borderX = 2;
-    private int m_borderY = 2;
+    private int m_leftBorder;
+    private int m_topBorder;
+    private int m_rightBorder;
+    private int m_bottomBorder;
+    
     private int m_pixelsX;
     private int m_pixelsY;
 
@@ -42,8 +45,13 @@ public class RendererControl {
     private Display m_display;
     private Image m_canvasImage;
 
-	public RendererControl(Display display) {
+	public RendererControl(Display display, int leftBorder, int topBorder, int rightBorder, int bottomBorder) {
 		m_display = display;
+	    m_leftBorder = leftBorder;
+		m_topBorder = topBorder;
+	    m_rightBorder = rightBorder;
+	    m_bottomBorder = bottomBorder;
+
 		m_canvasImage = new Image(m_display, 1, 1);
 		
 	    m_imageChanged = false;
@@ -78,7 +86,7 @@ public class RendererControl {
 	public synchronized void refresh() {
 		if (DEBUG) System.out.println("RendererControl::refresh()");
 	    if (m_viewNode != null) {
-			m_viewNode.annotateNodes(m_borderX, m_borderY, true, true);
+			m_viewNode.annotateNodes(m_leftBorder, m_topBorder, true, true);
 			updatePixelsXy();
 		}
     	m_renderRequired = true;
@@ -146,14 +154,18 @@ public class RendererControl {
 		return m_previousSelections.remove();
 	}
 
-	public synchronized void clearRenderRequired() {
+	public synchronized boolean getAndClearRenderRequired() {
 		if (DEBUG) System.out.println("RendererControl::clearRenderRequired()");
+		boolean renderRequired = m_renderRequired;
 		m_renderRequired = false;
+		return renderRequired;
 	}
 
-	public synchronized void clearImageMoved() {
+	public synchronized boolean getAndClearImageMoved() {
 		if (DEBUG) System.out.println("RendererControl::clearImageMoved()");
+		boolean imageMoved = m_imageMoved;
 		m_imageMoved = false;
+		return imageMoved;
 	}
 	
 	public synchronized Image getResizedCanvas() {
@@ -215,14 +227,6 @@ public class RendererControl {
 		return m_selectionChanged;
 	}
 
-	public boolean renderRequired() {
-		return m_renderRequired;
-	}
-
-	public boolean imageMoved() {
-		return m_imageMoved;
-	}
-
 	public boolean canvasResized() {
 		return m_canvasResized;
 	}
@@ -259,8 +263,8 @@ public class RendererControl {
 	}
 	
 	private synchronized void updatePixelsXy() {
-    	m_pixelsX = (2 * m_borderX);
-    	m_pixelsY = (2 * m_borderY);
+    	m_pixelsX = (m_leftBorder + m_rightBorder);
+    	m_pixelsY = (m_topBorder + m_bottomBorder);
     	if (m_viewNode != null) {
     		m_pixelsX += m_viewNode.getPixelsX();
     		m_pixelsY += m_viewNode.getPixelsY();

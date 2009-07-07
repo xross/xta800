@@ -4,9 +4,9 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.gui.views.structure.ZoomedCanvasProperties;
+import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
-public class StructurePathNode extends ViewNode {
+public class StructurePathNode extends StructureNode {
     public static final boolean DEBUG = false;
 
     private int m_connectorLen = 7;
@@ -80,17 +80,17 @@ public class StructurePathNode extends ViewNode {
 				isBestCase, isWorstCase);
     }
 
-	public void annotateNodes(int xOffset, int yOffset, boolean isBestCase, boolean isWorstCase) {
-		if (DEBUG) System.out.printf("Annotate StructurePath (%d, %d)\n", xOffset, yOffset);
+	public void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase) {
+		if (DEBUG) System.out.printf("Annotate StructurePath (%d, %d)\n", offsetX, offsetY);
 
-		m_pixelOffsetX = xOffset;
-		m_pixelOffsetY = yOffset;
+		m_pixelOffsetX = offsetX;
+		m_pixelOffsetY = offsetY;
 
     	int childOffsetX = m_borderX;
     	int childrenY = getChildrenY();
 		for (ViewNode child : getChildren()) {
 			int childY = child.getPixelsY();
-    		child.annotateNodes(xOffset + childOffsetX, yOffset + m_borderY + ((childrenY - childY) / 2),
+    		child.annotateNodes(offsetX + childOffsetX, offsetY + m_borderY + ((childrenY - childY) / 2),
     				isBestCase, isWorstCase);
             childOffsetX += child.getPixelsX() + m_connectorLen;
     	}

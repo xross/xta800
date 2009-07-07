@@ -5,11 +5,10 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.gui.views.structure.ZoomedCanvasProperties;
+import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
-public class StructureFunctionNode extends ViewNode {
+public class StructureFunctionNode extends StructureNode {
     public static final boolean DEBUG = false;
-    private static final int NAME_PADDING = 5;
 
     private int m_borderX = 5;
     private int m_borderY = 5;
@@ -66,10 +65,10 @@ public class StructureFunctionNode extends ViewNode {
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
     	if (isSelected()) {
     		gc.setLineWidth(getLineWidth() + 1);
-           	gc.drawRectangle(m_renderX + 1, m_renderY + 1, m_width - 1, m_height - 1);
+           	gc.drawRectangle(m_renderX + 1, m_renderY + 1, (int)m_width - 1, (int)m_height - 1);
     		gc.setLineWidth(getLineWidth());
     	} else {
-    		gc.drawRectangle(m_renderX, m_renderY, m_width, m_height);
+    		gc.drawRectangle(m_renderX, m_renderY, (int)m_width, (int)m_height);
     	}
 
        	if (!isFolded()) {
@@ -105,8 +104,8 @@ public class StructureFunctionNode extends ViewNode {
        	}
 		
 		// Draw the function name
-		if (scaleY(m_height) > gc.getFontMetrics().getHeight() &&
-			scale(m_width) > m_textAreaX) {
+		if (scale((int)m_height) > gc.getFontMetrics().getHeight() &&
+			scale((int)m_width) > m_textAreaX) {
 	        int textBase = scaleY(m_pixelOffsetY + m_borderY);
 			gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
@@ -115,16 +114,16 @@ public class StructureFunctionNode extends ViewNode {
 		}
 	}
 
-	public void annotateNodes(int xOffset, int yOffset, boolean isBestCase, boolean isWorstCase) {
-		if (DEBUG) System.out.printf("Annotate StructureFunction (%d, %d)\n", xOffset, yOffset);
-        m_pixelOffsetX = xOffset;
-		m_pixelOffsetY = yOffset;
+	public void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase) {
+		if (DEBUG) System.out.printf("Annotate StructureFunction (%d, %d)\n", offsetX, offsetY);
+        m_pixelOffsetX = offsetX;
+		m_pixelOffsetY = offsetY;
 
     	int childrenY = getChildrenY();
-    	int childOffsetY = yOffset + m_borderY + m_textAreaY;
+    	int childOffsetY = offsetY + m_borderY + m_textAreaY;
 		for (ViewNode child : getChildren()) {
 			int childY = child.getPixelsY();
-    		child.annotateNodes(xOffset + m_borderX + m_textAreaX, childOffsetY + ((childrenY - childY) / 2),
+    		child.annotateNodes(offsetX + m_borderX + m_textAreaX, childOffsetY + ((childrenY - childY) / 2),
     				isBestCase, isWorstCase);
     	}
 		

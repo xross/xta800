@@ -9,33 +9,18 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.gui.views.Renderer;
+import com.xmos.xta.gui.views.RendererControl;
+import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 import com.xmos.xta.gui.views.viewnode.ViewNode;
 
-public class Renderer implements Runnable {
-    public static final boolean DEBUG = false;
+public class StructureRenderer extends Renderer {
 
-    private static final int MAX_IMAGE_SIZE = 1024 * 1024 * 50;
-
-    private Display m_display;
-    private RendererControl m_control;
-    private ZoomedCanvasProperties m_canvasProperties;
-
-    private Image m_image;
-    private boolean m_imageTooLarge;
+	private boolean m_imageTooLarge;
+    private static final int MAX_IMAGE_SIZE = 1024 * 1024 * 30;
     
-	public Renderer(Display display, RendererControl control, ZoomedCanvasProperties canvasProperties) {
-		if (DEBUG) System.out.printf("Renderer()\n");
-		m_display = display;
-		m_control = control;
-		m_canvasProperties = canvasProperties;
-		
-	    // Dimensions must be minimum of 1
-		m_image = new Image(m_display, 1, 1);
-
-	    // Determine font metrics
-        GC gc = new GC(m_image);
-        m_canvasProperties.setAverageCharWidth(gc.getFontMetrics().getAverageCharWidth());
-        gc.dispose();
+	public StructureRenderer(Display display, RendererControl control, ZoomedCanvasProperties canvasProperties) {
+		super(display, control, canvasProperties);
 	}
 
 	public void run() {
@@ -43,36 +28,33 @@ public class Renderer implements Runnable {
 		while (!done) {
 			done = m_control.waitForChange();
 			if (!done) {
+				boolean renderRequired = m_control.getAndClearRenderRequired();
+				boolean canvasResized = m_control.canvasResized();
+				boolean imageMoved = m_control.getAndClearImageMoved();
+
 				if (m_control.hasPreviousSelection()) {
-					selectionChanged();
+					selectionChanged(renderRequired);
 				}
 				
-			    if (m_imageTooLarge) {
-				    if (m_control.renderRequired() || m_control.canvasResized()) {
-				    	updateCanvasProperties();
-				    }
+			    if (renderRequired || (m_imageTooLarge && canvasResized)) {
+			    	updateCanvasProperties();
+			    }
 
-				    if (m_control.renderRequired() || m_control.imageMoved() || m_control.canvasResized()) {
+			    if (m_imageTooLarge) {
+				    if (renderRequired || imageMoved || canvasResized) {
 			    		m_display.syncExec(new Runnable() {
 			    			public void run() {
 			    				render(m_control.getOffsetX(), m_control.getOffsetY());
 			    			}});
-						m_control.clearRenderRequired();
-						m_control.clearImageMoved();
 			    	}
 					m_control.updateCanvasImages(m_image, 0);
 					
 			    } else {
-				    if (m_control.renderRequired()) {
-				    	updateCanvasProperties();
-				    }
-
-			    	if (m_control.renderRequired()) {
+			    	if (renderRequired) {
 						m_display.syncExec(new Runnable() {
 							public void run() {
 								render(0, 0);
 							}});
-						m_control.clearRenderRequired();
 			    	}
 					m_control.updateCanvasImages(m_image, m_control.getOffsetX());
 			    	
@@ -82,7 +64,7 @@ public class Renderer implements Runnable {
 		}
 	}
 
-	private void render(int offsetX, int offsetY) {
+	protected void render(int offsetX, int offsetY) {
 		if (DEBUG) System.out.printf("StructureRenderer::render(%d, %d)\n", offsetX, offsetY);
 
 	    GC gc = new GC(m_image);
@@ -106,7 +88,7 @@ public class Renderer implements Runnable {
 	    if (DEBUG) System.out.printf("StructureRenderer::render() done\n");
 	}
 
-	private void selectionChanged() {
+	private void selectionChanged(boolean renderRequired) {
 	    ViewNode viewNode = m_control.getViewNode();
 		List<Node> currentSelection = m_control.getCurrentSelection();
 		m_canvasProperties.setSelected(currentSelection);
@@ -115,7 +97,7 @@ public class Renderer implements Runnable {
     		// Must iterate over the previous selections in order to clear the list
 			List<Node> previousSelection = m_control.getPreviousSelection();
 
-			if (m_control.renderRequired() || (viewNode == null) ||
+			if (renderRequired || (viewNode == null) ||
 				(previousSelection.size() == 0) || m_imageTooLarge) {
     			continue;
     		}
