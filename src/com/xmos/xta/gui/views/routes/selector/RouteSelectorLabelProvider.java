@@ -3,6 +3,7 @@ package com.xmos.xta.gui.views.routes.selector;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
 
+import com.xmos.xta.engine.analysis.routes.RouteTiming.Level;
 import com.xmos.xta.gui.icons.Icons;
 
 public class RouteSelectorLabelProvider extends CellLabelProvider {
@@ -24,9 +25,6 @@ public class RouteSelectorLabelProvider extends CellLabelProvider {
 		if (DEBUG) System.out.printf("RouteSelectorLabelProvider: getToolTipText\n");	
 
 		RouteNode routeNode = (RouteNode)element;		
-		String toolTip = "Node: " + routeNode.getRoute().getRouteDescription().getNodeId() + "\n" +
-							"Core: " + routeNode.getRoute().getRouteDescription().getNodeId() +"\n" + 
-							routeNode.getRoute().getRouteTiming().getDescription(true).substring(4).replaceAll("\n", "");
-		return toolTip;
+		return routeNode.getRoute().getRouteTiming().getDescription(Level.COMPLETE);
 	}
 }

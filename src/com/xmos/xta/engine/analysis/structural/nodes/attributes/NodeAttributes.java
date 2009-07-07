@@ -3,6 +3,7 @@ package com.xmos.xta.engine.analysis.structural.nodes.attributes;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status.S;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class NodeAttributes {
@@ -17,6 +18,8 @@ public class NodeAttributes {
 		UNKNOWN,
 		KNOWN,
 	}
+
+	public static final long INFINITE_ITERATIONS = -1;
 	
 	private double m_cachedWorstTimeTaken;
 	private long m_cachedWorstNumCycles;
@@ -27,6 +30,15 @@ public class NodeAttributes {
 	private long m_cachedBestNumInstructions;
 	private long m_cachedBestNumFnops;
 
+	private Status.S m_cachedWorstTimeTakenStatus;
+	private Status.S m_cachedWorstNumCyclesStatus;
+	private Status.S m_cachedWorstNumInstructionsStatus;
+	private Status.S m_cachedWorstNumFnopsStatus;
+	private Status.S m_cachedBestTimeTakenStatus;
+	private Status.S m_cachedBestNumCyclesStatus;
+	private Status.S m_cachedBestNumInstructionsStatus;
+	private Status.S m_cachedBestNumFnopsStatus;
+	
 	private boolean m_cachedWorstTimeTakenValid;
 	private boolean m_cachedWorstNumCyclesValid;
 	private boolean m_cachedWorstNumInstructionsValid;
@@ -58,92 +70,145 @@ public class NodeAttributes {
 		return m_node;
 	}
 	
+	// --------------------------------------------------------------------- //
+	// Display Methods
+	// --------------------------------------------------------------------- //				
 	public String getTimingSummary() { 
 	    String timingSummary = "";
 	    
-		// Displays the worst case timing.
-	    String worstCaseTimingStr = String.format("%.1fns", getTimeTaken(Case.WORST, false));	    
-	    timingSummary += String.format(" : %s", worstCaseTimingStr);
+	    timingSummary += String.format(" : %s", getTimeTakenStr(Case.WORST));
 		if (m_node.isBlockNode()) {					
-			timingSummary += String.format(" (x %d)", getTotalIterations(Case.WORST));
+			timingSummary += String.format(" (x %s)", getTotalIterationsStr(Case.WORST));
 		}
 
-		// Displays the best case timing.
-        String bestCaseTimingStr = String.format("%.1fns", getTimeTaken(Case.BEST, false));
-	    timingSummary += String.format(" / %s", bestCaseTimingStr);
+	    timingSummary += String.format(" / %s", getTimeTakenStr(Case.BEST));
 		if (m_node.isBlockNode()) {
-			timingSummary += String.format(" (x %d)", getTotalIterations(Case.BEST));
+			timingSummary += String.format(" (x %s)", getTotalIterationsStr(Case.BEST));
 		}
 	    return timingSummary;
 	}
 	
-	public String getTimingDetails() {		
-		String worstCaseTimeTaken    = String.format("%.1fns", getTimeTaken(Case.WORST, false));
-		String worstCaseThreadCycles = String.format("%d", getNumCycles(Case.WORST, false));
-		String worstCaseInstructions = String.format("%d", getNumInstructions(Case.WORST, false));
-		String worstCaseFnops        = String.format("%d", getNumFNops(Case.WORST, false));
-		
-		String bestCaseTimeTaken    = String.format("%.1fns", getTimeTaken(Case.BEST, false));
-		String bestCaseThreadCycles = String.format("%d", getNumCycles(Case.BEST, false));
-		String bestCaseInstructions = String.format("%d", getNumInstructions(Case.BEST, false));
-		String bestCaseFnops        = String.format("%d", getNumFNops(Case.BEST, false));			
-		
+	public String getTimingDetails() {
 		return String.format("%s %s\n", m_node.getTypeName(), m_node.getFunctionName()) +
-    	       String.format("Time taken:      \t%s / %s\n", worstCaseTimeTaken, bestCaseTimeTaken) +
-               String.format("Thread cycles:   \t%s / %s\n", worstCaseThreadCycles, bestCaseThreadCycles) +
-               String.format("Num Instructions:\t%s / %s\n", worstCaseInstructions, bestCaseInstructions) +
-               String.format("Num Fnops:       \t%s / %s\n", worstCaseFnops, bestCaseFnops) +            		   
-               String.format("Node Id:         \t%d\n", m_node.getId());
+    	       String.format("Time taken:       %s / %s\n", getTimeTakenStr(Case.WORST), getTimeTakenStr(Case.BEST)) +
+               String.format("Thread cycles:    %s / %s\n", getNumCyclesStr(Case.WORST), getNumCyclesStr(Case.BEST)) +
+               String.format("Num Instructions: %s / %s\n", getNumInstructionsStr(Case.WORST), getNumInstructionsStr(Case.BEST)) +
+               String.format("Num Fnops:        %s / %s\n", getNumFNopsStr(Case.WORST), getNumFNopsStr(Case.BEST)) +            		   
+               String.format("Node Id:          %d\n", m_node.getId());
 	}
-		
+	
+	private String getTimeTakenStr(Case c) {
+	    Status status = new Status();
+	    double value = getTimeTaken(c, status, false);	    
+	    switch (status.getStatus()) {
+	    case COMPLETED:  return String.format("%.1fns", value);
+	    case INFINITE:   return String.format("Infinity");
+	    case UNRESOLVED: return String.format("Unresolved");
+	    }
+	    assert(false);
+	    return "";
+	}
+	
+	private String getNumCyclesStr(Case c) {
+	    Status status = new Status();
+	    long value = getNumCycles(c, status, false);	    
+	    switch (status.getStatus()) {
+	    case COMPLETED:  return String.format("%d", value);
+	    case INFINITE:   return String.format("Infinity");
+	    case UNRESOLVED: return String.format("Unresolved");
+	    }
+	    assert(false);
+	    return "";
+	}
+
+	private String getNumInstructionsStr(Case c) {
+	    Status status = new Status();
+	    long value = getNumInstructions(c, status, false);	    
+	    switch (status.getStatus()) {
+	    case COMPLETED:  return String.format("%d", value);
+	    case INFINITE:   return String.format("Infinity");
+	    case UNRESOLVED: return String.format("Unresolved");
+	    }
+	    assert(false);
+	    return "";
+	}
+
+	private String getNumFNopsStr(Case c) {
+	    Status status = new Status();
+	    long value = getNumFNops(c, status, false);	    
+	    switch (status.getStatus()) {
+	    case COMPLETED:  return String.format("%d", value);
+	    case INFINITE:   return String.format("Infinity");
+	    case UNRESOLVED: return String.format("Unresolved");
+	    }
+	    assert(false);
+	    return "";
+	}
+	
+	private String getTotalIterationsStr(Case c) {
+		long totalIterations = getTotalIterations(c);
+		if (totalIterations == INFINITE_ITERATIONS) {
+			return "-";
+		}
+		return String.format("%d", totalIterations);
+	}
+	
 	// --------------------------------------------------------------------- //
 	// Statistics Methods
 	// --------------------------------------------------------------------- //			
-	public double getTimeTaken(Case c, boolean ignoreIterations) {
+	public double getTimeTaken(Case c, Status status, boolean ignoreIterations) {
 		if (!getCachedTimeTakenValid(c) && !ignoreIterations) {
 			double value = 0;
 			for (Node child : getNode().getChildren()) {
-				value += child.getAttributes().getTimeTaken(c, ignoreIterations);
+				value += child.getAttributes().getTimeTaken(c, status, ignoreIterations);
 			}
 			setCachedTimeTaken(c, value);
+			setCachedTimeTakenStatus(c, status.getStatus());
 			setCachedTimeTakenValid(c, true);
 		}
-		return getCachedTimeTaken(c);			
+		status.setStatus(getCachedTimeTakenStatus(c));
+		return getCachedTimeTaken(c);
 	}
 
-	public long getNumCycles(Case c, boolean ignoreIterations) {
+	public long getNumCycles(Case c, Status status, boolean ignoreIterations) {
 		if (!getCachedNumCyclesValid(c) && !ignoreIterations) {
 			long value = 0;
 			for (Node child : getNode().getChildren()) {
-				value += child.getAttributes().getNumCycles(c, ignoreIterations);
-			}			
+				value += child.getAttributes().getNumCycles(c, status, ignoreIterations);
+			}
 			setCachedNumCycles(c, value);
+			setCachedNumCyclesStatus(c, status.getStatus());
 			setCachedNumCyclesValid(c, true);
 		}
+		status.setStatus(getCachedNumCyclesStatus(c));
 		return getCachedNumCycles(c);
 	}
 
-	public long getNumInstructions(Case c, boolean ignoreIterations) {
+	public long getNumInstructions(Case c, Status status, boolean ignoreIterations) {
 		if (!getCachedNumInstructionsValid(c) && !ignoreIterations) {
 			long value = 0;
 			for (Node child : getNode().getChildren()) {
-				value += child.getAttributes().getNumInstructions(c, ignoreIterations);
+				value += child.getAttributes().getNumInstructions(c, status, ignoreIterations);
 			}			
 			setCachedNumInstructions(c, value);
+			setCachedNumInstructionsStatus(c, status.getStatus());
 			setCachedNumInstructionsValid(c, true);
 		}
+		status.setStatus(getCachedNumInstructionsStatus(c));
 		return getCachedNumInstructions(c);
 	}
 
-	public long getNumFNops(Case c, boolean ignoreIterations) {
+	public long getNumFNops(Case c, Status status, boolean ignoreIterations) {
 		if (!getCachedNumFnopsValid(c) && !ignoreIterations) {
 			long value = 0;
 			for (Node child : getNode().getChildren()) {
-				value += child.getAttributes().getNumFNops(c, ignoreIterations);
+				value += child.getAttributes().getNumFNops(c, status, ignoreIterations);
 			}			
 			setCachedNumFnops(c, value);
+			setCachedNumFnopsStatus(c, status.getStatus());
 			setCachedNumFnopsValid(c, true);
 		}
+		status.setStatus(getCachedNumFnopsStatus(c));
 		return getCachedNumFnops(c);
 	}	
 
@@ -159,7 +224,7 @@ public class NodeAttributes {
 	// Cached Statistics Methods
 	// --------------------------------------------------------------------- //			
 	void initialiseCachedStats() {
-		m_cachedWorstTimeTaken       = 0;		
+		m_cachedWorstTimeTaken       = 0;
 		m_cachedBestTimeTaken        = 0;		
 		m_cachedWorstNumCycles       = 0;
 		m_cachedBestNumCycles        = 0;
@@ -167,6 +232,15 @@ public class NodeAttributes {
 		m_cachedBestNumInstructions  = 0;
 		m_cachedWorstNumFnops        = 0;
 		m_cachedBestNumFnops         = 0;
+
+		m_cachedWorstTimeTakenStatus       = S.COMPLETED;
+		m_cachedBestTimeTakenStatus        = S.COMPLETED;		
+		m_cachedWorstNumCyclesStatus       = S.COMPLETED;
+		m_cachedBestNumCyclesStatus        = S.COMPLETED;
+		m_cachedWorstNumInstructionsStatus = S.COMPLETED;
+		m_cachedBestNumInstructionsStatus  = S.COMPLETED;
+		m_cachedWorstNumFnopsStatus        = S.COMPLETED;
+		m_cachedBestNumFnopsStatus         = S.COMPLETED;
 		
 		m_cachedWorstTimeTakenValid       = false; 
 		m_cachedBestTimeTakenValid        = false; 
@@ -208,6 +282,16 @@ public class NodeAttributes {
 	void setCachedNumInstructions(Case c, Long value) { if (c == Case.WORST) m_cachedWorstNumInstructions = value; else m_cachedBestNumInstructions = value; }
 	void setCachedNumFnops(Case c, Long value)        { if (c == Case.WORST) m_cachedWorstNumFnops = value;        else m_cachedBestNumFnops = value; }
 
+	Status.S getCachedTimeTakenStatus(Case c)       { return (c == Case.WORST) ? m_cachedWorstTimeTakenStatus       : m_cachedBestTimeTakenStatus; }	
+	Status.S getCachedNumCyclesStatus(Case c)       { return (c == Case.WORST) ? m_cachedWorstNumCyclesStatus       : m_cachedBestNumCyclesStatus; }
+	Status.S getCachedNumInstructionsStatus(Case c) { return (c == Case.WORST) ? m_cachedWorstNumInstructionsStatus : m_cachedBestNumInstructionsStatus; }
+	Status.S getCachedNumFnopsStatus(Case c)        { return (c == Case.WORST) ? m_cachedWorstNumFnopsStatus        : m_cachedBestNumFnopsStatus; }
+
+	void setCachedTimeTakenStatus(Case c, Status.S status)       { if (c == Case.WORST) m_cachedWorstTimeTakenStatus = status;       else m_cachedBestTimeTakenStatus = status; }
+	void setCachedNumCyclesStatus(Case c, Status.S status)       { if (c == Case.WORST) m_cachedWorstNumCyclesStatus = status;       else m_cachedBestNumCyclesStatus = status; }
+	void setCachedNumInstructionsStatus(Case c, Status.S status) { if (c == Case.WORST) m_cachedWorstNumInstructionsStatus = status; else m_cachedBestNumInstructionsStatus = status; }
+	void setCachedNumFnopsStatus(Case c, Status.S status)        { if (c == Case.WORST) m_cachedWorstNumFnopsStatus = status;        else m_cachedBestNumFnopsStatus = status; }
+	
 	boolean getCachedTimeTakenValid(Case c)       { return (c == Case.WORST) ? m_cachedWorstTimeTakenValid       : m_cachedBestTimeTakenValid; }	
 	boolean getCachedNumCyclesValid(Case c)       { return (c == Case.WORST) ? m_cachedWorstNumCyclesValid       : m_cachedBestNumCyclesValid; }
 	boolean getCachedNumInstructionsValid(Case c) { return (c == Case.WORST) ? m_cachedWorstNumInstructionsValid : m_cachedBestNumInstructionsValid; }
@@ -339,6 +423,13 @@ public class NodeAttributes {
 				return numIterations + headerAdjustment;		    	
 		    }
 		}
+		
+		// Checks for the infinite loop case.
+		Node enclosingInfiniteLoopNode = getNode().getEnclosingInfiniteLoopNode();
+		if (enclosingInfiniteLoopNode != null) {
+			return INFINITE_ITERATIONS;
+		}
+		
 		// At the outermost scope, i.e. not inside a loop..
 		return 1;
 	}

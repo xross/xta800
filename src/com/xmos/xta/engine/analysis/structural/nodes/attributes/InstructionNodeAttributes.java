@@ -14,7 +14,7 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		m_numCycles = m_instruction.getNumCycles();
 	}
 	
-	public double getTimeTaken(Case c, boolean ignoreIterations) {
+	public double getTimeTaken(Case c, Status status, boolean ignoreIterations) {
 		return getInstructionTimeTaken();
 	}
 

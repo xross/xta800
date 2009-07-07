@@ -5,9 +5,9 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.gui.views.structure.ZoomedCanvasProperties;
+import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
-public class StructureBlockNode extends ViewNode {
+public class StructureBlockNode extends StructureNode {
     public static final boolean DEBUG = false;
 
     private int m_minBlockX = 2;
@@ -39,23 +39,23 @@ public class StructureBlockNode extends ViewNode {
 
 		gc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
 		gc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
-    	gc.fillRectangle(m_renderX, m_renderY, m_width, m_height);
+    	gc.fillRectangle(m_renderX, m_renderY, (int)m_width, (int)m_height);
        
     	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
         if (isSelected()) {
         	gc.setLineWidth(getLineWidth() + 1);
-        	gc.drawRectangle(m_renderX + 1, m_renderY + 1, m_width - 1, m_height - 1);
-        	gc.setLineWidth(getLineWidth() + 1);
+        	gc.drawRectangle(m_renderX + 1, m_renderY + 1, (int)m_width - 1, (int)m_height - 1);
+        	gc.setLineWidth(getLineWidth());
         } else {
-        	gc.drawRectangle(m_renderX, m_renderY, m_width, m_height);
+        	gc.drawRectangle(m_renderX, m_renderY, (int)m_width, (int)m_height);
         }
 	}
 
-	public void annotateNodes(int xOffset, int yOffset, boolean isBestCase, boolean isWorstCase) {
-		if (DEBUG) System.out.printf("Annotate StructureBlock (%d, %d)\n", xOffset, yOffset);
-        m_pixelOffsetX = xOffset;
-		m_pixelOffsetY = yOffset;
+	public void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase) {
+		if (DEBUG) System.out.printf("Annotate StructureBlock (%d, %d)\n", offsetX, offsetY);
+        m_pixelOffsetX = offsetX;
+		m_pixelOffsetY = offsetY;
 		
 		m_isBestCase = isBestCase;
 		m_isWorstCase = isWorstCase;

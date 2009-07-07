@@ -6,9 +6,9 @@ import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
-import com.xmos.xta.gui.views.structure.ZoomedCanvasProperties;
+import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
-public class StructureLoopNode extends ViewNode {
+public class StructureLoopNode extends StructureNode {
     public static final boolean DEBUG = false;
 
     private int m_borderX = 8;
@@ -136,7 +136,7 @@ public class StructureLoopNode extends ViewNode {
 
         // Wire through the header
         int midY = scaleY(m_pixelOffsetY + (getPixelsY() / 2));
-        int right = m_renderX + m_width;
+        int right = m_renderX + (int)m_width;
         int headerY = scaleY(headerNode.getPixelOffsetY() + (headerNode.getPixelsY() / 2));
         int headerRight = scaleX(headerNode.getPixelOffsetX() + headerNode.getPixelsX());
 
@@ -150,14 +150,14 @@ public class StructureLoopNode extends ViewNode {
 				isBestCase, isWorstCase);
 	}
 
-	public void annotateNodes(int xOffset, int yOffset, boolean isBestCase, boolean isWorstCase) {
-		if (DEBUG) System.out.printf("Annotate StructureLoop (%d, %d\n", xOffset, yOffset);
+	public void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase) {
+		if (DEBUG) System.out.printf("Annotate StructureLoop (%d, %d\n", offsetX, offsetY);
 
-		m_pixelOffsetX = xOffset;
-		m_pixelOffsetY = yOffset;
+		m_pixelOffsetX = offsetX;
+		m_pixelOffsetY = offsetY;
 		
         ViewNode headerNode = getHeaderNode();
-		headerNode.annotateNodes(xOffset + m_borderX + m_gapX, yOffset + m_borderY, isBestCase, isWorstCase);
+		headerNode.annotateNodes(offsetX + m_borderX + m_gapX, offsetY + m_borderY, isBestCase, isWorstCase);
 
         int childOffsetX = m_borderX + headerNode.getPixelsX() + (2 * m_gapX);
         int childOffsetY = m_borderY + headerNode.getPixelsY() + m_gapY;
@@ -167,7 +167,7 @@ public class StructureLoopNode extends ViewNode {
 			boolean childIsBestCase = isBestCase && (child.getTreeNode().getAttributes().getTotalIterations(Case.BEST) > 0);
 			boolean childIsWorstCase = isBestCase && (child.getTreeNode().getAttributes().getTotalIterations(Case.WORST) > 0);
 			
-			child.annotateNodes(xOffset + childOffsetX, yOffset + childOffsetY, childIsBestCase, childIsWorstCase);
+			child.annotateNodes(offsetX + childOffsetX, offsetY + childOffsetY, childIsBestCase, childIsWorstCase);
     		childOffsetY += child.getPixelsY() + m_gapY;
     	}
 
