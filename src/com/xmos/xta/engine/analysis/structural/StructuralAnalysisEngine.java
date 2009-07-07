@@ -148,7 +148,7 @@ public class StructuralAnalysisEngine {
 			Collection<Node> basicBlocks = new TreeSet<Node>();
 			
 			collectCurrentGraphNodes(graphStart, currentGraph);
-			dumpTree(currentGraph);
+			//dumpTree(currentGraph);
 			
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
 			
