@@ -170,7 +170,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	
 	    initialiseTree();
 	    m_renderControl.refresh();
-		updateScrollBars();
+		zoomFit();
 	}
 	
 	public void dispose() {
@@ -296,7 +296,10 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		
 		double scale = m_renderControl.getScale();
 		int renderX = (int)((double)m_renderControl.getPixelsX() * scale);
-		int renderY = (int)((double)m_renderControl.getPixelsY() * scale);
+		int renderY = m_renderControl.getPixelsY();
+		if (m_canvasProperties.scaleY()) {
+			renderY = (int)((double)renderY * scale);
+		}
 
 		m_hScroll.setMaximum(renderX);
     	m_hScroll.setThumb(canvasX);

@@ -131,13 +131,15 @@ public class FunctionRenderer extends Renderer {
         	Rectangle visibleArea = new Rectangle(offsetX, offsetY, structureBounds.width, structureBounds.height);
         	m_canvasProperties.setVisibleArea(visibleArea);
         	viewNode.updateScaledXy();
-        	drawTimeLine(gc, offsetX);
-        	drawHorizontalLines(gc, m_timeLineY + ViewNode.TEXT_AREA_Y, visibleArea);
+        	updateUnits();
+        	drawVerticalLines(gc, offsetX);
+        	drawHorizontalLines(gc, m_timeLineY + ViewNode.TEXT_AREA_Y - offsetY, visibleArea);
         	
         	int startY = m_timeLineY;
         	viewNode.draw(m_display, gc, Case.WORST, 0, startY);
         	startY += viewNode.getPixelsY(Case.WORST) + BEST_WORST_SEPARATION;
         	viewNode.draw(m_display, gc, Case.BEST, 0, startY);
+        	drawTimeLine(gc, offsetX);
         }
 	    gc.dispose();
 
@@ -155,38 +157,48 @@ public class FunctionRenderer extends Renderer {
 		
 	}
 
+	private void drawVerticalLines(GC gc, int offsetX) {
+    	double scale = m_control.getScale();
+    	Rectangle visibleArea = m_canvasProperties.getVisibleArea();
+
+    	gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLUE));
+    	gc.setLineStyle(SWT.LINE_DOT);
+    	double timeUnitIncrement = getTimeUnitIncrement();
+		for (double x = 0; x < (offsetX + visibleArea.width); x += m_pixelsPerTimeUnit * scale * timeUnitIncrement) {
+        	if ((int)x > offsetX) {
+	            gc.drawLine((int)x - offsetX, m_timeLineY, (int)x - offsetX, visibleArea.height);
+        	}
+        }    	
+
+    	gc.setLineStyle(SWT.LINE_SOLID);
+    }
+ 
 	private void drawTimeLine(GC gc, int offsetX) {
     	double scale = m_control.getScale();
     	Rectangle visibleArea = m_canvasProperties.getVisibleArea();
 		int visibleWidth = visibleArea.width;
-    	int visibleHeight = visibleArea.height;
     	
-		gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLUE));
-    	gc.setLineStyle(SWT.LINE_DOT);
-    	
-    	gc.drawLine(0, m_timeLineY, visibleWidth, m_timeLineY);
-    	
-    	updateUnits();
+    	gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
+    	gc.fillRectangle(0, 0, visibleWidth, m_timeLineY);
 
+    	gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLUE));
+    	gc.setLineStyle(SWT.LINE_DOT);
+    	gc.drawLine(0, m_timeLineY, visibleWidth, m_timeLineY);
+    	gc.setLineStyle(SWT.LINE_SOLID);
+    	
+    	gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
     	double timeUnit = 0; 	
     	double timeUnitIncrement = getTimeUnitIncrement();
 		for (double x = 0; x < (offsetX + visibleWidth); x += m_pixelsPerTimeUnit * scale * timeUnitIncrement) {
-        	double time = timeUnit;
-        	
         	if ((int)x > offsetX) {
-	        	gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
-	        	if (timeUnitIncrement < 0.1)
-	        		gc.drawText(String.format("%.02f %s", time, m_timeUnits), (int)x - offsetX, 0);
-	        	else
-	        		gc.drawText(String.format("%.01f %s", time, m_timeUnits), (int)x - offsetX, 0);
-		        	
-	       	    gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLUE));
-	            gc.drawLine((int)x - offsetX, m_timeLineY, (int)x - offsetX, visibleHeight);
+	        	if (timeUnitIncrement < 0.1) {
+	        		gc.drawText(String.format("%.02f %s", timeUnit, m_timeUnits), (int)x - offsetX, 0);
+	        	} else {
+	        		gc.drawText(String.format("%.01f %s", timeUnit, m_timeUnits), (int)x - offsetX, 0);
+	        	}
         	}
          	timeUnit += timeUnitIncrement;
         }    	
-
-    	gc.setLineStyle(SWT.LINE_SOLID);
     }
  
 	private double getTimeUnitIncrement() {
