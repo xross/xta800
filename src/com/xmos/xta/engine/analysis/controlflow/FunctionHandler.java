@@ -100,7 +100,8 @@ public class FunctionHandler {
 			findTerminals(functionStart, seen, terminals);
 			
 			for(Node terminal : terminals){
-				CommonMethods.connect(nullNode, terminal);
+				if(!terminal.isNullNode())
+					CommonMethods.connect(nullNode, terminal);
 			}
 		}
 		return true;

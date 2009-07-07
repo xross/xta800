@@ -61,7 +61,6 @@ public class RouteConstructor {
 	}
 
 	public boolean analyse() {
-		//System.out.println("when route begines there are " + Node.s_numNodes + " nodes");
 		boolean seenEndPoint = false;
 		switch (m_description.getMode()) {
 		case FUNCTION:
@@ -415,10 +414,14 @@ public class RouteConstructor {
 	
 	private Collection<Node> getReferencedNodes(Reference reference) {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
-		Collection<Node> referencedNodes = new ArrayList<Node>();
+		Set<Node> referencedNodes = new TreeSet<Node>();
 		for(Node thread : m_structureGraph.getThreads()){
 			referencedNodes.addAll(referenceMatcher.getNodes(thread, reference));
 		}
+		for(Node thread : m_structureGraph.getFunctions()){
+			referencedNodes.addAll(referenceMatcher.getNodes(thread, reference));
+		}
+		
 		return referencedNodes;		
 	}
 }

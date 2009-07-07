@@ -8,7 +8,9 @@ public interface NodeTraverser {
     boolean foundInstructionNode(Node node, int depth);
     boolean foundPathNode(Node node, int depth);
     boolean foundLoopNode(Node node, int depth);
+    boolean foundInfiniteLoopNode(Node node, int depth);
     boolean foundSelfLoopNode(Node node, int depth);
     boolean foundSectionNode(Node node, int depth);
     boolean foundTerminalNode(Node node, int depth);
+    boolean foundInfiniteSelfLoopNode(Node node, int depth);
 }

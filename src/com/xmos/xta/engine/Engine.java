@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -233,7 +232,7 @@ public class Engine implements Notifier {
 					functionName, m_executableFile, m_nodeId, m_coreId));
 			return false;
 		} else {
-			RouteDescription routeDescription = new RouteDescription(functionName);		
+			RouteDescription routeDescription = new RouteDescription(functionName, m_nodeId, m_coreId);		
 			return analyseRouteSafely(routeDescription);
 		}
 	}
@@ -258,7 +257,7 @@ public class Engine implements Notifier {
 					"Unresolved reference: %s", to));
 			return false;
 		} else {		
-			RouteDescription routeDescription = new RouteDescription(fromRef, toRef);
+			RouteDescription routeDescription = new RouteDescription(fromRef, toRef, m_nodeId, m_coreId);
 			return analyseRouteSafely(routeDescription);
 		}
 	}
@@ -923,7 +922,7 @@ public class Engine implements Notifier {
 					return false;
 				th.addTerminators(threadStartNodes);
 				
-				Set<InstructionNode> starts = new HashSet<InstructionNode>();
+				Set<InstructionNode> starts = new TreeSet<InstructionNode>();
 				starts.addAll(fh.getKnownFuncStarts());
 				starts.addAll(threadStartNodes);
 

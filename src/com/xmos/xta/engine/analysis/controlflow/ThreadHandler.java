@@ -58,6 +58,7 @@ public class ThreadHandler {
 			findTerminals(threadStart, new TreeSet<Node>(), terminals);
 			NullNode nullNode = new NullNode();
 			for(Node terminal : terminals){
+				if(!terminal.isNullNode())
 				CommonMethods.connect(nullNode, terminal);
 			}
 		}

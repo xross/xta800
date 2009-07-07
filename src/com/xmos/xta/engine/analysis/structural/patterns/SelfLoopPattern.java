@@ -2,6 +2,7 @@ package com.xmos.xta.engine.analysis.structural.patterns;
 
 import java.util.Collection;
 
+import com.xmos.xta.engine.analysis.structural.nodes.InfiniteSelfLoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.SelfLoopNode;
 
@@ -11,8 +12,18 @@ public class SelfLoopPattern extends PatternMatcher {
 		
 		if (currentNode.getNextNodes().contains(currentNode)) {
 			assert(currentNode.getPrevNodes().contains(currentNode));
+			Node loop = null;
 			
-			SelfLoopNode loop = new SelfLoopNode(currentNode);
+			if(currentNode.getNextNodesSize() == 1){
+				loop = new InfiniteSelfLoopNode(currentNode);
+				
+				if(findNullNode(workingSet) != null){
+					CommonMethods.connect(findNullNode(workingSet), loop);
+				}
+				
+			} else {
+				loop = new SelfLoopNode(currentNode);
+			}
 			
 			if (m_treeStart == currentNode) {
 				m_treeStart = loop;
@@ -44,5 +55,13 @@ public class SelfLoopPattern extends PatternMatcher {
 
 	public boolean usesDominatorTree() {
 		return false;
+	}
+	private Node findNullNode(Collection<Node> workingSet){
+		for(Node node : workingSet){
+			if(node.isNullNode()){
+				return node;
+			}
+		}
+		return null;
 	}
 }

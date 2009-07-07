@@ -16,7 +16,7 @@ public class PathPatternMatcher extends PatternMatcher {
 		LinkedList<Node> pathList = new LinkedList<Node>();
 		pathList.add(currentNode);
 		if (isStart(currentNode)) {
-			while (continueDown(currentNode)) {
+			while (continueDown(currentNode, workingSet, pathList)) {
 				currentNode = currentNode.getNextNode();
 				pathList.add(currentNode);
 			}
@@ -32,7 +32,6 @@ public class PathPatternMatcher extends PatternMatcher {
 	}
 
 	private boolean isStart(Node node){
-		//im really not over happy about this. will have to verify it
 		if(node == m_treeStart){
 			return true;
 		} else if (node.getPrevNodesSize() ==  0) {
@@ -51,12 +50,19 @@ public class PathPatternMatcher extends PatternMatcher {
 		}
 	}
 	
-	private boolean isEnd(Node node) {
+	private boolean isEnd(Node node, Collection<Node> workingSet, LinkedList<Node> pathList) {
 		
 		if (node.getNextNodesSize() ==  0){
 			return true;
 		} else if (node.getNextNodesSize() ==  1) {
 			Node next = node.getNextNode();
+			
+			
+			
+			if(next.isNullNode() && pathList.size() + 1 < workingSet.size()){
+				return true;
+			}
+			
 			
 			if(next == m_treeStart){
 				return true;
@@ -73,8 +79,8 @@ public class PathPatternMatcher extends PatternMatcher {
 		}
 	}
 	
-	private boolean continueDown(Node node){
-		if (node.getNextNodesSize() == 1 && !isEnd(node) 
+	private boolean continueDown(Node node, Collection<Node> workingSet, LinkedList<Node> pathList){
+		if (node.getNextNodesSize() == 1 && !isEnd(node, workingSet, pathList) 
 				&& !node.dominatorsContain(node.getNextNode())) {
 			return true;
 		} else {

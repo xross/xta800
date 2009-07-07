@@ -166,10 +166,6 @@ public abstract class Node implements Comparable<Node>{
 	public void removeNextNode(Node node){
 		m_edges.removeNextNode(node);
 	}
-	
-	
-	
-	
 
 	public void setDominatorSetComplete(boolean b) {
 		m_dominatorSetIsCompleteSet = b;
@@ -223,6 +219,14 @@ public abstract class Node implements Comparable<Node>{
 		return false;
 	}
 
+	public boolean isInfiniteLoopNode(){
+		return false;
+	}
+	
+	public boolean isInfiniteSelfLoopNode() {
+		return false;
+	}
+	
 	public Node getEnclosingLoopNode() {		
 		Node node = this;
 		while ((node != null) && !node.isLoopNode() && !node.isSelfLoopNode()) {
