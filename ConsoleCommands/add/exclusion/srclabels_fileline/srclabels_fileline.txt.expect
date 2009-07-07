@@ -1,152 +1,49 @@
 =======================
-test.xc:3
+none
 =======================
 Route(0) function: testA
     No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
+
+Route(1) function: testB
+    No Timing Specified
+
+Route(2) function: testAandB
+    No Timing Specified
+
+Route(3) function: testAorB
+    No Timing Specified
 
 Fail, Timing Unspecified
-Error: No valid paths of execution (constraints applied)
+=======================
+- 0x100b4: test.xc:3
+=======================
+Warning: No valid paths of execution
+Warning: No valid paths of execution
 Route(0) function: testB
     No Timing Specified
-    Complete paths: 0, Unresolved paths: 0
 
-Fail, Timing Unspecified
-Route(0) function: testAandB
+Route(1) function: testAorB
     No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Route(0) function: testAorB
-    No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
 
 Fail, Timing Unspecified
 =======================
-!test.xc:3
+- 0x100b8: test.xc:7
 =======================
-Error: No valid paths of execution (constraints applied)
+Warning: No valid paths of execution
+Warning: No valid paths of execution
 Route(0) function: testA
     No Timing Specified
-    Complete paths: 0, Unresolved paths: 0
 
-Fail, Timing Unspecified
-Route(0) function: testB
+Route(1) function: testAorB
     No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Error: No valid paths of execution (constraints applied)
-Route(0) function: testAandB
-    No Timing Specified
-    Complete paths: 0, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Route(0) function: testAorB
-    No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
 
 Fail, Timing Unspecified
 =======================
-(test.xc:3 && test.xc:7)
+- 0x100b4: test.xc:3
+- 0x100b8: test.xc:7
 =======================
-Error: No valid paths of execution (constraints applied)
-Route(0) function: testA
-    No Timing Specified
-    Complete paths: 0, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Error: No valid paths of execution (constraints applied)
-Route(0) function: testB
-    No Timing Specified
-    Complete paths: 0, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Route(0) function: testAandB
-    No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Error: No valid paths of execution (constraints applied)
-Route(0) function: testAorB
-    No Timing Specified
-    Complete paths: 0, Unresolved paths: 0
-
-Fail, Timing Unspecified
-=======================
-!(test.xc:3 || test.xc:7)
-=======================
-Error: No valid paths of execution (constraints applied)
-Route(0) function: testA
-    No Timing Specified
-    Complete paths: 0, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Error: No valid paths of execution (constraints applied)
-Route(0) function: testB
-    No Timing Specified
-    Complete paths: 0, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Error: No valid paths of execution (constraints applied)
-Route(0) function: testAandB
-    No Timing Specified
-    Complete paths: 0, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Error: No valid paths of execution (constraints applied)
-Route(0) function: testAorB
-    No Timing Specified
-    Complete paths: 0, Unresolved paths: 0
-
-Fail, Timing Unspecified
-=======================
-(!test.xc:3 && !test.xc:7)
-=======================
-Error: No valid paths of execution (constraints applied)
-Route(0) function: testA
-    No Timing Specified
-    Complete paths: 0, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Error: No valid paths of execution (constraints applied)
-Route(0) function: testB
-    No Timing Specified
-    Complete paths: 0, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Error: No valid paths of execution (constraints applied)
-Route(0) function: testAandB
-    No Timing Specified
-    Complete paths: 0, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Error: No valid paths of execution (constraints applied)
-Route(0) function: testAorB
-    No Timing Specified
-    Complete paths: 0, Unresolved paths: 0
-
-Fail, Timing Unspecified
-=======================
-(!test.xc:3 || !test.xc:7)
-=======================
-Route(0) function: testA
-    No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Route(0) function: testB
-    No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Route(0) function: testAandB
-    No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Route(0) function: testAorB
-    No Timing Specified
-    Complete paths: 2, Unresolved paths: 0
-
-Fail, Timing Unspecified
+Warning: No valid paths of execution
+Warning: No valid paths of execution
+Warning: No valid paths of execution
+Warning: No valid paths of execution
+Error: No routes analysed

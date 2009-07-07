@@ -4,20 +4,14 @@ list exclusions
 echo =======================
 
 analyse function testA
-print summary
-remove route -
-
 analyse function testB
-print summary
-remove route -
-
 analyse function testAandB
-print summary
-remove route -
-
 analyse function testAorB
 print summary
-remove route -
+remove route 0
+remove route 1
+remove route 2
+remove route 3
 
 echo =======================
 remove exclusion *
@@ -26,20 +20,12 @@ list exclusions
 echo =======================
 
 analyse function testA
-print summary
-remove route -
-
 analyse function testB
-print summary
-remove route -
-
 analyse function testAandB
-print summary
-remove route -
-
 analyse function testAorB
 print summary
-remove route -
+remove route 0
+remove route 1
 
 echo =======================
 remove exclusion *
@@ -48,20 +34,12 @@ list exclusions
 echo =======================
 
 analyse function testA
-print summary
-remove route -
-
 analyse function testB
-print summary
-remove route -
-
 analyse function testAandB
-print summary
-remove route -
-
 analyse function testAorB
 print summary
-remove route -
+remove route 0
+remove route 1
 
 echo =======================
 remove exclusion *
@@ -71,19 +49,9 @@ list exclusions
 echo =======================
 
 analyse function testA
-print summary
-remove route -
-
 analyse function testB
-print summary
-remove route -
-
 analyse function testAandB
-print summary
-remove route -
-
 analyse function testAorB
 print summary
-remove route -
 
 exit
