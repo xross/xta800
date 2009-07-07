@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.gui.views.Renderer;
 import com.xmos.xta.gui.views.RendererControl;
 import com.xmos.xta.gui.views.ZoomedCanvasProperties;
@@ -231,7 +232,7 @@ public class FunctionRenderer extends Renderer {
 			return;
     	}
 
-    	double timeTaken = pathRoot.getAttributes().getTimeTaken(Case.WORST, false);
+    	double timeTaken = pathRoot.getAttributes().getTimeTaken(Case.WORST, new Status(), false);
 		m_pixelsPerTimeUnit = pixelsX / timeTaken;
 		
 		double scale = m_control.getScale();
