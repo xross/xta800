@@ -1,4 +1,4 @@
-#include <xs1_reva.h>
+#include <xs1.h>
 #include "Uart.h"
 
 /* This function receives a number of bytes using the Uart protocol 

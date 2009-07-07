@@ -6,7 +6,7 @@
  *
  */
 
-#include <xs1_reva.h>
+#include <xs1.h>
 #include "Uart.h"
 
 /* This function waits for the specified time.
