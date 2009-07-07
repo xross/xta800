@@ -1,4 +1,4 @@
-#include <xs1_reva.h>
+#include <xs1.h>
 #include <print.h>
 #include "UartTransmit.h"
 #include "UartReceive.h"
