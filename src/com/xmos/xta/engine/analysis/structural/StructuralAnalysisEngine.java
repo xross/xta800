@@ -43,9 +43,13 @@ public class StructuralAnalysisEngine {
 		setUpPatternMatcher();
 	}
 
-	public boolean analyse(Engine engine, TreeMap<String, InstructionNode> treeMap) {
+	public boolean analyse(Engine engine, 
+			TreeMap<String, InstructionNode> functionNames, 
+			Map<Integer, TreeSet<Node>> pcToEndPoints) {
+		
 		m_functionStartPcs = new TreeMap<Integer, FunctionNode>();
-		return buildStructureGraph(engine, treeMap);
+		return buildStructureGraph(engine, functionNames, pcToEndPoints);
+		
 	}
 
 	public StructureGraph getStructureGraph() {
@@ -86,7 +90,7 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	private boolean buildStructureGraph(Engine engine, TreeMap<String, InstructionNode> treeMap) {
+	private boolean buildStructureGraph(Engine engine, TreeMap<String, InstructionNode> treeMap, Map<Integer, TreeSet<Node>> pcToEndPoints) {
 		
 		Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
 		
@@ -102,7 +106,7 @@ public class StructuralAnalysisEngine {
 			return false;
 		}
 				
-		m_structureGraph = new StructureGraph(threads, functions);
+		m_structureGraph = new StructureGraph(threads, functions, pcToEndPoints);
 		
 		engine.provideFeedback("Analysing for recursion...");
 		

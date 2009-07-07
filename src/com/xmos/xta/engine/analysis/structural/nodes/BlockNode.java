@@ -20,6 +20,14 @@ public class BlockNode extends IBufferNode {
 	public BlockNode(BlockNode block) {
 		m_insts = block.m_insts;
 		m_attributes = new BlockNodeAttributes(this);
+		/*
+		for(InstructionNode inst : m_insts){
+			if(inst.isUnresolved()){
+				this.setUnresolved(true);
+				break;
+			}
+		}
+		*/
 	}
 	
 	public BlockNode(List<InstructionNode> insts) {

@@ -1,6 +1,15 @@
 package com.xmos.xta.engine.analysis.routes;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.TreeSet;
+import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.analysis.structural.StructureGraph;
+import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.engine.references.ReferenceFactory;
+import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class RouteDescription {
 	private String m_description;
@@ -9,7 +18,7 @@ public class RouteDescription {
 	private int m_coreId; 
 	private RouteMode m_mode;
 	private Reference m_from;
-	private Reference m_to;
+	private Collection<Reference> m_to;
 
 	enum RouteMode {
 		PATH, FUNCTION
@@ -19,17 +28,33 @@ public class RouteDescription {
 		m_description = String.format("path: %s to %s", from.getRef(), to.getRef());
 		m_mode = RouteMode.PATH;
 		m_from = from;
-		m_to = to;
+		m_to = new LinkedList<Reference>();
+		m_to.add(to);
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 	}
 
-	public RouteDescription(String functionName, int nodeId, int coreId) {
+	public RouteDescription(String functionName, Engine engine, int nodeId, int coreId) {
 		m_description = String.format("function: %s", functionName);
 		m_functionName = functionName;
 		m_mode = RouteMode.FUNCTION;
-		m_from = null;
-		m_to = null;
+		m_to = new LinkedList<Reference>();
+		StructureGraph sg = engine.getStructureGraph();
+		
+		for(FunctionNode fn : sg.getFunctions()){
+			if(fn.getFunctionName().equals(functionName)){
+				int pc = fn.getStartPc();
+				String from = "0x" + Integer.toHexString(pc);
+				m_from = ReferenceFactory.createReference(
+						from, ReferenceClass.ENDPOINT_REF);
+				TreeSet<Node> endInstructions = sg.getPcToEndPoints().get(pc);
+				for(Node endPoint : endInstructions){
+					String to = "0x" + Integer.toHexString(endPoint.getStartPc());
+					m_to.add(ReferenceFactory.createReference(to, ReferenceClass.ENDPOINT_REF));
+				}
+				break;
+			}
+		}
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 	}
@@ -54,7 +79,7 @@ public class RouteDescription {
 		return m_from;
 	}
 
-	public Reference getEndPoint() {
+	public Collection<Reference> getEndPoint() {
 		return m_to;
 	}
 
