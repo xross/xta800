@@ -12,20 +12,8 @@ system("xcc -target=$target -march=$arch -fxta-info -g test.xc -o $genDir/test.x
 }
 
 system("@ARGV " .
-       "set time inst 1000 ns " .
        "load $genDir/test.xe " .
        "analyse function main " .
-       "set time inst 1000 ns " .
-       "list knowns - " .
-       "unset time inst " .
-       "list knowns - " .
-       "set time inst 5000 ns " .
-       "list knowns - " .
-       "unset time x " .
-       "unset time .dfbjdb " .
-       "list knowns - " .
-       "unset time inst " .
-       "list knowns - " .
-       "analyse function main " .
+       "source cmds.txt " .
        "exit > $genDir/ns.txt 2>&1");
 

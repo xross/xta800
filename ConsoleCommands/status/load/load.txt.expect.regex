@@ -3,6 +3,8 @@ Current core: 0
 Frequency: 400
 NumThreads: 8
 SrcPaths: .
+Case: WORST
+Verbosity: 0
 Loaded executable: test.xe
 Node: 0, Core: 0 \(No debug information found\)
 No routes analysed

@@ -12,20 +12,7 @@ system("xcc -target=$target -march=$arch -fxta-info -g test.xc -o $genDir/test.x
 }
 
 system("@ARGV " .
-       "set time inst 1000 cycles " .
        "load $genDir/test.xe " .
-       "analyse function main " .
-       "set time inst 1000 cycles " .
-       "list knowns - " .
-       "unset time inst " .
-       "list knowns - " .
-       "set time inst 5000 cycles " .
-       "list knowns - " .
-       "unset time x " .
-       "unset time .dfbjdb " .
-       "list knowns - " .
-       "unset time inst " .
-       "list knowns - " .
-       "analyse function main " .
+       "source cmds.txt " .
        "exit > $genDir/cycles.txt 2>&1");
 
