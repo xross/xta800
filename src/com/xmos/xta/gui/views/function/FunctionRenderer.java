@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.gui.views.Renderer;
 import com.xmos.xta.gui.views.RendererControl;
 import com.xmos.xta.gui.views.ZoomedCanvasProperties;
@@ -26,11 +27,13 @@ public class FunctionRenderer extends Renderer {
 
     private String m_timeUnits;
     private double m_pixelsPerTimeUnit;
+	private Status m_status;
 
 	public FunctionRenderer(Display display, RendererControl control, ZoomedCanvasProperties canvasProperties,
 			int timeLineY, int borderY) {
 		super(display, control, canvasProperties);
 		m_timeLineY = timeLineY;
+		m_status = new Status();
 	}
 
 	public void run() {
@@ -121,7 +124,6 @@ public class FunctionRenderer extends Renderer {
 	    gc.setAntialias(SWT.ON);
 	    gc.setTextAntialias(SWT.ON);
 
-	    // Draw the structure
         gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
         Rectangle structureBounds = m_image.getBounds();
         gc.fillRectangle(0, 0, structureBounds.width, structureBounds.height);
@@ -131,22 +133,31 @@ public class FunctionRenderer extends Renderer {
         	Rectangle visibleArea = new Rectangle(offsetX, offsetY, structureBounds.width, structureBounds.height);
         	m_canvasProperties.setVisibleArea(visibleArea);
         	viewNode.updateScaledXy();
-        	updateUnits();
-        	drawVerticalLines(gc, offsetX);
-        	drawHorizontalLines(gc, m_timeLineY + ViewNode.TEXT_AREA_Y - offsetY, visibleArea);
-        	
-        	int startY = m_timeLineY;
-        	viewNode.draw(m_display, gc, Case.WORST, 0, startY);
-        	startY += viewNode.getPixelsY(Case.WORST) + BEST_WORST_SEPARATION;
-        	viewNode.draw(m_display, gc, Case.BEST, 0, startY);
-        	drawTimeLine(gc, offsetX);
+        	if (updateUnits()) {
+	        	drawVerticalLines(gc, offsetX);
+	        	drawHorizontalLines(gc, m_timeLineY + ViewNode.TEXT_AREA_Y - offsetY, visibleArea);
+	        	
+	        	int startY = m_timeLineY;
+	        	viewNode.draw(m_display, gc, Case.WORST, 0, startY);
+	        	startY += viewNode.getPixelsY(Case.WORST) + BEST_WORST_SEPARATION;
+	        	viewNode.draw(m_display, gc, Case.BEST, 0, startY);
+	        	drawTimeLine(gc, offsetX);
+        	} else {
+        		drawInfiniteTime(gc);
+        	}
         }
 	    gc.dispose();
 
 	    if (DEBUG) System.out.printf("StructureRenderer::render() done\n");
 	}
 
-    private void drawHorizontalLines(GC gc, int startY, Rectangle visibleArea) {
+    private void drawInfiniteTime(GC gc) {
+		gc.setForeground(m_display.getSystemColor(SWT.COLOR_RED));
+		gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
+		gc.drawText(" Worst-case time is infinite - cannot render", 0, 0);
+	}
+
+	private void drawHorizontalLines(GC gc, int startY, Rectangle visibleArea) {
 		gc.setForeground(m_display.getSystemColor(SWT.COLOR_GRAY));
 		gc.setBackground(m_display.getSystemColor(SWT.COLOR_GRAY));
     	gc.setLineStyle(SWT.LINE_DASH);
@@ -215,7 +226,7 @@ public class FunctionRenderer extends Renderer {
     	return increment;
     }
 
-	private void updateUnits() {
+	private boolean updateUnits() {
     	Node pathRoot = null;
 		int pixelsX = 0;
 
@@ -228,10 +239,13 @@ public class FunctionRenderer extends Renderer {
     	if (pathRoot == null) {
 			m_timeUnits = "ns";
 			m_pixelsPerTimeUnit = 1;
-			return;
+			return true;
     	}
 
-    	double timeTaken = pathRoot.getAttributes().getTimeTaken(Case.WORST, false);
+    	double timeTaken = pathRoot.getAttributes().getTimeTaken(Case.WORST, m_status, false);
+    	if (m_status.isInfinite() || m_status.isUnresolved()) {
+    		return false;
+		}
 		m_pixelsPerTimeUnit = pixelsX / timeTaken;
 		
 		double scale = m_control.getScale();
@@ -246,5 +260,6 @@ public class FunctionRenderer extends Renderer {
 		} else {
 			m_timeUnits = "ns";
 		}
+		return true;
 	}
 }

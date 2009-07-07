@@ -6,6 +6,7 @@ import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
 public class FunctionBlockNode extends FunctionNode {
@@ -18,7 +19,13 @@ public class FunctionBlockNode extends FunctionNode {
 	}
 	
 	public int getPixelsX() {
-		return (int)m_treeNode.getAttributes().getTimeTaken(Case.WORST, false);
+		Status status = new Status();
+		double time = m_treeNode.getAttributes().getTimeTaken(Case.WORST, status, false);
+		if (status.isInfinite() || status.isUnresolved()) {
+			return 0;
+		} else {
+			return (int)time;
+		}
 	}
 
 	public int getPixelsY() {

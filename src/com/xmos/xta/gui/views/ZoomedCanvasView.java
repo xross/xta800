@@ -412,6 +412,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		};
 		
 		Listener canvasListener = new Listener() {
+			private Rectangle m_dragBox = new Rectangle(0,0,0,0);
 			public void handleEvent(Event event) {
 				switch (event.type) {
                 case SWT.MouseWheel:
@@ -426,13 +427,27 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                 	else if (event.character == '-')
                 		zoomOut();
                 	break;
+                case SWT.MouseDown:
+                	m_dragBox = new Rectangle(event.x, event.y, 0, 0);
+                	break;
+                case SWT.MouseMove:
+                	m_dragBox.width = event.x - m_dragBox.x;
+                	m_dragBox.height = event.y - m_dragBox.y;
+                	break;
+                case SWT.MouseUp:
+//                	System.out.printf("Dragged over (%d, %d, %d, %d)\n", m_dragBox.x, m_dragBox.y, m_dragBox.width, m_dragBox.height);
+                	break;
 				}
 			}
 		};
 
 		m_canvas.addListener(SWT.MouseWheel, canvasListener);
 		m_canvas.addListener(SWT.KeyDown, canvasListener);
-		
+
+		m_canvas.addListener(SWT.MouseDown, canvasListener);
+		m_canvas.addListener(SWT.MouseMove, canvasListener);
+		m_canvas.addListener(SWT.MouseUp, canvasListener);
+
 		m_canvas.addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(MouseEvent e) {
 				if (m_viewNode != null) {
@@ -466,7 +481,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		    			}
 		    		}
     			}
-	    	} 
+	    	}
 	    });
 	    
 	    m_canvas.addMouseMoveListener(new MouseMoveListener() {
