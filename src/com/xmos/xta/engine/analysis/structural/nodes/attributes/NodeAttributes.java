@@ -17,7 +17,7 @@ public class NodeAttributes {
 		UNKNOWN,
 		KNOWN,
 	}
-
+	
 	private double m_cachedWorstTimeTaken;
 	private long m_cachedWorstNumCycles;
 	private long m_cachedWorstNumInstructions;
