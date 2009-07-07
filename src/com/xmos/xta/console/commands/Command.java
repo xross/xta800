@@ -127,7 +127,22 @@ public abstract class Command {
     	}
     	return String.format("%d", routeId);
     }
-    
+
+    public static int getNodeId(String nodeId) {
+    	if (nodeId.equals("-")) {
+    		return Engine.NODE_ID_TOP_LEVEL;
+    	} 
+    	int node = Integer.parseInt(nodeId);
+    	return node;
+    }
+
+    public static String getNodeId(int nodeId) {
+    	if (nodeId == Engine.NODE_ID_TOP_LEVEL) {
+    		return "-";
+    	} 
+    	return String.format("%d", nodeId);
+    }    
+
     protected boolean areArgsDone(String[] args, int i) {
 		if ((i >= args.length) || 
 			(args[i].startsWith("-") && (args[i].length() > 1)) || 

@@ -15,15 +15,15 @@ public class TraceDisplayer {
 		m_console = console;
 	}
 	
-    public void display(Node node) {
-		displayInstruction(node);			
+    public void display(Node node, Case c) {
+		displayInstruction(node, c);			
     }
     
-    private void displayInstruction(Node node) {
+    private void displayInstruction(Node node, Case c) {
     	m_currentTime = 0;
     	
     	List<InstructionNode> instructions = new LinkedList<InstructionNode>();
-    	node.getInstructionStream(Case.WORST, instructions);
+    	node.getInstructionStream(c, instructions);
 		for(InstructionNode instruction : instructions){
 			
 			String isUnknown = instruction.getAttributes().getDisplayUnknown() ? "*" : " ";

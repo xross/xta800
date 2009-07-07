@@ -1,16 +1,13 @@
 package com.xmos.xta.console.commands.print;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
-import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.sourcemapper.Line;
 import com.xmos.xta.sourcemapper.SourceFile;
 import com.xmos.xta.sourcemapper.SourceLine;
@@ -65,28 +62,24 @@ public class Sources extends Command {
     private Set<String> getSources(Engine engine) {
     	final Set<String> sources = new TreeSet<String>();   
     	final SourceMapper sourceMapper = engine.getSourceMapper();
-    	StructureGraph structureGraph = engine.getStructureGraph();
     	
-		Collection<FunctionNode> nodes = structureGraph.getThreads();	
-		for (Node node : nodes) {
-		    node.traverse(0, new DefaultNodeTraverser() {
-				public boolean foundInstructionNode(Node node, int depth) {					
-		            for (SourceFile sourceFile: sourceMapper.getSourceFiles()) {
-		                for (SourceLine sourceLine : sourceFile.getSourceLines()) {
-		                    for (Line assembly :sourceLine.getChildern()) {
+		Node node = engine.getRoute(m_routeId).getNode();    	
+	    node.traverse(0, new DefaultNodeTraverser() {
+			public boolean foundInstructionNode(Node node, int depth) {					
+		        for (SourceFile sourceFile: sourceMapper.getSourceFiles()) {
+		            for (SourceLine sourceLine : sourceFile.getSourceLines()) {
+		                for (Line assembly :sourceLine.getChildern()) {
 		                        	
-		                      	int pc = node.getInstructions().getFirst().getPc();
-		                        if (assembly.getLineNumber() == pc) {
-		                          	sources.add(sourceFile.getFileName());
-		                        }
+		                   	int pc = node.getInstructions().getFirst().getPc();
+		                    if (assembly.getLineNumber() == pc) {
+		                       	sources.add(sourceFile.getFileName());
 		                    }
 		                }
-		            }					
-					sources.add(node.getInstructions().getFirst().getFunctionName());
-					return true;
-				}
-		    });
-		}				    	
+		            }
+		        }
+				return true;
+			}				    	
+		});
     	return sources;
     }    
 }
