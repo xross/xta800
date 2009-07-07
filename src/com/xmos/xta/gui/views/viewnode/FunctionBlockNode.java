@@ -19,7 +19,13 @@ public class FunctionBlockNode extends FunctionNode {
 	}
 	
 	public int getPixelsX() {
-		return (int)m_treeNode.getAttributes().getTimeTaken(Case.WORST, new Status(), false);
+		Status status = new Status();
+		double time = m_treeNode.getAttributes().getTimeTaken(Case.WORST, status, false);
+		if (status.isInfinite() || status.isUnresolved()) {
+			return 0;
+		} else {
+			return (int)time;
+		}
 	}
 
 	public int getPixelsY() {
