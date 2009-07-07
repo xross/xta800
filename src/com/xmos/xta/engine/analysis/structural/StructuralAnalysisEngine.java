@@ -27,6 +27,8 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructuralAnalysisEngine {
 
+	private static final boolean SYMBOLIC_LINK = true;
+	
 	private ControlFlowGraph m_controlFlowGraph;
 	private Map<Integer, FunctionNode> m_functionStartPcs;
 	private StructureGraph m_structureGraph;
@@ -70,7 +72,6 @@ public class StructuralAnalysisEngine {
 						return false;
 					}
 					if (pm.isMatch(node, workingSet, treeStart)) {
-						//System.out.println(pm.getClass().getSimpleName() + " " + Node.s_numNodes);
 						treeStart = pm.getTreeStart();
 						assert (connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
@@ -135,8 +136,7 @@ public class StructuralAnalysisEngine {
 		}
 		
 		for (Node graphStart : orderedGraphs) {
-			
-			
+
 			String functionName = getFunctionName(graphStart, treeMap);
 			String jobName = "Processing " + functionName;
 			//There are the only two sets that need to be ordered as they determine the number of the blocks
@@ -145,13 +145,12 @@ public class StructuralAnalysisEngine {
 			
 			collectCurrentGraphNodes(graphStart, currentGraph);
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
-			
+			//dumpTree(basicBlocks);
 			assert(!basicBlocks.isEmpty());
-			//FnopAnalyser fa = new FnopAnalyser();
+			FnopAnalyser fa = new FnopAnalyser();
 			
-			//fa.analyse(initialBasicBlock, isFunction);
-			//fa.addFnopsToBasicBlocks(initialBasicBlock);
-
+			fa.analyse(initialBasicBlock, isFunction);
+			fa.addFnopsToBasicBlocks(initialBasicBlock);
 			assert(basicBlocks.contains(initialBasicBlock));
 			if (!createStructure(basicBlocks, initialBasicBlock, engine, false, jobName)) {
 				return null;
@@ -313,7 +312,6 @@ public class StructuralAnalysisEngine {
 
 	private void DFSPostOrder(List<Node> nodes, Node entry, Set<Node> visited) {
 		nodes.add(entry);
-		
 
 		List<Node> next = new LinkedList<Node>(entry.getNextNodes());
 		Collections.sort(next);
@@ -441,12 +439,16 @@ public class StructuralAnalysisEngine {
 						if (fnLink.getBranchTarget() != null) {
 							if (fnLink.getBranchTarget().getStartPc() == leaf
 									.getStartPc()) {
+								if(SYMBOLIC_LINK){
+									//symbolic link
+									fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction());
+								} else {
+									//copying link
+									fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction().deepCopy());
+								}
 								
-								//symbolic link
-								//fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction());
 
-								//copying link
-								fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction().deepCopy());
+								
 								
 								toRemove.add(fnLink);
 								engine.provideWorkDone(1);

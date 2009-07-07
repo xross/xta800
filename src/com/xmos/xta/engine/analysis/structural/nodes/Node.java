@@ -19,7 +19,9 @@ public abstract class Node implements Comparable<Node>{
 	boolean m_dominatorSetIsCompleteSet;
 	Edges m_edges;
 	Node m_branchLinkReturn;
-
+	
+	boolean m_unresolved;
+	
 	private boolean m_isFolded;
 
 	public enum Case {
@@ -41,7 +43,7 @@ public abstract class Node implements Comparable<Node>{
 	public abstract void getInstructionStream(Case c, List<InstructionNode> instructions);
 	public abstract Set<Integer> getPCs();	
 	public abstract LinkedList<XtaInstruction> getInstructions();
-
+	
 	/**
 	 * This returns all the instruction nodes that could possible be contained within this node
 	 */
@@ -60,12 +62,20 @@ public abstract class Node implements Comparable<Node>{
 		m_edges = new Edges(node.m_edges);
 		m_id = s_numNodes++;
 		m_isFolded = false;
+		m_unresolved = node.m_unresolved;
+	}
+	
+	public void setUnresolved(boolean unresolved){
+		m_unresolved = unresolved;
+	}
+	
+	public boolean isUnresolved(){
+		return m_unresolved;
 	}
 	
 	public int getId() {
 		return m_id;
 	}
-
 	
 	//private static final boolean s = true;
 	private static final boolean s = false;
@@ -166,10 +176,6 @@ public abstract class Node implements Comparable<Node>{
 	public void removeNextNode(Node node){
 		m_edges.removeNextNode(node);
 	}
-	
-	
-	
-	
 
 	public void setDominatorSetComplete(boolean b) {
 		m_dominatorSetIsCompleteSet = b;
@@ -223,6 +229,14 @@ public abstract class Node implements Comparable<Node>{
 		return false;
 	}
 
+	public boolean isInfiniteLoopNode(){
+		return false;
+	}
+	
+	public boolean isInfiniteSelfLoopNode() {
+		return false;
+	}
+	
 	public Node getEnclosingLoopNode() {		
 		Node node = this;
 		while ((node != null) && !node.isLoopNode() && !node.isSelfLoopNode()) {

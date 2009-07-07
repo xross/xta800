@@ -17,7 +17,7 @@ public class NodeAttributes {
 		UNKNOWN,
 		KNOWN,
 	}
-
+	
 	private double m_cachedWorstTimeTaken;
 	private long m_cachedWorstNumCycles;
 	private long m_cachedWorstNumInstructions;
@@ -89,11 +89,11 @@ public class NodeAttributes {
 		String bestCaseFnops        = String.format("%d", getNumFNops(Case.BEST, false));			
 		
 		return String.format("%s %s\n", m_node.getTypeName(), m_node.getFunctionName()) +
-    	       String.format("Time taken:       %s / %s\n", worstCaseTimeTaken, bestCaseTimeTaken) +
-               String.format("Thread cycles:    %s / %s\n", worstCaseThreadCycles, bestCaseThreadCycles) +
-               String.format("Num Instructions: %s / %s\n", worstCaseInstructions, bestCaseInstructions) +
-               String.format("Num Fnops:        %s / %s\n", worstCaseFnops, bestCaseFnops) +            		   
-               String.format("Node Id:          %d\n", m_node.getId());
+    	       String.format("Time taken:      \t%s / %s\n", worstCaseTimeTaken, bestCaseTimeTaken) +
+               String.format("Thread cycles:   \t%s / %s\n", worstCaseThreadCycles, bestCaseThreadCycles) +
+               String.format("Num Instructions:\t%s / %s\n", worstCaseInstructions, bestCaseInstructions) +
+               String.format("Num Fnops:       \t%s / %s\n", worstCaseFnops, bestCaseFnops) +            		   
+               String.format("Node Id:         \t%d\n", m_node.getId());
 	}
 		
 	// --------------------------------------------------------------------- //

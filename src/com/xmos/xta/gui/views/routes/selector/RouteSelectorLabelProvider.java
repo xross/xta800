@@ -24,6 +24,9 @@ public class RouteSelectorLabelProvider extends CellLabelProvider {
 		if (DEBUG) System.out.printf("RouteSelectorLabelProvider: getToolTipText\n");	
 
 		RouteNode routeNode = (RouteNode)element;		
-		return routeNode.getRoute().getRouteTiming().getDescription(true);
+		String toolTip = "Node: " + routeNode.getRoute().getRouteDescription().getNodeId() + "\n" +
+							"Core: " + routeNode.getRoute().getRouteDescription().getNodeId() +"\n" + 
+							routeNode.getRoute().getRouteTiming().getDescription(true).substring(4).replaceAll("\n", "");
+		return toolTip;
 	}
 }

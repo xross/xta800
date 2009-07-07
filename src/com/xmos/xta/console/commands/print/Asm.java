@@ -57,7 +57,7 @@ public class Asm extends Command {
 	    
 		if (!areArgsDone(args, index + 2)) {
 	    	try {
-	    		return new Asm(routeId, Integer.parseInt(args[index + 2]), true);
+	    		return new Asm(routeId, getNodeId(args[index + 2]), true);
 		    } catch (NumberFormatException e) { 
 		    	return null; 
 		    }

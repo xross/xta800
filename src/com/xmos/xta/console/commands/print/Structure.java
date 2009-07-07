@@ -62,7 +62,7 @@ public class Structure extends Command {
 		
 		if (!areArgsDone(args, index + 2)) {
 	    	try {
-	    		return new Structure(routeId, Integer.parseInt(args[index + 2]), true);
+	    		return new Structure(routeId, getNodeId(args[index + 2]), true);
 		    } catch (NumberFormatException e) { 
 		    	return null; 
 		    }

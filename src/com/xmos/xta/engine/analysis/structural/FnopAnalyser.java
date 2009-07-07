@@ -27,7 +27,6 @@ public class FnopAnalyser {
 		explore((IBufferNode)startNode, nodes);
 		
 		for(IBufferNode node : nodes){
-			System.out.println(node);
 			node.insertFnops();
 		}
 		

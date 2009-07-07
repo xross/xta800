@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,6 +25,7 @@ import com.xmos.xta.engine.analysis.controlflow.ThreadHandler;
 import com.xmos.xta.engine.analysis.controlflow.UnreachableCodeFinder;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.routes.Route;
@@ -47,6 +47,7 @@ public class Engine implements Notifier {
 	public static final int ROUTE_ID_LAST = -1;
 	public static final int ROUTE_ID_INVALID = -2;
 	public static final int ROUTE_ID_GLOBAL = -3;
+	public static final int NODE_ID_TOP_LEVEL = -4;
 	
 	private XeLoader m_xeLoader;
 	private FileFinder m_fileFinder;
@@ -97,8 +98,10 @@ public class Engine implements Notifier {
 	}
 	
 	public void notify(String message, String argument) {
-		if (m_notifier != null)
+		if (m_notifier != null){
 			m_notifier.notify(message, argument);
+		}
+			
 	}
 
 	public Config getConfig() {
@@ -216,6 +219,7 @@ public class Engine implements Notifier {
 		m_coreId = 0;			
 		m_routes.clear();
 		m_selectedRoute = null;
+		Route.resetRouteCount();
 		
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());		
 		return true;
@@ -233,7 +237,7 @@ public class Engine implements Notifier {
 					functionName, m_executableFile, m_nodeId, m_coreId));
 			return false;
 		} else {
-			RouteDescription routeDescription = new RouteDescription(functionName);		
+			RouteDescription routeDescription = new RouteDescription(functionName, m_nodeId, m_coreId);		
 			return analyseRouteSafely(routeDescription);
 		}
 	}
@@ -258,7 +262,7 @@ public class Engine implements Notifier {
 					"Unresolved reference: %s", to));
 			return false;
 		} else {		
-			RouteDescription routeDescription = new RouteDescription(fromRef, toRef);
+			RouteDescription routeDescription = new RouteDescription(fromRef, toRef, m_nodeId, m_coreId);
 			return analyseRouteSafely(routeDescription);
 		}
 	}
@@ -386,6 +390,15 @@ public class Engine implements Notifier {
 		return m_config.m_numThreads;
 	}
 
+	public void setCase(Case c) {
+		m_config.m_case = c;
+		notify(Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_CASE);
+	}
+
+	public Case getCase() {
+		return m_config.m_case;
+	}
+	
 	public void setVerbosity(int verbosity) {
 		m_config.m_verbosity = verbosity;
 	}
@@ -913,7 +926,7 @@ public class Engine implements Notifier {
 	// ===================================================================== //
 	private boolean initialiseGlobalStructure(XeLoader xeLoader, Sections sections, FileFinder fileFinder) {
 		assert(fileFinder != null);
-		
+		notify(Notifier.HOLD_MESSAGES, "");
 		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
 		NodeCoreCollection<ControlFlowGraph> newCfg = new NodeCoreCollection<ControlFlowGraph>();
 		NodeCoreCollection<InstructionDecoder> newInstructionDecoder = new NodeCoreCollection<InstructionDecoder>();
@@ -935,7 +948,6 @@ public class Engine implements Notifier {
 					th.getThreadNodes(sections.getThreadStartPoints(nodeId, coreId), "thread start");
 				Set<InstructionNode> threadStopNodes = 
 					th.getThreadNodes(sections.getThreadStopPoints(nodeId, coreId), "thread stop");
-
 				
 				threadStartNodes = th.ensureThreadStartExists(threadStartNodes);
 
@@ -948,10 +960,9 @@ public class Engine implements Notifier {
 					return false;
 				th.addTerminators(threadStartNodes);
 				
-				Set<InstructionNode> starts = new HashSet<InstructionNode>();
+				Set<InstructionNode> starts = new TreeSet<InstructionNode>();
 				starts.addAll(fh.getKnownFuncStarts());
 				starts.addAll(threadStartNodes);
-
 				
 				ensureAllFunctionsAreNamed(xeLoader.getSymbolTable(nodeId, coreId), 
 						newFunctionNames.get(nodeId, coreId), fh.getKnownFuncStarts(), threadStartNodes);
@@ -967,9 +978,7 @@ public class Engine implements Notifier {
 				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts(), fh.getFunctions());
 				newCfg.add(nodeId, coreId, cfg);
 				
-				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
-				
 				
 				if (!sae.analyse(this, newFunctionNames.get(nodeId, coreId)))
 					return false;
@@ -982,6 +991,7 @@ public class Engine implements Notifier {
 		m_structuralGraph = newStructuralGraph;
 		m_functionNames = newFunctionNames;
 		m_sourceMapper = newSourceMappers;
+		notify(Notifier.RELEASE_MESSAGES, "");
 		return true;
 	}
 

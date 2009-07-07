@@ -61,7 +61,8 @@ public class RouteConstructor {
 	}
 
 	public boolean analyse() {
-		//System.out.println("when route begines there are " + Node.s_numNodes + " nodes");
+		
+		resetParent();
 		boolean seenEndPoint = false;
 		switch (m_description.getMode()) {
 		case FUNCTION:
@@ -92,6 +93,7 @@ public class RouteConstructor {
 			
 			Collection<Node> startNodes =getReferencedNodes(m_description.getStartPoint());
 			Collection<Node> endNodes = getReferencedNodes(m_description.getEndPoint());
+			
 			for (Node start : startNodes) {
 				Collection<Node> workingSet = new TreeSet<Node>();
 
@@ -137,10 +139,12 @@ public class RouteConstructor {
 		return seenEndPoint;
 	}
 
+	
+
 	private boolean explore(Node node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
+		
 		Set<Node> nodes = new TreeSet<Node>(endNodes);
 		nodes.retainAll(node.getContainedNodes());
-		
 		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
 		exclusions.retainAll(node.getContainedNodes());
 		boolean seenEndPoint = false;
@@ -174,9 +178,12 @@ public class RouteConstructor {
 			if (!node.getParent().whatsNext(node).isEmpty()) {
 				
 				Collection<Node> nextNodes = node.getParent().whatsNext(node);
+				
+
 				for (Node next : nextNodes) {
 					seenEndPoint |= explore(next, set, endNodes, node);
 				}
+
 			}
 		} else {
 			if (endNodes.contains(node)) {
@@ -185,6 +192,7 @@ public class RouteConstructor {
 				return true;
 			} else {
 				assert (!node.getImmediateChildren().isEmpty());
+				
 				for(Node child : node.getImmediateChildren()){
 					seenEndPoint |= explore(child, set, endNodes, parent);
 				}
@@ -294,7 +302,14 @@ public class RouteConstructor {
 			CommonMethods.connect(node, parent);
 		}
 	}
-			
+	private void resetParent() {
+		for (Node node : m_structureGraph.getThreads()) {
+			setParent(node);
+		}
+		for (Node node : m_structureGraph.getFunctions()) {
+			setParent(node);
+		}
+	}
 	private void setParents() {
 		for (Node node : m_subRoutes) {
 			setParent(node);
@@ -415,10 +430,14 @@ public class RouteConstructor {
 	
 	private Collection<Node> getReferencedNodes(Reference reference) {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
-		Collection<Node> referencedNodes = new ArrayList<Node>();
+		Set<Node> referencedNodes = new TreeSet<Node>();
 		for(Node thread : m_structureGraph.getThreads()){
 			referencedNodes.addAll(referenceMatcher.getNodes(thread, reference));
 		}
+		for(Node thread : m_structureGraph.getFunctions()){
+			referencedNodes.addAll(referenceMatcher.getNodes(thread, reference));
+		}
+		
 		return referencedNodes;		
 	}
 }

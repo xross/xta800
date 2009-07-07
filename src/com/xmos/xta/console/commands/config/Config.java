@@ -10,6 +10,7 @@ public class Config extends CommandContainer {
 		new Threads(), 
 		new SrcPaths(), 
 		new Verbosity(),
+		new Case(),
 	};
 	
 	public Config() { super("config"); }

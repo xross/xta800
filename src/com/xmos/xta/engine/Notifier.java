@@ -25,9 +25,13 @@ public interface Notifier {
 
 	public static final String STATE_NUM_THREADS = "NumThreads";
 	public static final String STATE_FREQUENCY   = "Frequency";
+	public static final String STATE_CASE        = "Case";
 
 	public static final String RUN_MODE_FUNCTION = "Analyse function";
 	public static final String RUN_MODE_PATH     = "Analyse path";
-
+	
+	public static final String HOLD_MESSAGES     = "Hold messages";
+	public static final String RELEASE_MESSAGES     = "Release messages";
+	
 	void notify(String message, String argument);
 }

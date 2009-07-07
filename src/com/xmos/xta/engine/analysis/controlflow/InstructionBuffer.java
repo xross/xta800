@@ -1,7 +1,5 @@
 package com.xmos.xta.engine.analysis.controlflow;
 
-import com.xmos.xta.engine.analysis.structural.nodes.Node;
-
 public class InstructionBuffer implements Comparable<InstructionBuffer>{
 	
     static final int IBUFFER_NUM_BYTES = 8;

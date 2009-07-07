@@ -3,11 +3,8 @@ package com.xmos.xta.engine.analysis.structural.nodes;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
-import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NullNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -24,10 +21,6 @@ public class NullNode extends IBufferNode {
 		return "NullNode" + m_id;
 	}
 	
-	
-	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {
-		return new NullNode();
-	}
 	public Node deepCopy() {
 		return new NullNode();
 	}

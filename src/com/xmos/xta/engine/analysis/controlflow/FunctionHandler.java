@@ -100,7 +100,14 @@ public class FunctionHandler {
 			findTerminals(functionStart, seen, terminals);
 			
 			for(Node terminal : terminals){
-				CommonMethods.connect(nullNode, terminal);
+				if(terminal.isInstructionNode()){
+					InstructionNode inst = (InstructionNode)terminal;
+					if(!inst.getXtaInstruction().getReturn()){
+						inst.setUnresolved(true);
+					}
+				}
+				if(!terminal.isNullNode())
+					CommonMethods.connect(nullNode, terminal);
 			}
 		}
 		return true;

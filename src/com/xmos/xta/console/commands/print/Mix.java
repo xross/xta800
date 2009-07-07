@@ -57,7 +57,7 @@ public class Mix extends Command {
 	    
 		if (!areArgsDone(args, index + 2)) {
 	    	try {
-	    		return new Mix(routeId, Integer.parseInt(args[index + 2]), true);
+	    		return new Mix(routeId, getNodeId(args[index + 2]), true);
 		    } catch (NumberFormatException e) { 
 		    	return null; 
 		    }
