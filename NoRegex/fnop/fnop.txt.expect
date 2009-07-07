@@ -1,34 +1,3 @@
-Route(0) function: main
-    No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Path ID:          0
-Time taken:       80.0
-Thread cycles:    4
-Num Instructions: 3
-Num FNops:        1
-Num Pauseables:   0
-Num Unknowns:     0
-Num Loops:        0
-Time taken (this):       80.0
-Thread cycles (this):    4
-Num Instructions (this): 3
-Num FNops (this):        1
-Num Pauseables (this):   0
-Num Unknowns (this):     0
-Number of iterations:    0 + 0
-Route(0) function: main
-Complete [1 path]
-    path(0)    : 80.0ns
-        block(b0)  : 20.0ns
-            (20.0ns) 0x10002 blrf (u10) i 0x2 
-        block(b2)  : 20.0ns
-            (20.0ns) 0x10006 retsp (u6) i 0x0 
-        block(b1)  : 40.0ns
-            (20.0ns) 0x10004 --FNOP--  
-            (20.0ns) 0x10004 retsp (u6) i 0x0 
-
   0.0: (20.0ns) 0x10002 main + 0               blrf (u10)   i 0x2
   20.0: (20.0ns) 0x10006 test + 0               retsp (u6)   i 0x0
   40.0: (20.0ns) 0x10004 main + 2               --FNOP--     

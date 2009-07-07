@@ -16,13 +16,12 @@ system("@ARGV load $genDir/test.xe " .
        "analyse path B C " .
        "analyse path A C " .
 
-       "print completed_paths " .
        "echo ========================= " .
-       "print trace 0 0 " .
+       "print trace 0 " .
        "echo ========================= " .
-       "print trace 1 0 " .
+       "print trace 1 " .
        "echo ========================= " .
-       "print trace 2 0 " .
+       "print trace 2 " .
 
        "-exit > $genDir/addative_paths.txt 2>&1");
 

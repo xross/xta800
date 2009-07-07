@@ -1,15 +1,3 @@
-Route(0) path: A to B
-Complete [1 path]
-    path(0)    : 80.0ns
-
-Route(1) path: B to C
-Complete [1 path]
-    path(0)    : 80.0ns
-
-Route(2) path: A to C
-Complete [1 path]
-    path(0)    : 160.0ns
-
 =========================
   0.0: (20.0ns) 0x10004 main + 2               ldc (ru6)    r0, i 0x1
   20.0: (20.0ns) 0x10006 main + 4               ldc (ru6)    r0, i 0x2
