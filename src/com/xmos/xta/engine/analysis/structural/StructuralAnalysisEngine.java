@@ -72,7 +72,6 @@ public class StructuralAnalysisEngine {
 						return false;
 					}
 					if (pm.isMatch(node, workingSet, treeStart)) {
-						//System.out.println(pm.getClass().getSimpleName() + "\ton node " + node);
 						treeStart = pm.getTreeStart();
 						assert (connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
@@ -146,7 +145,7 @@ public class StructuralAnalysisEngine {
 			
 			collectCurrentGraphNodes(graphStart, currentGraph);
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
-			
+			//dumpTree(basicBlocks);
 			assert(!basicBlocks.isEmpty());
 			FnopAnalyser fa = new FnopAnalyser();
 			

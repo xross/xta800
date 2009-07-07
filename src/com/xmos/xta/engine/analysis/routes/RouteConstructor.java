@@ -61,6 +61,8 @@ public class RouteConstructor {
 	}
 
 	public boolean analyse() {
+		
+		resetParent();
 		boolean seenEndPoint = false;
 		switch (m_description.getMode()) {
 		case FUNCTION:
@@ -91,6 +93,7 @@ public class RouteConstructor {
 			
 			Collection<Node> startNodes =getReferencedNodes(m_description.getStartPoint());
 			Collection<Node> endNodes = getReferencedNodes(m_description.getEndPoint());
+			
 			for (Node start : startNodes) {
 				Collection<Node> workingSet = new TreeSet<Node>();
 
@@ -135,6 +138,8 @@ public class RouteConstructor {
 		}
 		return seenEndPoint;
 	}
+
+	
 
 	private boolean explore(Node node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
 		Set<Node> nodes = new TreeSet<Node>(endNodes);
@@ -293,7 +298,14 @@ public class RouteConstructor {
 			CommonMethods.connect(node, parent);
 		}
 	}
-			
+	private void resetParent() {
+		for (Node node : m_structureGraph.getThreads()) {
+			setParent(node);
+		}
+		for (Node node : m_structureGraph.getFunctions()) {
+			setParent(node);
+		}
+	}
 	private void setParents() {
 		for (Node node : m_subRoutes) {
 			setParent(node);
