@@ -1,28 +1,6 @@
-
 echo =======================
-set constraint label_a
-list constraint
-echo =======================
-
-analyse function testA
-print summary
-remove route -
-
-analyse function testB
-print summary
-remove route -
-
-analyse function testAandB
-print summary
-remove route -
-
-analyse function testAorB
-print summary
-remove route -
-
-echo =======================
-set constraint !label_a
-list constraint
+remove exclusion *
+list exclusions
 echo =======================
 
 analyse function testA
@@ -42,8 +20,9 @@ print summary
 remove route -
 
 echo =======================
-set constraint label_a&&label_b
-list constraint
+remove exclusion *
+add exclusion label_a
+list exclusions
 echo =======================
 
 analyse function testA
@@ -63,8 +42,9 @@ print summary
 remove route -
 
 echo =======================
-set constraint !(label_a||label_b)
-list constraint
+remove exclusion *
+add exclusion label_b
+list exclusions
 echo =======================
 
 analyse function testA
@@ -84,29 +64,10 @@ print summary
 remove route -
 
 echo =======================
-set constraint !label_a && !label_b
-list constraint
-echo =======================
-
-analyse function testA
-print summary
-remove route -
-
-analyse function testB
-print summary
-remove route -
-
-analyse function testAandB
-print summary
-remove route -
-
-analyse function testAorB
-print summary
-remove route -
-
-echo =======================
-set constraint !label_a || !label_b
-list constraint
+remove exclusion *
+add exclusion label_a
+add exclusion label_b
+list exclusions
 echo =======================
 
 analyse function testA
@@ -126,3 +87,4 @@ print summary
 remove route -
 
 exit
+

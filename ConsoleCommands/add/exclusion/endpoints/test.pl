@@ -8,8 +8,8 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -march=$arch -fxta-info -g test.xc -o $genDir/test.xe > $genDir/logic_srclabels_fileline.log 2>&1");
+system("xcc -target=$target -march=$arch -fxta-info -g test.xc -o $genDir/test.xe > $genDir/endpoints.log 2>&1");
 }
 system("@ARGV " .
        "load $genDir/test.xe " .
-       "source cmds.txt > $genDir/logic_srclabels_fileline.txt 2>&1");
+       "source cmds.txt > $genDir/endpoints.txt 2>&1");
