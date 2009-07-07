@@ -156,4 +156,10 @@ public class PathNode extends Node {
 		list.add(m_nodes.get(0));
 		return list;
 	}
+	
+	public void getTimeSpread(Collection<Integer> times) {
+		for(Node path : m_nodes){
+			path.getTimeSpread(times);
+		}
+	}
 }

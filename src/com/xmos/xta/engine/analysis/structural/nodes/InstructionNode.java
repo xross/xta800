@@ -157,5 +157,8 @@ public class InstructionNode extends Node {
 		return null;
 	}
 
+	public void getTimeSpread(Collection<Integer> times) {
+		assert(false);		
+	}
 
 }

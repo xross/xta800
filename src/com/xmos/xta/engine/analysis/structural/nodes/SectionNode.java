@@ -237,4 +237,10 @@ public class SectionNode extends Node {
 		}		
 		return caseNode;		
 	}
+
+
+	public void getTimeSpread(Collection<Integer> times) {
+		// TODO Auto-generated method stub
+		
+	}
 }

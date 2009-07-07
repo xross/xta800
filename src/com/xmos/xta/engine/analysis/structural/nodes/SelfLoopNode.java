@@ -135,4 +135,10 @@ public class SelfLoopNode extends Node{
 	public Node getLoop() {
 		return m_loop;
 	}
+
+	@Override
+	public void getTimeSpread(Collection<Integer> times) {
+		// TODO Auto-generated method stub
+		
+	}
 }
