@@ -33,7 +33,8 @@ public class SelectedRouteLabelProvider extends CellLabelProvider {
 	public String getToolTipText(Object element) {
 		if (DEBUG) System.out.printf("SelectedRouteLabelProvider: getToolTipText\n");	
 
-		Node node = (Node)element;		
-		return node.getAttributes().getTimingDetails();
+		Node node = (Node)element;	
+		String toolTip = node.getAttributes().getTimingDetails();
+		return toolTip.substring(0, toolTip.length()-1);
 	}
 }

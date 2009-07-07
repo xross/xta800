@@ -52,6 +52,10 @@ public class Route {
 		return m_node;
 	}
 	
+	public RouteDescription getRouteDescription(){
+		return m_description;
+	}
+	
 	public String getDescription() {
 		return m_description.getDescription();
 	}

@@ -19,7 +19,7 @@ public abstract class Node implements Comparable<Node>{
 	boolean m_dominatorSetIsCompleteSet;
 	Edges m_edges;
 	Node m_branchLinkReturn;
-
+	
 	private boolean m_isFolded;
 
 	public enum Case {
