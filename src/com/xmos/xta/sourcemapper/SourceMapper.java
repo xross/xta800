@@ -196,7 +196,6 @@ public class SourceMapper {
     }
 
     private List<Function> createFunctions() {
-    	List<Function> functions = new LinkedList<Function>();
     	List<InstructionNode> instList = m_instructionDecoder.getInstructions();
     	
     	Map<Integer, Function> pcToFunction = new HashMap<Integer, Function>();
@@ -210,7 +209,6 @@ public class SourceMapper {
     			functionAssemby.add(m_instructions.get(index));
     			index++;
     		}
-    		
     		String fnName = getFunctionName(inst);
     		Function function = new Function(fnName, functionAssemby);
     		
@@ -218,7 +216,6 @@ public class SourceMapper {
     			m_pcToFunction.put(assembly.getLineNumber(), function);
     		}
     		pcToFunction.put(inst.getStartPc(), function);
-    		functions.add(function);
     	}
     	
     	//sort the functions into ascending pc order

@@ -142,9 +142,9 @@ public class RouteConstructor {
 	
 
 	private boolean explore(Node node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
+		
 		Set<Node> nodes = new TreeSet<Node>(endNodes);
 		nodes.retainAll(node.getContainedNodes());
-		
 		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
 		exclusions.retainAll(node.getContainedNodes());
 		boolean seenEndPoint = false;
@@ -178,9 +178,12 @@ public class RouteConstructor {
 			if (!node.getParent().whatsNext(node).isEmpty()) {
 				
 				Collection<Node> nextNodes = node.getParent().whatsNext(node);
+				
+
 				for (Node next : nextNodes) {
 					seenEndPoint |= explore(next, set, endNodes, node);
 				}
+
 			}
 		} else {
 			if (endNodes.contains(node)) {
@@ -189,6 +192,7 @@ public class RouteConstructor {
 				return true;
 			} else {
 				assert (!node.getImmediateChildren().isEmpty());
+				
 				for(Node child : node.getImmediateChildren()){
 					seenEndPoint |= explore(child, set, endNodes, parent);
 				}
