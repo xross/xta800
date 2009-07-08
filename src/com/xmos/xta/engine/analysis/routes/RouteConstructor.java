@@ -125,11 +125,12 @@ public class RouteConstructor {
 			assert(cfgSanityCheck(workingSet));
 			
 			addTerminator(workingSet);
-			
+			String tree = StructuralAnalysisEngine.dumpTree("route_before",  workingSet);
 			sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
 			
 			if(workingSet.size() != 1){
-				StructuralAnalysisEngine.dumpTree(workingSet);
+				System.out.println(tree);
+				System.out.println(StructuralAnalysisEngine.dumpTree("route_after",  workingSet));
 			}
 			
 			assert(workingSet.size() == 1);

@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import com.xmos.xta.engine.analysis.structural.nodes.InfiniteSelfLoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.engine.analysis.structural.nodes.SelfLoopNode;
 
 public class SelfLoopPattern extends PatternMatcher {
@@ -62,6 +63,17 @@ public class SelfLoopPattern extends PatternMatcher {
 				return node;
 			}
 		}
-		return null;
+		//didn't find one so make a new one!!!!
+		Node nullNode = new NullNode();
+		
+		for(Node node : workingSet){
+			if(node.getNextNodesSize() == 0){
+				CommonMethods.connect(nullNode, node);
+			}
+		}
+		
+		//must add all other terminals to it
+		workingSet.add(nullNode);
+		return nullNode;
 	}
 }
