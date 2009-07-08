@@ -6,15 +6,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
-import com.xmos.xta.engine.analysis.structural.nodes.attributes.NullNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class NullNode extends IBufferNode {
-	private NullNodeAttributes m_attributes;	
 	public NullNode(){
 		super();
-		m_attributes = new NullNodeAttributes(this);
 	}
 	
 	public String toString(){
@@ -24,8 +21,10 @@ public class NullNode extends IBufferNode {
 	public Node deepCopy() {
 		return new NullNode();
 	}
+	
 	public NodeAttributes getAttributes() {
-		return m_attributes;	
+		assert(false);
+		return null;	
 	}
 
 	public List<Node> getChildren() {

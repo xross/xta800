@@ -412,7 +412,7 @@ public class NodeAttributes {
                     	cummulativeIterations *= n.getAttributes().getLoopIterations();
                     }					
 					n = n.getParent();
-				}				
+				}
 				long headerAdjustment = getIsLoopHeader() ? 1 : 0;				
 				return (numIterations + headerAdjustment) * cummulativeIterations;
 				
