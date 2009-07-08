@@ -15,7 +15,10 @@ import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.analysis.structural.patterns.LoopPatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.PathPatternMatcher;
@@ -23,7 +26,6 @@ import com.xmos.xta.engine.analysis.structural.patterns.PatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.SectionPatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.SectionTransformer;
 import com.xmos.xta.engine.analysis.structural.patterns.SelfLoopPattern;
-import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructuralAnalysisEngine {
 
@@ -87,8 +89,24 @@ public class StructuralAnalysisEngine {
 					break;
 			}
 		}
+		
+		//now remove any null nodes from the graph
+		//removeNullNodes(workingSet.iterator().next());
+		
 		return true;
 	}
+	
+	private void removeNullNodes(Node node) {
+
+		node.traverse(0, new UntypedNodeTraverser() {
+	    	public boolean foundNode(Node node, int depth) {
+	    		if(node.isNullNode()){
+	    			System.out.println("found a null node " + node.getParent());
+	    		}
+	        	return true;
+	    	}
+	    });
+	}	
 
 	private boolean buildStructureGraph(Engine engine, TreeMap<String, InstructionNode> treeMap, Map<Integer, TreeSet<Node>> pcToEndPoints) {
 		
@@ -431,7 +449,6 @@ public class StructuralAnalysisEngine {
 		}
 		engine.startAnalysis("Linking functions:", totalWork);
 		while (!allFunctionObjects.isEmpty()) {
-			// first make a set of nodes to eliminate (leaf nodes).
 			Set<FunctionNode> leafs = new TreeSet<FunctionNode>();
 			for (FunctionNode fn : allFunctionObjects.keySet()) {
 				if (allFunctionObjects.get(fn).isEmpty()) {
@@ -439,7 +456,6 @@ public class StructuralAnalysisEngine {
 				}
 			}
 
-			// for every function that call any of these leaf functions, link them
 			for (FunctionNode fn : allFunctionObjects.keySet()) {
 				for (FunctionNode leaf : leafs) {
 					Collection<FunctionNode> toRemove = new TreeSet<FunctionNode>();
@@ -454,9 +470,6 @@ public class StructuralAnalysisEngine {
 									//copying link
 									fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction().deepCopy());
 								}
-								
-
-								
 								
 								toRemove.add(fnLink);
 								engine.provideWorkDone(1);
@@ -490,7 +503,6 @@ public class StructuralAnalysisEngine {
 		}
 	}
 
-	private static final boolean verbose = false;
 	public static String dumpTree(String text, Collection<Node> workingSet) {
 		
 		String string = "";
@@ -503,20 +515,6 @@ public class StructuralAnalysisEngine {
 					} else {
 						string += node + " -> " + next + ";";
 					}
-				}
-				if(verbose){
-					string += node + " [label=\"" ;
-					string += node + ": \\n";
-					if(node.isBlockNode() || node.isInstructionNode()){
-						for(XtaInstruction inst : node.getInstructions()){
-							string += inst  +"\\n";
-						}
-					}
-					for(Node dom : node.getDominators()){
-						string += "dominator:" + dom + "\\n";
-					}
-					string +=  "\"";
-					string += "];";
 				}
 			}
 			string += "}\n";

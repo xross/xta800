@@ -86,6 +86,7 @@ public class RouteConstructor {
 		for (Node start : startNodes) {
 			seenEndPoint = follow(seenEndPoint, endNodes, start);
 		}
+		
 		setParents();
 		setUnknowns();				
 		setSelfLoops();	

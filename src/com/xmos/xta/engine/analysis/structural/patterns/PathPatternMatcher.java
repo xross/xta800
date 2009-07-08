@@ -20,6 +20,14 @@ public class PathPatternMatcher extends PatternMatcher {
 				pathList.add(currentNode);
 			}
 		}
+				
+		Node lastNode = pathList.getLast();
+		if(lastNode.isNullNode() && pathList.size() > 1){
+			CommonMethods.disconnect(lastNode, pathList.get(pathList.size()-2));
+			pathList.removeLast();
+			workingSet.remove(lastNode);
+		}
+		
 		
 		if (pathList.size() > 1) {
 			assert(pathSanityCheck(pathList));
@@ -51,16 +59,10 @@ public class PathPatternMatcher extends PatternMatcher {
 	
 	private boolean isEnd(Node node, Collection<Node> workingSet, LinkedList<Node> pathList) {
 		
-		
-		
 		if (node.getNextNodesSize() ==  0){
 			return true;
 		} else if (node.getNextNodesSize() ==  1) {
 			Node next = node.getNextNode();
-			
-			//if(next == pathList.getFirst()){
-			//	return true;
-			//}
 			
 			if(next.isNullNode() && pathList.size() + 1 < workingSet.size()){
 				return true;
@@ -119,7 +121,7 @@ public class PathPatternMatcher extends PatternMatcher {
 	}
 
 	protected void updateGraph(LinkedList<Node> pathList, Collection<Node> workingSet, Node treeStart) {
-
+		
 		Node path = null;
 		boolean allNodesNull = true;
 		for(Node node : pathList){
