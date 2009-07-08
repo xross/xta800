@@ -114,77 +114,120 @@ public class Route {
     	}    	
     }	
 		
+	// --------------------------------------------------------------------- //
+	// Loop Iteration Methods
+	// --------------------------------------------------------------------- //	    
 	public boolean setLoopIterations(Reference reference, long iterations) {
 		if (iterations < 0)
-			return false;
-		
-		boolean found = false;
+			return false;		
+
 		for (Node node : getReferencedNodes(reference)) {
-			if (setLoopIterations(node, iterations))
-				found = true;
-		}		
-		return found;
+			if ((canSetLoopIterations(node) == false) || 
+				(loopIterationsValid(node, iterations) == false))
+				return false;
+		}
+		for (Node node : getReferencedNodes(reference)) {
+			setLoopIterationsNoCheck(node, iterations);
+		}			
+		return true;
 	}
 
 	public boolean setLoopIterations(Node node, long iterations) {
-		if (canSetLoopIterations(node)) {
-    		Node enclosingLoopNode = node.getEnclosingLoopNode();
-    		clearPathIterations(enclosingLoopNode);
-    		
-			if (enclosingLoopNode.getAttributes().setLoopIterations(iterations)) {
-				enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
-				refreshDisplayedUnknowns();
-				invalidateCachedStats();				
-				return true;
-			}
+		if (iterations < 0)
+			return false;		
+
+		if (canSetLoopIterations(node) && loopIterationsValid(node, iterations)) {
+			setLoopIterationsNoCheck(node, iterations);
+			return true;
 		}
 		return false;
 	}
-
+	
 	public boolean canSetLoopIterations(Node node) {
-		return node.getEnclosingLoopNode() != null;
-	}
-	
-	public boolean setLoopPathIterations(Reference reference, long iterations) {
-		if (iterations < 0)
-			return false;
-
-		boolean found = false;
-		for (Node node : getReferencedNodes(reference)) {
-			if (setLoopPathIterations(node, iterations))
-				found = true;
-		}		
-		return found;		
-	}
-	
-	public boolean setLoopPathIterations(Node node, long iterations) {
-		if (canSetLoopPathIterations(node)) {
-			Node loopNode = node.getEnclosingLoopNode();
-			Node sectionNode = node.getEnclosingSectionNode();
-			Node optionNode = node.getEnclosingOptionNode();
-			if (sectionNode.getAttributes().setLoopPathIterations(loopNode, optionNode, iterations)) {
-				refreshDisplayedUnknowns();		
-				invalidateCachedStats();
-				return true;
-			}		
-			return false;		
-		}
-		return false;		
-	}
-
-	public boolean canSetLoopPathIterations(Node node) {
 		if (node.getEnclosingLoopNode() == null)
-			return false;
-		
-		if (node.getEnclosingSectionNode() == null)
-			return false;
-		
-		if (node.getEnclosingOptionNode() == null)
 			return false;
 		
 		return true;
 	}
+
+	private boolean loopIterationsValid(Node node, long iterations) {		
+		Node loopNode = node.getEnclosingLoopNode();
+		return loopNode.getAttributes().loopIterationsValid(iterations);
+	}
 	
+	private void setLoopIterationsNoCheck(Node node, long iterations) {
+		Node enclosingLoopNode = node.getEnclosingLoopNode();		
+	    enclosingLoopNode.getAttributes().setLoopIterations(iterations);
+		enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
+   		clearPathIterations(enclosingLoopNode);
+		refreshDisplayedUnknowns();
+		invalidateCachedStats();				
+	}
+
+	// --------------------------------------------------------------------- //
+	// Loop Path Iteration Methods
+	// --------------------------------------------------------------------- //		
+	public boolean setLoopPathIterations(Reference reference, long iterations) {
+		if (iterations < 0)
+			return false;		
+		
+		for (Node node : getReferencedNodes(reference)) {
+			if ((canSetLoopPathIterations(node) == false) || 
+				(loopPathIterationsValid(node, iterations) == false))
+				return false;
+		}		
+		for (Node node : getReferencedNodes(reference)) {
+			setLoopPathIterationsNoCheck(node, iterations);
+		}		
+		return true;
+	}
+	
+	public boolean setLoopPathIterations(Node node, long iterations) {
+		if (iterations < 0)
+			return false;		
+		
+		if (canSetLoopPathIterations(node) && loopPathIterationsValid(node, iterations)) {
+			setLoopPathIterationsNoCheck(node, iterations);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean canSetLoopPathIterations(Node node) {
+		Node loopNode = node.getEnclosingLoopNode();
+		if (loopNode == null)
+			return false;
+		
+		Node sectionNode = node.getEnclosingSectionNode();
+		if (sectionNode == null)
+			return false;
+		
+		Node optionNode = node.getEnclosingOptionNode();
+		if (optionNode == null)
+			return false;
+
+		return true;
+	}
+	
+	private boolean loopPathIterationsValid(Node node, long iterations) {
+		Node loopNode = node.getEnclosingLoopNode();
+		Node sectionNode = node.getEnclosingSectionNode();
+		Node optionNode = node.getEnclosingOptionNode();
+		return sectionNode.getAttributes().loopPathIterationsValid(loopNode, optionNode, iterations);
+	}
+
+	private void setLoopPathIterationsNoCheck(Node node, long iterations) {
+		Node loopNode = node.getEnclosingLoopNode();
+		Node sectionNode = node.getEnclosingSectionNode();
+		Node optionNode = node.getEnclosingOptionNode();
+	    sectionNode.getAttributes().setLoopPathIterations(loopNode, optionNode, iterations);
+		refreshDisplayedUnknowns();		
+		invalidateCachedStats();
+	}
+	
+	// --------------------------------------------------------------------- //
+	// Loop Scope Methods
+	// --------------------------------------------------------------------- //		
 	public boolean setLoopScope(Reference reference, boolean isAbsolute) {
 		boolean found = false;
 	    for (Node node : getReferencedNodes(reference)) {
@@ -208,6 +251,9 @@ public class Route {
 		return node.getEnclosingLoopNode() != null;
 	}
 	
+	// --------------------------------------------------------------------- //
+	// Instruction Time Methods
+	// --------------------------------------------------------------------- //			
 	public boolean setInstructionTimeTaken(Reference reference, double timeTaken) {
 		boolean found = false;
 	    for (Node node : getReferencedNodes(reference)) {
