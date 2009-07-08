@@ -95,7 +95,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 
 	protected abstract ViewNode buildViewNode(Node node, int depth);
 	protected abstract ZoomedCanvasProperties createCanvasProperties();
-	protected abstract RendererControl createRenderControl();
+	protected abstract RendererControl createRenderControl(Display display);
 	protected abstract Renderer createRenderer(Display display, RendererControl renderControl,
 			ZoomedCanvasProperties canvasProperties, Canvas canvas);
 	
@@ -103,7 +103,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		if (DEBUG) System.out.println(m_name + ": createPartControl");
 	    m_parent = parent;
 	    m_display = m_parent.getDisplay();
-		m_renderControl = createRenderControl();
+		m_renderControl = createRenderControl(m_display);
 
 	    final Composite composite = new Composite(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL); 	    
 	    composite.setLayout(new FillLayout()); 
@@ -598,7 +598,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 
     protected void drawCanvas(GC gc) {
 		if (DEBUG) System.out.println(m_name + ": drawCanvas");
-		gc.drawImage(m_renderControl.getCanvasImage(), 0, 0);
+		m_renderControl.drawCanvasImage(gc);
     }
 
 	private int scale(int value) {
