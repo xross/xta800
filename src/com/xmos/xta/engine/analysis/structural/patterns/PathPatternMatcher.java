@@ -11,7 +11,6 @@ import com.xmos.xta.engine.analysis.structural.nodes.PathNode;
 
 public class PathPatternMatcher extends PatternMatcher {	
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
-		
 		m_treeStart = treeStart;
 		LinkedList<Node> pathList = new LinkedList<Node>();
 		pathList.add(currentNode);
@@ -52,12 +51,16 @@ public class PathPatternMatcher extends PatternMatcher {
 	
 	private boolean isEnd(Node node, Collection<Node> workingSet, LinkedList<Node> pathList) {
 		
+		
+		
 		if (node.getNextNodesSize() ==  0){
 			return true;
 		} else if (node.getNextNodesSize() ==  1) {
 			Node next = node.getNextNode();
 			
-			
+			//if(next == pathList.getFirst()){
+			//	return true;
+			//}
 			
 			if(next.isNullNode() && pathList.size() + 1 < workingSet.size()){
 				return true;

@@ -103,6 +103,14 @@ public class FunctionHandler {
 			Set<Node> seen = new TreeSet<Node>();
 			findTerminals(functionStart, seen, terminals);
 			functionToEndPoints.put(functionStart.getStartPc(), terminals);
+			
+			int count = 0;
+			for(Node terminal : terminals){
+				if(!terminal.isNullNode())
+					count ++;
+			}
+			
+			
 			for(Node terminal : terminals){
 				if(terminal.isInstructionNode()){
 					InstructionNode inst = (InstructionNode)terminal;
@@ -110,8 +118,10 @@ public class FunctionHandler {
 						inst.setUnresolved(true);
 					}
 				}
-				if(!terminal.isNullNode())
-					CommonMethods.connect(nullNode, terminal);
+				if(count > 1){
+					if(!terminal.isNullNode())
+						CommonMethods.connect(nullNode, terminal);
+				}
 			}
 		}
 		return true;

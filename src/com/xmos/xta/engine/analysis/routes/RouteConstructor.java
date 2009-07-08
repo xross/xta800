@@ -108,7 +108,6 @@ public class RouteConstructor {
 		m_excludedRouteNodes = new TreeSet<Node>();
 		
 		seenEndPoint |= explore(start, workingSet, endNodes, null);
-		//StructuralAnalysisEngine.dumpTree(workingSet);
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 		pruneGraphOfExcludedPaths(workingSet);
 		
@@ -126,11 +125,12 @@ public class RouteConstructor {
 			assert(cfgSanityCheck(workingSet));
 			
 			addTerminator(workingSet);
-			
+			String tree = StructuralAnalysisEngine.dumpTree("route_before",  workingSet);
 			sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
 			
 			if(workingSet.size() != 1){
-				StructuralAnalysisEngine.dumpTree(workingSet);
+				System.out.println(tree);
+				System.out.println(StructuralAnalysisEngine.dumpTree("route_after",  workingSet));
 			}
 			
 			assert(workingSet.size() == 1);
@@ -158,6 +158,13 @@ public class RouteConstructor {
 	
 
 	private void addTerminator(Collection<Node> workingSet) {
+		int count = 0;
+		for(Node node : workingSet){
+			if(node.getNextNodesSize() == 0){
+				count++;
+			}
+		}
+		if(count < 2 ) return;
 		Node nullNode = new NullNode();
 		for(Node node : workingSet){
 			if(node.getNextNodesSize() == 0){
@@ -166,7 +173,8 @@ public class RouteConstructor {
 		}
 		workingSet.add(nullNode);
 	}
-
+	
+	
 	private boolean explore(Node node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
 		
 		Set<Node> nodes = new TreeSet<Node>(endNodes);

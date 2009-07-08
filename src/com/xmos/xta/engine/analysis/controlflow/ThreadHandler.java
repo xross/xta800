@@ -60,9 +60,18 @@ public class ThreadHandler {
 			findTerminals(threadStart, new TreeSet<Node>(), terminals);
 			NullNode nullNode = new NullNode();
 			threadToEndPoints.put(threadStart.getStartPc(), terminals);
+			
+			int count = 0;
 			for(Node terminal : terminals){
 				if(!terminal.isNullNode())
-				CommonMethods.connect(nullNode, terminal);
+				count ++;
+			}
+			
+			if(count > 1){
+				for(Node terminal : terminals){
+					if(!terminal.isNullNode())
+					CommonMethods.connect(nullNode, terminal);
+				}
 			}
 		}
 		return threadToEndPoints;

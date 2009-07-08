@@ -58,7 +58,7 @@ public class StructuralAnalysisEngine {
 
 	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine, boolean debug, String jobPrefix) {
 		
-		if(workingSet.size() == 1) return true;
+		if(workingSet.size() == 1 && workingSet.iterator().next().getNextNodesSize() == 0) return true;
 		boolean working = true;
 		boolean dominatorTreeUpToDate = false;
 		while (working) {
@@ -148,9 +148,10 @@ public class StructuralAnalysisEngine {
 			Collection<Node> basicBlocks = new TreeSet<Node>();
 			
 			collectCurrentGraphNodes(graphStart, currentGraph);
-			//dumpTree(currentGraph);
 			
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
+			
+			String tree = dumpTree(functionName + "_before", basicBlocks);
 			
 			assert(!basicBlocks.isEmpty());
 			FnopAnalyser fa = new FnopAnalyser();
@@ -162,7 +163,8 @@ public class StructuralAnalysisEngine {
 				return null;
 			}
 			if(basicBlocks.size() != 1) {
-				dumpTree(basicBlocks);
+				System.out.println(tree);
+				System.out.println(dumpTree(functionName + "_after", basicBlocks));
 			}
 			assert(basicBlocks.size() == 1);
 			Node decomposedGraph = basicBlocks.iterator().next();
@@ -488,41 +490,42 @@ public class StructuralAnalysisEngine {
 		}
 	}
 
-	private static int g = 0;
 	private static final boolean verbose = false;
-	public static void dumpTree(Collection<Node> workingSet) {
+	public static String dumpTree(String text, Collection<Node> workingSet) {
 		
-		
+		String string = "";
 		if (workingSet.size() > 1) {
-			System.out.println("digraph panic" + g++ + " {");
+			string += "digraph "+ text + "{";
 			for (Node node : workingSet) {
 				for (Node next : node.getNextNodes()) {
 					if (node.getBranchTargets().contains(next)) {
-						System.out.println(node + " -> " + next + " [style=dotted];");
+						string += node + " -> " + next + " [style=dotted];";
 					} else {
-						System.out.println(node + " -> " + next + ";");
+						string += node + " -> " + next + ";";
 					}
 				}
 				if(verbose){
-					System.out.print(node + " [label=\"" );
-					System.out.print(node + ": \\n");
+					string += node + " [label=\"" ;
+					string += node + ": \\n";
 					if(node.isBlockNode() || node.isInstructionNode()){
 						for(XtaInstruction inst : node.getInstructions()){
-							System.out.print(inst  +"\\n");
+							string += inst  +"\\n";
 						}
 					}
 					for(Node dom : node.getDominators()){
-						System.out.print("dominator:" + dom + "\\n");
+						string += "dominator:" + dom + "\\n";
 					}
-					System.out.print( "\"");
-					System.out.println("];");
+					string +=  "\"";
+					string += "];";
 				}
 			}
-			System.out.println("}\n");
+			string += "}\n";
 			
 		} else {
-			System.out.println("# graph has only " + workingSet.size() + " nodes");
+			string += "# graph has only " + workingSet.size() + " nodes";
 		}
+		
+		return string;
 	}
 	
 	private void setUpPatternMatcher() {
