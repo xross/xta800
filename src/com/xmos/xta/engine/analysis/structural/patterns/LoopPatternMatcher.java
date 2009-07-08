@@ -13,7 +13,6 @@ public class LoopPatternMatcher extends PatternMatcher {
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
 		// a loop pattern is when one or more nodes are doubly attached to a
 		// single node
-
 		Set<Node> intersection = new TreeSet<Node>(currentNode.getNextNodes());
 		intersection.retainAll(currentNode.getPrevNodes());
 		if (intersection.size() > 0) {
@@ -45,7 +44,7 @@ public class LoopPatternMatcher extends PatternMatcher {
 		}
 		
 		if(noNextNode){
-			System.out.println("woooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+			System.out.println("wooooooooooooohoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
 			loop = new InfiniteLoopNode(intersection, header);
 		} else {
 			loop = new LoopNode(intersection, header);

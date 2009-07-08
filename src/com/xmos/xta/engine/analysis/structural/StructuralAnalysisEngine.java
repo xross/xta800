@@ -58,7 +58,7 @@ public class StructuralAnalysisEngine {
 
 	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine, boolean debug, String jobPrefix) {
 		
-		if(workingSet.size() == 1) return true;
+		if(workingSet.size() == 1 && workingSet.iterator().next().getNextNodesSize() == 0) return true;
 		boolean working = true;
 		boolean dominatorTreeUpToDate = false;
 		while (working) {
