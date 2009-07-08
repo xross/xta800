@@ -372,6 +372,28 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		updateScrollBars();
 	}
 
+	protected boolean zoomDragBox(Rectangle box) {
+		if (box.width < 10 || box.height < 10)
+			return false;
+		
+		double scale = m_renderControl.getScale();
+		
+		m_hScrollPosition = (int)(((double)m_hScrollPosition +
+				((double)box.x / (double)m_renderControl.getCanvasWidth() * (double)m_hScroll.getThumb())) / scale);
+		m_vScrollPosition = (int)(((double)m_vScrollPosition +
+				((double)box.y / (double)m_renderControl.getCanvasHeight() * (double)m_vScroll.getThumb())) / scale);
+
+		double xScale = (double)m_renderControl.getCanvasWidth() / (double)box.width * scale;
+		double yScale = (double)m_renderControl.getCanvasHeight() / (double)box.height * scale;
+		if (m_canvasProperties.scaleY()) {
+			m_renderControl.setScale((xScale < yScale) ? xScale : yScale);
+		} else {
+			m_renderControl.setScale(xScale);
+		}
+		updateScrollBars();
+		return true;
+	}
+
 	private void clearView() {
 		if (m_toolTip != null  && !m_toolTip.isDisposed ()) {
 			m_toolTip.dispose ();
@@ -412,7 +434,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		};
 		
 		Listener canvasListener = new Listener() {
-			private Rectangle m_dragBox = new Rectangle(0,0,0,0);
+			private Rectangle m_dragBox;
 			public void handleEvent(Event event) {
 				switch (event.type) {
                 case SWT.MouseWheel:
@@ -428,16 +450,55 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                 		zoomOut();
                 	break;
                 case SWT.MouseDown:
-                	m_dragBox = new Rectangle(event.x, event.y, 0, 0);
+                	if (event.button == 1) {
+                		m_dragBox = new Rectangle(event.x, event.y, 0, 0);
+                	}
                 	break;
                 case SWT.MouseMove:
-                	m_dragBox.width = event.x - m_dragBox.x;
-                	m_dragBox.height = event.y - m_dragBox.y;
+                	if (m_dragBox != null) {
+	                	m_dragBox.width = event.x - m_dragBox.x;
+	                	m_dragBox.height = event.y - m_dragBox.y;
+	                	m_renderControl.addDragBox(correctedBox(m_dragBox));
+                	}
                 	break;
                 case SWT.MouseUp:
-//                	System.out.printf("Dragged over (%d, %d, %d, %d)\n", m_dragBox.x, m_dragBox.y, m_dragBox.width, m_dragBox.height);
+                	if (m_viewNode == null) {
+                		// Ensure the selection box gets removed
+                		m_renderControl.refresh();
+                	} else {
+                		if (!((event.button == 1) && zoomDragBox(correctedBox(m_dragBox)))) {
+	            			int offsetX = m_renderControl.getOffsetX();
+	    					int offsetY = m_renderControl.getOffsetY();
+	    					ViewNode clickNode = m_viewNode.getClickNode(event.x + offsetX, event.y + offsetY);
+	    					if (clickNode != null) {
+	    	    	        	List<Node> newNodes = new ArrayList<Node>();
+	    	    	        	newNodes.add(clickNode.getTreeNode());
+		    					setSelection(new StructuredSelection(newNodes));
+			    			}
+                		}
+                	}
+        			m_dragBox = null;
                 	break;
 				}
+			}
+			private Rectangle correctedBox(Rectangle box) {
+				int x, y, width, height;
+				if (box.width > 0) {
+					x = box.x;
+					width = box.width;
+				} else {
+					x = box.x + box.width;
+					width = -box.width;
+				}
+
+				if (box.height > 0) {
+					y = box.y;
+					height = box.height;
+				} else {
+					y = box.y + box.height;
+					height = -box.height;
+				}
+				return new Rectangle(x, y, width, height);
 			}
 		};
 
@@ -468,20 +529,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    			}
 	    		}
 			}
-	    	public void mouseDown(MouseEvent e) {
-    			if ((e.button == 1) || (e.button == 3)) {
-    				if (m_viewNode != null) {
-    					int offsetX = m_renderControl.getOffsetX();
-    					int offsetY = m_renderControl.getOffsetY();
-    					ViewNode clickNode = m_viewNode.getClickNode(e.x + offsetX, e.y + offsetY);
-    					if (clickNode != null) {
-    	    	        	List<Node> newNodes = new ArrayList<Node>();
-    	    	        	newNodes.add(clickNode.getTreeNode());
-	    					setSelection(new StructuredSelection(newNodes));
-		    			}
-		    		}
-    			}
-	    	}
 	    });
 	    
 	    m_canvas.addMouseMoveListener(new MouseMoveListener() {

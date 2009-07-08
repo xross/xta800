@@ -44,6 +44,7 @@ public class RendererControl {
 
     private Display m_display;
     private Image m_canvasImage;
+    private Image m_canvasImageClean;
 
 	public RendererControl(Display display, int leftBorder, int topBorder, int rightBorder, int bottomBorder) {
 		m_display = display;
@@ -52,6 +53,7 @@ public class RendererControl {
 	    m_rightBorder = rightBorder;
 	    m_bottomBorder = bottomBorder;
 
+	    m_canvasImageClean = new Image(m_display, 1, 1);
 		m_canvasImage = new Image(m_display, 1, 1);
 		
 	    m_imageChanged = false;
@@ -182,6 +184,9 @@ public class RendererControl {
 			m_canvasImage.dispose();
 			m_canvasImage = createImage(m_display, width, height);
 
+			m_canvasImageClean.dispose();
+			m_canvasImageClean = createImage(m_display, width, height);
+
 			m_canvasResized = true;
 			signalChange();
 		}
@@ -279,7 +284,8 @@ public class RendererControl {
 
 	public synchronized void updateCanvasImages(Image image, int offsetX) {
 		if (DEBUG) System.out.println("RendererControl::updateCanvasImages()");
-		copyImage(image, m_canvasImage, offsetX, m_offsetY);
+		copyImage(image, m_canvasImageClean, offsetX, m_offsetY);
+		copyImage(m_canvasImageClean, m_canvasImage, 0, 0);
 	}
 
 	// Copy images, ensuring bounds are valid
@@ -330,5 +336,13 @@ public class RendererControl {
 
 	public int getCanvasHeight() {
 		return m_canvasImage.getBounds().height;
+	}
+
+	public synchronized void addDragBox(Rectangle box) {
+		copyImage(m_canvasImageClean, m_canvasImage, 0, 0);
+		GC gc = new GC(m_canvasImage);
+		gc.drawFocus(box.x, box.y, box.width, box.height);
+		gc.dispose();
+		signalRenderComplete();
 	}
 }
