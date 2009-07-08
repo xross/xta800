@@ -16,6 +16,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.engine.analysis.structural.nodes.SelfLoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
@@ -124,7 +125,13 @@ public class RouteConstructor {
 			Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
 			assert(cfgSanityCheck(workingSet));
 			
+			addTerminator(workingSet);
+			
 			sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
+			
+			if(workingSet.size() != 1){
+				StructuralAnalysisEngine.dumpTree(workingSet);
+			}
 			
 			assert(workingSet.size() == 1);
 			
@@ -149,6 +156,16 @@ public class RouteConstructor {
 	}
 
 	
+
+	private void addTerminator(Collection<Node> workingSet) {
+		Node nullNode = new NullNode();
+		for(Node node : workingSet){
+			if(node.getNextNodesSize() == 0){
+				CommonMethods.connect(nullNode, node);
+			}
+		}
+		workingSet.add(nullNode);
+	}
 
 	private boolean explore(Node node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
 		
