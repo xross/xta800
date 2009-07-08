@@ -294,10 +294,14 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		int canvasY = m_renderControl.getCanvasHeight();
 		
 		int renderX = scale(m_renderControl.getPixelsX());
+		if (canvasX > renderX)
+			renderX = canvasX;
+		
 		int renderY = m_renderControl.getPixelsY();
-		if (m_canvasProperties.scaleY()) {
+		if (m_canvasProperties.scaleY())
 			renderY = scale(renderY);
-		}
+		if (canvasY > renderY)
+			renderY = canvasY;
 
 		m_hScroll.setMaximum(renderX);
     	m_hScroll.setThumb(canvasX);
@@ -372,12 +376,10 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	protected void zoomDragBox(Rectangle box) {
 		double scale = m_renderControl.getScale();
 		
-		m_hScrollPosition = (int)(((double)m_hScrollPosition +
-				((double)box.x / (double)m_renderControl.getCanvasWidth() * (double)m_hScroll.getThumb())) / scale);
+		m_hScrollPosition = (int)((double)m_hScrollPosition + ((double)box.x / scale));
 
 		if (m_canvasProperties.scaleY()) {
-			m_vScrollPosition = (int)(((double)m_vScrollPosition +
-					((double)box.y / (double)m_renderControl.getCanvasHeight() * (double)m_vScroll.getThumb())) / scale);
+			m_vScrollPosition = (int)((double)m_vScrollPosition + ((double)box.y / scale));
 		}
 
 		double xScale = (double)m_renderControl.getCanvasWidth() / (double)box.width * scale;
@@ -387,6 +389,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		} else {
 			m_renderControl.setScale(xScale);
 		}
+
 		updateScrollBars();
 	}
 
