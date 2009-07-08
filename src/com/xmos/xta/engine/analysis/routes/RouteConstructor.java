@@ -32,6 +32,10 @@ public class RouteConstructor {
 		COMPLETED, ABORTED, ERROR
 	}
 
+	public enum RouteError {
+		NO_ENDPOINTS_FOUND, ENDPOINTS_MISSING, STARTPOINT_MISSING, SUCCESS
+	}
+	
 	private int m_routeId;
 	private RouteDescription m_description;
 	private StructureGraph m_structureGraph;
@@ -60,14 +64,24 @@ public class RouteConstructor {
 		return m_subRoutes;
 	}
 
-	public boolean analyse() {
+	public RouteError analyse() {
 		resetParent();
 		boolean seenEndPoint = false;
+		
+		if(m_description.getStartPoint() == null ){
+			return RouteError.STARTPOINT_MISSING;
+		}
+		if(m_description.getEndPoint() == null ){
+			return RouteError.ENDPOINTS_MISSING;
+		}
+		
 		Collection<Node> startNodes =getReferencedNodes(m_description.getStartPoint());
 		Collection<Node> endNodes = new TreeSet<Node>();
 		for(Reference endPoint : m_description.getEndPoint()){
 			endNodes.addAll(getReferencedNodes(endPoint));
 		}
+		
+		
 		for (Node start : startNodes) {
 			seenEndPoint = follow(seenEndPoint, endNodes, start);
 		}
@@ -75,9 +89,13 @@ public class RouteConstructor {
 		setUnknowns();				
 		setSelfLoops();	
 		if(m_description.getMode() == RouteMode.PATH){
-			return seenEndPoint;
+			if(seenEndPoint){
+				return RouteError.SUCCESS;
+			} else {
+				return RouteError.NO_ENDPOINTS_FOUND;
+			}
 		} else {
-			return true;
+			return RouteError.SUCCESS;
 		}
 	}
 

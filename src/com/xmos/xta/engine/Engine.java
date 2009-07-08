@@ -32,6 +32,7 @@ import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
 import com.xmos.xta.engine.analysis.routes.RouteTiming;
+import com.xmos.xta.engine.analysis.routes.RouteConstructor.RouteError;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.types.ReferenceTypeFactory;
@@ -308,10 +309,16 @@ public class Engine implements Notifier {
 		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 		m_progress.resetState(Progress.State.PROCESSING_PATHS);
 		
-		boolean foundAtLeastOneEndPoint = routeConstructor.analyse();		
+		RouteError error = routeConstructor.analyse();		
 
-		if (!foundAtLeastOneEndPoint ) {
-			notify(Notifier.NOTIFY_ERROR, "No valid paths of execution");
+		if (error == RouteError.NO_ENDPOINTS_FOUND ) {
+			notify(Notifier.NOTIFY_ERROR, "No paths of execution could reach the endpoint(s)");
+			return false;
+		} else if (error == RouteError.ENDPOINTS_MISSING ) {
+			notify(Notifier.NOTIFY_ERROR, "Could not determine the endpoint(s)");
+			return false;
+		} else if (error == RouteError.STARTPOINT_MISSING ) {
+			notify(Notifier.NOTIFY_ERROR, "Could not determine the startpoint");
 			return false;
 		} else {
 			int currentSize = m_routes.size();
