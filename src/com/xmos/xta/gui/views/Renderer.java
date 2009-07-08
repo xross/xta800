@@ -40,7 +40,7 @@ public abstract class Renderer implements Runnable {
 	}
 
 	public void updateCanvasImages(Image image, int offsetX) {
-		if (DEBUG) System.out.println("RendererControl::updateCanvasImages()");
+		if (DEBUG) System.out.println("Renderer::updateCanvasImages()");
 		copyImage(image, m_canvasImageClean, offsetX, m_control.getOffsetY());
 		copyImage(m_canvasImageClean, m_canvasImage, 0, 0);
 	}
@@ -71,22 +71,11 @@ public abstract class Renderer implements Runnable {
 
 	public void resizeCanvas() {
 		Rectangle bounds = m_control.getCanvasBounds();
-		// Ensure the image in RendererControl is never in a disposed state - 
-		// put a new one there before disposing it
-		Image canvasImage = createImage(m_display, bounds.width, bounds.height);
-		m_control.setCanvasImage(canvasImage);
 		m_canvasImage.dispose();
-		m_canvasImage = canvasImage;
+		m_canvasImage = new Image(m_display, bounds.width, bounds.height);
 
 		m_canvasImageClean.dispose();
-		m_canvasImageClean = createImage(m_display, bounds.width, bounds.height);
-	}
-
-	private Image createImage(Display display, int x, int y) {
-		// Ensure image bounds are valid
-		if (x < 1) x = 1;
-		if (y < 1) y = 1;
-		return new Image(display, x, y);
+		m_canvasImageClean =  new Image(m_display, bounds.width, bounds.height);
 	}
 
 	public void drawSelectBox(Rectangle selectBox) {
@@ -100,6 +89,7 @@ public abstract class Renderer implements Runnable {
 	}
 	
 	protected void renderComplete() {
+		m_control.setCanvasImage(m_canvasImage);
 		m_display.syncExec(new Runnable() {
 			public void run() {
 				m_canvas.redraw();

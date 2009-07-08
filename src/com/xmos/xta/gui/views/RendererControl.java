@@ -5,8 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.views.viewnode.ViewNode;
@@ -14,6 +16,7 @@ import com.xmos.xta.gui.views.viewnode.ViewNode;
 public class RendererControl {
     public static final boolean DEBUG = false;
 
+    private Display m_display;
     private int m_leftBorder;
     private int m_topBorder;
     private int m_rightBorder;
@@ -47,7 +50,9 @@ public class RendererControl {
     
     private Image m_canvasImage;
 
-	public RendererControl(int leftBorder, int topBorder, int rightBorder, int bottomBorder) {
+	public RendererControl(Display display, int leftBorder, int topBorder, int rightBorder, int bottomBorder) {
+		m_display = display;
+		
 	    m_leftBorder = leftBorder;
 		m_topBorder = topBorder;
 	    m_rightBorder = rightBorder;
@@ -63,6 +68,10 @@ public class RendererControl {
 	    
 	    m_previousSelections = new LinkedList<List<Node>>();
 	    m_currentSelection = new ArrayList<Node>();
+	    
+	    m_canvasWidth = 1;
+	    m_canvasHeight = 1;
+		m_canvasImage = new Image(m_display, 1, 1);
 
 	    resetState();
 	}
@@ -133,11 +142,18 @@ public class RendererControl {
 	}
 
 	public synchronized void setCanvasSize(int width, int height) {
+		// Ensure valid image sizes
+		if (width < 1)
+			width = 1;
+		if (height < 1)
+			height = 1;
+		
 		if (m_canvasWidth != width || m_canvasHeight != height) {
 			if (DEBUG) System.out.println("RendererControl::setCanvasSize(" + width + ", " + height + ")");
 			m_canvasWidth = width;
 			m_canvasHeight = height;
 			m_canvasResized = true;
+			resizeCanvas();
 			signalChange();
 		}
 	}
@@ -194,12 +210,16 @@ public class RendererControl {
 		return new Rectangle(0, 0, m_canvasWidth, m_canvasHeight);
 	}
 	
-	public synchronized Image getCanvasImage() {
-		return m_canvasImage;
+	public synchronized void drawCanvasImage(GC gc) {
+		if (DEBUG) System.out.println("RendererControl::drawCanvasImage()");
+		gc.drawImage(m_canvasImage, 0, 0);
 	}
 
-	public synchronized void setCanvasImage(Image canvasImage) {
-		m_canvasImage = canvasImage;
+	public synchronized void setCanvasImage(Image newImage) {
+		if (DEBUG) System.out.println("RendererControl::setCanvasImage()");
+		GC gc = new GC(m_canvasImage);
+		gc.drawImage(newImage, 0, 0);
+		gc.dispose();
 	}
 	
 	private void signalChange() {
@@ -286,5 +306,10 @@ public class RendererControl {
 
 	public int getCanvasHeight() {
 		return m_canvasHeight;
+	}
+	
+	public synchronized void resizeCanvas() {
+		m_canvasImage.dispose();
+		m_canvasImage = new Image(m_display, m_canvasWidth, m_canvasHeight);
 	}
 }
