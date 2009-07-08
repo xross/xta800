@@ -44,8 +44,9 @@ public class FunctionRenderer extends Renderer {
 				boolean renderRequired = m_control.getAndClearRenderRequired();
 				boolean canvasResized = m_control.canvasResized();
 				boolean imageMoved = m_control.getAndClearImageMoved();
+				boolean selectionChanged = m_control.hasPreviousSelection();
 
-				if (m_control.hasPreviousSelection()) {
+				if (selectionChanged) {
 					selectionChanged(renderRequired);
 				}
 				
@@ -53,7 +54,7 @@ public class FunctionRenderer extends Renderer {
 			    	updateCanvasProperties();
 			    }
 
-			    if (renderRequired || imageMoved || canvasResized) {
+			    if (renderRequired || imageMoved || canvasResized || selectionChanged) {
 		    		m_display.syncExec(new Runnable() {
 		    			public void run() {
 		    				render(m_control.getOffsetX(), m_control.getOffsetY());
@@ -66,37 +67,14 @@ public class FunctionRenderer extends Renderer {
 	}
 
 	private void selectionChanged(boolean renderRequired) {
-	    ViewNode viewNode = m_control.getViewNode();
+		// Update current selection
 		List<Node> currentSelection = m_control.getCurrentSelection();
 		m_canvasProperties.setSelected(currentSelection);
 
     	while (m_control.hasPreviousSelection()) {
-    		// Must iterate over the previous selections in order to clear the list
-			List<Node> previousSelection = m_control.getPreviousSelection();
-
-			if (renderRequired || (viewNode == null) ||
-				(previousSelection.size() == 0)) {
-    			continue;
-    		}
-    		redraw(viewNode, previousSelection);
+    		// Clear list of previous selections
+			m_control.getPreviousSelection();
     	}
-
-    	if ((currentSelection.size() > 0) && (viewNode != null)) {
-    		redraw(viewNode, currentSelection);
-		}
-	}
-
-	private void redraw(final ViewNode viewNode, final List<Node> selection) {
-		final GC gc = new GC(m_image);
-	    gc.setAntialias(SWT.ON);
-	    gc.setTextAntialias(SWT.ON);
-
-		m_display.syncExec(new Runnable() {
-			public void run() {
-    	    	viewNode.redraw(m_display, gc, selection);
-			}});
-
-	    gc.dispose();
 	}
 
 	private void updateCanvasProperties() {
