@@ -141,8 +141,4 @@ public class StructureSectionNode extends StructureNode {
 		m_isBestCase = isBestCase;
 		m_isWorstCase = isWorstCase;
 	}
-
-	public boolean isFolded() {
-		return false;
-	}
 }

@@ -10,7 +10,6 @@ import org.eclipse.ui.PlatformUI;
 public class Broadcaster {	
 	public static final String BROADCAST_SET_START_POINT    = "SetStartPoint";
 	public static final String BROADCAST_SET_END_POINT      = "SetEndPoint";
-	public static final String BROADCAST_SET_FOCUS          = "SetFocus";
 	public static final String BROADCAST_SHOW_CODE_POINT    = "ShowCodePoint";
 	public static final String BROADCAST_SELECT_NODES       = "ShowNodes";
 	public static final String BROADCAST_HIGHLIGHTS_UPDATED = "HighlightsUpdated";

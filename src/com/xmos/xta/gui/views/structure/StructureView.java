@@ -1,5 +1,6 @@
 package com.xmos.xta.gui.views.structure;
 
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.gui.views.Renderer;
@@ -53,13 +54,13 @@ public class StructureView extends ZoomedCanvasView {
     	return viewNode;
 	}
 
-	protected RendererControl createRenderControl(Display display) {
-		return new RendererControl(display, 2, 2, 2, 2);
+	protected RendererControl createRenderControl() {
+		return new RendererControl(2, 2, 2, 2);
 	}
 
 	protected Renderer createRenderer(Display display, RendererControl renderControl, 
-			ZoomedCanvasProperties canvasProperties) {
-		return new StructureRenderer(display, renderControl, canvasProperties);
+			ZoomedCanvasProperties canvasProperties, Canvas canvas) {
+		return new StructureRenderer(display, renderControl, canvasProperties, canvas);
 	}
 
 	protected ZoomedCanvasProperties createCanvasProperties() {

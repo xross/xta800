@@ -58,13 +58,6 @@ public class SelectedRouteViewer {
 	    m_viewer.setContentProvider(new SelectedRouteContentProvider());				
 	    m_viewer.setLabelProvider(new SelectedRouteLabelProvider());
 		ColumnViewerToolTipSupport.enableFor(m_viewer, ToolTip.NO_RECREATE);
-		
-	    m_viewer.addDoubleClickListener(new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
-				GuiEngine.setFocus(m_viewer.getSelection());
-				GuiEngine.broadcast(Broadcaster.BROADCAST_SET_FOCUS, "");
-			}
-		});
 		createContextMenus();
 	}
 

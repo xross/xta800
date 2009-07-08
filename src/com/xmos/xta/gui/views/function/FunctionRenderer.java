@@ -6,6 +6,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -30,39 +31,50 @@ public class FunctionRenderer extends Renderer {
 	private Status m_status;
 
 	public FunctionRenderer(Display display, RendererControl control, ZoomedCanvasProperties canvasProperties,
-			int timeLineY, int borderY) {
-		super(display, control, canvasProperties);
+			Canvas canvas, int timeLineY, int borderY) {
+		super(display, control, canvasProperties, canvas);
 		m_timeLineY = timeLineY;
 		m_status = new Status();
 	}
 
 	public void run() {
-		boolean done = false;
-		while (!done) {
-			done = m_control.waitForChange();
-			if (!done) {
-				boolean renderRequired = m_control.getAndClearRenderRequired();
-				boolean canvasResized = m_control.canvasResized();
-				boolean imageMoved = m_control.getAndClearImageMoved();
-				boolean selectionChanged = m_control.hasPreviousSelection();
-
-				if (selectionChanged) {
-					selectionChanged(renderRequired);
-				}
-				
-			    if (renderRequired || canvasResized) {
-			    	updateCanvasProperties();
-			    }
-
-			    if (renderRequired || imageMoved || canvasResized || selectionChanged) {
-		    		m_display.syncExec(new Runnable() {
-		    			public void run() {
-		    				render(m_control.getOffsetX(), m_control.getOffsetY());
-		    			}});
-		    	}
-				m_control.updateCanvasImages(m_image, 0);
-			    m_control.signalRenderComplete();
+		boolean programExited = false;
+		while (!programExited) {
+			programExited = m_control.waitForChange();
+			if (programExited)
+				break;
+			
+			if (m_control.selectBoxChanged()) {
+				Rectangle selectBox = m_control.getSelectBox();
+				drawSelectBox(selectBox);
+				renderComplete();
+				continue;
 			}
+			
+			boolean canvasResized = m_control.canvasResized();
+			if (canvasResized) {
+				resizeCanvas();
+			}
+
+			boolean renderRequired = m_control.getAndClearRenderRequired();
+			boolean selectionChanged = m_control.hasPreviousSelection();
+			if (selectionChanged) {
+				selectionChanged(renderRequired);
+			}
+			
+			boolean imageMoved = m_control.getAndClearImageMoved();
+		    if (renderRequired || canvasResized) {
+		    	updateCanvasProperties();
+		    }
+
+		    if (renderRequired || imageMoved || canvasResized || selectionChanged) {
+	    		m_display.syncExec(new Runnable() {
+	    			public void run() {
+	    				render(m_control.getOffsetX(), m_control.getOffsetY());
+	    			}});
+	    	}
+			updateCanvasImages(m_image, 0);
+		    renderComplete();
 		}
 	}
 
@@ -78,10 +90,9 @@ public class FunctionRenderer extends Renderer {
 	}
 
 	private void updateCanvasProperties() {
-    	m_control.updateCanvasProperties(m_canvasProperties);
+    	m_canvasProperties.setScale(m_control.getScale());
 		
-		Image canvasImage = m_control.getResizedCanvas();
-		Rectangle bounds = canvasImage.getBounds();
+		Rectangle bounds = m_canvasImage.getBounds();
 		int imageX = bounds.width;
     	int imageY = bounds.height;
 
@@ -110,7 +121,6 @@ public class FunctionRenderer extends Renderer {
         if (viewNode != null) {
         	Rectangle visibleArea = new Rectangle(offsetX, offsetY, structureBounds.width, structureBounds.height);
         	m_canvasProperties.setVisibleArea(visibleArea);
-        	viewNode.updateScaledXy();
         	if (updateUnits()) {
 	        	drawVerticalLines(gc, offsetX);
 	        	drawHorizontalLines(gc, m_timeLineY + ViewNode.TEXT_AREA_Y - offsetY, visibleArea);
@@ -151,15 +161,16 @@ public class FunctionRenderer extends Renderer {
     	Rectangle visibleArea = m_canvasProperties.getVisibleArea();
 
     	gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLUE));
-    	gc.setLineStyle(SWT.LINE_DOT);
     	double timeUnitIncrement = getTimeUnitIncrement();
-		for (double x = 0; x < (offsetX + visibleArea.width); x += m_pixelsPerTimeUnit * scale * timeUnitIncrement) {
-        	if ((int)x > offsetX) {
-	            gc.drawLine((int)x - offsetX, m_timeLineY, (int)x - offsetX, visibleArea.height);
-        	}
-        }    	
-
-    	gc.setLineStyle(SWT.LINE_SOLID);
+    	if (timeUnitIncrement > 0) {
+        	gc.setLineStyle(SWT.LINE_DOT);
+			for (double x = 0; x < (offsetX + visibleArea.width); x += m_pixelsPerTimeUnit * scale * timeUnitIncrement) {
+	        	if ((int)x > offsetX) {
+		            gc.drawLine((int)x - offsetX, m_timeLineY, (int)x - offsetX, visibleArea.height);
+	        	}
+	        }
+	    	gc.setLineStyle(SWT.LINE_SOLID);
+    	}
     }
  
 	private void drawTimeLine(GC gc, int offsetX) {
@@ -178,21 +189,26 @@ public class FunctionRenderer extends Renderer {
     	gc.setForeground(m_display.getSystemColor(SWT.COLOR_BLACK));
     	double timeUnit = 0; 	
     	double timeUnitIncrement = getTimeUnitIncrement();
-		for (double x = 0; x < (offsetX + visibleWidth); x += m_pixelsPerTimeUnit * scale * timeUnitIncrement) {
-        	if ((int)x > offsetX) {
-	        	if (timeUnitIncrement < 0.1) {
-	        		gc.drawText(String.format("%.02f %s", timeUnit, m_timeUnits), (int)x - offsetX, 0);
-	        	} else {
-	        		gc.drawText(String.format("%.01f %s", timeUnit, m_timeUnits), (int)x - offsetX, 0);
+    	if (timeUnitIncrement > 0) {
+			for (double x = 0; x < (offsetX + visibleWidth); x += m_pixelsPerTimeUnit * scale * timeUnitIncrement) {
+	        	if ((int)x > offsetX) {
+		        	if (timeUnitIncrement < 0.1) {
+		        		gc.drawText(String.format("%.02f %s", timeUnit, m_timeUnits), (int)x - offsetX, 0);
+		        	} else {
+		        		gc.drawText(String.format("%.01f %s", timeUnit, m_timeUnits), (int)x - offsetX, 0);
+		        	}
 	        	}
-        	}
-         	timeUnit += timeUnitIncrement;
-        }    	
+	         	timeUnit += timeUnitIncrement;
+	        }
+    	}
     }
  
 	private double getTimeUnitIncrement() {
     	double increment = 1.0;
     	double numPixels = m_pixelsPerTimeUnit * m_control.getScale();
+    	if (numPixels == 0)
+    		return 0.0;
+    	
     	while (numPixels > TIMELINE_MAX_PIXELS_GAP) {
     		numPixels /= 2.0;
     		increment /= 2.0;

@@ -5,10 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.views.viewnode.ViewNode;
@@ -23,16 +21,21 @@ public class RendererControl {
     
     private int m_pixelsX;
     private int m_pixelsY;
+    
+    private int m_canvasWidth;
+    private int m_canvasHeight;
 
     private ViewNode m_viewNode;
     
     private boolean m_selectionChanged;
-    private boolean m_imageChanged;
-    private boolean m_imageComplete;
+    private boolean m_wakeRenderer;
     private boolean m_renderRequired;
     private boolean m_imageMoved;
     private boolean m_canvasResized;
-    private boolean m_done;
+    private boolean m_programExited;
+    
+    private boolean m_selectBoxChanged;
+    private Rectangle m_selectBox;
 	
     private double m_scale;
 	
@@ -41,26 +44,22 @@ public class RendererControl {
     
     private Queue<List<Node>> m_previousSelections;
     private List<Node> m_currentSelection;
-
-    private Display m_display;
+    
     private Image m_canvasImage;
-    private Image m_canvasImageClean;
 
-	public RendererControl(Display display, int leftBorder, int topBorder, int rightBorder, int bottomBorder) {
-		m_display = display;
+	public RendererControl(int leftBorder, int topBorder, int rightBorder, int bottomBorder) {
 	    m_leftBorder = leftBorder;
 		m_topBorder = topBorder;
 	    m_rightBorder = rightBorder;
 	    m_bottomBorder = bottomBorder;
 
-	    m_canvasImageClean = new Image(m_display, 1, 1);
-		m_canvasImage = new Image(m_display, 1, 1);
-		
-	    m_imageChanged = false;
+	    m_wakeRenderer = false;
 	    m_selectionChanged = false;
-	    m_imageComplete = false;
 	    m_imageMoved = false;
 	    m_canvasResized = false;
+
+	    m_selectBoxChanged = false;
+	    m_selectBox = null;
 	    
 	    m_previousSelections = new LinkedList<List<Node>>();
 	    m_currentSelection = new ArrayList<Node>();
@@ -70,14 +69,14 @@ public class RendererControl {
 
 	public synchronized boolean waitForChange() {
 		if (DEBUG) System.out.println("RendererControl::waitForChange()");
-        while (!m_imageChanged) {
+        while (!m_wakeRenderer && !m_programExited) {
             try {
                 wait();
             } catch (InterruptedException e) {}
         }
-        m_imageChanged = false;
-		if (DEBUG) System.out.println("RendererControl::waitForChange() - " + m_done);
-		return m_done;
+        m_wakeRenderer = false;
+		if (DEBUG) System.out.println("RendererControl::waitForChange() - " + m_programExited);
+		return m_programExited;
     }
 
 	public synchronized void reset() {
@@ -97,7 +96,7 @@ public class RendererControl {
 
 	public synchronized void signalDone() {
 		if (DEBUG) System.out.println("RendererControl::signalDone()");			
-    	m_done = true;
+    	m_programExited = true;
         notifyAll();
     }
 
@@ -133,8 +132,16 @@ public class RendererControl {
 		}
 	}
 
-	// Need to wait for the selection update to have completed before this can continue
-	// otherwise the rendering gets out of step
+	public synchronized void setCanvasSize(int width, int height) {
+		if (m_canvasWidth != width || m_canvasHeight != height) {
+			if (DEBUG) System.out.println("RendererControl::setCanvasSize(" + width + ", " + height + ")");
+			m_canvasWidth = width;
+			m_canvasHeight = height;
+			m_canvasResized = true;
+			signalChange();
+		}
+	}
+	
 	public synchronized void setSelection(List<Node> newNodes) {
 		if (selectionChanged(newNodes, m_currentSelection)) {
 			m_previousSelections.add(m_currentSelection);
@@ -144,6 +151,17 @@ public class RendererControl {
 		}
 	}
 
+	public synchronized void setSelectBox(Rectangle box) {
+		m_selectBox = box;
+		m_selectBoxChanged = true;
+		signalChange();
+	}
+	public synchronized Rectangle getSelectBox() {
+		m_selectBoxChanged = false;
+		return m_selectBox;
+	}
+
+	
 	public synchronized List<Node> getCurrentSelection() {
 		return m_currentSelection;
 	}
@@ -170,49 +188,23 @@ public class RendererControl {
 		return imageMoved;
 	}
 	
-	public synchronized Image getResizedCanvas() {
+	public synchronized Rectangle getCanvasBounds() {
 		if (DEBUG) System.out.println("RendererControl::clearCanvasResized()");
 		m_canvasResized = false;
-		return m_canvasImage;
+		return new Rectangle(0, 0, m_canvasWidth, m_canvasHeight);
 	}
 	
-	public synchronized void setCanvasSize(int width, int height) {
-		Rectangle bounds = m_canvasImage.getBounds();
-		if (bounds.width != width || bounds.height != height) {
-			if (DEBUG) System.out.println("RendererControl::setCanvasSize(" + width + ", " + height + ")");
-
-			m_canvasImage.dispose();
-			m_canvasImage = createImage(m_display, width, height);
-
-			m_canvasImageClean.dispose();
-			m_canvasImageClean = createImage(m_display, width, height);
-
-			m_canvasResized = true;
-			signalChange();
-		}
+	public synchronized Image getCanvasImage() {
+		return m_canvasImage;
 	}
 
-	public synchronized boolean waitForRender() {
-		if (DEBUG) System.out.println("RendererControl::waitForRender()");
-        while (!m_imageComplete) {
-            try {
-                wait();
-            } catch (InterruptedException e) {}
-        }
-        m_imageComplete = false;
-		if (DEBUG) System.out.println("RendererControl::waitForRender() - " + m_done);
-		return m_done;
-    }
-
-	public synchronized void signalRenderComplete() {
-		if (DEBUG) System.out.println("RendererControl::signalRenderComplete()");
-		m_imageComplete = true;
-		notifyAll();
-    }
-
+	public synchronized void setCanvasImage(Image canvasImage) {
+		m_canvasImage = canvasImage;
+	}
+	
 	private void signalChange() {
 		if (DEBUG) System.out.println("RendererControl::signalChange()");			
-    	m_imageChanged = true;
+    	m_wakeRenderer = true;
         notifyAll();
     }
 
@@ -236,14 +228,9 @@ public class RendererControl {
 		return m_canvasResized;
 	}
 
-	public synchronized void updateCanvasProperties(ZoomedCanvasProperties canvasProperties) {
-		if (m_viewNode != null) {
-	    	canvasProperties.setScale(m_scale);
-		} else {
-			if (DEBUG) System.out.printf("RendererControl::updateCanvasProperties(0, 0, 0, 0)\n");
-        	canvasProperties.setVisibleArea(new Rectangle(0, 0, 0, 0));
-		}
-    }
+	public boolean selectBoxChanged() {
+		return m_selectBoxChanged;
+	}
 
 	public int getPixelsX() {
 		return m_pixelsX;
@@ -278,40 +265,6 @@ public class RendererControl {
 		if (DEBUG) System.out.println("RendererControl::updatePixelsXy() - " + m_pixelsX + ", " + m_pixelsY);
 	}
 
-	public synchronized Image getCanvasImage() {
-		return m_canvasImage;
-	}
-
-	public synchronized void updateCanvasImages(Image image, int offsetX) {
-		if (DEBUG) System.out.println("RendererControl::updateCanvasImages()");
-		copyImage(image, m_canvasImageClean, offsetX, m_offsetY);
-		copyImage(m_canvasImageClean, m_canvasImage, 0, 0);
-	}
-
-	// Copy images, ensuring bounds are valid
-	private synchronized void copyImage(Image fromImage, Image toImage, int offsetX, int offsetY) {
-		Rectangle toBounds = toImage.getBounds();
-		int canvasX = toBounds.width;
-		int canvasY = toBounds.height;
-		
-		Rectangle fromBounds = fromImage.getBounds();
-		if (canvasX > fromBounds.width)
-			canvasX = fromBounds.width;
-		if (canvasY > fromBounds.height)
-			canvasY = fromBounds.height;
-		
-		if ((offsetX + canvasX) > fromBounds.width)
-			offsetX = fromBounds.width - canvasX;
-		if ((offsetY + canvasY) > fromBounds.height)
-			offsetY = fromBounds.height - canvasY;
-		
-		GC gc = new GC(toImage);
-		gc.drawImage(fromImage,
-				offsetX, offsetY, canvasX, canvasY,
-				0, 0, canvasX, canvasY);
-		gc.dispose();
-	}
-
 	private boolean selectionChanged(List<Node> oldList, List<Node> newList) {
 		if (oldList.size() != newList.size())
 			return true;
@@ -323,26 +276,15 @@ public class RendererControl {
 		return false;
 	}
 
-	private Image createImage(Display display, int x, int y) {
-		// Ensure image bounds are valid
-		if (x < 1) x = 1;
-		if (y < 1) y = 1;
-		return new Image(display, x, y);
+	public int scale(int value) {
+		return (int)((double)value * m_scale);
 	}
 
 	public int getCanvasWidth() {
-		return m_canvasImage.getBounds().width;
+		return m_canvasWidth;
 	}
 
 	public int getCanvasHeight() {
-		return m_canvasImage.getBounds().height;
-	}
-
-	public synchronized void addDragBox(Rectangle box) {
-		copyImage(m_canvasImageClean, m_canvasImage, 0, 0);
-		GC gc = new GC(m_canvasImage);
-		gc.drawFocus(box.x, box.y, box.width, box.height);
-		gc.dispose();
-		signalRenderComplete();
+		return m_canvasHeight;
 	}
 }

@@ -1,5 +1,6 @@
 package com.xmos.xta.gui.views.function;
 
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.gui.views.Renderer;
@@ -57,13 +58,13 @@ public class FunctionView extends ZoomedCanvasView {
     	return viewNode;
 	}
 
-	protected RendererControl createRenderControl(Display display) {
-		return new RendererControl(display, 2, BORDER_Y, 2, TIMELINE_Y + FunctionNode.TEXT_AREA_Y);
+	protected RendererControl createRenderControl() {
+		return new RendererControl(2, BORDER_Y, 2, TIMELINE_Y + FunctionNode.TEXT_AREA_Y);
 	}
 
 	protected Renderer createRenderer(Display display, RendererControl renderControl, 
-			ZoomedCanvasProperties canvasProperties) {
-		return new FunctionRenderer(display, renderControl, canvasProperties, TIMELINE_Y, BORDER_Y);
+			ZoomedCanvasProperties canvasProperties, Canvas canvas) {
+		return new FunctionRenderer(display, renderControl, canvasProperties, canvas, TIMELINE_Y, BORDER_Y);
 	}
 
 	protected ZoomedCanvasProperties createCanvasProperties() {

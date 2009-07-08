@@ -14,23 +14,23 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
 public abstract class ViewNode {
-	protected Node m_treeNode;
+	Node m_treeNode;
     private List<ViewNode> m_children;
 
-    protected static final int NAME_PADDING = 5;
-    protected static final int CORNER_ROUNDING = 7;
+    static final int NAME_PADDING = 5;
+    static final int CORNER_ROUNDING = 7;
     public static final int TEXT_AREA_Y = 20;
 
-    protected int m_pixelOffsetX;
-    protected int m_pixelOffsetY;
+    int m_pixelOffsetX;
+    int m_pixelOffsetY;
 
-    protected int m_renderX;
-    protected int m_renderY;
-    protected double m_width;
-    protected double m_height;
+    int m_renderX;
+    int m_renderY;
+    double m_width;
+    double m_height;
     
-    protected boolean m_isBestCase;
-    protected boolean m_isWorstCase;
+    boolean m_isBestCase;
+    boolean m_isWorstCase;
 
     private ZoomedCanvasProperties m_canvasProperties;
 	

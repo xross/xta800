@@ -8,7 +8,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.viewers.ISelection;
 
 import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.Engine;
@@ -24,7 +23,6 @@ public class GuiEngine {
 	private static GuiNotifier s_notifier;	
 	private static Broadcaster s_broadcaster;
 	private static GuiLog s_log;
-	private static ISelection s_focus;
 	private static String s_functionName;
 	private static Reference s_startPoint;
 	private static Reference s_endPoint;
@@ -114,10 +112,6 @@ public class GuiEngine {
 		}
 	}
 	
-	public static ISelection getFocus() {
-		return s_focus;
-	}
-	
 	public static String getFunctionName() {
 		return s_functionName;
 	}
@@ -138,10 +132,6 @@ public class GuiEngine {
 		return s_runMode;
 	}
 
-	public static void setFocus(ISelection selection) {
-		s_focus = selection;
-	}	
-
 	public static void setCodePoint(Reference codePoint) {
 		s_codePoint = codePoint;
 	}
@@ -151,6 +141,7 @@ public class GuiEngine {
 	}	
 
 	public static void setSelectedNodes(List<Node> selectedNodes) {
+		assert(selectedNodes != null);
 		s_selectedNodes = selectedNodes;
 	}
 	

@@ -98,8 +98,4 @@ public class StructurePathNode extends StructureNode {
 		m_isBestCase = isBestCase;
 		m_isWorstCase = isWorstCase;
 	}
-
-	public boolean isFolded() {
-		return false;
-	}
 }

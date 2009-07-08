@@ -6,6 +6,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -19,48 +20,61 @@ public class StructureRenderer extends Renderer {
 	private boolean m_imageTooLarge;
     private static final int MAX_IMAGE_SIZE = 1024 * 1024 * 30;
     
-	public StructureRenderer(Display display, RendererControl control, ZoomedCanvasProperties canvasProperties) {
-		super(display, control, canvasProperties);
+	public StructureRenderer(Display display, RendererControl control, ZoomedCanvasProperties canvasProperties,
+			Canvas canvas) {
+		super(display, control, canvasProperties, canvas);
 	}
 
 	public void run() {
-		boolean done = false;
-		while (!done) {
-			done = m_control.waitForChange();
-			if (!done) {
-				boolean renderRequired = m_control.getAndClearRenderRequired();
-				boolean canvasResized = m_control.canvasResized();
-				boolean imageMoved = m_control.getAndClearImageMoved();
-
-				if (m_control.hasPreviousSelection()) {
-					selectionChanged(renderRequired);
-				}
-				
-			    if (renderRequired || (m_imageTooLarge && canvasResized)) {
-			    	updateCanvasProperties();
-			    }
-
-			    if (m_imageTooLarge) {
-				    if (renderRequired || imageMoved || canvasResized) {
-			    		m_display.syncExec(new Runnable() {
-			    			public void run() {
-			    				render(m_control.getOffsetX(), m_control.getOffsetY());
-			    			}});
-			    	}
-					m_control.updateCanvasImages(m_image, 0);
-					
-			    } else {
-			    	if (renderRequired) {
-						m_display.syncExec(new Runnable() {
-							public void run() {
-								render(0, 0);
-							}});
-			    	}
-					m_control.updateCanvasImages(m_image, m_control.getOffsetX());
-			    	
-			    }
-			    m_control.signalRenderComplete();
+		boolean programExited = false;
+		while (!programExited) {
+			programExited = m_control.waitForChange();
+			if (programExited)
+				break;
+			
+			if (m_control.selectBoxChanged()) {
+				Rectangle selectBox = m_control.getSelectBox();
+				drawSelectBox(selectBox);
+				renderComplete();
+				continue;
 			}
+			
+			boolean canvasResized = m_control.canvasResized();
+			if (canvasResized) {
+				resizeCanvas();
+			}
+			
+			boolean renderRequired = m_control.getAndClearRenderRequired();
+			boolean selectionChanged = m_control.hasPreviousSelection();
+			if (selectionChanged) {
+				selectionChanged(renderRequired);
+			}
+			
+		    if (renderRequired || (m_imageTooLarge && canvasResized)) {
+		    	updateCanvasProperties();
+		    }
+
+			boolean imageMoved = m_control.getAndClearImageMoved();
+		    if (m_imageTooLarge) {
+			    if (renderRequired || imageMoved || canvasResized) {
+		    		m_display.syncExec(new Runnable() {
+		    			public void run() {
+		    				render(m_control.getOffsetX(), m_control.getOffsetY());
+		    			}});
+		    	}
+				updateCanvasImages(m_image, 0);
+				
+		    } else {
+		    	if (renderRequired) {
+					m_display.syncExec(new Runnable() {
+						public void run() {
+							render(0, 0);
+						}});
+		    	}
+				updateCanvasImages(m_image, m_control.getOffsetX());
+		    	
+		    }
+		    renderComplete();
 		}
 	}
 
@@ -123,13 +137,12 @@ public class StructureRenderer extends Renderer {
 	}
 
 	private void updateCanvasProperties() {
-    	m_control.updateCanvasProperties(m_canvasProperties);
     	double scale = m_control.getScale();
+    	m_canvasProperties.setScale(scale);
 		int imageX = (int)((double)m_control.getPixelsX() * scale);
 		int imageY = (int)((double)m_control.getPixelsY() * scale);
 		
-		Image canvasImage = m_control.getResizedCanvas();
-		Rectangle bounds = canvasImage.getBounds();
+		Rectangle bounds = m_canvasImage.getBounds();
 		int canvasX = bounds.width;
     	int canvasY = bounds.height;
 

@@ -22,7 +22,6 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -55,8 +54,9 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                                                        ISelectionListener,
                                                        ISelectionProvider,
                                                        IMenuListener {
-    public static final boolean DEBUG = false;
-    public static final String ID = "com.xmos.xta.gui.views.structure.Structure";
+    public static final boolean DEBUG = true;
+
+	private static final int LEFT_MOUSE_BUTTON = 1;
 
     private ViewNode m_viewNode;
     protected ZoomedCanvasProperties m_canvasProperties;
@@ -64,7 +64,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 
     private Node m_rootNode;
     private List<Node> m_selectedNodes;
-    private Node m_doubleClickNode;
     
     private Composite m_parent;
     private Display m_display;
@@ -89,7 +88,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    
 		m_listeners = new Vector<ISelectionChangedListener>();
 		m_rootNode = null;
-		m_doubleClickNode = null;
 	    m_selectedNodes = new ArrayList<Node>();
 
 		m_canvasProperties = createCanvasProperties();
@@ -97,15 +95,15 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 
 	protected abstract ViewNode buildViewNode(Node node, int depth);
 	protected abstract ZoomedCanvasProperties createCanvasProperties();
-	protected abstract RendererControl createRenderControl(Display display);
+	protected abstract RendererControl createRenderControl();
 	protected abstract Renderer createRenderer(Display display, RendererControl renderControl,
-			ZoomedCanvasProperties canvasProperties);
+			ZoomedCanvasProperties canvasProperties, Canvas canvas);
 	
 	public void createPartControl(Composite parent) {
 		if (DEBUG) System.out.println(m_name + ": createPartControl");
 	    m_parent = parent;
 	    m_display = m_parent.getDisplay();
-		m_renderControl = createRenderControl(m_display);
+		m_renderControl = createRenderControl();
 
 	    final Composite composite = new Composite(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL); 	    
 	    composite.setLayout(new FillLayout()); 
@@ -115,11 +113,17 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			public void controlResized(ControlEvent e) {
 				Rectangle clientArea = composite.getClientArea();
 				m_renderControl.setCanvasSize(clientArea.width, clientArea.height);
+				if (m_renderControl.getScale() == 0) {
+					zoomFit();
+				}
 				updateScrollBars();
 			}
 			public void controlMoved(ControlEvent e) {
 				Rectangle clientArea = composite.getClientArea();
 				m_renderControl.setCanvasSize(clientArea.width, clientArea.height);
+				if (m_renderControl.getScale() == 0) {
+					zoomFit();
+				}
 				updateScrollBars();
 			}
 	    });	    
@@ -164,9 +168,9 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		getSite().getPage().addSelectionListener(this);
 		getSite().setSelectionProvider(this);
 
-	    m_renderer = createRenderer(m_display, m_renderControl, m_canvasProperties);
+	    m_renderer = createRenderer(m_display, m_renderControl, m_canvasProperties, m_canvas);
 		(new Thread(m_renderer)).start();
-		(new Thread(new Updater(m_display, m_renderControl, m_canvas))).start();
+//		(new Thread(new Updater(m_display, m_renderControl, m_canvas))).start();
 	
 	    initialiseTree();
 	    m_renderControl.refresh();
@@ -176,6 +180,10 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	public void dispose() {
 		if (DEBUG) System.out.println(m_name + ": dispose()");			
 		m_renderControl.signalDone();
+	}
+
+	public void setFocus() {
+		if (DEBUG) System.out.println(m_name + ": setFocus");
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
@@ -199,15 +207,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 				m_toolTip.dispose ();
 	    	}
 	    	m_renderControl.refresh();
-			
-		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SET_FOCUS)) {
-			ISelection sel = GuiEngine.getFocus();
-	        if (sel instanceof IStructuredSelection) {	            
-	            Object object = ((IStructuredSelection)sel).getFirstElement();
-	            if (object instanceof Node) {
-	                m_doubleClickNode = (Node)object;
-	            }
-	        }
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) || 
 				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
@@ -294,21 +293,23 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		int canvasX = m_renderControl.getCanvasWidth();
 		int canvasY = m_renderControl.getCanvasHeight();
 		
-		double scale = m_renderControl.getScale();
-		int renderX = (int)((double)m_renderControl.getPixelsX() * scale);
+		int renderX = scale(m_renderControl.getPixelsX());
 		int renderY = m_renderControl.getPixelsY();
 		if (m_canvasProperties.scaleY()) {
-			renderY = (int)((double)renderY * scale);
+			renderY = scale(renderY);
 		}
 
 		m_hScroll.setMaximum(renderX);
     	m_hScroll.setThumb(canvasX);
-    	int position = setScrollPosition(m_hScroll, (int)((double)m_hScrollPosition * scale));
+    	int position = setScrollPosition(m_hScroll, scale(m_hScrollPosition));
     	m_renderControl.setOffsetX(position);
 	    
 	    m_vScroll.setMaximum(renderY);
     	m_vScroll.setThumb(canvasY);
-    	position = setScrollPosition(m_vScroll, (int)((double)m_vScrollPosition * scale));
+    	position = m_vScrollPosition;
+    	if (m_canvasProperties.scaleY()) {
+    		position = setScrollPosition(m_vScroll, scale(m_vScrollPosition));
+    	}
     	m_renderControl.setOffsetY(position);
     	
 		if (DEBUG) System.out.printf("%s: updateScrollBars (%d, %d, %d) (%d, %d, %d)\n", m_name,
@@ -331,10 +332,8 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		if (m_viewNode == null)
 			return;
 
-		double scale = m_renderControl.getScale();
-		m_hScrollPosition = (int)((double)m_hScroll.getSelection() / scale);
-		m_vScrollPosition = (int)((double)m_vScroll.getSelection() / scale);
-		m_renderControl.setScale(scale / 1.2);
+		updateScrollPositions();
+		m_renderControl.setScale(m_renderControl.getScale() / 1.2);
 		updateScrollBars();
 	}
 
@@ -345,16 +344,14 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		// Don't zoom any more than the maximum width
 		double scale = m_renderControl.getScale();
 		if (scale < 5) {
-			m_hScrollPosition = (int)((double)m_hScroll.getSelection() / scale);
-			m_vScrollPosition = (int)((double)m_vScroll.getSelection() / scale);
+			updateScrollPositions();
 			m_renderControl.setScale(scale * 1.2);
 			updateScrollBars();
 		}
 	}
 
 	public void zoomReset() {
-		m_hScrollPosition = 0;
-		m_vScrollPosition = 0;
+		updateScrollPositions();
 		m_renderControl.setScale(1.0);
 		updateScrollBars();
 	}
@@ -372,16 +369,16 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		updateScrollBars();
 	}
 
-	protected boolean zoomDragBox(Rectangle box) {
-		if (box.width < 10 || box.height < 10)
-			return false;
-		
+	protected void zoomDragBox(Rectangle box) {
 		double scale = m_renderControl.getScale();
 		
 		m_hScrollPosition = (int)(((double)m_hScrollPosition +
 				((double)box.x / (double)m_renderControl.getCanvasWidth() * (double)m_hScroll.getThumb())) / scale);
-		m_vScrollPosition = (int)(((double)m_vScrollPosition +
-				((double)box.y / (double)m_renderControl.getCanvasHeight() * (double)m_vScroll.getThumb())) / scale);
+
+		if (m_canvasProperties.scaleY()) {
+			m_vScrollPosition = (int)(((double)m_vScrollPosition +
+					((double)box.y / (double)m_renderControl.getCanvasHeight() * (double)m_vScroll.getThumb())) / scale);
+		}
 
 		double xScale = (double)m_renderControl.getCanvasWidth() / (double)box.width * scale;
 		double yScale = (double)m_renderControl.getCanvasHeight() / (double)box.height * scale;
@@ -391,7 +388,16 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			m_renderControl.setScale(xScale);
 		}
 		updateScrollBars();
-		return true;
+	}
+
+	private void updateScrollPositions() {
+		double scale = m_renderControl.getScale();
+		m_hScrollPosition = (int)((double)m_hScroll.getSelection() / scale);
+		if (m_canvasProperties.scaleY()) {
+			m_vScrollPosition = (int)((double)m_vScroll.getSelection() / scale);
+		} else {
+			m_vScrollPosition = m_vScroll.getSelection();
+		}
 	}
 
 	private void clearView() {
@@ -400,7 +406,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		}
 		m_viewNode = null;
 		m_rootNode = null;
-		m_doubleClickNode = null;
 		updateSelection(new ArrayList<Node>());
 		m_renderControl.reset();
 	}
@@ -418,83 +423,86 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		m_toolTip = null;
 		m_tipLabel = null;
 
-		final Listener labelListener = new Listener() {
-			public void handleEvent (Event e) {
-				Label label = (Label)e.widget;
-				Shell shell = label.getShell();
-				switch (e.type) {
-					case SWT.MouseDown:
-						shell.dispose();
-						break;
-					case SWT.MouseExit:
-						shell.dispose();
-						break;
-				}
-			}
-		};
-		
 		Listener canvasListener = new Listener() {
-			private Rectangle m_dragBox;
+			private Rectangle m_selectBox;
 			public void handleEvent(Event event) {
 				switch (event.type) {
                 case SWT.MouseWheel:
-                	if (event.count > 0)
+                	if (event.count > 0) {
                 		zoomIn();
-                	else
+                	} else {
                 		zoomOut();
+                	}
+                	event.doit = false;
                     break;
+                    
                 case SWT.KeyDown:
                 	if (event.character == '+')
                 		zoomIn();
                 	else if (event.character == '-')
                 		zoomOut();
                 	break;
+                	
                 case SWT.MouseDown:
-                	if (event.button == 1) {
-                		m_dragBox = new Rectangle(event.x, event.y, 0, 0);
+                	if (event.button == LEFT_MOUSE_BUTTON) {
+                		m_selectBox = new Rectangle(event.x, event.y, 0, 0);
                 	}
                 	break;
+                	
                 case SWT.MouseMove:
-                	if (m_dragBox != null) {
-	                	m_dragBox.width = event.x - m_dragBox.x;
-	                	m_dragBox.height = event.y - m_dragBox.y;
-	                	m_renderControl.addDragBox(correctedBox(m_dragBox));
+    	        	if (m_toolTip != null  && !m_toolTip.isDisposed ()) {
+    	    			m_toolTip.dispose ();
+    	        	}
+
+    	        	if (m_selectBox != null) {
+	                	m_selectBox.width = event.x - m_selectBox.x;
+	                	m_selectBox.height = event.y - m_selectBox.y;
+	                	m_renderControl.setSelectBox(normaliseBox(m_selectBox));
                 	}
                 	break;
+                	
                 case SWT.MouseUp:
                 	if (m_viewNode == null) {
                 		// Ensure the selection box gets removed
                 		m_renderControl.refresh();
                 	} else {
-                		if (!((event.button == 1) && zoomDragBox(correctedBox(m_dragBox)))) {
-	            			int offsetX = m_renderControl.getOffsetX();
-	    					int offsetY = m_renderControl.getOffsetY();
-	    					ViewNode clickNode = m_viewNode.getClickNode(event.x + offsetX, event.y + offsetY);
-	    					if (clickNode != null) {
-	    	    	        	List<Node> newNodes = new ArrayList<Node>();
-	    	    	        	newNodes.add(clickNode.getTreeNode());
-		    					setSelection(new StructuredSelection(newNodes));
-			    			}
+                		if (event.button == LEFT_MOUSE_BUTTON) {
+                    		Rectangle box = normaliseBox(m_selectBox);
+                			if ((box.width > 10) && (box.height > 10)) {
+                				// Only zoom if the user has selected enough
+                				zoomDragBox(box);
+                			} else {
+                				click(event.x, event.y);
+                			}
+                		} else {
+                			click(event.x, event.y);
                 		}
                 	}
-        			m_dragBox = null;
+        			m_selectBox = null;
                 	break;
 				}
 			}
-			private Rectangle correctedBox(Rectangle box) {
-				int x, y, width, height;
-				if (box.width > 0) {
-					x = box.x;
-					width = box.width;
-				} else {
+			
+			private void click(int x, int y) {
+				ViewNode clickNode = getClickNode(x, y);
+				if (clickNode != null) {
+		        	List<Node> newNodes = new ArrayList<Node>();
+		        	newNodes.add(clickNode.getTreeNode());
+					setSelection(new StructuredSelection(newNodes));
+				}
+			}
+
+			private Rectangle normaliseBox(Rectangle box) {
+				int x = box.x;
+				int width = box.width;
+				if (box.width < 0) {
 					x = box.x + box.width;
 					width = -box.width;
 				}
 
-				if (box.height > 0) {
-					y = box.y;
-					height = box.height;
-				} else {
+				int y = box.y;
+				int height = box.height;
+				if (box.height < 0) {
 					y = box.y + box.height;
 					height = -box.height;
 				}
@@ -504,59 +512,53 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 
 		m_canvas.addListener(SWT.MouseWheel, canvasListener);
 		m_canvas.addListener(SWT.KeyDown, canvasListener);
-
 		m_canvas.addListener(SWT.MouseDown, canvasListener);
 		m_canvas.addListener(SWT.MouseMove, canvasListener);
 		m_canvas.addListener(SWT.MouseUp, canvasListener);
 
 		m_canvas.addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(MouseEvent e) {
-				if (m_viewNode != null) {
-					int offsetX = m_renderControl.getOffsetX();
-					int offsetY = m_renderControl.getOffsetY();
-					ViewNode clickNode = m_viewNode.getClickNode(e.x + offsetX, e.y + offsetY);
-					if (clickNode != null) {
-						clickNode.setFolded(!clickNode.isFolded(), false);
-	    				m_renderControl.refresh();
-	    				updateScrollBars();
-
-	    	        	List<Node> newNodes = new ArrayList<Node>();
-	    	        	newNodes.add(clickNode.getTreeNode());
-	    	    		ISelection selection = new StructuredSelection(newNodes);
-	    	    		setSelection(selection);
-	    				GuiEngine.setFocus(selection);
-	    				GuiEngine.broadcast(Broadcaster.BROADCAST_SET_FOCUS, "");
-	    			}
-	    		}
+				ViewNode clickNode = getClickNode(e.x, e.y);
+				if (clickNode != null) {
+					clickNode.setFolded(!clickNode.isFolded(), false);
+    				m_renderControl.refresh();
+    				updateScrollBars();
+    			}
 			}
 	    });
 	    
-	    m_canvas.addMouseMoveListener(new MouseMoveListener() {
-	        public void mouseMove(MouseEvent e) {
-	        	if (m_toolTip != null  && !m_toolTip.isDisposed ())
-	    			m_toolTip.dispose ();
-	        }
-	      });
-	    
 	    m_canvas.addMouseTrackListener(new MouseTrackListener() { 
-		     public void mouseEnter(MouseEvent e) { 
-		     }  
-		     public void mouseExit(MouseEvent e) {
-		     }
-		     public void mouseHover(MouseEvent e) { 
- 				if (m_viewNode != null) {
-					int offsetX = m_renderControl.getOffsetX();
-					int offsetY = m_renderControl.getOffsetY();
-					ViewNode clickNode = m_viewNode.getClickNode(e.x + offsetX, e.y + offsetY);
-					if (clickNode != null) {
-	    	    		if (m_toolTip != null  && !m_toolTip.isDisposed ())
-	    	    			m_toolTip.dispose ();
+	    	private Listener labelListener = new Listener() {
+				public void handleEvent (Event e) {
+					// Dispose the tool tip if you click on it
+    	        	if (m_toolTip != null  && !m_toolTip.isDisposed ()) {
+    	    			m_toolTip.dispose ();
+    	        	}
+				}
+			};
 
-	    	    		createToolTip(clickNode.getToolTipText(), labelListener);
-	    			}
-	    		}
+			public void mouseEnter(MouseEvent e) {}  
+		    public void mouseExit(MouseEvent e) {}
+		    public void mouseHover(MouseEvent e) { 
+				ViewNode clickNode = getClickNode(e.x, e.y);
+				if (clickNode != null) {
+    	    		if (m_toolTip != null  && !m_toolTip.isDisposed ())
+    	    			m_toolTip.dispose ();
+
+    	    		createToolTip(clickNode.getToolTipText(), labelListener);
+    			}
 		     } 
 	    });
+	}
+
+	private ViewNode getClickNode(int x, int y) {
+    	if (m_viewNode != null) {
+			int offsetX = m_renderControl.getOffsetX();
+			int offsetY = m_renderControl.getOffsetY();
+			return m_viewNode.getClickNode(x + offsetX, y + offsetY);
+    	} else {
+    		return null;
+    	}
 	}
 
 	private void createToolTip(String toolTip, Listener labelListener) {
@@ -564,14 +566,14 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		m_toolTip.setBackground (m_display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
 		FillLayout layout = new FillLayout ();
 		layout.marginWidth = 2;
-		m_toolTip.setLayout (layout);
+		m_toolTip.setLayout(layout);
 		m_tipLabel = new Label (m_toolTip, SWT.NONE);
-		m_tipLabel.setForeground (m_display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
-		m_tipLabel.setBackground (m_display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
+		m_tipLabel.setForeground(m_display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
+		m_tipLabel.setBackground(m_display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
 		m_tipLabel.setText(toolTip);
 		m_tipLabel.addListener(SWT.MouseExit, labelListener);
 		m_tipLabel.addListener(SWT.MouseDown, labelListener);
-		Point size = m_toolTip.computeSize (SWT.DEFAULT, SWT.DEFAULT);
+		Point size = m_toolTip.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		Point pt = Display.getCurrent().getCursorLocation();
 
 		// Display slightly to the right of the cursor in order to not have it behind cursor
@@ -584,12 +586,10 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		Route route = GuiEngine.getEngine().getSelectedRoute();
 		if (route != null) {
 			m_rootNode = route.getNode();
-			m_doubleClickNode = m_rootNode;
 			updateSelection(GuiEngine.getSelectedNodes());
-			m_viewNode = buildViewNode(m_doubleClickNode, 0);
+			m_viewNode = buildViewNode(m_rootNode, 0);
 		} else {
 			m_rootNode = null;
-			m_doubleClickNode = null;
 			m_viewNode = null;
 			updateSelection(new ArrayList<Node>());
 		}
@@ -597,10 +597,11 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	}
 
     protected void drawCanvas(GC gc) {
+		if (DEBUG) System.out.println(m_name + ": drawCanvas");
 		gc.drawImage(m_renderControl.getCanvasImage(), 0, 0);
     }
 
-	public void setFocus() {
-		if (DEBUG) System.out.printf(m_name + ": setFocus");
+	private int scale(int value) {
+		return m_renderControl.scale(value);
 	}
 }
