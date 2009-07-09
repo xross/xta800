@@ -54,7 +54,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                                                        ISelectionListener,
                                                        ISelectionProvider,
                                                        IMenuListener {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
 	private static final int LEFT_MOUSE_BUTTON = 1;
 
