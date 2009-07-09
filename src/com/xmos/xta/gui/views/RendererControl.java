@@ -14,7 +14,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.views.viewnode.ViewNode;
 
 public class RendererControl {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     private Display m_display;
     private int m_leftBorder;
@@ -270,7 +270,7 @@ public class RendererControl {
 	    m_offsetX = 0;
 	    m_offsetY = 0;
 	    
-	    m_scale = 1.0;
+	    m_scale = 0.0;
 	    updatePixelsXy();
 	}
 	

@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 
 public abstract class Renderer implements Runnable {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     protected Display m_display;
     protected RendererControl m_control;
