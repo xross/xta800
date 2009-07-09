@@ -229,19 +229,19 @@ public class Route {
 	// Loop Scope Methods
 	// --------------------------------------------------------------------- //		
 	public boolean setLoopScope(Reference reference, boolean isAbsolute) {
-		boolean found = false;
-	    for (Node node : getReferencedNodes(reference)) {
-	    	if (setLoopScope(node, isAbsolute))
-	    		found = true;
+		for (Node node : getReferencedNodes(reference)) {
+			if (canSetLoopScope(node) == false)
+				return false;
 		}		
-		return found;
+		for (Node node : getReferencedNodes(reference)) {
+			setLoopScopeNoCheck(node, isAbsolute);
+		}		
+		return true;
 	}
-	
+
 	public boolean setLoopScope(Node node, boolean isAbsolute) {
-		if (canSetLoopScope(node)) {		
-        	Node enclosingLoopNode = node.getEnclosingLoopNode();
-			enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
-			invalidateCachedStats();
+		if (canSetLoopScope(node)) {
+			setLoopScopeNoCheck(node, isAbsolute);
 			return true;
 		}
 		return false;
@@ -249,6 +249,12 @@ public class Route {
 
 	public boolean canSetLoopScope(Node node) {
 		return node.getEnclosingLoopNode() != null;
+	}
+	
+	private void setLoopScopeNoCheck(Node node, boolean isAbsolute) {
+    	Node enclosingLoopNode = node.getEnclosingLoopNode();
+		enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
+		invalidateCachedStats();		
 	}
 	
 	// --------------------------------------------------------------------- //
