@@ -28,8 +28,10 @@ public class SectionNodeAttributes extends NodeAttributes {
 				value += option.getAttributes().getTimeTaken(c, status, ignoreIterations); 
 			}			
 			setCachedTimeTaken(c, value);
+			setCachedTimeTakenStatus(c, status.getStatus());			
 			setCachedTimeTakenValid(c, true);
 		}
+		status.setStatus(getCachedTimeTakenStatus(c));		
 		return getCachedTimeTaken(c);			
 	}
 
@@ -44,8 +46,10 @@ public class SectionNodeAttributes extends NodeAttributes {
     			value += option.getAttributes().getNumCycles(c, status, ignoreIterations); 
     		}    		
 			setCachedNumCycles(c, value);
+			setCachedNumCyclesStatus(c, status.getStatus());			
 			setCachedNumCyclesValid(c, true);
 		}
+		status.setStatus(getCachedNumCyclesStatus(c));    	
 		return getCachedNumCycles(c);
 	}
 
@@ -60,8 +64,10 @@ public class SectionNodeAttributes extends NodeAttributes {
 				value += option.getAttributes().getNumInstructions(c, status, ignoreIterations); 
 			}			
 			setCachedNumInstructions(c, value);
+			setCachedNumInstructionsStatus(c, status.getStatus());			
 			setCachedNumInstructionsValid(c, true);
 		}
+		status.setStatus(getCachedNumInstructionsStatus(c));
 		return getCachedNumInstructions(c);
 	}
 
@@ -76,8 +82,10 @@ public class SectionNodeAttributes extends NodeAttributes {
 				value += option.getAttributes().getNumFNops(c, status, ignoreIterations); 
 			}			
 			setCachedNumFnops(c, value);
+			setCachedNumFnopsStatus(c, status.getStatus());			
 			setCachedNumFnopsValid(c, true);
 		}
+		status.setStatus(getCachedNumFnopsStatus(c));
 		return getCachedNumFnops(c);
 	}
 
