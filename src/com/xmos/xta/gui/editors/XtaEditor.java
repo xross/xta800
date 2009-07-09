@@ -771,7 +771,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		Engine engine = GuiEngine.getEngine();
 		Route route = engine.getSelectedRoute();
 		if (route != null) {
-            return route.getUnknowns(UnknownState.UNKNOWN);
+            return route.getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN);
 		} else {
 			return new HashSet<Node>();
 		}

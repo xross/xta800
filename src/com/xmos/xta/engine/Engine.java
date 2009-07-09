@@ -423,7 +423,7 @@ public class Engine implements Notifier {
 		if (route == null)
 			return false;
 		
-		return route.canInstructionPause(reference);			
+		return route.getRouteUnknowns().canInstructionPause(reference);			
 	}
 		
 	public boolean removeRoute(int routeId) {
@@ -556,7 +556,7 @@ public class Engine implements Notifier {
 		}		
 		Route route = getRoute(routeId);
 		if (route != null) {
-		    if (route.setLoopIterations(reference, iterations)) {
+		    if (route.getRouteUnknowns().setLoopIterations(reference, iterations)) {
 			    notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			    return true;
 		    }
@@ -565,7 +565,7 @@ public class Engine implements Notifier {
 	}
 
 	public boolean setLoopIterations(Node node, long iterations) {
-		if (m_selectedRoute.setLoopIterations(node, iterations)) {
+		if (m_selectedRoute.getRouteUnknowns().setLoopIterations(node, iterations)) {
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
 		}
@@ -573,7 +573,7 @@ public class Engine implements Notifier {
 	}
 
 	public boolean canSetLoopIterations(Node node) {
-		return m_selectedRoute.canSetLoopIterations(node);
+		return m_selectedRoute.getRouteUnknowns().canSetLoopIterations(node);
 	}
 	
 	public boolean setLoopPathIterations(int routeId, String refString, long iterations) {
@@ -584,7 +584,7 @@ public class Engine implements Notifier {
 		}
 		Route route = getRoute(routeId);
 		if (route != null) {		
-		    if (route.setLoopPathIterations(reference, iterations)) {
+		    if (route.getRouteUnknowns().setLoopPathIterations(reference, iterations)) {
 			    notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			    return true;
 		    }
@@ -593,7 +593,7 @@ public class Engine implements Notifier {
 	}
 
 	public boolean setLoopPathIterations(Node node, long iterations) {
-		if (m_selectedRoute.setLoopPathIterations(node, iterations)) {
+		if (m_selectedRoute.getRouteUnknowns().setLoopPathIterations(node, iterations)) {
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
 		}
@@ -601,7 +601,7 @@ public class Engine implements Notifier {
 	}
 
 	public boolean canSetLoopPathIterations(Node node) {
-		return m_selectedRoute.canSetLoopPathIterations(node);
+		return m_selectedRoute.getRouteUnknowns().canSetLoopPathIterations(node);
 	}
 	
 	public boolean setLoopScope(int routeId, String refString, boolean absolute) {
@@ -612,7 +612,7 @@ public class Engine implements Notifier {
 		}
 		Route route = getRoute(routeId);
 		if (route != null) {				
-		    if (route.setLoopScope(reference, absolute)) {
+		    if (route.getRouteUnknowns().setLoopScope(reference, absolute)) {
 			    notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			    return true;
 		    }
@@ -621,7 +621,7 @@ public class Engine implements Notifier {
 	}
 
 	public boolean setLoopScope(Node node, boolean absolute) {
-		if (m_selectedRoute.setLoopScope(node, absolute)) {
+		if (m_selectedRoute.getRouteUnknowns().setLoopScope(node, absolute)) {
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
 		}
@@ -629,7 +629,7 @@ public class Engine implements Notifier {
 	}
 
 	public boolean canSetLoopScope(Node node) {
-		return m_selectedRoute.canSetLoopScope(node);
+		return m_selectedRoute.getRouteUnknowns().canSetLoopScope(node);
 	}
 	
 	// ===================================================================== //
@@ -643,7 +643,7 @@ public class Engine implements Notifier {
 		}
 		Route route = getRoute(routeId);
 		if (route != null) {						
-		    if (route.setInstructionTimeTaken(reference, timeTaken)) {
+		    if (route.getRouteUnknowns().setInstructionTimeTaken(reference, timeTaken)) {
 			    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			    return true;
 		    }
@@ -652,7 +652,7 @@ public class Engine implements Notifier {
 	}
 
 	public void setInstructionTimeTaken(Node node, double timeTaken) {
-		m_selectedRoute.setInstructionTimeTaken(node, timeTaken);
+		m_selectedRoute.getRouteUnknowns().setInstructionTimeTaken(node, timeTaken);
 		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	
@@ -664,7 +664,7 @@ public class Engine implements Notifier {
 		}
 		Route route = getRoute(routeId);
 		if (route != null) {								
-		    if (route.unsetInstructionTimeTaken(reference)) {
+		    if (route.getRouteUnknowns().unsetInstructionTimeTaken(reference)) {
 			    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			    return true;
 		    }
@@ -673,12 +673,12 @@ public class Engine implements Notifier {
 	}
 
 	public void unsetInstructionTimeTaken(Node node) {
-		m_selectedRoute.unsetInstructionTimeTaken(node);
+		m_selectedRoute.getRouteUnknowns().unsetInstructionTimeTaken(node);
 		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 
 	public double getInstructionTimeTaken(Node node) {
-		return m_selectedRoute.getInstructionTimeTaken(node);
+		return m_selectedRoute.getRouteUnknowns().getInstructionTimeTaken(node);
 	}
 
 	public boolean setInstructionNumCycles(int routeId, String refString, long numCycles) {
@@ -689,7 +689,7 @@ public class Engine implements Notifier {
 		}
 		Route route = getRoute(routeId);
 		if (route != null) {								
-     		if (route.setInstructionNumCycles(reference, numCycles)) {
+     		if (route.getRouteUnknowns().setInstructionNumCycles(reference, numCycles)) {
 			    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			    return true;
      		}
@@ -698,7 +698,7 @@ public class Engine implements Notifier {
 	}
 
 	public void setInstructionNumCycles(Node node, long numCycles) {
-		m_selectedRoute.setInstructionNumCycles(node, numCycles);
+		m_selectedRoute.getRouteUnknowns().setInstructionNumCycles(node, numCycles);
 		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	
@@ -710,7 +710,7 @@ public class Engine implements Notifier {
 		}
 		Route route = getRoute(routeId);
 		if (route != null) {								
-		    if (route.unsetInstructionNumCycles(reference)) {
+		    if (route.getRouteUnknowns().unsetInstructionNumCycles(reference)) {
 			    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			    notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			    return true;
@@ -720,12 +720,12 @@ public class Engine implements Notifier {
 	}
 			
 	public void unsetInstructionNumCycles(Node node) {
-		m_selectedRoute.unsetInstructionNumCycles(node);
+		m_selectedRoute.getRouteUnknowns().unsetInstructionNumCycles(node);
 		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	
 	public long getInstructionNumCycles(Node node) {
-		return m_selectedRoute.getInstructionNumCycles(node);
+		return m_selectedRoute.getRouteUnknowns().getInstructionNumCycles(node);
 	}	
 
 	// ===================================================================== //

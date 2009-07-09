@@ -81,7 +81,7 @@ public class Status extends Command {
 	    		for (Route route : routes) {
 		    		console.display(String.format("Loaded Route(%d): %s %s\n", 
 		    				route.getRouteId(),
-		    				route.getDescription(),
+		    				route.getRouteDescription().getDescription(),
 		    				route.getEndpointsPcsString()));	    			
 	    		}
 	    	} else {

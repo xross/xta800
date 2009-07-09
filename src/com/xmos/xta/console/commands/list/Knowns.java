@@ -53,7 +53,7 @@ public class Knowns extends Command {
 	    if (!validateRouteId(engine, console, m_routeId))
 		    return;
 		
-	    Collection<Node> nodes = engine.getRoute(m_routeId).getUnknowns(UnknownState.KNOWN);
+	    Collection<Node> nodes = engine.getRoute(m_routeId).getRouteUnknowns().getUnknowns(UnknownState.KNOWN);
 	    if (nodes.size() > 0) {
 			for (Node node : nodes) {			
 			    console.display(node.getAttributes().getUnknownDescription() + "\n");
