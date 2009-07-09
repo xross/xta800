@@ -2,8 +2,6 @@ ifndef $(TARGETDIR)
 TARGETDIR = .
 endif
 
-TARGET = $(TARGETDIR)/test.xe
-
 SOURCEDIR = source
 
 SOURCES = \
@@ -18,8 +16,8 @@ $(SOURCEDIR)/Encrypt.S \
 $(SOURCEDIR)/InvKeyExpansion.S \
 $(SOURCEDIR)/KeyExpansion.S \
 
-all: $(TARGET)
+all: $(TARGETDIR)/test.xe
 
-$(TARGET):
-	xcc $(SOURCES) -o $(TARGET)
+$(TARGETDIR)/test.xe:
+	@xcc $(SOURCES) -target=$(TARGET) -o $(TARGETDIR)/test.xe
 
