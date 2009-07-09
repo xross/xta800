@@ -230,11 +230,13 @@ public class Engine implements Notifier {
 					"Node: %d, Core: %d image not found in file: %s", m_nodeId,
 					m_coreId, m_executableFile));
 			return false;
+			
 		} else if (!functionExists(functionName)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Cannot find function: %s in file: %s, node: %d, core: %d",
 					functionName, m_executableFile, m_nodeId, m_coreId));
 			return false;
+			
 		} else {
 			RouteDescription routeDescription = new RouteDescription(functionName, this, m_nodeId, m_coreId);		
 			return analyseRouteSafely(routeDescription);
@@ -252,32 +254,36 @@ public class Engine implements Notifier {
 					"Node: %d, Core: %d image not found in file: %s", m_nodeId,
 					m_coreId, m_executableFile));
 			return false;
+			
 		} else if (!resolveRefernece(fromRef)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", from));
 			return false;
+			
 		} else if (!resolveRefernece(toRef)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", to));
 			return false;
+			
 		} else {		
 			RouteDescription routeDescription = new RouteDescription(fromRef, toRef, m_nodeId, m_coreId);
 			return analyseRouteSafely(routeDescription);
 		}
 	}
-	
+
 	private boolean analyseRouteSafely(RouteDescription routeDescription) {				
 		boolean success = false;
 		try {
 			success = doRouteAnalysis(routeDescription);
+			
 		} catch (final java.lang.OutOfMemoryError e) {
-			System.gc();
 			notify(Notifier.NOTIFY_ERROR, "Out of Memory (Heap)");
 			return false;
+
 		} catch (final java.lang.StackOverflowError e) {
-			System.gc();
 			notify(Notifier.NOTIFY_ERROR, "Out of Memory (Stack)");
 			return false;
+
 		} catch (Exception e) {
 			notify(Notifier.NOTIFY_ERROR, "Unknown error detected");
 			return false;
@@ -305,9 +311,11 @@ public class Engine implements Notifier {
 		if (error == RouteError.NO_ENDPOINTS_FOUND ) {
 			notify(Notifier.NOTIFY_ERROR, "No paths of execution could reach the endpoint(s)");
 			return false;
+			
 		} else if (error == RouteError.ENDPOINTS_MISSING ) {
 			notify(Notifier.NOTIFY_ERROR, "Could not determine the endpoint(s)");
 			return false;
+			
 		} else if (error == RouteError.STARTPOINT_MISSING ) {
 			notify(Notifier.NOTIFY_ERROR, "Could not determine the startpoint");
 			return false;
