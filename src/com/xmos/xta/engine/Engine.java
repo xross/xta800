@@ -292,10 +292,6 @@ public class Engine implements Notifier {
 	}
 
 	private boolean doRouteAnalysis(RouteDescription routeDescription) throws Exception {	
-		if (isBusy()) {
-			notify(Notifier.NOTIFY_ERROR, "Engine busy");
-			return false;
-		}
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Node: %d, Core: %d image not found in file: %s",
