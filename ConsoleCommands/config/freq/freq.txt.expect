@@ -3,6 +3,7 @@ Current core: 0
 Frequency: 100
 NumThreads: 8
 SrcPaths: .
+Case: WORST
 Verbosity: 0
 No executable loaded
 No routes analysed

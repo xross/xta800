@@ -1,32 +1,7 @@
-Current node: 0
-Current core: 0
-Frequency: 400
-NumThreads: 8
-SrcPaths: .
-Verbosity: 0
-Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
-Node: 0, Core: 1 \(No debug information found\)
-Node: 0, Core: 2 \(No debug information found\)
-Node: 0, Core: 3 \(No debug information found\)
-Loaded Route\(0\): function: test0 
 Route\(0\) function: test0
     No Timing Specified
 
 Fail, Timing Unspecified
-Current node: 0
-Current core: 1
-Frequency: 400
-NumThreads: 8
-SrcPaths: .
-Verbosity: 0
-Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
-Node: 0, Core: 1 \(No debug information found\)
-Node: 0, Core: 2 \(No debug information found\)
-Node: 0, Core: 3 \(No debug information found\)
-Loaded Route\(0\): function: test0 
-Loaded Route\(1\): function: test1 
 Route\(0\) function: test0
     No Timing Specified
 
@@ -34,20 +9,6 @@ Route\(1\) function: test1
     No Timing Specified
 
 Fail, Timing Unspecified
-Current node: 0
-Current core: 2
-Frequency: 400
-NumThreads: 8
-SrcPaths: .
-Verbosity: 0
-Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
-Node: 0, Core: 1 \(No debug information found\)
-Node: 0, Core: 2 \(No debug information found\)
-Node: 0, Core: 3 \(No debug information found\)
-Loaded Route\(0\): function: test0 
-Loaded Route\(1\): function: test1 
-Loaded Route\(2\): function: test2 
 Route\(0\) function: test0
     No Timing Specified
 
@@ -58,21 +19,6 @@ Route\(2\) function: test2
     No Timing Specified
 
 Fail, Timing Unspecified
-Current node: 0
-Current core: 3
-Frequency: 400
-NumThreads: 8
-SrcPaths: .
-Verbosity: 0
-Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
-Node: 0, Core: 1 \(No debug information found\)
-Node: 0, Core: 2 \(No debug information found\)
-Node: 0, Core: 3 \(No debug information found\)
-Loaded Route\(0\): function: test0 
-Loaded Route\(1\): function: test1 
-Loaded Route\(2\): function: test2 
-Loaded Route\(3\): function: test3 
 Route\(0\) function: test0
     No Timing Specified
 
@@ -86,18 +32,3 @@ Route\(3\) function: test3
     No Timing Specified
 
 Fail, Timing Unspecified
-Current node: 0
-Current core: 0
-Frequency: 400
-NumThreads: 8
-SrcPaths: .
-Verbosity: 0
-Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
-Node: 0, Core: 1 \(No debug information found\)
-Node: 0, Core: 2 \(No debug information found\)
-Node: 0, Core: 3 \(No debug information found\)
-Loaded Route\(0\): function: test0 
-Loaded Route\(1\): function: test1 
-Loaded Route\(2\): function: test2 
-Loaded Route\(3\): function: test3 

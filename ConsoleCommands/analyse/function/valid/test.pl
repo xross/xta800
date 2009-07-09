@@ -13,21 +13,15 @@ system("xcc -target=$target -march=$arch test.xc -o $genDir/test.xe > $genDir/va
 system("@ARGV load $genDir/test.xe " .
        "config proc 0 0 " .
        "analyse function test0 " .
-       "status " .
        "print summary " .
        "-config proc 0 1 " .
        "analyse function test1 " .
-       "status " .
        "print summary " .
        "-config proc 0 2 " .
        "analyse function test2 " .
-       "status " .
        "print summary " .
        "-config proc 0 3 " .
        "analyse function test3 " .
-       "status " .
        "print summary " .
-       "-config proc 0 0 " .
-       "status " .
        "exit > $genDir/valid.txt 2>&1");
 

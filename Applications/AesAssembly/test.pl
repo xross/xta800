@@ -10,7 +10,7 @@ my $noBuild = shift(@ARGV);
 my $directory = "AesAssembly";
 
 if (!$noBuild) {
-    system("xmake TARGETDIR=$genDir > $genDir/$directory.log 2>&1");
+    system("xmake TARGETDIR=$genDir TARGET=$target > $genDir/$directory.log 2>&1");
 }
 
 my $filename = "trace";
@@ -18,11 +18,10 @@ my $compareFnnops = 0;
 
 system("@ARGV load $genDir/test.xe " .
         "analyse function _Encrypt " .
-        "print completed_instructions " .
+        "print trace - " .
         "-exit > $genDir/$directory.txt 2>&1");
 
-system("xobjdump -r config.xml $genDir/test.xe > $genDir/$filename.out");
-system("xsim -t $genDir/test.xe > $genDir/$filename.out");
+system("xsim -t -f $genDir/test.xe > $genDir/$filename.out");
 
 open(INFILE, "$genDir/$filename.out") or die "Can't open input file";
 open(OUTFILE, ">$genDir/$filename.parsed") or die "Can't open file to write";
@@ -64,7 +63,7 @@ while (<INFILE>) {
 
         # Gets the pc from the trace. 
         my @lineArray = split('\s+', $line);
-        my $pc = $lineArray[1]; 
+        my $pc = $lineArray[2]; 
                 
         if($line =~ m/FNOP/ ){
             if($compareFnnops == 1){

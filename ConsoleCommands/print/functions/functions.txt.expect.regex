@@ -1,13 +1,13 @@
-function1: \d+ \d+ 
-function2: \d+ \d+ 
-function3: \d+ \d+ 
-function4: \d+ \d+ 
-function5: \d+ \d+ 
-test: \d+ \d+ 
-function1: \d+ \d+ 
-function2: \d+ \d+ 
-function3: \d+ \d+ 
-function4: \d+ \d+ 
-function5: \d+ \d+ 
-test: \d+ \d+ 
-main: \d+ \d+ 
+- function1
+- function2
+- function3
+- function4
+- function5
+- test
+- function1
+- function2
+- function3
+- function4
+- function5
+- main
+- test

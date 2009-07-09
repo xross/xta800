@@ -12,17 +12,14 @@ system("xcc -target=$target -march=$arch -fxta-info test.xc -o $genDir/test.xe >
 }
 system("@ARGV load $genDir/test.xe " .
        "config proc 0 0 " .
-       "status " .
        "add endpoint 0x10000 bob " .
        "add endpoint test.xc:11 bill " .
        "add endpoint test.xc:12 ben " .
        "add endpoint test.xc:13 fred " .
        "list endpoints " .
        "config proc 0 0 " .
-       "status " .
        "list endpoints " .
        "config proc 0 2 " .
-       "status " .
        "list endpoints " .
        "add endpoint 0x10000 bob " .
        "add endpoint test.xc:11 bill1 " .
@@ -30,7 +27,6 @@ system("@ARGV load $genDir/test.xe " .
        "add endpoint test.xc:13 fred1 " .
        "list endpoints " .
        "config proc 0 0 " .
-       "status " .
        "list endpoints " .
        "exit > $genDir/endpoint.txt 2>&1");
 

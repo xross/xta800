@@ -1,6 +1,6 @@
-main.xc: \d+ \d+ 
-test1.xc: \d+ \d+ 
-test2.xc: \d+ \d+ 
-test3.xc: \d+ \d+ 
-test4.xc: \d+ \d+ 
-test5.xc: \d+ \d+ 
+- main.xc
+- test1.xc
+- test2.xc
+- test3.xc
+- test4.xc
+- test5.xc

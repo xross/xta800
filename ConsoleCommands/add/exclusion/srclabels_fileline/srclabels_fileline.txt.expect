@@ -1,0 +1,49 @@
+=======================
+none
+=======================
+Route(0) function: testA
+    No Timing Specified
+
+Route(1) function: testB
+    No Timing Specified
+
+Route(2) function: testAandB
+    No Timing Specified
+
+Route(3) function: testAorB
+    No Timing Specified
+
+Fail, Timing Unspecified
+=======================
+- 0x100b4: test.xc:3
+=======================
+Warning: No valid paths of execution
+Warning: No valid paths of execution
+Route(0) function: testB
+    No Timing Specified
+
+Route(1) function: testAorB
+    No Timing Specified
+
+Fail, Timing Unspecified
+=======================
+- 0x100b8: test.xc:7
+=======================
+Warning: No valid paths of execution
+Warning: No valid paths of execution
+Route(0) function: testA
+    No Timing Specified
+
+Route(1) function: testAorB
+    No Timing Specified
+
+Fail, Timing Unspecified
+=======================
+- 0x100b4: test.xc:3
+- 0x100b8: test.xc:7
+=======================
+Warning: No valid paths of execution
+Warning: No valid paths of execution
+Warning: No valid paths of execution
+Warning: No valid paths of execution
+Error: No routes analysed

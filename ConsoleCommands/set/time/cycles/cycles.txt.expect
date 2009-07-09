@@ -1,8 +1,8 @@
-Error: No executable loaded
-Time for instruction (0x100ce: in (2r)) set to 20000.0ns
+Error: Failed to set instruction time on reference id: inst
+Time for instruction (0x100be: in (2r)) set to 20000.0ns
 none
-Time for instruction (0x100ce: in (2r)) set to 100000.0ns
-Error: Unable to unset time for: x
-Error: Unable to unset time for: .dfbjdb
-Time for instruction (0x100ce: in (2r)) set to 100000.0ns
+Time for instruction (0x100be: in (2r)) set to 100000.0ns
+Error: Failed to unset instruction time on reference id: x
+Error: Failed to unset instruction time on reference id: .dfbjdb
+Time for instruction (0x100be: in (2r)) set to 100000.0ns
 none
