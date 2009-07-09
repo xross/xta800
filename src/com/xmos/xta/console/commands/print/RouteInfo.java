@@ -56,7 +56,7 @@ public class RouteInfo extends Command {
 	    Route route = engine.getRoute(m_routeId);
 	    RouteTiming routeTiming = route.getRouteTiming();
 
-    	console.display(String.format("%s %s\n", route.getDescription(), route.getEndpointsPcsString()));    	
+    	console.display(String.format("%s %s\n", route.getRouteDescription().getDescription(), route.getEndpointsPcsString()));    	
     	console.display(routeTiming.getDescription(Level.COMPLETE));    	
     }
 }

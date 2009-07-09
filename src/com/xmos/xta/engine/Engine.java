@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,7 +61,6 @@ public class Engine implements Notifier {
 	private int m_nodeId;
 	private int m_coreId;
 	private Notifier m_notifier;	
-	private Progress m_progress;
 	private IProgressMonitor m_jobMonitor;
 	private String m_srcPaths;
 	private Sections m_sections;
@@ -87,7 +87,6 @@ public class Engine implements Notifier {
 		m_nodeId = 0;
 		m_coreId = 0;
 		m_srcPaths = ".";
-		m_progress = new Progress(Progress.State.IDLE, 0);
 		m_jobMonitor = null;
 		m_sections = new Sections();
 
@@ -102,7 +101,6 @@ public class Engine implements Notifier {
 		if (m_notifier != null){
 			m_notifier.notify(message, argument);
 		}
-			
 	}
 
 	public Config getConfig() {
@@ -232,11 +230,13 @@ public class Engine implements Notifier {
 					"Node: %d, Core: %d image not found in file: %s", m_nodeId,
 					m_coreId, m_executableFile));
 			return false;
+			
 		} else if (!functionExists(functionName)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Cannot find function: %s in file: %s, node: %d, core: %d",
 					functionName, m_executableFile, m_nodeId, m_coreId));
 			return false;
+			
 		} else {
 			RouteDescription routeDescription = new RouteDescription(functionName, this, m_nodeId, m_coreId);		
 			return analyseRouteSafely(routeDescription);
@@ -254,37 +254,37 @@ public class Engine implements Notifier {
 					"Node: %d, Core: %d image not found in file: %s", m_nodeId,
 					m_coreId, m_executableFile));
 			return false;
+			
 		} else if (!resolveRefernece(fromRef)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", from));
 			return false;
+			
 		} else if (!resolveRefernece(toRef)) {
 			notify(Notifier.NOTIFY_ERROR, String.format(
 					"Unresolved reference: %s", to));
 			return false;
+			
 		} else {		
 			RouteDescription routeDescription = new RouteDescription(fromRef, toRef, m_nodeId, m_coreId);
 			return analyseRouteSafely(routeDescription);
 		}
 	}
-	
+
 	private boolean analyseRouteSafely(RouteDescription routeDescription) {				
 		boolean success = false;
 		try {
 			success = doRouteAnalysis(routeDescription);
-			m_progress.setState(Progress.State.IDLE);
+			
 		} catch (final java.lang.OutOfMemoryError e) {
-			m_progress.setState(Progress.State.IDLE);
-			System.gc();
 			notify(Notifier.NOTIFY_ERROR, "Out of Memory (Heap)");
 			return false;
+
 		} catch (final java.lang.StackOverflowError e) {
-			m_progress.setState(Progress.State.IDLE);
-			System.gc();
 			notify(Notifier.NOTIFY_ERROR, "Out of Memory (Stack)");
 			return false;
+
 		} catch (Exception e) {
-			m_progress.setState(Progress.State.IDLE);
 			notify(Notifier.NOTIFY_ERROR, "Unknown error detected");
 			return false;
 		}
@@ -292,7 +292,7 @@ public class Engine implements Notifier {
 	}
 
 	private boolean doRouteAnalysis(RouteDescription routeDescription) throws Exception {	
-		if (m_progress.getState() != Progress.State.IDLE) {
+		if (isBusy()) {
 			notify(Notifier.NOTIFY_ERROR, "Engine busy");
 			return false;
 		}
@@ -303,19 +303,19 @@ public class Engine implements Notifier {
 			return false;
 		}
 
-		RouteConstructor routeConstructor = new RouteConstructor(this, m_structuralGraph.get(m_nodeId, m_coreId), routeDescription);
-			
-		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
-		m_progress.resetState(Progress.State.PROCESSING_PATHS);
+		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");		
 		
+		RouteConstructor routeConstructor = new RouteConstructor(this, m_structuralGraph.get(m_nodeId, m_coreId), routeDescription);			
 		RouteError error = routeConstructor.analyse();		
 
 		if (error == RouteError.NO_ENDPOINTS_FOUND ) {
 			notify(Notifier.NOTIFY_ERROR, "No paths of execution could reach the endpoint(s)");
 			return false;
+			
 		} else if (error == RouteError.ENDPOINTS_MISSING ) {
 			notify(Notifier.NOTIFY_ERROR, "Could not determine the endpoint(s)");
 			return false;
+			
 		} else if (error == RouteError.STARTPOINT_MISSING ) {
 			notify(Notifier.NOTIFY_ERROR, "Could not determine the startpoint");
 			return false;
@@ -335,15 +335,7 @@ public class Engine implements Notifier {
 			return true;
 		}		
 	}
-	
-	public Progress getProgress() {
-		if (m_progress != null) {
-			return m_progress;
-		} else {
-			return new Progress(Progress.State.IDLE, 0);
-		}
-	}
-	
+		
 	public Notifier getNotifier() {
 		return m_notifier;
 	}
@@ -423,7 +415,7 @@ public class Engine implements Notifier {
 		if (route == null)
 			return false;
 		
-		return route.canInstructionPause(reference);			
+		return route.getRouteUnknowns().canInstructionPause(reference);			
 	}
 		
 	public boolean removeRoute(int routeId) {
@@ -458,21 +450,25 @@ public class Engine implements Notifier {
 	}
 	
 	public void provideFeedback(String feedback) {
-		if (m_jobMonitor != null){
+		if (m_jobMonitor != null) {
 			m_jobMonitor.subTask(feedback);	
 		}		
 	}
 	
-	public void startAnalysis(String task, int functionCount){
-		if (m_jobMonitor != null){
+	public void startAnalysis(String task, int functionCount) {
+		if (m_jobMonitor != null) {
 			m_jobMonitor.beginTask(task, functionCount);
 		}	
 	}
 	
-	public void provideWorkDone(int work){
-		if (m_jobMonitor != null){
+	public void provideWorkDone(int work) {
+		if (m_jobMonitor != null) {
 			m_jobMonitor.worked(work);
 		}
+	}
+	
+	public boolean isBusy() {
+		return m_jobMonitor != null;
 	}
 	
 	public Collection<String> getFunctionsVisited() {
@@ -556,7 +552,7 @@ public class Engine implements Notifier {
 		}		
 		Route route = getRoute(routeId);
 		if (route != null) {
-		    if (route.setLoopIterations(reference, iterations)) {
+		    if (route.getRouteUnknowns().setLoopIterations(reference, iterations)) {
 			    notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			    return true;
 		    }
@@ -565,7 +561,7 @@ public class Engine implements Notifier {
 	}
 
 	public boolean setLoopIterations(Node node, long iterations) {
-		if (m_selectedRoute.setLoopIterations(node, iterations)) {
+		if (m_selectedRoute.getRouteUnknowns().setLoopIterations(node, iterations)) {
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
 		}
@@ -573,7 +569,7 @@ public class Engine implements Notifier {
 	}
 
 	public boolean canSetLoopIterations(Node node) {
-		return m_selectedRoute.canSetLoopIterations(node);
+		return m_selectedRoute.getRouteUnknowns().canSetLoopIterations(node);
 	}
 	
 	public boolean setLoopPathIterations(int routeId, String refString, long iterations) {
@@ -584,7 +580,7 @@ public class Engine implements Notifier {
 		}
 		Route route = getRoute(routeId);
 		if (route != null) {		
-		    if (route.setLoopPathIterations(reference, iterations)) {
+		    if (route.getRouteUnknowns().setLoopPathIterations(reference, iterations)) {
 			    notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			    return true;
 		    }
@@ -593,7 +589,7 @@ public class Engine implements Notifier {
 	}
 
 	public boolean setLoopPathIterations(Node node, long iterations) {
-		if (m_selectedRoute.setLoopPathIterations(node, iterations)) {
+		if (m_selectedRoute.getRouteUnknowns().setLoopPathIterations(node, iterations)) {
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
 		}
@@ -601,7 +597,7 @@ public class Engine implements Notifier {
 	}
 
 	public boolean canSetLoopPathIterations(Node node) {
-		return m_selectedRoute.canSetLoopPathIterations(node);
+		return m_selectedRoute.getRouteUnknowns().canSetLoopPathIterations(node);
 	}
 	
 	public boolean setLoopScope(int routeId, String refString, boolean absolute) {
@@ -612,7 +608,7 @@ public class Engine implements Notifier {
 		}
 		Route route = getRoute(routeId);
 		if (route != null) {				
-		    if (route.setLoopScope(reference, absolute)) {
+		    if (route.getRouteUnknowns().setLoopScope(reference, absolute)) {
 			    notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			    return true;
 		    }
@@ -621,7 +617,7 @@ public class Engine implements Notifier {
 	}
 
 	public boolean setLoopScope(Node node, boolean absolute) {
-		if (m_selectedRoute.setLoopScope(node, absolute)) {
+		if (m_selectedRoute.getRouteUnknowns().setLoopScope(node, absolute)) {
 			notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			return true;
 		}
@@ -629,7 +625,7 @@ public class Engine implements Notifier {
 	}
 
 	public boolean canSetLoopScope(Node node) {
-		return m_selectedRoute.canSetLoopScope(node);
+		return m_selectedRoute.getRouteUnknowns().canSetLoopScope(node);
 	}
 	
 	// ===================================================================== //
@@ -643,7 +639,7 @@ public class Engine implements Notifier {
 		}
 		Route route = getRoute(routeId);
 		if (route != null) {						
-		    if (route.setInstructionTimeTaken(reference, timeTaken)) {
+		    if (route.getRouteUnknowns().setInstructionTimeTaken(reference, timeTaken)) {
 			    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			    return true;
 		    }
@@ -652,7 +648,7 @@ public class Engine implements Notifier {
 	}
 
 	public void setInstructionTimeTaken(Node node, double timeTaken) {
-		m_selectedRoute.setInstructionTimeTaken(node, timeTaken);
+		m_selectedRoute.getRouteUnknowns().setInstructionTimeTaken(node, timeTaken);
 		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	
@@ -664,7 +660,7 @@ public class Engine implements Notifier {
 		}
 		Route route = getRoute(routeId);
 		if (route != null) {								
-		    if (route.unsetInstructionTimeTaken(reference)) {
+		    if (route.getRouteUnknowns().unsetInstructionTimeTaken(reference)) {
 			    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			    return true;
 		    }
@@ -673,12 +669,12 @@ public class Engine implements Notifier {
 	}
 
 	public void unsetInstructionTimeTaken(Node node) {
-		m_selectedRoute.unsetInstructionTimeTaken(node);
+		m_selectedRoute.getRouteUnknowns().unsetInstructionTimeTaken(node);
 		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 
 	public double getInstructionTimeTaken(Node node) {
-		return m_selectedRoute.getInstructionTimeTaken(node);
+		return m_selectedRoute.getRouteUnknowns().getInstructionTimeTaken(node);
 	}
 
 	public boolean setInstructionNumCycles(int routeId, String refString, long numCycles) {
@@ -689,7 +685,7 @@ public class Engine implements Notifier {
 		}
 		Route route = getRoute(routeId);
 		if (route != null) {								
-     		if (route.setInstructionNumCycles(reference, numCycles)) {
+     		if (route.getRouteUnknowns().setInstructionNumCycles(reference, numCycles)) {
 			    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			    return true;
      		}
@@ -698,7 +694,7 @@ public class Engine implements Notifier {
 	}
 
 	public void setInstructionNumCycles(Node node, long numCycles) {
-		m_selectedRoute.setInstructionNumCycles(node, numCycles);
+		m_selectedRoute.getRouteUnknowns().setInstructionNumCycles(node, numCycles);
 		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	
@@ -710,7 +706,7 @@ public class Engine implements Notifier {
 		}
 		Route route = getRoute(routeId);
 		if (route != null) {								
-		    if (route.unsetInstructionNumCycles(reference)) {
+		    if (route.getRouteUnknowns().unsetInstructionNumCycles(reference)) {
 			    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			    notify(Notifier.NOTIFY_UPDATE_STATE, "");
 			    return true;
@@ -720,12 +716,12 @@ public class Engine implements Notifier {
 	}
 			
 	public void unsetInstructionNumCycles(Node node) {
-		m_selectedRoute.unsetInstructionNumCycles(node);
+		m_selectedRoute.getRouteUnknowns().unsetInstructionNumCycles(node);
 		notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	
 	public long getInstructionNumCycles(Node node) {
-		return m_selectedRoute.getInstructionNumCycles(node);
+		return m_selectedRoute.getRouteUnknowns().getInstructionNumCycles(node);
 	}	
 
 	// ===================================================================== //
@@ -925,8 +921,7 @@ public class Engine implements Notifier {
 	public Collection<String> getSrcLevelCommands() {
 		return m_sections.getSrcLevelCommands(m_nodeId, m_coreId);
 	}
-	
-	
+		
 	// ===================================================================== //
 	// Private Methods
 	// ===================================================================== //
@@ -1071,5 +1066,25 @@ public class Engine implements Notifier {
 			return true;
 		}
 		return false;
+	}
+}
+
+class NodeCoreCollection<E> {
+	private Map<String, E> m_collectedObjects;
+
+	public NodeCoreCollection() {
+		m_collectedObjects = new HashMap<String, E>();
+	}
+
+	public void add(int nodeId, int coreId, E newObject) {
+		m_collectedObjects.put(nodeCoreToString(nodeId, coreId), newObject);
+	}
+
+	public E get(int nodeId, int coreId) {
+		return m_collectedObjects.get(nodeCoreToString(nodeId, coreId));
+	}
+
+	private String nodeCoreToString(int nodeId, int coreId) {
+		return nodeId + ":" + coreId;
 	}
 }

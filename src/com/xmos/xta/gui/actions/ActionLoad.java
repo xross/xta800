@@ -73,6 +73,7 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
 				Engine engine = GuiEngine.getEngine();
 				engine.setMonitor(monitor);
 				boolean success = engine.loadExecutable(xeFile, new GuiFileFinder());					
+				engine.setMonitor(null);
 	        	if (success && (m_action != null)) {	        		
 	        		m_action.setToolTipText("Currently loaded " + xeFile.getAbsolutePath());
 	        	}		        	

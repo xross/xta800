@@ -53,7 +53,7 @@ public class Unknowns extends Command {
 		if (!validateRouteId(engine, console, m_routeId))
 		    return;
 
-	    Collection<Node> nodes = engine.getRoute(m_routeId).getUnknowns(UnknownState.UNKNOWN);
+	    Collection<Node> nodes = engine.getRoute(m_routeId).getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN);
 	    if (nodes.size() > 0) {
 			for (Node node : nodes) {			
 			    console.display(String.format("%s, pc: 0x%x, backtrace: %s\n", 

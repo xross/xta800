@@ -163,11 +163,8 @@ public class StructureLoopNode extends StructureNode {
         int childOffsetY = m_borderY + headerNode.getPixelsY() + m_gapY;
 		for (int i = 1; i < getChildren().size(); i++) {
 			ViewNode child = getChildren().get(i);
-
-			boolean childIsBestCase = isBestCase && (child.getTreeNode().getAttributes().getTotalIterations(Case.BEST) > 0);
-			boolean childIsWorstCase = isBestCase && (child.getTreeNode().getAttributes().getTotalIterations(Case.WORST) > 0);
 			
-			child.annotateNodes(offsetX + childOffsetX, offsetY + childOffsetY, childIsBestCase, childIsWorstCase);
+			child.annotateNodes(offsetX + childOffsetX, offsetY + childOffsetY, isBestCase, isWorstCase);
     		childOffsetY += child.getPixelsY() + m_gapY;
     	}
 

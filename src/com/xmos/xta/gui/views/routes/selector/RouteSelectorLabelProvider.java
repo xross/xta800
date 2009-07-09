@@ -17,7 +17,7 @@ public class RouteSelectorLabelProvider extends CellLabelProvider {
 		if (DEBUG) System.out.printf("RouteSelectorLabelProvider: update\n");	
 		
 		RouteNode routeNode = (RouteNode)cell.getElement();
-		cell.setText(routeNode.getRoute().getDescription());
+		cell.setText(routeNode.getRoute().getRouteDescription().getDescription());
 		cell.setImage(Icons.getIcon("routes"));
 	}
 

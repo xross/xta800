@@ -211,26 +211,29 @@ public class SectionNode extends Node {
 		Status status = new Status();
 		Iterator<Node> iter = nodes.iterator();
 		Node caseNode = iter.next();		
+		double caseTime = caseNode.getAttributes().getTimeTaken(c, status, ignoreIterations);
+		
 		while (iter.hasNext()) {
 			Node node = iter.next();
+			double time = node.getAttributes().getTimeTaken(c, status, ignoreIterations);
+
 			switch (c) {
 			case WORST:
 				// Finds the worst case option...
-				double w1 = node.getAttributes().getTimeTaken(c, status, ignoreIterations);
-				double w2 = caseNode.getAttributes().getTimeTaken(c, status, ignoreIterations);				
-				if (w1 > w2) {
+				if (time > caseTime) {
 				    caseNode = node;
+				    caseTime = time;
 				}
 				break;
 				
 			case BEST:
 				// Finds the best (non-zero) case option... 
-				double b1 = node.getAttributes().getTimeTaken(c, status, ignoreIterations);
-				double b2 = caseNode.getAttributes().getTimeTaken(c, status, ignoreIterations);				
-				if ((b2 == 0) && (b1 != 0)) {
+				if ((caseTime == 0) && (time != 0)) {
 					caseNode = node;
-				} else if ((b1 > 0) && (b1 < b2)) {
+				    caseTime = time;
+				} else if ((time > 0) && (time < caseTime)) {
 				    caseNode = node;
+				    caseTime = time;
 				}
 				break;
 			}			

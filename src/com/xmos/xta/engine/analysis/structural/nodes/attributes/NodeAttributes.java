@@ -380,73 +380,77 @@ public class NodeAttributes {
 	// Loop Iteration Methods
 	// --------------------------------------------------------------------- //	
 	public long getTotalIterations(Case c) {
-		Node enclosingLoopNode = getNode().getEnclosingLoopNode();
-		if (enclosingLoopNode != null) {
-
-			// We are inside a loop, so we need to get the loop iterations.
-			// If we are in a section, then get them from the section.
-			// Otherwise, take the iterations from the enclosing loop.
-			long numIterations = 0;
-			boolean foundSectionIterations = false;
-			Node node = getNode();
-			while (node != enclosingLoopNode) {				
-				if (node.getParent().isSectionNode()) {
-					numIterations = node.getParent().getAttributes().getLoopPathIterations(enclosingLoopNode, node, c);
-					foundSectionIterations = true;
-					break;
-				}
-				node = node.getParent();
-			}
-			if (!foundSectionIterations) {
-				numIterations = enclosingLoopNode.getAttributes().getLoopIterations();
-			}
-
-			// Need to treat relative and absolute loops differently..
-			if (!enclosingLoopNode.getAttributes().getIsAbsolute()) {				
-				// We are within a relative loop, so multiply up by the 
-				// iterations of the above loops. 				
-				long cummulativeIterations = 1;
-				Node n = enclosingLoopNode.getParent();
-				while (n != null) {
-                    if (n.isLoopNode() || n.isSelfLoopNode()) {
-                    	cummulativeIterations *= n.getAttributes().getLoopIterations();
-                    }					
-					n = n.getParent();
-				}
-				long headerAdjustment = getIsLoopHeader() ? 1 : 0;				
-				return (numIterations + headerAdjustment) * cummulativeIterations;
-				
-		    } else {
-		    	// We are within an absolute loop, so no need to multiply
-		    	// up with the above iterations.
-		    	long headerAdjustment = getIsLoopHeader() ? numIterations : 0;		    	
-				return numIterations + headerAdjustment;		    	
-		    }
-		}
-		
-		// Checks for the infinite loop case.
 		Node enclosingInfiniteLoopNode = getNode().getEnclosingInfiniteLoopNode();
 		if (enclosingInfiniteLoopNode != null) {
 			return INFINITE_ITERATIONS;
+		}		
+
+		Node enclosingLoopNode = getNode().getEnclosingLoopNode();		
+		if (enclosingLoopNode == null) {
+			// At the outermost scope, i.e. not inside a loop..
+			return 1;
+		}			
+
+		// We are inside a loop, so we need to get the loop iterations.
+		// If we are in a section, then get them from the section.
+		// Otherwise, take the iterations from the enclosing loop.
+		long numIterations = 0;
+		boolean foundSectionIterations = false;
+		Node node = getNode();
+		while (node != enclosingLoopNode) {				
+			if (node.getParent().isSectionNode()) {
+				numIterations = node.getParent().getAttributes().getLoopPathIterations(enclosingLoopNode, node, c);
+				foundSectionIterations = true;
+				break;
+			}
+			node = node.getParent();
 		}
-		
-		// At the outermost scope, i.e. not inside a loop..
-		return 1;
+		if (!foundSectionIterations) {
+			numIterations = enclosingLoopNode.getAttributes().getLoopIterations();
+		}
+
+		// Need to treat relative and absolute loops differently..
+		if (enclosingLoopNode.getAttributes().getIsAbsolute()) {
+	    	// We are within an absolute loop, so no need to multiply
+	    	// up with the above iterations.
+	    	long headerAdjustment = getIsLoopHeader() ? numIterations : 0;		    	
+			return numIterations + headerAdjustment;		    	
+			
+	    } else {
+			// We are within a relative loop, so multiply up by the 
+			// iterations of the above loops.
+			long cummulativeIterations = 1;
+			Node n = enclosingLoopNode.getParent().getEnclosingLoopNode();
+			while (n != null) {
+               	cummulativeIterations *= n.getAttributes().getLoopIterations();
+				n = n.getParent().getEnclosingLoopNode();
+			}
+			long headerAdjustment = getIsLoopHeader() ? 1 : 0;				
+			return (numIterations + headerAdjustment) * cummulativeIterations;			
+	    }
 	}
 
-	public boolean setLoopIterations(long numIterations) {
+	public boolean loopIterationsValid(long numIterations) {
 		assert(false);
 		return false;
+	}
+	
+	public void setLoopIterations(long numIterations) {
+		assert(false);
 	}
 	
 	public long getLoopIterations() {
 		assert(false);
 		return 0;
 	}
-	
-	public boolean setLoopPathIterations(Node loopNode, Node optionNode, long numIterations) {
+
+	public boolean loopPathIterationsValid(Node loopNode, Node optionNode, long numIterations) {
 		assert(false);
 		return false;
+	}
+	
+	public void setLoopPathIterations(Node loopNode, Node optionNode, long numIterations) {
+		assert(false);
 	}
 		
 	public long getLoopPathIterations(Node loopNode, Node optionNode, Case c) {
@@ -465,11 +469,6 @@ public class NodeAttributes {
 	
 	public void setIsAbsolute(boolean isAbsolute) {
 		m_isAbsolute = isAbsolute;
-		for (Node child : m_node.getChildren()) {
-			if (!child.isLoopNode()) {
-			    child.getAttributes().setIsAbsolute(isAbsolute);
-			}
-		}
 	}
 
 	public boolean getIsAbsolute() {

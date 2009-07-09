@@ -17,7 +17,7 @@ class InfoViewerContentProvider implements IStructuredContentProvider {
     }
     
 	public Object[] getElements(Object inputElement) {
-	    Collection<Node> nodes = ((Route)inputElement).getUnknowns(m_unknownState);
+	    Collection<Node> nodes = ((Route)inputElement).getRouteUnknowns().getUnknowns(m_unknownState);
 		return nodes.toArray();
 	}
 

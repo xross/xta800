@@ -9,7 +9,6 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Progress;
 import com.xmos.xta.engine.analysis.routes.Route;
 
 public class Status extends Command {
@@ -68,12 +67,8 @@ public class Status extends Command {
         		console.display(String.format("(No debug information found)\n"));  		    		
     	}
     	    	
-    	Progress progress = engine.getProgress();
-    	if (progress.getState() != Progress.State.IDLE) {
-    		
-    		console.display(String.format("Currently busy: %s (%d)\n", 
-    				progress.getDescription(), 
-    				progress.getCurValue()));    		
+    	if (engine.isBusy()) {    		
+    		console.display("Currently busy...\n"); 
     	}
     	else {
     		List<Route> routes = engine.getRoutes();	    	
@@ -81,7 +76,7 @@ public class Status extends Command {
 	    		for (Route route : routes) {
 		    		console.display(String.format("Loaded Route(%d): %s %s\n", 
 		    				route.getRouteId(),
-		    				route.getDescription(),
+		    				route.getRouteDescription().getDescription(),
 		    				route.getEndpointsPcsString()));	    			
 	    		}
 	    	} else {
