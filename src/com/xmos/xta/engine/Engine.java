@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,7 +61,6 @@ public class Engine implements Notifier {
 	private int m_nodeId;
 	private int m_coreId;
 	private Notifier m_notifier;	
-	private Progress m_progress;
 	private IProgressMonitor m_jobMonitor;
 	private String m_srcPaths;
 	private Sections m_sections;
@@ -87,7 +87,6 @@ public class Engine implements Notifier {
 		m_nodeId = 0;
 		m_coreId = 0;
 		m_srcPaths = ".";
-		m_progress = new Progress(Progress.State.IDLE, 0);
 		m_jobMonitor = null;
 		m_sections = new Sections();
 
@@ -102,7 +101,6 @@ public class Engine implements Notifier {
 		if (m_notifier != null){
 			m_notifier.notify(message, argument);
 		}
-			
 	}
 
 	public Config getConfig() {
@@ -272,19 +270,15 @@ public class Engine implements Notifier {
 		boolean success = false;
 		try {
 			success = doRouteAnalysis(routeDescription);
-			m_progress.setState(Progress.State.IDLE);
 		} catch (final java.lang.OutOfMemoryError e) {
-			m_progress.setState(Progress.State.IDLE);
 			System.gc();
 			notify(Notifier.NOTIFY_ERROR, "Out of Memory (Heap)");
 			return false;
 		} catch (final java.lang.StackOverflowError e) {
-			m_progress.setState(Progress.State.IDLE);
 			System.gc();
 			notify(Notifier.NOTIFY_ERROR, "Out of Memory (Stack)");
 			return false;
 		} catch (Exception e) {
-			m_progress.setState(Progress.State.IDLE);
 			notify(Notifier.NOTIFY_ERROR, "Unknown error detected");
 			return false;
 		}
@@ -292,7 +286,7 @@ public class Engine implements Notifier {
 	}
 
 	private boolean doRouteAnalysis(RouteDescription routeDescription) throws Exception {	
-		if (m_progress.getState() != Progress.State.IDLE) {
+		if (isBusy()) {
 			notify(Notifier.NOTIFY_ERROR, "Engine busy");
 			return false;
 		}
@@ -303,11 +297,9 @@ public class Engine implements Notifier {
 			return false;
 		}
 
-		RouteConstructor routeConstructor = new RouteConstructor(this, m_structuralGraph.get(m_nodeId, m_coreId), routeDescription);
-			
-		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");
-		m_progress.resetState(Progress.State.PROCESSING_PATHS);
+		notify(Notifier.NOTIFY_ANALYSIS_BEGIN, "");		
 		
+		RouteConstructor routeConstructor = new RouteConstructor(this, m_structuralGraph.get(m_nodeId, m_coreId), routeDescription);			
 		RouteError error = routeConstructor.analyse();		
 
 		if (error == RouteError.NO_ENDPOINTS_FOUND ) {
@@ -335,15 +327,7 @@ public class Engine implements Notifier {
 			return true;
 		}		
 	}
-	
-	public Progress getProgress() {
-		if (m_progress != null) {
-			return m_progress;
-		} else {
-			return new Progress(Progress.State.IDLE, 0);
-		}
-	}
-	
+		
 	public Notifier getNotifier() {
 		return m_notifier;
 	}
@@ -458,21 +442,25 @@ public class Engine implements Notifier {
 	}
 	
 	public void provideFeedback(String feedback) {
-		if (m_jobMonitor != null){
+		if (m_jobMonitor != null) {
 			m_jobMonitor.subTask(feedback);	
 		}		
 	}
 	
-	public void startAnalysis(String task, int functionCount){
-		if (m_jobMonitor != null){
+	public void startAnalysis(String task, int functionCount) {
+		if (m_jobMonitor != null) {
 			m_jobMonitor.beginTask(task, functionCount);
 		}	
 	}
 	
-	public void provideWorkDone(int work){
-		if (m_jobMonitor != null){
+	public void provideWorkDone(int work) {
+		if (m_jobMonitor != null) {
 			m_jobMonitor.worked(work);
 		}
+	}
+	
+	public boolean isBusy() {
+		return m_jobMonitor != null;
 	}
 	
 	public Collection<String> getFunctionsVisited() {
@@ -925,8 +913,7 @@ public class Engine implements Notifier {
 	public Collection<String> getSrcLevelCommands() {
 		return m_sections.getSrcLevelCommands(m_nodeId, m_coreId);
 	}
-	
-	
+		
 	// ===================================================================== //
 	// Private Methods
 	// ===================================================================== //
@@ -1071,5 +1058,25 @@ public class Engine implements Notifier {
 			return true;
 		}
 		return false;
+	}
+}
+
+class NodeCoreCollection<E> {
+	private Map<String, E> m_collectedObjects;
+
+	public NodeCoreCollection() {
+		m_collectedObjects = new HashMap<String, E>();
+	}
+
+	public void add(int nodeId, int coreId, E newObject) {
+		m_collectedObjects.put(nodeCoreToString(nodeId, coreId), newObject);
+	}
+
+	public E get(int nodeId, int coreId) {
+		return m_collectedObjects.get(nodeCoreToString(nodeId, coreId));
+	}
+
+	private String nodeCoreToString(int nodeId, int coreId) {
+		return nodeId + ":" + coreId;
 	}
 }
