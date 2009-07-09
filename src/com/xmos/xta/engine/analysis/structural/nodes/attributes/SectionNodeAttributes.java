@@ -152,6 +152,10 @@ public class SectionNodeAttributes extends NodeAttributes {
 		}
 	}
 	
+	public boolean getSetOption(Node optionNode) {
+		return m_setIterations.get(optionNode) != null;
+	}
+	
 	public void resetPathIterations() {
 		m_setIterations.clear();
 	}
