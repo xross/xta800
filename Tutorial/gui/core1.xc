@@ -81,7 +81,8 @@ int processData(streaming chanend c) {
 
   while(1) {
     unsigned int errorCount;
-    unsigned int data;   c :> data;
+    unsigned int data;
+    c :> data;
     state = stateMachine(state, data, errorCount);
     statusP <: state;
   }
