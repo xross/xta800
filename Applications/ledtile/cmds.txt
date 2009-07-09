@@ -18,19 +18,29 @@
 # Times each of the cases inside the select in 
 # the while(1) loop inside function: ethSwitch
 # =========================================================================== #
+
 config proc 0 2
 
-set constraint !recieve_external_0 && !recieve_external_1 && !recieve_local_node
+remove exclusion *
+add exclusion recieve_external_0 
+add exclusion recieve_external_1 
+add exclusion recieve_local_node
 analyse path watchdog watchdog
 set required - 10000.0 ns
 
-set constraint !recieve_external_0 && !recieve_external_1 && !watchdog
+remove exclusion *
+add exclusion recieve_external_0 
+add exclusion recieve_external_1 
+add exclusion watchdog 
 analyse path recieve_local_node recieve_local_node
-set loopmax - recieve_local_node_loop 8
-set loopmax - ethTx_loop 4
+set loop - recieve_local_node_loop 8
+set loop - ethTx_loop 4
 set required - 10000.0 ns
 
-set constraint !watchdog && !recieve_external_1 && !recieve_local_node
+remove exclusion *
+add exclusion watchdog 
+add exclusion recieve_external_1 
+add exclusion recieve_local_node 
 analyse path recieve_external_0 recieve_external_0
 set loopmax - ethPhyRx_loop 4
 set loopmax - localTx_loop 4
@@ -38,7 +48,10 @@ set loopmax - adjustTTL_loop 4
 set loopmax - ethTx_loop 4
 set required - 10000.0 ns
 
-set constraint !recieve_external_0 && !watchdog && !recieve_local_node
+remove exclusion *
+add exclusion recieve_external_0 
+add exclusion watchdog 
+add exclusion recieve_local_node 
 analyse path recieve_external_1 recieve_external_1
 set loopmax - ethPhyRx_loop 4
 set loopmax - localTx_loop 4
@@ -47,5 +60,4 @@ set loopmax - ethTx_loop 4
 set required - 10000.0 ns
 
 print summary
-
 exit
