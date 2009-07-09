@@ -54,7 +54,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                                                        ISelectionListener,
                                                        ISelectionProvider,
                                                        IMenuListener {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
 	private static final int LEFT_MOUSE_BUTTON = 1;
 
@@ -170,11 +170,9 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 
 	    m_renderer = createRenderer(m_display, m_renderControl, m_canvasProperties, m_canvas);
 		(new Thread(m_renderer)).start();
-//		(new Thread(new Updater(m_display, m_renderControl, m_canvas))).start();
 	
 	    initialiseTree();
 	    m_renderControl.refresh();
-		zoomFit();
 	}
 	
 	public void dispose() {
