@@ -21,9 +21,14 @@ public class PcReference extends ReferenceType {
 	
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
 		SourceMapper sourceMapper = engine.getSourceMapper();
-		if(sourceMapper == null) 
+		if (sourceMapper == null) 
 			return false;
-		return sourceMapper.isProfilablePc(getPc());
+
+		if (sourceMapper.isProfilablePc(getPc())) {
+	        setResolved(true);
+	        return true;
+	    }
+	    return false;
 	}
 	
 	public String name() {

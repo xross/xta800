@@ -152,7 +152,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         getSite().getPage().addSelectionListener(this);
         
         m_painter = new AnnotationPainter(viewer, getAnnotationAccess());        
-        m_painter.addAnnotationType(HighlightAnnotationID);        
+        m_painter.addAnnotationType(HighlightAnnotationID);
+        updateHighlighting();
     }
     
     public void dispose() {
@@ -195,10 +196,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT) ||
 				   event.getProperty().equals(Broadcaster.BROADCAST_SET_START_POINT)) {
 			updateStartPoint();
+			updateHighlighting();
 
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT) ||
 				   event.getProperty().equals(Broadcaster.BROADCAST_SET_END_POINT)) {
 			updateEndPoint();
+			updateHighlighting();
 
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SHOW_CODE_POINT)) {
 			Reference codePoint = GuiEngine.getCodePoint();

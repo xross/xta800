@@ -24,7 +24,7 @@ public class LabelReference extends ReferenceType {
 	        setResolved(true);
 	        return true;
 	    }
-	    return false;		
+	    return false;
 	}	
 	
 	public String name() {
