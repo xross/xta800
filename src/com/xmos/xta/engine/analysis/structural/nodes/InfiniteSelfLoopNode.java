@@ -107,9 +107,7 @@ public class InfiniteSelfLoopNode extends Node{
 	}
 
 	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
-		for(int i=0;i< getAttributes().getLoopIterations();i++){
-			m_loop.getInstructionStream(c, instructions);
-		}
+		// TODO We need to warn the user here that you cant trace an infinite loop!
 	}
 
 	public Collection<Node> whatsBefore(Node node) {
@@ -126,7 +124,7 @@ public class InfiniteSelfLoopNode extends Node{
 		list.add(m_loop);
 		return list;
 	}
-		
+
 	public boolean isInfiniteSelfLoopNode() {
 		return true;
 	}
