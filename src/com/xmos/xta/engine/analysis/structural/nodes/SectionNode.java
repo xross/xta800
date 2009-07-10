@@ -157,13 +157,6 @@ public class SectionNode extends Node {
 		return false;
 	}	
 
-	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
-		Node option = getOption(c, false);
-		if (option != null) {
-			option.getInstructionStream(c, instructions);			
-		}
-	}
-
 	public long getError(Case c) {
 		long error = 0;
 		return error;

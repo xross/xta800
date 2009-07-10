@@ -129,12 +129,6 @@ public class PathNode extends Node {
 		return false;
 	}
 
-	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
-		for(Node pathNode : m_nodes){
-			pathNode.getInstructionStream(c, instructions);
-		}
-	}
-
 	public Collection<Node> whatsBefore(Node node) {
 		assert(m_nodes.contains(node));
 		int index = m_nodes.indexOf(node);

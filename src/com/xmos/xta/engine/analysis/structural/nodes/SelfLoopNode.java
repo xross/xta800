@@ -107,12 +107,6 @@ public class SelfLoopNode extends Node{
 		return false;
 	}
 
-	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
-		for(int i=0;i< getAttributes().getLoopIterations();i++){
-			m_loop.getInstructionStream(c, instructions);
-		}
-	}
-
 	public Collection<Node> whatsBefore(Node node) {
 		assert(m_loop == node);
 		Collection<Node> before = new TreeSet<Node>();

@@ -114,12 +114,6 @@ public class BlockNode extends IBufferNode {
 		}
 	}
 	
-	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
-		for (InstructionNode inst : m_insts){
-			instructions.add(inst);
-		}
-	}
-	
 	public Collection<Node> whatsBefore(Node node) {
 		if (getParent()!= null){
 			return getParent().whatsBefore(node);

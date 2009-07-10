@@ -161,17 +161,6 @@ public class InfiniteLoopNode extends Node {
 		return false;
 	}
 
-	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
-		
-		for(Node loop : m_loops){
-			for(long i=0;i<loop.getAttributes().getLoopIterations();i++){
-				m_loopHeader.getInstructionStream(c, instructions);
-				loop.getInstructionStream(c, instructions);
-			}
-		}
-		m_loopHeader.getInstructionStream(c, instructions);
-	}
-
 	public Collection<Node> whatsBefore(Node node) {
 		Collection<Node> before = new TreeSet<Node>();
 		if(node == m_loopHeader){
