@@ -3,6 +3,7 @@ package com.xmos.xta.engine.analysis.structural.patterns;
 import java.util.Collection;
 import java.util.TreeSet;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
 
 public class CommonMethods {
 	
@@ -85,6 +86,26 @@ public class CommonMethods {
 		workingSet.remove(node);
 		workingSet.addAll(newNodes);		
 		return true;
+	}
+	
+	public static Node findNullNode(Collection<Node> workingSet){
+		for(Node node : workingSet){
+			if(node.isNullNode()){
+				return node;
+			}
+		}
+		//didn't find one so make a new one!!!!
+		Node nullNode = new NullNode();
+		
+		for(Node node : workingSet){
+			if(node.getNextNodesSize() == 0){
+				CommonMethods.connect(nullNode, node);
+			}
+		}
+		
+		//must add all other terminals to it
+		workingSet.add(nullNode);
+		return nullNode;
 	}
 		
 }

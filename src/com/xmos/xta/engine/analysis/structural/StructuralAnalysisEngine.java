@@ -15,10 +15,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
-import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
-import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
-import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.analysis.structural.patterns.LoopPatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.PathPatternMatcher;
@@ -77,6 +74,7 @@ public class StructuralAnalysisEngine {
 					if (engine.getAbort()) {
 						return false;
 					}
+					
 					if (pm.isMatch(node, workingSet, treeStart)) {
 						treeStart = pm.getTreeStart();
 						assert (connectivitySanityCheck(workingSet));
@@ -90,28 +88,12 @@ public class StructuralAnalysisEngine {
 			}
 		}
 		
-		//now remove any null nodes from the graph
-		//removeNullNodes(workingSet.iterator().next());
-		
 		return true;
 	}
-	
-	private void removeNullNodes(Node node) {
-
-		node.traverse(0, new UntypedNodeTraverser() {
-	    	public boolean foundNode(Node node, int depth) {
-	    		if(node.isNullNode()){
-	    			System.out.println("found a null node " + node.getParent());
-	    		}
-	        	return true;
-	    	}
-	    });
-	}	
 
 	private boolean buildStructureGraph(Engine engine, TreeMap<String, InstructionNode> treeMap, Map<Integer, TreeSet<Node>> pcToEndPoints) {
 		
 		Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
-		
 		
 		Collection<FunctionNode> threads = buildGraph(m_controlFlowGraph.getThreadStartInstructions(), 
 				m_functionStartPcs, engine, false, treeMap, allFunctionObjects);
@@ -529,9 +511,9 @@ public class StructuralAnalysisEngine {
 	private void setUpPatternMatcher() {
 		m_patternMatchers = new ArrayList<PatternMatcher>();
 		m_patternMatchers.add(new SelfLoopPattern());
+		m_patternMatchers.add(new PathPatternMatcher());
 		m_patternMatchers.add(new LoopPatternMatcher());
 		m_patternMatchers.add(new SectionPatternMatcher());
-		m_patternMatchers.add(new PathPatternMatcher());
 		m_patternMatchers.add(new SectionTransformer());
 	}
 }

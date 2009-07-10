@@ -130,9 +130,10 @@ public class SelfLoopNode extends Node{
 		return m_loop;
 	}
 
-	@Override
-	public void getTimeSpread(Collection<Integer> times) {
-		// TODO Auto-generated method stub
-		
+
+	public TimeDistributionBuckets getTimeSpread() {
+		TimeDistributionBuckets tdb = m_loop.getTimeSpread();
+		tdb.repeat(getAttributes().getLoopIterations());
+		return tdb;
 	}
 }

@@ -154,8 +154,10 @@ public class InstructionNode extends Node {
 		return null;
 	}
 
-	public void getTimeSpread(Collection<Integer> times) {
-		assert(false);		
+	public TimeDistributionBuckets getTimeSpread() {
+		System.out.println("hit an instruction Node");
+		assert(false);
+		return null;
 	}
 
 }

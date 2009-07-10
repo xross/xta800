@@ -2,6 +2,7 @@ package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -235,8 +236,17 @@ public class SectionNode extends Node {
 	}
 
 
-	public void getTimeSpread(Collection<Integer> times) {
-		// TODO Auto-generated method stub
-		
+	public TimeDistributionBuckets getTimeSpread() {
+		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
+		tdb = new TimeDistributionBuckets();
+		Collection<TimeDistributionBuckets> tdbs = new HashSet<TimeDistributionBuckets>();
+		for(Node node : m_options){
+			tdbs.add(node.getTimeSpread());
+		}
+		if(m_isOptional){
+			tdbs.add(new TimeDistributionBuckets(0));
+		}
+		tdb.merge(tdbs);
+		return tdb;
 	}
 }

@@ -151,9 +151,13 @@ public class PathNode extends Node {
 		return list;
 	}
 	
-	public void getTimeSpread(Collection<Integer> times) {
-		for(Node path : m_nodes){
-			path.getTimeSpread(times);
+	public TimeDistributionBuckets getTimeSpread() {
+		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
+		List<TimeDistributionBuckets> tsbPath = new LinkedList<TimeDistributionBuckets>();
+		for(Node node : m_nodes){
+			tsbPath.add(node.getTimeSpread());
 		}
+		tdb.add(tsbPath);
+		return tdb;
 	}
 }

@@ -179,9 +179,10 @@ public class InfiniteLoopNode extends Node {
 		return list;
 	}
 
-	@Override
-	public void getTimeSpread(Collection<Integer> times) {
-		// TODO Auto-generated method stub
-		
+
+	public TimeDistributionBuckets getTimeSpread() {
+		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
+		tdb.setInfinite();
+		return tdb;
 	}
 }

@@ -35,10 +35,6 @@ public class NullNode extends IBufferNode {
 		return new LinkedList<Node>();
 	}
 
-	public long getError(Case c) {
-		return 0;
-	}
-
 	public List<Node> getImmediateChildren() {
 		return new LinkedList<Node>();
 	}
@@ -92,7 +88,7 @@ public class NullNode extends IBufferNode {
 		return true;
 	}
 	
-	public void getTimeSpread(Collection<Integer> times) {
-	
+	public TimeDistributionBuckets getTimeSpread() {
+		return new TimeDistributionBuckets(0);
 	}
 }

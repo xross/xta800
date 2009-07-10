@@ -87,6 +87,10 @@ public class RouteConstructor {
 			seenEndPoint = follow(seenEndPoint, endNodes, start);
 		}
 		
+		//for(Node node : m_subRoutes){
+		//	node.getTimeSpread().print();
+		//}
+		
 		setParents();
 		setUnknowns();				
 		setSelfLoops();	
@@ -269,7 +273,9 @@ public class RouteConstructor {
 			
 			startList.add(currentNode);
 	
-			while (currentNode.getNextNodesSize() == 1 && currentNode.getNextNode().isInstructionNode()) {
+			while (currentNode.getNextNodesSize() == 1 
+					&& currentNode.getNextNode().isInstructionNode() 
+					&& !startList.contains(currentNode.getNextNode())) {
 				currentNode = (InstructionNode)currentNode.getNextNode();
 				startList.add(currentNode);
 			}
