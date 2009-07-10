@@ -90,9 +90,6 @@ public class InfiniteSelfLoopNode extends Node{
 
 	public Collection<Node> whatsNext(Node node) {
 		Collection<Node> next = new TreeSet<Node>();		
-		if (getParent() != null){
-			next.addAll(getParent().whatsNext(this));
-		}
 		next.add(m_loop);
 		return next;
 	}

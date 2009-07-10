@@ -140,7 +140,6 @@ public class InfiniteLoopNode extends Node {
 	public Collection<Node> whatsNext(Node node) {
 		Collection<Node> next = new TreeSet<Node>();
 		if (m_loopHeader == node) {
-			next.addAll(getParent().whatsNext(this));
 			next.addAll(m_loops);
 		} else {
 			next.add(this);

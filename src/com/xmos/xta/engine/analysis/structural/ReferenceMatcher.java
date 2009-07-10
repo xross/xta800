@@ -19,6 +19,7 @@ public class ReferenceMatcher {
 	private Collection<Node> getNodesContainingReferencePc(Node node, final int pc) {		
 		final Collection<Node> matchingNodes = new ArrayList<Node>();		
 		node.traverse(0, new DefaultNodeTraverser() {
+			
 			public boolean foundInstructionNode(Node node, int depth) {							
 				XtaInstruction instruction = node.getInstructions().getFirst();				
 				if (instruction.getPc() == pc && !instruction.isFnop()) {

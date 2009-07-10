@@ -23,6 +23,7 @@ import com.xmos.xta.engine.analysis.structural.patterns.PatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.SectionPatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.SectionTransformer;
 import com.xmos.xta.engine.analysis.structural.patterns.SelfLoopPattern;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructuralAnalysisEngine {
 
@@ -498,8 +499,19 @@ public class StructuralAnalysisEngine {
 						string += node + " -> " + next + ";";
 					}
 				}
+				
+				if(node.isBlockNode() || node.isInstructionNode()){
+					string += node + " [label=\"" + node + "\\n";
+					for(XtaInstruction inst : node.getInstructions()){
+						string += inst + "\\n";  
+					}
+					string += "\"]; ";
+					
+				}
+				
 			}
 			string += "}\n";
+
 			
 		} else {
 			string += "# graph has only " + workingSet.size() + " nodes";
