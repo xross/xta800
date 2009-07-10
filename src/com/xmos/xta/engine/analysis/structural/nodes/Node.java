@@ -41,7 +41,6 @@ public abstract class Node implements Comparable<Node>{
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract Collection<Node> whatsBefore(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
-	public abstract void getInstructionStream(Case c, List<InstructionNode> instructions);
 	public abstract Set<Integer> getPCs();	
 	public abstract LinkedList<XtaInstruction> getInstructions();
 	

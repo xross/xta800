@@ -87,12 +87,15 @@ public class StructureFunctionNode extends StructureNode {
 		    	}
 	
 		    	int midY = scaleY(m_pixelOffsetY + (getPixelsY() / 2));
+		    	int midX = scaleX(m_pixelOffsetX + ((m_borderX + m_textAreaX) / 2));
 		    	int childLeftX = scaleX(m_pixelOffsetX + m_borderX + m_textAreaX);
 	
-	    		drawConnection(display, gc, m_renderX, midY, childLeftX, midY,
+	    		drawConnection(display, gc, m_renderX, midY, midX, midY,
 	    				isBestCase, isWorstCase);
-				drawConnection(display, gc, childLeftX, midY, childLeftX, childMidY,
+				drawConnection(display, gc, midX, midY, midX, childMidY,
 						isBestCase, isWorstCase);
+	    		drawConnection(display, gc, midX, childMidY, childLeftX, childMidY,
+	    				isBestCase, isWorstCase);
 	
 				if (!isInfinite) {
 					drawConnection(display, gc, childRightX, childMidY, childRightX, midY,
