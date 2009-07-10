@@ -2,7 +2,8 @@ echo ----------------------------------------
 echo Transmit
 echo ----------------------------------------
 
-set constraint !transmit_stop1 
+remove exclusion *
+add exclusion transmit_stop1 
 
 analyse path transmit_start transmit_data
 set required - 1000.0 ns
@@ -10,7 +11,7 @@ set required - 1000.0 ns
 analyse path transmit_data transmit_data
 set required - 1000.0 ns
 
-set constraint
+remove exclusion *
 
 analyse path transmit_data transmit_stop1
 set required - 1000.0 ns
@@ -29,12 +30,15 @@ echo ----------------------------------------
 echo Recieve
 echo ----------------------------------------
 
-set constraint !start_bit_input && !start_bit_error
+remove exclusion *
+add exclusion start_bit_input 
+add exclusion start_bit_error 
 
 analyse path start_bit_sample recieve_data
 set required - 1000.0 ns
 
-set constraint !recieve_complete
+remove exclusion *
+add exclusion recieve_complete 
 
 analyse path recieve_data recieve_data
 set required - 1000.0 ns
