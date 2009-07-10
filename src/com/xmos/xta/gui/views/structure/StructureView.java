@@ -36,7 +36,9 @@ public class StructureView extends ZoomedCanvasView {
     		if (depth > 3)
     			viewNode.setFolded(true, false);
     	} else if (node.isLoopNode() || node.isSelfLoopNode()) {
-    		viewNode = new StructureLoopNode(node, m_canvasProperties);
+    		viewNode = new StructureLoopNode(node, m_canvasProperties, false);
+    	} else if (node.isInfiniteLoopNode() || node.isInfiniteSelfLoopNode()) {
+    		viewNode = new StructureLoopNode(node, m_canvasProperties, true);
     	} else if (node.isSectionNode()) {
     		viewNode = new StructureSectionNode(node, m_canvasProperties);
     	} else {

@@ -60,4 +60,8 @@ public class StructureBlockNode extends StructureNode {
 		m_isBestCase = isBestCase;
 		m_isWorstCase = isWorstCase;
 	}
+
+    public boolean isInfinite() {
+		return false;
+	}
 }

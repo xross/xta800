@@ -73,6 +73,7 @@ public class StructureSectionNode extends StructureNode {
     	List<ViewNode> children = getChildren();
 		for (int i = 0; i < children.size(); i++) {
     		ViewNode child = children.get(i);
+    		boolean childIsInfinite = child.isInfinite();
 			boolean childIsBestCase = isBestCase && child.isBestCase();
 			boolean childIsWorstCase = isWorstCase && child.isWorstCase();
 
@@ -95,10 +96,13 @@ public class StructureSectionNode extends StructureNode {
         			verticalIsBestCase, verticalIsWorstCase);
         	drawConnection(display, gc, m_renderX, childMidY, childLeft, childMidY,
         			childIsBestCase, childIsWorstCase);
-    		drawConnection(display, gc, m_renderX + (int)m_width, midY, m_renderX + (int)m_width, childMidY,
-    				verticalIsBestCase, verticalIsWorstCase);
-    		drawConnection(display, gc, m_renderX + (int)m_width, childMidY, childRight, childMidY,
-    				childIsBestCase, childIsWorstCase);
+        	
+        	if (!childIsInfinite) {
+	    		drawConnection(display, gc, m_renderX + (int)m_width, midY, m_renderX + (int)m_width, childMidY,
+	    				verticalIsBestCase, verticalIsWorstCase);
+	    		drawConnection(display, gc, m_renderX + (int)m_width, childMidY, childRight, childMidY,
+	    				childIsBestCase, childIsWorstCase);
+        	}
             childOffsetY += childY + m_gapY;
 
             child.draw(display, gc);

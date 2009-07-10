@@ -104,6 +104,15 @@ public abstract class ViewNode {
 		return m_isWorstCase;
 	}
 
+    public boolean isInfinite() {
+		for (ViewNode child : getChildren()) {
+			if (child.isInfinite()) {
+				return true;
+			}
+    	}
+		return false;
+	}
+
 	public String getToolTipText() {
 		return m_treeNode.getAttributes().getTimingDetails();
 	}

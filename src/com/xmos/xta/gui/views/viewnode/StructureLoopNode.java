@@ -11,13 +11,16 @@ import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 public class StructureLoopNode extends StructureNode {
     public static final boolean DEBUG = false;
 
+    private boolean m_isInfinite;
+    
     private int m_borderX = 8;
     private int m_borderY = 4;
     private int m_gapX = 8;
     private int m_gapY = 4;
     
-	public StructureLoopNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
+	public StructureLoopNode(Node treeNode, ZoomedCanvasProperties canvasProperties, boolean isInfinite) {
 		super(treeNode, canvasProperties);
+		m_isInfinite = isInfinite;
 	}
 	
 	private ViewNode getHeaderNode() {
@@ -63,15 +66,16 @@ public class StructureLoopNode extends StructureNode {
 
 		boolean isWorstCase = isWorstCase();
 		boolean isBestCase = isBestCase();
-        drawHeader(display, gc, isWorstCase, isBestCase);
-        
+
         ViewNode headerNode = getHeaderNode();
         int headerY = scaleY(headerNode.getPixelOffsetY() + (headerNode.getPixelsY() / 2));
         int headerOutX = scaleX(headerNode.getPixelOffsetX() + headerNode.getPixelsX() + (m_gapX / 2));
         int headerInX = scaleX(headerNode.getPixelOffsetX() - (m_gapX / 2));
         int loopReturnX = scaleX(m_pixelOffsetX + getPixelsX() - (m_gapX / 2));
         int loopReturnY = scaleY(m_pixelOffsetY + getPixelsY() - (m_gapY / 2));
-
+        
+        drawHeader(display, gc, isWorstCase, isBestCase, headerOutX);
+        
         boolean loopWorstCase = false; 
         boolean loopBestCase = false; 
         if (getChildren().size() > 1) {
@@ -130,7 +134,7 @@ public class StructureLoopNode extends StructureNode {
 		gc.fillPolygon(returnTriangle);
 	}
 
-	private void drawHeader(Display display, GC gc, boolean isWorstCase, boolean isBestCase) {
+	private void drawHeader(Display display, GC gc, boolean isWorstCase, boolean isBestCase, int headerOutX) {
         ViewNode headerNode = getHeaderNode();
         headerNode.draw(display, gc);
 
@@ -144,10 +148,17 @@ public class StructureLoopNode extends StructureNode {
     			isBestCase, isWorstCase);
 		drawConnection(display, gc, m_renderX, headerY, scaleX(headerNode.getPixelOffsetX()), headerY,
 				isBestCase, isWorstCase);
-		drawConnection(display, gc, headerRight, headerY, right, headerY,
-				isBestCase, isWorstCase);
-		drawConnection(display, gc, right, midY, right, headerY,
-				isBestCase, isWorstCase);
+		
+		if (m_isInfinite) {
+			drawConnection(display, gc, headerRight, headerY, headerOutX, headerY,
+					isBestCase, isWorstCase);
+		} else {
+			drawConnection(display, gc, headerRight, headerY, right, headerY,
+					isBestCase, isWorstCase);
+			drawConnection(display, gc, right, midY, right, headerY,
+					isBestCase, isWorstCase);
+			
+		}
 	}
 
 	public void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase) {
@@ -164,11 +175,17 @@ public class StructureLoopNode extends StructureNode {
 		for (int i = 1; i < getChildren().size(); i++) {
 			ViewNode child = getChildren().get(i);
 			
-			child.annotateNodes(offsetX + childOffsetX, offsetY + childOffsetY, isBestCase, isWorstCase);
+			boolean childIsBestCase = isBestCase && (child.getTreeNode().getAttributes().getTotalIterations(Case.BEST) > 0);
+			boolean childIsWorstCase = isBestCase && (child.getTreeNode().getAttributes().getTotalIterations(Case.WORST) > 0);
+			child.annotateNodes(offsetX + childOffsetX, offsetY + childOffsetY, childIsBestCase, childIsWorstCase);
     		childOffsetY += child.getPixelsY() + m_gapY;
     	}
 
 		m_isBestCase = isBestCase;
 		m_isWorstCase = isWorstCase;
+	}
+
+    public boolean isInfinite() {
+    	return m_isInfinite;
 	}
 }
