@@ -270,7 +270,7 @@ public class RendererControl {
 	    m_offsetX = 0;
 	    m_offsetY = 0;
 	    
-	    m_scale = 1.0;
+	    m_scale = 0.0;
 	    updatePixelsXy();
 	}
 	

@@ -77,8 +77,10 @@ public class StructureFunctionNode extends StructureNode {
        		if ((getChildren().size() > 0)) {
 	    		int childRightX = 0;
 	            int childMidY = 0;
+	            boolean isInfinite = false;
 				for (ViewNode child : getChildren()) {
 		    		child.draw(display, gc);
+		    		isInfinite = child.isInfinite();
 	
 		    		childRightX = scaleX(child.getPixelOffsetX() + child.getPixelsX());
 		    		childMidY = scaleY(child.getPixelOffsetY() + (child.getPixelsY() / 2));
@@ -92,10 +94,12 @@ public class StructureFunctionNode extends StructureNode {
 				drawConnection(display, gc, childLeftX, midY, childLeftX, childMidY,
 						isBestCase, isWorstCase);
 	
-				drawConnection(display, gc, childRightX, childMidY, childRightX, midY,
-						isBestCase, isWorstCase);
-				drawConnection(display, gc, childRightX, midY, scaleX(m_pixelOffsetX + getPixelsX()), midY,
-						isBestCase, isWorstCase);
+				if (!isInfinite) {
+					drawConnection(display, gc, childRightX, childMidY, childRightX, midY,
+							isBestCase, isWorstCase);
+					drawConnection(display, gc, childRightX, midY, scaleX(m_pixelOffsetX + getPixelsX()), midY,
+							isBestCase, isWorstCase);
+				}
        		} else {
 		    	int midY = scaleY(m_pixelOffsetY + (getPixelsY() / 2));
 	    		drawConnection(display, gc, m_renderX, midY, scaleX(m_pixelOffsetX + getPixelsX()), midY,

@@ -21,7 +21,8 @@ public class FunctionFunctionNode extends FunctionNode {
 	}
 
 	public int getPixelsY() {
-		return getChildrenY() + TEXT_AREA_Y;
+		// The height of both best and worst case
+		return getChildrenY() + (TEXT_AREA_Y * 2);
 	}
 
 	public int getPixelsY(Case c) {

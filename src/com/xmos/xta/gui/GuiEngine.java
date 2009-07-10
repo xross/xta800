@@ -12,7 +12,6 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.Progress;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
@@ -67,15 +66,15 @@ public class GuiEngine {
 	}
 	
 	public static void runFunction(final String functionName) {
-		if (GuiEngine.getEngine().getProgress().getState() != Progress.State.IDLE) {
+		if (GuiEngine.getEngine().isBusy())
 			return;
-		}
 
 		if (!functionName.equals("")) {
 			Job job = new Job("Analyse: " + functionName) {
 				protected IStatus run(IProgressMonitor monitor) {
 					s_engine.setMonitor(monitor);
 					s_engine.analyseRoute(functionName);
+					s_engine.setMonitor(null);
 					return Status.OK_STATUS;
 				}
 			};
@@ -87,9 +86,8 @@ public class GuiEngine {
 	}
 	
 	public static void runPath() {
-		if (GuiEngine.getEngine().getProgress().getState() != Progress.State.IDLE) {
+		if (GuiEngine.getEngine().isBusy())
 			return;
-		}
 		
 		if ((s_startPoint == null) || s_startPoint.getRef().equals("")) {
 			GuiEngine.notify(Notifier.NOTIFY_ERROR, "Please specify a start reference");
@@ -104,6 +102,7 @@ public class GuiEngine {
 				protected IStatus run(IProgressMonitor monitor) {
 					s_engine.setMonitor(monitor);
 					s_engine.analyseRoute(startRef, endRef);
+					s_engine.setMonitor(null);
 					return Status.OK_STATUS;
 				}
 			};

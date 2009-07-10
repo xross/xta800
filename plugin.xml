@@ -201,33 +201,31 @@
          point="org.eclipse.ui.editors.markerAnnotationSpecification">
       <specification
             annotationType="com.xmos.xta.gui.highlight"
-            colorPreferenceKey="errorIndicationColor"
-            colorPreferenceValue="255,125,75"
+            colorPreferenceKey="highlight.highlight.color"
+            colorPreferenceValue="180,240,240"
             contributesToHeader="true"
-            highlightPreferenceKey="errorIndicationHighlighting"
+            highlightPreferenceKey="highlight.highlight"
             highlightPreferenceValue="true"
             isGoToNextNavigationTarget="true"
             isGoToNextNavigationTargetKey="isErrorGoToNextNavigationTarget"
             isGoToPreviousNavigationTarget="true"
             isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
             label="Highlight"
-            overviewRulerPreferenceKey="errorIndicationInOverviewRuler"
+            overviewRulerPreferenceKey="highlight.highlight.rulers.overview"
             overviewRulerPreferenceValue="true"
             presentationLayer="6"
             showInNextPrevDropdownToolbarAction="true"
             showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
-            symbolicIcon="error"
-            textPreferenceKey="errorIndication"
-            textPreferenceValue="true"
-            textStylePreferenceKey="errorTextStyle"
-            textStylePreferenceValue="PROBLEM_UNDERLINE"
-            verticalRulerPreferenceKey="errorIndicationInVerticalRuler"
+            textPreferenceKey="highlight.highlight.text"
+            textPreferenceValue="false"
+            textStylePreferenceValue="NONE"
+            verticalRulerPreferenceKey="highlight.highlight.rulers.vertical"
             verticalRulerPreferenceValue="false">
       </specification>
       <specification
             annotationType="com.xmos.xta.gui.unknown"
             colorPreferenceKey="highlight.unknown.color"
-            colorPreferenceValue="255,0,0"
+            colorPreferenceValue="255,125,75"
             contributesToHeader="false"
             highlightPreferenceValue="false"
             includeOnPreferencePage="false"
@@ -326,7 +324,7 @@
       <specification
             annotationType="com.xmos.xta.gui.endpoint"
             colorPreferenceKey="highlight.endpoint.color"
-            colorPreferenceValue="40,40,215"
+            colorPreferenceValue="200,230,230"
             contributesToHeader="false"
             highlightPreferenceValue="false"
             icon="icons/source_endpoint.png"
@@ -379,39 +377,32 @@
          point="org.eclipse.ui.editors.annotationTypes">
       <type
          name="com.xmos.xta.gui.highlight"
-         super="org.eclipse.ui.workbench.texteditor.error"
          markerType=""
          markerSeverity="1">
       </type>
       <type
             markerSeverity="1"
-            name="com.xmos.xta.gui.unknown"
-            super="org.eclipse.ui.workbench.texteditor.info">
+            name="com.xmos.xta.gui.unknown">
       </type>
       <type
             markerSeverity="2"
-            name="com.xmos.xta.gui.start"
-            super="org.eclipse.ui.workbench.texteditor.info">
+            name="com.xmos.xta.gui.start">
       </type>
       <type
             markerSeverity="2"
-            name="com.xmos.xta.gui.stop"
-            super="org.eclipse.ui.workbench.texteditor.info">
+            name="com.xmos.xta.gui.stop">
       </type>
       <type
             markerSeverity="2"
-            name="com.xmos.xta.gui.startstop"
-            super="org.eclipse.ui.workbench.texteditor.info">
+            name="com.xmos.xta.gui.startstop">
       </type>
       <type
             markerSeverity="2"
-            name="com.xmos.xta.gui.endpoint"
-            super="org.eclipse.ui.workbench.texteditor.info">
+            name="com.xmos.xta.gui.endpoint">
       </type>
       <type
             markerSeverity="2"
-            name="com.xmos.xta.gui.excluded"
-            super="org.eclipse.ui.workbench.texteditor.info">
+            name="com.xmos.xta.gui.excluded">
       </type>
    </extension>
    <extension

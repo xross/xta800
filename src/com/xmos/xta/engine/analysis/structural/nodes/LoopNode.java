@@ -165,7 +165,7 @@ public class LoopNode extends Node {
 	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
 		
 		for(Node loop : m_loops){
-			for(long i=0;i<loop.getAttributes().getLoopIterations();i++){
+			for(long i=0;i<getAttributes().getLoopIterations();i++){
 				m_loopHeader.getInstructionStream(c, instructions);
 				loop.getInstructionStream(c, instructions);
 			}

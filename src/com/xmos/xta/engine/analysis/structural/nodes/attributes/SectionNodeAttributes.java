@@ -4,17 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.SectionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 
 public class SectionNodeAttributes extends NodeAttributes {
-	private Map<Node, Long> m_numIterations;
-	private Map<Node, Boolean> m_setOptions;
+	private Map<Node, Long> m_setIterations;
 	
 	public SectionNodeAttributes(Node node) {
 		super(node);	
-		initialiseNumIterations();
-		initialiseSetOptions();
+		m_setIterations = new HashMap<Node, Long>();
 	}
 
 	// --------------------------------------------------------------------- //
@@ -23,68 +20,72 @@ public class SectionNodeAttributes extends NodeAttributes {
 	public double getTimeTaken(Case c, Status status, boolean ignoreIterations) {
 		if (!getCachedTimeTakenValid(c) && !ignoreIterations) {
 			double value = 0;
-			for (Node child : getNode().getChildren()) {
-				if (m_setOptions.get(child))
-				    value += child.getAttributes().getTimeTaken(c, status, ignoreIterations);
+			for (Node child : m_setIterations.keySet()) {
+			    value += child.getAttributes().getTimeTaken(c, status, ignoreIterations);
 			}
 			Node option = getNode().getUnsetOption(c, ignoreIterations);
 			if (option != null) {
 				value += option.getAttributes().getTimeTaken(c, status, ignoreIterations); 
 			}			
 			setCachedTimeTaken(c, value);
+			setCachedTimeTakenStatus(c, status.getStatus());			
 			setCachedTimeTakenValid(c, true);
 		}
+		status.setStatus(getCachedTimeTakenStatus(c));		
 		return getCachedTimeTaken(c);			
 	}
 
 	public long getNumCycles(Case c, Status status, boolean ignoreIterations) {
     	if (!getCachedNumCyclesValid(c) && !ignoreIterations) {
     		long value = 0;
-    		for (Node child : getNode().getChildren()) {
-    			if (m_setOptions.get(child))
-    			    value += child.getAttributes().getNumCycles(c, status, ignoreIterations);
+    		for (Node child : m_setIterations.keySet()) {
+   			    value += child.getAttributes().getNumCycles(c, status, ignoreIterations);
     		}		
     		Node option = getNode().getUnsetOption(c, ignoreIterations);
     		if (option != null) {
     			value += option.getAttributes().getNumCycles(c, status, ignoreIterations); 
     		}    		
 			setCachedNumCycles(c, value);
+			setCachedNumCyclesStatus(c, status.getStatus());			
 			setCachedNumCyclesValid(c, true);
 		}
+		status.setStatus(getCachedNumCyclesStatus(c));    	
 		return getCachedNumCycles(c);
 	}
 
 	public long getNumInstructions(Case c, Status status, boolean ignoreIterations) {
 		if (!getCachedNumInstructionsValid(c) && !ignoreIterations) {
 			long value = 0;
-			for (Node child : getNode().getChildren()) {
-				if (m_setOptions.get(child))
-				    value += child.getAttributes().getNumInstructions(c, status, ignoreIterations);
+			for (Node child : m_setIterations.keySet()) {
+			    value += child.getAttributes().getNumInstructions(c, status, ignoreIterations);
 			}		
 			Node option = getNode().getUnsetOption(c, ignoreIterations);
 			if (option != null) {
 				value += option.getAttributes().getNumInstructions(c, status, ignoreIterations); 
 			}			
 			setCachedNumInstructions(c, value);
+			setCachedNumInstructionsStatus(c, status.getStatus());			
 			setCachedNumInstructionsValid(c, true);
 		}
+		status.setStatus(getCachedNumInstructionsStatus(c));
 		return getCachedNumInstructions(c);
 	}
 
 	public long getNumFNops(Case c, Status status, boolean ignoreIterations) {
 		if (!getCachedNumFnopsValid(c) && !ignoreIterations) {
 			long value = 0;
-			for (Node child : getNode().getChildren()) {
-				if (m_setOptions.get(child))
-				    value += child.getAttributes().getNumFNops(c, status, ignoreIterations);
+			for (Node child : m_setIterations.keySet()) {
+			    value += child.getAttributes().getNumFNops(c, status, ignoreIterations);
 			}		
 			Node option = getNode().getUnsetOption(c, ignoreIterations);
 			if (option != null) {
 				value += option.getAttributes().getNumFNops(c, status, ignoreIterations); 
 			}			
 			setCachedNumFnops(c, value);
+			setCachedNumFnopsStatus(c, status.getStatus());			
 			setCachedNumFnopsValid(c, true);
 		}
+		status.setStatus(getCachedNumFnopsStatus(c));
 		return getCachedNumFnops(c);
 	}
 
@@ -98,15 +99,16 @@ public class SectionNodeAttributes extends NodeAttributes {
 	
 	// --------------------------------------------------------------------- //
 	// Loop Iteration Methods
-	// --------------------------------------------------------------------- //		
-	public boolean setLoopPathIterations(Node loopNode, Node optionNode, long numIterations) {
+	// --------------------------------------------------------------------- //
+	public boolean loopPathIterationsValid(Node loopNode, Node optionNode, long numIterations) {
 		long loopIterations = loopNode.getAttributes().getLoopIterations();
-		SectionNode sectionNode = (SectionNode)getNode();
-		
+
 		// Calculates the total iterations already set on all options of 
 		// this section (excluding the contribution from the option we are
 		// try to set here)
 		long totalNumIterationsSet = getTotalNumIterationsSet();
+		if (m_setIterations.get(optionNode) != null)
+			totalNumIterationsSet -= m_setIterations.get(optionNode);
 		
 		// Check that we will not set an iteration count that
 		// overflows the iteration count set on the enclosing loop...
@@ -115,33 +117,34 @@ public class SectionNodeAttributes extends NodeAttributes {
    			return false;
 
    		// If there is a remainder, checks that we have at least 
-   		// one option that hasn't had its iterations set...
+   		// one option that hasn't had its iterations set (excluding this one)...
    		long remainder = loopIterations - newTotal;
    		if (remainder > 0) {
-   			int numUnsetOptions = 0;
-   	   		for (Node node : m_setOptions.keySet()) {
-   	   			if (!m_setOptions.get(node) && (node != optionNode))
-   	   				++numUnsetOptions;
-   	   		}
+   			int numUnsetOptions = getNode().getChildren().size() - m_setIterations.size();
+   			if (m_setIterations.get(optionNode) == null)
+   				--numUnsetOptions;
+
    			if (numUnsetOptions == 0) {
-   				if (!sectionNode.isSectionOptional()) {
+   				if (!getNode().isSectionOptional()) {
    	   	   			return false;   					
    				}
    			}
    		}
 
    		// Sets the iterations on the given section option node..
-   		m_numIterations.put(optionNode, numIterations);
-   		m_setOptions.put(optionNode, true);
+   		m_setIterations.put(optionNode, numIterations);
 		return true;
+	}	
+	
+	public void setLoopPathIterations(Node loopNode, Node optionNode, long numIterations) {
+		assert(loopPathIterationsValid(loopNode, optionNode, numIterations));
+   		m_setIterations.put(optionNode, numIterations);
 	}
 	
 	public long getLoopPathIterations(Node loopNode, Node optionNode, Case c) {
-		assert(m_numIterations.containsKey(optionNode));
-		
-		if (getSetOption(optionNode)) {
+		if (m_setIterations.get(optionNode) != null) {
 			// The iterations have been explicitly set for this option.
-			return m_numIterations.get(optionNode);	
+			return m_setIterations.get(optionNode);	
 			
 		} else {
 			// Need to assign any remaining iterations to the best/worst case.
@@ -150,57 +153,25 @@ public class SectionNodeAttributes extends NodeAttributes {
 	   		long remainder = loopIterations - totalNumIterationsSet;
 	   		if (remainder > 0) {
 				Node option = getNode().getUnsetOption(c, true);
-				if (option != null) {
-					if (option == optionNode)
-						return remainder;
-				}				
+				if (option == optionNode)
+					return remainder;
 	   		}			
 			return 0;			
 		}
 	}
 	
 	public boolean getSetOption(Node optionNode) {
-		assert(m_setOptions.containsKey(optionNode));
-		return m_setOptions.get(optionNode);
+		return m_setIterations.get(optionNode) != null;
 	}
 	
 	public void resetPathIterations() {
-		clearNumIterations();
-		clearSetOptions();
+		m_setIterations.clear();
 	}
-	
-	private void clearNumIterations() {
-   		for (Node node : m_numIterations.keySet()) {
-   			m_numIterations.put(node, (long)0);
-   		}		
-	}
-
-	private void clearSetOptions() {
-   		for (Node node : m_setOptions.keySet()) {
-   			m_setOptions.put(node, false);
-   		}		
-	}
-	
-	private void initialiseNumIterations() {
-		m_numIterations = new HashMap<Node, Long>();
-   		for (Node node : getNode().getChildren()) {
-   			m_numIterations.put(node, (long)0);
-   		}		
-	}
-	
-	private void initialiseSetOptions() {
-		m_setOptions = new HashMap<Node, Boolean>();
-   		for (Node node : getNode().getChildren()) {
-   			m_setOptions.put(node, false);
-   		}		
-	}
-	
+				
 	private long getTotalNumIterationsSet() {
 		long totalNumIterationsSet = 0;
-		for (Node option : m_setOptions.keySet()) {
-			if (m_setOptions.get(option)) {
-				totalNumIterationsSet += m_numIterations.get(option);
-			}
+		for (Node option : m_setIterations.keySet()) {
+			totalNumIterationsSet += m_setIterations.get(option);
 	    }
   	    return totalNumIterationsSet;
 	}

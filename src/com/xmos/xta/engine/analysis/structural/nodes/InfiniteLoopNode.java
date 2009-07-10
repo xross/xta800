@@ -7,14 +7,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
-import com.xmos.xta.engine.analysis.structural.nodes.attributes.InfiniteLoopNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class InfiniteLoopNode extends Node {
-	private InfiniteLoopNodeAttributes m_attributes;	
+	private NodeAttributes m_attributes;	
 	private Node m_loopHeader;
 	private List<Node> m_loops;
 
@@ -22,14 +21,14 @@ public class InfiniteLoopNode extends Node {
 		super();
 		m_loopHeader = loop.m_loopHeader;
 		m_loops = new ArrayList<Node>(loop.m_loops);
-		m_attributes = new InfiniteLoopNodeAttributes(this);
+		m_attributes = new NodeAttributes(this);
 	}
 
 	public InfiniteLoopNode() {
 		super();
 		m_loopHeader = null;
 		m_loops = new ArrayList<Node>();
-		m_attributes = new InfiniteLoopNodeAttributes(this);
+		m_attributes = new NodeAttributes(this);
 	}
 
 	public InfiniteLoopNode(Node loop, Node base) {
@@ -37,7 +36,7 @@ public class InfiniteLoopNode extends Node {
 		m_loopHeader = base;
 		m_loops = new ArrayList<Node>();
 		m_loops.add(loop);
-		m_attributes = new InfiniteLoopNodeAttributes(this);
+		m_attributes = new NodeAttributes(this);
 	}
 
 	public InfiniteLoopNode(Set<Node> loops, Node base) {
@@ -47,7 +46,7 @@ public class InfiniteLoopNode extends Node {
 		for (Node loop : loops) {
 			m_loops.add(loop);
 		}
-		m_attributes = new InfiniteLoopNodeAttributes(this);
+		m_attributes = new NodeAttributes(this);
 	}
 
 	public InfiniteLoopNode shallowCopy() {
@@ -62,7 +61,7 @@ public class InfiniteLoopNode extends Node {
 		}
 		ln.m_loopHeader = m_loopHeader.deepCopy();
 		ln.m_loopHeader.getAttributes().setIsLoopHeader(true);
-		ln.m_attributes = new InfiniteLoopNodeAttributes(ln);
+		ln.m_attributes = new NodeAttributes(ln);
 		return ln;
 	}
 

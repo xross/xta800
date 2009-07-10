@@ -110,7 +110,7 @@ public class RouteTiming {
 			else
 				description += "Fail";
 
-			int numWarnings = m_route.getUnknowns(UnknownState.UNKNOWN).size();
+			int numWarnings = m_route.getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN).size();
 			if (numWarnings > 0)
 				description += " with " + numWarnings + " unknown";
 			if (numWarnings > 1)

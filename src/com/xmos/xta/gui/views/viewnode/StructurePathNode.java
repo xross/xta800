@@ -51,6 +51,7 @@ public class StructurePathNode extends StructureNode {
 		drawThis(display, gc);
 		boolean isWorstCase = isWorstCase();
 		boolean isBestCase = isBestCase();
+		boolean isInfinite = false;
 
         boolean first = true;
     	int childOffsetX = m_borderX;
@@ -59,13 +60,13 @@ public class StructurePathNode extends StructureNode {
     	int lineRight = 0;
 		for (ViewNode child : getChildren()) {
     		int childX = child.getPixelsX();
-    		
-        	if (!first) {
+        	if (!first && !isInfinite) {
         		drawConnection(display, gc, lineLeft, lineY, lineRight, lineY,
         				isBestCase, isWorstCase);
         	} else {
         		first = false;
         	}
+    		isInfinite = child.isInfinite();
 
             lineLeft = scaleX(m_pixelOffsetX + childOffsetX + childX);
             lineRight = scaleX(m_pixelOffsetX + childOffsetX + childX + m_connectorLen);
@@ -76,8 +77,10 @@ public class StructurePathNode extends StructureNode {
 
 		drawConnection(display, gc, m_renderX, lineY, scaleX(m_pixelOffsetX + m_borderX), lineY,
 				isBestCase, isWorstCase);
-		drawConnection(display, gc, lineLeft, lineY, scaleX(m_pixelOffsetX + getPixelsX()), lineY,
+		if (!isInfinite) {
+			drawConnection(display, gc, lineLeft, lineY, scaleX(m_pixelOffsetX + getPixelsX()), lineY,
 				isBestCase, isWorstCase);
+		}
     }
 
 	public void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase) {
