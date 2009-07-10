@@ -191,7 +191,18 @@ public class LoopNode extends Node {
 		return list;
 	}
 	
-	public void getTimeSpread(Collection<Integer> times) {
-		assert(false);		
+	public TimeDistributionBuckets getTimeSpread() {
+		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
+		List<TimeDistributionBuckets> loopList = new LinkedList<TimeDistributionBuckets>();
+		for(Node loop : m_loops){
+			//if(loop.getAttributes().getLoopIterations() > 0){
+				TimeDistributionBuckets loopBucket = new TimeDistributionBuckets();
+				loopBucket.add(m_loopHeader.getTimeSpread(), loop.getTimeSpread());
+				//loopBucket.repeat(1);
+				loopList.add(loopBucket);
+			//}
+		}
+		tdb.add(loopList);
+		return tdb;
 	}
 }

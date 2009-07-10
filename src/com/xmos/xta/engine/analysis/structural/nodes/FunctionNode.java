@@ -231,7 +231,8 @@ public class FunctionNode extends IBufferNode {
 		}
 		return functions;
 	}
-	public void getTimeSpread(Collection<Integer> times) {
-		m_function.getTimeSpread(times);
+
+	public TimeDistributionBuckets getTimeSpread() {
+		return m_function.getTimeSpread();
 	}
 }

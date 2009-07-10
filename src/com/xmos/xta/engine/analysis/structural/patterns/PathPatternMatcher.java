@@ -11,6 +11,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.PathNode;
 
 public class PathPatternMatcher extends PatternMatcher {	
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
+		
 		m_treeStart = treeStart;
 		LinkedList<Node> pathList = new LinkedList<Node>();
 		pathList.add(currentNode);

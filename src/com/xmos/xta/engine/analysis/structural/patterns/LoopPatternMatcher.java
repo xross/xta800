@@ -3,7 +3,6 @@ package com.xmos.xta.engine.analysis.structural.patterns;
 import java.util.Collection;
 import java.util.TreeSet;
 import java.util.Set;
-
 import com.xmos.xta.engine.analysis.structural.nodes.InfiniteLoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.LoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -44,7 +43,7 @@ public class LoopPatternMatcher extends PatternMatcher {
 		}
 		
 		if(noNextNode){
-			System.out.println("wooooooooooooohoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+			//System.out.println("wooooooooooooohoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
 			loop = new InfiniteLoopNode(intersection, header);
 		} else {
 			loop = new LoopNode(intersection, header);
@@ -75,7 +74,7 @@ public class LoopPatternMatcher extends PatternMatcher {
 			}
 		}
 		if(noNextNode){
-			CommonMethods.connect(findNullNode(workingSet), loop);
+			CommonMethods.connect(CommonMethods.findNullNode(workingSet), loop);
 		}
 		
 		workingSet.removeAll(intersection);
@@ -83,15 +82,6 @@ public class LoopPatternMatcher extends PatternMatcher {
 		workingSet.add(loop);
 	}
 
-	private Node findNullNode(Collection<Node> workingSet){
-		for(Node node : workingSet){
-			if(node.isNullNode()){
-				return node;
-			}
-		}
-		assert(false);
-		return null;
-	}
 	
 	public boolean usesDominatorTree() {
 		return false;

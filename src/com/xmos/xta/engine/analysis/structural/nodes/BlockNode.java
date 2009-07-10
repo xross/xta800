@@ -148,11 +148,8 @@ public class BlockNode extends IBufferNode {
 		m_insts = insts;
 	}
 
-	public void getTimeSpread(Collection<Integer> times) {
-		for(Integer time : times){
-			//TODO this will do for now
-			time += m_insts.size();
-		}
+	public TimeDistributionBuckets getTimeSpread() {
+		return new TimeDistributionBuckets(m_insts.size());
 	}
 
 }
