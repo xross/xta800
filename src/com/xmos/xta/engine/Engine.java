@@ -286,6 +286,7 @@ public class Engine implements Notifier {
 		} catch (Exception e) {
 			m_progress.setState(Progress.State.IDLE);
 			notify(Notifier.NOTIFY_ERROR, "Unknown error detected");
+			e.printStackTrace();
 			return false;
 		}
 		return success;
