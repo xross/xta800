@@ -93,10 +93,6 @@ public class Engine implements Notifier {
 		ReferenceTypeFactory.setEngine(this);
 	}
 
-	public Set<String> getFunctionNames(int nodeId, int coreId){
-		return m_functionNames.get(nodeId, coreId).keySet();
-	}
-	
 	public void notify(String message, String argument) {
 		if (m_notifier != null){
 			m_notifier.notify(message, argument);
@@ -154,11 +150,23 @@ public class Engine implements Notifier {
 	public InstructionDecoder getInstructionDecoder() {
 		return m_instructionDecoder.get(m_nodeId, m_coreId);
 	}
-	
+		
 	public Set<String> getFunctionNames() {
-		return m_functionNames.get(m_nodeId, m_coreId).keySet();
+		TreeMap<String, InstructionNode> functionNames = m_functionNames.get(m_nodeId, m_coreId);
+		if (functionNames != null) {
+		    return functionNames.keySet();
+	    }
+		return new TreeSet<String>();
 	}
 	
+	public Set<String> getFunctionNames(int nodeId, int coreId){
+		TreeMap<String, InstructionNode> functionNames = m_functionNames.get(nodeId, coreId);
+		if (functionNames != null) {
+		    return functionNames.keySet();
+	    }
+		return new TreeSet<String>();
+	}
+		
 	public String getSrcPaths() {
 		if (m_srcPaths != null) {
 			return m_srcPaths;
