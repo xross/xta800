@@ -70,7 +70,6 @@ public class TraceDisplayer {
     		}
     		iteration -= childIterations;
     	}
-    	assert(false);
 		return null;
 	}
 

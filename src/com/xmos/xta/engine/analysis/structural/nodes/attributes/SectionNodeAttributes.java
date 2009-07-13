@@ -157,14 +157,13 @@ public class SectionNodeAttributes extends NodeAttributes {
    		m_setIterations.put(optionNode, numIterations);
 	}
 	
-	public long getLoopPathIterations(Node loopNode, Node optionNode, Case c) {
+	public long getLoopPathIterations(long loopIterations, Node optionNode, Case c) {
 		if (m_setIterations.get(optionNode) != null) {
 			// The iterations have been explicitly set for this option.
 			return m_setIterations.get(optionNode);	
 			
 		} else {
 			// Need to assign any remaining iterations to the best/worst case.
-			long loopIterations = loopNode.getAttributes().getLoopIterations();
 			long totalNumIterationsSet = getTotalNumIterationsSet();
 	   		long remainder = loopIterations - totalNumIterationsSet;
 	   		if (remainder > 0) {

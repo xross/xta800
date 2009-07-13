@@ -408,7 +408,13 @@ public class NodeAttributes {
 		Node enclosingLoopNode = getNode().getEnclosingLoopNode();		
 		if (enclosingLoopNode == null) {
 			// At the outermost scope, i.e. not inside a loop..
-			return 1;
+			long numIterations;
+			try {
+				numIterations = getNodeIterations(c, getNode(), null, ignoreIterationsAboveSection);
+			} catch (IgnoreSectionIterationsException e) {
+				return 1;
+			}
+			return numIterations;
 		}			
 		
 		// Need to treat relative and absolute loops differently..
@@ -477,7 +483,7 @@ public class NodeAttributes {
 		assert(false);
 	}
 		
-	public long getLoopPathIterations(Node loopNode, Node optionNode, Case c) {
+	public long getLoopPathIterations(long loopIterations, Node optionNode, Case c) {
 		assert(false);
 		return 0;
 	}
@@ -549,23 +555,27 @@ public class NodeAttributes {
 	private long getNodeIterations(Case c, Node node, Node enclosingLoopNode, Node ignoreIterationsAboveSection) throws IgnoreSectionIterationsException {
 		// If we are in a section, then get them from the section.
 		// Otherwise, take the iterations from the enclosing loop.
-		long iterations = 0;
+		long iterations = 1;
 		boolean foundSection = false;
 		Node n = node;
-		while (n != enclosingLoopNode) {				
-			if (n.getParent().isSectionNode()) {
+		while (n != enclosingLoopNode) {
+			if ((n.getParent() != null) && n.getParent().isSectionNode()) {
 				if (n.getParent() == ignoreIterationsAboveSection) {
 					throw new IgnoreSectionIterationsException();
 					
-				} else {				
-				    iterations = n.getParent().getAttributes().getLoopPathIterations(enclosingLoopNode, n, c);
+				} else {
+					// Check if we are at the top level (i.e. there is no enclosing loop).
+					long loopIterations = enclosingLoopNode == null ? 1 :
+						enclosingLoopNode.getAttributes().getLoopIterations();
+					
+				    iterations = n.getParent().getAttributes().getLoopPathIterations(loopIterations, n, c);
 				    foundSection = true;
 				    break;
 				}
 			}
 			n = n.getParent();
 		}
-		if (!foundSection) {
+		if ((enclosingLoopNode != null) && !foundSection) {
 			iterations = enclosingLoopNode.getAttributes().getLoopIterations();
 		}
 		return iterations;
