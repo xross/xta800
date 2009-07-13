@@ -140,10 +140,6 @@ public class InstructionNode extends Node {
 		return m_inst;
 	}
 	
-	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
-		assert(false);
-	}
-
 	public long getError(Case c) {
 		return 0;
 	}

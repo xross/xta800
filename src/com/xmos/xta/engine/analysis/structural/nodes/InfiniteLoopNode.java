@@ -140,7 +140,6 @@ public class InfiniteLoopNode extends Node {
 	public Collection<Node> whatsNext(Node node) {
 		Collection<Node> next = new TreeSet<Node>();
 		if (m_loopHeader == node) {
-			next.addAll(getParent().whatsNext(this));
 			next.addAll(m_loops);
 		} else {
 			next.add(this);
@@ -159,17 +158,6 @@ public class InfiniteLoopNode extends Node {
 		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
 		}
 		return false;
-	}
-
-	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
-		
-		for(Node loop : m_loops){
-			for(long i=0;i<loop.getAttributes().getLoopIterations();i++){
-				m_loopHeader.getInstructionStream(c, instructions);
-				loop.getInstructionStream(c, instructions);
-			}
-		}
-		m_loopHeader.getInstructionStream(c, instructions);
 	}
 
 	public Collection<Node> whatsBefore(Node node) {

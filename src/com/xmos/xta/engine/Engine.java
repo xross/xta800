@@ -209,7 +209,7 @@ public class Engine implements Notifier {
 		
 		if (!initialiseGlobalStructure(xeLoader, sections, fileFinder))
 			return false;
-		
+		m_exclusions = new ArrayList<Reference>();
 		m_executableFile = executableFile;
 		m_fileFinder = fileFinder;
 		m_xeLoader = xeLoader;
@@ -991,6 +991,7 @@ public class Engine implements Notifier {
 		m_structuralGraph = newStructuralGraph;
 		m_functionNames = newFunctionNames;
 		m_sourceMapper = newSourceMappers;
+		
 		notify(Notifier.RELEASE_MESSAGES, "");
 		return true;
 	}

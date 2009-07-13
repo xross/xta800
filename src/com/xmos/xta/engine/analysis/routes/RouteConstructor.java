@@ -13,11 +13,10 @@ import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
-import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.engine.analysis.structural.nodes.InfiniteSelfLoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
-import com.xmos.xta.engine.analysis.structural.nodes.SelfLoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownType;
@@ -66,6 +65,7 @@ public class RouteConstructor {
 	}
 
 	public RouteError analyse() {
+		
 		resetParent();
 		boolean seenEndPoint = false;
 		
@@ -82,8 +82,13 @@ public class RouteConstructor {
 			endNodes.addAll(getReferencedNodes(endPoint));
 		}
 		
+		//convert startNodes into global structure nodes
 		
 		for (Node start : startNodes) {
+			int startPc = start.getStartPc();
+			while(start.getParent() != null && start.getParent().getStartPc() == startPc){
+				start = start.getParent();
+			}
 			seenEndPoint = follow(seenEndPoint, endNodes, start);
 		}
 		
@@ -112,6 +117,9 @@ public class RouteConstructor {
 		m_structureGraph.removeLinks();
 		m_excludedRouteNodes = new TreeSet<Node>();
 		
+		
+		//the problem here is that start may be an instruction when it should be something more complicated. i.e. a loop
+		
 		seenEndPoint |= explore(start, workingSet, endNodes, null);
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 		pruneGraphOfExcludedPaths(workingSet);
@@ -125,12 +133,14 @@ public class RouteConstructor {
 			} else {
 				newEndNodes = new TreeSet<Node>(endNodes);
 			}
-
+			
+			String tree = StructuralAnalysisEngine.dumpTree("route_before",  workingSet);
 			Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
 			assert(cfgSanityCheck(workingSet));
 			
 			addTerminator(workingSet);
-			String tree = StructuralAnalysisEngine.dumpTree("route_before",  workingSet);
+
+			tree = StructuralAnalysisEngine.dumpTree("route_before",  workingSet);
 			sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
 			
 			if(workingSet.size() != 1){
@@ -141,20 +151,14 @@ public class RouteConstructor {
 			assert(workingSet.size() == 1);
 			
 			Node baseNode = workingSet.iterator().next();
+		
+			assert(!baseNode.isInfiniteLoopNode());
 			
-			if(m_description.getMode() == RouteMode.PATH){
-				 baseNode = workingSet.iterator().next();
-			} else {
-				 baseNode = new FunctionNode(workingSet.iterator().next(), m_description.getFunctionName());
-			}
-			
-			if(baseNode.isSelfLoopNode()) {
-				SelfLoopNode sln = (SelfLoopNode)baseNode;
-				baseNode = sln.getLoop();
-			}
+			if(m_description.getMode() == RouteMode.PATH && baseNode.isInfiniteSelfLoopNode()){
+				baseNode = ((InfiniteSelfLoopNode)baseNode).getLoop();
+			} 
 			
 			Node newGraph = baseNode.deepCopy();
-						
 			m_subRoutes.add(newGraph);
 		}
 		return seenEndPoint;
@@ -213,12 +217,12 @@ public class RouteConstructor {
 			}
 			set.add(node);
 
-			assert(node.getParent() != null);
-			if (!node.getParent().whatsNext(node).isEmpty()) {
+			//assert(node.getParent() != null);
+			if (node.getParent() != null && !node.getParent().whatsNext(node).isEmpty()) {
 				
 				Collection<Node> nextNodes = node.getParent().whatsNext(node);
-				
-
+				node.getParent();
+				nextNodes = node.getParent().whatsNext(node);
 				for (Node next : nextNodes) {
 					seenEndPoint |= explore(next, set, endNodes, node);
 				}
@@ -267,7 +271,7 @@ public class RouteConstructor {
 		// from the start instruction crawl downwards stopping at basic block
 		// boundaries
 		Node startBlock = null;
-		if(!start.isBlockNode()){
+		if(start.isInstructionNode()){
 			InstructionNode currentNode = (InstructionNode)start;
 			List<InstructionNode> startList = new LinkedList<InstructionNode>();
 			
@@ -373,6 +377,17 @@ public class RouteConstructor {
     			m_exclusions.addAll(referenceMatcher.getNodes(threadNode, reference));
 			}
 		}
+		/*
+		if(m_engine.getExclusions().isEmpty())System.out.println("there are no exclusions in the engine");
+		for(Reference ref : m_engine.getExclusions()){
+			System.out.println("excluding:" + ref.description());
+		}
+		if(m_exclusions.isEmpty()) System.out.println("there are no exclusions in the route");
+		for(Node node : m_exclusions){
+			System.out.println("excluding:" + ((InstructionNode)node).getXtaInstruction());
+		}
+		//System.exit(1);
+		*/
 	}
 		
 	private void setUnknowns() {

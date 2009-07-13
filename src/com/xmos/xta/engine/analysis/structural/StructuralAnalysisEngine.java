@@ -23,6 +23,7 @@ import com.xmos.xta.engine.analysis.structural.patterns.PatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.SectionPatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.SectionTransformer;
 import com.xmos.xta.engine.analysis.structural.patterns.SelfLoopPattern;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructuralAnalysisEngine {
 
@@ -58,9 +59,13 @@ public class StructuralAnalysisEngine {
 	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine, boolean debug, String jobPrefix) {
 		
 		if(workingSet.size() == 1 && workingSet.iterator().next().getNextNodesSize() == 0) return true;
+		
+		
+		
 		boolean working = true;
 		boolean dominatorTreeUpToDate = false;
 		while (working) {
+			//if(debug) System.out.println(dumpTree("intermediate", workingSet));
 			engine.provideFeedback(jobPrefix + " - nodes left: " + workingSet.size());
 			List<Node> postOrder = new LinkedList<Node>();
 			DFSPostOrder(postOrder, treeStart, new TreeSet<Node>());
@@ -76,6 +81,8 @@ public class StructuralAnalysisEngine {
 					}
 					
 					if (pm.isMatch(node, workingSet, treeStart)) {
+						
+						
 						treeStart = pm.getTreeStart();
 						assert (connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
@@ -498,8 +505,19 @@ public class StructuralAnalysisEngine {
 						string += node + " -> " + next + ";";
 					}
 				}
+				
+				if(node.isBlockNode() || node.isInstructionNode()){
+					string += node + " [label=\"" + node + "\\n";
+					for(XtaInstruction inst : node.getInstructions()){
+						string += inst + "\\n";  
+					}
+					string += "\"]; ";
+					
+				}
+				
 			}
 			string += "}\n";
+
 			
 		} else {
 			string += "# graph has only " + workingSet.size() + " nodes";
@@ -508,11 +526,19 @@ public class StructuralAnalysisEngine {
 		return string;
 	}
 	
+/*
+ * before editing these check that pwm : analyse path sendRawSample sendRawSample
+ */
+	
 	private void setUpPatternMatcher() {
 		m_patternMatchers = new ArrayList<PatternMatcher>();
 		m_patternMatchers.add(new SelfLoopPattern());
-		m_patternMatchers.add(new PathPatternMatcher());
+		
+		
 		m_patternMatchers.add(new LoopPatternMatcher());
+		m_patternMatchers.add(new PathPatternMatcher());
+		
+		
 		m_patternMatchers.add(new SectionPatternMatcher());
 		m_patternMatchers.add(new SectionTransformer());
 	}

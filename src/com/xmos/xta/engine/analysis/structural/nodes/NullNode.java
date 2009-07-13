@@ -39,10 +39,6 @@ public class NullNode extends IBufferNode {
 		return new LinkedList<Node>();
 	}
 
-	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
-		
-	}
-
 	public LinkedList<XtaInstruction> getInstructions() {
 		return new LinkedList<XtaInstruction>();
 	}
