@@ -6,6 +6,9 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status.S;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
+@SuppressWarnings("serial")
+class IgnoreSectionIterationsException extends Exception {}
+
 public class NodeAttributes {
     private Node m_node; 
 
@@ -20,6 +23,7 @@ public class NodeAttributes {
 	}
 
 	public static final long INFINITE_ITERATIONS = -1;
+	public static final long IGNORE_ITERATIONS = -2;
 	
 	private double m_cachedWorstTimeTaken;
 	private long m_cachedWorstNumCycles;
@@ -70,9 +74,9 @@ public class NodeAttributes {
 		return m_node;
 	}
 	
-	// --------------------------------------------------------------------- //
+	// ===================================================================== //
 	// Display Methods
-	// --------------------------------------------------------------------- //				
+	// ===================================================================== //
 	public String getTimingSummary() { 
 	    String timingSummary = "";
 	    
@@ -99,7 +103,7 @@ public class NodeAttributes {
 	
 	private String getTimeTakenStr(Case c) {
 	    Status status = new Status();
-	    double value = getTimeTaken(c, status, false);	    
+	    double value = getTimeTaken(c, status, null);	    
 	    switch (status.getStatus()) {
 	    case COMPLETED:  return String.format("%.1fns", value);
 	    case INFINITE:   return String.format("Infinity");
@@ -111,7 +115,7 @@ public class NodeAttributes {
 	
 	private String getNumCyclesStr(Case c) {
 	    Status status = new Status();
-	    long value = getNumCycles(c, status, false);	    
+	    long value = getNumCycles(c, status, null);	    
 	    switch (status.getStatus()) {
 	    case COMPLETED:  return String.format("%d", value);
 	    case INFINITE:   return String.format("Infinity");
@@ -123,7 +127,7 @@ public class NodeAttributes {
 
 	private String getNumInstructionsStr(Case c) {
 	    Status status = new Status();
-	    long value = getNumInstructions(c, status, false);	    
+	    long value = getNumInstructions(c, status, null);	    
 	    switch (status.getStatus()) {
 	    case COMPLETED:  return String.format("%d", value);
 	    case INFINITE:   return String.format("Infinity");
@@ -135,7 +139,7 @@ public class NodeAttributes {
 
 	private String getNumFNopsStr(Case c) {
 	    Status status = new Status();
-	    long value = getNumFNops(c, status, false);	    
+	    long value = getNumFNops(c, status, null);	    
 	    switch (status.getStatus()) {
 	    case COMPLETED:  return String.format("%d", value);
 	    case INFINITE:   return String.format("Infinity");
@@ -146,27 +150,27 @@ public class NodeAttributes {
 	}
 	
 	private String getTotalIterationsStr(Case c) {
-		long totalIterations = getTotalIterations(c);
+		long totalIterations = getTotalIterations(c, null);
 		if (totalIterations == INFINITE_ITERATIONS) {
 			return "-";
 		}
 		return String.format("%d", totalIterations);
 	}
 	
-	// --------------------------------------------------------------------- //
+	// ===================================================================== //
 	// Statistics Methods
-	// --------------------------------------------------------------------- //			
-	public double getTimeTaken(Case c, Status status, boolean ignoreIterations) {
-		if (getCachedTimeTakenValid(c) && !ignoreIterations) {
+	// ===================================================================== //
+	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveSection) {
+		if (getCachedTimeTakenValid(c) && (ignoreIterationsAboveSection == null)) {
 			status.setStatus(getCachedTimeTakenStatus(c));
 			return getCachedTimeTaken(c);			
 		}
 
 		double value = 0;
 		for (Node child : getNode().getChildren()) {
-			value += child.getAttributes().getTimeTaken(c, status, ignoreIterations);
+			value += child.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveSection);
 		}
-		if (!ignoreIterations) {
+		if (ignoreIterationsAboveSection == null) {
 			setCachedTimeTaken(c, value);
 			setCachedTimeTakenStatus(c, status.getStatus());
 			setCachedTimeTakenValid(c, true);				
@@ -174,17 +178,17 @@ public class NodeAttributes {
 		return value;
 	}
 
-	public long getNumCycles(Case c, Status status, boolean ignoreIterations) {
-		if (getCachedNumCyclesValid(c) && !ignoreIterations) {
+	public long getNumCycles(Case c, Status status, Node ignoreIterationsAboveSection) {
+		if (getCachedNumCyclesValid(c) && (ignoreIterationsAboveSection == null)) {
 			status.setStatus(getCachedNumCyclesStatus(c));
 			return getCachedNumCycles(c);
 		}
 
 		long value = 0;
 		for (Node child : getNode().getChildren()) {
-			value += child.getAttributes().getNumCycles(c, status, ignoreIterations);
+			value += child.getAttributes().getNumCycles(c, status, ignoreIterationsAboveSection);
 		}
-		if (!ignoreIterations) {
+		if (ignoreIterationsAboveSection == null) {
 			setCachedNumCycles(c, value);
 			setCachedNumCyclesStatus(c, status.getStatus());
 			setCachedNumCyclesValid(c, true);				
@@ -192,17 +196,17 @@ public class NodeAttributes {
 		return value;
 	}
 
-	public long getNumInstructions(Case c, Status status, boolean ignoreIterations) {
-		if (getCachedNumInstructionsValid(c) && !ignoreIterations) {
+	public long getNumInstructions(Case c, Status status, Node ignoreIterationsAboveSection) {
+		if (getCachedNumInstructionsValid(c) && (ignoreIterationsAboveSection == null)) {
 			status.setStatus(getCachedNumInstructionsStatus(c));
 			return getCachedNumInstructions(c);
 		}
 		
 		long value = 0;
 		for (Node child : getNode().getChildren()) {
-			value += child.getAttributes().getNumInstructions(c, status, ignoreIterations);
-		}			
-		if (!ignoreIterations) {
+			value += child.getAttributes().getNumInstructions(c, status, ignoreIterationsAboveSection);		
+		}
+		if (ignoreIterationsAboveSection == null) {
 			setCachedNumInstructions(c, value);
 			setCachedNumInstructionsStatus(c, status.getStatus());
 			setCachedNumInstructionsValid(c, true);
@@ -210,17 +214,17 @@ public class NodeAttributes {
 		return value;
 	}
 
-	public long getNumFNops(Case c, Status status, boolean ignoreIterations) {
-		if (getCachedNumFnopsValid(c) && !ignoreIterations) {
+	public long getNumFNops(Case c, Status status, Node ignoreIterationsAboveSection) {
+		if (getCachedNumFnopsValid(c) && (ignoreIterationsAboveSection == null)) {
 			status.setStatus(getCachedNumFnopsStatus(c));
 			return getCachedNumFnops(c);
 		}
 		
 		long value = 0;
 		for (Node child : getNode().getChildren()) {
-			value += child.getAttributes().getNumFNops(c, status, ignoreIterations);
+			value += child.getAttributes().getNumFNops(c, status, ignoreIterationsAboveSection);
 		}			
-		if (!ignoreIterations) {
+		if (ignoreIterationsAboveSection == null) {
 			setCachedNumFnops(c, value);
 			setCachedNumFnopsStatus(c, status.getStatus());
 			setCachedNumFnopsValid(c, true);
@@ -236,9 +240,9 @@ public class NodeAttributes {
 		return value;
 	}
 
-	// --------------------------------------------------------------------- //
+	// ===================================================================== //
 	// Cached Statistics Methods
-	// --------------------------------------------------------------------- //			
+	// ===================================================================== //
 	void initialiseCachedStats() {
 		m_cachedWorstTimeTaken       = 0;
 		m_cachedBestTimeTaken        = 0;		
@@ -318,9 +322,9 @@ public class NodeAttributes {
 	void setCachedNumInstructionsValid(Case c, boolean value) { if (c == Case.WORST) m_cachedWorstNumInstructionsValid = value; else m_cachedBestNumInstructionsValid = value; }
 	void setCachedNumFnopsValid(Case c, boolean value)        { if (c == Case.WORST) m_cachedWorstNumFnopsValid = value;        else m_cachedBestNumFnopsValid = value; }
 	
-	// --------------------------------------------------------------------- //
+	// ===================================================================== //
 	// Unknown Status Methods
-	// --------------------------------------------------------------------- //		
+	// ===================================================================== //
 	public boolean isUnknown() {
 		return m_isUnknown;
 	}
@@ -392,10 +396,10 @@ public class NodeAttributes {
 		return "";
 	}
 	
-	// --------------------------------------------------------------------- //
+	// ===================================================================== //
 	// Loop Iteration Methods
-	// --------------------------------------------------------------------- //	
-	public long getTotalIterations(Case c) {
+	// ===================================================================== //
+	public long getTotalIterations(Case c, Node ignoreIterationsAboveSection) {
 		Node enclosingInfiniteLoopNode = getNode().getEnclosingInfiniteLoopNode();
 		if (enclosingInfiniteLoopNode != null) {
 			return INFINITE_ITERATIONS;
@@ -404,42 +408,52 @@ public class NodeAttributes {
 		Node enclosingLoopNode = getNode().getEnclosingLoopNode();		
 		if (enclosingLoopNode == null) {
 			// At the outermost scope, i.e. not inside a loop..
-			return 1;
-		}			
-
-		// We are inside a loop, so we need to get the loop iterations.
-		// If we are in a section, then get them from the section.
-		// Otherwise, take the iterations from the enclosing loop.
-		long numIterations = 0;
-		boolean foundSectionIterations = false;
-		Node node = getNode();
-		while (node != enclosingLoopNode) {				
-			if (node.getParent().isSectionNode()) {
-				numIterations = node.getParent().getAttributes().getLoopPathIterations(enclosingLoopNode, node, c);
-				foundSectionIterations = true;
-				break;
+			long numIterations;
+			try {
+				numIterations = getNodeIterations(c, getNode(), null, ignoreIterationsAboveSection);
+			} catch (IgnoreSectionIterationsException e) {
+				return 1;
 			}
-			node = node.getParent();
-		}
-		if (!foundSectionIterations) {
-			numIterations = enclosingLoopNode.getAttributes().getLoopIterations();
-		}
-
+			return numIterations;
+		}			
+		
 		// Need to treat relative and absolute loops differently..
 		if (enclosingLoopNode.getAttributes().getIsAbsolute()) {
-	    	// We are within an absolute loop, so no need to multiply
-	    	// up with the above iterations.
+	    	// We are within an absolute loop, so just get the iterations of this loop.
+			long numIterations;
+			try {
+				numIterations = getNodeIterations(c, getNode(), enclosingLoopNode, ignoreIterationsAboveSection);
+			} catch (IgnoreSectionIterationsException e) {
+				return 1;
+			}
+			
 	    	long headerAdjustment = getIsLoopHeader() ? numIterations : 0;		    	
 			return numIterations + headerAdjustment;		    	
 			
 	    } else {
-			// We are within a relative loop, so multiply up by the 
-			// iterations of the above loops.
-			long cummulativeIterations = 1;
-			Node n = enclosingLoopNode.getParent().getEnclosingLoopNode();
-			while (n != null) {
-               	cummulativeIterations *= n.getAttributes().getLoopIterations();
-				n = n.getParent().getEnclosingLoopNode();
+			// We are within a relative loop, so get the iterations of this loop, 
+			// then multiply up by the iterations of the above loops.
+			long numIterations;
+			try {
+				numIterations = getNodeIterations(c, getNode(), enclosingLoopNode, ignoreIterationsAboveSection);
+			} catch (IgnoreSectionIterationsException e) {
+				return 1;
+			}
+
+	    	long cummulativeIterations = 1;
+			Node startNode = enclosingLoopNode.getParent();
+			Node loopNode = startNode.getEnclosingLoopNode();
+			while (loopNode != null) {
+				long iterations;
+				try {
+					iterations = getNodeIterations(c, startNode, loopNode, ignoreIterationsAboveSection);
+				} catch (IgnoreSectionIterationsException e) {
+					break;
+				}
+
+				cummulativeIterations *= iterations;
+				startNode = loopNode.getParent();
+				loopNode = startNode.getEnclosingLoopNode();
 			}
 			long headerAdjustment = getIsLoopHeader() ? 1 : 0;				
 			return (numIterations + headerAdjustment) * cummulativeIterations;			
@@ -469,7 +483,7 @@ public class NodeAttributes {
 		assert(false);
 	}
 		
-	public long getLoopPathIterations(Node loopNode, Node optionNode, Case c) {
+	public long getLoopPathIterations(long loopIterations, Node optionNode, Case c) {
 		assert(false);
 		return 0;
 	}
@@ -504,9 +518,9 @@ public class NodeAttributes {
 		return m_isLoopHeader;
 	}		
 
-	// --------------------------------------------------------------------- //
+	// ===================================================================== //
 	// Instruction Time Methods
-	// --------------------------------------------------------------------- //
+	// ===================================================================== //
 	public void setInstructionNumCycles(long numCycles) {
 		assert(false);		
 	}
@@ -537,4 +551,33 @@ public class NodeAttributes {
 		assert(false);		
 		return false;
 	}		
+	
+	private long getNodeIterations(Case c, Node node, Node enclosingLoopNode, Node ignoreIterationsAboveSection) throws IgnoreSectionIterationsException {
+		// If we are in a section, then get them from the section.
+		// Otherwise, take the iterations from the enclosing loop.
+		long iterations = 1;
+		boolean foundSection = false;
+		Node n = node;
+		while (n != enclosingLoopNode) {
+			if ((n.getParent() != null) && n.getParent().isSectionNode()) {
+				if (n.getParent() == ignoreIterationsAboveSection) {
+					throw new IgnoreSectionIterationsException();
+					
+				} else {
+					// Check if we are at the top level (i.e. there is no enclosing loop).
+					long loopIterations = enclosingLoopNode == null ? 1 :
+						enclosingLoopNode.getAttributes().getLoopIterations();
+					
+				    iterations = n.getParent().getAttributes().getLoopPathIterations(loopIterations, n, c);
+				    foundSection = true;
+				    break;
+				}
+			}
+			n = n.getParent();
+		}
+		if ((enclosingLoopNode != null) && !foundSection) {
+			iterations = enclosingLoopNode.getAttributes().getLoopIterations();
+		}
+		return iterations;
+	}
 }

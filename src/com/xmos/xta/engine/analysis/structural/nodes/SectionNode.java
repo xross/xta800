@@ -67,7 +67,7 @@ public class SectionNode extends Node {
     
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
-		Node option = getOption(Case.WORST, false);
+		Node option = getOption(Case.WORST, null);
 		if (option != null) {			
 			list.addAll(option.getInstructions());
 		}
@@ -125,12 +125,12 @@ public class SectionNode extends Node {
 		return new TreeSet<Node>();		
 	}
 
-	public Node getOption(Case c, boolean ignoreIterations) {
+	public Node getOption(Case c, Node ignoreIterationsAboveSection) {
 		// Returns the best/worst case option of this section.
-		return getOption(c, ignoreIterations, m_options);
+		return getOption(c, ignoreIterationsAboveSection, m_options);
     }
 	
-	public Node getUnsetOption(Case c, boolean ignoreIterations) {
+	public Node getUnsetOption(Case c, Node ignoreIterationsAboveSection) {
 		// Gets the best/worst case option taken from each of the 
 		// option nodes that does not have its iteration 
 		// count explicitly set by the user.
@@ -138,7 +138,7 @@ public class SectionNode extends Node {
 		if (allUnsetOptions.isEmpty())
 			return null;
 		
-		return getOption(c, ignoreIterations, allUnsetOptions);
+		return getOption(c, ignoreIterationsAboveSection, allUnsetOptions);
 	}
 		
 	public boolean isSectionNode() {
@@ -196,7 +196,7 @@ public class SectionNode extends Node {
 		return new LinkedList<Node> (m_options);
 	}
 
-	private Node getOption(Case c, boolean ignoreIterations, Collection<Node> nodes) {
+	private Node getOption(Case c, Node ignoreIterationsAboveSection, Collection<Node> nodes) {
 		// Must handle optional sections as a special case.. 
 		if ((c == Case.BEST) && (m_isOptional))
 			return null;
@@ -205,11 +205,11 @@ public class SectionNode extends Node {
 		Status status = new Status();
 		Iterator<Node> iter = nodes.iterator();
 		Node caseNode = iter.next();		
-		double caseTime = caseNode.getAttributes().getTimeTaken(c, status, ignoreIterations);
+		double caseTime = caseNode.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveSection);
 		
 		while (iter.hasNext()) {
 			Node node = iter.next();
-			double time = node.getAttributes().getTimeTaken(c, status, ignoreIterations);
+			double time = node.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveSection);
 
 			switch (c) {
 			case WORST:

@@ -126,8 +126,8 @@ public class StructureSectionNode extends StructureNode {
 		m_pixelOffsetY = offsetY;
 
 		SectionNode sectionNode = (SectionNode)m_treeNode;
-		Node bestCaseNode = sectionNode.getOption(Case.BEST, false);
-		Node worstCaseNode = sectionNode.getOption(Case.WORST, false);
+		Node bestCaseNode = sectionNode.getOption(Case.BEST, null);
+		Node worstCaseNode = sectionNode.getOption(Case.WORST, null);
 		
     	int childOffsetY = m_borderY;
     	int childrenX = getChildrenX();

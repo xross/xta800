@@ -200,7 +200,7 @@ public abstract class ViewNode {
 
 	protected ViewNode getChild(Case c) {
 		SectionNode sectionNode = (SectionNode)m_treeNode;
-		Node optionChild = sectionNode.getOption(c, false);
+		Node optionChild = sectionNode.getOption(c, null);
 
 		if (optionChild != null) {
 			for (ViewNode child : getChildren()) {

@@ -111,7 +111,7 @@ public class StructureLoopNode extends StructureNode {
 			drawConnection(display, gc, headerInX, loopReturnY, loopReturnX, loopReturnY,
 					loopBestCase, loopWorstCase);
         } else {
-        	loopWorstCase = isWorstCase && (headerNode.getTreeNode().getAttributes().getTotalIterations(Case.WORST) > 1);
+        	loopWorstCase = isWorstCase && (headerNode.getTreeNode().getAttributes().getTotalIterations(Case.WORST, null) > 1);
 			drawConnection(display, gc, headerOutX, headerY, headerOutX, loopReturnY,
 					loopBestCase, loopWorstCase);
 			drawConnection(display, gc, headerInX, loopReturnY, headerOutX, loopReturnY,
@@ -175,8 +175,8 @@ public class StructureLoopNode extends StructureNode {
 		for (int i = 1; i < getChildren().size(); i++) {
 			ViewNode child = getChildren().get(i);
 			
-			boolean childIsBestCase = isBestCase && (child.getTreeNode().getAttributes().getTotalIterations(Case.BEST) > 0);
-			boolean childIsWorstCase = isBestCase && (child.getTreeNode().getAttributes().getTotalIterations(Case.WORST) > 0);
+			boolean childIsBestCase = isBestCase && (child.getTreeNode().getAttributes().getTotalIterations(Case.BEST, null) > 0);
+			boolean childIsWorstCase = isBestCase && (child.getTreeNode().getAttributes().getTotalIterations(Case.WORST, null) > 0);
 			child.annotateNodes(offsetX + childOffsetX, offsetY + childOffsetY, childIsBestCase, childIsWorstCase);
     		childOffsetY += child.getPixelsY() + m_gapY;
     	}

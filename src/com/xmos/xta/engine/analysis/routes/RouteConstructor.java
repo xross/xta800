@@ -13,12 +13,10 @@ import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
-import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InfiniteSelfLoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
-import com.xmos.xta.engine.analysis.structural.nodes.SelfLoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownType;
@@ -156,9 +154,7 @@ public class RouteConstructor {
 		
 			assert(!baseNode.isInfiniteLoopNode());
 			
-			if(m_description.getMode() == RouteMode.FUNCTION){
-				// baseNode = new FunctionNode(baseNode, m_description.getFunctionName());
-			} else if(baseNode.isInfiniteSelfLoopNode()){
+			if(m_description.getMode() == RouteMode.PATH && baseNode.isInfiniteSelfLoopNode()){
 				baseNode = ((InfiniteSelfLoopNode)baseNode).getLoop();
 			} 
 			

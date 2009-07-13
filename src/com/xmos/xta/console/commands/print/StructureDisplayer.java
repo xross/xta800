@@ -9,7 +9,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 
 public class StructureDisplayer {
-	private final static boolean DEBUG_NEXT = true;
+	private final static boolean DEBUG_NEXT = false;
 	private final static boolean DEBUG_BEFORE = false;
 	private final static boolean DEBUG_CHILDREN = false;
 	
@@ -105,8 +105,10 @@ public class StructureDisplayer {
 	                for (Node option : node.getChildren()) {
 	                	String optionSet = nodeAttributes.getSetOption(option) ? "T" : "F";
 	                	m_console.display(String.format("[%s,%d,%d]", optionSet, 
-	                			nodeAttributes.getLoopPathIterations(enclosingLoopNode, option, Case.WORST),
-	                			nodeAttributes.getLoopPathIterations(enclosingLoopNode, option, Case.BEST)));
+	                			nodeAttributes.getLoopPathIterations(
+	                					enclosingLoopNode.getAttributes().getLoopIterations(), option, Case.WORST),
+	                			nodeAttributes.getLoopPathIterations(
+	                					enclosingLoopNode.getAttributes().getLoopIterations(), option, Case.BEST)));
 	                }					
 				}
 				if (node.isSectionOptional())		
