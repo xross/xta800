@@ -89,7 +89,7 @@ public class RouteConstructor {
 			while(start.getParent() != null && start.getParent().getStartPc() == startPc){
 				start = start.getParent();
 			}
-			seenEndPoint = follow(seenEndPoint, endNodes, start);
+			seenEndPoint = makeSubRoute(seenEndPoint, endNodes, start);
 		}
 		
 		//for(Node node : m_subRoutes){
@@ -110,17 +110,17 @@ public class RouteConstructor {
 		}
 	}
 
-	private boolean follow(boolean seenEndPoint, Collection<Node> endNodes,
+	private boolean makeSubRoute(boolean seenEndPoint, Collection<Node> endNodes,
 			Node start) {
 		Collection<Node> workingSet = new TreeSet<Node>();
 
 		m_structureGraph.removeLinks();
 		m_excludedRouteNodes = new TreeSet<Node>();
 		
-		
-		//the problem here is that start may be an instruction when it should be something more complicated. i.e. a loop
-		
 		seenEndPoint |= explore(start, workingSet, endNodes, null);
+		
+	//	System.out.println(StructuralAnalysisEngine.dumpTree("now",  workingSet));
+		
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 		pruneGraphOfExcludedPaths(workingSet);
 		
@@ -135,6 +135,7 @@ public class RouteConstructor {
 			}
 			
 			String tree = StructuralAnalysisEngine.dumpTree("route_before",  workingSet);
+			
 			Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
 			assert(cfgSanityCheck(workingSet));
 			
@@ -185,18 +186,23 @@ public class RouteConstructor {
 	
 	
 	private boolean explore(Node node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
-		
+	//	System.out.println("currently on node " + node);
 		Set<Node> nodes = new TreeSet<Node>(endNodes);
 		nodes.retainAll(node.getContainedNodes());
+		
 		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
 		exclusions.retainAll(node.getContainedNodes());
+		
+		
 		boolean seenEndPoint = false;
 
 		if (nodes.isEmpty() || set.isEmpty()) {
 			
 			if(!exclusions.isEmpty() ){
+				System.out.println(node + " has something excluded");
+				
+				
 				if( node.isBlockNode() ){
-					
 					if(set.contains(node)) {
 						return false;
 					}
@@ -209,8 +215,8 @@ public class RouteConstructor {
 						seenEndPoint |= explore(child, set, endNodes, parent);
 					}
 				}
-				return false;
-			}
+				return seenEndPoint;
+			} 
 			makeConnection(node, parent);
 			if(set.contains(node)) {
 				return false;
@@ -377,17 +383,12 @@ public class RouteConstructor {
     			m_exclusions.addAll(referenceMatcher.getNodes(threadNode, reference));
 			}
 		}
-		/*
-		if(m_engine.getExclusions().isEmpty())System.out.println("there are no exclusions in the engine");
-		for(Reference ref : m_engine.getExclusions()){
-			System.out.println("excluding:" + ref.description());
+		
+		for (Reference reference : m_engine.getExclusions()) {
+			for (Node threadNode : m_structureGraph.getFunctions()) {
+    			m_exclusions.addAll(referenceMatcher.getNodes(threadNode, reference));
+			}
 		}
-		if(m_exclusions.isEmpty()) System.out.println("there are no exclusions in the route");
-		for(Node node : m_exclusions){
-			System.out.println("excluding:" + ((InstructionNode)node).getXtaInstruction());
-		}
-		//System.exit(1);
-		*/
 	}
 		
 	private void setUnknowns() {

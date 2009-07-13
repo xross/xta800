@@ -84,8 +84,8 @@ public class SectionNode extends Node {
 
 	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new TreeSet<Node> ();
-		for(Node loop: m_options){
-			containedNodes.addAll(loop.getContainedNodes());
+		for(Node option: m_options){
+			containedNodes.addAll(option.getContainedNodes());
 		}
 		return containedNodes;
 	}
