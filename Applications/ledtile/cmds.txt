@@ -1,18 +1,8 @@
 # =========================================================================== #
 # Time Function: ledreformat_process_mbi5026
 # =========================================================================== #
-#
-# STATUS: The function will analyse, but the loop counts cannot 
-# be scripted (from source level) due to the fact that the c compiler 
-# does not currently process the xta label pragmas.
 
-# =========================================================================== #
-# Time Function: ledreformat_process_mbi5026
-# =========================================================================== #
-#
-# STATUS: This function is currently too big to analyse. This is 
-# due to lots of calls to memcpy, which cause the path count to explode.
-# This should be ok once the new internal structure is implemented.
+analyse function ledreformat_process_mbi5026
 
 # =========================================================================== #
 # Times each of the cases inside the select in 
@@ -42,10 +32,10 @@ add exclusion watchdog
 add exclusion recieve_external_1 
 add exclusion recieve_local_node 
 analyse path recieve_external_0 recieve_external_0
-set loopmax - ethPhyRx_loop 4
-set loopmax - localTx_loop 4
-set loopmax - adjustTTL_loop 4
-set loopmax - ethTx_loop 4
+set loop - ethPhyRx_loop 4
+set loop - localTx_loop 4
+set loop - adjustTTL_loop 4
+set loop - ethTx_loop 4
 set required - 10000.0 ns
 
 remove exclusion *
@@ -53,10 +43,10 @@ add exclusion recieve_external_0
 add exclusion watchdog 
 add exclusion recieve_local_node 
 analyse path recieve_external_1 recieve_external_1
-set loopmax - ethPhyRx_loop 4
-set loopmax - localTx_loop 4
-set loopmax - adjustTTL_loop 4
-set loopmax - ethTx_loop 4
+set loop - ethPhyRx_loop 4
+set loop - localTx_loop 4
+set loop - adjustTTL_loop 4
+set loop - ethTx_loop 4
 set required - 10000.0 ns
 
 print summary
