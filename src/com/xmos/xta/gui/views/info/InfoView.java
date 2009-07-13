@@ -21,13 +21,18 @@ import org.eclipse.ui.part.ViewPart;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.gui.views.info.sections.AllCallsViewer;
 import com.xmos.xta.gui.views.info.sections.AllEndpointsViewer;
 import com.xmos.xta.gui.views.info.sections.AllSrcLabelsViewer;
 import com.xmos.xta.gui.views.info.sections.BranchesViewer;
+import com.xmos.xta.gui.views.info.sections.CallsViewer;
 import com.xmos.xta.gui.views.info.sections.EndpointsViewer;
 import com.xmos.xta.gui.views.info.sections.ExclusionsViewer;
 import com.xmos.xta.gui.views.info.sections.LabelsViewer;
+import com.xmos.xta.gui.views.info.sections.SrcCommandsViewer;
 import com.xmos.xta.gui.views.info.sections.SrcLabelsViewer;
+import com.xmos.xta.gui.views.info.sections.ThreadStartPointsViewer;
+import com.xmos.xta.gui.views.info.sections.ThreadStopPointsViewer;
 import com.xmos.xta.gui.views.info.unknowns.KnownsViewer;
 import com.xmos.xta.gui.views.info.unknowns.UnknownsViewer;
 
@@ -43,8 +48,13 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 	private AllEndpointsViewer m_allEndpoints;
 	private SrcLabelsViewer m_srcLabels;
 	private AllSrcLabelsViewer m_allSrcLabels;	
+	private CallsViewer m_calls;
+	private AllCallsViewer m_allCalls;	
 	private BranchesViewer m_branches;	
 	private LabelsViewer m_labels;	
+	private ThreadStartPointsViewer m_threadStartPoints;	
+	private ThreadStopPointsViewer m_threadStopPoints;	
+	private SrcCommandsViewer m_srcCommands;	
 	
 	public InfoView() {
 		if (DEBUG) System.out.printf("Info()\n");
@@ -69,10 +79,20 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 				createNewViewer("SrcLabels", folders));		
 		m_allSrcLabels = new AllSrcLabelsViewer(parent.getDisplay(), parent, getSite(),
 				createNewViewer("All SrcLabels", folders));		
+		m_calls = new CallsViewer(parent.getDisplay(), parent, getSite(),
+				createNewViewer("Calls", folders));		
+		m_allCalls = new AllCallsViewer(parent.getDisplay(), parent, getSite(),
+				createNewViewer("All Calls", folders));		
 		m_branches = new BranchesViewer(parent.getDisplay(), parent, getSite(),
 				createNewViewer("Branches", folders));	
 		m_labels = new LabelsViewer(parent.getDisplay(), parent, getSite(),
 				createNewViewer("Labels", folders));	
+		m_threadStartPoints = new ThreadStartPointsViewer(parent.getDisplay(), parent, getSite(),
+				createNewViewer("Thread Start Points", folders));	
+		m_threadStopPoints = new ThreadStopPointsViewer(parent.getDisplay(), parent, getSite(),
+				createNewViewer("Thread Stop Points", folders));
+		m_srcCommands = new SrcCommandsViewer(parent.getDisplay(), parent, getSite(),
+				createNewViewer("Src Level Commands", folders));
 
 		m_unknowns.update();
 		m_knowns.update();
@@ -81,8 +101,13 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 		m_allEndpoints.update();
 		m_srcLabels.update();
 		m_allSrcLabels.update();
+		m_calls.update();
+		m_allCalls.update();
 		m_branches.update();
 		m_labels.update();
+		m_threadStartPoints.update();
+		m_threadStopPoints.update();
+		m_srcCommands.update();
 
 		getSite().getPage().addSelectionListener(this);
 	}
