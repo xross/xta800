@@ -4,28 +4,20 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Spinner;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.references.Reference;
-import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
-import com.xmos.xta.gui.icons.Icons;
 
 public class ControlView extends ViewPart implements IPropertyChangeListener,
                                                      ISelectionListener {
@@ -34,29 +26,12 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 
     private Display m_display;
 
-    private Text m_startPoint;
-    private Text m_endPoint;
-    private ModifyListener m_startPointListener;
-    private ModifyListener m_endPointListener;
-    private Button m_timePathButton;
-
     private Spinner m_freqSpinner;
     private Spinner m_threadSpinner;
     
 	public ControlView() {
 		if (DEBUG) System.out.println("Control(" + this.hashCode() + "): new");			
 		GuiEngine.addBroadcastListener(this);
-		
-		m_startPointListener = new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-			    GuiEngine.broadcast(Broadcaster.BROADCAST_SET_START_POINT, m_startPoint.getText());
-			}			
-		};
-		m_endPointListener = new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-			    GuiEngine.broadcast(Broadcaster.BROADCAST_SET_END_POINT, m_endPoint.getText());
-			}			
-		};
 	}
 	
 	public void createPartControl(Composite parent) {
@@ -71,11 +46,7 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    controls.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 	    setBackground(controls);
 
-	    createControlBar(controls);
 	    createSettingsBar(controls);
-	    
-	    updateStartPoint();
-		updateEndPoint();
 	}
 	
 	public void setFocus() {
@@ -86,25 +57,12 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		if (DEBUG) System.out.println("Control(" + this.hashCode() + ") propertyChange: " + event.getProperty());	
 		
 		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {			
-	        setText(m_startPoint, m_startPointListener, "", "");
-	        setText(m_endPoint, m_endPointListener, "", "");
 	        updateState();
 	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
 	        updateState();
 	        
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT) || 
-				   event.getProperty().equals(Broadcaster.BROADCAST_SET_START_POINT)) {
-			updateStartPoint();
-			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT) ||
-    			   event.getProperty().equals(Broadcaster.BROADCAST_SET_END_POINT)) {
-			updateEndPoint();
-						
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
-			updateStartPoint();
-			updateEndPoint();			
-		}
+		}	        
 	}
 
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
@@ -143,16 +101,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
         }    	        
 	}
 
-	private void updateEndPoint() {
-		Reference endPoint = GuiEngine.getEndPoint();
-		updateText(endPoint, m_endPoint, m_endPointListener);
-	}
-
-	private void updateStartPoint() {
-		Reference startPoint = GuiEngine.getStartPoint();
-		updateText(startPoint, m_startPoint, m_startPointListener);
-	}
-	
 	private void setBackground(Composite composite) {
 	    composite.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
 	}
@@ -162,41 +110,6 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 		m_threadSpinner.setSelection(GuiEngine.getEngine().getNumThreads());		
 	}
 	
-	private void createControlBar(Composite controls) {
-	    createPathControl(controls);
-	}
-
-	private void createPathControl(Composite composite) {
-		Group group = createGroup(composite, "Path", 1, 2);
-
-		Group startGroup = createGroup(group, "From", 1, 1);
-	    m_startPoint = new Text(startGroup, SWT.SINGLE | SWT.CENTER);
-	    m_startPoint.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    m_startPoint.addModifyListener(m_startPointListener);
-		
-	    Group endGroup = createGroup(group, "To", 1, 1);
-	    m_endPoint = new Text(endGroup, SWT.SINGLE | SWT.CENTER);
-	    m_endPoint.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    m_endPoint.addModifyListener(m_endPointListener);
-
-		Composite buttons = new Composite(composite, SWT.NONE);
-	    GridLayout layout = new GridLayout();
-	    layout.numColumns = 1;
-	    buttons.setLayout(layout);
-	    buttons.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));		
-	    setBackground(buttons);
-	    
-	    m_timePathButton = new Button(buttons, SWT.PUSH);
-	    m_timePathButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-	    m_timePathButton.setToolTipText("Time specified path");
-	    m_timePathButton.setImage(Icons.getIcon("run"));
-	    m_timePathButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				GuiEngine.runPath();
-			}
-		});
-	}
-
 	private void createSettingsBar(Composite controls) {
 		Group freqGroup = createGroup(controls, "Frequency", 1, 1);
 	    m_freqSpinner = new Spinner(freqGroup, SWT.BORDER);
@@ -236,33 +149,5 @@ public class ControlView extends ViewPart implements IPropertyChangeListener,
 	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, span, 1));
 	    setBackground(group);
 	    return group;
-	}
-
-	private void updateText(Reference point, Text text, ModifyListener listener) {
-		if (point != null) {
-			Engine engine = GuiEngine.getEngine();
-			point.resolve(engine, engine.getNodeId(), engine.getCoreId());
-			if (point.getResolved() || point.getRef().equals("")) {		
-		     	setText(text, listener, point.getRef(), point.getRef());
-		    }
-		} else {
-			setText(text, listener, "", "");
-		}
-		updateTimePathButton();
-	}	
-	
-	private void updateTimePathButton() {
-		if (!m_startPoint.getText().equals("") && !m_endPoint.getText().equals(""))
-			m_timePathButton.setEnabled(true);
-		else
-			m_timePathButton.setEnabled(false);
-	}
-
-	private void setText(Text text, ModifyListener listener, String str, String toolTip) {
-		text.removeModifyListener(listener);
-		text.setText(str);
-		text.addModifyListener(listener);	
-		text.setSelection(str.length());
-		text.setToolTipText(toolTip);
 	}
 }

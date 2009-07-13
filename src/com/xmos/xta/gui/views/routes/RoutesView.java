@@ -114,6 +114,7 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 
 		} else if (event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 		    m_routeSelectorViewer.initialise();
+		    m_selectedRouteViewer.initialise();
 
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECT_NODES)) {
 			m_selectedRouteViewer.selectNodes();

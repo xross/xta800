@@ -13,6 +13,9 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ToolTip;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
@@ -86,11 +89,7 @@ public class RouteSelectorViewer {
 				if (((IStructuredSelection)selection).size() > 0) {
 	            	manager.add(new Action("delete") {
 						public void run() {
-				            for (Object object : ((IStructuredSelection)selection).toList()) {
-					            if (object instanceof RouteNode) {
- 				            	    GuiEngine.getEngine().removeRoute(((RouteNode)object).getRoute().getRouteId());
-				            	}
-				            }
+							deleteSelection();
 						}
 					});
 				}
@@ -138,6 +137,26 @@ public class RouteSelectorViewer {
 		        }
 			}
 		});
+		
+		m_viewer.getTree().addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent e) {
+				if (e.character == SWT.DEL) {
+					deleteSelection();
+				}
+			}
+
+			public void keyReleased(KeyEvent e) {
+			}
+		});
+	}
+
+	private void deleteSelection() {
+		ISelection selection = m_viewer.getSelection();
+        for (Object object : ((IStructuredSelection)selection).toList()) {
+            if (object instanceof RouteNode) {
+         	    GuiEngine.getEngine().removeRoute(((RouteNode)object).getRoute().getRouteId());
+        	}
+        }
 	}
 
     private void createContextMenu(final Shell parent, IMenuManager manager, final Route route) {
