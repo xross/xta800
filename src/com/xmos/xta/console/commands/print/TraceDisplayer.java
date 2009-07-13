@@ -26,7 +26,7 @@ public class TraceDisplayer {
     
     private boolean isInfinite(Node node, Case c) {
     	Status status = new Status();
-    	node.getAttributes().getTimeTaken(c, status, false);
+    	node.getAttributes().getTimeTaken(c, status, null);
     	if (status.isInfinite()) {
     		return true;
     	}
@@ -64,13 +64,12 @@ public class TraceDisplayer {
     
     private Node getChild(Node section, Case c, long iteration) {
     	for (Node child : section.getChildren()) {
-    		long childIterations = child.getAttributes().getTotalIterations(c);
+    		long childIterations = child.getAttributes().getTotalIterations(c, null);
     		if (iteration <= childIterations) {
     			return child;
     		}
     		iteration -= childIterations;
     	}
-    	assert(false);
 		return null;
 	}
 

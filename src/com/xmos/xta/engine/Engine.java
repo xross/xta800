@@ -218,6 +218,7 @@ public class Engine implements Notifier {
 		m_coreId = 0;			
 		m_routes.clear();
 		m_selectedRoute = null;
+		m_exclusions.clear();
 		Route.resetRouteCount();
 		
 		notify(Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());		
@@ -731,11 +732,24 @@ public class Engine implements Notifier {
 			notify(Notifier.NOTIFY_ERROR, String.format("Failed to add exclusion at reference: %s", refString));			
 			return false;
 		}
+		if (alreadyExcluded(reference.getPc())) {
+			notify(Notifier.NOTIFY_ERROR, String.format("Cannot add duplicate exclusion for PC: 0x%x", reference.getPc()));			
+			return false;
+		}
 		m_exclusions.add(reference);
 		notify(Notifier.NOTIFY_UPDATE_EXCLUSIONS, "");
 		return true;
 	}
 	
+	private boolean alreadyExcluded(int pc) {
+		for (Reference ref : m_exclusions) {
+			if (ref.getPc() == pc) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean removeExclusion(String refString) {
 		if (refString.equals("*")) {
 			m_exclusions.clear();

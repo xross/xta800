@@ -1,6 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.nodes.attributes;
 
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status.S;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -15,28 +16,28 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		m_numCycles = m_instruction.getNumCycles();
 	}
 	
-	public double getTimeTaken(Case c, Status status, boolean ignoreIterations) {
+	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveSection) {
 		if (getNode().isUnresolved()) {
 			status.setStatus(S.UNRESOLVED);
 		}
 		return getInstructionTimeTaken();
 	}
 
-	public long getNumCycles(Case c, Status status, boolean ignoreIterations) {
+	public long getNumCycles(Case c, Status status, Node ignoreIterationsAboveSection) {
 		if (getNode().isUnresolved()) {
 			status.setStatus(S.UNRESOLVED);
 		}
 		return m_numCycles;
 	}
 	
-	public long getNumInstructions(Case c, Status status, boolean ignoreIterations) {		
+	public long getNumInstructions(Case c, Status status, Node ignoreIterationsAboveSection) {		
 		if (getNode().isUnresolved()) {
 			status.setStatus(S.UNRESOLVED);
 		}
 		return 1;
 	}
 	
-	public long getNumFNops(Case c, Status status, boolean ignoreIterations) {
+	public long getNumFNops(Case c, Status status, Node ignoreIterationsAboveSection) {
 		if (getNode().isUnresolved()) {
 			status.setStatus(S.UNRESOLVED);
 		}

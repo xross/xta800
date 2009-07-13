@@ -9,51 +9,39 @@ public class BlockNodeAttributes extends NodeAttributes {
 		super(node);
 	}
 
-	public double getTimeTaken(Case c, Status status, boolean ignoreIterations) {
-		if (ignoreIterations) {
-			return super.getTimeTaken(c, status, ignoreIterations);
-		}
-		long totalIterations = getTotalIterations(c);
+	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveSection) {
+		long totalIterations = getTotalIterations(c, ignoreIterationsAboveSection);
 		if (totalIterations == INFINITE_ITERATIONS) {
 			status.setStatus(S.INFINITE);
 			return Double.MAX_VALUE;
 		}
-	    return super.getTimeTaken(c, status, ignoreIterations) * totalIterations;
+	    return super.getTimeTaken(c, status, ignoreIterationsAboveSection) * totalIterations;
 	}
 
-	public long getNumCycles(Case c, Status status, boolean ignoreIterations) {
-		if (ignoreIterations) {
-			return super.getNumCycles(c, status, ignoreIterations);
-		}
-		long totalIterations = getTotalIterations(c);
+	public long getNumCycles(Case c, Status status, Node ignoreIterationsAboveSection) {
+		long totalIterations = getTotalIterations(c, ignoreIterationsAboveSection);
 		if (totalIterations == INFINITE_ITERATIONS) {
 			status.setStatus(S.INFINITE);
 			return Long.MAX_VALUE;
 		}
-		return super.getNumCycles(c, status, ignoreIterations) * totalIterations;
+		return super.getNumCycles(c, status, ignoreIterationsAboveSection) * totalIterations;
 	}
 
-	public long getNumInstructions(Case c, Status status, boolean ignoreIterations) {
-		if (ignoreIterations) {
-			return super.getNumInstructions(c, status, ignoreIterations);
-		}
-		long totalIterations = getTotalIterations(c);
+	public long getNumInstructions(Case c, Status status, Node ignoreIterationsAboveSection) {
+		long totalIterations = getTotalIterations(c, ignoreIterationsAboveSection);
 		if (totalIterations == INFINITE_ITERATIONS) {
 			status.setStatus(S.INFINITE);
 			return Long.MAX_VALUE;
 		}
-		return super.getNumInstructions(c, status, ignoreIterations) * totalIterations;
+		return super.getNumInstructions(c, status, ignoreIterationsAboveSection) * totalIterations;
 	}
 	
-	public long getNumFNops(Case c, Status status, boolean ignoreIterations) {
-		if (ignoreIterations) {
-			return super.getNumFNops(c, status, ignoreIterations);
-		}
-		long totalIterations = getTotalIterations(c);
+	public long getNumFNops(Case c, Status status, Node ignoreIterationsAboveSection) {
+		long totalIterations = getTotalIterations(c, ignoreIterationsAboveSection);
 		if (totalIterations == INFINITE_ITERATIONS) {
 			status.setStatus(S.INFINITE);
 			return Long.MAX_VALUE;
 		}
-		return super.getNumFNops(c, status, ignoreIterations) * totalIterations;
+		return super.getNumFNops(c, status, ignoreIterationsAboveSection) * totalIterations;
 	}	
 }

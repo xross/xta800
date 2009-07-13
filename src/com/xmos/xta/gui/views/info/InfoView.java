@@ -25,6 +25,7 @@ import com.xmos.xta.gui.views.info.sections.AllEndpointsViewer;
 import com.xmos.xta.gui.views.info.sections.AllSrcLabelsViewer;
 import com.xmos.xta.gui.views.info.sections.BranchesViewer;
 import com.xmos.xta.gui.views.info.sections.EndpointsViewer;
+import com.xmos.xta.gui.views.info.sections.ExclusionsViewer;
 import com.xmos.xta.gui.views.info.sections.LabelsViewer;
 import com.xmos.xta.gui.views.info.sections.SrcLabelsViewer;
 import com.xmos.xta.gui.views.info.unknowns.KnownsViewer;
@@ -37,6 +38,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 
 	private UnknownsViewer m_unknowns;
 	private KnownsViewer m_knowns;
+	private ExclusionsViewer m_exclusions;
 	private EndpointsViewer m_endpoints;
 	private AllEndpointsViewer m_allEndpoints;
 	private SrcLabelsViewer m_srcLabels;
@@ -57,6 +59,8 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 				createNewViewer("Unknowns", folders));		
 		m_knowns = new KnownsViewer(parent.getDisplay(), parent, getSite(),
 				createNewViewer("Knowns", folders));		
+		m_exclusions = new ExclusionsViewer(parent.getDisplay(), parent, getSite(),
+				createNewViewer("Exclusions", folders));		
 		m_endpoints = new EndpointsViewer(parent.getDisplay(), parent, getSite(),
 				createNewViewer("Endpoints", folders));				
 		m_allEndpoints = new AllEndpointsViewer(parent.getDisplay(), parent, getSite(),
@@ -72,6 +76,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 
 		m_unknowns.update();
 		m_knowns.update();
+		m_exclusions.update();
 		m_endpoints.update();
 		m_allEndpoints.update();
 		m_srcLabels.update();
@@ -107,12 +112,16 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 				   event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 			m_unknowns.clear();
 			m_knowns.clear();			
+			m_exclusions.update();			
 			m_endpoints.update();
 			m_allEndpoints.update();
 			m_srcLabels.update();
 			m_allSrcLabels.update();
 			m_branches.update();
 			m_labels.update();
+		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUSIONS)) {
+			m_exclusions.update();
+	        
 		}
 	}
 

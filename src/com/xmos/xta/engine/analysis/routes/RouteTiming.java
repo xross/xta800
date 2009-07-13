@@ -224,12 +224,12 @@ public class RouteTiming {
 	    
 	private long getWorstCycles(Status status) {
 		Node worstCaseSubRoute = m_route.getNode();
-		return worstCaseSubRoute.getAttributes().getNumCycles(Case.WORST, status, false);
+		return worstCaseSubRoute.getAttributes().getNumCycles(Case.WORST, status, null);
 	}
 
 	private double getWorstTime(Status status) {
 		Node worstCaseSubRoute = m_route.getNode();
-		return worstCaseSubRoute.getAttributes().getTimeTaken(Case.WORST, status, false);
+		return worstCaseSubRoute.getAttributes().getTimeTaken(Case.WORST, status, null);
 	}
 	
 	private long getNumPaths() {

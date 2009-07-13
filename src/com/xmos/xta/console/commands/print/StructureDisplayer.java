@@ -105,8 +105,10 @@ public class StructureDisplayer {
 	                for (Node option : node.getChildren()) {
 	                	String optionSet = nodeAttributes.getSetOption(option) ? "T" : "F";
 	                	m_console.display(String.format("[%s,%d,%d]", optionSet, 
-	                			nodeAttributes.getLoopPathIterations(enclosingLoopNode, option, Case.WORST),
-	                			nodeAttributes.getLoopPathIterations(enclosingLoopNode, option, Case.BEST)));
+	                			nodeAttributes.getLoopPathIterations(
+	                					enclosingLoopNode.getAttributes().getLoopIterations(), option, Case.WORST),
+	                			nodeAttributes.getLoopPathIterations(
+	                					enclosingLoopNode.getAttributes().getLoopIterations(), option, Case.BEST)));
 	                }					
 				}
 				if (node.isSectionOptional())		

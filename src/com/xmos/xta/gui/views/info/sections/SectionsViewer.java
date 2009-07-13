@@ -41,5 +41,9 @@ abstract class SectionsViewer {
 	
 	void clear() {
 		m_viewer.setInput(null);
-	}	
+	}
+	
+	TableViewer getViewer() {
+		return m_viewer;
+	}
 }

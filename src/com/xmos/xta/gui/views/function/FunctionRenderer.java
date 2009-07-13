@@ -236,7 +236,7 @@ public class FunctionRenderer extends Renderer {
 			return true;
     	}
 
-    	double timeTaken = pathRoot.getAttributes().getTimeTaken(Case.WORST, m_status, false);
+    	double timeTaken = pathRoot.getAttributes().getTimeTaken(Case.WORST, m_status, null);
     	if (m_status.isInfinite() || m_status.isUnresolved()) {
     		return false;
 		}

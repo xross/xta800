@@ -1,0 +1,32 @@
+package com.xmos.xta.gui.views.info.sections;
+
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.swt.SWT;
+
+import com.xmos.xta.engine.references.Reference;
+
+class ExclusionsViewerLabelProvider extends SectionsViewerLabelProvider implements ITableLabelProvider {
+    static final String PC          = "Pc";
+    static final String DESCRIPTION = "Description";
+    
+    ExclusionsViewerLabelProvider() {
+    	m_columnNames = new String[] { PC, DESCRIPTION };
+    	m_columnWidths = new int[] { 100, 200 };
+    	m_columnAligmnments = new int[] { SWT.LEFT, SWT.LEFT };
+    }
+
+	public String getColumnText(Object element, int columnIndex) {
+		assert((columnIndex >= 0) && (columnIndex < m_columnNames.length));
+		
+		Reference reference = (Reference)element;	
+		if (m_columnNames[columnIndex].equals(PC)) {
+			return String.format("0x%x", reference.getPc());
+			
+    	} else if (m_columnNames[columnIndex].equals(DESCRIPTION)) {    		
+		    return reference.getRef();
+		    
+    	}
+		assert(false);
+		return "";
+	}
+}
