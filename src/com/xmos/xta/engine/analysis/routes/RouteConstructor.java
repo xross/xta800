@@ -130,6 +130,7 @@ public class RouteConstructor {
 		pruneGraphOfExcludedPaths(workingSet);
 		
 		
+		
 		if(!workingSet.isEmpty()){
 			
 			Set<Node> newEndNodes;
