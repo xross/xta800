@@ -110,14 +110,21 @@ public class RouteConstructor {
 		}
 	}
 
+	class NodeWrapper {
+		Node m_node;
+		public NodeWrapper(Node node){
+			m_node = node;
+		}
+	}
+	
 	private boolean makeSubRoute(boolean seenEndPoint, Collection<Node> endNodes,
 			Node start) {
 		Collection<Node> workingSet = new TreeSet<Node>();
 
 		m_structureGraph.removeLinks();
 		m_excludedRouteNodes = new TreeSet<Node>();
-		
-		seenEndPoint |= explore(start, workingSet, endNodes, null);
+		NodeWrapper startNodeWrapper = new NodeWrapper(start);
+		seenEndPoint |= explore(startNodeWrapper, workingSet, endNodes, null);
 		
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 		pruneGraphOfExcludedPaths(workingSet);
@@ -127,23 +134,21 @@ public class RouteConstructor {
 			
 			Set<Node> newEndNodes;
 			if(m_description.getMode() == RouteMode.PATH){
-				newEndNodes = removeFinalInstruction(endNodes, start,workingSet);
+				newEndNodes = removeFinalInstruction(endNodes, startNodeWrapper.m_node,workingSet);
 			} else {
 				newEndNodes = new TreeSet<Node>(endNodes);
 			}
 			
-			String tree = StructuralAnalysisEngine.dumpTree("route_before",  workingSet);
-			
-			Node newStart = makeBasicBlocks(start, newEndNodes, workingSet);
+			Node newStart = makeBasicBlocks(startNodeWrapper.m_node, newEndNodes, workingSet);
 			assert(cfgSanityCheck(workingSet));
 			
 			addTerminator(workingSet);
-
-			tree = StructuralAnalysisEngine.dumpTree("route_before",  workingSet);
+			
+			assert(workingSet.contains(newStart));
+			
 			sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
 			
 			if(workingSet.size() != 1){
-				System.out.println(tree);
 				System.out.println(StructuralAnalysisEngine.dumpTree("route_after",  workingSet));
 			}
 			
@@ -183,12 +188,12 @@ public class RouteConstructor {
 	}
 	
 	
-	private boolean explore(Node node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
+	private boolean explore(NodeWrapper node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
 		Set<Node> nodes = new TreeSet<Node>(endNodes);
-		nodes.retainAll(node.getContainedNodes());
+		nodes.retainAll(node.m_node.getContainedNodes());
 		
 		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
-		exclusions.retainAll(node.getContainedNodes());
+		exclusions.retainAll(node.m_node.getContainedNodes());
 		
 		
 		boolean seenEndPoint = false;
@@ -197,48 +202,55 @@ public class RouteConstructor {
 			
 			if(!exclusions.isEmpty() ){
 				
-				if( node.isBlockNode() ){
-					if(set.contains(node)) {
+				if( node.m_node.isBlockNode() ){
+					if(set.contains(node.m_node)) {
 						return false;
 					}
-					set.add(node);
-					makeConnection(node, parent);
-					m_excludedRouteNodes.add(node);
+					set.add(node.m_node);
+					makeConnection(node.m_node, parent);
+					m_excludedRouteNodes.add(node.m_node);
 				} else {
-					assert (!node.getImmediateChildren().isEmpty());
-					for(Node child : node.getImmediateChildren()){
-						seenEndPoint |= explore(child, set, endNodes, parent);
+					assert (!node.m_node.getImmediateChildren().isEmpty());
+					for(Node child : node.m_node.getImmediateChildren()){
+						NodeWrapper childWrapper = new NodeWrapper(child);
+						seenEndPoint |= explore(childWrapper, set, endNodes, parent);
+						if(parent == null) {
+							node.m_node = childWrapper.m_node;
+						}
 					}
 				}
 				return seenEndPoint;
 			} 
-			makeConnection(node, parent);
-			if(set.contains(node)) {
+			makeConnection(node.m_node, parent);
+			if(set.contains(node.m_node)) {
 				return false;
 			}
-			set.add(node);
+			set.add(node.m_node);
 
-			//assert(node.getParent() != null);
-			if (node.getParent() != null && !node.getParent().whatsNext(node).isEmpty()) {
+			if (node.m_node.getParent() != null && !node.m_node.getParent().whatsNext(node.m_node).isEmpty()) {
 				
-				Collection<Node> nextNodes = node.getParent().whatsNext(node);
-				node.getParent();
-				nextNodes = node.getParent().whatsNext(node);
+				Collection<Node> nextNodes = node.m_node.getParent().whatsNext(node.m_node);
+				nextNodes = node.m_node.getParent().whatsNext(node.m_node);
 				for (Node next : nextNodes) {
-					seenEndPoint |= explore(next, set, endNodes, node);
+					seenEndPoint |= explore(new NodeWrapper(next), set, endNodes, node.m_node);
 				}
 
 			}
 		} else {
-			if (endNodes.contains(node)) {
-				makeConnection(node, parent);
-				set.add(node);
+			if (endNodes.contains(node.m_node)) {
+				makeConnection(node.m_node, parent);
+				set.add(node.m_node);
 				return true;
 			} else {
-				assert (!node.getImmediateChildren().isEmpty());
+				assert (!node.m_node.getImmediateChildren().isEmpty());
 				
-				for(Node child : node.getImmediateChildren()){
-					seenEndPoint |= explore(child, set, endNodes, parent);
+				for(Node child : node.m_node.getImmediateChildren()){
+					NodeWrapper childWrapper = new NodeWrapper(child);
+					seenEndPoint |= explore(childWrapper, set, endNodes, parent);
+					if(parent == null) {
+						node.m_node = childWrapper.m_node;
+					}
+					
 				}
 			}
 		}

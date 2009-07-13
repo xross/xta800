@@ -60,12 +60,9 @@ public class StructuralAnalysisEngine {
 		
 		if(workingSet.size() == 1 && workingSet.iterator().next().getNextNodesSize() == 0) return true;
 		
-		
-		
 		boolean working = true;
 		boolean dominatorTreeUpToDate = false;
 		while (working) {
-			//if(debug) System.out.println(dumpTree("intermediate", workingSet));
 			engine.provideFeedback(jobPrefix + " - nodes left: " + workingSet.size());
 			List<Node> postOrder = new LinkedList<Node>();
 			DFSPostOrder(postOrder, treeStart, new TreeSet<Node>());
@@ -79,7 +76,6 @@ public class StructuralAnalysisEngine {
 					if (engine.getAbort()) {
 						return false;
 					}
-					
 					if (pm.isMatch(node, workingSet, treeStart)) {
 						
 						
