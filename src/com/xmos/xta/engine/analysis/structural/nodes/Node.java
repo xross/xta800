@@ -84,8 +84,8 @@ public abstract class Node implements Comparable<Node>{
 	public int compareTo(Node node) {
 		if (s) {
 			Status status = new Status();
-			double thisTimeTaken = getAttributes().getTimeTaken(Case.WORST, status, false);
-			double nodeTimeTaken = node.getAttributes().getTimeTaken(Case.WORST, status, false);
+			double thisTimeTaken = getAttributes().getTimeTaken(Case.WORST, status, null);
+			double nodeTimeTaken = node.getAttributes().getTimeTaken(Case.WORST, status, null);
 
 			if (thisTimeTaken - nodeTimeTaken != 0) {
 				return Integer.signum((int) (thisTimeTaken - nodeTimeTaken));
@@ -336,12 +336,12 @@ public abstract class Node implements Comparable<Node>{
 		return "";
 	}
 
-	public Node getOption(Case c, boolean ignoreIterations) {
+	public Node getOption(Case c, Node ignoreIterationsAboveSection) {
 		assert(false);
 		return null;
 	}
 	
-	public Node getUnsetOption(Case c, boolean ignoreIterations) {
+	public Node getUnsetOption(Case c, Node ignoreIterationsAboveSection) {
 		assert(false);
 		return null;
 	}
