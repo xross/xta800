@@ -119,8 +119,6 @@ public class RouteConstructor {
 		
 		seenEndPoint |= explore(start, workingSet, endNodes, null);
 		
-	//	System.out.println(StructuralAnalysisEngine.dumpTree("now",  workingSet));
-		
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 		pruneGraphOfExcludedPaths(workingSet);
 		
@@ -186,7 +184,6 @@ public class RouteConstructor {
 	
 	
 	private boolean explore(Node node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
-	//	System.out.println("currently on node " + node);
 		Set<Node> nodes = new TreeSet<Node>(endNodes);
 		nodes.retainAll(node.getContainedNodes());
 		
@@ -199,8 +196,6 @@ public class RouteConstructor {
 		if (nodes.isEmpty() || set.isEmpty()) {
 			
 			if(!exclusions.isEmpty() ){
-				System.out.println(node + " has something excluded");
-				
 				
 				if( node.isBlockNode() ){
 					if(set.contains(node)) {
