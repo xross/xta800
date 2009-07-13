@@ -425,6 +425,14 @@
             label="controls"
             visible="false">
          <action
+               class="com.xmos.xta.gui.actions.ActionSettings"
+               icon="icons/settings.png"
+               id="com.xmos.xta.gui.actions.settings"
+               label="Xta Settings"
+               style="push"
+               toolbarPath="Normal/controls">
+         </action>            
+         <action
                class="com.xmos.xta.gui.actions.ActionCore"
                icon="icons/core.png"
                id="com.xmos.xta.gui.actions.core"
@@ -461,14 +469,6 @@
                icon="icons/load.png"
                id="com.xmos.xta.gui.actions.load"
                label="Open Xe File"
-               style="push"
-               toolbarPath="Normal/controls">
-         </action>
-         <action
-               class="com.xmos.xta.gui.actions.ActionSettings"
-               icon="icons/settings.png"
-               id="com.xmos.xta.gui.actions.settings"
-               label="Xta Settings"
                style="push"
                toolbarPath="Normal/controls">
          </action>
