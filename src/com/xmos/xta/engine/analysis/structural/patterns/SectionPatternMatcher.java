@@ -62,8 +62,14 @@ public class SectionPatternMatcher extends PatternMatcher {
 					}
 				}
 			}
+			
 			if (jumpNodes.contains(endNode)) {
 				if (sectionNodes.size() > 0) {
+					
+					//if something goes wrong this is probably to blame
+					if(endNode.getNextNodesSize() == 1 && endNode.getNextNode() == currentNode && currentNode != m_treeStart){
+						continue;
+					}
 					if (!sectionSanityCheck(currentNode, sectionNodes, endNode, endNode)) {
 						System.err.println("#section failed sanity check");
 						continue;
@@ -73,6 +79,7 @@ public class SectionPatternMatcher extends PatternMatcher {
 				}
 			} else {
 				if (sectionNodes.size() > 1) {
+
 					assert(sectionSanityCheck(currentNode, sectionNodes, null, endNode));
 					updateGraph(currentNode, sectionNodes, false, workingSet, endNode);
 					return true;

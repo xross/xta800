@@ -43,7 +43,6 @@ public class LoopPatternMatcher extends PatternMatcher {
 		}
 		
 		if(noNextNode){
-			//System.out.println("wooooooooooooohoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
 			loop = new InfiniteLoopNode(intersection, header);
 		} else {
 			loop = new LoopNode(intersection, header);
