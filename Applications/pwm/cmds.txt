@@ -11,20 +11,22 @@ set required - 0.048 mhz
 
 analyse path interS1ThreadInput interS1ThreadInput
 # (This has been disabled due to compiler BUG: 5436)
-#set loop - interS1ThreadOuterLoop 3 
-set loop - interS1Thread.xc:61 3
-set loop - interS1ThreadInnerLoop 23
+#set loop - interS1ThreadOuterLoop 4 
+set loop - interS1Thread.xc:61 4
+set loop - interS1ThreadInnerLoop 24
 set required - 0.048 mhz
 
-set constraint !interS1ThreadInput
+remove exclusion *
+add exclusion interS1ThreadInput
 analyse path interS1ThreadOutput interS1ThreadOutput
-set loop - interS1ThreadInnerLoop 23
+set loop - interS1ThreadInnerLoop 24
 set required - 0.192 mhz
 
 # =========================================================================== #
 # Interpolate S2 Stage
 # =========================================================================== #
 
+remove exclusion *
 analyse path interS2ThreadInput interS2ThreadInput
 # (This has been disabled due to compiler BUG: 5436)
 #set loop - interS1ThreadOuterLoop 3
@@ -32,29 +34,34 @@ set loop - interS2Thread.xc:62 4
 set loop - interS2ThreadInnerLoop 5
 set required - 0.192 mhz
 
-set constraint !interS2ThreadInput
+remove exclusion *
+add exclusion interS2ThreadInput
 analyse path interS2ThreadOutput interS2ThreadOutput
 set loop - interS2ThreadInnerLoop 5
 set required - 0.96 mhz
 
-# =========================================================================== #
-# Pwn Stage
-# =========================================================================== #
+## =========================================================================== #
+## Pwn Stage
+## =========================================================================== #
+remove exclusion *
 analyse path pwmThreadLow1 pwmThreadHigh
 set required - 600.0 ns
 
+remove exclusion *
 analyse path pwmThreadLow2 pwmThreadHigh
 set loop - pwmThreadLoop2 2
 set required - 600.0 ns
 
+remove exclusion *
 # (This has been disabled due to compiler BUG: 5436)
-#set constraint !pwmThreadHiDuration2
-set constraint !pwmThread.xc:116
+#add exclusion pwmThreadHiDuration2
+add exclusion pwmThread.xc:116
 analyse path pwmThreadHigh pwmThreadLow1
 set loop - pwmThreadLoop1 2
 set required - 600.0 ns
 
-set constraint !pwmThreadHiDuration1
+remove exclusion *
+add exclusion pwmThreadHiDuration1
 analyse path pwmThreadHigh pwmThreadLow2
 set loop - pwmThreadLoop1 2
 set required - 600.0 ns
