@@ -1,6 +1,7 @@
 .text
 
 .align 2
+.xtathreadstart
 .globl _start
 _start:
   bl main

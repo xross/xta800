@@ -12,6 +12,6 @@ system("xcc -target=$target -nostartfiles test.s -o $genDir/test.xe > $genDir/in
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "print trace - 0 " .
+       "print trace - " .
        "-exit > $genDir/include_retsp.txt 2>&1");
 

@@ -12,7 +12,6 @@ system("xcc -target=$target -nostartfiles test.s -o $genDir/test.xe > $genDir/mi
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse path 0x10004 0x10014 " .
-       "print completed_paths " .
-       "print trace - 0 " .
+       "print trace - " .
        "-exit > $genDir/mid_block_endpoints.txt 2>&1");
 

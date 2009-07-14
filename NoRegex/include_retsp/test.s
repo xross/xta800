@@ -4,7 +4,7 @@
 .align 2
 .globl _start
 _start:
-  bu main
+  bl main
 
 .type main, @function
 .globl main

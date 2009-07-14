@@ -1,22 +1,10 @@
-Time taken for instruction (0x10004: in (2r)) is unknown
+Time taken for instruction (0x10004: in (2r)) is unknown, pc: 0x10004, backtrace: 
 none
-Route(0) function: main
-Complete [1 path]
-  * path(0)    : 40.0ns
-      * block(b2)  : 40.0ns
-          * (20.0ns) 0x10004 in (2r) r0, res[r0] (P)
-            (20.0ns) 0x10006 retsp (u6) i 0x0 
-
 * 0.0: (20.0ns) 0x10004 main + 0               in (2r)      r0, res[r0] (P)
   20.0: (20.0ns) 0x10006 main + 2               retsp (u6)   i 0x0
+
 none
 Time for instruction (0x10004: in (2r)) set to 2000.0ns
-Route(0) function: main
-Complete [1 path]
-    path(0)    : 2020.0ns
-        block(b2)  : 2020.0ns
-            (2000.0ns) 0x10004 in (2r) r0, res[r0] (P)
-            (20.0ns) 0x10006 retsp (u6) i 0x0 
-
   0.0: (2000.0ns) 0x10004 main + 0               in (2r)      r0, res[r0] (P)
   2000.0: (20.0ns) 0x10006 main + 2               retsp (u6)   i 0x0
+

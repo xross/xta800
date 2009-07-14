@@ -15,15 +15,13 @@ system("@ARGV load $genDir/test.xe " .
 
        "list unknowns - " .
        "list knowns - " .
-       "print completed_instructions " .
-       "print trace - 0 " .
+       "print trace - " .
 
-       "set time 0x10004 100.0 ns " .
+       "-set time - 0x10004 100.0 ns " .
 
        "list unknowns - " .
        "list knowns - " .
-       "print completed_instructions " .
-       "print trace - 0 " .
+       "print trace - " .
 
        "-exit > $genDir/set_pause_time_ns.txt 2>&1");
 
