@@ -10,27 +10,27 @@ import org.eclipse.ui.PlatformUI;
 import com.xmos.xta.engine.Notifier;
 
 public class GuiNotifier implements Notifier {
-	
 	private boolean m_holdMessages;
 	private int m_heldMessageCount;
 	
 	public void notify(String message, String argument) {		
 		if (message.equals(NOTIFY_ERROR)) {
-			displayMessageBox("Error", "Error detected\n(See log for details)");
-			
+			displayMessageBox("Error", argument);
+
 		} else if (message.equals(HOLD_MESSAGES)) {
 			m_holdMessages = true;
+			
 		} else if (message.equals(RELEASE_MESSAGES)) {
 			m_holdMessages = false;
-			if(m_heldMessageCount > 0){
+			if (m_heldMessageCount > 0) {
 				displayMessageBox("Warning", "Multiple warnings detected\n(See log for details)");
 				m_heldMessageCount = 0;
 			}
 		} else if (message.equals(NOTIFY_WARNING)) {
-			if(m_holdMessages){
+			if (m_holdMessages) {
 				m_heldMessageCount++;
 			} else {
-				displayMessageBox("Warning", "Warnings detected\n(See log for details)");
+				displayMessageBox("Warning", argument);
 			}
 		} else if (message.equals(NOTIFY_ANALYSIS_ABORTED)) {
 			displayAbortDetails();

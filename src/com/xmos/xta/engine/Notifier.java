@@ -31,7 +31,7 @@ public interface Notifier {
 	public static final String RUN_MODE_PATH     = "Analyse path";
 	
 	public static final String HOLD_MESSAGES     = "Hold messages";
-	public static final String RELEASE_MESSAGES     = "Release messages";
+	public static final String RELEASE_MESSAGES  = "Release messages";
 	
 	void notify(String message, String argument);
 }
