@@ -40,6 +40,7 @@ import com.xmos.xta.engine.references.types.ReferenceTypeFactory;
 import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.engine.sections.CodePointInfo;
 import com.xmos.xta.engine.sections.CodePointTableInfo;
+import com.xmos.xta.engine.sections.SrcLevelLoopInfo;
 import com.xmos.xta.engine.sections.Sections;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.sourcemapper.FileFinder;
@@ -940,7 +941,11 @@ public class Engine implements Notifier {
 	public Collection<String> getSrcLevelCommands() {
 		return m_sections.getSrcLevelCommands(m_nodeId, m_coreId);
 	}
-		
+
+	public Collection<SrcLevelLoopInfo> getSrcLevelLoops() {
+		return m_sections.getSrcLevelLoops(m_nodeId, m_coreId);
+	}
+	
 	// ===================================================================== //
 	// Private Methods
 	// ===================================================================== //
