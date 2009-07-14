@@ -21,6 +21,7 @@ import org.eclipse.ui.part.ViewPart;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.gui.views.info.log.LogViewer;
 import com.xmos.xta.gui.views.info.sections.AllCallsViewer;
 import com.xmos.xta.gui.views.info.sections.AllEndpointsViewer;
 import com.xmos.xta.gui.views.info.sections.AllSrcLabelsViewer;
@@ -38,9 +39,9 @@ import com.xmos.xta.gui.views.info.unknowns.UnknownsViewer;
 
 public class InfoView extends ViewPart implements IPropertyChangeListener,
 		                                              ISelectionListener {
-	public static final boolean DEBUG = false;
 	public static final String ID = "com.xmos.xta.gui.views.info.Info";
 
+	private LogViewer m_log;
 	private UnknownsViewer m_unknowns;
 	private KnownsViewer m_knowns;
 	private ExclusionsViewer m_exclusions;
@@ -57,14 +58,13 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 	private SrcCommandsViewer m_srcCommands;	
 	
 	public InfoView() {
-		if (DEBUG) System.out.printf("Info()\n");
 		GuiEngine.addBroadcastListener(this);
 	}
 
 	public void createPartControl(Composite parent) {
-		if (DEBUG) System.out.printf("Info: createPartControl\n");
-
-		TabFolder folders = new TabFolder(parent, SWT.BORDER);
+		TabFolder folders = new TabFolder(parent, SWT.BORDER);		
+		m_log = new LogViewer(parent.getDisplay(), parent, getSite(), 
+				createNewViewer("Log", folders));		
 		m_unknowns = new UnknownsViewer(parent.getDisplay(), parent, getSite(), 
 				createNewViewer("Unknowns", folders));		
 		m_knowns = new KnownsViewer(parent.getDisplay(), parent, getSite(),
@@ -94,6 +94,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 		m_srcCommands = new SrcCommandsViewer(parent.getDisplay(), parent, getSite(),
 				createNewViewer("Src Level Commands", folders));
 
+		m_log.update();
 		m_unknowns.update();
 		m_knowns.update();
 		m_exclusions.update();
@@ -113,23 +114,14 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 	}
 
 	public void setFocus() {
-		if (DEBUG) System.out.printf("Info: setFocus\n");
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG) System.out.printf("Info: propertyChange: %s\n", event.getProperty());
-
-		if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
-			m_unknowns.update();
-			m_knowns.update();
-			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE) ||
+		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE) ||
 				   event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) ||
-				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
-			m_unknowns.update();
-			m_knowns.update();
-			
-		}  else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
+				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE) ||
+				   event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS) ||
+				   event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
 			m_unknowns.update();
 			m_knowns.update();
 			
@@ -142,17 +134,24 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 			m_allEndpoints.update();
 			m_srcLabels.update();
 			m_allSrcLabels.update();
+			m_calls.update();
+			m_allCalls.update();			
 			m_branches.update();
 			m_labels.update();
+			m_threadStartPoints.update();
+			m_threadStopPoints.update();
+			m_srcCommands.update();
+			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUSIONS)) {
 			m_exclusions.update();
-	        
+		
+		} else if (event.getProperty().equals(Notifier.NOTIFY_ERROR) || 
+				   event.getProperty().equals(Notifier.NOTIFY_WARNING)) {
+			m_log.update();
 		}
 	}
 
 	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
-		if (DEBUG) System.out.printf("Info: selectionChanged: %s\n");
-
 		List<Node> selectedNodes = new ArrayList<Node>();		
 		if (!sel.isEmpty()) {
 			if (sel instanceof IStructuredSelection) {

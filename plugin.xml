@@ -52,13 +52,6 @@
             name="Console"
             restorable="true">
       </view>
-      <view
-            class="com.xmos.xta.gui.views.log.LogView"
-            icon="icons/log.png"
-            id="com.xmos.xta.gui.views.log.Log"
-            name="Log"
-            restorable="true">
-      </view>
 	  <view
 			class="com.xmos.xta.gui.views.structure.StructureView"
   			icon="icons/structure.png"

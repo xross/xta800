@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.log;
+package com.xmos.xta.gui.views.info.log;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -8,12 +8,9 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 
-import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.GuiLogEntry;
 
-public class LogViewLabelProvider extends LabelProvider implements ITableLabelProvider {
-    public static final boolean DEBUG = false;
-
+public class LogViewerLabelProvider extends LabelProvider implements ITableLabelProvider {
     private String[] m_columnNames;
     private int[] m_columnWidths;
     private int[] m_columnAligmnments;
@@ -24,27 +21,24 @@ public class LogViewLabelProvider extends LabelProvider implements ITableLabelPr
     
     DateFormat m_dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
     
-    public LogViewLabelProvider() {
+    public LogViewerLabelProvider() {
     	m_columnNames = new String[] { DATE, LEVEL, DESCRIPTION };
     	m_columnWidths = new int[] { 150, 50, 500 };
     	m_columnAligmnments = new int[] { SWT.LEFT, SWT.LEFT, SWT.LEFT };
     }
     
 	public Image getColumnImage(Object element, int columnIndex) {
-		if (DEBUG) System.out.printf("LogViewLabelProvider: getColumnImage\n");	
 		return null;
 	}
 
 	public String getColumnText(Object element, int columnIndex) {
-		if (DEBUG) System.out.printf("LogViewLabelProvider: getColumnText: index: %d\n", columnIndex);	
-		
 		assert((columnIndex >= 0) && (columnIndex < m_columnNames.length));
 		
 		GuiLogEntry entry = (GuiLogEntry)element;	
 		if (m_columnNames[columnIndex].equals(DATE)) {
 			return m_dateFormat.format(entry.getDate());
 		} else if (m_columnNames[columnIndex].equals(LEVEL)) {
-			return GuiEngine.getLog().getLevelString(entry.getLevel());			
+			return entry.getLevel().toString();			
 		} else if (m_columnNames[columnIndex].equals(DESCRIPTION)) {
 			return entry.getString();
 		}
