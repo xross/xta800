@@ -11,7 +11,7 @@ public class WhileStatement extends CodeElement {
 	
 	public void emitSource(BufferedWriter file, int depth) throws IOException  {
 		emitSourceIndent(file, depth);
-		file.write("while (x < " + m_id + ") {\n");
+		file.write("while (x < " + m_id + " + temp) {\n");
 		for (CodeElement child : getChildren()) {
 			child.emitSource(file, depth + 1);
 		}

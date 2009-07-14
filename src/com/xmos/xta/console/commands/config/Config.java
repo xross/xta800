@@ -11,6 +11,7 @@ public class Config extends CommandContainer {
 		new SrcPaths(), 
 		new Verbosity(),
 		new Case(),
+		new TimeOut(),
 	};
 	
 	public Config() { super("config"); }

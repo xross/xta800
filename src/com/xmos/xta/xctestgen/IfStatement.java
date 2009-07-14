@@ -18,7 +18,7 @@ public class IfStatement extends CodeElement {
 				emitSourceIndent(file, depth);
 			}
 			
-			file.write("if (x == " + m_id + ") {\n");
+			file.write("if (x == " + m_id + " + temp) {\n");
 			for (CodeElement child : getChildren(i)) {
 				child.emitSource(file, depth + 1);
 			}
