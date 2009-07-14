@@ -65,7 +65,8 @@ public class Engine implements Notifier {
 	private String m_srcPaths;
 	private Sections m_sections;
 	private Collection<String> m_functionsVisited;
-	
+	private int m_timeOut;
+	private long m_loadStartTime;
 	private NodeCoreCollection<SourceMapper> m_sourceMapper;
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
 	private NodeCoreCollection<ControlFlowGraph> m_controlFlowGraph;
@@ -89,7 +90,7 @@ public class Engine implements Notifier {
 		m_srcPaths = ".";
 		m_jobMonitor = null;
 		m_sections = new Sections();
-
+		m_timeOut = -1;
 		ReferenceTypeFactory.setEngine(this);
 	}
 
@@ -350,9 +351,17 @@ public class Engine implements Notifier {
 		m_notifier = notifier;
 	}
 
+
+	
 	public boolean getAbort() {
+		
+		if(m_timeOut > 0 && (System.currentTimeMillis() - m_loadStartTime)/1000 > m_timeOut){
+			return true;
+		}
 		if (m_jobMonitor != null)
 			return m_jobMonitor.isCanceled();
+		
+		
 		return false;
 	}
 
@@ -946,6 +955,8 @@ public class Engine implements Notifier {
 	// ===================================================================== //
 	private boolean initialiseGlobalStructure(XeLoader xeLoader, Sections sections, FileFinder fileFinder) {
 		assert(fileFinder != null);
+		
+		m_loadStartTime = System.currentTimeMillis();
 		notify(Notifier.HOLD_MESSAGES, "");
 		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
 		NodeCoreCollection<ControlFlowGraph> newCfg = new NodeCoreCollection<ControlFlowGraph>();
@@ -992,6 +1003,11 @@ public class Engine implements Notifier {
 				SourceMapper sourceMapper = new SourceMapper(xeLoader, nodeId, coreId, starts, 
 						fileFinder, id, newFunctionNames.get(nodeId, coreId));
 				
+				
+				//for(String fn : newFunctionNames.get(nodeId, coreId).keySet()){
+				//	System.out.println("all fns contains " + fn + " " + newFunctionNames.get(nodeId, coreId).get(fn));
+				//}
+				
 				newSourceMappers.add(nodeId, coreId, sourceMapper);
 				
 				UnreachableCodeFinder uca = new UnreachableCodeFinder();
@@ -1017,7 +1033,7 @@ public class Engine implements Notifier {
 		notify(Notifier.RELEASE_MESSAGES, "");
 		return true;
 	}
-
+	
 	private void ensureAllFunctionsAreNamed(SymbolTable symbolTable,
 			TreeMap<String, InstructionNode> treeMap,
 			Collection<InstructionNode> funcStarts, Set<InstructionNode> threadStarts ) {
@@ -1086,6 +1102,11 @@ public class Engine implements Notifier {
 			return true;
 		}
 		return false;
+	}
+
+
+	public void setAnalysisTimeOut(int time) {
+		m_timeOut = time;
 	}
 }
 

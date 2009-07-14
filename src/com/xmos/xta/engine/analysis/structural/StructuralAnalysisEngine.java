@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
@@ -43,13 +44,10 @@ public class StructuralAnalysisEngine {
 		setUpPatternMatcher();
 	}
 
-	public boolean analyse(Engine engine, 
-			TreeMap<String, InstructionNode> functionNames, 
+	public boolean analyse(Engine engine, TreeMap<String, InstructionNode> functionNames, 
 			Map<Integer, TreeSet<Node>> pcToEndPoints) {
-		
 		m_functionStartPcs = new TreeMap<Integer, FunctionNode>();
 		return buildStructureGraph(engine, functionNames, pcToEndPoints);
-		
 	}
 
 	public StructureGraph getStructureGraph() {
@@ -78,7 +76,10 @@ public class StructuralAnalysisEngine {
 					}
 					if (pm.isMatch(node, workingSet, treeStart)) {
 						
-						
+						if(treeStart.getStartPc() != pm.getTreeStart().getStartPc()){
+							System.out.println(pm.getClass().getSimpleName());
+							System.exit(1);
+						}
 						treeStart = pm.getTreeStart();
 						assert (connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
@@ -119,7 +120,10 @@ public class StructuralAnalysisEngine {
 		}
 		
 		engine.provideFeedback("Linking functions...");
-		linkFunctions(engine, allFunctionObjects);
+		if(!linkFunctions(engine, allFunctionObjects)) {
+			engine.notify(Notifier.NOTIFY_ERROR, "Could not link");
+			return false;
+		}
 		
 		engine.provideFeedback("Setting parent nodes...");
 		setParents();
@@ -156,21 +160,26 @@ public class StructuralAnalysisEngine {
 			
 			String tree = dumpTree(functionName + "_before", basicBlocks);
 			
+			int initialPc = graphStart.getStartPc();
+			
 			assert(!basicBlocks.isEmpty());
 			FnopAnalyser fa = new FnopAnalyser();
 			
 			fa.analyse(initialBasicBlock, isFunction);
 			fa.addFnopsToBasicBlocks(initialBasicBlock);
 			assert(basicBlocks.contains(initialBasicBlock));
+			
 			if (!createStructure(basicBlocks, initialBasicBlock, engine, false, jobName)) {
 				return null;
 			}
-			if(basicBlocks.size() != 1) {
+			
+			if(basicBlocks.size() != 1 || initialPc != basicBlocks.iterator().next().getStartPc()) {
 				System.out.println(tree);
 				System.out.println(dumpTree(functionName + "_after", basicBlocks));
 			}
 			assert(basicBlocks.size() == 1);
 			Node decomposedGraph = basicBlocks.iterator().next();
+
 
 			final FunctionNode fn = new FunctionNode(decomposedGraph, functionName);
 			
@@ -184,7 +193,7 @@ public class StructuralAnalysisEngine {
 	   		    	return true;
 	   		    }   			
 	   		});
-			
+
 			allFunctionObjects.put(fn, unlinkedFunctions);
 
 			graphs.add(fn);
@@ -194,6 +203,7 @@ public class StructuralAnalysisEngine {
 			startPcs.put(graphStart.getStartPc(), fn);
 			engine.provideWorkDone(1);
 		}
+		
 		return graphs;
 	}
 
@@ -427,7 +437,7 @@ public class StructuralAnalysisEngine {
 		}
 	}
 	
-	private void linkFunctions(Engine engine, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects) {
+	private boolean linkFunctions(Engine engine, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects) {
 		int totalWork = 0;
 		Set<FunctionNode> unlinkedFunctions = new TreeSet<FunctionNode>(m_structureGraph.getFunctions());
 	
@@ -455,14 +465,17 @@ public class StructuralAnalysisEngine {
 			totalWork += allFunctionObjects.get(fn).size();
 		}
 		engine.startAnalysis("Linking functions:", totalWork);
-		while (!allFunctionObjects.isEmpty()) {
+		
+		
+		while (!allFunctionObjects.isEmpty() && !engine.getAbort()) {
+			
 			Set<FunctionNode> leafs = new TreeSet<FunctionNode>();
 			for (FunctionNode fn : allFunctionObjects.keySet()) {
 				if (allFunctionObjects.get(fn).isEmpty()) {
 					leafs.add(fn);
 				}
 			}
-
+			
 			for (FunctionNode fn : allFunctionObjects.keySet()) {
 				for (FunctionNode leaf : leafs) {
 					Collection<FunctionNode> toRemove = new TreeSet<FunctionNode>();
@@ -470,6 +483,7 @@ public class StructuralAnalysisEngine {
 						if (fnLink.getBranchTarget() != null) {
 							if (fnLink.getBranchTarget().getStartPc() == leaf
 									.getStartPc()) {
+								
 								if(SYMBOLIC_LINK){
 									//symbolic link
 									fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction());
@@ -494,7 +508,7 @@ public class StructuralAnalysisEngine {
 				
 			}
 		}
-
+		return allFunctionObjects.isEmpty();
 	}
 
 	private void setParents() {
@@ -543,10 +557,6 @@ public class StructuralAnalysisEngine {
 		
 		return string;
 	}
-	
-/*
- * before editing these check that pwm : analyse path sendRawSample sendRawSample
- */
 	
 	private void setUpPatternMatcher() {
 		m_patternMatchers = new ArrayList<PatternMatcher>();

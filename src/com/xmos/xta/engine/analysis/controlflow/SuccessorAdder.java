@@ -115,6 +115,9 @@ public class SuccessorAdder {
 			}
 				
 			CommonMethods.connect(target, instruction);
+			
+			
+			//System.out.println("0x" + Integer.toHexString(instruction.getStartPc()) + " -> 0x" + Integer.toHexString(target.getStartPc()));
 			if(debug) System.out.println(instruction + " -> " + target);
 		} else {
 			m_notifier.notify(Notifier.NOTIFY_WARNING, "Instruction " + instruction + " failed to find target 0x"

@@ -81,7 +81,7 @@ public class TestGen {
 		} while (!done());
 	}
 
-	private static void createTest(String description, int optLevel) {
+	private static void createTest(String description, String optLevel) {
 		
 		
 		try {
@@ -107,7 +107,7 @@ public class TestGen {
 			sourceFile.close();
 	
 			BufferedWriter runExpectFile = new BufferedWriter(new FileWriter(testName + "/" + testName + ".txt.expect.regex"));
-			test.emitExpect(0, runExpectFile, 0);
+			//test.emitExpect(0, runExpectFile, 0);
 			runExpectFile.close();
 	
 			// Create empty build expect
@@ -136,7 +136,8 @@ public class TestGen {
 		file.write("if (!$noBuild) {\n");
 		file.write("  system(\"xcc -target=$target -march=$arch " + flags +" -fxta-info -g " + testName + ".xc -o $genDir/" + testName + ".xe > $genDir/" + testName + ".log 2>&1\");\n");
 		file.write("}\n");
-		file.write("system(\"@ARGV load $genDir/" + testName + ".xe \" .\n");
+		file.write("system(\"@ARGV -config timeout 5 -load $genDir/" + testName + ".xe \" .\n");
+		
 		file.write("       \"-analyse function test \" .\n");
 		file.write("       \"-print structure - \" .\n");
 		file.write("       \"-exit > $genDir/" + testName + ".txt 2>&1\");\n");
@@ -177,7 +178,6 @@ public class TestGen {
 				"i(a)f(i(a)f(i(a)))",
 				"i(a)f(i(a)f(i(a)f(i(a)f(i(a)))))",
 				
-				
 				"w(a)",
 				"w(w(a))",
 				"w(w(w(w(a))))",
@@ -191,15 +191,92 @@ public class TestGen {
 				"i(a)w(i(a)w(i(a)))",
 				"i(a)w(i(a)w(i(a)w(i(a)w(i(a)))))",
 				
-				"aa",
+				"d(i(a)(a))",
+				"d(d(i(a)(a)))",
+				"d(d(d(i(a)(a))))",
+				"d(d(d(d(i(a)(a)))))",
+				"i(a)(a)d(i(a)(a))",
+				"i(a)(a)d(i(a)(a)d(i(a)(a)))",
+				"i(a)(a)d(i(a)(a)d(i(a)(a)d(i(a)(a))))",
+				"i(a)(a)d(i(a)(a)d(i(a)(a)d(i(a)(a)d(i(a)(a)))))",
 				
+				"f(a)",
+				"f(f(a))",
+				"f(f(f(f(a))))",
+				"af(a)",
+				"af(af(a))",
+				"af(af(af(af(a))))",
+				"f(i(a)(a))",
+				"f(f(i(a)(a)))",
+				"f(f(f(f(i(a)(a)))))",
+				"i(a)(a)f(i(a)(a))",
+				"i(a)(a)f(i(a)(a)f(i(a)(a)))",
+				"i(a)(a)f(i(a)(a)f(i(a)(a)f(i(a)(a)f(i(a)(a)))))",
+				
+				"w(a)",
+				"w(w(a))",
+				"w(w(w(w(a))))",
+				"aw(a)",
+				"aw(aw(a))",
+				"aw(aw(aw(aw(a))))",
+				"w(i(a)(a))",
+				"w(w(i(a)(a)))",
+				"w(w(w(w(i(a)(a)))))",
+				"i(a)(a)w(i(a)(a))",
+				"i(a)(a)w(i(a)(a)w(i(a)(a)))",
+				"i(a)(a)w(i(a)(a)w(i(a)(a)w(i(a)(a)w(i(a)(a)))))",
+				
+				
+				"s(a)(a)",
+				"s(a)(a)(a)",
+				"s(a)(a)(a)(a)",
+				
+				"d(s(a)(a))",
+				"d(s(a)(a)(a))",
+				"d(s(a)(a)(a)(a))",
+				
+				"s(d(a))(d(a))",
+				"s(d(a))(d(a))(d(a))",
+				"s(d(a))(d(a))(d(a))(d(a))",
+				
+				"d(s(d(a))(d(a)))",
+				"d(s(d(a))(d(a))(d(a)))",
+				"d(s(d(a))(d(a))(d(a))(d(a)))",
+				
+				"s(s(a)(a))(a)",
+				"s(s(a)(a))(s(a)(a))",
+				"s(s(a)(s(a)(a)))(s(a)(a))",
+				"s(s(a)(s(a)(a)))(s(a)(s(a)(a)))",
+
+				"e(a)(a)",
+				"e(a)(a)(a)",
+				"e(a)(a)(a)(a)",
+				
+				"d(e(a)(a))",
+				"d(e(a)(a)(a))",
+				"d(e(a)(a)(a)(a))",
+				
+				"e(d(a))(d(a))",
+				"e(d(a))(d(a))(d(a))",
+				"e(d(a))(d(a))(d(a))(d(a))",
+				
+				"d(e(d(a))(d(a)))",
+				"d(e(d(a))(d(a))(d(a)))",
+				"d(e(d(a))(d(a))(d(a))(d(a)))",
+				
+				"e(e(a)(a))(a)",
+				"e(e(a)(a))(e(a)(a))",
+				"e(e(a)(e(a)(a)))(e(a)(a))",
+				"e(e(a)(e(a)(a)))(e(a)(e(a)(a)))",
 		};
 
 		m_testCount = 0;
 	  for (String testDesc : tests) {
-		  createTest(testDesc, 0);
-		  createTest(testDesc, 1);
-		  createTest(testDesc, 2);
+		  createTest(testDesc, "0");
+		  createTest(testDesc, "1");
+		  createTest(testDesc, "2");
+		  createTest(testDesc, "3");
+		  createTest(testDesc, "s");
 	  }
 	}
 }

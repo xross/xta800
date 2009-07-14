@@ -30,10 +30,6 @@ public class FunctionHandler {
 		return m_functions;
 	}
 	
-	public Map<InstructionNode, FunctionNode> getKnownFunctions(){
-		return m_instToFunc;
-	}
-	
 	public Collection<InstructionNode> getKnownFuncStarts(){
 		return m_instToFunc.keySet();
 	}
@@ -64,7 +60,6 @@ public class FunctionHandler {
 					for(Node next : instruction.getNextNodes()){
 						InstructionNode instNode  = (InstructionNode)next;
 						FunctionNode fn = new FunctionNode(instNode);
-						
 						m_instToFunc.put(instNode, fn);
 						newFunctions.add(fn);
 						
