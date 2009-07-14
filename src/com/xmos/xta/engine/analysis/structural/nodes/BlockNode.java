@@ -15,7 +15,7 @@ public class BlockNode extends IBufferNode {
 	private BlockNodeAttributes m_attributes;	
 	private List<InstructionNode> m_insts;
 
-	private static final boolean COPY_INSTRUCTIONS = false;
+	private static final boolean COPY_INSTRUCTIONS = true;
 	
 	public BlockNode(BlockNode block) {
 		m_insts = block.m_insts;

@@ -2,6 +2,7 @@ package com.xmos.xta.engine.analysis.structural;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
@@ -11,6 +12,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTrave
 public class StructureGraph {
 	private Collection<FunctionNode> m_threads;
 	private Collection<FunctionNode> m_functions;
+	private Collection<FunctionNode> m_unlinkedFunctions;
 	private Node m_searchNode;
 	private Map<Integer, TreeSet<Node>> m_pcToEndPoints;
 	
@@ -20,6 +22,7 @@ public class StructureGraph {
 		m_threads = threads;
 		m_functions = functions;
 		m_pcToEndPoints = pcToEndPoints;
+		m_unlinkedFunctions = new TreeSet<FunctionNode>();
 		removeLinks();
 	}
 
@@ -35,6 +38,10 @@ public class StructureGraph {
 		return m_functions;
 	}
 	
+	public Collection<FunctionNode> getUnlinkedFunctions() {
+		return m_unlinkedFunctions;
+	}
+	
 	public void removeLinks() {	
 		for (Node node : getThreads()) {
 		    node.traverse(0, new UntypedNodeTraverser() {
@@ -44,7 +51,7 @@ public class StructureGraph {
 				}
 		    });
 		}	
-		for (Node node : getFunctions()) {
+		for (Node node : getUnlinkedFunctions()) {
 		    node.traverse(0, new UntypedNodeTraverser() {
 				public boolean foundNode(Node node, int depth) {
 					node.freeMemory();
@@ -71,7 +78,7 @@ public class StructureGraph {
 			return m_searchNode;  
 		}
         
-        for (Node node : getFunctions()) {					
+        for (Node node : getUnlinkedFunctions()) {					
 		    node.traverse(0, new UntypedNodeTraverser() {
 				public boolean foundNode(Node node, int depth) {
 					if (node.getId() == nodeId) {
@@ -83,5 +90,9 @@ public class StructureGraph {
 		    });
 		}
         return m_searchNode;   	
-    }		
+    }
+
+	public void setUnlinkedFunctions(Set<FunctionNode> unlinkedFunctions) {
+		m_unlinkedFunctions = unlinkedFunctions;
+	}		
 }

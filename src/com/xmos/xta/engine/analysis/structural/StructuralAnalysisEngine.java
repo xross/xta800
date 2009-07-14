@@ -27,7 +27,7 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructuralAnalysisEngine {
 
-	private static final boolean SYMBOLIC_LINK = true;
+	private static final boolean SYMBOLIC_LINK = false;
 	
 	private ControlFlowGraph m_controlFlowGraph;
 	private Map<Integer, FunctionNode> m_functionStartPcs;
@@ -429,6 +429,28 @@ public class StructuralAnalysisEngine {
 	
 	private void linkFunctions(Engine engine, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects) {
 		int totalWork = 0;
+		Set<FunctionNode> unlinkedFunctions = new TreeSet<FunctionNode>(m_structureGraph.getFunctions());
+	
+		for(FunctionNode fn : allFunctionObjects.keySet()){
+			for(FunctionNode linkedFunction : allFunctionObjects.get(fn)){
+				Node branchTarget = linkedFunction.getBranchTarget();
+				if(branchTarget != null){
+					FunctionNode toRemove = null;
+					for(FunctionNode unlinkedFn : unlinkedFunctions){
+						if(unlinkedFn.getStartPc() == branchTarget.getStartPc()){
+							toRemove = unlinkedFn;
+							break;
+						}
+					}
+					if(toRemove != null){
+						unlinkedFunctions.remove(toRemove);
+					}
+				}
+			}
+			
+		}
+		m_structureGraph.setUnlinkedFunctions(unlinkedFunctions);
+		
 		for(FunctionNode fn : allFunctionObjects.keySet()){
 			totalWork += allFunctionObjects.get(fn).size();
 		}

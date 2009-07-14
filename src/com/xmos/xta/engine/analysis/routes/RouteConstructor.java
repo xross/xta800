@@ -121,15 +121,20 @@ public class RouteConstructor {
 			Node start) {
 		Collection<Node> workingSet = new TreeSet<Node>();
 
+		
+		//System.out.println(start + " -> " + endNodes);
+		
+		
 		m_structureGraph.removeLinks();
 		m_excludedRouteNodes = new TreeSet<Node>();
 		NodeWrapper startNodeWrapper = new NodeWrapper(start);
 		seenEndPoint |= explore(startNodeWrapper, workingSet, endNodes, null);
 		
+		
+		//System.out.println(StructuralAnalysisEngine.dumpTree("tree", workingSet));
+		
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 		pruneGraphOfExcludedPaths(workingSet);
-		
-		
 		
 		if(!workingSet.isEmpty()){
 			
@@ -196,6 +201,7 @@ public class RouteConstructor {
 		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
 		exclusions.retainAll(node.m_node.getContainedNodes());
 		
+		//System.out.println("exlopring node " + node.m_node);
 		
 		boolean seenEndPoint = false;
 
@@ -224,18 +230,17 @@ public class RouteConstructor {
 			} 
 			makeConnection(node.m_node, parent);
 			if(set.contains(node.m_node)) {
-				return false;
+				//return false;
+				return seenEndPoint;
 			}
 			set.add(node.m_node);
 
 			if (node.m_node.getParent() != null && !node.m_node.getParent().whatsNext(node.m_node).isEmpty()) {
-				
 				Collection<Node> nextNodes = node.m_node.getParent().whatsNext(node.m_node);
 				nextNodes = node.m_node.getParent().whatsNext(node.m_node);
 				for (Node next : nextNodes) {
 					seenEndPoint |= explore(new NodeWrapper(next), set, endNodes, node.m_node);
 				}
-
 			}
 		} else {
 			if (endNodes.contains(node.m_node)) {
@@ -365,7 +370,7 @@ public class RouteConstructor {
 		for (Node node : m_structureGraph.getThreads()) {
 			setParent(node);
 		}
-		for (Node node : m_structureGraph.getFunctions()) {
+		for (Node node : m_structureGraph.getUnlinkedFunctions()) {
 			setParent(node);
 		}
 	}
@@ -384,19 +389,22 @@ public class RouteConstructor {
 	
 	private void createExclusions() {
 		m_exclusions = new ArrayList<Node>();
-		
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		for (Reference reference : m_engine.getExclusions()) {
 			for (Node threadNode : m_structureGraph.getThreads()) {
+				//System.out.println("Excluding " +referenceMatcher.getNodes(threadNode, reference) );
     			m_exclusions.addAll(referenceMatcher.getNodes(threadNode, reference));
 			}
 		}
 		
 		for (Reference reference : m_engine.getExclusions()) {
-			for (Node threadNode : m_structureGraph.getFunctions()) {
-    			m_exclusions.addAll(referenceMatcher.getNodes(threadNode, reference));
+			for (Node threadNode : m_structureGraph.getUnlinkedFunctions()) {
+		//		System.out.println("Excluding " +referenceMatcher.getNodes(threadNode, reference) );
+				m_exclusions.addAll(referenceMatcher.getNodes(threadNode, reference));
 			}
 		}
+		
+		
 	}
 		
 	private void setUnknowns() {
@@ -495,7 +503,8 @@ public class RouteConstructor {
 		for(Node thread : m_structureGraph.getThreads()){
 			referencedNodes.addAll(referenceMatcher.getNodes(thread, reference));
 		}
-		for(Node thread : m_structureGraph.getFunctions()){
+		
+		for(Node thread : m_structureGraph.getUnlinkedFunctions()){
 			referencedNodes.addAll(referenceMatcher.getNodes(thread, reference));
 		}
 		
