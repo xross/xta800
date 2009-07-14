@@ -11,10 +11,10 @@ if (!$noBuild) {
 system("xcc -target=$target -march=$arch -fxta-info -g test.xc -o $genDir/test.xe > $genDir/dependent_nested_loop_fcall.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse function loop " .
-       "set loopmax - outer_loop 10 " .
+       "analyse function main " .
+       "set loop - outer_loop 10 " .
+       "set loop - inner_loop 55 " .
        "set loopscope - inner_loop a " .
-       "set loopmax - inner_loop 55 " .
-       "print completed_loops " .
+       "print structure - " .
        "-exit > $genDir/dependent_nested_loop_fcall.txt 2>&1");
 
