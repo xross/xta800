@@ -74,13 +74,6 @@
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.gui.views.control.ControlView"
-            icon="icons/settings.png"
-            id="com.xmos.xta.gui.views.control.Control"
-            name="Control"
-            restorable="true">
-      </view>
-      <view
             class="com.xmos.xta.gui.views.function.FunctionView"
             icon="icons/function_view.png"
             id="com.xmos.xta.gui.views.function.Function"
@@ -431,6 +424,14 @@
             id="tools_xta.actionSet"
             label="controls"
             visible="false">
+         <action
+               class="com.xmos.xta.gui.actions.ActionSettings"
+               icon="icons/settings.png"
+               id="com.xmos.xta.gui.actions.settings"
+               label="Xta Settings"
+               style="push"
+               toolbarPath="Normal/controls">
+         </action>            
          <action
                class="com.xmos.xta.gui.actions.ActionCore"
                icon="icons/core.png"

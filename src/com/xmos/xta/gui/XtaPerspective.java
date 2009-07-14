@@ -5,7 +5,6 @@ import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.IFolderLayout;
 
 import com.xmos.xta.gui.views.console.ConsoleView;
-import com.xmos.xta.gui.views.control.ControlView;
 import com.xmos.xta.gui.views.function.FunctionView;
 import com.xmos.xta.gui.views.info.InfoView;
 import com.xmos.xta.gui.views.log.LogView;
@@ -26,7 +25,6 @@ public class XtaPerspective implements IPerspectiveFactory {
         IFolderLayout treeFolder = layout.createFolder(
         		"tree.folder", IPageLayout.LEFT, 0.3f, layout.getEditorArea());        
         addView(layout, treeFolder, RoutesView.ID);
-        addView(layout, treeFolder, ControlView.ID);
 
         layout.setEditorAreaVisible(true);
 	}

@@ -35,7 +35,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
@@ -55,7 +54,6 @@ import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.InstructionTime;
-import com.xmos.xta.gui.views.control.ControlView;
 
 public class XtaEditor extends TextEditor implements IPropertyChangeListener,
                                                      ISelectionListener {
@@ -80,7 +78,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     public static final String RemoveStartPointID    = "com.xmos.xta.gui.action.RemoveStartPoint";
     public static final String RemoveEndPointID      = "com.xmos.xta.gui.action.RemoveEndPoint";
     public static final String SetInstructionTimeID  = "com.xmos.xta.gui.action.SetInstructionTime";
-    public static final String ConstrainRequireID    = "com.xmos.xta.gui.action.ConstrainRequire";
     public static final String ConstrainExcludeID    = "com.xmos.xta.gui.action.ConstrainExclude";
     public static final String SelectPathsID         = "com.xmos.xta.gui.action.ShowPaths";
 
@@ -93,7 +90,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private Action m_clearRouteMaskingAction;
     private Action m_restoreRouteMaskingAction;
     private String m_clickCodeRefString;
-    private Reference m_clickCodeRef;
     private ProjectionSupport m_projectionSupport;    
     private ProjectionAnnotationModel m_projectionAnnotationModel;
     private IAnnotationModelExtension m_annotationModel;
@@ -212,7 +208,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUSIONS)) {
 			updateExcluded();
-						
+			updateHighlighting();
+
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 	        updateStartPoint();
 	        updateEndPoint();
@@ -398,7 +395,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      	
      	setAction(ConstrainExcludeID, new Action("Exclude this") {
      		public void run() {
-     			addToExclusion("!" + m_clickCodeRef.getRef());
+     	    	GuiEngine.getEngine().addExclusion(m_clickCodeRefString);		
      		}
      	});
 
@@ -412,21 +409,11 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
      	m_setInstructionTimeAction = new Action("Set instruction time") {
      		public void run() {
-     			new InstructionTime(m_parent.getShell(), m_clickCodeRef);
+     			new InstructionTime(m_parent.getShell(), m_clickCodeRefString);
      		}
      	};
      	setAction(SetInstructionTimeID, m_setInstructionTimeAction);
     }    
-
-    protected void addToExclusion(String refString) {  	
-		if (DEBUG) System.out.printf("XtaEditor: addToExclusion\n"); 
-
-    	GuiEngine.getEngine().addExclusion(refString);		
-		try {
-			PlatformUI.getWorkbench().getActiveWorkbenchWindow().
-			getActivePage().showView(ControlView.ID);
-		} catch (PartInitException e) {}	
-	}
 
 	protected void editorContextMenuAboutToShow(IMenuManager menu) {
 		if (DEBUG) System.out.printf("XtaEditor: editorContextMenuAboutToShow\n"); 
@@ -473,7 +460,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			}
 			addAction(menu, SetInstructionTimeID);
 			addAction(menu, ConstrainExcludeID);
-			addAction(menu, ConstrainRequireID);
 			addAction(menu, SelectPathsID);
 			
 			int selectedRouteId = GuiEngine.getEngine().getSelectedRouteId();
@@ -750,24 +736,27 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 						inputSection.getIndex());
 			}
 			for (InputLine line : inputSection.getLines()) {
-				if (checkLineForExclusion(exclusions, line.getCodeReference(), line.getIndex())) {
-					m_excludedIndexes.add(inputSection.getIndex());
+				int linePc = line.getPc();
+				for (Reference exclusion : exclusions) {
+					if (linePc == exclusion.getPc()) {
+						m_excludedIndexes.add(line.getIndex());
+						m_excludedIndexes.add(inputSection.getIndex());
+					}
 				}
 			}
     	}
 	}
 
-    private boolean checkLineForExclusion(Collection<Reference> exclusions, String refStr, int index) {
+    private void checkLineForExclusion(Collection<Reference> exclusions, String refStr, int index) {
 		Engine engine = GuiEngine.getEngine();
 		Reference ref = ReferenceFactory.createReference(refStr, ReferenceClass.ANY_REF);
 		if (ref.resolve(engine, engine.getNodeId(),engine.getCoreId())) {			
 			for (Reference exclusion : exclusions) {
 				if (ref.getPc() == exclusion.getPc()) {
-					return true;
+					m_excludedIndexes.add(index);
 				}				
 			}
 		}
-		return false;
 	}
 
 	private Collection<Node> getSelectedRouteUnknowns() {
