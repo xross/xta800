@@ -13,6 +13,7 @@ import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
+import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InfiniteSelfLoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -92,10 +93,6 @@ public class RouteConstructor {
 			seenEndPoint = makeSubRoute(seenEndPoint, endNodes, start);
 		}
 		
-		//for(Node node : m_subRoutes){
-		//	node.getTimeSpread().print();
-		//}
-		
 		setParents();
 		setUnknowns();				
 		setSelfLoops();	
@@ -120,18 +117,12 @@ public class RouteConstructor {
 	private boolean makeSubRoute(boolean seenEndPoint, Collection<Node> endNodes,
 			Node start) {
 		Collection<Node> workingSet = new TreeSet<Node>();
-
-		
-		//System.out.println(start + " -> " + endNodes);
-		
 		
 		m_structureGraph.removeLinks();
 		m_excludedRouteNodes = new TreeSet<Node>();
 		NodeWrapper startNodeWrapper = new NodeWrapper(start);
+
 		seenEndPoint |= explore(startNodeWrapper, workingSet, endNodes, null);
-		
-		
-		//System.out.println(StructuralAnalysisEngine.dumpTree("tree", workingSet));
 		
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 		pruneGraphOfExcludedPaths(workingSet);
@@ -151,6 +142,8 @@ public class RouteConstructor {
 			addTerminator(workingSet);
 			
 			assert(workingSet.contains(newStart));
+			
+			
 			
 			sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
 			
@@ -195,17 +188,20 @@ public class RouteConstructor {
 	
 	
 	private boolean explore(NodeWrapper node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
+		
+		//System.out.println("exploring " + node.m_node);
+		
 		Set<Node> nodes = new TreeSet<Node>(endNodes);
 		nodes.retainAll(node.m_node.getContainedNodes());
 		
 		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
 		exclusions.retainAll(node.m_node.getContainedNodes());
 		
-		//System.out.println("exlopring node " + node.m_node);
-		
 		boolean seenEndPoint = false;
 
-		if (nodes.isEmpty() || set.isEmpty()) {
+	//	System.out.println(nodes);
+		
+		if (nodes.isEmpty() ) {
 			
 			if(!exclusions.isEmpty() ){
 				
