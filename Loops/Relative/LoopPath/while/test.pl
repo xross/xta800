@@ -8,13 +8,13 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -march=$arch -fxta-info -g test.xc -o $genDir/test.xe > $genDir/do_while.log 2>&1");
+system("xcc -target=$target -march=$arch -fxta-info -g test.xc -o $genDir/test.xe > $genDir/while.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "set loopmax - loop 100 " .
+       "set loop - loop 100 " .
        "print completed_loops " .
-       "unset loopmax - loop " .
+       "unset loop - loop " .
        "print completed_loops " .
-       "exit > $genDir/do_while.txt 2>&1");
+       "exit > $genDir/while.txt 2>&1");
 

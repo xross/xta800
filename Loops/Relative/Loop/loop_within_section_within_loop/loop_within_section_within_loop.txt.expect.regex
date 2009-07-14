@@ -1,0 +1,17 @@
+function\(\d+\)  : \d+\.\d+ns / \d+\.\d+ns main
+.    path\(\d+\)      : \d+\.\d+ns / \d+\.\d+ns 
+.    .    block\(\d+\)     : \d+\.\d+ns \(x 1\) / \d+\.\d+ns \(x 1\) 
+.    .    loop\(\d+\)      : \d+\.\d+ns / \d+\.\d+ns 
+.    .    .    block\(\d+\)     : \d+\.\d+ns \(x 11\) / \d+\.\d+ns \(x 11\) 
+.    .    .    path\(\d+\)      : \d+\.\d+ns / \d+\.\d+ns 
+.    .    .    .    block\(\d+\)     : \d+\.\d+ns \(x 10\) / \d+\.\d+ns \(x 10\) 
+.    .    .    .    section\(\d+\)   : \d+\.\d+ns / \d+\.\d+ns 
+.    .    .    .    .    block\(\d+\)     : \d+\.\d+ns \(x 0\) / \d+\.\d+ns \(x 10\) 
+.    .    .    .    .    path\(\d+\)      : \d+\.\d+ns / \d+\.\d+ns 
+.    .    .    .    .    .    loop\(\d+\)      : \d+\.\d+ns / \d+\.\d+ns 
+.    .    .    .    .    .    .    block\(\d+\)     : \d+\.\d+ns \(x 110\) / \d+\.\d+ns \(x 0\) 
+.    .    .    .    .    .    .    block\(\d+\)     : \d+\.\d+ns \(x 100\) / \d+\.\d+ns \(x 0\) 
+.    .    .    .    .    .    block\(\d+\)     : \d+\.\d+ns \(x 10\) / \d+\.\d+ns \(x 0\) 
+.    .    .    .    block\(\d+\)     : \d+\.\d+ns \(x 10\) / \d+\.\d+ns \(x 10\) 
+.    .    block\(\d+\)     : \d+\.\d+ns \(x 1\) / \d+\.\d+ns \(x 1\) 
+
