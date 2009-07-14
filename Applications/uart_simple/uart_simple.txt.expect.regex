@@ -2,25 +2,25 @@
 Transmit
 ----------------------------------------
 Route\(0\) path: transmit_start to transmit_data
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
 Route\(1\) path: transmit_data to transmit_data
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
 Route\(2\) path: transmit_data to transmit_stop1
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
 Route\(3\) path: transmit_stop1 to transmit_stop2
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
 Pass, Min Frequency: \d+ Mhz
 ----------------------------------------
 Recieve
 ----------------------------------------
 Route\(0\) path: start_bit_sample to recieve_data
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
 Route\(1\) path: recieve_data to recieve_data
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
 Pass, Min Frequency: \d+ Mhz

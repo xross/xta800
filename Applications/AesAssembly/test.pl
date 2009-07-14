@@ -10,7 +10,7 @@ my $noBuild = shift(@ARGV);
 my $directory = "AesAssembly";
 
 if (!$noBuild) {
-    system("xmake TARGETDIR=$genDir TARGET=$target > $genDir/$directory.log 2>&1");
+    system("xmake TARGETDIR=$genDir > $genDir/$directory.log 2>&1");
 }
 
 my $filename = "trace";
