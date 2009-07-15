@@ -16,7 +16,9 @@ import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
+import com.xmos.xta.engine.analysis.structural.nodes.PathNode;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.analysis.structural.patterns.LoopPatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.PathPatternMatcher;
@@ -195,11 +197,45 @@ public class StructuralAnalysisEngine {
 			
 			setParent(fn);
 			
+			normaliseGraph(fn);
+			
 			startPcs.put(graphStart.getStartPc(), fn);
 			engine.provideWorkDone(1);
 		}
 		
 		return graphs;
+	}
+
+	private boolean done;
+	private void normaliseGraph(FunctionNode fn) {
+		done = false;
+		//this bit removes the path within paths 
+		while(!done){
+			done =true;
+			fn.traverse(0,  new DefaultNodeTraverser() {
+				public boolean foundPathNode(Node node, int depth) {
+					for(Node child : node.getChildren()){
+						if(child.isPathNode()){
+							PathNode childPath = (PathNode)child;
+							PathNode path = (PathNode)node;
+							int insertPathAt =path.getPath().indexOf(child);
+							path.getPath().remove(insertPathAt);
+							for(Node pathChild : childPath.getPath()){
+								path.getPath().add(insertPathAt++, pathChild);
+							}
+							done = false;
+							return false;
+						}
+					}
+					return true;
+				}
+		    });
+			setParent(fn);
+		}
+		
+		//now remove the function nodes-> path nodes
+		//TODO
+		
 	}
 
 	private String getFunctionName(Node graphStart,

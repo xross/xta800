@@ -49,42 +49,17 @@ public abstract class CodeElement {
 
 	public void emitExpectIndent(BufferedWriter file, int depth) throws IOException  {
 		for (int i = 0; i < depth; i++)
-			file.write("    ");
+			file.write("   ");
 	}
 
 	public abstract void emitSource(BufferedWriter file, int depth) throws IOException ;
 
-	public void emitExpect(int pathNum, BufferedWriter file, int depth) throws IOException  {
-		emitExpect(0, pathNum, file, depth);
+	public abstract void emitExpect(int node, BufferedWriter file, int depth) throws IOException ;
+
+
+	public String toString(){
+		return getName();
 	}
-
-	public void emitExpect(int node, int pathNum, BufferedWriter file, int depth) throws IOException  {
-		assert(node < m_children.size());
-		int numPaths = getTotalNumPaths(node);
-
-		for (int i = 0; i < numPaths; i++) {
-			emitExpectIndent(file, depth - 1);
-			file.write("  . path\\(\\d+\\) +: \\d+\\.\\d+ns\n");
-			for (CodeElement child : m_children.get(node)) {
-				child.emitExpect(node, i, file, depth + 1);
-			}
-		}
-	}
-
-	public int getTotalNumPaths() {
-		return getTotalNumPaths(0);
-	}
-
-	public int getTotalNumPaths(int node) {
-		int numPaths = 1;
-		for (CodeElement child : m_children.get(node)) {
-			numPaths *= child.getNodeNumPaths();
-		}
-		return numPaths;
-	}
-
-	public abstract int getNodeNumPaths();
-
 	public String getName() {
 		if (m_children.size() == 0) 
 			return m_namePart;

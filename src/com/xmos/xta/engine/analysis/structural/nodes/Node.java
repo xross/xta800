@@ -366,6 +366,9 @@ public abstract class Node implements Comparable<Node>{
 	public boolean isFolded() {
 		return m_isFolded;
 	}
+	public boolean isPathNode() {
+		return false;
+	}
 }
 
 class FunctionCallStatus {

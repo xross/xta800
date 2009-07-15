@@ -87,6 +87,12 @@ public class RouteConstructor {
 		
 		//convert startNodes into global structure nodes
 		
+		if(m_description.getMode() == RouteMode.FUNCTION){
+			Node node = startNodes.iterator().next();
+			startNodes.clear();
+			startNodes.add(node);
+		}
+		
 		for (Node start : startNodes) {
 			int startPc = start.getStartPc();
 			while(start.getParent() != null && start.getParent().getStartPc() == startPc){

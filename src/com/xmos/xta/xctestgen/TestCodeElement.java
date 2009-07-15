@@ -4,9 +4,10 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 public class TestCodeElement extends CodeElement {
-	
-	public TestCodeElement() {
+	private String m_description; 
+	public TestCodeElement(String desc) {
 		super(1, "test_", 0);
+		m_description = desc;
 	}
 	
 	public void emitSource(BufferedWriter file, int depth) throws IOException  {
@@ -32,16 +33,12 @@ public class TestCodeElement extends CodeElement {
 		file.write("}\n");
 	}
 
-	public void emitExpect(int node, int pathNum, BufferedWriter file, int depth) throws IOException  {
-		int numPaths = getTotalNumPaths();
-
-		file.write("Route\\(0\\) function: test\n");
-		if (numPaths == 1)
-		    file.write("Complete \\[" + numPaths + " path\\]\n");
-		else
-		    file.write("Complete \\[" + numPaths + " paths\\]\n");
+	public void emitExpect(int node, BufferedWriter file, int depth) throws IOException  {
 		
-		super.emitExpect(node, pathNum, file, depth + 1);
+		file.write("function: "+ m_description + "\n");
+		for (CodeElement child : m_children.get(node)) {
+			child.emitExpect(node, file, depth+1);
+		}
 		file.write("\n");
 	}
 
