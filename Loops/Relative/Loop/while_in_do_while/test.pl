@@ -12,10 +12,8 @@ system("xcc -target=$target -march=$arch -fxta-info -g test.xc -o $genDir/test.x
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "print summary " .
-       "-print completed_loops " .
-       "set loopmax - do 100 " .
-       "set loopmax - while 50 " .
-       "print completed_loops " .
-       "exit > $genDir/while_in_do_while.txt 2>&1");
+       "set loop - do 5 " .
+       "set loop - while 5 " .
+       "print structure - " .
+       "-exit > $genDir/while_in_do_while.txt 2>&1");
 

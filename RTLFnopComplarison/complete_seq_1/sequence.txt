@@ -1,0 +1,2 @@
+ldw r0, cp[64]
+ldw r0, cp[0]

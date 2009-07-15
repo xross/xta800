@@ -1,7 +1,8 @@
 0x1000c: 22
-path\(\d+\)       : \d+.\d+ns / \d+.\d+ns 
-.    block\(\d+\)      : \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
-.    selfloop\(\d+\)   : \d+.\d+ns / \d+.\d+ns 
-.    .    block\(\d+\)      : \d+.\d+ns \(x 22\) / \d+.\d+ns \(x 22\) 
-.    block\(\d+\)      : \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+function\(\d+\)   : \d+.\d+ns / \d+.\d+ns main
+.    path\(\d+\)       : \d+.\d+ns / \d+.\d+ns 
+.    .    block\(\d+\)      : \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    .    selfloop\(\d+\)   : \d+.\d+ns / \d+.\d+ns 
+.    .    .    block\(\d+\)      : \d+.\d+ns \(x 22\) / \d+.\d+ns \(x 22\) 
+.    .    block\(\d+\)      : \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
 

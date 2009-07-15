@@ -11,6 +11,6 @@ system("xcc -target=$target -march=$arch -std=c99 -g test.c -o $genDir/test.xe >
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "status " .
+       "print node_info - - " .
        "exit > $genDir/float_library.txt 2>&1");
 

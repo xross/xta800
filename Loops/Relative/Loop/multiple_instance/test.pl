@@ -8,13 +8,11 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir/array.log 2>&1");
+system("xcc -target=$target -march=$arch -fxta-info -g test.xc -o $genDir/test.xe > $genDir/multiple_instance.log 2>&1");
 }
-
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "print summary " .
-       "-print src - 0 " .
-       "-print src - 1 " .
-       "exit > $genDir/array.txt 2>&1");
+       "set loop - loop 100 " .
+       "print structure - " .
+       "-exit > $genDir/multiple_instance.txt 2>&1");
 

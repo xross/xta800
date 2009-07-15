@@ -1,13 +1,13 @@
-function\(\d+\)  : \d+.\d+ns / \d+.\d+ns main
-.    path\(\d+\)      : \d+.\d+ns / \d+.\d+ns 
-.    .    block\(\d+\)     : \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
-.    .    loop\(\d+\)      : \d+.\d+ns / \d+.\d+ns 
-.    .    .    block\(\d+\)     : \d+.\d+ns \(x 4\) / \d+.\d+ns \(x 4\) 
-.    .    .    path\(\d+\)      : \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    block\(\d+\)     : \d+.\d+ns \(x 3\) / \d+.\d+ns \(x 3\) 
-.    .    .    .    loop\(\d+\)      : \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    block\(\d+\)     : \d+.\d+ns \(x 12\) / \d+.\d+ns \(x 12\) 
-.    .    .    .    .    block\(\d+\)     : \d+.\d+ns \(x 6\) / \d+.\d+ns \(x 6\) 
-.    .    .    .    block\(\d+\)     : \d+.\d+ns \(x 3\) / \d+.\d+ns \(x 3\) 
-.    .    block\(\d+\)     : \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns main
+.    path\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    .    loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 4\) / \d+.\d+ns \(x 4\) 
+.    .    .    path\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 3\) / \d+.\d+ns \(x 3\) 
+.    .    .    .    loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 12\) / \d+.\d+ns \(x 12\) 
+.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 6\) / \d+.\d+ns \(x 6\) 
+.    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 3\) / \d+.\d+ns \(x 3\) 
+.    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
 

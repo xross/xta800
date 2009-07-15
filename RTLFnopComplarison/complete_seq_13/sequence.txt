@@ -1,0 +1,2 @@
+add r0, r0, r0
+ldw r0, cp[0]
