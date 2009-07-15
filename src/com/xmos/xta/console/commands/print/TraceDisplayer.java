@@ -2,6 +2,7 @@ package com.xmos.xta.console.commands.print;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.engine.analysis.structural.nodes.LoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status;
@@ -39,30 +40,20 @@ public class TraceDisplayer {
 		
 		if (node.isInstructionNode()) {
 			displayInstruction((InstructionNode)node);
+			
 		} else if (node.isLoopNode() || node.isSelfLoopNode()) {
-			if (node.getAttributes().getIsAbsolute()) {
-				if (iteration != 1) {
-					return; // Only print this once
-				}
-				
-	    		for (int i = 0; i < node.getAttributes().getLoopIterations(); i++) {
-	    			displayChildren(node, c, i);
-	    		}
-				
-			} else {
-	    		for (int i = 0; i < node.getAttributes().getLoopIterations(); i++) {
-	    			displayChildren(node, c, iteration + i);
-	    		}
-			}
+			displayLoop(node, c, iteration);
+			
     	} else if (node.isSectionNode()) {
     		Node child = getChild(node, c, iteration);
     		displayInstructions(child, c, iteration);
+    		
     	} else {
     		displayChildren(node, c, iteration);
     	}
     }
     
-    private Node getChild(Node section, Case c, long iteration) {
+	private Node getChild(Node section, Case c, long iteration) {
     	for (Node child : section.getChildren()) {
     		long childIterations = child.getAttributes().getTotalIterations(c, null);
     		if (iteration <= childIterations) {
@@ -79,6 +70,27 @@ public class TraceDisplayer {
     	}
 	}
 
+    private void displayLoop(Node node, Case c, long iteration) {
+		long loopIterations = node.getAttributes().getLoopIterations();
+		if (node.getAttributes().getIsAbsolute()) {
+			if (iteration == 1) {
+				// Only print body of absolute once
+	    		for (int i = 0; i < loopIterations; i++) {
+	    			displayChildren(node, c, i);
+	    		}
+			}
+
+			if (node.isLoopNode()) {
+				displayInstructions(((LoopNode)node).getLoopHeader(), c, iteration);
+			}
+			
+		} else {
+    		for (int i = 0; i < loopIterations; i++) {
+    			displayChildren(node, c, iteration + i);
+    		}
+		}
+	}
+    
 	private void displayInstruction(InstructionNode instruction) {
 		String isUnknown = instruction.getAttributes().getDisplayUnknown() ? "*" : " ";
      	
