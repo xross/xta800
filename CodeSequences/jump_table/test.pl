@@ -12,6 +12,6 @@ system("xcc -target=$target -march=$arch -nostartfiles test.s -o $genDir/test.xe
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "print completed_loops " .
+       "print structure - " .
        "-exit > $genDir/jump_table.txt 2>&1");
 

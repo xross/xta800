@@ -1,5 +1,5 @@
 .text
-
+.xtathreadstart
 .align 2
 .globl _start
 _start:
@@ -11,63 +11,26 @@ test:
   ldc r2, 1
   retsp 0
   
-
 .type main, @function
 .globl main
 main:
   entsp 1
   ldc r1, 1
-  loop:  
+.xtabranch Ltarget1, Ltarget2, Ltarget3, Ltarget4, Ltarget5
   bru r1
 Ltarget1:
   bl test
+  retsp 1
 Ltarget2:
   bl test
+  retsp 1
 Ltarget3:
   bl test
+  retsp 1
 Ltarget4:
   bl test
+  retsp 1
 Ltarget5:
   bl test
-Ltarget6:
-  bl test
-Ltarget7:
-  bl test
-Ltarget8:
-  bl test
-Ltarget9:
-  bl test
-Ltarget10:
-  bl test
-Ltarget11:
-  bl test
-Ltarget12:
-  bl test
-Ltarget13:
-  bl test
-Ltarget14:
-  add r1, r1,2
-Ltarget15:
-  bu loop
-Ltarget16:
-  ldc r1, 1
   retsp 1
 
-.section .xtabranch
-    .int loop, Ltarget1
-    .int loop, Ltarget2
-    .int loop, Ltarget3
-    .int loop, Ltarget4
-    .int loop, Ltarget5
-    .int loop, Ltarget6
-    .int loop, Ltarget7
-    .int loop, Ltarget8
-    .int loop, Ltarget9
-    .int loop, Ltarget10
-    .int loop, Ltarget11
-    .int loop, Ltarget12
-    .int loop, Ltarget13
-    .int loop, Ltarget14
-    .int loop, Ltarget15
-    .int loop, Ltarget16
-    

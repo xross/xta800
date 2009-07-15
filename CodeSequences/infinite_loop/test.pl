@@ -10,5 +10,8 @@ my $noBuild = shift(@ARGV);
 if (!$noBuild) {
 system("xcc -target=$target -march=$arch -nostartfiles test.s -o $genDir/test.xe > $genDir/infinite_loop.log 2>&1");
 }
-system("@ARGV load $genDir/test.xe analyse function main exit > $genDir/infinite_loop.txt 2>&1");
+system("@ARGV load $genDir/test.xe " .
+       "analyse function main " .
+       "print node_info - - " .
+       "-exit > $genDir/infinite_loop.txt 2>&1");
 

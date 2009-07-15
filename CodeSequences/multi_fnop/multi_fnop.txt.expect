@@ -1,0 +1,14 @@
+  0.0: (20.0ns) 0x10002                        --FNOP--     
+  20.0: (20.0ns) 0x10002 main + 0               entsp (u6)   i 0x4
+  40.0: (20.0ns) 0x10004                        --FNOP--     
+  60.0: (20.0ns) 0x10004 main + 2               ldc (ru6)    r0, i 0x1
+  80.0: (20.0ns) 0x10006 main + 4               brfu (u6)    i 0x0
+  100.0: (20.0ns) 0x10008 main + 6               blrf (u10)   i 0x6
+  120.0: (20.0ns) 0x10010 test + 0               entsp (u6)   i 0x4
+  140.0: (20.0ns) 0x10012 test + 2               add (3r)     r0, r0, r0
+  160.0: (20.0ns) 0x10014 test + 4               retsp (u6)   i 0x4
+  180.0: (20.0ns) 0x1000a                        --FNOP--     
+  200.0: (20.0ns) 0x1000a                        --FNOP--     
+  220.0: (20.0ns) 0x1000a main + 8               ashr (l3r)   r0, r0, r0
+  240.0: (20.0ns) 0x1000e main + 12              retsp (u6)   i 0x4
+
