@@ -11,7 +11,6 @@ if (!$noBuild) {
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "print summary " .
-       "-print functions - " .
+       "print node_info - - " .
        "-exit > $genDir/function_call.txt 2>&1");
 
