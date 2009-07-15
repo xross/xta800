@@ -11,6 +11,6 @@ if (!$noBuild) {
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function fix_fft_64 " .
-       "print completed_loops " .
+       "print structure - " .
        "-exit > $genDir/fft_c.txt 2>&1");
 
