@@ -59,7 +59,7 @@ public class StructureFunctionNode extends StructureNode {
 			return;
 		
 		// Don't currently support connecting up nodes like a path
-		assert(getChildren().size() == 1);
+		//assert(getChildren().size() == 1);
         drawThis(display, gc);
 
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
