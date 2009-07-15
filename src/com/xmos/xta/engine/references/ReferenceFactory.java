@@ -17,5 +17,5 @@ public class ReferenceFactory {
 					subRefs[index], ReferenceClass.ANY_REF));
 		}
 		return reference;    	
-	}
+	}	
 }
