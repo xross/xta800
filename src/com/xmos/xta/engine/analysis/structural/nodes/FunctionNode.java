@@ -16,19 +16,16 @@ public class FunctionNode extends IBufferNode {
 	private String m_functionName;
 	private List<Node> m_functionPath;
 	private static int functionId;
-	private boolean m_knownFunction;
 	private Node m_branchTarget;
 	
 	public FunctionNode() {
 		super();
-		m_knownFunction = false;
 		m_attributes = new NodeAttributes(this);
 	}
 	
 	public FunctionNode(Node branchTarget) {
 		super();
 		m_branchTarget = branchTarget;
-		m_knownFunction = false;
 		m_attributes = new NodeAttributes(this);
 	}
 	
@@ -42,7 +39,6 @@ public class FunctionNode extends IBufferNode {
 			m_functionPath.add(function);
 		}
 		
-		m_knownFunction = true;
 		if(functionName == null){
 			m_functionName = "Unnamed function " + functionId++;
 		} else {
@@ -55,7 +51,6 @@ public class FunctionNode extends IBufferNode {
 	public FunctionNode(FunctionNode fn){
 		m_functionName = fn.m_functionName;
 		m_functionPath = fn.m_functionPath;
-		m_knownFunction = fn.m_knownFunction;
 		m_branchTarget = fn.m_branchTarget;
 		m_attributes = new NodeAttributes(this);
 	}
@@ -67,7 +62,6 @@ public class FunctionNode extends IBufferNode {
 	public Node deepCopy(){
 		FunctionNode fn = new FunctionNode();
 		fn.m_functionName = m_functionName;
-		fn.m_knownFunction = m_knownFunction;
 		fn.m_branchTarget = m_branchTarget;
 		fn.m_attributes = new NodeAttributes(fn);
 		if(m_functionPath!= null){
@@ -99,9 +93,6 @@ public class FunctionNode extends IBufferNode {
 	public void setFunction(String functionName, List<Node> fn) {
 		m_functionPath = fn;
 		m_functionName = functionName;
-		if (fn!= null) {
-			m_knownFunction = true;
-		}
 	}
 
 	public List<Node> getFunction() {
@@ -139,7 +130,7 @@ public class FunctionNode extends IBufferNode {
 	}
 
 	public LinkedList<XtaInstruction> getInstructions() {
-		if (m_knownFunction) {
+		if (m_functionPath!= null) {
 			LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
 			for (Node node : m_functionPath) {
 				list.addAll(node.getInstructions());
@@ -175,7 +166,7 @@ public class FunctionNode extends IBufferNode {
 		if (!nodeTraverser.foundFunctionNode(this, depth))
 			return;
 		
-		if (m_knownFunction) {
+		if (m_functionPath != null) {
 			for (Node node : m_functionPath) {
 				node.traverse(depth + 1, nodeTraverser);
 			}
@@ -193,10 +184,18 @@ public class FunctionNode extends IBufferNode {
 	}
 	
 	public Collection<Node> whatsNext(Node node) {
-		if (getParent() != null){
-			return getParent().whatsNext(this);
+		assert (m_functionPath.contains(node));
+		int index = m_functionPath.indexOf(node);
+		if (index < m_functionPath.size() - 1) {
+			Collection<Node> next = new TreeSet<Node>();
+			next.add(m_functionPath.get(index + 1));
+			return next;
+		} else {
+			if (getParent() != null){
+				return getParent().whatsNext(this);
+			}
+			return new TreeSet<Node>();
 		}
-		return new TreeSet<Node>();
 	}
 
 	public boolean isFunctionNode() {
@@ -218,10 +217,18 @@ public class FunctionNode extends IBufferNode {
 	}
 
 	public Collection<Node> whatsBefore(Node node) {
-		if(getParent()!= null){
-			return getParent().whatsBefore(this);
+		assert(m_functionPath.contains(node));
+		int index = m_functionPath.indexOf(node);
+		if(index > 0){
+			Collection<Node> before = new TreeSet<Node>();
+			before.add(m_functionPath.get(index-1));
+			return before;
 		} else {
-			return new TreeSet<Node>();
+			if(getParent()!= null){
+				return getParent().whatsBefore(this);
+			} else {
+				return new TreeSet<Node>();
+			}
 		}
 	}
 
