@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
 import com.xmos.xta.engine.analysis.routes.RouteDescription.RouteMode;
 import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
@@ -23,6 +24,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.U
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
+import com.xmos.xta.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
@@ -30,7 +32,9 @@ import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.engine.sections.SrcLevelLoopInfo;
 
 public class RouteConstructor {
-
+	private static final int SR_IEBLE_SHIFT = 1;
+	private static final int SR_IEBLE_SIZE = 1; 
+	
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR
 	}
@@ -105,6 +109,7 @@ public class RouteConstructor {
 		setUnknowns();				
 		setSelfLoops();	
 		setSrcLoopCounts();	
+		checkSupportedInstructions();
 
 		if (m_description.getMode() == RouteMode.PATH) {
 			if (seenEndPoint) {
@@ -478,6 +483,46 @@ public class RouteConstructor {
 				route.getRouteUnknowns().setLoopIterations(reference, srcLevelLoopInfo.getNumIterations());				
 			}
 		}		
+	}
+	
+	private void checkSupportedInstructions() {
+		final Engine engine = m_engine;
+		final InstructionMnemonics mnenonics = new InstructionMnemonics(
+				m_engine.getXeLoader().getArchitecture());
+		
+		for (Route route : m_routes) {
+			Node node = route.getNode();
+			node.traverse(0, new DefaultNodeTraverser() {
+				public boolean foundInstructionNode(Node node, int depth) {
+					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
+
+					// Checks for threading instructions...
+					if (mnenonics.isSsync(instruction))
+						engine.notify(Notifier.NOTIFY_WARNING, String.format(
+								"Ssync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
+					
+					if (mnenonics.isMsync(instruction))
+						engine.notify(Notifier.NOTIFY_WARNING, String.format(
+								"Msync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
+
+					if (mnenonics.isMjoin(instruction)) {
+						engine.notify(Notifier.NOTIFY_WARNING, String.format(
+								"Mjoin (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
+					}
+					
+					// Checks for interrupt enable..
+					if (mnenonics.isSetSr(instruction)) {	
+						int op1Field = instruction.getOperandField("op1");
+						int shift = SR_IEBLE_SHIFT;
+						int mask = (1 << SR_IEBLE_SIZE) - 1;
+						if (((op1Field >> shift) & mask) == 1) 
+							engine.notify(Notifier.NOTIFY_WARNING, String.format(
+									"Interrupt enable detected. Pc: 0x%08x", instruction.getPc()));
+					}					
+					return true;
+				}
+			});
+		}
 	}
 	
 	private void refreshDisplayedUnknowns(Node node) {	
