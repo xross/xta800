@@ -75,11 +75,6 @@ public class StructuralAnalysisEngine {
 						return false;
 					}
 					if (pm.isMatch(node, workingSet, treeStart)) {
-						
-						if(treeStart.getStartPc() != pm.getTreeStart().getStartPc()){
-							System.out.println(pm.getClass().getSimpleName());
-							System.exit(1);
-						}
 						treeStart = pm.getTreeStart();
 						assert (connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
@@ -545,6 +540,10 @@ public class StructuralAnalysisEngine {
 					}
 					string += "\"]; ";
 					
+				} else if(node.isFunctionNode()){
+					string += node + " [label=\"" + node + "\\n";
+					string += ((FunctionNode)node).getFunctionName() + "\\n";
+					string += "\"]; ";
 				}
 				
 			}
