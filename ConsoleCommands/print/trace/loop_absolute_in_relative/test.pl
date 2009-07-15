@@ -13,7 +13,7 @@ system("xcc -target=$target -nostartfiles -march=$arch -g test.s -o $genDir/test
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "set loopscope - loopA absolute " .
-       "set loop - loopA 9 " .
+       "set loop - loopA 5 " .
        "set loop - loopR 5 " .
        "-print trace - " .
        "-exit > $genDir/loop_absolute_in_relative.txt 2>&1");
