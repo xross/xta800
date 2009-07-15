@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
+import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
 
@@ -22,7 +23,7 @@ public class LoopPath extends XtaDialog {
     public LoopPath(Shell parent, Node node) {
     	super(parent);
     	m_node = node;
-    	m_iterations = 0;
+    	m_iterations = GuiEngine.getEngine().getSetLoopPathIterations(node);
     	open();
     }
     
@@ -57,7 +58,7 @@ public class LoopPath extends XtaDialog {
 
 		spinner.setMinimum(0);		
 		spinner.setEnabled(true);
-		spinner.setSelection(0);
+		spinner.setSelection((int)m_iterations);
 		spinner.setIncrement(1);
 		spinner.setPageIncrement(10);
 		spinner.addSelectionListener(new SelectionAdapter() {
@@ -75,8 +76,13 @@ public class LoopPath extends XtaDialog {
     
     protected void buttonPressed(int id) {
     	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {    		
-    		GuiEngine.getEngine().setLoopPathIterations(m_node, m_iterations);    		
+    		if (!GuiEngine.getEngine().setLoopPathIterations(m_node, m_iterations)) {
+    			GuiEngine.notify(Notifier.NOTIFY_ERROR, "Error: Failed to set loop path iterations");
+    		} else {
+        		super.buttonPressed(id);
+     		}
+    	} else {
+    		super.buttonPressed(id);
     	}
-    	super.buttonPressed(id);
     }
 }

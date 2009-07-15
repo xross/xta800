@@ -489,6 +489,11 @@ public class NodeAttributes {
 		return 0;
 	}
 	
+	public long getSetLoopPathIterations(Node optionNode) {
+		assert(false);
+		return 0;
+	}
+	
 	public boolean getSetOption(Node optionNode) {
 		assert(false);
 		return false;

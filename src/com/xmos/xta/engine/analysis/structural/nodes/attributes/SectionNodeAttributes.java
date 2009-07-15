@@ -174,7 +174,16 @@ public class SectionNodeAttributes extends NodeAttributes {
 			return 0;			
 		}
 	}
-	
+
+	public long getSetLoopPathIterations(Node optionNode) {
+		if (m_setIterations.get(optionNode) != null) {
+			// The iterations have been explicitly set for this option.
+			return m_setIterations.get(optionNode);	
+			
+		}
+		return 0;			
+	}
+
 	public boolean getSetOption(Node optionNode) {
 		return m_setIterations.get(optionNode) != null;
 	}
