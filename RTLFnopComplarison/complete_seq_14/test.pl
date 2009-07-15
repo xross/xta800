@@ -1,2 +1,2 @@
 #!/usr/bin/perl
-system("../complete_seq.pl @ARGV");
+system("perl ../complete_seq.pl @ARGV");

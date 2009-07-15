@@ -16,33 +16,5 @@ if (!$noBuild) {
         system("xcc -target=$target -march=$arch -nostartfiles test.S -I ../ -o $genDir/test.xe > $genDir/$suite.log 2>&1");
 }
 
-system("@ARGV load $genDir/test.xe analyse function main print trace - 0 exit > $genDir/$suite.tmp 2>&1");
-
-open(INFILE, "$genDir/$suite.tmp") or die "Can't open input file";
-open(OUTFILE, ">$genDir/$suite.txt") or die "Can't open file to write";
-
-my $foundFunction = $_;
-my $function = "main";
-$foundFunction = 0;
-my $linecount = $_;
-$linecount =0;
-
-while (<INFILE>) {
-        my $line = $_;
-        if($line =~ m/FNOP/){
-            $line = "FNOP";
-        } else {
-            $line =~ s/^\s+//;
-            my @fields = split /\s+/, $line;
-            $line = $fields[2];
-        }
-        $linecount++;
-        if($linecount==1 && $line =~ m/FNOP/){
-            
-        } else {
-            print OUTFILE "$line\n";
-        }
-        
-}
-close(INFILE);
-close(OUTFILE);
+system("@ARGV load $genDir/test.xe analyse function main print trace - -exit > $genDir/$suite.tmp 2>&1");
+system("perl ../create_compare_file.pl $genDir $suite");

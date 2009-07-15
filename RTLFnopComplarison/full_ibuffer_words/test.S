@@ -1,8 +1,6 @@
 .text
-
-
-
 .align 2
+.xtathreadstart
 .globl _start
 _start:
   ldap r11, data
