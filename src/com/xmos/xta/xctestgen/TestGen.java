@@ -86,14 +86,13 @@ public class TestGen {
 		} while (!done());
 	}
 
-	private static void createTest(String description, String optLevel) {
-		
+	private static void createNonStucturalTest(String description, String optLevel) {
 		
 		try {
 			m_testDescription = description;
 			m_unique = 0;
 			m_endpoint = 0;
-			CodeElement test = new TestCodeElement();
+			CodeElement test = new TestCodeElement(description);
 			generate(test);
 			
 			String testName = test.getName()+"_O" + optLevel;
@@ -112,23 +111,81 @@ public class TestGen {
 			sourceFile.close();
 	
 			BufferedWriter runExpectFile = new BufferedWriter(new FileWriter(testName + "/" + testName + ".txt.expect.regex"));
-			//test.emitExpect(0, runExpectFile, 0);
 			runExpectFile.close();
 	
 			// Create empty build expect
 			BufferedWriter logExpectFile = new BufferedWriter(new FileWriter(testName + "/" + testName + ".log.expect"));
 			logExpectFile.close();
 	
-			// Create empty build expect
 			BufferedWriter testPerlFile = new BufferedWriter(new FileWriter(testName + "/test.pl"));
-			writeTestPerl(testPerlFile, testName, "-O"+optLevel);
+			writeNonStucturalTestPerl(testPerlFile, testName, "-O"+optLevel);
+			testPerlFile.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static void createStucturalTest(String description) {
+		
+		try {
+			m_testDescription = description;
+			m_unique = 0;
+			m_endpoint = 0;
+			CodeElement test = new TestCodeElement(description);
+			generate(test);
+			
+			String testName = test.getName();
+			m_testCount++;
+			
+			File dir = new File(testName);
+			if (!dir.exists()) {
+				boolean success = (new File(testName)).mkdir();
+				if (!success) {
+					error("Error: failed to mkdir '" + testName + "'");
+				}
+			}
+		  
+			BufferedWriter sourceFile = new BufferedWriter(new FileWriter(testName + "/" + testName + ".xc"));
+			test.emitSource(sourceFile, 0);
+			sourceFile.close();
+	
+			BufferedWriter runExpectFile = new BufferedWriter(new FileWriter(testName + "/" + testName + ".txt.expect.regex"));
+			test.emitExpect(0, runExpectFile, 0);
+			runExpectFile.close();
+	
+			// Create empty build expect
+			BufferedWriter logExpectFile = new BufferedWriter(new FileWriter(testName + "/" + testName + ".log.expect"));
+			logExpectFile.close();
+	
+			BufferedWriter testPerlFile = new BufferedWriter(new FileWriter(testName + "/test.pl"));
+			writeStucturalTestPerl(testPerlFile, testName, "");
 			testPerlFile.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void writeTestPerl(BufferedWriter file, String testName, String flags) throws IOException {
+	private static void writeStucturalTestPerl(BufferedWriter file, String testName, String flags) throws IOException {
+		file.write("#!/usr/bin/perl\n");
+		file.write("use strict;\n");
+		file.write("use warnings;\n");
+		file.write("\n");
+		file.write("my $genDir  = shift(@ARGV);\n");
+		file.write("my $arch    = shift(@ARGV);\n");
+		file.write("my $target  = shift(@ARGV);\n");
+		file.write("my $noBuild = shift(@ARGV);\n");
+		file.write("\n");
+		file.write("if (!$noBuild) {\n");
+		file.write("  system(\"xcc -target=$target -march=$arch " + flags +" -fxta-info -g " + testName + ".xc -o $genDir/" + testName + ".xe > $genDir/" + testName + ".log 2>&1\");\n");
+		file.write("}\n");
+		file.write("system(\"@ARGV -config timeout 5 -load $genDir/" + testName + ".xe \" .\n");
+		file.write("       \"-analyse function test \" .\n");
+		file.write("       \"-print structure - \" .\n");
+		file.write("       \"-exit > $genDir/" + testName + ".txt 2>&1\");\n");
+		file.write("\n");
+	}
+	
+	private static void writeNonStucturalTestPerl(BufferedWriter file, String testName, String flags) throws IOException {
 		file.write("#!/usr/bin/perl\n");
 		file.write("use strict;\n");
 		file.write("use warnings;\n");
@@ -156,6 +213,10 @@ public class TestGen {
 
 	static public void main(String[] args) {
 		String tests[] = {
+				/*
+				"pad(ai(a)p)p",
+				"pad(ai(a)(p))p",
+				*/
 				"papp",
 				"pd(pap)",
 				"pd(pd(ap))",
@@ -188,7 +249,7 @@ public class TestGen {
 				"pi(a)f(pi(a)f(i(ap)))",
 				"pi(a)f(pi(a)f(i(a)f(i(a)f(i(ap)))))",
 				
-				"pw(ap)",
+				"pw(pap)",
 				"pw(pw(ap))",
 				"pw(w(w(pw(ap))))",
 				"paw(pap)",
@@ -249,9 +310,9 @@ public class TestGen {
 				"ps(d(a))(d(pa))(d(ap))",
 				"ps(d(pa))(d(a))(d(a))(d(ap))",
 				
-				"pd(s(d(a))(d(ap)))",
-				"pd(s(d(a))(d(a))(d(ap)))",
-				"pd(s(d(a))(d(a))(d(a))(d(ap)))",
+				"pd(s(d(ap))(d(ap)))",
+				"pd(s(d(ap))(d(a))(d(ap)))",
+				"pd(s(d(ap))(d(a))(d(a))(d(ap)))",
 				
 				"ps(s(pa)(a))(ap)",
 				"ps(s(a)(pa))(s(a)(ap))",
@@ -278,15 +339,19 @@ public class TestGen {
 				"pe(e(a)(pa))(e(a)(ap))",
 				"pe(e(a)(e(pa)(a)))(e(a)(ap))",
 				"pe(e(pa)(e(a)(a)))(e(a)(e(a)(ap)))",
+				
 		};
 
 		m_testCount = 0;
 	  for (String testDesc : tests) {
-		  createTest(testDesc, "0");
-		  createTest(testDesc, "1");
-		  createTest(testDesc, "2");
-		  createTest(testDesc, "3");
-		  createTest(testDesc, "s");
+		 
+		  createNonStucturalTest(testDesc, "0");
+		  createNonStucturalTest(testDesc, "1");
+		  createNonStucturalTest(testDesc, "2");
+		  createNonStucturalTest(testDesc, "3");
+		  createNonStucturalTest(testDesc, "s");
+		  
+		  //createStucturalTest(testDesc);
 	  }
 	}
 }

@@ -98,8 +98,9 @@ public class NodeAttributes {
                String.format("Thread cycles:    %s / %s\n", getNumCyclesStr(Case.WORST), getNumCyclesStr(Case.BEST)) +
                String.format("Num Instructions: %s / %s\n", getNumInstructionsStr(Case.WORST), getNumInstructionsStr(Case.BEST)) +
                String.format("Num Fnops:        %s / %s\n", getNumFNopsStr(Case.WORST), getNumFNopsStr(Case.BEST)) +            		   
+               String.format("Num Paths:        %d\n", getNumPaths()) +            		   
                String.format("Node Id:          %d\n", m_node.getId());
-	}
+    }
 	
 	private String getTimeTakenStr(Case c) {
 	    Status status = new Status();

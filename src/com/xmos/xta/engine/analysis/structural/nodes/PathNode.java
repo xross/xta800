@@ -47,7 +47,9 @@ public class PathNode extends Node {
 		pn.m_attributes = new NodeAttributes(pn);
 		return pn;
 	}
-
+	public boolean isPathNode() {
+		return true;
+	}
     public String getTypeName() {
         return "path";
     }
@@ -159,5 +161,9 @@ public class PathNode extends Node {
 		}
 		tdb.add(tsbPath);
 		return tdb;
+	}
+
+	public List<Node> getPath() {
+		return m_nodes;
 	}
 }

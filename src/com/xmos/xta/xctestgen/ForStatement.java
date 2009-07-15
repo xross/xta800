@@ -19,17 +19,13 @@ public class ForStatement extends CodeElement {
 		file.write("}\n");
 	}
 
-	public void emitExpect(int node, int pathNum, BufferedWriter file, int depth) throws IOException  {
-		int numPaths = getTotalNumPaths();
+	public void emitExpect(int node, BufferedWriter file, int depth) throws IOException  {
 
 		emitExpectIndent(file, depth);
-		
-		if (numPaths == 1)
-		    file.write("loop \\[" + numPaths + " path, 0 iterations\\]\n");
-		else
-		    file.write("loop \\[" + numPaths + " paths, 0 iterations\\]\n");			
-		
-		super.emitExpect(node, pathNum, file, depth + 1);
+	    file.write("loop\n");
+	    for (CodeElement child : m_children.get(node)) {
+			child.emitExpect(node, file, depth+1);
+		}
 	}
 
 	public int getNodeNumPaths() {

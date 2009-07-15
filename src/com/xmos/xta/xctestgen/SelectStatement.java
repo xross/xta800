@@ -41,35 +41,14 @@ public class SelectStatement extends CodeElement {
 	}
 
 	// Emit the part of the switch which relates to the current path 
-	public void emitExpect(int node, int pathNum, BufferedWriter file, int depth) throws IOException  {
-		pathNum = pathNum % getNodeNumPaths();
-
-		int numPaths = 0;
+	public void emitExpect(int node,  BufferedWriter file, int depth) throws IOException  {
+		
+		//TODO
 		for (ArrayList<CodeElement> children : m_children) {
-			int childNumPaths = 1;
 			for (CodeElement child : children) {
-				childNumPaths *= child.getNodeNumPaths();
-			}
-			numPaths += childNumPaths;
-
-			if (pathNum < numPaths) {
-				for (CodeElement child : children) {
-					child.emitExpect(node, pathNum, file, depth);
-				}
-				break;
+				child.emitExpect(node, file, depth);
 			}
 		}
 	}
 
-	public int getNodeNumPaths() {
-		int numPaths = 0;
-		for (ArrayList<CodeElement> children : m_children) {
-			int childNumPaths = 1;
-			for (CodeElement child : children) {
-				childNumPaths *= child.getNodeNumPaths();
-			}
-			numPaths += childNumPaths;
-		}
-		return numPaths;
-	}
 }

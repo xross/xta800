@@ -9,54 +9,76 @@ public class IfStatement extends CodeElement {
 	public IfStatement(int id) {
 		super(10, "i", id);
 	}
-	
+
 	public void emitSource(BufferedWriter file, int depth) throws IOException  {
-		for (int i = 0; i < m_children.size(); i++) {
-			if (i > 0) {
-				file.write(" else ");
-			} else {
-				emitSourceIndent(file, depth);
-			}
-			
+		if(m_children.size() == 1){
+			emitSourceIndent(file, depth);
 			file.write("if (x == " + m_id + " + temp) {\n");
-			for (CodeElement child : getChildren(i)) {
+			for (CodeElement child : getChildren(0)) {
 				child.emitSource(file, depth + 1);
 			}
 			emitSourceIndent(file, depth);
-			file.write("}");
-		}
-		file.write("\n");
-	}
-
-	public void emitExpect(int node, int pathNum, BufferedWriter file, int depth) throws IOException  {
-		pathNum = pathNum % getNodeNumPaths();
-
-		int numPaths = 0;
-		for (ArrayList<CodeElement> children : m_children) {
-			int childNumPaths = 1;
-			for (CodeElement child : children) {
-				childNumPaths *= child.getNodeNumPaths();
+			file.write("}\n");
+		} else if(m_children.size() == 2){
+			emitSourceIndent(file, depth);
+			file.write("if (x == " + m_id + " + temp) {\n");
+			for (CodeElement child : getChildren(0)) {
+				child.emitSource(file, depth + 1);
 			}
-			numPaths += childNumPaths;
-
-			if (pathNum < numPaths) {
-				for (CodeElement child : children) {
-					child.emitExpect(node, pathNum, file, depth);
+			emitSourceIndent(file, depth);
+			file.write("} else {\n");
+			for (CodeElement child : getChildren(1)) {
+				child.emitSource(file, depth + 1);
+			}
+			emitSourceIndent(file, depth);
+			file.write("}\n");
+		} else if(m_children.size() > 2){
+			for (int i = 0; i < m_children.size(); i++) {
+				if (i > 0) {
+					file.write(" else ");
+				} else {
+					emitSourceIndent(file, depth);
 				}
-				break;
+				file.write("if (x == " + m_id + " + temp) {\n");
+				for (CodeElement child : getChildren(i)) {
+					child.emitSource(file, depth + 1);
+				}
+				emitSourceIndent(file, depth);
+				file.write("}");
 			}
-		}
+			file.write("\n");
+		} 	
 	}
 
-	public int getNodeNumPaths() {
-		int numPaths = 1;
-		for (ArrayList<CodeElement> children : m_children) {
-			int childNumPaths = 1;
-			for (CodeElement child : children) {
-				childNumPaths *= child.getNodeNumPaths();
+	public void emitExpect(int node, BufferedWriter file, int depth) throws IOException  {
+		
+		
+		
+		emitExpectIndent(file, depth);
+		file.write("section\n");
+		
+		if(m_children.size() == 1 ) { 
+			for (ArrayList<CodeElement> children : m_children) {
+				for (CodeElement child : children) {
+					//System.out.println(this + "(" +depth +") has a child of " + child);
+					child.emitExpect(node, file, depth+1);
+				}
 			}
-			numPaths += childNumPaths;
+		} else if (m_children.size() == 2){
+			for (ArrayList<CodeElement> children : m_children) {
+				for (CodeElement child : children) {
+					//System.out.println(this + "(" +depth +") has a child of " + child);
+					child.emitExpect(node, file, depth+1);
+				}
+			}
+		} else if (m_children.size() > 2){
+			//TODO - ill do this later as its hard but not nessessary
+			assert(false);
 		}
-		return numPaths;
+		
+		
+		
 	}
+
+	
 }
