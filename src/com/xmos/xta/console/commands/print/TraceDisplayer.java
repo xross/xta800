@@ -21,7 +21,7 @@ public class TraceDisplayer {
     		m_console.display("Can not trace - time is infinite\n");
     	} else {
         	m_currentTime = 0;
-    		displayInstructions(node, c, 1);
+    		displayInstructions(node, c, 1, 0);
     		m_console.display("\n");
     	}
     }
@@ -35,7 +35,7 @@ public class TraceDisplayer {
 		return false;
 	}
 
-	private void displayInstructions(Node node, Case c, long iteration) {
+	private void displayInstructions(Node node, Case c, long totalIterations, long iteration) {
 		if (node == null || node.isNullNode())
 			return;
 		
@@ -43,21 +43,21 @@ public class TraceDisplayer {
 			displayInstruction((InstructionNode)node);
 			
 		} else if (node.isLoopNode() || node.isSelfLoopNode()) {
-			displayLoop(node, c, iteration);
+			displayLoop(node, c, totalIterations, iteration);
 			
     	} else if (node.isSectionNode()) {
-    		Node child = getChild(node, c, iteration);
-    		displayInstructions(child, c, iteration);
+    		Node child = getChild(node, c, totalIterations, iteration);
+    		displayInstructions(child, c, totalIterations, iteration);
     		
     	} else {
-    		displayChildren(node, c, iteration);
+    		displayChildren(node, c, totalIterations, iteration);
     	}
     }
     
-	private Node getChild(Node section, Case c, long iteration) {
+	private Node getChild(Node section, Case c, long totalIterations, long iteration) {
     	for (Node child : section.getChildren()) {
-    		long childIterations = child.getAttributes().getTotalIterations(c, null);
-    		if (iteration <= childIterations) {
+    		long childIterations = section.getAttributes().getLoopPathIterations(totalIterations, child, c);
+    		if (iteration < childIterations) {
     			return child;
     		}
     		iteration -= childIterations;
@@ -65,29 +65,29 @@ public class TraceDisplayer {
 		return null;
 	}
 
-	private void displayChildren(Node node, Case c, long iteration) {
+	private void displayChildren(Node node, Case c, long totalIterations, long iteration) {
     	for (Node child : node.getChildren()) {
-    		displayInstructions(child, c, iteration);
+    		displayInstructions(child, c, totalIterations, iteration);
     	}
 	}
 
-    private void displayLoop(Node node, Case c, long iteration) {
+    private void displayLoop(Node node, Case c, long totalIterations, long iteration) {
 		long loopIterations = node.getAttributes().getLoopIterations();
 		if (node.getAttributes().getIsAbsolute()) {
-			if (iteration == 1) {
+			if (iteration == 0) {
 				// Only print body of absolute once
 	    		for (int i = 0; i < loopIterations; i++) {
-	    			displayChildren(node, c, i);
+	    			displayChildren(node, c, loopIterations, i);
 	    		}
 			}
 
 			if (node.isLoopNode()) {
-				displayInstructions(((LoopNode)node).getLoopHeader(), c, iteration);
+				displayInstructions(((LoopNode)node).getLoopHeader(), c, totalIterations, iteration);
 			}
 			
 		} else {
     		for (int i = 0; i < loopIterations; i++) {
-    			displayChildren(node, c, iteration + i);
+    			displayChildren(node, c, loopIterations, i);
     		}
 		}
 	}
