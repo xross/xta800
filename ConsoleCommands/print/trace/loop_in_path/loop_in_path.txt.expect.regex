@@ -1,0 +1,20 @@
+  0.0: \(20.0ns\) 0x10004 main \+ 0               ldc \(ru6\)    r0, i 0x5
+  20.0: \(20.0ns\) 0x10006 main \+ 2               brft \(ru6\)   r0, i 0x6
+  40.0: \(160.0ns\) 0x10008 main \+ 4               divu \(l3r\)   r0, r1, r2
+  200.0: \(20.0ns\) 0x1000c main \+ 8               brfu \(u6\)    i 0x4
+  220.0: \(20.0ns\) 0x10012 main \+ 14              retsp \(u6\)   i 0x0
+
+  0.0: \(20.0ns\) 0x10004 main \+ 0               ldc \(ru6\)    r0, i 0x5
+  20.0: \(20.0ns\) 0x10006 main \+ 2               brft \(ru6\)   r0, i 0x6
+  40.0: \(20.0ns\) 0x1000e main \+ 10              sub \(2rus\)   r0, r0, i 0x1
+  60.0: \(20.0ns\) 0x10010 main \+ 12              brbt \(ru6\)   r0, i 0x4
+  80.0: \(20.0ns\) 0x1000e main \+ 10              sub \(2rus\)   r0, r0, i 0x1
+  100.0: \(20.0ns\) 0x10010 main \+ 12              brbt \(ru6\)   r0, i 0x4
+  120.0: \(20.0ns\) 0x1000e main \+ 10              sub \(2rus\)   r0, r0, i 0x1
+  140.0: \(20.0ns\) 0x10010 main \+ 12              brbt \(ru6\)   r0, i 0x4
+  160.0: \(20.0ns\) 0x1000e main \+ 10              sub \(2rus\)   r0, r0, i 0x1
+  180.0: \(20.0ns\) 0x10010 main \+ 12              brbt \(ru6\)   r0, i 0x4
+  200.0: \(20.0ns\) 0x1000e main \+ 10              sub \(2rus\)   r0, r0, i 0x1
+  220.0: \(20.0ns\) 0x10010 main \+ 12              brbt \(ru6\)   r0, i 0x4
+  240.0: \(20.0ns\) 0x10012 main \+ 14              retsp \(u6\)   i 0x0
+
