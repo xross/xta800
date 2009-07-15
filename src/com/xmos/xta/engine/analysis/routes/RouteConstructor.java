@@ -121,7 +121,15 @@ public class RouteConstructor {
 		m_excludedRouteNodes = new TreeSet<Node>();
 		NodeWrapper startNodeWrapper = new NodeWrapper(start);
 
-		seenEndPoint |= explore(startNodeWrapper, workingSet, endNodes, null);
+		
+		if(start.isFunctionNode()){
+			workingSet.add(start);
+			seenEndPoint  = true;
+		} else {
+			seenEndPoint |= explore(startNodeWrapper, workingSet, endNodes, null);
+		}
+		
+		
 		
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 		pruneGraphOfExcludedPaths(workingSet);
@@ -141,9 +149,8 @@ public class RouteConstructor {
 			addTerminator(workingSet);
 			
 			assert(workingSet.contains(newStart));
-			
-			
-			
+			//System.out.println(newStart + " " + workingSet);
+			//System.out.println(StructuralAnalysisEngine.dumpTree("route_before",  workingSet));
 			sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
 			
 			if(workingSet.size() != 1){
@@ -187,9 +194,7 @@ public class RouteConstructor {
 	
 	
 	private boolean explore(NodeWrapper node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
-		
-		//System.out.println("exploring " + node.m_node);
-		
+//System.out.println("exploring node " + node.m_node);
 		Set<Node> nodes = new TreeSet<Node>(endNodes);
 		nodes.retainAll(node.m_node.getContainedNodes());
 		
@@ -198,9 +203,9 @@ public class RouteConstructor {
 		
 		boolean seenEndPoint = false;
 
-	//	System.out.println(nodes);
-		
+
 		if (nodes.isEmpty() ) {
+			//System.out.println(node.m_node + " does not contain an endpoint");
 			
 			if(!exclusions.isEmpty() ){
 				
@@ -208,6 +213,7 @@ public class RouteConstructor {
 					if(set.contains(node.m_node)) {
 						return false;
 					}
+					//System.out.println("adding node " + node.m_node + " to working set");
 					set.add(node.m_node);
 					makeConnection(node.m_node, parent);
 					m_excludedRouteNodes.add(node.m_node);
@@ -228,6 +234,8 @@ public class RouteConstructor {
 				//return false;
 				return seenEndPoint;
 			}
+			
+			//System.out.println("adding node " + node.m_node + " to working set");
 			set.add(node.m_node);
 
 			if (node.m_node.getParent() != null && !node.m_node.getParent().whatsNext(node.m_node).isEmpty()) {
@@ -238,6 +246,7 @@ public class RouteConstructor {
 				}
 			}
 		} else {
+			//System.out.println(node.m_node + " contains an endpoint");
 			if (endNodes.contains(node.m_node)) {
 				makeConnection(node.m_node, parent);
 				set.add(node.m_node);
@@ -358,6 +367,8 @@ public class RouteConstructor {
 
 	private void makeConnection(Node node, Node parent) {
 		if (parent != null) {
+			
+			//System.out.println("connecting " + parent + " -> " + node);
 			CommonMethods.connect(node, parent);
 		}
 	}

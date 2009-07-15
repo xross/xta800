@@ -10,8 +10,11 @@ public class TestCodeElement extends CodeElement {
 	}
 	
 	public void emitSource(BufferedWriter file, int depth) throws IOException  {
+		
+		file.write("#include <xs1.h>\n");
+		file.write("port c = XS1_PORT_1A;\n");
 		file.write("int temp = 1;\n");
-		file.write("int test(int x) {\n");
+		file.write("int test(int x, port c) {\n");
 
 		for (CodeElement child : getChildren()) {
 			child.emitSource(file, depth + 1);
@@ -19,7 +22,13 @@ public class TestCodeElement extends CodeElement {
 		file.write("}\n");
 		file.write("\n");
 		file.write("int main() {\n");
-		file.write("  return test(1);\n");
+		file.write("  int returnVal = 0;\n");
+		file.write("  #pragma xta endpoint \"start\"\n");
+		file.write("  c<: returnVal;\n");
+		file.write("  returnVal = test(1, c);\n");
+		file.write("  #pragma xta endpoint \"end\"\n");
+		file.write("  c<: returnVal;\n");
+		file.write("  return returnVal;\n");
 		file.write("}\n");
 	}
 
