@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
-import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
@@ -15,42 +14,43 @@ import com.xmos.xta.engine.references.types.ReferenceType;
 public class FunctionNode extends IBufferNode {
 	private NodeAttributes m_attributes;	
 	private String m_functionName;
-	private Node m_function;
+	private List<Node> m_functionPath;
 	private static int functionId;
-	private boolean m_knownFunction;
 	private Node m_branchTarget;
 	
 	public FunctionNode() {
 		super();
-		m_knownFunction = false;
 		m_attributes = new NodeAttributes(this);
 	}
 	
 	public FunctionNode(Node branchTarget) {
 		super();
 		m_branchTarget = branchTarget;
-		m_knownFunction = false;
 		m_attributes = new NodeAttributes(this);
 	}
 	
 	public FunctionNode(Node function, String functionName) {
 		super();
-		m_function = function;
-		m_knownFunction = true;
+		
+		if(function.isPathNode()){
+			m_functionPath = function.getChildren();
+		} else {
+			m_functionPath = new LinkedList<Node>();
+			m_functionPath.add(function);
+		}
+		
 		if(functionName == null){
 			m_functionName = "Unnamed function " + functionId++;
 		} else {
 			m_functionName = functionName;
 		}
-		m_branchTarget = m_function;
+		m_branchTarget = m_functionPath.get(0);
 		m_attributes = new NodeAttributes(this);
 	}
 	
 	public FunctionNode(FunctionNode fn){
-		//super(fn);
 		m_functionName = fn.m_functionName;
-		m_function = fn.m_function;
-		m_knownFunction = fn.m_knownFunction;
+		m_functionPath = fn.m_functionPath;
 		m_branchTarget = fn.m_branchTarget;
 		m_attributes = new NodeAttributes(this);
 	}
@@ -62,11 +62,14 @@ public class FunctionNode extends IBufferNode {
 	public Node deepCopy(){
 		FunctionNode fn = new FunctionNode();
 		fn.m_functionName = m_functionName;
-		fn.m_knownFunction = m_knownFunction;
 		fn.m_branchTarget = m_branchTarget;
 		fn.m_attributes = new NodeAttributes(fn);
-		if(m_function!= null){
-			fn.m_function = m_function.deepCopy();
+		if(m_functionPath!= null){
+			List<Node> nodes = new LinkedList<Node>();
+			for(Node node : m_functionPath){
+				nodes.add(node.deepCopy());
+			}
+			fn.m_functionPath = nodes;
 		}
 		return fn;
 	}
@@ -87,16 +90,13 @@ public class FunctionNode extends IBufferNode {
 		return m_branchTarget != null;
 	}
 	
-	public void setFunction(String functionName, Node fn) {
-		m_function = fn;
+	public void setFunction(String functionName, List<Node> fn) {
+		m_functionPath = fn;
 		m_functionName = functionName;
-		if (fn!= null) {
-			m_knownFunction = true;
-		}
 	}
 
-	public Node getFunction() {
-		return m_function;
+	public List<Node> getFunction() {
+		return m_functionPath;
 	}
 	
 	public Node getBranchTarget() {
@@ -104,8 +104,12 @@ public class FunctionNode extends IBufferNode {
 	}
 	
 	public Collection<Node> getContainedNodes() {
-		if(m_function != null){
-			return m_function.getContainedNodes();
+		if(m_functionPath != null){
+			Collection<Node> containedNodes = new TreeSet<Node>();
+			for (Node path : m_functionPath) {
+				containedNodes.addAll(path.getContainedNodes());
+			}
+			return containedNodes;
 		} else {
 			return new TreeSet<Node>();
 		}
@@ -126,8 +130,12 @@ public class FunctionNode extends IBufferNode {
 	}
 
 	public LinkedList<XtaInstruction> getInstructions() {
-		if (m_knownFunction) {
-			return m_function.getInstructions();
+		if (m_functionPath!= null) {
+			LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
+			for (Node node : m_functionPath) {
+				list.addAll(node.getInstructions());
+			}
+			return list;
 		} else {
 			return new LinkedList<XtaInstruction>();
 		}
@@ -135,17 +143,21 @@ public class FunctionNode extends IBufferNode {
 
 	public Set<Integer> getPCs() {
 		
-		if(m_function == null){
+		if(m_functionPath == null){
 			return new TreeSet<Integer>();
 		} else {
-			return m_function.getPCs();
+			Set<Integer> pcs = new TreeSet<Integer>();
+			for (Node node : m_functionPath) {
+				pcs.addAll(node.getPCs());
+			}
+			return pcs;
 		}
 		
 	}
 		
 	public int getStartPc() {
-		if(m_function != null){
-			return m_function.getStartPc();
+		if(m_functionPath != null){
+			return m_functionPath.get(0).getStartPc();
 		}
 		return 0;
 	}
@@ -154,24 +166,36 @@ public class FunctionNode extends IBufferNode {
 		if (!nodeTraverser.foundFunctionNode(this, depth))
 			return;
 		
-		if (m_knownFunction) {
-		    m_function.traverse(depth + 1, nodeTraverser);
+		if (m_functionPath != null) {
+			for (Node node : m_functionPath) {
+				node.traverse(depth + 1, nodeTraverser);
+			}
 		}
 	}
 
 	public List<Node> getChildren() {
-		List<Node> children = new LinkedList<Node>();
-		if(m_function!= null){
-			children.add(m_function);
+		List<Node> children = null;
+		if(m_functionPath!= null){
+			children =  m_functionPath;
+		} else {
+			children = new LinkedList<Node>();
 		}
 		return children;
 	}
 	
 	public Collection<Node> whatsNext(Node node) {
-		if (getParent() != null){
-			return getParent().whatsNext(this);
+		assert (m_functionPath.contains(node));
+		int index = m_functionPath.indexOf(node);
+		if (index < m_functionPath.size() - 1) {
+			Collection<Node> next = new TreeSet<Node>();
+			next.add(m_functionPath.get(index + 1));
+			return next;
+		} else {
+			if (getParent() != null){
+				return getParent().whatsNext(this);
+			}
+			return new TreeSet<Node>();
 		}
-		return new TreeSet<Node>();
 	}
 
 	public boolean isFunctionNode() {
@@ -193,17 +217,25 @@ public class FunctionNode extends IBufferNode {
 	}
 
 	public Collection<Node> whatsBefore(Node node) {
-		if(getParent()!= null){
-			return getParent().whatsBefore(this);
+		assert(m_functionPath.contains(node));
+		int index = m_functionPath.indexOf(node);
+		if(index > 0){
+			Collection<Node> before = new TreeSet<Node>();
+			before.add(m_functionPath.get(index-1));
+			return before;
 		} else {
-			return new TreeSet<Node>();
+			if(getParent()!= null){
+				return getParent().whatsBefore(this);
+			} else {
+				return new TreeSet<Node>();
+			}
 		}
 	}
 
 
 	public List<Node> getImmediateChildren() {
 		List<Node> list = new LinkedList<Node>();
-		list.add(m_function);
+		list.add(m_functionPath.get(0));
 		return list;
 	}
 
@@ -211,22 +243,14 @@ public class FunctionNode extends IBufferNode {
 
 		
 	}
-	
-	public Collection<FunctionNode> getContainedFunctions() {
-		final Collection<FunctionNode> functions = new TreeSet<FunctionNode>();
-		
-		if(m_function != null){
-			m_function.traverse(0, new DefaultNodeTraverser() {
-				public boolean foundFunctionNode(Node node, int depth) {
-					functions.add((FunctionNode) node);
-					return true;
-				}
-			});
-		}
-		return functions;
-	}
 
 	public TimeDistributionBuckets getTimeSpread() {
-		return m_function.getTimeSpread();
+		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
+		List<TimeDistributionBuckets> tsbPath = new LinkedList<TimeDistributionBuckets>();
+		for(Node node : m_functionPath){
+			tsbPath.add(node.getTimeSpread());
+		}
+		tdb.add(tsbPath);
+		return tdb;
 	}
 }

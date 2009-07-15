@@ -16,9 +16,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
-import com.xmos.xta.engine.analysis.structural.nodes.PathNode;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
-import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.analysis.structural.patterns.LoopPatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.PathPatternMatcher;
@@ -216,12 +214,25 @@ public class StructuralAnalysisEngine {
 				public boolean foundPathNode(Node node, int depth) {
 					for(Node child : node.getChildren()){
 						if(child.isPathNode()){
-							PathNode childPath = (PathNode)child;
-							PathNode path = (PathNode)node;
-							int insertPathAt =path.getPath().indexOf(child);
-							path.getPath().remove(insertPathAt);
-							for(Node pathChild : childPath.getPath()){
-								path.getPath().add(insertPathAt++, pathChild);
+							int insertPathAt =node.getChildren().indexOf(child);
+							node.getChildren().remove(insertPathAt);
+							for(Node pathChild : child.getChildren()){
+								node.getChildren().add(insertPathAt++, pathChild);
+							}
+							done = false;
+							return false;
+						}
+					}
+					return true;
+				}
+				
+				public boolean foundFunctionNode(Node node, int depth) {
+					for(Node child : node.getChildren()){
+						if(child.isPathNode()){
+							int insertPathAt =node.getChildren().indexOf(child);
+							node.getChildren().remove(insertPathAt);
+							for(Node pathChild : child.getChildren()){
+								node.getChildren().add(insertPathAt++, pathChild);
 							}
 							done = false;
 							return false;
@@ -232,9 +243,6 @@ public class StructuralAnalysisEngine {
 		    });
 			setParent(fn);
 		}
-		
-		//now remove the function nodes-> path nodes
-		//TODO
 		
 	}
 
@@ -520,7 +528,11 @@ public class StructuralAnalysisEngine {
 									fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction());
 								} else {
 									//copying link
-									fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction().deepCopy());
+									List<Node> nodes = new LinkedList<Node>();
+									for(Node node : leaf.getFunction()){
+										nodes.add(node.deepCopy());
+									}
+									fnLink.setFunction(leaf.getFunctionName(), nodes);
 								}
 								
 								toRemove.add(fnLink);
