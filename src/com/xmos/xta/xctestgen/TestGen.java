@@ -9,6 +9,7 @@ public class TestGen {
 
 	static String m_testDescription;
 	static int m_unique;
+	static int m_endpoint;
 	static int m_testCount;
 	
 	static boolean done() {
@@ -39,6 +40,10 @@ public class TestGen {
 		do {
 			char nextC = getNext();
 			switch (nextC) {
+			case 'p':
+				code.addChild(new EndPointStatement(m_endpoint));
+				m_endpoint++;
+				break;
 			case 'a':
 				code.addChild(new AddStatement(m_unique));
 				break;
@@ -87,7 +92,7 @@ public class TestGen {
 		try {
 			m_testDescription = description;
 			m_unique = 0;
-			
+			m_endpoint = 0;
 			CodeElement test = new TestCodeElement();
 			generate(test);
 			
@@ -137,137 +142,142 @@ public class TestGen {
 		file.write("  system(\"xcc -target=$target -march=$arch " + flags +" -fxta-info -g " + testName + ".xc -o $genDir/" + testName + ".xe > $genDir/" + testName + ".log 2>&1\");\n");
 		file.write("}\n");
 		file.write("system(\"@ARGV -config timeout 5 -load $genDir/" + testName + ".xe \" .\n");
-		
 		file.write("       \"-analyse function test \" .\n");
-		file.write("       \"-print structure - \" .\n");
+		file.write("       \"-analyse path start endpoint0 \" .\n");
+		file.write("       \"-analyse path start endpoint1 \" .\n");
+		file.write("       \"-analyse path start endpoint2 \" .\n");
+		file.write("       \"-analyse path endpoint0 end \" .\n");
+		file.write("       \"-analyse path endpoint1 end \" .\n");
+		file.write("       \"-analyse path endpoint2 end \" .\n");
+		file.write("       \"-analyse path endpoint0 endpoint2 \" .\n");
 		file.write("       \"-exit > $genDir/" + testName + ".txt 2>&1\");\n");
 		file.write("\n");
 	}
 
 	static public void main(String[] args) {
 		String tests[] = {
-				"a",
-				"d(a)",
-				"d(d(a))",
-				"d(d(d(a)))",
-				"d(d(d(d(a))))",
-				"ad(a)",
-				"ad(ad(a))",
-				"ad(ad(ad(a)))",
-				"ad(ad(ad(ad(a))))",
+				"papp",
+				"pd(pap)",
+				"pd(pd(ap))",
+				"pd(d(pd(ap)))",
+				"pd(d(pd(d(ap))))",
+				"pad(pap)",
+				"pad(apd(ap))",
+				"pad(ad(apd(ap)))",
+				"pad(ad(apd(ad(ap))))",
 				
-				"d(i(a))",
-				"d(d(i(a)))",
-				"d(d(d(i(a))))",
-				"d(d(d(d(i(a)))))",
-				"i(a)d(i(a))",
-				"i(a)d(i(a)d(i(a)))",
-				"i(a)d(i(a)d(i(a)d(i(a))))",
-				"i(a)d(i(a)d(i(a)d(i(a)d(i(a)))))",
+				"pd(i(pap))",
+				"pd(d(pi(ap)))",
+				"pd(d(pd(i(ap))))",
+				"pd(d(d(pd(i(ap)))))",
+				"pi(a)d(pi(ap))",
+				"pi(a)d(pi(a)d(i(ap)))",
+				"pi(a)d(i(a)d(pi(a)d(i(ap))))",
+				"pi(a)d(i(a)d(pi(a)d(i(a)d(i(ap)))))",
 				
-				"f(a)",
-				"f(f(a))",
-				"f(f(f(f(a))))",
-				"af(a)",
-				"af(af(a))",
-				"af(af(af(af(a))))",
-				"f(i(a))",
-				"f(f(i(a)))",
-				"f(f(f(f(i(a)))))",
-				"i(a)f(i(a))",
-				"i(a)f(i(a)f(i(a)))",
-				"i(a)f(i(a)f(i(a)f(i(a)f(i(a)))))",
+				"pf(pap)",
+				"pf(pf(ap))",
+				"pf(f(pf(f(ap))))",
+				"paf(pap)",
+				"paf(apf(ap))",
+				"paf(af(paf(af(ap))))",
+				"pf(i(pap))",
+				"pf(f(pi(ap)))",
+				"pf(f(pf(f(i(ap)))))",
+				"pi(a)pf(i(ap))",
+				"pi(a)f(pi(a)f(i(ap)))",
+				"pi(a)f(pi(a)f(i(a)f(i(a)f(i(ap)))))",
 				
-				"w(a)",
-				"w(w(a))",
-				"w(w(w(w(a))))",
-				"aw(a)",
-				"aw(aw(a))",
-				"aw(aw(aw(aw(a))))",
-				"w(i(a))",
-				"w(w(i(a)))",
-				"w(w(w(w(i(a)))))",
-				"i(a)w(i(a))",
-				"i(a)w(i(a)w(i(a)))",
-				"i(a)w(i(a)w(i(a)w(i(a)w(i(a)))))",
+				"pw(ap)",
+				"pw(pw(ap))",
+				"pw(w(w(pw(ap))))",
+				"paw(pap)",
+				"paw(apw(ap))",
+				"paw(aw(apw(aw(ap))))",
+				"pw(pi(ap))",
+				"pw(w(pi(ap)))",
+				"pw(w(pw(w(i(ap)))))",
+				"pi(a)w(i(pap))",
+				"pi(a)w(i(pa)w(i(ap)))",
+				"pi(a)w(i(a)w(i(pa)w(i(a)w(i(ap)))))",
 				
-				"d(i(a)(a))",
-				"d(d(i(a)(a)))",
-				"d(d(d(i(a)(a))))",
-				"d(d(d(d(i(a)(a)))))",
-				"i(a)(a)d(i(a)(a))",
-				"i(a)(a)d(i(a)(a)d(i(a)(a)))",
-				"i(a)(a)d(i(a)(a)d(i(a)(a)d(i(a)(a))))",
-				"i(a)(a)d(i(a)(a)d(i(a)(a)d(i(a)(a)d(i(a)(a)))))",
+				"pd(i(pa)(ap))",
+				"pd(d(i(pa)(ap)))",
+				"pd(d(d(i(pa)(ap))))",
+				"pd(d(pd(d(i(a)(ap)))))",
+				"pi(a)(pa)d(i(a)(ap))",
+				"pi(a)(a)d(i(ap)(a)d(i(a)(ap)))",
+				"pi(a)(a)d(i(a)(pa)d(i(a)(a)d(i(a)(ap))))",
+				"pi(a)(a)d(i(a)(a)d(i(pa)(a)d(i(a)(a)d(i(a)(ap)))))",
 				
-				"f(a)",
-				"f(f(a))",
-				"f(f(f(f(a))))",
-				"af(a)",
-				"af(af(a))",
-				"af(af(af(af(a))))",
-				"f(i(a)(a))",
-				"f(f(i(a)(a)))",
-				"f(f(f(f(i(a)(a)))))",
-				"i(a)(a)f(i(a)(a))",
-				"i(a)(a)f(i(a)(a)f(i(a)(a)))",
-				"i(a)(a)f(i(a)(a)f(i(a)(a)f(i(a)(a)f(i(a)(a)))))",
+				"pf(pap)",
+				"pf(pf(ap))",
+				"pf(pf(f(f(ap))))",
+				"paf(pap)",
+				"paf(apf(ap))",
+				"paf(af(apf(af(ap))))",
+				"pf(i(pa)(ap))",
+				"pf(f(i(pa)(ap)))",
+				"pf(f(f(pf(i(a)(ap)))))",
+				"pi(a)(pa)f(i(a)(ap))",
+				"pi(a)(a)f(i(pa)(a)f(i(a)(ap)))",
+				"pi(a)(a)f(i(a)(a)f(i(pa)(a)f(i(a)(a)f(i(a)(ap)))))",
 				
-				"w(a)",
-				"w(w(a))",
-				"w(w(w(w(a))))",
-				"aw(a)",
-				"aw(aw(a))",
-				"aw(aw(aw(aw(a))))",
-				"w(i(a)(a))",
-				"w(w(i(a)(a)))",
-				"w(w(w(w(i(a)(a)))))",
-				"i(a)(a)w(i(a)(a))",
-				"i(a)(a)w(i(a)(a)w(i(a)(a)))",
-				"i(a)(a)w(i(a)(a)w(i(a)(a)w(i(a)(a)w(i(a)(a)))))",
+				"pw(pap)",
+				"pw(w(pap))",
+				"pw(w(pw(w(ap))))",
+				"papw(ap)",
+				"paw(paw(ap))",
+				"paw(aw(paw(aw(ap))))",
+				"pw(i(pa)(ap))",
+				"pw(w(pi(a)(ap)))",
+				"pw(w(w(pw(i(a)(ap)))))",
+				"pi(a)(pa)w(i(a)(ap))",
+				"pi(a)(a)w(i(pa)(a)w(i(a)(ap)))",
+				"pi(a)(a)w(i(a)(a)w(i(a)(pa)w(i(a)(a)w(i(a)(ap)))))",
 				
 				
-				"s(a)(a)",
-				"s(a)(a)(a)",
-				"s(a)(a)(a)(a)",
+				"ps(pa)(ap)",
+				"ps(a)(pa)(ap)",
+				"ps(pa)(a)(a)(ap)",
 				
-				"d(s(a)(a))",
-				"d(s(a)(a)(a))",
-				"d(s(a)(a)(a)(a))",
+				"pd(s(pa)(ap))",
+				"pd(s(a)(pa)(ap))",
+				"pd(s(a)(pa)(a)(ap))",
 				
-				"s(d(a))(d(a))",
-				"s(d(a))(d(a))(d(a))",
-				"s(d(a))(d(a))(d(a))(d(a))",
+				"ps(d(pa))(d(ap))",
+				"ps(d(a))(d(pa))(d(ap))",
+				"ps(d(pa))(d(a))(d(a))(d(ap))",
 				
-				"d(s(d(a))(d(a)))",
-				"d(s(d(a))(d(a))(d(a)))",
-				"d(s(d(a))(d(a))(d(a))(d(a)))",
+				"pd(s(d(a))(d(ap)))",
+				"pd(s(d(a))(d(a))(d(ap)))",
+				"pd(s(d(a))(d(a))(d(a))(d(ap)))",
 				
-				"s(s(a)(a))(a)",
-				"s(s(a)(a))(s(a)(a))",
-				"s(s(a)(s(a)(a)))(s(a)(a))",
-				"s(s(a)(s(a)(a)))(s(a)(s(a)(a)))",
+				"ps(s(pa)(a))(ap)",
+				"ps(s(a)(pa))(s(a)(ap))",
+				"ps(s(a)(s(pa)(a)))(s(a)(ap))",
+				"ps(s(pa)(s(a)(a)))(s(a)(s(a)(ap)))",
 
-				"e(a)(a)",
-				"e(a)(a)(a)",
-				"e(a)(a)(a)(a)",
+				"pe(pa)(ap)",
+				"pe(a)(pa)(ap)",
+				"pe(a)(pa)(a)(ap)",
 				
-				"d(e(a)(a))",
-				"d(e(a)(a)(a))",
-				"d(e(a)(a)(a)(a))",
+				"pd(e(pa)(ap))",
+				"pd(e(pa)(a)(ap))",
+				"pd(e(a)(pa)(a)(ap))",
 				
-				"e(d(a))(d(a))",
-				"e(d(a))(d(a))(d(a))",
-				"e(d(a))(d(a))(d(a))(d(a))",
+				"pe(d(pa))(d(ap))",
+				"pe(d(a))(d(pa))(d(ap))",
+				"pe(d(pa))(d(a))(d(a))(d(ap))",
 				
-				"d(e(d(a))(d(a)))",
-				"d(e(d(a))(d(a))(d(a)))",
-				"d(e(d(a))(d(a))(d(a))(d(a)))",
+				"pd(e(d(pa))(d(ap)))",
+				"pd(e(d(a))(d(ap))(d(ap)))",
+				"pd(e(d(pa))(d(a))(d(a))(d(ap)))",
 				
-				"e(e(a)(a))(a)",
-				"e(e(a)(a))(e(a)(a))",
-				"e(e(a)(e(a)(a)))(e(a)(a))",
-				"e(e(a)(e(a)(a)))(e(a)(e(a)(a)))",
+				"pe(e(pa)(a))(ap)",
+				"pe(e(a)(pa))(e(a)(ap))",
+				"pe(e(a)(e(pa)(a)))(e(a)(ap))",
+				"pe(e(pa)(e(a)(a)))(e(a)(e(a)(ap)))",
 		};
 
 		m_testCount = 0;

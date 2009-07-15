@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
 import com.xmos.xta.engine.analysis.routes.RouteDescription.RouteMode;
 import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
@@ -23,11 +24,17 @@ import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.U
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
+import com.xmos.xta.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.engine.references.ReferenceFactory;
+import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
+import com.xmos.xta.engine.sections.SrcLevelLoopInfo;
 
 public class RouteConstructor {
-
+	private static final int SR_IEBLE_SHIFT = 1;
+	private static final int SR_IEBLE_SIZE = 1; 
+	
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR
 	}
@@ -39,7 +46,7 @@ public class RouteConstructor {
 	private int m_routeId;
 	private RouteDescription m_description;
 	private StructureGraph m_structureGraph;
-	private List<Node> m_subRoutes;
+	private List<Route> m_routes;
 	private Engine m_engine;
 	private Collection<Node> m_exclusions;
 	private Set<Node> m_excludedRouteNodes;
@@ -47,7 +54,7 @@ public class RouteConstructor {
 	public RouteConstructor(Engine engine, StructureGraph structureGraph, RouteDescription description) {
 		m_structureGraph = structureGraph;
 		m_description = description;
-		m_subRoutes = new ArrayList<Node>();
+		m_routes = new ArrayList<Route>();
 		m_engine = engine;
 		createExclusions();
 	}
@@ -60,8 +67,8 @@ public class RouteConstructor {
 		return m_description.getDescription();
 	}
 	
-	public List<Node> getSubRoutes() {
-		return m_subRoutes;
+	public List<Route> getRoutes() {
+		return m_routes;
 	}
 
 	public RouteError analyse() {
@@ -95,8 +102,11 @@ public class RouteConstructor {
 		setParents();
 		setUnknowns();				
 		setSelfLoops();	
-		if(m_description.getMode() == RouteMode.PATH){
-			if(seenEndPoint){
+		setSrcLoopCounts();	
+		checkSupportedInstructions();
+
+		if (m_description.getMode() == RouteMode.PATH) {
+			if (seenEndPoint) {
 				return RouteError.SUCCESS;
 			} else {
 				return RouteError.NO_ENDPOINTS_FOUND;
@@ -121,7 +131,15 @@ public class RouteConstructor {
 		m_excludedRouteNodes = new TreeSet<Node>();
 		NodeWrapper startNodeWrapper = new NodeWrapper(start);
 
-		seenEndPoint |= explore(startNodeWrapper, workingSet, endNodes, null);
+		
+		if(start.isFunctionNode()){
+			workingSet.add(start);
+			seenEndPoint  = true;
+		} else {
+			seenEndPoint |= explore(startNodeWrapper, workingSet, endNodes, null);
+		}
+		
+		
 		
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 		pruneGraphOfExcludedPaths(workingSet);
@@ -141,9 +159,8 @@ public class RouteConstructor {
 			addTerminator(workingSet);
 			
 			assert(workingSet.contains(newStart));
-			
-			
-			
+			//System.out.println(newStart + " " + workingSet);
+			//System.out.println(StructuralAnalysisEngine.dumpTree("route_before",  workingSet));
 			sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
 			
 			if(workingSet.size() != 1){
@@ -161,7 +178,7 @@ public class RouteConstructor {
 			} 
 			
 			Node newGraph = baseNode.deepCopy();
-			m_subRoutes.add(newGraph);
+			m_routes.add(new Route(m_engine, newGraph, m_description));
 		}
 		return seenEndPoint;
 	}
@@ -187,9 +204,7 @@ public class RouteConstructor {
 	
 	
 	private boolean explore(NodeWrapper node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
-		
-		//System.out.println("exploring " + node.m_node);
-		
+//System.out.println("exploring node " + node.m_node);
 		Set<Node> nodes = new TreeSet<Node>(endNodes);
 		nodes.retainAll(node.m_node.getContainedNodes());
 		
@@ -198,9 +213,9 @@ public class RouteConstructor {
 		
 		boolean seenEndPoint = false;
 
-	//	System.out.println(nodes);
-		
+
 		if (nodes.isEmpty() ) {
+			//System.out.println(node.m_node + " does not contain an endpoint");
 			
 			if(!exclusions.isEmpty() ){
 				
@@ -208,6 +223,7 @@ public class RouteConstructor {
 					if(set.contains(node.m_node)) {
 						return false;
 					}
+					//System.out.println("adding node " + node.m_node + " to working set");
 					set.add(node.m_node);
 					makeConnection(node.m_node, parent);
 					m_excludedRouteNodes.add(node.m_node);
@@ -228,6 +244,8 @@ public class RouteConstructor {
 				//return false;
 				return seenEndPoint;
 			}
+			
+			//System.out.println("adding node " + node.m_node + " to working set");
 			set.add(node.m_node);
 
 			if (node.m_node.getParent() != null && !node.m_node.getParent().whatsNext(node.m_node).isEmpty()) {
@@ -238,6 +256,7 @@ public class RouteConstructor {
 				}
 			}
 		} else {
+			//System.out.println(node.m_node + " contains an endpoint");
 			if (endNodes.contains(node.m_node)) {
 				makeConnection(node.m_node, parent);
 				set.add(node.m_node);
@@ -358,6 +377,8 @@ public class RouteConstructor {
 
 	private void makeConnection(Node node, Node parent) {
 		if (parent != null) {
+			
+			//System.out.println("connecting " + parent + " -> " + node);
 			CommonMethods.connect(node, parent);
 		}
 	}
@@ -369,9 +390,10 @@ public class RouteConstructor {
 			setParent(node);
 		}
 	}
+	
 	private void setParents() {
-		for (Node node : m_subRoutes) {
-			setParent(node);
+		for (Route route : m_routes) {
+			setParent(route.getNode());
 		}
 	}
 
@@ -398,12 +420,11 @@ public class RouteConstructor {
 				m_exclusions.addAll(referenceMatcher.getNodes(threadNode, reference));
 			}
 		}
-		
-		
 	}
 		
 	private void setUnknowns() {
-		for (Node node : m_subRoutes) {
+		for (Route route : m_routes) {
+			Node node = route.getNode();
 			node.traverse(0, new DefaultNodeTraverser() {
 				// Sets all the pausing instructions to unknown.
 				public boolean foundInstructionNode(Node node, int depth) {
@@ -414,7 +435,6 @@ public class RouteConstructor {
 					}
 					return true;
 				}
-
 				// Sets all the loop iterations to unknown.
 				public boolean foundLoopNode(Node node, int depth) {
 					NodeAttributes nodeAttributes = node.getAttributes();
@@ -434,11 +454,65 @@ public class RouteConstructor {
 
 	private void setSelfLoops() {
 		// Sets the iteration count of all self loops to 1
-		for (Node node : m_subRoutes) {
+		for (Route route : m_routes) {
+			Node node = route.getNode();			
 			node.traverse(0, new DefaultNodeTraverser() {
 				public boolean foundSelfLoopNode(Node node, int depth) {
 					NodeAttributes nodeAttributes = node.getAttributes();
 					nodeAttributes.setLoopIterations(1);
+					return true;
+				}
+			});
+		}
+	}
+	
+	private void setSrcLoopCounts() {
+		// Sets the loop iteration counts specified at compile time.
+		for (SrcLevelLoopInfo srcLevelLoopInfo : m_engine.getSrcLevelLoops()) {
+			Reference reference = ReferenceFactory.createReference(
+					String.format("0x%x", srcLevelLoopInfo.getPc()), 
+					ReferenceClass.PC_REF);
+			
+			for (Route route : m_routes) {
+				route.getRouteUnknowns().setLoopIterations(reference, srcLevelLoopInfo.getNumIterations());				
+			}
+		}		
+	}
+	
+	private void checkSupportedInstructions() {
+		final Engine engine = m_engine;
+		final InstructionMnemonics mnenonics = new InstructionMnemonics(
+				m_engine.getXeLoader().getArchitecture());
+		
+		for (Route route : m_routes) {
+			Node node = route.getNode();
+			node.traverse(0, new DefaultNodeTraverser() {
+				public boolean foundInstructionNode(Node node, int depth) {
+					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
+
+					// Checks for threading instructions...
+					if (mnenonics.isSsync(instruction))
+						engine.notify(Notifier.NOTIFY_WARNING, String.format(
+								"Ssync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
+					
+					if (mnenonics.isMsync(instruction))
+						engine.notify(Notifier.NOTIFY_WARNING, String.format(
+								"Msync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
+
+					if (mnenonics.isMjoin(instruction)) {
+						engine.notify(Notifier.NOTIFY_WARNING, String.format(
+								"Mjoin (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
+					}
+					
+					// Checks for interrupt enable..
+					if (mnenonics.isSetSr(instruction)) {	
+						int op1Field = instruction.getOperandField("op1");
+						int shift = SR_IEBLE_SHIFT;
+						int mask = (1 << SR_IEBLE_SIZE) - 1;
+						if (((op1Field >> shift) & mask) == 1) 
+							engine.notify(Notifier.NOTIFY_WARNING, String.format(
+									"Interrupt enable detected. Pc: 0x%08x", instruction.getPc()));
+					}					
 					return true;
 				}
 			});
@@ -498,11 +572,9 @@ public class RouteConstructor {
 		for(Node thread : m_structureGraph.getThreads()){
 			referencedNodes.addAll(referenceMatcher.getNodes(thread, reference));
 		}
-		
 		for(Node thread : m_structureGraph.getUnlinkedFunctions()){
 			referencedNodes.addAll(referenceMatcher.getNodes(thread, reference));
 		}
-		
 		return referencedNodes;		
 	}
 }
