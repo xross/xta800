@@ -40,6 +40,7 @@ import com.xmos.xta.engine.references.types.ReferenceTypeFactory;
 import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.engine.sections.CodePointInfo;
 import com.xmos.xta.engine.sections.CodePointTableInfo;
+import com.xmos.xta.engine.sections.SrcLevelLoopInfo;
 import com.xmos.xta.engine.sections.Sections;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.sourcemapper.FileFinder;
@@ -329,11 +330,10 @@ public class Engine implements Notifier {
 			
 		} else {
 			int currentSize = m_routes.size();
-			for(Node subRoute : routeConstructor.getSubRoutes()){
-				Route route = new Route(this, subRoute, routeDescription);
+			for (Route route : routeConstructor.getRoutes()) {
 				m_routes.add(route);
-			}
-			if (!m_routes.isEmpty() && !routeConstructor.getSubRoutes().isEmpty()) {
+			}			
+			if (!m_routes.isEmpty() && !routeConstructor.getRoutes().isEmpty()) {
 				setSelectedRoute(m_routes.get(currentSize));
 				notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
 			} else {
@@ -949,7 +949,11 @@ public class Engine implements Notifier {
 	public Collection<String> getSrcLevelCommands() {
 		return m_sections.getSrcLevelCommands(m_nodeId, m_coreId);
 	}
-		
+
+	public Collection<SrcLevelLoopInfo> getSrcLevelLoops() {
+		return m_sections.getSrcLevelLoops(m_nodeId, m_coreId);
+	}
+	
 	// ===================================================================== //
 	// Private Methods
 	// ===================================================================== //

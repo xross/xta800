@@ -25,6 +25,9 @@ import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTrave
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
+import com.xmos.xta.engine.references.ReferenceFactory;
+import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
+import com.xmos.xta.engine.sections.SrcLevelLoopInfo;
 
 public class RouteConstructor {
 
@@ -39,7 +42,7 @@ public class RouteConstructor {
 	private int m_routeId;
 	private RouteDescription m_description;
 	private StructureGraph m_structureGraph;
-	private List<Node> m_subRoutes;
+	private List<Route> m_routes;
 	private Engine m_engine;
 	private Collection<Node> m_exclusions;
 	private Set<Node> m_excludedRouteNodes;
@@ -47,7 +50,7 @@ public class RouteConstructor {
 	public RouteConstructor(Engine engine, StructureGraph structureGraph, RouteDescription description) {
 		m_structureGraph = structureGraph;
 		m_description = description;
-		m_subRoutes = new ArrayList<Node>();
+		m_routes = new ArrayList<Route>();
 		m_engine = engine;
 		createExclusions();
 	}
@@ -60,8 +63,8 @@ public class RouteConstructor {
 		return m_description.getDescription();
 	}
 	
-	public List<Node> getSubRoutes() {
-		return m_subRoutes;
+	public List<Route> getRoutes() {
+		return m_routes;
 	}
 
 	public RouteError analyse() {
@@ -95,8 +98,10 @@ public class RouteConstructor {
 		setParents();
 		setUnknowns();				
 		setSelfLoops();	
-		if(m_description.getMode() == RouteMode.PATH){
-			if(seenEndPoint){
+		setSrcLoopCounts();	
+
+		if (m_description.getMode() == RouteMode.PATH) {
+			if (seenEndPoint) {
 				return RouteError.SUCCESS;
 			} else {
 				return RouteError.NO_ENDPOINTS_FOUND;
@@ -168,7 +173,7 @@ public class RouteConstructor {
 			} 
 			
 			Node newGraph = baseNode.deepCopy();
-			m_subRoutes.add(newGraph);
+			m_routes.add(new Route(m_engine, newGraph, m_description));
 		}
 		return seenEndPoint;
 	}
@@ -380,9 +385,10 @@ public class RouteConstructor {
 			setParent(node);
 		}
 	}
+	
 	private void setParents() {
-		for (Node node : m_subRoutes) {
-			setParent(node);
+		for (Route route : m_routes) {
+			setParent(route.getNode());
 		}
 	}
 
@@ -409,12 +415,11 @@ public class RouteConstructor {
 				m_exclusions.addAll(referenceMatcher.getNodes(threadNode, reference));
 			}
 		}
-		
-		
 	}
 		
 	private void setUnknowns() {
-		for (Node node : m_subRoutes) {
+		for (Route route : m_routes) {
+			Node node = route.getNode();
 			node.traverse(0, new DefaultNodeTraverser() {
 				// Sets all the pausing instructions to unknown.
 				public boolean foundInstructionNode(Node node, int depth) {
@@ -425,7 +430,6 @@ public class RouteConstructor {
 					}
 					return true;
 				}
-
 				// Sets all the loop iterations to unknown.
 				public boolean foundLoopNode(Node node, int depth) {
 					NodeAttributes nodeAttributes = node.getAttributes();
@@ -445,7 +449,8 @@ public class RouteConstructor {
 
 	private void setSelfLoops() {
 		// Sets the iteration count of all self loops to 1
-		for (Node node : m_subRoutes) {
+		for (Route route : m_routes) {
+			Node node = route.getNode();			
 			node.traverse(0, new DefaultNodeTraverser() {
 				public boolean foundSelfLoopNode(Node node, int depth) {
 					NodeAttributes nodeAttributes = node.getAttributes();
@@ -454,6 +459,19 @@ public class RouteConstructor {
 				}
 			});
 		}
+	}
+	
+	private void setSrcLoopCounts() {
+		// Sets the loop iteration counts specified at compile time.
+		for (SrcLevelLoopInfo srcLevelLoopInfo : m_engine.getSrcLevelLoops()) {
+			Reference reference = ReferenceFactory.createReference(
+					String.format("0x%x", srcLevelLoopInfo.getPc()), 
+					ReferenceClass.PC_REF);
+			
+			for (Route route : m_routes) {
+				route.getRouteUnknowns().setLoopIterations(reference, srcLevelLoopInfo.getNumIterations());				
+			}
+		}		
 	}
 	
 	private void refreshDisplayedUnknowns(Node node) {	
@@ -509,11 +527,9 @@ public class RouteConstructor {
 		for(Node thread : m_structureGraph.getThreads()){
 			referencedNodes.addAll(referenceMatcher.getNodes(thread, reference));
 		}
-		
 		for(Node thread : m_structureGraph.getUnlinkedFunctions()){
 			referencedNodes.addAll(referenceMatcher.getNodes(thread, reference));
 		}
-		
 		return referencedNodes;		
 	}
 }

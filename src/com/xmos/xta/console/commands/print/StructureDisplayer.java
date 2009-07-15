@@ -12,7 +12,6 @@ public class StructureDisplayer {
 	private final static boolean DEBUG_NEXT = false;
 	private final static boolean DEBUG_BEFORE = false;
 	private final static boolean DEBUG_CHILDREN = false;
-	
 	private final static boolean DEBUG_ATTRIBUTES = false;
 
 	private Console m_console;
@@ -92,7 +91,7 @@ public class StructureDisplayer {
 		if ((m_verbosity >= 50) || (DEBUG_ATTRIBUTES == true)) {			
 			NodeAttributes nodeAttributes = node.getAttributes();
 			
-			if (node.isLoopNode()) {
+			if (node.isLoopNode() || node.isSelfLoopNode()) {
 				m_console.display(String.format(" [%d]",
 						nodeAttributes.getLoopIterations()));
 				

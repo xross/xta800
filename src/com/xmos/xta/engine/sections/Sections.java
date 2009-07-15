@@ -21,6 +21,7 @@ public class Sections {
 	private Collection<Section> m_threadStartPoints;
 	private Collection<Section> m_threadStopPoints;
 	private Collection<Section> m_srcLevelCommands;	
+	private Collection<Section> m_srcLevelLoops;	
 	
     public Sections() { 
     	m_xeLoader  = null;
@@ -36,6 +37,7 @@ public class Sections {
 		m_threadStartPoints = new ArrayList<Section>();
 		m_threadStopPoints  = new ArrayList<Section>();
 		m_srcLevelCommands  = new ArrayList<Section>();
+		m_srcLevelLoops     = new ArrayList<Section>();
     }
 
 	public boolean load(XeLoader xeLoader, Notifier notifier) {		
@@ -52,6 +54,7 @@ public class Sections {
 		m_threadStartPoints.clear();
 		m_threadStopPoints.clear();
 		m_srcLevelCommands.clear();
+		m_srcLevelLoops.clear();
 
 		for (int node : m_xeLoader.getNodeIds()) {
 			for (int core : m_xeLoader.getCoreIds(node)) {
@@ -66,6 +69,7 @@ public class Sections {
 				m_threadStartPoints.add(new ThreadDelimiters(node, core, ".xtathreadstart", m_notifier));
 				m_threadStopPoints.add(new ThreadDelimiters(node, core, ".xtathreadstop", m_notifier));
 				m_srcLevelCommands.add(new SrcLevelCommands(node, core, m_notifier));
+				m_srcLevelLoops.add(new SrcLevelLoops(node, core, m_notifier));
 			}
 		}
 				
@@ -90,6 +94,8 @@ public class Sections {
 		if (!loadSection(m_threadStopPoints))
 			return false;
 		if (!loadSection(m_srcLevelCommands))
+			return false;
+		if (!loadSection(m_srcLevelLoops))
 			return false;
 		
 		return true;
@@ -209,7 +215,7 @@ public class Sections {
 		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStopPoints, nodeId, coreId);
 		return threadDelimiter.remove(pc);
 	}
-					
+
 	public Collection<Integer> getThreadStopPoints(int nodeId, int coreId) {
 		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStopPoints, nodeId, coreId);				
 		return threadDelimiter.get();	
@@ -219,7 +225,12 @@ public class Sections {
 		SrcLevelCommands srcLevelCommands = (SrcLevelCommands)getSection(m_srcLevelCommands, nodeId, coreId);
 		return srcLevelCommands.get();		
 	}
-			
+
+	public Collection<SrcLevelLoopInfo> getSrcLevelLoops(int nodeId, int coreId) {
+		SrcLevelLoops loops = (SrcLevelLoops)getSection(m_srcLevelLoops, nodeId, coreId);
+		return loops.get();		
+	}
+	
 	private boolean loadSection(Collection<Section> sections) {
 		for (Section section : sections) {
 			if (!section.load(m_xeLoader)) {
