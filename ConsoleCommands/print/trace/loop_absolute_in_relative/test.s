@@ -13,8 +13,9 @@ main:
   ldc r0, 5
   ldc r1, 5
 loopA:
-  sub r1, r0, 1
-  bt r1, loopA
+  bf r1, loopR
+  sub r1, r1, 1
+  bu loopA
 loopR:
   sub r0, r0, 1
   bt r0, loopA

@@ -14,7 +14,7 @@ main:
 loopA:
   ldc r1, 5
 loopR:
-  sub r1, r0, 1
+  sub r1, r1, 1
   bt r1, loopR
   sub r0, r0, 1
   bt r0, loopA
