@@ -1,4 +1,4 @@
-Time taken for instruction (0x10004: in (2r)) is unknown, pc: 0x10004, backtrace: 
+Time taken for instruction (0x10004: in (2r)) is unknown, pc: 0x10004, backtrace: main:
 none
 * 0.0: (20.0ns) 0x10004 main + 0               in (2r)      r0, res[r0] (P)
   20.0: (20.0ns) 0x10006 main + 2               retsp (u6)   i 0x0
