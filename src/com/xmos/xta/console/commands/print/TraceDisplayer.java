@@ -6,6 +6,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.LoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class TraceDisplayer {
 	private Console m_console;
@@ -94,19 +95,24 @@ public class TraceDisplayer {
 	private void displayInstruction(InstructionNode instruction) {
 		String isUnknown = instruction.getAttributes().getDisplayUnknown() ? "*" : " ";
      	
-     	String functionOffsetString = 
-     		instruction.getXtaInstruction().getFunctionName() + " + " + instruction.getXtaInstruction().getFunctionOffset();
+     	XtaInstruction xtaInstruction = instruction.getXtaInstruction();
+		String functionName = xtaInstruction.getFunctionName();
+		
+		String functionOffsetString = "";
+		if (functionName != null) { 
+			functionOffsetString = functionName + " + " + xtaInstruction.getFunctionOffset();
+		}
      	
      	m_console.display(String.format("%s %.1f: (%.1fns) 0x%05x %-22s %-12s %s",
      			isUnknown,
          		m_currentTime,
          		instruction.getAttributes().getInstructionTimeTaken(),
-           		instruction.getXtaInstruction().getPc(), 
+           		xtaInstruction.getPc(), 
            		functionOffsetString, 
-           		instruction.getXtaInstruction().getNmenonic(), 
-           		instruction.getXtaInstruction().getOperandString()));
+           		xtaInstruction.getNmenonic(), 
+           		xtaInstruction.getOperandString()));
      	
-     	if (instruction.getXtaInstruction().canPause())
+     	if (xtaInstruction.canPause())
      		m_console.display(" (P)");
      	
      	m_currentTime += instruction.getAttributes().getInstructionTimeTaken();
