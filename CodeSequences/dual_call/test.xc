@@ -1,12 +1,14 @@
-int f() {
-  int a = 0;
-  return a;
+int f(int a) {
+  if (a == 0)
+    return 2;
+  else
+    return 5;
 }
 
 int main()
 {
-  f();
-  f();
+  f(2);
+  f(3);
   return 0;
 }
 

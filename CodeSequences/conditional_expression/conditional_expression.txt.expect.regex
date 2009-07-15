@@ -1,12 +1,7 @@
-Route\(0\) function: test
-    No Timing Specified
-    Complete paths: 1, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Route\(0\) function: test
-Complete \[1 path\]
-  \* path\(\d+\) +: \d+\.\d+ns
-        loop \[2 paths, 0 iterations\]
-          \* path\(\d+\) +: \d+\.\d+ns
-          \* path\(\d+\) +: \d+\.\d+ns
-
+function test
+Time taken:       \d+\.\d+ns / \d+\.\d+ns
+Thread cycles:    \d+ / \d+
+Num Instructions: \d+ / \d+
+Num Fnops:        \d+ / \d+
+Num Paths:        2
+Node Id:          \d+

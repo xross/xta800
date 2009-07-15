@@ -1,54 +1,7 @@
-Route\(0\) function: main
-    No Timing Specified
-    Complete paths: 2, Unresolved paths: 0
-
-Fail, Timing Unspecified
-Route\(\d+\) function: main
-Complete \[2 paths\]
-    path\(\d+\) +: \d+\.\d+ns
-    path\(\d+\) +: \d+\.\d+ns
-
-----------------------------------
-test.xc \(.*data_pointer\)
-----------------------------------
-  1: int a = 1;
-  2: int b = 2;
-  3: int c = 3;
-  4: int d = 4;
-  5: int e = 5;
-  6: int f = 6;
-  7: int g = 7;
-  8: int h = 8;
-  9: int i = 9;
-  10: int j = 10;
-  11: int main\(\)
-  12: \{
-\+ 13:   if \(b == 2\)
-  14:   \{
-\+ 15:     a = 3;
-  16:   \}
-\+ 17:   return b;
-  18: \}
-  19: 
-----------------------------------
-test.xc \(.*data_pointer\)
-----------------------------------
-  1: int a = 1;
-  2: int b = 2;
-  3: int c = 3;
-  4: int d = 4;
-  5: int e = 5;
-  6: int f = 6;
-  7: int g = 7;
-  8: int h = 8;
-  9: int i = 9;
-  10: int j = 10;
-  11: int main\(\)
-  12: \{
-\+ 13:   if \(b == 2\)
-  14:   \{
-  15:     a = 3;
-  16:   \}
-\+ 17:   return b;
-  18: \}
-  19: 
+function main
+Time taken:       \d+\.\d+ns / \d+\.\d+ns
+Thread cycles:    \d+ / \d+
+Num Instructions: \d+ / \d+
+Num Fnops:        \d+ / \d+
+Num Paths:        2
+Node Id:          \d+
