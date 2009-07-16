@@ -18,7 +18,7 @@ public class TraceDisplayer {
 	
     public void display(Node node, Case c) {
     	if (isInfinite(node, c)) {
-    		m_console.display("Can not trace - time is infinite\n");
+    		m_console.display("Cannot trace - time is infinite\n");
     	} else {
         	m_currentTime = 0;
     		displayInstructions(node, c, 1, 0);
@@ -27,6 +27,10 @@ public class TraceDisplayer {
     }
     
     private boolean isInfinite(Node node, Case c) {
+    	// Allow the user to always trace blocks
+    	if (node.isBlockNode())
+    		return false;
+    	
     	Status status = new Status();
     	node.getAttributes().getTimeTaken(c, status, null);
     	if (status.isInfinite()) {

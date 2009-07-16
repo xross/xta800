@@ -1,14 +1,19 @@
 package com.xmos.xta.gui.views.viewnode;
 
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.gui.icons.Icons;
 import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
 public abstract class StructureNode extends ViewNode {
-	
+    static final Image m_warningImage = Icons.getIcon("warning");
+    static final int m_warningX = m_warningImage.getBounds().width;
+    static final int m_warningY = m_warningImage.getBounds().height;
+
     int m_connectorLen = 7;
     int m_borderX;
     int m_borderY;
