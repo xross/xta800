@@ -56,7 +56,7 @@ public class RouteDescription {
 			}
 		}
 		
-		for(FunctionNode fn : sg.getUnlinkedFunctions()){
+		for(FunctionNode fn : sg.getFunctions()){
 			if(fn.getFunctionName().equals(functionName)){
 				int pc = fn.getStartPc();
 				String from = "0x" + Integer.toHexString(pc);
