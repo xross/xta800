@@ -199,7 +199,7 @@
             label="Highlight"
             overviewRulerPreferenceKey="highlight.highlight.rulers.overview"
             overviewRulerPreferenceValue="true"
-            presentationLayer="6"
+            presentationLayer="7"
             showInNextPrevDropdownToolbarAction="true"
             showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
             textPreferenceKey="highlight.highlight.text"
@@ -222,7 +222,7 @@
             label="Unknown"
             overviewRulerPreferenceKey="highlight.unknown.rulers.overview"
             overviewRulerPreferenceValue="true"
-            presentationLayer="7"
+            presentationLayer="5"
             showInNextPrevDropdownToolbarAction="false"
             showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
             symbolicIcon="warning"
@@ -247,7 +247,7 @@
             label="Start"
             overviewRulerPreferenceKey="highlight.endpoint.rulers.overview"
             overviewRulerPreferenceValue="true"
-            presentationLayer="5"
+            presentationLayer="6"
             showInNextPrevDropdownToolbarAction="false"
             showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
             symbolicIcon="warning"
@@ -272,7 +272,7 @@
             label="Stop"
             overviewRulerPreferenceKey="highlight.endpoint.rulers.overview"
             overviewRulerPreferenceValue="true"
-            presentationLayer="5"
+            presentationLayer="6"
             showInNextPrevDropdownToolbarAction="false"
             showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
             symbolicIcon="warning"
@@ -297,7 +297,7 @@
             label="StartStop"
             overviewRulerPreferenceKey="highlight.endpoint.rulers.overview"
             overviewRulerPreferenceValue="true"
-            presentationLayer="5"
+            presentationLayer="6"
             showInNextPrevDropdownToolbarAction="false"
             showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
             symbolicIcon="warning"
@@ -364,7 +364,7 @@
       <type
          name="com.xmos.xta.gui.highlight"
          markerType=""
-         markerSeverity="1">
+         markerSeverity="2">
       </type>
       <type
             markerSeverity="1"
@@ -379,15 +379,15 @@
             name="com.xmos.xta.gui.stop">
       </type>
       <type
-            markerSeverity="2"
+            markerSeverity="0"
             name="com.xmos.xta.gui.startstop">
       </type>
       <type
-            markerSeverity="2"
+            markerSeverity="0"
             name="com.xmos.xta.gui.endpoint">
       </type>
       <type
-            markerSeverity="2"
+            markerSeverity="0"
             name="com.xmos.xta.gui.excluded">
       </type>
    </extension>
