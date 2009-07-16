@@ -13,16 +13,15 @@ import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 public class StructureSectionNode extends StructureNode {
     public static final boolean DEBUG = false;
 
-    private int m_borderX = 4;
-    private int m_borderY = 2;
-    private int m_gapY = 12;
-    
     private boolean m_isOptional;
+    private int m_gapY = 12;
     
 	public StructureSectionNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
 		super(treeNode, canvasProperties);
 		
 		m_isOptional = m_treeNode.isSectionOptional();
+	    m_borderX = 4;
+	    m_borderY = 2;
 	}
 	
 	public int getPixelsX() {
