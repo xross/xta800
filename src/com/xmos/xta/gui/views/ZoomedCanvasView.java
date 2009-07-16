@@ -43,6 +43,7 @@ import org.eclipse.ui.part.ViewPart;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.gui.GuiRouteProperties;
 import com.xmos.xta.gui.views.Renderer;
 import com.xmos.xta.gui.views.RendererControl;
 import com.xmos.xta.gui.views.Views;
@@ -588,10 +589,16 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		if (route != null) {
 			m_rootNode = route.getNode();
 			updateSelection(GuiEngine.getSelectedNodes());
-			m_viewNode = buildViewNode(m_rootNode, 0);
+
+			GuiRouteProperties routeProperties = GuiEngine.getRouteProperties(route.getRouteId());
+			m_viewNode = routeProperties.getViewNode();
+			if (m_viewNode == null) {
+				m_viewNode = buildViewNode(m_rootNode, 0);
+				routeProperties.setViewNode(m_viewNode);
+			}
 		} else {
 			m_rootNode = null;
-			m_viewNode = null;
+    		m_viewNode = null;
 			updateSelection(new ArrayList<Node>());
 		}
 		m_renderControl.setRoute(route);
@@ -603,7 +610,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		updateScrollBars();
 	}
 
-    protected void drawCanvas(GC gc) {
+	protected void drawCanvas(GC gc) {
 		if (DEBUG) System.out.println(m_name + ": drawCanvas");
 		m_renderControl.drawCanvasImage(gc);
     }

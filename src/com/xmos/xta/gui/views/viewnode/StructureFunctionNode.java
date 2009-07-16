@@ -70,7 +70,9 @@ public class StructureFunctionNode extends StructureNode {
     		gc.drawRectangle(m_renderX, m_renderY, (int)m_width, (int)m_height);
     	}
 
-       	if (!isFolded()) {
+       	boolean folded = isFolded();
+		boolean hasUnknowns = false;
+		if (!folded) {
     		boolean isWorstCase = isWorstCase();
     		boolean isBestCase = isBestCase();
        		if ((getChildren().size() == 0)) {
@@ -80,16 +82,29 @@ public class StructureFunctionNode extends StructureNode {
        		} else {
        			drawPathChildren(display, gc);
        		}
+       	} else {
+			hasUnknowns = hasUnknowns();
        	}
-		
-		// Draw the function name
+
 		if (scale((int)m_height) > gc.getFontMetrics().getHeight() &&
 			scale((int)m_width) > m_textAreaX) {
-	        int textBase = scaleY(m_pixelOffsetY + m_borderY);
+			// Draw the function name
+			int textBase = scaleY(m_pixelOffsetY + m_borderY);
 			gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-
 			gc.drawString(m_treeNode.getFunctionName(),  m_renderX + m_borderX, textBase);
+			
+			if (hasUnknowns) {
+				gc.drawImage(m_warningImage,
+						m_renderX + (int)m_width - m_warningX,
+						m_renderY + (int)m_height - m_warningY);
+			}
+		} else {
+			if (hasUnknowns) {
+				gc.drawImage(m_warningImage,
+						m_renderX + (((int)m_width - m_warningX) / 2),
+						m_renderY + (((int)m_height - m_warningY) / 2));
+			}
 		}
 	}
 
