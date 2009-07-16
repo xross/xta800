@@ -404,26 +404,26 @@ public class NodeAttributes {
 		Node enclosingInfiniteLoopNode = getNode().getEnclosingInfiniteLoopNode();
 		if (enclosingInfiniteLoopNode != null) {
 			return INFINITE_ITERATIONS;
-		}		
+		}
 
 		Node enclosingLoopNode = getNode().getEnclosingLoopNode();		
 		if (enclosingLoopNode == null) {
 			// At the outermost scope, i.e. not inside a loop..
 			long numIterations;
 			try {
-				numIterations = getNodeIterations(c, getNode(), null, ignoreIterationsAboveSection);
+				numIterations = getNodeIterations(c, getNode(), ignoreIterationsAboveSection);
 			} catch (IgnoreSectionIterationsException e) {
 				return 1;
 			}
 			return numIterations;
-		}			
+		}
 		
 		// Need to treat relative and absolute loops differently..
 		if (enclosingLoopNode.getAttributes().getIsAbsolute()) {
 	    	// We are within an absolute loop, so just get the iterations of this loop.
 			long numIterations;
 			try {
-				numIterations = getNodeIterations(c, getNode(), enclosingLoopNode, ignoreIterationsAboveSection);
+				numIterations = getNodeIterations(c, getNode(), ignoreIterationsAboveSection);
 			} catch (IgnoreSectionIterationsException e) {
 				return 1;
 			}
@@ -436,7 +436,7 @@ public class NodeAttributes {
 			// then multiply up by the iterations of the above loops.
 			long numIterations;
 			try {
-				numIterations = getNodeIterations(c, getNode(), enclosingLoopNode, ignoreIterationsAboveSection);
+				numIterations = getNodeIterations(c, getNode(), ignoreIterationsAboveSection);
 			} catch (IgnoreSectionIterationsException e) {
 				return 1;
 			}
@@ -447,7 +447,7 @@ public class NodeAttributes {
 			while (loopNode != null) {
 				long iterations;
 				try {
-					iterations = getNodeIterations(c, startNode, loopNode, ignoreIterationsAboveSection);
+					iterations = startNode.getAttributes().getNodeIterations(c, startNode, ignoreIterationsAboveSection);
 				} catch (IgnoreSectionIterationsException e) {
 					break;
 				}
@@ -524,6 +524,13 @@ public class NodeAttributes {
 		return m_isLoopHeader;
 	}		
 
+	long getNodeIterations(Case c, Node child, Node ignoreIterationsAboveSection) throws IgnoreSectionIterationsException {
+		if (getNode().getParent() != null) {
+			return getNode().getParent().getAttributes().getNodeIterations(c, getNode(), ignoreIterationsAboveSection);
+		}
+		return 1;		
+	}
+	
 	// ===================================================================== //
 	// Instruction Time Methods
 	// ===================================================================== //
@@ -557,33 +564,4 @@ public class NodeAttributes {
 		assert(false);		
 		return false;
 	}		
-	
-	private long getNodeIterations(Case c, Node node, Node enclosingLoopNode, Node ignoreIterationsAboveSection) throws IgnoreSectionIterationsException {
-		// If we are in a section, then get them from the section.
-		// Otherwise, take the iterations from the enclosing loop.
-		long iterations = 1;
-		boolean foundSection = false;
-		Node n = node;
-		while (n != enclosingLoopNode) {
-			if ((n.getParent() != null) && n.getParent().isSectionNode()) {
-				if (n.getParent() == ignoreIterationsAboveSection) {
-					throw new IgnoreSectionIterationsException();
-					
-				} else {
-					// Check if we are at the top level (i.e. there is no enclosing loop).
-					long loopIterations = enclosingLoopNode == null ? 1 :
-						enclosingLoopNode.getAttributes().getLoopIterations();
-					
-				    iterations = n.getParent().getAttributes().getLoopPathIterations(loopIterations, n, c);
-				    foundSection = true;
-				    break;
-				}
-			}
-			n = n.getParent();
-		}
-		if ((enclosingLoopNode != null) && !foundSection) {
-			iterations = enclosingLoopNode.getAttributes().getLoopIterations();
-		}
-		return iterations;
-	}
 }

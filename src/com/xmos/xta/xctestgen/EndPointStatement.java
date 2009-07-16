@@ -12,6 +12,7 @@ public class EndPointStatement extends CodeElement{
 	public void emitSource(BufferedWriter file, int depth) throws IOException  {
 		emitSourceIndent(file, depth);
 		file.write("#pragma xta endpoint \"endpoint" + m_id + "\"\n");
+		emitSourceIndent(file, depth);
 		file.write("c <: x;\n");
 	}
 

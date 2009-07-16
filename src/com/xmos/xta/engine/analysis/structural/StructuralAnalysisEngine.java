@@ -591,6 +591,17 @@ public class StructuralAnalysisEngine {
 					string += ((FunctionNode)node).getFunctionName() + "\\n";
 					string += "\"]; ";
 				}
+				/*
+				 else if(node.isPathNode()){
+				 
+					string += node + " [label=\"" + node + "\\n";
+					for(Node child : node.getChildren()){
+						string += child + "\\n";
+					}
+					
+					string += "\"]; ";
+				}
+				*/
 				
 			}
 			string += "}\n";
