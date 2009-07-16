@@ -1,7 +1,0 @@
-Route\(0\) function: test
-Complete \[4 paths\]
-  . path\(\d+\) +: \d+\.\d+ns
-  . path\(\d+\) +: \d+\.\d+ns
-  . path\(\d+\) +: \d+\.\d+ns
-  . path\(\d+\) +: \d+\.\d+ns
-
