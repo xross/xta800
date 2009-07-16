@@ -669,7 +669,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         if (m_selectedNode != null) {
         	Set<Integer> pcsCovered = m_selectedNode.getPCs();
         	for (Integer pc : pcsCovered) {
-				updateAnnotations(pc, HighlightAnnotationID, annotations, annotationPositions, false, getInput().getPcsToLines());
+				updateAnnotations(pc, HighlightAnnotationID, annotations, annotationPositions,
+						false, false, getInput().getPcsToLines());
 			}
         }
         m_hasHighlightedLines = (annotations.size() > 0);
@@ -795,15 +796,16 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("XtaEditor: updateUnknowns\n"); 
 
 	    ArrayList<Annotation> annotations = new ArrayList<Annotation>();
-        final HashMap<Annotation, Position> annotationPositions = 
-    	    new HashMap<Annotation, Position>();		
+        final HashMap<Annotation, Position> annotationPositions = new HashMap<Annotation, Position>();		
 
 		HashSet<Integer> unknownsSet = new HashSet<Integer>();
 		for (Node node : getSelectedRouteUnknowns()) {
 			unknownsSet.add(node.getStartPc());
 		}
+		boolean excludeSections = m_type.equals(XtaDocumentPartitioner.SOURCE);
 		for (int pc : unknownsSet) {
-			updateAnnotations(pc, UnknownAnnotationID, annotations, annotationPositions, true, getInput().getPcsToLines());
+			updateAnnotations(pc, UnknownAnnotationID, annotations, annotationPositions,
+					true, excludeSections, getInput().getPcsToLines());
 		}
 
 		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
@@ -815,14 +817,18 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     }
 
     private void updateAnnotations(int pc, String type, List<Annotation> annotations, 
-    		Map<Annotation, Position> annotationPositions, boolean excludeFnops, HashMap<Integer, InputLine> pcToLine) {
+    		Map<Annotation, Position> annotationPositions, boolean excludeFnops, boolean excludeSections,
+    		HashMap<Integer, InputLine> pcToLine) {
     	
     	InputLine line = pcToLine.get(pc);
     	if (line == null) return;
-		InputSection inputSection = getInput().getPcsToSection().get(pc);
-		if (inputSection != null) {
-			addAnnotation(inputSection.getIndex(), type, annotations, annotationPositions);
-		}
+    	if (!excludeSections) {
+			InputSection inputSection = getInput().getPcsToSection().get(pc);
+			if (inputSection != null) {
+				addAnnotation(inputSection.getIndex(), type, annotations, annotationPositions);
+			}
+    	}
+    	
 		InputLine inputLine = getInput().getPcsToLines().get(pc);
 		if (inputLine != null) {
 			addAnnotation(line.getIndex(), type, annotations, annotationPositions);
