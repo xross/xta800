@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
+import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
 
@@ -22,7 +23,7 @@ public class Loop extends XtaDialog {
     public Loop(Shell parent, Node node) {
     	super(parent);
     	m_node = node;
-    	m_iterations = 0;
+    	m_iterations = GuiEngine.getEngine().getSetLoopIterations(node);
     	open();
     }
     
@@ -55,9 +56,14 @@ public class Loop extends XtaDialog {
 		spinner.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
 				true, false, 2, 1));
 		
-		spinner.setMinimum(0);		
+		Node loopNode = m_node.getEnclosingLoopNode();
+		assert(loopNode != null);
+		if (loopNode.isSelfLoopNode())
+			spinner.setMinimum(1);
+		else 
+			spinner.setMinimum(0);
 		spinner.setEnabled(true);
-		spinner.setSelection(0);
+		spinner.setSelection((int)m_iterations);
 		spinner.setIncrement(1);
 		spinner.setPageIncrement(10);
 		spinner.addSelectionListener(new SelectionAdapter() {
@@ -75,8 +81,13 @@ public class Loop extends XtaDialog {
     
     protected void buttonPressed(int id) {
     	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {
-    		GuiEngine.getEngine().setLoopIterations(m_node, m_iterations);
+    		if (!GuiEngine.getEngine().setLoopIterations(m_node, m_iterations)) {
+    			GuiEngine.notify(Notifier.NOTIFY_ERROR, "Error: Failed to set loop iterations");
+    		} else {
+        		super.buttonPressed(id);
+    		}
+    	} else {
+    		super.buttonPressed(id);
     	}
-    	super.buttonPressed(id);
     }
 }

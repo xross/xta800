@@ -9,6 +9,10 @@ import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
 public abstract class StructureNode extends ViewNode {
 	
+    int m_connectorLen = 7;
+    int m_borderX;
+    int m_borderY;
+
     public StructureNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
     	super(treeNode, canvasProperties);
     }
@@ -22,4 +26,62 @@ public abstract class StructureNode extends ViewNode {
     	assert(false);
     	return 0;
     }
+
+    protected void drawPathChildren(Display display, GC gc) {
+		boolean isWorstCase = isWorstCase();
+		boolean isBestCase = isBestCase();
+		boolean isInfinite = false;
+
+		assert(getChildren().size() > 0);
+    	ViewNode firstChild = getChildren().get(0);
+		
+		int midY = scaleY(m_pixelOffsetY + (getPixelsY() / 2));
+    	int midX = getLeftMidX();
+		int childMidY = scaleY(firstChild.getPixelOffsetY() + (firstChild.getPixelsY() / 2));
+		int childLeftX = scaleX(firstChild.getPixelOffsetX());
+    	drawConnection(display, gc, m_renderX, midY, midX, midY,
+				isBestCase, isWorstCase);
+		drawConnection(display, gc, midX, midY, midX, childMidY,
+				isBestCase, isWorstCase);
+		drawConnection(display, gc, midX, childMidY, childLeftX, childMidY,
+				isBestCase, isWorstCase);
+
+		boolean first = true;
+    	int childOffsetX = firstChild.getPixelOffsetX();
+    	
+    	int lineLeft = 0;
+    	int lineRight = 0;
+		for (ViewNode child : getChildren()) {
+    		int childX = child.getPixelsX();
+        	if (!first && !isInfinite) {
+        		drawConnection(display, gc, lineLeft, childMidY, lineRight, childMidY,
+        				isBestCase, isWorstCase);
+        	} else {
+        		first = false;
+        	}
+    		isInfinite = child.isInfinite();
+
+            lineLeft = scaleX(childOffsetX + childX);
+            lineRight = scaleX(childOffsetX + childX + m_connectorLen);
+            childOffsetX += childX + m_connectorLen;
+
+    		child.draw(display, gc);
+		}
+
+		if (!isInfinite) {
+			int right = m_pixelOffsetX + getPixelsX();
+			int rightX = scaleX(right);
+			int rightMidX = scaleX(right - (m_borderX / 2));
+			drawConnection(display, gc, lineLeft, childMidY, rightMidX, childMidY,
+				isBestCase, isWorstCase);
+			drawConnection(display, gc, rightMidX, childMidY, rightMidX, midY,
+					isBestCase, isWorstCase);
+			drawConnection(display, gc, rightMidX, midY, rightX, midY,
+					isBestCase, isWorstCase);
+		}
+	}
+
+	int getLeftMidX() {
+		return scaleX(m_pixelOffsetX + (m_borderX / 2));
+	}
 }

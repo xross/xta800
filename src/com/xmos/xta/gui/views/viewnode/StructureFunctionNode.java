@@ -10,14 +10,14 @@ import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 public class StructureFunctionNode extends StructureNode {
     public static final boolean DEBUG = false;
 
-    private int m_borderX = 5;
-    private int m_borderY = 5;
     private int m_textAreaX = 0;
     private int m_textAreaY = 20;
 
 	public StructureFunctionNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
 		super(treeNode, canvasProperties);
 		m_textAreaX = canvasProperties.getAverageCharWidth() * treeNode.getFunctionName().length() + NAME_PADDING;
+	    m_borderX = 5;
+	    m_borderY = 5;
 	}
 
 	public int getPixelsX() {
@@ -41,6 +41,7 @@ public class StructureFunctionNode extends StructureNode {
 		for (ViewNode child : getChildren()) {
 			pixels += child.getPixelsX();
 		}
+		pixels += (getChildren().size() - 1) * m_connectorLen;
 		return pixels;
 	}
 
@@ -58,8 +59,6 @@ public class StructureFunctionNode extends StructureNode {
 		if (!isVisible())
 			return;
 		
-		// Don't currently support connecting up nodes like a path
-		//assert(getChildren().size() == 1);
         drawThis(display, gc);
 
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
@@ -74,39 +73,12 @@ public class StructureFunctionNode extends StructureNode {
        	if (!isFolded()) {
     		boolean isWorstCase = isWorstCase();
     		boolean isBestCase = isBestCase();
-       		if ((getChildren().size() > 0)) {
-	    		int childRightX = 0;
-	            int childMidY = 0;
-	            boolean isInfinite = false;
-				for (ViewNode child : getChildren()) {
-		    		child.draw(display, gc);
-		    		isInfinite = child.isInfinite();
-	
-		    		childRightX = scaleX(child.getPixelOffsetX() + child.getPixelsX());
-		    		childMidY = scaleY(child.getPixelOffsetY() + (child.getPixelsY() / 2));
-		    	}
-	
-		    	int midY = scaleY(m_pixelOffsetY + (getPixelsY() / 2));
-		    	int midX = scaleX(m_pixelOffsetX + ((m_borderX + m_textAreaX) / 2));
-		    	int childLeftX = scaleX(m_pixelOffsetX + m_borderX + m_textAreaX);
-	
-	    		drawConnection(display, gc, m_renderX, midY, midX, midY,
-	    				isBestCase, isWorstCase);
-				drawConnection(display, gc, midX, midY, midX, childMidY,
-						isBestCase, isWorstCase);
-	    		drawConnection(display, gc, midX, childMidY, childLeftX, childMidY,
-	    				isBestCase, isWorstCase);
-	
-				if (!isInfinite) {
-					drawConnection(display, gc, childRightX, childMidY, childRightX, midY,
-							isBestCase, isWorstCase);
-					drawConnection(display, gc, childRightX, midY, scaleX(m_pixelOffsetX + getPixelsX()), midY,
-							isBestCase, isWorstCase);
-				}
-       		} else {
+       		if ((getChildren().size() == 0)) {
 		    	int midY = scaleY(m_pixelOffsetY + (getPixelsY() / 2));
 	    		drawConnection(display, gc, m_renderX, midY, scaleX(m_pixelOffsetX + getPixelsX()), midY,
 	    				isBestCase, isWorstCase);
+       		} else {
+       			drawPathChildren(display, gc);
        		}
        	}
 		
@@ -126,15 +98,20 @@ public class StructureFunctionNode extends StructureNode {
         m_pixelOffsetX = offsetX;
 		m_pixelOffsetY = offsetY;
 
+    	int childOffsetX = m_borderX + m_textAreaX;
     	int childrenY = getChildrenY();
-    	int childOffsetY = offsetY + m_borderY + m_textAreaY;
 		for (ViewNode child : getChildren()) {
 			int childY = child.getPixelsY();
-    		child.annotateNodes(offsetX + m_borderX + m_textAreaX, childOffsetY + ((childrenY - childY) / 2),
+    		child.annotateNodes(offsetX + childOffsetX, offsetY + m_borderY + m_textAreaY + ((childrenY - childY) / 2),
     				isBestCase, isWorstCase);
+            childOffsetX += child.getPixelsX() + m_connectorLen;
     	}
-		
+
 		m_isBestCase = isBestCase;
 		m_isWorstCase = isWorstCase;
+	}
+	
+	int getLeftMidX() {
+		return scaleX(m_pixelOffsetX + ((m_borderX + m_textAreaX) / 2));
 	}
 }

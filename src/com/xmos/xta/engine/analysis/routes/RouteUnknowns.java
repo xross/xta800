@@ -70,6 +70,14 @@ public class RouteUnknowns {
 		return true;
 	}
 
+	public long getSetLoopIterations(Node node) {
+		Node enclosingLoopNode = node.getEnclosingLoopNode();
+		if (enclosingLoopNode == null) {
+			return 1;
+		}
+		return enclosingLoopNode.getAttributes().getLoopIterations();
+	}		
+
 	private boolean loopIterationsValid(Node node, long iterations) {		
 		Node loopNode = node.getEnclosingLoopNode();
 		return loopNode.getAttributes().loopIterationsValid(iterations);
@@ -128,7 +136,15 @@ public class RouteUnknowns {
 
 		return true;
 	}
-	
+
+	public long getSetLoopPathIterations(Node node) {
+		assert(canSetLoopPathIterations(node));
+		Node sectionNode = node.getEnclosingSectionNode();
+		Node optionNode = node.getEnclosingOptionNode();
+	    long iterations = sectionNode.getAttributes().getSetLoopPathIterations(optionNode);
+	    return iterations;
+	}
+
 	private boolean loopPathIterationsValid(Node node, long iterations) {
 		Node loopNode = node.getEnclosingLoopNode();
 		Node sectionNode = node.getEnclosingSectionNode();
@@ -313,5 +329,5 @@ public class RouteUnknowns {
 	        	return true;
 	    	}
 	    });		
-	}		
+	}
 }

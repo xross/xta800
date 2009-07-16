@@ -12,14 +12,13 @@ public class StructureLoopNode extends StructureNode {
     public static final boolean DEBUG = false;
 
     private boolean m_isInfinite;
-    
-    private int m_borderX = 8;
-    private int m_borderY = 4;
     private int m_gapX = 8;
     private int m_gapY = 4;
     
 	public StructureLoopNode(Node treeNode, ZoomedCanvasProperties canvasProperties, boolean isInfinite) {
 		super(treeNode, canvasProperties);
+	    m_borderX = 8;
+	    m_borderY = 4;
 		m_isInfinite = isInfinite;
 	}
 	

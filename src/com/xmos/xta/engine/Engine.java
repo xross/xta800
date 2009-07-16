@@ -215,10 +215,11 @@ public class Engine implements Notifier {
 		Sections sections = new Sections();
 		if (!sections.load(xeLoader, this)) {
 			return false;
-		} 
+		}
 		
 		if (!initialiseGlobalStructure(xeLoader, sections, fileFinder))
 			return false;
+		
 		m_exclusions = new ArrayList<Reference>();
 		m_executableFile = executableFile;
 		m_fileFinder = fileFinder;
@@ -586,6 +587,10 @@ public class Engine implements Notifier {
 	public boolean canSetLoopIterations(Node node) {
 		return m_selectedRoute.getRouteUnknowns().canSetLoopIterations(node);
 	}
+
+	public long getSetLoopIterations(Node node) {
+		return m_selectedRoute.getRouteUnknowns().getSetLoopIterations(node);
+	}
 	
 	public boolean setLoopPathIterations(int routeId, String refString, long iterations) {
 		Reference reference = ReferenceFactory.createReference(
@@ -615,6 +620,10 @@ public class Engine implements Notifier {
 		return m_selectedRoute.getRouteUnknowns().canSetLoopPathIterations(node);
 	}
 	
+	public long getSetLoopPathIterations(Node node) {
+		return m_selectedRoute.getRouteUnknowns().getSetLoopPathIterations(node);
+	}
+
 	public boolean setLoopScope(int routeId, String refString, boolean absolute) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ANY_REF);

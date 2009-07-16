@@ -9,12 +9,10 @@ import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 public class StructurePathNode extends StructureNode {
     public static final boolean DEBUG = false;
 
-    private int m_connectorLen = 7;
-    private int m_borderX = 4;
-    private int m_borderY = 2;
-
 	public StructurePathNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
 		super(treeNode, canvasProperties);
+	    m_borderX = 4;
+	    m_borderY = 2;
 	}
 
 	public int getPixelsX() {
@@ -49,43 +47,11 @@ public class StructurePathNode extends StructureNode {
 			return;
 
 		drawThis(display, gc);
-		boolean isWorstCase = isWorstCase();
-		boolean isBestCase = isBestCase();
-		boolean isInfinite = false;
-
-        boolean first = true;
-    	int childOffsetX = m_borderX;
-    	int lineY = scaleY(m_pixelOffsetY + (getPixelsY() / 2));
-    	int lineLeft = 0;
-    	int lineRight = 0;
-		for (ViewNode child : getChildren()) {
-    		int childX = child.getPixelsX();
-        	if (!first && !isInfinite) {
-        		drawConnection(display, gc, lineLeft, lineY, lineRight, lineY,
-        				isBestCase, isWorstCase);
-        	} else {
-        		first = false;
-        	}
-    		isInfinite = child.isInfinite();
-
-            lineLeft = scaleX(m_pixelOffsetX + childOffsetX + childX);
-            lineRight = scaleX(m_pixelOffsetX + childOffsetX + childX + m_connectorLen);
-            childOffsetX += childX + m_connectorLen;
-
-    		child.draw(display, gc);
-		}
-
-		drawConnection(display, gc, m_renderX, lineY, scaleX(m_pixelOffsetX + m_borderX), lineY,
-				isBestCase, isWorstCase);
-		if (!isInfinite) {
-			drawConnection(display, gc, lineLeft, lineY, scaleX(m_pixelOffsetX + getPixelsX()), lineY,
-				isBestCase, isWorstCase);
-		}
+		drawPathChildren(display, gc);
     }
 
 	public void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase) {
 		if (DEBUG) System.out.printf("Annotate StructurePath (%d, %d)\n", offsetX, offsetY);
-
 		m_pixelOffsetX = offsetX;
 		m_pixelOffsetY = offsetY;
 
