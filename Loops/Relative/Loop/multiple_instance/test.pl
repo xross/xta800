@@ -12,7 +12,8 @@ system("xcc -target=$target -march=$arch -fxta-info -g test.xc -o $genDir/test.x
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "set loop - loop 100 " .
+       "set loop - test1,loop 100 " .
+       "set loop - test2,loop 200 " .
        "print structure - " .
        "-exit > $genDir/multiple_instance.txt 2>&1");
 
