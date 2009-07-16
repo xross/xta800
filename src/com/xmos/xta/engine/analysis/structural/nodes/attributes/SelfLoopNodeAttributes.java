@@ -35,8 +35,13 @@ public class SelfLoopNodeAttributes extends NodeAttributes {
 		
 		long iterations = 1;
 		if (getNode().getParent() != null) {
-			iterations = getNode().getParent().getAttributes().getTotalIterations(c, getNode(), ignoreIterationsAboveSection);
-		}		
+			
+		    try {			
+				iterations = getNode().getParent().getAttributes().getTotalIterations(c, getNode(), ignoreIterationsAboveSection);
+		    } catch (IgnoreSectionIterationsException e) {
+		    	iterations = IGNORE_SECTION_ITERATIONS;
+		    }			
+		}
 		return iterations * m_numIterations;		
 	}	
 }
