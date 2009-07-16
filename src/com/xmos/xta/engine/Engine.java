@@ -215,10 +215,11 @@ public class Engine implements Notifier {
 		Sections sections = new Sections();
 		if (!sections.load(xeLoader, this)) {
 			return false;
-		} 
+		}
 		
 		if (!initialiseGlobalStructure(xeLoader, sections, fileFinder))
 			return false;
+		
 		m_exclusions = new ArrayList<Reference>();
 		m_executableFile = executableFile;
 		m_fileFinder = fileFinder;

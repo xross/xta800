@@ -103,19 +103,17 @@ public class StructuralAnalysisEngine {
 				m_functionStartPcs, engine, true, treeMap, allFunctionObjects);
 		if (functions == null) {
 			return false;
-		}
-				
+		}				
 		m_structureGraph = new StructureGraph(threads, functions, pcToEndPoints);
-		
-		engine.provideFeedback("Analysing for recursion...");
-		
-		boolean recurrses = detectRecursion(engine, allFunctionObjects);
-		if(recurrses){
+
+		engine.provideFeedback("Analysing for recursion...");		
+		if (detectRecursion(engine, allFunctionObjects)) {
+			engine.notify(Notifier.NOTIFY_ERROR, "Recursion detected");			
 			return false;
 		}
 		
 		engine.provideFeedback("Linking functions...");
-		if(!linkFunctions(engine, allFunctionObjects)) {
+		if (!linkFunctions(engine, allFunctionObjects)) {
 			engine.notify(Notifier.NOTIFY_ERROR, "Could not link");
 			return false;
 		}
