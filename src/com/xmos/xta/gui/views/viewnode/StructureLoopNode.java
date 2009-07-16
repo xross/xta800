@@ -6,6 +6,9 @@ import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
 public class StructureLoopNode extends StructureNode {
@@ -131,6 +134,21 @@ public class StructureLoopNode extends StructureNode {
 				headerInX + (m_borderX / 2), headerY + (2 * m_borderY),
 				headerInX - (m_borderX / 2), headerY + (2 * m_borderY),};
 		gc.fillPolygon(returnTriangle);
+
+		if (hasUnknowns()) {
+    		gc.drawImage(m_warningImage,
+    				headerOutX - m_warningX / 2, 
+    				loopReturnY - m_warningY / 2);
+        }
+	}
+
+	private boolean hasUnknowns() {
+		NodeAttributes nodeAttributes = m_treeNode.getAttributes();
+		if (nodeAttributes.isUnknown() &&
+			(nodeAttributes.getUnknownState() == UnknownState.UNKNOWN)) {
+			return true;
+		}
+		return false;
 	}
 
 	private void drawHeader(Display display, GC gc, boolean isWorstCase, boolean isBestCase, int headerOutX) {
