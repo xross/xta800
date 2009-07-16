@@ -445,7 +445,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		m_clickCodeRefString = getLineDescription(clickLineIndex);				
 		if (m_clickCodeRefString != null) {			
 			if (m_endPointLineIndexes.containsKey(clickLineIndex) ||
-				m_type.equals(XtaDocumentPartitioner.DISASSEMBLY)) {
+				isAssembly(m_clickCodeRefString)) {
 				if (isStartPointSet(m_clickCodeRefString)) {
 				    addAction(menu, RemoveStartPointID);
 				} else {
@@ -474,6 +474,18 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      	super.editorContextMenuAboutToShow(menu);
     }
 	
+	private boolean isAssembly(String codeRefString) {
+		if (codeRefString.length() < 3) {
+			return false;
+		}
+		
+		if (codeRefString.charAt(0) == '0' &&
+			codeRefString.charAt(1) == 'x') {
+			return true;
+		}
+		return false;
+	}
+
 	private void updateStartPoint() {
 		Reference startPoint = GuiEngine.getStartPoint();
 		m_startPointLine = findCodeRefLineNum(startPoint);
