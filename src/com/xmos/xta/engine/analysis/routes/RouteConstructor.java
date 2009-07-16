@@ -89,20 +89,23 @@ public class RouteConstructor {
 			endNodes.addAll(getReferencedNodes(endPoint));
 		}
 		
-		//convert startNodes into global structure nodes
-		
-		if(m_description.getMode() == RouteMode.FUNCTION){
-			Node node = startNodes.iterator().next();
-			startNodes.clear();
-			startNodes.add(node);
-		}
-		
+		boolean notFoundFunctionYet = true;
 		for (Node start : startNodes) {
+			
 			int startPc = start.getStartPc();
 			while(start.getParent() != null && start.getParent().getStartPc() == startPc){
 				start = start.getParent();
 			}
-			seenEndPoint = makeSubRoute(seenEndPoint, endNodes, start);
+			
+			if(m_description.getMode() == RouteMode.FUNCTION && notFoundFunctionYet){
+				if(start.isFunctionNode()){
+					seenEndPoint = makeSubRoute(seenEndPoint, endNodes, start);
+					notFoundFunctionYet = false;
+				}
+			} else {
+				seenEndPoint = makeSubRoute(seenEndPoint, endNodes, start);
+			}
+			
 		}
 		
 		setParents();
@@ -137,15 +140,12 @@ public class RouteConstructor {
 		m_excludedRouteNodes = new TreeSet<Node>();
 		NodeWrapper startNodeWrapper = new NodeWrapper(start);
 
-		
 		if(start.isFunctionNode()){
 			workingSet.add(start);
 			seenEndPoint  = true;
 		} else {
 			seenEndPoint |= explore(startNodeWrapper, workingSet, endNodes, null);
 		}
-		
-		
 		
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
 		pruneGraphOfExcludedPaths(workingSet);
@@ -165,8 +165,7 @@ public class RouteConstructor {
 			addTerminator(workingSet);
 			
 			assert(workingSet.contains(newStart));
-			//System.out.println(newStart + " " + workingSet);
-			//System.out.println(StructuralAnalysisEngine.dumpTree("route_before",  workingSet));
+
 			sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
 			
 			if(workingSet.size() != 1){
@@ -177,6 +176,8 @@ public class RouteConstructor {
 			
 			Node baseNode = workingSet.iterator().next();
 		
+			sae.normaliseGraph(baseNode);
+			
 			assert(!baseNode.isInfiniteLoopNode());
 			
 			if(m_description.getMode() == RouteMode.PATH && baseNode.isInfiniteSelfLoopNode()){
