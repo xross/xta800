@@ -44,6 +44,9 @@ public class TestGen {
 				code.addChild(new EndPointStatement(m_endpoint));
 				m_endpoint++;
 				break;
+			case 'r':
+				code.addChild(new ReturnStatement(m_unique));
+				break;
 			case 'a':
 				code.addChild(new AddStatement(m_unique));
 				break;
@@ -368,6 +371,18 @@ public class TestGen {
 				"pe(e(a)(pa))(e(a)(ap))",
 				"pe(e(a)(e(pa)(a)))(e(a)(ap))",
 				"pe(e(pa)(e(a)(a)))(e(a)(e(a)(ap)))",
+				
+				//now for non stuctural test with returns on them
+				
+				"parpp",
+				"pd(rpap)",
+				"pd(rpd(rap))",
+				"pd(rd(rpd(rap)))",
+				"pd(rd(rpd(d(rap))))",
+				"pad(rpap)",
+				"pad(aprd(apr))",
+				"pad(ad(apd(ap)r)r)r",
+				"pad(ad(apd(ad(apr)r)r)r)",
 				
 		};
 

@@ -91,9 +91,10 @@ public class RouteConstructor {
 		
 		boolean notFoundFunctionYet = true;
 		for (Node start : startNodes) {
-			
+			//System.out.println("initial instruction is : " + start);
 			int startPc = start.getStartPc();
-			while(start.getParent() != null && start.getParent().getStartPc() == startPc){
+			while(start.getParent() != null && !start.getParent().isSectionNode()&& start.getParent().getStartPc() == startPc){
+			//	System.out.println("but " + start.getParent() + " would be better");
 				start = start.getParent();
 			}
 			
@@ -134,6 +135,9 @@ public class RouteConstructor {
 	
 	private boolean makeSubRoute(boolean seenEndPoint, Collection<Node> endNodes,
 			Node start) {
+		
+		if(EXPLORE_DUBUG) System.out.println("starting from " + start);
+		
 		Collection<Node> workingSet = new TreeSet<Node>();
 		
 		m_structureGraph.removeLinks();
@@ -210,6 +214,8 @@ public class RouteConstructor {
 	}
 	
 	
+	private static boolean EXPLORE_DUBUG =  false;
+	
 	private boolean explore(NodeWrapper node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
 
 		Set<Node> nodes = new TreeSet<Node>(endNodes);
@@ -229,6 +235,8 @@ public class RouteConstructor {
 					if(set.contains(node.m_node)) {
 						return false;
 					}
+					
+					if (EXPLORE_DUBUG) System.out.println("adding node "+ node.m_node + " to working set");
 					set.add(node.m_node);
 					makeConnection(node.m_node, parent);
 					m_excludedRouteNodes.add(node.m_node);
@@ -248,7 +256,7 @@ public class RouteConstructor {
 			if(set.contains(node.m_node)) {
 				return seenEndPoint;
 			}
-			
+			if (EXPLORE_DUBUG) System.out.println("adding node "+ node.m_node + " to working set");
 			set.add(node.m_node);
 
 			if (node.m_node.getParent() != null && !node.m_node.getParent().whatsNext(node.m_node).isEmpty()) {
@@ -261,6 +269,7 @@ public class RouteConstructor {
 		} else {
 			if (endNodes.contains(node.m_node)) {
 				makeConnection(node.m_node, parent);
+				if (EXPLORE_DUBUG) System.out.println("adding node "+ node.m_node + " to working set");
 				set.add(node.m_node);
 				return true;
 			} else {
@@ -379,8 +388,7 @@ public class RouteConstructor {
 
 	private void makeConnection(Node node, Node parent) {
 		if (parent != null) {
-			
-			//System.out.println("connecting " + parent + " -> " + node);
+			if (EXPLORE_DUBUG) System.out.println("connecting " + parent + " -> " + node);
 			CommonMethods.connect(node, parent);
 		}
 	}
