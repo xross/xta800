@@ -1,7 +1,9 @@
 package com.xmos.xta.gui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -28,6 +30,7 @@ public class GuiEngine {
 	private static Reference s_codePoint;
 	private static String s_runMode;
 	private static List<Node> s_selectedNodes;
+	private static Map<Integer, GuiRouteProperties> s_routeProperties;
 
 	static {
         s_engine = new Engine(new Config());
@@ -37,6 +40,7 @@ public class GuiEngine {
         s_selectedNodes = new ArrayList<Node>();
 
         s_engine.setNotifier(s_notifier);
+        s_routeProperties = new HashMap<Integer, GuiRouteProperties>();
 	}
 	
 	public static Engine getEngine() {
@@ -176,7 +180,34 @@ public class GuiEngine {
 			resetGuiState();
 						
 		} else if (message.equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
-			s_runMode = argument;						
+			s_runMode = argument;
+			
+		} else if (message.equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
+			refreshGuiRouteProperties();
+			
+		}
+	}
+	
+	private static void refreshGuiRouteProperties() {
+		List<Integer> remove = new ArrayList<Integer>();
+		for (Integer routeId : s_routeProperties.keySet()) {
+			if (s_engine.getRoute(routeId) == null) {
+				remove.add(routeId);
+			}
+		}
+		for (Integer routeId : remove) {
+			s_routeProperties.remove(routeId);
+		}
+	}
+
+	public static GuiRouteProperties getRouteProperties(int routeId) {
+		if (s_routeProperties.containsKey(routeId)) {
+			return s_routeProperties.get(routeId);
+			
+		} else {
+			GuiRouteProperties routeProperties = new GuiRouteProperties();
+			s_routeProperties.put(routeId, routeProperties);
+			return routeProperties;
 		}
 	}
 	
@@ -185,5 +216,5 @@ public class GuiEngine {
 		s_startPoint = null;
 		s_endPoint = null;
 		s_runMode = Notifier.RUN_MODE_FUNCTION;
-	}	
+	}
 }

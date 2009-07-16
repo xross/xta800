@@ -19,22 +19,25 @@ public class GuiNotifier implements Notifier {
 
 		} else if (message.equals(HOLD_MESSAGES)) {
 			m_holdMessages = true;
-			
+
 		} else if (message.equals(RELEASE_MESSAGES)) {
 			m_holdMessages = false;
 			if (m_heldMessageCount > 0) {
 				displayMessageBox("Warning", "Multiple warnings detected\n(See log for details)");
 				m_heldMessageCount = 0;
 			}
+
 		} else if (message.equals(NOTIFY_WARNING)) {
 			if (m_holdMessages) {
 				m_heldMessageCount++;
 			} else {
 				displayMessageBox("Warning", argument);
 			}
+
 		} else if (message.equals(NOTIFY_ANALYSIS_ABORTED)) {
 			displayAbortDetails();
-		}		
+
+		}
 		GuiEngine.broadcast(message, argument);			
 	}
 	
