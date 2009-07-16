@@ -12,6 +12,6 @@ system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "print completed_paths " .
+       "print structure - " .
        "-exit > $genDir/pausable.txt 2>&1");
 

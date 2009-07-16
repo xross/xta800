@@ -12,6 +12,6 @@ system("xcc -target=$target -march=$arch -fxta-info -g test.xc -o $genDir/test.x
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "print completed_paths " .
+       "print structure - " .
        "-exit > $genDir/nested_select.txt 2>&1");
 

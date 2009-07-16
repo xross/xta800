@@ -11,8 +11,5 @@ if (!$noBuild) {
 system("xcc -target=$target -march=$arch -std=c99 test.c -o $genDir/test.xe > $genDir/quicksort.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse function sort " .
-       "print completed_loops " .
-       "print unresolved_paths " .
-       "exit > $genDir/quicksort.txt 2>&1");
+       "-exit > $genDir/quicksort.txt 2>&1");
 

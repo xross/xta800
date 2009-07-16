@@ -8,10 +8,10 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -march=$arch -nostartfiles test.s -o $genDir/test.xe > $genDir/self_loop.log 2>&1");
+system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir/same_loop_twice.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "print completed_loops " .
-       "exit > $genDir/self_loop.txt 2>&1");
+       "print structure - " .
+       "-exit > $genDir/same_loop_twice.txt 2>&1");
 
