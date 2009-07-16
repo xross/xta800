@@ -93,7 +93,10 @@ public class RouteConstructor {
 		for (Node start : startNodes) {
 			resetParent();
 			int startPc = start.getStartPc();
-			while(start.getParent() != null && !start.getParent().isSectionNode()&& start.getParent().getStartPc() == startPc){
+			
+			//this should be reworked to not have the start.getParent().getStartPc() != 0 statement as this 
+			//is a dirty way of testing to see if the top most block of a parent is in fact a section
+			while(start.getParent() != null && start.getParent().getStartPc() != 0 && start.getParent().getStartPc() == startPc){
 				start = start.getParent();
 			}
 			
@@ -149,11 +152,6 @@ public class RouteConstructor {
 		} else {
 			seenEndPoint |= explore(startNodeWrapper, workingSet, endNodes, null);
 		}
-		if(!cfgSanityCheck(workingSet)){
-			System.out.println(sae.dumpTree("cfg", workingSet));
-		}
-		
-		
 		assert(cfgSanityCheck(workingSet));
 									
 		pruneGraphOfExcludedPaths(workingSet);

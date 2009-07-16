@@ -91,7 +91,7 @@ public class SectionNode extends Node {
 	}
 	
 	public int getStartPc() {
-		assert(false);
+	//	assert(false);
 		return 0;
 	}
 
