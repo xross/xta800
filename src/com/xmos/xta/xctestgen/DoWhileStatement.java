@@ -23,9 +23,15 @@ public class DoWhileStatement extends CodeElement {
 
 	public void emitExpect(int node, BufferedWriter file, int depth) throws IOException  {
 		emitExpectIndent(file, depth);
-		file.write("selfloop\n");
+		file.write("selfloop " + getName() + "\n" );
+		int indent = 1;
+		if(getChildCount() > 1){
+			indent++;
+			emitExpectIndent(file, depth+1);
+			file.write("path\n");
+		}
 		for (CodeElement child : m_children.get(node)) {
-			child.emitExpect(node, file, depth+1);
+			child.emitExpect(node, file, depth+indent);
 		}
 	}
 

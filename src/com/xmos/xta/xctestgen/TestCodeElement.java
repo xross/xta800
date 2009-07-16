@@ -34,8 +34,10 @@ public class TestCodeElement extends CodeElement {
 	}
 
 	public void emitExpect(int node, BufferedWriter file, int depth) throws IOException  {
+		//function(1363) : 520.0ns / 460.0ns test
 		
-		file.write("function: "+ m_description + "\n");
+		
+		file.write("function\\(\\d+\\) +: \\d+.\\d+ns / \\d+.\\d+ns test\n");
 		for (CodeElement child : m_children.get(node)) {
 			child.emitExpect(node, file, depth+1);
 		}

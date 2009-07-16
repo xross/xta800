@@ -17,7 +17,7 @@ public class EndPointStatement extends CodeElement{
 
 	public void emitExpect(int node, BufferedWriter file, int depth) throws IOException  {
 		emitExpectIndent(file, depth);
-		file.write("block\n");
+		file.write("block\\(\\d+\\) +: \\d+.\\d+ns \\(x 1\\)/ \\d+.\\d+ns \\(x1\\)\n");
 	}
 
 	public int getNodeNumPaths() {
