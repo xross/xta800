@@ -141,7 +141,7 @@ public class StructureLoopNode extends StructureNode {
         }
 	}
 
-	private boolean hasUnknowns() {
+	protected boolean hasUnknowns() {
 		NodeAttributes nodeAttributes = m_treeNode.getAttributes();
 		if (nodeAttributes.isUnknown() &&
 			(nodeAttributes.getUnknownState() == UnknownState.UNKNOWN)) {

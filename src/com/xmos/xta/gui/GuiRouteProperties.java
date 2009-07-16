@@ -1,14 +1,18 @@
 package com.xmos.xta.gui;
 
+import com.xmos.xta.gui.views.viewnode.ViewNode;
+
 public class GuiRouteProperties {
     private double m_scale;
     private int m_offsetX;
     private int m_offsetY;
+	private ViewNode m_viewNode;
 
     public GuiRouteProperties() {
 		m_scale = 0.0;
 		m_offsetX = 0;
 		m_offsetY = 0;
+		m_viewNode = null;
 	}
 
 	public double getScale() {
@@ -33,5 +37,13 @@ public class GuiRouteProperties {
 
 	public void setOffsetY(int offset) {
 		m_offsetY = offset;
+	}
+
+	public ViewNode getViewNode() {
+		return m_viewNode;
+	}
+
+	public void setViewNode(ViewNode viewNode) {
+		m_viewNode = viewNode;
 	}
 }
