@@ -203,7 +203,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	private boolean done;
-	private void normaliseGraph(FunctionNode fn) {
+	public void normaliseGraph(Node fn) {
 		done = false;
 		//this bit removes the path within paths 
 		while(!done){

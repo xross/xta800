@@ -18,6 +18,14 @@ public abstract class CodeElement {
 		m_maxNodes = maxNodes;
 	}
 	
+	public int getChildCount(){
+		int childCount = 0;
+		for(ArrayList<CodeElement> child : m_children){
+			childCount+=child.size();
+		}
+		return childCount;
+	}
+	
 	public void addNode() {
 		assert(m_children.size() < m_maxNodes);
 		m_children.add(new ArrayList<CodeElement>());

@@ -23,87 +23,89 @@ public class StructureDisplayer {
 	}
 	
 	public void display(Collection<Node> nodes) {
+		final StringBuffer sb = new StringBuffer();
 		for (Node node : nodes) {					
 		    node.traverse(0, new UntypedNodeTraverser() {
 				public boolean foundNode(Node node, int depth) {
-					displayNodeInfo(node, depth);
+					displayNodeInfo(node, depth, sb);
 					return true;						
 				}
 		    });
-		    m_console.display("\n"); 
+		    sb.append("\n");	
 		}
+		m_console.display(sb.toString());
     }
 	
-	private void displayNodeInfo(Node node, int depth) {
+	private void displayNodeInfo(Node node, int depth, StringBuffer sb) {
 		if (node.isInstructionNode() && (m_verbosity <= 0))
 			return;
 		if (node.isNullNode() && (m_verbosity <= 50))
 			return;
-		printIndent(depth);
-		printModifiers(node, depth);
-		displayNodeName(node);
-		displayTimeTaken(node);
-		displayNumPaths(node);
-		displayDescription(node);
-		displayAttributes(node);
-		if (DEBUG_NEXT) displayWhatsNext(node);
-		if (DEBUG_BEFORE) displayWhatsBefore(node);
-		if (DEBUG_CHILDREN) displayChildren(node);
-		m_console.display("\n");		
+		printIndent(depth, sb);
+		printModifiers(node, depth, sb);
+		displayNodeName(node, sb);
+		displayTimeTaken(node, sb);
+		displayNumPaths(node, sb);
+		displayDescription(node, sb);
+		displayAttributes(node, sb);
+		if (DEBUG_NEXT) displayWhatsNext(node, sb);
+		if (DEBUG_BEFORE) displayWhatsBefore(node, sb);
+		if (DEBUG_CHILDREN) displayChildren(node, sb);
+		sb.append("\n");	
 	}
 	
-	private void printIndent(int depth) {
+	private void printIndent(int depth, StringBuffer sb) {
 		for (int i = 0; i < depth - 1; ++i) {
-			m_console.display(".    ");
+			sb.append(".    ");
 		}
 	}
 
-	private void printModifiers(Node node, int depth) {
+	private void printModifiers(Node node, int depth, StringBuffer sb) {
 		if (depth > 0) {
 			if (node.getAttributes().getDisplayUnknown()) {
-				m_console.display(".  * ");
+				sb.append(".  * ");
 			} else {
-				m_console.display(".    ");			
+				sb.append(".    ");		
 			}			
 		}
 	}	
 	
-	private void displayNodeName(Node node) {	
+	private void displayNodeName(Node node, StringBuffer sb) {	
 		String nodeName = String.format("%s(%d)", node.getTypeName(), node.getId());
-		m_console.display(String.format("%-14s", nodeName));		
+		sb.append(String.format("%-14s", nodeName));		
 	}
 	
-	private void displayTimeTaken(Node node) {
-		m_console.display(node.getAttributes().getTimingSummary()); 		
+	private void displayTimeTaken(Node node, StringBuffer sb) {
+		sb.append(node.getAttributes().getTimingSummary());	
 	}	
 
-	private void displayNumPaths(Node node) {
+	private void displayNumPaths(Node node, StringBuffer sb) {
 		if (m_verbosity >= 10)
-		    m_console.display(String.format(" [%d]", 
+			sb.append(String.format(" [%d]", 
 		    		node.getAttributes().getNumPaths())); 		
 	}	
 	
-	private void displayDescription(Node node) {
-		m_console.display(" " + node.getDescription());
+	private void displayDescription(Node node, StringBuffer sb) {
+		sb.append(" " + node.getDescription());
 	}
 	
-	private void displayAttributes(Node node) {		
+	private void displayAttributes(Node node, StringBuffer sb) {		
 		if ((m_verbosity >= 50) || (DEBUG_ATTRIBUTES == true)) {			
 			NodeAttributes nodeAttributes = node.getAttributes();
 			
 			if (node.isLoopNode() || node.isSelfLoopNode()) {
-				m_console.display(String.format(" [%d]",
+				sb.append(String.format(" [%d]",
 						nodeAttributes.getLoopIterations()));
 				
 				if (nodeAttributes.getIsAbsolute())
-					m_console.display(" (ABSOLUTE)"); 				
+					sb.append(" (ABSOLUTE)"); 				
 				
 			} else if (node.isSectionNode()) {
 				Node enclosingLoopNode = node.getEnclosingLoopNode();
 				if (enclosingLoopNode != null) {
 	                for (Node option : node.getChildren()) {
 	                	String optionSet = nodeAttributes.getSetOption(option) ? "T" : "F";
-	                	m_console.display(String.format("[%s,%d,%d]", optionSet, 
+	                	sb.append(String.format("[%s,%d,%d]", optionSet, 
 	                			nodeAttributes.getLoopPathIterations(
 	                					enclosingLoopNode.getAttributes().getLoopIterations(), option, Case.WORST),
 	                			nodeAttributes.getLoopPathIterations(
@@ -111,35 +113,35 @@ public class StructureDisplayer {
 	                }					
 				}
 				if (node.isSectionOptional())		
-				    m_console.display(" (OPTIONAL)"); 				
+					sb.append(" (OPTIONAL)"); 				
 				
 			} else if (node.getAttributes().getIsLoopHeader())  {
-				m_console.display(" (HEADER)"); 
+				sb.append(" (HEADER)"); 
 			}			
 		}
 	}
 	
-	private void displayWhatsNext(Node node) {
+	private void displayWhatsNext(Node node, StringBuffer sb) {
 		if (node.getParent()!= null && node.getParent().whatsNext(node) != null){
-			m_console.display(" ---next: ");
-			m_console.display(node.getParent().whatsNext(node).toString());
-			m_console.display("---");
+			sb.append(" ---next: ");
+			sb.append(node.getParent().whatsNext(node).toString());
+			sb.append("---");
 		}		
 	}
 	
-	private void displayWhatsBefore(Node node) {
+	private void displayWhatsBefore(Node node, StringBuffer sb) {
 		if (node.getParent()!= null && node.getParent().whatsBefore(node) != null){
-			m_console.display(" ---before: ");
-			m_console.display(node.getParent().whatsBefore(node).toString());
-			m_console.display("---");
+			sb.append(" ---before: ");
+			sb.append(node.getParent().whatsBefore(node).toString());
+			sb.append("---");
 		}		
 	}
 	
-	private void displayChildren(Node node) {
+	private void displayChildren(Node node, StringBuffer sb) {
 		if (node.getChildren() != null){
-			m_console.display(" ---children: ");
-			m_console.display(node.getChildren().toString());
-			m_console.display("---");
+			sb.append(" ---children: ");
+			sb.append(node.getChildren().toString());
+			sb.append("---");
 		}		
 	}
 }

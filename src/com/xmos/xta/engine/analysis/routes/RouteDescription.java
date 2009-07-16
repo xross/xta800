@@ -41,6 +41,21 @@ public class RouteDescription {
 		m_to = new LinkedList<Reference>();
 		StructureGraph sg = engine.getStructureGraph();
 		
+		for(FunctionNode fn : sg.getThreads()){
+			if(fn.getFunctionName().equals(functionName)){
+				int pc = fn.getStartPc();
+				String from = "0x" + Integer.toHexString(pc);
+				m_from = ReferenceFactory.createReference(
+						from, ReferenceClass.ENDPOINT_REF);
+				TreeSet<Node> endInstructions = sg.getPcToEndPoints().get(pc);
+				for(Node endPoint : endInstructions){
+					String to = "0x" + Integer.toHexString(endPoint.getStartPc());
+					m_to.add(ReferenceFactory.createReference(to, ReferenceClass.ENDPOINT_REF));
+				}
+				break;
+			}
+		}
+		
 		for(FunctionNode fn : sg.getFunctions()){
 			if(fn.getFunctionName().equals(functionName)){
 				int pc = fn.getStartPc();
