@@ -1,7 +1,0 @@
-Error: Failed to set max loop iterations: route id: -1
-.*
-[^^^]
-Number of iterations:    140 \+ 0
-.*
-[^^^]
-Number of iterations:    110 \+ 0

@@ -8,7 +8,9 @@ int test(int x) {
 }
 
 int main() {
+  #pragma xta call "test1"
   test(100);
+  #pragma xta call "test2"
   test(100);
   return 0;
 }

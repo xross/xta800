@@ -12,11 +12,9 @@ system("xcc -target=$target -march=$arch -fxta-info -g test.xc -o $genDir/test.x
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "set loopmax - loop 100 " .
-       "set loop - loop_func1 75 " .
-       "set loop - loop_func2 25 " .
-       "print path_info - 1 " .
-       "print path_info - 2 " .
-       "print completed_loops " .
-       "exit > $genDir/for.txt 2>&1");
+       "set loop - loop 100 " .
+       "set looppath - loop_func1 75 " .
+       "set looppath - loop_func2 25 " .
+       "print structure - " .
+       "-exit > $genDir/for.txt 2>&1");
 

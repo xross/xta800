@@ -1,20 +1,17 @@
 function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns main
-.    path\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns test
 .    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
-.    .    function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns test
-.    .    .    path\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
-.    .    .    .    loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 101\) / \d+.\d+ns \(x 101\) 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 100\) / \d+.\d+ns \(x 100\) 
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    .    loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 101\) / \d+.\d+ns \(x 101\) 
+.    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 100\) / \d+.\d+ns \(x 100\) 
 .    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
-.    .    function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns test
-.    .    .    path\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
-.    .    .    .    loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 101\) / \d+.\d+ns \(x 101\) 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 100\) / \d+.\d+ns \(x 100\) 
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns test
 .    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    .    loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 201\) / \d+.\d+ns \(x 201\) 
+.    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 200\) / \d+.\d+ns \(x 200\) 
+.    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
 
