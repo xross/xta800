@@ -199,4 +199,17 @@ public class SectionNodeAttributes extends NodeAttributes {
 	    }
   	    return totalNumIterationsSet;
 	}
+	
+	long getNodeIterations(Case c, Node child, Node ignoreIterationsAboveSection) throws IgnoreSectionIterationsException {
+		if (getNode() == ignoreIterationsAboveSection) {
+			throw new IgnoreSectionIterationsException();
+			
+		} else {
+			long iterations = 1;
+			if (getNode().getParent() != null) {
+				iterations =  getNode().getParent().getAttributes().getNodeIterations(c, getNode(), ignoreIterationsAboveSection);
+			}					
+		    return getLoopPathIterations(iterations, child, c);
+		}
+	}		
 }
