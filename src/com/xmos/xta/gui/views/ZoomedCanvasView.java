@@ -242,8 +242,8 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 
 	public void menuAboutToShow(IMenuManager manager) {
 		if (m_selectedNodes.size() == 1) {
-	    	if (m_toolTip != null  && !m_toolTip.isDisposed ()) {
-				m_toolTip.dispose ();
+	    	if (m_toolTip != null  && !m_toolTip.isDisposed()) {
+				m_toolTip.dispose();
 	    	}
 	    	Views.createContextMenu(manager, m_selectedNodes, m_parent.getShell());
 		}
@@ -594,7 +594,13 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			m_viewNode = null;
 			updateSelection(new ArrayList<Node>());
 		}
+		m_renderControl.setRoute(route);
 		m_renderControl.setViewNode(m_viewNode);
+
+		double scale = m_renderControl.getScale();
+		m_hScrollPosition = (int)((double)m_renderControl.getOffsetX() / scale);
+		m_vScrollPosition = (int)((double)m_renderControl.getOffsetY() / scale);
+		updateScrollBars();
 	}
 
     protected void drawCanvas(GC gc) {

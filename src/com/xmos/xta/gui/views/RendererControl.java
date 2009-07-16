@@ -10,7 +10,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
+import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.gui.GuiRouteProperties;
 import com.xmos.xta.gui.views.viewnode.ViewNode;
 
 public class RendererControl {
@@ -40,8 +43,8 @@ public class RendererControl {
     private boolean m_selectBoxChanged;
     private Rectangle m_selectBox;
 	
+    private GuiRouteProperties m_routeProperties;
     private double m_scale;
-	
     private int m_offsetX;
     private int m_offsetY;
     
@@ -74,6 +77,8 @@ public class RendererControl {
 		m_canvasImage = new Image(m_display, 1, 1);
 
 	    resetState();
+	    
+	    m_routeProperties = null;
 	}
 
 	public synchronized boolean waitForChange() {
@@ -311,5 +316,24 @@ public class RendererControl {
 	public synchronized void resizeCanvas() {
 		m_canvasImage.dispose();
 		m_canvasImage = new Image(m_display, m_canvasWidth, m_canvasHeight);
+	}
+
+	public void setRoute(Route route) {
+		// Save off current properties
+		if (m_routeProperties != null) {
+			m_routeProperties.setScale(m_scale);
+			m_routeProperties.setOffsetX(m_offsetX);
+			m_routeProperties.setOffsetY(m_offsetY);
+		}
+		
+		// Set up new state
+		if (route == null) {
+			m_routeProperties = null;
+		} else {
+			m_routeProperties = GuiEngine.getRouteProperties(route.getRouteId());
+			setScale(m_routeProperties.getScale());
+			setOffsetX(m_routeProperties.getOffsetX());
+			setOffsetY(m_routeProperties.getOffsetY());
+		}
 	}
 }

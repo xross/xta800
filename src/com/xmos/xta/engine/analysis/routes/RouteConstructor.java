@@ -97,8 +97,8 @@ public class RouteConstructor {
 				start = start.getParent();
 			}
 			
-			if(m_description.getMode() == RouteMode.FUNCTION && notFoundFunctionYet){
-				if(start.isFunctionNode()){
+			if(m_description.getMode() == RouteMode.FUNCTION ){
+				if(start.isFunctionNode()&& notFoundFunctionYet){
 					seenEndPoint = makeSubRoute(seenEndPoint, endNodes, start);
 					notFoundFunctionYet = false;
 				}
