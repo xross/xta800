@@ -1,0 +1,4 @@
+function\(\d+\)\s+: Infinity / Infinity main
+.    infiniteselfloop\(\d+\)\s+: Infinity / Infinity 
+.    .    block\(\d+\)\s+: Infinity \(x -\) / Infinity \(x -\) 
+
