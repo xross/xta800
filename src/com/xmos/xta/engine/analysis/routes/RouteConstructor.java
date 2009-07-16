@@ -121,6 +121,7 @@ public class RouteConstructor {
 			if (seenEndPoint) {
 				return RouteError.SUCCESS;
 			} else {
+				//return RouteError.SUCCESS;
 				return RouteError.NO_ENDPOINTS_FOUND;
 			}
 		} else {
@@ -152,6 +153,10 @@ public class RouteConstructor {
 		} else {
 			seenEndPoint |= explore(startNodeWrapper, workingSet, endNodes, null);
 		}
+		
+		
+		
+		//System.out.println(sae.dumpTree("tree", workingSet));
 		assert(cfgSanityCheck(workingSet));
 									
 		pruneGraphOfExcludedPaths(workingSet);
@@ -226,6 +231,14 @@ public class RouteConstructor {
 		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
 		exclusions.retainAll(node.m_node.getContainedNodes());
 		
+		if (EXPLORE_DUBUG) {
+			if(nodes.isEmpty()){
+				System.out.println(node.m_node + "does not contain an endpoint" );
+			} else {
+				System.out.println(node.m_node + " contains an endpoint" );
+			}
+		}
+		
 		boolean seenEndPoint = false;
 
 
@@ -244,7 +257,11 @@ public class RouteConstructor {
 					m_excludedRouteNodes.add(node.m_node);
 				} else {
 					assert (!node.m_node.getImmediateChildren().isEmpty());
+					
+					if (EXPLORE_DUBUG) System.out.println(node.m_node + " has immediate children of " + node.m_node.getImmediateChildren());
 					for(Node child : node.m_node.getImmediateChildren()){
+						
+						
 						NodeWrapper childWrapper = new NodeWrapper(child);
 						seenEndPoint |= explore(childWrapper, set, endNodes, parent);
 						if(parent == null) {
@@ -264,6 +281,9 @@ public class RouteConstructor {
 			if (node.m_node.getParent() != null && !node.m_node.getParent().whatsNext(node.m_node).isEmpty()) {
 				Collection<Node> nextNodes = node.m_node.getParent().whatsNext(node.m_node);
 				nextNodes = node.m_node.getParent().whatsNext(node.m_node);
+				
+				if (EXPLORE_DUBUG) System.out.println(node.m_node + " has next nodes of " + nextNodes);
+				
 				for (Node next : nextNodes) {
 					seenEndPoint |= explore(new NodeWrapper(next), set, endNodes, node.m_node);
 				}
@@ -276,6 +296,7 @@ public class RouteConstructor {
 				return true;
 			} else {
 				assert (!node.m_node.getImmediateChildren().isEmpty());
+				if (EXPLORE_DUBUG) System.out.println(node.m_node + " has immediate children of " + node.m_node.getImmediateChildren());
 				
 				for(Node child : node.m_node.getImmediateChildren()){
 					NodeWrapper childWrapper = new NodeWrapper(child);

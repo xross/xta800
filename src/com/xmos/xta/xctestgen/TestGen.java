@@ -206,6 +206,9 @@ public class TestGen {
 		file.write("       \"-analyse path start endpoint0 \" .\n");
 		file.write("       \"-analyse path start endpoint1 \" .\n");
 		file.write("       \"-analyse path start endpoint2 \" .\n");
+//		file.write("       \"-analyse path endpoint0 endpoint0 \" .\n");
+//		file.write("       \"-analyse path endpoint1 endpoint1 \" .\n");
+//		file.write("       \"-analyse path endpoint2 endpoint2 \" .\n");
 		file.write("       \"-analyse path endpoint0 end \" .\n");
 		file.write("       \"-analyse path endpoint1 end \" .\n");
 		file.write("       \"-analyse path endpoint2 end \" .\n");
