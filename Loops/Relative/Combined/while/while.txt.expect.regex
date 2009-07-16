@@ -1,13 +1,22 @@
-.*
-[^^^]
-Number of iterations:    25 \+ 0
-.*
-[^^^]
-Number of iterations:    75 \+ 0
-Route\(0\) function: main
-Complete \[1 path\]
-    path\(\d+\) +: \d+\.\d+ns
-        loop \[2 paths, 100 iterations\]
-            path\(\d+\) +: \d+\.\d+ns
-            path\(\d+\) +: \d+\.\d+ns
+function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns main
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns test
+.    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    .    loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 101\) / \d+.\d+ns \(x 101\) 
+.    .    .    path\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 100\) / \d+.\d+ns \(x 100\) 
+.    .    .    .    section\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    .    .    .    .    path\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 25\) / \d+.\d+ns \(x 25\) 
+.    .    .    .    .    .    function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns func2
+.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 25\) / \d+.\d+ns \(x 25\) 
+.    .    .    .    .    path\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 75\) / \d+.\d+ns \(x 75\) 
+.    .    .    .    .    .    function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns func1
+.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 75\) / \d+.\d+ns \(x 75\) 
+.    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 75\) / \d+.\d+ns \(x 75\) 
+.    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 100\) / \d+.\d+ns \(x 100\) 
+.    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
 
