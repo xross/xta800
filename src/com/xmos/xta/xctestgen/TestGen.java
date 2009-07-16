@@ -44,6 +44,9 @@ public class TestGen {
 				code.addChild(new EndPointStatement(m_endpoint));
 				m_endpoint++;
 				break;
+			case 'r':
+				code.addChild(new ReturnStatement(m_unique));
+				break;
 			case 'a':
 				code.addChild(new AddStatement(m_unique));
 				break;
@@ -203,10 +206,42 @@ public class TestGen {
 		file.write("       \"-analyse path start endpoint0 \" .\n");
 		file.write("       \"-analyse path start endpoint1 \" .\n");
 		file.write("       \"-analyse path start endpoint2 \" .\n");
+//		file.write("       \"-analyse path endpoint0 endpoint0 \" .\n");
+//		file.write("       \"-analyse path endpoint1 endpoint1 \" .\n");
+//		file.write("       \"-analyse path endpoint2 endpoint2 \" .\n");
 		file.write("       \"-analyse path endpoint0 end \" .\n");
 		file.write("       \"-analyse path endpoint1 end \" .\n");
 		file.write("       \"-analyse path endpoint2 end \" .\n");
 		file.write("       \"-analyse path endpoint0 endpoint2 \" .\n");
+		
+		file.write("       \"-add exclusion endpoint0 \" .\n");
+		file.write("       \"-analyse function test \" .\n");
+		file.write("       \"-remove exclusion endpoint0 \" .\n");
+		
+		file.write("       \"-add exclusion endpoint1 \" .\n");
+		file.write("       \"-analyse function test \" .\n");
+		file.write("       \"-remove exclusion endpoint1 \" .\n");
+		
+		file.write("       \"-add exclusion endpoint2 \" .\n");
+		file.write("       \"-analyse function test \" .\n");
+		file.write("       \"-remove exclusion endpoint2 \" .\n");
+		
+		file.write("       \"-add exclusion endpoint0 \" .\n");
+		file.write("       \"-add exclusion endpoint1 \" .\n");
+		file.write("       \"-analyse function test \" .\n");
+		file.write("       \"-remove exclusion endpoint0 \" .\n");
+		file.write("       \"-remove exclusion endpoint1 \" .\n");
+		
+		file.write("       \"-add exclusion endpoint0 \" .\n");
+		file.write("       \"-add exclusion endpoint2 \" .\n");
+		file.write("       \"-analyse function test \" .\n");
+		file.write("       \"-remove exclusion endpoint0 \" .\n");
+		file.write("       \"-remove exclusion endpoint2 \" .\n");
+		
+		file.write("       \"-add exclusion endpoint1 \" .\n");
+		file.write("       \"-add exclusion endpoint2 \" .\n");
+		file.write("       \"-analyse function test \" .\n");
+
 		file.write("       \"-exit > $genDir/" + testName + ".txt 2>&1\");\n");
 		file.write("\n");
 	}
@@ -214,9 +249,9 @@ public class TestGen {
 	static public void main(String[] args) {
 		String tests[] = {
 				
-				"pad(ai(a)p)p",
-				"pad(ai(a)(p))p",
-				/*
+				//"pad(ai(a)p)p",
+				//"pad(ai(a)(p))p",
+				
 				"papp",
 				"pd(pap)",
 				"pd(pd(ap))",
@@ -339,19 +374,144 @@ public class TestGen {
 				"pe(e(a)(pa))(e(a)(ap))",
 				"pe(e(a)(e(pa)(a)))(e(a)(ap))",
 				"pe(e(pa)(e(a)(a)))(e(a)(e(a)(ap)))",
-				*/
+				
+				//now for non stuctural test with returns on them
+				
+				"parpp",
+				"pd(rpap)",
+				"pd(rpd(rap))",
+				"pd(rd(rpd(rap)))",
+				"pd(rd(rpd(d(rap))))",
+				"pad(rpap)",
+				"pad(aprd(apr))",
+				"pad(ad(apd(ap)r)r)r",
+				"pad(ad(apd(ad(apr)r)r)r)",
+				
+				"pd(ir(prap))",
+				"pd(rd(pi(rap)))",
+				"pd(d(pd(ri(ap))))",
+				"pd(d(d(pd(ri(ap)))))",
+				"pi(a)d(pri(ap))",
+				"pi(ar)d(pi(a)d(i(ap)))",
+				"pi(ar)d(i(a)d(pi(a)d(i(ap))))",
+				"pi(a)d(i(a)d(pri(a)d(i(a)d(i(rap)))))",
+				
+				"pf(prap)",
+				"pf(prf(ap))",
+				"pf(rf(pf(f(ap))))",
+				"paf(rpap)",
+				"paf(arpf(ap))",
+				"paf(arf(paf(af(ap))))",
+				"pf(ri(prap))",
+				"pf(rf(pi(arp)))",
+				"pf(f(prf(f(ri(ap)))))",
+				"pi(ar)pf(i(ap))",
+				"pi(ar)f(pi(a)f(i(ap)))",
+				"pi(a)f(pi(ar)f(i(ra)f(i(a)f(i(arp)))))",
+				
+				"pw(prap)",
+				"prw(pw(ap))",
+				"pw(w(w(prw(rap))))",
+				"paw(prap)",
+				"paw(arpw(ap))",
+				"paw(arw(apw(raw(ap))))",
+				"pw(pi(arp))",
+				"pw(w(pri(ap)))",
+				"prw(w(pw(w(i(ap)))))",
+				"pi(ar)w(i(pap))",
+				"pi(ar)w(i(pa)w(i(rap)))",
+				"pi(ar)w(i(ra)w(i(pa)w(i(ra)w(i(ap)))))",
+				
+				"pd(i(pra)(ap))",
+				"pd(d(ri(pra)(ap)))",
+				"pd(rd(d(i(pra)(ap))))",
+				"pd(rd(pd(d(i(a)(rap)))))",
+				"pi(a)(pra)d(i(a)(ap))",
+				"pi(a)(ar)d(i(ap)(ar)d(i(a)(arp)))",
+				"pi(ar)(a)d(i(a)(pra)d(i(a)(a)d(i(a)(apr))))",
+				"pi(a)(ar)d(i(a)(a)d(i(pa)(a)d(i(a)(a)d(ri(a)(ap)))))",
+				
+				"pf(parp)",
+				"pf(prf(ap))",
+				"pf(pf(f(f(arp))))",
+				"paf(parp)",
+				"paf(arpf(ap))",
+				"paf(arf(apf(af(ap))))",
+				"pf(ri(pa)(arp))",
+				"pf(rf(i(pa)(ap)))",
+				"pf(f(f(pf(ri(a)(ap)))))",
+				"pi(a)(pa)f(ri(a)(ap))",
+				"pi(a)(a)f(ri(pa)(a)f(ri(a)(ap)))",
+				"pi(a)(a)f(ri(a)(a)f(ri(pa)(a)f(i(a)(a)f(ri(a)(ap)))))",
+				
+				"pw(rprarp)",
+				"pw(w(prap))",
+				"pw(rw(pw(w(ap))))",
+				"parpw(ap)",
+				"parw(paw(ap))r",
+				"paw(aw(praw(aw(ap))))",
+				"pw(i(pa)(ap)r)",
+				"pw(w(pi(a)(ap)))r",
+				"pw(w(w(prw(i(ra)(ap)))))",
+				"pi(a)(pra)w(i(a)(ap))",
+				"pi(a)(ar)w(i(par)(a)w(i(ra)(ap)))",
+				"pi(a)(a)w(i(a)(a)w(i(a)(pra)w(i(a)(a)rw(i(a)(ap)))))",
+				
+				
+				"ps(prra)(ap)",
+				"ps(ar)(pa)(ap)",
+				"ps(pa)(a)(a)(arp)r",
+				
+				"pd(s(pa)(arp))",
+				"pd(s(ar)(pa)(ap))",
+				"pd(rs(ar)(pa)(a)(ap))",
+				
+				"ps(rd(pa))(d(ap))",
+				"ps(d(ra))(d(pra))(d(ap))",
+				"ps(d(pra))(d(ra))(d(a))(d(ap))r",
+				
+				"pd(s(d(arp))(d(ap)))",
+				"pd(s(d(arp))(d(a))(d(arp)))",
+				"pd(s(d(arp))(d(ar))(d(a))(d(ap)))r",
+				
+				"prs(s(pra)(a))(rap)",
+				"prs(s(a)(pa))(s(a)(ap))",
+				"ps(s(ar)(s(pa)(ar)))(s(a)(ap))",
+				"ps(s(par)(s(a)(a)))(s(ar)(s(arr)(ap)))",
+
+				"pe(par)(ap)",
+				"pe(ar)(pa)(ap)",
+				"pe(a)(pa)(ra)(ap)",
+				
+				"pd(e(rpa)(ap))",
+				"pd(e(pra)(ar)(ap))",
+				"pd(e(ra)(pa)(a)(arp))",
+				
+				"pe(d(pa))(d(arp))",
+				"pe(d(ar))(d(pa))(d(ap))",
+				"pe(d(par))(d(a))(d(rra))(d(ap))",
+				
+				"pd(e(d(pa))(d(arp)))",
+				"pd(e(d(ar))(d(arp))(d(ap)))",
+				"pd(e(d(pra))(d(a))(d(a))(d(ap)))",
+				
+				"pe(e(pra)(a))(ap)",
+				"pe(e(a)(pra))(e(ar)(ap))",
+				"pe(e(a)(e(pa)(a)))(e(ra)(ap))",
+				"pe(e(pa)(e(ra)(ar)))(e(ra)(e(a)(ap)))",
+				
 		};
 
 		m_testCount = 0;
 	  for (String testDesc : tests) {
-		 /*
+		 
 		  createNonStucturalTest(testDesc, "0");
 		  createNonStucturalTest(testDesc, "1");
 		  createNonStucturalTest(testDesc, "2");
 		  createNonStucturalTest(testDesc, "3");
 		  createNonStucturalTest(testDesc, "s");
-		  */
-		  createStucturalTest(testDesc);
+		  
+		 // createStucturalTest(testDesc);
 	  }
 	}
 }

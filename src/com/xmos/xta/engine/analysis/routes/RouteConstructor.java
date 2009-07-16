@@ -73,7 +73,7 @@ public class RouteConstructor {
 
 	public RouteError analyse() {
 		
-		resetParent();
+		
 		boolean seenEndPoint = false;
 		
 		if(m_description.getStartPoint() == null ){
@@ -91,9 +91,12 @@ public class RouteConstructor {
 		
 		boolean notFoundFunctionYet = true;
 		for (Node start : startNodes) {
-			
+			resetParent();
 			int startPc = start.getStartPc();
-			while(start.getParent() != null && start.getParent().getStartPc() == startPc){
+			
+			//this should be reworked to not have the start.getParent().getStartPc() != 0 statement as this 
+			//is a dirty way of testing to see if the top most block of a parent is in fact a section
+			while(start.getParent() != null && start.getParent().getStartPc() != 0 && start.getParent().getStartPc() == startPc){
 				start = start.getParent();
 			}
 			
@@ -118,6 +121,7 @@ public class RouteConstructor {
 			if (seenEndPoint) {
 				return RouteError.SUCCESS;
 			} else {
+				//return RouteError.SUCCESS;
 				return RouteError.NO_ENDPOINTS_FOUND;
 			}
 		} else {
@@ -134,12 +138,15 @@ public class RouteConstructor {
 	
 	private boolean makeSubRoute(boolean seenEndPoint, Collection<Node> endNodes,
 			Node start) {
+		
+		if(EXPLORE_DUBUG) System.out.println("starting from " + start);
+		
 		Collection<Node> workingSet = new TreeSet<Node>();
 		
 		m_structureGraph.removeLinks();
 		m_excludedRouteNodes = new TreeSet<Node>();
 		NodeWrapper startNodeWrapper = new NodeWrapper(start);
-
+		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
 		if(start.isFunctionNode()){
 			workingSet.add(start);
 			seenEndPoint  = true;
@@ -147,18 +154,22 @@ public class RouteConstructor {
 			seenEndPoint |= explore(startNodeWrapper, workingSet, endNodes, null);
 		}
 		
-		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
-		pruneGraphOfExcludedPaths(workingSet);
 		
+		
+		//System.out.println(sae.dumpTree("tree", workingSet));
+		assert(cfgSanityCheck(workingSet));
+									
+		pruneGraphOfExcludedPaths(workingSet);
+		assert(cfgSanityCheck(workingSet));
 		if(!workingSet.isEmpty()){
-			
+			assert(cfgSanityCheck(workingSet));
 			Set<Node> newEndNodes;
 			if(m_description.getMode() == RouteMode.PATH){
 				newEndNodes = removeFinalInstruction(endNodes, startNodeWrapper.m_node,workingSet);
 			} else {
 				newEndNodes = new TreeSet<Node>(endNodes);
 			}
-			
+			assert(cfgSanityCheck(workingSet));
 			Node newStart = makeBasicBlocks(startNodeWrapper.m_node, newEndNodes, workingSet);
 			assert(cfgSanityCheck(workingSet));
 			
@@ -210,6 +221,8 @@ public class RouteConstructor {
 	}
 	
 	
+	private static boolean EXPLORE_DUBUG =  false;
+	
 	private boolean explore(NodeWrapper node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
 
 		Set<Node> nodes = new TreeSet<Node>(endNodes);
@@ -217,6 +230,14 @@ public class RouteConstructor {
 		
 		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
 		exclusions.retainAll(node.m_node.getContainedNodes());
+		
+		if (EXPLORE_DUBUG) {
+			if(nodes.isEmpty()){
+				System.out.println(node.m_node + "does not contain an endpoint" );
+			} else {
+				System.out.println(node.m_node + " contains an endpoint" );
+			}
+		}
 		
 		boolean seenEndPoint = false;
 
@@ -229,12 +250,18 @@ public class RouteConstructor {
 					if(set.contains(node.m_node)) {
 						return false;
 					}
+					
+					if (EXPLORE_DUBUG) System.out.println("adding node "+ node.m_node + " to working set");
 					set.add(node.m_node);
 					makeConnection(node.m_node, parent);
 					m_excludedRouteNodes.add(node.m_node);
 				} else {
 					assert (!node.m_node.getImmediateChildren().isEmpty());
+					
+					if (EXPLORE_DUBUG) System.out.println(node.m_node + " has immediate children of " + node.m_node.getImmediateChildren());
 					for(Node child : node.m_node.getImmediateChildren()){
+						
+						
 						NodeWrapper childWrapper = new NodeWrapper(child);
 						seenEndPoint |= explore(childWrapper, set, endNodes, parent);
 						if(parent == null) {
@@ -248,12 +275,15 @@ public class RouteConstructor {
 			if(set.contains(node.m_node)) {
 				return seenEndPoint;
 			}
-			
+			if (EXPLORE_DUBUG) System.out.println("adding node "+ node.m_node + " to working set");
 			set.add(node.m_node);
 
 			if (node.m_node.getParent() != null && !node.m_node.getParent().whatsNext(node.m_node).isEmpty()) {
 				Collection<Node> nextNodes = node.m_node.getParent().whatsNext(node.m_node);
 				nextNodes = node.m_node.getParent().whatsNext(node.m_node);
+				
+				if (EXPLORE_DUBUG) System.out.println(node.m_node + " has next nodes of " + nextNodes);
+				
 				for (Node next : nextNodes) {
 					seenEndPoint |= explore(new NodeWrapper(next), set, endNodes, node.m_node);
 				}
@@ -261,10 +291,12 @@ public class RouteConstructor {
 		} else {
 			if (endNodes.contains(node.m_node)) {
 				makeConnection(node.m_node, parent);
+				if (EXPLORE_DUBUG) System.out.println("adding node "+ node.m_node + " to working set");
 				set.add(node.m_node);
 				return true;
 			} else {
 				assert (!node.m_node.getImmediateChildren().isEmpty());
+				if (EXPLORE_DUBUG) System.out.println(node.m_node + " has immediate children of " + node.m_node.getImmediateChildren());
 				
 				for(Node child : node.m_node.getImmediateChildren()){
 					NodeWrapper childWrapper = new NodeWrapper(child);
@@ -379,8 +411,7 @@ public class RouteConstructor {
 
 	private void makeConnection(Node node, Node parent) {
 		if (parent != null) {
-			
-			//System.out.println("connecting " + parent + " -> " + node);
+			if (EXPLORE_DUBUG) System.out.println("connecting " + parent + " -> " + node);
 			CommonMethods.connect(node, parent);
 		}
 	}
@@ -556,11 +587,14 @@ public class RouteConstructor {
 		for(Node node : workingSet){
 			for(Node next: node.getNextNodes()){
 				if(!workingSet.contains(next)){
+					
+					System.out.println(node + " points to " + next);
 					return false;
 				}
 			}
 			for(Node prev: node.getPrevNodes()){
 				if(!workingSet.contains(prev)){
+					System.out.println(node + " comes from " + prev);
 					return false;
 				}
 			}

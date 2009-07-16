@@ -91,11 +91,8 @@ public class SectionNode extends Node {
 	}
 	
 	public int getStartPc() {
-		int pc = 0;
-		for(Node n : m_options){
-			pc = Math.max(pc, n.getStartPc());
-		}
-		return pc;
+	//	assert(false);
+		return 0;
 	}
 
 	public Collection<Node> getOptions(){

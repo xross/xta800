@@ -114,6 +114,10 @@ public class PathNode extends Node {
 			Collection<Node> next = new TreeSet<Node>();
 			next.add(m_nodes.get(index + 1));
 			return next;
+		}  else if(node.isInfiniteLoopNode() || node.isInfiniteSelfLoopNode()){
+			Collection<Node> next = new TreeSet<Node>();
+			next.add(node);
+			return next;
 		} else {
 			if (getParent() != null){
 				return getParent().whatsNext(this);

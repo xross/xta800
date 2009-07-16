@@ -1,6 +1,7 @@
 package com.xmos.xta.gui.views.routes.selected;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,6 +35,7 @@ import com.xmos.xta.gui.views.Views;
 public class SelectedRouteViewer {	
     private TreeViewer m_viewer;
     private Composite m_parent;
+	private Node m_rootNode;
 	
     public SelectedRouteViewer(Composite parent) {    	
     	m_parent = parent;
@@ -63,12 +65,15 @@ public class SelectedRouteViewer {
 		
 		Route selectedRoute = GuiEngine.getEngine().getSelectedRoute();
 		if (selectedRoute != null) {
+			m_rootNode = selectedRoute.getNode();
 			List<Node> nodes = new LinkedList<Node>();
-			nodes.add(selectedRoute.getNode());
+			nodes.add(m_rootNode);
 			PathNode hiddenRouteNode = new PathNode(nodes);
 			
 			m_viewer.setInput(hiddenRouteNode);
 			m_viewer.expandToLevel(2);
+		} else {
+			m_rootNode = null;
 		}
 	}
     
@@ -114,7 +119,8 @@ public class SelectedRouteViewer {
 			public void menuAboutToShow(IMenuManager manager) {				
 				manager.add(new Action("expand all") {
 					public void run() {
-						m_viewer.expandAll();
+						Collection<Node> nonBlockNodes = getNonBlockNodes();
+						m_viewer.setExpandedElements(nonBlockNodes.toArray());
 					}
 				});
 				manager.add(new Action("collapse all") {
@@ -146,5 +152,19 @@ public class SelectedRouteViewer {
 			}
 		});
 	}
-    
+
+	private Collection<Node> getNonBlockNodes() {
+	    final Collection<Node> nonBlockNodes = new ArrayList<Node>();
+	    if (m_rootNode != null) {
+	    	m_rootNode.traverse(0, new UntypedNodeTraverser() {
+		    	public boolean foundNode(Node node, int depth) {
+		    		if (!node.isBlockNode()) {
+		    			nonBlockNodes.add(node);
+		    		}
+		        	return true;
+		    	}
+		    });
+	    }
+		return nonBlockNodes;
+	}
 }
