@@ -73,7 +73,7 @@ public class RouteConstructor {
 
 	public RouteError analyse() {
 		
-		resetParent();
+		
 		boolean seenEndPoint = false;
 		
 		if(m_description.getStartPoint() == null ){
@@ -91,10 +91,9 @@ public class RouteConstructor {
 		
 		boolean notFoundFunctionYet = true;
 		for (Node start : startNodes) {
-			//System.out.println("initial instruction is : " + start);
+			resetParent();
 			int startPc = start.getStartPc();
 			while(start.getParent() != null && !start.getParent().isSectionNode()&& start.getParent().getStartPc() == startPc){
-			//	System.out.println("but " + start.getParent() + " would be better");
 				start = start.getParent();
 			}
 			
@@ -143,26 +142,31 @@ public class RouteConstructor {
 		m_structureGraph.removeLinks();
 		m_excludedRouteNodes = new TreeSet<Node>();
 		NodeWrapper startNodeWrapper = new NodeWrapper(start);
-
+		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
 		if(start.isFunctionNode()){
 			workingSet.add(start);
 			seenEndPoint  = true;
 		} else {
 			seenEndPoint |= explore(startNodeWrapper, workingSet, endNodes, null);
 		}
+		if(!cfgSanityCheck(workingSet)){
+			System.out.println(sae.dumpTree("cfg", workingSet));
+		}
 		
-		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();								
+		
+		assert(cfgSanityCheck(workingSet));
+									
 		pruneGraphOfExcludedPaths(workingSet);
-		
+		assert(cfgSanityCheck(workingSet));
 		if(!workingSet.isEmpty()){
-			
+			assert(cfgSanityCheck(workingSet));
 			Set<Node> newEndNodes;
 			if(m_description.getMode() == RouteMode.PATH){
 				newEndNodes = removeFinalInstruction(endNodes, startNodeWrapper.m_node,workingSet);
 			} else {
 				newEndNodes = new TreeSet<Node>(endNodes);
 			}
-			
+			assert(cfgSanityCheck(workingSet));
 			Node newStart = makeBasicBlocks(startNodeWrapper.m_node, newEndNodes, workingSet);
 			assert(cfgSanityCheck(workingSet));
 			
@@ -564,11 +568,14 @@ public class RouteConstructor {
 		for(Node node : workingSet){
 			for(Node next: node.getNextNodes()){
 				if(!workingSet.contains(next)){
+					
+					System.out.println(node + " points to " + next);
 					return false;
 				}
 			}
 			for(Node prev: node.getPrevNodes()){
 				if(!workingSet.contains(prev)){
+					System.out.println(node + " comes from " + prev);
 					return false;
 				}
 			}
