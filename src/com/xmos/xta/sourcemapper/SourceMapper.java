@@ -127,8 +127,9 @@ public class SourceMapper {
 
         for (SourceFile sourceFile : sourceFiles){        	
         	for (SourceLine sourceLine : sourceFile.getSourceLines()){
-            	Collection<Pair<Long,Long>> addressRanges = debugEngine.getAddressRangesMatchingPath(
-            			sourceFile.getFullSourceName(), sourceLine.getLineNumber());
+            	int lineNumber = sourceLine.getLineNumber();
+				Collection<Pair<Long,Long>> addressRanges = debugEngine.getAddressRangesMatchingPath(
+            			sourceFile.getFullSourceName(), lineNumber);
             	Collection<Long> addresses = rangesToAddresses(addressRanges);
             	
                 for (long pc : addresses) {
@@ -147,7 +148,7 @@ public class SourceMapper {
                 }
 
             	Collection<Long> statementPcs = debugEngine.getStatementPcsMatchingPath(
-            			sourceFile.getFullSourceName(), sourceLine.getLineNumber());
+            			sourceFile.getFullSourceName(), lineNumber);
             	sourceLine.addStatementPcs(statementPcs);
             }            
         }
