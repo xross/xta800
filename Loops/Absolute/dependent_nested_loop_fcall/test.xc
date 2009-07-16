@@ -17,11 +17,11 @@ int loop(int k) {
 int main() {
   int res = 0;
   int j = 10;
-
-  for (int i = 0; i < 3; i++) {
+  int i = 0;
+  while (i < 3) {
     #pragma xta label "main_loop"
     res += loop(j);
-    res += loop(j);
+    ++i;
   }
   return res;
 }
