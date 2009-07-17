@@ -9,8 +9,4 @@ public class FunctionLoopNode extends FunctionNode {
 	public FunctionLoopNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
 		super(treeNode, canvasProperties);
 	}
-	
-	public void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase) {
-		if (DEBUG) System.out.printf("Annotate FunctionLoop (%d, %d\n", offsetX, offsetY);
-	}
 }

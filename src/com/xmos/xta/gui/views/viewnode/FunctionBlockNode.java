@@ -2,6 +2,7 @@ package com.xmos.xta.gui.views.viewnode;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -13,18 +14,27 @@ public class FunctionBlockNode extends FunctionNode {
     public static final boolean DEBUG = false;
 
     private int m_blockHeight = TEXT_AREA_Y;
+    private double m_width;
 
 	public FunctionBlockNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
 		super(treeNode, canvasProperties);
+		m_width = 0;
 	}
 	
 	public int getPixelsX() {
 		Status status = new Status();
-		double time = m_treeNode.getAttributes().getTimeTaken(Case.WORST, status, null);
+		double worstTime = m_treeNode.getAttributes().getTimeTaken(Case.WORST, status, null);
 		if (status.isInfinite() || status.isUnresolved()) {
-			return 0;
+			worstTime = 0;
+		}
+		double bestTime = m_treeNode.getAttributes().getTimeTaken(Case.BEST, status, null);
+		if (status.isInfinite() || status.isUnresolved()) {
+			bestTime = 0;
+		}
+		if (bestTime > worstTime) {
+			return (int)bestTime;
 		} else {
-			return (int)time;
+			return (int)worstTime;
 		}
 	}
 
@@ -48,8 +58,10 @@ public class FunctionBlockNode extends FunctionNode {
         if (!isVisible((int)x, (int)y))
         	return x + m_width;
 
-        int widthInPixels = ((int)m_width < 1) ? 1 : (int)m_width;
-        int heightInPixels = ((int)m_height < 1) ? 1 : (int)m_height;
+        // Get the dimensions, but ensure that all non-zero times show up
+        int widthInPixels = (int)m_width;
+        if (widthInPixels == 0 && m_width != 0)
+        	widthInPixels = 1;
 
         if (c == Case.BEST) {
         	gc.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
@@ -59,18 +71,40 @@ public class FunctionBlockNode extends FunctionNode {
         	gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
         }
         gc.setAlpha(100);
-    	gc.fillRectangle(offsetX((int)x), offsetY((int)y), widthInPixels, heightInPixels);
+    	gc.fillRectangle(offsetX((int)x), offsetY((int)y), widthInPixels, m_blockHeight);
         gc.setAlpha(255);
 
         if (isSelected()) {
     		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
     		gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-        	gc.drawRectangle(offsetX((int)x), offsetY((int)y), widthInPixels, heightInPixels);
+        	gc.drawRectangle(offsetX((int)x), offsetY((int)y), widthInPixels, m_blockHeight);
         }
         return x + m_width;
 	}
 
-	public void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase) {
-		if (DEBUG) System.out.printf("Annotate FunctionBlock (%d, %d)\n", offsetX, offsetY);
+	public void updateScaledXy() {
+		m_width = getPixelsX() * m_canvasProperties.getScale();
+	}
+
+	public boolean isVisible(int x, int y) {
+		Rectangle visibleArea = m_canvasProperties.getVisibleArea();
+		if ((x + m_width < visibleArea.x) ||
+			(x > visibleArea.x + visibleArea.width) ||
+			(y + m_blockHeight < visibleArea.y) ||
+			(y > visibleArea.y + visibleArea.height)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public double getWidth(Case c) {
+		Status status = new Status();
+		double time = m_treeNode.getAttributes().getTimeTaken(c, status, null);
+		if (status.isInfinite() || status.isUnresolved()) {
+			return 0;
+		} else {
+			return time;
+		}
 	}
 }

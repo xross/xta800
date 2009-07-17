@@ -1,7 +1,9 @@
 package com.xmos.xta.gui.views.viewnode;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -21,8 +23,25 @@ public abstract class StructureNode extends ViewNode {
     int m_borderX;
     int m_borderY;
 
+    int m_pixelOffsetX;
+    int m_pixelOffsetY;
+    int m_renderX;
+    int m_renderY;
+    
+    int m_width;
+    int m_height;
+
+    boolean m_isBestCase;
+    boolean m_isWorstCase;
+
     public StructureNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
     	super(treeNode, canvasProperties);
+
+	    m_isBestCase = false;
+	    m_isWorstCase = false;
+
+	    m_pixelOffsetX = 0;
+	    m_pixelOffsetY = 0;
     }
 
     public double draw(Display display, GC gc, Case c, double offsetX, double offsetY) {
@@ -108,5 +127,94 @@ public abstract class StructureNode extends ViewNode {
 	    	}
 	    });
 		return found;
+	}
+
+	public void updateScaledXy() {
+		int pixelsX = getPixelsX();
+		int pixelsY = getPixelsY();
+		
+        m_renderX = scaleX(m_pixelOffsetX);
+        m_renderY = scaleY(m_pixelOffsetY);
+        m_width = (int)((double)pixelsX * m_canvasProperties.getScale());
+        
+        if (m_canvasProperties.scaleY()) {
+        	m_height = (int)((double)pixelsY * m_canvasProperties.getScale());
+        } else {
+        	m_height = pixelsY;
+        }
+
+		for (ViewNode child : getChildren()) {
+    		child.updateScaledXy();
+		}
+	}
+
+	public boolean isVisible() {
+		Rectangle visibleArea = m_canvasProperties.getVisibleArea();
+		int x = scale(m_pixelOffsetX);
+		int y = scale(m_pixelOffsetY);
+		if (m_width < 1 || m_height < 1 ||
+			(x + m_width < visibleArea.x) ||
+			(x > visibleArea.x + visibleArea.width) ||
+			(y + m_height < visibleArea.y) ||
+			(y > visibleArea.y + visibleArea.height)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public void drawThis(Display display, GC gc) {
+	    if (isSelected()) {
+	    	gc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
+	    	gc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
+	    	gc.setAlpha(100);
+	    	gc.fillRoundRectangle(m_renderX, m_renderY, (int)m_width, (int)m_height, CORNER_ROUNDING, CORNER_ROUNDING);
+	    	gc.setAlpha(255);
+	    } else {
+	    	gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+	    	gc.fillRectangle(m_renderX, m_renderY, (int)m_width, (int)m_height);
+	    }
+	}
+
+    public boolean isBestCase() {
+		return m_isBestCase;
+	}
+
+    public boolean isWorstCase() {
+		return m_isWorstCase;
+	}
+
+    public int getPixelOffsetX() {
+    	return m_pixelOffsetX;
+    }
+
+    public int getPixelOffsetY() {
+    	return m_pixelOffsetY;
+    }
+
+	public boolean contains(int x, int y) {
+		int thisX = scale(m_pixelOffsetX);
+		int thisY = scale(m_pixelOffsetY);
+		int width = scale(getPixelsX());
+		int height = scale(getPixelsY());
+		if ((x >= thisX) && (x <= (thisX + width))) {
+			if ((y >= thisY) && (y <= (thisY + height))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public ViewNode getClickNode(int x, int y) {
+		if (this.contains(x, y)) {
+			for (ViewNode child : getChildren()) {
+				ViewNode clickNode = child.getClickNode(x, y);
+				if (clickNode != null)
+					return clickNode;
+	    	}
+			return this;
+		} else {
+			return null;
+		}
 	}
 }

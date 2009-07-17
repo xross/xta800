@@ -45,10 +45,6 @@ public class FunctionSectionNode extends FunctionNode {
 		return x;
 	}
 
-	public void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase) {
-		if (DEBUG) System.out.printf("Annotate FunctionSection (%d, %d\n", offsetX, offsetY);
-	}
-
 	public ViewNode getClickNode(int x, int y) {
 		ViewNode child = getChild(Case.BEST);
 		if (child != null) {

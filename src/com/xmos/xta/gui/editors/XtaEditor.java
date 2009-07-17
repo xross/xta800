@@ -409,7 +409,14 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
      	m_setInstructionTimeAction = new Action("Set instruction time") {
      		public void run() {
-     			new InstructionTime(m_parent.getShell(), m_clickCodeRefString);
+     	    	List<Node> nodes = new ArrayList<Node>();
+     	    	Engine engine = GuiEngine.getEngine();
+     	    	Reference reference = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.ANY_REF);
+     	    	if (!reference.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
+     	    		assert(false);
+     	    	}
+     			nodes.addAll(engine.getSelectedRoute().getReferencedNodes(reference));
+     			new InstructionTime(m_parent.getShell(), nodes);
      		}
      	};
      	setAction(SetInstructionTimeID, m_setInstructionTimeAction);

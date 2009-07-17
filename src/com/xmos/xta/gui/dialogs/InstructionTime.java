@@ -15,12 +15,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
-import com.xmos.xta.engine.references.Reference;
-import com.xmos.xta.engine.references.ReferenceFactory;
-import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.gui.GuiEngine;
 
 public class InstructionTime extends XtaDialog {
@@ -32,23 +28,12 @@ public class InstructionTime extends XtaDialog {
     Text m_cycles;    
     ModifyListener m_nsListener;
     ModifyListener m_cyclesListener;
-    
-    public InstructionTime(Shell parent, String refString) {
-    	super(parent);    	
-    	m_nodes = new ArrayList<Node>();
-    	Engine engine = GuiEngine.getEngine();
-    	Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
-    	if (!reference.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
-    		assert(false);
-    	}
-		m_nodes.addAll(engine.getSelectedRoute().getReferencedNodes(reference));
-    	initialise();
-    }
 
 	public InstructionTime(Shell parent, List<Node> nodes) {
     	super(parent);
     	assert(nodes.size() > 0);
-    	m_nodes = nodes;
+    	m_nodes = new ArrayList<Node>();
+    	m_nodes.addAll(nodes);
     	initialise();
     }
 
@@ -154,7 +139,7 @@ public class InstructionTime extends XtaDialog {
     		}
     	} else if (id == IDialogConstants.OK_ID) {
     		if (!m_valueChanged) {
-	    		int index = 0;	    		
+	    		int index = 0;
 	    		for (Node node : m_nodes) {
     				GuiEngine.getEngine().setInstructionNumCycles(
     						node, m_originalCycles.get(index));

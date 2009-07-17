@@ -65,4 +65,38 @@ public abstract class FunctionNode extends ViewNode {
 		// The function view doesn't allow clicking
 		return null;
 	}
+
+	public boolean contains(int x, int y) {
+		// The function view doesn't allow clicking
+		return false;
+	}
+
+	public void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase) {
+		// Do nothing
+	}
+
+	public void updateScaledXy() {
+		for (ViewNode child : getChildren()) {
+    		child.updateScaledXy();
+		}
+	}
+	
+    public int getPixelOffsetX() {
+    	assert(false);
+    	return 0;
+    }
+
+    public int getPixelOffsetY() {
+    	assert(false);
+    	return 0;
+    }
+
+    public boolean isBestCase() {
+		return false;
+	}
+
+    public boolean isWorstCase() {
+		return false;
+	}
+
 }

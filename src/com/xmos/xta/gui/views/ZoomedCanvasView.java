@@ -63,7 +63,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     protected ZoomedCanvasProperties m_canvasProperties;
     private Canvas m_canvas;
 
-    private Node m_rootNode;
     private List<Node> m_selectedNodes;
     
     private Composite m_parent;
@@ -88,7 +87,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		GuiEngine.addBroadcastListener(this);
 	    
 		m_listeners = new Vector<ISelectionChangedListener>();
-		m_rootNode = null;
 	    m_selectedNodes = new ArrayList<Node>();
 
 		m_canvasProperties = createCanvasProperties();
@@ -114,17 +112,11 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			public void controlResized(ControlEvent e) {
 				Rectangle clientArea = composite.getClientArea();
 				m_renderControl.setCanvasSize(clientArea.width, clientArea.height);
-				if (m_renderControl.getScale() == 0) {
-					zoomFit();
-				}
 				updateScrollBars();
 			}
 			public void controlMoved(ControlEvent e) {
 				Rectangle clientArea = composite.getClientArea();
 				m_renderControl.setCanvasSize(clientArea.width, clientArea.height);
-				if (m_renderControl.getScale() == 0) {
-					zoomFit();
-				}
 				updateScrollBars();
 			}
 	    });	    
@@ -193,8 +185,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 				m_toolTip.dispose ();
 	    	}
 	    	initialiseTree();
-			m_renderControl.refresh();
-			zoomFit();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE) || 
 				   event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
@@ -210,7 +200,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) || 
 				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 			initialiseTree();
-			m_renderControl.refresh();
 			
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_UPDATE_FOLDING)) {
 			m_renderControl.refresh();
@@ -288,7 +277,15 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		}
 	}
 
+	public String getName() {
+		return m_name;
+	}
+	
 	private void updateScrollBars() {
+		if (m_renderControl.getScale() == 0) {
+			zoomFit();
+			return;
+		}
 		int canvasX = m_renderControl.getCanvasWidth();
 		int canvasY = m_renderControl.getCanvasHeight();
 		
@@ -407,7 +404,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			m_toolTip.dispose ();
 		}
 		m_viewNode = null;
-		m_rootNode = null;
 		updateSelection(new ArrayList<Node>());
 		m_renderControl.reset();
 	}
@@ -587,17 +583,15 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		if (DEBUG) System.out.println(m_name + ": initialiseTree");
 		Route route = GuiEngine.getEngine().getSelectedRoute();
 		if (route != null) {
-			m_rootNode = route.getNode();
 			updateSelection(GuiEngine.getSelectedNodes());
 
-			GuiRouteProperties routeProperties = GuiEngine.getRouteProperties(route.getRouteId());
+			GuiRouteProperties routeProperties = GuiEngine.getRouteProperties(route.getRouteId(), getName());
 			m_viewNode = routeProperties.getViewNode();
 			if (m_viewNode == null) {
-				m_viewNode = buildViewNode(m_rootNode, 0);
+				m_viewNode = buildViewNode(route.getNode(), 0);
 				routeProperties.setViewNode(m_viewNode);
 			}
 		} else {
-			m_rootNode = null;
     		m_viewNode = null;
 			updateSelection(new ArrayList<Node>());
 		}
@@ -605,8 +599,10 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		m_renderControl.setViewNode(m_viewNode);
 
 		double scale = m_renderControl.getScale();
-		m_hScrollPosition = (int)((double)m_renderControl.getOffsetX() / scale);
-		m_vScrollPosition = (int)((double)m_renderControl.getOffsetY() / scale);
+		if (scale != 0) {
+			m_hScrollPosition = (int)((double)m_renderControl.getOffsetX() / scale);
+			m_vScrollPosition = (int)((double)m_renderControl.getOffsetY() / scale);
+		}
 		updateScrollBars();
 	}
 

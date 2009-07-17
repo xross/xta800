@@ -59,7 +59,7 @@ public class FunctionView extends ZoomedCanvasView {
 	}
 
 	protected RendererControl createRenderControl(Display display) {
-		return new RendererControl(display, 2, TIMELINE_Y, 2, FunctionNode.TEXT_AREA_Y * 2);
+		return new RendererControl(getName(), display, 2, TIMELINE_Y, 2, FunctionNode.TEXT_AREA_Y * 2);
 	}
 
 	protected Renderer createRenderer(Display display, RendererControl renderControl, 
