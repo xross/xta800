@@ -7,6 +7,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 
@@ -56,14 +57,16 @@ public class Functions extends Command {
     }
 
     private Set<String> getFunctions(Engine engine) {
-    	final Set<String> functions = new TreeSet<String>();   
-		Node node = engine.getRoute(m_routeId).getNode();
-	    node.traverse(0, new DefaultNodeTraverser() {
-			public boolean foundFunctionNode(Node node, int depth) {
-				functions.add(node.getFunctionName());
-				return true;
-			}
-	    });
+    	final Set<String> functions = new TreeSet<String>();
+    	
+		for (Route route : engine.getRoute(m_routeId)) {
+			route.getNode().traverse(0, new DefaultNodeTraverser() {
+				public boolean foundFunctionNode(Node node, int depth) {
+					functions.add(node.getFunctionName());
+					return true;
+				}
+		    });			
+		}    	
     	return functions;
     }
 }

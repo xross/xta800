@@ -4,6 +4,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
 public class NodeInfo extends Command {
@@ -58,11 +59,13 @@ public class NodeInfo extends Command {
     }
     
     private void displayNodeSummary(Engine engine, Console console) {
-    	Node node = engine.getRoute(m_routeId).getNode(m_nodeId);	
-    	if (node == null) {
-    		console.display(String.format("Error: Node id: %d nt found\n", m_nodeId));
-    		return;
-    	}    	
-    	console.display(node.getAttributes().getTimingDetails());
+		for (Route route : engine.getRoute(m_routeId)) {
+	    	Node node = route.getNode(m_nodeId);	
+	    	if (node != null) {
+	        	console.display(node.getAttributes().getTimingDetails());	    		
+	    		return;
+	    	}			
+		}
+		console.display(String.format("Error: Node id: %d nt found\n", m_nodeId));    	
     }
 }

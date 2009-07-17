@@ -132,7 +132,7 @@ public class RouteSelectorViewer {
 					}
 					
 					if ((newId != currentSelectedId) && (newId != Engine.ROUTE_ID_INVALID)) {
-						engine.setSelectedRoute(newId);
+						engine.setSelectedRouteId(newId);
 	            	}
 		        }
 			}

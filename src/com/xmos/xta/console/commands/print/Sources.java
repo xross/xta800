@@ -6,6 +6,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.sourcemapper.Line;
@@ -63,23 +64,24 @@ public class Sources extends Command {
     	final Set<String> sources = new TreeSet<String>();   
     	final SourceMapper sourceMapper = engine.getSourceMapper();
     	
-		Node node = engine.getRoute(m_routeId).getNode();    	
-	    node.traverse(0, new DefaultNodeTraverser() {
-			public boolean foundInstructionNode(Node node, int depth) {					
-		        for (SourceFile sourceFile: sourceMapper.getSourceFiles()) {
-		            for (SourceLine sourceLine : sourceFile.getSourceLines()) {
-		                for (Line assembly :sourceLine.getChildern()) {
-		                        	
-		                   	int pc = node.getInstructions().getFirst().getPc();
-		                    if (assembly.getLineNumber() == pc) {
-		                       	sources.add(sourceFile.getFileName());
-		                    }
-		                }
-		            }
-		        }
-				return true;
-			}				    	
-		});
+		for (Route route : engine.getRoute(m_routeId)) {
+			route.getNode().traverse(0, new DefaultNodeTraverser() {
+				public boolean foundInstructionNode(Node node, int depth) {					
+			        for (SourceFile sourceFile: sourceMapper.getSourceFiles()) {
+			            for (SourceLine sourceLine : sourceFile.getSourceLines()) {
+			                for (Line assembly :sourceLine.getChildern()) {
+			                        	
+			                   	int pc = node.getInstructions().getFirst().getPc();
+			                    if (assembly.getLineNumber() == pc) {
+			                       	sources.add(sourceFile.getFileName());
+			                    }
+			                }
+			            }
+			        }
+					return true;
+				}				    	
+			});			
+		}    	
     	return sources;
     }    
 }

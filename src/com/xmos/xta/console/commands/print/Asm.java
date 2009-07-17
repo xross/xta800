@@ -4,6 +4,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.analysis.routes.Route;
 
 public class Asm extends Command {
 	private int m_routeId;
@@ -75,11 +76,13 @@ public class Asm extends Command {
 	    if (m_nodeIdSet && !validateNodeId(engine, console, m_routeId, m_nodeId))
 		    return;	    	
 	    
-		AsmDisplayer displayer = new AsmDisplayer(engine, console); 
-		if (m_nodeIdSet) {
-			displayer.display(engine.getRoute(m_routeId).getNode(m_nodeId));						
-		} else {
-			displayer.display(engine.getRoute(m_routeId).getNode());			
-		}        
+		AsmDisplayer displayer = new AsmDisplayer(engine, console);
+		for (Route route : engine.getRoute(m_routeId)) {
+			if (m_nodeIdSet) {
+				displayer.display(route.getNode(m_nodeId));						
+			} else {
+				displayer.display(route.getNode());			
+			}        			
+		}		
    } 
 }
