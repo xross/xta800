@@ -19,27 +19,5 @@ system("@ARGV -config timeout 5 -load $genDir/test_pd-s-d-arp_d-ar_d-a_d-ap___r_
        "-analyse path endpoint1 end " .
        "-analyse path endpoint2 end " .
        "-analyse path endpoint0 endpoint2 " .
-       "-add exclusion endpoint0 " .
-       "-analyse function test " .
-       "-remove exclusion endpoint0 " .
-       "-add exclusion endpoint1 " .
-       "-analyse function test " .
-       "-remove exclusion endpoint1 " .
-       "-add exclusion endpoint2 " .
-       "-analyse function test " .
-       "-remove exclusion endpoint2 " .
-       "-add exclusion endpoint0 " .
-       "-add exclusion endpoint1 " .
-       "-analyse function test " .
-       "-remove exclusion endpoint0 " .
-       "-remove exclusion endpoint1 " .
-       "-add exclusion endpoint0 " .
-       "-add exclusion endpoint2 " .
-       "-analyse function test " .
-       "-remove exclusion endpoint0 " .
-       "-remove exclusion endpoint2 " .
-       "-add exclusion endpoint1 " .
-       "-add exclusion endpoint2 " .
-       "-analyse function test " .
        "-exit > $genDir/test_pd-s-d-arp_d-ar_d-a_d-ap___r_O2.txt 2>&1");
 
