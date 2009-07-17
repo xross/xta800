@@ -1,40 +1,7 @@
 Route\(0\) path: core0\.xc:26 to core0\.xc:26
-Complete \[1 path\]
-  \* path\(0\)    : 380\.0ns
+    Pass with 5 unknowns, Num Paths: \d+, Slack: 1600\.0ns, Required: 2000\.0ns, Worst: 400\.0ns, Min Frequency: 79 Mhz
 
-Route\(0\) path: core0\.xc:26 to core0\.xc:26
-Complete \[1 path\]
-  \* path\(0\)    : 380\.0ns
+Route\(2\) path: core1\.xc:85 to core1\.xc:85
+    Fail with 2 unknowns, Num Paths: \d+, Violation: 5260\.0ns, Required: 2000\.0ns, Worst: 7260\.0ns, Min Frequency: 1451 Mhz
 
-Route\(1\) path: core1\.xc:84 to core1\.xc:84
-Complete \[41 paths\]
-  \* path\(\d+\) +: \d+\.0ns
-[^^^]
-
-Route\(0\) path: core0\.xc:26 to core0\.xc:26
-Complete \[1 path\]
-  \* path\(0\)    : 380\.0ns
-
-Route\(2\) path: core1\.xc:84 to core1\.xc:84
-Complete \[11 paths\]
-  \* path\(6\)    : 7560\.0ns
-  \* path\(5\)    : 7540\.0ns
-  \* path\(3\)    : 7400\.0ns
-  \* path\(2\)    : 7380\.0ns
-  \* path\(0\)    : 660\.0ns
-  \* path\(8\)    : 640\.0ns
-  \* path\(9\)    : 620\.0ns
-  \* path\(11\)   : 620\.0ns
-  \* path\(12\)   : 620\.0ns
-  \* path\(10\)   : 600\.0ns
-  \* path\(1\)    : 580\.0ns
-
-Route\(0\) path: core0\.xc:26 to core0\.xc:26
-    Pass with 5 unknowns, Slack: 1620\.0ns, Required: 2000\.0ns, Worst: 380\.0ns, Min Frequency: 75 Mhz
-    Complete paths: 1, Unresolved paths: 0
-
-Route\(2\) path: core1\.xc:84 to core1\.xc:84
-    Fail with 2 unknowns, Violation: 5560\.0ns, Required: 2000\.0ns, Worst: 7560\.0ns, Min Frequency: 1511 Mhz
-    Complete paths: 11, Unresolved paths: 0
-
-Fail, 1/2, Max Violation: 5560\.0ns
+Fail, 1/2, Max Violation: 5260\.0ns
