@@ -103,7 +103,7 @@ public class RouteConstructor {
 			
 			if(m_description.getMode() == RouteMode.FUNCTION ){
 				if(start.isFunctionNode()&& notFoundFunctionYet){
-					if(start.isFunctionNode() && !containAnyNodes(start, endNodes)){
+					if(!containAnyNodes(start, m_exclusions)){
 						m_routes.add(new Route(m_engine, start, m_description));
 					} else {
 						seenEndPoint = makeSubRoute(seenEndPoint, endNodes, start);

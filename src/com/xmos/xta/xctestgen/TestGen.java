@@ -206,14 +206,11 @@ public class TestGen {
 		file.write("       \"-analyse path start endpoint0 \" .\n");
 		file.write("       \"-analyse path start endpoint1 \" .\n");
 		file.write("       \"-analyse path start endpoint2 \" .\n");
-//		file.write("       \"-analyse path endpoint0 endpoint0 \" .\n");
-//		file.write("       \"-analyse path endpoint1 endpoint1 \" .\n");
-//		file.write("       \"-analyse path endpoint2 endpoint2 \" .\n");
 		file.write("       \"-analyse path endpoint0 end \" .\n");
 		file.write("       \"-analyse path endpoint1 end \" .\n");
 		file.write("       \"-analyse path endpoint2 end \" .\n");
 		file.write("       \"-analyse path endpoint0 endpoint2 \" .\n");
-		
+/*		
 		file.write("       \"-add exclusion endpoint0 \" .\n");
 		file.write("       \"-analyse function test \" .\n");
 		file.write("       \"-remove exclusion endpoint0 \" .\n");
@@ -241,7 +238,7 @@ public class TestGen {
 		file.write("       \"-add exclusion endpoint1 \" .\n");
 		file.write("       \"-add exclusion endpoint2 \" .\n");
 		file.write("       \"-analyse function test \" .\n");
-
+*/
 		file.write("       \"-exit > $genDir/" + testName + ".txt 2>&1\");\n");
 		file.write("\n");
 	}
@@ -249,9 +246,7 @@ public class TestGen {
 	static public void main(String[] args) {
 		String tests[] = {
 				
-				//"pad(ai(a)p)p",
-				//"pad(ai(a)(p))p",
-				
+/*
 				"papp",
 				"pd(pap)",
 				"pd(pd(ap))",
@@ -374,7 +369,7 @@ public class TestGen {
 				"pe(e(a)(pa))(e(a)(ap))",
 				"pe(e(a)(e(pa)(a)))(e(a)(ap))",
 				"pe(e(pa)(e(a)(a)))(e(a)(e(a)(ap)))",
-				
+*/				
 				//now for non stuctural test with returns on them
 				
 				"parpp",
