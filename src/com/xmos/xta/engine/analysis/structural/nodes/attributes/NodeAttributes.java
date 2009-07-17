@@ -8,6 +8,8 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 
 @SuppressWarnings("serial")
 class IgnoreSectionIterationsException extends Exception {}
+@SuppressWarnings("serial")
+class InfiniteIterationsException extends Exception {}
 
 public class NodeAttributes {
     private Node m_node; 
@@ -23,7 +25,7 @@ public class NodeAttributes {
 	}
 
 	public static final long INFINITE_ITERATIONS = -1;
-	public static final long IGNORE_ITERATIONS = -2;
+	public static final long IGNORE_SECTION_ITERATIONS = 1;
 	
 	private double m_cachedWorstTimeTaken;
 	private long m_cachedWorstNumCycles;
@@ -401,64 +403,15 @@ public class NodeAttributes {
 	// Loop Iteration Methods
 	// ===================================================================== //
 	public long getTotalIterations(Case c, Node ignoreIterationsAboveSection) {
-		Node enclosingInfiniteLoopNode = getNode().getEnclosingInfiniteLoopNode();
-		if (enclosingInfiniteLoopNode != null) {
+		try {
+			return getTotalIterations(c, getNode(), ignoreIterationsAboveSection);
+			
+		} catch (IgnoreSectionIterationsException e) {
+			return IGNORE_SECTION_ITERATIONS;
+			
+		} catch (InfiniteIterationsException e) {
 			return INFINITE_ITERATIONS;
 		}
-
-		Node enclosingLoopNode = getNode().getEnclosingLoopNode();		
-		if (enclosingLoopNode == null) {
-			// At the outermost scope, i.e. not inside a loop..
-			long numIterations;
-			try {
-				numIterations = getNodeIterations(c, getNode(), ignoreIterationsAboveSection);
-			} catch (IgnoreSectionIterationsException e) {
-				return 1;
-			}
-			return numIterations;
-		}
-		
-		// Need to treat relative and absolute loops differently..
-		if (enclosingLoopNode.getAttributes().getIsAbsolute()) {
-	    	// We are within an absolute loop, so just get the iterations of this loop.
-			long numIterations;
-			try {
-				numIterations = getNodeIterations(c, getNode(), ignoreIterationsAboveSection);
-			} catch (IgnoreSectionIterationsException e) {
-				return 1;
-			}
-			
-	    	long headerAdjustment = getIsLoopHeader() ? numIterations : 0;		    	
-			return numIterations + headerAdjustment;		    	
-			
-	    } else {
-			// We are within a relative loop, so get the iterations of this loop, 
-			// then multiply up by the iterations of the above loops.
-			long numIterations;
-			try {
-				numIterations = getNodeIterations(c, getNode(), ignoreIterationsAboveSection);
-			} catch (IgnoreSectionIterationsException e) {
-				return 1;
-			}
-
-	    	long cummulativeIterations = 1;
-			Node startNode = enclosingLoopNode.getParent();
-			Node loopNode = startNode.getEnclosingLoopNode();
-			while (loopNode != null) {
-				long iterations;
-				try {
-					iterations = startNode.getAttributes().getNodeIterations(c, startNode, ignoreIterationsAboveSection);
-				} catch (IgnoreSectionIterationsException e) {
-					break;
-				}
-
-				cummulativeIterations *= iterations;
-				startNode = loopNode.getParent();
-				loopNode = startNode.getEnclosingLoopNode();
-			}
-			long headerAdjustment = getIsLoopHeader() ? 1 : 0;				
-			return (numIterations + headerAdjustment) * cummulativeIterations;			
-	    }
 	}
 
 	public boolean loopIterationsValid(long numIterations) {
@@ -513,20 +466,17 @@ public class NodeAttributes {
 	
 	public void setIsLoopHeader(boolean isLoopHeader) {
 		m_isLoopHeader = isLoopHeader;
-		for (Node child : m_node.getChildren()) {
-			if (!child.isLoopNode()) {
-			    child.getAttributes().setIsLoopHeader(isLoopHeader);
-			}
-		}
 	}
 
 	public boolean getIsLoopHeader() {
 		return m_isLoopHeader;
 	}		
 
-	long getNodeIterations(Case c, Node child, Node ignoreIterationsAboveSection) throws IgnoreSectionIterationsException {
+	long getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection) 
+	    throws IgnoreSectionIterationsException, InfiniteIterationsException {
+		
 		if (getNode().getParent() != null) {
-			return getNode().getParent().getAttributes().getNodeIterations(c, getNode(), ignoreIterationsAboveSection);
+			return getNode().getParent().getAttributes().getTotalIterations(c, getNode(), ignoreIterationsAboveSection);
 		}
 		return 1;		
 	}
