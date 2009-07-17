@@ -10,7 +10,11 @@ if (!$noBuild) {
         system("xcc -fxta-info -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir/function_out_and_back.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
+       "add exclusion the_great_outdoors " .
        "analyse path x x " .
-       "print structure - " .
+       "-print structure 0 " .
+       "-print structure 1 " .
+       "-print structure 2 " .
+       "-print structure 3 " .
        "-exit > $genDir/function_out_and_back.txt 2>&1");
 
