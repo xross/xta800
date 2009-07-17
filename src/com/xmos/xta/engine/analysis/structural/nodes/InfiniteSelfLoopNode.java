@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.InfiniteSelfLoopNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -18,19 +20,19 @@ public class InfiniteSelfLoopNode extends Node{
 	public InfiniteSelfLoopNode(InfiniteSelfLoopNode loop) {
 		super();
 		m_loop = loop.m_loop;
-		m_attributes = new NodeAttributes(this);
+		m_attributes = new InfiniteSelfLoopNodeAttributes(this);
 	}
 
 	public InfiniteSelfLoopNode() {
 		super();
 		m_loop = null;
-		m_attributes = new NodeAttributes(this);
+		m_attributes = new InfiniteSelfLoopNodeAttributes(this);
 	}
 
 	public InfiniteSelfLoopNode(Node base) {
 		super();
 		m_loop = base;
-		m_attributes = new NodeAttributes(this);
+		m_attributes = new InfiniteSelfLoopNodeAttributes(this);
 	}
 
 	public InfiniteSelfLoopNode shallowCopy() {
@@ -40,9 +42,10 @@ public class InfiniteSelfLoopNode extends Node{
 	public Node deepCopy() {
 		InfiniteSelfLoopNode ln = new InfiniteSelfLoopNode();
 		ln.m_loop = m_loop.deepCopy();
-		ln.m_attributes = new NodeAttributes(ln);
+		ln.m_attributes = new InfiniteSelfLoopNodeAttributes(ln);
 		return ln;
 	}
+	
     public String getTypeName() {
         return "infiniteselfloop";
     }

@@ -14,6 +14,7 @@ import org.eclipse.ui.PlatformUI;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.gui.dialogs.InstructionTime;
 import com.xmos.xta.gui.dialogs.Loop;
 import com.xmos.xta.gui.dialogs.LoopPath;
 import com.xmos.xta.gui.dialogs.LoopScope;
@@ -30,16 +31,16 @@ public class Views {
 	    }
 	}
 	
-	public static void createContextMenu(IMenuManager manager, List<Node> selectedNodes, final Shell shell) {
-		if (selectedNodes.size() != 1) {
+	public static void createContextMenu(IMenuManager manager, final List<Node> selectedNodes, final Shell shell) {
+		if (selectedNodes.size() < 1) {
 			return;
 		}
 
-		final Node node = selectedNodes.get(0);
+		final Node firstNode = selectedNodes.get(0);
 		manager.add(new Separator());
 
     	// Adds the 'Trace in console' option.
-    	manager.add(new Action("Trace in console") {
+    	Action traceInConsoleAction = new Action("Trace in console") {
 			public void run() {
 				ConsoleView console = (ConsoleView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 					getActivePage().findView(ConsoleView.ID);
@@ -50,20 +51,27 @@ public class Views {
 				} catch (PartInitException e) {}
 				
 				int routeId = GuiEngine.getEngine().getSelectedRouteId();
-				console.runCommand("print trace " + routeId + " " + node.getId());
+				console.runCommand("print trace " + routeId + " " + firstNode.getId());
 			}
-		});
-
+		};
+    	manager.add(traceInConsoleAction);
+    	
+    	boolean oneNodeSelected = selectedNodes.size() == 1;
+		if (oneNodeSelected)
+    		traceInConsoleAction.setEnabled(true);
+    	else
+    		traceInConsoleAction.setEnabled(false);
+    	
 	    manager.add(new Separator());
     	
     	// Adds the 'Set iterations' option.
 	    Action setLoopIterationsAction = new Action("Set loop iterations") {
 		    public void run() {
-		    	new Loop(shell, node);
+		    	new Loop(shell, firstNode);
 		    }
 	    };
 	    manager.add(setLoopIterationsAction);
-	    if (GuiEngine.getEngine().canSetLoopIterations(node))
+	    if (oneNodeSelected && GuiEngine.getEngine().canSetLoopIterations(firstNode))
 	    	setLoopIterationsAction.setEnabled(true);
 	    else
 	    	setLoopIterationsAction.setEnabled(false);
@@ -71,11 +79,11 @@ public class Views {
     	// Adds the 'Set iterations' option.
 	    Action setLoopPathIterationsAction = new Action("Set loop path iterations") {
 		    public void run() {
-		    	new LoopPath(shell, node);
+		    	new LoopPath(shell, firstNode);
 		    }
 	    };
 	    manager.add(setLoopPathIterationsAction);
-	    if (GuiEngine.getEngine().canSetLoopPathIterations(node))
+	    if (oneNodeSelected && GuiEngine.getEngine().canSetLoopPathIterations(firstNode))
 	    	setLoopPathIterationsAction.setEnabled(true);
 	    else
 	    	setLoopPathIterationsAction.setEnabled(false);
@@ -83,62 +91,77 @@ public class Views {
     	// Adds the 'Set scope' option.
 	    Action setLoopScopeAction = new Action("Set loop scope") {
 		    public void run() {
-		    	new LoopScope(shell, node);
+		    	new LoopScope(shell, firstNode);
 		    }
 	    };
 	    manager.add(setLoopScopeAction);
-	    if (GuiEngine.getEngine().canSetLoopScope(node))
+	    if (oneNodeSelected && GuiEngine.getEngine().canSetLoopScope(firstNode))
 	    	setLoopScopeAction.setEnabled(true);
 	    else
 	    	setLoopScopeAction.setEnabled(false);
+
+    	// Adds the 'set instruction time' option.
+	    Action setInstructionTimeAction = new Action("Set instruction time") {
+		    public void run() {
+		    	new InstructionTime(shell, selectedNodes);
+		    }
+	    };
+	    manager.add(setInstructionTimeAction);
+	    setInstructionTimeAction.setEnabled(true);
+	    for (Node node : selectedNodes) {
+	    	// All nodes have to be instructions which can pause
+	    	if (!node.isInstructionNode() || !node.getInstructions().get(0).canPause()) {
+	    		setInstructionTimeAction.setEnabled(false);
+	    	}
+	    }
 
 	    manager.add(new Separator());
 
     	// Adds folding option.
 	    Action foldAction = new Action("Fold") {
 		    public void run() {
-		    	node.setFolded(true, false);
+		    	firstNode.setFolded(true, false);
 				GuiEngine.broadcast(Broadcaster.BROADCAST_UPDATE_FOLDING, "");
 		    }
 	    };
 	    manager.add(foldAction);
-	    if (!node.isFolded() && node.isFunctionNode())
+	    if (oneNodeSelected && !firstNode.isFolded() && firstNode.isFunctionNode())
 	    	foldAction.setEnabled(true);
 	    else
 	    	foldAction.setEnabled(false);
 
 	    Action unfoldAction = new Action("Unfold") {
 		    public void run() {
-		    	node.setFolded(false, false);
+		    	firstNode.setFolded(false, false);
 				GuiEngine.broadcast(Broadcaster.BROADCAST_UPDATE_FOLDING, "");
 		    }
 	    };
 	    manager.add(unfoldAction);
-	    if (node.isFolded() && node.isFunctionNode())
+	    if (oneNodeSelected && firstNode.isFolded() && firstNode.isFunctionNode())
 	    	unfoldAction.setEnabled(true);
 	    else
 	    	unfoldAction.setEnabled(false);
 
 	    Action foldChildrenAction = new Action("Fold children") {
 		    public void run() {
-		    	node.setFolded(true, true);
+		    	firstNode.setFolded(true, true);
 				GuiEngine.broadcast(Broadcaster.BROADCAST_UPDATE_FOLDING, "");
 		    }
 	    };
 	    manager.add(foldChildrenAction);
-	    if (node.isFunctionNode())
+	    if (oneNodeSelected && firstNode.isFunctionNode())
 	    	foldChildrenAction.setEnabled(true);
 	    else
 	    	foldChildrenAction.setEnabled(false);
 
 	    Action unfoldChildrenAction = new Action("Unfold children") {
 		    public void run() {
-		    	node.setFolded(false, true);
+		    	firstNode.setFolded(false, true);
 				GuiEngine.broadcast(Broadcaster.BROADCAST_UPDATE_FOLDING, "");
 		    }
 	    };
 	    manager.add(unfoldChildrenAction);
-	    if (node.isFunctionNode())
+	    if (oneNodeSelected && firstNode.isFunctionNode())
 	    	unfoldChildrenAction.setEnabled(true);
 	    else
 	    	unfoldChildrenAction.setEnabled(false);

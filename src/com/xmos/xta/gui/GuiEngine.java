@@ -30,7 +30,7 @@ public class GuiEngine {
 	private static Reference s_codePoint;
 	private static String s_runMode;
 	private static List<Node> s_selectedNodes;
-	private static Map<Integer, GuiRouteProperties> s_routeProperties;
+	private static Map<String, Map<Integer, GuiRouteProperties>> s_routeProperties;
 
 	static {
         s_engine = new Engine(new Config());
@@ -40,7 +40,7 @@ public class GuiEngine {
         s_selectedNodes = new ArrayList<Node>();
 
         s_engine.setNotifier(s_notifier);
-        s_routeProperties = new HashMap<Integer, GuiRouteProperties>();
+        s_routeProperties = new HashMap<String, Map<Integer, GuiRouteProperties>>();
 	}
 	
 	public static Engine getEngine() {
@@ -175,6 +175,7 @@ public class GuiEngine {
 			
 		} else if (message.equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			resetGuiState();
+			refreshGuiRouteProperties();
 			
 		} else if (message.equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 			resetGuiState();
@@ -189,28 +190,42 @@ public class GuiEngine {
 	}
 	
 	private static void refreshGuiRouteProperties() {
-		List<Integer> remove = new ArrayList<Integer>();
-		for (Integer routeId : s_routeProperties.keySet()) {
-			if (s_engine.getRoute(routeId) == null) {
-				remove.add(routeId);
+		for (Map<Integer, GuiRouteProperties> routeIdMap : s_routeProperties.values()) {
+			List<Integer> remove = new ArrayList<Integer>();
+			for (Integer routeId : routeIdMap.keySet()) {
+				if (s_engine.getRoute(routeId) == null) {
+					remove.add(routeId);
+				}
 			}
-		}
-		for (Integer routeId : remove) {
-			s_routeProperties.remove(routeId);
+			for (Integer routeId : remove) {
+				routeIdMap.remove(routeId);
+			}
 		}
 	}
 
-	public static GuiRouteProperties getRouteProperties(int routeId) {
-		if (s_routeProperties.containsKey(routeId)) {
-			return s_routeProperties.get(routeId);
+	public static GuiRouteProperties getRouteProperties(int routeId, String name) {
+		Map<Integer, GuiRouteProperties> routeIdMap = getRouteIdMap(name);
+		if (routeIdMap.containsKey(routeId)) {
+			return routeIdMap.get(routeId);
 			
 		} else {
 			GuiRouteProperties routeProperties = new GuiRouteProperties();
-			s_routeProperties.put(routeId, routeProperties);
+			routeIdMap.put(routeId, routeProperties);
 			return routeProperties;
 		}
 	}
 	
+	private static Map<Integer, GuiRouteProperties> getRouteIdMap(String name) {
+		if (s_routeProperties.containsKey(name)) {
+			return s_routeProperties.get(name);
+			
+		} else {
+			Map<Integer, GuiRouteProperties> routeIdMap = new HashMap<Integer, GuiRouteProperties>();
+			s_routeProperties.put(name, routeIdMap);
+			return routeIdMap;
+		}
+	}
+
 	private static void resetGuiState() {
 		s_codePoint = null;
 		s_startPoint = null;

@@ -57,7 +57,7 @@ public class StructureView extends ZoomedCanvasView {
 	}
 
 	protected RendererControl createRenderControl(Display display) {
-		return new RendererControl(display, 2, 2, 2, 2);
+		return new RendererControl(getName(), display, 2, 2, 2, 2);
 	}
 
 	protected Renderer createRenderer(Display display, RendererControl renderControl, 

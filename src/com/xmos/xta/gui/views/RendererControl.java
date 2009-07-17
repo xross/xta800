@@ -52,8 +52,11 @@ public class RendererControl {
     private List<Node> m_currentSelection;
     
     private Image m_canvasImage;
+	private String m_viewName;
 
-	public RendererControl(Display display, int leftBorder, int topBorder, int rightBorder, int bottomBorder) {
+	public RendererControl(String viewName, Display display,
+			int leftBorder, int topBorder, int rightBorder, int bottomBorder) {
+		m_viewName = viewName;
 		m_display = display;
 		
 	    m_leftBorder = leftBorder;
@@ -330,7 +333,7 @@ public class RendererControl {
 		if (route == null) {
 			m_routeProperties = null;
 		} else {
-			m_routeProperties = GuiEngine.getRouteProperties(route.getRouteId());
+			m_routeProperties = GuiEngine.getRouteProperties(route.getRouteId(), m_viewName);
 			setScale(m_routeProperties.getScale());
 			setOffsetX(m_routeProperties.getOffsetX());
 			setOffsetY(m_routeProperties.getOffsetY());

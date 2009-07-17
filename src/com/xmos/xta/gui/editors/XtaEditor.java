@@ -409,7 +409,14 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
      	m_setInstructionTimeAction = new Action("Set instruction time") {
      		public void run() {
-     			new InstructionTime(m_parent.getShell(), m_clickCodeRefString);
+     	    	List<Node> nodes = new ArrayList<Node>();
+     	    	Engine engine = GuiEngine.getEngine();
+     	    	Reference reference = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.ANY_REF);
+     	    	if (!reference.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
+     	    		assert(false);
+     	    	}
+     			nodes.addAll(engine.getSelectedRoute().getReferencedNodes(reference));
+     			new InstructionTime(m_parent.getShell(), nodes);
      		}
      	};
      	setAction(SetInstructionTimeID, m_setInstructionTimeAction);
@@ -445,7 +452,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		m_clickCodeRefString = getLineDescription(clickLineIndex);				
 		if (m_clickCodeRefString != null) {			
 			if (m_endPointLineIndexes.containsKey(clickLineIndex) ||
-				m_type.equals(XtaDocumentPartitioner.DISASSEMBLY)) {
+				isAssembly(m_clickCodeRefString)) {
 				if (isStartPointSet(m_clickCodeRefString)) {
 				    addAction(menu, RemoveStartPointID);
 				} else {
@@ -474,6 +481,18 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      	super.editorContextMenuAboutToShow(menu);
     }
 	
+	private boolean isAssembly(String codeRefString) {
+		if (codeRefString.length() < 3) {
+			return false;
+		}
+		
+		if (codeRefString.charAt(0) == '0' &&
+			codeRefString.charAt(1) == 'x') {
+			return true;
+		}
+		return false;
+	}
+
 	private void updateStartPoint() {
 		Reference startPoint = GuiEngine.getStartPoint();
 		m_startPointLine = findCodeRefLineNum(startPoint);
