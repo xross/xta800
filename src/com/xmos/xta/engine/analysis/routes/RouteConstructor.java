@@ -225,7 +225,7 @@ public class RouteConstructor {
 	
 	private boolean explore(NodeWrapper node, Collection<Node> workingSet, Collection<Node> endNodes, Node parent) {	
 		Node currentNode = node.m_node;
-		//System.out.println("exploring node " + currentNode + " " + currentNode.getInstructions().getFirst());
+	//	System.out.println("exploring node " + currentNode + " " + currentNode.getInstructions().getFirst());
 		Set<Node> containedEndPoints = new TreeSet<Node>(endNodes);
 		containedEndPoints.retainAll(currentNode.getContainedNodes());
 		
@@ -235,8 +235,6 @@ public class RouteConstructor {
 		
 		if(containedEndPoints.isEmpty()){
 			// this node contains no end points or the start node is the end node
-			
-			
 			
 			if(!exclusions.isEmpty() ){
 				if( currentNode.isInstructionNode() ){
@@ -269,9 +267,15 @@ public class RouteConstructor {
 					}
 					
 				} else {
-					makeConnection(currentNode, parent);
-					workingSet.add(currentNode);
-					return true;
+					if(workingSet.isEmpty()){
+						workingSet.add(currentNode);
+						return exploreWhatsNext(workingSet, endNodes, currentNode);
+					} else {
+						makeConnection(currentNode, parent);
+						workingSet.add(currentNode);
+						return true;
+					}
+					
 				}
 				
 		
