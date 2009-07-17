@@ -51,8 +51,4 @@ public class FunctionFunctionNode extends FunctionNode {
 		}
 		return x;
 	}
-
-	public void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase) {
-		if (DEBUG) System.out.printf("Annotate FunctionFunction (%d, %d\n", offsetX, offsetY);
-	}
 }

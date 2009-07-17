@@ -112,17 +112,11 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			public void controlResized(ControlEvent e) {
 				Rectangle clientArea = composite.getClientArea();
 				m_renderControl.setCanvasSize(clientArea.width, clientArea.height);
-				if (m_renderControl.getScale() == 0) {
-					zoomFit();
-				}
 				updateScrollBars();
 			}
 			public void controlMoved(ControlEvent e) {
 				Rectangle clientArea = composite.getClientArea();
 				m_renderControl.setCanvasSize(clientArea.width, clientArea.height);
-				if (m_renderControl.getScale() == 0) {
-					zoomFit();
-				}
 				updateScrollBars();
 			}
 	    });	    
@@ -191,8 +185,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 				m_toolTip.dispose ();
 	    	}
 	    	initialiseTree();
-			m_renderControl.refresh();
-			zoomFit();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE) || 
 				   event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
@@ -208,7 +200,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) || 
 				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 			initialiseTree();
-			m_renderControl.refresh();
 			
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_UPDATE_FOLDING)) {
 			m_renderControl.refresh();
@@ -291,6 +282,10 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	}
 	
 	private void updateScrollBars() {
+		if (m_renderControl.getScale() == 0) {
+			zoomFit();
+			return;
+		}
 		int canvasX = m_renderControl.getCanvasWidth();
 		int canvasY = m_renderControl.getCanvasHeight();
 		
@@ -604,8 +599,10 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		m_renderControl.setViewNode(m_viewNode);
 
 		double scale = m_renderControl.getScale();
-		m_hScrollPosition = (int)((double)m_renderControl.getOffsetX() / scale);
-		m_vScrollPosition = (int)((double)m_renderControl.getOffsetY() / scale);
+		if (scale != 0) {
+			m_hScrollPosition = (int)((double)m_renderControl.getOffsetX() / scale);
+			m_vScrollPosition = (int)((double)m_renderControl.getOffsetY() / scale);
+		}
 		updateScrollBars();
 	}
 
