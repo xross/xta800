@@ -18,6 +18,7 @@ int bar(){
         x = foo();
         x = foo();
     }
+    #pragma xta label "the_great_outdoors"
     return x;
 }
 
