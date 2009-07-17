@@ -34,6 +34,7 @@ import com.xmos.xta.engine.sections.SrcLevelLoopInfo;
 public class RouteConstructor {
 	private static final int SR_IEBLE_SHIFT = 1;
 	private static final int SR_IEBLE_SIZE = 1; 
+	private static boolean DEBUG =  false;
 	
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR
@@ -102,7 +103,11 @@ public class RouteConstructor {
 			
 			if(m_description.getMode() == RouteMode.FUNCTION ){
 				if(start.isFunctionNode()&& notFoundFunctionYet){
-					seenEndPoint = makeSubRoute(seenEndPoint, endNodes, start);
+					if(!containAnyNodes(start, m_exclusions)){
+						m_routes.add(new Route(m_engine, start, m_description));
+					} else {
+						seenEndPoint = makeSubRoute(seenEndPoint, endNodes, start);
+					}
 					notFoundFunctionYet = false;
 				}
 			} else {
@@ -121,7 +126,6 @@ public class RouteConstructor {
 			if (seenEndPoint) {
 				return RouteError.SUCCESS;
 			} else {
-				//return RouteError.SUCCESS;
 				return RouteError.NO_ENDPOINTS_FOUND;
 			}
 		} else {
@@ -129,17 +133,20 @@ public class RouteConstructor {
 		}
 	}
 
-	class NodeWrapper {
-		Node m_node;
-		public NodeWrapper(Node node){
-			m_node = node;
+	private boolean containAnyNodes(Node start, Collection<Node> endNodes) {
+		Collection<Node> containedNodes = start.getContainedNodes();
+		for(Node endNode : endNodes){
+			if(containedNodes.contains(endNode)){
+				return true;
+			}
 		}
+		return false;
 	}
-	
+
 	private boolean makeSubRoute(boolean seenEndPoint, Collection<Node> endNodes,
 			Node start) {
 		
-		if(EXPLORE_DUBUG) System.out.println("starting from " + start);
+		if(DEBUG) System.out.println("starting from " + start + " " + start.getInstructions().get(0));
 		
 		Collection<Node> workingSet = new TreeSet<Node>();
 		
@@ -147,16 +154,14 @@ public class RouteConstructor {
 		m_excludedRouteNodes = new TreeSet<Node>();
 		NodeWrapper startNodeWrapper = new NodeWrapper(start);
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
-		if(start.isFunctionNode()){
-			workingSet.add(start);
-			seenEndPoint  = true;
-		} else {
-			seenEndPoint |= explore(startNodeWrapper, workingSet, endNodes, null);
-		}
+		
+		seenEndPoint |= explore(startNodeWrapper, workingSet, endNodes, null);
+
+		
+		if(DEBUG) System.out.println( sae.dumpTree("after", workingSet));
+		if(DEBUG) System.out.println("seen endpoint: " + seenEndPoint + " \n\n\n\n\n");
 		
 		
-		
-		//System.out.println(sae.dumpTree("tree", workingSet));
 		assert(cfgSanityCheck(workingSet));
 									
 		pruneGraphOfExcludedPaths(workingSet);
@@ -201,8 +206,6 @@ public class RouteConstructor {
 		return seenEndPoint;
 	}
 
-	
-
 	private void addTerminator(Collection<Node> workingSet) {
 		int count = 0;
 		for(Node node : workingSet){
@@ -220,92 +223,104 @@ public class RouteConstructor {
 		workingSet.add(nullNode);
 	}
 	
-	
-	private static boolean EXPLORE_DUBUG =  false;
-	
-	private boolean explore(NodeWrapper node, Collection<Node> set, Collection<Node> endNodes, Node parent) {	
-
-		Set<Node> nodes = new TreeSet<Node>(endNodes);
-		nodes.retainAll(node.m_node.getContainedNodes());
+	private boolean explore(NodeWrapper node, Collection<Node> workingSet, Collection<Node> endNodes, Node parent) {	
+		Node currentNode = node.m_node;
+	//	System.out.println("exploring node " + currentNode + " " + currentNode.getInstructions().getFirst());
+		Set<Node> containedEndPoints = new TreeSet<Node>(endNodes);
+		containedEndPoints.retainAll(currentNode.getContainedNodes());
 		
 		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
-		exclusions.retainAll(node.m_node.getContainedNodes());
+		exclusions.retainAll(currentNode.getContainedNodes());
 		
-		if (EXPLORE_DUBUG) {
-			if(nodes.isEmpty()){
-				System.out.println(node.m_node + "does not contain an endpoint" );
+		
+		if(containedEndPoints.isEmpty()){
+			// this node contains no end points or the start node is the end node
+			
+			if(!exclusions.isEmpty() ){
+				if( currentNode.isInstructionNode() ){
+					workingSet.add(currentNode);
+					makeConnection(currentNode, parent);
+					m_excludedRouteNodes.add(currentNode);
+					return false;
+				} else {
+					return exploreIntoCurrentNode(node, workingSet, endNodes, parent, currentNode);
+				}
+				
 			} else {
-				System.out.println(node.m_node + " contains an endpoint" );
+				makeConnection(currentNode, parent);
+				workingSet.add(currentNode);
+				return exploreWhatsNext(workingSet, endNodes, currentNode);
+			}
+			
+		} else {
+			//then we need to explore into the current node unless it is then end point
+			if (currentNodeEndsWithEndNode(endNodes, currentNode)) {
+				
+				if(!exclusions.isEmpty() ){
+					if( currentNode.isInstructionNode() ){
+						workingSet.add(currentNode);
+						makeConnection(currentNode, parent);
+						m_excludedRouteNodes.add(currentNode);
+						return false;
+					} else {
+						return exploreIntoCurrentNode(node, workingSet, endNodes, parent, currentNode);
+					}
+					
+				} else {
+					if(workingSet.isEmpty()){
+						workingSet.add(currentNode);
+						return exploreWhatsNext(workingSet, endNodes, currentNode);
+					} else {
+						makeConnection(currentNode, parent);
+						workingSet.add(currentNode);
+						return true;
+					}
+					
+				}
+				
+		
+			} else {
+				// otherwise explore into the currentNode
+				return exploreIntoCurrentNode(node, workingSet, endNodes, parent, currentNode);
 			}
 		}
 		
-		boolean seenEndPoint = false;
+	}
 
-
-		if (nodes.isEmpty() || set.isEmpty()) {
-			
-			if(!exclusions.isEmpty() ){
-				
-				if( node.m_node.isBlockNode() ){
-					if(set.contains(node.m_node)) {
-						return false;
-					}
-					
-					if (EXPLORE_DUBUG) System.out.println("adding node "+ node.m_node + " to working set");
-					set.add(node.m_node);
-					makeConnection(node.m_node, parent);
-					m_excludedRouteNodes.add(node.m_node);
-				} else {
-					assert (!node.m_node.getImmediateChildren().isEmpty());
-					
-					if (EXPLORE_DUBUG) System.out.println(node.m_node + " has immediate children of " + node.m_node.getImmediateChildren());
-					for(Node child : node.m_node.getImmediateChildren()){
-						
-						
-						NodeWrapper childWrapper = new NodeWrapper(child);
-						seenEndPoint |= explore(childWrapper, set, endNodes, parent);
-						if(parent == null) {
-							node.m_node = childWrapper.m_node;
-						}
-					}
-				}
-				return seenEndPoint;
-			} 
-			makeConnection(node.m_node, parent);
-			if(set.contains(node.m_node)) {
-				return seenEndPoint;
-			}
-			if (EXPLORE_DUBUG) System.out.println("adding node "+ node.m_node + " to working set");
-			set.add(node.m_node);
-
-			if (node.m_node.getParent() != null && !node.m_node.getParent().whatsNext(node.m_node).isEmpty()) {
-				Collection<Node> nextNodes = node.m_node.getParent().whatsNext(node.m_node);
-				nextNodes = node.m_node.getParent().whatsNext(node.m_node);
-				
-				if (EXPLORE_DUBUG) System.out.println(node.m_node + " has next nodes of " + nextNodes);
-				
-				for (Node next : nextNodes) {
-					seenEndPoint |= explore(new NodeWrapper(next), set, endNodes, node.m_node);
-				}
-			}
-		} else {
-			if (endNodes.contains(node.m_node)) {
-				makeConnection(node.m_node, parent);
-				if (EXPLORE_DUBUG) System.out.println("adding node "+ node.m_node + " to working set");
-				set.add(node.m_node);
+	private boolean currentNodeEndsWithEndNode(Collection<Node> endNodes, Node currentNode) {
+		int endPc = currentNode.getInstructions().getLast().getPc();
+		for(Node endNode : endNodes ){
+			if(endNode.getStartPc() == endPc){
 				return true;
-			} else {
-				assert (!node.m_node.getImmediateChildren().isEmpty());
-				if (EXPLORE_DUBUG) System.out.println(node.m_node + " has immediate children of " + node.m_node.getImmediateChildren());
-				
-				for(Node child : node.m_node.getImmediateChildren()){
-					NodeWrapper childWrapper = new NodeWrapper(child);
-					seenEndPoint |= explore(childWrapper, set, endNodes, parent);
-					if(parent == null) {
-						node.m_node = childWrapper.m_node;
-					}
-					
-				}
+			}
+		}
+		return false;
+	}
+
+	private boolean exploreWhatsNext(Collection<Node> workingSet, Collection<Node> endNodes, Node currentNode) {
+		boolean seenEndPoint = false;
+		Node parent = currentNode.getParent();
+		if (parent != null && !parent.whatsNext(currentNode).isEmpty()) {
+			for (Node next : parent.whatsNext(currentNode)) {
+				seenEndPoint |= explore(new NodeWrapper(next), workingSet, endNodes, currentNode);
+			}
+		}
+		return seenEndPoint;
+	}
+
+	private boolean exploreIntoCurrentNode(NodeWrapper node, Collection<Node> workingSet, Collection<Node> endNodes,
+			Node parent, Node currentNode) {
+		
+		boolean seenEndPoint = false;
+		
+		assert (!currentNode.getImmediateChildren().isEmpty());
+		
+		for(Node child : currentNode.getImmediateChildren()){
+			NodeWrapper childWrapper = new NodeWrapper(child);
+			seenEndPoint |= explore(childWrapper, workingSet, endNodes, parent);
+			if(parent == null) {
+				//TODO check to see if parent is ever null or not
+				node.m_node = childWrapper.m_node;
 			}
 		}
 		return seenEndPoint;
@@ -393,7 +408,6 @@ public class RouteConstructor {
 		return startBlock;
 	}
 	
-	
 	private void pruneGraphOfExcludedPaths(Collection<Node> workingSet) {
 		
 		while(!m_excludedRouteNodes.isEmpty()){
@@ -411,10 +425,11 @@ public class RouteConstructor {
 
 	private void makeConnection(Node node, Node parent) {
 		if (parent != null) {
-			if (EXPLORE_DUBUG) System.out.println("connecting " + parent + " -> " + node);
+			if (DEBUG) System.out.println("connecting " + parent + " -> " + node);
 			CommonMethods.connect(node, parent);
 		}
 	}
+	
 	private void resetParent() {
 		for (Node node : m_structureGraph.getThreads()) {
 			setParent(node);
@@ -581,7 +596,6 @@ public class RouteConstructor {
 		}
 	}		
 	
-	
 	private boolean cfgSanityCheck(Collection<Node> workingSet) {
 		//this checks to see that all nodes point to another node in the workingSet and no other
 		for(Node node : workingSet){
@@ -612,5 +626,12 @@ public class RouteConstructor {
 			referencedNodes.addAll(referenceMatcher.getNodes(thread, reference));
 		}
 		return referencedNodes;		
+	}
+	
+	class NodeWrapper {
+		Node m_node;
+		public NodeWrapper(Node node){
+			m_node = node;
+		}
 	}
 }
