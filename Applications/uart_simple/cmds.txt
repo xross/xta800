@@ -33,6 +33,7 @@ echo ----------------------------------------
 remove exclusion *
 add exclusion start_bit_input 
 add exclusion start_bit_error 
+add exclusion recieve_complete 
 
 analyse path start_bit_sample recieve_data
 set required - 1000.0 ns
