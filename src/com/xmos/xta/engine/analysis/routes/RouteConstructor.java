@@ -104,7 +104,8 @@ public class RouteConstructor {
 			if(m_description.getMode() == RouteMode.FUNCTION ){
 				if(start.isFunctionNode()&& notFoundFunctionYet){
 					if(!containAnyNodes(start, m_exclusions)){
-						m_routes.add(new Route(m_engine, start, m_description));
+						start.setParent(null);
+						m_routes.add(new Route(m_engine, start.deepCopy(), m_description));
 					} else {
 						seenEndPoint = makeSubRoute(seenEndPoint, endNodes, start);
 					}
@@ -117,11 +118,12 @@ public class RouteConstructor {
 		}
 		
 		setParents();
-		setUnknowns();				
+		setUnknowns();			
 		setSelfLoops();	
 		setSrcLoopCounts();	
 		checkSupportedInstructions();
 
+		
 		if (m_description.getMode() == RouteMode.PATH) {
 			if (seenEndPoint) {
 				return RouteError.SUCCESS;
@@ -157,11 +159,6 @@ public class RouteConstructor {
 		
 		seenEndPoint |= explore(startNodeWrapper, workingSet, endNodes, null);
 
-		
-		if(DEBUG) System.out.println( sae.dumpTree("after", workingSet));
-		if(DEBUG) System.out.println("seen endpoint: " + seenEndPoint + " \n\n\n\n\n");
-		
-		
 		assert(cfgSanityCheck(workingSet));
 									
 		pruneGraphOfExcludedPaths(workingSet);
@@ -201,6 +198,7 @@ public class RouteConstructor {
 			} 
 			
 			Node newGraph = baseNode.deepCopy();
+			newGraph.setParent(null);
 			m_routes.add(new Route(m_engine, newGraph, m_description));
 		}
 		return seenEndPoint;
@@ -225,7 +223,7 @@ public class RouteConstructor {
 	
 	private boolean explore(NodeWrapper node, Collection<Node> workingSet, Collection<Node> endNodes, Node parent) {	
 		Node currentNode = node.m_node;
-	//	System.out.println("exploring node " + currentNode + " " + currentNode.getInstructions().getFirst());
+		//System.out.println("exploring node " + currentNode + " " + currentNode.getInstructions().getFirst());
 		Set<Node> containedEndPoints = new TreeSet<Node>(endNodes);
 		containedEndPoints.retainAll(currentNode.getContainedNodes());
 		
@@ -235,7 +233,6 @@ public class RouteConstructor {
 		
 		if(containedEndPoints.isEmpty()){
 			// this node contains no end points or the start node is the end node
-			
 			if(!exclusions.isEmpty() ){
 				if( currentNode.isInstructionNode() ){
 					workingSet.add(currentNode);
@@ -247,6 +244,10 @@ public class RouteConstructor {
 				}
 				
 			} else {
+				//TODO find out what this is for
+				if(workingSet.contains(currentNode)){
+					return false;
+				}
 				makeConnection(currentNode, parent);
 				workingSet.add(currentNode);
 				return exploreWhatsNext(workingSet, endNodes, currentNode);
