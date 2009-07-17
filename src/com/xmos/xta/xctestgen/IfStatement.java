@@ -60,14 +60,12 @@ public class IfStatement extends CodeElement {
 		if(m_children.size() == 1 ) { 
 			for (ArrayList<CodeElement> children : m_children) {
 				for (CodeElement child : children) {
-					//System.out.println(this + "(" +depth +") has a child of " + child);
 					child.emitExpect(node, file, depth+1);
 				}
 			}
 		} else if (m_children.size() == 2){
 			for (ArrayList<CodeElement> children : m_children) {
 				for (CodeElement child : children) {
-					//System.out.println(this + "(" +depth +") has a child of " + child);
 					child.emitExpect(node, file, depth+1);
 				}
 			}

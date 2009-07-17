@@ -56,8 +56,8 @@ public class InstructionNode extends Node {
     }
     
 	public String toString() {
-		return "instruction" + m_id;
-		//return m_inst.toString();
+		//return "instruction" + m_id;
+		return m_inst.toString();
 	}
 
 	public Collection<Node> getContainedNodes() {
@@ -155,7 +155,6 @@ public class InstructionNode extends Node {
 	}
 
 	public TimeDistributionBuckets getTimeSpread() {
-		System.out.println("hit an instruction Node");
 		assert(false);
 		return null;
 	}

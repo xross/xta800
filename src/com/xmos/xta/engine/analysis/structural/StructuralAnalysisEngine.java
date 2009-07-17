@@ -151,8 +151,6 @@ public class StructuralAnalysisEngine {
 			
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
 			
-			String tree = dumpTree(functionName + "_before", basicBlocks);
-			
 			int initialPc = graphStart.getStartPc();
 			
 			assert(!basicBlocks.isEmpty());
@@ -167,7 +165,6 @@ public class StructuralAnalysisEngine {
 			}
 			
 			if(basicBlocks.size() != 1 || initialPc != basicBlocks.iterator().next().getStartPc()) {
-				System.out.println(tree);
 				System.out.println(dumpTree(functionName + "_after", basicBlocks));
 			}
 			assert(basicBlocks.size() == 1);

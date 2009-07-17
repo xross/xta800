@@ -74,7 +74,11 @@ public class SuccessorAdder {
 	private void handleNonBranchingInstructions(Node instruction, XtaInstruction inst, boolean debug) {
 		if (!(inst.isBranch() || inst.isLink() || m_mnenonics.isWait(inst) || m_threadEnds.contains(instruction))) {
 			int nextPc = inst.getPc() + inst.getNumBytes();
-			connect(instruction, nextPc, false, debug);
+			
+			if(m_instDecoder.getNode(nextPc) != null){
+				connect(instruction, nextPc, false, debug);
+			}
+			
 		}
 	}
 
@@ -112,13 +116,8 @@ public class SuccessorAdder {
 		if (target != null) {
 			if (branching){
 				instruction.addBranchTarget(target);
-			}
-				
+			}	
 			CommonMethods.connect(target, instruction);
-			
-			
-			//System.out.println("0x" + Integer.toHexString(instruction.getStartPc()) + " -> 0x" + Integer.toHexString(target.getStartPc()));
-			if(debug) System.out.println(instruction + " -> " + target);
 		} else {
 			m_notifier.notify(Notifier.NOTIFY_WARNING, "Instruction " + instruction + " failed to find target 0x"
 					+ Integer.toHexString(pc));

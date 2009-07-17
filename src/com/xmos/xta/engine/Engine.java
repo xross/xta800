@@ -362,7 +362,6 @@ public class Engine implements Notifier {
 		if (m_jobMonitor != null)
 			return m_jobMonitor.isCanceled();
 		
-		
 		return false;
 	}
 
@@ -1015,11 +1014,6 @@ public class Engine implements Notifier {
 				
 				SourceMapper sourceMapper = new SourceMapper(xeLoader, nodeId, coreId, starts, 
 						fileFinder, id, newFunctionNames.get(nodeId, coreId));
-				
-				
-				//for(String fn : newFunctionNames.get(nodeId, coreId).keySet()){
-				//	System.out.println("all fns contains " + fn + " " + newFunctionNames.get(nodeId, coreId).get(fn));
-				//}
 				
 				newSourceMappers.add(nodeId, coreId, sourceMapper);
 				

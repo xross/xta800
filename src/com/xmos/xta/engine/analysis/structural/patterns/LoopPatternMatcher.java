@@ -50,9 +50,6 @@ public class LoopPatternMatcher extends PatternMatcher {
 				
 		
 		if (intersection.contains(treeStart) || header == treeStart){
-			
-			//System.out.println(StructuralAnalysisEngine.dumpTree("error" , workingSet));
-			
 			m_treeStart = loop;
 		} else {
 			m_treeStart = treeStart;

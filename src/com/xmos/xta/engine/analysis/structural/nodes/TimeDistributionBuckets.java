@@ -63,7 +63,6 @@ public class TimeDistributionBuckets {
 				
 				if(b <0 || b >=BUCKET_COUNT){
 					timeToBucket(t);
-					System.out.println(m_lowest + " " + t + " " + m_highest);
 				}
 				
 				m_buckets[b] += b0.m_buckets[i] * b1.m_buckets[j];

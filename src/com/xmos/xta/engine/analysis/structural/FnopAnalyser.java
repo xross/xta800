@@ -92,13 +92,14 @@ public class FnopAnalyser {
 		for (XtaInstruction inst : block.getInstructions()) {
 			
 			if (inst.isBranch()) {
+				update(endInstBuffer, fnopPcs, inst);
 				endInstBuffer.branchTo(inst.getBranchPcRelativeTargetPc(), inst.isLoadStore());
 			} else {
 				update(endInstBuffer, fnopPcs, inst);
 				endInstBuffer.setPc(inst.getPc() + inst.getNumBytes());
 			}
-			//System.out.println(inst);
-
+	//		System.out.println(inst);
+	//		System.out.print("");
 		}
 	//	System.out.println("--------------------------------------------------------------------------------");
 
@@ -108,7 +109,7 @@ public class FnopAnalyser {
 	private void update(InstructionBuffer ib, List<Integer> fnopPcs, XtaInstruction inst) {
 		while (!ib.canIssue(inst.getNumBytes())) {
 			ib.fetch();
-			//System.out.println("fnop");
+	//		System.out.println("fnop");
 			fnopPcs.add(inst.getPc());
 		}
 		if (!inst.isLoadStore()) {
