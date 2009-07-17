@@ -19,27 +19,5 @@ system("@ARGV -config timeout 5 -load $genDir/test_pi-ar_w-i-pap___O3.xe " .
        "-analyse path endpoint1 end " .
        "-analyse path endpoint2 end " .
        "-analyse path endpoint0 endpoint2 " .
-       "-add exclusion endpoint0 " .
-       "-analyse function test " .
-       "-remove exclusion endpoint0 " .
-       "-add exclusion endpoint1 " .
-       "-analyse function test " .
-       "-remove exclusion endpoint1 " .
-       "-add exclusion endpoint2 " .
-       "-analyse function test " .
-       "-remove exclusion endpoint2 " .
-       "-add exclusion endpoint0 " .
-       "-add exclusion endpoint1 " .
-       "-analyse function test " .
-       "-remove exclusion endpoint0 " .
-       "-remove exclusion endpoint1 " .
-       "-add exclusion endpoint0 " .
-       "-add exclusion endpoint2 " .
-       "-analyse function test " .
-       "-remove exclusion endpoint0 " .
-       "-remove exclusion endpoint2 " .
-       "-add exclusion endpoint1 " .
-       "-add exclusion endpoint2 " .
-       "-analyse function test " .
        "-exit > $genDir/test_pi-ar_w-i-pap___O3.txt 2>&1");
 
