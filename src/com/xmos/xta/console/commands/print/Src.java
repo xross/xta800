@@ -4,6 +4,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.analysis.routes.Route;
 
 public class Src extends Command {
 	private int m_routeId;
@@ -76,10 +77,12 @@ public class Src extends Command {
 		    return;	    	
 	    
 		SrcDisplayer displayer = new SrcDisplayer(engine, console, false);
-		if (m_nodeIdSet) {
-			displayer.display(engine.getRoute(m_routeId).getNode(m_nodeId));						
-		} else {
-			displayer.display(engine.getRoute(m_routeId).getNode());			
-		}        
+		for (Route route : engine.getRoute(m_routeId)) {
+			if (m_nodeIdSet) {
+				displayer.display(route.getNode(m_nodeId));						
+			} else {
+				displayer.display(route.getNode());			
+			}        			
+		}
    }    
 }

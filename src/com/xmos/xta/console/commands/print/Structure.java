@@ -7,6 +7,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
 public class Structure extends Command {
@@ -89,11 +90,13 @@ public class Structure extends Command {
     			nodes.addAll(engine.getStructureGraph().getThreads());    			
     		}			
 		} else {
-    		if (m_nodeIdSet) {
-	    		nodes = getCollection(engine.getRoute(m_routeId).getNode(m_nodeId));			
-		    } else {
-			    nodes = getCollection(engine.getRoute(m_routeId).getNode());
-		    }
+			for (Route route : engine.getRoute(m_routeId)) {
+	    		if (m_nodeIdSet) {
+		    		nodes = getCollection(route.getNode(m_nodeId));			
+			    } else {
+				    nodes = getCollection(route.getNode());
+			    }				
+			}
 		}		
 		StructureDisplayer displayer = new StructureDisplayer(console, engine.getVerbosity());
 		displayer.display(nodes);

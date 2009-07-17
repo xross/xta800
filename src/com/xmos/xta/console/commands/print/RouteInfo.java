@@ -53,10 +53,10 @@ public class RouteInfo extends Command {
 	    if (!validateRouteId(engine, console, m_routeId))
 		    return;
 
-	    Route route = engine.getRoute(m_routeId);
-	    RouteTiming routeTiming = route.getRouteTiming();
-
-    	console.display(String.format("%s %s\n", route.getRouteDescription().getDescription(), route.getEndpointsPcsString()));    	
-    	console.display(routeTiming.getDescription(Level.COMPLETE));    	
+		for (Route route : engine.getRoute(m_routeId)) {
+    	    RouteTiming routeTiming = route.getRouteTiming();
+    	    console.display(String.format("%s %s\n", route.getRouteDescription().getDescription(), route.getEndpointsPcsString()));    	
+    	    console.display(routeTiming.getDescription(Level.COMPLETE));
+		}
     }
 }

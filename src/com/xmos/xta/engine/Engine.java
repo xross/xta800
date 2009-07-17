@@ -47,14 +47,15 @@ import com.xmos.xta.sourcemapper.FileFinder;
 import com.xmos.xta.sourcemapper.SourceMapper;
 
 public class Engine implements Notifier {
-	public static final int ROUTE_ID_LAST = -1;
-	public static final int ROUTE_ID_INVALID = -2;
-	public static final int ROUTE_ID_GLOBAL = -3;
+	public static final int ROUTE_ID_LAST     = -1;
+	public static final int ROUTE_ID_INVALID  = -2;
+	public static final int ROUTE_ID_GLOBAL   = -3;
 	public static final int NODE_ID_TOP_LEVEL = -4;
 	
 	private XeLoader m_xeLoader;
 	private FileFinder m_fileFinder;
 	private List<Route> m_routes;
+	private int m_numRoutesLastAnalysed;
 	private Collection<Reference> m_exclusions;
 	private Route m_selectedRoute;
 	private Config m_config;
@@ -82,6 +83,7 @@ public class Engine implements Notifier {
 		m_functionNames = new NodeCoreCollection<TreeMap<String, InstructionNode>>();
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
+		m_numRoutesLastAnalysed = 0;
 		m_exclusions = new ArrayList<Reference>();
 		m_config = config;
 		m_executableFile = null;
@@ -182,20 +184,24 @@ public class Engine implements Notifier {
 		m_srcPaths += ";.";
 	}
 
-	public Route getRoute(int routeId) {
+	public Collection<Route> getRoute(int routeId) {
+		Collection<Route> routes = new ArrayList<Route>();
+		
 		if (routeId == ROUTE_ID_LAST) {
-			if (m_routes.size() > 0)
-				return m_routes.get(m_routes.size() - 1);
-			else 
-				return null;
-		}
-
-		for (Route route : m_routes) {
-			if (route.getRouteId() == routeId) {
-				return route;
-			}
+			assert(m_routes.size() >= m_numRoutesLastAnalysed);						
+			int toIndex = m_routes.size();
+			int fromIndex = toIndex - m_numRoutesLastAnalysed;
+			routes.addAll(m_routes.subList(fromIndex, toIndex));
+			
+		} else {
+		    for (Route route : m_routes) {
+				if (route.getRouteId() == routeId) {
+					routes.add(route);
+					break;
+				}
+		    }
 		}		
-		return null;
+		return routes;
 	}
 	
 	public boolean loadExecutable(File executableFile, FileFinder fileFinder) {
@@ -228,6 +234,7 @@ public class Engine implements Notifier {
 		m_nodeId = 0;
 		m_coreId = 0;			
 		m_routes.clear();
+		m_numRoutesLastAnalysed = 0;
 		m_selectedRoute = null;
 		m_exclusions.clear();
 		Route.resetRouteCount();
@@ -331,9 +338,11 @@ public class Engine implements Notifier {
 			
 		} else {
 			int currentSize = m_routes.size();
+			m_numRoutesLastAnalysed = 0;
 			for (Route route : routeConstructor.getRoutes()) {
 				m_routes.add(route);
-			}			
+				++m_numRoutesLastAnalysed;
+			}
 			if (!m_routes.isEmpty() && !routeConstructor.getRoutes().isEmpty()) {
 				setSelectedRoute(m_routes.get(currentSize));
 				notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
@@ -427,27 +436,28 @@ public class Engine implements Notifier {
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		Route route = getRoute(routeId);
-		if (route == null)
-			return false;
-		
-		return route.getRouteUnknowns().canInstructionPause(reference);			
+		for (Route route : getRoute(routeId)) {
+			 if (route.getRouteUnknowns().canInstructionPause(reference))
+				 return true;			
+		}		
+		return false;
 	}
 		
-	public boolean removeRoute(int routeId) {
-		Route route = getRoute(routeId);
-		if (route != null) {
-			m_routes.remove(route);			
-			if (m_routes.size() == 0) {
-				Route.resetRouteCount();
-				setSelectedRoute(null);
-			} else if (m_selectedRoute.getRouteId() == routeId) {
-				m_selectedRoute = m_routes.get(m_routes.size() - 1);
-			}
-			notify(Notifier.NOTIFY_REMOVE_ROUTE, "");
-			return true;
+	public boolean removeRoute(int routeId) {		
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.size() == 0)
+			return false;
+		
+		m_routes.removeAll(routes);			
+		if (m_routes.size() == 0) {
+			Route.resetRouteCount();
+			setSelectedRoute(null);
+			
+		} else if (m_selectedRoute.getRouteId() == routeId) {
+			m_selectedRoute = m_routes.get(m_routes.size() - 1);
 		}
-		return false;
+		notify(Notifier.NOTIFY_REMOVE_ROUTE, "");
+		return true;
 	}
 
 	public void removeAllRoutes() {
@@ -498,13 +508,6 @@ public class Engine implements Notifier {
 		return m_selectedRoute;
 	}
 
-	public int getSelectedRouteId() {
-		if (m_selectedRoute != null)
-			return m_selectedRoute.getRouteId();
-		else
-			return ROUTE_ID_INVALID;
-	}
-
 	public void setSelectedRoute(Route route) {
 		if (route != null) {
 			RouteTiming routeTiming = route.getRouteTiming();
@@ -520,60 +523,81 @@ public class Engine implements Notifier {
 		notify(Notifier.NOTIFY_SELECT_ROUTE, "");
 	}
 
-	public void setSelectedRoute(int routeId) {
-		 setSelectedRoute(getRoute(routeId));
+	public int getSelectedRouteId() {
+		if (m_selectedRoute != null)
+			return m_selectedRoute.getRouteId();
+		else
+			return ROUTE_ID_INVALID;
+	}
+	
+	public void setSelectedRouteId(int routeId) {
+		assert((routeId != ROUTE_ID_INVALID) || (routeId != ROUTE_ID_LAST));
+		Collection<Route> routes = getRoute(routeId);
+		assert(routes.size() == 1);
+		setSelectedRoute(routes.iterator().next());
 	}
 	
 	// ===================================================================== //
 	// Requirements Methods
 	// ===================================================================== //		
 	public boolean setRouteMaxTime(int routeId, double time) {
-		Route route = getRoute(routeId);
-		if (route != null) {
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.size() == 0)
+			return false;
+			
+		for (Route route : routes) {
 			route.getRouteTiming().setMaxTime(time);
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
 		}
-		return false;
+		notify(Notifier.NOTIFY_UPDATE_STATE, "");
+		return true;
 	}
 
 	public boolean setRouteMaxCycles(int routeId, int cycles) {
-		Route route = getRoute(routeId);
-		if (route != null) {
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.size() == 0)
+			return false;
+
+		for (Route route : routes) {			
 			route.getRouteTiming().setMaxCycles(cycles);
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
 		}
-		return false;		
+		notify(Notifier.NOTIFY_UPDATE_STATE, "");
+		return true;
 	}
 	
 	public boolean unsetRouteMax(int routeId) {
-		Route route = getRoute(routeId);
-		if (route != null) {
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.size() == 0)
+			return false;
+		
+		for (Route route : routes) {			
 			route.getRouteTiming().resetMaxTime();
-			notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
 		}
-		return false;		
+		notify(Notifier.NOTIFY_UPDATE_STATE, "");
+		return true;
 	}	
 	
 	// ===================================================================== //
 	// Unknown (Loop Iteration) Methods
 	// ===================================================================== //		
 	public boolean setLoopIterations(int routeId, String refString, long iterations) {
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.ANY_REF);
+		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
-		}		
-		Route route = getRoute(routeId);
-		if (route != null) {
-		    if (route.getRouteUnknowns().setLoopIterations(reference, iterations)) {
-			    notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			    return true;
-		    }
 		}
-		return false;
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.size() == 0) {
+			return false;
+		}
+		for (Route route : routes) {
+			if (!route.getRouteUnknowns().canSetLoopIterations(reference, iterations)) {
+				return false;
+			}
+		}
+		for (Route route : routes) {
+		    route.getRouteUnknowns().setLoopIterations(reference, iterations);
+		}
+	    notify(Notifier.NOTIFY_UPDATE_STATE, "");
+	    return true;
 	}
 
 	public boolean setLoopIterations(Node node, long iterations) {
@@ -593,19 +617,24 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean setLoopPathIterations(int routeId, String refString, long iterations) {
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.ANY_REF);
+		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
+		}		
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.size() == 0) {
+			return false;
 		}
-		Route route = getRoute(routeId);
-		if (route != null) {		
-		    if (route.getRouteUnknowns().setLoopPathIterations(reference, iterations)) {
-			    notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			    return true;
-		    }
+		for (Route route : routes) {
+			if (!route.getRouteUnknowns().setLoopPathIterations(reference, iterations)) {
+				return false;
+			}
 		}
-		return false;
+		for (Route route : routes) {
+		    route.getRouteUnknowns().setLoopPathIterations(reference, iterations);
+		}
+		notify(Notifier.NOTIFY_UPDATE_STATE, "");
+		return true;
 	}
 
 	public boolean setLoopPathIterations(Node node, long iterations) {
@@ -625,19 +654,24 @@ public class Engine implements Notifier {
 	}
 
 	public boolean setLoopScope(int routeId, String refString, boolean absolute) {
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.ANY_REF);
+		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		Route route = getRoute(routeId);
-		if (route != null) {				
-		    if (route.getRouteUnknowns().setLoopScope(reference, absolute)) {
-			    notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			    return true;
-		    }
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.size() == 0) {
+			return false;
 		}
-		return false;
+		for (Route route : routes) {
+			if (!route.getRouteUnknowns().setLoopScope(reference, absolute)) {
+				return false;
+			}
+		}
+		for (Route route : routes) {
+		    route.getRouteUnknowns().setLoopScope(reference, absolute);		   
+		}
+		notify(Notifier.NOTIFY_UPDATE_STATE, "");
+		return true;
 	}
 
 	public boolean setLoopScope(Node node, boolean absolute) {
@@ -656,19 +690,24 @@ public class Engine implements Notifier {
 	// Unknown (Instruction Time) Methods
 	// ===================================================================== //			
 	public boolean setInstructionTimeTaken(int routeId, String refString, double timeTaken) {
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.ENDPOINT_REF);
+		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		Route route = getRoute(routeId);
-		if (route != null) {						
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.size() == 0)
+			return false;
+
+		boolean passed = false;
+		for (Route route : routes) {
 		    if (route.getRouteUnknowns().setInstructionTimeTaken(reference, timeTaken)) {
-			    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			    return true;
+			    passed = true;
 		    }
 		}
-		return false;
+		if (passed) {
+		    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+		}
+		return passed;
 	}
 
 	public void setInstructionTimeTaken(Node node, double timeTaken) {
@@ -677,19 +716,24 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean unsetInstructionTimeTaken(int routeId, String refString) {
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.ENDPOINT_REF);
+		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		Route route = getRoute(routeId);
-		if (route != null) {								
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.size() == 0)
+			return false;
+		
+		boolean passed = false;
+		for (Route route : routes) {
 		    if (route.getRouteUnknowns().unsetInstructionTimeTaken(reference)) {
-			    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			    return true;
+			    passed = true;
 		    }
 		}
-		return false;
+		if (passed) {
+		    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+		}
+		return passed;
 	}
 
 	public void unsetInstructionTimeTaken(Node node) {
@@ -702,19 +746,24 @@ public class Engine implements Notifier {
 	}
 
 	public boolean setInstructionNumCycles(int routeId, String refString, long numCycles) {
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.ENDPOINT_REF);
+		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		Route route = getRoute(routeId);
-		if (route != null) {								
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.size() == 0)
+			return false;
+		
+		boolean passed = false;
+		for (Route route : routes) {
      		if (route.getRouteUnknowns().setInstructionNumCycles(reference, numCycles)) {
-			    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			    return true;
-     		}
+			    passed = true;
+		    }
 		}
-		return false;
+		if (passed) {
+		    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+		}
+		return passed;
 	}
 
 	public void setInstructionNumCycles(Node node, long numCycles) {
@@ -723,20 +772,24 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean unsetInstructionNumCycles(int routeId, String refString) {
-		Reference reference = ReferenceFactory.createReference(
-				refString, ReferenceClass.ENDPOINT_REF);
+		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		Route route = getRoute(routeId);
-		if (route != null) {								
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.size() == 0)
+			return false;
+		
+		boolean passed = false;
+		for (Route route : routes) {
 		    if (route.getRouteUnknowns().unsetInstructionNumCycles(reference)) {
-			    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-			    notify(Notifier.NOTIFY_UPDATE_STATE, "");
-			    return true;
+			    passed = true;
 		    }
 		}
-		return false;
+		if (passed) {
+		    notify(Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+		}
+		return passed;
 	}
 			
 	public void unsetInstructionNumCycles(Node node) {

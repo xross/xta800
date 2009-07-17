@@ -38,6 +38,16 @@ public class RouteUnknowns {
 	// Setting Loop Iteration
 	// ===================================================================== //
 	public boolean setLoopIterations(Reference reference, long iterations) {
+		if (!canSetLoopIterations(reference, iterations))
+			return false;		
+
+		for (Node node : m_route.getReferencedNodes(reference)) {
+			setLoopIterationsNoCheck(node, iterations);
+		}			
+		return true;
+	}
+
+	public boolean canSetLoopIterations(Reference reference, long iterations) {
 		if (iterations < 0)
 			return false;		
 
@@ -46,12 +56,9 @@ public class RouteUnknowns {
 				(loopIterationsValid(node, iterations) == false))
 				return false;
 		}
-		for (Node node : m_route.getReferencedNodes(reference)) {
-			setLoopIterationsNoCheck(node, iterations);
-		}			
 		return true;
 	}
-
+	
 	public boolean setLoopIterations(Node node, long iterations) {
 		if (iterations < 0)
 			return false;		
@@ -96,19 +103,26 @@ public class RouteUnknowns {
 	// Setting Loop Path Iteration
 	// ===================================================================== //
 	public boolean setLoopPathIterations(Reference reference, long iterations) {
-		if (iterations < 0)
+		if (!canSetLoopPathIterations(reference, iterations))
 			return false;		
 		
-		for (Node node : m_route.getReferencedNodes(reference)) {
-			if ((canSetLoopPathIterations(node) == false) || 
-				(loopPathIterationsValid(node, iterations) == false))
-				return false;
-		}		
 		for (Node node : m_route.getReferencedNodes(reference)) {
 			setLoopPathIterationsNoCheck(node, iterations);
 		}		
 		return true;
 	}
+	
+	public boolean canSetLoopPathIterations(Reference reference, long iterations) {
+		if (iterations < 0)
+			return false;		
+
+		for (Node node : m_route.getReferencedNodes(reference)) {
+			if ((canSetLoopPathIterations(node) == false) || 
+				(loopPathIterationsValid(node, iterations) == false))
+				return false;
+		}		
+		return true;
+	}	
 	
 	public boolean setLoopPathIterations(Node node, long iterations) {
 		if (iterations < 0)
@@ -165,16 +179,23 @@ public class RouteUnknowns {
 	// Setting Loop Scope
 	// ===================================================================== //
 	public boolean setLoopScope(Reference reference, boolean isAbsolute) {
-		for (Node node : m_route.getReferencedNodes(reference)) {
-			if (canSetLoopScope(node) == false)
-				return false;
-		}		
+		if (!canSetLoopScope(reference, isAbsolute))
+			return false;
+		
 		for (Node node : m_route.getReferencedNodes(reference)) {
 			setLoopScopeNoCheck(node, isAbsolute);
 		}		
 		return true;
 	}
 
+	public boolean canSetLoopScope(Reference reference, boolean isAbsolute) {
+		for (Node node : m_route.getReferencedNodes(reference)) {
+			if (canSetLoopScope(node) == false)
+				return false;
+		}		
+		return true;
+	}
+	
 	public boolean setLoopScope(Node node, boolean isAbsolute) {
 		if (canSetLoopScope(node)) {
 			setLoopScopeNoCheck(node, isAbsolute);

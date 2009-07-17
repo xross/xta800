@@ -74,8 +74,8 @@ public abstract class Command {
     		    console.display("Error: No routes analysed\n");
     		    return false;
     	    }
-        	Route route = engine.getRoute(routeId);
-        	if (route == null) {
+        	Collection<Route> routes = engine.getRoute(routeId);
+        	if (routes.size() == 0) {
         		console.display(String.format("Error: invalid route id: %d\n", routeId));
         		return false;
         	}
@@ -94,17 +94,25 @@ public abstract class Command {
 	    	if (engine.getRoutes().size() == 0) {
 	    		console.display("Error: No routes analysed\n");
 	    		return false;
-	    	}    	
-        	Route route = engine.getRoute(routeId);
-        	if (route == null) {
+	    	}
+        	Collection<Route> routes = engine.getRoute(routeId);
+        	if (routes.size() == 0) {
         		console.display(String.format("Error: invalid route id: %d\n", routeId));
         		return false;
-        	}   
-        	Node node = route.getNode(nodeId);
-        	if (node == null) {
+        	}
+        	
+        	boolean found = false;
+        	for (Route route : routes) {
+            	Node node = route.getNode(nodeId);
+            	if (node != null) {
+            		found = true;
+            		break;
+            	}        	
+        	}
+        	if (!found) {
         		console.display(String.format("Error: invalid node id: %d\n", nodeId));
-        		return false;    		
-        	}        	
+        		return false;    		        		
+        	}
     	}    	    	    	
     	return true;
     }

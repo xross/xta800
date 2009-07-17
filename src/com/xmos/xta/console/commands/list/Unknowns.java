@@ -6,6 +6,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 
@@ -53,16 +54,21 @@ public class Unknowns extends Command {
 		if (!validateRouteId(engine, console, m_routeId))
 		    return;
 
-	    Collection<Node> nodes = engine.getRoute(m_routeId).getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN);
-	    if (nodes.size() > 0) {
-			for (Node node : nodes) {			
-			    console.display(String.format("%s, pc: 0x%x, backtrace: %s\n", 
-			    		node.getAttributes().getUnknownDescription(),
-			    		node.getStartPc(), 
-			    		node.getBackTrace("")));
-			}
-	    } else {
+	    boolean found = false;
+	    for (Route route : engine.getRoute(m_routeId)) {
+		    Collection<Node> nodes = route.getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN);
+		    if (nodes.size() > 0) {
+				for (Node node : nodes) {			
+				    console.display(String.format("%s, pc: 0x%x, backtrace: %s\n", 
+				    		node.getAttributes().getUnknownDescription(),
+				    		node.getStartPc(), 
+				    		node.getBackTrace("")));
+				}
+				found = true;				
+		    }			    	
+	    }
+	    if (!found) {
 		    console.display("none\n");
-		}		
+	    }		
     }
 }
