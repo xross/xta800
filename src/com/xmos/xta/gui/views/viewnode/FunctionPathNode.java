@@ -10,10 +10,6 @@ public class FunctionPathNode extends FunctionNode {
 		super(treeNode, canvasProperties);
 	}
 
-	public void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase) {
-		if (DEBUG) System.out.printf("Annotate FunctionLoop (%d, %d\n", offsetX, offsetY);
-	}
-
 	public ViewNode getClickNode(int x, int y) {
 		// Don't let the hover-over select a path
 		if (this.contains(x, y)) {
