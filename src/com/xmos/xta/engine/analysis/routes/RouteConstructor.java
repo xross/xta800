@@ -182,7 +182,7 @@ public class RouteConstructor {
 			sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
 			
 			if(workingSet.size() != 1){
-				System.out.println(StructuralAnalysisEngine.dumpTree("route_after",  workingSet));
+				System.err.println(StructuralAnalysisEngine.dumpTree("route_after",  workingSet));
 			}
 			
 			assert(workingSet.size() == 1);

@@ -140,6 +140,13 @@ public class BlockNode extends IBufferNode {
 			insts.add(inst);
 		}
 		m_insts = insts;
+		/*
+		System.out.println("Instructions for " + this + " are:");
+		for(InstructionNode inst : m_insts){
+			System.out.println(inst.getXtaInstruction());
+		}
+		System.out.println("\n\n");
+		*/
 	}
 
 	public TimeDistributionBuckets getTimeSpread() {
