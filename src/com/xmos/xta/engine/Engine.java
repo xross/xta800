@@ -24,6 +24,7 @@ import com.xmos.xta.engine.analysis.controlflow.InstructionDecoder;
 import com.xmos.xta.engine.analysis.controlflow.SuccessorAdder;
 import com.xmos.xta.engine.analysis.controlflow.ThreadHandler;
 import com.xmos.xta.engine.analysis.controlflow.UnreachableCodeFinder;
+import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
@@ -326,6 +327,14 @@ public class Engine implements Notifier {
 
 		if (error == RouteError.NO_ENDPOINTS_FOUND ) {
 			notify(Notifier.NOTIFY_ERROR, "No paths of execution could reach the endpoint(s)");
+			return false;
+			
+		} else if (error == RouteError.COULD_NOT_FIND_ENDPOINT ) {
+			notify(Notifier.NOTIFY_ERROR, "Could node find any end points");
+			return false;
+			
+		} else if (error == RouteError.COULD_NOT_FIND_STARTPOINT ) {
+			notify(Notifier.NOTIFY_ERROR,"Could node find any start points");
 			return false;
 			
 		} else if (error == RouteError.ENDPOINTS_MISSING ) {

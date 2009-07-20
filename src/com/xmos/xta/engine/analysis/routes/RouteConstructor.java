@@ -34,14 +34,13 @@ import com.xmos.xta.engine.sections.SrcLevelLoopInfo;
 public class RouteConstructor {
 	private static final int SR_IEBLE_SHIFT = 1;
 	private static final int SR_IEBLE_SIZE = 1; 
-	private static boolean DEBUG =  false;
 	
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR
 	}
 
 	public enum RouteError {
-		NO_ENDPOINTS_FOUND, ENDPOINTS_MISSING, STARTPOINT_MISSING, SUCCESS
+		NO_ENDPOINTS_FOUND, ENDPOINTS_MISSING, STARTPOINT_MISSING, SUCCESS, COULD_NOT_FIND_STARTPOINT, COULD_NOT_FIND_ENDPOINT
 	}
 	
 	private int m_routeId;
@@ -74,7 +73,6 @@ public class RouteConstructor {
 
 	public RouteError analyse() {
 		
-		
 		boolean seenEndPoint = false;
 		
 		if(m_description.getStartPoint() == null ){
@@ -89,6 +87,14 @@ public class RouteConstructor {
 		for(Reference endPoint : m_description.getEndPoint()){
 			endNodes.addAll(getReferencedNodes(endPoint));
 		}
+		
+		if(startNodes.isEmpty() ){
+			return RouteError.COULD_NOT_FIND_STARTPOINT;
+		}
+		if(endNodes.isEmpty()){
+			return RouteError.COULD_NOT_FIND_ENDPOINT;
+		}
+		
 		
 		boolean notFoundFunctionYet = true;
 		for (Node start : startNodes) {
@@ -148,13 +154,16 @@ public class RouteConstructor {
 	private boolean makeSubRoute(boolean seenEndPoint, Collection<Node> endNodes,
 			Node start) {
 		
+		//System.out.println("making a sub route starting at " + start + " end ending at " + endNodes);
+		
+		
 		Collection<Node> workingSet = new TreeSet<Node>();
 		
 		m_structureGraph.removeLinks();
 		m_excludedRouteNodes = new TreeSet<Node>();
 		NodeWrapper startNodeWrapper = new NodeWrapper(start);
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
-		
+	
 		seenEndPoint |= explore(startNodeWrapper, workingSet, endNodes, null);
 
 		assert(cfgSanityCheck(workingSet));
@@ -229,6 +238,7 @@ public class RouteConstructor {
 		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
 		exclusions.retainAll(currentNode.getContainedNodes());
 		
+		//System.out.println("exploring node " + node.m_node + " contains end point " + containedEndPoints.isEmpty());
 		
 		if(containedEndPoints.isEmpty()){
 			// this node contains no end points or the start node is the end node
@@ -330,17 +340,19 @@ public class RouteConstructor {
 			Node start, Collection<Node> workingSet) {
 		
 		Set<Node> newEndNodes = new TreeSet<Node>();
-		for(Node node : endNodes){
+		
+		Set<Node> endNodeCopy = new TreeSet<Node>(endNodes);
+		for(Node node : endNodeCopy){
 			for(Node prev : node.getPrevNodes()){
 				newEndNodes.add(prev);
 			}
 		}
 		
-		if(endNodes.contains(start)){
-			endNodes.remove(start);
+		if(endNodeCopy.contains(start)){
+			endNodeCopy.remove(start);
 		}
 		
-		for(Node endNode : endNodes){
+		for(Node endNode : endNodeCopy){
 			for(Node prev : endNode.getPrevNodes()){
 				CommonMethods.disconnect(endNode, prev);
 			}
