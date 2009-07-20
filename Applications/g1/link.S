@@ -35,6 +35,7 @@
 .skip 2
 .text
 hda_io:
+.xtathreadstart
   entsp    16
 hda_io_init:
   ldw      r4, dp[p_sync0]

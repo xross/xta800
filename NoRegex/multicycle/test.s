@@ -5,6 +5,9 @@
 .globl _start
 _start:
   bl main
+  clre
+.xtathreadstop
+  waiteu
 
 .type rems, @function
 .globl rems

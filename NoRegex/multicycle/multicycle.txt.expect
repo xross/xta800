@@ -1,23 +1,28 @@
-  0.0: (20.0ns) 0x1002a main + 0               entsp (u6)   i 0x4
-  20.0: (20.0ns) 0x1002c main + 2               blrb (u10)   i 0x2c
-  40.0: (20.0ns) 0x10002 rems + 0               ldc (ru6)    r1, i 0x4
-  60.0: (20.0ns) 0x10004 rems + 2               ldc (ru6)    r0, i 0x11
-  80.0: (160.0ns) 0x10006 rems + 4               rems (l3r)   r0, r0, r1
-  240.0: (20.0ns) 0x1000a rems + 8               retsp (u6)   i 0x0
-  260.0: (20.0ns) 0x1002e main + 4               blrb (u10)   i 0x24
-  280.0: (20.0ns) 0x1000c remu + 0               ldc (ru6)    r1, i 0x4
-  300.0: (20.0ns) 0x1000e remu + 2               ldc (ru6)    r0, i 0x11
-  320.0: (160.0ns) 0x10010 remu + 4               remu (l3r)   r0, r0, r1
-  480.0: (20.0ns) 0x10014 remu + 8               retsp (u6)   i 0x0
-  500.0: (20.0ns) 0x10030 main + 6               blrb (u10)   i 0x1c
-  520.0: (20.0ns) 0x10016 divs + 0               ldc (ru6)    r1, i 0x4
-  540.0: (20.0ns) 0x10018 divs + 2               ldc (ru6)    r0, i 0x11
-  560.0: (160.0ns) 0x1001a divs + 4               divs (l3r)   r0, r0, r1
-  720.0: (20.0ns) 0x1001e divs + 8               retsp (u6)   i 0x0
-  740.0: (20.0ns) 0x10032 main + 8               blrb (u10)   i 0x14
-  760.0: (20.0ns) 0x10020 divu + 0               ldc (ru6)    r1, i 0x4
-  780.0: (20.0ns) 0x10022 divu + 2               ldc (ru6)    r0, i 0x11
-  800.0: (160.0ns) 0x10024 divu + 4               divu (l3r)   r0, r0, r1
-  960.0: (20.0ns) 0x10028 divu + 8               retsp (u6)   i 0x0
-  980.0: (20.0ns) 0x10034 main + 10              retsp (u6)   i 0x4
+  0.0: (20.0ns) 0x1002e main + 0               entsp (u6)   i 0x4
+  20.0: (20.0ns) 0x10030                        --FNOP--     
+  40.0: (20.0ns) 0x10030 main + 2               blrb (u10)   i 0x2c
+  60.0: (20.0ns) 0x10006 rems + 0               ldc (ru6)    r1, i 0x4
+  80.0: (20.0ns) 0x10008 rems + 2               ldc (ru6)    r0, i 0x11
+  100.0: (160.0ns) 0x1000a rems + 4               rems (l3r)   r0, r0, r1
+  260.0: (20.0ns) 0x1000e rems + 8               retsp (u6)   i 0x0
+  280.0: (20.0ns) 0x10032                        --FNOP--     
+  300.0: (20.0ns) 0x10032 main + 4               blrb (u10)   i 0x24
+  320.0: (20.0ns) 0x10010 remu + 0               ldc (ru6)    r1, i 0x4
+  340.0: (20.0ns) 0x10012 remu + 2               ldc (ru6)    r0, i 0x11
+  360.0: (160.0ns) 0x10014 remu + 4               remu (l3r)   r0, r0, r1
+  520.0: (20.0ns) 0x10018 remu + 8               retsp (u6)   i 0x0
+  540.0: (20.0ns) 0x10034                        --FNOP--     
+  560.0: (20.0ns) 0x10034 main + 6               blrb (u10)   i 0x1c
+  580.0: (20.0ns) 0x1001a divs + 0               ldc (ru6)    r1, i 0x4
+  600.0: (20.0ns) 0x1001c divs + 2               ldc (ru6)    r0, i 0x11
+  620.0: (160.0ns) 0x1001e divs + 4               divs (l3r)   r0, r0, r1
+  780.0: (20.0ns) 0x10022 divs + 8               retsp (u6)   i 0x0
+  800.0: (20.0ns) 0x10036                        --FNOP--     
+  820.0: (20.0ns) 0x10036 main + 8               blrb (u10)   i 0x14
+  840.0: (20.0ns) 0x10024 divu + 0               ldc (ru6)    r1, i 0x4
+  860.0: (20.0ns) 0x10026 divu + 2               ldc (ru6)    r0, i 0x11
+  880.0: (160.0ns) 0x10028 divu + 4               divu (l3r)   r0, r0, r1
+  1040.0: (20.0ns) 0x1002c divu + 8               retsp (u6)   i 0x0
+  1060.0: (20.0ns) 0x10038                        --FNOP--     
+  1080.0: (20.0ns) 0x10038 main + 10              retsp (u6)   i 0x4
 
