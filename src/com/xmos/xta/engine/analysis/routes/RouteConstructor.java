@@ -91,10 +91,6 @@ public class RouteConstructor {
 		if(startNodes.isEmpty() ){
 			return RouteError.COULD_NOT_FIND_STARTPOINT;
 		}
-		if(endNodes.isEmpty()){
-			return RouteError.COULD_NOT_FIND_ENDPOINT;
-		}
-		
 		
 		boolean notFoundFunctionYet = true;
 		for (Node start : startNodes) {
@@ -264,8 +260,8 @@ public class RouteConstructor {
 			
 		} else {
 			//then we need to explore into the current node unless it is then end point
-			if (currentNodeEndsWithEndNode(endNodes, currentNode) || workingSet.isEmpty()) {
-				
+			//if (currentNodeEndsWithEndNode(endNodes, currentNode) || workingSet.isEmpty()) {
+			if (currentNodeEndsWithEndNode(endNodes, currentNode)) {	
 				if(!exclusions.isEmpty() ){
 					if( currentNode.isInstructionNode() ){
 						workingSet.add(currentNode);
