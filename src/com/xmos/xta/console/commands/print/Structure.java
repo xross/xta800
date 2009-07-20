@@ -81,6 +81,8 @@ public class Structure extends Command {
 	    if (m_nodeIdSet && !validateNodeId(engine, console, m_routeId, m_nodeId))
 		    return;	    	
 
+		StructureDisplayer displayer = new StructureDisplayer(console, engine.getVerbosity());
+	    
 		Collection<Node> nodes = null;
 		if (m_routeId == Engine.ROUTE_ID_GLOBAL) {
     		if (m_nodeIdSet) {
@@ -89,6 +91,8 @@ public class Structure extends Command {
     			nodes = new HashSet<Node>();
     			nodes.addAll(engine.getStructureGraph().getThreads());    			
     		}			
+    		displayer.display(nodes);
+    		
 		} else {
 			for (Route route : engine.getRoute(m_routeId)) {
 	    		if (m_nodeIdSet) {
@@ -96,9 +100,8 @@ public class Structure extends Command {
 			    } else {
 				    nodes = getCollection(route.getNode());
 			    }				
+	    		displayer.display(nodes);
 			}
 		}		
-		StructureDisplayer displayer = new StructureDisplayer(console, engine.getVerbosity());
-		displayer.display(nodes);
     }
 }
