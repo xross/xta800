@@ -7,7 +7,6 @@ import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.SectionNodeAttributes;
@@ -67,21 +66,12 @@ public class SectionNode extends Node {
     
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
-		Node option = getOption(Case.WORST, null);
-		if (option != null) {			
-			list.addAll(option.getInstructions());
+		for(Node node : m_options){
+			list.addAll(node.getInstructions());
 		}
 		return list;		
 	}
 	
-	public Set<Integer> getPCs() {
-		Set<Integer> pcs = new TreeSet<Integer>();
-		for(Node node : m_options){
-			pcs.addAll(node.getPCs());
-		}
-		return pcs;
-	}
-
 	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new TreeSet<Node> ();
 		for(Node option: m_options){

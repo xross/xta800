@@ -1,5 +1,6 @@
 package com.xmos.xta.engine.analysis.structural.nodes.attributes;
 
+import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
@@ -9,11 +10,17 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 public class InstructionNodeAttributes extends NodeAttributes {
 	private long m_numCycles;
 	private XtaInstruction m_instruction;
+	private Config m_config;
 
 	public InstructionNodeAttributes(InstructionNode node) {
 		super(node);
 		m_instruction = node.getXtaInstruction();
 		m_numCycles = m_instruction.getNumCycles();
+		m_config = null;
+	}
+	
+	public void setConfig(Config config) {
+		m_config = config;
 	}
 	
 	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveSection) {
@@ -71,8 +78,9 @@ public class InstructionNodeAttributes extends NodeAttributes {
 	}
 	
 	public void setInstructionTimeTaken(double timeTaken) {
-    	int threadFactor = (m_instruction.getConfig().m_numThreads > 4) ? m_instruction.getConfig().m_numThreads : 4;		
-       	setInstructionNumCycles((int)((timeTaken * m_instruction.getConfig().m_frequency) / (threadFactor * 1000)));
+		assert(m_config != null);
+    	int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;		
+       	setInstructionNumCycles((int)((timeTaken * m_config.m_frequency) / (threadFactor * 1000)));
 	}
 
 	public void unsetInstructionTimeTaken() {
@@ -80,7 +88,8 @@ public class InstructionNodeAttributes extends NodeAttributes {
 	}
 	
 	public double getInstructionTimeTaken() {
-    	int threadFactor = (m_instruction.getConfig().m_numThreads > 4) ? m_instruction.getConfig().m_numThreads : 4;
-        return ((double)(threadFactor * 1000) / (double)m_instruction.getConfig().m_frequency) * m_numCycles;
+		assert(m_config != null);		
+    	int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
+        return ((double)(threadFactor * 1000) / (double)m_config.m_frequency) * m_numCycles;
 	}
 }

@@ -39,7 +39,7 @@ public class Disassembler {
         	} catch (Exception e) {
         	    // Do nothing
         	}
-        	XtaInstruction instruction = instructionDecoder.decode(opcode, pc, config);    
+        	XtaInstruction instruction = instructionDecoder.decode(opcode, pc);    
             disassemblyVector.add(instruction);            
         	int instNumBytes = instruction.getNumBytes();        	        	
         	numBytesRead += instNumBytes;

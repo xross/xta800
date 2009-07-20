@@ -11,7 +11,9 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.InstructionTime;
@@ -110,7 +112,12 @@ public class Views {
 	    setInstructionTimeAction.setEnabled(true);
 	    for (Node node : selectedNodes) {
 	    	// All nodes have to be instructions which can pause
-	    	if (!node.isInstructionNode() || !node.getInstructions().get(0).canPause()) {
+	    	if (node.isInstructionNode()) {
+				XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();				
+	    		if (!instruction.canPause()) {
+	    			setInstructionTimeAction.setEnabled(false);
+	    		}				
+	    	} else {
 	    		setInstructionTimeAction.setEnabled(false);
 	    	}
 	    }

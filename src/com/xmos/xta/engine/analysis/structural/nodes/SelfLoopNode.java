@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.SelfLoopNodeAttributes;
@@ -53,14 +52,8 @@ public class SelfLoopNode extends Node{
     }    
     
 	public LinkedList<XtaInstruction> getInstructions() {
-	LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loop.getInstructions());
-
+    	LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loop.getInstructions());
 		return insts;
-	}
-
-	public Set<Integer> getPCs() {
-		Set<Integer> pcs = new TreeSet<Integer>(m_loop.getPCs());
-		return pcs;
 	}
 
 	public Collection<Node> getContainedNodes() {

@@ -31,19 +31,15 @@ public abstract class Node implements Comparable<Node>{
 	}
 
 	public abstract String getTypeName();
-	public abstract NodeAttributes getAttributes();
-	
+	public abstract NodeAttributes getAttributes();	
 	public abstract Node shallowCopy();
-	public abstract Node deepCopy();
-			
+	public abstract Node deepCopy();			
 	public abstract List<Node> getChildren();
 	public abstract List<Node> getImmediateChildren();
 	public abstract Collection<Node> whatsNext(Node node);
 	public abstract Collection<Node> whatsBefore(Node node);
 	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
-	public abstract Set<Integer> getPCs();	
-	public abstract LinkedList<XtaInstruction> getInstructions();
-	
+	public abstract LinkedList<XtaInstruction> getInstructions();	
 	public abstract TimeDistributionBuckets getTimeSpread();
 	
 	/**

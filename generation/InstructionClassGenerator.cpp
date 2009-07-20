@@ -48,8 +48,6 @@ void InstructionClassGenerator::generateHeader()
   m_outFile << endl;
   m_outFile << "package com.xmos.xta.engine.instructions;" << endl;
   m_outFile << endl;
-  m_outFile << "import com.xmos.xta.engine.Config;" << endl;
-  m_outFile << endl;
   m_outFile << "// Dummy class required to optimise the ant builds.." << endl;
   m_outFile << "public class " << string(m_version) << "XtaInstructions {" << endl;
   m_outFile << "}" << endl;
@@ -117,8 +115,8 @@ void InstructionClassGenerator::generateClassDefStart(const DbInstruction *inst,
 
   m_outFile << "class " << string(m_version) << "XtaInstruction_" << className << " extends XtaInstruction {" << endl;
 
-  m_outFile << "    " << string(m_version) << "XtaInstruction_" << className << "(int opcode, int pc, Config config) {" << endl;
-  m_outFile << "        super(\"" << fullName << "\", config, opcode, pc, " << 
+  m_outFile << "    " << string(m_version) << "XtaInstruction_" << className << "(int opcode, int pc) {" << endl;
+  m_outFile << "        super(\"" << fullName << "\", opcode, pc, " << 
     fmt->numBytes() << ", " << isLoadStore << ", " << canPause << ", "  << numCycles << ", " << isBranch <<", " <<  isLink <<");" << endl;
   if(inst->isLink()) {
    m_outFile << "        this.setBranchLink(true);";
