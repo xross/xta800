@@ -12,9 +12,6 @@ if (!$noBuild) {
 system("@ARGV load $genDir/test.xe " .
        "add exclusion the_great_outdoors " .
        "analyse path x x " .
-       "-print structure 0 " .
-       "-print structure 1 " .
-       "-print structure 2 " .
-       "-print structure 3 " .
+       "-print structure - " .
        "-exit > $genDir/function_out_and_back.txt 2>&1");
 
