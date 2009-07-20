@@ -264,7 +264,7 @@ public class RouteConstructor {
 			
 		} else {
 			//then we need to explore into the current node unless it is then end point
-			if (currentNodeEndsWithEndNode(endNodes, currentNode)) {
+			if (currentNodeEndsWithEndNode(endNodes, currentNode) || workingSet.isEmpty()) {
 				
 				if(!exclusions.isEmpty() ){
 					if( currentNode.isInstructionNode() ){
