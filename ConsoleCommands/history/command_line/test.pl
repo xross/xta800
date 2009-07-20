@@ -65,7 +65,6 @@ system("@ARGV  " .
        "-set time - test.xc:12 99 ns " .
        "-set time - label1 99 cycles " .
        "-set time - 0x1000 99 cycles " .
-       "-unset time - 0x10000 " .
  
        "-source invalid.txt " .
        "-status " .

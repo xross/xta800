@@ -46,8 +46,7 @@
 44: set time - test.xc:12 99.0 ns
 45: set time - label1 99 cycles
 46: set time - 0x1000 99 cycles
-47: unset time - 0x10000
-48: source invalid.txt
-49: status
-50: version
-51: history
+47: source invalid.txt
+48: status
+49: version
+50: history
