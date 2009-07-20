@@ -287,7 +287,7 @@ public class Engine implements Notifier {
 			
 		} else {		
 			RouteDescription routeDescription = new RouteDescription(fromRef, toRef, m_nodeId, m_coreId);
-			return analyseRouteSafely(routeDescription);
+			return  analyseRouteSafely(routeDescription);
 		}
 	}
 
@@ -346,19 +346,23 @@ public class Engine implements Notifier {
 			return false;
 			
 		} else {
-			int currentSize = m_routes.size();
-			m_numRoutesLastAnalysed = 0;
-			for (Route route : routeConstructor.getRoutes()) {
-				m_routes.add(route);
-				++m_numRoutesLastAnalysed;
-			}
-			if (!m_routes.isEmpty() && !routeConstructor.getRoutes().isEmpty()) {
-				setSelectedRoute(m_routes.get(currentSize));
-				notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
+			if(!getAbort()){
+				int currentSize = m_routes.size();
+				m_numRoutesLastAnalysed = 0;
+				for (Route route : routeConstructor.getRoutes()) {
+					m_routes.add(route);
+					++m_numRoutesLastAnalysed;
+				}
+				if (!m_routes.isEmpty() && !routeConstructor.getRoutes().isEmpty()) {
+					setSelectedRoute(m_routes.get(currentSize));
+					notify(Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
+				} else {
+					notify(Notifier.NOTIFY_WARNING, "No valid paths of execution");
+				}
+				return true;
 			} else {
-				notify(Notifier.NOTIFY_WARNING, "No valid paths of execution");
+				return false;
 			}
-			return true;
 		}		
 	}
 		
