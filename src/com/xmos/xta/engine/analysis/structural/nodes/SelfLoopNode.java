@@ -1,6 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -122,7 +123,6 @@ public class SelfLoopNode extends Node{
 	public Node getLoop() {
 		return m_loop;
 	}
-
 
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = m_loop.getTimeSpread();
