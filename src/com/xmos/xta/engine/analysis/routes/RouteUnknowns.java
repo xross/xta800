@@ -301,6 +301,9 @@ public class RouteUnknowns {
 		return canPause;
 	}
 
+	// ===================================================================== //
+	// Helper Methods
+	// ===================================================================== //	
 	private void refreshDisplayedUnknowns() {
 		refreshDisplayedUnknowns(m_route.getNode());
 	}

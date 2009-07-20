@@ -12,6 +12,8 @@ class IgnoreSectionIterationsException extends Exception {}
 class InfiniteIterationsException extends Exception {}
 
 public class NodeAttributes {
+	private static final boolean DISABLE_STATS_CACHE = false; 
+	
     private Node m_node; 
 
 	public enum UnknownType {
@@ -320,10 +322,10 @@ public class NodeAttributes {
 	boolean getCachedNumInstructionsValid(Case c) { return (c == Case.WORST) ? m_cachedWorstNumInstructionsValid : m_cachedBestNumInstructionsValid; }
 	boolean getCachedNumFnopsValid(Case c)        { return (c == Case.WORST) ? m_cachedWorstNumFnopsValid        : m_cachedBestNumFnopsValid; }
 
-	void setCachedTimeTakenValid(Case c, boolean value)       { if (c == Case.WORST) m_cachedWorstTimeTakenValid = value;       else m_cachedBestTimeTakenValid = value; }
-	void setCachedNumCyclesValid(Case c, boolean value)       { if (c == Case.WORST) m_cachedWorstNumCyclesValid = value;       else m_cachedBestNumCyclesValid = value; }
-	void setCachedNumInstructionsValid(Case c, boolean value) { if (c == Case.WORST) m_cachedWorstNumInstructionsValid = value; else m_cachedBestNumInstructionsValid = value; }
-	void setCachedNumFnopsValid(Case c, boolean value)        { if (c == Case.WORST) m_cachedWorstNumFnopsValid = value;        else m_cachedBestNumFnopsValid = value; }
+	void setCachedTimeTakenValid(Case c, boolean value)       { if (!DISABLE_STATS_CACHE) { if (c == Case.WORST) m_cachedWorstTimeTakenValid = value;       else m_cachedBestTimeTakenValid = value; } }
+	void setCachedNumCyclesValid(Case c, boolean value)       { if (!DISABLE_STATS_CACHE) { if (c == Case.WORST) m_cachedWorstNumCyclesValid = value;       else m_cachedBestNumCyclesValid = value; } }
+	void setCachedNumInstructionsValid(Case c, boolean value) { if (!DISABLE_STATS_CACHE) { if (c == Case.WORST) m_cachedWorstNumInstructionsValid = value; else m_cachedBestNumInstructionsValid = value; } }
+	void setCachedNumFnopsValid(Case c, boolean value)        { if (!DISABLE_STATS_CACHE) { if (c == Case.WORST) m_cachedWorstNumFnopsValid = value;        else m_cachedBestNumFnopsValid = value; } }
 	
 	// ===================================================================== //
 	// Unknown Status Methods
@@ -508,10 +510,5 @@ public class NodeAttributes {
 	public double getInstructionTimeTaken() {
 		assert(false);		
 		return 0;
-	}
-	
-	public boolean isInstructionUnknown() {
-		assert(false);		
-		return false;
 	}		
 }

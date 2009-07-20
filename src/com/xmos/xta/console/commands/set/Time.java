@@ -9,11 +9,6 @@ import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class Time extends Command {
-	public enum Operation {
-		SET,
-		UNSET,
-	}
-
 	private enum Mode {
 		NS,
 		MHZ,
@@ -23,14 +18,12 @@ public class Time extends Command {
 	private int m_routeId;
 	private String m_refString;
 	private Mode m_mode;
-	private Operation m_operation;
 	private float m_ns;
 	private float m_mhz;
 	private int m_cycles;
 	
-	public Time(Operation operation) {
+	public Time() {
 		m_routeId = 0;
-		m_operation = operation;
 		m_mode = Mode.NS;
 		m_ns = 0;
 		m_mhz = 0;
@@ -39,7 +32,6 @@ public class Time extends Command {
 	
 	public Time(int routeId, String refString, int cycles) {
 		m_routeId = routeId;
-		m_operation = Operation.SET;
 		m_mode = Mode.CYCLES;
 		m_refString = refString;
 		m_cycles = cycles;
@@ -49,7 +41,6 @@ public class Time extends Command {
 
 	public Time(int routeId, String refString, float value, Mode mode) {
 		m_routeId = routeId;
-		m_operation = Operation.SET;
 		m_mode = Mode.NS;
 		m_refString = refString;
 		m_cycles = 0;
@@ -66,25 +57,8 @@ public class Time extends Command {
 		}
 	}
 
-	public Time(int routeId, String refString) {
-		m_routeId = routeId;
-		m_operation = Operation.UNSET;
-		m_mode = Mode.NS;
-		m_refString = refString;
-		m_cycles = 0;
-		m_ns = 0;
-		m_mhz = 0;
-	}
-
     public int numArgs() {
-    	switch (m_operation) {
-    	case SET:
-    		return 4; 
-    	case UNSET:
-    		return 2;
-    	}
-    	assert(false);
-        return 0;
+   		return 4; 
     }
 
     public String name() {
@@ -92,40 +66,27 @@ public class Time extends Command {
     }        
 
     public String commandLine() {
-    	switch (m_operation) {
-    	case SET:
-        	switch (m_mode) {
-        	case NS:
-            	return String.format("time %s %s %.1f ns", getRouteId(m_routeId), m_refString, m_ns);
-        	case MHZ:
-            	return String.format("time %s %s %.1f mhz", getRouteId(m_routeId), m_refString, m_mhz);
-        	case CYCLES:
-            	return String.format("time %s %s %d cycles", getRouteId(m_routeId), m_refString, m_cycles);    		
-        	}
-    	case UNSET:
-    		return String.format("time %s %s", getRouteId(m_routeId), m_refString);
-    	}    			
-
-    	assert(false);
-    	return "";
+       	switch (m_mode) {
+       	case NS:
+           	return String.format("time %s %s %.1f ns", getRouteId(m_routeId), m_refString, m_ns);
+       	case MHZ:
+           	return String.format("time %s %s %.1f mhz", getRouteId(m_routeId), m_refString, m_mhz);
+       	case CYCLES:
+           	return String.format("time %s %s %d cycles", getRouteId(m_routeId), m_refString, m_cycles);    		
+       	}
+       	assert(false);
+       	return "";
     }
     
     public String description(Engine engine, boolean detailed) {
-    	switch (m_operation) {
-    	case SET:
-            String descString = "time <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc";         
-        	if (detailed) {    	    	
-            	descString += "\n";
-        		descString += "          mode: ns:     Sets the time this instruction takes in ns\n";
-        		descString += "          mode: mhz:    Sets the time this instruction takes in mhz\n";
-        		descString += "          mode: cycles: Sets the time this instruction takes in thread cycles";
-        	}
-        	return descString;
-    	case UNSET:
-            return "time <route id> <pc>: Clears the time set for the given instructions (supports regular expressions)";
-    	}
-    	assert(false);
-    	return "";
+        String descString = "time <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc";         
+       	if (detailed) {    	    	
+           	descString += "\n";
+       		descString += "          mode: ns:     Sets the time this instruction takes in ns\n";
+       		descString += "          mode: mhz:    Sets the time this instruction takes in mhz\n";
+       		descString += "          mode: cycles: Sets the time this instruction takes in thread cycles";
+       	}
+       	return descString;
     }
 
     public Command clone(String[] args, int index) {
@@ -138,44 +99,37 @@ public class Time extends Command {
 	        return null;
 	    }    			
     	
-    	switch (m_operation) {
-    	case SET:    		    		
-    		String ref = args[index + 2];
-    		String value = args[index + 3];
-    		String mode = args[index + 4];
+   		String ref = args[index + 2];
+   		String value = args[index + 3];
+   		String mode = args[index + 4];
     		
-    		if (mode.equals("ns")) {			
-    		    float ns;
-    	        try { ns = Float.parseFloat(value); }
-    	        catch (NumberFormatException e) {
-    	            return null;
-    	        }    
-    	        return new Time(routeId, ref, ns, Mode.NS);
+   		if (mode.equals("ns")) {			
+   		    float ns;
+   	        try { ns = Float.parseFloat(value); }
+   	        catch (NumberFormatException e) {
+   	            return null;
+   	        }    
+   	        return new Time(routeId, ref, ns, Mode.NS);
+   		    
+   		} else if (mode.equals("mhz")) {
+   		    float mhz;
+   	        try { mhz = Float.parseFloat(value); }
+   	        catch (NumberFormatException e) {
+   	            return null;
+   	        }    
+   	        return new Time(routeId, ref, mhz, Mode.MHZ);
     		    
-    		} else if (mode.equals("mhz")) {
-    		    float mhz;
-    	        try { mhz = Float.parseFloat(value); }
-    	        catch (NumberFormatException e) {
-    	            return null;
-    	        }    
-    	        return new Time(routeId, ref, mhz, Mode.MHZ);
-    		    
-    		} else if (mode.equals("cycles")) {
-    		    int cycles;
-    	        try { cycles = Integer.parseInt(value); }
-    	        catch (NumberFormatException e) {
-    	            return null;
-    	        }    
-    	        return new Time(routeId, ref, cycles);
+   		} else if (mode.equals("cycles")) {
+   		    int cycles;
+   	        try { cycles = Integer.parseInt(value); }
+   	        catch (NumberFormatException e) {
+   	            return null;
+   	        }    
+   	        return new Time(routeId, ref, cycles);
     	        
-    		} else {
-    			return null;
-    		}
-    	case UNSET:
-            return new Time(routeId, args[index + 2]);
-    	}
-    	assert(false);
-    	return null;
+   		} else {
+   			return null;
+   		}
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
@@ -185,34 +139,24 @@ public class Time extends Command {
 		Reference ref = ReferenceFactory.createReference(m_refString, ReferenceClass.ENDPOINT_REF);
 		ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
 
-		switch (m_operation) {
-    	case SET:
-    		switch (m_mode) {
-	    	case NS:
-	            if (!engine.setInstructionTimeTaken(m_routeId, m_refString, m_ns))
-	        		console.display(String.format(
-	        			"Error: Failed to set instruction time on reference id: %s\n", m_refString));    			            	
-	    		break;
+   		switch (m_mode) {
+	    case NS:
+	        if (!engine.setInstructionTimeTaken(m_routeId, m_refString, m_ns))
+	      		console.display(String.format(
+	       			"Error: Failed to set instruction time on reference id: %s\n", m_refString));    			            	
+	    	break;
+
+	    case MHZ:
+	        if (!engine.setInstructionTimeTaken(m_routeId, m_refString, m_mhz))
+        	    console.display(String.format(
+        		    "Error: Failed to set instruction time on reference id: %s\n", m_refString));    			            	
+	        break;
 	    		
-	    	case MHZ:
-	            if (!engine.setInstructionTimeTaken(m_routeId, m_refString, m_mhz))
-        		    console.display(String.format(
-        			    "Error: Failed to set instruction time on reference id: %s\n", m_refString));    			            	
-	            break;
-	    		
-	    	case CYCLES:
-	            if (!engine.setInstructionNumCycles(m_routeId, m_refString, m_cycles))
-        		    console.display(String.format(
-        				"Error: Failed to set instruction time on reference id: %s\n", m_refString));    			            	
-	            break;
-	    	}
-    		break;
-    		
-    	case UNSET:
-   			if (!engine.unsetInstructionTimeTaken(m_routeId, m_refString))
-    		    console.display(String.format(
-       				"Error: Failed to unset instruction time on reference id: %s\n", m_refString));
-   			break;
-    	}
+	    case CYCLES:
+	        if (!engine.setInstructionNumCycles(m_routeId, m_refString, m_cycles))
+        	    console.display(String.format(
+        			"Error: Failed to set instruction time on reference id: %s\n", m_refString));    			            	
+	        break;
+	    }
     }    
 }

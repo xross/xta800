@@ -8,7 +8,7 @@ public class Set extends CommandContainer {
 		new Loop(),
 		new LoopPath(),
 		new LoopScope(), 
-		new Time(Time.Operation.SET), 
+		new Time(), 
 		new Required(Required.Operation.SET), 
 	};
 	
