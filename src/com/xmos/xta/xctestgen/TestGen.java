@@ -201,7 +201,7 @@ public class TestGen {
 		file.write("if (!$noBuild) {\n");
 		file.write("  system(\"xcc -target=$target -march=$arch " + flags +" -fxta-info -g " + testName + ".xc -o $genDir/" + testName + ".xe > $genDir/" + testName + ".log 2>&1\");\n");
 		file.write("}\n");
-		file.write("system(\"@ARGV -config timeout 80 -load $genDir/" + testName + ".xe \" .\n");
+		file.write("system(\"@ARGV -config timeout 200 -load $genDir/" + testName + ".xe \" .\n");
 		file.write("       \"-analyse function test \" .\n");
 		file.write("       \"-analyse path start endpoint0 \" .\n");
 		file.write("       \"-analyse path start endpoint1 \" .\n");
