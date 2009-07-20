@@ -13,7 +13,6 @@ system("xcc -target=$target -march=$arch -fxta-info -g test.xc -o $genDir/test.x
 
 system("@ARGV " .
        "load $genDir/test.xe " .
-       "analyse function main " .
        "source cmds.txt " .
        "exit > $genDir/ns.txt 2>&1");
 
