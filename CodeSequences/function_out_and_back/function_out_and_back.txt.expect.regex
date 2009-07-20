@@ -1,8 +1,22 @@
-Error: Found 8 unresolved paths
-Route\(0\) path: 0x[0-9a-fA-F]+ to 0x[0-9a-fA-F]+
-Complete \[4 paths\]
-    path\(\d+\) +: \d+\.\d+ns
-    path\(\d+\) +: \d+\.\d+ns
-    path\(\d+\) +: \d+\.\d+ns
-    path\(\d+\) +: \d+\.\d+ns
+path\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.  \* block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+
+path\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.  \* block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+
+path\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.  \* block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+
+path\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.  \* block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
 
