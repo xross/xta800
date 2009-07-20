@@ -28,6 +28,7 @@ import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.PathNode;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.views.Views;
@@ -99,8 +100,12 @@ public class SelectedRouteViewer {
 			if (selectedRoute != null) {								
 				selectedRoute.getNode().traverse(0, new UntypedNodeTraverser() {
 					public boolean foundNode(Node node, int depth) {
-						if (node.getPCs().contains(pc)) {
-							selectedNodes.add(node);
+						Collection<XtaInstruction> instructionsCovered = node.getInstructions();
+						for (XtaInstruction instruction : instructionsCovered) {
+						    if (instruction.getPc() == pc) {
+						    	selectedNodes.add(node);
+						    	break;
+						    }
 						}
 						return true;
 					}

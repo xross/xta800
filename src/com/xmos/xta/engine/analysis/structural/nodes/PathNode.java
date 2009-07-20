@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -64,14 +63,6 @@ public class PathNode extends Node {
 			list.addAll(node.getInstructions());
 		}
 		return list;
-	}
-
-	public Set<Integer> getPCs() {
-		Set<Integer> pcs = new TreeSet<Integer>();
-		for (Node node : m_nodes) {
-			pcs.addAll(node.getPCs());
-		}
-		return pcs;
 	}
 
 	public Collection<Node> getContainedNodes() {

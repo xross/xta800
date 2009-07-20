@@ -637,7 +637,7 @@ public class Engine implements Notifier {
 			return false;
 		}
 		for (Route route : routes) {
-			if (!route.getRouteUnknowns().setLoopPathIterations(reference, iterations)) {
+			if (!route.getRouteUnknowns().canSetLoopPathIterations(reference, iterations)) {
 				return false;
 			}
 		}
@@ -674,7 +674,7 @@ public class Engine implements Notifier {
 			return false;
 		}
 		for (Route route : routes) {
-			if (!route.getRouteUnknowns().setLoopScope(reference, absolute)) {
+			if (!route.getRouteUnknowns().canSetLoopScope(reference, absolute)) {
 				return false;
 			}
 		}
@@ -708,6 +708,11 @@ public class Engine implements Notifier {
 		Collection<Route> routes = getRoute(routeId);
 		if (routes.size() == 0)
 			return false;
+		
+		for (Route route : routes) {
+		    if (!route.getRouteUnknowns().canInstructionPause(reference))
+		    	return false;		    	
+		}
 
 		boolean passed = false;
 		for (Route route : routes) {
@@ -764,6 +769,11 @@ public class Engine implements Notifier {
 		Collection<Route> routes = getRoute(routeId);
 		if (routes.size() == 0)
 			return false;
+		
+		for (Route route : routes) {
+		    if (!route.getRouteUnknowns().canInstructionPause(reference))
+		    	return false;		    	
+		}
 		
 		boolean passed = false;
 		for (Route route : routes) {

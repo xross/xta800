@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Stack;
 
+import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -19,8 +20,8 @@ public class ReferenceMatcher {
 	private Collection<Node> getNodesContainingReferencePc(Node node, final int pc) {		
 		final Collection<Node> matchingNodes = new ArrayList<Node>();		
 		node.traverse(0, new DefaultNodeTraverser() {		
-			public boolean foundInstructionNode(Node node, int depth) {							
-				XtaInstruction instruction = node.getInstructions().getFirst();				
+			public boolean foundInstructionNode(Node node, int depth) {		
+				XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();				
 				if (instruction.getPc() == pc && !instruction.isFnop()) {
 					matchingNodes.add(node);
 				}

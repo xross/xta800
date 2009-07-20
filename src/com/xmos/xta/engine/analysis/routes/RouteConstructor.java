@@ -234,8 +234,7 @@ public class RouteConstructor {
 		
 		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
 		exclusions.retainAll(currentNode.getContainedNodes());
-		
-	//	System.out.println("exploring node " + node.m_node + " contains end point " + !containedEndPoints.isEmpty());
+
 		
 		if(containedEndPoints.isEmpty()){
 			// this node contains no end points or the start node is the end node

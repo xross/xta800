@@ -19,16 +19,13 @@ public class InstructionDecoder {
 	private int m_nodeId;
 	private int m_coreId;
 	private Map<Integer, InstructionNode> m_decodedInstructions;
-	private List<InstructionNode> m_orderedInstructions;
-	
+	private List<InstructionNode> m_orderedInstructions;	
 	private XeLoader m_xeLoader;
-	private Config m_config;
 	
 	public InstructionDecoder(int nodeId, int coreId, XeLoader xeLoader, Config config) {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_xeLoader = xeLoader;
-		m_config = config;
 		m_decodedInstructions = new HashMap<Integer, InstructionNode>();
 		m_orderedInstructions = new LinkedList<InstructionNode>();
 	}
@@ -48,7 +45,7 @@ public class InstructionDecoder {
 		            	return false;
 		            }
 		            
-		            XtaInstruction inst = instructionDecoder.decode(opcode, pc, m_config);
+		            XtaInstruction inst = instructionDecoder.decode(opcode, pc);
 
 		            inst.setFunctionName(symbolTable.functionName(pc)); 
 		            inst.setFunctionOffset(symbolTable.functionOffset(pc));

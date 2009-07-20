@@ -3,8 +3,22 @@ package com.xmos.xta.engine;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 
 public class Config {
-	public int m_verbosity = 0;
-	public int m_numThreads = 8;
-	public int m_frequency = 400;
-	public Case m_case = Case.WORST;
+	public int m_verbosity;
+	public int m_numThreads;
+	public int m_frequency;
+	public Case m_case;
+
+	public Config() {
+		m_verbosity = 0;
+		m_numThreads = 8;
+		m_frequency = 400;
+		m_case = Case.WORST;		
+	}
+
+	public Config(Config config) {
+		m_verbosity = config.m_verbosity;
+		m_numThreads = config.m_numThreads;
+		m_frequency = config.m_frequency;
+		m_case = config.m_case;		
+	}
 }

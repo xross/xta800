@@ -94,14 +94,6 @@ public class LoopNode extends Node {
 		return insts;
 	}
 
-	public Set<Integer> getPCs() {
-		Set<Integer> pcs = new TreeSet<Integer>(m_loopHeader.getPCs());
-		for (Node loop : m_loops) {
-			pcs.addAll(loop.getPCs());
-		}
-		return pcs;
-	}
-
 	public Collection<Node> getContainedNodes() {
 		Collection<Node> containedNodes = new TreeSet<Node>();
 		containedNodes.addAll(m_loopHeader.getContainedNodes());

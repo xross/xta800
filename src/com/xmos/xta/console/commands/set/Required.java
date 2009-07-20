@@ -180,8 +180,6 @@ public class Required extends Command {
     	case SET:
     		switch (m_mode) {
 	    	case NS:
-	            engine.setRouteMaxTime(m_routeId, m_ns);
-	    		return;
 	    	case MHZ:
 	            engine.setRouteMaxTime(m_routeId, m_ns);
 	    		return;

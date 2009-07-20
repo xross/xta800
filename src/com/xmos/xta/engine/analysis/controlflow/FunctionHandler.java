@@ -83,15 +83,13 @@ public class FunctionHandler {
 				}
 			} 
 		}
-		
+
 		for(Node node : m_instToFunc.keySet()){
 			if(!canReturn(node, new TreeSet<Node>())){
 				CommonMethods.disconnect(m_instToFunc.get(node).getNextNode(), m_instToFunc.get(node));
 			}
-		}		
-		
-		
-		
+		}				
+
 		for(InstructionNode functionStart : getKnownFuncStarts()){
 			NullNode nullNode = new NullNode();
 			TreeSet<Node> terminals = new TreeSet<Node>();
@@ -146,8 +144,11 @@ public class FunctionHandler {
 	private boolean canReturn(Node start, Set<Node> seen){
 		seen.add(start);
 		if (start.getNextNodesSize() == 0){
-			if (start.isFunctionNode()) return false;
-			return start.getInstructions().getFirst().getReturn();
+			if (start.isFunctionNode()) 
+				return false;
+			
+			assert(start.isInstructionNode());
+			return ((InstructionNode)start).getXtaInstruction().getReturn();
 		} else {
 			boolean canReturn = false;
 			for (Node next : start.getNextNodes()) {

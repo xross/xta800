@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeSet;
 import java.util.Set;
+
+import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
 import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.engine.references.Reference;
@@ -38,8 +41,11 @@ public class Route {
 		m_description = description;
 		m_routeId = s_routeCount++;
 		m_node = node;
-		m_timing = new RouteTiming(this, engine.getConfig(), engine.getNodeId(), engine.getCoreId());
-		m_unknowns = new RouteUnknowns(this);
+		
+		Config config = new Config(engine.getConfig());
+		m_timing = new RouteTiming(this, config, engine.getNodeId(), engine.getCoreId());
+		m_unknowns = new RouteUnknowns(this);		
+		setRouteSpecificConfigs(config);
 	}
 	
 	public int getRouteId() {
@@ -101,6 +107,15 @@ public class Route {
 		Collection<Node> referencedNodes = new ArrayList<Node>();
 		referencedNodes.addAll(referenceMatcher.getNodes(m_node, reference));
 		return referencedNodes;		
-	}    
+	} 
+
+	private void setRouteSpecificConfigs(final Config config) {
+		m_node.traverse(0, new DefaultNodeTraverser() {
+			public boolean foundInstructionNode(Node node, int depth) {
+				((InstructionNodeAttributes)node.getAttributes()).setConfig(config);				
+				return true;
+			}
+		});
+	}
 }
 

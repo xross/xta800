@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.BlockNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -67,14 +66,6 @@ public class BlockNode extends IBufferNode {
 		return insts;
 	}
 			
-	public Set<Integer> getPCs() {
-		Set<Integer> pcs = new TreeSet<Integer>();
-		for (XtaInstruction inst : getInstructions()) {
-			pcs.add(inst.getPc());
-		}
-		return pcs;
-	}
-
 	public Collection<Node> getContainedNodes() {
 		return new TreeSet<Node> (m_insts);
 	}
@@ -132,7 +123,7 @@ public class BlockNode extends IBufferNode {
 			XtaInstruction xtaInst = inst.getXtaInstruction();
 			for(int pc : fnops){
 				if(xtaInst.getPc() == pc){
-					XtaInstruction fnop = new NullInstruction("--FNOP--", xtaInst.getConfig(), 0, xtaInst.getPc(), 0);
+					XtaInstruction fnop = new NullInstruction("--FNOP--", 0, xtaInst.getPc(), 0);
 					InstructionNode fnopNode = new InstructionNode(fnop);
 					insts.add(fnopNode);
 				}

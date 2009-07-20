@@ -39,16 +39,15 @@ DecoderGenerator::DecoderGenerator(const char *fileName, DbInterface &dbInterfac
   fprintf(outFp, "package com.xmos.xta.engine.instructions;\n");
   fprintf(outFp, "\n");
   fprintf(outFp, "import com.xmos.isa.Instruction;\n");
-  fprintf(outFp, "import com.xmos.xta.engine.Config;\n");
   fprintf(outFp, "\n");
   fprintf(outFp, "public class %sXtaInstructionDecoder extends XtaInstructionDecoder {\n", m_version);
-  fprintf(outFp, "    public XtaInstruction decode(int opcode, int pc, Config config) {\n");
+  fprintf(outFp, "    public XtaInstruction decode(int opcode, int pc) {\n");
 
   DecodeNode *root = dbInterface.getDecodeTree();
 
   generateTree(outFp, root, true);
 
-  fprintf(outFp, "        return new NullInstruction(\"...\", config, opcode, pc, 2);\n");
+  fprintf(outFp, "        return new NullInstruction(\"...\", opcode, pc, 2);\n");
   fprintf(outFp, "    }\n");
   fprintf(outFp, "}\n");
 
@@ -136,7 +135,7 @@ void DecoderGenerator::printNode(FILE *outFp, DecodeNode *node)
   string className = *instName + "_" + *fmtName;
 
   printIndent(outFp);
-  fprintf(outFp, "  XtaInstruction instruction =  new %sXtaInstruction_%s(opcode, pc, config);\n", 
+  fprintf(outFp, "  XtaInstruction instruction =  new %sXtaInstruction_%s(opcode, pc);\n", 
     m_version, className.c_str());
 
   calculateBranchTargetInfo(outFp, fmt, inst);

@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -130,7 +129,7 @@ public class FunctionNode extends IBufferNode {
 	}
 
 	public LinkedList<XtaInstruction> getInstructions() {
-		if (m_functionPath!= null) {
+		if (m_functionPath != null) {
 			LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
 			for (Node node : m_functionPath) {
 				list.addAll(node.getInstructions());
@@ -139,20 +138,6 @@ public class FunctionNode extends IBufferNode {
 		} else {
 			return new LinkedList<XtaInstruction>();
 		}
-	}
-
-	public Set<Integer> getPCs() {
-		
-		if(m_functionPath == null){
-			return new TreeSet<Integer>();
-		} else {
-			Set<Integer> pcs = new TreeSet<Integer>();
-			for (Node node : m_functionPath) {
-				pcs.addAll(node.getPCs());
-			}
-			return pcs;
-		}
-		
 	}
 		
 	public int getStartPc() {

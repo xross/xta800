@@ -42,6 +42,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.routes.Route;
+import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
@@ -586,7 +587,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	if (m_selectedNode != null) {
        		m_selectedNode.traverse(0, new DefaultNodeTraverser() {
        		    public boolean foundInstructionNode(Node node, int depth) {
-       		    	XtaInstruction instruction = node.getInstructions().getFirst();
+    				XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();				
        		    	if (instruction.isFnop()) {   		    		
        	   		    	fnops.add(instruction);
        		    	}
@@ -686,9 +687,9 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         HashMap<Annotation, Position> annotationPositions = new HashMap<Annotation, Position>();		
 		
         if (m_selectedNode != null) {
-        	Set<Integer> pcsCovered = m_selectedNode.getPCs();
-        	for (Integer pc : pcsCovered) {
-				updateAnnotations(pc, HighlightAnnotationID, annotations, annotationPositions,
+        	Collection<XtaInstruction> instructionsCovered = m_selectedNode.getInstructions();
+        	for (XtaInstruction instruction : instructionsCovered) {
+				updateAnnotations(instruction.getPc(), HighlightAnnotationID, annotations, annotationPositions,
 						false, false, getInput().getPcsToLines());
 			}
         }

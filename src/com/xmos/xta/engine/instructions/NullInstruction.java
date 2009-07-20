@@ -1,10 +1,8 @@
 package com.xmos.xta.engine.instructions;
 
-import com.xmos.xta.engine.Config;
-
 public class NullInstruction extends XtaInstruction {    
-    public NullInstruction(String nmenonic, Config config, int opcode, int pc, int numBytes) {
-        super(nmenonic, config, opcode, pc, numBytes, false, false, 1, false, false);
+    public NullInstruction(String nmenonic, int opcode, int pc, int numBytes) {
+        super(nmenonic, opcode, pc, numBytes, false, false, 1, false, false);
         setIsFnop(true);
     }
     

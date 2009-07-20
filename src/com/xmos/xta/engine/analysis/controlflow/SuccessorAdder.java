@@ -36,8 +36,8 @@ public class SuccessorAdder {
 	}
 
 	public boolean process() {
-		for (Node node : m_instDecoder.getInstructions()) {
-			XtaInstruction inst = node.getInstructions().getFirst();
+		for (InstructionNode node : m_instDecoder.getInstructions()) {
+			XtaInstruction inst = node.getXtaInstruction();
 			boolean debug = false;
 			addAllBranchTargets(node, inst, debug);
 			handleNonBranchingInstructions(node, inst, debug);

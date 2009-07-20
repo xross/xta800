@@ -2,14 +2,13 @@ package com.xmos.xta.engine.analysis.routes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 
+import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
-import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
 
 public class RouteUnknowns {
@@ -292,15 +291,16 @@ public class RouteUnknowns {
 	public boolean canInstructionPause(Reference reference) {
 		boolean canPause = true;
         for (Node node : m_route.getReferencedNodes(reference)) {
-        	LinkedList<XtaInstruction> instructions = node.getInstructions();
-        	assert(instructions.size() == 1);
-        	if (!instructions.getFirst().canPause()) {
+        	if (!((InstructionNode)node).getXtaInstruction().canPause()) {
         		canPause = false;
         	}
 		}
 		return canPause;
 	}
 
+	// ===================================================================== //
+	// Helper Methods
+	// ===================================================================== //	
 	private void refreshDisplayedUnknowns() {
 		refreshDisplayedUnknowns(m_route.getNode());
 	}
