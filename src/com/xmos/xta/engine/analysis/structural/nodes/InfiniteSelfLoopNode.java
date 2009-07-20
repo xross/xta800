@@ -138,4 +138,9 @@ public class InfiniteSelfLoopNode extends Node{
 		tdb.setInfinite();
 		return tdb;
 	}
+	public Set<InstructionNode> getEndNodes() {
+		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		set.addAll(m_loop.getEndNodes());
+		return set;
+	}
 }

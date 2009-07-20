@@ -194,4 +194,12 @@ public class LoopNode extends Node {
 		tdb.add(loopList);
 		return tdb;
 	}
+	
+	public Set<InstructionNode> getEndNodes() {
+		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		for(Node loop : m_loops){
+			set.addAll(loop.getEndNodes());
+		}
+		return set;
+	}
 }

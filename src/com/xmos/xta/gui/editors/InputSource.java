@@ -29,9 +29,9 @@ public class InputSource implements IEditorInput {
         	++lineIndex;
             for (Line line : sourceLine.getChildern()) {
         		int pc = line.getLineNumber();
-				String str = String.format("    0x%05x %s", pc, line.getText());
+        		String str = String.format("    0x%05x %s", pc, line.getText());
         		String childRef = String.format("0x%05x", pc);
-            	m_input.addLine(str, childRef, pc, lineIndex); 
+        		m_input.addLine(str, childRef, pc, lineIndex);
         		++lineIndex;        		
             }
             

@@ -51,6 +51,8 @@ public abstract class Node implements Comparable<Node>{
 	 */
 	public abstract Collection<Node> getContainedNodes();	
 	public abstract int getStartPc();
+	public abstract Set<InstructionNode> getEndNodes();
+	
 	
 	
 	public Node() {

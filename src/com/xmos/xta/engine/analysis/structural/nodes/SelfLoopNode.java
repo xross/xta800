@@ -136,4 +136,10 @@ public class SelfLoopNode extends Node{
 		tdb.repeat(getAttributes().getLoopIterations());
 		return tdb;
 	}
+	
+	public Set<InstructionNode> getEndNodes() {
+		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		set.addAll(m_loop.getEndNodes());
+		return set;
+	}
 }

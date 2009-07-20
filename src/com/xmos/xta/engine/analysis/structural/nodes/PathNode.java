@@ -170,4 +170,9 @@ public class PathNode extends Node {
 	public List<Node> getPath() {
 		return m_nodes;
 	}
+	public Set<InstructionNode> getEndNodes() {
+		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		set.addAll(m_nodes.get(m_nodes.size()-1).getEndNodes());
+		return set;
+	}
 }

@@ -24,7 +24,6 @@ import com.xmos.xta.engine.analysis.controlflow.InstructionDecoder;
 import com.xmos.xta.engine.analysis.controlflow.SuccessorAdder;
 import com.xmos.xta.engine.analysis.controlflow.ThreadHandler;
 import com.xmos.xta.engine.analysis.controlflow.UnreachableCodeFinder;
-import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
@@ -1078,6 +1077,9 @@ public class Engine implements Notifier {
 				ensureAllFunctionsAreNamed(xeLoader.getSymbolTable(nodeId, coreId), 
 						newFunctionNames.get(nodeId, coreId), fh.getKnownFuncStarts(), threadStartNodes);
 				
+				setBranchTargets(id, newFunctionNames.get(nodeId, coreId));
+				
+				
 				SourceMapper sourceMapper = new SourceMapper(xeLoader, nodeId, coreId, starts, 
 						fileFinder, id, newFunctionNames.get(nodeId, coreId));
 				
@@ -1107,6 +1109,23 @@ public class Engine implements Notifier {
 		return true;
 	}
 	
+	private void setBranchTargets(InstructionDecoder id,
+			TreeMap<String, InstructionNode> treeMap) {
+		for(InstructionNode inst : id.getInstructions()){
+			if(inst.getXtaInstruction().getBranchPcRelative()){
+				int branchTarget = inst.getXtaInstruction().getBranchPcRelativeTargetPc();
+				inst.getXtaInstruction().setBranchPcRelativeTargetFunction("0x" + Integer.toHexString(branchTarget));
+				for(String fn : treeMap.keySet()){
+					if(treeMap.get(fn).getStartPc() == branchTarget){
+						inst.getXtaInstruction().setBranchPcRelativeTargetFunction(fn);
+						break;
+					}
+				}
+			}
+		}
+		
+	}
+
 	private void ensureAllFunctionsAreNamed(SymbolTable symbolTable,
 			TreeMap<String, InstructionNode> treeMap,
 			Collection<InstructionNode> funcStarts, Set<InstructionNode> threadStarts ) {

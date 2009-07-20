@@ -257,4 +257,8 @@ public class FunctionNode extends IBufferNode {
 		tdb.add(tsbPath);
 		return tdb;
 	}
+	
+	public Set<InstructionNode> getEndNodes() {
+		return m_functionPath.get(m_functionPath.size()-1).getEndNodes();
+	}
 }

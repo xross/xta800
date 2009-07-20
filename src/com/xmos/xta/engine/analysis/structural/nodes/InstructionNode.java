@@ -158,5 +158,9 @@ public class InstructionNode extends Node {
 		assert(false);
 		return null;
 	}
-
+	public Set<InstructionNode> getEndNodes() {
+		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		set.add(this);
+		return set;
+	}
 }

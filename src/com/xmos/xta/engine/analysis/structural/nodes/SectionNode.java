@@ -246,4 +246,12 @@ public class SectionNode extends Node {
 		tdb.merge(tdbs);
 		return tdb;
 	}
+	
+	public Set<InstructionNode> getEndNodes() {
+		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		for(Node options : m_options){
+			set.addAll(options.getEndNodes());
+		}
+		return set;
+	}
 }

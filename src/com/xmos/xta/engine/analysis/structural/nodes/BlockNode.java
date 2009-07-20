@@ -146,4 +146,10 @@ public class BlockNode extends IBufferNode {
 		return new TimeDistributionBuckets(m_insts.size());
 	}
 
+	public Set<InstructionNode> getEndNodes() {
+		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		set.add(m_insts.get(m_insts.size()-1));
+		return set;
+	}
+
 }

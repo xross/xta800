@@ -216,6 +216,7 @@ public class SourceMapper {
     		for(Line assembly : functionAssemby){
     			m_pcToFunction.put(assembly.getLineNumber(), function);
     		}
+    		
     		pcToFunction.put(inst.getStartPc(), function);
     	}
     	

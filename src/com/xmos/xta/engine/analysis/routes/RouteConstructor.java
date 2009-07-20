@@ -96,6 +96,7 @@ public class RouteConstructor {
 		for (Node start : startNodes) {
 			resetParent();
 			int startPc = start.getStartPc();
+			Node realStart = start;
 			
 			//this should be reworked to not have the start.getParent().getStartPc() != 0 statement as this 
 			//is a dirty way of testing to see if the top most block of a parent is in fact a section
@@ -109,12 +110,12 @@ public class RouteConstructor {
 						start.setParent(null);
 						m_routes.add(new Route(m_engine, start.deepCopy(), m_description));
 					} else {
-						seenEndPoint = makeSubRoute(seenEndPoint, endNodes, start);
+						seenEndPoint = makeSubRoute(realStart, seenEndPoint, endNodes, start);
 					}
 					notFoundFunctionYet = false;
 				}
 			} else {
-				seenEndPoint = makeSubRoute(seenEndPoint, endNodes, start);
+				seenEndPoint = makeSubRoute(realStart, seenEndPoint, endNodes, start);
 			}
 			
 		}
@@ -147,7 +148,7 @@ public class RouteConstructor {
 		return false;
 	}
 
-	private boolean makeSubRoute(boolean seenEndPoint, Collection<Node> endNodes,
+	private boolean makeSubRoute(Node realStart, boolean seenEndPoint, Collection<Node> endNodes,
 			Node start) {
 		
 		//System.out.println("making a sub route starting at " + start + " end ending at " + endNodes);
@@ -160,7 +161,7 @@ public class RouteConstructor {
 		NodeWrapper startNodeWrapper = new NodeWrapper(start);
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
 	
-		seenEndPoint |= explore(startNodeWrapper, workingSet, endNodes, null);
+		seenEndPoint |= explore(realStart, startNodeWrapper, workingSet, endNodes, null);
 
 		assert(cfgSanityCheck(workingSet));
 									
@@ -226,7 +227,7 @@ public class RouteConstructor {
 		workingSet.add(nullNode);
 	}
 	
-	private boolean explore(NodeWrapper node, Collection<Node> workingSet, Collection<Node> endNodes, Node parent) {	
+	private boolean explore(Node start, NodeWrapper node, Collection<Node> workingSet, Collection<Node> endNodes, Node parent) {	
 		Node currentNode = node.m_node;
 		Set<Node> containedEndPoints = new TreeSet<Node>(endNodes);
 		containedEndPoints.retainAll(currentNode.getContainedNodes());
@@ -234,7 +235,7 @@ public class RouteConstructor {
 		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
 		exclusions.retainAll(currentNode.getContainedNodes());
 		
-		System.out.println("exploring node " + node.m_node + " contains end point " + !containedEndPoints.isEmpty());
+	//	System.out.println("exploring node " + node.m_node + " contains end point " + !containedEndPoints.isEmpty());
 		
 		if(containedEndPoints.isEmpty()){
 			// this node contains no end points or the start node is the end node
@@ -245,7 +246,7 @@ public class RouteConstructor {
 					m_excludedRouteNodes.add(currentNode);
 					return false;
 				} else {
-					return exploreIntoCurrentNode(node, workingSet, endNodes, parent, currentNode);
+					return exploreIntoCurrentNode(start, node, workingSet, endNodes, parent, currentNode);
 				}
 				
 			} else {
@@ -255,13 +256,12 @@ public class RouteConstructor {
 				}
 				makeConnection(currentNode, parent);
 				workingSet.add(currentNode);
-				return exploreWhatsNext(workingSet, endNodes, currentNode);
+				return exploreWhatsNext(start, workingSet, endNodes, currentNode);
 			}
 			
 		} else {
 			//then we need to explore into the current node unless it is then end point
-			//if (currentNodeEndsWithEndNode(endNodes, currentNode) || workingSet.isEmpty()) {
-			if (currentNodeEndsWithEndNode(endNodes, currentNode)) {	
+			if (endNodes.containsAll(currentNode.getEndNodes())) {	
 				if(!exclusions.isEmpty() ){
 					if( currentNode.isInstructionNode() ){
 						workingSet.add(currentNode);
@@ -269,52 +269,39 @@ public class RouteConstructor {
 						m_excludedRouteNodes.add(currentNode);
 						return false;
 					} else {
-						return exploreIntoCurrentNode(node, workingSet, endNodes, parent, currentNode);
+						return exploreIntoCurrentNode(start, node, workingSet, endNodes, parent, currentNode);
 					}
-					
 				} else {
 					if(workingSet.isEmpty()){
 						workingSet.add(currentNode);
-						return exploreWhatsNext(workingSet, endNodes, currentNode);
+						return exploreWhatsNext(start, workingSet, endNodes, currentNode);
 					} else {
 						makeConnection(currentNode, parent);
 						workingSet.add(currentNode);
 						return true;
 					}
-					
 				}
-				
 		
 			} else {
 				// otherwise explore into the currentNode
-				return exploreIntoCurrentNode(node, workingSet, endNodes, parent, currentNode);
+				return exploreIntoCurrentNode(start, node, workingSet, endNodes, parent, currentNode);
 			}
 		}
 		
 	}
 
-	private boolean currentNodeEndsWithEndNode(Collection<Node> endNodes, Node currentNode) {
-		int endPc = currentNode.getInstructions().getLast().getPc();
-		for(Node endNode : endNodes ){
-			if(endNode.getStartPc() == endPc){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean exploreWhatsNext(Collection<Node> workingSet, Collection<Node> endNodes, Node currentNode) {
+	private boolean exploreWhatsNext(Node start, Collection<Node> workingSet, Collection<Node> endNodes, Node currentNode) {
 		boolean seenEndPoint = false;
 		Node parent = currentNode.getParent();
 		if (parent != null && !parent.whatsNext(currentNode).isEmpty()) {
 			for (Node next : parent.whatsNext(currentNode)) {
-				seenEndPoint |= explore(new NodeWrapper(next), workingSet, endNodes, currentNode);
+				seenEndPoint |= explore(start, new NodeWrapper(next), workingSet, endNodes, currentNode);
 			}
 		}
 		return seenEndPoint;
 	}
 
-	private boolean exploreIntoCurrentNode(NodeWrapper node, Collection<Node> workingSet, Collection<Node> endNodes,
+	private boolean exploreIntoCurrentNode(Node start, NodeWrapper node, Collection<Node> workingSet, Collection<Node> endNodes,
 			Node parent, Node currentNode) {
 		
 		boolean seenEndPoint = false;
@@ -323,7 +310,7 @@ public class RouteConstructor {
 		
 		for(Node child : currentNode.getImmediateChildren()){
 			NodeWrapper childWrapper = new NodeWrapper(child);
-			seenEndPoint |= explore(childWrapper, workingSet, endNodes, parent);
+			seenEndPoint |= explore(start, childWrapper, workingSet, endNodes, parent);
 			if(parent == null) {
 				//TODO check to see if parent is ever null or not
 				node.m_node = childWrapper.m_node;

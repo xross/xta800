@@ -91,4 +91,8 @@ public class NullNode extends IBufferNode {
 	public TimeDistributionBuckets getTimeSpread() {
 		return new TimeDistributionBuckets(0);
 	}
+	public Set<InstructionNode> getEndNodes() {
+		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		return set;
+	}
 }
