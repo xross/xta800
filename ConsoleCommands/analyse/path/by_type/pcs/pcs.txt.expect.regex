@@ -1,13 +1,12 @@
-Label: input0, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 10
-Label: output0, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 7
-Error: Unresolved reference: output1
-Label: input1, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 22
-Label: output1, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 19
-Error: Unresolved reference: output0
-Route\(0\) path: output0 to input0
-    No Timing Specified
+function\(98\)   : \d+\.0ns / \d+\.0ns main
+\.    block\(101\)     : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
+\.    function\(102\)  : \d+\.0ns / \d+\.0ns g
+\.    \.    block\(104\)     : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
+\.    block\(108\)     : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
 
-Route\(1\) path: output1 to input1
-    No Timing Specified
+function\(109\)  : \d+\.0ns / \d+\.0ns main
+\.    block\(112\)     : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
+\.    function\(113\)  : \d+\.0ns / \d+\.0ns g
+\.    \.    block\(115\)     : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
+\.    block\(119\)     : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
 
-Fail, Timing Unspecified
