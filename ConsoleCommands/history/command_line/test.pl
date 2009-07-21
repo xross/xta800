@@ -13,9 +13,6 @@ system("xcc -target=$target -march=$arch test.xc -o $genDir/test.xe > $genDir/co
 system("@ARGV  " .
 
        "-add branch 0x10000 0x10000 " .
-       "-add label 0x10000 string " .
-       "-add srclabel test.xc:10 string " .
-       "-add endpoint input1 string " .
 
        "-analyse function main " .
        "-analyse path label1 label2 " .
@@ -57,9 +54,6 @@ system("@ARGV  " .
        "-print route_info 0 " .
 
        "-remove branch branch1 " .
-       "-remove label label1 " .
-       "-remove srclabel label1 " .
-       "-remove endpoint label1 " .
 
        "-set loop - a 99 " .
        "-set time - test.xc:12 99 ns " .

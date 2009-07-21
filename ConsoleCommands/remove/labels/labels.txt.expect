@@ -1,7 +1,0 @@
-Label: bill, pc: 0x10002
-Label: bob, pc: 0x10000
-none
-Label: bill, pc: 0x1000a
-Label: bob, pc: 0x10006
-Error: Unable to remove label: bill
-none

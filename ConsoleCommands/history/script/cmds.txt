@@ -1,11 +1,5 @@
 add branch fromRef toRef
 add branch 0x10000 0x10000
-add label codeRef string
-add label 0x10000 string
-add srclabel codeRef string
-add srclabel test.xc:10 string
-add endpoint codeRef string
-add endpoint input1 string
 
 analyse function main
 analyse path label1 label2
@@ -48,9 +42,6 @@ print mix - 99
 print trace - 99
 
 -remove branch branch1
--remove label label1
--remove srclabel label1
--remove endpoint label1
 
 -pwd
 

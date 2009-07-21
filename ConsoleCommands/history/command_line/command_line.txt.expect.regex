@@ -1,52 +1,46 @@
 .*
 [^^^]
 1: add branch 0x10000 0x10000
-2: add label 0x10000 string
-3: add srclabel test.xc:10 string
-4: add endpoint input1 string
-5: analyse function main
-6: analyse path label1 label2
-7: analyse path 0x10000 0x10002
-8: config proc 0 0
-9: config freq 999
-10: config threads 99
-11: config srcpaths /test/path/srcpath/
-12: clear
-13: echo
-14: pwd
-15: help
-16: help history
-17: load invalid.xe
-18: list branches
-19: list labels
-20: list srclabels
-21: list endpoints
-22: list allsrclabels
-23: list allendpoints
-24: list functions
-25: list sources
-26: list exclusions
-27: list unknowns -
-28: list knowns -
-29: print asm -
-30: print src -
-31: print mix -
-32: print trace -
-33: print structure -
-34: print summary
-35: print functions -
-36: print sources -
-37: print node_info - 0
-38: print route_info 0
-39: remove branch branch1
-40: remove label label1
-41: remove srclabel label1
-42: remove endpoint label1
-43: set loop - a 99
-44: set time - test.xc:12 99.0 ns
-45: set time - label1 99 cycles
-46: set time - 0x1000 99 cycles
-47: source invalid.txt
-48: status
-49: version
-50: history
+2: analyse function main
+3: analyse path label1 label2
+4: analyse path 0x10000 0x10002
+5: config proc 0 0
+6: config freq 999
+7: config threads 99
+8: config srcpaths /test/path/srcpath/
+9: clear
+10: echo
+11: pwd
+12: help
+13: help history
+14: load invalid.xe
+15: list branches
+16: list labels
+17: list srclabels
+18: list endpoints
+19: list allsrclabels
+20: list allendpoints
+21: list functions
+22: list sources
+23: list exclusions
+24: list unknowns -
+25: list knowns -
+26: print asm -
+27: print src -
+28: print mix -
+29: print trace -
+30: print structure -
+31: print summary
+32: print functions -
+33: print sources -
+34: print node_info - 0
+35: print route_info 0
+36: remove branch branch1
+37: set loop - a 99
+38: set time - test.xc:12 99.0 ns
+39: set time - label1 99 cycles
+40: set time - 0x1000 99 cycles
+41: source invalid.txt
+42: status
+43: version
+44: history

@@ -3,60 +3,51 @@
 1: source cmds.txt
 2: add branch fromRef toRef
 3: add branch 0x10000 0x10000
-4: add label codeRef string
-5: add label 0x10000 string
-6: add srclabel codeRef string
-7: add srclabel test.xc:10 string
-8: add endpoint codeRef string
-9: add endpoint input1 string
-10: analyse function main
-11: analyse path label1 label2
-12: analyse path 0x10000 0x10002
-13: invalid command with arguments
-14: config proc 9 9
-15: config proc 0 0
-16: config freq 999
-17: config threads 99
-18: config srcpaths /test/path/srcpath/
-19: echo
-20: clear
-21: echo "Test string"
-22: pwd
-23: help
-24: help history
-25: load invalid.xe
-26: list branches
-27: list labels
-28: list srclabels
-29: list endpoints
-30: list allsrclabels
-31: list allendpoints
-32: list unknowns -
-33: list unknowns 10
-34: list functions
-35: list sources
-36: list knowns -
-37: list knowns 10
-38: list constraint
-39: print asm - 99
-40: print src - 99
-41: print mix - 99
-42: print trace - 99
-43: remove branch branch1
-44: remove label label1
-45: remove srclabel label1
-46: remove endpoint label1
-47: pwd
-48: set loop - 99 99
-49: set time - test.xc:12 99.0 ns
-50: set time - label1 99 cycles
-51: set time - 0x1000 99 cycles
-52: source invalid.txt
-53: status
-54: print summary
-55: print functions
-56: print sources
-57: print info 99
-58: unset time 0x10000
-59: version
-60: history
+4: analyse function main
+5: analyse path label1 label2
+6: analyse path 0x10000 0x10002
+7: invalid command with arguments
+8: config proc 9 9
+9: config proc 0 0
+10: config freq 999
+11: config threads 99
+12: config srcpaths /test/path/srcpath/
+13: echo
+14: clear
+15: echo "Test string"
+16: pwd
+17: help
+18: help history
+19: load invalid.xe
+20: list branches
+21: list labels
+22: list srclabels
+23: list endpoints
+24: list allsrclabels
+25: list allendpoints
+26: list unknowns -
+27: list unknowns 10
+28: list functions
+29: list sources
+30: list knowns -
+31: list knowns 10
+32: list constraint
+33: print asm - 99
+34: print src - 99
+35: print mix - 99
+36: print trace - 99
+37: remove branch branch1
+38: pwd
+39: set loop - 99 99
+40: set time - test.xc:12 99.0 ns
+41: set time - label1 99 cycles
+42: set time - 0x1000 99 cycles
+43: source invalid.txt
+44: status
+45: print summary
+46: print functions
+47: print sources
+48: print info 99
+49: unset time 0x10000
+50: version
+51: history
