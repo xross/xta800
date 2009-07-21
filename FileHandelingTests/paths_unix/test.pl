@@ -2,13 +2,14 @@
 use strict;
 use warnings;
 use File::Copy;
+use Cwd;
 
 my $genDir  = shift(@ARGV);
 my $arch    = shift(@ARGV);
 my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
-my $pwd = $ENV{PWD};
+my $pwd = getcwd();
 
 if (!$noBuild) {
   open(LOG, ">$genDir/paths_unix.log");
