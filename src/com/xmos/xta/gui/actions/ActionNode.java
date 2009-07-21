@@ -45,7 +45,7 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 		        	int nodeId = Integer.parseInt(selected); 
 		        	if (nodeId != m_currentNodeId) {
 		        		GuiEngine.getEngine().setNodeId(nodeId);
-		        		m_currentNodeId = nodeId;
+		        		updateCurrentNodeId(nodeId);
 		        	}
 		        } catch (NumberFormatException exception) {
 		        }
@@ -75,8 +75,12 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 	}
 			
 	public void propertyChange(PropertyChangeEvent event) {
-		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE) || 
-			event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {			
+		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) { 
+	        updateState();
+	        m_action.setEnabled(true);
+    		updateCurrentNodeId(0);
+
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 	        updateState();
 	        m_action.setEnabled(true);
 	        
@@ -109,4 +113,9 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 			m_nodeIds.add(String.format("%d", nodeId));
 		}
 	}
+	
+	private void updateCurrentNodeId(int noded) {
+		m_currentNodeId = noded;
+		m_action.setToolTipText("Node " + m_currentNodeId);		
+	}	
 }

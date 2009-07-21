@@ -45,8 +45,7 @@ public class ActionCore extends ActionDelegate implements IPropertyChangeListene
 		        	int coreId = Integer.parseInt(selected); 
 		        	if (coreId != m_currentCoreId) {
 		        		GuiEngine.getEngine().setCoreId(coreId);
-		        		m_currentCoreId = coreId;
-		        		m_action.setToolTipText("Core " + m_currentCoreId);
+		        		updateCurrentCoreId(coreId);
 		        	}
 		        } catch (NumberFormatException exception) {
 		        }
@@ -74,16 +73,20 @@ public class ActionCore extends ActionDelegate implements IPropertyChangeListene
 	}
 		
 	public void propertyChange(PropertyChangeEvent event) {
-		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE) || 
-			event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {			
+		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) { 
 	        updateState();
 	        m_action.setEnabled(true);
-	        
+    		updateCurrentCoreId(0);	        
+	     
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
+	        updateState();
+	        m_action.setEnabled(true);
+
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
 	        updateState();
 		}
 	}
-
+ 
 	public Menu getMenu(Menu parent) {
 		assert(false);
 		return null;
@@ -108,5 +111,10 @@ public class ActionCore extends ActionDelegate implements IPropertyChangeListene
 		for (Integer coreId : GuiEngine.getEngine().getXeLoader().getCoreIds(selectedNodeId)) {
 			m_coreIds.add(String.format("%d", coreId));
 		}
+	}
+	
+	private void updateCurrentCoreId(int coreId) {
+		m_currentCoreId = coreId;
+		m_action.setToolTipText("Core " + m_currentCoreId);		
 	}
 }
