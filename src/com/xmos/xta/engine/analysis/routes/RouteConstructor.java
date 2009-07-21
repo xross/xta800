@@ -249,7 +249,7 @@ public class RouteConstructor {
 	private boolean explore(Node start, NodeWrapper node, Collection<Node> workingSet, Collection<Node> endNodes, Node parent) {	
 		
 		Node currentNode = node.m_node;
-		//System.out.println("exploring node: " + currentNode + " " + currentNode.getInstructions());
+	//	System.out.println("exploring node: " + currentNode + " " + currentNode.getInstructions());
 		
 		
 		Set<Node> containedEndPoints = new TreeSet<Node>(endNodes);
@@ -263,15 +263,8 @@ public class RouteConstructor {
 			//all the ends of currentBlock are endNodes 
 			if(exclusions.isEmpty()){
 				//there are no exclusions in this block
-				
-				if(workingSet.isEmpty()){
-					//TODO find out what this is for
-					if(workingSet.contains(currentNode)){
-						return false;
-					}
-					makeConnection(currentNode, parent);
-					workingSet.add(currentNode);
-					return exploreWhatsNext(start, workingSet, endNodes, currentNode);
+				if(workingSet.isEmpty() && endNodes.contains(start)){
+					return exploreWhatsNext(start, workingSet, endNodes, currentNode, parent);
 				} else {
 					makeConnection(currentNode, parent);
 					workingSet.add(currentNode);
@@ -281,7 +274,6 @@ public class RouteConstructor {
 				// there are exclusions in this block
 				return exploreIntoCurrentNode(start, node, workingSet, endNodes, parent, currentNode);
 			}
-			
 		} else {
 			//we have to go into the current block
 			if(containedEndPoints.isEmpty()){
@@ -294,15 +286,8 @@ public class RouteConstructor {
 					} else {
 						return exploreIntoCurrentNode(start, node, workingSet, endNodes, parent, currentNode);
 					}
-					
 				} else {
-					//TODO find out what this is for
-					if(workingSet.contains(currentNode)){
-						return false;
-					}
-					makeConnection(currentNode, parent);
-					workingSet.add(currentNode);
-					return exploreWhatsNext(start, workingSet, endNodes, currentNode);
+					return exploreWhatsNext(start, workingSet, endNodes, currentNode, parent);
 				}
 			} else {
 				//has multiple ends with at not all as end points
@@ -375,8 +360,15 @@ public class RouteConstructor {
 		
 	}
 */
-	private boolean exploreWhatsNext(Node start, Collection<Node> workingSet, Collection<Node> endNodes, Node currentNode) {
+	private boolean exploreWhatsNext(Node start, Collection<Node> workingSet, Collection<Node> endNodes, 
+			Node currentNode, Node originalParent) {
 		boolean seenEndPoint = false;
+		//TODO find out what this is for
+		if(workingSet.contains(currentNode)){
+			return false;
+		}
+		makeConnection(currentNode, originalParent);
+		workingSet.add(currentNode);
 		Node parent = currentNode.getParent();
 		if (parent != null && !parent.whatsNext(currentNode).isEmpty()) {
 			for (Node next : parent.whatsNext(currentNode)) {
