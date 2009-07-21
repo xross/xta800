@@ -19,10 +19,3 @@ Route\(1\) function: test1
     Pass, Num Paths: 1, Slack: \d+\.\d+ns, Required: \d+\.\d+ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
 Pass, Min Frequency: \d+ Mhz
-Route\(0\) function: test0
-    No Timing Specified
-
-Route\(1\) function: test1
-    No Timing Specified
-
-Fail, Timing Unspecified

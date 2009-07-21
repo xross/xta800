@@ -30,9 +30,5 @@ system("@ARGV load $genDir/test.xe " .
        "-set required 1 100 cycles " .
        "print summary " .
 
-       "-unset required 0 " .
-       "-unset required 1 " .
-       "print summary " .
-
        "-exit > $genDir/cycles.txt 2>&1");
 

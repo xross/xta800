@@ -1,4 +1,5 @@
 Invalid argument(s) to 'help' command (Try 'help help'..)
+Invalid argument(s) to 'help' command (Try 'help help'..)
   [-]add <option> <arg0> <arg1>...: Add item to given list
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
   [-]config <option> <arg0> <arg1>...: Configures the given option
@@ -15,7 +16,6 @@ Invalid argument(s) to 'help' command (Try 'help help'..)
   [-]set <option> <arg0> <arg1>...: Set path information
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
-  [-]unset <option> <arg0> <arg1>...: Unset item from given list
   [-]version: Displays the version information
   [-]add <option> <arg0> <arg1>...: Add item to given list
       option: branch <from LABEL_REF> <to LABEL_REF>: Adds the given from/to reference to the branches list
@@ -100,8 +100,7 @@ Invalid argument(s) to 'help' command (Try 'help help'..)
           mode: cycles: Sets the required route time in thread cycles
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
-  [-]unset <option> <arg0> <arg1>...: Unset item from given list
-      option: required <route id>: Clears the the maximum allowed time for the given route
+Invalid command in file: cmds.txt, line number: 18
 Invalid command in file: cmds.txt, line number: 19
   Any of the following are permitted:
     Pc: Raw program counter specified in the format: 0x*
