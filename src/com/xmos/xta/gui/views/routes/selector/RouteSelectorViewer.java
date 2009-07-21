@@ -30,7 +30,6 @@ import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.Route;
-import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.Required;
 import com.xmos.xta.gui.views.console.ConsoleView;

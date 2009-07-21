@@ -239,12 +239,10 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	}
 
 	public void menuAboutToShow(IMenuManager manager) {
-		if (m_selectedNodes.size() == 1) {
-	    	if (m_toolTip != null  && !m_toolTip.isDisposed()) {
-				m_toolTip.dispose();
-	    	}
-	    	Views.createContextMenu(manager, m_selectedNodes, m_parent.getShell());
-		}
+    	if (m_toolTip != null  && !m_toolTip.isDisposed()) {
+			m_toolTip.dispose();
+    	}
+    	Views.createContextMenu(manager, m_selectedNodes, m_parent.getShell());
 	}
 
 	//
@@ -448,7 +446,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                 	else if (event.character == '-')
                 		zoomOut();
                 	break;
-                	
+
                 case SWT.MouseDown:
                 	if (event.button == LEFT_MOUSE_BUTTON) {
                 		m_selectBox = new Rectangle(event.x, event.y, 0, 0);
@@ -468,6 +466,8 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                 	break;
                 	
                 case SWT.MouseUp:
+                	boolean ctrlKeyPressed = (event.stateMask & SWT.CTRL) != 0;
+                	
                 	if (m_viewNode == null) {
                 		// Ensure the selection box gets removed
                 		m_renderControl.refresh();
@@ -478,10 +478,8 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                 				// Only zoom if the user has selected enough
                 				zoomDragBox(box);
                 			} else {
-                				click(event.x, event.y);
+                				click(event.x, event.y, ctrlKeyPressed);
                 			}
-                		} else {
-                			click(event.x, event.y);
                 		}
                 	}
         			m_selectBox = null;
@@ -489,12 +487,23 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 				}
 			}
 			
-			private void click(int x, int y) {
+			private void click(int x, int y, boolean ctrlKeyPressed) {
 				ViewNode clickNode = getClickNode(x, y);
 				if (clickNode != null) {
+		        	Node newNode = clickNode.getTreeNode();
 		        	List<Node> newNodes = new ArrayList<Node>();
-		        	newNodes.add(clickNode.getTreeNode());
-					setSelection(new StructuredSelection(newNodes));
+		        	
+		        	if (ctrlKeyPressed) {
+		        		newNodes.addAll(m_selectedNodes);
+		        		if (newNodes.contains(newNode)) {
+		        			newNodes.remove(newNode);
+		        		} else {
+		        			newNodes.add(newNode);
+		        		}
+		        	} else {
+		        		newNodes.add(newNode);
+		        	}
+	        		setSelection(new StructuredSelection(newNodes));
 				}
 			}
 
