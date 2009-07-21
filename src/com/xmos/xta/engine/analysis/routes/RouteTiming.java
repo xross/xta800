@@ -59,7 +59,7 @@ public class RouteTiming {
 		return m_maxTime;
 	}
 
-	public void resetMaxTime() {
+	public void unset() {
 		m_maxTime = 0.0;
 		m_maxTimeSet = false;
 	}

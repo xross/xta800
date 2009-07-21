@@ -9,7 +9,7 @@ public class Set extends CommandContainer {
 		new LoopPath(),
 		new LoopScope(), 
 		new Time(), 
-		new Required(Required.Operation.SET), 
+		new Required(), 
 	};
 	
 	public Set() { super("set"); }

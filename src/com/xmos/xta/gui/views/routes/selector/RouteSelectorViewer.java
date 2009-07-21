@@ -166,11 +166,6 @@ public class RouteSelectorViewer {
 			    new Required(parent, GuiEngine.getEngine(), route);
 		    }
 	    });
-	    manager.add(new Action("Clear timing requirements") {
-		    public void run() {
-		    	GuiEngine.getEngine().unsetRouteMax(route.getRouteId());
-		    }
-	    });
     }	
     
 	private boolean setSelection(RouteNode root, int routeId) {

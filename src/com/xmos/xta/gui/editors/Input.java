@@ -78,7 +78,6 @@ class InputSection {
 	private int m_index;
 	private HashMap<Integer, InputLine> m_pcs;
 	private String m_headerType;
-	private boolean m_grey;
 	
 	public InputSection(String header, String headerCodeReference, int index, int lineNum, String headerType) {
 		// Header line must have -1 index to counteract +1 in index calculations
@@ -88,7 +87,6 @@ class InputSection {
 		m_index = index;
 		m_pcs = new HashMap<Integer, InputLine>();
 		m_headerType = headerType;
-		m_grey = false;
 	}
 	
 	public void addLine(String line, String codeReference, int pc, int index, Input input) {
@@ -184,21 +182,9 @@ class InputSection {
 	public void decrementIndex() {
 		m_index--;
 	}
-	
-	public void setGrey(boolean b) {
-		m_grey = b;
-	}
-	
-	public boolean isGrey() {
-		return m_grey;
-	}
-	
+		
 	public String getHeaderType() {
-		if (!isGrey()) {
-			return m_headerType;
-		} else {
-			return XtaDocumentPartitioner.GREY;
-		}
+		return m_headerType;
 	}
 }
 
@@ -208,7 +194,6 @@ class InputLine {
 	private String m_line;
 	private int m_pc;
 	private int m_offset;
-	private boolean m_grey;
 	private String m_headerType;
 	
 	public InputLine(InputSection section, String line, String codeReference, int pc, int offset, String headerType) {
@@ -217,16 +202,11 @@ class InputLine {
 		m_codeReference = codeReference;
 		m_pc = pc;
 		m_offset = offset;
-		m_grey = false;
 		m_headerType = headerType;
 	}
 	
 	public String getHeaderType() {
-		if(!isGrey()){
-			return m_headerType;
-		} else {
-			return XtaDocumentPartitioner.GREY;
-		}
+		return m_headerType;
 	}
 	
 	public String getLine() {
@@ -255,13 +235,5 @@ class InputLine {
 
 	public void decrementOffset() {
 		m_offset--;
-	}
-
-	public void setGrey(boolean b) {
-		m_grey = b;
-	}
-	
-	public boolean isGrey() {
-		return m_grey;
 	}
 }
