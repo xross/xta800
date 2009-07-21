@@ -470,15 +470,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		m_endPointLine = findCodeRefLineNum(endPoint);
 	}
 	    	
-    private void updatePartitions() {
-    	IDocument document = getDocument();
-    	if (document != null) {
-    		XtaDocumentPartitioner xtaDocumentPartitioner = (XtaDocumentPartitioner)document.getDocumentPartitioner();
-    		xtaDocumentPartitioner.partitionDocument(document, false);
-    		getSourceViewer().invalidateTextPresentation();
-    	}
-	}
-
     private void updateFnops() {
 		if (DEBUG) System.out.printf("XtaEditor: updateFnops\n"); 
 		
