@@ -49,7 +49,7 @@ public class GuiConsole implements Console {
 		m_shell = new Shell(this, GuiEngine.getEngine(), new GuiConsoleNotifier(this));		        		
 		m_commandQueue = new LinkedBlockingQueue<CommandString>();
 		m_characterQueue = new LinkedBlockingQueue<Integer>();		
-        m_text = new StyledText(parent, SWT.V_SCROLL);
+        m_text = new StyledText(parent, SWT.H_SCROLL | SWT.V_SCROLL);
 		m_display = PlatformUI.getWorkbench().getDisplay();						
              
         Font font = new Font(PlatformUI.getWorkbench().getDisplay(), "Courier New", 10, SWT.NONE);

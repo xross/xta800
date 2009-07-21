@@ -1,5 +1,8 @@
 package com.xmos.xta.gui.views.routes.selector;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -22,11 +25,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.Required;
+import com.xmos.xta.gui.views.console.ConsoleView;
 
 public class RouteSelectorViewer {	
     private TreeViewer m_viewer;	
@@ -102,14 +108,17 @@ public class RouteSelectorViewer {
 					});
 				}
 				
-				if (((IStructuredSelection)selection).size() == 1) {
-			        if (selection instanceof IStructuredSelection) {	            
-			            Object object = ((IStructuredSelection)selection).getFirstElement();
-			            if (object instanceof RouteNode) {
-			                createContextMenu(m_parent.getShell(), manager, ((RouteNode)object).getRoute());
-			            }
-			        }
-				}
+		        if (selection instanceof IStructuredSelection) {
+		        	IStructuredSelection sSel = (IStructuredSelection)selection;
+
+		        	List<RouteNode> selectedNodes = new ArrayList<RouteNode>();
+		        	for (Object object : sSel.toArray()) {
+		        		if (object instanceof RouteNode) {
+		        			selectedNodes.add((RouteNode)object);
+		        		}
+		            }
+		        	createContextMenu(manager, selectedNodes, m_parent.getShell());
+		        }
 			}
 		});
 		
@@ -159,15 +168,51 @@ public class RouteSelectorViewer {
         }
 	}
 
-    private void createContextMenu(final Shell parent, IMenuManager manager, final Route route) {
-	    manager.add(new Separator());
-	    manager.add(new Action("Set timing requirements") {
+	public static void createContextMenu(IMenuManager manager, final List<RouteNode> selectedNodes, final Shell shell) {
+		if (selectedNodes.size() < 1) {
+			return;
+		}
+    	boolean oneNodeSelected = selectedNodes.size() == 1;
+		final RouteNode firstNode = selectedNodes.get(0);
+
+		manager.add(new Separator());
+
+		Action setTimingRequirementsAction = new Action("Set timing requirements") {
 		    public void run() {
-			    new Required(parent, GuiEngine.getEngine(), route);
+			    new Required(shell, GuiEngine.getEngine(), firstNode.getRoute());
 		    }
-	    });
-    }	
-    
+	    };
+	    manager.add(setTimingRequirementsAction);
+	    if (oneNodeSelected)
+	    	setTimingRequirementsAction.setEnabled(true);
+	    else
+	    	setTimingRequirementsAction.setEnabled(false);
+
+		manager.add(new Separator());
+
+    	// Adds the 'Trace in console' option.
+    	Action traceInConsoleAction = new Action("Trace in console") {
+			public void run() {
+				ConsoleView console = (ConsoleView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+					getActivePage().findView(ConsoleView.ID);
+				
+				try {
+					PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+					    getActivePage().showView(ConsoleView.ID);
+				} catch (PartInitException e) {}
+				
+				int routeId = GuiEngine.getEngine().getSelectedRouteId();
+				console.runCommand("print trace " + routeId + " " + firstNode.getRoute().getNode().getId());
+			}
+		};
+    	manager.add(traceInConsoleAction);
+    	
+		if (oneNodeSelected)
+    		traceInConsoleAction.setEnabled(true);
+    	else
+    		traceInConsoleAction.setEnabled(false);
+	}
+	
 	private boolean setSelection(RouteNode root, int routeId) {
 		for (RouteNode node : root.getChildren()) {
 			if (node.getRoute().getRouteId() == routeId) {

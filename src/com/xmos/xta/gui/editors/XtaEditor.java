@@ -580,15 +580,16 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	    ArrayList<Annotation> annotations = new ArrayList<Annotation>();
         HashMap<Annotation, Position> annotationPositions = new HashMap<Annotation, Position>();		
 		
+        m_hasHighlightedLines = false;
         if (m_selectedNode != null) {
         	Collection<XtaInstruction> instructionsCovered = m_selectedNode.getInstructions();
         	for (XtaInstruction instruction : instructionsCovered) {
-				updateAnnotations(instruction.getPc(), HighlightAnnotationID, annotations, annotationPositions,
+        		m_hasHighlightedLines |= updateAnnotations(
+        				instruction.getPc(), HighlightAnnotationID, 
+        				annotations, annotationPositions,
 						false, false, getInput().getPcsToLines());
 			}
         }
-        m_hasHighlightedLines = (annotations.size() > 0);
-
 		updateAnnotations(annotations, annotationPositions);		
 		GuiEngine.broadcast(Broadcaster.BROADCAST_HIGHLIGHTS_UPDATED, "");	
     }
@@ -605,6 +606,18 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 
         m_endPointLineIndexes.clear();
         for (CodePointTableInfo info : GuiEngine.getEngine().getEndpointTable().values()) {
+        	if (info.getFileName().equals(m_fileName)) {
+        		InputLine line = findCodeLine(info.getLineNumber());
+        		if (line != null) {
+        			int index = line.getIndex();
+	        		if (index != endPointIndex && index != startPointIndex)
+	        			addAnnotation(index, EndpointID, allAnnotations, allAnnotationPositions);
+	        		m_endPointLineIndexes.put(index, line);
+        		}
+        	}
+        } 
+
+        for (CodePointTableInfo info : GuiEngine.getEngine().getCallTable().values()) {
         	if (info.getFileName().equals(m_fileName)) {
         		InputLine line = findCodeLine(info.getLineNumber());
         		if (line != null) {
@@ -730,16 +743,21 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		m_previousUnknownAnnotations = createArray(annotations);
     }
 
-    private void updateAnnotations(int pc, String type, List<Annotation> annotations, 
+    private boolean updateAnnotations(int pc, String type, List<Annotation> annotations, 
     		Map<Annotation, Position> annotationPositions, boolean excludeFnops, boolean excludeSections,
     		HashMap<Integer, InputLine> pcToLine) {
     	
+    	boolean hitSection = false;
+    	
     	InputLine line = pcToLine.get(pc);
-    	if (line == null) return;
+    	if (line == null) 
+    		return hitSection;
+    	
     	if (!excludeSections) {
 			InputSection inputSection = getInput().getPcsToSection().get(pc);
 			if (inputSection != null) {
 				addAnnotation(inputSection.getIndex(), type, annotations, annotationPositions);
+				hitSection = true;
 			}
     	}
     	
@@ -757,6 +775,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 				}
 			}
 		}
+		return hitSection;
     }
 
     private void addAnnotation(int index, String type, List<Annotation> annotations,
