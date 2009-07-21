@@ -1,0 +1,22 @@
+path\(\d+\)     : \d+\.0ns / \d+\.0ns 
+\.    block\(\d+\)    : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
+\.    function\(\d+\) : \d+\.0ns / \d+\.0ns label2
+\.    \.    block\(\d+\)    : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
+
+path\(\d+\)     : \d+\.0ns / \d+\.0ns 
+\.    block\(\d+\)    : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
+\.    function\(\d+\) : \d+\.0ns / \d+\.0ns label2
+\.    \.    block\(\d+\)    : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
+
+path\(\d+\)     : \d+\.0ns / \d+\.0ns 
+\.  \* block\(\d+\)    : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
+\.    function\(\d+\) : \d+\.0ns / \d+\.0ns add
+\.    \.    block\(\d+\)    : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
+\.  \* block\(\d+\)    : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
+
+path\(\d+\)     : \d+\.0ns / \d+\.0ns 
+\.    block\(\d+\)    : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
+\.    function\(\d+\) : \d+\.0ns / \d+\.0ns sub
+\.    \.    block\(\d+\)    : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
+\.  \* block\(\d+\)    : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
+
