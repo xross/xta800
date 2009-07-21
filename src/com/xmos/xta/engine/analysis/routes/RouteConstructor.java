@@ -100,7 +100,14 @@ public class RouteConstructor {
 			
 			//this should be reworked to not have the start.getParent().getStartPc() != 0 statement as this 
 			//is a dirty way of testing to see if the top most block of a parent is in fact a section
+			
+			/*
 			while(start.getParent() != null && start.getParent().getStartPc() != 0 && start.getParent().getStartPc() == startPc){
+				start = start.getParent();
+			}
+			*/
+			
+			while(parentIsBetterThanChild(start)){
 				start = start.getParent();
 			}
 			
@@ -136,6 +143,18 @@ public class RouteConstructor {
 		} else {
 			return RouteError.SUCCESS;
 		}
+	}
+
+	private boolean parentIsBetterThanChild(Node child) {
+		if(child.getParent() == null) return false;
+		Node parent = child.getParent();
+		
+		if(parent.isSectionNode()) return false;
+		
+		if(parent.getStartPc() == child.getStartPc() && !parent.getInstructions().getFirst().isFnop())
+			return true;
+		
+		return false;
 	}
 
 	private boolean containAnyNodes(Node start, Collection<Node> endNodes) {
@@ -228,6 +247,73 @@ public class RouteConstructor {
 	}
 	
 	private boolean explore(Node start, NodeWrapper node, Collection<Node> workingSet, Collection<Node> endNodes, Node parent) {	
+		
+		Node currentNode = node.m_node;
+		//System.out.println("exploring node: " + currentNode + " " + currentNode.getInstructions());
+		
+		
+		Set<Node> containedEndPoints = new TreeSet<Node>(endNodes);
+		containedEndPoints.retainAll(currentNode.getContainedNodes());
+		
+		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
+		exclusions.retainAll(currentNode.getContainedNodes());
+		
+		
+		if(endNodes.containsAll(currentNode.getEndNodes())){
+			//all the ends of currentBlock are endNodes 
+			if(exclusions.isEmpty()){
+				//there are no exclusions in this block
+				
+				if(workingSet.isEmpty()){
+					//TODO find out what this is for
+					if(workingSet.contains(currentNode)){
+						return false;
+					}
+					makeConnection(currentNode, parent);
+					workingSet.add(currentNode);
+					return exploreWhatsNext(start, workingSet, endNodes, currentNode);
+				} else {
+					makeConnection(currentNode, parent);
+					workingSet.add(currentNode);
+					return true;
+				}
+			} else {
+				// there are exclusions in this block
+				return exploreIntoCurrentNode(start, node, workingSet, endNodes, parent, currentNode);
+			}
+			
+		} else {
+			//we have to go into the current block
+			if(containedEndPoints.isEmpty()){
+				if(!exclusions.isEmpty() ){
+					if( currentNode.isInstructionNode() ){
+						workingSet.add(currentNode);
+						makeConnection(currentNode, parent);
+						m_excludedRouteNodes.add(currentNode);
+						return false;
+					} else {
+						return exploreIntoCurrentNode(start, node, workingSet, endNodes, parent, currentNode);
+					}
+					
+				} else {
+					//TODO find out what this is for
+					if(workingSet.contains(currentNode)){
+						return false;
+					}
+					makeConnection(currentNode, parent);
+					workingSet.add(currentNode);
+					return exploreWhatsNext(start, workingSet, endNodes, currentNode);
+				}
+			} else {
+				//has multiple ends with at not all as end points
+				return exploreIntoCurrentNode(start, node, workingSet, endNodes, parent, currentNode);
+			}
+		}
+	}
+	
+	
+	/*
+	private boolean explore(Node start, NodeWrapper node, Collection<Node> workingSet, Collection<Node> endNodes, Node parent) {	
 		Node currentNode = node.m_node;
 		Set<Node> containedEndPoints = new TreeSet<Node>(endNodes);
 		containedEndPoints.retainAll(currentNode.getContainedNodes());
@@ -288,7 +374,7 @@ public class RouteConstructor {
 		}
 		
 	}
-
+*/
 	private boolean exploreWhatsNext(Node start, Collection<Node> workingSet, Collection<Node> endNodes, Node currentNode) {
 		boolean seenEndPoint = false;
 		Node parent = currentNode.getParent();
