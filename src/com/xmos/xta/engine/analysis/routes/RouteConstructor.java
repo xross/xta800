@@ -132,7 +132,6 @@ public class RouteConstructor {
 		setSelfLoops();	
 		setSrcLoopCounts();	
 		checkSupportedInstructions();
-
 		
 		if (m_description.getMode() == RouteMode.PATH) {
 			if (seenEndPoint) {
