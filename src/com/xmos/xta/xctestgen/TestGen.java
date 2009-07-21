@@ -128,8 +128,7 @@ public class TestGen {
 		}
 	}
 	
-	private static void createStucturalTest(String description) {
-		
+	private static void createStucturalTest(String description) {		
 		try {
 			m_testDescription = description;
 			m_unique = 0;
