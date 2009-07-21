@@ -107,10 +107,18 @@ public class BlockNode extends IBufferNode {
 	}
 	
 	public Collection<Node> whatsBefore(Node node) {
-		if (getParent()!= null){
-			return getParent().whatsBefore(node);
+		assert(m_insts.contains(node));
+		int index = m_insts.indexOf(node);
+		if(index > 0 ){
+			Collection<Node> next = new TreeSet<Node>();
+			next.add(m_insts.get(index-1));
+			return next;
+		} else {
+			if (getParent() != null){
+				return getParent().whatsBefore(this);
+			}
+			return new TreeSet<Node>();
 		}
-		return new TreeSet<Node>();
 	}
 
 	public List<Node> getImmediateChildren() {
