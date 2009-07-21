@@ -1,18 +1,7 @@
 set time - inst 1 mhz
-
 analyse function main
-
+list knowns -
 set time - inst 1 mhz
 list knowns -
-unset time - inst
-list knowns -
-
 set time - inst 0.2 mhz
-list knowns -
-
-unset time - x
-unset time - .dfbjdb
-list knowns -
-
-unset time - inst
 list knowns -

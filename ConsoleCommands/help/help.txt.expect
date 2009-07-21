@@ -101,7 +101,6 @@ Invalid argument(s) to 'help' command (Try 'help help'..)
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
   [-]unset <option> <arg0> <arg1>...: Unset item from given list
-      option: time <route id> <pc>: Clears the time set for the given instructions (supports regular expressions)
       option: required <route id>: Clears the the maximum allowed time for the given route
 Invalid command in file: cmds.txt, line number: 19
   Any of the following are permitted:

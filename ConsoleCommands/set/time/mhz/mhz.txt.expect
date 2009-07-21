@@ -1,8 +1,4 @@
 Error: Failed to set instruction time on reference id: inst
+none
 Time for instruction (0x100be: in (2r)) set to 1000.0ns, pc: 0x100be, backtrace: main:
-none
 Time for instruction (0x100be: in (2r)) set to 5000.0ns, pc: 0x100be, backtrace: main:
-Error: Failed to unset instruction time on reference id: x
-Error: Failed to unset instruction time on reference id: .dfbjdb
-Time for instruction (0x100be: in (2r)) set to 5000.0ns, pc: 0x100be, backtrace: main:
-none
