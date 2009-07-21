@@ -551,7 +551,7 @@ public class Engine implements Notifier {
 	// ===================================================================== //
 	// Requirements Methods
 	// ===================================================================== //		
-	public boolean setRouteMaxTime(int routeId, double time) {
+	public boolean setRequirement(int routeId, double time) {
 		Collection<Route> routes = getRoute(routeId);
 		if (routes.size() == 0)
 			return false;
@@ -563,7 +563,7 @@ public class Engine implements Notifier {
 		return true;
 	}
 
-	public boolean setRouteMaxCycles(int routeId, int cycles) {
+	public boolean setRequirement(int routeId, int cycles) {
 		Collection<Route> routes = getRoute(routeId);
 		if (routes.size() == 0)
 			return false;
@@ -575,13 +575,13 @@ public class Engine implements Notifier {
 		return true;
 	}
 	
-	public boolean unsetRouteMax(int routeId) {
+	public boolean unsetRequirement(int routeId) {
 		Collection<Route> routes = getRoute(routeId);
 		if (routes.size() == 0)
 			return false;
 		
 		for (Route route : routes) {			
-			route.getRouteTiming().resetMaxTime();
+			route.getRouteTiming().unset();
 		}
 		notify(Notifier.NOTIFY_UPDATE_STATE, "");
 		return true;

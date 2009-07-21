@@ -19,7 +19,6 @@ import com.xmos.xta.console.commands.remove.Remove;
 import com.xmos.xta.console.commands.set.Set;
 import com.xmos.xta.console.commands.source.Source;
 import com.xmos.xta.console.commands.status.Status;
-import com.xmos.xta.console.commands.unset.Unset;
 import com.xmos.xta.console.commands.version.Version;
 
 public class CommandFactory {
@@ -40,7 +39,6 @@ public class CommandFactory {
 		new Set(),
 		new Source(),
 		new Status(),
-		new Unset(),
 	    new Version(),
 	};
 	

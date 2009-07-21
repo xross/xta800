@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -88,8 +87,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private Action m_showStartPointAction;
     private Action m_showEndPointAction;
     private Action m_setInstructionTimeAction;
-    private Action m_clearRouteMaskingAction;
-    private Action m_restoreRouteMaskingAction;
     private String m_clickCodeRefString;
     private ProjectionSupport m_projectionSupport;    
     private ProjectionAnnotationModel m_projectionAnnotationModel;
@@ -106,7 +103,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private InputLine m_endPointLine;
     private Map<Integer,InputLine> m_endPointLineIndexes;
     private HashSet<Integer> m_excludedIndexes;
-    private boolean m_routeMaskEnabled;
 	private HashSet<XtaInstruction> m_previousFnops;
 
     public XtaEditor(final String type, String fileName) {
@@ -164,15 +160,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("XtaEditor: propertyChange: %s\n", event.getProperty());	
 
-		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
-			updateInputLinesGreyStatus();
-			updatePartitions();
-
-		} else if (event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
-			clearInputLinesGreyStatus();
-			updatePartitions();
-
-		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
+		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			m_selectedNode = null;
 			updateFnops();
 			updateExcluded();
@@ -185,8 +173,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			updateExcluded();
 			updateUnknowns();
 			updateHighlighting();
-			updateInputLinesGreyStatus();
-			updatePartitions();
 	        updateStartPoint();
 	        updateEndPoint();
 
@@ -340,22 +326,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      		}
      	});
 
-     	m_clearRouteMaskingAction =  new Action("Clear route masking") {
-     		public void run() {
-     			clearInputLinesGreyStatus();
-     			updatePartitions();
-     		}
-     	};
-     	setAction(ClearRouteMaskingID, m_clearRouteMaskingAction);
-
-     	m_restoreRouteMaskingAction = new Action("Restore route masking") {
-     		public void run() {
-     			updateInputLinesGreyStatus();
-     			updatePartitions();
-     		}
-     	};
-     	setAction(RestoreRouteMaskingID, m_restoreRouteMaskingAction);
-
      	m_showStartPointAction = new Action("Show start point") {
      		public void run() {
 				GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
@@ -430,10 +400,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      	menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));     	
     	addAction(menu, ExpandAllID);
     	addAction(menu, CollapseAllID);
-    	addAction(menu, ClearRouteMaskingID);
-    	addAction(menu, RestoreRouteMaskingID);
-    	m_clearRouteMaskingAction.setEnabled(m_routeMaskEnabled);
-    	m_restoreRouteMaskingAction.setEnabled(!m_routeMaskEnabled);
 		menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
 
 		Reference startPoint = GuiEngine.getStartPoint();
@@ -504,78 +470,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		m_endPointLine = findCodeRefLineNum(endPoint);
 	}
 	    	
-    private void updatePartitions() {
-    	IDocument document = getDocument();
-    	if (document != null) {
-    		XtaDocumentPartitioner xtaDocumentPartitioner = (XtaDocumentPartitioner)document.getDocumentPartitioner();
-    		xtaDocumentPartitioner.partitionDocument(document, false);
-    		getSourceViewer().invalidateTextPresentation();
-    	}
-	}
-
-	private void updateInputLinesGreyStatus() {
-		Input input = getInput();
-    	if (input == null)
-    		return;
-    	
-		Route route = GuiEngine.getEngine().getSelectedRoute();
-		if (route != null) {
-			m_routeMaskEnabled = true;
-    		for (InputSection inputSection : input.getSections()){
-    			inputSection.setGrey(true);
-				for(InputLine inputLine: inputSection.getLines()){
-					inputLine.setGrey(true);
-				}
-			}
-    		
-	    	Set<Integer> pcsCovered = route.getPcsHit();
-	    	
-	    	boolean foundFirstLine = false;
-	    	ArrayList<InputSection> noDebug = new ArrayList<InputSection>();
-	    	
-			for (InputSection inputSection : input.getSections()){
-				boolean hit = false;
-				for (InputLine inputLine: inputSection.getLines()){
-					if (pcsCovered.contains(inputLine.getPc())){
-						foundFirstLine = true;
-						inputLine.setGrey(false);
-						hit = true;
-					} 	
-				}
-				
-				if (foundFirstLine && inputSection.getLines().size() == 0){
-					noDebug.add(inputSection);
-				}
-				
-				if (inputSection.getLines().size() > 0 && hit == false){
-					noDebug.clear();
-				}
-				if (hit == true){
-					inputSection.setGrey(false);
-					for (InputSection i : noDebug){
-						i.setGrey(false);
-					}
-				}
-			}
-    	} else {
-    		clearInputLinesGreyStatus();
-    	}
-	}
-
-	private void clearInputLinesGreyStatus() {
-		Input input = getInput();
-    	if (input == null)
-    		return;
-		
-		m_routeMaskEnabled = false;
-		for (InputSection inputSection : input.getSections()){
-			inputSection.setGrey(false);
-			for (InputLine inputLine: inputSection.getLines()){
-				inputLine.setGrey(false);
-			}
-		}		
-	}
-	
     private void updateFnops() {
 		if (DEBUG) System.out.printf("XtaEditor: updateFnops\n"); 
 		

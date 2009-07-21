@@ -78,7 +78,7 @@ public class Required extends XtaDialog {
 	    m_nsListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				try {
-					m_engine.setRouteMaxTime(m_routeId, Double.parseDouble(m_ns.getText()));
+					m_engine.setRequirement(m_routeId, Double.parseDouble(m_ns.getText()));
 					m_valueChanged = true;
 					updateCyclesValue();
 					updateMhzValue();
@@ -97,7 +97,7 @@ public class Required extends XtaDialog {
 	    m_cyclesListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				try {
-					m_engine.setRouteMaxCycles(m_routeId, Integer.parseInt(m_cycles.getText()));
+					m_engine.setRequirement(m_routeId, Integer.parseInt(m_cycles.getText()));
 					m_valueChanged = true;
 					updateNsValue();
 					updateMhzValue();
@@ -117,7 +117,7 @@ public class Required extends XtaDialog {
 			public void modifyText(ModifyEvent e) {
 				try {
 					double value = Double.parseDouble(m_mhz.getText());
-					m_engine.setRouteMaxTime(m_routeId, ((float)1.0 / value) * 1000);
+					m_engine.setRequirement(m_routeId, ((float)1.0 / value) * 1000);
 					m_valueChanged = true;
 					updateNsValue();
 					updateCyclesValue();
@@ -161,9 +161,9 @@ public class Required extends XtaDialog {
     	if (id == IDialogConstants.CANCEL_ID) {
     		if (m_valueChanged) {
     			if (!m_timingWasSet)
-    				m_engine.unsetRouteMax(m_routeId);
+    				m_engine.unsetRequirement(m_routeId);
     			else
-    				m_engine.setRouteMaxTime(m_routeId, m_originalValue);
+    				m_engine.setRequirement(m_routeId, m_originalValue);
     		}
     	}
     	super.buttonPressed(id);
