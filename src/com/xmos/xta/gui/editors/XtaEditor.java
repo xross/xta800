@@ -617,6 +617,18 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         	}
         } 
 
+        for (CodePointTableInfo info : GuiEngine.getEngine().getCallTable().values()) {
+        	if (info.getFileName().equals(m_fileName)) {
+        		InputLine line = findCodeLine(info.getLineNumber());
+        		if (line != null) {
+        			int index = line.getIndex();
+	        		if (index != endPointIndex && index != startPointIndex)
+	        			addAnnotation(index, EndpointID, allAnnotations, allAnnotationPositions);
+	        		m_endPointLineIndexes.put(index, line);
+        		}
+        	}
+        } 
+
         if ((startPointIndex != -1) && (startPointIndex == endPointIndex)) {
         	addAnnotation(startPointIndex, StartStopAnnotationID, allAnnotations, allAnnotationPositions);
         } else {

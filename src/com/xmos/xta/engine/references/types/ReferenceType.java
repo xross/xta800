@@ -20,9 +20,7 @@ public abstract class ReferenceType {
 		ENDPOINT,
 		SRCLABEL,
 		CALL,
-		ERROR,
-		FUNCTIONSTART,
-		FUNCTIONEND
+		ERROR
 	}
 	
 	ReferenceType(String ref, Type type) {
@@ -113,14 +111,14 @@ public abstract class ReferenceType {
 	boolean isSourceReference(String ref) {
 		String[] refArray = ref.split(":"); 
 
-		if ((refArray.length < 2) || (refArray.length > 3))
+		if ((refArray.length < 2) || (refArray.length > 4))
 			return false;
 				
-		String fileName = (refArray.length == 2) ? refArray[0] : refArray[1];
+		String fileName = getFileName(ref);
 		if (fileName.length() == 0)
 			return false;
 
-		String lineNum = (refArray.length == 2) ? refArray[1] : refArray[2];			
+		String lineNum = refArray[refArray.length - 1];			
 		if (!lineNum.matches("[0-9]*")) 
 			return false;
 		
@@ -156,15 +154,21 @@ public abstract class ReferenceType {
 		
 	String getFileName(String fileLineReference) {
 		String[] refArray = fileLineReference.split(":");
-		assert((refArray.length == 2) || (refArray.length == 3));		
-		return (refArray.length == 2) ? refArray[0] : refArray[1];		
+		assert((refArray.length == 2) || (refArray.length == 3) || (refArray.length == 4));
+		
+		if ((refArray.length == 4) || (refArray.length == 3) &&
+				(refArray[refArray.length - 3].length() == 1)) {
+			return refArray[refArray.length - 3] + ":" + refArray[refArray.length - 2];
+		} else {
+			return refArray[refArray.length - 2];
+		}
 	}
 
 	int getLineNumber(String fileLineReference) {
 		String[] refArray = fileLineReference.split(":");
-		assert((refArray.length == 2) || (refArray.length == 3));		
+		assert((refArray.length == 2) || (refArray.length == 3) || (refArray.length == 4));		
 		
-		String lineNumberStr = (refArray.length == 2) ? refArray[1] : refArray[2];		        
+		String lineNumberStr = refArray[refArray.length - 1];
         int lineNumber = 0;
         try {       
         	lineNumber = Integer.parseInt(lineNumberStr);
@@ -179,17 +183,32 @@ public abstract class ReferenceType {
 		String[] refArray = reference.split(":");
 		assert((refArray.length == 1) || (refArray.length == 2));		
 		return (refArray.length == 1) ? refArray[0] : refArray[1];		
-	}	
+	}
 	
 	boolean checkTypeString(String reference, Type refType, int numElements) {
 		String[] refArray = reference.split(":"); 
 
-		if (refArray.length == numElements) {
+		if ((refArray.length == numElements))
 			return true;
-			
-		} else if ((refArray.length == (numElements + 1)) && 
-				   (refArray[0].equals(refType.toString()))) {
-			return true;
+
+		if (numElements == 1) {
+			// No file names supported
+			 if ((refArray.length == 2) && (refArray[0].equals(refType.toString()))) {
+				return true;
+			}
+
+		} else {
+			// File names supported - deal with possible windows path
+			assert(numElements == 2);
+			if (refArray.length > 4)
+				return false;
+
+			if ((refArray.length == 3) && (refArray[0].length() == 1)) {
+				return true; // Case of a windows path and no type
+				
+			} else if (refArray[0].equals(refType.toString())) {
+				return true;
+			}
 		}
 		return false;
 	}
