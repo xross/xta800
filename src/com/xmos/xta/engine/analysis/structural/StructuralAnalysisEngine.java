@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
@@ -16,6 +18,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.analysis.structural.patterns.LoopPatternMatcher;
@@ -121,6 +124,9 @@ public class StructuralAnalysisEngine {
 		engine.provideFeedback("Setting parent nodes...");
 		setParents();
 
+		engine.provideFeedback("Registering config...");
+		setConfig(engine.getConfig());
+		
 		engine.provideFeedback("Complete");
 		return true;
 	}
@@ -562,8 +568,18 @@ public class StructuralAnalysisEngine {
 		}
 	}
 
-	public static String dumpTree(String text, Collection<Node> workingSet) {
-		
+	private void setConfig(final Config config) {
+		for (Node node : m_structureGraph.getThreads()) {
+			node.traverse(0, new DefaultNodeTraverser() {
+				public boolean foundInstructionNode(Node node, int depth) {
+					((InstructionNodeAttributes)node.getAttributes()).setConfig(config);				
+					return true;
+				}
+			});					
+		}
+	}
+	
+	public static String dumpTree(String text, Collection<Node> workingSet) {		
 		String string = "";
 		if (workingSet.size() > 1) {
 			string += "digraph "+ text + "{";
