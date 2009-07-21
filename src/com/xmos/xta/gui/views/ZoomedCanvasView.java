@@ -78,6 +78,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     
     private RendererControl m_renderControl;
     private Renderer m_renderer;
+    private Rectangle m_compositeArea;
     
     private String m_name;
 
@@ -90,6 +91,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    m_selectedNodes = new ArrayList<Node>();
 
 		m_canvasProperties = createCanvasProperties();
+		m_compositeArea = new Rectangle(0, 0, 0, 0);
 	}
 
 	protected abstract ViewNode buildViewNode(Node node, int depth);
@@ -110,13 +112,19 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    m_canvas = new Canvas(composite, SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED);
 	    composite.addControlListener(new ControlListener() {
 			public void controlResized(ControlEvent e) {
-				Rectangle clientArea = composite.getClientArea();
-				m_renderControl.setCanvasSize(clientArea.width, clientArea.height);
-				updateScrollBars();
+				compositeResized(composite);
 			}
 			public void controlMoved(ControlEvent e) {
+				compositeResized(composite);
+			}
+			private void compositeResized(final Composite composite) {
 				Rectangle clientArea = composite.getClientArea();
 				m_renderControl.setCanvasSize(clientArea.width, clientArea.height);
+
+				if (m_compositeArea.width == 0 || m_compositeArea.height == 0) {
+					zoomFit();
+				}
+				m_compositeArea = clientArea;
 				updateScrollBars();
 			}
 	    });	    
@@ -164,7 +172,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	    m_renderer = createRenderer(m_display, m_renderControl, m_canvasProperties, m_canvas);
 		(new Thread(m_renderer)).start();
 	
-	    initialiseTree();
+		initialiseTree();
 	    m_renderControl.refresh();
 	}
 	
