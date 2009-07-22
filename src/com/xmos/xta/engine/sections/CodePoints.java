@@ -117,7 +117,7 @@ public class CodePoints extends Section  {
 				return true; 
 			} else {
 				getNotifier().notify(Notifier.NOTIFY_ERROR, 
-						String.format("Duplicate %s: %s", m_type, codePoint, location));
+						String.format("Duplicate %s: %s at pc: 0x%x", m_type, codePoint, location));
 				return false; 				
 			}				
 		}

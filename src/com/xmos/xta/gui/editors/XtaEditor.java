@@ -474,7 +474,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("XtaEditor: updateFnops\n"); 
 		
     	HashSet<XtaInstruction> toAdd = new HashSet<XtaInstruction>();
-    	HashSet<XtaInstruction> toRemove = new HashSet<XtaInstruction>();
+    	HashSet<XtaInstruction> toRemove;
     	HashSet<XtaInstruction> toKeep  = new HashSet<XtaInstruction>();
     	
    		final Collection<XtaInstruction> fnops = new Vector<XtaInstruction>();
