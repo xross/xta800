@@ -24,6 +24,7 @@ public abstract class Node implements Comparable<Node>{
 	Node m_branchLinkReturn;
 	
 	boolean m_unresolved;
+	boolean m_infinite;
 	
 	private boolean m_isFolded;
 
@@ -63,6 +64,7 @@ public abstract class Node implements Comparable<Node>{
 		m_id = s_numNodes++;
 		m_isFolded = false;
 		m_unresolved = node.m_unresolved;
+		m_infinite = node.m_infinite;
 	}
 	
 	public String toString() {
@@ -83,6 +85,13 @@ public abstract class Node implements Comparable<Node>{
 	
 	public boolean isUnresolved(){
 		return m_unresolved;
+	}
+	public void setInfinite(boolean infinite){
+		m_infinite = infinite;
+	}
+	
+	public boolean isInfinite(){
+		return m_infinite;
 	}
 	
 	public int getId() {
