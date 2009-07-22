@@ -213,13 +213,19 @@ sub DoInstall
 
   if ($HOST ne "PC" && $HOST ne "Mac") {
     system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}xta_bin");
     system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin");
 
     system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin64 $INSTALLPATH${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}xta_bin64");
     system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin64 $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin64");
   }else{
     system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}xta_bin");
     system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin");
   }
 
   # Linux uses a perl script to check the jvm
@@ -232,39 +238,7 @@ sub DoInstall
 
   XmosBuildLib::InstallFile("$DOMAIN", "lib", "xta.jar");
   XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xta.jar", "bin");
-
 }
-#  XmosBuildLib::InstallFile("$DOMAIN", "bin", "$target");
-
-  # Unzips the zip file..
-#  chdir("$INSTALLPATH") 
-#    or die("Unable to chdir to: $INSTALLPATH\n");
-#  system("unzip -q -o $target");
-#  rmtree("xta_bin");
-#  rename("xta_$platform", "xta_bin")
-#    or die("Unable to rename xta_$platform to: xta_bin\n");
-
-#  XmosBuildLib::InstallReleaseFile("$DOMAIN", "bin", "$target", ".");
-
-  # Unzips the zip file..
-#  chdir("$INSTALLPATH/External/Product") 
-#    or die("Unable to chdir to: $INSTALLPATH/External/Product\n");
-#  system("unzip -q -o $target");
-#  rmtree("xta_bin");
-#  rename("xta_$platform", "xta_bin")
-#    or die("Unable to rename xta_$platform to: xta_bin\n");
-#  unlink("$target");
-
-#  XmosBuildLib::InstallReleaseFile("$DOMAIN", ".", "xtagui.ini", "xta_bin");
-
-  # Linux uses a perl script to check the jvm
-#  if ($HOST ne "PC" && $HOST ne "Mac") {
-#    XmosBuildLib::InstallFile("$DOMAIN", ".", "xtagui");
-#    XmosBuildLib::InstallReleaseFile("$DOMAIN", ".", "xtagui", "bin");
-#  }
-
-#  chdir("$BUILDPATH") or die("oops");
-#}
 
 sub DoLint
 {

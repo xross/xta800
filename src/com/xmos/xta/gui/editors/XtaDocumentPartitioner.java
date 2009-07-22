@@ -67,7 +67,7 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 			String headerType = inputSection.getHeaderType();
 						
 			// Adds the SOURCE region for the previous lines.
-			if (numLines > 0 || headerType != previousType) {
+			if (numLines > 0 || !headerType.equals(previousType)) {
 				addTypedRegion(regionList, previousOffset, documentLength - previousOffset, previousType);
 			}
 			

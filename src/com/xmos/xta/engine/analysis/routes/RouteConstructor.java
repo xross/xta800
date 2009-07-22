@@ -72,7 +72,7 @@ public class RouteConstructor {
 	}
 
 	public RouteError analyse() {
-		
+		resetParent();
 		boolean seenEndPoint = false;
 		
 		if(m_description.getStartPoint() == null ){
@@ -91,7 +91,7 @@ public class RouteConstructor {
 		if(startNodes.isEmpty() ){
 			return RouteError.COULD_NOT_FIND_STARTPOINT;
 		}
-		boolean notFoundFunctionYet = true;
+		
 		if(m_description.getMode() == RouteMode.PATH){
 			Collection<Node> newEndNodes = new TreeSet<Node>();
 			for(Node endNode : endNodes){
@@ -109,7 +109,7 @@ public class RouteConstructor {
 			
 			endNodes = newEndNodes;
 		}
-		
+		boolean notFoundFunctionYet = true;
 		for (Node start : startNodes) {
 			resetParent();
 			Node realStart = start;
@@ -131,7 +131,7 @@ public class RouteConstructor {
 			}
 			
 		}
-		
+
 		setParents();
 		setUnknowns();			
 		setSelfLoops();	
@@ -152,8 +152,8 @@ public class RouteConstructor {
 	private boolean explore(Node start, NodeWrapper node, Collection<Node> workingSet, Collection<Node> endNodes, Node parent) {	
 		
 		Node currentNode = node.m_node;
-//		System.out.println("exploring node: " + currentNode + " " + currentNode.getInstructions());
-		
+		//System.out.println("exploring node: " + currentNode + " " + currentNode.getInstructions());
+		//System.out.println("exploring node: " + currentNode);
 		Collection<Node> exclusions = new TreeSet<Node>();
 		
 		
@@ -165,7 +165,14 @@ public class RouteConstructor {
 			exclusions = new TreeSet<Node>(m_exclusions);
 			exclusions.retainAll(currentNode.getContainedNodes());
 		}
-		
+		/*
+		if(currentNode.getId() == 909){
+			System.out.println(m_exclusions);
+			System.out.println(exclusions);
+			System.out.println(endNodes);
+			System.out.println(currentNode.getContainedNodes());
+		}
+		*/
 //		System.out.println("exclusion Nodes: " + exclusions + " of " + m_exclusions );
 		
 		
@@ -253,7 +260,9 @@ public class RouteConstructor {
 		if(!workingSet.isEmpty()){
 			assert(cfgSanityCheck(workingSet));
 			assert(cfgSanityCheck(workingSet));
+			
 			Node newStart = makeBasicBlocks(startNodeWrapper.m_node, endNodes, workingSet);
+			
 			assert(cfgSanityCheck(workingSet));
 			
 			addTerminator(workingSet);
@@ -308,17 +317,21 @@ public class RouteConstructor {
 	private boolean exploreWhatsNext(Node start, Collection<Node> workingSet, Collection<Node> endNodes, 
 			Node currentNode, Node originalParent) {
 		boolean seenEndPoint = false;
-		//TODO find out what this is for
+
 		if(workingSet.contains(currentNode)){
+			//this causes the search not to form infinite loops
+			//System.out.println("stopping due to loop");
 			return false;
 		}
 		makeConnection(currentNode, originalParent);
 		workingSet.add(currentNode);
 		Node parent = currentNode.getParent();
 		if (parent != null && !parent.whatsNext(currentNode).isEmpty()) {
+			
+			//System.out.println("\t\t\t" + currentNode + " has next of " + parent.whatsNext(currentNode));
 			for (Node next : parent.whatsNext(currentNode)) {
 				
-				//System.out.println("going from " + currentNode + " to next: " + next+ "\n");
+			//	System.out.println("going from " + currentNode + " to next: " + next+ "\n");
 				seenEndPoint |= explore(start, new NodeWrapper(next), workingSet, endNodes, currentNode);
 			}
 		}

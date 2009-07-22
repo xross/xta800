@@ -4,10 +4,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 public class TestCodeElement extends CodeElement {
-	private String m_description; 
 	public TestCodeElement(String desc) {
 		super(1, "test_", 0);
-		m_description = desc;
 	}
 	
 	public void emitSource(BufferedWriter file, int depth) throws IOException  {

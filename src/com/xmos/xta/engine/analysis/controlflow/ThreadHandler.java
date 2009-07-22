@@ -38,7 +38,7 @@ public class ThreadHandler {
 	
 
 	public Set<InstructionNode> ensureThreadStartExists(Set<InstructionNode> threadStarts){
-		if(threadStarts.isEmpty() || threadStarts == null){
+		if(threadStarts == null  || threadStarts.isEmpty()){
 			m_notifier.notify(Notifier.NOTIFY_WARNING,
 					"No thread starts found, assuming master thread starts at 0x10000");
 			InstructionNode threadNode = m_instDecoder.getNode(0x10000);

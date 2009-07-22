@@ -53,11 +53,12 @@ public class GuiNotifier implements Notifier {
 	}
 	
 	private void displayAbortDetails() {
-		String abortString = "Functions Visited: ";
+
+		StringBuffer sb = new StringBuffer();
+		sb.append("Functions Visited: ");
 		for (String function : GuiEngine.getEngine().getFunctionsVisited()) {
-			abortString += function + ", ";
+			sb.append(function + ", ");
 		}			
-		abortString = abortString.substring(0, abortString.length() - 2);
-		displayMessageBox("Aborted", abortString);								
+		displayMessageBox("Aborted", sb.substring(0, sb.length() - 2).toString());								
 	}
 }

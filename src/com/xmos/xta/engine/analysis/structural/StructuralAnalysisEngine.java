@@ -452,6 +452,10 @@ public class StructuralAnalysisEngine {
 					continue;
 
 				Set<FunctionNode> intersection = new TreeSet<FunctionNode>(reachableNodes);
+				
+				
+				//TODO - find out why this is!!!!
+				assert(node.getPrevNodesSize() == 0);
 				for (Node pred : node.getPrevNodes()) {
 					intersection.retainAll(fnDominators.get(pred));
 				}
@@ -580,51 +584,39 @@ public class StructuralAnalysisEngine {
 	}
 	
 	public static String dumpTree(String text, Collection<Node> workingSet) {		
-		String string = "";
+		
+		StringBuffer sb = new StringBuffer();
 		if (workingSet.size() > 1) {
-			string += "digraph "+ text + "{";
+			sb.append("digraph "+ text + "{");
 			for (Node node : workingSet) {
 				for (Node next : node.getNextNodes()) {
 					if (node.getBranchTargets().contains(next)) {
-						string += node + " -> " + next + " [style=dotted];";
+						sb.append(node + " -> " + next + " [style=dotted];");
 					} else {
-						string += node + " -> " + next + ";";
+						sb.append(node + " -> " + next + ";");
 					}
 				}
 				
 				if(node.isBlockNode() || node.isInstructionNode()){
-					string += node + " [label=\"" + node + "\\n";
+					sb.append(node + " [label=\"" + node + "\\n");
 					for(XtaInstruction inst : node.getInstructions()){
-						string += inst + "\\n";  
+						sb.append(inst + "\\n");  
 					}
-					string += "\"]; ";
+					sb.append("\"]; ");
 					
 				} else if(node.isFunctionNode()){
-					string += node + " [label=\"" + node + "\\n";
-					string += ((FunctionNode)node).getFunctionName() + "\\n";
-					string += "\"]; ";
+					sb.append(node + " [label=\"" + node + "\\n");
+					sb.append(((FunctionNode)node).getFunctionName() + "\\n");
+					sb.append("\"]; ");
 				}
-				/*
-				 else if(node.isPathNode()){
-				 
-					string += node + " [label=\"" + node + "\\n";
-					for(Node child : node.getChildren()){
-						string += child + "\\n";
-					}
-					
-					string += "\"]; ";
-				}
-				*/
-				
 			}
-			string += "}\n";
+			sb.append("}\n");
 
-			
 		} else {
-			string += "# graph has only " + workingSet.size() + " nodes";
+			sb.append("# graph has only " + workingSet.size() + " nodes");
 		}
 		
-		return string;
+		return sb.toString();
 	}
 	
 	private void setUpPatternMatcher() {

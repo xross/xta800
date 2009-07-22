@@ -93,6 +93,9 @@ public class TraceDisplayer {
     		for (int i = 0; i < loopIterations; i++) {
     			displayChildren(node, c, loopIterations, i);
     		}
+			if (node.isLoopNode()) {
+				displayInstructions(((LoopNode)node).getLoopHeader(), c, totalIterations, 0);
+			}
 		}
 	}
     
