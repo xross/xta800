@@ -694,6 +694,10 @@ public class Engine implements Notifier {
 		return m_selectedRoute.getRouteUnknowns().canSetLoopScope(node);
 	}
 	
+	public boolean getSetLoopScope(Node node) {
+		return m_selectedRoute.getRouteUnknowns().getSetLoopScope(node);
+	}
+	
 	// ===================================================================== //
 	// Unknown (Instruction Time) Methods
 	// ===================================================================== //			

@@ -22,7 +22,7 @@ public class LoopScope extends XtaDialog {
     public LoopScope(Shell parent, Node node) {
     	super(parent);
     	m_node = node;
-    	m_scope = false;
+    	m_scope = GuiEngine.getEngine().getSetLoopScope(node);
     	open();
     }
 
