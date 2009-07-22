@@ -310,7 +310,7 @@
       <specification
             annotationType="com.xmos.xta.gui.endpoint"
             colorPreferenceKey="highlight.endpoint.color"
-            colorPreferenceValue="200,230,230"
+            colorPreferenceValue="120,230,120"
             contributesToHeader="false"
             highlightPreferenceValue="false"
             icon="icons/source_endpoint.png"
