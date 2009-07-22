@@ -1,0 +1,5 @@
+Label: A, pc: 0x10004
+Label: B, pc: 0x1000c
+Label: C, pc: 0x10014
+Label: _start, pc: 0x10000
+Label: main, pc: 0x10002

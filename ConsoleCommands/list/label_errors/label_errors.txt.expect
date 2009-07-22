@@ -1,9 +1,0 @@
-Error: No executable loaded
-Error: No executable loaded
-Label: one, pc: 0x10000
-Error: Unresolved reference: 0x1000
-Error: Label already exists: one
-Error: Unresolved reference: 0x10004
-Error: Failed to set instruction time on reference id: one
-Error: No routes analysed
-Error: Cannot use PC as a label: 0x10000

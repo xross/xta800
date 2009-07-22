@@ -8,9 +8,9 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir/labels.log 2>&1");
+system("xcc -target=$target -nostartfiles test.s -o $genDir/test.xe > $genDir/global.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "source cmds.txt " .
-       "exit > $genDir/labels.txt 2>&1");
+       "-exit > $genDir/global.txt 2>&1");
 

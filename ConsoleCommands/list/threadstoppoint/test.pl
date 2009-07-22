@@ -8,9 +8,9 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -march=$arch -fxta-info test.xc -o $genDir/test.xe > $genDir/threadstoppoint.log 2>&1");
+system("xcc -target=$target -nostartfiles test.s -o $genDir/test.xe > $genDir/threadstoppoint.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "source cmds.txt " .
-       "exit > $genDir/threadstoppoint.txt 2>&1");
+       "list threadstoppoints " .
+       "-exit > $genDir/threadstoppoint.txt 2>&1");
 

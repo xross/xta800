@@ -12,11 +12,6 @@ system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir
 }
 system("@ARGV load $genDir/test.xe " .
        "-add branch 100 100 " .
-       "-add label 99 silly " .
        "-remove branch 100 " .
-       "-remove label silly " .
-       "-add label 0x10000 silly " .
-       "-add label 0x100c6 silly " .
-       "-add label 0x10000 0x1ab1e " .
        "exit > $genDir/invalid_references.txt 2>&1");
 

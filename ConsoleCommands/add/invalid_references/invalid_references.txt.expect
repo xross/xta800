@@ -1,6 +1,2 @@
 Error: Unresolved reference: 100
-Error: Unresolved reference: 99
 Error: Unresolved reference: 100
-Error: Unable to remove label: silly
-Error: Label already exists: silly
-Error: Cannot use PC as a label: 0x1ab1e
