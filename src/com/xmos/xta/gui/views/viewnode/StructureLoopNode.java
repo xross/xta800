@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Display;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
@@ -191,8 +192,11 @@ public class StructureLoopNode extends StructureNode {
 		for (int i = 1; i < getChildren().size(); i++) {
 			ViewNode child = getChildren().get(i);
 			
-			boolean childIsBestCase = child.getTreeNode().getAttributes().getTotalIterations(Case.BEST, null) > 0;
-			boolean childIsWorstCase = child.getTreeNode().getAttributes().getTotalIterations(Case.WORST, null) > 0;
+			Status status = new Status();
+			Node treeNode = child.getTreeNode();
+			boolean childIsBestCase = treeNode.getAttributes().getTimeTaken(Case.BEST, status, null) > 0;
+			boolean childIsWorstCase = treeNode.getAttributes().getTimeTaken(Case.WORST, status, null) > 0;
+
 			child.annotateNodes(offsetX + childOffsetX, offsetY + childOffsetY, childIsBestCase, childIsWorstCase);
     		childOffsetY += child.getPixelsY() + m_gapY;
     	}
