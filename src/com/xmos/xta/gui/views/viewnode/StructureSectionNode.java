@@ -124,16 +124,11 @@ public class StructureSectionNode extends StructureNode {
 		m_pixelOffsetX = offsetX;
 		m_pixelOffsetY = offsetY;
 
-		SectionNode sectionNode = (SectionNode)m_treeNode;
-		Node bestCaseNode = sectionNode.getOption(Case.BEST, null);
-		Node worstCaseNode = sectionNode.getOption(Case.WORST, null);
-		
     	int childOffsetY = m_borderY;
     	int childrenX = getChildrenX();
 		for (ViewNode child : getChildren()) {
-			Node childTreeNode = child.getTreeNode();
-			boolean childIsBestCase = isBestCase && (childTreeNode == bestCaseNode);
-			boolean childIsWorstCase = isWorstCase && (childTreeNode == worstCaseNode);
+			boolean childIsBestCase = child.getTreeNode().getAttributes().getTotalIterations(Case.BEST, null) > 0;
+			boolean childIsWorstCase = child.getTreeNode().getAttributes().getTotalIterations(Case.WORST, null) > 0;
 
 			int childX = child.getPixelsX();
     		child.annotateNodes(offsetX + m_borderX + ((childrenX - childX) / 2), offsetY + childOffsetY,

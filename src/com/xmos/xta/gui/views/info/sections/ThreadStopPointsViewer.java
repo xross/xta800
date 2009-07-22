@@ -18,4 +18,9 @@ public class ThreadStopPointsViewer extends SectionsViewer {
 	SectionsViewerLabelProvider createLabelProvider() {
 		return new ThreadStopPointsViewerLabelProvider();
 	}
+
+	@Override
+	protected int getPc(Object object) {
+		return (Integer)object;
+	}
 }

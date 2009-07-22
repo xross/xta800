@@ -30,4 +30,18 @@ class BranchesViewerLabelProvider extends SectionsViewerLabelProvider implements
 		assert(false);
 		return "";
 	}
+
+	public int compare(Object e1, Object e2, String column) {
+		BranchesContent p1 = (BranchesContent)e1;
+		BranchesContent p2 = (BranchesContent)e2;
+		int res = 0;
+		if (column.equals(FROMPC)) {
+			res = p1.m_fromPc > p2.m_fromPc ? 1 : -1;
+		} else if (column.equals(TOPCS)) {
+			res = p1.m_toPcs.size() > p2.m_toPcs.size() ? 1 : -1;
+		} else {
+			assert(false);
+		}
+		return res;
+	}
 }

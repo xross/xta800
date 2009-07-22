@@ -59,10 +59,6 @@ public class InfiniteSelfLoopNode extends Node{
 		return insts;
 	}
 
-	public Collection<Node> getContainedNodes() {
-		return m_loop.getContainedNodes();
-	}
-
 	public int getStartPc() {
 		return m_loop.getStartPc();
 	}
@@ -73,10 +69,6 @@ public class InfiniteSelfLoopNode extends Node{
 
 		m_loop.traverse(depth + 1, nodeTraverser);			
 
-	}
-
-	public String toString() {
-		return "InfiniteSelfLoop" + m_id;
 	}
 
 	public List<Node> getChildren() {
@@ -100,9 +92,6 @@ public class InfiniteSelfLoopNode extends Node{
 		return false;
 	}
 
-	public void getInstructionStream(Case c, List<InstructionNode> instructions) {
-		// TODO We need to warn the user here that you cant trace an infinite loop!
-	}
 
 	public Collection<Node> whatsBefore(Node node) {
 		assert(m_loop == node);

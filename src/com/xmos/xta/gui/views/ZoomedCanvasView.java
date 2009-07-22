@@ -58,6 +58,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
     public static final boolean DEBUG = false;
 
 	private static final int LEFT_MOUSE_BUTTON = 1;
+	private static final int RIGHT_MOUSE_BUTTON = 3;
 
     private ViewNode m_viewNode;
     protected ZoomedCanvasProperties m_canvasProperties;
@@ -480,6 +481,8 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                 			} else {
                 				click(event.x, event.y, ctrlKeyPressed);
                 			}
+                		} else if (event.button == RIGHT_MOUSE_BUTTON) {
+            				click(event.x, event.y, ctrlKeyPressed);
                 		}
                 	}
         			m_selectBox = null;

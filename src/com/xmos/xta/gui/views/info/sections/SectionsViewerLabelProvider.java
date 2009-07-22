@@ -23,5 +23,7 @@ abstract class SectionsViewerLabelProvider extends LabelProvider implements ITab
 
 	public int[] getColumnAligmnments() {
 		return m_columnAligmnments;
-	}			
+	}
+	
+	public abstract int compare(Object e1, Object e2, String column);
 }

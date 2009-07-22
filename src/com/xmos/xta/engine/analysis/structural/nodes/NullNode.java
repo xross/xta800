@@ -14,10 +14,6 @@ public class NullNode extends IBufferNode {
 		super();
 	}
 	
-	public String toString(){
-		return "NullNode" + m_id;
-	}
-	
 	public Node deepCopy() {
 		return new NullNode();
 	}

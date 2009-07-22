@@ -17,10 +17,10 @@ class InfoSorter extends ViewerSorter {
 			int res2 = p1.getStartPc() > p2.getStartPc() ? 1 : -1;
 			return res2 * m_direction;
 		case 1:
-			int res3 = p1.getStartPc() > p2.getStartPc() ? 1 : -1;
+			int res3 = p1.getAttributes().getUnknownDescription().compareTo(p2.getAttributes().getUnknownDescription());
 			return res3 * m_direction;
 		default:
-			int resd = p1.getId() > p2.getId() ? 1 : -1;
+			int resd = p1.getBackTrace("").compareTo(p2.getBackTrace(""));
 			return resd * m_direction;
 		}
 	}

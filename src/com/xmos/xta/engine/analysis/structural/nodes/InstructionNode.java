@@ -31,6 +31,7 @@ public class InstructionNode extends Node {
 		m_attributes = new InstructionNodeAttributes(this);
 	}
 	
+	
 	public Node shallowCopy() {
 		return new InstructionNode(this);
 	}
@@ -54,17 +55,6 @@ public class InstructionNode extends Node {
     public NodeAttributes getAttributes() {
     	return m_attributes;
     }
-    
-	public String toString() {
-		//return "instruction" + m_id;
-		return m_inst.toString();
-	}
-
-	public Collection<Node> getContainedNodes() {
-		Collection<Node> containedNodes = new TreeSet<Node>();
-		containedNodes.add(this);
-		return containedNodes;
-	}
 
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> inst = new LinkedList<XtaInstruction>();

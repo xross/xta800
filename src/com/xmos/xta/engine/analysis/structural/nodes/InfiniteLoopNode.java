@@ -95,15 +95,6 @@ public class InfiniteLoopNode extends Node {
 		return insts;
 	}
 
-	public Collection<Node> getContainedNodes() {
-		Collection<Node> containedNodes = new TreeSet<Node>();
-		containedNodes.addAll(m_loopHeader.getContainedNodes());
-		for (Node loop : m_loops) {
-			containedNodes.addAll(loop.getContainedNodes());
-		}
-		return containedNodes;
-	}
-
 	public int getStartPc() {
 		return m_loopHeader.getStartPc();
 	}
@@ -116,10 +107,6 @@ public class InfiniteLoopNode extends Node {
 		for (Node node : m_loops) {
 			node.traverse(depth + 1, nodeTraverser);
 		}
-	}
-
-	public String toString() {
-		return "Loop" + m_id;
 	}
 
 	public List<Node> getChildren() {

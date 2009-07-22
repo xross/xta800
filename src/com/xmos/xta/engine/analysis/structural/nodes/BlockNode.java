@@ -20,7 +20,6 @@ public class BlockNode extends IBufferNode {
 	public BlockNode(BlockNode block) {
 		m_insts = block.m_insts;
 		m_attributes = new BlockNodeAttributes(this);
-
 	}
 	
 	public BlockNode(List<InstructionNode> insts) {
@@ -32,7 +31,6 @@ public class BlockNode extends IBufferNode {
 	public BlockNode shallowCopy() {
 		return new BlockNode(this);
 	}
-
 	
 	public Node deepCopy() {
 		List<InstructionNode> insts;
@@ -66,10 +64,6 @@ public class BlockNode extends IBufferNode {
 		}
 		return insts;
 	}
-			
-	public Collection<Node> getContainedNodes() {
-		return new TreeSet<Node> (m_insts);
-	}
 	
 	public int getStartPc() {
 		return getInstructions().getFirst().getPc();
@@ -83,15 +77,15 @@ public class BlockNode extends IBufferNode {
 			instruction.traverse(depth + 1, nodeTraverser);
 		}		
 	}
-	
-	public String toString(){
-		return "Block" + m_id;
-	}
 
 	public List<Node> getChildren() {
 		return new LinkedList<Node>(m_insts);
 	}
 
+	public Collection<Node> getContainedNodes(){
+		return new TreeSet<Node>(m_insts);
+	}
+	
 	public Collection<Node> whatsNext(Node node) {
 		int index = m_insts.indexOf(node);
 		if(index < m_insts.size()-1){
@@ -107,10 +101,18 @@ public class BlockNode extends IBufferNode {
 	}
 	
 	public Collection<Node> whatsBefore(Node node) {
-		if (getParent()!= null){
-			return getParent().whatsBefore(node);
+		assert(m_insts.contains(node));
+		int index = m_insts.indexOf(node);
+		if(index > 0 ){
+			Collection<Node> next = new TreeSet<Node>();
+			next.add(m_insts.get(index-1));
+			return next;
+		} else {
+			if (getParent() != null){
+				return getParent().whatsBefore(this);
+			}
+			return new TreeSet<Node>();
 		}
-		return new TreeSet<Node>();
 	}
 
 	public List<Node> getImmediateChildren() {

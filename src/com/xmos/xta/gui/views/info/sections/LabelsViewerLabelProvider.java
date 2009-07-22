@@ -26,4 +26,18 @@ class LabelsViewerLabelProvider extends SectionsViewerLabelProvider implements I
 		assert(false);
 		return "";
 	}
+
+	public int compare(Object e1, Object e2, String column) {
+		LabelsContent p1 = (LabelsContent)e1;
+		LabelsContent p2 = (LabelsContent)e2;
+		int res = 0;
+		if (column.equals(PC)) {
+			res = p1.m_pc > p2.m_pc ? 1 : -1;
+		} else if (column.equals(LABEL)) {
+			res = p1.m_label.compareTo(p2.m_label);
+		} else {
+			assert(false);
+		}
+		return res;
+	}
 }

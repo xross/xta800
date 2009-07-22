@@ -66,14 +66,6 @@ public class PathNode extends Node {
 		return list;
 	}
 
-	public Collection<Node> getContainedNodes() {
-		Collection<Node> containedNodes = new TreeSet<Node>();
-		for (Node path : m_nodes) {
-			containedNodes.addAll(path.getContainedNodes());
-		}
-		return containedNodes;
-	}
-
 	public String getFunctionName() {
 		return "";
 	}
@@ -89,10 +81,6 @@ public class PathNode extends Node {
 		for (Node node : m_nodes) {
 			node.traverse(depth + 1, nodeTraverser);
 		}
-	}
-
-	public String toString() {
-		return "Path" + m_id;
 	}
 
 	public List<Node> getChildren() {
