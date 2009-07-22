@@ -38,6 +38,19 @@ public class Exclusion extends Command {
     	return 0;
     }        
 
+	public ArgType[] getArgTypes() {
+    	switch (m_operation) {
+    	case ADD:
+    	case REMOVE:
+    		return new Command.ArgType[] {ArgType.ALLREFS};
+    		
+    	case LIST:
+            return super.getArgTypes();            
+    	}    		
+    	assert(false);
+        return null;
+	}    
+    
     public String name() {
     	switch (m_operation) {
     	case ADD:

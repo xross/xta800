@@ -55,6 +55,19 @@ public class Branch extends Command {
     	}    		
 	}
 
+	public ArgType[] getArgTypes() {
+    	switch (m_operation) {
+    	case ADD:
+    		return new Command.ArgType[] {ArgType.LABEL, ArgType.LABEL};
+    	case REMOVE:
+    	case LIST:
+            return super.getArgTypes();
+        default:
+        	assert(false);
+            return null;
+    	}    		
+	}    
+	
 	public String name() {
     	switch (m_operation) {
     	case ADD:
