@@ -73,14 +73,6 @@ public class SectionNode extends Node {
 		return list;		
 	}
 	
-	public Collection<Node> getContainedNodes() {
-		Collection<Node> containedNodes = new TreeSet<Node> ();
-		for(Node option: m_options){
-			containedNodes.addAll(option.getContainedNodes());
-		}
-		return containedNodes;
-	}
-	
 	public int getStartPc() {
 	//	assert(false);
 		return 0;
@@ -97,9 +89,6 @@ public class SectionNode extends Node {
 		for (Node node : m_options) {
 			node.traverse(depth + 1, nodeTraverser);			
 		}		
-	}
-	public String toString(){
-		return "Section" + m_id;
 	}
 
 	public List<Node> getChildren() {

@@ -81,10 +81,6 @@ public class FunctionNode extends IBufferNode {
     public NodeAttributes getAttributes() {
     	return m_attributes;
     }
-    
-	public String toString(){
-		return "Function" + m_id;
-	}
 
 	public boolean isFunctionKnown() {
 		return m_branchTarget != null;
@@ -101,18 +97,6 @@ public class FunctionNode extends IBufferNode {
 	
 	public Node getBranchTarget() {
 		return m_branchTarget;
-	}
-	
-	public Collection<Node> getContainedNodes() {
-		if(m_functionPath != null){
-			Collection<Node> containedNodes = new TreeSet<Node>();
-			for (Node path : m_functionPath) {
-				containedNodes.addAll(path.getContainedNodes());
-			}
-			return containedNodes;
-		} else {
-			return new TreeSet<Node>();
-		}
 	}
 	
 	public String getDescription() {

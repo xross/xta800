@@ -57,10 +57,6 @@ public class SelfLoopNode extends Node{
 		return insts;
 	}
 
-	public Collection<Node> getContainedNodes() {
-		return m_loop.getContainedNodes();
-	}
-
 	public int getStartPc() {
 		return m_loop.getStartPc();
 	}
@@ -71,10 +67,6 @@ public class SelfLoopNode extends Node{
 
 		m_loop.traverse(depth + 1, nodeTraverser);			
 
-	}
-
-	public String toString() {
-		return "SelfLoop" + m_id;
 	}
 
 	public List<Node> getChildren() {
