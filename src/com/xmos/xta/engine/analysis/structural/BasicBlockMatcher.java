@@ -41,7 +41,7 @@ public class BasicBlockMatcher {
 		return isStart;
 	}
 
-	public Node getBlock() {
+	public BlockNode getBlock() {
 		return m_block;
 	}
 

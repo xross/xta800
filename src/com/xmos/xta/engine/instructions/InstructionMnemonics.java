@@ -110,5 +110,14 @@ public class InstructionMnemonics {
 		case REVC: return (inst.getClass() == RevbXtaInstruction_blacp_lu10.class);
 		}		
 		return false;
+	}
+
+	public boolean isClre(XtaInstruction inst) {
+		switch (m_arch) {
+		case REVA: return (inst.getClass() == RevaXtaInstruction_clre_0r.class);
+		case REVB: return (inst.getClass() == RevbXtaInstruction_clre_0r.class);
+		case REVC: return (inst.getClass() == RevbXtaInstruction_clre_0r.class);
+		}		
+		return false;
 	}	
 }

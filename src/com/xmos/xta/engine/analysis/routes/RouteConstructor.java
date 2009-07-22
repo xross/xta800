@@ -131,7 +131,6 @@ public class RouteConstructor {
 			}
 			
 		}
-
 		setParents();
 		setUnknowns();			
 		setSelfLoops();	
