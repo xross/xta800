@@ -79,12 +79,20 @@ public class XtaCompletor implements Completor {
 	  		    case FUNCTION:
 	  			    completors.add(new FunctionCompletor(m_engine));	  			
 			        break;
-			    
+			    			        
+	  		    case ALLREFS:
+	  			    completors.add(new CodeReferenceCompletor(m_engine, argType));	  			
+			        break;
+
 	  		    case ENDPOINT:
 	  			    completors.add(new CodeReferenceCompletor(m_engine, argType));	  			
 			        break;
 	  			
 	  		    case SRCLABEL:
+	  			    completors.add(new CodeReferenceCompletor(m_engine, argType));	  			
+			        break;
+
+	  		    case LABEL:
 	  			    completors.add(new CodeReferenceCompletor(m_engine, argType));	  			
 			        break;
 			        

@@ -19,8 +19,10 @@ public abstract class Command {
     public enum ArgType {
     	FILE,
     	FUNCTION,
+    	ALLREFS,
     	ENDPOINT,
     	SRCLABEL,
+    	LABEL,
     	HELP,
     }
 	    

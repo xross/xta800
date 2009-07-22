@@ -207,6 +207,14 @@ public class RouteUnknowns {
 		return node.getEnclosingLoopNode() != null;
 	}
 	
+	public boolean getSetLoopScope(Node node) {
+		Node enclosingLoopNode = node.getEnclosingLoopNode();
+		if (enclosingLoopNode == null) {
+			return false;
+		}
+		return enclosingLoopNode.getAttributes().getIsAbsolute();
+	}		
+	
 	private void setLoopScopeNoCheck(Node node, boolean isAbsolute) {
     	Node enclosingLoopNode = node.getEnclosingLoopNode();
 		enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);

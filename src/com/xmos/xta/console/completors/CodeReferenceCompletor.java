@@ -1,5 +1,6 @@
 package com.xmos.xta.console.completors;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -23,14 +24,27 @@ public class CodeReferenceCompletor implements Completor {
         if (m_engine.getExecutable() != null) {
             String start = (buffer == null) ? "" : buffer;
                         
-            Collection<CodePointInfo> srcLabelInfos = null;
+            Collection<CodePointInfo> srcLabelInfos = new ArrayList<CodePointInfo>();
             switch (m_type) {
-            case ENDPOINT: 
-            	srcLabelInfos = m_engine.getEndpoints().values();
+            case ALLREFS:
+            	srcLabelInfos.addAll(m_engine.getEndpoints().values());
+            	srcLabelInfos.addAll(m_engine.getSrcLabels().values());
+            	srcLabelInfos.addAll(m_engine.getCalls().values());
             	break;
+
+            case ENDPOINT:
+            	srcLabelInfos.addAll(m_engine.getEndpoints().values());
+            	srcLabelInfos.addAll(m_engine.getCalls().values());
+            	break;
+            	
             case SRCLABEL: 
-            	srcLabelInfos = m_engine.getSrcLabels().values();
+            	srcLabelInfos.addAll(m_engine.getSrcLabels().values());
+            	srcLabelInfos.addAll(m_engine.getCalls().values());
             	break;
+            	
+            case LABEL:
+            	break;
+            	
             default:
             	assert(false);
                 break;
