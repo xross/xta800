@@ -113,7 +113,11 @@ public class StructureLoopNode extends StructureNode {
 			drawConnection(display, gc, headerInX, loopReturnY, loopReturnX, loopReturnY,
 					loopBestCase, loopWorstCase);
         } else {
-        	loopWorstCase = isWorstCase && (getTreeNode().getAttributes().getLoopIterations() > 1);
+        	if (m_isInfinite) {
+        		loopWorstCase = isWorstCase;
+        	} else {
+        		loopWorstCase = isWorstCase && (getTreeNode().getAttributes().getLoopIterations() > 1);
+        	}
 			drawConnection(display, gc, headerOutX, headerY, headerOutX, loopReturnY,
 					loopBestCase, loopWorstCase);
 			drawConnection(display, gc, headerInX, loopReturnY, headerOutX, loopReturnY,
