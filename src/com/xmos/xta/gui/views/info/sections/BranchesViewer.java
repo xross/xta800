@@ -18,4 +18,9 @@ public class BranchesViewer extends SectionsViewer {
 	SectionsViewerLabelProvider createLabelProvider() {
 		return new BranchesViewerLabelProvider();
 	}
+
+	@Override
+	protected int getPc(Object object) {
+		return ((BranchesContent)object).m_fromPc;
+	}
 }

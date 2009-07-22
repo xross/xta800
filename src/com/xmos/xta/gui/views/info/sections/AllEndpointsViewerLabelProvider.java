@@ -36,4 +36,22 @@ class AllEndpointsViewerLabelProvider extends SectionsViewerLabelProvider implem
 		assert(false);
 		return "";
 	}
+
+	public int compare(Object e1, Object e2, String column) {
+		CodePointTableInfo p1 = (CodePointTableInfo)e1;
+		CodePointTableInfo p2 = (CodePointTableInfo)e2;
+		int res = 0;
+		if (column.equals(PC)) {
+			res = p1.getPc() > p2.getPc() ? 1 : -1;
+		} else if (column.equals(COMPDIR)) {
+			res = p1.getCompilationDir().compareTo(p2.getCompilationDir());
+		} else if (column.equals(FILENAME)) {
+			res = p1.getFileName().compareTo(p2.getFileName());
+		} else if (column.equals(LINENUMBER)) {
+			res = p1.getLineNumber() > p2.getLineNumber() ? 1 : -1;
+		} else {
+			assert(false);
+		}
+		return res;
+	}
 }

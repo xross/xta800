@@ -5,6 +5,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPartSite;
 
+import com.xmos.xta.engine.sections.SrcLabelTableInfo;
+
 public class AllSrcLabelsViewer extends SectionsViewer {
 	public AllSrcLabelsViewer(Display display, Composite parent, 
 			IWorkbenchPartSite site, TableViewer viewer) {
@@ -17,5 +19,10 @@ public class AllSrcLabelsViewer extends SectionsViewer {
 	
 	SectionsViewerLabelProvider createLabelProvider() {
 		return new AllSrcLabelsViewerLabelProvider();
+	}
+
+	@Override
+	protected int getPc(Object object) {
+		return ((SrcLabelTableInfo)object).getPc();
 	}
 }
