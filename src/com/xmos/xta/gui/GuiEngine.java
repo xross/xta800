@@ -193,7 +193,7 @@ public class GuiEngine {
 		for (Map<Integer, GuiRouteProperties> routeIdMap : s_routeProperties.values()) {
 			List<Integer> remove = new ArrayList<Integer>();
 			for (Integer routeId : routeIdMap.keySet()) {
-				if (s_engine.getRoute(routeId) == null) {
+				if (s_engine.getRoute(routeId).size() == 0) {
 					remove.add(routeId);
 				}
 			}
