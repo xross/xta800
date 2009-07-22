@@ -29,4 +29,18 @@ class ExclusionsViewerLabelProvider extends SectionsViewerLabelProvider implemen
 		assert(false);
 		return "";
 	}
+
+	public int compare(Object e1, Object e2, String column) {
+		Reference p1 = (Reference)e1;
+		Reference p2 = (Reference)e2;
+		int res = 0;
+		if (column.equals(PC)) {
+			res = p1.getPc() > p2.getPc() ? 1 : -1;
+		} else if (column.equals(DESCRIPTION)) {
+			res = p1.getRef().compareTo(p2.getRef());
+		} else {
+			assert(false);
+		}
+		return res;
+	}
 }

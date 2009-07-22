@@ -22,4 +22,16 @@ class SrcCommandsViewerLabelProvider extends SectionsViewerLabelProvider impleme
 		assert(false);
 		return "";
 	}
+
+	public int compare(Object e1, Object e2, String column) {
+		String p1 = (String)e1;
+		String p2 = (String)e2;
+		int res = 0;
+		if (column.equals(COMMAND)) {
+			res = p1.compareTo(p2);
+		} else {
+			assert(false);
+		}
+		return res;
+	}
 }

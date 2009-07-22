@@ -28,4 +28,18 @@ class SrcLoopsViewerLabelProvider extends SectionsViewerLabelProvider implements
 		assert(false);
 		return "";
 	}
+
+	public int compare(Object e1, Object e2, String column) {
+		SrcLevelLoopInfo p1 = (SrcLevelLoopInfo)e1;
+		SrcLevelLoopInfo p2 = (SrcLevelLoopInfo)e2;
+		int res = 0;
+		if (column.equals(PC)) {
+			res = p1.getPc() > p2.getPc() ? 1 : -1;
+		} else if (column.equals(COUNT)) {
+			res = p1.getNumIterations() > p2.getNumIterations() ? 1 : -1;
+		} else {
+			assert(false);
+		}
+		return res;
+	}
 }

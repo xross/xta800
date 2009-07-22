@@ -18,4 +18,9 @@ public class LabelsViewer extends SectionsViewer {
 	SectionsViewerLabelProvider createLabelProvider() {
 		return new LabelsViewerLabelProvider();
 	}
+
+	@Override
+	protected int getPc(Object object) {
+		return ((LabelsContent)object).m_pc;
+	}
 }

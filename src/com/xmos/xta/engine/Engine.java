@@ -373,11 +373,8 @@ public class Engine implements Notifier {
 		m_notifier = notifier;
 	}
 
-
-	
-	public boolean getAbort() {
-		
-		if(m_timeOut > 0 && (System.currentTimeMillis() - m_loadStartTime)/1000 > m_timeOut){
+	public boolean getAbort() {		
+		if (m_timeOut > 0 && (System.currentTimeMillis() - m_loadStartTime)/1000 > m_timeOut) {
 			return true;
 		}
 		if (m_jobMonitor != null)
@@ -917,49 +914,16 @@ public class Engine implements Notifier {
 		return m_sections.getBranches(m_nodeId, m_coreId);
 	}
 
-	public boolean addLabel(String label, Reference ref) {
-		if (checkAddParameters(label, ref, "label")) {
-			return m_sections.addToLabels(m_nodeId, m_coreId, label, ref.getPc());			
-		}
-		return false;
-	}
-
-	public void removeLabel(String label) {
-		m_sections.removeFromLabels(m_nodeId, m_coreId, label);
-	}
-
 	public Map<String, Integer> getLabels() {
 		return m_sections.getLabels(m_nodeId, m_coreId);
 	}
 	
-	public boolean addSrcLabel(String label, Reference ref) {
-		if (checkAddParameters(label, ref, "src label")) {
-		    return m_sections.addToSrcLabels(m_nodeId, m_coreId, label, ref.getPc());
-		}
-		return false;
-	}
-
-	public boolean removeSrcLabel(String label) {
-		return m_sections.removeFromSrcLabels(m_nodeId, m_coreId,  label);
-	}
-
 	public Map<String, CodePointInfo> getSrcLabels() {
 		return m_sections.getSrcLabels(m_nodeId, m_coreId);
 	}
 
 	public Map<Integer, SrcLabelTableInfo> getSrcLabelTable() {
 		return m_sections.getSrcLabelTable(m_nodeId, m_coreId);
-	}
-
-	public boolean addEndpoint(String endpoint, Reference ref) {
-		if (checkAddParameters(endpoint, ref, "endpoint label")) {
-    		return m_sections.addToEndpoints(m_nodeId, m_coreId, endpoint, ref.getPc());
-		}
-		return false;
-	}
-
-	public boolean removeEndpoint(String endpoint) {
-		return m_sections.removeFromEndpoints(m_nodeId, m_coreId, endpoint);
 	}
 
 	public Map<String, CodePointInfo> getEndpoints() {
@@ -970,17 +934,6 @@ public class Engine implements Notifier {
 		return m_sections.getEndpointTable(m_nodeId, m_coreId);
 	}
 	
-	public boolean addCall(String call, Reference ref) {
-		if (checkAddParameters(call, ref, "call label")) {		
-		    return m_sections.addToCalls(m_nodeId, m_coreId, call, ref.getPc());
-		}
-		return false;
-	}
-
-	public boolean removeCall(String call) {
-		return m_sections.removeFromCalls(m_nodeId, m_coreId, call);
-	}
-
 	public Map<String, CodePointInfo> getCalls() {
 		return m_sections.getCalls(m_nodeId, m_coreId);
 	}
@@ -989,41 +942,9 @@ public class Engine implements Notifier {
 		return m_sections.getCallTable(m_nodeId, m_coreId);
 	}
 	
-	public boolean addThreadStartPoint(Reference ref) {
-		if (!resolveRefernece(ref)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
-			return false;
-		}		
-		return m_sections.addToThreadStartPoints(m_nodeId, m_coreId, ref.getPc());
-	}
-
-	public boolean removeThreadStartPoint(Reference ref) {
-		if (!resolveRefernece(ref)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
-			return false;
-		}		
-		return m_sections.removeFromThreadStartPoints(m_nodeId, m_coreId, ref.getPc());
-	}
-
 	public Collection<Integer> getThreadStartPoints() {
 		return m_sections.getThreadStartPoints(m_nodeId, m_coreId);
 	}	
-
-	public boolean addThreadStopPoint(Reference ref) {
-		if (!resolveRefernece(ref)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
-			return false;
-		}				
-		return m_sections.addToThreadStopPoints(m_nodeId, m_coreId, ref.getPc());
-	}
-
-	public boolean removeThreadStopPoint(Reference ref) {
-		if (!resolveRefernece(ref)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
-			return false;
-		}		
-		return m_sections.removeFromThreadStopPoints(m_nodeId, m_coreId, ref.getPc());
-	}
 
 	public Collection<Integer> getThreadStopPoints() {
 		return m_sections.getThreadStopPoints(m_nodeId, m_coreId);
@@ -1186,27 +1107,6 @@ public class Engine implements Notifier {
 		return ref.resolve(this, m_nodeId, m_coreId);
 	}
 		
-	private boolean checkAddParameters(String label, Reference ref, String type) {
-		if (!resolveRefernece(ref)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", ref.getRef()));
-			return false;
-		}
-		if (isValidPcString(label)) {
-			notify(Notifier.NOTIFY_ERROR, String.format("Cannot use PC as a %s: %s", type, label));
-			return false;
-		}				
-		return true;
-	}
-
-	private boolean isValidPcString(String ref) {
-		if (ref.matches("0x[0-9a-fA-F]+") ||
-			ref.matches("[0-9]+")) {
-			return true;
-		}
-		return false;
-	}
-
-
 	public void setAnalysisTimeOut(int time) {
 		m_timeOut = time;
 	}

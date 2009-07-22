@@ -68,9 +68,13 @@ abstract class InfoViewer {
 				public void widgetSelected(SelectionEvent event) {
 					int colIndex = 0;
 					if (col.getText().equals(InfoViewerLabelProvider.PC)) {
-						colIndex = 1;
+						colIndex = 0;
 					} else if (col.getText().equals(InfoViewerLabelProvider.DESC)) {
+						colIndex = 1;
+					} else if (col.getText().equals(InfoViewerLabelProvider.BACKTRACE)) {
 						colIndex = 2;
+					} else {
+						assert(false);
 					}
 					
 					unknownSorter.setColoumn(colIndex);

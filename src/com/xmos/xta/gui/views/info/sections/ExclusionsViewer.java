@@ -87,4 +87,9 @@ public class ExclusionsViewer extends SectionsViewer {
 			GuiEngine.getEngine().removeExclusion(ref.getRef());
 		}
 	}
+
+ 	@Override
+	protected int getPc(Object object) {
+		return ((Reference)object).getPc();
+	}
 }

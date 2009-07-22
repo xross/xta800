@@ -116,29 +116,9 @@ public class Sections {
 		return branches.get();
 	}
 
-	public boolean addToLabels(int nodeId, int coreId, String label, int pc) {
-		Labels labels = (Labels)getSection(m_labels, nodeId, coreId);
-		return labels.add(label, pc);
-	}
-
-	public boolean removeFromLabels(int nodeId, int coreId, String label) {
-		Labels labels = (Labels)getSection(m_labels, nodeId, coreId);
-		return labels.remove(label);
-	}
-
 	public Map<String, Integer> getLabels(int nodeId, int coreId) {
 	    Labels labels = (Labels)getSection(m_labels, nodeId, coreId);
 	    return labels.get();
-	}
-	
-	public boolean addToSrcLabels(int nodeId, int coreId, String label, int pc) {
-		CodePoints codePoints = (CodePoints)getSection(m_srcLabels, nodeId, coreId);
-		return codePoints.add(label, pc);
-	}
-		
-	public boolean removeFromSrcLabels(int nodeId, int coreId, String label) {
-		CodePoints codePoints = (CodePoints)getSection(m_srcLabels, nodeId, coreId);
-		return codePoints.remove(label);
 	}
 	
 	public Map<String, CodePointInfo> getSrcLabels(int nodeId, int coreId) {
@@ -151,16 +131,6 @@ public class Sections {
 		return srcLabelTable.get();
 	}	
 
-	public boolean addToEndpoints(int nodeId, int coreId, String endpoint, int pc) {
-		CodePoints codePoints = (CodePoints)getSection(m_endpoints, nodeId, coreId);
-		return codePoints.add(endpoint, pc);
-	}
-
-	public boolean removeFromEndpoints(int nodeId, int coreId, String label) {
-		CodePoints codePoints = (CodePoints)getSection(m_endpoints, nodeId, coreId);
-		return codePoints.remove(label);
-	}	
-	
 	public Map<String, CodePointInfo> getEndpoints(int nodeId, int coreId) {
 		CodePoints codePoints = (CodePoints)getSection(m_endpoints, nodeId, coreId);
 	    return codePoints.get();
@@ -171,16 +141,6 @@ public class Sections {
 		return endpointTable.get();		
 	}	
 
-	public boolean addToCalls(int nodeId, int coreId, String endpoint, int pc) {
-		CodePoints codePoints = (CodePoints)getSection(m_calls, nodeId, coreId);
-		return codePoints.add(endpoint, pc);
-	}
-
-	public boolean removeFromCalls(int nodeId, int coreId, String label) {
-		CodePoints codePoints = (CodePoints)getSection(m_calls, nodeId, coreId);
-		return codePoints.remove(label);
-	}	
-	
 	public Map<String, CodePointInfo> getCalls(int nodeId, int coreId) {
 		CodePoints codePoints = (CodePoints)getSection(m_calls, nodeId, coreId);
 	    return codePoints.get();
@@ -191,31 +151,11 @@ public class Sections {
 		return endpointTable.get();		
 	}
 		
-	public boolean addToThreadStartPoints(int nodeId, int coreId, int pc) {
-		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStartPoints, nodeId, coreId);
-		return threadDelimiter.add(pc);
-	}
-
-	public boolean removeFromThreadStartPoints(int nodeId, int coreId, int pc) {
-		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStartPoints, nodeId, coreId);
-		return threadDelimiter.remove(pc);
-	}
-	
 	public Collection<Integer> getThreadStartPoints(int nodeId, int coreId) {
 		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStartPoints, nodeId, coreId);				
 		return threadDelimiter.get();	
 	}
 	
-	public boolean addToThreadStopPoints(int nodeId, int coreId, int pc) {
-		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStopPoints, nodeId, coreId);
-		return threadDelimiter.add(pc);
-	}
-
-	public boolean removeFromThreadStopPoints(int nodeId, int coreId, int pc) {
-		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStopPoints, nodeId, coreId);
-		return threadDelimiter.remove(pc);
-	}
-
 	public Collection<Integer> getThreadStopPoints(int nodeId, int coreId) {
 		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStopPoints, nodeId, coreId);				
 		return threadDelimiter.get();	

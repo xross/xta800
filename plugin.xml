@@ -322,7 +322,7 @@
             label="Endpoint"
             overviewRulerPreferenceKey="highlight.endpoint.rulers.overview"
             overviewRulerPreferenceValue="true"
-            presentationLayer="5"
+            presentationLayer="4"
             showInNextPrevDropdownToolbarAction="false"
             showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
             symbolicIcon="warning"
