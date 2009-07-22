@@ -91,30 +91,31 @@ public class RouteConstructor {
 		if(startNodes.isEmpty() ){
 			return RouteError.COULD_NOT_FIND_STARTPOINT;
 		}
-		
 		boolean notFoundFunctionYet = true;
 		if(m_description.getMode() == RouteMode.PATH){
-				Collection<Node> newEndNodes = new TreeSet<Node>();
-				for(Node endNode : endNodes){
-					
-					//this need to only allow you to add a node if it doesnt contain any exclusions
-					newEndNodes.addAll(endNode.getParent().whatsBefore(endNode));
-				}
-				for(Node endNode : newEndNodes){
-					System.out.println(endNode + " "+ endNode.getInstructions());
+			Collection<Node> newEndNodes = new TreeSet<Node>();
+			for(Node endNode : endNodes){
+				
+				//TODO
+				//this need to only allow you to add a node if it doesn't contain any exclusions
+				for(Node node : endNode.getParent().whatsBefore(endNode)){
+					newEndNodes.addAll(node.getEndNodes());
 				}
 				
-				endNodes = newEndNodes;
+				//System.out.println(endNode + " -> " + newEndNodes );
 			}
+			
+			endNodes = newEndNodes;
+		}
+		
+		//System.out.println();
 		
 		for (Node start : startNodes) {
 			resetParent();
 			Node realStart = start;
-			
 			while(parentIsBetterThanChild(start)){
 				start = start.getParent();
 			}
-			
 			if(m_description.getMode() == RouteMode.FUNCTION ){
 				if(start.isFunctionNode()&& notFoundFunctionYet){
 					if(!containAnyNodes(start, m_exclusions)){
@@ -146,6 +147,69 @@ public class RouteConstructor {
 			}
 		} else {
 			return RouteError.SUCCESS;
+		}
+	}
+	
+	private boolean explore(Node start, NodeWrapper node, Collection<Node> workingSet, Collection<Node> endNodes, Node parent) {	
+		
+		Node currentNode = node.m_node;
+//		System.out.println("exploring node: " + currentNode + " " + currentNode.getInstructions());
+		
+		Collection<Node> exclusions = new TreeSet<Node>();
+		
+		
+		if(currentNode.isInstructionNode()){
+			if(m_exclusions.contains(currentNode)){
+				exclusions.add(currentNode);
+			}
+		} else {
+			exclusions = new TreeSet<Node>(m_exclusions);
+			exclusions.retainAll(currentNode.getContainedNodes());
+		}
+		
+//		System.out.println("exclusion Nodes: " + exclusions + " of " + m_exclusions );
+		
+		
+//		System.out.println();
+		
+		if(endNodes.containsAll(currentNode.getEndNodes())){
+			//all the ends of currentBlock are endNodes 
+			if(exclusions.isEmpty()){
+				//there are no exclusions in this block
+				if(workingSet.isEmpty() && endNodes.contains(start)){
+					return exploreWhatsNext(start, workingSet, endNodes, currentNode, parent);
+				} else {
+					makeConnection(currentNode, parent);
+					workingSet.add(currentNode);
+					//System.out.println("found end with " + currentNode);
+					return true;
+				}
+			} else {
+				// there are exclusions in this block
+				return exploreIntoCurrentNode(start, node, workingSet, endNodes, parent, currentNode);
+			}
+		} else {
+			Set<Node> containedEndPoints = new TreeSet<Node>(endNodes);
+			containedEndPoints.retainAll(currentNode.getContainedNodes());
+			//we have to go into the current block
+			if(containedEndPoints.isEmpty()){
+				if(!exclusions.isEmpty() ){
+					if( currentNode.isInstructionNode() ){
+						workingSet.add(currentNode);
+						makeConnection(currentNode, parent);
+						m_excludedRouteNodes.add(currentNode);
+						return false;
+					} else {
+						return exploreIntoCurrentNode(start, node, workingSet, endNodes, parent, currentNode);
+					}
+				} else {
+					return exploreWhatsNext(start, workingSet, endNodes, currentNode, parent);
+				}
+			} else {
+				
+				//has multiple ends with at not all as end points
+				return exploreIntoCurrentNode(start, node, workingSet, endNodes, parent, currentNode);
+			}
 		}
 	}
 
@@ -182,7 +246,7 @@ public class RouteConstructor {
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
 	
 		seenEndPoint |= explore(realStart, startNodeWrapper, workingSet, endNodes, null);
-
+		//System.out.println();
 		assert(cfgSanityCheck(workingSet));
 									
 		pruneGraphOfExcludedPaths(workingSet);
@@ -241,61 +305,7 @@ public class RouteConstructor {
 		workingSet.add(nullNode);
 	}
 	
-	private boolean explore(Node start, NodeWrapper node, Collection<Node> workingSet, Collection<Node> endNodes, Node parent) {	
-		
-		Node currentNode = node.m_node;
-		System.out.println("exploring node: " + currentNode + " " + currentNode.getInstructions());
-		
-		Set<Node> containedEndPoints = new TreeSet<Node>(endNodes);
-		containedEndPoints.retainAll(currentNode.getContainedNodes());
-		
-		Collection<Node> exclusions = new TreeSet<Node>(m_exclusions);
-		exclusions.retainAll(currentNode.getContainedNodes());
-		
-		
-		
-		if(endNodes.containsAll(currentNode.getEndNodes())){
-			//all the ends of currentBlock are endNodes 
-			if(exclusions.isEmpty()){
-				//there are no exclusions in this block
-				if(workingSet.isEmpty() && endNodes.contains(start)){
-					return exploreWhatsNext(start, workingSet, endNodes, currentNode, parent);
-				} else {
-					makeConnection(currentNode, parent);
-					workingSet.add(currentNode);
-					return true;
-				}
-			} else {
-				// there are exclusions in this block
-				return exploreIntoCurrentNode(start, node, workingSet, endNodes, parent, currentNode);
-			}
-		} else {
-			if( endNodes.contains(currentNode)){
-				return true;
-			}
-			
-			//we have to go into the current block
-			if(containedEndPoints.isEmpty()){
-				if(!exclusions.isEmpty() ){
-					if( currentNode.isInstructionNode() ){
-						workingSet.add(currentNode);
-						makeConnection(currentNode, parent);
-						m_excludedRouteNodes.add(currentNode);
-						return false;
-					} else {
-						return exploreIntoCurrentNode(start, node, workingSet, endNodes, parent, currentNode);
-					}
-				} else {
-					return exploreWhatsNext(start, workingSet, endNodes, currentNode, parent);
-				}
-			} else {
-				
-				//has multiple ends with at not all as end points
-				return exploreIntoCurrentNode(start, node, workingSet, endNodes, parent, currentNode);
-			}
-		}
-	}
-
+	
 	private boolean exploreWhatsNext(Node start, Collection<Node> workingSet, Collection<Node> endNodes, 
 			Node currentNode, Node originalParent) {
 		boolean seenEndPoint = false;
@@ -308,6 +318,8 @@ public class RouteConstructor {
 		Node parent = currentNode.getParent();
 		if (parent != null && !parent.whatsNext(currentNode).isEmpty()) {
 			for (Node next : parent.whatsNext(currentNode)) {
+				
+				//System.out.println("going from " + currentNode + " to next: " + next+ "\n");
 				seenEndPoint |= explore(start, new NodeWrapper(next), workingSet, endNodes, currentNode);
 			}
 		}
@@ -323,6 +335,7 @@ public class RouteConstructor {
 		
 		for(Node child : currentNode.getImmediateChildren()){
 			NodeWrapper childWrapper = new NodeWrapper(child);
+			//System.out.println("going from " + currentNode + " into: " + child+ "\n");
 			seenEndPoint |= explore(start, childWrapper, workingSet, endNodes, parent);
 			if(parent == null) {
 				//TODO check to see if parent is ever null or not

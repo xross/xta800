@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
+
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.engine.analysis.structural.nodes.edges.Edges;
@@ -45,11 +47,9 @@ public abstract class Node implements Comparable<Node>{
 	/**
 	 * This returns all the instruction nodes that could possible be contained within this node
 	 */
-	public abstract Collection<Node> getContainedNodes();	
+	
 	public abstract int getStartPc();
 	public abstract Set<InstructionNode> getEndNodes();
-	
-	
 	
 	public Node() {
 		m_id = s_numNodes++;
@@ -63,6 +63,18 @@ public abstract class Node implements Comparable<Node>{
 		m_id = s_numNodes++;
 		m_isFolded = false;
 		m_unresolved = node.m_unresolved;
+	}
+	
+	public String toString() {
+		return getTypeName() + m_id;
+	}
+	
+	public Collection<Node> getContainedNodes(){
+		Collection<Node> containedNodes = new TreeSet<Node>();
+		for(Node child : getChildren()){
+			containedNodes.addAll(child.getContainedNodes());
+		}
+		return containedNodes;
 	}
 	
 	public void setUnresolved(boolean unresolved){
@@ -121,10 +133,6 @@ public abstract class Node implements Comparable<Node>{
 	
 	public void addAllDominators(Collection<Node> nodes){
 		m_edges.addAllDominators(nodes);
-	}
-
-	public String toString(){
-		return "Node" + m_id;  
 	}
 	
 	public Set<Node> getNextNodes(){
