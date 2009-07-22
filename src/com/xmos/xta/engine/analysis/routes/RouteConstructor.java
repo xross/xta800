@@ -95,20 +95,20 @@ public class RouteConstructor {
 		if(m_description.getMode() == RouteMode.PATH){
 			Collection<Node> newEndNodes = new TreeSet<Node>();
 			for(Node endNode : endNodes){
-				
-				//TODO
-				//this need to only allow you to add a node if it doesn't contain any exclusions
-				for(Node node : endNode.getParent().whatsBefore(endNode)){
-					newEndNodes.addAll(node.getEndNodes());
+				if(endNode.getParent().whatsBefore(endNode) != null){
+					for(Node node : endNode.getParent().whatsBefore(endNode)){
+						Set<InstructionNode> newNodes = node.getEndNodes();
+						for(Node newNode : newNodes){
+							if(!m_exclusions.contains(newNode)){
+								newEndNodes.add(newNode);
+							}
+						}
+					}
 				}
-				
-				//System.out.println(endNode + " -> " + newEndNodes );
 			}
 			
 			endNodes = newEndNodes;
 		}
-		
-		//System.out.println();
 		
 		for (Node start : startNodes) {
 			resetParent();
