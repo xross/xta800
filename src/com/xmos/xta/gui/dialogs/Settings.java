@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Spinner;
 import com.xmos.xta.gui.GuiEngine;
 
 public class Settings extends XtaDialog {
-    private Spinner m_freqSpinner;
+    private Spinner m_coreMhzSpinner;
     private Spinner m_threadSpinner;
     private Spinner m_verbositySpinner;
   
@@ -57,16 +57,16 @@ public class Settings extends XtaDialog {
     
 	private void createSettingsBar(Composite controls) {
 		Group freqGroup = createGroup(controls, "Core Mhz", 1, 1);
-	    m_freqSpinner = new Spinner(freqGroup, SWT.BORDER);
-		m_freqSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		m_freqSpinner.setMinimum(1);
-		m_freqSpinner.setMaximum(Integer.MAX_VALUE);
-		m_freqSpinner.setSelection(getFrequency());
-		m_freqSpinner.setIncrement(1);
-		m_freqSpinner.setPageIncrement(10);
-		m_freqSpinner.addSelectionListener(new SelectionAdapter() {
+	    m_coreMhzSpinner = new Spinner(freqGroup, SWT.BORDER);
+		m_coreMhzSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		m_coreMhzSpinner.setMinimum(1);
+		m_coreMhzSpinner.setMaximum(Integer.MAX_VALUE);
+		m_coreMhzSpinner.setSelection(getFrequency());
+		m_coreMhzSpinner.setIncrement(1);
+		m_coreMhzSpinner.setPageIncrement(10);
+		m_coreMhzSpinner.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				setFrequency(m_freqSpinner.getSelection());
+				setFrequency(m_coreMhzSpinner.getSelection());
 			}			
 		});
 
