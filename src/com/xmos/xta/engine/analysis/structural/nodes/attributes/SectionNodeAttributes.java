@@ -116,9 +116,19 @@ public class SectionNodeAttributes extends NodeAttributes {
 	// --------------------------------------------------------------------- //
 	// Loop Iteration Methods
 	// --------------------------------------------------------------------- //
-	public boolean loopPathIterationsValid(Node loopNode, Node optionNode, long numIterations) {
-		long loopIterations = loopNode.getAttributes().getLoopIterations();
+	public boolean loopPathIterationsValid(Node optionNode, long numIterations) {
+		// Gets the iterations set from above for this node.
+		long loopIterations = 1;
+		try {
+			loopIterations = getNode().getParent().getAttributes().getLocalIterations(getNode());
 
+		} catch (SectionIterationsNotSetException e) {
+			return false;
+
+		} catch (InfiniteIterationsException e) {
+			return false;
+		}
+		
 		// Calculates the total iterations already set on all options of 
 		// this section (excluding the contribution from the option we are
 		// try to set here)
@@ -146,14 +156,11 @@ public class SectionNodeAttributes extends NodeAttributes {
    				}
    			}
    		}
-
-   		// Sets the iterations on the given section option node..
-   		m_setIterations.put(optionNode, numIterations);
 		return true;
 	}	
 	
-	public void setLoopPathIterations(Node loopNode, Node optionNode, long numIterations) {
-		assert(loopPathIterationsValid(loopNode, optionNode, numIterations));
+	public void setLoopPathIterations(Node optionNode, long numIterations) {
+		assert(loopPathIterationsValid(optionNode, numIterations));
    		m_setIterations.put(optionNode, numIterations);
 	}
 	
@@ -165,6 +172,7 @@ public class SectionNodeAttributes extends NodeAttributes {
 		} else {
 			// Need to assign any remaining iterations to the best/worst case.
 			long totalNumIterationsSet = getTotalNumIterationsSet();
+			assert(totalNumIterationsSet <= loopIterations);
 	   		long remainder = loopIterations - totalNumIterationsSet;
 	   		if (remainder > 0) {
 				Node option = getNode().getUnsetOption(c, getNode());
@@ -178,8 +186,7 @@ public class SectionNodeAttributes extends NodeAttributes {
 	public long getSetLoopPathIterations(Node optionNode) {
 		if (m_setIterations.get(optionNode) != null) {
 			// The iterations have been explicitly set for this option.
-			return m_setIterations.get(optionNode);	
-			
+			return m_setIterations.get(optionNode);				
 		}
 		return 0;			
 	}
@@ -200,18 +207,31 @@ public class SectionNodeAttributes extends NodeAttributes {
   	    return totalNumIterationsSet;
 	}
 	
-	long getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection)
+	long getLocalIterations(Node child) 
+        throws SectionIterationsNotSetException, InfiniteIterationsException {
+
+		if (m_setIterations.get(child) != null) {
+			return m_setIterations.get(child);				
+		}
+		throw new SectionIterationsNotSetException();			
+	}
+	
+	Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection)
 	    throws IgnoreSectionIterationsException, InfiniteIterationsException {
 		
 		if (getNode() == ignoreIterationsAboveSection) {
 			throw new IgnoreSectionIterationsException();
 			
 		} else {
-			long iterations = 1;
+			Iterations iterations = null;
 			if (getNode().getParent() != null) {
-				iterations =  getNode().getParent().getAttributes().getTotalIterations(c, getNode(), ignoreIterationsAboveSection);
+				iterations =  getNode().getParent().getAttributes().getTotalIterations(
+						c, getNode(), ignoreIterationsAboveSection);						
 			}					
-		    return getLoopPathIterations(iterations, child, c);
+
+		    long localSectionIterations = getLoopPathIterations(iterations.getLocalIterations(), child, c);
+		    iterations.setLocalIterations(localSectionIterations);
+		    return iterations;
 		}
 	}		
 }

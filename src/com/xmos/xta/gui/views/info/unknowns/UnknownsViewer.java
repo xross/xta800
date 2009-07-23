@@ -1,6 +1,8 @@
 package com.xmos.xta.gui.views.info.unknowns;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
@@ -15,6 +17,7 @@ import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.InstructionTime;
 import com.xmos.xta.gui.dialogs.Loop;
@@ -33,9 +36,19 @@ public class UnknownsViewer extends InfoViewer {
 	}
 	
 	public void updateHighlighting(List<Node> selectedNodes) {
+		final Set<Node> allInstructionNodes = new HashSet<Node>();
+   		for (Node node : selectedNodes) {
+       		node.traverse(0, new DefaultNodeTraverser() {
+       		    public boolean foundInstructionNode(Node node, int depth) {
+       		    	allInstructionNodes.add(node);
+       		    	return true;
+       		    }
+       		});    		
+    	}
+
 		for (TableItem item : getViewer().getTable().getItems()) {
 			Node node = (Node)item.getData();					
-			if (selectedNodes.contains(node)) {
+			if (allInstructionNodes.contains(node)) {
 				item.setBackground(getDisplay().getSystemColor(SWT.COLOR_YELLOW));
 			} else {
 				item.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));

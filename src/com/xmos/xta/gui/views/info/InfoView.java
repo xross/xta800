@@ -1,12 +1,7 @@
 package com.xmos.xta.gui.views.info;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -14,12 +9,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.views.info.log.LogViewer;
 import com.xmos.xta.gui.views.info.sections.AllCallsViewer;
@@ -38,8 +31,7 @@ import com.xmos.xta.gui.views.info.sections.ThreadStopPointsViewer;
 import com.xmos.xta.gui.views.info.unknowns.KnownsViewer;
 import com.xmos.xta.gui.views.info.unknowns.UnknownsViewer;
 
-public class InfoView extends ViewPart implements IPropertyChangeListener,
-		                                              ISelectionListener {
+public class InfoView extends ViewPart implements IPropertyChangeListener {
 	public static final String ID = "com.xmos.xta.gui.views.info.Info";
 
 	private LogViewer m_log;
@@ -114,8 +106,6 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 		m_threadStopPoints.update();
 		m_srcCommands.update();
 		m_srcLoops.update();
-
-		getSite().getPage().addSelectionListener(this);
 	}
 
 	public void setFocus() {
@@ -154,23 +144,14 @@ public class InfoView extends ViewPart implements IPropertyChangeListener,
 		} else if (event.getProperty().equals(Notifier.NOTIFY_ERROR) || 
 				   event.getProperty().equals(Notifier.NOTIFY_WARNING)) {
 			m_log.update();
+
+		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECTION_CHANGED)) {
+			m_unknowns.updateHighlighting(GuiEngine.getSelectedNodes());
+			
 		}
+		
 	}
 
-	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
-		List<Node> selectedNodes = new ArrayList<Node>();		
-		if (!sel.isEmpty()) {
-			if (sel instanceof IStructuredSelection) {
-				for (Object object : ((IStructuredSelection)sel).toArray()) {
-					if (object instanceof Node) {
-						selectedNodes.add((Node)object);
-					}
-				}
-			}
-		}
-		m_unknowns.updateHighlighting(selectedNodes);
-	}
-	
 	private TableViewer createNewViewer(String displayText, TabFolder folders) {
 		TabItem tab = new TabItem(folders, SWT.NONE);
 		tab.setText(displayText);

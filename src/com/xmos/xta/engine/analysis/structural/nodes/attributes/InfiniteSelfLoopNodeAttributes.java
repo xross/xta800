@@ -8,7 +8,12 @@ public class InfiniteSelfLoopNodeAttributes extends NodeAttributes {
 		super(node);
 	}
 	
-	long getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection)
+	long getLocalIterations(Node child) 
+        throws SectionIterationsNotSetException, InfiniteIterationsException {
+	    throw new InfiniteIterationsException();
+    }
+	
+	Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection)
         throws IgnoreSectionIterationsException, InfiniteIterationsException {
 	    throw new InfiniteIterationsException();		
     }	
