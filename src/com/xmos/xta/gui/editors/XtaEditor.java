@@ -29,11 +29,7 @@ import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
@@ -55,8 +51,7 @@ import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.InstructionTime;
 
-public class XtaEditor extends TextEditor implements IPropertyChangeListener,
-                                                     ISelectionListener {
+public class XtaEditor extends TextEditor implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
     
     public static final String ID                    = "com.xmos.xta.gui.editors.XtaEditor.Test";
@@ -96,7 +91,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     private Annotation[] m_previousHighlightAnnotations;
     private Annotation[] m_previousUnknownAnnotations;
     private boolean m_hasHighlightedLines;
-    private Node m_selectedNode;    
+    private List<Node> m_selectedNodes;    
     private final String m_type;
     private final String m_fileName;
     private InputLine m_startPointLine;
@@ -115,7 +110,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	setSourceViewerConfiguration(new XtaConfiguration(this));
     	setDocumentProvider(new XtaDocumentProvider());
 
-    	m_selectedNode = null;
+    	m_selectedNodes = new ArrayList<Node>();
         m_hasHighlightedLines = false;
         
         m_endPointLineIndexes = new TreeMap<Integer,InputLine>();
@@ -142,8 +137,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         viewer.showAnnotations(true);
         viewer.showAnnotationsOverview(true);
         
-        getSite().getPage().addSelectionListener(this);
-        
         m_painter = new AnnotationPainter(viewer, getAnnotationAccess());        
         m_painter.addAnnotationType(HighlightAnnotationID);
         updateHighlighting();
@@ -153,7 +146,6 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("XtaEditor: dispose\n");	
     	
 		GuiEngine.removeBroadcastListener(this);
-		getSite().getPage().removeSelectionListener(this);
 		super.dispose();
     }
     
@@ -161,14 +153,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 		if (DEBUG) System.out.printf("XtaEditor: propertyChange: %s\n", event.getProperty());	
 
 		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
-			m_selectedNode = null;
 			updateFnops();
 			updateExcluded();
 			updateUnknowns();
 			updateHighlighting();
 
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
-			m_selectedNode = null;
 			updateFnops();
 			updateExcluded();
 			updateUnknowns();
@@ -204,26 +194,20 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
 			Input input = getInput();
 	    	if (input == null)
 	    		return;	        
+
+		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECTION_CHANGED)) {
+			updateSelection(GuiEngine.getSelectedNodes());
+			
 		}
 	}
 
-	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
-		if (DEBUG) System.out.printf("XtaEditor: selectionChanged\n"); 
-		if (sel instanceof IStructuredSelection) {
-			if (((IStructuredSelection) sel).size() != 1)
-				return;
-			
-            Object object = ((IStructuredSelection)sel).getFirstElement();
-            if (object instanceof Node) {
-            	if (m_selectedNode != (Node)object) {
-            		m_selectedNode = (Node)object;
-            		updateFnops();
-            		updateExcluded();
-            		updateUnknowns();
-            		updateHighlighting();
-            	}
-            }
-        }
+	public void updateSelection(List<Node> selection) {
+		if (DEBUG) System.out.printf("XtaEditor: selectionChanged\n");
+		m_selectedNodes = selection;
+		updateFnops();
+		updateExcluded();
+		updateUnknowns();
+		updateHighlighting();
     }
 
     public HashSet<Node> getUnknownsForLine(int lineNumber) {
@@ -370,7 +354,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
      		}
      	});
 
-     	setAction(SelectPathsID, new Action("Select nodes through here") {
+     	setAction(SelectPathsID, new Action("Select blocks through here") {
      		public void run() {
      			Reference clickCodeRef = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.ANY_REF);
      			GuiEngine.setCodePoint(clickCodeRef);
@@ -478,8 +462,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
     	HashSet<XtaInstruction> toKeep  = new HashSet<XtaInstruction>();
     	
    		final Collection<XtaInstruction> fnops = new Vector<XtaInstruction>();
-    	if (m_selectedNode != null) {
-       		m_selectedNode.traverse(0, new DefaultNodeTraverser() {
+   		for (Node node : m_selectedNodes) {
+       		node.traverse(0, new DefaultNodeTraverser() {
        		    public boolean foundInstructionNode(Node node, int depth) {
     				XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();				
        		    	if (instruction.isFnop()) {   		    		
@@ -581,8 +565,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener,
         HashMap<Annotation, Position> annotationPositions = new HashMap<Annotation, Position>();		
 		
         m_hasHighlightedLines = false;
-        if (m_selectedNode != null) {
-        	Collection<XtaInstruction> instructionsCovered = m_selectedNode.getInstructions();
+        for (Node node : m_selectedNodes) {
+        	Collection<XtaInstruction> instructionsCovered = node.getInstructions();
         	for (XtaInstruction instruction : instructionsCovered) {
         		m_hasHighlightedLines |= updateAnnotations(
         				instruction.getPc(), HighlightAnnotationID, 

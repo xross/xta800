@@ -1,12 +1,7 @@
 package com.xmos.xta.gui.views.routes;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
@@ -16,21 +11,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Sash;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.views.routes.selected.SelectedRouteViewer;
 import com.xmos.xta.gui.views.routes.selector.RouteSelectorViewer;
 
-public class RoutesView extends ViewPart implements IPropertyChangeListener,
-												    ISelectionListener {
+public class RoutesView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.gui.views.routes.Routes";
     
@@ -60,8 +51,6 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 	    m_routeSelectorViewer = new RouteSelectorViewer(parent);
 	    m_routeSelectorViewer.create(sash);	    
 
-	    getSite().setSelectionProvider(m_selectedRouteViewer.getViewer());	    
-	    
 	    // Control the sash re-sizing
 	    final int limit = 40;
 	    sash.addListener(SWT.Selection, new Listener() {
@@ -77,7 +66,6 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 	        }
 	    });
 
-		getSite().getPage().addSelectionListener(this);		
 		initialiseTrees();
 	}
 
@@ -118,29 +106,13 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener,
 
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECT_NODES)) {
 			m_selectedRouteViewer.selectNodes();
+			
+		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECTION_CHANGED)) {
+			m_selectedRouteViewer.updateSelection();
+			
 		}
 	}
 	
-	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
-		if (DEBUG) System.out.printf("RoutesView: selectionChanged\n");			
-
-		if (sel.isEmpty())
-    		return;
-    	
-		List<Node> selectedNodes = new ArrayList<Node>();
-		if (sel instanceof IStructuredSelection) {
-			for (Object object : ((IStructuredSelection)sel).toArray()) {
-				if (object instanceof Node) {
-					selectedNodes.add((Node)object);
-				}
-			}
-		}
-		GuiEngine.setSelectedNodes(selectedNodes);
-    	if (part != this) {
-    		m_selectedRouteViewer.getViewer().setSelection(sel, true);
-        }
-    }
-		
 	private void initialiseTrees() {		
 	    m_selectedRouteViewer.initialise();
 	    m_routeSelectorViewer.initialise();

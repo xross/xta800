@@ -2,18 +2,12 @@ package com.xmos.xta.gui.views.console;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
-import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
 
-public class ConsoleView extends ViewPart implements IPropertyChangeListener,
-                                                     ISelectionListener {
+public class ConsoleView extends ViewPart implements IPropertyChangeListener {
     public static final String ID = "com.xmos.xta.gui.views.console.Console";
 
     private GuiConsole m_guiConsole;
@@ -37,15 +31,6 @@ public class ConsoleView extends ViewPart implements IPropertyChangeListener,
 	public void propertyChange(PropertyChangeEvent event) {
 	}
 	
-    public void selectionChanged(IWorkbenchPart part, ISelection sel) {
-        if (sel instanceof IStructuredSelection) {	            
-            Object object = ((IStructuredSelection)sel).getFirstElement();
-            if (object instanceof Node) {
-                // Do selection updates here..
-            }
-        }
-     }
-
     public synchronized void runCommand(String command) {
 		m_guiConsole.sendCommand(command);
     }

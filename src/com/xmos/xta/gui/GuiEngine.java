@@ -145,7 +145,22 @@ public class GuiEngine {
 
 	public static void setSelectedNodes(List<Node> selectedNodes) {
 		assert(selectedNodes != null);
-		s_selectedNodes = selectedNodes;
+		boolean selectionChanged = false;
+		if (selectedNodes.size() != s_selectedNodes.size()) {
+			selectionChanged = true;
+		} else {
+			for (Node node : selectedNodes) {
+				if (!s_selectedNodes.contains(node)) {
+					selectionChanged = true;
+					break;
+				}
+			}
+		}
+		
+		if (selectionChanged) {
+			s_selectedNodes = selectedNodes;
+			broadcast(Broadcaster.BROADCAST_SELECTION_CHANGED, "");
+		}
 	}
 	
 	public static void updateGuiState(String message, String argument) {

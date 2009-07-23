@@ -14,6 +14,7 @@ public class Broadcaster {
 	public static final String BROADCAST_SELECT_NODES       = "ShowNodes";
 	public static final String BROADCAST_HIGHLIGHTS_UPDATED = "HighlightsUpdated";
 	public static final String BROADCAST_UPDATE_FOLDING     = "UpdateFolding";
+	public static final String BROADCAST_SELECTION_CHANGED  = "SelectionChanged";
 	
 	private ArrayList<IPropertyChangeListener> m_listeners;
 
