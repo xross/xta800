@@ -135,6 +135,10 @@ public class RouteUnknowns {
 	}
 
 	public boolean canSetLoopPathIterations(Node node) {
+		Node infiniteLoopNode = node.getEnclosingInfiniteLoopNode();
+		if (infiniteLoopNode != null)
+			return false;
+
 		Node loopNode = node.getEnclosingLoopNode();
 		if (loopNode == null)
 			return false;
@@ -142,7 +146,7 @@ public class RouteUnknowns {
 		Node sectionNode = node.getEnclosingSectionNode();
 		if (sectionNode == null)
 			return false;
-		
+
 		Node optionNode = node.getEnclosingOptionNode();
 		if (optionNode == null)
 			return false;
@@ -159,17 +163,15 @@ public class RouteUnknowns {
 	}
 
 	private boolean loopPathIterationsValid(Node node, long iterations) {
-		Node loopNode = node.getEnclosingLoopNode();
 		Node sectionNode = node.getEnclosingSectionNode();
 		Node optionNode = node.getEnclosingOptionNode();
-		return sectionNode.getAttributes().loopPathIterationsValid(loopNode, optionNode, iterations);
+		return sectionNode.getAttributes().loopPathIterationsValid(optionNode, iterations);
 	}
 
 	private void setLoopPathIterationsNoCheck(Node node, long iterations) {
-		Node loopNode = node.getEnclosingLoopNode();
 		Node sectionNode = node.getEnclosingSectionNode();
 		Node optionNode = node.getEnclosingOptionNode();
-	    sectionNode.getAttributes().setLoopPathIterations(loopNode, optionNode, iterations);
+	    sectionNode.getAttributes().setLoopPathIterations(optionNode, iterations);
 		refreshDisplayedUnknowns();		
 		invalidateCachedStats();
 	}

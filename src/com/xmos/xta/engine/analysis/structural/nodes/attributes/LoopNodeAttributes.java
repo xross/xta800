@@ -18,11 +18,27 @@ public class LoopNodeAttributes extends NodeAttributes {
 	public void setLoopIterations(long numIterations) {
 		m_numIterations = numIterations;
 	}
-	
+
 	public long getLoopIterations() {
 		return m_numIterations;
 	}
 
+	long getLocalIterations(Node child) 
+        throws SectionIterationsNotSetException, InfiniteIterationsException {
+	
+		if (getIsAbsolute()) {	
+			long iterations = 1;
+			if (getNode().getParent() != null) {
+				getNode().getParent().getAttributes().getLocalIterations(getNode());
+			}
+			long headerAdjustment = child.getAttributes().getIsLoopHeader() ? iterations : 0;
+			return m_numIterations + headerAdjustment;
+		}
+		
+		long headerAdjustment = child.getAttributes().getIsLoopHeader() ? 1 : 0;						
+		return m_numIterations + headerAdjustment;		
+    }
+	
 	Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection)
 	    throws IgnoreSectionIterationsException, InfiniteIterationsException {
 

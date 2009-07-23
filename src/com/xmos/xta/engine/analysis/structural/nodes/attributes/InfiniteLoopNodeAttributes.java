@@ -8,6 +8,11 @@ public class InfiniteLoopNodeAttributes extends NodeAttributes {
 		super(node);
 	}
 	
+	long getLocalIterations(Node child) 
+	    throws SectionIterationsNotSetException, InfiniteIterationsException {
+		throw new InfiniteIterationsException();
+	}
+	
 	Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection)
         throws IgnoreSectionIterationsException, InfiniteIterationsException {
 	    throw new InfiniteIterationsException();		

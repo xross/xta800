@@ -27,6 +27,11 @@ public class SelfLoopNodeAttributes extends NodeAttributes {
 		return m_numIterations;
 	}		
 	
+	long getLocalIterations(Node child) 
+        throws SectionIterationsNotSetException, InfiniteIterationsException {
+		return m_numIterations;		
+	}
+	
 	Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection)
 	    throws IgnoreSectionIterationsException, InfiniteIterationsException {
 		
