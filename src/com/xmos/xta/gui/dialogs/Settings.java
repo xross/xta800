@@ -17,6 +17,7 @@ import com.xmos.xta.gui.GuiEngine;
 public class Settings extends XtaDialog {
     private Spinner m_freqSpinner;
     private Spinner m_threadSpinner;
+    private Spinner m_verbositySpinner;
   
     private int m_oldFrequency;
     private int m_oldNumThreads;
@@ -55,7 +56,7 @@ public class Settings extends XtaDialog {
     }
     
 	private void createSettingsBar(Composite controls) {
-		Group freqGroup = createGroup(controls, "Frequency", 1, 1);
+		Group freqGroup = createGroup(controls, "Core Mhz", 1, 1);
 	    m_freqSpinner = new Spinner(freqGroup, SWT.BORDER);
 		m_freqSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		m_freqSpinner.setMinimum(1);
@@ -69,7 +70,7 @@ public class Settings extends XtaDialog {
 			}			
 		});
 
-		Group threadsGroup = createGroup(controls, "Num threads", 1, 1);
+		Group threadsGroup = createGroup(controls, "Num Threads", 1, 1);
 		m_threadSpinner = new Spinner(threadsGroup, SWT.BORDER);
 		m_threadSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		m_threadSpinner.setMinimum(1);
@@ -81,6 +82,20 @@ public class Settings extends XtaDialog {
 			public void widgetSelected(SelectionEvent e) {
 				setNumThreads(m_threadSpinner.getSelection());
 			}			
+		});
+
+		Group verbosityGroup = createGroup(controls, "Console Verbosity", 1, 1);
+		m_verbositySpinner = new Spinner(verbosityGroup, SWT.BORDER);
+		m_verbositySpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		m_verbositySpinner.setMinimum(-10);
+		m_verbositySpinner.setMaximum(10);
+		m_verbositySpinner.setSelection(getVerbosity());
+		m_verbositySpinner.setIncrement(1);
+		m_verbositySpinner.setPageIncrement(4);
+		m_verbositySpinner.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				setVerbosity(m_verbositySpinner.getSelection());
+			}
 		});
 	}
 	
@@ -109,4 +124,13 @@ public class Settings extends XtaDialog {
 	public void setNumThreads(int numThreads) {
 		GuiEngine.getEngine().setNumThreads(numThreads);
 	}	
+
+	private int getVerbosity() {
+		return GuiEngine.getEngine().getVerbosity();
+	}
+
+	private void setVerbosity(int verbosity) {
+		GuiEngine.getEngine().setVerbosity(verbosity);
+	}
 }
+
