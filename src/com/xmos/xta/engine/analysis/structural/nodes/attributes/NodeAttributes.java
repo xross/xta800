@@ -406,7 +406,8 @@ public class NodeAttributes {
 	// ===================================================================== //
 	public long getTotalIterations(Case c, Node ignoreIterationsAboveSection) {
 		try {
-			return getTotalIterations(c, getNode(), ignoreIterationsAboveSection);
+			Iterations iterations = getTotalIterations(c, getNode(), ignoreIterationsAboveSection);
+			return iterations.getGlobalIterations() * iterations.getLocalIterations();			
 			
 		} catch (IgnoreSectionIterationsException e) {
 			return IGNORE_SECTION_ITERATIONS;
@@ -474,13 +475,14 @@ public class NodeAttributes {
 		return m_isLoopHeader;
 	}		
 
-	long getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection) 
+	Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection) 
 	    throws IgnoreSectionIterationsException, InfiniteIterationsException {
 		
 		if (getNode().getParent() != null) {
-			return getNode().getParent().getAttributes().getTotalIterations(c, getNode(), ignoreIterationsAboveSection);
+			return getNode().getParent().getAttributes().getTotalIterations(
+					c, getNode(), ignoreIterationsAboveSection);
 		}
-		return 1;		
+		return new Iterations();		
 	}
 	
 	// ===================================================================== //

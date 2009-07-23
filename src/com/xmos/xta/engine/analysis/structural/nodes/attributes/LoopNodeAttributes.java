@@ -23,25 +23,31 @@ public class LoopNodeAttributes extends NodeAttributes {
 		return m_numIterations;
 	}
 
-	long getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection)
+	Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection)
 	    throws IgnoreSectionIterationsException, InfiniteIterationsException {
 
-		long iterations = 1;
-		if (getNode().getParent() != null) {
-			
+		Iterations iterations = null;
+		if (getNode().getParent() != null) {	
             try {			
-			    iterations = getNode().getParent().getAttributes().getTotalIterations(c, getNode(), ignoreIterationsAboveSection);
+			    iterations = getNode().getParent().getAttributes().getTotalIterations(
+			    		c, getNode(), ignoreIterationsAboveSection);
+			    
 		    } catch (IgnoreSectionIterationsException e) {
-		    	iterations = IGNORE_SECTION_ITERATIONS;
+		    	iterations = new Iterations();
 		    }
 		}
-		
-		if (getIsAbsolute()) {
-			long headerAdjustment = child.getAttributes().getIsLoopHeader() ? iterations : 0;									
-			return m_numIterations + headerAdjustment;
+		long iterationsAbove = iterations.getGlobalIterations() * iterations.getLocalIterations();
+				
+		if (getIsAbsolute()) {			
+			long headerAdjustment = child.getAttributes().getIsLoopHeader() ? iterationsAbove : 0;
+			iterations.setGlobalIterations(1);
+			iterations.setLocalIterations(m_numIterations + headerAdjustment);
+			return iterations;
 		}
 		
 		long headerAdjustment = child.getAttributes().getIsLoopHeader() ? 1 : 0;						
-		return iterations * (m_numIterations + headerAdjustment);		
+		iterations.setGlobalIterations(iterationsAbove);
+		iterations.setLocalIterations(m_numIterations + headerAdjustment);
+		return iterations;		
 	}	
 }
