@@ -2,11 +2,14 @@ package com.xmos.xta.sourcemapper;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class AssemblyLine implements Line {	
 	
+	private Map<String, Integer> m_labels;
+	private static final int WIDTH = 20;
 	private static final String m_resourceName[] = {
 		"PORT", "TIMER", "CHANEND",	"SYNC", "THREAD",
 		"LOCK", "CLKBLK", "COPROC", "INVALID", "INVALID",
@@ -25,18 +28,49 @@ public class AssemblyLine implements Line {
 	
 	private InstructionNode m_instructionNode;
 	
-	public AssemblyLine(InstructionNode instructionNode) {
+	public AssemblyLine(InstructionNode instructionNode, Map<String, Integer> labels) {
 		m_instructionNode = instructionNode;
+		m_labels = labels;
 	}
 
-	public List<Line> getChildern() {
-		return new LinkedList<Line>();
+	public List<AssemblyLine> getChildern() {
+		return new LinkedList<AssemblyLine>();
 	}
 
 	public int getLineNumber() {
 		return m_instructionNode.getXtaInstruction().getPc();
 	}
 
+	public String getPreText(){
+		String preText = "";
+		
+		for(String key : m_labels.keySet()){
+    		if(m_instructionNode.getXtaInstruction().getPc() == m_labels.get(key)){
+    			preText = key+":";
+    			break;
+    		}
+    	}
+		
+		if(preText.length() > WIDTH){
+			preText = preText.substring(0, WIDTH);
+		}
+		
+		for(int i=preText.length(); i< WIDTH; i++){
+			preText += " ";
+		}
+		
+		return preText;
+	}
+	public String getEmptyText(){
+		String preText = "";
+		
+		for(int i=preText.length(); i< WIDTH; i++){
+			preText += " ";
+		}
+		
+		return preText;
+	}
+	
 	public String getText() {
 
 		XtaInstruction inst  = m_instructionNode.getXtaInstruction();
@@ -71,20 +105,32 @@ public class AssemblyLine implements Line {
 				}
 			}
 		}
-		
 	    if (inst.getBranchPcRelative()) {
 	        String functionName = inst.getBranchPcRelativeTargetFunction();
+	        
+	        String target = functionName;
+	        
+	        if(functionName.startsWith("0x")){
+	        	for(String key : m_labels.keySet()){
+	        		if(inst.getBranchPcRelativeTargetPc() == m_labels.get(key)){
+	        			target = key;
+	        			break;
+	        		}
+	        	}
+	        } 
+	        if(target == null){
+	        	target = functionName;
+	        }
 	        
 	        if(operandString.contains("i ")){
 	        	operandString = operandString.substring(0, operandString.indexOf("i "));
 	        }
 	        operandString = operandString.trim();
 	        return "\t" + inst.getNmenonic() + " " + operandString +
-	        		" <" + functionName + ">"; 
+	        		" <" + target + ">"; 
 	    } else {
 	        return "\t" + inst.getNmenonic() +" " + operandString;
 	    }
-	  
 	}
 
 	public boolean getShowChildern() {

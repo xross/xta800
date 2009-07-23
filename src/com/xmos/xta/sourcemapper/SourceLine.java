@@ -7,7 +7,7 @@ import java.util.List;
 public class SourceLine implements Line {
 	
 	private String             m_line;
-    private ArrayList<Line>    m_assembly;
+    private ArrayList<AssemblyLine>    m_assembly;
 	private int                m_lineNumber;
 	private ArrayList<Integer> m_statementPcs;
 	
@@ -16,7 +16,7 @@ public class SourceLine implements Line {
 	    assert(lineNumber>0);
 		m_line = line;
 		m_lineNumber = lineNumber;
-		m_assembly = new ArrayList<Line>();
+		m_assembly = new ArrayList<AssemblyLine>();
 		m_statementPcs = new ArrayList<Integer>();
 	}
 	
@@ -50,7 +50,7 @@ public class SourceLine implements Line {
         return m_line;
     }
 
-    public ArrayList<Line> getChildern() {
+    public ArrayList<AssemblyLine> getChildern() {
         return m_assembly;
     }
 }

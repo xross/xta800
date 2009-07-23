@@ -81,12 +81,12 @@ class InputSection {
 	
 	public InputSection(String header, String headerCodeReference, int index, int lineNum, String headerType) {
 		// Header line must have -1 index to counteract +1 in index calculations
+		m_headerType = headerType;
 		m_header = new InputLine(this, header, headerCodeReference, lineNum, -1, m_headerType);
 		m_lines = new ArrayList<InputLine>();
 		m_fnops = new ArrayList<InputLine>();
 		m_index = index;
 		m_pcs = new HashMap<Integer, InputLine>();
-		m_headerType = headerType;
 	}
 	
 	public void addLine(String line, String codeReference, int pc, int index, Input input) {

@@ -64,7 +64,7 @@ public class Version extends Command {
 		} 
     }
     
-    class XMLHandler extends DefaultHandler {
+    static class XMLHandler extends DefaultHandler {
     	String m_versionString;
     	
         public XMLHandler() {

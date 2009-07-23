@@ -20,6 +20,7 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
     public static final String SECTION     = "PositionCategory.Section";
     public static final String SOURCE      = "SOURCE";
     public static final String DISASSEMBLY = "DISASSEMBLY";
+    public static final String DISASSEMBLYFUNCTION = "DISASSEMBLYFUNCTION";
     
     private Input m_input;
     private TypedRegion[] m_regions;
@@ -43,6 +44,7 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 		m_regionTypes = new String[3];
 		m_regionTypes[0] = SOURCE;
 		m_regionTypes[1] = DISASSEMBLY;
+		m_regionTypes[2] = DISASSEMBLYFUNCTION;
 	}
 
 	public void partitionDocument(IDocument document, boolean buildDocument) {

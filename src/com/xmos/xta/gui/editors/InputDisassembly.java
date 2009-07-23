@@ -6,12 +6,12 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import com.xmos.xta.gui.GuiEngine;
+import com.xmos.xta.sourcemapper.AssemblyLine;
 import com.xmos.xta.sourcemapper.Function;
-import com.xmos.xta.sourcemapper.Line;
 
 public class InputDisassembly implements IEditorInput {
     public static final boolean DEBUG = false;
-    public static final String s_headerType = XtaDocumentPartitioner.SOURCE;
+    public static final String s_headerType = XtaDocumentPartitioner.DISASSEMBLYFUNCTION;
     public static final String s_lineType = XtaDocumentPartitioner.DISASSEMBLY;
 
     private Input m_input;    
@@ -28,9 +28,16 @@ public class InputDisassembly implements IEditorInput {
         	++lineIndex;
 
             InputSection section = m_input.getLastSection();
-        	for (Line line : function.getChildern()) {
+            boolean firstLine = true;
+        	for (AssemblyLine line : function.getChildern()) {
         		int pc = line.getLineNumber();
-				String str = String.format("    0x%05x %s", pc, line.getText());
+        		String str = "";
+        		if(firstLine){
+        			str = String.format("%s 0x%05x %s", line.getEmptyText(), pc, line.getText());
+        			firstLine = false;
+        		} else {
+        			str = String.format("%s 0x%05x %s", line.getPreText(), pc, line.getText());
+        		}
         		String childRef = String.format("0x%05x", pc);
         		m_input.addLine(str, childRef, pc, lineIndex);
         		++lineIndex;

@@ -629,7 +629,7 @@ public class RouteConstructor {
 		return referencedNodes;		
 	}
 	
-	class NodeWrapper {
+	static class NodeWrapper {
 		Node m_node;
 		public NodeWrapper(Node node){
 			m_node = node;

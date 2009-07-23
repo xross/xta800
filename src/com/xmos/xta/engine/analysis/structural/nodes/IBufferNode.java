@@ -74,7 +74,7 @@ public abstract class IBufferNode extends Node {
 	}
 	
 	private static int id;
-	class IBufferSequence implements Comparable<IBufferSequence>{
+	static class IBufferSequence implements Comparable<IBufferSequence>{
 		
 		
 		private int m_id;
