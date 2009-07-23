@@ -1026,7 +1026,7 @@ public class Engine implements Notifier {
 				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts(), fh.getFunctions());
 				newCfg.add(nodeId, coreId, cfg);
 				
-				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg);
+				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg, xeLoader);
 				
 				if (!sae.analyse(this, newFunctionNames.get(nodeId, coreId), pcToEndPoints))
 					return false;

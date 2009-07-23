@@ -17,9 +17,12 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ToolTip;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Sash;
 
@@ -100,18 +103,21 @@ public class SelectedRouteViewer {
 			if (selectedRoute != null) {								
 				selectedRoute.getNode().traverse(0, new UntypedNodeTraverser() {
 					public boolean foundNode(Node node, int depth) {
-						Collection<XtaInstruction> instructionsCovered = node.getInstructions();
-						for (XtaInstruction instruction : instructionsCovered) {
-						    if (instruction.getPc() == pc) {
-						    	selectedNodes.add(node);
-						    	break;
-						    }
+						if (node.isBlockNode()) {
+							Collection<XtaInstruction> instructionsCovered = node.getInstructions();
+							for (XtaInstruction instruction : instructionsCovered) {
+							    if (instruction.getPc() == pc) {
+							    	selectedNodes.add(node);
+							    	break;
+							    }
+							}
 						}
 						return true;
 					}
 				});
 			}
-			m_viewer.setSelection(new StructuredSelection(selectedNodes));			
+			StructuredSelection selection = new StructuredSelection(selectedNodes);
+			m_viewer.setSelection(selection, true);
 		}
 	}	
 	

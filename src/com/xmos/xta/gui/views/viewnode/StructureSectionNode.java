@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
 public class StructureSectionNode extends StructureNode {
@@ -126,8 +127,10 @@ public class StructureSectionNode extends StructureNode {
     	int childOffsetY = m_borderY;
     	int childrenX = getChildrenX();
 		for (ViewNode child : getChildren()) {
-			boolean childIsBestCase = child.getTreeNode().getAttributes().getTotalIterations(Case.BEST, null) > 0;
-			boolean childIsWorstCase = child.getTreeNode().getAttributes().getTotalIterations(Case.WORST, null) > 0;
+			Status status = new Status();
+			Node treeNode = child.getTreeNode();
+			boolean childIsBestCase = treeNode.getAttributes().getTimeTaken(Case.BEST, status, null) > 0;
+			boolean childIsWorstCase = treeNode.getAttributes().getTimeTaken(Case.WORST, status, null) > 0;
 
 			int childX = child.getPixelsX();
     		child.annotateNodes(offsetX + m_borderX + ((childrenX - childX) / 2), offsetY + childOffsetY,

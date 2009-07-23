@@ -10,10 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.xmos.xeloader.XeLoader;
+import com.xmos.xeloader.XeLoader.Architecture;
 import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.controlflow.ControlFlowGraph;
+import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -27,6 +30,7 @@ import com.xmos.xta.engine.analysis.structural.patterns.PatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.SectionPatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.SectionTransformer;
 import com.xmos.xta.engine.analysis.structural.patterns.SelfLoopPattern;
+import com.xmos.xta.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class StructuralAnalysisEngine {
@@ -37,9 +41,11 @@ public class StructuralAnalysisEngine {
 	private Map<Integer, FunctionNode> m_functionStartPcs;
 	private StructureGraph m_structureGraph;
 	private List<PatternMatcher> m_patternMatchers;
+	private Architecture m_arch;
 	
-	public StructuralAnalysisEngine(ControlFlowGraph controlFlowGraph) {
+	public StructuralAnalysisEngine(ControlFlowGraph controlFlowGraph, XeLoader xeLoader) {
 		m_controlFlowGraph = controlFlowGraph;
+		m_arch = xeLoader.getArchitecture();
 		setUpPatternMatcher();
 	}
 
@@ -272,10 +278,11 @@ public class StructuralAnalysisEngine {
 					BasicBlockMatcher bbpm = new BasicBlockMatcher();
 					if (bbpm.match(node, treeStart, currentGraph)) {
 						seen.addAll(bbpm.getBlock().getContainedNodes());
-						basicBlocks.add(bbpm.getBlock());
+						BlockNode basicBlock = bbpm.getBlock();
+						basicBlocks.add(basicBlock);
 						treeStart = bbpm.getTreeStart();
-						cfgToStructure.put(node, bbpm.getBlock());
-						endPoint.put(bbpm.getBlock(), bbpm.getLastBlock());
+						cfgToStructure.put(node, basicBlock);
+						endPoint.put(basicBlock, bbpm.getLastBlock());
 					}
 
 				} else if(node.isFunctionNode()){
@@ -311,7 +318,34 @@ public class StructuralAnalysisEngine {
 				CommonMethods.connect(leaf, root);
 			}
 		}
+		
+		for (Node node : basicBlocks) {
+			if(haltsProcessor(node)){
+				node.setInfinite(true);
+			}
+			if(nextProcessorStateUnknown(node)){
+				node.setUnresolved(true);
+			}
+		}
 		return treeStart;
+	}
+
+	private boolean nextProcessorStateUnknown(Node basicBlock) {
+		if(basicBlock.getNextNodesSize() == 0 && !basicBlock.isInfinite()){
+			return true;
+		}
+		return false;
+	}
+
+	private boolean haltsProcessor(Node basicBlock) {
+		LinkedList<XtaInstruction> instruction = basicBlock.getInstructions();
+		if(instruction.size() > 1){
+			InstructionMnemonics im = new InstructionMnemonics(m_arch);
+			if(im.isClre(instruction.get(instruction.size()-2)) && im.isWait(instruction.getLast())){
+				return true;
+			} 
+		} 
+		return false;
 	}
 
 	private void collectCurrentGraphNodes(Node node, Collection<Node> seen) {
