@@ -27,21 +27,27 @@ public class SelfLoopNodeAttributes extends NodeAttributes {
 		return m_numIterations;
 	}		
 	
-	long getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection)
+	Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection)
 	    throws IgnoreSectionIterationsException, InfiniteIterationsException {
-
-		if (getIsAbsolute())
-			return m_numIterations;
 		
-		long iterations = 1;
-		if (getNode().getParent() != null) {
-			
-		    try {			
-				iterations = getNode().getParent().getAttributes().getTotalIterations(c, getNode(), ignoreIterationsAboveSection);
-		    } catch (IgnoreSectionIterationsException e) {
-		    	iterations = IGNORE_SECTION_ITERATIONS;
-		    }			
+		if (getIsAbsolute()) {
+			Iterations iterations = new Iterations();
+			iterations.setLocalIterations(m_numIterations);
+			return iterations;
 		}
-		return iterations * m_numIterations;		
+		
+		Iterations iterations = null;
+		if (getNode().getParent() != null) {
+		    try {			
+		    	iterations = getNode().getParent().getAttributes().getTotalIterations(
+						c, getNode(), ignoreIterationsAboveSection);
+				
+		    } catch (IgnoreSectionIterationsException e) {
+		    	iterations = new Iterations();
+		    }
+		}
+		iterations.setGlobalIterations(iterations.getGlobalIterations() * iterations.getLocalIterations());
+		iterations.setLocalIterations(m_numIterations);
+		return iterations;		
 	}	
 }
