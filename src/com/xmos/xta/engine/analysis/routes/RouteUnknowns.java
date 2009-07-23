@@ -70,6 +70,10 @@ public class RouteUnknowns {
 	}
 	
 	public boolean canSetLoopIterations(Node node) {
+		Node infiniteLoopNode = node.getEnclosingInfiniteLoopNode();
+		if (infiniteLoopNode != null)
+			return false;
+		
 		if (node.getEnclosingLoopNode() == null)
 			return false;
 		
