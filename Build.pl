@@ -162,8 +162,8 @@ sub DoClean
 
 sub DoRealClean
 {
-  XmosBuildLib::UnInstallFile("$DOMAIN", "xta.jar");
-  XmosBuildLib::UnInstallFile("$DOMAIN", "xiss.jar");
+  XmosBuildLib::UnInstallFile("xta.exe");
+  XmosBuildLib::UnInstallFile("xta.jar");
 
   chdir("$BUILDPATH") or die("oops");
   DoPreClean();
