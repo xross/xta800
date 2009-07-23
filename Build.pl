@@ -135,8 +135,6 @@ sub DoPreClean
   chdir("$TOOLS_XTA${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta") 
     or die("Failed to move to $TOOLS_XTA${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta");
 
-  unlink("instructions/RevaInstructionDecoder.java");
-  unlink("instructions/RevaInstructions.java");
   unlink("instructions/RevbInstructionDecoder.java");
   unlink("instructions/RevbInstructions.java");
 
@@ -182,7 +180,6 @@ sub DoPreBuild
 
   print(" + Generating files from Databases\n");
 
-  CreateXtaFiles("reva", "Reva");
   CreateXtaFiles("revb", "Revb");
 
   chdir("$BUILDPATH") or die("oops");
