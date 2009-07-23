@@ -71,14 +71,12 @@ public class Engine implements Notifier {
 	private long m_loadStartTime;
 	private NodeCoreCollection<SourceMapper> m_sourceMapper;
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
-	private NodeCoreCollection<ControlFlowGraph> m_controlFlowGraph;
 	private NodeCoreCollection<InstructionDecoder> m_instructionDecoder;
 	private NodeCoreCollection<TreeMap<String, InstructionNode>> m_functionNames;
 	
 	public Engine(Config config) {		
 		m_sourceMapper = new NodeCoreCollection<SourceMapper>();
 		m_structuralGraph = new NodeCoreCollection<StructureGraph>();
-		m_controlFlowGraph = new NodeCoreCollection<ControlFlowGraph>();
 		m_instructionDecoder = new NodeCoreCollection<InstructionDecoder>();
 		m_functionNames = new NodeCoreCollection<TreeMap<String, InstructionNode>>();
 		m_xeLoader = new XeLoader();
@@ -141,10 +139,6 @@ public class Engine implements Notifier {
 
 	public SourceMapper getSourceMapper() {
 		return m_sourceMapper.get(m_nodeId, m_coreId);
-	}
-	
-	public ControlFlowGraph getControlFlowGraph() {
-		return m_controlFlowGraph.get(m_nodeId, m_coreId);
 	}
 	
 	public StructureGraph getStructureGraph() {
@@ -971,7 +965,6 @@ public class Engine implements Notifier {
 		m_loadStartTime = System.currentTimeMillis();
 		notify(Notifier.HOLD_MESSAGES, "");
 		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
-		NodeCoreCollection<ControlFlowGraph> newCfg = new NodeCoreCollection<ControlFlowGraph>();
 		NodeCoreCollection<InstructionDecoder> newInstructionDecoder = new NodeCoreCollection<InstructionDecoder>();
 		NodeCoreCollection<TreeMap<String, InstructionNode>> newFunctionNames = new NodeCoreCollection<TreeMap<String, InstructionNode>>();
 		NodeCoreCollection<SourceMapper> newSourceMappers = new NodeCoreCollection<SourceMapper>();
@@ -1010,13 +1003,13 @@ public class Engine implements Notifier {
 				starts.addAll(threadStartNodes);
 				
 				ensureAllFunctionsAreNamed(xeLoader.getSymbolTable(nodeId, coreId), 
-						newFunctionNames.get(nodeId, coreId), fh.getKnownFuncStarts(), threadStartNodes);
+						newFunctionNames.get(nodeId, coreId), fh.getKnownFuncStarts(), threadStartNodes, sections.getLabels(nodeId, coreId));
 				
 				setBranchTargets(id, newFunctionNames.get(nodeId, coreId));
 				
 				
 				SourceMapper sourceMapper = new SourceMapper(xeLoader, nodeId, coreId, starts, 
-						fileFinder, id, newFunctionNames.get(nodeId, coreId));
+						fileFinder, id, newFunctionNames.get(nodeId, coreId), sections.getLabels(nodeId, coreId));
 				
 				newSourceMappers.add(nodeId, coreId, sourceMapper);
 				
@@ -1024,7 +1017,6 @@ public class Engine implements Notifier {
 				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
 	
 				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts(), fh.getFunctions());
-				newCfg.add(nodeId, coreId, cfg);
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg, xeLoader);
 				
@@ -1035,7 +1027,6 @@ public class Engine implements Notifier {
 			}
 		}
 		m_instructionDecoder = newInstructionDecoder;
-		m_controlFlowGraph = newCfg;
 		m_structuralGraph = newStructuralGraph;
 		m_functionNames = newFunctionNames;
 		m_sourceMapper = newSourceMappers;
@@ -1063,12 +1054,18 @@ public class Engine implements Notifier {
 
 	private void ensureAllFunctionsAreNamed(SymbolTable symbolTable,
 			TreeMap<String, InstructionNode> treeMap,
-			Collection<InstructionNode> funcStarts, Set<InstructionNode> threadStarts ) {
+			Collection<InstructionNode> funcStarts, Set<InstructionNode> threadStarts, Map<String, Integer> labelToPc ) {
 		
+		Map<Integer, String> pcToLabel = new HashMap<Integer, String>();
+		
+		for(String label : labelToPc.keySet()){
+			pcToLabel.put(labelToPc.get(label), label);
+		}
 		
 		//TODO test this properly
 		for(InstructionNode inst : funcStarts){
 			String name = symbolTable.functionName(inst.getStartPc());
+			String label = pcToLabel.get(inst.getXtaInstruction().getPc());
 			
 			if(treeMap.containsKey(name)){
 				//the one with the lower pc will stay in the set and the other will take an auto-generated name.
@@ -1076,8 +1073,13 @@ public class Engine implements Notifier {
 				InstructionNode instNode = treeMap.get(name);
 				
 				if(instNode.getStartPc() < inst.getStartPc()){
-					name = "unnamed_function_at_0x" + Integer.toHexString(inst.getStartPc());
-					treeMap.put(name, inst);
+					if(label != null){
+						treeMap.put(label, inst);
+					} else {
+						name = "unnamed_function_at_0x" + Integer.toHexString(inst.getStartPc());
+						treeMap.put(name, inst);
+					}
+					
 				} else if(instNode.getStartPc() > inst.getStartPc()){
 					String newName = "unnamed_function_at_0x" + Integer.toHexString(instNode.getStartPc());
 					treeMap.put(newName, instNode);

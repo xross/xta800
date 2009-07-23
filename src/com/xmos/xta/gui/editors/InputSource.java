@@ -4,6 +4,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 
+import com.xmos.xta.sourcemapper.AssemblyLine;
 import com.xmos.xta.sourcemapper.Line;
 import com.xmos.xta.sourcemapper.SourceFile;
 import com.xmos.xta.sourcemapper.SourceLine;
@@ -27,14 +28,20 @@ public class InputSource implements IEditorInput {
         	String headerRef = String.format("%s:%d", sourceFile.getFileName(), sourceLine.getLineNumber());
         	m_input.addHeader(sourceLine.getText(), headerRef, lineIndex, sourceLine.getLineNumber());        	
         	++lineIndex;
-            for (Line line : sourceLine.getChildern()) {
+        	boolean firstLine = true;
+            for (AssemblyLine line : sourceLine.getChildern()) {
         		int pc = line.getLineNumber();
-        		String str = String.format("    0x%05x %s", pc, line.getText());
+        		String str = "";
+        		if(firstLine){
+        			str = String.format("%s 0x%05x %s", line.getEmptyText(), pc, line.getText());
+        			firstLine = false;
+        		} else {
+        			str = String.format("%s 0x%05x %s", line.getPreText(), pc, line.getText());
+        		}
         		String childRef = String.format("0x%05x", pc);
         		m_input.addLine(str, childRef, pc, lineIndex);
-        		++lineIndex;        		
-            }
-            
+        		++lineIndex;
+        	}
             // Only associate statement PCs from debug with this source line
             InputSection section = m_input.getLastSection();
             for (Integer pc : sourceLine.getStatementPcs()) {

@@ -375,7 +375,7 @@ public class GuiConsole implements Console {
         }
 	}
 
-	private class CommandString {
+	static private class CommandString {
 		private String m_str;
 		private boolean m_echo;
 		

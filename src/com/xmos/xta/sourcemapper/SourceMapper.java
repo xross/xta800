@@ -37,10 +37,12 @@ public class SourceMapper {
 	private Map<Integer, Function> m_pcToFunction;
 	private Map<String, String> m_functionToFile;
 	
+	private Map<String, Integer> m_labels;
 	
     public SourceMapper(XeLoader xeLoader, int nodeId, int coreId,
 			Set<InstructionNode> starts, FileFinder fileFinder, InstructionDecoder instructionDecoder, 
-			TreeMap<String, InstructionNode> treeMap) {
+			TreeMap<String, InstructionNode> treeMap, Map<String, Integer> labels) {
+    	m_labels = labels;
     	m_fileFinder = fileFinder;
         m_instructionDecoder = instructionDecoder;
         m_starts = starts;
@@ -189,7 +191,7 @@ public class SourceMapper {
 	private List<AssemblyLine> createAssemblyLines() {
 		List<AssemblyLine> asmLines = new LinkedList<AssemblyLine>();
 		for(InstructionNode instNode : m_instructionDecoder.getInstructions()){
-			AssemblyLine assLine = new AssemblyLine(instNode);
+			AssemblyLine assLine = new AssemblyLine(instNode, m_labels);
 			asmLines.add(assLine);
 			m_pcToAsm.put(instNode.getStartPc(), assLine);
 		}
@@ -203,7 +205,7 @@ public class SourceMapper {
     	
     	for(InstructionNode inst : m_starts){
     		int startIndex = instList.indexOf(inst);
-    		List<Line> functionAssemby = new LinkedList<Line>();
+    		List<AssemblyLine> functionAssemby = new LinkedList<AssemblyLine>();
     		functionAssemby.add(m_instructions.get(startIndex));
     		int index = startIndex +1;
     		while(index < instList.size() && !m_starts.contains(instList.get(index))){

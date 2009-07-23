@@ -42,6 +42,10 @@ public class XtaConfiguration extends SourceViewerConfiguration {
         reconciler.setDamager(asmDamageRepairer, XtaDocumentPartitioner.DISASSEMBLY);
         reconciler.setRepairer(asmDamageRepairer, XtaDocumentPartitioner.DISASSEMBLY);
         
+        DefaultDamagerRepairer asmFnDamageRepairer = new DefaultDamagerRepairer(new ScannerDisassemblyFunction());
+        reconciler.setDamager(asmFnDamageRepairer, XtaDocumentPartitioner.DISASSEMBLYFUNCTION);
+        reconciler.setRepairer(asmFnDamageRepairer, XtaDocumentPartitioner.DISASSEMBLYFUNCTION);
+        
         return reconciler;
     }
     

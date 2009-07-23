@@ -5,14 +5,14 @@ import java.util.List;
 public class Function implements Line, Comparable<Object> {
 
 	private String m_functionName;
-	private List<Line> m_assembly;
+	private List<AssemblyLine> m_assembly;
 
-	public Function(String name, List<Line> functionAssemby) {
+	public Function(String name, List<AssemblyLine> functionAssemby) {
 		m_assembly = functionAssemby;
 		m_functionName = name;
 	}
 
-	public List<Line> getChildern() {
+	public List<AssemblyLine> getChildern() {
 		return m_assembly;
 	}
 
