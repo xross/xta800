@@ -6,18 +6,20 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
+import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.gui.GuiEngine;
 
 public class Settings extends XtaDialog {
     private Spinner m_coreMhzSpinner;
     private Spinner m_threadSpinner;
-    private Spinner m_verbositySpinner;
+    private Button m_caseButton;
   
     private int m_oldFrequency;
     private int m_oldNumThreads;
@@ -84,17 +86,13 @@ public class Settings extends XtaDialog {
 			}			
 		});
 
-		Group verbosityGroup = createGroup(controls, "Console Verbosity", 1, 1);
-		m_verbositySpinner = new Spinner(verbosityGroup, SWT.BORDER);
-		m_verbositySpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		m_verbositySpinner.setMinimum(-10);
-		m_verbositySpinner.setMaximum(10);
-		m_verbositySpinner.setSelection(getVerbosity());
-		m_verbositySpinner.setIncrement(1);
-		m_verbositySpinner.setPageIncrement(4);
-		m_verbositySpinner.addSelectionListener(new SelectionAdapter() {
+		Group caseGroup = createGroup(controls, "Print worst case", 1, 1);
+		m_caseButton = new Button(caseGroup, SWT.CHECK);
+		m_caseButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
+		m_caseButton.setSelection(isWorstCase());
+		m_caseButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				setVerbosity(m_verbositySpinner.getSelection());
+				setCase(m_caseButton.getSelection());
 			}
 		});
 	}
@@ -125,12 +123,12 @@ public class Settings extends XtaDialog {
 		GuiEngine.getEngine().setNumThreads(numThreads);
 	}	
 
-	private int getVerbosity() {
-		return GuiEngine.getEngine().getVerbosity();
+	private boolean isWorstCase() {
+		return GuiEngine.getEngine().getCase().equals(Case.WORST);
 	}
 
-	private void setVerbosity(int verbosity) {
-		GuiEngine.getEngine().setVerbosity(verbosity);
+	private void setCase(boolean isWorstCase) {
+		GuiEngine.getEngine().setCase(isWorstCase ? Case.WORST : Case.BEST);
 	}
 }
 
