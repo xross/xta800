@@ -1,0 +1,4 @@
+analyse function cpuJSR
+print summary
+
+exit
