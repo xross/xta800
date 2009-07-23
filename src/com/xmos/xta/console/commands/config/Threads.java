@@ -29,7 +29,7 @@ public class Threads extends Command {
     }
     
     public String description(Engine engine, boolean detailed) {
-        return String.format("threads <num threads>: Sets number of threads currently executing (default: %d)", 
+        return String.format("threads <num threads>: Sets number of threads currently executing (currently: %d)", 
         		engine.getNumThreads());      	
     }
 
