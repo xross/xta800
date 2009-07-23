@@ -3,7 +3,6 @@ package com.xmos.xta.gui.views.info.sections;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import com.xmos.xta.engine.Engine;
 

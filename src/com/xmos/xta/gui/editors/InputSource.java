@@ -5,7 +5,6 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 
 import com.xmos.xta.sourcemapper.AssemblyLine;
-import com.xmos.xta.sourcemapper.Line;
 import com.xmos.xta.sourcemapper.SourceFile;
 import com.xmos.xta.sourcemapper.SourceLine;
 

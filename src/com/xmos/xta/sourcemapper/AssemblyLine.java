@@ -33,6 +33,11 @@ public class AssemblyLine implements Line {
 		m_labels = labels;
 	}
 
+	public static String [] getResourceNames(){
+		return m_resourceName;
+	}
+
+	
 	public List<AssemblyLine> getChildern() {
 		return new LinkedList<AssemblyLine>();
 	}

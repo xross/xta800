@@ -9,9 +9,6 @@ public abstract class XtaInstructionDecoder {
     		XeLoader.Architecture architecture) {
 		XtaInstructionDecoder instructionDecoder = null;
 		switch (architecture) {
-		case REVA:
-			instructionDecoder = new RevaXtaInstructionDecoder();
-			break;
 		case REVB:
 			instructionDecoder = new RevbXtaInstructionDecoder();
 			break;
