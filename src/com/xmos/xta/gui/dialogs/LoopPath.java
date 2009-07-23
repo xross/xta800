@@ -56,7 +56,8 @@ public class LoopPath extends XtaDialog {
 		spinner.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
 				true, false, 2, 1));
 
-		spinner.setMinimum(0);		
+		spinner.setMinimum(0);
+		spinner.setMaximum(Integer.MAX_VALUE);		
 		spinner.setEnabled(true);
 		spinner.setSelection((int)m_iterations);
 		spinner.setIncrement(1);

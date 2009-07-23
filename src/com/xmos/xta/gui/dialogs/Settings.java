@@ -59,7 +59,7 @@ public class Settings extends XtaDialog {
 	    m_freqSpinner = new Spinner(freqGroup, SWT.BORDER);
 		m_freqSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		m_freqSpinner.setMinimum(1);
-		m_freqSpinner.setMaximum(10000);
+		m_freqSpinner.setMaximum(Integer.MAX_VALUE);
 		m_freqSpinner.setSelection(getFrequency());
 		m_freqSpinner.setIncrement(1);
 		m_freqSpinner.setPageIncrement(10);

@@ -62,7 +62,8 @@ public class Loop extends XtaDialog {
 			spinner.setMinimum(1);
 		else 
 			spinner.setMinimum(0);
-		spinner.setEnabled(true);
+		spinner.setMaximum(Integer.MAX_VALUE);
+		spinner.setEnabled(true);		
 		spinner.setSelection((int)m_iterations);
 		spinner.setIncrement(1);
 		spinner.setPageIncrement(10);
