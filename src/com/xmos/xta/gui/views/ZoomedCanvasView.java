@@ -2,7 +2,6 @@ package com.xmos.xta.gui.views;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
@@ -12,12 +11,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -36,8 +29,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.engine.analysis.routes.Route;
@@ -52,8 +43,6 @@ import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.gui.Broadcaster;
 
 public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChangeListener,
-                                                       ISelectionListener,
-                                                       ISelectionProvider,
                                                        IMenuListener {
     public static final boolean DEBUG = false;
 
@@ -75,7 +64,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 
     private Shell m_toolTip;
     private Label m_tipLabel;
-    private Vector<ISelectionChangedListener> m_listeners;
     
     private RendererControl m_renderControl;
     private Renderer m_renderer;
@@ -88,7 +76,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		if (DEBUG) System.out.println(m_name + "()");			
 		GuiEngine.addBroadcastListener(this);
 	    
-		m_listeners = new Vector<ISelectionChangedListener>();
 	    m_selectedNodes = new ArrayList<Node>();
 
 		m_canvasProperties = createCanvasProperties();
@@ -166,9 +153,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 
 	    setupMouseListeners();
 	    createContextMenus();
-	    
-		getSite().getPage().addSelectionListener(this);
-		getSite().setSelectionProvider(this);
 
 	    m_renderer = createRenderer(m_display, m_renderControl, m_canvasProperties, m_canvas);
 		(new Thread(m_renderer)).start();
@@ -214,26 +198,12 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			m_renderControl.refresh();
 			updateScrollBars();
 			
-		} 
+		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECTION_CHANGED)) {
+			updateSelection(GuiEngine.getSelectedNodes());
+			
+		}
 	}
 	
-	public void selectionChanged(IWorkbenchPart part, ISelection sel) {
-		if (part == this)
-			return;
-		
-        if (sel instanceof IStructuredSelection) {
-        	IStructuredSelection sSel = (IStructuredSelection)sel;
-
-        	List<Node> newNodes = new ArrayList<Node>();
-        	for (Object object : sSel.toArray()) {
-        		if (object instanceof Node) {
-        			newNodes.add((Node)object);
-        		}
-            }
-        	updateSelection(newNodes);
-        }
-    }	            		         	        	
-
 	private void updateSelection(List<Node> newNodes) {
     	m_selectedNodes = newNodes;
     	m_renderControl.setSelection(newNodes);
@@ -244,44 +214,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			m_toolTip.dispose();
     	}
     	Views.createContextMenu(manager, m_selectedNodes, m_parent.getShell());
-	}
-
-	//
-	// Methods for implementing the ISelectionProvider
-	//
-	public void addSelectionChangedListener(ISelectionChangedListener listener) {
-		if (!m_listeners.contains(listener)) {
-			m_listeners.add(listener);
-		}
-	}
-
-	public ISelection getSelection() {
-		return new StructuredSelection(m_selectedNodes);
-	}
-
-	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
-		if (m_listeners.contains(listener)) {
-			m_listeners.remove(listener);
-		}
-	}
-
-	public void setSelection(ISelection sel) {
-		if (sel == null)
-			return;
-
-        if (sel instanceof IStructuredSelection) {
-        	List<Node> newNodes = new ArrayList<Node>();
-        	for (Object object : ((IStructuredSelection)sel).toArray()) {
-        		if (object instanceof Node) {
-        			newNodes.add((Node)object);
-        		}
-            }
-        	updateSelection(newNodes);
-        }
-        
-		for (ISelectionChangedListener listener : m_listeners) {
-			listener.selectionChanged(new SelectionChangedEvent(this, sel));
-		}
 	}
 
 	public String getName() {
@@ -506,7 +438,8 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		        	} else {
 		        		newNodes.add(newNode);
 		        	}
-	        		setSelection(new StructuredSelection(newNodes));
+	        		updateSelection(newNodes);
+	            	GuiEngine.setSelectedNodes(newNodes);
 				}
 			}
 
