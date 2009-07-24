@@ -13,5 +13,6 @@ system("xcc -target=$target -march=$arch -nostartfiles -g test.s -o $genDir/test
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
        "-print trace - " .
+       "-print structure - " .
        "-exit > $genDir/unresolved.txt 2>&1");
 

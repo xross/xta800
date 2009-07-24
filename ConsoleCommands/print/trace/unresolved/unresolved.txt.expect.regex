@@ -1,9 +1,0 @@
-  0.0: \(20.0ns\) 0x10002 main \+ 0               entsp \(u6\)   i 0x4
-  20.0: \(20.0ns\) 0x10004                        --FNOP--     
-  40.0: \(20.0ns\) 0x10004 main \+ 2               ldc \(ru6\)    r0, i 0x0
-  60.0: \(20.0ns\) 0x10006 main \+ 4               ldc \(ru6\)    r0, i 0x0
-  80.0: \(20.0ns\) 0x10008 main \+ 6               ldc \(ru6\)    r0, i 0x0
-  100.0: \(20.0ns\) 0x1000a main \+ 8               ldc \(ru6\)    r0, i 0x0
-  120.0: \(20.0ns\) 0x1000c main \+ 10              ldc \(ru6\)    r0, i 0x0
-  140.0: \(20.0ns\) 0x1000e main \+ 12              bau \(1r\)     r1
-
