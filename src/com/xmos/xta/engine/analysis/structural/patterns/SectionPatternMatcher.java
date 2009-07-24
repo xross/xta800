@@ -85,7 +85,7 @@ public class SectionPatternMatcher extends PatternMatcher {
 
 					assert(sectionSanityCheck(currentNode, sectionNodes, null, endNode));
 					if(verifyGraphAgainstDominators(currentNode, endNode)){
-						updateGraph(currentNode, sectionNodes, true, workingSet, endNode);
+						updateGraph(currentNode, sectionNodes, false, workingSet, endNode);
 						return true;
 					}
 				}
