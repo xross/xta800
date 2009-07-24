@@ -1,0 +1,17 @@
+Warning: Instruction instruction10 failed to find target 0x0
+Warning: CP address 0x410234 out of bounds
+Warning: Instruction instruction14 failed to find target 0x10826
+Warning: Instruction instruction15 failed to find target 0x21002a
+Warning: Instruction instruction16 failed to find target 0xf830
+Warning: Instruction instruction17 failed to find target 0xffe10034
+Warning: Instruction instruction18 failed to find target 0x100b2
+Warning: Instruction instruction19 failed to find target 0x30036
+Warning: Instruction instruction20 failed to find target 0xffbc
+Warning: Instruction instruction21 failed to find target 0xffff0040
+Warning: Instruction instruction23 failed to find target 0x30042
+Warning: Instruction instruction24 failed to find target 0x100c4
+Warning: Instruction instruction25 failed to find target 0x30048
+Warning: Instruction instruction27 failed to find target 0x3004e
+Warning: Instruction instruction29 failed to find target 0x30054
+Warning: No valid paths of execution
+Error: No routes analysed

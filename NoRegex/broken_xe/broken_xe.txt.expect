@@ -1,0 +1,11 @@
+Error: The file '/home/andrew-local/software/sandbox2/verif_tests_sw/Tools/xta/NoRegex/broken_xe/test_2.xe' could not be loaded.
+Current node: 0
+Current core: 0
+Frequency: 400
+NumThreads: 8
+SrcPaths: .
+Case: WORST
+Verbosity: 0
+Loaded executable: test_1.xe
+Node: 0, Core: 0 (Debug information avaliable)
+No routes analysed

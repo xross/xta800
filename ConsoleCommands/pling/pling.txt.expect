@@ -30,6 +30,7 @@ Error: No executable loaded
 6: list functions
 7: history
 Invalid command in file: cmds.txt, line number: 15
+Invalid command in file: cmds.txt, line number: 18
 1: status
 2: source cmds.txt
 3: status
@@ -38,4 +39,5 @@ Invalid command in file: cmds.txt, line number: 15
 6: list functions
 7: history
 8: !3
-9: history
+9: !e
+10: history
