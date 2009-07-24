@@ -105,9 +105,12 @@ public class SectionPatternMatcher extends PatternMatcher {
 		if(endNode.getDominators().containsAll(set)){
 			return true;
 		}
+
+		return false;
+		
 		*/
+		
 		return true;
-		//return false;
 	}
 
 	private boolean sectionSanityCheck(Node startNode, Collection<Node> sectionNodes, Node jumpNode, Node endNode) {
