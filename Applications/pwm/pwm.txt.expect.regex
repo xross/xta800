@@ -5,7 +5,7 @@ Route\(1\) path: interS1ThreadInput to interS1ThreadInput
     Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d+ns, Required: 20833.3ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
 Route\(2\) path: interS1ThreadOutput to interS1ThreadOutput
-    Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d+ns, Required: 5208.3ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 5208.3ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
 Route\(3\) path: interS2ThreadInput to interS2ThreadInput
     Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d+ns, Required: 5208.3ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
@@ -31,4 +31,4 @@ Route\(9\) path: pwmThreadHigh to pwmThreadLow2
 Route\(10\) path: pwmThreadHigh to pwmThreadLow2
     Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d+ns, Required: 600.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
-Fail, 10/11, Max Violation: \d+\.\d+ns
+Fail, 9/11, Max Violation: \d+\.\d+ns
