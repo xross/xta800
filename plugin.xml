@@ -109,7 +109,7 @@
          </command>
          <command
                commandId="com.xmos.xta.gui.function.exportjpg.command"
-               icon="icons/exportjpg.png"
+               icon="icons/filesave.png"
                id="com.xmos.xta.gui.function.exportjpg.command"
                label="Export as jpg"
                style="push">
@@ -147,7 +147,7 @@
    </command>
    <command
          commandId="com.xmos.xta.gui.structure.exportjpg.command"
-         icon="icons/exportjpg.png"
+         icon="icons/filesave.png"
          id="com.xmos.xta.gui.structure.exportjpg.command"
          label="Export as jpg"
          style="push">
