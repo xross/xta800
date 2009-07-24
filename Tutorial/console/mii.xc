@@ -155,7 +155,7 @@ void mii_rx_pins(chanend c_mii_rx)
                         #pragma xta label "error_crc"
                         mii_counter_rxercrc++;
                         clearbuf(p_mii_rxd);
-                    } else if (length & !63) {
+                    } else if (length & ~63) {
                         #pragma xta label "error_len"
                         mii_counter_rxerlen++;
                         clearbuf(p_mii_rxd);
