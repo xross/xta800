@@ -8,10 +8,14 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 
 public class SectionNodeAttributes extends NodeAttributes {
 	private Map<Node, Long> m_setIterations;
+	private Node m_cachedWorstCaseOption;
+	private Node m_cachedBestCaseOption;
 	
 	public SectionNodeAttributes(Node node) {
 		super(node);	
 		m_setIterations = new HashMap<Node, Long>();
+		m_cachedWorstCaseOption = null;
+		m_cachedBestCaseOption = null;
 	}
 
 	// --------------------------------------------------------------------- //
@@ -27,7 +31,7 @@ public class SectionNodeAttributes extends NodeAttributes {
 		for (Node child : m_setIterations.keySet()) {
 		    value += child.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveSection);
 		}
-		Node option = getNode().getUnsetOption(c, ignoreIterationsAboveSection);
+		Node option = getFloatingOption(c, ignoreIterationsAboveSection);
 		if (option != null) {
 			value += option.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveSection); 
 		}		
@@ -49,7 +53,7 @@ public class SectionNodeAttributes extends NodeAttributes {
     	for (Node child : m_setIterations.keySet()) {
    		    value += child.getAttributes().getNumCycles(c, status, ignoreIterationsAboveSection);
     	}		
-    	Node option = getNode().getUnsetOption(c, ignoreIterationsAboveSection);
+    	Node option = getFloatingOption(c, ignoreIterationsAboveSection);
     	if (option != null) {
     		value += option.getAttributes().getNumCycles(c, status, ignoreIterationsAboveSection); 
     	}    		
@@ -71,7 +75,7 @@ public class SectionNodeAttributes extends NodeAttributes {
 		for (Node child : m_setIterations.keySet()) {
 		    value += child.getAttributes().getNumInstructions(c, status, ignoreIterationsAboveSection);
 		}		
-		Node option = getNode().getUnsetOption(c, ignoreIterationsAboveSection);
+		Node option = getFloatingOption(c, ignoreIterationsAboveSection);
 		if (option != null) {
 			value += option.getAttributes().getNumInstructions(c, status, ignoreIterationsAboveSection); 
 		}
@@ -93,7 +97,7 @@ public class SectionNodeAttributes extends NodeAttributes {
 		for (Node child : m_setIterations.keySet()) {
 		    value += child.getAttributes().getNumFNops(c, status, ignoreIterationsAboveSection);
 		}		
-		Node option = getNode().getUnsetOption(c, ignoreIterationsAboveSection);
+		Node option = getFloatingOption(c, ignoreIterationsAboveSection);
 		if (option != null) {
 			value += option.getAttributes().getNumFNops(c, status, ignoreIterationsAboveSection); 
 		}			
@@ -175,7 +179,7 @@ public class SectionNodeAttributes extends NodeAttributes {
 			assert(totalNumIterationsSet <= loopIterations);
 	   		long remainder = loopIterations - totalNumIterationsSet;
 	   		if (remainder > 0) {
-				Node option = getNode().getUnsetOption(c, getNode());
+				Node option = getFloatingOption(c, getNode());
 				if (option == optionNode)
 					return remainder;
 	   		}			
@@ -199,14 +203,6 @@ public class SectionNodeAttributes extends NodeAttributes {
 		m_setIterations.clear();
 	}
 				
-	private long getTotalNumIterationsSet() {
-		long totalNumIterationsSet = 0;
-		for (Node option : m_setIterations.keySet()) {
-			totalNumIterationsSet += m_setIterations.get(option);
-	    }
-  	    return totalNumIterationsSet;
-	}
-	
 	long getLocalIterations(Node child) 
         throws SectionIterationsNotSetException, InfiniteIterationsException {
 
@@ -235,4 +231,35 @@ public class SectionNodeAttributes extends NodeAttributes {
             return new Iterations();
 		}
 	}		
+	
+	void invalidateCacheIterations() {
+		m_cachedWorstCaseOption = null;
+		m_cachedBestCaseOption = null;
+	}
+	
+	private long getTotalNumIterationsSet() {
+		long totalNumIterationsSet = 0;
+		for (Node option : m_setIterations.keySet()) {
+			totalNumIterationsSet += m_setIterations.get(option);
+	    }
+  	    return totalNumIterationsSet;
+	}
+	
+    private Node getFloatingOption(Case c, Node ignoreIterationsAboveSection) {    	
+    	switch (c) {
+    	case WORST:
+    		if (m_cachedWorstCaseOption == null) {
+    			m_cachedWorstCaseOption = getNode().getUnsetOption(c, ignoreIterationsAboveSection);
+    		}
+			return m_cachedWorstCaseOption;
+    		
+    	case BEST:
+    		if (m_cachedBestCaseOption == null) {
+    			m_cachedBestCaseOption = getNode().getUnsetOption(c, ignoreIterationsAboveSection);
+    		}
+			return m_cachedBestCaseOption;
+    	}
+    	assert(false);
+    	return null;
+    }
 }

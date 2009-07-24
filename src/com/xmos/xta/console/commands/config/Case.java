@@ -35,7 +35,7 @@ public class Case extends Command {
     }
     
     public String description(Engine engine, boolean detailed) {
-        return String.format("case <BEST/WORST>: Sets the case (default: %s)", 
+        return String.format("case <BEST/WORST>: Sets the case (currently: %s)", 
         		engine.getCase().toString());      	
     }
 

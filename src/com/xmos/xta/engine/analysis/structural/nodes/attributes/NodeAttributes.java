@@ -297,6 +297,8 @@ public class NodeAttributes {
 		setCachedNumInstructionsValid(Case.BEST, false);
 		setCachedNumFnopsValid(Case.WORST, false);
 		setCachedNumFnopsValid(Case.BEST, false);
+		
+		invalidateCacheIterations();
     }
 
 	double getCachedTimeTaken(Case c)     { return (c == Case.WORST) ? m_cachedWorstTimeTaken       : m_cachedBestTimeTaken; }	
@@ -496,6 +498,9 @@ public class NodeAttributes {
 		return new Iterations();		
 	}
 	
+	void invalidateCacheIterations() {
+	}
+
 	// ===================================================================== //
 	// Instruction Time Methods
 	// ===================================================================== //

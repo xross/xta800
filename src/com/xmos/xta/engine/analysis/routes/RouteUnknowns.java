@@ -94,12 +94,12 @@ public class RouteUnknowns {
 	}
 	
 	private void setLoopIterationsNoCheck(Node node, long iterations) {
+		invalidateCachedStats();				
 		Node enclosingLoopNode = node.getEnclosingLoopNode();		
 	    enclosingLoopNode.getAttributes().setLoopIterations(iterations);
 		enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
    		clearPathIterations(enclosingLoopNode);
 		refreshDisplayedUnknowns();
-		invalidateCachedStats();				
 	}
 
 	// ===================================================================== //
@@ -173,11 +173,11 @@ public class RouteUnknowns {
 	}
 
 	private void setLoopPathIterationsNoCheck(Node node, long iterations) {
+		invalidateCachedStats();
 		Node sectionNode = node.getEnclosingSectionNode();
 		Node optionNode = node.getEnclosingOptionNode();
 	    sectionNode.getAttributes().setLoopPathIterations(optionNode, iterations);
 		refreshDisplayedUnknowns();		
-		invalidateCachedStats();
 	}
 	
 	// ===================================================================== //
@@ -222,9 +222,9 @@ public class RouteUnknowns {
 	}		
 	
 	private void setLoopScopeNoCheck(Node node, boolean isAbsolute) {
+		invalidateCachedStats();		
     	Node enclosingLoopNode = node.getEnclosingLoopNode();
 		enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
-		invalidateCachedStats();		
 	}
 	
 	// ===================================================================== //
@@ -240,10 +240,10 @@ public class RouteUnknowns {
 	}
 	
 	public void setInstructionTimeTaken(Node node, double timeTaken) {
+		invalidateCachedStats();
     	node.getAttributes().setInstructionTimeTaken(timeTaken);
 		node.getAttributes().setUnknownState(UnknownState.KNOWN);	
 		refreshDisplayedUnknowns();	
-		invalidateCachedStats();
 	}
 
 	public boolean unsetInstructionTimeTaken(Reference reference) {
@@ -256,10 +256,10 @@ public class RouteUnknowns {
 	}
 
 	public void unsetInstructionTimeTaken(Node node) {
+		invalidateCachedStats();
     	node.getAttributes().unsetInstructionTimeTaken();
 		node.getAttributes().setUnknownState(UnknownState.UNKNOWN);	
 		refreshDisplayedUnknowns();
-		invalidateCachedStats();
 	}
 	
 	public double getInstructionTimeTaken(Node node) {
@@ -276,10 +276,10 @@ public class RouteUnknowns {
 	}
 
 	public void setInstructionNumCycles(Node node, long numCycles) {
+		invalidateCachedStats();
     	node.getAttributes().setInstructionNumCycles(numCycles);
 		node.getAttributes().setUnknownState(UnknownState.KNOWN);	
 		refreshDisplayedUnknowns();		
-		invalidateCachedStats();
 	}
 	
 	public boolean unsetInstructionNumCycles(Reference reference) {
@@ -292,10 +292,10 @@ public class RouteUnknowns {
 	}
 
 	public void unsetInstructionNumCycles(Node node) {
+		invalidateCachedStats();
     	node.getAttributes().unsetInstructionNumCycles();
 		node.getAttributes().setUnknownState(UnknownState.UNKNOWN);			
 		refreshDisplayedUnknowns();			
-		invalidateCachedStats();
 	}
 		
 	public long getInstructionNumCycles(Node node) {
