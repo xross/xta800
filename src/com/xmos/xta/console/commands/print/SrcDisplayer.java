@@ -37,10 +37,10 @@ public class SrcDisplayer {
         	displaySrcLinesCovered(linesCovered);
         
 		for (SourceFile sourceFile : sourceMapper.getSourceFiles()) {									
-	        TreeSet<Integer> fileLines = linesCovered.get(sourceFile.getFullSourceName());    
+	        TreeSet<Integer> fileLines = linesCovered.get(sourceFile.getFullFileName());    
 	        if (fileLines.size() > 0) {
 				m_console.display("----------------------------------\n");
-				m_console.display(sourceFile.getFileName() + " (" + sourceFile.getBaseDir() + ")\n");
+				m_console.display(sourceFile.getFullFileName() + "\n");
 				m_console.display("----------------------------------\n");	        	
 	        	
 				for (SourceLine sourceLine : sourceFile.getSourceLines()) {						
@@ -71,7 +71,7 @@ public class SrcDisplayer {
 		for (XtaInstruction inst : instructions) {
 			for (SourceFile sourceFile : sourceMapper.getSourceFiles()) {
 				
-				String compilationName = sourceFile.getFullSourceName();
+				String compilationName = sourceFile.getFullFileName();
 				TreeSet<Integer> sourceLines;
 				if (linesCovered.containsKey(compilationName)) {
 					sourceLines = linesCovered.get(compilationName);

@@ -31,7 +31,11 @@ public class SourceFile {
 		return m_debugFile.getBaseDir();
 	}
 
-	public String getFullSourceName() {
+	public String getShortFileName() {
+		return m_debugFile.getShortFileName();
+	}
+	
+	public String getFullFileName() {
 		return m_debugFile.getFullFileName();
 	}
 	

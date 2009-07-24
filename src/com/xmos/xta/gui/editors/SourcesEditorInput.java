@@ -5,7 +5,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 
 public class SourcesEditorInput implements IEditorInput {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public SourcesEditorInput() {	
 		if (DEBUG) System.out.printf("SourcesInput()\n");			
