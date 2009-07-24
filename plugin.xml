@@ -107,6 +107,13 @@
                label="Zoom to fit"
                style="push">
          </command>
+         <command
+               commandId="com.xmos.xta.gui.function.exportjpg.command"
+               icon="icons/exportjpg.png"
+               id="com.xmos.xta.gui.function.exportjpg.command"
+               label="Export as jpg"
+               style="push">
+         </command>
       </menuContribution>
       <menuContribution
             locationURI="toolbar:com.xmos.xta.gui.views.structure.Structure">
@@ -136,6 +143,13 @@
          icon="icons/zoomfit.png"
          id="com.xmos.xta.gui.structure.zoomfit.command"
          label="Zoom to fit"
+         style="push">
+   </command>
+   <command
+         commandId="com.xmos.xta.gui.structure.exportjpg.command"
+         icon="icons/exportjpg.png"
+         id="com.xmos.xta.gui.structure.exportjpg.command"
+         label="Export as jpg"
          style="push">
    </command>
 		</menuContribution>
@@ -181,6 +195,16 @@
             defaultHandler="com.xmos.xta.gui.handlers.FunctionZoomFitHandler"
             id="com.xmos.xta.gui.function.zoomfit.command"
             name="com.xmos.xta.gui.function.zoomfit.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.gui.handlers.StructureExportJpgHandler"
+            id="com.xmos.xta.gui.structure.exportjpg.command"
+            name="com.xmos.xta.gui.structure.exportjpg.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.gui.handlers.FunctionExportJpgHandler"
+            id="com.xmos.xta.gui.function.exportjpg.command"
+            name="com.xmos.xta.gui.function.exportjpg.command">
       </command>
    </extension>
    <extension

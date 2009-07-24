@@ -56,7 +56,7 @@ public class StructuralAnalysisEngine {
 	public boolean analyse(Engine engine, TreeMap<String, InstructionNode> functionNames, 
 			Map<Integer, TreeSet<Node>> pcToEndPoints) {
 		m_functionStartPcs = new TreeMap<Integer, FunctionNode>();
-		return buildStructureGraph(engine, functionNames, pcToEndPoints);
+		return buildStructureGraphs(engine, functionNames, pcToEndPoints);
 	}
 
 	public StructureGraph getStructureGraph() {
@@ -66,6 +66,8 @@ public class StructuralAnalysisEngine {
 	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine, boolean debug, String jobPrefix) {
 		
 		if(workingSet.size() == 1 && workingSet.iterator().next().getNextNodesSize() == 0) return true;
+		buildDominatorTree(workingSet, treeStart);
+		//System.out.println(dumpTree("tree", workingSet));
 		
 		boolean working = true;
 		boolean dominatorTreeUpToDate = false;
@@ -99,7 +101,7 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	private boolean buildStructureGraph(Engine engine, TreeMap<String, InstructionNode> treeMap, Map<Integer, TreeSet<Node>> pcToEndPoints) {
+	private boolean buildStructureGraphs(Engine engine, TreeMap<String, InstructionNode> treeMap, Map<Integer, TreeSet<Node>> pcToEndPoints) {
 		
 		Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
 		
@@ -171,6 +173,9 @@ public class StructuralAnalysisEngine {
 			fa.analyse(initialBasicBlock, isFunction);
 			fa.addFnopsToBasicBlocks(initialBasicBlock);
 			assert(basicBlocks.contains(initialBasicBlock));
+			
+			
+			
 			
 			if (!createStructure(basicBlocks, initialBasicBlock, engine, false, jobName)) {
 				return null;
@@ -633,6 +638,15 @@ public class StructuralAnalysisEngine {
 				
 				if(node.isBlockNode() || node.isInstructionNode()){
 					sb.append(node + " [label=\"" + node + "\\n");
+					
+					
+					sb.append("dominated by: ");
+					for(Node dom : node.getDominators()){
+						sb.append( dom + " ");
+					}
+					sb.append("\\n");
+					
+					
 					for(XtaInstruction inst : node.getInstructions()){
 						sb.append(inst + "\\n");  
 					}

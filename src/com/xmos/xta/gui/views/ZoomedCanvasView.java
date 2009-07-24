@@ -1,10 +1,16 @@
 package com.xmos.xta.gui.views;
 
+import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -24,6 +30,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -156,9 +163,40 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 
 	    m_renderer = createRenderer(m_display, m_renderControl, m_canvasProperties, m_canvas);
 		(new Thread(m_renderer)).start();
-	
+		
 		initialiseTree();
 	    m_renderControl.refresh();
+	}
+	
+	public void dumpJpg(){
+		
+		BufferedOutputStream bufferedOutput = null;
+        try {
+        	FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.SAVE);
+            fileDialog.setText("Save as...");
+            String fileName = fileDialog.open();
+        	
+            bufferedOutput = new BufferedOutputStream(new FileOutputStream(fileName));
+            
+            ImageLoader imgLoader = new ImageLoader();
+    		ImageData[] imgData = new ImageData[1];
+    		imgData[0] = m_renderer.m_canvasImage.getImageData();
+
+    		imgLoader.data = imgData;
+    		imgLoader.save(bufferedOutput, 4);
+            
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (bufferedOutput != null) {
+                    bufferedOutput.flush();
+                    bufferedOutput.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
 	}
 	
 	public void dispose() {

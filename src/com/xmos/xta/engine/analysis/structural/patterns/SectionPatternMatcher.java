@@ -74,19 +74,40 @@ public class SectionPatternMatcher extends PatternMatcher {
 						System.err.println("#section failed sanity check");
 						continue;
 					}
-					updateGraph(currentNode, sectionNodes, true, workingSet, endNode);
-					return true;
+					
+					if(verifyGraphAgainstDominators(currentNode, endNode)){
+						updateGraph(currentNode, sectionNodes, true, workingSet, endNode);
+						return true;
+					}
 				}
 			} else {
 				if (sectionNodes.size() > 1) {
 
 					assert(sectionSanityCheck(currentNode, sectionNodes, null, endNode));
-					updateGraph(currentNode, sectionNodes, false, workingSet, endNode);
-					return true;
+					if(verifyGraphAgainstDominators(currentNode, endNode)){
+						updateGraph(currentNode, sectionNodes, true, workingSet, endNode);
+						return true;
+					}
 				}
 			}
 		}
 		return false;
+	}
+
+	private boolean verifyGraphAgainstDominators(Node startNode, Node endNode) {
+		
+		//for a section to pass it must have the following property:
+		// dom(endNode) = dom(startNode) n endNode
+		/*
+		Set<Node> set = new TreeSet<Node>(startNode.getDominators());
+		set.add(endNode);
+		
+		if(endNode.getDominators().containsAll(set)){
+			return true;
+		}
+		*/
+		return true;
+		//return false;
 	}
 
 	private boolean sectionSanityCheck(Node startNode, Collection<Node> sectionNodes, Node jumpNode, Node endNode) {
@@ -143,6 +164,6 @@ public class SectionPatternMatcher extends PatternMatcher {
 	}
 	
 	public boolean usesDominatorTree() {
-		return false;
+		return true;
 	}
 }
