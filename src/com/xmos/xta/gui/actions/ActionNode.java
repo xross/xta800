@@ -77,12 +77,10 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 	public void propertyChange(PropertyChangeEvent event) {
 		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) { 
 	        updateState();
-	        m_action.setEnabled(true);
     		updateCurrentNodeId(0);
 
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 	        updateState();
-	        m_action.setEnabled(true);
 	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
 	        updateState();
@@ -94,12 +92,12 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 		assert(false);
 		return null;
 	}
-
+	//private MenuItem m_item;
 	public Menu getMenu(Control parent) {
 		Menu menu = new Menu(parent);
 		
         for (final String nodeId : m_nodeIds) {
-    		MenuItem item = new MenuItem(menu, SWT.NONE);
+        	MenuItem item = new MenuItem(menu, SWT.NONE);
     		item.setText(nodeId);
     		item.addSelectionListener(m_listListener);
         }
@@ -110,8 +108,16 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 	private void updateState() {
 		m_nodeIds.clear();
 		for (Integer nodeId : GuiEngine.getEngine().getXeLoader().getNodeIds()) {
-			m_nodeIds.add(String.format("%d", nodeId));
+				m_nodeIds.add(String.format("%d", nodeId));
+			}
+		
+		if(GuiEngine.getEngine().getXeLoader().getNodeIds().size() == 1){
+			m_action.setEnabled(false);
+		}  else {
+			m_action.setEnabled(true);
 		}
+		
+		
 	}
 	
 	private void updateCurrentNodeId(int noded) {

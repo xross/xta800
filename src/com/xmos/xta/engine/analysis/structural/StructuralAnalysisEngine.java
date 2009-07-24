@@ -119,7 +119,7 @@ public class StructuralAnalysisEngine {
 
 		engine.provideFeedback("Analysing for recursion...");		
 		if (detectRecursion(engine, allFunctionObjects)) {
-			engine.notify(Notifier.NOTIFY_ERROR, "Recursion detected");			
+			//engine.notify(Notifier.NOTIFY_ERROR, "Recursion detected");			
 			return false;
 		}
 		
@@ -460,7 +460,16 @@ public class StructuralAnalysisEngine {
 				}
 			}
 		}
-		return !loops.isEmpty();
+		if(!loops.isEmpty()){
+			StringBuffer sb = new StringBuffer();
+			for(FunctionNode fn : loops){
+				sb.append(fn.getFunctionName() + " ");
+			}
+			engine.notify(Notifier.NOTIFY_ERROR, "Recursion detected in function(s): " + sb.toString());	
+			return true;
+		}
+		return false;
+
 	}
 	private void buildFunctionDominatorTree(Collection<FunctionNode> reachableNodes, 
 			FunctionNode treeStart, Map<FunctionNode, TreeSet<FunctionNode>> fnDominators) {
