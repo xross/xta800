@@ -56,8 +56,7 @@ public class NullNode extends IBufferNode {
 	}
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundTerminalNode(this, depth))
-			return;
+		return;
 	}
 	
 	public Collection<Node> whatsBefore(Node node) {

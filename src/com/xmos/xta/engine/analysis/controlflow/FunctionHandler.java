@@ -1,6 +1,7 @@
 package com.xmos.xta.engine.analysis.controlflow;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -85,7 +86,7 @@ public class FunctionHandler {
 		}
 
 		for(Node node : m_instToFunc.keySet()){
-			if(!canReturn(node, new TreeSet<Node>())){
+			if(!canReturn(node)){
 				CommonMethods.disconnect(m_instToFunc.get(node).getNextNode(), m_instToFunc.get(node));
 			}
 		}				
@@ -93,8 +94,7 @@ public class FunctionHandler {
 		for(InstructionNode functionStart : getKnownFuncStarts()){
 			NullNode nullNode = new NullNode();
 			TreeSet<Node> terminals = new TreeSet<Node>();
-			Set<Node> seen = new TreeSet<Node>();
-			findTerminals(functionStart, seen, terminals);
+			findTerminals(functionStart, terminals);
 			functionToEndPoints.put(functionStart.getStartPc(), terminals);
 			
 			int count = 0;
@@ -102,7 +102,6 @@ public class FunctionHandler {
 				if(!terminal.isNullNode())
 					count ++;
 			}
-			
 			
 			for(Node terminal : terminals){
 				if(terminal.isInstructionNode()){
@@ -124,39 +123,46 @@ public class FunctionHandler {
 		return functionToEndPoints;
 	}
 
-	private void findTerminals(Node node, Set<Node> seen,
-			Set<Node> terminals) {
-		seen.add(node);
-		
-		if(node.getNextNodesSize() == 0){
-			assert(!terminals.contains(node));
-			terminals.add(node);
-		}
-		
-		for(Node next : node.getNextNodes()){
-			if(!seen.contains(next)){
-				findTerminals(next, seen, terminals);
-			}
-		}
-		
-	}
-
-	private boolean canReturn(Node start, Set<Node> seen){
+	private void findTerminals(Node start, Set<Node> terminals) {
+		Set<Node> seen = new TreeSet<Node>();
+		LinkedList<Node> workingSet = new LinkedList<Node>();
 		seen.add(start);
-		if (start.getNextNodesSize() == 0){
-			if (start.isFunctionNode()) 
-				return false;
-			
-			assert(start.isInstructionNode());
-			return ((InstructionNode)start).getXtaInstruction().getReturn();
-		} else {
-			boolean canReturn = false;
-			for (Node next : start.getNextNodes()) {
-				if (!seen.contains(next)){
-					canReturn = canReturn || canReturn(next, seen);
-				}
+		workingSet.add(start);
+		while(!workingSet.isEmpty()){
+			Node currentNode = workingSet.getLast();
+			if(currentNode.getNextNodesSize() == 0){
+				terminals.add(currentNode);
+				workingSet.remove(currentNode);
+			} else {
+				Set<Node> newNodes = new TreeSet<Node>(currentNode.getNextNodes());
+				newNodes.removeAll(seen);
+				workingSet.addAll(newNodes);
+				seen.addAll(newNodes);
+				workingSet.remove(currentNode);
 			}
-			return canReturn;
 		}
-	}	
+	}
+	
+	private boolean canReturn(Node start){
+		LinkedList<Node> workingSet = new LinkedList<Node>();
+		Set<Node> seen = new TreeSet<Node>();
+		seen.add(start);
+		workingSet.add(start);
+		while(!workingSet.isEmpty()){
+			Node currentNode = workingSet.getLast();
+			if (currentNode.getNextNodesSize() == 0){
+				if (currentNode.isFunctionNode()) 
+					return false;
+				assert(currentNode.isInstructionNode());
+				return ((InstructionNode)currentNode).getXtaInstruction().getReturn();
+			} else if(currentNode.getNextNodesSize() > 0) {
+				Set<Node> newNodes = new TreeSet<Node>(currentNode.getNextNodes());
+				newNodes.removeAll(seen);
+				workingSet.addAll(newNodes);
+				seen.addAll(newNodes);
+				workingSet.remove(currentNode);
+			} 
+		}
+		return false;
+	}
 }

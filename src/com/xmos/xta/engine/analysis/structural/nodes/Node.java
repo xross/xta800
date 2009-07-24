@@ -236,10 +236,6 @@ public abstract class Node implements Comparable<Node>{
 		return false;
 	}
 
-	public boolean isTerminalNode() {
-		return false;
-	}	
-
 	public boolean isNullNode() {
 		return false;
 	}

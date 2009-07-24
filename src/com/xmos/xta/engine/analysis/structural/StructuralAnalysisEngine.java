@@ -659,10 +659,13 @@ public class StructuralAnalysisEngine {
 		
 		
 		m_patternMatchers.add(new LoopPatternMatcher());
+		
+		//the section should be above the path for best results but 
+		//it will need to decide a section based on dominators and not set operations
 		m_patternMatchers.add(new PathPatternMatcher());
-		
-		
 		m_patternMatchers.add(new SectionPatternMatcher());
+		
+		
 		m_patternMatchers.add(new SectionTransformer());
 	}
 }

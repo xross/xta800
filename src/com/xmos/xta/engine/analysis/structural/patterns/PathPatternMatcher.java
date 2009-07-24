@@ -78,7 +78,10 @@ public class PathPatternMatcher extends PatternMatcher {
 			} else {
 				return false;
 			}
-		} else if (node.getNextNodesSize() > 1) {
+		} 
+		
+		//FIXME - i dont think this can be hit
+		else if (node.getNextNodesSize() > 1) {
 			return true;
 		} else {
 			return false;

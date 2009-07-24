@@ -51,7 +51,10 @@ public class LoopNodeAttributes extends NodeAttributes {
 		    } catch (IgnoreSectionIterationsException e) {
 		    	iterations = new Iterations();
 		    }
+		} else {
+			return new Iterations();
 		}
+		
 		long iterationsAbove = iterations.getGlobalIterations() * iterations.getLocalIterations();
 				
 		if (getIsAbsolute()) {			

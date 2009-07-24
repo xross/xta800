@@ -226,12 +226,13 @@ public class SectionNodeAttributes extends NodeAttributes {
 			Iterations iterations = null;
 			if (getNode().getParent() != null) {
 				iterations =  getNode().getParent().getAttributes().getTotalIterations(
-						c, getNode(), ignoreIterationsAboveSection);						
+						c, getNode(), ignoreIterationsAboveSection);
+				
+			    long localSectionIterations = getLoopPathIterations(iterations.getLocalIterations(), child, c);
+			    iterations.setLocalIterations(localSectionIterations);
+			    return iterations;				
 			}					
-
-		    long localSectionIterations = getLoopPathIterations(iterations.getLocalIterations(), child, c);
-		    iterations.setLocalIterations(localSectionIterations);
-		    return iterations;
+            return new Iterations();
 		}
 	}		
 }

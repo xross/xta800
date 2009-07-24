@@ -124,8 +124,6 @@ public class SectionPatternMatcher extends PatternMatcher {
 		
 		//startNode.getNextNodes().removeAll(sectionNodes);
 		startNode.addNextNode(ms);
-
-		
 		
 		endNode.getPrevNodes().removeAll(sectionNodes);
 		endNode.addPrevNode(ms);
@@ -138,27 +136,6 @@ public class SectionPatternMatcher extends PatternMatcher {
 		}
 
 		ms.addNextNode(endNode);
-		ms.addPrevNode(startNode);
-
-		workingSet.removeAll(sectionNodes);
-		workingSet.add(ms);
-	}
-	
-	protected void updateGraph(Node startNode, Collection<Node> sectionNodes, Collection<Node> workingSet,  boolean verbose) {
-		SectionNode ms = new SectionNode(sectionNodes, false);
-		
-		if(verbose){
-			System.out.println("#have found a section from; " + startNode + " to: none");
-			System.out.println("#have replaced "+sectionNodes + " with " + ms);
-		}
-
-		for (Node sectionNode : sectionNodes){
-			startNode.removeNextNode(sectionNode);
-		}
-		
-		//startNode.getNextNodes().removeAll(sectionNodes);
-		startNode.addNextNode(ms);
-
 		ms.addPrevNode(startNode);
 
 		workingSet.removeAll(sectionNodes);

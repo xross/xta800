@@ -1016,7 +1016,7 @@ public class Engine implements Notifier {
 				UnreachableCodeFinder uca = new UnreachableCodeFinder();
 				uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
 	
-				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts(), fh.getFunctions());
+				ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts());
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg, xeLoader);
 				

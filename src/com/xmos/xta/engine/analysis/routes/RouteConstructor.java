@@ -151,10 +151,7 @@ public class RouteConstructor {
 	private boolean explore(Node start, NodeWrapper node, Collection<Node> workingSet, Collection<Node> endNodes, Node parent) {	
 		
 		Node currentNode = node.m_node;
-		//System.out.println("exploring node: " + currentNode + " " + currentNode.getInstructions());
-		//System.out.println("exploring node: " + currentNode);
 		Collection<Node> exclusions = new TreeSet<Node>();
-		
 		
 		if(currentNode.isInstructionNode()){
 			if(m_exclusions.contains(currentNode)){
@@ -164,18 +161,6 @@ public class RouteConstructor {
 			exclusions = new TreeSet<Node>(m_exclusions);
 			exclusions.retainAll(currentNode.getContainedNodes());
 		}
-		/*
-		if(currentNode.getId() == 909){
-			System.out.println(m_exclusions);
-			System.out.println(exclusions);
-			System.out.println(endNodes);
-			System.out.println(currentNode.getContainedNodes());
-		}
-		*/
-//		System.out.println("exclusion Nodes: " + exclusions + " of " + m_exclusions );
-		
-		
-//		System.out.println();
 		
 		if(endNodes.containsAll(currentNode.getEndNodes())){
 			//all the ends of currentBlock are endNodes 
@@ -186,7 +171,6 @@ public class RouteConstructor {
 				} else {
 					makeConnection(currentNode, parent);
 					workingSet.add(currentNode);
-					//System.out.println("found end with " + currentNode);
 					return true;
 				}
 			} else {
@@ -198,7 +182,7 @@ public class RouteConstructor {
 			containedEndPoints.retainAll(currentNode.getContainedNodes());
 			//we have to go into the current block
 			if(containedEndPoints.isEmpty()){
-				if(!exclusions.isEmpty() ){
+				if(!exclusions.isEmpty() && !workingSet.isEmpty()){
 					if( currentNode.isInstructionNode() ){
 						workingSet.add(currentNode);
 						makeConnection(currentNode, parent);

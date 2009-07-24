@@ -41,8 +41,8 @@ public class SelfLoopNodeAttributes extends NodeAttributes {
 			return iterations;
 		}
 		
-		Iterations iterations = null;
 		if (getNode().getParent() != null) {
+			Iterations iterations = null;
 		    try {			
 		    	iterations = getNode().getParent().getAttributes().getTotalIterations(
 						c, getNode(), ignoreIterationsAboveSection);
@@ -50,9 +50,10 @@ public class SelfLoopNodeAttributes extends NodeAttributes {
 		    } catch (IgnoreSectionIterationsException e) {
 		    	iterations = new Iterations();
 		    }
+			iterations.setGlobalIterations(iterations.getGlobalIterations() * iterations.getLocalIterations());
+			iterations.setLocalIterations(m_numIterations);
+			return iterations;				    
 		}
-		iterations.setGlobalIterations(iterations.getGlobalIterations() * iterations.getLocalIterations());
-		iterations.setLocalIterations(m_numIterations);
-		return iterations;		
+		return new Iterations();
 	}	
 }

@@ -14,8 +14,13 @@ public class Reference {
 		m_base = base;
 		m_backTrail = new ArrayList<ReferenceType>();
 	}
-
+	
 	public boolean equals(Object obj) {
+		if(obj == null)
+			return false;
+		
+		if(!(obj instanceof Reference))
+			return false;
 		// A reference is equal to another if its base pc, and
 		// all of its back trail pc's, match.
 		Reference reference = (Reference)obj;
@@ -87,5 +92,10 @@ public class Reference {
 	
 	public void addToBackTrail(ReferenceType referenceType) {
 		m_backTrail.add(referenceType);
+	}
+	
+	public int hashCode() {
+		//this is needed to complete the equals method
+		return 0;
 	}
 }

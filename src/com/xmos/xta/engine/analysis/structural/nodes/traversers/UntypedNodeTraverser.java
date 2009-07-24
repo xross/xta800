@@ -38,8 +38,4 @@ public abstract class UntypedNodeTraverser implements NodeTraverser {
     public boolean foundSectionNode(Node node, int depth) {
     	return foundNode(node, depth);
     }
-    
-    public boolean foundTerminalNode(Node node, int depth) {
-    	return foundNode(node, depth);
-    }
 }

@@ -8,11 +8,6 @@ public class InstructionBuffer implements Comparable<InstructionBuffer>{
     int m_pc;
     int m_numBytes;
 
-    public InstructionBuffer() {
-    	m_pc = 0;
-        m_numBytes = 0;
-	}
-
     public InstructionBuffer(int startPc) {
     	m_pc = startPc;
         m_numBytes = 0;
@@ -22,18 +17,9 @@ public class InstructionBuffer implements Comparable<InstructionBuffer>{
         m_numBytes = instructionBuffer.m_numBytes;
         m_pc = instructionBuffer.m_pc;
     }
-	
-    public boolean isEqual(InstructionBuffer ib){
-    	//assert(m_pc == ib.m_pc);
-    	return (m_numBytes == ib.m_numBytes);
-    }
     
     public void setPc(int pc) {
         m_pc = pc;
-    }
-    
-    public int getPc() {
-        return m_pc;
     }
     
     public int getNumBytes() {
