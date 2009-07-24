@@ -1,7 +1,7 @@
 Label: label1, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 5
 Label: label2, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: up/up.xc, line number: 3
 ----------------------------------
-test.xc \(.*\)
+.*test.xc
 ----------------------------------
   1: int add\(int a, int b\);
   2: 
@@ -13,7 +13,7 @@ test.xc \(.*\)
   8: }
   9: 
 ----------------------------------
-up/up.xc \(.*\)
+.*up/up.xc
 ----------------------------------
   1: int add\(int a, int b\)
   2: {

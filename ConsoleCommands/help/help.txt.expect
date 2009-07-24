@@ -26,11 +26,11 @@ Invalid argument(s) to 'help' command (Try 'help help'..)
   [-]clear: Clears the screen (Gui mode only)
   [-]config <option> <arg0> <arg1>...: Configures the given option
       option: proc <node id> <core id>: All following analysis on given node and core (default: 0,0)
-      option: freq <core frequency>: Sets the core frequency (default: 400)
-      option: threads <num threads>: Sets number of threads currently executing (default: 8)
+      option: freq <core frequency>: Sets the core frequency in Mhz (currently: 400)
+      option: threads <num threads>: Sets number of threads currently executing (currently: 8)
       option: srcpaths <paths>: Sets the (semicolon separated) source search path
       option: verbosity <level>: Sets the tool verbosity level (range: -10 -> +10, default: 0)
-      option: case <BEST/WORST>: Sets the case (default: WORST)
+      option: case <BEST/WORST>: Sets the case (currently: WORST)
       option: timeout <seconds>: Sets the tools timeout on load
   [-]echo "text": prints the text to the console
   [-]exit: Quits the shell (Standalone mode only)

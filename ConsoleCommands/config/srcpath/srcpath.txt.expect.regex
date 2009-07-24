@@ -1,5 +1,5 @@
 Warning: Failed to find source file: test.xc
-- test.xc \(.*\) \(File not found\)
+- .*test.xc \(File not found\)
 Current node: 0
 Current core: 0
 Frequency: 400
@@ -10,4 +10,4 @@ Verbosity: 0
 Loaded executable: test.xe
 Node: 0, Core: 0 \(Debug information avaliable\)
 No routes analysed
-- test.xc \(.*\)
+- .*test.xc
