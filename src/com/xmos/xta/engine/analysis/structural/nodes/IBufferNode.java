@@ -18,7 +18,7 @@ public abstract class IBufferNode extends Node {
 		super();
 		m_ibufferSequences = new TreeSet<IBufferSequence>();
 	}
-
+	
 	public Collection<InstructionBuffer> getEndInstructionBuffers() {
 		Set<InstructionBuffer> set = new TreeSet<InstructionBuffer>();
 		for(IBufferSequence ibs :m_ibufferSequences ){

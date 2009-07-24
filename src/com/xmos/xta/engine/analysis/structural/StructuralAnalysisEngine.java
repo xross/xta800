@@ -328,18 +328,8 @@ public class StructuralAnalysisEngine {
 			if(haltsProcessor(node)){
 				node.setInfinite(true);
 			}
-			if(nextProcessorStateUnknown(node)){
-				node.setUnresolved(true);
-			}
 		}
 		return treeStart;
-	}
-
-	private boolean nextProcessorStateUnknown(Node basicBlock) {
-		if(basicBlock.getNextNodesSize() == 0 && !basicBlock.isInfinite()){
-			return true;
-		}
-		return false;
 	}
 
 	private boolean haltsProcessor(Node basicBlock) {

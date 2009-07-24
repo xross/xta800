@@ -3,6 +3,9 @@ package com.xmos.xta.gui.editors;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -105,7 +108,13 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 	        	XtaEditor sourceEditor = new XtaEditor(XtaDocumentPartitioner.SOURCE, sourceFile.getFileName());
 	        	IEditorInput sourceEditorInput = new InputSource(sourceFile);
 	    		index = addPage(sourceEditor, sourceEditorInput);
-		    	setPageText(index, sourceFile.getFileName());
+		    	setPageText(index, sourceFile.getShortFileName());
+		    	
+		    	Composite container = super.getContainer();
+		    	if (container instanceof CTabFolder){
+		    	    CTabItem tabItem = ((CTabFolder)container).getItem(index);
+		    	    tabItem.setToolTipText(sourceFile.getFullFileName());
+		    	}
 	        }
 	        
 			String fileName = xeObject.getFunctionFileName("main");

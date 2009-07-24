@@ -26,7 +26,7 @@ public class InstructionNode extends Node {
 	}
 
 	public InstructionNode(InstructionNode node) {
-		super();
+		super(node);
 		m_inst = node.m_inst;
 		m_attributes = new InstructionNodeAttributes(this);
 	}

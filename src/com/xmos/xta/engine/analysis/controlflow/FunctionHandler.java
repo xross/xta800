@@ -102,7 +102,7 @@ public class FunctionHandler {
 				if(!terminal.isNullNode())
 					count ++;
 			}
-			
+
 			for(Node terminal : terminals){
 				if(terminal.isInstructionNode()){
 					InstructionNode inst = (InstructionNode)terminal;

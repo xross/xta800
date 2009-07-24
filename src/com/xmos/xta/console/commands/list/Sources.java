@@ -47,10 +47,7 @@ public class Sources extends Command {
 	    Set<String> sourceNames = new TreeSet<String>();
 	    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {
 
-	    	String sourceName = String.format("- %s (%s)", 
-  	    			debugFile.getFileName(), debugFile.getBaseDir());
-	    	  	    	  	    	
-
+	    	String sourceName = String.format("- %s", debugFile.getFullFileName());
   	    	if (debugFile.getFile() == null) {
   	    		sourceName += " (File not found)"; 	    		
   	    	} 
