@@ -77,12 +77,13 @@ public class ActionCore extends ActionDelegate implements IPropertyChangeListene
 	        updateState();
 	        m_action.setEnabled(true);
     		updateCurrentCoreId(0);	        
-	     
+	         		
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 	        updateState();
 	        m_action.setEnabled(true);
 
-		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) ||
+	               event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
 	        updateState();
 		}
 	}
@@ -111,6 +112,7 @@ public class ActionCore extends ActionDelegate implements IPropertyChangeListene
 		for (Integer coreId : GuiEngine.getEngine().getXeLoader().getCoreIds(selectedNodeId)) {
 			m_coreIds.add(String.format("%d", coreId));
 		}
+		updateCurrentCoreId(GuiEngine.getEngine().getCoreId());
 	}
 	
 	private void updateCurrentCoreId(int coreId) {
