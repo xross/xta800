@@ -1,0 +1,13 @@
+function_a...
+function_b...
+function_c...
+Error: Cannot find function: function_f in file: /home/andrew-local/software/sandbox2/verif_tests_sw/Tools/xta/Pragmas/xta_broken_command/csim__xs1b__default/test.xe, node: 0, core: 0
+function_d...
+Error: Cannot find function: function_e in file: /home/andrew-local/software/sandbox2/verif_tests_sw/Tools/xta/Pragmas/xta_broken_command/csim__xs1b__default/test.xe, node: 0, core: 0
+Route(0) function: function_a
+    No Timing Specified
+
+Route(1) function: function_b
+    No Timing Specified
+
+Fail, Timing Unspecified

@@ -14,6 +14,9 @@ history
 # This should also be an error, as it is trying to execute the earlier !0
 !3
 
+# This should also be an error, as it is trying to execute the earlier !0
+!e
+
 # Checks that the !3 comes out in the history
 history
 
