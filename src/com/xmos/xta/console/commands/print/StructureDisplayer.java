@@ -93,6 +93,9 @@ public class StructureDisplayer {
 		if ((m_verbosity >= 50) || (DEBUG_ATTRIBUTES == true)) {			
 			NodeAttributes nodeAttributes = node.getAttributes();
 			
+			if (node.isUnresolved())
+				sb.append(" UNRESOLVED");
+			
 			if (node.isLoopNode() || node.isSelfLoopNode()) {
 				sb.append(String.format(" [%d]",
 						nodeAttributes.getLoopIterations()));
