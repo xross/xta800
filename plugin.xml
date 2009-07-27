@@ -486,7 +486,7 @@
                icon="icons/load.png"
                id="com.xmos.xta.gui.actions.load"
                label="Open Xe File"
-               style="push"
+               style="pulldown"
                toolbarPath="Normal/controls">
          </action>
       </actionSet>

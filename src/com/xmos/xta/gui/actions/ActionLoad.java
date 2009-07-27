@@ -11,13 +11,18 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+import org.eclipse.ui.IWorkbenchWindowPulldownDelegate;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionDelegate;
@@ -32,11 +37,22 @@ import com.xmos.xta.gui.editors.SourcesEditorInput;
 import com.xmos.xta.gui.views.console.ConsoleView;
 
 public class ActionLoad extends ActionDelegate implements IPropertyChangeListener, 
-                                                          IWorkbenchWindowActionDelegate {
+										IWorkbenchWindowPulldownDelegate {
 	private IAction m_action;
+	private SelectionListener m_listListener;
 	
 	public ActionLoad() {
 		GuiEngine.addBroadcastListener(this);
+		m_listListener = new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				assert(false);
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				String selectedFile = ((MenuItem)e.getSource()).getText();
+				loadFile(selectedFile);
+			}
+		};
 	}
 
 	public void init(IAction action) {
@@ -76,7 +92,10 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
 				engine.setMonitor(null);
 	        	if (success && (m_action != null)) {	        		
 	        		m_action.setToolTipText("Currently loaded " + xeFile.getAbsolutePath());
-	        	}		        	
+	        	}		        
+	        	XtaPlugin plugin = XtaPlugin.getDefault(); 
+	        	String fileHistory = plugin.getPreferenceStore().getString("FileHistory");
+	        	plugin.getPreferenceStore().setValue("FileHistory", fileHistory + xeFile.toString() +";"  );
 				return Status.OK_STATUS;
 			}
 		};
@@ -126,4 +145,21 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
     	    }
     	}    	
     }
+
+	public Menu getMenu(Control parent) {
+		Menu menu = new Menu(parent);
+		
+		XtaPlugin plugin = XtaPlugin.getDefault();        
+     	String fileHistory = plugin.getPreferenceStore().getString("FileHistory");
+     	
+     	String[] files = fileHistory.split(";");
+    	for(String file : files){
+    		System.out.println(file);
+        	MenuItem item = new MenuItem(menu, SWT.NONE);
+    		item.setText(file);
+    		item.addSelectionListener(m_listListener);
+        }
+		
+		return menu;
+	}
 }
