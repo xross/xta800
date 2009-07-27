@@ -98,7 +98,7 @@ public class UnknownsViewer extends InfoViewer {
 		        }
 			}
 		};
-		m_setLoopIterationsAction.setText("Set iterations");
+		m_setLoopIterationsAction.setText("Set loop iterations");
 		menuMgr.add(m_setLoopIterationsAction);
 		m_setLoopIterationsAction.setEnabled(false);
 	} 		
