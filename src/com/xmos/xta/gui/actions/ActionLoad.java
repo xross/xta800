@@ -2,6 +2,8 @@ package com.xmos.xta.gui.actions;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -92,9 +94,21 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
 				engine.setMonitor(null);
 	        	if (success && (m_action != null)) {	        		
 	        		m_action.setToolTipText("Currently loaded " + xeFile.getAbsolutePath());
-	        	}		        
+	        	} 
+	        	
+	        	
+	        	
 	        	XtaPlugin plugin = XtaPlugin.getDefault(); 
 	        	String fileHistory = plugin.getPreferenceStore().getString("FileHistory");
+	        	String[] files = fileHistory.split(";");
+	        	List<String> fileList = new LinkedList<String>();
+	        	for(String file : files){
+	        		fileList.add(file);
+	        	}
+	        	fileList.remove(xeFile.toString());
+	        	if(success)
+	        		fileList.add(xeFile.toString());
+	        	
 	        	plugin.getPreferenceStore().setValue("FileHistory", fileHistory + xeFile.toString() +";"  );
 				return Status.OK_STATUS;
 			}
