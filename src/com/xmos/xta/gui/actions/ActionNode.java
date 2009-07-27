@@ -78,13 +78,14 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) { 
 	        updateState();
     		updateCurrentNodeId(0);
-
+    		
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 	        updateState();
-	        
-		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
-	        updateState();
-	        
+	        m_action.setEnabled(true);
+
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) ||
+				   event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
+			updateState();	       
 		}
 	}
 
@@ -109,15 +110,14 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 		m_nodeIds.clear();
 		for (Integer nodeId : GuiEngine.getEngine().getXeLoader().getNodeIds()) {
 				m_nodeIds.add(String.format("%d", nodeId));
-			}
+		}
+		updateCurrentNodeId(GuiEngine.getEngine().getNodeId());		
 		
 		if(GuiEngine.getEngine().getXeLoader().getNodeIds().size() == 1){
 			m_action.setEnabled(false);
 		}  else {
 			m_action.setEnabled(true);
 		}
-		
-		
 	}
 	
 	private void updateCurrentNodeId(int noded) {
