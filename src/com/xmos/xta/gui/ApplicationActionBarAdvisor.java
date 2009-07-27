@@ -10,14 +10,14 @@ import org.eclipse.ui.application.IActionBarConfigurer;
 
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     private IWorkbenchAction m_aboutAction;
-
+    
     public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
         super(configurer);
     }
 
     protected void makeActions(IWorkbenchWindow window) {
   	    m_aboutAction = ActionFactory.ABOUT.create(window);
-    	register(m_aboutAction);    	
+    	register(m_aboutAction);    
     }
 
     protected void fillMenuBar(IMenuManager menuBar) {

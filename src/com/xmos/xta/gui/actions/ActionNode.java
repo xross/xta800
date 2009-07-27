@@ -72,6 +72,7 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 	}
 
 	public void run(IAction action) {
+		
 	}
 			
 	public void propertyChange(PropertyChangeEvent event) {

@@ -274,10 +274,54 @@ public class RouteConstructor {
 			
 			Node newGraph = baseNode.deepCopy();
 			newGraph.setParent(null);
-			m_routes.add(new Route(m_engine, newGraph, m_description));
+			
+			
+			if(!alreadyContainRoute(newGraph)){
+				m_routes.add(new Route(m_engine, newGraph, m_description));
+			}
+			
 		}
 		return seenEndPoint;
 	}
+
+	private boolean alreadyContainRoute(Node newGraph) {
+
+		final List<String> newNodeList = new LinkedList<String>();
+		
+		newGraph.traverse(0, new UntypedNodeTraverser() {
+	    	public boolean foundNode(Node node, int depth) {
+	    		newNodeList.add(node.getTypeName());
+	        	return true;
+	    	}
+	    });	 
+		for(Route route : m_routes){
+			
+			final List<String> nodeList = new LinkedList<String>();
+			
+			route.getNode().traverse(0, new UntypedNodeTraverser() {
+		    	public boolean foundNode(Node node, int depth) {
+		    		if(node.isInstructionNode()){
+		    			nodeList.add(node.getTypeName()+node.getStartPc());
+		    		} else {
+		    			nodeList.add(node.getTypeName());
+		    		}
+		    		
+		        	return true;
+		    	}
+		    });	 
+			
+			if(newNodeList.containsAll(nodeList)){
+				return true;
+			}
+			
+		}
+
+	
+		return false;
+	}
+	
+	
+	
 
 	private void addTerminator(Collection<Node> workingSet) {
 		int count = 0;
