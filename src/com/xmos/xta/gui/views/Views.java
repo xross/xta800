@@ -66,7 +66,7 @@ public class Views {
     	
 	    manager.add(new Separator());
     	
-    	// Adds the 'Set iterations' option.
+    	// Adds the 'Set loop iterations' option.
 	    Action setLoopIterationsAction = new Action("Set loop iterations") {
 		    public void run() {
 		    	new Loop(shell, firstNode);
@@ -78,7 +78,7 @@ public class Views {
 	    else
 	    	setLoopIterationsAction.setEnabled(false);
 
-    	// Adds the 'Set iterations' option.
+    	// Adds the 'Set loop path iterations' option.
 	    Action setLoopPathIterationsAction = new Action("Set loop path iterations") {
 		    public void run() {
 		    	new LoopPath(shell, firstNode);
