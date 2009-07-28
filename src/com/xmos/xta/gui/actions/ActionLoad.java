@@ -168,7 +168,6 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
      	
      	String[] files = fileHistory.split(";");
     	for(String file : files){
-    		System.out.println(file);
         	MenuItem item = new MenuItem(menu, SWT.NONE);
     		item.setText(file);
     		item.addSelectionListener(m_listListener);
