@@ -1,7 +1,9 @@
 package com.xmos.xta.gui.actions;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -105,11 +107,21 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
 	        	for(String file : files){
 	        		fileList.add(file);
 	        	}
+	        	
+	        	
 	        	fileList.remove(xeFile.toString());
 	        	if(success)
 	        		fileList.add(xeFile.toString());
+	        	StringBuffer sb = new StringBuffer();
+	        	int count = 0;
+	        	for(String file : fileList){
+	        		sb.append(file +";");
+	        		count++;
+	        		if(count > 10)
+	        			break;
+	        	}
 	        	
-	        	plugin.getPreferenceStore().setValue("FileHistory", fileHistory + xeFile.toString() +";"  );
+	        	plugin.getPreferenceStore().setValue("FileHistory", sb.toString()  );
 				return Status.OK_STATUS;
 			}
 		};
@@ -167,10 +179,21 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
      	String fileHistory = plugin.getPreferenceStore().getString("FileHistory");
      	
      	String[] files = fileHistory.split(";");
-    	for(String file : files){
-        	MenuItem item = new MenuItem(menu, SWT.NONE);
-    		item.setText(file);
-    		item.addSelectionListener(m_listListener);
+     	
+     	List<String> fileStrings = new ArrayList<String>();
+     	
+     	for(String file : files){
+     		fileStrings.add(file);
+     	}
+     	
+     	Collections.reverse(fileStrings);
+     	
+    	for(String file : fileStrings){
+    		if(file.length() > 0 ){
+	        	MenuItem item = new MenuItem(menu, SWT.NONE);
+	    		item.setText(file);
+	    		item.addSelectionListener(m_listListener);
+    		}
         }
 		
 		return menu;
