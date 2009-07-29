@@ -22,7 +22,13 @@ Route\(6\) path: pwmThreadLow2 to pwmThreadHigh
 Route\(7\) path: pwmThreadHigh to pwmThreadLow1
     Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d+ns, Required: 600.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
-Route\(8\) path: pwmThreadHigh to pwmThreadLow2
+Route\(8\) path: pwmThreadHigh to pwmThreadLow1
     Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d+ns, Required: 600.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
-Fail, 7/9, Max Violation: \d+\.\d+ns
+Route\(9\) path: pwmThreadHigh to pwmThreadLow2
+    Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d+ns, Required: 600.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Route\(10\) path: pwmThreadHigh to pwmThreadLow2
+    Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d+ns, Required: 600.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Fail, 9/11, Max Violation: \d+\.\d+ns
