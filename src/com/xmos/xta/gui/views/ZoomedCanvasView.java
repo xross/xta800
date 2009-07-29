@@ -180,7 +180,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
             
             ImageLoader imgLoader = new ImageLoader();
     		ImageData[] imgData = new ImageData[1];
-    		imgData[0] = m_renderer.m_canvasImage.getImageData();
+    		imgData[0] = m_renderer.m_image.getImageData();
 
     		imgLoader.data = imgData;
     		imgLoader.save(bufferedOutput, 4);
