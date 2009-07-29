@@ -14,6 +14,7 @@ import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
+import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InfiniteSelfLoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -234,7 +235,12 @@ public class RouteConstructor {
 		NodeWrapper startNodeWrapper = new NodeWrapper(start);
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
 	
+		
+		
 		seenEndPoint |= explore(realStart, startNodeWrapper, workingSet, endNodes, null);
+		
+		System.out.println(StructuralAnalysisEngine.dumpTree("eek", workingSet));
+		
 		//System.out.println();
 		assert(cfgSanityCheck(workingSet));
 									
@@ -344,13 +350,13 @@ public class RouteConstructor {
 	private boolean exploreWhatsNext(Node start, Collection<Node> workingSet, Collection<Node> endNodes, 
 			Node currentNode, Node originalParent) {
 		boolean seenEndPoint = false;
-
+		makeConnection(currentNode, originalParent);
 		if(workingSet.contains(currentNode)){
 			//this causes the search not to form infinite loops
 			//System.out.println("stopping due to loop");
 			return false;
 		}
-		makeConnection(currentNode, originalParent);
+		
 		workingSet.add(currentNode);
 		Node parent = currentNode.getParent();
 		if (parent != null && !parent.whatsNext(currentNode).isEmpty()) {
@@ -381,6 +387,7 @@ public class RouteConstructor {
 				node.m_node = childWrapper.m_node;
 			}
 		}
+		
 		return seenEndPoint;
 	}
 
