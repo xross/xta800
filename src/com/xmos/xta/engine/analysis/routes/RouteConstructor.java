@@ -238,9 +238,7 @@ public class RouteConstructor {
 		
 		
 		seenEndPoint |= explore(realStart, startNodeWrapper, workingSet, endNodes, null);
-		
-		System.out.println(StructuralAnalysisEngine.dumpTree("eek", workingSet));
-		
+
 		//System.out.println();
 		assert(cfgSanityCheck(workingSet));
 									
