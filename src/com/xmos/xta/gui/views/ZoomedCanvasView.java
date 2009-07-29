@@ -173,17 +173,21 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		BufferedOutputStream bufferedOutput = null;
         try {
         	FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.SAVE);
-            fileDialog.setText("Save as...");
+            String[] filterExt = { "*.jpg" };
+            fileDialog.setFilterExtensions(filterExt);
+        	fileDialog.setText("Save as...");
             String fileName = fileDialog.open();
         	
-            bufferedOutput = new BufferedOutputStream(new FileOutputStream(fileName));
-            
-            ImageLoader imgLoader = new ImageLoader();
-    		ImageData[] imgData = new ImageData[1];
-    		imgData[0] = m_renderer.m_image.getImageData();
-
-    		imgLoader.data = imgData;
-    		imgLoader.save(bufferedOutput, 4);
+            if (fileName != null) {
+	            bufferedOutput = new BufferedOutputStream(new FileOutputStream(fileName));
+	            
+	            ImageLoader imgLoader = new ImageLoader();
+	    		ImageData[] imgData = new ImageData[1];
+	    		imgData[0] = m_renderer.m_image.getImageData();
+	
+	    		imgLoader.data = imgData;
+	    		imgLoader.save(bufferedOutput, 4);
+            }
             
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();

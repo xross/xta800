@@ -114,6 +114,10 @@ public class SectionNodeAttributes extends NodeAttributes {
 		for (Node child : getNode().getChildren()) {
 			value += child.getAttributes().getNumPaths();
 		}
+		
+		if (getNode().isSectionOptional()) {
+			value += 1;
+		}
 		return value;
 	}
 	
