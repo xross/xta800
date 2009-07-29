@@ -8,7 +8,8 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -march=$arch -fxta-info -g -O3 mii.xc -o $genDir/tutorial_console.xe > $genDir/console.log 2>&1");
+  system("xmake -f Makefile > $genDir/console.log 2>&1");
+  rename("tutorial_console.xe", "$genDir/tutorial_console.xe");
 }
 system("@ARGV load $genDir/tutorial_console.xe " .
        "source receive.sr.sample > $genDir/console.txt 2>&1");

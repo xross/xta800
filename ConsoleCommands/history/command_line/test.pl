@@ -21,6 +21,8 @@ system("@ARGV  " .
        "-config proc 0 0 " .
        "-config freq 999 " .
        "-config threads 99 " .
+       "-config case BEST " .
+       "-config case WORST " .
        "-config srcpaths /test/path/srcpath/ " .
 
        "-clear " .
@@ -48,8 +50,6 @@ system("@ARGV  " .
        "-print trace - " .
        "-print structure - " .
        "-print summary " .
-       "-print functions - " .
-       "-print sources - " .
        "-print node_info - 0 " .
        "-print route_info 0 " .
 

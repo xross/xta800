@@ -15,9 +15,8 @@ help remove
 help set
 help source
 help status
-help unset
-help CONSTRAINT_REF
+help PC_REF
 help LABEL_REF
-help SRCLABEL_REF
 help ENDPOINT_REF
+help ANY_REF
 exit
