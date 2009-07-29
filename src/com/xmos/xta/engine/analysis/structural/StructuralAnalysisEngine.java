@@ -638,13 +638,13 @@ public class StructuralAnalysisEngine {
 				if(node.isBlockNode() || node.isInstructionNode()){
 					sb.append(node + " [label=\"" + node + "\\n");
 					
-					
+					/*
 					sb.append("dominated by: ");
 					for(Node dom : node.getDominators()){
 						sb.append( dom + " ");
 					}
 					sb.append("\\n");
-					
+					*/
 					
 					for(XtaInstruction inst : node.getInstructions()){
 						sb.append(inst + "\\n");  
