@@ -638,6 +638,8 @@ public class StructuralAnalysisEngine {
 				if(node.isBlockNode() || node.isInstructionNode()){
 					sb.append(node + " [label=\"" + node + "\\n");
 					
+					
+					sb.append("branch targets: " + node.getBranchTargets() + "\\n");
 					/*
 					sb.append("dominated by: ");
 					for(Node dom : node.getDominators()){
