@@ -14,6 +14,7 @@ import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
+import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InfiniteSelfLoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
