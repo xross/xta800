@@ -12,6 +12,7 @@ public class Config extends CommandContainer {
 		new Verbosity(),
 		new Case(),
 		new TimeOut(),
+		new WarnAsErrors(),
 	};
 	
 	public Config() { super("config"); }

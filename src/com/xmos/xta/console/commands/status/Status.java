@@ -45,6 +45,7 @@ public class Status extends Command {
 
     	console.display(String.format("Frequency: %d\n", engine.getConfig().m_frequency));    	
     	console.display(String.format("NumThreads: %d\n", engine.getConfig().m_numThreads));
+    	console.display(String.format("WarnAsError: %s\n", engine.getConfig().m_warnAsErrors ? "true" : "false"));
     	
     	console.display(String.format("SrcPaths: %s\n", engine.getSrcPaths()));
     	console.display(String.format("Case: %s\n", engine.getCase().toString()));

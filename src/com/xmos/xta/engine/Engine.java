@@ -432,6 +432,10 @@ public class Engine implements Notifier {
 		return m_config.m_verbosity;
 	}
 	
+	public void setWarnAsErrors() {
+		m_config.m_warnAsErrors = true;
+	}
+	
 	public boolean canInstructionPause(int routeId, String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
