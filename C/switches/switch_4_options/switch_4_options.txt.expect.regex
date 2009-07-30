@@ -1,9 +1,9 @@
 function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns test
 .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
-.    section\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    path\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    .    seq\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
 .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 0\) 
-.    .    .    section\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    .    .    cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
 .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 0\) 
 .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
 .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 

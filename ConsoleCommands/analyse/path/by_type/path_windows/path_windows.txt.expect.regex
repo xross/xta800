@@ -1,14 +1,14 @@
-Warning: Failed to find source file: C:/peter/git/software/verif_tests_sw/Tools/xta/ConsoleCommands/analyse/path/by_type/path_windows/add/test.xc
-Warning: Failed to find source file: C:/peter/git/software/verif_tests_sw/Tools/xta/ConsoleCommands/analyse/path/by_type/path_windows/test.xc
+Warning: Failed to find source file: C:/peter/git/software/verif_tests_sw/Tools/xta/ConsoleCommands/analyse/seq/by_type/path_windows/add/test.xc
+Warning: Failed to find source file: C:/peter/git/software/verif_tests_sw/Tools/xta/ConsoleCommands/analyse/seq/by_type/path_windows/test.xc
 block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
 
-path\(\d+\)     : \d+\.0ns / \d+\.0ns 
+seq\(\d+\)     : \d+\.0ns / \d+\.0ns 
 \.  \* block\(\d+\)    : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
 \.    function\(\d+\) : \d+\.0ns / \d+\.0ns add
 \.    \.    block\(\d+\)    : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
 \.  \* block\(\d+\)    : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
 
-path\(\d+\)     : \d+\.0ns / \d+\.0ns 
+seq\(\d+\)     : \d+\.0ns / \d+\.0ns 
 \.  \* block\(\d+\)    : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 
 \.    function\(\d+\) : \d+\.0ns / \d+\.0ns sub
 \.    \.    block\(\d+\)    : \d+\.0ns \(x 1\) / \d+\.0ns \(x 1\) 

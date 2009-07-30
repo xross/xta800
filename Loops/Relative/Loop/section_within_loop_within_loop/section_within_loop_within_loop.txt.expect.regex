@@ -2,13 +2,13 @@ function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns main
 .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
 .    loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
 .    .    block\(\d+\)\s+: \d+.\d+ns \(x 11\) / \d+.\d+ns \(x 11\) 
-.    .    path\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    .    seq\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
 .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 10\) / \d+.\d+ns \(x 10\) 
 .    .    .    loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
 .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 110\) / \d+.\d+ns \(x 110\) 
-.    .    .    .    path\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    .    .    .    seq\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
 .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 100\) / \d+.\d+ns \(x 100\) 
-.    .    .    .    .    section\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    .    .    .    .    cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
 .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 20\) / \d+.\d+ns \(x 20\) 
 .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 80\) / \d+.\d+ns \(x 80\) 
 .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 100\) / \d+.\d+ns \(x 100\) 

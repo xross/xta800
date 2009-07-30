@@ -3,7 +3,7 @@ function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns main
 .    function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns test
 .    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
 .    .    selfloop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    path\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
+.    .    .    seq\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
 .    .    .    .    loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
 .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 30\) / \d+.\d+ns \(x 30\) 
 .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 25\) / \d+.\d+ns \(x 25\) 

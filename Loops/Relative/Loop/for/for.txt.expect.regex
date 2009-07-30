@@ -1,12 +1,12 @@
 Route\(0\) function: main
-Complete \[1 path\]
-    path\(\d+\) +: \d+\.\d+ns
-        loop \[1 path, 100 iterations\]
-            path\(\d+\) +: \d+\.\d+ns
+Complete \[1 seq\]
+    seq\(\d+\) +: \d+\.\d+ns
+        loop \[1 seq, 100 iterations\]
+            seq\(\d+\) +: \d+\.\d+ns
 
 Route\(0\) function: main
-Complete \[1 path\]
-  \* path\(\d+\) +: \d+\.\d+ns
-        loop \[1 path, 0 iterations\]
-          \* path\(\d+\) +: \d+\.\d+ns
+Complete \[1 seq\]
+  \* seq\(\d+\) +: \d+\.\d+ns
+        loop \[1 seq, 0 iterations\]
+          \* seq\(\d+\) +: \d+\.\d+ns
 

@@ -1,0 +1,23 @@
+function\(\d+\) : Infinity / Infinity test
+.    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    cond\(\d+\)     : Infinity / Infinity 
+.    .    seq\(\d+\)      : Infinity / Infinity 
+.    .    .    block\(\d+\)    : \d+.0ns \(x 1\) / 0.0ns \(x 0\) 
+.    .    .    cond\(\d+\)     : Infinity / Infinity 
+.    .    .    .    seq\(\d+\)      : Infinity / Infinity 
+.    .    .    .    .    block\(\d+\)    : \d+.0ns \(x 1\) / 0.0ns \(x 0\) 
+.    .    .    .    .    infiniteselfloop\(\d+\) : Infinity / Infinity 
+.    .    .    .    .    .    block\(\d+\)    : Infinity \(x -\) / Infinity \(x -\) 
+.    .    .    .    seq\(\d+\)      : Infinity / Infinity 
+.    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    infiniteselfloop\(\d+\) : Infinity / Infinity 
+.    .    .    .    .    .    block\(\d+\)    : Infinity \(x -\) / Infinity \(x -\) 
+.    .    seq\(\d+\)      : Infinity / Infinity 
+.    .    .    cond\(\d+\)     : Infinity / Infinity 
+.    .    .    .    seq\(\d+\)      : Infinity / 0.0ns 
+.    .    .    .    .    block\(\d+\)    : Infinity \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    cond\(\d+\)     : Infinity / 0.0ns 
+.    .    .    .    .    .    block\(\d+\)    : Infinity \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    block\(\d+\)    : Infinity \(x 0\) / Infinity \(x 1\) 
+

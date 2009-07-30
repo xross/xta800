@@ -4,14 +4,14 @@
 2: add branch fromRef toRef
 3: add branch 0x10000 0x10000
 4: analyse function main
-5: analyse path label1 label2
-6: analyse path 0x10000 0x10002
+5: analyse seq label1 label2
+6: analyse seq 0x10000 0x10002
 7: invalid command with arguments
 8: config proc 9 9
 9: config proc 0 0
 10: config freq 999
 11: config threads 99
-12: config srcpaths /test/path/srcpath/
+12: config srcpaths /test/seq/srcpath/
 13: echo
 14: clear
 15: echo "Test string"
