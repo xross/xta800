@@ -1,7 +1,7 @@
-Route\(0\) seq: core0\.xc:26 to core0\.xc:26
+Route\(0\) path: core0\.xc:26 to core0\.xc:26
     Pass with 5 unknowns, Num Paths: 1, Slack: 1600.0ns, Required: 2000.0ns, Worst: 400.0ns, Min Frequency: 79 Mhz
 
-Route\(2\) seq: core1\.xc:85 to core1\.xc:85
+Route\(2\) path: core1\.xc:85 to core1\.xc:85
     Fail with \d+ unknowns, Num Paths: \d+, Violation: 5260\.0ns, Required: 2000\.0ns, Worst: 7260\.0ns, Min Frequency: 1451 Mhz
 
 Fail, 1/2, Max Violation: 5260\.0ns

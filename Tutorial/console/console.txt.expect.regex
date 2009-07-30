@@ -1,7 +1,7 @@
-Route\(0\) seq: receive_loop to receive_loop
+Route\(0\) path: receive_loop to receive_loop
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 320.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
-Route\(1\) seq: eop_detected to packet_start
+Route\(1\) path: eop_detected to packet_start
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1520.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
 Pass, Min Frequency: \d+ Mhz

@@ -1,9 +1,9 @@
 Error: Unresolved reference: test.xc:19
 Error: Unresolved reference: test.xc:13
-Route\(0\) seq: test.xc:13 to test.xc:14
+Route\(0\) path: test.xc:13 to test.xc:14
     No Timing Specified
 
-Route\(1\) seq: test.xc:19 to test.xc:20
+Route\(1\) path: test.xc:19 to test.xc:20
     No Timing Specified
 
 Fail, Timing Unspecified

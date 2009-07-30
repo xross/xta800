@@ -7,4 +7,4 @@ Case: WORST
 Verbosity: 0
 Loaded executable: test.xe
 Node: 0, Core: 0 \(Debug information avaliable\)
-Loaded Route\(0\): seq: test.xc:8 to test.xc:10 
+Loaded Route\(0\): path: test.xc:8 to test.xc:10 

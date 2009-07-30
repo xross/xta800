@@ -4,10 +4,10 @@ Error: Unresolved reference: output1
 Label: input1, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 22
 Label: output1, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 19
 Error: Unresolved reference: output0
-Route\(0\) seq: output0 to input0
+Route\(0\) path: output0 to input0
     No Timing Specified
 
-Route\(1\) seq: output1 to input1
+Route\(1\) path: output1 to input1
     No Timing Specified
 
 Fail, Timing Unspecified
