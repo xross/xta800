@@ -2,6 +2,7 @@ Current node: 0
 Current core: 2
 Frequency: 400
 NumThreads: 8
+WarnAsError: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
@@ -15,6 +16,7 @@ Current node: 0
 Current core: 1
 Frequency: 400
 NumThreads: 8
+WarnAsError: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
