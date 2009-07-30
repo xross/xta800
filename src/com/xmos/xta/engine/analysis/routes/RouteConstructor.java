@@ -267,7 +267,7 @@ public class RouteConstructor {
 			Node baseNode = workingSet.iterator().next();
 		*/
 			
-			Node baseNode = reduceGraph(newStart, new TreeSet<Node>());
+			Node baseNode = reduceGraph(0, newStart, new TreeSet<Node>());
 			sae.normaliseGraph(baseNode);
 			
 			assert(!baseNode.isInfiniteLoopNode());
@@ -288,10 +288,10 @@ public class RouteConstructor {
 		return seenEndPoint;
 	}
 	
-	private Node reduceGraph(Node startNode, Set<Node> nextNodes){
+	private Node reduceGraph(int depth, Node startNode, Set<Node> nextNodes){
 		//crawl from the start node to make a working set of just the nodes at this context
 		Set<Node> workingSet = new TreeSet<Node>();
-		findGraph(startNode, workingSet, nextNodes);
+		findGraph(depth, startNode, workingSet, nextNodes);
 
 		/*
 		for(Node everyNode : workingSet){
@@ -314,9 +314,9 @@ public class RouteConstructor {
 	}
 	
 	
-	private void findGraph(Node currentNode, Set<Node> seen, Set<Node> nextNodes){
+	private void findGraph(int depth, Node currentNode, Set<Node> seen, Set<Node> nextNodes){
 		seen.add(currentNode);
-		if(isFunctionEnd(currentNode) && !currentNode.isFunctionNode()){
+		if(isFunctionEnd(currentNode) && !currentNode.isFunctionNode() && depth > 0){
 			//System.out.println("function end is " + currentNode);
 			nextNodes.addAll(currentNode.getNextNodes());
 			for(Node next : currentNode.getNextNodes()){
@@ -325,13 +325,13 @@ public class RouteConstructor {
 			return;
 		} else {
 			for(Node next : currentNode.getNextNodes()){
-				if (isFunctionStart(next) && !next.isFunctionNode()){
+				if (isFunctionStart(next) && !next.isFunctionNode() && depth > 0){
 					
 					CommonMethods.disconnect(next, currentNode);
 					
 					Set<Node> functionNext = new TreeSet<Node>();
 					
-					Node functionContents = reduceGraph(next, functionNext);
+					Node functionContents = reduceGraph(depth+1, next, functionNext);
 					String functionName = "unnamed function";
 					for(FunctionNode fnNode : m_structureGraph.getFunctions()){
 						if(fnNode.getStartPc() == functionContents.getStartPc()){
@@ -339,7 +339,6 @@ public class RouteConstructor {
 							break;
 						}
 					}
-					
 					
 					FunctionNode fn = new FunctionNode(functionContents, functionName);
 					
@@ -351,10 +350,10 @@ public class RouteConstructor {
 						CommonMethods.connect(fnNext, fn);
 						CommonMethods.disconnect(fnNext, currentNode);
 					}
-					findGraph(fn, seen, nextNodes);
+					findGraph(depth, fn, seen, nextNodes);
 				} else {
 					if(!seen.contains(next)){
-						findGraph(next, seen, nextNodes);
+						findGraph(depth, next, seen, nextNodes);
 					}
 					
 				}
