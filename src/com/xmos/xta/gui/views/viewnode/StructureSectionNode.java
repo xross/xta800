@@ -231,4 +231,14 @@ public class StructureSectionNode extends StructureNode {
 		m_isBestCase = isBestCase;
 		m_isWorstCase = isWorstCase;
 	}
+	
+    public boolean isInfinite() {
+    	// A section is only infinite if all children are infinite
+    	for (ViewNode child : getChildren()) {
+			if (!child.isInfinite()) {
+				return false;
+			}
+    	}
+		return true;
+	}
 }
