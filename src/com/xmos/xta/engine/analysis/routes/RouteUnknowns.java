@@ -147,8 +147,8 @@ public class RouteUnknowns {
 		if (loopNode == null)
 			return false;
 		
-		Node sectionNode = node.getEnclosingSectionNode();
-		if (sectionNode == null)
+		Node condNode = node.getEnclosingCondNode();
+		if (condNode == null)
 			return false;
 
 		Node optionNode = node.getEnclosingOptionNode();
@@ -160,23 +160,23 @@ public class RouteUnknowns {
 
 	public long getSetLoopPathIterations(Node node) {
 		assert(canSetLoopPathIterations(node));
-		Node sectionNode = node.getEnclosingSectionNode();
+		Node condNode = node.getEnclosingCondNode();
 		Node optionNode = node.getEnclosingOptionNode();
-	    long iterations = sectionNode.getAttributes().getSetLoopPathIterations(optionNode);
+	    long iterations = condNode.getAttributes().getSetLoopPathIterations(optionNode);
 	    return iterations;
 	}
 
 	private boolean loopPathIterationsValid(Node node, long iterations) {
-		Node sectionNode = node.getEnclosingSectionNode();
+		Node condNode = node.getEnclosingCondNode();
 		Node optionNode = node.getEnclosingOptionNode();
-		return sectionNode.getAttributes().loopPathIterationsValid(optionNode, iterations);
+		return condNode.getAttributes().loopPathIterationsValid(optionNode, iterations);
 	}
 
 	private void setLoopPathIterationsNoCheck(Node node, long iterations) {
 		invalidateCachedStats();
-		Node sectionNode = node.getEnclosingSectionNode();
+		Node condNode = node.getEnclosingCondNode();
 		Node optionNode = node.getEnclosingOptionNode();
-	    sectionNode.getAttributes().setLoopPathIterations(optionNode, iterations);
+	    condNode.getAttributes().setLoopPathIterations(optionNode, iterations);
 		refreshDisplayedUnknowns();		
 	}
 	
@@ -350,7 +350,7 @@ public class RouteUnknowns {
 	
 	private void clearPathIterations(Node node) {
 	    node.traverse(0, new DefaultNodeTraverser() {
-	    	public boolean foundSectionNode(Node node, int depth) {
+	    	public boolean foundConditionalNode(Node node, int depth) {
 	    		node.getAttributes().resetPathIterations();
 	        	return true;
 	    	}

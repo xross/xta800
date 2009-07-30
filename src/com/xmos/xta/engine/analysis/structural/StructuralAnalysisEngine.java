@@ -25,10 +25,10 @@ import com.xmos.xta.engine.analysis.structural.nodes.attributes.InstructionNodeA
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.engine.analysis.structural.patterns.LoopPatternMatcher;
-import com.xmos.xta.engine.analysis.structural.patterns.PathPatternMatcher;
+import com.xmos.xta.engine.analysis.structural.patterns.SequencePatternMatcher;
 import com.xmos.xta.engine.analysis.structural.patterns.PatternMatcher;
-import com.xmos.xta.engine.analysis.structural.patterns.SectionPatternMatcher;
-import com.xmos.xta.engine.analysis.structural.patterns.SectionTransformer;
+import com.xmos.xta.engine.analysis.structural.patterns.ConditionalPatternMatcher;
+import com.xmos.xta.engine.analysis.structural.patterns.ConditionalTransformer;
 import com.xmos.xta.engine.analysis.structural.patterns.SelfLoopPattern;
 import com.xmos.xta.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -223,9 +223,9 @@ public class StructuralAnalysisEngine {
 		while(!done){
 			done =true;
 			fn.traverse(0,  new DefaultNodeTraverser() {
-				public boolean foundPathNode(Node node, int depth) {
+				public boolean foundSequenceNode(Node node, int depth) {
 					for(Node child : node.getChildren()){
-						if(child.isPathNode()){
+						if(child.isSequenceNode()){
 							int insertPathAt =node.getChildren().indexOf(child);
 							node.getChildren().remove(insertPathAt);
 							for(Node pathChild : child.getChildren()){
@@ -240,7 +240,7 @@ public class StructuralAnalysisEngine {
 				
 				public boolean foundFunctionNode(Node node, int depth) {
 					for(Node child : node.getChildren()){
-						if(child.isPathNode()){
+						if(child.isSequenceNode()){
 							int insertPathAt =node.getChildren().indexOf(child);
 							node.getChildren().remove(insertPathAt);
 							for(Node pathChild : child.getChildren()){
@@ -675,12 +675,12 @@ public class StructuralAnalysisEngine {
 		
 		m_patternMatchers.add(new LoopPatternMatcher());
 		
-		//the section should be above the path for best results but 
+		//the conditional should be above the path for best results but 
 		//it will need to decide a section based on dominators and not set operations
-		m_patternMatchers.add(new PathPatternMatcher());
-		m_patternMatchers.add(new SectionPatternMatcher());
+		m_patternMatchers.add(new SequencePatternMatcher());
+		m_patternMatchers.add(new ConditionalPatternMatcher());
 		
 		
-		m_patternMatchers.add(new SectionTransformer());
+		m_patternMatchers.add(new ConditionalTransformer());
 	}
 }

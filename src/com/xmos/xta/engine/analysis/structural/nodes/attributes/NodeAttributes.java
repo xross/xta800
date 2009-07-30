@@ -7,11 +7,11 @@ import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status.S;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
 @SuppressWarnings("serial")
-class IgnoreSectionIterationsException extends Exception {}
+class IgnoreCondIterationsException extends Exception {}
 @SuppressWarnings("serial")
 class InfiniteIterationsException extends Exception {}
 @SuppressWarnings("serial")
-class SectionIterationsNotSetException extends Exception {}
+class CondIterationsNotSetException extends Exception {}
 
 public class NodeAttributes {
 	private static final boolean DISABLE_STATS_CACHE = false; 
@@ -29,7 +29,7 @@ public class NodeAttributes {
 	}
 
 	public static final long INFINITE_ITERATIONS = -1;
-	public static final long IGNORE_SECTION_ITERATIONS = 1;
+	public static final long IGNORE_COND_ITERATIONS = 1;
 	
 	private double m_cachedWorstTimeTaken;
 	private long m_cachedWorstNumCycles;
@@ -167,17 +167,17 @@ public class NodeAttributes {
 	// ===================================================================== //
 	// Statistics Methods
 	// ===================================================================== //
-	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveSection) {
-		if (getCachedTimeTakenValid(c) && (ignoreIterationsAboveSection == null)) {
+	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveCond) {
+		if (getCachedTimeTakenValid(c) && (ignoreIterationsAboveCond == null)) {
 			status.setStatus(getCachedTimeTakenStatus(c));
 			return getCachedTimeTaken(c);			
 		}
 
 		double value = 0;
 		for (Node child : getNode().getChildren()) {
-			value += child.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveSection);
+			value += child.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveCond);
 		}
-		if (ignoreIterationsAboveSection == null) {
+		if (ignoreIterationsAboveCond == null) {
 			setCachedTimeTaken(c, value);
 			setCachedTimeTakenStatus(c, status.getStatus());
 			setCachedTimeTakenValid(c, true);				
@@ -185,17 +185,17 @@ public class NodeAttributes {
 		return value;
 	}
 
-	public long getNumCycles(Case c, Status status, Node ignoreIterationsAboveSection) {
-		if (getCachedNumCyclesValid(c) && (ignoreIterationsAboveSection == null)) {
+	public long getNumCycles(Case c, Status status, Node ignoreIterationsAboveCond) {
+		if (getCachedNumCyclesValid(c) && (ignoreIterationsAboveCond == null)) {
 			status.setStatus(getCachedNumCyclesStatus(c));
 			return getCachedNumCycles(c);
 		}
 
 		long value = 0;
 		for (Node child : getNode().getChildren()) {
-			value += child.getAttributes().getNumCycles(c, status, ignoreIterationsAboveSection);
+			value += child.getAttributes().getNumCycles(c, status, ignoreIterationsAboveCond);
 		}
-		if (ignoreIterationsAboveSection == null) {
+		if (ignoreIterationsAboveCond == null) {
 			setCachedNumCycles(c, value);
 			setCachedNumCyclesStatus(c, status.getStatus());
 			setCachedNumCyclesValid(c, true);				
@@ -203,17 +203,17 @@ public class NodeAttributes {
 		return value;
 	}
 
-	public long getNumInstructions(Case c, Status status, Node ignoreIterationsAboveSection) {
-		if (getCachedNumInstructionsValid(c) && (ignoreIterationsAboveSection == null)) {
+	public long getNumInstructions(Case c, Status status, Node ignoreIterationsAboveCond) {
+		if (getCachedNumInstructionsValid(c) && (ignoreIterationsAboveCond == null)) {
 			status.setStatus(getCachedNumInstructionsStatus(c));
 			return getCachedNumInstructions(c);
 		}
 		
 		long value = 0;
 		for (Node child : getNode().getChildren()) {
-			value += child.getAttributes().getNumInstructions(c, status, ignoreIterationsAboveSection);		
+			value += child.getAttributes().getNumInstructions(c, status, ignoreIterationsAboveCond);		
 		}
-		if (ignoreIterationsAboveSection == null) {
+		if (ignoreIterationsAboveCond == null) {
 			setCachedNumInstructions(c, value);
 			setCachedNumInstructionsStatus(c, status.getStatus());
 			setCachedNumInstructionsValid(c, true);
@@ -221,17 +221,17 @@ public class NodeAttributes {
 		return value;
 	}
 
-	public long getNumFNops(Case c, Status status, Node ignoreIterationsAboveSection) {
-		if (getCachedNumFnopsValid(c) && (ignoreIterationsAboveSection == null)) {
+	public long getNumFNops(Case c, Status status, Node ignoreIterationsAboveCond) {
+		if (getCachedNumFnopsValid(c) && (ignoreIterationsAboveCond == null)) {
 			status.setStatus(getCachedNumFnopsStatus(c));
 			return getCachedNumFnops(c);
 		}
 		
 		long value = 0;
 		for (Node child : getNode().getChildren()) {
-			value += child.getAttributes().getNumFNops(c, status, ignoreIterationsAboveSection);
+			value += child.getAttributes().getNumFNops(c, status, ignoreIterationsAboveCond);
 		}			
-		if (ignoreIterationsAboveSection == null) {
+		if (ignoreIterationsAboveCond == null) {
 			setCachedNumFnops(c, value);
 			setCachedNumFnopsStatus(c, status.getStatus());
 			setCachedNumFnopsValid(c, true);
@@ -408,13 +408,13 @@ public class NodeAttributes {
 	// ===================================================================== //
 	// Loop Iteration Methods
 	// ===================================================================== //
-	public long getTotalIterations(Case c, Node ignoreIterationsAboveSection) {
+	public long getTotalIterations(Case c, Node ignoreIterationsAboveCond) {
 		try {
-			Iterations iterations = getTotalIterations(c, getNode(), ignoreIterationsAboveSection);
+			Iterations iterations = getTotalIterations(c, getNode(), ignoreIterationsAboveCond);
 			return iterations.getGlobalIterations() * iterations.getLocalIterations();			
 			
-		} catch (IgnoreSectionIterationsException e) {
-			return IGNORE_SECTION_ITERATIONS;
+		} catch (IgnoreCondIterationsException e) {
+			return IGNORE_COND_ITERATIONS;
 			
 		} catch (InfiniteIterationsException e) {
 			return INFINITE_ITERATIONS;
@@ -480,7 +480,7 @@ public class NodeAttributes {
 	}		
 
 	long getLocalIterations(Node child) 
-        throws SectionIterationsNotSetException, InfiniteIterationsException {
+        throws CondIterationsNotSetException, InfiniteIterationsException {
 		
 		if (getNode().getParent() != null) {
 			return getNode().getParent().getAttributes().getLocalIterations(getNode());
@@ -488,12 +488,12 @@ public class NodeAttributes {
 		return 1;				
 	}
 	
-	Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection) 
-	    throws IgnoreSectionIterationsException, InfiniteIterationsException {
+	Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveCond) 
+	    throws IgnoreCondIterationsException, InfiniteIterationsException {
 		
 		if (getNode().getParent() != null) {
 			return getNode().getParent().getAttributes().getTotalIterations(
-					c, getNode(), ignoreIterationsAboveSection);
+					c, getNode(), ignoreIterationsAboveCond);
 		}
 		return new Iterations();		
 	}

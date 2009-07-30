@@ -28,12 +28,12 @@ public class SelfLoopNodeAttributes extends NodeAttributes {
 	}		
 	
 	long getLocalIterations(Node child) 
-        throws SectionIterationsNotSetException, InfiniteIterationsException {
+        throws CondIterationsNotSetException, InfiniteIterationsException {
 		return m_numIterations;		
 	}
 	
-	Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection)
-	    throws IgnoreSectionIterationsException, InfiniteIterationsException {
+	Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveCond)
+	    throws IgnoreCondIterationsException, InfiniteIterationsException {
 		
 		if (getIsAbsolute()) {
 			Iterations iterations = new Iterations();
@@ -45,9 +45,9 @@ public class SelfLoopNodeAttributes extends NodeAttributes {
 			Iterations iterations = null;
 		    try {			
 		    	iterations = getNode().getParent().getAttributes().getTotalIterations(
-						c, getNode(), ignoreIterationsAboveSection);
+						c, getNode(), ignoreIterationsAboveCond);
 				
-		    } catch (IgnoreSectionIterationsException e) {
+		    } catch (IgnoreCondIterationsException e) {
 		    	iterations = new Iterations();
 		    }
 			iterations.setGlobalIterations(iterations.getGlobalIterations() * iterations.getLocalIterations());

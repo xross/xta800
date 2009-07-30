@@ -6,10 +6,10 @@ import org.eclipse.swt.widgets.Display;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
-public class StructurePathNode extends StructureNode {
+public class StructureSequenceNode extends StructureNode {
     public static final boolean DEBUG = false;
 
-	public StructurePathNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
+	public StructureSequenceNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
 		super(treeNode, canvasProperties);
 	    m_borderX = 4;
 	    m_borderY = 2;
@@ -47,11 +47,11 @@ public class StructurePathNode extends StructureNode {
 			return;
 
 		drawThis(display, gc);
-		drawPathChildren(display, gc);
+		drawSequenceChildren(display, gc);
     }
 
 	public void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase) {
-		if (DEBUG) System.out.printf("Annotate StructurePath (%d, %d)\n", offsetX, offsetY);
+		if (DEBUG) System.out.printf("Annotate StructureSequence (%d, %d)\n", offsetX, offsetY);
 		m_pixelOffsetX = offsetX;
 		m_pixelOffsetY = offsetY;
 

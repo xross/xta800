@@ -11,11 +11,6 @@ import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
 public abstract class Command {
-    public enum IdType {
-    	PATH,
-    	BLOCK,
-    }
-    
     public enum ArgType {
     	FILE,
     	FUNCTION,

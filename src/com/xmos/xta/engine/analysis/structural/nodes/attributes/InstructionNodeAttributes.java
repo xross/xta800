@@ -23,28 +23,28 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		m_config = config;
 	}
 	
-	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveSection) {
+	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveCond) {
 		if (getNode().isUnresolved()) {
 			status.setStatus(S.UNRESOLVED);
 		}
 		return getInstructionTimeTaken();
 	}
 
-	public long getNumCycles(Case c, Status status, Node ignoreIterationsAboveSection) {
+	public long getNumCycles(Case c, Status status, Node ignoreIterationsAboveCond) {
 		if (getNode().isUnresolved()) {
 			status.setStatus(S.UNRESOLVED);
 		}
 		return m_numCycles;
 	}
 	
-	public long getNumInstructions(Case c, Status status, Node ignoreIterationsAboveSection) {		
+	public long getNumInstructions(Case c, Status status, Node ignoreIterationsAboveCond) {		
 		if (getNode().isUnresolved()) {
 			status.setStatus(S.UNRESOLVED);
 		}
 		return 1;
 	}
 	
-	public long getNumFNops(Case c, Status status, Node ignoreIterationsAboveSection) {
+	public long getNumFNops(Case c, Status status, Node ignoreIterationsAboveCond) {
 		if (getNode().isUnresolved()) {
 			status.setStatus(S.UNRESOLVED);
 		}

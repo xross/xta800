@@ -212,7 +212,7 @@ public abstract class Node implements Comparable<Node>{
 		m_parent = node;
 	}
 	
-	public boolean isSectionNode() {
+	public boolean isCondNode() {
 		return false;
 	}
 	
@@ -256,9 +256,9 @@ public abstract class Node implements Comparable<Node>{
 		return node;
 	}
 
-	public Node getEnclosingSectionNode() {
+	public Node getEnclosingCondNode() {
 		Node node = m_parent;
-		while ((node != null) && !node.isSectionNode()) {
+		while ((node != null) && !node.isCondNode()) {
 			node = node.getParent();
 		}
 		return node;		
@@ -266,7 +266,7 @@ public abstract class Node implements Comparable<Node>{
 
 	public Node getEnclosingOptionNode() {
 		Node node = this;
-		while ((node.getParent() != null) && !node.getParent().isSectionNode()) {
+		while ((node.getParent() != null) && !node.getParent().isCondNode()) {
 			node = node.getParent();
 		}
 		return node;		
@@ -346,12 +346,12 @@ public abstract class Node implements Comparable<Node>{
 		return "";
 	}
 
-	public Node getOption(Case c, Node ignoreIterationsAboveSection) {
+	public Node getOption(Case c, Node ignoreIterationsAboveCond) {
 		assert(false);
 		return null;
 	}
 	
-	public Node getUnsetOption(Case c, Node ignoreIterationsAboveSection) {
+	public Node getUnsetOption(Case c, Node ignoreIterationsAboveCond) {
 		assert(false);
 		return null;
 	}
@@ -361,7 +361,7 @@ public abstract class Node implements Comparable<Node>{
 		return null;
 	}
 
-	public boolean isSectionOptional() {
+	public boolean isCondOptional() {
 		return false;
 	}
 	
@@ -377,7 +377,7 @@ public abstract class Node implements Comparable<Node>{
 	public boolean isFolded() {
 		return m_isFolded;
 	}
-	public boolean isPathNode() {
+	public boolean isSequenceNode() {
 		return false;
 	}
 }

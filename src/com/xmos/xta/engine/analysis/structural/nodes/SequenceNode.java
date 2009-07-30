@@ -11,35 +11,35 @@ import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
-public class PathNode extends Node {
+public class SequenceNode extends Node {
 	private NodeAttributes m_attributes;
 	List<Node> m_nodes;
 
-	public PathNode(List<Node> nodes) {
+	public SequenceNode(List<Node> nodes) {
 		super();
 		assert (nodes != null);
 		m_nodes = nodes;
 		m_attributes = new NodeAttributes(this);
 	}
 
-	public PathNode(PathNode path) {
+	public SequenceNode(SequenceNode path) {
 		super();
 		m_nodes = path.m_nodes;
 		m_attributes = new NodeAttributes(this);
 	}
 
-	public PathNode() {
+	public SequenceNode() {
 		super();
 		m_nodes = new LinkedList<Node>();
 		m_attributes = new NodeAttributes(this);
 	}
 
 	public Node shallowCopy() {
-		return new PathNode(this);
+		return new SequenceNode(this);
 	}
 
 	public Node deepCopy() {
-		PathNode pn = new PathNode();
+		SequenceNode pn = new SequenceNode();
 		for (Node path : m_nodes) {
 			Node clone = path.deepCopy();
 			pn.m_nodes.add(clone);
@@ -47,11 +47,11 @@ public class PathNode extends Node {
 		pn.m_attributes = new NodeAttributes(pn);
 		return pn;
 	}
-	public boolean isPathNode() {
+	public boolean isSequenceNode() {
 		return true;
 	}
     public String getTypeName() {
-        return "path";
+        return "seq";
     }
     
     public NodeAttributes getAttributes() {
@@ -75,7 +75,7 @@ public class PathNode extends Node {
 	}
 
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundPathNode(this, depth))
+		if (!nodeTraverser.foundSequenceNode(this, depth))
 			return;
 
 		for (Node node : m_nodes) {

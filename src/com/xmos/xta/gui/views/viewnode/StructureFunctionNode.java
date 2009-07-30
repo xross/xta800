@@ -80,7 +80,7 @@ public class StructureFunctionNode extends StructureNode {
 	    		drawConnection(display, gc, m_renderX, midY, scaleX(m_pixelOffsetX + getPixelsX()), midY,
 	    				isBestCase, isWorstCase);
        		} else {
-       			drawPathChildren(display, gc);
+       			drawSequenceChildren(display, gc);
        		}
        	} else {
 			hasUnknowns = hasUnknowns();

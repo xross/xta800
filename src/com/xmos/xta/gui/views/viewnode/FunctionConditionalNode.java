@@ -7,10 +7,10 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
-public class FunctionSectionNode extends FunctionNode {
+public class FunctionConditionalNode extends FunctionNode {
     public static final boolean DEBUG = false;
 
-	public FunctionSectionNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
+	public FunctionConditionalNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
 		super(treeNode, canvasProperties);
 	}
 

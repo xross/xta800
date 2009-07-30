@@ -14,7 +14,7 @@ import com.xmos.xta.engine.references.types.ReferenceType;
 public class FunctionNode extends IBufferNode {
 	private NodeAttributes m_attributes;	
 	private String m_functionName;
-	private List<Node> m_functionPath;
+	private List<Node> m_functionSequence;
 	private static int functionId;
 	private Node m_branchTarget;
 	
@@ -32,11 +32,11 @@ public class FunctionNode extends IBufferNode {
 	public FunctionNode(Node function, String functionName) {
 		super();
 		
-		if(function.isPathNode()){
-			m_functionPath = function.getChildren();
+		if(function.isSequenceNode()){
+			m_functionSequence = function.getChildren();
 		} else {
-			m_functionPath = new LinkedList<Node>();
-			m_functionPath.add(function);
+			m_functionSequence = new LinkedList<Node>();
+			m_functionSequence.add(function);
 		}
 		
 		if(functionName == null){
@@ -44,13 +44,13 @@ public class FunctionNode extends IBufferNode {
 		} else {
 			m_functionName = functionName;
 		}
-		m_branchTarget = m_functionPath.get(0);
+		m_branchTarget = m_functionSequence.get(0);
 		m_attributes = new NodeAttributes(this);
 	}
 	
 	public FunctionNode(FunctionNode fn){
 		m_functionName = fn.m_functionName;
-		m_functionPath = fn.m_functionPath;
+		m_functionSequence = fn.m_functionSequence;
 		m_branchTarget = fn.m_branchTarget;
 		m_attributes = new NodeAttributes(this);
 	}
@@ -64,12 +64,12 @@ public class FunctionNode extends IBufferNode {
 		fn.m_functionName = m_functionName;
 		fn.m_branchTarget = m_branchTarget;
 		fn.m_attributes = new NodeAttributes(fn);
-		if(m_functionPath!= null){
+		if(m_functionSequence!= null){
 			List<Node> nodes = new LinkedList<Node>();
-			for(Node node : m_functionPath){
+			for(Node node : m_functionSequence){
 				nodes.add(node.deepCopy());
 			}
-			fn.m_functionPath = nodes;
+			fn.m_functionSequence = nodes;
 		}
 		return fn;
 	}
@@ -87,12 +87,12 @@ public class FunctionNode extends IBufferNode {
 	}
 	
 	public void setFunction(String functionName, List<Node> fn) {
-		m_functionPath = fn;
+		m_functionSequence = fn;
 		m_functionName = functionName;
 	}
 
 	public List<Node> getFunction() {
-		return m_functionPath;
+		return m_functionSequence;
 	}
 	
 	public Node getBranchTarget() {
@@ -114,9 +114,9 @@ public class FunctionNode extends IBufferNode {
 	}
 
 	public LinkedList<XtaInstruction> getInstructions() {
-		if (m_functionPath != null) {
+		if (m_functionSequence != null) {
 			LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
-			for (Node node : m_functionPath) {
+			for (Node node : m_functionSequence) {
 				list.addAll(node.getInstructions());
 			}
 			return list;
@@ -126,8 +126,8 @@ public class FunctionNode extends IBufferNode {
 	}
 		
 	public int getStartPc() {
-		if(m_functionPath != null){
-			return m_functionPath.get(0).getStartPc();
+		if(m_functionSequence != null){
+			return m_functionSequence.get(0).getStartPc();
 		}
 		return 0;
 	}
@@ -136,8 +136,8 @@ public class FunctionNode extends IBufferNode {
 		if (!nodeTraverser.foundFunctionNode(this, depth))
 			return;
 		
-		if (m_functionPath != null) {
-			for (Node node : m_functionPath) {
+		if (m_functionSequence != null) {
+			for (Node node : m_functionSequence) {
 				node.traverse(depth + 1, nodeTraverser);
 			}
 		}
@@ -145,8 +145,8 @@ public class FunctionNode extends IBufferNode {
 
 	public List<Node> getChildren() {
 		List<Node> children = null;
-		if(m_functionPath!= null){
-			children =  m_functionPath;
+		if(m_functionSequence!= null){
+			children =  m_functionSequence;
 		} else {
 			children = new LinkedList<Node>();
 		}
@@ -154,11 +154,11 @@ public class FunctionNode extends IBufferNode {
 	}
 	
 	public Collection<Node> whatsNext(Node node) {
-		assert (m_functionPath.contains(node));
-		int index = m_functionPath.indexOf(node);
-		if (index < m_functionPath.size() - 1) {
+		assert (m_functionSequence.contains(node));
+		int index = m_functionSequence.indexOf(node);
+		if (index < m_functionSequence.size() - 1) {
 			Collection<Node> next = new TreeSet<Node>();
-			next.add(m_functionPath.get(index + 1));
+			next.add(m_functionSequence.get(index + 1));
 			return next;
 		} else if(node.isInfiniteLoopNode() || node.isInfiniteSelfLoopNode()){
 			Collection<Node> next = new TreeSet<Node>();
@@ -191,11 +191,11 @@ public class FunctionNode extends IBufferNode {
 	}
 
 	public Collection<Node> whatsBefore(Node node) {
-		assert(m_functionPath.contains(node));
-		int index = m_functionPath.indexOf(node);
+		assert(m_functionSequence.contains(node));
+		int index = m_functionSequence.indexOf(node);
 		if(index > 0){
 			Collection<Node> before = new TreeSet<Node>();
-			before.add(m_functionPath.get(index-1));
+			before.add(m_functionSequence.get(index-1));
 			return before;
 		} else {
 			if(getParent()!= null){
@@ -209,7 +209,7 @@ public class FunctionNode extends IBufferNode {
 
 	public List<Node> getImmediateChildren() {
 		List<Node> list = new LinkedList<Node>();
-		list.add(m_functionPath.get(0));
+		list.add(m_functionSequence.get(0));
 		return list;
 	}
 
@@ -220,15 +220,15 @@ public class FunctionNode extends IBufferNode {
 
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
-		List<TimeDistributionBuckets> tsbPath = new LinkedList<TimeDistributionBuckets>();
-		for(Node node : m_functionPath){
-			tsbPath.add(node.getTimeSpread());
+		List<TimeDistributionBuckets> tsbSequence = new LinkedList<TimeDistributionBuckets>();
+		for(Node node : m_functionSequence){
+			tsbSequence.add(node.getTimeSpread());
 		}
-		tdb.add(tsbPath);
+		tdb.add(tsbSequence);
 		return tdb;
 	}
 	
 	public Set<InstructionNode> getEndNodes() {
-		return m_functionPath.get(m_functionPath.size()-1).getEndNodes();
+		return m_functionSequence.get(m_functionSequence.size()-1).getEndNodes();
 	}
 }

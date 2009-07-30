@@ -10,55 +10,55 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
-import com.xmos.xta.engine.analysis.structural.nodes.attributes.SectionNodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.ConditionalNodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
-public class SectionNode extends Node {
-	private SectionNodeAttributes m_attributes;
+public class ConditionalNode extends Node {
+	private ConditionalNodeAttributes m_attributes;
 	private Collection<Node> m_options;
 	private boolean m_isOptional;
 
-	public SectionNode() {
+	public ConditionalNode() {
 		super();
 		m_options = new TreeSet<Node>();
 		m_isOptional = false;
-		m_attributes = new SectionNodeAttributes(this);
+		m_attributes = new ConditionalNodeAttributes(this);
 	}
 	
-	public SectionNode(Collection<Node> options, boolean isOptional) {
+	public ConditionalNode(Collection<Node> options, boolean isOptional) {
 		super();
 		m_options = options;
 		m_isOptional = isOptional;
-		m_attributes = new SectionNodeAttributes(this);
+		m_attributes = new ConditionalNodeAttributes(this);
 	}
 	
-	public SectionNode(SectionNode ms) {
+	public ConditionalNode(ConditionalNode ms) {
 		super();
 		m_options = ms.m_options;
 		m_isOptional = ms.m_isOptional;
-		m_attributes = new SectionNodeAttributes(this);
+		m_attributes = new ConditionalNodeAttributes(this);
 	}
 
 	public Node shallowCopy() {
-		return new SectionNode(this);
+		return new ConditionalNode(this);
 	}
 
 	public Node deepCopy() {
-		SectionNode sn = new SectionNode();
-		for (Node section : m_options) {
-			Node clone = section.deepCopy();
+		ConditionalNode sn = new ConditionalNode();
+		for (Node option : m_options) {
+			Node clone = option.deepCopy();
 			sn.m_options.add(clone);
 		}
 		sn.m_isOptional = m_isOptional; 
-		sn.m_attributes = new SectionNodeAttributes(sn);
+		sn.m_attributes = new ConditionalNodeAttributes(sn);
 		return sn;
 	}
 	
     public String getTypeName() {
-        return "section";
+        return "cond";
     }
 	
     public NodeAttributes getAttributes() {
@@ -83,7 +83,7 @@ public class SectionNode extends Node {
 	}
 	
 	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundSectionNode(this, depth))
+		if (!nodeTraverser.foundConditionalNode(this, depth))
 			return;
 		
 		for (Node node : m_options) {
@@ -102,12 +102,12 @@ public class SectionNode extends Node {
 		return new TreeSet<Node>();		
 	}
 
-	public Node getOption(Case c, Node ignoreIterationsAboveSection) {
-		// Returns the best/worst case option of this section.
-		return getOption(c, ignoreIterationsAboveSection, m_options);
+	public Node getOption(Case c, Node ignoreIterationsAboveCond) {
+		// Returns the best/worst case option of this conditional.
+		return getOption(c, ignoreIterationsAboveCond, m_options);
     }
 	
-	public Node getUnsetOption(Case c, Node ignoreIterationsAboveSection) {
+	public Node getUnsetOption(Case c, Node ignoreIterationsAboveCond) {
 		// Gets the best/worst case option taken from each of the 
 		// option nodes that does not have its iteration 
 		// count explicitly set by the user.
@@ -115,14 +115,14 @@ public class SectionNode extends Node {
 		if (allUnsetOptions.isEmpty())
 			return null;
 		
-		return getOption(c, ignoreIterationsAboveSection, allUnsetOptions);
+		return getOption(c, ignoreIterationsAboveCond, allUnsetOptions);
 	}
 		
-	public boolean isSectionNode() {
+	public boolean isCondNode() {
 		return true;
 	}
 
-	public boolean isSectionOptional() {
+	public boolean isCondOptional() {
 		return m_isOptional;
 	}
 
@@ -173,8 +173,8 @@ public class SectionNode extends Node {
 		return new LinkedList<Node> (m_options);
 	}
 
-	private Node getOption(Case c, Node ignoreIterationsAboveSection, Collection<Node> nodes) {
-		// Must handle optional sections as a special case.. 
+	private Node getOption(Case c, Node ignoreIterationsAboveCond, Collection<Node> nodes) {
+		// Must handle optional conditionals as a special case.. 
 		if ((c == Case.BEST) && (m_isOptional))
 			return null;
 		
@@ -182,11 +182,11 @@ public class SectionNode extends Node {
 		Status status = new Status();
 		Iterator<Node> iter = nodes.iterator();
 		Node caseNode = iter.next();		
-		double caseTime = caseNode.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveSection);
+		double caseTime = caseNode.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveCond);
 		
 		while (iter.hasNext()) {
 			Node node = iter.next();
-			double time = node.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveSection);
+			double time = node.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveCond);
 
 			switch (c) {
 			case WORST:

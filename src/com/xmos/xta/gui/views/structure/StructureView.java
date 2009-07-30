@@ -10,8 +10,8 @@ import com.xmos.xta.gui.views.ZoomedCanvasView;
 import com.xmos.xta.gui.views.viewnode.StructureBlockNode;
 import com.xmos.xta.gui.views.viewnode.StructureFunctionNode;
 import com.xmos.xta.gui.views.viewnode.StructureLoopNode;
-import com.xmos.xta.gui.views.viewnode.StructurePathNode;
-import com.xmos.xta.gui.views.viewnode.StructureSectionNode;
+import com.xmos.xta.gui.views.viewnode.StructureSequenceNode;
+import com.xmos.xta.gui.views.viewnode.StructureConditionalNode;
 import com.xmos.xta.gui.views.viewnode.ViewNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
@@ -39,10 +39,10 @@ public class StructureView extends ZoomedCanvasView {
     		viewNode = new StructureLoopNode(node, m_canvasProperties, false);
     	} else if (node.isInfiniteLoopNode() || node.isInfiniteSelfLoopNode()) {
     		viewNode = new StructureLoopNode(node, m_canvasProperties, true);
-    	} else if (node.isSectionNode()) {
-    		viewNode = new StructureSectionNode(node, m_canvasProperties);
+    	} else if (node.isCondNode()) {
+    		viewNode = new StructureConditionalNode(node, m_canvasProperties);
     	} else {
-    		viewNode = new StructurePathNode(node, m_canvasProperties);
+    		viewNode = new StructureSequenceNode(node, m_canvasProperties);
     	}
     	
     	if (!node.isBlockNode()) {

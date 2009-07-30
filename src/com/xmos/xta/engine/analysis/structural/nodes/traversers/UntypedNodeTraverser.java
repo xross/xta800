@@ -17,7 +17,7 @@ public abstract class UntypedNodeTraverser implements NodeTraverser {
     	return foundNode(node, depth);
     }
     
-    public boolean foundPathNode(Node node, int depth) {
+    public boolean foundSequenceNode(Node node, int depth) {
     	return foundNode(node, depth);
     }
     
@@ -35,7 +35,7 @@ public abstract class UntypedNodeTraverser implements NodeTraverser {
     public boolean foundInfiniteSelfLoopNode(Node node, int depth) {
     	return foundNode(node, depth);
     }
-    public boolean foundSectionNode(Node node, int depth) {
+    public boolean foundConditionalNode(Node node, int depth) {
     	return foundNode(node, depth);
     }
 }

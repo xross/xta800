@@ -54,7 +54,7 @@ public abstract class StructureNode extends ViewNode {
     	return 0;
     }
 
-    protected void drawPathChildren(Display display, GC gc) {
+    protected void drawSequenceChildren(Display display, GC gc) {
 		boolean isWorstCase = isWorstCase();
 		boolean isBestCase = isBestCase();
 		boolean isInfinite = false;

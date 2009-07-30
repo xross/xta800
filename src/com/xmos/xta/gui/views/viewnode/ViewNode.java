@@ -8,7 +8,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.SectionNode;
+import com.xmos.xta.engine.analysis.structural.nodes.ConditionalNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
@@ -140,8 +140,8 @@ public abstract class ViewNode {
 	}
 
 	protected ViewNode getChild(Case c) {
-		SectionNode sectionNode = (SectionNode)m_treeNode;
-		Node optionChild = sectionNode.getOption(c, null);
+		ConditionalNode condNode = (ConditionalNode)m_treeNode;
+		Node optionChild = condNode.getOption(c, null);
 
 		if (optionChild != null) {
 			for (ViewNode child : getChildren()) {

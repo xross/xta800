@@ -26,7 +26,7 @@ public class TimeDistributionBuckets {
 	
 	/**
 	 * this is used for adding two buckets together that are in series.
-	 * i.e. a path
+	 * i.e. a sequence
 	 */
 	public void add (List<TimeDistributionBuckets> list){
 		if(list.size() == 2){
@@ -72,7 +72,7 @@ public class TimeDistributionBuckets {
 	
 	/**
 	 *  this is for adding two buckets together that are in parallel.
-	 *  i.e. a section
+	 *  i.e. a conditional
 	 */
 	public void merge (Collection<TimeDistributionBuckets> tdbs){
 		//always check for infinity first

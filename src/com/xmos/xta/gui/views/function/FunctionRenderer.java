@@ -221,22 +221,22 @@ public class FunctionRenderer extends Renderer {
     }
 
 	private boolean updateUnits() {
-    	Node pathRoot = null;
+    	Node root = null;
 		int pixelsX = 0;
 
 		ViewNode viewNode = m_control.getViewNode();
 		if (viewNode != null) {
-    		pathRoot = viewNode.getTreeNode();
+    		root = viewNode.getTreeNode();
     		pixelsX = viewNode.getPixelsX();
     	}
 
-    	if (pathRoot == null) {
+    	if (root == null) {
 			m_timeUnits = "ns";
 			m_pixelsPerTimeUnit = 1;
 			return true;
     	}
 
-    	double timeTaken = pathRoot.getAttributes().getTimeTaken(Case.WORST, m_status, null);
+    	double timeTaken = root.getAttributes().getTimeTaken(Case.WORST, m_status, null);
     	if (m_status.isInfinite() || m_status.isUnresolved()) {
     		return false;
 		}

@@ -207,7 +207,7 @@ public class RouteConstructor {
 		if(child.getParent() == null) return false;
 		Node parent = child.getParent();
 		
-		if(parent.isSectionNode()) return false;
+		if(parent.isCondNode()) return false;
 		
 		if(parent.getStartPc() == child.getStartPc() && !parent.getInstructions().getFirst().isFnop())
 			return true;

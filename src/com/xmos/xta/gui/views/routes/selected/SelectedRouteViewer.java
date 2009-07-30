@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Sash;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.PathNode;
+import com.xmos.xta.engine.analysis.structural.nodes.SequenceNode;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.Reference;
@@ -69,7 +69,7 @@ public class SelectedRouteViewer {
 			m_rootNode = selectedRoute.getNode();
 			List<Node> nodes = new LinkedList<Node>();
 			nodes.add(m_rootNode);
-			PathNode hiddenRouteNode = new PathNode(nodes);
+			SequenceNode hiddenRouteNode = new SequenceNode(nodes);
 			
 			m_viewer.setInput(hiddenRouteNode);
 			m_viewer.expandToLevel(2);

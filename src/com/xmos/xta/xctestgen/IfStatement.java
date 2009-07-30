@@ -52,10 +52,8 @@ public class IfStatement extends CodeElement {
 
 	public void emitExpect(int node, BufferedWriter file, int depth) throws IOException  {
 		
-		
-		
 		emitExpectIndent(file, depth);
-		file.write("section\n");
+		file.write("cond\n");
 		
 		if(m_children.size() == 1 ) { 
 			for (ArrayList<CodeElement> children : m_children) {

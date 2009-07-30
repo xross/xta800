@@ -103,7 +103,7 @@ public class StructureDisplayer {
 				if (nodeAttributes.getIsAbsolute())
 					sb.append(" (ABSOLUTE)"); 				
 				
-			} else if (node.isSectionNode()) {
+			} else if (node.isCondNode()) {
 				Node enclosingLoopNode = node.getEnclosingLoopNode();
 				if (enclosingLoopNode != null) {
 	                for (Node option : node.getChildren()) {
@@ -115,7 +115,7 @@ public class StructureDisplayer {
 	                					enclosingLoopNode.getAttributes().getLoopIterations(), option, Case.BEST)));
 	                }					
 				}
-				if (node.isSectionOptional())		
+				if (node.isCondOptional())		
 					sb.append(" (OPTIONAL)"); 				
 				
 			} else if (node.getAttributes().getIsLoopHeader())  {

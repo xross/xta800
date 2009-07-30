@@ -49,7 +49,7 @@ public class TraceDisplayer {
 		} else if (node.isLoopNode() || node.isSelfLoopNode()) {
 			displayLoop(node, c, totalIterations, iteration);
 			
-    	} else if (node.isSectionNode()) {
+    	} else if (node.isCondNode()) {
     		Node child = getChild(node, c, totalIterations, iteration);
     		displayInstructions(child, c, totalIterations, iteration);
     		
@@ -58,9 +58,9 @@ public class TraceDisplayer {
     	}
     }
     
-	private Node getChild(Node section, Case c, long totalIterations, long iteration) {
-    	for (Node child : section.getChildren()) {
-    		long childIterations = section.getAttributes().getLoopPathIterations(totalIterations, child, c);
+	private Node getChild(Node cond, Case c, long totalIterations, long iteration) {
+    	for (Node child : cond.getChildren()) {
+    		long childIterations = cond.getAttributes().getLoopPathIterations(totalIterations, child, c);
     		if (iteration < childIterations) {
     			return child;
     		}

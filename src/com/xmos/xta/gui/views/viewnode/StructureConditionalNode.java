@@ -11,7 +11,7 @@ import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.gui.views.ZoomedCanvasProperties;
 
-public class StructureSectionNode extends StructureNode {
+public class StructureConditionalNode extends StructureNode {
     public static final boolean DEBUG = false;
 
     private boolean m_isOptional;
@@ -22,10 +22,10 @@ public class StructureSectionNode extends StructureNode {
 	boolean m_bestCaseInfinite;
 	boolean m_worstCaseInfinite;
     
-	public StructureSectionNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
+	public StructureConditionalNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
 		super(treeNode, canvasProperties);
 		
-		m_isOptional = m_treeNode.isSectionOptional();
+		m_isOptional = m_treeNode.isCondOptional();
 	    m_borderX = 4;
 	    m_borderY = 2;
 	}
@@ -209,7 +209,7 @@ public class StructureSectionNode extends StructureNode {
 	}
 
 	public void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase) {
-		if (DEBUG) System.out.printf("Annotate StructureSection (%d, %d)\n", offsetX, offsetY);
+		if (DEBUG) System.out.printf("Annotate StructureCond (%d, %d)\n", offsetX, offsetY);
 
 		m_pixelOffsetX = offsetX;
 		m_pixelOffsetY = offsetY;
@@ -233,7 +233,7 @@ public class StructureSectionNode extends StructureNode {
 	}
 	
     public boolean isInfinite() {
-    	// A section is only infinite if all children are infinite
+    	// A conditional is only infinite if all children are infinite
     	for (ViewNode child : getChildren()) {
 			if (!child.isInfinite()) {
 				return false;

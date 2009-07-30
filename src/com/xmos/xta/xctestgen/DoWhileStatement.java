@@ -28,7 +28,7 @@ public class DoWhileStatement extends CodeElement {
 		if(getChildCount() > 1){
 			indent++;
 			emitExpectIndent(file, depth+1);
-			file.write("path\n");
+			file.write("seq\n");
 		}
 		for (CodeElement child : m_children.get(node)) {
 			child.emitExpect(node, file, depth+indent);

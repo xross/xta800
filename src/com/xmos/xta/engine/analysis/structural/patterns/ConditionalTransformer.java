@@ -6,7 +6,7 @@ import java.util.TreeSet;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
-public class SectionTransformer extends PatternMatcher {
+public class ConditionalTransformer extends PatternMatcher {
 
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
 		m_treeStart = treeStart;

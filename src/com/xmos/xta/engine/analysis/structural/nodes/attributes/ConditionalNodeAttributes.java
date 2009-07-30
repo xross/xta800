@@ -6,12 +6,12 @@ import java.util.Map;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 
-public class SectionNodeAttributes extends NodeAttributes {
+public class ConditionalNodeAttributes extends NodeAttributes {
 	private Map<Node, Long> m_setIterations;
 	private Node m_cachedWorstCaseOption;
 	private Node m_cachedBestCaseOption;
 	
-	public SectionNodeAttributes(Node node) {
+	public ConditionalNodeAttributes(Node node) {
 		super(node);	
 		m_setIterations = new HashMap<Node, Long>();
 		m_cachedWorstCaseOption = null;
@@ -21,21 +21,21 @@ public class SectionNodeAttributes extends NodeAttributes {
 	// --------------------------------------------------------------------- //
 	// Statistics Methods
 	// --------------------------------------------------------------------- //	
-	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveSection) {
-		if (getCachedTimeTakenValid(c) && (ignoreIterationsAboveSection == null)) {
+	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveCond) {
+		if (getCachedTimeTakenValid(c) && (ignoreIterationsAboveCond == null)) {
 			status.setStatus(getCachedTimeTakenStatus(c));		
 			return getCachedTimeTaken(c);
 		}
 		
 		double value = 0;
 		for (Node child : m_setIterations.keySet()) {
-		    value += child.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveSection);
+		    value += child.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveCond);
 		}
-		Node option = getFloatingOption(c, ignoreIterationsAboveSection);
+		Node option = getFloatingOption(c, ignoreIterationsAboveCond);
 		if (option != null) {
-			value += option.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveSection); 
+			value += option.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveCond); 
 		}		
-		if (ignoreIterationsAboveSection == null) {			
+		if (ignoreIterationsAboveCond == null) {			
 			setCachedTimeTaken(c, value);
 			setCachedTimeTakenStatus(c, status.getStatus());			
 			setCachedTimeTakenValid(c, true);
@@ -43,21 +43,21 @@ public class SectionNodeAttributes extends NodeAttributes {
 		return value;			
 	}
 
-	public long getNumCycles(Case c, Status status, Node ignoreIterationsAboveSection) {
-    	if (getCachedNumCyclesValid(c) && (ignoreIterationsAboveSection == null)) {
+	public long getNumCycles(Case c, Status status, Node ignoreIterationsAboveCond) {
+    	if (getCachedNumCyclesValid(c) && (ignoreIterationsAboveCond == null)) {
     		status.setStatus(getCachedNumCyclesStatus(c));    	
     		return getCachedNumCycles(c);
     	}
     		
     	long value = 0;
     	for (Node child : m_setIterations.keySet()) {
-   		    value += child.getAttributes().getNumCycles(c, status, ignoreIterationsAboveSection);
+   		    value += child.getAttributes().getNumCycles(c, status, ignoreIterationsAboveCond);
     	}		
-    	Node option = getFloatingOption(c, ignoreIterationsAboveSection);
+    	Node option = getFloatingOption(c, ignoreIterationsAboveCond);
     	if (option != null) {
-    		value += option.getAttributes().getNumCycles(c, status, ignoreIterationsAboveSection); 
+    		value += option.getAttributes().getNumCycles(c, status, ignoreIterationsAboveCond); 
     	}    		
-		if (ignoreIterationsAboveSection == null) {
+		if (ignoreIterationsAboveCond == null) {
 			setCachedNumCycles(c, value);
 			setCachedNumCyclesStatus(c, status.getStatus());			
 			setCachedNumCyclesValid(c, true);				
@@ -65,21 +65,21 @@ public class SectionNodeAttributes extends NodeAttributes {
 		return value;
 	}
 
-	public long getNumInstructions(Case c, Status status, Node ignoreIterationsAboveSection) {
-		if (getCachedNumInstructionsValid(c) && (ignoreIterationsAboveSection == null)) {
+	public long getNumInstructions(Case c, Status status, Node ignoreIterationsAboveCond) {
+		if (getCachedNumInstructionsValid(c) && (ignoreIterationsAboveCond == null)) {
 			status.setStatus(getCachedNumInstructionsStatus(c));
 			return getCachedNumInstructions(c);
 		}
 		
 		long value = 0;
 		for (Node child : m_setIterations.keySet()) {
-		    value += child.getAttributes().getNumInstructions(c, status, ignoreIterationsAboveSection);
+		    value += child.getAttributes().getNumInstructions(c, status, ignoreIterationsAboveCond);
 		}		
-		Node option = getFloatingOption(c, ignoreIterationsAboveSection);
+		Node option = getFloatingOption(c, ignoreIterationsAboveCond);
 		if (option != null) {
-			value += option.getAttributes().getNumInstructions(c, status, ignoreIterationsAboveSection); 
+			value += option.getAttributes().getNumInstructions(c, status, ignoreIterationsAboveCond); 
 		}
-		if (ignoreIterationsAboveSection == null) {
+		if (ignoreIterationsAboveCond == null) {
 			setCachedNumInstructions(c, value);
 			setCachedNumInstructionsStatus(c, status.getStatus());			
 			setCachedNumInstructionsValid(c, true);				
@@ -87,21 +87,21 @@ public class SectionNodeAttributes extends NodeAttributes {
 		return value;
 	}
 
-	public long getNumFNops(Case c, Status status, Node ignoreIterationsAboveSection) {
-		if (getCachedNumFnopsValid(c) && (ignoreIterationsAboveSection == null)) {
+	public long getNumFNops(Case c, Status status, Node ignoreIterationsAboveCond) {
+		if (getCachedNumFnopsValid(c) && (ignoreIterationsAboveCond == null)) {
 			status.setStatus(getCachedNumFnopsStatus(c));
 			return getCachedNumFnops(c);
 		}
 		
 		long value = 0;
 		for (Node child : m_setIterations.keySet()) {
-		    value += child.getAttributes().getNumFNops(c, status, ignoreIterationsAboveSection);
+		    value += child.getAttributes().getNumFNops(c, status, ignoreIterationsAboveCond);
 		}		
-		Node option = getFloatingOption(c, ignoreIterationsAboveSection);
+		Node option = getFloatingOption(c, ignoreIterationsAboveCond);
 		if (option != null) {
-			value += option.getAttributes().getNumFNops(c, status, ignoreIterationsAboveSection); 
+			value += option.getAttributes().getNumFNops(c, status, ignoreIterationsAboveCond); 
 		}			
-		if (ignoreIterationsAboveSection == null) {
+		if (ignoreIterationsAboveCond == null) {
 			setCachedNumFnops(c, value);
 			setCachedNumFnopsStatus(c, status.getStatus());			
 			setCachedNumFnopsValid(c, true);				
@@ -115,7 +115,7 @@ public class SectionNodeAttributes extends NodeAttributes {
 			value += child.getAttributes().getNumPaths();
 		}
 		
-		if (getNode().isSectionOptional()) {
+		if (getNode().isCondOptional()) {
 			value += 1;
 		}
 		return value;
@@ -130,7 +130,7 @@ public class SectionNodeAttributes extends NodeAttributes {
 		try {
 			loopIterations = getNode().getParent().getAttributes().getLocalIterations(getNode());
 
-		} catch (SectionIterationsNotSetException e) {
+		} catch (CondIterationsNotSetException e) {
 			return false;
 
 		} catch (InfiniteIterationsException e) {
@@ -138,7 +138,7 @@ public class SectionNodeAttributes extends NodeAttributes {
 		}
 		
 		// Calculates the total iterations already set on all options of 
-		// this section (excluding the contribution from the option we are
+		// this conditional (excluding the contribution from the option we are
 		// try to set here)
 		long totalNumIterationsSet = getTotalNumIterationsSet();
 		if (m_setIterations.get(optionNode) != null)
@@ -159,7 +159,7 @@ public class SectionNodeAttributes extends NodeAttributes {
    				--numUnsetOptions;
 
    			if (numUnsetOptions == 0) {
-   				if (!getNode().isSectionOptional()) {
+   				if (!getNode().isCondOptional()) {
    	   	   			return false;   					
    				}
    			}
@@ -208,28 +208,28 @@ public class SectionNodeAttributes extends NodeAttributes {
 	}
 				
 	long getLocalIterations(Node child) 
-        throws SectionIterationsNotSetException, InfiniteIterationsException {
+        throws CondIterationsNotSetException, InfiniteIterationsException {
 
 		if (m_setIterations.get(child) != null) {
 			return m_setIterations.get(child);				
 		}
-		throw new SectionIterationsNotSetException();			
+		throw new CondIterationsNotSetException();			
 	}
 	
-	Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection)
-	    throws IgnoreSectionIterationsException, InfiniteIterationsException {
+	Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveCond)
+	    throws IgnoreCondIterationsException, InfiniteIterationsException {
 		
-		if (getNode() == ignoreIterationsAboveSection) {
-			throw new IgnoreSectionIterationsException();
+		if (getNode() == ignoreIterationsAboveCond) {
+			throw new IgnoreCondIterationsException();
 			
 		} else {
 			Iterations iterations = null;
 			if (getNode().getParent() != null) {
 				iterations =  getNode().getParent().getAttributes().getTotalIterations(
-						c, getNode(), ignoreIterationsAboveSection);
+						c, getNode(), ignoreIterationsAboveCond);
 				
-			    long localSectionIterations = getLoopPathIterations(iterations.getLocalIterations(), child, c);
-			    iterations.setLocalIterations(localSectionIterations);
+			    long localCondIterations = getLoopPathIterations(iterations.getLocalIterations(), child, c);
+			    iterations.setLocalIterations(localCondIterations);
 			    return iterations;				
 			}					
             return new Iterations();
@@ -249,17 +249,17 @@ public class SectionNodeAttributes extends NodeAttributes {
   	    return totalNumIterationsSet;
 	}
 	
-    private Node getFloatingOption(Case c, Node ignoreIterationsAboveSection) {    	
+    private Node getFloatingOption(Case c, Node ignoreIterationsAboveCond) {    	
     	switch (c) {
     	case WORST:
     		if (m_cachedWorstCaseOption == null) {
-    			m_cachedWorstCaseOption = getNode().getUnsetOption(c, ignoreIterationsAboveSection);
+    			m_cachedWorstCaseOption = getNode().getUnsetOption(c, ignoreIterationsAboveCond);
     		}
 			return m_cachedWorstCaseOption;
     		
     	case BEST:
     		if (m_cachedBestCaseOption == null) {
-    			m_cachedBestCaseOption = getNode().getUnsetOption(c, ignoreIterationsAboveSection);
+    			m_cachedBestCaseOption = getNode().getUnsetOption(c, ignoreIterationsAboveCond);
     		}
 			return m_cachedBestCaseOption;
     	}
@@ -272,7 +272,7 @@ public class SectionNodeAttributes extends NodeAttributes {
 		try {
 			loopIterations = getNode().getParent().getAttributes().getLocalIterations(getNode());
 
-		} catch (SectionIterationsNotSetException e) {
+		} catch (CondIterationsNotSetException e) {
 			return true;
 
 		} catch (InfiniteIterationsException e) {

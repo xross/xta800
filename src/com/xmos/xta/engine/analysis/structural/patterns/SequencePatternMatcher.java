@@ -7,9 +7,9 @@ import java.util.Set;
 
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
-import com.xmos.xta.engine.analysis.structural.nodes.PathNode;
+import com.xmos.xta.engine.analysis.structural.nodes.SequenceNode;
 
-public class PathPatternMatcher extends PatternMatcher {	
+public class SequencePatternMatcher extends PatternMatcher {	
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
 		
 		m_treeStart = treeStart;
@@ -136,7 +136,7 @@ public class PathPatternMatcher extends PatternMatcher {
 		if(allNodesNull){
 			path = new NullNode();
 		} else {
-			path = new PathNode(pathList);
+			path = new SequenceNode(pathList);
 		}
 		
 		if (pathList.contains(treeStart)) {

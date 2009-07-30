@@ -11,8 +11,8 @@ import com.xmos.xta.gui.views.viewnode.FunctionBlockNode;
 import com.xmos.xta.gui.views.viewnode.FunctionFunctionNode;
 import com.xmos.xta.gui.views.viewnode.FunctionLoopNode;
 import com.xmos.xta.gui.views.viewnode.FunctionNode;
-import com.xmos.xta.gui.views.viewnode.FunctionPathNode;
-import com.xmos.xta.gui.views.viewnode.FunctionSectionNode;
+import com.xmos.xta.gui.views.viewnode.FunctionSequenceNode;
+import com.xmos.xta.gui.views.viewnode.FunctionConditionalNode;
 import com.xmos.xta.gui.views.viewnode.ViewNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
@@ -41,10 +41,10 @@ public class FunctionView extends ZoomedCanvasView {
     			viewNode.setFolded(true, false);
     	} else if (node.isLoopNode() || node.isSelfLoopNode()) {
     		viewNode = new FunctionLoopNode(node, m_canvasProperties);
-    	} else if (node.isSectionNode()) {
-    		viewNode = new FunctionSectionNode(node, m_canvasProperties);
+    	} else if (node.isCondNode()) {
+    		viewNode = new FunctionConditionalNode(node, m_canvasProperties);
     	} else {
-    		viewNode = new FunctionPathNode(node, m_canvasProperties);
+    		viewNode = new FunctionSequenceNode(node, m_canvasProperties);
     	}
     	
     	if (!node.isBlockNode()) {

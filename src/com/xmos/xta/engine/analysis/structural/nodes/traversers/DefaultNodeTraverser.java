@@ -15,7 +15,7 @@ public class DefaultNodeTraverser implements NodeTraverser {
     	return true;
     }
     
-    public boolean foundPathNode(Node node, int depth) {
+    public boolean foundSequenceNode(Node node, int depth) {
     	return true;
     }
     
@@ -31,7 +31,7 @@ public class DefaultNodeTraverser implements NodeTraverser {
     	return true;
     }
     
-    public boolean foundSectionNode(Node node, int depth) {
+    public boolean foundConditionalNode(Node node, int depth) {
     	return true;
     }
 

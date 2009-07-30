@@ -24,7 +24,7 @@ public class LoopNodeAttributes extends NodeAttributes {
 	}
 
 	long getLocalIterations(Node child) 
-        throws SectionIterationsNotSetException, InfiniteIterationsException {
+        throws CondIterationsNotSetException, InfiniteIterationsException {
 	
 		if (getIsAbsolute()) {	
 			long iterations = 1;
@@ -39,16 +39,16 @@ public class LoopNodeAttributes extends NodeAttributes {
 		return m_numIterations + headerAdjustment;		
     }
 	
-	Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveSection)
-	    throws IgnoreSectionIterationsException, InfiniteIterationsException {
+	Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveCond)
+	    throws IgnoreCondIterationsException, InfiniteIterationsException {
 
 		Iterations iterations = null;
 		if (getNode().getParent() != null) {	
             try {			
 			    iterations = getNode().getParent().getAttributes().getTotalIterations(
-			    		c, getNode(), ignoreIterationsAboveSection);
+			    		c, getNode(), ignoreIterationsAboveCond);
 			    
-		    } catch (IgnoreSectionIterationsException e) {
+		    } catch (IgnoreCondIterationsException e) {
 		    	iterations = new Iterations();
 		    }
 		} else {
