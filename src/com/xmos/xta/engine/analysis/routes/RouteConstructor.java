@@ -233,8 +233,6 @@ public class RouteConstructor {
 		m_excludedRouteNodes = new TreeSet<Node>();
 		NodeWrapper startNodeWrapper = new NodeWrapper(start);
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
-	
-		
 		
 		seenEndPoint |= explore(realStart, startNodeWrapper, workingSet, endNodes, null);
 
@@ -254,7 +252,7 @@ public class RouteConstructor {
 			addTerminator(workingSet);
 			
 			assert(workingSet.contains(newStart));
-			
+			/*
 			sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
 			
 			assert(cfgSanityCheck(workingSet));
@@ -266,7 +264,9 @@ public class RouteConstructor {
 			assert(workingSet.size() == 1);
 			
 			Node baseNode = workingSet.iterator().next();
-		
+		*/
+			
+			Node baseNode = reduceGraph(newStart, new TreeSet<Node>());
 			sae.normaliseGraph(baseNode);
 			
 			assert(!baseNode.isInfiniteLoopNode());
@@ -285,6 +285,107 @@ public class RouteConstructor {
 			
 		}
 		return seenEndPoint;
+	}
+	
+	private Node reduceGraph(Node startNode, Set<Node> nextNodes){
+		//crawl from the start node to make a working set of just the nodes at this context
+		Set<Node> workingSet = new TreeSet<Node>();
+		findGraph(startNode, workingSet, nextNodes);
+
+		/*
+		for(Node everyNode : workingSet){
+			for(Node next : nextNodes){
+				CommonMethods.disconnect(next, everyNode);
+			}
+		}
+		*/
+		//System.out.println("next Nodes : " + nextNodes + " working set size " + workingSet.size());
+		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
+		
+		assert(workingSet.contains(startNode));
+		
+		
+		//System.out.println(sae.dumpTree("before", workingSet));
+		sae.createStructure(workingSet, startNode, m_engine, true, "Analysing route");
+		
+		assert(workingSet.size() == 1);
+		return workingSet.iterator().next();
+	}
+	
+	
+	private void findGraph(Node currentNode, Set<Node> seen, Set<Node> nextNodes){
+		seen.add(currentNode);
+		if(isFunctionEnd(currentNode) && !currentNode.isFunctionNode()){
+			//System.out.println("function end is " + currentNode);
+			nextNodes.addAll(currentNode.getNextNodes());
+			for(Node next : currentNode.getNextNodes()){
+				CommonMethods.disconnect(next, currentNode);
+			}
+			return;
+		} else {
+			for(Node next : currentNode.getNextNodes()){
+				if (isFunctionStart(next) && !next.isFunctionNode()){
+					
+					CommonMethods.disconnect(next, currentNode);
+					
+					Set<Node> functionNext = new TreeSet<Node>();
+					
+					Node functionContents = reduceGraph(next, functionNext);
+					String functionName = "unnamed function";
+					for(FunctionNode fnNode : m_structureGraph.getFunctions()){
+						if(fnNode.getStartPc() == functionContents.getStartPc()){
+							functionName = fnNode.getFunctionName();
+							break;
+						}
+					}
+					
+					
+					FunctionNode fn = new FunctionNode(functionContents, functionName);
+					
+					//make  currentNode point to this function
+					
+					CommonMethods.connect(fn, currentNode);
+					//make fn point to functionNext
+					for(Node fnNext : functionNext){
+						CommonMethods.connect(fnNext, fn);
+						CommonMethods.disconnect(fnNext, currentNode);
+					}
+					findGraph(fn, seen, nextNodes);
+				} else {
+					if(!seen.contains(next)){
+						findGraph(next, seen, nextNodes);
+					}
+					
+				}
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+
+	private boolean isFunctionStart(Node next) {
+		if(next.getPrevNodesSize() == 1){
+			if(next.getPrevNode().getEndNodes().size() == 1){
+				return next.getPrevNode().getEndNodes().iterator().next().getXtaInstruction().isLink();
+			}
+		}
+		return false;
+	}
+	
+	private boolean isFunctionEnd(Node node) {
+		boolean allEndsareReturns = true;
+		for(InstructionNode inst : node.getEndNodes()){
+			if(!inst.getXtaInstruction().getReturn()){
+				allEndsareReturns = false;
+			}
+		}
+		return allEndsareReturns;
 	}
 
 	private boolean alreadyContainRoute(Node newGraph) {
@@ -322,9 +423,6 @@ public class RouteConstructor {
 	
 		return false;
 	}
-	
-	
-	
 
 	private void addTerminator(Collection<Node> workingSet) {
 		int count = 0;
