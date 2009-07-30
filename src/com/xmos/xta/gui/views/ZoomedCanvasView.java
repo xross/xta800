@@ -486,6 +486,10 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			}
 
 			private Rectangle normaliseBox(Rectangle box) {
+				if (box == null) {
+					return new Rectangle(0, 0, 0, 0);
+				}
+				
 				int x = box.x;
 				int width = box.width;
 				if (box.width < 0) {

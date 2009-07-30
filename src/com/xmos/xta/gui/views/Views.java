@@ -11,6 +11,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -39,6 +40,7 @@ public class Views {
 		}
 
 		final Node firstNode = selectedNodes.get(0);
+		final Engine engine = GuiEngine.getEngine();
 		manager.add(new Separator());
 
     	// Adds the 'Trace in console' option.
@@ -52,7 +54,7 @@ public class Views {
 					    getActivePage().showView(ConsoleView.ID);
 				} catch (PartInitException e) {}
 				
-				int routeId = GuiEngine.getEngine().getSelectedRouteId();
+				int routeId = engine.getSelectedRouteId();
 				console.runCommand("print trace " + routeId + " " + firstNode.getId());
 			}
 		};
@@ -121,6 +123,20 @@ public class Views {
 	    		setInstructionTimeAction.setEnabled(false);
 	    	}
 	    }
+
+    	// Adds the 'exclude this' option.
+    	final List<XtaInstruction> instructions = firstNode.getInstructions();
+	    Action excludeThisAction = new Action("Exclude this") {
+		    public void run() {
+		    	XtaInstruction instruction = instructions.get(0);
+		    	engine.addExclusion("0x" + Integer.toHexString(instruction.getPc())); 
+		    }
+	    };
+	    manager.add(excludeThisAction);
+	    if (instructions.size() > 0)
+	    	excludeThisAction.setEnabled(true);
+	    else
+	    	excludeThisAction.setEnabled(false);
 
 	    manager.add(new Separator());
 

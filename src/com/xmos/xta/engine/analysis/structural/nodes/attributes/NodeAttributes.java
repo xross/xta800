@@ -526,7 +526,12 @@ public class NodeAttributes {
 	}
 	
 	public double getInstructionTimeTaken() {
-		assert(false);		
+		assert(false);
 		return 0;
+	}
+
+	public boolean hasFloatingIterations() {
+		assert(false);
+		return false;
 	}		
 }
