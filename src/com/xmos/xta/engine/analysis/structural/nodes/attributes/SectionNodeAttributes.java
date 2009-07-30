@@ -266,4 +266,19 @@ public class SectionNodeAttributes extends NodeAttributes {
     	assert(false);
     	return null;
     }
+
+	public boolean hasFloatingIterations() {
+		long loopIterations = 1;
+		try {
+			loopIterations = getNode().getParent().getAttributes().getLocalIterations(getNode());
+
+		} catch (SectionIterationsNotSetException e) {
+			return true;
+
+		} catch (InfiniteIterationsException e) {
+			return false;
+		}
+		
+		return (loopIterations - getTotalNumIterationsSet()) > 0;
+	}		
 }
