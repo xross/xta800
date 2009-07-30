@@ -82,7 +82,6 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
     		
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 	        updateState();
-	        m_action.setEnabled(true);
 
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) ||
 				   event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {

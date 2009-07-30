@@ -324,25 +324,25 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
      	};
      	setAction(ShowEndPointID, m_showEndPointAction);
 
-     	setAction(SetStartPointID, new Action("Set start point") {
+     	setAction(SetStartPointID, new Action("Set from endpoint") {
      		public void run() {
      			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_START_POINT, m_clickCodeRefString);
      		}
      	});
      	
-     	setAction(SetEndPointID, new Action("Set end point") {
+     	setAction(SetEndPointID, new Action("Set to endpoint") {
      		public void run() {
      			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_END_POINT, m_clickCodeRefString);
      		}
      	});
      	
-     	setAction(RemoveStartPointID, new Action("Remove start point") {
+     	setAction(RemoveStartPointID, new Action("Remove from endpoint") {
      		public void run() {
      			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_START_POINT, "");     			
      		}
      	});
      	
-     	setAction(RemoveEndPointID, new Action("Remove end point") {
+     	setAction(RemoveEndPointID, new Action("Remove to endpoint") {
      		public void run() {
      			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_END_POINT, "");
      		}
