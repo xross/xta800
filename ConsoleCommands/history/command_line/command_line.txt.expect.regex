@@ -2,14 +2,14 @@
 [^^^]
 1: add branch 0x10000 0x10000
 2: analyse function main
-3: analyse seq label1 label2
-4: analyse seq 0x10000 0x10002
+3: analyse path label1 label2
+4: analyse path 0x10000 0x10002
 5: config proc 0 0
 6: config freq 999
 7: config threads 99
 8: config case BEST
 9: config case WORST
-10: config srcpaths /test/seq/srcpath/
+10: config srcpaths /test/path/srcpath/
 11: clear
 12: echo
 13: pwd
