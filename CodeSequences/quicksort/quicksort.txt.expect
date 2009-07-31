@@ -1,1 +1,1 @@
-Error: Recursion detected in function(s): sort 
+error: Recursion detected in function(s): sort 
