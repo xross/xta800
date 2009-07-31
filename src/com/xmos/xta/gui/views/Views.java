@@ -129,7 +129,7 @@ public class Views {
 	    Action excludeThisAction = new Action("Exclude this") {
 		    public void run() {
 		    	XtaInstruction instruction = instructions.get(0);
-		    	engine.addExclusion("0x" + Integer.toHexString(instruction.getPc())); 
+		    	engine.addExclusion(GuiEngine.s_guiCommandSrc, "0x" + Integer.toHexString(instruction.getPc())); 
 		    }
 	    };
 	    manager.add(excludeThisAction);

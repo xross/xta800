@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.util.IPropertyChangeListener;
 
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
@@ -31,6 +32,8 @@ public class GuiEngine {
 	private static String s_runMode;
 	private static List<Node> s_selectedNodes;
 	private static Map<String, Map<Integer, GuiRouteProperties>> s_routeProperties;
+
+	public static final CommandSource s_guiCommandSrc = new CommandSource("GUI", 0);  
 
 	static {
         s_engine = new Engine(new Config());
@@ -66,7 +69,7 @@ public class GuiEngine {
 	}
 	
 	public static void notify(String message, String argument) {
-		s_notifier.notify(message, argument);
+		s_notifier.notify(s_guiCommandSrc, message, argument);
 	}
 	
 	public static void runFunction(final String functionName) {
@@ -77,7 +80,7 @@ public class GuiEngine {
 			Job job = new Job("Analyse: " + functionName) {
 				protected IStatus run(IProgressMonitor monitor) {
 					s_engine.setMonitor(monitor);
-					s_engine.analyseRoute(functionName);
+					s_engine.analyseRoute(s_guiCommandSrc, functionName);
 					s_engine.setMonitor(null);
 					return Status.OK_STATUS;
 				}
@@ -105,7 +108,7 @@ public class GuiEngine {
 			Job job = new Job("Analyse: " + startRef + " -> " + endRef) {
 				protected IStatus run(IProgressMonitor monitor) {
 					s_engine.setMonitor(monitor);
-					s_engine.analyseRoute(startRef, endRef);
+					s_engine.analyseRoute(s_guiCommandSrc, startRef, endRef);
 					s_engine.setMonitor(null);
 					return Status.OK_STATUS;
 				}

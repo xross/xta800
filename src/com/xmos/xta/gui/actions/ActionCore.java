@@ -44,7 +44,7 @@ public class ActionCore extends ActionDelegate implements IPropertyChangeListene
 				try {
 		        	int coreId = Integer.parseInt(selected); 
 		        	if (coreId != m_currentCoreId) {
-		        		GuiEngine.getEngine().setCoreId(coreId);
+		        		GuiEngine.getEngine().setCoreId(GuiEngine.s_guiCommandSrc, coreId);
 		        		updateCurrentCoreId(coreId);
 		        	}
 		        } catch (NumberFormatException exception) {

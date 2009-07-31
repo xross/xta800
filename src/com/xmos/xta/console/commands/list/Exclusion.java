@@ -114,11 +114,11 @@ public class Exclusion extends Command {
 
     	switch (m_operation) {
     	case ADD:
-    		engine.addExclusion(m_reference);
+    		engine.addExclusion(getSrc(), m_reference);
     		break;
 
     	case REMOVE:
-    		engine.removeExclusion(m_reference);
+    		engine.removeExclusion(getSrc(), m_reference);
     		break;
     		
     	case LIST:

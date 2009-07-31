@@ -10,6 +10,7 @@ import com.xmos.elfhandler.ElfHandler;
 import com.xmos.elfhandler.Symbol;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Notifier;
 
 public class Labels extends Section  {	
@@ -20,18 +21,18 @@ public class Labels extends Section  {
 		m_labels = new TreeMap<String, Integer>(); 
 	}
 	
-	boolean add(String label, int pc) {
+	boolean add(CommandSource src, String label, int pc) {
 		if (!m_labels.containsKey(label)) {										
 			m_labels.put(label, pc);
 			return true;
 		} else {
-			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
+			getNotifier().notify(src , Notifier.NOTIFY_ERROR, String.format(
 					"Label already exists: %s", label));
 			return false;
 		}		
 	}
 	
-	boolean remove(String label) {
+	boolean remove(CommandSource src, String label) {
 		List<String> matches = new ArrayList<String>();
 		for (String mapEntry : m_labels.keySet()) {
 			try {
@@ -48,7 +49,7 @@ public class Labels extends Section  {
 			}
 			return true;			
 		} else {
-			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
+			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
 					"Unable to remove label: %s", label));
 			return false;
 		}		
@@ -58,7 +59,7 @@ public class Labels extends Section  {
 		return m_labels;
 	}
 	
-	boolean load(XeLoader xeLoader) {
+	boolean load(CommandSource src, XeLoader xeLoader) {
         SymbolTable symbolTable = xeLoader.getSymbolTable(getNodeId(), getCoreId());
         ElfHandler elfHandler = symbolTable.getElfHandler();
         

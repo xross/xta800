@@ -48,6 +48,6 @@ public class Function extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-        engine.analyseRoute(m_functionName);  
+        engine.analyseRoute(getSrc(), m_functionName);  
     }
 }

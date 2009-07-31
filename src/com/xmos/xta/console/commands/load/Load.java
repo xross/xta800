@@ -9,7 +9,9 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.console.commands.CommandFactory;
 import com.xmos.xta.console.commands.Invalid;
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.sections.SrcCommandInfo;
 import com.xmos.xta.sourcemapper.FileFinder;
 
 public class Load extends Command {
@@ -53,7 +55,7 @@ public class Load extends Command {
     
     public void execute(Shell shell, Engine engine, Console console) {    	
 		FileFinder fileFinder = new ConsoleFileFinder(engine, console);	
-		if (engine.loadExecutable(new File(m_executableName), fileFinder)) {
+		if (engine.loadExecutable(getSrc(), new File(m_executableName), fileFinder)) {
 		    runSectionCommands(shell, engine, console);
 		}
     }
@@ -63,9 +65,12 @@ public class Load extends Command {
 	}
 	
     private void runSectionCommands(Shell shell, Engine engine, Console console) {
-	    for (String commandString : engine.getSrcLevelCommands()) {
+	    for (SrcCommandInfo cmdInfo : engine.getSrcLevelCommands()) {
+	    	String commandString = cmdInfo.getCommand();
             String[] tokens = commandString.trim().split("\\s+");
-            Command command = CommandFactory.buildCommand(
+            
+            CommandSource src = new CommandSource(cmdInfo.getFileName(), cmdInfo.getLineNumber());
+            Command command = CommandFactory.buildCommand(src,
         		tokens, 0, new Vector<Command>(), console);
 		
             if (command == null)

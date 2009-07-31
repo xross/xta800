@@ -7,13 +7,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Notifier;
 
 public class GuiNotifier implements Notifier {
 	private boolean m_holdMessages;
 	private int m_heldMessageCount;
 	
-	public void notify(String message, String argument) {		
+	public void notify(CommandSource src, String message, String argument) {		
 		if (message.equals(NOTIFY_ERROR)) {
 			displayMessageBox("Error", argument);
 

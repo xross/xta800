@@ -8,6 +8,7 @@ import java.util.regex.PatternSyntaxException;
 
 import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Notifier;
 
 public class CodePoints extends Section  {
@@ -22,18 +23,18 @@ public class CodePoints extends Section  {
 		m_type = type;
 	}
 	
-	boolean add(String label, int pc) {
+	boolean add(CommandSource src, String label, int pc) {
 		if (!m_codePoints.containsKey(label)) {										
 			m_codePoints.put(label, new CodePointInfo(pc, label, "", "", 0));
 			return true;
 		} else {
-			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
+			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
 					"Label already exists: %s", label));
 			return false;
 		}		
 	}
 	
-	boolean remove(String label) {
+	boolean remove(CommandSource src, String label) {
 		List<String> matches = new ArrayList<String>();
 		for (String mapEntry : m_codePoints.keySet()) {
 			try {
@@ -50,7 +51,7 @@ public class CodePoints extends Section  {
 			}
 			return true;
 		} else {
-			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
+			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
 					"Unable to remove label: %s", label));
 			return false;
 		}		
@@ -60,7 +61,7 @@ public class CodePoints extends Section  {
 		return m_codePoints;
 	}
 	
-	boolean load(XeLoader xeLoader) {
+	boolean load(CommandSource src, XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeId(), getCoreId());
 				
 		try {
@@ -91,7 +92,7 @@ public class CodePoints extends Section  {
 	        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
 	        		        		
-	        		if (validateCodePoint(codePoint, location)) {
+	        		if (validateCodePoint(src, codePoint, location)) {
 	            		m_codePoints.put(codePoint, new CodePointInfo(location, codePoint, compilationDir, fileName, lineNumber));        	        		
 	        		} else {
 	        			m_codePoints.clear();
@@ -100,23 +101,23 @@ public class CodePoints extends Section  {
 	        	}			
 		    }
         } catch (Exception e) {
-			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
+			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
 					"Problem reading %s section while loading executable", m_sectionName));
         	return false;
         }
         return true;
 	}
 	
-	private boolean validateCodePoint(String codePoint, int location) {
+	private boolean validateCodePoint(CommandSource src, String codePoint, int location) {
 		if (m_codePoints.containsKey(codePoint)) {
 			CodePointInfo info = m_codePoints.get(codePoint);
 			
 			if (info.getPc() == location) {
-				getNotifier().notify(Notifier.NOTIFY_WARNING, 
+				getNotifier().notify(src, Notifier.NOTIFY_WARNING, 
 						String.format("Duplicate %s: %s at pc: 0x%x", m_type, codePoint, location));
 				return true; 
 			} else {
-				getNotifier().notify(Notifier.NOTIFY_ERROR, 
+				getNotifier().notify(src, Notifier.NOTIFY_ERROR, 
 						String.format("Duplicate %s: %s at pc: 0x%x", m_type, codePoint, location));
 				return false; 				
 			}				

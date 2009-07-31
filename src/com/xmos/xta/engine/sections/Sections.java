@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.TreeSet;
 import java.util.Map;
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Notifier;
 
 public class Sections {	
@@ -40,7 +41,7 @@ public class Sections {
 		m_srcLevelLoops     = new ArrayList<Section>();
     }
 
-	public boolean load(XeLoader xeLoader, Notifier notifier) {		
+	public boolean load(CommandSource src, XeLoader xeLoader, Notifier notifier) {		
 		m_xeLoader = xeLoader;
 		m_notifier = notifier;
 		m_branches.clear();
@@ -73,42 +74,42 @@ public class Sections {
 			}
 		}
 				
-		if (!loadSection(m_branches))
+		if (!loadSection(src, m_branches))
 			return false;
-		if (!loadSection(m_labels))
+		if (!loadSection(src, m_labels))
 			return false;
-		if (!loadSection(m_srcLabels))
+		if (!loadSection(src, m_srcLabels))
 			return false;
-		if (!loadSection(m_endpoints))
+		if (!loadSection(src, m_endpoints))
 			return false;
-		if (!loadSection(m_calls))
+		if (!loadSection(src, m_calls))
 			return false;
-		if (!loadSection(m_srcLabelTables))
+		if (!loadSection(src, m_srcLabelTables))
 			return false;
-		if (!loadSection(m_endpointTables))
+		if (!loadSection(src, m_endpointTables))
 		    return false;
-		if (!loadSection(m_callTables))
+		if (!loadSection(src, m_callTables))
 		    return false;
-		if (!loadSection(m_threadStartPoints))
+		if (!loadSection(src, m_threadStartPoints))
 			return false;
-		if (!loadSection(m_threadStopPoints))
+		if (!loadSection(src, m_threadStopPoints))
 			return false;
-		if (!loadSection(m_srcLevelCommands))
+		if (!loadSection(src, m_srcLevelCommands))
 			return false;
-		if (!loadSection(m_srcLevelLoops))
+		if (!loadSection(src, m_srcLevelLoops))
 			return false;
 		
 		return true;
 	}	
 	
-	public boolean addToBranches(int nodeId, int coreId, int fromPc, int toPc) {
+	public boolean addToBranches(CommandSource src, int nodeId, int coreId, int fromPc, int toPc) {
 		Branches branches = (Branches)getSection(m_branches, nodeId, coreId);
-		return branches.add(fromPc, toPc);
+		return branches.add(src, fromPc, toPc);
 	}
 
-	public boolean removeFromBranches(int nodeId, int coreId, int fromPc) {
+	public boolean removeFromBranches(CommandSource src, int nodeId, int coreId, int fromPc) {
 		Branches branches = (Branches)getSection(m_branches, nodeId, coreId);
-		return branches.remove(fromPc);			
+		return branches.remove(src, fromPc);			
 	}	
 	
 	public Map<Integer, TreeSet<Integer>> getBranches(int nodeId, int coreId) {
@@ -161,7 +162,7 @@ public class Sections {
 		return threadDelimiter.get();	
 	}
 	
-	public Collection<String> getSrcLevelCommands(int nodeId, int coreId) {
+	public Collection<SrcCommandInfo> getSrcLevelCommands(int nodeId, int coreId) {
 		SrcLevelCommands srcLevelCommands = (SrcLevelCommands)getSection(m_srcLevelCommands, nodeId, coreId);
 		return srcLevelCommands.get();		
 	}
@@ -171,9 +172,9 @@ public class Sections {
 		return loops.get();		
 	}
 	
-	private boolean loadSection(Collection<Section> sections) {
+	private boolean loadSection(CommandSource src, Collection<Section> sections) {
 		for (Section section : sections) {
-			if (!section.load(m_xeLoader)) {
+			if (!section.load(src, m_xeLoader)) {
 			    return false;
 			}
 		}

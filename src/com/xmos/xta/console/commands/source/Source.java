@@ -9,7 +9,9 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.console.commands.CommandFactory;
 import com.xmos.xta.console.commands.Invalid;
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Notifier;
 
 public class Source extends Command {
 	private String m_fileName;
@@ -63,7 +65,8 @@ public class Source extends Command {
                         String[] tokens = line.trim().split("\\s+");
                         
                     	if (!tokens[0].startsWith("#")) {
-                            Command command = CommandFactory.buildCommand(
+                    		CommandSource src = new CommandSource(m_fileName, lineNumber);
+                            Command command = CommandFactory.buildCommand(src,
                             		tokens, 0, shell.getCommandHistory(), console);
                             
                             boolean invalidCommand = false;
@@ -78,7 +81,7 @@ public class Source extends Command {
                             }
 
                             if (invalidCommand) {
-                            	String errorMessage = String.format("Invalid command in file: %s, line number: %d\n", m_fileName, lineNumber);
+                            	String errorMessage = String.format("%s:%d: error: invalid command\n", m_fileName, lineNumber);
                             	shell.addCommand(new Invalid(line, errorMessage), location+1);
                             	location++;
                             }
@@ -89,11 +92,13 @@ public class Source extends Command {
                 fp.close();
             }
             catch (IOException e) {
-            	console.display(String.format("Error: Problem reading the file: %s\n", m_fileName)); 
+       			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
+       					"problem reading the file: %s\n", m_fileName)); 
             }                               
         }
         catch (IOException e) {
-        	console.display(String.format("Error: Unable to open file for reading: %s\n", m_fileName)); 
+   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
+   					"unable to open file for reading: %s\n", m_fileName)); 
         }    	
     }        
 }

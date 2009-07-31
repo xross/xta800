@@ -350,7 +350,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
      	
      	setAction(ConstrainExcludeID, new Action("Exclude this") {
      		public void run() {
-     	    	GuiEngine.getEngine().addExclusion(m_clickCodeRefString);		
+     	    	GuiEngine.getEngine().addExclusion(GuiEngine.s_guiCommandSrc, m_clickCodeRefString);		
      		}
      	});
 

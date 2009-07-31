@@ -130,10 +130,10 @@ public class Required extends Command {
    		switch (m_mode) {
     	case NS:
     	case MHZ:
-            engine.setRequirement(m_routeId, m_ns);
+            engine.setRequirement(getSrc(), m_routeId, m_ns);
     		return;
     	case CYCLES:
-            engine.setRequirement(m_routeId, m_cycles);
+            engine.setRequirement(getSrc(), m_routeId, m_cycles);
     		return;
     	}
     	assert(false);

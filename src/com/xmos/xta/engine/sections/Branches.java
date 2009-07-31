@@ -5,6 +5,7 @@ import java.util.TreeSet;
 import java.util.Map;
 import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Notifier;
 
 public class Branches extends Section {	
@@ -16,7 +17,7 @@ public class Branches extends Section {
 		m_branches = new HashMap<Integer, TreeSet<Integer>>(); 
 	}
 	
-	boolean add(int fromPc, int toPc) {
+	boolean add(CommandSource src, int fromPc, int toPc) {
 		if (!m_branches.containsKey(fromPc)) {
 			TreeSet<Integer> toPcs = new TreeSet<Integer>();
 			toPcs.add(toPc);
@@ -28,19 +29,19 @@ public class Branches extends Section {
 			    m_branches.get(fromPc).add(toPc);
 			    return true;
 			} else {
-				getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
+				getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
 						"Unable to add branch: 0x%x, 0x%08x", fromPc, toPc));					
 				return false;				
 			}
 		}	
 	}
 	
-	boolean remove(int fromPc) {
+	boolean remove(CommandSource src, int fromPc) {
 		if (m_branches.containsKey(fromPc)) {
 			m_branches.remove(fromPc);
 			return true;
 		} else {
-			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
+			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
 					"Unable to remove branch: 0x%x", fromPc));		
 			return false;			
 		}
@@ -51,12 +52,12 @@ public class Branches extends Section {
 		return m_branches;
 	}
 		
-	boolean load(XeLoader xeLoader) {
+	boolean load(CommandSource src, XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(".xtabranch", getNodeId(), getCoreId());
 
 				
 		if ((data.length % 8) != 0) {
-			getNotifier().notify(Notifier.NOTIFY_ERROR, "Invalid size for .xtabranch section");
+			getNotifier().notify(src, Notifier.NOTIFY_ERROR, "Invalid size for .xtabranch section");
 			return false;
 		}
 
@@ -68,10 +69,10 @@ public class Branches extends Section {
 	        	int toPc = ByteArrayManipulation.readInt(data, byteIndex);
 	        	byteIndex += 4;
 	        	
-	    		add(fromPc, toPc);
+	    		add(src, fromPc, toPc);
 	        }        
 		} catch (Exception e) {
-			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
+			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
 			    	"Problem reading .xtabranch section while loading executable"));
     	    return false;
         }        

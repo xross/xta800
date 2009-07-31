@@ -33,6 +33,7 @@ import org.eclipse.ui.actions.ActionDelegate;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
+import com.xmos.xta.engine.sections.SrcCommandInfo;
 import com.xmos.xta.gui.XtaPlugin;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.GuiFileFinder;
@@ -92,7 +93,7 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
 			protected IStatus run(IProgressMonitor monitor) {
 				Engine engine = GuiEngine.getEngine();
 				engine.setMonitor(monitor);
-				boolean success = engine.loadExecutable(xeFile, new GuiFileFinder());					
+				boolean success = engine.loadExecutable(GuiEngine.s_guiCommandSrc, xeFile, new GuiFileFinder());					
 				engine.setMonitor(null);
 	        	if (success && (m_action != null)) {	        		
 	        		m_action.setToolTipText("Currently loaded " + xeFile.getAbsolutePath());
@@ -159,15 +160,15 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
 	    ConsoleView console = (ConsoleView)PlatformUI.getWorkbench().
             getActiveWorkbenchWindow().getActivePage().findView(ConsoleView.ID);
     	
-    	Collection<String> srcLevelCommands = GuiEngine.getEngine().getSrcLevelCommands();    	
+    	Collection<SrcCommandInfo> srcLevelCommands = GuiEngine.getEngine().getSrcLevelCommands();    	
     	if (srcLevelCommands.size() > 0) {    	    
 			try {
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 				    getActivePage().showView(ConsoleView.ID);
 			} catch (PartInitException e) {}    	    
 
-        	for (String command : GuiEngine.getEngine().getSrcLevelCommands()) {    	    				
-	    	    console.runCommand(command);
+        	for (SrcCommandInfo command : srcLevelCommands) {    	    				
+	    	    console.runCommand(command.getCommand());
     	    }
     	}    	
     }

@@ -51,6 +51,6 @@ public class Route extends Command {
 	    if (!validateRouteId(engine, console, m_routeId))
 		    return;
     	
-    	engine.removeRoute(m_routeId);
+    	engine.removeRoute(getSrc(), m_routeId);
     }
 }

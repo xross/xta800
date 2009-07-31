@@ -37,8 +37,8 @@ public class JLineConsole implements Console {
 			}
 			return line;
 		} catch (IOException e) {
-			System.out.printf("Internal Error: Problem reading console input (aborting)..\n");
-		    System.out.printf("Try using -DConsole=Basic\n");			
+			System.out.printf("internal error: problem reading console input (aborting)..\n");
+		    System.out.printf("try using -DConsole=Basic\n");			
 			System.exit(1);
 			return null;
 		}
@@ -48,8 +48,8 @@ public class JLineConsole implements Console {
 	}
 	
 	private void reportError() {
-		System.out.printf("Internal Error: Problem reading console input (aborting)..\n");
-	    System.out.printf("Try using -DConsole=Basic\n");			
+		System.out.printf("internal error: Problem reading console input (aborting)..\n");
+	    System.out.printf("try using -DConsole=Basic\n");			
 		System.exit(1);		
 	}
 }

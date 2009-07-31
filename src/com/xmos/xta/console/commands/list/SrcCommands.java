@@ -4,6 +4,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.sections.SrcCommandInfo;
 
 public class SrcCommands extends Command {
 	public SrcCommands() {
@@ -38,8 +39,8 @@ public class SrcCommands extends Command {
 			return;
 		}
 		
-		for (String srcCommand : engine.getSrcLevelCommands()) {
-    	    console.display(String.format("%s\n", srcCommand));
+		for (SrcCommandInfo cmdInfo : engine.getSrcLevelCommands()) {
+    	    console.display(String.format("%s\n", cmdInfo.getCommand()));
     	}		
 	}
 }

@@ -82,8 +82,8 @@ public class Loop extends XtaDialog {
     
     protected void buttonPressed(int id) {
     	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {
-    		if (!GuiEngine.getEngine().setLoopIterations(m_node, m_iterations)) {
-    			GuiEngine.notify(Notifier.NOTIFY_ERROR, "Error: Failed to set loop iterations");
+    		if (!GuiEngine.getEngine().setLoopIterations(GuiEngine.s_guiCommandSrc, m_node, m_iterations)) {
+    			GuiEngine.notify(Notifier.NOTIFY_ERROR, "failed to set loop iterations");
     		} else {
         		super.buttonPressed(id);
     		}
