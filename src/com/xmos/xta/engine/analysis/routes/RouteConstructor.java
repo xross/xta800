@@ -14,11 +14,13 @@ import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
+import com.xmos.xta.engine.analysis.structural.nodes.ConditionalNode;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InfiniteSelfLoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.NullNode;
+import com.xmos.xta.engine.analysis.structural.nodes.SequenceNode;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownType;
@@ -253,21 +255,9 @@ public class RouteConstructor {
 			addTerminator(workingSet);
 			
 			assert(workingSet.contains(newStart));
-			/*
-			sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
 			
-			assert(cfgSanityCheck(workingSet));
+			Node baseNode = reduceGraph(0, null, newStart, new TreeSet<Node>());
 			
-			if(workingSet.size() != 1){
-				System.err.println( StructuralAnalysisEngine.dumpTree("route_after",  workingSet));
-			}
-			
-			assert(workingSet.size() == 1);
-			
-			Node baseNode = workingSet.iterator().next();
-		*/
-			
-			Node baseNode = reduceGraph(0, newStart, new TreeSet<Node>());
 			sae.normaliseGraph(baseNode);
 			
 			assert(!baseNode.isInfiniteLoopNode());
@@ -288,87 +278,95 @@ public class RouteConstructor {
 		return seenEndPoint;
 	}
 	
-	private Node reduceGraph(int depth, Node startNode, Set<Node> nextNodes){
-		//crawl from the start node to make a working set of just the nodes at this context
+	private Node reduceGraph(int depth, Node parentNode, Node startNode, Set<Node> nextNodes){
 		Set<Node> workingSet = new TreeSet<Node>();
-		findGraph(depth, startNode, workingSet, nextNodes);
-
-		/*
-		for(Node everyNode : workingSet){
-			for(Node next : nextNodes){
-				CommonMethods.disconnect(next, everyNode);
-			}
-		}
-		*/
-		//System.out.println("next Nodes : " + nextNodes + " working set size " + workingSet.size());
+		findFunction(depth, parentNode, startNode, workingSet, nextNodes);
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
-		
-		assert(workingSet.contains(startNode));
-		
-		
-		//System.out.println(sae.dumpTree("before", workingSet));
 		sae.createStructure(workingSet, startNode, m_engine, true, "Analysing route");
+		assert(workingSet.size() == 1);
+		return workingSet.iterator().next();
+	}
+	
+	private Node reduceFunctionGraph(int depth, Node parentNode, Node startNode, Set<Node> nextNodes){
+		Set<Node> workingSet = new TreeSet<Node>();
+		workingSet.add(startNode);
+		for(Node next : startNode.getNextNodes()){
+			findFunction(depth, startNode, next, workingSet, nextNodes);
+		}
+		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
+
+		Set<Node> parentsNext = new TreeSet<Node>(parentNode.getNextNodes());
+		sae.createStructure(workingSet, startNode, m_engine, true, "Analysing route");
+		parentNode.getNextNodes().clear();
+		parentNode.getNextNodes().addAll(parentsNext);
 		
 		assert(workingSet.size() == 1);
 		return workingSet.iterator().next();
 	}
 	
-	
-	private void findGraph(int depth, Node currentNode, Set<Node> seen, Set<Node> nextNodes){
-		seen.add(currentNode);
-		if(isFunctionEnd(currentNode) && !currentNode.isFunctionNode() && depth > 0){
-			//System.out.println("function end is " + currentNode);
-			nextNodes.addAll(currentNode.getNextNodes());
-			for(Node next : currentNode.getNextNodes()){
-				CommonMethods.disconnect(next, currentNode);
-			}
+	private void findFunction(int depth, Node parentNode, Node currentNode, Set<Node> seen, Set<Node> functionLasts){
+
+		if (seen.contains(currentNode))
 			return;
-		} else {
+		
+		if (isFunctionStart(currentNode) && !currentNode.isFunctionNode()) {
+			currentNode = makeNewFunction(depth, parentNode, currentNode, seen, functionLasts);
+			seen.add(currentNode);
 			for(Node next : currentNode.getNextNodes()){
-				if (isFunctionStart(next) && !next.isFunctionNode() && depth > 0){
-					
-					CommonMethods.disconnect(next, currentNode);
-					
-					Set<Node> functionNext = new TreeSet<Node>();
-					
-					Node functionContents = reduceGraph(depth+1, next, functionNext);
-					String functionName = "unnamed function";
-					for(FunctionNode fnNode : m_structureGraph.getFunctions()){
-						if(fnNode.getStartPc() == functionContents.getStartPc()){
-							functionName = fnNode.getFunctionName();
-							break;
-						}
-					}
-					
-					FunctionNode fn = new FunctionNode(functionContents, functionName);
-					
-					//make  currentNode point to this function
-					
-					CommonMethods.connect(fn, currentNode);
-					//make fn point to functionNext
-					for(Node fnNext : functionNext){
-						CommonMethods.connect(fnNext, fn);
-						CommonMethods.disconnect(fnNext, currentNode);
-					}
-					findGraph(depth, fn, seen, nextNodes);
-				} else {
-					if(!seen.contains(next)){
-						findGraph(depth, next, seen, nextNodes);
-					}
-					
-				}
+				findFunction(depth, currentNode, next, seen, functionLasts);
+			}
+		} else if ((depth > 0) && isFunctionEnd(currentNode) && !currentNode.isFunctionNode()) {
+			seen.add(currentNode);
+			functionLasts.addAll(currentNode.getNextNodes());
+			CommonMethods.disconnect(currentNode.getNextNode(), currentNode);
+			
+		} else {
+			seen.add(currentNode);
+			for(Node next : currentNode.getNextNodes()){
+				findFunction(depth, currentNode, next, seen, functionLasts);
+			}
+		}			
+	}
+
+	private Node makeNewFunction(int depth, Node parentNode, Node currentNode,
+			Set<Node> seen, Set<Node> functionLasts) {
+		Set<Node> newLasts = new TreeSet<Node>();
+		Node functionContents = reduceFunctionGraph(depth + 1, parentNode, currentNode, newLasts);
+
+		boolean allEndPointsRetsps = true;
+		for (InstructionNode inst : functionContents.getEndNodes()) {
+			if (!inst.getXtaInstruction().getReturn()) {
+				allEndPointsRetsps = false;
 			}
 		}
+		Node fn = null;
+		if (allEndPointsRetsps) {
+			String functionName = "unnamed function";
+			for (FunctionNode fnNode : m_structureGraph.getFunctions()) {
+				if (fnNode.getStartPc() == functionContents.getStartPc()) {
+					functionName = fnNode.getFunctionName();
+					break;
+				}
+			}
+			fn = new FunctionNode(functionContents, functionName);
+		} else {
+			fn = functionContents;
+		}
+		seen.add(fn);
+		CommonMethods.disconnect(currentNode, parentNode);
+		CommonMethods.connect(fn, parentNode);
+			for (Node nextNext : newLasts) {
+				CommonMethods.connect(nextNext, fn);
+			}
+			
+		return fn;
+		/*
+		for (Node next : fn.getNextNodes()) {
+			findFunction(depth, fn, next, seen, functionLasts);
+		}
+*/
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-
 	private boolean isFunctionStart(Node next) {
 		if(next.getPrevNodesSize() == 1){
 			if(next.getPrevNode().getEndNodes().size() == 1){
@@ -379,13 +377,37 @@ public class RouteConstructor {
 	}
 	
 	private boolean isFunctionEnd(Node node) {
-		boolean allEndsareReturns = true;
+		
+		if(node.isBlockNode() || node.isInstructionNode()){
+			boolean allEndsAreReturns = true;
+			for(InstructionNode inst : node.getEndNodes()){
+				if(!inst.getXtaInstruction().getReturn()){
+					allEndsAreReturns = false;
+				}
+			}
+			return allEndsAreReturns;
+		} else if(node.isSequenceNode() ){
+			return isFunctionEnd(((SequenceNode)node).getPath().get(((SequenceNode)node).getPath().size() -1 ));
+		} else if(node.isCondNode()){
+			boolean allReturn = true;
+			for(Node option : ((ConditionalNode)node).getChildren()){
+				if(!isFunctionEnd(option)){
+					allReturn = false;
+				}
+			}
+			return allReturn;
+		} else {
+			return false;
+		}
+		/*
+		boolean allEndsAreReturns = true;
 		for(InstructionNode inst : node.getEndNodes()){
 			if(!inst.getXtaInstruction().getReturn()){
-				allEndsareReturns = false;
+				allEndsAreReturns = false;
 			}
 		}
-		return allEndsareReturns;
+		return allEndsAreReturns;
+		*/
 	}
 
 	private boolean alreadyContainRoute(Node newGraph) {
