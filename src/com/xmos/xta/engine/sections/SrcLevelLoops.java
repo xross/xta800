@@ -35,7 +35,7 @@ public class SrcLevelLoops extends Section {
 	        }        
 		} catch (Exception e) {
 		    getNotifier().notify(src, Notifier.NOTIFY_ERROR,
-			    	"Problem reading .xtaloop section while loading executable");
+			    	"problem reading .xtaloop section while loading executable");
     	    return false;
         }
         return true;

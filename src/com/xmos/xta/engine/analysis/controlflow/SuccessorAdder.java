@@ -56,7 +56,7 @@ public class SuccessorAdder {
 			if (returnNode != null) {
 				instruction.setBranchLinkReturn(returnNode);
 			} else {
-				m_notifier.notify(src, Notifier.NOTIFY_WARNING, "Unable to find PC for return from: " + inst);
+				m_notifier.notify(src, Notifier.NOTIFY_WARNING, "unable to find PC for return from: " + inst);
 			}
 		}
 	}
@@ -120,7 +120,7 @@ public class SuccessorAdder {
 			}	
 			CommonMethods.connect(target, instruction);
 		} else {
-			m_notifier.notify(src, Notifier.NOTIFY_WARNING, "Instruction " + instruction + " failed to find target 0x"
+			m_notifier.notify(src, Notifier.NOTIFY_WARNING, "instruction " + instruction + " failed to find target 0x"
 					+ Integer.toHexString(pc));
 		}
 	}

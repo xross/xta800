@@ -23,7 +23,7 @@ public class ThreadDelimiters extends Section {
 			return true;	
 		} else {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"Unable to add pc: 0x%08x", pc));			
+					"unable to add pc: 0x%08x", pc));			
 			return false;
 		}
 	}
@@ -33,7 +33,7 @@ public class ThreadDelimiters extends Section {
 			return true;
 		} else {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-    				"Unable to remove pc: %s", pc));
+    				"unable to remove pc: %s", pc));
 			return false;
 		}		
 	}
@@ -47,7 +47,7 @@ public class ThreadDelimiters extends Section {
 				
 		if ((data.length % 4) != 0) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"Invalid size for %s section", m_sectionName));
+					"invalid size for %s section", m_sectionName));
 			return false;
 		}
 
@@ -61,7 +61,7 @@ public class ThreadDelimiters extends Section {
 	        }        
 		} catch (Exception e) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-			    	"Problem reading %s section while loading executable", m_sectionName));
+			    	"problem reading %s section while loading executable", m_sectionName));
     	    return false;
         }        
         return true;

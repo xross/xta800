@@ -88,7 +88,7 @@ public class GuiEngine {
 			job.setUser(true);
 			job.schedule();
 		} else {
-			GuiEngine.notify(Notifier.NOTIFY_ERROR, "No function/path specified");
+			GuiEngine.notify(Notifier.NOTIFY_ERROR, "no function/path specified");
 		}
 	}
 	
@@ -97,10 +97,10 @@ public class GuiEngine {
 			return;
 		
 		if ((s_startPoint == null) || s_startPoint.getRef().equals("")) {
-			GuiEngine.notify(Notifier.NOTIFY_ERROR, "Please specify a start reference");
+			GuiEngine.notify(Notifier.NOTIFY_ERROR, "please specify a start reference");
 
 		} else if ((s_endPoint == null) || s_endPoint.getRef().equals("")) {
-			GuiEngine.notify(Notifier.NOTIFY_ERROR, "Please specify an end reference");
+			GuiEngine.notify(Notifier.NOTIFY_ERROR, "please specify an end reference");
 
 		} else {
 			final String startRef = s_startPoint.getRef();

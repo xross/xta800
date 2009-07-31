@@ -31,7 +31,7 @@ public class ThreadHandler {
 				nodes.add(threadNode);
 			} else {
 				m_notifier.notify(src, Notifier.NOTIFY_WARNING,
-						"Failed to find " + type + " at PC 0x" + Integer.toHexString(pc));
+						"failed to find " + type + " at PC 0x" + Integer.toHexString(pc));
 			}
 		}
 		return nodes;
@@ -41,13 +41,13 @@ public class ThreadHandler {
 	public Set<InstructionNode> ensureThreadStartExists(CommandSource src, Set<InstructionNode> threadStarts){
 		if(threadStarts == null  || threadStarts.isEmpty()){
 			m_notifier.notify(src, Notifier.NOTIFY_WARNING,
-					"No thread starts found, assuming master thread starts at 0x10000");
+					"no thread starts found, assuming master thread starts at 0x10000");
 			InstructionNode threadNode = m_instDecoder.getNode(0x10000);
 			if (threadNode != null){
 				threadStarts.add(threadNode);
 			} else {
 				m_notifier.notify(src, Notifier.NOTIFY_WARNING,
-						"Failed to find thread start at PC 0x" + Integer.toHexString(0x10000));
+						"failed to find thread start at PC 0x" + Integer.toHexString(0x10000));
 			}
 		}
 		return threadStarts;

@@ -27,7 +27,7 @@ public class Labels extends Section  {
 			return true;
 		} else {
 			getNotifier().notify(src , Notifier.NOTIFY_ERROR, String.format(
-					"Label already exists: %s", label));
+					"label already exists: %s", label));
 			return false;
 		}		
 	}
@@ -50,7 +50,7 @@ public class Labels extends Section  {
 			return true;			
 		} else {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"Unable to remove label: %s", label));
+					"unable to remove label: %s", label));
 			return false;
 		}		
 	}

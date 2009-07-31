@@ -30,7 +30,7 @@ public class Branches extends Section {
 			    return true;
 			} else {
 				getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-						"Unable to add branch: 0x%x, 0x%08x", fromPc, toPc));					
+						"unable to add branch: 0x%x, 0x%08x", fromPc, toPc));					
 				return false;				
 			}
 		}	
@@ -42,7 +42,7 @@ public class Branches extends Section {
 			return true;
 		} else {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"Unable to remove branch: 0x%x", fromPc));		
+					"unable to remove branch: 0x%x", fromPc));		
 			return false;			
 		}
 	}
@@ -57,7 +57,7 @@ public class Branches extends Section {
 
 				
 		if ((data.length % 8) != 0) {
-			getNotifier().notify(src, Notifier.NOTIFY_ERROR, "Invalid size for .xtabranch section");
+			getNotifier().notify(src, Notifier.NOTIFY_ERROR, "invalid size for .xtabranch section");
 			return false;
 		}
 
@@ -73,7 +73,7 @@ public class Branches extends Section {
 	        }        
 		} catch (Exception e) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-			    	"Problem reading .xtabranch section while loading executable"));
+			    	"problem reading .xtabranch section while loading executable"));
     	    return false;
         }        
         return true;

@@ -54,7 +54,7 @@ public class SrcLevelCommands extends Section {
 		    }
         } catch (Exception e) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"Problem reading .xtacommand while loading executable"));
+					"problem reading .xtacommand while loading executable"));
         	return false;
         }
         return true;

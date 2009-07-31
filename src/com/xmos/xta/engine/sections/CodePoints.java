@@ -29,7 +29,7 @@ public class CodePoints extends Section  {
 			return true;
 		} else {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"Label already exists: %s", label));
+					"label already exists: %s", label));
 			return false;
 		}		
 	}
@@ -52,7 +52,7 @@ public class CodePoints extends Section  {
 			return true;
 		} else {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"Unable to remove label: %s", label));
+					"unable to remove label: %s", label));
 			return false;
 		}		
 	}
@@ -102,7 +102,7 @@ public class CodePoints extends Section  {
 		    }
         } catch (Exception e) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"Problem reading %s section while loading executable", m_sectionName));
+					"problem reading %s section while loading executable", m_sectionName));
         	return false;
         }
         return true;
@@ -114,11 +114,11 @@ public class CodePoints extends Section  {
 			
 			if (info.getPc() == location) {
 				getNotifier().notify(src, Notifier.NOTIFY_WARNING, 
-						String.format("Duplicate %s: %s at pc: 0x%x", m_type, codePoint, location));
+						String.format("duplicate %s: %s at pc: 0x%x", m_type, codePoint, location));
 				return true; 
 			} else {
 				getNotifier().notify(src, Notifier.NOTIFY_ERROR, 
-						String.format("Duplicate %s: %s at pc: 0x%x", m_type, codePoint, location));
+						String.format("duplicate %s: %s at pc: 0x%x", m_type, codePoint, location));
 				return false; 				
 			}				
 		}

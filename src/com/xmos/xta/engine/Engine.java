@@ -241,13 +241,13 @@ public class Engine implements Notifier {
 	public boolean analyseRoute(CommandSource src, String functionName) {
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"Node: %d, Core: %d image not found in file: %s", m_nodeId,
+					"node: %d, Core: %d image not found in file: %s", m_nodeId,
 					m_coreId, m_executableFile));
 			return false;
 			
 		} else if (!functionExists(functionName)) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"Cannot find function: %s in file: %s, node: %d, core: %d",
+					"cannot find function: %s in file: %s, node: %d, core: %d",
 					functionName, m_executableFile, m_nodeId, m_coreId));
 			return false;
 			
@@ -265,18 +265,18 @@ public class Engine implements Notifier {
 		
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"Node: %d, Core: %d image not found in file: %s", m_nodeId,
+					"node: %d, Core: %d image not found in file: %s", m_nodeId,
 					m_coreId, m_executableFile));
 			return false;
 			
 		} else if (!resolveRefernece(fromRef)) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"Unresolved reference: %s", from));
+					"unresolved reference: %s", from));
 			return false;
 			
 		} else if (!resolveRefernece(toRef)) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"Unresolved reference: %s", to));
+					"unresolved reference: %s", to));
 			return false;
 			
 		} else {		
@@ -291,15 +291,15 @@ public class Engine implements Notifier {
 			success = doRouteAnalysis(src, routeDescription);
 			
 		} catch (final java.lang.OutOfMemoryError e) {
-			notify(src, Notifier.NOTIFY_ERROR, "Out of Memory (Heap)");
+			notify(src, Notifier.NOTIFY_ERROR, "out of Memory (Heap)");
 			return false;
 
 		} catch (final java.lang.StackOverflowError e) {
-			notify(src, Notifier.NOTIFY_ERROR, "Out of Memory (Stack)");
+			notify(src, Notifier.NOTIFY_ERROR, "out of Memory (Stack)");
 			return false;
 
 		} catch (Exception e) {
-			notify(src, Notifier.NOTIFY_ERROR, "Unknown error detected");
+			notify(src, Notifier.NOTIFY_ERROR, "unknown error detected");
 			e.printStackTrace();
 			return false;
 		}
@@ -309,7 +309,7 @@ public class Engine implements Notifier {
 	private boolean doRouteAnalysis(CommandSource src, RouteDescription routeDescription) throws Exception {	
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"Node: %d, Core: %d image not found in file: %s",
+					"node: %d, Core: %d image not found in file: %s",
 					m_nodeId, m_coreId, m_executableFile));
 			return false;
 		}
@@ -320,23 +320,23 @@ public class Engine implements Notifier {
 		RouteError error = routeConstructor.analyse(src);		
 
 		if (error == RouteError.NO_ENDPOINTS_FOUND ) {
-			notify(src, Notifier.NOTIFY_ERROR, "No paths of execution could reach the endpoint(s)");
+			notify(src, Notifier.NOTIFY_ERROR, "no paths of execution could reach the endpoint(s)");
 			return false;
 			
 		} else if (error == RouteError.COULD_NOT_FIND_ENDPOINT ) {
-			notify(src, Notifier.NOTIFY_ERROR, "Could node find any end points");
+			notify(src, Notifier.NOTIFY_ERROR, "could node find any end points");
 			return false;
 			
 		} else if (error == RouteError.COULD_NOT_FIND_STARTPOINT ) {
-			notify(src, Notifier.NOTIFY_ERROR,"Could node find any start points");
+			notify(src, Notifier.NOTIFY_ERROR,"could node find any start points");
 			return false;
 			
 		} else if (error == RouteError.ENDPOINTS_MISSING ) {
-			notify(src, Notifier.NOTIFY_ERROR, "Could not determine the endpoint(s)");
+			notify(src, Notifier.NOTIFY_ERROR, "could not determine the endpoint(s)");
 			return false;
 			
 		} else if (error == RouteError.STARTPOINT_MISSING ) {
-			notify(src, Notifier.NOTIFY_ERROR, "Could not determine the startpoint");
+			notify(src, Notifier.NOTIFY_ERROR, "could not determine the startpoint");
 			return false;
 			
 		} else {
@@ -351,7 +351,7 @@ public class Engine implements Notifier {
 					setSelectedRoute(src, m_routes.get(currentSize));
 					notify(src, Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
 				} else {
-					notify(src, Notifier.NOTIFY_WARNING, "No valid paths of execution");
+					notify(src, Notifier.NOTIFY_WARNING, "no valid paths of execution");
 				}
 				return true;
 			} else {
@@ -829,11 +829,11 @@ public class Engine implements Notifier {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ANY_REF);
 		if (!resolveRefernece(reference)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to add exclusion at reference: %s", refString));			
+			notify(src, Notifier.NOTIFY_ERROR, String.format("failed to add exclusion at reference: %s", refString));			
 			return false;
 		}
 		if (alreadyExcluded(reference.getPc())) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Cannot add duplicate exclusion for PC: 0x%x", reference.getPc()));			
+			notify(src, Notifier.NOTIFY_ERROR, String.format("cannot add duplicate exclusion for PC: 0x%x", reference.getPc()));			
 			return false;
 		}
 		m_exclusions.add(reference);
@@ -858,7 +858,7 @@ public class Engine implements Notifier {
 			Reference reference = ReferenceFactory.createReference(
 					refString, ReferenceClass.ANY_REF);
 			if (!resolveRefernece(reference)) {
-				notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to remove exclusion at reference: %s", refString));			
+				notify(src, Notifier.NOTIFY_ERROR, String.format("failed to remove exclusion at reference: %s", refString));			
 				return false;
 			}
 			Iterator<Reference> iter = m_exclusions.iterator();
@@ -882,10 +882,10 @@ public class Engine implements Notifier {
 	// ===================================================================== //
 	public boolean addBranch(CommandSource src, Reference fromRef, Reference toRef) {
 		if (!resolveRefernece(fromRef)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", fromRef.getRef()));
+			notify(src, Notifier.NOTIFY_ERROR, String.format("unresolved reference: %s", fromRef.getRef()));
 			return false;
 		} else if (!resolveRefernece(toRef)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", toRef.getRef()));
+			notify(src, Notifier.NOTIFY_ERROR, String.format("unresolved reference: %s", toRef.getRef()));
 			return false;
 		}		
 		
@@ -900,7 +900,7 @@ public class Engine implements Notifier {
 
 	public boolean removeBranch(CommandSource src, Reference fromRef) {
 		if (!resolveRefernece(fromRef)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Unresolved reference: %s", fromRef.getRef()));
+			notify(src, Notifier.NOTIFY_ERROR, String.format("unresolved reference: %s", fromRef.getRef()));
 			return false;
 		}
 		

@@ -121,13 +121,13 @@ public class StructuralAnalysisEngine {
 
 		engine.provideFeedback("Analysing for recursion...");		
 		if (detectRecursion(src, engine, allFunctionObjects)) {
-			//engine.notify(Notifier.NOTIFY_ERROR, "Recursion detected");			
+			//engine.notify(Notifier.NOTIFY_ERROR, "recursion detected");			
 			return false;
 		}
 		
 		engine.provideFeedback("Linking functions...");
 		if (!linkFunctions(engine, allFunctionObjects)) {
-			engine.notify(src, Notifier.NOTIFY_ERROR, "Could not link");
+			engine.notify(src, Notifier.NOTIFY_ERROR, "could not link");
 			return false;
 		}
 		
@@ -469,7 +469,7 @@ public class StructuralAnalysisEngine {
 			for(FunctionNode fn : loops){
 				sb.append(fn.getFunctionName() + " ");
 			}
-			engine.notify(src, Notifier.NOTIFY_ERROR, "Recursion detected in function(s): " + sb.toString());	
+			engine.notify(src, Notifier.NOTIFY_ERROR, "recursion detected in function(s): " + sb.toString());	
 			return true;
 		}
 		return false;

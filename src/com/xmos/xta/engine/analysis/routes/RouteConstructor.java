@@ -699,15 +699,15 @@ public class RouteConstructor {
 					// Checks for threading instructions...
 					if (mnenonics.isSsync(instruction))
 						engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
-								"Ssync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
+								"ssync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
 					
 					if (mnenonics.isMsync(instruction))
 						engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
-								"Msync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
+								"msync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
 
 					if (mnenonics.isMjoin(instruction)) {
 						engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
-								"Mjoin (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
+								"mjoin (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
 					}
 					
 					// Checks for interrupt enable..
@@ -717,7 +717,7 @@ public class RouteConstructor {
 						int mask = (1 << SR_IEBLE_SIZE) - 1;
 						if (((op1Field >> shift) & mask) == 1) 
 							engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
-									"Interrupt enable detected. Pc: 0x%08x", instruction.getPc()));
+									"interrupt enable detected. Pc: 0x%08x", instruction.getPc()));
 					}					
 					return true;
 				}

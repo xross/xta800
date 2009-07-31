@@ -156,7 +156,7 @@ public class Time extends Command {
 	    case CYCLES:
 	        if (!engine.setInstructionNumCycles(getSrc(), m_routeId, m_refString, m_cycles))
 	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-        			"Failed to set instruction time on reference id: %s\n", m_refString));    			            	
+        			"failed to set instruction time on reference id: %s\n", m_refString));    			            	
 	        break;
 	    }
     }    

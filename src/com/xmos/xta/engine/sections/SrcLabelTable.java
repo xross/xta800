@@ -59,7 +59,7 @@ public class SrcLabelTable extends Section {
 	        }
 	    } catch (Exception e) {
 		    getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"Problem reading %s section while loading executable", m_sectionName));
+					"problem reading %s section while loading executable", m_sectionName));
 	        return false;
 		}
         return true;
