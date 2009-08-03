@@ -125,14 +125,14 @@ public class RouteConstructor {
 				if(start.isFunctionNode()&& notFoundFunctionYet){
 					if(!containAnyNodes(start, m_exclusions)){
 						start.setParent(null);
-						m_routes.add(new Route(m_engine, start.deepCopy(), m_description));
+						m_routes.add(new Route(src, m_engine, start.deepCopy(), m_description));
 					} else {
-						seenEndPoint = makeSubRoute(realStart, seenEndPoint, endNodes, start);
+						seenEndPoint = makeSubRoute(src, realStart, seenEndPoint, endNodes, start);
 					}
 					notFoundFunctionYet = false;
 				}
 			} else {
-				seenEndPoint = makeSubRoute(realStart, seenEndPoint, endNodes, start);
+				seenEndPoint = makeSubRoute(src, realStart, seenEndPoint, endNodes, start);
 			}
 			
 		}
@@ -229,8 +229,8 @@ public class RouteConstructor {
 		return false;
 	}
 
-	private boolean makeSubRoute(Node realStart, boolean seenEndPoint, Collection<Node> endNodes,
-			Node start) {
+	private boolean makeSubRoute(CommandSource src, Node realStart, boolean seenEndPoint,
+			Collection<Node> endNodes, Node start) {
 		
 		Collection<Node> workingSet = new TreeSet<Node>();
 		
@@ -273,7 +273,7 @@ public class RouteConstructor {
 			
 			
 			if(!alreadyContainRoute(newGraph)){
-				m_routes.add(new Route(m_engine, newGraph, m_description));
+				m_routes.add(new Route(src, m_engine, newGraph, m_description));
 			}
 			
 		}

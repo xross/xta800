@@ -1,5 +1,6 @@
 package com.xmos.xta.engine.analysis.routes;
 
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
@@ -19,8 +20,11 @@ public class RouteTiming {
 	private boolean m_maxTimeSet;
 	private int m_nodeId;
 	private int m_coreId;
+	
+	private CommandSource m_requirementsSrc;
 
-	RouteTiming(Route route, Config config, int nodeId, int coreId) {
+	RouteTiming(CommandSource src, Route route, Config config, int nodeId, int coreId) {
+		m_requirementsSrc = src;
 		m_route = route;
 		m_config = config;
 		m_nodeId = nodeId;
@@ -39,7 +43,9 @@ public class RouteTiming {
 		return m_maxTimeSet;
 	}
 
-	public void setMaxCycles(int maxCycles) {
+	public void setMaxCycles(CommandSource src, int maxCycles) {
+		m_requirementsSrc = src;
+		
 		int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
 		m_maxTime = (double) (threadFactor * 1000 * maxCycles) / (double) m_config.m_frequency;
 		m_maxTimeSet = true;
@@ -50,7 +56,9 @@ public class RouteTiming {
 		return (int) (m_config.m_frequency * m_maxTime) / (threadFactor * 1000);
 	}
 
-	public void setMaxTime(double maxTime) {
+	public void setMaxTime(CommandSource src, double maxTime) {
+		m_requirementsSrc = src;
+		
 		m_maxTime = maxTime;
 		m_maxTimeSet = true;
 	}
@@ -63,7 +71,11 @@ public class RouteTiming {
 		m_maxTime = 0.0;
 		m_maxTimeSet = false;
 	}
-	
+
+	public CommandSource getCommandSource() {
+		return m_requirementsSrc;
+	}
+
 	public boolean passedTiming() {
 		Status status = new Status();
 		double worstTime = getWorstTime(status);

@@ -553,7 +553,7 @@ public class Engine implements Notifier {
 			return false;
 			
 		for (Route route : routes) {
-			route.getRouteTiming().setMaxTime(time);
+			route.getRouteTiming().setMaxTime(src, time);
 		}
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		return true;
@@ -565,7 +565,7 @@ public class Engine implements Notifier {
 			return false;
 
 		for (Route route : routes) {			
-			route.getRouteTiming().setMaxCycles(cycles);
+			route.getRouteTiming().setMaxCycles(src, cycles);
 		}
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		return true;
