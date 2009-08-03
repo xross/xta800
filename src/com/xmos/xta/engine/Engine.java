@@ -433,8 +433,8 @@ public class Engine implements Notifier {
 		return m_config.m_verbosity;
 	}
 	
-	public void setWarnAsErrors() {
-		m_config.m_warnAsErrors = true;
+	public void setWarnAsErrors(boolean errorOn) {
+		m_config.m_warnAsErrors = errorOn;
 	}
 	
 	public boolean canInstructionPause(int routeId, String refString) {

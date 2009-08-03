@@ -6,11 +6,18 @@ import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
 
 public class WarnAsErrors extends Command {
+	private boolean m_errorOn;
+
 	public WarnAsErrors() {
+		m_errorOn = false;
+	}
+	
+	public WarnAsErrors(boolean errorOn) {
+		m_errorOn = errorOn;
 	}
 	
     public int numArgs() {
-    	return 0;
+    	return 1;
     }        
 
     public String name() {
@@ -18,21 +25,31 @@ public class WarnAsErrors extends Command {
     }        
 
     public String commandLine() {
-    	return String.format("Werror");
+    	if (m_errorOn) {
+    		return String.format("Werror on");
+    	} else {
+    		return String.format("Werror off");
+    	}
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "Werror: treat all warnings as errors"; 
+        return "Werror <on / off>: treat all warnings as errors or not"; 
     }
 
     public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 
-        return new WarnAsErrors();
+		if (args[index + 1].equals("on")) {
+			return new WarnAsErrors(true);
+		} else if (args[index + 1].equals("off")) {
+			return new WarnAsErrors(false);
+		} else {
+			return null;
+		}
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-    	engine.setWarnAsErrors();
+    	engine.setWarnAsErrors(m_errorOn);
     }    
 }

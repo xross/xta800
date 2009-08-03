@@ -8,6 +8,7 @@ import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.engine.analysis.routes.RouteTiming.Level;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 
 public class Failures extends Command {
 	public Failures() {
@@ -36,22 +37,34 @@ public class Failures extends Command {
 			return;
 		
 		for (Route route : engine.getRoutes()) {
-		    displayRouteSummary(console, route);
+		    displayRouteSummary(engine, console, route);
 		}		
     }
 
-    private void displayRouteSummary(Console console, Route route) {
+    private void displayRouteSummary(Engine engine, Console console, Route route) {
 		RouteTiming routeTiming = route.getRouteTiming();
 		CommandSource src = routeTiming.getCommandSource();
 
 		if (!routeTiming.isTimingSpecified() || !routeTiming.passedTiming()) {
+			
 			if (src.m_lineNum > 0) {
 				console.display(String.format("%s:%d: ",
 						src.m_fileName, src.m_lineNum));
 			}
-			console.display(String.format("error route(%d) %s",
+			console.display(String.format("error: route(%d) %s",
 					route.getRouteId(),
 			        routeTiming.getDescription(Level.DETAILED)));
+		} else if (engine.getConfig().m_warnAsErrors &&
+				(route.getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN).size() > 0)) {
+
+			if (src.m_lineNum > 0) {
+				console.display(String.format("%s:%d: ",
+						src.m_fileName, src.m_lineNum));
+			}
+			console.display(String.format("error: warnings in route(%d) %s",
+					route.getRouteId(),
+			        routeTiming.getDescription(Level.DETAILED)));
+			
 		}
 	}
 }
