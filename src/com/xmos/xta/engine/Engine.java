@@ -1069,6 +1069,8 @@ public class Engine implements Notifier {
 		
 		//TODO test this properly
 		for(InstructionNode inst : funcStarts){
+			
+			
 			String name = symbolTable.functionName(inst.getStartPc());
 			String label = pcToLabel.get(inst.getXtaInstruction().getPc());
 			
@@ -1098,8 +1100,8 @@ public class Engine implements Notifier {
 			}
 		}
 		for(InstructionNode inst : threadStarts){
-			String name = symbolTable.functionName(inst.getStartPc());
 			
+			String name = symbolTable.functionName(inst.getStartPc());
 			if(treeMap.containsKey(name)){
 				name = "unnamed_thread_at_0x" + Integer.toHexString(inst.getStartPc());
 				treeMap.put(name, inst);
@@ -1108,6 +1110,7 @@ public class Engine implements Notifier {
 				treeMap.put(name, inst);
 			}
 		}
+		
 	}
 	
 	private boolean functionExists(String functionName) {
