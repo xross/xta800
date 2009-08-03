@@ -13,7 +13,7 @@ public class Print extends CommandContainer {
 		new Trace(),		
 		new RouteInfo(), 
 		new NodeInfo(),
-		new Failures(),
+		new Warnings(),
 	};
 	
 	public Print() { super("print"); }

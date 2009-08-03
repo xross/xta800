@@ -3,6 +3,7 @@ package com.xmos.xta.console.commands.config;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
+import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.Engine;
 
 public class WarnAsErrors extends Command {
@@ -33,7 +34,9 @@ public class WarnAsErrors extends Command {
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "Werror <on/off>: treat all warnings as errors or not"; 
+    	Config config = engine.getConfig();
+        return String.format("Werror <on/off>: treat warnings as errors or not (currently: %s)",
+            	config.m_warnAsErrors ? "on" : "off"); 
     }
 
     public Command clone(String[] args, int index) {
