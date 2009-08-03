@@ -9,6 +9,28 @@ Verbosity: 0
 Loaded executable: test.xe
 Node: 0, Core: 0 \(No debug information found\)
 No routes analysed
+Current node: 0
+Current core: 0
+Frequency: 400
+NumThreads: 8
+WarnAsError: false
+SrcPaths: \.
+Case: WORST
+Verbosity: 0
+Loaded executable: test.xe
+Node: 0, Core: 0 \(No debug information found\)
+No routes analysed
+Current node: 0
+Current core: 0
+Frequency: 400
+NumThreads: 8
+WarnAsError: true
+SrcPaths: \.
+Case: WORST
+Verbosity: 0
+Loaded executable: test.xe
+Node: 0, Core: 0 \(No debug information found\)
+No routes analysed
 Route\(0\) function: main
     Pass with 3 unknowns, Num Paths: 1, Slack: \d+.0ns, Required: \d+.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
 

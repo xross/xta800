@@ -1,5 +1,7 @@
 analyse function div
-analyse function main
+analyse function test
 set required - 10 ns
-analyse function main
+analyse function test
+set required - 1000 ns
+analyse function pausable
 set required - 1000 ns

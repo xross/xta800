@@ -12,11 +12,14 @@ system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function div " .
-       "analyse function main " .
+       "analyse function test " .
        "-set required - 10 ns " .
-       "analyse function main " .
+       "analyse function test " .
+       "-set required - 1000 ns " .
+       "analyse function pausable " .
        "-set required - 1000 ns " .
        "source cmds.txt " .
+       "-config Werror on " .
        "-print failures " .
        "-exit > $genDir/failures.txt 2>&1");
 
