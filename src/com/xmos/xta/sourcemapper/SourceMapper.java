@@ -240,6 +240,7 @@ public class SourceMapper {
 				return functionName;
 			}
 		}
+		//FIXME
 		assert(false);
 		return "";
 	}

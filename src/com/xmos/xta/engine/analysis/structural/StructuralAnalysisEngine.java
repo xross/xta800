@@ -266,6 +266,7 @@ public class StructuralAnalysisEngine {
 				return functionName;
 			}
 		}
+		//FIXME
 		assert(false);
 		return null;
 	}

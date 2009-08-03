@@ -18,7 +18,7 @@ public class ThreadDelimiters extends Section {
 	}
 	
 	boolean add(int pc) {
-		if (m_pcs.add(pc)) {												
+		if (m_pcs.add(pc)) {
 			return true;	
 		} else {
 			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
