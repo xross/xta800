@@ -2,6 +2,7 @@ Current node: 0
 Current core: 2
 Frequency: 400
 NumThreads: 8
+TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
 Case: WORST
@@ -16,6 +17,7 @@ Current node: 0
 Current core: 1
 Frequency: 400
 NumThreads: 8
+TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
 Case: WORST
