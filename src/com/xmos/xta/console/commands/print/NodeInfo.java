@@ -68,6 +68,6 @@ public class NodeInfo extends Command {
 	    	}			
 		}
 		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, 
-				String.format("node id: %d not found\n", m_nodeId));    	
+				String.format("node id: %d not found", m_nodeId));    	
     }
 }

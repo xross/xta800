@@ -203,7 +203,7 @@ public class Engine implements Notifier {
     	try {
     		executableFile = executableFile.getCanonicalFile();
 		} catch (IOException e) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("failed to resolve executable path: %s\n", executableFile.getName()));
+			notify(src, Notifier.NOTIFY_ERROR, String.format("failed to resolve executable path: %s", executableFile.getName()));
 			return false;			
 		}		
 		

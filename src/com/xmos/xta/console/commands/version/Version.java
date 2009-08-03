@@ -42,13 +42,13 @@ public class Version extends Command {
     	InputStream inputStream = getClass().getResourceAsStream("/plugin.xml");
     	if (inputStream == null) {
    			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-   					"unable to locate version information (missing plugin.xml)\n"));
+   					"unable to locate version information (missing plugin.xml)"));
         	return;
     	}    	
     	String versionString = getVersionString(inputStream);
     	if (versionString == null) {
    			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-   					"unable to locate version information\n"));
+   					"unable to locate version information"));
         	return;    		
     	}
     	console.display(versionString + "\n");    		

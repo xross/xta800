@@ -47,7 +47,7 @@ public abstract class Command {
     public boolean isExecutableLoaded(Engine engine, Console console) {    
 	    File executable = engine.getExecutable();
     	if (executable == null) {
-    		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no executable loaded\n");
+    		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no executable loaded");
 	        return false;
     	}
     	return true;
@@ -72,13 +72,13 @@ public abstract class Command {
     public boolean validateRouteId(Engine engine, Console console, int routeId) {
     	if (routeId != Engine.ROUTE_ID_GLOBAL) {
     	    if (engine.getRoutes().size() == 0) {
-       			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no routes analysed\n");
+       			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no routes analysed");
     		    return false;
     	    }
         	Collection<Route> routes = engine.getRoute(routeId);
         	if (routes.size() == 0) {
        			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-       					"invalid route id: %d\n", routeId));
+       					"invalid route id: %d", routeId));
         		return false;
         	}
     	}
@@ -90,18 +90,18 @@ public abstract class Command {
         	Node node = engine.getStructureGraph().getNode(nodeId);
         	if (node == null) {
        			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-       					"invalid node id: %d\n", nodeId));
+       					"invalid node id: %d", nodeId));
         		return false;    		
         	}        	    		    		
     	} else {
 	    	if (engine.getRoutes().size() == 0) {
-	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no routes analysed\n");
+	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no routes analysed");
 	    		return false;
 	    	}
         	Collection<Route> routes = engine.getRoute(routeId);
         	if (routes.size() == 0) {
        			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-       					"invalid route id: %d\n", routeId));
+       					"invalid route id: %d", routeId));
         		return false;
         	}
         	
@@ -115,7 +115,7 @@ public abstract class Command {
         	}
         	if (!found) {
        			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-       					"invalid node id: %d\n", nodeId));
+       					"invalid node id: %d", nodeId));
         		return false;    		        		
         	}
     	}    	    	    	

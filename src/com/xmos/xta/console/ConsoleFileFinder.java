@@ -25,7 +25,7 @@ public class ConsoleFileFinder extends FileFinder {
 		}
 				
 		addToCancelCache(compilationDir, fileName);
-		m_console.display(String.format("Warning: Failed to find source file: %s\n", fileName));
+		m_console.display(String.format("warning: failed to find source file: %s\n", fileName));
         return null;
 	}	
 }

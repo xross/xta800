@@ -62,7 +62,7 @@ public class LoopPath extends Command {
 
    		if (!engine.setLoopPathIterations(getSrc(), m_routeId, m_refString, m_iterations)) {
    			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-       				"failed to set loop path iterations on reference: %s\n", 
+       				"failed to set loop path iterations on reference: %s", 
        				m_refString));
     	}    					
     }    

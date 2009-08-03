@@ -79,7 +79,7 @@ public class LoopScope extends Command {
 		
 		if (!engine.setLoopScope(getSrc(), m_routeId, m_refString, m_absolute)) {
    			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-    				"failed to set loop scope on reference: %s\n", 
+    				"failed to set loop scope on reference: %s", 
     				m_refString));
     	}
     }    

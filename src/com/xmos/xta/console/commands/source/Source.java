@@ -93,12 +93,12 @@ public class Source extends Command {
             }
             catch (IOException e) {
        			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-       					"problem reading the file: %s\n", m_fileName)); 
+       					"problem reading the file: %s", m_fileName)); 
             }                               
         }
         catch (IOException e) {
    			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-   					"unable to open file for reading: %s\n", m_fileName)); 
+   					"unable to open file for reading: %s", m_fileName)); 
         }    	
     }        
 }

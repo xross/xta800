@@ -144,19 +144,19 @@ public class Time extends Command {
 	    case NS:
 	        if (!engine.setInstructionTimeTaken(getSrc(), m_routeId, m_refString, m_ns))
 	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-	       			"failed to set instruction time on reference id: %s\n", m_refString));    			            	
+	       			"failed to set instruction time on reference id: %s", m_refString));    			            	
 	    	break;
 
 	    case MHZ:
 	        if (!engine.setInstructionTimeTaken(getSrc(), m_routeId, m_refString, m_mhz))
 	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-        		    "failed to set instruction time on reference id: %s\n", m_refString));    			            	
+        		    "failed to set instruction time on reference id: %s", m_refString));    			            	
 	        break;
 	    		
 	    case CYCLES:
 	        if (!engine.setInstructionNumCycles(getSrc(), m_routeId, m_refString, m_cycles))
 	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-        			"failed to set instruction time on reference id: %s\n", m_refString));    			            	
+        			"failed to set instruction time on reference id: %s", m_refString));    			            	
 	        break;
 	    }
     }    
