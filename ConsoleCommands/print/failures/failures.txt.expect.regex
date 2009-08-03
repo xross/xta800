@@ -1,0 +1,4 @@
+error route\(0\)     No Timing Specified
+error route\(1\)     Fail, Num Paths: 1, Violation: \d+.0ns, Required: 10.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+cmds.txt:1: error route\(3\)     No Timing Specified
+cmds.txt:3: error route\(4\)     Fail, Num Paths: 1, Violation: \d+.0ns, Required: 10.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz

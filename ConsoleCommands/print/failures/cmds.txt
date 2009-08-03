@@ -1,0 +1,5 @@
+analyse function div
+analyse function main
+set required - 10 ns
+analyse function main
+set required - 1000 ns
