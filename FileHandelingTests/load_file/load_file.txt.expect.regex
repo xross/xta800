@@ -1,4 +1,4 @@
-Error: The file '.*john.xe' could not be loaded.
-Error: No executable loaded
-Error: The file '.*sponge.xe' could not be loaded.
-Error: No executable loaded
+error: the file '.*john.xe' could not be loaded.
+error: no executable loaded
+error: the file '.*sponge.xe' could not be loaded.
+error: no executable loaded

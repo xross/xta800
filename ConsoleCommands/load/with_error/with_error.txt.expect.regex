@@ -9,7 +9,7 @@ Verbosity: 0
 Loaded executable: test\.xe
 Node: 0, Core: 0 \(No debug information found\)
 No routes analysed
-Error: The file '.*not_found\.xe' could not be loaded\.
+error: the file '.*not_found\.xe' could not be loaded\.
 Current node: 0
 Current core: 0
 Frequency: 400
