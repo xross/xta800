@@ -30,7 +30,7 @@
       option: verbosity <level>: Sets the tool verbosity level (range: -10 -> +10, default: 0)
       option: case <BEST/WORST>: Sets the case (currently: WORST)
       option: timeout <seconds>: Sets the tools timeout on load
-      option: Werror: treat all warnings as errors
+      option: Werror <on/off>: treat all warnings as errors or not
   [-]echo "text": prints the text to the console
   [-]exit: Quits the shell (Standalone mode only)
   [-]help [command/option]: Displays help message for the given command/option
