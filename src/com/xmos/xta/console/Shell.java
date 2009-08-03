@@ -8,6 +8,7 @@ import java.util.Vector;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.console.commands.CommandFactory;
 import com.xmos.xta.console.commands.Invalid;
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 
@@ -112,7 +113,8 @@ public class Shell {
     
     private void processCommandLine(String[] args) {
 	    for (int i = 0; i < args.length; ++i) {
-	    	Command command = CommandFactory.buildCommand(args, i, m_commandHistory, m_console);
+            CommandSource src = new CommandSource("cmd", 0);
+	    	Command command = CommandFactory.buildCommand(src, args, i, m_commandHistory, m_console);
 	    	if (command == null) {
 	    		usage();
 	    	}
@@ -146,7 +148,8 @@ public class Shell {
                 tokens = tokenGroups.toArray(tokens);
                 
                 boolean isPlingCommand = CommandFactory.isPlingCommand(tokens[0]);
-                command = CommandFactory.buildCommand(tokens, 0, m_commandHistory, m_console);
+                CommandSource src = new CommandSource("console", 0);
+                command = CommandFactory.buildCommand(src, tokens, 0, m_commandHistory, m_console);
 
                 // Check command is valid and has consumed entire line
                 boolean invalidCommand = false;

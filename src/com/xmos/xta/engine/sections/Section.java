@@ -1,6 +1,7 @@
 package com.xmos.xta.engine.sections;
 
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Notifier;
 
 public abstract class Section {
@@ -14,7 +15,7 @@ public abstract class Section {
 		m_notifier = notifier;
 	}
 
-	abstract boolean load(XeLoader xeLoader);
+	abstract boolean load(CommandSource src, XeLoader xeLoader);
 	
 	int getNodeId() {
 		return m_nodeId;

@@ -52,6 +52,6 @@ public class Path extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-        engine.analyseRoute(m_fromRef, m_toRef);
+        engine.analyseRoute(getSrc(), m_fromRef, m_toRef);
     }    
  }

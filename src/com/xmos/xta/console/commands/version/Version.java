@@ -12,6 +12,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Notifier;
 
 public class Version extends Command {
 	public Version() {		
@@ -40,12 +41,14 @@ public class Version extends Command {
     public void execute(Shell shell, Engine engine, Console console) {
     	InputStream inputStream = getClass().getResourceAsStream("/plugin.xml");
     	if (inputStream == null) {
-        	console.display(String.format("Error: Unable to locate version information (missing plugin.xml)\n"));
+   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
+   					"unable to locate version information (missing plugin.xml)"));
         	return;
     	}    	
     	String versionString = getVersionString(inputStream);
     	if (versionString == null) {
-        	console.display(String.format("Error: Unable to locate version information\n"));
+   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
+   					"unable to locate version information"));
         	return;    		
     	}
     	console.display(versionString + "\n");    		

@@ -5,6 +5,7 @@ import java.util.TreeSet;
 
 import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Notifier;
 
 public class ThreadDelimiters extends Section {
@@ -17,22 +18,23 @@ public class ThreadDelimiters extends Section {
 		m_pcs = new TreeSet<Integer>(); 
 	}
 	
-	boolean add(int pc) {
-		if (m_pcs.add(pc)) {
+
+	boolean add(CommandSource src, int pc) {
+		if (m_pcs.add(pc)) {												
 			return true;	
 		} else {
-			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
-					"Unable to add pc: 0x%08x", pc));			
+			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
+					"unable to add pc: 0x%08x", pc));			
 			return false;
 		}
 	}
 	
-	boolean remove(int pc) {
+	boolean remove(CommandSource src, int pc) {
 		if (m_pcs.remove(pc)) {
 			return true;
 		} else {
-			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
-    				"Unable to remove pc: %s", pc));
+			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
+    				"unable to remove pc: %s", pc));
 			return false;
 		}		
 	}
@@ -41,12 +43,12 @@ public class ThreadDelimiters extends Section {
 		return m_pcs;
 	}
 	
-	boolean load(XeLoader xeLoader) {
+	boolean load(CommandSource src, XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeId(), getCoreId());
 				
 		if ((data.length % 4) != 0) {
-			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
-					"Invalid size for %s section", m_sectionName));
+			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
+					"invalid size for %s section", m_sectionName));
 			return false;
 		}
 
@@ -59,8 +61,8 @@ public class ThreadDelimiters extends Section {
 	    		m_pcs.add(pc);
 	        }        
 		} catch (Exception e) {
-			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
-			    	"Problem reading %s section while loading executable", m_sectionName));
+			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
+			    	"problem reading %s section while loading executable", m_sectionName));
     	    return false;
         }        
         return true;

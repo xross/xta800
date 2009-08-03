@@ -70,7 +70,7 @@ public class LoopScope extends XtaDialog {
     
     protected void buttonPressed(int id) {
     	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {
-    		GuiEngine.getEngine().setLoopScope(m_node, m_scope);  
+    		GuiEngine.getEngine().setLoopScope(GuiEngine.s_guiCommandSrc, m_node, m_scope);  
     	}
     	super.buttonPressed(id);
     } 

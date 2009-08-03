@@ -6,6 +6,8 @@ import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
@@ -74,7 +76,7 @@ public class RouteConstructor {
 		return m_routes;
 	}
 
-	public RouteError analyse() {
+	public RouteError analyse(CommandSource src) {
 		resetParent();
 		boolean seenEndPoint = false;
 		
@@ -138,7 +140,7 @@ public class RouteConstructor {
 		setUnknowns();			
 		setSelfLoops();	
 		setSrcLoopCounts();	
-		checkSupportedInstructions();
+		checkSupportedInstructions(src);
 		
 		if (m_description.getMode() == RouteMode.PATH) {
 			if (seenEndPoint) {
@@ -683,7 +685,7 @@ public class RouteConstructor {
 		}		
 	}
 	
-	private void checkSupportedInstructions() {
+	private void checkSupportedInstructions(final CommandSource src) {
 		final Engine engine = m_engine;
 		final InstructionMnemonics mnenonics = new InstructionMnemonics(
 				m_engine.getXeLoader().getArchitecture());
@@ -696,16 +698,16 @@ public class RouteConstructor {
 
 					// Checks for threading instructions...
 					if (mnenonics.isSsync(instruction))
-						engine.notify(Notifier.NOTIFY_WARNING, String.format(
-								"Ssync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
+						engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
+								"ssync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
 					
 					if (mnenonics.isMsync(instruction))
-						engine.notify(Notifier.NOTIFY_WARNING, String.format(
-								"Msync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
+						engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
+								"msync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
 
 					if (mnenonics.isMjoin(instruction)) {
-						engine.notify(Notifier.NOTIFY_WARNING, String.format(
-								"Mjoin (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
+						engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
+								"mjoin (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
 					}
 					
 					// Checks for interrupt enable..
@@ -714,8 +716,8 @@ public class RouteConstructor {
 						int shift = SR_IEBLE_SHIFT;
 						int mask = (1 << SR_IEBLE_SIZE) - 1;
 						if (((op1Field >> shift) & mask) == 1) 
-							engine.notify(Notifier.NOTIFY_WARNING, String.format(
-									"Interrupt enable detected. Pc: 0x%08x", instruction.getPc()));
+							engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
+									"interrupt enable detected. Pc: 0x%08x", instruction.getPc()));
 					}					
 					return true;
 				}

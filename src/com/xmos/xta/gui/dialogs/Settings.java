@@ -112,7 +112,7 @@ public class Settings extends XtaDialog {
 	}
 
 	public void setFrequency(int frequency) {
-		GuiEngine.getEngine().setFrequency(frequency);
+		GuiEngine.getEngine().setFrequency(GuiEngine.s_guiCommandSrc, frequency);
 	}
 
 	public int getNumThreads() {
@@ -120,7 +120,7 @@ public class Settings extends XtaDialog {
 	}
 
 	public void setNumThreads(int numThreads) {
-		GuiEngine.getEngine().setNumThreads(numThreads);
+		GuiEngine.getEngine().setNumThreads(GuiEngine.s_guiCommandSrc, numThreads);
 	}	
 
 	private boolean isWorstCase() {
@@ -128,7 +128,7 @@ public class Settings extends XtaDialog {
 	}
 
 	private void setCase(boolean isWorstCase) {
-		GuiEngine.getEngine().setCase(isWorstCase ? Case.WORST : Case.BEST);
+		GuiEngine.getEngine().setCase(GuiEngine.s_guiCommandSrc, isWorstCase ? Case.WORST : Case.BEST);
 	}
 }
 

@@ -4,6 +4,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
@@ -66,6 +67,7 @@ public class NodeInfo extends Command {
 	    		return;
 	    	}			
 		}
-		console.display(String.format("Error: Node id: %d nt found\n", m_nodeId));    	
+		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, 
+				String.format("node id: %d not found", m_nodeId));    	
     }
 }

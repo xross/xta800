@@ -103,7 +103,7 @@ public class RouteSelectorViewer {
 				if (GuiEngine.getEngine().getRoutes().size() > 0) {
 	            	manager.add(new Action("delete all") {
 						public void run() {
-							GuiEngine.getEngine().removeAllRoutes();
+							GuiEngine.getEngine().removeAllRoutes(GuiEngine.s_guiCommandSrc);
 						}
 					});
 				}
@@ -141,7 +141,7 @@ public class RouteSelectorViewer {
 					}
 					
 					if ((newId != currentSelectedId) && (newId != Engine.ROUTE_ID_INVALID)) {
-						engine.setSelectedRouteId(newId);
+						engine.setSelectedRouteId(GuiEngine.s_guiCommandSrc, newId);
 	            	}
 		        }
 			}
@@ -163,7 +163,7 @@ public class RouteSelectorViewer {
 		ISelection selection = m_viewer.getSelection();
         for (Object object : ((IStructuredSelection)selection).toList()) {
             if (object instanceof RouteNode) {
-         	    GuiEngine.getEngine().removeRoute(((RouteNode)object).getRoute().getRouteId());
+         	    GuiEngine.getEngine().removeRoute(GuiEngine.s_guiCommandSrc, ((RouteNode)object).getRoute().getRouteId());
         	}
         }
 	}

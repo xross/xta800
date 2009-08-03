@@ -4,6 +4,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
 import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
@@ -92,7 +93,7 @@ public class Time extends Command {
     public Command clone(String[] args, int index) {
     	if ((index + numArgs()) >= args.length) 
 			return null;
-    	
+
 		int routeId;
     	try { routeId = getRouteId(args[index + 1]);
 	    } catch (NumberFormatException e) {
@@ -141,21 +142,21 @@ public class Time extends Command {
 
    		switch (m_mode) {
 	    case NS:
-	        if (!engine.setInstructionTimeTaken(m_routeId, m_refString, m_ns))
-	      		console.display(String.format(
-	       			"Error: Failed to set instruction time on reference id: %s\n", m_refString));    			            	
+	        if (!engine.setInstructionTimeTaken(getSrc(), m_routeId, m_refString, m_ns))
+	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
+	       			"failed to set instruction time on reference id: %s", m_refString));    			            	
 	    	break;
 
 	    case MHZ:
-	        if (!engine.setInstructionTimeTaken(m_routeId, m_refString, m_mhz))
-        	    console.display(String.format(
-        		    "Error: Failed to set instruction time on reference id: %s\n", m_refString));    			            	
+	        if (!engine.setInstructionTimeTaken(getSrc(), m_routeId, m_refString, m_mhz))
+	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
+        		    "failed to set instruction time on reference id: %s", m_refString));    			            	
 	        break;
 	    		
 	    case CYCLES:
-	        if (!engine.setInstructionNumCycles(m_routeId, m_refString, m_cycles))
-        	    console.display(String.format(
-        			"Error: Failed to set instruction time on reference id: %s\n", m_refString));    			            	
+	        if (!engine.setInstructionNumCycles(getSrc(), m_routeId, m_refString, m_cycles))
+	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
+        			"failed to set instruction time on reference id: %s", m_refString));    			            	
 	        break;
 	    }
     }    

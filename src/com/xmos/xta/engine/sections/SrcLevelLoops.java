@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Notifier;
 
 public class SrcLevelLoops extends Section {
@@ -19,7 +20,7 @@ public class SrcLevelLoops extends Section {
 		return m_loops;
 	}
 	
-	boolean load(XeLoader xeLoader) {
+	boolean load(CommandSource src, XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(".xtaloop", getNodeId(), getCoreId());
 		try {
 			int byteIndex = 0;
@@ -33,8 +34,8 @@ public class SrcLevelLoops extends Section {
 	        	m_loops.add(new SrcLevelLoopInfo(pc, numIterations));
 	        }        
 		} catch (Exception e) {
-		    getNotifier().notify(Notifier.NOTIFY_ERROR,
-			    	"Problem reading .xtaloop section while loading executable");
+		    getNotifier().notify(src, Notifier.NOTIFY_ERROR,
+			    	"problem reading .xtaloop section while loading executable");
     	    return false;
         }
         return true;

@@ -77,8 +77,8 @@ public class LoopPath extends XtaDialog {
     
     protected void buttonPressed(int id) {
     	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {    		
-    		if (!GuiEngine.getEngine().setLoopPathIterations(m_node, m_iterations)) {
-    			GuiEngine.notify(Notifier.NOTIFY_ERROR, "Error: Failed to set loop path iterations");
+    		if (!GuiEngine.getEngine().setLoopPathIterations(GuiEngine.s_guiCommandSrc, m_node, m_iterations)) {
+    			GuiEngine.notify(Notifier.NOTIFY_ERROR, "failed to set loop path iterations");
     		} else {
         		super.buttonPressed(id);
      		}

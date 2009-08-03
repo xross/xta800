@@ -46,6 +46,6 @@ public class Threads extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-        engine.setNumThreads(m_numThreads);
+        engine.setNumThreads(getSrc(), m_numThreads);
     }    
 }

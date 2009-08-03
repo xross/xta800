@@ -136,10 +136,10 @@ public class Branch extends Command {
 
     	switch (m_operation) {
     	case ADD:
-			engine.addBranch(fromRef, toRef);
+			engine.addBranch(getSrc(), fromRef, toRef);
 			break;			
     	case REMOVE:
-			engine.removeBranch(fromRef);
+			engine.removeBranch(getSrc(), fromRef);
 			break;			
     	case LIST:
     		listBranches(engine, console);        	

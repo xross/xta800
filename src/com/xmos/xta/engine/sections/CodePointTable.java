@@ -5,6 +5,7 @@ import java.util.TreeMap;
 
 import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Notifier;
 
 public class CodePointTable extends Section {
@@ -21,7 +22,7 @@ public class CodePointTable extends Section {
 		return m_locations;
 	}
 	
-	boolean load(XeLoader xeLoader) {
+	boolean load(CommandSource src, XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeId(), getCoreId());
 				
 		try {
@@ -53,8 +54,8 @@ public class CodePointTable extends Section {
 	        	}
 	        }			
         } catch (Exception e) {
-			getNotifier().notify(Notifier.NOTIFY_ERROR, String.format(
-					"Problem reading %s section while loading executable", m_sectionName));
+			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
+					"problem reading %s section while loading executable", m_sectionName));
         	return false;
         }
         return true;

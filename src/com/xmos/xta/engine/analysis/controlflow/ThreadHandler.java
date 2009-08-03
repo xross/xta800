@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -22,31 +23,31 @@ public class ThreadHandler {
 	}
 
 
-	public Set<InstructionNode> getThreadNodes(Collection<Integer> threadPcs, String type) {
+	public Set<InstructionNode> getThreadNodes(CommandSource src, Collection<Integer> threadPcs, String type) {
 		Set<InstructionNode> nodes = new TreeSet<InstructionNode>();
 		for(int pc : threadPcs){
 			InstructionNode threadNode = m_instDecoder.getNode(pc);
 			if (threadNode != null){
 				nodes.add(threadNode);
 			} else {
-				m_notifier.notify(Notifier.NOTIFY_WARNING,
-						"Failed to find " + type + " at PC 0x" + Integer.toHexString(pc));
+				m_notifier.notify(src, Notifier.NOTIFY_WARNING,
+						"failed to find " + type + " at PC 0x" + Integer.toHexString(pc));
 			}
 		}
 		return nodes;
 	}
 	
 
-	public Set<InstructionNode> ensureThreadStartExists(Set<InstructionNode> threadStarts){
+	public Set<InstructionNode> ensureThreadStartExists(CommandSource src, Set<InstructionNode> threadStarts){
 		if(threadStarts == null  || threadStarts.isEmpty()){
-			m_notifier.notify(Notifier.NOTIFY_WARNING,
-					"No thread starts found, assuming master thread starts at 0x10000");
+			m_notifier.notify(src, Notifier.NOTIFY_WARNING,
+					"no thread starts found, assuming master thread starts at 0x10000");
 			InstructionNode threadNode = m_instDecoder.getNode(0x10000);
 			if (threadNode != null){
 				threadStarts.add(threadNode);
 			} else {
-				m_notifier.notify(Notifier.NOTIFY_WARNING,
-						"Failed to find thread start at PC 0x" + Integer.toHexString(0x10000));
+				m_notifier.notify(src, Notifier.NOTIFY_WARNING,
+						"failed to find thread start at PC 0x" + Integer.toHexString(0x10000));
 			}
 		}
 		return threadStarts;

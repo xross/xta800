@@ -67,6 +67,7 @@ public abstract class CommandContainer extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
+    	m_option.setSrc(getSrc());
     	m_option.execute(shell, engine, console);
     }             
 }

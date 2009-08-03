@@ -55,6 +55,6 @@ public class Case extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-        engine.setCase(m_case);
+        engine.setCase(getSrc(), m_case);
     }    
 }

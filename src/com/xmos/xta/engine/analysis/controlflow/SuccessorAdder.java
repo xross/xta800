@@ -7,6 +7,7 @@ import java.util.TreeSet;
 import com.xmos.isa.Instruction;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.XeLoader;
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -35,83 +36,83 @@ public class SuccessorAdder {
 		m_notifier = notifier;
 	}
 
-	public boolean process() {
+	public boolean process(CommandSource src) {
 		for (InstructionNode node : m_instDecoder.getInstructions()) {
 			XtaInstruction inst = node.getXtaInstruction();
 			boolean debug = false;
-			addAllBranchTargets(node, inst, debug);
-			handleNonBranchingInstructions(node, inst, debug);
-			addUserSuccessors(node, inst, debug);
-			addBranchLinkReturns(node, inst);
+			addAllBranchTargets(src, node, inst, debug);
+			handleNonBranchingInstructions(src, node, inst, debug);
+			addUserSuccessors(src, node, inst, debug);
+			addBranchLinkReturns(src, node, inst);
 			
 		}
 		return true;
 	}
 
-	private void addBranchLinkReturns(Node instruction, XtaInstruction inst) {
+	private void addBranchLinkReturns(CommandSource src, Node instruction, XtaInstruction inst) {
 		if (inst.isLink()) {
 			int returnPc = inst.getPc() + inst.getNumBytes();
 			Node returnNode = m_instDecoder.getNode(returnPc);
 			if (returnNode != null) {
 				instruction.setBranchLinkReturn(returnNode);
 			} else {
-				m_notifier.notify(Notifier.NOTIFY_WARNING, "Unable to find PC for return from: " + inst);
+				m_notifier.notify(src, Notifier.NOTIFY_WARNING, "unable to find PC for return from: " + inst);
 			}
 		}
 	}
 
-	private void addUserSuccessors(Node instruction, XtaInstruction inst, boolean debug) {
+	private void addUserSuccessors(CommandSource src, Node instruction, XtaInstruction inst, boolean debug) {
 		TreeSet<Integer> nextPcs = m_branchMap.get(inst.getPc());
 
 		//FIXME - this should not be allowed for instruction that are not branches
 		if (nextPcs != null) {
 			for (int pc : nextPcs) {
-				connect(instruction, pc, true, debug);
+				connect(src, instruction, pc, true, debug);
 			}
 		}
 	}
 
-	private void handleNonBranchingInstructions(Node instruction, XtaInstruction inst, boolean debug) {
+	private void handleNonBranchingInstructions(CommandSource src, Node instruction, XtaInstruction inst, boolean debug) {
 		if (!(inst.isBranch() || inst.isLink() || m_mnenonics.isWait(inst) || m_threadEnds.contains(instruction))) {
 			int nextPc = inst.getPc() + inst.getNumBytes();
 			
 			if(m_instDecoder.getNode(nextPc) != null){
-				connect(instruction, nextPc, false, debug);
+				connect(src, instruction, nextPc, false, debug);
 			}
 			
 		}
 	}
 
-	private void addAllBranchTargets(Node instruction, XtaInstruction inst, boolean debug) {
+	private void addAllBranchTargets(CommandSource src, Node instruction, XtaInstruction inst, boolean debug) {
 		if (inst.getBranchPcRelative()) {
 			int target = inst.getBranchPcRelativeTargetPc();
-			connect(instruction, target, true, debug);
+			connect(src, instruction, target, true, debug);
 		}
 		if (m_mnenonics.isConditional(inst)) {
 			int target = inst.getPc() + inst.getNumBytes();
-			connect(instruction, target, false, debug);
+			connect(src, instruction, target, false, debug);
 		}
 		if (m_mnenonics.isBlacpShort(inst)) {
 			int imm = XtaInstruction.getBits(16, 10, inst.getOpcode()) << Instruction.NUM_BYTES_PER_WORD_LOG2;
-			calculateCPAddress(instruction, imm, debug);
+			calculateCPAddress(src, instruction, imm, debug);
 		}
 		if (m_mnenonics.isBlacpLong(inst)) {
 			int imm = XtaInstruction.getBitsHL(16, 10, 0, 10, inst.getOpcode()) << Instruction.NUM_BYTES_PER_WORD_LOG2;
-			calculateCPAddress(instruction, imm, debug);
+			calculateCPAddress(src, instruction, imm, debug);
 		}
 	}
 
-	private void calculateCPAddress(Node instruction, int imm, boolean debug) {
+	private void calculateCPAddress(CommandSource src, Node instruction, int imm, boolean debug) {
 		int address = m_cpPointer + imm;
 		try {
 			int word = m_mi.readInstructionWord(address);
-			connect(instruction, word, true, debug);
+			connect(src, instruction, word, true, debug);
 		} catch (Exception e) {
-			m_notifier.notify(Notifier.NOTIFY_WARNING, String.format("CP address 0x%x out of bounds", address));
+			m_notifier.notify(src, Notifier.NOTIFY_WARNING, String.format("CP address 0x%x out of bounds", address));
 		}
 	}
 
-	private void connect(Node instruction, int pc, boolean branching, boolean debug) {
+	private void connect(CommandSource src, Node instruction, int pc, boolean branching, boolean debug) {
 		Node target = m_instDecoder.getNode(pc);
 		if (target != null) {
 			if (branching){
@@ -119,7 +120,7 @@ public class SuccessorAdder {
 			}	
 			CommonMethods.connect(target, instruction);
 		} else {
-			m_notifier.notify(Notifier.NOTIFY_WARNING, "Instruction " + instruction + " failed to find target 0x"
+			m_notifier.notify(src, Notifier.NOTIFY_WARNING, "instruction " + instruction + " failed to find target 0x"
 					+ Integer.toHexString(pc));
 		}
 	}

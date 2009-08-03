@@ -20,6 +20,7 @@ import com.xmos.xta.console.commands.set.Set;
 import com.xmos.xta.console.commands.source.Source;
 import com.xmos.xta.console.commands.status.Status;
 import com.xmos.xta.console.commands.version.Version;
+import com.xmos.xta.engine.CommandSource;
 
 public class CommandFactory {
 	static private Command[] m_commands = { 
@@ -46,7 +47,7 @@ public class CommandFactory {
 		return m_commands;
 	}
 	
-    public static Command buildCommand(String[] args, int index, 
+    public static Command buildCommand(CommandSource src, String[] args, int index, 
     		Vector<Command> commandHistory, Console console) {
     	String arg = args[index];    	
         
@@ -57,11 +58,13 @@ public class CommandFactory {
     	arg = stripLeadingDash(arg);
     	for (Command command : m_commands) {
     		if (arg.equals(command.name())) {
-    			Command cloned = command.clone(args, index);    			
+    			Command cloned = command.clone(args, index);
     			if (cloned == null) {
-    		    	console.display(
-    		    			"Invalid argument(s) to '" + command.name() + 
+    		    	console.display(src.m_fileName + ":" + src.m_lineNum + ": error: " +
+    		    			"invalid argument(s) to '" + command.name() + 
     		    			"' command (Try 'help " + command.name() + "'..)\n");    	    				
+    			} else {
+        			cloned.setSrc(src);
     			}
     			return cloned;
     		}

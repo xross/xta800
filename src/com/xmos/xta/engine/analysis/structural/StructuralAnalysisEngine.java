@@ -12,6 +12,7 @@ import java.util.Set;
 
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xeloader.XeLoader.Architecture;
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
@@ -53,10 +54,10 @@ public class StructuralAnalysisEngine {
 		setUpPatternMatcher();
 	}
 
-	public boolean analyse(Engine engine, TreeMap<String, InstructionNode> functionNames, 
+	public boolean analyse(CommandSource src, Engine engine, TreeMap<String, InstructionNode> functionNames, 
 			Map<Integer, TreeSet<Node>> pcToEndPoints) {
 		m_functionStartPcs = new TreeMap<Integer, FunctionNode>();
-		return buildStructureGraphs(engine, functionNames, pcToEndPoints);
+		return buildStructureGraphs(src, engine, functionNames, pcToEndPoints);
 	}
 
 	public StructureGraph getStructureGraph() {
@@ -101,7 +102,8 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	private boolean buildStructureGraphs(Engine engine, TreeMap<String, InstructionNode> treeMap, Map<Integer, TreeSet<Node>> pcToEndPoints) {
+	private boolean buildStructureGraphs(CommandSource src, Engine engine, TreeMap<String,
+			InstructionNode> treeMap, Map<Integer, TreeSet<Node>> pcToEndPoints) {
 		
 		Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
 		
@@ -118,14 +120,14 @@ public class StructuralAnalysisEngine {
 		m_structureGraph = new StructureGraph(threads, functions, pcToEndPoints);
 
 		engine.provideFeedback("Analysing for recursion...");		
-		if (detectRecursion(engine, allFunctionObjects)) {
-			//engine.notify(Notifier.NOTIFY_ERROR, "Recursion detected");			
+		if (detectRecursion(src, engine, allFunctionObjects)) {
+			//engine.notify(Notifier.NOTIFY_ERROR, "recursion detected");			
 			return false;
 		}
 		
 		engine.provideFeedback("Linking functions...");
 		if (!linkFunctions(engine, allFunctionObjects)) {
-			engine.notify(Notifier.NOTIFY_ERROR, "Could not link");
+			engine.notify(src, Notifier.NOTIFY_ERROR, "could not link");
 			return false;
 		}
 		
@@ -422,7 +424,9 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	private boolean detectRecursion(Engine engine, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects){
+	private boolean detectRecursion(CommandSource src, Engine engine, Map<FunctionNode,
+			TreeSet<FunctionNode>> allFunctionObjects){
+		
 		Map<FunctionNode, TreeSet<FunctionNode>> links = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
 		for(FunctionNode fn : allFunctionObjects.keySet()){
 			for(FunctionNode linksTo : allFunctionObjects.get(fn)){
@@ -466,7 +470,7 @@ public class StructuralAnalysisEngine {
 			for(FunctionNode fn : loops){
 				sb.append(fn.getFunctionName() + " ");
 			}
-			engine.notify(Notifier.NOTIFY_ERROR, "Recursion detected in function(s): " + sb.toString());	
+			engine.notify(src, Notifier.NOTIFY_ERROR, "recursion detected in function(s): " + sb.toString());	
 			return true;
 		}
 		return false;

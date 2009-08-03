@@ -4,6 +4,7 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Notifier;
 
 public class LoopScope extends Command {	
 	private int m_routeId;
@@ -76,10 +77,10 @@ public class LoopScope extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 		
-		if (!engine.setLoopScope(m_routeId, m_refString, m_absolute)) {
-    		console.display(String.format(
-    				"Error: Failed to set loop scope on reference: %s\n", 
-    				m_refString));    		
+		if (!engine.setLoopScope(getSrc(), m_routeId, m_refString, m_absolute)) {
+   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
+    				"failed to set loop scope on reference: %s", 
+    				m_refString));
     	}
     }    
  }
