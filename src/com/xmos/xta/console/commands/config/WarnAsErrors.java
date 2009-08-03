@@ -33,7 +33,7 @@ public class WarnAsErrors extends Command {
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "Werror <on / off>: treat all warnings as errors or not"; 
+        return "Werror <on/off>: treat all warnings as errors or not"; 
     }
 
     public Command clone(String[] args, int index) {
