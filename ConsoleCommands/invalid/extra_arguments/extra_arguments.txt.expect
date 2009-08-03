@@ -1,1 +1,1 @@
-Invalid command in file: cmds.txt, line number: 1
+cmds.txt:1: error: invalid command

@@ -9,4 +9,4 @@ Route(1) function: test1
     No Timing Specified
 
 Fail, Timing Unspecified
-Error: No routes analysed
+error: no routes analysed

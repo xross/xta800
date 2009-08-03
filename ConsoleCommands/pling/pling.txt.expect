@@ -22,8 +22,8 @@ No routes analysed
 2: source cmds.txt
 3: status
 4: history
-Invalid command in file: cmds.txt, line number: 8
-Error: No executable loaded
+cmds.txt:8: error: invalid command
+cmds.txt:9: error: no executable loaded
 1: status
 2: source cmds.txt
 3: status
@@ -31,8 +31,8 @@ Error: No executable loaded
 5: !0
 6: list functions
 7: history
-Invalid command in file: cmds.txt, line number: 15
-Invalid command in file: cmds.txt, line number: 18
+cmds.txt:15: error: invalid command
+cmds.txt:18: error: invalid command
 1: status
 2: source cmds.txt
 3: status

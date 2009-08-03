@@ -8,4 +8,4 @@ Case: WORST
 Verbosity: 0
 No executable loaded
 No routes analysed
-Invalid command in file: cmds.txt, line number: 5
+cmds.txt:5: error: invalid command

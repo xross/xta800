@@ -1,2 +1,2 @@
-Error: Failed to set loop iterations on reference: loop
-Error: Failed to set loop path iterations on reference: if
+error: failed to set loop iterations on reference: loop
+error: failed to set loop path iterations on reference: if

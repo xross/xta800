@@ -1,6 +1,6 @@
-Warning: Failed to find source file: fft.xc
-Warning: Failed to find source file: fft.xc
-Error: The file '.*test_2.xe' could not be loaded.
+warning: failed to find source file: fft.xc
+warning: failed to find source file: fft.xc
+error: the file '.*test_2.xe' could not be loaded.
 Current node: 0
 Current core: 0
 Frequency: 400

@@ -1,4 +1,4 @@
-Error: Failed to set instruction time on reference id: inst
+cmds.txt:1: error: failed to set instruction time on reference id: inst
 none
 Time for instruction (0x100be: in (2r)) set to 1000.0ns, pc: 0x100be, backtrace: main:
 Time for instruction (0x100be: in (2r)) set to 5000.0ns, pc: 0x100be, backtrace: main:

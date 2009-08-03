@@ -1,4 +1,4 @@
-Error: Unresolved reference: test.xc:3
+error: unresolved reference: test.xc:3
 Current node: 0
 Current core: 0
 Frequency: 400
