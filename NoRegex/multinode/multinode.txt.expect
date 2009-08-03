@@ -1,0 +1,7 @@
+function main
+Time taken:       10160.0ns / 10140.0ns
+Thread cycles:    508 / 507
+Num Instructions: 508 / 507
+Num Fnops:        73 / 73
+Num Paths:        8
+Node Id:          29531
