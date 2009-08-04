@@ -120,8 +120,8 @@ public class SuccessorAdder {
 			}	
 			CommonMethods.connect(target, instruction);
 		} else {
-			m_notifier.notify(src, Notifier.NOTIFY_WARNING, "instruction " + instruction + " failed to find target 0x"
-					+ Integer.toHexString(pc));
+			m_notifier.notify(src, Notifier.NOTIFY_WARNING, "target (0x"+ Integer.toHexString(pc)+ 
+					") of: " + instruction + " not found in exectauble sections");
 		}
 	}
 }

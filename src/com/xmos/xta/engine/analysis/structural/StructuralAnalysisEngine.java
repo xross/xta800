@@ -662,6 +662,10 @@ public class StructuralAnalysisEngine {
 					sb.append(node + " [label=\"" + node + "\\n");
 					sb.append(((FunctionNode)node).getFunctionName() + "\\n");
 					sb.append("\"]; ");
+				}else if(node.isSequenceNode()){
+					sb.append(node + " [label=\"" + node + "\\n");
+					sb.append("0x" + Integer.toHexString(node.getStartPc()) + "\\n");
+					sb.append("\"]; ");
 				}
 			}
 			sb.append("}\n");
