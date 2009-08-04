@@ -1,0 +1,15 @@
+xta: warning: instruction instruction10 failed to find target 0x0
+xta: warning: CP address 0x410234 out of bounds
+xta: warning: instruction instruction14 failed to find target 0x10826
+xta: warning: instruction instruction15 failed to find target 0x21002a
+xta: warning: instruction instruction16 failed to find target 0xf830
+xta: warning: instruction instruction17 failed to find target 0xffe10034
+xta: warning: instruction instruction18 failed to find target 0x100b2
+xta: warning: instruction instruction19 failed to find target 0x30036
+xta: warning: instruction instruction20 failed to find target 0xffbc
+xta: warning: instruction instruction21 failed to find target 0xffff0040
+xta: warning: instruction instruction23 failed to find target 0x30042
+xta: warning: instruction instruction24 failed to find target 0x100c4
+xta: warning: instruction instruction25 failed to find target 0x30048
+xta: warning: instruction instruction27 failed to find target 0x3004e
+xta: warning: instruction instruction29 failed to find target 0x30054

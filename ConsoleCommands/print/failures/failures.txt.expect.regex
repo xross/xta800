@@ -1,6 +1,6 @@
-error: route\(0\)     No Timing Specified
-error: route\(1\)     Fail, Num Paths: 1, Violation: \d+.0ns, Required: 10.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
-error: warnings in route\(3\)     Pass with 3 unknowns, Num Paths: 1, Slack: \d+.0ns, Required: 1000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
-cmds.txt:1: error: route\(4\)     No Timing Specified
-cmds.txt:3: error: route\(5\)     Fail, Num Paths: 1, Violation: \d+.0ns, Required: 10.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
-cmds.txt:7: error: warnings in route\(7\)     Pass with 3 unknowns, Num Paths: 1, Slack: \d+.0ns, Required: 1000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+xta: error: route\(0\)     No Timing Specified
+xta: error: route\(1\)     Fail, Num Paths: 1, Violation: \d+.0ns, Required: 10.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+xta: error: warnings in route\(3\)     Pass with 3 unknowns, Num Paths: 1, Slack: \d+.0ns, Required: 1000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+xta: cmds.txt:1: error: route\(4\)     No Timing Specified
+xta: cmds.txt:3: error: route\(5\)     Fail, Num Paths: 1, Violation: \d+.0ns, Required: 10.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+xta: cmds.txt:7: error: warnings in route\(7\)     Pass with 3 unknowns, Num Paths: 1, Slack: \d+.0ns, Required: 1000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz

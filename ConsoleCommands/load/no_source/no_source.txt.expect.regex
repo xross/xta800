@@ -1,8 +1,9 @@
-warning: failed to find source file: test.xc
+xta: warning: failed to find source file: test.xc
 Current node: 0
 Current core: 0
 Frequency: 400
 NumThreads: 8
+TimingFailAsError: true
 WarnAsError: false
 SrcPaths: \.
 Case: WORST

@@ -1,5 +1,5 @@
-error: unresolved reference: test.xc:16
-error: unresolved reference: test.xc:7
+xta: error: unresolved reference: test.xc:16
+xta: error: unresolved reference: test.xc:7
 Route\(0\) path: test.xc:7 to test.xc:8
     No Timing Specified
 

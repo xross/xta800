@@ -2,6 +2,7 @@ Current node: 0
 Current core: 0
 Frequency: 400
 NumThreads: 8
+TimingFailAsError: true
 WarnAsError: false
 SrcPaths: \.
 Case: WORST
@@ -9,11 +10,12 @@ Verbosity: 0
 Loaded executable: test\.xe
 Node: 0, Core: 0 \(No debug information found\)
 No routes analysed
-error: the file '.*not_found\.xe' could not be loaded\.
+xta: error: the file '.*not_found\.xe' could not be loaded\.
 Current node: 0
 Current core: 0
 Frequency: 400
 NumThreads: 8
+TimingFailAsError: true
 WarnAsError: false
 SrcPaths: \.
 Case: WORST

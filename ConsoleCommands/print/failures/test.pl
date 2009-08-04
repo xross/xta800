@@ -20,6 +20,6 @@ system("@ARGV load $genDir/test.xe " .
        "-set required - 1000 ns " .
        "source cmds.txt " .
        "-config Werror on " .
-       "-print failures " .
+       "-print warnings " .
        "-exit > $genDir/failures.txt 2>&1");
 

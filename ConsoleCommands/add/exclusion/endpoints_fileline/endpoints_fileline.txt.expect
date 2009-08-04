@@ -17,8 +17,8 @@ Fail, Timing Unspecified
 =======================
 - 0x100be: test.xc:10
 =======================
-cmds.txt:22: warning: no valid paths of execution
-cmds.txt:24: warning: no valid paths of execution
+xta: cmds.txt:22: warning: no valid paths of execution
+xta: cmds.txt:24: warning: no valid paths of execution
 Route(0) function: testB
     No Timing Specified
 
@@ -29,8 +29,8 @@ Fail, Timing Unspecified
 =======================
 - 0x100de: test.xc:16
 =======================
-cmds.txt:37: warning: no valid paths of execution
-cmds.txt:38: warning: no valid paths of execution
+xta: cmds.txt:37: warning: no valid paths of execution
+xta: cmds.txt:38: warning: no valid paths of execution
 Route(0) function: testA
     No Timing Specified
 
@@ -42,8 +42,8 @@ Fail, Timing Unspecified
 - 0x100be: test.xc:10
 - 0x100de: test.xc:16
 =======================
-cmds.txt:51: warning: no valid paths of execution
-cmds.txt:52: warning: no valid paths of execution
-cmds.txt:53: warning: no valid paths of execution
-cmds.txt:54: warning: no valid paths of execution
-error: no routes analysed
+xta: cmds.txt:51: warning: no valid paths of execution
+xta: cmds.txt:52: warning: no valid paths of execution
+xta: cmds.txt:53: warning: no valid paths of execution
+xta: cmds.txt:54: warning: no valid paths of execution
+xta: cmds.txt:55: error: no routes analysed

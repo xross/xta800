@@ -1,8 +1,9 @@
-error: unresolved reference: test.xc:3
+xta: error: unresolved reference: test.xc:3
 Current node: 0
 Current core: 0
 Frequency: 400
 NumThreads: 8
+TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
 Case: WORST
