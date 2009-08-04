@@ -12,18 +12,18 @@ import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.types.ReferenceType;
 
 public class ReferenceMatcher {
-	public Collection<Node> getNodes(Node node, Reference reference) {
-		Collection<Node> matchingNodes = getNodesContainingReferencePc(node, reference.getPc());
+	public Collection<InstructionNode> getNodes(Node node, Reference reference) {
+		Collection<InstructionNode> matchingNodes = getNodesContainingReferencePc(node, reference.getPc());
 		return checkBackTrail(matchingNodes, reference);
 	}
 
-	private Collection<Node> getNodesContainingReferencePc(Node node, final int pc) {		
-		final Collection<Node> matchingNodes = new ArrayList<Node>();		
+	private Collection<InstructionNode> getNodesContainingReferencePc(Node node, final int pc) {		
+		final Collection<InstructionNode> matchingNodes = new ArrayList<InstructionNode>();		
 		node.traverse(0, new DefaultNodeTraverser() {		
 			public boolean foundInstructionNode(Node node, int depth) {		
 				XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();				
 				if (instruction.getPc() == pc && !instruction.isFnop()) {
-					matchingNodes.add(node);
+					matchingNodes.add((InstructionNode)node);
 				}
 				return true;
 			}
@@ -31,9 +31,9 @@ public class ReferenceMatcher {
 		return matchingNodes;
 	}
 
-	private Collection<Node> checkBackTrail(Collection<Node> nodes, Reference reference) {
-		Collection<Node> matchingNodes = new ArrayList<Node>();
-		for (Node node : nodes) {
+	private Collection<InstructionNode> checkBackTrail(Collection<InstructionNode> nodes, Reference reference) {
+		Collection<InstructionNode> matchingNodes = new ArrayList<InstructionNode>();
+		for (InstructionNode node : nodes) {
 			Stack<ReferenceType> stack = createBackTrailStack(reference);
 			if (stack.empty()) {
 				matchingNodes.add(node);
