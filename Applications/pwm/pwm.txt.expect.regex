@@ -31,4 +31,4 @@ Route\(9\) path: pwmThreadHigh to pwmThreadLow2
 Route\(10\) path: pwmThreadHigh to pwmThreadLow2
     Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d+ns, Required: 600.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
-Fail, 9/11, Max Violation: \d+\.\d+ns
+Fail, 7/11, Max Violation: \d+\.\d+ns

@@ -8,7 +8,7 @@ Route(2) path: sdr_input0_2 to sdr_input0_3
     Pass with 5 unknowns, Num Paths: 1, Slack: 113.0ns, Required: 333.0ns, Worst: 220.0ns, Min Frequency: 263 Mhz
 
 Route(3) path: sdr_input0_3 to sdr_input0_0
-    Fail with 6 unknowns, Num Paths: 1, Violation: 7.0ns, Required: 333.0ns, Worst: 340.0ns, Min Frequency: 407 Mhz
+    Fail with 7 unknowns, Num Paths: 1, Violation: 27.0ns, Required: 333.0ns, Worst: 360.0ns, Min Frequency: 431 Mhz
 
 Route(4) path: sdr_input1_0 to sdr_input1_1
     Pass with 4 unknowns, Num Paths: 1, Slack: 133.0ns, Required: 333.0ns, Worst: 200.0ns, Min Frequency: 239 Mhz
