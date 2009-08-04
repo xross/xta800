@@ -1,15 +1,15 @@
-error: cannot find function: test0 in file: .*test.xe, node: 0, core: 3
-error: cannot find function: test1 in file: .*test.xe, node: 0, core: 3
-error: cannot find function: test2 in file: .*test.xe, node: 0, core: 3
-error: cannot find function: test0 in file: .*test.xe, node: 0, core: 2
-error: cannot find function: test1 in file: .*test.xe, node: 0, core: 2
-error: cannot find function: test3 in file: .*test.xe, node: 0, core: 2
-error: cannot find function: test0 in file: .*test.xe, node: 0, core: 1
-error: cannot find function: test2 in file: .*test.xe, node: 0, core: 1
-error: cannot find function: test3 in file: .*test.xe, node: 0, core: 1
-error: cannot find function: test1 in file: .*test.xe, node: 0, core: 0
-error: cannot find function: test2 in file: .*test.xe, node: 0, core: 0
-error: cannot find function: test3 in file: .*test.xe, node: 0, core: 0
+xta: error: cannot find function: test0 in file: .*test.xe, node: 0, core: 3
+xta: error: cannot find function: test1 in file: .*test.xe, node: 0, core: 3
+xta: error: cannot find function: test2 in file: .*test.xe, node: 0, core: 3
+xta: error: cannot find function: test0 in file: .*test.xe, node: 0, core: 2
+xta: error: cannot find function: test1 in file: .*test.xe, node: 0, core: 2
+xta: error: cannot find function: test3 in file: .*test.xe, node: 0, core: 2
+xta: error: cannot find function: test0 in file: .*test.xe, node: 0, core: 1
+xta: error: cannot find function: test2 in file: .*test.xe, node: 0, core: 1
+xta: error: cannot find function: test3 in file: .*test.xe, node: 0, core: 1
+xta: error: cannot find function: test1 in file: .*test.xe, node: 0, core: 0
+xta: error: cannot find function: test2 in file: .*test.xe, node: 0, core: 0
+xta: error: cannot find function: test3 in file: .*test.xe, node: 0, core: 0
 Route\(0\) function: test3
     No Timing Specified
 
