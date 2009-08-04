@@ -1,0 +1,60 @@
+package com.xmos.xta.console.commands.print;
+
+import com.xmos.xta.console.Console;
+import com.xmos.xta.console.Shell;
+import com.xmos.xta.console.commands.Command;
+import com.xmos.xta.engine.CommandSource;
+import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.analysis.routes.Route;
+import com.xmos.xta.engine.analysis.routes.RouteTiming;
+import com.xmos.xta.engine.analysis.routes.RouteTiming.Level;
+import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+
+public class Warnings extends Command {
+	public Warnings() {
+	}
+
+    public int numArgs() { 
+    	return 0; 
+    }
+    
+    public String name()        { return "warnings"; }        
+    public String commandLine() { return "warnings"; }        
+    
+    public String description(Engine engine, boolean detailed) {
+    	return "warnings: Print all timing warnings";
+    }
+
+    public Command clone(String[] args, int index) {
+   		return new Warnings();
+    }
+    
+    public void execute(Shell shell, Engine engine, Console console) {
+		if (!isExecutableLoaded(engine, console))
+			return;			    	
+
+		if (!validateRoutes(engine, console))
+			return;
+		
+		for (Route route : engine.getRoutes()) {
+		    displayRouteSummary(engine, console, route);
+		}		
+    }
+
+    private void displayRouteSummary(Engine engine, Console console, Route route) {
+		RouteTiming routeTiming = route.getRouteTiming();
+		CommandSource src = routeTiming.getCommandSource();
+
+		if (!routeTiming.isTimingSpecified() || !routeTiming.passedTiming() ||
+			(route.getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN).size() > 0)) {
+			
+			if (src.m_lineNum > 0) {
+				console.display(String.format("%s:%d: ",
+						src.m_fileName, src.m_lineNum));
+			}
+			console.display(String.format("warning: route(%d) %s",
+					route.getRouteId(),
+			        routeTiming.getDescription(Level.DETAILED)));
+		}
+	}
+}
