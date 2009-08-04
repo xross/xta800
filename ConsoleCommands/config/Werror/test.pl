@@ -15,7 +15,11 @@ my $message = "RETURN CODE WRONG";
 
 # Expect to get 1 since warnings should be treated as errors
 my $retval = system("@ARGV load $genDir/test.xe " .
-       "config Werror " .
+       "config Werror on " .
+       "status " .
+       "config Werror off " .
+       "status " .
+       "config Werror on " .
        "status " .
        "analyse function main " .
        "-set required - 10000 ns " .

@@ -1,5 +1,5 @@
-error: unresolved reference: CALL:test.xc:19
-error: unresolved reference: CALL:test.xc:13
+xta: error: unresolved reference: CALL:test.xc:19
+xta: error: unresolved reference: CALL:test.xc:13
 Route\(0\) path: CALL:test.xc:13 to CALL:test.xc:14
     No Timing Specified
 

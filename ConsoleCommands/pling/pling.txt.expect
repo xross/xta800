@@ -2,6 +2,7 @@ Current node: 0
 Current core: 0
 Frequency: 400
 NumThreads: 8
+TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
 Case: WORST
@@ -12,6 +13,7 @@ Current node: 0
 Current core: 0
 Frequency: 400
 NumThreads: 8
+TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
 Case: WORST
@@ -22,8 +24,8 @@ No routes analysed
 2: source cmds.txt
 3: status
 4: history
-cmds.txt:8: error: invalid command
-cmds.txt:9: error: no executable loaded
+xta: cmds.txt:8: error: invalid command
+xta: cmds.txt:9: error: no executable loaded
 1: status
 2: source cmds.txt
 3: status
@@ -31,8 +33,8 @@ cmds.txt:9: error: no executable loaded
 5: !0
 6: list functions
 7: history
-cmds.txt:15: error: invalid command
-cmds.txt:18: error: invalid command
+xta: cmds.txt:15: error: invalid command
+xta: cmds.txt:18: error: invalid command
 1: status
 2: source cmds.txt
 3: status

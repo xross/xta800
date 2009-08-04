@@ -30,7 +30,8 @@
       option: verbosity <level>: Sets the tool verbosity level (range: -10 -> +10, default: 0)
       option: case <BEST/WORST>: Sets the case (currently: WORST)
       option: timeout <seconds>: Sets the tools timeout on load
-      option: Werror: treat all warnings as errors
+      option: Werror <on/off>: treat warnings as errors or not (currently: off)
+      option: Terror <on/off>: treat timing failures as errors or not (currently: on)
   [-]echo "text": prints the text to the console
   [-]exit: Quits the shell (Standalone mode only)
   [-]help [command/option]: Displays help message for the given command/option
@@ -64,6 +65,7 @@
       option: trace <route id> [node id]: Display instruction trace for the worst case path of the given route/node
       option: route_info <route id>: Show detailed information for the given route
       option: node_info <route id> <node id>: Show detailed information for the given node in the given route
+      option: warnings: Print all timing warnings
   [-]pwd: Displays the current working directory
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
       option: branch <from LABEL_REF>: Removes the given from reference from the branches list
