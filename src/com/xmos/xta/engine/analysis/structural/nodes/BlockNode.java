@@ -142,7 +142,13 @@ public class BlockNode extends IBufferNode {
 
 	public Set<InstructionNode> getEndNodes() {
 		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		set.add(m_insts.get(m_insts.size()-1));
+		
+		if(m_insts.get(m_insts.size()-1).getXtaInstruction().isFnop()){
+			set.add(m_insts.get(m_insts.size()-2));
+		} else {
+			set.add(m_insts.get(m_insts.size()-1));
+		}
+		
 		return set;
 	}
 

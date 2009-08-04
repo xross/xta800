@@ -34,28 +34,34 @@ public class Exit extends Command {
     
     public void execute(Shell shell, Engine engine, Console console) {
 		boolean warnAsErrors = engine.getConfig().m_warnAsErrors;
+		boolean timingErrors = engine.getConfig().m_timingFailuresAsErrors;
 		int errors = 0;
 
-		for (Route route : engine.getRoutes()) {
-			RouteTiming routeTiming = route.getRouteTiming();
-				
-			if (routeTiming.isTimingSpecified()) {			
-				if (!routeTiming.passedTiming()) {
-					errors = 1;
+		if (engine.getNumErrors() > 0) {
+			errors = 1;
+			
+    	} else if (timingErrors) {
+			for (Route route : engine.getRoutes()) {
+				RouteTiming routeTiming = route.getRouteTiming();
+					
+				if (routeTiming.isTimingSpecified()) {			
+					if (!routeTiming.passedTiming()) {
+						errors = 1;
+				    	break;
+					}
+				} else {
+			    	errors = 1;
 			    	break;
 				}
-			} else {
-		    	errors = 1;
-		    	break;
-			}
-			
-			if (warnAsErrors) {
-				if (route.getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN).size() > 0) {
-					errors = 1;
-					break;
+				
+				if (warnAsErrors) {
+					if (route.getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN).size() > 0) {
+						errors = 1;
+						break;
+					}
 				}
 			}
-		}
+    	}
     	shell.exit(errors);
     }    
 }

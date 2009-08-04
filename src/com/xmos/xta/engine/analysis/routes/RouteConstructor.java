@@ -96,22 +96,24 @@ public class RouteConstructor {
 		if(startNodes.isEmpty() ){
 			return RouteError.COULD_NOT_FIND_STARTPOINT;
 		}
-		
-		//for(InstructionNode inst : endNodes){
-		//	System.out.println("the end nodes start out as: " + inst.getXtaInstruction());
-		//}
-		
-		
+
 		if(m_description.getMode() == RouteMode.PATH){
 			Set<InstructionNode> newEndNodes = new TreeSet<InstructionNode>();
 			for(InstructionNode endNode : endNodes){
 				if(endNode.getParent().whatsBefore(endNode) != null){
 					
-					//System.out.println("whats before " + endNode.getXtaInstruction() + " " + endNode.getParent().whatsBefore(endNode));
 					for(Node node : endNode.getParent().whatsBefore(endNode)){
 						
-						if(!node.isInstructionNode()){
+						///System.out.println(node);
+						//for(XtaInstruction inst : node.getInstructions()){
+						//	System.out.println("\t" + inst);
+						//}
+						if(!node.isBlockNode() && !node.isInstructionNode()){
 							for(Node immChild : node.getImmediateChildren()){
+								
+								while(immChild.isInstructionNode() && ((InstructionNode)immChild).getXtaInstruction().isFnop()){
+									immChild = immChild.getParent().whatsNext(immChild).iterator().next();
+								}
 								Set<InstructionNode> newNodes = immChild.getEndNodes();
 								for(InstructionNode newNode : newNodes){
 									if(!m_exclusions.contains(newNode)){
@@ -143,9 +145,9 @@ public class RouteConstructor {
 			endNodes = newEndNodes;
 		}
 		
-		//for(InstructionNode inst : endNodes){
-		//	System.out.println("and end up as: " + inst.getXtaInstruction());
-		//}
+		for(InstructionNode inst : endNodes){
+				//System.out.println(inst + " " + inst.getXtaInstruction());
+			}
 		boolean notFoundFunctionYet = true;
 		for (Node start : startNodes) {
 			resetParent();
@@ -157,14 +159,14 @@ public class RouteConstructor {
 				if(start.isFunctionNode()&& notFoundFunctionYet){
 					if(!containAnyNodes(start, m_exclusions)){
 						start.setParent(null);
-						m_routes.add(new Route(m_engine, start.deepCopy(), m_description));
+						m_routes.add(new Route(src, m_engine, start.deepCopy(), m_description));
 					} else {
-						seenEndPoint = makeSubRoute(realStart, seenEndPoint, endNodes, start);
+						seenEndPoint = makeSubRoute(src, realStart, seenEndPoint, endNodes, start);
 					}
 					notFoundFunctionYet = false;
 				}
 			} else {
-				seenEndPoint = makeSubRoute(realStart, seenEndPoint, endNodes, start);
+				seenEndPoint = makeSubRoute(src, realStart, seenEndPoint, endNodes, start);
 			}
 			
 		}
@@ -267,8 +269,9 @@ public class RouteConstructor {
 		return false;
 	}
 
-	private boolean makeSubRoute(Node realStart, boolean seenEndPoint, Collection<InstructionNode> endNodes,
+	private boolean makeSubRoute(CommandSource src,Node realStart, boolean seenEndPoint, Collection<InstructionNode> endNodes,
 			Node start) {
+
 		
 		Collection<Node> workingSet = new TreeSet<Node>();
 		
@@ -334,7 +337,7 @@ public class RouteConstructor {
 			
 			
 			if(!alreadyContainRoute(newGraph)){
-				m_routes.add(new Route(m_engine, newGraph, m_description));
+				m_routes.add(new Route(src, m_engine, newGraph, m_description));
 			}
 			
 		}

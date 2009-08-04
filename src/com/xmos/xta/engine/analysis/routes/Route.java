@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.TreeSet;
 import java.util.Set;
 
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
@@ -37,13 +38,13 @@ public class Route {
 		s_routeCount = 0;
 	}
 
-	public Route(Engine engine, Node node, RouteDescription description) {
+	public Route(CommandSource src, Engine engine, Node node, RouteDescription description) {
 		m_description = description;
 		m_routeId = s_routeCount++;
 		m_node = node;
 		
 		Config config = new Config(engine.getConfig());
-		m_timing = new RouteTiming(this, config, engine.getNodeId(), engine.getCoreId());
+		m_timing = new RouteTiming(src, this, config, engine.getNodeId(), engine.getCoreId());
 		m_unknowns = new RouteUnknowns(this);		
 		setRouteSpecificConfigs(config);
 	}

@@ -13,6 +13,7 @@ public class Config extends CommandContainer {
 		new Case(),
 		new TimeOut(),
 		new WarnAsErrors(),
+		new TimingErrors(),
 	};
 	
 	public Config() { super("config"); }

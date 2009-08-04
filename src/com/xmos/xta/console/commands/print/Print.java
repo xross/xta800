@@ -12,7 +12,8 @@ public class Print extends CommandContainer {
 		new Mix(), 
 		new Trace(),		
 		new RouteInfo(), 
-		new NodeInfo(), 
+		new NodeInfo(),
+		new Warnings(),
 	};
 	
 	public Print() { super("print"); }

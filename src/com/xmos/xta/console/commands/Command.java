@@ -53,17 +53,19 @@ public abstract class Command {
     	return true;
     }
 
-    public static boolean isPresent(Engine engine, int nodeId, int coreId, Console console) { 
+    public boolean isPresent(Engine engine, int nodeId, int coreId, Console console) { 
     	if (engine.getXeLoader().getMemoryImage(nodeId, coreId) == null) {
-    		console.display(String.format("error: no code loaded on node: %d, core: %d\n", nodeId, coreId));
+    		engine.notify(m_src, Notifier.NOTIFY_ERROR,
+    				String.format("no code loaded on node: %d, core: %d", nodeId, coreId));
     		return false;
     	}
     	return true;    	
     }
     
-    public static boolean validateRoutes(Engine engine, Console console) {
+    public boolean validateRoutes(Engine engine, Console console) {
        	if (engine.getRoutes().size() == 0) {
-    		console.display("error: no routes analysed\n");
+    		engine.notify(m_src, Notifier.NOTIFY_ERROR,
+    				"no routes analysed");
     		return false;
      	}
         return true;  	

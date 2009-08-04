@@ -69,6 +69,7 @@ public class Engine implements Notifier {
 	private Sections m_sections;
 	private Collection<String> m_functionsVisited;
 	private int m_timeOut;
+	private int m_numErrors;
 	private long m_loadStartTime;
 	private NodeCoreCollection<SourceMapper> m_sourceMapper;
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
@@ -93,12 +94,17 @@ public class Engine implements Notifier {
 		m_jobMonitor = null;
 		m_sections = new Sections();
 		m_timeOut = -1;
+		m_numErrors = 0;
 		ReferenceTypeFactory.setEngine(this);
 	}
 
 	public void notify(CommandSource src, String message, String argument) {
 		if (m_notifier != null){
 			m_notifier.notify(src, message, argument);
+		}
+		
+		if (message.equals(NOTIFY_ERROR)) {
+			m_numErrors++;
 		}
 	}
 
@@ -433,10 +439,14 @@ public class Engine implements Notifier {
 		return m_config.m_verbosity;
 	}
 	
-	public void setWarnAsErrors() {
-		m_config.m_warnAsErrors = true;
+	public void setWarnAsErrors(boolean errorOn) {
+		m_config.m_warnAsErrors = errorOn;
 	}
-	
+
+	public void setTimingFailuresAsErrors(boolean errorsOn) {
+		m_config.m_timingFailuresAsErrors = errorsOn;
+	}
+
 	public boolean canInstructionPause(int routeId, String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
@@ -553,7 +563,7 @@ public class Engine implements Notifier {
 			return false;
 			
 		for (Route route : routes) {
-			route.getRouteTiming().setMaxTime(time);
+			route.getRouteTiming().setMaxTime(src, time);
 		}
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		return true;
@@ -565,7 +575,7 @@ public class Engine implements Notifier {
 			return false;
 
 		for (Route route : routes) {			
-			route.getRouteTiming().setMaxCycles(cycles);
+			route.getRouteTiming().setMaxCycles(src, cycles);
 		}
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		return true;
@@ -1124,6 +1134,11 @@ public class Engine implements Notifier {
 	public void setAnalysisTimeOut(int time) {
 		m_timeOut = time;
 	}
+
+	public int getNumErrors() {
+		return m_numErrors;
+	}
+
 }
 
 class NodeCoreCollection<E> {

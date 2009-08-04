@@ -8,6 +8,7 @@ public class Config {
 	public int m_frequency;
 	public Case m_case;
 	public boolean m_warnAsErrors;
+	public boolean m_timingFailuresAsErrors;
 
 	public Config() {
 		m_verbosity = 0;
@@ -15,6 +16,7 @@ public class Config {
 		m_frequency = 400;
 		m_case = Case.WORST;
 		m_warnAsErrors = false;
+		m_timingFailuresAsErrors = true;
 	}
 
 	public Config(Config config) {
@@ -23,5 +25,6 @@ public class Config {
 		m_frequency = config.m_frequency;
 		m_case = config.m_case;
 		m_warnAsErrors = config.m_warnAsErrors;
+		m_timingFailuresAsErrors = config.m_timingFailuresAsErrors;
 	}
 }
