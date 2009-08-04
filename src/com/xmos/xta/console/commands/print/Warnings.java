@@ -5,6 +5,7 @@ import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.engine.analysis.routes.RouteTiming.Level;
@@ -48,13 +49,10 @@ public class Warnings extends Command {
 		if (!routeTiming.isTimingSpecified() || !routeTiming.passedTiming() ||
 			(route.getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN).size() > 0)) {
 			
-			if (src.m_lineNum > 0) {
-				console.display(String.format("%s:%d: ",
-						src.m_fileName, src.m_lineNum));
-			}
-			console.display(String.format("warning: route(%d) %s",
-					route.getRouteId(),
-			        routeTiming.getDescription(Level.DETAILED)));
+			engine.notify(src, Notifier.NOTIFY_WARNING, 
+					String.format("warning: route(%d) %s", 
+							route.getRouteId(),
+							routeTiming.getDescription(Level.DETAILED)));
 		}
 	}
 }

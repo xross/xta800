@@ -54,7 +54,7 @@ public class Load extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {    	
-		FileFinder fileFinder = new ConsoleFileFinder(engine, console);	
+		FileFinder fileFinder = new ConsoleFileFinder(getSrc(), engine);	
 		if (engine.loadExecutable(getSrc(), new File(m_executableName), fileFinder)) {
 		    runSectionCommands(shell, engine, console);
 		}

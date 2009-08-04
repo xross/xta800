@@ -2,30 +2,33 @@ package com.xmos.xta.console;
 
 import java.io.File;
 
+import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.sourcemapper.FileFinder;
 
 public class ConsoleFileFinder extends FileFinder {
+	private CommandSource m_src;
     private Engine m_engine; 
-    private Console m_console;
     
-    public ConsoleFileFinder(Engine engine, Console console) {
+    public ConsoleFileFinder(CommandSource src, Engine engine) {
+    	m_src = src;
     	m_engine = engine;
-    	m_console = console;
     }
     
 	public File openFileFinder(String compilationDir, String fileName) {
 		if (findFileInCancelCache(compilationDir, fileName)) {
 			return null;
 		}
-				
+		
 		File srcPathFile = findFileInSrcPaths(m_engine.getSrcPaths(), fileName);
 		if (srcPathFile != null) {
 			return srcPathFile;
 		}
 				
 		addToCancelCache(compilationDir, fileName);
-		m_console.display(String.format("warning: failed to find source file: %s\n", fileName));
+		m_engine.notify(m_src, Notifier.NOTIFY_WARNING,
+				String.format("failed to find source file: %s", fileName));
         return null;
 	}	
 }
