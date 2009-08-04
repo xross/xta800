@@ -471,7 +471,7 @@ public class Engine implements Notifier {
 			setSelectedRoute(src, null);
 			
 		} else if (m_selectedRoute.getRouteId() == routeId) {
-			m_selectedRoute = m_routes.get(m_routes.size() - 1);
+			this.setSelectedRoute(src, m_routes.get(m_routes.size() - 1));
 		}
 		notify(src, Notifier.NOTIFY_REMOVE_ROUTE, "");
 		return true;
