@@ -49,10 +49,12 @@ public class Warnings extends Command {
 		if (!routeTiming.isTimingSpecified() || !routeTiming.passedTiming() ||
 			(route.getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN).size() > 0)) {
 			
+			// Need to take the '\n' off the end of the string
+			String description = routeTiming.getDescription(Level.DETAILED);
+			description = description.substring(0, description.length() - 1);
+			
 			engine.notify(src, Notifier.NOTIFY_WARNING, 
-					String.format("warning: route(%d) %s", 
-							route.getRouteId(),
-							routeTiming.getDescription(Level.DETAILED)));
+					String.format("route(%d) %s", route.getRouteId(), description));
 		}
 	}
 }
