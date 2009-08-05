@@ -18,7 +18,6 @@ public class StructureGraph {
 	
 	public StructureGraph(Collection<FunctionNode> threads, Collection<FunctionNode> functions, Map<Long, TreeSet<Node>> pcToEndPoints) {
 		super();
-		assert(threads.size() > 0);
 		m_threads = threads;
 		m_functions = functions;
 		m_pcToEndPoints = pcToEndPoints;
