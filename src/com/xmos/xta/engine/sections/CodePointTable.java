@@ -10,15 +10,15 @@ import com.xmos.xta.engine.Notifier;
 
 public class CodePointTable extends Section {
 	private String m_sectionName;
-	private TreeMap<Integer, CodePointTableInfo> m_locations;
+	private TreeMap<Long, CodePointTableInfo> m_locations;
 	
 	CodePointTable(int nodeId, int coreId, String sectionName, Notifier notifier) {
 		super(nodeId, coreId, notifier);
 		m_sectionName = sectionName;
-		m_locations = new TreeMap<Integer, CodePointTableInfo>(); 
+		m_locations = new TreeMap<Long, CodePointTableInfo>(); 
 	}
 	
-	Map<Integer, CodePointTableInfo> get() {
+	Map<Long, CodePointTableInfo> get() {
 		return m_locations;
 	}
 	
@@ -47,7 +47,7 @@ public class CodePointTable extends Section {
 	        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
 
-	        		int location = ByteArrayManipulation.readInt(data, byteIndex);
+	        		long location = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
 	        		
 	        		m_locations.put(location, new CodePointTableInfo(location, compilationDir, fileName, lineNumber));        	        		

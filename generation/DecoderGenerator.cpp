@@ -41,7 +41,7 @@ DecoderGenerator::DecoderGenerator(const char *fileName, DbInterface &dbInterfac
   fprintf(outFp, "import com.xmos.isa.Instruction;\n");
   fprintf(outFp, "\n");
   fprintf(outFp, "public class %sXtaInstructionDecoder extends XtaInstructionDecoder {\n", m_version);
-  fprintf(outFp, "    public XtaInstruction decode(int opcode, int pc) {\n");
+  fprintf(outFp, "    public XtaInstruction decode(int opcode, long pc) {\n");
 
   DecodeNode *root = dbInterface.getDecodeTree();
 

@@ -73,8 +73,8 @@ public class Route {
 		return "";
 	}
 
-	public Set<Integer> getPcsHit() {
-		final Set<Integer> pcs = new TreeSet<Integer>();
+	public Set<Long> getPcsHit() {
+		final Set<Long> pcs = new TreeSet<Long>();
 		m_node.traverse(0, new DefaultNodeTraverser() {
 			public boolean foundInstructionNode(Node node, int depth) {
 				pcs.add(node.getStartPc());

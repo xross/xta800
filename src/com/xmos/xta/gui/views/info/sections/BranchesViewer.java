@@ -20,7 +20,7 @@ public class BranchesViewer extends SectionsViewer {
 	}
 
 	@Override
-	protected int getPc(Object object) {
+	protected long getPc(Object object) {
 		return ((BranchesContent)object).m_fromPc;
 	}
 }

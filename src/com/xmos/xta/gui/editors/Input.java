@@ -8,40 +8,40 @@ public class Input {
 	private ArrayList<InputSection> m_sections;
 	private String m_headerType;
 	private String m_lineType;
-	private Map<Integer, Integer> m_lineNumberMapping;
-	private HashMap<Integer, InputLine> m_pcToLine;
-	private HashMap<Integer, InputSection> m_pcToSection;
+	private Map<Long, Long> m_lineNumberMapping;
+	private HashMap<Long, InputLine> m_pcToLine;
+	private HashMap<Long, InputSection> m_pcToSection;
 	
 	public Input(String headerType, String lineType) {
     	m_sections = new ArrayList<InputSection>();
     	m_headerType = headerType;
     	m_lineType = lineType;
-    	m_lineNumberMapping = new HashMap<Integer, Integer>();
-    	m_pcToLine = new HashMap<Integer, InputLine>();
-    	m_pcToSection = new HashMap<Integer, InputSection>();
+    	m_lineNumberMapping = new HashMap<Long, Long>();
+    	m_pcToLine = new HashMap<Long, InputLine>();
+    	m_pcToSection = new HashMap<Long, InputSection>();
     }
 	
-	public void addPcToLine(int pc, InputLine line){
+	public void addPcToLine(long pc, InputLine line){
 		m_pcToLine.put(pc, line);
 	}
 	
-	public HashMap<Integer, InputLine> getPcsToLines(){
+	public HashMap<Long, InputLine> getPcsToLines(){
 		return m_pcToLine;
     }
     
-	public void addPcToSecion(int pc, InputSection sec){
+	public void addPcToSecion(long pc, InputSection sec){
 		m_pcToSection.put(pc, sec);
 	}
 	
-	public HashMap<Integer, InputSection> getPcsToSection(){
+	public HashMap<Long, InputSection> getPcsToSection(){
 		return m_pcToSection;
     }
 	
-	public void addHeader(String header, String headerCodeReference, int index, int lineNum) {
+	public void addHeader(String header, String headerCodeReference, long index, long lineNum) {
         m_sections.add(new InputSection(header, headerCodeReference, index, lineNum, m_headerType));    	
     }
     
-	public void addLine(String line, String codeReference, int pc, int index) {
+	public void addLine(String line, String codeReference, long pc, long index) {
     	getLastSection().addLine(line, codeReference, pc, index, this);
     }
     
@@ -62,11 +62,11 @@ public class Input {
         return m_lineType; 	
     }
 	
-	public void addLineNumberMapping(int from, int to) {
+	public void addLineNumberMapping(long from, long to) {
 		m_lineNumberMapping.put(from, to);
 	}
 		
-	public Map<Integer, Integer> getLineNumberMapping() {
+	public Map<Long, Long> getLineNumberMapping() {
 		return m_lineNumberMapping;
 	}
 }
@@ -75,43 +75,43 @@ class InputSection {
 	private InputLine m_header;
 	private ArrayList<InputLine> m_lines;
 	private ArrayList<InputLine> m_fnops;
-	private int m_index;
-	private HashMap<Integer, InputLine> m_pcs;
+	private long m_index;
+	private HashMap<Long, InputLine> m_pcs;
 	private String m_headerType;
 	
-	public InputSection(String header, String headerCodeReference, int index, int lineNum, String headerType) {
+	public InputSection(String header, String headerCodeReference, long index, long lineNum, String headerType) {
 		// Header line must have -1 index to counteract +1 in index calculations
 		m_headerType = headerType;
 		m_header = new InputLine(this, header, headerCodeReference, lineNum, -1, m_headerType);
 		m_lines = new ArrayList<InputLine>();
 		m_fnops = new ArrayList<InputLine>();
 		m_index = index;
-		m_pcs = new HashMap<Integer, InputLine>();
+		m_pcs = new HashMap<Long, InputLine>();
 	}
 	
-	public void addLine(String line, String codeReference, int pc, int index, Input input) {
+	public void addLine(String line, String codeReference, long pc, long index, Input input) {
 		InputLine newLine = new InputLine(this, line, codeReference, pc, index - m_index - 1, input.getLineType());
 		m_lines.add(newLine);
 		input.addPcToLine(pc, newLine);
 	}
 	
-	public HashMap<Integer, InputLine> getPcs(){
+	public HashMap<Long, InputLine> getPcs(){
 		return m_pcs;
 	}
 
-	public void addFnop(String line, int pc, int index, Input input) {
-		int offset = index - m_index - 1;
+	public void addFnop(String line, long pc, long index, Input input) {
+		long offset = index - m_index - 1;
 		
 		InputLine fnop = new InputLine(this, line, "", pc, offset, m_headerType);
-		m_lines.add(offset, fnop);
+		m_lines.add((int)offset, fnop);
 		m_fnops.add(fnop);
 		
-		for (int lineNum = offset + 1; lineNum < m_lines.size(); lineNum++) {
-			m_lines.get(lineNum).incrementOffset();
+		for (long lineNum = offset + 1; lineNum < m_lines.size(); lineNum++) {
+			m_lines.get((int)lineNum).incrementOffset();
 		}
 	}
 	
-	public InputLine removeFnop(int pc) {
+	public InputLine removeFnop(long pc) {
 		if (m_fnops.isEmpty())
 			return null;
 		
@@ -125,18 +125,18 @@ class InputSection {
 		if(index == -1) return null;
 		
 		InputLine firstFnop = m_fnops.remove(index);
-		int offset = firstFnop.getOffset();
+		long offset = firstFnop.getOffset();
 		m_lines.remove(firstFnop);
 
-		for (int lineNum = offset; lineNum < m_lines.size(); lineNum++) {
-			m_lines.get(lineNum).decrementOffset();
+		for (long lineNum = offset; lineNum < m_lines.size(); lineNum++) {
+			m_lines.get((int)lineNum).decrementOffset();
 		}
 		return firstFnop;
 	}
 	
-	public boolean isFnop(int lineNum) {
+	public boolean isFnop(long lineNum) {
 		assert(lineNum < m_lines.size());
-		if (m_fnops.contains(m_lines.get(lineNum))) {
+		if (m_fnops.contains(m_lines.get((int)lineNum))) {
 			return true;
 		}
 		return false;
@@ -162,16 +162,16 @@ class InputSection {
 		return m_lines;
 	}
 
-	public InputLine getLine(int lineNum) {
+	public InputLine getLine(long lineNum) {
 		assert(lineNum < m_lines.size());
-		return m_lines.get(lineNum);
+		return m_lines.get((int)lineNum);
 	}
 
-	public int getIndex() {
+	public long getIndex() {
 		return m_index;
 	}
 
-	public void setIndex(int index) {
+	public void setIndex(long index) {
 		m_index = index;
 	}
 
@@ -192,11 +192,11 @@ class InputLine {
 	private InputSection m_section;
 	private String m_codeReference;
 	private String m_line;
-	private int m_pc;
-	private int m_offset;
+	private long m_pc;
+	private long m_offset;
 	private String m_headerType;
 	
-	public InputLine(InputSection section, String line, String codeReference, int pc, int offset, String headerType) {
+	public InputLine(InputSection section, String line, String codeReference, long pc, long offset, String headerType) {
 		m_section = section;
 		m_line = line;
 		m_codeReference = codeReference;
@@ -217,15 +217,15 @@ class InputLine {
 		return m_codeReference;
 	}
 	
-	public int getPc() {
+	public long getPc() {
 		return m_pc;
 	}
 	
-	public int getIndex() {
+	public long getIndex() {
 		return m_offset + m_section.getIndex() + 1;
 	}
 
-	public int getOffset() {
+	public long getOffset() {
 		return m_offset;
 	}
 

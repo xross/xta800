@@ -7,19 +7,20 @@ import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Notifier;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class ThreadDelimiters extends Section {
 	private String m_sectionName;
-	private Collection<Integer> m_pcs;
+	private Collection<Long> m_pcs;
 
 	ThreadDelimiters(int nodeId, int coreId, String sectionName, Notifier notifier) {
 		super(nodeId, coreId, notifier);
 		m_sectionName = sectionName;
-		m_pcs = new TreeSet<Integer>(); 
+		m_pcs = new TreeSet<Long>(); 
 	}
 	
 
-	boolean add(CommandSource src, int pc) {
+	boolean add(CommandSource src, long pc) {
 		if (m_pcs.add(pc)) {												
 			return true;	
 		} else {
@@ -39,7 +40,7 @@ public class ThreadDelimiters extends Section {
 		}		
 	}
 	
-	Collection<Integer> get() {
+	Collection<Long> get() {
 		return m_pcs;
 	}
 	
@@ -55,7 +56,7 @@ public class ThreadDelimiters extends Section {
 		try {
 			int byteIndex = 0;
 	        while (byteIndex < data.length) {        	
-	        	int pc = ByteArrayManipulation.readInt(data, byteIndex);
+	        	long pc = XtaInstruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
 	        	byteIndex += 4;        	
 
 	    		m_pcs.add(pc);

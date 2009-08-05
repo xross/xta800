@@ -43,7 +43,7 @@ public class Reference {
 		return m_base.getRef();
 	}
 
-	public int getPc() {
+	public long getPc() {
 		assert(m_base != null);
 		return m_base.getPc();
 	}
@@ -58,7 +58,7 @@ public class Reference {
 		return m_base.getFileName();		
 	}
 
-	public int getLineNum() {
+	public long getLineNum() {
 		assert(m_base != null);
 		return m_base.getLineNum();		
 	}

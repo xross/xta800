@@ -9,10 +9,10 @@ import com.xmos.xta.engine.Engine;
 
 class BranchesViewerContentProvider extends SectionsViewerContentProvider {
 	public Object[] getElements(Object inputElement) {
-		Map<Integer, TreeSet<Integer>> branchesMap = ((Engine)inputElement).getBranches();
+		Map<Long, TreeSet<Long>> branchesMap = ((Engine)inputElement).getBranches();
 		
 		List<BranchesContent> content = new ArrayList<BranchesContent>();
-		for (Integer fromPc : branchesMap.keySet()) {			
+		for (Long fromPc : branchesMap.keySet()) {			
 			content.add(new BranchesContent(fromPc, branchesMap.get(fromPc)));
 		}				
 		return content.toArray();
@@ -20,10 +20,10 @@ class BranchesViewerContentProvider extends SectionsViewerContentProvider {
 }
 
 class BranchesContent {
-	Integer m_fromPc;
-	TreeSet<Integer> m_toPcs;
+	long m_fromPc;
+	TreeSet<Long> m_toPcs;
 	
-	BranchesContent(Integer fromPc, TreeSet<Integer> toPcs) {
+	BranchesContent(long fromPc, TreeSet<Long> toPcs) {
 		m_fromPc = fromPc;
 		m_toPcs = toPcs;
 	}

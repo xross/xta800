@@ -7,6 +7,7 @@ import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Notifier;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class SrcLevelLoops extends Section {
 	private Collection<SrcLevelLoopInfo> m_loops;
@@ -25,7 +26,7 @@ public class SrcLevelLoops extends Section {
 		try {
 			int byteIndex = 0;
 	        while (byteIndex < data.length) {        
-	        	int pc = ByteArrayManipulation.readInt(data, byteIndex);
+	        	long pc = XtaInstruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
 	        	byteIndex += 4;        	
 	        	
 	        	int numIterations = ByteArrayManipulation.readInt(data, byteIndex);

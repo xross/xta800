@@ -125,8 +125,8 @@ public class FunctionNode extends IBufferNode {
 		}
 	}
 		
-	public int getStartPc() {
-		if(m_functionSequence != null){
+	public long getStartPc() {
+		if (m_functionSequence != null){
 			return m_functionSequence.get(0).getStartPc();
 		}
 		return 0;

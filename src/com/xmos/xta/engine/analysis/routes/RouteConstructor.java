@@ -192,7 +192,7 @@ public class RouteConstructor {
 		Node currentNode = node.m_node;
 		Collection<Node> exclusions = new TreeSet<Node>();
 		
-		if (explore_debug) System.out.println("exploring node " + currentNode + " 0x" + Integer.toHexString(currentNode.getStartPc()) + " from " + parent + " "+ currentNode.getEndNodes());
+		if (explore_debug) System.out.println("exploring node " + currentNode + " 0x" + Long.toHexString(currentNode.getStartPc()) + " from " + parent + " "+ currentNode.getEndNodes());
 		
 		
 		if(currentNode.isInstructionNode()){

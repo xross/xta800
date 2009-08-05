@@ -57,7 +57,7 @@ public class SelfLoopNode extends Node{
 		return insts;
 	}
 
-	public int getStartPc() {
+	public long getStartPc() {
 		return m_loop.getStartPc();
 	}
 

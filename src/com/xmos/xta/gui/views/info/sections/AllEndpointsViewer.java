@@ -22,7 +22,7 @@ public class AllEndpointsViewer extends SectionsViewer {
 	}
 
 	@Override
-	protected int getPc(Object object) {
+	protected long getPc(Object object) {
 		return ((CodePointTableInfo)object).getPc();
 	}
 }

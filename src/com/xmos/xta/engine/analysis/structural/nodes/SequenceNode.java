@@ -70,7 +70,7 @@ public class SequenceNode extends Node {
 		return "";
 	}
 
-	public int getStartPc() {
+	public long getStartPc() {
 		return m_nodes.get(0).getStartPc();
 	}
 

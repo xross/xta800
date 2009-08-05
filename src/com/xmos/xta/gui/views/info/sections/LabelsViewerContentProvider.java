@@ -8,7 +8,7 @@ import com.xmos.xta.engine.Engine;
 
 class LabelsViewerContentProvider extends SectionsViewerContentProvider {
 	public Object[] getElements(Object inputElement) {
-		Map<String, Integer> labelsMap = ((Engine)inputElement).getLabels();
+		Map<String, Long> labelsMap = ((Engine)inputElement).getLabels();
 		
 		List<LabelsContent> content = new ArrayList<LabelsContent>();
 		for (String label : labelsMap.keySet()) {			
@@ -21,9 +21,9 @@ class LabelsViewerContentProvider extends SectionsViewerContentProvider {
 
 class LabelsContent {
 	String m_label;
-	Integer m_pc;
+	Long m_pc;
 	
-	LabelsContent(String label, Integer pc) {
+	LabelsContent(String label, Long pc) {
 		m_label = label;
 		m_pc = pc;
 	}

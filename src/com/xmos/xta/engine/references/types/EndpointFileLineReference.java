@@ -20,7 +20,7 @@ public class EndpointFileLineReference extends ReferenceType {
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
     	String ref  = getRef();
 		String fileName = getFileName(ref);
-        int lineNumber  = getLineNumber(ref);		
+        long lineNumber = getLineNumber(ref);		
 
 		for (CodePointTableInfo info : engine.getEndpointTable().values()) {
             if (info.getFileName().equals(fileName) &&

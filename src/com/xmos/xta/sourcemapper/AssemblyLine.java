@@ -8,7 +8,7 @@ import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class AssemblyLine implements Line {	
 	
-	private Map<String, Integer> m_labels;
+	private Map<String, Long> m_labels;
 	private static final int WIDTH = 20;
 	private static final String m_resourceName[] = {
 		"PORT", "TIMER", "CHANEND",	"SYNC", "THREAD",
@@ -28,7 +28,7 @@ public class AssemblyLine implements Line {
 	
 	private InstructionNode m_instructionNode;
 	
-	public AssemblyLine(InstructionNode instructionNode, Map<String, Integer> labels) {
+	public AssemblyLine(InstructionNode instructionNode, Map<String, Long> labels) {
 		m_instructionNode = instructionNode;
 		m_labels = labels;
 	}
@@ -42,7 +42,7 @@ public class AssemblyLine implements Line {
 		return new LinkedList<AssemblyLine>();
 	}
 
-	public int getLineNumber() {
+	public long getLineNumber() {
 		return m_instructionNode.getXtaInstruction().getPc();
 	}
 
@@ -89,12 +89,12 @@ public class AssemblyLine implements Line {
 			}
 		} else if (inst.getNmenonic().toLowerCase().equals("ldapf (u10)")) {
 			String offset = (operandString.substring(operandString.indexOf("0x")+2));
-			int loadLocation = (Integer.parseInt(offset, 16) << 1) + inst.getPc() + inst.getNumBytes();
-			operandString = operandString.substring(0, operandString.indexOf(",")) + ", <0x" + Integer.toHexString(loadLocation) + ">";
+			long loadLocation = (Long.parseLong(offset, 16) << 1) + inst.getPc() + inst.getNumBytes();
+			operandString = operandString.substring(0, operandString.indexOf(",")) + ", <0x" + Long.toHexString(loadLocation) + ">";
 		} else if (inst.getNmenonic().toLowerCase().equals("ldapb (u10)")) {
 			String offset = (operandString.substring(operandString.indexOf("0x")+2));
-			int loadLocation = inst.getPc()-(Integer.parseInt(offset, 16) << 1) + inst.getNumBytes();;
-			operandString = operandString.substring(0, operandString.indexOf(",")) + ", <0x" + Integer.toHexString(loadLocation) + ">";
+			long loadLocation = inst.getPc()-(Long.parseLong(offset, 16) << 1) + inst.getNumBytes();;
+			operandString = operandString.substring(0, operandString.indexOf(",")) + ", <0x" + Long.toHexString(loadLocation) + ">";
 		} else if (inst.getNmenonic().toLowerCase().equals("chkct (rus)")) {
 			for (int i = 0; i < 12; i++){
 				String lookUp = "i 0x"+Integer.toHexString(i);
@@ -142,7 +142,7 @@ public class AssemblyLine implements Line {
         return false;
     }
 
-	public int getPc() {
+	public long getPc() {
 		return m_instructionNode.getXtaInstruction().getPc();
 	}
 	

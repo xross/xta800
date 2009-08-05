@@ -20,11 +20,11 @@ public class FunctionHandler {
 	private Collection<FunctionNode> m_functions;
 	private Map<InstructionNode, FunctionNode> m_instToFunc;
 	private Collection<Node> m_pseudoFunctions;
-	private Map<Integer, TreeSet<Node>> functionToEndPoints;
+	private Map<Long, TreeSet<Node>> functionToEndPoints;
 	
 	public FunctionHandler(InstructionDecoder instDecoder) {
 		m_instDecoder = instDecoder;
-		functionToEndPoints = new TreeMap<Integer, TreeSet<Node>>();
+		functionToEndPoints = new TreeMap<Long, TreeSet<Node>>();
 	}
 
 	public Collection<FunctionNode> getFunctions(){
@@ -119,7 +119,7 @@ public class FunctionHandler {
 		return true;
 	}
 	
-	public Map<Integer, TreeSet<Node>> getFunctionsToEndPoints(){
+	public Map<Long, TreeSet<Node>> getFunctionsToEndPoints(){
 		return functionToEndPoints;
 	}
 

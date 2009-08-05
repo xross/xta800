@@ -27,7 +27,7 @@ public class EndpointReference extends ReferenceType {
 			CodePointInfo info = engine.getEndpoints().get(label);
 			setPc(info.getPc());
 			
-			Map<Integer, CodePointTableInfo> endpointTable = engine.getEndpointTable();
+			Map<Long, CodePointTableInfo> endpointTable = engine.getEndpointTable();
 			if (!endpointTable.containsKey(info.getPc()))
 				return false;
 				

@@ -65,7 +65,7 @@ public class BlockNode extends IBufferNode {
 		return insts;
 	}
 	
-	public int getStartPc() {
+	public long getStartPc() {
 		return getInstructions().getFirst().getPc();
 	}	
 		
@@ -122,9 +122,9 @@ public class BlockNode extends IBufferNode {
 	public void insertFnops() {
 		List<InstructionNode> insts = new LinkedList<InstructionNode>();
 		for(InstructionNode inst : m_insts){
-			List<Integer> fnops =  m_worstIbufferSequence.getfnops();
+			List<Long> fnops =  m_worstIbufferSequence.getfnops();
 			XtaInstruction xtaInst = inst.getXtaInstruction();
-			for(int pc : fnops){
+			for (long pc : fnops){
 				if(xtaInst.getPc() == pc){
 					XtaInstruction fnop = new NullInstruction("--FNOP--", 0, xtaInst.getPc(), 0);
 					InstructionNode fnopNode = new InstructionNode(fnop);

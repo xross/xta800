@@ -14,14 +14,14 @@ import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Notifier;
 
 public class Labels extends Section  {	
-	private TreeMap<String, Integer> m_labels;
+	private TreeMap<String, Long> m_labels;
 	
 	Labels(int nodeId, int coreId, Notifier notifier) {
 		super(nodeId, coreId, notifier);
-		m_labels = new TreeMap<String, Integer>(); 
+		m_labels = new TreeMap<String, Long>(); 
 	}
 	
-	boolean add(CommandSource src, String label, int pc) {
+	boolean add(CommandSource src, String label, long pc) {
 		if (!m_labels.containsKey(label)) {										
 			m_labels.put(label, pc);
 			return true;
@@ -55,7 +55,7 @@ public class Labels extends Section  {
 		}		
 	}
 	
-	Map<String, Integer> get() {
+	Map<String, Long> get() {
 		return m_labels;
 	}
 	
@@ -68,7 +68,7 @@ public class Labels extends Section  {
             	int sectionIndex = symbol.getShndx();        	
             	if (elfHandler.getSections().get(sectionIndex).isExecutable()) {        		
             		if (symbol.getName().charAt(0) != '.') {
-            	        m_labels.put(symbol.getName(), symbol.getValue());
+            	        m_labels.put(symbol.getName(), (long)symbol.getValue());
             		}
             	}
         	}

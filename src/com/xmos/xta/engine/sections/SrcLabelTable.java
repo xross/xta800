@@ -10,15 +10,15 @@ import com.xmos.xta.engine.Notifier;
 
 public class SrcLabelTable extends Section {
 	private String m_sectionName;
-	private TreeMap<Integer, SrcLabelTableInfo> m_locations;
+	private TreeMap<Long, SrcLabelTableInfo> m_locations;
 	
 	SrcLabelTable(int nodeId, int coreId, String sectionName, Notifier notifier) {
 		super(nodeId, coreId, notifier);
 		m_sectionName = sectionName;		
-		m_locations = new TreeMap<Integer, SrcLabelTableInfo>(); 
+		m_locations = new TreeMap<Long, SrcLabelTableInfo>(); 
 	}
 	
-	Map<Integer, SrcLabelTableInfo> get() {
+	Map<Long, SrcLabelTableInfo> get() {
 		return m_locations;
 	}
 	
@@ -50,7 +50,7 @@ public class SrcLabelTable extends Section {
 	        		int lineNumberEnd = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
 	        		
-	        		int location = ByteArrayManipulation.readInt(data, byteIndex);
+	        		long location = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
 	        		
 	        		m_locations.put(location, new SrcLabelTableInfo(location, compilationDir, 

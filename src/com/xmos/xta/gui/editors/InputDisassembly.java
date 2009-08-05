@@ -15,7 +15,7 @@ public class InputDisassembly implements IEditorInput {
     public static final String s_lineType = XtaDocumentPartitioner.DISASSEMBLY;
 
     private Input m_input;    
-    private HashMap<Integer, InputLine> m_pcToLine;
+    private HashMap<Long, InputLine> m_pcToLine;
     
     public InputDisassembly() {	
 		if (DEBUG) System.out.printf("InputDisassembly()\n");	
@@ -30,7 +30,7 @@ public class InputDisassembly implements IEditorInput {
             InputSection section = m_input.getLastSection();
             boolean firstLine = true;
         	for (AssemblyLine line : function.getChildern()) {
-        		int pc = line.getLineNumber();
+        		long pc = line.getLineNumber();
         		String str = "";
         		if(firstLine){
         			str = String.format("%s 0x%05x %s", line.getEmptyText(), pc, line.getText());
@@ -45,13 +45,13 @@ public class InputDisassembly implements IEditorInput {
         	}
         }
         updateLineNumberMapping();
-        m_pcToLine = new HashMap<Integer, InputLine>();
-        for(InputSection inputSection : m_input.getSections()){
+        m_pcToLine = new HashMap<Long, InputLine>();
+        for (InputSection inputSection : m_input.getSections()){
         	m_pcToLine.putAll(inputSection.getPcs());
         }
 	}
     
-    public HashMap<Integer, InputLine> getPcsToLines(){
+    public HashMap<Long, InputLine> getPcsToLines(){
     	return m_pcToLine;
     }
     

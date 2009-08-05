@@ -23,15 +23,15 @@ public class ThreadHandler {
 	}
 
 
-	public Set<InstructionNode> getThreadNodes(CommandSource src, Collection<Integer> threadPcs, String type) {
+	public Set<InstructionNode> getThreadNodes(CommandSource src, Collection<Long> threadPcs, String type) {
 		Set<InstructionNode> nodes = new TreeSet<InstructionNode>();
-		for(int pc : threadPcs){
+		for (long pc : threadPcs){
 			InstructionNode threadNode = m_instDecoder.getNode(pc);
 			if (threadNode != null){
 				nodes.add(threadNode);
 			} else {
 				m_notifier.notify(src, Notifier.NOTIFY_WARNING,
-						"failed to find " + type + " at PC 0x" + Integer.toHexString(pc));
+						"failed to find " + type + " at PC 0x" + Long.toHexString(pc));
 			}
 		}
 		return nodes;
@@ -53,9 +53,9 @@ public class ThreadHandler {
 		return threadStarts;
 	}
 	
-	public Map<Integer, TreeSet<Node>> addTerminators(Collection<InstructionNode> threadStarts){
+	public Map<Long, TreeSet<Node>> addTerminators(Collection<InstructionNode> threadStarts){
 		
-		Map<Integer, TreeSet<Node>> threadToEndPoints = new TreeMap<Integer, TreeSet<Node>>();
+		Map<Long, TreeSet<Node>> threadToEndPoints = new TreeMap<Long, TreeSet<Node>>();
 		for(InstructionNode threadStart : threadStarts){
 			TreeSet<Node> terminals  = new TreeSet<Node>();
 			findTerminals(threadStart, new TreeSet<Node>(), terminals);

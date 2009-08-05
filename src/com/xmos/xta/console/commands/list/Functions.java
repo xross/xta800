@@ -45,7 +45,7 @@ public class Functions extends Command {
             SymbolTable symbolTable = xeLoader.getSymbolTable(nodeId, coreId);
             
             for (String functionName : functionNames) {
-            	int functionAddress = symbolTable.symbolAddress(functionName);
+            	long functionAddress = symbolTable.symbolAddress(functionName);
                 console.display(String.format("- %s (0x%x)\n", functionName, functionAddress));
             }        	
         } else {

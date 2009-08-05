@@ -17,7 +17,7 @@ public class ReferenceMatcher {
 		return checkBackTrail(matchingNodes, reference);
 	}
 
-	private Collection<InstructionNode> getNodesContainingReferencePc(Node node, final int pc) {		
+	private Collection<InstructionNode> getNodesContainingReferencePc(Node node, final long pc) {		
 		final Collection<InstructionNode> matchingNodes = new ArrayList<InstructionNode>();		
 		node.traverse(0, new DefaultNodeTraverser() {		
 			public boolean foundInstructionNode(Node node, int depth) {		

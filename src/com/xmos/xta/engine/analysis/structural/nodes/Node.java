@@ -49,7 +49,7 @@ public abstract class Node implements Comparable<Node>{
 	 * This returns all the instruction nodes that could possible be contained within this node
 	 */
 	
-	public abstract int getStartPc();
+	public abstract long getStartPc();
 	public abstract Set<InstructionNode> getEndNodes();
 	
 	public Node() {

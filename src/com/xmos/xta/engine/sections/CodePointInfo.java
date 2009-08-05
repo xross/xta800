@@ -1,13 +1,13 @@
 package com.xmos.xta.engine.sections;
 
 public class CodePointInfo {
-    private int m_pc;
+    private long m_pc;
     private String m_label;
     private String m_compilationDir;
     private String m_fileName;
     private int m_lineNumber;
     
-    public CodePointInfo(int pc, String label, String compilationDir, String fileName, int lineNumber) {
+    public CodePointInfo(long pc, String label, String compilationDir, String fileName, int lineNumber) {
     	m_pc = pc;
     	m_label = label;
     	m_compilationDir = compilationDir;
@@ -15,7 +15,7 @@ public class CodePointInfo {
     	m_lineNumber = lineNumber;
     }
  
-    public int getPc() {
+    public long getPc() {
     	return m_pc;
     }
     
@@ -31,7 +31,7 @@ public class CodePointInfo {
     	return m_fileName;
     }
 
-    public int getLineNumber() {
+    public long getLineNumber() {
     	return m_lineNumber;
     }
 }

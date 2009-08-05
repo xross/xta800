@@ -15,12 +15,10 @@ public class InputSource implements IEditorInput {
 
     private Input m_input;
     
-    
-    
     public InputSource(SourceFile sourceFile) {	
 		if (DEBUG) System.out.printf("InputSource()\n");
 				
-		int lineIndex = 0;
+		long lineIndex = 0;
 		m_input = new Input(s_headerType, s_lineType);
         for (SourceLine sourceLine : sourceFile.getSourceLines()){   
 
@@ -29,7 +27,7 @@ public class InputSource implements IEditorInput {
         	++lineIndex;
         	boolean firstLine = true;
             for (AssemblyLine line : sourceLine.getChildern()) {
-        		int pc = line.getLineNumber();
+        		long pc = line.getLineNumber();
         		String str = "";
         		if(firstLine){
         			str = String.format("%s 0x%05x %s", line.getEmptyText(), pc, line.getText());
@@ -43,7 +41,7 @@ public class InputSource implements IEditorInput {
         	}
             // Only associate statement PCs from debug with this source line
             InputSection section = m_input.getLastSection();
-            for (Integer pc : sourceLine.getStatementPcs()) {
+            for (long pc : sourceLine.getStatementPcs()) {
             	m_input.addPcToSecion(pc, section);
             }
         }

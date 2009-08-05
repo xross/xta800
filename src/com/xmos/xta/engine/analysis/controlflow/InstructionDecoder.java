@@ -18,7 +18,7 @@ import com.xmos.xta.engine.instructions.XtaInstructionDecoder;
 public class InstructionDecoder {
 	private int m_nodeId;
 	private int m_coreId;
-	private Map<Integer, InstructionNode> m_decodedInstructions;
+	private Map<Long, InstructionNode> m_decodedInstructions;
 	private List<InstructionNode> m_orderedInstructions;	
 	private XeLoader m_xeLoader;
 	
@@ -26,7 +26,7 @@ public class InstructionDecoder {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_xeLoader = xeLoader;
-		m_decodedInstructions = new HashMap<Integer, InstructionNode>();
+		m_decodedInstructions = new HashMap<Long, InstructionNode>();
 		m_orderedInstructions = new LinkedList<InstructionNode>();
 	}
 	
@@ -36,8 +36,9 @@ public class InstructionDecoder {
 		XtaInstructionDecoder instructionDecoder = XtaInstructionDecoder.createInstructionDecoder(m_xeLoader.getArchitecture());
 		for (ElfSection section: m_xeLoader.getSymbolTable(m_nodeId, m_coreId).getElfHandler().getSections()){
 			if (section.isExecutable()){
-				int pc = section.getAddress();
-				while (pc < section.getAddress() + section.getBytes().length){
+				long sectionAddress = XtaInstruction.makeLongPc(section.getAddress());
+				long pc = sectionAddress;
+				while (pc < sectionAddress + section.getBytes().length){
 					int opcode = 0;
 					try {
 		                opcode = memoryImage.readInstructionWord(pc);
@@ -65,7 +66,7 @@ public class InstructionDecoder {
 		return m_orderedInstructions;
 	}
 	
-	public InstructionNode getNode(int pc){
+	public InstructionNode getNode(long pc){
 		return m_decodedInstructions.get(pc);
 	}
 }

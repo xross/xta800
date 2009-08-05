@@ -20,7 +20,7 @@ public class CallFileLineReference extends ReferenceType {
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
     	String ref  = getRef();
 		String fileName = getFileName(ref);
-        int lineNumber  = getLineNumber(ref);		
+        long lineNumber = getLineNumber(ref);		
 
 		for (CodePointTableInfo info : engine.getCallTable().values()) {
             if (info.getFileName().equals(fileName) &&

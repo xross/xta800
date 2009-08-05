@@ -102,22 +102,22 @@ public class Sections {
 		return true;
 	}	
 	
-	public boolean addToBranches(CommandSource src, int nodeId, int coreId, int fromPc, int toPc) {
+	public boolean addToBranches(CommandSource src, int nodeId, int coreId, long fromPc, long toPc) {
 		Branches branches = (Branches)getSection(m_branches, nodeId, coreId);
 		return branches.add(src, fromPc, toPc);
 	}
 
-	public boolean removeFromBranches(CommandSource src, int nodeId, int coreId, int fromPc) {
+	public boolean removeFromBranches(CommandSource src, int nodeId, int coreId, long fromPc) {
 		Branches branches = (Branches)getSection(m_branches, nodeId, coreId);
 		return branches.remove(src, fromPc);			
 	}	
 	
-	public Map<Integer, TreeSet<Integer>> getBranches(int nodeId, int coreId) {
+	public Map<Long, TreeSet<Long>> getBranches(int nodeId, int coreId) {
 		Branches branches = (Branches)getSection(m_branches, nodeId, coreId);
 		return branches.get();
 	}
 
-	public Map<String, Integer> getLabels(int nodeId, int coreId) {
+	public Map<String, Long> getLabels(int nodeId, int coreId) {
 	    Labels labels = (Labels)getSection(m_labels, nodeId, coreId);
 	    return labels.get();
 	}
@@ -127,7 +127,7 @@ public class Sections {
 	    return codePoints.get();
 	}
 	
-	public Map<Integer, SrcLabelTableInfo> getSrcLabelTable(int nodeId, int coreId) {
+	public Map<Long, SrcLabelTableInfo> getSrcLabelTable(int nodeId, int coreId) {
 		SrcLabelTable srcLabelTable = (SrcLabelTable)getSection(m_srcLabelTables, nodeId, coreId);
 		return srcLabelTable.get();
 	}	
@@ -137,7 +137,7 @@ public class Sections {
 	    return codePoints.get();
 	}
 
-	public Map<Integer, CodePointTableInfo> getEndpointTable(int nodeId, int coreId) {
+	public Map<Long, CodePointTableInfo> getEndpointTable(int nodeId, int coreId) {
 		CodePointTable endpointTable = (CodePointTable)getSection(m_endpointTables, nodeId, coreId);
 		return endpointTable.get();		
 	}	
@@ -147,17 +147,17 @@ public class Sections {
 	    return codePoints.get();
 	}
 	
-	public Map<Integer, CodePointTableInfo> getCallTable(int nodeId, int coreId) {
+	public Map<Long, CodePointTableInfo> getCallTable(int nodeId, int coreId) {
 		CodePointTable endpointTable = (CodePointTable)getSection(m_callTables, nodeId, coreId);
 		return endpointTable.get();		
 	}
 		
-	public Collection<Integer> getThreadStartPoints(int nodeId, int coreId) {
+	public Collection<Long> getThreadStartPoints(int nodeId, int coreId) {
 		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStartPoints, nodeId, coreId);				
 		return threadDelimiter.get();	
 	}
 	
-	public Collection<Integer> getThreadStopPoints(int nodeId, int coreId) {
+	public Collection<Long> getThreadStopPoints(int nodeId, int coreId) {
 		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStopPoints, nodeId, coreId);				
 		return threadDelimiter.get();	
 	}

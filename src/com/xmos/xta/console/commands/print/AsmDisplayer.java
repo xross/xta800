@@ -35,20 +35,20 @@ public class AsmDisplayer {
     	SymbolTable symbolTable = m_engine.getSymbolTable();
     	    	
         if (instructions.size() > 0) { 
-	    	HashMap<String, TreeSet<Integer>> asmLinesCovered = 
+	    	HashMap<String, TreeSet<Long>> asmLinesCovered = 
 	    		createAsmPcsCovered(instructions, m_engine.getSourceMapper());
 	    	
-	        for (Iterator<Map.Entry<String, TreeSet<Integer>>> iter = 
+	        for (Iterator<Map.Entry<String, TreeSet<Long>>> iter = 
 	        	asmLinesCovered.entrySet().iterator(); iter.hasNext();) {
 	        	
-	            Map.Entry<String, TreeSet<Integer>> entry = 
-	                (Map.Entry<String, TreeSet<Integer>>)iter.next();    
+	            Map.Entry<String, TreeSet<Long>> entry = 
+	                (Map.Entry<String, TreeSet<Long>>)iter.next();    
 	            
 	            String functionName = (String)entry.getKey();                    
-	            TreeSet<Integer> functionLinesCovered = (TreeSet<Integer>)entry.getValue();
+	            TreeSet<Long> functionLinesCovered = (TreeSet<Long>)entry.getValue();
 
-	            int functionAddress = symbolTable.functionAddress(functionLinesCovered.first());
-	            int functionSize = symbolTable.functionSize(functionAddress);  
+	            long functionAddress = symbolTable.functionAddress(functionLinesCovered.first());
+	            long functionSize = symbolTable.functionSize(functionAddress);  
 	            
 	            if ((functionAddress == 0) && (functionSize == 0)) {
 	            	// We can't seem to find the actual address + size (maybe the information
@@ -63,7 +63,7 @@ public class AsmDisplayer {
 	            		memoryImage, functionAddress, functionSize, m_engine.getXeLoader().getArchitecture(),
 	            		m_engine.getConfig());
 	            
-	            HashMap<Integer, String> branchTargetMap = Disassembler.createBranchTargetMap(
+	            HashMap<Long, String> branchTargetMap = Disassembler.createBranchTargetMap(
 	            		symbolTable, disassemblyVector);	            
 	            
 	            for (Instruction instruction : disassemblyVector) {
@@ -86,18 +86,18 @@ public class AsmDisplayer {
         }
     }
 
-    private HashMap<String, TreeSet<Integer>> createAsmPcsCovered(
+    private HashMap<String, TreeSet<Long>> createAsmPcsCovered(
     		List<XtaInstruction> instructions, SourceMapper sourceMapper) {
 			
-        HashMap<String, TreeSet<Integer>> asmLinesCovered = new HashMap<String, TreeSet<Integer>>();
-        for(XtaInstruction inst : instructions){
+        HashMap<String, TreeSet<Long>> asmLinesCovered = new HashMap<String, TreeSet<Long>>();
+        for (XtaInstruction inst : instructions){
             Function function = sourceMapper.getFunction(inst.getPc());
             if (function != null) {
 	            String instString = function.getText();
 	            if (asmLinesCovered.containsKey(instString)){
 	                asmLinesCovered.get(instString).add(inst.getPc());
 	            } else {
-	                TreeSet<Integer> treeList = new TreeSet<Integer>();
+	                TreeSet<Long> treeList = new TreeSet<Long>();
 	                treeList.add(inst.getPc());
 	                asmLinesCovered.put(instString, treeList);
 	            }
@@ -106,23 +106,23 @@ public class AsmDisplayer {
         return asmLinesCovered;
 	}
     
-    private String getBranchDest(HashMap<Integer, String> branchTargetMap, 
+    private String getBranchDest(HashMap<Long, String> branchTargetMap, 
     		Instruction instruction) {
     	
 	    String branchDest = "";	    	    
-    	int destPc = instruction.getPc();    	
+    	long destPc = instruction.getPc();    	
 	    if (branchTargetMap.containsKey(destPc)) {
 		    branchDest = branchTargetMap.get(destPc);
 	    }
 	    return branchDest;
     }
 
-    private String getBranchTarget(HashMap<Integer, String> branchTargetMap, 
+    private String getBranchTarget(HashMap<Long, String> branchTargetMap, 
     		Instruction instruction, SymbolTable symbolTable) {
     	
 	    String branchTarget = "";	
     	if (instruction.getBranchPcRelative()) {
-	    	int targetPc = instruction.getBranchPcRelativeTargetPc();	    	
+	    	long targetPc = instruction.getBranchPcRelativeTargetPc();	    	
     		if (symbolTable.functionExists(targetPc)) {
     		    branchTarget = "<" + symbolTable.functionName(targetPc) + ">";	
     		}
@@ -135,8 +135,8 @@ public class AsmDisplayer {
 	    return branchTarget;
     }
     
-    private int getLowestAddress(List<XtaInstruction> instructions) {
-    	int address = Integer.MAX_VALUE;    	
+    private long getLowestAddress(List<XtaInstruction> instructions) {
+    	long address = Long.MAX_VALUE;    	
 		for (Instruction instruction : instructions) {
 			if (instruction.getPc() < address) {
 				address = instruction.getPc();
@@ -145,8 +145,8 @@ public class AsmDisplayer {
         return address;	
     }
     
-    private int getHighestAddress(List<XtaInstruction> instructions) {
-    	int address = Integer.MIN_VALUE;    	
+    private long getHighestAddress(List<XtaInstruction> instructions) {
+    	long address = Long.MIN_VALUE;    	
 		for (Instruction instruction : instructions) {
 			if (instruction.getPc() > address) {
 				address = instruction.getPc();

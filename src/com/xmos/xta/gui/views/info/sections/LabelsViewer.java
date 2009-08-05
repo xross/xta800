@@ -20,7 +20,7 @@ public class LabelsViewer extends SectionsViewer {
 	}
 
 	@Override
-	protected int getPc(Object object) {
+	protected long getPc(Object object) {
 		return ((LabelsContent)object).m_pc;
 	}
 }

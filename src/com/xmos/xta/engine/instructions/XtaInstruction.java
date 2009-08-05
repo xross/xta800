@@ -9,7 +9,7 @@ public abstract class XtaInstruction extends Instruction {
     private boolean m_isLink;
     private boolean m_isBranch;
 	
-	XtaInstruction(String nmenonic, int opcode, int pc, int numBytes, 
+	XtaInstruction(String nmenonic, int opcode, long pc, int numBytes, 
 			boolean isLoadStore, boolean canPause, int numCycles, boolean isBranch, boolean isLink) {
 		super(nmenonic, opcode, pc, numBytes, isLoadStore, canPause);
 		m_functionName = null;
@@ -30,7 +30,7 @@ public abstract class XtaInstruction extends Instruction {
 	}
 	
 	public String toString(){
-		return "0x" + Integer.toHexString(getPc()) + " " + getNmenonic() + " " + getOperandString();
+		return "0x" + Long.toHexString(getPc()) + " " + getNmenonic() + " " + getOperandString();
 	}
 		
 	public void setFunctionName(String functionName) {
@@ -51,6 +51,10 @@ public abstract class XtaInstruction extends Instruction {
 	
 	public long getNumCycles() {
 		return m_numCycles;
+	}
+	
+	public static long makeLongPc(int pc) {
+		return (long)pc & 0xffffffffL;
 	}
 }
 

@@ -14,9 +14,9 @@ public class StructureGraph {
 	private Collection<FunctionNode> m_functions;
 	private Collection<FunctionNode> m_unlinkedFunctions;
 	private Node m_searchNode;
-	private Map<Integer, TreeSet<Node>> m_pcToEndPoints;
+	private Map<Long, TreeSet<Node>> m_pcToEndPoints;
 	
-	public StructureGraph(Collection<FunctionNode> threads, Collection<FunctionNode> functions, Map<Integer, TreeSet<Node>> pcToEndPoints) {
+	public StructureGraph(Collection<FunctionNode> threads, Collection<FunctionNode> functions, Map<Long, TreeSet<Node>> pcToEndPoints) {
 		super();
 		assert(threads.size() > 0);
 		m_threads = threads;
@@ -26,7 +26,7 @@ public class StructureGraph {
 		removeLinks();
 	}
 
-	public Map<Integer, TreeSet<Node>> getPcToEndPoints(){
+	public Map<Long, TreeSet<Node>> getPcToEndPoints(){
 		return m_pcToEndPoints;
 	}
 	

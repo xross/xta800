@@ -45,7 +45,7 @@ public class ThreadStopPoints extends Command {
 			return;
 		}
 		
-		for (Integer pc : engine.getThreadStopPoints()) {
+		for (long pc : engine.getThreadStopPoints()) {
     	    console.display(String.format("0x%x ", pc));
     	}		
 	    console.display("\n");

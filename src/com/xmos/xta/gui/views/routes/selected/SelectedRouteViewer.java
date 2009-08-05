@@ -92,7 +92,7 @@ public class SelectedRouteViewer {
 		Reference codePoint = GuiEngine.getCodePoint();
 		Engine engine = GuiEngine.getEngine();
 		if (codePoint.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
-			final int pc = codePoint.getPc();
+			final long pc = codePoint.getPc();
 			final List<Node> selectedNodes = new ArrayList<Node>();
 
 			// Add the nodes hitting the pc

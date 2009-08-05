@@ -34,8 +34,8 @@ public class FnopAnalyser {
 	
 	private void explore(IBufferNode startNode, Set<IBufferNode> seen) {
 		seen.add(startNode);
-		for(IBufferNode next : startNode.getNextIbufferNodes()){
-			if(!seen.contains(next)){
+		for (IBufferNode next : startNode.getNextIbufferNodes()){
+			if (!seen.contains(next)){
 				explore(next, seen);
 			}
 		}
@@ -65,7 +65,7 @@ public class FnopAnalyser {
 
 	private boolean iterateOverBasicBlocks(IBufferNode block, InstructionBuffer pretransitionIB, IBufferNode parent) {
 
-		List<Integer> fnopPcs = new LinkedList<Integer>();
+		List<Long> fnopPcs = new LinkedList<Long>();
 		InstructionBuffer endInstBuffer = new InstructionBuffer(pretransitionIB);
 		
 		if (parent == null) {
@@ -106,7 +106,7 @@ public class FnopAnalyser {
 		return block.addEndInstructionBuffer(numStartBytes, endInstBuffer, fnopPcs);
 	}
 
-	private void update(InstructionBuffer ib, List<Integer> fnopPcs, XtaInstruction inst) {
+	private void update(InstructionBuffer ib, List<Long> fnopPcs, XtaInstruction inst) {
 		while (!ib.canIssue(inst.getNumBytes())) {
 			ib.fetch();
 	//		System.out.println("fnop");
