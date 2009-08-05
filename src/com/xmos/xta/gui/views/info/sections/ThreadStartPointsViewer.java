@@ -21,6 +21,6 @@ public class ThreadStartPointsViewer extends SectionsViewer {
 
 	@Override
 	protected long getPc(Object object) {
-		return (Integer)object;
+		return (Long)object;
 	}
 }

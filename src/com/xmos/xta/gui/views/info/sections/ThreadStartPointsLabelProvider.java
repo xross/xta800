@@ -15,7 +15,7 @@ class ThreadStartPointsViewerLabelProvider extends SectionsViewerLabelProvider i
 	public String getColumnText(Object element, int columnIndex) {
 		assert((columnIndex >= 0) && (columnIndex < m_columnNames.length));
 		
-		Integer pc = (Integer)element;	
+		Long pc = (Long)element;	
 		if (m_columnNames[columnIndex].equals(PC)) {
 			return String.format("0x%x", pc);
 		}
@@ -24,8 +24,8 @@ class ThreadStartPointsViewerLabelProvider extends SectionsViewerLabelProvider i
 	}
 
 	public int compare(Object e1, Object e2, String column) {
-		Integer p1 = (Integer)e1;
-		Integer p2 = (Integer)e2;
+		Long p1 = (Long)e1;
+		Long p2 = (Long)e2;
 		int res = 0;
 		if (column.equals(PC)) {
 			res = p1 > p2 ? 1 : -1;

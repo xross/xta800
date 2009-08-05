@@ -93,16 +93,16 @@ public class SuccessorAdder {
 			connect(src, instruction, target, false, debug);
 		}
 		if (m_mnenonics.isBlacpShort(inst)) {
-			int imm = XtaInstruction.getBits(16, 10, inst.getOpcode()) << Instruction.NUM_BYTES_PER_WORD_LOG2;
+			long imm = XtaInstruction.getBits(16, 10, inst.getOpcode()) << Instruction.NUM_BYTES_PER_WORD_LOG2;
 			calculateCPAddress(src, instruction, imm, debug);
 		}
 		if (m_mnenonics.isBlacpLong(inst)) {
-			int imm = XtaInstruction.getBitsHL(16, 10, 0, 10, inst.getOpcode()) << Instruction.NUM_BYTES_PER_WORD_LOG2;
+			long imm = XtaInstruction.getBitsHL(16, 10, 0, 10, inst.getOpcode()) << Instruction.NUM_BYTES_PER_WORD_LOG2;
 			calculateCPAddress(src, instruction, imm, debug);
 		}
 	}
 
-	private void calculateCPAddress(CommandSource src, Node instruction, int imm, boolean debug) {
+	private void calculateCPAddress(CommandSource src, Node instruction, long imm, boolean debug) {
 		long address = m_cpPointer + imm;
 		try {
 			int word = m_mi.readInstructionWord(address);
@@ -120,7 +120,7 @@ public class SuccessorAdder {
 			}	
 			CommonMethods.connect(target, instruction);
 		} else {
-			m_notifier.notify(src, Notifier.NOTIFY_WARNING, "target ("+ String.format("0x%0x", pc) + 
+			m_notifier.notify(src, Notifier.NOTIFY_WARNING, "target ("+ String.format("0x%x", pc) + 
 					") of: " + instruction + " not found in exectauble sections");
 		}
 	}

@@ -145,9 +145,9 @@ public class RouteConstructor {
 			endNodes = newEndNodes;
 		}
 		
-		for(InstructionNode inst : endNodes){
+//		for(InstructionNode inst : endNodes){
 				//System.out.println(inst + " " + inst.getXtaInstruction());
-			}
+//			}
 		boolean notFoundFunctionYet = true;
 		for (Node start : startNodes) {
 			resetParent();
@@ -769,7 +769,7 @@ public class RouteConstructor {
 					
 					// Checks for interrupt enable..
 					if (mnenonics.isSetSr(instruction)) {	
-						int op1Field = instruction.getOperandField("op1");
+						long op1Field = instruction.getOperandField("op1");
 						int shift = SR_IEBLE_SHIFT;
 						int mask = (1 << SR_IEBLE_SIZE) - 1;
 						if (((op1Field >> shift) & mask) == 1) 

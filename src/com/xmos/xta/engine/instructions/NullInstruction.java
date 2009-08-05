@@ -6,7 +6,7 @@ public class NullInstruction extends XtaInstruction {
         setIsFnop(true);
     }
     
-    public int getOperandField(String opName) {
+    public long getOperandField(String opName) {
     	return 0;
     }
     

@@ -127,7 +127,7 @@ void InstructionClassGenerator::generateClassDefStart(const DbInstruction *inst,
 
 void InstructionClassGenerator::generateGetOperandFieldMethod(const DbInstruction *inst, const DbFormat *fmt) 
 {
-  m_outFile << "    public int getOperandField(String opName) {" << endl;
+  m_outFile << "    public long getOperandField(String opName) {" << endl;
 
   int numOperands = fmt->numOperands();
   for (int operNum = 0; operNum < numOperands; operNum++)

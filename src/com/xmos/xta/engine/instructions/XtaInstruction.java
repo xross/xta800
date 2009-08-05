@@ -19,7 +19,7 @@ public abstract class XtaInstruction extends Instruction {
 		m_isBranch= isBranch;
 	}
 	
-	public abstract int getOperandField(String opName);    		   
+	public abstract long getOperandField(String opName);    		   
 	
 	public boolean isBranch(){
 		return m_isBranch;
@@ -51,10 +51,6 @@ public abstract class XtaInstruction extends Instruction {
 	
 	public long getNumCycles() {
 		return m_numCycles;
-	}
-	
-	public static long makeLongPc(int pc) {
-		return (long)pc & 0xffffffffL;
 	}
 }
 
