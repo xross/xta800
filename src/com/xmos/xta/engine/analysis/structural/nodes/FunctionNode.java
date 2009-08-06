@@ -231,4 +231,9 @@ public class FunctionNode extends IBufferNode {
 	public Set<InstructionNode> getEndNodes() {
 		return m_functionSequence.get(m_functionSequence.size()-1).getEndNodes();
 	}
+
+	public void setFunctionName(String string) {
+		m_functionName = string;
+		
+	}
 }
