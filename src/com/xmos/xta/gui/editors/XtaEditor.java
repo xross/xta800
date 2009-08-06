@@ -399,7 +399,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
     protected void rulerContextMenuAboutToShow(IMenuManager menu) {
 		if (DEBUG) System.out.printf("XtaEditor: rulerContextMenuAboutToShow\n");
 		
-		int clickLineIndex = getVerticalRuler().getLineOfLastMouseButtonActivity();
+		long clickLineIndex = getVerticalRuler().getLineOfLastMouseButtonActivity();
 		
 		m_clickCodeRefString = getLineDescription(clickLineIndex);				
 		if (m_clickCodeRefString != null) {			
@@ -788,7 +788,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
     	return annotationList.toArray(annotationArray);    	
     }
 
-	private String getLineDescription(int clickLineIndex) {
+	private String getLineDescription(long clickLineIndex) {
 		if (m_endPointLineIndexes.containsKey(clickLineIndex)) {
 			InputLine line = m_endPointLineIndexes.get(clickLineIndex);
 			return line.getCodeReference();
