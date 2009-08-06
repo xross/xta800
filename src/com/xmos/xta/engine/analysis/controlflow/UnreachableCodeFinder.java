@@ -1,6 +1,8 @@
 package com.xmos.xta.engine.analysis.controlflow;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -50,12 +52,24 @@ public class UnreachableCodeFinder {
 	}
 
 	private void explore(Node node, Collection<Node> seen){
-		seen.add(node);
-		for (Node next : node.getNextNodes()) {
-			if (!seen.contains(next)) {
-				explore(next, seen);
+		List<Node> toDo = new LinkedList<Node>();
+		toDo.add(node);
+		
+		while(!toDo.isEmpty()){
+			Node currentNode = toDo.get(0);
+			if(!seen.contains(currentNode)){
+				seen.add(currentNode);
+				for(Node next : currentNode.getNextNodes()){
+					if(!seen.contains(next)){
+						toDo.add(next);
+					}
+				}
 			}
+			
+			toDo.remove(currentNode);
 		}
+		
 	}
+	
 	
 }
