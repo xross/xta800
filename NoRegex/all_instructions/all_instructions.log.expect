@@ -1,15 +1,15 @@
-xta: warning: instruction instruction10 failed to find target 0x0
+xta: warning: target (0x0) of: instruction10 not found in exectauble sections
 xta: warning: CP address 0x410234 out of bounds
-xta: warning: instruction instruction14 failed to find target 0x10826
-xta: warning: instruction instruction15 failed to find target 0x21002a
-xta: warning: instruction instruction16 failed to find target 0xf830
-xta: warning: instruction instruction17 failed to find target 0xffe10034
-xta: warning: instruction instruction18 failed to find target 0x100b2
-xta: warning: instruction instruction19 failed to find target 0x30036
-xta: warning: instruction instruction20 failed to find target 0xffbc
-xta: warning: instruction instruction21 failed to find target 0xffff0040
-xta: warning: instruction instruction23 failed to find target 0x30042
-xta: warning: instruction instruction24 failed to find target 0x100c4
-xta: warning: instruction instruction25 failed to find target 0x30048
-xta: warning: instruction instruction27 failed to find target 0x3004e
-xta: warning: instruction instruction29 failed to find target 0x30054
+xta: warning: target (0x10826) of: instruction14 not found in exectauble sections
+xta: warning: target (0x21002a) of: instruction15 not found in exectauble sections
+xta: warning: target (0xf830) of: instruction16 not found in exectauble sections
+xta: warning: target (0xffe10034) of: instruction17 not found in exectauble sections
+xta: warning: target (0x100b2) of: instruction18 not found in exectauble sections
+xta: warning: target (0x30036) of: instruction19 not found in exectauble sections
+xta: warning: target (0xffbc) of: instruction20 not found in exectauble sections
+xta: warning: target (0xffff0040) of: instruction21 not found in exectauble sections
+xta: warning: target (0x30042) of: instruction23 not found in exectauble sections
+xta: warning: target (0x100c4) of: instruction24 not found in exectauble sections
+xta: warning: target (0x30048) of: instruction25 not found in exectauble sections
+xta: warning: target (0x3004e) of: instruction27 not found in exectauble sections
+xta: warning: target (0x30054) of: instruction29 not found in exectauble sections
