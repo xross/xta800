@@ -23,12 +23,11 @@ public class SequencePatternMatcher extends PatternMatcher {
 		}
 				
 		Node lastNode = pathList.getLast();
-		if(lastNode.isNullNode() && pathList.size() > 1){
+		if (lastNode.isNullNode() && pathList.size() > 1) {
 			CommonMethods.disconnect(lastNode, pathList.get(pathList.size()-2));
 			pathList.removeLast();
 			workingSet.remove(lastNode);
 		}
-		
 		
 		if (pathList.size() > 1) {
 			assert(pathSanityCheck(pathList));
@@ -65,14 +64,14 @@ public class SequencePatternMatcher extends PatternMatcher {
 		} else if (node.getNextNodesSize() ==  1) {
 			Node next = node.getNextNode();
 			
-			if(next.isNullNode() && pathList.size() + 1 < workingSet.size()){
+			if (next.isNullNode() && pathList.size() + 1 < workingSet.size()){
 				return true;
 			}
-			
 			
 			if(next == m_treeStart){
 				return true;
 			}
+			
 			if (next.getPrevNodesSize() > 1) {
 				return true;
 			} else {

@@ -38,16 +38,15 @@ public class LoopPatternMatcher extends PatternMatcher {
 		
 		boolean noNextNode = false;
 		
-		if(header.getNextNodesSize() == intersection.size()){
+		if (header.getNextNodesSize() == intersection.size()){
 			noNextNode = true;
 		}
 		
-		if(noNextNode){
+		if (noNextNode){
 			loop = new InfiniteLoopNode(intersection, header);
 		} else {
 			loop = new LoopNode(intersection, header);
 		}
-				
 		
 		if (intersection.contains(treeStart) || header == treeStart){
 			m_treeStart = loop;
@@ -63,6 +62,7 @@ public class LoopPatternMatcher extends PatternMatcher {
 				prev.addNextNode(loop);
 			}
 		}
+		
 		for (Node next : header.getNextNodes()) {
 			if (!intersection.contains(next)) {
 				loop.addNextNode(next);
@@ -72,7 +72,8 @@ public class LoopPatternMatcher extends PatternMatcher {
 				next.addPrevNode(loop);
 			}
 		}
-		if(noNextNode){
+		
+		if (noNextNode){
 			CommonMethods.connect(CommonMethods.findNullNode(workingSet), loop);
 		}
 		

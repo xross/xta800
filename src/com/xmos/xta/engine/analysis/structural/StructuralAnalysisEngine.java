@@ -68,29 +68,30 @@ public class StructuralAnalysisEngine {
 		
 		if(workingSet.size() == 1 && workingSet.iterator().next().getNextNodesSize() == 0) return true;
 		buildDominatorTree(workingSet, treeStart);
-		//System.out.println(dumpTree("tree", workingSet));
+//		System.out.println(dumpTree("tree", workingSet));
 		
 		boolean working = true;
 		boolean dominatorTreeUpToDate = false;
 		while (working) {
-			
 			engine.provideFeedback(jobPrefix + " - nodes left: " + workingSet.size());
 			List<Node> postOrder = new LinkedList<Node>();
 			DFSPostOrder(postOrder, treeStart, new TreeSet<Node>());
 			working = false;
+
 			for (PatternMatcher pm : m_patternMatchers) {
 				if (!dominatorTreeUpToDate && pm.usesDominatorTree()) {
 					buildDominatorTree(workingSet, treeStart);
 					dominatorTreeUpToDate = true;
+				}
+				if (pm instanceof ConditionalTransformer) {
+					Collections.reverse(postOrder);
 				}
 				for (Node node : postOrder) {
 					if (engine.getAbort()) {
 						return false;
 					}
 					if (pm.isMatch(node, workingSet, treeStart)) {
-						if(debug) {
-						//	System.out.println(dumpTree(pm.getClass().getSimpleName(), workingSet));
-						}
+//						System.out.println(dumpTree(pm.getClass().getSimpleName(), workingSet));
 						treeStart = pm.getTreeStart();
 						assert (connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
@@ -176,7 +177,7 @@ public class StructuralAnalysisEngine {
 			fa.analyse(initialBasicBlock, isFunction);
 			fa.addFnopsToBasicBlocks(initialBasicBlock);
 			assert(basicBlocks.contains(initialBasicBlock));
-			
+
 			if (!createStructure(basicBlocks, initialBasicBlock, engine, false, jobName)) {
 				return null;
 			}
@@ -186,7 +187,6 @@ public class StructuralAnalysisEngine {
 			}
 			assert(basicBlocks.size() == 1);
 			Node decomposedGraph = basicBlocks.iterator().next();
-
 
 			final FunctionNode fn = new FunctionNode(decomposedGraph, functionName);
 			
@@ -507,7 +507,6 @@ public class StructuralAnalysisEngine {
 
 				Set<FunctionNode> intersection = new TreeSet<FunctionNode>(reachableNodes);
 				
-				
 				//TODO - find out why this is!!!!
 				assert(node.getPrevNodesSize() == 0);
 				for (Node pred : node.getPrevNodes()) {
@@ -522,7 +521,6 @@ public class StructuralAnalysisEngine {
 			}
 		}
 	}
-	
 	
 	private void crawlFunctionGraph(FunctionNode fn, Map<FunctionNode, TreeSet<FunctionNode>> links, Set<FunctionNode> seen ){
 		seen.add(fn);
@@ -694,16 +692,9 @@ public class StructuralAnalysisEngine {
 	private void setUpPatternMatcher() {
 		m_patternMatchers = new ArrayList<PatternMatcher>();
 		m_patternMatchers.add(new SelfLoopPattern());
-		
-		
 		m_patternMatchers.add(new LoopPatternMatcher());
-		
-		//the conditional should be above the path for best results but 
-		//it will need to decide a section based on dominators and not set operations
-		m_patternMatchers.add(new SequencePatternMatcher());
 		m_patternMatchers.add(new ConditionalPatternMatcher());
-		
-		
+		m_patternMatchers.add(new SequencePatternMatcher());
 		m_patternMatchers.add(new ConditionalTransformer());
 	}
 }
