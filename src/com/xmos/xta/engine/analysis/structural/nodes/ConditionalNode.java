@@ -73,7 +73,7 @@ public class ConditionalNode extends Node {
 		return list;		
 	}
 	
-	public int getStartPc() {
+	public long getStartPc() {
 	//	assert(false);
 		return 0;
 	}

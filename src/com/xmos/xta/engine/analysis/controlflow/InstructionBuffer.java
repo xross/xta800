@@ -5,10 +5,10 @@ public class InstructionBuffer implements Comparable<InstructionBuffer>{
     static final int IBUFFER_NUM_BYTES = 8;
     static final int BYTES_PER_WORD = 4;
 
-    int m_pc;
+    long m_pc;
     int m_numBytes;
 
-    public InstructionBuffer(int startPc) {
+    public InstructionBuffer(long startPc) {
     	m_pc = startPc;
         m_numBytes = 0;
 	}
@@ -18,7 +18,7 @@ public class InstructionBuffer implements Comparable<InstructionBuffer>{
         m_pc = instructionBuffer.m_pc;
     }
     
-    public void setPc(int pc) {
+    public void setPc(long pc) {
         m_pc = pc;
     }
     
@@ -54,7 +54,7 @@ public class InstructionBuffer implements Comparable<InstructionBuffer>{
         m_numBytes -= numBytes;
     }
 
-    public int branchTo(int targetAddress, boolean isLoadStore) {
+    public int branchTo(long targetAddress, boolean isLoadStore) {
         m_pc = targetAddress;
         
         if (isLoadStore) {
@@ -71,7 +71,7 @@ public class InstructionBuffer implements Comparable<InstructionBuffer>{
         return m_numBytes;
 	}
 
-    private boolean isWordAligned(int address) {
+    private boolean isWordAligned(long address) {
         if ((address & 0x3) == 0)
             return true;
         else
@@ -80,9 +80,9 @@ public class InstructionBuffer implements Comparable<InstructionBuffer>{
 
 	public int compareTo(InstructionBuffer o) {
 		if(m_pc - o.m_pc != 0){
-			return Integer.signum(m_pc - o.m_pc);
+			return Long.signum(m_pc - o.m_pc);
 		} else {
-			return Integer.signum(m_numBytes - o.m_numBytes);
+			return Long.signum(m_numBytes - o.m_numBytes);
 		}
 		
 	}

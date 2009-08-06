@@ -22,7 +22,7 @@ public class AllSrcLabelsViewer extends SectionsViewer {
 	}
 
 	@Override
-	protected int getPc(Object object) {
+	protected long getPc(Object object) {
 		return ((SrcLabelTableInfo)object).getPc();
 	}
 }

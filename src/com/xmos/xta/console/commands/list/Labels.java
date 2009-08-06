@@ -48,9 +48,9 @@ public class Labels extends Command {
 			return;
 		}
 		
-    	Iterator<Map.Entry<String, Integer>> iter = engine.getLabels().entrySet().iterator();        
+    	Iterator<Map.Entry<String, Long>> iter = engine.getLabels().entrySet().iterator();        
     	while (iter.hasNext()) {
-    	    Map.Entry<String, Integer> pair = iter.next();
+    	    Map.Entry<String, Long> pair = iter.next();
     	    console.display(String.format("Label: %s, pc: 0x%x\n", pair.getKey(), pair.getValue()));
     	}		
 	}

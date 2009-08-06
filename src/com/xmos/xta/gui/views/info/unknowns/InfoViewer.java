@@ -87,7 +87,7 @@ abstract class InfoViewer {
 			public void doubleClick(DoubleClickEvent event) {
 				if (m_selectedNodes.size() == 1) {					
 					Reference ref = ReferenceFactory.createReference("0x" + 
-							Integer.toHexString(m_selectedNodes.get(0).getStartPc()), ReferenceClass.LABEL_REF);
+							Long.toHexString(m_selectedNodes.get(0).getStartPc()), ReferenceClass.LABEL_REF);
 					
 					Engine engine = GuiEngine.getEngine();
 					ref.resolve(engine, engine.getNodeId(), engine.getCoreId());

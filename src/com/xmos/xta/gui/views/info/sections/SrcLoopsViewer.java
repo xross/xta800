@@ -22,7 +22,7 @@ public class SrcLoopsViewer extends SectionsViewer {
 	}
 
 	@Override
-	protected int getPc(Object object) {
+	protected long getPc(Object object) {
 		return ((SrcLevelLoopInfo)object).getPc();
 	}
 }

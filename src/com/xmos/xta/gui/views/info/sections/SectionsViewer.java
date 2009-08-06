@@ -26,14 +26,14 @@ import com.xmos.xta.gui.GuiEngine;
 
 abstract class SectionsViewer {
 	private TableViewer m_viewer;
-	private List<Integer> m_selectedPcs;
+	private List<Long> m_selectedPcs;
 
 	abstract SectionsViewerContentProvider createContentProvider();
 	abstract SectionsViewerLabelProvider createLabelProvider();
 	
 	SectionsViewer(Display display, Composite parent, IWorkbenchPartSite site, TableViewer viewer) {
 		m_viewer = viewer;
-		m_selectedPcs = new ArrayList<Integer>();
+		m_selectedPcs = new ArrayList<Long>();
 
 		SectionsViewerContentProvider contentProvider = createContentProvider();
 		final SectionsViewerLabelProvider labelProvider = createLabelProvider();
@@ -62,7 +62,7 @@ abstract class SectionsViewer {
 			public void doubleClick(DoubleClickEvent event) {
 				if (m_selectedPcs.size() == 1) {					
 					Reference ref = ReferenceFactory.createReference("0x" + 
-							Integer.toHexString(m_selectedPcs.get(0)), ReferenceClass.LABEL_REF);
+							Long.toHexString(m_selectedPcs.get(0)), ReferenceClass.LABEL_REF);
 					
 					Engine engine = GuiEngine.getEngine();
 					ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
@@ -84,7 +84,7 @@ abstract class SectionsViewer {
 		});
 	}
 	
-	protected abstract int getPc(Object object);
+	protected abstract long getPc(Object object);
 	
 	public void update() {
 		Engine engine = GuiEngine.getEngine();

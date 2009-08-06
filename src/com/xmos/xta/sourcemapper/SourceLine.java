@@ -6,10 +6,10 @@ import java.util.List;
 
 public class SourceLine implements Line {
 	
-	private String             m_line;
-    private ArrayList<AssemblyLine>    m_assembly;
-	private int                m_lineNumber;
-	private ArrayList<Integer> m_statementPcs;
+	private String         m_line;
+    private ArrayList<AssemblyLine> m_assembly;
+	private int             m_lineNumber;
+	private ArrayList<Long> m_statementPcs;
 	
 	public SourceLine(String line, int lineNumber) {
 	    assert(line!=null);
@@ -17,7 +17,7 @@ public class SourceLine implements Line {
 		m_line = line;
 		m_lineNumber = lineNumber;
 		m_assembly = new ArrayList<AssemblyLine>();
-		m_statementPcs = new ArrayList<Integer>();
+		m_statementPcs = new ArrayList<Long>();
 	}
 	
 	public void addAssembly(List<Line> assembly){
@@ -34,15 +34,15 @@ public class SourceLine implements Line {
 	
 	public void addStatementPcs(Collection<Long> pcs) {
 		for (long pc : pcs) {
-			m_statementPcs.add((int)pc);
+			m_statementPcs.add(pc);
 		}
 	}
 
-	public Collection<Integer> getStatementPcs() {
+	public Collection<Long> getStatementPcs() {
 		return m_statementPcs;
 	}
 
-	public int getLineNumber() {
+	public long getLineNumber() {
 		return m_lineNumber;
 	}
 

@@ -11,33 +11,21 @@ import com.xmos.xta.engine.Config;
 
 public class Disassembler {      
 	public static Vector<Instruction> disassemble(
-			MemoryImage memoryImage, int address, int size, XeLoader.Architecture architecture, Config config) {	
+			MemoryImage memoryImage, long address, long size, XeLoader.Architecture architecture, Config config) {	
 
 		XtaInstructionDecoder instructionDecoder = 
 			XtaInstructionDecoder.createInstructionDecoder(architecture);
         
-        int fromAddress = address;        
-        if ((fromAddress < memoryImage.getMemoryBase()) || 
-        	(fromAddress >= (memoryImage.getMemoryBase() + memoryImage.getMemorySize()))) {
-        	return null;
-        }
-        
-        int toAddress = address + size;        
-        if ((toAddress < memoryImage.getMemoryBase()) || 
-            (toAddress >= (memoryImage.getMemoryBase() + memoryImage.getMemorySize()))) {
-            	return null;
-        }
-       
         Vector<Instruction> disassemblyVector = new Vector<Instruction>();
         
         int numBytesRead = 0;
         while (numBytesRead < size) {        	
-        	int pc = address + numBytesRead;
+        	long pc = address + numBytesRead;
         	int opcode = 0;
         	try {
         	    opcode = memoryImage.readInstructionWord(pc);
         	} catch (Exception e) {
-        	    // Do nothing
+        	    return null;
         	}
         	XtaInstruction instruction = instructionDecoder.decode(opcode, pc);    
             disassemblyVector.add(instruction);            
@@ -47,13 +35,13 @@ public class Disassembler {
         return disassemblyVector;
 	}
 	
-	public static HashMap<Integer, String> createBranchTargetMap(
+	public static HashMap<Long, String> createBranchTargetMap(
 			SymbolTable symbolTable, Vector<Instruction> instructions) {
 		
-		HashMap<Integer, String> branchTargetMap = new HashMap<Integer, String>();		
+		HashMap<Long, String> branchTargetMap = new HashMap<Long, String>();		
 		for (Instruction instruction : instructions) {
 		    if (instruction.getBranchPcRelative() && !symbolTable.functionExists(instruction.getPc())) {
-		    	int branchTargetPc = instruction.getBranchPcRelativeTargetPc();
+		    	long branchTargetPc = instruction.getBranchPcRelativeTargetPc();
 		    	
 		    	if (!branchTargetMap.containsKey(branchTargetPc)) {
 		    		String branchTargetName = ".bt" + branchTargetMap.size();

@@ -30,14 +30,14 @@ public class SrcDisplayer {
 	public void display(Node node) {    	
   	    List<XtaInstruction> instructions = node.getInstructions();
 		SourceMapper sourceMapper = m_engine.getSourceMapper();
-        HashMap<String, TreeSet<Integer>> linesCovered = 
+        HashMap<String, TreeSet<Long>> linesCovered = 
         	createSrcLinesCovered(instructions, sourceMapper);                                                                   
         
         if (DEBUG) 
         	displaySrcLinesCovered(linesCovered);
         
 		for (SourceFile sourceFile : sourceMapper.getSourceFiles()) {									
-	        TreeSet<Integer> fileLines = linesCovered.get(sourceFile.getFullFileName());    
+	        TreeSet<Long> fileLines = linesCovered.get(sourceFile.getFullFileName());    
 	        if (fileLines.size() > 0) {
 				m_console.display("----------------------------------\n");
 				m_console.display(sourceFile.getFullFileName() + "\n");
@@ -64,19 +64,19 @@ public class SrcDisplayer {
 		}              	    		
     }
 
-	private HashMap<String, TreeSet<Integer>> createSrcLinesCovered(List<XtaInstruction> instructions,
+	private HashMap<String, TreeSet<Long>> createSrcLinesCovered(List<XtaInstruction> instructions,
 			SourceMapper sourceMapper) {
 
-		HashMap<String, TreeSet<Integer>> linesCovered = new HashMap<String, TreeSet<Integer>>();
+		HashMap<String, TreeSet<Long>> linesCovered = new HashMap<String, TreeSet<Long>>();
 		for (XtaInstruction inst : instructions) {
 			for (SourceFile sourceFile : sourceMapper.getSourceFiles()) {
 				
 				String compilationName = sourceFile.getFullFileName();
-				TreeSet<Integer> sourceLines;
+				TreeSet<Long> sourceLines;
 				if (linesCovered.containsKey(compilationName)) {
 					sourceLines = linesCovered.get(compilationName);
 				} else {
-					sourceLines = new TreeSet<Integer>();
+					sourceLines = new TreeSet<Long>();
 					linesCovered.put(compilationName, sourceLines);
 				}
 
@@ -92,17 +92,17 @@ public class SrcDisplayer {
 		return linesCovered;
 	}
 	
-	private void displaySrcLinesCovered(Map<String, TreeSet<Integer>> linesCovered) {
-        Iterator<Map.Entry<String, TreeSet<Integer>>> iter =
+	private void displaySrcLinesCovered(Map<String, TreeSet<Long>> linesCovered) {
+        Iterator<Map.Entry<String, TreeSet<Long>>> iter =
         	linesCovered.entrySet().iterator();
 
         while (iter.hasNext()) {
-        	Map.Entry<String, TreeSet<Integer>> pair = iter.next();
+        	Map.Entry<String, TreeSet<Long>> pair = iter.next();
             String fileName = pair.getKey();
-            TreeSet<Integer> lineNumbers = pair.getValue();
+            TreeSet<Long> lineNumbers = pair.getValue();
 		
             System.out.printf("SrcLinesCovered: %s: ", fileName);
-            for (Integer lineNumber : lineNumbers) {
+            for (long lineNumber : lineNumbers) {
                 System.out.print(lineNumber + " ");            	
             }
             System.out.print("\n");

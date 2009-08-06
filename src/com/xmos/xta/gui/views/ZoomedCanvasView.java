@@ -226,7 +226,8 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			clearView();
 			m_renderControl.refresh();
 			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
+		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE) ||
+				   event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
 	    	if (m_toolTip != null  && !m_toolTip.isDisposed ()) {
 				m_toolTip.dispose ();
 	    	}

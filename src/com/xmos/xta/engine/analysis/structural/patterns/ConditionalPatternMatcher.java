@@ -16,8 +16,6 @@ public class ConditionalPatternMatcher extends PatternMatcher {
 
 	private static final boolean OLD_METHOD = true;
 	
-	
-	
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
 		m_treeStart = treeStart;
 

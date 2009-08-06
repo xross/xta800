@@ -27,34 +27,34 @@ public class SourceMapper {
     private List<Function> m_functions;
 	private List<SourceFile> m_sourceFiles;
 	private List<AssemblyLine> m_instructions;
-	private Map<Integer, SourceFile> m_pcToFile;
+	private Map<Long, SourceFile> m_pcToFile;
 	private FileFinder m_fileFinder;
 	
 	private InstructionDecoder m_instructionDecoder;
 	private Set<InstructionNode> m_starts;
 	private Map<String, InstructionNode> m_functionNames;
-	private Map<Integer, AssemblyLine> m_pcToAsm;
-	private Map<Integer, Function> m_pcToFunction;
+	private Map<Long, AssemblyLine> m_pcToAsm;
+	private Map<Long, Function> m_pcToFunction;
 	private Map<String, String> m_functionToFile;
 	
-	private Map<String, Integer> m_labels;
+	private Map<String, Long> m_labels;
 	
     public SourceMapper(XeLoader xeLoader, int nodeId, int coreId,
 			Set<InstructionNode> starts, FileFinder fileFinder, InstructionDecoder instructionDecoder, 
-			TreeMap<String, InstructionNode> treeMap, Map<String, Integer> labels) {
+			TreeMap<String, InstructionNode> treeMap, Map<String, Long> labels) {
     	m_labels = labels;
     	m_fileFinder = fileFinder;
         m_instructionDecoder = instructionDecoder;
         m_starts = starts;
         m_functionNames = treeMap;
-        m_pcToAsm = new TreeMap<Integer, AssemblyLine>();
-        m_pcToFunction = new TreeMap<Integer, Function>();
+        m_pcToAsm = new TreeMap<Long, AssemblyLine>();
+        m_pcToFunction = new TreeMap<Long, Function>();
         m_functionToFile = new TreeMap<String, String>();
         initialise(xeLoader, nodeId, coreId);
 	}
 
     public void initialise(XeLoader xeLoader, int nodeId, int coreId) {
-        m_pcToFile = new TreeMap <Integer, SourceFile> ();
+        m_pcToFile = new TreeMap <Long, SourceFile> ();
         m_instructions = createAssemblyLines();
         m_functions = createFunctions();
         m_sourceFiles = createSourceFiles(xeLoader, nodeId, coreId);
@@ -129,24 +129,24 @@ public class SourceMapper {
 
         for (SourceFile sourceFile : sourceFiles){        	
         	for (SourceLine sourceLine : sourceFile.getSourceLines()){
-            	int lineNumber = sourceLine.getLineNumber();
+            	long lineNumber = sourceLine.getLineNumber();
 				Collection<Pair<Long,Long>> addressRanges = debugEngine.getAddressRangesMatchingPath(
             			sourceFile.getFullFileName(), lineNumber);
             	Collection<Long> addresses = rangesToAddresses(addressRanges);
             	
                 for (long pc : addresses) {
-                	if (m_pcToAsm.containsKey((int)pc)) {
-                        AssemblyLine assemblyLine = m_pcToAsm.get((int)pc);
-                        Function fn = m_pcToFunction.get((int)pc);
+                	if (m_pcToAsm.containsKey(pc)) {
+                        AssemblyLine assemblyLine = m_pcToAsm.get(pc);
+                        Function fn = m_pcToFunction.get(pc);
                         m_functionToFile.put(fn.getText(), sourceFile.getFileName());
                         sourceLine.addAssembly(assemblyLine);                    
                 	} else {
                 		System.err.println("Could not find assembly line correspinding to 0x" + 
-                				Integer.toHexString((int)pc) + " in debug information. ");
+                				Long.toHexString(pc) + " in debug information. ");
                 		assert(false);
                 	}
 
-                	m_pcToFile.put((int)pc, sourceFile);
+                	m_pcToFile.put(pc, sourceFile);
                 }
 
             	Collection<Long> statementPcs = debugEngine.getStatementPcsMatchingPath(
@@ -201,7 +201,7 @@ public class SourceMapper {
     private List<Function> createFunctions() {
     	List<InstructionNode> instList = m_instructionDecoder.getInstructions();
     	
-    	Map<Integer, Function> pcToFunction = new HashMap<Integer, Function>();
+    	Map<Long, Function> pcToFunction = new HashMap<Long, Function>();
     	
     	for(InstructionNode inst : m_starts){
     		int startIndex = instList.indexOf(inst);
@@ -215,7 +215,7 @@ public class SourceMapper {
     		String fnName = getFunctionName(inst);
     		Function function = new Function(fnName, functionAssemby);
     		
-    		for(Line assembly : functionAssemby){
+    		for (Line assembly : functionAssemby){
     			m_pcToFunction.put(assembly.getLineNumber(), function);
     		}
     		
@@ -223,12 +223,12 @@ public class SourceMapper {
     	}
     	
     	//sort the functions into ascending pc order
-    	List<Integer> pcs = new LinkedList<Integer>();
+    	List<Long> pcs = new LinkedList<Long>();
     	pcs.addAll(pcToFunction.keySet());
     	Collections.sort(pcs);
     	
     	List<Function> sortedFunctions = new LinkedList<Function>();
-    	for(int pc : pcs){
+    	for (long pc : pcs){
     		sortedFunctions.add(pcToFunction.get(pc));
     	}
     	return sortedFunctions;
@@ -252,18 +252,19 @@ public class SourceMapper {
     public List<Function> getFunctions() {
         return m_functions;
     }
-	public boolean isProfilablePc(int pc) {
-		for(Function function : m_functions){
-			if(function.containsPc(pc)){
+	public boolean isProfilablePc(long pc) {
+		for (Function function : m_functions){
+			if (function.containsPc(pc)){
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	public Function getFunction(int pc) {
+	public Function getFunction(long pc) {
 		return m_pcToFunction.get(pc);
 	}
+	
 	public String getFunctionFileName(String string) {
 		return m_functionToFile.get(string);
 	}

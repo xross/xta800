@@ -36,7 +36,7 @@ public class InstructionNode extends Node {
 		return new InstructionNode(this);
 	}
 
-	public Node deepCopy(Map<Integer, FunctionNode> startPcs, Engine engine) {
+	public Node deepCopy(Map<Long, FunctionNode> startPcs, Engine engine) {
 		InstructionNode in = new InstructionNode(this);
 		in.m_attributes = new InstructionNodeAttributes(in);
 		return in;
@@ -66,13 +66,13 @@ public class InstructionNode extends Node {
 		return inst;
 	}
 
-	public Set<Integer> getPCs() {
-		Set<Integer> pcs = new TreeSet<Integer>();
+	public Set<Long> getPCs() {
+		Set<Long> pcs = new TreeSet<Long>();
 		pcs.add(m_inst.getPc());
 		return pcs;
 	}
 
-	public int getStartPc() {
+	public long getStartPc() {
 		return m_inst.getPc();
 	}
 

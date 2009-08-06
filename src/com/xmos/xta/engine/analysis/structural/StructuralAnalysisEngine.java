@@ -39,7 +39,7 @@ public class StructuralAnalysisEngine {
 	private static final boolean SYMBOLIC_LINK = false;
 	
 	private ControlFlowGraph m_controlFlowGraph;
-	private Map<Integer, FunctionNode> m_functionStartPcs;
+	private Map<Long, FunctionNode> m_functionStartPcs;
 	private StructureGraph m_structureGraph;
 	private List<PatternMatcher> m_patternMatchers;
 	private Architecture m_arch;
@@ -55,8 +55,8 @@ public class StructuralAnalysisEngine {
 	}
 
 	public boolean analyse(CommandSource src, Engine engine, TreeMap<String, InstructionNode> functionNames, 
-			Map<Integer, TreeSet<Node>> pcToEndPoints) {
-		m_functionStartPcs = new TreeMap<Integer, FunctionNode>();
+			Map<Long, TreeSet<Node>> pcToEndPoints) {
+		m_functionStartPcs = new TreeMap<Long, FunctionNode>();
 		return buildStructureGraphs(src, engine, functionNames, pcToEndPoints);
 	}
 
@@ -107,7 +107,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	private boolean buildStructureGraphs(CommandSource src, Engine engine, TreeMap<String,
-			InstructionNode> treeMap, Map<Integer, TreeSet<Node>> pcToEndPoints) {
+			InstructionNode> treeMap, Map<Long, TreeSet<Node>> pcToEndPoints) {
 		
 		Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
 		
@@ -142,7 +142,7 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	private Collection<FunctionNode> buildGraph(Collection<InstructionNode> graphStartNodes, Map<Integer, FunctionNode> startPcs,
+	private Collection<FunctionNode> buildGraph(Collection<InstructionNode> graphStartNodes, Map<Long, FunctionNode> startPcs,
 			Engine engine, boolean isFunction, TreeMap<String, InstructionNode> treeMap, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects) {
 
 		Collection<FunctionNode> graphs = new TreeSet<FunctionNode>();
@@ -168,7 +168,7 @@ public class StructuralAnalysisEngine {
 
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
 			
-			int initialPc = graphStart.getStartPc();
+			long initialPc = graphStart.getStartPc();
 			
 			assert(!basicBlocks.isEmpty());
 			FnopAnalyser fa = new FnopAnalyser();
@@ -425,10 +425,10 @@ public class StructuralAnalysisEngine {
 			TreeSet<FunctionNode>> allFunctionObjects){
 		
 		Map<FunctionNode, TreeSet<FunctionNode>> links = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
-		for(FunctionNode fn : allFunctionObjects.keySet()){
-			for(FunctionNode linksTo : allFunctionObjects.get(fn)){
-				if(linksTo.getBranchTarget() != null){
-					int pc = linksTo.getBranchTarget().getStartPc();
+		for (FunctionNode fn : allFunctionObjects.keySet()){
+			for (FunctionNode linksTo : allFunctionObjects.get(fn)){
+				if (linksTo.getBranchTarget() != null){
+					long pc = linksTo.getBranchTarget().getStartPc();
 					FunctionNode linkingFn = m_functionStartPcs.get(pc);
 					TreeSet<FunctionNode> fnLinks = links.get(fn);
 					if(fnLinks == null){
@@ -463,7 +463,7 @@ public class StructuralAnalysisEngine {
 			}
 		}
 		Set<String> recursiveFunctions = new TreeSet<String>();
-		Set<Integer> recursiveFunctionStartPcs = new TreeSet<Integer>();
+		Set<Long> recursiveFunctionStartPcs = new TreeSet<Long>();
 		if(!loops.isEmpty()){
 			for(FunctionNode fn : loops){
 				recursiveFunctions.add(fn.getFunctionName());
@@ -678,7 +678,7 @@ public class StructuralAnalysisEngine {
 					sb.append("\"]; ");
 				}else if(node.isSequenceNode()){
 					sb.append(node + " [label=\"" + node + "\\n");
-					sb.append("0x" + Integer.toHexString(node.getStartPc()) + "\\n");
+					sb.append("0x" + Long.toHexString(node.getStartPc()) + "\\n");
 					sb.append("\"]; ");
 				}
 			}

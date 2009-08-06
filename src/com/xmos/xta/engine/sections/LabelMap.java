@@ -11,12 +11,12 @@ import com.xmos.xeloader.XeLoader;
 public class LabelMap {	
 	private int m_nodeId;
 	private int m_coreId;
-	private TreeMap<String, Integer> m_labels;
+	private TreeMap<String, Long> m_labels;
 	
 	LabelMap(int nodeId, int coreId) {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
-		m_labels = new TreeMap<String, Integer>(); 
+		m_labels = new TreeMap<String, Long>(); 
 	}
 	
 	int getNodeId() {
@@ -27,7 +27,7 @@ public class LabelMap {
 		return m_coreId;
 	}
 	
-	Map<String, Integer> getMap() {
+	Map<String, Long> getMap() {
 		return m_labels;
 	}
 	
@@ -42,7 +42,7 @@ public class LabelMap {
             	int sectionIndex = symbol.getShndx();        	
             	if (elfHandler.getSections().get(sectionIndex).isExecutable()) {        		
             		if (symbol.getName().charAt(0) != '.') {
-            	        m_labels.put(symbol.getName(), symbol.getValue());
+            	        m_labels.put(symbol.getName(), (long)symbol.getValue());
             		}
             	}
         	}

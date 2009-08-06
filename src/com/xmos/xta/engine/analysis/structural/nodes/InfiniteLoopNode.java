@@ -95,7 +95,7 @@ public class InfiniteLoopNode extends Node {
 		return insts;
 	}
 
-	public int getStartPc() {
+	public long getStartPc() {
 		return m_loopHeader.getStartPc();
 	}
 

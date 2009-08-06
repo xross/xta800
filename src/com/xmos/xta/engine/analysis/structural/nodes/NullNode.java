@@ -43,7 +43,7 @@ public class NullNode extends IBufferNode {
 		return new TreeSet<Integer>();
 	}
 
-	public int getStartPc() {
+	public long getStartPc() {
 		return 0;
 	}
 

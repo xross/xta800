@@ -20,7 +20,7 @@ public class ThreadStartPointsViewer extends SectionsViewer {
 	}
 
 	@Override
-	protected int getPc(Object object) {
-		return (Integer)object;
+	protected long getPc(Object object) {
+		return (Long)object;
 	}
 }

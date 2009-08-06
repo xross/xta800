@@ -45,7 +45,7 @@ public class ThreadStartPoints extends Command {
 			return;
 		}
 		
-		for (Integer pc : engine.getThreadStartPoints()) {
+		for (long pc : engine.getThreadStartPoints()) {
     	    console.display(String.format("0x%x ", pc));
     	}		
 	    console.display("\n");

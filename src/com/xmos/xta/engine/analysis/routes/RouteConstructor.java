@@ -112,6 +112,7 @@ public class RouteConstructor {
 			
 			endNodes = newEndNodes;
 		}
+
 		for(InstructionNode node : startNodes){
 			if (explore_debug) {
 				System.out.println("startNodes " + node + " " + node.getXtaInstruction() );
@@ -123,6 +124,7 @@ public class RouteConstructor {
 			}
 		}
 		
+
 		boolean notFoundFunctionYet = true;
 		for (Node start : startNodes) {
 			resetParent();
@@ -173,7 +175,8 @@ public class RouteConstructor {
 		Collection<Node> exclusions = new TreeSet<Node>();
 		Set<Node> containedEndPoints = new TreeSet<Node>();
 		Set<Node> currentEndNodes = new TreeSet<Node>();	
-		if (explore_debug) System.out.println("\nexploring node " + currentNode+ " 0x" + Integer.toHexString(currentNode.getStartPc()) + " from " + parent + " "+ currentNode.getEndNodes());
+		if (explore_debug) System.out.println("\nexploring node " + currentNode+ " 0x" + Long.toHexString(currentNode.getStartPc()) + " from " + parent + " "+ currentNode.getEndNodes());
+
 
 		if(currentNode.isInstructionNode()){
 			if(m_exclusions.contains(currentNode) && !workingSet.isEmpty()){
@@ -741,7 +744,7 @@ public class RouteConstructor {
 					
 					// Checks for interrupt enable..
 					if (mnenonics.isSetSr(instruction)) {	
-						int op1Field = instruction.getOperandField("op1");
+						long op1Field = instruction.getOperandField("op1");
 						int shift = SR_IEBLE_SHIFT;
 						int mask = (1 << SR_IEBLE_SIZE) - 1;
 						if (((op1Field >> shift) & mask) == 1) 

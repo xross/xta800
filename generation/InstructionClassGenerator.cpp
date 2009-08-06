@@ -115,7 +115,7 @@ void InstructionClassGenerator::generateClassDefStart(const DbInstruction *inst,
 
   m_outFile << "class " << string(m_version) << "XtaInstruction_" << className << " extends XtaInstruction {" << endl;
 
-  m_outFile << "    " << string(m_version) << "XtaInstruction_" << className << "(int opcode, int pc) {" << endl;
+  m_outFile << "    " << string(m_version) << "XtaInstruction_" << className << "(int opcode, long pc) {" << endl;
   m_outFile << "        super(\"" << fullName << "\", opcode, pc, " << 
     fmt->numBytes() << ", " << isLoadStore << ", " << canPause << ", "  << numCycles << ", " << isBranch <<", " <<  isLink <<");" << endl;
   if(inst->isLink()) {
@@ -127,7 +127,7 @@ void InstructionClassGenerator::generateClassDefStart(const DbInstruction *inst,
 
 void InstructionClassGenerator::generateGetOperandFieldMethod(const DbInstruction *inst, const DbFormat *fmt) 
 {
-  m_outFile << "    public int getOperandField(String opName) {" << endl;
+  m_outFile << "    public long getOperandField(String opName) {" << endl;
 
   int numOperands = fmt->numOperands();
   for (int operNum = 0; operNum < numOperands; operNum++)

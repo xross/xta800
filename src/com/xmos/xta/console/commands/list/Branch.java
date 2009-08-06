@@ -156,14 +156,14 @@ public class Branch extends Command {
 			return;
 		}
 		
-    	Iterator<Map.Entry<Integer, TreeSet<Integer>>> iter = engine.getBranches().entrySet().iterator();        
+    	Iterator<Map.Entry<Long, TreeSet<Long>>> iter = engine.getBranches().entrySet().iterator();        
     	while (iter.hasNext()) {
-    	    Map.Entry<Integer, TreeSet<Integer>> pair = iter.next();
-    	    Integer fromPc = pair.getKey();
-    	    TreeSet<Integer> toPcs = pair.getValue();
+    	    Map.Entry<Long, TreeSet<Long>> pair = iter.next();
+    	    Long fromPc = pair.getKey();
+    	    TreeSet<Long> toPcs = pair.getValue();
     	    
     	    console.display(String.format("- 0x%x =>", fromPc));
-    	    for (Integer toPc : toPcs) {
+    	    for (Long toPc : toPcs) {
         	    console.display(String.format(" 0x%x", toPc));    	    	
     	    }
     	    console.display("\n");

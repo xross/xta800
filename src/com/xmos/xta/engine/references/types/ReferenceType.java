@@ -9,9 +9,9 @@ import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 public abstract class ReferenceType {
 	private String m_ref;
 	private boolean m_resolved;
-	private int m_pc;
+	private long m_pc;
 	private String m_fileName;
-	private int m_lineNum;	
+	private long m_lineNum;	
 	private Type m_type;
 
 	public enum Type {
@@ -53,11 +53,11 @@ public abstract class ReferenceType {
     	m_resolved = resolved;
     }
     
-	public int getPc() {
+	public long getPc() {
 		return m_pc;
 	}	
 
-	public void setPc(int pc) {
+	public void setPc(long pc) {
 	    m_pc = pc;
 	}
 
@@ -69,11 +69,11 @@ public abstract class ReferenceType {
 		m_fileName = fileName;
 	}
 
-	public int getLineNum() {
+	public long getLineNum() {
 		return m_lineNum;
 	}	
 
-	public void setLineNum(int lineNum) {
+	public void setLineNum(long lineNum) {
 		m_lineNum = lineNum;
 	}
 	
@@ -81,9 +81,9 @@ public abstract class ReferenceType {
 		return m_type;
 	}
 	
-	boolean inSrcLabelTable(String ref, Map<Integer, SrcLabelTableInfo> srcLabelTable) {
+	boolean inSrcLabelTable(String ref, Map<Long, SrcLabelTableInfo> srcLabelTable) {
 		String fileName = getFileName(ref);
-        int lineNumber  = getLineNumber(ref);		
+        long lineNumber  = getLineNumber(ref);		
 
 		for (SrcLabelTableInfo info : srcLabelTable.values()) {
             if (info.getFileName().equals(fileName) &&
@@ -95,9 +95,9 @@ public abstract class ReferenceType {
 		return false;
 	}
 	
-	boolean inCodePointTable(String ref, Map<Integer, CodePointTableInfo> codePointTable) {		
+	boolean inCodePointTable(String ref, Map<Long, CodePointTableInfo> codePointTable) {		
 		String fileName = getFileName(ref);
-        int lineNumber  = getLineNumber(ref);		
+        long lineNumber  = getLineNumber(ref);		
 
 		for (CodePointTableInfo info : codePointTable.values()) {
             if (info.getFileName().equals(fileName) &&
@@ -138,14 +138,14 @@ public abstract class ReferenceType {
 		}
 	}
 	
-	int getPcString(String ref) {
+	long getPcString(String ref) {
 		String[] refArray = ref.split(":"); 
         String pcString = (refArray.length == 2) ? refArray[1] : refArray[0];	 		
 		
 		if (pcString.matches("0x[0-9a-fA-F]+")){
-			return Integer.parseInt(pcString.substring(2), 16);
+			return Long.parseLong(pcString.substring(2), 16);
 		} else if (pcString.matches("[0-9]+")){
-			return Integer.parseInt(pcString, 10);
+			return Long.parseLong(pcString, 10);
 		} else {
 			assert(false);
 			return 0;
@@ -164,14 +164,14 @@ public abstract class ReferenceType {
 		}
 	}
 
-	int getLineNumber(String fileLineReference) {
+	long getLineNumber(String fileLineReference) {
 		String[] refArray = fileLineReference.split(":");
 		assert((refArray.length == 2) || (refArray.length == 3) || (refArray.length == 4));		
 		
 		String lineNumberStr = refArray[refArray.length - 1];
-        int lineNumber = 0;
+        long lineNumber = 0;
         try {       
-        	lineNumber = Integer.parseInt(lineNumberStr);
+        	lineNumber = Long.parseLong(lineNumberStr);
         }
         catch (NumberFormatException e) {
             assert false;

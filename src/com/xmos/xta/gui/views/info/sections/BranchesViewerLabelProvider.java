@@ -22,8 +22,8 @@ class BranchesViewerLabelProvider extends SectionsViewerLabelProvider implements
 			
     	} else if (m_columnNames[columnIndex].equals(TOPCS)) {
     		String toPcs = "";
-    		for (Integer toPc : branches.m_toPcs) {
-    			toPcs += String.format("0x%x ", toPc);
+    		for (Long toPc : branches.m_toPcs) {
+    			toPcs += "0x" + Long.toHexString(toPc);
     		}
 	        return toPcs;
         }

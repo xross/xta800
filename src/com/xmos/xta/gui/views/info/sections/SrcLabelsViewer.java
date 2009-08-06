@@ -22,7 +22,7 @@ public class SrcLabelsViewer extends SectionsViewer {
 	}
 
 	@Override
-	protected int getPc(Object object) {
+	protected long getPc(Object object) {
 		return ((CodePointInfo)object).getPc();
 	}
 }

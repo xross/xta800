@@ -89,7 +89,7 @@ public class ExclusionsViewer extends SectionsViewer {
 	}
 
  	@Override
-	protected int getPc(Object object) {
+	protected long getPc(Object object) {
 		return ((Reference)object).getPc();
 	}
 }

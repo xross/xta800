@@ -473,7 +473,7 @@ public class Engine implements Notifier {
 			setSelectedRoute(src, null);
 			
 		} else if (m_selectedRoute.getRouteId() == routeId) {
-			m_selectedRoute = m_routes.get(m_routes.size() - 1);
+			this.setSelectedRoute(src, m_routes.get(m_routes.size() - 1));
 		}
 		notify(src, Notifier.NOTIFY_REMOVE_ROUTE, "");
 		return true;
@@ -853,7 +853,7 @@ public class Engine implements Notifier {
 		return true;
 	}
 	
-	private boolean alreadyExcluded(int pc) {
+	private boolean alreadyExcluded(long pc) {
 		for (Reference ref : m_exclusions) {
 			if (ref.getPc() == pc) {
 				return true;
@@ -925,11 +925,11 @@ public class Engine implements Notifier {
 		return false;
 	}
 
-	public Map<Integer, TreeSet<Integer>> getBranches() {
+	public Map<Long, TreeSet<Long>> getBranches() {
 		return m_sections.getBranches(m_nodeId, m_coreId);
 	}
 
-	public Map<String, Integer> getLabels() {
+	public Map<String, Long> getLabels() {
 		return m_sections.getLabels(m_nodeId, m_coreId);
 	}
 	
@@ -937,7 +937,7 @@ public class Engine implements Notifier {
 		return m_sections.getSrcLabels(m_nodeId, m_coreId);
 	}
 
-	public Map<Integer, SrcLabelTableInfo> getSrcLabelTable() {
+	public Map<Long, SrcLabelTableInfo> getSrcLabelTable() {
 		return m_sections.getSrcLabelTable(m_nodeId, m_coreId);
 	}
 
@@ -945,7 +945,7 @@ public class Engine implements Notifier {
 		return m_sections.getEndpoints(m_nodeId, m_coreId);
 	}
 		
-	public Map<Integer, CodePointTableInfo> getEndpointTable() {
+	public Map<Long, CodePointTableInfo> getEndpointTable() {
 		return m_sections.getEndpointTable(m_nodeId, m_coreId);
 	}
 	
@@ -953,15 +953,15 @@ public class Engine implements Notifier {
 		return m_sections.getCalls(m_nodeId, m_coreId);
 	}
 		
-	public Map<Integer, CodePointTableInfo> getCallTable() { 
+	public Map<Long, CodePointTableInfo> getCallTable() { 
 		return m_sections.getCallTable(m_nodeId, m_coreId);
 	}
 	
-	public Collection<Integer> getThreadStartPoints() {
+	public Collection<Long> getThreadStartPoints() {
 		return m_sections.getThreadStartPoints(m_nodeId, m_coreId);
 	}	
 
-	public Collection<Integer> getThreadStopPoints() {
+	public Collection<Long> getThreadStopPoints() {
 		return m_sections.getThreadStopPoints(m_nodeId, m_coreId);
 	}	
 	
@@ -1012,7 +1012,7 @@ public class Engine implements Notifier {
 				if (!fh.addFunctions()) 
 					return false;
 				
-				Map<Integer, TreeSet<Node>> pcToEndPoints = th.addTerminators(threadStartNodes);
+				Map<Long, TreeSet<Node>> pcToEndPoints = th.addTerminators(threadStartNodes);
 				pcToEndPoints.putAll(fh.getFunctionsToEndPoints());
 				
 				Set<InstructionNode> starts = new TreeSet<InstructionNode>();
@@ -1056,8 +1056,8 @@ public class Engine implements Notifier {
 			TreeMap<String, InstructionNode> treeMap) {
 		for(InstructionNode inst : id.getInstructions()){
 			if(inst.getXtaInstruction().getBranchPcRelative()){
-				int branchTarget = inst.getXtaInstruction().getBranchPcRelativeTargetPc();
-				inst.getXtaInstruction().setBranchPcRelativeTargetFunction("0x" + Integer.toHexString(branchTarget));
+				long branchTarget = inst.getXtaInstruction().getBranchPcRelativeTargetPc();
+				inst.getXtaInstruction().setBranchPcRelativeTargetFunction("0x" + Long.toHexString(branchTarget));
 				for(String fn : treeMap.keySet()){
 					if(treeMap.get(fn).getStartPc() == branchTarget){
 						inst.getXtaInstruction().setBranchPcRelativeTargetFunction(fn);
@@ -1071,18 +1071,17 @@ public class Engine implements Notifier {
 
 	private void ensureAllFunctionsAreNamed(SymbolTable symbolTable,
 			TreeMap<String, InstructionNode> treeMap,
-			Collection<InstructionNode> funcStarts, Set<InstructionNode> threadStarts, Map<String, Integer> labelToPc ) {
+			Collection<InstructionNode> funcStarts, Set<InstructionNode> threadStarts, Map<String, Long> labelToPc ) {
 		
-		Map<Integer, String> pcToLabel = new HashMap<Integer, String>();
+		Map<Long, String> pcToLabel = new HashMap<Long, String>();
 		
-		for(String label : labelToPc.keySet()){
+		for (String label : labelToPc.keySet()){
 			pcToLabel.put(labelToPc.get(label), label);
 		}
 		
 		//TODO test this properly
 		for(InstructionNode inst : funcStarts){
-			
-			
+
 			String name = symbolTable.functionName(inst.getStartPc());
 			String label = pcToLabel.get(inst.getXtaInstruction().getPc());
 			
@@ -1091,16 +1090,16 @@ public class Engine implements Notifier {
 				
 				InstructionNode instNode = treeMap.get(name);
 				
-				if(instNode.getStartPc() < inst.getStartPc()){
-					if(label != null){
+				if (instNode.getStartPc() < inst.getStartPc()){
+					if (label != null){
 						treeMap.put(label, inst);
 					} else {
-						name = "unnamed_function_at_0x" + Integer.toHexString(inst.getStartPc());
+						name = "unnamed_function_at_0x" + Long.toHexString(inst.getStartPc());
 						treeMap.put(name, inst);
 					}
 					
 				} else if(instNode.getStartPc() > inst.getStartPc()){
-					String newName = "unnamed_function_at_0x" + Integer.toHexString(instNode.getStartPc());
+					String newName = "unnamed_function_at_0x" + Long.toHexString(instNode.getStartPc());
 					treeMap.put(newName, instNode);
 					treeMap.put(name, inst);
 				} else {
@@ -1115,7 +1114,7 @@ public class Engine implements Notifier {
 			
 			String name = symbolTable.functionName(inst.getStartPc());
 			if(treeMap.containsKey(name)){
-				name = "unnamed_thread_at_0x" + Integer.toHexString(inst.getStartPc());
+				name = "unnamed_thread_at_0x" + Long.toHexString(inst.getStartPc());
 				treeMap.put(name, inst);
 			} else {
 				assert(!treeMap.containsKey(name));

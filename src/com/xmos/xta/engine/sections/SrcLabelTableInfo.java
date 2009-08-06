@@ -1,13 +1,13 @@
 package com.xmos.xta.engine.sections;
 
 public class SrcLabelTableInfo {
-    private int m_pc;
+    private long m_pc;
     private String m_compilationDir;
     private String m_fileName;
     private int m_lineNumberStart;
     private int m_lineNumberEnd;
     
-    public SrcLabelTableInfo(int pc, String compilationDir, String fileName, 
+    public SrcLabelTableInfo(long pc, String compilationDir, String fileName, 
     		int lineNumberStart, int lineNumberEnd) {
     	m_pc = pc;
     	m_compilationDir = compilationDir;
@@ -16,7 +16,7 @@ public class SrcLabelTableInfo {
     	m_lineNumberEnd = lineNumberEnd;
     }
  
-    public int getPc() {
+    public long getPc() {
     	return m_pc;
     }
         

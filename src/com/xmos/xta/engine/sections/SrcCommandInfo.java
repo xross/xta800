@@ -25,7 +25,7 @@ public class SrcCommandInfo {
     	return m_fileName;
     }
 
-    public int getLineNumber() {
+    public long getLineNumber() {
     	return m_lineNumber;
     }
 }

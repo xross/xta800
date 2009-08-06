@@ -20,7 +20,7 @@ public class Function implements Line, Comparable<Object> {
 		return m_functionName;
 	}
 
-	public int getLineNumber() {
+	public long getLineNumber() {
 		return 0;
 	}
 
@@ -39,7 +39,7 @@ public class Function implements Line, Comparable<Object> {
 		}
 	}
 
-	public boolean containsPc(int pc) {
+	public boolean containsPc(long pc) {
 		for (Line line : m_assembly) {
 			if (line.getLineNumber() == pc)
 				return true;

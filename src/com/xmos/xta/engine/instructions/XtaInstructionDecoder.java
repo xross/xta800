@@ -3,7 +3,7 @@ package com.xmos.xta.engine.instructions;
 import com.xmos.xeloader.XeLoader;
 
 public abstract class XtaInstructionDecoder {
-    public abstract XtaInstruction decode(int opcode, int pc);
+    public abstract XtaInstruction decode(int opcode, long pc);
     
     public static XtaInstructionDecoder createInstructionDecoder(
     		XeLoader.Architecture architecture) {

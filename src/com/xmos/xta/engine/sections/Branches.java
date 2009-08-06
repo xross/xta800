@@ -7,19 +7,20 @@ import com.xmos.util.ByteArrayManipulation;
 import com.xmos.xeloader.XeLoader;
 import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Notifier;
+import com.xmos.xta.engine.instructions.XtaInstruction;
 
 public class Branches extends Section {	
-	private HashMap<Integer, TreeSet<Integer>> m_branches;
+	private HashMap<Long, TreeSet<Long>> m_branches;
 
 	Branches(int nodeId, int coreId, Notifier notifier) {
 		super(nodeId, coreId, notifier);
 
-		m_branches = new HashMap<Integer, TreeSet<Integer>>(); 
+		m_branches = new HashMap<Long, TreeSet<Long>>(); 
 	}
 	
-	boolean add(CommandSource src, int fromPc, int toPc) {
+	boolean add(CommandSource src, long fromPc, long toPc) {
 		if (!m_branches.containsKey(fromPc)) {
-			TreeSet<Integer> toPcs = new TreeSet<Integer>();
+			TreeSet<Long> toPcs = new TreeSet<Long>();
 			toPcs.add(toPc);
 			m_branches.put(fromPc, toPcs);
 			return true;
@@ -36,7 +37,7 @@ public class Branches extends Section {
 		}	
 	}
 	
-	boolean remove(CommandSource src, int fromPc) {
+	boolean remove(CommandSource src, long fromPc) {
 		if (m_branches.containsKey(fromPc)) {
 			m_branches.remove(fromPc);
 			return true;
@@ -48,7 +49,7 @@ public class Branches extends Section {
 	}
 
 	
-	Map<Integer, TreeSet<Integer>> get() {
+	Map<Long, TreeSet<Long>> get() {
 		return m_branches;
 	}
 		
@@ -64,9 +65,9 @@ public class Branches extends Section {
 		try {
 			int byteIndex = 0;
 	        while (byteIndex < data.length) {        	
-	        	int fromPc = ByteArrayManipulation.readInt(data, byteIndex);
+	        	long fromPc = XtaInstruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
 	        	byteIndex += 4;        	
-	        	int toPc = ByteArrayManipulation.readInt(data, byteIndex);
+	        	long toPc = XtaInstruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
 	        	byteIndex += 4;
 	        	
 	    		add(src, fromPc, toPc);
