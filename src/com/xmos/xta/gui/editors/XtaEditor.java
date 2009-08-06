@@ -50,6 +50,7 @@ import com.xmos.xta.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.dialogs.InstructionTime;
+import com.xmos.xta.sourcemapper.AssemblyLine;
 
 public class XtaEditor extends TextEditor implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
@@ -76,7 +77,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
     public static final String ConstrainExcludeID    = "com.xmos.xta.gui.action.ConstrainExclude";
     public static final String SelectPathsID         = "com.xmos.xta.gui.action.ShowPaths";
 
-    private static final String fnopString = "    ------- \tFNOP\n";
+    private static final String fnopString = AssemblyLine.getLeadingWhiteSpace() + " FNOP\n";
     
     private Composite m_parent;
     private Action m_showStartPointAction;

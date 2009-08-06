@@ -168,9 +168,10 @@ public class InfiniteLoopNode extends Node {
 	
 	public Set<InstructionNode> getEndNodes() {
 		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		for(Node loop : m_loops){
-			set.addAll(loop.getEndNodes());
-		}
+		//for(Node loop : m_loops){
+		//	set.addAll(loop.getEndNodes());
+		//}
+		set.addAll(m_loopHeader.getEndNodes());
 		return set;
 	}
 }

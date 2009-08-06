@@ -10,6 +10,15 @@ public class AssemblyLine implements Line {
 	
 	private Map<String, Integer> m_labels;
 	private static final int WIDTH = 20;
+	
+	public static String getLeadingWhiteSpace(){
+		StringBuffer sb = new StringBuffer();
+		for(int i=0; i< WIDTH; i++){
+			sb.append(" ");
+		}
+		return sb.toString();
+	}
+	
 	private static final String m_resourceName[] = {
 		"PORT", "TIMER", "CHANEND",	"SYNC", "THREAD",
 		"LOCK", "CLKBLK", "COPROC", "INVALID", "INVALID",
@@ -47,6 +56,7 @@ public class AssemblyLine implements Line {
 	}
 
 	public String getPreText(){
+		
 		String preText = "";
 		
 		for(String key : m_labels.keySet()){

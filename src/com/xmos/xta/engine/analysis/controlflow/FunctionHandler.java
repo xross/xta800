@@ -92,15 +92,22 @@ public class FunctionHandler {
 		}				
 
 		for(InstructionNode functionStart : getKnownFuncStarts()){
+			
 			NullNode nullNode = new NullNode();
 			TreeSet<Node> terminals = new TreeSet<Node>();
 			findTerminals(functionStart, terminals);
+			
 			functionToEndPoints.put(functionStart.getStartPc(), terminals);
 			
 			int count = 0;
+			int nullNodeCount = 0;
 			for(Node terminal : terminals){
-				if(!terminal.isNullNode())
+				if(!terminal.isNullNode()){
 					count ++;
+				} else {
+					nullNode = (NullNode) terminal;
+					nullNodeCount++;
+				}
 			}
 
 			for(Node terminal : terminals){
@@ -110,10 +117,18 @@ public class FunctionHandler {
 						inst.setUnresolved(true);
 					}
 				}
-				if(count > 1){
-					if(!terminal.isNullNode())
-						CommonMethods.connect(nullNode, terminal);
+				if(nullNodeCount == 1){
+					if(count > 0){
+						if(!terminal.isNullNode())
+							CommonMethods.connect(nullNode, terminal);
+					}
+				} else {
+					if(count > 1){
+						if(!terminal.isNullNode())
+							CommonMethods.connect(nullNode, terminal);
+					}
 				}
+				
 			}
 		}
 		return true;
