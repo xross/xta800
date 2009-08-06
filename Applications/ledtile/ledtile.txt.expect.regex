@@ -1,17 +1,46 @@
-Route\(0\) path: watchdog to watchdog
-    Pass with \d+ unknowns, Slack: \d+\.\d+ns, Required: \d+\.\d+ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
-    Complete paths: \d+, Unresolved paths: 0
+Route\(0\) function: ledreformat_process_mbi5026
+    No Timing Specified
 
-Route\(1\) path: recieve_local_node to recieve_local_node
-    Pass with \d+ unknowns, Slack: \d+\.\d+ns, Required: \d+\.\d+ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
-    Complete paths: \d+, Unresolved paths: 0
+Route\(1\) path: watchdog to watchdog
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
 
-Route\(2\) path: recieve_external_0 to recieve_external_0
-    Pass with \d+ unknowns, Slack: \d+\.\d+ns, Required: \d+\.\d+ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
-    Complete paths: \d+, Unresolved paths: 0
+Route\(2\) path: recieve_local_node to recieve_local_node
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
 
-Route\(3\) path: recieve_external_1 to recieve_external_1
-    Pass with \d+ unknowns, Slack: \d+\.\d+ns, Required: \d+\.\d+ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
-    Complete paths: \d+, Unresolved paths: 0
+Route\(3\) path: recieve_external_0 to recieve_external_0
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
 
-Pass, Min Frequency: \d+ Mhz
+Route\(4\) path: recieve_external_0 to recieve_external_0
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+
+Route\(5\) path: recieve_external_0 to recieve_external_0
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+
+Route\(6\) path: recieve_external_0 to recieve_external_0
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+
+Route\(7\) path: recieve_external_0 to recieve_external_0
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+
+Route\(8\) path: recieve_external_0 to recieve_external_0
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+
+Route\(9\) path: recieve_external_1 to recieve_external_1
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+
+Route\(10\) path: recieve_external_1 to recieve_external_1
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+
+Route\(11\) path: recieve_external_1 to recieve_external_1
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+
+Route\(12\) path: recieve_external_1 to recieve_external_1
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+
+Route\(13\) path: recieve_external_1 to recieve_external_1
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+
+Route\(14\) path: recieve_external_1 to recieve_external_1
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+
+Fail, Timing Unspecified
