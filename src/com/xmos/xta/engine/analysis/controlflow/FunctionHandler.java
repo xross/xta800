@@ -51,7 +51,7 @@ public class FunctionHandler {
 		
 		for (InstructionNode instruction : m_instDecoder.getInstructions() ){
 			
-			
+
 			assert(instruction.getInstructions().size() == 1);
 			XtaInstruction inst = instruction.getInstructions().getFirst();
 			if(inst.isLink()){
@@ -85,7 +85,7 @@ public class FunctionHandler {
 			} 
 		}
 
-		for(Node node : m_instToFunc.keySet()){
+		for(InstructionNode node : m_instToFunc.keySet()){
 			if(!canReturn(node)){
 				CommonMethods.disconnect(m_instToFunc.get(node).getNextNode(), m_instToFunc.get(node));
 			}
@@ -96,7 +96,6 @@ public class FunctionHandler {
 			NullNode nullNode = new NullNode();
 			TreeSet<Node> terminals = new TreeSet<Node>();
 			findTerminals(functionStart, terminals);
-			
 			functionToEndPoints.put(functionStart.getStartPc(), terminals);
 			
 			int count = 0;
@@ -109,7 +108,6 @@ public class FunctionHandler {
 					nullNodeCount++;
 				}
 			}
-
 			for(Node terminal : terminals){
 				if(terminal.isInstructionNode()){
 					InstructionNode inst = (InstructionNode)terminal;
@@ -130,6 +128,9 @@ public class FunctionHandler {
 				}
 				
 			}
+			terminals = new TreeSet<Node>();
+			findTerminals(functionStart, terminals);
+			assert(terminals.size()<2);
 		}
 		return true;
 	}

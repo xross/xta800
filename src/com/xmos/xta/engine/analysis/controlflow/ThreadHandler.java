@@ -61,17 +61,29 @@ public class ThreadHandler {
 			findTerminals(threadStart, new TreeSet<Node>(), terminals);
 			NullNode nullNode = new NullNode();
 			threadToEndPoints.put(threadStart.getStartPc(), terminals);
-			
+			int nullNodeCount = 0;
 			int count = 0;
 			for(Node terminal : terminals){
-				if(!terminal.isNullNode())
-				count ++;
+				if(!terminal.isNullNode()){
+					count ++;
+				} else {
+					nullNode = (NullNode) terminal;
+					nullNodeCount++;
+				}
 			}
-			
-			if(count > 1){
-				for(Node terminal : terminals){
-					if(!terminal.isNullNode())
-					CommonMethods.connect(nullNode, terminal);
+			if(nullNodeCount == 1){
+				if(count > 0){
+					for(Node terminal : terminals){
+						if(!terminal.isNullNode())
+						CommonMethods.connect(nullNode, terminal);
+					}
+				}
+			} else {
+				if(count > 1){
+					for(Node terminal : terminals){
+						if(!terminal.isNullNode())
+						CommonMethods.connect(nullNode, terminal);
+					}
 				}
 			}
 		}

@@ -54,10 +54,10 @@ public class StructuralAnalysisEngine {
 		setUpPatternMatcher();
 	}
 
-	public boolean analyse(CommandSource src, Engine engine, TreeMap<String, InstructionNode> functionNames, 
+	public boolean analyse(CommandSource src, Engine engine, TreeMap<String, LinkedList<InstructionNode>> treeMap, 
 			Map<Long, TreeSet<Node>> pcToEndPoints) {
 		m_functionStartPcs = new TreeMap<Long, FunctionNode>();
-		return buildStructureGraphs(src, engine, functionNames, pcToEndPoints);
+		return buildStructureGraphs(src, engine, treeMap, pcToEndPoints);
 	}
 
 	public StructureGraph getStructureGraph() {
@@ -106,8 +106,7 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	private boolean buildStructureGraphs(CommandSource src, Engine engine, TreeMap<String,
-			InstructionNode> treeMap, Map<Long, TreeSet<Node>> pcToEndPoints) {
+	private boolean buildStructureGraphs(CommandSource src, Engine engine, TreeMap<String, LinkedList<InstructionNode>> treeMap, Map<Long, TreeSet<Node>> pcToEndPoints) {
 		
 		Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
 		
@@ -143,7 +142,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	private Collection<FunctionNode> buildGraph(Collection<InstructionNode> graphStartNodes, Map<Long, FunctionNode> startPcs,
-			Engine engine, boolean isFunction, TreeMap<String, InstructionNode> treeMap, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects) {
+			Engine engine, boolean isFunction, TreeMap<String, LinkedList<InstructionNode>> treeMap, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects) {
 
 		Collection<FunctionNode> graphs = new TreeSet<FunctionNode>();
 
@@ -259,11 +258,12 @@ public class StructuralAnalysisEngine {
 	}
 
 	private String getFunctionName(Node graphStart,
-			TreeMap<String, InstructionNode> treeMap) {
+			TreeMap<String, LinkedList<InstructionNode>> treeMap) {
 		for(String functionName : treeMap.keySet()){
-			InstructionNode instNode = treeMap.get(functionName);
-			if(instNode.getStartPc() == graphStart.getStartPc()){
-				return functionName;
+			for(InstructionNode fnInst : treeMap.get(functionName)){
+				if(fnInst.getStartPc() == graphStart.getStartPc()){
+					return functionName;
+				}
 			}
 		}
 		assert(false);

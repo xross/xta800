@@ -32,7 +32,7 @@ public class SourceMapper {
 	
 	private InstructionDecoder m_instructionDecoder;
 	private Set<InstructionNode> m_starts;
-	private Map<String, InstructionNode> m_functionNames;
+	private TreeMap<String, LinkedList<InstructionNode>> m_functionNames;
 	private Map<Long, AssemblyLine> m_pcToAsm;
 	private Map<Long, Function> m_pcToFunction;
 	private Map<String, String> m_functionToFile;
@@ -41,7 +41,7 @@ public class SourceMapper {
 	
     public SourceMapper(XeLoader xeLoader, int nodeId, int coreId,
 			Set<InstructionNode> starts, FileFinder fileFinder, InstructionDecoder instructionDecoder, 
-			TreeMap<String, InstructionNode> treeMap, Map<String, Long> labels) {
+			TreeMap<String, LinkedList<InstructionNode>> treeMap, Map<String, Long> labels) {
     	m_labels = labels;
     	m_fileFinder = fileFinder;
         m_instructionDecoder = instructionDecoder;
@@ -235,12 +235,17 @@ public class SourceMapper {
     }
     
     private String getFunctionName(InstructionNode inst) {
-		for(String functionName : m_functionNames.keySet()){
-			if(m_functionNames.get(functionName).getStartPc() == inst.getStartPc()){
-				return functionName;
-			}
+    	
+    	for(String functionName : m_functionNames.keySet()){
+    		for(InstructionNode fnInst : m_functionNames.get(functionName)){
+				if(fnInst.getStartPc() == inst.getStartPc()){
+					return functionName;
+				}
+    		}
 		}
 		//FIXME
+		System.err.println("cound not find the function corresponding to " + inst.getXtaInstruction());
+		
 		assert(false);
 		return "";
 	}

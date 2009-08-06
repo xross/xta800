@@ -24,7 +24,6 @@ import com.xmos.xta.engine.analysis.controlflow.InstructionDecoder;
 import com.xmos.xta.engine.analysis.controlflow.SuccessorAdder;
 import com.xmos.xta.engine.analysis.controlflow.ThreadHandler;
 import com.xmos.xta.engine.analysis.controlflow.UnreachableCodeFinder;
-import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
@@ -75,14 +74,14 @@ public class Engine implements Notifier {
 	private NodeCoreCollection<SourceMapper> m_sourceMapper;
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
 	private NodeCoreCollection<InstructionDecoder> m_instructionDecoder;
-	private NodeCoreCollection<TreeMap<String, InstructionNode>> m_functionNames;
+	private NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>> m_functionNames;
 	private Set<String> m_recursiveFunctions;
 	
 	public Engine(Config config) {		
 		m_sourceMapper = new NodeCoreCollection<SourceMapper>();
 		m_structuralGraph = new NodeCoreCollection<StructureGraph>();
 		m_instructionDecoder = new NodeCoreCollection<InstructionDecoder>();
-		m_functionNames = new NodeCoreCollection<TreeMap<String, InstructionNode>>();
+		m_functionNames = new NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>>();
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
 		m_numRoutesLastAnalysed = 0;
@@ -160,15 +159,7 @@ public class Engine implements Notifier {
 	}
 		
 	public Set<String> getFunctionNames() {
-		TreeMap<String, InstructionNode> functionNames = m_functionNames.get(m_nodeId, m_coreId);
-		if (functionNames != null) {
-		    return functionNames.keySet();
-	    }
-		return new TreeSet<String>();
-	}
-	
-	public Set<String> getFunctionNames(int nodeId, int coreId){
-		TreeMap<String, InstructionNode> functionNames = m_functionNames.get(nodeId, coreId);
+		TreeMap<String, LinkedList<InstructionNode>> functionNames = m_functionNames.get(m_nodeId, m_coreId);
 		if (functionNames != null) {
 		    return functionNames.keySet();
 	    }
@@ -983,14 +974,14 @@ public class Engine implements Notifier {
 		notify(src, Notifier.HOLD_MESSAGES, "");
 		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
 		NodeCoreCollection<InstructionDecoder> newInstructionDecoder = new NodeCoreCollection<InstructionDecoder>();
-		NodeCoreCollection<TreeMap<String, InstructionNode>> newFunctionNames = new NodeCoreCollection<TreeMap<String, InstructionNode>>();
+		NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>> newFunctionNames = new NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>>();
 		NodeCoreCollection<SourceMapper> newSourceMappers = new NodeCoreCollection<SourceMapper>();
 		
 		for (int nodeId : xeLoader.getNodeIds()){
 			for (int coreId : xeLoader.getCoreIds(nodeId)){
 				InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config);
 
-				newFunctionNames.add(nodeId, coreId, new TreeMap<String, InstructionNode>());
+				newFunctionNames.add(nodeId, coreId, new TreeMap<String, LinkedList<InstructionNode>>());
 				
 				if (!id.decode()) 
 					return false;
@@ -1053,15 +1044,17 @@ public class Engine implements Notifier {
 	}
 	
 	private void setBranchTargets(InstructionDecoder id,
-			TreeMap<String, InstructionNode> treeMap) {
+			TreeMap<String, LinkedList<InstructionNode>> treeMap) {
 		for(InstructionNode inst : id.getInstructions()){
 			if(inst.getXtaInstruction().getBranchPcRelative()){
 				long branchTarget = inst.getXtaInstruction().getBranchPcRelativeTargetPc();
 				inst.getXtaInstruction().setBranchPcRelativeTargetFunction("0x" + Long.toHexString(branchTarget));
 				for(String fn : treeMap.keySet()){
-					if(treeMap.get(fn).getStartPc() == branchTarget){
-						inst.getXtaInstruction().setBranchPcRelativeTargetFunction(fn);
-						break;
+					for(InstructionNode fnInst : treeMap.get(fn)){
+						if(fnInst.getStartPc() == branchTarget){
+							inst.getXtaInstruction().setBranchPcRelativeTargetFunction(fn);
+							break;
+						}
 					}
 				}
 			}
@@ -1070,7 +1063,7 @@ public class Engine implements Notifier {
 	}
 
 	private void ensureAllFunctionsAreNamed(SymbolTable symbolTable,
-			TreeMap<String, InstructionNode> treeMap,
+			TreeMap<String, LinkedList<InstructionNode>> treeMap,
 			Collection<InstructionNode> funcStarts, Set<InstructionNode> threadStarts, Map<String, Long> labelToPc ) {
 		
 		Map<Long, String> pcToLabel = new HashMap<Long, String>();
@@ -1081,33 +1074,34 @@ public class Engine implements Notifier {
 		
 		//TODO test this properly
 		for(InstructionNode inst : funcStarts){
-
+			
 			String name = symbolTable.functionName(inst.getStartPc());
 			String label = pcToLabel.get(inst.getXtaInstruction().getPc());
 			
 			if(treeMap.containsKey(name)){
 				//the one with the lower pc will stay in the set and the other will take an auto-generated name.
 				
-				InstructionNode instNode = treeMap.get(name);
-				
-				if (instNode.getStartPc() < inst.getStartPc()){
-					if (label != null){
-						treeMap.put(label, inst);
+				LinkedList<InstructionNode> instNodes = new LinkedList<InstructionNode>(treeMap.get(name));
+				for(InstructionNode instNode : instNodes){
+					if (instNode.getStartPc() < inst.getStartPc()){
+						if (label != null){
+							addToMap(treeMap, inst, label);
+						} else {
+							name = "unnamed_function_at_0x" + Long.toHexString(inst.getStartPc());
+							addToMap(treeMap, inst, name);
+						}
+						
+					} else if(instNode.getStartPc() > inst.getStartPc()){
+						String newName = "unnamed_function_at_0x" + Long.toHexString(instNode.getStartPc());
+						addToMap(treeMap, instNode, newName);
+						addToMap(treeMap, inst, name);
 					} else {
-						name = "unnamed_function_at_0x" + Long.toHexString(inst.getStartPc());
-						treeMap.put(name, inst);
+						assert(false);
 					}
-					
-				} else if(instNode.getStartPc() > inst.getStartPc()){
-					String newName = "unnamed_function_at_0x" + Long.toHexString(instNode.getStartPc());
-					treeMap.put(newName, instNode);
-					treeMap.put(name, inst);
-				} else {
-					assert(false);
 				}
 			} else {
 				assert(!treeMap.containsKey(name));
-				treeMap.put(name, inst);
+				addToMap(treeMap, inst, name);
 			}
 		}
 		for(InstructionNode inst : threadStarts){
@@ -1115,13 +1109,22 @@ public class Engine implements Notifier {
 			String name = symbolTable.functionName(inst.getStartPc());
 			if(treeMap.containsKey(name)){
 				name = "unnamed_thread_at_0x" + Long.toHexString(inst.getStartPc());
-				treeMap.put(name, inst);
+				addToMap(treeMap, inst, name);
 			} else {
 				assert(!treeMap.containsKey(name));
-				treeMap.put(name, inst);
+				addToMap(treeMap, inst, name);
 			}
 		}
-		
+	}
+
+	private void addToMap(TreeMap<String, LinkedList<InstructionNode>> treeMap,
+			InstructionNode inst, String name) {
+		LinkedList<InstructionNode> list = treeMap.get(name);
+		if(list == null){
+			list = new LinkedList<InstructionNode>();
+		}
+		list.add(inst);
+		treeMap.put(name, list);
 	}
 	
 	private boolean functionExists(String functionName) {
