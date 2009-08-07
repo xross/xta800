@@ -7,10 +7,10 @@ function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns main
 .    .    .    function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns f
 .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 20\) / \d+.\d+ns \(x 20\) 
 .    .    .    .    cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 20\) 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
 .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
 .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 20\) / \d+.\d+ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 20\) 
 .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 20\) / \d+.\d+ns \(x 20\) 
 .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 20\) / \d+.\d+ns \(x 20\) 
 .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
@@ -24,10 +24,10 @@ function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns main
 .    .    .    function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns f
 .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 20\) / \d+.\d+ns \(x 20\) 
 .    .    .    .    cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 6\) / \d+.\d+ns \(x 6\) 
 .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 4\) / \d+.\d+ns \(x 4\) 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 2\) / \d+.\d+ns \(x 2\) 
 .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 8\) / \d+.\d+ns \(x 8\) 
+.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 2\) / \d+.\d+ns \(x 2\) 
+.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 6\) / \d+.\d+ns \(x 6\) 
 .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 20\) / \d+.\d+ns \(x 20\) 
 .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 20\) / \d+.\d+ns \(x 20\) 
 .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
@@ -41,10 +41,10 @@ function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns main
 .    .    .    function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns f
 .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 20\) / \d+.\d+ns \(x 20\) 
 .    .    .    .    cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 20\) 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
 .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
 .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 20\) / \d+.\d+ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 20\) 
 .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 20\) / \d+.\d+ns \(x 20\) 
 .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 20\) / \d+.\d+ns \(x 20\) 
 .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
