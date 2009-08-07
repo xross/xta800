@@ -18,6 +18,9 @@ INCDIRS = \
 
 LIBS    = \
   $(XMOS_ROOT)/infr_libs_java/$(BINEXP)/frontendlib$(LIBEXT) \
+  $(XMOS_ROOT)/infr_libs_cpp/$(BINEXP)/ElfHandler$(LIBEXT) \
+  $(XMOS_ROOT)/infr_libs_cpp/$(BINEXP)/XmosBinaryHandler$(LIBEXT) \
+  $(XMOS_ROOT)/infr_libs_cpp/$(BINEXP)/XmlParser$(LIBEXT) \
   $(XMOS_ROOT)/infr_libs_cpp/$(BINEXP)/ErrorHandler$(LIBEXT) \
   $(XMOS_ROOT)/infr_libs_cpp/$(BINEXP)/StringLibrary$(LIBEXT)
 

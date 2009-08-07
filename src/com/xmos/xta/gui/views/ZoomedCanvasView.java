@@ -518,9 +518,14 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			public void mouseDoubleClick(MouseEvent e) {
 				ViewNode clickNode = getClickNode(e.x, e.y);
 				if (clickNode != null) {
-					clickNode.setFolded(!clickNode.isFolded(), false);
-    				m_renderControl.refresh();
-    				updateScrollBars();
+					Node node = clickNode.getTreeNode();
+					if (node.isFunctionNode()) {
+						clickNode.setFolded(!clickNode.isFolded(), false);
+						m_renderControl.refresh();
+    					updateScrollBars();
+					} else {
+						GuiEngine.setFocus(node);
+					}
     			}
 			}
 	    });
