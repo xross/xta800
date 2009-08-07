@@ -14,21 +14,15 @@ Route(4) path: interS2ThreadOutput to interS2ThreadOutput
     Fail with 5 unknowns, Num Paths: 3, Violation: 958.3ns, Required: 1041.7ns, Worst: 2000.0ns, Min Frequency: 767 Mhz
 
 Route(5) path: pwmThreadLow1 to pwmThreadHigh
-    Fail with 3 unknowns, Num Paths: 4, Violation: 680.0ns, Required: 600.0ns, Worst: 1280.0ns, Min Frequency: 851 Mhz
+    Fail with 2 unknowns, Num Paths: 4, Violation: 680.0ns, Required: 600.0ns, Worst: 1280.0ns, Min Frequency: 851 Mhz
 
 Route(6) path: pwmThreadLow2 to pwmThreadHigh
-    Fail with 8 unknowns, Num Paths: 8, Violation: 1200.0ns, Required: 600.0ns, Worst: 1800.0ns, Min Frequency: 1198 Mhz
+    Fail with 7 unknowns, Num Paths: 8, Violation: 1200.0ns, Required: 600.0ns, Worst: 1800.0ns, Min Frequency: 1198 Mhz
 
 Route(7) path: pwmThreadHigh to pwmThreadLow1
-    Fail with 20 unknowns, Num Paths: 16, Violation: 260.0ns, Required: 600.0ns, Worst: 860.0ns, Min Frequency: 572 Mhz
+    Fail with 18 unknowns, Num Paths: 16, Violation: 260.0ns, Required: 600.0ns, Worst: 860.0ns, Min Frequency: 572 Mhz
 
-Route(8) path: pwmThreadHigh to pwmThreadLow1
-    Fail with 20 unknowns, Num Paths: 16, Violation: 260.0ns, Required: 600.0ns, Worst: 860.0ns, Min Frequency: 572 Mhz
-
-Route(9) path: pwmThreadHigh to pwmThreadLow2
+Route(8) path: pwmThreadHigh to pwmThreadLow2
     Fail with 7 unknowns, Num Paths: 2, Violation: 720.0ns, Required: 600.0ns, Worst: 1320.0ns, Min Frequency: 878 Mhz
 
-Route(10) path: pwmThreadHigh to pwmThreadLow2
-    Fail with 7 unknowns, Num Paths: 2, Violation: 720.0ns, Required: 600.0ns, Worst: 1320.0ns, Min Frequency: 878 Mhz
-
-Fail, 7/11, Max Violation: 1200.0ns
+Fail, 5/9, Max Violation: 1200.0ns
