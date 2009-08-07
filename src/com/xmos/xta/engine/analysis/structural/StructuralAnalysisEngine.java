@@ -181,7 +181,7 @@ public class StructuralAnalysisEngine {
 				return null;
 			}
 			
-			if(basicBlocks.size() != 1 || initialPc != basicBlocks.iterator().next().getStartPc()) {
+			if (basicBlocks.size() != 1 || initialPc != basicBlocks.iterator().next().getStartPc()) {
 				System.out.println(dumpTree(functionName + "_after", basicBlocks));
 			}
 			assert(basicBlocks.size() == 1);

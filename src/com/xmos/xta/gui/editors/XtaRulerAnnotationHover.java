@@ -26,7 +26,7 @@ public class XtaRulerAnnotationHover implements IAnnotationHover {
 		return null;
 	}
 
-	private String getAnnotationString(int lineNumber) {
+	private String getAnnotationString(long lineNumber) {
 		boolean isStartPoint = isStartPoint(lineNumber);
 		boolean isEndPoint = isEndPoint(lineNumber);
 		if (isStartPoint && isEndPoint) {
@@ -44,7 +44,7 @@ public class XtaRulerAnnotationHover implements IAnnotationHover {
 		return null;
 	}
 
-	private String getWarningString(int lineNumber) {
+	private String getWarningString(long lineNumber) {
 		String warning = "";
 		for (Node nodes : m_editor.getUnknownsForLine(lineNumber)) {
 			warning += nodes.getAttributes().getUnknownDescription() + "\n";
@@ -52,14 +52,14 @@ public class XtaRulerAnnotationHover implements IAnnotationHover {
 		return warning;
 	}
 
-	private boolean isStartPoint(int lineNum) {
+	private boolean isStartPoint(long lineNum) {
 		if (lineNum == m_editor.getStartPointIndex())
 			return true;
 
 		return false;
 	}
 
-	private boolean isEndPoint(int lineNum) {
+	private boolean isEndPoint(long lineNum) {
 		if (lineNum == m_editor.getEndPointIndex())
 			return true;
 

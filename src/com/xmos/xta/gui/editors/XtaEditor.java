@@ -211,7 +211,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
 		updateHighlighting();
     }
 
-    public HashSet<Node> getUnknownsForLine(int lineNumber) {
+    public HashSet<Node> getUnknownsForLine(long lineNumber) {
 	    if (DEBUG) System.out.printf("XtaEditor: getUnknownsForLine\n"); 
 
     	HashSet<Node> nodes = new HashSet<Node>();
@@ -261,7 +261,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
 		return -1;
 	}
 	
-	public boolean isValidEndPoint(int lineNumber) {
+	public boolean isValidEndPoint(long lineNumber) {
 	    if (DEBUG) System.out.printf("XtaEditor: isValidEndPoint\n"); 
 		if (m_endPointLineIndexes.containsKey(lineNumber)) {
 			return true;
@@ -537,7 +537,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
     		if (fnopsAdded) {
     			inputSection.incrementIndex();
     		} else {
-	    		int lineNum = 0;
+	    		long lineNum = 0;
 	    		while (!fnopsAdded && (lineNum < inputSection.getNumLines())) {
 	    			InputLine line = inputSection.getLine(lineNum);
 	    			long index = line.getIndex();
@@ -682,7 +682,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
 		}
 	}
 
-	private HashSet<Long> getPcsForLine(int lineNumber) {
+	private HashSet<Long> getPcsForLine(long lineNumber) {
 		HashSet<Long> pcs = new HashSet<Long>();
 		HashMap<Long, InputLine> lineMap = getInput().getPcsToLines();
 		Iterator<Map.Entry<Long, InputLine>> lineIter = lineMap.entrySet().iterator();

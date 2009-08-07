@@ -271,7 +271,7 @@ public class RouteConstructor {
 		assert(cfgSanityCheck(workingSet));						
 		pruneGraphOfExcludedPaths(workingSet);
 		assert(cfgSanityCheck(workingSet));
-		if(!workingSet.isEmpty()){
+		if (!workingSet.isEmpty()){
 			assert(cfgSanityCheck(workingSet));
 			assert(cfgSanityCheck(workingSet));
 			
@@ -283,28 +283,13 @@ public class RouteConstructor {
 			
 			assert(workingSet.contains(newStart));
 			
+			//System.err.println( StructuralAnalysisEngine.dumpTree("route_before",  workingSet));
 			Node baseNode = reduceGraph(0, null, newStart, new TreeSet<Node>());
-			
-			/*
-			sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
-			
-			assert(cfgSanityCheck(workingSet));
-			
-			if(workingSet.size() != 1){
-				System.err.println( StructuralAnalysisEngine.dumpTree("route_after",  workingSet));
-			}
-			
-			assert(workingSet.size() == 1);
-			
-			Node baseNode = workingSet.iterator().next();
-
-			*/
-			
 			sae.normaliseGraph(baseNode);
 			
 			assert(!baseNode.isInfiniteLoopNode());
 			
-			if(m_description.getMode() == RouteMode.PATH && baseNode.isInfiniteSelfLoopNode()){
+			if (m_description.getMode() == RouteMode.PATH && baseNode.isInfiniteSelfLoopNode()){
 				baseNode = ((InfiniteSelfLoopNode)baseNode).getLoop();
 			} 
 			
@@ -312,7 +297,7 @@ public class RouteConstructor {
 			newGraph.setParent(null);
 			
 			
-			if(!alreadyContainRoute(newGraph)){
+			if (!alreadyContainRoute(newGraph)){
 				m_routes.add(new Route(src, m_engine, newGraph, m_description));
 			}
 			
@@ -327,7 +312,7 @@ public class RouteConstructor {
 		
 		String before = StructuralAnalysisEngine.dumpTree("before", workingSet);
 		sae.createStructure(workingSet, startNode, m_engine, true, "Analysing route");
-		if(workingSet.size() != 1){
+		if (workingSet.size() != 1){
 			System.out.println(startNode);
 			System.out.println(before);
 			System.out.println(StructuralAnalysisEngine.dumpTree("broken", workingSet));
@@ -339,7 +324,7 @@ public class RouteConstructor {
 	private Node reduceFunctionGraph(int depth, Node parentNode, Node startNode, Set<Node> nextNodes){
 		Set<Node> workingSet = new TreeSet<Node>();
 		workingSet.add(startNode);
-		for(Node next : startNode.getNextNodes()){
+		for (Node next : startNode.getNextNodes()){
 			findFunction(depth, startNode, next, workingSet, nextNodes);
 		}
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
@@ -355,7 +340,7 @@ public class RouteConstructor {
 	
 	private void findFunction(int depth, Node parentNode, Node currentNode, Set<Node> seen, Set<Node> functionLasts){
 
-		if (seen.contains(currentNode))
+		if (seen.contains(currentNode) || currentNode.isNullNode())
 			return;
 		
 		if (isFunctionStart(currentNode) && !currentNode.isFunctionNode()) {
@@ -388,6 +373,7 @@ public class RouteConstructor {
 				allEndPointsRetsps = false;
 			}
 		}
+		
 		Node fn = null;
 		if (allEndPointsRetsps) {
 			String functionName = "unnamed function";
@@ -401,12 +387,13 @@ public class RouteConstructor {
 		} else {
 			fn = functionContents;
 		}
+		
 		seen.add(fn);
 		CommonMethods.disconnect(currentNode, parentNode);
 		CommonMethods.connect(fn, parentNode);
-			for (Node nextNext : newLasts) {
-				CommonMethods.connect(nextNext, fn);
-			}
+		for (Node nextNext : newLasts) {
+			CommonMethods.connect(nextNext, fn);
+		}
 			
 		return fn;
 	}

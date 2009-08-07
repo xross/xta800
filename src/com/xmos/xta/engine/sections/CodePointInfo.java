@@ -5,9 +5,9 @@ public class CodePointInfo {
     private String m_label;
     private String m_compilationDir;
     private String m_fileName;
-    private int m_lineNumber;
+    private long m_lineNumber;
     
-    public CodePointInfo(long pc, String label, String compilationDir, String fileName, int lineNumber) {
+    public CodePointInfo(long pc, String label, String compilationDir, String fileName, long lineNumber) {
     	m_pc = pc;
     	m_label = label;
     	m_compilationDir = compilationDir;

@@ -8,10 +8,10 @@ public class SourceLine implements Line {
 	
 	private String         m_line;
     private ArrayList<AssemblyLine> m_assembly;
-	private int             m_lineNumber;
+	private long            m_lineNumber;
 	private ArrayList<Long> m_statementPcs;
 	
-	public SourceLine(String line, int lineNumber) {
+	public SourceLine(String line, long lineNumber) {
 	    assert(line!=null);
 	    assert(lineNumber>0);
 		m_line = line;
