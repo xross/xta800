@@ -10,7 +10,7 @@ public class Xta {
 	    Console console = ConsoleFactory.buildConsole(engine);
 	    Notifier notifier = new ConsoleNotifier(console);
 		Shell shell = new Shell(console, engine, notifier, args);			
-		int numTimingViolations = shell.execute();		
-		System.exit(numTimingViolations);
+		int returnCode = shell.execute();
+		System.exit(returnCode);
 	}
 }
