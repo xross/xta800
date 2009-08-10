@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.patterns;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Set;
@@ -16,10 +16,10 @@ public class ConditionalPatternMatcher extends PatternMatcher {
 
 		if (currentNode.getNextNodesSize() < 2) {
 			return false;
-		} 
+		}
 		
 		Map<Node, Set<Node>> condNodeMap = new TreeMap<Node, Set<Node>>();
-		Set<Node> isOptionalSet = new HashSet<Node>();
+		Set<Node> isOptionalSet = new TreeSet<Node>();
 		for (Node node : currentNode.getNextNodes()) {
 			Set<Node> nodes = getConditionalDepth(node, 0, currentNode, condNodeMap, isOptionalSet);
 			if (nodes == null) {
@@ -52,7 +52,7 @@ public class ConditionalPatternMatcher extends PatternMatcher {
 		} else if (currentNode.getPrevNodesSize() > 1) {
 			Set<Node> condNodes = endNodeMap.get(currentNode);
 			if (condNodes == null) {
-				condNodes = new HashSet<Node>();
+				condNodes = new TreeSet<Node>();
 				endNodeMap.put(currentNode, condNodes);
 			}
 			if (depth == 0) {
@@ -61,7 +61,7 @@ public class ConditionalPatternMatcher extends PatternMatcher {
 			return condNodes;
 			
 		} else if (currentNode.getNextNodesSize() == 0) {
-			return new HashSet<Node>();
+			return new TreeSet<Node>();
 			
 		} else if (currentNode.getNextNodesSize() != 1) {
 			return null;

@@ -1,7 +1,5 @@
 package com.xmos.xta.gui.editors;
 
-import java.util.HashMap;
-
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
@@ -15,7 +13,6 @@ public class InputDisassembly implements IEditorInput {
     public static final String s_lineType = XtaDocumentPartitioner.DISASSEMBLY;
 
     private Input m_input;    
-    private HashMap<Long, InputLine> m_pcToLine;
     
     public InputDisassembly() {	
 		if (DEBUG) System.out.printf("InputDisassembly()\n");	
@@ -32,7 +29,7 @@ public class InputDisassembly implements IEditorInput {
         	for (AssemblyLine line : function.getChildern()) {
         		long pc = line.getLineNumber();
         		String str = "";
-        		if(firstLine){
+        		if (firstLine){
         			str = String.format("%s 0x%05x %s", line.getEmptyText(), pc, line.getText());
         			firstLine = false;
         		} else {
@@ -41,27 +38,19 @@ public class InputDisassembly implements IEditorInput {
         		String childRef = String.format("0x%05x", pc);
         		m_input.addLine(str, childRef, pc, lineIndex);
         		++lineIndex;
-            	m_input.addPcToSecion(pc, section);
+            	m_input.addPcToSection(pc, section);
         	}
         }
         updateLineNumberMapping();
-        m_pcToLine = new HashMap<Long, InputLine>();
-        for (InputSection inputSection : m_input.getSections()){
-        	m_pcToLine.putAll(inputSection.getPcs());
-        }
 	}
     
-    public HashMap<Long, InputLine> getPcsToLines(){
-    	return m_pcToLine;
-    }
-    
     public void updateLineNumberMapping() {
-		int lineIndex = 0;
+		long lineIndex = 0;
     	for (InputSection inputSection : m_input.getSections()) {
         	m_input.addLineNumberMapping(lineIndex, lineIndex + 1);
         	++lineIndex;
 
-        	int numInputLines = inputSection.getLines().size();
+        	long numInputLines = inputSection.getLines().size();
         	while (numInputLines > 0) {
             	m_input.addLineNumberMapping(lineIndex, lineIndex + 1);
         		++lineIndex;  

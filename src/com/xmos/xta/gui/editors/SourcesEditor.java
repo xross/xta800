@@ -63,11 +63,12 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 
 				for (int i = 0; i < getPageCount(); i++) {
 					XtaEditor editor = (XtaEditor)this.getEditor(i);
-					if (editor.hasHighlightedLines()) {
+					if (editor.hasHighlightedLines() && (i != m_disassemblyIndex)) {
 						setActivePage(i);
-						break;
+						return;
 					}
 				}
+				setActivePage(m_disassemblyIndex);
 				
 			} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 				while (getPageCount() > 0) {

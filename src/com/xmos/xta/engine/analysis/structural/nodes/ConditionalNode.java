@@ -74,7 +74,6 @@ public class ConditionalNode extends Node {
 	}
 	
 	public long getStartPc() {
-	//	assert(false);
 		return 0;
 	}
 
@@ -104,7 +103,8 @@ public class ConditionalNode extends Node {
 
 	public Node getOption(Case c, Node ignoreIterationsAboveCond) {
 		// Returns the best/worst case option of this conditional.
-		return getOption(c, ignoreIterationsAboveCond, m_options);
+		Node option = getOption(c, ignoreIterationsAboveCond, m_options);
+		return option;
     }
 	
 	public Node getUnsetOption(Case c, Node ignoreIterationsAboveCond) {
@@ -179,14 +179,13 @@ public class ConditionalNode extends Node {
 			return null;
 		
 		// Finds the best/worst case of the real options..
-		Status status = new Status();
 		Iterator<Node> iter = nodes.iterator();
 		Node caseNode = iter.next();		
-		double caseTime = caseNode.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveCond);
+		double caseTime = caseNode.getAttributes().getTimeTaken(c, new Status(), ignoreIterationsAboveCond);
 		
 		while (iter.hasNext()) {
 			Node node = iter.next();
-			double time = node.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveCond);
+			double time = node.getAttributes().getTimeTaken(c, new Status(), ignoreIterationsAboveCond);
 
 			switch (c) {
 			case WORST:

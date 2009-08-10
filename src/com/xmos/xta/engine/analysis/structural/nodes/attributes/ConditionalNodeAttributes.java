@@ -24,7 +24,8 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveCond) {
 		if (getCachedTimeTakenValid(c) && (ignoreIterationsAboveCond == null)) {
 			status.setStatus(getCachedTimeTakenStatus(c));		
-			return getCachedTimeTaken(c);
+			double timeTaken = getCachedTimeTaken(c);
+			return timeTaken;
 		}
 		
 		double value = 0;
