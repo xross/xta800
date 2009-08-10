@@ -2,7 +2,6 @@ package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Iterator;
@@ -214,7 +213,7 @@ public class ConditionalNode extends Node {
 
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
-		Collection<TimeDistributionBuckets> tdbs = new HashSet<TimeDistributionBuckets>();
+		Collection<TimeDistributionBuckets> tdbs = new TreeSet<TimeDistributionBuckets>();
 		for(Node node : m_options){
 			tdbs.add(node.getTimeSpread());
 		}
