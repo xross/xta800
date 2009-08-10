@@ -1,7 +1,7 @@
 package com.xmos.xta.console.commands.print;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
@@ -88,7 +88,7 @@ public class Structure extends Command {
     		if (m_nodeIdSet) {
     			nodes = getCollection(engine.getStructureGraph().getNode(m_nodeId));
     		} else {
-    			nodes = new HashSet<Node>();
+    			nodes = new TreeSet<Node>();
     			nodes.addAll(engine.getStructureGraph().getThreads());    			
     		}			
     		displayer.display(nodes);

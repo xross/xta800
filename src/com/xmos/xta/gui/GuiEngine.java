@@ -255,10 +255,8 @@ public class GuiEngine {
 	}
 
 	public static void setFocus(Node node) {
-		if (s_focusNodes != node) {
-			s_focusNodes = node;
-			broadcast(Broadcaster.BROADCAST_SET_FOCUS, "");
-		}
+		s_focusNodes = node;
+		broadcast(Broadcaster.BROADCAST_SET_FOCUS, "");
 	}
 
 	public static Node getFocus() {

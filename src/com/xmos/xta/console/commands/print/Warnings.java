@@ -31,12 +31,6 @@ public class Warnings extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console))
-			return;			    	
-
-		if (!validateRoutes(engine, console))
-			return;
-		
 		for (Route route : engine.getRoutes()) {
 		    displayRouteSummary(engine, console, route);
 		}		

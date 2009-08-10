@@ -9,11 +9,11 @@ public class XtaLineNumberRulerColumn extends LineNumberRulerColumn {
 		m_input = input;
 	}
 	
-	protected String createDisplayString(long line) {
-		if (m_input.getLineNumberMapping().containsKey(line)) {
-			long lineNumber = m_input.getLineNumberMapping().get(line);
+	protected String createDisplayString(int line) {
+		if (m_input.getLineNumberMapping().containsKey((long)line)) {
+			long lineNumber = m_input.getLineNumberMapping().get((long)line);
 			return Long.toString(lineNumber);
-		}		
+		}
 		return "";
     }
 }

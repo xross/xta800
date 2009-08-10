@@ -3,7 +3,7 @@ package com.xmos.xta.gui.editors;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -98,8 +98,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
     private InputLine m_startPointLine;
     private InputLine m_endPointLine;
     private Map<Long, InputLine> m_endPointLineIndexes;
-    private HashSet<Long> m_excludedIndexes;
-	private HashSet<XtaInstruction> m_previousFnops;
+    private TreeSet<Long> m_excludedIndexes;
+	private TreeSet<XtaInstruction> m_previousFnops;
 
     public XtaEditor(final String type, String fileName) {
 		if (DEBUG) System.out.printf("XtaEditor()\n");
@@ -115,9 +115,9 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
         m_hasHighlightedLines = false;
         
         m_endPointLineIndexes = new TreeMap<Long, InputLine>();
-        m_excludedIndexes = new HashSet<Long>();
+        m_excludedIndexes = new TreeSet<Long>();
         
-        m_previousFnops = new HashSet<XtaInstruction>();
+        m_previousFnops = new TreeSet<XtaInstruction>();
     }
 
     public void createPartControl(Composite parent) {
@@ -207,7 +207,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SET_FOCUS)) {
 			Node focusNode = GuiEngine.getFocus();
 			if (focusNode != null) {
-				showCodePoint(focusNode.getStartPc());
+				for (XtaInstruction instruction : focusNode.getInstructions()) {
+					boolean hit = showCodePoint(instruction.getPc());
+					if (hit) {
+						return;
+					}
+				}
 			}
 			
 		}
@@ -222,12 +227,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
 		updateHighlighting();
     }
 
-    public HashSet<Node> getUnknownsForLine(long lineNumber) {
+    public TreeSet<Node> getUnknownsForLine(long lineNumber) {
 	    if (DEBUG) System.out.printf("XtaEditor: getUnknownsForLine\n"); 
 
-    	HashSet<Node> nodes = new HashSet<Node>();
+    	TreeSet<Node> nodes = new TreeSet<Node>();
     	
-    	HashSet<Long> linePcs = getPcsForLine(lineNumber);
+    	TreeSet<Long> linePcs = getPcsForLine(lineNumber);
 		for (Node node : getSelectedRouteUnknowns()) {
 			if (linePcs.contains(node.getStartPc())) {
 				nodes.add(node);
@@ -469,9 +474,9 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
     private void updateFnops() {
 		if (DEBUG) System.out.printf("XtaEditor: updateFnops\n"); 
 		
-    	HashSet<XtaInstruction> toAdd = new HashSet<XtaInstruction>();
-    	HashSet<XtaInstruction> toRemove;
-    	HashSet<XtaInstruction> toKeep  = new HashSet<XtaInstruction>();
+    	TreeSet<XtaInstruction> toAdd = new TreeSet<XtaInstruction>();
+    	TreeSet<XtaInstruction> toRemove;
+    	TreeSet<XtaInstruction> toKeep  = new TreeSet<XtaInstruction>();
     	
    		final Collection<XtaInstruction> fnops = new Vector<XtaInstruction>();
    		for (Node node : m_selectedNodes) {
@@ -689,12 +694,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
 		if (route != null) {
             return route.getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN);
 		} else {
-			return new HashSet<Node>();
+			return new TreeSet<Node>();
 		}
 	}
 
-	private HashSet<Long> getPcsForLine(long lineNumber) {
-		HashSet<Long> pcs = new HashSet<Long>();
+	private TreeSet<Long> getPcsForLine(long lineNumber) {
+		TreeSet<Long> pcs = new TreeSet<Long>();
 		HashMap<Long, InputLine> lineMap = getInput().getPcsToLines();
 		Iterator<Map.Entry<Long, InputLine>> lineIter = lineMap.entrySet().iterator();
 		while (lineIter.hasNext()) {
@@ -721,7 +726,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
 	    ArrayList<Annotation> annotations = new ArrayList<Annotation>();
         final HashMap<Annotation, Position> annotationPositions = new HashMap<Annotation, Position>();		
 
-		HashSet<Long> unknownsSet = new HashSet<Long>();
+		TreeSet<Long> unknownsSet = new TreeSet<Long>();
 		for (Node node : getSelectedRouteUnknowns()) {
 			unknownsSet.add(node.getStartPc());
 		}
@@ -857,29 +862,42 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
 		return null;
 	}
 
-	private void showCodePoint(long pc) {
+	private boolean showCodePoint(long pc) {
+		IDocument document = getDocument();
+		if (m_type.equals(XtaDocumentPartitioner.DISASSEMBLY)) {
+			InputLine line = getInput().getPcsToLines().get(pc);
+			if (line != null) {
+				try {
+					int charOffset = document.getLineOffset((int)line.getIndex());
+					showLocation(charOffset, line.getIndex(), true);
+					return true;
+				} catch (BadLocationException e) {}
+			}
+			
+		} else {
+			InputSection section = getInput().getPcsToSection().get(pc);
+			if (section != null) {
+				try {
+					int charOffset = document.getLineOffset((int)section.getIndex());
+					showLocation(charOffset, section.getIndex(), false);
+					return true;
+				} catch (BadLocationException e) {}
+			}
+		}
+		return false;
+	}
+	
+	private void showLocation(int charOffset, long index, boolean expand) {
 		ISourceViewer viewer = getSourceViewer();
 		if (viewer == null)
 			return;
 
-		IDocument document = getDocument();
-		for (InputSection inputSection : getSections()) {
-			InputLine line = inputSection.getPcs().get(pc);
+		if (expand) {
+			m_projectionAnnotationModel.expandAll(charOffset, 1);
+		}
 
-			if (line != null) {
-				try {
-					int charOffset = document.getLineOffset((int)line.getIndex());
-					m_projectionAnnotationModel.expandAll(charOffset, 1);
-					
-					long topIndex = Math.max(0, line.getIndex() - 10);
-					viewer.setTopIndex((int)topIndex);
-					viewer.setRangeIndication(charOffset, 0, true);
-					viewer.removeRangeIndication();
-					
-				} catch (BadLocationException e) {}
-				return;
-			}
-    	}
+		long topIndex = Math.max(0, index - 10);
+		viewer.setTopIndex((int)topIndex);
 	}
 
 	private InputLine findCodeRefLineNum(Reference codeRef) {

@@ -29,7 +29,7 @@ public class Input {
 		return m_pcToLine;
     }
     
-	public void addPcToSecion(long pc, InputSection sec){
+	public void addPcToSection(long pc, InputSection sec){
 		m_pcToSection.put(pc, sec);
 	}
 	
@@ -76,7 +76,6 @@ class InputSection {
 	private ArrayList<InputLine> m_lines;
 	private ArrayList<InputLine> m_fnops;
 	private long m_index;
-	private HashMap<Long, InputLine> m_pcs;
 	private String m_headerType;
 	
 	public InputSection(String header, String headerCodeReference, long index, long lineNum, String headerType) {
@@ -86,7 +85,6 @@ class InputSection {
 		m_lines = new ArrayList<InputLine>();
 		m_fnops = new ArrayList<InputLine>();
 		m_index = index;
-		m_pcs = new HashMap<Long, InputLine>();
 	}
 	
 	public void addLine(String line, String codeReference, long pc, long index, Input input) {
@@ -95,10 +93,6 @@ class InputSection {
 		input.addPcToLine(pc, newLine);
 	}
 	
-	public HashMap<Long, InputLine> getPcs(){
-		return m_pcs;
-	}
-
 	public void addFnop(String line, long pc, long index, Input input) {
 		long offset = index - m_index - 1;
 		
