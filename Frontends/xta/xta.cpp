@@ -51,14 +51,46 @@ bool needToRun(int argc, char **argv)
 {
   // In the case when being simply called with "load XE exit" from xcc check
   // whether there are xta commands embedded that need to be run
-  if (argc == 4) {
-    if ((strcmp(argv[1], "load") == 0) && 
-        ((strcmp(argv[3], "-exit") == 0) ||
-         (strcmp(argv[3], "exit") == 0))) {
-      
-      if (!xeContainsXtaCommands(argv[2])) {
-        return false;
+  char *xe = 0;
+  std::string arg;
+  for (int i = 1; i < argc; i++) {
+    arg = argv[i];
+    if (arg == "load" || arg == "-load") {
+      if (i+1 >= argc || xe) {
+        return true;
       }
+      i++;
+      xe = argv[i];
+    } else if (arg == "exit" || arg == "-exit") {
+      return xe ? xeContainsXtaCommands(xe) : false;
+    } else if (arg == "print" || arg == "-print") {
+      if (i+1 >= argc) {
+        return true;
+      }
+      i++;
+      arg = argv[i];
+      if (arg != "warnings") {
+        return true;
+      }
+    } else if (arg == "config" || arg == "-config") {
+      if (i+1 >= argc) {
+        return true;
+      }
+      i++;
+      arg = argv[i];
+      if (arg != "Terror" && arg != "Werror") {
+        return true;
+      }
+      if (i+1 >= argc) {
+        return true;
+      }
+      i++;
+      arg = argv[i];
+      if (arg != "on" && arg != "off") {
+        return true;
+      }
+    } else {
+      return true;
     }
   }
   return true;
