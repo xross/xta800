@@ -46,12 +46,26 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 				
 			} else if (event.getProperty().equals(Broadcaster.BROADCAST_HIGHLIGHTS_UPDATED)) {
 				for (int i = 0; i < getPageCount(); i++) {
-					XtaEditor editor = (XtaEditor)this.getEditor(i);
+					XtaEditor editor = (XtaEditor)getEditor(i);
 					
 					if (editor.hasHighlightedLines()) {
 						setPageImage(i, Icons.getIcon("selected"));
 					} else {
 						setPageImage(i, null);
+					}
+				}
+				
+			} else if (event.getProperty().equals(Broadcaster.BROADCAST_SET_FOCUS)) {
+				XtaEditor activeEditor = (XtaEditor)getEditor(getActivePage());
+				if (activeEditor.hasHighlightedLines()) {
+					return;
+				}
+
+				for (int i = 0; i < getPageCount(); i++) {
+					XtaEditor editor = (XtaEditor)this.getEditor(i);
+					if (editor.hasHighlightedLines()) {
+						setActivePage(i);
+						break;
 					}
 				}
 				

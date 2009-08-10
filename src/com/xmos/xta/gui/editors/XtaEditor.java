@@ -179,7 +179,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
 
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SHOW_CODE_POINT)) {
 			Reference codePoint = GuiEngine.getCodePoint();
-			showCodePoint(codePoint);
+	    	if (m_type.equals(XtaDocumentPartitioner.SOURCE) ||
+	    		codePoint == null ||
+	    		!codePoint.getResolved()) {
+	    		return;
+	    	}
+			showCodePoint(codePoint.getPc());
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
 			updateUnknowns();
@@ -198,6 +203,12 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
 
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECTION_CHANGED)) {
 			updateSelection(GuiEngine.getSelectedNodes());
+			
+		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SET_FOCUS)) {
+			Node focusNode = GuiEngine.getFocus();
+			if (focusNode != null) {
+				showCodePoint(focusNode.getStartPc());
+			}
 			
 		}
 	}
@@ -846,31 +857,27 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
 		return null;
 	}
 
-	private void showCodePoint(Reference codePoint) {
-    	if ((codePoint == null) || !codePoint.getResolved() || m_type.equals(XtaDocumentPartitioner.SOURCE)) {
-    		return;
-    	}
-    	
+	private void showCodePoint(long pc) {
 		ISourceViewer viewer = getSourceViewer();
 		if (viewer == null)
 			return;
 
 		IDocument document = getDocument();
 		for (InputSection inputSection : getSections()) {
-			for (InputLine line : inputSection.getLines()) {
-				if ((line.getPc() == codePoint.getPc()) && !inputSection.isFnop(line.getOffset())) {
-					try {
-						int charOffset = document.getLineOffset((int)line.getIndex());
-						m_projectionAnnotationModel.expandAll(charOffset, 1);
-						
-						long topIndex = Math.max(0, line.getIndex() - 10);
-						viewer.setTopIndex((int)topIndex);
-						viewer.setRangeIndication(charOffset, 0, true);
-						viewer.removeRangeIndication();
-						
-					} catch (BadLocationException e) {}
-					return;
-				}
+			InputLine line = inputSection.getPcs().get(pc);
+
+			if (line != null) {
+				try {
+					int charOffset = document.getLineOffset((int)line.getIndex());
+					m_projectionAnnotationModel.expandAll(charOffset, 1);
+					
+					long topIndex = Math.max(0, line.getIndex() - 10);
+					viewer.setTopIndex((int)topIndex);
+					viewer.setRangeIndication(charOffset, 0, true);
+					viewer.removeRangeIndication();
+					
+				} catch (BadLocationException e) {}
+				return;
 			}
     	}
 	}

@@ -31,6 +31,7 @@ public class GuiEngine {
 	private static Reference s_codePoint;
 	private static String s_runMode;
 	private static List<Node> s_selectedNodes;
+	private static Node s_focusNodes;
 	private static Map<String, Map<Integer, GuiRouteProperties>> s_routeProperties;
 
 	public static final CommandSource s_guiCommandSrc = new CommandSource("GUI", 0);  
@@ -41,6 +42,7 @@ public class GuiEngine {
         s_broadcaster = new Broadcaster();        
         s_log = new GuiLog();
         s_selectedNodes = new ArrayList<Node>();
+        s_focusNodes = null;
 
         s_engine.setNotifier(s_notifier);
         s_routeProperties = new HashMap<String, Map<Integer, GuiRouteProperties>>();
@@ -248,6 +250,18 @@ public class GuiEngine {
 		s_codePoint = null;
 		s_startPoint = null;
 		s_endPoint = null;
+		s_focusNodes = null;
 		s_runMode = Notifier.RUN_MODE_FUNCTION;
+	}
+
+	public static void setFocus(Node node) {
+		if (s_focusNodes != node) {
+			s_focusNodes = node;
+			broadcast(Broadcaster.BROADCAST_SET_FOCUS, "");
+		}
+	}
+
+	public static Node getFocus() {
+		return s_focusNodes;
 	}
 }
