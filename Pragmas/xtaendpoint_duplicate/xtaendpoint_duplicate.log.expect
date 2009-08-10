@@ -1,3 +1,0 @@
-test.xc:9:1: warning: xta endpoint `SAME' and `SAME' refer to same endpoint
-xta: warning: duplicate endpoint: SAME at pc: 0x100c0
-xta: error: duplicate endpoint: DIFFERENT at pc: 0x100d8

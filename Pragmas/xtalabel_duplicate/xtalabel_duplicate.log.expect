@@ -1,2 +1,0 @@
-xta: warning: duplicate label: SAME at pc: 0x100b4
-xta: error: duplicate label: DIFFERENT at pc: 0x100c0

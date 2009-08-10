@@ -10,37 +10,7 @@ Route\(2\) path: recieve_local_node to recieve_local_node
 Route\(3\) path: recieve_external_0 to recieve_external_0
     Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
 
-Route\(4\) path: recieve_external_0 to recieve_external_0
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
-
-Route\(5\) path: recieve_external_0 to recieve_external_0
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
-
-Route\(6\) path: recieve_external_0 to recieve_external_0
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
-
-Route\(7\) path: recieve_external_0 to recieve_external_0
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
-
-Route\(8\) path: recieve_external_0 to recieve_external_0
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
-
-Route\(9\) path: recieve_external_1 to recieve_external_1
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
-
-Route\(10\) path: recieve_external_1 to recieve_external_1
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
-
-Route\(11\) path: recieve_external_1 to recieve_external_1
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
-
-Route\(12\) path: recieve_external_1 to recieve_external_1
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
-
-Route\(13\) path: recieve_external_1 to recieve_external_1
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
-
-Route\(14\) path: recieve_external_1 to recieve_external_1
+Route\(4\) path: recieve_external_1 to recieve_external_1
     Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
 
 Fail, Timing Unspecified
