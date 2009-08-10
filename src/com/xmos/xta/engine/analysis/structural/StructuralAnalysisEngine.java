@@ -344,11 +344,21 @@ public class StructuralAnalysisEngine {
 	}
 
 	private void collectCurrentGraphNodes(Node node, Collection<Node> seen) {
-		seen.add(node);
-		for (Node next : node.getNextNodes()) {
-			if (!seen.contains(next)) {
-				collectCurrentGraphNodes(next, seen);
+		Collection<Node> toDo = new TreeSet<Node>();
+		toDo.add(node);
+		
+		while (toDo.size() > 0) {
+			Collection<Node> nextToDo = new TreeSet<Node>();
+			for (Node doNode : toDo) {
+				seen.add(doNode);
+				
+				for (Node next : doNode.getNextNodes()) {
+					if (!seen.contains(next)) {
+						nextToDo.add(next);
+					}
+				}
 			}
+			toDo = nextToDo;
 		}
 	}
 
