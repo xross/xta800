@@ -1,6 +1,6 @@
 package com.xmos.xta.gui.views.info.unknowns;
 
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,7 +36,7 @@ public class UnknownsViewer extends InfoViewer {
 	}
 	
 	public void updateHighlighting(List<Node> selectedNodes) {
-		final Set<Node> allInstructionNodes = new HashSet<Node>();
+		final Set<Node> allInstructionNodes = new TreeSet<Node>();
    		for (Node node : selectedNodes) {
        		node.traverse(0, new DefaultNodeTraverser() {
        		    public boolean foundInstructionNode(Node node, int depth) {

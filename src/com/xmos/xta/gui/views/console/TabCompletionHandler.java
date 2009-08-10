@@ -23,7 +23,7 @@ public class TabCompletionHandler {
     	        
         // Copy the values and make them distinct, without otherwise
         // affecting the ordering. Only do it if the sizes differ.
-        Set<String> distinct = new HashSet<String>(candidates);
+        Set<String> distinct = new TreeSet<String>(candidates);
         if (distinct.size() != candidates.size()) {
             Collection<String> copy = new ArrayList<String>();
 

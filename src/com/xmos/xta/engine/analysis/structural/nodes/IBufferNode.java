@@ -1,7 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -12,7 +12,7 @@ public abstract class IBufferNode extends Node {
 	
 	IBufferSequence m_worstIbufferSequence;
 	Collection<IBufferSequence> m_ibufferSequences;
-	private HashSet<Integer> startBytes = new HashSet<Integer>();
+	private TreeSet<Integer> startBytes = new TreeSet<Integer>();
 	
 	public IBufferNode(){
 		super();

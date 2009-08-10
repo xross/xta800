@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
+import java.util.TreeSet;
 
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
@@ -14,7 +14,7 @@ public class UnreachableCodeFinder {
 	private Set<Node> m_unreachable;
 		
 	public UnreachableCodeFinder() {
-		m_unreachable = new HashSet<Node>();
+		m_unreachable = new TreeSet<Node>();
 	}
 	
 	public Collection<Node> getUnreachableCode(){
@@ -30,14 +30,14 @@ public class UnreachableCodeFinder {
 			Collection<InstructionNode> functionStarts){
 		m_unreachable.clear();
 		m_unreachable.addAll(id.getInstructions());
-		Set<Node> reachable = new HashSet<Node>();
+		Set<Node> reachable = new TreeSet<Node>();
 		for (Node node : threadStarts){
-			Set<Node> seen = new HashSet<Node>();
+			Set<Node> seen = new TreeSet<Node>();
 			explore(node , seen);
 			reachable.addAll(seen);
 		}
 		for (Node node : functionStarts){
-			Set<Node> seen = new HashSet<Node>();
+			Set<Node> seen = new TreeSet<Node>();
 			explore(node, seen);
 			reachable.addAll(seen);
 		}
