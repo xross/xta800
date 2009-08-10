@@ -16,16 +16,17 @@ $(TARGETDIR)/sid.o \
 $(TARGETDIR)/led_controller.o \
 $(TARGETDIR)/fft.o \
 $(TARGETDIR)/buffer.o \
+$(TARGETDIR)/pwm.o \
 $(TARGETDIR)/main.o
 
 $(TARGETDIR)/test.xe: $(OBJECTS)
-	xcc -o $(TARGETDIR)/test.xe $(OBJECTS)
+	xcc -g -o $(TARGETDIR)/test.xe $(OBJECTS)
 
 $(TARGETDIR)/%.o: %.c
 	xcc $(INCLUDES) -g -O3 -Wall -Werror -c -o "$@" "$<"
 
 $(TARGETDIR)/%.o: %.xc
-	xcc $(INCLUDES) -fxta-info -g -O3 -Wall -Werror -c -o "$@" "$<"
+	xcc $(INCLUDES) -g -O3 -Wall -Werror -c -o "$@" "$<"
 
 clean:
 	rm -rf $(OBJECTS)
