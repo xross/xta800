@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sstream>
-#include "XbHandler.h"
+#include "XBHandler.h"
 #include "ElfHandler.h"
 #include "XmosUtils.h"
 
