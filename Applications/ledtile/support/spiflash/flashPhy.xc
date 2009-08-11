@@ -67,12 +67,12 @@ void spi_device_id(unsigned &device_id_ref, out port p_flash_ss, buffered in por
     buffered out port:32 p_flash_clk, buffered out port:8 p_flash_mosi)
 {
   unsigned device_id;
-  unsigned null;
+  unsigned nullVar;
   p_flash_ss <: 0;
-  clockbyte(byterev(bitrev(SPI_RDID)), null);
+  clockbyte(byterev(bitrev(SPI_RDID)), nullVar);
 
-  null = 0;
-  clockword(null, device_id);
+  nullVar = 0;
+  clockword(nullVar, device_id);
   device_id_ref = bitrev(device_id);
   
   p_flash_ss <: 1;
@@ -84,9 +84,9 @@ void spi_status_reg(unsigned &status_reg_ref, out port p_flash_ss, buffered in p
     buffered out port:32 p_flash_clk, buffered out port:8 p_flash_mosi)
 {
   unsigned status_reg;
-  unsigned char null;
+  unsigned char nullVar;
   p_flash_ss <: 0;
-  clockbyte(byterev(bitrev(SPI_RDSR)), null);
+  clockbyte(byterev(bitrev(SPI_RDSR)), nullVar);
   clockbyte(0, status_reg);
   
   p_flash_ss <: 1;
@@ -102,12 +102,12 @@ void spi_status_reg(unsigned &status_reg_ref, out port p_flash_ss, buffered in p
 void spi_read(int ptr, unsigned char buffer[], int nbytes, out port p_flash_ss, buffered in port:8 p_flash_miso,
     buffered out port:32 p_flash_clk, buffered out port:8 p_flash_mosi)
 {
-  unsigned null;
+  unsigned nullVar;
   unsigned addr = bitrev(ptr) >> 8;
   p_flash_ss <: 0;
-  clockbyte(byterev(bitrev(SPI_READ_FAST)), null);
-  clock3byte(addr, null);
-  clockbyte(0, null);
+  clockbyte(byterev(bitrev(SPI_READ_FAST)), nullVar);
+  clock3byte(addr, nullVar);
+  clockbyte(0, nullVar);
   for (int i = 0; i < nbytes; i++)
     clockbyte(0, buffer[i]);
   
@@ -117,18 +117,18 @@ void spi_read(int ptr, unsigned char buffer[], int nbytes, out port p_flash_ss, 
 void spi_wordread(int wordptr, unsigned buffer[], int nwords,  out port p_flash_ss, buffered in port:8 p_flash_miso,
     buffered out port:32 p_flash_clk, buffered out port:8 p_flash_mosi)
 {
-  unsigned null;
+  unsigned nullVar;
   unsigned addr = bitrev(wordptr<<2) >> 8;
   p_flash_ss <: 0;
   sync(p_flash_ss);
-  clockbyte(byterev(bitrev(SPI_READ_FAST)), null);
-  clock3byte(addr, null);
-  clockbyte(0, null);
-  null = 0;
+  clockbyte(byterev(bitrev(SPI_READ_FAST)), nullVar);
+  clock3byte(addr, nullVar);
+  clockbyte(0, nullVar);
+  nullVar = 0;
   for (int i = 0; i < nwords; i++)
   {
     unsigned val;
-    clockword(null, val);
+    clockword(nullVar, val);
     buffer[i] = val;
   }
   p_flash_ss <: 1;
@@ -145,15 +145,15 @@ void spi_wordread(int wordptr, unsigned buffer[], int nwords,  out port p_flash_
 void spi_write(int baddr, const unsigned char buffer[], int nbytes, out port p_flash_ss, buffered in port:8 p_flash_miso,
     buffered out port:32 p_flash_clk, buffered out port:8 p_flash_mosi)
 {
-  unsigned null;
+  unsigned nullVar;
   unsigned addr = bitrev(baddr) >> 8;
   spi_write_enable(p_flash_ss, p_flash_miso, p_flash_clk, p_flash_mosi);
 
   p_flash_ss <: 0;
-  clockbyte(byterev(bitrev(SPI_PP)), null);
-  clock3byte(addr, null);
+  clockbyte(byterev(bitrev(SPI_PP)), nullVar);
+  clock3byte(addr, nullVar);
   for (int i = 0; i < nbytes; i++)
-    clockbyte(buffer[i], null);
+    clockbyte(buffer[i], nullVar);
   
   p_flash_ss <: 1;
   
@@ -163,17 +163,17 @@ void spi_write(int baddr, const unsigned char buffer[], int nbytes, out port p_f
 void spi_wordwrite(int waddr, const unsigned buffer[], int nwords, out port p_flash_ss, buffered in port:8 p_flash_miso,
     buffered out port:32 p_flash_clk, buffered out port:8 p_flash_mosi)
 {
-  unsigned null;
+  unsigned nullVar;
   unsigned addr = bitrev(waddr << 2) >> 8;
   spi_write_enable(p_flash_ss, p_flash_miso, p_flash_clk, p_flash_mosi);
 
   p_flash_ss <: 0;
-  clockbyte(byterev(bitrev(SPI_PP)), null);
-  clock3byte(addr, null);
+  clockbyte(byterev(bitrev(SPI_PP)), nullVar);
+  clock3byte(addr, nullVar);
   for (int i = 0; i < nwords; i++)
   {
     int bufdata = buffer[i];
-    clockword(bufdata, null);
+    clockword(bufdata, nullVar);
   }
   
   p_flash_ss <: 1;
@@ -186,9 +186,9 @@ void spi_wordwrite(int waddr, const unsigned buffer[], int nwords, out port p_fl
 void spi_write_enable(out port p_flash_ss, buffered in port:8 p_flash_miso,
     buffered out port:32 p_flash_clk, buffered out port:8 p_flash_mosi)
 {
-  unsigned char null;
+  unsigned char nullVar;
   p_flash_ss <: 0;
-  clockbyte(byterev(bitrev(SPI_WREN)), null);
+  clockbyte(byterev(bitrev(SPI_WREN)), nullVar);
   
   p_flash_ss <: 1;
 }
@@ -198,9 +198,9 @@ void spi_write_enable(out port p_flash_ss, buffered in port:8 p_flash_miso,
 void spi_write_disable(out port p_flash_ss, buffered in port:8 p_flash_miso,
     buffered out port:32 p_flash_clk, buffered out port:8 p_flash_mosi)
 {
-  unsigned null;
+  unsigned nullVar;
   p_flash_ss <: 0;
-  clockbyte(byterev(bitrev(SPI_WRDI)), null);
+  clockbyte(byterev(bitrev(SPI_WRDI)), nullVar);
   
   p_flash_ss <: 1;
 }
@@ -211,12 +211,12 @@ void spi_write_disable(out port p_flash_ss, buffered in port:8 p_flash_miso,
 void spi_unprotect(unsigned addr, out port p_flash_ss, buffered in port:8 p_flash_miso,
     buffered out port:32 p_flash_clk, buffered out port:8 p_flash_mosi)
 {
-  unsigned null;
+  unsigned nullVar;
   spi_write_enable(p_flash_ss, p_flash_miso, p_flash_clk, p_flash_mosi);
   addr = bitrev(addr) >> 8;
   p_flash_ss <: 0;
-  clockbyte(byterev(bitrev(SPI_SU)), null);
-  clock3byte(addr, null);
+  clockbyte(byterev(bitrev(SPI_SU)), nullVar);
+  clock3byte(addr, nullVar);
   p_flash_ss <: 1;
   spi_write_disable(p_flash_ss, p_flash_miso, p_flash_clk, p_flash_mosi);
 }
@@ -227,12 +227,12 @@ void spi_unprotect(unsigned addr, out port p_flash_ss, buffered in port:8 p_flas
 void spi_protect(unsigned addr, out port p_flash_ss, buffered in port:8 p_flash_miso,
     buffered out port:32 p_flash_clk, buffered out port:8 p_flash_mosi)
 {
-  unsigned null;
+  unsigned nullVar;
   spi_write_enable(p_flash_ss, p_flash_miso, p_flash_clk, p_flash_mosi);
   addr = bitrev(addr) >> 8;
   p_flash_ss <: 0;
-  clockbyte(byterev(bitrev(SPI_SP)), null);
-  clock3byte(addr, null);
+  clockbyte(byterev(bitrev(SPI_SP)), nullVar);
+  clock3byte(addr, nullVar);
   p_flash_ss <: 1;
   spi_write_disable(p_flash_ss, p_flash_miso, p_flash_clk, p_flash_mosi);
 }
@@ -243,13 +243,13 @@ void spi_protect(unsigned addr, out port p_flash_ss, buffered in port:8 p_flash_
 void spi_erase(int sector, out port p_flash_ss, buffered in port:8 p_flash_miso,
     buffered out port:32 p_flash_clk, buffered out port:8 p_flash_mosi)
 {
-  unsigned null;
+  unsigned nullVar;
   unsigned addr = bitrev(SPI_NUM_BYTES_IN_SECTOR * sector) >> 8;
   spi_write_enable(p_flash_ss, p_flash_miso, p_flash_clk, p_flash_mosi);
   
   p_flash_ss <: 0;  
-  clockbyte(byterev(bitrev(SPI_SE)), null);
-  clock3byte(addr, null);
+  clockbyte(byterev(bitrev(SPI_SE)), nullVar);
+  clock3byte(addr, nullVar);
   p_flash_ss <: 1;
 }
 
@@ -258,13 +258,13 @@ void spi_erase(int sector, out port p_flash_ss, buffered in port:8 p_flash_miso,
 void spi_blockerase(int baddr, out port p_flash_ss, buffered in port:8 p_flash_miso,
     buffered out port:32 p_flash_clk, buffered out port:8 p_flash_mosi)
 {
-  unsigned null;
+  unsigned nullVar;
   unsigned addr = bitrev(baddr) >> 8;
   spi_write_enable(p_flash_ss, p_flash_miso, p_flash_clk, p_flash_mosi);
   
   p_flash_ss <: 0;  
-  clockbyte(byterev(bitrev(SPI_BE)), null);
-  clock3byte(addr, null);
+  clockbyte(byterev(bitrev(SPI_BE)), nullVar);
+  clock3byte(addr, nullVar);
   p_flash_ss <: 1;
 }
 

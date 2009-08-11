@@ -20,7 +20,7 @@
 #pragma unsafe arrays
 int ethPhyRx(chanend c, s_packet &pkt, unsigned numbytes)
 {
-  int null;
+  int nullVar;
   int numwords = (numbytes >> 2) + 1;
   int bufindex = 0;
 
@@ -33,7 +33,7 @@ int ethPhyRx(chanend c, s_packet &pkt, unsigned numbytes)
 	  bufindex++;
   }
   // Absorb crc
-  getMiiData(null, c);
+  getMiiData(nullVar, c);
   // Receive Timestamp
   getMiiData(pkt.timestamp, c);
   pkt.timestamp = byterev(pkt.timestamp);
