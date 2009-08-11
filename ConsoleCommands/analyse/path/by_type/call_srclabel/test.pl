@@ -8,7 +8,7 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -march=$arch -fxta-info -g test.xc func.s -o $genDir/test.xe > $genDir/call_srclabel.log 2>&1");
+system("xcc -target=$target -march=$arch -g test.xc func.s -o $genDir/test.xe > $genDir/call_srclabel.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "-analyse path label1 label2 " .

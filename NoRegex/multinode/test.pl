@@ -7,7 +7,7 @@ my $arch    = shift(@ARGV);
 my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 if (!$noBuild) {
-        system("xcc -fxta-info -march=$arch -g test.xc 4XVB.xn -o $genDir/test.xe > $genDir/multinode.log 2>&1");
+        system("xcc -march=$arch -g test.xc 4XVB.xn -o $genDir/test.xe > $genDir/multinode.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .

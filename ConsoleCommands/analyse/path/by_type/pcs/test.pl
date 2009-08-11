@@ -8,7 +8,7 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -march=$arch -fxta-info -nostartfiles -g test.s -o $genDir/test.xe > $genDir/pcs.log 2>&1");
+system("xcc -target=$target -march=$arch -nostartfiles -g test.s -o $genDir/test.xe > $genDir/pcs.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "-analyse path 0x10040 0x10080 " .
