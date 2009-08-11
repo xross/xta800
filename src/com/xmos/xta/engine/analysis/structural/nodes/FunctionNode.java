@@ -32,18 +32,19 @@ public class FunctionNode extends IBufferNode {
 	public FunctionNode(Node function, String functionName) {
 		super();
 		
-		if(function.isSequenceNode()){
+		if (function.isSequenceNode()){
 			m_functionSequence = function.getChildren();
 		} else {
 			m_functionSequence = new LinkedList<Node>();
 			m_functionSequence.add(function);
 		}
 		
-		if(functionName == null){
+		if (functionName == null){
 			m_functionName = "Unnamed function " + functionId++;
 		} else {
 			m_functionName = functionName;
 		}
+		
 		m_branchTarget = m_functionSequence.get(0);
 		m_attributes = new NodeAttributes(this);
 	}
@@ -52,6 +53,7 @@ public class FunctionNode extends IBufferNode {
 		m_functionName = fn.m_functionName;
 		m_functionSequence = fn.m_functionSequence;
 		m_branchTarget = fn.m_branchTarget;
+		m_unresolved = fn.m_unresolved;
 		m_attributes = new NodeAttributes(this);
 	}
 	
@@ -64,6 +66,7 @@ public class FunctionNode extends IBufferNode {
 		fn.m_functionName = m_functionName;
 		fn.m_branchTarget = m_branchTarget;
 		fn.m_attributes = new NodeAttributes(fn);
+		fn.m_unresolved = m_unresolved;
 		if(m_functionSequence!= null){
 			List<Node> nodes = new LinkedList<Node>();
 			for(Node node : m_functionSequence){
@@ -214,8 +217,6 @@ public class FunctionNode extends IBufferNode {
 	}
 
 	public void insertFnops() {
-
-		
 	}
 
 	public TimeDistributionBuckets getTimeSpread() {
@@ -229,11 +230,14 @@ public class FunctionNode extends IBufferNode {
 	}
 	
 	public Set<InstructionNode> getEndNodes() {
-		return m_functionSequence.get(m_functionSequence.size()-1).getEndNodes();
+		if (m_functionSequence != null) {
+			return m_functionSequence.get(m_functionSequence.size()-1).getEndNodes();
+		} else {
+			return new TreeSet<InstructionNode>();
+		}
 	}
 
 	public void setFunctionName(String string) {
 		m_functionName = string;
-		
 	}
 }

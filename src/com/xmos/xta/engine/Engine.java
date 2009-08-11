@@ -40,7 +40,7 @@ import com.xmos.xta.engine.references.types.ReferenceTypeFactory;
 import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.engine.sections.CodePointInfo;
 import com.xmos.xta.engine.sections.CodePointTableInfo;
-import com.xmos.xta.engine.sections.SrcCommandInfo;
+import com.xmos.xta.engine.sections.SrcStringInfo;
 import com.xmos.xta.engine.sections.SrcLevelLoopInfo;
 import com.xmos.xta.engine.sections.Sections;
 import com.xmos.xta.engine.sections.SrcLabelTableInfo;
@@ -75,7 +75,6 @@ public class Engine implements Notifier {
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
 	private NodeCoreCollection<InstructionDecoder> m_instructionDecoder;
 	private NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>> m_functionNames;
-	private Set<String> m_recursiveFunctions;
 	
 	public Engine(Config config) {		
 		m_sourceMapper = new NodeCoreCollection<SourceMapper>();
@@ -97,7 +96,6 @@ public class Engine implements Notifier {
 		m_timeOut = -1;
 		m_numErrors = 0;
 		ReferenceTypeFactory.setEngine(this);
-		m_recursiveFunctions = new TreeSet<String>();
 	}
 
 	public void notify(CommandSource src, String message, String argument) {
@@ -161,7 +159,9 @@ public class Engine implements Notifier {
 	public Set<String> getFunctionNames() {
 		TreeMap<String, LinkedList<InstructionNode>> functionNames = m_functionNames.get(m_nodeId, m_coreId);
 		if (functionNames != null) {
-		    return functionNames.keySet();
+			Set<String> names = new TreeSet<String>(functionNames.keySet());
+			names.removeAll(getUnreachableFunctions());
+		    return names;
 	    }
 		return new TreeSet<String>();
 	}
@@ -956,7 +956,7 @@ public class Engine implements Notifier {
 		return m_sections.getThreadStopPoints(m_nodeId, m_coreId);
 	}	
 	
-	public Collection<SrcCommandInfo> getSrcLevelCommands() {
+	public Collection<SrcStringInfo> getSrcLevelCommands() {
 		return m_sections.getSrcLevelCommands(m_nodeId, m_coreId);
 	}
 
@@ -964,6 +964,18 @@ public class Engine implements Notifier {
 		return m_sections.getSrcLevelLoops(m_nodeId, m_coreId);
 	}
 	
+	public Collection<SrcStringInfo> getNoLoads() {
+		return m_sections.getNoLoads(m_nodeId, m_coreId);
+	}
+
+	public Collection<String> getRecursiveFunctions() {
+		return m_sections.getRecursiveFunctions(m_nodeId, m_coreId);
+	}
+
+	public Collection<String> getUnreachableFunctions() {
+		return m_sections.getUnreachableFunctions(m_nodeId, m_coreId);
+	}
+
 	// ===================================================================== //
 	// Private Methods
 	// ===================================================================== //
@@ -1015,7 +1027,6 @@ public class Engine implements Notifier {
 				
 				setBranchTargets(id, newFunctionNames.get(nodeId, coreId));
 				
-				
 				SourceMapper sourceMapper = new SourceMapper(xeLoader, nodeId, coreId, starts, 
 						fileFinder, id, newFunctionNames.get(nodeId, coreId), sections.getLabels(nodeId, coreId));
 				
@@ -1028,8 +1039,10 @@ public class Engine implements Notifier {
 				
 				StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg, xeLoader);
 				
-				if (!sae.analyse(src, this, newFunctionNames.get(nodeId, coreId), pcToEndPoints))
+				if (!sae.analyse(src, this, newFunctionNames.get(nodeId, coreId),
+						pcToEndPoints, sections, nodeId, coreId)) {
 					return false;
+				}
 				
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
 			}
@@ -1142,15 +1155,6 @@ public class Engine implements Notifier {
 	public int getNumErrors() {
 		return m_numErrors;
 	}
-
-	public void setRecursiveFunctions(Set<String> recursiveFunctions) {
-		m_recursiveFunctions = recursiveFunctions;
-	}
-
-	public Set<String> getRecursiveFunctions() {
-		return m_recursiveFunctions;
-	}
-
 }
 
 class NodeCoreCollection<E> {

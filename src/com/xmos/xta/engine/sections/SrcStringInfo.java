@@ -1,20 +1,20 @@
 package com.xmos.xta.engine.sections;
 
-public class SrcCommandInfo {
-    private String m_command;
+public class SrcStringInfo {
+    private String m_string;
     private String m_compilationDir;
     private String m_fileName;
     private long m_lineNumber;
     
-    public SrcCommandInfo(String command, String compilationDir, String fileName, long lineNumber) {
-    	m_command = command;
+    public SrcStringInfo(String string, String compilationDir, String fileName, long lineNumber) {
+    	m_string = string;
     	m_compilationDir = compilationDir;
     	m_fileName = fileName;
     	m_lineNumber = lineNumber;
     }
  
-    public String getCommand() {
-    	return m_command;
+    public String getString() {
+    	return m_string;
     }
     
     public String getCompilationDir() {

@@ -21,7 +21,7 @@ public abstract class IBufferNode extends Node {
 	
 	public Collection<InstructionBuffer> getEndInstructionBuffers() {
 		Set<InstructionBuffer> set = new TreeSet<InstructionBuffer>();
-		for(IBufferSequence ibs :m_ibufferSequences ){
+		for (IBufferSequence ibs :m_ibufferSequences ){
 			set.add(ibs.getInstructionBuffer());
 		}
 		return set;

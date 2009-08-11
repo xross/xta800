@@ -21,24 +21,30 @@ public class Sections {
 	private Collection<Section> m_callTables;
 	private Collection<Section> m_threadStartPoints;
 	private Collection<Section> m_threadStopPoints;
-	private Collection<Section> m_srcLevelCommands;	
-	private Collection<Section> m_srcLevelLoops;	
+	private Collection<Section> m_srcLevelCommands;
+	private Collection<Section> m_srcLevelLoops;
+	private Collection<Section> m_noLoads;
+	private Collection<Section> m_recursiveFunctions;
+	private Collection<Section> m_unreachableFunctions;
 	
     public Sections() { 
-    	m_xeLoader  = null;
-    	m_notifier  = null;
+    	m_xeLoader = null;
+    	m_notifier = null;
 		m_branches  = new ArrayList<Section>();
-		m_labels    = new ArrayList<Section>();
+		m_labels = new ArrayList<Section>();
 		m_srcLabels = new ArrayList<Section>();
 		m_endpoints = new ArrayList<Section>();
-		m_calls     = new ArrayList<Section>();
-		m_srcLabelTables    = new ArrayList<Section>();
-		m_endpointTables    = new ArrayList<Section>();
-		m_callTables        = new ArrayList<Section>();
+		m_calls = new ArrayList<Section>();
+		m_srcLabelTables = new ArrayList<Section>();
+		m_endpointTables = new ArrayList<Section>();
+		m_callTables = new ArrayList<Section>();
 		m_threadStartPoints = new ArrayList<Section>();
-		m_threadStopPoints  = new ArrayList<Section>();
-		m_srcLevelCommands  = new ArrayList<Section>();
-		m_srcLevelLoops     = new ArrayList<Section>();
+		m_threadStopPoints = new ArrayList<Section>();
+		m_srcLevelCommands = new ArrayList<Section>();
+		m_srcLevelLoops = new ArrayList<Section>();
+		m_noLoads = new ArrayList<Section>();
+		m_recursiveFunctions = new ArrayList<Section>();
+		m_unreachableFunctions = new ArrayList<Section>();
     }
 
 	public boolean load(CommandSource src, XeLoader xeLoader, Notifier notifier) {		
@@ -56,6 +62,9 @@ public class Sections {
 		m_threadStopPoints.clear();
 		m_srcLevelCommands.clear();
 		m_srcLevelLoops.clear();
+		m_noLoads.clear();
+		m_recursiveFunctions.clear();
+		m_unreachableFunctions.clear();
 
 		for (int node : m_xeLoader.getNodeIds()) {
 			for (int core : m_xeLoader.getCoreIds(node)) {
@@ -71,6 +80,9 @@ public class Sections {
 				m_threadStopPoints.add(new ThreadDelimiters(node, core, ".xtathreadstop", m_notifier));
 				m_srcLevelCommands.add(new SrcLevelCommands(node, core, m_notifier));
 				m_srcLevelLoops.add(new SrcLevelLoops(node, core, m_notifier));
+				m_noLoads.add(new NoLoads(node, core, m_notifier));
+				m_recursiveFunctions.add(new StringSection(node, core, m_notifier));
+				m_unreachableFunctions.add(new StringSection(node, core, m_notifier));
 			}
 		}
 				
@@ -97,6 +109,8 @@ public class Sections {
 		if (!loadSection(src, m_srcLevelCommands))
 			return false;
 		if (!loadSection(src, m_srcLevelLoops))
+			return false;
+		if (!loadSection(src, m_noLoads))
 			return false;
 		
 		return true;
@@ -162,7 +176,7 @@ public class Sections {
 		return threadDelimiter.get();	
 	}
 	
-	public Collection<SrcCommandInfo> getSrcLevelCommands(int nodeId, int coreId) {
+	public Collection<SrcStringInfo> getSrcLevelCommands(int nodeId, int coreId) {
 		SrcLevelCommands srcLevelCommands = (SrcLevelCommands)getSection(m_srcLevelCommands, nodeId, coreId);
 		return srcLevelCommands.get();		
 	}
@@ -172,6 +186,21 @@ public class Sections {
 		return loops.get();		
 	}
 	
+	public Collection<SrcStringInfo> getNoLoads(int nodeId, int coreId) {
+		NoLoads noLoads = (NoLoads)getSection(m_noLoads, nodeId, coreId);
+		return noLoads.get();		
+	}
+
+	public Collection<String> getRecursiveFunctions(int nodeId, int coreId) {
+		StringSection strings = (StringSection)getSection(m_recursiveFunctions, nodeId, coreId);
+		return strings.get();		
+	}
+
+	public Collection<String> getUnreachableFunctions(int nodeId, int coreId) {
+		StringSection strings = (StringSection)getSection(m_unreachableFunctions, nodeId, coreId);
+		return strings.get();		
+	}
+
 	private boolean loadSection(CommandSource src, Collection<Section> sections) {
 		for (Section section : sections) {
 			if (!section.load(src, m_xeLoader)) {
@@ -189,6 +218,6 @@ public class Sections {
 			}
 		}
 		assert(false);
-		return null;				
+		return null;
 	}
 }

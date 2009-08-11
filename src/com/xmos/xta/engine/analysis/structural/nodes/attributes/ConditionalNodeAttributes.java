@@ -23,19 +23,25 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 	// --------------------------------------------------------------------- //	
 	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveCond) {
 		if (getCachedTimeTakenValid(c) && (ignoreIterationsAboveCond == null)) {
-			status.setStatus(getCachedTimeTakenStatus(c));		
+			status.mergeStatus(getCachedTimeTakenStatus(c));		
 			double timeTaken = getCachedTimeTaken(c);
 			return timeTaken;
 		}
 		
 		double value = 0;
 		for (Node child : m_setIterations.keySet()) {
-		    value += child.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveCond);
+			Status childStatus = new Status();
+		    value += child.getAttributes().getTimeTaken(c, childStatus, ignoreIterationsAboveCond);
+			status.mergeStatus(childStatus.getStatus());
 		}
+		
 		Node option = getFloatingOption(c, ignoreIterationsAboveCond);
 		if (option != null) {
-			value += option.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveCond); 
-		}		
+			Status childStatus = new Status();
+			value += option.getAttributes().getTimeTaken(c, childStatus, ignoreIterationsAboveCond); 
+			status.mergeStatus(childStatus.getStatus());
+		}
+		
 		if (ignoreIterationsAboveCond == null) {			
 			setCachedTimeTaken(c, value);
 			setCachedTimeTakenStatus(c, status.getStatus());			
@@ -46,7 +52,7 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 
 	public long getNumCycles(Case c, Status status, Node ignoreIterationsAboveCond) {
     	if (getCachedNumCyclesValid(c) && (ignoreIterationsAboveCond == null)) {
-    		status.setStatus(getCachedNumCyclesStatus(c));    	
+    		status.mergeStatus(getCachedNumCyclesStatus(c));    	
     		return getCachedNumCycles(c);
     	}
     		
@@ -68,7 +74,7 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 
 	public long getNumInstructions(Case c, Status status, Node ignoreIterationsAboveCond) {
 		if (getCachedNumInstructionsValid(c) && (ignoreIterationsAboveCond == null)) {
-			status.setStatus(getCachedNumInstructionsStatus(c));
+			status.mergeStatus(getCachedNumInstructionsStatus(c));
 			return getCachedNumInstructions(c);
 		}
 		
@@ -90,7 +96,7 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 
 	public long getNumFNops(Case c, Status status, Node ignoreIterationsAboveCond) {
 		if (getCachedNumFnopsValid(c) && (ignoreIterationsAboveCond == null)) {
-			status.setStatus(getCachedNumFnopsStatus(c));
+			status.mergeStatus(getCachedNumFnopsStatus(c));
 			return getCachedNumFnops(c);
 		}
 		

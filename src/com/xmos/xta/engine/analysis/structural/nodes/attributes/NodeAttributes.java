@@ -175,8 +175,15 @@ public class NodeAttributes {
 
 		double value = 0;
 		for (Node child : getNode().getChildren()) {
-			value += child.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveCond);
+			Status childStatus = new Status();
+			value += child.getAttributes().getTimeTaken(c, childStatus, ignoreIterationsAboveCond);
+			status.mergeStatus(childStatus.getStatus());
 		}
+
+		if (m_node.isUnresolved()) {
+			status.mergeStatus(S.UNRESOLVED);
+		}
+		
 		if (ignoreIterationsAboveCond == null) {
 			setCachedTimeTaken(c, value);
 			setCachedTimeTakenStatus(c, status.getStatus());

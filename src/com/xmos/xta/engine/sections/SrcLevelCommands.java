@@ -9,14 +9,14 @@ import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Notifier;
 
 public class SrcLevelCommands extends Section {
-	private Collection<SrcCommandInfo> m_commands;
+	private Collection<SrcStringInfo> m_commands;
 
 	SrcLevelCommands(int nodeId, int coreId, Notifier notifier) {
 		super(nodeId, coreId, notifier);
-		m_commands = new ArrayList<SrcCommandInfo>(); 
+		m_commands = new ArrayList<SrcStringInfo>(); 
 	}
 	
-	Collection<SrcCommandInfo> get() {
+	Collection<SrcStringInfo> get() {
 		return m_commands;
 	}
 	
@@ -48,7 +48,7 @@ public class SrcLevelCommands extends Section {
 	        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
 	        				
-	        		SrcCommandInfo command = new SrcCommandInfo(commandString, compilationDir, fileName, lineNumber);
+	        		SrcStringInfo command = new SrcStringInfo(commandString, compilationDir, fileName, lineNumber);
 	        		m_commands.add(command);
 	        	}			
 		    }

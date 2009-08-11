@@ -11,7 +11,7 @@ import com.xmos.xta.console.commands.CommandFactory;
 import com.xmos.xta.console.commands.Invalid;
 import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.sections.SrcCommandInfo;
+import com.xmos.xta.engine.sections.SrcStringInfo;
 import com.xmos.xta.sourcemapper.FileFinder;
 
 public class Load extends Command {
@@ -65,8 +65,8 @@ public class Load extends Command {
 	}
 	
     private void runSectionCommands(Shell shell, Engine engine, Console console) {
-	    for (SrcCommandInfo cmdInfo : engine.getSrcLevelCommands()) {
-	    	String commandString = cmdInfo.getCommand();
+	    for (SrcStringInfo cmdInfo : engine.getSrcLevelCommands()) {
+	    	String commandString = cmdInfo.getString();
             String[] tokens = commandString.trim().split("\\s+");
             
             CommandSource src = new CommandSource(cmdInfo.getFileName(), cmdInfo.getLineNumber());

@@ -33,7 +33,7 @@ import org.eclipse.ui.actions.ActionDelegate;
 
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.sections.SrcCommandInfo;
+import com.xmos.xta.engine.sections.SrcStringInfo;
 import com.xmos.xta.gui.XtaPlugin;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.GuiFileFinder;
@@ -160,15 +160,15 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
 	    ConsoleView console = (ConsoleView)PlatformUI.getWorkbench().
             getActiveWorkbenchWindow().getActivePage().findView(ConsoleView.ID);
     	
-    	Collection<SrcCommandInfo> srcLevelCommands = GuiEngine.getEngine().getSrcLevelCommands();    	
+    	Collection<SrcStringInfo> srcLevelCommands = GuiEngine.getEngine().getSrcLevelCommands();    	
     	if (srcLevelCommands.size() > 0) {    	    
 			try {
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 				    getActivePage().showView(ConsoleView.ID);
 			} catch (PartInitException e) {}    	    
 
-        	for (SrcCommandInfo command : srcLevelCommands) {    	    				
-	    	    console.runCommand(command.getCommand());
+        	for (SrcStringInfo command : srcLevelCommands) {    	    				
+	    	    console.runCommand(command.getString());
     	    }
     	}    	
     }

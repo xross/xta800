@@ -29,4 +29,15 @@ public class Status {
 	public boolean isUnresolved() {
 		return m_status == S.UNRESOLVED;
 	}
+
+	// Keep the worst-case (UNRESOLVED, INFINITE, COMPLETE)
+	public void mergeStatus(S s) {
+		if (m_status == S.UNRESOLVED || s == S.UNRESOLVED) {
+			m_status = S.UNRESOLVED;
+			
+		} else if (m_status == S.INFINITE || s == S.INFINITE) {
+			m_status = S.INFINITE;
+			
+		}
+	}
 }
