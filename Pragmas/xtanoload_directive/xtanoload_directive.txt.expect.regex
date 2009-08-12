@@ -1,3 +1,5 @@
-function\(\d+\)   : 60.0ns / 60.0ns main
-.    block\(\d+\)      : 60.0ns \(x 1\) / 60.0ns \(x 1\) 
+function\(\d+\)   : Unresolved / Unresolved main
+.    block\(\d+\)      : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    function\(\d+\)   : Unresolved / Unresolved printf not loaded
+.    block\(\d+\)      : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
 

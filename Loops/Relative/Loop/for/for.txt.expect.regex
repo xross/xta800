@@ -1,12 +1,10 @@
-Route\(0\) function: main
-Complete \[1 seq\]
-    seq\(\d+\) +: \d+\.\d+ns
-        loop \[1 seq, 100 iterations\]
-            seq\(\d+\) +: \d+\.\d+ns
-
-Route\(0\) function: main
-Complete \[1 seq\]
-  \* seq\(\d+\) +: \d+\.\d+ns
-        loop \[1 seq, 0 iterations\]
-          \* seq\(\d+\) +: \d+\.\d+ns
+function\(\d+\) : \d+.0ns / \d+.0ns main
+.    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    function\(\d+\) : \d+.0ns / \d+.0ns test
+.    .    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    .    loop\(\d+\)     : \d+.0ns / \d+.0ns 
+.    .    .    block\(\d+\)    : \d+.0ns \(x 101\) / \d+.0ns \(x 101\) 
+.    .    .    block\(\d+\)    : \d+.0ns \(x 100\) / \d+.0ns \(x 100\) 
+.    .    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
 
