@@ -2,13 +2,13 @@ Route(0) path: sendRawSample to sendRawSample
     Pass with 6 unknowns, Num Paths: 4, Slack: 20413.3ns, Required: 20833.3ns, Worst: 420.0ns, Min Frequency: 8 Mhz
 
 Route(1) path: interS1ThreadInput to interS1ThreadInput
-    Pass with 11 unknowns, Num Paths: 6, Slack: 14573.3ns, Required: 20833.3ns, Worst: 6260.0ns, Min Frequency: 120 Mhz
+    Fail with 10 unknowns, Num Paths: 6, Violation: 2186.7ns, Required: 20833.3ns, Worst: 23020.0ns, Min Frequency: 441 Mhz
 
 Route(2) path: interS1ThreadOutput to interS1ThreadOutput
     Fail with 5 unknowns, Num Paths: 3, Violation: 451.7ns, Required: 5208.3ns, Worst: 5660.0ns, Min Frequency: 434 Mhz
 
 Route(3) path: interS2ThreadInput to interS2ThreadInput
-    Pass with 11 unknowns, Num Paths: 6, Slack: 2608.3ns, Required: 5208.3ns, Worst: 2600.0ns, Min Frequency: 199 Mhz
+    Fail with 10 unknowns, Num Paths: 6, Violation: 5871.7ns, Required: 5208.3ns, Worst: 11080.0ns, Min Frequency: 850 Mhz
 
 Route(4) path: interS2ThreadOutput to interS2ThreadOutput
     Fail with 5 unknowns, Num Paths: 3, Violation: 998.3ns, Required: 1041.7ns, Worst: 2040.0ns, Min Frequency: 783 Mhz
@@ -20,9 +20,9 @@ Route(6) path: pwmThreadLow2 to pwmThreadHigh
     Fail with 7 unknowns, Num Paths: 8, Violation: 1160.0ns, Required: 600.0ns, Worst: 1760.0ns, Min Frequency: 1171 Mhz
 
 Route(7) path: pwmThreadHigh to pwmThreadLow1
-    Fail with 18 unknowns, Num Paths: 16, Violation: 200.0ns, Required: 600.0ns, Worst: 800.0ns, Min Frequency: 532 Mhz
+    Fail with 7 unknowns, Num Paths: 2, Violation: 200.0ns, Required: 600.0ns, Worst: 800.0ns, Min Frequency: 532 Mhz
 
 Route(8) path: pwmThreadHigh to pwmThreadLow2
     Fail with 7 unknowns, Num Paths: 2, Violation: 660.0ns, Required: 600.0ns, Worst: 1260.0ns, Min Frequency: 838 Mhz
 
-Fail, 6/9, Max Violation: 1160.0ns
+Fail, 8/9, Max Violation: 5871.7ns

@@ -56,7 +56,7 @@ void interpolateStage2Thread (chanend s1SampleChan, chanend s2SampleChan) {
 #endif
 
     for (interpolationSampleNo = 0; interpolationSampleNo < s2_OVERSAMPLING_RATE ; interpolationSampleNo++) {
-      //#pragma xta label "interS2ThreadOuterLoop"       
+      #pragma xta label "interS2ThreadOuterLoop"       
 
       // First active (non-zero) sample
       int    sampleIndex = s2SampleHeadPtr;

@@ -100,7 +100,7 @@ void pwmThread (chanend s2SampleChan){
       speaker @ portTime <: 0;
 
     } else {
-      //#pragma xta label "pwmThreadHiDuration2"
+      #pragma xta label "pwmThreadHiDuration2"
 
       // Hi for longer than minumum (work out how long)
       // Modify sample by modulation depth & unsigned offset
