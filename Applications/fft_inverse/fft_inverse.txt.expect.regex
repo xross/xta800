@@ -1,96 +1,86 @@
-function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns fix_fft_64_inverse
-.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
-.  \* loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
-.    .  \* seq\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .  \* selfloop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
-.  \* loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
-.    .  \* seq\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .  \* loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    seq\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    seq\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    seq\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .  \* cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .  \* seq\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .  \* loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .  \* seq\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .  \* loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    .    seq\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    .    .    cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .  \* seq\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .  \* loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .  \* seq\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .  \* loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    .    seq\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    .    .    cond\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 0\) / \d+.\d+ns \(x 0\) 
-.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+function\(\d+\) : \d+.0ns / \d+.0ns fix_fft_64_inverse
+.    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.  \* loop\(\d+\)     : \d+.0ns / \d+.0ns 
+.    .    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    .  \* seq\(\d+\)      : 0.0ns / 0.0ns 
+.    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .  \* selfloop\(\d+\) : 0.0ns / 0.0ns 
+.    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    cond\(\d+\)     : 0.0ns / 0.0ns 
+.    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.  \* loop\(\d+\)     : \d+.0ns / \d+.0ns 
+.    .    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    .  \* seq\(\d+\)      : 0.0ns / 0.0ns 
+.    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .  \* loop\(\d+\)     : 0.0ns / 0.0ns 
+.    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    seq\(\d+\)      : 0.0ns / 0.0ns 
+.    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    cond\(\d+\)     : 0.0ns / 0.0ns 
+.    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    cond\(\d+\)     : 0.0ns / 0.0ns 
+.    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    cond\(\d+\)     : 0.0ns / 0.0ns 
+.    .    .    .    .    .    seq\(\d+\)      : 0.0ns / 0.0ns 
+.    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    seq\(\d+\)      : 0.0ns / 0.0ns 
+.    .    .    .    .    .    .    cond\(\d+\)     : 0.0ns / 0.0ns 
+.    .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .  \* cond\(\d+\)     : 0.0ns / 0.0ns 
+.    .    .    .  \* seq\(\d+\)      : 0.0ns / 0.0ns 
+.    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .  \* loop\(\d+\)     : 0.0ns / 0.0ns 
+.    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .  \* seq\(\d+\)      : 0.0ns / 0.0ns 
+.    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    cond\(\d+\)     : 0.0ns / 0.0ns 
+.    .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .  \* loop\(\d+\)     : 0.0ns / 0.0ns 
+.    .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    .    seq\(\d+\)      : 0.0ns / 0.0ns 
+.    .    .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    .    .    cond\(\d+\)     : 0.0ns / 0.0ns 
+.    .    .    .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .  \* seq\(\d+\)      : 0.0ns / 0.0ns 
+.    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .  \* loop\(\d+\)     : 0.0ns / 0.0ns 
+.    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .  \* seq\(\d+\)      : 0.0ns / 0.0ns 
+.    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    cond\(\d+\)     : 0.0ns / 0.0ns 
+.    .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .  \* loop\(\d+\)     : 0.0ns / 0.0ns 
+.    .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    .    seq\(\d+\)      : 0.0ns / 0.0ns 
+.    .    .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    .    .    cond\(\d+\)     : 0.0ns / 0.0ns 
+.    .    .    .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
 
