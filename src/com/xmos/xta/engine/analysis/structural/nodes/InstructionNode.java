@@ -42,9 +42,9 @@ public class InstructionNode extends Node {
 		return in;
 	}
 	
-	//public String toString(){
-	//	return m_inst.toString();
-	//}
+	public String toString(){
+		return m_inst.toString();
+	}
 	
 	public Node deepCopy() {
 		InstructionNode in = new InstructionNode(this);
