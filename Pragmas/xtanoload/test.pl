@@ -8,7 +8,7 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -march=$arch -g main.c -o $genDir/test.xe -save-temps > $genDir/xtanoload.log 2>&1");
+system("xcc -target=$target -march=$arch -g main.xc -o $genDir/test.xe > $genDir/xtanoload.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "-analyse function main " .
