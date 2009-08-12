@@ -1,0 +1,11 @@
+function\(\d+\) : Unresolved / Unresolved main
+.    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    function\(\d+\) : Unresolved / Unresolved puts not loaded
+.    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    function\(\d+\) : \d+.0ns / \d+.0ns test
+.    .    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+
+function\(\d+\) : 140.0ns / 140.0ns test
+.    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+
