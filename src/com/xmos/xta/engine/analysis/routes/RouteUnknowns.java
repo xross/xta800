@@ -50,12 +50,17 @@ public class RouteUnknowns {
 		if (iterations < 0)
 			return false;		
 
-		for (Node node : m_route.getReferencedNodes(reference)) {
-			if ((canSetLoopIterations(node) == false) || 
-				(loopIterationsValid(node, iterations) == false))
-				return false;
+		Collection<Node> referencedNodes = m_route.getReferencedNodes(reference);
+		if (referencedNodes.size() > 0) {
+			for (Node node : referencedNodes) {
+				if ((canSetLoopIterations(node) == false) || 
+					(loopIterationsValid(node, iterations) == false))
+					return false;
+			}
+			return true;
+		} else {
+			return false;
 		}
-		return true;
 	}
 	
 	public boolean setLoopIterations(Node node, long iterations) {
@@ -119,12 +124,17 @@ public class RouteUnknowns {
 		if (iterations < 0)
 			return false;		
 
-		for (Node node : m_route.getReferencedNodes(reference)) {
-			if ((canSetLoopPathIterations(node) == false) || 
-				(loopPathIterationsValid(node, iterations) == false))
-				return false;
-		}		
-		return true;
+		Collection<Node> referencedNodes = m_route.getReferencedNodes(reference);
+		if (referencedNodes.size() > 0) {
+			for (Node node : referencedNodes) {
+				if ((canSetLoopPathIterations(node) == false) || 
+					(loopPathIterationsValid(node, iterations) == false))
+					return false;
+			}		
+			return true;
+		} else {
+			return false;
+		}
 	}	
 	
 	public boolean setLoopPathIterations(Node node, long iterations) {
@@ -194,11 +204,16 @@ public class RouteUnknowns {
 	}
 
 	public boolean canSetLoopScope(Reference reference, boolean isAbsolute) {
-		for (Node node : m_route.getReferencedNodes(reference)) {
-			if (canSetLoopScope(node) == false)
-				return false;
-		}		
-		return true;
+		Collection<Node> referencedNodes = m_route.getReferencedNodes(reference);
+		if (referencedNodes.size() > 0) {
+			for (Node node : referencedNodes) {
+				if (canSetLoopScope(node) == false)
+					return false;
+			}		
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public boolean setLoopScope(Node node, boolean isAbsolute) {
