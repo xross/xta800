@@ -8,7 +8,7 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -march=$arch -g test.xc functions.xc -o $genDir/test.xe > $genDir/xta_broken_command.log 2>&1");
+system("xcc -Wno-timing -target=$target -march=$arch -g test.xc functions.xc -o $genDir/test.xe > $genDir/xta_broken_command.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "print summary " .
