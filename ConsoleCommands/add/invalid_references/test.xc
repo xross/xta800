@@ -13,10 +13,7 @@ int test1()
 
 int main()
 {
-  par
-  {
-    on stdcore[0] : test0();
-    on stdcore[3] : test1();
-  }
+  test0();
+  test1();
   return 0;
 }
