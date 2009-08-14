@@ -1,5 +1,5 @@
 Route\(0\) path: core0\.xc:26 to core0\.xc:26
-    Pass with 5 unknowns, Num Paths: 1, Slack: 1600.0ns, Required: 2000.0ns, Worst: 400.0ns, Min Frequency: 79 Mhz
+    Pass with 5 unknowns, Num Paths: 1, Slack: 1620.0ns, Required: 2000.0ns, Worst: 380.0ns, Min Frequency: 75 Mhz
 
 Route\(2\) path: core1\.xc:85 to core1\.xc:85
     Fail with \d+ unknowns, Num Paths: \d+, Violation: 4860\.0ns, Required: 2000\.0ns, Worst: 6860\.0ns, Min Frequency: 1371 Mhz
