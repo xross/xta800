@@ -55,28 +55,29 @@ public class GuiConsole implements Console {
         Font font = new Font(PlatformUI.getWorkbench().getDisplay(), "Courier New", 10, SWT.NONE);
         m_text.setFont(font);
         m_text.addKeyListener(new KeyListener() {
-        	public void keyPressed(KeyEvent event) {
+        	public void keyPressed(KeyEvent event) {        		
         		if (DEBUG) System.out.printf("GuiConsole: keyPressed: %d\n", event.keyCode);			
-        				
+        				        		
         		if ((event.keyCode == SWT.CR) || (event.keyCode == SWT.KEYPAD_CR)) {
         			handleEnter();
-        		}
-        		else if (event.keyCode == SWT.ARROW_UP) {
+        			
+        		} else if (event.keyCode == SWT.ARROW_UP) {
         			decrementCommandIndex();
         			displayCommand();
-        		}
-        		else if (event.keyCode == SWT.ARROW_DOWN) {
+        			
+        		} else if (event.keyCode == SWT.ARROW_DOWN) {
         			incrementCommandIndex();
         			displayCommand();
-        		}
-        		else if (event.keyCode == SWT.HOME) {
-                    home();
-        		}
-        		else if (event.keyCode == SWT.TAB) {
+        			
+        		} else if (event.keyCode == SWT.HOME) {
+                    home(event);
+                    
+        		} else if (event.keyCode == SWT.TAB) {
                     complete();
+                    
         		} else {
         			handleCharacter(event.character);
-        		}
+        		}        		        		
         	}
         	
         	public void keyReleased(KeyEvent keyEvent) {        		
@@ -88,23 +89,22 @@ public class GuiConsole implements Console {
 				if (DEBUG) System.out.printf("GuiConsole: verifyKey: %d\n", event.keyCode);
 
 			    if (event.keyCode == SWT.ARROW_UP) {
-			    	event.doit = false;				
-				}
-				else if (event.keyCode == SWT.ARROW_DOWN) {
-					event.doit = false;				
-				}
-        		else if (event.keyCode == SWT.TAB) {
+			    	event.doit = false;
+			    	
+				} else if (event.keyCode == SWT.ARROW_DOWN) {
+					event.doit = false;
+					
+				} else if (event.keyCode == SWT.TAB) {
         			event.doit = false;
-        		}
-				else if (event.keyCode == SWT.BS) {
+        			
+        		} else if (event.keyCode == SWT.BS) {
 					if (checkCursor()) {
     					event.doit = false;				
 					}
-				}
-				else if (event.keyCode == SWT.HOME) {
+				} else if (event.keyCode == SWT.HOME) {
   					event.doit = false;
-				}
-				else if (event.keyCode == SWT.ARROW_LEFT) {
+  					
+				} else if (event.keyCode == SWT.ARROW_LEFT) {
 					if (checkCursor()) {
     					event.doit = false;				
 	    			}
@@ -112,7 +112,16 @@ public class GuiConsole implements Console {
 					if (DEBUG) System.out.printf("Set Caret to end\n");
 					setCaretToEnd();
 					m_text.append("\n");
-					event.doit = false;	
+					event.doit = false;
+					
+				} else if (event.keyCode == SWT.SHIFT) {
+					
+				} else if (event.keyCode == SWT.END) {
+
+				} else if (event.keyCode == SWT.CONTROL) {
+					
+				} else {
+					checkRow();
 				}
 			}
 		});
@@ -352,16 +361,33 @@ public class GuiConsole implements Console {
 		return false;
 	}	
 
-	private void home() {
+	private void checkRow() {
+		int currentIndex = m_text.getCaretOffset();
+        int currentRowIndex = m_text.getLineAtOffset(currentIndex);
+        
+        if (currentRowIndex != (m_text.getLineCount() - 1)) {
+            m_text.setCaretOffset(m_text.getCharCount());
+        }
+	}
+	
+	private void home(KeyEvent event) {		
 		int currentIndex = m_text.getCaretOffset();
         int currentRowIndex = m_text.getLineAtOffset(currentIndex);
 		int rowStartIndex = m_text.getOffsetAtLine(currentRowIndex);
-		
+				
+    	boolean shiftKeyPressed = (event.stateMask & SWT.SHIFT) != 0;
+    	
 		if (currentRowIndex == (m_text.getLineCount() - 1)) {
 			m_text.setCaretOffset(rowStartIndex + m_shell.getPrompt().length());
+			if (shiftKeyPressed) {
+				m_text.setSelection(rowStartIndex + m_shell.getPrompt().length(), currentIndex);
+			}			
 		} else {
 			m_text.setCaretOffset(rowStartIndex);
-		}
+			if (shiftKeyPressed) {
+				m_text.setSelection(rowStartIndex, currentIndex);
+			}			
+		}		
 	}
 
 	private void complete() {
