@@ -11,15 +11,13 @@ public class SelfLoopNodeAttributes extends NodeAttributes {
 		m_numIterations = 0;
 	}
 
-	public boolean loopIterationsValid(long numIterations) {
-		if (numIterations > 0) {
-			return true;
+	public void loopIterationsValid(long numIterations) throws Exception {
+		if (numIterations < 1) {
+			throw new Exception("Cannot set iteration count less than 1 on a self loop");
 		}
-		return false;
 	}
 	
 	public void setLoopIterations(long numIterations) {
-		assert(loopIterationsValid(numIterations));
 		m_numIterations = numIterations;
 	}
 	

@@ -589,111 +589,153 @@ public class Engine implements Notifier {
 	// ===================================================================== //
 	// Unknown (Loop Iteration) Methods
 	// ===================================================================== //		
-	public boolean setLoopIterations(CommandSource src, int routeId, String refString, long iterations) {
+	public void setLoopIterations(CommandSource src, int routeId, String refString, long iterations) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
 		if (!resolveRefernece(reference)) {
-			return false;
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));
+			return;
 		}
 		Collection<Route> routes = getRoute(routeId);
 		if (routes.size() == 0) {
-			return false;
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find route: %d", routeId));
+			return;
 		}
 		for (Route route : routes) {
-			if (!route.getRouteUnknowns().canSetLoopIterations(reference, iterations)) {
-				return false;
-			}
+			try {
+				route.getRouteUnknowns().checkSetLoopIterations(reference, iterations);
+			} catch (Exception e) {
+				notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
+				return;
+			}			
 		}
 		for (Route route : routes) {
 		    route.getRouteUnknowns().setLoopIterations(reference, iterations);
 		}
 	    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-	    return true;
 	}
 
-	public boolean setLoopIterations(CommandSource src, Node node, long iterations) {
-		if (m_selectedRoute.getRouteUnknowns().setLoopIterations(node, iterations)) {
+	public void setLoopIterations(CommandSource src, Node node, long iterations) {
+		try {
+			m_selectedRoute.getRouteUnknowns().setLoopIterations(node, iterations);
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
-		}
-		return false;
+			
+		} catch (Exception e) {
+			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
+		}		
 	}
 
 	public boolean canSetLoopIterations(Node node) {
-		return m_selectedRoute.getRouteUnknowns().canSetLoopIterations(node);
+		try {
+			m_selectedRoute.getRouteUnknowns().checkSetLoopIterations(node);
+			return true;
+			
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	public long getSetLoopIterations(Node node) {
 		return m_selectedRoute.getRouteUnknowns().getSetLoopIterations(node);
 	}
 	
-	public boolean setLoopPathIterations(CommandSource src, int routeId, String refString, long iterations) {
+	// ===================================================================== //
+	// Unknown (Loop Path Iteration) Methods
+	// ===================================================================== //			
+	public void setLoopPathIterations(CommandSource src, int routeId, String refString, long iterations) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
 		if (!resolveRefernece(reference)) {
-			return false;
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));
+			return;
 		}		
 		Collection<Route> routes = getRoute(routeId);
 		if (routes.size() == 0) {
-			return false;
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find route: %d", routeId));
+			return;
 		}
 		for (Route route : routes) {
-			if (!route.getRouteUnknowns().canSetLoopPathIterations(reference, iterations)) {
-				return false;
+			try {
+				route.getRouteUnknowns().checkSetLoopPathIterations(reference, iterations);
+			} catch (Exception e) {
+				notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
+				return;
 			}
 		}
 		for (Route route : routes) {
 		    route.getRouteUnknowns().setLoopPathIterations(reference, iterations);
 		}
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-		return true;
 	}
 
-	public boolean setLoopPathIterations(CommandSource src, Node node, long iterations) {
-		if (m_selectedRoute.getRouteUnknowns().setLoopPathIterations(node, iterations)) {
+	public void setLoopPathIterations(CommandSource src, Node node, long iterations) {
+		try {
+			m_selectedRoute.getRouteUnknowns().setLoopPathIterations(node, iterations);
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
-		}
-		return false;
+			
+		} catch (Exception e) {
+			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());		
+		}		
 	}
 
 	public boolean canSetLoopPathIterations(Node node) {
-		return m_selectedRoute.getRouteUnknowns().canSetLoopPathIterations(node);
+		try {
+			m_selectedRoute.getRouteUnknowns().checkSetLoopPathIterations(node);
+			return true;
+			
+		} catch (Exception e) {
+			return false;
+		}
 	}
 	
 	public long getSetLoopPathIterations(Node node) {
 		return m_selectedRoute.getRouteUnknowns().getSetLoopPathIterations(node);
 	}
 
-	public boolean setLoopScope(CommandSource src, int routeId, String refString, boolean absolute) {
+	// ===================================================================== //
+	// Unknown (Loop Scope) Methods
+	// ===================================================================== //			
+	public void setLoopScope(CommandSource src, int routeId, String refString, boolean absolute) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
 		if (!resolveRefernece(reference)) {
-			return false;
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));
+			return;
 		}
 		Collection<Route> routes = getRoute(routeId);
 		if (routes.size() == 0) {
-			return false;
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find route: %d", routeId));
+			return;
 		}
 		for (Route route : routes) {
-			if (!route.getRouteUnknowns().canSetLoopScope(reference, absolute)) {
-				return false;
+			try {
+				route.getRouteUnknowns().checkSetLoopScope(reference, absolute);
+			} catch (Exception e) {
+				notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
+				return;
 			}
 		}
 		for (Route route : routes) {
 		    route.getRouteUnknowns().setLoopScope(reference, absolute);		   
 		}
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-		return true;
 	}
 
-	public boolean setLoopScope(CommandSource src, Node node, boolean absolute) {
-		if (m_selectedRoute.getRouteUnknowns().setLoopScope(node, absolute)) {
+	public void setLoopScope(CommandSource src, Node node, boolean absolute) {
+		try {
+		    m_selectedRoute.getRouteUnknowns().setLoopScope(node, absolute);
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-			return true;
-		}
-		return false;
+		
+    	} catch (Exception e) {
+	    	notify(src, Notifier.NOTIFY_ERROR, e.getMessage());		
+	    }				
 	}
 
 	public boolean canSetLoopScope(Node node) {
-		return m_selectedRoute.getRouteUnknowns().canSetLoopScope(node);
+		try {
+			m_selectedRoute.getRouteUnknowns().checkSetLoopScope(node);
+			return true;
+			
+		} catch (Exception e) {
+			return false;
+		}
 	}
 	
 	public boolean getSetLoopScope(Node node) {

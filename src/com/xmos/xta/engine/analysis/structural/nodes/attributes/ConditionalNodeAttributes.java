@@ -131,17 +131,17 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 	// --------------------------------------------------------------------- //
 	// Loop Iteration Methods
 	// --------------------------------------------------------------------- //
-	public boolean loopPathIterationsValid(Node optionNode, long numIterations) {
+	public void loopPathIterationsValid(Node optionNode, long numIterations) throws Exception {
 		// Gets the iterations set from above for this node.
 		long loopIterations = 1;
 		try {
 			loopIterations = getNode().getParent().getAttributes().getLocalIterations(getNode());
 
 		} catch (CondIterationsNotSetException e) {
-			return false;
+			throw new Exception("Within a nested loop, but the outer loop iterations for this path have not been set");
 
 		} catch (InfiniteIterationsException e) {
-			return false;
+			throw new Exception("Cannot set path iterations on an infinite loop");
 		}
 		
 		// Calculates the total iterations already set on all options of 
@@ -155,7 +155,7 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 		// overflows the iteration count set on the enclosing loop...
    		long newTotal = totalNumIterationsSet + numIterations;
    		if (newTotal > loopIterations)
-   			return false;
+   			throw new Exception("Attempting to set a path iteration count that will overflow those set on the enclosing loop");
 
    		// If there is a remainder, checks that we have at least 
    		// one option that hasn't had its iterations set (excluding this one)...
@@ -167,15 +167,13 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 
    			if (numUnsetOptions == 0) {
    				if (!getNode().isCondOptional()) {
-   	   	   			return false;   					
+   					throw new Exception("Attempting to set a path iteration count that will underflow those set on the enclosing loop");
    				}
    			}
    		}
-		return true;
-	}	
+	}
 	
 	public void setLoopPathIterations(Node optionNode, long numIterations) {
-		assert(loopPathIterationsValid(optionNode, numIterations));
    		m_setIterations.put(optionNode, numIterations);
 	}
 	

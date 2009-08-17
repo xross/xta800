@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
-import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
 
@@ -82,13 +81,8 @@ public class Loop extends XtaDialog {
     
     protected void buttonPressed(int id) {
     	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {
-    		if (!GuiEngine.getEngine().setLoopIterations(GuiEngine.s_guiCommandSrc, m_node, m_iterations)) {
-    			GuiEngine.notify(Notifier.NOTIFY_ERROR, "failed to set loop iterations");
-    		} else {
-        		super.buttonPressed(id);
-    		}
-    	} else {
-    		super.buttonPressed(id);
+    		GuiEngine.getEngine().setLoopIterations(GuiEngine.s_guiCommandSrc, m_node, m_iterations);
     	}
+    	super.buttonPressed(id);
     }
 }

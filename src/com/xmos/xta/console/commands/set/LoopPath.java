@@ -4,7 +4,6 @@ import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.engine.Notifier;
 
 public class LoopPath extends Command {	
 	private int m_routeId;
@@ -60,10 +59,6 @@ public class LoopPath extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-   		if (!engine.setLoopPathIterations(getSrc(), m_routeId, m_refString, m_iterations)) {
-   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-       				"failed to set loop path iterations on reference: %s", 
-       				m_refString));
-    	}    					
+   		engine.setLoopPathIterations(getSrc(), m_routeId, m_refString, m_iterations);
     }    
  }

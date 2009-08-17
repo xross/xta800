@@ -11,8 +11,7 @@ public class LoopNodeAttributes extends NodeAttributes {
 		m_numIterations = 0;
 	}
 
-	public boolean loopIterationsValid(long numIterations) {
-		return true;
+	public void loopIterationsValid(long numIterations) throws Exception {
 	}
 	
 	public void setLoopIterations(long numIterations) {

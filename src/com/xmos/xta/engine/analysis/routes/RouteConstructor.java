@@ -697,9 +697,11 @@ public class RouteConstructor {
 			Reference reference = ReferenceFactory.createReference(
 					String.format("0x%x", srcLevelLoopInfo.getPc()), 
 					ReferenceClass.PC_REF);
-			
+
 			for (Route route : m_routes) {
-				route.getRouteUnknowns().setLoopIterations(reference, srcLevelLoopInfo.getNumIterations());				
+				try {
+					route.getRouteUnknowns().setLoopIterations(reference, srcLevelLoopInfo.getNumIterations());
+				} catch (Exception e) {}				
 			}
 		}		
 	}

@@ -428,9 +428,8 @@ public class NodeAttributes {
 		}
 	}
 
-	public boolean loopIterationsValid(long numIterations) {
+	public void loopIterationsValid(long numIterations) throws Exception {		
 		assert(false);
-		return false;
 	}
 	
 	public void setLoopIterations(long numIterations) {
@@ -442,9 +441,8 @@ public class NodeAttributes {
 		return 0;
 	}
 
-	public boolean loopPathIterationsValid(Node optionNode, long numIterations) {
+	public void loopPathIterationsValid(Node optionNode, long numIterations) throws Exception {
 		assert(false);
-		return false;
 	}
 	
 	public void setLoopPathIterations(Node optionNode, long numIterations) {

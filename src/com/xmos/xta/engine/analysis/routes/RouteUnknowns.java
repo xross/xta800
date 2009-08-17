@@ -34,55 +34,44 @@ public class RouteUnknowns {
 	}	
 	
 	// ===================================================================== //
-	// Setting Loop Iteration
+	// Setting Loop Iterations
 	// ===================================================================== //
-	public boolean setLoopIterations(Reference reference, long iterations) {
-		if (!canSetLoopIterations(reference, iterations))
-			return false;		
-
+	public void setLoopIterations(Reference reference, long iterations) {
 		for (Node node : m_route.getReferencedNodes(reference)) {
 			setLoopIterationsNoCheck(node, iterations);
 		}			
-		return true;
 	}
 
-	public boolean canSetLoopIterations(Reference reference, long iterations) {
+	public void checkSetLoopIterations(Reference reference, long iterations) throws Exception {
 		if (iterations < 0)
-			return false;		
+			throw new Exception("Cannot set a negative iteration count");		
 
 		Collection<Node> referencedNodes = m_route.getReferencedNodes(reference);
 		if (referencedNodes.size() > 0) {
 			for (Node node : referencedNodes) {
-				if ((canSetLoopIterations(node) == false) || 
-					(loopIterationsValid(node, iterations) == false))
-					return false;
+				checkSetLoopIterations(node); 
+				checkLoopIterationsValid(node, iterations);
 			}
-			return true;
 		} else {
-			return false;
+			throw new Exception("Reference not found on given route");
 		}
 	}
-	
-	public boolean setLoopIterations(Node node, long iterations) {
-		if (iterations < 0)
-			return false;		
 
-		if (canSetLoopIterations(node) && loopIterationsValid(node, iterations)) {
-			setLoopIterationsNoCheck(node, iterations);
-			return true;
-		}
-		return false;
+	public void setLoopIterations(Node node, long iterations) throws Exception {
+		if (iterations < 0)
+			throw new Exception("Cannot set a negative iteration count");
+
+		checkSetLoopIterations(node);
+		checkLoopIterationsValid(node, iterations);
+	    setLoopIterationsNoCheck(node, iterations);
 	}
 	
-	public boolean canSetLoopIterations(Node node) {
-		Node infiniteLoopNode = node.getEnclosingInfiniteLoopNode();
-		if (infiniteLoopNode != null)
-			return false;
+	public void checkSetLoopIterations(Node node) throws Exception {
+		if (node.getEnclosingInfiniteLoopNode() != null)
+			throw new Exception("Cannot set loop iterations on an infintie loop");
 		
 		if (node.getEnclosingLoopNode() == null)
-			return false;
-		
-		return true;
+			throw new Exception("Must be within a loop to be able to set loop iterations");
 	}
 
 	public long getSetLoopIterations(Node node) {
@@ -93,9 +82,9 @@ public class RouteUnknowns {
 		return enclosingLoopNode.getAttributes().getLoopIterations();
 	}		
 
-	private boolean loopIterationsValid(Node node, long iterations) {		
+	private void checkLoopIterationsValid(Node node, long iterations) throws Exception {		
 		Node loopNode = node.getEnclosingLoopNode();
-		return loopNode.getAttributes().loopIterationsValid(iterations);
+		loopNode.getAttributes().loopIterationsValid(iterations);
 	}
 	
 	private void setLoopIterationsNoCheck(Node node, long iterations) {
@@ -108,78 +97,63 @@ public class RouteUnknowns {
 	}
 
 	// ===================================================================== //
-	// Setting Loop Path Iteration
+	// Setting Loop Path Iterations
 	// ===================================================================== //
-	public boolean setLoopPathIterations(Reference reference, long iterations) {
-		if (!canSetLoopPathIterations(reference, iterations))
-			return false;		
-		
+	public void setLoopPathIterations(Reference reference, long iterations) {
 		for (Node node : m_route.getReferencedNodes(reference)) {
 			setLoopPathIterationsNoCheck(node, iterations);
 		}		
-		return true;
 	}
 	
-	public boolean canSetLoopPathIterations(Reference reference, long iterations) {
+	public void checkSetLoopPathIterations(Reference reference, long iterations) throws Exception {
 		if (iterations < 0)
-			return false;		
+			throw new Exception("Cannot set a negative iteration count");		
 
 		Collection<Node> referencedNodes = m_route.getReferencedNodes(reference);
 		if (referencedNodes.size() > 0) {
 			for (Node node : referencedNodes) {
-				if ((canSetLoopPathIterations(node) == false) || 
-					(loopPathIterationsValid(node, iterations) == false))
-					return false;
+				checkSetLoopPathIterations(node); 
+				checkLoopPathIterationsValid(node, iterations);
 			}		
-			return true;
 		} else {
-			return false;
+			throw new Exception("Reference not found on given route");
 		}
-	}	
+	}
 	
-	public boolean setLoopPathIterations(Node node, long iterations) {
+	public void setLoopPathIterations(Node node, long iterations) throws Exception {
 		if (iterations < 0)
-			return false;		
+			throw new Exception("Cannot set a negative iteration count");
 		
-		if (canSetLoopPathIterations(node) && loopPathIterationsValid(node, iterations)) {
-			setLoopPathIterationsNoCheck(node, iterations);
-			return true;
-		}
-		return false;
+		checkSetLoopPathIterations(node);
+		checkLoopPathIterationsValid(node, iterations);
+		setLoopPathIterationsNoCheck(node, iterations);
 	}
 
-	public boolean canSetLoopPathIterations(Node node) {
-		Node infiniteLoopNode = node.getEnclosingInfiniteLoopNode();
-		if (infiniteLoopNode != null)
-			return false;
+	public void checkSetLoopPathIterations(Node node) throws Exception {
+		if (node.getEnclosingInfiniteLoopNode() != null)
+			throw new Exception("Cannot set loop iterations on an infintie loop");
 
-		Node loopNode = node.getEnclosingLoopNode();
-		if (loopNode == null)
-			return false;
+		if (node.getEnclosingLoopNode() == null)
+			throw new Exception("Must be within a loop to be able to set loop path iterations");
 		
-		Node condNode = node.getEnclosingCondNode();
-		if (condNode == null)
-			return false;
+		if (node.getEnclosingCondNode() == null)
+			throw new Exception("Must be within a condition to be able to set loop path iterations");
 
-		Node optionNode = node.getEnclosingOptionNode();
-		if (optionNode == null)
-			return false;
-
-		return true;
+		if (node.getEnclosingOptionNode() == null)
+			throw new Exception("Must be within a condition to be able to set loop path iterations");
 	}
 
 	public long getSetLoopPathIterations(Node node) {
-		assert(canSetLoopPathIterations(node));
 		Node condNode = node.getEnclosingCondNode();
 		Node optionNode = node.getEnclosingOptionNode();
 	    long iterations = condNode.getAttributes().getSetLoopPathIterations(optionNode);
 	    return iterations;
 	}
 
-	private boolean loopPathIterationsValid(Node node, long iterations) {
+	private void checkLoopPathIterationsValid(Node node, long iterations) throws Exception {
 		Node condNode = node.getEnclosingCondNode();
 		Node optionNode = node.getEnclosingOptionNode();
-		return condNode.getAttributes().loopPathIterationsValid(optionNode, iterations);
+		condNode.getAttributes().loopPathIterationsValid(optionNode, iterations);
 	}
 
 	private void setLoopPathIterationsNoCheck(Node node, long iterations) {
@@ -193,46 +167,35 @@ public class RouteUnknowns {
 	// ===================================================================== //
 	// Setting Loop Scope
 	// ===================================================================== //
-	public boolean setLoopScope(Reference reference, boolean isAbsolute) {
-		if (!canSetLoopScope(reference, isAbsolute))
-			return false;
-		
+	public void setLoopScope(Reference reference, boolean isAbsolute) {
 		for (Node node : m_route.getReferencedNodes(reference)) {
 			setLoopScopeNoCheck(node, isAbsolute);
 		}		
-		return true;
 	}
 
-	public boolean canSetLoopScope(Reference reference, boolean isAbsolute) {
+	public void checkSetLoopScope(Reference reference, boolean isAbsolute) throws Exception {
 		Collection<Node> referencedNodes = m_route.getReferencedNodes(reference);
 		if (referencedNodes.size() > 0) {
 			for (Node node : referencedNodes) {
-				if (canSetLoopScope(node) == false)
-					return false;
+				checkSetLoopScope(node);
 			}		
-			return true;
 		} else {
-			return false;
+			throw new Exception("Reference not found on given route");
 		}
 	}
 	
-	public boolean setLoopScope(Node node, boolean isAbsolute) {
-		if (canSetLoopScope(node)) {
-			setLoopScopeNoCheck(node, isAbsolute);
-			return true;
-		}
-		return false;
+	public void setLoopScope(Node node, boolean isAbsolute) throws Exception {
+		checkSetLoopScope(node);
+		setLoopScopeNoCheck(node, isAbsolute);
 	}	
 
-	public boolean canSetLoopScope(Node node) {
-		return node.getEnclosingLoopNode() != null;
+	public void checkSetLoopScope(Node node) throws Exception {
+		if (node.getEnclosingLoopNode() == null)
+			throw new Exception("Must be within a loop to be able to set loop scope");
 	}
 	
 	public boolean getSetLoopScope(Node node) {
 		Node enclosingLoopNode = node.getEnclosingLoopNode();
-		if (enclosingLoopNode == null) {
-			return false;
-		}
 		return enclosingLoopNode.getAttributes().getIsAbsolute();
 	}		
 	
