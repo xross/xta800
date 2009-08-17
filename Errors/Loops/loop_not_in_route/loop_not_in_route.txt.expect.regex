@@ -1,8 +1,0 @@
-xta: error: failed to set loop iterations on reference: loop2
-function\(\d+\) : \d+.0ns / \d+.0ns test1
-.    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.  \* loop\(\d+\)     : \d+.0ns / \d+.0ns 
-.    .    block\(\d+\)    : 40.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
-.    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-
