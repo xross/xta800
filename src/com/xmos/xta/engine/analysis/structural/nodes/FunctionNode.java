@@ -77,7 +77,11 @@ public class FunctionNode extends IBufferNode {
 		return fn;
 	}
 
-    public String getTypeName() {
+	public String toString(){
+		return m_functionName + "(" + m_id + ")";
+	}
+
+	public String getTypeName() {
         return "function";
     }
 		

@@ -122,6 +122,7 @@ public class StructuralAnalysisEngine {
 		}
 		Collection<FunctionNode> functions = buildGraph(m_controlFlowGraph.getFunctionStartInstructions(), 
 				m_functionStartPcs, engine, true, treeMap, allFunctionObjects);
+
 		if (functions == null) {
 			return false;
 		}				
@@ -134,9 +135,22 @@ public class StructuralAnalysisEngine {
 		detectRecursion(engine, allFunctionObjects, sections.getRecursiveFunctions(nodeId, coreId));
 		
 		engine.provideFeedback("Linking functions...");
-		if (!linkFunctions(engine, allFunctionObjects)) {
-			engine.notify(src, Notifier.NOTIFY_ERROR, "Could not link");
-			return false;
+		linkFunctions(engine, allFunctionObjects);
+		
+		if (!allFunctionObjects.isEmpty()) {
+			String warning = "node " + nodeId + ", core " + coreId + ": functions (";
+			boolean first = true;
+			for (FunctionNode fn : allFunctionObjects.keySet()) {
+				if (!first) {
+					warning += ",";
+				}
+				first = false;
+
+				warning += " " + fn.getFunctionName();
+			}
+			warning += " ) could not be reached. Check branch tables and indirect calls.";
+		
+			engine.notify(src, Notifier.NOTIFY_WARNING, warning);
 		}
 		
 		engine.provideFeedback("Setting parent nodes...");
@@ -175,7 +189,7 @@ public class StructuralAnalysisEngine {
 			collectCurrentGraphNodes(graphStart, currentGraph);
 
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
-			
+
 			long initialPc = graphStart.getStartPc();
 			
 			assert(!basicBlocks.isEmpty());
@@ -665,33 +679,33 @@ public class StructuralAnalysisEngine {
 		}
 	}
 	
-	private boolean linkFunctions(Engine engine, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects) {
+	private void linkFunctions(Engine engine, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects) {
 		int totalWork = 0;
 		Set<FunctionNode> unlinkedFunctions = new TreeSet<FunctionNode>(m_structureGraph.getFunctions());
-		for(FunctionNode fn : allFunctionObjects.keySet()){
-			for(FunctionNode linkedFunction : allFunctionObjects.get(fn)){
+		for (FunctionNode fn : allFunctionObjects.keySet()) {
+			for (FunctionNode linkedFunction : allFunctionObjects.get(fn)) {
 				Node branchTarget = linkedFunction.getBranchTarget();
-				if(branchTarget != null){
+				if (branchTarget != null) {
 					FunctionNode toRemove = null;
-					for(FunctionNode unlinkedFn : unlinkedFunctions){
-						if(unlinkedFn.getStartPc() == branchTarget.getStartPc()){
+					for (FunctionNode unlinkedFn : unlinkedFunctions) {
+						if (unlinkedFn.getStartPc() == branchTarget.getStartPc()) {
 							toRemove = unlinkedFn;
 							break;
 						}
 					}
-					if(toRemove != null){
+					if (toRemove != null) {
 						unlinkedFunctions.remove(toRemove);
 					}
 				}
 			}
-			
 		}
+		
 		m_structureGraph.setUnlinkedFunctions(unlinkedFunctions);
 		
-		for(FunctionNode fn : allFunctionObjects.keySet()){
+		for (FunctionNode fn : allFunctionObjects.keySet()){
 			totalWork += allFunctionObjects.get(fn).size();
 		}
-		engine.startAnalysis("Linking functions:", totalWork);
+		engine.startAnalysis("Linking functions...", totalWork);
 		
 		boolean wasEmptyLastTime = false;
 		while (!allFunctionObjects.isEmpty() && !engine.getAbort()) {
@@ -707,19 +721,18 @@ public class StructuralAnalysisEngine {
 					Collection<FunctionNode> toRemove = new TreeSet<FunctionNode>();
 					for (FunctionNode fnLink : allFunctionObjects.get(fn)) {
 						if (fnLink.getBranchTarget() != null) {
-							if (fnLink.getBranchTarget().getStartPc() == leaf
-									.getStartPc()) {
-									if(SYMBOLIC_LINK){
-										//symbolic link
-										fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction());
-									} else {
-										//copying link
-										List<Node> nodes = new LinkedList<Node>();
-										for(Node node : leaf.getFunction()){
-											nodes.add(node.deepCopy());
-										}
-										fnLink.setFunction(leaf.getFunctionName(), nodes);
+							if (fnLink.getBranchTarget().getStartPc() == leaf.getStartPc()) {
+								if (SYMBOLIC_LINK){
+									//symbolic link
+									fnLink.setFunction(leaf.getFunctionName(), leaf.getFunction());
+								} else {
+									//copying link
+									List<Node> nodes = new LinkedList<Node>();
+									for (Node node : leaf.getFunction()) {
+										nodes.add(node.deepCopy());
 									}
+									fnLink.setFunction(leaf.getFunctionName(), nodes);
+								}
 								
 								toRemove.add(fnLink);
 								engine.provideWorkDone(1);
@@ -731,19 +744,17 @@ public class StructuralAnalysisEngine {
 					}
 					allFunctionObjects.get(fn).removeAll(toRemove);
 				}
-				
 			}
+			
 			for (FunctionNode leaf : leafs) {
 				allFunctionObjects.remove(leaf);
-				
 			}
-			if(wasEmptyLastTime && leafs.isEmpty()){
+			if (wasEmptyLastTime && leafs.isEmpty()) {
 				break;
 			}
 			
 			wasEmptyLastTime = leafs.isEmpty();
 		}
-		return allFunctionObjects.isEmpty();
 	}
 
 	private void setParents() {
