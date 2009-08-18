@@ -116,9 +116,9 @@ public class Sections {
 		return true;
 	}	
 	
-	public boolean addToBranches(CommandSource src, int nodeId, int coreId, long fromPc, long toPc) {
+	public boolean addToBranches(CommandSource src, int nodeId, int coreId, long fromPc, Collection<Long> toPcs) {
 		Branches branches = (Branches)getSection(m_branches, nodeId, coreId);
-		return branches.add(src, fromPc, toPc);
+		return branches.add(src, fromPc, toPcs);
 	}
 
 	public boolean removeFromBranches(CommandSource src, int nodeId, int coreId, long fromPc) {

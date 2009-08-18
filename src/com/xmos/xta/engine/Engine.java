@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -218,8 +219,9 @@ public class Engine implements Notifier {
 			return false;
 		}
 		
-		if (!initialiseGlobalStructure(src, xeLoader, sections, fileFinder))
+		if (!initialiseGlobalStructure(src, xeLoader, sections, fileFinder, false))
 			return false;
+		
 		m_exclusions = new ArrayList<Reference>();
 		m_executableFile = executableFile;
 		m_fileFinder = fileFinder;
@@ -323,11 +325,11 @@ public class Engine implements Notifier {
 			return false;
 			
 		} else if (error == RouteError.COULD_NOT_FIND_ENDPOINT ) {
-			notify(src, Notifier.NOTIFY_ERROR, "could node find any end points");
+			notify(src, Notifier.NOTIFY_ERROR, "could not find any end points");
 			return false;
 			
 		} else if (error == RouteError.COULD_NOT_FIND_STARTPOINT ) {
-			notify(src, Notifier.NOTIFY_ERROR,"could node find any start points");
+			notify(src, Notifier.NOTIFY_ERROR,"could not find any start points");
 			return false;
 			
 		} else if (error == RouteError.ENDPOINTS_MISSING ) {
@@ -925,17 +927,23 @@ public class Engine implements Notifier {
 	// ===================================================================== //
 	// Section Methods
 	// ===================================================================== //
-	public boolean addBranch(CommandSource src, Reference fromRef, Reference toRef) {
+	public boolean addBranch(CommandSource src, Reference fromRef, Collection<Reference> toRefs) {
 		if (!resolveRefernece(fromRef)) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("unresolved reference: %s", fromRef.getRef()));
 			return false;
-		} else if (!resolveRefernece(toRef)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("unresolved reference: %s", toRef.getRef()));
-			return false;
-		}		
+		}
 		
-		if (m_sections.addToBranches(src, m_nodeId, m_coreId, fromRef.getPc(), toRef.getPc())) {
-			if (!initialiseGlobalStructure(src, m_xeLoader, m_sections, m_fileFinder)) {
+		Collection<Long> toRefPcs = new HashSet<Long>();
+		for (Reference toRef : toRefs) {
+			if (!resolveRefernece(toRef)) {
+				notify(src, Notifier.NOTIFY_ERROR, String.format("unresolved reference: %s", toRef.getRef()));
+				return false;
+			}
+			toRefPcs.add(toRef.getPc());
+		}			
+		
+		if (m_sections.addToBranches(src, m_nodeId, m_coreId, fromRef.getPc(), toRefPcs)) {
+			if (!initialiseGlobalStructure(src, m_xeLoader, m_sections, m_fileFinder, true)) {
 				return false;
 			}
 			return true;			
@@ -950,7 +958,7 @@ public class Engine implements Notifier {
 		}
 		
 		if (m_sections.removeFromBranches(src, m_nodeId, m_coreId, fromRef.getPc())) {	
-			if (!initialiseGlobalStructure(src, m_xeLoader, m_sections, m_fileFinder)) {
+			if (!initialiseGlobalStructure(src, m_xeLoader, m_sections, m_fileFinder, true)) {
 				return false;
 			}
 			return true;			
@@ -1021,8 +1029,18 @@ public class Engine implements Notifier {
 	// ===================================================================== //
 	// Private Methods
 	// ===================================================================== //
-	private boolean initialiseGlobalStructure(CommandSource src, XeLoader xeLoader, Sections sections, FileFinder fileFinder) {
+	private boolean initialiseGlobalStructure(CommandSource src, XeLoader xeLoader, Sections sections, FileFinder fileFinder, boolean clearPrevious) {
 		assert(fileFinder != null);
+
+		if (clearPrevious) {
+			// This is a memory optimisation, required for the add/remove branch case.
+			// (i.e. for these operations, if we do not clear this first, the engine 
+			// required double the memory to work).
+			m_instructionDecoder = null;
+			m_structuralGraph = null;
+			m_functionNames = null;
+			m_sourceMapper = null;			
+		}
 		
 		m_loadStartTime = System.currentTimeMillis();
 		notify(src, Notifier.HOLD_MESSAGES, "");

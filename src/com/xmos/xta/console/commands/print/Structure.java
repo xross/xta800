@@ -11,6 +11,8 @@ import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
 public class Structure extends Command {
+	private static final boolean DEBUG_GLOBAL_STRUCTURES = false;
+	
 	private int m_routeId;
 	private int m_nodeId;
 	private boolean m_nodeIdSet;
@@ -85,13 +87,18 @@ public class Structure extends Command {
 	    
 		Collection<Node> nodes = null;
 		if (m_routeId == Engine.ROUTE_ID_GLOBAL) {
-    		if (m_nodeIdSet) {
-    			nodes = getCollection(engine.getStructureGraph().getNode(m_nodeId));
-    		} else {
-    			nodes = new TreeSet<Node>();
-    			nodes.addAll(engine.getStructureGraph().getThreads());    			
-    		}			
-    		displayer.display(nodes);
+			if (DEBUG_GLOBAL_STRUCTURES) {
+				debugGlobalStructures(engine, console, displayer);
+	    		
+			} else {
+	    		if (m_nodeIdSet) {
+	    			nodes = getCollection(engine.getStructureGraph().getNode(m_nodeId));
+	    		} else {
+	    			nodes = new TreeSet<Node>();
+	    			nodes.addAll(engine.getStructureGraph().getThreads());    			
+	    		}			
+	    		displayer.display(nodes);				
+			}			
     		
 		} else {
 			for (Route route : engine.getRoute(m_routeId)) {
@@ -103,5 +110,28 @@ public class Structure extends Command {
 	    		displayer.display(nodes);
 			}
 		}		
+    }
+    
+    private void debugGlobalStructures(Engine engine, Console console, StructureDisplayer displayer) {
+    	console.display("####################################\n");
+    	console.display("# Threads\n");
+    	console.display("####################################\n");
+    	Collection<Node> threads = new TreeSet<Node>();
+    	threads.addAll(engine.getStructureGraph().getThreads());    			
+		displayer.display(threads);				
+
+    	console.display("####################################\n");
+    	console.display("# Functions\n");
+    	console.display("####################################\n");
+		Collection<Node> functions = new TreeSet<Node>();
+		functions.addAll(engine.getStructureGraph().getFunctions());    			
+		displayer.display(functions);				
+    	
+    	console.display("####################################\n");
+    	console.display("# Unlinked Functions\n");
+    	console.display("####################################\n");
+		Collection<Node> unlinkedFunctions = new TreeSet<Node>();
+		unlinkedFunctions.addAll(engine.getStructureGraph().getUnlinkedFunctions());    			
+		displayer.display(unlinkedFunctions);				
     }
 }
