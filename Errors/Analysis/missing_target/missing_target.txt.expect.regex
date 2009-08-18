@@ -1,5 +1,5 @@
-xta: warning: target \(0x10010\) of: 0x10008 blrf \(lu10\) i 0x4 not found in exectauble sections
-xta: error: Could not link
+xta: warning: target \(0x10010\) of: 0x10008 blrf \(lu10\) i 0x4 not found in executable sections
+xta: warning: node 0, core 0: functions \( unnamed_thread_at_0x10000, main \) could not be reached. Check branch tables and indirect calls.
 Current node: 0
 Current core: 0
 Frequency: 400
@@ -9,5 +9,6 @@ WarnAsError: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
-No executable loaded
+Loaded executable: test.xe
+Node: 0, Core: 0 \(Debug information avaliable\)
 No routes analysed

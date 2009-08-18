@@ -16,7 +16,7 @@
   [-]status: Display current status
   [-]version: Displays the version information
   [-]add <option> <arg0> <arg1>...: Add item to given list
-      option: branch <from LABEL_REF> <to LABEL_REF>: Adds the given from/to reference to the branches list
+      option: branch <from LABEL_REF> <to LABEL_REF> <to LABEL_REF> ... etc: Adds the given from/to references to the branches list
       option: exclusion <ANY_REF>: Adds the given reference to the list of exclusions
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
       option: path <from ENDPOINT_REF> <to ENDPOINT_REF>: Sets a path start and end points
