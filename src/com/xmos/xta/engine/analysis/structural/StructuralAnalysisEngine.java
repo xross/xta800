@@ -37,7 +37,7 @@ import com.xmos.xta.engine.sections.Sections;
 import com.xmos.xta.engine.sections.SrcStringInfo;
 
 public class StructuralAnalysisEngine {
-
+    private static final boolean DEBUG = false;
 	private static final boolean SYMBOLIC_LINK = false;
 	
 	private ControlFlowGraph m_controlFlowGraph;
@@ -120,12 +120,13 @@ public class StructuralAnalysisEngine {
 		if (threads == null) {
 			return false;
 		}
+		
 		Collection<FunctionNode> functions = buildGraph(m_controlFlowGraph.getFunctionStartInstructions(), 
 				m_functionStartPcs, engine, true, treeMap, allFunctionObjects);
-
 		if (functions == null) {
 			return false;
-		}				
+		}
+		
 		m_structureGraph = new StructureGraph(threads, functions, pcToEndPoints);
 		
 		removeNoLoad(engine, allFunctionObjects, sections.getNoLoads(nodeId, coreId),
@@ -157,7 +158,9 @@ public class StructuralAnalysisEngine {
 		setParents();
 
 		engine.provideFeedback("Registering config...");
-		setConfig(engine.getConfig());
+		setConfig(engine.getConfig(), m_structureGraph.getThreads());
+		setConfig(engine.getConfig(), m_structureGraph.getFunctions());
+		setConfig(engine.getConfig(), m_structureGraph.getUnlinkedFunctions());
 		
 		engine.provideFeedback("Complete");
 		return true;
@@ -189,6 +192,8 @@ public class StructuralAnalysisEngine {
 			collectCurrentGraphNodes(graphStart, currentGraph);
 
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
+			
+			if (DEBUG) System.out.println(dumpTree(functionName, basicBlocks));
 
 			long initialPc = graphStart.getStartPc();
 			
@@ -770,8 +775,8 @@ public class StructuralAnalysisEngine {
 		}
 	}
 
-	private void setConfig(final Config config) {
-		for (Node node : m_structureGraph.getThreads()) {
+	private void setConfig(final Config config, Collection<FunctionNode> nodes) {
+		for (Node node : nodes) {
 			node.traverse(0, new DefaultNodeTraverser() {
 				public boolean foundInstructionNode(Node node, int depth) {
 					((InstructionNodeAttributes)node.getAttributes()).setConfig(config);				

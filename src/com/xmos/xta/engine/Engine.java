@@ -218,8 +218,9 @@ public class Engine implements Notifier {
 			return false;
 		}
 		
-		if (!initialiseGlobalStructure(src, xeLoader, sections, fileFinder))
+		if (!initialiseGlobalStructure(src, xeLoader, sections, fileFinder, false))
 			return false;
+		
 		m_exclusions = new ArrayList<Reference>();
 		m_executableFile = executableFile;
 		m_fileFinder = fileFinder;
@@ -323,11 +324,11 @@ public class Engine implements Notifier {
 			return false;
 			
 		} else if (error == RouteError.COULD_NOT_FIND_ENDPOINT ) {
-			notify(src, Notifier.NOTIFY_ERROR, "could node find any end points");
+			notify(src, Notifier.NOTIFY_ERROR, "could not find any end points");
 			return false;
 			
 		} else if (error == RouteError.COULD_NOT_FIND_STARTPOINT ) {
-			notify(src, Notifier.NOTIFY_ERROR,"could node find any start points");
+			notify(src, Notifier.NOTIFY_ERROR,"could not find any start points");
 			return false;
 			
 		} else if (error == RouteError.ENDPOINTS_MISSING ) {
@@ -935,7 +936,7 @@ public class Engine implements Notifier {
 		}		
 		
 		if (m_sections.addToBranches(src, m_nodeId, m_coreId, fromRef.getPc(), toRef.getPc())) {
-			if (!initialiseGlobalStructure(src, m_xeLoader, m_sections, m_fileFinder)) {
+			if (!initialiseGlobalStructure(src, m_xeLoader, m_sections, m_fileFinder, true)) {
 				return false;
 			}
 			return true;			
@@ -950,7 +951,7 @@ public class Engine implements Notifier {
 		}
 		
 		if (m_sections.removeFromBranches(src, m_nodeId, m_coreId, fromRef.getPc())) {	
-			if (!initialiseGlobalStructure(src, m_xeLoader, m_sections, m_fileFinder)) {
+			if (!initialiseGlobalStructure(src, m_xeLoader, m_sections, m_fileFinder, true)) {
 				return false;
 			}
 			return true;			
@@ -1021,8 +1022,18 @@ public class Engine implements Notifier {
 	// ===================================================================== //
 	// Private Methods
 	// ===================================================================== //
-	private boolean initialiseGlobalStructure(CommandSource src, XeLoader xeLoader, Sections sections, FileFinder fileFinder) {
+	private boolean initialiseGlobalStructure(CommandSource src, XeLoader xeLoader, Sections sections, FileFinder fileFinder, boolean clearPrevious) {
 		assert(fileFinder != null);
+
+		if (clearPrevious) {
+			// This is a memory optimisation, required for the add/remove branch case.
+			// (i.e. for these operations, if we do not clear this first, the engine 
+			// required double the memory to work).
+			m_instructionDecoder = null;
+			m_structuralGraph = null;
+			m_functionNames = null;
+			m_sourceMapper = null;			
+		}
 		
 		m_loadStartTime = System.currentTimeMillis();
 		notify(src, Notifier.HOLD_MESSAGES, "");
