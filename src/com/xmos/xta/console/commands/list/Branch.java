@@ -151,18 +151,17 @@ public class Branch extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-		Reference fromRef = ReferenceFactory.createReference(
-				m_fromRefString, ReferenceClass.LABEL_REF);
+		Reference fromRef = ReferenceFactory.createReference(m_fromRefString, ReferenceClass.LABEL_REF);
 		
-		Collection<Reference> toRefs = new ArrayList<Reference>(); 
-		for (String toRefString : m_toRefStrings) {
-			Reference ref = ReferenceFactory.createReference(toRefString, ReferenceClass.LABEL_REF);
-			toRefs.add(ref);
-		}
-
     	switch (m_operation) {
     	case ADD:
-			engine.addBranch(getSrc(), fromRef, toRefs);
+    		Collection<Reference> toRefs = new ArrayList<Reference>(); 
+    		for (String toRefString : m_toRefStrings) {
+    			Reference ref = ReferenceFactory.createReference(toRefString, ReferenceClass.LABEL_REF);
+    			toRefs.add(ref);
+    		}
+
+    		engine.addBranch(getSrc(), fromRef, toRefs);
 			break;			
     	case REMOVE:
 			engine.removeBranch(getSrc(), fromRef);
