@@ -80,22 +80,24 @@ public class RouteConstructor {
 		resetParent();
 		boolean seenEndPoint = false;
 		
-		if(m_description.getStartPoint() == null ){
+		if (m_description.getStartPoint() == null ) {
 			return RouteError.STARTPOINT_MISSING;
 		}
-		if(m_description.getEndPoint() == null ){
+		if (m_description.getEndPoint() == null ) {
 			return RouteError.ENDPOINTS_MISSING;
 		}
 		
-		Collection<InstructionNode> startNodes =getReferencedNodes(m_description.getStartPoint());
-		Set<InstructionNode> endNodes = new TreeSet<InstructionNode>();
-		for(Reference endPoint : m_description.getEndPoint()){
-			endNodes.addAll(getReferencedNodes(endPoint));
-		}
-		if(startNodes.isEmpty() ){
+		Collection<InstructionNode> startNodes = getReferencedNodes(m_description.getStartPoint());
+		if (startNodes.isEmpty()) {
 			return RouteError.COULD_NOT_FIND_STARTPOINT;
 		}
-		if(m_description.getMode() == RouteMode.PATH){
+		
+		Set<InstructionNode> endNodes = new TreeSet<InstructionNode>();
+		for (Reference endPoint : m_description.getEndPoint()){
+			endNodes.addAll(getReferencedNodes(endPoint));
+		}
+		
+		if (m_description.getMode() == RouteMode.PATH) {
 			Set<InstructionNode> newEndNodes = new TreeSet<InstructionNode>();
 			for(InstructionNode endNode : endNodes){
 				if(endNode.getParent().whatsBefore(endNode) != null){
