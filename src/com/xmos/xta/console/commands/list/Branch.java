@@ -1,5 +1,8 @@
 package com.xmos.xta.console.commands.list;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
@@ -18,33 +21,32 @@ public class Branch extends Command {
 	};
 
 	private String m_fromRefString;
-	private String m_toRefString;
+	private Collection<String> m_toRefStrings;
 	private Operation m_operation;
 
 	public Branch(Operation operation) {
 		m_operation = operation;
 		m_fromRefString = "";
-		m_toRefString = "";
+		m_toRefStrings = new HashSet<String>();
 	}
 
-	public Branch(String fromRefString, String toRefString, Operation operation) {
+	public Branch(String fromRefString, Collection<String> toRefStrings, Operation operation) {
 		assert(operation == Operation.ADD);
 		m_operation = operation;
 		m_fromRefString = fromRefString;
-		m_toRefString = toRefString;
+		m_toRefStrings = toRefStrings;
 	}
 
 	Branch(String fromRefString, Operation operation) {
 		assert(operation == Operation.REMOVE);
 		m_operation = operation;
 		m_fromRefString = fromRefString;
-		m_toRefString = "";
 	}
 	
 	public int numArgs() {
     	switch (m_operation) {
     	case ADD:
-            return 2;         
+            return 1 + m_toRefStrings.size();         
     	case REMOVE:
             return 1;
     	case LIST:
@@ -58,7 +60,11 @@ public class Branch extends Command {
 	public ArgType[] getArgTypes() {
     	switch (m_operation) {
     	case ADD:
-    		return new Command.ArgType[] {ArgType.LABEL, ArgType.LABEL};
+    		// Note: From the point of view of the console command 
+    		// completion, it wont work after the 10th argument...
+    		return new Command.ArgType[] {
+    				ArgType.LABEL, ArgType.LABEL, ArgType.LABEL, ArgType.LABEL, ArgType.LABEL,
+         			ArgType.LABEL, ArgType.LABEL, ArgType.LABEL, ArgType.LABEL, ArgType.LABEL};
     	case REMOVE:
     	case LIST:
             return super.getArgTypes();
@@ -83,11 +89,18 @@ public class Branch extends Command {
 	public String commandLine() {
     	switch (m_operation) {
     	case ADD:
-    		return "branch " + m_fromRefString + " " + m_toRefString; 
+    		String str = "branch " + m_fromRefString;
+    		for (String toRefString : m_toRefStrings) {
+    			str += " " + toRefString;
+    		}
+    		return str; 
+    		
     	case REMOVE:
     		return "branch " + m_fromRefString;
+    		
     	case LIST:
     		return "branches";
+    		
         default:
         	assert(false);
             return "";
@@ -97,7 +110,7 @@ public class Branch extends Command {
 	public String description(Engine engine, boolean detailed) {
     	switch (m_operation) {
     	case ADD:
-            return "branch <from LABEL_REF> <to LABEL_REF>: Adds the given from/to reference to the branches list";         
+            return "branch <from LABEL_REF> <to LABEL_REF> <to LABEL_REF> ... etc: Adds the given from/to references to the branches list";         
     	case REMOVE:
             return "branch <from LABEL_REF>: Removes the given from reference from the branches list";
     	case LIST:
@@ -113,12 +126,21 @@ public class Branch extends Command {
 			return null;
 				
     	switch (m_operation) {
-    	case ADD:
-    		return new Branch(args[index + 1], args[index + 2], m_operation);            
+    	case ADD:    		
+    		int i = 2;
+    		Collection<String> toRefStrings = new ArrayList<String>();
+    		while (!areArgsDone(args, index + i)) {
+    			toRefStrings.add(args[index + i]);
+    			++i;
+    		}		    		
+    		return new Branch(args[index + 1], toRefStrings, m_operation);  
+    		
     	case REMOVE:
-    		return new Branch(args[index + 1], m_operation);            
+    		return new Branch(args[index + 1], m_operation);   
+    		
     	case LIST:
     		return new Branch(m_operation);            
+    		
         default:
         	assert(false);
             return null;
@@ -131,12 +153,16 @@ public class Branch extends Command {
 
 		Reference fromRef = ReferenceFactory.createReference(
 				m_fromRefString, ReferenceClass.LABEL_REF);
-		Reference toRef = ReferenceFactory.createReference(
-				m_toRefString, ReferenceClass.LABEL_REF);
+		
+		Collection<Reference> toRefs = new ArrayList<Reference>(); 
+		for (String toRefString : m_toRefStrings) {
+			Reference ref = ReferenceFactory.createReference(toRefString, ReferenceClass.LABEL_REF);
+			toRefs.add(ref);
+		}
 
     	switch (m_operation) {
     	case ADD:
-			engine.addBranch(getSrc(), fromRef, toRef);
+			engine.addBranch(getSrc(), fromRef, toRefs);
 			break;			
     	case REMOVE:
 			engine.removeBranch(getSrc(), fromRef);

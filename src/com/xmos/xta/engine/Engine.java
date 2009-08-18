@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -926,16 +927,22 @@ public class Engine implements Notifier {
 	// ===================================================================== //
 	// Section Methods
 	// ===================================================================== //
-	public boolean addBranch(CommandSource src, Reference fromRef, Reference toRef) {
+	public boolean addBranch(CommandSource src, Reference fromRef, Collection<Reference> toRefs) {
 		if (!resolveRefernece(fromRef)) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("unresolved reference: %s", fromRef.getRef()));
 			return false;
-		} else if (!resolveRefernece(toRef)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("unresolved reference: %s", toRef.getRef()));
-			return false;
-		}		
+		}
 		
-		if (m_sections.addToBranches(src, m_nodeId, m_coreId, fromRef.getPc(), toRef.getPc())) {
+		Collection<Long> toRefPcs = new HashSet<Long>();
+		for (Reference toRef : toRefs) {
+			if (!resolveRefernece(toRef)) {
+				notify(src, Notifier.NOTIFY_ERROR, String.format("unresolved reference: %s", toRef.getRef()));
+				return false;
+			}
+			toRefPcs.add(toRef.getPc());
+		}			
+		
+		if (m_sections.addToBranches(src, m_nodeId, m_coreId, fromRef.getPc(), toRefPcs)) {
 			if (!initialiseGlobalStructure(src, m_xeLoader, m_sections, m_fileFinder, true)) {
 				return false;
 			}
