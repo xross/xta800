@@ -1,0 +1,13 @@
+# Only designed to work with 4 threads
+config threads 4
+
+# =========================================================================== #
+# Phy loop must complete in 25 bit times of 10ns
+# =========================================================================== #
+
+add exclusion commandReceived
+analyse path dataReceiveLoop dataReceiveLoop
+set required - 250 ns
+
+print summary
+exit

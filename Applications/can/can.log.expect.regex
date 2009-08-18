@@ -1,0 +1,2 @@
+xcc -Wall -O2  -g source/CanFunctions.xc source/CanExtra.c source/CanAsm.S source/CanPhyRx.S -I include -target=.* -o .*can.xe
+.*Warning: Clock "c" is not placed on specific core \(support may later be deprecated\).
