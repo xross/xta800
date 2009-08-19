@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
-import org.eclipse.core.runtime.IProgressMonitor;
 import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
@@ -65,7 +64,7 @@ public class Engine implements Notifier {
 	private int m_nodeId;
 	private int m_coreId;
 	private Notifier m_notifier;	
-	private IProgressMonitor m_jobMonitor;
+	private ProgressMonitor m_progressMonitor;
 	private String m_srcPaths;
 	private Sections m_sections;
 	private Collection<String> m_functionsVisited;
@@ -92,7 +91,7 @@ public class Engine implements Notifier {
 		m_nodeId = 0;
 		m_coreId = 0;
 		m_srcPaths = ".";
-		m_jobMonitor = null;
+		m_progressMonitor = null;
 		m_sections = new Sections();
 		m_timeOut = -1;
 		m_numErrors = 0;
@@ -373,8 +372,8 @@ public class Engine implements Notifier {
 		if (m_timeOut > 0 && (System.currentTimeMillis() - m_loadStartTime)/1000 > m_timeOut) {
 			return true;
 		}
-		if (m_jobMonitor != null)
-			return m_jobMonitor.isCanceled();
+		if (m_progressMonitor != null)
+			return m_progressMonitor.isCanceled();
 		
 		return false;
 	}
@@ -483,30 +482,30 @@ public class Engine implements Notifier {
 		return m_executableFile;
 	}
 
-	public void setMonitor(IProgressMonitor monitor) {
-		m_jobMonitor = monitor;
+	public void setMonitor(ProgressMonitor monitor) {
+		m_progressMonitor = monitor;
 	}
 	
 	public void provideFeedback(String feedback) {
-		if (m_jobMonitor != null) {
-			m_jobMonitor.subTask(feedback);	
+		if (m_progressMonitor != null) {
+			m_progressMonitor.subTask(feedback);	
 		}		
 	}
 	
 	public void startAnalysis(String task, int functionCount) {
-		if (m_jobMonitor != null) {
-			m_jobMonitor.beginTask(task, functionCount);
+		if (m_progressMonitor != null) {
+			m_progressMonitor.beginTask(task, functionCount);
 		}	
 	}
 	
 	public void provideWorkDone(int work) {
-		if (m_jobMonitor != null) {
-			m_jobMonitor.worked(work);
+		if (m_progressMonitor != null) {
+			m_progressMonitor.worked(work);
 		}
 	}
 	
 	public boolean isBusy() {
-		return m_jobMonitor != null;
+		return m_progressMonitor != null;
 	}
 	
 	public Collection<String> getFunctionsVisited() {
@@ -1050,7 +1049,9 @@ public class Engine implements Notifier {
 		NodeCoreCollection<SourceMapper> newSourceMappers = new NodeCoreCollection<SourceMapper>();
 		
 		for (int nodeId : xeLoader.getNodeIds()){
-			for (int coreId : xeLoader.getCoreIds(nodeId)){
+			for (int coreId : xeLoader.getCoreIds(nodeId)) {
+				provideFeedback(String.format("Processing node: %d, core: %d", nodeId, coreId));
+				
 				InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config);
 
 				newFunctionNames.add(nodeId, coreId, new TreeMap<String, LinkedList<InstructionNode>>());
@@ -1086,7 +1087,8 @@ public class Engine implements Notifier {
 						newFunctionNames.get(nodeId, coreId), fh.getKnownFuncStarts(), threadStartNodes, sections.getLabels(nodeId, coreId));
 				
 				setBranchTargets(id, newFunctionNames.get(nodeId, coreId));
-				
+
+				provideFeedback(String.format("Processing sources..."));				
 				SourceMapper sourceMapper = new SourceMapper(xeLoader, nodeId, coreId, starts, 
 						fileFinder, id, newFunctionNames.get(nodeId, coreId), sections.getLabels(nodeId, coreId));
 				

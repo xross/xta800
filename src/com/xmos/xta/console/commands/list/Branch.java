@@ -41,6 +41,7 @@ public class Branch extends Command {
 		assert(operation == Operation.REMOVE);
 		m_operation = operation;
 		m_fromRefString = fromRefString;
+		m_toRefStrings = new HashSet<String>();
 	}
 	
 	public int numArgs() {

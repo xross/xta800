@@ -34,6 +34,7 @@ import org.eclipse.ui.actions.ActionDelegate;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.sections.SrcStringInfo;
+import com.xmos.xta.gui.GuiProgressMonitor;
 import com.xmos.xta.gui.XtaPlugin;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.GuiFileFinder;
@@ -92,14 +93,12 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
         Job job = new Job("Load: " + xeFileName) {
 			protected IStatus run(IProgressMonitor monitor) {
 				Engine engine = GuiEngine.getEngine();
-				engine.setMonitor(monitor);
+				engine.setMonitor(new GuiProgressMonitor(monitor));
 				boolean success = engine.loadExecutable(GuiEngine.s_guiCommandSrc, xeFile, new GuiFileFinder());					
 				engine.setMonitor(null);
 	        	if (success && (m_action != null)) {	        		
 	        		m_action.setToolTipText("Currently loaded " + xeFile.getAbsolutePath());
-	        	} 
-	        	
-	        	
+	        	} 	        		        	
 	        	
 	        	XtaPlugin plugin = XtaPlugin.getDefault(); 
 	        	String fileHistory = plugin.getPreferenceStore().getString("FileHistory");

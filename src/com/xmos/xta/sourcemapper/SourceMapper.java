@@ -2,6 +2,7 @@ package com.xmos.xta.sourcemapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -127,9 +128,9 @@ public class SourceMapper {
         assert debugEngine != null;
         assert symbolTable != null;
 
-        for (SourceFile sourceFile : sourceFiles){        	
-        	for (SourceLine sourceLine : sourceFile.getSourceLines()){
-            	long lineNumber = sourceLine.getLineNumber();
+        for (SourceFile sourceFile : sourceFiles){    
+        	for (SourceLine sourceLine : sourceFile.getSourceLines()) {        		
+        		long lineNumber = sourceLine.getLineNumber();
 				Collection<Pair<Long,Long>> addressRanges = debugEngine.getAddressRangesMatchingPath(
             			sourceFile.getFullFileName(), lineNumber);
             	Collection<Long> addresses = rangesToAddresses(addressRanges);
@@ -148,7 +149,7 @@ public class SourceMapper {
 
                 	m_pcToFile.put(pc, sourceFile);
                 }
-
+                
             	Collection<Long> statementPcs = debugEngine.getStatementPcsMatchingPath(
             			sourceFile.getFullFileName(), lineNumber);
             	sourceLine.addStatementPcs(statementPcs);
@@ -189,7 +190,7 @@ public class SourceMapper {
 	}
     
 	private List<AssemblyLine> createAssemblyLines() {
-		List<AssemblyLine> asmLines = new LinkedList<AssemblyLine>();
+		List<AssemblyLine> asmLines = new ArrayList<AssemblyLine>();
 		for(InstructionNode instNode : m_instructionDecoder.getInstructions()){
 			AssemblyLine assLine = new AssemblyLine(instNode, m_labels);
 			asmLines.add(assLine);
@@ -205,7 +206,7 @@ public class SourceMapper {
     	
     	for(InstructionNode inst : m_starts){
     		int startIndex = instList.indexOf(inst);
-    		List<AssemblyLine> functionAssemby = new LinkedList<AssemblyLine>();
+    		List<AssemblyLine> functionAssemby = new ArrayList<AssemblyLine>();
     		functionAssemby.add(m_instructions.get(startIndex));
     		int index = startIndex +1;
     		while(index < instList.size() && !m_starts.contains(instList.get(index))){

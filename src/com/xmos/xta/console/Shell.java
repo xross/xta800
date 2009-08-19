@@ -22,6 +22,7 @@ public class Shell {
 	private State m_state;
 	private Console m_console;
     private Notifier m_notifier;
+	private Notifier m_savedNotifier;
     private Engine m_engine;
     private Queue<Command> m_commands;
     private Vector<Command> m_commandHistory;
@@ -44,10 +45,9 @@ public class Shell {
     		Command command = getNextCommand();
     		
             if (exitAllowed(command)) {
-            	Notifier notifier = m_engine.getNotifier();
-            	m_engine.setNotifier(m_notifier);            	
+            	preCommandExecute();
             	command.execute(this, m_engine, m_console);
-            	m_engine.setNotifier(notifier);
+            	postCommandExecute();            	
             }
     	}
     	return m_numTimingViolations;
@@ -101,6 +101,10 @@ public class Shell {
     		m_commandHistory.add(new Invalid(historyString, ""));
     	}    	    	
     }
+    
+	public String getPrompt() {
+		return m_prompt;
+	}
     
     private void initialise(Console console, Engine engine, Notifier notifier) {
 	    m_engine = engine;
@@ -220,8 +224,17 @@ public class Shell {
       	}
         System.exit(1);
 	}
+		
+	private void preCommandExecute() {
+		m_savedNotifier = m_engine.getNotifier();
+    	m_engine.setNotifier(m_notifier);
+    	
+    	if (m_engine.getConfig().m_verbosity >= 10)
+    		m_engine.setMonitor(new ConsoleProgessMonitor(m_console));                           		
+	}
 	
-	public String getPrompt() {
-		return m_prompt;
+	private void postCommandExecute() {
+    	m_engine.setNotifier(m_savedNotifier);
+    	m_engine.setMonitor(null);                           		            			
 	}
 }
