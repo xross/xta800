@@ -132,15 +132,6 @@ public class InfiniteLoopNode extends Node {
 		return true;
 	}
 		
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
-			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
-		
-		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
-		}
-		return false;
-	}
-
 	public Collection<Node> whatsBefore(Node node) {
 		Collection<Node> before = new TreeSet<Node>();
 		if(node == m_loopHeader){
@@ -174,4 +165,11 @@ public class InfiniteLoopNode extends Node {
 		set.addAll(m_loopHeader.getEndNodes());
 		return set;
 	}
+	
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove) {		
+		if (!calledFromAbove) {
+		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);
+		}
+		return false;
+	}	
 }

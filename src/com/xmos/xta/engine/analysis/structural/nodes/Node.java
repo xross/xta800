@@ -281,44 +281,9 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public boolean checkBackTrail(Stack<ReferenceType> referenceTypes) {
-		return checkBackTrail(referenceTypes, null, false, new FunctionCallStatus());
+		return checkBackTrail(referenceTypes, null, false);
 	}
-	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
-			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
 		
-		// Builds up a stack of all the children up to the calling node...
-		Stack<Node> children = new Stack<Node>();
-		for (Node child : getChildren()) {
-			if (child == node)
-				break;
-			
-			children.push(child);
-		}
-		
-		// Now call each of the children.
-		// Note: the use of a stack causes 
-		// them to be called in reverse order.
-		while (!children.empty()) {
-			Node child = children.pop();			
-			if (child.checkBackTrail(referenceTypes, this, true, functionCallStatus))
-				return true;
-		}
-		
-		// Now if we are on are way up, then call the parent...
-		if (!calledFromAbove) {
-			if (m_parent == null) {
-				// We have reached the top of the tree...
-				return false;
-				
-			} else {		
-		        if (m_parent.checkBackTrail(referenceTypes, this, false, functionCallStatus))
-		    	    return true;
-			}
-		}
-		return false;
-	}
-	
 	public String getBackTrace(String backTrace) {
 		if (m_parent != null) {
 			return m_parent.getBackTrace(backTrace);
@@ -377,9 +342,45 @@ public abstract class Node implements Comparable<Node>{
 	public boolean isFolded() {
 		return m_isFolded;
 	}
+	
 	public boolean isSequenceNode() {
 		return false;
 	}
+	
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove) {		
+		if (referenceTypes.peek().getType() != ReferenceType.Type.CALL) {
+			// Builds up a stack of all the children up to the calling node...
+			Stack<Node> children = new Stack<Node>();
+			for (Node child : getChildren()) {
+				if (child == node)
+					break;
+				
+				children.push(child);
+			}
+			
+			// Now call each of the children.
+			// Note: the use of a stack causes 
+			// them to be called in reverse order.
+			while (!children.empty()) {
+				Node child = children.pop();			
+				if (child.checkBackTrail(referenceTypes, this, true))
+					return true;
+			}
+		}
+		
+		// Now if we are on are way up, then call the parent...
+		if (!calledFromAbove) {
+			if (m_parent == null) {
+				// We have reached the top of the tree...
+				return false;
+				
+			} else {		
+		        if (m_parent.checkBackTrail(referenceTypes, this, false))
+		    	    return true;
+			}
+		}			
+		return false;
+	}	
 }
 
 class FunctionCallStatus {

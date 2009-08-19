@@ -84,15 +84,6 @@ public class SelfLoopNode extends Node{
 		return next;
 	}
 		
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
-			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
-		
-		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
-		}
-		return false;
-	}
-
 	public Collection<Node> whatsBefore(Node node) {
 		assert(m_loop == node);
 		Collection<Node> before = new TreeSet<Node>();
@@ -126,5 +117,12 @@ public class SelfLoopNode extends Node{
 		Set<InstructionNode> set = new TreeSet<InstructionNode>();
 		set.addAll(m_loop.getEndNodes());
 		return set;
+	}
+
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove) {		
+		if (!calledFromAbove) {
+		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);
+		}
+		return false;
 	}
 }

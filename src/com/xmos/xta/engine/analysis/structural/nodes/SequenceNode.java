@@ -1,11 +1,12 @@
 package com.xmos.xta.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
+
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -106,15 +107,6 @@ public class SequenceNode extends Node {
 		}
 	}
 
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove,
-			FunctionCallStatus functionCallStatus) {
-
-		if (!calledFromAbove) {
-			return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
-		}
-		return false;
-	}
-
 	public Collection<Node> whatsBefore(Node node) {
 		assert(m_nodes.contains(node));
 		int index = m_nodes.indexOf(node);
@@ -136,7 +128,7 @@ public class SequenceNode extends Node {
 		list.add(m_nodes.get(0));
 		return list;
 	}
-	
+		
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		List<TimeDistributionBuckets> tsbPath = new LinkedList<TimeDistributionBuckets>();
@@ -150,9 +142,17 @@ public class SequenceNode extends Node {
 	public List<Node> getPath() {
 		return m_nodes;
 	}
+	
 	public Set<InstructionNode> getEndNodes() {
 		Set<InstructionNode> set = new TreeSet<InstructionNode>();
 		set.addAll(m_nodes.get(m_nodes.size()-1).getEndNodes());
 		return set;
 	}
+	
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove) {		
+		if (!calledFromAbove) {
+		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);
+		}
+		return false;
+	}		
 }

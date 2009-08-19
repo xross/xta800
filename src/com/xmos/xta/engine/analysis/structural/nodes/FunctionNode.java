@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
+import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 import com.xmos.xta.engine.references.types.ReferenceType;
@@ -183,16 +184,6 @@ public class FunctionNode extends IBufferNode {
 		return true;
 	}	
 	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
-			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
-		
-		if (!calledFromAbove) {
-			functionCallStatus.setStatus(true);
-		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
-		}
-		return false;
-	}	
-
 	public String getBackTrace(String backTrace) {
 		return super.getBackTrace(m_functionName + ":" + backTrace); 
 	}
@@ -244,4 +235,50 @@ public class FunctionNode extends IBufferNode {
 	public void setFunctionName(String string) {
 		m_functionName = string;
 	}
+	
+	private Node m_callNode;
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove) {		
+		if (!calledFromAbove) {
+			ReferenceType referenceType = referenceTypes.peek();
+			
+			// If the next reference we are trying to match is 
+			// a call reference, then we need to find the calling 
+			// (instruction) node and check for a match here...
+			if (referenceType.getType() == ReferenceType.Type.CALL) {
+				if (m_parent != null) {
+
+					// Finds the node previous to this one...
+					Node previousNode = null;
+					for (Node child : m_parent.getChildren()) {
+						if (child == this)
+							break;
+						
+						previousNode = child;
+					}
+					if (previousNode != null) {
+						// Finds the final instruction in the previous node
+						// (which must be the calling instruction..)
+						m_callNode = null;
+						previousNode.traverse(0, new DefaultNodeTraverser() {
+							public boolean foundInstructionNode(Node node, int depth) {
+								m_callNode = node;
+								return true;
+							}
+						});
+						
+						if (m_callNode != null) {
+							if (referenceType.getPc() == m_callNode.getStartPc()) {
+								referenceTypes.pop();
+								if (referenceTypes.empty()) {
+									return true;
+								}								
+							}
+						}
+					}					
+				}
+			}			
+		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);
+		}
+		return false;
+	}	
 }

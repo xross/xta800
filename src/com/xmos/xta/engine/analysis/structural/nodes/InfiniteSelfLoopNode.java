@@ -82,16 +82,6 @@ public class InfiniteSelfLoopNode extends Node{
 		next.add(m_loop);
 		return next;
 	}
-		
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
-			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
-		
-		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
-		}
-		return false;
-	}
-
 
 	public Collection<Node> whatsBefore(Node node) {
 		assert(m_loop == node);
@@ -126,4 +116,11 @@ public class InfiniteSelfLoopNode extends Node{
 		set.addAll(m_loop.getEndNodes());
 		return set;
 	}
+	
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove) {		
+		if (!calledFromAbove) {
+		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);
+		}
+		return false;
+	}	
 }

@@ -96,33 +96,6 @@ public class InstructionNode extends Node {
 		return true;
 	}
 
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove,
-			FunctionCallStatus functionCallStatus) {
-
-		ReferenceType referenceType = referenceTypes.peek();
-
-		boolean isMatch = false;
-		if (referenceType.getPc() == m_inst.getPc()) {
-			if (referenceType.getType() == ReferenceType.Type.CALL) {
-				if (functionCallStatus.getStatus()) {
-					isMatch = true;
-				}
-			} else {
-				isMatch = true;
-			}
-		}
-
-		if (isMatch) {
-			referenceTypes.pop();
-			if (referenceTypes.empty()) {
-				return true;
-			}
-		}
-
-		functionCallStatus.setStatus(false);
-		return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
-	}
-
 	public String getDescription() {
 		return String.format("0x%x: %s %s", 
 				m_inst.getPc(),
@@ -152,9 +125,20 @@ public class InstructionNode extends Node {
 		assert(false);
 		return null;
 	}
+	
 	public Set<InstructionNode> getEndNodes() {
 		Set<InstructionNode> set = new TreeSet<InstructionNode>();
 		set.add(this);
 		return set;
 	}
+	
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove) {
+		if (referenceTypes.peek().getPc() == m_inst.getPc()) {
+			referenceTypes.pop();
+			if (referenceTypes.empty()) {
+				return true;
+			}
+		}
+		return super.checkBackTrail(referenceTypes, node, calledFromAbove);
+	}	
 }

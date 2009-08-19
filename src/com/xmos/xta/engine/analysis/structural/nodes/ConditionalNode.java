@@ -125,15 +125,6 @@ public class ConditionalNode extends Node {
 		return m_isOptional;
 	}
 
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, 
-			boolean calledFromAbove, FunctionCallStatus functionCallStatus) {
-		
-		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, node, calledFromAbove, functionCallStatus);
-		}
-		return false;
-	}	
-
 	public long getError(Case c) {
 		long error = 0;
 		return error;
@@ -172,6 +163,13 @@ public class ConditionalNode extends Node {
 		return new LinkedList<Node> (m_options);
 	}
 
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove) {		
+		if (!calledFromAbove) {
+		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);
+		}
+		return false;
+	}	
+	
 	private Node getOption(Case c, Node ignoreIterationsAboveCond, Collection<Node> nodes) {
 		// Must handle optional conditionals as a special case.. 
 		if ((c == Case.BEST) && (m_isOptional))
