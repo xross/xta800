@@ -19,7 +19,7 @@ remove exclusion *
 add exclusion interS1ThreadInput
 analyse path interS1ThreadOutput interS1ThreadOutput
 set loop - interS1ThreadInnerLoop 24
-set required - 0.192 mhz
+set required - 0.048 mhz
 
 # =========================================================================== #
 # Interpolate S2 Stage
