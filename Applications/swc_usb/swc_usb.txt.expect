@@ -1,5 +1,0 @@
-Route(0) path: physicalStart to deliverFinish
-    Pass with 16 unknowns, Slack: 500.0ns, Required: 5000.0ns, Worst: 4500.0ns, Min Frequency: 359 Mhz
-    Complete paths: 1, Unresolved paths: 0
-
-Pass, Min Frequency: 359 Mhz

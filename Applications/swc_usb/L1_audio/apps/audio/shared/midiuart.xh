@@ -1,0 +1,8 @@
+#ifndef MIDIUART_XH
+#define MIDIUART_XH
+
+void uart_getmidi(in port rx, chanend midi);
+void uart_putmidi(out port tx, chanend midi);
+void repeater(in port p_midi_in, chanend c_midi_in, out port p_midi_out, chanend c_midi_out);
+
+#endif

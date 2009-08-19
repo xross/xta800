@@ -1,0 +1,7 @@
+analyse path left_output right_output
+set required - 0.192 mhz
+analyse path right_output left_output
+set required - 0.192 mhz
+print summary
+exit
+

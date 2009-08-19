@@ -1,0 +1,74 @@
+load apps/audio/xtreme-v2/bin/xtreme-v2.xe
+
+config threads 4
+
+add branch wait1 NextRxWord
+add branch wait2 NextRxWord
+add branch wait1 RxALow
+add branch wait2 RxALow
+
+analyse path ReadDataPidByte NextRxWord
+set required - 133 ns
+analyse path NextRxWord NextRxWord
+set required - 67 ns
+analyse path StoreTailDataOut ReadToken_PID
+set required - 200 ns
+
+
+print summary 
+exit
+
+
+
+
+
+
+
+
+
+OLD
+
+
+load apps/audio/xdk/bin/xdk.xe
+
+add branch right4EndLabel bruRightDefaultLabel
+add branch left4EndLabel bruLeftDefaultLabel
+add branch recordPoll recordVector 
+add branch playPoll playVector 
+
+analyse path right1 right2
+set required - 620 ns
+analyse path right2 right3
+set required - 620 ns
+analyse path right3 right4
+set required - 620 ns
+analyse path right4 left1
+set required - 620 ns
+analyse path left1 left2
+set required - 620 ns
+analyse path left2 left3
+set required - 620 ns
+analyse path left3 left4
+set required - 620 ns
+analyse path left4 right1
+set required - 620 ns
+
+analyse path right1 right3
+set required - 1260 ns
+analyse path right2 right4
+set required - 1260 ns
+analyse path right3 left1
+set required - 1260 ns
+analyse path right4 left2
+set required - 1260 ns
+analyse path left1 left3
+set required - 1260 ns
+analyse path left2 left4
+set required - 1260 ns
+analyse path left3 right1
+set required - 1260 ns
+analyse path left4 right2
+set required - 1260 ns
+
+print summary 1
+exit

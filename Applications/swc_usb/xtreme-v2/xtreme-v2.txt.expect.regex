@@ -1,0 +1,10 @@
+Route\(0\) path: ReadDataPidByte to NextRxWord
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 133.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Route\(1\) path: NextRxWord to NextRxWord
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 67.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Route\(2\) path: StoreTailDataOut to ReadToken_PID
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 200.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Pass, Min Frequency: \d+ Mhz

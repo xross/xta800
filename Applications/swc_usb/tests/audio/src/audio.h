@@ -1,2 +1,0 @@
-#define CMD_SET_SAMFREQ 0x99
-#define CMD_GET_SAMFREQ 0x98
