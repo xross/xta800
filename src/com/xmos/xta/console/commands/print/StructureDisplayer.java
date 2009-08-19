@@ -81,8 +81,7 @@ public class StructureDisplayer {
 
 	private void displayNumPaths(Node node, StringBuffer sb) {
 		if (m_verbosity >= 10)
-			sb.append(String.format(" [%d]", 
-		    		node.getAttributes().getNumPaths())); 		
+			sb.append(String.format(" [%s]", node.getAttributes().getNumPathsStr())); 		
 	}	
 	
 	private void displayDescription(Node node, StringBuffer sb) {

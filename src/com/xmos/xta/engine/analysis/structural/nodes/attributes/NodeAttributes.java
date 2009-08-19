@@ -12,6 +12,8 @@ class IgnoreCondIterationsException extends Exception {}
 class InfiniteIterationsException extends Exception {}
 @SuppressWarnings("serial")
 class CondIterationsNotSetException extends Exception {}
+@SuppressWarnings("serial")
+class NumPathsOverflowException extends Exception {}
 
 public class NodeAttributes {
 	private static final boolean DISABLE_STATS_CACHE = false; 
@@ -103,10 +105,19 @@ public class NodeAttributes {
     	       String.format("Time taken:       %s / %s\n", getTimeTakenStr(Case.WORST), getTimeTakenStr(Case.BEST)) +
                String.format("Thread cycles:    %s / %s\n", getNumCyclesStr(Case.WORST), getNumCyclesStr(Case.BEST)) +
                String.format("Num Instructions: %s / %s\n", getNumInstructionsStr(Case.WORST), getNumInstructionsStr(Case.BEST)) +
-               String.format("Num Fnops:        %s / %s\n", getNumFNopsStr(Case.WORST), getNumFNopsStr(Case.BEST)) +            		   
-               String.format("Num Paths:        %d\n", getNumPaths()) +            		   
+               String.format("Num Fnops:        %s / %s\n", getNumFNopsStr(Case.WORST), getNumFNopsStr(Case.BEST)) +
+               String.format("Num Paths:        %s\n", getNumPathsStr()) +            		   
                String.format("Node Id:          %d\n", m_node.getId());
     }
+	
+	public String getNumPathsStr() {
+		try {
+			return String.format("%d", getNumPaths());
+			
+		} catch (NumPathsOverflowException e) {
+			return "n/a";
+		}		
+	}
 	
 	private String getTimeTakenStr(Case c) {
 	    Status status = new Status();
@@ -163,7 +174,7 @@ public class NodeAttributes {
 		}
 		return String.format("%d", totalIterations);
 	}
-	
+		
 	// ===================================================================== //
 	// Statistics Methods
 	// ===================================================================== //
@@ -246,10 +257,10 @@ public class NodeAttributes {
 		return value;
 	}	
 
-	public long getNumPaths() {
+	public long getNumPaths() throws NumPathsOverflowException {
 		long value = 1;
 		for (Node child : getNode().getChildren()) {
-			value *= child.getAttributes().getNumPaths();
+			value = multiplyNumPaths(value, child.getAttributes().getNumPaths());
 		}
 		return value;
 	}
@@ -538,5 +549,24 @@ public class NodeAttributes {
 	public boolean hasFloatingIterations() {
 		assert(false);
 		return false;
-	}		
+	}
+	
+	// ===================================================================== //
+	// Checked Arithmetic Methods
+	// ===================================================================== //	
+	long addNumPaths(long op1, long op2) throws NumPathsOverflowException {
+		long result = op1 + op2;
+		if (result < 0) {
+			throw new NumPathsOverflowException();
+		}
+		return result;
+	}
+
+	long multiplyNumPaths(long op1, long op2) throws NumPathsOverflowException {
+		long result = op1 * op2;
+		if (result < 0) {
+			throw new NumPathsOverflowException();
+		}
+		return result;
+	}
 }

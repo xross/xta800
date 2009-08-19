@@ -54,7 +54,7 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		return 0;
 	}
 	
-	public long getNumPaths() {
+	public long getNumPaths() throws ArithmeticException {
 		return 1;
 	}
 	

@@ -128,7 +128,7 @@ public class RouteTiming {
 			if (numWarnings > 1)
 				description += "s";
 
-			description += ", Num Paths: " + getNumPaths();
+			description += ", Num Paths: " + m_route.getNode().getAttributes().getNumPathsStr();
 			
 			if (level == Level.DETAILED) {
 				description += ", ";
@@ -242,11 +242,6 @@ public class RouteTiming {
 	private double getWorstTime(Status status) {
 		Node worstCaseSubRoute = m_route.getNode();
 		return worstCaseSubRoute.getAttributes().getTimeTaken(Case.WORST, status, null);
-	}
-	
-	private long getNumPaths() {
-		Node worstCaseSubRoute = m_route.getNode();
-		return worstCaseSubRoute.getAttributes().getNumPaths();		
 	}
 	
     private double getMhz(double ns) {

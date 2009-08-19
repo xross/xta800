@@ -116,14 +116,14 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 		return value;
 	}
 
-	public long getNumPaths() {
+	public long getNumPaths() throws NumPathsOverflowException {
 		long value = 0;
 		for (Node child : getNode().getChildren()) {
-			value += child.getAttributes().getNumPaths();
+			value = addNumPaths(value, child.getAttributes().getNumPaths());
 		}
-		
+
 		if (getNode().isCondOptional()) {
-			value += 1;
+			value = addNumPaths(value, 1);
 		}
 		return value;
 	}
