@@ -1,0 +1,4 @@
+Route\(0\) path: mic_sample to mic_sample
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 20640.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Pass, Min Frequency: \d+ Mhz

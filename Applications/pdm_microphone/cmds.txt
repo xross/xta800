@@ -1,0 +1,8 @@
+analyse path mic_sample mic_sample
+set loop - loop1 6
+set loop - loop2 15
+set required - 20640 ns
+
+print summary
+exit
+
