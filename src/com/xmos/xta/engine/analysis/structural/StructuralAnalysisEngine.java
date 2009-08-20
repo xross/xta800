@@ -38,6 +38,7 @@ import com.xmos.xta.engine.sections.SrcStringInfo;
 
 public class StructuralAnalysisEngine {
     private static final boolean DEBUG = false;
+    private static final boolean DEBUG_GRAPH_TRANSFORMATIONS = false;
 	private static final boolean SYMBOLIC_LINK = false;
 	
 	private ControlFlowGraph m_controlFlowGraph;
@@ -66,11 +67,14 @@ public class StructuralAnalysisEngine {
 		return m_structureGraph;
 	}
 
-	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine, boolean debug, String jobPrefix) {
+	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine, boolean debug, String jobPrefix) {		
+		if (workingSet.size() == 1 && workingSet.iterator().next().getNextNodesSize() == 0) 
+			return true;
 		
-		if(workingSet.size() == 1 && workingSet.iterator().next().getNextNodesSize() == 0) return true;
 		buildDominatorTree(workingSet, treeStart);
-//		System.out.println(dumpTree("tree", workingSet));
+		
+		if (DEBUG_GRAPH_TRANSFORMATIONS) 
+			System.out.println(dumpTree("tree", workingSet));
 		
 		boolean working = true;
 		boolean dominatorTreeUpToDate = false;
@@ -93,7 +97,9 @@ public class StructuralAnalysisEngine {
 						return false;
 					}
 					if (pm.isMatch(node, workingSet, treeStart)) {
-//						System.out.println(dumpTree(pm.getClass().getSimpleName(), workingSet));
+						if (DEBUG_GRAPH_TRANSFORMATIONS) 
+							System.out.println(dumpTree(pm.getClass().getSimpleName(), workingSet));
+						
 						treeStart = pm.getTreeStart();
 						assert (connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;

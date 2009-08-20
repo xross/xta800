@@ -291,16 +291,15 @@ public class Engine implements Notifier {
 			success = doRouteAnalysis(src, routeDescription);
 			
 		} catch (final java.lang.OutOfMemoryError e) {
-			notify(src, Notifier.NOTIFY_ERROR, "out of Memory (Heap)");
+			notify(src, Notifier.NOTIFY_ERROR, "out of memory (heap)");
 			return false;
 
 		} catch (final java.lang.StackOverflowError e) {
-			notify(src, Notifier.NOTIFY_ERROR, "out of Memory (Stack)");
+			notify(src, Notifier.NOTIFY_ERROR, "out of memory (stack)");
 			return false;
 
 		} catch (Exception e) {
-			notify(src, Notifier.NOTIFY_ERROR, "unknown error detected");
-			e.printStackTrace();
+			notify(src, Notifier.NOTIFY_ERROR, String.format("internal error detected (%s)", e.getMessage()));
 			return false;
 		}
 		return success;
@@ -316,7 +315,7 @@ public class Engine implements Notifier {
 
 		notify(src, Notifier.NOTIFY_ANALYSIS_BEGIN, "");		
 		
-		RouteConstructor routeConstructor = new RouteConstructor(this, m_structuralGraph.get(m_nodeId, m_coreId), routeDescription);			
+		RouteConstructor routeConstructor = new RouteConstructor(this, m_structuralGraph.get(m_nodeId, m_coreId), routeDescription);				
 		RouteError error = routeConstructor.analyse(src);		
 
 		if (error == RouteError.NO_ENDPOINTS_FOUND ) {

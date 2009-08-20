@@ -76,7 +76,7 @@ public class RouteConstructor {
 		return m_routes;
 	}
 
-	public RouteError analyse(CommandSource src) {
+	public RouteError analyse(CommandSource src) throws Exception {
 		resetParent();
 		boolean seenEndPoint = false;
 		
@@ -259,8 +259,7 @@ public class RouteConstructor {
 	}
 
 	private boolean makeSubRoute(CommandSource src,Node realStart, boolean seenEndPoint, Collection<InstructionNode> endNodes,
-			Node start) {
-
+			Node start) throws Exception {
 		
 		Collection<Node> workingSet = new TreeSet<Node>();
 		
@@ -296,8 +295,7 @@ public class RouteConstructor {
 			} 
 			
 			Node newGraph = baseNode.deepCopy();
-			newGraph.setParent(null);
-			
+			newGraph.setParent(null);			
 			
 			if (!alreadyContainRoute(newGraph)){
 				m_routes.add(new Route(src, m_engine, newGraph, m_description));
@@ -307,7 +305,9 @@ public class RouteConstructor {
 		return seenEndPoint;
 	}
 	
-	private Node reduceGraph(int depth, Node parentNode, Node startNode, Set<Node> nextNodes){
+	private Node reduceGraph(int depth, Node parentNode, Node startNode, 
+			Set<Node> nextNodes) throws Exception {
+		
 		Set<Node> workingSet = new TreeSet<Node>();
 		findFunction(depth, parentNode, startNode, workingSet, nextNodes);
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
@@ -319,11 +319,15 @@ public class RouteConstructor {
 			System.out.println(before);
 			System.out.println(StructuralAnalysisEngine.dumpTree("broken", workingSet));
 		}
-		assert(workingSet.size() == 1);
+		if (workingSet.size() != 1) {
+			throw new Exception("route construction failed");
+		}		
 		return workingSet.iterator().next();
 	}
 	
-	private Node reduceFunctionGraph(int depth, Node parentNode, Node startNode, Set<Node> nextNodes){
+	private Node reduceFunctionGraph(int depth, Node parentNode, Node startNode, 
+			Set<Node> nextNodes) throws Exception {
+		
 		Set<Node> workingSet = new TreeSet<Node>();
 		workingSet.add(startNode);
 		for (Node next : startNode.getNextNodes()){
@@ -336,11 +340,14 @@ public class RouteConstructor {
 		parentNode.getNextNodes().clear();
 		parentNode.getNextNodes().addAll(parentsNext);
 		
-		assert(workingSet.size() == 1);
-		return workingSet.iterator().next();
+		if (workingSet.size() != 1) {
+			throw new Exception("route construction failed");
+		}
+		return workingSet.iterator().next();			
 	}
 	
-	private void findFunction(int depth, Node parentNode, Node currentNode, Set<Node> seen, Set<Node> functionLasts){
+	private void findFunction(int depth, Node parentNode, Node currentNode, 
+			Set<Node> seen, Set<Node> functionLasts) throws Exception {
 
 		if (seen.contains(currentNode) || currentNode.isNullNode())
 			return;
@@ -365,7 +372,8 @@ public class RouteConstructor {
 	}
 
 	private Node makeNewFunction(int depth, Node parentNode, Node currentNode,
-			Set<Node> seen, Set<Node> functionLasts) {
+			Set<Node> seen, Set<Node> functionLasts) throws Exception {
+		
 		Set<Node> newLasts = new TreeSet<Node>();
 		Node functionContents = reduceFunctionGraph(depth + 1, parentNode, currentNode, newLasts);
 
@@ -395,8 +403,7 @@ public class RouteConstructor {
 		CommonMethods.connect(fn, parentNode);
 		for (Node nextNext : newLasts) {
 			CommonMethods.connect(nextNext, fn);
-		}
-			
+		}			
 		return fn;
 	}
 	
