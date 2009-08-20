@@ -12,5 +12,6 @@ system("xcc -target=$target -march=$arch test.xc -o $genDir/test.xe > $genDir/sc
 }
 system("@ARGV  " .
        "source cmds.txt " .
+       "history " .
        "exit > $genDir/script.txt 2>&1");
 

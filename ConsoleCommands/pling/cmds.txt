@@ -1,23 +1,7 @@
 # This should work, and display the status
 !1
 
-# Check that the !1 is reported as 'status' in the history.
-history
-
-# This should error as the commands start from 1
-!0
-list functions
-
-# This tests that the above !0 comes out in the history
-history
-
-# This should also be an error, as it is trying to execute the earlier !0
-!3
-
-# This should also be an error, as it is trying to execute the earlier !0
-!e
-
-# Checks that the !3 comes out in the history
+# Check that the source of this script is reported in the history
 history
 
 exit

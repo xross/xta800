@@ -60,5 +60,3 @@ print info 99
 unset time 0x10000
 version
 
-history
-

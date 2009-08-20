@@ -22,26 +22,3 @@ No executable loaded
 No routes analysed
 1: status
 2: source cmds.txt
-3: status
-4: history
-xta: cmds.txt:8: error: invalid command
-xta: cmds.txt:9: error: no executable loaded
-1: status
-2: source cmds.txt
-3: status
-4: history
-5: !0
-6: list functions
-7: history
-xta: cmds.txt:15: error: invalid command
-xta: cmds.txt:18: error: invalid command
-1: status
-2: source cmds.txt
-3: status
-4: history
-5: !0
-6: list functions
-7: history
-8: !3
-9: !e
-10: history
