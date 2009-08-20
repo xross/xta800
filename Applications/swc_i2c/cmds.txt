@@ -1,59 +1,94 @@
 #
 # iic_initialise
 #
-analyse path iic_initialise_wait1,iic_phy_wait_start iic_initialise_wait1,iic_phy_wait_stop
+analyse path \
+    iic_initialise_wait1,iic_phy_wait_start \
+    iic_initialise_wait1,iic_phy_wait_stop   
 set required - 25000.0 ns
 
 #
 # iic_phy_master_start
 #
-analyse path iic_write_block1,master_start_call,iic_phy_master_start_wait1,iic_phy_wait_start iic_write_block1,master_start_call,iic_phy_master_start_wait1,iic_phy_wait_stop
+analyse path \
+    iic_write_block1,master_start_call,iic_phy_master_start_wait1,iic_phy_wait_start \
+    iic_write_block1,master_start_call,iic_phy_master_start_wait1,iic_phy_wait_stop
 set required - 600.0 ns
-analyse path iic_write_block1,master_start_call,iic_phy_master_start_wait2,iic_phy_wait_start iic_write_block1,master_start_call,iic_phy_master_start_wait2,iic_phy_wait_stop
+
+analyse path \
+    iic_write_block1,master_start_call,iic_phy_master_start_wait2,iic_phy_wait_start \
+    iic_write_block1,master_start_call,iic_phy_master_start_wait2,iic_phy_wait_stop
 set required - 600.0 ns
 
 #
 # iic_phy_sendBit
 #
-analyse path iic_read_receiveByte,iic_phy_sendBit_start iic_read_receiveByte,iic_phy_sendBit_high
+analyse path \
+    iic_read_receiveByte,iic_phy_sendBit_start \
+    iic_read_receiveByte,iic_phy_sendBit_high
 set required - 1300.0 ns
-analyse path iic_read_receiveByte,iic_phy_sendBit_high iic_read_receiveByte,iic_phy_sendBit_low
+
+analyse path \
+    iic_read_receiveByte,iic_phy_sendBit_high \
+    iic_read_receiveByte,iic_phy_sendBit_low
 set required - 600.0 ns
 
 #
 # iic_phy_receiveBit
 #
-analyse path iic_read_sendByte,iic_phy_receiveBit_start iic_read_sendByte,iic_phy_receiveBit_high
+analyse path \
+    iic_read_sendByte,iic_phy_receiveBit_start \
+    iic_read_sendByte,iic_phy_receiveBit_high
 set required - 1300.0 ns
-analyse path iic_read_sendByte,iic_phy_receiveBit_high iic_read_sendByte,iic_phy_receiveBit_low
+
+analyse path \
+    iic_read_sendByte,iic_phy_receiveBit_high \
+    iic_read_sendByte,iic_phy_receiveBit_low
 set required - 600.0 ns
 
 #
 # iic_phy_sendByte
 #
-analyse path  iic_read_sendByte,iic_phy_sendByte_start iic_read_sendByte,iic_phy_sendByte_high
+analyse path \
+    iic_read_sendByte,iic_phy_sendByte_start \
+    iic_read_sendByte,iic_phy_sendByte_high
 set required - 1300.0 ns
-analyse path  iic_read_sendByte,iic_phy_sendByte_high iic_read_sendByte,iic_phy_sendByte_low
+
+analyse path \
+    iic_read_sendByte,iic_phy_sendByte_high \
+    iic_read_sendByte,iic_phy_sendByte_low
 set required - 600.0 ns
+
 # ----- DISABLED DUE TO ROUTE CONSTRUCTION BUG -----.
-#analyse path  iic_read_sendByte,iic_phy_sendByte_low iic_read_sendByte,iic_phy_sendByte_high
+#analyse path \
+#    iic_read_sendByte,iic_phy_sendByte_low \
+#    iic_read_sendByte,iic_phy_sendByte_high
 #set required - 1300.0 ns
 
 #
 # iic_phy_receiveByte
 #
-analyse path iic_read_receiveByte,iic_phy_receiveByte_start iic_read_receiveByte,iic_phy_receiveByte_high
+analyse path \
+    iic_read_receiveByte,iic_phy_receiveByte_start \
+    iic_read_receiveByte,iic_phy_receiveByte_high
 set required - 1300.0 ns
-analyse path iic_read_receiveByte,iic_phy_receiveByte_high iic_read_receiveByte,iic_phy_receiveByte_low
+
+analyse path \
+    iic_read_receiveByte,iic_phy_receiveByte_high \
+    iic_read_receiveByte,iic_phy_receiveByte_low
 set required - 600.0 ns
+
 # ----- DISABLED DUE TO ROUTE CONSTRUCTION BUG -----.
-#analyse path iic_read_receiveByte,iic_phy_receiveByte_low iic_read_receiveByte,iic_phy_receiveByte_high
+#analyse path \
+#    iic_read_receiveByte,iic_phy_receiveByte_low \
+#    iic_read_receiveByte,iic_phy_receiveByte_high
 #set required - 1300.0 ns
 
 #
 # iic_checkWriteComplete
 #
-analyse path iic_write_block1,iic_checkWriteComplete_start iic_write_block1,iic_checkWriteComplete_stop
+analyse path \
+    iic_write_block1,iic_checkWriteComplete_start \
+    iic_write_block1,iic_checkWriteComplete_stop
 set required - 50000.0 ns
 
 print summary
