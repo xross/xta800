@@ -1,0 +1,37 @@
+Route\(0\) path: iic_phy_wait_start to iic_phy_wait_stop
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 25000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Route\(1\) path: iic_phy_wait_start to iic_phy_wait_stop
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 600.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Route\(2\) path: iic_phy_wait_start to iic_phy_wait_stop
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 600.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Route\(3\) path: iic_phy_sendBit_start to iic_phy_sendBit_high
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1300.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Route\(4\) path: iic_phy_sendBit_high to iic_phy_sendBit_low
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 600.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Route\(5\) path: iic_phy_receiveBit_start to iic_phy_receiveBit_high
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1300.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Route\(6\) path: iic_phy_receiveBit_high to iic_phy_receiveBit_low
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 600.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Route\(7\) path: iic_phy_sendByte_start to iic_phy_sendByte_high
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1300.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Route\(8\) path: iic_phy_sendByte_high to iic_phy_sendByte_low
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 600.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Route\(9\) path: iic_phy_receiveByte_start to iic_phy_receiveByte_high
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1300.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Route\(10\) path: iic_phy_receiveByte_high to iic_phy_receiveByte_low
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 600.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Route\(11\) path: iic_checkWriteComplete_start to iic_checkWriteComplete_stop
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 50000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Pass, Min Frequency: \d+ Mhz
