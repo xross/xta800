@@ -59,12 +59,31 @@ public class Source extends Command {
             try {
             	int lineNumber = 1;
                 String line;
-                while ((line = fp.readLine()) != null) {
-                    line = line.trim();
+                String commandString = "";
+                boolean multilineCommand = false;
+                
+                while ((line = fp.readLine()) != null) {                	
+                    line = line.trim();                    
                     if (line.length() > 0) {            
-                        String[] tokens = line.trim().split("\\s+");
                         
-                    	if (!tokens[0].startsWith("#")) {
+                        if (line.startsWith("#")) {
+                        	// Ignore comment lines...
+                        	
+                        } else if (line.endsWith("\\")) {
+                        	// Handles the line continuation character...
+                        	commandString += " " + line.substring(0, line.length() - 2).trim();                        	
+                        	multilineCommand = true;
+                        	
+                        } else {
+                            if (multilineCommand) {
+                            	commandString += " " + line;
+                            } else {
+                            	commandString = line;
+                            }
+                            multilineCommand = false;
+                        	
+                            String[] tokens = commandString.trim().split("\\s+");
+                            
                     		CommandSource src = new CommandSource(m_fileName, lineNumber);
                             Command command = CommandFactory.buildCommand(src,
                             		tokens, 0, shell.getCommandHistory(), console);
@@ -82,9 +101,10 @@ public class Source extends Command {
 
                             if (invalidCommand) {
                             	String errorMessage = String.format("xta: %s:%d: error: invalid command\n", m_fileName, lineNumber);
-                            	shell.addCommand(new Invalid(line, errorMessage), location+1);
+                            	shell.addCommand(new Invalid(commandString, errorMessage), location+1);
                             	location++;
                             }
+                            commandString = "";
                     	}
                     }
                     ++lineNumber;
