@@ -11,6 +11,7 @@ import com.xmos.xta.console.commands.Invalid;
 import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
+import com.xmos.xta.engine.CommandSource.Type;
 
 public class Shell {
 	enum State {
@@ -98,10 +99,10 @@ public class Shell {
 
     public void setHistoryStrings(Vector<String> historyStrings) {
     	for (String historyString : historyStrings) {
-    		m_commandHistory.add(new Invalid(historyString, ""));
+    		m_commandHistory.add(new Invalid(historyString, "", null));
     	}    	    	
     }
-    
+
 	public String getPrompt() {
 		return m_prompt;
 	}
@@ -117,7 +118,7 @@ public class Shell {
     
     private void processCommandLine(String[] args) {
 	    for (int i = 0; i < args.length; ++i) {
-            CommandSource src = new CommandSource("cmd", 0);
+            CommandSource src = new CommandSource(Type.CMD);
 	    	Command command = CommandFactory.buildCommand(src, args, i, m_commandHistory, m_console);
 	    	if (command == null) {
 	    		usage();
@@ -131,7 +132,9 @@ public class Shell {
     private Command getNextCommand() {
 		Command command = m_commands.peek();
 		if (command != null) {
-    		m_commandHistory.add(command);			
+			if (command.getSrc().m_type != Type.FILE) {
+    		    m_commandHistory.add(command);
+			}
         	m_commands.remove(command);
 			return command;	
 		}
@@ -152,7 +155,7 @@ public class Shell {
                 tokens = tokenGroups.toArray(tokens);
                 
                 boolean isPlingCommand = CommandFactory.isPlingCommand(tokens[0]);
-                CommandSource src = new CommandSource("console", 0);
+                CommandSource src = new CommandSource(Type.CONSOLE);
                 command = CommandFactory.buildCommand(src, tokens, 0, m_commandHistory, m_console);
 
                 // Check command is valid and has consumed entire line
@@ -167,8 +170,8 @@ public class Shell {
                 	invalidCommand = true;
                 }
                 
-                if (invalidCommand) {    
-                	command = new Invalid(line, "Invalid command (Try 'help'..)\n");
+                if (invalidCommand) {
+                	command = new Invalid(line, "Invalid command (Try 'help'..)\n", src);
                 }
             }
     	}    	

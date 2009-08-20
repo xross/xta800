@@ -15,6 +15,7 @@ import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
+import com.xmos.xta.engine.CommandSource.Type;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.engine.references.ReferenceFactory;
@@ -34,7 +35,7 @@ public class GuiEngine {
 	private static Node s_focusNodes;
 	private static Map<String, Map<Integer, GuiRouteProperties>> s_routeProperties;
 
-	public static final CommandSource s_guiCommandSrc = new CommandSource("GUI", 0);  
+	public static final CommandSource s_guiCommandSrc = new CommandSource(Type.GUI);  
 
 	static {
         s_engine = new Engine(new Config());

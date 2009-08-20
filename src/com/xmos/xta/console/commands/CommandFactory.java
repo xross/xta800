@@ -52,7 +52,9 @@ public class CommandFactory {
     	String arg = args[index];    	
         
         if (isPlingCommand(arg)) {
-        	return getPingCommand(arg, commandHistory);
+        	Command command = getPingCommand(arg, commandHistory);
+        	command.setSrc(src);
+        	return command;
         }
     	
     	arg = stripLeadingDash(arg);

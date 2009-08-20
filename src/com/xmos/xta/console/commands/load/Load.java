@@ -73,12 +73,12 @@ public class Load extends Command {
             Command command = CommandFactory.buildCommand(src,
         		tokens, 0, new Vector<Command>(), console);
 		
-            if (command == null)
+            if (command == null) {
             	command = new Invalid(commandString, 
-            		    String.format("Invalid command in source file '%s'\n", commandString));
-            	
+            		    String.format("Invalid command in source file '%s'\n", commandString), src);
+            }
+
 		    command.execute(shell, engine, console);
-		    shell.addToCommandHistory(command);
 	    }		
     }
 }
