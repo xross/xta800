@@ -450,22 +450,6 @@
                toolbarPath="Normal/controls">
          </action>            
          <action
-               class="com.xmos.xta.gui.actions.ActionCore"
-               icon="icons/core.png"
-               id="com.xmos.xta.gui.actions.core"
-               label="Core 0"
-               style="pulldown"
-               toolbarPath="Normal/controls">
-         </action>            
-         <action
-               class="com.xmos.xta.gui.actions.ActionNode"
-               icon="icons/node.png"
-               id="com.xmos.xta.gui.actions.node"
-               label="Node 0"
-               style="pulldown"
-               toolbarPath="Normal/controls">
-         </action>
-         <action
                class="com.xmos.xta.gui.actions.ActionRun"
                icon="icons/run.png"
                id="com.xmos.xta.gui.actions.run"
@@ -478,6 +462,20 @@
                icon="icons/function.png"
                id="com.xmos.xta.gui.actions.function"
                label="Select Function to Analyse"
+               style="pulldown"
+               toolbarPath="Normal/controls">
+         </action>
+         <action
+               class="com.xmos.xta.gui.actions.ActionCore"
+               id="com.xmos.xta.gui.actions.core"
+               label="Core 0"
+               style="pulldown"
+               toolbarPath="Normal/controls">
+         </action>
+         <action
+               class="com.xmos.xta.gui.actions.ActionNode"
+               id="com.xmos.xta.gui.actions.node"
+               label="Node 0"
                style="pulldown"
                toolbarPath="Normal/controls">
          </action>         

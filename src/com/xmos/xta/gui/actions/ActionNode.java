@@ -122,6 +122,7 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 	
 	private void updateCurrentNodeId(int noded) {
 		m_currentNodeId = noded;
+		m_action.setText("Node " + m_currentNodeId);		
 		m_action.setToolTipText("Node " + m_currentNodeId);		
 	}	
 }

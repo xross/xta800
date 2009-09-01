@@ -121,6 +121,7 @@ public class ActionCore extends ActionDelegate implements IPropertyChangeListene
 	
 	private void updateCurrentCoreId(int coreId) {
 		m_currentCoreId = coreId;
+		m_action.setText("Core " + m_currentCoreId);
 		m_action.setToolTipText("Core " + m_currentCoreId);		
 	}
 }
