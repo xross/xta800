@@ -109,7 +109,7 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 	private void updateState() {
 		m_nodeIds.clear();
 		for (Integer nodeId : GuiEngine.getEngine().getXeLoader().getNodeIds()) {
-				m_nodeIds.add(String.format("%d", nodeId));
+			m_nodeIds.add(String.format("%d", nodeId));
 		}
 		updateCurrentNodeId(GuiEngine.getEngine().getNodeId());		
 		
@@ -119,7 +119,7 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 			m_action.setEnabled(true);
 		}
 	}
-	
+
 	private void updateCurrentNodeId(int noded) {
 		m_currentNodeId = noded;
 		m_action.setText("Node " + m_currentNodeId);		
