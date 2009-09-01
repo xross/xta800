@@ -93,7 +93,7 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 		assert(false);
 		return null;
 	}
-	//private MenuItem m_item;
+	
 	public Menu getMenu(Control parent) {
 		Menu menu = new Menu(parent);
 		
