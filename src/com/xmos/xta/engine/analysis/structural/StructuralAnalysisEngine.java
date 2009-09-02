@@ -789,34 +789,27 @@ public class StructuralAnalysisEngine {
 						sb.append(node + " -> " + next + ";");
 					}
 				}
-				
+				/*
 				if(node.isBlockNode() || node.isInstructionNode()){
 					sb.append(node + " [label=\"" + node + "\\n");
-					
-					
-					sb.append("branch targets: " + node.getBranchTargets() + "\\n");
-					/*
-					sb.append("dominated by: ");
-					for(Node dom : node.getDominators()){
-						sb.append( dom + " ");
-					}
-					sb.append("\\n");
-					*/
 					
 					for(XtaInstruction inst : node.getInstructions()){
 						sb.append(inst + "\\n");  
 					}
 					sb.append("\"]; ");
 					
-				} else if(node.isFunctionNode()){
-					sb.append(node + " [label=\"" + node + "\\n");
-					sb.append(((FunctionNode)node).getFunctionName() + "\\n");
+				} else 
+					
+					if(node.isFunctionNode()){
+					sb.append(node + " [label=\"" + node + "\\n ");
+					sb.append(((FunctionNode)node).getFunctionName() + "\\n ");
 					sb.append("\"]; ");
-				}else if(node.isSequenceNode()){
+				} else if(node.isSequenceNode()){
 					sb.append(node + " [label=\"" + node + "\\n");
-					sb.append("0x" + Long.toHexString(node.getStartPc()) + "\\n");
+					sb.append("0x" + Long.toHexString(node.getStartPc()) + "\\n ");
 					sb.append("\"]; ");
-				}
+				} 
+				*/
 			}
 			sb.append("}\n");
 

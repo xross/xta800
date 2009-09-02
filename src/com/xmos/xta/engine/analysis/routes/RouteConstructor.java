@@ -96,7 +96,7 @@ public class RouteConstructor {
 		for (Reference endPoint : m_description.getEndPoint()){
 			endNodes.addAll(getReferencedNodes(endPoint));
 		}
-		
+
 		if (m_description.getMode() == RouteMode.PATH) {
 			Set<InstructionNode> newEndNodes = new TreeSet<InstructionNode>();
 			for(InstructionNode endNode : endNodes){
@@ -130,7 +130,7 @@ public class RouteConstructor {
 		boolean notFoundFunctionYet = true;
 		for (Node start : startNodes) {
 			resetParent();
-			Node realStart = start;
+			InstructionNode realStart = (InstructionNode) start;
 			while(parentIsBetterThanChild(start)){
 				start = start.getParent();
 			}
@@ -144,15 +144,28 @@ public class RouteConstructor {
 							start.setParent(null);
 							m_routes.add(new Route(src, m_engine, start.deepCopy(), m_description));
 						} else {
-							seenEndPoint = makeSubRoute(src, realStart, seenEndPoint, endNodes, start);
+							
+							try {
+								seenEndPoint = makeSubRoute(src, realStart,
+										seenEndPoint, endNodes, start, true);
+							} catch (Exception e) {
+									seenEndPoint = makeSubRoute(src, realStart,
+											seenEndPoint, endNodes, start, false);
+								}
 						}
+						
 						notFoundFunctionYet = false;
 					}
 				}
 			} else {
-				seenEndPoint = makeSubRoute(src, realStart, seenEndPoint, endNodes, start);
+				try {
+					seenEndPoint = makeSubRoute(src, realStart, 
+							seenEndPoint, endNodes, start, true);
+				} catch (Exception e) {
+					seenEndPoint = makeSubRoute(src, realStart, 
+							seenEndPoint, endNodes, start, false);
+				}
 			}
-			
 		}
 		setParents();
 		setUnknowns();			
@@ -178,8 +191,6 @@ public class RouteConstructor {
 		Set<Node> containedEndPoints = new TreeSet<Node>();
 		Set<Node> currentEndNodes = new TreeSet<Node>();	
 		if (explore_debug) System.out.println("\nexploring node " + currentNode+ " 0x" + Long.toHexString(currentNode.getStartPc()) + " from " + parent + " "+ currentNode.getEndNodes());
-
-
 		if(currentNode.isInstructionNode()){
 			if(m_exclusions.contains(currentNode) && !workingSet.isEmpty()){
 				exclusions.add(currentNode);
@@ -233,7 +244,6 @@ public class RouteConstructor {
 				return exploreIntoCurrentNode(start, node, workingSet, endNodes, parent, currentNode);
 			}
 		}
-		
 	}
 
 	private boolean parentIsBetterThanChild(Node child) {
@@ -258,8 +268,19 @@ public class RouteConstructor {
 		return false;
 	}
 
-	private boolean makeSubRoute(CommandSource src,Node realStart, boolean seenEndPoint, Collection<InstructionNode> endNodes,
-			Node start) throws Exception {
+	/**
+	 * 
+	 * @param src					- 
+	 * @param startInstruction		- the instruction that the route begins at
+	 * @param seenEndPoint			- if true then an end node has been seen on this route
+	 * @param endNodes				- a list of the nodes that the route terminates on
+	 * @param start					- the greatest parent that begins with the startInstruction and contains no exclusions
+	 * @param addFunctionWrappers	- to solve the function wrappers problem
+	 * @return						- true if an end point has been seen false otherwise
+	 * @throws Exception			- fails if the jvm dies for some reason or one of the endless assertions fails
+	 */
+	private boolean makeSubRoute(CommandSource src, InstructionNode startInstruction, boolean seenEndPoint, Collection<InstructionNode> endNodes,
+			Node start, boolean addFunctionWrappers) throws Exception {
 		
 		Collection<Node> workingSet = new TreeSet<Node>();
 		
@@ -267,25 +288,48 @@ public class RouteConstructor {
 		m_excludedRouteNodes = new TreeSet<Node>();
 		NodeWrapper startNodeWrapper = new NodeWrapper(start);
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
-		seenEndPoint |= explore(realStart, startNodeWrapper, workingSet, endNodes, null);
+		seenEndPoint |= explore(startInstruction, startNodeWrapper, workingSet, endNodes, null);
 		if(explore_debug) System.out.println();
+		if (explore_debug) System.out.println( StructuralAnalysisEngine.dumpTree("route_straight_after",  workingSet));
 		assert(cfgSanityCheck(workingSet));						
 		pruneGraphOfExcludedPaths(workingSet);
+		if (explore_debug) System.out.println( StructuralAnalysisEngine.dumpTree("pruned",  workingSet));
 		assert(cfgSanityCheck(workingSet));
 		if (!workingSet.isEmpty()){
-			assert(cfgSanityCheck(workingSet));
-			assert(cfgSanityCheck(workingSet));
 			
-			Node newStart = makeBasicBlocks(startNodeWrapper.m_node, endNodes, workingSet);
+			assert(cfgSanityCheck(workingSet));
+			if(explore_debug) System.out.println("think the graph origanally started at " + startInstruction);
+			if(explore_debug) System.out.println("think the graph actually starts at " + start);
+			Node newStart = makeBasicBlocks(startInstruction, endNodes, workingSet);
 			
+			if(explore_debug) System.out.println("now the graph starts at " + newStart);
+			if (explore_debug) System.out.println( StructuralAnalysisEngine.dumpTree("blocked",  workingSet));
 			assert(cfgSanityCheck(workingSet));
 			
 			addTerminator(workingSet);
 			
 			assert(workingSet.contains(newStart));
 			
-			//System.err.println( StructuralAnalysisEngine.dumpTree("route_before",  workingSet));
-			Node baseNode = reduceGraph(0, null, newStart, new TreeSet<Node>());
+			Node baseNode = null;
+			if(addFunctionWrappers){
+				baseNode = reduceGraph(0, null, newStart,new TreeSet<Node>());
+			} else {
+				
+				
+				
+				sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
+				
+				assert(cfgSanityCheck(workingSet));
+				
+				if(workingSet.size() != 1){
+					System.err.println( StructuralAnalysisEngine.dumpTree("route_after",  workingSet));
+				}
+				
+				assert(workingSet.size() == 1);
+				
+				baseNode = workingSet.iterator().next();
+
+			}
 			sae.normaliseGraph(baseNode);
 			
 			assert(!baseNode.isInfiniteLoopNode());
@@ -536,37 +580,44 @@ public class RouteConstructor {
 		return seenEndPoint;
 	}
 
-	private Node makeBasicBlocks(Node start, Collection<InstructionNode> endNodes, Collection<Node> workingSet) {
-		// from the start instruction crawl downwards stopping at basic block
-		// boundaries
-		Node startBlock = null;
-		if(start.isInstructionNode()){
-			InstructionNode currentNode = (InstructionNode)start;
+	private Node makeBasicBlocks(InstructionNode startInstruction, Collection<InstructionNode> endNodes, Collection<Node> workingSet) {
+		//first search the working set to find the node that contains the start instruction
+		Node beginingOfFirstBlock = null;
+		for(Node node : workingSet){
+			if((node.getContainedNodes().contains(startInstruction) &&beginingOfFirstBlock == null )|| node == startInstruction){
+				beginingOfFirstBlock = node;
+			}
+		}
+		assert(beginingOfFirstBlock != null);
+		Node startNode = null;
+		if(beginingOfFirstBlock.isInstructionNode()){
+			//if the sequence starts with an instruction then a new block will have to be made
+			InstructionNode currentNode = startInstruction;
 			List<InstructionNode> startList = new LinkedList<InstructionNode>();
-			
 			startList.add(currentNode);
-	
 			while (currentNode.getNextNodesSize() == 1 
 					&& currentNode.getNextNode().isInstructionNode() 
 					&& !startList.contains(currentNode.getNextNode())) {
 				currentNode = (InstructionNode)currentNode.getNextNode();
 				startList.add(currentNode);
 			}
-			startBlock = new BlockNode(startList);
+			startNode = new BlockNode(startList);
 			workingSet.removeAll(startList);
-			workingSet.add(startBlock);
+			workingSet.add(startNode);
 	
 			for (Node next : currentNode.getNextNodes()) {
 				next.removePrevNode(currentNode);
-				CommonMethods.connect(next, startBlock);
+				CommonMethods.connect(next, startNode);
 			}
-			for(Node prev  : start.getPrevNodes()){
-				prev.removeNextNode(start);
-				CommonMethods.connect(startBlock, prev);
+			for(Node prev  : startInstruction.getPrevNodes()){
+				prev.removeNextNode(startInstruction);
+				CommonMethods.connect(startNode, prev);
 			}
 		} else {
-			startBlock = start;
+			//otherwise that one will do
+			startNode = beginingOfFirstBlock;
 		}
+		
 		// from every end node in the working set crawl upwards stopping at
 		// basic block boundaries
 		for (Node endNode : endNodes) {
@@ -592,7 +643,8 @@ public class RouteConstructor {
 				}
 			}
 		}
-		return startBlock;
+		assert(workingSet.contains(startNode));
+		return startNode;
 	}
 	
 	private void pruneGraphOfExcludedPaths(Collection<Node> workingSet) {

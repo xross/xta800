@@ -121,7 +121,7 @@ public class SuccessorAdder {
 			CommonMethods.connect(target, instruction);
 		} else {
 			m_notifier.notify(src, Notifier.NOTIFY_WARNING, "target ("+ String.format("0x%x", pc) + 
-					") of: " + instruction + " not found in executable sections");
+					") of: " + ((InstructionNode)instruction).getXtaInstruction().toString() + " not found in executable sections");
 		}
 	}
 }
