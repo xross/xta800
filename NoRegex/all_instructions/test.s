@@ -18,8 +18,8 @@ main:
     bau r0
     bitrev r0, r0
     bla r0
-    blacp 1023
-    blacp 1048575
+    bla cp[1023] 
+    bla cp[1048575]
     blat 63
     blat 65535
     bl 1023

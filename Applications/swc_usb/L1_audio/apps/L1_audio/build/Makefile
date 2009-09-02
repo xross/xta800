@@ -29,7 +29,7 @@ TEST_INCLUDES  	= -I $(XUD_INC_DIR) \
 
 #ADAT            = -DADAT
 ADAT            = -DSPDIF
-BUILD_FLAGS   		= -DASYNC $(ADAT) -g -Wall -O3 -D UIFM_MODE=2 -fall-stream-select \
+BUILD_FLAGS   		= -DASYNC $(ADAT) -g -Wall -O3 -save-temps -D UIFM_MODE=2 -fall-stream-select \
 									-D PRODUCT='"Xtreme "' \
 					  -D VENDOR_LSB=0x92 -D VENDOR_MSB=0x0A -D PRODUCT_LSB=0x11 -D PRODUCT_MSB=0x70 -target=XS1-L1A-TQ128 -D G1
 
