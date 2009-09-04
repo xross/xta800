@@ -167,12 +167,17 @@ public class RouteConstructor {
 			
 			Node newStart = makeBasicBlocks(startInstruction, endNodes, workingSet);
 			
+			//System.out.println(StructuralAnalysisEngine.dumpTree("broken", workingSet));
+			//System.out.println("tree start:" +newStart);
+			
+			
+			
 			addTerminator(workingSet);
-			
+			assert(cfgSanityCheck(workingSet));
 			StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
-			
 			sae.createStructure(workingSet, newStart, m_engine, "Analysing route");
-
+			assert(cfgSanityCheck(workingSet));
+			
 			assert(cfgSanityCheck(workingSet));
 			assert(workingSet.size() == 1);
 			
@@ -307,13 +312,7 @@ public class RouteConstructor {
 				Node firstFunctionNode = currentNode.getImmediateChildren().get(0);
 				
 				Node firstInstructionNode = currentNode; 
-				while(!firstInstructionNode.isInstructionNode()){
-					assert(firstInstructionNode.getImmediateChildren().size() == 1);
-					firstInstructionNode = firstInstructionNode.getImmediateChildren().get(0);
-				}
-				assert(firstInstructionNode.isInstructionNode());
-				//do the analysis of the function
-				InstructionNode functionStartNode = (InstructionNode)firstInstructionNode;
+				InstructionNode functionStartNode = findFirstInstruction(firstInstructionNode);
 				
 				
 				if(m_exclusions.contains(functionStartNode) && firstNodeAdded){
@@ -390,6 +389,14 @@ public class RouteConstructor {
 		return seenEndPoint;
 	}
 
+	private InstructionNode findFirstInstruction(Node firstInstructionNode) {
+		while(!firstInstructionNode.isInstructionNode()){
+			assert(firstInstructionNode.getImmediateChildren().size() == 1);
+			firstInstructionNode = firstInstructionNode.getImmediateChildren().get(0);
+		}
+		assert(firstInstructionNode.isInstructionNode());
+		return (InstructionNode)firstInstructionNode;
+	}
 
 	private boolean alreadyContainRoute(Node newGraph) {
 
@@ -412,7 +419,6 @@ public class RouteConstructor {
 		    		} else {
 		    			nodeList.add(node.getTypeName());
 		    		}
-		    		
 		        	return true;
 		    	}
 		    });	 
@@ -446,10 +452,22 @@ public class RouteConstructor {
 
 	private Node makeBasicBlocks(InstructionNode startInstruction, Collection<InstructionNode> endNodes, Collection<Node> workingSet) {
 		//first search the working set to find the node that contains the start instruction
+		
+		
+		//System.out.println(StructuralAnalysisEngine.dumpTree("beforebasicblock", workingSet));
 		Node beginingOfFirstBlock = null;
 		for(Node node : workingSet){
-			if((node.getContainedNodes().contains(startInstruction) &&beginingOfFirstBlock == null )|| node == startInstruction){
-				beginingOfFirstBlock = node;
+			
+			//System.out.println(node + " contains the start instruction " + node.getContainedNodes().contains(startInstruction));
+			
+			
+			if((node.getContainedNodes().contains(startInstruction) && beginingOfFirstBlock == null )|| node == startInstruction){
+				
+				if(findFirstInstruction(node) == startInstruction){
+					beginingOfFirstBlock = node;
+				}
+				
+				
 			}
 		}
 		assert(beginingOfFirstBlock != null);

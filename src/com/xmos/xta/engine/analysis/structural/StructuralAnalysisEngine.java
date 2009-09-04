@@ -73,8 +73,11 @@ public class StructuralAnalysisEngine {
 		
 		buildDominatorTree(workingSet, treeStart);
 		
-		if (DEBUG_GRAPH_TRANSFORMATIONS) 
-			System.out.println(dumpTree("tree", workingSet));
+		if (DEBUG_GRAPH_TRANSFORMATIONS) {
+			System.out.println(dumpTree("start_tree", workingSet));
+			System.out.println("Tree starts at " + treeStart);
+		}
+			
 		
 		boolean working = true;
 		boolean dominatorTreeUpToDate = false;
@@ -97,10 +100,15 @@ public class StructuralAnalysisEngine {
 						return false;
 					}
 					if (pm.isMatch(node, workingSet, treeStart)) {
-						if (DEBUG_GRAPH_TRANSFORMATIONS) 
+						if (DEBUG_GRAPH_TRANSFORMATIONS) {
 							System.out.println(dumpTree(pm.getClass().getSimpleName(), workingSet));
+							System.out.println("Tree now starts at " +pm.getTreeStart());
+						}
+							
 						
 						treeStart = pm.getTreeStart();
+						
+						assert(workingSet.contains(treeStart));
 						assert (connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
 						working = true;
