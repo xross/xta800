@@ -27,8 +27,8 @@ public class NullNode extends IBufferNode {
 		return new LinkedList<Node>();
 	}
 
-	public Collection<Node> getContainedNodes() {
-		return new LinkedList<Node>();
+	public Collection<InstructionNode> getContainedNodes() {
+		return new LinkedList<InstructionNode>();
 	}
 
 	public List<Node> getImmediateChildren() {

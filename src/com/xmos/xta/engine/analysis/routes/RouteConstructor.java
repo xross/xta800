@@ -92,10 +92,6 @@ public class RouteConstructor {
 		
 		Set<InstructionNode> endNodes = new TreeSet<InstructionNode>();
 		findEndInstructions(endNodes);
-
-		//for(InstructionNode node : endNodes){
-		//	System.out.println("end node: " + node + " "+ node.getXtaInstruction());
-		//}
 		
 		
 		boolean notFoundFunctionYet = true;
@@ -161,25 +157,21 @@ public class RouteConstructor {
 		m_structureGraph.removeLinks();
 		m_excludedRouteNodes = new TreeSet<Node>();
 		NodeWrapper startNodeWrapper = new NodeWrapper(start);
-		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
 		
 		seenEndPoint |= explore(startInstruction, startNodeWrapper, workingSet, endNodes, null);
-		
-		//System.out.println(StructuralAnalysisEngine.dumpTree("eek", workingSet));
-		
 		assert(cfgSanityCheck(workingSet));	
+		
 		pruneGraphOfExcludedPaths(workingSet);
-		assert(cfgSanityCheck(workingSet));
 		
 		if (!workingSet.isEmpty()){
 			
 			Node newStart = makeBasicBlocks(startInstruction, endNodes, workingSet);
-			assert(cfgSanityCheck(workingSet));
-			assert(workingSet.contains(newStart));
 			
 			addTerminator(workingSet);
-
-			sae.createStructure(workingSet, newStart, m_engine, true, "Analysing route");
+			
+			StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
+			
+			sae.createStructure(workingSet, newStart, m_engine, "Analysing route");
 
 			assert(cfgSanityCheck(workingSet));
 			assert(workingSet.size() == 1);
@@ -200,7 +192,6 @@ public class RouteConstructor {
 			if (!alreadyContainRoute(newGraph)){
 				m_routes.add(new Route(src, m_engine, newGraph, m_description));
 			}
-			
 		}
 		return seenEndPoint;
 	}
@@ -218,13 +209,11 @@ public class RouteConstructor {
 		
 		Node currentNode = node.m_node;
 		
-		//System.out.println("on node " + currentNode + " 0x" + Long.toHexString(currentNode.getStartPc()));
 		Collection<Node> currentNodesExclusions = new TreeSet<Node>();
 		Set<Node> containedEndPoints = new TreeSet<Node>();
 		Set<Node> currentEndNodes = new TreeSet<Node>();	
 		
 		if(currentNode.isInstructionNode()){
-			//FIXME
 			if(m_exclusions.contains(currentNode) && !workingSet.isEmpty()){
 				currentNodesExclusions.add(currentNode);
 			}
@@ -239,10 +228,6 @@ public class RouteConstructor {
 			containedEndPoints.retainAll(currentNode.getContainedNodes());
 			currentEndNodes.addAll(currentNode.getEndNodes());
 		}
-		
-		//System.out.println("\tcurrent nodes exclusions: " + currentNodesExclusions);
-		//System.out.println("\tcurrent nodes end points: " + containedEndPoints);
-		//System.out.println("\tcurrent nodes end nodes : " + currentEndNodes + "\n");
 		
 		if(currentNodesExclusions.isEmpty()){
 
@@ -303,9 +288,6 @@ public class RouteConstructor {
 		boolean seenEndPoint = false;
 		assert (!currentNode.getImmediateChildren().isEmpty());
 		
-		//if the currentNode is a functionNode then we can perform a whole new analysis on it
-		//deal with exclusions!
-		
 		if(currentNode.isFunctionNode()){
 			//the node contains end instructions?
 			if(!containedEndPoints.isEmpty()){
@@ -333,13 +315,12 @@ public class RouteConstructor {
 				//do the analysis of the function
 				InstructionNode functionStartNode = (InstructionNode)firstInstructionNode;
 				
-				if(firstNodeAdded && m_exclusions.contains(functionStartNode)){
-					//System.out.println("found " + functionStartNode + " when was at node " + currentNode + " with parent " + parent);
-					//makeConnection(node, parent);
+				
+				if(m_exclusions.contains(functionStartNode) && firstNodeAdded){
+
 					m_excludedRouteNodes.add(parent);
 					return false;
 				}
-				
 				
 				NodeWrapper functionNodeWrapper = new NodeWrapper(firstFunctionNode);
 				Collection<InstructionNode> functionEndNodes = currentNode.getEndNodes();
@@ -347,7 +328,7 @@ public class RouteConstructor {
 				seenEndPoint |= explore(functionStartNode, functionNodeWrapper, newWorkingSet, functionEndNodes, null);
 				assert(cfgSanityCheck(newWorkingSet));	
 				pruneGraphOfExcludedPaths(newWorkingSet);
-				assert(cfgSanityCheck(newWorkingSet));
+				
 				
 				//there should be nothing in the working set that is excluded now
 				for(Node nodes : newWorkingSet){
@@ -361,9 +342,6 @@ public class RouteConstructor {
 				if(!newWorkingSet.isEmpty()){
 
 					Node newStart = makeBasicBlocks(functionStartNode, functionEndNodes, newWorkingSet);
-					assert(cfgSanityCheck(newWorkingSet));
-					assert(newWorkingSet.contains(newStart));
-					
 					
 					//check that there are no instruction nodes in the graph.
 					for(Node graphNode : newWorkingSet){
@@ -371,27 +349,35 @@ public class RouteConstructor {
 					}
 					
 					StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
+					
 					addTerminator(newWorkingSet);
 					
-					sae.createStructure(newWorkingSet, newStart, m_engine, true, "Analysing sub route");
+					sae.createStructure(newWorkingSet, newStart, m_engine, "Analysing sub route");
 					
 					assert(newWorkingSet.size() == 1);
 					Node newCurrentNode = newWorkingSet.iterator().next();
 					
+					sae.normaliseGraph(newCurrentNode);
+					
 					FunctionNode replacementFunction = new FunctionNode(newCurrentNode,currentFunction.getFunctionName());
-					//may have a problem with parents here
 					
 					replacementFunction.getNextNodes().addAll(currentFunction.getNextNodes());
 					
 					//the replacement function should be without exclusions and end points
 					//maybe check this
 					
+					for(Node containedInstruction : currentFunction.getContainedNodes()){
+						//assert(!m_exclusions.contains(containedInstruction) && firstNodeAdded);
+						assert(!endNodes.contains(containedInstruction));
+					}
+					
 					seenEndPoint |= exploreWhatsNext(startInstruction, workingSet, endNodes, currentNode, parent, replacementFunction);
+				} else {
+					//probably should add the parent to the list of excluded route nodes
 				}
 			}
 			
 		} else {
-			//at this point is should be noticed that the node could have been excluded
 			for(Node child : currentNode.getImmediateChildren()){
 				NodeWrapper childWrapper = new NodeWrapper(child);
 				seenEndPoint |= explore(startInstruction, childWrapper, workingSet, endNodes, parent);
@@ -403,25 +389,7 @@ public class RouteConstructor {
 
 		return seenEndPoint;
 	}
-	/*
-	
-	private boolean exploreIntoCurrentNode(InstructionNode start, Collection<Node> workingSet, Collection<InstructionNode> endNodes,
-			Node currentNode, NodeWrapper node, Node parent, Collection<Node> currentNodesExclusions, Set<Node> containedEndPoints ) {
-		boolean seenEndPoint = false;
-		assert (!currentNode.getImmediateChildren().isEmpty());
-		
-		//if the currentNode is a functionNode then we can perform a whole new analysis on it
-		
-		for(Node child : currentNode.getImmediateChildren()){
-			NodeWrapper childWrapper = new NodeWrapper(child);
-			seenEndPoint |= explore(start, childWrapper, workingSet, endNodes, parent);
-			if(parent == null) {
-				node.m_node = childWrapper.m_node;
-			}
-		}
-		return seenEndPoint;
-	}
-	*/
+
 
 	private boolean alreadyContainRoute(Node newGraph) {
 
@@ -451,11 +419,8 @@ public class RouteConstructor {
 			
 			if(newNodeList.containsAll(nodeList)){
 				return true;
-			}
-			
+			}	
 		}
-
-	
 		return false;
 	}
 
@@ -543,6 +508,7 @@ public class RouteConstructor {
 			}
 		}
 		assert(workingSet.contains(startNode));
+		assert(cfgSanityCheck(workingSet));
 		return startNode;
 	}
 	
@@ -559,6 +525,7 @@ public class RouteConstructor {
 			m_excludedRouteNodes.remove(excludedNode);
 			workingSet.remove(excludedNode);
 		}
+		assert(cfgSanityCheck(workingSet));
 	}
 
 	private void makeConnection(Node node, Node parent) {
@@ -802,8 +769,8 @@ public class RouteConstructor {
 	}
 
 	private boolean containAnyNodes(Node start, Collection<InstructionNode> endNodes) {
-		Collection<Node> containedNodes = start.getContainedNodes();
-		for(Node endNode : endNodes){
+		Collection<InstructionNode> containedNodes = start.getContainedNodes();
+		for(InstructionNode endNode : endNodes){
 			if(containedNodes.contains(endNode)){
 				return true;
 			}

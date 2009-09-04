@@ -82,8 +82,8 @@ public class BlockNode extends IBufferNode {
 		return new LinkedList<Node>(m_insts);
 	}
 
-	public Collection<Node> getContainedNodes(){
-		return new TreeSet<Node>(m_insts);
+	public Collection<InstructionNode> getContainedNodes(){
+		return new TreeSet<InstructionNode>(m_insts);
 	}
 	
 	public Collection<Node> whatsNext(Node node) {

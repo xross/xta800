@@ -67,7 +67,7 @@ public class StructuralAnalysisEngine {
 		return m_structureGraph;
 	}
 
-	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine, boolean debug, String jobPrefix) {		
+	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine, String jobPrefix) {		
 		if (workingSet.size() == 1 && workingSet.iterator().next().getNextNodesSize() == 0) 
 			return true;
 		
@@ -210,7 +210,7 @@ public class StructuralAnalysisEngine {
 			fa.addFnopsToBasicBlocks(initialBasicBlock);
 			assert(basicBlocks.contains(initialBasicBlock));
 
-			if (!createStructure(basicBlocks, initialBasicBlock, engine, false, jobName)) {
+			if (!createStructure(basicBlocks, initialBasicBlock, engine, jobName)) {
 				return null;
 			}
 			

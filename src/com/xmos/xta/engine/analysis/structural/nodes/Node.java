@@ -71,8 +71,8 @@ public abstract class Node implements Comparable<Node>{
 		return getTypeName() + m_id;
 	}
 	
-	public Collection<Node> getContainedNodes(){
-		Collection<Node> containedNodes = new TreeSet<Node>();
+	public Collection<InstructionNode> getContainedNodes(){
+		Collection<InstructionNode> containedNodes = new TreeSet<InstructionNode>();
 		for(Node child : getChildren()){
 			containedNodes.addAll(child.getContainedNodes());
 		}
