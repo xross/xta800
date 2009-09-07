@@ -114,6 +114,7 @@ public class TestGen {
 			sourceFile.close();
 	
 			BufferedWriter runExpectFile = new BufferedWriter(new FileWriter(testName + "/" + testName + ".txt.expect.regex"));
+			runExpectFile.write("xta: warning: no valid paths of execution\n[^^^]\n");
 			runExpectFile.close();
 	
 			// Create empty build expect
@@ -209,7 +210,7 @@ public class TestGen {
 		file.write("       \"-analyse path endpoint1 end \" .\n");
 		file.write("       \"-analyse path endpoint2 end \" .\n");
 		file.write("       \"-analyse path endpoint0 endpoint2 \" .\n");
-/*		
+		
 		file.write("       \"-add exclusion endpoint0 \" .\n");
 		file.write("       \"-analyse function test \" .\n");
 		file.write("       \"-remove exclusion endpoint0 \" .\n");
@@ -237,15 +238,15 @@ public class TestGen {
 		file.write("       \"-add exclusion endpoint1 \" .\n");
 		file.write("       \"-add exclusion endpoint2 \" .\n");
 		file.write("       \"-analyse function test \" .\n");
-*/
+
 		file.write("       \"-exit > $genDir/" + testName + ".txt 2>&1\");\n");
 		file.write("\n");
 	}
 
 	static public void main(String[] args) {
 		String tests[] = {
-				
-/*
+	/*			
+
 				"papp",
 				"pd(pap)",
 				"pd(pd(ap))",
@@ -368,9 +369,9 @@ public class TestGen {
 				"pe(e(a)(pa))(e(a)(ap))",
 				"pe(e(a)(e(pa)(a)))(e(a)(ap))",
 				"pe(e(pa)(e(a)(a)))(e(a)(e(a)(ap)))",
-*/				
-				//now for non stuctural test with returns on them
 				
+				//now for non stuctural test with returns on them
+	*/			
 				"parpp",
 				"pd(rpap)",
 				"pd(rpd(rap))",
@@ -472,7 +473,7 @@ public class TestGen {
 				"prs(s(a)(pa))(s(a)(ap))",
 				"ps(s(ar)(s(pa)(ar)))(s(a)(ap))",
 				"ps(s(par)(s(a)(a)))(s(ar)(s(arr)(ap)))",
-
+	
 				"pe(par)(ap)",
 				"pe(ar)(pa)(ap)",
 				"pe(a)(pa)(ra)(ap)",
@@ -493,7 +494,7 @@ public class TestGen {
 				"pe(e(a)(pra))(e(ar)(ap))",
 				"pe(e(a)(e(pa)(a)))(e(ra)(ap))",
 				"pe(e(pa)(e(ra)(ar)))(e(ra)(e(a)(ap)))",
-				
+			
 		};
 
 		m_testCount = 0;

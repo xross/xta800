@@ -29,7 +29,7 @@ public class ThreadDelimiters extends Section {
 			return false;
 		}
 	}
-	
+	/*
 	boolean remove(CommandSource src, int pc) {
 		if (m_pcs.remove(pc)) {
 			return true;
@@ -39,7 +39,7 @@ public class ThreadDelimiters extends Section {
 			return false;
 		}		
 	}
-	
+	*/
 	Collection<Long> get() {
 		return m_pcs;
 	}

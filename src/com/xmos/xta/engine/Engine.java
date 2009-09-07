@@ -1146,7 +1146,6 @@ public class Engine implements Notifier {
 			pcToLabel.put(labelToPc.get(label), label);
 		}
 		
-		//TODO test this properly
 		for(InstructionNode inst : funcStarts){
 			
 			String name = symbolTable.functionName(inst.getStartPc());

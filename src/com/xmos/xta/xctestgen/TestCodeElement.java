@@ -47,10 +47,10 @@ public class TestCodeElement extends CodeElement {
 	}
 
 	public String getName() {
-		String name = m_namePart;
+		StringBuffer sb = new StringBuffer(m_namePart);
 		for (CodeElement child : getChildren()) {
-			name += child.getName();
+			sb.append(child.getName());
 		}
-		return name;
+		return sb.toString();
 	}
 }
