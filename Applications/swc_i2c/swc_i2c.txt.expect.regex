@@ -25,13 +25,19 @@ Route\(7\) path: iic_phy_sendByte_start to iic_phy_sendByte_high
 Route\(8\) path: iic_phy_sendByte_high to iic_phy_sendByte_low
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 600.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
-Route\(9\) path: iic_phy_receiveByte_start to iic_phy_receiveByte_high
-    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1300.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
-
-Route\(10\) path: iic_phy_receiveByte_high to iic_phy_receiveByte_low
+Route\(9\) path: iic_phy_sendByte_low to iic_phy_sendByte_high
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 600.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
-Route\(11\) path: iic_checkWriteComplete_start to iic_checkWriteComplete_stop
+Route\(10\) path: iic_phy_receiveByte_start to iic_phy_receiveByte_high
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 1300.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Route\(11\) path: iic_phy_receiveByte_high to iic_phy_receiveByte_low
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 600.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Route\(12\) path: iic_phy_receiveByte_low to iic_phy_receiveByte_high
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 600.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+
+Route\(13\) path: iic_checkWriteComplete_start to iic_checkWriteComplete_stop
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 50000.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
 Pass, Min Frequency: \d+ Mhz
