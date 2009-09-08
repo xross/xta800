@@ -15,7 +15,8 @@ if (!$noBuild) {
 }
 
 system("@ARGV load $genDir/test.xe " .
-        "analyse function main " .
-        "print trace - " .
+        "config proc 0 1 " .
+        "analyse path 0x101ca 0x101ca " .
+        "print structure - " .
         "-exit > $genDir/$directory.txt 2>&1");
 
