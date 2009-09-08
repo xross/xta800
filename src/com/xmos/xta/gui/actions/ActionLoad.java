@@ -63,8 +63,13 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
 
 	public void init(IAction action) {
 		m_action = action;
+		
+		String xeFileName = GuiEngine.getCommandLineXeFile();
+		if (xeFileName != null) {
+			loadFile(xeFileName);
+		}
 	}
-	
+
 	public void init(IWorkbenchWindow window) {
 	}
 
