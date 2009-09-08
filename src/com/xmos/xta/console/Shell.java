@@ -19,7 +19,6 @@ public class Shell {
 		EXIT,
 	}
 	
-	private boolean m_exitAllowed;
 	private State m_state;
 	private Console m_console;
     private Notifier m_notifier;
@@ -33,23 +32,18 @@ public class Shell {
 	public Shell(Console console, Engine engine, Notifier notifier, String[] args) {
 	    initialise(console, engine, notifier);
     	processCommandLine(args);	   
-	    m_exitAllowed = true;
 	}
 
 	public Shell(Console console, Engine engine, Notifier notifier) {
 	    initialise(console, engine, notifier);
-	    m_exitAllowed = false;
 	}
 
     public int execute() {    	
     	while (!isComplete()) {
-    		Command command = getNextCommand();
-    		
-            if (exitAllowed(command)) {
-            	preCommandExecute();
-            	command.execute(this, m_engine, m_console);
-            	postCommandExecute();            	
-            }
+    		Command command = getNextCommand();    		
+           	preCommandExecute();
+           	command.execute(this, m_engine, m_console);
+           	postCommandExecute();            	
     	}
     	return m_numTimingViolations;
     }
@@ -209,15 +203,6 @@ public class Shell {
     	return m_state == State.EXIT;
     }
            
-    private boolean exitAllowed(Command command) {
-        assert(command != null);
-        if (!m_exitAllowed &&
-        	command.name().equals("exit")) {
-    		return false;
-        }
-    	return true;
-    }
-    
 	private void usage() {
 		m_console.display("Avaliable console commands:\n");	        	
         

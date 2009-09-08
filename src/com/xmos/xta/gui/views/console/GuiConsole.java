@@ -45,7 +45,7 @@ public class GuiConsole implements Console {
 
 	public GuiConsole(Composite parent) {
 		if (DEBUG) System.out.printf("GuiConsole()\n");		
-		
+				
 		m_shell = new Shell(this, GuiEngine.getEngine(), new GuiConsoleNotifier(this));		        		
 		m_commandQueue = new LinkedBlockingQueue<CommandString>();
 		m_characterQueue = new LinkedBlockingQueue<Integer>();		
@@ -128,10 +128,13 @@ public class GuiConsole implements Console {
                 
         m_completor = new XtaCompletor(GuiEngine.getEngine());
         m_completionHandler = new TabCompletionHandler();
+        
+        m_text.setFocus();
 	}
 	
     public void execute() {
-        m_shell.execute();
+		int returnCode = m_shell.execute();
+		System.exit(returnCode);        
     }
 	
 	public void display(String str) {

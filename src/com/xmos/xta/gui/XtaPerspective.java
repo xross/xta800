@@ -1,8 +1,8 @@
 package com.xmos.xta.gui;
 
+import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
-import org.eclipse.ui.IFolderLayout;
 
 import com.xmos.xta.gui.views.console.ConsoleView;
 import com.xmos.xta.gui.views.function.FunctionView;
@@ -24,7 +24,7 @@ public class XtaPerspective implements IPerspectiveFactory {
         		"tree.folder", IPageLayout.LEFT, 0.3f, layout.getEditorArea());        
         addView(layout, treeFolder, RoutesView.ID);
 
-        layout.setEditorAreaVisible(true);
+        layout.setEditorAreaVisible(true);        
 	}
 	
 	private void addView(IPageLayout pageLayout, IFolderLayout folderLayout, String viewId) {
