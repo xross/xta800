@@ -74,6 +74,8 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
 	}
 
 	public void run(IAction action) {
+		m_action = action;
+		
 		FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.OPEN);
         fileDialog.setText("Open Xe File");
         String[] filterExt = { "*.xe" };
@@ -112,8 +114,7 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
 	        	for(String file : files){
 	        		fileList.add(file);
 	        	}
-	        	
-	        	
+	        		        	
 	        	fileList.remove(xeFile.toString());
 	        	if(success)
 	        		fileList.add(xeFile.toString());

@@ -43,10 +43,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         IMenuManager menuManager = configurer.getMenuManager();        	
         for (IContributionItem contributionItem : menuManager.getItems()) {
         	if (contributionItem.getId().equals("file")) {
-        		removeAllSubItems(contributionItem, "quit");
+        		removeAllSubItems(contributionItem, new String[] {"quit", "open"});
 
         	} else if (contributionItem.getId().equals("help")) {
-        		removeAllSubItems(contributionItem, "about");
+        		removeAllSubItems(contributionItem, new String[] {"about"});
         		
         	} else {
             	menuManager.remove(contributionItem.getId());
@@ -73,12 +73,17 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         configurer.getMenuManager().update(true);
 	}
     
-    private void removeAllSubItems(IContributionItem contributionItem, String apartFrom) {
+    private void removeAllSubItems(IContributionItem contributionItem, String[] exclusions) {
 		if (contributionItem instanceof MenuManager) {
 			MenuManager subMenuManager = (MenuManager)contributionItem;
 	        for (IContributionItem subItem : subMenuManager.getItems()) {
-	        	if (!subItem.getId().equals(apartFrom))
-	        		subMenuManager.remove(subItem);
+	        	boolean excluded = false;
+	        	for (String exclusion : exclusions) {
+		        	if (subItem.getId().equals(exclusion))
+		        		excluded = true;        		
+	        	}
+	        	if (!excluded)
+	        	    subMenuManager.remove(subItem);	        			        	
 	        }
 		}    	
     }    
