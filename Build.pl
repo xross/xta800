@@ -208,26 +208,40 @@ sub DoInstall
     $ENV{PATH} = "C:/cygwin/bin;" . $ENV{PATH};
   }
 
-  if ($HOST ne "PC" && $HOST ne "Mac") {
+  if ($HOST eq "PC") {
     system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}");
     system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}xta_bin");
+    ConfigureWorkspaceDirectory("$INSTALLPATH${SLASH}xta_bin${SLASH}configuration${SLASH}config.ini");
+
     system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
     system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin");
+    ConfigureWorkspaceDirectory("$INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin${SLASH}configuration${SLASH}config.ini");
+
+  } elsif ($HOST eq "Mac") {
+    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}xta_bin");
+    ConfigureWorkspaceDirectory("$INSTALLPATH${SLASH}xta_bin${SLASH}configuration${SLASH}config.ini");
+
+    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin");
+    ConfigureWorkspaceDirectory("$INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin${SLASH}configuration${SLASH}config.ini");
+
+  } else {
+    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}xta_bin");
+    ConfigureWorkspaceDirectory("$INSTALLPATH${SLASH}xta_bin${SLASH}configuration${SLASH}config.ini");
+
+    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin");
+    ConfigureWorkspaceDirectory("$INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin${SLASH}configuration${SLASH}config.ini");
 
     system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin64 $INSTALLPATH${SLASH}");
     system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}xta_bin64");
+    ConfigureWorkspaceDirectory("$INSTALLPATH${SLASH}xta_bin64${SLASH}configuration${SLASH}config.ini");
+
     system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin64 $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
     system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin64");
-  }else{
-    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}");
-    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}xta_bin");
-    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
-    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin");
-  }
-
-  # Linux uses a perl script to check the jvm
-  if ($HOST ne "PC" && $HOST ne "Mac") {
-      system("cp $TOOLS_XTA${SLASH}xtagui $INSTALLPATH${SLASH}");
+    ConfigureWorkspaceDirectory("$INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin64${SLASH}configuration${SLASH}config.ini");
   }
 
   XmosBuildLib::InstallFile("$DOMAIN", "${BIN}", "xta.exe");
@@ -417,6 +431,16 @@ sub MakeDirectory
   my $dir = shift;
   mkpath("$dir") 
     or die("Unable to create directory: $dir\n");
+}
+
+sub ConfigureWorkspaceDirectory
+{
+  my $configFile = shift;
+  open LOGFILE, ">>$configFile" 
+    or die "Error: Cannot open config file $configFile";
+
+  print LOGFILE "osgi.instance.area=xtaworkspace\n";
+  close LOGFILE;
 }
 
 main()
