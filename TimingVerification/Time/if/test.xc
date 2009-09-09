@@ -1,0 +1,15 @@
+int test(){
+    int i=0;
+    int j=0;
+    if( i == 0){
+    i++;
+    j = 9;
+    j = j * j;
+    }
+    return j;
+}
+
+
+int main(){
+    return test();
+}
