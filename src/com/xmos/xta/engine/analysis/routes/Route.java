@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.TreeSet;
 import java.util.Set;
 
+import com.xmos.xeloader.XeLoader.Architecture;
 import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Config;
 import com.xmos.xta.engine.Engine;
@@ -44,9 +45,10 @@ public class Route {
 		m_node = node;
 		
 		Config config = new Config(engine.getConfig());
+		Architecture architecture = engine.getXeLoader().getArchitecture();
 		m_timing = new RouteTiming(src, this, config, engine.getNodeId(), engine.getCoreId());
 		m_unknowns = new RouteUnknowns(this);		
-		setRouteSpecificConfigs(config);
+		setRouteSpecificConfigs(config, architecture);
 	}
 	
 	public int getRouteId() {
@@ -110,10 +112,10 @@ public class Route {
 		return referencedNodes;		
 	} 
 
-	private void setRouteSpecificConfigs(final Config config) {
+	private void setRouteSpecificConfigs(final Config config, final Architecture architecture) {
 		m_node.traverse(0, new DefaultNodeTraverser() {
 			public boolean foundInstructionNode(Node node, int depth) {
-				((InstructionNodeAttributes)node.getAttributes()).setConfig(config);				
+				((InstructionNodeAttributes)node.getAttributes()).setConfig(config, architecture);				
 				return true;
 			}
 		});
