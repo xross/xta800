@@ -7,7 +7,7 @@
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
-             class="com.xmos.xta.gui.Application">
+               class="com.xmos.xta.gui.Application">
          </run>
       </application>
    </extension>
@@ -17,7 +17,7 @@
             class="com.xmos.xta.gui.XtaPerspective"
             icon="icons/xta16x16.png"
             id="com.xmos.xta.gui.XtaPerspective"
-            name="Timing">
+            name="Xta">
       </perspective>
    </extension>
    <extension
@@ -39,7 +39,6 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            category="tools_xta.views"      
             class="com.xmos.xta.gui.views.routes.RoutesView"
             icon="icons/tree.png"
             id="com.xmos.xta.gui.views.routes.Routes"
@@ -47,7 +46,6 @@
             restorable="true">
       </view>
       <view
-            category="tools_xta.views"      
             class="com.xmos.xta.gui.views.console.ConsoleView"
             icon="icons/console.png"
             id="com.xmos.xta.gui.views.console.Console"
@@ -55,7 +53,6 @@
             restorable="true">
       </view>
 	  <view
-            category="tools_xta.views"      
 			class="com.xmos.xta.gui.views.structure.StructureView"
   			icon="icons/structure.png"
 			id="com.xmos.xta.gui.views.structure.Structure"
@@ -63,7 +60,6 @@
   			restorable="true">
   	  </view>
       <view
-            category="tools_xta.views"      
             class="com.xmos.xta.gui.views.info.InfoView"
             icon="icons/unknowns.png"
             id="com.xmos.xta.gui.views.info.Info"
@@ -71,17 +67,12 @@
             restorable="true">
       </view>
       <view
-            category="tools_xta.views"      
             class="com.xmos.xta.gui.views.function.FunctionView"
             icon="icons/function_view.png"
             id="com.xmos.xta.gui.views.function.Function"
             name="Function"
             restorable="true">
       </view>
-      <category
-            id="tools_xta.views"
-            name="Timing">
-      </category>      
    </extension>
   
    <extension
@@ -429,10 +420,10 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="tools_xta.application"
-            name="xta">
+            name="tools_xta">
          <property
                name="appName"
-               value="xta">
+               value="tools_xta">
          </property>
          <property
                name="aboutText"
@@ -440,7 +431,11 @@
          </property>
          <property
           	name="windowImages" 
-          	value="icons/xta16x16.png,icons/xta32x32.png">
+          	value="icons/xta16x16.png,icons/xta32x32.png,icons/xta48x48.png,icons/xta64x64.png,icons/xta128x128.png">
+         </property>
+         <property
+               name="aboutImage"
+               value="icons/xta.png">
          </property>
       </product>
    </extension>

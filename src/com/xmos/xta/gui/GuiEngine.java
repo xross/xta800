@@ -34,6 +34,7 @@ public class GuiEngine {
 	private static List<Node> s_selectedNodes;
 	private static Node s_focusNodes;
 	private static Map<String, Map<Integer, GuiRouteProperties>> s_routeProperties;
+	private static String s_commandLineXeFile;
 
 	public static final CommandSource s_guiCommandSrc = new CommandSource(Type.GUI);  
 
@@ -44,6 +45,7 @@ public class GuiEngine {
         s_log = new GuiLog();
         s_selectedNodes = new ArrayList<Node>();
         s_focusNodes = null;
+        s_commandLineXeFile = null;
 
         s_engine.setNotifier(s_notifier);
         s_routeProperties = new HashMap<String, Map<Integer, GuiRouteProperties>>();
@@ -149,6 +151,14 @@ public class GuiEngine {
 		return s_selectedNodes;
 	}	
 
+	public static String getCommandLineXeFile() {
+		return s_commandLineXeFile;
+	}
+	
+	public static void setCommandLineXeFile(String xeFile) {
+		s_commandLineXeFile = xeFile;
+	}
+	
 	public static void setSelectedNodes(List<Node> selectedNodes) {
 		assert(selectedNodes != null);
 		boolean selectionChanged = false;
