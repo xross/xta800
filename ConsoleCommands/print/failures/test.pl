@@ -15,7 +15,7 @@ system("@ARGV load $genDir/test.xe " .
        "analyse function test " .
        "-set required - 10 ns " .
        "analyse function test " .
-       "-set required - 1000 ns " .
+       "-set required - 2000 ns " .
        "analyse function pausable " .
        "-set required - 1000 ns " .
        "source cmds.txt " .
