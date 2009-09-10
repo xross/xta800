@@ -17,6 +17,12 @@ my $genDir  = shift(@ARGV);
 my $arch    = shift(@ARGV);
 my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
+my $extraArgs = "";
+
+if (scalar(@ARGV) > 4) {
+    $extraArgs = shift(@ARGV);
+}
+
 my $cwd = getcwd();
 my $suite = basename($cwd);
 
@@ -35,19 +41,16 @@ open(INFILE, "$suite.trace") or die "Can't open input file";
 open(OUTFILE, ">$suite.txt.expect") or die "Can't open file to write";
 
 my $xsimTime = $_;
-my $xsimStartCycles = $_;
-my $xsimEndCycles = $_;
-my $foundFunction = $_;
+my $xsimStartCycles = 0;
+my $xsimEndCycles = 0;
+my $foundFunction = 0;
 
-my $xsimNumInstructions = $_;
-my $xsimNumFNOPs = $_;
+my $xsimNumInstructions = 0;
+my $xsimNumFNOPs = 0;
 
-$xsimNumInstructions = 0;
-$xsimNumFNOPs = 0;
 
 $foundFunction = 0;
-while (<INFILE>) {
-    my $line = $_;
+while (my $line = <INFILE>) {
     if($line =~ m/test/ and $foundFunction == 0){
         $foundFunction = 1;  
         if($line =~ m/ @(.*)/) {
@@ -59,7 +62,12 @@ while (<INFILE>) {
         if($line =~ m/FNOP/){
             $xsimNumFNOPs = $xsimNumFNOPs + 1;
         } else {
-            $xsimNumInstructions = $xsimNumInstructions + 1;
+            if($line =~ m/ P A/) {
+                #do nothing
+            } else {
+                $xsimNumInstructions = $xsimNumInstructions + 1;
+            }
+            
         }
     }
     if($line =~ m/test/ and $line =~ m/retsp/){
@@ -72,7 +80,7 @@ while (<INFILE>) {
 $xsimTime = (($xsimEndCycles - $xsimStartCycles) *10 ) /4;
 
 my $s = %_;
-$s = sprintf("Time: %d\nInstructions: %d\nFNOPs: %d\n", $xsimTime, $xsimNumInstructions, $xsimNumFNOPs);
+$s = sprintf("Time: %d\nInstructions: %d\nFNOPs acceptable: TRUE\n", $xsimTime, $xsimNumInstructions);
 print OUTFILE $s;
 
 close(INFILE);
@@ -84,15 +92,16 @@ system("@ARGV load $genDir/test.xe " .
         "-config threads 4 " .
         "-analyse function test " .
         "-print node_info - - " .
+        "$extraArgs " .
         "-exit > $genDir/$suite.in 2>&1");
 
 open(INFILE, "$genDir/$suite.in") or die "Can't open input file";
 open(OUTFILE, ">$genDir/$suite.txt") or die "Can't open file to write";
 $foundFunction = 0;
 
-my $xtaTotalTimeTaken = $_;
-my $xtaNumInstructions = $_;
-my $xtaNumFnops = $_;
+my $xtaTotalTimeTaken = 0;
+my $xtaNumInstructions = 0;
+my $xtaNumFnops = 0;
 
 while(<INFILE>) {
     my $line = $_;
@@ -107,9 +116,18 @@ while(<INFILE>) {
     }
 }
 my $t = %_;
-$t = sprintf("Time: %d\nInstructions: %d\nFNOPs: %d\n", $xtaTotalTimeTaken, $xtaNumInstructions - $xtaNumFnops, $xtaNumFnops);
-print OUTFILE $t;
+my $fnopsWithinAcceptableBounds = "";
 
+if($xtaNumFnops >= $xsimNumFNOPs and $xtaNumFnops <= $xsimNumFNOPs*2 ){
+    $fnopsWithinAcceptableBounds = "TRUE";
+} else {
+    $fnopsWithinAcceptableBounds = "FALSE xta: " . $xtaNumFnops . " xsim: " . $xsimNumFNOPs;
+}
+
+my $fnopAdjustedTime = $xtaTotalTimeTaken - (($xtaNumFnops- $xsimNumFNOPs) * 10 );
+
+$t = sprintf("Time: %d\nInstructions: %d\nFNOPs acceptable: %s\n", $fnopAdjustedTime, $xtaNumInstructions - $xtaNumFnops, $fnopsWithinAcceptableBounds);
+print OUTFILE $t;
 
 close(INFILE);
 close(OUTFILE);
