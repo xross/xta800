@@ -172,11 +172,6 @@ public class RouteConstructor {
 			
 			Node newStart = makeBasicBlocks(startInstruction, endNodes, workingSet);
 			
-			//System.out.println(StructuralAnalysisEngine.dumpTree("broken", workingSet));
-			//System.out.println("tree start:" +newStart);
-			
-			
-			
 			addTerminator(workingSet);
 			assert(cfgSanityCheck(workingSet));
 			StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
