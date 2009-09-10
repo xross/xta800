@@ -84,6 +84,8 @@ public class SourceMapper {
         if (DEBUG) System.out.printf("createSourceFiles: node: %d, core: %d\n", nodeId, coreId);            
             
       	for (DebugFile debugFile : de.getDebugFiles()) {
+      		
+      		
 			File source = new File(debugFile.getFullFileName());
 			boolean done = false;
 			while (!done) {

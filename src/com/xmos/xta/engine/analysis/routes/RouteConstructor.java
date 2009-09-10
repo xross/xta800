@@ -93,7 +93,12 @@ public class RouteConstructor {
 		Set<InstructionNode> endNodes = new TreeSet<InstructionNode>();
 		findEndInstructions(endNodes);
 		
-		
+		//for(InstructionNode end : endNodes){
+		//	System.out.println("end: " + end.getXtaInstruction());
+		//}
+		//for(InstructionNode start : startNodes){
+		//	System.out.println("start: " + start.getXtaInstruction());
+		//}
 		boolean notFoundFunctionYet = true;
 		for (Node start : startNodes) {
 			resetParent();
