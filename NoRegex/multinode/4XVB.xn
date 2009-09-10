@@ -54,15 +54,12 @@ xsi:schemaLocation="http://www.xmos.com http://www.xmos.com">
 
 </Links>
 
-  <Boot>
     <JTAGChain>
        <JTAGDevice Node="0"/>
        <JTAGDevice Node="1"/>
        <JTAGDevice Node="2"/>
        <JTAGDevice Node="3"/>
     </JTAGChain>
-    <SPIBoot Node="0"/>
-  </Boot>
 
 </Network>
 
