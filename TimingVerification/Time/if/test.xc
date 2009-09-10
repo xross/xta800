@@ -1,15 +1,17 @@
-int test(){
+int test(int l){
     int i=0;
     int j=0;
-    if( i == 0){
+    l++;
+    if( l == (l*l)){
     i++;
     j = 9;
     j = j * j;
+    l++;
     }
     return j;
 }
 
 
 int main(){
-    return test();
+    return test(0);
 }
