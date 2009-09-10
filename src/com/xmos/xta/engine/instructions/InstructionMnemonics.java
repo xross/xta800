@@ -9,7 +9,19 @@ public class InstructionMnemonics {
 	public InstructionMnemonics(Architecture arch) {
 		m_arch = arch;
 	}
-
+	public boolean isMultiCycle(Instruction inst) {
+		switch (m_arch) {
+		case REVB: return (inst.getClass() == RevbXtaInstruction_divs_l3r.class) ||
+                          (inst.getClass() == RevbXtaInstruction_divu_l3r.class) ||
+                          (inst.getClass() == RevbXtaInstruction_rems_l3r.class) ||
+                          (inst.getClass() == RevbXtaInstruction_remu_l3r.class); 
+		case REVC: return (inst.getClass() == RevbXtaInstruction_divs_l3r.class) ||
+			              (inst.getClass() == RevbXtaInstruction_divu_l3r.class) ||
+			              (inst.getClass() == RevbXtaInstruction_rems_l3r.class) ||
+			              (inst.getClass() == RevbXtaInstruction_remu_l3r.class); 
+		}
+		return false;
+	}
 	public boolean isSsync(Instruction inst) {
 		switch (m_arch) {
 		case REVB: return inst.getClass() == RevbXtaInstruction_ssync_0r.class;

@@ -93,7 +93,12 @@ public class RouteConstructor {
 		Set<InstructionNode> endNodes = new TreeSet<InstructionNode>();
 		findEndInstructions(endNodes);
 		
-		
+		//for(InstructionNode end : endNodes){
+		//	System.out.println("end: " + end.getXtaInstruction());
+		//}
+		//for(InstructionNode start : startNodes){
+		//	System.out.println("start: " + start.getXtaInstruction());
+		//}
 		boolean notFoundFunctionYet = true;
 		for (Node start : startNodes) {
 			resetParent();
@@ -166,11 +171,6 @@ public class RouteConstructor {
 		if (!workingSet.isEmpty()){
 			
 			Node newStart = makeBasicBlocks(startInstruction, endNodes, workingSet);
-			
-			//System.out.println(StructuralAnalysisEngine.dumpTree("broken", workingSet));
-			//System.out.println("tree start:" +newStart);
-			
-			
 			
 			addTerminator(workingSet);
 			assert(cfgSanityCheck(workingSet));
