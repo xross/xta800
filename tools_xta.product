@@ -80,7 +80,6 @@
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.eclipse.ui.workbench.texteditor"/>
       <plugin id="org.eclipse.update.configurator"/>
-      <plugin id="org.junit4"/>
       <plugin id="tools_xta"/>
    </plugins>
 
