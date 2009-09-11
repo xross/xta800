@@ -7,7 +7,7 @@ int fix_fft_64(int fr[], int fi[])
         mr = 0;
         nn = 63;
 
-#pragma unsafearrays
+#pragma unsafe arrays
         for(m=1; m<=nn; m += 1) {
                 l = 64;
                 do {
@@ -27,7 +27,7 @@ int fix_fft_64(int fr[], int fi[])
 
         l = 1;
         k = 5;
-#pragma unsafearrays
+#pragma unsafe arrays
         while(l < 64) {
                 {int m; for(m=0; m < l; m+=1) {
                         int j = m << k;
@@ -62,7 +62,7 @@ int fix_fft_64_inverse(int fr[], int fi[])
         mr = 0;
         nn = 63;
 
-#pragma unsafearrays
+#pragma unsafe arrays
         for(m=1; m<=nn; m += 1) {
                 l = 64;
                 do {
@@ -82,7 +82,7 @@ int fix_fft_64_inverse(int fr[], int fi[])
 
         l = 1;
         k = 5;
-#pragma unsafearrays
+#pragma unsafe arrays
         while(l < 64) {
                 shift = 0;
                 for(i=0; i<64 && !shift; i+=1) {

@@ -1,9 +1,7 @@
-  0.0: \(20.0ns\) 0x100b4 foo \+ 0                mkmsk \(rus\)  r0, i 0x1
-  20.0: \(20.0ns\) 0x100b6 foo \+ 2                retsp \(u6\)   i 0x0
-  40.0: \(20.0ns\) 0x100d8                        --FNOP--     
-  60.0: \(20.0ns\) 0x100d8 test \+ 16              add \(3r\)     r1, r4, r0
-  80.0: \(20.0ns\) 0x100da test \+ 18              add \(3r\)     r4, r4, r0
-  100.0: \(20.0ns\) 0x100dc test \+ 20              ldc \(ru6\)    r4, i 0xa
-  120.0: \(20.0ns\) 0x100de test \+ 22              brft \(ru6\)   r4, i 0x2
-  140.0: \(20.0ns\) 0x100e2 test \+ 26              blrb \(u10\)   i 0x2c
-
+  0.0: \(20.0ns\) 0x100ac foo \+ 0                mkmsk \(rus\)  r0, i 0x1
+  20.0: \(20.0ns\) 0x100ae foo \+ 2                retsp \(u6\)   i 0x0
+  40.0: \(20.0ns\) 0x100d0                        --FNOP--     
+  60.0: \(20.0ns\) 0x100d0 test \+ 16              add \(3r\)     r4, r4, r0
+  80.0: \(20.0ns\) 0x100d2 test \+ 18              ldc \(ru6\)    r4, i 0xa
+  100.0: \(20.0ns\) 0x100d4 test \+ 20              brft \(ru6\)   r4, i 0x2
+  120.0: \(20.0ns\) 0x100d8 test \+ 24              blrb \(u10\)   i 0x2a
