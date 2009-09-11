@@ -93,13 +93,7 @@ public class RouteConstructor {
 		
 		Set<InstructionNode> endNodes = new TreeSet<InstructionNode>();
 		findEndInstructions(endNodes);
-		
-		//for(InstructionNode end : endNodes){
-		//	System.out.println("end: " + end.getXtaInstruction());
-		//}
-		//for(InstructionNode start : startNodes){
-		//	System.out.println("start: " + start.getXtaInstruction());
-		//}
+
 		boolean notFoundFunctionYet = true;
 		for (Node start : startNodes) {
 			resetParent();
@@ -165,20 +159,14 @@ public class RouteConstructor {
 		
 		seenEndPoint |= explore(startInstruction, startNodeWrapper, workingSet, endNodes, null);
 		assert(cfgSanityCheck(workingSet));	
-		
 		pruneGraphOfExcludedPaths(workingSet);
-		
 		if (!workingSet.isEmpty()){
 			
 			Node newStart = makeBasicBlocks(startInstruction, endNodes, workingSet);
 			
-			//System.out.println(StructuralAnalysisEngine.dumpTree("broken", workingSet));
-			//System.out.println("tree start:" +newStart);
-			
-			
-			
 			addTerminator(workingSet);
 			assert(cfgSanityCheck(workingSet));
+			
 			StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
 			sae.createStructure(workingSet, newStart, m_engine, "Analysing route");
 			assert(cfgSanityCheck(workingSet));
@@ -225,7 +213,7 @@ public class RouteConstructor {
 		
 		if(currentNode.isInstructionNode()){
 			if(m_exclusions.contains(currentNode) && !workingSet.isEmpty()){
-				currentNodesExclusions.add(currentNode);
+				addNodeToWorkingSet(currentNodesExclusions, currentNode);
 			}
 			if(endInstructions.contains(currentNode)){
 				containedEndPoints.add(currentNode);
@@ -246,7 +234,7 @@ public class RouteConstructor {
 			} else {
 				if(endInstructions.containsAll(currentEndNodes)){;
 					makeConnection(currentNode, parent);
-					workingSet.add(currentNode);
+					addNodeToWorkingSet(workingSet, currentNode);
 					firstNodeAdded = true;
 					return true;
 				} else {
@@ -256,13 +244,19 @@ public class RouteConstructor {
 			}
 		} else {
 			if( currentNode.isInstructionNode() ){
-				workingSet.add(currentNode);
+				addNodeToWorkingSet(workingSet, currentNode);
+				
 				firstNodeAdded = true;
 				if(currentNode != startInstruction){
 					//this doesn't allow excluded nodes to form a loop with the start node! --check
 					//maybe it should also contain 'endNodes.contains(start) &&'
 					makeConnection(currentNode, parent);
+					
+					//System.out.println(StructuralAnalysisEngine.dumpTree("inter", workingSet));
 					m_excludedRouteNodes.add(currentNode);
+					
+					
+					
 				} else {
 					m_excludedRouteNodes.add(parent);
 				}
@@ -273,6 +267,12 @@ public class RouteConstructor {
 			}
 		}
 	}
+
+	private void addNodeToWorkingSet(Collection<Node> workingSet,
+			Node currentNode) {
+		//System.out.println("adding " + currentNode + " to working set");
+		workingSet.add(currentNode);
+	}
 	
 	private boolean exploreWhatsNext(InstructionNode startInstruction, Collection<Node> workingSet, Collection<InstructionNode> endNodes,
 			 Node currentNode, Node originalParent, Node replacementNode) {
@@ -282,7 +282,7 @@ public class RouteConstructor {
 			//this causes the search not to form infinite loops
 			return false;
 		}
-		workingSet.add(replacementNode);
+		addNodeToWorkingSet(workingSet, replacementNode);
 		firstNodeAdded = true;
 		Node parent = currentNode.getParent();
 		if (parent != null && !parent.whatsNext(currentNode).isEmpty()) {
@@ -318,10 +318,8 @@ public class RouteConstructor {
 				
 				Node firstInstructionNode = currentNode; 
 				InstructionNode functionStartNode = findFirstInstruction(firstInstructionNode);
-				
-				
+				//TODO - the endpoint fix lives around here
 				if(m_exclusions.contains(functionStartNode) && firstNodeAdded){
-
 					m_excludedRouteNodes.add(parent);
 					return false;
 				}
@@ -337,7 +335,8 @@ public class RouteConstructor {
 				//there should be nothing in the working set that is excluded now
 				for(Node nodes : newWorkingSet){
 					Collection<Node> set = new TreeSet<Node>(nodes.getContainedNodes());
-					if(!workingSet.isEmpty()) set.add(nodes);
+					if(!workingSet.isEmpty())
+						addNodeToWorkingSet(set, nodes);
 					set.retainAll(m_exclusions);
 					assert(set.isEmpty());
 				}
@@ -378,6 +377,9 @@ public class RouteConstructor {
 					seenEndPoint |= exploreWhatsNext(startInstruction, workingSet, endNodes, currentNode, parent, replacementFunction);
 				} else {
 					//probably should add the parent to the list of excluded route nodes
+					if(!m_excludedRouteNodes.contains(parent)){
+						m_excludedRouteNodes.add(parent);
+					}
 				}
 			}
 			
@@ -450,7 +452,7 @@ public class RouteConstructor {
 				CommonMethods.connect(nullNode, node);
 			}
 		}
-		workingSet.add(nullNode);
+		addNodeToWorkingSet(workingSet, nullNode);
 	}
 	
 	
@@ -459,23 +461,15 @@ public class RouteConstructor {
 	private Node makeBasicBlocks(InstructionNode startInstruction, Collection<InstructionNode> endNodes, Collection<Node> workingSet) {
 		//first search the working set to find the node that contains the start instruction
 		
-		
-		//System.out.println(StructuralAnalysisEngine.dumpTree("beforebasicblock", workingSet));
 		Node beginingOfFirstBlock = null;
 		for(Node node : workingSet){
-			
-			//System.out.println(node + " contains the start instruction " + node.getContainedNodes().contains(startInstruction));
-			
-			
 			if((node.getContainedNodes().contains(startInstruction) && beginingOfFirstBlock == null )|| node == startInstruction){
-				
 				if(findFirstInstruction(node) == startInstruction){
 					beginingOfFirstBlock = node;
 				}
-				
-				
 			}
 		}
+		
 		assert(beginingOfFirstBlock != null);
 		Node startNode = null;
 		if(beginingOfFirstBlock.isInstructionNode()){
@@ -491,7 +485,7 @@ public class RouteConstructor {
 			}
 			startNode = new BlockNode(startList);
 			workingSet.removeAll(startList);
-			workingSet.add(startNode);
+			addNodeToWorkingSet(workingSet, startNode);
 	
 			for (Node next : currentNode.getNextNodes()) {
 				next.removePrevNode(currentNode);
@@ -519,8 +513,7 @@ public class RouteConstructor {
 				}
 				BlockNode endBlock = new BlockNode(endList);
 				workingSet.removeAll(endList);
-				workingSet.add(endBlock);
-
+				addNodeToWorkingSet(workingSet, endBlock);
 				for (Node prev : end.getPrevNodes()) {
 					prev.removeNextNode(end);
 					CommonMethods.connect(endBlock, prev);
@@ -537,7 +530,7 @@ public class RouteConstructor {
 	}
 	
 	private void pruneGraphOfExcludedPaths(Collection<Node> workingSet) {
-		
+		Set<Node> t = new TreeSet<Node>(m_excludedRouteNodes);
 		while(!m_excludedRouteNodes.isEmpty()){
 			Node excludedNode = m_excludedRouteNodes.iterator().next();
 			for(Node prev : excludedNode.getPrevNodes()){
@@ -549,6 +542,7 @@ public class RouteConstructor {
 			m_excludedRouteNodes.remove(excludedNode);
 			workingSet.remove(excludedNode);
 		}
+		m_excludedRouteNodes.addAll(t);
 		assert(cfgSanityCheck(workingSet));
 	}
 

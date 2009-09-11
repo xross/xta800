@@ -172,9 +172,11 @@ public class StructuralAnalysisEngine {
 		setParents();
 
 		engine.provideFeedback("Registering config...");
-		setConfig(engine.getConfig(), m_structureGraph.getThreads());
-		setConfig(engine.getConfig(), m_structureGraph.getFunctions());
-		setConfig(engine.getConfig(), m_structureGraph.getUnlinkedFunctions());
+		Config config = engine.getConfig();
+		Architecture architecture = engine.getXeLoader().getArchitecture();
+		setConfig(config, architecture, m_structureGraph.getThreads());
+		setConfig(config, architecture, m_structureGraph.getFunctions());
+		setConfig(config, architecture, m_structureGraph.getUnlinkedFunctions());
 		
 		engine.provideFeedback("Complete");
 		return true;
@@ -773,11 +775,11 @@ public class StructuralAnalysisEngine {
 		}
 	}
 
-	private void setConfig(final Config config, Collection<FunctionNode> nodes) {
+	private void setConfig(final Config config, final Architecture architecture, Collection<FunctionNode> nodes) {
 		for (Node node : nodes) {
 			node.traverse(0, new DefaultNodeTraverser() {
 				public boolean foundInstructionNode(Node node, int depth) {
-					((InstructionNodeAttributes)node.getAttributes()).setConfig(config);				
+					((InstructionNodeAttributes)node.getAttributes()).setConfig(config, architecture);				
 					return true;
 				}
 			});					

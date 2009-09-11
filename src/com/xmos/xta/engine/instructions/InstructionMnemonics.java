@@ -112,5 +112,25 @@ public class InstructionMnemonics {
 		case REVC: return (inst.getClass() == RevbXtaInstruction_clre_0r.class);
 		}		
 		return false;
-	}	
+	}
+	
+	public boolean isDivide(XtaInstruction inst) {
+		switch (m_arch) {
+		case REVB: return (inst.getClass() == RevbXtaInstruction_divs_l3r.class) ||
+                          (inst.getClass() == RevbXtaInstruction_divu_l3r.class);
+        case REVC: return (inst.getClass() == RevbXtaInstruction_divs_l3r.class) ||
+                 	      (inst.getClass() == RevbXtaInstruction_divu_l3r.class);
+		}
+		return false;
+	}
+
+	public boolean isRemainder(XtaInstruction inst) {
+		switch (m_arch) {
+		case REVB: return (inst.getClass() == RevbXtaInstruction_rems_l3r.class) ||
+                          (inst.getClass() == RevbXtaInstruction_remu_l3r.class);
+        case REVC: return (inst.getClass() == RevbXtaInstruction_rems_l3r.class) ||
+                 	      (inst.getClass() == RevbXtaInstruction_remu_l3r.class);
+		}
+		return false;
+	}		
 }
