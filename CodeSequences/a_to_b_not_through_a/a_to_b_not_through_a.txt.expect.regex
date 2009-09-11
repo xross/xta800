@@ -5,3 +5,4 @@
   80.0: \(20.0ns\) 0x100d2 test \+ 18              ldc \(ru6\)    r4, i 0xa
   100.0: \(20.0ns\) 0x100d4 test \+ 20              brft \(ru6\)   r4, i 0x2
   120.0: \(20.0ns\) 0x100d8 test \+ 24              blrb \(u10\)   i 0x2a
+
