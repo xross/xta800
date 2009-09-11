@@ -3,6 +3,8 @@ package com.xmos.xta.engine.analysis.routes;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.xmos.xta.engine.CommandSource;
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
@@ -36,9 +38,11 @@ public class RouteUnknowns {
 	// ===================================================================== //
 	// Setting Loop Iterations
 	// ===================================================================== //
-	public void setLoopIterations(Reference reference, long iterations) {
+	public void setLoopIterations(CommandSource src, Engine engine,
+			Reference reference, long iterations, boolean sourceLevelIterations) {
+		
 		for (Node node : m_route.getReferencedNodes(reference)) {
-			setLoopIterationsNoCheck(node, iterations);
+			setLoopIterationsNoCheck(src, engine, node, iterations, sourceLevelIterations);
 		}			
 	}
 
@@ -57,13 +61,13 @@ public class RouteUnknowns {
 		}
 	}
 
-	public void setLoopIterations(Node node, long iterations) throws Exception {
+	public void setLoopIterations(CommandSource src, Engine engine, Node node, long iterations) throws Exception {
 		if (iterations < 0)
 			throw new Exception("Cannot set a negative iteration count");
 
 		checkSetLoopIterations(node);
 		checkLoopIterationsValid(node, iterations);
-	    setLoopIterationsNoCheck(node, iterations);
+	    setLoopIterationsNoCheck(src, engine, node, iterations, false);
 	}
 	
 	public void checkSetLoopIterations(Node node) throws Exception {
@@ -87,10 +91,12 @@ public class RouteUnknowns {
 		loopNode.getAttributes().loopIterationsValid(iterations);
 	}
 	
-	private void setLoopIterationsNoCheck(Node node, long iterations) {
+	private void setLoopIterationsNoCheck(CommandSource src, Engine engine,
+			Node node, long iterations, boolean sourceLevelIterations) {
+		
 		invalidateCachedStats();				
 		Node enclosingLoopNode = node.getEnclosingLoopNode();		
-	    enclosingLoopNode.getAttributes().setLoopIterations(iterations);
+	    enclosingLoopNode.getAttributes().setLoopIterations(src, engine, iterations, sourceLevelIterations);
 		enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
    		clearPathIterations(enclosingLoopNode);
 		refreshDisplayedUnknowns();
