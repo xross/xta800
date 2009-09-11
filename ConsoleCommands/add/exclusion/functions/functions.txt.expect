@@ -15,7 +15,7 @@ Route(3) function: testAorB
 
 Fail, Timing Unspecified
 =======================
-- 0x100b4: a
+- 0x100ac: a
 =======================
 xta: cmds.txt:23: warning: no valid paths of execution
 xta: cmds.txt:25: warning: no valid paths of execution
@@ -27,7 +27,7 @@ Route(1) function: testAorB
 
 Fail, Timing Unspecified
 =======================
-- 0x100b8: b
+- 0x100b0: b
 =======================
 xta: cmds.txt:38: warning: no valid paths of execution
 xta: cmds.txt:39: warning: no valid paths of execution
@@ -39,8 +39,8 @@ Route(1) function: testAorB
 
 Fail, Timing Unspecified
 =======================
-- 0x100b4: a
-- 0x100b8: b
+- 0x100ac: a
+- 0x100b0: b
 =======================
 xta: cmds.txt:52: warning: no valid paths of execution
 xta: cmds.txt:53: warning: no valid paths of execution
