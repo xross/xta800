@@ -37,8 +37,7 @@ import com.xmos.xta.engine.sections.Sections;
 import com.xmos.xta.engine.sections.SrcStringInfo;
 
 public class StructuralAnalysisEngine {
-    private static final boolean DEBUG = false;
-    private static final boolean DEBUG_GRAPH_TRANSFORMATIONS = false;
+	
 	private static final boolean SYMBOLIC_LINK = false;
 	
 	private ControlFlowGraph m_controlFlowGraph;
@@ -73,12 +72,6 @@ public class StructuralAnalysisEngine {
 		
 		buildDominatorTree(workingSet, treeStart);
 		
-		if (DEBUG_GRAPH_TRANSFORMATIONS) {
-			System.out.println(dumpTree("start_tree", workingSet));
-			System.out.println("Tree starts at " + treeStart);
-		}
-			
-		
 		boolean working = true;
 		boolean dominatorTreeUpToDate = false;
 		while (working) {
@@ -100,14 +93,7 @@ public class StructuralAnalysisEngine {
 						return false;
 					}
 					if (pm.isMatch(node, workingSet, treeStart)) {
-						if (DEBUG_GRAPH_TRANSFORMATIONS) {
-							System.out.println(dumpTree(pm.getClass().getSimpleName(), workingSet));
-							System.out.println("Tree now starts at " +pm.getTreeStart());
-						}
-							
-						
 						treeStart = pm.getTreeStart();
-						
 						assert(workingSet.contains(treeStart));
 						assert (connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
@@ -209,10 +195,6 @@ public class StructuralAnalysisEngine {
 
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
 			
-			if (DEBUG) System.out.println(dumpTree(functionName, basicBlocks));
-
-			long initialPc = graphStart.getStartPc();
-			
 			assert(!basicBlocks.isEmpty());
 			FnopAnalyser fa = new FnopAnalyser();
 			
@@ -224,9 +206,6 @@ public class StructuralAnalysisEngine {
 				return null;
 			}
 			
-			if (basicBlocks.size() != 1 || initialPc != basicBlocks.iterator().next().getStartPc()) {
-				System.out.println(dumpTree(functionName + "_after", basicBlocks));
-			}
 			assert(basicBlocks.size() == 1);
 			Node decomposedGraph = basicBlocks.iterator().next();
 
@@ -787,7 +766,6 @@ public class StructuralAnalysisEngine {
 	}
 	
 	public static String dumpTree(String text, Collection<Node> workingSet) {		
-		
 		StringBuffer sb = new StringBuffer();
 		if (workingSet.size() > 1) {
 			sb.append("digraph "+ text + "{");
@@ -799,34 +777,12 @@ public class StructuralAnalysisEngine {
 						sb.append(node + " -> " + next + ";");
 					}
 				}
-				/*
-				if(node.isBlockNode() || node.isInstructionNode()){
-					sb.append(node + " [label=\"" + node + "\\n");
-					
-					for(XtaInstruction inst : node.getInstructions()){
-						sb.append(inst + "\\n");  
-					}
-					sb.append("\"]; ");
-					
-				} else 
-					
-					if(node.isFunctionNode()){
-					sb.append(node + " [label=\"" + node + "\\n ");
-					sb.append(((FunctionNode)node).getFunctionName() + "\\n ");
-					sb.append("\"]; ");
-				} else if(node.isSequenceNode()){
-					sb.append(node + " [label=\"" + node + "\\n");
-					sb.append("0x" + Long.toHexString(node.getStartPc()) + "\\n ");
-					sb.append("\"]; ");
-				} 
-				*/
 			}
 			sb.append("}\n");
 
 		} else {
 			sb.append("# graph has only " + workingSet.size() + " nodes");
 		}
-		
 		return sb.toString();
 	}
 	

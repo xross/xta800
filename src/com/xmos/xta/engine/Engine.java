@@ -136,14 +136,6 @@ public class Engine implements Notifier {
 		return m_xeLoader.getMemoryImage(m_nodeId, m_coreId);
 	}
 
-	public SymbolTable getSymbolTable() {
-		return m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
-	}
-
-	public DebugInfo getDebugInfo() {
-		return m_xeLoader.getDebugInfo(m_nodeId, m_coreId);
-	}
-
 	public SourceMapper getSourceMapper() {
 		return m_sourceMapper.get(m_nodeId, m_coreId);
 	}
@@ -152,10 +144,6 @@ public class Engine implements Notifier {
 		return m_structuralGraph.get(m_nodeId, m_coreId);
 	}
 	
-	public InstructionDecoder getInstructionDecoder() {
-		return m_instructionDecoder.get(m_nodeId, m_coreId);
-	}
-		
 	public Set<String> getFunctionNames() {
 		TreeMap<String, LinkedList<InstructionNode>> functionNames = m_functionNames.get(m_nodeId, m_coreId);
 		if (functionNames != null) {
