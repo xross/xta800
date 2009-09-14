@@ -54,9 +54,10 @@ public class FilteredFunctions extends XtaDialog {
 
     protected void buttonPressed(int id) {
     	if (id == IDialogConstants.OK_ID) {
-			Object object = ((IStructuredSelection)m_signalsViewer.getViewer().getSelection()).getFirstElement();
-			if (object instanceof String) {
-				GuiEngine.runFunction((String)object);
+			for (Object object : ((IStructuredSelection)m_signalsViewer.getViewer().getSelection()).toArray()) {
+				if (object instanceof String) {
+					GuiEngine.runFunction((String)object);
+				}
 			}
 			Text filterControl = m_signalsViewer.getFilterControl();
 			if (filterControl != null) {
