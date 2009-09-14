@@ -56,11 +56,14 @@ public abstract class CommandContainer extends Command {
     	String arg = args[index + 1];    	
     	for (Command option : getSubCommands()) {
     		if (arg.equals(option.name())) {
+    			return option.clone(args, index + 1);
+    			/*
     			Command opt = option.clone(args, index + 1);
     			if (opt == null)
     				return null;
     			
     			return clone(opt);
+    			*/
     		}    			
     	}
     	return null;

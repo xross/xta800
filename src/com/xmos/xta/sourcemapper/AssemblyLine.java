@@ -148,10 +148,6 @@ public class AssemblyLine implements Line {
 	    }
 	}
 
-	public boolean getShowChildern() {
-        return false;
-    }
-
 	public long getPc() {
 		return m_instructionNode.getXtaInstruction().getPc();
 	}

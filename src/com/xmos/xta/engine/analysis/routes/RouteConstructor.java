@@ -318,7 +318,7 @@ public class RouteConstructor {
 				
 				Node firstInstructionNode = currentNode; 
 				InstructionNode functionStartNode = findFirstInstruction(firstInstructionNode);
-				//TODO - the endpoint fix lives around here
+				
 				if(m_exclusions.contains(functionStartNode) && firstNodeAdded){
 					m_excludedRouteNodes.add(parent);
 					return false;
@@ -330,7 +330,6 @@ public class RouteConstructor {
 				seenEndPoint |= explore(functionStartNode, functionNodeWrapper, newWorkingSet, functionEndNodes, null);
 				assert(cfgSanityCheck(newWorkingSet));	
 				pruneGraphOfExcludedPaths(newWorkingSet);
-				
 				
 				//there should be nothing in the working set that is excluded now
 				for(Node nodes : newWorkingSet){
@@ -588,10 +587,6 @@ public class RouteConstructor {
 				m_exclusions.addAll(referenceMatcher.getNodes(threadNode, reference));
 			}
 		}
-		
-		//for(InstructionNode node : m_exclusions){
-		//	System.out.println("excluded: " + node + " " + node.getXtaInstruction());
-		//}
 	}
 		
 	private void setUnknowns() {
