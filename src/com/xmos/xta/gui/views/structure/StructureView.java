@@ -33,7 +33,8 @@ public class StructureView extends ZoomedCanvasView {
     		viewNode = new StructureBlockNode(node, m_canvasProperties);
     	} else if (node.isFunctionNode()) {
     		viewNode = new StructureFunctionNode(node, m_canvasProperties);
-    		if (depth > 3)
+    		depth += 1;
+    		if (depth > 2)
     			viewNode.setFolded(true, false);
     	} else if (node.isLoopNode() || node.isSelfLoopNode()) {
     		viewNode = new StructureLoopNode(node, m_canvasProperties, false);
@@ -47,7 +48,7 @@ public class StructureView extends ZoomedCanvasView {
     	
     	if (!node.isBlockNode()) {
 	        for (Node subNode : node.getChildren()) {
-	        	ViewNode child = buildViewNode(subNode, depth + 1);
+	        	ViewNode child = buildViewNode(subNode, depth);
 	        	if (child != null)
 	        		viewNode.addChild(child);
 	        }

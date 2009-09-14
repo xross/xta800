@@ -1,20 +1,34 @@
 package com.xmos.xta.engine.analysis.structural.nodes.attributes;
 
+import com.xmos.xta.engine.CommandSource;
+import com.xmos.xta.engine.Engine;
+import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 
 public class LoopNodeAttributes extends NodeAttributes {
 	private long m_numIterations;
-	
+	private boolean m_sourceLevelIterations;
+
 	public LoopNodeAttributes(Node node) {
 		super(node);
 		m_numIterations = 0;
+		m_sourceLevelIterations = false;
 	}
 
 	public void loopIterationsValid(long numIterations) throws Exception {
 	}
 	
-	public void setLoopIterations(long numIterations) {
+	public void setLoopIterations(CommandSource src, Engine engine,
+			long numIterations, boolean sourceLevelIterations) {
+		
+		if (m_sourceLevelIterations) {
+			engine.notify(src, Notifier.NOTIFY_WARNING,
+				String.format("Overriding loop iterations already set at source level (loop starting at 0x%x)",
+					getNode().getStartPc()));
+		}
+		
+		m_sourceLevelIterations = sourceLevelIterations;
 		m_numIterations = numIterations;
 	}
 

@@ -5,7 +5,8 @@ public class CommandSource {
 		CONSOLE,
 		GUI,
 		CMD,
-		FILE
+		FILE,
+		INTERNAL
 	}
 	
 	public String m_fileName;
@@ -33,6 +34,10 @@ public class CommandSource {
 			m_fileName = "cmd";
 			break;
 			
+		case INTERNAL:
+			m_fileName = "internal";
+			break;
+
 		case FILE:
 		default:
 			assert(false);

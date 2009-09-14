@@ -281,7 +281,7 @@ public class Engine implements Notifier {
 			
 		} else {		
 			RouteDescription routeDescription = new RouteDescription(fromRef, toRef, m_nodeId, m_coreId);
-			return  analyseRouteSafely(src, routeDescription);
+			return analyseRouteSafely(src, routeDescription);
 		}
 	}
 
@@ -339,7 +339,7 @@ public class Engine implements Notifier {
 			return false;
 			
 		} else {
-			if(!getAbort()){
+			if (!getAbort()){
 				int currentSize = m_routes.size();
 				m_numRoutesLastAnalysed = 0;
 				for (Route route : routeConstructor.getRoutes()) {
@@ -609,14 +609,14 @@ public class Engine implements Notifier {
 			}			
 		}
 		for (Route route : routes) {
-		    route.getRouteUnknowns().setLoopIterations(reference, iterations);
+		    route.getRouteUnknowns().setLoopIterations(src, this, reference, iterations, false);
 		}
 	    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 	}
 
 	public void setLoopIterations(CommandSource src, Node node, long iterations) {
 		try {
-			m_selectedRoute.getRouteUnknowns().setLoopIterations(node, iterations);
+			m_selectedRoute.getRouteUnknowns().setLoopIterations(src, this, node, iterations);
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 			
 		} catch (Exception e) {

@@ -1,5 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.nodes.attributes;
 
+import com.xmos.xta.engine.CommandSource;
+import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
@@ -14,6 +16,8 @@ class InfiniteIterationsException extends Exception {}
 class CondIterationsNotSetException extends Exception {}
 @SuppressWarnings("serial")
 class NumPathsOverflowException extends Exception {}
+@SuppressWarnings("serial")
+class SourceLevelIterationsSetException extends Exception {}
 
 public class NodeAttributes {
 	private static final boolean DISABLE_STATS_CACHE = false; 
@@ -443,7 +447,8 @@ public class NodeAttributes {
 		assert(false);
 	}
 	
-	public void setLoopIterations(long numIterations) {
+	public void setLoopIterations(CommandSource src, Engine engine,
+			long numIterations, boolean sourceLevelIterations) {
 		assert(false);
 	}
 	
