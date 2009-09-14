@@ -17,11 +17,6 @@ my $genDir  = shift(@ARGV);
 my $arch    = shift(@ARGV);
 my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
-my $extraArgs = "";
-
-if (scalar(@ARGV) > 4) {
-    $extraArgs = shift(@ARGV);
-}
 
 my $cwd = getcwd();
 my $suite = basename($cwd);
@@ -92,10 +87,9 @@ system("@ARGV load $genDir/test.xe " .
         "-config threads 4 " .
         "-analyse function test " .
         "-print node_info - - " .
-        "$extraArgs " .
         "-exit > $genDir/$suite.in 2>&1");
 
-open(INFILE, "$genDir/$suite.in") or die "Can't open input file";
+open(INFILE, "$genDir/$suite.in") or die "Can not open input file";
 open(OUTFILE, ">$genDir/$suite.txt") or die "Can't open file to write";
 $foundFunction = 0;
 
