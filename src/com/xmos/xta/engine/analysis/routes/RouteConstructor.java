@@ -255,8 +255,6 @@ public class RouteConstructor {
 					//System.out.println(StructuralAnalysisEngine.dumpTree("inter", workingSet));
 					m_excludedRouteNodes.add(currentNode);
 					
-					
-					
 				} else {
 					m_excludedRouteNodes.add(parent);
 				}

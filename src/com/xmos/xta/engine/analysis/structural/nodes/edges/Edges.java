@@ -1,6 +1,7 @@
 package com.xmos.xta.engine.analysis.structural.nodes.edges;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -122,7 +123,7 @@ public class Edges {
 
 	public Set<Node> getDominators() {
 		if(m_dominators == null){
-			m_dominators = new TreeSet<Node>();
+			m_dominators = new HashSet<Node>();
 		}
 		return m_dominators;
 	}
@@ -171,8 +172,6 @@ public class Edges {
 		if(m_branchTargets == null) return false;
 		return m_branchTargets.contains(block);
 	}
-	
-	
 	
 	
 	

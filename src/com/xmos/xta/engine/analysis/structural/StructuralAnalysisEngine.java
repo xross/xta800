@@ -3,6 +3,7 @@ package com.xmos.xta.engine.analysis.structural;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.LinkedList;
@@ -73,11 +74,11 @@ public class StructuralAnalysisEngine {
 		buildDominatorTree(workingSet, treeStart);
 		
 		boolean working = true;
-		boolean dominatorTreeUpToDate = false;
+		boolean dominatorTreeUpToDate = true;
 		while (working) {
 			engine.provideFeedback(jobPrefix + " - nodes left: " + workingSet.size());
 			List<Node> postOrder = new LinkedList<Node>();
-			DFSPostOrder(postOrder, treeStart, new TreeSet<Node>());
+			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
 			working = false;
 
 			for (PatternMatcher pm : m_patternMatchers) {
@@ -383,6 +384,7 @@ public class StructuralAnalysisEngine {
 		}
 	}
 
+	//try to remove tree sets from this
 	private void buildDominatorTree(Collection<Node> reachableNodes, Node treeStart) {
 
 		for (Node node : reachableNodes) {
@@ -395,7 +397,7 @@ public class StructuralAnalysisEngine {
 			}
 		}
 
-		Set<Node> intersection = new TreeSet<Node>();
+		Set<Node> intersection = new HashSet<Node>();
 		boolean stillChanging = true;
 
 		while (stillChanging) {
@@ -420,13 +422,14 @@ public class StructuralAnalysisEngine {
 				}
 
 				intersection.add(node);
-
+				
 				if (!intersection.equals(node.getDominators())) {
 					node.clearDominators();
 					node.addAllDominators(intersection);
 					node.setDominatorSetComplete(intersectionIsCompleteSet);
 					stillChanging = true;
 				}
+				
 			}
 		}
 	}
@@ -635,10 +638,12 @@ public class StructuralAnalysisEngine {
 				if (treeStart == node)
 					continue;
 
-				Set<FunctionNode> intersection = new TreeSet<FunctionNode>(reachableNodes);
+				//TODO - this should be ok but check
+				Set<FunctionNode> intersection = new HashSet<FunctionNode>(reachableNodes);
 				
 				//TODO - find out why this is!!!!
 				assert(node.getPrevNodesSize() == 0);
+				
 				for (Node pred : node.getPrevNodes()) {
 					intersection.retainAll(fnDominators.get(pred));
 				}
@@ -791,8 +796,8 @@ public class StructuralAnalysisEngine {
 		m_patternMatchers.add(new SelfLoopPattern());
 		m_patternMatchers.add(new LoopPatternMatcher());
 		m_patternMatchers.add(new ConditionalPatternMatcher());
-		m_patternMatchers.add(new SequencePatternMatcher());
-		m_patternMatchers.add(new ConditionalTransformer());
+		m_patternMatchers.add(new SequencePatternMatcher());	//uses dominators
+		m_patternMatchers.add(new ConditionalTransformer());	//uses dominators
 	}
 
 	private long findFunctionPc(String functionName, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects) {

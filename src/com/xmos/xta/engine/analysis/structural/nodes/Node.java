@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
-
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.NodeAttributes;
-import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.engine.analysis.structural.nodes.edges.Edges;
 import com.xmos.xta.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.engine.instructions.XtaInstruction;
@@ -98,22 +96,8 @@ public abstract class Node implements Comparable<Node>{
 		return m_id;
 	}
 	
-	private static final boolean s = false;
 	public int compareTo(Node node) {
-		if (s) {
-			Status status = new Status();
-			double thisTimeTaken = getAttributes().getTimeTaken(Case.WORST, status, null);
-			double nodeTimeTaken = node.getAttributes().getTimeTaken(Case.WORST, status, null);
-
-			if (thisTimeTaken - nodeTimeTaken != 0) {
-				return Integer.signum((int) (thisTimeTaken - nodeTimeTaken));
-			} else {
-
-				return Integer.signum(m_id - node.m_id);
-			}
-		} else {
-			return Integer.signum(m_id - node.m_id);
-		}
+		return Integer.signum(m_id - node.m_id);
 	}
 	
 	public void setBranchLinkReturn(Node bl){
