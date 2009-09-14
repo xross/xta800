@@ -34,7 +34,7 @@ add exclusion recieve_local_node
 analyse path recieve_external_0 recieve_external_0
 set loop - ethPhyRx_loop 4
 set loop - localTx_loop 4
-set loop - adjustTTL_loop 4
+# set loop - adjustTTL_loop 4
 set loop - ethTx_loop 4
 set required - 10000.0 ns
 
@@ -45,7 +45,7 @@ add exclusion recieve_local_node
 analyse path recieve_external_1 recieve_external_1
 set loop - ethPhyRx_loop 4
 set loop - localTx_loop 4
-set loop - adjustTTL_loop 4
+# set loop - adjustTTL_loop 4
 set loop - ethTx_loop 4
 set required - 10000.0 ns
 
