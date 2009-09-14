@@ -1,5 +1,8 @@
 package com.xmos.xta.engine.sections;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -62,6 +65,43 @@ public class SrcLabelTable extends Section {
 					"problem reading %s section while loading executable", m_sectionName));
 	        return false;
 		}
+	    
+	    // BUG 6471: A compiler bug means that basic blocks overlap when they shouldn't
+	    // Here we ensure this overlapping is removed as the rest of the tool assumes the
+	    // blocks don't overlap.
+	    detectAndCorrectOverlap();
+	    
         return true;
+	}
+
+	private void detectAndCorrectOverlap() {
+		List<SrcLabelTableInfo> entries = new ArrayList<SrcLabelTableInfo>();
+		entries.addAll(m_locations.values());
+		Collections.sort(entries);
+		
+		int index = 0;
+		while (index < entries.size()) {
+			index = detectForFile(entries, index);
+    	}
+	}
+
+	private int detectForFile(List<SrcLabelTableInfo> entries, int index) {
+		SrcLabelTableInfo entry = entries.get(index);
+		String thisFile = entry.getFileName();
+		
+		index++;
+		while (index < entries.size()) {
+			SrcLabelTableInfo nextEntry = entries.get(index);
+			if (!nextEntry.getFileName().equals(thisFile)) {
+				return index;
+			} else {
+				if (entry.getLineNumberEnd() > nextEntry.getLineNumberStart()) {
+					entry.setLineNumberEnd(nextEntry.getLineNumberStart() - 1);
+				}
+			}
+			entry = nextEntry;
+			index++;
+		}
+		return index;
 	}
 }
