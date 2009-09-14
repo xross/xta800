@@ -27,10 +27,6 @@ public class SourceFile {
 		return m_debugFile.getFileName();
 	}
 
-	public String getBaseDir() {
-		return m_debugFile.getBaseDir();
-	}
-
 	public String getShortFileName() {
 		return m_debugFile.getShortFileName();
 	}

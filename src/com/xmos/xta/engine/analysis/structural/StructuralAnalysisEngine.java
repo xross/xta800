@@ -3,6 +3,7 @@ package com.xmos.xta.engine.analysis.structural;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.LinkedList;
@@ -37,8 +38,7 @@ import com.xmos.xta.engine.sections.Sections;
 import com.xmos.xta.engine.sections.SrcStringInfo;
 
 public class StructuralAnalysisEngine {
-    private static final boolean DEBUG = false;
-    private static final boolean DEBUG_GRAPH_TRANSFORMATIONS = false;
+	
 	private static final boolean SYMBOLIC_LINK = false;
 	
 	private ControlFlowGraph m_controlFlowGraph;
@@ -73,18 +73,12 @@ public class StructuralAnalysisEngine {
 		
 		buildDominatorTree(workingSet, treeStart);
 		
-		if (DEBUG_GRAPH_TRANSFORMATIONS) {
-			System.out.println(dumpTree("start_tree", workingSet));
-			System.out.println("Tree starts at " + treeStart);
-		}
-			
-		
 		boolean working = true;
-		boolean dominatorTreeUpToDate = false;
+		boolean dominatorTreeUpToDate = true;
 		while (working) {
 			engine.provideFeedback(jobPrefix + " - nodes left: " + workingSet.size());
 			List<Node> postOrder = new LinkedList<Node>();
-			DFSPostOrder(postOrder, treeStart, new TreeSet<Node>());
+			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
 			working = false;
 
 			for (PatternMatcher pm : m_patternMatchers) {
@@ -100,14 +94,7 @@ public class StructuralAnalysisEngine {
 						return false;
 					}
 					if (pm.isMatch(node, workingSet, treeStart)) {
-						if (DEBUG_GRAPH_TRANSFORMATIONS) {
-							System.out.println(dumpTree(pm.getClass().getSimpleName(), workingSet));
-							System.out.println("Tree now starts at " +pm.getTreeStart());
-						}
-							
-						
 						treeStart = pm.getTreeStart();
-						
 						assert(workingSet.contains(treeStart));
 						assert (connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
@@ -209,10 +196,6 @@ public class StructuralAnalysisEngine {
 
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
 			
-			if (DEBUG) System.out.println(dumpTree(functionName, basicBlocks));
-
-			long initialPc = graphStart.getStartPc();
-			
 			assert(!basicBlocks.isEmpty());
 			FnopAnalyser fa = new FnopAnalyser();
 			
@@ -224,9 +207,6 @@ public class StructuralAnalysisEngine {
 				return null;
 			}
 			
-			if (basicBlocks.size() != 1 || initialPc != basicBlocks.iterator().next().getStartPc()) {
-				System.out.println(dumpTree(functionName + "_after", basicBlocks));
-			}
 			assert(basicBlocks.size() == 1);
 			Node decomposedGraph = basicBlocks.iterator().next();
 
@@ -404,6 +384,7 @@ public class StructuralAnalysisEngine {
 		}
 	}
 
+	//try to remove tree sets from this
 	private void buildDominatorTree(Collection<Node> reachableNodes, Node treeStart) {
 
 		for (Node node : reachableNodes) {
@@ -416,7 +397,7 @@ public class StructuralAnalysisEngine {
 			}
 		}
 
-		Set<Node> intersection = new TreeSet<Node>();
+		Set<Node> intersection = new HashSet<Node>();
 		boolean stillChanging = true;
 
 		while (stillChanging) {
@@ -441,13 +422,14 @@ public class StructuralAnalysisEngine {
 				}
 
 				intersection.add(node);
-
+				
 				if (!intersection.equals(node.getDominators())) {
 					node.clearDominators();
 					node.addAllDominators(intersection);
 					node.setDominatorSetComplete(intersectionIsCompleteSet);
 					stillChanging = true;
 				}
+				
 			}
 		}
 	}
@@ -656,10 +638,12 @@ public class StructuralAnalysisEngine {
 				if (treeStart == node)
 					continue;
 
-				Set<FunctionNode> intersection = new TreeSet<FunctionNode>(reachableNodes);
+				//TODO - this should be ok but check
+				Set<FunctionNode> intersection = new HashSet<FunctionNode>(reachableNodes);
 				
 				//TODO - find out why this is!!!!
 				assert(node.getPrevNodesSize() == 0);
+				
 				for (Node pred : node.getPrevNodes()) {
 					intersection.retainAll(fnDominators.get(pred));
 				}
@@ -787,7 +771,6 @@ public class StructuralAnalysisEngine {
 	}
 	
 	public static String dumpTree(String text, Collection<Node> workingSet) {		
-		
 		StringBuffer sb = new StringBuffer();
 		if (workingSet.size() > 1) {
 			sb.append("digraph "+ text + "{");
@@ -799,34 +782,12 @@ public class StructuralAnalysisEngine {
 						sb.append(node + " -> " + next + ";");
 					}
 				}
-				/*
-				if(node.isBlockNode() || node.isInstructionNode()){
-					sb.append(node + " [label=\"" + node + "\\n");
-					
-					for(XtaInstruction inst : node.getInstructions()){
-						sb.append(inst + "\\n");  
-					}
-					sb.append("\"]; ");
-					
-				} else 
-					
-					if(node.isFunctionNode()){
-					sb.append(node + " [label=\"" + node + "\\n ");
-					sb.append(((FunctionNode)node).getFunctionName() + "\\n ");
-					sb.append("\"]; ");
-				} else if(node.isSequenceNode()){
-					sb.append(node + " [label=\"" + node + "\\n");
-					sb.append("0x" + Long.toHexString(node.getStartPc()) + "\\n ");
-					sb.append("\"]; ");
-				} 
-				*/
 			}
 			sb.append("}\n");
 
 		} else {
 			sb.append("# graph has only " + workingSet.size() + " nodes");
 		}
-		
 		return sb.toString();
 	}
 	
@@ -835,8 +796,8 @@ public class StructuralAnalysisEngine {
 		m_patternMatchers.add(new SelfLoopPattern());
 		m_patternMatchers.add(new LoopPatternMatcher());
 		m_patternMatchers.add(new ConditionalPatternMatcher());
-		m_patternMatchers.add(new SequencePatternMatcher());
-		m_patternMatchers.add(new ConditionalTransformer());
+		m_patternMatchers.add(new SequencePatternMatcher());	//uses dominators
+		m_patternMatchers.add(new ConditionalTransformer());	//uses dominators
 	}
 
 	private long findFunctionPc(String functionName, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects) {

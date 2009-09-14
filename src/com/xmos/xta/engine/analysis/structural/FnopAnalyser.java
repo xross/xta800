@@ -16,8 +16,6 @@ public class FnopAnalyser {
 	}
 
 	public void analyse(Node startNode, boolean isFunction) {
-		assert (!startNode.isFunctionNode());
-		assert(startNode instanceof IBufferNode);
 		simulateBasicBlock((IBufferNode)startNode, null, isFunction);
 	}
 

@@ -73,13 +73,11 @@ public class Engine implements Notifier {
 	private long m_loadStartTime;
 	private NodeCoreCollection<SourceMapper> m_sourceMapper;
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
-	private NodeCoreCollection<InstructionDecoder> m_instructionDecoder;
 	private NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>> m_functionNames;
 	
 	public Engine(Config config) {		
 		m_sourceMapper = new NodeCoreCollection<SourceMapper>();
 		m_structuralGraph = new NodeCoreCollection<StructureGraph>();
-		m_instructionDecoder = new NodeCoreCollection<InstructionDecoder>();
 		m_functionNames = new NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>>();
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
@@ -139,11 +137,7 @@ public class Engine implements Notifier {
 	public SymbolTable getSymbolTable() {
 		return m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
 	}
-
-	public DebugInfo getDebugInfo() {
-		return m_xeLoader.getDebugInfo(m_nodeId, m_coreId);
-	}
-
+	
 	public SourceMapper getSourceMapper() {
 		return m_sourceMapper.get(m_nodeId, m_coreId);
 	}
@@ -152,10 +146,6 @@ public class Engine implements Notifier {
 		return m_structuralGraph.get(m_nodeId, m_coreId);
 	}
 	
-	public InstructionDecoder getInstructionDecoder() {
-		return m_instructionDecoder.get(m_nodeId, m_coreId);
-	}
-		
 	public Set<String> getFunctionNames() {
 		TreeMap<String, LinkedList<InstructionNode>> functionNames = m_functionNames.get(m_nodeId, m_coreId);
 		if (functionNames != null) {
@@ -1034,7 +1024,6 @@ public class Engine implements Notifier {
 			// This is a memory optimisation, required for the add/remove branch case.
 			// (i.e. for these operations, if we do not clear this first, the engine 
 			// required double the memory to work).
-			m_instructionDecoder = null;
 			m_structuralGraph = null;
 			m_functionNames = null;
 			m_sourceMapper = null;			
@@ -1043,7 +1032,6 @@ public class Engine implements Notifier {
 		m_loadStartTime = System.currentTimeMillis();
 		notify(src, Notifier.HOLD_MESSAGES, "");
 		NodeCoreCollection<StructureGraph> newStructuralGraph = new NodeCoreCollection<StructureGraph>();
-		NodeCoreCollection<InstructionDecoder> newInstructionDecoder = new NodeCoreCollection<InstructionDecoder>();
 		NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>> newFunctionNames = new NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>>();
 		NodeCoreCollection<SourceMapper> newSourceMappers = new NodeCoreCollection<SourceMapper>();
 		
@@ -1108,7 +1096,6 @@ public class Engine implements Notifier {
 				newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
 			}
 		}
-		m_instructionDecoder = newInstructionDecoder;
 		m_structuralGraph = newStructuralGraph;
 		m_functionNames = newFunctionNames;
 		m_sourceMapper = newSourceMappers;

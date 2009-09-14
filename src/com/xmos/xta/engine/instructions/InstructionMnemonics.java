@@ -9,6 +9,7 @@ public class InstructionMnemonics {
 	public InstructionMnemonics(Architecture arch) {
 		m_arch = arch;
 	}
+	/*
 	public boolean isMultiCycle(Instruction inst) {
 		switch (m_arch) {
 		case REVB: return (inst.getClass() == RevbXtaInstruction_divs_l3r.class) ||
@@ -22,6 +23,8 @@ public class InstructionMnemonics {
 		}
 		return false;
 	}
+	*/
+	
 	public boolean isSsync(Instruction inst) {
 		switch (m_arch) {
 		case REVB: return inst.getClass() == RevbXtaInstruction_ssync_0r.class;
