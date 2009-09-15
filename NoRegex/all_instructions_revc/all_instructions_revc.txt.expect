@@ -1,0 +1,17 @@
+xta: warning: target (0x0) of: 0x1001a blacp (u10) cp[i 0xffc] not found in executable sections
+xta: warning: CP address 0x410234 out of bounds
+xta: warning: target (0x10826) of: 0x10026 blrf (u10) i 0x7fe not found in executable sections
+xta: warning: target (0x21002a) of: 0x10028 blrf (lu10) i 0x1ffffe not found in executable sections
+xta: warning: target (0xf830) of: 0x1002c blrb (u10) i 0x7fe not found in executable sections
+xta: warning: target (0xffe10034) of: 0x1002e blrb (lu10) i 0x1ffffe not found in executable sections
+xta: warning: target (0x100b2) of: 0x10032 brff (ru6) r0, i 0x7e not found in executable sections
+xta: warning: target (0x30036) of: 0x10034 brff (lru6) r0, i 0x1fffe not found in executable sections
+xta: warning: target (0xffbc) of: 0x10038 brbt (ru6) r0, i 0x7e not found in executable sections
+xta: warning: target (0xffff0040) of: 0x1003a brbt (lru6) r0, i 0x1fffe not found in executable sections
+xta: warning: target (0x30042) of: 0x10040 brfu (lu6) i 0x1fffe not found in executable sections
+xta: warning: target (0x100c4) of: 0x10044 brff (ru6) r0, i 0x7e not found in executable sections
+xta: warning: target (0x30048) of: 0x10046 brff (lru6) r0, i 0x1fffe not found in executable sections
+xta: warning: target (0x3004e) of: 0x1004c brft (lru6) r0, i 0x1fffe not found in executable sections
+xta: warning: target (0x30054) of: 0x10052 brfu (lu6) i 0x1fffe not found in executable sections
+xta: warning: no valid paths of execution
+xta: error: no routes analysed
