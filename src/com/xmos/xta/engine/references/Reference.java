@@ -60,4 +60,32 @@ public class Reference {
 		m_backTrail.add(referenceType);
 	}
 
+    public boolean equals(Object obj) {
+    	if(obj == null)
+    	return false;
+               
+        if(!(obj instanceof Reference))
+            return false;
+
+    	// A reference is equal to another if its base pc, and
+    	// all of its back trail pc's, match.
+    	Reference reference = (Reference)obj;
+               
+        if (getPc() != reference.getPc())
+    	    return false;
+
+        if (m_backTrail.size() != reference.getBackTrail().size()) 
+    	    return false;
+
+        for (int i = 0; i < m_backTrail.size(); ++i) {
+    	    if (m_backTrail.get(i).getPc() != getBackTrail().get(i).getPc())
+    	        return false;
+        }
+    	return true;
+    }	
+    
+    public int hashCode() {
+ 	    //this is needed to complete the equals method
+    	return 0;
+    }
 }
