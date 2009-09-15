@@ -26,19 +26,10 @@ public class FunctionHandler {
 		m_instDecoder = instDecoder;
 		functionToEndPoints = new TreeMap<Long, TreeSet<Node>>();
 	}
-
-	public Collection<FunctionNode> getFunctions(){
-		return m_functions;
-	}
 	
 	public Collection<InstructionNode> getKnownFuncStarts(){
 		return m_instToFunc.keySet();
 	}
-	
-	public Collection<Node> getPseudoFunctions(){
-		return m_pseudoFunctions;
-	}
-	
 	
 	/** 
 	 * For each function call this places a function node as its successor. The link stage resolves which function it actually is.

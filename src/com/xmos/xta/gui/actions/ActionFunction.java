@@ -16,11 +16,14 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionDelegate;
 
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.GuiNotifier;
+import com.xmos.xta.gui.dialogs.FilteredFunctions;
+import com.xmos.xta.gui.dialogs.Settings;
 
 public class ActionFunction extends ActionDelegate implements IPropertyChangeListener, 
                                                               IWorkbenchWindowPulldownDelegate {
@@ -65,6 +68,7 @@ public class ActionFunction extends ActionDelegate implements IPropertyChangeLis
 	}
 
 	public void run(IAction action) {
+		new FilteredFunctions(PlatformUI.getWorkbench().getDisplay().getActiveShell()); 
 	}
 
 	public void dispose() {

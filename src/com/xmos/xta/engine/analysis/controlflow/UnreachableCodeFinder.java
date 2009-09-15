@@ -17,10 +17,6 @@ public class UnreachableCodeFinder {
 		m_unreachable = new TreeSet<Node>();
 	}
 	
-	public Collection<Node> getUnreachableCode(){
-		return m_unreachable;
-	}
-	
 	/**
 	 * This finds all the code that is unreachable and removes it from the graph. 
 	 * It needs removing from the graph so that functions 

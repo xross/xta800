@@ -10,6 +10,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.MultiPageEditorPart;
+import org.netbeans.modules.cnd.dwarfdump.Paths;
 
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.gui.Broadcaster;
@@ -141,8 +142,9 @@ public class SourcesEditor extends MultiPageEditorPart implements IPropertyChang
 			if ((fileName == null) || fileName.equals("")) {
 				setActivePage(0);
 			} else {
+				String baseName = Paths.getName(fileName);
 				for (int i = 0; i < this.getPageCount(); i++) {
-					if (fileName.equals(this.getPageText(i))) {
+					if (baseName.equals(this.getPageText(i))) {
 						setActivePage(i);
 					}
 				}

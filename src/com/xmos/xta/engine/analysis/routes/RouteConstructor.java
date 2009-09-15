@@ -10,6 +10,7 @@ import java.util.Set;
 import com.xmos.xta.engine.CommandSource;
 import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
+import com.xmos.xta.engine.CommandSource.Type;
 import com.xmos.xta.engine.analysis.routes.RouteDescription;
 import com.xmos.xta.engine.analysis.routes.RouteDescription.RouteMode;
 import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
@@ -121,7 +122,6 @@ public class RouteConstructor {
 		}
 		setParents();
 		setUnknowns();			
-		setSelfLoops();	
 		setSrcLoopCounts();	
 		checkSupportedInstructions(src);
 		
@@ -255,8 +255,6 @@ public class RouteConstructor {
 					//System.out.println(StructuralAnalysisEngine.dumpTree("inter", workingSet));
 					m_excludedRouteNodes.add(currentNode);
 					
-					
-					
 				} else {
 					m_excludedRouteNodes.add(parent);
 				}
@@ -318,7 +316,7 @@ public class RouteConstructor {
 				
 				Node firstInstructionNode = currentNode; 
 				InstructionNode functionStartNode = findFirstInstruction(firstInstructionNode);
-				//TODO - the endpoint fix lives around here
+				
 				if(m_exclusions.contains(functionStartNode) && firstNodeAdded){
 					m_excludedRouteNodes.add(parent);
 					return false;
@@ -330,7 +328,6 @@ public class RouteConstructor {
 				seenEndPoint |= explore(functionStartNode, functionNodeWrapper, newWorkingSet, functionEndNodes, null);
 				assert(cfgSanityCheck(newWorkingSet));	
 				pruneGraphOfExcludedPaths(newWorkingSet);
-				
 				
 				//there should be nothing in the working set that is excluded now
 				for(Node nodes : newWorkingSet){
@@ -588,10 +585,6 @@ public class RouteConstructor {
 				m_exclusions.addAll(referenceMatcher.getNodes(threadNode, reference));
 			}
 		}
-		
-		//for(InstructionNode node : m_exclusions){
-		//	System.out.println("excluded: " + node + " " + node.getXtaInstruction());
-		//}
 	}
 		
 	private void setUnknowns() {
@@ -624,20 +617,6 @@ public class RouteConstructor {
 		}
 	}
 
-	private void setSelfLoops() {
-		// Sets the iteration count of all self loops to 1
-		for (Route route : m_routes) {
-			Node node = route.getNode();			
-			node.traverse(0, new DefaultNodeTraverser() {
-				public boolean foundSelfLoopNode(Node node, int depth) {
-					NodeAttributes nodeAttributes = node.getAttributes();
-					nodeAttributes.setLoopIterations(1);
-					return true;
-				}
-			});
-		}
-	}
-	
 	private void setSrcLoopCounts() {
 		// Sets the loop iteration counts specified at compile time.
 		for (SrcLevelLoopInfo srcLevelLoopInfo : m_engine.getSrcLevelLoops()) {
@@ -645,9 +624,11 @@ public class RouteConstructor {
 					String.format("0x%x", srcLevelLoopInfo.getPc()), 
 					ReferenceClass.PC_REF);
 
+			CommandSource src = new CommandSource(Type.INTERNAL);
 			for (Route route : m_routes) {
 				try {
-					route.getRouteUnknowns().setLoopIterations(reference, srcLevelLoopInfo.getNumIterations());
+					route.getRouteUnknowns().setLoopIterations(src, m_engine, 
+							reference, srcLevelLoopInfo.getNumIterations(), true);
 				} catch (Exception e) {}				
 			}
 		}		

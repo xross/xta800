@@ -128,7 +128,7 @@ public class TestGen {
 			e.printStackTrace();
 		}
 	}
-	
+	/*
 	private static void createStucturalTest(String description) {		
 		try {
 			m_testDescription = description;
@@ -187,7 +187,7 @@ public class TestGen {
 		file.write("       \"-exit > $genDir/" + testName + ".txt 2>&1\");\n");
 		file.write("\n");
 	}
-	
+	*/
 	private static void writeNonStucturalTestPerl(BufferedWriter file, String testName, String flags) throws IOException {
 		file.write("#!/usr/bin/perl\n");
 		file.write("use strict;\n");

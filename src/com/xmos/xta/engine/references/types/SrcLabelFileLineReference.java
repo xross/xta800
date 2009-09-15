@@ -20,7 +20,7 @@ public class SrcLabelFileLineReference extends ReferenceType {
 	public boolean resolve(Engine engine, int nodeId, int coreId) {
     	String ref  = getRef();
 		String fileName = getFileName(ref);
-        long lineNumber = getLineNumber(ref);		
+        long lineNumber = getLineNumber(ref);
 
 		for (SrcLabelTableInfo info : engine.getSrcLabelTable().values()) {
             if (info.getFileName().equals(fileName) &&

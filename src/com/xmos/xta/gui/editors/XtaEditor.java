@@ -679,7 +679,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
     private void checkLineForExclusion(Collection<Reference> exclusions, String refStr, long index) {
 		Engine engine = GuiEngine.getEngine();
 		Reference ref = ReferenceFactory.createReference(refStr, ReferenceClass.ANY_REF);
-		if (ref.resolve(engine, engine.getNodeId(),engine.getCoreId())) {			
+		if (ref.resolve(engine, engine.getNodeId(), engine.getCoreId())) {			
 			for (Reference exclusion : exclusions) {
 				if (ref.getPc() == exclusion.getPc()) {
 					m_excludedIndexes.add(index);

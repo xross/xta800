@@ -2,7 +2,6 @@ package com.xmos.xta.sourcemapper;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class SourceLine implements Line {
 	
@@ -18,13 +17,6 @@ public class SourceLine implements Line {
 		m_lineNumber = lineNumber;
 		m_assembly = new ArrayList<AssemblyLine>();
 		m_statementPcs = new ArrayList<Long>();
-	}
-	
-	public void addAssembly(List<Line> assembly){
-	    assert(assembly!=null);
-	    for(Line al : assembly){
-	        addAssembly((AssemblyLine)al);
-	    }
 	}
 	
 	public void addAssembly(AssemblyLine newInst){

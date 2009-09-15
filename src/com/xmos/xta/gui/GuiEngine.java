@@ -78,9 +78,6 @@ public class GuiEngine {
 	}
 	
 	public static void runFunction(final String functionName) {
-		if (GuiEngine.getEngine().isBusy())
-			return;
-
 		if (!functionName.equals("")) {
 			Job job = new Job("Analyse: " + functionName) {
 				protected IStatus run(IProgressMonitor monitor) {
@@ -98,9 +95,6 @@ public class GuiEngine {
 	}
 	
 	public static void runPath() {
-		if (GuiEngine.getEngine().isBusy())
-			return;
-		
 		if ((s_startPoint == null) || s_startPoint.getRef().equals("")) {
 			GuiEngine.notify(Notifier.NOTIFY_ERROR, "please specify a start reference");
 
