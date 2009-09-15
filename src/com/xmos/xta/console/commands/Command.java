@@ -21,6 +21,7 @@ public abstract class Command {
     	SRCLABEL,
     	LABEL,
     	HELP,
+    	IGNORE,
     }
 
     private CommandSource m_src;
