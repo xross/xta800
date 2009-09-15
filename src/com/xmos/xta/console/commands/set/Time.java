@@ -62,6 +62,10 @@ public class Time extends Command {
    		return 4; 
     }
 
+	public ArgType[] getArgTypes() {
+		return new Command.ArgType[] {ArgType.IGNORE, ArgType.ENDPOINT};
+	}    
+    
     public String name() {
     	return "time";
     }        
