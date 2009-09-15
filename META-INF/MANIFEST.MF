@@ -19,4 +19,5 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-Activator: com.xmos.xta.gui.XtaPlugin
 Bundle-ActivationPolicy: lazy
 Import-Package: com.xmos.xta.engine
+Bundle-Vendor: XMOS
 
