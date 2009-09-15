@@ -14,8 +14,31 @@ XUD_DIR					= $(SWC_USB)/xud_lite
 XUD_LIB_DIR    	= $(XUD_DIR)/lib
 XUD_SRC_DIR			= $(XUD_DIR)/src
 XUD_INC_DIR    	= $(XUD_DIR)/include
-XUD_LIBS				= $(XUD_LIB_DIR)/xud.a
 XUD_SRC_UIFM_DIR	= $(XUD_SRC_DIR)/uifm
+
+
+XUD_SRC_XC		= XUD_Manager \
+		  			XUD_DeviceAttach \
+						XUD_LLD_Io \
+	     			XUD_EpFunctions  
+ 
+XUD_SRC_S 	= XUD_LLD_IoLoop \
+						ledTrapHandler \
+						ssctrl XUD_EpFuncs
+
+XUD_SRC_C	=
+
+XUD_SRC_UIFM_S  = XUD_UIFM_PConfig \
+		  uifm_enable \
+		  uifm_reg_write \
+		  setAddress \
+		  uifm_reg_read
+XUD_SRC_SUP_S	= delay \
+		  outpw \
+		  sr \
+		  inpw \
+		  lock channels 
+
 
 
 TEST_DIR				= $(SWC_USB_TESTS)/$(TEST_NAME)
@@ -63,8 +86,12 @@ compile:
 		$(addprefix $(TEST_SRC_DIR)/, $(addsuffix .xc ,$(TEST_SRC_XC))) \
 		$(addprefix $(AUD_SHARED)/, $(addsuffix .xc ,$(SHARED_SRC_XC))) \
 		$(addprefix $(AUD_SHARED)/, $(addsuffix .S ,$(SHARED_SRC_S))) \
-		$(addprefix $(TEST_SRC_DIR)/, $(addsuffix .S ,$(TEST_SRC_S))) $(XUD_LIBS)  \
-		$(addprefix $(TEST_SRC_DIR)/, $(addsuffix .s ,$(TEST_SRC_s)))
+		$(addprefix $(TEST_SRC_DIR)/, $(addsuffix .S ,$(TEST_SRC_S))) \
+		$(addprefix $(TEST_SRC_DIR)/, $(addsuffix .s ,$(TEST_SRC_s))) \
+		$(addsuffix .o ,$(XUD_SRC_XC)) \
+		$(addsuffix .o ,$(XUD_SRC_S)) \
+		$(addsuffix .o ,$(XUD_SRC_SUP_S)) \
+		$(addsuffix .o ,$(XUD_SRC_UIFM_S)) 
 
 xedump:
 	xobjdump -D $(TARGET) > $(TARGET).txt

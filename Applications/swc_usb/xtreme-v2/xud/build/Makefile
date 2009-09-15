@@ -12,7 +12,6 @@ XUD_SRC_DIR	= $(XUD_DIR)/src
 XUD_SRC_UIFM_DIR= $(XUD_SRC_DIR)/uifm
 XUD_SRC_SUP_DIR = $(XUD_SRC_DIR)/support
 
-XUD_LIB_DIR    	= $(XUD_DIR)/lib
 XUD_INC_DIR    	= $(XUD_DIR)/include
 
 XUD_INCLUDES	= -I $(XUD_INC_DIR) \
@@ -56,13 +55,7 @@ XUD_SRC_SUP_S	= delay \
 		  lock channels 
 
 
-all: cleanlibs makedirs buildlibs postclean 
-
-makedirs:
-	-@mkdir -p $(XUD_LIB_DIR)
-
-cleanlibs:
-	-@rm -rf $(XUD_LIB_DIR)/*.a
+all: buildlibs 
 
 buildlibs:
 	-@echo ""
@@ -73,12 +66,6 @@ buildlibs:
 		$(addprefix $(XUD_SRC_DIR)/, $(addsuffix .S ,$(XUD_SRC_S))) \
 		$(addprefix $(XUD_SRC_SUP_DIR)/, $(addsuffix .S ,$(XUD_SRC_SUP_S))) \
 		$(addprefix $(XUD_SRC_UIFM_DIR)/, $(addsuffix .S ,$(XUD_SRC_UIFM_S))) 
-	ar crvu $(XUD_LIB_DIR)/$(XUD_LIB) \
-		$(addsuffix .o ,$(XUD_SRC_XC)) \
-		$(addsuffix .o ,$(XUD_SRC_S)) \
-		$(addsuffix .o ,$(XUD_SRC_SUP_S)) \
-		$(addsuffix .o ,$(XUD_SRC_UIFM_S)) 
-	ranlib $(XUD_LIB_DIR)/$(XUD_LIB) 
 
 postclean:
 	-@rm -rf *.o

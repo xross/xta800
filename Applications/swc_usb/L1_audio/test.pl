@@ -12,6 +12,7 @@ my $directory = "L1_audio";
 if (!$noBuild) {
     system(" xmake -f ./xud_lite/build/Makefile       > $genDir/$directory.log 2>&1");
     system(" xmake -f ./apps/L1_audio/build/Makefile >> $genDir/$directory.log 2>&1");
+    system(" xmake -f ./xud_lite/build/Makefile cleantemps >> $genDir/$directory.log 2>&1");
     system(" cp ./apps/L1_audio/bin/L1_audio.xe $genDir/test.xe");
 }
 
