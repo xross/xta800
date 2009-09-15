@@ -113,9 +113,9 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 		}
 		updateCurrentNodeId(GuiEngine.getEngine().getNodeId());		
 		
-		if(GuiEngine.getEngine().getXeLoader().getNodeIds().size() == 1){
+		if (GuiEngine.getEngine().getXeLoader().getNodeIds().size() < 2) {
 			m_action.setEnabled(false);
-		}  else {
+		} else {
 			m_action.setEnabled(true);
 		}
 	}
