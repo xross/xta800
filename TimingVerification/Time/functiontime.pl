@@ -120,7 +120,7 @@ if($xtaNumFnops >= $xsimNumFNOPs and $xtaNumFnops <= $xsimNumFNOPs*2 ){
 
 my $fnopAdjustedTime = $xtaTotalTimeTaken - (($xtaNumFnops- $xsimNumFNOPs) * 10 );
 
-$t = sprintf("Time: %d\nInstructions: %d\nFNOPs acceptable: %s\n", $fnopAdjustedTime, $xtaNumInstructions - $xtaNumFnops, $fnopsWithinAcceptableBounds);
+$t = sprintf("Time: %d\nInstructions: %d\nFNOPs acceptable: %s\n", $fnopAdjustedTime, $xtaNumInstructions, $fnopsWithinAcceptableBounds);
 print OUTFILE $t;
 
 close(INFILE);
