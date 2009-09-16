@@ -78,7 +78,7 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
 		
 		FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.OPEN);
         fileDialog.setText("Open Xe File");
-        String[] filterExt = { "*.xe" };
+        String[] filterExt = { "*.xe", "*.*" };
         fileDialog.setFilterExtensions(filterExt);
         
         XtaPlugin plugin = XtaPlugin.getDefault();        
