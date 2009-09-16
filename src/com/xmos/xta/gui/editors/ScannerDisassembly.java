@@ -8,6 +8,7 @@ import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
+import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WordRule;
 import org.eclipse.swt.SWT;
@@ -25,6 +26,7 @@ public class ScannerDisassembly extends RuleBasedScanner {
     	Display display = PlatformUI.getWorkbench().getDisplay();
     	List<IRule> rules = new ArrayList<IRule>();
     	processRegisters(display, rules);
+    	processHyperlinks(display, rules);
     	//processSpecialRegisters(display, rules);
     	IRule[] rulesArray = new IRule[rules.size()];
     	rulesArray = rules.toArray(rulesArray);    	
@@ -78,4 +80,12 @@ public class ScannerDisassembly extends RuleBasedScanner {
         }
         rules.add(rule);
     }
+
+    private void processHyperlinks(Display display, List<IRule> rules) {
+    	Color color = display.getSystemColor(SWT.COLOR_BLUE);
+    	
+    	IToken token = new Token(new TextAttribute(color));
+    	rules.add(new SingleLineRule("<", ">", token, '\\'));
+    }
+
 }
