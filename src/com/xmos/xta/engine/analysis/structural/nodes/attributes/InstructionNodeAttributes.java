@@ -47,9 +47,12 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		if (getNode().isUnresolved()) {
 			status.mergeStatus(S.UNRESOLVED);
 		}
-		return 1;
+		if (!m_instruction.isFnop()) {
+			return 1;
+		}
+		return 0;
 	}
-	
+
 	public long getNumFNops(Case c, Status status, Node ignoreIterationsAboveCond) {
 		if (getNode().isUnresolved()) {
 			status.mergeStatus(S.UNRESOLVED);
