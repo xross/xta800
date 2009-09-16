@@ -8,6 +8,9 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.engine.instructions.XtaInstruction;
 
+@SuppressWarnings("serial")
+class EscapedDetctedException extends Exception {}
+
 public class TraceDisplayer {
 	private Console m_console;
 	private double m_currentTime;
@@ -20,8 +23,12 @@ public class TraceDisplayer {
     	if (isInfinite(node, c)) {
     		m_console.display("Cannot trace - time is infinite\n");
     	} else {
-        	m_currentTime = 0;
-    		displayInstructions(node, c, 1, 0);
+        	m_currentTime = 0;        	        
+    		try {
+				displayInstructions(node, c, 1, 0);
+			} catch (EscapedDetctedException e) {
+				m_console.display("Trace aborted...\n");
+			}
     		m_console.display("\n");
     	}
     }
@@ -39,7 +46,7 @@ public class TraceDisplayer {
 		return false;
 	}
 
-	private void displayInstructions(Node node, Case c, long totalIterations, long iteration) {
+	private void displayInstructions(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException {
 		if (node == null || node.isNullNode())
 			return;
 		
@@ -69,13 +76,13 @@ public class TraceDisplayer {
 		return null;
 	}
 
-	private void displayChildren(Node node, Case c, long totalIterations, long iteration) {
+	private void displayChildren(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException {
     	for (Node child : node.getChildren()) {
     		displayInstructions(child, c, totalIterations, iteration);
     	}
 	}
 
-    private void displayLoop(Node node, Case c, long totalIterations, long iteration) {
+    private void displayLoop(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException {
 		long loopIterations = node.getAttributes().getLoopIterations();
 		if (node.getAttributes().getIsAbsolute()) {
 			if (iteration == 0) {
@@ -99,7 +106,7 @@ public class TraceDisplayer {
 		}
 	}
     
-	private void displayInstruction(InstructionNode instruction) {
+	private void displayInstruction(InstructionNode instruction) throws EscapedDetctedException {
 		String isUnknown = instruction.getAttributes().getDisplayUnknown() ? "*" : " ";
 		String isUnresolved = instruction.isUnresolved() ? " [UNRESOLVED]" : "";
      	
@@ -125,7 +132,11 @@ public class TraceDisplayer {
      		m_console.display(" (P)");
      	
      	m_currentTime += instruction.getAttributes().getInstructionTimeTaken();
-      	m_console.display("\n");    	
+      	m_console.display("\n");    
+      	
+      	if (m_console.hasEscaped()) {
+      		throw new EscapedDetctedException();
+      	}
     }
 }
 
