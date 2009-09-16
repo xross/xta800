@@ -99,11 +99,11 @@ public class AssemblyLine implements Line {
 			}
 		} else if (inst.getNmenonic().toLowerCase().equals("ldapf (u10)")) {
 			String offset = (operandString.substring(operandString.indexOf("0x")+2));
-			long loadLocation = (Long.parseLong(offset, 16) << 1) + inst.getPc() + inst.getNumBytes();
+			long loadLocation = Long.parseLong(offset, 16) + inst.getPc() + inst.getNumBytes();
 			operandString = operandString.substring(0, operandString.indexOf(",")) + ", <0x" + Long.toHexString(loadLocation) + ">";
 		} else if (inst.getNmenonic().toLowerCase().equals("ldapb (u10)")) {
 			String offset = (operandString.substring(operandString.indexOf("0x")+2));
-			long loadLocation = inst.getPc()-(Long.parseLong(offset, 16) << 1) + inst.getNumBytes();;
+			long loadLocation = inst.getPc() - Long.parseLong(offset, 16) + inst.getNumBytes();
 			operandString = operandString.substring(0, operandString.indexOf(",")) + ", <0x" + Long.toHexString(loadLocation) + ">";
 		} else if (inst.getNmenonic().toLowerCase().equals("chkct (rus)")) {
 			for (int i = 0; i < 12; i++){

@@ -898,6 +898,7 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
 
 		long topIndex = Math.max(0, index - 10);
 		viewer.setTopIndex((int)topIndex);
+		viewer.setRangeIndication(charOffset, 0, true);
 	}
 
 	private InputLine findCodeRefLineNum(Reference codeRef) {
