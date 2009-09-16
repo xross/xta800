@@ -42,6 +42,7 @@ public class GuiConsole implements Console {
 	private String m_prompt;
 	private Completor m_completor;
     private TabCompletionHandler m_completionHandler;
+    private boolean m_hasEscaped;
 
 	public GuiConsole(Composite parent) {
 		if (DEBUG) System.out.printf("GuiConsole()\n");		
@@ -74,7 +75,10 @@ public class GuiConsole implements Console {
                     
         		} else if (event.keyCode == SWT.TAB) {
                     complete();
-                    
+
+        		} else if (event.keyCode == SWT.ESC) {
+        			m_hasEscaped = true;
+
         		} else {
         			handleCharacter(event.character);
         		}        		        		
@@ -120,6 +124,8 @@ public class GuiConsole implements Console {
 
 				} else if (event.keyCode == SWT.CONTROL) {
 					
+        		} else if (event.keyCode == SWT.ESC) {
+					
 				} else {
 					checkRow();
 				}
@@ -127,9 +133,9 @@ public class GuiConsole implements Console {
 		});
                 
         m_completor = new XtaCompletor(GuiEngine.getEngine());
-        m_completionHandler = new TabCompletionHandler();
-        
+        m_completionHandler = new TabCompletionHandler();        
         m_text.setFocus();
+        m_hasEscaped = false;
 	}
 	
     public void execute() {
@@ -165,7 +171,8 @@ public class GuiConsole implements Console {
 	
 	public String getNextLine(Vector<Command> commandHistory) {
 		if (DEBUG) System.out.printf("GuiConsole: Entering: getNextLine\n");			
-
+		m_hasEscaped = false;
+		
 		m_commandHistory = commandHistory;
 		resetCommandIndex();
 
@@ -213,6 +220,10 @@ public class GuiConsole implements Console {
     		}
         });    		
 		if (DEBUG) System.out.printf("GuiConsole: Leaving: clearScreen\n");			
+	}
+	
+	public boolean hasEscaped() {
+		return m_hasEscaped;
 	}
 	
 	public void close() throws IOException {

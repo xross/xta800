@@ -47,6 +47,10 @@ public class JLineConsole implements Console {
 	public void clearScreen() {		
 	}
 	
+	public boolean hasEscaped() {
+		return false;
+	}
+	
 	private void reportError() {
 		System.out.printf("internal error: Problem reading console input (aborting)..\n");
 	    System.out.printf("try using -DConsole=Basic\n");			
