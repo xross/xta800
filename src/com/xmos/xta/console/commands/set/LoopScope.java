@@ -26,6 +26,10 @@ public class LoopScope extends Command {
     	return 3;
     }        
 
+	public ArgType[] getArgTypes() {
+		return new Command.ArgType[] {ArgType.IGNORE, ArgType.ALLREFS, ArgType.IGNORE};
+	}    
+    
     public String name() {
     	return "loopscope";
     }        
