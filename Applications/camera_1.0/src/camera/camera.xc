@@ -89,7 +89,7 @@ void camLoop(streaming chanend c_lcd_pro, streaming chanend c_lcd_cntrl, in port
   VSYNC_port when pinseq(0) :> tmp;
   while(1)
   {
-
+    #pragma xta endpoint "a"
     VSYNC_port when pinseq(1) :> tmp;    // Wait for vsync
     for ( i= 0; i < 240; i+=1)
     {
