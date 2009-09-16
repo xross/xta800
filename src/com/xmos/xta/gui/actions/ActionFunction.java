@@ -23,7 +23,6 @@ import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.GuiNotifier;
 import com.xmos.xta.gui.dialogs.FilteredFunctions;
-import com.xmos.xta.gui.dialogs.Settings;
 
 public class ActionFunction extends ActionDelegate implements IPropertyChangeListener, 
                                                               IWorkbenchWindowPulldownDelegate {

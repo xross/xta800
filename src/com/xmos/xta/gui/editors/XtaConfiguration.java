@@ -1,5 +1,7 @@
 package com.xmos.xta.gui.editors;
 
+import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
+import org.eclipse.jface.text.hyperlink.URLHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.reconciler.IReconciler;
@@ -51,5 +53,14 @@ public class XtaConfiguration extends SourceViewerConfiguration {
     
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
 		return new XtaRulerAnnotationHover(m_editor);
+	}
+	
+	public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
+		return new IHyperlinkDetector[] { new BranchTargetHyperlinkDetector(),
+				new URLHyperlinkDetector() };
+	}
+
+	public int getHyperlinkStateMask(ISourceViewer sourceViewer) {
+		return 0;
 	}
 }

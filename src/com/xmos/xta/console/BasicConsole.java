@@ -21,4 +21,8 @@ public class BasicConsole implements Console {
 		
 	public void clearScreen() {		
 	}
+	
+	public boolean hasEscaped() {
+		return false;
+	}
 }

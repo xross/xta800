@@ -9,4 +9,5 @@ public interface Console {
 	void displayPrompt(String str);
 	String getNextLine(Vector<Command> commandHistory);
 	void clearScreen();
+	boolean hasEscaped();
 }

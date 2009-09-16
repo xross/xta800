@@ -19,12 +19,16 @@
 
    <windowImages i16="/tools_xta/icons/xta16x16.png" i32="/tools_xta/icons/xta32x32.png" i48="/tools_xta/icons/xta48x48.png" i64="/tools_xta/icons/xta64x64.png" i128="/tools_xta/icons/xta128x128.png"/>
 
+   <splash
+      location="tools_xta"
+      startupProgressRect="5,279,454,15" />
    <launcher name="xta">
       <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
    </vm>
