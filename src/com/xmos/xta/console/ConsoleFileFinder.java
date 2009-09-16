@@ -17,18 +17,17 @@ public class ConsoleFileFinder extends FileFinder {
     }
     
 	public File openFileFinder(String compilationDir, String fileName) {
-		if (findFileInCancelCache(compilationDir, fileName)) {
-			return null;
-		}
 		
-		File srcPathFile = findFileInSrcPaths(m_engine.getSrcPaths(), fileName);
-		if (srcPathFile != null) {
-			return srcPathFile;
+		if(!findFileInCancelCache(compilationDir, fileName)){
+			File srcPathFile = findFileInSrcPaths(m_engine.getSrcPaths(), fileName);
+			if (srcPathFile != null) {
+				return srcPathFile;
+			}
+					
+			addToCancelCache(compilationDir, fileName);
+			m_engine.notify(m_src, Notifier.NOTIFY_WARNING,
+					String.format("failed to find source file: %s", fileName));
 		}
-				
-		addToCancelCache(compilationDir, fileName);
-		m_engine.notify(m_src, Notifier.NOTIFY_WARNING,
-				String.format("failed to find source file: %s", fileName));
         return null;
 	}	
 }

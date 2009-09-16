@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
-import com.xmos.xeloader.DebugInfo;
 import com.xmos.xeloader.MemoryImage;
 import com.xmos.xeloader.SymbolTable;
 import com.xmos.xeloader.XeLoader;
@@ -121,7 +120,7 @@ public class Engine implements Notifier {
 	public Vector<MemoryImage> getMemoryImages() {
 		return m_xeLoader.getMemoryImages();
 	}
-
+/*
 	public Vector<SymbolTable> getSymbolTables() {
 		return m_xeLoader.getSymbolTables();
 	}
@@ -129,7 +128,7 @@ public class Engine implements Notifier {
 	public Vector<DebugInfo> getDebugInfos() {
 		return m_xeLoader.getDebugInfos();
 	}
-	
+	*/
 	public MemoryImage getMemoryImage() {
 		return m_xeLoader.getMemoryImage(m_nodeId, m_coreId);
 	}

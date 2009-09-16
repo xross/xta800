@@ -47,7 +47,6 @@ public class RouteConstructor {
 		NO_ENDPOINTS_FOUND, ENDPOINTS_MISSING, STARTPOINT_MISSING, SUCCESS, COULD_NOT_FIND_STARTPOINT, COULD_NOT_FIND_ENDPOINT
 	}
 	
-	private int m_routeId;
 	private RouteDescription m_description;
 	private StructureGraph m_structureGraph;
 	private List<Route> m_routes;
@@ -63,14 +62,6 @@ public class RouteConstructor {
 		createExclusions();
 	}
 
-	public int getRouteId() {
-		return m_routeId;
-	}
-
-	public String getDescription() {
-		return m_description.getDescription();
-	}
-	
 	public List<Route> getRoutes() {
 		return m_routes;
 	}
@@ -660,7 +651,8 @@ public class RouteConstructor {
 					}
 					
 					// Checks for interrupt enable..
-					if (mnenonics.isSetSr(instruction)) {	
+					if (mnenonics.isSetSr(instruction)) {
+						
 						long op1Field = instruction.getOperandField("op1");
 						int shift = SR_IEBLE_SHIFT;
 						int mask = (1 << SR_IEBLE_SIZE) - 1;

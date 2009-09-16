@@ -17,9 +17,22 @@ public abstract class XtaInstruction extends Instruction {
 		m_numCycles = numCycles;
 		m_isLink = isLink;
 		m_isBranch= isBranch;
+		adjustSetcPause(nmenonic);
 	}
 	
 	public abstract long getOperandField(String opName);    		   
+	
+	private void adjustSetcPause(String nmenonic){
+		if(nmenonic.equals("setc (ru6)")){
+			if(getOperandField("op2") == 0x0007){
+				this.setCanPause(true);
+			} else {
+				this.setCanPause(true);
+			}
+		}
+	}
+	
+	
 	
 	public boolean isBranch(){
 		return m_isBranch;

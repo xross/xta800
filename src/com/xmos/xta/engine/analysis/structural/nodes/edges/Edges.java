@@ -10,48 +10,26 @@ import com.xmos.xta.engine.analysis.structural.nodes.Node;
 public class Edges {
 	Set<Node> m_nextNodes;
 	Set<Node> m_prevNodes;
-	
 	Set<Node> m_dominators;
 	Set<Node> m_branchTargets;
 	
 	public Edges(){
-	}
-	
-	public Edges(Edges edges){
-		
-		if(m_dominators != null){
-			m_dominators = new TreeSet<Node>(edges.m_dominators);
-		}
-		if(m_branchTargets != null){
-			m_branchTargets = new TreeSet<Node>(edges.m_branchTargets);
-		}
-		
-		if(m_nextNodes != null){
-			m_nextNodes = new TreeSet<Node>(edges.m_nextNodes);
-		}
-		if(m_prevNodes != null){
-			m_prevNodes = new TreeSet<Node>(edges.m_prevNodes);
-		}
+		m_nextNodes = null;
+		m_prevNodes = null;
+		m_dominators = null;
+		m_branchTargets = null;
 	}
 	
 	public Node getNextNode(){
-		if(m_nextNodes == null){
-			assert(false);
-			return null;
-		} else {
-			assert(m_nextNodes.size() == 1);
-			return m_nextNodes.iterator().next();
-		}
+		assert(m_nextNodes != null);
+		assert(m_nextNodes.size() == 1);
+		return m_nextNodes.iterator().next();
 	}
 	
 	public Node getPrevNode(){
-		if(m_prevNodes == null){
-			assert(false);
-			return null;
-		} else {
-			assert(m_prevNodes.size() == 1);
-			return m_prevNodes.iterator().next();
-		}
+		assert(m_prevNodes != null);
+		assert(m_prevNodes.size() == 1);
+		return m_prevNodes.iterator().next();
 	}
 	
 	
@@ -81,10 +59,6 @@ public class Edges {
 	
 	public void clearNextNodes(){
 		m_nextNodes = null;
-	}
-	
-	public void clearPrevNodes(){
-		m_prevNodes = null;
 	}
 	
 	public void addNextNode(Node node){

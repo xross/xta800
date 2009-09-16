@@ -57,8 +57,7 @@ public abstract class Node implements Comparable<Node>{
 	}
 	
 	public Node(Node node) {
-		//FIXME i dont think any of this copying comes to any use!
-		m_edges = new Edges(node.m_edges);
+		m_edges = new Edges();
 		m_id = s_numNodes++;
 		m_isFolded = false;
 		m_unresolved = node.m_unresolved;
@@ -146,10 +145,6 @@ public abstract class Node implements Comparable<Node>{
 	
 	public void clearNextNodes(){
 		m_edges.clearNextNodes();
-	}
-	
-	public void clearPrevNodes(){
-		m_edges.clearPrevNodes();
 	}
 	
 	public int getNextNodesSize(){

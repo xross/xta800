@@ -14,8 +14,6 @@ import com.xmos.xta.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 public class RouteDescription {
 	private String m_description;
 	private String m_functionName;
-	private int m_nodeId;
-	private int m_coreId; 
 	private RouteMode m_mode;
 	private Reference m_from;
 	private Collection<Reference> m_to;
@@ -23,15 +21,14 @@ public class RouteDescription {
 	enum RouteMode {
 		PATH, FUNCTION
 	};
-
+	//TODO --node and core id arent used
 	public RouteDescription(Reference from, Reference to, int nodeId, int coreId) {
 		m_description = String.format("path: %s to %s", from.getRef(), to.getRef());
 		m_mode = RouteMode.PATH;
 		m_from = from;
 		m_to = new LinkedList<Reference>();
 		m_to.add(to);
-		m_nodeId = nodeId;
-		m_coreId = coreId;
+
 	}
 
 	public RouteDescription(String functionName, Engine engine, int nodeId, int coreId) {
@@ -70,16 +67,6 @@ public class RouteDescription {
 				break;
 			}
 		}
-		m_nodeId = nodeId;
-		m_coreId = coreId;
-	}
-
-	public int getNodeId(){
-		return m_nodeId;
-	}
-	
-	public int getCoreId(){
-		return m_coreId;
 	}
 	
 	public String getDescription() {

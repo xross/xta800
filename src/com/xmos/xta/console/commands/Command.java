@@ -18,7 +18,6 @@ public abstract class Command {
     	FUNCTION,
     	ALLREFS,
     	ENDPOINT,
-    	SRCLABEL,
     	LABEL,
     	HELP,
     }
