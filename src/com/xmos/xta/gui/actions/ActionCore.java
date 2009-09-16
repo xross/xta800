@@ -112,9 +112,9 @@ public class ActionCore extends ActionDelegate implements IPropertyChangeListene
 		}
 		updateCurrentCoreId(GuiEngine.getEngine().getCoreId());
 
-		if(GuiEngine.getEngine().getXeLoader().getCoreIds(selectedNodeId).size() == 1){
+		if (GuiEngine.getEngine().getXeLoader().getCoreIds(selectedNodeId).size() < 2) {
 			m_action.setEnabled(false);
-		}  else {
+		} else {
 			m_action.setEnabled(true);
 		}
 	}

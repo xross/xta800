@@ -67,7 +67,7 @@ public class XtaCompletor implements Completor {
   	        ArgumentCompletor argCompletor = createArgCompletor(
   	        		new SimpleCompletor(subCommandStrings), commandLevel);
 	  	    m_subCompletors.put(command.name(), argCompletor);
-	  	} else {	  	    	  		  		  	
+	  	} else {
 	  		// Adds the completors for the options of this (leaf) sub-command.
   		    List<Completor> completors = new ArrayList<Completor>();
 	  	    for (Command.ArgType argType : command.getArgTypes()) {
@@ -95,6 +95,10 @@ public class XtaCompletor implements Completor {
 	  		    case HELP:
 	  			    completors.add(new HelpCompletor());	  			
 			        break;
+			        
+	  		    case IGNORE:
+	  		    	completors.add(new NullCompletor());
+	  		    	break;
 			        
 			    default:
 				    assert(false);

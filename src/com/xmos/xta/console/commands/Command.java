@@ -20,6 +20,7 @@ public abstract class Command {
     	ENDPOINT,
     	LABEL,
     	HELP,
+    	IGNORE,
     }
 
     private CommandSource m_src;

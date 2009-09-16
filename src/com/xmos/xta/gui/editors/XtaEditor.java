@@ -74,7 +74,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
     public static final String RemoveStartPointID    = "com.xmos.xta.gui.action.RemoveStartPoint";
     public static final String RemoveEndPointID      = "com.xmos.xta.gui.action.RemoveEndPoint";
     public static final String SetInstructionTimeID  = "com.xmos.xta.gui.action.SetInstructionTime";
-    public static final String ConstrainExcludeID    = "com.xmos.xta.gui.action.ConstrainExclude";
+    public static final String AddExclusionID        = "com.xmos.xta.gui.action.AddExclusion";
+    public static final String RemoveExclusionID     = "com.xmos.xta.gui.action.RemoveExclusion";
     public static final String SelectPathsID         = "com.xmos.xta.gui.action.ShowPaths";
 
     private static final String fnopString = AssemblyLine.getLeadingWhiteSpace() + " FNOP\n";
@@ -365,12 +366,18 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
      		}
      	});
      	
-     	setAction(ConstrainExcludeID, new Action("Exclude this") {
+     	setAction(AddExclusionID, new Action("Add Exclusion") {
      		public void run() {
      	    	GuiEngine.getEngine().addExclusion(GuiEngine.s_guiCommandSrc, m_clickCodeRefString);		
      		}
      	});
 
+     	setAction(RemoveExclusionID, new Action("Remove Exclusion") {
+     		public void run() {
+     	    	GuiEngine.getEngine().removeExclusion(GuiEngine.s_guiCommandSrc, m_clickCodeRefString);		
+     		}
+     	});
+     	
      	setAction(SelectPathsID, new Action("Select blocks through here") {
      		public void run() {
      			Reference clickCodeRef = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.ANY_REF);
@@ -418,7 +425,8 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
 		long clickLineIndex = getVerticalRuler().getLineOfLastMouseButtonActivity();
 		
 		m_clickCodeRefString = getLineDescription(clickLineIndex);				
-		if (m_clickCodeRefString != null) {			
+		if (m_clickCodeRefString != null) {	
+			
 			if (m_endPointLineIndexes.containsKey(clickLineIndex) ||
 				isAssembly(m_clickCodeRefString)) {
 				if (isStartPointSet(m_clickCodeRefString)) {
@@ -433,8 +441,14 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
 				}
 				menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
 			}
-			addAction(menu, SetInstructionTimeID);
-			addAction(menu, ConstrainExcludeID);
+			
+			if (m_excludedIndexes.contains(clickLineIndex)) {
+				addAction(menu, RemoveExclusionID);				
+			} else {
+				addAction(menu, AddExclusionID);				
+			}
+			
+			addAction(menu, SetInstructionTimeID);			
 			addAction(menu, SelectPathsID);
 			
 			int selectedRouteId = GuiEngine.getEngine().getSelectedRouteId();
