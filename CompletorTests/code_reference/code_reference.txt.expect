@@ -1,12 +1,9 @@
 xta 1>load csim__xs1b__default/test.xe
-xta 2>add e exclusion 
+xta 2>add e exclusion e e
 
-_DoException                  _DoSyscall                    _ExitWithError                _GetRamEnd                    _InitThread
-_InitThreadLoop               _InitThreadRoutine            _Join                         _NonZeroReturn                _SetupTraps
-_TouchRegisters               _TrapHandler                  __alloc_libc_hwlock           __call_exitprocs              __call_exitprocs_impl
-__free_libc_hwlock            __libc_done                   __register_frame_info_bases   _cleanup                      _cleanup_impl
-_done                         _exit                         _exit_unlocked                _fini                         _init
-_start                        do_ctors_end                  do_ctors_loop                 do_dtors_end                  do_dtors_loop
-elephants                     main                          memset
-xta 2>add exclusion mem   memset
+egghead     eggplant    elephants
+xta 2>add exclusion eg  egg
+
+egghead    eggplant
+xta 2>add exclusion eggh    egghead
 xta 3>exit

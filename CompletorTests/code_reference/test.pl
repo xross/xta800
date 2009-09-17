@@ -11,7 +11,7 @@ if (!$noBuild) {
 system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir/code_reference.log 2>&1");
 }
 open (FILE, ">$genDir/cmds.txt");
-print FILE "load $genDir/test.xe\nadd e\t\tmem\t\nexit\n";
+print FILE "load $genDir/test.xe\nadd e\te\tg\th\t\nexit\n";
 close FILE;
 
 system("@ARGV < $genDir/cmds.txt > $genDir/code_reference.txt 2>&1");
