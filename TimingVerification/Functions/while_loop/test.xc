@@ -11,5 +11,8 @@ int test(){
 
 
 int main(){
-    return test();
+    if (test())
+      return 0;
+    else
+      return 1;
 }
