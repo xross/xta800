@@ -1,10 +1,11 @@
 package com.xmos.xta.console.commands.list;
 
+import com.xmos.dwarfhandler.DebugFile;
+import com.xmos.xeloader.DebugInfo;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
-import com.xmos.xta.sourcemapper.SourceFile;
 
 public class Sources extends Command {
 	public Sources() {
@@ -34,10 +35,18 @@ public class Sources extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;		
 		
-		for (SourceFile sourceFile : engine.getSourceMapper().getSourceFiles()) {
-    	    console.display(String.format("compilation dir: %s, filename: %s\n", 
-    	    		sourceFile.getBaseDir(), sourceFile.getFileName()));
-			
-		}
+	    DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(engine.getNodeId(), engine.getCoreId());
+	    assert(debugInfo != null);        
+
+	    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {
+
+	    	console.display(String.format("compilation dir: %s, filename: %s", 
+	    			debugFile.getBaseDir(), debugFile.getFileName()));
+
+  	    	if (debugFile.getFile() == null) {
+  	    		console.display(" (File not found)"); 	    		
+  	    	} 
+  	    	console.display("\n");
+    	}   
     }
 }

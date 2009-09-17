@@ -3,7 +3,7 @@ package com.xmos.xta.gui.views.info.sections;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 
-import com.xmos.xta.sourcemapper.SourceFile;
+import com.xmos.dwarfhandler.DebugFile;
 
 class SourcesViewerLabelProvider extends SectionsViewerLabelProvider implements ITableLabelProvider {
     static final String COMPDIR = "Compilation Directory";
@@ -18,12 +18,12 @@ class SourcesViewerLabelProvider extends SectionsViewerLabelProvider implements 
 	public String getColumnText(Object element, int columnIndex) {
 		assert((columnIndex >= 0) && (columnIndex < m_columnNames.length));
 		
-		SourceFile sourceFile = (SourceFile)element;	
+		DebugFile debugFile = (DebugFile)element;	
 		if (m_columnNames[columnIndex].equals(COMPDIR)) {    		
-	        return sourceFile.getBaseDir();
+	        return debugFile.getBaseDir();
 
     	} else if (m_columnNames[columnIndex].equals(FILENAME)) {    		
-	        return sourceFile.getFileName();
+	        return debugFile.getFileName();
     	
     	}
 		assert(false);
@@ -31,8 +31,8 @@ class SourcesViewerLabelProvider extends SectionsViewerLabelProvider implements 
 	}
 
 	public int compare(Object e1, Object e2, String column) {
-		SourceFile p1 = (SourceFile)e1;
-		SourceFile p2 = (SourceFile)e2;
+		DebugFile p1 = (DebugFile)e1;
+		DebugFile p2 = (DebugFile)e2;
 		int res = 0;
 		if (column.equals(COMPDIR)) {
 			res = p1.getBaseDir().compareTo(p2.getBaseDir());
