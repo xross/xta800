@@ -1,5 +1,5 @@
-- .*test.xc
-- .*up/test.xc
+compilation dir: .*multi_directory_same_file_names, filename: test.xc
+compilation dir: .*multi_directory_same_file_names, filename: up/test.xc
 ----------------------------------
 .*test.xc
 ----------------------------------

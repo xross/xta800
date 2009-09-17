@@ -1,5 +1,5 @@
-- .*add/test\.xc
-- .*test\.xc
+compilation dir: .*paths_unix, filename: test.xc
+compilation dir: .*paths_unix, filename: add/test.xc
 ----------------------------------
 .*test\.xc
 ----------------------------------

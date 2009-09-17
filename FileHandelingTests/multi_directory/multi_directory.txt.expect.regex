@@ -1,6 +1,6 @@
-- .*add/add.xc
-- .*sub/sub.xc
-- .*test.xc
+compilation dir: .*multi_directory, filename: test.xc
+compilation dir: .*multi_directory, filename: add/add.xc
+compilation dir: .*multi_directory, filename: sub/sub.xc
 ----------------------------------
 .*test.xc
 ----------------------------------
