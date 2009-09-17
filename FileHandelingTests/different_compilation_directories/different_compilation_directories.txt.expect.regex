@@ -1,6 +1,6 @@
-- .*test.xc
-- .*test.xc
-- .*test.xc
+compilation dir: .*different_compilation_directories, filename: test.xc
+compilation dir: .*add, filename: test.xc
+compilation dir: .*sub, filename: test.xc
 ----------------------------------
 .*test.xc
 ----------------------------------
