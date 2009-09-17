@@ -7,7 +7,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.actions.ActionDelegate;
 
-import com.xmos.xta.engine.Engine;
 import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.references.Reference;
 import com.xmos.xta.gui.GuiEngine;
@@ -48,32 +47,23 @@ public class ActionRun extends ActionDelegate implements IPropertyChangeListener
 	}
 	
 	public void propertyChange(PropertyChangeEvent event) {
-		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {			
-	        updateState();
-	        m_action.setEnabled(false);
-	        
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT)) {
-			m_startPoint = GuiEngine.getStartPoint();					
-			updateText(m_startPoint);
-
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT)) {
-			m_endPoint = GuiEngine.getEndPoint();					
-			updateText(m_endPoint);
+		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE) ||
+			event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT) ||
+			event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT) ||
+			event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
+			
+			updateState();
 		}
 	}
 
-	private void updateText(Reference point) {
-		if (point != null) {
-			Engine engine = GuiEngine.getEngine();
-			point.resolve(engine, engine.getNodeId(), engine.getCoreId());
-			if (!point.getResolved()) {		
-		     	point = null;
-		    }
-		}		
+	private void updateState() {
+		m_startPoint = GuiEngine.getStartPoint();					
+		m_endPoint = GuiEngine.getEndPoint();					
 
 		if (m_startPoint == null && m_endPoint == null) { 
 			m_action.setToolTipText(DEFAULT_TOOL_TIP);
 			m_action.setEnabled(false);
+			
 		} else {
 			String startText = "";
 			String endText = "";
@@ -92,11 +82,4 @@ public class ActionRun extends ActionDelegate implements IPropertyChangeListener
 			}
 		}
 	}	
-
-	private void updateState() {
-	    m_startPoint = null;
-	    m_endPoint = null;
-    	
-	    m_action.setToolTipText(DEFAULT_TOOL_TIP);
-	}
 }
