@@ -23,7 +23,7 @@ public class SrcLabelFileLineReference extends ReferenceType {
         long lineNumber = getLineNumber(ref);
 
 		for (SrcLabelTableInfo info : engine.getSrcLabelTable().values()) {
-            if (info.getFileName().equals(fileName) &&
+            if (fileNameMatches(info.getCompilationDir(), info.getFileName(), fileName) &&
             	((lineNumber >= info.getLineNumberStart()) &&
             	 (lineNumber <= info.getLineNumberEnd()))) {
             	

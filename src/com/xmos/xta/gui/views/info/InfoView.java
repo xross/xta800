@@ -24,6 +24,7 @@ import com.xmos.xta.gui.views.info.sections.EndpointsViewer;
 import com.xmos.xta.gui.views.info.sections.ExclusionsViewer;
 import com.xmos.xta.gui.views.info.sections.LabelsViewer;
 import com.xmos.xta.gui.views.info.sections.NoLoadsViewer;
+import com.xmos.xta.gui.views.info.sections.SourcesViewer;
 import com.xmos.xta.gui.views.info.sections.SrcCommandsViewer;
 import com.xmos.xta.gui.views.info.sections.SrcLabelsViewer;
 import com.xmos.xta.gui.views.info.sections.SrcLoopsViewer;
@@ -51,6 +52,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener {
 	private ThreadStopPointsViewer m_threadStopPoints;
 	private SrcCommandsViewer m_srcCommands;
 	private SrcLoopsViewer m_srcLoops;
+	private SourcesViewer m_sources;
 	private NoLoadsViewer m_noLoads;
 	
 	public InfoView() {
@@ -91,6 +93,8 @@ public class InfoView extends ViewPart implements IPropertyChangeListener {
 				createNewViewer("Src Level Commands", folders));
 		m_srcLoops = new SrcLoopsViewer(parent.getDisplay(), parent, getSite(),
 				createNewViewer("Src Level Loops", folders));
+		m_sources = new SourcesViewer(parent.getDisplay(), parent, getSite(),
+				createNewViewer("Source files", folders));
 		m_noLoads = new NoLoadsViewer(parent.getDisplay(), parent, getSite(),
 				createNewViewer("Functions not loaded", folders));
 		
@@ -110,6 +114,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener {
 		m_threadStopPoints.update();
 		m_srcCommands.update();
 		m_srcLoops.update();
+		m_sources.update();
 		m_noLoads.update();
 	}
 
@@ -142,6 +147,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener {
 			m_threadStopPoints.update();
 			m_srcCommands.update();
 			m_srcLoops.update();
+			m_sources.update();
 			m_noLoads.update();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUSIONS)) {

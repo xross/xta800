@@ -1,14 +1,10 @@
 package com.xmos.xta.console.commands.list;
 
-import java.util.Set;
-import java.util.TreeSet;
-
-import com.xmos.dwarfhandler.DebugFile;
-import com.xmos.xeloader.DebugInfo;
 import com.xmos.xta.console.Console;
 import com.xmos.xta.console.Shell;
 import com.xmos.xta.console.commands.Command;
 import com.xmos.xta.engine.Engine;
+import com.xmos.xta.sourcemapper.SourceFile;
 
 public class Sources extends Command {
 	public Sources() {
@@ -38,25 +34,10 @@ public class Sources extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;		
 		
-        int nodeId = engine.getNodeId();
-	    int coreId = engine.getCoreId();
-
-	    DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(nodeId, coreId);
-	    assert(debugInfo != null);        
-
-	    Set<String> sourceNames = new TreeSet<String>();
-	    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {
-
-	    	String sourceName = String.format("- %s", debugFile.getFullFileName());
-  	    	if (debugFile.getFile() == null) {
-  	    		sourceName += " (File not found)"; 	    		
-  	    	} 
-  	    	sourceNames.add(sourceName + "\n");
-    	}   
-	    
-	    // The output is now sorted...
-	    for (String sourceName : sourceNames) {
-	        console.display(sourceName);
-	    }
+		for (SourceFile sourceFile : engine.getSourceMapper().getSourceFiles()) {
+    	    console.display(String.format("compilation dir: %s, filename: %s\n", 
+    	    		sourceFile.getBaseDir(), sourceFile.getFileName()));
+			
+		}
     }
 }
