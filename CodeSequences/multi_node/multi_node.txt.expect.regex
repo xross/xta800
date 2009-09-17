@@ -1,0 +1,7 @@
+function main
+Time taken:       \d+\.\d+ns / \d+\.\d+ns
+Thread cycles:    \d+ / \d+
+Num Instructions: \d+ / \d+
+Num Fnops:        \d+ / \d+
+Num Paths:        \d+
+Node Id:          \d+
