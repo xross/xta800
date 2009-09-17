@@ -15,61 +15,80 @@ import org.eclipse.swt.widgets.Spinner;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.gui.GuiEngine;
 
-public class Loop extends XtaDialog {	
+public class Loop extends XtaDialog {
+	private static String DEFAULT_MESSAGE = "Set the iteration count";
 	private Node m_node;
 	private long m_iterations;
-		
+	private int m_minIterations;
+
+	private Label m_status;
+	private Spinner m_spinner; 
+			
     public Loop(Shell parent, Node node) {
     	super(parent);
     	m_node = node;
     	m_iterations = GuiEngine.getEngine().getSetLoopIterations(node);
+
+    	Node loopNode = m_node.getEnclosingLoopNode();
+		assert(loopNode != null);
+		if (loopNode.isSelfLoopNode()) {
+			m_minIterations = 1;
+    	} else { 
+			m_minIterations = 0;
+    	}
+
     	open();
     }
     
     protected void configureShell(Shell newShell) {
     	super.configureShell(newShell);
-    	configureShell(newShell, "Iterations", 300, 150);
+    	configureShell(newShell, "Loop Iterations", 300, 150);
     }
 
     protected Control createDialogArea(Composite parent) {
     	Composite container = (Composite) super.createDialogArea(parent);
 
 	    final GridLayout gridLayout = new GridLayout();
-	    gridLayout.numColumns = 3;
+	    gridLayout.numColumns = 2;
 	    container.setLayout(gridLayout);
 
+		createStatusLine(container);
 		createNumIterationsControl(container);
     	return container;
     }
 
-    private void createControlLabel(Composite parent, String str) {
-		Label label = new Label(parent, SWT.NONE);		        
-	    label.setLayoutData(new GridData(GridData.END, GridData.CENTER,
-	    		false, false));
-        label.setText(str);
+    private void createStatusLine(Composite container) {
+		m_status = new Label(container, SWT.BORDER);
+		m_status.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
+				true, false, 2, 1));
+		m_status.setText(DEFAULT_MESSAGE);
 	}
 
     private void createNumIterationsControl(Composite parent) {
-		createControlLabel(parent, "Num Iterations:");
-		final Spinner spinner = new Spinner(parent, SWT.BORDER);
-		spinner.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
+		m_spinner = new Spinner(parent, SWT.BORDER);
+		m_spinner.setLayoutData(new GridData(GridData.FILL, GridData.CENTER,
 				true, false, 2, 1));
 		
-		Node loopNode = m_node.getEnclosingLoopNode();
-		assert(loopNode != null);
-		if (loopNode.isSelfLoopNode())
-			spinner.setMinimum(1);
-		else 
-			spinner.setMinimum(0);
-		spinner.setMaximum(Integer.MAX_VALUE);
-		spinner.setEnabled(true);		
-		spinner.setSelection((int)m_iterations);
-		spinner.setIncrement(1);
-		spinner.setPageIncrement(10);
-		spinner.addSelectionListener(new SelectionAdapter() {
+		m_spinner.setMaximum(Integer.MAX_VALUE);
+		m_spinner.setMinimum(Integer.MIN_VALUE);
+		m_spinner.setEnabled(true);		
+		m_spinner.setSelection((int)m_iterations);
+		m_spinner.setIncrement(1);
+		m_spinner.setPageIncrement(10);
+		m_spinner.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				m_iterations = spinner.getSelection();
-			}			
+				if (m_spinner.getSelection() >= m_minIterations) {
+					m_status.setText(DEFAULT_MESSAGE);
+					m_iterations = m_spinner.getSelection();
+					getButton(IDialogConstants.OK_ID).setEnabled(true);
+					getButton(IDialogConstants.PROCEED_ID).setEnabled(true);
+					
+				} else {
+					m_status.setText("Iterations must be >= " + Integer.toString(m_minIterations));
+					getButton(IDialogConstants.OK_ID).setEnabled(false);
+					getButton(IDialogConstants.PROCEED_ID).setEnabled(false);
+				}
+			}
 		});
     }
 
@@ -81,7 +100,7 @@ public class Loop extends XtaDialog {
     
     protected void buttonPressed(int id) {
     	if ((id == IDialogConstants.OK_ID) || (id == IDialogConstants.PROCEED_ID)) {
-    		GuiEngine.getEngine().setLoopIterations(GuiEngine.s_guiCommandSrc, m_node, m_iterations);
+			GuiEngine.getEngine().setLoopIterations(GuiEngine.s_guiCommandSrc, m_node, m_iterations);
     	}
     	super.buttonPressed(id);
     }

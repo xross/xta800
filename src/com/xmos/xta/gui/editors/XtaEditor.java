@@ -16,6 +16,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.AnnotationPainter;
@@ -29,6 +30,10 @@ import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.VerifyKeyListener;
+import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
@@ -142,6 +147,29 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
         m_painter = new AnnotationPainter(viewer, getAnnotationAccess());        
         m_painter.addAnnotationType(HighlightAnnotationID);
         updateHighlighting();
+
+        getSourceViewer().getTextWidget().addVerifyKeyListener(new VerifyKeyListener() {
+			public void verifyKey(VerifyEvent event) {
+				ISelection selection = getSelectionProvider().getSelection();
+
+				if (selection instanceof ITextSelection) {
+					ITextSelection textSelection = (ITextSelection)selection;
+
+					if ((event.keyCode == SWT.CR) || (event.keyCode == SWT.KEYPAD_CR)) {
+						try {
+							IRegion line = getDocument().getLineInformationOfOffset(textSelection.getOffset());
+							m_projectionAnnotationModel.expandAll(line.getOffset() + line.getLength(), 1);
+						} catch (BadLocationException e) {}
+	
+					} else if (event.keyCode == SWT.BS) {
+						try {
+							IRegion line = getDocument().getLineInformationOfOffset(textSelection.getOffset());
+							m_projectionAnnotationModel.collapseAll(line.getOffset() + line.getLength(), 1);
+						} catch (BadLocationException e) {}
+					}
+				}
+			}
+        });
     }
     
     public void dispose() {
