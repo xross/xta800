@@ -56,8 +56,12 @@ public class XtaConfiguration extends SourceViewerConfiguration {
 	}
 	
 	public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
-		return new IHyperlinkDetector[] { new BranchTargetHyperlinkDetector(),
+		if (m_editor.getType().equals(XtaDocumentPartitioner.DISASSEMBLY)) {
+			return new IHyperlinkDetector[] { new BranchTargetHyperlinkDetector(),
 				new URLHyperlinkDetector() };
+		} else {
+			return new IHyperlinkDetector[] { new URLHyperlinkDetector() };
+		}
 	}
 
 	public int getHyperlinkStateMask(ISourceViewer sourceViewer) {

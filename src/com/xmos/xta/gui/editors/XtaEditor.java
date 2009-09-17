@@ -247,6 +247,10 @@ public class XtaEditor extends TextEditor implements IPropertyChangeListener {
 		}
 	}
 
+	public String getType() {
+		return m_type;
+	}
+
 	public void updateSelection(List<Node> selection) {
 		if (DEBUG) System.out.printf("XtaEditor: selectionChanged\n");
 		m_selectedNodes = selection;

@@ -1,5 +1,6 @@
 package com.xmos.xta.engine.references.types;
 
+import java.io.File;
 import java.util.Map;
 
 import com.xmos.xta.engine.Engine;
@@ -100,7 +101,7 @@ public abstract class ReferenceType {
         long lineNumber  = getLineNumber(ref);		
 
 		for (CodePointTableInfo info : codePointTable.values()) {
-            if (info.getFileName().equals(fileName) &&
+            if (fileNameMatches(info.getCompilationDir(), info.getFileName(), fileName) &&
             	(info.getLineNumber() == lineNumber)) {
             	return true;
             }			
@@ -162,6 +163,18 @@ public abstract class ReferenceType {
 		} else {
 			return refArray[refArray.length - 2];
 		}
+	}
+
+	boolean fileNameMatches(String dir, String name, String fileName) {
+		if (name.equals(fileName)) {
+			return true;
+		}
+		
+		String fullName = dir + File.separator + name;
+		if (fullName.equals(fileName)) {
+			return true;
+		}
+		return false;
 	}
 
 	long getLineNumber(String fileLineReference) {
