@@ -171,7 +171,6 @@ public class GuiConsole implements Console {
 	
 	public String getNextLine(Vector<Command> commandHistory) {
 		if (DEBUG) System.out.printf("GuiConsole: Entering: getNextLine\n");			
-		m_hasEscaped = false;
 		
 		m_commandHistory = commandHistory;
 		resetCommandIndex();
@@ -186,6 +185,8 @@ public class GuiConsole implements Console {
 			command = commandString.getStr();
 		} catch (InterruptedException e) {}
 
+		m_hasEscaped = false;
+		
 		if (DEBUG) System.out.printf("GuiConsole: Leaving: getNextLine: %s\n", command);			
 		return command;
 	}
