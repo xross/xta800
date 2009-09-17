@@ -3,6 +3,7 @@ package com.xmos.xta.console.commands;
 import java.util.Vector;
 
 import com.xmos.xta.console.Console;
+import com.xmos.xta.console.commands.Command.RedirectMode;
 import com.xmos.xta.console.commands.add.Add;
 import com.xmos.xta.console.commands.analyse.Analyse;
 import com.xmos.xta.console.commands.clear.Clear;
@@ -67,7 +68,10 @@ public class CommandFactory {
     		    			"' command (Try 'help " + command.name() + "'..)\n");    	    				
     			} else {
         			cloned.setSrc(src);
-    			}
+        			if (!processFileRedirect(cloned, args, index)) {
+        				return null;
+        			}
+    			}    			
     			return cloned;
     		}
     	}
@@ -105,5 +109,26 @@ public class CommandFactory {
   		    return null;
         
         return commandHistory.get(commandIndex);    	
+    }
+    
+    private static boolean processFileRedirect(Command command, String[] args, int index) {
+    	int nextIndex = index + command.numArgs() + 1;
+    	if (nextIndex < args.length) {
+    	    if (args[nextIndex].equals(Command.REDIRECT_OVERWITE) ||
+    	    	args[nextIndex].equals(Command.REDIRECT_APPEND)) {
+    	    	
+    	    	// Check that the filename is specified..
+    	    	if ((nextIndex + 1) >= args.length)
+    	    		return false;
+
+    	    	command.setFileRedirect(args[nextIndex + 1]);    	    	
+    	    	if (args[nextIndex].equals(">")) {
+    	    		command.setFileRedirectMode(RedirectMode.OVERWRITE);
+    	    	} else {
+    	    		command.setFileRedirectMode(RedirectMode.APPEND);    	    		
+    	    	}
+    	    }
+    	}
+    	return true;
     }
 }

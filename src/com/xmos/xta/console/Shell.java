@@ -41,9 +41,9 @@ public class Shell {
     public int execute() {    	
     	while (!isComplete()) {
     		Command command = getNextCommand();    		
-           	preCommandExecute();
+           	preCommandExecute(command);
            	command.execute(this, m_engine, m_console);
-           	postCommandExecute();            	
+           	postCommandExecute(command);            	
     	}
     	return m_numTimingViolations;
     }
@@ -119,7 +119,10 @@ public class Shell {
 	    	}
 	    	
 	    	m_commands.offer(command);
-	    	i += command.numArgs();
+	    	
+	    	i += (command.getFileRedirect() != null) ? 
+	    			command.numArgs() + 2 : 
+	    			command.numArgs();
 	    }	
     }
     
@@ -151,23 +154,10 @@ public class Shell {
                     ArrayList<String> tokenGroups = groupQuotedTokens(tokens);
                     tokens = tokenGroups.toArray(tokens);
                     
-                    boolean isPlingCommand = CommandFactory.isPlingCommand(tokens[0]);
                     CommandSource src = new CommandSource(Type.CONSOLE);
                     Command command = CommandFactory.buildCommand(src, tokens, 0, m_commandHistory, m_console);
 
-                    // Check command is valid and has consumed entire line
-                    boolean invalidCommand = false;
-                    if (command != null) {
-                    	if (isPlingCommand) {
-                    		invalidCommand = (tokens.length != 1);
-                    	} else {
-                    		invalidCommand = (command.numArgs() != (tokens.length - 1));
-                    	}
-                    } else {
-                    	invalidCommand = true;
-                    }
-
-                    if (invalidCommand) {
+                    if (!commandIsValid(command, tokens)) {
                     	command = new Invalid(line, "Invalid command (Try 'help'..)\n", src);
                     }
                     m_commands.offer(command);
@@ -176,6 +166,19 @@ public class Shell {
     	}
     }
 
+    private boolean commandIsValid(Command command, String[] tokens) {
+    	if (command == null)
+    		return false;
+    	
+       	if (CommandFactory.isPlingCommand(tokens[0]))
+       		return (tokens.length == 1);
+        		
+   		if (command.getFileRedirect() != null)
+   			return ((command.numArgs() + 2) == (tokens.length - 1));
+   		
+   		return (command.numArgs() == (tokens.length - 1));
+    }
+    
 	private ArrayList<String> groupQuotedTokens(String[] tokens) {
         ArrayList<String> s = new ArrayList<String>();                
 
@@ -216,16 +219,24 @@ public class Shell {
         System.exit(1);
 	}
 		
-	private void preCommandExecute() {
+	private void preCommandExecute(Command command) {
 		m_savedNotifier = m_engine.getNotifier();
     	m_engine.setNotifier(m_notifier);
     	
     	if (m_engine.getConfig().m_verbosity >= 10)
-    		m_engine.setMonitor(new ConsoleProgessMonitor(m_console));                           		
+    		m_engine.setMonitor(new ConsoleProgessMonitor(m_console));
+    
+    	if (command.getFileRedirect() != null) {
+    		m_console.openRedirectFile(command.getFileRedirect(), command.getFileRedirectMode());
+    	}    	
 	}
 	
-	private void postCommandExecute() {
+	private void postCommandExecute(Command command) {
     	m_engine.setNotifier(m_savedNotifier);
     	m_engine.setMonitor(null);                           		            			
+
+    	if (command.getFileRedirect() != null) {
+    		m_console.closeRedirectFile();    		
+    	}    	
 	}
 }
