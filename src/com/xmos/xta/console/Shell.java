@@ -124,53 +124,56 @@ public class Shell {
     }
     
     private Command getNextCommand() {
+    	if (m_commands.size() == 0)
+    		fillCommandQueueFromConsole();
+    	
 		Command command = m_commands.peek();
-		if (command != null) {
-			if (command.getSrc().m_type != Type.FILE) {
-    		    m_commandHistory.add(command);
-			}
-        	m_commands.remove(command);
-			return command;	
+		assert(command != null);
+		
+		if (command.getSrc().m_type != Type.FILE) {
+    	    m_commandHistory.add(command);
 		}
-		return getCommandFromConsole();
+        m_commands.remove(command);
+		return command;	
     }
         
-    private Command getCommandFromConsole() {
-    	Command command = null;
-    	while (command == null) {
+    private void fillCommandQueueFromConsole() {
+    	while (m_commands.size() == 0) {
     		m_prompt = "xta " + (m_commandHistory.size() + 1) + ">";
     		m_console.displayPrompt(m_prompt);    	
     		
-            String line = m_console.getNextLine(m_commandHistory);
-            line = line.trim();
-            if (line.length() > 0) {            	
-                String[] tokens = line.trim().split("\\s+");                
-                ArrayList<String> tokenGroups = groupQuotedTokens(tokens);
-                tokens = tokenGroups.toArray(tokens);
+            String[] lines = m_console.getNextLine(m_commandHistory).split("\n");
+            for (String line : lines) {
+                line = line.trim();
                 
-                boolean isPlingCommand = CommandFactory.isPlingCommand(tokens[0]);
-                CommandSource src = new CommandSource(Type.CONSOLE);
-                command = CommandFactory.buildCommand(src, tokens, 0, m_commandHistory, m_console);
+                if (line.length() > 0) {            	
+                    String[] tokens = line.trim().split("\\s+");                
+                    ArrayList<String> tokenGroups = groupQuotedTokens(tokens);
+                    tokens = tokenGroups.toArray(tokens);
+                    
+                    boolean isPlingCommand = CommandFactory.isPlingCommand(tokens[0]);
+                    CommandSource src = new CommandSource(Type.CONSOLE);
+                    Command command = CommandFactory.buildCommand(src, tokens, 0, m_commandHistory, m_console);
 
-                // Check command is valid and has consumed entire line
-                boolean invalidCommand = false;
-                if (command != null) {
-                	if (isPlingCommand) {
-                		invalidCommand = (tokens.length != 1);
-                	} else {
-                		invalidCommand = (command.numArgs() != (tokens.length - 1));
-                	}
-                } else {
-                	invalidCommand = true;
-                }
-                
-                if (invalidCommand) {
-                	command = new Invalid(line, "Invalid command (Try 'help'..)\n", src);
+                    // Check command is valid and has consumed entire line
+                    boolean invalidCommand = false;
+                    if (command != null) {
+                    	if (isPlingCommand) {
+                    		invalidCommand = (tokens.length != 1);
+                    	} else {
+                    		invalidCommand = (command.numArgs() != (tokens.length - 1));
+                    	}
+                    } else {
+                    	invalidCommand = true;
+                    }
+
+                    if (invalidCommand) {
+                    	command = new Invalid(line, "Invalid command (Try 'help'..)\n", src);
+                    }
+                    m_commands.offer(command);
                 }
             }
-    	}    	
-		m_commandHistory.add(command);                    	
-		return command;    	
+    	}
     }
 
 	private ArrayList<String> groupQuotedTokens(String[] tokens) {
