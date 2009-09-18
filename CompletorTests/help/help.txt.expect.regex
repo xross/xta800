@@ -1,0 +1,13 @@
+xta 1>load csim__xs1b__default/test.xe
+xta 2>he  help pr  print
+  \[-\]print <option> <arg0> <arg1>...: Display analysis information
+      option: summary: Show routes summary \(verbosity -2|-1|0\)
+      option: structure <route id> \[node id\]: Display the structure for given route/node \(verbosity 0|1\)
+      option: asm <route id> \[node id\]: Display annotated assembly for the given route/node
+      option: src <route id> \[node id\]: Display annotated source file\(s\) for given route/node
+      option: mix <route id> \[node id\]: Display annotated source file\(s\) \+ assembly instructions for the given route/node
+      option: trace <route id> \[node id\]: Display instruction trace for the worst case path of the given route/node
+      option: route_info <route id>: Show detailed information for the given route
+      option: node_info <route id> <node id>: Show detailed information for the given node in the given route
+      option: warnings: Print all timing warnings
+xta 3>exit
