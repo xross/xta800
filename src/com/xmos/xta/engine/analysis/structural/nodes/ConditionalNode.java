@@ -222,10 +222,19 @@ public class ConditionalNode extends Node {
 		return tdb;
 	}
 	
-	public Set<InstructionNode> getEndNodes() {
+	public Set<InstructionNode> getEndInstructions() {
 		Set<InstructionNode> set = new TreeSet<InstructionNode>();
 		for(Node options : m_options){
-			set.addAll(options.getEndNodes());
+			set.addAll(options.getEndInstructions());
+		}
+		return set;
+	}
+
+
+	public Set<InstructionNode> getStartInstructions() {
+		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		for(Node options : m_options){
+			set.addAll(options.getStartInstructions());
 		}
 		return set;
 	}

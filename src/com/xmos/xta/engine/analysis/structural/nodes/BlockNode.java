@@ -140,7 +140,7 @@ public class BlockNode extends IBufferNode {
 		return new TimeDistributionBuckets(m_insts.size());
 	}
 
-	public Set<InstructionNode> getEndNodes() {
+	public Set<InstructionNode> getEndInstructions() {
 		Set<InstructionNode> set = new TreeSet<InstructionNode>();
 		
 		if(m_insts.get(m_insts.size()-1).getXtaInstruction().isFnop()){
@@ -149,6 +149,16 @@ public class BlockNode extends IBufferNode {
 			set.add(m_insts.get(m_insts.size()-1));
 		}
 		
+		return set;
+	}
+
+	public Set<InstructionNode> getStartInstructions() {
+		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		if(m_insts.get(0).getXtaInstruction().isFnop()){
+			set.add(m_insts.get(1));
+		} else {
+			set.add(m_insts.get(0));
+		}
 		return set;
 	}
 

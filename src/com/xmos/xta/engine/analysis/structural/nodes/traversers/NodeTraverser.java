@@ -12,4 +12,5 @@ public interface NodeTraverser {
     boolean foundSelfLoopNode(Node node, int depth);
     boolean foundConditionalNode(Node node, int depth);
     boolean foundInfiniteSelfLoopNode(Node node, int depth);
+    boolean foundEndNode(Node node, int depth);
 }

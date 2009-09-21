@@ -167,12 +167,16 @@ public class LoopNode extends Node {
 		return tdb;
 	}
 	
-	public Set<InstructionNode> getEndNodes() {
+	public Set<InstructionNode> getEndInstructions() {
 		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		//for(Node loop : m_loops){
-		//	set.addAll(loop.getEndNodes());
-		//}
-		set.addAll(m_loopHeader.getEndNodes());
+		
+		//i think this is correct
+		set.addAll(m_loopHeader.getEndInstructions());
+		
+		//maybe this should be included too however
+		for(Node loop : m_loops){
+			set.addAll(loop.getEndInstructions());
+		}
 		return set;
 	}
 	
@@ -181,5 +185,18 @@ public class LoopNode extends Node {
 		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);
 		}
 		return false;
+	}
+
+	public Set<InstructionNode> getStartInstructions() {
+		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		
+		//i think this is correct
+		set.addAll(m_loopHeader.getStartInstructions());
+		
+		//maybe this should be included too however
+		for(Node loop : m_loops){
+			set.addAll(loop.getStartInstructions());
+		}
+		return set;
 	}	
 }

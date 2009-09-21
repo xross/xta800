@@ -17,6 +17,7 @@ import com.xmos.xta.engine.analysis.structural.ReferenceMatcher;
 import com.xmos.xta.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.engine.analysis.structural.nodes.BlockNode;
+import com.xmos.xta.engine.analysis.structural.nodes.EndNode;
 import com.xmos.xta.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InfiniteSelfLoopNode;
 import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
@@ -82,8 +83,8 @@ public class RouteConstructor {
 			return RouteError.COULD_NOT_FIND_STARTPOINT;
 		}
 		
-		Set<InstructionNode> endNodes = new TreeSet<InstructionNode>();
-		findEndInstructions(endNodes);
+		Set<InstructionNode> endInstructions = new TreeSet<InstructionNode>();
+		findEndInstructions(endInstructions);
 
 		boolean notFoundFunctionYet = true;
 		for (Node start : startNodes) {
@@ -102,13 +103,13 @@ public class RouteConstructor {
 							start.setParent(null);
 							m_routes.add(new Route(src, m_engine, start.deepCopy(), m_description));
 						} else {
-							seenEndPoint = makeSubRoute(src, realStart,	seenEndPoint, endNodes, start);
+							seenEndPoint = makeSubRoute(src, realStart,	seenEndPoint, endInstructions, start);
 						}	
 						notFoundFunctionYet = false;
 					}
 				}
 			} else {
-				seenEndPoint = makeSubRoute(src, realStart, seenEndPoint, endNodes, start);
+				seenEndPoint = makeSubRoute(src, realStart, seenEndPoint, endInstructions, start);
 			}
 		}
 		setParents();
@@ -152,13 +153,28 @@ public class RouteConstructor {
 		assert(cfgSanityCheck(workingSet));	
 		pruneGraphOfExcludedPaths(workingSet);
 		if (!workingSet.isEmpty()){
-			
+			//System.out.println(StructuralAnalysisEngine.dumpTree("eek", workingSet));
 			Node newStart = makeBasicBlocks(startInstruction, endNodes, workingSet);
 			
 			addTerminator(workingSet);
 			assert(cfgSanityCheck(workingSet));
 			
 			StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
+			/*
+			//System.out.println(StructuralAnalysisEngine.dumpTree("eek", workingSet));
+			//remove all the unnessessary nodes from the graph
+			for(Node node :workingSet){
+				if(node.isEndNode()){
+					assert(node.getPrevNodesSize() == 1);
+					
+					System.out.println(node.getPrevNode().getNextNodes());
+					if(node.getPrevNode().getNextNodesSize() == 1){
+						workingSet.remove(node);
+					}
+				}
+			}
+			*/
+			
 			sae.createStructure(workingSet, newStart, m_engine, "Analysing route");
 			assert(cfgSanityCheck(workingSet));
 			
@@ -166,6 +182,8 @@ public class RouteConstructor {
 			assert(workingSet.size() == 1);
 			
 			Node baseNode = workingSet.iterator().next();
+			
+			
 			
 			sae.normaliseGraph(baseNode);
 			
@@ -199,52 +217,59 @@ public class RouteConstructor {
 		
 		Node currentNode = node.m_node;
 		
-		Collection<Node> currentNodesExclusions = new TreeSet<Node>();
-		Set<Node> containedEndPoints = new TreeSet<Node>();
-		Set<Node> currentEndNodes = new TreeSet<Node>();	
+		Collection<Node> exclusionsWithinCurrentNode = new TreeSet<Node>();
+		Set<Node> endInstructionsWithinCurrentNode = new TreeSet<Node>();
+		Set<Node> finalInstructionsOfCurrentNode = new TreeSet<Node>();	
 		
 		if(currentNode.isInstructionNode()){
 			if(m_exclusions.contains(currentNode) && !workingSet.isEmpty()){
-				addNodeToWorkingSet(currentNodesExclusions, currentNode);
+				addNodeToWorkingSet(exclusionsWithinCurrentNode, currentNode);
 			}
 			if(endInstructions.contains(currentNode)){
-				containedEndPoints.add(currentNode);
+				endInstructionsWithinCurrentNode.add(currentNode);
 			}
-			currentEndNodes.add(currentNode);
+			finalInstructionsOfCurrentNode.add(currentNode);
 		} else {
-			currentNodesExclusions = new TreeSet<Node>(m_exclusions);
-			currentNodesExclusions.retainAll(currentNode.getContainedNodes());
-			containedEndPoints = new TreeSet<Node>(endInstructions);
-			containedEndPoints.retainAll(currentNode.getContainedNodes());
-			currentEndNodes.addAll(currentNode.getEndNodes());
+			exclusionsWithinCurrentNode = new TreeSet<Node>(m_exclusions);
+			exclusionsWithinCurrentNode.retainAll(currentNode.getContainedNodes());
+			endInstructionsWithinCurrentNode = new TreeSet<Node>(endInstructions);
+			endInstructionsWithinCurrentNode.retainAll(currentNode.getContainedNodes());
+			finalInstructionsOfCurrentNode.addAll(currentNode.getEndInstructions());
 		}
 		
-		if(currentNodesExclusions.isEmpty()){
-
-			if(containedEndPoints.isEmpty()){
+		if(exclusionsWithinCurrentNode.isEmpty()){
+			if(endInstructionsWithinCurrentNode.isEmpty()){
+				// no exclusions and no endpoints
 				return exploreWhatsNext(startInstruction, workingSet, endInstructions, currentNode, parent, currentNode);
 			} else {
-				if(endInstructions.containsAll(currentEndNodes)){;
-					makeConnection(currentNode, parent);
-					addNodeToWorkingSet(workingSet, currentNode);
-					firstNodeAdded = true;
-					return true;
+				//there are no exclusions on this block but it does contain at least one endpoint
+				if(currentNode.getStartInstructions().size() == 1 && currentNode.isInstructionNode()){
+					
+					if(workingSet.isEmpty()){
+						return exploreWhatsNext(startInstruction, workingSet, endInstructions, currentNode, parent, currentNode);
+					} else {
+						//connect an end node and stop
+						EndNode endOfTheLine = new EndNode();
+						makeConnection(endOfTheLine, parent);
+						addNodeToWorkingSet(workingSet, endOfTheLine);
+						return true;
+					}
+					
+					
 				} else {
 					return exploreIntoCurrentNode(startInstruction, workingSet, endInstructions, currentNode, 
-							node,  parent, currentNodesExclusions, containedEndPoints);
+							node,  parent, exclusionsWithinCurrentNode, endInstructionsWithinCurrentNode);
 				}
 			}
 		} else {
+			// exclusions
 			if( currentNode.isInstructionNode() ){
 				addNodeToWorkingSet(workingSet, currentNode);
-				
-				firstNodeAdded = true;
 				if(currentNode != startInstruction){
 					//this doesn't allow excluded nodes to form a loop with the start node! --check
 					//maybe it should also contain 'endNodes.contains(start) &&'
 					makeConnection(currentNode, parent);
 					
-					//System.out.println(StructuralAnalysisEngine.dumpTree("inter", workingSet));
 					m_excludedRouteNodes.add(currentNode);
 					
 				} else {
@@ -253,11 +278,11 @@ public class RouteConstructor {
 				return false;
 			} else {
 				return exploreIntoCurrentNode(startInstruction, workingSet, endInstructions, currentNode, 
-						node, parent, currentNodesExclusions, containedEndPoints);
+						node, parent, exclusionsWithinCurrentNode, endInstructionsWithinCurrentNode);
 			}
 		}
 	}
-
+	
 	private void addNodeToWorkingSet(Collection<Node> workingSet,
 			Node currentNode) {
 		//System.out.println("adding " + currentNode + " to working set");
@@ -266,6 +291,8 @@ public class RouteConstructor {
 	
 	private boolean exploreWhatsNext(InstructionNode startInstruction, Collection<Node> workingSet, Collection<InstructionNode> endNodes,
 			 Node currentNode, Node originalParent, Node replacementNode) {
+		//System.out.println("\tgoing to whats next");
+		
 		boolean seenEndPoint = false;
 		makeConnection(replacementNode, originalParent);
 		if(workingSet.contains(currentNode)){
@@ -285,6 +312,7 @@ public class RouteConstructor {
 
 	private boolean exploreIntoCurrentNode(InstructionNode startInstruction, Collection<Node> workingSet, Collection<InstructionNode> endNodes,
 			Node currentNode, NodeWrapper node, Node parent, Collection<Node> currentNodesExclusions, Set<Node> containedEndPoints ) {
+		//System.out.println("\tlooking into");
 		boolean seenEndPoint = false;
 		assert (!currentNode.getImmediateChildren().isEmpty());
 		
@@ -315,7 +343,7 @@ public class RouteConstructor {
 				}
 				
 				NodeWrapper functionNodeWrapper = new NodeWrapper(firstFunctionNode);
-				Collection<InstructionNode> functionEndNodes = currentNode.getEndNodes();
+				Collection<InstructionNode> functionEndNodes = currentNode.getEndInstructions();
 				Collection<Node> newWorkingSet = new TreeSet<Node>();
 				seenEndPoint |= explore(functionStartNode, functionNodeWrapper, newWorkingSet, functionEndNodes, null);
 				assert(cfgSanityCheck(newWorkingSet));	
@@ -732,7 +760,10 @@ public class RouteConstructor {
 		}
 	}
 	
-	private void findEndInstructions(Set<InstructionNode> endNodes) {
+	
+	
+	private void findEndInstructions(Set<InstructionNode> endInstructions) {
+		/*
 		for (Reference endPoint : m_description.getEndPoint()){
 			for(InstructionNode endInstruction : getReferencedNodes(endPoint)){
 				if(endInstruction.getParent().whatsBefore(endInstruction) != null){
@@ -747,6 +778,17 @@ public class RouteConstructor {
 				}
 			}
 		}
+		*/
+		for (Reference endPoint : m_description.getEndPoint()){
+			for(InstructionNode endInstruction : getReferencedNodes(endPoint)){
+				if(!m_exclusions.contains(endInstruction)){
+					endInstructions.add(endInstruction);
+				}
+			}
+		}
+		//for(InstructionNode endInst : endInstructions){
+		//	System.out.println("ending on inst: " + endInst.getXtaInstruction());
+		//}
 	}
 	
 	private boolean parentIsBetterThanChild(Node child) {

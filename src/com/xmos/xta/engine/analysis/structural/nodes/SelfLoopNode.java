@@ -113,12 +113,18 @@ public class SelfLoopNode extends Node{
 		return tdb;
 	}
 	
-	public Set<InstructionNode> getEndNodes() {
+	public Set<InstructionNode> getEndInstructions() {
 		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		set.addAll(m_loop.getEndNodes());
+		set.addAll(m_loop.getEndInstructions());
 		return set;
 	}
 
+	public Set<InstructionNode> getStartInstructions() {
+		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		set.addAll(m_loop.getStartInstructions());
+		return set;
+	}
+	
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove) {		
 		if (!calledFromAbove) {
 		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);

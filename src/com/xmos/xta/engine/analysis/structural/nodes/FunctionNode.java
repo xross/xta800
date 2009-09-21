@@ -213,16 +213,18 @@ public class FunctionNode extends IBufferNode {
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		List<TimeDistributionBuckets> tsbSequence = new LinkedList<TimeDistributionBuckets>();
-		for(Node node : m_functionSequence){
-			tsbSequence.add(node.getTimeSpread());
+		if(m_functionSequence != null){
+			for(Node node : m_functionSequence){
+				tsbSequence.add(node.getTimeSpread());
+			}
 		}
 		tdb.add(tsbSequence);
 		return tdb;
 	}
 	
-	public Set<InstructionNode> getEndNodes() {
+	public Set<InstructionNode> getEndInstructions() {
 		if (m_functionSequence != null) {
-			return m_functionSequence.get(m_functionSequence.size()-1).getEndNodes();
+			return m_functionSequence.get(m_functionSequence.size()-1).getEndInstructions();
 		} else {
 			return new TreeSet<InstructionNode>();
 		}
@@ -276,5 +278,13 @@ public class FunctionNode extends IBufferNode {
 		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);
 		}
 		return false;
+	}
+
+	public Set<InstructionNode> getStartInstructions() {
+		if (m_functionSequence != null) {
+			return m_functionSequence.get(m_functionSequence.size()-1).getStartInstructions();
+		} else {
+			return new TreeSet<InstructionNode>();
+		}
 	}	
 }

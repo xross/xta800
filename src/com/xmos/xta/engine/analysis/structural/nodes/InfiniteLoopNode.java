@@ -157,12 +157,14 @@ public class InfiniteLoopNode extends Node {
 		return tdb;
 	}
 	
-	public Set<InstructionNode> getEndNodes() {
+	public Set<InstructionNode> getEndInstructions() {
 		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		
+		//TODO this need verifying as does it for loop and getStartInstructions()
 		//for(Node loop : m_loops){
 		//	set.addAll(loop.getEndNodes());
 		//}
-		set.addAll(m_loopHeader.getEndNodes());
+		set.addAll(m_loopHeader.getEndInstructions());
 		return set;
 	}
 	
@@ -171,5 +173,14 @@ public class InfiniteLoopNode extends Node {
 		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);
 		}
 		return false;
+	}
+
+	public Set<InstructionNode> getStartInstructions() {
+		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		//for(Node loop : m_loops){
+		//	set.addAll(getStartInstructions());
+		//}
+		set.addAll(m_loopHeader.getStartInstructions());
+		return set;
 	}	
 }

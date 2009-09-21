@@ -80,7 +80,7 @@ public class StructuralAnalysisEngine {
 			List<Node> postOrder = new LinkedList<Node>();
 			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
 			working = false;
-
+			removeEndNodes(workingSet);
 			for (PatternMatcher pm : m_patternMatchers) {
 				if (!dominatorTreeUpToDate && pm.usesDominatorTree()) {
 					buildDominatorTree(workingSet, treeStart);
@@ -108,6 +108,24 @@ public class StructuralAnalysisEngine {
 		}
 		
 		return true;
+	}
+
+	private void removeEndNodes(Collection<Node> workingSet) {
+		boolean done = false;
+		while(!done){
+			done = true;
+			for(Node node : workingSet){
+				if(node.isEndNode()){
+					assert(node.getPrevNodesSize() == 1);
+					if(node.getPrevNode().getNextNodesSize() == 1){
+						CommonMethods.disconnect(node, node.getPrevNode());
+						workingSet.remove(node);
+						done = false;
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	private boolean buildStructureGraphs(CommandSource src, Engine engine, TreeMap<String,
@@ -227,7 +245,7 @@ public class StructuralAnalysisEngine {
 
 			graphs.add(fn);
 			
-			setParent(fn);
+			//setParent(fn);
 			
 			normaliseGraph(fn);
 			
@@ -240,6 +258,9 @@ public class StructuralAnalysisEngine {
 
 	private boolean done;
 	public void normaliseGraph(Node fn) {
+		
+		setParent(fn);
+		
 		done = false;
 		//this bit removes the path within paths 
 		while(!done){
@@ -274,6 +295,17 @@ public class StructuralAnalysisEngine {
 					}
 					return true;
 				}
+				/*
+				public boolean foundEndNode(Node node, int depth) {
+					assert(node.getParent() != null);
+					Node previousNodes = node.getParent();
+					System.out.println("the parent of the node to remove is:" + previousNodes);
+					System.out.println("its children are: " + previousNodes.getChildren());
+					previousNodes.getChildren().remove(node);
+
+					return true;
+				}
+				*/
 		    });
 			setParent(fn);
 		}
@@ -781,6 +813,9 @@ public class StructuralAnalysisEngine {
 					} else {
 						sb.append(node + " -> " + next + ";");
 					}
+				}
+				if(node.isBlockNode() || node.isInstructionNode()){
+					sb.append(node + " [label=\""+node.getInstructions() +"\"];");
 				}
 			}
 			sb.append("}\n");
