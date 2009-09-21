@@ -37,4 +37,9 @@ public class SelectedRouteLabelProvider extends CellLabelProvider {
 		String toolTip = node.getAttributes().getTimingDetails();
 		return toolTip.substring(0, toolTip.length()-1);
 	}
+
+    public boolean useNativeToolTip(Object object) {
+        if (DEBUG) System.out.printf("SelectedRouteLabelProvider: useNativeToolTips\n");
+        return true;
+    }
 }
