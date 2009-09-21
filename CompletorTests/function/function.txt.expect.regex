@@ -1,7 +1,7 @@
-xta 1>lo  load  csim__xs1b__default/t test.xe 
+xta 1>lo  load  .*/t test.xe 
 xta 2>an  analyse fun   function ele   elephants
 xta 3>print summary
-Route(0) function: elephants
+Route\(0\) function: elephants
     No Timing Specified
 
 Fail, Timing Unspecified
