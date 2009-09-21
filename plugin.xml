@@ -73,6 +73,13 @@
             name="Function"
             restorable="true">
       </view>
+      <view
+            class="com.xmos.xta.gui.views.timedistribution.TimeDistributionView"
+            icon="icons/structure.png"
+            id="com.xmos.xta.gui.views.timedistribution.TimeDistribution"
+            name="TimeDistribution"
+            restorable="true">
+      </view>
    </extension>
   
    <extension
@@ -153,6 +160,16 @@
          style="push">
    </command>
 		</menuContribution>
+      <menuContribution
+            locationURI="toolbar:com.xmos.xta.gui.views.timedistribution.TimeDistribution">
+         <command
+               commandId="com.xmos.xta.gui.timedistribution.exportjpg.command"
+               icon="icons/filesave.png"
+               id="com.xmos.xta.gui.timedistribution.exportjpg.command"
+               label="Export as jpg"
+               style="push">
+         </command>
+      </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
@@ -205,6 +222,11 @@
             defaultHandler="com.xmos.xta.gui.handlers.FunctionExportJpgHandler"
             id="com.xmos.xta.gui.function.exportjpg.command"
             name="com.xmos.xta.gui.function.exportjpg.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.gui.handlers.TimeDistributionExportJpgHandler"
+            id="com.xmos.xta.gui.timedistribution.exportjpg.command"
+            name="com.xmos.xta.gui.timedistribution.exportjpg.command">
       </command>
    </extension>
    <extension

@@ -177,6 +177,7 @@ public class RouteConstructor {
 			
 			Node newGraph = baseNode.deepCopy();
 			newGraph.setParent(null);			
+
 			
 			if (!alreadyContainRoute(newGraph)){
 				m_routes.add(new Route(src, m_engine, newGraph, m_description));

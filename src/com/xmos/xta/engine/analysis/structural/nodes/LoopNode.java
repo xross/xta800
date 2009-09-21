@@ -153,13 +153,15 @@ public class LoopNode extends Node {
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		List<TimeDistributionBuckets> loopList = new LinkedList<TimeDistributionBuckets>();
+		TimeDistributionBuckets loopHeaderBucket = m_loopHeader.getTimeSpread();
+		loopHeaderBucket.repeat(m_attributes.getLoopIterations()+1);
+		loopList.add(loopHeaderBucket);
 		for(Node loop : m_loops){
-			//if(loop.getAttributes().getLoopIterations() > 0){
-				TimeDistributionBuckets loopBucket = new TimeDistributionBuckets();
-				loopBucket.add(m_loopHeader.getTimeSpread(), loop.getTimeSpread());
-				//loopBucket.repeat(1);
-				loopList.add(loopBucket);
-			//}
+			if(m_attributes.getLoopIterations() > 0){
+				TimeDistributionBuckets b = loop.getTimeSpread();
+				b.repeat(m_attributes.getLoopIterations());
+				loopList.add(b);
+			}
 		}
 		tdb.add(loopList);
 		return tdb;

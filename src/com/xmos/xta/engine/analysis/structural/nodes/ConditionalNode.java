@@ -211,7 +211,7 @@ public class ConditionalNode extends Node {
 
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
-		Collection<TimeDistributionBuckets> tdbs = new TreeSet<TimeDistributionBuckets>();
+		Collection<TimeDistributionBuckets> tdbs = new LinkedList<TimeDistributionBuckets>();
 		for(Node node : m_options){
 			tdbs.add(node.getTimeSpread());
 		}
