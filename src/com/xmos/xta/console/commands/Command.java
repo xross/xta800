@@ -13,6 +13,9 @@ import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 
 public abstract class Command {
+	public static final String REDIRECT_OVERWITE = ">";
+	public static final String REDIRECT_APPEND   = ">>";
+	
     public enum ArgType {
     	FILE,
     	FUNCTION,
@@ -22,8 +25,14 @@ public abstract class Command {
     	HELP,
     	IGNORE,
     }
+    public enum RedirectMode {
+    	OVERWRITE,
+    	APPEND,
+    }
 
     private CommandSource m_src;
+    private String m_fileRedirect;
+    private RedirectMode m_fileRedirectMode;
     
     public abstract int numArgs();
     public abstract String name();
@@ -161,7 +170,9 @@ public abstract class Command {
     protected boolean areArgsDone(String[] args, int i) {
 		if ((i >= args.length) || 
 			(args[i].startsWith("-") && (args[i].length() > 1)) || 
-			args[i].startsWith("\n")) {
+			args[i].startsWith("\n") ||
+			args[i].equals(REDIRECT_OVERWITE) ||
+			args[i].equals(REDIRECT_APPEND)) {
 			return true;
 		}
 		return false;
@@ -180,4 +191,36 @@ public abstract class Command {
     public CommandSource getSrc() {
 		return m_src;
 	}
+    
+    public void setFileRedirect(String fileRedirect) {
+    	m_fileRedirect = fileRedirect;
+    }
+    
+    public String getFileRedirect() {
+    	return m_fileRedirect;
+    }
+
+    public void setFileRedirectMode(RedirectMode fileRedirectMode) {
+    	m_fileRedirectMode = fileRedirectMode;
+    }
+    
+    public RedirectMode getFileRedirectMode() {
+    	return m_fileRedirectMode;
+    }
+    
+    public String getFullCommandLine() {
+		if (m_fileRedirect != null) {
+			switch (m_fileRedirectMode) {
+			case OVERWRITE:
+				return commandLine() + " " + REDIRECT_OVERWITE + " " + m_fileRedirect;
+				
+			case APPEND:
+				return commandLine() + " " + REDIRECT_APPEND + " " + m_fileRedirect;
+				
+			default:
+				return commandLine();
+			}
+		}
+		return commandLine();
+    }
 }

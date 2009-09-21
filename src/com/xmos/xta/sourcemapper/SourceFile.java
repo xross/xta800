@@ -23,6 +23,10 @@ public class SourceFile {
 		}
 	}
 
+	public String getBaseDir() {
+		return m_debugFile.getBaseDir();
+	}
+
 	public String getFileName() {
 		return m_debugFile.getFileName();
 	}

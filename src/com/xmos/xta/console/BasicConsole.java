@@ -5,11 +5,13 @@ import java.util.Vector;
 
 import com.xmos.xta.console.commands.Command;
 
-public class BasicConsole implements Console {
+public class BasicConsole extends Console {
 	public void display(String str) {
-		System.out.printf("%s", str);
+		if (!redirectToFile(str)) {
+			System.out.printf("%s", str);
+		}
 	}
-	
+
 	public void displayPrompt(String str) {
 		System.out.printf("%s", str);
 	}

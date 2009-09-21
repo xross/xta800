@@ -28,7 +28,7 @@ import com.xmos.xta.console.completors.XtaCompletor;
 import com.xmos.xta.gui.XtaPlugin;
 import com.xmos.xta.gui.GuiEngine;
 
-public class GuiConsole implements Console {	
+public class GuiConsole extends Console {	
     public static final boolean DEBUG = false;
 
     private Shell m_shell;
@@ -137,22 +137,24 @@ public class GuiConsole implements Console {
         m_text.setFocus();
         m_hasEscaped = false;
 	}
-	
+
     public void execute() {
 		int returnCode = m_shell.execute();
 		System.exit(returnCode);        
     }
-	
+
 	public void display(String str) {
 		if (DEBUG) System.out.printf("GuiConsole: Entering: display: %s\n", str);
-		
-		m_string = str;
-        m_display.syncExec(new Runnable() {
-    		public void run() {
-	    		m_text.append(m_string);
-		    	m_text.setSelection(m_text.getCharCount());
-		    }
-    	});
+
+		if (!redirectToFile(str)) {
+			m_string = str;
+	        m_display.syncExec(new Runnable() {
+	    		public void run() {
+		    		m_text.append(m_string);
+			    	m_text.setSelection(m_text.getCharCount());
+			    }
+	    	});
+		}			
 		if (DEBUG) System.out.printf("GuiConsole: Leaving: display\n");
 	}
 
@@ -171,7 +173,6 @@ public class GuiConsole implements Console {
 	
 	public String getNextLine(Vector<Command> commandHistory) {
 		if (DEBUG) System.out.printf("GuiConsole: Entering: getNextLine\n");			
-		m_hasEscaped = false;
 		
 		m_commandHistory = commandHistory;
 		resetCommandIndex();
@@ -186,6 +187,8 @@ public class GuiConsole implements Console {
 			command = commandString.getStr();
 		} catch (InterruptedException e) {}
 
+		m_hasEscaped = false;
+		
 		if (DEBUG) System.out.printf("GuiConsole: Leaving: getNextLine: %s\n", command);			
 		return command;
 	}
@@ -224,6 +227,9 @@ public class GuiConsole implements Console {
 	
 	public boolean hasEscaped() {
 		return m_hasEscaped;
+	}
+	
+	public void setFileRedirect(String fileName) {		
 	}
 	
 	public void close() throws IOException {
@@ -315,11 +321,12 @@ public class GuiConsole implements Console {
 	
 	private void handleEnter() {
 		setCaretToEnd();
-		String txt = m_text.getText();
-		int idx = txt.lastIndexOf('>', m_text.getCharCount() - 1);
 		
+		String text = m_text.getText();			
+		int idx = text.lastIndexOf(m_prompt) + m_prompt.length();
+
 		try {
-			m_commandQueue.put(new CommandString(txt.substring(idx != -1 ? idx + 1 : 1, m_text.getCharCount()), false));
+			m_commandQueue.put(new CommandString(text.substring(idx != -1 ? idx : 1, m_text.getCharCount()), false));
 		} catch (InterruptedException e) {}					
 	}
 
@@ -330,15 +337,15 @@ public class GuiConsole implements Console {
 	}
 	
 	private void displayCommand() {		
-		int length = m_text.getCharCount();
-		String text = m_text.getText();
-		int index = text.lastIndexOf('>', length);
-		int range = length - (index + 1);
-		m_text.replaceTextRange(index + 1, range, "");
+		String text = m_text.getText();		
+		int idx = text.lastIndexOf(m_prompt) + m_prompt.length();
+		
+		int range = m_text.getCharCount() - idx;
+		m_text.replaceTextRange(idx, range, "");
 		 
         String commandLine = "";
         if (m_commandHistoryIndex < m_commandHistory.size()) {
-    		commandLine = m_commandHistory.get(m_commandHistoryIndex).commandLine();		        	
+    		commandLine = m_commandHistory.get(m_commandHistoryIndex).getFullCommandLine();		        	
         }
    		display(String.format("%s", commandLine));
 	}

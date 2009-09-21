@@ -90,7 +90,12 @@ public class Source extends Command {
                             
                             boolean invalidCommand = false;
                             if (command != null) {
-                        		invalidCommand = (command.numArgs() != (tokens.length - 1));
+                            	if (command.getFileRedirect() != null) {
+                            		invalidCommand = ((command.numArgs() + 2) != (tokens.length - 1));
+                            		
+                            	} else {
+                            		invalidCommand = (command.numArgs() != (tokens.length - 1));                            		
+                            	}
                                 if (!invalidCommand) {	
                             	    shell.addCommand(command, location + 1);
                             	    location++;

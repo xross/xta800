@@ -10,7 +10,7 @@ import com.xmos.xta.engine.Engine;
 
 import jline.ConsoleReader;
 
-public class JLineConsole implements Console {
+public class JLineConsole extends Console {
 	private ConsoleReader m_reader;
 	private String m_prompt;
 	
@@ -21,7 +21,9 @@ public class JLineConsole implements Console {
 	}
 	
 	public void display(String str) {
-		System.out.printf("%s", str);
+		if (!redirectToFile(str)) {		
+		    System.out.printf("%s", str);
+		}
 	}
 	
 	public void displayPrompt(String str) {
@@ -49,6 +51,9 @@ public class JLineConsole implements Console {
 	
 	public boolean hasEscaped() {
 		return false;
+	}
+
+	public void setFileRedirect(String fileName) {		
 	}
 	
 	private void reportError() {

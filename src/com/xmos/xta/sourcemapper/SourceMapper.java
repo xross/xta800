@@ -85,7 +85,6 @@ public class SourceMapper {
             
       	for (DebugFile debugFile : de.getDebugFiles()) {
       		
-      		
 			File source = new File(debugFile.getFullFileName());
 			boolean done = false;
 			while (!done) {
