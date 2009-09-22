@@ -3,7 +3,7 @@ package com.xmos.xta.ui.views.info.sections;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 
-import com.xmos.dwarfhandler.DebugFile;
+import com.xmos.libs.dwarfhandler.DebugFile;
 
 class SourcesViewerLabelProvider extends SectionsViewerLabelProvider implements ITableLabelProvider {
     static final String COMPDIR = "Compilation Directory";

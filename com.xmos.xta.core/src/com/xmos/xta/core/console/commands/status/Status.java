@@ -3,8 +3,8 @@ package com.xmos.xta.core.console.commands.status;
 import java.io.File;
 import java.util.List;
 
-import com.xmos.xeloader.DebugInfo;
-import com.xmos.xeloader.MemoryImage;
+import com.xmos.libs.xeloader.DebugInfo;
+import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;

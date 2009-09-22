@@ -1,8 +1,8 @@
 package com.xmos.xta.core.console.commands.list;
 
 import java.util.Collection;
-import com.xmos.xeloader.SymbolTable;
-import com.xmos.xeloader.XeLoader;
+import com.xmos.libs.xeloader.SymbolTable;
+import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;

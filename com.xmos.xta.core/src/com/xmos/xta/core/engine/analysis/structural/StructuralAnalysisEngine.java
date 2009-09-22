@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.xmos.xeloader.XeLoader;
-import com.xmos.xeloader.XeLoader.Architecture;
+import com.xmos.libs.xeloader.XeLoader;
+import com.xmos.libs.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;

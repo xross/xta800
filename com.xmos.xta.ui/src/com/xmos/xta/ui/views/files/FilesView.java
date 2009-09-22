@@ -22,7 +22,7 @@ import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.part.ViewPart;
 
-import com.xmos.dwarfhandler.DebugFile;
+import com.xmos.libs.dwarfhandler.DebugFile;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.sourcemapper.SourceFile;
 import com.xmos.xta.core.sourcemapper.SourceMapper;

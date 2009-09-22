@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import com.xmos.isa.Instruction;
-import com.xmos.xeloader.MemoryImage;
-import com.xmos.xeloader.SymbolTable;
+import com.xmos.libs.isa.Instruction;
+import com.xmos.libs.xeloader.MemoryImage;
+import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;

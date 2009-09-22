@@ -38,7 +38,7 @@ DecoderGenerator::DecoderGenerator(const char *fileName, DbInterface &dbInterfac
 
   fprintf(outFp, "package com.xmos.xta.core.engine.instructions;\n");
   fprintf(outFp, "\n");
-  fprintf(outFp, "import com.xmos.isa.Instruction;\n");
+  fprintf(outFp, "import com.xmos.libs.isa.Instruction;\n");
   fprintf(outFp, "\n");
   fprintf(outFp, "public class %sXtaInstructionDecoder extends XtaInstructionDecoder {\n", m_version);
   fprintf(outFp, "    public XtaInstruction decode(int opcode, long pc) {\n");

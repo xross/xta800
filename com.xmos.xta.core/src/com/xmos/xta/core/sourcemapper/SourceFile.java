@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.xmos.dwarfhandler.DebugFile;
+import com.xmos.libs.dwarfhandler.DebugFile;
 
 public class SourceFile {
 	private DebugFile m_debugFile;

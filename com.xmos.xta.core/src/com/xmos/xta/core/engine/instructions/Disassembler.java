@@ -3,10 +3,10 @@ package com.xmos.xta.core.engine.instructions;
 import java.util.HashMap;
 import java.util.Vector;
 
-import com.xmos.isa.Instruction;
-import com.xmos.xeloader.MemoryImage;
-import com.xmos.xeloader.SymbolTable;
-import com.xmos.xeloader.XeLoader;
+import com.xmos.libs.isa.Instruction;
+import com.xmos.libs.xeloader.MemoryImage;
+import com.xmos.libs.xeloader.SymbolTable;
+import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.Config;
 
 public class Disassembler {      

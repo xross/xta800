@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.xmos.dwarfhandler.DebugFile;
+import com.xmos.libs.dwarfhandler.DebugFile;
 
 public abstract class FileFinder {
     private List<DebugFile> m_fileCache;
