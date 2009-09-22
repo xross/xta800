@@ -46,7 +46,7 @@ public class FilteredFunctions extends XtaDialog {
 			}			
 		});
 	    
-	    viewer.setInput(GuiEngine.getEngine().getFunctionNames());
+	    viewer.setInput(GuiEngine.getEngine());
 	    m_signalsViewer.getFilterControl().setText(filterString);
 	    
     	return container;

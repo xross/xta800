@@ -23,17 +23,18 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="com.xmos.xta.gui.editors.SourcesEditor"
+            class="com.xmos.xta.gui.editors.XtaSourceEditor"
             default="false"
-            icon="icons/editor.png"
-            id="com.xmos.xta.gui.editors.Sources"
-            name="Xta">
+            icon="icons/xta16x16.png"
+            id="com.xmos.xta.gui.editors.XtaSourceEditor"
+            name="XtaSourceEditor">
       </editor>
       <editor
-            class="com.xmos.xta.gui.editors.XtaEditor"
+            class="com.xmos.xta.gui.editors.XtaDisassemblyEditor"
             default="false"
-            id="com.xmos.xta.gui.editors.XtaEditor"
-            name="XtaEditor">
+            icon="icons/xta16x16.png"
+            id="com.xmos.xta.gui.editors.XtaDisassemblyEditor"
+            name="XtaDisassemblyEditor">
       </editor>
    </extension>
    <extension
@@ -71,6 +72,13 @@
             icon="icons/function_view.png"
             id="com.xmos.xta.gui.views.function.Function"
             name="Function"
+            restorable="true">
+      </view>
+      <view
+            class="com.xmos.xta.gui.views.files.FilesView"
+            icon="icons/files_view.png"
+            id="com.xmos.xta.gui.views.files.Files"
+            name="Files"
             restorable="true">
       </view>
    </extension>

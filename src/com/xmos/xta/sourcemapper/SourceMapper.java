@@ -55,20 +55,21 @@ public class SourceMapper {
 	}
 
     public void initialise(XeLoader xeLoader, int nodeId, int coreId) {
-        m_pcToFile = new TreeMap <Long, SourceFile> ();
+        m_pcToFile = new TreeMap <Long, SourceFile>();
         m_instructions = createAssemblyLines();
         m_functions = createFunctions();
         m_sourceFiles = createSourceFiles(xeLoader, nodeId, coreId);
     }   
 
     private boolean containsSourceFile(File file, List<SourceFile> sourceFiles){    	
-    	//every source file added should have been canonicalised as should have the file
+    	// Every source file added should have been canonicalised as should have the file
         for (SourceFile sourceFile : sourceFiles){
             File srcFile = sourceFile.getFile();
             
             if (srcFile == null){
                 continue;
             }
+            
             if (srcFile.equals(file)){
                 return true;
             }
@@ -109,8 +110,8 @@ public class SourceMapper {
 					}
 				} else {
 					if (m_fileFinder != null) {
-						source = m_fileFinder.openFileFinder(debugFile
-								.getBaseDir(), debugFile.getFileName());
+						source = m_fileFinder.openFileFinder(debugFile.getBaseDir(),
+								debugFile.getFileName());
 
 						if (source == null)
 							done = true;
@@ -141,7 +142,8 @@ public class SourceMapper {
                         AssemblyLine assemblyLine = m_pcToAsm.get(pc);
                         Function fn = m_pcToFunction.get(pc);
                         m_functionToFile.put(fn.getText(), sourceFile.getFileName());
-                        sourceLine.addAssembly(assemblyLine);                    
+                        sourceLine.addAssembly(assemblyLine);
+                        
                 	} else {
                 		System.err.println("Could not find assembly line correspinding to 0x" + 
                 				Long.toHexString(pc) + " in debug information. ");
@@ -154,6 +156,10 @@ public class SourceMapper {
             	Collection<Long> statementPcs = debugEngine.getStatementPcsMatchingPath(
             			sourceFile.getFullFileName(), lineNumber);
             	sourceLine.addStatementPcs(statementPcs);
+
+            	for (long statementPc : statementPcs) {
+            		sourceFile.addPcToLine(statementPc, sourceLine);
+            	}
             }            
         }
         assert(sourceFiles != null);
@@ -161,8 +167,7 @@ public class SourceMapper {
     }
 
     private Collection<Long> rangesToAddresses(Collection<Pair<Long, Long>> addressRanges) {
-		Set<Long> addresses = new TreeSet<Long>();
-
+    	Set<Long> addresses = new TreeSet<Long>();
 		for (Pair<Long, Long> range : addressRanges) {
 			int asmLineNum = 0;
 			boolean active = false;
@@ -192,7 +197,7 @@ public class SourceMapper {
     
 	private List<AssemblyLine> createAssemblyLines() {
 		List<AssemblyLine> asmLines = new ArrayList<AssemblyLine>();
-		for(InstructionNode instNode : m_instructionDecoder.getInstructions()){
+		for (InstructionNode instNode : m_instructionDecoder.getInstructions()){
 			AssemblyLine assLine = new AssemblyLine(instNode, m_labels);
 			asmLines.add(assLine);
 			m_pcToAsm.put(instNode.getStartPc(), assLine);
@@ -256,7 +261,16 @@ public class SourceMapper {
         return m_sourceFiles;
     }
 
-    public List<Function> getFunctions() {
+	public SourceFile getSourceFile(String fileName) {
+        for (SourceFile sourceFile : m_sourceFiles){
+        	if (sourceFile.getFileName().equals(fileName))
+        		return sourceFile;
+        }
+        assert(false);
+        return null;
+    }
+
+	public List<Function> getFunctions() {
         return m_functions;
     }
 	public boolean isProfilablePc(long pc) {

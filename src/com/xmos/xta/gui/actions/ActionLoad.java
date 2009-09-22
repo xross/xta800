@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -38,8 +37,8 @@ import com.xmos.xta.gui.GuiProgressMonitor;
 import com.xmos.xta.gui.XtaPlugin;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.GuiFileFinder;
-import com.xmos.xta.gui.editors.SourcesEditor;
-import com.xmos.xta.gui.editors.SourcesEditorInput;
+import com.xmos.xta.gui.editors.XtaDisassemblyEditor;
+import com.xmos.xta.gui.editors.XtaSourceEditor;
 import com.xmos.xta.gui.views.console.ConsoleView;
 
 public class ActionLoad extends ActionDelegate implements IPropertyChangeListener, 
@@ -147,17 +146,10 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
 		
 		// Need to close any xta editors already open..
 		for (IEditorReference editorReference : page.getEditorReferences()) {
-			if (editorReference.getId().equals(SourcesEditor.ID)) {
+			if (editorReference.getId().equals(XtaSourceEditor.ID) || 
+					editorReference.getId().equals(XtaDisassemblyEditor.ID)) {
 				page.closeEditor(editorReference.getEditor(false), false);
 			}
-		}
-		
-		// Opens a new xta editor.. 
-		IEditorInput sourcesInput = new SourcesEditorInput();
-		try {
-		    page.openEditor(sourcesInput, SourcesEditor.ID);
-		} catch (PartInitException e) {
-			e.printStackTrace();
 		}
     }
     
