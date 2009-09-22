@@ -4,8 +4,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.core.sourcemapper.AssemblyLine;
-import com.xmos.xta.core.sourcemapper.Function;
+import com.xmos.xta.core.engine.sourcemapper.AssemblyLine;
+import com.xmos.xta.core.engine.sourcemapper.Function;
 
 public class InputDisassembly implements IEditorInput {
     public static final boolean DEBUG = false;

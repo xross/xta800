@@ -1,4 +1,4 @@
-package com.xmos.xta.core.sourcemapper;
+package com.xmos.xta.core.engine.sourcemapper;
 
 import java.io.File;
 import java.io.IOException;

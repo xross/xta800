@@ -43,8 +43,8 @@ import com.xmos.xta.core.engine.sections.SrcStringInfo;
 import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
 import com.xmos.xta.core.engine.sections.Sections;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
-import com.xmos.xta.core.sourcemapper.FileFinder;
-import com.xmos.xta.core.sourcemapper.SourceMapper;
+import com.xmos.xta.core.engine.sourcemapper.FileFinder;
+import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 
 public class Engine implements Notifier {
 	public static final int ROUTE_ID_LAST     = -1;

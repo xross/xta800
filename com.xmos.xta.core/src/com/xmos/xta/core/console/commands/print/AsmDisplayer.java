@@ -15,8 +15,8 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.instructions.Disassembler;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
-import com.xmos.xta.core.sourcemapper.Function;
-import com.xmos.xta.core.sourcemapper.SourceMapper;
+import com.xmos.xta.core.engine.sourcemapper.Function;
+import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 
 public class AsmDisplayer {
 	private Engine m_engine;

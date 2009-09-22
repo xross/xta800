@@ -12,7 +12,7 @@ import com.xmos.xta.core.console.commands.Invalid;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.SrcStringInfo;
-import com.xmos.xta.core.sourcemapper.FileFinder;
+import com.xmos.xta.core.engine.sourcemapper.FileFinder;
 
 public class Load extends Command {
 	private String m_executableName;

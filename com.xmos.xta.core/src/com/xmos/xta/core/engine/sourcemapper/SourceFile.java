@@ -1,4 +1,4 @@
-package com.xmos.xta.core.sourcemapper;
+package com.xmos.xta.core.engine.sourcemapper;
 
 import java.io.BufferedReader;
 import java.io.File;

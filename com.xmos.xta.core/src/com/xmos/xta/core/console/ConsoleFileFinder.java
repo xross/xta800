@@ -5,7 +5,7 @@ import java.io.File;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.sourcemapper.FileFinder;
+import com.xmos.xta.core.engine.sourcemapper.FileFinder;
 
 public class ConsoleFileFinder extends FileFinder {
 	private CommandSource m_src;

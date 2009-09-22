@@ -24,8 +24,8 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.libs.dwarfhandler.DebugFile;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.sourcemapper.SourceFile;
-import com.xmos.xta.core.sourcemapper.SourceMapper;
+import com.xmos.xta.core.engine.sourcemapper.SourceFile;
+import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.editors.InputDisassembly;
 import com.xmos.xta.ui.editors.InputSource;

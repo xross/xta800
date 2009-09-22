@@ -7,10 +7,10 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
-import com.xmos.xta.core.sourcemapper.Line;
-import com.xmos.xta.core.sourcemapper.SourceFile;
-import com.xmos.xta.core.sourcemapper.SourceLine;
-import com.xmos.xta.core.sourcemapper.SourceMapper;
+import com.xmos.xta.core.engine.sourcemapper.Line;
+import com.xmos.xta.core.engine.sourcemapper.SourceFile;
+import com.xmos.xta.core.engine.sourcemapper.SourceLine;
+import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 
 public class SrcDisplayer {
 
