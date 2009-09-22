@@ -1,16 +1,16 @@
 
 prebuild:
-	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)generation              $(THEN) $(MAKECOMMAND)
-	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)Frontends$(SLASH)xta    $(THEN) $(MAKECOMMAND)
+	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)com.xmos.xta.core$(SLASH)generation              $(THEN) $(MAKECOMMAND)
+	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)com.xmos.xta.core$(SLASH)frontends$(SLASH)xta    $(THEN) $(MAKECOMMAND)
 
 preclean:
-	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)generation              $(THEN) $(MAKECLEAN)
-	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)Frontends$(SLASH)xta    $(THEN) $(MAKECLEAN)
+	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)com.xmos.xta.core$(SLASH)generation              $(THEN) $(MAKECLEAN)
+	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)com.xmos.xta.core$(SLASH)frontends$(SLASH)xta    $(THEN) $(MAKECLEAN)
 
 predepend:
-	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)generation              $(THEN) $(MAKEDEPEND)
-	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)Frontends$(SLASH)xta    $(THEN) $(MAKEDEPEND)
+	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)com.xmos.xta.core$(SLASH)generation              $(THEN) $(MAKEDEPEND)
+	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)com.xmos.xta.core$(SLASH)frontends$(SLASH)xta    $(THEN) $(MAKEDEPEND)
 
 prelint:
-	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)generation              $(THEN) $(MAKELINT)
-	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)Frontends$(SLASH)xta    $(THEN) $(MAKELINT)
+	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)com.xmos.xta.core$(SLASH)generation              $(THEN) $(MAKELINT)
+	$(CD) $(XMOS_ROOT)$(SLASH)tools_xta$(SLASH)com.xmos.xta.core$(SLASH)frontends$(SLASH)xta    $(THEN) $(MAKELINT)
