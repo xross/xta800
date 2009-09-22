@@ -1,0 +1,50 @@
+package com.xmos.xta.core.sourcemapper;
+
+import java.util.List;
+
+public class Function implements Line, Comparable<Object> {
+
+	private String m_functionName;
+	private List<AssemblyLine> m_assembly;
+
+	public Function(String name, List<AssemblyLine> functionAssemby) {
+		m_assembly = functionAssemby;
+		m_functionName = name;
+	}
+
+	public List<AssemblyLine> getChildern() {
+		return m_assembly;
+	}
+
+	public String getText() {
+		return m_functionName;
+	}
+
+	public long getLineNumber() {
+		return 0;
+	}
+
+	public int compareTo(Object o) throws ClassCastException {
+		Function f = (Function) o; 
+		if (m_functionName.charAt(0) == '_') {
+			if (f.m_functionName.charAt(0) == '_')
+				return m_functionName.compareTo(f.m_functionName);
+			else
+				return 1;
+		} else {
+			if (f.m_functionName.charAt(0) == '_')
+				return -1;
+			else
+				return m_functionName.compareTo(f.m_functionName);
+		}
+	}
+
+	public boolean containsPc(long pc) {
+		for (Line line : m_assembly) {
+			if (line.getLineNumber() == pc)
+				return true;
+		}
+		return false;
+	}
+
+}

@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Core Plug-in
+Bundle-SymbolicName: com.xmos.xta.core
+Bundle-Version: 1.0.0
+Bundle-Vendor: XMOS
+Import-Package: com.xmos.xeloader,
+ jline
+Require-Bundle: infr_libs_java
+Export-Package: com.xmos.xta.core.console,
+ com.xmos.xta.core.console.commands,
+ com.xmos.xta.core.console.completors,
+ com.xmos.xta.core.engine,
+ com.xmos.xta.core.engine.analysis.routes,
+ com.xmos.xta.core.engine.analysis.structural.nodes,
+ com.xmos.xta.core.engine.analysis.structural.nodes.attributes,
+ com.xmos.xta.core.engine.analysis.structural.nodes.traversers,
+ com.xmos.xta.core.engine.instructions,
+ com.xmos.xta.core.engine.references,
+ com.xmos.xta.core.engine.references.types,
+ com.xmos.xta.core.engine.sections,
+ com.xmos.xta.core.sourcemapper
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

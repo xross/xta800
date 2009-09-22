@@ -17,8 +17,6 @@ my $BUILD_NUM;
 my $BIN;
 
 my $buildDir = "";
-my $tmpBuildDir = "";
-
 my $tailCmd = "";
 my $platform = "";
 my $config = "";
@@ -39,7 +37,6 @@ my %TARGETS =
     'preclean' => [\&DoPreClean, "Delete generated source code\n"],
     'clean' => [\&DoClean, "Clean java tools"],
     'realclean' => [\&DoRealClean, "Delete installed java tools from installs"],
-    'depend' => [\&DoDepend, "Updates the dependency files. Can only be run in Linux/Cygwin."],
     'prebuild' => [\&DoPreBuild, "Create generated files."],
     'build' => [\&DoBuild, "Build java tools"],
     'install' => [\&DoInstall, "Install java tools"],
@@ -132,7 +129,7 @@ sub PrintUsage
 
 sub DoPreClean
 {
-  chdir("$TOOLS_XTA${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta") 
+  chdir("$TOOLS_XTA${SLASH}com.xmos.xta.core${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta${SLASH}core") 
     or die("Failed to move to $TOOLS_XTA${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta");
 
   unlink("instructions/RevbInstructionDecoder.java");
@@ -144,16 +141,21 @@ sub DoPreClean
 sub DoClean
 {
   chdir("$TOOLS_XTA") or die("Failed to find $TOOLS_XTA\n");
+
   system("$MAKE $MAKE_FLAGS clean");
-  system("ant clean");
+  
+  chdir("com.xmos.xta.core") 
+    or die("Failed to find com.xmos.xta.core\n");
+  system("ant clean"); 
     die() if ($? != 0);
+  chdir("../");
 
   SetupVars();
-  unlink("$TOOLS_XTA/bin/$target");
-  rmtree("$TOOLS_XTA/bin/xta_$platform");
+  system("rm -rf $TOOLS_XTA/export/*.zip");
+  system("rm -rf $TOOLS_XTA/export/xta_bin");
+  system("rm -rf $TOOLS_XTA/export/xta_bin64");
 
   system("rm -rf $TOOLS_XTA/tmp");
-  system("rm -rf $TOOLS_XTA/bin");
   system("rm -rf $INSTALLPATH${SLASH}xta_bin");
   system("rm -rf $INSTALLPATH${SLASH}xta_bin64");
 
@@ -173,8 +175,9 @@ sub DoRealClean
 sub DoPreBuild
 {
   print(" + Building Generation Tools\n");
-  chdir("$TOOLS_XTA${SLASH}generation") 
-    or confess("Build failed to find $TOOLS_XTA${SLASH}generation\n");
+  chdir("$TOOLS_XTA${SLASH}com.xmos.xta.core${SLASH}generation") 
+    or confess("Build failed to find $TOOLS_XTA${SLASH}com.xmos.xta.core${SLASH}generation\n");
+
   system("$MAKE $MAKE_FLAGS");
   confess() if ($? != 0);
 
@@ -192,8 +195,11 @@ sub DoBuild
 
   UpdateBuildNumber();
 
-  system("ant");
-  die() if ($? != 0);
+  chdir("com.xmos.xta.core") 
+    or die("Failed to find com.xmos.xta.core\n");
+  system("ant"); 
+    die() if ($? != 0);
+  chdir("../");
 
   BuildEclipse();
 
@@ -209,46 +215,46 @@ sub DoInstall
   }
 
   if ($HOST eq "PC") {
-    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}");
-    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}xta_bin");
+    system("cp -r $TOOLS_XTA${SLASH}export${SLASH}xta_bin $INSTALLPATH${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}com.xmos.xta.ui${SLASH}xtagui.ini $INSTALLPATH${SLASH}xta_bin");
     ConfigureWorkspaceDirectory("$INSTALLPATH${SLASH}xta_bin${SLASH}configuration${SLASH}config.ini");
 
-    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
-    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin");
+    system("cp -r $TOOLS_XTA${SLASH}export${SLASH}xta_bin $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}com.xmos.xta.ui${SLASH}xtagui.ini $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin");
     ConfigureWorkspaceDirectory("$INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin${SLASH}configuration${SLASH}config.ini");
 
   } elsif ($HOST eq "Mac") {
-    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}");
-    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}xta_bin");
+    system("cp -r $TOOLS_XTA${SLASH}export${SLASH}xta_bin $INSTALLPATH${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}com.xmos.xta.ui${SLASH}xtagui.ini $INSTALLPATH${SLASH}xta_bin");
     ConfigureWorkspaceDirectory("$INSTALLPATH${SLASH}xta_bin${SLASH}configuration${SLASH}config.ini");
 
-    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
-    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin");
+    system("cp -r $TOOLS_XTA${SLASH}export${SLASH}xta_bin $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}com.xmos.xta.ui${SLASH}xtagui.ini $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin");
     ConfigureWorkspaceDirectory("$INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin${SLASH}configuration${SLASH}config.ini");
 
   } else {
-    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}");
-    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}xta_bin");
+    system("cp -r $TOOLS_XTA${SLASH}export${SLASH}xta_bin $INSTALLPATH${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}com.xmos.xta.ui${SLASH}xtagui.ini $INSTALLPATH${SLASH}xta_bin");
     ConfigureWorkspaceDirectory("$INSTALLPATH${SLASH}xta_bin${SLASH}configuration${SLASH}config.ini");
 
-    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
-    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin");
+    system("cp -r $TOOLS_XTA${SLASH}export${SLASH}xta_bin $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}com.xmos.xta.ui${SLASH}xtagui.ini $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin");
     ConfigureWorkspaceDirectory("$INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin${SLASH}configuration${SLASH}config.ini");
 
-    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin64 $INSTALLPATH${SLASH}");
-    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}xta_bin64");
+    system("cp -r $TOOLS_XTA${SLASH}export${SLASH}xta_bin64 $INSTALLPATH${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}com.xmos.xta.ui${SLASH}xtagui.ini $INSTALLPATH${SLASH}xta_bin64");
     ConfigureWorkspaceDirectory("$INSTALLPATH${SLASH}xta_bin64${SLASH}configuration${SLASH}config.ini");
 
-    system("cp -r $TOOLS_XTA${SLASH}bin${SLASH}xta_bin64 $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
-    system("cp -r $TOOLS_XTA${SLASH}xtagui.ini $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin64");
+    system("cp -r $TOOLS_XTA${SLASH}export${SLASH}xta_bin64 $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}");
+    system("cp -r $TOOLS_XTA${SLASH}com.xmos.xta.ui${SLASH}xtagui.ini $INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin64");
     ConfigureWorkspaceDirectory("$INSTALLPATH${SLASH}External${SLASH}Product${SLASH}xta_bin64${SLASH}configuration${SLASH}config.ini");
   }
 
   XmosBuildLib::InstallFile("$DOMAIN", "${BIN}", "xta.exe");
   XmosBuildLib::InstallReleaseFile("$DOMAIN", "${BIN}", "xta.exe", "bin");
 
-  XmosBuildLib::InstallFile("$DOMAIN", "lib", "xta.jar");
-  XmosBuildLib::InstallReleaseFile("$DOMAIN", "lib", "xta.jar", "bin");
+  XmosBuildLib::InstallFile("$DOMAIN", "export${SLASH}jars", "xta.jar");
+  XmosBuildLib::InstallReleaseFile("$DOMAIN", "export${SLASH}jars", "xta.jar", "bin");
 }
 
 sub DoLint
@@ -272,16 +278,15 @@ sub CreateXtaFiles
   system("$TOOLS_XTA${SLASH}${BIN}${SLASH}XtaGeneration.exe XSystemDb${SLASH}XS1-040.xml $version");
 
   print(" + Installing $version generated xta files\n");
-  rename("XtaInstructionDecoder.java", "$TOOLS_XTA${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta${SLASH}engine${SLASH}instructions${SLASH}${version}XtaInstructionDecoder.java") 
+  rename("XtaInstructionDecoder.java", "$TOOLS_XTA${SLASH}com.xmos.xta.core${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta${SLASH}core${SLASH}engine${SLASH}instructions${SLASH}${version}XtaInstructionDecoder.java") 
     or die("Failed to move XtaInstructionDecoder.java\n");
-  rename("XtaInstructions.java", "$TOOLS_XTA${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta${SLASH}engine${SLASH}instructions${SLASH}${version}XtaInstructions.java") 
+  rename("XtaInstructions.java",       "$TOOLS_XTA${SLASH}com.xmos.xta.core${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta${SLASH}core${SLASH}engine${SLASH}instructions${SLASH}${version}XtaInstructions.java") 
     or die("Failed to move XtaInstructions.java\n");
 }
 
 sub SetupVars
 {
   $buildDir    = "$TOOLS_XTA/tmp";
-  $tmpBuildDir = "$TOOLS_XTA/../tmp";
   $exeName     = "xtagui";
 
   if ($HOST eq "PC") {
@@ -305,20 +310,11 @@ sub SetupVars
     $platform   = "linux";
     $buildDirProperties = $buildDir;
     $exeName    = "$exeName.exe";
-
-  $config = "linux, gtk, x86_64 & linux, gtk, x86";
-
-#    my $version = `uname -m`;
-#    chomp($version);
-#    if ($version eq "x86_64") {
-#      $config = "linux, gtk, x86_64";
-#    } else {
-#      $config = "linux, gtk, x86";
-#    }
+    $config = "linux, gtk, x86_64 & linux, gtk, x86";
   }
 
   $eclipseDir  = "$ENV{'ECLIPSE_HOME'}";
-  $buildOutput = "$TOOLS_XTA/build.output.$platform";
+  $buildOutput = "$buildDir/build.output.$platform";
   $target      = "xta.$platform.zip";
 }
 
@@ -327,8 +323,8 @@ sub UpdateBuildNumber
   if (defined($BUILD_NUM)) 
   {
     # Reads in the plugin.xml and patches the build number..
-    open(my $infp, "+<plugin.xml") 
-      or die("Cannot open file: plugin.xml for reading");
+    open(my $infp, "+<com.xmos.xta.ui${SLASH}plugin.xml") 
+      or die("Cannot open file: com.xmos.xta.ui${SLASH}plugin.xml for reading");
     my @lines = <$infp>;
 
     seek $infp,0,0;
@@ -346,17 +342,14 @@ sub BuildEclipse
   SetupVars();
 
   rmtree($buildDir);
-  rmtree($tmpBuildDir);
-
-  MakeDirectory("$tmpBuildDir/build/plugins");
-  MakeDirectory("$tmpBuildDir/build_config");
+  MakeDirectory("$buildDir/build/plugins");
+  MakeDirectory("$buildDir/build_config");
   
   unlink($buildOutput);
 
-  system("cp -r $TOOLS_XTA/../infr_libs_java $tmpBuildDir/build/plugins/infr_libs_java >> $buildOutput");
-  system("cp -r $TOOLS_XTA/../tools_xta      $tmpBuildDir/build/plugins/tools_xta      >> $buildOutput");
-
-  rename($tmpBuildDir, $buildDir);
+  system("cp -r $TOOLS_XTA/../infr_libs_java $buildDir/build/plugins/infr_libs_java    >> $buildOutput");
+  system("cp -r $TOOLS_XTA/com.xmos.xta.core $buildDir/build/plugins/com.xmos.xta.core >> $buildOutput");
+  system("cp -r $TOOLS_XTA/com.xmos.xta.ui   $buildDir/build/plugins/com.xmos.xta.ui   >> $buildOutput");
 
   # Creates the target specific build properties file..
   my $buildPropertiesFile = CreateBuildPropertiesFile($platform, $config, $buildDirProperties, $eclipseDir, $exeName);
@@ -370,23 +363,22 @@ sub BuildEclipse
   system("$buildCmd >> $buildOutput");
   system($tailCmd . " $buildOutput");
 
-  # Installs the zip file into the bin directory.
-  mkdir("$TOOLS_XTA/bin");
-  unlink("$TOOLS_XTA/bin/$target");
+  # Installs the zip file into the export directory.
+  unlink("$TOOLS_XTA/export/$target");
 
   if ($HOST ne "PC" && $HOST ne "Mac") {
-      system("mv $buildDir/build/I.TestBuild/*.zip $TOOLS_XTA/bin/");
-  }else{
-    system("mv $buildDir/build/I.TestBuild/*.zip $TOOLS_XTA/bin/$target");
+      system("mv $buildDir/build/I.TestBuild/*.zip $TOOLS_XTA/export/");
+  } else {
+    system("mv $buildDir/build/I.TestBuild/*.zip $TOOLS_XTA/export/$target");
   }
- 
+
   # Unzips the zip file..
-  chdir("$TOOLS_XTA/bin") 
-    or die("Unable to chdir to: $TOOLS_XTA/bin\n");
+  chdir("$TOOLS_XTA/export") 
+    or die("Unable to chdir to: $TOOLS_XTA/export\n");
 
   if ($HOST ne "PC" && $HOST ne "Mac") {
     system("unzip `ls | grep 64` >> $buildOutput; mv xta_bin xta_bin64 >> $buildOutput; unzip `ls | grep -v 64 | grep .zip` >> $buildOutput");
-  }else{
+  } else {
     system("unzip -o $target >> $buildOutput");
   }
 }
@@ -403,8 +395,8 @@ sub CreateBuildPropertiesFile
   $buildDir =~ s/\\/\//g; 
   $eclipseDir =~ s/\\/\//g; 
 
-  my $buildPropertiesTemplate = "$TOOLS_XTA/build.properties.template";
-  my $buildPropertiesFile     = "$TOOLS_XTA/build.properties.$platform";
+  my $buildPropertiesTemplate = "$TOOLS_XTA/com.xmos.xta.ui/build.properties.template";
+  my $buildPropertiesFile     = "$TOOLS_XTA/com.xmos.xta.ui/build.properties.$platform";
 
   open(my $infp, "<$buildPropertiesTemplate") 
     or die("Cannot open file: $buildPropertiesTemplate for reading");

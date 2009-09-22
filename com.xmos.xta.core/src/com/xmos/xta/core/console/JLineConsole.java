@@ -1,0 +1,63 @@
+package com.xmos.xta.core.console;
+
+import java.io.IOException;
+import java.util.Vector;
+
+import com.xmos.xta.core.console.commands.Command;
+import com.xmos.xta.core.console.completors.XtaCompletor;
+import com.xmos.xta.core.engine.Engine;
+
+import jline.ConsoleReader;
+
+public class JLineConsole extends Console {
+	private ConsoleReader m_reader;
+	private String m_prompt;
+	
+	JLineConsole(Engine engine) throws IOException {
+		m_reader = new ConsoleReader();
+		m_reader.setBellEnabled(false);
+	  	m_reader.addCompletor(new XtaCompletor(engine));
+	}
+	
+	public void display(String str) {
+		if (!redirectToFile(str)) {		
+		    System.out.printf("%s", str);
+		}
+	}
+	
+	public void displayPrompt(String str) {
+		m_prompt = str;
+	}	
+	
+	public String getNextLine(Vector<Command> commandHistory) {
+		try {
+			String line = m_reader.readLine(m_prompt);			
+			if (line == null) {
+				reportError();
+			    return null;
+			}
+			return line;
+		} catch (IOException e) {
+			System.out.printf("internal error: problem reading console input (aborting)..\n");
+		    System.out.printf("try using -DConsole=Basic\n");			
+			System.exit(1);
+			return null;
+		}
+	}
+		
+	public void clearScreen() {		
+	}
+	
+	public boolean hasEscaped() {
+		return false;
+	}
+
+	public void setFileRedirect(String fileName) {		
+	}
+	
+	private void reportError() {
+		System.out.printf("internal error: Problem reading console input (aborting)..\n");
+	    System.out.printf("try using -DConsole=Basic\n");			
+		System.exit(1);		
+	}
+}
