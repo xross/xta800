@@ -241,14 +241,15 @@ public class RouteConstructor {
 					if(workingSet.isEmpty()){
 						return exploreWhatsNext(startInstruction, workingSet, endInstructions, currentNode, parent, currentNode, isFunction, realEndNodes);
 					} else {
-						realEndNodes.add(parent);
-						
 						//connect an end node and stop
 						if(isFunction){
+							realEndNodes.add(currentNode);
 							makeConnection(currentNode, parent);
 							addNodeToWorkingSet(workingSet, currentNode);
 							return true;
 						} else {
+							//there could be a problem with the end nodes not being a real end node.
+							realEndNodes.add(parent);
 							EndNode endOfTheLine = new EndNode();
 							makeConnection(endOfTheLine, parent);
 							addNodeToWorkingSet(workingSet, endOfTheLine);
@@ -359,9 +360,13 @@ public class RouteConstructor {
 				if(!newWorkingSet.isEmpty()){
 
 					Node newStart = makeBasicBlocks(functionStartNode, realEndNodes, newWorkingSet);
-					
+					System.out.println(realEndNodes);
 					//check that there are no instruction nodes in the graph.
 					for(Node graphNode : newWorkingSet){
+						if(graphNode.isInstructionNode()){
+							System.out.println(StructuralAnalysisEngine.dumpTree("broken", newWorkingSet));
+						}
+						
 						assert(!graphNode.isInstructionNode());
 					}
 					
