@@ -2,6 +2,7 @@ package com.xmos.xta.engine.analysis.routes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -134,14 +135,14 @@ public class RouteConstructor {
 	 * @param src					- 
 	 * @param startInstruction		- the instruction that the route begins at
 	 * @param seenEndPoint			- if true then an end node has been seen on this route
-	 * @param endNodes				- a list of the nodes that the route terminates on
+	 * @param endInstructions				- a list of the nodes that the route terminates on
 	 * @param start					- the greatest parent that begins with the startInstruction and contains no exclusions
 	 * @param addFunctionWrappers	- to solve the function wrappers problem
 	 * @return						- true if an end point has been seen false otherwise
 	 * @throws Exception			- fails if the jvm dies for some reason or one of the endless assertions fails
 	 */
 	private boolean makeSubRoute(CommandSource src, InstructionNode startInstruction, boolean seenEndPoint, 
-			Collection<InstructionNode> endNodes, Node start, boolean isFunction) throws Exception {
+			Collection<InstructionNode> endInstructions, Node start, boolean isFunction) throws Exception {
 		firstNodeAdded = false;
 		Collection<Node> workingSet = new TreeSet<Node>();
 		
@@ -149,16 +150,18 @@ public class RouteConstructor {
 		m_excludedRouteNodes = new TreeSet<Node>();
 		NodeWrapper startNodeWrapper = new NodeWrapper(start);
 		
-		seenEndPoint |= explore(startInstruction, startNodeWrapper, workingSet, endNodes, null, isFunction);
+		Collection<Node> realEndNodes = new HashSet<Node>();
+		
+		seenEndPoint |= explore(startInstruction, startNodeWrapper, workingSet, endInstructions, null, isFunction, realEndNodes);
 		assert(cfgSanityCheck(workingSet));	
 		pruneGraphOfExcludedPaths(workingSet);
 		if (!workingSet.isEmpty()){
 			
 			
-			System.out.println(StructuralAnalysisEngine.dumpTree("eek", workingSet));
-			System.out.println("endNodes: " +endNodes+"\n\n");
-			
-			Node newStart = makeBasicBlocks(startInstruction, endNodes, workingSet);
+			//System.out.println(StructuralAnalysisEngine.dumpTree("eek", workingSet));
+			//System.out.println("end instructions: " +endInstructions);
+			//System.out.println("real end Nodes: "+ realEndNodes +"\n\n" );
+			Node newStart = makeBasicBlocks(startInstruction, realEndNodes, workingSet);
 			
 			addTerminator(workingSet);
 			assert(cfgSanityCheck(workingSet));
@@ -200,10 +203,11 @@ public class RouteConstructor {
 	 * @param workingSet - the nodes in the control flow graph we are making
 	 * @param endInstructions - a set of instructions that the route will end on
 	 * @param parent - the node before this one
+	 * @param realEndNodes 
 	 * @return true if the explore saw an end node
 	 */
 	private boolean explore(InstructionNode startInstruction, NodeWrapper node, Collection<Node> workingSet, 
-			Collection<InstructionNode> endInstructions, Node parent, boolean isFunction) {	
+			Collection<InstructionNode> endInstructions, Node parent, boolean isFunction, Collection<Node> realEndNodes) {	
 		
 		Node currentNode = node.m_node;
 		//System.out.println("exploring node " + currentNode);
@@ -230,13 +234,15 @@ public class RouteConstructor {
 		if(exclusionsWithinCurrentNode.isEmpty()){
 			if(endInstructionsWithinCurrentNode.isEmpty()){
 				// no exclusions and no endpoints
-				return exploreWhatsNext(startInstruction, workingSet, endInstructions, currentNode, parent, currentNode, isFunction);
+				return exploreWhatsNext(startInstruction, workingSet, endInstructions, currentNode, parent, currentNode, isFunction, realEndNodes);
 			} else {
 				//there are no exclusions on this block but it does contain at least one endpoint
 				if(currentNode.getStartInstructions().size() == 1 && currentNode.isInstructionNode()){
 					if(workingSet.isEmpty()){
-						return exploreWhatsNext(startInstruction, workingSet, endInstructions, currentNode, parent, currentNode, isFunction);
+						return exploreWhatsNext(startInstruction, workingSet, endInstructions, currentNode, parent, currentNode, isFunction, realEndNodes);
 					} else {
+						realEndNodes.add(parent);
+						
 						//connect an end node and stop
 						if(isFunction){
 							makeConnection(currentNode, parent);
@@ -251,7 +257,7 @@ public class RouteConstructor {
 					}
 				} else {
 					return exploreIntoCurrentNode(startInstruction, workingSet, endInstructions, currentNode, 
-							node,  parent, exclusionsWithinCurrentNode, endInstructionsWithinCurrentNode, isFunction);
+							node,  parent, exclusionsWithinCurrentNode, endInstructionsWithinCurrentNode, isFunction, realEndNodes);
 				}
 			}
 		} else {
@@ -271,7 +277,7 @@ public class RouteConstructor {
 				return false;
 			} else {
 				return exploreIntoCurrentNode(startInstruction, workingSet, endInstructions, currentNode, 
-						node, parent, exclusionsWithinCurrentNode, endInstructionsWithinCurrentNode, isFunction);
+						node, parent, exclusionsWithinCurrentNode, endInstructionsWithinCurrentNode, isFunction, realEndNodes);
 			}
 		}
 	}
@@ -284,7 +290,7 @@ public class RouteConstructor {
 	
 	private boolean exploreWhatsNext(InstructionNode startInstruction, Collection<Node> workingSet, 
 			Collection<InstructionNode> endInstructions, Node currentNode, Node originalParent, 
-			Node replacementNode, boolean isFunction) {
+			Node replacementNode, boolean isFunction, Collection<Node> realEndNodes) {
 		//System.out.println("\tgoing to whats next");
 		
 		boolean seenEndPoint = false;
@@ -298,7 +304,7 @@ public class RouteConstructor {
 		Node parent = currentNode.getParent();
 		if (parent != null && !parent.whatsNext(currentNode).isEmpty()) {
 			for (Node next : parent.whatsNext(currentNode)) {
-				seenEndPoint |= explore(startInstruction, new NodeWrapper(next), workingSet, endInstructions, replacementNode, isFunction);
+				seenEndPoint |= explore(startInstruction, new NodeWrapper(next), workingSet, endInstructions, replacementNode, isFunction, realEndNodes);
 			}
 		}
 		return seenEndPoint;
@@ -306,7 +312,7 @@ public class RouteConstructor {
 
 	private boolean exploreIntoCurrentNode(InstructionNode startInstruction, Collection<Node> workingSet, 
 			Collection<InstructionNode> endInstructions, Node currentNode, NodeWrapper node, Node parent, 
-			Collection<Node> currentNodesExclusions, Set<Node> containedEndPoints, boolean isFunction ) {
+			Collection<Node> currentNodesExclusions, Set<Node> containedEndPoints, boolean isFunction, Collection<Node> realEndNodes ) {
 		//System.out.println("\tlooking into");
 		boolean seenEndPoint = false;
 		assert (!currentNode.getImmediateChildren().isEmpty());
@@ -316,7 +322,7 @@ public class RouteConstructor {
 			if(!containedEndPoints.isEmpty()){
 				for(Node child : currentNode.getImmediateChildren()){
 					NodeWrapper childWrapper = new NodeWrapper(child);
-					seenEndPoint |= explore(startInstruction, childWrapper, workingSet, endInstructions, parent, isFunction);
+					seenEndPoint |= explore(startInstruction, childWrapper, workingSet, endInstructions, parent, isFunction, realEndNodes);
 					if(parent == null) {
 						node.m_node = childWrapper.m_node;
 					}
@@ -340,7 +346,7 @@ public class RouteConstructor {
 				NodeWrapper functionNodeWrapper = new NodeWrapper(firstFunctionNode);
 				Collection<InstructionNode> functionEndNodes = currentNode.getEndInstructions();
 				Collection<Node> newWorkingSet = new TreeSet<Node>();
-				seenEndPoint |= explore(functionStartNode, functionNodeWrapper, newWorkingSet, functionEndNodes, null, true);
+				seenEndPoint |= explore(functionStartNode, functionNodeWrapper, newWorkingSet, functionEndNodes, null, true, realEndNodes);
 				assert(cfgSanityCheck(newWorkingSet));	
 				pruneGraphOfExcludedPaths(newWorkingSet);
 				
@@ -356,7 +362,7 @@ public class RouteConstructor {
 				//remember that the function might have 0 paths so terminates
 				if(!newWorkingSet.isEmpty()){
 
-					Node newStart = makeBasicBlocks(functionStartNode, functionEndNodes, newWorkingSet);
+					Node newStart = makeBasicBlocks(functionStartNode, realEndNodes, newWorkingSet);
 					
 					//check that there are no instruction nodes in the graph.
 					for(Node graphNode : newWorkingSet){
@@ -386,7 +392,8 @@ public class RouteConstructor {
 						assert(!endInstructions.contains(containedInstruction));
 					}
 					
-					seenEndPoint |= exploreWhatsNext(startInstruction, workingSet, endInstructions, currentNode, parent, replacementFunction, isFunction);
+					seenEndPoint |= exploreWhatsNext(startInstruction, workingSet, endInstructions, currentNode, 
+							parent, replacementFunction, isFunction, realEndNodes);
 				} else {
 					//probably should add the parent to the list of excluded route nodes
 					if(!m_excludedRouteNodes.contains(parent)){
@@ -398,7 +405,7 @@ public class RouteConstructor {
 		} else {
 			for(Node child : currentNode.getImmediateChildren()){
 				NodeWrapper childWrapper = new NodeWrapper(child);
-				seenEndPoint |= explore(startInstruction, childWrapper, workingSet, endInstructions, parent, isFunction);
+				seenEndPoint |= explore(startInstruction, childWrapper, workingSet, endInstructions, parent, isFunction, realEndNodes);
 				if(parent == null) {
 					node.m_node = childWrapper.m_node;
 				}
@@ -470,7 +477,7 @@ public class RouteConstructor {
 	
 	
 
-	private Node makeBasicBlocks(InstructionNode startInstruction, Collection<InstructionNode> endNodes, Collection<Node> workingSet) {
+	private Node makeBasicBlocks(InstructionNode startInstruction, Collection<Node> endNodes, Collection<Node> workingSet) {
 		//first search the working set to find the node that contains the start instruction
 		
 		Node beginingOfFirstBlock = null;
@@ -515,8 +522,6 @@ public class RouteConstructor {
 		// from every end node in the working set crawl upwards stopping at
 		// basic block boundaries
 		for (Node endNode : endNodes) {
-			System.out.println("should end on: " +endNode.getPrevNodes());
-			
 			if (workingSet.contains(endNode) && endNode.isInstructionNode()) {
 				List<InstructionNode> endList = new LinkedList<InstructionNode>();
 				InstructionNode end = (InstructionNode)endNode;
