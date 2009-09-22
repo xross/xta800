@@ -140,7 +140,8 @@ sub DoPreClean
 
 sub DoClean
 {
-  chdir("$TOOLS_XTA") or die("Failed to find $TOOLS_XTA\n");
+  chdir("$TOOLS_XTA") 
+    or die("Failed to find $TOOLS_XTA\n");
 
   system("$MAKE $MAKE_FLAGS clean");
   
@@ -190,7 +191,9 @@ sub DoPreBuild
 
 sub DoBuild
 {
-  chdir("$TOOLS_XTA") or die("Build failed to find $TOOLS_XTA\n");
+  chdir("$TOOLS_XTA") 
+    or die("Build failed to find $TOOLS_XTA\n");
+
   system("$MAKE $MAKE_FLAGS");
 
   UpdateBuildNumber();
@@ -347,9 +350,9 @@ sub BuildEclipse
   
   unlink($buildOutput);
 
-  system("cp -r $TOOLS_XTA/../infr_libs_java $buildDir/build/plugins/infr_libs_java    >> $buildOutput");
-  system("cp -r $TOOLS_XTA/com.xmos.xta.core $buildDir/build/plugins/com.xmos.xta.core >> $buildOutput");
-  system("cp -r $TOOLS_XTA/com.xmos.xta.ui   $buildDir/build/plugins/com.xmos.xta.ui   >> $buildOutput");
+  system("cp -r $TOOLS_XTA/../infr_libs_java/com.xmos.libs $buildDir/build/plugins/com.xmos.libs     >> $buildOutput");
+  system("cp -r $TOOLS_XTA/com.xmos.xta.core               $buildDir/build/plugins/com.xmos.xta.core >> $buildOutput");
+  system("cp -r $TOOLS_XTA/com.xmos.xta.ui                 $buildDir/build/plugins/com.xmos.xta.ui   >> $buildOutput");
 
   # Creates the target specific build properties file..
   my $buildPropertiesFile = CreateBuildPropertiesFile($platform, $config, $buildDirProperties, $eclipseDir, $exeName);

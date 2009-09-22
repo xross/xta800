@@ -21,7 +21,7 @@
              <fileset dir="../../infr_libs_java/export/jars/">
                  <include name="**/*.jar"/>
              </fileset>
-             <fileset dir="../../infr_libs_java/jars/">
+             <fileset dir="../../infr_libs_java/com.xmos.libs/jars/">
                  <include name="**/*.jar"/>
              </fileset>
            </classpath>
@@ -35,7 +35,7 @@
          basedir="${build}"
          includes="com/xmos/xta/**"
          manifest="manifests/xta">
-         <zipfileset src="../../infr_libs_java/jars/jline-0.9.94.jar"/>
+         <zipfileset src="../../infr_libs_java/com.xmos.libs/jars/jline-0.9.94.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/dwarfhandler.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/elfhandler.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/xehandler.jar"/>

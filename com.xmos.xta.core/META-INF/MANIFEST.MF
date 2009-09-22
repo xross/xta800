@@ -6,7 +6,7 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: XMOS
 Import-Package: com.xmos.xeloader,
  jline
-Require-Bundle: infr_libs_java
+Require-Bundle: com.xmos.libs
 Export-Package: com.xmos.xta.core.console,
  com.xmos.xta.core.console.commands,
  com.xmos.xta.core.console.completors,
