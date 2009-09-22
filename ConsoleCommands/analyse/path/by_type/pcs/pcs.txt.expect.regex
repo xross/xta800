@@ -1,12 +1,12 @@
-seq\(100\) +: 100.0ns / 100.0ns 
-\.    block\(103\) +: 40.0ns \(x 1\) / 40.0ns \(x 1\) 
-\.    function\(104\) +: 20.0ns / 20.0ns g
-\.    \.    block\(106\) +: 20.0ns \(x 1\) / 20.0ns \(x 1\) 
-\.    block\(109\)     : 40.0ns \(x 1\) / 40.0ns \(x 1\) 
+seq\(\d+\) +: \d+.0ns / \d+.0ns 
+\.    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+\.    function\(\d+\) +: \d+.0ns / \d+.0ns g
+\.    \.    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+\.    block\(\d+\)     : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
 
-seq\(112\) +: 100.0ns / 100.0ns 
-\.    block\(115\) +: 40.0ns \(x 1\) / 40.0ns \(x 1\) 
-\.    function\(116\) +: 20.0ns / 20.0ns g
-\.    \.    block\(118\) +: 20.0ns \(x 1\) / 20.0ns \(x 1\) 
-\.    block\(121\) +: 40.0ns \(x 1\) / 40.0ns \(x 1\) 
+seq\(\d+\) +: \d+.0ns / \d+.0ns 
+\.    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+\.    function\(\d+\) +: \d+.0ns / \d+.0ns g
+\.    \.    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+\.    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
 
